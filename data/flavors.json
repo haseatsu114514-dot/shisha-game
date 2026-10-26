@@ -291,12 +291,12 @@
       "maker": "af"
     },
     {
-      "id": "nightside_frost_mint",
-      "name": "ナイトサイド フロストミント",
-      "short_name": "ナイトサイド フロストミント",
+      "id": "nightside_blast_mint",
+      "name": "ナイトサイド ブラストミント",
+      "short_name": "ナイトサイド ブラストミント",
       "category": "cooling",
       "price": 1750,
-      "description": "発売されたばかりのナイトサイドの冷涼ミント。ヴォルクは熱を精密に管理して一口ごとの清涼感を揃える。",
+      "description": "発売されたばかりのナイトサイドの強い清涼ミント。ヴォルクは熱を精密に管理し、鋭い立ち上がりから最後の一口まで清涼感を揃える。",
       "heat_tolerance": 1.2,
       "smoke_weight": 0.7,
       "steam_bias": -1.0,

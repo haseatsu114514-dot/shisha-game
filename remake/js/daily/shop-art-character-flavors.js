@@ -1,7 +1,7 @@
 // Character-linked cartons generated for the chapter shops. Each sheet keeps its original tile grid.
 const nine = new URL("../../img/shop/character-flavors/sheet-nine.webp", import.meta.url).href;
 const three = new URL("../../img/shop/character-flavors/sheet-three.webp", import.meta.url).href;
-const frost = new URL("../../img/shop/character-flavors/nightside-frost-mint.webp", import.meta.url).href;
+const blast = new URL("../../img/shop/character-flavors/nightside-blast-mint.webp", import.meta.url).href;
 const tea = new URL("../../img/shop/character-flavors/dragonfruit-black-tea.webp", import.meta.url).href;
 const tileNine = (col, row) => ({ url: nine, size: [1254, 1254], box: [col * 418, row * 418, 418, 418] });
 const tileThree = (col) => ({ url: three, size: [2172, 724], box: [col * 724, 0, 724, 724] });
@@ -19,7 +19,7 @@ export const CHARACTER_FLAVOR_ART = {
   bombshell: tileThree(0),
   white_musk: tileThree(1),
   siga: tileThree(2),
-  nightside_frost_mint: { url: frost, size: [1254, 1254], box: [245, 110, 760, 1010] },
+  nightside_blast_mint: { url: blast, size: [1254, 1254], box: [245, 110, 760, 1010] },
   dragonfruit: { url: tea, size: [1774, 887], box: [0, 0, 887, 887] },
   black_tea: { url: tea, size: [1774, 887], box: [887, 0, 887, 887] },
 };

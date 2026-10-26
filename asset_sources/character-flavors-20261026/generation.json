@@ -39,12 +39,13 @@
       "sha256": "d35a61b489d06d8e10cead6445bf36964559c01e779b86f6751144a06fbafa43"
     },
     {
-      "name": "nightside-frost-mint",
+      "name": "nightside-blast-mint",
       "ids": [
-        "nightside_frost_mint"
+        "nightside_blast_mint"
       ],
-      "source": "asset_sources/character-flavors-20261026/nightside-frost-mint.png",
-      "delivery": "remake/img/shop/character-flavors/nightside-frost-mint.webp",
+      "source": "asset_sources/character-flavors-20261026/nightside-blast-mint.png",
+      "delivery": "remake/img/shop/character-flavors/nightside-blast-mint.webp",
+      "note": "生成時はフロストミントの呼称。オーナー指定のブラストミントへ変更し、同じミント画像を採用。",
       "size": [
         1254,
         1254
