@@ -260,6 +260,51 @@ await suite("mix-temperature", async check => {
     await finishResult(page);
   });
 
+  await check("expressive-labels-fit-through-care", async page => {
+    await page.evaluate(async () => {
+      const { TITLE_LAYOUT_KEY } = await import("./js/scenes/title-layout.js");
+      localStorage.setItem(TITLE_LAYOUT_KEY, "ds");
+      window.dispatchEvent(new Event("display-layout-change"));
+    });
+    await prepare(page, "drill");
+    await page.locator("body.game-ds").waitFor();
+    for (const care of [false, true]) for (const high of [false, true]) {
+      await page.evaluate(async ({ care, high }) => {
+        const cs = QA.session.newSession("drill");
+        cs.mix = { mint: 12 }; cs.mixInfo = { total: 12 }; cs.pack = "normal";
+        const bands = QA.conditions.temperatureBands(cs);
+        const temp = high ? bands.ideal[1] - .04 : bands.ideal[0] + .04;
+        cs.steam = { temp, score: 100 };
+        cs.holes = { total: 24, minimumComplete: true };
+        if (care) cs.pull = { temp, score: 100, pulls: 2 };
+        QA.cs = cs; QA.session.craftTest.auto = null;
+        await QA.session.openBench(cs).ready;
+        QA.run = care ? QA.pull.runCare(cs) : QA.pull.runPull(cs);
+      }, { care, high });
+      if (care) await page.locator('[data-test="care-coal-0"]').click();
+      await page.locator('[data-test="pull-stop"]:enabled').waitFor();
+      await page.locator(".pull-state").filter({ hasText: high ? "適温・高" : "適温・低" }).waitFor();
+      await assertFits(page, ".pull-read");
+      assert.equal(await page.locator(".thermo-optimal").isVisible(), false);
+      assert.equal(await page.locator(".pull-drift").count(), care ? 1 : 0);
+      // render() replaces the live label each frame; query it and measure it in one browser task.
+      assert(await page.evaluate(() => {
+        const node = document.querySelector(".pull-state");
+        const text = node.getBoundingClientRect(), box = node.parentElement.getBoundingClientRect();
+        const front = document.elementFromPoint(text.left + text.width / 2, text.top + text.height / 2);
+        return text.width > 0 && text.height > 0 && node.scrollWidth <= node.clientWidth + 1
+          && node.scrollHeight <= node.clientHeight + 1 && text.left >= box.left - 1 && text.right <= box.right + 1
+          && text.top >= box.top - 1 && text.bottom <= box.bottom + 1 && node.contains(front);
+      }), "The low/high label must fit and remain in front of the audience panel, including while coals are cooling");
+      await page.screenshot({ path: path.join(shots, `expression-${care ? "care" : "pull"}-${high ? "high" : "low"}-ds.png`) });
+      // Finish each live stage before mounting the next shisha; a cancelled care is an error.
+      await keep(page);
+      if (!care) await keep(page);
+      await page.locator('[data-test="pull-serve"]').click();
+      await finishResult(page);
+    }
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
+
   await check("all-bands-boundaries-and-session-isolation", async page => {
     await prepare(page, "drill");
     const results = await page.evaluate(async () => {

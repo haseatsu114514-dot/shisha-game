@@ -167,6 +167,7 @@ await suite("flavor-expression", async check => {
     await setupMix(page);
     await page.locator("body.game-ds").waitFor();
     await add(page, "mint", 12);
+    await assertFits(page, '.mix-temperature-preview .mix-temperature-legend, .mix-temperature-preview > small:visible');
     const compact = page.locator('[data-test="mix-taste-compact"]');
     assert(await compact.isVisible());
     assert.equal(await compact.locator(".flavor-forecast-compact").evaluate(node => node.open), false);

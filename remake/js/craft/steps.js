@@ -94,7 +94,7 @@ export async function stepSetup(cs) {
       const guide = equipmentUse(e);
       return {
         value: e.id, label: e.name,
-        desc: `${guide.use}${guide.caution ? ` ／ ${guide.caution}` : ""}`,
+        desc: `${guide.use}${guide.caution ? ` ／ 注意：${guide.caution}` : ""}`,
         disabled, badge: disabled ? "素焼き非対応" : e.id === currentId ? "装備中" : null,
         auto: !disabled && e.id === currentId,
       };
@@ -287,6 +287,8 @@ export async function stepMix(cs) {
 
   const rows = ids.map((id) => {
     const f = DB.flavorById[id];
+    const tags = flavorTags(f), shortTag = tags.split("・")[0];
+    const stockTag = shortTag ? ` · ${shortTag}` : "";
     const g = el("span.fr-g", { text: "0g" });
     const ratio = el("small.fr-ratio", { dataset: { test: `mix-ratio-${id}` } });
     const change = (d) => {
@@ -306,9 +308,9 @@ export async function stepMix(cs) {
           onclick: () => modal({ title: f?.short_name || f?.name || id, className: "flavor-guide-dialog", body: flavorFeatureCard(f, { description: f?.description }),
             options: [{ label: "配合に戻る", primary: true, test: "flavor-info-close" }] }),
         }, [el("b", { text: f?.short_name || f?.name || id })]),
-        supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })
-          : consumes ? el("small.fr-stock", { text: `持ち込み 残り${flavorStock(id)}g` })
-          : el("small", { text: flavorTags(f) }),
+        supplied(id) ? el("small.fr-reg", { text: `課題（支給）${stockTag}` })
+          : consumes ? el("small.fr-stock", { text: `残り${flavorStock(id)}g${stockTag}` })
+          : el("small", { text: tags }),
         el("small.fr-mastery", { text: masteryLabel(state, id, DB.flavorById) }),
         cs.staffPractice ? el("small.fr-stock", { text: `まかない ${staffStock(state, id)}g ／ 私物 ${flavorStock(id)}g（まかない優先）` }) : null,
         ratio,
@@ -389,9 +391,9 @@ export async function stepPack(cs) {
   await waitBenchReady(cs, "pack");
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   const options = [
-    { value: "fluffy", label: "ふんわり", surface: "軽い吸い心地へ", desc: "熱が早く入る。軽い一杯を狙う時に。温めすぎに注意" },
-    { value: "normal", label: "ノーマル", surface: "バランスを探る基準", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
-    { value: "firm", label: "デンスパック", surface: "厚い味・長い余韻へ", desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
+    { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一杯を狙う時に。温めすぎに注意" },
+    { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
+    { value: "firm", label: "デンスパック", surface: "密に詰める・厚い味へ", desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
   ];
   let selected = options.find(o => o.value === cs.pack) || options[1];
   const vessel = el("div.pack-vessel", { role: "img", dataset: { test: "pack-vessel" } });

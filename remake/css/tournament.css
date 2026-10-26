@@ -127,7 +127,7 @@
 @keyframes stamp-in { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(2.4); } }
 
 /* ---- 最終結果 */
-.result-table { padding: 26px 44px 24px; display: grid; grid-template-rows: 128px 1fr 54px; gap: 16px; align-items: stretch; justify-content: stretch; overflow: hidden; }
+.result-table { padding: 26px 44px 24px; display: grid; grid-template-rows: 128px minmax(0, 1fr) 54px; gap: 16px; align-items: stretch; justify-content: stretch; overflow: hidden; }
 .rt-rays { position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 50% 0%, #f6c95e12 0 6deg, transparent 6deg 18deg); -webkit-mask: radial-gradient(ellipse 70% 80% at 50% 0%, #000 20%, transparent 70%); mask: radial-gradient(ellipse 70% 80% at 50% 0%, #000 20%, transparent 70%); animation: rays-breathe 3s ease-in-out infinite alternate; pointer-events: none; }
 .rt-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }
 @keyframes rays-breathe { from { opacity: .6; } to { opacity: 1; } }
@@ -167,6 +167,7 @@
 .result-table .rt-judge-comment { color: #f6d68e !important; }
 .result-table .rt-next-tip { color: #9fe7d9 !important; }
 .result-table .flavor-actual { grid-column: 1 / -1; }
+.result-table .rt-detail { min-height: 0; overflow: auto; overscroll-behavior: contain; }
 .result-table .rt-good-point { color: #e9d6a1; }
 .result-table > .btn { justify-self: end; min-width: 320px; border: 1px solid #f6c95e99; border-radius: 8px; background: linear-gradient(135deg, #6a4e2c, #2f2536); box-shadow: inset 0 1px 0 #ffe8b526, 0 6px 20px #0008; color: #fff1d0; font-size: 18px; font-weight: 800; }
 .result-table > :is(.rt-hero, .rt-layout, .btn) { position: relative; }

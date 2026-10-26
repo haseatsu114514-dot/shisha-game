@@ -42,6 +42,15 @@ body:not(.game-ds) .bench[data-step="mix"] .mix-vessel-art { top: auto; height: 
 .shop-dialog .flavor-guide-more { font-size: 14px; }
 .shop-dialog .flavor-guide-more summary { color: #69497e; }
 body.game-ds .bench[data-step="mix"] .mix-taste-compact { display: block; }
+/* DSの凡例は2行。温度計の足元に場所を取り、下段を画面外へ押し出さない。 */
+body.game-ds .bench[data-step="mix"] .mix-temperature-preview:not([hidden]) { padding-bottom: 44px; }
+body.game-ds .bench[data-step="mix"] .mix-temperature-legend { top: auto; bottom: 8px; }
+/* 適温の低・高と冷却中の↓を、同じ読み取り欄に収める。 */
+.pull > .thermo .pull-read { left: -9px; right: -9px; gap: 2px; flex-wrap: wrap; padding: 3px 0; }
+.pull > .thermo .pull-state { white-space: normal; letter-spacing: 0; text-align: center; }
+.pull > .thermo .pull-drift { font-size: 14px; }
+body.game-ds .bench[data-step] .pull > .thermo { height: max(80px, calc(var(--ds-vh) - 152px)); }
+body.game-ds .bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-right { z-index: 3; }
 .flavor-forecast-compact > summary { min-height: 34px; padding: 7px 0; cursor: pointer; color: var(--guide-muted); font-size: 13px; line-height: 1.4; }
 body.game-ds .bench[data-step="mix"] .fr-feature { min-height: 36px; }
 body.game-ds .bench[data-step="mix"] .fr-feature::after { font-size: 11px; }

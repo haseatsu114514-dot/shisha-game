@@ -28,6 +28,7 @@ const values = {
   "util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo) => lo },
   "ui.js": { countdown: async () => {} },
   "data.js": { DB: { flavorById: {} } },
+  "state.js": { state: null },
   "art.js": { artImg: () => el("div.art") },
   "audio.js": { SE: Object.fromEntries(["foilPunch", "perfect", "good", "miss", "just", "whoosh"].map((name) => [name, () => seCalls.push(name)])) },
   "session.js": { waitBenchReady: async () => {}, stepPanel: () => { panel ||= new Element("div.panel"); panel.replaceChildren(); return panel; }, refreshBench: () => {}, tickerSay: () => {}, reactAudience: () => {}, scoreStep: () => {},
@@ -42,7 +43,7 @@ const mods = new Map();
 async function load(name) {
   if (mods.has(name)) return mods.get(name);
   const mod = values[name] ? new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name })
-    : new vm.SourceTextModule(await fs.readFile(new URL(name === "condition.js" ? "../core/condition.js" : name, craftRoot), "utf8"), { context, identifier: name });
+    : new vm.SourceTextModule(await fs.readFile(new URL(["condition.js", "flavor-mastery.js"].includes(name) ? `../core/${name}` : name, craftRoot), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const holesModule = await load("holes.js"); await holesModule.evaluate();
