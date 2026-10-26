@@ -69,6 +69,9 @@ export async function withLoading(prepare, {
   host.addEventListener("focusin", focusGuard);
   for (const [node] of locked) node.inert = true;
   host.setAttribute("aria-busy", "true");
+  for (const type of ["pointerdown", "pointerup", "click"]) {
+    overlay.addEventListener(type, event => event.stopPropagation());
+  }
   proceed.onclick = () => close();
   const comic = selectLoadingComic(comics, { context, chapter });
   const comicReady = comic ? Promise.all(comic.panels.map(panel => prepareImage(panel.src, {

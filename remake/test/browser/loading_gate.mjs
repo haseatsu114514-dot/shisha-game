@@ -27,10 +27,12 @@ await suite("loading-gate", async check => {
       assert.equal(await page.locator('#result').textContent(), '試験用の処理を実行しています。');
       await page.keyboard.press('Tab');
       assert.equal(await page.locator('.loading-proceed').evaluate(node => node === document.activeElement), true);
+      await page.evaluate(() => { window.clicksBehindGate = 0; window.addEventListener('click', () => { window.clicksBehindGate++; }, { once: true }); });
       await page.keyboard.press('Enter');
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), false);
       assert.match(await page.locator('#result').textContent(), /準備完了/);
+      assert.equal(await page.evaluate(() => window.clicksBehindGate), 0, 'Gate clicks must not reach gameplay handlers');
       assert.equal(await page.evaluate(() => JSON.stringify({ local: { ...localStorage }, session: { ...sessionStorage } })), storage);
     }, { viewport });
   }
