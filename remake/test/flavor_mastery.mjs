@@ -58,6 +58,23 @@ s.day++;assert.equal(staffStock(s,staffFlavors(s)[0]),6);
 s=core.newGame();s.schema=20;s.flavorStock={mint:37};s.flavorMastery={lemon:Infinity,mint:-4};core.save();s=core.load();assert.deepEqual(s.flavorStock,{mint:37});assert.deepEqual(s.flavorMastery,{});
 assert.equal(regulationFor({mode:'tournament'}).flavor,'lemon');assert.equal(regulationFor({mode:'tournament'}).supply,undefined);
 s.schema=20;s.phase='tournament';core.save();s=core.load();assert.equal(regulationFor({mode:'tournament'}).flavor,'mint');
+// Spring Water is a purchasable blond flavor with its own persistent mastery family.
+const spring=DB.flavorById.spring_water;
+assert.equal(spring.maker,'afsahr');assert.equal(spring.leaf,'blond');
+const { WIDEHANGA_FLAVORS,TOKYO_FLAVORS }=await import('../js/daily/shop-catalogs.js');
+assert(WIDEHANGA_FLAVORS.includes(spring.id));assert(TOKYO_FLAVORS.includes(spring.id));
+const samechan=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/samechan.json',import.meta.url)));
+const lesson=samechan.dialogues.find(d=>d.dialogue_id==='samechan_shop_repeat_0');
+s=core.newGame();s.chapter=2;s.day=4;s.flavorStock={spring_water:50};s.stamina=100;
+learnFlavorStory(s,lesson,DB.flavorById);learnFlavorStory(s,lesson,DB.flavorById);
+assert.equal(s.flavorMastery.spring_water,12);assert.equal(masteryLevel(s,'spring_water'),2);
+assert(applyHomeShisha({spring_water:12},{id:'home_rig_set'},s));
+assert.equal(s.flavorStock.spring_water,38);assert.equal(s.flavorMastery.spring_water,18);
+core.save();s=core.load();assert.equal(s.flavorMastery.spring_water,18);
+learnFlavorStory(s,lesson,DB.flavorById);assert.equal(s.flavorMastery.spring_water,18);
+for(let i=0;i<7;i++)gainFlavorExperience(s,{spring_water:12},6,DB.flavorById);
+assert.equal(masteryLevel(s,'spring_water'),5);assert.equal(masteryBonus(s,{spring_water:12},DB.flavorById),3);
+
 // Daily budgets at initial guts: light day +6, shisha day -18, light day with home -18.
 const cafe=SPOTS.find(x=>x.id==='cafe'),temple=SPOTS.find(x=>x.id==='kannon'),shop=SPOTS.find(x=>x.id==='naru');
 for(const [costs,delta] of [[[cafe.stamina,temple.stamina],6],[[shop.stamina,shop.stamina],-18],[[cafe.stamina,temple.stamina,-24],-18]]){
