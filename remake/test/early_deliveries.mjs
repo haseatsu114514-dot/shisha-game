@@ -49,7 +49,7 @@ await calendar.link(async spec=>{
 });
 await calendar.evaluate();const c=calendar.namespace;
 function reset({day=2,slot=0,flags={},story={}}={}){
- Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,{chapter:1,day,slot,money:10000,stamina:80,flags:{_errand_scout_done:true,_c_station_registered:true,...flags},story:{...story},met:{},visitedDay:{},stats:{},inbox:[]});calls.length=0;saves.length=0;actionEnds=0;closed.clear();locked.clear();
+ Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,{chapter:1,day,slot,money:10000,stamina:80,flags:{_errand_scout_done:true,_c_station_registered:true,_ch1_rules_read:true,...flags},story:{...story},met:{},visitedDay:{},stats:{},inbox:[]});calls.length=0;saves.length=0;actionEnds=0;closed.clear();locked.clear();
 }
 reset();assert.equal(c.dueDelivery().charId,'minto');await c.deliver(c.dueDelivery());assert.equal(c.dueDelivery().charId,'adam');await c.deliver(c.dueDelivery());
 assert.equal(c.dueDelivery(),null);assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(state.slot,2);assert.equal(actionEnds,2);assert.equal(state.story.minto,undefined);assert.equal(state.story.adam,1);assert.equal(state.met.minto,true);

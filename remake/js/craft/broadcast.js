@@ -1,6 +1,6 @@
 // 大会の生放送レイヤー（旧版 #24/#20/#26・N4）。本番（tournament）のときだけ出る。
 // ・ニコ動風コメント: 工程の出来に観客が反応して右から左へ流れる
-// ・点数は作業台の上の SCORE（総合スコア TH42）に一本化した。以前の「体感スコア」の札は出さない
+// ・出来栄えは観客の反応とパッキーの実況で伝える
 // ・MC の前振りは固定の人物欄へ。流れるコメントは工程の結果確認中だけ出す
 // 文面は remake/data/broadcast.json。
 import { el, pick } from "../core/util.js";
@@ -87,7 +87,7 @@ export function burst(cs, kind, n = null) {
 /** 点数（0〜100）→ 観客の反応の段階 */
 export const judgeOf = (score) => (score >= 88 ? "perfect" : score >= 74 ? "great" : score >= 55 ? "good" : "miss");
 
-/** 工程の出来を、観客のコメント・パッキーの実況へまとめて反映（点数は SCORE が工程ごとに入れる） */
+/** 工程の出来を、観客のコメント・パッキーの実況へまとめて反映 */
 export function judge(cs, result) {
   if (!live(cs)) return;
   burst(cs, result === "great" ? "perfect" : result);

@@ -260,9 +260,6 @@ body.game-ds .bench-mode { width: 74px; font-size: 10px; }
 body.game-ds .bench-progress { min-width: 0; overflow: auto; }
 body.game-ds .bench-progress-track { width: max-content; gap: 3px; }
 body.game-ds .bench .bench-progress-track > .bench-phase { min-width: 54px; max-width: 54px; height: 32px; gap: 2px; padding: 2px; }
-body.game-ds .arcade-score { min-width: 78px; padding: 3px; gap: 2px; }
-body.game-ds .arcade-num { font-size: 16px; }
-body.game-ds .arcade-label { font-size: 9px; }
 body.game-ds .bench-left, body.game-ds .bench[data-step] .bench-left {
   left: var(--ds-vx); top: calc(var(--ds-vy) + 40px); width: var(--ds-vw); height: calc(var(--ds-vh) - 40px); right: auto; bottom: auto; padding: 4px;
 }

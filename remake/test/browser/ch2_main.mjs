@@ -86,6 +86,11 @@ async function visit(page, id, inside = false, touch = false) {
     const next = page.locator(test(inside ? 'inside' : 'back-map'));
     if (touch) await next.tap(); else await next.click();
   }
+  if (id === 'c_station') {
+    await page.locator('[data-test="rule-sheet"]').waitFor();
+    assert.match(await page.locator('[data-test="rule-sheet"]').innerText(), /ストロベリー/);
+    if (touch) await page.locator('[data-test="rule-sheet-close"]').tap(); else await page.locator('[data-test="rule-sheet-close"]').click();
+  }
   await page.locator(test('map')).waitFor();
 }
 async function reloadSaved(page, slot = 0) {

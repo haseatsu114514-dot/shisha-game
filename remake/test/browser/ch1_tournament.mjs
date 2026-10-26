@@ -332,7 +332,9 @@ await suite("ch1-tournament", async check => {
     await page.waitForTimeout(550);
     await assertFits(page, '.result-table, .rt-layout, .rt-row, .rt-detail, [data-test="result-next"]');
     const labels = await page.locator('.rt-part > span').allTextContents();
-    assert.deepEqual(labels, ["穴あけ", "炭焼き", "完成品", "調整1回目", "調整2回目", "総合", "SCORE"]);
+    assert.deepEqual(labels, ["穴あけ", "炭焼き", "完成品", "調整1回目", "調整2回目", "総合"]);
+    assert.match(await page.locator('.rt-judge-comment').innerText(), /上園「.+」/);
+    assert.equal(await page.locator('.arcade-score, [data-test="result-score"], .rt-meter').count(), 0);
     assert.equal(await page.locator('.rt-row.me .rt-rank').textContent(), "1位");
   }, { viewport, isMobile: mobile, hasTouch: mobile });
 });
