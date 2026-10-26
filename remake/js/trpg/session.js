@@ -2,10 +2,13 @@
 const copy = value => structuredClone(value);
 
 export const TEAMWORK_MAX = 2;
-/** Doubles are table events: 6-6 critical, 1-1 fumble, any other pair a cheer. */
-export const specialOf = dice => dice[0] !== dice[1] ? null : dice[0] === 6 ? "critical" : dice[0] === 1 ? "fumble" : "double";
+// Keep two dice and one-die rerolls; scale the old aids toward their original success rates.
+export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 4, success: 30, mixed: 19 });
+export const gradeOf = total => total >= DICE.success ? "success" : total >= DICE.mixed ? "mixed" : "trouble";
+/** Doubles are table events: 20-20 critical, 1-1 fumble, any other pair a cheer. */
+export const specialOf = dice => dice[0] !== dice[1] ? null : dice[0] === DICE.sides ? "critical" : dice[0] === 1 ? "fumble" : "double";
 const RATING_TITLES = ["にぎやかな卓", "よい卓", "名卓", "伝説の卓"];
-/** Table excitement. Each tier reached once gives momentum: +1 to the next roll (up to +2). */
+/** Table excitement. Each tier reached once gives one momentum: bonus +4 to the next roll (up to two). */
 export const HEAT = { max: 8, tiers: [3, 6, 8], momentumMax: 2,
   names: ["静かな卓", "あたたまってきた", "沸いてきた", "最高潮"],
   nights: ["静かな夜", "和やかな夜", "盛り上がった夜", "大盛況の夜"] };
@@ -40,7 +43,7 @@ export class TrpgSession {
     x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
     return this.rng = x >>> 0;
   }
-  die() { return this.next() % 6 + 1; }
+  die() { return this.next() % DICE.sides + 1; }
   /** Moments the whole table enjoys. Never rolls dice, so the seeded story is unchanged. */
   cheer(amount, reason) {
     const before = this.state.heat;
@@ -102,11 +105,11 @@ export class TrpgSession {
     const helper = this.scenario.checks[kind].helper || null;
     if (support && (!helper || this.state.used[helper] || this.state.teamwork < 1)) throw new Error("This support is unavailable");
     if (support) { this.state.used[helper] = true; this.state.teamwork--; }
-    const hypothesisBonus = kind === "prepare" && this.state.hypothesis === this.profile.id ? this.rules.hypothesisBonus : 0;
+    const hypothesisBonus = kind === "prepare" && this.state.hypothesis === this.profile.id ? this.rules.hypothesisBonus * DICE.hypothesis : 0;
     const momentum = this.state.momentum;
     this.state.momentum = 0;
     this.state.pending = {
-      kind, dice: [this.die(), this.die()], bonus: 1 + hypothesisBonus + (support ? 2 : 0) + momentum, hypothesisBonus, momentum,
+      kind, dice: [this.die(), this.die()], bonus: DICE.base + hypothesisBonus + (support ? DICE.support : 0) + momentum * DICE.momentum, hypothesisBonus, momentum,
       helper: support ? helper : null, rerolled: false,
     };
     if (support) this.cheer(1, "仲間の見せ場");
@@ -117,7 +120,7 @@ export class TrpgSession {
     const p = this.state.pending;
     if (!p) throw new Error("No pending check");
     const total = p.dice[0] + p.dice[1] + p.bonus;
-    return { ...copy(p), total, grade: total >= 10 ? "success" : total >= 7 ? "mixed" : "trouble", special: specialOf(p.dice) };
+    return { ...copy(p), total, grade: gradeOf(total), special: specialOf(p.dice) };
   }
 
   reroll(index) {

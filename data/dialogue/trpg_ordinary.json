@@ -34,7 +34,7 @@
       "role": "ニコ／香りの案内役",
       "color": "#c8a375",
       "ability": "舞台の支度",
-      "abilityText": "一台を準備するとき、判定に一度だけ＋2",
+      "abilityText": "一台を準備するとき、判定に一度だけ＋7",
       "abilityType": "prepare"
     },
     {
@@ -43,7 +43,7 @@
       "role": "ルカ／窓辺の絵描き",
       "color": "#b8a3cc",
       "ability": "席の気配",
-      "abilityText": "提供するとき、判定に一度だけ＋2",
+      "abilityText": "提供するとき、判定に一度だけ＋7",
       "abilityType": "serve"
     }
   ],
@@ -52,14 +52,14 @@
   "checks": {
     "listen": {
       "title": "旅人の言葉を待つ",
-      "hint": "聞き役の気配り ＋1。結果にかかわらず、店内の探索へ進みます。",
+      "hint": "聞き役の気配り ＋3。結果にかかわらず、店内の探索へ進みます。",
       "success": "trpg_ordinary_listen_success",
       "mixed": "trpg_ordinary_listen_mixed",
       "trouble": "trpg_ordinary_listen_trouble"
     },
     "prepare": {
       "title": "選んだ香りを、一台にする",
-      "hint": "店番の手際 ＋1。香りと席の準備を、判定します。",
+      "hint": "店番の手際 ＋3。香りと席の準備を、判定します。",
       "success": "trpg_ordinary_prepare_success",
       "mixed": "trpg_ordinary_prepare_mixed",
       "trouble": "trpg_ordinary_prepare_trouble",
@@ -67,7 +67,7 @@
     },
     "serve": {
       "title": "席へ案内して、声をかける",
-      "hint": "相手への気配り ＋1。どの出目でも結末へ進みます。",
+      "hint": "相手への気配り ＋3。どの出目でも結末へ進みます。",
       "success": "trpg_ordinary_serve_success",
       "mixed": "trpg_ordinary_serve_mixed",
       "trouble": "trpg_ordinary_serve_trouble",
@@ -1647,3 +1647,4 @@
     ]
   }
 }
+

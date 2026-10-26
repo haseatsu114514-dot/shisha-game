@@ -636,3 +636,16 @@
 .trpg-campaign-night { display: block; color: #f3c98c; }
 @keyframes trpg-heat-fade { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .trpg-heat-pop, .trpg-heat-pop:not([data-tier="0"]) { animation-name: trpg-heat-fade; } }
+
+
+/* True d20: facet silhouette and centered numeric face, preserving the existing roll/reduced-motion lifecycle. */
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die.trpg-d20 {
+  display: grid; place-items: center; padding: 0; border: 0; border-radius: 0;
+  background: transparent; box-shadow: none;
+  filter: drop-shadow(3px 5px 3px #00171899);
+}
+.trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die.trpg-d20::before { content: none; }
+.trpg-die.trpg-d20 svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.trpg-die.trpg-d20 polygon { fill: #f6e8c5; stroke: #fff3c9; stroke-width: 2; }
+.trpg-die.trpg-d20 path { fill: none; stroke: #947951; stroke-width: 1; }
+.trpg-die.trpg-d20 .trpg-d20-value { position: relative; z-index: 1; color: #213b3c; font-size: 32px; font-weight: 700; line-height: 1; pointer-events: none; }

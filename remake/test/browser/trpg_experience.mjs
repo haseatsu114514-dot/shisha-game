@@ -91,8 +91,8 @@ async function forecast(page, supported = false, conditional = false) {
     const range = (await control(page, "trpg-odds-" + grade).textContent()).match(/(\d+)[〜～](\d+)/);
     if (range) assert(Number(range[1]) <= Number(range[2]), "Conditional probabilities use an ascending range");
   }
-  assert.match(await control(page, "trpg-bonus").textContent(), supported ? /[+＋]\s*3/ : /[+＋]\s*1/);
-  assert.match(await control(page, "trpg-forecast").textContent(), /10/);
+  assert.equal(await control(page, "trpg-bonus").textContent(), "＋" + (3 + (supported ? 7 : 0) + (await state(page)).momentum * 4));
+  assert.match(await control(page, "trpg-forecast").textContent(), /30/);
   await fits(page);
 }
 async function roll(page, { trap = false } = {}) {
@@ -374,7 +374,7 @@ async function shark(page, correct) {
   await hit(page, "trpg-support-hiyori");
   await forecast(page, true, true);
   await roll(page);
-  assert.equal((await state(page)).pending.bonus, correct ? 4 : 3,
+  assert.equal((await state(page)).pending.bonus, (correct ? 14 : 10) + (await state(page)).pending.momentum * 4,
     "The actual insight bonus is applied only when its hypothesis matches");
   await settle(page);
   if (correct) {
@@ -475,3 +475,4 @@ try {
   fs.writeFileSync(path.join(artifacts, "results.json"), JSON.stringify(results, null, 2) + "\n");
 }
 assert.equal(results.filter(r => r.status === "failed").length, 0, "TRPG experience browser cases failed");
+
