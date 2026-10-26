@@ -8,7 +8,6 @@ if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 async function init(page) {
   await page.evaluate(async () => {
-    (await import("./js/craft/session.js")).craftTest.autoLoading = true;
     const state = await import("./js/core/state.js"); state.newGame();
     window.T = {
       state, session: await import("./js/craft/session.js"),

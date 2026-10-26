@@ -34,7 +34,7 @@ export async function boot() {
   if (step === "heat") cs.equip.charcoal = query.get("charcoal") === "cube" ? "cube_charcoal" : "flat_charcoal";
   const loadingPreview = query.get("loading") === "comic";
   if (loadingPreview) {
-    document.querySelector(".craft-preview-nav small").textContent = "確認用に約2秒読み込みます。進むと実際の制作画面へ";
+    document.querySelector(".craft-preview-nav small").textContent = "確認用に約2秒読み込み、自動で制作画面へ";
   }
   // Only this preview supplies a simulated extra asset. The game never adds a delay.
   await openBench(cs, { entryAssets: loadingPreview ? new Promise(resolve => setTimeout(resolve, 2200)) : null }).ready;

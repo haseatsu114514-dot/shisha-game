@@ -11,23 +11,19 @@ await suite("loading-gate", async check => {
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), true);
       await page.locator('.loading-panels img').first().waitFor();
       assert.equal(await page.locator('.loading-panels img').count(), 2);
-      assert.equal(await page.locator('.loading-proceed').isVisible(), false);
-      await page.locator('.loading-proceed').waitFor();
+      assert.equal(await page.locator('.loading-gate').innerText(), 'LOADING…');
+      assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate h2, .loading-gate figcaption').count(), 0);
       await page.screenshot({ path: path.resolve(`.codex/artifacts/remake-browser/loading-comic-${label}.png`) });
-      assert.equal(await page.locator('.loading-proceed').evaluate(node => {
-        const box = node.getBoundingClientRect(), host = document.querySelector('#loading-demo').getBoundingClientRect();
-        return box.bottom <= host.bottom && box.top >= host.top && box.left >= host.left && box.right <= host.right;
-      }), true, 'Continue control must fit the stage');
       const boxes = await page.locator('.loading-panels img').evaluateAll(nodes => nodes.map(node => {
         const box = node.getBoundingClientRect(); return { left: box.left, right: box.right, width: box.width, natural: node.naturalWidth };
       }));
       assert(boxes.every(box => box.natural > 0 && box.width > 0 && box.left >= 0 && box.right <= viewport.width));
       assert(boxes[0].right < boxes[1].left, "Panels read from left to right");
-      // Completion stays open for the reader; keyboard activates the focused button.
-      assert.equal(await page.locator('#result').textContent(), '試験用の処理を実行しています。');
       await page.keyboard.press('Tab');
-      assert.equal(await page.locator('.loading-proceed').evaluate(node => node === document.activeElement), true);
+      assert.equal(await page.locator('.loading-gate').evaluate(node => node === document.activeElement), true);
       await page.evaluate(() => { window.clicksBehindGate = 0; window.addEventListener('click', () => { window.clicksBehindGate++; }, { once: true }); });
+      await page.locator('.loading-status').click();
+      assert.equal(await page.locator('.loading-gate').count(), 1, 'Input must not skip preparation');
       await page.keyboard.press('Enter');
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), false);
@@ -60,7 +56,7 @@ await suite("loading-gate", async check => {
     await page.locator('[data-demo="plain"]').click();
     await page.locator('.loading-gate').waitFor();
     assert.equal(await page.locator('.loading-comic img').count(), 0);
-    assert.equal(await page.locator('.loading-proceed').isVisible(), false);
+    assert.equal(await page.locator('.loading-proceed').count(), 0);
     await page.getByText('準備完了。次の場面を開始できます。', { exact: true }).waitFor();
     assert.equal(await page.locator('.loading-gate').count(), 0);
   });

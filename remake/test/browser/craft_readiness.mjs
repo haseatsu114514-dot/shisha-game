@@ -7,7 +7,6 @@ import { suite } from "./support.mjs";
 const metrics = [];
 async function init(page) {
   await page.evaluate(async () => {
-    (await import("./js/craft/session.js")).craftTest.autoLoading = true;
     const core = await import("./js/core/state.js"); core.newGame();
     window.T = { core, session: await import("./js/craft/session.js"),
       heat: await import("./js/craft/heat.js"), common: await import("./js/craft/common.js"),

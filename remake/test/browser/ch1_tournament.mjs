@@ -10,7 +10,6 @@ const capture = async (page, name) => { if (shots) await page.screenshot({ path:
 
 async function init(page) {
   await page.evaluate(async () => {
-    (await import("./js/craft/session.js")).craftTest.autoLoading = true;
     const core = await import("./js/core/state.js"); core.newGame();
     window.T = { core,
       data: await import("./js/core/data.js"),

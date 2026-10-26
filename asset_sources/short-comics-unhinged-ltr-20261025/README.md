@@ -55,6 +55,6 @@
 
 ## ゲーム内ロードへの採用
 
-オーナーの「リポジトリにある漫画とロード画面を実際に入れる」という依頼により、第25話「メニュー改訂」を制作開始時のロードへ採用。`remake/img/loading/adam-chaos.webp` は原画シート全体のWebP変換（quality 88）で、内容の加筆・反転・変更はなし。`remake/js/core/loading-comics.js` の表示領域で25話だけを左→右に出す。原画SHA-256は既存 `comics.json` のmanifestを維持する。番外編の注記を併記し、他話やギャラリーの一括採用は含まない。確認入口は `/remake/craft-preview.html?loading=comic`。
+オーナーの「リポジトリにある漫画とロード画面を実際に入れる」という依頼により、第25話「メニュー改訂」を制作開始時のロードへ採用。`remake/img/loading/adam-chaos.webp` は原画シート全体のWebP変換（quality 88）で、内容の加筆・反転・変更はなし。`remake/js/core/loading-comics.js` の表示領域で25話だけを左→右に出す。原画SHA-256は既存 `comics.json` のmanifestを維持する。番外編としての管理は本資料で行い、ロード中は漫画と右下の「LOADING…」のみ表示。他話やギャラリーの一括採用は含まない。確認入口は `/remake/craft-preview.html?loading=comic`。
 
-実画面での配置確認: [PC](loading-qa/pc.png) / [スマホ横](loading-qa/mobile.png)。準備完了後に「進む」で制作へ入る。
+実画面での配置確認: [PC](loading-qa/pc.png) / [スマホ横](loading-qa/mobile.png)。準備完了後は自動で制作へ入る。

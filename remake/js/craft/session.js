@@ -36,8 +36,7 @@ import { applyCoalTraining } from "./coals.js";
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
  * その腕前相当の結果を出して進む（UIの流れ自体は通常どおり通る）。
  */
-// autoLoading acknowledges the comic only after assets are ready; it never skips preparation.
-export const craftTest = { auto: null, autoLoading: false }; // "good" / "bad" / "burn"（温度を上げ続けて焦がす）
+export const craftTest = { auto: null }; // "good" / "bad" / "burn"（温度を上げ続けて焦がす）
 
 export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "REHEARSAL", tournament: "SMOKE CROWN CUP" };
 const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsal: "前日リハーサル", tournament: "大会" };
@@ -154,7 +153,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
   const background = bg();
   const assets = Promise.all([background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets]);
-  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, { waitForReader: !craftTest.auto && !craftTest.autoLoading });
+  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter);
   renderFatigue();
   return bench;
 }

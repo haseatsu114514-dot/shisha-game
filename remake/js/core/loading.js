@@ -43,7 +43,7 @@ export function selectLoadingComic(comics, { context = "default", chapter = 1 } 
 export async function withLoading(prepare, {
   host = document.querySelector("#stage"), label = "場面を準備しています…",
   delayMs = 220, context = "default", chapter = 1, comics = LOADING_COMICS,
-  signal, waitForReader = true,
+  signal,
 } = {}) {
   if (!host) throw new Error("Loading host is missing");
   if (active) throw new Error("A loading gate is already active");
@@ -54,23 +54,14 @@ export async function withLoading(prepare, {
   const locked = [...host.children].map(node => [node, node.inert]);
   const wasBusy = host.getAttribute("aria-busy");
   const overlay = el("section.loading-gate", { role: "dialog", "aria-modal": "true", "aria-label": "読み込み", tabindex: "-1" });
-  const status = el("p.loading-status", { role: "status", text: label });
-  const progress = el("progress", { "aria-label": "読み込み進捗" });
+  const status = el("p.loading-status", { role: "status", "aria-label": label, text: "LOADING…" });
   const content = el("div.loading-comic");
-  const proceed = el("button.loading-proceed", { text: "進む", hidden: true });
-  overlay.append(el("div.loading-card", [el("p.loading-eyebrow", { text: "水煙前線 / LOADING" }), content, status, progress, proceed]));
-  let shown = false, settled = false, hasComic = false, close;
-  const continued = new Promise(resolve => { close = resolve; });
-  const abort = () => { controller.abort(signal.reason); close(); };
+  overlay.append(el("div.loading-card", [content]), status);
+  let settled = false;
+  const abort = () => controller.abort(signal.reason);
   signal?.addEventListener("abort", abort, { once: true });
-  // Capture gameplay hotkeys while loading; let Tab and the gate's button work.
-  const guard = event => {
-    if (!shown || !overlay.contains(event.target)) {
-      event.preventDefault(); event.stopImmediatePropagation();
-    } else if (event.key === "Tab") {
-      event.preventDefault(); (proceed.hidden ? overlay : proceed).focus();
-    } else event.stopPropagation();
-  };
+  // Block gameplay input even before the overlay becomes visible.
+  const guard = event => { event.preventDefault(); event.stopImmediatePropagation(); };
   const focusGuard = event => { if (!overlay.contains(event.target)) overlay.focus(); };
   window.addEventListener("keydown", guard, true);
   window.addEventListener("keyup", guard, true);
@@ -80,7 +71,6 @@ export async function withLoading(prepare, {
   for (const type of ["pointerdown", "pointerup", "click"]) {
     overlay.addEventListener(type, event => event.stopPropagation());
   }
-  proceed.onclick = () => close();
   const comic = selectLoadingComic(comics, { context, chapter });
   const comicReady = comic ? Promise.all(comic.panels.map(panel => prepareImage(panel.src, {
     timeoutMs: 4000, signal: controller.signal,
@@ -98,22 +88,22 @@ export async function withLoading(prepare, {
           left: `${-region.x / region.width * 100}%`, top: `${-region.y / region.height * 100}%`,
         });
       }
-      return el("figure", [art, el("figcaption", { text: `${i + 1} / 2` })]);
+      return el("figure", [art]);
     }));
     if (comic.panels.every(panel => panel.region)) {
       panels.style.gridTemplateColumns = comic.panels.map(panel => `${panel.region.width}fr`).join(" ");
     }
-    content.append(el("h2", { text: comic.title }), panels);
-    if (comic.note) content.append(el("p.loading-comic-note", { text: comic.note }));
-    hasComic = true;
+    content.setAttribute("role", "group");
+    content.setAttribute("aria-label", comic.title);
+    content.append(panels);
   }).catch(() => {}) : Promise.resolve();
   // A quick task never flashes a loading screen. Styles are loaded only on use.
   const styleReady = loadStyle();
-  styleReady.catch(error => { controller.abort(error); close(); });
+  styleReady.catch(error => controller.abort(error));
   const show = async () => {
     try { await styleReady; } catch { return; }
     if (settled || controller.signal.aborted) return;
-    shown = true; host.append(overlay); overlay.focus();
+    host.append(overlay); overlay.focus();
   };
   const timer = delayMs > 0 ? setTimeout(show, delayMs) : null;
   const aborted = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(controller.signal.reason), { once: true }));
@@ -127,18 +117,12 @@ export async function withLoading(prepare, {
     const result = await Promise.race([
       Promise.resolve().then(() => prepare({ signal: controller.signal, report(done, total) {
         if (settled || controller.signal.aborted || !Number.isFinite(done) || !Number.isFinite(total) || total <= 0) return;
-        progress.max = total; progress.value = Math.max(0, Math.min(done, total));
+        status.setAttribute("aria-label", `${label} ${Math.max(0, Math.min(done, total))} / ${total}`);
       } })),
       aborted,
     ]);
     host.setAttribute("aria-busy", "false");
-    // Never wait for comic downloads after the actual preparation is finished.
-    if (shown && hasComic && waitForReader) {
-      status.textContent = "準備ができました。読み終えたら進めます。";
-      progress.hidden = true; proceed.hidden = false; proceed.focus();
-      await continued;
-      controller.signal.throwIfAborted();
-    }
+    // Return as soon as preparation is done; no extra reading prompt or comic download wait.
     return result;
   } finally {
     settled = true; clearTimeout(timer); controller.abort();
