@@ -6,6 +6,7 @@ export const SPAWN = { x: 0, z: .04, dir: 'up' };
 export const CHARACTER_HEIGHT = 302.4;
 // 背景上の移動量を人物高で校正する。奥行きの二乗で縦移動を遅くしない。
 export const WALK_SPEED = 420, RUN_SPEED = 660, STRIDE_LENGTH = 250;
+const CAMERA_ZOOM_EXPONENT = .55;
 export const DOORS = [
   { id: 'cafe', rect: [54, 270, 150, 270], foot: [235, 592], label: [160, 252] },
   { id: 'peppermint', rect: [1116, 280, 100, 274], foot: [1060, 592], label: [1110, 258] },
@@ -24,7 +25,7 @@ export function constrain(p) {
 }
 export function camera(player) {
   const ratio = project(SPAWN).scale / project(player).scale;
-  return cameraAtZoom(Math.max(1, ratio ** .55));
+  return cameraAtZoom(Math.max(1, ratio ** CAMERA_ZOOM_EXPONENT));
 }
 function cameraAtZoom(zoom) {
   // 消失点は固定。人物の足元を画面下へ引き戻すズーム/横追従をしない。
@@ -35,16 +36,31 @@ export function followCamera(current, player, dt) {
   return camera(player);
 }
 export function groundDistance(a,b) { return Math.hypot(a.x-b.x,5*(a.z-b.z)); }
+// カメラのズームも含めた、歩く人物の足元と表示倍率。
+// 床だけの投影座標で移動すると、奥へ進むときの足元だけがズームで遅くなる。
+export function walkingPoint(player) {
+  const p=project(player),cam=camera(player),screen=toScreen(p.x,p.y,cam);
+  return {...screen,scale:p.scale*cam.zoom};
+}
+function unprojectWalkingPoint(x,y) {
+  const visibleScale=Math.max(.001,(y-FLOOR.horizon)/FLOOR.rise);
+  const spawnScale=project(SPAWN).scale;
+  const scale=visibleScale>=spawnScale ? visibleScale :
+    (visibleScale/spawnScale**CAMERA_ZOOM_EXPONENT)**(1/(1-CAMERA_ZOOM_EXPONENT));
+  return {x:(x-FLOOR.cx)/(FLOOR.halfWidth*visibleScale),z:(1/scale-1)/5};
+}
 export function moveOnFloor(player, dx, dy, dt, run=false, goal=null) {
-  const start=project(player),len=Math.hypot(dx,dy);
+  const start=walkingPoint(player),len=Math.hypot(dx,dy);
   if(len<1e-6)return { player:{...player},distance:0,arrived:!!goal };
   const speed=run?RUN_SPEED:WALK_SPEED,k=dy/len*speed/FLOOR.rise;
   const step=speed*start.scale*(Math.abs(k)<1e-9?dt:Math.expm1(k*dt)/k);
-  const remaining=goal?Math.hypot(goal.x-start.x,goal.y-start.y):Infinity;
+  const goalPoint=goal?walkingPoint(unproject(goal.x,goal.y)):null;
+  const remaining=goalPoint?Math.hypot(goalPoint.x-start.x,goalPoint.y-start.y):Infinity;
   const amount=Math.min(step,remaining);
-  const next=constrain(unproject(start.x+dx/len*amount,start.y+dy/len*amount));
-  const end=project(next),scale=(start.scale+end.scale)/2;
-  return {player:next,distance:Math.hypot(end.x-start.x,end.y-start.y)/scale,arrived:remaining<=step};
+  const next=constrain(unprojectWalkingPoint(start.x+dx/len*amount,start.y+dy/len*amount));
+  const end=walkingPoint(next),scale=(start.scale+end.scale)/2;
+  return {player:next,distance:Math.hypot(end.x-start.x,end.y-start.y)/scale,
+    arrived:!!goalPoint&&Math.hypot(end.x-goalPoint.x,end.y-goalPoint.y)<1e-4};
 }
 export function toScreen(x, y, cam) { return { x: x * cam.zoom + cam.tx, y: y * cam.zoom + cam.ty }; }
 export function fromScreen(x, y, cam) { return { x: (x - cam.tx) / cam.zoom, y: (y - cam.ty) / cam.zoom }; }

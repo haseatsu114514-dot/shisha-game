@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
-import { DOORS, FLOOR, SPAWN, CHARACTER_HEIGHT, WALK_SPEED, camera, moveOnFloor, toScreen, fromScreen, project, unproject, constrain } from '../street/model.js';
-import { legPose } from '../street/gait.js';
+import { DOORS, FLOOR, SPAWN, CHARACTER_HEIGHT, WALK_SPEED, RUN_SPEED, camera, moveOnFloor, walkingPoint, toScreen, fromScreen, project, unproject, constrain } from '../street/model.js';
+import { drawWalker, walkerFrame } from '../street/gait.js';
 for(const x of [-.98,0,.98]) for(const z of [0,.04,.4,FLOOR.depth]) {
   const p=project({x,z}), q=unproject(p.x,p.y);
   assert(Math.abs(q.x-x)<1e-9 && Math.abs(q.z-z)<1e-9, 'tap inverse must preserve the floor position');
@@ -19,23 +19,39 @@ for(let n=1;n<=400;n++) {
   assert(height<=previousHeight,'actor must never grow when walking away');
   assert(height>=90,'far actor must remain readable');previousHeight=height;
 }
-for(const z of [.2,.5,.9])for(const [dx,dy] of [[1,0],[0,-1],[1,1],[-1,-1],[0,1]]) {
-  let p={x:0,z},distance=0;
-  for(let n=0;n<20;n++){const m=moveOnFloor(p,dx,dy,1/120);p=m.player;distance+=m.distance;}
-  assert(Math.abs(distance-WALK_SPEED/6)<.3,'relative speed must stay equal at near/mid/far and diagonals');
+for(const z of [.04,.2,.5,.9])for(const [dx,dy] of [[1,0],[0,-1],[1,1],[-1,-1],[0,1]])for(const run of [false,true]) {
+  const start={x:0,z},before=walkingPoint(start),m=moveOnFloor(start,dx,dy,1/120,run),after=walkingPoint(m.player);
+  const apparent=Math.hypot(after.x-before.x,after.y-before.y)/((before.scale+after.scale)/2);
+  assert(Math.abs(apparent-(run?RUN_SPEED:WALK_SPEED)/120)<.03,
+    `actor-relative screen speed must match across directions at z=${z}, run=${run}`);
 }
-for(let col=0;col<5;col++)for(let n=0;n<120;n++) {
-  const a=legPose(n/120,col,0),b=legPose(n/120,col,1);
-  assert.equal(a.planted,!b.planted,'legs must alternate contact and swing');
-  assert.equal(a.hip.y,104);assert.equal(b.hip.y,104);
-}
+assert.equal(walkerFrame(0,false),1,'idle must use the standing sprite');
+assert.deepEqual([0,.25,.5,.75].map(phase=>walkerFrame(phase,true)),[1,2,3,0],
+  'walking must cycle through all four source poses');
+const spriteRows=[];
+const drawContext={drawImage:(_sprite,_sx,sy,_sw,_sh,_dx,_dy,_dw,_dh)=>spriteRows.push(sy)};
+for(const phase of [0,.25,.5,.75]) drawWalker(drawContext,{}, {cell:[108,148]},2,phase,true);
+assert.deepEqual(spriteRows,[148,296,444,0], 'walking must draw each complete source frame');
 for(const d of DOORS) {
   const q=project(constrain(unproject(...d.foot)));
   assert(Math.hypot(q.x-d.foot[0],q.y-d.foot[1])<.01, `${d.id}: door approach is outside the walkable floor`);
   const ratio=CHARACTER_HEIGHT*q.scale/d.rect[3];
   assert(ratio>.8&&ratio<.9,`${d.id}: character height must fit the door at the approach`);
+  let player={...SPAWN},arrived=false;
+  for(let n=0;n<600&&!arrived;n++) {
+    const here=walkingPoint(player),there=walkingPoint(unproject(...d.foot));
+    const moved=moveOnFloor(player,there.x-here.x,there.y-here.y,1/120,false,{x:d.foot[0],y:d.foot[1]});
+    player=moved.player;arrived=moved.arrived;
+  }
+  assert(arrived&&Math.hypot(project(player).x-d.foot[0],project(player).y-d.foot[1])<.01,
+    `${d.id}: movement must reach the tapped entrance`);
+}
+for(const [player,dx,dy] of [[{x:.98,z:.5},1,0],[{x:-.98,z:.5},-1,0],[{x:0,z:0},0,1],[{x:0,z:FLOOR.depth},0,-1]]) {
+  const moved=moveOnFloor(player,dx,dy,1/60);
+  assert(moved.distance<1e-6&&Math.hypot(moved.player.x-player.x,moved.player.z-player.z)<1e-6,
+    'walking into a corridor edge must stop');
 }
 assert(project({x:0,z:1}).scale<project({x:0,z:.04}).scale, 'far character must be smaller');
 assert(project({x:.98,z:1}).x<project({x:.98,z:.04}).x, 'walkable corridor narrows with depth');
 assert(DOORS.find(d=>d.id==='kemurikusa').foot[1]<DOORS.find(d=>d.id==='cafe').foot[1], 'KEMURIKUSA stays at the district outskirts');
-console.log('street_projection: inverses/edges, 400 monotonic camera steps, near/mid/far diagonal speeds, alternating planted/swing legs, 3 door ratios PASS');
+console.log('street_projection: inverses/edges, 400 monotonic camera steps, 8-direction visible speeds, 4 sprite poses, 3 tap targets PASS');
