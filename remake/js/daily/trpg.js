@@ -1,6 +1,7 @@
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { state } from "../core/state.js";
 import { knowsTrpgBar } from "../core/trpg-discovery.js";
+import { DB } from "../core/data.js";
 
 export const trpgSpot = () => knowsTrpgBar(state) ? {
   id: "trpg_bar", kind: "trpg", label: "ボドゲカフェ", area: "隣町の遊び場", x: 48, y: 27,
@@ -59,6 +60,12 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
   await setBg(CITY_BACKGROUNDS.trpg, { instant: true });
   if (state !== owner) return { completed: false };
   showScreen("trpg", host); playBgm("bgm_trpg"); // #788 採用曲。倍率は既定1.0（asset_sources/music/adopted-minigame-bgm-20261020.md）
+  if (!owner.flags._intro_sai) {
+    const { playIntro } = await import("../vn/intro.js");
+    if (state !== owner || !host.isConnected) return { completed: false };
+    await playIntro("sai", { override: { display_name: DB.characters.sai.display_name } });
+    if (state !== owner || !host.isConnected) return { completed: false };
+  }
   const controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy });
   const unsubscribe = on("hud", () => { if (state !== owner) controller.destroy(); });
   const observer = new MutationObserver(() => { if (!host.isConnected) controller.destroy(); });
