@@ -26,7 +26,8 @@ try {
     }))).observe(document.querySelector("#fx"), { childList: true });
     assertArt();
     function assertArt() {
-      if (Object.keys(DB.manifest.introArt).length !== 17) throw new Error("登場背景が17種ではない");
+      const missing = ["hajime", "sumi", "tsumugi", "oneesan", "naru", "adam", "minto", "rin", "samechan", "nagumo", "maezono", "dr_kemuri", "pakki", "ageha", "hiyori", "kumicho", "rei"].filter(id => !DB.manifest.introArt[id]);
+      if (missing.length) throw new Error(`採用済みの登場背景がない: ${missing.join(", ")}`);
     }
     return Object.fromEntries(["hajime", "adam", "naru", "dr_kemuri", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));
   });

@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-25 23:13 UTC",
+ "generated": "2026-10-26 06:54 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -1346,6 +1346,137 @@
      "top": -12
     }
    }
+  },
+  "mashiro": {
+   "color": "#b5c8b9",
+   "secondary": "#eee5cc",
+   "shadow": "#172d2b",
+   "background": "ui/character_intros/mashiro.png",
+   "frames": {
+    "normal": {
+     "width": 1162.048,
+     "left": -271.376,
+     "top": -347.188
+    },
+    "sad": {
+     "width": 1164.698,
+     "left": -254.374,
+     "top": -350.666
+    },
+    "serious": {
+     "width": 1163.371,
+     "left": -267.733,
+     "top": -348.925
+    },
+    "sleep": {
+     "width": 1162.048,
+     "left": -249.95,
+     "top": -347.188
+    },
+    "smile": {
+     "width": 1163.371,
+     "left": -272.103,
+     "top": -348.925
+    },
+    "surprise": {
+     "width": 1162.048,
+     "left": -268.559,
+     "top": -347.188
+    }
+   }
+  },
+  "volk": {
+   "color": "#8fb4d8",
+   "secondary": "#c6e7df",
+   "shadow": "#112739",
+   "background": "ui/character_intros/volk.png",
+   "frames": {
+    "normal": {
+     "width": 878.28,
+     "left": -123.782,
+     "top": 21.336
+    }
+   }
+  },
+  "kuze": {
+   "color": "#8c7564",
+   "secondary": "#dcc4a1",
+   "shadow": "#26191b",
+   "background": "ui/character_intros/kuze.png",
+   "frames": {
+    "nervous": {
+     "width": 864.162,
+     "left": -102.025,
+     "top": 34.142
+    },
+    "normal": {
+     "width": 864.162,
+     "left": -104.061,
+     "top": 31.249
+    },
+    "smug": {
+     "width": 869.311,
+     "left": -103.245,
+     "top": 27.328
+    },
+    "wild": {
+     "width": 864.894,
+     "left": -107.975,
+     "top": 32.208
+    }
+   }
+  },
+  "steve": {
+   "color": "#f07a3a",
+   "secondary": "#ffe1ac",
+   "shadow": "#301a14",
+   "background": "ui/character_intros/steve.png",
+   "frames": {
+    "normal": {
+     "width": 857.632,
+     "left": -108.237,
+     "top": 33.214
+    }
+   }
+  },
+  "maki": {
+   "color": "#bd6547",
+   "secondary": "#e4b586",
+   "shadow": "#2b1814",
+   "background": "ui/character_intros/maki.png",
+   "frames": {
+    "normal": {
+     "width": 861.975,
+     "left": -122.738,
+     "top": 35.114
+    }
+   }
+  },
+  "sai": {
+   "color": "#589579",
+   "secondary": "#e5d7ad",
+   "shadow": "#102c22",
+   "background": "ui/character_intros/sai.png",
+   "frames": {
+    "normal": {
+     "width": 866.361,
+     "left": -119.87,
+     "top": 29.298
+    }
+   }
+  },
+  "uranaishi": {
+   "color": "#aa83c7",
+   "secondary": "#ddc296",
+   "shadow": "#20132e",
+   "background": "ui/character_intros/uranaishi.png",
+   "frames": {
+    "normal": {
+     "width": 873.026,
+     "left": -124.294,
+     "top": 28.256
+    }
+   }
   }
  },
  "titleArts": [
@@ -2161,6 +2292,13 @@
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
-  "cgs/cg_ch3_childhood_offered_hand.png"
+  "cgs/cg_ch3_childhood_offered_hand.png",
+  "ui/character_intros/mashiro.png",
+  "ui/character_intros/volk.png",
+  "ui/character_intros/kuze.png",
+  "ui/character_intros/steve.png",
+  "ui/character_intros/maki.png",
+  "ui/character_intros/sai.png",
+  "ui/character_intros/uranaishi.png"
  ]
 }

@@ -19,6 +19,7 @@ async function setup(page, { chapter = 1, slot = 0 } = {}) {
     // 未発見のロック／目撃の中断・無報酬はaxe_bar_discovery.mjsの専用回帰で検査する。
     // #780: 喫茶店は紹介フラグ後に解放される。ロック判定は別途 axe_bar_discovery で検査する。
     Object.assign(s.flags, { _cafe_introduced: true, _axe_bar_rumor_done: true, _axe_bar_sighting_done: true,
+      _intro_maki: true, _intro_sai: true, // 初登場はrecent_introsで検査。ここは来店後の案内・消費なしを検査する。
       _axe_bar_sighting_day: s.day - 1, _axe_bar_sighting_chapter: chapter,
       _gym_member: true, _ch2_day1: { startDay: 15, stage: "complete" },
       _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true });
