@@ -2330,6 +2330,24 @@
       ]
     },
     {
+      "id": "story-assist-rules",
+      "title": "Story craft assist and tournament rule sheets",
+      "kind": "browser",
+      "paths": [
+        "remake/js/scenes/craft-assist.js",
+        "remake/js/scenes/rule-sheet.js",
+        "remake/js/craft/common.js",
+        "remake/js/core/state.js",
+        "remake/css/rule-sheet.css",
+        "remake/test/browser/story_assist_rules.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/story_assist_rules.mjs"
+      ],
+      "weight": 1,
+      "timeout": 8
+    },
+    {
       "id": "flavor-mastery-browser",
       "title": "Flavor mastery and private leaves in actual UI",
       "kind": "browser",

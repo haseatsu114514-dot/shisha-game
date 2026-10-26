@@ -63,11 +63,15 @@ async function openMenu(owner) {
     const choice = await modal({ title: "県大会 MENU", body: "途中の工程は、その工程の始めから再開できます。", options: [
       { label: "セーブ", value: "save", test: id("save") },
       { label: "ロード", value: "load", test: id("load") },
+      { label: "大会の規則", value: "rules", test: id("rules") },
+      { label: "制作補助", value: "craft-assist", test: id("craft-assist") },
       { label: "タイトルへ戻る", value: "title", test: id("title") },
       { label: "閉じる", value: null, primary: true },
     ] });
     if (!live(owner)) return;
     if (choice === "save") await saveFlow();
+    if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
+    if (choice === "craft-assist") await (await import("../scenes/craft-assist.js")).openCraftAssistSettings();
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
       if (key && loadFromSlot(key)) { owner.active = false; owner.continueRoot?.cleanupContinue(); owner.controller?.abort(); requestResumeOnBoot(); location.reload(); }
