@@ -20,6 +20,7 @@ import { kujiRows, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
 import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
 import { LIMITED_FLAVOR_ART } from "./shop-art-limited.js";
+import { CHARACTER_FLAVOR_ART } from "./shop-art-character-flavors.js";
 import { SHOP_EQUIPMENT_ART } from "./shop-equipment-art.js";
 import { compareEquipment, flavorThermalGuide } from "../craft/temperature-model.js";
 
@@ -27,7 +28,7 @@ import { compareEquipment, flavorThermalGuide } from "../craft/temperature-model
 export const SHOP_FLAVORS = [
   "mint", "double_apple", "blueberry", "strawberry", "vanilla", "pineapple", "coconut", "mango",
   "lemon", "peach", "orange", "grape", "melon", "watermelon", "banana", "cinnamon", "rose", "lychee",
-  "cardamom", "lavender",
+  "cardamom", "lavender", "cola", "raspberry", "gum_cinnamon", "bombshell", "white_musk",
 ];
 const SHOP_EQUIP_TYPES = ["bowl", "hms", "charcoal"];
 const CAT_LABEL = { cooling: "清涼", sweet: "スイート", fruit: "フルーツ", spice: "スパイス", floral: "フローラル" };
@@ -97,7 +98,7 @@ export function flavorPackageArt(id, size = 54) {
   const fallback = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: id } }, [
     el("span.shop-type-mark", { style: { fontSize: "10px", letterSpacing: "0", whiteSpace: "nowrap" }, text: "フレーバー" }),
   ]);
-  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id];
+  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id];
   return art ? windowArt(item, art.url, art.box, art.size, size, "generated", fallback) : fallback();
 }
 function productArt(item, flavor, size = 66) {
@@ -106,7 +107,7 @@ function productArt(item, flavor, size = 66) {
   ]);
   const botanical = () => FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)] ? windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
     [1774, 887], size, "botanical", textArt) : textArt();
-  const generated = flavor ? (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id] || LIMITED_FLAVOR_ART[item.id]) : SHOP_EQUIPMENT_ART[item.art || item.id];
+  const generated = flavor ? (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id] || LIMITED_FLAVOR_ART[item.id] || CHARACTER_FLAVOR_ART[item.id]) : SHOP_EQUIPMENT_ART[item.art || item.id];
   if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", flavor ? botanical : textArt);
   if (flavor) return botanical();
   const art = EQUIP_ART[item.art || item.id];
@@ -173,7 +174,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     let finished = false, confirming = false, tab = "flavor", category = "all";
     const cart = new Map();
     const firstErrand = errand === "mint" && expense && expenseFlag === "_errand_mint_expensed" && !session.flags._errand_shop_done;
-    setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url)] });
+    setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url), ...new Set(Object.values(CHARACTER_FLAVOR_ART).map(art => art.url))] });
     playBgm("kansetsu_shomei_to_black_coffee");
     const body = el("div.shop-body", { tabindex: "0", "aria-label": "商品一覧" });
     const tabs = el("div.shop-tabs", { "aria-label": "売り場" });
