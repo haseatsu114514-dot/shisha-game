@@ -100,6 +100,7 @@
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
         "node remake/test/ch2_tournament.mjs",
         "node remake/test/tournament_story.mjs",
+        "node --experimental-vm-modules remake/test/tournament_vote_progression.mjs",
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
         "node --test remake/test/trpg_feedback.mjs",
