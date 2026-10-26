@@ -86,6 +86,9 @@ await suite("tokyo-visits", async check => {
       await page.locator(`${t("ch3-intro-scene")}[data-scene="${id}"]`).waitFor();
       await page.locator(t("ch3-intro-continue")).click();
       if (id === "ch3_opening") {
+        await page.locator(`${t("ch3-intro-scene")}[data-scene="ch3_registration"]`).waitFor();
+        assert.match(await page.locator(t("ch3-intro-scene")).innerText(), /参加登録/);
+        await page.locator(t("ch3-intro-continue")).click();
         await page.locator(`${t("rule-sheet")}[data-chapter="3"]`).waitFor();
         await assertFits(page, t("rule-sheet-close"));
         await page.locator(t("rule-sheet-close")).click();

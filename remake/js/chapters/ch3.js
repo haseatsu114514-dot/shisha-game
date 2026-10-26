@@ -17,7 +17,7 @@ import { openShop } from "../daily/shop.js";
 
 const FILES = {
   ch3_prologue: ["ch3_childhood_opening", "ch3_train_arrival"],
-  ch3_main: ["ch3_opening", "ch3_individuality_doubt", "ch3_tokyo_shop_gap", "ch3_abyss_recovery",
+  ch3_main: ["ch3_opening", "ch3_registration", "ch3_individuality_doubt", "ch3_tokyo_shop_gap", "ch3_abyss_recovery",
     "ch3_naru_contact_before_tournament", "ch3_naru_work", "ch3_strategy", "ch3_tournament_eve"],
   ch3_double_apple: ["ch3_mukai_arrival", "ch3_double_apple_incident", "ch3_rest_before_recovery",
     "ch3_daily_cup_1", "ch3_work_without_taste", "ch3_taste_return"],
@@ -57,14 +57,12 @@ async function openMenu(owner) {
       { label: "セーブ", value: "save", test: test("save") },
       { label: "ロード", value: "load", test: test("load") },
       { label: "大会の規則", value: "rules", test: test("rules") },
-      { label: "制作補助", value: "craft-assist", test: test("craft-assist") },
       { label: "タイトルへ戻る", value: "title", test: test("title") },
       { label: "閉じる", value: null, primary: true },
     ] });
     if (!current(owner)) return;
     if (choice === "save") await saveFlow();
     if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-    if (choice === "craft-assist") await (await import("../scenes/craft-assist.js")).openCraftAssistSettings();
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
       if (key && loadFromSlot(key)) {
@@ -323,16 +321,41 @@ async function renderStage(owner) {
     ], "四人一斉に制作し、客席への提供と二度の調整まで競います。");
     return;
   }
+  if (scene.id === "ch3_opening" && state.flags._ch3_opening_read) {
+    await setBg(bgUrl("bg_tournament_stage"), { instant: true });
+    if (!current(owner)) return;
+    card(owner, "scene", "DAY 1・全国大会の参加登録", "東京駅から会場へ。受付で出場手続きを済ませ、競技規則を受け取る。", [
+      button(owner, state.flags._ch3_rules_read ? "mukaiへ向かう"
+        : state.flags._ch3_registration_read ? "競技規則を確認する" : "参加登録をする", "continue", async () => {
+        if (!state.flags._ch3_registration_read) {
+          if (!await readScene(owner, { id: "ch3_registration", bg: "bg_tournament_stage" })) return;
+          state.flags._ch3_registration_read = true;
+          save();
+        }
+        if (!state.flags._ch3_rules_read) {
+          await (await import("../scenes/rule-sheet.js")).openRuleSheet();
+          if (!current(owner)) return;
+          state.flags._ch3_rules_read = true;
+          save();
+        }
+        if (!completeChapterThreeScene(state, "ch3_opening")) return;
+        save();
+        await renderStage(owner);
+      }, true),
+    ], "受付で受け取った規則は、あとからMENUでも読み返せる。", "ch3_registration");
+    return;
+  }
   const background = bgUrl(scene.bg);
   await setBg(background, { instant: true });
   if (!current(owner)) return;
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
     button(owner, "続きを読む", "continue", async () => {
       if (!await readScene(owner, scene)) return;
-      if (scene.id === "ch3_opening" && !state.flags._ch3_rules_read) {
-        await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-        if (!current(owner)) return;
-        state.flags._ch3_rules_read = true; save();
+      if (scene.id === "ch3_opening") {
+        state.flags._ch3_opening_read = true;
+        save();
+        await renderStage(owner);
+        return;
       }
       if (!completeChapterThreeScene(state, scene.id)) return;
       save();

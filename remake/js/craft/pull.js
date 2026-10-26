@@ -13,7 +13,7 @@ import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE, startBubbling } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady } from "./session.js";
-import { gradeOf, autoSkill, operationAuto, craftEase, skill, resultCard, keys } from "./common.js";
+import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { burnCoals, HEAT_GRADES } from "./heat.js";
 
 import { craftConditions, heatDelta, pullResult, isIdealTemperature, isOptimalTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
@@ -130,7 +130,7 @@ async function pullGame(cs, mode) {
   let pulls = 0, justs = 0, failed = null, coals = null;
   // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
   const clarity = mode.drift ? skill.clarity(cs) : 1;
-  const baseCool = mode.drift ? rand(0.006, 0.013) * (craftEase(cs) ? .55 : 1) : 0;
+  const baseCool = mode.drift ? rand(0.006, 0.013) * (cs.retryAssist ? .55 : 1) : 0;
   let coolRate = 0, elapsed = 0;
   const wobblePhase = rand(0, 6.28);
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
@@ -291,7 +291,7 @@ async function pullGame(cs, mode) {
     cancelAnimationFrame(raf);
     moveNeedle(at);
     pulls++;
-    const duration = operationAuto(cs) ? 120 : DRAW_MS[z.id];
+    const duration = autoSkill() ? 120 : DRAW_MS[z.id];
     const from = coreTemp, to = clamp(from + heatDelta(cs, delta), 0, 1), sway = T - coreTemp;
     play.dataset.draw = z.id;
     play.style.setProperty("--draw-duration", `${duration}ms`);
@@ -375,7 +375,7 @@ async function pullGame(cs, mode) {
     if (!coals) {
       cs.careCoals = { count: 0, picks: [] };
       lead.textContent = "消耗した炭のまま整える。熱は落ちていく";
-      await sleep(operationAuto(cs) ? 60 : 700);
+      await sleep(autoSkill() ? 60 : 700);
       choice.remove();
       choosing = false;
       play.hidden = false;
@@ -388,10 +388,10 @@ async function pullGame(cs, mode) {
     const { picks } = await burnCoals(cs, stage, { count: coals, compact: true });
     coolRate *= coalLifeFactor(picks);
     cs.careCoals = { count: coals, picks };
-    await sleep(operationAuto(cs) ? 40 : 450);
+    await sleep(autoSkill() ? 40 : 450);
     choice.replaceChildren(el("p.care-coals-lead", { text: "消耗した炭を交換した。温度が戻ってくる" }));
     SE.coalPlace();
-    const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = gameClock.now(), dur = operationAuto(cs) ? 200 : 1400;
+    const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
     for (;;) {
       const k = Math.min(1, (gameClock.now() - started) / dur);
       coreTemp = clamp(from + add * (1 - (1 - k) ** 2), 0, 1); T = coreTemp;
@@ -425,7 +425,7 @@ async function pullGame(cs, mode) {
     render();
   } else serve();
 
-  const auto = operationAuto(cs);
+  const auto = autoSkill();
   if (auto && !failed) {
     (async () => {
       await sleep(60);

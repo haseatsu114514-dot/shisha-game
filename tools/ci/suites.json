@@ -2330,19 +2330,18 @@
       ]
     },
     {
-      "id": "story-assist-rules",
-      "title": "Story craft assist and tournament rule sheets",
+      "id": "tournament-rules",
+      "title": "Tournament rule sheets",
       "kind": "browser",
       "paths": [
-        "remake/js/scenes/craft-assist.js",
         "remake/js/scenes/rule-sheet.js",
         "remake/js/craft/common.js",
         "remake/js/core/state.js",
         "remake/css/rule-sheet.css",
-        "remake/test/browser/story_assist_rules.mjs"
+        "remake/test/browser/tournament_rules.mjs"
       ],
       "run": [
-        "node remake/test/browser/story_assist_rules.mjs"
+        "node remake/test/browser/tournament_rules.mjs"
       ],
       "weight": 1,
       "timeout": 8

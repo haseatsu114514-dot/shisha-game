@@ -342,14 +342,12 @@ async function openMenu() {
     { label: "セーブ", value: "save", test: test("save") }, { label: "ロード", value: "load", test: test("load") },
     { label: "ステータス・人間関係", value: "status", test: test("status") },
     { label: "大会の規則", value: "rules", test: test("rules") },
-    { label: "制作補助", value: "craft-assist", test: test("craft-assist") },
     { label: "タイトルへ戻る", value: "title", test: test("title") },
     { label: "閉じる", value: null, primary: true },
   ] });
   if (!current(owner)) return;
   if (choice === "save") await saveFlow();
   if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-  if (choice === "craft-assist") await (await import("../scenes/craft-assist.js")).openCraftAssistSettings();
   if (choice === "load") {
     const key = await loadFlow({ inGame: true });
     if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
