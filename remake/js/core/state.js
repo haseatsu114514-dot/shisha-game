@@ -3,6 +3,7 @@
 // 状態の形を変えたら SCHEMA を上げ、migrate() に1段足す（互換コードはここだけに置く）。
 
 import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
+import { MASTERY_THRESHOLDS } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
 
@@ -288,7 +289,7 @@ function migrate(s) {
   s.tokyoVisits = restoreTokyoVisits(oldSchema < 20 ? null : s.tokyoVisits);
   s.flavorMastery = Object.fromEntries(Object.entries(record(s.flavorMastery))
     .filter(([id, xp]) => /^[a-z0-9_]+$/.test(id) && Number.isFinite(xp) && xp >= 0)
-    .map(([id, xp]) => [id, Math.min(66, xp)]));
+    .map(([id, xp]) => [id, Math.min(MASTERY_THRESHOLDS.at(-1), xp)]));
   s.flavorLessons = Array.isArray(s.flavorLessons) ? [...new Set(s.flavorLessons.filter(x => typeof x === "string"))] : [];
   if (!s.staffPractice || typeof s.staffPractice.day !== "string") s.staffPractice = null;
   else s.staffPractice.used = Object.fromEntries(Object.entries(record(s.staffPractice.used))

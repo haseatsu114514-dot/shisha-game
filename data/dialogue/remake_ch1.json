@@ -2738,6 +2738,7 @@
     },
     {
       "dialogue_id": "remake_lemon_gift",
+      "metadata": { "flavor_lesson": { "lemon": 1 } },
       "lines": [
         {
           "speaker": "sumi",
@@ -2758,6 +2759,26 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "試作でも使っていい。本番の分は残しとけよ。足りなくなったら自分で買い足すんだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "レモンって、どう使うのがいいんですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "鋭い酸味で味の輪郭を締める葉だ。ミントと合わせても、甘い葉に少し足してもいい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ただし熱をかけすぎると香りが飛ぶ。最初は炭を中心に寄せすぎず、香りを確かめろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "酸味を生かして、熱を強くしすぎない。覚えておきます"
         },
         {
           "speaker": "hajime",

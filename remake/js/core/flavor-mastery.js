@@ -1,7 +1,8 @@
 // 味の系統ごとの熟練度。同じ味のメーカー違いは経験を共有する。
-export const MASTERY_THRESHOLDS = [0, 6, 18, 38, 66];
+export const MASTERY_THRESHOLDS = [0, 6, 18, 36, 60];
+const MASTERY_MAX_XP = MASTERY_THRESHOLDS.at(-1);
 export const flavorFamily = (id, flavors = {}) => flavors[id]?.family || id;
-export const masteryXp = (s, id, flavors = {}) => Math.min(66, Math.max(0, Number(s.flavorMastery?.[flavorFamily(id, flavors)]) || 0));
+export const masteryXp = (s, id, flavors = {}) => Math.min(MASTERY_MAX_XP, Math.max(0, Number(s.flavorMastery?.[flavorFamily(id, flavors)]) || 0));
 export const masteryLevel = (s, id, flavors = {}) => MASTERY_THRESHOLDS.filter(x => masteryXp(s, id, flavors) >= x).length;
 export function masteryLabel(s, id, flavors = {}) {
   const level = masteryLevel(s, id, flavors);
@@ -16,7 +17,7 @@ export function gainFlavorExperience(s, mix, budget, flavors = {}) {
   s.flavorMastery ||= {};
   return Object.entries(families).map(([id, g]) => {
     const before = masteryLevel(s, id, flavors);
-    s.flavorMastery[id] = Math.min(66, Math.round((masteryXp(s, id, flavors) + budget * g / total) * 1000) / 1000);
+    s.flavorMastery[id] = Math.min(MASTERY_MAX_XP, Math.round((masteryXp(s, id, flavors) + budget * g / total) * 1000) / 1000);
     return { id, before, level: masteryLevel(s, id, flavors) };
   });
 }
@@ -26,7 +27,7 @@ export function learnFlavorStory(s, dialogue, flavors = {}) {
   const key = dialogue?.dialogue_id;
   if (!key || !lesson || s.flavorLessons?.includes(key)) return [];
   (s.flavorLessons ||= []).push(key);
-  return gainFlavorExperience(s, lesson, 3, flavors);
+  return gainFlavorExperience(s, lesson, 12, flavors);
 }
 export function masteryBonus(s, mix, flavors = {}) {
   const entries = Object.entries(mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0);

@@ -86,8 +86,10 @@ await suite('flavor-mastery',async check=>{
    const core=await import('./js/core/state.js');core.newGame();
    const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;
    await vn.play('ch1_minto_second');const first={...core.state.flavorMastery};await vn.play('ch1_minto_second');
+   await vn.play('remake_lemon_gift');await vn.play('remake_lemon_gift');
    core.save();core.load();return {first,after:core.state.flavorMastery,lessons:core.state.flavorLessons};
   });
-  assert.equal(result.first.mint,3);assert.deepEqual(result.after,result.first);assert.deepEqual(result.lessons,['ch1_minto_second']);
+  assert.equal(result.first.mint,12);assert.deepEqual(result.after,{mint:12,lemon:12});
+  assert.deepEqual(result.lessons,['ch1_minto_second','remake_lemon_gift']);
  });
 });
