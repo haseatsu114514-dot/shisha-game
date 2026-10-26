@@ -264,11 +264,11 @@
       "short_name": "NS アールグレイ",
       "category": "floral",
       "price": 1700,
-      "description": "NIGHTSIDEから正式発売されたアールグレイ。試香モニター『モルモットくん』の感想が、最後のひと匙を決めたという。ch3以降、_rin_release フラグで解放（時差発売の回収）。",
+      "description": "第3章で発売されたばかりのNIGHTSIDEのアールグレイ。凛の試作品とは別の正式発売品で、東京のヴォルクも使う。試香モニターの感想が最後の調整に生きたという。",
       "heat_tolerance": 1.15,
       "smoke_weight": 1.05,
       "steam_bias": 0.5,
-      "requires_flag": "_rin_release",
+      "chapter_min": 3,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -285,7 +285,8 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "nightside"
+      "maker": "nightside",
+      "family": "earlgrey"
     },
     {
       "id": "grape",
