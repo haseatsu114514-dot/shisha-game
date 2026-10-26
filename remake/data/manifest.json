@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-26 14:17 UTC",
+ "generated": "2026-10-26 14:38 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -316,6 +316,8 @@
   "bg_cafe_day.png",
   "bg_cafe_night.png",
   "bg_cafe_overcast_day.png",
+  "bg_ch2_ageha_closed_night.png",
+  "bg_ch2_venue_bench_night.png",
   "bg_ch3_hotel_night.png",
   "bg_ch3_kuze_video.png",
   "bg_ch3_train_arrival.png",
@@ -332,6 +334,7 @@
   "bg_kannon_day.png",
   "bg_kannon_night.png",
   "bg_kannon_overcast_day.png",
+  "bg_kemurikusa_outside_night.png",
   "bg_mukai_shop.png",
   "bg_osu_map_day.png",
   "bg_osu_map_night.png",
@@ -2003,6 +2006,8 @@
   "backgrounds/bg_cafe_day.png",
   "backgrounds/bg_cafe_night.png",
   "backgrounds/bg_cafe_overcast_day.png",
+  "backgrounds/bg_ch2_ageha_closed_night.png",
+  "backgrounds/bg_ch2_venue_bench_night.png",
   "backgrounds/bg_ch3_hotel_night.png",
   "backgrounds/bg_ch3_kuze_video.png",
   "backgrounds/bg_ch3_train_arrival.png",
@@ -2019,6 +2024,7 @@
   "backgrounds/bg_kannon_day.png",
   "backgrounds/bg_kannon_night.png",
   "backgrounds/bg_kannon_overcast_day.png",
+  "backgrounds/bg_kemurikusa_outside_night.png",
   "backgrounds/bg_mukai_shop.png",
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_night.png",

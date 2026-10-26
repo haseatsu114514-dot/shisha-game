@@ -26,7 +26,8 @@ import * as broadcast from "../craft/broadcast.js";
 import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
-import { readDialogues, ROOMS } from "./ch2-city-data.js";
+import { readDialogues } from "./ch2-city-data.js";
+import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
 
@@ -351,8 +352,9 @@ async function drive(owner) {
     } else if (p.stage === "complete") {
       // 章の最後に、はじめのいない店であげはの心の声（#929）。読了時だけ記録し、クリア済みの旧セーブにも一度だけ出す。
       if (!state.flags._ch2_read_ch2_tournament_ageha_heart) {
-        if (!await imageReady(ROOMS.ageha, 15000)) throw new Error("MELTY PUFFの店内を読み込めませんでした");
-        await setBg(ROOMS.ageha, { instant: true });
+        const closedRoom = bgUrl(CH2_SCENE_BACKGROUNDS.agehaClosed);
+        if (!await imageReady(closedRoom, 15000)) throw new Error("閉店後のMELTY PUFFを読み込めませんでした");
+        await setBg(closedRoom, { instant: true });
         if (!await read(owner, "ageha_heart")) return;
         state.flags._ch2_read_ch2_tournament_ageha_heart = true; save();
         await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });

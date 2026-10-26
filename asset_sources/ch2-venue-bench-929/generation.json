@@ -1,0 +1,26 @@
+{
+  "tool": "image_gen.imagegen",
+  "generation_count": 1,
+  "reference": "assets/backgrounds/bg_yuzugaya_c_station_night.webp",
+  "source_size": [
+    1672,
+    941
+  ],
+  "source_mode": "RGB",
+  "source_sha256": "bbf311ebb079484976e1eeb48ac7fe283aabd425d49a4489961a5b9783ccd207",
+  "delivery": "remake/img/backgrounds/bg_ch2_venue_bench_night.webp",
+  "delivery_size": [
+    1280,
+    720
+  ],
+  "delivery_bytes": 199048,
+  "delivery_sha256": "813c3fa87d50096448dc91876dcfc931f6236fb09bfab6b8a712ec2ea93fd493",
+  "delivery_box": [
+    0,
+    0,
+    1280,
+    720
+  ],
+  "processing": "Format conversion and uniform resizing only; original retained unchanged.",
+  "fallback": "assets/backgrounds/bg_ch2_venue_bench_night.png"
+}

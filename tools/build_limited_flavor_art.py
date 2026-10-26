@@ -32,7 +32,7 @@ def main():
         if native.read_bytes()!=original: raise ValueError('Encoding mutated native PNG')
         report.append(dict(id=item['id'],source=before,delivery=after,bytes=len(data)))
         mappings.append(f'  "{item["id"]}": {{ url: new URL("../../img/shop/limited/{item["id"]}.webp", import.meta.url).href, size: [512, 512], box: {json.dumps(after["box"])} }},')
-    module='// Limited flavor cartons; derived by tools/build_limited_flavor_art.py.\nexport const LIMITED_FLAVOR_ART = {\n'+'\n'.join(mappings)+'\n};\n'
+    module='// Limited flavor cartons; derived by tools/build_limited_flavor_art.py.\nimport { STORY_FLAVOR_ART } from "./shop-art-story.js";\nexport const LIMITED_FLAVOR_ART = {\n  ...STORY_FLAVOR_ART,\n'+'\n'.join(mappings)+'\n};\n'
     for path,content in [(ROOT/'remake/js/daily/shop-art-limited.js',module),(SOURCE/'validation.json',json.dumps(dict(items=report),indent=2)+'\n')]:
         if args.check:
             if path.read_text()!=content: raise ValueError(f'Derived file changed: {path}')

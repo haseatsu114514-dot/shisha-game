@@ -1,0 +1,25 @@
+{
+  "tool": "image_gen.imagegen",
+  "generation_count": 1,
+  "reference": "remake/img/shop/remaining8/rose.webp",
+  "source_size": [
+    1254,
+    1254
+  ],
+  "source_mode": "RGBA",
+  "source_sha256": "9fe12b4601353ab042aef78dc5716da41c16f846f02a499b7fe025d9f242d342",
+  "delivery": "remake/img/shop/limited/afsahr_strawberry.webp",
+  "delivery_size": [
+    512,
+    512
+  ],
+  "delivery_bytes": 28950,
+  "delivery_sha256": "7db6308729898ef19b67ffe66736bfeb8d019e31fcd55b7bd3a4b49be4abe3ad",
+  "delivery_box": [
+    107,
+    43,
+    299,
+    432
+  ],
+  "processing": "Format conversion and uniform resizing only; original retained unchanged."
+}
