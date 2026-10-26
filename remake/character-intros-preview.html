@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>新しい登場カットイン — 水煙前線 -EN:CODE-</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/vn.css">
+<link rel="stylesheet" href="css/intro.css">
+<style>
+body { background:#101820; color:#f8f6ee; }
+.preview-tools { position:fixed; inset:12px 12px auto; z-index:100; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center; font:14px var(--font); }
+.preview-tools button,.preview-tools select { min-height:44px; padding:8px 16px; border:1px solid #bc9e72; border-radius:6px; background:#20232b; color:inherit; font:inherit; }
+.preview-tools button:disabled { opacity:.45; }
+.preview-tools p { flex-basis:100%; text-align:center; margin:0; }
+#viewport { top:130px; bottom:12px; }
+</style>
+</head>
+<body>
+<div class="preview-tools">
+ <label for="character">登場カットイン</label><select id="character" disabled></select>
+ <button id="play" type="button" disabled>再生する</button>
+ <button id="all" type="button" disabled>7人を続けて再生</button>
+ <p id="status" role="status">読み込み中…</p>
+</div>
+<div id="viewport"><div id="stage"><div id="fx"></div></div></div>
+<script type="module">
+import { DB, loadAll, realName } from './js/core/data.js';
+import { newGame, state } from './js/core/state.js';
+import { layers } from './js/core/ui.js';
+import { playIntro } from './js/vn/intro.js';
+const ids = ['kuze','steve','volk','mashiro','maki','sai','uranaishi'];
+const selector = document.getElementById('character'), play = document.getElementById('play'), all = document.getElementById('all'), status = document.getElementById('status');
+layers.fx = document.getElementById('fx');
+function fit() { document.getElementById('stage').style.setProperty('--k', Math.max(.05, Math.min(innerWidth / 1280, (innerHeight - 142) / 720))); }
+addEventListener('resize', fit); fit();
+function busy(value) { selector.disabled = play.disabled = all.disabled = value; }
+async function run(selected) {
+  busy(true);
+  try {
+    for (const id of selected) {
+      selector.value = id; status.textContent = `${realName(id)} — ${DB.characters[id].intro_cutin.title}`;
+      await playIntro(id);
+    }
+    status.textContent = '再生終了。ゲームの保存データは変更していません。';
+  } catch (error) { status.textContent = `表示エラー：${error.message}`; }
+  finally { busy(false); }
+}
+play.addEventListener('click', () => run([selector.value]));
+all.addEventListener('click', () => run(ids));
+try {
+  await loadAll(); newGame();
+  for (const id of ids) { state.met[id] = true; selector.add(new Option(realName(id), id)); }
+  const requested = new URLSearchParams(location.search).get('character');
+  if (ids.includes(requested)) selector.value = requested;
+  status.textContent = '呼び名・二つ名・一言を約4秒で紹介します。ゲームの保存データは変更しません。';
+  busy(false);
+} catch (error) { status.textContent = `読み込みエラー：${error.message}`; }
+</script>
+</body>
+</html>
