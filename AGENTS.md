@@ -38,14 +38,14 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 - 起動とテスト入口は [remake/README.md](remake/README.md)。変更箇所と危険度に応じ、局所再現→関連回帰の順に確認する。表示・文言の小変更に全章通しや全種類の総当たりを要求しない。保存・進行・共通基盤には必要な境界回帰を残す。ゲームデータを編集したら関連リンタ・テストを確認する。
 - 同じHEADの成功結果を再利用する。無関係な変更で過去の検証を失効扱いしない。
 - 現行必須checksの無断省略、失敗の隠蔽、assertion・判定の緩和は禁止。成功・失敗・timeout・cancel・未実施を区別して記録する。
-- CI待ちの間に同じ確認や報告を繰り返さない。結果が出てから判断する。古いHEADの失敗や、再実行で成功に置き換わった結果を停止理由にしない。
+- CI待ちだけになったら、対象PR・現HEAD・残る必須checkを一度確認する。同じ「実行中」「マージ保留」の報告や短間隔の再照会を繰り返さず、待機中は他の有益な作業を進める。成功・失敗・timeout・cancelなど判断材料が変わった時だけ報告・対応する。セッションを終える場合は保留理由と次に確認する条件を一度だけ残す。古いHEADの失敗や、再実行で成功に置き換わった結果を停止理由にしない。
 - 未完の実装はDraft PR、完成したらReady for review にする。**CI待ちだけでDraftに留めない**。
 - マージは、競合なし・現HEADの `CI / result` が成功・未解決の指摘なしを確認して行う。条件を満たすPRは速やかにmergeする。
 
 ### CI（2026-10-23 に1本へ統合）
 
 - workflowは [ci.yml](.github/workflows/ci.yml) の1本（ほかは公開用の `deploy-pages.yml` と手動用の `sequential-merge.yml` だけ）。**PRで待つチェックは `CI / result` の1つだけ**。
-- quick（ブラウザ不要の検査）は毎回すべて動く。browser（Chromium）は変更ファイルに関係するテストだけを最大8グループに分けて動かす。
+- quick（ブラウザ不要の検査）は毎回すべて動く。PRのbrowser（Chromium）は変更ファイルに関係する短いスイート（目安5分以内）を最大8グループで動かし、ブラウザテスト本体を変更した場合は長いスイートも動かす。長い通し検査を含む全件は毎晩mainで動かす。
 - Draft PRではbrowserを動かさない。結果が必要になったら Ready for review にする（その時点のheadで動く）。mainへのpushはquickだけ。browserの全テストは毎晩（03:17 JST）mainで動く。夜間の失敗は「mainのCIが赤い」として最優先で直す。
 - テストの追加は [tools/ci/suites.json](tools/ci/suites.json) に1件足す。**workflowファイルを増やさない**。手元では `node tools/ci/run.mjs --kind quick` / `--kind browser --suites <id>`（プレビューサーバーを先に起動）で同じものを動かせる。
 - CIのcheckoutは必要なフォルダだけ（約0.7GB）にし、4.4GBのファイル一式を取らない。新規画像（Git LFS）はキャッシュ経由で取得する。

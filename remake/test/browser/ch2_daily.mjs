@@ -104,18 +104,18 @@ await suite('ch2-daily',async check=>{
     let v=await value(page); assert.equal(v.day,16); assert.equal(v.slot,0); assert.equal(v.stamina,110);
     assert.match(await page.locator('.dc-day').textContent(),/^2\/14$/); assert.match(await page.locator('.dc-row').allTextContents().then(a=>a.join(' ')),/あと12日/);
     await capture(page,'day2-home.png'); await wide(page);
-    await assertFits(page,'.map-regions button, .spot-pin');
+    await assertFits(page,'.spot-pin');
     const overlaps=await page.evaluate(()=>{
-      const controls=[...document.querySelectorAll('.map-regions button')].map(n=>n.getBoundingClientRect());
-      return [...document.querySelectorAll('.spot-pin, .hud-card, .hud-stamina, .hud-level, .hud-lime, .hud-menu, .reel-widget')].map(n=>{
-        const r=n.getBoundingClientRect();return {name:n.className,area:Math.max(...controls.map(c=>Math.max(0,Math.min(c.right,r.right)-Math.max(c.left,r.left))*Math.max(0,Math.min(c.bottom,r.bottom)-Math.max(c.top,r.top))))};
+      const station=document.querySelector('[data-test="station-open"]').getBoundingClientRect();
+      return [...document.querySelectorAll('.spot-pin:not([data-test="station-open"]), .hud-card, .hud-stamina, .hud-level, .hud-lime, .hud-menu, .reel-widget')].map(n=>{
+        const r=n.getBoundingClientRect();return {name:n.className,area:Math.max(0,Math.min(station.right,r.right)-Math.max(station.left,r.left))*Math.max(0,Math.min(station.bottom,r.bottom)-Math.max(station.top,r.top))};
       });
     });
-    for(const overlap of overlaps)assert(overlap.area<1,`City controls cover another control: ${JSON.stringify(overlap)}`);
+    for(const overlap of overlaps)assert(overlap.area<1,`Station covers another control: ${JSON.stringify(overlap)}`);
     // 既存3店舗と用品店、紹介済みTRPGバー。
     assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(),5);
     assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
-      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-ch2_shop','pin-ch2_c_station','pin-trpg_bar'].sort());
+      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-ch2_shop','pin-ch2_c_station','pin-trpg_bar','station-open'].sort());
     await settled(page);await page.locator(t('pin-ch2_rei')).click();
     await page.locator('.mi-preview:not(.loading)').waitFor();
     const preview=await page.locator('.mi-preview').evaluate(async node=>{

@@ -42,6 +42,12 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     if (axeBarSightingDue(owner)) {
       if (!await playAxeBarSighting({ signal: abort.signal }) || !current()) return false;
     }
+    if (!owner.flags._intro_maki) {
+      const { playIntro } = await import("../vn/intro.js");
+      if (!current()) return false;
+      await playIntro("maki", { override: { display_name: DB.characters.maki.display_name } });
+      if (!current()) return false;
+    }
     const mode = await new Promise(resolve => {
       host.hidden = false;
       let lessonOpen = false, picked = false;

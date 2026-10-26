@@ -110,7 +110,6 @@ await suite('ch2-main', async check => {
     assert.equal(value.flags._ch1_cleared, true);
     assert.match(await page.locator('.dc-day').textContent(), /^1\/14$/);
     assert.match(await page.locator('.dc-meta').textContent(), /あと13日/);
-    assert.equal(await page.locator(test('return')).isDisabled(), true);
     await page.locator(test('station')).click();
     assert.equal(await page.locator(test('go')).count(), 0, 'Return remains unavailable before deliveries and venue');
     await assertFits(page, '.spot-pin .sub-label, .ch2-route-note, .map-info, '+test('menu'));
@@ -133,7 +132,7 @@ await suite('ch2-main', async check => {
     for (const id of ['ageha', 'rei', 'c_station', 'kumicho']) await visit(page, id, id !== 'c_station', true);
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 1);
     await screenshot(page, 'city-discovered-spots.png');
-    await page.locator(test('return')).tap();
+    await page.locator(test('station')).tap(); await page.locator(test('go')).tap();
     await page.locator(test('complete')).waitFor();
     const value = await page.evaluate(() => window.__remake.state);
     assert.equal(value.chapter, 2); assert.equal(value.day, 15); assert.equal(value.slot, 2);
@@ -169,7 +168,7 @@ await suite('ch2-main', async check => {
     await page.locator(test('menu')).click(); await page.locator(test('save')).click();
     await page.locator('[data-test="slot-1"]').click();
     await page.locator(test('map')).waitFor();
-    await visit(page, 'c_station'); await visit(page, 'ageha'); await visit(page, 'rei'); await page.locator(test('return')).click(); await page.locator(test('complete')).waitFor();
+    await visit(page, 'c_station'); await visit(page, 'ageha'); await visit(page, 'rei'); await page.locator(test('station')).click(); await page.locator(test('go')).click(); await page.locator(test('complete')).waitFor();
     await page.locator(test('menu')).click(); await page.locator(test('load')).click();
     assert.match(await page.locator('[data-test="slot-1"] .ss-info').textContent(), /第2章・DAY 1/);
     await page.locator('[data-test="slot-1"]').click(); await page.locator('[data-test="confirm-load"]').click();

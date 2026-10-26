@@ -12,6 +12,7 @@ import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play } from "../vn/engine.js";
 import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { trainRide } from "../core/scene-motions.js";
+import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { advanceToChapterTwo, dayOneProgress, cityVisits, recordCityVisit } from "./ch2-progress.js";
 
 import { acceptChapterTwoDeliveries, deliveryPending, finishChapterTwoDelivery, chapterTwoDeliveriesDone, DELIVERY_STOPS } from "./ch2-deliveries.js";
@@ -157,7 +158,7 @@ async function continueDayOne() {
     } else if (stage === "map") {
       if (!await mapBackground()) return;
       renderMap();
-      focus(cityVisits(state).has("c_station") ? "return" : "pin-c_station");
+      focus(cityVisits(state).has("c_station") ? "station" : "pin-c_station");
       return;
     } else if (stage === "return") {
       if (!await scene("ch2_city_return", "地元へ帰る列車", MAP.night)) return;
@@ -293,12 +294,14 @@ function renderMap() {
   };
   for (const stop of stops) {
     const done = deliveries?.done?.[stop.id];
-    const pin = el("button.spot-pin.pin-store", { type: "button", style: { left: `${stop.x}%`, top: `${stop.y}%` },
+    const pin = el(`button.spot-pin.${stop.id === "station" ? "pin-station" : "pin-store"}`, { type: "button", style: { left: `${stop.x}%`, top: `${stop.y}%` },
       dataset: { test: test(stop.id === "station" ? "station" : `pin-${stop.id}`), read: String(visited.has(stop.id)), spot: stop.id },
       "aria-pressed": "false", "aria-label": `${stop.name}${deliveryPending(state, stop.id) ? "・配達先" : ""}`,
       onclick: () => selected === stop ? go(stop) : select(stop, pin) }, [
-      el("div.shield", [el("span.ico", [storeLogo(ROOMS[stop.id] ? `ch2_${stop.id}` : stop.id, { width: 68, height: 42 })
-        || el("span", { text: stop.glyph || (stop.id === "c_station" ? "会" : "駅"), "aria-hidden": "true" })])]),
+      el("div.shield", [el("span.ico", [stop.id === "station"
+        ? el("span.train-icon", { html: TRAIN_ICON_SVG })
+        : storeLogo(ROOMS[stop.id] ? `ch2_${stop.id}` : stop.id, { width: 68, height: 42 })
+          || el("span", { text: stop.glyph || (stop.id === "c_station" ? "会" : ""), "aria-hidden": "true" })])]),
       el("span.sub-label", { text: stop.name }),
       el("small.pin-status", { text: deliveryPending(state, stop.id) ? "配達先" : done ? "お届け済み" : visited.has(stop.id) ? "確認済み" : stop.outing ? "教えてもらった場所" : "" }),
     ]);
@@ -312,11 +315,10 @@ function renderMap() {
     acceptChapterTwoDeliveries(state); save();
     if (await mapBackground()) renderMap();
   }));
-  const home = button("駅へ戻る", "return", returnHome, canReturn, !canReturn);
-  home.dataset.locked = String(!canReturn);
   const root = el("main.map.ch2-shell.ch2-map.ch2-map-main", { class: session.mapAvailable ? "" : "is-map-missing", dataset: { test: test("map"), phase: session.mapAvailable ? "ready" : "unavailable" } }, [
     el("div.map-pins", { "aria-label": `${CH2_CITY_NAME}の行き先` }, pins), info,
-    el("aside.map-notice.ch2-route-note", [el("strong", { text: "配達と会場の下見" }), el("span", { text: progressText(), dataset: { test: test("route-progress") } }), home]),
+    el("aside.map-notice.ch2-route-note", [el("strong", { text: "配達と会場の下見" }), el("span", { text: progressText(), dataset: { test: test("route-progress") } }),
+      el("span", { text: canReturn ? "地図の駅から地元へ戻れます。" : returnNote })]),
   ]);
   if (!session.mapAvailable) root.append(el("div.map-notice.ch2-map-warning", { role: "status" }, [el("span", { text: "地図の絵を読み込めませんでした。行き先は選べます。" }), button("再読み込み", "retry-map", async () => { if (await mapBackground()) renderMap(); })]));
   showScreen("map", root);

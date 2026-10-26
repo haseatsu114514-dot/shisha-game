@@ -4,9 +4,6 @@
 .ch2-city #bg img { object-position: center; }
 .ch2-city #hud:empty { display: none; }
 .ch2-city #screen { color: #fcf6e9; }
-.map-regions { position: absolute; top: 16px; left: 336px; z-index: 5; display: flex; gap: 10px; }
-.map-regions button { min-height: 48px; padding: 8px 18px; border: 1px solid #9d8a55; border-radius: 4px; color: #fff3d0; background: #181222ed; font: inherit; cursor: pointer; }
-.map-regions button[aria-pressed="true"] { border-color: #f5d38c; background: #695329f2; box-shadow: 0 0 0 2px #f5d38c33; }
 .ch2-city button, .ch2-city a { -webkit-tap-highlight-color: transparent; }
 .ch2-city button:focus-visible, .ch2-city a:focus-visible {
   outline: 4px solid #fff3af; outline-offset: 5px;
@@ -78,9 +75,10 @@
 .ch2-pin.c-station .ch2-pin-title { font-size: 18px; }
 .ch2-pin.ageha { width: 215px; }
 .ch2-pin.ageha .ch2-pin-title { font-size: 18px; }
-.ch2-pin.station { width: 185px; border-color: #d8e4e9; background: #152c3bf2; }
+.ch2-pin.station { width: 205px; border-color: #d8e4e9; background: #152c3bf2; }
 .ch2-pin.station::after { background: #152c3b; border-color: #d8e4e9; }
 .ch2-pin.station .ch2-pin-num { font-size: 22px; color: #dfebef; }
+.ch2-pin.station .ch2-pin-num svg { width: 29px; height: 29px; }
 .ch2-map-summary {
   position: absolute; right: 32px; bottom: 78px; width: 274px; padding: 20px;
   border: 1px solid #bedace70; border-radius: 9px; background: var(--ch2-panel); box-shadow: 0 8px 22px #0005;

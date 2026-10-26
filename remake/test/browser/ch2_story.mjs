@@ -190,7 +190,7 @@ await suite('ch2-story', async check => {
     await travelToCity(page,'widehanga');
     assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(), 5);
     assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
-      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-ch2_shop','pin-ch2_c_station'].sort());
+      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-ch2_shop','pin-ch2_c_station','station-open'].sort());
     assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
     assert.equal(await page.locator(t('pin-trpg_bar')).count(), 0, 'TRPG bar waits for REI introduction');
     const logos = await page.locator('.store-logo img').evaluateAll(async imgs => {

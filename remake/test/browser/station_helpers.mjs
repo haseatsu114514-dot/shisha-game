@@ -17,13 +17,11 @@ export async function travelToCity(page, destination, { touch } = {}) {
   };
   if (fare) {
     await hit('station-open');
-    const label = (await page.locator(`[data-test="station-destination-${destination}"]`).textContent()).split(' ／ ')[0];
     await hit('station-destination-' + destination);
     assert.deepEqual(await snapshot(), before, 'Selecting a city does not charge before confirmation');
     await hit('station-confirm');
     // The region flag commits before the arrival transition; wait for the new map to be rendered too.
-    await page.waitForFunction(label => document.querySelector('.map:not(.done) [data-test="station-open"]')?.textContent
-      === `駅・街移動（${label}）`, label);
+    await page.locator(`.map:not(.done)[data-region="${destination}"][data-station-arrived="${destination}"] [data-test="station-open"]`).waitFor();
   }
   await page.locator(`.map:not(.done)[data-region="${destination}"]`).waitFor();
   await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));

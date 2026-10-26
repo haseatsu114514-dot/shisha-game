@@ -441,6 +441,12 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .pin-gym     { --pin-from: #2fa888; --pin-to: #145648; }
 .pin-stadium { --pin-from: #d4b430; --pin-to: #685818; }
 .pin-rest    { --pin-from: #4a4d6c; --pin-to: #1d1f30; }
+.pin-station { --pin-from: #31556c; --pin-to: #162b3b; width: 112px; }
+.pin-station.station-waiting { opacity: .75; }
+.pin-station .pin-symbol { color: #e2f1f7; }
+.train-icon { display: grid; place-items: center; color: #e2f1f7; }
+.train-icon svg { display: block; width: 42px; height: 42px; }
+body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .pin-locked  { --pin-from: #4a4a52; --pin-to: #2a2a32; }
 .pin-locked .shield { color: #d8d8e0; }
 
@@ -1085,7 +1091,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 
 /* Movement waits for the brief reveal; interrupt always clears its local lock. */
 .map[data-revealing="true"] .map-pins, .map[data-revealing="true"] .map-info,
-.map[data-revealing="true"] .map-walk, .map[data-revealing="true"] .map-regions { pointer-events: none; }
+.map[data-revealing="true"] .map-walk { pointer-events: none; }
 /* 解禁の表示と余韻が終わるまでは、次の指示を重ねない。 */
 .map[data-revealing="true"] .map-info, .map[data-revealing="true"] .map-guide,
 .map[data-revealing="true"] .map-notice:not(.map-unlock-notice) { visibility: hidden; }
