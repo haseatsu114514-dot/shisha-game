@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-26 06:54 UTC",
+ "generated": "2026-10-26 14:17 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -383,6 +383,7 @@
   "cg_ch2_ageha_purikura_strip_soft.png",
   "cg_ch3_childhood_offered_hand.png",
   "cg_kuze_mashiro_childhood.png",
+  "cg_mashiro_double_apple.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
   "cg_minto_confession.png",
@@ -2299,6 +2300,7 @@
   "ui/character_intros/steve.png",
   "ui/character_intros/maki.png",
   "ui/character_intros/sai.png",
-  "ui/character_intros/uranaishi.png"
+  "ui/character_intros/uranaishi.png",
+  "cgs/cg_mashiro_double_apple.png"
  ]
 }
