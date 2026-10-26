@@ -67,11 +67,16 @@ export function quickSuites(manifest) {
   return manifest.suites.filter((s) => s.kind === "quick");
 }
 
-// Browser suites to run for a list of changed files.
+// PRs run short, path-related browser suites. A changed browser test always
+// runs its own suite, even when that suite is long. Nightly uses browserSuites().
+export const PR_BROWSER_MAX_WEIGHT = 5;
 export function selectSuites(manifest, changedFiles) {
   const all = browserSuites(manifest);
-  if (changedFiles.some((f) => matchesAny(f, manifest.always_all))) return all;
-  return all.filter((s) => changedFiles.some((f) => matchesAny(f, s.paths)));
+  const selected = changedFiles.some((f) => matchesAny(f, manifest.always_all))
+    ? all
+    : all.filter((s) => changedFiles.some((f) => matchesAny(f, s.paths)));
+  return selected.filter((s) => s.weight <= PR_BROWSER_MAX_WEIGHT ||
+    changedFiles.some((f) => f.startsWith("remake/test/browser/") && matchesAny(f, s.paths)));
 }
 
 // Spread suites over groups so each group takes about `target` minutes,
