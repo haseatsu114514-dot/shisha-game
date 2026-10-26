@@ -6,7 +6,11 @@
     "remake/test/browser/package.json",
     "remake/test/browser/package-lock.json",
     "remake/tools/serve_preview.py",
-    "remake/test/browser/support.mjs"
+    "remake/test/browser/support.mjs",
+    "remake/js/core/**",
+    "remake/js/vn/**",
+    "remake/css/base.css",
+    "data/characters.json"
   ],
   "suites": [
     {
@@ -255,8 +259,20 @@
       "weight": 9,
       "timeout": 30,
       "paths": [
-        "remake/**",
-        "data/**"
+        "remake/js/chapters/ch1*.js",
+        "data/dialogue/ch1*.json",
+        "remake/js/daily/tonari.js",
+        "remake/test/browser/first_brew_finish.mjs",
+        "remake/test/browser/setup_continuation.mjs",
+        "remake/test/browser/ch2_choice_echoes.mjs",
+        "remake/test/browser/ch1_presentation.mjs",
+        "remake/test/browser/ch1_story_feedback.mjs",
+        "remake/test/browser/first_brew.mjs",
+        "remake/test/browser/minto_delivery.mjs",
+        "remake/test/browser/reel_registration_load.mjs",
+        "remake/js/chapters/ch2*.js",
+        "data/dialogue/ch2*.json",
+        "remake/js/daily/phone.js"
       ],
       "run": [
         "node remake/test/browser/first_brew_finish.mjs",
@@ -280,14 +296,17 @@
       "weight": 1,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
         "remake/js/craft/water-pour*.js",
         "remake/css/craft-water-pour.css",
         "remake/js/craft/preview.js",
         "remake/craft-preview.html",
         "remake/test/water_pour.mjs",
-        "remake/test/browser/water_pour.mjs"
+        "remake/test/browser/water_pour.mjs",
+        "remake/js/craft/**",
+        "remake/css/craft*.css",
+        "data/equipment.json",
+        "data/flavors.json",
+        "remake/test/browser/craft_materials.mjs"
       ],
       "run": [
         "node remake/test/browser/craft_materials.mjs"
@@ -919,15 +938,7 @@
         "remake/test/craft_templates_timing.mjs",
         "remake/test/browser/craft_progress.mjs",
         "remake/test/browser/ch1_tournament.mjs",
-        "remake/test/steam_forecast.mjs",
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/test/steam_forecast.mjs"
       ],
       "run": [
         "node remake/test/steam_forecast.mjs"
@@ -1178,9 +1189,15 @@
       "weight": 2.9,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/backgrounds/**"
+        "remake/js/chapters/ch1*.js",
+        "data/dialogue/ch1*.json",
+        "remake/js/daily/phone.js",
+        "remake/test/browser/ch1_loading.mjs",
+        "remake/test/browser/issue439.mjs",
+        "remake/test/browser/early_contacts_705.mjs",
+        "assets/backgrounds/bg_ch1*",
+        "remake/img/backgrounds/bg_ch1*",
+        "data/lime_messages.json"
       ],
       "run": [
         "node remake/test/browser/ch1_loading.mjs",
@@ -1266,8 +1283,6 @@
         "remake/test/lime_consistency.mjs",
         "remake/test/browser/lime_evening.mjs",
         "remake/test/browser/minto_invite_reminder.mjs",
-        "remake/**",
-        "data/**",
         "tools/check_legacy_terms.py"
       ],
       "run": [
@@ -1460,9 +1475,19 @@
       "weight": 8,
       "timeout": 25,
       "paths": [
-        "remake/**",
-        "data/**",
-        "tools/check_legacy_terms.py"
+        "tools/check_legacy_terms.py",
+        "remake/js/daily/**",
+        "remake/js/chapters/ch1*.js",
+        "data/dialogue/ch1*.json",
+        "data/dialogue/confession.json",
+        "remake/test/browser/play_feedback.mjs",
+        "remake/test/browser/ch1_opening_resume.mjs",
+        "remake/test/browser/lover_milestones.mjs",
+        "remake/test/browser/lime_appointment_recovery.mjs",
+        "data/dialogue/*minto*.json",
+        "data/dialogue/*tsumugi*.json",
+        "data/dialogue/*samechan*.json",
+        "remake/js/daily/romance.js"
       ],
       "run": [
         "node remake/test/browser/play_feedback.mjs",
@@ -1513,14 +1538,11 @@
       "weight": 4.8,
       "timeout": 20,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/index.html",
+        "remake/css/**",
+        "remake/data/manifest.json",
+        "assets/ui/**",
+        "remake/test/browser/game_layout.mjs"
       ],
       "run": [
         "node remake/test/browser/game_layout.mjs"
@@ -1533,14 +1555,15 @@
       "weight": 2,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/daily/adam*.js",
+        "remake/js/daily/eden*.js",
+        "data/dialogue/*adam*.json",
+        "data/dialogue/*eden*.json",
+        "assets/backgrounds/*adam*",
+        "assets/backgrounds/*eden*",
+        "assets/sprites/characters/adam/**",
+        "remake/img/sprites/characters/adam/**",
+        "remake/test/browser/adam_eden_711.mjs"
       ],
       "run": [
         "node remake/test/browser/adam_eden_711.mjs"
@@ -1556,14 +1579,30 @@
       "weight": 7,
       "timeout": 25,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/daily/hiyori*.js",
+        "remake/js/daily/samechan*.js",
+        "remake/js/daily/bonds.js",
+        "remake/js/daily/romance.js",
+        "data/dialogue/hiyori*.json",
+        "data/dialogue/samechan*.json",
+        "assets/sprites/characters/hiyori/**",
+        "assets/sprites/characters/samechan/**",
+        "remake/test/browser/axe_bar_discovery.mjs",
+        "remake/test/hiyori.mjs",
+        "remake/test/browser/map_guests.mjs",
+        "remake/test/hiyori_encounters.mjs",
+        "remake/test/hiyori_intro.mjs",
+        "remake/test/samechan_portrait.mjs",
+        "remake/test/browser/samechan_entry.mjs",
+        "remake/test/browser/samechan_confession.mjs",
+        "remake/test/browser/affinity_gates.mjs",
+        "remake/test/browser/relationship_ui.mjs",
+        "data/dialogue/*hiyori*.json",
+        "data/dialogue/*samechan*.json",
+        "assets/cgs/*hiyori*",
+        "assets/cgs/*samechan*",
+        "remake/img/cgs/*hiyori*",
+        "remake/img/cgs/*samechan*"
       ],
       "run": [
         "node remake/test/browser/axe_bar_discovery.mjs",
@@ -1588,14 +1627,13 @@
       "weight": 2,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/daily/minto*.js",
+        "data/dialogue/minto*.json",
+        "assets/sprites/characters/minto/**",
+        "remake/test/minto_progression.mjs",
+        "data/dialogue/*minto*.json",
+        "assets/cgs/*minto*",
+        "remake/img/cgs/*minto*"
       ],
       "run": [
         "node remake/test/minto_progression.mjs"
@@ -1609,14 +1647,13 @@
       "weight": 2,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/daily/tsumugi*.js",
+        "data/dialogue/tsumugi*.json",
+        "assets/sprites/characters/tsumugi/**",
+        "remake/test/tsumugi_story.mjs",
+        "data/dialogue/*tsumugi*.json",
+        "assets/cgs/*tsumugi*",
+        "remake/img/cgs/*tsumugi*"
       ],
       "run": [
         "node remake/test/tsumugi_story.mjs"
@@ -1630,14 +1667,8 @@
       "weight": 1,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/core/dev-*.js",
+        "remake/test/browser/dev_tools.mjs"
       ],
       "run": [
         "selected=(); [[ ! -f remake/js/core/dev-inspector.js ]] || selected+=(inspect); [[ ! -f remake/js/core/dev-event-preview.js ]] || selected+=(preview); [[ ! -f remake/js/core/dev-isolated-player.js ]] || selected+=(rehearsal); if [[ ${#selected[@]} -eq 0 ]]; then echo \"Developer tools are not implemented on this branch; skipped.\"; else tools_list=$(IFS=,; echo \"${selected[*]}\"); node remake/test/browser/dev_tools.mjs --tools=\"$tools_list\"; fi"
@@ -1650,14 +1681,9 @@
       "weight": 1.5,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/daily/reel*.js",
+        "remake/js/daily/phone.js",
+        "remake/test/reel_lifecycle.mjs"
       ],
       "run": [
         "node remake/test/reel_lifecycle.mjs"
@@ -1671,14 +1697,6 @@
       "weight": 2,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**",
         "remake/js/minigames/**",
         "remake/js/axe-throw-page.js",
         "remake/axe-throw.html",
@@ -1730,7 +1748,10 @@
         "remake/js/motions/gift.js",
         "assets/ui/making/bowl_empty_hiyori.png",
         "remake/test/browser/hiyori_axe_natural.mjs",
-        "tools/check_legacy_terms.py"
+        "tools/check_legacy_terms.py",
+        "remake/test/browser/save_load.mjs",
+        "remake/js/chapters/ch2*.js",
+        "remake/js/chapters/ch3*.js"
       ],
       "run": [
         "node remake/test/browser/save_load.mjs"
@@ -1743,14 +1764,17 @@
       "weight": 7,
       "timeout": 25,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/daily/home*.js",
+        "remake/css/home*.css",
+        "remake/js/scenes/title*.js",
+        "remake/js/daily/phone.js",
+        "remake/test/browser/title_layout.mjs",
+        "remake/test/browser/gallery.mjs",
+        "remake/test/browser/sumi_contact.mjs",
+        "remake/test/browser/lover_hidden_growth.mjs",
+        "remake/test/browser/home_shisha.mjs",
+        "remake/test/browser/home_practice_leaves.mjs",
+        "remake/js/daily/practice*.js"
       ],
       "run": [
         "node remake/test/browser/title_layout.mjs",
@@ -1768,14 +1792,11 @@
       "weight": 2,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/daily/romance.js",
+        "remake/js/daily/bonds.js",
+        "data/dialogue/*date*.json",
+        "remake/test/browser/lover_date_route.mjs",
+        "data/dialogue/*romance*.json"
       ],
       "run": [
         "node remake/test/browser/lover_date_route.mjs"
@@ -1788,14 +1809,6 @@
       "weight": 1,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**",
         "assets/ui/title_arts/**",
         "remake/img/ui/title_arts/**",
         "remake/data/manifest.json",
@@ -1816,14 +1829,15 @@
       "weight": 3,
       "timeout": 20,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/index.html",
+        "remake/js/chapters/ch1*.js",
+        "data/dialogue/ch1*.json",
+        "remake/js/daily/tonari.js",
+        "remake/test/vn_visual_readiness.mjs",
+        "remake/test/browser/tonari_opening.mjs",
+        "remake/test/browser/tutorial_transition.mjs",
+        "remake/css/ch1*.css",
+        "remake/js/daily/tutorial*.js"
       ],
       "run": [
         "node remake/test/vn_visual_readiness.mjs",
@@ -1838,14 +1852,15 @@
       "weight": 4,
       "timeout": 20,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/daily/map.js",
+        "remake/js/daily/shop.js",
+        "remake/css/map*.css",
+        "remake/css/shop*.css",
+        "assets/ui/maps/**",
+        "remake/test/store_logos.mjs",
+        "remake/test/browser/facility_map.mjs",
+        "remake/test/browser/map_reveals.mjs",
+        "remake/test/browser/shop_ui.mjs"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
@@ -1865,14 +1880,12 @@
       "weight": 1.5,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/daily/fortune*.js",
+        "remake/css/hud*.css",
+        "assets/ui/fortune/**",
+        "remake/test/fortune_readings.mjs",
+        "remake/test/browser/hud_fortune.mjs",
+        "remake/test/browser/fortune_readings.mjs"
       ],
       "run": [
         "node remake/test/fortune_readings.mjs",
@@ -1896,14 +1909,13 @@
       "weight": 3,
       "timeout": 15,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/scenes/continue*.js",
+        "remake/css/continue*.css",
+        "remake/index.html",
+        "remake/test/continue_readiness.mjs",
+        "remake/test/continue_output.mjs",
+        "remake/test/continue_neon.mjs",
+        "remake/test/continue_typing.mjs"
       ],
       "run": [
         "node remake/test/continue_readiness.mjs",
@@ -1919,14 +1931,14 @@
       "weight": 5,
       "timeout": 20,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/craft/**",
+        "remake/css/craft*.css",
+        "data/equipment.json",
+        "remake/test/steam_attack_lesson.mjs",
+        "remake/test/steam_slash.mjs",
+        "remake/test/steam_attack_growth.mjs",
+        "remake/test/steam_refresh.mjs",
+        "remake/test/browser/thermometer_alignment.mjs"
       ],
       "run": [
         "node remake/test/steam_attack_lesson.mjs",
@@ -1947,14 +1959,9 @@
       "weight": 8,
       "timeout": 25,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/chapters/ch1*.js",
+        "data/dialogue/ch1*.json",
+        "remake/test/browser/ch1_eve.mjs"
       ],
       "run": [
         "node remake/test/browser/ch1_eve.mjs"
@@ -1971,14 +1978,10 @@
       "weight": 4.8,
       "timeout": 25,
       "paths": [
-        "remake/**",
-        "data/**",
-        "assets/audio/**",
-        "assets/fonts/**",
-        "assets/backgrounds/**",
-        "assets/sprites/**",
-        "assets/cgs/**",
-        "assets/ui/**"
+        "remake/js/chapters/ch1*.js",
+        "data/dialogue/ch1*.json",
+        "remake/js/daily/tonari.js",
+        "remake/test/browser/ch1_practice.mjs"
       ],
       "run": [
         "node remake/test/browser/ch1_practice.mjs"
@@ -2060,11 +2063,12 @@
       "weight": 1,
       "timeout": 25,
       "paths": [
-        "remake/**",
-        "data/**",
         "experiments/proto/street/**",
         "assets/proto_*/**",
-        "assets/street_walk/**"
+        "assets/street_walk/**",
+        "remake/js/daily/street.js",
+        "remake/street/**",
+        "remake/test/browser/street_selection.mjs"
       ],
       "run": [
         "node remake/test/browser/street_selection.mjs"
@@ -2081,11 +2085,14 @@
       "weight": 11,
       "timeout": 25,
       "paths": [
-        "remake/**",
-        "data/**",
         "experiments/proto/street/**",
         "assets/proto_*/**",
-        "assets/street_walk/**"
+        "assets/street_walk/**",
+        "remake/js/chapters/ch1*.js",
+        "remake/js/chapters/ch2*.js",
+        "data/dialogue/ch1*.json",
+        "data/dialogue/ch2*.json",
+        "remake/test/playthrough.mjs"
       ],
       "run": [
         "node remake/test/playthrough.mjs"
@@ -2102,11 +2109,16 @@
       "weight": 11,
       "timeout": 25,
       "paths": [
-        "remake/**",
-        "data/**",
         "experiments/proto/street/**",
         "assets/proto_*/**",
-        "assets/street_walk/**"
+        "assets/street_walk/**",
+        "remake/js/daily/street.js",
+        "remake/street/**",
+        "remake/js/chapters/ch1*.js",
+        "remake/js/chapters/ch2*.js",
+        "data/dialogue/ch1*.json",
+        "data/dialogue/ch2*.json",
+        "remake/test/playthrough.mjs"
       ],
       "run": [
         "node remake/test/playthrough.mjs"
