@@ -223,7 +223,22 @@ await suite('ch2-tournament',async check=>{
       assert.equal(await page.evaluate(()=>document.activeElement?.dataset.test),'ch3-intro-continue');
       await page.keyboard.press('Enter');
     }
+    await page.locator(scene('ch3_registration')).waitFor();
+    assert.match(await page.locator(scene('ch3_registration')).innerText(),/参加登録/);
+    assert.equal((await get(page)).flags._ch3_opening_read,true);
+    await reload(page,0,touch);
+    await page.locator(scene('ch3_registration')).waitFor();
+    assert.equal((await get(page)).flags._ch3_intro.stage,0,'登録前のロードで東京駅を再演しない');
+    await press(next);
     await page.locator('[data-test="rule-sheet"]').waitFor();
+    assert.equal((await get(page)).flags._ch3_registration_read,true);
+    if(!touch){
+      await reload(page);
+      await page.locator(scene('ch3_registration')).waitFor();
+      assert.match(await page.locator(next).innerText(),/競技規則を確認する/);
+      await press(next);
+      await page.locator('[data-test="rule-sheet"]').waitFor();
+    }
     await press(dt('rule-sheet-close'));
     await page.locator(scene('ch3_mukai_arrival')).waitFor();await checkGuide();
     assert.match(await page.locator(guide).innerText(),/直前に読んだ場面[\s\S]*東京駅/);
@@ -486,6 +501,8 @@ await suite('ch2-tournament',async check=>{
     assert.equal(s.chapter,3);assert.equal(s.day,29);assert.equal(s.flags._ch3_intro.stage,0);
     for(const key of ['money','stamina','stats','flavorStock','lovers','loverSince','keepsakes','relationshipMemories','tournament'])
       assert.deepEqual(s[key],before[key],`Chapter 3 entry changed ${key}`);
+    await page.locator(continueButton).click();
+    await page.locator(scene('ch3_registration')).waitFor();
     await page.locator(continueButton).click();
     await page.locator('[data-test="rule-sheet"]').waitFor();
     await page.locator(dt('rule-sheet-close')).click();

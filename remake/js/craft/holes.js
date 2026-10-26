@@ -6,7 +6,7 @@ import { createCraftClock } from "./clock.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
-import { gradeOf, autoSkill, operationAuto, craftEase, skill, resultCard, keys, popStamp } from "./common.js";
+import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 import { artImg } from "./art.js";
 
@@ -86,7 +86,7 @@ export async function runHoles(cs) {
   const rings = ringsForTemplate(template);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
   const perfWin = 4.2 * skill.window(cs) * (tutorial ? 1.5 : 1);
-  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (craftEase(cs) ? 1.35 : 1);
+  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (cs.retryAssist ? 1.35 : 1);
   const limit = tutorial ? 48 : TIME_LIMIT;
 
   // ---- 画面
@@ -319,7 +319,7 @@ export async function runHoles(cs) {
   t0 = gameClock.now();
   raf = requestAnimationFrame(loop);
 
-  const auto = operationAuto(cs);
+  const auto = autoSkill();
   if (auto) simulate(auto);
   await finishedP;
 
