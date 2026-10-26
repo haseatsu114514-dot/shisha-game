@@ -45,7 +45,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 ### CI（2026-10-23 に1本へ統合）
 
 - workflowは [ci.yml](.github/workflows/ci.yml) の1本（ほかは公開用の `deploy-pages.yml` と手動用の `sequential-merge.yml` だけ）。**PRで待つチェックは `CI / result` の1つだけ**。
-- quick（ブラウザ不要の検査）は毎回すべて動く。browser（Chromium）は変更ファイルに関係するテストだけを最大8グループに分けて動かす。
+- quick（ブラウザ不要の検査）は毎回すべて動く。PRのbrowser（Chromium）は変更ファイルに関係する短いスイート（目安5分以内）を最大8グループで動かし、ブラウザテスト本体を変更した場合は長いスイートも動かす。長い通し検査を含む全件は毎晩mainで動かす。
 - Draft PRではbrowserを動かさない。結果が必要になったら Ready for review にする（その時点のheadで動く）。mainへのpushはquickだけ。browserの全テストは毎晩（03:17 JST）mainで動く。夜間の失敗は「mainのCIが赤い」として最優先で直す。
 - テストの追加は [tools/ci/suites.json](tools/ci/suites.json) に1件足す。**workflowファイルを増やさない**。手元では `node tools/ci/run.mjs --kind quick` / `--kind browser --suites <id>`（プレビューサーバーを先に起動）で同じものを動かせる。
 - CIのcheckoutは必要なフォルダだけ（約0.7GB）にし、4.4GBのファイル一式を取らない。新規画像（Git LFS）はキャッシュ経由で取得する。
