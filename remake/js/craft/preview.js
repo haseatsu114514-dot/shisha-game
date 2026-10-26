@@ -32,7 +32,12 @@ export async function boot() {
   cs.mix = { double_apple: 10, mint: 2 };
   if (step !== "pack") cs.pack = "normal";
   if (step === "heat") cs.equip.charcoal = query.get("charcoal") === "cube" ? "cube_charcoal" : "flat_charcoal";
-  await openBench(cs).ready;
+  const loadingPreview = query.get("loading") === "comic";
+  if (loadingPreview) {
+    document.querySelector(".craft-preview-nav small").textContent = "確認用に約2秒読み込みます。進むと実際の制作画面へ";
+  }
+  // Only this preview supplies a simulated extra asset. The game never adds a delay.
+  await openBench(cs, { entryAssets: loadingPreview ? new Promise(resolve => setTimeout(resolve, 2200)) : null }).ready;
   document.getElementById("craft-preview-loading").hidden = true;
   async function play() {
     activeStep(step);

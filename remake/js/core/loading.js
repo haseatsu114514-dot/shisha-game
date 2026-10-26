@@ -14,11 +14,19 @@ function loadStyle() {
   return stylesheet;
 }
 
+function validPanel(panel) {
+  if (!panel.src || !panel.alt) return false;
+  const r = panel.region;
+  return !r || [r.x, r.y, r.width, r.height, r.sourceWidth, r.sourceHeight].every(Number.isFinite) &&
+    r.x >= 0 && r.y >= 0 && r.width > 0 && r.height > 0 &&
+    r.x + r.width <= r.sourceWidth && r.y + r.height <= r.sourceHeight;
+}
+
 export function selectLoadingComic(comics, { context = "default", chapter = 1 } = {}) {
   const eligible = comics.filter(comic => comic.id && comic.title &&
     Number.isInteger(comic.minChapter) && comic.minChapter <= chapter &&
     (!comic.contexts || comic.contexts.includes(context)) &&
-    comic.panels?.length === 2 && comic.panels.every(panel => panel.src && panel.alt));
+    comic.panels?.length === 2 && comic.panels.every(validPanel));
   const fresh = eligible.filter(comic => comic.id !== previousComic);
   const pool = fresh.length ? fresh : eligible;
   // Presentation uses its own entropy; do not consume gameplay Math.random().
@@ -35,7 +43,7 @@ export function selectLoadingComic(comics, { context = "default", chapter = 1 } 
 export async function withLoading(prepare, {
   host = document.querySelector("#stage"), label = "場面を準備しています…",
   delayMs = 220, context = "default", chapter = 1, comics = LOADING_COMICS,
-  signal,
+  signal, waitForReader = true,
 } = {}) {
   if (!host) throw new Error("Loading host is missing");
   if (active) throw new Error("A loading gate is already active");
@@ -78,10 +86,25 @@ export async function withLoading(prepare, {
     timeoutMs: 4000, signal: controller.signal,
   }))).then(images => {
     if (settled || controller.signal.aborted) return;
-    content.append(el("h2", { text: comic.title }), el("div.loading-panels", images.map((img, i) => {
-      img.alt = comic.panels[i].alt;
-      return el("figure", [img, el("figcaption", { text: `${i + 1} / 2` })]);
-    })));
+    const panels = el("div.loading-panels", images.map((img, i) => {
+      const panel = comic.panels[i], region = panel.region;
+      img.alt = panel.alt;
+      const art = el("div.loading-panel-art", [img]);
+      if (region) {
+        art.style.aspectRatio = `${region.width} / ${region.height}`;
+        Object.assign(img.style, {
+          position: "absolute", width: `${region.sourceWidth / region.width * 100}%`,
+          height: `${region.sourceHeight / region.height * 100}%`, maxWidth: "none",
+          left: `${-region.x / region.width * 100}%`, top: `${-region.y / region.height * 100}%`,
+        });
+      }
+      return el("figure", [art, el("figcaption", { text: `${i + 1} / 2` })]);
+    }));
+    if (comic.panels.every(panel => panel.region)) {
+      panels.style.gridTemplateColumns = comic.panels.map(panel => `${panel.region.width}fr`).join(" ");
+    }
+    content.append(el("h2", { text: comic.title }), panels);
+    if (comic.note) content.append(el("p.loading-comic-note", { text: comic.note }));
     hasComic = true;
   }).catch(() => {}) : Promise.resolve();
   // A quick task never flashes a loading screen. Styles are loaded only on use.
@@ -110,7 +133,7 @@ export async function withLoading(prepare, {
     ]);
     host.setAttribute("aria-busy", "false");
     // Never wait for comic downloads after the actual preparation is finished.
-    if (shown && hasComic) {
+    if (shown && hasComic && waitForReader) {
       status.textContent = "準備ができました。読み終えたら進めます。";
       progress.hidden = true; proceed.hidden = false; proceed.focus();
       await continued;

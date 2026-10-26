@@ -3,12 +3,15 @@
 .loading-eyebrow { margin: 0; color: #cfb37a; letter-spacing: .18em; font-size: 18px; }
 .loading-comic:empty { display: none; }
 .loading-comic h2 { font-size: 26px; margin: 0 0 14px; }
-.loading-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.loading-panels figure { margin: 0; width: 480px; }
-.loading-panels img { display: block; width: 100%; height: 400px; object-fit: contain; background: #201929; border: 1px solid #cfb37a66; }
+.loading-panels { width: 1000px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.loading-panels figure { margin: 0; min-width: 0; }
+.loading-panel-art { position: relative; overflow: hidden; width: 100%; aspect-ratio: 6 / 5; background: #201929; border: 1px solid #cfb37a66; }
+.loading-panels img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .loading-panels figcaption { font-size: 16px; color: #b6aa96; margin-top: 5px; }
 .loading-status { margin: 0; font-size: 23px; }
 .loading-card progress { width: 360px; height: 10px; accent-color: #cfb37a; }
 .loading-proceed { min-width: 220px; min-height: 56px; padding: 8px 32px; border: 1px solid #cfb37a; border-radius: 4px; background: #32243e; color: #f4ede0; font: inherit; font-size: 24px; cursor: pointer; }
 .loading-proceed:focus-visible { outline: 3px solid #f4ede0; outline-offset: 4px; }
 .loading-gate [hidden] { display: none; }
+
+.loading-comic-note { margin: 12px 0 0; color: #b6aa96; font-size: 17px; }

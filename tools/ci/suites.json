@@ -26,9 +26,15 @@
         "remake/js/loading-preview.js",
         "remake/css/loading.css",
         "remake/loading-preview.html",
-        "remake/test/browser/loading_gate.mjs"
+        "remake/test/browser/loading_gate.mjs",
+        "remake/test/browser/loading_craft.mjs",
+        "remake/js/craft/loading.js",
+        "remake/js/craft/session.js",
+        "remake/js/craft/preview.js",
+        "remake/craft-preview.html",
+        "remake/img/loading/*"
       ],
-      "run": ["node remake/test/browser/loading_gate.mjs"]
+      "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
     },
     {
       "id": "dialogue-lint",
