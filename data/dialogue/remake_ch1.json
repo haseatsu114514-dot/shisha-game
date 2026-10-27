@@ -1726,6 +1726,190 @@
       ]
     },
     {
+      "dialogue_id": "shift_flavor_citrus_lemon_mint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "レモンがはっきりしてる。後味は涼しいね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客はホースを持ち直し、もう一口吸った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_citrus_orange_lemon",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "オレンジの香り、いいね。酸味もあって、重く残らない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客はホースを持ち直し、もう一口吸った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_fruit_blueberry_peach",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "桃の香りもする。ミントなしで、この感じがいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客はグラスの香りをもう一度確かめて、小さく笑った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_fruit_grape_orange",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ぶどうの甘い香りに、オレンジの感じもあるね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客はグラスの香りをもう一度確かめて、小さく笑った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_sweet_vanilla_coconut",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "バニラとココナッツか。甘い香りで、ほっとする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は小さく頷いて、ホースを置いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_sweet_peach_vanilla",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "桃の香りだ。お菓子っぽいのに、果物の感じも残るんだね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は小さく頷いて、ホースを置いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_double_apple_mint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "アニスの香りはそのままで、少しだけ涼しい。これくらいがいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は目を細めて、ゆっくり煙を吐いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_double_apple_solo",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "アニスの香りが、しっかりする。今日はこれがいいな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は目を細めて、ゆっくり煙を吐いた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_fortune_first",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_day.png"

@@ -250,10 +250,14 @@ export function chooseDrill({ title = "自主練", lead = "苦手な工程を反
 }
 
 const SHIFT_ORDERS = [
-  { text: "甘すぎない、柑橘のさっぱりしたものを", mixes: [{ lemon: 9, mint: 3 }, { orange: 9, lemon: 3 }], labels: ["レモン＋ミント", "オレンジ＋レモン"] },
-  { text: "果物の甘さで、ミントは抜きにして", mixes: [{ blueberry: 9, peach: 3 }, { grape: 8, orange: 4 }], labels: ["ブルーベリー＋ピーチ", "グレープ＋オレンジ"] },
-  { text: "お菓子みたいに、甘くて丸い味がいいな", mixes: [{ vanilla: 8, coconut: 4 }, { peach: 8, vanilla: 4 }], labels: ["バニラ＋ココナッツ", "ピーチ＋バニラ"] },
-  { text: "ダブルアップルを。清涼感は少しだけ", mixes: [{ double_apple: 10, mint: 2 }, { double_apple: 12 }], labels: ["ダブルアップル＋ミント少量", "ダブルアップル単体"] },
+  { id: "citrus", text: "甘すぎない、柑橘のさっぱりしたものを", mixes: [{ lemon: 9, mint: 3 }, { orange: 9, lemon: 3 }], labels: ["レモン＋ミント", "オレンジ＋レモン"],
+    reactions: ["shift_flavor_citrus_lemon_mint", "shift_flavor_citrus_orange_lemon"] },
+  { id: "fruit_mint_free", text: "果物の甘さで、ミントは抜きにして", mixes: [{ blueberry: 9, peach: 3 }, { grape: 8, orange: 4 }], labels: ["ブルーベリー＋ピーチ", "グレープ＋オレンジ"],
+    reactions: ["shift_flavor_fruit_blueberry_peach", "shift_flavor_fruit_grape_orange"] },
+  { id: "sweet_round", text: "お菓子みたいに、甘くて丸い味がいいな", mixes: [{ vanilla: 8, coconut: 4 }, { peach: 8, vanilla: 4 }], labels: ["バニラ＋ココナッツ", "ピーチ＋バニラ"],
+    reactions: ["shift_flavor_sweet_vanilla_coconut", "shift_flavor_sweet_peach_vanilla"] },
+  { id: "double_apple", text: "ダブルアップルを。清涼感は少しだけ", mixes: [{ double_apple: 10, mint: 2 }, { double_apple: 12 }], labels: ["ダブルアップル＋ミント少量", "ダブルアップル単体"],
+    reactions: ["shift_flavor_double_apple_mint", "shift_flavor_double_apple_solo"] },
 ];
 async function serveShiftOrder() {
   const owner = state;
@@ -264,9 +268,8 @@ async function serveShiftOrder() {
   const index = await modal({ title: "今日の注文", body: `「${order.text}」 店の葉で一台を作る。`,
     options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
   if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
-  const result = await play({ dialogue_id: "shift_flavor_order", lines: [
-    { speaker: "hajime", face: "normal", text: "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した。" },
-  ] }, { bg: TONARI_BG });
+  // 注文と配合に対応した客の反応を返す（#1073）。給料・行動消費は従来どおり後続のcalendarで確定。
+  const result = await play(order.reactions[index], { bg: TONARI_BG });
   if (state !== owner || result?.cancelled) return;
   // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
