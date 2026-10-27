@@ -238,7 +238,9 @@ test("table status guides player when companions and books are not yet ready (#1
   rules.joinTrpgClub(s, catalog, "hiyori");
   const withMember = rules.tableStatus(s, catalog);
   assert(withMember.ok);
-  assert.equal(withMember.reason, "今夜の卓を囲もう");
+  rules.syncTrpgStock(s, catalog);
+  const afterStock = rules.tableStatus(s, catalog);
+  assert.equal(afterStock.reason, s.trpg.stock.length ? "今夜の卓を囲もう" : "今は遊べる本がない。部員が増えると入荷する");
 
   // Or having an owned playable book without members
   const bookOnly = state();
@@ -246,5 +248,5 @@ test("table status guides player when companions and books are not yet ready (#1
   bookOnly.trpg.owned = [ordinary.id];
   const withBook = rules.tableStatus(bookOnly, catalog);
   assert(withBook.ok);
-  assert.equal(withBook.reason, "今夜の卓を囲もう");
+  assert.equal(withBook.reason, "今夜来られる部員がいない。知り合いとの交流を深めよう");
 });
