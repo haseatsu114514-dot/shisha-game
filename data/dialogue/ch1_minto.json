@@ -684,9 +684,10 @@
           "text": "（……彼女のやり方は、俺みたいに黙々と煙だけを磨くのとは対極だ）"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（なのに大会では、あの『可愛さ』という武器に負けるかもしれないんだ）"
+          "type": "condition",
+          "condition_type": "local_match_finished",
+          "next_true": "after_local_match",
+          "next_false": "before_local_match"
         },
         {
           "speaker": "",
@@ -695,6 +696,12 @@
         }
       ],
       "branches": {
+        "before_local_match": [
+          { "speaker": "hajime", "face": "normal", "text": "（なのに大会では、あの『可愛さ』という武器に負けるかもしれないんだ）" }
+        ],
+        "after_local_match": [
+          { "speaker": "hajime", "face": "normal", "text": "（あの「可愛さ」も、煙と一緒に人を惹きつける彼女の武器なんだ）" }
+        ],
         "cb_shibui": [
           {
             "speaker": "minto",
