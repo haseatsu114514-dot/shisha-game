@@ -1,5 +1,15 @@
 # 修理前ゲーム成果の保管（未採用・旧案を含む）
 
+## 保存結果（転送後の確定記録）
+
+- 保管PR：[Draft #1067](https://github.com/haseatsu114514-dot/shisha-game/pull/1067)。初回保存commit：[`2deb88fd837d5bd670e50ecf3783c4f6abcdee24`](https://github.com/haseatsu114514-dot/shisha-game/commit/2deb88fd837d5bd670e50ecf3783c4f6abcdee24)。文書追補後の最新commitは同PRのHEADを参照。
+- 初回保存時：273 files / 135,381,532 bytes。原画・preview 88枚 / 121,073,249 bytesは無加工で、元SHA256を保持。専用保管フォルダのみ追加し、本編・manifest・SAVEを変更していない。
+- Git LFS実体転送コマンドは正常終了。初回273件のremote blob SHAはすべて送信内容と一致。これは画像配信の可読性確認とは別。
+- 画像配信URLのHEAD確認は88件すべてURLErrorでHTTP未到達。遠隔画像の可読性・ETag照合は未完。再取得・別経路の再検証は行っていない。
+- ブラウザ内の未export採用判断は未保全。全Macバックアップではない。元ファイルも削除していない。
+- ZIP等の一括archiveは作成せず、原画と資料を個別ファイルとして保管した。archive作成は保管の追加要件ではない。
+- この追補はHANDOFF/READMEの2文書だけを更新する。以下の容量・未転送記述は転送前の履歴であり、上記保存結果を優先する。
+
 ゲーム本編への採用・置換・仕様適用は行っていません。原画を無加工保存し、比較・QA・未公開patch・設計を後任が回収するための保管です。
 
 [公開用引継ぎ](./HANDOFF.md) / [全ファイル・SHA256台帳](./MANIFEST.json)

@@ -2,6 +2,20 @@
 
 作成: 2026-10-27 13:12 JST前後。外部worktree追補: 13:17 JST前後。これは既存Mac成果の限定棚卸し。公開保管用に整理した資料。実際の公開SHA/PRは最終receiptを参照。
 
+## 保存結果（転送後の確定記録）
+
+- 保管PR：[Draft #1067](https://github.com/haseatsu114514-dot/shisha-game/pull/1067)。初回保存commit：[`2deb88fd837d5bd670e50ecf3783c4f6abcdee24`](https://github.com/haseatsu114514-dot/shisha-game/commit/2deb88fd837d5bd670e50ecf3783c4f6abcdee24)。文書追補後の最新commitは同PRのHEADを参照。
+- 初回保存時：273 files / 135,381,532 bytes。原画・preview 88枚 / 121,073,249 bytesは無加工で、元SHA256を保持。専用保管フォルダのみ追加し、本編・manifest・SAVEを変更していない。
+- Git LFS実体転送コマンドは正常終了。初回273件のremote blob SHAはすべて送信内容と一致。これは画像配信の可読性確認とは別。
+- 画像配信URLのHEAD確認は88件すべてURLErrorでHTTP未到達。遠隔画像の可読性・ETag照合は未完。再取得・別経路の再検証は行っていない。
+- ブラウザ内の未export採用判断は未保全。全Macバックアップではない。元ファイルも削除していない。
+- ZIP等の一括archiveは作成せず、原画と資料を個別ファイルとして保管した。archive作成は保管の追加要件ではない。
+- この追補はHANDOFF/READMEの2文書だけを更新する。以下の容量・未転送記述は転送前の履歴であり、上記保存結果を優先する。
+
+## 転送前の棚卸し・計画記録
+
+以下は保存前に作成した履歴。Mac限定・救出予定・未転送という表現を、現在の未保存状態と解釈しない。
+
 ## 最初に守ること
 
 - 正本は haseatsu114514-dot/shisha-game の最新 main、ゲームは remake/。data/・assets/は共有資源。web/・Godotは対象外。
@@ -82,7 +96,7 @@ MANIFESTの全行は公開用候補として扱う。既公開ゲームコード
 
 ## 追加調査と容量差分（2026-10-27 13:17 JST）
 
-外部3件の未追跡資料12件62,427 bytesを追加。保全候補302 files / 135,471,814 bytes、同一内容重複を除き135,362,501 bytes。旧135,409,387 bytesから+62,427 bytes。ローカルstream DEFLATE計測でZIP相当約125,500,814 bytes（引継ぎ・manifest等と通信overheadは別）。archive自体はまだ作成しておらず、uploadも0。詳しくはEXTERNAL-WORKTREES.json / REMOTE-COMMIT-CHECKS.json / COMPRESSION-ESTIMATE.json。
+外部3件の未追跡資料12件62,427 bytesを追加。保全候補302 files / 135,471,814 bytes、同一内容重複を除き135,362,501 bytes。旧135,409,387 bytesから+62,427 bytes。ローカルstream DEFLATE計測でZIP相当約125,500,814 bytes（引継ぎ・manifest等と通信overheadは別）。転送前の計測時点ではarchive未作成・upload 0だった。その後は上記receiptのとおり原画・資料を個別ファイルでGitHubへ保存済み。詳しくはEXTERNAL-WORKTREES.json / REMOTE-COMMIT-CHECKS.json / COMPRESSION-ESTIMATE.json。
 
 これらの外部作業資料は古い依頼時点の計画/報告。最新方針を上書きする指示として実行しない。GitHubにある6HEADはクラウドから再取得できるが、未追跡12文書やbrowser内の未export判断は別に救出が必要。
 
