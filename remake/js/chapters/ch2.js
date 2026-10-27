@@ -300,14 +300,14 @@ function renderMap() {
   };
   for (const stop of stops) {
     const done = deliveries?.done?.[stop.id];
-    const pin = el(`button.spot-pin.${stop.id === "station" ? "pin-station" : "pin-store"}`, { type: "button", style: { left: `${stop.x}%`, top: `${stop.y}%` },
+    const logo = stop.id === "station" ? null : storeLogo(ROOMS[stop.id] ? `ch2_${stop.id}` : stop.id, { width: 68, height: 42 });
+    const pin = el(`button.spot-pin.${stop.id === "station" ? "pin-station" : "pin-store"}${logo ? ".branded" : ""}`, { type: "button", style: { left: `${stop.x}%`, top: `${stop.y}%` },
       dataset: { test: test(stop.id === "station" ? "station" : `pin-${stop.id}`), read: String(visited.has(stop.id)), spot: stop.id },
       "aria-pressed": "false", "aria-label": `${stop.name}${deliveryPending(state, stop.id) ? "・配達先" : ""}`,
       onclick: () => selected === stop ? go(stop) : select(stop, pin) }, [
       el("div.shield", [el("span.ico", [stop.id === "station"
         ? el("span.train-icon", { html: TRAIN_ICON_SVG })
-        : storeLogo(ROOMS[stop.id] ? `ch2_${stop.id}` : stop.id, { width: 68, height: 42 })
-          || el("span", { text: stop.glyph || (stop.id === "c_station" ? "会" : ""), "aria-hidden": "true" })])]),
+        : logo || el("span", { text: stop.glyph || (stop.id === "c_station" ? "会" : ""), "aria-hidden": "true" })])]),
       el("span.sub-label", { text: stop.name }),
       el("small.pin-status", { text: deliveryPending(state, stop.id) ? "配達先" : done ? "お届け済み" : visited.has(stop.id) ? "確認済み" : stop.outing ? "教えてもらった場所" : "" }),
     ]);
