@@ -372,6 +372,7 @@ export async function stepMix(cs) {
         cs.mix = { [supplyId]: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
       }
       if (reg?.flavor === "lemon") cs.mix = { lemon: 3, double_apple: 9 };
+      if (reg?.flavor === "chocolate") cs.mix = { chocolate: 3, double_apple: 9 };
       if (cs.staffPractice || consumes) cs.mix = fitMixToStock(cs.mix, ids, limit, cap, 12);
       if (cs.orderFlavorIds) cs.mix = fitMixToStock({ lemon: 9, mint: 3 }, ids, limit, cap, 12);
       redraw();
