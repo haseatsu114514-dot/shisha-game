@@ -28,8 +28,17 @@ export function prepareAppearanceCatalog(root = repositoryRoot) {
 }
 
 // Setup now continues directly to water/mix. A missing next step is still an error.
+// A loading gate that showed its comic (#1153) waits for a tap after preparation; tap through it.
 export async function waitForSetupContinuation(page) {
-  await page.locator('.bench [data-test="water-confirm"], .bench [data-test="mix-ok"]').first().waitFor({ state: "visible" });
+  const next = page.locator('.bench [data-test="water-confirm"], .bench [data-test="mix-ok"]').first();
+  const deadline = Date.now() + 25000;
+  while (!(await next.isVisible())) {
+    if (Date.now() > deadline) break;
+    const ready = page.locator(".loading-gate.is-ready");
+    if (await ready.count()) await ready.first().dispatchEvent("pointerdown").catch(() => {});
+    await page.waitForTimeout(100);
+  }
+  await next.waitFor({ state: "visible", timeout: 1000 });
   if (await page.locator('.bench [data-test="appearance-confirm"]').count()) {
     throw new Error("Appearance must not block ordinary crafting");
   }
