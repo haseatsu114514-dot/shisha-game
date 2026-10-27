@@ -148,7 +148,7 @@ try {
       const expected = [];
       for (let i = 0; i < count; i++) {
         const phase = excellentOnly ? "just" : ["raw", "pre", "just", "over"][i];
-        const grade = { raw: ["MISS", 15], pre: ["GOOD", 78], just: ["PERFECT", 100], over: ["MISS", 28] }[phase];
+        const grade = { raw: ["MISS", 15], pre: ["GOOD", 78], just: ["PERFECT", 100], over: ["MISS", 68] }[phase];
         expected.push({ phase, rating: grade[0], score: grade[1] });
         await page.evaluate(({ phase }) => {
           const time = { raw: 1, pre: 5.7, just: QA.ideal, over: 9.5 }[phase];
