@@ -1,3 +1,4 @@
+import { storyThreadStatus } from "./story-contact.js";
 import { spendableMoney } from "../core/travel-budget.js";
 // LIME（スマホ）。朝に届くメッセージ・返信の選択肢・誘い。
 // ルール: 同じ相手からは1日1話題まで（小分けの連投はOK）／連絡先を交換した相手だけ（master_spec #7/#26）
@@ -801,6 +802,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
       avatar(sender),
       el("span.lime-name", { text: limeName(sender) }),
     );
+    const status = storyThreadStatus(sender, state);
+    if (status) ui.chat.append(el("p.lime-tip", { text: status, dataset: { test: "lime-story-contact" } }));
     const items = thread(sender);
     // 既読ぶんは履歴としてすぐ出し、未読・返事待ちを順に流す
     drawHistory(items.filter((i) => i.read), ui);
@@ -891,7 +894,7 @@ export function limeCoach(onOpen) {
     el("div.lc-bubble", { style: { right: `${stage.offsetWidth - x - w - 4}px`, top: `${y + h + 22}px` } }, [
       el("b", { text: "LIMEにメッセージが届いた！" }),
       el("span", { text: "右上のLIMEをタップして開いてみよう。" }),
-      el("span", { text: "未読があるとアイコンに赤い丸がつく。好きなときに開いて読めばいい。" }),
+      el("span", { text: "まずは一度開いてみよう。次からは好きなときに読める。返事や誘いの受諾は、今決めなくて大丈夫。" }),
     ]),
   ]);
   layers.fx.append(coach);
