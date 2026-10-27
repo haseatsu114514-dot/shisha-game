@@ -131,7 +131,7 @@ const outdoorSheet = host.children[0];
 const outdoorDrops = outdoorSheet.children.filter((c) => c.classList.has("weather-drop"));
 const outdoorMist = outdoorSheet.children.filter((c) => c.classList.has("weather-mist"));
 const outdoorRipples = outdoorSheet.children.filter((c) => c.classList.has("weather-ripple"));
-assert.equal(outdoorDrops.length, 36);
+assert.equal(outdoorDrops.length, 54);
 assert.equal(outdoorMist.length, 1);
 assert.equal(outdoorRipples.length, 8);
 const depths = new Set(outdoorDrops.map((d) => d.dataset.depth));

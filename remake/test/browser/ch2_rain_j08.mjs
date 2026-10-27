@@ -64,7 +64,7 @@ await suite("ch2-rain-j08", async (check) => {
     assert.equal(day2MapRain.sky, "day");
     assert.equal(day2MapRain.mode, "outdoor");
     assert.equal(day2MapRain.view, "map");
-    assert.equal(day2MapRain.drops, 36);
+    assert.equal(day2MapRain.drops, 54);
     assert.deepEqual(day2MapRain.depths, ["far", "mid", "near"]);
     assert.equal(day2MapRain.ripples, 8);
     assert.equal(day2MapRain.mist, 1);
@@ -86,7 +86,7 @@ await suite("ch2-rain-j08", async (check) => {
       };
       return out;
     });
-    assert.deepEqual(sceneChecks.station, { mode: "outdoor", view: "station", sky: "day", drops: 36 });
+    assert.deepEqual(sceneChecks.station, { mode: "outdoor", view: "station", sky: "day", drops: 54 });
     await page.screenshot({ path: path.join(shotsDir, "02-ch2-rain-station-day.png") });
 
     const cStationRain = await page.evaluate(async () => {

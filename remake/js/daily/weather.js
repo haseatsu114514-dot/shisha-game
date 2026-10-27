@@ -91,7 +91,7 @@ export function weatherViewKind(background = "", scene = null) {
   return "street";
 }
 
-const OUTDOOR_DROP_COUNT = 36;
+const OUTDOOR_DROP_COUNT = 54;
 const WINDOW_DROP_COUNT = 5;
 const OUTDOOR_RIPPLES = [
   [14, 76], [27, 84], [39, 71], [52, 87],
@@ -122,10 +122,10 @@ export function renderWeatherLayer(host, scene, { sky = "day", view = "street", 
       const depth = i % 6 === 0 ? "near" : i % 2 === 0 ? "mid" : "far";
       const left = ((i * 29 + (i % 3) * 17 + 7) % 98) + 1;
       const len = depth === "near" ? 42 + (i % 3) * 6 : depth === "mid" ? 28 + (i % 4) * 4 : 18 + (i % 4) * 3;
-      const w = depth === "near" ? "1.9px" : depth === "mid" ? "1.5px" : "1.1px";
-      const alpha = depth === "near" ? (0.62 + (i % 3) * 0.05).toFixed(2)
-        : depth === "mid" ? (0.46 + (i % 3) * 0.05).toFixed(2)
-        : (0.28 + (i % 3) * 0.05).toFixed(2);
+      const w = depth === "near" ? "2px" : depth === "mid" ? "1.6px" : "1.2px";
+      const alpha = depth === "near" ? (0.74 + (i % 3) * 0.05).toFixed(2)
+        : depth === "mid" ? (0.58 + (i % 3) * 0.05).toFixed(2)
+        : (0.40 + (i % 3) * 0.05).toFixed(2);
       const dur = depth === "near" ? (0.50 + (i % 4) * 0.03).toFixed(2)
         : depth === "mid" ? (0.64 + (i % 5) * 0.04).toFixed(2)
         : (0.82 + (i % 5) * 0.05).toFixed(2);
