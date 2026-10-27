@@ -26,6 +26,7 @@ import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
+import { servedEvaluationLines } from "../craft/served-eval.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, regulationFor } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
@@ -541,7 +542,11 @@ async function tournamentDay() {
   bc.block(cs, "pull");
   if (await runPull(cs) === false) return;
   if (cs.failed) return failedOut(cs.failed, cs);
-  await play("ch1_tournament_served", { bg: STAGE });
+  // 固定の「個性も薄い」ではなく、実配合と提供時の温度から一口の感想を2行だけ差し込む。
+  const served = DB.dialogues.ch1_tournament_served;
+  const servedLines = served.lines.slice();
+  servedLines.splice(1, 0, ...servedEvaluationLines(cs));
+  await play({ ...served, lines: servedLines }, { bg: STAGE });
   cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
   bc.burst(cs, "serve", 1);
   await sleep(900);
