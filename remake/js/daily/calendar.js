@@ -261,7 +261,6 @@ async function day1Errands() {
     await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ！" } });
     await openShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" });
     f._errand_shop_done = true;
-    toast("スミ「仕入れ、ご苦労さん」", { ms: 3200 });
     save();
     await bannersIdle();
   }
