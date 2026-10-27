@@ -44,6 +44,22 @@ export function buildWorkerScene(cs) {
   actions.root.append(holes.root);
   const equipment = buildHookahRig("worker-equipment");
   const baseH = artHeight("hookah_base.png", 90);
+  // 確定した水位（cs.water 0〜1）を、ベルの胴に溜まる水として描く。ガラスの奥に置き、半透明の本体越しに見せる。
+  // 水面の高さだけを動かし、泡や判定とは分ける。cs.water が未設定の間は隠す。
+  const waterLevel = el("div.worker-water-level", { "aria-hidden": "true", dataset: { test: "worker-water-level" },
+    style: { bottom: `${baseH * .05}px`, width: `${90 * .6}px`, height: `${baseH * .5}px` },
+  }, [el("i.worker-water-body"), el("i.worker-water-surface")]);
+  const applyWaterLevel = (value) => {
+    const has = Number.isFinite(value);
+    waterLevel.hidden = !has;
+    if (!has) return;
+    const v = Math.max(0, Math.min(1, value));
+    waterLevel.style.setProperty("--water-q", v.toFixed(3));
+    waterLevel.dataset.band = v < .45 ? "low" : v > .55 ? "high" : "ideal";
+  };
+  applyWaterLevel(cs.water);
+  const baseArt = equipment.querySelector(".worker-base");
+  if (baseArt) equipment.insertBefore(waterLevel, baseArt); else equipment.append(waterLevel);
   const water = el("div.worker-water", { "aria-hidden": "true", dataset: { test: "worker-bubbles" },
     style: { bottom: `${baseH * .18}px`, height: `${baseH * .36}px` },
   }, Array.from({ length: 9 }, (_, i) => el("i", { style: { "--bubble-x": `${24 + (i * 19 % 53)}%`, "--bubble-delay": `${i * -.11}s` } })));
@@ -142,6 +158,8 @@ export function buildWorkerScene(cs) {
     prepare(step).then(() => { if (root.isConnected && root.dataset.step === step) applyFace(); });
   }, punch(event) {
     if (root.dataset.step === "holes") holes.punch(event);
+  }, setWater(value) {
+    applyWaterLevel(value);
   }, setMental(level) {
     if (mental === level && root.dataset.mental === level) return;
     mental = level; root.dataset.mental = level;

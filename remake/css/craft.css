@@ -974,6 +974,13 @@
 .pull-play[data-draw] .pull-draw-status { color: #ffe2a8; }
 .pull-play[data-draw] .pull-summary { position: relative; overflow: hidden; }
 .pull-play[data-draw] .pull-summary::after { content: ""; position: absolute; left: 0; bottom: 0; width: calc(var(--draw-progress, 0) * 100%); height: 2px; background: #e4c786; box-shadow: 0 0 8px #f1c975; }
+/* 確定した水位をベルの胴に溜まる水として見せる。ガラス（.worker-base）の奥に置き、本体越しに見える。 */
+.worker-water-level { border-radius: 40% 40% 50% 50% / 18% 18% 62% 62%; overflow: hidden; pointer-events: none; opacity: 1; }
+.worker-water-level[hidden] { display: none; }
+.worker-water-body { position: absolute; left: 0; bottom: 0; width: 100%; height: calc(var(--water-q, 0) * 100%);
+  background: linear-gradient(to top, #2f84a8cc, #4cb0cfc2 55%, #86dcefb0 100%); box-shadow: inset 0 3px 10px #cdf4ff55, inset 0 -6px 12px #0c2a3466; transition: height .35s ease; }
+.worker-water-surface { position: absolute; left: 4%; width: 92%; height: 3px; border-radius: 50%; bottom: calc(var(--water-q, 0) * 100%); transform: translateY(1px);
+  background: linear-gradient(90deg, transparent, #d6f4ffdd 30%, #f2fdffff 50%, #d6f4ffdd 70%, transparent); box-shadow: 0 0 6px #aee6f6aa; opacity: calc(min(1, var(--water-q, 0) * 6)); transition: bottom .35s ease; }
 .worker-water { width: 62px; border-radius: 48%; overflow: hidden; opacity: 0; background: radial-gradient(ellipse, #b2b9dd18, #9794c30a 60%, transparent 70%); transition: opacity .15s; }
 .worker-water i { position: absolute; left: var(--bubble-x); bottom: 0; width: 5px; height: 6px; border-radius: 50%; border: 1px solid #e3ebffa6; background: #dbe9ff30; box-shadow: 0 0 4px #9abfff55; }
 .bench-worker[data-draw] .worker-water { opacity: 1; }
@@ -987,6 +994,7 @@
 @media (prefers-reduced-motion: reduce) {
   .bench-worker[data-draw] .worker-actor, .bench-worker[data-draw] .worker-water i { animation: none; }
   .bench-worker[data-draw] .worker-water i { opacity: .7; bottom: 35%; }
+  .worker-water-body, .worker-water-surface { transition: none; }
 }
 
 /* TH57: 拡大したモックアップの配置に合わせる。ダイヤル・情報欄・ボタンを下段の固定行に収める。 */
