@@ -10,7 +10,16 @@ const out=path.resolve(process.env.ARTIFACT_DIR||'docs/qa/dj-prototype-1064');fs
 const browser=await chromium.launch({headless:true,...(process.env.CHROME_EXECUTABLE_PATH?{executablePath:process.env.CHROME_EXECUTABLE_PATH}:{})});
 const results=[],near=(a,b,e=.01)=>assert(Math.abs(a-b)<e,`${a} != ${b}`);
 const snap=p=>p.evaluate(async()=>(await import('./app.mjs')).snapshot());
-const wait=(p,key,timeout=5000)=>p.waitForFunction(async key=>{const s=(await import('./app.mjs')).snapshot();return key==='audio'?s.running&&s.rms>1e-5:key==='head'?s.mode==='waiting-play':s.guide?.from===1;},key,{timeout});
+const wait=async(p,key,timeout=5000)=>{
+ const deadline=Date.now()+timeout;let state;
+ do{
+  state=await snap(p);
+  const ready=key==='audio'?state.running&&state.rms>1e-5:key==='head'?state.mode==='waiting-play':state.guide?.from===1&&state.master===1;
+  if(ready)return;
+  await p.waitForTimeout(50);
+ }while(Date.now()<deadline);
+ assert.fail(`Timed out waiting for ${key}: ${JSON.stringify(state)}`);
+};
 const hashWaves=p=>p.evaluate(()=>['wave-a','wave-b'].map(id=>document.getElementById(id).getContext('2d').getImageData(0,0,960,65).data.reduce((h,b)=>(Math.imul(h,31)+b)>>>0,7)));
 try{
  for(const kind of ['pc','touch','reduced']){
@@ -18,11 +27,17 @@ try{
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height>=64&&r.width>=100,'Large individual PLAY targets');}
-  assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No sync/CUE/tap input workload');
+  assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No continuous sync/CUE/tap input workload');
   if(kind==='pc')await page.locator('#start').click();else await page.locator('#start').tap();
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.deepEqual(ready.bpms,[128,126]);
+  for(const deck of [0,1]){
+   const plus=page.locator(`[data-pitch="${deck},0.01"]`),minus=page.locator(`[data-pitch="${deck},-0.01"]`);
+   const before=await snap(page);if(kind==='pc')await plus.click();else await plus.tap();
+   const after=await snap(page);near(after.bpms[deck],before.bpms[deck]+.01,.000001);assert.deepEqual(after.playing,[false,false]);assert.equal(after.bpms[1-deck],before.bpms[1-deck]);
+   if(kind==='pc')await minus.click();else await minus.tap();near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+  }
   // Genuine native input, not setter/evaluate/forceclick.
-  if(kind==='pc'){await page.locator('#tempo-b').focus();for(let n=0;n<20;n++)await page.locator('#tempo-b').press('ArrowRight');}
+  if(kind==='pc'){await page.locator('#tempo-b').focus();for(let n=0;n<200;n++)await page.locator('#tempo-b').press('ArrowRight');}
   else{const input=page.locator('#tempo-b');await input.scrollIntoViewIfNeeded();const r=await input.boundingBox();await page.touchscreen.tap(r.x+r.width*.6,r.y+r.height/2);}
   const pitched=await snap(page),manual=pitched.bpms[1];assert.notEqual(manual,126);if(kind==='pc')near(manual,128,.001);
   if(kind==='pc')await page.locator('#play-a').click();else await page.locator('#play-a').tap();await wait(page,'audio');
@@ -39,11 +54,21 @@ try{
    for(let n=0;n<8;n++)await page.locator('[data-nudge="1,-0.0625"]').tap();const corrected=await snap(page);near(corrected.beats[1]-offset.beats[1]-(corrected.clock-offset.clock)*manual/60,-.5);
    const input=page.locator('#crossfader');await input.scrollIntoViewIfNeeded();const r=await input.boundingBox();await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2);near((await snap(page)).mix,.5,.1);near((await snap(page)).bpms[1],manual,.001);
   }
+  {
+   const before=await snap(page);const button=page.locator('#sync-b');if(kind==='pc')await button.click();else await button.tap();
+   const after=await snap(page);near(after.bpms[1],before.bpms[0],.000001);assert.deepEqual(after.playing,before.playing);
+   for(let i=0;i<2;i++)near(after.beats[i]-before.beats[i]-(after.clock-before.clock)*before.bpms[i]/60,0,.03);
+   const plus=page.locator('[data-pitch="1,0.01"]');if(kind==='pc')await plus.click();else await plus.tap();
+   near((await snap(page)).bpms[1],after.bpms[1]+.01,.000001);
+  }
   assert(await page.evaluate(()=>{const v=document.querySelector('.visual-slot').getBoundingClientRect(),box=document.querySelector('.console').getBoundingClientRect();return v.width<=180&&v.height<=160&&v.top>=box.bottom;}),'VJ small window stays below controls');
   if(kind==='reduced')assert((await page.locator('#visual-label').textContent()).includes('静止'));
   await page.locator('#pause').click();const stopped=await snap(page);assert.deepEqual(stopped.playing,[false,false]);assert.equal(stopped.voices,0);await page.waitForTimeout(100);assert.deepEqual((await snap(page)).beats,stopped.beats);
-  await page.locator('#start').click();await wait(page,'audio');const resumed=await snap(page);assert.deepEqual(resumed.playing,[true,true]);near(resumed.bpms[1],manual,.001);assert.equal(resumed.voices,2);assert.deepEqual(errors,[]);
+  await page.locator('#start').click();await wait(page,'audio');const resumed=await snap(page);assert.deepEqual(resumed.playing,[true,true]);near(resumed.bpms[1],stopped.bpms[1],.001);assert.equal(resumed.voices,2);assert.deepEqual(errors,[]);
   results.push({kind,ready,pitched,entered,stopped,resumed,passed:true,limits:'Real WebAudio/UI only; physical listening/capture excluded'});await context.close();
  }
  fs.writeFileSync(path.join(out,'result.json'),JSON.stringify({url,results},null,2));console.log('Manual pitch/individual PLAY PC/touch/reduced WebAudio/UI PASS; no physical listening/video claim');
+}catch(error){
+ const detail=String(error.stack||error).replaceAll('%','%25').replaceAll('\r','%0D').replaceAll('\n','%0A');
+ console.error(`::error title=DJ browser failure::${detail}`);throw error;
 }finally{await browser.close();}
