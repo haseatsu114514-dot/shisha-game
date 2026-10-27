@@ -15,6 +15,37 @@ assert(tsumugiResult.lines.some(line => line.cg_id === "cg_ch1_tsumugi_heart_art
 assert(tsumugiResult.lines.some(line => line.condition_type === "flag" && line.flag === "_tsumugi_contest_eve"));
 assert(!tsumugiResult.metadata?.add_affinity && !tsumugiResult.lines.some(line => line.affinity || line.type === "apply"));
 
+// #1052 §3/§4: preferences and recovery must agree with the shared runtime data.
+const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
+const characters = Object.fromEntries(readData("characters").map(row => [row.id, row]));
+assert.equal(characters.kuze.favorite_flavor, "アフサール アールグレイ");
+assert.match(characters.kuze.specialty_flavor, /アールグレイ/);
+assert.equal(characters.mashiro.favorite_flavor, "ブラックティー");
+assert.match(characters.mashiro.specialty_flavor, /ブラックティー/);
+assert.match(characters.mashiro.description, /ダークリーフやシガーリーフ/);
+const flavors = Object.fromEntries(readData("flavors").flavors.map(row => [row.id, row]));
+assert.equal(flavors.black_tea.name, "アフサール ブラックティー");
+assert.equal(flavors.black_tea.leaf, "blond");
+assert.equal(flavors.dark_earlgrey.leaf, "dark");
+assert.equal(flavors.dark_earlgrey.name, "アルファーヘブン ダーク アールグレイ");
+const scenes = Object.fromEntries([
+  ...dialogues, ...readData("dialogue/ch3_double_apple").dialogues,
+  ...readData("dialogue/ch3_mashiro").dialogues, ...readData("dialogue/ch3_rivals").dialogues,
+].map(row => [row.dialogue_id, row]));
+const text = id => scenes[id].lines.map(line => line.text || "").join("\n");
+assert.match(text("ch3_kuze_first"), /柑橘とアールグレイ/);
+assert.match(text("ch3_work_without_taste"), /ブラックティーが得意/);
+assert.match(text("ch3_mashiro_play_1"), /自分用のダーク/);
+assert.match(text("ch3_double_apple_incident"), /いつもより薄くて/);
+assert.doesNotMatch(text("ch3_double_apple_incident"), /味がしない/);
+assert.match(text("ch3_abyss_recovery"), /十分な味.*薄く思え.*炭を足し/);
+assert.match(text("ch3_abyss_recovery"), /焦げた苦さは分かる/);
+assert.match(text("ch3_abyss_recovery"), /ノート.*ましろの感想/);
+assert.match(text("ch3_abyss_recovery"), /受診/);
+assert.match(text("ch3_work_without_taste"), /次の受診日/);
+assert.match(text("ch3_taste_return"), /明日また迷っても/);
+assert.match(scenes.ch3_abyss_hotel.comment, /優勝で完治させない/);
+
 function winningSave() {
   const value = newState();
   Object.assign(value, { chapter: 3, phase: "tournament", day: 42, slot: 0, money: 23456,
