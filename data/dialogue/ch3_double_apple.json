@@ -81,7 +81,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あ、いえ、僕は……"
+          "text": "あ、いえ、俺は……"
         },
         {
           "speaker": "mashiro",
@@ -417,7 +417,7 @@
         { "speaker": "mashiro", "face": "normal", "text": "一台、作ってみる？　味を当てる仕事じゃないよ" },
         { "speaker": "hajime", "face": "normal", "text": "今日は炭を見ます。吸う人が熱いって言ったら、そこで直したい" },
         { "speaker": "", "text": "客が二口目で少しむせた。はじめは急いで炭を足さず、ホースを置く相手の手を待った。" },
-        { "speaker": "hajime", "face": "normal", "text": "僕にはまだ味の名前が分かりません。でも、さっきより熱くなったのは分かります" },
+        { "speaker": "hajime", "face": "normal", "text": "俺にはまだ味の名前が分かりません。でも、さっきより熱くなったのは分かります" },
         { "speaker": "mashiro", "face": "normal", "text": "うん。それを伝えてくれたら、一緒に直せる" },
         { "speaker": "", "text": "ましろはブラックティーの配合メモを開き、客用のブロンドを指した。" },
         { "speaker": "mashiro", "face": "normal", "text": "ブラックティーが得意なの。僕は、ほかの葉も分かる量を探してる" },
