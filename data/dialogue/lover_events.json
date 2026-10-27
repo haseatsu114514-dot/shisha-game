@@ -162,7 +162,12 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……ねえ。大会で、もし煙が濁ったら。わたしが、ちゃんと言います。……『濁ってる』って"
+          "text": "……ねえ。大会で、もし煙が濁ったら"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "わたしが、ちゃんと言います。……『濁ってる』って"
         },
         {
           "speaker": "tsumugi",

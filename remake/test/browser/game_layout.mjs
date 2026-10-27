@@ -262,9 +262,13 @@ try {
       (await import("./js/chapters/ch1.js")).setupHooks();
       void (await import("./js/chapters/ch2.js")).resumeChapterTwo();
     });
-    // The fixture's completion screen uses the normal portrait rotate hint;
-    // enter the DS map before testing its real touch controls.
-    await button(p,"ch2-main-next-day").evaluate(n=>n.click());
+    // J07: 初日完了後は共通の帰宅・就寝で翌朝へ進む。「翌日へ」ボタンはない。
+    await button(p,"ch2-morning-home").waitFor();
+    assert.deepEqual(await p.evaluate(async()=>{
+      const {state}=await import("./js/core/state.js");
+      return [state.day,state.slot];
+    }),[16,0]);
+    assert.equal(await button(p,"ch2-main-next-day").count(),0);
     await activate(p,"ch2-morning-home",true);
     await p.locator('[data-destination-selection]:not(.done)').waitFor();
     await p.waitForFunction(()=>!document.querySelector('.map[data-revealing="true"]'));

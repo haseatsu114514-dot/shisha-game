@@ -224,3 +224,29 @@ test("club copy fits dialogue limits and the catalog explicitly marks interest",
     assert(!text.includes("\n")); assert([...text].reduce((n, c) => n + (c.codePointAt(0) <= 255 ? .5 : 1), 0) <= 48, text);
   }
 });
+
+test("table status guides player when companions and books are not yet ready (#1045 B03)", () => {
+  const s = state();
+  rules.foundTrpgClub(s, catalog);
+  // Initial state: club founded, but no recruited members and no owned books
+  const initial = rules.tableStatus(s, catalog);
+  assert(initial.ok);
+  assert.equal(initial.reason, "今は招集できる仲間／遊べる本がない。知り合いとの交流を深めよう");
+
+  // Having a companion ready
+  s.met.hiyori = true; s.affinity.hiyori = 66;
+  rules.joinTrpgClub(s, catalog, "hiyori");
+  const withMember = rules.tableStatus(s, catalog);
+  assert(withMember.ok);
+  rules.syncTrpgStock(s, catalog);
+  const afterStock = rules.tableStatus(s, catalog);
+  assert.equal(afterStock.reason, s.trpg.stock.length ? "今夜の卓を囲もう" : "今は遊べる本がない。部員が増えると入荷する");
+
+  // Or having an owned playable book without members
+  const bookOnly = state();
+  rules.foundTrpgClub(bookOnly, catalog);
+  bookOnly.trpg.owned = [ordinary.id];
+  const withBook = rules.tableStatus(bookOnly, catalog);
+  assert(withBook.ok);
+  assert.equal(withBook.reason, "今夜来られる部員がいない。知り合いとの交流を深めよう");
+});

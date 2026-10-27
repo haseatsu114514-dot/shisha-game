@@ -77,7 +77,10 @@ async function playAttempt(page,touch=false,reloadCare=false) {
   assert(await page.locator('.ch2-contest-rival img').evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));return imgs.every(i=>i.naturalWidth>0);}));assert.deepEqual(p.craft.audienceIds.slice().sort(),['dr_kemuri','maezono','nagumo']);
   // 同じ配分で計算された総合値がそのまま章2の記録に残る。
   assert.equal(p.result.total,p.craft.total);
-  assert.equal(p.craft.total,Math.round(Math.min(100,Object.values(p.craft.parts).reduce((a,b)=>a+b,0)*.2)*10)/10);
+  // #1107 B2: ロートスHMDはアルミ穴あけを飛ばすので、穴あけの重みを外し残り4工程を各25%で割り直す（finalizeと同じ配分）。
+  const w=p.craft.foilSkipped?.25:.2;
+  const sum=Object.entries(p.craft.parts).reduce((a,[k,v])=>a+((p.craft.foilSkipped&&k==='holes')?0:v),0);
+  assert.equal(p.craft.total,Math.round(Math.min(100,sum*w)*10)/10);
   return s;
 }
 async function reload(page,slot=0,touch=false) {

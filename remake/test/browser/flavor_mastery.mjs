@@ -75,11 +75,13 @@ await suite('flavor-mastery',async check=>{
    const core=await import('./js/core/state.js');const s=core.newGame();s.day=1;s.phase='daily';
    const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;
    const rig=await import('./js/daily/home-rig.js');await rig.giveEarlyHomeRig();const day1=s.owned.includes(rig.SUMI_RIG);
+   const stockBefore={...s.flavorStock};
    s.day=2;await rig.giveEarlyHomeRig();const after={owned:[...s.owned],stock:{...s.flavorStock}};
    await rig.giveEarlyHomeRig();core.save();core.load();await rig.giveEarlyHomeRig();
-   return {day1,after,loaded:{owned:core.state.owned,stock:core.state.flavorStock}};
+   return {day1,stockBefore,after,loaded:{owned:core.state.owned,stock:core.state.flavorStock}};
   });
-  assert.equal(result.day1,false);assert(result.after.owned.includes('home_rig_set'));assert.equal(result.after.stock.double_apple,50);assert.deepEqual(result.loaded,result.after);
+  // D02: 贈呈するのは卓上台だけ。在庫は増やさず、再実行・SAVE/LOADでも受領状態を保つ。
+  assert.equal(result.day1,false);assert.equal(result.after.owned.filter(id=>id==='home_rig_set').length,1);assert.deepEqual(result.after.stock,result.stockBefore);assert.deepEqual(result.loaded,result.after);
  });
  for(const touch of [false,true])await check(`spring-water-${touch?'touch':'pc'}`,async page=>{
   await page.evaluate(async()=>{

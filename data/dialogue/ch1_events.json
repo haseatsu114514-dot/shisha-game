@@ -96,7 +96,17 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "買ったわ。帰るぞ。……ん、これお前の分の炭。新作のついで。使って感想ちょうだい"
+          "text": "買ったわ。帰るぞ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……ん、これお前の分の炭"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "新作のついで。使って感想ちょうだい"
         },
         {
           "speaker": "",

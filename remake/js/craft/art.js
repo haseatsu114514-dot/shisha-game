@@ -173,13 +173,15 @@ export function buildRig() {
       const rimMid = rimTop - bh * spec.rim;
       const rimW = bw * 0.94;
       const hasMix = Object.values(cs.mix || {}).some(Boolean);
+      // アルミを張った一台だけ foil を重ねる。ロートスの直のせ（skipped）は葉のまま。
+      const foiled = !!cs.holes && !cs.holes.skipped;
       // 葉: 詰めた差分が無い器（素焼き）と、配合したが詰める前の状態は色の楕円で見せる
-      const showLeaf = hasMix && (!packed || !spec.packed) && !cs.holes;
+      const showLeaf = hasMix && (!packed || !spec.packed) && !foiled;
       Object.assign(leaf.style, { width: `${rimW * 0.76}px`, height: `${rimW * 0.19}px`, bottom: `${rimMid - rimW * 0.12}px`, "--leaf": mixColor(cs.mix) });
       leaf.classList.toggle("show", showLeaf);
       // アルミ: 素材の斜め俯瞰がボウルより浅いので、口の楕円に合わせて縦を潰す
       foil.replaceChildren();
-      if (cs.holes) {
+      if (foiled) {
         const fw = rimW * 1.08;
         const fh = fw * 0.36;
         const img = artImg("foil_surface.png", fw, "rig-foil-img", { h: fh });
@@ -189,7 +191,7 @@ export function buildRig() {
         foil.append(img, dots);
         Object.assign(foil.style, { bottom: `${rimMid - fh * 0.62}px`, width: `${fw}px`, height: `${fh}px` });
       }
-      foil.classList.toggle("show", !!cs.holes);
+      foil.classList.toggle("show", foiled);
       // 炭: アルミの上面に三角（4個なら菱形）に並べる。位置だけ中心へ20%寄せ、寸法は保つ
       const n = cs.place === "four" ? 4 : cs.place ? 3 : 0;
       const cw = rimW * 0.27;

@@ -49,7 +49,8 @@ body.game-ds .bench[data-step="mix"] .mix-temperature-legend { top: auto; bottom
 .pull > .thermo .pull-read { left: -9px; right: -9px; gap: 2px; flex-wrap: wrap; padding: 3px 0; }
 .pull > .thermo .pull-state { white-space: normal; letter-spacing: 0; text-align: center; }
 .pull > .thermo .pull-drift { font-size: 14px; }
-body.game-ds .bench[data-step] .pull > .thermo { height: max(80px, calc(var(--ds-vh) - 152px)); }
+/* 配合側の縦管と同じ高さ：外枠の差分54px＋上余白34px＋凡例の下余白44px。 */
+body.game-ds .bench[data-step] .pull > .thermo { height: max(80px, calc(var(--ds-vh) - 132px)); }
 body.game-ds .bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-right { z-index: 3; }
 .flavor-forecast-compact > summary { min-height: 34px; padding: 7px 0; cursor: pointer; color: var(--guide-muted); font-size: 13px; line-height: 1.4; }
 body.game-ds .bench[data-step="mix"] .fr-feature { min-height: 36px; }
