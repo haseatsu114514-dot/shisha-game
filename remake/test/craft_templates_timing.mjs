@@ -121,7 +121,7 @@ try {
     assert.match(summary, /奥 PERFECT：0\.08秒早い/);
     assert.match(summary, /手前左 GOOD：0\.35秒遅い/);
     assert.match(summary, /手前右 GOOD：0\.35秒早い/);
-    assert.match(summary, /芯が光る瞬間を捉えた炭がある/);
+    assert.match(summary, /取り頃で取れた炭がある/);
     assert.doesNotMatch(summary, /タイミング精度|平均誤差/);
     assert.equal(await page.locator('[data-test="coal-timing-0"]').textContent(), first);
     assert.equal(await page.evaluate(() => cs.heat.timingAccuracy === cs.heat.score), true);
