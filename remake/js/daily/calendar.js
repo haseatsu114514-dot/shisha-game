@@ -710,6 +710,11 @@ async function endDay({ returnedToTonari = false } = {}) {
   syncNightQueue(chapterDef.nightEvents);
   const rested = restingToday();
   const nightCount = await runNightPlan(chapterDef.nightEvents, async (ev) => {
+    const owner = state, day = state.day;
+    // 帰路の中断/LOADでは、その後の夜イベントを開始しない。
+    if (await chapterDef.beforeNightEvent?.(ev) === false || state !== owner || state.day !== day) {
+      throw new Error("夜の予定へ向かう移動が中断されました");
+    }
     await bannersIdle();
     delete state.flags._home_tonight; // 休息後でも、固定イベントの場所へ出かける。
     // 配達報告の直後だけは同じ来店で話を続ける。別の目的地・後続予定の到着は残す。
@@ -822,3 +827,4 @@ async function advanceDay() {
   }
   updateHud();
 }
+

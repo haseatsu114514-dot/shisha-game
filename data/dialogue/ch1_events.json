@@ -446,9 +446,11 @@
           "text": "審査員も客も、一口目で半分決める。だから俺は、そこに全部置きに行く"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……それ、俺に見せてよかったんですか？ 大会で使うんですよね"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "context_after",
+          "next_false": "context_before"
         },
         {
           "speaker": "naru",
@@ -465,7 +467,23 @@
           "face": "",
           "text": "……【技術】と【洞察】が上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "context_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……それ、俺に見せてよかったんですか？ 大会で使うんですよね"
+          }
+        ],
+        "context_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……それ、俺に見せてよかったんですか？ 新しいミックスのコツまで"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "interaction_minto_noon_01",
@@ -508,9 +526,11 @@
           "text": "夜のミックスのまま昼に出すと、重たくて疲れちゃうから"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（時間帯で設計を変える……。大会の本番は昼だ。覚えておこう）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "context_after",
+          "next_false": "context_before"
         },
         {
           "speaker": "minto",
@@ -539,7 +559,23 @@
         {
           "type": "hide_cg"
         }
-      ]
+      ],
+      "branches": {
+        "context_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（時間帯で設計を変える……。大会の本番は昼だ。覚えておこう）"
+          }
+        ],
+        "context_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（時間帯で設計を変える……。昼に来るお客さんの顔を思い浮かべてみよう）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "outing_tsumugi_1",
@@ -600,9 +636,11 @@
           "text": "（店ごとに、塗る色が違う。……絵描きの目って、そういうものなのかな）"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ねえ、その絵、大会の日も描くの？"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "context_after",
+          "next_false": "context_before"
         },
         {
           "speaker": "tsumugi",
@@ -634,7 +672,23 @@
           "face": "",
           "text": "……【センス】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "context_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ねえ、その絵、大会の日も描くの？"
+          }
+        ],
+        "context_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ねえ、その絵、俺が店で作ってる時も描いてくれる？"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_rei_cameo",

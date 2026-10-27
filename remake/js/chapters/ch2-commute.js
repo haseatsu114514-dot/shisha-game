@@ -40,12 +40,15 @@ export async function chooseMorningCity() {
 }
 
 export async function returnCityHome() {
-  if (state.chapter !== 2) return;
+  if (state.chapter !== 2) return true;
   const owner = state;
   if (state.flags._ch2_region === "widehanga") {
     const trip = prepareStationTrip(state, regions, "home");
     if (!trip?.commit(state, { persist: save })) throw new Error("帰宅の切符代200円が不足しています");
-    await play({ dialogue_id: "__ch2_return_train", lines: [{ speaker: "", face: "", text: `${CH2_CITY_NAME}の駅で、${HOME_CITY_NAME}へ戻る片道切符を200円で買った。` }, { speaker: "hajime", face: "normal", text: "今日もいろいろあったな。家に帰ろう" }] });
+    const result = await play({ dialogue_id: "__ch2_return_train", lines: [{ speaker: "", face: "", text: `${CH2_CITY_NAME}の駅で、${HOME_CITY_NAME}へ戻る片道切符を200円で買った。` }, { speaker: "hajime", face: "normal", text: "今日もいろいろあったな。家に帰ろう" }] });
+    if (state !== owner || !result || result.cancelled) return false;
   }
-  if (state === owner) await setBg(bgUrl("bg_home", "night"), { instant: true });
+  await setBg(bgUrl("bg_home", "night"), { instant: true });
+  return state === owner;
 }
+

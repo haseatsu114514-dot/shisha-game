@@ -35,6 +35,15 @@ export function pointTable(rank) {
   if (rank === 3) return { maezono: { naru: 4, adam: 3, hajime: 2, minto: 1 }, dr_kemuri: { adam: 5, minto: 2, hajime: 2, naru: 1 }, nagumo: { naru: 10 } };
   return { maezono: { naru: 5, adam: 3, minto: 2 }, dr_kemuri: { adam: 5, minto: 4, naru: 1 }, nagumo: { naru: 10 } };
 }
+/** 中間票は、どの最終結果にも残る確定分だけ。未投入票は最終審査まで保留する。 */
+export function interimPointTable(round) {
+  return round === 1
+    ? { maezono: { naru: 3, adam: 1, minto: 1 }, dr_kemuri: {}, nagumo: {} }
+    : round === 2
+      ? { maezono: { naru: 4, adam: 2, minto: 1 }, dr_kemuri: { adam: 4, minto: 2, naru: 1 }, nagumo: {} }
+      : { maezono: { naru: 4, adam: 2, minto: 1 }, dr_kemuri: { adam: 5, minto: 2, naru: 1 }, nagumo: {} };
+}
+
 const totals = (table, upto = JUDGES.length) => {
   const t = Object.fromEntries(CONTESTANTS.map((c) => [c, 0]));
   JUDGES.slice(0, upto).forEach((j) => { for (const [c, v] of Object.entries(table[j.id] || {})) t[c] += v; });
@@ -72,23 +81,19 @@ const judgeLegend = () => legendOf(JUDGE_IDS);
 // ---------------------------------------------------------------- 中間発表
 
 /**
- * 暫定順位（R1・R2の後）。南雲票が入るまでは、演出上はじめは最大2位止まり。
- * @param round 1 | 2
+ * 暫定順位（R1〜R3の後）。南雲票が入るまでは、演出上はじめは最大2位止まり。
+ * @param round 1 | 2 | 3
  * @param mine  ここまでのはじめの出来（0〜100）
  */
 export async function showStandings(round, mine, cs = null) {
   // 実際に投入された持ち点だけを順位にする。制作の出来と投票を混ぜない。
-  const table = round === 1
-    ? { maezono: { naru: 3, adam: 1, minto: 1 }, dr_kemuri: {}, nagumo: {} }
-    : round === 2
-      ? { maezono: { naru: 4, adam: 2, minto: 1 }, dr_kemuri: { adam: 4, minto: 2, naru: 1 }, nagumo: {} }
-      : { maezono: { naru: 5, adam: 3, minto: 2 }, dr_kemuri: { adam: 5, minto: 3, naru: 2 }, nagumo: {} };
+  const table = interimPointTable(round);
   const values = totals(table);
   const feed = round === 1
     ? [`${displayName("maezono", state)}、なるに3点投入！`, "南雲審査員長、まだ動かず"]
     : round === 2
       ? ["チャコール博士、アダムに4点投入！", "南雲審査員長、10点まるまる温存"]
-      : [`${displayName("maezono", state)}・チャコール博士が最後の持ち点を投入！`, "南雲審査員長、依然10点を温存"];
+      : [`${displayName("maezono", state)}・チャコール博士は、残りの配点を見極めている`, "南雲審査員長、依然10点を温存"];
   const review = evaluationOf(mine);
   const recognition = craftRecognition(cs, { careRounds: Math.max(0, round - 2) });
   const board = el("div.standings.tournament-board", { dataset: { test: "standings", round }, role: "status" }, [
@@ -334,3 +339,4 @@ export function resultTable(cs, rank) {
     if (autoSkill()) setTimeout(() => btn.click(), 150);
   });
 }
+

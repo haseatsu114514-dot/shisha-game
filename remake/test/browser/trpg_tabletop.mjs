@@ -65,17 +65,17 @@ async function fit(p,label){
  assert.equal(await p.locator('.trpg-die').count(),2);
  const dice=await p.locator('.trpg-die').evaluateAll(nodes=>nodes.map(n=>({
    label:n.getAttribute('aria-label'),role:n.getAttribute('role'),
-   pips:[...n.children].filter(i=>getComputedStyle(i).opacity==='1').length,
-   children:[...n.children].map(i=>i.className),
+   value:Number(n.querySelector('.trpg-d20-value')?.textContent),
+   facets:n.querySelectorAll('svg polygon,svg path').length,
    edges:['::before','::after'].map(x=>getComputedStyle(n,x).content),
  })));
- for(const d of dice){assert.equal(d.role,'img');assert.match(d.label,/^サイコロ [1-6]$/);
-   assert.equal(d.pips,Number(d.label.slice(-1)),'Live pips must match accessible value');
-   assert.equal(d.children.length,9);assert(d.children.every(c=>c==='trpg-pip'));
+ for(const d of dice){assert.equal(d.role,'img');assert.match(d.label,/^20面ダイス ([1-9]|1[0-9]|20)$/);
+   assert.equal(d.value,Number(d.label.split(' ').at(-1)),'Numeric d20 face must match accessible value');
+   assert.equal(d.facets,2,'D20 silhouette and facet edges are present');
    assert(d.edges.every(c=>['none','""'].includes(c)),'Blank edges cannot imply another result');
  }
  const pending=(await p.evaluate(()=>__trpg.snapshot())).pending;
- if(pending){assert.deepEqual(dice.map(d=>d.pips),pending.dice,'Rendered dice must match actual model');
+ if(pending){assert.deepEqual(dice.map(d=>d.value),pending.dice,'Rendered dice must match actual model');
    for(const i of [0,1])if(await ctl(p,'trpg-reroll-'+i).count())assert.match(await ctl(p,'trpg-reroll-'+i).textContent(),new RegExp(`${i+1}個目（${pending.dice[i]}）`));
  }
  const prop=p.locator('.trpg-spare-kit');assert.equal(await prop.count(),1);
@@ -158,7 +158,7 @@ try{
     await ctl(p,'trpg-details-toggle').press('Enter');await fit(p,`${scenario}-aid-${width}x${height}-details`);await ctl(p,'trpg-details-toggle').press('Space');
     await ctl(p,'trpg-support-'+helper).press('Space');assert(await ctl(p,'trpg-support-'+helper).isChecked());
     const momentum=(await p.evaluate(()=>__trpg.snapshot())).momentum; // table excitement adds to the shown bonus
-    assert.equal(await ctl(p,'trpg-bonus').textContent(),'＋'+(3+momentum));await ctl(p,'trpg-support-'+helper).press('Space');
+    assert.equal(await ctl(p,'trpg-bonus').textContent(),'＋'+(10+momentum*4));await ctl(p,'trpg-support-'+helper).press('Space');
   }
   await ctl(p,'trpg-support-'+helper).check();await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();
   assert((await p.evaluate(()=>__trpg.snapshot())).used[helper]);assert.equal(await ctl(p,'trpg-reroll-0').count(),0,'Spent teamwork and used reroll cannot offer another reroll');
@@ -199,3 +199,4 @@ try{
  await p.goto(base+'trpg-preview.html?scenario=ordinary-cup&seed=9');await ctl(p,'trpg-start').click();await lines(p);await fit(p,'missing-decoration');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');await c.close();
 }finally{await browser.close();fs.writeFileSync(path.join(out,'measurements.json'),JSON.stringify(results,null,2)+'\n');}
 console.log('PASS tabletop viewport, live input, state invariance and missing image checks');
+

@@ -137,18 +137,11 @@
           "text": "卓の端で考え始めるとな、ろくなことにならねえ。いったん置いて、見直す"
         },
         {
-          "type": "choice",
-          "id": "ch2_kumicho_first_chat",
-          "choices": [
-            {
-              "text": "自分の作業台も見直します",
-              "next": "a"
-            },
-            {
-              "text": "大会では焦りそうです",
-              "next": "b"
-            }
-          ]
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
         },
         {
           "speaker": "kumicho",
@@ -201,6 +194,38 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "止まるのも、準備なんですね"
+          }
+        ],
+        "before_tournament": [
+          {
+            "type": "choice",
+            "id": "ch2_kumicho_first_chat",
+            "choices": [
+              {
+                "text": "自分の作業台も見直します",
+                "next": "a"
+              },
+              {
+                "text": "大会では焦りそうです",
+                "next": "b"
+              }
+            ]
+          }
+        ],
+        "after_tournament": [
+          {
+            "type": "choice",
+            "id": "ch2_kumicho_first_chat",
+            "choices": [
+              {
+                "text": "自分の作業台も見直します",
+                "next": "a"
+              },
+              {
+                "text": "忙しい時は焦りそうです",
+                "next": "b"
+              }
+            ]
           }
         ]
       }

@@ -92,9 +92,11 @@
           ]
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "俺は鳴切。なるでいい。SMOKE CROWN CUP、俺も出る"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "name_after",
+          "next_false": "name_before"
         },
         {
           "type": "set_flag",
@@ -244,34 +246,11 @@
           "memory_id": "naru_hands"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "そうだ、大会の参加登録はもう済んでるか？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "まだです。会場も、ちゃんと見てなくて"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "だったら、大会前にC.STATIONの受付へ寄っとけよ"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "大会は同じビルのイベントホールでやるんだ"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "受付で登録できる。店員に聞けば案内してくれる"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ありがとうございます。次に出かける時に寄ってみます"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "venue_after",
+          "next_false": "venue_before"
         },
         {
           "type": "set_flag",
@@ -288,9 +267,11 @@
       "branches": {
         "scout_honest": [
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "正直に言うと……偵察です。大会、出るので"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 1,
+            "next_true": "scout_honest_context_after",
+            "next_false": "scout_honest_context_before"
           },
           {
             "speaker": "naru",
@@ -319,9 +300,11 @@
             "text": "（……バレてる）"
           },
           {
-            "speaker": "naru",
-            "face": "smile",
-            "text": "いいよ、隠さなくて。大会前だしな"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 1,
+            "next_true": "scout_bluff_context_after",
+            "next_false": "scout_bluff_context_before"
           },
           {
             "type": "set_flag",
@@ -354,9 +337,11 @@
         ],
         "early_lime_exchange": [
           {
-            "speaker": "naru",
-            "face": "normal",
-            "text": "あー、そうだ。LIME交換しとこうぜ。大会前に困ったことあったら投げろ"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 1,
+            "next_true": "early_lime_exchange_context_after",
+            "next_false": "early_lime_exchange_context_before"
           },
           {
             "speaker": "naru",
@@ -381,6 +366,111 @@
           {
             "type": "set_flag",
             "flag": "_lime_contact_naru"
+          }
+        ],
+        "name_before": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "俺は鳴切。なるでいい。SMOKE CROWN CUP、俺も出る"
+          }
+        ],
+        "name_after": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "俺は鳴切。なるでいい。今日はゆっくり吸ってけよ"
+          }
+        ],
+        "venue_before": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "そうだ、大会の参加登録はもう済んでるか？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "まだです。会場も、ちゃんと見てなくて"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "だったら、大会前にC.STATIONの受付へ寄っとけよ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "大会は同じビルのイベントホールでやるんだ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "受付で登録できる。店員に聞けば案内してくれる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ありがとうございます。次に出かける時に寄ってみます"
+          }
+        ],
+        "venue_after": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "そうだ、C.STATIONの店にはもう寄ったか？"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "会場とは別に、ゆっくり見てみるのもいいぞ。店員に聞けば案内してくれる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ありがとうございます。次に出かける時に寄ってみます"
+          }
+        ],
+        "scout_honest_context_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "正直に言うと……偵察です。大会、出るので"
+          }
+        ],
+        "scout_honest_context_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "正直に言うと……勉強です。ほかのお店の煙も知りたくて"
+          }
+        ],
+        "scout_bluff_context_before": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "いいよ、隠さなくて。大会前だしな"
+          }
+        ],
+        "scout_bluff_context_after": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "いいよ、隠さなくて。店の煙が気になるんだろ"
+          }
+        ],
+        "early_lime_exchange_context_before": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "あー、そうだ。LIME交換しとこうぜ。大会前に困ったことあったら投げろ"
+          }
+        ],
+        "early_lime_exchange_context_after": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "あー、そうだ。LIME交換しとこうぜ。煙のことで困ったら投げろ"
           }
         ]
       },
@@ -520,9 +610,11 @@
         "cb_none": [],
         "early_lime_exchange": [
           {
-            "speaker": "naru",
-            "face": "normal",
-            "text": "あー、そうだ。LIME交換しとこうぜ。大会前に困ったことあったら投げろ"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 1,
+            "next_true": "exchange_after",
+            "next_false": "exchange_before"
           },
           {
             "speaker": "naru",
@@ -547,6 +639,20 @@
           {
             "type": "set_flag",
             "flag": "_lime_contact_naru"
+          }
+        ],
+        "exchange_before": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "あー、そうだ。LIME交換しとこうぜ。大会前に困ったことあったら投げろ"
+          }
+        ],
+        "exchange_after": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "あー、そうだ。LIME交換しとこうぜ。煙のことで困ったら投げろ"
           }
         ]
       }
@@ -620,9 +726,11 @@
           "text": "…………お前、それ気づくのか"
         },
         {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "──はは。いいね。スミさんがお前を大会に出す理由、ちょっと分かったわ"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "trust_after",
+          "next_false": "trust_before"
         },
         {
           "speaker": "",
@@ -659,7 +767,22 @@
           "text": "……【センス】が少し上がった。"
         }
       ],
-      "branches": {},
+      "branches": {
+        "trust_before": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "──はは。いいね。スミさんがお前を大会に出す理由、ちょっと分かったわ"
+          }
+        ],
+        "trust_after": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "──はは。いいね。スミさんがお前に一台任せる理由、ちょっと分かったわ"
+          }
+        ]
+      },
       "metadata": {
         "flavor_lesson": {
           "vanilla": 1
@@ -832,69 +955,11 @@
       "dialogue_id": "ch1_naru_fifth",
       "lines": [
         {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "お、来たな。大会前の最後の一服ってとこか"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。……あの、なるさん。本番、よろしくお願いします"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "おう。──なあ、はじめ。お前、大会で勝つ気ある？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "もちろんです。出るからには優勝します"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "そうか。なら言っとく。──俺は本気で潰しに行く。手加減はしない"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "教えたことも全部込みで、お前を正面から叩く"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……っ"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "教わった技も使えよ。俺の許可なんて、いちいち要らねえから"
-        },
-        {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "──望むところです。俺も、全部出します"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "そうこなくちゃ。お前の手で、どうなるか見たいんだ"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "よし。じゃあ約束な。どっちが勝っても、終わったら一服しようぜ。勝った方が作る"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "差し出された拳に、拳を合わせる。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（最初は、すごい人だとしか思えなかった。今は、この人に勝ちたいと心から思う）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "next_true": "after_local_match",
+          "next_false": "before_local_match",
+          "tournament_chapter": 1
         },
         {
           "type": "remember",
@@ -906,7 +971,112 @@
           "text": "……【根性】が少し上がった。"
         }
       ],
-      "branches": {}
+      "branches": {
+        "before_local_match": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "お、来たな。大会前の最後の一服ってとこか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。……あの、なるさん。本番、よろしくお願いします"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "おう。──なあ、はじめ。お前、大会で勝つ気ある？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "もちろんです。出るからには優勝します"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "そうか。なら言っとく。──俺は本気で潰しに行く。手加減はしない"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "教えたことも全部込みで、お前を正面から叩く"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……っ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "教わった技も使えよ。俺の許可なんて、いちいち要らねえから"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "──望むところです。俺も、全部出します"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "そうこなくちゃ。お前の手で、どうなるか見たいんだ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "よし。じゃあ約束な。どっちが勝っても、終わったら一服しようぜ。勝った方が作る"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "差し出された拳に、拳を合わせる。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（最初は、すごい人だとしか思えなかった。今は、この人に勝ちたいと心から思う）"
+          }
+        ],
+        "after_local_match": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "お、来たな。今日はゆっくり吸ってけよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。……なるさんに教わった手つき、まだ確かめたいんです"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "使ってみて、変えたいとこも出てきたろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "はい。教わった通りにするだけじゃなくて、俺の一台にしたいです"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "言うようになったな。俺の許可なんて、いちいち要らねえから"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "どこが変わったか、次に吸うのを楽しみにしてる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（最初は、すごい人だとしか思えなかった。今は、自分の一台をこの人に確かめてほしい）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_naru_promise",
@@ -920,9 +1090,11 @@
           "text": "優勝の翌日の夜。ケムリクサに呼び出された。閉店後の店に、道具が一式並べてある。"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "約束、覚えてたか。──勝った方が作る、だ"
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch1_naru_fifth",
+          "next_true": "promise_made",
+          "next_false": "fresh_invitation"
         },
         {
           "speaker": "naru",
@@ -1064,6 +1236,20 @@
             "speaker": "naru",
             "face": "normal",
             "text": "──ま、ああいうちゃっかりは嫌いじゃない。師匠孝行だしな"
+          }
+        ],
+        "promise_made": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "約束、覚えてたか。──勝った方が作る、だ"
+          }
+        ],
+        "fresh_invitation": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "おう、チャンピオン。今日はお前の一台を吸わせてくれ"
           }
         ]
       }
@@ -1245,70 +1431,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "初めてケムリクサに足を踏み入れた。商店街の外れ。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "エナジードリンクとシナモンが混ざったような、独特な匂いの店だ。"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "……来たのか。大会以来か"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "店は初めてで。帰ってきたって聞いたから、１回来てみようと思って"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "珍しいな。負かした相手の店に来るやつ、あんまりいない"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "なるが静かにシーシャのセットを組み始めた。大会の時と同じ、無駄のない動作。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "でも店の中だと少し落ち着いて見える。"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "大会でのお前の煙。理論じゃ説明できないとこがあった。それが負けた理由だと思ってる"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……作ってる間、理屈のことは考えてませんでした。届けたい顔が、先にあって"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "……そういうやつだったか。ドバイに出るんだろ。ここの空気、１回知っといて損はない。座れ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "出てきたシーシャは、分析的なのにどこか人間らしい煙だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【技術】が上がった。"
-        },
-        {
-          "type": "set_flag",
-          "flag": "ch1_naru_after_return_done"
+          "type": "jump",
+          "next_id": "ch1_naru_after_return"
         }
-      ]
+      ],
+      "comment": "旧ID互換。大会前の顔合わせを無視した初対面版は使わず、通常の後日談へ進む。"
     }
   ]
 }
