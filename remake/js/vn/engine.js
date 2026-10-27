@@ -20,6 +20,7 @@ import { rememberRelationship, relationshipReflectionLines } from "../core/relat
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
 import { chekiShot, tarotFlip, limeExchange, purikuraShot } from "../core/scene-motions.js";
+import { reducedMotion } from "../core/transition-kit.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -405,7 +406,7 @@ function next() {
     }
     if (type === "hide_cg") {
       r.ready = false;
-      dom.cg.classList.remove("show");
+      dom.cg.classList.remove("show", "cg-focus-window");
       visualSettled(dom.cg).then(() => { if (running === r) { r.ready = true; next(); } });
       return;
     }
@@ -501,6 +502,9 @@ function runFx(line) {
   else if (id === "flashback") layers.vn.classList.add("flashback");
   else if (id === "flashback_off") layers.vn.classList.remove("flashback");
   else if (id === "scent") scent(line.color || "#e8c27a", line.color2 || line.color || "#b8743a");
+  // #1076: 完成CGの窓辺へ短く視線を寄せる／全景へ戻す。SKIP中・低減モーションではカメラを動かさない。
+  else if (id === "cg_focus_window") { if (!skipMode && !reducedMotion()) dom.cg.classList.add("cg-focus-window"); }
+  else if (id === "cg_focus_reset") dom.cg.classList.remove("cg-focus-window");
 }
 
 function scent(c1, c2) {
