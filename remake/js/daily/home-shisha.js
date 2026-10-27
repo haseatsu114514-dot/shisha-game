@@ -2,7 +2,7 @@ import { notifyMastery } from "../core/mastery-notice.js";
 import { gainFlavorExperience, masteryLabel } from "../core/flavor-mastery.js";
 // 寝る前の一服（家シーシャ・#638 オーナー依頼）。昼と夜に行動したうえでの“ちょい足し”で、行動の枠は使わない。
 // 一日の終わり（帰宅のあと・就寝の前）に聞く。自分の葉を12g決めたら、あとは短い場面が進む。
-// 自分で配合すれば模索になり（美味しい／普通／イマイチ）、面倒ならレシピ帳から作れる。
+// 自分で葉を選んで味の特徴を覚える。レシピ帳からも作れる。
 // 育つのは配合したフレーバーの熟練度だけ。ステータスは増えず、体力24を使う。
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
@@ -26,7 +26,7 @@ const leafName = (id) => String(DB.flavorById?.[id]?.short_name || DB.flavorById
 const familyOf = (id) => DB.flavorById?.[id]?.family || id;
 const dayKey = (s) => `${s.chapter || 1}:${s.day}`;
 
-/** 味の手応え。レシピどおりならたいてい美味しい、組み合わせが散ると普通、噛み合わないとイマイチ */
+/** 内部の手応え区分。会話のフレーバー感想には使わない。 */
 export function tasteOf(info) {
   if (info?.count === 1 && info.score >= 80) return "great";
   if (info?.recipe && info.score >= 95) return "great";
@@ -80,7 +80,7 @@ export function applyHomeShisha(mix, rig, s = state) {
   // 自分で組んで当てたレシピはレシピ帳へ。発見によるセンス加算も行わない。
   const found = info.recipe && !s.recipes?.[info.recipe.id] ? info.recipe : null;
   if (found) (s.recipes ||= {})[found.id] = { day: s.day, home: true };
-  return { info, taste, found, masteryGains };
+  return { info, taste, found, masteryGains, mix: { ...mix } };
 }
 
 // ---------------------------------------------------------------- 画面
@@ -89,16 +89,87 @@ const INTROS = {
   home_rig_set: ["部屋の明かりを落として、卓上台に炭をのせる。", "一日の終わり。小さな台に、今日の葉を詰める。", "窓を少し開けて、寝る前の家シーシャを組む。"],
   home_rig_pro: ["本番と同じ台に炭をのせる。手の感覚が、そのまま残る。", "一日の終わり。大会と同じ台で、家シーシャを組む。"],
 };
-const TASTE_LINES = {
-  great: "（……美味しい。香りがきれいに出ている）",
-  fine: "（普通に吸える。悪くはないけど、もう一歩だな）",
-  meh: "（……イマイチだ。どこで噛み合わなかったんだろう）",
-};
-/** 第2章の味覚不調中（#952）。配合の出来は手と温度で分かるが、舌では受け取れない。評価・成長は変えない */
-const DISTANT_TASTE_LINES = {
-  great: "（手順はきれいに噛み合った。……なのに、香りが遠い）",
-  fine: "（悪くない手応えはある。でも、味の輪郭まで届かない）",
-  meh: "（どこかで噛み合わなかった。……舌だけでは確かめられない）",
+// data/flavors.json の説明に沿った一口の気づき。技法・温度・分量の講評はしない。
+// 銘柄固有の味はfamilyでまとめず、同系統でも別の感想にする。
+const FLAVOR_IMPRESSIONS = {
+  white_gummy_bear: "パイナップルみたいな、やわらかい甘さなんだ",
+  red_gummy_bear: "ベリーの甘酸っぱさがあるんだな",
+  cola: "スパイスと柑橘がコーラらしく香るんだな",
+  raspberry: "甘さだけじゃなく、酸味もはっきりしてる",
+  pistachio: "青い香ばしさに、穏やかな甘さがある",
+  gum_cinnamon: "ガムの甘さにシナモンの刺激が重なるんだ",
+  bombshell: "ベリーと花の香りが重なるんだな",
+  white_musk: "白い花みたいな香りがやわらかく残る",
+  dark_earlgrey: "紅茶の香りがはっきり立つんだな",
+  siga: "葉巻みたいな重い香りなんだな",
+  nightside_blast_mint: "鋭い清涼感があるんだな",
+  mint: "冴えのある清涼感なんだな",
+  double_apple: "アニスが香る。りんご一色じゃないんだな",
+  blueberry: "ブルーベリーの果実らしい香りなんだな",
+  strawberry: "想像した苺の甘さとは違う。繊細な味なんだ",
+  vanilla: "厚みのある、丸い甘さなんだな",
+  pineapple: "明るいパイナップルの香りが立つんだな",
+  coconut: "甘い余韻が長く残るんだな",
+  mango: "トロピカルな甘みが広がるんだな",
+  nightside_earlgrey: "ベルガモットの紅茶香が長く残るんだな",
+  nightside_earlgrey_release: "ベルガモットの紅茶香がするんだな",
+  grape: "熟したぶどうみたいな甘さなんだな",
+  rose: "薔薇の華やかな香りが残るんだな",
+  peach: "やわらかい桃の甘みが広がるんだな",
+  orange: "柑橘の酸味と果実の甘さがあるんだな",
+  lemon: "きりっとした酸味なんだな",
+  watermelon: "みずみずしい果汁みたいな味なんだな",
+  guava: "独特の甘酸っぱさがあるんだな",
+  dragonfruit: "見た目より穏やかな甘みなんだな",
+  kiwi: "酸味がはっきりしてるんだな",
+  melon: "濃厚な甘みがあるんだな",
+  banana: "クリーミーな甘さなんだな",
+  lychee: "上品な甘みに、ほのかな花の香りがある",
+  cool_mint: "ひときわ強い清涼感なんだな",
+  twice_ice: "冷涼感の刺激が後まで残るんだな",
+  peppermint_shake: "ミントの冷たさにミルクみたいな甘さもある",
+  ice_grape: "ぶどうの甘酸っぱさと冷たさが重なるんだな",
+  ice_lemon: "レモンの酸味に冷涼感が重なるんだな",
+  death_by_ice: "突き抜けるような冷涼感なんだな",
+  blueberry_mint: "ベリーの果実感にミントの清涼感もある",
+  frozen_citrus: "柑橘の酸味と冷涼感が重なるんだな",
+  frozen_berry: "ベリーの甘さに冷たさが重なるんだな",
+  cardamom: "独特のスパイスの香りなんだな",
+  cinnamon: "温かみのあるスパイスの香りなんだな",
+  clove: "重厚なスパイスの香りなんだな",
+  basil: "青い爽やかさとスパイス感があるんだな",
+  anise: "ダブルアップルにも使われる、独特の香りだ",
+  licorice: "独特の甘苦さが残るんだな",
+  nutmeg: "ほんのり甘いスパイスの香りなんだな",
+  black_pepper: "ピリッとした辛みがあるんだな",
+  ginger: "じんわりした生姜の辛みなんだな",
+  lavender: "やさしく残るハーブの香りなんだな",
+  jasmine: "上品な花の香りなんだな",
+  chamomile: "穏やかなハーブの甘みなんだな",
+  sakura: "桜餅みたいな甘い香りなんだな",
+  lily: "凛とした百合の花の香りなんだな",
+  white_rose: "やわらかい薔薇の甘い香りが残るんだな",
+  violet_rose: "深みのある薔薇の香りなんだな",
+  gardenia: "濃密で甘い花の香りなんだな",
+  chocolate: "甘さとビターな香りがあるんだな",
+  dark_chocolate: "苦みの奥に甘さがあるんだな",
+  caramel: "焦がし砂糖みたいな濃い甘さなんだな",
+  cotton_candy: "綿菓子みたいなふわっとした甘さなんだな",
+  mountain_mist: "レモンとライムの軽い酸味なんだな",
+  popcorn: "香ばしさと甘さが一緒に来るんだな",
+  hazelnut: "ナッツの香ばしさに、ほのかな甘みもある",
+  cappuccino: "ミルクの甘さとコーヒーの苦みが重なるんだ",
+  coffee: "焙煎した豆の深い苦みなんだな",
+  espresso: "ぎゅっと凝縮した苦みと香りなんだな",
+  black_tea: "紅茶の渋みと落ち着いた香りなんだな",
+  absal_earlgrey: "ベルガモットの柑橘香に紅茶の渋みもある",
+  lemon_tea: "落ち着いた紅茶の香りにレモンの酸味もある",
+  dobaj_double_apple: "クリーミーでやわらかい甘さなんだな",
+  absal_double_apple: "アニスとリコリスがはっきり香るんだな",
+  dobaj_mint: "キャンディみたいな甘い清涼感なんだな",
+  absal_mint: "清涼感の奥にハーブの苦みもあるんだな",
+  afsahr_strawberry: "華やかな苺の香りが立つんだな",
+  spring_water: "香水みたいな香りに、爽やかな後味もある",
 };
 /** 物語の味覚不調（DAY5で始まり、第2章の間は戻らない）。第3章以降の扱いはその章の物語に任せる */
 export const tasteDistant = (s = state) => s.chapter === 2 && !!s.flags?._ch2_taste_distant;
@@ -106,9 +177,14 @@ export const tasteDistant = (s = state) => s.chapter === 2 && !!s.flags?._ch2_ta
 /** 場面の台本（地の文＋はじめの心の声）。全角48字以内・手動改行なし */
 export function homeShishaDialogue(result, rig, random = Math.random, { distant = false } = {}) {
   const intros = INTROS[rig.id] || INTROS.home_rig_set;
+  const impressions = distant ? ["（……香りが遠い。今は味の輪郭をうまく受け取れない）"]
+    : Object.entries(result.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0)
+      .map(([id]) => `（${leafName(id)}。${FLAVOR_IMPRESSIONS[id] || "どんな味か、またゆっくり確かめたい"}）`);
   const lines = [{ speaker: "", face: "", text: intros[Math.floor(random() * intros.length)] },
-    { speaker: "hajime", face: "normal", text: (distant ? DISTANT_TASTE_LINES : TASTE_LINES)[result.taste] }];
-  lines.push({ speaker: "hajime", face: "normal", text: "（この味の感触、覚えておこう。片付けたら今日は寝よう）" });
+    ...(impressions.length ? impressions : ["（今夜の味を、またゆっくり確かめたい）"]).map(text => ({ speaker: "hajime", face: "normal", text }))];
+  lines.push({ speaker: "hajime", face: "normal", text: distant
+    ? "（また香りを感じられる日に。片付けたら今日は寝よう）"
+    : "（この味の感触、覚えておこう。片付けたら今日は寝よう）" });
   return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG }, lines };
 }
 
