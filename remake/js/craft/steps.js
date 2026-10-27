@@ -26,6 +26,9 @@ export const REGULATION = {
   1: { flavor: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（私物持ち込み）" },
   // 判定は同系統（AFの持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
   2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 1, label: "課題フレーバー「ストロベリー」を使う" },
+  // 第3章＝菓子系の課題。メーカー最終指定・通常/ダーク・最低使用量・支給/持込は未確定なので、
+  // 既存の「ドバジ チョコレート」を仮に支給扱いで使う。確定時はここ1か所を差し替える（#1052 §1）。
+  3: { flavor: "chocolate", supply: "chocolate", min: 1, label: "課題フレーバー「チョコレート」を使う" },
 };
 export const regulationFor = (cs) => cs.staffPractice ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
   ? { flavor: "mint", supply: "mint", min: 2, label: "再開中の旧大会：ミント2g以上" }
