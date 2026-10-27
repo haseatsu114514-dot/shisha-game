@@ -14,10 +14,10 @@ async function run(failure=null,{pullMode="success",insight=30}={}){
  const end=new Error('review boundary completed');
  const values={state,hooks:{},DB:{dialogues},TOURNAMENT_DAY:14,CRAFT_STEPS:[],SHOP_FLAVORS:[],el,
   layers:{fx:el()},SE:new Proxy({},{get:()=>()=>{}}),
-  sleep:async()=>{},smokeWipe:async mid=>mid(),newSession:()=>cs,
+  sleep:async()=>{},smokeWipe:async mid=>mid(),newSession:()=>cs,servedEvaluationLines:()=>[],
   runSteamDodge:async()=>trace.push('steam'),runPull:async()=>{trace.push('pull');enterPull();if(pullMode==='false')return false;if(pullMode==='reject')throw rejected;
    if(pullMode==='deferred')await new Promise(r=>resolvePull=r);if(failure)cs.failed=failure;trace.push('pull:completed');return true;},
-  play:async(id)=>{trace.push(typeof id==='string'?id:id.dialogue_id);for(const l of dialogues[id]?.lines||[])if(l.text)texts.push({at:trace.length,text:l.text});return {id};},
+  play:async(id)=>{const dlg=typeof id==='string'?dialogues[id]:id;trace.push(typeof id==='string'?id:id.dialogue_id);for(const l of dlg?.lines||[])if(l.text)texts.push({at:trace.length,text:l.text});return {id};},
   computeShisha:()=>({aroma:50,craftQuality:70}),showStandings:async n=>{trace.push('standings:'+n);if(n===2){ended=true;throw end;}},
   buildGameOver:()=>el(),showScreen:()=>{ended=true;},block(){},judge(){},judgeOf:x=>x,burst(){},clearComments(){}};
  const ctx=vm.createContext({console,window:{__remake:{craftTest:{auto:true}}},location:{reload(){}},setTimeout,clearTimeout});
