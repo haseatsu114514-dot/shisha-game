@@ -117,7 +117,12 @@ for (const scene of [ageha.remake_ch2_ageha_tasting, remake.remake_ch2_eve_rei])
 assert.match(text(main.ch2_pre_tournament_realisation), /うちの店にも来てた/);
 assert.match(text(ageha.remake_ch2_ageha_tasting), /人を見る訓練/);
 const meet = ch3volk.ch3_volk_first;
-assert(meet.lines.some((l) => l.flag === "_ch2_scout_seen") && meet.branches.unseen.length);
+const deliveryRecognition = meet.lines.find((l) => l.flag === "_ch3_delivery_volk" && l.next_false === "delivery_original_recognition");
+assert(deliveryRecognition, "未配達なら元の面識判定へ進む");
+const scoutRecognition = meet.branches[deliveryRecognition.next_false].find((l) => l.flag === "_ch2_scout_seen");
+assert.equal(scoutRecognition?.next_true, "seen_in_ch2");
+assert.equal(scoutRecognition?.next_false, "unseen");
+assert(meet.branches.unseen.length);
 assert.match(meet.branches.seen_in_ch2.map((l) => l.text).join("\n"), /偵察[\s\S]*軍/, "第3章で、軍で覚えた偵察だと分かる");
 
 console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights, Ageha\'s last inner voice, anonymous scout");
