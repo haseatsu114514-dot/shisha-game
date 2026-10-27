@@ -363,19 +363,16 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 /* 行けない場所は「消えた」ではなく「無効化」に見せる（旧版 #6） */
 .spot-pin.off .shield { filter: grayscale(0.5) brightness(0.74); }
 .spot-pin.off { opacity: 0.9; }
-/* 雨の日（旧版 A8/W4）: マップの雨オーバーレイ。ピンより下・操作を邪魔しない */
+/* 雨の日（旧版 A8/W4）: マップの雨オーバーレイ。雨粒本体は #weather に統一し、ここはピンと看板が読みやすい湿潤な陰影だけを添える */
 .map-weather {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background-image:
-    linear-gradient(rgba(70, 90, 140, 0.22), rgba(70, 90, 140, 0.22)),
-    repeating-linear-gradient(115deg, rgba(200, 218, 255, 0.28) 0px, rgba(200, 218, 255, 0.28) 2px, transparent 2px, transparent 26px);
-  background-size: auto, 52px 52px;
-  animation: map-rainfall 0.55s linear infinite;
+  background:
+    radial-gradient(110% 75% at 50% 44%, rgba(44, 64, 98, 0.06) 0%, rgba(16, 26, 46, 0.22) 100%),
+    linear-gradient(180deg, rgba(18, 28, 48, 0.18) 0%, rgba(36, 54, 84, 0.08) 45%, rgba(14, 22, 38, 0.24) 100%);
 }
-@keyframes map-rainfall { from { background-position: 0 0, 0 0; } to { background-position: 0 0, -24px 52px; } }
 /* 1日目の案内: 行き先の1か所だけ光らせ、ほかは沈める */
 .spot-pin.guided-off { opacity: 0.45; }
 .spot-pin.guided-off .shield { filter: grayscale(0.7) brightness(0.7); }

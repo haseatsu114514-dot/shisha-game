@@ -6,7 +6,7 @@ import { state, STAT_KEYS } from "./state.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
-import { rainScene } from "../daily/weather.js";
+import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
@@ -60,6 +60,7 @@ let bgTask = Promise.resolve();
 let bgAssetsReady = Promise.resolve();
 let activeCurtain = null;
 let weatherBg = "";
+let weatherTint = "";
 let weatherKey = "";
 const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
 const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切った待ち時間を繰り返さない
@@ -150,6 +151,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
     weatherBg = url || "";
+    weatherTint = tint || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);
     if (instant || curtain || coveredElsewhere) {
@@ -172,29 +174,15 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
 export function refreshWeather() {
   if (!layers.weather) return;
   const scene = document.hidden ? null : rainScene(weatherBg, document.body.dataset.screen);
+  const sky = scene ? weatherSkyTone(weatherBg, weatherTint) : "none";
+  const view = scene ? weatherViewKind(weatherBg, scene) : "none";
   document.body.dataset.weather = scene?.mode || "none";
+  document.body.dataset.weatherSky = sky;
   setRainAmbience(scene?.mode || null);
-  const key = scene ? JSON.stringify(scene) : "";
+  const key = scene ? JSON.stringify({ scene, sky, view }) : "";
   if (key === weatherKey) return;
   weatherKey = key;
-  const host = layers.weather;
-  host.replaceChildren();
-  host.dataset.mode = scene?.mode || "none";
-  host.hidden = !scene;
-  if (!scene) return;
-  const sheet = (windowRect = null) => {
-    const count = windowRect ? 5 : 34;
-    const node = el("div.weather-sheet", {
-      class: windowRect ? "window" : "outdoor",
-      style: windowRect ? { left: `${windowRect[0]}px`, top: `${windowRect[1]}px`, width: `${windowRect[2]}px`, height: `${windowRect[3]}px`, "--rain-travel": `${windowRect[3] + 60}px` } : { "--rain-travel": "780px" },
-    });
-    for (let i = 0; i < count; i++) node.append(el("i.weather-drop", {
-      style: { left: `${(i * 37 + 13) % 100}%`, animationDuration: `${0.65 + (i % 5) * 0.09}s`, animationDelay: `${-((i * 7) % 17) * 0.08}s` },
-    }));
-    host.append(node);
-  };
-  if (scene.mode === "outdoor") sheet();
-  else scene.windows.forEach(sheet);
+  renderWeatherLayer(layers.weather, scene, { sky, view, el });
 }
 
 // ---------------------------------------------------------------- 画面

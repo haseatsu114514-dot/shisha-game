@@ -97,26 +97,135 @@ body.vn-open #screen { visibility: hidden; } /* 会話中は前の画面を後�
 #boot { z-index: 100; }
 
 /* ---------------------------------------------------------------- 雨（背景より上、操作・立ち絵より下） */
-#weather { z-index: 5; pointer-events: none; }
+#weather {
+  z-index: 5;
+  pointer-events: none;
+  contain: layout style paint;
+}
 #weather[hidden] { display: none; }
-#weather[data-mode="outdoor"] { background: rgba(48, 66, 100, 0.09); }
-.weather-sheet { position: absolute; overflow: hidden; pointer-events: none; }
-.weather-sheet.outdoor { inset: 0; }
-.weather-sheet.window { opacity: 0.42; background: rgba(71, 95, 130, 0.07); }
+/* 屋外の雨天空気層: 曇天差分のない第2章背景（駅前・街マップ等）でも青空や強い日差しを抑え、雨雲と湿った空気感をなじませる */
+#weather[data-mode="outdoor"] {
+  background:
+    linear-gradient(180deg,
+      rgba(24, 36, 58, 0.34) 0%,
+      rgba(34, 50, 78, 0.20) 32%,
+      rgba(42, 60, 90, 0.11) 62%,
+      rgba(16, 24, 40, 0.26) 100%);
+}
+#weather[data-mode="outdoor"][data-sky="overcast"] {
+  background:
+    linear-gradient(180deg,
+      rgba(26, 38, 60, 0.16) 0%,
+      rgba(38, 54, 82, 0.09) 45%,
+      rgba(18, 26, 42, 0.18) 100%);
+}
+#weather[data-mode="outdoor"][data-sky="night"] {
+  background:
+    linear-gradient(180deg,
+      rgba(10, 16, 32, 0.32) 0%,
+      rgba(18, 28, 52, 0.16) 46%,
+      rgba(8, 12, 24, 0.28) 100%);
+}
+body[data-weather="outdoor"][data-weather-sky="day"] #bg .bg-img.show:not([data-tint]) {
+  filter: saturate(0.82) brightness(0.91) contrast(1.02);
+}
+.weather-sheet {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout style paint;
+}
+.weather-sheet.outdoor {
+  inset: 0;
+  /* 下部の会話枠・案内パネル付近は雨粒を少し和らげ、文字とUIの視認性を保つ */
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.92) 0%, #000 14%, #000 72%, rgba(0, 0, 0, 0.48) 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.92) 0%, #000 14%, #000 72%, rgba(0, 0, 0, 0.48) 100%);
+}
+body.in-vn .weather-sheet.outdoor,
+body.vn-open .weather-sheet.outdoor {
+  opacity: 0.84;
+}
+.weather-mist {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 42% at 50% 64%, rgba(182, 204, 232, 0.12) 0%, rgba(182, 204, 232, 0) 76%),
+    linear-gradient(180deg, rgba(164, 188, 220, 0.08) 0%, transparent 36%, rgba(148, 174, 208, 0.07) 78%, transparent 100%);
+}
+#weather[data-sky="night"] .weather-mist {
+  background:
+    radial-gradient(120% 42% at 50% 66%, rgba(120, 152, 204, 0.10) 0%, rgba(120, 152, 204, 0) 76%),
+    linear-gradient(180deg, rgba(90, 118, 168, 0.06) 0%, transparent 40%, rgba(100, 132, 184, 0.06) 80%, transparent 100%);
+}
+.weather-sheet.window {
+  opacity: 0.56;
+  background: linear-gradient(180deg, rgba(58, 82, 118, 0.14) 0%, rgba(76, 102, 140, 0.08) 100%);
+  box-shadow: inset 0 0 8px rgba(14, 22, 38, 0.22);
+}
+.weather-sheet.window::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(214, 230, 252, 0.10) 0%, transparent 45%, rgba(180, 204, 236, 0.06) 100%);
+  pointer-events: none;
+}
 .weather-drop {
   position: absolute;
-  top: -30px;
-  width: 1.5px;
-  height: 21px;
-  background: linear-gradient(transparent, rgba(211, 228, 250, 0.62));
-  animation: scene-rainfall 0.8s linear infinite;
+  top: -56px;
+  width: var(--drop-w, 1.5px);
+  height: var(--drop-len, 26px);
+  border-radius: 999px;
+  background: linear-gradient(180deg,
+    rgba(211, 228, 250, 0) 0%,
+    rgba(205, 224, 248, calc(var(--drop-alpha, 0.56) * 0.45)) 58%,
+    rgba(232, 243, 255, var(--drop-alpha, 0.56)) 92%,
+    rgba(255, 255, 255, calc(var(--drop-alpha, 0.56) * 0.85)) 100%);
+  animation: scene-rainfall 0.75s linear infinite;
+  will-change: transform;
+  pointer-events: none;
+}
+.weather-drop[data-depth="far"] {
+  --drop-w: 1.1px;
+  --drop-len: 20px;
+  --drop-alpha: 0.34;
+}
+.weather-drop[data-depth="mid"] {
+  --drop-w: 1.5px;
+  --drop-len: 30px;
+  --drop-alpha: 0.52;
+}
+.weather-drop[data-depth="near"] {
+  --drop-w: 1.9px;
+  --drop-len: 44px;
+  --drop-alpha: 0.68;
+}
+.weather-ripple {
+  position: absolute;
+  width: 22px;
+  height: 6px;
+  margin-left: -11px;
+  margin-top: -3px;
+  border-radius: 50%;
+  border: 1px solid rgba(216, 232, 252, 0.34);
+  opacity: 0;
+  transform: scale(0.25);
+  animation: scene-rain-ripple 1.6s ease-out infinite;
+  will-change: transform, opacity;
   pointer-events: none;
 }
 @keyframes scene-rainfall {
-  from { transform: translate3d(18px, 0, 0) rotate(12deg); }
-  to { transform: translate3d(-26px, var(--rain-travel), 0) rotate(12deg); }
+  from { transform: translate3d(20px, 0, 0) rotate(11deg); }
+  to { transform: translate3d(-28px, var(--rain-travel), 0) rotate(11deg); }
 }
-@media (prefers-reduced-motion: reduce) { .weather-drop { animation: none; display: none; } }
+@keyframes scene-rain-ripple {
+  0% { opacity: 0; transform: scale(0.2); }
+  22% { opacity: 0.42; }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .weather-drop, .weather-ripple { animation: none; display: none; }
+}
 
 /* ---------------------------------------------------------------- 背景 */
 .bg-img {
