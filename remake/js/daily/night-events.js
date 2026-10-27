@@ -78,7 +78,14 @@ export function fixedNightVisitBlock(events, spot) {
     if (!(ev.prerequisites || []).every(key => flags.has(key))) break;
     const mandatory = !postponeable(ev) || ev.schedule === "preparation" && ev.deadline <= state.day;
     if (mandatory && ev.pin === spot.id) {
-      return { ok: false, why: "この後もtonariに行くから、今は別のところにしよう", tag: "この後、必須の予定あり" };
+      // #1044 A08: 説明欄が通常の「一服／シフト」のままだと、何がいつ使えないか迷う。
+      const homeRig = (state.owned || []).some(id => id === "home_rig_set" || id === "home_rig_pro");
+      return {
+        ok: false,
+        why: "この後もtonariに行くから、今は別のところにしよう",
+        tag: "この後、必須の予定あり",
+        desc: `今夜はtonariで本編の予定${ev.label ? `「${ev.label}」` : ""}がある。それまで客としての一服・まかない練習・シフトには入れない。tonariの用事は、夜の予定がない日に回そう。${homeRig ? "配合の試作なら、寝る前の家シーシャでもできる。" : ""}`,
+      };
     }
     for (const key of ev.doneKeys || []) flags.add(key);
   }
