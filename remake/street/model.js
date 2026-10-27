@@ -6,8 +6,8 @@ export const SPAWN = { x: 0, z: .04, dir: 'up' };
 export const CHARACTER_HEIGHT = 302.4;
 // 背景上の移動量を人物高で校正する。奥行きの二乗で縦移動を遅くしない。
 export const WALK_SPEED = 420, RUN_SPEED = 660, STRIDE_LENGTH = 250;
-// 通りの縦方向は遠近で画面上の距離が短い。端までの所要時間を横歩きと揃える。
-export const SIDE_SPEED = 1.1, DEPTH_SPEED = .55;
+// 左右は中央から端まで約1秒。奥行きと入力・カメラの即応性は維持する。
+export const SIDE_SPEED = 1.4, DEPTH_SPEED = .55;
 const CAMERA_ZOOM_EXPONENT = .55;
 export const DOORS = [
   { id: 'cafe', rect: [54, 270, 150, 270], foot: [235, 592], label: [160, 252] },

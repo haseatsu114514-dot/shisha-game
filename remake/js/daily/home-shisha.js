@@ -7,6 +7,7 @@ import { gainFlavorExperience, masteryLabel } from "../core/flavor-mastery.js";
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { addStamina, staminaAfter, maxStamina } from "../core/stats.js";
+import { conditionForRatio } from "../core/condition.js";
 import { coldRisk } from "../core/illness.js";
 import { el } from "../core/util.js";
 import { modal, toast } from "../core/ui.js";
@@ -54,12 +55,13 @@ export function recipeMix(recipe, { stockOf = flavorStock, owned = ownedFlavorId
   return mix;
 }
 
-/** 今夜聞くか。台があり、葉が12gあり、今日まだ吸っておらず、大会前夜でなく、体力が赤くならない */
+/** 今夜聞くか。台があり、葉が12gあり、今日まだ吸っておらず、大会前夜でなく、現在体力が緑で、消耗後に風邪リスクがない */
 export function homeShishaOffer(s = state, { eve = false } = {}) {
   const rig = homeRig(s);
   if (!rig || eve || s.flags?._home_shisha_day === dayKey(s)) return null;
   const stock = ownedFlavorIds().reduce((sum, id) => sum + flavorStock(id), 0);
   if (stock < HOME_GRAMS) return null;
+  if (conditionForRatio(s.stamina / maxStamina()).health !== "green") return null;
   if (coldRisk(staminaAfter(HOME_STAMINA) / maxStamina())) return null;
   return rig;
 }
@@ -106,7 +108,7 @@ export function homeShishaDialogue(result, rig, random = Math.random, { distant 
   const intros = INTROS[rig.id] || INTROS.home_rig_set;
   const lines = [{ speaker: "", face: "", text: intros[Math.floor(random() * intros.length)] },
     { speaker: "hajime", face: "normal", text: (distant ? DISTANT_TASTE_LINES : TASTE_LINES)[result.taste] }];
-  lines.push({ speaker: "hajime", face: "normal", text: "（この配合の感触、覚えておこう。片付けたら今日は寝よう）" });
+  lines.push({ speaker: "hajime", face: "normal", text: "（この味の感触、覚えておこう。片付けたら今日は寝よう）" });
   return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG }, lines };
 }
 
@@ -155,7 +157,7 @@ async function chooseRecipe() {
   const options = (DB.recipes || []).filter((r) => state.recipes?.[r.id] && recipeMix(r))
     .map((r) => ({ label: r.name, value: r.id, test: `home-recipe-${r.id}` }));
   if (!options.length) return null;
-  const id = await modal({ title: "家シーシャ：レシピ帳から作る", className: "home-shisha-dialog", body: "自分の葉で作れるレシピ。量は決まった配合で詰める。",
+  const id = await modal({ title: "家シーシャ：レシピ帳から作る", className: "home-shisha-dialog", body: "自分の葉で作れるレシピ。使う葉と量はレシピどおり。",
     options: [...options, { label: "戻る", value: null, test: "home-recipe-back" }] });
   return id ? recipeMix(DB.recipes.find((r) => r.id === id)) : null;
 }
@@ -171,9 +173,9 @@ export async function runHomeShisha({ eve = false } = {}) {
   let mix = null;
   while (!mix) {
     const how = await modal({ title: "寝る前の家シーシャ", className: "home-shisha-dialog",
-      body: `まだ体力に余裕がある。${rig.name}で家シーシャをする？ 自分の葉を${HOME_GRAMS}g使い、体力は大きく減る。使った味の熟練度が育つ。`,
+      body: `まだ体力に余裕がある。${rig.name}で家シーシャをする？ 自分の葉${HOME_GRAMS}gと体力を使う。使った味の熟練度が育つ。`,
       options: [
-        { label: "家シーシャをする（自分で配合）", value: "mix", primary: true, test: "home-shisha-mix" },
+        { label: "家シーシャをする（フレーバーを選ぶ）", value: "mix", primary: true, test: "home-shisha-mix" },
         ...(canRecipe ? [{ label: "家シーシャをする（レシピ帳）", value: "recipe", test: "home-shisha-recipe" }] : []),
         { label: "今日は寝る", value: null, test: "home-shisha-skip" },
       ] });

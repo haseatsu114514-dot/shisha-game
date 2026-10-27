@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const BASE = process.env.BASE_URL || 'http://127.0.0.1:8123/remake/';
 const SHOTS = process.env.SHOTS;
+const { SIDE_SPEED, DEPTH_SPEED, CHARACTER_HEIGHT } = await import('../../street/model.js');
 if (SHOTS) await fs.mkdir(SHOTS, { recursive: true });
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 let checks = 0;
@@ -12,7 +13,7 @@ const pass = (name) => { checks++; console.log(`[street] PASS ${name}`); };
 try {
   for (const touch of [false, true]) {
     const label = touch ? 'touch' : 'pc';
-    const context = await browser.newContext({ viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: touch });
+    const context = await browser.newContext({ viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: touch, reducedMotion: touch ? 'reduce' : 'no-preference' });
     let page = await context.newPage(); const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto(BASE); await page.waitForSelector('[data-test="title-new"]');
@@ -74,7 +75,23 @@ try {
     assert.equal((await frame.evaluate(() => __street.state())).alwaysRun, false);
     // 入口ボタンのクリックだけでキーが届く。テスト側からframeをfocusしない。
     const initial = await frame.evaluate(() => __street.state());
+    await frame.evaluate(() => {
+      const startX = __street.state().x;
+      addEventListener('keydown', function measure(e) {
+        if (e.code !== 'ArrowRight') return;
+        removeEventListener('keydown', measure);
+        const began = performance.now();
+        const sample = () => {
+          if (__street.state().x !== startX) window.firstMoveMs = performance.now() - began;
+          else requestAnimationFrame(sample);
+        };
+        requestAnimationFrame(sample);
+      });
+    });
     await page.keyboard.down('ArrowRight'); await page.waitForTimeout(800); await page.keyboard.up('ArrowRight');
+    const latency = await frame.evaluate(() => window.firstMoveMs);
+    assert(Number.isFinite(latency) && latency < 250, 'key must move on the next rendered frame without a deliberate delay');
+    console.log(`[street] MEASURE ${label}: key to first movement ${latency.toFixed(1)}ms`);
     assert((await frame.evaluate(() => __street.state())).worldX > initial.worldX + 20);
     await page.keyboard.down('ArrowUp'); await page.waitForTimeout(800); await page.keyboard.up('ArrowUp');
     const deeper = await frame.evaluate(() => __street.state());
@@ -96,11 +113,15 @@ try {
       const startY=dir.startsWith('down')?470:dir.startsWith('up')?600:540;
       await frame.evaluate(y=>__street.place(640,y,'up'),startY);await frame.locator('#view').focus();
       const before=await frame.evaluate(()=>__street.state());
+      const began = await frame.evaluate(() => performance.now());
       for(const key of keys)await page.keyboard.down(key);
       await page.waitForTimeout(300);
-      const during=await frame.evaluate(()=>__street.state());
+      const during=await frame.evaluate(()=>({...__street.state(), measuredAt: performance.now()}));
       assert.equal((await frame.evaluate(()=>__street.state())).dir,dir);
       for(const key of keys)await page.keyboard.up(key);
+      // 次の描画でkeyupが反映された位置を取り、そこから惰性がないことを確認する。
+      await frame.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      const released = await frame.evaluate(() => __street.state());
       await page.waitForTimeout(100);
       const s=await frame.evaluate(()=>__street.state());
       assert.equal(s.moving,false,`${dir}: key release must stop`);
@@ -108,10 +129,34 @@ try {
       assert(s.strideDistance>100&&s.strideDistance<165,`${dir}: walk cycle outside expected range: ${s.strideDistance}`);
       const screenDistance=Math.hypot(during.x-before.x,during.y-before.y);
       const diagonal=keys.length===2;
-      const pace=diagonal?1/Math.hypot(1/Math.SQRT2/1.1,1/Math.SQRT2/.55):dir==='right'||dir==='left'?1.1:.55;
+      const pace=diagonal?1/Math.hypot(1/Math.SQRT2/SIDE_SPEED,1/Math.SQRT2/DEPTH_SPEED):dir==='right'||dir==='left'?SIDE_SPEED:DEPTH_SPEED;
       speeds.push(screenDistance/((during.renderHeight+before.renderHeight)/2)/pace);
+      if (dir === 'right' || dir === 'left') {
+        const speed = screenDistance / ((during.renderHeight+before.renderHeight)/2) * CHARACTER_HEIGHT / ((during.measuredAt-began)/1000);
+        console.log(`[street] MEASURE ${label}: ${dir} actor-normalized ${speed.toFixed(1)}px/s, camera drift ${s.cameraZoom-during.cameraZoom}`);
+        assert.equal(s.x, released.x, 'horizontal key release must stop without coasting');
+        assert.equal(s.cameraZoom, released.cameraZoom, 'camera must stop with the actor');
+      }
     }
     assert(Math.max(...speeds)/Math.min(...speeds)<1.2,`8-direction apparent-speed spread: ${JSON.stringify(speeds)}`);
+    if (touch) {
+      await frame.evaluate(() => __street.place(640, 640, 'right'));
+      const box = await frame.locator('#view').boundingBox();
+      const screen = (x, y) => ({x: box.x+x/1280*box.width, y: box.y+y/720*box.height});
+      const session = await context.newCDPSession(page);
+      await session.send('Input.dispatchTouchEvent', {type:'touchStart', touchPoints:[screen(640,640)]});
+      for (const x of [680,720,760,800]) {
+        await session.send('Input.dispatchTouchEvent', {type:'touchMove', touchPoints:[screen(x,640)]});
+        await page.waitForTimeout(30);
+      }
+      await session.send('Input.dispatchTouchEvent', {type:'touchEnd', touchPoints:[]});
+      await frame.waitForFunction(() => !__street.state().moving && Math.abs(__street.state().x-800)<.01);
+      const stopped = await frame.evaluate(() => __street.state());
+      await page.waitForTimeout(100);
+      assert.equal((await frame.evaluate(() => __street.state())).x, stopped.x, 'swipe destination must not overshoot or coast');
+      await session.detach();
+      pass('landscape touch with reduced motion: swipe arrives exactly and stays stopped');
+    }
     await frame.evaluate(() => __street.place(640, 540, 'right'));
     await frame.locator('#view').focus();
     await page.keyboard.down('ArrowRight');
