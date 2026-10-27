@@ -10,7 +10,16 @@ const out=path.resolve(process.env.ARTIFACT_DIR||'docs/qa/dj-prototype-1064');fs
 const browser=await chromium.launch({headless:true,...(process.env.CHROME_EXECUTABLE_PATH?{executablePath:process.env.CHROME_EXECUTABLE_PATH}:{})});
 const results=[],near=(a,b,e=.01)=>assert(Math.abs(a-b)<e,`${a} != ${b}`);
 const snap=p=>p.evaluate(async()=>(await import('./app.mjs')).snapshot());
-const wait=(p,key,timeout=5000)=>p.waitForFunction(async key=>{const s=(await import('./app.mjs')).snapshot();return key==='audio'?s.running&&s.rms>1e-5:key==='head'?s.mode==='waiting-play':s.guide?.from===1;},key,{timeout});
+const wait=async(p,key,timeout=5000)=>{
+ const deadline=Date.now()+timeout;let state;
+ do{
+  state=await snap(p);
+  const ready=key==='audio'?state.running&&state.rms>1e-5:key==='head'?state.mode==='waiting-play':state.guide?.from===1&&state.master===1;
+  if(ready)return;
+  await p.waitForTimeout(50);
+ }while(Date.now()<deadline);
+ assert.fail(`Timed out waiting for ${key}: ${JSON.stringify(state)}`);
+};
 const hashWaves=p=>p.evaluate(()=>['wave-a','wave-b'].map(id=>document.getElementById(id).getContext('2d').getImageData(0,0,960,65).data.reduce((h,b)=>(Math.imul(h,31)+b)>>>0,7)));
 try{
  for(const kind of ['pc','touch','reduced']){
