@@ -452,4 +452,25 @@ db.lime = ["naru", "adam", "minto"].map(sender => ({ id: `cap_${sender}`, sender
   type: "chat", trigger_condition: "lime_exchanged", trigger_day: 5, messages: ["既存の優先連絡"] }));
 assert.equal(phone.deliverMorning(), 3);
 assert(!state.inbox.some(item => item.msg.sender === "tsumugi"));
+// 章をまたぐ同じ日付と、chapter がない旧セーブの表示。
+reset({ chapter: 2, day: 3 });
+const historyMessage = { id: "history", sender: "minto", type: "chat", messages: ["履歴"] };
+state.inbox.push(
+  item(historyMessage, { chapter: 1, day: 14, read: true, done: true }),
+);
+session = phone.openLime(); await settle();
+assert.equal(find(layers.modal, "lime-chat-minto").children[2].children[0].text, "第1章 DAY 14");
+await click("phone-close"); await session;
+state.inbox.push(
+  item(historyMessage, { chapter: 1, day: 3, read: true, done: true }),
+  item(historyMessage, { chapter: 2, day: 3, read: true, done: true }),
+  item(historyMessage, { day: 2, read: true, done: true }),
+);
+session = phone.openLime(); await settle();
+const row = find(layers.modal, "lime-chat-minto");
+assert.equal(row.children[2].children[0].text, "昨日");
+await click("lime-chat-minto");
+assert.deepEqual(layers.modal.querySelectorAll(".day").map((node) => node.text), ["第1章 DAY 14", "第1章 DAY 3", "今日", "昨日"]);
+await closeThread(session);
+
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority: PASS");
