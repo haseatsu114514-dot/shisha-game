@@ -1,21 +1,81 @@
-/* A printed comic intermission: one sheet, an ink backdrop, and a smoke mark. */
-.loading-gate { position: absolute; inset: 0; z-index: 110; isolation: isolate; overflow: hidden; display: grid; place-items: center; background: #100b18; color: #ede2ce; pointer-events: auto; animation: loading-appear 160ms ease-out both; }
+/* A printed comic intermission laid out after the owner's mockup:
+   small top logo, an enlarged comic sheet, a progress bar, and a smoke-marked LOADING line.
+   All placeholder art (logo / bar colours / backdrop) is swappable through the CSS variables
+   declared on .loading-gate below, so the owner's final art drops in without touching the layout. */
+.loading-gate {
+  /* --- Swappable placeholders: replace these in one place when the final art arrives. --- */
+  --loading-logo: url("../img/ui/ui_title_logo.webp");         /* 上中央のロゴ（仮: 既存タイトルロゴ） */
+  --loading-bar-gradient: linear-gradient(90deg, #ff5fa8 0%, #b45cf0 50%, #3fd0e8 100%); /* 進捗バーの色 */
+  --loading-backdrop: #100b18;                                  /* 背景の下地色（仮） */
+  /* --- Comic panel authoring size: 1 panel = 860x500 at a 1920x1080 master (43:25). --- */
+  --loading-panel-ratio: 43 / 25;
+  position: absolute; inset: 0; z-index: 110; isolation: isolate; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; padding: 12px 16px 16px;
+  background: var(--loading-backdrop); color: #ede2ce; pointer-events: auto;
+  animation: loading-appear 160ms ease-out both;
+}
 .loading-gate::before { content: ""; position: absolute; inset: -70px -90px; z-index: -1; background: url("../img/ui/vn-lounge/smoke-purple.svg") center / 132% auto no-repeat; opacity: .24; transform: rotate(-14deg); pointer-events: none; }
-.loading-gate::after { content: ""; position: absolute; inset: 160px -80px; z-index: -1; background: #291638; clip-path: polygon(0 15%, 100% 0, 100% 85%, 0 100%); transform: rotate(-3deg); pointer-events: none; }
-.loading-card { width: 1144px; padding: 16px; background: #e9dfca; border: 1px solid #fff4dc99; box-shadow: 0 20px 48px #0006; animation: loading-sheet 260ms cubic-bezier(.2,.65,.3,1) both; }
+.loading-gate::after { content: ""; position: absolute; inset: 120px -80px; z-index: -1; background: #291638; clip-path: polygon(0 15%, 100% 0, 100% 85%, 0 100%); transform: rotate(-3deg); pointer-events: none; }
+
+/* Logo: moved up and kept small per the mockup. Purely decorative (title text lives in the art). */
+.loading-logo { flex: none; width: min(340px, 30%); height: 72px; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 4px 12px #0008); }
+.loading-gate:not(.has-logo) .loading-logo { display: none; }
+
+.loading-card { width: min(1180px, 94%); padding: 14px 16px; background: #e9dfca; border: 1px solid #fff4dc99; box-shadow: 0 20px 48px #0006; animation: loading-sheet 260ms cubic-bezier(.2,.65,.3,1) both; }
 /* With no decoded comic, the intermission remains just the ink and its mark. */
 .loading-card:has(.loading-comic:empty) { visibility: hidden; }
-.loading-comic-title { margin: 0 0 13px; padding: 2px 4px 11px; border-bottom: 1px solid #59423255; color: #302333; font-size: 27px; font-weight: 900; line-height: 1.35; letter-spacing: .09em; text-align: left; }
+.loading-comic-title { margin: 0 0 11px; padding: 2px 4px 9px; border-bottom: 1px solid #59423255; color: #302333; font-size: 26px; font-weight: 900; line-height: 1.3; letter-spacing: .09em; text-align: left; }
 .loading-panels { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .loading-panels figure { margin: 0; min-width: 0; }
-.loading-panel-art { position: relative; overflow: hidden; width: 100%; aspect-ratio: 6 / 5; background: #e9dfca; }
-.loading-panels img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.loading-status { position: absolute; right: 44px; bottom: 26px; display: flex; align-items: center; gap: 10px; margin: 0; color: #e1d1b4; font-size: 17px; font-weight: 900; font-style: italic; letter-spacing: .08em; }
-.loading-emblem { width: 36px; height: 42px; overflow: visible; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
-.loading-emblem path { stroke-dasharray: 35 65; animation: loading-smoke 2.8s ease-in-out infinite; }
+/* Fixed display frame = 43:25 for every panel, so each comic is drawn and shown to the same box. */
+.loading-panel-art { position: relative; overflow: hidden; width: 100%; aspect-ratio: var(--loading-panel-ratio); background: #d9cdb3; container-type: size; }
+/* The cropped region keeps its own proportions and is letterboxed inside the 43:25 frame (no distortion).
+   width = min(full width, ratio * full height) contains any ratio without stretching. */
+.loading-panel-crop { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); overflow: hidden; background: #e9dfca; }
+.loading-panel-crop img { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* Optional text bubbles: bubble shape is in the art, the words are live DOM text (typo-fixable). */
+.loading-bubble { position: absolute; margin: 0; color: #20161f; font-weight: 800; line-height: 1.25; text-align: center; white-space: pre-line; transform: translate(-50%, -50%); pointer-events: none; }
+/* Beginner-friendly one-line note under the panels (per-comic data). */
+.loading-comic-caption { margin: 10px 2px 0; color: #4a3a30; font-size: 15px; font-weight: 700; line-height: 1.4; letter-spacing: .02em; }
+
+/* Progress bar (placeholder colours). Width follows real preparation counts; a sweep shows motion. */
+.loading-bar { position: relative; flex: none; width: min(620px, 64%); height: 14px; border-radius: 999px; background: #2a1d3a; box-shadow: inset 0 0 0 1px #ffffff14; overflow: hidden; }
+.loading-bar-fill { height: 100%; width: calc(var(--loading-progress, 0) * 100%); min-width: 8%; border-radius: inherit; background: var(--loading-bar-gradient); transition: width .3s ease; }
+.loading-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, #ffffff55, transparent); transform: translateX(-100%); animation: loading-bar-sweep 1.6s ease-in-out infinite; }
+
+.loading-status { position: static; display: flex; align-items: center; gap: 12px; margin: 0; color: #e8dabd; font-size: 19px; font-weight: 900; font-style: italic; letter-spacing: .12em; }
+.loading-emblem { width: 48px; height: 40px; overflow: visible; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+.loading-emblem path { stroke-dasharray: 34 66; animation: loading-smoke 2.8s ease-in-out infinite; }
 .loading-emblem path:nth-child(2) { animation-delay: -.9s; }
 .loading-emblem path:nth-child(3) { animation-delay: -1.8s; }
+
+/* "Tap/click/key to continue" prompt, revealed only once preparation is done and a comic is shown. */
+.loading-proceed { margin: 0; min-height: 1.2em; color: #f3e7cc; font-size: 15px; font-weight: 700; letter-spacing: .06em; opacity: 0; transition: opacity .2s ease; }
+.loading-gate.is-ready .loading-proceed { opacity: .92; animation: loading-proceed-pulse 1.6s ease-in-out infinite; }
+
 @keyframes loading-appear { from { opacity: 0; } to { opacity: 1; } }
-@keyframes loading-sheet { from { opacity: 0; } to { opacity: 1; } }
-@keyframes loading-smoke { 0% { stroke-dashoffset: 30; opacity: .15; } 45% { opacity: .9; } 100% { stroke-dashoffset: -65; opacity: .15; } }
-@media (prefers-reduced-motion: reduce) { .loading-gate, .loading-card, .loading-emblem path { animation: none; } .loading-emblem path { stroke-dasharray: none; opacity: .8; } }
+@keyframes loading-sheet { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes loading-smoke { 0% { stroke-dashoffset: 30; opacity: .15; } 45% { opacity: .9; } 100% { stroke-dashoffset: -66; opacity: .15; } }
+@keyframes loading-bar-sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
+@keyframes loading-proceed-pulse { 0%, 100% { opacity: .5; } 50% { opacity: .95; } }
+
+/* Phone portrait: stack the two panels (full-width each) so bubble text is larger than side-by-side.
+   The game canvas stays 1280x720, so the stacked column is sized to fit that height without clipping.
+   (The game still asks phones to rotate to landscape for the roomier view.) */
+@media (orientation: portrait) {
+  .loading-gate { gap: 9px; padding: 8px 10px; }
+  .loading-logo { width: min(240px, 40%); height: 46px; }
+  .loading-card { width: min(430px, 94%); padding: 9px 11px; }
+  .loading-comic-title { font-size: 21px; margin-bottom: 7px; padding-bottom: 6px; }
+  .loading-panels { grid-template-columns: 1fr; gap: 7px; }
+  .loading-comic-caption { font-size: 12px; margin-top: 6px; line-height: 1.3; }
+  .loading-bar { width: min(430px, 82%); }
+  .loading-proceed { min-height: 1em; font-size: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-gate, .loading-card, .loading-emblem path, .loading-bar::after, .loading-proceed { animation: none; }
+  .loading-emblem path { stroke-dasharray: none; opacity: .8; }
+  .loading-gate.is-ready .loading-proceed { opacity: .92; }
+}
