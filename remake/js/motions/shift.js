@@ -39,6 +39,28 @@ export async function a() {
   });
 }
 
+// ---------------------------------------------------------------- brief: 「見た演出を短く」設定の2回目以降。
+// 吊り札が降りて、裏返す演出は省き CLOSED を直接見せてすぐ退場する（初回の a／b は省かない）。
+
+export async function brief() {
+  const P = pick(SHIFT, { mid: MONO_CLOSED });
+  await stagePlay("shift", async (node) => {
+    const back = backdrop(`${P.bg}d9`);
+    const face = (cls, label, bg, fg, border) => el(`div.mo-sign-face.${cls}`, { style: { background: bg, color: fg, borderColor: border } }, [el("small", { text: "tonari" }), el("b", { text: label })]);
+    // 初めから裏の CLOSED を見せる（flip を 180° 回して固定）。
+    const flip = el("div.mo-sign-flip", { style: { transform: "rotateY(180deg)" } }, [face("open", "OPEN", P.light, P.main, P.main), face("closed", "CLOSED", P.mid, P.light, P.light)]);
+    const pop = el("div.mo-sign-pop", [flip]);
+    const sign = el("div.mo-sign", { style: { "--s": P.light } }, [el("i.mo-sign-string"), pop]);
+    node.append(back, sign);
+    move(back, [{ opacity: 0 }, { opacity: 1 }], 160);
+    await move(sign, [{ transform: "translate(-50%, -560px)" }, { transform: "translate(-50%, 0)" }], 320, { easing: E.back });
+    SE.select();
+    await sleep(520);
+    move(back, [{ opacity: 1 }, { opacity: 0 }], 240, { delay: 80 });
+    await move(sign, [{ transform: "translate(-50%, 0)" }, { transform: "translate(-50%, -580px)" }], 280, { easing: E.in });
+  });
+}
+
 // ---------------------------------------------------------------- b: バイトの終わり: 丸い札がコインのように弾かれて回り、CLOSED で着地して転がっていく
 
 let coinSerial = 0;
