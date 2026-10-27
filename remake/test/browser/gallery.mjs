@@ -115,7 +115,59 @@ async function initialLegacyLoad(name, options, malformed) {
     results.push({ name, passed: true }); console.log("PASS: gallery " + name);
   } finally { await context.close(); }
 }
+// #1136: exercise the actual motion, manifest URL and persistent gallery unlock together.
+async function adoptedPurikura(name, viewport, random, variant) {
+  const context = await browser.newContext({ viewport, hasTouch: name.includes("touch"), reducedMotion: "no-preference" });
+  const page = await context.newPage(), requests = [], errors = [];
+  page.on("request", r => requests.push(r.url()));
+  page.on("pageerror", e => errors.push(e.message));
+  const id = "cg_ch2_ageha_purikura_strip";
+  try {
+    await page.goto(base + "?movar=" + variant);
+    await page.locator(t("title-gallery")).waitFor({ timeout: 45000 });
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await page.evaluate(random => {
+      const original = Math.random;
+      Math.random = () => random;
+      window.pkDone = false;
+      window.pkRun = __remake.dev.motion("purikura").then(() => { window.pkDone = true; })
+        .finally(() => { Math.random = original; });
+    }, random);
+    await page.waitForFunction(() => {
+      const sheet = document.querySelector(".mo-pk-sheet");
+      return sheet && Number(getComputedStyle(sheet).opacity) > .95;
+    });
+    const backgrounds = await page.locator(".mo-pk-half.cg.strip").evaluateAll(nodes => nodes.map(n => getComputedStyle(n).backgroundImage));
+    assert.equal(backgrounds.length, 2);
+    for (const background of backgrounds) assert.match(background, /\/img\/cgs\/cg_ch2_ageha_purikura_strip\.webp(?:[?][^"]*)?"\)$/);
+    await page.screenshot({ path: path.join(out, name + "-adopted-printed.png") });
+    await page.waitForFunction(() => window.pkDone, { timeout: 15000 });
+    await page.evaluate(() => window.pkRun);
+    assert.equal(await page.locator(".mo-purikura").count(), 0);
+    assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_gallery"))), [id]);
+    await page.reload(); // The unlock must survive a fresh title/gallery load.
+    await page.locator(t("title-gallery")).waitFor({ timeout: 45000 });
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await open(page);
+    for (const tab of ["all", "purikura"]) {
+      await page.locator(t("gallery-tab-" + tab)).click();
+      for (const suffix of ["_soft", "_gal"]) assert.equal(await page.locator(t("gal-" + id + suffix)).count(), 0);
+    }
+    await page.locator(t("gal-" + id)).click();
+    await page.waitForFunction(() => document.querySelector(".gal-viewer img")?.naturalWidth > 0);
+    assert.match(await page.locator(".gal-viewer img").getAttribute("src"), /img\/cgs\/cg_ch2_ageha_purikura_strip\.webp(?:[?].*)?$/);
+    await shot(page, name + "-adopted-gallery.png");
+    assert(!requests.some(url => /cg_ch2_ageha_purikura_strip_(soft|gal)/.test(url)), "candidate images must never be requested");
+    assert.deepEqual(errors, []);
+    results.push({ name, passed: true }); console.log("PASS: adopted purikura " + name);
+  } finally { await context.close(); }
+}
 try {
+  for (const [name, viewport, random, variant] of [
+    ["strip-pc-low", { width: 1280, height: 720 }, 0, "a"],
+    ["strip-pc-mid", { width: 1280, height: 720 }, .4, "a"],
+    ["strip-touch-high", { width: 844, height: 390 }, .999, "b"],
+  ]) await adoptedPurikura(name, viewport, random, variant);
   await initialLegacyLoad("first-load-raw-auto-pc", { viewport: { width: 1280, height: 720 } }, false);
   await initialLegacyLoad("first-load-malformed-auto-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true);
   for (const [name, options] of Object.entries({ pc: { viewport: { width: 1280, height: 720 } },

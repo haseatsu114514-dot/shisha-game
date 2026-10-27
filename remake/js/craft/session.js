@@ -44,7 +44,7 @@ const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsa
 // 自主練のメニュー（本番のミニゲームを単体で回す）
 export const DRILLS = {
   holes: { label: "アルミ穴あけ", desc: "アルミに均等な穴を開ける", stats: ["technique", "sense"] },
-  heat: { label: "炭焼き", desc: "炭の芯が光る瞬間を見極める", stats: ["sense", "insight"] },
+  heat: { label: "炭焼き", desc: "炭の全面が赤くなる頃合いを見極める", stats: ["sense", "insight"] },
   steam: { label: "蒸らし", desc: "待つ間の雑念を避け続ける", stats: ["guts", "insight"] },
   pull: { label: "吸い出し", desc: "吸い方で熱を適温へ運ぶ", stats: ["technique", "sense"] },
 };

@@ -7,9 +7,10 @@ import vm from "node:vm";
 const read = (path) => fs.readFileSync(new URL(path, import.meta.url), "utf8");
 const source = read("../js/motions/purikura.js");
 
-async function fixture({ variant = "a", width = 1280, height = 720, cg = null, loadDuring = false, interruptMusic = false, throwDuring = false, random = 0 } = {}) {
+async function fixture({ variant = "a", width = 1280, height = 720, cg = null, loadDuring = false, interruptMusic = false, throwDuring = false, random = 0, imageFails = false, loadBeforePrint = false } = {}) {
   const context = vm.createContext({ console, Math: Object.assign(Object.create(Math), { random: () => random }) });
-  const made = [], anims = [], sounds = {}, music = [];
+  const made = [], anims = [], sounds = {}, music = [], queried = [], images = [], recorded = [];
+  let elapsed = 0;
   let musicNow = "sweets_or_sweets", during = false;
   let disconnected = false, staged = 0, root = null;
   function el(selector, attrs = {}, children = []) {
@@ -21,13 +22,16 @@ async function fixture({ variant = "a", width = 1280, height = 720, cg = null, l
   }
   const owner = { flags: {} }, loaded = { flags: {} };
   const values = {
-    "util.js": { el, sleep: async () => {
+    "util.js": { el, sleep: async (ms) => {
+      elapsed += ms;
+      if (during && loadBeforePrint && elapsed >= 7000) stateModule.setExport("state", loaded);
       if (during && interruptMusic) { stateModule.setExport("state", loaded); musicNow = "bgm_map"; }
       if (during && throwDuring) throw new Error("interrupted");
     } },
     "state.js": { state: owner },
-    "data.js": { cgUrl: (id) => (typeof cg === "object" && cg ? cg[id] ?? null : id === "cg_ageha_first_purikura" ? cg : null), portraitInfo: (id, face) => ({ src: `${id}_${face}.webp` }) },
-    "ui.js": { imageReady: async () => { if (loadDuring) stateModule.setExport("state", loaded); return true; } },
+    "gallery.js": { recordCg: (id) => recorded.push({ id, elapsed }) },
+    "data.js": { cgUrl: (id) => (queried.push(id), typeof cg === "object" && cg ? cg[id] ?? null : id === "cg_ageha_first_purikura" ? cg : null), portraitInfo: (id, face) => ({ src: `${id}_${face}.webp` }) },
+    "ui.js": { imageReady: async (url) => { images.push(url); if (loadDuring) stateModule.setExport("state", loaded); return !imageFails; } },
     "audio.js": { preloadBgm: async () => true, currentBgm: () => musicNow, playBgm: (key) => { music.push(key); musicNow = key; during = key?.startsWith("bgm_purikura"); }, SE: new Proxy({}, { get: (_, name) => () => { sounds[name] = (sounds[name] || 0) + 1; } }) },
     "transition-kit.js": { svg: el, move: async (node, frames, ms, opt = {}) => { anims.push({ node, frames, ms, ...opt }); } },
     "mg-kit.js": { MG_EASE: { out: "out", in: "in", inOut: "inOut", back: "back" } },
@@ -54,7 +58,7 @@ async function fixture({ variant = "a", width = 1280, height = 720, cg = null, l
   let error;
   try { await module.namespace[variant](); } catch (e) { if (!throwDuring) throw e; error = e; }
   const find = (selector) => made.filter((n) => n.selector === selector);
-  return { made, anims, sounds, music, musicNow, error, disconnected, staged, root, find, plans: module.namespace.PLANS };
+  return { queried, images, recorded, made, anims, sounds, music, musicNow, error, disconnected, staged, root, find, plans: module.namespace.PLANS };
 }
 
 // a: 毎回3・2・1、盛りを選ぶ／b: 撮影はさっと、スタンプ多め
@@ -131,15 +135,26 @@ for (const [variant, ticks, menu] of [["a", 9, 3], ["b", 3, 0]]) {
   assert.deepEqual([sheet.style.width, sheet.style.height], ["616px", "520px"], "two 640x1080 strips side by side");
   assert.equal(f.find("div.mo-pk-cutline")[0].style.left, "307px");
 }
-// 3種類から1枚を選び、半分こする左右には必ず同じ絵を使う。
-for (const [random, suffix] of [[0, ""], [.4, "_soft"], [.999, "_gal"]]) {
+// 旧manifestに候補が残っていても、乱数・演出案にかかわらず採用画像だけを使う。
+for (const variant of ["a", "b"]) for (const random of [0, .4, .999]) {
   const ids = ["", "_soft", "_gal"].map((s) => `cg_ch2_ageha_purikura_strip${s}`);
   const cg = Object.fromEntries(ids.map((id) => [id, `img/cgs/${id}.webp`]));
-  const f = await fixture({ random, cg });
+  const f = await fixture({ variant, random, cg });
   const halves = f.made.filter((n) => n.selector.startsWith("div.mo-pk-half.cg.strip."));
   assert.equal(halves.length, 2);
-  for (const half of halves) assert.equal(half.style.backgroundImage, `url("${cg[`cg_ch2_ageha_purikura_strip${suffix}`]}")`);
+  for (const half of halves) assert.equal(half.style.backgroundImage, `url("${cg.cg_ch2_ageha_purikura_strip}")`);
+  assert.deepEqual(f.queried, [ids[0]], "never resolve rejected candidate IDs or the old CG");
+  assert.deepEqual(f.images.filter(url => url.includes("/cgs/")), [cg[ids[0]]]);
+  assert.deepEqual(f.recorded.map(v => v.id), [ids[0]], "record exactly the printed CG");
+  assert(f.recorded[0].elapsed >= f.plans[variant].print, "unlock after printing, not while preloading");
 }
+// 中断・画像失敗・立ち絵代用で採用画像を誤解放しない。
+for (const opts of [{ loadDuring: true }, { loadBeforePrint: true }, { imageFails: true }]) {
+  const f = await fixture({ cg: { cg_ch2_ageha_purikura_strip: "img/cgs/cg_ch2_ageha_purikura_strip.webp" }, ...opts });
+  assert.deepEqual(f.recorded, []);
+}
+assert.deepEqual((await fixture()).recorded, []);
+assert.deepEqual((await fixture({ cg: "img/cgs/cg_ageha_first_purikura.webp" })).recorded.map(v => v.id), ["cg_ageha_first_purikura"]);
 // 画像を待つ間にLOADされたら、前のセーブの演出を始めない
 {
   const f = await fixture({ loadDuring: true });
@@ -171,7 +186,7 @@ const cond = story.lines.find((l) => l.type === "condition" && l.flag === "_ch2_
 assert(cond && story.branches[cond.next_true]?.length && story.branches[cond.next_false]?.length);
 const engine = read("../js/vn/engine.js");
 assert(/purikura: \(\) => purikuraShot\(\)/.test(engine), "engine runs the purikura motion line");
-// 入口（scene-motions.js の purikuraShot）: SKIP中と動きを減らす設定では読み込まず、読み込み中にLOADされたら始めない
+// 入口（scene-motions.js の purikuraShot）: 動きを減らす設定では読み込まず、SKIP中は最後まで再生し、読み込み中にLOADされたら始めない（#1081 H05）
 async function wrapperCase({ skip = false, reduce = false, loadDuringImport = false } = {}) {
   const context = vm.createContext({ console, document: { body: { classList: { contains: () => skip } } } });
   const owner = { flags: {} }, loaded = { flags: {} };
@@ -202,8 +217,8 @@ async function wrapperCase({ skip = false, reduce = false, loadDuringImport = fa
   return { imported, played };
 }
 assert.deepEqual(await wrapperCase(), { imported: 1, played: 1 });
-assert.deepEqual(await wrapperCase({ skip: true }), { imported: 0, played: 0 }, "SKIP skips the purikura");
+assert.deepEqual(await wrapperCase({ skip: true }), { imported: 1, played: 1 }, "SKIP plays the purikura to the end (#1081 H05)");
 assert.deepEqual(await wrapperCase({ reduce: true }), { imported: 0, played: 0 }, "reduced motion skips the purikura");
 assert.deepEqual(await wrapperCase({ loadDuringImport: true }), { imported: 1, played: 0 }, "LOAD during the lazy import does not start the old purikura");
 
-console.log("[purikura] PASS: fit, cleanup, sounds, a/b, sprites/CG, doodle words, tremor stop then stamp, LOAD guard (image wait and lazy import), SKIP/reduced motion, dialogue hook");
+console.log("[purikura] PASS: fit, cleanup, sounds, a/b, sprites/CG, doodle words, tremor stop then stamp, LOAD guard (image wait and lazy import), SKIP plays / reduced motion skips, dialogue hook");

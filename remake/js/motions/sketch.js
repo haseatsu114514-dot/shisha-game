@@ -1,5 +1,5 @@
 // DAY12夜のつむぎのスケッチ（ch1.js の sketchScene）。覆っている間に mid() で背景を替える。bgUrl は線画の元の絵。
-// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。SKIPと動きを減らす設定は core/scene-motions.js で省く。
+// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { W, H, svg, stageSvg, move } from "../core/transition-kit.js";

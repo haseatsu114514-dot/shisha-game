@@ -1,5 +1,4 @@
 // 本編の初日と独立試遊が使う同じ街・同じ台本。セーブ操作を含めない。
-import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { DB } from "../core/data.js";
 import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY } from "./ch2-story-data.js";
 
@@ -14,7 +13,10 @@ export const STOPS = [
   { id: "rei", name: "零-ZERO-", x: 42, y: 78 },
   { id: "c_station", name: "県大会ホール", x: 85, y: 30 },
 ];
-export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, id === "kumicho" ? CITY_BACKGROUNDS.kumicho : `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
+// 神崎（kumicho）は採用済みの内装 bg_ch2_kumicho_entry.webp を使う。#962 で街の店舗画像
+// bg_yuzugaya_kumicho.webp（LFS）へ一時的に差し替わり、採用内装が出ないうえ、LFS未取得の配信では
+// ポインタのまま「室内を読み込めませんでした」になっていた（#1081 A02 / #1044 A04）。
+export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
 const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ryuji", "remake_ch2_ageha_purikura", ...["invite", "solo", "pair", "guest"].map(id => `remake_ch2_purikura_${id}`)];
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
 const OUTING_IDS = ["aquarium", "sento", "chain"].flatMap(id => ["look", "visit", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
