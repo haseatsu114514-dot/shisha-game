@@ -9,7 +9,7 @@ const t = name => `[data-test="${name}"]`;
 const map = '[data-destination-selection]:not(.done)';
 async function setup(page, { money = 36000, unknown = false, reel = false, guest = null, stamina = 100, weatherSeed = 7 } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async ({ money, unknown, reel, guest, stamina, weatherSeed }) => {
+  const seeded = await page.evaluate(async ({ money, unknown, reel, guest, stamina, weatherSeed }) => {
     const core = await import('./js/core/state.js');
     const value = core.newGame();
     Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina, weatherSeed });
@@ -42,9 +42,12 @@ async function setup(page, { money = 36000, unknown = false, reel = false, guest
     vn.hooks.onLine = (id,line) => {
       if(window.__dailyTrace.at(-1)!==id) window.__dailyTrace.push(id);
     };
+    const before = structuredClone(value);
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
+    return before;
   }, { money, unknown, reel, guest, stamina, weatherSeed });
   await page.locator(`${t('ch2-morning-home')}, ${t('ch2-main-error')}`).first().waitFor();
+  return seeded;
 }
 async function begin(page) { await page.locator(t('ch2-morning-home')).click(); await page.locator(map).waitFor(); }
 async function value(page) { return page.evaluate(() => structuredClone(window.__remake.state)); }
@@ -102,9 +105,11 @@ await suite('ch2-daily',async check=>{
     assert.equal(loaded.flags._city_guest_day,'2:16'); assert.equal(loaded.money,after.money);
   });
   for (const weatherSeed of [0, 4]) await check(`first-night-auto-sleep-once-weather-${weatherSeed}`, async page => {
-    await setup(page, { stamina: 60, weatherSeed });
+    const seeded = await setup(page, { stamina: 60, weatherSeed });
     assert.equal(await page.locator(t('ch2-main-next-day')).count(), 0);
     const before = await value(page);
+    const preserved = ['trpg', 'contacts', 'met', 'story', 'visits', 'affinity', 'loverSince', 'lastDate', 'relationshipMemories', 'flavorStock'];
+    for (const key of preserved) assert.deepEqual(before[key], seeded[key], `Initial sleep changed ${key}`);
     assert.equal(before.day, 16); assert.equal(before.slot, 0); assert.equal(before.stamina, 74);
     assert.equal(before.money, 36000); assert.equal(before.flags._ch2_region, 'home');
     const trace = await page.evaluate(() => window.__dailyTrace);
@@ -123,7 +128,7 @@ await suite('ch2-daily',async check=>{
     await page.locator(t('slot-1')).click(); await page.locator(t('confirm-load')).click();
     await page.locator(map).waitFor();
     const after = await value(page);
-    for (const key of ['day', 'slot', 'stamina', 'money', 'inbox', 'weatherSeed']) assert.deepEqual(after[key], before[key], key);
+    for (const key of ['day', 'slot', 'stamina', 'money', 'inbox', 'weatherSeed', ...preserved]) assert.deepEqual(after[key], before[key], key);
     assert.equal(after.flags._ch2_region, 'home');
   }, { reducedMotion: 'reduce' });
   await check('next-day-region-switch-and-autosave',async page=>{
