@@ -7,8 +7,10 @@
 .bench[data-step="steam"] .bench-head { position: relative; min-height: 89px; margin-bottom: 0; padding-bottom: 7px; border-bottom: 0; }
 .bench[data-step="steam"] .bench-head::after { content: ""; position: absolute; left: 12px; right: 0; top: 56px; height: 1px; background: linear-gradient(90deg, #c8b39238, #c8b3920d); }
 .bench[data-step="steam"] .bench-guide { align-self: flex-start; margin-top: 10px; }
-/* ヘルプは上のモード欄へ。スマホの指先補正で弾幕端のタップを奪わない。 */
-.bench[data-step="steam"] .bench-right .bench-head { left: -238px; right: auto; top: -68px; }
+/* モード欄の縮小率に依存させず、操作盤面から離れた左の人物欄上部へ。 */
+.bench[data-step="steam"] .bench-right .bench-head { left: -238px; right: auto; top: 8px; }
+.bench[data-step="steam"] .bench-guide { margin-top: 0; }
+.bench[data-step="steam"] .bench-guide summary { width: calc(44px / var(--k, 1)); height: calc(44px / var(--k, 1)); }
 .bench[data-step="steam"] .bench-guide-tip { left: 0; right: auto; }
 
 /* タイマー設定・弾幕・吸い出しは同じ位置、同じ64×360pxの温度計。 */
@@ -170,5 +172,7 @@
   .dodge-thought-echo { animation: none; opacity: .2; }
 }
 
-.slash-lock { position: absolute; top: 0; left: -25px; width: 226px; text-align: center; font-size: 13px; color: #f4dba5; line-height: 1.3; }
-.slash-lock[hidden] { display: none; }
+.dodge-slash[data-locked="true"] .refresh-emblem { background: #211e27; }
+.dodge-slash[data-locked="true"] .refresh-emblem > span:first-child { opacity: .2; filter: grayscale(1); }
+.dodge-slash .refresh-emblem > .slash-lock { position: absolute; inset: 0; display: grid; place-items: center; font-size: 56px; line-height: 1; color: #f4dba5; filter: none; pointer-events: none; }
+.dodge-slash .refresh-emblem > .slash-lock[hidden] { display: none; }
