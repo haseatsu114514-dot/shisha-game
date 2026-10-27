@@ -4,7 +4,8 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, modal, imageReady } from "../core/ui.js";
+import { layers, showScreen, setBg, modal, imageReady, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
@@ -258,7 +259,8 @@ async function renderDefeat(owner, variant = null) {
 function renderComplete(owner) {
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
     button(owner, "第三章・東京へ", "chapter-three", async () => {
-      await (await import("./ch3.js")).beginChapterThree();
+      const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
+      await mod.beginChapterThree();
     }, true),
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),

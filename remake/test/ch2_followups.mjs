@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
+import { scheduleChapterTwoTrpgNight } from "../js/chapters/ch2-progress.js";
 
 const root = new URL("../../", import.meta.url);
 const preparation = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_preparation.json", root)));
@@ -45,7 +46,7 @@ const mocks = {
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
   "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false },
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
-  "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight: () => {} },
+  "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight },
   "./ch2-story.js": { chapterTwoNights: () => ({}) },
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
   "./ch2-story-data.js": { agehaStoryScene: () => null, syncAgehaVibes: () => 0 },
@@ -184,3 +185,21 @@ for (const id of ["kumicho", "rei"]) {
   assert.deepEqual(state.relationshipMemories, before.relationshipMemories); assert.deepEqual(state.lovers, before.lovers);
 }
 console.log("PASS: actual preparation/loader, three owners, old saves, once-only followups, cancellation/LOAD, atomic preflight");
+
+// Entering preparation after the initial deliveries must not create TRPG appointments
+// or change any participant/relationship state. Keep the real legacy scheduler above
+// so an accidental automatic call reproduces the browser regression.
+const participants = JSON.parse(fs.readFileSync(new URL("data/trpg_catalog.json", root))).participants.map(person => person.id);
+for (const shifts of [undefined, [], [{ id: "samechan", chapter: 2, day: 22, slot: 1, busy: true }]]) {
+  await setup();
+  Object.assign(state, { chapter: 2, day: 15, slot: 2,
+    trpg: { owned: ["qa_book"], club: { founded: true, members: Object.fromEntries(participants.map(id => [id, { chapter: 1, day: 12 }])) },
+      ...(shifts === undefined ? {} : { shifts: structuredClone(shifts) }) },
+  });
+  const before = structuredClone(state);
+  await module.namespace.runChapterTwoPreparation();
+  for (const key of Object.keys(before).filter(key => key !== "flags")) {
+    assert.deepEqual(state[key], before[key], `Preparation entry changed ${key}`);
+  }
+}
+console.log("PASS: preparation preserves every resource/relationship and all TRPG members and explicit shifts (legacy/empty/existing)");

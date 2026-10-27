@@ -59,3 +59,73 @@ reset(); state.money=100; await assert.rejects(run('tonari')); assert.equal(stat
 const intro=JSON.parse(read('data/dialogue/remake_ch2.json')).dialogues.find(d=>d.dialogue_id==='remake_ch2_departure').lines.map(l=>l.text||'').join('\n');
 assert.match(intro,/約束を果たした、その翌朝/); assert.doesNotMatch(intro,/優勝の翌朝|昨日の採点表|電車に乗った/);
 console.log(JSON.stringify({groups:6,scope:'actual commute/station/night-plan modules + actual calendar callback; controlled VN/UI, no browser or real LOAD',passed:['home event after return','one fare after repeated return','city event stays in city until homecoming','cancel/throw/owner replacement stops event','insufficient fare stops without charge','departure chronology']},null,2));
+
+// Run the actual calendar entry, night, sleep and morning functions together.
+// Chapter 2's delivery checkpoint and chapter 1's ordinary evening must use the same order.
+const runDailySource = calendar.slice(calendar.indexOf('export async function runDaily('), calendar.indexOf('\nasync function morning()')).replace('export ', '');
+const morningSource = calendar.slice(calendar.indexOf('async function morning()'), calendar.indexOf('\n/** HUD'));
+const nightSource = calendar.slice(calendar.indexOf('async function endDay('));
+for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
+  const trace = [], snapshots = [];
+  const fixture = { chapter, day: 15, slot: 2, stamina: 60, money: 1000, flags: { _morning_15: true }, visitedDay: {} };
+  const stop = new Error('morning destination reached');
+  const env = {
+    state: fixture,
+    chapterDay: s => s.day - 14, TOURNAMENT_DAY: 14, SLEEP_RECOVERY: 14, DELIVERY_LAST_DAY: 4,
+    save: () => { snapshots.push(structuredClone(fixture)); trace.push('save:' + fixture.day); },
+    showReelNow: async () => {}, syncSamechanKnowledge() {}, syncNightQueue() {}, expireInvitations() {},
+    initHud() {}, showHud() {}, setPhoneBadge() {}, unreadCount: () => 0, phoneButton() {}, openStatus() {}, openMenu() {},
+    briefDeliveryBatch: async () => true, reportDeliveryBatch: async () => null,
+    restingToday: () => false, bannersIdle: async () => {},
+    runNightPlan: async () => { trace.push('night'); return 0; },
+    maybeConfession: async () => { trace.push('confession'); return false; },
+    maybeSamechanEncounter: async () => { trace.push('encounter'); },
+    play: async id => { trace.push(id); return {}; }, beat() {},
+    runHomeShisha: async () => { trace.push('home-shisha'); return false; },
+    conditionForRatio: () => ({ health: 'healthy' }), staminaRatio: () => fixture.stamina / 100,
+    addStamina: n => { fixture.stamina += n; trace.push('recovery'); },
+    daysLeft: () => 28 - fixture.day, updateHud() {},
+    refreshWeather: () => trace.push('weather:' + fixture.day),
+    bgUrl: (id, time) => `${id}:${time}`, setBg: bg => trace.push(bg),
+    dayTurn: async wake => { trace.push('dawn'); const data = await wake(); assert.equal(data.weather, weather); },
+    fadeBlack: async wake => wake(), isRainy: () => weather === 'rain', weatherOf: () => weather,
+    presentSleepRecovery: async ({ before, after }) => { assert.equal(before, 60); assert.equal(after, 74); trace.push('recovery-ui'); },
+    playBgm: bgm => trace.push(bgm), dayCard: async () => { throw Error('Duplicate morning DAY card'); },
+    deliverMorning: () => { trace.push('lime'); return 1; }, pushNotice: () => trace.push('notice'),
+  };
+  const ctx = vm.createContext(env);
+  vm.runInContext('let chapterDef, onQuit, queuedLimeSender, dawnShownDay; const fixedNight = () => false;\n' + runDailySource + morningSource + nightSource, ctx);
+  await assert.rejects(ctx.runDaily({ startNextDay: chapter === 2, untilDay: 28, nightEvents: {},
+    beforeHomecoming: async () => trace.push('return-home'),
+    morningDeparture: async () => { if (fixture.day === 16) throw stop; },
+  }), error => error === stop);
+  assert.equal(fixture.day, 16); assert.equal(fixture.slot, 0); assert.equal(fixture.stamina, 74); assert.equal(fixture.money, 1000);
+  assert.deepEqual(trace.filter(x => !x.startsWith('save:')), [
+    'night', 'confession', 'return-home', 'encounter', 'remake_homecoming_0', 'home-shisha',
+    'dawn', 'recovery', 'weather:16', 'bg_home:day', 'recovery-ui',
+    'weather:16', 'kansetsu_shomei_to_black_coffee', 'lime', 'notice',
+  ]);
+  assert.equal(trace.filter(x => x === 'lime').length, 1);
+  assert(snapshots.some(s => s.day === 15 && s.stamina === 60), 'Night checkpoint precedes sleep');
+  assert(snapshots.some(s => s.day === 16 && !s.flags._morning_16 && s.stamina === 74), 'Sleep is saved before morning delivery');
+  assert(snapshots.some(s => s.day === 16 && s.flags._morning_16 && s.stamina === 74), 'Morning completion is saved');
+}
+console.log('PASS: chapter 1 / chapter 2 actual calendar night → home → sleep → autosave → weather/BGM/LIME, once each (sun/rain)');
+
+// Actual chapter controller: finish the mandatory report before entering the shared calendar.
+const chapterSource = read('remake/js/chapters/ch2.js');
+const dayOneSource = chapterSource.slice(chapterSource.indexOf('async function continueDayOne()'), chapterSource.indexOf('\nasync function introduceStop('));
+for (const stage of ['tonari', 'complete']) {
+  const scenes = [], progress = { stage }, fixture = { slot: 1, money: 1000, flags: { _ch2_deliveries: { accepted: true, reported: stage === 'complete' } } };
+  const ctx = vm.createContext({
+    session: {}, current: () => true, state: fixture, progress: () => progress,
+    bgUrl: () => 'tonari:night', scene: async id => { scenes.push(id); return true; }, save() {},
+    checkpoint: async stage => { progress.stage = stage; },
+    continuePreparation: async () => { scenes.push('shared-calendar'); assert(fixture.flags._ch2_deliveries.reported); },
+  });
+  vm.runInContext(dayOneSource, ctx);
+  await ctx.continueDayOne();
+  assert.deepEqual(scenes, stage === 'tonari' ? ['remake_ch2_day1_night', 'remake_ch2_delivery_report', 'shared-calendar'] : ['shared-calendar']);
+  assert.equal(fixture.money, 1000);
+}
+console.log('PASS: initial report and legacy complete checkpoint automatically enter shared calendar');
