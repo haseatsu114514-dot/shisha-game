@@ -109,10 +109,16 @@ export function finalize(cs) {
     care1: cs.careHistory?.[0]?.score ?? 0,
     care2: cs.careHistory?.[1]?.score ?? 0,
   };
-  const total = clamp(Object.entries(WEIGHTS).reduce((s, [k, w]) => s + parts[k] * w, 0) + bonus, 0, 100);
+  // アルミ穴あけを飛ばした一台は穴あけの重みを外し、残りの工程で割り直す（損も得もしない）。
+  const foilSkipped = !!cs.holes?.skipped;
+  const weights = { ...WEIGHTS };
+  if (foilSkipped) delete weights.holes;
+  const wsum = Object.values(weights).reduce((sum, w) => sum + w, 0) || 1;
+  const total = clamp(Object.entries(weights).reduce((s, [k, w]) => s + parts[k] * (w / wsum), 0) + bonus, 0, 100);
   cs.total = Math.round(total * 10) / 10;
   cs.rank = gradeOf(cs.total);
   cs.parts = parts;
+  cs.foilSkipped = foilSkipped;
   cs.bonusNotes = notes;
   return cs;
 }
