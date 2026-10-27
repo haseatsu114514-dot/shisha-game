@@ -586,9 +586,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   const m = item.msg;
   const g = ui.gen;
   const alive = () => ui.live(g);
-  const mine = async (t) => { item.log.push({ me: true, text: t }); await ui.bubble(t, true); };
   const from = accountOf(item);
-  const theirs = async (t) => { item.log.push({ me: false, text: t }); await ui.bubble(t, false, from); };
   if (!item.read) {
     for (const msg of m.messages || []) {
       await ui.bubble(typeof msg === "string" ? msg : msg.text, false, from);
@@ -643,10 +641,13 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       ],
       st === "busy" ? null : first ? m.hint || `誘いに乗ると行動を1回使う。返事は今日の${deadline}ならできる。断っても嫌われたりはしない` : `返事は今日の${deadline}`,
     );
-    if (!pick || !alive()) return; // 返事をせずに抜けた（期限内ならまた返事できる）
+    if (!pick || !alive() || state !== session || item.done) return; // 返事をせずに抜けた（期限内ならまた返事できる）
     if (pick.later) { item.replyState = "waiting"; return "deferred"; }
+    // 送信演出中に戻る・別トーク・SAVE/LOADしても、返信と予約を一度だけ確定する。
+    // 承諾は面会完了ではない。移動・行動消費は従来どおりLIMEを閉じた後。
+    if (pick.go && !forced && inviteState(item, ui.inviteOptions) !== "open") return;
     state.flags[hintKey] = true;
-    await mine(pick.text);
+    item.log.push({ me: true, text: pick.text });
     state.flags[`_invited_${originId(item)}`] = true;
     item.done = true;
     item.replyState = "replied";
@@ -654,6 +655,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       item.result = "accepted";
       const inv = { event: m.accept_event, sender: m.sender, slot: night ? 1 : 0,
         day: state.day, originId: originId(item), afterClose: !!m.after_close, temporaryClosed: !!m.temporary_closed };
+      if (!forced) inv.awaitingLimeClose = true;
       if (m.visit_spot) inv.visitSpot = m.visit_spot;
       accepted.push(inv);
       if (!forced) {
@@ -666,15 +668,18 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
         : m.closed_on != null ? "定休日の午後に会う約束ができた"
         : night ? "今夜の約束ができた" : "このあと向かうことにした";
       item.log.push({ note: t });
-      ui.note(t);
+      await ui.bubble(pick.text, true);
+      if (alive() && state === session) ui.note(t);
     } else {
       item.result = "declined";
       if (m.retry_on_decline) {
         item.needsResend = true;
         delete state.flags[`_invited_${originId(item)}`];
       }
-      if (m.decline_response) await theirs(m.decline_response.text);
+      if (m.decline_response) item.log.push({ me: false, text: m.decline_response.text });
       gainAffinity(m.sender, 1, { source: "lime" });
+      await ui.bubble(pick.text, true);
+      if (alive() && state === session && m.decline_response) await ui.bubble(m.decline_response.text, false, from);
     }
     return;
   }
@@ -735,6 +740,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
   state.flags._lime_tut = 1;
   expireInvitations({ fixedNight });
+  const owner = state;
   const accepted = [];
   const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
   ui.inviteOptions = { fixedNight };
@@ -826,7 +832,12 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   else showList();
   await closed;
   // 準備が失敗した場合もスマホの操作ロックを残さない。
-  try { await beforeClose?.(); } finally { await ui.close(); }
+  try {
+    if (state === owner) {
+      if (state.pendingInvite) delete state.pendingInvite.awaitingLimeClose;
+      await beforeClose?.();
+    }
+  } finally { await ui.close(); }
   return accepted;
 }
 
