@@ -222,6 +222,13 @@
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 13px; color: var(--gold-hi); }
 .mix-hint { font-size: 14px; color: #afc7d2; line-height: 1.5; padding: 6px 10px; border-left: 2px solid #afc7d266; background: #afc7d20d; }
+/* #1081 E02: フレーバーを決めるこの工程でも「フレーバーの持ち」を左の窓で先に見せる。 */
+.mix-life-preview { width: 100%; display: grid; justify-items: center; gap: 4px; padding: 6px 4px; border-top: 1px solid #d1b48622; }
+.mix-life-preview > b { font-size: 13px; letter-spacing: .04em; color: #d3c2a8; }
+.mix-life-preview .leaf-icon { gap: 6px; }
+.mix-life-preview .flavor-leaf { width: 24px; height: 24px; }
+.mix-life-preview .leaf-skin { width: 24px; height: 24px; }
+.mix-life-note { font-size: 12px; line-height: 1.4; min-height: 16px; color: #cfe6b8; text-align: center; }
 .mix-temperature-preview { min-width: 0; display: grid; gap: 5px; font-size: 13px; color: var(--text-dim); }
 .mix-temperature-legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
 .mix-thermal-scale { position: relative; height: 22px; overflow: hidden; background: #55515d; border: 1px solid #eadbc2; border-radius: 4px; }

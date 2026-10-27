@@ -6,7 +6,8 @@ import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience, waitBenchReady } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible } from "./session.js";
+import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
@@ -248,6 +249,13 @@ export async function stepMix(cs) {
   const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
   const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
   const temperatureHint = el("small", { text: "上が高温" });
+  // #1081 E02: 蒸らし・吸い出しで初めて出る「フレーバーの持ち」を、葉を決めるこの工程でも左の窓で先に見せる。
+  // 既存の共有ゲージ（bench.leaf）と flavorMixLife をそのまま表示するだけで、新しい計算はしない。
+  const lifeHost = el("span.mix-life-leaves");
+  const lifeNote = el("small.mix-life-note", { "aria-live": "polite" });
+  const lifePreview = cs.mode === "tutorial" ? null : el("div.mix-life-preview", { dataset: { test: "mix-life-preview" } }, [
+    el("b", { text: "フレーバーの持ち" }), lifeHost, lifeNote,
+  ]);
   const temperaturePreview = el("div.mix-temperature-preview", { hidden: cs.mode === "tutorial", dataset: { test: "mix-temperature-preview" } }, [
     el("b", { text: "温度帯" }),
     thermometer.root,
@@ -291,6 +299,14 @@ export async function stepMix(cs) {
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
     okBtn.disabled = !(total >= 12 && total <= cap && info.regOk);
+    // フレーバーの持ち（#1081 E02）: 配合で決まる傷みにくさ（flavorMixLife）を一言で。基準1.0との比較だけで、新しい閾値は作らない。
+    if (lifePreview) {
+      const life = flavorMixLife(cs);
+      lifeNote.textContent = total <= 0 ? "葉を選ぶと表示"
+        : life > LEAF_DAMAGE.mixLifeDefault ? "この配合は少し長持ち"
+        : life < LEAF_DAMAGE.mixLifeDefault ? "この配合は少し早く傷みやすい"
+        : "持ちは標準";
+    }
     // 比率（#638）: グラムだけでなく、今の割合も見せる（表示のみ・判定には使わない）
     const pct = mixPercents(cs.mix);
     rows.forEach((r) => { r.g.textContent = `${cs.mix[r.id] || 0}g`; r.ratio.textContent = cs.mix[r.id] ? `比率 ${pct[r.id]}%` : ""; });
@@ -342,7 +358,7 @@ export async function stepMix(cs) {
     : null;
 
   panel.append(el("div.mix", [
-    el("div.mix-side", [vessel, taste, recipeLine]),
+    el("div.mix-side", [vessel, taste, lifePreview, recipeLine]),
     // ひらめきは葉の組み合わせの助言なので葉の一覧の頭に置き、決定欄に隠れないようにする（#907）。
     // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
     el("div.mix-list", [el("div.mix-list-head", [
@@ -354,6 +370,8 @@ export async function stepMix(cs) {
     el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), okBtn]),
   ]));
   redraw();
+  // 共有の葉ゲージを左の窓へ移し、配合中だけ見えるようにする（蒸らし以降は既存どおり元の位置へ戻る）。
+  if (lifePreview) { dockBenchLeaf(cs, lifeHost); setBenchLeafVisible(cs, true); }
   await new Promise((resolve) => {
     okBtn.addEventListener("click", () => { SE.select(); resolve(); });
     if (autoSkill()) {
