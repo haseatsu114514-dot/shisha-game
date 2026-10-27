@@ -2414,6 +2414,25 @@
       ]
     },
     {
+      "id": "shisha-diagram",
+      "title": "Sumi's shisha mechanism diagram (step sync, skip, load, portrait)",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 5,
+      "paths": [
+        "remake/js/vn/shisha-diagram.js",
+        "remake/css/vn/shisha-diagram.css",
+        "remake/js/vn/engine.js",
+        "remake/js/vn/conversation-preview.js",
+        "remake/conversation-preview.html",
+        "data/dialogue/ch1_sumi.json",
+        "remake/test/browser/shisha_diagram.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/shisha_diagram.mjs"
+      ]
+    },
+    {
       "id": "tokyo-visits",
       "title": "Tokyo long-distance LIME and visit reservations",
       "kind": "browser",
