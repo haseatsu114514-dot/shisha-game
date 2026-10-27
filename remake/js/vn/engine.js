@@ -1,4 +1,5 @@
-import { learnFlavorStory, masteryLabel } from "../core/flavor-mastery.js";
+import { notifyMastery } from "../core/mastery-notice.js";
+import { learnFlavorStory } from "../core/flavor-mastery.js";
 import { tournamentFinished } from "../core/story-context.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
@@ -300,9 +301,7 @@ function finish(cancelled = false) {
   if (!cancelled && meta.add_stat) applyStats(meta.add_stat);
   if (!cancelled && meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
-  if (!cancelled && meta.flavor_lesson) for (const gain of learnFlavorStory(state, r.dlg, DB.flavorById)) {
-    toast(`${DB.flavorById[gain.id]?.short_name || gain.id} ${masteryLabel(state, gain.id, DB.flavorById)}`, { kind: "good" });
-  }
+  if (!cancelled && meta.flavor_lesson) notifyMastery(learnFlavorStory(state, r.dlg, DB.flavorById));
   layers.vn.classList.remove("active");
   document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");
