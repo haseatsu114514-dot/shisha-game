@@ -12,6 +12,7 @@ import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, ch
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "./ch3-progress.js";
 import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
 
+import { mashiroVisitScene, visitTokyoMashiro } from "./ch3-affinity.js";
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 import { openShop } from "../daily/shop.js";
 import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
@@ -387,12 +388,13 @@ async function renderFreeTime(owner, window) {
     && (!plan.met || !state.flags._story_shuraba_unresolved);
   const name = id ? displayName(id, state, { context: "private" }) : "";
   const gym = chapterThreeGymAvailability(state, window.id);
+  const mashiro = mashiroVisitScene(state, window);
   await setBg(bgUrl(window.slot ? "bg_tokyo_map_night" : "bg_tokyo_map_day"), { instant: true });
   if (!current(owner)) return;
   card(owner, "free", `DAY ${window.day - state.flags._ch3_intro.startDay + 1}・${window.slot ? "夜" : "昼"}${plan ? "の約束" : "の自由時間"}`,
     eligible ? `${name}と${plan.met ? "東京の街を散歩する" : "東京駅で合流する"}時間になった。`
       : plan ? "この時間は静かに過ごそう。会えなくても、二人の関係は変わらない。"
-        : "次の予定まで、少し時間がある。街で体を動かすか、休んで過ごそう。", [
+        : "次の予定まで、少し時間がある。ましろちゃんと過ごすか、街で体を動かすか、休んで過ごそう。", [
     ...(eligible ? [button(owner, plan.met ? "二人で散歩する" : "東京駅へ迎えに行く", "visit", async () => {
       const kind = plan.met ? "date" : "meetup";
       if (dueTokyoVisit(state, window)?.id !== plan.id) return;
@@ -402,6 +404,12 @@ async function renderFreeTime(owner, window) {
       save();
       await renderStage(owner);
     }, true)] : []),
+    ...(mashiro ? [button(owner, "ましろちゃんと過ごす", "mashiro", async () => {
+      const controller = owner.controller = new AbortController();
+      try { await visitTokyoMashiro(window.id, { signal: controller.signal, isCurrent: () => current(owner) }); }
+      finally { if (owner.controller === controller) owner.controller = null; }
+      if (current(owner)) await renderStage(owner);
+    })] : []),
     ...(gym.ok ? [button(owner, "チョイザップで体を動かす", "gym", async () => {
       await trainInTokyo(owner, window.id);
       if (current(owner)) await renderStage(owner);
@@ -411,7 +419,7 @@ async function renderFreeTime(owner, window) {
       await renderStage(owner);
     }),
   ], plan ? "合流と散歩は、それぞれ一回の自由時間を使います。"
-    : "会員証は東京でも使えます。トレーニングは一日一回、追加料金はかかりません。", "");
+    : "交流・運動・休養はそれぞれ一回の自由時間を使います。ましろちゃんとの交流に追加料金はかかりません。", "");
 }
 
 async function trainInTokyo(owner, windowId) {

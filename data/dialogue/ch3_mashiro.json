@@ -6,7 +6,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "休みの日。ましろは自分用のダークのアールグレイと、はじめ用のブロンドを分けて置いた。"
+          "text": "仕事の合間。ましろは自分用のダークのアールグレイと、はじめ用のブロンドを分けて置いた。"
         },
         {
           "speaker": "mashiro",
@@ -58,7 +58,10 @@
           "face": "",
           "text": "お揃いにしようとしていた手を戻し、それぞれ好きな方を包んでもらった。"
         }
-      ]
+      ],
+      "metadata": {
+        "bg": ""
+      }
     },
     {
       "dialogue_id": "ch3_mashiro_play_3",
@@ -93,7 +96,7 @@
     {
       "dialogue_id": "ch3_mashiro_practice",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": ""
       },
       "lines": [
         {
@@ -203,13 +206,38 @@
         {
           "speaker": "",
           "face": "",
-          "text": "……【技術】と【センス】が上がった。"
+          "text": "……肩の力を抜いて、目の前の一台を作れた。"
         }
       ],
       "growth_stats": {
         "technique": 2,
         "sense": 2
       }
+    },
+    {
+      "dialogue_id": "ch3_mashiro_repeat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "mukaiの席で、ましろとひと息ついた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今日は、何もしないで座っててもいいよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。少しここにいます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で、取りとめのない話をした。"
+        }
+      ]
     }
   ]
 }

@@ -75,6 +75,7 @@
       "kind": "quick",
       "run": [
         "node --experimental-vm-modules remake/test/ch3_deliveries.mjs",
+        "node --experimental-vm-modules remake/test/ch3_mashiro_affinity.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
