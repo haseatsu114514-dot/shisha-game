@@ -523,37 +523,32 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……炭を置き、蒸らしたこの一台。ここからが分かれ道だ"
+          "text": "……この一台の炭を見ろ。同じ場所に置き続けてはいかん"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "もう一つ、炭を足すんですか？"
+          "text": "動かすんですか？ まだ火は残ってますよね"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "いや。まず、一口確かめろ"
+          "text": "真下が一番熱くなる。居続ければ、そこだけ焦げるのだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "まだ温もっていない側へ、少しずつ寄せてやる"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "……さっきより、香りが出てる"
+          "text": "……煙の尖りが取れて、丸くなった"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "この一台は、まだ立ち上がりの途中だ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "足りないのは、熱じゃなかったんですね"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "待つのも火の入れ方だ。俺は、急いで何度も台を駄目にした"
+          "text": "ボウル全体を、同じ温度へ連れていく。俺は焦がして何台も駄目にした"
         },
         {
           "speaker": "hajime",
@@ -573,7 +568,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "次の一台で、炭を足す前に一口、試してみます"
+          "text": "次の一台で、炭を動かすタイミングを試してみます"
         },
         {
           "speaker": "hajime",
