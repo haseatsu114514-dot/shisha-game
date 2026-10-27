@@ -185,11 +185,8 @@ async function continueDayOne() {
       state.slot = 2;
       await checkpoint("complete");
     } else if (stage === "complete") {
-      await setBg(bgUrl("bg_tonari_inside", "night"), { instant: true });
-      if (!current(owner)) return;
-      playBgm("tonari");
-      renderComplete();
-      focus("menu");
+      // 配達報告後は第1章と同じ帰宅・就寝へ。旧版の初日完了SAVEもここから再開する。
+      await continuePreparation();
       return;
     } else throw new Error(`初日の保存地点を確認してください: ${stage}`);
   }
@@ -387,17 +384,6 @@ async function openMenu() {
   if (choice === "title") { save(); location.reload(); }
 }
 
-function renderComplete() {
-  session.scene = "complete";
-  layers.hud.replaceChildren();
-  showScreen("ch2-complete", el("main.ch2-shell.ch2-end", { dataset: { test: test("complete") } }, [el("div.ch2-end-card.panel", [
-    el("p.ch2-kicker", { text: "第二章・DAY1 / 地元へ戻って" }), el("h1", { text: "次に持っていく、一台。" }),
-    el("p.ch2-end-description", { text: "会場までの道を覚えて、tonariへ戻った。鞄の中には、大会の案内。初めての街で見たものを、少しずつ整理していこう。" }),
-    el("p.ch2-preview-note", { text: "明日からは地元と隣町で自由に過ごせます。大会前夜のDAY13まで、行動と交流、物語が続きます。DAY14は県大会本戦です。" }),
-    el("div.ch2-actions", [button("翌日へ", "next-day", continuePreparation, true), button("セーブ・メニュー", "menu", openMenu)]),
-  ])]));
-}
-
 async function continuePreparation() {
   const owner = session;
   // 追加台本に失敗しても、初日の完了保存や翌日の日付を進めない。
@@ -413,6 +399,7 @@ async function continuePreparation() {
   if (!current(owner)) return;
   document.body.classList.remove("ch2-city", "ch2-main");
   owner.scene = "preparation";
+  showScreen("none", null);
   layers.screen.removeAttribute("aria-busy"); // 日常の地図は入力待ち。章のロード中として読み上げを止めない。
   await runChapterTwoPreparation();
   if (!current(owner)) return;

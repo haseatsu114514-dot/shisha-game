@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { suite, assertFits, storageSnapshot } from "./support.mjs";
 
-const evidence = fileURLToPath(new URL("../../../docs/qa/ch2-main/", import.meta.url));
+const evidence = process.env.COMPARISON_DIR || fileURLToPath(new URL("../../../docs/qa/ch2-main/", import.meta.url));
 fs.mkdirSync(evidence, { recursive: true });
 const test = name => `[data-test="ch2-main-${name}"]`;
 const preservedKeys = ["money", "stamina", "stats", "statXp", "owned", "equip", "flavors", "flavorStock", "affinity", "affinityCarry", "story", "visits", "visitedDay", "lovers", "loveLevel", "lovePts", "loveCarry", "loverSince", "lastDate", "loverEventsSeen", "relationshipMemories", "romance", "romanceChoices", "finales", "friendHangouts", "contacts", "inbox", "pendingInvite", "recipes", "keepsakes", "best", "reel", "kuji", "goods", "trpg", "notes", "usedBaito", "baitoRecent"];
@@ -61,6 +61,15 @@ async function setup(page, { knownDoctor = true, knownRei = false, legacy = fals
 async function preserved(page, before, { loaded = false } = {}) {
   const value = await page.evaluate(() => structuredClone(window.__remake.state));
   for (const key of preservedKeys) {
+    if (value.day > 15 && key === 'stamina') {
+      assert.equal(value.stamina, Math.min(await page.evaluate(async () => (await import('./js/core/stats.js')).maxStamina()), before.value.stamina + 14));
+      continue;
+    }
+    if (value.day > 15 && key === 'inbox') {
+      for (const item of before.value.inbox) assert.deepEqual(value.inbox.find(row => row.id === item.id), item);
+      assert.equal(new Set(value.inbox.map(item => item.id)).size, value.inbox.length);
+      continue;
+    }
     if (!loaded) {
       const expected = key === 'keepsakes' && value.flags._ageha_first_purikura
         ? [...new Set([...before.value[key], 'ageha_first_purikura'])] : before.value[key];
@@ -187,22 +196,22 @@ await suite('ch2-main', async check => {
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 1);
     await screenshot(page, 'city-discovered-spots.png');
     await page.locator(test('station')).tap(); await page.locator(test('go')).tap();
-    await page.locator(test('complete')).waitFor();
-    assert.equal(await musicOf(page), 'tonari');
+    await page.locator('[data-test="ch2-morning-home"]').waitFor();
+    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee');
     const value = await page.evaluate(() => window.__remake.state);
-    assert.equal(value.chapter, 2); assert.equal(value.day, 15); assert.equal(value.slot, 2);
+    assert.equal(value.chapter, 2); assert.equal(value.day, 16); assert.equal(value.slot, 0);
     assert.equal(value.flags._ch2_day1.stage, 'complete');
     assert.deepEqual(value.flags._ch2_deliveries.done, { ageha: true, rei: true, kumicho: true });
     assert.equal(value.flags._ch2_deliveries.reported, true);
     assert.equal(value.keepsakes.filter(id => id === 'ageha_first_purikura').length, 1);
     for (const id of ['ageha', 'rei', 'kumicho']) assert.equal(value.flags[`_ch2_city_inside_${id}`], true);
-    assert.match(await page.locator(test('complete')).textContent(), /DAY13.*DAY14は県大会本戦/);
+    assert.equal(await page.locator(test('next-day')).count(), 0);
     await screenshot(page, 'touch-first-day-complete.png');
     await preserved(page, before);
     await reloadSaved(page);
-    await page.locator(test('complete')).waitFor();
-    assert.equal(await musicOf(page), 'tonari', 'LOAD at the homecoming checkpoint restores the existing tonari track');
-    assert.equal(await page.evaluate(() => window.__remake.state.day), 15, 'Loading completion advanced the date again');
+    await page.locator('[data-test="ch2-morning-home"]').waitFor();
+    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'LOAD after sleep restores morning music');
+    assert.equal(await page.evaluate(() => window.__remake.state.day), 16, 'Loading completion advanced the date again');
     await preserved(page, before);
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
@@ -225,8 +234,10 @@ await suite('ch2-main', async check => {
     await page.locator(test('menu')).click(); await page.locator(test('save')).click();
     await page.locator('[data-test="slot-1"]').click();
     await page.locator(test('map')).waitFor();
-    await visit(page, 'c_station'); await visit(page, 'ageha'); await visit(page, 'rei'); await page.locator(test('station')).click(); await page.locator(test('go')).click(); await page.locator(test('complete')).waitFor();
-    await page.locator(test('menu')).click(); await page.locator(test('load')).click();
+    await visit(page, 'c_station'); await visit(page, 'ageha'); await visit(page, 'rei'); await page.locator(test('station')).click(); await page.locator(test('go')).click(); await page.locator('[data-test="ch2-morning-home"]').waitFor();
+    await page.locator('[data-test="ch2-morning-home"]').click();
+    await page.locator('[data-destination-selection]:not(.done)').waitFor();
+    await page.locator('[data-test="hud-menu"]').click(); await page.locator('[data-test="menu-load"]').click();
     assert.match(await page.locator('[data-test="slot-1"] .ss-info').textContent(), /第2章・DAY 1/);
     await page.locator('[data-test="slot-1"]').click(); await page.locator('[data-test="confirm-load"]').click();
     await page.locator(test('map')).waitFor();
