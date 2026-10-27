@@ -2445,10 +2445,13 @@
         "remake/js/daily/tonari.js",
         "remake/js/daily/home-shisha.js",
         "data/dialogue/ch1_minto.json",
-        "remake/test/browser/flavor_mastery.mjs"
+        "remake/test/browser/flavor_mastery.mjs",
+        "remake/test/browser/mastery_display.mjs",
+        "remake/js/core/mastery-notice.js"
       ],
       "run": [
-        "node remake/test/browser/flavor_mastery.mjs"
+        "node remake/test/browser/flavor_mastery.mjs",
+        "node remake/test/browser/mastery_display.mjs"
       ],
       "weight": 3,
       "timeout": 10

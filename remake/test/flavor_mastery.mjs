@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { MASTERY_THRESHOLDS, gainFlavorExperience, learnFlavorStory, masteryLevel, masteryBonus, staffFlavors, staffStock, spendPracticeMix } from '../js/core/flavor-mastery.js';
+import { masteryLabel, MASTERY_THRESHOLDS, gainFlavorExperience, learnFlavorStory, masteryLevel, masteryBonus, staffFlavors, staffStock, spendPracticeMix } from '../js/core/flavor-mastery.js';
 globalThis.document = { addEventListener() {}, querySelector() { return null; } };
 globalThis.window = {};
 const storage = new Map();
@@ -17,6 +17,10 @@ const { regulationFor } = await import('../js/craft/steps.js');
 let s=core.newGame();
 assert.equal(masteryLevel(s,'lemon'),1);
 for(let i=0;i<MASTERY_THRESHOLDS.length;i++){s.flavorMastery.lemon=MASTERY_THRESHOLDS[i];assert.equal(masteryLevel(s,'lemon'),i+1);}
+for (const [xp, stars] of [[0,1],[5.999,1],[6,2],[17.999,2],[18,3],[35.999,3],[36,4],[59.999,4],[60,5],[999,5]]) {
+ s.flavorMastery.lemon=xp;
+ assert.equal(masteryLabel(s,'lemon'),`熟練度 ${'★'.repeat(stars)}${'☆'.repeat(5-stars)}${stars===5?' MAX':''}`);
+}
 s.flavorMastery={};
 gainFlavorExperience(s,{lemon:6,mint:6},6,DB.flavorById);
 assert.deepEqual(s.flavorMastery,{lemon:3,mint:3},'6g + 6g splits experience equally');
