@@ -1,0 +1,38 @@
+[
+  {
+    "id": "adam-a",
+    "prompt": "Two apples, green on viewer LEFT and red on viewer RIGHT, equal size tightly paired with stems and one leaf each, dignified symmetrical emblem on charcoal background. Adam is a dead-serious perfectionist who devotes his life to double apple shisha. No human, no equipment. Strong simple silhouettes, understated warm edge light.",
+    "tool": "image_gen.imagegen",
+    "path": "/workspace/generated_images/exec-beb47f59-1d66-481f-92ee-aa49503625a7.png"
+  },
+  {
+    "id": "adam-b",
+    "prompt": "An intimate still life: green apple on viewer LEFT and red apple on viewer RIGHT resting close together on a dark walnut counter, slight high oblique angle, a tiny soft curl of aromatic smoke behind them. Adam's painstaking double-apple devotion communicated with carefully aligned fruit. No human, equipment, packaging or labels. Apples large, simple, matte, background minimal.",
+    "tool": "image_gen.imagegen",
+    "path": "/workspace/generated_images/exec-299cfeb7-d964-4668-a6b2-8f8afbd1cda6.png"
+  },
+  {
+    "id": "minto-a",
+    "prompt": "Selfie taken by the adult woman in the provided reference. Preserve her precise face identity, long straight black hair with blunt bangs, green eyes, age 29 with youthful styling but adult facial proportions, black and lime green off-shoulder cafe costume with green chest bow, black horn accessories and small bat hair wings. Close face and upper shoulders, high handheld camera angle, she looks directly into lens with playful wink and small smile. Head fully visible with safe space around horns. Soft plain muted mint cafe wall, no phone visible, no shisha. Keep reference art style and facial proportions, no enlarged child face.",
+    "tool": "image_gen.imagegen",
+    "path": "/workspace/generated_images/exec-00961314-229a-4d41-9257-f64fb138150d.png"
+  },
+  {
+    "id": "minto-b",
+    "prompt": "Selfie taken by the exact adult woman in provided reference. Same face, green eyes, long straight black hair and blunt bangs, age 29, same black and green off shoulder cafe outfit with chest bow, horn hair accessories and small bat wings. Slight three-quarter tilted head with both eyes open, knowing gentle smile, close head and shoulders, intimate eye-level handheld camera framing. Fully include horns, central face, plain warm cream background with muted green edge. No phone visible, no shisha, no ornate background. Not a new character. Match restrained reference shading.",
+    "tool": "image_gen.imagegen",
+    "path": "/workspace/generated_images/exec-68f51b62-a04d-45d6-b456-bef2b2881bea.png"
+  },
+  {
+    "id": "tsumugi-a",
+    "prompt": "An illustration drawn by Tsumugi, a quiet 21-year-old art student: a curled sleeping cream-gray cat with two simple leaf-shaped ears and a lavender smoke tail wrapping around its body. She mixes memories of a friend's tree, a pet cat's sleeping posture and cafe smoke. Standalone artwork only, no artist or tablet. Hand drawn confident slightly irregular pencil lines and soft lavender/green watercolor-like flat fills on warm paper. Cat large, entire ears and smoky tail contained inside central safe circle, minimal empty background. Use provided cat artwork as stylistic inspiration, simplify for tiny avatar.",
+    "tool": "image_gen.imagegen",
+    "path": "/workspace/generated_images/exec-f494ab7f-a320-491c-860c-ef718b102d52.png"
+  },
+  {
+    "id": "tsumugi-b",
+    "prompt": "An illustration drawn by Tsumugi, quiet art student: a sitting cream-gray cat looking toward viewer with leaf ears and a single broad lavender smoke tail rising and curling beside its cheek. Standalone artwork only, no artist/tablet. Personal hand drawn slightly irregular ink line, soft matte lavender and sage wash on pale warm paper, low detail. A clear upright composition different from curled sleeping cat. Leaf ears and smoke tail fully inside central safe circle. Reference shows her existing cat artwork; retain its gentle curious mood without copying the whole scene.",
+    "tool": "image_gen.imagegen",
+    "path": "/workspace/generated_images/exec-c4166035-3485-474b-af97-9ddd25b8988a.png"
+  }
+]

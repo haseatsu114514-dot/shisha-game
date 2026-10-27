@@ -1,0 +1,72 @@
+{
+  "main": "ed8098a9b0469f508fcca61964a00eebc567f918",
+  "new_images": 6,
+  "candidates": [
+    {
+      "id": "adam-a",
+      "prompt": "Two apples, green on viewer LEFT and red on viewer RIGHT, equal size tightly paired with stems and one leaf each, dignified symmetrical emblem on charcoal background. Adam is a dead-serious perfectionist who devotes his life to double apple shisha. No human, no equipment. Strong simple silhouettes, understated warm edge light.",
+      "tool": "image_gen.imagegen",
+      "path": "/workspace/generated_images/exec-beb47f59-1d66-481f-92ee-aa49503625a7.png",
+      "original": "asset_sources/lime-icons-1081-i01/originals/adam-a.png",
+      "sha256": "fd60e90345d7d2e3875fd6a33cfd73ecab75db2f6ff798ffa3bdd901a8b1b049",
+      "intent": "左右対称の二果。職人気質と二択の世界観を端的に表現。",
+      "new_generation": true,
+      "adopted": false
+    },
+    {
+      "id": "adam-b",
+      "prompt": "An intimate still life: green apple on viewer LEFT and red apple on viewer RIGHT resting close together on a dark walnut counter, slight high oblique angle, a tiny soft curl of aromatic smoke behind them. Adam's painstaking double-apple devotion communicated with carefully aligned fruit. No human, equipment, packaging or labels. Apples large, simple, matte, background minimal.",
+      "tool": "image_gen.imagegen",
+      "path": "/workspace/generated_images/exec-299cfeb7-d964-4668-a6b2-8f8afbd1cda6.png",
+      "original": "asset_sources/lime-icons-1081-i01/originals/adam-b.png",
+      "sha256": "84be9efd18fd95668daaa991b18cd268c361b1483914b94f09cdd6d71ccbfaa7",
+      "intent": "カウンター上の二果と煙。店主が自分で撮った静物のような距離感。",
+      "new_generation": true,
+      "adopted": false
+    },
+    {
+      "id": "minto-a",
+      "prompt": "Selfie taken by the adult woman in the provided reference. Preserve her precise face identity, long straight black hair with blunt bangs, green eyes, age 29 with youthful styling but adult facial proportions, black and lime green off-shoulder cafe costume with green chest bow, black horn accessories and small bat hair wings. Close face and upper shoulders, high handheld camera angle, she looks directly into lens with playful wink and small smile. Head fully visible with safe space around horns. Soft plain muted mint cafe wall, no phone visible, no shisha. Keep reference art style and facial proportions, no enlarged child face.",
+      "tool": "image_gen.imagegen",
+      "path": "/workspace/generated_images/exec-00961314-229a-4d41-9257-f64fb138150d.png",
+      "original": "asset_sources/lime-icons-1081-i01/originals/minto-a.png",
+      "sha256": "cbb8e6b451f5de61c748f6cd6f9663e0f34fc8ebcc06dea0e94ddfbfda589b29",
+      "intent": "高い位置からのウインク自撮り。営業の小悪魔らしさ。原画上端で角の一部が切れているため保留。",
+      "new_generation": true,
+      "adopted": false
+    },
+    {
+      "id": "minto-b",
+      "prompt": "Selfie taken by the exact adult woman in provided reference. Same face, green eyes, long straight black hair and blunt bangs, age 29, same black and green off shoulder cafe outfit with chest bow, horn hair accessories and small bat wings. Slight three-quarter tilted head with both eyes open, knowing gentle smile, close head and shoulders, intimate eye-level handheld camera framing. Fully include horns, central face, plain warm cream background with muted green edge. No phone visible, no shisha, no ornate background. Not a new character. Match restrained reference shading.",
+      "tool": "image_gen.imagegen",
+      "path": "/workspace/generated_images/exec-68f51b62-a04d-45d6-b456-bef2b2881bea.png",
+      "original": "asset_sources/lime-icons-1081-i01/originals/minto-b.png",
+      "sha256": "fc6d63c199cc199287f28fd44dfc11751047164788ce6b6936ef4b34f0edf6a2",
+      "intent": "目線に近い斜め顔の自撮り。顔と営業衣装の本人性を比較。",
+      "new_generation": true,
+      "adopted": false
+    },
+    {
+      "id": "tsumugi-a",
+      "prompt": "An illustration drawn by Tsumugi, a quiet 21-year-old art student: a curled sleeping cream-gray cat with two simple leaf-shaped ears and a lavender smoke tail wrapping around its body. She mixes memories of a friend's tree, a pet cat's sleeping posture and cafe smoke. Standalone artwork only, no artist or tablet. Hand drawn confident slightly irregular pencil lines and soft lavender/green watercolor-like flat fills on warm paper. Cat large, entire ears and smoky tail contained inside central safe circle, minimal empty background. Use provided cat artwork as stylistic inspiration, simplify for tiny avatar.",
+      "tool": "image_gen.imagegen",
+      "path": "/workspace/generated_images/exec-f494ab7f-a320-491c-860c-ef718b102d52.png",
+      "original": "asset_sources/lime-icons-1081-i01/originals/tsumugi-a.png",
+      "sha256": "0b2d123db723bb591bd8d25f0180ba9136577b31f35fcf51a2aded98851748d9",
+      "intent": "葉の耳と煙の尾を持つ眠る猫。台詞の寝姿・記憶の混ざり方を反映。",
+      "new_generation": true,
+      "adopted": false
+    },
+    {
+      "id": "tsumugi-b",
+      "prompt": "An illustration drawn by Tsumugi, quiet art student: a sitting cream-gray cat looking toward viewer with leaf ears and a single broad lavender smoke tail rising and curling beside its cheek. Standalone artwork only, no artist/tablet. Personal hand drawn slightly irregular ink line, soft matte lavender and sage wash on pale warm paper, low detail. A clear upright composition different from curled sleeping cat. Leaf ears and smoke tail fully inside central safe circle. Reference shows her existing cat artwork; retain its gentle curious mood without copying the whole scene.",
+      "tool": "image_gen.imagegen",
+      "path": "/workspace/generated_images/exec-c4166035-3485-474b-af97-9ddd25b8988a.png",
+      "original": "asset_sources/lime-icons-1081-i01/originals/tsumugi-b.png",
+      "sha256": "04beff382be4ee033f44bfdfbbb08720c66331d34ea970fd59395546df530abd",
+      "intent": "こちらを見る座り猫。葉の耳と煙の尾を縦のシルエットで表現。",
+      "new_generation": true,
+      "adopted": false
+    }
+  ]
+}
