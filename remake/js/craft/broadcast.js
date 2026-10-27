@@ -49,7 +49,7 @@ export function comment(cs, text, { cls = "", row = null } = {}) {
   if (!live(cs)) return;
   const b = ensure(cs);
   if (!b) return;
-  if (b.lane.children.length >= 4) return;
+  if (b.lane.children.length >= ROWS) return;
   const occupied = new Set([...b.lane.children].map(node => Number(node.dataset.row)));
   let r = row != null ? row % ROWS : nextRow++ % ROWS;
   for (let i = 0; i < ROWS && occupied.has(r); i++) r = (r + 1) % ROWS;
@@ -108,19 +108,18 @@ export function completed(cs, step, score) {
   if (!live(cs)) return;
   clearComments();
   const kind = judgeOf(score);
-  const label = { holes: "穴あけ", heat: "炭焼き", steam: "蒸らし", pull: "提供", care: "調整" }[step];
   const genericKind = kind === "great" ? "perfect" : kind;
   const cls = genericKind;
   const specific = DB.broadcast?.completion?.[step]?.[kind] || [];
   const generic = DB.broadcast?.nico?.[genericKind] || [];
+  // 工程に触れた視聴者コメント2本を先頭に、短い歓声3本を続けて数を増やす。
+  // 以前の「【炭焼き】…」のような機械的な工程ラベルは付けない（コメント自体が工程に触れている）。
   const lines = specific.length
-    ? pickFresh(cs, specific, 2).map(text => `【${label || step}】${text}`)
-    : pickFresh(cs, generic, 2).map(text => label ? `${label}、${text}` : text);
-  // 工程らしい反応2本＋短い歓声1本。表示量や待ち時間は増やさない。
-  lines.push(...pickFresh(cs, generic, 1));
+    ? [...pickFresh(cs, specific, 2), ...pickFresh(cs, generic, 3)]
+    : pickFresh(cs, generic, 3);
   lines.forEach((text, i) => {
     if (i === 0) comment(cs, text, { cls });
-    else defer(cs, () => comment(cs, text, { cls }), i * 750);
+    else defer(cs, () => comment(cs, text, { cls }), i * 600);
   });
 }
 

@@ -619,6 +619,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .audience-person[data-mood="nod"] img { animation: none; }
+  /* 動き軽減では横に流さず、画面左に淡く出して消す。操作域（右上）はクリップで避けたまま。 */
+  .nico { transform: none; left: 7%; animation-name: nico-hold; }
+  @keyframes nico-hold { 0% { opacity: 0; } 8%, 85% { opacity: 1; } 100% { opacity: 0; } }
 }
 .rt-part.feel b { font-size: 20px; color: #ffe79a; }
 
