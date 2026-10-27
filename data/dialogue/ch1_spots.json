@@ -180,9 +180,11 @@
           "text": "賽銭箱の前に立ち、手を合わせる。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……大会、うまくいきますように）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "context_after",
+          "next_false": "context_before"
         },
         {
           "speaker": "",
@@ -197,6 +199,22 @@
       ],
       "metadata": {
         "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "branches": {
+        "context_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……大会、うまくいきますように）"
+          }
+        ],
+        "context_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……今日も、いい一台が作れますように）"
+          }
+        ]
       }
     },
     {
@@ -271,185 +289,218 @@
       "dialogue_id": "ch1_c_station_visit",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "「C.STATION」。地元最大のシーシャチェーン旗艦店。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "大会は、同じビルのイベントホールを借りて大々的に開かれる。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "広い。とにかく広い。何十席もある大空間。過剰な装飾はなく、シンプルで洗練されたインテリア。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "キラキラしているわけではないが、システマチックに整えられた美しさがある。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（大会を運営してる店か。参加登録は、ここの受付だな）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "フロアをぐるりと見回していると、奥のテーブルで、２人の男が打ち合わせをしているのが目に入った。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "１人は白衣の男。七三分けのメガネ。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "水色のシャツに青いチェックのネクタイ、チノパンに、足元だけサンダル。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "なんとも抜けた格好だが、話し方には独特の圧がある。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（あの人……審査員の火浦さんだ。チャコール博士。もう１人は……南雲会長？）"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_met_dr_kemuri"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_met_nagumo"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "近づくつもりはなかったが、静かな店内に声が少し響いていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "はじめは席について、聞こえてくる話に耳をそばだてた。"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "今回の評価軸ですが、私は例によってデータ収集を兼ねます"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "同じ手順で、どこまで味を再現できるか。温度と配合を記録したい"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "火浦くんはいつもそうだね。……で、僕が見たいのは、味や技術の正確さじゃない"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "その子が何を背負って、誰のために煙を作っているのか"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "『作り手の物語』が煙ににじみ出ているかどうか。それだけだよ"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "物語、ですか。それは数値化が難しい"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "難しいからこそ、面白いんだよ。丁寧に作られた煙は、吸った人の顔を変える。それを見たい"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "……なるほど。南雲さんの評価に『顔色』の項目を加えると、データが豊かになりますね。記録します"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "どんな人生を歩んできて、何に心を揺さぶられて、なぜシーシャを作るのか"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "全部、煙に出るんだよ。本人が無自覚でもね"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "煙は嘘をつけないから"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "打ち合わせが終わるのを待ち、受付へ向かった。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "SMOKE CROWN CUPに出たいんです。参加登録をお願いします"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "君がtonariの新人だね。スミさんから聞いているよ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "蒸野はじめです。なるさんに教えてもらって来ました"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "ようこそ。見学と参加登録には、お金はかからないよ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "受付票に名前を書き、参加者の登録を済ませた。"
-        },
-        {
-          "speaker": "nagumo",
-          "face": "normal",
-          "text": "公式アプリも入れておいてね。会場の案内が届くから"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "案内のコードを読み取ると、大会のマスコット『パッキー』の顔がスマホに現れた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "煙をモチーフにしたキャラクターらしい。"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_c_station_registered"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（ここで、俺も煙を出すんだ。少しだけ実感が湧いてきた）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
         }
       ],
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_day.png"
+      },
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「C.STATION」。地元最大のシーシャチェーン旗艦店。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "大会は、同じビルのイベントホールを借りて大々的に開かれる。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "広い。とにかく広い。何十席もある大空間。過剰な装飾はなく、シンプルで洗練されたインテリア。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "キラキラしているわけではないが、システマチックに整えられた美しさがある。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（大会を運営してる店か。参加登録は、ここの受付だな）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "フロアをぐるりと見回していると、奥のテーブルで、２人の男が打ち合わせをしているのが目に入った。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "１人は白衣の男。七三分けのメガネ。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "水色のシャツに青いチェックのネクタイ、チノパンに、足元だけサンダル。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なんとも抜けた格好だが、話し方には独特の圧がある。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（あの人……審査員の火浦さんだ。チャコール博士。もう１人は……南雲会長？）"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_dr_kemuri"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_nagumo"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "近づくつもりはなかったが、静かな店内に声が少し響いていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "はじめは席について、聞こえてくる話に耳をそばだてた。"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "今回の評価軸ですが、私は例によってデータ収集を兼ねます"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "同じ手順で、どこまで味を再現できるか。温度と配合を記録したい"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "火浦くんはいつもそうだね。……で、僕が見たいのは、味や技術の正確さじゃない"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "その子が何を背負って、誰のために煙を作っているのか"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "『作り手の物語』が煙ににじみ出ているかどうか。それだけだよ"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "物語、ですか。それは数値化が難しい"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "難しいからこそ、面白いんだよ。丁寧に作られた煙は、吸った人の顔を変える。それを見たい"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "……なるほど。南雲さんの評価に『顔色』の項目を加えると、データが豊かになりますね。記録します"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "どんな人生を歩んできて、何に心を揺さぶられて、なぜシーシャを作るのか"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "全部、煙に出るんだよ。本人が無自覚でもね"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "煙は嘘をつけないから"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "打ち合わせが終わるのを待ち、受付へ向かった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "SMOKE CROWN CUPに出たいんです。参加登録をお願いします"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "君がtonariの新人だね。スミさんから聞いているよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "蒸野はじめです。なるさんに教えてもらって来ました"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "ようこそ。見学と参加登録には、お金はかからないよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "受付票に名前を書き、参加者の登録を済ませた。"
+          },
+          {
+            "speaker": "nagumo",
+            "face": "normal",
+            "text": "公式アプリも入れておいてね。会場の案内が届くから"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "案内のコードを読み取ると、大会のマスコット『パッキー』の顔がスマホに現れた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "煙をモチーフにしたキャラクターらしい。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_c_station_registered"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（ここで、俺も煙を出すんだ。少しだけ実感が湧いてきた）"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONの広い客席に、スタッフが静かに一台を運んできた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（ここで一服するのもいいな。今日は、店の仕事をゆっくり見ていこう）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スタッフは空いたグラスを下げながら、客の手元へさりげなく目を配っている。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（広い店でも、一人ずつ見てるんだな）"
+          }
+        ]
       }
     },
     {
@@ -501,84 +552,99 @@
       "dialogue_id": "cs_customer_rumor",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "C.STATIONの奥のソファ席で、シーシャを吸いながら耳をすます。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "隣のテーブルの客が、大会の話をしている。"
-        },
-        {
-          "speaker": "old_man",
-          "face": "",
-          "text": "今回のSMOKE CROWN CUP、KEMURIKUSAのなるが本命って話だ"
-        },
-        {
-          "speaker": "old_man",
-          "face": "",
-          "text": "あとEDENのアダム。ダブルアップルであいつに勝てるやつ、そういないぞ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "もう１人が口を挟む。"
-        },
-        {
-          "speaker": "old_man",
-          "face": "",
-          "text": "PEPPERMINTのみんとも侮れない。客あしらいが上手い。審査員の心もつかむだろう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（みんな名前が挙がるんだな……。tonariのはじめ、は？）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "自分の名前は聞こえなかった。でも、ここにいる意味はある。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "rumor_after",
+          "next_false": "rumor_before"
         }
-      ]
+      ],
+      "branches": {
+        "rumor_before": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONの奥のソファ席で、シーシャを吸いながら耳をすます。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "隣のテーブルの客が、大会の話をしている。"
+          },
+          {
+            "speaker": "old_man",
+            "face": "",
+            "text": "今回のSMOKE CROWN CUP、KEMURIKUSAのなるが本命って話だ"
+          },
+          {
+            "speaker": "old_man",
+            "face": "",
+            "text": "あとEDENのアダム。ダブルアップルであいつに勝てるやつ、そういないぞ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "もう１人が口を挟む。"
+          },
+          {
+            "speaker": "old_man",
+            "face": "",
+            "text": "PEPPERMINTのみんとも侮れない。客あしらいが上手い。審査員の心もつかむだろう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（みんな名前が挙がるんだな……。tonariのはじめ、は？）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "自分の名前は聞こえなかった。でも、ここにいる意味はある。"
+          }
+        ],
+        "rumor_after": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONの奥のソファ席で、シーシャを吸いながら耳をすます。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "隣のテーブルの客が、街の店の話をしている。"
+          },
+          {
+            "speaker": "old_man",
+            "face": "",
+            "text": "ケムリクサの焼き菓子みたいな香り、また吸いたいなあ"
+          },
+          {
+            "speaker": "old_man",
+            "face": "",
+            "text": "俺はエデンのダブルアップルだな。あれは忘れられん"
+          },
+          {
+            "speaker": "old_man",
+            "face": "",
+            "text": "ぺぱーみんともいいぞ。つい長居しちゃうんだよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（誰かの帰り道に残る店か。tonariも、そういう場所でありたいな）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "cs_stage_setup",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "C.STATIONと同じビルのイベントホールをのぞく。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "大会ステージの準備が進んでいた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "作業台が4つ。客席が前面にずらり。照明のテストで、スポットが点滅している。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（4人同時か。隣のやつの手元も、客席からは丸見えなんだ）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スタッフが資材を運びながら話している。"
-        },
-        {
-          "speaker": "staff_choizap",
-          "face": "",
-          "text": "審査席は正面。南雲会長がいつも一番端。最後まで点を入れないんですよね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（南雲会長が最後まで温存……。あの人を動かすには、何が必要なんだろう）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "work_after",
+          "next_false": "work_before"
         },
         {
           "type": "note",
@@ -586,11 +652,88 @@
           "label": "南雲会長は持ち点を最後まで温存する"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "本番のステージを見て、イメージが少しだけ具体的になった。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "closing_after",
+          "next_false": "closing_before"
         }
-      ]
+      ],
+      "branches": {
+        "work_before": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONと同じビルのイベントホールをのぞく。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "大会ステージの準備が進んでいた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "作業台が4つ。客席が前面にずらり。照明のテストで、スポットが点滅している。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（4人同時か。隣のやつの手元も、客席からは丸見えなんだ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スタッフが資材を運びながら話している。"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "審査席は正面。南雲会長がいつも一番端。最後まで点を入れないんですよね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（南雲会長が最後まで温存……。あの人を動かすには、何が必要なんだろう）"
+          }
+        ],
+        "work_after": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONの客席では、スタッフが一台ずつ道具を確かめていた。"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "配置を揃えておくと、忙しい時も迷わないんです"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの作業台も、こういう準備に支えられていたんだな）"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "南雲会長は、最後までじっくり見てから点を入れる方ですよ"
+          }
+        ],
+        "closing_before": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "本番のステージを見て、イメージが少しだけ具体的になった。"
+          }
+        ],
+        "closing_after": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "片づいた道具を見て、自分の店での準備を思い返した。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "cs_regular_chat",
@@ -601,9 +744,11 @@
           "text": "C.STATIONのカウンターで一服。隣に座った常連らしき男性が話しかけてきた。"
         },
         {
-          "speaker": "old_man",
-          "face": "",
-          "text": "お兄ちゃん、大会出るの？ 顔つきが違うもんな、出場者は"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "context_after",
+          "next_false": "context_before"
         },
         {
           "speaker": "hajime",
@@ -630,7 +775,23 @@
           "face": "",
           "text": "知らない人の言葉が、意外と深く刺さった。"
         }
-      ]
+      ],
+      "branches": {
+        "context_before": [
+          {
+            "speaker": "old_man",
+            "face": "",
+            "text": "お兄ちゃん、大会出るの？ 顔つきが違うもんな、出場者は"
+          }
+        ],
+        "context_after": [
+          {
+            "speaker": "old_man",
+            "face": "",
+            "text": "お兄ちゃんも店で作る人？ 手つきが違うもんな、慣れてる人は"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "cs_nagumo_glimpse",
@@ -696,9 +857,11 @@
           "text": "（何言ってるかわからないけど……すごい細かいな）"
         },
         {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "おや、きみ。見ない顔だね。今度の大会の出場者かい？"
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "dr_kemuri",
+          "next_true": "known_greeting",
+          "next_false": "new_greeting"
         },
         {
           "speaker": "hajime",
@@ -725,7 +888,39 @@
           "face": "",
           "text": "博士はすぐにPCに目を戻した。会話は終わり、でも収穫はあった。"
         }
-      ]
+      ],
+      "branches": {
+        "context_before": [
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "おや、きみ。見ない顔だね。今度の大会の出場者かい？"
+          }
+        ],
+        "context_after": [
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "おや、きみ。今日は何を吸いに来たんだい？"
+          }
+        ],
+        "new_greeting": [
+          {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 1,
+            "next_true": "context_after",
+            "next_false": "context_before"
+          }
+        ],
+        "known_greeting": [
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "おや、きみ。今日は何を吸いに来たんだい？"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "kannon_cat",
@@ -754,16 +949,34 @@
           "text": "隣に腰を下ろして、しばらくぼんやりする。頭の中の雑音が、少しずつ静かになっていく。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（大会のこと、考えすぎてたかも、……よし）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "context_after",
+          "next_false": "context_before"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【根性】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "context_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（大会のこと、考えすぎてたかも、……よし）"
+          }
+        ],
+        "context_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（少し、考えごとばかりしてたかも、……よし）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "kannon_sweep",
@@ -970,9 +1183,11 @@
           "text": "賽銭箱の前にアダムがいた。目を閉じ、長く手を合わせている。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "アダムさん。大会のお願いですか？"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "context_after",
+          "next_false": "context_before"
         },
         {
           "speaker": "adam",
@@ -1076,6 +1291,20 @@
             "speaker": "adam",
             "face": "normal",
             "text": "……俺も、その一人だ"
+          }
+        ],
+        "context_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "アダムさん。大会のお願いですか？"
+          }
+        ],
+        "context_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "アダムさん。何か、お願いごとですか？"
           }
         ]
       }
@@ -1677,46 +1906,84 @@
       "dialogue_id": "cs_pakki_rehearsal",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "C.STATIONと同じビルのイベントホール。二頭身のマスコットがマイクを握っていた。"
-        },
-        {
-          "speaker": "pakki",
-          "face": "normal",
-          "text": "泣いても笑っても、勝者はたった１人ッ！ ……うーん、もう一声ほしいなあ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "大会MCのパッキーだ。誰もいない客席に向かって、リハーサルをしている。"
-        },
-        {
-          "speaker": "pakki",
-          "face": "excited",
-          "text": "おっと、そこの君ィ！ その顔は出場者だねッ？"
-        },
-        {
-          "speaker": "pakki",
-          "face": "normal",
-          "text": "MCはね、4台ぜんぶの見せ場を拾うのが仕事！ ぷぷぷっ！"
-        },
-        {
-          "speaker": "pakki",
-          "face": "smile",
-          "text": "つまり君の手元は、ぜーんぶ実況されると思ってねッ！"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（手元は全部見られてる……。ごまかしは、きかないわけだ）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "妙な気合いの入る、リハーサル見学だった。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "microphone_after",
+          "next_false": "microphone_before"
         }
-      ]
+      ],
+      "branches": {
+        "microphone_before": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONと同じビルのイベントホール。二頭身のマスコットがマイクを握っていた。"
+          },
+          {
+            "speaker": "pakki",
+            "face": "normal",
+            "text": "泣いても笑っても、勝者はたった１人ッ！ ……うーん、もう一声ほしいなあ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "大会MCのパッキーだ。誰もいない客席に向かって、リハーサルをしている。"
+          },
+          {
+            "speaker": "pakki",
+            "face": "excited",
+            "text": "おっと、そこの君ィ！ その顔は出場者だねッ？"
+          },
+          {
+            "speaker": "pakki",
+            "face": "normal",
+            "text": "MCはね、4台ぜんぶの見せ場を拾うのが仕事！ ぷぷぷっ！"
+          },
+          {
+            "speaker": "pakki",
+            "face": "smile",
+            "text": "つまり君の手元は、ぜーんぶ実況されると思ってねッ！"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（手元は全部見られてる……。ごまかしは、きかないわけだ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "妙な気合いの入る、リハーサル見学だった。"
+          }
+        ],
+        "microphone_after": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONの客席で、パッキーがマイクを拭いていた。"
+          },
+          {
+            "speaker": "pakki",
+            "face": "normal",
+            "text": "おっと、そこの君ィ！ 今日はゆっくりしてるねッ！"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "マイクもお手入れするんですね"
+          },
+          {
+            "speaker": "pakki",
+            "face": "smile",
+            "text": "商売道具だからねッ！ 君もトングは磨くでしょ？ ぷぷぷっ！"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（自分の道具を大事にする。そこは、同じなんだな）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "cs_prep_line",

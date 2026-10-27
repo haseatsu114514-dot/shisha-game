@@ -69,6 +69,8 @@
         "python3 tools/audit_dialogue_art.py",
         "node --experimental-vm-modules remake/test/data_loading.mjs",
         "node --experimental-vm-modules remake/test/daily_consistency.mjs",
+        "node --experimental-vm-modules remake/test/naru_chapter_context.mjs",
+        "node remake/test/story_context.mjs",
         "node --experimental-vm-modules remake/test/early_deliveries.mjs",
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
@@ -1641,6 +1643,7 @@
         "remake/test/browser/samechan_entry.mjs",
         "remake/test/browser/samechan_confession.mjs",
         "remake/test/browser/affinity_gates.mjs",
+        "remake/test/browser/naru_chapter_context.mjs",
         "remake/test/browser/relationship_ui.mjs",
         "data/dialogue/*hiyori*.json",
         "data/dialogue/*samechan*.json",
@@ -1659,6 +1662,7 @@
         "node remake/test/browser/samechan_entry.mjs",
         "node remake/test/browser/samechan_confession.mjs",
         "node remake/test/browser/affinity_gates.mjs",
+        "node remake/test/browser/naru_chapter_context.mjs",
         "node remake/test/browser/relationship_ui.mjs"
       ],
       "env": {
