@@ -160,6 +160,7 @@
         "node remake/test/mix_temperature.mjs",
         "node remake/test/steam_temperature.mjs",
         "node remake/test/flavor_life.mjs",
+        "node remake/test/leaf_carry.mjs",
         "node remake/test/attack_training.mjs",
         "node remake/test/steam_word_cut.mjs",
         "node remake/test/water_pour.mjs",
