@@ -298,7 +298,7 @@ await suite('ch2-main', async check => {
     let v = await page.evaluate(() => structuredClone(__remake.state));
     assert(v.flags._ryuji_melty_greeting); assert(v.keepsakes.includes('ryuji_purikura'));
     assert.deepEqual(v.flags._ageha_purikura_history[0].people, ['hajime', 'kumicho']);
-    assert.equal(v.money, 12345); assert.equal(v.stamina, 80); assert.equal(v.slot, 0);
+    assert.equal(v.money, 12345 - 400); assert.equal(v.stamina, 80); assert.equal(v.slot, 0);
     const trace = await page.evaluate(() => window.__photoTrace);
     assert(trace.some(row => row.id === 'remake_ch2_ryuji_melty_greeting'));
     assert(trace.some(row => row.text?.includes('左右の高さ')));
@@ -314,6 +314,7 @@ await suite('ch2-main', async check => {
     await page.waitForFunction(() => window.__photoDone);
     v = await page.evaluate(() => structuredClone(__remake.state));
     assert.equal(v.flags._ageha_purikura_history.length, 2, 'Declining does not create a photo');
+    assert.equal(v.money, 12345 - 400 * 2, 'Two repeat photos cost 400 each; declining is free');
     assert.equal(v.keepsakes.filter(id => id === 'ryuji_purikura').length, 1);
     await page.evaluate(async () => {
       const { purikuraGuests } = await import('./js/chapters/ch2-purikura.js');
