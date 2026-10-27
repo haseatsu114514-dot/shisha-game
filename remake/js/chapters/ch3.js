@@ -7,6 +7,7 @@ import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "./ch3-progress.js";
 import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
@@ -22,6 +23,7 @@ const FILES = {
   ch3_double_apple: ["ch3_mukai_arrival", "ch3_double_apple_incident", "ch3_rest_before_recovery",
     "ch3_daily_cup_1", "ch3_work_without_taste", "ch3_taste_return"],
   ch3_mukai: ["ch3_mukai_intro"],
+  ch3_deliveries: MUKAI_DELIVERY_STEPS.filter(step => step.id !== "ch3_mukai_intro").map(step => step.id),
   ch3_rivals: ["ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_kuze_advice", "ch3_steve_low_heat"],
   ch3_volk: ["ch3_volk_first"],
 };
@@ -299,7 +301,7 @@ async function readScene(owner, scene) {
   if (choiceHook) hooks.onChoice = choiceHook;
   try {
     const result = await play(dialogue, { signal: controller.signal });
-    finished = current(owner) && !!result && !result.cancelled;
+    finished = current(owner) && !controller.signal.aborted && !!result && !result.cancelled;
     if (finished && strategyChoice) state.flags._ch3_strategy = strategyChoice;
     return finished;
   } finally {
@@ -355,7 +357,13 @@ async function renderStage(owner) {
   if (!current(owner)) return;
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
     button(owner, "続きを読む", "continue", async () => {
-      if (!await readScene(owner, scene)) return;
+      if (scene.id === "ch3_mukai_intro") {
+        if (!await runMukaiDeliveryWork(owner.state, { read: step => readScene(owner, step), save,
+          isCurrent: () => current(owner) })) {
+          if (current(owner)) await renderStage(owner);
+          return;
+        }
+      } else if (!await readScene(owner, scene)) return;
       if (scene.id === "ch3_opening") {
         state.flags._ch3_opening_read = true;
         save();
