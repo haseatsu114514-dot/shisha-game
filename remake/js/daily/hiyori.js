@@ -2,7 +2,7 @@
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { seeded } from "../core/util.js";
-import { gainAffinity, affinityLevel, releaseHiyoriAffinity } from "../core/stats.js";
+import { gainAffinity, affinityLevel, releaseHiyoriAffinity, ensureAffinityLevel } from "../core/stats.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriHasContact } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { afterStory, hiyoriQuestionReady, playHiyoriQuestion, finaleAtVisit, playFinale } from "./bonds.js";
@@ -60,7 +60,8 @@ export async function playHiyoriEvent(id, options = {}) {
     await afterStory(event.dialogue, { signal: lifetime?.signal, deferSave: id === "work_talk" });
     if (state !== owner || options.signal?.aborted || lifetime?.signal.aborted) return false;
     await maybeRecruitTrpgMember("hiyori");
-    if (state !== owner) return false;
+    if (state !== owner || options.signal?.aborted) return false;
+    if (id === "meeting") ensureAffinityLevel("hiyori", 1);
     save();
     return true;
   } finally {
