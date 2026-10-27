@@ -12,10 +12,10 @@ const context = vm.createContext({ Math, Set, Promise, console });
 const mocks = {
   "core/data.js": { DB },
   "core/state.js": { state, save: () => saves++ },
-  "core/stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap() {}, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, gainAffinity: (id, n) => { state.affinity[id] = (state.affinity[id] || 0) + n; }, affinityLevel: () => 3, releaseHiyoriAffinity: () => {}, addMoney() {}, addStamina() {} },
+  "core/stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap() {}, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, gainAffinity: (id, n) => { state.affinity[id] = (state.affinity[id] || 0) + n; }, affinityLevel: () => 3, ensureAffinityLevel: (id, level) => { const target = [0, 9, 20, 33, 48, 66][level]; if (!id || !Number.isInteger(level) || !(target > 0) || state.lovers.includes(id)) return 0; const before = state.affinity[id] || 0; state.affinity[id] = Math.max(before, target); return state.affinity[id] - before; }, releaseHiyoriAffinity: () => {}, addMoney() {}, addStamina() {} },
   "vn/engine.js": { play: async id => played.push(id), isPlaying: () => false },
   "daily/bonds.js": { afterStory: async () => {}, hiyoriQuestionReady: () => false, playHiyoriQuestion: async () => false, finaleAtVisit: () => false, playFinale: async () => false },
-  "daily/spots.js": { allSpots: () => shops, isClosed: spot => spot.closedOn === state.day % 7, isUnlocked: spot => !spot.locked },
+  "daily/spots.js": { allSpots: () => shops, isClosed: spot => spot.closedOn === state.day % 7, isUnlocked: spot => !spot.locked, shortNormalVisit: () => false },
   "daily/spot-hours.js": { rinUnavailable: () => state.slot === 1 ? "" : "夜から" },
   "daily/hiyori-axe.js": { hiyoriAxeAffordable: () => false, playHiyoriAxeSequence: async () => false },
 };

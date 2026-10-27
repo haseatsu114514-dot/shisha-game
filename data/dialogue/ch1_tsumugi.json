@@ -976,9 +976,11 @@
           "text": "つむぎが、タブレットを差し出した。傷のある画面。その上に描かれた、はじめのtonari。"
         },
         {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……これ、はじめさんに。大会の……お守りに"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "gift_after",
+          "next_false": "gift_before"
         },
         {
           "speaker": "hajime",
@@ -1014,9 +1016,11 @@
           "text": "……ありがとう、つむぎちゃん。大事にする"
         },
         {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "大会でも、ちゃんと一台ずつ作ってくるよ"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "reply_after",
+          "next_false": "reply_before"
         },
         {
           "speaker": "tsumugi",
@@ -1213,6 +1217,34 @@
             "face": "normal",
             "text": "これも、私の絵です、……前の猫も"
           }
+        ],
+        "gift_before": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……これ、はじめさんに。大会の……お守りに"
+          }
+        ],
+        "gift_after": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……これ、はじめさんに。そばに、置いてほしくて"
+          }
+        ],
+        "reply_before": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "大会でも、ちゃんと一台ずつ作ってくるよ"
+          }
+        ],
+        "reply_after": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "これからも、ちゃんと一台ずつ作っていくよ"
+          }
         ]
       }
     },
@@ -1277,9 +1309,11 @@
           "cg_id": "cg_tsumugi_smoke_color"
         },
         {
-          "speaker": "tsumugi",
-          "face": "smile",
-          "text": "……夕焼けの、すこし後の藍色。あったかいのに、ちょっとさみしい色。……大会が近いから、かな"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "color_after",
+          "next_false": "color_before"
         },
         {
           "speaker": "",
@@ -1290,9 +1324,11 @@
           "type": "hide_cg"
         },
         {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……はじめさん。大会の日の煙が何色になるか、わたしが一番に見ます"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "promise_after",
+          "next_false": "promise_before"
         },
         {
           "speaker": "tsumugi",
@@ -1332,6 +1368,36 @@
       ],
       "growth_stats": {
         "sense": 1
+      },
+      "branches": {
+        "color_before": [
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……夕焼けの、すこし後の藍色。あったかいのに、ちょっとさみしい色。……大会が近いから、かな"
+          }
+        ],
+        "color_after": [
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……夕焼けの、すこし後の藍色。あったかいのに、ちょっとさみしい色"
+          }
+        ],
+        "promise_before": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はじめさん。大会の日の煙が何色になるか、わたしが一番に見ます"
+          }
+        ],
+        "promise_after": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はじめさん。これからも、煙の色をわたしに見せてください"
+          }
+        ]
       }
     },
     {

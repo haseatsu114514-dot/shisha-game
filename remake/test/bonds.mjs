@@ -100,7 +100,7 @@ try {
     stats.gainAffinity("tsumugi", 1);
     stats.bond.private = false;
     const lover = { shop, after: state.lovePts.tsumugi, carry: state.loveCarry.tsumugi };
-    // 未回答では♥3。実際の質問に答えた後のMAXでも告白を予約しない。
+    // 未回答でも数値は育つ。質問の反応未読/告白条件は数値と別に保持。
     state = fresh({ met: { tsumugi: true }, story: { tsumugi: 3 } });
     for (let i = 0; i < 12; i++) stats.gainAffinity("tsumugi", 10);
     const waiting = { level: stats.affinityLevel("tsumugi"), answer: state.romanceChoices.bond_q1_tsumugi ?? null,
@@ -109,7 +109,7 @@ try {
     await spots.visitChar("tsumugi");
     const answer = state.romanceChoices.bond_q1_tsumugi?.value;
     for (let i = 0; i < 12; i++) stats.gainAffinity("tsumugi", 10);
-    await spots.visitChar("tsumugi"); // heart4 story must finish before heart5
+    await spots.visitChar("tsumugi"); // heart4 story is oldest unread despite numeric heart5
     await spots.visitChar("tsumugi"); // remaining heart5 story precedes the finale
     const max = { level: stats.affinityLevel("tsumugi"), due: state.flags._confession_due ?? null };
     return { out, fortune, lover, waiting, answer, max };
@@ -122,7 +122,7 @@ try {
   assert.equal(pace.fortune.got, 12); assert.equal(pace.fortune.left, undefined); assert.equal(pace.fortune.second, 12 + 9); // 0.75 の端数を持ち越す
   assert.equal(pace.lover.shop, 9, "lover affinity must not grow outside private scenes");
   assert.equal(pace.lover.after, 9 + 5 + 1); assert.equal(pace.lover.carry, 0);
-  assert.deepEqual(pace.waiting, { level: 3, answer: null, due: null });
+  assert.deepEqual(pace.waiting, { level: 5, answer: null, due: null });
   assert.equal(pace.answer, 1);
   assert.equal(pace.max.level, 5); assert.equal(pace.max.due, null);
   log("HF01 pace: small rewards <= legacy, 85% at every charm tier, fortune once, lover half/private only, no MAX auto-confession");

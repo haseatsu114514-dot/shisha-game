@@ -67,7 +67,7 @@ test("all choices, including low rolls without help, remain finishable", () => {
         seed: seed++, supports: false });
       const result = session.result();
       assert.equal(result.checks.length, 3);
-      assert(result.checks.every(c => c.dice.every(d => d >= 1 && d <= 6)));
+      assert(result.checks.every(c => c.dice.every(d => d >= 1 && d <= 20)));
       assert(result.pressure >= 0 && result.pressure <= 3);
       assert(scenario.endings[result.ending]);
       result.checks.forEach(check => grades.add(check.grade));
@@ -79,7 +79,7 @@ test("all choices, including low rolls without help, remain finishable", () => {
 });
 
 test("rerolls are shared across checks and take the new die; aids are spent once", () => {
-  const session = new TrpgSession(scenario, { profileId: "quiet", seed: 9 });
+  const session = new TrpgSession(scenario, { profileId: "quiet", seed: 5 });
   session.start(); const first = session.beginCheck("listen");
   const next = session.reroll(0);
   assert.equal(next.dice[1], first.dice[1]);
@@ -91,7 +91,7 @@ test("rerolls are shared across checks and take the new die; aids are spent once
   const preparation = session.beginCheck("prepare", { support: true });
   // Reroll, the listen result and the hypothesis talk lift the table to the first tier: momentum +1.
   assert.equal(preparation.momentum, 1);
-  assert.equal(preparation.bonus, 3 + preparation.momentum);
+  assert.equal(preparation.bonus, 10 + preparation.momentum * 4);
   assert(session.snapshot().used.adam);
   assert.throws(() => session.reroll(0));
 });
@@ -182,7 +182,7 @@ test("all 243 shark plans finish; both risk variants exist and risk stays bounde
       assert.equal(result.checks.length, 3);
       assert(result.pressure >= 3 && result.pressure <= 6);
       assert(shark.endings[result.ending]);
-      assert(result.checks.every(c => c.dice.every(n => n >= 1 && n <= 6)));
+      assert(result.checks.every(c => c.dice.every(n => n >= 1 && n <= 20)));
       endings.add(result.ending); variants.add(result.variant);
     }
   }
@@ -192,7 +192,7 @@ test("all 243 shark plans finish; both risk variants exist and risk stays bounde
 
 test("a matching shark hypothesis improves preparation, and an unknown plan field is inert", () => {
   const correct = sharkRun(), incorrect = sharkRun({ hypothesis: "light" });
-  assert.equal(correct.result().checks[1].bonus, incorrect.result().checks[1].bonus + 1);
+  assert.equal(correct.result().checks[1].bonus, incorrect.result().checks[1].bonus + 4);
   const s = new TrpgSession(shark, { seed: 5 });
   s.start(); s.beginCheck("listen"); s.settleCheck();
   for (const spot of shark.spots.slice(0, 3)) s.inspect(spot.id);
@@ -202,7 +202,7 @@ test("a matching shark hypothesis improves preparation, and an unknown plan fiel
 });
 
 test("doubles are table events: a critical returns one card up to two, never changing the grade", () => {
-  assert.equal(specialOf([6, 6]), "critical"); assert.equal(specialOf([1, 1]), "fumble");
+  assert.equal(specialOf([20, 20]), "critical"); assert.equal(specialOf([1, 1]), "fumble");
   assert.equal(specialOf([3, 3]), "double"); assert.equal(specialOf([2, 5]), null);
   for (let seed = 1; seed < 400; seed++) {
     const session = new TrpgSession(scenario, { profileId: "quiet", seed });
@@ -217,7 +217,7 @@ test("doubles are table events: a critical returns one card up to two, never cha
   }
   const full = new TrpgSession(scenario, { profileId: "quiet", seed: 1 });
   full.start();
-  full.state.pending = { kind: "listen", dice: [6, 6], bonus: 1, hypothesisBonus: 0, helper: null, rerolled: false };
+  full.state.pending = { kind: "listen", dice: [20, 20], bonus: 1, hypothesisBonus: 0, helper: null, rerolled: false };
   const capped = full.settleCheck();
   assert.equal(capped.special, "critical"); assert.equal(capped.inspired, false); assert.equal(full.snapshot().teamwork, 2);
 });
@@ -246,12 +246,12 @@ test("table chatter files only use the GM seats and the required player", async 
   }
 });
 
-test("table excitement rises with shared moments, tiers give the next roll +1 and the night gets a name", () => {
+test("table excitement rises with shared moments, tiers give the next roll one momentum (bonus +4) and the night gets a name", () => {
   const session = new TrpgSession(scenario, { profileId: "quiet", seed: 3 });
   session.start();
   const start = session.snapshot();
   assert.equal(start.heat, 0); assert.equal(start.momentum, 0);
-  session.state.pending = { kind: "listen", dice: [6, 6], bonus: 1, hypothesisBonus: 0, momentum: 0, helper: null, rerolled: false };
+  session.state.pending = { kind: "listen", dice: [20, 20], bonus: 1, hypothesisBonus: 0, momentum: 0, helper: null, rerolled: false };
   session.settleCheck();
   assert.equal(session.snapshot().heat, 3, "a critical lifts the table three");
   assert.equal(session.snapshot().momentum, 1, "reaching the first tier");
@@ -261,7 +261,7 @@ test("table excitement rises with shared moments, tiers give the next roll +1 an
   session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
   const before = session.snapshot().momentum;
   const check = session.beginCheck("prepare");
-  assert.equal(check.momentum, before); assert.equal(check.bonus, 1 + before);
+  assert.equal(check.momentum, before); assert.equal(check.bonus, 3 + before * 4);
   assert.equal(session.snapshot().momentum, 0, "momentum is spent on the roll");
   session.state.heat = HEAT.max - 1; session.cheer(5, "test");
   assert.equal(session.snapshot().heat, HEAT.max);
@@ -270,3 +270,4 @@ test("table excitement rises with shared moments, tiers give the next roll +1 an
   const done = complete();
   assert.equal(done.result().heat.night, HEAT.nights[heatTier(done.snapshot().heat)]);
 });
+

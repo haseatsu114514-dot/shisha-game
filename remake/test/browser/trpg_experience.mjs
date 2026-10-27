@@ -84,15 +84,25 @@ async function closedDetails(page) {
 async function forecast(page, supported = false, conditional = false) {
   if (!await control(page, "trpg-roll-details").evaluate(n => n.open)) await hit(page, "trpg-details-toggle");
   assert(await control(page, "trpg-forecast").isVisible(), "Opening the details reveals the probability forecast");
-  const odds = await control(page, "trpg-odds-success").textContent();
-  const expected = conditional ? (supported ? /58.*72/ : /28.*42/) : (supported ? /58/ : /28/);
-  assert.match(odds, expected, "Success odds reflect support and conditional insight");
+  const momentum = (await state(page)).momentum;
+  const bonus = 3 + (supported ? 7 : 0) + momentum * 4;
+  const oddsFor = extra => {
+    const counts = { success: 0, mixed: 0, trouble: 0 };
+    for (let a = 1; a <= 20; a++) for (let b = 1; b <= 20; b++) {
+      const total = a + b + bonus + extra;
+      counts[total >= 30 ? "success" : total >= 19 ? "mixed" : "trouble"]++;
+    }
+    return Object.fromEntries(Object.entries(counts).map(([grade, count]) => [grade, Math.round(count / 4)]));
+  };
+  const ordinary = oddsFor(0), withInsight = oddsFor(conditional ? 4 : 0);
   for (const grade of ["success", "mixed", "trouble"]) {
-    const range = (await control(page, "trpg-odds-" + grade).textContent()).match(/(\d+)[〜～](\d+)/);
-    if (range) assert(Number(range[1]) <= Number(range[2]), "Conditional probabilities use an ascending range");
+    const lo = Math.min(ordinary[grade], withInsight[grade]);
+    const hi = Math.max(ordinary[grade], withInsight[grade]);
+    assert.equal(await control(page, "trpg-odds-" + grade).textContent(),
+      `約${lo}${conditional ? `〜${hi}` : ""}%`, `${grade} odds reflect support and conditional insight`);
   }
-  assert.match(await control(page, "trpg-bonus").textContent(), supported ? /[+＋]\s*3/ : /[+＋]\s*1/);
-  assert.match(await control(page, "trpg-forecast").textContent(), /10/);
+  assert.equal(await control(page, "trpg-bonus").textContent(), "＋" + bonus);
+  assert.match(await control(page, "trpg-forecast").textContent(), /30/);
   await fits(page);
 }
 async function roll(page, { trap = false } = {}) {
@@ -306,7 +316,7 @@ async function ordinary(page, keyboard) {
   await hit(page, "trpg-prepare-open");
   await closedDetails(page);
   const aid = await control(page, "trpg-support-adam").evaluate(n => n.closest("label")?.textContent || n.getAttribute("aria-label"));
-  assert.match(aid, /[+＋]\s*2/);
+  assert.match(aid, /[+＋]\s*7/);
   assert.match(aid, /札\s*1/);
   assert(await control(page, "trpg-support-adam").isEnabled(), "Support remains usable without opening the probability details");
   if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-roll-stage-pc.png") });
@@ -374,7 +384,7 @@ async function shark(page, correct) {
   await hit(page, "trpg-support-hiyori");
   await forecast(page, true, true);
   await roll(page);
-  assert.equal((await state(page)).pending.bonus, correct ? 4 : 3,
+  assert.equal((await state(page)).pending.bonus, (correct ? 14 : 10) + (await state(page)).pending.momentum * 4,
     "The actual insight bonus is applied only when its hypothesis matches");
   await settle(page);
   if (correct) {
@@ -475,3 +485,4 @@ try {
   fs.writeFileSync(path.join(artifacts, "results.json"), JSON.stringify(results, null, 2) + "\n");
 }
 assert.equal(results.filter(r => r.status === "failed").length, 0, "TRPG experience browser cases failed");
+
