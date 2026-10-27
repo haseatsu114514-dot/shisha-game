@@ -1,0 +1,214 @@
+{
+  "comment": "Mukai勤務内の預かり物の受け渡し。中身・銘柄・取引を設定せず、料金/報酬/枠消費なし。面識/配達完読は呼出元が確定。自主来店・注文は別イベント。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_delivery_offer",
+      "lines": [
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "街を覚えがてら、預かり物を届けてもらえるかな。宛名はここに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんが小さな包みを三つと、行き先を書いたメモを並べた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "煙幕、Smoke & Glory、鉄の煙。受け渡しと挨拶だけで大丈夫。戻ったら、店の続きにしよう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。mukaiから来たとお伝えします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_delivery_kuze",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メモの「煙幕」を確かめ、店先で声をかけた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "mukaiから、預かり物をお届けに来ました"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "kuze",
+          "next_true": "known",
+          "next_false": "new"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世が宛名を確かめて包みを受け取る。客席には座らず、店先で会釈した。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "今度は用事なしでおいで。客としてなら、ゆっくり話せるから"
+        }
+      ],
+      "branches": {
+        "new": [
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "久世朔。大会の間、ここを借りてる。届けてくれてありがとう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "蒸野はじめです。mukaiで働き始めました。よろしくお願いします"
+          }
+        ],
+        "known": [
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "ああ、はじめくん。今日はmukaiのお仕事なんだね。ありがとう"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_delivery_steve",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の宛名はSmoke & Glory。柄シャツの男が、店先の時計から顔を上げた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "mukaiからのお届け物です"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "steve",
+          "next_true": "known",
+          "next_false": "new"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブは包みを棚へ置き、道を戻れるようメモをこちらへ向けた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "配達の続き、気をつけて。今度は座っていってくれ"
+        }
+      ],
+      "branches": {
+        "new": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "スティーブだ。mukaiに入ったの、君か。よろしく"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "蒸野はじめです。よろしくお願いします"
+          }
+        ],
+        "known": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "はじめ、ありがとう。ムカイにもよろしくな"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_delivery_volk",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「鉄の煙」の宛名と、小さな日本語の看板が一致した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "mukaiから、預かり物をお届けに来ました"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "volk",
+          "next_true": "known",
+          "next_false": "new"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは宛名と受け渡しを確かめた。はじめもメモに印を付ける。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "確かに受け取った。ムカイにそう伝えてくれ"
+        }
+      ],
+      "branches": {
+        "new": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "ヴォルクだ。ここは東京の拠点にしている"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "蒸野はじめです。mukaiで働き始めました"
+          }
+        ],
+        "known": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "はじめか。今日は配達だな。そこで受け取る"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_delivery_return",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "mukaiへ戻り、受け渡しの済んだメモを渡す。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ありがとう。道も、少し分かったかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。次は、自分の用事でも訪ねてみたいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鞄を置き、カウンターへ戻った。いつもの勤務の続きが待っていた。"
+        }
+      ]
+    }
+  ]
+}

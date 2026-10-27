@@ -113,6 +113,7 @@
       "title": "Game logic without a browser",
       "kind": "quick",
       "run": [
+        "node --experimental-vm-modules remake/test/ch3_deliveries.mjs",
         "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",

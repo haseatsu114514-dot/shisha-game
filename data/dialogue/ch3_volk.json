@@ -8,14 +8,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "「Железный Дым」。読めない。店名の下に小さく「鉄の煙」と書いてあった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "東京に開いたばかりだという店。店の来歴を調べても、短い告知しか見つからなかった。"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch3_delivery_volk",
+          "next_true": "delivery_known_open",
+          "next_false": "delivery_new_open"
         },
         {
           "speaker": "",
@@ -50,9 +47,9 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch2_scout_seen",
-          "next_true": "seen_in_ch2",
-          "next_false": "unseen"
+          "flag": "_ch3_delivery_volk",
+          "next_true": "delivery_known_recognition",
+          "next_false": "delivery_original_recognition"
         },
         {
           "speaker": "hajime",
@@ -60,14 +57,18 @@
           "text": "はい。地方から来て、この辺のシーシャ屋を回っていて"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "あの、名前を聞いてもいいですか"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch3_delivery_volk",
+          "next_true": "delivery_known_question",
+          "next_false": "delivery_new_question"
         },
         {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "ヴォルク。ナイトサイドを経営している。ここは日本の市場を調べる拠点だ"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch3_delivery_volk",
+          "next_true": "delivery_known_name",
+          "next_false": "delivery_new_name"
         },
         {
           "speaker": "volk",
@@ -241,6 +242,69 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "（偵察の理由は聞けた。でも、開いたばかりの店がどう勝ち上がったのかは分からない）"
+          }
+        ],
+        "delivery_known_open": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "配達で来た「鉄の煙」へ、今日は客として戻った。"
+          }
+        ],
+        "delivery_new_open": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「Железный Дым」。読めない。店名の下に小さく「鉄の煙」と書いてあった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "東京に開いたばかりだという店。店の来歴を調べても、短い告知しか見つからなかった。"
+          }
+        ],
+        "delivery_known_name": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "ナイトサイドの経営者として、日本の市場を調べている。今日は、その話もできるな"
+          }
+        ],
+        "delivery_new_name": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "ヴォルク。ナイトサイドを経営している。ここは日本の市場を調べる拠点だ"
+          }
+        ],
+        "delivery_original_recognition": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_scout_seen",
+            "next_true": "seen_in_ch2",
+            "next_false": "unseen"
+          }
+        ],
+        "delivery_known_recognition": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "この辺の店を回っているんだったな。今日は、ゆっくりしていけ"
+          }
+        ],
+        "delivery_new_question": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの、名前を聞いてもいいですか"
+          }
+        ],
+        "delivery_known_question": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "普段のお仕事も、聞いていいですか"
           }
         ]
       },
