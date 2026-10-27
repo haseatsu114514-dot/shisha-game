@@ -136,6 +136,30 @@ state.flavorStock = { lemon: 9, mint: 3, double_apple: 0 };
 assert.equal(home.homeShishaOffer()?.id, rig.SUMI_RIG);
 assert.equal(home.homeShishaOffer(state, { eve: true }), null, "大会前夜は聞かない");
 
+// #1081 D05: HUDと同じ現在残量の色。病気の制作補正とは分ける。
+{
+  const { maxStamina, addStamina } = await import("../js/core/stats.js");
+  const { conditionForRatio } = await import("../js/core/condition.js");
+  for (const guts of [0, 30, 100]) {
+    state.stats.guts = guts;
+    const max = maxStamina();
+    for (const ratio of [0, .25, .2501, .5, .5001, 1]) {
+      state.stamina = max * ratio;
+      assert.equal(!!home.homeShishaOffer(), conditionForRatio(ratio).health === "green", `guts=${guts} ratio=${ratio}`);
+    }
+  }
+  state.stats.guts = 30;
+  const max = maxStamina();
+  for (const [before, after, expected] of [[.7,.45,false],[.1,.4,false],[.4,.7,true]]) {
+    state.stamina = Math.round(max * before);
+    addStamina(Math.round(max * after) - state.stamina);
+    assert.equal(!!home.homeShishaOffer(), expected, `${before}→${after}`);
+    saveGame(); state = loadGame();
+    assert.equal(!!home.homeShishaOffer(), expected, "LOAD後も現在の色で判定");
+  }
+  state.stamina = 80;
+}
+
 // レシピ帳から作る: 黄金比があればそれで（氷レモネード 12g → レモン8・ミント4）、なければ主役2:1
 const lemonade = DB.recipes.find((r) => r.id === "ice_lemonade");
 state.flavorStock = { lemon: 20, mint: 20, double_apple: 20, cinnamon: 20 };
@@ -194,6 +218,7 @@ const width = (t) => [...t].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? .5 : 1
 for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, rig.PRO_RIG]) for (const pick of [0, .5, .99]) for (const distant of [false, true]) {
   const d = home.homeShishaDialogue({ taste, stat: "insight" }, { id }, () => pick, { distant });
   for (const l of d.lines) {
+    assert(!l.text.includes("配合"), l.text);
     assert(width(l.text) <= 48 && !l.text.includes("\n"), l.text);
     if (l.speaker === "hajime") assert(l.text.startsWith("（") && l.text.endsWith("）"), l.text);
   }
