@@ -592,11 +592,10 @@ await suite('ch2-tournament',async check=>{
     assert(s.met.volk,'Volk must be known after his shop visit');
     assert.equal(s.flags._ch3_strategy,'aroma','The chosen strategy must survive the eve checkpoint');
     assert(s.relationshipMemories.includes('volk_measure'),'Volk’s measured hospitality should be remembered');
-    // DAY2の勤務内にある配達は、導入チェックポイントを増やさず続けて再生する。
-    const expectedTrace=ordered.slice(1).flatMap(scene=>scene.id==='ch3_mukai_intro'
-      ? [scene.id,'ch3_delivery_offer','ch3_delivery_kuze','ch3_delivery_steve','ch3_delivery_volk','ch3_delivery_return']
-      : [scene.id]);
-    assert.deepEqual(await page.evaluate(()=>window.__chapterThreeTrace),expectedTrace);
+    assert.deepEqual(await page.evaluate(()=>window.__chapterThreeTrace),ordered.slice(1).flatMap(scene=>
+      scene.id === 'ch3_mukai_intro' ? [scene.id, 'ch3_delivery_offer', 'ch3_delivery_kuze',
+        'ch3_delivery_steve', 'ch3_delivery_volk', 'ch3_delivery_return'] : [scene.id]));
+    for (const who of ['kuze', 'steve', 'volk']) assert.equal(s.flags[`_ch3_delivery_${who}`], true);
     assert.equal(await page.getByText(/全国大会・優勝|第三章・完/).count(),0,'The introduction cannot award a national win');
     for(const key of ['money','stats','flavorStock','lovers','loverSince','keepsakes','tournament'])
       assert.deepEqual(s[key],before[key],`Intro scene changed ${key}`);

@@ -69,13 +69,12 @@ export async function runSteamDodge(cs) {
   const slashCount = el("span.slash-count", { text: "×0" });
   const slashGrowth = el("span.slash-growth", [slashCount]);
   const slashFeedback = el("span.slash-feedback", { role: "status", "aria-live": "polite", "aria-atomic": "true", dataset: { test: "slash-feedback" } });
+  const slashLock = el("span.slash-lock", { text: "🔒", "aria-hidden": "true", dataset: { test: "slash-lock" } });
   const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "Z／ボタンで前方へアタック", dataset: { test: "dodge-slash", uses: "0" } }, [
-    el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashGrowth]),
+    el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashGrowth, slashLock]),
     el("span.refresh-copy", { text: "アタック" }),
   ]);
-  const slashLock = el("span.slash-lock", { text: "🔒", "aria-hidden": "true",
-    style: { fontSize: "20px", lineHeight: "28px" }, dataset: { test: "slash-lock" } });
-  const slashControl = el("div.slash-control", [slashBtn, slashFeedback, slashLock]);
+  const slashControl = el("div.slash-control", [slashBtn, slashFeedback]);
   const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
   const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
     el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),

@@ -6,6 +6,7 @@ import { layers } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, STAT_KEYS } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina, star } from "../core/stats.js";
+import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
@@ -136,12 +137,14 @@ export function updateHud() {
   dom.left.textContent = `あと${daysLeft()}日`;
   const r = staminaRatio();
   const condition = currentCondition();
-  dom.stamina.dataset.health = condition.health;
+  // ゲージは実残量。発病日の制作コンディションは従来どおり別に保持する。
+  const health = conditionForRatio(r).health;
+  dom.stamina.dataset.health = health;
   dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
   dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
   scheduleRecovery();
-  dom.stamina.classList.toggle("low", condition.health === "red");
+  dom.stamina.classList.toggle("low", health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる
   dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(92 * (maxStamina() / 100))}px`;
   dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 4 + 3.2 * star(k))).join(" "));
@@ -169,7 +172,7 @@ export async function presentSleepRecovery({ before, after }) {
   pendingRecovery = null;
   const maximum = maxStamina();
   const fill = el("b", { style: `width:${Math.min(100, before / maximum * 100)}%` });
-  const panel = el("div.sleep-recovery", { dataset: { test: "sleep-recovery" }, role: "status" }, [
+  const panel = el("div.sleep-recovery", { dataset: { test: "sleep-recovery", health: conditionForRatio(after / maximum).health }, role: "status" }, [
     el("p", { text: "ぐっすり眠って、体力が回復した" }),
     el("div.sleep-gauge", { role: "img", "aria-label": "睡眠で体力が回復している" }, [fill]),
   ]);
