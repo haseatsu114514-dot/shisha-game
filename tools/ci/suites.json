@@ -1615,6 +1615,7 @@
         "remake/test/browser/samechan_entry.mjs",
         "remake/test/browser/samechan_confession.mjs",
         "remake/test/browser/affinity_gates.mjs",
+        "remake/test/browser/naru_chapter_context.mjs",
         "remake/test/browser/relationship_ui.mjs",
         "data/dialogue/*hiyori*.json",
         "data/dialogue/*samechan*.json",
@@ -1633,6 +1634,7 @@
         "node remake/test/browser/samechan_entry.mjs",
         "node remake/test/browser/samechan_confession.mjs",
         "node remake/test/browser/affinity_gates.mjs",
+        "node remake/test/browser/naru_chapter_context.mjs",
         "node remake/test/browser/relationship_ui.mjs"
       ],
       "env": {
