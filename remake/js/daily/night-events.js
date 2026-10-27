@@ -78,7 +78,12 @@ export function fixedNightVisitBlock(events, spot) {
     if (!(ev.prerequisites || []).every(key => flags.has(key))) break;
     const mandatory = !postponeable(ev) || ev.schedule === "preparation" && ev.deadline <= state.day;
     if (mandatory && ev.pin === spot.id) {
-      return { ok: false, why: "この後もtonariに行くから、今は別のところにしよう", tag: "この後、必須の予定あり" };
+      return {
+        ok: false,
+        why: "この後もtonariに行くから、今は別のところにしよう（今夜、必須の予定あり）",
+        tag: "この後、必須の予定あり",
+        desc: `今夜はtonariで本編の予定${ev.label ? `（${ev.label}）` : ""}があるため、自由入店（客としての一服・練習・シフト）はお休みです。一服やシフトは夜にtonariの予定がない日や翌日以降に利用できます。フレーバーの練習は夜の自宅シーシャでも可能です。`,
+      };
     }
     for (const key of ev.doneKeys || []) flags.add(key);
   }
