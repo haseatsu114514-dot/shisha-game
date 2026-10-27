@@ -1,7 +1,7 @@
 // スミさんの「シーシャの仕組み」解説に合わせて段階表示する図解（Issue #1128）。
 // 台詞行の "diagram" キー（engine の showLine）から呼ぶ。段階は絶対指定なので、
 // SKIP・AUTO・連打・LOAD で飛んでも、その行に対応する段階へそのまま切り替わる（重なり・取りこぼしなし）。
-// 新規画像は使わず SVG で店の図として描く。水は煙を冷やすだけで害は減らない（WHO/CDC）ことを図にも明記する。
+// 新規画像は使わず SVG で店の図として描く。水は煙を冷やして吸いやすくする（有害物質への効果は諸説あり）とだけ図に添え、断定しない。
 import { layers } from "../core/ui.js";
 
 // 段階の順番（凡例の番号と、段階インジケータに使う）
@@ -89,7 +89,7 @@ function build(host) {
       <p class="sd-title">シーシャの仕組み</p>
       ${APPARATUS}
       <ol class="sd-legend">${legend}</ol>
-      <p class="sd-note">※水は煙を冷やすだけ。有害物質はほとんど取れない</p>
+      <p class="sd-note">※水は煙を冷やして、吸いやすくしている（有害物質への効果は諸説あり）</p>
     </div>`;
   host.append(box);
   return box;
