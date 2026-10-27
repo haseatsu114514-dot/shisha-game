@@ -45,8 +45,8 @@ await check('actual fixed-day access and all-person suppression preserve pin wit
  const av = access.spotAvailability(tonari,{visitBlock});
  assert.equal(av.ok,false,'fixed tonari event must reject the earlier free visit');
  assert.match(av.why,/この後もtonari/);
- assert.match(av.desc,/自由入店（客としての一服・練習・シフト）はお休み/);
- assert.match(av.desc,/自宅シーシャ/);
+ assert.match(av.desc,/客としての一服・まかない練習・シフトには入れない/);
+ assert.match(av.desc,/夜の予定がない日/);
  assert.equal(access.spotVisible(tonari),true);assert.deepEqual([...people.spotPeople(tonari,{visitBlock})],[]);
  assert.equal(access.spotAvailability(other,{visitBlock}).ok,true);
  for(let i=0;i<4;i++)visitBlock(tonari);assert.equal(JSON.stringify(state),before);
