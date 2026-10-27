@@ -2,13 +2,12 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
+import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
-import { state, save, markMet, setFlag, flag, timeOfDay, requestResumeOnBoot } from "../core/state.js";
-import { sketchIn } from "../core/scene-motions.js";
+import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
 import { addMoney, maxStamina, addStamina } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
@@ -41,7 +40,7 @@ import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill
 import { prepareFlavorStock } from "../daily/preparation.js";
 import { chooseDrill } from "../daily/tonari.js";
 import { warmCraftAssets } from "../craft/readiness.js";
-import { playTsumugiStory } from "./tsumugi-story.js";
+import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
@@ -287,11 +286,9 @@ const nightScene = (id, bg) => async (context) => {
   ] } : id;
   await play(scene, bg ? { bg } : {});
 };
-// つむぎのスケッチ: 紙の上に鉛筆の線で店が描かれ、色が乗ってから会話へ
+// 完成を告げる台詞の後、完成画を提示するところで描画演出を入れる。
 const sketchScene = (id, bg) => async () => {
-  const art = sceneBg(bg, timeOfDay());
-  await sketchIn(async () => { if (art.url) await setBg(art.url, { tint: art.tint }); }, art.url);
-  await play(id, { bg });
+  return await playTsumugiSketch(id, bg);
 };
 const once = (key, fn) => ({ id: key, doneKeys: [key], run: async (context) => { await fn(context); setFlag(key); }, done: () => flag(key) });
 
