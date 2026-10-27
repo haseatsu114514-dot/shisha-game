@@ -10,7 +10,7 @@ import { on } from "../core/bus.js";
 import { hiyoriAxeAffordable, playHiyoriAxeSequence } from "./hiyori-axe.js";
 import { addMoney, addStamina } from "../core/stats.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
-import { allSpots, isClosed, isUnlocked } from "./spots.js";
+import { allSpots, isClosed, isUnlocked, shortNormalVisit } from "./spots.js";
 import { hiyoriFirstMeetingReady, axeBarRumorDue } from "../core/axe-bar-discovery.js";
 import { playAxeBarRumor } from "./axe-bar-discovery.js";
 
@@ -29,7 +29,7 @@ function ownedConversation(signal) {
 
 /** 実際に読み終えた後だけ進行を記録。同時呼び出し・再読で好感度を稼がない。 */
 export async function playHiyoriEvent(id, options = {}) {
-  if (active || isPlaying() || hiyoriEventStatus(id) !== "ready") return false;
+  if (options.signal?.aborted || active || isPlaying() || hiyoriEventStatus(id) !== "ready") return false;
   const event = hiyoriRoute().events.find((e) => e.id === id);
   if (id === "axe_reveal" && !hiyoriAxeAffordable()) return false;
   const owner = state;
@@ -40,9 +40,9 @@ export async function playHiyoriEvent(id, options = {}) {
       if (!await playHiyoriAxeSequence(event, options)) return false;
     } else {
       const result = await play(event.dialogue, { ...options, ...(lifetime ? { signal: lifetime.signal } : {}) });
-      if (result?.cancelled) return false;
+      if (!result || result.cancelled) return false;
     }
-    if (state !== owner || lifetime?.signal.aborted) return false;
+    if (state !== owner || options.signal?.aborted || lifetime?.signal.aborted) return false;
     if (id === "axe_reveal") {
       // 前段・実プレイ・後段の読了と料金を同じ保存にする。中止は未払い。
       if (!hiyoriAxeAffordable()) return false;
@@ -58,7 +58,7 @@ export async function playHiyoriEvent(id, options = {}) {
     if (hiyoriRoute().storyEvents.includes(id)) state.story.hiyori = (state.story.hiyori || 0) + 1;
     if (event.affinity) gainAffinity("hiyori", event.affinity);
     await afterStory(event.dialogue, { signal: lifetime?.signal, deferSave: id === "work_talk" });
-    if (state !== owner || lifetime?.signal.aborted) return false;
+    if (state !== owner || options.signal?.aborted || lifetime?.signal.aborted) return false;
     await maybeRecruitTrpgMember("hiyori");
     if (state !== owner) return false;
     save();
@@ -100,9 +100,9 @@ export function hiyoriShopLocation() {
   if (!ready) return null;
   const candidates = [...allSpots(), ...extraShopSource()].filter(spot => hiyoriShopEligible(spot) && isUnlocked(spot)
     && !isClosed(spot) && !spot.unavailable && state.visitedDay?.[spot.id] !== state.day)
-    .map(spot => ({ id: spot.id, roll: encounterRoll(spot) }))
+    .map(spot => ({ id: spot.id, roll: encounterRoll(spot), quiet: shortNormalVisit(spot) }))
     .filter(spot => first || spot.roll < 0.2)
-    .sort((a, b) => a.roll - b.roll || a.id.localeCompare(b.id));
+    .sort((a, b) => Number(b.quiet) - Number(a.quiet) || a.roll - b.roll || a.id.localeCompare(b.id));
   return candidates[0]?.id || null;
 }
 
@@ -110,13 +110,13 @@ export function hiyoriShopLocation() {
 export const hiyoriShopEncounterDue = spot => !!spot && hiyoriShopLocation() === spot.id;
 
 /** 既存の訪問に相席を添える。同じ日の多重遭遇・無料の買い物による好感度稼ぎを防ぐ。 */
-export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLocation() } = {}) {
+export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLocation(), signal = null } = {}) {
   // 来店中の面識・訪問済みの更新で、入店前に示した滞在先を再抽選しない。
-  if (!hiyoriShopEligible(spot) || !scheduledSpot || scheduledSpot !== spot.id
+  if (signal?.aborted || !hiyoriShopEligible(spot) || !scheduledSpot || scheduledSpot !== spot.id
     || state.flags._hiyori_encounter_day === `${state.chapter}:${state.day}`) return false;
   const owner = state;
   const stamp = `${state.chapter}:${state.day}`;
-  const options = { bg };
+  const options = { bg, signal };
   if (hiyoriEventStatus("meeting") === "ready") {
     if (!await playHiyoriEvent("meeting", options)) return false;
     state.flags._hiyori_meeting_shop = spot.id;
@@ -134,8 +134,8 @@ export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLo
       const owner = state;
       active = true;
       try {
-        await play(id, options);
-        if (state !== owner) return false;
+        const result = await play(id, options);
+        if (state !== owner || signal?.aborted || !result || result.cancelled) return false;
         state.flags._hiyori_repeat_count = n + 1;
         gainAffinity("hiyori", 10);
       } finally { active = false; }
