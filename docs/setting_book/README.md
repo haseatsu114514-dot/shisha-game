@@ -3,6 +3,7 @@
 - **参照commit**：`origin/main` `54a6d87f`（2026-10-28 確認）
 - **確認日**：2026-10-28
 - **位置づけ**：正本は [`docs/master_spec.md`](../master_spec.md)・[`docs/owner_requests.md`](../owner_requests.md)・[`brand/story_and_structure.md`](../../brand/story_and_structure.md)・[`brand/character_profiles.md`](../../brand/character_profiles.md)・[`data/characters.json`](../../data/characters.json) 等であり、**この資料集は二次資料**です。正本と食い違いがある場合は正本を優先します。
+- **照合範囲（2026-10-28 司令塔レビュー）**：フレーバー収録数・価格・リーフ種別（`data/flavors.json` を集計）、主要人物の氏名・読み・年齢（`data/characters.json`）、章タイトル・大会名・課題、魅力ボーナス額（`remake/js/daily/tonari.js`）は正本と照合済み。人物の一人称・呼称表、店舗・スポットの説明文、各章あらすじの細部は**全件照合が未了**のため、正本と食い違う場合は正本を優先してください（身長は資料集から外し、[`brand/character_profiles.md`](../../brand/character_profiles.md) を参照）。
 - **ステータス区分**：
   - **確定（main反映済み）**：現行 `origin/main` の正本・データ・実装に反映されている仕様。本文にそのまま記載。
   - **採用済みだが未マージ**：オーナー裁定済み・正本（`master_spec.md` / `owner_requests.md`）記録済みだが、一部チャプターランナーや周辺実装が順次接続中の仕様。該当箇所に明記。
@@ -27,7 +28,7 @@
 | **03** | [`03_world_shops.md`](03_world_shops.md) | 4つの舞台（橙須・柚ヶ谷・東京・ドバイ）・シーシャ店・街スポット・電車移動・日常パートと1日の流れ |
 | **04** | [`04_glossary.md`](04_glossary.md) | 作中用語・シーシャ機材＆工程（水入れ・炭・キッチンタイマー蒸らし等）・UI/LIME・小ネタ解説 |
 | **05** | [`05_tournament.md`](05_tournament.md) | 大会システム（全章4人同時1試合制）・審査5軸（20%×5）・各章課題と特別審査ルール・クラフト工程 |
-| **06** | [`06_flavors_recipes.md`](06_flavors_recipes.md) | 5メーカー全76フレーバー・温度帯表現・フレーバー熟練度Lv.1〜5・定番13レシピ・裏レシピ7種・機材一覧 |
+| **06** | [`06_flavors_recipes.md`](06_flavors_recipes.md) | 5メーカー全78フレーバー・温度帯表現・フレーバー熟練度Lv.1〜5・定番13レシピ・裏レシピ7種・機材一覧 |
 | **引き継ぎ** | [`HANDOVER.md`](HANDOVER.md) | 確定裁定一覧（`master_spec.md` 照合済み）・旧版の引き継ぎ（参考） |
 
 ---
@@ -167,6 +168,10 @@
 
 ## 変更履歴
 
+### 2026-10-28 司令塔レビューでの修正
+
+- 作業者の下書きにあった誤りを修正：フレーバー収録数（76→78、メーカー別内訳・価格・リーフ種別を `data/flavors.json` から再集計）、ナイトサイドを「ダークリーフ専門」とした記述、スミの本名（→墨田 丈一郎・46歳）、ムカイさん（根拠のない本名・年齢を削除し48歳・店長に）、なるの読み（なるぎれ）、パッキーの読み（なみしま）、王 煙楼の出身（→中国）と店の説明、根拠のない常連客名「高橋さん」、ダーク アールグレイのニコチン値（9→8）、根拠のない身長の記載。
+
 ### 2026-10-28（Issue #544：10/09削除版からの復元および `origin/main` `54a6d87f` への全面追随更新）
 
 - **全体・メタ情報（`README.md` / `HANDOVER.md` / `tools/build_setting_reference.py`）**
@@ -181,13 +186,13 @@
   - 第3章タイトルを『嘘つきたちの夜（SMOKE AND MIRRORS）』（#385）へ更新。旧ライバル「ナンディ・カルダモン」を廃止し **久世 朔（くぜ さく）** と間借り店「煙幕」へ差し替え。ましろがグレープをダブルアップルと偽って出す展開、生活の手順による味覚回復、**なるの「ラストチャンス予選」突破による日本第二代表獲得**を反映（根拠：[`data/dialogue/ch3_main.json`](../../data/dialogue/ch3_main.json), [`data/dialogue/ch3_rivals.json`](../../data/dialogue/ch3_rivals.json), [`data/dialogue/ch3_mashiro.json`](../../data/dialogue/ch3_mashiro.json)）。
   - 第4章（スミと南雲の15年前の過去、シェイクの原点、王煙楼の位置づけ、はじめの「和の一台」とスミとの二台）および第5章（SHISHA-9000とのダブルアップル単体12g・二本勝負・観客挙手2回合計票）を反映（根拠：[`brand/story_and_structure.md`](../../brand/story_and_structure.md), [`docs/master_spec.md`](../master_spec.md)）。
 - **キャラクター・フレーバーうんちく（`02_characters.md`）**
-  - 公式ヒロインを7名体制（**サメちゃん / 波多野なぎさ**、**朝霧ひより** を追加）へ更新。街スポット店主（**斧崎マキ**、**六角サイ**、**路上占い師**）と常連（**高橋さん**）を追加（根拠：[`data/characters.json`](../../data/characters.json), [`data/story_routes.json`](../../data/story_routes.json)）。
+  - 公式ヒロインを7名体制（**サメちゃん / 波多野なぎさ**、**朝霧ひより** を追加）へ更新。街スポット店主（**斧崎マキ**、**六角サイ**、**路上占い師**）と常連（**常連のサラリーマン**）を追加（根拠：[`data/characters.json`](../../data/characters.json), [`data/story_routes.json`](../../data/story_routes.json)）。
   - 人物設定の改定を反映：神崎竜二の年齢を **53歳**（旧39歳から修正）、チャコール博士の本名を **火浦 理一**（旧「炭場 創」から修正）、HOOKAH PRESS編集長を **上園 文太郎**（旧「前園 壮一郎」から修正）、零-REI-を純粋なV系好き青年店長（裏の顔やスミ由来のタトゥー設定を撤回）、ヴォルクを **NIGHTSIDE経営者**（凛のボス）、ダ・シルヴァ太陽へのチャド統合を反映（根拠：[`brand/character_profiles.md`](../../brand/character_profiles.md), [`data/characters.json`](../../data/characters.json)）。
   - **#1108 フレーバーうんちく**を反映：なる（バニラの温度帯による味変化）、みんと（ミントの温度帯による味変化）、神崎竜二（ドラゴンフルーツと0分立ち上げ）、零-REI-（ローズの中温止めと棘）、アダム4回目（ダブルアップルの焦げる一歩手前の甘さと先人からの継承＋ナイフ投げ）、スミ（レモンの輪郭と熱）、久世朔（フローズンシトラス＋ブラックティーの熱順序によるお菓子の連想）、水瀬ましろ（重いダークリーフ `アルファーヘブン ダーク アールグレイ` 好みと第2章「これ、お水？」の理由）を追記（根拠：[`data/dialogue/ch1_naru.json`](../../data/dialogue/ch1_naru.json), [`data/dialogue/ch1_minto.json`](../../data/dialogue/ch1_minto.json), [`data/dialogue/ch1_adam.json`](../../data/dialogue/ch1_adam.json), [`data/dialogue/ch2_kumicho.json`](../../data/dialogue/ch2_kumicho.json), [`data/dialogue/ch2_rei.json`](../../data/dialogue/ch2_rei.json), [`data/dialogue/ch3_rivals.json`](../../data/dialogue/ch3_rivals.json), [`data/dialogue/ch3_mashiro.json`](../../data/dialogue/ch3_mashiro.json)）。
 - **店舗・街・機材・システム・レシピ（`03_world_shops.md` / `04_glossary.md` / `05_tournament.md` / `06_flavors_recipes.md`）**
   - 第1章の街名を「橙須（とうす）」、第2章の街名を「柚ヶ谷（ゆずがや）」へ統一。あげはの店を「MELTY PUFF」、久世の間借り店「煙幕」、サメちゃんの「SHISHARK」、橙須・柚ヶ谷の各スポットを追加（根拠：[`docs/master_spec.md`](../master_spec.md), [`brand/story_and_structure.md`](../../brand/story_and_structure.md)）。
   - **スミの水の説明（#1113 / #1128）**：「煙を冷やして吸いやすくする」だけとし、有害物質への影響は「諸説ある」（断定しない）へ統一。爆煙の理由は「グリセリンと熱の仕事」（K14）を明記（根拠：[`docs/master_spec.md`](../master_spec.md), [`data/glossary.json`](../../data/glossary.json)）。
   - **水入れ開始水量0（#1081 E01）**、キッチンタイマー蒸らし（#541）、はじめの【魅力】の2効果（指名売上＋好感度倍率 GG3/GG4）を反映（根拠：[`docs/master_spec.md`](../master_spec.md)）。
-  - 5メーカー全76フレーバー（`アルファーヘブン` 37種・`ドバジ` 17種・`アフサール` 18種・`フォースフェクタ` 2種・`ナイトサイド` 2種）、定番13レシピ（「メルティ・サマー」追加、氷レモネード黄金比7:3）、裏レシピ7種、専用素焼きハガル8種を含む最新機材データを反映（根拠：[`data/flavors.json`](../../data/flavors.json), [`data/recipes.json`](../../data/recipes.json), [`data/secret_recipes.json`](../../data/secret_recipes.json), [`data/equipment.json`](../../data/equipment.json)）。
+  - 5メーカー全78フレーバー（`アルファーヘブン` 39種・`ドバジ` 18種・`アフサール` 17種・`フォースフェクタ` 1種・`ナイトサイド` 3種）、定番13レシピ（「メルティ・サマー」追加、氷レモネード黄金比7:3）、裏レシピ7種、専用素焼きハガル8種を含む最新機材データを反映（根拠：[`data/flavors.json`](../../data/flavors.json), [`data/recipes.json`](../../data/recipes.json), [`data/secret_recipes.json`](../../data/secret_recipes.json), [`data/equipment.json`](../../data/equipment.json)）。
 - **HTML生成スクリプト（`tools/build_setting_reference.py`）**
   - `assets/` 内に実在する最新立ち絵（`kumicho`, `rei`, `volk`, `kuze`, `steve`, `hiyori`, `samechan`, `maki`, `sai`, `salaryman`, `uranaishi` 等）および背景・CGパスへ更新し、存在しない旧キャラ（`nandi`）を除外。本文データを設定資料集と完全同期（根拠：[`remake/data/manifest.json`](../../remake/data/manifest.json)）。
