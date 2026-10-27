@@ -189,33 +189,40 @@ try {
   await seat.close();
   console.log("[tsumugi story] PASS: customer-seat scenes, known after the interview, first meeting kept before it");
 
-  // #814: ハートと会話イベントの連動（第1章の固有会話）。実際の spots/stats を使う。
+  // 通常好感度は既読数と独立。会話は必要ハートで開き、一訪問で最古未読を一本だけ読む。
   const gate = await open();
   const g = await gate.evaluate(async () => {
+    const below = T.fresh(); below.story.naru = 1; below.affinity.naru = 8;
+    const belowHeart = T.spots.hasNewStory("naru");
+    below.affinity.naru = 9;
+    const atHeart = T.spots.hasNewStory("naru");
     const s = T.fresh(); s.day = 4; s.slot = 0; s.met.naru = true;
     const lv = () => T.stats.affinityLevel("naru");
     await T.spots.visitChar("naru");
-    const first = { story: s.story.naru, lv: lv(), open: T.spots.hasNewStory("naru") };
-    T.stats.gainAffinity("naru", 30); // LIMEや贈り物で大きく増えても、2本目を読むまで♥2にはならない
-    const capped = { pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_affinity_waiting_pts || 0, open: T.spots.hasNewStory("naru") };
+    const first = { story: s.story.naru, pts: s.affinity.naru, lv: lv(), open: T.spots.hasNewStory("naru") };
+    T.stats.gainAffinity("naru", 30); // 未読会話を既読にせず、獲得点は保留せずに加算する。
+    const gained = { story: s.story.naru, pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_affinity_waiting_pts || 0, open: T.spots.hasNewStory("naru") };
     T.vn.backlog().length = 0;
     await T.spots.visitChar("naru");
     const second = { story: s.story.naru, pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_affinity_waiting_pts || 0,
       read: T.lines().length > 0, released: s.flags._naru_affinity_stage_released_pts || 0 };
-    // 第2章でも未読の第1章会話を勝手に完読扱いにしない。
+    // 第2章でも好感度は伸び、未読の第1章会話は次の訪問へ残る。
     const ch2 = T.fresh(); ch2.chapter = 2; ch2.met.naru = true; T.stats.gainAffinity("naru", 60);
-    return { first, capped, second, ch2: { level: T.stats.affinityLevel("naru"), points: ch2.affinity.naru,
+    return { belowHeart, atHeart, first, gained, second, ch2: { story: ch2.story.naru || 0,
+      open: T.spots.hasNewStory("naru"), level: T.stats.affinityLevel("naru"), points: ch2.affinity.naru,
       waiting: ch2.flags._naru_affinity_waiting_pts || 0 } };
   });
-  assert.deepEqual(g.first, { story: 1, lv: 0, open: false }, "2nd talk waits for ♥1");
-  assert.equal(g.capped.lv, 1); assert.equal(g.capped.pts, 19, "Capped just below ♥2 until the 2nd talk");
-  assert(g.capped.waiting > 0, "The excess is kept, not lost"); assert.equal(g.capped.open, true, "♥1 opens the 2nd talk");
-  assert.equal(g.second.story, 2); assert.equal(g.second.lv, 2, "Reading the talk releases the kept points up to the next cap");
-  assert.equal(g.second.pts, 32); assert(g.second.waiting - g.second.released < g.capped.waiting);
-  assert.equal(g.ch2.level, 0); assert.equal(g.ch2.points, 8);
-  assert(g.ch2.waiting > 0, "Unread chapter 1 talk still holds later gains");
+  assert.equal(g.belowHeart, false, "2nd talk waits for ♥1");
+  assert.equal(g.atHeart, true, "♥1 opens the 2nd talk");
+  assert.deepEqual(g.first, { story: 1, pts: 9, lv: 1, open: true }, "First completed talk guarantees ♥1");
+  assert.deepEqual(g.gained, { story: 1, pts: 35, lv: 3, waiting: 0, open: true },
+    "Ordinary gains cross unread hearts without reading the next talk or deferring points");
+  assert.deepEqual(g.second, { story: 2, pts: 43, lv: 3, waiting: 0, read: true, released: 0 },
+    "One visit reads only the 2nd talk and grants its normal reward");
+  assert.deepEqual(g.ch2, { story: 0, open: true, level: 4, points: 51, waiting: 0 },
+    "Chapter 2 gains leave the first chapter's oldest unread talk available");
   await gate.close();
-  console.log("[tsumugi story] PASS: #814 heart opens the next talk, talks cap the next heart, kept points released, chapter 2 holds unread gains");
+  console.log("[tsumugi story] PASS: heart1 floor, heart-gated talks, independent ordinary gains, one talk per visit across chapters");
 
   // 本番カレンダーの夜枠で必須イベントが発火し、翌日のマップへ戻る。全章通しは不要。
   for (const day of [3, 11, 13]) {
