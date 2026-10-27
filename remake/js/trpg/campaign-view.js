@@ -129,6 +129,12 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     }
     if (!party.children.length) party.append(el("p", { text: "仲間と親しくなると、一緒に遊べる物語が増えていきます。" }));
     root.append(party);
+    if (!readOnly && !daytime && !completed && !scenarios.some(scenario =>
+      state?.trpg?.owned?.includes(scenario.id) && !state?.trpg?.cleared?.[scenario.id]
+      && castTrpgTable(state, catalog, scenario, options).ok)) {
+      root.append(el("p.trpg-campaign-notice", { dataset: { test: "trpg-preparation-notice" },
+        text: "今は遊べる本と仲間が揃っていません。下の入荷条件と仲間の予定を確認し、交流・勧誘から準備しよう。" }));
+    }
     if (visitMember && !readOnly && state.trpg?.club?.founded) {
       root.append(el("div.trpg-club-demo-visits", { "aria-label": "試遊用の対面会話" }, [
         el("small", { text: "試遊：知り合いに会って勧誘する" }),

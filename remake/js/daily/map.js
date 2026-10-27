@@ -188,7 +188,11 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         Promise.all(sceneArtUrls(pv.url).map((url) => imageReady(url, 15000))).then((loaded) => {
           if (!info.contains(preview)) return;
           preview.classList.remove("loading");
-          if (!loaded.every(Boolean)) { preview.textContent = "画像を表示できませんでした"; return; }
+          if (!loaded.every(Boolean)) {
+            preview.textContent = `${s.label} — ${s.area || "行き先"}`;
+            preview.setAttribute("aria-label", `${s.label}の案内。詳細と入店条件は下に表示しています`);
+            return;
+          }
           preview.replaceChildren();
           preview.removeAttribute("role");
           renderSceneArt(preview, pv.url);
