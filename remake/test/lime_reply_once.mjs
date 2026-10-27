@@ -20,7 +20,7 @@ async function fixture({ lover = false, reply = response, invitation = false } =
   const imports = {
     'util.js': { el: noop, sleep: async () => {}, fitOneLine: noop, yen: String },
     'data.js': { DB: { lime: [] }, displayName: String, faceIconUrl: noop },
-    'ui.js': { layers: {} }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
+    'ui.js': { layers: {}, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
     'travel-budget.js': { spendableMoney: () => 30000 },
     'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private }); if (pts > 0) opts?.onGain?.(.2125); },
