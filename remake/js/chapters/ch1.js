@@ -6,8 +6,8 @@ import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
-import { withLoadingNotice, singleFlight } from "../core/module-loading.js";
-import { state, save, markMet, setFlag, flag, timeOfDay } from "../core/state.js";
+import { withLoadingNotice } from "../core/module-loading.js";
+import { state, save, markMet, setFlag, flag, timeOfDay, requestResumeOnBoot } from "../core/state.js";
 import { sketchIn } from "../core/scene-motions.js";
 import { addMoney, maxStamina, addStamina } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
@@ -200,21 +200,22 @@ export async function resumeGame() {
 // 取得に失敗（通信断・デプロイ直後のキャッシュ不整合）しても無反応で止めず、
 // 「もう一度試す／タイトルへ戻る」で操作可能に戻す。章の中身の失敗は各章側が扱う。
 async function resumeChapterModule(load, run, label) {
-  const attempt = async () => run(await withLoadingNotice(load(), loadingNotice(label)));
-  try { return await attempt(); }
-  catch { return showResumeError(attempt); }
+  try { return await run(await withLoadingNotice(load(), loadingNotice(label))); }
+  catch { return showResumeError(); }
 }
 
-function showResumeError(attempt) {
-  return new Promise((resolve) => {
-    // singleFlight で連打・二重読込を防ぐ。失敗したら同じ画面でそのまま再試行できる。
-    const run = singleFlight(async () => {
+function showResumeError() {
+  return new Promise(() => {
+    // 同じ文書では失敗した import がキャッシュされ、再取得されないブラウザがある。
+    // 既存のLOADと同じ起動経路で、保存済みの続きから文書ごと読み直す。
+    const reload = (resume) => {
+      if (retry.disabled || home.disabled) return;
       retry.disabled = home.disabled = true;
-      try { resolve(await attempt()); }
-      catch { retry.disabled = home.disabled = false; retry.focus({ preventScroll: true }); }
-    });
-    const retry = el("button.btn.primary", { text: "もう一度試す", dataset: { test: "resume-retry" }, onclick: run });
-    const home = el("button.btn", { text: "タイトルへ戻る", dataset: { test: "resume-title" }, onclick: () => location.reload() });
+      if (resume) requestResumeOnBoot();
+      location.reload();
+    };
+    const retry = el("button.btn.primary", { text: "もう一度試す", dataset: { test: "resume-retry" }, onclick: () => reload(true) });
+    const home = el("button.btn", { text: "タイトルへ戻る", dataset: { test: "resume-title" }, onclick: () => reload(false) });
     const root = el("div.end-screen", [
       el("div.end-title", { text: "続きを読み込めませんでした" }),
       el("div.end-sub", { text: "通信を確認して、もう一度お試しください。確定した進行は残っています。" }),

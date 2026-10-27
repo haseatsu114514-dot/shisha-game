@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import { withLoadingNotice, singleFlight } from '../js/core/module-loading.js';
 
 const defer = () => { let resolve, reject; const promise = new Promise((res, rej) => { resolve = res; reject = rej; }); return { promise, resolve, reject }; };
@@ -73,4 +75,61 @@ const defer = () => { let resolve, reject; const promise = new Promise((res, rej
   assert.equal(runs, 2);
 }
 
-console.log('module loading: PASS (delay suppress/show/hide, failure cleanup, retry, single-flight)');
+// 実際の章再開・復帰画面の関数を、DOMとナビゲーションだけ差し替えて検証する。
+// ブラウザ内での失敗キャッシュ自体と、再読込後の起動はbrowserテストが担当する。
+const ch1Source = readFileSync(new URL('../js/chapters/ch1.js', import.meta.url), 'utf8');
+const recoveryStart = ch1Source.indexOf('async function resumeChapterModule(');
+const recoveryEnd = ch1Source.indexOf('\nasync function dailyPart()', recoveryStart);
+assert(recoveryStart >= 0 && recoveryEnd > recoveryStart);
+const recoverySource = ch1Source.slice(recoveryStart, recoveryEnd);
+function recoveryHarness() {
+  const buttons = new Map(), events = [];
+  const context = vm.createContext({
+    withLoadingNotice, singleFlight, loadingNotice: () => ({}),
+    requestResumeOnBoot: () => events.push('resume-on-boot'),
+    location: { reload: () => events.push('reload') },
+    el: (spec, attrs) => {
+      const node = { ...attrs, disabled: false, focus: () => events.push(attrs.dataset.test) };
+      if (attrs.dataset?.test) buttons.set(attrs.dataset.test, node);
+      return node;
+    },
+    showScreen: name => events.push(name),
+  });
+  vm.runInContext(recoverySource, context);
+  return { resume: context.resumeChapterModule, buttons, events };
+}
+{
+  const h = recoveryHarness();
+  let loads = 0, runs = 0, settled = false;
+  // 同じ文書での再importが必ず失敗する環境でも、再読込の導線が機能する。
+  const failed = Promise.reject(new Error('cached module fetch failure'));
+  h.resume(() => { loads++; return failed; }, () => runs++, 'chapter')
+    .then(() => { settled = true; }, () => { assert.fail('Resume must show recovery instead of rejecting'); });
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(settled, false, 'Resume remains pending until navigation');
+  assert.deepEqual(h.events, ['end', 'resume-retry']);
+  const retry = h.buttons.get('resume-retry'), home = h.buttons.get('resume-title');
+  await retry.onclick();
+  assert.deepEqual(h.events, ['end', 'resume-retry', 'resume-on-boot', 'reload']);
+  assert.equal(retry.disabled, true);
+  assert.equal(home.disabled, true);
+  await retry.onclick();
+  await home.onclick();
+  assert.equal(h.events.filter(event => event === 'reload').length, 1, 'Double navigation is blocked');
+  assert.equal(loads, 1, 'Do not retry the cached import in the same document');
+  assert.equal(runs, 0, 'Do not start a chapter after import failure');
+}
+{
+  const h = recoveryHarness();
+  h.resume(() => Promise.reject(new Error('offline')), () => assert.fail('No module'), 'chapter');
+  await new Promise(resolve => setImmediate(resolve));
+  await h.buttons.get('resume-title').onclick();
+  assert.deepEqual(h.events, ['end', 'resume-retry', 'reload'], 'Title navigation must not request resume');
+}
+{
+  const h = recoveryHarness();
+  assert.equal(await h.resume(() => Promise.resolve({ chapter: 2 }), module => module.chapter, 'chapter'), 2);
+  assert.deepEqual(h.events, [], 'Successful resume needs no recovery screen or reload');
+}
+
+console.log('module loading: PASS (delay suppress/show/hide, failure cleanup, retry, single-flight, resume recovery navigation)');

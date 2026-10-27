@@ -5,7 +5,7 @@ import { suite } from "./support.mjs";
 
 await suite("resume-loading-a01", async check => {
   await check("resume-chapter-two-import-failure-recovers", async page => {
-    // ch2.js の取得を最初だけ失敗させる（通信断・デプロイ直後のキャッシュ不整合の模擬）。
+    // ch2.js の取得を失敗させる（通信断・デプロイ直後のキャッシュ不整合の模擬）。
     // abort は "aborted"（ERR_ABORTED）で返す。support.mjs はこれを失敗リソースに数えない。
     let blockCh2 = true;
     let ch2Requests = 0;
@@ -20,6 +20,8 @@ await suite("resume-loading-a01", async check => {
       core.newGame();
       core.state.chapter = 2;
       core.state.phase = "daily";
+      core.state.money = 23456;
+      core.state.flags._resume_loading_a01 = true;
       core.save();
       window.R = { ch1, core, resolved: false, threw: null };
       // resumeGame 自体が例外で止まらないことを確かめる（失敗時は画面を出して待つ）。
@@ -37,11 +39,29 @@ await suite("resume-loading-a01", async check => {
     assert.equal(await page.evaluate(() => R.resolved), false, "まだ再開は完了していないはず");
     assert.equal(ch2Requests, 1, "最初の再開で ch2.js を1回だけ取得した");
 
-    // 取得を通してから「もう一度試す」を押すと、第2章へ復帰する。
+    const saved = await page.evaluate(() => localStorage.getItem(R.core.SAVE_KEY));
+
+    // 通信断が続く場合も、再読込後に復帰画面とフォーカスが戻り、再び操作できる。
+    await Promise.all([page.waitForEvent("load"), retry.click()]);
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await retry.waitFor();
+    assert.equal(await retry.isEnabled(), true, "再失敗後に再試行できない");
+    assert.equal(await page.locator('[data-test="resume-title"]').isEnabled(), true);
+    assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "resume-retry");
+    assert.equal(ch2Requests, 2, "再試行で ch2.js を取得し直していない");
+    assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), saved,
+      "再開失敗で保存済み進行を書き換えた");
+
+    // 取得を通してから「もう一度試す」を押すと、タイトルを経由せず第2章へ復帰する。
     blockCh2 = false;
-    await retry.click();
+    await Promise.all([page.waitForEvent("load"), retry.click()]);
+    await page.locator("#boot").waitFor({ state: "detached" });
     await page.waitForFunction(() => document.body.classList.contains("ch2-city"), null, { timeout: 15000 });
     assert.equal(await page.locator('[data-test="resume-retry"]').count(), 0, "復帰後も失敗画面が残っている");
-    assert(ch2Requests >= 2, "再試行で ch2.js を取得し直していない");
+    assert.equal(ch2Requests, 3, "再試行で ch2.js を1回だけ取得し直す");
+    assert.deepEqual(await page.evaluate(async () => {
+      const { state, consumeResumeOnBoot } = await import("./js/core/state.js");
+      return [state.chapter, state.money, state.flags._resume_loading_a01, consumeResumeOnBoot()];
+    }), [2, 23456, true, false], "保存済み進行の再開・起動時リクエストの消費に失敗した");
   });
 });
