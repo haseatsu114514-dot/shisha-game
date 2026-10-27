@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>RED ROOM — DJ独立試作</title>
+<link rel="stylesheet" href="./style.css">
+<main>
+  <header><div><small>CHAPTER 03 / CLUB LAB</small><h1>RED ROOM <span>DJ PROTOTYPE</span></h1></div><strong class="badge">コード描画・試験音</strong></header>
+  <section class="stage" aria-label="音連動VJと仮ドットダンサー">
+    <canvas id="vj" width="640" height="144" aria-label="オリジナル仮ドット。実音の拍に連動する自動演出"></canvas>
+    <div class="stage-label"><span>AUTOMATIC VJ</span><span id="master">基準 A</span></div>
+  </section>
+  <section class="waves" aria-label="共通の秒スケールで上下の波形を比較">
+    <div><b class="a">A</b><canvas id="wave-a" width="960" height="65" aria-label="A 試験音PCMの振幅波形"></canvas></div>
+    <div><b class="b">B</b><canvas id="wave-b" width="960" height="65" aria-label="B 試験音PCMの振幅波形"></canvas></div>
+    <p id="phase">開始するとPCM波形を表示します。中央の白線が現在の再生位置です。</p>
+  </section>
+  <section class="crossfade"><div><b class="a">A</b><output id="mix-value" aria-live="off">A 100% / B 0%</output><b class="b">B</b></div><label class="sr" for="crossfader">横クロスフェーダー、左A・右B</label><input id="crossfader" type="range" min="0" max="1" step=".001" value="0"><progress id="phrase" max="1" value="0" aria-label="8小節の交代区間"></progress><p id="coaching">音を開始すると次の8小節境界に交代を自動予約します。</p></section>
+  <section class="console" aria-label="2デッキと中央ミキサー">
+    <article class="deck a"><small>DECK A / RED</small><div class="bpm"><output id="bpm-a" aria-live="off">128.0</output><span>BPM</span></div><p id="beat-a">1小節・1拍</p>
+      <label>テンポ <input id="tempo-a" type="range" min="110" max="140" step=".1" value="128"></label>
+      <div class="nudge"><button data-nudge="0,-0.0625" aria-label="Aを16分の1拍遅らせる">− 1/16拍</button><button data-nudge="0,0.0625" aria-label="Aを16分の1拍進める">＋ 1/16拍</button></div>
+      <button data-sync="0">AをBのテンポ・拍へ</button>
+    </article>
+    <article class="mixer"><small>MIXER</small><button id="start" class="primary">音を開始</button><button id="pause" disabled>一時停止</button><button id="mute" aria-pressed="false">ミュート OFF</button><label>音量 <input id="volume" type="range" min="0" max=".5" step=".01" value=".18"></label><label class="check"><input id="assist" type="checkbox" checked>予約時にテンポ・拍を補助</label></article>
+    <article class="deck b"><small>DECK B / EMBER</small><div class="bpm"><output id="bpm-b" aria-live="off">126.0</output><span>BPM</span></div><p id="beat-b">1小節・1拍</p>
+      <label>テンポ <input id="tempo-b" type="range" min="110" max="140" step=".1" value="126"></label>
+      <div class="nudge"><button data-nudge="1,-0.0625" aria-label="Bを16分の1拍遅らせる">− 1/16拍</button><button data-nudge="1,0.0625" aria-label="Bを16分の1拍進める">＋ 1/16拍</button></div>
+      <button data-sync="1">BをAのテンポ・拍へ</button>
+    </article>
+  </section>
+
+  <section class="extras"><button id="offset">Bを半拍ずらして試す</button><button id="tap">通常区間で拍を押す（任意・J）</button><span id="tap-result">交代中は拍押し不要</span></section>
+  <p id="status" role="status" aria-live="polite">音は開始操作後に鳴ります。初期音量18%。イヤホン側の音量も下げてから試してください。</p>
+  <details><summary>短い操作ガイド・試作の範囲</summary><ol><li>「音を開始」。補助ONならまず横フェーダーだけで遊べます。</li><li>次の8小節境界から32拍が交代区間。案内に合わせて反対側へゆっくり動かします。未達でも罰・報酬なし。</li><li>ズレを試す場合は補助をOFF。上下の波形と拍線を見てテンポ差・位相差を区別し、±1/16拍で直します。</li></ol><p>固定のオリジナル合成試験音2本。完成EDMではありません。テンポ変更は再生速度と音程が一緒に変わります。音源選択・EQ・ヘッドホンCUE・本編接続・採点は未実装。VJ/仮ダンサーは自動で、操作不要です。タブを隠すと停止し、自動再開しません。ゲームのセーブ・お金・時間には触れません。</p></details>
+  <footer>RED ROOMは試作の仮称 · NO EXTERNAL MEDIA · NO GAME SAVE · ORIGINAL CODE TEST SOUND / PIXEL PLACEHOLDER</footer>
+</main>
+<script type="module" src="./app.mjs"></script>
+</html>
