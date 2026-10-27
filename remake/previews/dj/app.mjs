@@ -1,60 +1,42 @@
 import { DJAudio } from './audio.mjs';
-import { beatAt, updateMix, phaseError, mod, dancerPose } from './model.mjs';
+import { beatAt, updateMix, phaseError, phraseError, mod, dancerPose } from './model.mjs';
 import { peakAt } from './synth.mjs';
-const $ = id => document.getElementById(id), audio = new DJAudio();
-const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-let message = '', disposed = false, frame = 0, inMix = false, frameView = { mode: 'idle' };
-// Read-only acceptance snapshot. No clock override, source replacement or saved game access.
-export function snapshot() {
-  return { clock: audio.now, state: audio.context?.state || 'not-started', running: audio.mix.running,
-    bpms: audio.mix.decks.map(d => d.bpm), beats: audio.mix.decks.map(d => beatAt(d,audio.now)),
-    phase: phaseError(...audio.mix.decks,audio.now), mix: audio.mix.mix, master: audio.mix.master,
-    visualMaster: audio.mix.visualMaster, mode: frameView.mode, last: audio.mix.last ? { ...audio.mix.last } : null,
-    voices: audio.voices.filter(Boolean).length, retiring: audio.retiring.size,
-    rms: audio.level(), reduced: reduced.matches };
+const $=id=>document.getElementById(id),audio=new DJAudio();
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+let disposed=false,frame=0,frameView={mode:'idle'},message='';
+const status=text=>{$('status').textContent=text;};
+export function snapshot(){
+ const now=audio.now;
+ return {clock:now,state:audio.context?.state||'not-started',running:audio.mix.running,
+  bpms:audio.mix.decks.map(d=>d.bpm),beats:audio.mix.decks.map(d=>beatAt(d,now)),playing:audio.mix.decks.map(d=>d.playing),
+  phase:phaseError(...audio.mix.decks,now),phraseOffset:phraseError(...audio.mix.decks,now),mix:audio.mix.mix,
+  master:audio.mix.master,visualMaster:audio.mix.visualMaster,mode:frameView.mode,
+  guide:audio.mix.guide?{...audio.mix.guide}:null,voices:audio.voices.filter(Boolean).length,retiring:audio.retiring.size,
+  rms:audio.level(),reduced:reduced.matches};
 }
-const status = text => { $('status').textContent = text; };
-audio.onInterrupted = () => { $('start').textContent = '音を再開'; $('pause').disabled = true; status('音声が中断されました。開始ボタンから再開してください。'); };
-async function pause() {
-  try { await audio.pause(); status('停止中。再開ボタンで同じ位置から続けられます。'); }
-  catch (error) { status(`停止処理: ${error.message}。音声nodeは切断済みです。`); }
-  $('start').textContent = '音を再開'; $('pause').disabled = true;
+audio.onInterrupted=()=>status('音声が中断されました。全体再開または各PLAYで再開できます。自動再開はしません。');
+async function pause(){try{await audio.pause();status('全体停止。全体再開は直前に鳴っていたデッキだけを戻します。');}catch(e){status(`停止処理: ${e.message}。音声nodeは切断済みです。`);}}
+$('start').addEventListener('click',async()=>{
+ try{if(await audio.start()){if(document.hidden){await pause();return;}status(audio.mix.running?'停止前のデッキを再開しました。':'音声準備完了。手動でBPMを合わせ、まずPLAY Aを押してください。');}}
+ catch(e){status(`${e.message}。音声準備またはPLAYから再試行できます。`);}
+});
+$('pause').addEventListener('click',pause);
+for(const id of [0,1]){
+ const key=id?'b':'a';
+ $('tempo-'+key).addEventListener('input',e=>audio.tempo(id,Number(e.target.value)));
+ $('play-'+key).addEventListener('click',async()=>{
+  try{if(audio.mix.decks[id].playing){audio.pauseDeck(id);status(`${key.toUpperCase()} PAUSE。位置を保ちます。`);}
+   else if(await audio.play(id)){if(document.hidden){await pause();return;}status(`${key.toUpperCase()} PLAY。押した時点の音声時計で開始。BPM/開始位相は自動で合わせません。`);}}
+  catch(e){status(`${e.message}。PLAYから再試行できます。`);}
+ });
 }
-$('start').addEventListener('click', async () => {
-  $('start').disabled = true;
-  try { if (await audio.start()) {
-    if (document.hidden) { await pause(); return; }
-    $('start').textContent = '再生中'; $('pause').disabled = false;
-    status('合成試験音を再生中。赤黒ドットは仮デザインです。本編セーブは使用しません。');
-  } } catch (error) { status(`${error.message}。開始ボタンから再試行できます。`); }
-  finally { $('start').disabled = false; }
-});
-$('pause').addEventListener('click', pause);
-$('mute').addEventListener('click', () => {
-  audio.muted = !audio.muted; audio.setVolume(audio.volume);
-  $('mute').textContent = `ミュート ${audio.muted ? 'ON' : 'OFF'}`; $('mute').setAttribute('aria-pressed', String(audio.muted));
-});
-$('volume').addEventListener('input', e => audio.setVolume(e.target.value));
-$('crossfader').addEventListener('input', e => audio.setMix(e.target.value));
-$('assist').addEventListener('change', e => { audio.mix.assist = e.target.checked; status('補助設定は次回の予約から適用します。手動テンポ変更はそのまま音へ反映します。'); });
-for (const id of [0, 1]) $('tempo-' + (id ? 'b' : 'a')).addEventListener('input', e => audio.tempo(id, Number(e.target.value)));
-document.querySelectorAll('[data-nudge]').forEach(button => button.addEventListener('click', () => {
-  const [id, beats] = button.dataset.nudge.split(',').map(Number); audio.nudge(id, beats);
-}));
-document.querySelectorAll('[data-sync]').forEach(button => button.addEventListener('click', () => audio.sync(Number(button.dataset.sync))));
-$('offset').addEventListener('click', () => { audio.nudge(1, .5); status('Bを実際に半拍進めました。上下の波形と拍線を比べて補正できます。'); });
-function tap() {
-  if (!audio.mix.running || inMix) return;
-  const b = beatAt(audio.mix.decks[audio.mix.visualMaster], audio.now);
-  $('tap-result').textContent = Math.min(mod(b, 1), 1 - mod(b, 1)) < .16 ? '拍に近い！' : '次の拍を聴いてみよう';
-}
-$('tap').addEventListener('click', tap);
-document.addEventListener('keydown', e => { if (e.code === 'KeyJ' && !e.repeat && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) tap(); });
-document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
-window.addEventListener('pagehide', event => {
-  if (event.persisted) { pause(); return; } // 戻る/進むキャッシュでは無音・手動再開を維持。
-  disposed = true; cancelAnimationFrame(frame); audio.dispose().catch(() => {});
-});
+$('mute').addEventListener('click',()=>{audio.muted=!audio.muted;audio.setVolume(audio.volume);$('mute').textContent=`ミュート ${audio.muted?'ON':'OFF'}`;$('mute').setAttribute('aria-pressed',String(audio.muted));});
+$('volume').addEventListener('input',e=>audio.setVolume(e.target.value));
+$('crossfader').addEventListener('input',e=>audio.setMix(e.target.value));
+document.querySelectorAll('[data-nudge]').forEach(button=>button.addEventListener('click',()=>{const[id,beats]=button.dataset.nudge.split(',').map(Number);audio.nudge(id,beats);}));
+$('offset').addEventListener('click',()=>{if(audio.nudge(1,.5))status('再生中のBを実際に半拍進めました。微調整で戻せます。');});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+window.addEventListener('pagehide',event=>{if(event.persisted){pause();return;}disposed=true;cancelAnimationFrame(frame);audio.dispose().catch(()=>{});});
 
 function wave(canvas, id, now) {
   const c = canvas.getContext('2d'), w = canvas.width, h = canvas.height, x0 = Math.round(w * .32), scale = w / 7;
@@ -70,60 +52,58 @@ function wave(canvas, id, now) {
   const first = Math.floor(b - x0 / scale * d.bpm / 60);
   for (let n = first; n < b + (w - x0) / scale * d.bpm / 60; n++) {
     const x = x0 + (n - b) * 60 / d.bpm * scale;
-    c.fillStyle = mod(n, 4) === 0 ? '#e7d8dd' : '#60545e'; c.fillRect(x, 0, 1, h);
+    c.fillStyle = mod(n, 32) === 0 ? '#aee7d5' : mod(n, 4) === 0 ? '#e7d8dd' : '#60545e'; c.fillRect(x, 0, mod(n,32)===0?2:1, h);
     if (mod(n, 4) === 0) { c.font = '10px monospace'; c.fillText(`${Math.floor(mod(n, 32) / 4) + 1}`, x + 3, 11); }
   }
+  const guide=audio.mix.guide;
+  if(guide?.from===id){const x=x0+(guide.start-b)*60/d.bpm*scale;if(x>=0&&x<w){c.fillStyle='#aee7d5';c.fillRect(x,0,2,h);c.font='10px monospace';c.fillText('NEXT HEAD',Math.min(w-75,x+4),h-5);}}
   c.fillStyle = '#fff'; c.fillRect(x0, 0, 2, h);
 }
-function drawVJ(beat, energy) {
-  const canvas = $('vj'), c = canvas.getContext('2d'); c.imageSmoothingEnabled = false;
-  c.fillStyle = '#170d13'; c.fillRect(0, 0, 640, 144);
-  const pulse = reduced.matches ? .06 : .07 + Math.min(.09, energy * .4);
-  c.fillStyle = `rgba(190,42,69,${pulse})`;
-  for (let i = 0; i < 8; i++) { const x = 25 + i * 88; c.fillRect(x, 55, 32, 74); }
-  const pose = dancerPose(beat, reduced.matches), u = 3, cx = 320 + Math.round(pose.hip) * u, cy = 54 + Math.round(pose.bob) * u;
-  const block = (x,y,w,h,color) => { c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h); };
-  const limb = (x,y,xx,yy,color,width=6) => { const steps=Math.max(Math.abs(xx-x),Math.abs(yy-y))/3;for(let i=0;i<=steps;i++)block(x+(xx-x)*i/steps,y+(yy-y)*i/steps,width,width,color); };
-  block(cx-9,cy-21,18,18,'#efb8a0'); block(cx-12,cy-24,24,9,'#211926'); // face/hair
-  block(cx-12,cy,24,27,'#cd435c'); block(cx-3,cy+3,6,21,'#f68687'); // jacket
-  limb(cx-12,cy+3,cx-27,cy+18+Math.round(pose.arm)*u,'#dc6975');
-  limb(cx+9,cy+3,cx+24,cy+18-Math.round(pose.arm)*u,'#dc6975');
-  const leftX=299-Math.round(pose.left)*u,rightX=329+Math.round(pose.right)*u;
-  const leftY=126-Math.round(pose.left)*u,rightY=126-Math.round(pose.right)*u;
-  limb(cx-9,cy+27,leftX+6,leftY-3,'#413449');
-  limb(cx+6,cy+27,rightX+3,rightY-3,'#413449');
-  block(leftX,leftY,15,6,'#e4c9ca');block(rightX,rightY,15,6,'#e4c9ca');
-  c.fillStyle='#b96a7d';c.fillRect(0,132,640,1);
-  // 控えめな自動カットイン。VJ専用領域内で、波形や操作へ重ねない。
-  if (inMix) {
-    c.fillStyle='#672637';c.fillRect(420,103,195,22);c.fillStyle='#f2c5cb';c.font='11px monospace';
-    c.fillText(`8 BAR TRANSFER ${audio.mix.transition?.from ? 'B > A' : 'A > B'}`,430,118);
-  }
+function drawVJ(beat,energy){
+ const c=$('vj').getContext('2d');c.imageSmoothingEnabled=false;c.fillStyle='#1a1017';c.fillRect(0,0,160,112);
+ const pulse=reduced.matches ? .035 : .035+Math.min(.05,energy*.25);c.fillStyle=`rgba(190,42,69,${pulse})`;
+ for(let i=0;i<5;i++)c.fillRect(5+i*33,32,16,70);
+ const phase=mod(beat,32),dancing=audio.mix.running&&!reduced.matches&&phase<4;
+ const character=audio.mix.running&&!reduced.matches&&phase>=28;
+ const block=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h);};
+ const limb=(x,y,xx,yy,color)=>{const steps=Math.max(1,Math.ceil(Math.max(Math.abs(xx-x),Math.abs(yy-y))/2));for(let i=0;i<=steps;i++)block(x+(xx-x)*i/steps,y+(yy-y)*i/steps,4,4,color);};
+ if(dancing){
+  const p=dancerPose(beat),u=2,cx=80+Math.round(p.hip)*u,cy=36+Math.round(p.bob)*u;
+  block(cx-6,cy-16,12,12,'#efb8a0');block(cx-8,cy-18,16,6,'#211926');block(cx-8,cy,16,18,'#ce435b');block(cx-2,cy+2,4,14,'#f68687');
+  limb(cx-8,cy+2,cx-18,cy+12+Math.round(p.arm)*u,'#dc6975');limb(cx+6,cy+2,cx+16,cy+12-Math.round(p.arm)*u,'#dc6975');
+  const lx=66-Math.round(p.left)*u,rx=86+Math.round(p.right)*u,ly=94-Math.round(p.left)*u,ry=94-Math.round(p.right)*u;
+  limb(cx-6,cy+18,lx+4,ly-2,'#49374f');limb(cx+4,cy+18,rx+2,ry-2,'#49374f');block(lx,ly,10,4,'#e4c9ca');block(rx,ry,10,4,'#e4c9ca');
+ }else if(character){
+  // Original geometric bust only: not a borrowed character/portrait or adopted new cast.
+  block(60,19,40,43,'#b45681');block(70,25,22,27,'#efbdad');block(66,19,34,10,'#d5799c');block(56,62,49,33,'#a24b69');block(77,56,8,27,'#e0b66e');
+  block(42,24,4,4,'#e0b66e');block(113,38,4,4,'#e0b66e');
+ }
+ block(0,102,160,1,'#8f5164');
+ $('visual-label').textContent=reduced.matches?'低減表示・静止VJ':dancing?'4拍の仮ドット・自動演出':character?'華やかな仮シルエット（案）':'背景VJのみ・操作不要';
 }
-function render() {
-  if (disposed) return;
-  const now = audio.now, oldTransition = audio.mix.transition;
-  const view = updateMix(audio.mix, now);
-  frameView = view;
-  if (oldTransition !== audio.mix.transition && audio.mix.transition) audio.reconcile(audio.mix.transition.to);
-  inMix = view.mode === 'mix'; $('tap').disabled = inMix || !audio.mix.running;
-  for (const id of [0,1]) {
-    const key = id ? 'b' : 'a', deck = audio.mix.decks[id], beat = mod(beatAt(deck,now),32);
-    $('bpm-'+key).value = deck.bpm.toFixed(1); $('tempo-'+key).value = String(deck.bpm);
-    $('beat-'+key).textContent = `${Math.floor(beat/4)+1}小節・${Math.floor(beat%4)+1}拍`;
-    wave($('wave-'+key),id,now);
-  }
-  $('mix-value').textContent = `A ${Math.round((1-audio.mix.mix)*100)}% / B ${Math.round(audio.mix.mix*100)}%（位置）`;
-  $('phase').textContent = `共通7秒スケール / B−A 拍位相 ${phaseError(...audio.mix.decks,now).toFixed(3)}拍 / テンポ差 ${(audio.mix.decks[1].bpm-audio.mix.decks[0].bpm).toFixed(1)} BPM`;
-  $('master').textContent = `音・VJ基準 ${audio.mix.visualMaster ? 'B' : 'A'}`;
-  $('phrase').value = view.mode === 'mix' ? view.progress : 0;
-  const next = audio.mix.transition;
-  const text = !audio.mix.running ? '停止中。開始/再開は本人操作のみ。' : view.mode === 'mix'
-    ? `8小節で交代中 ${Math.floor(view.progress*8)+1}/8：${next?.to ? '右B' : '左A'}へゆっくり移動。拍押しは休止。`
-    : view.mode === 'finished' ? `${view.reached ? '交代完了' : 'ミックスを維持しました'}。次の区間を自動予約。罰・採点なし。`
-    : `${audio.mix.last ? (audio.mix.last.reached ? '前回の交代完了。' : '前回のミックスを維持。') : ''}次の8小節境界まで ${Math.ceil(view.remaining || 0)}拍。通常区間は聴いて待てばOK。`;
-  if (message !== text) { $('coaching').textContent=text;message=text; }
-  drawVJ(beatAt(audio.mix.decks[audio.mix.visualMaster],now),audio.level());
-  frame=requestAnimationFrame(render);
+function render(){
+ if(disposed)return;const now=audio.now;frameView=updateMix(audio.mix,now);
+ const both=audio.mix.decks.every(d=>d.playing),guide=audio.mix.guide;
+ for(const id of [0,1]){
+  const key=id?'b':'a',d=audio.mix.decks[id],beat=mod(beatAt(d,now),32),play=$('play-'+key);
+  $('bpm-'+key).value=d.bpm.toFixed(1);$('tempo-'+key).value=String(d.bpm);
+  $('beat-'+key).textContent=`${d.playing?'再生':'停止'}・${Math.floor(beat/4)+1}小節 ${Math.floor(beat%4)+1}拍`;
+  play.textContent=d.playing?`Ⅱ PAUSE ${key.toUpperCase()}`:`▶ PLAY ${key.toUpperCase()}`;play.setAttribute('aria-pressed',String(d.playing));play.disabled=audio.busy;
+  wave($('wave-'+key),id,now);
+ }
+ document.querySelectorAll('[data-nudge]').forEach(b=>{b.disabled=!audio.mix.decks[Number(b.dataset.nudge.split(',')[0])].playing;});
+ $('offset').disabled=!audio.mix.decks[1].playing;$('start').disabled=audio.busy;$('pause').disabled=!audio.mix.running;
+ $('start').textContent=audio.mix.resumeDecks.length?'全体を再開':audio.context?'音声準備済み':'音声を準備';
+ $('mix-value').textContent=`A ${Math.round((1-audio.mix.mix)*100)} / B ${Math.round(audio.mix.mix*100)}%`;
+ $('phase').textContent=`共通7秒 / BPM差 ${(audio.mix.decks[1].bpm-audio.mix.decks[0].bpm).toFixed(1)} / ${both?`B−A拍位相 ${phaseError(...audio.mix.decks,now).toFixed(3)}・フレーズ差 ${phraseError(...audio.mix.decks,now).toFixed(2)}拍`:'各PLAYを押すまで、そのデッキの波形は停止'}`;
+ $('master').textContent=`VJ基準 ${audio.mix.visualMaster?'B':'A'}（音声時計）`;
+ $('phrase').value=frameView.mode==='mix'?frameView.progress:0;
+ const target=guide?.to?'B':'A';let text;
+ if(frameView.mode==='idle')text='手動PITCHでBPMを合わせ、まずPLAY A。音声準備だけでは鳴りません。';
+ else if(frameView.mode==='entry')text=frameView.remaining<=4?`${target}の入りまで ${Math.ceil(frameView.remaining)} 拍。合図で自分でPLAY。`:`次のフレーズ頭まで ${Math.ceil(frameView.remaining/4)}小節。${target}のBPMを手動で合わせてPLAYを準備。`;
+ else if(frameView.mode==='waiting-play')text=frameView.elapsed<1?`PLAY ${target}：今がフレーズ頭。押した瞬間に再生します。`:`${target}は停止中。次の頭まで ${Math.ceil(frameView.remaining)}拍。自動で再生しません。`;
+ else text=`8小節MIX ${Math.floor(frameView.progress*8)+1}/8：位相を確かめ、横フェーダーを動かそう。採点なし。`;
+ if(text!==message){$('coaching').textContent=text;message=text;}
+ drawVJ(beatAt(audio.mix.decks[audio.mix.visualMaster],now),audio.level());frame=requestAnimationFrame(render);
 }
 render();

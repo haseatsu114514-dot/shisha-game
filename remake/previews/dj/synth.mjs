@@ -1,6 +1,6 @@
 // Original procedural test audio. No recorded EDM, samples, external assets or network.
 import { mod } from './model.mjs';
-// Bの低音は補助128BPMでAと同じ音高になるよう事前補正する（key lock機能ではない）。
+// Bの低音は手動で128BPMに合わせたときにAと同じ音高になるよう事前補正する（key lock機能ではない）。
 export const TRACKS = [{ name: 'RED / 試験音 A', bpm: 128, root: 55 }, { name: 'EMBER / 試験音 B', bpm: 126, root: 55 * 126 / 128 }];
 export function renderTrack(id, sampleRate) {
   const track = TRACKS[id], duration = 32 * 60 / track.bpm;

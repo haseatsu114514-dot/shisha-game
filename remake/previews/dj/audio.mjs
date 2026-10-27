@@ -1,4 +1,4 @@
-import { createMix, startMix, pauseMix, beatAt, gains, mod, setTempo, nudgeDeck, syncDeck } from './model.mjs';
+import { createMix, resumeMix, playDeck, pauseDeck, pauseMix, beatAt, gains, mod, setTempo, nudgeDeck } from './model.mjs';
 import { renderTrack } from './synth.mjs';
 export class DJAudio {
   constructor(Context = globalThis.AudioContext) {
@@ -6,7 +6,7 @@ export class DJAudio {
     this.retiring = new Set(); this.volume = .18; this.muted = false; this.busy = false; this.disposed = false; this.revision = 0;
   }
   get now() { return this.context?.currentTime || 0; }
-  async start() {
+  async start(deckId = null) {
     if (this.busy || this.disposed) return false;
     this.busy = true;
     const revision = ++this.revision;
@@ -34,8 +34,9 @@ export class DJAudio {
         return false;
       }
       if (this.context.state !== 'running') throw new Error('音声の開始が許可されませんでした。開始ボタンを押してください');
-      startMix(this.mix, this.now);
-      for (let id = 0; id < 2; id++) if (!this.voices[id]) this.spawn(id);
+      if (deckId === null) resumeMix(this.mix, this.now);
+      else if (!playDeck(this.mix, deckId, this.now)) return false;
+      for (let id = 0; id < 2; id++) if (this.mix.decks[id].playing && !this.voices[id]) this.spawn(id);
       this.setMix(this.mix.mix); this.setVolume(this.volume);
       return true;
     } catch (error) {
@@ -101,10 +102,17 @@ export class DJAudio {
     setTempo(this.mix.decks[id], value, this.now);
     this.voices[id]?.source.playbackRate.setValueAtTime(this.mix.decks[id].bpm / this.tracks[id].nativeBpm, this.now);
   }
-  nudge(id, beats) { nudgeDeck(this.mix, id, beats, this.now); if (this.mix.running) this.spawn(id); }
-  sync(id) { syncDeck(this.mix, id, this.now); if (this.mix.running) this.spawn(id); }
-  // queueMix may re-anchor the incoming deck; reschedule its audible source too.
-  reconcile(id) { if (this.mix.running) this.spawn(id); }
+  play(id) { return this.start(id); }
+  pauseDeck(id) {
+    pauseDeck(this.mix, id, this.now);
+    const voice = this.voices[id];
+    if (voice) { this.stopVoice(voice); voice.source.disconnect(); voice.gain.disconnect(); this.voices[id] = null; }
+    this.setVolume(this.volume);
+  }
+  nudge(id, beats) {
+    if (!nudgeDeck(this.mix, id, beats, this.now)) return false;
+    this.spawn(id); return true;
+  }
   level() {
     if (!this.analyser || !this.mix.running) return 0;
     this.analyser.getFloatTimeDomainData(this.meterData);
