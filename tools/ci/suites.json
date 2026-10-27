@@ -2504,6 +2504,15 @@
       "chrome": "playwright"
     },
     {
+      "id": "logo-j06",
+      "title": "Chapter 2 store logo map surfaces",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/chapters/ch2.js", "remake/js/core/store-logos.js", "remake/css/store-logos.css", "remake/test/browser/logo_j06.mjs"],
+      "run": ["node remake/test/browser/logo_j06.mjs"]
+    },
+    {
       "id": "shopping-tutorial",
       "title": "Tutorial shopping order and return dialogue",
       "kind": "browser",
