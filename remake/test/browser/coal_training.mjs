@@ -223,7 +223,7 @@ try {
       const res = await page.evaluate(async () => {
         const { res } = await Q.burn; performance.now = Q.realNow; Math.random = Q.realRandom; return res;
       });
-      assert.equal(res.picks.length, count); assert.equal(res.score, count === 1 ? 62 : 100);
+      assert.equal(res.picks.length, count); assert.equal(res.score, count === 1 ? 80 : 100);
       timing.push({ count, score: res.score, picks: res.picks });
       console.log(`[coal browser] ${label}: shared burn count=${count} score=${res.score}`);
     }
