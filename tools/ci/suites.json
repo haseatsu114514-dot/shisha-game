@@ -10,6 +10,15 @@
   ],
   "suites": [
     {
+      "id": "station-j01",
+      "title": "Station availability, layout and save/load",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/daily/map.js", "remake/js/daily/station-travel.js", "remake/test/browser/station_j01.mjs"],
+      "run": ["node remake/test/browser/station_j01.mjs"]
+    },
+    {
       "id": "dj-preview",
       "title": "Independent DJ preview WebAudio and controls",
       "kind": "browser",
