@@ -94,6 +94,9 @@ function render(){
   $('bpm-'+key).value=d.bpm.toFixed(2);$('tempo-'+key).value=String(d.bpm);
   $('beat-'+key).textContent=`${d.playing?'再生':'停止'}・${Math.floor(beat/4)+1}小節 ${Math.floor(beat%4)+1}拍`;
   play.textContent=d.playing?`Ⅱ PAUSE ${key.toUpperCase()}`:`▶ PLAY ${key.toUpperCase()}`;play.setAttribute('aria-pressed',String(d.playing));play.disabled=audio.busy;
+  $('deck-'+key).dataset.playing=String(d.playing);
+  $('indicator-'+key).textContent=d.playing?'ON AIR':'STANDBY';
+  $('platter-'+key).style.setProperty('--rotation',`${reduced.matches?0:mod(beatAt(d,now),4)*90}deg`);
   wave($('wave-'+key),id,now);
  }
  document.querySelectorAll('[data-nudge]').forEach(b=>{b.disabled=!audio.mix.decks[Number(b.dataset.nudge.split(',')[0])].playing;});

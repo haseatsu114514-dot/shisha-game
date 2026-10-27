@@ -27,6 +27,12 @@ try{
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height>=64&&r.width>=100,'Large individual PLAY targets');}
+  const artwork=new URL('../../../assets/backgrounds/bg_dj_red_room.png',url).href;
+  const art=await page.request.get(artwork);assert(art.ok(),'Generated background must be served');assert((await art.body()).length>10000,'Background must not be an LFS pointer');
+  for(const key of ['a','b']){
+   assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');
+   for(const control of ['#sync-'+key,`[data-pitch="${key==='a'?0:1},0.01"]`]){const b=await page.locator(control).boundingBox();assert(b.width>=44&&b.height>=44,'Touch controls remain at least 44px');}
+  }
   assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No continuous sync/CUE/tap input workload');
   if(kind==='pc')await page.locator('#start').click();else await page.locator('#start').tap();
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.deepEqual(ready.bpms,[128,126]);
@@ -42,6 +48,8 @@ try{
   const pitched=await snap(page),manual=pitched.bpms[1];assert.notEqual(manual,126);if(kind==='pc')near(manual,128,.001);
   if(kind==='pc')await page.locator('#play-a').click();else await page.locator('#play-a').tap();await wait(page,'audio');
   assert.deepEqual((await snap(page)).playing,[true,false]);
+  assert.equal(await page.locator('#indicator-a').textContent(),'ON AIR');
+  assert.equal(await page.locator('#deck-a').getAttribute('data-playing'),'true');
   const a=await hashWaves(page);await page.waitForTimeout(160);const b=await hashWaves(page);assert.notEqual(a[0],b[0]);assert.equal(a[1],b[1],'Stopped B waveform cannot advance');
   if(kind==='pc')await wait(page,'head',19000);
   if(kind==='pc')await page.locator('#play-b').click();else await page.locator('#play-b').tap();
@@ -65,6 +73,7 @@ try{
   if(kind==='reduced')assert((await page.locator('#visual-label').textContent()).includes('静止'));
   await page.locator('#pause').click();const stopped=await snap(page);assert.deepEqual(stopped.playing,[false,false]);assert.equal(stopped.voices,0);await page.waitForTimeout(100);assert.deepEqual((await snap(page)).beats,stopped.beats);
   await page.locator('#start').click();await wait(page,'audio');const resumed=await snap(page);assert.deepEqual(resumed.playing,[true,true]);near(resumed.bpms[1],stopped.bpms[1],.001);assert.equal(resumed.voices,2);assert.deepEqual(errors,[]);
+  await page.screenshot({path:path.join(out,`visual-${kind}.png`),fullPage:true});
   results.push({kind,ready,pitched,entered,stopped,resumed,passed:true,limits:'Real WebAudio/UI only; physical listening/capture excluded'});await context.close();
  }
  fs.writeFileSync(path.join(out,'result.json'),JSON.stringify({url,results},null,2));console.log('Manual pitch/individual PLAY PC/touch/reduced WebAudio/UI PASS; no physical listening/video claim');
