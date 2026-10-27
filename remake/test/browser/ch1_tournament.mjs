@@ -331,6 +331,9 @@ await suite("ch1-tournament", async check => {
       nagumo:{spent:0,left:'10点を保留中'},
     });
     assert.deepEqual(interim.points,{adam:7,naru:5,minto:3,hajime:0});
+    // The second feed line starts after a 0.5s delay and slides in for 0.5s.
+    // Measure its settled layout, not its temporarily translated overflow.
+    await page.waitForTimeout(1100);
     await assertFits(page,'.standings .judge-panel, .standings .judge-chip, .standings .judge-left, .standings .sd-feed-lines');
     await capture(page, `standings-${label}`);
     await page.evaluate(() => window.standings);
