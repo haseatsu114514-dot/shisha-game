@@ -40,9 +40,9 @@ function timeToEdge(start,dx,dy,run=false) {
   throw Error('walker never reached the corridor edge');
 }
 const upTime=timeToEdge(SPAWN,0,-1),sideTime=timeToEdge(SPAWN,1,0);
-assert(upTime>1.1&&upTime<1.25&&sideTime>1.2&&sideTime<1.35,
-  `walking across the arcade must take about the same time up and sideways: ${upTime}, ${sideTime}`);
-assert(Math.abs(upTime-sideTime)<.15,'depth and sideways travel times must feel comparable');
+assert(upTime>1.1&&upTime<1.25&&sideTime>=.975&&sideTime<=1.025,
+  `sideways walking must reach the edge in about 1s while depth keeps its pace: ${upTime}, ${sideTime}`);
+console.log(`street_projection: center-to-edge walk ${sideTime.toFixed(3)}s, depth ${upTime.toFixed(3)}s`);
 for(const [dx,dy] of [[0,-1],[1,0]]) {
   const walk=timeToEdge(SPAWN,dx,dy),run=timeToEdge(SPAWN,dx,dy,true);
   assert(Math.abs(run/walk-WALK_SPEED/RUN_SPEED)<.02,'dash must speed up either direction consistently');
@@ -59,14 +59,25 @@ for(const d of DOORS) {
   assert(Math.hypot(q.x-d.foot[0],q.y-d.foot[1])<.01, `${d.id}: door approach is outside the walkable floor`);
   const ratio=CHARACTER_HEIGHT*q.scale/d.rect[3];
   assert(ratio>.8&&ratio<.9,`${d.id}: character height must fit the door at the approach`);
-  let player={...SPAWN},arrived=false;
-  for(let n=0;n<600&&!arrived;n++) {
-    const here=walkingPoint(player),there=walkingPoint(unproject(...d.foot));
-    const moved=moveOnFloor(player,there.x-here.x,there.y-here.y,1/120,false,{x:d.foot[0],y:d.foot[1]});
-    player=moved.player;arrived=moved.arrived;
+  for (const run of [false,true]) for (const dt of [1/120,1/30]) {
+    let player={...SPAWN},arrived=false;
+    for(let n=0;n<600&&!arrived;n++) {
+      const here=walkingPoint(player),there=walkingPoint(unproject(...d.foot));
+      const moved=moveOnFloor(player,there.x-here.x,there.y-here.y,dt,run,{x:d.foot[0],y:d.foot[1]});
+      player=moved.player;arrived=moved.arrived;
+    }
+    assert(arrived&&Math.hypot(project(player).x-d.foot[0],project(player).y-d.foot[1])<.01,
+      `${d.id}: movement must reach the tapped entrance exactly (run=${run}, dt=${dt})`);
   }
-  assert(arrived&&Math.hypot(project(player).x-d.foot[0],project(player).y-d.foot[1])<.01,
-    `${d.id}: movement must reach the tapped entrance`);
+  // 30fpsのダッシュでも入口の決定キーを受け付ける区間が複数フレーム残る。
+  const goal=project(unproject(...d.foot));
+  let player=unproject(goal.x-100*goal.scale,goal.y),selectable=0;
+  for(let n=0;n<20;n++) {
+    const p=project(player);
+    if(Math.hypot(p.x-goal.x,p.y-goal.y)<Math.max(12,55*p.scale))selectable++;
+    player=moveOnFloor(player,1,0,1/30,true).player;
+  }
+  assert(selectable>=2,`${d.id}: dash must leave time to select the entrance`);
 }
 for(const [player,dx,dy] of [[{x:.98,z:.5},1,0],[{x:-.98,z:.5},-1,0],[{x:0,z:0},0,1],[{x:0,z:FLOOR.depth},0,-1]]) {
   const moved=moveOnFloor(player,dx,dy,1/60);
