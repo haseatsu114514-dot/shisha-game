@@ -5,7 +5,8 @@ import { el, sleep } from "../core/util.js";
 import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
-import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
+import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice, singleFlight } from "../core/module-loading.js";
 import { state, save, markMet, setFlag, flag, timeOfDay } from "../core/state.js";
 import { sketchIn } from "../core/scene-motions.js";
 import { addMoney, maxStamina, addStamina } from "../core/stats.js";
@@ -185,13 +186,42 @@ async function openingPart() {
 
 export async function resumeGame() {
   setupHooks();
-  if (state.chapter === 2) return (await import("./ch2.js")).resumeChapterTwo();
-  if (state.chapter === 3) return (await import("./ch3.js")).resumeChapterThree();
+  if (state.chapter === 2) return resumeChapterModule(() => import("./ch2.js"), m => m.resumeChapterTwo(), "第2章の街へ戻っています…");
+  if (state.chapter === 3) return resumeChapterModule(() => import("./ch3.js"), m => m.resumeChapterThree(), "第3章へ戻っています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
   if (state.phase === "opening" && await openingPart() === false) return;
   await dailyPart();
+}
+
+// SAVEからの再開で、次章モジュールの動的 import を軽いロード表示付きで待つ（A-1）。
+// 取得に失敗（通信断・デプロイ直後のキャッシュ不整合）しても無反応で止めず、
+// 「もう一度試す／タイトルへ戻る」で操作可能に戻す。章の中身の失敗は各章側が扱う。
+async function resumeChapterModule(load, run, label) {
+  const attempt = async () => run(await withLoadingNotice(load(), loadingNotice(label)));
+  try { return await attempt(); }
+  catch { return showResumeError(attempt); }
+}
+
+function showResumeError(attempt) {
+  return new Promise((resolve) => {
+    // singleFlight で連打・二重読込を防ぐ。失敗したら同じ画面でそのまま再試行できる。
+    const run = singleFlight(async () => {
+      retry.disabled = home.disabled = true;
+      try { resolve(await attempt()); }
+      catch { retry.disabled = home.disabled = false; retry.focus({ preventScroll: true }); }
+    });
+    const retry = el("button.btn.primary", { text: "もう一度試す", dataset: { test: "resume-retry" }, onclick: run });
+    const home = el("button.btn", { text: "タイトルへ戻る", dataset: { test: "resume-title" }, onclick: () => location.reload() });
+    const root = el("div.end-screen", [
+      el("div.end-title", { text: "続きを読み込めませんでした" }),
+      el("div.end-sub", { text: "通信を確認して、もう一度お試しください。確定した進行は残っています。" }),
+      el("div.end-actions", [retry, home]),
+    ]);
+    showScreen("end", root);
+    retry.focus({ preventScroll: true });
+  });
 }
 
 async function dailyPart() {
@@ -681,7 +711,7 @@ export async function showClear() {
     if (playing || !root.isConnected || state !== owner) return;
     playing = true; next.disabled = true; replay.disabled = true;
     try {
-      const chapter = await import("./ch2.js");
+      const chapter = await withLoadingNotice(import("./ch2.js"), loadingNotice("第2章の街へ向かっています…"));
       if (root.isConnected && state === owner) await chapter.beginChapterTwo();
     } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
     finally { playing = false; next.disabled = false; replay.disabled = false; }
