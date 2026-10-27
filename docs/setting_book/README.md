@@ -179,7 +179,7 @@
   - 「確定（main反映済み）」「採用済みだが未マージ」「未確定・提案」の3区分を導入し、古い不採用案を本文から除外または「旧設定（不採用）」として整理。
   - 実装状況を現行の `remake/` 基準（第1章〜第3章必須進行プレイ可能、旧 `web/`・Godot廃止）へ更新（根拠：[`CLAUDE.md`](../../CLAUDE.md), [`remake/README.md`](../../remake/README.md)）。
 - **物語・章構成（`01_story.md`）**
-  - 主人公表記を「蒸野 始（僕）」から **「蒸野 はじめ（俺）」** へ全面統一（根拠：[`data/characters.json`](../../data/characters.json), [`docs/master_spec.md`](../master_spec.md)）。
+  - 主人公表記を旧資料の漢字表記（一人称「僕」）から **「蒸野 はじめ（俺）」** へ全面統一（根拠：[`data/characters.json`](../../data/characters.json), [`docs/master_spec.md`](../master_spec.md)）。
   - 物語の中心テーマを「空・縁起・分人主義（混ざったままで、俺だった）」へ更新（根拠：[`brand/story_and_structure.md`](../../brand/story_and_structure.md), [`docs/master_spec.md`](../master_spec.md)）。
   - 第1章タイトルを『煙がつなぐ街』、大会課題を「レモン2g以上」、優勝夜のスミの対応を「まず優勝を褒め、採点表を取り上げて否定しない」へ更新。つむぎの公募スケッチ応募〜第3章帰郷夜の入選報告を反映（根拠：[`data/dialogue/remake_ch1.json`](../../data/dialogue/remake_ch1.json), [`data/dialogue/ch1_tsumugi.json`](../../data/dialogue/ch1_tsumugi.json), [`data/dialogue/ch3_main.json`](../../data/dialogue/ch3_main.json)）。
   - 第2章副題を *Hollow Crown*、課題を「ストロベリー（DAY9試煙会のアフサール苺支給＋持ち込み可）」、大会形式を4人同時1試合（はじめ・あげは・神崎・REI、ヴォルクは偵察者「？？？」）へ更新。DAY11のなるとの衝突、神崎の受付での自己申告、あげはが失踪せず「次はうちの店ね」と送り出す展開（#929）を反映（根拠：[`docs/master_spec.md`](../master_spec.md), [`data/dialogue/ch2_main.json`](../../data/dialogue/ch2_main.json)）。
