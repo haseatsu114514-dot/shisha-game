@@ -80,7 +80,9 @@ export async function runDaily(def) {
     await readLime();
     if (state !== owner) return;
   }
-  if (def.startNextDay && chapterDay(state) === 1) { await advanceDay(); save(); }
+  // 第2章の初日配達は章側で行動・帰店報告まで完了済み。
+  // 日付だけを飛ばさず、通常日と同じ夜予定・帰宅・就寝を経て翌朝へ進む。
+  if (def.startNextDay && chapterDay(state) === 1) { await endDay({ returnedToTonari: true }); save(); }
   while (state.day < (def.untilDay ?? TOURNAMENT_DAY)) {
     syncNightQueue(chapterDef.nightEvents);
     if (!state.flags[`_morning_${state.day}`]) {
