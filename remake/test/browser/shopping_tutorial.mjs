@@ -25,4 +25,21 @@ await suite('shopping-tutorial',async check=>{
   });
   assert.deepEqual(result,{first:12,xp:12,stock:50,money:30000});
  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
+ for(const touch of [false,true]) await check(`daily-return-${touch?'touch':'pc'}`,async page=>{
+  await page.evaluate(async()=>{
+   const core=await import('./js/core/state.js');const s=core.newGame();s.phase='daily';
+   s.flags._morning_1=true;
+   (await import('./js/vn/engine.js')).vnTest.turbo=true;
+   void (await import('./js/daily/calendar.js')).runDaily({untilDay:2,nightEvents:[],onQuit(){}});
+  });
+  await page.locator('[data-test="pin-shop"]').click();
+  await page.locator('[data-test="map-go"]').click();
+  await page.locator('[data-test="buy-lemon"]').click();
+  await page.locator('[data-test="shop-checkout"]').click();
+  await page.locator('[data-test="shop-leave"]').click();
+  await page.waitForFunction(()=>__remake.state.flags._lemon_gift_read);
+  assert.deepEqual(await page.evaluate(()=>{const s=__remake.state;return {done:s.flags._errand_shop_done,read:s.flags._lemon_gift_read,xp:s.flavorMastery.lemon,stock:s.flavorStock.lemon,money:s.money};}),{done:true,read:true,xp:12,stock:50,money:30000});
+  assert.doesNotMatch(await page.locator('#toasts').innerText(),/仕入れ、ご苦労/);
+ },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
+
 });
