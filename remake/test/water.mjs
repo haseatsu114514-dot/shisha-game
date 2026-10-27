@@ -197,7 +197,8 @@ await check("real practice orchestration puts confirmed water between SETUP and 
   stub("js/craft/heat.js", { runHeat: async () => {} });
   stub("js/craft/steam.js", { runSteamDodge: async () => {} });
   stub("js/craft/pull.js", { runPull: async cs => { cs.pullDone = true; }, runCare: async cs => cs.careHistory.push({ score: 80 }) });
-  stub("js/core/ui.js", { retireScreen: () => {}, gainCard: () => {} });
+  stub("js/core/ui.js", { retireScreen: () => {} });
+  stub("js/core/mastery-notice.js", { notifyMastery: () => {} });
   stub("js/craft/conditions.js", { temperatureAfterSteam: () => 0 });
   stub("js/craft/flavor-life.js", { ensureFlavorLife: () => {} });
   state.newGame(); order.length = 0; session.namespace.craftTest.auto = "good";
