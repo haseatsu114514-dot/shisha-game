@@ -278,9 +278,9 @@
   border-radius: 0;
   background: var(--art-gauge-fill) left center / 100% 100% no-repeat;
 }
-:is(.hud-stamina, .gain-card.stamina) { --stamina-fill: #8ee6a8; }
-:is(.hud-stamina, .gain-card.stamina)[data-health="yellow"] { --stamina-fill: #ffd45c; }
-:is(.hud-stamina, .gain-card.stamina)[data-health="red"] { --stamina-fill: #ff6969; }
+:is(.hud-stamina, .gain-card.stamina, .sleep-recovery) { --stamina-fill: #8ee6a8; }
+:is(.hud-stamina, .gain-card.stamina, .sleep-recovery)[data-health="yellow"] { --stamina-fill: #ffd45c; }
+:is(.hud-stamina, .gain-card.stamina, .sleep-recovery)[data-health="red"] { --stamina-fill: #ff6969; }
 .hud-stamina .hud-bar b, .hud-stamina.low .hud-bar b, .gain-card.stamina .gc-meter i {
   background-color: var(--stamina-fill);
   background-image: var(--art-gauge-fill);

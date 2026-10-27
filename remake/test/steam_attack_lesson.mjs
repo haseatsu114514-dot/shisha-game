@@ -54,12 +54,33 @@ await suite('attack-lesson', async check => {
       const button=page.locator('[data-test="dodge-slash"]'); await button.waitFor();
       if (mode === 'tutorial') {
         await page.waitForFunction(() => document.querySelector('.bench-guide')?.open);
+        await assertFits(page, '.bench-guide summary');
+        await assertFits(page, '.bench-guide-tip');
+        const helpClear = await page.locator('.bench-guide summary').evaluate(summary => {
+          const a = summary.getBoundingClientRect();
+          return a.width >= 43 && a.height >= 43 &&
+            [...document.querySelectorAll('.dodge, .dodge-controls, .bench-guide-tip')].every(node => {
+              const b = node.getBoundingClientRect();
+              return a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom;
+            });
+        });
+        assert(helpClear, 'help target is reachable and clear of controls and explanation');
         await page.locator('.bench-guide summary').click();
       }
       await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled);
       assert(await button.isDisabled()); await assertFits(page,'[data-test="slash-lock"]');
       assert.equal(await page.locator('[data-test="slash-lock"]').innerText(),'🔒');
       assert.equal(await page.locator('[data-test="slash-lock"]').getAttribute('aria-hidden'),'true');
+      const lockGeometry = await button.evaluate(button => {
+        const emblem = button.querySelector('.refresh-emblem').getBoundingClientRect();
+        const lock = button.querySelector('.slash-lock').getBoundingClientRect();
+        return { dx: Math.abs(lock.x + lock.width / 2 - emblem.x - emblem.width / 2),
+          dy: Math.abs(lock.y + lock.height / 2 - emblem.y - emblem.height / 2),
+          size: parseFloat(getComputedStyle(button.querySelector('.slash-lock')).fontSize),
+          opacity: Number(getComputedStyle(button.querySelector('.refresh-emblem > span:first-child')).opacity) };
+      });
+      assert(lockGeometry.dx < 1 && lockGeometry.dy < 1, 'lock stays at icon centre');
+      assert(lockGeometry.size >= 50 && lockGeometry.opacity <= .25, 'large lock and inactive artwork');
       assert.equal(await button.getAttribute('title'),'アタック：使用不可');
       assert.equal(await button.getAttribute('aria-label'),'アタック。使用不可');
       await page.keyboard.press('z');
