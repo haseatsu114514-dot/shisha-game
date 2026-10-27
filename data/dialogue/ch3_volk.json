@@ -67,7 +67,22 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "ヴォルク。ここの店主だ"
+          "text": "ヴォルク。ナイトサイドを経営している。ここは日本の市場を調べる拠点だ"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "日本の窓口は凛に任せている。あいつの上司だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "メーカーの方が、お店まで？"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "同じ袋でも、器具と客の吸う間隔が違う。卸した先も確かめて、次のロットを決める"
         },
         {
           "type": "set_flag",
@@ -151,6 +166,36 @@
           "speaker": "volk",
           "face": "normal",
           "text": "客が吸った時刻だ。数字だけでは、誰も吸わない台になる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめが水を飲むと、ヴォルクは入力を止めた。トングを置き、顔を見る。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……熱すぎたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いえ。少し、休んだだけです"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "そうか、……急がなくていい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "計器へ戻しかけた手で、グラスをはじめの近くへ寄せる。メモには先に「休憩」と書いた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "数値が合っているはずで、客を帰したくはない。袋を売った先でも同じだ"
         },
         {
           "speaker": "hajime",
