@@ -44,9 +44,10 @@ class Dom {
 }
 const documentPort = { createElement: tag => new Dom(tag), createTextNode: text => new Dom('#text', text), addEventListener() {}, removeEventListener() {}, hidden: false };
 const timers = [];
+const delays = [], tickers = []; let reducedMotion = true;
 const context = vm.createContext({ Node: Dom, document: documentPort, URL, structuredClone, console,
-  Image: class { decode() { return Promise.resolve(); } }, matchMedia: () => ({ matches: true }),
-  setTimeout: fn => { timers.push(fn); return timers.length; }, clearTimeout() {}, setInterval() {}, clearInterval() {} });
+  Image: class { decode() { return Promise.resolve(); } }, matchMedia: () => ({ matches: reducedMotion }),
+  AbortController, setTimeout: (fn, delay) => { timers.push(fn); delays.push(delay); return timers.length; }, clearTimeout() {}, setInterval: fn => { tickers.push(fn); return tickers.length; }, clearInterval() {} });
 const modules = new Map();
 async function load(url) {
   if (modules.has(url.href)) return modules.get(url.href);
@@ -60,12 +61,13 @@ function mount(scenario) {
   const host = new Dom();
   const manifest = { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
   const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {} };
-  const api = mod.namespace.mountTrpg(host, { scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
+  let completions = 0;
+  const api = mod.namespace.mountTrpg(host, { onComplete: () => completions++, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
   const root = host.children[0];
   const q = id => { const node = root.querySelector('[data-test="' + id + '"]'); assert(node, id); return node; };
   const drain = () => { let n = 0; while (!q('trpg-next').hidden) { q('trpg-next').click(); assert(++n < 100); } };
   const roll = () => { q('trpg-roll').click(); timers.shift()(); };
-  return { api, root, q, drain, roll };
+  return { api, root, q, drain, roll, get completions() { return completions; } };
 }
 for (const scenario of scenarios) {
   test(scenario.id + ': cast seats follow dialogue and idle GM; no invented participants', () => {
@@ -76,12 +78,17 @@ for (const scenario of scenarios) {
     assert.equal(root.querySelector('.trpg-table-person.active').dataset.speaker, scenario.cast.find(c => c.part === 'GM').id); api.destroy();
   });
   test(scenario.id + ': support cancellation does not spend; confirmed help and reroll share seat receipts', () => {
-    const { api, root, q, drain, roll } = mount(scenario); q('trpg-start').click(); drain(); roll();
+    const mounted = mount(scenario); const { api, root, q, drain, roll } = mounted; q('trpg-start').click(); drain(); roll();
     const actor = scenario.cast.find(c => c.abilityType === 'reroll').id;
     q('trpg-reroll-1').click();
     assert(q('trpg-reroll-receipt').textContent.includes(actor));
     assert.equal(root.querySelectorAll('.trpg-reroll-stamp').length, 1);
-    for (const die of root.querySelectorAll('.trpg-die')) assert.equal(die.children.length, 9, 'dice retain only nine real pips');
+    for (const die of root.querySelectorAll('.trpg-die')) {
+      const face = die.querySelector('.trpg-d20-value'); assert(face, 'd20 has a numeric face');
+      assert.equal(die.getAttribute('aria-label'), '20面ダイス ' + face.textContent);
+      assert(Number(face.textContent) >= 1 && Number(face.textContent) <= 20);
+      assert.equal(die.querySelectorAll('.trpg-pip').length, 0, 'No d6 pips remain');
+    }
     assert.equal(api.snapshot().used[actor], true); q('trpg-settle').click(); drain();
     for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
     q('trpg-interpret').click(); q('trpg-hypothesis-' + scenario.hypotheses[0].id).click(); drain();
@@ -101,7 +108,7 @@ for (const scenario of scenarios) {
     q('trpg-serve-open').click(); roll(); assert(!root.querySelector('[data-test="trpg-helper-receipt"]'));
     q('trpg-settle').click(); drain(); assert.equal(api.snapshot().phase, 'ending');
     assert.equal(root.querySelectorAll('.trpg-table-clue').length, 3); assert(!q('trpg-finish').disabled);
-    assert.equal(api.snapshot().teamwork, 0); api.destroy();
+    assert.equal(api.snapshot().teamwork, 0); assert.equal(mounted.completions, 1); drain(); assert.equal(mounted.completions, 1, 'Fast advance cannot deliver completion twice'); api.destroy(); assert.equal(mounted.completions,1);
   });
   test(scenario.id + ': 0/1/3 clue cards open the existing notes without inspecting again', () => {
     const { api, root, q, drain, roll } = mount(scenario); q('trpg-start').click(); drain(); roll(); q('trpg-settle').click(); drain();
@@ -174,7 +181,7 @@ test('seat rail measurement waits for preview resize outputs', async () => {
     innerWidth: 1280, innerHeight: 720,
     document: { getElementById: id => id === 'stage' ? stage : id === 'trpg-rotate' ? rotate : {}, querySelector: () => null },
     window: { addEventListener: (event, fn) => { listeners[event] = fn; } },
-    matchMedia: () => ({ matches: true }), location: { href: 'https://example.invalid/remake/trpg-preview.html', search: '' }, history: { replaceState() {} } });
+    matchMedia: () => ({ matches: reducedMotion }), location: { href: 'https://example.invalid/remake/trpg-preview.html', search: '' }, history: { replaceState() {} } });
   const preview = new vm.SourceTextModule(previewSource, { context: port });
   await preview.link(() => new vm.SyntheticModule(['mountTrpgCollection'], function () {
     this.setExport('mountTrpgCollection', () => ({ snapshot() {}, audioSnapshot() {}, loaded: true }));
@@ -198,4 +205,32 @@ test('seat rail measurement waits for preview resize outputs', async () => {
   assert.equal(Number(styles.get('--k')), 390 / 1280);
   assert.equal(rotate.hidden, false);
   assert.equal(ready(), true);
+});
+
+
+for (const reduced of [true, false]) test('d20 roll once and settle once; reduced-motion=' + reduced, async () => {
+  reducedMotion = reduced; timers.length = delays.length = tickers.length = 0;
+  const { api, root, q, drain } = mount(scenarios[0]); q('trpg-start').click(); drain();
+  const roll = q('trpg-roll'), click = roll.events.click[0];
+  click({currentTarget:roll}); const pending = JSON.stringify(api.snapshot().pending);
+  click({currentTarget:roll}); assert.equal(JSON.stringify(api.snapshot().pending), pending, 'Double click cannot roll twice');
+  assert.equal(delays.at(-1), reduced ? 40 : 650);
+  for (const tick of tickers) tick(); assert.equal(JSON.stringify(api.snapshot().pending), pending, 'Animation cannot update actual dice');
+  timers.shift()();
+  const values = root.querySelectorAll('.trpg-d20-value').map(n => Number(n.textContent));
+  assert.deepEqual(values, Array.from(api.snapshot().pending.dice));
+  const settle = q('trpg-settle').events.click[0]; settle(); settle();
+  assert.equal(api.snapshot().checks.length, 1, 'Double callback cannot settle twice');
+  api.destroy(); reducedMotion = true;
+});
+
+test('actual runTrpg public caller: pre-abort and in-flight abort return cancellation without completion', async () => {
+  const entry = await load(new URL('../js/trpg/index.js', import.meta.url)); await entry.evaluate();
+  const scenario = scenarios[0], host = new Dom(), signal = new AbortController(); let completed = 0;
+  const manifest = { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, {faces:['normal'],h:.7,b:.1,aspect:1}])) };
+  const options = { resources: {scenario,characters:scenario.cast.map(c=>({id:c.id,name:c.id})),manifest}, signal:signal.signal,
+    audio:{available:false,enabled:false,setTheme(){},play(){},silence(){}}, onComplete:()=>completed++ };
+  const pending = entry.namespace.runTrpg(host, options); signal.abort(); signal.abort();
+  assert.equal((await pending).cancelled, true); assert.equal(completed, 0);
+  const again = await entry.namespace.runTrpg(new Dom(), options); assert.equal(again.cancelled,true); assert.equal(completed,0);
 });

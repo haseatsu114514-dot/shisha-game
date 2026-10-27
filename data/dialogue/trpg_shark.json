@@ -63,7 +63,7 @@
       "color": "#c8a375",
       "ability": "段取りの確認",
       "abilityType": "prepare",
-      "abilityText": "仕掛けを組むとき、判定に一度だけ＋2",
+      "abilityText": "仕掛けを組むとき、判定に一度だけ＋7",
       "alternatives": {
         "adam": {
           "ability": "舞台の支度",
@@ -78,7 +78,7 @@
       "color": "#b8a3cc",
       "ability": "見せ場の構図",
       "abilityType": "serve",
-      "abilityText": "脱出するとき、判定に一度だけ＋2"
+      "abilityText": "脱出するとき、判定に一度だけ＋7"
     }
   ],
   "spots": [
@@ -1485,7 +1485,7 @@
         "description": "大事なものを持って、岸へ帰れた。さて、この映画の感想は？"
       }
     },
-    "help": "調査は最大四箇所。新しい場所を調べるたび、危機が一つ進みます。三つ以上で見立てを選び、道具・経路・最後の作戦を決めます。相談とメモの再読は無料。見立てが合うと仕掛け判定に＋1。",
+    "help": "調査は最大四箇所。新しい場所を調べるたび、危機が一つ進みます。三つ以上で見立てを選び、道具・経路・最後の作戦を決めます。相談とメモの再読は無料。見立てが合うと仕掛け判定に＋4。",
     "exitText": "映画をここで中断して、本棚へ戻ります。次に遊ぶと、違う習性のサメが現れるかもしれません。",
     "endingKicker": "TONIGHT’S FEATURE / この映画の結末"
   },
@@ -1494,14 +1494,14 @@
   "checks": {
     "listen": {
       "title": "背びれと波を見分ける",
-      "hint": "落ち着いて観察 ＋1。どの出目でも探索へ進みます。",
+      "hint": "落ち着いて観察 ＋3。どの出目でも探索へ進みます。",
       "success": "trpg_shark_listen_success",
       "mixed": "trpg_shark_listen_mixed",
       "trouble": "trpg_shark_listen_trouble"
     },
     "prepare": {
       "title": "即席の仕掛けを組み立てる",
-      "hint": "手際 ＋1。見立てが合えば、さらに＋1。",
+      "hint": "手際 ＋3。見立てが合えば、さらに＋4。",
       "success": "trpg_shark_prepare_success",
       "mixed": "trpg_shark_prepare_mixed",
       "trouble": "trpg_shark_prepare_trouble",
@@ -1509,7 +1509,7 @@
     },
     "serve": {
       "title": "三人そろって岸へ帰る",
-      "hint": "連携 ＋1。どの出目でも全員で結末へ進みます。",
+      "hint": "連携 ＋3。どの出目でも全員で結末へ進みます。",
       "success": "trpg_shark_serve_success",
       "mixed": "trpg_shark_serve_mixed",
       "trouble": "trpg_shark_serve_trouble",
@@ -1561,3 +1561,4 @@
     ]
   }
 }
+
