@@ -1,5 +1,5 @@
 // バイトのシフト終了（tonari.js・remake_baito_end の前）。OPEN の札が裏返って CLOSED。
-// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。SKIPと動きを減らす設定は core/scene-motions.js で省く。
+// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { W, svg, stageSvg, move } from "../core/transition-kit.js";
