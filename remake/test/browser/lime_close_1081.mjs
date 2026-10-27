@@ -89,6 +89,35 @@ await suite('lime-close-1081', async check => {
     await page.locator('[data-test="phone-close"]').evaluate(b => { b.click(); b.click(); });
     await page.locator('.phone-overlay').waitFor({ state: 'detached' });
     assert.equal(await page.evaluate(async () => (await import('./js/core/state.js')).state.pendingInvite?.awaitingLimeClose), undefined);
+    // Reload uses production pacing (turbo does not survive a document reload).
+    await page.locator('[data-test="vn-auto"]').waitFor();
+    await page.locator('.vn-text').waitFor();
+    await act('vn-auto');
+    assert.equal(await page.locator('[data-test="vn-auto"]').getAttribute('aria-pressed'), 'true');
+    await act('vn-skip');
+    assert.equal(await page.locator('[data-test="vn-skip"]').getAttribute('aria-pressed'), 'true');
+    await page.waitForFunction(async () => (await import('./js/core/state.js')).state.money === 27000);
+
 
   }, options);
+  await check('chapter-two-resume', async page => {
+    await page.evaluate(async () => {
+      const core = await import('./js/core/state.js');
+      const s = core.newGame();
+      Object.assign(s, { chapter: 2, phase: 'daily', day: 18, slot: 0, money: 30000 });
+      Object.assign(s.flags, { _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _morning_18: true });
+      s.pendingInvite = { event: 'outing_minto_1', sender: 'minto', day: 18, slot: 0, awaitingLimeClose: true };
+      core.saveToSlot('suien_remake_slot1'); core.loadFromSlot('suien_remake_slot1');
+      (await import('./js/core/ui.js')).clearScreen();
+      window.QA = { core };
+      QA.run = (await import('./js/chapters/ch2-preparation.js')).runChapterTwoPreparation();
+    });
+    await page.locator('[data-test="phone-close"]').waitFor();
+    assert.deepEqual(await page.evaluate(() => [QA.core.state.day, QA.core.state.slot, QA.core.state.money]), [18, 0, 30000]);
+    await page.locator('[data-test="phone-close"]').click();
+    await page.locator('.phone-overlay').waitFor({ state: 'detached' });
+    assert.equal(await page.evaluate(() => QA.core.state.pendingInvite?.awaitingLimeClose), undefined);
+  });
+
 });

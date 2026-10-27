@@ -60,7 +60,7 @@ async function fixture({ lover = false, reply = response, invitation = false } =
       const hold = deferred(); held.push(hold); return hold.promise;
     }, note: value => notes.push(value) };
   return { original, bond, item, ui, picks, bubbles, held, reply, notes,
-    run: () => phone.namespace.testRunItem(item, ui, []),
+    run: (target = item) => phone.namespace.testRunItem(target, ui, []),
     replaceState() {
       current = { inbox: [], limeRead: [], gains: [], lovers: [] };
       modules.get('state.js').setExport('state', current); return current;
@@ -164,4 +164,20 @@ test('two overlapping invitation selections keep the first appointment', async (
   assert.equal(f.item.log.filter(x => x.me).length, 1);
   assert.equal(f.original.pendingInvite.event, 'outing_minto_1');
   await f.finish(); await Promise.all([a, b]);
+});
+
+test('acceptance keeps the first destination and does not read or accept a conflicting invitation', async () => {
+  const f = await fixture({ invitation: true });
+  const other = { ...f.item, id: 'other', read: false, log: [], msg: { ...f.item.msg, id: 'other', sender: 'adam', accept_event: 'outing_adam_1' } };
+  f.original.inbox.push(other);
+  const run = f.run(); f.picks[0].resolve({ text: '行く！', go: true }); await flush();
+  assert.equal(f.original.pendingInvite.event, 'outing_minto_1');
+  assert.equal(other.read, false); assert.equal(other.result, 'conflict_declined');
+  assert.equal(other.completed, undefined); assert.equal(f.item.completed, undefined);
+  await f.finish(); await run;
+});
+test('an invitation expiring while its selection is pending is not accepted', async () => {
+  const f = await fixture({ invitation: true }); const run = f.run();
+  f.original.slot = 2; f.picks[0].resolve({ text: '行く！', go: true }); await run;
+  assert.equal(f.original.pendingInvite, undefined); assert.equal(f.item.done, false);
 });
