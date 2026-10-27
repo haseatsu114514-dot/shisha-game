@@ -23,6 +23,9 @@ async function setup(page, { knownDoctor = true, knownRei = false, legacy = fals
     value.flags._ch1_preview_seen = true;
     value.flags._minto_name_known = true;
     value.flags._minto_identity_known = true;
+    // 第1章クリア済み。朝の通常地図へ進んでも初回LIME案内を再開しない。
+    value.flags._lime_tut = 1;
+    value.flags._lime_opened = true;
     value.met = { hajime: true, sumi: true, minto: true, tsumugi: true, dr_kemuri: knownDoctor, rei: knownRei };
     value.flags._intro_dr_kemuri = knownDoctor;
     value.flags._intro_rei = knownRei;
@@ -31,7 +34,8 @@ async function setup(page, { knownDoctor = true, knownRei = false, legacy = fals
     value.affinityCarry = { tsumugi: .25 };
     value.flavors = ['double_apple', 'mint', 'blueberry'];
     value.flavorStock = { double_apple: 12.5, mint: 22, blueberry: 18 };
-    value.lovers = ['tsumugi', 'minto']; value.contacts.push('minto');
+    // story.naru=3は2本目の交換シーンも読了済み。朝のhasContactによる旧保存補完前から整合させる。
+    value.lovers = ['tsumugi', 'minto']; value.contacts.push('minto', 'naru');
     value.loverSince = { tsumugi: 11, minto: 13 }; value.lastDate = { tsumugi: 12 };
     value.loveLevel = { tsumugi: 2, minto: 1 }; value.lovePts = { tsumugi: 3, minto: 1 }; value.loveCarry = { tsumugi: .5 };
     value.relationshipMemories = ['tsumugi_creature'];
