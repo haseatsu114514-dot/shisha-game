@@ -41,9 +41,15 @@ async function setup(page, { money = 36000, unknown = false, reel = false, guest
     vn.hooks.onLine = (id,line) => { if(window.__dailyTrace.at(-1)!==id) window.__dailyTrace.push(id); };
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
   }, { money, unknown, reel, guest });
-  await page.locator(t('ch2-main-complete')).waitFor();
+  // J07: 初日完了SAVEも帰宅・就寝を経て翌朝へ進む。
+  await page.locator(t('ch2-morning-home')).waitFor();
+  assert.deepEqual(await page.evaluate(() => {
+    const { chapter, day, slot } = window.__remake.state;
+    return { chapter, day, slot };
+  }), { chapter: 2, day: 16, slot: 0 });
+  assert.equal(await page.locator(t('ch2-main-next-day')).count(), 0);
 }
-async function begin(page) { await page.locator(t('ch2-main-next-day')).click(); await page.locator(t('ch2-morning-home')).click(); await page.locator(map).waitFor(); }
+async function begin(page) { await page.locator(t('ch2-morning-home')).click(); await page.locator(map).waitFor(); }
 async function settled(page) { await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); }
 
 for (const [name, options] of [['pc',{}],['touch',{viewport:{width:844,height:390},isMobile:true,hasTouch:true}]]) {
