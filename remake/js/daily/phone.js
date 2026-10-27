@@ -7,7 +7,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 見た目は旧版の LIME（ノッチ付きの端末・緑のヘッダー・白と黄緑の吹き出し・明るい返信欄）を踏襲する。
 import { el, sleep, fitOneLine, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
-import { layers } from "../core/ui.js";
+import { layers, toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
@@ -23,6 +23,9 @@ import { hiyoriEventStatus } from "../core/hiyori-route.js";
 import { tsumugiMessages } from "./tsumugi-schedule.js";
 
 import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitationNote } from "./invitations.js";
+
+// C03: 初回受信から返信を待つ目安。再案内の日付では数え直さない。
+const LIME_REPLY_NUDGE_DAYS = 3;
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -375,6 +378,42 @@ const text = (raw) => formatHtml(hooks.interpolate ? hooks.interpolate(String(ra
 export const unreadCount = () => (state.inbox || []).filter((i) => !i.read).length;
 export const hasUnread = () => unreadCount() > 0;
 
+/** 返事を溜めた重要連絡だけ、元の連絡ごとに一度促す。期限や既読は変更しない。 */
+function nudgeWaitingContacts(opts) {
+  if (state.phase !== "daily" || opts.tournamentDay) return;
+  const histories = new Map();
+  for (const item of state.inbox || []) {
+    const id = originId(item);
+    if (!histories.has(id)) histories.set(id, []);
+    histories.get(id).push(item);
+  }
+  const due = [];
+  for (const [id, history] of histories) {
+    if (state.flags[`_lime_reply_nudged_${id}`]) continue;
+    const latest = history.at(-1);
+    const m = latest.msg;
+    const source = DB.lime.find((candidate) => candidate.id === id) || m;
+    if (!(m.important || source.important) || latest.done || latest.result
+      || source.chapter && source.chapter !== state.chapter
+      || history.some((item) => completedStoryInvitation(item, source))) continue;
+    // 失効した履歴しかない時や、今日は返事できない誘いでは急かさない。
+    if (m.type === "invitation" && inviteState(latest, opts) !== "open") continue;
+    if (latest.read && !m.replies?.length && m.type !== "invitation") continue;
+    let waitingSince = null;
+    for (const item of history) {
+      // 明示返信・自動辞退・予約後の失効は、返信を待った期間に含めない。
+      if (item.replyState === "replied" || ["accepted", "declined", "conflict_declined"].includes(item.result)
+        || item.log?.some((entry) => entry.me)) waitingSince = null;
+      else if (waitingSince == null && Number.isFinite(item.day)) waitingSince = item.day;
+    }
+    if (waitingSince != null && state.day - waitingSince >= LIME_REPLY_NUDGE_DAYS) due.push(id);
+  }
+  if (!due.length) return;
+  for (const id of due) state.flags[`_lime_reply_nudged_${id}`] = true;
+  // 複数の誘いも一つの通知にまとめる。返信・承諾・移動はプレイヤーに任せる。
+  toast("大事なLIMEが届いている。そろそろ確認して返事しよう。", { ms: 5000 });
+}
+
 /** 今朝のメッセージを受信箱に積む。戻り値=届いた件数 */
 export function deliverMorning(opts = {}) {
   const msgs = morningMessages(opts);
@@ -386,6 +425,7 @@ export function deliverMorning(opts = {}) {
     state.inbox.push(stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, chapter: state.chapter, msg,
       read: false, done: false, replyState: m.type === "invitation" || m.replies?.length ? "waiting" : "none", log: [] }));
   }
+  nudgeWaitingContacts(opts);
   return msgs.length;
 }
 
@@ -472,7 +512,9 @@ export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingRep
 
 const thread = (account) => state.inbox.filter((i) => accountOf(i) === account);
 const plain = (raw) => String(hooks.interpolate ? hooks.interpolate(String(raw)) : raw).replace(/\[\/?[a-z]+[^\]]*\]/gi, "").replace(/<[^>]+>/g, "");
-const dayLabel = (d) => (d === state.day ? "今日" : d === state.day - 1 ? "昨日" : `DAY ${d}`);
+const dayLabel = (item) => (item.chapter != null && item.chapter !== state.chapter
+  ? `第${item.chapter}章 DAY ${item.day}`
+  : item.day === state.day ? "今日" : item.day === state.day - 1 ? "昨日" : `DAY ${item.day}`);
 const clockNow = () => (state.phase === "tournament" ? "大会の朝" : state.slot >= 1 ? "夜" : "昼");
 
 /** 端末の枠（ノッチ・ステータスバー・ヘッダー・本文・返信欄）。openLime と openPhone で共用 */
@@ -715,9 +757,9 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
 
 /** 既読ぶんを履歴として一気に描く（日付の区切りつき） */
 function drawHistory(items, ui) {
-  let lastDay = null;
+  let lastItem = null;
   for (const it of items) {
-    if (it.day !== lastDay) { ui.note(dayLabel(it.day), ".day"); lastDay = it.day; }
+    if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
     if (!it.read) continue;
     for (const msg of it.msg.messages || []) ui.bubble(typeof msg === "string" ? msg : msg.text, false, accountOf(it), false);
     const missed = missedInvitationNote(it);
@@ -784,7 +826,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
           el("div.lcr-preview", { text: preview }),
         ]),
         el("div.lcr-side", [
-          el("small", { text: dayLabel(last.day) }),
+          el("small", { text: dayLabel(last) }),
           openInv ? el("span.lcr-tag", { text: "誘い" }) : last.msg.type === "chat" ? el("span.lcr-tag", { text: "雑談" }) : null,
         ]),
       ]));
@@ -816,7 +858,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
     for (const it of items) {
       if (!ui.live(g)) return;
       if (it.read && it.done) continue;
-      if (!it.read && it.day !== (items[items.indexOf(it) - 1]?.day)) ui.note(dayLabel(it.day), ".day");
+      const previous = items[items.indexOf(it) - 1];
+      if (!it.read && (!previous || it.day !== previous.day || it.chapter !== previous.chapter)) ui.note(dayLabel(it), ".day");
       const result = await runItem(it, ui, accepted);
       if (result === "deferred" && ui.live(g)) { showList(); return; }
     }

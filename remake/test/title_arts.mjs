@@ -14,13 +14,25 @@ await suite("title-arts", async (check) => {
     assert(timing.count < 2048, "Resource Timing buffer filled before title-image measurement");
     assert.equal(timing.images.length, 1, "Boot must load exactly one selected title image");
     const before = await storageSnapshot(page);
+    // 起動・本当のタイトル復帰（reload 相当）は毎回新しく抽選して表示する。連続で同じキャラにしない。
     let previous = await page.locator(".title-art").getAttribute("data-character");
     for (let i = 0; i < 24; i++) {
-      await page.evaluate(async () => (await import("./js/scenes/title.js")).showTitle());
+      await page.evaluate(async () => {
+        const title = await import("./js/scenes/title.js");
+        const loader = await import("./js/scenes/title-art.js");
+        title.showTitle(await loader.prepareTitleArt(loader.pickTitleArt()));
+      });
       await page.locator(".title-art.ready").waitFor();
       const character = await page.locator(".title-art").getAttribute("data-character");
       assert.notEqual(character, previous, "The same character appeared on consecutive title visits");
       previous = character;
+    }
+    // メニューを閉じただけの再描画（引数なしの showTitle）は、絵を選び直さず同じキャラのまま（#1081 H01）。
+    for (let i = 0; i < 3; i++) {
+      await page.evaluate(async () => (await import("./js/scenes/title.js")).showTitle());
+      await page.locator(".title-art.ready").waitFor();
+      assert.equal(await page.locator(".title-art").getAttribute("data-character"), previous,
+        "Closing a menu must keep the same title art instead of reshuffling");
     }
     // 追加されたひよりを確実に抽選・表示する。偶然24回で出ないことを失敗にしない。
     const selected = await page.evaluate(async previous => {

@@ -34,6 +34,27 @@
       "run": ["node remake/test/loading_prefetch.mjs"]
     },
     {
+      "id": "module-loading",
+      "title": "Deferred module loading notice: delay, failure cleanup, retry, single-flight",
+      "kind": "quick",
+      "run": ["node remake/test/module_loading.mjs"]
+    },
+    {
+      "id": "resume-loading-a01",
+      "title": "Resume into a later chapter recovers from a failed module fetch (#1081 A01)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": [
+        "remake/js/core/module-loading.js",
+        "remake/js/core/ui.js",
+        "remake/js/chapters/ch1.js",
+        "remake/js/chapters/ch2-tournament.js",
+        "remake/test/browser/resume_loading_a01.mjs"
+      ],
+      "run": ["node remake/test/browser/resume_loading_a01.mjs"]
+    },
+    {
       "id": "loading-gate",
       "title": "Loading gate and two-panel comic lifecycle",
       "kind": "browser",

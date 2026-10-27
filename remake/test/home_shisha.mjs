@@ -178,10 +178,13 @@ for (const flavor of flavors) for (const mode of ["home", "drill", "rehearsal", 
   if (mode === "tournament") assert.equal(info.regOk, (flavor.family || flavor.id) === "lemon", "第1章の課題はレモン");
 }
 state = newGame(); state.owned.push(rig.SUMI_RIG); state.flavorStock = { mint: 50 }; state.stamina = 80;
-const single = home.applyHomeShisha({ mint: 12 }, rig.homeRig());
+const singleMix = { mint: 12 };
+const single = home.applyHomeShisha(singleMix, rig.homeRig());
 assert.equal(single.taste, "great");
 assert.equal(state.flavorStock.mint, 38);
 assert.equal(single.found, null, "単体を架空レシピとして登録しない");
+assert.deepEqual(single.mix, { mint: 12 }, "感想には今回使った葉を渡す（SAVE項目は増やさない）");
+assert.notEqual(single.mix, singleMix, "結果は選択画面のmixの参照を持ち続けない");
 assert(!home.homeShishaDialogue(single, rig.homeRig()).lines.some(l => /イマイチ|もう一歩/.test(l.text)));
 assert.equal(home.tasteOf({ recipe: lemonade, score: 100 }), "great");
 assert.equal(home.tasteOf({ recipe: null, score: 88 }), "fine");
@@ -207,16 +210,49 @@ assert(state.recipes.ice_lemonade?.home);
 assert.deepEqual({stats:state.stats,xp:state.statXp},statsBefore,"レシピ発見を含め、家ではステータスは育たない");
 assert.deepEqual(state.flavorMastery,{lemon:4.5,mint:1.5});
 assert.equal(home.homeShishaOffer(), null, "同じ日に二度は聞かない");
+saveGame();
+const savedHomeState = JSON.parse(store.get(SAVE_KEY));
+state = loadGame();
+const reloadedHomeState = JSON.parse(JSON.stringify(state));
+delete savedHomeState.savedAt; delete reloadedHomeState.savedAt;
+assert.deepEqual(reloadedHomeState, savedHomeState, "感想追加後もSAVEの既存資源・フラグをそのまま復元");
+assert.equal(Object.hasOwn(savedHomeState, "mix"), false, "使用した葉の感想用データはSAVEに追加しない");
+assert.equal(home.homeShishaOffer(), null, "LOAD後も同じ日の消費・成長を繰り返さない");
 // 大会公式モデルも熟練度のみ。6gずつなら半分ずつ育つ。
 state.day++;state.owned.push(rig.PRO_RIG);
 home.applyHomeShisha({lemon:6,mint:6},rig.homeRig());
 assert.deepEqual(state.flavorMastery,{lemon:8.25,mint:5.25});
 assert.deepEqual({stats:state.stats,xp:state.statXp},statsBefore);
 
+// #1081 D07: 単品もミックスも使った銘柄の味を学ぶ。内部評価・量の講評は出さない。
+const dialogueFor = (mix, taste = "great", distant = false) => home.homeShishaDialogue({ mix, taste }, { id: rig.SUMI_RIG }, () => 0, { distant });
+for (const flavor of flavors) {
+  const mix = { [flavor.id]: 12 };
+  const d = dialogueFor(mix);
+  const name = (flavor.short_name || flavor.name).split(" ").pop();
+  assert(d.lines[1].text.includes(name), flavor.id);
+  assert(!/確かめたい/.test(d.lines[1].text), `${flavor.id}: 現行の葉には具体的な感想がある`);
+  assert.deepEqual(dialogueFor(mix, "meh"), d, "点数で出来栄え感想へ戻さない");
+  for (const l of d.lines) assert(!/美味しい|普通に吸える|もう一歩|イマイチ|点|[0-9]|多すぎ|少なすぎ|配合/.test(l.text), l.text);
+}
+const lemonMint = dialogueFor({ lemon: 9, mint: 3, rose: 0 });
+assert.match(lemonMint.lines[1].text, /レモン.*酸味/);
+assert.match(lemonMint.lines[2].text, /ミント.*清涼感/);
+assert.equal(lemonMint.lines.length, 4, "使った葉だけを一言ずつ振り返る");
+assert.match(dialogueFor({ double_apple: 12 }).lines[1].text, /アニス/);
+assert.match(dialogueFor({ dobaj_double_apple: 12 }).lines[1].text, /クリーミー/);
+assert.match(dialogueFor({ dobaj_mint: 12 }).lines[1].text, /甘/);
+assert.match(dialogueFor({ absal_mint: 12 }).lines[1].text, /苦/);
+assert.notEqual(dialogueFor({ strawberry: 12 }).lines[1].text, dialogueFor({ afsahr_strawberry: 12 }).lines[1].text);
+assert.doesNotThrow(() => dialogueFor({ unknown_legacy_leaf: 12 }));
+assert.match(dialogueFor({ unknown_legacy_leaf: 12 }).lines[1].text, /確かめたい/);
+assert.equal(dialogueFor(single.mix).lines[1].text, home.homeShishaDialogue(single, { id: rig.SUMI_RIG }, () => 0).lines[1].text);
+assert.equal(Object.hasOwn(state, "mix"), false, "感想のためのSAVEフィールドは追加しない");
+
 // 場面の台本: 全角48字以内・手動改行なし・心の声は（）で閉じる
 const width = (t) => [...t].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? .5 : 1), 0);
 for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, rig.PRO_RIG]) for (const pick of [0, .5, .99]) for (const distant of [false, true]) {
-  const d = home.homeShishaDialogue({ taste, stat: "insight" }, { id }, () => pick, { distant });
+  const d = home.homeShishaDialogue({ taste, mix: Object.fromEntries(flavors.map(f => [f.id, 1])) }, { id }, () => pick, { distant });
   for (const l of d.lines) {
     assert(!l.text.includes("配合"), l.text);
     assert(width(l.text) <= 48 && !l.text.includes("\n"), l.text);
@@ -224,7 +260,7 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
   }
 }
 
-// #952: 第2章の味覚不調中は、出来の良し悪しは残しつつ「舌では受け取れない」主観に。評価・成長・消費は同じ。
+// #952: 第2章の味覚不調中は「舌では受け取れない」主観を保つ。評価・成長・消費は同じ。
 {
   const lines = taste => ({ normal: home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0).lines[1].text,
     distant: home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0, { distant: true }).lines[1].text });
@@ -234,6 +270,9 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
     assert(!/美味しい/.test(distant), "Distant taste does not claim the flavour was received");
   }
   assert.match(lines("great").distant, /遠い/);
+  const distant = dialogueFor({ lemon: 9, mint: 3 }, "great", true);
+  assert.equal(distant.lines.length, 3);
+  assert(!distant.lines.some(l => /酸味|冴え|覚えておこう/.test(l.text)), "味覚不調中に味の特徴を受け取ったと断定しない");
   const s = newGame();
   assert.equal(home.tasteDistant(s), false, "Chapter 1 never");
   s.chapter = 2; assert.equal(home.tasteDistant(s), false, "Before the DAY5 slump");

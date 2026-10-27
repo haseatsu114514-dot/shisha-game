@@ -15,7 +15,7 @@ import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot } from "./
 import { offerAgehaPurikura } from "./ch2-purikura.js";
 import { openShop } from "../daily/shop.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
-import { dayOneProgress, recordCityVisit, scheduleChapterTwoTrpgNight } from "./ch2-progress.js";
+import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
 import { chapterTwoNights } from "./ch2-story.js";
 import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
 
@@ -122,7 +122,8 @@ export async function runChapterTwoPreparation() {
   setHiyoriExtraShops(() => state.chapter === 2 ? PREPARATION_SPOTS : []);
   normalizeCommuteState(state);
   const startDay = dayOneProgress(state).startDay;
-  scheduleChapterTwoTrpgNight(state, startDay);
+  // 現行の卓は通常シフト後に集まれる。準備開始だけで旧DAY8の空き予定を追加しない。
+  // 保存済みの個別予定・部員・連絡先はそのまま引き継ぐ。
   state.flags._ch2_preparation_started = true;
   state.flags._ch2_region ||= "home";
   save();

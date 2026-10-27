@@ -11,6 +11,9 @@ import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { mountTitleLayout } from "./title-layout.js";
 
 let titleRevision = 0;
+// 直近に表示したキャラアート。メニューを閉じて再描画するだけのときは同じ絵を使い回し、
+// 読込待ちや無駄な抽選切替を起こさない。新しい絵はブート/タイトル復帰（reload）でだけ選ぶ。
+let currentArt = null;
 
 export function showTitle(preparedArt = null) {
   const revision = ++titleRevision;
@@ -52,7 +55,9 @@ export function showTitle(preparedArt = null) {
     item("CONFIG", "設定", () => openConfig().then(refresh), "title-config"),
   );
 
-  const art = preparedArt || pickTitleArt();
+  const art = preparedArt || currentArt || pickTitleArt();
+  // メニューを閉じただけの再描画（同じ絵の使い回し）は、フェードを繰り返さずそのまま置く。
+  const reused = art === currentArt;
   const artNode = el("div.title-art", { "aria-hidden": "true", dataset: { character: art.character } });
   const root = el("div.title", [
     artNode,
@@ -75,12 +80,25 @@ export function showTitle(preparedArt = null) {
   logo.addEventListener("error", fallbackLogo);
   if (logo.complete && !logo.naturalWidth) fallbackLogo();
   mountTitleLayout(root, { art: artNode, brand, menu, left: root.querySelector(".title-left"), background: bgUrl("bg_title") });
+  const requested = performance.now();
   const place = (loaded) => {
     // 幕の終了待ちでrootが未接続のときも、そのrootへ絵を準備する。
+    currentArt = { character: loaded.character, file: loaded.file, url: loaded.url, ready: true };
     artNode.dataset.character = loaded.character;
     artNode.dataset.art = loaded.file;
     artNode.style.backgroundImage = `url("${loaded.url}")`;
+    if (reused) artNode.classList.add("shown");
     artNode.classList.add("ready");
+    // 「読込待ち」と「アニメ時間」を分けて計測し、window.__titleArtTiming で参照できるようにする。
+    const loadWaitMs = Math.round(performance.now() - requested);
+    const timing = { character: loaded.character, file: loaded.file, loadWaitMs, animMs: null };
+    window.__titleArtTiming = timing;
+    artNode.addEventListener("animationstart", (e) => {
+      if (e.animationName === "title-art-in") timing._animStart = performance.now();
+    });
+    artNode.addEventListener("animationend", (e) => {
+      if (e.animationName === "title-art-in" && timing._animStart != null) timing.animMs = Math.round(performance.now() - timing._animStart);
+    });
   };
   if (art.ready) place(art);
   else prepareTitleArt(art).then(place);

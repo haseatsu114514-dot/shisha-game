@@ -7,12 +7,12 @@ const evidence = (process.env.COMPARISON_DIR || fileURLToPath(new URL('../../../
 fs.mkdirSync(evidence, { recursive: true });
 const t = name => `[data-test="${name}"]`;
 const map = '[data-destination-selection]:not(.done)';
-async function setup(page, { money = 36000, unknown = false, reel = false, guest = null } = {}) {
+async function setup(page, { money = 36000, unknown = false, reel = false, guest = null, stamina = 100, weatherSeed = 7 } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async ({ money, unknown, reel, guest }) => {
+  const seeded = await page.evaluate(async ({ money, unknown, reel, guest, stamina, weatherSeed }) => {
     const core = await import('./js/core/state.js');
     const value = core.newGame();
-    Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina: 100, weatherSeed: 7 });
+    Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina, weatherSeed });
     value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
       _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true,
       _hiyori_meeting_done: true, _hiyori_message_delivered: true };
@@ -39,12 +39,17 @@ async function setup(page, { money = 36000, unknown = false, reel = false, guest
     (await import('./js/chapters/ch1.js')).setupHooks();
     window.__dailyTrace = [];
     const vn = await import('./js/vn/engine.js');
-    vn.hooks.onLine = (id,line) => { if(window.__dailyTrace.at(-1)!==id) window.__dailyTrace.push(id); };
+    vn.hooks.onLine = (id,line) => {
+      if(window.__dailyTrace.at(-1)!==id) window.__dailyTrace.push(id);
+    };
+    const before = structuredClone(value);
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
-  }, { money, unknown, reel, guest });
-  await page.locator(t('ch2-main-complete')).waitFor();
+    return before;
+  }, { money, unknown, reel, guest, stamina, weatherSeed });
+  await page.locator(`${t('ch2-morning-home')}, ${t('ch2-main-error')}`).first().waitFor();
+  return seeded;
 }
-async function begin(page) { await page.locator(t('ch2-main-next-day')).click(); await page.locator(t('ch2-morning-home')).click(); await page.locator(map).waitFor(); }
+async function begin(page) { await page.locator(t('ch2-morning-home')).click(); await page.locator(map).waitFor(); }
 async function value(page) { return page.evaluate(() => structuredClone(window.__remake.state)); }
 async function settled(page) { await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); } // #780: 新ピンの解錠演出中は選択を受け付けない
 async function wide(page, touch = false) {
@@ -99,6 +104,33 @@ await suite('ch2-daily',async check=>{
     const loaded=await value(page); assert.equal(loaded.flags._city_guest_seen_ageha,true);
     assert.equal(loaded.flags._city_guest_day,'2:16'); assert.equal(loaded.money,after.money);
   });
+  for (const weatherSeed of [0, 4]) await check(`first-night-auto-sleep-once-weather-${weatherSeed}`, async page => {
+    const seeded = await setup(page, { stamina: 60, weatherSeed });
+    assert.equal(await page.locator(t('ch2-main-next-day')).count(), 0);
+    const before = await value(page);
+    const preserved = ['trpg', 'contacts', 'met', 'story', 'visits', 'affinity', 'loverSince', 'lastDate', 'relationshipMemories', 'flavorStock'];
+    for (const key of preserved) assert.deepEqual(before[key], seeded[key], `Initial sleep changed ${key}`);
+    assert.equal(before.day, 16); assert.equal(before.slot, 0); assert.equal(before.stamina, 74);
+    assert.equal(before.money, 36000); assert.equal(before.flags._ch2_region, 'home');
+    const trace = await page.evaluate(() => window.__dailyTrace);
+    assert.equal(trace.filter(id => id === 'remake_homecoming_0').length, 1);
+    assert(!trace.includes('__ch2_return_train'), 'Initial delivery route already returned to tonari');
+    assert(before.flags._morning_16);
+    assert.equal(new Set(before.inbox.map(item => item.id)).size, before.inbox.length);
+    assert.equal(await page.evaluate(async () => (await import('./js/daily/weather.js')).isRainy()), weatherSeed === 4);
+    assert.match(await page.locator('#bg > .bg-img').last().getAttribute('style'), /bg_home/);
+    assert.equal(await page.evaluate(async () => (await import('./js/core/audio.js')).currentBgm()), 'kansetsu_shomei_to_black_coffee');
+    await begin(page);
+    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-save')).click();
+    await page.locator(t('slot-1')).click(); await page.locator(t('confirm-overwrite')).click();
+    await page.locator('#modal.show').waitFor({ state: 'hidden' });
+    await page.locator(t('hud-menu')).click(); await page.locator(t('menu-load')).click();
+    await page.locator(t('slot-1')).click(); await page.locator(t('confirm-load')).click();
+    await page.locator(map).waitFor();
+    const after = await value(page);
+    for (const key of ['day', 'slot', 'stamina', 'money', 'inbox', 'weatherSeed', ...preserved]) assert.deepEqual(after[key], before[key], key);
+    assert.equal(after.flags._ch2_region, 'home');
+  }, { reducedMotion: 'reduce' });
   await check('next-day-region-switch-and-autosave',async page=>{
     await setup(page,{reel:true}); await begin(page);
     let v=await value(page); assert.equal(v.day,16); assert.equal(v.slot,0); assert.equal(v.stamina,110);
@@ -185,7 +217,7 @@ await suite('ch2-daily',async check=>{
   },{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
   await check('preparation-json-failure-keeps-day1-and-retries',async page=>{
     let bad=true;await page.route('**/ch2_preparation.json',r=>bad?r.fulfill({status:200,body:'bad json'}):r.continue());
-    await setup(page);await page.locator(t('ch2-main-next-day')).click();await page.locator(t('ch2-main-error')).waitFor();
+    await setup(page);await page.locator(t('ch2-main-error')).waitFor();
     let v=await value(page);assert.equal(v.day,15);assert.equal(v.slot,2);assert(!v.flags._ch2_preparation_started);
     const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('suien_remake_save')));assert.equal(saved.day,15);
     bad=false;await page.locator(t('ch2-main-retry')).click();await page.locator(t('ch2-morning-home')).click();await page.locator(map).waitFor();v=await value(page);assert.equal(v.day,16);assert.equal(v.money,36000);
@@ -231,7 +263,6 @@ await suite('ch2-daily',async check=>{
   await check('morning-city-choice-and-reserved-return-money', async page => {
     await setup(page, { money: 1950 });
     await page.evaluate(() => { __remake.state.flags._kumicho_sento_introduced = true; });
-    await page.locator(t('ch2-main-next-day')).click();
     await page.locator(t('ch2-morning-city')).waitFor();
     await capture(page, 'morning-city-choice.png');
     assert.equal((await value(page)).flags._ch2_region, 'home');
@@ -252,7 +283,6 @@ await suite('ch2-daily',async check=>{
   await check('city-night-buys-one-return-ticket-and-wakes-at-home', async page => {
     await setup(page, { money: 5000 });
     await page.evaluate(() => Object.assign(__remake.state.flags, { _ageha_aquarium_introduced: true, _kumicho_sento_introduced: true }));
-    await page.locator(t('ch2-main-next-day')).click();
     await page.locator(t('ch2-morning-city')).click();
     await page.locator('.map[data-region="widehanga"]').waitFor();
     await act(page, 'ch2_aquarium');

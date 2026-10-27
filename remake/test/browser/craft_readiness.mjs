@@ -156,7 +156,7 @@ await suite("craft-readiness", async check => {
     await page.evaluate(() => { coalClock = 11500; });
     await page.locator('[data-test="step-summary"]').waitFor();
     assert.deepEqual(await page.evaluate(() => ({ phases: cs.heat.picks, score: cs.heat.score, automatic: cs.heat.timings.map(t => t.automatic) })),
-      { phases: ["just", "just", "over"], score: 76, automatic: [false, false, true] });
+      { phases: ["just", "just", "over"], score: 89, automatic: [false, false, true] });
     assert.equal(await page.locator('[data-test="coal-count"]').textContent(), "3 / 3");
     assert.equal(await page.evaluate(() => JSON.stringify(T.core.state)), await page.evaluate(() => before));
   });

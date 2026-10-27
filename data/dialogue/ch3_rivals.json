@@ -177,7 +177,12 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "うん。君にも勝ちたい。でも今は客でいて。飲み物、冷めるよ"
+          "text": "うん。君にも勝ちたい"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "でも今は客でいて。飲み物、冷めるよ"
         },
         {
           "speaker": "",
@@ -383,7 +388,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "僕には、ちゃんとお茶。……好きだよ"
+          "text": "僕には、ちゃんとお茶、……好きだよ"
         },
         {
           "speaker": "kuze",

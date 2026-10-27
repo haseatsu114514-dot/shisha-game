@@ -275,6 +275,16 @@ export function toast(text, { ms = 2600, kind = "" } = {}) {
   setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 400); }, ms);
 }
 
+/**
+ * 動的 import など、画面が無反応になりがちな待ちに添える軽量ロード表示。
+ * 会話中の .vn-loading と同じ見た目。show / hide を withLoadingNotice に渡して、
+ * 500ms超で出し、完了・失敗のどちらでも消す（速い読み込みでは出さない）。
+ */
+export function loadingNotice(label = "読み込んでいます…") {
+  const notice = el("div.vn-loading", { role: "status", "aria-live": "polite", text: label, dataset: { test: "module-loading" } });
+  return { onShow: () => layers.fx.append(notice), onHide: () => notice.remove() };
+}
+
 // ステ上昇などのバナー（右上から順に積む・同時に出すのは数枚まで）
 const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" };
 const AFF_PTS = AFFINITY_RANK_PTS; // stats.js の AFFINITY_RANK_PTS と同じ段階

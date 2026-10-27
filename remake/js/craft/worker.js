@@ -15,7 +15,7 @@ export const benchPlaceTag = (cs) => cs?.mode === "tournament" ? cs.eventTitle |
 
 export const WORKER_STEPS = {
   setup: "道具を選ぶ", mix: "香りを合わせる",
-  pack: "葉を詰める", holes: "アルミに穴を開ける", heat: "炭の芯を確かめる",
+  pack: "葉を詰める", holes: "アルミに穴を開ける", heat: "炭の焼け具合を確かめる",
   place: "炭を置く", steam: "蒸らしを待つ", pull: "煙の温度を合わせる",
   care: "最後の一口まで整える",
 };

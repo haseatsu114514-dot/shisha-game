@@ -10,7 +10,7 @@ import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
 const db = { lime: JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8")).messages, lover: {}, dialogues: {} };
-const allMessages = db.lime, state = {}, gains = [], plays = [], statGains = [];
+const allMessages = db.lime, state = {}, gains = [], plays = [], statGains = [], nudges = [];
 const completedPlay = (scene) => ({ id: typeof scene === "string" ? scene : scene?.dialogue_id, visited: [] });
 let playResult = completedPlay;
 let playHook = async () => {};
@@ -38,7 +38,7 @@ const values = {
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => db.hiyori?.route || {}, hiyoriFinaleReady: () => false },
   "util.js": { el, clamp, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
-  "ui.js": { layers }, "state.js": { state, save: noop, STAT_JA, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
+  "ui.js": { layers, toast: (text) => nudges.push(text) }, "state.js": { state, save: noop, STAT_JA, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
   "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
 
   "audio.js": { SE: { phone: noop, phoneReceive: noop, phoneSend: noop, select: noop, click: noop, cancel: noop } },
@@ -67,7 +67,7 @@ const clone = (v) => JSON.parse(JSON.stringify(v));
 function reset(overrides = {}) {
   for (const key of Object.keys(state)) delete state[key];
   Object.assign(state, { chapter: 1, phase: "daily", money: 30000, day: 6, slot: 0, flags: {}, limeRead: [], inbox: [], contacts: ["minto", "rin", "tsumugi", "naru", "adam", "sumi"], met: {}, story: {}, lastBaitoDay: 6, lovers: [], loveLevel: {}, loverSince: {}, lastDate: {}, lovePts: {}, loverEventsSeen: [] }, overrides);
-  db.lime = allMessages; db.lover = {}; db.dialogues = {}; gains.length = 0; plays.length = 0; statGains.length = 0; playHook = async () => {}; playResult = completedPlay;
+  db.lime = allMessages; db.lover = {}; db.dialogues = {}; gains.length = 0; plays.length = 0; statGains.length = 0; nudges.length = 0; playHook = async () => {}; playResult = completedPlay;
   for (const layer of Object.values(layers)) layer.replaceChildren();
 }
 function find(node, test) { if (node.dataset?.test === test) return node; for (const c of node.children || []) { const v = find(c, test); if (v) return v; } return null; }
@@ -113,6 +113,62 @@ reset();
 reset(); state.inbox.push(item(invitation("a", "minto")), item(invitation("b", "rin")));
 const opened = []; phone.pushNotice(2, { onOpen: (sender) => opened.push(sender) });
 const notice = find(layers.toasts, "lime-notice"); assert.equal(notice.tag, "button"); notice.onclick(); notice.onclick(); assert.deepEqual(opened, ["rin"]); assert.equal(notice.parent, null);
+
+// #1081 C03: 未読/既読保留の重要な誘いは、再案内で時計を戻さず3日後に一度だけ促す。
+for (const read of [false, true]) {
+  reset({ day: 1, contacts: ["minto"] });
+  db.lime = [invitation("nudge_story", "minto", { important: true })];
+  phone.deliverMorning();
+  state.inbox[0].read = read;
+  if (read) state.limeRead.push("nudge_story");
+  for (const day of [2, 3]) {
+    state.day = day; phone.deliverMorning(); assert.equal(nudges.length, 0, "3日未満は促さない");
+  }
+  state.day = 4; phone.deliverMorning();
+  assert.equal(nudges.length, 1, "再案内の初回受信から3日で促す");
+  assert.match(nudges[0], /LIME.*そろそろ/);
+  assert.equal(state.inbox[0].read, read, "促しで既読にしない");
+  assert.equal(state.inbox[0].result, "expired", "過去の誘いは失効のまま");
+  assert(state.inbox.some(i => i.id.includes("_retry_c1_d4") && !i.read && !i.done));
+  assert.equal(state.pendingInvite, undefined); assert.equal(gains.length, 0);
+  assert.deepEqual(clone(state.limeRead), read ? ["nudge_story"] : []);
+  const saved = clone(state);
+  reset(saved); db.lime = [invitation("nudge_story", "minto", { important: true })];
+  for (const day of [4, 5, 8]) { state.day = day; phone.deliverMorning(); }
+  assert.equal(nudges.length, 0, "保存復元・同日再実行・翌日以降の再案内で繰り返さない");
+}
+
+// 重要な返信付き連絡/読むだけの連絡も対象。新着がない朝でも、まとめて一つの通知。
+reset({ day: 4, contacts: [] }); db.lime = [];
+state.inbox.push(...[false, true].map((read, index) => item({ id: `important_chat_${index}`, sender: "minto",
+  type: "chat", important: true, messages: ["大事な連絡"], replies: [{ text: "わかった" }] }, { day: 1, read })));
+state.inbox.push(item({ id: "important_note", sender: "adam", type: "chat", important: true, messages: ["連絡"] }, { day: 1 }));
+const beforeNudge = clone(state.inbox);
+assert.equal(phone.deliverMorning(), 0); assert.equal(nudges.length, 1);
+assert.deepEqual(clone(state.inbox), beforeNudge, "既読/返信/履歴を書き換えない");
+phone.deliverMorning(); assert.equal(nudges.length, 1);
+
+// 雑談、返信済み、期限切れだけの履歴、他章限定/完了済みの連絡からは促さない。
+for (const variant of ["ordinary", "read_note", "replied", "expired_only", "other_chapter", "completed", "tournament", "declined_retry"]) {
+  reset({ day: 4, contacts: [] }); db.lime = [];
+  const msg = invitation("excluded_nudge", "minto", { important: true });
+  const old = item(msg, { day: 1 });
+  if (variant === "ordinary") delete msg.important;
+  if (variant === "read_note") { msg.type = "chat"; old.read = true; old.done = true; old.replyState = "none"; }
+  if (variant === "replied") { old.done = true; old.replyState = "replied"; old.result = "declined"; }
+  if (variant === "expired_only") { old.done = true; old.replyState = "expired"; old.result = "expired"; }
+  if (variant === "other_chapter") msg.chapter = 2;
+  if (variant === "completed") { msg.exclude_flag = "_story_done"; state.flags._story_done = true; }
+  if (variant === "tournament") state.phase = "tournament";
+  if (variant === "declined_retry") { old.done = true; old.replyState = "replied"; old.result = "declined"; }
+  state.inbox.push(old);
+  if (!["read_note", "expired_only", "replied"].includes(variant)) {
+    // 今日の再案内があっても、完了/章/直近の返信は尊重する。
+    state.inbox.push(item({ ...msg, id: `${msg.id}_retry_c1_d4`, origin_id: msg.id }, { originId: msg.id }));
+  }
+  phone.deliverMorning(); assert.equal(nudges.length, 0, variant);
+}
+console.log("[1081 C03] PASS unread/deferred/3-day boundary/retries/once/restore/important contacts/exclusions");
 
 // 通知からトーク直行。読んでも保留なら返事待ちのまま一覧へ戻る。
 reset(); const waiting = item(invitation("later", "minto", { important: true })); state.inbox.push(waiting);
@@ -452,4 +508,25 @@ db.lime = ["naru", "adam", "minto"].map(sender => ({ id: `cap_${sender}`, sender
   type: "chat", trigger_condition: "lime_exchanged", trigger_day: 5, messages: ["既存の優先連絡"] }));
 assert.equal(phone.deliverMorning(), 3);
 assert(!state.inbox.some(item => item.msg.sender === "tsumugi"));
+// 章をまたぐ同じ日付と、chapter がない旧セーブの表示。
+reset({ chapter: 2, day: 3 });
+const historyMessage = { id: "history", sender: "minto", type: "chat", messages: ["履歴"] };
+state.inbox.push(
+  item(historyMessage, { chapter: 1, day: 14, read: true, done: true }),
+);
+session = phone.openLime(); await settle();
+assert.equal(find(layers.modal, "lime-chat-minto").children[2].children[0].text, "第1章 DAY 14");
+await click("phone-close"); await session;
+state.inbox.push(
+  item(historyMessage, { chapter: 1, day: 3, read: true, done: true }),
+  item(historyMessage, { chapter: 2, day: 3, read: true, done: true }),
+  item(historyMessage, { day: 2, read: true, done: true }),
+);
+session = phone.openLime(); await settle();
+const row = find(layers.modal, "lime-chat-minto");
+assert.equal(row.children[2].children[0].text, "昨日");
+await click("lime-chat-minto");
+assert.deepEqual(layers.modal.querySelectorAll(".day").map((node) => node.text), ["第1章 DAY 14", "第1章 DAY 3", "今日", "昨日"]);
+await closeThread(session);
+
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority: PASS");

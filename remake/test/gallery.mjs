@@ -121,6 +121,19 @@ assert.equal(entries.filter(e => ["comic", "movie"].includes(e.kind)).length, 2,
 assert.equal(entries.filter(e => e.photo).length, 1);
 const empty = { clearedChapters: [], keepsakes: [], purikura: [] };
 assert(!galleryEntries(manifest, { items: [comic] }, empty, new Set()).find(e => e.id === comic.id).unlocked);
+// 採用シールだけを命名・解放し、旧manifestや既見記録に候補が残っていても隠す。
+const actualManifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
+const strip = "cg_ch2_ageha_purikura_strip";
+const candidates = [strip + "_soft", strip + "_gal"];
+const legacyManifest = { ...actualManifest, cgs: [...actualManifest.cgs, ...candidates.map(id => id + ".png")] };
+for (const seen of [[], [strip, ...candidates]]) {
+  const photos = galleryEntries(legacyManifest, {}, empty, new Set(seen)).filter(e => e.id.startsWith(strip));
+  assert.equal(photos.length, 1);
+  assert.equal(photos[0].id, strip);
+  assert.equal(photos[0].title, "あげはと半分このプリクラ");
+  assert.equal(photos[0].kind, "purikura");
+  assert.equal(photos[0].unlocked, seen.includes(strip));
+}
 storage.set(g.GALLERY_PROGRESS_KEY, "{broken"); assert.deepEqual(copy(g.readGalleryProgress()), empty);
 storage.set(g.GALLERY_PROGRESS_KEY, JSON.stringify({ clearedChapters: [0, 1, "2", 99], keepsakes: {}, purikura: [null] }));
 assert.deepEqual(copy(g.readGalleryProgress()), { ...empty, clearedChapters: [1] });
