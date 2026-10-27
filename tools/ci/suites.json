@@ -10,6 +10,15 @@
   ],
   "suites": [
     {
+      "id": "dj-preview",
+      "title": "Independent DJ preview WebAudio and controls",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": ["remake/previews/dj/**", "remake/test/dj_preview.mjs", "remake/test/browser/dj_preview.mjs"],
+      "run": ["node remake/test/browser/dj_preview.mjs"]
+    },
+    {
       "id": "loading-prefetch",
       "title": "Bounded preparation queue and retries",
       "kind": "quick",
@@ -104,6 +113,7 @@
       "title": "Game logic without a browser",
       "kind": "quick",
       "run": [
+        "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
