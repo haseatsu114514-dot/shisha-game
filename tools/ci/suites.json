@@ -1358,11 +1358,13 @@
         "remake/test/browser/hiyori_gate.mjs",
         "remake/test/lime_consistency.mjs",
         "remake/test/browser/lime_evening.mjs",
+        "remake/test/browser/lime_close_1081.mjs",
         "remake/test/browser/minto_invite_reminder.mjs",
         "tools/check_legacy_terms.py"
       ],
       "run": [
-        "node remake/test/browser/lime_evening.mjs"
+        "node remake/test/browser/lime_evening.mjs",
+        "node remake/test/browser/lime_close_1081.mjs"
       ]
     },
     {

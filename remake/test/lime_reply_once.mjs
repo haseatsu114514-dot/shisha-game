@@ -11,15 +11,15 @@ const response = { text: '頑張ります', response: 'うん、お互いにね'
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const flush = async () => { for (let i = 0; i < 12; i++) await Promise.resolve(); };
 
-async function fixture({ lover = false, reply = response } = {}) {
-  const original = { inbox: [], limeRead: [], gains: [], lovers: lover ? ['minto'] : [] };
+async function fixture({ lover = false, reply = response, invitation = false } = {}) {
+  const original = { phase: 'daily', day: 5, slot: 0, flags: {}, inbox: [], limeRead: [], gains: [], lovers: lover ? ['minto'] : [] };
   let current = original;
   const bond = { private: false };
   const notes = [];
   const noop = () => {};
   const imports = {
     'util.js': { el: noop, sleep: async () => {}, fitOneLine: noop, yen: String },
-    'data.js': { DB: {}, displayName: String, faceIconUrl: noop },
+    'data.js': { DB: { lime: [] }, displayName: String, faceIconUrl: noop },
     'ui.js': { layers: {} }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
     'travel-budget.js': { spendableMoney: () => 30000 },
@@ -31,7 +31,7 @@ async function fixture({ lover = false, reply = response } = {}) {
     'bonds.js': { bondInvites: noop, friendMessages: noop },
     'story-knowledge.js': { syncMintoKnowledge: noop }, 'hiyori-route.js': { hiyoriEventStatus: noop },
     'story-contact.js': { storyThreadStatus: () => null },
-    'invitations.js': { invitationCost: noop, storeInvitationSpot: noop, visitReminderSpot: noop, invitationVisitSpot: noop, immediateInvitation: () => false, missedInvitationNote: () => null },
+    'invitations.js': { invitationCost: () => 0, storeInvitationSpot: noop, visitReminderSpot: noop, invitationVisitSpot: noop, immediateInvitation: () => false, missedInvitationNote: () => null },
   };
   const context = vm.createContext({ console, setTimeout, requestAnimationFrame: noop, document: {}, Math, Date, Set, Promise });
   const modules = new Map();
@@ -49,6 +49,7 @@ async function fixture({ lover = false, reply = response } = {}) {
   await phone.evaluate();
   const item = { id: 'lime_minto_day5', read: true, done: false, replyState: 'waiting', log: [],
     msg: { type: 'chat', sender: 'minto', replies: [reply] } };
+  if (invitation) Object.assign(item, { day: 5, msg: { id: item.id, type: 'invitation', sender: 'minto', time_slot: 'noon', accept_event: 'outing_minto_1' } });
   original.inbox.push(item);
   const picks = [], bubbles = [], held = [];
   const ui = { gen: 0, open: true, live(g) { return this.open && this.gen === g; },
@@ -134,3 +135,33 @@ for (const [name, lover, points, expected] of [['zero reward', false, 0, 0], ['e
     assert.deepEqual(f.original.gains.map(x => x.pts), [expected]); assert.equal(f.bond.private, false);
   });
 }
+
+for (const mode of ['reentry', 'load']) test(`invitation commits before animation: ${mode}`, async () => {
+  const f = await fixture({ invitation: true });
+  const run = f.run();
+  f.picks[0].resolve({ text: '行く！', go: true }); await flush();
+  assert.equal(f.item.result, 'accepted');
+  assert.equal(f.item.completed, undefined);
+  assert.equal(f.original.pendingInvite.event, 'outing_minto_1');
+  assert.equal(f.original.gains.length, 0);
+  if (mode === 'reentry') { f.ui.gen++; f.run(); await flush(); assert.equal(f.picks.length, 1); }
+  if (mode === 'load') { const loaded = f.replaceState(); await f.finish(); await run; assert.equal(loaded.pendingInvite, undefined); return; }
+  const saved = JSON.parse(JSON.stringify(f.original));
+  assert.equal(saved.pendingInvite.originId, f.item.id);
+  await f.finish(); await run;
+  assert.equal(f.item.log.filter(x => x.me).length, 1);
+});
+
+test('invitation cannot commit an old selection after LOAD', async () => {
+  const f = await fixture({ invitation: true }); const run = f.run();
+  const loaded = f.replaceState();
+  f.picks[0].resolve({ text: '行く！', go: true }); await run;
+  assert.equal(f.item.done, false); assert.equal(loaded.pendingInvite, undefined);
+});
+test('two overlapping invitation selections keep the first appointment', async () => {
+  const f = await fixture({ invitation: true }); const a = f.run(), b = f.run();
+  f.picks[0].resolve({ text: '行く！', go: true }); f.picks[1].resolve({ text: '行く！', go: true }); await flush();
+  assert.equal(f.item.log.filter(x => x.me).length, 1);
+  assert.equal(f.original.pendingInvite.event, 'outing_minto_1');
+  await f.finish(); await Promise.all([a, b]);
+});
