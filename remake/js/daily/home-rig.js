@@ -21,7 +21,7 @@ export function homeRig(s = state) {
 
 /** スミさんから卓上台を受け取る（一度だけ）。DAY2の帰宅前に呼ぶ。中間準備は未受領セーブのフォールバック */
 export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
-  if (state.owned?.includes(SUMI_RIG) && state.flags._sumi_double_apple_received) return false;
+  if (state.owned?.includes(SUMI_RIG)) return false;
   const owner = state;
   if (DB.dialogues[RIG_SCENE]) {
     const result = await play(RIG_SCENE, bg ? { bg } : {});
@@ -29,14 +29,6 @@ export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
   }
   state.owned ||= [];
   if (!state.owned.includes(SUMI_RIG)) state.owned.push(SUMI_RIG);
-  if (!state.flags._sumi_double_apple_received) {
-    state.flavors ||= [];
-    state.flavorStock ||= {};
-    if (!state.flavors.includes("double_apple")) state.flavors.push("double_apple");
-    state.flavorStock.double_apple = (Number(state.flavorStock.double_apple) || 0) + 50;
-    state.flags._sumi_double_apple_received = true;
-    emit("notice", { text: "ダブルアップルを1箱（50g）もらった" });
-  }
   const name = DB.equipById?.[SUMI_RIG]?.name || "卓上台";
   emit("notice", { text: `「${name}」をもらった。体力に余裕がある夜は、寝る前に家シーシャができる` });
   if (!deferSave) save(); // 有料訪問は calendar の支払い・行動確定と同時に保存する
@@ -46,6 +38,6 @@ export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
 /** DAY2から、体調を崩していない夜にお下がりを渡す。旧セーブでも次の夜に受け取れる。 */
 export async function giveEarlyHomeRig() {
   if (state.chapter !== 1 || state.day < 2 || state.day >= 14 || state.restDay?.fullDay
-      || state.owned?.includes(SUMI_RIG) && state.flags._sumi_double_apple_received) return;
+      || state.owned?.includes(SUMI_RIG)) return;
   await giveSumiRig({ bg: "res://assets/backgrounds/bg_tonari_inside.png" });
 }
