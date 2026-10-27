@@ -24,7 +24,10 @@ await suite('loading-craft', async check => {
           overflow: getComputedStyle(node).overflow, src: image.getAttribute('src') };
       }));
       assert(regions.every(region => region.inside && region.decoded && region.overflow === 'hidden'));
-      assert(regions[0].ratio > 1.5 && regions[1].ratio > 1.8, 'Keep the original panel proportions');
+      assert(regions.every(region => Math.abs(region.ratio - 43 / 25) < 0.03), 'Every panel uses the fixed 43:25 display frame');
+      // The cropped region keeps its own proportions, letterboxed inside the frame (no stretching).
+      const crops = await page.locator('.loading-panel-crop').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().width / node.getBoundingClientRect().height));
+      assert(crops[0] > 1.5 && crops[1] > 1.8, 'The cropped art keeps the original region proportions');
       assert(regions.every(region => region.src.endsWith('adam-chaos.webp')));
       await page.locator(".loading-card").evaluate(node => Promise.all(node.getAnimations().map(animation => animation.finished)));
       assert.equal(await page.locator('.loading-card').evaluate(node => {
@@ -34,15 +37,18 @@ await suite('loading-craft', async check => {
       await page.locator("#stage").screenshot({ path: path.resolve(`.codex/artifacts/remake-browser/loading-ingame-${label}.png`) });
       const indicator = await page.locator('.loading-status').evaluate(node => {
         const box = node.getBoundingClientRect(), stage = document.querySelector('#stage').getBoundingClientRect();
-        return { right: stage.right - box.right, bottom: stage.bottom - box.bottom,
-          inside: box.left > stage.left + stage.width * .75 && box.top > stage.top + stage.height * .85,
+        const center = box.left + box.width / 2;
+        return { right: stage.right - box.right, bottom: stage.bottom - box.bottom, left: box.left - stage.left,
+          inside: box.top > stage.top + stage.height * .8 && Math.abs(center - (stage.left + stage.width / 2)) < stage.width * .2,
           reduced: matchMedia('(prefers-reduced-motion: reduce)').matches,
           animation: getComputedStyle(node.querySelector('.loading-emblem path')).animationName };
       });
-      assert(indicator.inside && indicator.right >= 0 && indicator.bottom >= 0, 'Indicator belongs inside the bottom-right corner');
+      assert(indicator.inside && indicator.left >= 0 && indicator.right >= 0 && indicator.bottom >= 0, 'LOADING sits centred along the bottom');
       if (indicator.reduced) assert.equal(indicator.animation, 'none');
       assert.equal(await page.locator('.loading-emblem path').count(), 3, 'Use the game-specific smoke mark');
-      // The actual preparation completes; no acknowledgement or artificial read wait remains.
+      // A shown comic holds for reading; advancing needs a tap/key, then the gate closes.
+      await page.locator('.loading-gate.is-ready').waitFor();
+      await page.keyboard.press('Enter');
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       await page.waitForFunction(() => document.querySelector('.bench-panel')?.childElementCount > 0);
       assert.equal(await page.locator('#screen').evaluate(node => node.inert), false);
