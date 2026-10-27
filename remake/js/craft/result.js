@@ -151,7 +151,7 @@ export async function resultCountdown(cs, kind) {
   const screen = el("div.count-screen", { dataset: { test: "result-count" } }, [header("SMOKE CROWN CUP / FINAL JUDGING", "結果発表", "最後の10点が、動く。"), cuts, ring, num, pray, el("div.rc-crt")]);
   showScreen("count", screen);
   const cutWords = [
-    "アルミ穴あけ", cs.heat?.flash ? "炭のピカン" : "炭の赤熱", cs.heat?.just ? "ジャスト炭" : "炭の熱", "立ちのぼる煙",
+    "アルミ穴あけ", cs.heat?.flash ? "全面が赤い炭" : "炭の赤熱", cs.heat?.just ? "ジャスト炭" : "炭の熱", "立ちのぼる煙",
     "ミントの香り", "審査員の目元", "会場のざわめき", "スミさんの背中", "tonariのカウンター",
   ];
   SE.drumroll(fast ? 0.5 : 5.5);

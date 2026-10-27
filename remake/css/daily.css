@@ -15,8 +15,10 @@
   opacity: 0;
   image-rendering: pixelated;
 }
-.title-art.ready { animation: title-art-in 2.2s 0.3s var(--ease-out) forwards; }
-@keyframes title-art-in { from { opacity: 0; transform: translateX(40px); } to { opacity: 0.95; transform: none; } }
+.title-art.ready { animation: title-art-in 1s 0.1s var(--ease-out) forwards; }
+/* メニューを閉じただけの再描画は、絵を動かさずそのまま見せる（切替を繰り返さない）。 */
+.title-art.ready.shown { animation: none; opacity: 0.95; transform: none; }
+@keyframes title-art-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 0.95; transform: none; } }
 .title-smoke i {
   position: absolute;
   width: 700px;
@@ -80,6 +82,7 @@
 @media (prefers-reduced-motion: reduce) {
   .title-logo-smoke i { animation: none; opacity: 0.18; transform: translateY(-70px); }
   .title-smoke i { animation: none; }
+  .title-art.ready { animation: none; opacity: 0.95; transform: none; }
 }
 @keyframes logo-in { from { opacity: 0; transform: translateY(12px); } }
 .title-menu { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }

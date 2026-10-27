@@ -472,7 +472,9 @@ export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingRep
 
 const thread = (account) => state.inbox.filter((i) => accountOf(i) === account);
 const plain = (raw) => String(hooks.interpolate ? hooks.interpolate(String(raw)) : raw).replace(/\[\/?[a-z]+[^\]]*\]/gi, "").replace(/<[^>]+>/g, "");
-const dayLabel = (d) => (d === state.day ? "今日" : d === state.day - 1 ? "昨日" : `DAY ${d}`);
+const dayLabel = (item) => (item.chapter != null && item.chapter !== state.chapter
+  ? `第${item.chapter}章 DAY ${item.day}`
+  : item.day === state.day ? "今日" : item.day === state.day - 1 ? "昨日" : `DAY ${item.day}`);
 const clockNow = () => (state.phase === "tournament" ? "大会の朝" : state.slot >= 1 ? "夜" : "昼");
 
 /** 端末の枠（ノッチ・ステータスバー・ヘッダー・本文・返信欄）。openLime と openPhone で共用 */
@@ -715,9 +717,9 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
 
 /** 既読ぶんを履歴として一気に描く（日付の区切りつき） */
 function drawHistory(items, ui) {
-  let lastDay = null;
+  let lastItem = null;
   for (const it of items) {
-    if (it.day !== lastDay) { ui.note(dayLabel(it.day), ".day"); lastDay = it.day; }
+    if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
     if (!it.read) continue;
     for (const msg of it.msg.messages || []) ui.bubble(typeof msg === "string" ? msg : msg.text, false, accountOf(it), false);
     const missed = missedInvitationNote(it);
@@ -784,7 +786,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
           el("div.lcr-preview", { text: preview }),
         ]),
         el("div.lcr-side", [
-          el("small", { text: dayLabel(last.day) }),
+          el("small", { text: dayLabel(last) }),
           openInv ? el("span.lcr-tag", { text: "誘い" }) : last.msg.type === "chat" ? el("span.lcr-tag", { text: "雑談" }) : null,
         ]),
       ]));
@@ -816,7 +818,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
     for (const it of items) {
       if (!ui.live(g)) return;
       if (it.read && it.done) continue;
-      if (!it.read && it.day !== (items[items.indexOf(it) - 1]?.day)) ui.note(dayLabel(it.day), ".day");
+      const previous = items[items.indexOf(it) - 1];
+      if (!it.read && (!previous || it.day !== previous.day || it.chapter !== previous.chapter)) ui.note(dayLabel(it), ".day");
       const result = await runItem(it, ui, accepted);
       if (result === "deferred" && ui.live(g)) { showList(); return; }
     }

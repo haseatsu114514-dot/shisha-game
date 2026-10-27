@@ -50,17 +50,17 @@ await suite("heat-advice", async check => {
       assert.deepEqual(actual.automatic, pattern === "late-auto" ? [true, true, true]
         : pattern === "early" ? [false, false, false] : [false, true, true]);
       assert.equal(actual.over, pattern === "early" ? 0 : pattern === "mixed" ? 2 : 3);
-      assert.equal(actual.score, pattern === "early" ? 15 : pattern === "mixed" ? 24 : 28);
+      assert.equal(actual.score, pattern === "early" ? 15 : pattern === "mixed" ? 50 : 68);
       const feedback = page.locator('[data-test="craft-feedback"]');
       await feedback.waitFor({ state: "visible" });
       const text = await feedback.textContent();
       if (pattern === "late-auto") {
-        assert.match(text, /焼きすぎ.*光ったら、待たずに取り出そう/);
-        assert(!/光るまで待|焦らず待/.test(text), "Late timeout must not advise waiting longer");
+        assert.match(text, /取り出しが遅れた.*全面が赤くなったら、待たずに取り出そう/);
+        assert(!/消えるまで待|焦らず待/.test(text), "Late timeout must not advise waiting longer");
       } else if (pattern === "early") {
-        assert.match(text, /早く取り出した.*光るまで待とう/);
+        assert.match(text, /早く取り出した.*黒い面が消えるまで待とう/);
       } else {
-        assert.match(text, /早い炭と遅い炭.*一つずつ芯の光を目印に取り出そう/);
+        assert.match(text, /早い炭と遅い炭.*全面が赤くなった炭から取り出そう/);
       }
       const summary = await page.locator('[data-test="step-summary"]').textContent();
       assert.equal(summary.includes("・自動"), pattern !== "early");
