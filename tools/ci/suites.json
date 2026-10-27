@@ -1954,11 +1954,16 @@
         "assets/ui/fortune/**",
         "remake/test/fortune_readings.mjs",
         "remake/test/browser/hud_fortune.mjs",
+        "remake/test/browser/stamina_recovery.mjs",
+        "remake/js/daily/hud.js",
+        "remake/css/daily.css",
+        "remake/css/ui-art.css",
         "remake/test/browser/fortune_readings.mjs"
       ],
       "run": [
         "node remake/test/fortune_readings.mjs",
         "node remake/test/browser/hud_fortune.mjs",
+        "node remake/test/browser/stamina_recovery.mjs",
         "node remake/test/browser/fortune_readings.mjs"
       ],
       "env": {
