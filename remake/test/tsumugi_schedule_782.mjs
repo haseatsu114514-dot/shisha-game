@@ -53,7 +53,11 @@ await schedule.evaluate();
 const mocks = {
   "state.js": { state, save: () => saves.push(JSON.stringify(state)) },
   "stats.js": { ensureAffinityLevel: () => 0 },
-  "engine.js": { play: async id => plays.push(id) },
+  "engine.js": { play: async id => plays.push(id), hooks: {}, dialogueSequence: async run => run() },
+  "data.js": { DB: {}, cgUrl() {} },
+  "util.js": { el() {} },
+  "ui.js": { layers: {}, imageReady() {} },
+  "scene-motions.js": { sketchIn() {} },
   "spots.js": { hasContact: () => true },
 };
 const story = new vm.SourceTextModule(await fs.readFile(new URL("../js/chapters/tsumugi-story.js", import.meta.url), "utf8"), { context });
