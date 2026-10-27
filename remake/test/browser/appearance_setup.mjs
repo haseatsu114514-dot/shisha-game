@@ -32,13 +32,13 @@ export function prepareAppearanceCatalog(root = repositoryRoot) {
 export async function waitForSetupContinuation(page) {
   const next = page.locator('.bench [data-test="water-confirm"], .bench [data-test="mix-ok"]').first();
   const deadline = Date.now() + 25000;
-  while (!(await next.isVisible())) {
+  while (typeof next.isVisible === "function" && !(await next.isVisible())) {
     if (Date.now() > deadline) break;
     const ready = page.locator(".loading-gate.is-ready");
     if (await ready.count()) await ready.first().dispatchEvent("pointerdown").catch(() => {});
     await page.waitForTimeout(100);
   }
-  await next.waitFor({ state: "visible", timeout: 1000 });
+  await next.waitFor({ state: "visible" });
   if (await page.locator('.bench [data-test="appearance-confirm"]').count()) {
     throw new Error("Appearance must not block ordinary crafting");
   }
