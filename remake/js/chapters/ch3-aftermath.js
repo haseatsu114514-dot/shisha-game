@@ -38,11 +38,13 @@ async function openMenu(owner) {
     const choice = await modal({ title: "第三章 MENU", body: "読み終えた場面から再開できます。", options: [
       { label: "セーブ", value: "save", test: test("save") },
       { label: "ロード", value: "load", test: test("load") },
+      { label: "設定", value: "config", test: test("config") },
       { label: "タイトルへ戻る", value: "title", test: test("title") },
       { label: "閉じる", value: null, primary: true },
     ] });
     if (!live(owner)) return;
     if (choice === "save") await saveFlow();
+    if (choice === "config") await (await import("../scenes/title.js")).openConfig();
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
       if (key && loadFromSlot(key)) {

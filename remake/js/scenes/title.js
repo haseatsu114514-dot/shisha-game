@@ -104,32 +104,41 @@ export function showTitle(preparedArt = null) {
   else prepareTitleArt(art).then(place);
 }
 
-async function openConfig() {
+export async function openConfig(opts = {}) {
   const { createUiThemeSelect } = await import("../core/ui-theme.js");
+  const persist = () => {
+    if (document.body?.dataset?.screen !== "preview") saveConfig();
+  };
   const row = (label, input) => el("label.cfg-row", [el("span", { text: label }), input]);
-  const range = (key, min, max, step) =>
+  const range = (key, min, max, step, test) =>
     el("input", {
       type: "range", min, max, step, value: config[key],
-      oninput: (e) => { config[key] = Number(e.target.value); applyVolumes(); saveConfig(); },
+      dataset: { test },
+      oninput: (e) => { config[key] = Number(e.target.value); applyVolumes(); persist(); opts.onChange?.(key, config[key]); },
     });
   const speed = el("select", {
-    onchange: (e) => { config.textSpeed = Number(e.target.value); saveConfig(); },
+    dataset: { test: "cfg-text-speed" },
+    onchange: (e) => { config.textSpeed = Number(e.target.value); persist(); opts.onChange?.("textSpeed", config.textSpeed); },
   }, [["1", "ゆっくり"], ["2", "ふつう"], ["3", "はやい"], ["4", "瞬間表示"]].map(([v, t]) => {
     const o = el("option", { value: v, text: t });
     if (Number(v) === config.textSpeed) o.selected = true;
     return o;
   }));
-  const blip = el("input", { type: "checkbox", onchange: (e) => { config.voiceBlip = e.target.checked; saveConfig(); } });
+  const blip = el("input", {
+    type: "checkbox",
+    dataset: { test: "cfg-voice-blip" },
+    onchange: (e) => { config.voiceBlip = e.target.checked; persist(); opts.onChange?.("voiceBlip", config.voiceBlip); },
+  });
   blip.checked = config.voiceBlip;
   return modal({
     title: "設定",
     body: el("div.cfg", [
-      row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; saveConfig(); })),
-      row("BGM 音量", range("bgmVolume", 0, 1, 0.05)),
-      row("効果音 音量", range("seVolume", 0, 1, 0.05)),
+      row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; persist(); opts.onChange?.("uiTheme", value); })),
+      row("BGM 音量", range("bgmVolume", 0, 1, 0.05, "cfg-bgm-volume")),
+      row("効果音 音量", range("seVolume", 0, 1, 0.05, "cfg-se-volume")),
       row("文字の速さ", speed),
       row("文字送りの声", blip),
     ]),
-    options: [{ label: "閉じる", value: true, primary: true }],
+    options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
   });
 }

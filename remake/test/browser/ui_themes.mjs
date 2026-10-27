@@ -235,6 +235,102 @@ await suite("ui-themes-config",async check=>{
     await page.locator('[data-test="title-config"]').waitFor();
     assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"classic","unknown skin safely uses the default");
   });
+  for (const [label, options, touch] of [
+    ["ingame-config-pc", { viewport: { width: 1280, height: 720 } }, false],
+    ["ingame-config-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
+  ]) {
+    await check(label, async page => {
+      const press = async sel => {
+        const loc = page.locator(sel);
+        if (touch) await loc.tap(); else await loc.click();
+      };
+      await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        const s = core.newGame();
+        Object.assign(s, { chapter: 1, phase: "daily", day: 6, slot: 0, money: 34567, stamina: 88, seed: 1234, weatherSeed: 4 });
+        Object.assign(s.met, { sumi: true, tsumugi: true });
+        Object.assign(s.flags, {
+          _morning_6: true, _errand_scout_done: true,
+          _delivery_adam_done: true, _delivery_minto_done: true, _delivery_report_done: true,
+          _c_station_registered: true, _lime_tut: 1, _lime_opened: true,
+          _intro_hajime: true, _intro_sumi: true,
+          _ev_first_practice: true, _ev_midcheck: true, _ev_salaryman: true,
+          _ev_day5: true, _ev_meet_rivals: true, _qa_marker: "keep-progress",
+        });
+        Object.assign(core.config, { textSpeed: 2, voiceBlip: true, uiTheme: "classic" });
+        core.saveConfig();
+        core.save();
+        (await import("./js/scenes/title.js")).showTitle();
+      });
+      await press('[data-test="title-load"]');
+      await press('[data-test="slot-0"]');
+      await page.locator("#screen .map:not(.done)").waitFor();
+      const savedBefore = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
+      await press('[data-test="hud-menu"]');
+      await assertFits(page, '.menu-modal .modal-actions .btn');
+      await press('[data-test="menu-config"]');
+      await page.locator("#modal.show .cfg").waitFor();
+      await page.selectOption('[data-test="cfg-text-speed"]', "1");
+      await press('[data-test="cfg-voice-blip"]');
+      await page.selectOption('[data-test="ui-theme-select"]', "amber");
+      const menuCfg = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config")));
+      assert.equal(menuCfg.textSpeed, 1);
+      assert.equal(menuCfg.voiceBlip, false);
+      assert.equal(menuCfg.uiTheme, "amber");
+      assert.equal(await page.locator("html").getAttribute("data-ui-theme"), "amber");
+      assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), savedBefore, "MENU config must not overwrite save");
+      await press('[data-test="cfg-close"]');
+      await page.locator("#modal.show").waitFor({ state: "hidden" });
+
+      await page.evaluate(async () => {
+        const { play, vnTest, backlog } = await import("./js/vn/engine.js");
+        vnTest.turbo = false;
+        backlog().length = 0;
+        window.__cfgVnDone = false;
+        window.__cfgVnPromise = play({
+          dialogue_id: "qa_ingame_config_vn",
+          lines: [
+            { speaker: "sumi", face: "normal", text: "会話の途中でも、読みやすさの設定を開いて文字の速さを変えられるよ。" },
+            { speaker: "sumi", face: "smile", text: "次の行もそのまま続けて読める。" },
+            { type: "set_flag", flag: "_qa_ingame_cfg_done", value: true },
+          ],
+        }, { bg: "res://assets/backgrounds/bg_tonari_inside.png" }).then(() => { window.__cfgVnDone = true; });
+      });
+      await page.locator("#vn.active .vn-box").waitFor();
+      await page.waitForFunction(() => (document.querySelector(".vn-text")?.textContent?.length || 0) > 0);
+      await assertFits(page, ".vn-controls, .vn-controls .vn-ctl");
+      await press('[data-test="vn-auto"]');
+      assert.equal(await page.locator('[data-test="vn-auto"]').getAttribute("aria-pressed"), "true");
+      await press('[data-test="vn-config"]');
+      await page.locator("#modal.show .cfg").waitFor();
+      await page.waitForTimeout(250);
+      assert.equal(await page.evaluate(() => window.__cfgVnDone), false, "AUTO must pause while config modal is open");
+      await page.selectOption('[data-test="cfg-text-speed"]', "4");
+      await page.selectOption('[data-test="ui-theme-select"]', "smoke");
+      await page.locator(".vn-next.show").waitFor();
+      const vnCfg = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config")));
+      assert.equal(vnCfg.textSpeed, 4);
+      assert.equal(vnCfg.uiTheme, "smoke");
+      assert.equal(await page.locator("html").getAttribute("data-ui-theme"), "smoke");
+      await press('[data-test="cfg-close"]');
+      await page.locator("#modal.show").waitFor({ state: "hidden" });
+      assert.equal(await page.locator('[data-test="vn-auto"]').getAttribute("aria-pressed"), "true", "AUTO state is preserved across config modal");
+      await press('[data-test="vn-auto"]');
+      assert.equal(await page.locator('[data-test="vn-auto"]').getAttribute("aria-pressed"), "false");
+      await page.waitForTimeout(350);
+      if (touch) await page.locator(".vn-box").tap(); else await page.keyboard.press("Enter");
+      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent?.includes("次の行もそのまま続けて読める。"));
+      await page.locator(".vn-next.show").waitFor();
+      if (touch) await page.locator(".vn-box").tap(); else await page.keyboard.press("Enter");
+      await page.waitForFunction(() => window.__cfgVnDone);
+      const afterVn = await page.evaluate(async () => {
+        const { state } = await import("./js/core/state.js");
+        const { backlog } = await import("./js/vn/engine.js");
+        return { flag: state.flags._qa_ingame_cfg_done, marker: state.flags._qa_marker, logCount: backlog().length };
+      });
+      assert.deepEqual(afterVn, { flag: true, marker: "keep-progress", logCount: 2 });
+    }, options);
+  }
 });
 
 

@@ -70,7 +70,7 @@
 .vn-controls {
   right: 80px;
   bottom: 205px; /* 本文上辺から5px。枠線を重ねない。 */
-  width: 370px;
+  width: 420px;
   height: 54px;
   padding: 5px 8px;
   gap: 0;
@@ -83,7 +83,7 @@
   min-width: 0;
   min-height: 44px;
   margin: 0;
-  padding: 0 8px;
+  padding: 0 6px;
   font-size: 18px;
   font-weight: 700;
   letter-spacing: .02em;

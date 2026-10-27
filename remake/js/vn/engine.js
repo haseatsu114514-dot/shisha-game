@@ -78,7 +78,7 @@ function buildDom() {
   dom.skipBtn = ctl("SKIP", () => setSkip(!skipMode), "vn-skip");
   dom.autoBtn.setAttribute("aria-pressed", "false");
   dom.skipBtn.setAttribute("aria-pressed", "false");
-  dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"));
+  dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"), ctl("設定", openSettings, "vn-config"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
@@ -120,7 +120,7 @@ let autoTimer = 0;
 function kickAuto() {
   clearTimeout(autoTimer);
   if (!running || !running.ready) return;
-  if (dom.log.classList.contains("show")) return;
+  if (dom.log.classList.contains("show") || layers.modal.classList.contains("show")) return;
   const fast = vnTest.turbo || skipMode;
   if (!fast && !autoMode) return;
   if (running.waitingChoice) {
@@ -129,7 +129,7 @@ function kickAuto() {
   }
   const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45;
   autoTimer = setTimeout(() => {
-    if (!running) return;
+    if (!running || dom.log.classList.contains("show") || layers.modal.classList.contains("show")) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();
     advance();
   }, delay);
@@ -691,11 +691,14 @@ function renderPage() {
   r.fullInnerHtml = page.inner ? formatHtml(page.inner) : "";
   r.spokenLength = visibleLength(r.fullHtml);
   const total = r.spokenLength + visibleLength(r.fullInnerHtml);
+  r.totalLength = total;
   clearInterval(r.typeTimer);
+  clearTimeout(r.typeTimer);
   dom.next.classList.remove("show");
   const speed = vnTest.turbo ? 4 : config.textSpeed;
   if (speed >= 4 || skipMode) {
     r.typing = false;
+    r.shown = total;
     renderTyped(total);
     dom.next.classList.add("show");
     kickAuto();
@@ -704,21 +707,31 @@ function renderPage() {
   // 重要行（[imp]）は一拍の「溜め」を置いてから出す
   const hold = raw.includes("[imp]") && r.pageIdx === 0 ? 380 : 0;
   r.typing = true;
-  let shown = page.continuation ? r.spokenLength : 0;
-  renderTyped(shown);
-  const interval = { 1: 46, 2: 26, 3: 12 }[speed] || 26;
-  const step = Math.max(1, Math.round(total / 90));
-  const start = () => {
-    r.typeTimer = setInterval(() => {
-      shown += step;
-      renderTyped(shown);
-      if (shown <= r.spokenLength && shown % 3 < step) SE.blip(r.speaker);
-      if (shown >= total) completeTyping();
-    }, interval);
-  };
-  if (hold) r.typeTimer = setTimeout(start, hold);
-  else start();
+  r.shown = page.continuation ? r.spokenLength : 0;
+  renderTyped(r.shown);
+  if (hold) r.typeTimer = setTimeout(() => startTypingInterval(r), hold);
+  else startTypingInterval(r);
   kickAuto();
+}
+
+function startTypingInterval(r = running) {
+  if (!r || !r.typing) return;
+  clearInterval(r.typeTimer);
+  clearTimeout(r.typeTimer);
+  const speed = vnTest.turbo ? 4 : config.textSpeed;
+  if (speed >= 4 || skipMode) {
+    completeTyping();
+    return;
+  }
+  const interval = { 1: 46, 2: 26, 3: 12 }[speed] || 26;
+  const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
+  const step = Math.max(1, Math.round(total / 90));
+  r.typeTimer = setInterval(() => {
+    r.shown = (r.shown || 0) + step;
+    renderTyped(r.shown);
+    if (r.shown <= r.spokenLength && r.shown % 3 < step) SE.blip(r.speaker);
+    if (r.shown >= total) completeTyping();
+  }, interval);
 }
 
 function renderTyped(shown) {
@@ -735,7 +748,9 @@ function completeTyping() {
   clearInterval(r.typeTimer);
   clearTimeout(r.typeTimer);
   r.typing = false;
-  renderTyped(r.spokenLength + visibleLength(r.fullInnerHtml));
+  const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
+  r.shown = total;
+  renderTyped(total);
   dom.next.classList.add("show");
   kickAuto();
 }
@@ -863,7 +878,29 @@ function openLog() {
 
 async function openGlossary() {
   SE.select();
+  clearTimeout(autoTimer);
   await modal({ title: "用語集", body: glossaryPanel(), options: [{ label: "閉じる", value: true, primary: true }], className: "glossary-modal" });
+  if (document.activeElement?.closest?.(".vn-controls")) document.activeElement.blur();
+  kickAuto();
+}
+
+async function openSettings() {
+  SE.select();
+  clearTimeout(autoTimer);
+  if (running?.typing) {
+    clearInterval(running.typeTimer);
+    clearTimeout(running.typeTimer);
+  }
+  const { openConfig } = await import("../scenes/title.js");
+  await openConfig({
+    onChange(key) {
+      if (key === "uiTheme") nameFit?.fit();
+      if (key === "textSpeed" && running?.typing && config.textSpeed >= 4) completeTyping();
+    },
+  });
+  if (document.activeElement?.closest?.(".vn-controls")) document.activeElement.blur();
+  if (running?.typing) startTypingInterval(running);
+  kickAuto();
 }
 
 export const isPlaying = () => !!running;
