@@ -52,7 +52,9 @@ await suite("ch1-tournament", async check => {
       window.confirmResult = resultCard(document.querySelector(".bench-panel"), { title: "穴あけ 結果" });
     });
     await page.locator('.nico').first().waitFor();
-    assert.match(await page.locator('.nico').first().textContent(), /穴あけ/);
+    // 機械的な工程ラベルは廃止。先頭コメントは穴あけ工程の視聴者コメント（専用プール）から出る。
+    const holesPerfect = await page.evaluate(() => T.data.DB.broadcast.completion.holes.perfect);
+    assert(holesPerfect.includes(await page.locator('.nico').first().textContent()), "first comment is not a holes reaction");
     await page.locator('[data-test="step-next"]').click();
     await page.evaluate(async () => {
       await window.confirmResult;
@@ -67,7 +69,8 @@ await suite("ch1-tournament", async check => {
       cs.holes.score = 20;
       T.session.presentBenchResult(document.querySelector(".bench-panel"), "穴あけ 結果");
     });
-    assert.match(await page.locator('.nico.miss').first().textContent(), /穴あけ/);
+    const holesMiss = await page.evaluate(() => T.data.DB.broadcast.completion.holes.miss);
+    assert(holesMiss.includes(await page.locator('.nico.miss').first().textContent()), "first miss comment is not a holes reaction");
     assert.equal(await page.locator('.nico:not(.miss)').count(), 0);
     await page.evaluate(() => T.session.stepPanel("heat", "炭焼き"));
     await page.waitForTimeout(1800);
@@ -86,8 +89,8 @@ await suite("ch1-tournament", async check => {
           const seen = [];
           for (let i = 0; i < 5; i++) {
             T.broadcast.completed(cs, step, score);
-            const text = document.querySelector('.nico').textContent.replace(/^【[^】]+】/, "");
-            seen.push(text);
+            // 工程ラベルは廃止したので、先頭コメントはそのまま専用プールの一文になる。
+            seen.push(document.querySelector('.nico').textContent);
           }
           groups.push({ step, kind, seen, pool });
         }
@@ -101,10 +104,10 @@ await suite("ch1-tournament", async check => {
       assert(seen.every(text => pool.includes(text)), `${step}/${kind}: wrong reaction`);
       assert.equal(new Set(seen).size, 5, `${step}/${kind}: recent reaction repeated`);
     }
-    await page.waitForTimeout(1600);
+    await page.waitForTimeout(2800);
     const visible = await page.locator('.nico').allTextContents();
-    assert.equal(visible.length, 3);
-    assert.equal(new Set(visible).size, 3, "Duplicate comments within one result");
+    assert.equal(visible.length, 5);
+    assert.equal(new Set(visible).size, 5, "Duplicate comments within one result");
     await page.evaluate(() => T.session.stepPanel("heat", "炭焼き"));
     assert.equal(await page.locator('.nico').count(), 0);
   });
