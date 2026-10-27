@@ -108,3 +108,11 @@ await check('entry has individual PLAY and no hidden sync/auto blend or game SAV
  const html=fs.readFileSync(new URL('index.html',dir),'utf8');assert(html.includes('play-a')&&html.includes('play-b'));assert(!/data-sync|id="assist"|id="tap"/.test(html));assert(html.includes('wave-a')&&html.includes('wave-b'));assert(html.includes('試験音'));
 });
 console.log(`DJ manual revision: ${groups} current controlled groups PASS; real browser/listening/capture NOT RUN.`);
+
+await check('hundredth-BPM changes preserve current beat and affect only selected playback rate',async()=>{
+ const a=new DJAudio(Context);await a.play(0);await a.play(1);a.context.currentTime=2;
+ const beat=beatAt(a.mix.decks[1],2);a.tempo(1,126.01);
+ near(beatAt(a.mix.decks[1],2),beat);near(a.mix.decks[0].bpm,128);near(a.voices[1].source.playbackRate.value,126.01/a.tracks[1].nativeBpm);
+ near(beatAt(a.mix.decks[1],3),beat+126.01/60);
+ a.tempo(1,140.01);near(a.mix.decks[1].bpm,140);a.tempo(1,109.99);near(a.mix.decks[1].bpm,110);await a.dispose();
+});

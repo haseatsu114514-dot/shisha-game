@@ -21,8 +21,14 @@ try{
   assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No sync/CUE/tap input workload');
   if(kind==='pc')await page.locator('#start').click();else await page.locator('#start').tap();
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.deepEqual(ready.bpms,[128,126]);
+  for(const deck of [0,1]){
+   const plus=page.locator(`[data-pitch="${deck},0.01"]`),minus=page.locator(`[data-pitch="${deck},-0.01"]`);
+   const before=await snap(page);if(kind==='pc')await plus.click();else await plus.tap();
+   const after=await snap(page);near(after.bpms[deck],before.bpms[deck]+.01,.000001);assert.deepEqual(after.playing,[false,false]);assert.equal(after.bpms[1-deck],before.bpms[1-deck]);
+   if(kind==='pc')await minus.click();else await minus.tap();near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+  }
   // Genuine native input, not setter/evaluate/forceclick.
-  if(kind==='pc'){await page.locator('#tempo-b').focus();for(let n=0;n<20;n++)await page.locator('#tempo-b').press('ArrowRight');}
+  if(kind==='pc'){await page.locator('#tempo-b').focus();for(let n=0;n<200;n++)await page.locator('#tempo-b').press('ArrowRight');}
   else{const input=page.locator('#tempo-b');await input.scrollIntoViewIfNeeded();const r=await input.boundingBox();await page.touchscreen.tap(r.x+r.width*.6,r.y+r.height/2);}
   const pitched=await snap(page),manual=pitched.bpms[1];assert.notEqual(manual,126);if(kind==='pc')near(manual,128,.001);
   if(kind==='pc')await page.locator('#play-a').click();else await page.locator('#play-a').tap();await wait(page,'audio');

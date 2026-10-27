@@ -30,6 +30,10 @@ for(const id of [0,1]){
   catch(e){status(`${e.message}。PLAYから再試行できます。`);}
  });
 }
+document.querySelectorAll('[data-pitch]').forEach(button=>button.addEventListener('click',()=>{
+ const[id,delta]=button.dataset.pitch.split(',').map(Number);
+ audio.tempo(id,Math.round((audio.mix.decks[id].bpm+delta)*100)/100);
+}));
 $('mute').addEventListener('click',()=>{audio.muted=!audio.muted;audio.setVolume(audio.volume);$('mute').textContent=`ミュート ${audio.muted?'ON':'OFF'}`;$('mute').setAttribute('aria-pressed',String(audio.muted));});
 $('volume').addEventListener('input',e=>audio.setVolume(e.target.value));
 $('crossfader').addEventListener('input',e=>audio.setMix(e.target.value));
@@ -86,16 +90,17 @@ function render(){
  const both=audio.mix.decks.every(d=>d.playing),guide=audio.mix.guide;
  for(const id of [0,1]){
   const key=id?'b':'a',d=audio.mix.decks[id],beat=mod(beatAt(d,now),32),play=$('play-'+key);
-  $('bpm-'+key).value=d.bpm.toFixed(1);$('tempo-'+key).value=String(d.bpm);
+  $('bpm-'+key).value=d.bpm.toFixed(2);$('tempo-'+key).value=String(d.bpm);
   $('beat-'+key).textContent=`${d.playing?'再生':'停止'}・${Math.floor(beat/4)+1}小節 ${Math.floor(beat%4)+1}拍`;
   play.textContent=d.playing?`Ⅱ PAUSE ${key.toUpperCase()}`:`▶ PLAY ${key.toUpperCase()}`;play.setAttribute('aria-pressed',String(d.playing));play.disabled=audio.busy;
   wave($('wave-'+key),id,now);
  }
  document.querySelectorAll('[data-nudge]').forEach(b=>{b.disabled=!audio.mix.decks[Number(b.dataset.nudge.split(',')[0])].playing;});
+ document.querySelectorAll('[data-pitch]').forEach(b=>{const[id,delta]=b.dataset.pitch.split(',').map(Number),bpm=audio.mix.decks[id].bpm;b.disabled=delta<0?bpm<=110:bpm>=140;});
  $('offset').disabled=!audio.mix.decks[1].playing;$('start').disabled=audio.busy;$('pause').disabled=!audio.mix.running;
  $('start').textContent=audio.mix.resumeDecks.length?'全体を再開':audio.context?'音声準備済み':'音声を準備';
  $('mix-value').textContent=`A ${Math.round((1-audio.mix.mix)*100)} / B ${Math.round(audio.mix.mix*100)}%`;
- $('phase').textContent=`共通7秒 / BPM差 ${(audio.mix.decks[1].bpm-audio.mix.decks[0].bpm).toFixed(1)} / ${both?`B−A拍位相 ${phaseError(...audio.mix.decks,now).toFixed(3)}・フレーズ差 ${phraseError(...audio.mix.decks,now).toFixed(2)}拍`:'各PLAYを押すまで、そのデッキの波形は停止'}`;
+ $('phase').textContent=`共通7秒 / BPM差 ${(audio.mix.decks[1].bpm-audio.mix.decks[0].bpm).toFixed(2)} / ${both?`B−A拍位相 ${phaseError(...audio.mix.decks,now).toFixed(3)}・フレーズ差 ${phraseError(...audio.mix.decks,now).toFixed(2)}拍`:'各PLAYを押すまで、そのデッキの波形は停止'}`;
  $('master').textContent=`VJ基準 ${audio.mix.visualMaster?'B':'A'}（音声時計）`;
  $('phrase').value=frameView.mode==='mix'?frameView.progress:0;
  const target=guide?.to?'B':'A';let text;
