@@ -7,11 +7,11 @@
 .bench[data-step="steam"] .bench-head { position: relative; min-height: 89px; margin-bottom: 0; padding-bottom: 7px; border-bottom: 0; }
 .bench[data-step="steam"] .bench-head::after { content: ""; position: absolute; left: 12px; right: 0; top: 56px; height: 1px; background: linear-gradient(90deg, #c8b39238, #c8b3920d); }
 .bench[data-step="steam"] .bench-guide { align-self: flex-start; margin-top: 10px; }
-/* モード欄の縮小率に依存させず、操作群から離れた盤面右上へ。 */
-.bench[data-step="steam"] .bench-right .bench-head { left: auto; right: 12px; top: 8px; }
+/* モード欄の縮小率に依存させず、操作盤面から離れた左の人物欄上部へ。 */
+.bench[data-step="steam"] .bench-right .bench-head { left: -238px; right: auto; top: 8px; }
 .bench[data-step="steam"] .bench-guide { margin-top: 0; }
 .bench[data-step="steam"] .bench-guide summary { width: calc(44px / var(--k, 1)); height: calc(44px / var(--k, 1)); }
-.bench[data-step="steam"] .bench-guide-tip { left: auto; right: 0; }
+.bench[data-step="steam"] .bench-guide-tip { left: 0; right: auto; }
 
 /* タイマー設定・弾幕・吸い出しは同じ位置、同じ64×360pxの温度計。 */
 .bench[data-step="steam"] .steam-temperature { position: absolute; left: -128px; top: -48px; height: 360px; z-index: 3; }

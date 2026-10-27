@@ -59,7 +59,7 @@ await suite('attack-lesson', async check => {
         const helpClear = await page.locator('.bench-guide summary').evaluate(summary => {
           const a = summary.getBoundingClientRect();
           return a.width >= 43 && a.height >= 43 &&
-            [...document.querySelectorAll('.dodge-controls, .bench-guide-tip')].every(node => {
+            [...document.querySelectorAll('.dodge, .dodge-controls, .bench-guide-tip')].every(node => {
               const b = node.getBoundingClientRect();
               return a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom;
             });
