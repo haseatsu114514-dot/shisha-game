@@ -1,0 +1,110 @@
+[
+  {
+    "width": 1280,
+    "face": "normal",
+    "errors": [],
+    "portrait": {
+      "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_normal.webp?v=face-line-20261026",
+      "rect": {
+        "x": 152.70587158203125,
+        "y": -105.015625,
+        "width": 845.703125,
+        "height": 1132.65625,
+        "top": -105.015625,
+        "right": 998.4089965820312,
+        "bottom": 1027.640625,
+        "left": 152.70587158203125
+      }
+    }
+  },
+  {
+    "width": 1280,
+    "face": "ura_normal",
+    "errors": [],
+    "portrait": {
+      "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_ura_normal.webp",
+      "rect": {
+        "x": 152.70587158203125,
+        "y": -105.015625,
+        "width": 845.703125,
+        "height": 1132.65625,
+        "top": -105.015625,
+        "right": 998.4089965820312,
+        "bottom": 1027.640625,
+        "left": 152.70587158203125
+      }
+    }
+  },
+  {
+    "width": 1280,
+    "face": "restore",
+    "errors": [],
+    "portrait": {
+      "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_normal.webp?v=face-line-20261026",
+      "rect": {
+        "x": 152.70587158203125,
+        "y": -105.015625,
+        "width": 845.703125,
+        "height": 1132.65625,
+        "top": -105.015625,
+        "right": 998.4089965820312,
+        "bottom": 1027.640625,
+        "left": 152.70587158203125
+      }
+    }
+  },
+  {
+    "width": 844,
+    "face": "normal",
+    "errors": [],
+    "portrait": {
+      "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_normal.webp?v=face-line-20261026",
+      "rect": {
+        "x": 158.0489959716797,
+        "y": -56.88346481323242,
+        "width": 458.08917236328125,
+        "height": 613.5221557617188,
+        "top": -56.88346481323242,
+        "right": 616.1381683349609,
+        "bottom": 556.6386909484863,
+        "left": 158.0489959716797
+      }
+    }
+  },
+  {
+    "width": 844,
+    "face": "ura_normal",
+    "errors": [],
+    "portrait": {
+      "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_ura_normal.webp",
+      "rect": {
+        "x": 158.0489959716797,
+        "y": -56.88346481323242,
+        "width": 458.08917236328125,
+        "height": 613.5221557617188,
+        "top": -56.88346481323242,
+        "right": 616.1381683349609,
+        "bottom": 556.6386909484863,
+        "left": 158.0489959716797
+      }
+    }
+  },
+  {
+    "width": 844,
+    "face": "restore",
+    "errors": [],
+    "portrait": {
+      "src": "http://127.0.0.1:8123/remake/img/sprites/characters/minto/chr_minto_normal.webp?v=face-line-20261026",
+      "rect": {
+        "x": 158.0489959716797,
+        "y": -56.88346481323242,
+        "width": 458.08917236328125,
+        "height": 613.5221557617188,
+        "top": -56.88346481323242,
+        "right": 616.1381683349609,
+        "bottom": 556.6386909484863,
+        "left": 158.0489959716797
+      }
+    }
+  }
+]

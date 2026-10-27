@@ -1,0 +1,3494 @@
+[
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[2].lines[1]",
+    "dialogue_id": "ch1_minto_bond_question",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……ね、はじめくん。ひとつだけ、聞いてもいい？"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[2].lines[2]",
+    "dialogue_id": "ch1_minto_bond_question",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……次に会うのも、お店の外でいい？"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[2].branches.close[0]",
+    "dialogue_id": "ch1_minto_bond_question",
+    "speaker": "minto",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "……っ"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[2].branches.close[1]",
+    "dialogue_id": "ch1_minto_bond_question",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……私も。お店の外だと、ちょっと緊張する"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[2].branches.close[2]",
+    "dialogue_id": "ch1_minto_bond_question",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "でも……また、２人で会いたい。今日は、ここまで"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[2].branches.friend[0]",
+    "dialogue_id": "ch1_minto_bond_question",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……うん。お店の話、気楽にできる人がいると助かる"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[2].branches.friend[1]",
+    "dialogue_id": "ch1_minto_bond_question",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "また、こうやって歩こうね、……気楽に"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].lines[1]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……来てくれた。今日は、渡したいものがあって"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].lines[4]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "家で使ってた一台。……ミントしか、詰めたことないの"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].lines[5]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "お店のとは別。１人の時に、ずっとこれで吸ってた"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].lines[7]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_sad",
+    "portrait_disabled": false,
+    "text": "あの匂いは、まだ時々するよ。たぶん、すぐには消えない"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].lines[8]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "でもね。ミントを吸う理由が、上書きだけじゃなくなってきたの"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].lines[9]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "きみの一台を待つ時間とか。こうして外で話す時間とか"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].lines[10]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "だから、これは預けるんじゃなくて、あげる、……お礼、かな"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].branches.lover[0]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "……恋人に渡すの、ちょっと照れるね。でも、きみに持っててほしい"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].branches.ask[0]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……ね。お店のみんとじゃない私と、これからも会ってくれる？"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].branches.close[0]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "……っ"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].branches.close[1]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "……そういうの、ずるい。でも、うれしい"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].branches.close[2]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "私も。……もう少しだけ、隣を歩いてもいい？"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].branches.ask_friend[0]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……うん。友達、いい言葉だね"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].branches.ask_friend[1]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "お店では『みんと』で、外では栞。どっちでも、気楽に会えたらいいな"
+  },
+  {
+    "file": "data/dialogue/ch1_bonds.json",
+    "json_path": "$.dialogues[7].branches.friend[1]",
+    "dialogue_id": "ch1_minto_bond_finale",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "お店では『みんと』で、外では栞。どっちでも、気楽に会えたらいいな"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].lines[2]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "あ、はじめくん。来てくれてありがとう。……約束のお買い物、付き合ってくれるの、嬉しいな"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].lines[3]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "問屋街のほうへ行きたいんだけど、道がちょっと不安で"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].lines[5]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……外だと、こういう感じなの。ねえ、『Dr.fookah』ってお店、どっちか分かる？"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].lines[8]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……ありがとう。助かる。私、地図を見てると右と左が分からなくなっちゃって"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].lines[13]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……フレーバーは、自分でも吸って選びたいの。誰かのおすすめも、聞くけどね"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].lines[14]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……はじめくんも、そうでしょ？"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].lines[16]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "ふふ。なんとなく。……同じ匂いがするから、かもね"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].lines[20]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "この柑橘、甘いのと合わせたらどうかな。……後味は、少し軽くしたくて"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].lines[22]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……うん。帰ったら、試してみる。来てもらってよかった"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[2].branches.unfamiliar[1]",
+    "dialogue_id": "outing_minto_1",
+    "speaker": "minto",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "……う、うん。……キャストの、みんとです"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[4].lines[1]",
+    "dialogue_id": "interaction_minto_noon_01",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくん、いらっしゃーいっ♡ ふふ、来てくれると思ってたよ"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[4].lines[2]",
+    "dialogue_id": "interaction_minto_noon_01",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "じゃーん、新作！ ミント×グレープフルーツ、仕上げにほんのり蜂蜜。『夏の昼専用』に作ったの"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[4].lines[4]",
+    "dialogue_id": "interaction_minto_noon_01",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "そうそう！ 時間帯でレシピを変えるの、大事なんだよ？"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[4].lines[5]",
+    "dialogue_id": "interaction_minto_noon_01",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "夜のミックスのまま昼に出すと、重たくて疲れちゃうから"
+  },
+  {
+    "file": "data/dialogue/ch1_events.json",
+    "json_path": "$.dialogues[4].lines[7]",
+    "dialogue_id": "interaction_minto_noon_01",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "お代はいいから、そのかわり感想いっぱいちょうだい！ ……あ、あと約束のチェキねっ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[1]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "ドアが開き、落ち着いた雰囲気のお姉さんが店に入ってきた。"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[5]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "こんばんは。……あ。今日は、きみが作ってくれるんだ……？"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[9]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "…………え。あ、うん。はい、どうぞ"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[14]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "じゃあ……お任せで、一台。きみの好きに作って、いいよ"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[15]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……あ。ミントは、平気。むしろ好き、だから……"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[18]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "…………"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[21]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……うん、美味しい。つい、もう一口吸いたくなるね"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[23]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "うん。……きみ、いいシーシャ屋さんに、なるよ"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[26]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "ふふ……。じゃあ、もう少しゆっくり吸っていくね"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[5].lines[27]",
+    "dialogue_id": "ch1_tutorial_oneesan",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……がんばってね、新人くん"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[6].lines[13]",
+    "dialogue_id": "ch1_meet_rivals",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "審査員さん、4台続けて吸うんだよね？"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[6].lines[14]",
+    "dialogue_id": "ch1_meet_rivals",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "みんとはミントが主役♪ レモンで香りを足して、ぱっと涼しくするよ"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[6].lines[15]",
+    "dialogue_id": "ch1_meet_rivals",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "4台目でも、もうひと口って思ってもらわなきゃ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[6].branches.mr_minto_new[0]",
+    "dialogue_id": "ch1_meet_rivals",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "みんとでーす♪ PEPPERMINTの看板娘！ 全員まとめてライバルってことで、よろしくね？"
+  },
+  {
+    "file": "data/dialogue/ch1_main.json",
+    "json_path": "$.dialogues[6].branches.mr_minto_known[0]",
+    "dialogue_id": "ch1_meet_rivals",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "あ、はじめくんだ♪ ふふ、ここからは正式にライバルってことで、よろしくね？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[6]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はーいっ♡ みんな、あとで順番にね〜！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[8]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あらためて♡ はじめくん、初ご来店ありがとっ！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[9]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "ご指名ありがとうございますっ♡ 今日はみんとに任せてね？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[14]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくん、どんなシーシャが好き？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[16]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "初めてのお客様には、みんとイチ推しの『フラミンゴ・ピーチ』っ♡ 甘くてカワイイの！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[18]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "はーいっ♡ みんと特製、と〜っても可愛く作るから、ゆっくり待っててねっ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[24]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "excited",
+    "portrait_disabled": false,
+    "text": "ほんとっ！？ やったぁー！ ……あ、でもはじめくん、ちゃんと今日ご飯食べた？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[25]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "空きっ腹で吸うと酔うからね？ ……って、同業者に言うのもヘンだけど♡ 偵察ならお手柔らかにね？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[29]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "ねえ、はじめくん。キミのお店のシーシャ、評判いいよね。……ちゃんと、煙で勝負してる感じ"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[31]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "うちさ、こう見えてシーシャの話できる相手、あんまりいないんだよね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[32]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "お客さんは『みんとちゃん』目当てだしさ♪"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[34]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "初ご来店の記念に、みんとのチェキ撮っていく？ １枚1,000円だよっ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[37]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "こっちも、よかったら登録してねっ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[43]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "新作とか、お得なお知らせとか、そこに送るからね〜♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[45]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あ、でもね。うち、キャストはみんとひとりだから♪"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[47]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "ぜーんぶ、みんとだよ♪ 人気No.1にして、ただひとりのキャストっ"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[48]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "だから『お店の公式』でも、中の人はみんとだけ。……実質、個人アカだね♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[50]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "煙の話なら、ちゃんと返すから。……たまーに、付き合って？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[55]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "はじめくん、来た時より、話しやすそうな顔してるっ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[57]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "そうだ、はじめくん、ジムは行ってる？ チョイザップっていう店が、みんとのおすすめなんだ♪"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].lines[59]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "見た目も武器だよ♡ 煙を吐く姿だって、お客さんはちゃんと見てるからね？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.taste_shibui[1]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ふふっ、出た〜tonari育ち！ じゃあ今日は逆側、行ってみよっか♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.taste_amai[1]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "excited",
+    "portrait_disabled": false,
+    "text": "素直でよろしいっ♡ みんとに任せて！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.cheki_taken[0]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ありがとっ♡ はじめくん、カメラお願い！ 可愛く撮ってねっ♪"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.cheki_taken[5]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "ふふっ、初ご来店の記念だもん。大事にしてね♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.cheki_decline[0]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はーいっ♡ また撮りたくなったら言ってね♪"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.cheki_short[1]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "大丈夫っ♡ 今日は煙を楽しんでもらえたら、それで！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.self_door[1]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "おかえりなさーいっ♡ はじめまして、みんとです！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.self_door[5]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "同業さんなんだねっ♡ どうぞ、こっちへ！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.dl_door[1]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あっ！ 配達してくれたはじめくんだ♡ 遊びに来てくれたんだね！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.dl_door[3]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "もちろんっ♡ どうぞ、こっちへ！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[0].branches.known_door[0]",
+    "dialogue_id": "ch1_minto_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あっ、はじめくんっ♡ 今日はゆっくり吸っていってね！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[0]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あーっ！ はじめくんっ！ おかえりなさーいっ♡ 今日もみんとに会いに来てくれたの？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[1]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "嬉しいなー、常連さんに昇格しちゃうよ〜？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[4]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "えへへ、せっかくお店に来てくれたんだもん♡ みんなに楽しい気持ちで帰ってほしいの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[5]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……あ、はじめくん、目の下ちょっとクマできてない？ ちゃんと寝れてる？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[6]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "うちは、お客さんに楽しく過ごしてもらうのが大事なの♡ ……もちろん、これでも商売だからね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[7]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "何がお客さんを『また来たい』にさせるか、みんとなりに全部計算してやってるんだー"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[8]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あとねっ♡ みんとのチャームポイント、教えてあげよっか？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[10]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "じゃーん！ ここ、見て？ にぃーっ……♡ ほら、八重歯！ ドラキュラみたいで可愛いでしょ？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[11]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "お客さんにも大人気なの♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[12]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あとねー、みんとの瞳、光の加減でちょっとミントグリーンっぽく見えるの。知ってた？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[13]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "カラコンじゃないよ？ ……たぶん♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[15]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "でもっ、はじめくんみたいに『本物の煙』がわかる人は、可愛いガワだけじゃ誤魔化せないでしょ？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[16]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "だから、味にもちゃんとこだわってるの♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[20]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "うーん……正直、しんどい日もあるよ。でも、お店に立ったら切り替えなきゃって"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[21]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……もう何年も──あっ、ぜんぜん何年もじゃないよ？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[22]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "みんとまだ20歳だもんっ♡ ……えっと、デビューしてからずっとこの調子、かな"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[24]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "だからねっ♡ みんとは『可愛い』と『美味しい』の両立を目指してるの！ ……推してくれる？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[25]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "みんとの永久指名、してくれたら嬉しいなー♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[26]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "指名してくれた子には、ひみつのレシピ教えちゃう♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[27]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ミントってね、熱しだいで甘くも、キリッと辛くもなるの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[28]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "みんとは、温度ちょい高めの甘いミントが好き♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].lines[29]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ピーチにミントをちょっとだけ。甘いのに、すーって抜けるの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].branches.cb_shibui[0]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "今日はねー、『渋いの派』のはじめくんに、みんとが甘いのを布教する日でーす♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].branches.cb_amai[0]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "『甘いの気になる』って言ってたキミに、今日もとっておき用意してるよ〜♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[1].branches.charm_dizzy[1]",
+    "dialogue_id": "ch1_minto_second",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はいそこ、ちゃんとついてきて♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[0]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "oneesan",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "ぺぱーみんとのドアを開けると、カウンターの奥に見覚えのある横顔があった。"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[3]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "oneesan",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……あ、……こんにちは"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[5]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "oneesan",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……キャスト、です"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[6]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……はじめくん"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[10]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……うん。バレちゃった"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[12]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "oneesan",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……あっちでは、静かに吸いたくて。なんだか、恥ずかしいね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[14]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "いつもの席、どうぞ、……準備してくるね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[18]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "お、おかえりなさーいっ♡ ……はじめくん"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[21]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はーいっ♡ いつも……あ、いつもの。うん"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[23]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……さっきの、あんまり思い出さないでね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[25]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……もう。そういうの、余計照れるから"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[2].lines[27]",
+    "dialogue_id": "ch1_minto_identity_reveal",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "ご、ごゆっくりっ♡ ……熱かったら、言ってね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[0]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あっ、はじめくんっ、おかえりっ♡ ちょうどよかったー！ 実は新メニューの試作をしてたの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[1]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "みんとの大好きな『チョコミント』の再現ミックスなんだけどー"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[3]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "そうそう！ ……でも、なんかちょっと、熱の伝わり方が強すぎる気がして"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[4]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "みんとね、甘いミントが好きだから、つい熱めに攻めちゃうの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[5]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "でも欲張ると、甘いとこ通り越して、すぐ焦げそうになるっ"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[6]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "このままじゃ、みんとが『ケインミント』みたいに激怒りしちゃうよーっ！ ……なーんてね♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[15]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくん、すごーいっ♡ さっきより、ずっと安定した煙になったよ！ みんと感動〜っ！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[17]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "えへへっ……。はじめくんとお話しするの、すっごく楽しいな"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[18]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ずっとこの時間が続けばいいのに……なんてねっ♡ ……あっ、もうこんな時間"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[3].lines[19]",
+    "dialogue_id": "ch1_minto_third",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくん、夜ご飯ちゃんと食べてから帰るんだよ？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[0]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくんっ♡ おかえりなさーいっ！ 今日はどんな味が気分？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[1]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "みんとになんでもわがまま言っていいからねっ♡ ご指名、お待ちしておりました〜"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[3]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "スッキリ系だね、任せて！ ……ねえ、はじめくん"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[4]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "うちのお店とtonariってスタイルは全然違うライバルだけど……"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[5]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "私、はじめくんがお店に来てくれるの、特別に嬉しいんだ。これは営業トークじゃなくてね？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[6]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "他のお客さんには内緒だけど……はじめくんだから、だよ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[9]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "だからね、『可愛いだけの見掛け倒し』みたいに思われるのだけは、絶対に嫌なんだ"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[10]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "私の人生と、思い出が全部詰まってるお店だから"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[13]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……ふふっ、引かないで聞いてくれて、ありがとう、はじめくん"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].lines[14]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "こんな昔話、他のお客さんには絶対ナイショだからねっ♡ みんとと、はじめくんだけの秘密♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_new[0]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……はじめくんなら、少しだけ本音、話してもいいかな"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_new[1]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "ここ、昔は私の実家の『喫茶店』だったんだ"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_new[3]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "うん。親が自己破産して、店を手放すことになって……"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_new[4]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "跡地に建ったのは、ただの『精肉店』だった"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_new[5]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "大好きだった喫茶店の思い出が消えたのが、本当に悲しくて……"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_new[6]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "看板メニューのチョコミントパフェが大好きで。だから私、今『みんと』って名乗ってるの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_new[8]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "それからずーっと、必死にお金貯めて、あの精肉店の物件を取り返したの！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_new[9]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……何年かかったかは秘密だけど♡ で、改装して今のシーシャ屋にしたってわけ！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_new[10]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ふふっ、まぁ、どのみち『肉の匂いを消す』って言ったら、ミントが一番でしょ？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_known[0]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "前にLIMEで話した、実家の喫茶店のこと。覚えてる？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_known[2]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "うん。看板のチョコミントから『みんと』って名乗ったの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[4].branches.history_known[4]",
+    "dialogue_id": "ch1_minto_fourth",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……そう言ってもらえると、ちょっとほっとする"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].lines[2]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "はじめくん、ちょっと手伝ってくれない？ フレーバーの在庫整理"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].lines[3]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……あ、今日は営業終わりだから、みんとモードじゃなくてごめんね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].lines[8]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "……ごめん。なんでもない"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].lines[9]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "ねえ、はじめくん。ミントの匂いって、何かを思い出す？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].lines[11]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あはは、普通はそうだよね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].lines[14]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……なーんてね♡ 重い女でしょ？ 忘れてっ♪"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].lines[16]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "え"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].lines[18]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "………………"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].lines[19]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……ばか。もう遅いから、帰りなさい、……気をつけてね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].branches.smell_new[0]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "……私にとってはね、上書きなの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].branches.smell_new[2]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "前に話したでしょ、実家の喫茶店のこと。潰れて精肉店になったって"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].branches.smell_new[3]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "もうとっくにクリーニングされてるの。匂いなんか残ってるわけない。でもね……"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].branches.smell_new[4]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "鼻の奥に、まだあるの。血と肉の匂いが。頭では分かってるのに、体が忘れてくれない"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].branches.smell_new[5]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "serious",
+    "portrait_disabled": false,
+    "text": "だから私、ミントで埋め尽くすの。この空間ごと、全部。あの幻の匂いが消えるまで"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].branches.smell_known[0]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "この前LIMEで話した、あの匂い。……今、少しだけするの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[5].branches.smell_known[2]",
+    "dialogue_id": "ch1_minto_phantom_smell",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "うん。頭ではもう残ってないって、分かってるんだけどね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[5]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "……うん。今日は、お店の服じゃないから。……そんなに見られると、ちょっと恥ずかしい"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[7]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "本日も、ご指名ありがとうございますっ♡ ……なんて。今のは、ちょっと冗談"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[12]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……あそこのクレープ屋さん、気になってたの。あとで、寄ってもいい？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[16]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……どれにしようかな。……あ、チョコミント、ある"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[18]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_sad",
+    "portrait_disabled": false,
+    "text": "……ごめんね。今日は、あまりにぎやかに話せなくて"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[20]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "お店の外だと、こういう話し方なの、……退屈じゃない？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[22]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……こうやって、２人でゆっくり話せるの、うれしい"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[24]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "ずっとじゃないよ。あそこで笑ってる私も、けっこう好き"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[25]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "でも今日は、はじめくんとお茶してる時の私でいたいな"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[27]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……名前は、緑川栞。お店の外では、栞って呼んでくれたら、うれしい"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[30]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……ふふ。名前で呼ばれるの、まだ慣れないな"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[31]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……じゃあ、せっかくだし。好きなフレーバーの話、してもいい？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[32]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "私の知ってる美味しいフレーバーの組み合わせとか、ね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].lines[34]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "……ふふ。そんなに喜んでもらえると、ちょっと照れるね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].branches.identity_new[3]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "っ！？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].branches.identity_new[5]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_sad",
+    "portrait_disabled": false,
+    "text": "……うぅ…………、……ばれた…………"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].branches.identity_new[6]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……そうです。tonariの隅っこの『お姉さん』は、私です……"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].branches.identity_new[8]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……うん。あの日、初めてきみに作ってもらった一台を、私が飲んだの。……年齢確認も、されたけど"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].branches.identity_new[10]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "最初はただの偵察だったの。ライバル店の新人くんが、どんな煙を作るのかなって"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].branches.identity_new[11]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……でも、あの一台が思ったより良くてさ。なんか、言いそびれちゃった"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].branches.identity_known[1]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……あの時、初めて作ってくれた一台、覚えてる？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[6].branches.identity_known[3]",
+    "dialogue_id": "ch1_minto_fifth",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "最初は偵察のつもりだったけど。あの一台、うれしかったの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].lines[1]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "お待たせ。……ふふ、もう驚かないんだね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].lines[4]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "……っ。名前で呼ばれると、まだちょっと照れるね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].lines[6]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "……お店では、いつも通り『みんと』って呼んでね。２人の時の名前は、ここだけの内緒"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].lines[7]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "……まだ、ちょっと照れるから"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].lines[9]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "……今日は、お店の声は出さないからね。お休みだから"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].lines[11]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……ふふ。そう言うと思った"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].lines[12]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……今日は、ゆっくり歩きたいな。はじめくんと、話しながら"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].lines[13]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……でも風邪引かないようにちゃんと上着持ってきた？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].branches.name_new[0]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……あらためて。私、緑川栞っていうの。２人の時は、そっちで呼んでもらえたら、うれしいな"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[7].branches.name_known[0]",
+    "dialogue_id": "ch1_minto_private_1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……今日は、お店のことは少し置いておこうかな"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[1]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "あっ、はじめくんっ♡ おかえりなさーいっ！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[3]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……あのさ。大会のこと、ちゃんと言えてなかったから"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[4]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "おめでとう、はじめくん。本当に"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[6]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "あそこで勝ったのは、みんとじゃなかった。悔しいけど──それは認める"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[7]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "でも『可愛さ』でいえば断然みんとの勝ちだし♡ チェキの枚数でも堂々のナンバーワンだったから、"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[8]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "実質総合優勝なんだけどねっ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[10]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "じゃあさ、１個だけ聞いていい。はじめくんは、シーシャ続けるの？ 次の大会も出るの？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[12]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "そっか"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[14]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "みんとはね、大会より自分のお店かな。自分のやり方で、もっといい一台を出せるように磨くよ"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[15]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……だから、きみが上で戦うのは、ここから見てる。きみの煙、私は好きだから"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[17]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "っ……！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[8].lines[18]",
+    "dialogue_id": "ch1_minto_after_ch1",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……ばか。もう少しびびりなさいよ。……しょうがないなぁ、そういうとこがはじめくんなんだよね"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[10].lines[4]",
+    "dialogue_id": "ch1_minto_group_regulars",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はいはいっ♡ チェキは別料金だよ〜！ あとで撮ろうね♡ でもちょっと待ってて〜！"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[10].lines[5]",
+    "dialogue_id": "ch1_minto_group_regulars",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……あっ、おかえりなさーいっ♡ はじめくんっ！ ご指名ありがとっ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[10].lines[7]",
+    "dialogue_id": "ch1_minto_group_regulars",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ごめんね、少しだけ待っててねっ♡ 今、先にいらした推しメンさん達の分作ってるからっ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[10].lines[13]",
+    "dialogue_id": "ch1_minto_group_regulars",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "お待たせっ♡ はじめくんの分、今から作るからね〜♡"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[10].lines[14]",
+    "dialogue_id": "ch1_minto_group_regulars",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……ねえ、今日はどんな気分？ 甘いの？ すっきりするの？"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[10].lines[16]",
+    "dialogue_id": "ch1_minto_group_regulars",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "任せてっ♡ ぴったりなのあるから"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[10].lines[17]",
+    "dialogue_id": "ch1_minto_group_regulars",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……ふふ、はじめくんって素直に答えてくれるから作りがいがあるの"
+  },
+  {
+    "file": "data/dialogue/ch1_minto.json",
+    "json_path": "$.dialogues[10].lines[18]",
+    "dialogue_id": "ch1_minto_group_regulars",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "いい子だねぇ♡ ……あっ、今の、お姉さんっぽかった？"
+  },
+  {
+    "file": "data/dialogue/ch1_spots.json",
+    "json_path": "$.dialogues[26].branches.yes[2]",
+    "dialogue_id": "choizap_minto",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……じゃあ、一分だけ。速くしなくていいから"
+  },
+  {
+    "file": "data/dialogue/ch1_spots.json",
+    "json_path": "$.dialogues[26].branches.yes[4]",
+    "dialogue_id": "choizap_minto",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……長かったね、一分"
+  },
+  {
+    "file": "data/dialogue/ch1_spots.json",
+    "json_path": "$.dialogues[26].branches.no[1]",
+    "dialogue_id": "choizap_minto",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……うん。そう言ってもらえると、止めやすい"
+  },
+  {
+    "file": "data/dialogue/ch1_spots.json",
+    "json_path": "$.dialogues[26].branches.no[3]",
+    "dialogue_id": "choizap_minto",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……休んでても、まだ足が走ってるみたい"
+  },
+  {
+    "file": "data/dialogue/ch1_spots.json",
+    "json_path": "$.dialogues[26].branches.encounter[1]",
+    "dialogue_id": "choizap_minto",
+    "speaker": "minto",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "……あ、はじめくん。……あと一分で終わろうと思ってたの"
+  },
+  {
+    "file": "data/dialogue/ch1_spots.json",
+    "json_path": "$.dialogues[26].branches.encounter[3]",
+    "dialogue_id": "choizap_minto",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……聞こえてたんだ。……二回くらい、言ったかも"
+  },
+  {
+    "file": "data/dialogue/ch1_spots.json",
+    "json_path": "$.dialogues[34].branches.minute[0]",
+    "dialogue_id": "choizap_minto_followup",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "この前の「あと一分」、今日は一回でやめられたよ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_spots.json",
+    "json_path": "$.dialogues[34].branches.rest[0]",
+    "dialogue_id": "choizap_minto_followup",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "この前、一緒に休んでくれてありがと♪ 今日はちゃんと止められた♡"
+  },
+  {
+    "file": "data/dialogue/ch1_tournament.json",
+    "json_path": "$.dialogues[0].lines[22]",
+    "dialogue_id": "ch1_tournament_arrival",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "はじめくん、緊張してる？ みんとは全然だよっ♡"
+  },
+  {
+    "file": "data/dialogue/ch1_tournament.json",
+    "json_path": "$.dialogues[3].lines[5]",
+    "dialogue_id": "ch1_tournament_served",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "（このケインミントなら絶対にイケる……！ 笑顔、笑顔……！）"
+  },
+  {
+    "file": "data/dialogue/ch1_tournament.json",
+    "json_path": "$.dialogues[6].lines[10]",
+    "dialogue_id": "ch1_tournament_after",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくん、おめでとっ♡ でも、可愛さはみんとの方が上だったでしょ？"
+  },
+  {
+    "file": "data/dialogue/ch2_ageha_story.json",
+    "json_path": "$.dialogues[5].lines[8]",
+    "dialogue_id": "remake_ch2_ageha_tasting",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくん、やっほ〜♡ 新作って聞いたら、来ちゃうよね"
+  },
+  {
+    "file": "data/dialogue/ch2_ageha_story.json",
+    "json_path": "$.dialogues[5].lines[16]",
+    "dialogue_id": "remake_ch2_ageha_tasting",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ねえ、その髪のセット、何分かかるの？"
+  },
+  {
+    "file": "data/dialogue/ch2_ageha_story.json",
+    "json_path": "$.dialogues[5].lines[33]",
+    "dialogue_id": "remake_ch2_ageha_tasting",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "メニューに「いちごミルク」って書いたら、絶対頼まれるよ♡"
+  },
+  {
+    "file": "data/dialogue/ch2_ageha_story.json",
+    "json_path": "$.dialogues[5].branches.ask[3]",
+    "dialogue_id": "remake_ch2_ageha_tasting",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "お客さんの顔を思い浮かべるかな。誰に出したいか、って"
+  },
+  {
+    "file": "data/dialogue/ch2_city_guests.json",
+    "json_path": "$.dialogues[0].lines[4]",
+    "dialogue_id": "ch2_city_guest_ageha_first",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "じゃあ、ゆっくりしてって。甘めのミント、できたよ♡"
+  },
+  {
+    "file": "data/dialogue/ch2_isolation.json",
+    "json_path": "$.dialogues[3].lines[0]",
+    "dialogue_id": "ch2_minto_warning",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくん、いらっしゃ〜い♡　……もうすぐ県大会なんだって？　すごいねえ"
+  },
+  {
+    "file": "data/dialogue/ch2_isolation.json",
+    "json_path": "$.dialogues[3].lines[2]",
+    "dialogue_id": "ch2_minto_warning",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "ねえ。最近、連絡の返事まで大会の話になってない？"
+  },
+  {
+    "file": "data/dialogue/ch2_isolation.json",
+    "json_path": "$.dialogues[3].lines[4]",
+    "dialogue_id": "ch2_minto_warning",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "別に、責めてるんじゃないよ？　勝負の世界だもん。勝ってるはじめくんは、何も悪くない"
+  },
+  {
+    "file": "data/dialogue/ch2_isolation.json",
+    "json_path": "$.dialogues[3].lines[5]",
+    "dialogue_id": "ch2_minto_warning",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "ただ……はじめくん自身が、ちょっとしんどそうに見えるの。わたしは、それがいちばん心配"
+  },
+  {
+    "file": "data/dialogue/ch2_isolation.json",
+    "json_path": "$.dialogues[3].lines[7]",
+    "dialogue_id": "ch2_minto_warning",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "何があっても、わたしはここにいるから。疲れたら、いつでも吸いに来な。ね？"
+  },
+  {
+    "file": "data/dialogue/ch3_double_apple.json",
+    "json_path": "$.dialogues[2].lines[1]",
+    "dialogue_id": "ch3_minto_small_lies",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "はーじめくん。生きてる？"
+  },
+  {
+    "file": "data/dialogue/ch3_double_apple.json",
+    "json_path": "$.dialogues[2].lines[3]",
+    "dialogue_id": "ch3_minto_small_lies",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "よし。じゃ、聞いて。自称二十歳、何年目ですかって、またいじられた"
+  },
+  {
+    "file": "data/dialogue/ch3_double_apple.json",
+    "json_path": "$.dialogues[2].lines[5]",
+    "dialogue_id": "ch3_minto_small_lies",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "歳ってさ、一度盛ると、次の誕生日にも辻褄を合わせるでしょ"
+  },
+  {
+    "file": "data/dialogue/ch3_double_apple.json",
+    "json_path": "$.dialogues[2].lines[6]",
+    "dialogue_id": "ch3_minto_small_lies",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "嘘は育つの。年齢の話だけのはずが、戻り方まで分かんなくなる"
+  },
+  {
+    "file": "data/dialogue/ch3_double_apple.json",
+    "json_path": "$.dialogues[2].lines[8]",
+    "dialogue_id": "ch3_minto_small_lies",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "でも、店のみんとまで嘘だったことにはしたくないんだよね"
+  },
+  {
+    "file": "data/dialogue/ch3_double_apple.json",
+    "json_path": "$.dialogues[2].lines[10]",
+    "dialogue_id": "ch3_minto_small_lies",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "ふふ。ちゃんと寝なよ。今度は、そっちの話も聞かせて"
+  },
+  {
+    "file": "data/dialogue/ch3_visits.json",
+    "json_path": "$.dialogues[2].lines[1]",
+    "dialogue_id": "ch3_visit_minto_meetup",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "いた。……遠くで見つけても、ちゃんと分かるもんだね"
+  },
+  {
+    "file": "data/dialogue/ch3_visits.json",
+    "json_path": "$.dialogues[3].lines[1]",
+    "dialogue_id": "ch3_visit_minto_date",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "新しいお店の看板、つい見ちゃう。今度、二人の休みに行きたい場所が増えた"
+  },
+  {
+    "file": "data/dialogue/ch3_visits.json",
+    "json_path": "$.dialogues[3].lines[3]",
+    "dialogue_id": "ch3_visit_minto_date",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "じゃあ、もうちょっとだけ手、借りるね。迷子にならないように"
+  },
+  {
+    "file": "data/dialogue/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[1]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "店のお休み、ちゃんと貼ってきたよ"
+  },
+  {
+    "file": "data/dialogue/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[2]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "来たかったから、予定を空けました"
+  },
+  {
+    "file": "data/dialogue/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[4]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "うん。……ご飯は、あとで一緒にどう？"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[0].lines[2]",
+    "dialogue_id": "confession_minto",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……今日は、その。一緒にいてくれて、ありがと。……まだちょっと、緊張する"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[0].lines[3]",
+    "dialogue_id": "confession_minto",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "あのね。……私、ずっと、言えてないことがあって。……笑わないで、聞いてくれる……？"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[0].lines[4]",
+    "dialogue_id": "confession_minto",
+    "speaker": "minto",
+    "requested_face": "ura_sad",
+    "portrait_disabled": false,
+    "text": "私……お店では『はたち』って言ってるけど。……ほんとは、今年で29、なの……"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[0].lines[6]",
+    "dialogue_id": "confession_minto",
+    "speaker": "minto",
+    "requested_face": "ura_sad",
+    "portrait_disabled": false,
+    "text": "騙してた……よね。ごめんなさい。引かれちゃうのが、怖くて……ずっと、言えなかった……"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[1]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "歳を偽っていたのは、謝りたい。そこは、ちゃんと"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[2]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "みんとも、栞も、私。嘘だったのは歳だけなの"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[4]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……っ。……うん。うれしい"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[5]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……私も、はじめくんが好き"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[6]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……言えた。ずっと、言いたかったの"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[7]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "これからは……たまには、甘えてもいい？"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[12]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……もう少しだけ、ここを歩かない？　……手、つないでもいい？"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[17]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "……はじめくん、手、あったかいね。……私まで、どきどきしてきた"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[18]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……急がなくていいよ。もう少しだけ、こうしていたい"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[21]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……あ、そうだ。はじめくん、スマホ出して"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[23]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "これが、私のLIME……お店のじゃない方"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[1].lines[26]",
+    "dialogue_id": "confession_minto_accept",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "お仕事用のは、みんなの『みんと』だから。……こっちは、はじめくんだけ"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[2].lines[0]",
+    "dialogue_id": "confession_minto_reject",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……そっか。……うん。聞いてくれただけで、うれしい……"
+  },
+  {
+    "file": "data/dialogue/confession.json",
+    "json_path": "$.dialogues[2].lines[1]",
+    "dialogue_id": "confession_minto_reject",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "じゃあ……これからも、『ライバルのお姉さん』でいさせてね。……負けない、から……"
+  },
+  {
+    "file": "data/dialogue/ending.json",
+    "json_path": "$.dialogues[3].lines[1]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "店のみんとは、きょうも頑張りました"
+  },
+  {
+    "file": "data/dialogue/ending.json",
+    "json_path": "$.dialogues[3].lines[3]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "お腹ぺこぺこ。……あと、ちょっと甘やかしてほしい"
+  },
+  {
+    "file": "data/dialogue/ending.json",
+    "json_path": "$.dialogues[3].lines[5]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "歳のことは、ごめんね。あれは、嘘だった"
+  },
+  {
+    "file": "data/dialogue/ending.json",
+    "json_path": "$.dialogues[3].lines[6]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "でも、みんとで笑ってる時も、私だから"
+  },
+  {
+    "file": "data/dialogue/ending.json",
+    "json_path": "$.dialogues[3].lines[8]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "じゃあ、まず今日のお客さんの話からね"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[5].lines[1]",
+    "dialogue_id": "lover_minto_lv1",
+    "speaker": "minto",
+    "requested_face": "ura_sad",
+    "portrait_disabled": false,
+    "text": "……ねえ。ほんとに、私でいいの……？……7コも、上だよ。私"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[5].lines[3]",
+    "dialogue_id": "lover_minto_lv1",
+    "speaker": "minto",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "……っ。……もう。そういうの、ずるい……"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[5].lines[4]",
+    "dialogue_id": "lover_minto_lv1",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……あのね。店の『みんと』じゃない私、……かわいくないよ。弱いし、暗いし"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[5].lines[6]",
+    "dialogue_id": "lover_minto_lv1",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "……ばか、……ありがと"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[5].lines[8]",
+    "dialogue_id": "lover_minto_lv1",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……次のお休みも、また会えたらうれしい。……ゆっくり、予定を合わせようね"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[6].lines[1]",
+    "dialogue_id": "lover_minto_lv2",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……前に話した、喫茶店のこと。ここから見ると、まだ看板を思い出すの"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[6].lines[2]",
+    "dialogue_id": "lover_minto_lv2",
+    "speaker": "minto",
+    "requested_face": "ura_sad",
+    "portrait_disabled": false,
+    "text": "……チョコミントのパフェが、看板でね。……手放したとき、私、なんにもできなくて"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[6].lines[3]",
+    "dialogue_id": "lover_minto_lv2",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "ミントで上書きしてた頃も、あの看板は忘れられなくてね"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[6].lines[5]",
+    "dialogue_id": "lover_minto_lv2",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……うん。私も、そうしたい、……一緒に、ね"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[7].lines[1]",
+    "dialogue_id": "lover_minto_lv3",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……実家のやつ。これと、傷だらけのトング、……ずっと、こっそり使ってるの"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[7].lines[2]",
+    "dialogue_id": "lover_minto_lv3",
+    "speaker": "minto",
+    "requested_face": "ura_sad",
+    "portrait_disabled": false,
+    "text": "……重いでしょ。29にもなって、昔のものに、しがみついて"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[7].lines[4]",
+    "dialogue_id": "lover_minto_lv3",
+    "speaker": "minto",
+    "requested_face": "ura_surprise",
+    "portrait_disabled": false,
+    "text": "……っ、〜〜！……もう、ほんと、その素直なの、心臓に、わるい……"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[7].lines[6]",
+    "dialogue_id": "lover_minto_lv3",
+    "speaker": "minto",
+    "requested_face": "ura_smug",
+    "portrait_disabled": false,
+    "text": "……ね、トングのほうは、お店で使ってるの、……見ても、笑わないでよ"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[8].lines[1]",
+    "dialogue_id": "lover_minto_lv4",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……あのね。私、目標が、できたの。お店を取り戻して、終わりじゃなくて"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[8].lines[2]",
+    "dialogue_id": "lover_minto_lv4",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……いつか、チョコミントのパフェ、もう１回、出すんだ。……はじめくんにも、食べてほしい"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[8].lines[4]",
+    "dialogue_id": "lover_minto_lv4",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……ふふ。約束ね。……ひとりの夢が、ふたりの夢になった、……こんなの、初めて"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[9].lines[1]",
+    "dialogue_id": "lover_minto_lv5",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……今日は、お化粧もしてないの。はじめくんとなら、このままでも落ち着くね"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[9].lines[3]",
+    "dialogue_id": "lover_minto_lv5",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……もう、隠さなくていいんだ。年も、過去も、弱いとこも。……ぜんぶ、知られてる"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[9].lines[4]",
+    "dialogue_id": "lover_minto_lv5",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……こんなに、楽なの、生まれて初めて。……ありがとね、はじめくん"
+  },
+  {
+    "file": "data/dialogue/lover_events.json",
+    "json_path": "$.dialogues[9].lines[7]",
+    "dialogue_id": "lover_minto_lv5",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "ん、……ふたりで作ろ"
+  },
+  {
+    "file": "data/dialogue/relationship_conflicts.json",
+    "json_path": "$.dialogues[2].lines[0]",
+    "dialogue_id": "ch3_shuraba_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……ずいぶん、親しそうに呼ぶんだね"
+  },
+  {
+    "file": "data/dialogue/relationship_conflicts.json",
+    "json_path": "$.dialogues[11].lines[0]",
+    "dialogue_id": "shuraba_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "私たち、付き合ってるよね"
+  },
+  {
+    "file": "data/dialogue/relationship_conflicts.json",
+    "json_path": "$.dialogues[11].lines[1]",
+    "dialogue_id": "shuraba_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "それを、この人には言ってなかったんだ"
+  },
+  {
+    "file": "data/dialogue/relationship_conflicts.json",
+    "json_path": "$.dialogues[11].lines[2]",
+    "dialogue_id": "shuraba_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "店で笑うのも、ここで怒るのも私だよ"
+  },
+  {
+    "file": "data/dialogue/relationship_conflicts.json",
+    "json_path": "$.dialogues[11].lines[3]",
+    "dialogue_id": "shuraba_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "笑って済ませてあげると思わないで"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[17].lines[2]",
+    "dialogue_id": "remake_repeat_minto_0",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "猫に見えた？　やった！　昨日はタヌキって言われたの"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[17].lines[4]",
+    "dialogue_id": "remake_repeat_minto_0",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "消しちゃった！　証拠隠滅♡"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[18].lines[2]",
+    "dialogue_id": "remake_repeat_minto_1",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "そう、それ！　……中身、見ないでね"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[18].lines[4]",
+    "dialogue_id": "remake_repeat_minto_1",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "みんと、今月こそ溜めないって誓ったのに……"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[19].lines[1]",
+    "dialogue_id": "remake_repeat_minto_2",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "写真、撮っても大丈夫？"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[19].lines[3]",
+    "dialogue_id": "remake_repeat_minto_2",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "はーい。かわいく撮るね♡"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[20].lines[1]",
+    "dialogue_id": "remake_repeat_minto_3",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "はぁ。今日もよく働いた！"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[20].lines[3]",
+    "dialogue_id": "remake_repeat_minto_3",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "今のもみんと。営業終了前の、省エネ版♡"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[67].lines[2]",
+    "dialogue_id": "remake_shuraba_minto_tsumugi",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくーん！ みんと、最前列の席とってあるからね♡"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[67].lines[4]",
+    "dialogue_id": "remake_shuraba_minto_tsumugi",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……えっと。tonariの常連さん、だよね？ はじめくんのお友達？"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[67].lines[7]",
+    "dialogue_id": "remake_shuraba_minto_tsumugi",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "「その」？ ……ふうん。みんともね、はじめくんとは「その」なんだ♡"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[67].lines[11]",
+    "dialogue_id": "remake_shuraba_minto_tsumugi",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……うん、いってらっしゃい。お話は、終わってからゆっくりね♡"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[69].lines[1]",
+    "dialogue_id": "remake_shuraba_minto_rin",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくーん！ 応援にきたよっ♡ 今日のみんと、全力で推し活です！"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[69].lines[3]",
+    "dialogue_id": "remake_shuraba_minto_rin",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……品質管理？ ……あ、Dr.fookahの2階のお姉さん、ですよね"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[69].lines[5]",
+    "dialogue_id": "remake_shuraba_minto_rin",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "えへへ、みんとの大事な人なので♡ ……そちらこそ、朝からご熱心で"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[69].lines[10]",
+    "dialogue_id": "remake_shuraba_minto_rin",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "いってらっしゃい♡ ……終わったら、ちゃんと説明してね？"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[70].lines[1]",
+    "dialogue_id": "remake_shuraba_all",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はじめくーん！ 応援にきたよ♡ ……って、あれ？"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[70].lines[5]",
+    "dialogue_id": "remake_shuraba_all",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……ねえ。もしかして３人とも、はじめくんの「その」だったり……する？"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[70].lines[11]",
+    "dialogue_id": "remake_shuraba_all",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……うん。いってらっしゃい♡ お話は、あとで。３人で、ゆっくりね"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[76].lines[0]",
+    "dialogue_id": "remake_delivery_minto_handoff",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "いらっしゃいっ♡ その大きな袋、tonariさんからのお届け物？"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[76].lines[2]",
+    "dialogue_id": "remake_delivery_minto_handoff",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ありがとっ♡ はじめまして、みんとです！"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[76].lines[7]",
+    "dialogue_id": "remake_delivery_minto_handoff",
+    "speaker": "minto",
+    "requested_face": "wink",
+    "portrait_disabled": false,
+    "text": "だいじょーぶ♡ この辺なら、これで通じるから"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[76].lines[8]",
+    "dialogue_id": "remake_delivery_minto_handoff",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "配達ありがとう！ この後よかったら、お客さんとして遊びに来てね♡"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[82].lines[0]",
+    "dialogue_id": "remake_first_brew_order",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "じゃあ……今日は、サッパリした一台をお願いしても、いい？"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[82].lines[1]",
+    "dialogue_id": "remake_first_brew_order",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "ミントは……好き。ほかの香りは、きみが選んでくれたら……"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[84].branches.lemon[0]",
+    "dialogue_id": "remake_first_brew_response",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……レモン。きゅっとして、あとがすっきりする。こういうの、今吸いたかった……"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[84].branches.lemon_mint[0]",
+    "dialogue_id": "remake_first_brew_response",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "レモンのあとに、ミントがすうっと来る……。うん、サッパリしてる。好き……"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[84].branches.orange[0]",
+    "dialogue_id": "remake_first_brew_response",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……オレンジだ。優しい甘さなのに、あとが軽いね。サッパリしてて……落ち着く"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[84].branches.orange_mint[0]",
+    "dialogue_id": "remake_first_brew_response",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……オレンジの香りと、ミント。甘さが残りすぎなくて、すっきりする……"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[84].branches.mint[0]",
+    "dialogue_id": "remake_first_brew_response",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……ミント、しっかり感じる。口の中がすうっとして……うん。こういうの、好き"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[84].branches.finish_balanced[0]",
+    "dialogue_id": "remake_first_brew_response",
+    "speaker": "oneesan",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……うん、美味しい。熱もちょうどよくて、もう一口吸いたくなるね"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[84].branches.finish_cool[0]",
+    "dialogue_id": "remake_first_brew_response",
+    "speaker": "oneesan",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "少しぬるい、かな……。でも、この組み合わせ、美味しいね"
+  },
+  {
+    "file": "data/dialogue/remake_ch1.json",
+    "json_path": "$.dialogues[84].branches.finish_hot[0]",
+    "dialogue_id": "remake_first_brew_response",
+    "speaker": "oneesan",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "少し熱い、かも……。香りの組み合わせは、美味しいんだけど"
+  },
+  {
+    "file": "data/dialogue/tournament_dates.json",
+    "json_path": "$.dialogues[1].lines[1]",
+    "dialogue_id": "tournament_date_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "このパフェ、仕込み大変そう。……休みなのに見ちゃうね"
+  },
+  {
+    "file": "data/dialogue/tournament_dates.json",
+    "json_path": "$.dialogues[1].lines[3]",
+    "dialogue_id": "tournament_date_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "うん。みんとでいるのも、好きだから"
+  },
+  {
+    "file": "data/dialogue/tournament_dates.json",
+    "json_path": "$.dialogues[1].lines[4]",
+    "dialogue_id": "tournament_date_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "でも今夜は、隣の彼氏にアイスをねだりたいな"
+  },
+  {
+    "file": "data/dialogue/tournament_dates.json",
+    "json_path": "$.dialogues[1].lines[6]",
+    "dialogue_id": "tournament_date_minto",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "半分こ、……違う味、頼もうよ"
+  },
+  {
+    "file": "data/dialogue/venue_hours.json",
+    "json_path": "$.dialogues[13].lines[0]",
+    "dialogue_id": "venue_minto_day",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "いらっしゃい♡　今なら、みんとが一人占めできちゃうよ♪"
+  },
+  {
+    "file": "data/dialogue/venue_hours.json",
+    "json_path": "$.dialogues[14].lines[1]",
+    "dialogue_id": "venue_minto_night",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "はーい♡　はじめくんも座ってて。ちゃんと順番に見てるから♪"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[6].lines[0]",
+    "dialogue_id": "ch3_tournament_eve_minto",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "『はじめくんっ♡ みんと、明日の応援のために東京に来ちゃったよー！"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[6].lines[1]",
+    "dialogue_id": "ch3_tournament_eve_minto",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ご指名のお客様のところにみんとが出張サービスですっ♡』"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[6].lines[2]",
+    "dialogue_id": "ch3_tournament_eve_minto",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "『今夜、ちょっとだけ会えないかな？ 一緒に東京観光しよっ♡ ……あ、ちゃんと夜ご飯は食べたー？"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[6].lines[3]",
+    "dialogue_id": "ch3_tournament_eve_minto",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "食べてなかったら何か一緒に食べよっか♪』"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[9].lines[1]",
+    "dialogue_id": "ch3_minto_date",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "「わあっ♡ 綺麗だねはじめくんっ！ ほら、手つなごっ？ ……寒くない？"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[9].lines[2]",
+    "dialogue_id": "ch3_minto_date",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はい、みんとの手であっためてあげるねっ♡」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[9].lines[5]",
+    "dialogue_id": "ch3_minto_date",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "「ううん、私の方こそ。大好きなだんな様の晴れ舞台だもん♡ 絶対見たいよ"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[9].lines[6]",
+    "dialogue_id": "ch3_minto_date",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……あ、明日の朝ごはん、ちゃんと食べれるようにおにぎり作ってきたんだけど、受け取ってくれる？」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[9].lines[11]",
+    "dialogue_id": "ch3_minto_date",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "「明日はこれで頑張れるでしょ？"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[9].lines[12]",
+    "dialogue_id": "ch3_minto_date",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "えへへ♡ ……大会終わったら……お家で、みんとからのスペシャルご褒美……あるからねっ♡」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[14].lines[7]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_ageha",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "「はじめくーんっ♡ 優勝おめでとう！ すっごくカッコよかった！"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[14].lines[8]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_ageha",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "みんとの推し、堂々のナンバーワンだよっ♡ ……はい、お水飲んで？ 喉乾いたでしょ？」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[14].lines[11]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_ageha",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "「え？ あなた誰？ なんで馴れ馴れしく私のだんな様に……」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[14].lines[14]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_ageha",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "「えっ！？」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[14].lines[22]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_ageha",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "「……っ！（熱狂的なファン……？ じゃあ、彼女も同業のファンの人……？）」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[14].lines[27]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_ageha",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "「そ、そうそうっ♡ 世界大会なんだから、みんと的に全力で応援するよっ！"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[14].lines[28]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_ageha",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……（すごい勢いで流されちゃったけど、しょうがない、そういうことにしておこ……）」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[15].lines[3]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_mashiro",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "「はじめくーんっ♡ 優勝おめでとう！ すっごくカッコよかった！"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[15].lines[4]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_mashiro",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "みんとの推し、堂々のナンバーワンだよっ♡ ……はい、お水飲んで？ 喉乾いたでしょ？」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[15].lines[7]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_mashiro",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "「え？ あなた誰？ なんで馴れ馴れしく私のだんな様に……」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[15].lines[11]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_mashiro",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "「えっ！？」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[15].lines[19]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_mashiro",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "「ファンクラブ！？」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[15].lines[22]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_mashiro",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "「ドドド、ドバイ！？ そう、そうだよ！ 世界大会なんだから、ファンとして全力で応援しないとね……！"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[15].lines[23]",
+    "dialogue_id": "ch3_tournament_day_shuraba_minto_mashiro",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "（すごい勢いで流されちゃったけど、そういうことにしておこ……）」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[17].lines[8]",
+    "dialogue_id": "ch3_tournament_day_shuraba_all",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "「はじめくーんっ♡ 優勝おめでとう！ すっごくカッコよかった！"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[17].lines[9]",
+    "dialogue_id": "ch3_tournament_day_shuraba_all",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "みんとの推し、堂々のナンバーワンだよっ♡ ……はい、お水飲んで？ 喉乾いたでしょ？」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[17].lines[13]",
+    "dialogue_id": "ch3_tournament_day_shuraba_all",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "「え？ あなた達誰？ なんで馴れ馴れしく私のだんな様に……」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[17].lines[24]",
+    "dialogue_id": "ch3_tournament_day_shuraba_all",
+    "speaker": "minto",
+    "requested_face": "surprise",
+    "portrait_disabled": false,
+    "text": "「……っ！（熱狂的なファン……？ じゃあ、彼女達も同業のファンの人……？）」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[17].lines[29]",
+    "dialogue_id": "ch3_tournament_day_shuraba_all",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "「そ、そうそうっ♡ 世界大会なんだから、みんと的に全力で応援するよっ！"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch3_main.json",
+    "json_path": "$.dialogues[17].lines[30]",
+    "dialogue_id": "ch3_tournament_day_shuraba_all",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "……（すごい勢いで流されちゃったけど、しょうがない、そういうことにしておこ……）」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[3]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "はっけーん♡ はじめくんだ"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[5]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "smug",
+    "portrait_disabled": false,
+    "text": "ふっふーん、市場調査でーす☆ 世界のシーシャ店、この目で見ておかないとね"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[6]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "smug",
+    "portrait_disabled": false,
+    "text": "私も店を持つ身ですから！ 立派な出張ですっ"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[9]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "……うそ。半分だけ、うそ"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[10]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "normal",
+    "portrait_disabled": false,
+    "text": "会いたかったの。世界で戦う彼氏を、いちばん近くで見たかった、……それだけ"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[13]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "明日、会場のどこかで手を振るから。ちゃんと見つけてよね"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[14]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "smug",
+    "portrait_disabled": false,
+    "text": "あ、でも優勝インタビューで彼女の話はしなくていいから。……私だけが知ってればいいの"
+  },
+  {
+    "file": "data/dialogue/_legacy/ch4_minto_dubai.json",
+    "json_path": "$.dialogues[0].lines[16]",
+    "dialogue_id": "ch4_minto_dubai_girlfriend",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "じゃ、おやすみ。……明日の煙、世界一にしてきて"
+  },
+  {
+    "file": "data/dialogue/_legacy/dreams.json",
+    "json_path": "$.dialogues[3].lines[3]",
+    "dialogue_id": "ch2_dream",
+    "speaker": "minto",
+    "requested_face": "sad",
+    "portrait_disabled": false,
+    "text": "「私のこと、営業してるだけで、実力じゃないって思ってるでしょ」"
+  },
+  {
+    "file": "data/dialogue/_legacy/ending.json",
+    "json_path": "$.dialogues[5].lines[1]",
+    "dialogue_id": "sit_with_minto",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ふふっ、はじめくん"
+  },
+  {
+    "file": "data/dialogue/_legacy/ending.json",
+    "json_path": "$.dialogues[5].lines[2]",
+    "dialogue_id": "sit_with_minto",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "おつかれさまっ♡ ……しょうがないなぁ、今日はみんとがいっぱい甘やかしてあげるね"
+  },
+  {
+    "file": "data/dialogue/_legacy/ending.json",
+    "json_path": "$.dialogues[6].lines[1]",
+    "dialogue_id": "shuraba_minto",
+    "speaker": "minto",
+    "requested_face": "smile",
+    "portrait_disabled": false,
+    "text": "ふふっ、みんとのところに来てくれたんだ♡ おかえりなさい、はじめくん"
+  },
+  {
+    "file": "data/dialogue/_legacy/ending.json",
+    "json_path": "$.dialogues[11].lines[2]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……おかえり、はじめくん。お疲れさま"
+  },
+  {
+    "file": "data/dialogue/_legacy/ending.json",
+    "json_path": "$.dialogues[11].lines[5]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "……ごめん。今日は、ちょっとだけ甘えたい日"
+  },
+  {
+    "file": "data/dialogue/_legacy/ending.json",
+    "json_path": "$.dialogues[11].lines[8]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "今日のきみの一台、お店の外まで匂ってた、……いい匂いだったよ"
+  },
+  {
+    "file": "data/dialogue/_legacy/ending.json",
+    "json_path": "$.dialogues[11].lines[10]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "ura_normal",
+    "portrait_disabled": false,
+    "text": "ねえ、今日はうちでご飯にしよ。簡単なのでよければ、私が作るから"
+  },
+  {
+    "file": "data/dialogue/_legacy/ending.json",
+    "json_path": "$.dialogues[11].lines[12]",
+    "dialogue_id": "epilogue_minto",
+    "speaker": "minto",
+    "requested_face": "ura_smile",
+    "portrait_disabled": false,
+    "text": "……ふふ。それ、すごく楽しみ、……帰ろっか"
+  }
+]

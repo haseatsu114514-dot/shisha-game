@@ -1,0 +1,167 @@
+[
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      342,
+      238,
+      660,
+      1176
+    ],
+    "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_sad.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      350,
+      239,
+      644,
+      1178
+    ],
+    "sha256": "668e9d3309e33db3c3e6623348ca0845124a3f4711da7409db6625378b1b281a",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      348,
+      238,
+      651,
+      1178
+    ],
+    "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_surprise.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      353,
+      238,
+      656,
+      1178
+    ],
+    "sha256": "7a57ebb1c6a4c3d43338c08390684cfddc81f9e89d31586656283cf180e02f22",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      353,
+      230,
+      682,
+      1178
+    ],
+    "sha256": "c9a603a9c9c9b0438781573180d8c6e0ecac6c425a17c116623b0ba4b6d48bf2",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_ura_sad.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      360,
+      230,
+      670,
+      1178
+    ],
+    "sha256": "2b01f25db493b7198df8f2f90ac4d601c9fcbef55adfdac425726bd0f92c9a6d",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_ura_smile.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      311,
+      230,
+      665,
+      1178
+    ],
+    "sha256": "5579265d2e1db6088afe2ffe279f934cdae15f1b121cd065b60e878f383839f5",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_ura_smug.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      330,
+      230,
+      675,
+      1178
+    ],
+    "sha256": "75429d0d0a6237440cecb300dabaf05e773e9a1966b980ca8e3fa4beccc6724c",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_ura_surprise.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      357,
+      230,
+      672,
+      1178
+    ],
+    "sha256": "7a25a023b178c4f40c299bb0b49ac6cce8af02c97990b794e7e3ccf3418926a5",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "assets/sprites/characters/minto/chr_minto_wink.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      347,
+      238,
+      655,
+      1178
+    ],
+    "sha256": "2c97ce12f4b6773af39d32f682d23e45bde81e726d560015b8f71d1730bc3646",
+    "runtime_rgba_equal": true
+  },
+  {
+    "path": "asset_sources/portraits/jawline-cleanup/minto-normal-before.png",
+    "size": [
+      896,
+      1200
+    ],
+    "bbox": [
+      351,
+      236,
+      663,
+      1178
+    ],
+    "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+    "runtime_rgba_equal": null
+  }
+]
