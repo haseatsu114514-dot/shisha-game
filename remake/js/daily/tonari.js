@@ -265,7 +265,7 @@ async function serveShiftOrder() {
   if (state.flags[key]) return;
   const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
   const order = SHIFT_ORDERS[((seed ^ (seed >>> 16)) >>> 0) % SHIFT_ORDERS.length];
-  const index = await modal({ title: "今日の注文", body: `「${order.text}」 店の葉で一台を作る。`,
+  const index = await modal({ title: "今日の注文", body: `前のお客さんを見送って、次の卓につく。<br>「${order.text}」 店の葉で一台を作る。`,
     options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
   if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
   // 注文と配合に対応した客の反応を返す（#1073）。給料・行動消費は従来どおり後続のcalendarで確定。
