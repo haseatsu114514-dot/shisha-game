@@ -13,13 +13,13 @@ import { SE, playBgm, currentBgm, preloadBgm } from "../core/audio.js";
 import { move, svg } from "../core/transition-kit.js";
 import { MG_EASE as E } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { recordCg } from "../scenes/gallery.js";
 
 export const PURIKURA_CG = "cg_ageha_first_purikura";
 // 撮影ごとに3曲から等確率で一つ。日常の乱数・保存状態には触れない。
 export const PURIKURA_BGM = ["bgm_purikura", "bgm_purikura_b", "bgm_purikura_d"];
 // 半分こ用の縦長シール1列分（640×1080・CG制作プラン #16）。あれば同じ絵を2枚並べて真ん中で切る（#15より優先）
 export const PURIKURA_STRIP = "cg_ch2_ageha_purikura_strip";
-export const PURIKURA_STRIPS = [PURIKURA_STRIP, `${PURIKURA_STRIP}_soft`, `${PURIKURA_STRIP}_gal`];
 // 印刷したシールの大きさ（場面の座標）。1列分×2、4コマ（960×1440）、代用は写真の2×2
 const SHEET = { strip: { w: 616, h: 520, top: 100 }, cg: { w: 374, h: 560, top: 80 }, sprites: { w: 534, h: 480, top: 120 } };
 const PW = 640, PH = 480; // 写真の大きさ（落書きの座標もこの画素）
@@ -352,14 +352,14 @@ export async function shoot(variant = "a") {
   const owner = state;
   const music = PURIKURA_BGM[Math.floor(Math.random() * PURIKURA_BGM.length)];
   const plan = PLANS[variant] || PLANS.a;
-  const strips = PURIKURA_STRIPS.map((id) => cgUrl(id)).filter(Boolean);
-  const strip = strips.length ? strips[Math.floor(Math.random() * strips.length)] : null;
+  const strip = cgUrl(PURIKURA_STRIP);
   const sheetCg = strip ? null : cgUrl(PURIKURA_CG);
   const art = strip ? { kind: "strip", url: strip } : sheetCg ? { kind: "cg", url: sheetCg } : { kind: "sprites", url: null };
   const urls = [...new Set([...POSES.flatMap((p) => [portraitInfo("hajime", p.hajime)?.src, portraitInfo("ageha", p.ageha)?.src]), art.url].filter(Boolean))];
   // 画像と並行して用意する。取得に失敗しても撮影を止めない。
   void preloadBgm(music);
-  await Promise.all(urls.map((u) => imageReady(u, 3000)));
+  const ready = await Promise.all(urls.map((u) => imageReady(u, 3000)));
+  const artReady = art.url && ready[urls.indexOf(art.url)];
   if (state !== owner) return;
   await stagePlay("purikura", async (node) => {
     if (state !== owner) return;
@@ -388,11 +388,16 @@ export async function shoot(variant = "a") {
         [T.print + 240, "whoosh"],
         [T.cut + 200, "crackle"], [T.cut + 580, "crackle"],
       ].sort((a, b) => a[0] - b[0]);
-      let now = 0;
+      let now = 0, recorded = false;
       for (const [t, name] of cues) {
         await sleep(t - now);
         now = t;
         if (state !== owner) return;
+        // 印刷した絵を見せてから解放する。LOAD中断や画像失敗では記録しない。
+        if (!recorded && artReady && t >= T.print) {
+          recordCg(strip ? PURIKURA_STRIP : PURIKURA_CG);
+          recorded = true;
+        }
         SE[name]?.();
       }
       await sleep(T.end - now);

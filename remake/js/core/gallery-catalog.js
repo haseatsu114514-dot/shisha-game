@@ -10,6 +10,7 @@ const labels = {
   cg_naru_next_entry: "なる・もう一つの予選",
   cg_minto_first_cheki: "みんとの初来店チェキ", cg_minto_cheki: "みんととのチェキ",
   cg_ageha_first_purikura: "あげはとの初プリ", cg_ryuji_purikura: "神崎との職人プリ",
+  cg_ch2_ageha_purikura_strip: "あげはと半分このプリクラ",
 };
 const localAsset = (path, extensions) => typeof path === "string"
   && /^(?:img|movies|\.\.\/assets)\/[a-zA-Z0-9_./-]+$/.test(path)
@@ -20,7 +21,8 @@ const localAsset = (path, extensions) => typeof path === "string"
 export function galleryEntries(manifest, catalog, progress, seen) {
   const got = new Set(seen);
   progress.keepsakes.forEach(id => got.add(PHOTO_KEEPSAKES[id]));
-  const entries = [...new Set((manifest.cgs || []).map(file => file.replace(/\.png$/, "")))].sort().map((id, i) => ({
+  const entries = [...new Set((manifest.cgs || []).map(file => file.replace(/\.png$/, "")))]
+    .filter(id => !/^cg_ch2_ageha_purikura_strip_(?:soft|gal)$/.test(id)).sort().map((id, i) => ({
     id, cg: id, kind: id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still",
     title: labels[id] || "物語のスチル " + (i + 1), unlocked: got.has(id),
   }));
