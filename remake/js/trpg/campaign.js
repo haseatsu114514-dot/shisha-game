@@ -57,6 +57,13 @@ export function tableStatus(state, catalog, { nightBusy = false } = {}) {
   if (nightBusy || state.pendingInvite && (state.pendingInvite.day ?? state.day) === state.day && state.pendingInvite.slot === 1) {
     return { ok: false, reason: "今夜は先に決まった予定がある" };
   }
+  // #1045 B03: 卓は開けるが、仲間か本が欠けていると遊べない。今の不足と次の目標を一行で示す。
+  const hasCompanion = (catalog?.participants || []).some(p => participantStatus(state, p).ok);
+  const hasBook = (catalog?.scenarios || []).some(b => !state.trpg.cleared?.[b.id]
+    && (state.trpg.owned?.includes(b.id) || state.trpg.stock?.includes(b.id)));
+  if (!hasCompanion && !hasBook) return { ok: true, reason: "今は招集できる仲間／遊べる本がない。知り合いとの交流を深めよう" };
+  if (!hasCompanion) return { ok: true, reason: "今夜来られる部員がいない。知り合いとの交流を深めよう" };
+  if (!hasBook) return { ok: true, reason: "今は遊べる本がない。部員が増えると入荷する" };
   return { ok: true, reason: "今夜の卓を囲もう" };
 }
 
