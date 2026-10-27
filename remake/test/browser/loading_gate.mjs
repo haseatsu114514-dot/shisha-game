@@ -40,6 +40,33 @@ await suite("loading-gate", async check => {
       assert.equal(await page.evaluate(() => JSON.stringify({ local: { ...localStorage }, session: { ...sessionStorage } })), storage);
     }, { viewport });
   }
+  await check("portrait-readable", async page => {
+    // Portrait escapes the shrunken #stage: the overlay covers the real viewport and stacks the
+    // two panels large so the bubble text stays readable (and still advances on a key press).
+    await page.locator('[data-demo="comic"]').click();
+    await page.locator('.loading-gate').waitFor();
+    await page.locator('.loading-panels img').first().waitFor();
+    assert.equal(await page.locator('.loading-gate').evaluate(node => node.classList.contains('is-viewport') && node.parentElement === document.body), true, 'Portrait renders at viewport scale, outside #stage');
+    const layout = await page.evaluate(() => {
+      const arts = [...document.querySelectorAll('.loading-panel-art')].map(node => node.getBoundingClientRect());
+      const bubble = document.querySelector('.loading-bubble');
+      return {
+        widths: arts.map(box => box.width),
+        stacked: arts.length === 2 && arts[1].top >= arts[0].bottom - 2,
+        bubbleFont: bubble ? parseFloat(getComputedStyle(bubble).fontSize) : 0,
+        withinViewport: arts.every(box => box.left >= -1 && box.right <= window.innerWidth + 1 && box.bottom <= window.innerHeight + 1),
+      };
+    });
+    assert(layout.stacked, 'Portrait stacks the two panels vertically');
+    assert(layout.widths.every(width => width >= 280), `Panels must be large in portrait, got ${layout.widths}`);
+    assert(layout.bubbleFont >= 14, `Bubble text must stay readable in portrait, got ${layout.bubbleFont}px`);
+    assert(layout.withinViewport, 'Portrait layout stays within the viewport');
+    await page.screenshot({ path: path.resolve('.codex/artifacts/remake-browser/loading-comic-portrait.png') });
+    await page.locator('.loading-gate.is-ready').waitFor();
+    await page.keyboard.press('Enter');
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
+    assert.match(await page.locator('#result').textContent(), /準備完了/);
+  }, { viewport: { width: 390, height: 844 } });
   await check("fast-error-cancel", async page => {
     await page.evaluate(() => {
       window.gatesShown = 0;

@@ -135,10 +135,21 @@ export async function withLoading(prepare, {
   // A quick task never flashes a loading screen. Styles are loaded only on use.
   const styleReady = loadStyle();
   styleReady.catch(error => controller.abort(error));
+  // Portrait phones/tablets scale #stage down so far that comic text is unreadable. There, show the
+  // overlay at true viewport scale (outside the scaled stage) and stack the panels large instead.
+  const portraitMq = window.matchMedia?.("(orientation: portrait)");
+  const portraitHost = () => (portraitMq?.matches ? document.body : host);
+  const placeOverlay = () => {
+    overlay.classList.toggle("is-viewport", !!portraitMq?.matches);
+    const parent = portraitHost();
+    if (overlay.parentNode !== parent) parent.append(overlay);
+  };
+  const onOrient = () => { if (overlay.isConnected) { placeOverlay(); overlay.focus(); } };
+  portraitMq?.addEventListener?.("change", onOrient);
   const show = async () => {
     try { await styleReady; } catch { return; }
     if (settled || controller.signal.aborted) return;
-    host.append(overlay); overlay.focus();
+    placeOverlay(); overlay.focus();
   };
   const timer = delayMs > 0 ? setTimeout(show, delayMs) : null;
   const aborted = new Promise((_, reject) => controller.signal.addEventListener("abort", () => reject(controller.signal.reason), { once: true }));
@@ -172,6 +183,7 @@ export async function withLoading(prepare, {
   } finally {
     settled = true; clearTimeout(timer); controller.abort();
     void comicReady;
+    portraitMq?.removeEventListener?.("change", onOrient);
     overlay.remove();
     signal?.removeEventListener("abort", abort);
     window.removeEventListener("keydown", guard, true);
