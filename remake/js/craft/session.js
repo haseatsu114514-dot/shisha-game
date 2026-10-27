@@ -15,6 +15,7 @@ import { evaluationOf } from "./feedback.js";
 import { clearComments, completed } from "./broadcast.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
+import { usesFoil } from "./holes_logic.js";
 import { availableHoleTemplates } from "./holes_templates.js";
 import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
@@ -117,6 +118,8 @@ function waitForBenchAssets(b, task, assets = task, notice = true) {
  */
 export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   applyCoalTraining(cs, state.flags);
+  // ロートスでアルミを使わない一台は、工程バーからも穴あけを外す（runHoles 側も飛ばす）。
+  if (!usesFoil(cs)) steps = steps.filter(([step]) => step !== "holes");
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   // 制作中は大会用の台だけを見せる。家背景に所持品の台を重ねない（#873）。
   const bg = () => setBg(bgUrl(benchBgRef(cs), timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls(), homeRigs: false });

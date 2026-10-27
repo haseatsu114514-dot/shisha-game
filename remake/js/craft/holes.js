@@ -10,7 +10,7 @@ import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.
 import { craftCondition } from "../core/condition.js";
 import { artImg } from "./art.js";
 
-import { RINGS, circularAngleDistance, templateComplete, evaluateFoil } from "./holes_logic.js";
+import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil, skippedFoilResult } from "./holes_logic.js";
 import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
 export { RINGS } from "./holes_logic.js";
 const TIME_LIMIT = 32;
@@ -78,6 +78,12 @@ async function chooseTemplate(panel, cs) {
 }
 
 export async function runHoles(cs) {
+  // ロートスHMDはアルミなし。穴あけ工程を飛ばし、中立な穴あけ相当値だけ残して次の工程へ。
+  if (!usesFoil(cs)) {
+    cs.holes = skippedFoilResult();
+    refreshBench();
+    return;
+  }
   await waitBenchReady(cs, "holes");
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始してから、光が目印に重なった瞬間にタップ（Space）", { brief: "穴の配置を選んでから、穴あけを始める" });

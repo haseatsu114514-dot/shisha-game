@@ -309,7 +309,8 @@ export function resultTable(cs, rank) {
     const detail = el("div.rt-detail", [
       el("h4", { text: "あなたの一台" }),
       Number.isFinite(cs.pull?.temp) && !cs.pull.failed ? actualExpressionCard(cs, cs.pull.temp) : null,
-      ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]].map(([k, v]) =>
+      ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["調整1回目", P.care1], ["調整2回目", P.care2]]
+        .filter(([k]) => !(k === "穴あけ" && cs.foilSkipped)).map(([k, v]) =>
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
       el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total)]),
       el("small.rt-judge-comment", { text: `上園「${feedbackLine("maezono", "pull", evaluationOf(P.shisha || 0))}」` }),

@@ -167,10 +167,11 @@ function renderReady(owner) {
 }
 function partialQuality(cs, round) {
   if (round === 3) return finalize(cs).total;
-  const parts = [cs.holes.score, cs.heat.score];
+  // アルミを飛ばした一台は穴あけの点が無いので、ある工程だけで平均する。
+  const parts = [cs.holes?.score, cs.heat?.score].filter(Number.isFinite);
   if (round >= 1) parts.push(computeShisha(cs).craftQuality);
   if (round >= 2) parts.push(cs.careHistory[0].score);
-  return parts.reduce((sum, value) => sum + value, 0) / parts.length;
+  return parts.reduce((sum, value) => sum + value, 0) / (parts.length || 1);
 }
 function contestantAvatar(who) {
   const icon = faceIconUrl(who), portrait = portraitInfo(who, "normal");

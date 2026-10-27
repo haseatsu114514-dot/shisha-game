@@ -16,6 +16,7 @@ import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTraining } from "./coals.js";
 import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams } from "./score.js";
+import { FOIL_FREE_HMS } from "./holes_logic.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
@@ -99,10 +100,21 @@ export async function stepSetup(cs) {
         auto: !disabled && e.id === currentId,
       };
     }));
+    // ロートスを選んだら、アルミを付けるか選べる（既定はアルミなし／#1107 B2）。
+    if (type === "hms" && FOIL_FREE_HMS.includes(cs.equip.hms) && cs.mode !== "tutorial" && cs.mode !== "drill") await chooseFoilOption(cs);
   }
   // 制作中の制限で旧セーブの装備・所有品を消さない。
   state.equip = { ...cs.equip, ...(!trained ? { charcoal: state.equip.charcoal } : {}) };
   refreshBench();
+}
+
+/** ロートスHMDで、アルミを付けて作るか選ぶ。既定はアルミなし（穴あけを飛ばす）。 */
+async function chooseFoilOption(cs) {
+  const panel = stepPanel("setup", "機材 アルミ", lessonHint(cs, "setup", "ロートスはアルミなしで使える。アルミを足すと穴あけの工程が増える"));
+  cs.foilOptIn = await choose(panel, [
+    { value: false, label: "アルミなしで作る", desc: "ロートスに直接のせる。穴あけはしない", auto: !cs.foilOptIn },
+    { value: true, label: "アルミを付けて作る", desc: "アルミを張って穴を開ける。熱の入り方を自分で決める", auto: !!cs.foilOptIn },
+  ]);
 }
 
 // ---------------------------------------------------------------- ミックス

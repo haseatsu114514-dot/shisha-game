@@ -426,7 +426,7 @@ async function rehearsal(progress = null) {
       result = "burnt";
     } else {
       const shisha = computeShisha(cs);
-      const score = (cs.holes.score + cs.heat.score + shisha.craftQuality + cs.careHistory[0].score + cs.careHistory[1].score) / 5;
+      const score = avgScore(cs.holes.score, cs.heat.score, shisha.craftQuality, cs.careHistory[0].score, cs.careHistory[1].score);
       result = state.rehearsal = score >= 85 ? "great" : score >= 68 ? "good" : "rough";
     }
     if (progress) {
@@ -444,6 +444,8 @@ async function rehearsal(progress = null) {
 
 const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includes(id));
 const STEPS_ALL = CRAFT_STEPS;
+// 中間順位の出来栄えは、ある工程の点だけで平均する（ロートスでアルミを飛ばすと穴あけの点が無い）。
+const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
 
 async function tournamentDay() {
   // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
@@ -533,7 +535,7 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
   await play("ch1_tournament_r1_end", { bg: STAGE });
-  await showStandings(1, (cs.holes.score + cs.heat.score) / 2, cs);
+  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs);
 
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
@@ -553,7 +555,7 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
-  await showStandings(2, (cs.holes.score + cs.heat.score + cs.stats.craftQuality) / 3, cs);
+  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs);
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
   for (const round of [1, 2]) {
@@ -567,7 +569,7 @@ async function tournamentDay() {
     bc.clearComments();
     cs.stats = null;
     await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
-    if (round === 1) await showStandings(3, (cs.holes.score + cs.heat.score + computeShisha(cs).craftQuality + cs.care.score) / 4, cs);
+    if (round === 1) await showStandings(3, avgScore(cs.holes.score, cs.heat.score, computeShisha(cs).craftQuality, cs.care.score), cs);
   }
 
   // 審査は完成品と2回の調整の実績で決まる。
