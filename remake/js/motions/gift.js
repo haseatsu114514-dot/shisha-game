@@ -1,5 +1,5 @@
 // 締めくくりの贈り物（bonds.playFinale・専用ハガルを受け取る前）。
-// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。SKIPと動きを減らす設定は core/scene-motions.js で省く。
+// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
 // どちらも生成したハガルの絵（making/bowl_empty_clay）を大きく見せる。シーシャの道具をベクターで描き足さない。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
