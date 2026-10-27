@@ -10,6 +10,42 @@
   ],
   "suites": [
     {
+      "id": "dj-preview",
+      "title": "Independent DJ preview WebAudio and controls",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": ["remake/previews/dj/**", "remake/test/dj_preview.mjs", "remake/test/browser/dj_preview.mjs"],
+      "run": ["node remake/test/browser/dj_preview.mjs"]
+    },
+    {
+      "id": "loading-prefetch",
+      "title": "Bounded preparation queue and retries",
+      "kind": "quick",
+      "run": ["node remake/test/loading_prefetch.mjs"]
+    },
+    {
+      "id": "loading-gate",
+      "title": "Loading gate and two-panel comic lifecycle",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": [
+        "remake/js/core/loading*.js",
+        "remake/js/loading-preview.js",
+        "remake/css/loading.css",
+        "remake/loading-preview.html",
+        "remake/test/browser/loading_gate.mjs",
+        "remake/test/browser/loading_craft.mjs",
+        "remake/js/craft/loading.js",
+        "remake/js/craft/session.js",
+        "remake/js/craft/preview.js",
+        "remake/craft-preview.html",
+        "remake/img/loading/*"
+      ],
+      "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
+    },
+    {
       "id": "dialogue-lint",
       "title": "Dialogue lint, canon and story routes",
       "kind": "quick",
@@ -42,6 +78,8 @@
         "python3 tools/audit_dialogue_art.py",
         "node --experimental-vm-modules remake/test/data_loading.mjs",
         "node --experimental-vm-modules remake/test/daily_consistency.mjs",
+        "node --experimental-vm-modules remake/test/naru_chapter_context.mjs",
+        "node remake/test/story_context.mjs",
         "node --experimental-vm-modules remake/test/early_deliveries.mjs",
         "node --experimental-vm-modules remake/test/delivery_night_plan.mjs",
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
@@ -57,7 +95,8 @@
         "node --experimental-vm-modules remake/test/fortune_rumor.mjs",
         "node remake/test/lover_dates.mjs",
         "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs",
-        "node remake/test/tokyo_visits.mjs"
+        "node remake/test/tokyo_visits.mjs",
+        "node --experimental-vm-modules remake/test/ch2_night_commute.mjs"
       ]
     },
     {
@@ -74,11 +113,14 @@
       "title": "Game logic without a browser",
       "kind": "quick",
       "run": [
+        "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
+        "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
+        "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
         "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
         "node remake/test/axe_bar_discovery.mjs",
@@ -100,15 +142,18 @@
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
         "node remake/test/ch2_tournament.mjs",
         "node remake/test/tournament_story.mjs",
+        "node --experimental-vm-modules remake/test/tournament_vote_progression.mjs",
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
         "node --test remake/test/trpg_feedback.mjs",
+        "node --test remake/test/trpg_d20.mjs",
         "node --experimental-vm-modules --test remake/test/trpg_table_view.mjs",
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs",
         "node --experimental-vm-modules remake/test/gallery.mjs",
-        "node --experimental-vm-modules remake/test/story_guidance_1045.mjs"
+        "node --experimental-vm-modules remake/test/story_guidance_1045.mjs",
+        "node --experimental-vm-modules remake/test/purikura_fee.mjs"
       ]
     },
     {
@@ -901,6 +946,7 @@
       "weight": 1.5,
       "timeout": 15,
       "paths": [
+        "remake/js/craft/result.js",
         "remake/js/craft/heat*.js",
         "remake/js/craft/coals.js",
         "remake/js/craft/common.js",
@@ -1615,6 +1661,7 @@
         "remake/test/browser/samechan_entry.mjs",
         "remake/test/browser/samechan_confession.mjs",
         "remake/test/browser/affinity_gates.mjs",
+        "remake/test/browser/naru_chapter_context.mjs",
         "remake/test/browser/relationship_ui.mjs",
         "data/dialogue/*hiyori*.json",
         "data/dialogue/*samechan*.json",
@@ -1633,6 +1680,7 @@
         "node remake/test/browser/samechan_entry.mjs",
         "node remake/test/browser/samechan_confession.mjs",
         "node remake/test/browser/affinity_gates.mjs",
+        "node remake/test/browser/naru_chapter_context.mjs",
         "node remake/test/browser/relationship_ui.mjs"
       ],
       "env": {

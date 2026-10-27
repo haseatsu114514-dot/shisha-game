@@ -1,10 +1,9 @@
 import { el } from "../core/util.js";
-import { TrpgSession, HEAT, heatTier } from "./session.js";
+import { TrpgSession, HEAT, heatTier, DICE } from "./session.js";
 import { displayName, portraitUrl, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds } from "./feedback.js";
 
-const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 const PHASES = ["listen", "explore", "prepare", "serve", "ending"];
 const LABELS = { success: "うまくいった", mixed: "ひと手間かかる", trouble: "思わぬ出来事" };
 const SPECIALS = { critical: "クリティカル！", fumble: "ファンブル……", double: "ゾロ目！" };
@@ -168,7 +167,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     audio.play(entry.tier ? "success" : "clue");
     const pop = el("div.trpg-heat-pop", { "aria-hidden": "true", dataset: { tier: String(entry.tier) } }, [
       el("strong", { text: entry.tier ? HEAT.names[entry.tier] + "！" : "盛り上がり ＋" + entry.amount }),
-      el("span", { text: entry.tier ? "次の判定に 勢い＋1" : entry.reason }),
+      el("span", { text: entry.tier ? "次の判定に 勢い1つ（補正＋4）" : entry.reason }),
     ]);
     root.querySelectorAll(".trpg-heat-pop").forEach(old => old.remove());
     pop.addEventListener("animationend", () => pop.remove());
@@ -468,23 +467,23 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     ]), [button("もう少し調べる", "trpg-hypothesis-back", () => pop.close())], { wide: true, skin: "trpg-hypothesis-stage" });
   }
   function die(value, rolling = false) {
-    const node = el("div.trpg-die", { class: rolling ? "rolling" : "", role: "img", "aria-label": "サイコロ " + value });
-    for (let i = 0; i < 9; i++) node.append(el("i.trpg-pip", { style: { opacity: PIPS[value].includes(i) ? 1 : 0 } }));
-    return node;
+    return el("div.trpg-die.trpg-d20", { class: rolling ? "rolling" : "", role: "img", "aria-label": "20面ダイス " + value,
+      html: '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><polygon points="50,2 95,26 95,74 50,98 5,74 5,26"/><path d="M50 2 25 68 75 68 50 2M5 26 25 68 5 74M95 26 75 68 95 74M50 98 25 68M50 98 75 68M5 26 50 2 95 26"/></svg>' },
+      el("span.trpg-d20-value", { text: String(value), "aria-hidden": "true" }));
   }
   function openCheck(kind) {
     if (busy || overlay || session.snapshot().pending) return;
     const check = scenario.checks[kind], helper = check.helper || null;
-    const body = el("div", [el("p.trpg-roll-instruction", { text: "2個の出目 ＋ 補正で判定 · 10以上で成功" }), el("div.trpg-roll-scene",
-      el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋1", dataset: { test: "trpg-bonus" } })]))]);
+    const body = el("div", [el("p.trpg-roll-instruction", { text: "20面ダイス2個 ＋ 補正 · 30以上で成功" }), el("div.trpg-roll-scene",
+      el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋" + DICE.base, dataset: { test: "trpg-bonus" } })]))]);
     const forecast = el("div.trpg-forecast", { dataset: { test: "trpg-forecast" }, "aria-live": "polite" });
     function updateForecast() {
       const predicted = checkForecast(scenario, session.snapshot(), kind, { support: !!support?.checked });
       body.querySelector(".trpg-dice-bonus").textContent = "＋" + predicted.baseBonus;
       forecast.replaceChildren(el("div.trpg-forecast-head", [
-        el("strong", { text: "この判定の見通し" }), el("small", { text: "2d6 ＋ 基本1" + (support?.checked ? " ＋ 助力2" : "") + (predicted.momentum ? " ＋ 勢い" + predicted.momentum : "") }),
+        el("strong", { text: "この判定の見通し" }), el("small", { text: "2d20 ＋ 基本" + DICE.base + (support?.checked ? " ＋ 助力" + DICE.support : "") + (predicted.momentum ? " ＋ 勢い" + predicted.momentum * DICE.momentum : "") }),
       ]), el("div.trpg-odds", [
-        ["success", "10以上", "うまくいく"], ["mixed", "7〜9", "ひと手間"], ["trouble", "6以下", "思わぬ出来事"],
+        ["success", "30以上", "うまくいく"], ["mixed", "19〜29", "ひと手間"], ["trouble", "18以下", "思わぬ出来事"],
       ].map(([grade, threshold, label]) => el("div", { dataset: { grade } }, [
         el("strong", { text: "約" + Math.min(predicted.odds[grade], predicted.bestOdds[grade])
           + (predicted.potentialBonus ? "〜" + Math.max(predicted.odds[grade], predicted.bestOdds[grade]) : "") + "%",
@@ -499,7 +498,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (support) body.append(el("label.trpg-aid", [support, seatMark(helper),
       el("span.trpg-aid-art", { "aria-hidden": "true" }, el("img", { src: portrait(helper), alt: "", style: { top: portraitTop(helper, 150, 6) } })), el("span", [
       el("strong", { text: name(helper) + "の「" + cast[helper].ability + "」を借りる" }),
-      el("small", { text: "判定＋2 · 連携札1枚を使う · この切り札は一度だけ" }),
+      el("small", { text: "判定＋7 · 連携札1枚を使う · この切り札は一度だけ" }),
     ])]));
     if (support) support.addEventListener("change", updateForecast);
     if (helper && !support) body.append(el("p", { text: "この判定では連携札を使えません。手元の作戦で進めましょう。" }));
@@ -523,7 +522,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       audio.play("roll");
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (!reduced) rollTicker = setInterval(() => {
-        body.querySelector(".trpg-dice-row")?.replaceChildren(die(Math.ceil(Math.random()*6), true), die(Math.ceil(Math.random()*6), true),
+        body.querySelector(".trpg-dice-row")?.replaceChildren(die(Math.floor(Math.random()*DICE.sides)+1, true), die(Math.floor(Math.random()*DICE.sides)+1, true),
           el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
       }, 90);
       timer = setTimeout(() => {
@@ -553,9 +552,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("span", { text: result.special === "critical" ? session.snapshot().teamwork < 2 ? "物語を続けると、連携札が1枚戻る" : "連携札は満タン。卓が沸いた"
         : result.special === "fumble" ? "それでも物語は続く。卓は笑いに包まれた" : "揃った出目に、卓が少しざわめく" }),
     ]));
-    if (result.momentum) body.append(el("p.trpg-ability-receipt.trpg-momentum-receipt", { text: "卓の勢い ＋" + result.momentum + " · 盛り上がりが後押し" }));
+    if (result.momentum) body.append(el("p.trpg-ability-receipt.trpg-momentum-receipt", { text: "卓の勢い ＋" + result.momentum * DICE.momentum + " · 盛り上がりが後押し" }));
     if (result.helper) body.append(el("p.trpg-ability-receipt", { dataset: { test: "trpg-helper-receipt" } },
-      [seatMark(result.helper), name(result.helper) + "の助力 ＋2 · 札 使用済"]));
+      [seatMark(result.helper), name(result.helper) + "の助力 ＋7 · 札 使用済"]));
     if (result.rerolled) {
       body.append(el("p.trpg-ability-receipt", { dataset: { test: "trpg-reroll-receipt" } },
         [seatMark(session.rerollActor), name(session.rerollActor) + "の振り直し · 札 使用済"]));
@@ -692,9 +691,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     let pop;
     pop = modal("この卓の遊び方", [
       el("p", { text: presentation.help }),
-      el("p", { text: "判定はサイコロ二つの合計に＋1。10以上は成功、7〜9はひと手間、6以下は思わぬ出来事。どの結果でも物語は続きます。" }),
-      el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。6のゾロ目（クリティカル）が出ると、1枚戻ります。" }),
-      el("p", { text: "卓の盛り上がりは、うまくいった判定・思わぬ出来事・ゾロ目・仲間の見せ場・初めての相談・見立ての話し合いで上がります。3・6・8に届くたび、次の判定に勢い＋1（最大＋2）。" }),
+      el("p", { text: "判定は20面ダイス二つの合計に＋3。30以上は成功、19〜29はひと手間、18以下は思わぬ出来事。どの結果でも物語は続きます。" }),
+      el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。20のゾロ目（クリティカル）が出ると、1枚戻ります。" }),
+      el("p", { text: "卓の盛り上がりは、うまくいった判定・思わぬ出来事・ゾロ目・仲間の見せ場・初めての相談・見立ての話し合いで上がります。3・6・8に届くたび、次の判定に勢い1つ（補正＋4、最大2つ）。" }),
       el("p", { text: "結末では卓を星3つで評価します。見立てが真相に合う、提案が本来の結末に届く、判定で2回以上うまくいく。" }),
       ...scenario.cast.filter(c => c.part !== "GM").map(c => el("p.trpg-help-ability", { text: name(c.id) + "「" + c.ability + "」 · " + c.abilityText })),
       el("p", { text: "切り札は各人一度ずつ。先に助けを借りるか、最後のために札を残すか、相談しながら決めましょう。" }),
@@ -758,3 +757,4 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   return { finished, snapshot: () => session.snapshot(),
     destroy: () => finish(completed || { cancelled: true, scenarioId: scenario.id }), get disposed() { return disposed; } };
 }
+

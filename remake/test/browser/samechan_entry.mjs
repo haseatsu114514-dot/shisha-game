@@ -66,12 +66,12 @@ await suite("samechan-entry", async check => {
         assert(r.afterSeat.flags._samechan_quiet_seat_done);
         assert(!r.beforeClosing.flags._samechan_closing_check_done);
         assert(r.afterClosing.flags._samechan_closing_check_done);
-        assert.equal(r.capped.affinity.samechan, 33);
-        assert(r.capped.flags._samechan_affinity_waiting_pts > 0);
+        assert.equal(r.capped.affinity.samechan, r.afterClosing.affinity.samechan + 85);
+        assert.equal(r.capped.flags._samechan_affinity_waiting_pts || 0,0);
         assert(r.afterQuestion.flags._samechan_bond_question_done);
         assert.equal(r.afterQuestion.romanceChoices.bond_q1_samechan.value, value);
         assert.equal(r.afterQuestion.romance.samechan || 0, value);
-        assert.equal(r.afterQuestion.flags._samechan_affinity_stage_released_pts, 90);
+        assert.equal(r.afterQuestion.flags._samechan_affinity_stage_released_pts || 0,0);
         assert(r.afterQuestion.affinity.samechan >= 48);
         assert.equal(r.afterQuestion.money, 100000 - 7 * 3000);
         assert(r.replay); assert.deepEqual(r.repeated, r.afterQuestion);

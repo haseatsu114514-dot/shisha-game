@@ -29,6 +29,7 @@ import { artImg } from "./art.js";
 import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
 import { buildCraftProgress } from "./progress.js";
 import { warmCraftAssets } from "./readiness.js";
+import { prepareBenchEntry } from "./loading.js";
 import { applyCoalTraining } from "./coals.js";
 
 /**
@@ -86,12 +87,12 @@ export function newSession(mode) {
 let bench = null;
 
 // 同時に待つベース/工程の準備を一つにまとめる。キャッシュ済みなら幕を出さない。
-function waitForBenchAssets(b, task, assets = task) {
+function waitForBenchAssets(b, task, assets = task, notice = true) {
   b.pendingWork = (b.pendingWork || 0) + 1;
   b.pendingAssets = (b.pendingAssets || 0) + 1;
   b.root.inert = true;
   b.root.setAttribute("aria-busy", "true");
-  if (!b.loadingTimer && !b.loading) b.loadingTimer = setTimeout(() => {
+  if (notice && !b.loadingTimer && !b.loading) b.loadingTimer = setTimeout(() => {
     b.loadingTimer = null;
     if (!b.pendingAssets || !b.root.isConnected) return;
     b.loading = el("div.craft-loading", { role: "status", dataset: { test: "craft-loading" }, text: "作業台を準備しています…" });
@@ -114,7 +115,7 @@ function waitForBenchAssets(b, task, assets = task) {
  * 作業台画面を開く（すでに開いていれば再利用）。
  * 戻り値の panel に各工程が中身を描き、左側は作業風景の静止モックアップ。
  */
-export function openBench(cs, { steps = [] } = {}) {
+export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   applyCoalTraining(cs, state.flags);
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   // 制作中は大会用の台だけを見せる。家背景に所持品の台を重ねない（#873）。
@@ -151,8 +152,8 @@ export function openBench(cs, { steps = [] } = {}) {
   bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
   const background = bg();
-  const assets = Promise.all([background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready]);
-  bench.ready = waitForBenchAssets(bench, Promise.all([background, assets]), assets);
+  const assets = Promise.all([background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets]);
+  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter);
   renderFatigue();
   return bench;
 }

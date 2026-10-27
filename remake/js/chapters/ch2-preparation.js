@@ -128,6 +128,9 @@ export async function runChapterTwoPreparation() {
   save();
   await runDaily({
     morningDeparture: chooseMorningCity, beforeHomecoming: returnCityHome,
+    // 地元の予定の前だけ帰る。柚ヶ谷の試煙会などは現地のまま開く。
+    beforeNightEvent: event => allSpots().some(spot => spot.id === event.pin && (spot.region || "home") === "home")
+      ? returnCityHome() : true,
     startNextDay: true, untilDay: startDay + 13, tournamentName: "HAZE: OPEN CLOUD",
     mapOptions: () => ({
       regionId: state.flags._ch2_region,
@@ -142,3 +145,4 @@ export async function runChapterTwoPreparation() {
     nightEvents: chapterTwoNights(startDay),
   });
 }
+

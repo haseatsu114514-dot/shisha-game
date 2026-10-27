@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import { createPrefetchQueue } from '../js/core/loading-prefetch.js';
+
+const queue = createPrefetchQueue({ concurrency: 1, capacity: 2 });
+let release, starts = 0;
+const first = queue.prepare('a', () => { starts++; return new Promise(resolve => { release = resolve; }); });
+assert.equal(queue.prepare('a', () => assert.fail('Duplicate preparation')), first);
+const second = queue.prepare('b', () => { starts++; return 'B'; });
+await Promise.resolve();
+assert.equal(starts, 1, 'Concurrency bound');
+assert.equal(await queue.warm('overflow', () => assert.fail('Queue overflow ran')), false);
+release('A');
+assert.equal(await first, 'A');
+assert.equal(await second, 'B');
+assert.equal(await queue.prepare('a', () => assert.fail('Cached preparation ran')), 'A');
+assert.equal(await queue.prepare('c', () => 'C'), 'C');
+let attempts = 0;
+const retry = createPrefetchQueue();
+assert.equal(await retry.warm('retry', () => { attempts++; throw new Error('offline'); }), false);
+assert.equal(await retry.prepare('retry', () => { attempts++; return 'online'; }), 'online');
+assert.equal(attempts, 2);
+assert.throws(() => createPrefetchQueue({ concurrency: 0 }), RangeError);
+console.log('loading prefetch: PASS (reuse, bounds, concurrency, failure, retry)');

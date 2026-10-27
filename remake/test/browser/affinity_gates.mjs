@@ -16,7 +16,7 @@ async function setup(page) {
         s.met[id] = true; s.flags[`_intro_${id}`] = true;
       }
       s.flags._minto_identity_revealed = true;
-      // #814: 固有会話を読み終えた状態から始め、♥3の質問ゲートだけを確かめる（会話待ちの上限は別のテスト）。
+      // #814: 固有会話を読み終えた状態から始め、♥3の質問ゲートだけを確かめる（最古未読/ハート解放は別のテスト）。
       Object.assign(s.story, { tsumugi: 6, minto: 5, rin: 3 }); // みんとは最後の1本を残し、早すぎる締めくくりを確かめる
       return s;
     };
@@ -74,7 +74,7 @@ await suite("affinity-gates", async check => {
       });
       await act('[data-test="reply-0"]');
       await page.locator('[data-test="phone-next"]').waitFor();
-      assert.equal(await feedback.count(),0,"capped reply must not claim a gain");
+      assert.equal(await feedback.count(),1,"an unread story cannot suppress real fractional reply progress");
       assert.equal((await read()).pts,19);
       await act('[data-test="lime-back"]'); await act('[data-test="phone-close"]');
       await page.evaluate(() => G.phoneDone);
@@ -90,12 +90,12 @@ await suite("affinity-gates", async check => {
           for (let i = 0; i < 20; i++) G.stats.gainAffinity(id, 10);
           const locked = { points: s.affinity[id], level: G.stats.affinityLevel(id),
             waiting: G.stats.affinityGateWaiting(id), fortune: s.fortune ?? null,
-            held: s.flags[`_${id}_affinity_waiting_pts`], early: G.stats.releaseAffinity(id) };
+            held: s.flags[`_${id}_affinity_waiting_pts`] || 0, early: G.stats.releaseAffinity(id) };
           G.core.save(); G.core.newGame(); G.core.load(); s = G.core.state;
           G.vn.vnTest.choose = scene => scene.includes("bond_question") ? 1 - value : 0;
           await G.readGate(id);
           const opened = { points: s.affinity[id], level: G.stats.affinityLevel(id),
-            waiting: G.stats.affinityGateWaiting(id), rescued: s.flags[`_${id}_affinity_stage_released_pts`],
+            waiting: G.stats.affinityGateWaiting(id), rescued: s.flags[`_${id}_affinity_stage_released_pts`] || 0,
             answer: s.romanceChoices[G.stats.AFFINITY_GATE_CHOICES[id]], due: s.flags._confession_due ?? null };
           const pts = s.affinity[id], romance = G.bonds.romanceValue(id);
           if (id === "rin") await G.bonds.playQuestionVisit(id);
@@ -106,7 +106,7 @@ await suite("affinity-gates", async check => {
           const saved = { points: s.affinity[id], again: G.stats.releaseAffinity(id) };
           const earlyFinale = G.bonds.finaleDue(id);
           s.story[id] = G.spots.VISIT_SEQ[id].length; // explicit completed-history fixture for the finale
-          G.stats.releaseAffinity(id); // only the newly completed stages free the remaining earned bank
+          G.stats.releaseAffinity(id); // no numeric credit is held behind these read flags
           G.stats.gainAffinity(id, 22);
 
           if (id === "tsumugi") s.flags._tsumugi_contest_submitted = true; // DAY11 fixed story is the chapter-1 relationship beat
@@ -118,22 +118,22 @@ await suite("affinity-gates", async check => {
           const seen = JSON.stringify(s.finales[id]);
           const replay = await G.bonds.playFinale(id);
           out.push({ id, value, locked, opened, duplicate, saved, pts, romance, earlyFinale, ready, finale,
-            replay, stable: seen === JSON.stringify(s.finales[id]), held: s.flags[`_${id}_affinity_waiting_pts`] });
+            replay, stable: seen === JSON.stringify(s.finales[id]), held: s.flags[`_${id}_affinity_waiting_pts`] || 0 });
         }
         return out;
       });
       for (const r of rows) {
-        assert.equal(r.locked.points, 33); assert.equal(r.locked.level, 3); assert(r.locked.waiting);
-        assert(r.locked.held > 100); assert.equal(r.locked.early, 0); assert.equal(r.locked.fortune, null);
-        // Rin has no unimplemented fourth-stage story to invent; the six-scene routes still wait at heart4.
-        assert.equal(r.opened.level, r.id === "rin" ? 5 : 4); assert(!r.opened.waiting);
-        assert.equal(r.opened.rescued, r.id === "rin" ? 171 : 32);
+        assert.equal(r.locked.points, 204); assert.equal(r.locked.level, 5); assert(r.locked.waiting);
+        assert.equal(r.locked.held, 0); assert.equal(r.locked.early, 0); assert.equal(r.locked.fortune, null);
+        // Numeric hearts are independent; completion/finale prerequisites are still separate.
+        assert.equal(r.opened.level, 5); assert(!r.opened.waiting);
+        assert.equal(r.opened.rescued, 0);
         assert.equal(r.opened.answer.value, r.value); assert.equal(r.opened.due, null);
         assert.equal(r.duplicate.points, r.pts); assert.equal(r.duplicate.romance, r.romance);
         assert.equal(r.duplicate.release, 0); assert.equal(r.saved.points, r.pts); assert.equal(r.saved.again, 0);
         assert.equal(r.earlyFinale, r.id === "rin"); assert(r.ready); assert.equal(r.finale.route, r.value ? "romance" : "friend");
         assert.equal(r.finale.due, r.value ? r.id : null); assert.equal(r.finale.open, !!r.value);
-        assert.equal(r.finale.giftCount, 1); assert(!r.replay && r.stable); assert(r.held >= r.locked.held);
+        assert.equal(r.finale.giftCount, 1); assert(!r.replay && r.stable); assert.equal(r.held,0);
       }
     }, { ...options, reducedMotion: "reduce" });
 
@@ -153,15 +153,15 @@ await suite("affinity-gates", async check => {
           G.stats.gainAffinity(id, 100); G.vn.vnTest.choose = () => 0;
           await G.spots.visitChar(id);
           out.push({ id, early, pendingEarly, pending, count, afterCount: s.story[id],
-            answer: s.romanceChoices[G.stats.AFFINITY_GATE_CHOICES[id]], rescued: s.flags[`_${id}_affinity_stage_released_pts`],
+            answer: s.romanceChoices[G.stats.AFFINITY_GATE_CHOICES[id]], rescued: s.flags[`_${id}_affinity_stage_released_pts`] || 0,
             level: G.stats.affinityLevel(id) });
         }
         return out;
       });
       for (const r of rows) {
         assert(!r.early && !r.pendingEarly && r.pending); assert.equal(r.afterCount, r.count);
-        assert.equal(r.answer.value, 1); assert.equal(r.rescued, r.id === "rin" ? 85 : 32);
-        assert.equal(r.level, r.id === "rin" ? 5 : 4);
+        assert.equal(r.answer.value, 1); assert.equal(r.rescued,0);
+        assert.equal(r.level,5);
       }
     }, { ...options, reducedMotion: "reduce" });
 
@@ -172,9 +172,9 @@ await suite("affinity-gates", async check => {
         for (const id of ["tsumugi", "minto", "rin"]) for (const points of [33, 47, 66]) {
           let s = G.fresh(); s.affinity[id] = points; s.affinityCarry[id] = 0.7; s.stats.charm = 100;
           G.stats.gainAffinity(id, 10);
-          const held = s.flags[`_${id}_affinity_waiting_pts`];
+          const held = s.flags[`_${id}_affinity_waiting_pts`] || 0;
           G.core.save(); G.core.load(); s = G.core.state;
-          const unchanged = s.affinity[id] === points, carry = s.affinityCarry[id];
+          const unchanged = s.affinity[id] === points + 10, carry = s.affinityCarry[id];
           // A saved choice alone is not completed reaction dialogue. Preserve it without synthesizing completion.
           s.romanceChoices[G.stats.AFFINITY_GATE_CHOICES[id]] = { char: id, value: 0, day: 7 };
           const rescued = G.stats.releaseAffinity(id);
@@ -185,9 +185,9 @@ await suite("affinity-gates", async check => {
         const oldFriend = { points: G.core.state.affinity.rin, friend: G.core.state.flags._friend_rin,
           waiting: G.stats.affinityGateWaiting("rin"), answer: G.core.state.romanceChoices.bond_q1_rin ?? null };
         s = G.fresh(); s.story.minto = 0; G.stats.ensureAffinityLevel("minto", 5);
-        const guarantee = s.flags._minto_affinity_waiting_pts;
+        const guarantee = s.flags._minto_affinity_waiting_pts || 0;
         G.stats.ensureAffinityLevel("minto", 5);
-        const guaranteed = { points: s.affinity.minto, guarantee, second: s.flags._minto_affinity_waiting_pts };
+        const guaranteed = { points: s.affinity.minto, guarantee, second: s.flags._minto_affinity_waiting_pts || 0 };
         s.lovers = ["tsumugi", "rin"]; s.lovePts = { tsumugi: 9, rin: 20 }; s.loveLevel = { tsumugi: 1, rin: 2 };
         G.stats.gainAffinity("tsumugi", 10); const publicBond = s.lovePts.tsumugi;
         G.stats.bond.private = true; G.stats.gainAffinity("tsumugi", 10); G.stats.bond.private = false;
@@ -204,12 +204,12 @@ await suite("affinity-gates", async check => {
           accepted: G.core.state.lovers, pending: G.core.state.flags._confession_due ?? null };
       });
       for (const r of result.legacy) {
-        assert(r.unchanged); assert(r.carry >= 0 && r.carry < 1); assert(r.held > 0);
+        assert(r.unchanged); assert(r.carry >= 0 && r.carry < 1); assert.equal(r.held,0);
         assert.equal(r.rescued, 0); assert(r.level <= (r.points === 66 ? 5 : 4));
-        assert.equal(r.after, r.points + r.rescued);
+        assert.equal(r.after, r.points + 10);
       }
-      assert.deepEqual(result.guaranteed, { points: 8, guarantee: 58, second: 58 });
-      assert.deepEqual(result.oldFriend, { points: 66, friend: true, waiting: false, answer: null });
+      assert.deepEqual(result.guaranteed, { points: 66, guarantee: 0, second: 0 });
+      assert.deepEqual(result.oldFriend, { points: 74, friend: true, waiting: false, answer: null });
       assert.equal(result.publicBond, 9); assert.equal(result.saved.lovePts.tsumugi, 14);
       assert.deepEqual(result.saved.lovers, ["tsumugi", "rin"]); assert.equal(result.saved.lovePts.rin, 20);
       assert.equal(result.saved.flags._confession_due, "minto"); assert.equal(result.saved.flags._confession_wait, 11);

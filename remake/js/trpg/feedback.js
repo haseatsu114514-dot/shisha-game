@@ -1,6 +1,6 @@
 // Public roll information only: never inspect the hidden traveler profile.
 const grades = ["success", "mixed", "trouble"];
-const gradeOf = total => total >= 10 ? "success" : total >= 7 ? "mixed" : "trouble";
+import { DICE, gradeOf } from "./session.js";
 
 function percentages(totals) {
   const counts = { success: 0, mixed: 0, trouble: 0 };
@@ -16,8 +16,8 @@ function requireBonus(bonus) {
 export function rollOdds(bonus) {
   requireBonus(bonus);
   const totals = [];
-  for (let first = 1; first <= 6; first++) {
-    for (let second = 1; second <= 6; second++) totals.push(first + second + bonus);
+  for (let first = 1; first <= DICE.sides; first++) {
+    for (let second = 1; second <= DICE.sides; second++) totals.push(first + second + bonus);
   }
   return percentages(totals);
 }
@@ -25,9 +25,9 @@ export function rollOdds(bonus) {
 export function checkForecast(scenario, state, kind, { support = false } = {}) {
   // Momentum from table excitement is public and spent on this roll.
   const momentum = Number.isInteger(state.momentum) ? state.momentum : 0;
-  const baseBonus = 1 + (support ? 2 : 0) + momentum;
+  const baseBonus = DICE.base + (support ? DICE.support : 0) + momentum * DICE.momentum;
   // The potential is deliberately identical for correct and incorrect guesses.
-  const potentialBonus = kind === "prepare" && state.hypothesis ? scenario.rules?.hypothesisBonus || 0 : 0;
+  const potentialBonus = kind === "prepare" && state.hypothesis ? (scenario.rules?.hypothesisBonus || 0) * DICE.hypothesis : 0;
   return {
     baseBonus,
     momentum,
@@ -40,9 +40,10 @@ export function checkForecast(scenario, state, kind, { support = false } = {}) {
 export function rerollOdds(dice, bonus, index) {
   requireBonus(bonus);
   if (![0, 1].includes(index) || !Array.isArray(dice) || dice.length !== 2
-    || dice.some(die => !Number.isInteger(die) || die < 1 || die > 6)) {
-    throw new RangeError("Choose one of two six-sided dice to reroll");
+    || dice.some(die => !Number.isInteger(die) || die < 1 || die > DICE.sides)) {
+    throw new RangeError("Choose one of two twenty-sided dice to reroll");
   }
   const kept = dice[1 - index];
-  return percentages(Array.from({ length: 6 }, (_, face) => kept + face + 1 + bonus));
+  return percentages(Array.from({ length: DICE.sides }, (_, face) => kept + face + 1 + bonus));
 }
+
