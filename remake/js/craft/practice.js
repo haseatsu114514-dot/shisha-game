@@ -1,3 +1,4 @@
+import { notifyMastery } from "../core/mastery-notice.js";
 import { gainFlavorExperience, masteryDay } from "../core/flavor-mastery.js";
 import { DB } from "../core/data.js";
 // 日常で一台を通して作り、提供後の調整も実際に練習する。
@@ -61,7 +62,7 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
   if (cs.pullDone && !state.flags[key] && !coached) {
     const own = Object.values(cs.practiceSpent?.own || {}).reduce((a, b) => a + b, 0);
     const total = Object.values(cs.mix).reduce((a, b) => a + b, 0);
-    gainFlavorExperience(state, cs.mix, staffPractice ? 2 + 4 * own / Math.max(1, total) : 2, DB.flavorById);
+    notifyMastery(gainFlavorExperience(state, cs.mix, staffPractice ? 2 + 4 * own / Math.max(1, total) : 2, DB.flavorById));
     state.flags[key] = true;
   }
   retireScreen();

@@ -27,7 +27,7 @@ export function initLayers() {
   on("stat-gain", ({ key, total, name, starUp, star }) => {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
     const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
-    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "STATUS UP", main: name,
+    gainCard({ kind: "stat", stat: key, points: starUp ? 0 : total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "STATUS UP", main: name,
       evolution: starUp ? `Lv.${star}に到達` : "", fx });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {

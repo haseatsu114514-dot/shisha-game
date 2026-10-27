@@ -62,6 +62,11 @@ try {
     assert.deepEqual(committed.returned, gains);
     assert.equal(committed.stats.technique, before + expected);
     await page.waitForSelector(".gain-card.st-technique.show");
+    const levelUp = level > Math.max(1, Math.ceil(before / 20));
+    if (levelUp) {
+      assert.equal(await page.locator(".gc-earned").count(), 0);
+      assert.equal(await page.locator(".gc-points").count(), 0, "レベル到達時は増分数字を表示しない");
+    } else {
     assert.equal(await page.locator(".gc-earned").textContent(), "今回");
     assert.equal(await page.locator(".gc-points").textContent(), `+${expected}P`);
     assert.equal(await page.locator(".gc-points").getAttribute("aria-label"), `今回の増加 +${expected}P`);
@@ -73,7 +78,7 @@ try {
         && points.right <= card.getBoundingClientRect().right
         && card.scrollWidth <= card.clientWidth;
     }), "今回の表示と名前・増分が重なるか、カードからはみ出した");
-    const levelUp = level > Math.max(1, Math.ceil(before / 20));
+    }
     assert.equal(await page.locator(".gc-top").textContent(), levelUp ? "LEVEL UP" : "STATUS UP");
     assert.deepEqual(await page.locator(".gc-evolution").allTextContents(), levelUp ? [`Lv.${level}に到達`] : []);
     assert.deepEqual(await page.evaluate(() => T.events.map(({ total, starUp, star }) => ({ total, starUp, star }))),

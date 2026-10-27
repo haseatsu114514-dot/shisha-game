@@ -70,9 +70,8 @@ try {
         QA.stats.gainStat("charm", amount);
       }, { from, amount });
       await page.waitForSelector(".gain-card.st-charm.show");
-      assert.equal(await page.locator(".gc-earned").count(), 1, "能力通知に今回の増分ラベルを1つ表示する");
-      assert.equal(await page.locator(".gc-earned").textContent(), "今回");
-      assert.equal(await page.locator(".gc-points").textContent(), `+${amount}P`);
+      assert.equal(await page.locator(".gc-earned").count(), 0);
+      assert.equal(await page.locator(".gc-points").count(), 0, "レベル到達時に＋数値を表示しない");
       assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
       const after = await page.evaluate(() => JSON.stringify(QA.core.state));
       if (shots && amount === 1) { await page.waitForTimeout(500); await page.screenshot({ path: `${shots}/${label}-level.png` }); }
@@ -117,7 +116,7 @@ try {
     assert(innerPages > 1, "長い本心の続きが表示されない");
     assert.equal(await page.evaluate(() => JSON.stringify(QA.core.state)), await page.evaluate(() => QA.beforeDialogue));
     assert.deepEqual(errors, []);
-    console.log(`PASS notifications layout ${label}: real LIME reply, +1/+16 and level reached, ${pages} fixed-height dialogue pages, state unchanged`);
+    console.log(`PASS notifications layout ${label}: real LIME reply, level reached without point numbers, ${pages} fixed-height dialogue pages, state unchanged`);
     await page.close();
   }
 } finally { await browser.close(); }

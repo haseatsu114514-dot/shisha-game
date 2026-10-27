@@ -6,7 +6,7 @@ export const masteryXp = (s, id, flavors = {}) => Math.min(MASTERY_MAX_XP, Math.
 export const masteryLevel = (s, id, flavors = {}) => MASTERY_THRESHOLDS.filter(x => masteryXp(s, id, flavors) >= x).length;
 export function masteryLabel(s, id, flavors = {}) {
   const level = masteryLevel(s, id, flavors);
-  return `熟練度 Lv.${level}/5${level === 5 ? " MAX" : `（次まで${Math.ceil(MASTERY_THRESHOLDS[level] - masteryXp(s, id, flavors))}）`}`;
+  return `熟練度 ${"★".repeat(level)}${"☆".repeat(5 - level)}${level === 5 ? " MAX" : ""}`;
 }
 export function gainFlavorExperience(s, mix, budget, flavors = {}) {
   const valid = Object.entries(mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0);

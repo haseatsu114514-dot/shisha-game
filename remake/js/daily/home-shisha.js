@@ -1,3 +1,4 @@
+import { notifyMastery } from "../core/mastery-notice.js";
 import { gainFlavorExperience, masteryLabel } from "../core/flavor-mastery.js";
 // 寝る前の一服（家シーシャ・#638 オーナー依頼）。昼と夜に行動したうえでの“ちょい足し”で、行動の枠は使わない。
 // 一日の終わり（帰宅のあと・就寝の前）に聞く。自分の葉を12g決めたら、あとは短い場面が進む。
@@ -70,14 +71,14 @@ export function applyHomeShisha(mix, rig, s = state) {
       || entries.reduce((sum, [, g]) => sum + g, 0) !== HOME_GRAMS) return null;
   for (const [id, g] of entries) addFlavorStock(id, -g);
   addStamina(HOME_STAMINA);
-  gainFlavorExperience(s, mix, rig.id === "home_rig_pro" ? 7.5 : 6, DB.flavorById);
+  const masteryGains = gainFlavorExperience(s, mix, rig.id === "home_rig_pro" ? 7.5 : 6, DB.flavorById);
   s.flags._home_shisha_day = dayKey(s);
   const info = evaluateMix({ mode: "home", mix, equip: { bowl: s.equip?.bowl || "silicone_bowl" } });
   const taste = tasteOf(info);
   // 自分で組んで当てたレシピはレシピ帳へ。発見によるセンス加算も行わない。
   const found = info.recipe && !s.recipes?.[info.recipe.id] ? info.recipe : null;
   if (found) (s.recipes ||= {})[found.id] = { day: s.day, home: true };
-  return { info, taste, found };
+  return { info, taste, found, masteryGains };
 }
 
 // ---------------------------------------------------------------- 画面
@@ -187,7 +188,7 @@ export async function runHomeShisha({ eve = false } = {}) {
   if (result.info.golden === "hit") toast(`✨ 黄金比！ ${result.info.recipe.name}は ${goldenLabel(result.info.recipe)}`, { kind: "good" });
   await play(homeShishaDialogue(result, rig, Math.random, { distant: tasteDistant() }));
   if (state !== owner) return true;
-  toast(Object.keys(mix).map(id => `${leafName(id)} ${masteryLabel(state, id, DB.flavorById)}`).join(" ／ "), { kind: "good" });
+  notifyMastery(result.masteryGains);
   save();
   return true;
 }

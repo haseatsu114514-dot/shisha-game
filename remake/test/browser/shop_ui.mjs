@@ -294,7 +294,8 @@ await suite("shop-ui", async check => {
     await press('[data-test="buy-blueberry"]');
     assert.equal(await page.locator('[data-test="quantity-blueberry"]').innerText(), '0');
     assert.equal(await allState(), before, '他フレーバーの購入拒否で状態を変えない');
-    assert.match(await page.locator('.toast.warn').last().innerText(), /ミントだけ/);
+    assert.match(await page.locator('.toast.warn').last().innerText(), /先に頼まれた.*ミントを購入/);
+    assert.doesNotMatch(await page.locator('.toast.warn').last().innerText(), /スミ/);
     await page.evaluate(() => { const b = document.querySelector('[data-test="buy-blueberry"]'); b.click(); b.click(); });
     assert.equal(await page.locator('.toast.warn').count(), 1, '連打で同じ注意が積み重ならない');
     assert.equal(await allState(), before);

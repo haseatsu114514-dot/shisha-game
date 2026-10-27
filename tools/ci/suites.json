@@ -2445,10 +2445,13 @@
         "remake/js/daily/tonari.js",
         "remake/js/daily/home-shisha.js",
         "data/dialogue/ch1_minto.json",
-        "remake/test/browser/flavor_mastery.mjs"
+        "remake/test/browser/flavor_mastery.mjs",
+        "remake/test/browser/mastery_display.mjs",
+        "remake/js/core/mastery-notice.js"
       ],
       "run": [
-        "node remake/test/browser/flavor_mastery.mjs"
+        "node remake/test/browser/flavor_mastery.mjs",
+        "node remake/test/browser/mastery_display.mjs"
       ],
       "weight": 3,
       "timeout": 10
@@ -2508,6 +2511,21 @@
       "timeout": 5,
       "paths": ["remake/js/chapters/ch2.js", "remake/js/core/store-logos.js", "remake/css/store-logos.css", "remake/test/browser/logo_j06.mjs"],
       "run": ["node remake/test/browser/logo_j06.mjs"]
+    },
+    {
+      "id": "shopping-tutorial",
+      "title": "Tutorial shopping order and return dialogue",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/shop.js",
+        "remake/js/daily/calendar.js",
+        "remake/test/browser/shopping_tutorial.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/shopping_tutorial.mjs"
+      ]
     }
   ]
 }

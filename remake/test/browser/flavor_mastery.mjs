@@ -12,7 +12,7 @@ await suite('flavor-mastery',async check=>{
   await page.locator('[data-test="mix-ok"]').waitFor();
   const free=await page.evaluate(()=>freeId);
   for(const id of [free,'lemon'])for(let i=0;i<6;i++)await page.locator(`[data-test="mix-plus-${id}"]`).click();
-  assert.match(await page.locator('.mix-list').innerText(),/熟練度 Lv.1\/5/);
+  assert.match(await page.locator('.mix-list').innerText(),/熟練度 ★☆☆☆☆/);
   assert.match(await page.locator('.mix-list').innerText(),/まかない 6g/);
   assert(await page.locator('[data-test="mix-ok"]').isEnabled());
   await page.locator('[data-test="mix-ok"]').click();await page.waitForFunction(()=>done);
@@ -107,7 +107,7 @@ await suite('flavor-mastery',async check=>{
    window.cs=craft.newSession('rehearsal');cs.staffPractice=true;craft.openBench(cs);window.mixDone=false;void steps.stepMix(cs).then(()=>mixDone=true);
   });
   const mixRow=page.locator('[data-flavor="spring_water"]');await mixRow.waitFor();
-  assert.match(await mixRow.innerText(),/熟練度 Lv.2\/5/);
+  assert.match(await mixRow.innerText(),/熟練度 ★★☆☆☆/);
   for(let i=0;i<12;i++)await page.locator('[data-test="mix-plus-spring_water"]').click();
   assert(await page.locator('[data-test="mix-ok"]').isEnabled());
  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
