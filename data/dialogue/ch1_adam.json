@@ -523,22 +523,37 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……炭の立ち上げ時の、完璧な『蒸らし』と熱管理の極意だ"
+          "text": "……炭を置き、蒸らしたこの一台。ここからが分かれ道だ"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "アダムは芝居がかった態度を潜めて、論理的に熱管理の理論を語り始めた。"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もう一つ、炭を足すんですか？"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "その内容は、原初のフレーバーを愛する彼だからこそ辿り着けた、本物の理屈だった。"
+          "speaker": "adam",
+          "face": "normal",
+          "text": "いや。まず、一口確かめろ"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "tonariの作り方にも応用できそうだ。"
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……さっきより、香りが出てる"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "この一台は、まだ立ち上がりの途中だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "足りないのは、熱じゃなかったんですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "待つのも火の入れ方だ。俺は、急いで何度も台を駄目にした"
         },
         {
           "speaker": "hajime",
@@ -558,7 +573,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "すごい……。ダブルアップルだけを研究し続けたから、この境地なんですね"
+          "text": "次の一台で、炭を足す前に一口、試してみます"
         },
         {
           "speaker": "hajime",
