@@ -3,14 +3,14 @@
 import { state, markMet } from "../core/state.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
-import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, affinityGateWaiting, AFFINITY_RANK_PTS, setStoryAffinityCap } from "../core/stats.js";
+import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, AFFINITY_RANK_PTS, setStoryAffinityCap } from "../core/stats.js";
 
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
 import { samechanSpot, samechanVisitDialogue } from "./samechan.js";
 import { cinemaSpot, visitCinema } from "./cinema.js";
-import { cinemaDiscovered } from "../core/cinema-discovery.js";
+import { cinemaDiscovered, cinemaIntroductionDue } from "../core/cinema-discovery.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 import { installReel } from "./reel.js";
 import { toast } from "../core/ui.js";
@@ -120,30 +120,18 @@ const NIGHT_STORIES = new Set([
   "ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_closing", "ch1_sumi_final",
   "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color", "ch1_minto_phantom_smell",
 ]);
-/**
- * #814 ハートと会話イベントの連動（第1章の固有会話がある人物）。
- * k番目（0始まり）の会話は ♥k 以上で開く。読んだ会話の数より多いハートには上がらない。
- * 全部読んだら上限なし。第2章以降・恋人・固有会話の無い人物は対象外。
- */
-// 師匠の修業回は進行の柱なので、ハートでは止めない。
+/** 通常段階会話は章をまたいでも既存の必要ハートで解放し、最古未読を一訪問一本だけ読む。 */
+// 師匠の修業と恋人・専用ルートは、この通常列のハート判定で止めない。
 const HEART_STORY_EXEMPT = new Set(["sumi"]);
 const heartStoryTarget = (id, s) => !!VISIT_SEQ[id] && !HEART_STORY_EXEMPT.has(id)
-  && s?.chapter === 1 && !(s.lovers || []).includes(id);
-export function storyAffinityCap(id, s = state) {
-  if (!heartStoryTarget(id, s)) return Infinity;
-  const read = s.story?.[id] || 0;
-  if (read >= VISIT_SEQ[id].length || read + 1 >= AFFINITY_RANK_PTS.length) return Infinity;
-  return AFFINITY_RANK_PTS[read + 1] - 1;
-}
+  && !(s?.lovers || []).includes(id);
+/** 旧公開portは保持するが、通常好感度を会話数で制限しない。 */
+export function storyAffinityCap(id, s = state) { return Infinity; }
 setStoryAffinityCap(storyAffinityCap);
-/**
- * 会話 dialogueId を今のハートで開けるか（第1章の固有会話だけ）。
- * ♥3の質問待ち（affinityGateWaiting）で止まっている間は♥3で足りる。質問へ進む会話を塞がない。
- */
 export function storyHeartReady(charId, index, s = state) {
   if (!heartStoryTarget(charId, s)) return true;
-  const need = Math.min(index, affinityGateWaiting(charId) ? 3 : AFFINITY_RANK_PTS.length - 1);
-  return affinityLevel(charId) >= need;
+  const need = Math.min(index, AFFINITY_RANK_PTS.length - 1);
+  return (s?.affinity?.[charId] || 0) >= AFFINITY_RANK_PTS[need];
 }
 const storyAvailable = (id) => (!NIGHT_STORIES.has(id) || state.slot >= 1) && storyOpenByHeart(id);
 function storyOpenByHeart(id) {
@@ -163,6 +151,44 @@ export function hasNewStory(charId) {
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
+}
+
+/** 実来店と予定表示で、同じ既存repeat（訪問順・雨差分）を読む。状態は進めない。 */
+function repeatVisitDialogue(charId) {
+  const pool = REPEAT_POOL[charId] || [0, 1, 2, 3].map(i => `remake_repeat_${charId}_${i}`);
+  const rain = `remake_repeat_${charId}_rain`;
+  return isRainy() && affinityLevel(charId) >= 1 && DB.dialogues[rain]
+    ? rain : pool[(state.visits[charId] || 0) % pool.length];
+}
+
+/** ひよりのsoft priority用。初対面・専用回・紹介・未取得台本を短日常と扱わない。 */
+export function shortNormalVisit(spot) {
+  const valid = id => !!DB.dialogues[id]?.lines?.length;
+  if (spot?.kind === "samechan") {
+    if (!state.met?.samechan || cinemaIntroductionDue(state)) return false;
+    const receipt = state.flags._samechan_visit;
+    const id = receipt?.stamp === `${state.chapter}:${state.day}:${state.slot}`
+      ? receipt.dialogue : samechanVisitDialogue();
+    return !!id?.startsWith("samechan_shop_repeat_") && valid(id);
+  }
+  if (spot?.kind === "rival") {
+    const id = spot.charId;
+    if (!id || !state.met?.[id] || !storyCount(id) || id === "naru" && naruRiftActive(state)
+      || hasNewStory(id) || finaleAtVisit(id) || spotFollowupDue(id, state, DB.dialogues)) return false;
+    if (id === "naru" && storyCount(id) >= 2 && !state.flags._cafe_introduced
+      && DB.dialogues.ch1_naru_cafe_intro) return false;
+    return valid(repeatVisitDialogue(id));
+  }
+  if (spot?.id === "c_station") {
+    const n = (state.spotVisits?.[spot.id] || 0) + 1;
+    if (n < 2 || !state.reel?.introDone || state.flags._pakki_first_spin_pending
+      || state.notes?.baito_incognito_reviewer && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) return false;
+    const pool = quietSpotPool(spot, state.slot);
+    const rain = RAIN_SPOT_TEXTS[spot.id];
+    const id = rain && isRainy() && DB.dialogues[rain] ? rain : pool[Math.max(0, n - 2) % pool.length];
+    return valid(id);
+  }
+  return false;
 }
 
 /** 店主の固有イベントと、初めて訪れる施設のイベントを同じ印で案内する。 */
@@ -294,12 +320,8 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       if (!await playFinale(charId, { bg, signal, deferSave: true }) || !live()) return false;
       gainAffinity(charId, 10);
     } else {
-      const pool = REPEAT_POOL[charId] || [0, 1, 2, 3].map((i) => `remake_repeat_${charId}_${i}`);
-      const n = visit - 1;
       const rainy = isRainy();
-      // 雨の日: つむぎは長居する（仲良くなってから）。ほかの相手も入りの1行が雨になる
-      const rainTalk = rainy && affinityLevel(charId) >= 1 && DB.dialogues[`remake_repeat_${charId}_rain`] ? `remake_repeat_${charId}_rain` : null;
-      const id = rainTalk || pool[n % pool.length];
+      const id = repeatVisitDialogue(charId);
       const dlg = DB.dialogues[id];
       const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
       if (!await read(opener.length ? { ...dlg, lines: [...opener, ...(dlg?.lines || [])] } : id, { bg })) return false;

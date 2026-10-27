@@ -109,7 +109,7 @@ await suite('hiyori-work-relationship',async run=>{
    const repeat=await W.daily.meetHiyoriAtTonari();return {resumed,repeat,firstAffinity,question:W.core.state.flags._hiyori_bond_question_done,value:W.core.state.romanceChoices.bond_q1_hiyori.value,affinity:W.core.state.affinity.hiyori,saved:W.savedAffinity,
    released:W.core.state.flags._hiyori_affinity_stage_released_pts||0,finale:W.bonds.finaleDue('hiyori')};});
   assert(end.resumed&&end.question&&!end.repeat&&!end.finale,JSON.stringify(end));
-  assert.equal(end.released,8);assert.equal(end.affinity,end.saved+end.released);
+  assert.equal(end.saved,67);assert.equal(end.released,0);assert.equal(end.affinity,end.saved);
   assert.equal(end.affinity,end.firstAffinity);assert.equal(end.value,0);
  });
  await check('load-during-work-stops-old-vn-with-no-new-state-reward',async page=>{

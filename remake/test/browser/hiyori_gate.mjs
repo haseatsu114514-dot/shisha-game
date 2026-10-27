@@ -35,7 +35,7 @@ await suite('hiyori-gate', async check => {
           let s = H.fresh(); s.affinity.hiyori = start; s.fortune = { char: 'hiyori' };
           s.stats.charm = 100;
           for (let n = 0; n < 20; n++) H.stats.gainAffinity('hiyori', 10);
-          const locked = s.affinity.hiyori, held = s.flags._hiyori_affinity_waiting_pts, carry = s.affinityCarry.hiyori;
+          const locked = s.affinity.hiyori, held = s.flags._hiyori_affinity_waiting_pts || 0, carry = s.affinityCarry.hiyori;
           H.core.save(); H.core.load(); s = H.core.state;
           const beforeRead = H.stats.releaseHiyoriAffinity();
           H.vn.backlog().length = 0;
@@ -47,12 +47,12 @@ await suite('hiyori-gate', async check => {
           const again = H.stats.releaseHiyoriAffinity();
           rows.push({ start, locked, held, carry, beforeRead, read, after, legacyReleased, stageReleased, duplicate, again,
             final: H.core.state.affinity.hiyori, done: H.core.state.flags._hiyori_tonari_return_done,
-            retained: H.core.state.flags._hiyori_affinity_waiting_pts, fortuneUsed: !H.core.state.fortune });
+            retained: H.core.state.flags._hiyori_affinity_waiting_pts || 0, fortuneUsed: !H.core.state.fortune });
         }
         let s = H.fresh(); H.stats.ensureAffinityLevel('hiyori', 4);
-        const guaranteed = s.flags._hiyori_affinity_waiting_pts;
+        const guaranteed = s.flags._hiyori_affinity_waiting_pts || 0;
         H.stats.ensureAffinityLevel('hiyori', 4);
-        const guarantee = { points: s.affinity.hiyori, guaranteed, again: s.flags._hiyori_affinity_waiting_pts };
+        const guarantee = { points: s.affinity.hiyori, guaranteed, again: s.flags._hiyori_affinity_waiting_pts || 0 };
         s = H.fresh(); s.lovers = ['hiyori']; s.loveLevel.hiyori = 1;
         H.stats.bond.private = true; H.stats.gainAffinity('hiyori', 10); H.stats.bond.private = false;
         const lover = s.lovePts.hiyori;
@@ -60,14 +60,14 @@ await suite('hiyori-gate', async check => {
         return { rows, guarantee, lover, minto: s.affinity.minto };
       });
       for (const r of results.rows) {
-        assert.equal(r.locked, Math.max(r.start, 33)); assert(r.held > 100);
+        assert.equal(r.locked, r.start + 209); assert.equal(r.held,0);
         assert.equal(r.beforeRead, 0); assert(r.read && r.done && r.fortuneUsed);
-        assert.equal(r.legacyReleased, 0); assert.equal(r.stageReleased, Math.max(0, 47 - Math.max(r.start, 33)));
-        assert.equal(r.retained, r.held + 10);
-        assert.equal(r.after, Math.max(r.start, 47), JSON.stringify(r));
+        assert.equal(r.legacyReleased, 0); assert.equal(r.stageReleased,0);
+        assert.equal(r.retained,0);
+        assert.equal(r.after, r.start + 219, JSON.stringify(r));
         assert(!r.duplicate); assert.equal(r.again, 0); assert.equal(r.final, r.after);
       }
-      assert.deepEqual(results.guarantee, { points: 33, guaranteed: 15, again: 15 });
+      assert.deepEqual(results.guarantee, { points: 48, guaranteed: 0, again: 0 });
       assert.equal(results.lover, 5); assert.equal(results.minto, 8);
       await page.evaluate(async () => {
         H.fresh(); H.ui.clearScreen();

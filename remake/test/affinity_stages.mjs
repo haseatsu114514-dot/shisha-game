@@ -26,6 +26,7 @@ async function fixture() {
     maybeRecruitTrpgMember: async () => false, sharkSwim: async swap => swap(),
     imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
     hiyoriFirstMeetingReady: () => true,
+    openingStatus: () => ({ok:true}), refreshPlaceCue() {}, playBgm() {}, hiyoriShopEncounterDue: () => false,
   };
   const modules = new Map(), required = new Map();
   for (const p of realPaths) {
@@ -61,22 +62,16 @@ async function check(name,run) {
 }
 const done = { id:'port-scene',visited:[] };
 const close = (a,b) => assert(Math.abs(a-b)<1e-8,`${a} != ${b}`);
-await check('five social shop routes: each unread stage caps earned points, completing it releases once', async f => {
+await check('five social shop routes: ordinary gains are independent of every unread stage', async f => {
   for (const [id,seq] of Object.entries(f.spots.VISIT_SEQ).filter(([id]) => id !== "sumi")) for (let stage=0;stage<seq.length;stage++) {
     const s=f.fresh(); s.story[id]=stage;
-    if (stage>3) s.flags[f.stages.questionDoneKey(id)]=true;
-    s.affinity[id]=f.stats.AFFINITY_RANK_PTS[stage];
-    f.stats.gainAffinity(id,100);
-    const cap=stage<5 ? f.stats.AFFINITY_RANK_PTS[stage+1]-1 : Infinity;
-    const effective=['tsumugi','minto','rin'].includes(id)&&stage<=3 ? Math.min(cap,33) : cap;
-    assert.equal(s.affinity[id], Math.min(f.stats.AFFINITY_RANK_PTS[stage]+85,effective),`${id}:${stage}`);
-    assert(f.stats.affinityLevel(id)<=stage,`${id}:${stage} skipped unread`);
-    if (stage<seq.length-1) {
-      s.story[id]++;
-      if (stage===3) s.flags[f.stages.questionDoneKey(id)]=true;
-      const got=f.stats.releaseAffinity(id); assert(got>0,`${id}:${stage} did not release`);
-      assert.equal(f.stats.releaseAffinity(id),0);
-    }
+    const start=f.stats.AFFINITY_RANK_PTS[stage];s.affinity[id]=start;
+    assert.equal(f.stats.gainAffinity(id,100),85);
+    assert.equal(s.affinity[id],start+85,`${id}:${stage}`);
+    assert.equal(f.stats.affinityPointCap(id),Infinity);
+    assert.equal(s.story[id],stage,'Numeric gain cannot read a story');
+    assert.equal(f.stats.releaseAffinity(id),0,'New gains create no deferred ordinary credit');
+    assert.equal(s.flags[`_${id}_affinity_waiting_pts`]||0,0);
   }
 });
 await check('Sumi lessons remain outside social heart caps', async f => {
@@ -150,26 +145,27 @@ await check('Rin third story completes at heart2; question becomes due only at h
   assert.equal(s.story.rin,3);assert.equal(s.affinity.rin,28);assert.equal(f.bonds.questionVisitDue('rin'),false);
   f.stats.gainAffinity('rin',6);assert.equal(s.affinity.rin,33);assert.equal(f.bonds.questionVisitDue('rin'),true);
 });
-await check('legacy current/carry/history stay intact; old rescued points never released twice across SAVE/LOAD', async f => {
+await check('legacy current/carry/history stay intact; deferred ordinary credit releases once without reading stages across SAVE/LOAD', async f => {
   let s=f.core.state;s.affinity.tsumugi=66;s.affinityCarry.tsumugi=.7;
   s.flags._tsumugi_affinity_waiting_pts=34;s.flags._tsumugi_affinity_waiting_released=true;s.flags._tsumugi_affinity_released_pts=15;
-  const before=clone(s);assert.equal(f.stats.releaseAffinity('tsumugi'),0);assert.deepEqual(clone(s),before);
-  s=f.roundTrip();assert.equal(s.affinity.tsumugi,66);assert.equal(s.story.tsumugi||0,0);close(s.affinityCarry.tsumugi,.7);
-  s.story.tsumugi=6;s.flags[f.stages.questionDoneKey('tsumugi')]=true;
   assert.equal(f.stats.releaseAffinity('tsumugi'),19);assert.equal(s.affinity.tsumugi,85);
+  assert.equal(s.story.tsumugi||0,0);assert.equal(s.flags[f.stages.questionDoneKey('tsumugi')],undefined);
   assert.equal(s.flags._tsumugi_affinity_waiting_pts,34);assert.equal(s.flags._tsumugi_affinity_released_pts,15);
+  assert.equal(s.flags._tsumugi_affinity_stage_released_pts,19);close(s.affinityCarry.tsumugi,.7);
   s=f.roundTrip();assert.equal(f.stats.releaseAffinity('tsumugi'),0);assert.equal(s.affinity.tsumugi,85);
+  close(s.affinityCarry.tsumugi,.7);assert.equal(s.story.tsumugi||0,0);
 });
-await check('LIME .25/carry and fortune once: blocked actual delta has no false gain notification', async f => {
+await check('LIME .25/carry crosses unread hearts; old credit releases once without consuming fortune', async f => {
   const s=f.core.state;s.story.naru=0;s.affinity.naru=8;
   for(let i=0;i<5;i++) f.stats.gainAffinity('naru',1,{source:'lime'});
-  close(s.affinityCarry.naru,.0625);assert.equal(s.affinity.naru,8);assert.equal(s.flags._naru_affinity_waiting_pts,1);
-  f.tick();assert.equal(f.events.filter(e=>e.type==='affinity-gain').length,0);
-  s.story.naru=1;s.fortune={char:'naru'};assert.equal(f.stats.releaseAffinity('naru'),1);assert(s.fortune);
-  f.stats.gainAffinity('naru',2,{source:'lime'});assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,9);
-  close(s.affinityCarry.naru,.7); // round(2*1.5)*.85*.25 + .0625
+  close(s.affinityCarry.naru,.0625);assert.equal(s.affinity.naru,9);assert.equal(s.flags._naru_affinity_waiting_pts||0,0);
+  f.tick();assert.equal(f.events.filter(e=>e.type==='affinity-gain').length,1);
+  s.flags._naru_affinity_waiting_pts=1;s.fortune={char:'naru'};
+  assert.equal(f.stats.releaseAffinity('naru'),1);assert(s.fortune);assert.equal(f.stats.releaseAffinity('naru'),0);
+  f.stats.gainAffinity('naru',2,{source:'lime'});assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,10);
+  close(s.affinityCarry.naru,.7);assert.equal(s.story.naru,0);
 });
-await check('LIME reply feedback follows actual fractional progress, caps, SAVE/LOAD and integer rollover', async f => {
+await check('LIME reply feedback follows actual fractional progress without ordinary story caps, SAVE/LOAD and integer rollover', async f => {
   let s = f.core.state; s.story.naru = 1; s.affinity.naru = 9;
   const deltas = [], opts = { source: 'lime', onGain: delta => deltas.push(delta) };
   for (let i=0;i<5;i++) { f.stats.gainAffinity('naru',1,opts); s=f.roundTrip(); }
@@ -177,9 +173,9 @@ await check('LIME reply feedback follows actual fractional progress, caps, SAVE/
   assert.equal(s.affinity.naru,10); close(s.affinityCarry.naru,.0625);
   f.tick(); assert.equal(f.events.filter(e=>e.type==='affinity-gain').length,0,'reply feedback must not also show a heart card');
   s.affinity.naru=19;
-  f.stats.gainAffinity('naru',2,opts); assert.equal(deltas.length,5,'capped carry is not visible progress');
+  f.stats.gainAffinity('naru',2,opts); assert.equal(deltas.length,6);close(deltas.at(-1),.425);assert.equal(s.story.naru,1);
   s.affinity.naru=18; s.affinityCarry.naru=.9;
-  f.stats.gainAffinity('naru',1,opts); close(deltas.at(-1),.1); assert.equal(s.affinity.naru,19);
+  f.stats.gainAffinity('naru',1,opts); close(deltas.at(-1),.2125); assert.equal(s.affinity.naru,19);close(s.affinityCarry.naru,.1125);
   const n=deltas.length; f.stats.gainAffinity('naru',0,opts); assert.equal(deltas.length,n);
   // Existing private bond formula is separate from ordinary LIME's quarter scale.
   s.lovers=['tsumugi']; s.lovePts.tsumugi=9; s.loveLevel.tsumugi=1;
@@ -200,25 +196,27 @@ await check('samechan shop cancellation keeps receipt unpaid/unread, retry compl
   f.setPlay(async()=>done);assert.equal(await f.samechan.visitSamechan(spot),true);assert.equal(s.money,money-3000);
   assert.equal(await f.samechan.visitSamechan(spot),true);assert.equal(s.money,money-3000);assert.equal(s.story.samechan,1);
 });
-await check('hiyori connected prerequisites: work_talk2 never caps before required axe3; dedicated return guard stays', async f => {
+await check('hiyori numeric growth is independent while connected route/question prerequisites remain', async f => {
   const s=f.core.state;const route=f.db.hiyori.route;
   for(const e of route.events) if(e.id!=='axe_reveal'&&e.id!=='work_talk')s.flags[e.flag]=true;
-  s.affinity.hiyori=33;assert.equal(f.stats.affinityPointCap('hiyori'),47);
+  s.affinity.hiyori=33;assert.equal(f.stats.affinityPointCap('hiyori'),Infinity);
   assert.equal(f.stages.pendingAffinityStage(s,'hiyori',f.db).level,3);
-  delete s.flags._hiyori_tonari_return_done;assert.equal(f.stats.affinityPointCap('hiyori'),33);
+  delete s.flags._hiyori_tonari_return_done;assert.equal(f.stats.affinityPointCap('hiyori'),Infinity);
+  assert(f.stats.affinityGateWaiting('hiyori'));assert.equal(f.bonds.hiyoriQuestionReady(),false);
+  f.stats.gainAffinity('hiyori',100);assert.equal(s.affinity.hiyori,118);assert(!s.flags._hiyori_tonari_return_done);assert(!s.flags._hiyori_work_talk_done);
   s.flags._hiyori_tonari_return_done=true;s.flags._hiyori_real_self_known=true;s.flags._hiyori_work_talk_done=true;
-  assert.equal(f.stats.affinityPointCap('hiyori'),47);
+  assert.equal(f.stats.affinityPointCap('hiyori'),Infinity);
   s.flags._hiyori_bond_question_done=true;assert.equal(f.stats.affinityPointCap('hiyori'),Infinity);
 });
 await check('chapter2 actual flags: chat/followup/ageha three visits are independent completion evidence', async f => {
   for(const id of ['ageha','kumicho','rei']) {
-    const s=f.fresh();assert.equal(f.stats.affinityPointCap(id),8);
-    s.flags._ch2_talks={[id]:1};assert.equal(f.stats.affinityPointCap(id),19);
+    const s=f.fresh();assert.equal(f.stats.affinityPointCap(id),Infinity);
+    s.flags._ch2_talks={[id]:1};assert.equal(f.stats.affinityPointCap(id),Infinity);
     s.flags._ch2_followup_done={[id]:true};
-    assert.equal(f.stats.affinityPointCap(id),id==='ageha'?32:Infinity);
+    assert.equal(f.stats.affinityPointCap(id),Infinity);
     if(id==='ageha')for(const [i,key]of ['gyaru','newcomer','magazine'].entries()){
       s.flags[`_ch2_read_remake_ch2_ageha_${key}`]=true;
-      assert.equal(f.stats.affinityPointCap(id),i===2?Infinity:f.stats.AFFINITY_RANK_PTS[i+4]-1);
+      assert.equal(f.stats.affinityPointCap(id),Infinity);
     }
   }
 });
@@ -277,5 +275,45 @@ await check('question pending public caller rejects duplicate entry without a se
   f.setPlay(()=>new Promise(r=>resolve=r));const p=f.bonds.playQuestionVisit('rin');
   assert.equal(await f.bonds.playQuestionVisit('rin'),false);assert.equal(f.plays.length,1);
   f.bonds.recordRomanceChoice({id:'bond_q1_rin',romance_char:'rin'},{romance:1});resolve(done);assert.equal(await p,true);
+});
+for (const chapter of [1,2]) for (const points of [32,33,34]) await check(`chapter-spanning visit at ${points} points in chapter${chapter}: one eligible stage or daily talk`,async f=>{
+  const s=f.core.state;s.chapter=chapter;s.story.naru=3;s.affinity.naru=points;s.flags._cafe_introduced=true;
+  assert.equal(f.spots.storyHeartReady('naru',3),points>=33);
+  f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('naru'),true);
+  const normal=f.plays.filter(([scene])=>f.spots.VISIT_SEQ.naru.includes(typeof scene==='string'?scene:scene.dialogue_id));
+  assert.equal(normal.length,points>=33?1:0);assert.equal(s.story.naru,points>=33?4:3);
+});
+await check('heart2.5 with heart2 seen uses daily talk and keeps the normal visit fee/action costs',async f=>{
+  const s=f.core.state;s.chapter=2;s.story.naru=3;s.affinity.naru=26;s.affinityCarry.naru=.5;s.money=10000;s.flags._cafe_introduced=true;
+  const stamina=f.stats.staminaAfter(-16);f.setPlay(async()=>done);
+  assert.equal(await f.spots.visitRival({id:'naru',charId:'naru',cost:3000,stamina:-16}),true);
+  assert.equal(s.money,7000);assert.equal(s.stamina,stamina);assert.equal(s.story.naru,3);assert.equal(s.visits.naru,1);
+  assert(f.plays.some(([scene])=>String(scene).startsWith('remake_repeat_naru_')));
+});
+await check('LIME-only heart3 unlocks oldest unread; a visit never chains heart2 into heart3',async f=>{
+  const s=f.core.state;s.chapter=2;s.story.naru=2;s.affinity.naru=25;s.flags._cafe_introduced=true;
+  f.stats.gainAffinity('naru',40,{source:'lime'});assert.equal(s.affinity.naru,33);assert.equal(s.story.naru,2);
+  f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('naru'),true);assert.equal(s.story.naru,3);
+  assert.deepEqual(f.plays.filter(([id])=>f.spots.VISIT_SEQ.naru.includes(id)).map(([id])=>id),['ch1_naru_third']);
+  f.plays.length=0;assert.equal(await f.spots.visitChar('naru'),true);assert.equal(s.story.naru,4);
+  assert.deepEqual(f.plays.filter(([id])=>f.spots.VISIT_SEQ.naru.includes(id)).map(([id])=>id),['ch1_naru_group_regulars']);
+});
+await check('readiness for a detached preview state uses that state and never changes save data',async f=>{
+  const current=f.core.state;current.affinity.naru=0;const preview=clone(current);preview.chapter=2;preview.affinity.naru=33;
+  assert.equal(f.spots.storyHeartReady('naru',3,preview),true);assert.equal(current.affinity.naru,0);assert.equal(preview.story.naru||0,0);
+});
+await check('ordinary stage and independent facility introduction remain separate in one visit',async f=>{
+  const s=f.core.state;s.affinity.naru=33;s.story.naru=1;f.setPlay(async()=>done);
+  assert(f.db.dialogues.ch1_naru_cafe_intro);assert.equal(await f.spots.visitChar('naru'),true);
+  assert.equal(s.story.naru,2);assert(s.flags._cafe_introduced);
+  assert.deepEqual(f.plays.map(([id])=>id),['ch1_naru_second','ch1_naru_cafe_intro']);
+});
+for (const outcome of ['cancel','missing','throw','abort','load']) await check(`high numeric affinity ${outcome} keeps oldest stage unread/unrewarded`,async f=>{
+  const s=f.core.state;s.chapter=2;s.story.naru=2;s.affinity.naru=48;s.flags._cafe_introduced=true;
+  const controller=new AbortController();
+  f.setPlay(async()=>{if(outcome==='throw')throw Error('expected');if(outcome==='load')f.core.newGame();if(outcome==='abort')controller.abort();return outcome==='missing'?undefined:outcome==='cancel'?{cancelled:true}:done;});
+  const p=f.spots.visitChar('naru',{signal:controller.signal});
+  if(outcome==='throw')await assert.rejects(p,/expected/);else assert.equal(await p,false);
+  assert.equal(s.story.naru,2);assert.equal(s.affinity.naru,48);assert.equal(s.visits.naru||0,0);
 });
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);

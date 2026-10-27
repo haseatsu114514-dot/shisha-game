@@ -59,7 +59,7 @@ await suite("hiyori-axe-story",async check=>{
       });
       assert.equal(result.done.money,87000);assert.equal(result.done.stamina,70);assert.equal(result.done.slot,2);
       assert.equal(result.done.story,3);assert(result.done.known&&!result.replay&&!result.work);assert.deepEqual(result.loaded,result.done);
-      assert.equal(result.done.affinity,51);assert.equal(result.done.held,8);assert(result.dialogues.some(t=>t.includes("よっしゃあ")));assert(result.dialogues.some(t=>t.includes("仕事で疲れてるのは")));
+      assert.equal(result.done.affinity,59);assert.equal(result.done.held,0);assert(result.dialogues.some(t=>t.includes("よっしゃあ")));assert(result.dialogues.some(t=>t.includes("仕事で疲れてるのは")));
     },options);
   await check("cancel-and-unread-retry",async page=>{
     await setup(page);await start(page);await page.locator('[data-test="axe-cancel"]').click();assert(!await page.evaluate(()=>S.run));await unchanged(page);
