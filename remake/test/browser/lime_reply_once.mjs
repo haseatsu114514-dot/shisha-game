@@ -11,12 +11,15 @@ const out = path.resolve(process.env.ARTIFACT_DIR || '.codex/artifacts/remake-br
 fs.mkdirSync(out, { recursive: true });
 const measurements = [];
 const control = (page, test) => page.locator(`[data-test="${test}"]`);
+const expectedGain = .2125;
+const expectedNote = '♡ ほんの少し仲良くなった';
 const snap = page => page.evaluate(() => {
   const s = QA.core.state, item = s.inbox.find(i => i.id === 'lime_minto_day5');
   return { affinity: s.affinity.minto, carry: s.affinityCarry.minto,
     item: JSON.parse(JSON.stringify(item)), limeRead: [...s.limeRead],
     peer: [...document.querySelectorAll('.lime-row.peer:not(.typing) .lime-bubble')].map(n => n.textContent.trim()),
     mine: [...document.querySelectorAll('.lime-row.me .lime-bubble')].map(n => n.textContent.trim()),
+    notes: [...document.querySelectorAll('.lime-chat .lime-note')].map(n => n.textContent.trim()),
     replies: [...document.querySelectorAll('.lime-actions .lime-reply')].map(n => n.textContent.trim()) };
 });
 
@@ -45,7 +48,7 @@ async function setup(page) {
 }
 
 function assertOnce(value) {
-  assert.equal(value.affinity, 11); assert(Math.abs(value.carry - .35) < 1e-9);
+  assert.equal(value.affinity, 10); assert(Math.abs(value.carry - (.5 + expectedGain)) < 1e-9);
   assert(value.item.read && value.item.done); assert.equal(value.item.replyState, 'replied');
   assert.deepEqual(value.item.log, [{ me: true, text: replyText }, { me: false, text: responseText }]);
   assert.equal(value.limeRead.filter(x => x === id).length, 1);
@@ -70,11 +73,14 @@ try {
       await open();
       await page.getByRole('button', { name: replyText, exact: true }).waitFor();
       const before = await snap(page);
-      assert.equal(before.affinity, 10); assert.equal(before.item.done, false); assert.deepEqual(before.item.log, []);
+      assert.equal(before.affinity, 10); assert(Math.abs(before.carry - .5) < 1e-9);
+      assert.equal(before.item.done, false); assert.deepEqual(before.item.log, []);
       if (mode === 'abandon') {
         await act(control(page, 'lime-back')); await act(control(page, 'lime-chat-minto'));
         await page.getByRole('button', { name: replyText, exact: true }).waitFor();
-        assert.equal((await snap(page)).item.done, false);
+        const abandoned = await snap(page);
+        assert.equal(abandoned.affinity, 10); assert(Math.abs(abandoned.carry - .5) < 1e-9);
+        assert.equal(abandoned.item.done, false);
       }
       await act(page.getByRole('button', { name: replyText, exact: true }));
       if (mode !== 'single' && mode !== 'abandon') {
@@ -93,8 +99,14 @@ try {
       assertOnce(after);
       assert.equal(after.mine.filter(x => x === replyText).length, 1);
       assert.equal(after.peer.filter(x => x === responseText).length, 1);
+      assert.equal(after.notes.filter(x => x === expectedNote).length, mode === 'single' || mode === 'abandon' ? 1 : 0);
       assert.equal(await page.getByRole('button', { name: replyText, exact: true }).count(), 0);
       await page.screenshot({ path: path.join(out, name + '.png') });
+      await act(control(page, 'phone-next')); await act(control(page, 'lime-chat-minto'));
+      await control(page, 'phone-next').waitFor();
+      const reopened = await snap(page);
+      assertOnce(reopened);
+      assert.equal(reopened.notes.filter(x => x === expectedNote).length, 0);
       await act(control(page, 'phone-next')); await act(control(page, 'phone-close'));
       await page.locator('.phone-overlay').waitFor({ state: 'detached' });
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(QA.core.SAVE_KEY)));
