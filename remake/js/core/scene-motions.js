@@ -16,6 +16,7 @@ const shark = () => import("../motions/shark.js");
 const sketch = () => import("../motions/sketch.js");
 const lime = () => import("../motions/lime.js");
 const train = () => import("../motions/train.js");
+const shinkansen = () => import("../motions/shinkansen.js");
 const purikura = () => import("../motions/purikura.js");
 
 // 連絡先の交換は一度きり（交換済みの記録が先に付く）。SKIP中でも見せ、動きを減らす設定では
@@ -76,6 +77,14 @@ export async function sharkSwim(mid) {
 export async function trainRide(mid, opts = {}) {
   // テストの高速送りでも省く（engine の vnTest は window.__remake 経由で見る。循環 import を避ける）
   const mod = skipMotion() || window.__remake?.vnTest?.turbo ? null : await train().catch((e) => { console.error(e); return null; });
+  if (mod) await mod.a(mid, opts);
+  else await mid?.();
+}
+
+/** 新幹線に乗る（Issue #1059）。mid(): 車窓が覆っている間に次の背景へ替える。
+ * opts.from/to: "home"|"tokyo"。第2章の隣町行き電車(#891 trainRide)とは別の演出。 */
+export async function shinkansenRide(mid, opts = {}) {
+  const mod = skipMotion() || window.__remake?.vnTest?.turbo ? null : await shinkansen().catch((e) => { console.error(e); return null; });
   if (mod) await mod.a(mid, opts);
   else await mid?.();
 }
