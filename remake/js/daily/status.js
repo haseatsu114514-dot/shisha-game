@@ -6,7 +6,7 @@ import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
-import { relationshipStatus } from "./relationship-status.js";
+import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 
@@ -111,6 +111,8 @@ function peopleTab() {
     const face = faceIconUrl(id);
     const lover = (state.lovers || []).includes(id);
     const relation = relationshipStatus(id);
+    // 直近の交流の思い出を前面に。無い人は中立のまま（反復する♥説明は全体ガイドへ集約）
+    const memory = recentMemoryEcho(id);
     const hearts = heartRow(Array.from({ length: 5 }, (_, i) => i < lv ? 100 : 0), {
       className: "heart-row", bond: lover, label: lover ? "恋人（♥5）" : "好感度",
     });
@@ -122,12 +124,13 @@ function peopleTab() {
           el("span.pp-hearts", [hearts, el("span.pp-relation", { text: relation.label })]),
           state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
         ]),
-        !lover && relation.label !== "友達" ? el("p.pp-next", { text: relation.hint }) : null,
+        memory ? el("p.pp-memory", { text: memory }) : null,
+        !lover && relation.label !== "友達" && relation.hint ? el("p.pp-next", { text: relation.hint }) : null,
       ]),
     ]);
   });
   return el("div.st-people", [
-    el("p.pp-guide", { text: "♥は親しさ。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。友情でも♥5の特別なイベントと贈り物があり、友達・恋人になった後もLIMEで交流は続く。" }),
+    el("p.pp-guide", { text: "♥は親しさ。♥3で恋愛・友情のどちらで続けるかを選び、♥5で特別なイベントと贈り物（どちらを選んでも受け取れる）。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。友達・恋人になった後もLIMEで交流は続く。" }),
     ...(rows.length ? rows : [el("p", { text: "まだ誰とも親しくなっていない。" })]),
   ]);
 }
