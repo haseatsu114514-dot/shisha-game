@@ -192,7 +192,12 @@ try { await suite('ch1-loading',async check=>{
       await page.evaluate(async()=>{
         L.session=await import('./js/craft/session.js');L.cs=L.session.newSession('tutorial');
         await L.session.openBench(L.cs).ready;
-        await L.ui.setBg(L.data.bgUrl('bg_home_day'),{instant:true});L.events=[];
+        await L.ui.setBg(L.data.bgUrl('bg_home_day'),{instant:true});
+        // instant setBg resolves after inserting the CSS background, before paint.
+        // Let that intervening scene render before measuring the cached bench's
+        // requests; otherwise its deferred CSS image request belongs to this window.
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+        L.events=[];
       });
       const requests=[];page.on('request',r=>{if(/\.(webp|png)(\?|$)/.test(r.url()))requests.push(r.url());});
       await page.evaluate(()=>{L.start=performance.now();const b=L.session.openBench(L.cs);L.bench=b;

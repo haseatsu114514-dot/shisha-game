@@ -2,13 +2,12 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
+import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
-import { state, save, markMet, setFlag, flag, timeOfDay, requestResumeOnBoot } from "../core/state.js";
-import { sketchIn } from "../core/scene-motions.js";
+import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
 import { addMoney, maxStamina, addStamina } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
@@ -41,7 +40,7 @@ import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill
 import { prepareFlavorStock } from "../daily/preparation.js";
 import { chooseDrill } from "../daily/tonari.js";
 import { warmCraftAssets } from "../craft/readiness.js";
-import { playTsumugiStory } from "./tsumugi-story.js";
+import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
@@ -287,11 +286,9 @@ const nightScene = (id, bg) => async (context) => {
   ] } : id;
   await play(scene, bg ? { bg } : {});
 };
-// つむぎのスケッチ: 紙の上に鉛筆の線で店が描かれ、色が乗ってから会話へ
+// 完成を告げる台詞の後、完成画を提示するところで描画演出を入れる。
 const sketchScene = (id, bg) => async () => {
-  const art = sceneBg(bg, timeOfDay());
-  await sketchIn(async () => { if (art.url) await setBg(art.url, { tint: art.tint }); }, art.url);
-  await play(id, { bg });
+  return await playTsumugiSketch(id, bg);
 };
 const once = (key, fn) => ({ id: key, doneKeys: [key], run: async (context) => { await fn(context); setFlag(key); }, done: () => flag(key) });
 
@@ -457,7 +454,7 @@ async function rehearsal(progress = null) {
       result = "burnt";
     } else {
       const shisha = computeShisha(cs);
-      const score = (cs.holes.score + cs.heat.score + shisha.craftQuality + cs.careHistory[0].score + cs.careHistory[1].score) / 5;
+      const score = avgScore(cs.holes.score, cs.heat.score, shisha.craftQuality, cs.careHistory[0].score, cs.careHistory[1].score);
       result = state.rehearsal = score >= 85 ? "great" : score >= 68 ? "good" : "rough";
     }
     if (progress) {
@@ -475,6 +472,8 @@ async function rehearsal(progress = null) {
 
 const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includes(id));
 const STEPS_ALL = CRAFT_STEPS;
+// 中間順位の出来栄えは、ある工程の点だけで平均する（ロートスでアルミを飛ばすと穴あけの点が無い）。
+const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
 
 async function tournamentDay() {
   // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
@@ -564,7 +563,7 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
   await play("ch1_tournament_r1_end", { bg: STAGE });
-  await showStandings(1, (cs.holes.score + cs.heat.score) / 2, cs);
+  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs);
 
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
@@ -584,7 +583,7 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
-  await showStandings(2, (cs.holes.score + cs.heat.score + cs.stats.craftQuality) / 3, cs);
+  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs);
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
   for (const round of [1, 2]) {
@@ -598,7 +597,7 @@ async function tournamentDay() {
     bc.clearComments();
     cs.stats = null;
     await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
-    if (round === 1) await showStandings(3, (cs.holes.score + cs.heat.score + computeShisha(cs).craftQuality + cs.care.score) / 4, cs);
+    if (round === 1) await showStandings(3, avgScore(cs.holes.score, cs.heat.score, computeShisha(cs).craftQuality, cs.care.score), cs);
   }
 
   // 審査は完成品と2回の調整の実績で決まる。

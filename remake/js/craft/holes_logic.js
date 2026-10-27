@@ -7,6 +7,29 @@ export const RINGS = [
   { id: "middle", label: "中周", r: 0.54, targets: 8, period: 5.2, weight: 0.3, role: "中ほどへ熱を届ける" },
   { id: "inner", label: "内周", r: 0.28, targets: 4, period: 3.8, weight: 0.2, role: "中心へ熱を入れる（開けすぎ注意）" },
 ];
+// アルミを使わないHMD（ロートス型）。ボウルに直接のせるので、アルミ張り＋穴あけをしない。
+export const FOIL_FREE_HMS = ["lotos_hagal"];
+/**
+ * この一台でアルミ穴あけを行うか。ロートスHMDは既定で飛ばす（#1107 B2）。
+ * レッスンと自主練（穴あけドリル）は技術を教える場なので必ず行い、任意トグル（cs.foilOptIn）でも行う。
+ */
+export function usesFoil(cs) {
+  if (!cs) return true;
+  if (cs.foilOptIn) return true;
+  if (cs.mode === "tutorial" || cs.mode === "drill") return true;
+  return !FOIL_FREE_HMS.includes(cs.equip?.hms);
+}
+/**
+ * 穴あけを飛ばした一台の、採点に中立な穴あけ相当値。ロートスは直のせで熱が均一に回るので、
+ * そこそこ揃った外周（得も損もしない中庸）として後工程の熱・完成品へ渡す。score は付けない（評価項目から外す）。
+ */
+export function skippedFoilResult() {
+  return {
+    skipped: true, total: 24, outer: 12, middle: 8, inner: 4,
+    evenness: 0.75, outerEven: 0.75, precision: 0.75, completion: 1,
+    innerExcess: 0, minimumComplete: true, dots: [], score: null,
+  };
+}
 export const normalizeAngle = (angle) => ((angle % TAU) + TAU) % TAU;
 export function circularAngleDistance(a, b) {
   const difference = Math.abs(normalizeAngle(a) - normalizeAngle(b));
