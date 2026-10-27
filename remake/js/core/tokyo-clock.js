@@ -1,3 +1,4 @@
+import { tokyoAffinityAvailable } from "./tokyo-affinity.js";
 // 本筋の場面と重ならない東京の自由時間。dayは章内日、保存は通算日。
 export const TOKYO_FREE_TIMES = Object.freeze([
   { id: "d5-noon", before: "ch3_taste_return", day: 5, slot: 0 },
@@ -48,6 +49,7 @@ export function nextTokyoFreeTime(value, before) {
     .map(window => tokyoTime(value, window))
     .filter(window => value.tokyoVisits?.plans.some(plan => plan.status !== "returned"
         && (plan.meetup.id === window.id || plan.date.id === window.id))
-      || (value.flags._gym_member && tokyoGymWindowAllowed(value, window) && !tokyoWindowReserved(value, window)))
+      || ((value.flags._gym_member || tokyoAffinityAvailable(value, window))
+        && tokyoGymWindowAllowed(value, window) && !tokyoWindowReserved(value, window)))
     .find(window => timeNumber(window) >= timeNumber(value)) || null;
 }

@@ -230,6 +230,12 @@
       "seen": [
         "ch3_mashiro_play_2"
       ]
+    },
+    "ch3_mashiro_practice": {
+      "seen": [
+        "ch3_mashiro_play_2"
+      ],
+      "comment": "通常交流♥1以上・既存の夜自由時間。技術練習の回で恋愛必須条件ではない。"
     }
   },
   "near_conflict": {
@@ -238,5 +244,13 @@
     "open": "ch3_shuraba_open",
     "close": "ch3_shuraba_steve",
     "overlap": "tournament_evening_overlap"
+  },
+  "optional_connections": {
+    "ch3_mashiro": {
+      "entry": "remake/js/chapters/ch3-affinity.js",
+      "selector": "remake/js/core/tokyo-affinity.js",
+      "comment": "ましろ面識/東京到着後、既存の非予約・非本筋自由時間だけ。解放済み最古未読を一件。練習は夜、未読なし/閾値待ちは短日常。必須回復・支援は無条件の既存本筋を保持。",
+      "thresholdSource": "MASHIRO_STORIES in remake/js/core/tokyo-affinity.js"
+    }
   }
 }
