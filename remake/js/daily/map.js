@@ -228,7 +228,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     let moving = false;
     const stationActive = () => state === owner && root.isConnected && !root.classList.contains("done") && !document.hidden;
     const openStation = () => {
-      if (moving || revealing || !stationActive()) return;
+      if (moving || revealing || !stationActive() || !stationDestinations(state, regions || [], region?.id).length) return;
       stationTrip?.cancel(); stationTrip = null; selected = null;
       pins.querySelectorAll(".spot-pin").forEach(p => p.classList.remove("sel"));
       markSelected(null);
@@ -366,13 +366,12 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       markers.append(el("i.ds-map-marker", { className: `ds-map-marker${av.ok || av.guided ? "" : " off"}${selected?.id === s.id ? " sel" : ""}`,
         dataset: { marker: s.id, label: caption }, style: { left: `${s.x}%`, top: `${s.y}%` } }));
       }
-      if (!guide && state.chapter <= 2) {
-        const station = region?.id === "widehanga" ? { x: 15, y: 34 } : { x: 15, y: 15 };
-        const travelReady = stationDestinations(state, regions || [], region?.id).length > 0;
-        pins.append(el(`button.spot-pin.pin-station${travelReady ? "" : ".station-waiting"}`, {
+      if (!guide && stationDestinations(state, regions || [], region?.id).length) {
+        const station = region?.id === "widehanga" ? { x: 15, y: 34 } : { x: 15, y: 36 };
+        pins.append(el("button.spot-pin.pin-station", {
           type: "button", style: { left: `${station.x}%`, top: `${station.y}%` },
           dataset: { test: "station-open", spot: "station" },
-          "aria-label": travelReady ? "駅から電車で街を移動する" : "駅。今は街移動の予定がない",
+          "aria-label": "駅から電車で街を移動する",
           onclick: openStation,
         }, [el("div.pin-visual", [el("div.shield", [el("div.ico", [el("span.pin-symbol", { html: TRAIN_ICON_SVG })])])]),
           el("div.sub-label", { text: "駅" })]));
