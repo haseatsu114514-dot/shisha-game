@@ -117,10 +117,12 @@ function setSkip(v) {
 }
 
 let autoTimer = 0;
+// 会話の操作バーから開いた用語集・設定の表示中だけ自動送りを止める（他の画面のモーダルでは止めない）
+let vnModalOpen = 0;
 function kickAuto() {
   clearTimeout(autoTimer);
   if (!running || !running.ready) return;
-  if (dom.log.classList.contains("show") || layers.modal.classList.contains("show")) return;
+  if (dom.log.classList.contains("show") || vnModalOpen) return;
   const fast = vnTest.turbo || skipMode;
   if (!fast && !autoMode) return;
   if (running.waitingChoice) {
@@ -129,7 +131,7 @@ function kickAuto() {
   }
   const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45;
   autoTimer = setTimeout(() => {
-    if (!running || dom.log.classList.contains("show") || layers.modal.classList.contains("show")) return;
+    if (!running || dom.log.classList.contains("show") || vnModalOpen) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();
     advance();
   }, delay);
@@ -879,7 +881,10 @@ function openLog() {
 async function openGlossary() {
   SE.select();
   clearTimeout(autoTimer);
-  await modal({ title: "用語集", body: glossaryPanel(), options: [{ label: "閉じる", value: true, primary: true }], className: "glossary-modal" });
+  vnModalOpen++;
+  try {
+    await modal({ title: "用語集", body: glossaryPanel(), options: [{ label: "閉じる", value: true, primary: true }], className: "glossary-modal" });
+  } finally { vnModalOpen--; }
   if (document.activeElement?.closest?.(".vn-controls")) document.activeElement.blur();
   kickAuto();
 }
@@ -891,13 +896,16 @@ async function openSettings() {
     clearInterval(running.typeTimer);
     clearTimeout(running.typeTimer);
   }
-  const { openConfig } = await import("../scenes/title.js");
-  await openConfig({
-    onChange(key) {
-      if (key === "uiTheme") nameFit?.fit();
-      if (key === "textSpeed" && running?.typing && config.textSpeed >= 4) completeTyping();
-    },
-  });
+  vnModalOpen++;
+  try {
+    const { openConfig } = await import("../scenes/title.js");
+    await openConfig({
+      onChange(key) {
+        if (key === "uiTheme") nameFit?.fit();
+        if (key === "textSpeed" && running?.typing && config.textSpeed >= 4) completeTyping();
+      },
+    });
+  } finally { vnModalOpen--; }
   if (document.activeElement?.closest?.(".vn-controls")) document.activeElement.blur();
   if (running?.typing) startTypingInterval(running);
   kickAuto();
