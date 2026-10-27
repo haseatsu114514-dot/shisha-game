@@ -110,6 +110,7 @@
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
+        "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
         "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
         "node remake/test/axe_bar_discovery.mjs",

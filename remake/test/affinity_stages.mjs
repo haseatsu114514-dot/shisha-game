@@ -116,10 +116,10 @@ await check('visitChar normal completion, same-owner concurrent entry and heart 
   f.setPlay(() => new Promise(r=>resolve=r));
   const pending=f.spots.visitChar('naru'); assert.equal(await f.spots.visitChar('naru'),false);
   assert.equal(s.story.naru||0,0); resolve(done); assert.equal(await pending,true);
-  assert.equal(s.story.naru,1); assert.equal(s.visits.naru,1); assert.equal(s.affinity.naru,8);
-  assert.equal(f.spots.hasNewStory('naru'),false);
-  f.setPlay(async()=>done); await f.spots.visitChar('naru'); // repeat provides existing +5, then ♥1 unlocks second
-  assert.equal(s.story.naru,1); assert.equal(f.stats.affinityLevel('naru'),1); assert.equal(f.spots.hasNewStory('naru'),true);
+  assert.equal(s.story.naru,1); assert.equal(s.visits.naru,1); assert.equal(s.affinity.naru,9);
+  assert.equal(f.stats.affinityLevel('naru'),1); assert.equal(f.spots.hasNewStory('naru'),true);
+  f.setPlay(async()=>done); await f.spots.visitChar('naru'); // next visit reads only the newly eligible second scene
+  assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,18); assert.equal(f.stats.affinityLevel('naru'),1); assert.equal(f.spots.hasNewStory('naru'),false);
 });
 await check('question selected then cancelled: retain answer, resume reaction and complete once', async f => {
   const s=f.core.state; s.story.rin=3; s.affinity.rin=33;
@@ -317,3 +317,4 @@ for (const outcome of ['cancel','missing','throw','abort','load']) await check(`
   assert.equal(s.story.naru,2);assert.equal(s.affinity.naru,48);assert.equal(s.visits.naru||0,0);
 });
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);
+

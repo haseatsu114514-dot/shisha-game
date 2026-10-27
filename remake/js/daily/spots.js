@@ -3,7 +3,7 @@
 import { state, markMet } from "../core/state.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
-import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, AFFINITY_RANK_PTS, setStoryAffinityCap } from "../core/stats.js";
+import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, AFFINITY_RANK_PTS, setStoryAffinityCap, ensureAffinityLevel } from "../core/stats.js";
 
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
@@ -315,6 +315,8 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       if (!await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg })) return false;
       state.story[charId] = idx + 1;
       gainAffinity(charId, 10);
+      // 初回読了と通常獲得はここで確定する。後続の質問・勧誘の中断で保証だけを失わない。
+      if (idx === 0) ensureAffinityLevel(charId, 1);
       if (await afterStory(seq[idx], { bg, signal, deferSave: true }) === false || !live()) return false;
     } else if (finaleAtVisit(charId)) {
       if (!await playFinale(charId, { bg, signal, deferSave: true }) || !live()) return false;
@@ -341,7 +343,8 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     markMet(charId);
     hasContact(charId); // 交換済みの判定をこの場で記録
     await maybeRecruitTrpgMember(charId);
-    return live();
+    if (!live()) return false;
+    return true;
   } finally { active.delete(charId); }
 
 

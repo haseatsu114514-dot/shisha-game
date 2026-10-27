@@ -2,7 +2,7 @@
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { seeded } from "../core/util.js";
-import { gainAffinity, affinityLevel, releaseHiyoriAffinity } from "../core/stats.js";
+import { gainAffinity, affinityLevel, releaseHiyoriAffinity, ensureAffinityLevel } from "../core/stats.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriHasContact } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { afterStory, hiyoriQuestionReady, playHiyoriQuestion, finaleAtVisit, playFinale } from "./bonds.js";
@@ -57,10 +57,12 @@ export async function playHiyoriEvent(id, options = {}) {
     if (hiyoriHasContact() && !state.contacts.includes("hiyori")) state.contacts.push("hiyori");
     if (hiyoriRoute().storyEvents.includes(id)) state.story.hiyori = (state.story.hiyori || 0) + 1;
     if (event.affinity) gainAffinity("hiyori", event.affinity);
+    // 面識・読了と同じ確定境界。後続の勧誘待ちでLOADされても保証を取り残さない。
+    if (id === "meeting") ensureAffinityLevel("hiyori", 1);
     await afterStory(event.dialogue, { signal: lifetime?.signal, deferSave: id === "work_talk" });
     if (state !== owner || options.signal?.aborted || lifetime?.signal.aborted) return false;
     await maybeRecruitTrpgMember("hiyori");
-    if (state !== owner) return false;
+    if (state !== owner || options.signal?.aborted) return false;
     save();
     return true;
   } finally {
