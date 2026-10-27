@@ -19,7 +19,7 @@ export function naruTastingCategory(cs, { careRounds = 2 } = {}) {
 
 // 区分ごとの、なるの短い感想（感覚の言葉のみ）。
 const NARU_LINES = {
-  steady: "最後まで熱を保ったな。後の一口も、吸いやすかった",
+  steady: "最後まで熱を保ったな。見てて、ぶれなかったの分かったよ",
   recovered: "途中で熱が揺れたろ。そこから戻したの、見てたよ",
   offband: "香りは覚えてる。ただ、最後の熱は、まだ詰められるな",
   unknown: "お前の一台、ちゃんと見てたよ。結果が出たら、また話そうぜ",
