@@ -48,6 +48,24 @@ export function feedbackLine(id, step, evaluation) {
   return (voice[step] || voice.default)[evaluation.index];
 }
 
+// 判定前の「見ている」間に出す一言。地の文の説明ではなく、本人が話す体で短く。
+const WATCH = {
+  sumi: { default: "手元を見ているぞ。落ち着いていけ" },
+  dr_kemuri: {
+    setup: "水の加減、見ていきますね", pack: "詰め方を見ていきます", holes: "穴の配置を見ていきましょう",
+    heat: "炭の熾き具合を見ていきます", place: "炭の置き方を見てみましょう", care: "ここからの熱の管理を見ていきます",
+    default: "ここからの手順を見ていきますね",
+  },
+  maezono: { steam: "さて、蒸らしだねえ。楽しみだ", pull: "どんな味になるか見てみよう", default: "ここからだねえ、楽しみにしてるよ" },
+  emil: { mix: "……配分を見ている", steam: "……葉の時間を見ている", pull: "……味の変化を見ている", default: "……ここからを見ている" },
+  nagumo: { care: "……ここからの手際を見ていよう", default: "……ここからを見ていよう" },
+};
+
+export function watchLine(id, step) {
+  const voice = WATCH[id] || WATCH.sumi;
+  return voice[step] || voice.default;
+}
+
 const LIVE = {
   sumi: {
     holes: ["その間隔だ。いい手つきだな", "少し手が詰まったか。落ち着いて続けろ"],
