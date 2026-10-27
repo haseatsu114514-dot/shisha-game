@@ -30,6 +30,7 @@ async function fixture({ lover = false, reply = response } = {}) {
     'romance.js': { loverMessages: noop, isLover: id => current.lovers.includes(id), dateSchedule: noop },
     'bonds.js': { bondInvites: noop, friendMessages: noop },
     'story-knowledge.js': { syncMintoKnowledge: noop }, 'hiyori-route.js': { hiyoriEventStatus: noop },
+    'story-contact.js': { storyThreadStatus: () => null },
     'invitations.js': { invitationCost: noop, storeInvitationSpot: noop, visitReminderSpot: noop, invitationVisitSpot: noop, immediateInvitation: () => false, missedInvitationNote: () => null },
   };
   const context = vm.createContext({ console, setTimeout, requestAnimationFrame: noop, document: {}, Math, Date, Set, Promise });
