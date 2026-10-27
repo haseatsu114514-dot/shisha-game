@@ -152,6 +152,7 @@
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
         "node remake/test/ch2_tournament.mjs",
         "node remake/test/tournament_story.mjs",
+        "node remake/test/served_eval.mjs",
         "node --experimental-vm-modules remake/test/tournament_vote_progression.mjs",
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
@@ -176,6 +177,7 @@
         "node --experimental-vm-modules remake/test/continue_audio.mjs",
         "node --experimental-vm-modules remake/test/continue_context.mjs",
         "node --experimental-vm-modules remake/test/bgm_gain.mjs",
+        "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
@@ -1357,11 +1359,13 @@
         "remake/test/browser/hiyori_gate.mjs",
         "remake/test/lime_consistency.mjs",
         "remake/test/browser/lime_evening.mjs",
+        "remake/test/browser/lime_close_1081.mjs",
         "remake/test/browser/minto_invite_reminder.mjs",
         "tools/check_legacy_terms.py"
       ],
       "run": [
-        "node remake/test/browser/lime_evening.mjs"
+        "node remake/test/browser/lime_evening.mjs",
+        "node remake/test/browser/lime_close_1081.mjs"
       ]
     },
     {
@@ -2502,6 +2506,15 @@
         "ARTIFACT_DIR": ".codex/artifacts/flavor-expression"
       },
       "chrome": "playwright"
+    },
+    {
+      "id": "logo-j06",
+      "title": "Chapter 2 store logo map surfaces",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/chapters/ch2.js", "remake/js/core/store-logos.js", "remake/css/store-logos.css", "remake/test/browser/logo_j06.mjs"],
+      "run": ["node remake/test/browser/logo_j06.mjs"]
     },
     {
       "id": "shopping-tutorial",

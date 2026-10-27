@@ -1,7 +1,7 @@
 import { el } from "../core/util.js";
 import { state } from "../core/state.js";
 import { stepPanel, benchRoot, craftTest } from "./session.js";
-import { WATER, waterQuantity, changeWater, waterBand } from "./water.js";
+import { waterQuantity, changeWater, waterBand } from "./water.js";
 
 function ensureStyle() {
   if (document.querySelector('link[data-craft-water]')) return;
@@ -10,7 +10,8 @@ function ensureStyle() {
 }
 
 // 入力と波はこの画面だけの寿命。確定時に返すのは実qだけ。
-export function mountWater(panel, { quantity = WATER.neutral, isCurrent = () => true, signal } = {}) {
+// 開始時は空（0）。途中再開はcs.waterの実量をそのまま渡すので保たれる。
+export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal } = {}) {
   let q = waterQuantity(quantity), direction = null, input = null, last = null;
   let raf = 0, done = false, wave = 0, velocity = 0;
   let resolve, reject;

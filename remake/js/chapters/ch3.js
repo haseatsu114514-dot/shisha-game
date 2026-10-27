@@ -6,6 +6,7 @@ import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
+import { shinkansenRide } from "../core/scene-motions.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
@@ -223,8 +224,9 @@ async function openChapter(advance) {
   });
 }
 
-async function readPrologue(owner, id, bg) {
-  await setBg(bg ? bgUrl(bg) : null, { instant: true });
+async function readPrologue(owner, id, bg, ride = null) {
+  if (ride) await ride();
+  else await setBg(bg ? bgUrl(bg) : null, { instant: true });
   if (!current(owner)) return false;
   showScreen("none", null);
   hud(owner);
@@ -260,7 +262,10 @@ async function renderPrologue(owner) {
   }
   if (progress.prologueStep === 3) {
     playBgm("tonari");
-    if (!await readPrologue(owner, "ch3_train_arrival", "bg_ch3_train_arrival")) return;
+    // 地元→東京の往路。車窓が覆っている間に新幹線到着時の背景へ替える（#1059）。
+    const ride = () => shinkansenRide(async () => { await setBg(bgUrl("bg_ch3_train_arrival"), { instant: true }); },
+      { from: "home", to: "tokyo" });
+    if (!await readPrologue(owner, "ch3_train_arrival", "bg_ch3_train_arrival", ride)) return;
     progress.prologueStep = 4;
     save();
   }

@@ -107,22 +107,28 @@ await check("clamp, finite defaults and inclusive ideal boundaries", () => {
   assert.equal(model.waterBand(.4499), "low"); assert.equal(model.waterBand(.5501), "high");
   for (const dt of [-1, NaN, Infinity, 0]) assert.equal(model.changeWater(.5, "pour", dt), .5);
 });
+await check("first entry starts empty; an in-progress real amount is not reset", async () => {
+  const fresh = mounted(); near(quantity(fresh), 0); // 開始時（cs.water未設定）はガラスが空。
+  fresh.cancel(); await assert.rejects(fresh.result, { name: "AbortError" });
+  const resumed = mounted({ quantity: .62 }); near(quantity(resumed), .62); // 途中再開（cs.waterが実量）はその値のまま。
+  resumed.cancel(); await assert.rejects(resumed.result, { name: "AbortError" });
+});
 await check("pour/drain operate continuously; wave never alters saved q", async () => {
-  const m = mounted(); down(m); tick(1000); near(quantity(m), .62);
+  const m = mounted({ quantity: .5 }); down(m); tick(1000); near(quantity(m), .62);
   fire(window, "pointerup", { pointerId: 1 }); tick(1000); near(quantity(m), .62);
   down(m, "drain"); tick(2000); near(quantity(m), .56);
   fire(window, "pointerup", { pointerId: 1 }); tick(1000); near(await finish(m), .56);
 });
 for (const type of ["pointerup", "pointercancel", "lostpointercapture", "pointerleave", "pointerout"]) await check(`${type} stops until a new press`, async () => {
-  const m = mounted(); down(m); tick(500); fire(m.button("pour"), type, { pointerId: 1 }); tick(2000); near(quantity(m), .56);
+  const m = mounted({ quantity: .5 }); down(m); tick(500); fire(m.button("pour"), type, { pointerId: 1 }); tick(2000); near(quantity(m), .56);
   tick(500); near(quantity(m), .56); down(m); tick(500); near(await finish(m), .62);
 });
 await check("captured pointer moving outside stops and moving back does not resume", async () => {
-  const m = mounted(); down(m); tick(500); fire(m.button("pour"), "pointermove", { pointerId: 1, clientX: 101, clientY: 20 });
+  const m = mounted({ quantity: .5 }); down(m); tick(500); fire(m.button("pour"), "pointermove", { pointerId: 1, clientX: 101, clientY: 20 });
   tick(1000); fire(m.button("pour"), "pointermove", { pointerId: 1, clientX: 20, clientY: 20 }); tick(1000); near(await finish(m), .56);
 });
 for (const boundary of ["blur", "hidden", "menu", "load", "help"]) await check(`${boundary} stops and reopening does not resume`, async () => {
-  const m = mounted(); down(m); tick(500);
+  const m = mounted({ quantity: .5 }); down(m); tick(500);
   if (boundary === "blur") fire(window, "blur");
   if (boundary === "hidden") { document.hidden = true; fire(document, "visibilitychange"); }
   if (["menu", "load"].includes(boundary)) fire(document, "click");
@@ -130,7 +136,7 @@ for (const boundary of ["blur", "hidden", "menu", "load", "help"]) await check(`
   tick(500); document.hidden = false; document.blocked = false; tick(1000); near(await finish(m), .56);
 });
 await check("keyboard held input, release and repeat suppression after blur", async () => {
-  const m = mounted(); const b = m.button("drain"); fire(b, "keydown", { key: "Enter", repeat: false }); tick(1000);
+  const m = mounted({ quantity: .5 }); const b = m.button("drain"); fire(b, "keydown", { key: "Enter", repeat: false }); tick(1000);
   fire(window, "blur"); fire(b, "keydown", { key: "Enter", repeat: true }); tick(1000); near(quantity(m), .47);
   fire(b, "keyup", { key: "Enter" }); fire(b, "keydown", { key: "Enter", repeat: false }); tick(1000);
   fire(window, "keyup", { key: "Enter" }); tick(1000); near(await finish(m), .44);
@@ -167,16 +173,16 @@ await check("new SAVE/LOAD retains confirmed q; in-flight SETUP restarts from ch
   const original = JSON.stringify({ equip: s.equip, stats: s.stats, stock: s.flavorStock });
   const cs = { equip: { ...s.equip }, mix: {}, careHistory: [] };
   tournament.startAttempt(s, cs); tournament.beginStep(s); state.saveToSlot("suien_remake_slot1");
-  const m = mounted(); down(m); tick(1000); cs.water = await finish(m);
+  const m = mounted(); near(quantity(m), 0); down(m); tick(1000); cs.water = await finish(m); // 開始時は空から注ぐ
   state.loadFromSlot("suien_remake_slot1"); tournament.recoverStep(state.state);
   assert.equal(tournament.tournamentProgress(state.state).step, 0); assert.equal(tournament.tournamentProgress(state.state).craft.water, undefined);
   tournament.finishStep(state.state, cs); state.saveToSlot("suien_remake_slot2");
   state.loadFromSlot("suien_remake_slot2"); const p = tournament.tournamentProgress(state.state);
-  assert.equal(p.step, 1); near(p.craft.water, .62); assert.equal(p.rollback, null);
+  assert.equal(p.step, 1); near(p.craft.water, .12); assert.equal(p.rollback, null);
   assert.equal(JSON.stringify({ equip: state.state.equip, stats: state.state.stats, stock: state.state.flavorStock }), original);
   assert.ok(!JSON.stringify(p.craft).match(/wave|velocity|pointer|direction/));
   tournament.beginStep(state.state); state.saveToSlot("suien_remake_slot3"); state.loadFromSlot("suien_remake_slot3"); tournament.recoverStep(state.state);
-  near(tournament.tournamentProgress(state.state).craft.water, .62);
+  near(tournament.tournamentProgress(state.state).craft.water, .12); // 途中再開でも確定済みの実量は保たれる
 });
 await check("full practice record saves only confirmed water, care-only records stay scoped", () => {
   state.newGame();
@@ -190,7 +196,7 @@ await check("full practice record saves only confirmed water, care-only records 
 await check("real practice orchestration puts confirmed water between SETUP and MIX", async () => {
   stub("js/craft/steps.js", {
     stepSetup: async () => order.push("setup"),
-    stepMix: async cs => { assert.equal(cs.water, .5); order.push("mix"); },
+    stepMix: async cs => { assert.equal(cs.water, 0); order.push("mix"); },
     stepPack: async () => {}, stepPlace: async () => {}, stepSteamTime: async () => {}, evaluateMix: () => ({}),
   });
   stub("js/craft/holes.js", { runHoles: async () => {} });
@@ -204,8 +210,8 @@ await check("real practice orchestration puts confirmed water between SETUP and 
   state.newGame(); order.length = 0; session.namespace.craftTest.auto = "good";
   const practice = await load("js/craft/practice.js");
   const cs = await practice.runFullPractice({ coached: true });
-  assert.deepEqual(order, ["setup", "water", "mix"]); assert.equal(cs.water, .5);
-  assert.equal(history.practiceRecords().at(-1).water, .5);
+  assert.deepEqual(order, ["setup", "water", "mix"]); assert.equal(cs.water, 0);
+  assert.equal(history.practiceRecords().at(-1).water, 0);
   session.namespace.craftTest.auto = null;
 });
 console.log(`${checks} water checks passed; browser rendering/real pointer capture not covered by DOM adapter.`);

@@ -365,6 +365,11 @@ export const SE = {
     noise({ dur: sec, vol: 0.1, filter: 220, q: 0.7 });
     [0.15, 0.27, 1.05, 1.17].forEach((t, i) => { tone({ freq: i % 2 ? 72 : 96, to: 48, type: "sine", dur: 0.12, vol: 0.22, delay: t }); noise({ dur: 0.05, vol: 0.08, filter: 1400, delay: t }); });
   },
+  // 新幹線（motions/shinkansen.js, Issue #1059）: 継ぎ目のない高速走行の連続音。在来線の「ガタン・ゴトン」は鳴らさない。
+  shinkansen: (sec = 1.7) => {
+    noise({ dur: sec, vol: 0.09, filter: 900, q: 0.5, sweepTo: 1500 });
+    tone({ freq: 150, to: 105, type: "sine", dur: sec, vol: 0.07 });
+  },
   freezeBoom: () => { tone({ freq: 60, to: 30, type: "sine", dur: 0.6, vol: 0.4 }); noise({ dur: 0.5, vol: 0.2, filter: 700, sweepTo: 3000 }); },
 };
 

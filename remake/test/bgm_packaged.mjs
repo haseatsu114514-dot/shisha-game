@@ -62,6 +62,24 @@ assert.equal(stopped.plays, 0);
 assert.equal(stopped.paused, true);
 assert.equal(audio.currentBgm(), null);
 
+// J03: 章を跨いだ後に大会曲の復元が完了しても、街の曲を奪わない。
+gate = new Promise((r) => { release = r; });
+audio.playBgm("bgm_tournament_craft");
+const lateTournament = elements.at(-1);
+audio.playBgm("kansetsu_shomei_to_black_coffee");
+const city = elements.at(-1), count = elements.length;
+release(); gate = null;
+assert(await audio.preloadBgm("bgm_tournament_craft"));
+await flush(); step(1500); await flush();
+assert.equal(lateTournament.plays, 0);
+assert.equal(lateTournament.paused, true);
+assert.equal(lateTournament.volume, 0);
+assert.equal(audio.currentBgm(), "kansetsu_shomei_to_black_coffee");
+assert.equal(city.plays, 1);
+audio.playBgm("kansetsu_shomei_to_black_coffee");
+assert.equal(elements.length, count, "Repeated city requests must not add a second player");
+audio.stopBgm(0); await flush();
+
 const adopted = [
   ["bgm_purikura_b", 1, "d348ce8a91d7cad1da14c71b51870ea2c20f44c379f5277213d80f0eac6e805e"],
   ["bgm_purikura_d", 1, "4848a6ffbccf9f3bc4911ef1043cd3143fbaf73a6f789d5181137477dcb899dc"],

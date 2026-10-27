@@ -185,14 +185,15 @@ function penHop(pen, to, ms, { lift = 26, land = 0, spin = 0, ang = pen.at.ang, 
 }
 
 /** マーカーで画を順に書く。画と画の間はペンを浮かせて移る。onFrame(x, y) で毎フレームの位置を知らせる */
+// 落書き全体の速さ（旧2.4）。#1081 H06: お絵描き演出が長いという報告を受けて短縮。
 function writeInk(pen, list, { speed = 5.2, base = 24, hop = 9, onFrame = null } = {}) {
   const plan = [];
   let t = 0, at = [pen.at.x, pen.at.y];
   for (const s of list) {
     const a = s.pts[0];
     const d = Math.hypot(a[0] - at[0], a[1] - at[1]);
-    if (d > 2) { const dur = Math.max(100, (12 + d / hop) * 2.4); plan.push({ t0: t, dur, from: at, to: a, d }); t += dur; }
-    const dur = Math.max(90, base + s.len / speed) * 2.4;
+    if (d > 2) { const dur = Math.max(100, (12 + d / hop) * 1.6); plan.push({ t0: t, dur, from: at, to: a, d }); t += dur; }
+    const dur = Math.max(90, base + s.len / speed) * 1.6;
     plan.push({ t0: t, dur, s }); t += dur;
     at = s.pts[s.pts.length - 1];
   }
@@ -350,7 +351,7 @@ export async function a(url, placeCg = null) {
       move(cam, [{ transform: camAt(...camFrom) }, { transform: camAt(...camTo) }], 320, { easing: CAM });
       ring(print.top, pen.at.x, pen.at.y - 190, { r: 120, color: P.white, width: 10, dur: 360 });
       SE.tick();
-      await penHop(pen, to, 250, { lift: 40, spin: 360, onHalf: () => pen.setInk(color) });
+      await penHop(pen, to, 170, { lift: 40, spin: 360, onHalf: () => pen.setInk(color) });
     };
     drift(camIn, [460, 1305], 700);
     await writeInk(pen, ink.line1, { speed: 5, base: 16, hop: 12 });
@@ -367,9 +368,9 @@ export async function a(url, placeCg = null) {
     move(stripes, [{ transform: "scale(1.18)" }, { transform: "scale(1)" }], 620, { easing: CAM });
     move(glow, [{ transform: "scale(1.5)" }, { transform: "scale(1)" }], 620, { easing: CAM });
     await Promise.all([centered,
-      ...ink.leaf.map((s, i) => inkSelf(s, 550, 90 + i * 86)),
-      ...ink.deco.map((s, i) => inkSelf(s, 500, 290 + i * 132)),
-      ...ink.side.map((s, i) => inkSelf(s, 480, 530 + i * 86)),
+      ...ink.leaf.map((s, i) => inkSelf(s, 370, 60 + i * 60)),
+      ...ink.deco.map((s, i) => inkSelf(s, 330, 190 + i * 90)),
+      ...ink.side.map((s, i) => inkSelf(s, 320, 350 + i * 60)),
     ]);
     // 8. 仕上げ: 光が横切り、四隅にきらめき。背景を会話のCGと同じ黒へ戻し、同じ位置にCGを置く
     print.full.style.opacity = "1";
@@ -620,12 +621,12 @@ export async function b(url, placeCg = null) {
     await penHop(pp, [tip.x, tip.y], 70, { lift: 0 });
     // 7. ピンク → 緑 → ピンクと持ち替えて書く（使い終えたペンは右下へ抜け、次のペンが入る）
     const handoff = async (from, to, next) => {
-      penHop(from, [from.at.x + 360, from.at.y + 520], 220, { lift: 30, ang: 50, ease: easeIn }); // 抜けるときは加速
-      move(from.g, [{ opacity: 1 }, { opacity: 0 }], 160, { delay: 60 }).then(() => { from.g.style.opacity = "0"; from.g.getAnimations().forEach((x) => x.cancel()); });
+      penHop(from, [from.at.x + 360, from.at.y + 520], 150, { lift: 30, ang: 50, ease: easeIn }); // 抜けるときは加速
+      move(from.g, [{ opacity: 1 }, { opacity: 0 }], 110, { delay: 40 }).then(() => { from.g.style.opacity = "0"; from.g.getAnimations().forEach((x) => x.cancel()); });
       to.place(next[0] + 420, next[1] + 520, 60, 50);
       to.g.style.opacity = "1";
       SE.tick();
-      await penHop(to, next, 250, { lift: 30, ang: 30, ease: easeOut });
+      await penHop(to, next, 170, { lift: 30, ang: 30, ease: easeOut });
     };
     const track = { onFrame: (x, y) => follow(x, y) };
     await writeInk(pp, ink.line1, { speed: 5.5, base: 14, hop: 13, ...track });
@@ -653,9 +654,9 @@ export async function b(url, placeCg = null) {
     const centered = move(fly, [{ transform: `translate(${sx}px, ${sy}px)` }, { transform: "translate(0px, 0px)" }], 460, { easing: CAM });
     move(disc, [{ transform: `translate(${sx * 0.6}px, ${sy * 0.6}px)` }, { transform: "translate(0px, 0px)" }], 460, { easing: CAM });
     await Promise.all([centered,
-      ...ink.leaf.map((s, i) => inkSelf(s, 530, 70 + i * 77, Q_OUT)),
-      ...ink.deco.map((s, i) => inkSelf(s, 480, 240 + i * 120, Q_OUT)),
-      ...ink.side.map((s, i) => inkSelf(s, 460, 380 + i * 77, Q_OUT)),
+      ...ink.leaf.map((s, i) => inkSelf(s, 350, 50 + i * 60, Q_OUT)),
+      ...ink.deco.map((s, i) => inkSelf(s, 320, 160 + i * 80, Q_OUT)),
+      ...ink.side.map((s, i) => inkSelf(s, 310, 250 + i * 50, Q_OUT)),
     ]);
     // 9. 仕上げ: 光が横切り、ぽんと弾む。暗い幕が斜めに横切って会話のCGと同じ黒にし、同じ位置にCGを置く
     print.full.style.opacity = "1";

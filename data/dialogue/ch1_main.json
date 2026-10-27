@@ -2074,11 +2074,13 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
+            "fx": "cg_focus_window",
             "text": "……窓辺の煙と猫、残しました。好きって言ってくれたので"
           },
           {
             "speaker": "hajime",
             "face": "normal",
+            "fx": "cg_focus_reset",
             "text": "覚えててくれたんだ。やっぱり、居心地よさそうだ"
           }
         ],
