@@ -75,6 +75,11 @@ export async function runDaily(def) {
   initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
   showHud(true);
   setPhoneBadge(unreadCount()); // つづきから再開したときも未読の赤丸を出す
+  // 承諾後・閉じる前のSAVEはLIMEへ戻す。LOADだけで出発したことにしない。
+  if (state.pendingInvite?.awaitingLimeClose) {
+    await readLime();
+    if (state !== owner) return;
+  }
   if (def.startNextDay && chapterDay(state) === 1) { await advanceDay(); save(); }
   while (state.day < (def.untilDay ?? TOURNAMENT_DAY)) {
     syncNightQueue(chapterDef.nightEvents);
@@ -147,14 +152,16 @@ async function phoneButton({ sender = null } = {}) {
 }
 
 async function readLime(sender) {
+  const session = state;
   const first = !state.flags._lime_opened;
   state.flags._lime_opened = true;
   state.flags._lime_tut = 1; // 自分で開けたなら案内はいらない
   const before = state.pendingInvite;
+  const wasWaiting = !!before?.awaitingLimeClose;
   let interrupted = false;
   await openLime({ tutorial: first, sender, fixedNight, beforeClose: async () => {
     const invite = state.pendingInvite;
-    if (!invite || invite === before || !immediateInvitation(invite, state)) return;
+    if (!invite || invite === before && !wasWaiting || !immediateInvitation(invite, state)) return;
     const owner = state;
     const source = invitationSourceMessage(invite);
     const destination = spotById(invitationVisitSpot(invite, source));
@@ -166,6 +173,7 @@ async function readLime(sender) {
       if (interrupted) dropRetired(); // スマホが消える前にマップのピンも片付ける。
     }
   } });
+  if (state !== session) return;
   syncSamechanKnowledge();
   setPhoneBadge(unreadCount());
   save();

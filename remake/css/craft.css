@@ -619,6 +619,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .audience-person[data-mood="nod"] img { animation: none; }
+  /* 動き軽減では横に流さず、画面左に淡く出して消す。操作域（右上）はクリップで避けたまま。 */
+  .nico { transform: none; left: 7%; animation-name: nico-hold; }
+  @keyframes nico-hold { 0% { opacity: 0; } 8%, 85% { opacity: 1; } 100% { opacity: 0; } }
 }
 .rt-part.feel b { font-size: 20px; color: #ffe79a; }
 
@@ -1055,6 +1058,8 @@
 .pull-life { position: relative; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: center; gap: 24px; padding: 8px 16px; border: 1px solid #a18a665c; border-radius: 9px; background: #100b18bb; box-shadow: inset 0 1px 2px #fff2; }
 .pull-life-label { font-size: 13px; color: #c8bcc0; white-space: nowrap; letter-spacing: .05em; }
 .pull-life-leaves { display: flex; align-items: center; flex: none; }
+/* E08: 消耗する葉を右端に置き、残りの赤い葉を左に残す。 */
+.pull-life-leaves .leaf-icon { flex-direction: row-reverse; }
 .pull-tags:empty { display: none; }
 .pull-serve-icon svg { display: block; width: 100%; height: 100%; }
 /* 状態の読み上げだけ残す。注意書きや別ウインドウは表示しない（TH71）。 */

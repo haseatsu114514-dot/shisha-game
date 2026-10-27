@@ -21,6 +21,8 @@ import { rememberRelationship, relationshipReflectionLines } from "../core/relat
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
 import { chekiShot, tarotFlip, limeExchange, purikuraShot } from "../core/scene-motions.js";
+import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
+import { reducedMotion } from "../core/transition-kit.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -196,6 +198,7 @@ export function play(idOrDlg, opts = {}) {
     dom.inner.replaceChildren();
     dom.inner.hidden = true;
     dom.box.classList.remove("has-inner");
+    hideShishaDiagram(); // 前の場面やLOAD前の図解を残さない（#1128）
     dom.name.textContent = "";
     dom.name.classList.remove("show");
     const meta = dlg.metadata || {};
@@ -306,6 +309,7 @@ function finish(cancelled = false) {
   document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");
   dom.portraits.replaceChildren();
+  hideShishaDiagram(); // 会話終了（SKIP/キャンセル含む）で図解を片付ける（#1128）
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia", "flashback");
   if (!sequenceDepth) setSkip(false);
@@ -404,7 +408,7 @@ function next() {
     }
     if (type === "hide_cg") {
       r.ready = false;
-      dom.cg.classList.remove("show");
+      dom.cg.classList.remove("show", "cg-focus-window");
       visualSettled(dom.cg).then(() => { if (running === r) { r.ready = true; next(); } });
       return;
     }
@@ -500,6 +504,9 @@ function runFx(line) {
   else if (id === "flashback") layers.vn.classList.add("flashback");
   else if (id === "flashback_off") layers.vn.classList.remove("flashback");
   else if (id === "scent") scent(line.color || "#e8c27a", line.color2 || line.color || "#b8743a");
+  // #1076: 完成CGの窓辺へ短く視線を寄せる／全景へ戻す。SKIP中・低減モーションではカメラを動かさない。
+  else if (id === "cg_focus_window") { if (!skipMode && !reducedMotion()) dom.cg.classList.add("cg-focus-window"); }
+  else if (id === "cg_focus_reset") dom.cg.classList.remove("cg-focus-window");
 }
 
 function scent(c1, c2) {
@@ -610,6 +617,8 @@ async function showLine(line) {
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
   if (line.fx) runFx({ id: line.fx });
   else autoFx(line);
+  // シーシャの仕組み解説の図解（#1128）。段階は絶対指定なのでSKIP・連打・LOADでも重ならない。
+  if (line.diagram) showShishaDiagram(line.diagram, { still: reducedMotion() || skipMode || vnTest.turbo });
   let text = String(line.text || "");
   if (hooks.interpolate) text = hooks.interpolate(text);
   const cue = parseCue(text);

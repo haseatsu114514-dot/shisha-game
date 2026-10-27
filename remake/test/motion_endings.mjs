@@ -386,19 +386,26 @@ try {
   await checkScene("cheki", desktop, "alternate-a", "a");
   await checkScene("gift", desktop, "alternate-b", "b");
   await checkScene("cheki", desktop, "dropped-frames", null, true);
+  // 動きを減らす設定だけ演出を省く。SKIP中は一度きりの演出を最後まで再生し（#1081 H05）、チェキは会話のCGを受け渡す。
   for (const reduced of [false, true]) {
     const { page, context } = await open(desktop, reduced ? "reduced" : "skip", reduced ? "reduce" : "no-preference");
     try {
       const result = await page.evaluate(async (reduced) => {
         if (!reduced) document.body.classList.add("vn-skip");
-        let mid = 0, placed = 0;
+        let mid = 0, placed = 0, played = 0;
+        const watch = () => { played = Math.max(played, document.querySelectorAll("#fx .mo").length); };
+        const timer = setInterval(watch, 16); // 演出中に実際の層が出たか（省略なら一度も出ない）
         await T.motions.chekiShot(T.data.cgUrl("cg_minto_first_cheki"), () => placed++);
         await T.motions.tarotFlip("tsumugi"); await T.motions.giftOpen("suyaki_tsumugi"); await T.motions.shiftClose();
         await T.motions.sharkSwim(() => mid++);
         await T.motions.sketchIn(() => mid++, T.data.bgUrl("bg_home", "day"));
-        return { mid, placed, overlays: document.getElementById("fx").children.length, covering: T.transitions.isCovering() };
+        clearInterval(timer);
+        return { mid, placed, played, overlays: document.getElementById("fx").children.length, covering: T.transitions.isCovering() };
       }, reduced);
-      assert.deepEqual(result, { mid: 2, placed: 0, overlays: 0, covering: false });
+      // reduced: 全演出を省き mid だけ呼ぶ（placed 0・層は出ない）。skip: 全演出を再生しチェキのCGも置く（placed 1・層が出る）。
+      assert.deepEqual({ mid: result.mid, placed: result.placed, overlays: result.overlays, covering: result.covering },
+        { mid: 2, placed: reduced ? 0 : 1, overlays: 0, covering: false });
+      assert.equal(result.played >= 1, !reduced, `${reduced ? "reduced" : "skip"}: 演出の層の有無が想定と違う`);
       console.log(`PASS ${reduced ? "reduced motion" : "skip"}`);
     } finally { await context.close(); }
   }

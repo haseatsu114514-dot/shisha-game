@@ -81,7 +81,7 @@ await suite("first-brew", async check => {
     await page.waitForFunction(() => window.cs.heat !== null, null, { timeout: 20000 });
     assert.equal(await page.evaluate(() => cs.heat.over), 3);
     await page.locator('[data-test="step-next"]').waitFor();
-    assert.match(await page.locator('[data-test="craft-feedback"]').innerText(), /焼きすぎ/);
+    assert.match((await page.locator('[data-test="craft-feedback"]').innerText()).replace(/\n/g, ""), /全面が赤くなったら、待たずに取り出そう/);
     assert.doesNotMatch(await page.locator('[data-test="craft-feedback"]').innerText(), /焦らず待つ/);
     if (!touch) {
       await page.locator('[data-test="step-next"]').click();

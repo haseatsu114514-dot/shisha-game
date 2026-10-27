@@ -48,6 +48,8 @@ await suite("home-shisha", async check => {
       await offer(page);
       assert.match(await page.locator(".home-shisha-dialog").innerText(), /寝る前の家シーシャ/);
       assert.doesNotMatch(await page.locator(".home-shisha-dialog").innerText(), /体力\s*[+＋−-]?\d/);
+      assert.match(await page.locator(".home-shisha-dialog").innerText(), /体力を使う/);
+      assert.doesNotMatch(await page.locator(".home-shisha-dialog").innerText(), /大きく減る|配合/);
       await hit("home-shisha-mix");
       await hit("home-plus-lemon"); await hit("home-mix-cancel"); await hit("home-shisha-skip");
       await page.waitForFunction(() => homeDone === false);
@@ -78,11 +80,56 @@ await suite("home-shisha", async check => {
       await page.evaluate(() => { __remake.state.day++; });
       await offer(page); await hit("home-shisha-recipe");
       await page.locator(t("home-recipe-ice_lemonade")).waitFor();
+      assert.doesNotMatch(await page.locator(".home-shisha-dialog").innerText(), /配合/);
       await assertFits(page, ".home-shisha-dialog .modal-actions button");
       await page.evaluate(() => { __remake.vnTest.turbo = true; });
       await hit("home-recipe-ice_lemonade"); await page.waitForFunction(() => homeDone === true);
       assert.deepEqual(await snapshot(page), { ...after, flavorStock: { ...after.flavorStock, lemon: 3, mint: 13 }, stamina: 36,
         stats: before.stats, statXp: {} });
+    }, options);
+  }
+
+  // #1081 D04-D06: HUDの現在色・回復後・誘い中LOAD・単品の文言。
+  for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`${label}-health-and-offer-load`, async page => {
+      const hit = async id => label === "touch" ? page.locator(t(id)).tap() : page.locator(t(id)).click();
+      await page.evaluate(async () => {
+        window.H = { core: await import("./js/core/state.js"), stats: await import("./js/core/stats.js"),
+          hud: await import("./js/daily/hud.js"), home: await import("./js/daily/home-shisha.js") };
+        const s = H.core.newGame(); Object.assign(s, {phase:"daily",day:8,slot:2,stamina:80});
+        s.stats.guts = 0; s.flags._sumi_double_apple_received = true; s.flavorStock = {mint:30};
+        H.hud.initHud({}); H.hud.showHud(); __remake.vnTest.turbo = false;
+      });
+      assert.equal(await page.evaluate(() => H.home.homeShishaOffer()), null, "台なし");
+      await page.evaluate(() => H.core.state.owned.push("home_rig_set"));
+      for (const [before, after, health] of [[25,25,"red"],[50,50,"yellow"],[51,51,"green"],[80,45,"yellow"],[10,40,"yellow"],[40,70,"green"]]) {
+        const result = await page.evaluate(({before,after}) => {
+          H.core.state.stamina=before; H.stats.addStamina(after-before); H.hud.updateHud();
+          return {health:document.querySelector('.hud-stamina').dataset.health, offered:!!H.home.homeShishaOffer()};
+        }, {before,after});
+        assert.deepEqual(result,{health,offered:health==="green"});
+        if (health === "green") { await offer(page); await hit("home-shisha-skip"); await page.waitForFunction(()=>homeDone===false); }
+        else assert.equal(await page.evaluate(()=>H.home.runHomeShisha()),false);
+      }
+      // 実保存APIで黄色の別セーブをLOADし、緑の旧誘いを押しても消費しない。
+      await page.evaluate(()=>{H.core.state.stamina=50;H.core.saveToSlot("suien_remake_slot1");H.core.state.stamina=80;});
+      await offer(page);
+      const loaded = await page.evaluate(()=>{H.core.loadFromSlot("suien_remake_slot1");return structuredClone(H.core.state);});
+      await hit("home-shisha-mix"); await page.waitForFunction(()=>homeDone===false);
+      assert.deepEqual(await page.evaluate(()=>structuredClone(H.core.state)),loaded);
+      assert.equal(await page.evaluate(()=>H.home.runHomeShisha()),false);
+      assert.equal(await page.locator(t("home-shisha-mix")).count(),0);
+      assert.equal(loaded.owned.filter(id=>id==="home_rig_set").length,1);
+      // 単品でも選択画面・感想に「配合」と表示しない。
+      await page.evaluate(()=>{H.core.state.stamina=80;window.homeLines=[];
+        __remake.vnTest.turbo=true;});
+      await offer(page); await hit("home-shisha-mix");
+      assert.doesNotMatch(await page.locator(".home-shisha-dialog").innerText(),/配合/);
+      for(let i=0;i<12;i++) await hit("home-plus-mint");
+      await page.evaluate(async()=>{const vn=await import("./js/vn/engine.js");vn.hooks.onLine=(_id,line)=>homeLines.push(line.text);__remake.vnTest.turbo=true;});
+      await hit("home-mix-ok"); await page.waitForFunction(()=>homeDone===true);
+      assert.doesNotMatch((await page.evaluate(()=>homeLines)).join(" "),/配合/);
+      assert.match((await page.evaluate(()=>homeLines)).join(" "),/この味の感触/);
     }, options);
   }
 

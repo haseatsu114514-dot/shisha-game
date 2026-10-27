@@ -159,6 +159,7 @@
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
         "node remake/test/mix_temperature.mjs",
         "node remake/test/steam_temperature.mjs",
+        "node remake/test/flavor_life.mjs",
         "node remake/test/attack_training.mjs",
         "node remake/test/steam_word_cut.mjs",
         "node remake/test/water_pour.mjs",
@@ -171,8 +172,10 @@
         "node remake/test/venue_hours.mjs",
         "node remake/test/ch2_progress.mjs",
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
+        "node remake/test/ch2_delivery_identity.mjs",
         "node remake/test/ch2_tournament.mjs",
         "node remake/test/tournament_story.mjs",
+        "node remake/test/served_eval.mjs",
         "node --experimental-vm-modules remake/test/tournament_vote_progression.mjs",
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
@@ -1379,11 +1382,13 @@
         "remake/test/browser/hiyori_gate.mjs",
         "remake/test/lime_consistency.mjs",
         "remake/test/browser/lime_evening.mjs",
+        "remake/test/browser/lime_close_1081.mjs",
         "remake/test/browser/minto_invite_reminder.mjs",
         "tools/check_legacy_terms.py"
       ],
       "run": [
-        "node remake/test/browser/lime_evening.mjs"
+        "node remake/test/browser/lime_evening.mjs",
+        "node remake/test/browser/lime_close_1081.mjs"
       ]
     },
     {

@@ -89,3 +89,42 @@
 @media (prefers-reduced-motion: reduce) {
   .chapter-card.ct-text .cc-no, .chapter-card.ct-text .cc-name, .chapter-card.ct-text .cc-read, .chapter-card.ct-text .cc-sub { animation: none; }
 }
+
+/* 第一章タイトルコール（js/chapters/ch1-title-motion.js）の装飾層。採用画像はcanvasに描く。
+   ここは絵の上に重ねる煙・光・周辺減光だけで、canvasの画素検査には影響しない */
+.ch1-title-fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
+/* テーマの煙。白地では淡い灰のもや、仕上がった絵の上では薄くたなびく */
+.ch1-title-fx-smoke {
+  position: absolute; bottom: 4%; width: 190px; height: 190px; margin-left: -95px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(116, 120, 132, .22), rgba(116, 120, 132, .10) 55%, rgba(116, 120, 132, 0) 76%);
+  filter: blur(9px); opacity: 0; will-change: transform, opacity;
+  animation: ch1-fx-rise 4200ms cubic-bezier(.4, 0, .2, 1) both;
+}
+@keyframes ch1-fx-rise {
+  0% { opacity: 0; transform: translateY(44px) scale(.55); }
+  22% { opacity: .85; }
+  60% { opacity: .55; }
+  100% { opacity: 0; transform: translateY(-230px) scale(1.5); }
+}
+/* 黒い服・題字にだけ乗る一筋の光。白地はscreen合成で素通りして出ない */
+.ch1-title-fx-sweep {
+  position: absolute; top: -10%; bottom: -10%; left: 0; width: 40%;
+  background: linear-gradient(104deg, transparent 20%, rgba(255, 249, 232, .0) 34%, rgba(255, 249, 232, .55) 50%, rgba(255, 249, 232, 0) 66%, transparent 80%);
+  mix-blend-mode: screen; transform: translateX(-130%); opacity: 0; will-change: transform;
+  animation: ch1-fx-sweep 1400ms cubic-bezier(.5, .05, .3, 1) 1700ms both;
+}
+@keyframes ch1-fx-sweep {
+  0% { transform: translateX(-130%); opacity: 0; }
+  14% { opacity: 1; }
+  86% { opacity: 1; }
+  100% { transform: translateX(330%); opacity: 0; }
+}
+/* 四隅のわずかな減光で中央の一行へ目を向ける（仕上げの一枚絵でも控えめに残る） */
+.ch1-title-fx-vignette {
+  position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(132% 120% at 50% 46%, transparent 56%, rgba(18, 14, 28, .18) 100%);
+  animation: ch1-fx-vignette 1600ms ease-out 300ms both;
+}
+@keyframes ch1-fx-vignette { to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) { .ch1-title-fx { display: none; } }

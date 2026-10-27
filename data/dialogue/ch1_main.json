@@ -1406,14 +1406,24 @@
           "text": "……うん、美味しい。つい、もう一口吸いたくなるね"
         },
         {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……ほんとですか？"
+        },
+        {
           "speaker": "oneesan",
           "face": "ura_smile",
-          "text": "……きみ、いいシーシャ屋さんに、なるよ"
+          "text": "うん。……きみ、いいシーシャ屋さんに、なるよ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "ありがとうございます。お姉さんに出すのは初めてだったので……うれしいです"
+          "text": "よかった……。あ、すみません。今、顔に出ましたよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "お姉さんに出すの、初めてだったので、……うれしくて"
         },
         {
           "speaker": "oneesan",
@@ -1461,6 +1471,31 @@
           "stats": {
             "charm": 2
           }
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "終わったなら、洗い物。頼む"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。……今の俺、ちょっと店長っぽくなかったですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "洗い物まで終わらせてからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "急に現実、……はい、やります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言いながら、シンクに溜まったグラスへ手を伸ばした。"
         }
       ],
       "branches": {
@@ -2039,11 +2074,13 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
+            "fx": "cg_focus_window",
             "text": "……窓辺の煙と猫、残しました。好きって言ってくれたので"
           },
           {
             "speaker": "hajime",
             "face": "normal",
+            "fx": "cg_focus_reset",
             "text": "覚えててくれたんだ。やっぱり、居心地よさそうだ"
           }
         ],

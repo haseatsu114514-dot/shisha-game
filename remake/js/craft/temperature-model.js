@@ -1,5 +1,6 @@
 // 全工程で共有するゲーム内の実効温度帯。位置と許容幅を独立に計算する。
 import { DB } from "../core/data.js";
+import { leafDamageRatio, LEAF_DAMAGE } from "./flavor-life.js";
 
 // 基準帯は互換用の読み取り専用定数。一台の配合で上書きしない。
 export const IDEAL = Object.freeze([0.42, 0.66]);
@@ -33,12 +34,14 @@ export function temperatureBands(cs, flavorById = DB.flavorById) {
     * (EQUIP_WIDTH_FACTORS.charcoal[cs?.equip?.charcoal] || 1.04);
   const totalWidthScale = makerWidth * equipWidth;
   const center = .54 * t;
-  const halfIdeal = .12 * totalWidthScale, halfOptimal = .05 * totalWidthScale;
+  // #1106: 葉が傷むほど適温帯を段階的に細くする。中心は動かさず、幅だけを縮める（温度計・ダイヤルで見て分かる）。
+  const damageScale = 1 - LEAF_DAMAGE.bandNarrow * leafDamageRatio(cs?.leaf);
+  const halfIdeal = .12 * totalWidthScale * damageScale, halfOptimal = .05 * totalWidthScale * damageScale;
   // 表情対応の葉だけをグラム比で反映。少量を足して全配合の中央狙いを消せない。
   const expressionWeight = entries.reduce((sum, [id, w]) =>
     sum + (flavorById?.[id]?.thermal_expression?.quality === "range" ? w : 0), 0);
   return Object.freeze({
-    t, center, selected: entries.length > 0, makerWidth, equipWidth, totalWidthScale, expressionWeight,
+    t, center, selected: entries.length > 0, makerWidth, equipWidth, totalWidthScale, expressionWeight, damageScale,
     ideal: Object.freeze([center - halfIdeal, center + halfIdeal]),
     optimal: Object.freeze([center - halfOptimal, center + halfOptimal]),
   });
