@@ -69,7 +69,8 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   const updateBands = () => {
     const next = temperatureBands(cs);
     if (bands?.center === next.center && bands?.totalWidthScale === next.totalWidthScale
-      && bands?.expressionWeight === next.expressionWeight && bands?.selected === next.selected) return bands;
+      && bands?.expressionWeight === next.expressionWeight && bands?.selected === next.selected
+      && bands?.damageScale === next.damageScale) return bands;
     bands = next;
     const expressive = fullExpression(bands);
     zone.style.bottom = pct(bands.ideal[0]); zone.style.height = pct(bands.ideal[1] - bands.ideal[0]);

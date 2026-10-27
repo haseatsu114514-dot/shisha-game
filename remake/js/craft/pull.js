@@ -19,7 +19,7 @@ import { burnCoals, HEAT_GRADES } from "./heat.js";
 import { craftConditions, heatDelta, pullResult, isIdealTemperature, isOptimalTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
-import { ensureFlavorLife, burnFlavorLeaf } from "./flavor-life.js";
+import { ensureFlavorLife, applyLeafDamage, leafDamagePerPull, leafDamageRatio, leafStopDrift } from "./flavor-life.js";
 import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { mixExpression } from "./flavor-profile.js";
@@ -108,7 +108,9 @@ export async function runCare(cs, { round = 0 } = {}) {
 async function pullGame(cs, mode) {
   await waitBenchReady(cs, mode.store);
   const tutorial = cs.mode === "tutorial";
-  const bands = temperatureBands(cs), ideal = bands.ideal, center = bands.center;
+  // 葉が傷むと適温帯が細くなるので、ダメージのたびに bands/ideal を取り直す。中心は動かないので一度だけ。
+  let bands = temperatureBands(cs), ideal = bands.ideal;
+  const center = bands.center;
   const maker = makerMixProfile(cs);
   const safeLimit = mode.safe + (maker.safePullsBonus || 0);
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
@@ -275,7 +277,9 @@ async function pullGame(cs, mode) {
   };
   // 吸いすぎでフレーバーが傷む。文字は出さず、ダメージの音と揺れ、葉の傷みで伝える（TH27・TH28）。
   const damageLeaf = () => {
-    burnFlavorLeaf(cs.leaf);
+    applyLeafDamage(cs.leaf, leafDamagePerPull(cs));
+    // 傷んだ分だけ適温帯を取り直す。温度計側も同じダメージ量から細くなる。
+    bands = temperatureBands(cs); ideal = bands.ideal;
     setBenchLeaf(cs, true);
     // 適温を合わせたときは成功の絵を保ち、消耗した葉だけで吸いすぎを示す。
     if (!isIdealTemperature(T, bands)) { SE.hit(); shake(undefined, 380); }
@@ -290,10 +294,12 @@ async function pullGame(cs, mode) {
   const doPull = async (at = pos) => {
     if (failed || !running || drawing || finished || pulls >= MAX_PULLS || gameClock.paused) return;
     const before = T;
-    const { z, isJust, delta } = actionAt(at);
+    // 葉が傷むほど、止めた針が狙いから少しずれて落ち着く（止まり方のズレ TH27）。傷が浅いうちはほぼ0。
+    const landed = clamp(at + leafStopDrift(leafDamageRatio(cs.leaf), rand(-1, 1)), 0, 1);
+    const { z, isJust, delta } = actionAt(landed);
     drawing = true;
     cancelAnimationFrame(raf);
-    moveNeedle(at);
+    moveNeedle(landed);
     pulls++;
     const duration = autoSkill() ? 120 : DRAW_MS[z.id];
     const from = coreTemp, to = clamp(from + heatDelta(cs, delta), 0, 1), sway = T - coreTemp;
