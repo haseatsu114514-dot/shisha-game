@@ -427,6 +427,8 @@ function handleCondition(line) {
   if (kind === "stat") {
     const key = STAT_EN[line.stat] || line.stat;
     ok = (state.stats[key] || 0) >= Number(line.threshold || 0);
+  } else if (kind === "local_match_finished") {
+    ok = (state.chapter || 1) >= 2 || (state.chapter || 1) === 1 && ["aftermath", "cleared"].includes(state.phase);
   } else if (kind === "money") {
     ok = state.money >= Number(line.threshold || 0);
   } else if (kind === "flag") {
