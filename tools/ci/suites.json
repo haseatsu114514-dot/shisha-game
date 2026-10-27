@@ -2485,6 +2485,21 @@
         "ARTIFACT_DIR": ".codex/artifacts/flavor-expression"
       },
       "chrome": "playwright"
+    },
+    {
+      "id": "shopping-tutorial",
+      "title": "Tutorial shopping order and return dialogue",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/shop.js",
+        "remake/js/daily/calendar.js",
+        "remake/test/browser/shopping_tutorial.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/shopping_tutorial.mjs"
+      ]
     }
   ]
 }
