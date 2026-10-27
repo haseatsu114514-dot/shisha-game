@@ -147,6 +147,8 @@
         "node --experimental-vm-modules remake/test/ch3_deliveries.mjs",
         "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
+        "node --experimental-vm-modules remake/test/tournament_resources.mjs",
+        "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
