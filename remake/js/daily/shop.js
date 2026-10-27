@@ -193,7 +193,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       if (now - refusedAt < 2600) return; // 連打でも案内を同じ注意で埋めない。
       refusedAt = now;
       SE.error();
-      toast(`スミ「今日は頼んだ${errandName}だけだ。ほかの買い物は、買い出しが終わってからにしろ」`, { kind: "warn" });
+      toast(`先に頼まれた${errandName}を購入しよう。ほかの買い物は買い出しの後で`, { kind: "warn" });
     };
     const pointTo = (button, active) => {
       if (firstErrand) {
@@ -308,7 +308,9 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       filters.hidden = tab !== "flavor";
       filters.querySelectorAll("button").forEach((b) => { b.classList.toggle("on", b.dataset.category === category); b.setAttribute("aria-pressed", String(b.dataset.category === category));
         pointTo(b, errandBox?.dataset.guideStep === "return-filter" && b.dataset.category === "all"); });
-      body.replaceChildren(...(tab === "flavor" ? groupShopFlavors(flavorIds.map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category))).map((f) => productRow(f, true))
+      const items = groupShopFlavors(flavorIds.map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category)));
+      if (firstErrand) items.sort((a, b) => Number(b.id === errand) - Number(a.id === errand));
+      body.replaceChildren(...(tab === "flavor" ? items.map((f) => productRow(f, true))
         : tab === "equip" ? DB.equipment.filter(item => forSale(item, stockChapter)).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }) : sellRows()));
       body.scrollTop = scroll;
       summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: spendableMoney(state) >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - spendableMoney(state))}` }));
@@ -354,7 +356,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       if (errand && flavorStock(errand) < minStock) {
         SE.error(); tab = "flavor"; category = "all"; render();
         body.querySelector(".errand")?.scrollIntoView({ block: "nearest" });
-        toast(`スミ「おい、${errandName}を仕入れてから戻ってこい」`, { kind: "warn" }); return;
+        toast(`${errandName}を購入してから戻ろう`, { kind: "warn" }); return;
       }
       if (order().length) {
         confirming = true;
