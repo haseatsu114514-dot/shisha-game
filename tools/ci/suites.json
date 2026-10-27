@@ -176,6 +176,7 @@
         "node --experimental-vm-modules remake/test/continue_audio.mjs",
         "node --experimental-vm-modules remake/test/continue_context.mjs",
         "node --experimental-vm-modules remake/test/bgm_gain.mjs",
+        "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
