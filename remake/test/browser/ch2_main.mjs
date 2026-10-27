@@ -309,12 +309,13 @@ await suite('ch2-main', async check => {
     await page.locator('[data-test="purikura-receive"]').click();
     await page.waitForFunction(() => window.__photoDone);
     assert(await page.evaluate(() => __photoTrace.some(row => row.text?.includes('うちですらやったことないのに'))));
+    assert.equal(await page.evaluate(() => __remake.state.money), 12345 - 800, 'Each completed repeat photo costs 400 yen');
     await page.evaluate(() => { __remake.state.slot = 2; void window.__offerPhoto(); });
     await page.locator('[data-test="purikura-skip"]').click();
     await page.waitForFunction(() => window.__photoDone);
     v = await page.evaluate(() => structuredClone(__remake.state));
+    assert.equal(v.money, 12345 - 800, 'Declining does not charge for a photo');
     assert.equal(v.flags._ageha_purikura_history.length, 2, 'Declining does not create a photo');
-    assert.equal(v.money, 12345 - 400 * 2, 'Two repeat photos cost 400 each; declining is free');
     assert.equal(v.keepsakes.filter(id => id === 'ryuji_purikura').length, 1);
     await page.evaluate(async () => {
       const { purikuraGuests } = await import('./js/chapters/ch2-purikura.js');

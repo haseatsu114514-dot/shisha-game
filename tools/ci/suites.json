@@ -1954,11 +1954,16 @@
         "assets/ui/fortune/**",
         "remake/test/fortune_readings.mjs",
         "remake/test/browser/hud_fortune.mjs",
+        "remake/test/browser/stamina_recovery.mjs",
+        "remake/js/daily/hud.js",
+        "remake/css/daily.css",
+        "remake/css/ui-art.css",
         "remake/test/browser/fortune_readings.mjs"
       ],
       "run": [
         "node remake/test/fortune_readings.mjs",
         "node remake/test/browser/hud_fortune.mjs",
+        "node remake/test/browser/stamina_recovery.mjs",
         "node remake/test/browser/fortune_readings.mjs"
       ],
       "env": {
@@ -2431,10 +2436,13 @@
         "remake/js/daily/tonari.js",
         "remake/js/daily/home-shisha.js",
         "data/dialogue/ch1_minto.json",
-        "remake/test/browser/flavor_mastery.mjs"
+        "remake/test/browser/flavor_mastery.mjs",
+        "remake/test/browser/mastery_display.mjs",
+        "remake/js/core/mastery-notice.js"
       ],
       "run": [
-        "node remake/test/browser/flavor_mastery.mjs"
+        "node remake/test/browser/flavor_mastery.mjs",
+        "node remake/test/browser/mastery_display.mjs"
       ],
       "weight": 3,
       "timeout": 10

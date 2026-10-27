@@ -12,6 +12,8 @@ async function prepare(page) {
       _delivery_minto_done: true, _lime_tut: 1, _qa_preserved: "keep" });
     s.stats.insight = 27; s.statXp.insight = 0.25;
     s.flavorStock.double_apple = 37;
+    s.flavorMastery = { lemon: 6, mint: 60 };
+    s.flavorLessons = ["remake_lemon_gift"];
     s.relationshipMemories = ["tsumugi_creature"];
     s.lovers = ["mashiro"]; s.lovePts.mashiro = 4; s.loveLevel.mashiro = 2;
     s.romance.mashiro = 2;

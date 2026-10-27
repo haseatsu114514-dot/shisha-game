@@ -58,7 +58,7 @@ await suite("flavor-expression", async check => {
   for (const [platform, options] of [["desktop", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`features-and-forecast-${platform}`, async page => {
       await setupMix(page);
-      assert.match(await page.locator('[data-flavor="mint"] .fr-mastery').innerText(), /Lv\.1/);
+      assert.match(await page.locator('[data-flavor="mint"] .fr-mastery').innerText(), /熟練度 ★☆☆☆☆/);
       const before = await page.evaluate(() => JSON.stringify(FE.core.state));
       await page.locator('[data-test="flavor-info-mint"]').click();
       await feature(page, "flavor-info-close");

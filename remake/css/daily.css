@@ -182,7 +182,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .hud-bar { display: block; height: 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(199, 154, 60, 0.7); overflow: hidden; transition: width 0.4s; }
 .hud-bar b { display: block; height: 100%; background: linear-gradient(90deg, #6fcf8f, #c9f07a); transition: width 0.5s var(--ease-out); }
 .hud-stamina.recovering { animation: stamina-recover 1.4s ease-out; }
-@keyframes stamina-recover { 25% { border-color: #a6e69b; box-shadow: 0 0 20px rgba(143, 230, 155, 0.55); color: #c9f07a; } }
+@keyframes stamina-recover { 25% { border-color: var(--stamina-fill); box-shadow: 0 0 20px var(--stamina-fill); color: var(--stamina-fill); } }
 @media (prefers-reduced-motion: reduce) { .hud-stamina.recovering { animation: none; } }
 .hud-stamina.low .hud-bar b { background: linear-gradient(90deg, #ff6b6b, #ffae6b); animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: 0.5; } }
@@ -1043,7 +1043,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .sleep-recovery.show {opacity:1; transform:none;}
 .sleep-recovery p {font-size:25px; margin:0 0 24px; font-weight:700;}
 .sleep-gauge {height:26px; border-radius:14px; padding:3px; background:#030e08; border:1px solid #9bd2a488; overflow:hidden;}
-.sleep-gauge b {display:block; height:100%; border-radius:10px; background:linear-gradient(90deg,#5ea87b,#abf0af); box-shadow:0 0 18px #95efa577; transition:width 1.05s cubic-bezier(.25,.65,.3,1);}
+.sleep-gauge b {display:block; height:100%; border-radius:10px; background:var(--stamina-fill); box-shadow:0 0 18px var(--stamina-fill); transition:width 1.05s cubic-bezier(.25,.65,.3,1);}
 @media(prefers-reduced-motion:reduce) {.sleep-recovery,.sleep-gauge b {transition:none; transform:none;}}
 .keepsake-list { display: flex; gap: 16px; margin-bottom: 20px; }
 .keepsake-card { display: flex; align-items: center; gap: 15px; background: #100b1b; border: 1px solid #e8c27a55; border-radius: 10px; padding: 10px; text-align: left; cursor: pointer; }
