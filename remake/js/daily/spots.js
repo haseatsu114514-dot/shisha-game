@@ -291,7 +291,6 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     const visit = (state.visits[charId] || 0) + 1;
     const seq = VISIT_SEQ[charId] || [];
     const idx = storyCount(charId);
-    let firstStoryCompleted = false;
     // Keep already-connected legacy saves from repeating the newly early exchange.
     // The original story-count thresholds remain a compatibility path only.
     if (["naru", "adam"].includes(charId) && hasContact(charId)) {
@@ -315,8 +314,9 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
       if (!await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg })) return false;
       state.story[charId] = idx + 1;
-      firstStoryCompleted = idx === 0;
       gainAffinity(charId, 10);
+      // 初回読了と通常獲得はここで確定する。後続の質問・勧誘の中断で保証だけを失わない。
+      if (idx === 0) ensureAffinityLevel(charId, 1);
       if (await afterStory(seq[idx], { bg, signal, deferSave: true }) === false || !live()) return false;
     } else if (finaleAtVisit(charId)) {
       if (!await playFinale(charId, { bg, signal, deferSave: true }) || !live()) return false;
@@ -344,7 +344,6 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     hasContact(charId); // 交換済みの判定をこの場で記録
     await maybeRecruitTrpgMember(charId);
     if (!live()) return false;
-    if (firstStoryCompleted) ensureAffinityLevel(charId, 1);
     return true;
   } finally { active.delete(charId); }
 

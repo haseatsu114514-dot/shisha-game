@@ -14,7 +14,7 @@ const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/
 const clone = value => JSON.parse(JSON.stringify(value));
 async function fixture() {
   const memory = new Map(), events = [], plays = [], timers = new Map();
-  let rainy = false;
+  let rainy = false, recruitImpl = async () => false;
   let serial = 0, playImpl = async scene => ({ id: typeof scene === 'string' ? scene : scene.dialogue_id, visited: [] });
   const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], samechan: data[7], equipById: {}, flavorById: {}, characters: {} };
   const context = vm.createContext({ console, AbortController, setTimeout: fn => { timers.set(++serial,fn); return serial; }, clearTimeout: id => timers.delete(id), localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
@@ -25,7 +25,7 @@ async function fixture() {
     play: async (...args) => { plays.push(args); return playImpl(...args); }, isPlaying: () => false,
     trpgSpot: () => ({id:'trpg',kind:'trpg'}), AXE_BAR: {id:'axe_bar',kind:'axe'}, RAIN_SPOT_TEXTS: {}, isRainy: () => rainy,
     spotFollowupDue: () => null, syncMintoKnowledge() {}, 
-    maybeRecruitTrpgMember: async () => false, sharkSwim: async swap => swap(),
+    maybeRecruitTrpgMember: (...args) => recruitImpl(...args), sharkSwim: async swap => swap(),
     imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
     
     openingStatus: () => ({ok:true}), refreshPlaceCue() {}, playBgm() {}, 
@@ -52,7 +52,7 @@ async function fixture() {
   const core=ns('core/state.js'), stats=ns('core/stats.js');
   const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:0,seed:4}); Object.assign(s.met,{hiyori:true,naru:true,adam:true,minto:true}); Object.assign(s.flags,{_hiyori_meeting_done:true,_hiyori_sumi_message_done:true,_hiyori_message_delivered:true,_hiyori_cracks_done:true}); return s; };
   fresh();
-  return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), spots: ns('daily/spots.js'), hiyori: ns('daily/hiyori.js'), util: ns('core/util.js'), bonds: ns('daily/bonds.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setRain: value => rainy=value, setPlay: fn => playImpl=fn,
+  return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), spots: ns('daily/spots.js'), hiyori: ns('daily/hiyori.js'), util: ns('core/util.js'), bonds: ns('daily/bonds.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setRain: value => rainy=value, setPlay: fn => playImpl=fn, setRecruit: fn => recruitImpl=fn,
     tick: () => { for (const [id,fn] of [...timers]) { timers.delete(id); fn(); } },
     roundTrip: () => { core.save(); core.newGame(); assert(core.load()); return core.state; },
   };
@@ -101,6 +101,48 @@ await check('Samechan reuses existing first-encounter guarantee without another 
  const s=f.fresh();s.chapter=2;delete s.flags._samechan_first_encounter;s.affinity.samechan=0;
  assert.equal(await f.samechan.playSamechanEncounter(),true);assert.equal(f.stats.affinityLevel('samechan'),1);
  const after=JSON.stringify(s);assert.equal(await f.samechan.playSamechanEncounter(),false);assert.equal(JSON.stringify(s),after);
+});
+// The initial VN commit is real; only the unrelated recruitment UI is a controlled deferred port.
+for (const route of ['ordinary','hiyori']) for (const interruption of ['abort','load']) {
+ await check(`${route} completed first VN keeps heart floor across pending recruitment ${interruption}`,async f=>{
+  const id=route==='ordinary'?'adam':'hiyori';
+  const s=route==='ordinary'?first(f,id):readyMeeting(f);
+  s.chapter=2;s.trpg.club.founded=true;s.trpg.club.members={};
+  const controller=new AbortController();let release,entered;
+  const waiting=new Promise(r=>entered=r);
+  f.setRecruit(personId=>{assert.equal(personId,id);assert(s.chapter>=2 && s.phase==='daily' && s.trpg.club.founded && !s.trpg.club.members[id] && s.met[id] && !['sumi','naru'].includes(id),'actual recruitment entry prerequisites');entered();return new Promise(r=>release=r);});
+  const job=route==='ordinary'?f.spots.visitChar(id,{signal:controller.signal}):f.hiyori.playHiyoriEvent('meeting',{signal:controller.signal});
+  await waiting;
+  // Already committed by the existing read path, independently of the visit's eventual return value.
+  assert.equal(s.story[id],1);
+  if(route==='hiyori')assert.equal(s.flags._hiyori_meeting_done,true);
+  const pendingAffinity=s.affinity[id];
+  const loaded=interruption==='load'?f.roundTrip():null;
+  const before=loaded?JSON.stringify(loaded):null;
+  if(interruption==='abort')controller.abort();
+  release(false);assert.equal(await job,false);
+  if(loaded)assert.equal(JSON.stringify(loaded),before,'old runner cannot mutate loaded owner');
+  assert.equal(pendingAffinity,9,'completed first VN must commit its floor before unrelated postprocessing');
+  assert.equal((loaded||s).affinity[id],9);
+  assert.equal(f.stats.affinityLevel(id),1);
+  f.setRecruit(async()=>false);
+  f.roundTrip();assert.equal(f.core.state.affinity[id],9,'isolated save/reload retains the one-time floor');
+  const committed=f.core.state;
+  if(route==='hiyori'){
+   assert.equal(await f.hiyori.playHiyoriEvent('meeting'),false);
+   assert.equal(committed.affinity[id],9,'already committed meeting cannot award again');
+  }else{
+   assert.equal(await f.spots.visitChar(id),true);
+   assert.equal(committed.story[id],2);assert.equal(committed.affinity[id],18,'next visit reads exactly one next scene');
+  }
+ });
+}
+for (const route of ['ordinary','hiyori']) await check(`${route} pending recruitment normal completion keeps high affinity`,async f=>{
+ const id=route==='ordinary'?'adam':'hiyori',s=route==='ordinary'?first(f,id):readyMeeting(f);s.chapter=2;s.trpg.club.founded=true;s.trpg.club.members={};s.affinity[id]=40;
+ let release,entered;const waiting=new Promise(r=>entered=r);
+ f.setRecruit(()=>{entered();return new Promise(r=>release=r);});
+ const job=route==='ordinary'?f.spots.visitChar(id):f.hiyori.playHiyoriEvent('meeting');
+ await waiting;const before=s.affinity[id];assert(before>=40);release(false);assert.equal(await job,true);assert.equal(s.affinity[id],before);
 });
 console.log(JSON.stringify({groups,failures,scope:'actual modules with controlled VN/UI and isolated Map storage; not real browser/menu LOAD'}));
 if(failures)process.exitCode=1;
