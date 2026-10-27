@@ -11,8 +11,9 @@ await suite("loading-gate", async check => {
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), true);
       await page.locator('.loading-panels img').first().waitFor();
       assert.equal(await page.locator('.loading-panels img').count(), 2);
-      assert.equal(await page.locator('.loading-gate').innerText(), 'LOADING…');
-      assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate h2, .loading-gate figcaption').count(), 0);
+      assert.equal(await page.locator('.loading-status').innerText(), 'LOADING…');
+      assert.equal(await page.locator('.loading-comic-title').innerText(), '２コマ漫画・配置確認');
+      assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate figcaption').count(), 0);
       await page.screenshot({ path: path.resolve(`.codex/artifacts/remake-browser/loading-comic-${label}.png`) });
       const boxes = await page.locator('.loading-panels img').evaluateAll(nodes => nodes.map(node => {
         const box = node.getBoundingClientRect(); return { left: box.left, right: box.right, width: box.width, natural: node.naturalWidth };

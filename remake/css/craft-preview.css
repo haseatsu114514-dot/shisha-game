@@ -20,3 +20,5 @@
 #stage[data-loading-study="plain"] .loading-emblem { display: none; }
 #stage[data-loading-study="plain"] .loading-status { right: 42px; bottom: 30px; font-weight: 500; font-style: normal; letter-spacing: .16em; }
 #stage[data-loading-study="plain"] .loading-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+#stage[data-loading-study="plain"] .loading-comic-title { display: none; }
