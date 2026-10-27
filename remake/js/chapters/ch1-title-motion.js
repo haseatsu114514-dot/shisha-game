@@ -16,18 +16,33 @@ const title = CHAPTER_TITLE_ART.find(entry => entry.chapter === 1);
 const ease = value => { const p = Math.max(0, Math.min(1, value)); return p * p * (3 - 2 * p); };
 let active = null;
 
+/** 章開幕の装飾層。煙（テーマ）・人物をなでる一筋の光・周辺減光。canvasの画素には触れない。 */
+function buildTitleFx() {
+  const fx = el("div.ch1-title-fx", { "aria-hidden": "true" });
+  // 各人の足元から立ちのぼる煙。右から順に少し遅れて上がり、集まってくる気配を出す。
+  for (const [x, delay] of [[9, 0], [24, 520], [41, 260], [59, 820], [73, 420], [90, 680]]) {
+    fx.append(el("div.ch1-title-fx-smoke", { style: { left: `${x}%`, animationDelay: `${delay}ms` } }));
+  }
+  fx.append(el("div.ch1-title-fx-sweep"));     // 黒い服と題字にだけ走る光（白地には出ない）
+  fx.append(el("div.ch1-title-fx-vignette"));  // 四隅をわずかに締めて中央へ寄せる
+  return fx;
+}
+
 /** 採用プレビューと同じ原画座標。終端は一枚絵を直接描いて全画素を保つ。 */
 export function drawCh1Title(context, image, elapsed) {
   if (elapsed >= CH1_TITLE_TIMING.fullAt) { context.drawImage(image, 0, 0); return; }
   context.fillStyle = "#fff";
   context.fillRect(0, 0, 1280, 720);
   context.drawImage(image, 0, 655, 1280, 65, 0, 655, 1280, 65);
-  const crop = ([x, y, w, h], alpha) => {
+  const crop = ([x, y, w, h], alpha, rise = 0) => {
     context.save(); context.globalAlpha = alpha;
-    context.drawImage(image, x, y, w, h, x, y, w, h); context.restore();
+    context.drawImage(image, x, y, w, h, x, y + rise, w, h); context.restore();
   };
-  PEOPLE.forEach((box, i) => crop(box, ease((elapsed - CH1_TITLE_TIMING.initial
-    - (5 - i) * CH1_TITLE_TIMING.interval) / CH1_TITLE_TIMING.personFade)));
+  // 6人は右から順に、少し沈んだ所から歩み寄るように浮かび上がる（fullAtより前に定位置へ収まる）。
+  PEOPLE.forEach((box, i) => {
+    const a = ease((elapsed - CH1_TITLE_TIMING.initial - (5 - i) * CH1_TITLE_TIMING.interval) / CH1_TITLE_TIMING.personFade);
+    crop(box, a, (1 - a) * 9);
+  });
   crop([0, 0, 1280, 255], ease((elapsed - CH1_TITLE_TIMING.titleStart) / CH1_TITLE_TIMING.titleFade));
 }
 
@@ -43,7 +58,7 @@ export function playCh1Title({ signal } = {}) {
     style: { position: "absolute", inset: "0", pointerEvents: "auto" },
     onpointerdown: swallow, onpointerup: swallow, onclick: swallow });
   const image = new Image(), media = matchMedia("(prefers-reduced-motion: reduce)");
-  let phase = "loading", frame = 0, timer = 0, imageTimer = 0, context = null, started = 0, endAt = 0;
+  let phase = "loading", frame = 0, timer = 0, imageTimer = 0, context = null, started = 0, endAt = 0, fx = null;
   let removeState = () => {}, observer;
   return new Promise(resolve => {
     const finish = (cancelled = false) => {
@@ -72,7 +87,7 @@ export function playCh1Title({ signal } = {}) {
     };
     const reduce = () => {
       if (phase !== "playing" || !media.matches) return;
-      cancelAnimationFrame(frame); full();
+      cancelAnimationFrame(frame); fx?.remove(); fx = null; full();
       scheduleEnd(Math.min(Math.max(0, endAt - performance.now()), CH1_TITLE_TIMING.hold));
     };
     const tick = now => {
@@ -96,6 +111,8 @@ export function playCh1Title({ signal } = {}) {
           style: { width: "100%", height: "100%", objectFit: "contain" } });
         context = canvas.getContext("2d"); card.append(canvas);
         if (context) drawCh1Title(context, image, media.matches ? CH1_TITLE_TIMING.fullAt : 0);
+        // 動きを出すときだけ、装飾の演出層を絵の上へ重ねる。画素検査はcanvasだけを見るので影響しない。
+        if (context && !media.matches) { fx = buildTitleFx(); card.append(fx); }
       }
       if (!context) {
         shield.dataset.art = "text";
