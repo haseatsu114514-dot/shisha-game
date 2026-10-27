@@ -134,9 +134,11 @@ function peopleTab() {
 
 /** 常連ノート: バイトで接客した客の記録（会った客は名前・回数・メモ、未接客は？？？） */
 function notesTab() {
-  const entries = Object.entries(DB.statusTexts?.customerNotes || {});
   const notes = state.notes || {};
-  const found = entries.filter(([id]) => notes[id]).length;
+  const all = Object.entries(DB.statusTexts?.customerNotes || {});
+  // 取得済みを先に並べる（未取得の？？？は後ろ）。同じ側の中では元の順を保つ
+  const entries = [...all.filter(([id]) => notes[id]), ...all.filter(([id]) => !notes[id])];
+  const found = all.filter(([id]) => notes[id]).length;
   return el("div.st-notes", [
     el("p.note-progress", { text: `${found} / ${entries.length} 人` }),
     el("div.note-list", entries.map(([id, e]) => notes[id]

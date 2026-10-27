@@ -205,7 +205,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
         el("div.mi-tags", [
           spotTimeNote(s, state) ? el("span.tag", { text: spotTimeNote(s, state), dataset: { test: "spot-hours" } }) : null,
-          s.playCost ? el("span.tag", { text: `プレイ ${yen(s.playCost)}` }) : s.cost && !freeGuide(s) ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: freeGuide(s) ? guide.free : s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : s.kind === "trpg" ? "入店・部活設立は無料" : "無料" }),
+          s.id === "choizap" && !state.flags?._gym_member ? el("span.tag", { text: `初回は入会費 ${yen(4000)}`, dataset: { test: "spot-fee" } }) : s.playCost ? el("span.tag", { text: `プレイ ${yen(s.playCost)}` }) : s.cost && !freeGuide(s) ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: freeGuide(s) ? guide.free : s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : s.kind === "trpg" ? "入店・部活設立は無料" : "無料" }),
           staminaNote ? el(`span.tag${warn ? ".warn" : ""}`, { text: warn ? "体力が心配" : staminaNote }) : null,
           known && hasNewEvent(s) ? el("span.tag.new", { text: "新しいイベント" }) : null,
         ]),
