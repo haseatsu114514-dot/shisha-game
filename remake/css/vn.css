@@ -31,6 +31,16 @@
   background-position: center 18px;
 }
 
+/* #1076: つむぎの応募CG。実際の回答(窓辺)の台詞へ合わせて、既存の一枚絵の中の
+   窓辺・猫・煙の位置へ短く視線を寄せ、次の行で全景へ戻す（新規素材・別画像は使わない）。 */
+.vn-cg[data-cg="cg_ch1_tsumugi_heart_art"] {
+  transition: opacity 0.7s ease, background-position .22s ease, background-size .22s ease;
+}
+.vn-cg[data-cg="cg_ch1_tsumugi_heart_art"].cg-focus-window {
+  background-position: 41.7% 72.2%;
+  background-size: 200% 200%;
+}
+
 /* metadata.effect="smoke": 画面の下からうっすら煙がたなびく */
 .vn-effect { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 .vn-effect[data-effect="smoke"]::before,
