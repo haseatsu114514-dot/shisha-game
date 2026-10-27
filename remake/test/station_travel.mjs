@@ -147,12 +147,11 @@ await test("interruption and LOAD before confirmation cancel without charge", as
   screen.replaceChildren(); fresh(); core.save(); await open(); choose(); const stale = button("station-confirm"); core.load(); await stale.onclick();
   assert.equal(core.state.money, 1000); assert.equal(core.state.flags._ch2_region, "home"); map.interruptMap("__lime__"); screen.replaceChildren();
 });
-await test("chapter1 map shows the station without offering an unavailable trip", async () => {
+await test("chapter1 map hides the station and blocks travel", async () => {
   fresh().chapter = 1; const pending = map.chooseSpot({ regions, regionId: "home" });
   await new Promise(r => setTimeout(r, 0));
-  assert.ok(button("station-open"));
-  button("station-open").click();
-  assert.equal(button("station-destination-widehanga"), null);
+  assert.equal(button("station-open"), null);
+  assert.equal(travel.prepareStationTrip(core.state, regions, "widehanga"), null);
   map.interruptMap("done"); await pending; screen.replaceChildren();
 });
 console.log(`PASS 8 station travel acceptance groups; backgrounds=${backgrounds}. Browser layout remains separately unverified.`);
