@@ -104,7 +104,7 @@ export async function withLoading(prepare, {
     }
     content.setAttribute("role", "group");
     content.setAttribute("aria-label", comic.title);
-    content.append(panels);
+    content.append(el("h2.loading-comic-title", { text: comic.title }), panels);
   }).catch(() => {}) : Promise.resolve();
   // A quick task never flashes a loading screen. Styles are loaded only on use.
   const styleReady = loadStyle();

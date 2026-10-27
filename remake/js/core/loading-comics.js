@@ -3,7 +3,7 @@
 const src = "img/loading/adam-chaos.webp";
 export const LOADING_COMICS = [{
   id: "adam-menu-25",
-  title: "けむりのとなり 暴走編 ─ メニュー改訂",
+  title: "メニュー改訂",
   contexts: ["craft"],
   minChapter: 1,
   note: "番外編のギャグ漫画です。左から右へお読みください。",

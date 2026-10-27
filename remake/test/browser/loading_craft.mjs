@@ -10,8 +10,9 @@ await suite('loading-craft', async check => {
       await page.locator('.loading-panels img').first().waitFor();
       assert.equal(await page.locator('.loading-panels img').count(), 2);
       assert.match(await page.locator('.loading-comic').getAttribute('aria-label'), /メニュー改訂/);
-      assert.equal(await page.locator('.loading-gate').innerText(), 'LOADING…');
-      assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate h2, .loading-gate figcaption').count(), 0);
+      assert.equal(await page.locator('.loading-status').innerText(), 'LOADING…');
+      assert.equal(await page.locator('.loading-comic-title').innerText(), 'メニュー改訂');
+      assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate figcaption').count(), 0);
       assert.equal(await page.locator('.bench-panel > *').count(), 0, 'No gameplay before preparation');
       await page.keyboard.press('Enter');
       assert.equal(await page.locator('.loading-gate').count(), 1, 'Cannot skip the preparation');
@@ -26,6 +27,10 @@ await suite('loading-craft', async check => {
       assert(regions[0].ratio > 1.5 && regions[1].ratio > 1.8, 'Keep the original panel proportions');
       assert(regions.every(region => region.src.endsWith('adam-chaos.webp')));
       await page.locator(".loading-card").evaluate(node => Promise.all(node.getAnimations().map(animation => animation.finished)));
+      assert.equal(await page.locator('.loading-card').evaluate(node => {
+        const matrix = new DOMMatrix(getComputedStyle(node).transform);
+        return matrix.b === 0 && matrix.c === 0;
+      }), true, 'The comic sheet stays horizontal, including after its entrance');
       await page.locator("#stage").screenshot({ path: path.resolve(`.codex/artifacts/remake-browser/loading-ingame-${label}.png`) });
       const indicator = await page.locator('.loading-status').evaluate(node => {
         const box = node.getBoundingClientRect(), stage = document.querySelector('#stage').getBoundingClientRect();
