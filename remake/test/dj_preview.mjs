@@ -107,7 +107,7 @@ await check('entry has individual PLAY and no hidden sync/auto blend or game SAV
  const dir=new URL('../previews/dj/',import.meta.url);for(const name of ['app.mjs','audio.mjs','model.mjs','synth.mjs']){const s=fs.readFileSync(new URL(name,dir),'utf8');assert(!/localStorage|sessionStorage|fetch\(|core\/state|daily\/|https?:\/\//.test(s));if(name!=='synth.mjs')assert(!/syncDeck|queueMix|\.sync\(|assist|reconcile|reached/.test(s));}
  const html=fs.readFileSync(new URL('index.html',dir),'utf8');assert(html.includes('play-a')&&html.includes('play-b'));assert(!/data-sync|id="assist"|id="tap"/.test(html));assert(html.includes('wave-a')&&html.includes('wave-b'));assert(html.includes('試験音'));
 });
-console.log(`DJ manual revision: ${groups} current controlled groups PASS; real browser/listening/capture NOT RUN.`);
+
 
 await check('hundredth-BPM changes preserve current beat and affect only selected playback rate',async()=>{
  const a=new DJAudio(Context);await a.play(0);await a.play(1);a.context.currentTime=2;
@@ -116,3 +116,17 @@ await check('hundredth-BPM changes preserve current beat and affect only selecte
  near(beatAt(a.mix.decks[1],3),beat+126.01/60);
  a.tempo(1,140.01);near(a.mix.decks[1].bpm,140);a.tempo(1,109.99);near(a.mix.decks[1].bpm,110);await a.dispose();
 });
+
+await check('BPM SYNC copies either deck once while stopped without playback',()=>{
+ const a=new DJAudio(Context);a.tempo(0,127.83);a.syncBpm(1);assert.deepEqual(a.mix.decks.map(d=>d.bpm),[127.83,127.83]);assert.equal(a.context,null);assert.deepEqual(a.mix.decks.map(d=>d.playing),[false,false]);
+ a.tempo(1,126.17);a.syncBpm(0);assert.deepEqual(a.mix.decks.map(d=>d.bpm),[126.17,126.17]);
+ a.tempo(1,125.01);near(a.mix.decks[0].bpm,126.17);
+});
+await check('BPM SYNC updates actual rate without seeking beat/phrase or changing reference',async()=>{
+ const a=new DJAudio(Context);await a.play(0);a.context.currentTime=2;await a.play(1);a.context.currentTime=5;
+ a.tempo(0,129.37);const beats=a.mix.decks.map(d=>beatAt(d,5)),sources=a.context.sources.length,guide=JSON.stringify(a.mix.guide);
+ a.syncBpm(1);near(a.mix.decks[1].bpm,129.37);near(a.voices[1].source.playbackRate.value,129.37/a.tracks[1].nativeBpm);
+ a.mix.decks.forEach((d,i)=>near(beatAt(d,5),beats[i]));assert.equal(a.context.sources.length,sources);assert.equal(JSON.stringify(a.mix.guide),guide);assert.deepEqual(a.mix.decks.map(d=>d.playing),[true,true]);
+ a.tempo(0,130);near(a.mix.decks[1].bpm,129.37);a.tempo(1,129.38);near(a.mix.decks[1].bpm,129.38);await a.dispose();
+});
+console.log(`DJ revision: ${groups} current controlled groups PASS; real browser/listening/capture NOT RUN.`);

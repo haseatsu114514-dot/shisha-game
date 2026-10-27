@@ -17,16 +17,17 @@ export function snapshot(){
 audio.onInterrupted=()=>status('音声が中断されました。全体再開または各PLAYで再開できます。自動再開はしません。');
 async function pause(){try{await audio.pause();status('全体停止。全体再開は直前に鳴っていたデッキだけを戻します。');}catch(e){status(`停止処理: ${e.message}。音声nodeは切断済みです。`);}}
 $('start').addEventListener('click',async()=>{
- try{if(await audio.start()){if(document.hidden){await pause();return;}status(audio.mix.running?'停止前のデッキを再開しました。':'音声準備完了。手動でBPMを合わせ、まずPLAY Aを押してください。');}}
+ try{if(await audio.start()){if(document.hidden){await pause();return;}status(audio.mix.running?'停止前のデッキを再開しました。':'音声準備完了。PITCHまたはBPM SYNCでBPMを合わせ、まずPLAY Aを押してください。');}}
  catch(e){status(`${e.message}。音声準備またはPLAYから再試行できます。`);}
 });
 $('pause').addEventListener('click',pause);
 for(const id of [0,1]){
  const key=id?'b':'a';
+ $('sync-'+key).addEventListener('click',()=>{audio.syncBpm(id);status(`${key.toUpperCase()}のBPMを${id?'A':'B'}の${audio.mix.decks[id].bpm.toFixed(2)}に合わせました。ピッチは引き続き手動で調整できます。`);});
  $('tempo-'+key).addEventListener('input',e=>audio.tempo(id,Number(e.target.value)));
  $('play-'+key).addEventListener('click',async()=>{
   try{if(audio.mix.decks[id].playing){audio.pauseDeck(id);status(`${key.toUpperCase()} PAUSE。位置を保ちます。`);}
-   else if(await audio.play(id)){if(document.hidden){await pause();return;}status(`${key.toUpperCase()} PLAY。押した時点の音声時計で開始。BPM/開始位相は自動で合わせません。`);}}
+   else if(await audio.play(id)){if(document.hidden){await pause();return;}status(`${key.toUpperCase()} PLAY。押した時点の音声時計で開始。拍の位置は押したタイミングで決まります。`);}}
   catch(e){status(`${e.message}。PLAYから再試行できます。`);}
  });
 }
@@ -104,8 +105,8 @@ function render(){
  $('master').textContent=`VJ基準 ${audio.mix.visualMaster?'B':'A'}（音声時計）`;
  $('phrase').value=frameView.mode==='mix'?frameView.progress:0;
  const target=guide?.to?'B':'A';let text;
- if(frameView.mode==='idle')text='手動PITCHでBPMを合わせ、まずPLAY A。音声準備だけでは鳴りません。';
- else if(frameView.mode==='entry')text=frameView.remaining<=4?`${target}の入りまで ${Math.ceil(frameView.remaining)} 拍。合図で自分でPLAY。`:`次のフレーズ頭まで ${Math.ceil(frameView.remaining/4)}小節。${target}のBPMを手動で合わせてPLAYを準備。`;
+ if(frameView.mode==='idle')text='PITCHまたはBPM SYNCでBPMを合わせ、まずPLAY A。音声準備だけでは鳴りません。';
+ else if(frameView.mode==='entry')text=frameView.remaining<=4?`${target}の入りまで ${Math.ceil(frameView.remaining)} 拍。合図で自分でPLAY。`:`次のフレーズ頭まで ${Math.ceil(frameView.remaining/4)}小節。${target}のBPMを合わせてPLAYを準備。`;
  else if(frameView.mode==='waiting-play')text=frameView.elapsed<1?`PLAY ${target}：今がフレーズ頭。押した瞬間に再生します。`:`${target}は停止中。次の頭まで ${Math.ceil(frameView.remaining)}拍。自動で再生しません。`;
  else text=`8小節MIX ${Math.floor(frameView.progress*8)+1}/8：位相を確かめ、横フェーダーを動かそう。採点なし。`;
  if(text!==message){$('coaching').textContent=text;message=text;}

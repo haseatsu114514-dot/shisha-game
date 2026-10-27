@@ -102,6 +102,7 @@ export class DJAudio {
     setTempo(this.mix.decks[id], value, this.now);
     this.voices[id]?.source.playbackRate.setValueAtTime(this.mix.decks[id].bpm / this.tracks[id].nativeBpm, this.now);
   }
+  syncBpm(id) { this.tempo(id, this.mix.decks[1 - id].bpm); }
   play(id) { return this.start(id); }
   pauseDeck(id) {
     pauseDeck(this.mix, id, this.now);

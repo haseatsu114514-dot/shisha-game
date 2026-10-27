@@ -3,9 +3,11 @@
 Entry: `remake/previews/dj/index.html`, using the existing permitted HTTP preview/normal PR CI environment. Buildless; no dependency installation, external media or game SAVE required. This revision did not launch a local server/browser or change a recorded browser restriction.
 
 1. Prepare audio (initial volume 18%). Preparation alone starts neither deck. Mute/volume are available before playback.
-2. Fine pitch: each deck has −0.01/+0.01 BPM buttons (also usable before playback), with two-decimal BPM/difference readouts and a 0.01-step slider. Tempo is retained after release; these controls do not seek the beat, start a deck or sync the other deck. Range is 110–140 BPM; the outward button is disabled at each limit.
+2. BPM SYNC: press a deck’s button to copy the other deck’s current BPM once, including decimals. It does not start playback, seek or align beat/phrase positions, change the other deck, or keep following later tempo changes. Fine pitch remains available afterwards.
 
-Manually match PITCH/BPM: the fixed test pair starts at A128/B126. Press PLAY A, then press the separate large PLAY B at the displayed phrase head yourself. There is no SYNC, automatic tempo blending, scheduled PLAY, automatic seek or automatic fader movement. PLAY uses the audio clock when its user request is accepted; it does not quantize to the guide.
+Fine pitch: each deck has −0.01/+0.01 BPM buttons (also usable before playback), with two-decimal BPM/difference readouts and a 0.01-step slider. Tempo is retained after release; these controls do not seek the beat, start a deck or sync the other deck. Range is 110–140 BPM; the outward button is disabled at each limit.
+
+Manually match PITCH/BPM: the fixed test pair starts at A128/B126. Press PLAY A, then press the separate large PLAY B at the displayed phrase head yourself. There is no continuous sync, automatic tempo blending, scheduled PLAY, automatic seek or automatic fader movement. PLAY uses the audio clock when its user request is accepted; it does not quantize to the guide.
 3. Use the upper A/lower B actual-PCM waveforms and ±1/16-beat nudges to align phase. Both use the same seven-second scale/current line. Nudging seeks the playing audio; stopped-deck nudge is disabled. The B half-beat button is a labelled test control.
 4. Move the horizontal crossfader over the indicated eight bars. It changes equal-power gains only. There is no EQ/CUE, tapping mini-game, scoring or pass/fail. Fader percentages show position, not linear gain.
 

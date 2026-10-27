@@ -18,7 +18,7 @@ try{
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(url);
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height>=64&&r.width>=100,'Large individual PLAY targets');}
-  assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No sync/CUE/tap input workload');
+  assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No continuous sync/CUE/tap input workload');
   if(kind==='pc')await page.locator('#start').click();else await page.locator('#start').tap();
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.deepEqual(ready.bpms,[128,126]);
   for(const deck of [0,1]){
@@ -45,11 +45,21 @@ try{
    for(let n=0;n<8;n++)await page.locator('[data-nudge="1,-0.0625"]').tap();const corrected=await snap(page);near(corrected.beats[1]-offset.beats[1]-(corrected.clock-offset.clock)*manual/60,-.5);
    const input=page.locator('#crossfader');await input.scrollIntoViewIfNeeded();const r=await input.boundingBox();await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2);near((await snap(page)).mix,.5,.1);near((await snap(page)).bpms[1],manual,.001);
   }
+  {
+   const before=await snap(page);const button=page.locator('#sync-b');if(kind==='pc')await button.click();else await button.tap();
+   const after=await snap(page);near(after.bpms[1],before.bpms[0],.000001);assert.deepEqual(after.playing,before.playing);
+   for(let i=0;i<2;i++)near(after.beats[i]-before.beats[i]-(after.clock-before.clock)*before.bpms[i]/60,0,.03);
+   const plus=page.locator('[data-pitch="1,0.01"]');if(kind==='pc')await plus.click();else await plus.tap();
+   near((await snap(page)).bpms[1],after.bpms[1]+.01,.000001);
+  }
   assert(await page.evaluate(()=>{const v=document.querySelector('.visual-slot').getBoundingClientRect(),box=document.querySelector('.console').getBoundingClientRect();return v.width<=180&&v.height<=160&&v.top>=box.bottom;}),'VJ small window stays below controls');
   if(kind==='reduced')assert((await page.locator('#visual-label').textContent()).includes('静止'));
   await page.locator('#pause').click();const stopped=await snap(page);assert.deepEqual(stopped.playing,[false,false]);assert.equal(stopped.voices,0);await page.waitForTimeout(100);assert.deepEqual((await snap(page)).beats,stopped.beats);
-  await page.locator('#start').click();await wait(page,'audio');const resumed=await snap(page);assert.deepEqual(resumed.playing,[true,true]);near(resumed.bpms[1],manual,.001);assert.equal(resumed.voices,2);assert.deepEqual(errors,[]);
+  await page.locator('#start').click();await wait(page,'audio');const resumed=await snap(page);assert.deepEqual(resumed.playing,[true,true]);near(resumed.bpms[1],stopped.bpms[1],.001);assert.equal(resumed.voices,2);assert.deepEqual(errors,[]);
   results.push({kind,ready,pitched,entered,stopped,resumed,passed:true,limits:'Real WebAudio/UI only; physical listening/capture excluded'});await context.close();
  }
  fs.writeFileSync(path.join(out,'result.json'),JSON.stringify({url,results},null,2));console.log('Manual pitch/individual PLAY PC/touch/reduced WebAudio/UI PASS; no physical listening/video claim');
+}catch(error){
+ const detail=String(error.stack||error).replaceAll('%','%25').replaceAll('\r','%0D').replaceAll('\n','%0A');
+ console.error(`::error title=DJ browser failure::${detail}`);throw error;
 }finally{await browser.close();}
