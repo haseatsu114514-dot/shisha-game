@@ -12,6 +12,7 @@ import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play } from "../vn/engine.js";
 import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { trainRide } from "../core/scene-motions.js";
+import { playBgm } from "../core/audio.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { advanceToChapterTwo, dayOneProgress, cityVisits, recordCityVisit } from "./ch2-progress.js";
 
@@ -27,6 +28,8 @@ let watchingHistory = false;
 const current = owner => session === owner && owner.active && state === owner.state;
 const test = name => `ch2-main-${name}`;
 const progress = () => dayOneProgress(state);
+// 通常の日常・買物と同じ既存曲。J04の街用新曲選定とは分ける。
+const CITY_BGM = "kansetsu_shomei_to_black_coffee";
 
 function button(label, name, action, primary = false, disabled = false) {
   return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text: label, dataset: { test: test(name) }, disabled: session?.busy || disabled, onclick: () => perform(action) });
@@ -88,7 +91,9 @@ async function openChapter(advance) {
       save();
     }
     if (state.chapter !== 2) return;
-    if (chapterDay(state) > 1 || state.flags._ch2_preparation_started) await continuePreparation();
+    const preparing = chapterDay(state) > 1 || state.flags._ch2_preparation_started;
+    playBgm(!preparing && ["departure", "tonari", "complete"].includes(progress().stage) ? "tonari" : CITY_BGM);
+    if (preparing) await continuePreparation();
     else await continueDayOne();
   });
 }
@@ -106,8 +111,9 @@ async function scene(id, label, background) {
   owner.scene = id;
   if (background) {
     await setBg(background, { instant: true });
-    if (!current(owner)) return false;
   }
+  if (!current(owner)) return false;
+  playBgm(background?.includes("bg_tonari_inside") ? "tonari" : CITY_BGM);
   showScreen("none", null);
   layers.hud.replaceChildren(el("div.ch2-vn-label", { text: `第2章・DAY ${chapterDay(state)} ／ ${label}` }));
   const controller = new AbortController();
@@ -125,7 +131,9 @@ async function mapBackground() {
   if (!current(owner)) return false;
   owner.mapAvailable = ready;
   await setBg(ready ? MAP.day : null, { instant: true });
-  return current(owner);
+  if (!current(owner)) return false;
+  playBgm(CITY_BGM);
+  return true;
 }
 
 async function continueDayOne() {
@@ -177,6 +185,7 @@ async function continueDayOne() {
     } else if (stage === "complete") {
       await setBg(bgUrl("bg_tonari_inside", "night"), { instant: true });
       if (!current(owner)) return;
+      playBgm("tonari");
       renderComplete();
       focus("menu");
       return;

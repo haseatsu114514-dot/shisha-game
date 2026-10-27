@@ -76,6 +76,19 @@ async function begin(page) {
   await page.locator('[data-test="end-chapter2"]').click();
   await page.locator(test('map')).waitFor({ timeout: 20000 });
 }
+async function watchMusic(page) {
+  await page.evaluate(async () => {
+    const audio = await import('./js/core/audio.js');
+    const vn = await import('./js/vn/engine.js');
+    const previous = vn.hooks.onLine;
+    window.__ch2SceneMusic = [];
+    vn.hooks.onLine = (id, line) => {
+      previous?.(id, line);
+      if (window.__ch2SceneMusic.at(-1)?.id !== id) window.__ch2SceneMusic.push({ id, key: audio.currentBgm() });
+    };
+  });
+}
+const musicOf = page => page.evaluate(async () => (await import('./js/core/audio.js')).currentBgm());
 async function visit(page, id, inside = false, touch = false) {
   const pin = page.locator(test(`pin-${id}`));
   if (touch) await pin.tap(); else await pin.click();
@@ -105,11 +118,33 @@ async function screenshot(page, name) {
 }
 
 await suite('ch2-main', async check => {
+  await check('specified-dialogue-music-restores-the-scene-track', async page => {
+    await page.mouse.click(1, 1); // 実操作で既存AudioContextを解放する。
+    await page.evaluate(async () => {
+      const core = await import('./js/core/state.js'); core.newGame();
+      const audio = await import('./js/core/audio.js');
+      const vn = await import('./js/vn/engine.js');
+      await (await import('./js/chapters/ch2-city-data.js')).loadPreparationDialogues();
+      audio.playBgm('tonari'); vn.vnTest.turbo = true;
+      window.__specifiedMusic = [];
+      vn.hooks.onLine = id => { if (id === 'ch2_slump_taste') window.__specifiedMusic.push(audio.currentBgm()); };
+      await vn.play('ch2_slump_taste');
+    });
+    const music = await page.evaluate(() => window.__specifiedMusic);
+    assert(music.length > 0);
+    assert(music.every(key => key === 'bgm_taste_distant'), 'Existing dialogue-specific music must remain in effect');
+    assert.equal(await musicOf(page), 'tonari', 'Dialogue completion returns to its existing scene track');
+  });
   await check('chapter-clear-to-city-preserves-progress', async page => {
     const before = await setup(page);
+    await watchMusic(page);
     await assertFits(page, '[data-test="end-chapter2"], [data-test="end-preview"], [data-test="end-title"]');
     await screenshot(page, 'chapter1-clear.png');
     await begin(page);
+    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'Chapter 2 city must replace tournament aftermath music');
+    const music = await page.evaluate(() => window.__ch2SceneMusic);
+    assert.equal(music.find(row => row.id === 'remake_ch2_departure')?.key, 'tonari');
+    assert.equal(music.find(row => row.id === 'ch2_city_arrival')?.key, 'kansetsu_shomei_to_black_coffee');
     const value = await page.evaluate(() => window.__remake.state);
     assert.equal(value.chapter, 2); assert.equal(value.day, 15); assert.equal(value.phase, 'daily');
     assert.equal(value.flags._ch1_cleared, true);
@@ -132,13 +167,20 @@ await suite('ch2-main', async check => {
 
   await check('touch-visits-rooms-and-first-day-ending', async page => {
     const before = await setup(page, { knownTrpg: false });
+    await watchMusic(page);
     await begin(page);
+    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee');
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 0, 'A meeting is not a spot introduction');
     for (const id of ['ageha', 'rei', 'c_station', 'kumicho']) await visit(page, id, id !== 'c_station', true);
+    for (const id of ['ageha', 'rei', 'kumicho']) {
+      const music = await page.evaluate(() => window.__ch2SceneMusic);
+      assert.equal(music.find(row => row.id === `ch2_city_${id}_inside`)?.key, 'kansetsu_shomei_to_black_coffee');
+    }
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 1);
     await screenshot(page, 'city-discovered-spots.png');
     await page.locator(test('station')).tap(); await page.locator(test('go')).tap();
     await page.locator(test('complete')).waitFor();
+    assert.equal(await musicOf(page), 'tonari');
     const value = await page.evaluate(() => window.__remake.state);
     assert.equal(value.chapter, 2); assert.equal(value.day, 15); assert.equal(value.slot, 2);
     assert.equal(value.flags._ch2_day1.stage, 'complete');
@@ -151,6 +193,7 @@ await suite('ch2-main', async check => {
     await preserved(page, before);
     await reloadSaved(page);
     await page.locator(test('complete')).waitFor();
+    assert.equal(await musicOf(page), 'tonari', 'LOAD at the homecoming checkpoint restores the existing tonari track');
     assert.equal(await page.evaluate(() => window.__remake.state.day), 15, 'Loading completion advanced the date again');
     await preserved(page, before);
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
@@ -158,6 +201,7 @@ await suite('ch2-main', async check => {
   await check('autosave-resumes-partial-city-without-replaying-opening', async page => {
     const before = await setup(page); await begin(page); await visit(page, 'rei', true);
     await reloadSaved(page); await page.locator(test('map')).waitFor();
+    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'LOAD in the city must replace title music');
     assert.equal(await page.locator(test('pin-rei')).getAttribute('data-read'), 'true');
     assert.equal(await page.locator(test('pin-ageha')).getAttribute('data-read'), 'false');
     assert.equal(await page.locator('#vn.active').count(), 0);
@@ -178,6 +222,7 @@ await suite('ch2-main', async check => {
     assert.match(await page.locator('[data-test="slot-1"] .ss-info').textContent(), /第2章・DAY 1/);
     await page.locator('[data-test="slot-1"]').click(); await page.locator('[data-test="confirm-load"]').click();
     await page.locator(test('map')).waitFor();
+    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'MENU LOAD restores the city track');
     assert.equal(await page.locator(test('pin-kumicho')).getAttribute('data-read'), 'true');
     assert.equal(await page.locator(test('pin-c_station')).getAttribute('data-read'), 'false');
     assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_day1.stage), 'map');
