@@ -176,6 +176,7 @@
         "node remake/test/ch2_tournament.mjs",
         "node remake/test/tournament_story.mjs",
         "node remake/test/served_eval.mjs",
+        "node remake/test/naru_tasting.mjs",
         "node --experimental-vm-modules remake/test/tournament_vote_progression.mjs",
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
