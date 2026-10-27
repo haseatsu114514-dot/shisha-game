@@ -171,7 +171,7 @@ const cond = story.lines.find((l) => l.type === "condition" && l.flag === "_ch2_
 assert(cond && story.branches[cond.next_true]?.length && story.branches[cond.next_false]?.length);
 const engine = read("../js/vn/engine.js");
 assert(/purikura: \(\) => purikuraShot\(\)/.test(engine), "engine runs the purikura motion line");
-// 入口（scene-motions.js の purikuraShot）: SKIP中と動きを減らす設定では読み込まず、読み込み中にLOADされたら始めない
+// 入口（scene-motions.js の purikuraShot）: 動きを減らす設定では読み込まず、SKIP中は最後まで再生し、読み込み中にLOADされたら始めない（#1081 H05）
 async function wrapperCase({ skip = false, reduce = false, loadDuringImport = false } = {}) {
   const context = vm.createContext({ console, document: { body: { classList: { contains: () => skip } } } });
   const owner = { flags: {} }, loaded = { flags: {} };
@@ -202,8 +202,8 @@ async function wrapperCase({ skip = false, reduce = false, loadDuringImport = fa
   return { imported, played };
 }
 assert.deepEqual(await wrapperCase(), { imported: 1, played: 1 });
-assert.deepEqual(await wrapperCase({ skip: true }), { imported: 0, played: 0 }, "SKIP skips the purikura");
+assert.deepEqual(await wrapperCase({ skip: true }), { imported: 1, played: 1 }, "SKIP plays the purikura to the end (#1081 H05)");
 assert.deepEqual(await wrapperCase({ reduce: true }), { imported: 0, played: 0 }, "reduced motion skips the purikura");
 assert.deepEqual(await wrapperCase({ loadDuringImport: true }), { imported: 1, played: 0 }, "LOAD during the lazy import does not start the old purikura");
 
-console.log("[purikura] PASS: fit, cleanup, sounds, a/b, sprites/CG, doodle words, tremor stop then stamp, LOAD guard (image wait and lazy import), SKIP/reduced motion, dialogue hook");
+console.log("[purikura] PASS: fit, cleanup, sounds, a/b, sprites/CG, doodle words, tremor stop then stamp, LOAD guard (image wait and lazy import), SKIP plays / reduced motion skips, dialogue hook");

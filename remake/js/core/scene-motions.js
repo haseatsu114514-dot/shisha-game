@@ -1,7 +1,7 @@
 // 場面ごとの一度きりのモーショングラフィックス（CI107〜CI109）。中身は remake/js/motions/ の場面ごとのファイル。
 // チェキ（PEPPERMINT）／占いのタロット／締めくくりの贈り物／バイトの終わり／サメちゃんとの出会い／つむぎのスケッチ。
 // 各場面に a／b の2パターンがあり、本編は場面ごとの採用（mg-kit.js の ADOPTED_VARIANT）。比べるときは ?movar=b か __remake.dev.motionVariant("b")、配色は紫1色／場面ごとの色（?mopal=free）。
-// SKIP中と動きを減らす設定では省く（背景を替える mid() だけは呼ぶ）。
+// 動きを減らす設定では省く（背景を替える mid() だけは呼ぶ）。SKIP中は省かず最後まで見せる（#1081 H05・一度きりの演出を飛ばして見逃さない）。
 import { state } from "./state.js";
 import { DB } from "./data.js";
 import { reducedMotion } from "./transition-kit.js";
@@ -28,7 +28,8 @@ export async function limeExchange(charId, context = null) {
   await mod?.exchange(charId, context, { still: reducedMotion() });
 }
 
-const skipMotion = () => reducedMotion() || document.body.classList.contains("vn-skip");
+// 演出を省くのは動きを減らす設定のときだけ。SKIP中は一度きりの演出を飛ばさず最後まで再生する（#1081 H05）。
+const omitMotion = () => reducedMotion();
 /** 今のパターンの関数。読めなかったときは null（演出を省いて先へ進む） */
 const variant = async (scene, load) => {
   const mod = await load().catch((e) => { console.error(e); return null; });
@@ -37,13 +38,15 @@ const variant = async (scene, load) => {
 
 /** placeCg(): 写真が仕上がった瞬間に会話のCGを同じ位置へ置く（省いたときは会話側がふつうに置く） */
 export async function chekiShot(url, placeCg = null) {
-  const run = skipMotion() || !url ? null : await variant("cheki", cheki);
+  const owner = state;
+  const run = omitMotion() || !url ? null : await variant("cheki", cheki);
+  if (state !== owner) return; // 読み込み中のLOADから、前のセーブのチェキを始めない。
   if (run) await run(url, placeCg);
 }
 
 /** あげはの店のプリクラ（#939）。会話の {"type": "motion", "id": "purikura"} から呼ぶ */
 export async function purikuraShot() {
-  if (skipMotion()) return;
+  if (omitMotion()) return;
   const owner = state;
   const run = await variant("purikura", purikura);
   if (state !== owner) return; // 読み込み中のLOADから、前のセーブのプリクラを始めない。
@@ -51,24 +54,24 @@ export async function purikuraShot() {
 }
 
 export async function tarotFlip(charId = state?.fortune?.char) {
-  const run = skipMotion() ? null : await variant("tarot", tarot);
+  const run = omitMotion() ? null : await variant("tarot", tarot);
   if (run) await run(charId);
 }
 
 export async function giftOpen(giftId) {
   const gear = DB.equipById?.[giftId];
-  const run = skipMotion() || !gear ? null : await variant("gift", gift);
+  const run = omitMotion() || !gear ? null : await variant("gift", gift);
   if (run) await run(gear);
 }
 
 export async function shiftClose() {
-  const run = skipMotion() ? null : await variant("shift", shift);
+  const run = omitMotion() ? null : await variant("shift", shift);
   if (run) await run();
 }
 
 /** mid(): 覆っている間に次の背景へ替える */
 export async function sharkSwim(mid) {
-  const run = skipMotion() ? null : await variant("shark", shark);
+  const run = omitMotion() ? null : await variant("shark", shark);
   if (run) await run(mid);
   else await mid?.();
 }
@@ -76,7 +79,7 @@ export async function sharkSwim(mid) {
 /** 電車に乗る（Issue #891）。mid(): 車内の絵が覆っている間に次の背景へ替える。tone: "day"|"night"（省略で今の時間帯） */
 export async function trainRide(mid, opts = {}) {
   // テストの高速送りでも省く（engine の vnTest は window.__remake 経由で見る。循環 import を避ける）
-  const mod = skipMotion() || window.__remake?.vnTest?.turbo ? null : await train().catch((e) => { console.error(e); return null; });
+  const mod = omitMotion() || window.__remake?.vnTest?.turbo ? null : await train().catch((e) => { console.error(e); return null; });
   if (mod) await mod.a(mid, opts);
   else await mid?.();
 }
@@ -84,14 +87,14 @@ export async function trainRide(mid, opts = {}) {
 /** 新幹線に乗る（Issue #1059）。mid(): 車窓が覆っている間に次の背景へ替える。
  * opts.from/to: "home"|"tokyo"。第2章の隣町行き電車(#891 trainRide)とは別の演出。 */
 export async function shinkansenRide(mid, opts = {}) {
-  const mod = skipMotion() || window.__remake?.vnTest?.turbo ? null : await shinkansen().catch((e) => { console.error(e); return null; });
+  const mod = omitMotion() || window.__remake?.vnTest?.turbo ? null : await shinkansen().catch((e) => { console.error(e); return null; });
   if (mod) await mod.a(mid, opts);
   else await mid?.();
 }
 
 /** mid(): 覆っている間に背景を替える。bgUrl はその背景の絵（線画の元） */
 export async function sketchIn(mid, bgUrl) {
-  const run = skipMotion() || !bgUrl ? null : await variant("sketch", sketch);
+  const run = omitMotion() || !bgUrl ? null : await variant("sketch", sketch);
   if (run) await run(mid, bgUrl);
   else await mid?.();
 }
