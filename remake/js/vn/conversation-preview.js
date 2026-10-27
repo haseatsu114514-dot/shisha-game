@@ -143,6 +143,8 @@ async function start() {
       { type: "choice", choices: [{ text: "もう少し話す" }, { text: "ゆっくり煙を眺める" }] },
       { speaker: "hiyori", face: "smile", text: "……うん。今日はここにしよう" },
     ] },
+    // 本編のスミさんの仕組み解説（図解つき, #1128）をそのまま再生して確かめる
+    shisha: DB.dialogues.ch1_sumi_basics,
   };
   status.textContent = "画面をクリックで会話送り · セーブへの影響なし";
   await play(scenes[selector.value], { bg: backgrounds[backgroundSelect.value][1], signal });
