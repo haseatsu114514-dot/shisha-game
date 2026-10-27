@@ -57,6 +57,11 @@ export function tableStatus(state, catalog, { nightBusy = false } = {}) {
   if (nightBusy || state.pendingInvite && (state.pendingInvite.day ?? state.day) === state.day && state.pendingInvite.slot === 1) {
     return { ok: false, reason: "今夜は先に決まった予定がある" };
   }
+  const hasCompanion = (catalog?.participants || []).some(p => participantStatus(state, p).ok);
+  const hasPlayableBook = (catalog?.scenarios || []).some(b => state?.trpg?.owned?.includes(b.id) && !state?.trpg?.cleared?.[b.id]);
+  if (!hasCompanion && !hasPlayableBook) {
+    return { ok: true, reason: "今は招集できる仲間／遊べる本がない。知り合いとの交流を深めよう" };
+  }
   return { ok: true, reason: "今夜の卓を囲もう" };
 }
 
