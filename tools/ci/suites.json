@@ -150,6 +150,7 @@
         "node remake/test/venue_hours.mjs",
         "node remake/test/ch2_progress.mjs",
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
+        "node remake/test/ch2_delivery_identity.mjs",
         "node remake/test/ch2_tournament.mjs",
         "node remake/test/tournament_story.mjs",
         "node remake/test/served_eval.mjs",

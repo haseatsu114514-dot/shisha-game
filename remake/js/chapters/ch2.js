@@ -16,7 +16,7 @@ import { playBgm } from "../core/audio.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { advanceToChapterTwo, dayOneProgress, cityVisits, recordCityVisit } from "./ch2-progress.js";
 
-import { acceptChapterTwoDeliveries, deliveryPending, finishChapterTwoDelivery, chapterTwoDeliveriesDone, DELIVERY_STOPS } from "./ch2-deliveries.js";
+import { acceptChapterTwoDeliveries, deliveryPending, finishChapterTwoDelivery, chapterTwoDeliveriesDone, DELIVERY_STOPS, snapshotDeliveryIdentity, confirmDeliveryIdentity, reconcileDeliveryIdentity } from "./ch2-deliveries.js";
 import { openShop } from "../daily/shop.js";
 import { openTrpgBar } from "../daily/trpg.js";
 import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot } from "./ch2-outings.js";
@@ -91,6 +91,8 @@ async function openChapter(advance) {
       save();
     }
     if (state.chapter !== 2) return;
+    // 既存SAVE（配達済みで面識が付いていない）を読んだときに「？」を自然へ直す。
+    if (reconcileDeliveryIdentity(state)) save();
     const preparing = chapterDay(state) > 1 || state.flags._ch2_preparation_started;
     playBgm(!preparing && ["departure", "tonari", "complete"].includes(progress().stage) ? "tonari" : CITY_BGM);
     if (preparing) await continuePreparation();
@@ -204,19 +206,39 @@ async function introduceStop(id, background) {
 
 async function visit(stop) {
   const owner = session;
-  if (!await scene(`ch2_city_${stop.id}`, stop.sceneLabel || stop.name)) return;
+  const delivering = deliveryPending(state, stop.id);
+  const tracked = DELIVERY_STOPS.includes(stop.id);
+  // 顔合わせ挨拶。初対面なら台詞中で名乗り（set_flag _met_）、面識済みなら短い再会。
+  // 完読まで面識を確定しない（SKIP/LOAD/中断で面識だけ先に付くのを防ぐ）。
+  const restore = tracked ? snapshotDeliveryIdentity(state, stop.id) : null;
+  if (!await scene(`ch2_city_${stop.id}`, stop.sceneLabel || stop.name)) { restore?.(); return; }
+  // 完読したので面識と名前表示を確定する（台詞の set_flag が失われても整合させる保険・idempotent）。
+  if (tracked) confirmDeliveryIdentity(state, stop.id);
   recordCityVisit(state, stop.id); save();
   if (stop.id === "c_station" && !state.flags._ch2_rules_read) {
     await (await import("../scenes/rule-sheet.js")).openRuleSheet();
     if (!current(owner)) return;
     state.flags._ch2_rules_read = true; save();
   }
-  if (deliveryPending(state, stop.id)) {
+  if (delivering) {
     if (!await scene(`remake_ch2_delivery_${stop.id}`, "配達とご挨拶", ROOMS[stop.id])) return;
     finishChapterTwoDelivery(state, stop.id); save();
   }
   if (!await introduceStop(stop.id, ROOMS[stop.id])) return;
   if (stop.id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha)) return;
+  // J05: 配達で来たら、そのまま店内へ入って店主と話す（「店内をのぞく」は出さない）。
+  // 室内の絵が間に合わないときだけ、通常訪問と同じ店頭カード（再読み込みできる）に落とす。
+  if (delivering && ROOMS[stop.id]) {
+    const ready = await imageReady(ROOMS[stop.id], 15000);
+    if (!current(owner)) return;
+    if (ready) {
+      if (!await scene(`ch2_city_${stop.id}_inside`, stop.sceneLabel || stop.name, ROOMS[stop.id])) return;
+      state.flags[`_ch2_city_inside_${stop.id}`] = true; save();
+      if (!await mapBackground()) return;
+      renderMap(); focus(`pin-${stop.id}`);
+      return;
+    }
+  }
   if (ROOMS[stop.id]) renderStop(stop);
   else { await mapBackground(); renderMap(); focus("return"); }
 }

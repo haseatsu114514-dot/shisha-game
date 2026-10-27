@@ -93,18 +93,26 @@ async function visit(page, id, inside = false, touch = false) {
   const pin = page.locator(test(`pin-${id}`));
   if (touch) await pin.tap(); else await pin.click();
   if (touch) await page.locator(test("go")).tap(); else await page.locator(test("go")).click();
-  if (id !== 'c_station') {
-    await page.locator(test('stop')).waitFor();
-    await assertFits(page, `${test('inside')}, ${test('back-map')}`);
-    const next = page.locator(test(inside ? 'inside' : 'back-map'));
-    if (touch) await next.tap(); else await next.click();
-  }
   if (id === 'c_station') {
     await page.locator('[data-test="rule-sheet"]').waitFor();
     assert.match(await page.locator('[data-test="rule-sheet"]').innerText(), /ストロベリー/);
     if (touch) await page.locator('[data-test="rule-sheet-close"]').tap(); else await page.locator('[data-test="rule-sheet-close"]').click();
+    await page.locator(test('map')).waitFor();
+    return;
   }
-  await page.locator(test('map')).waitFor();
+  // 配達（J05: そのまま店内→地図）は再描画された地図でピンが訪問済みになる。通常訪問は店頭カードが出る。
+  // turbo で一気に進んでも取りこぼさないよう、開始時と区別できる安定状態を待つ。
+  await page.waitForFunction(sel => {
+    if (document.querySelector('[data-test="ch2-main-stop"]')) return true;
+    const pin = document.querySelector(sel);
+    return !!pin && pin.getAttribute('data-read') === 'true';
+  }, test(`pin-${id}`));
+  if (await page.locator(test('stop')).count()) {
+    await assertFits(page, `${test('inside')}, ${test('back-map')}`);
+    const next = page.locator(test(inside ? 'inside' : 'back-map'));
+    if (touch) await next.tap(); else await next.click();
+    await page.locator(test('map')).waitFor();
+  }
 }
 async function reloadSaved(page, slot = 0) {
   await page.reload();
@@ -263,14 +271,28 @@ await suite('ch2-main', async check => {
     await preserved(page, before);
   });
 
-  await check('reload-during-room-does-not-complete-unread-room', async page => {
-    const before = await setup(page); await begin(page); await visit(page, 'rei');
-    await page.locator(test('pin-rei')).click(); await page.locator(test('go')).click(); await page.locator(test('stop')).waitFor();
-    await page.evaluate(() => { window.__remake.vnTest.turbo = false; });
-    await page.locator(test('inside')).click(); await page.locator('#vn.active .vn-box').waitFor();
+  await check('reload-during-delivery-room-does-not-complete-unread-room', async page => {
+    const before = await setup(page); await begin(page);
+    // J05の配達導線はそのまま店内へ入る。店内に入った瞬間に送りを止め、未読のままリロードする。
+    await page.evaluate(async () => {
+      const vn = await import('./js/vn/engine.js');
+      const prev = vn.hooks.onEnter;
+      vn.hooks.onEnter = (id, target) => { prev?.(id, target); if (id === 'ch2_city_rei_inside') window.__remake.vnTest.turbo = false; };
+    });
+    await page.locator(test('pin-rei')).click(); await page.locator(test('go')).click();
+    // 挨拶→配達の受け渡しを turbo で抜け、店内会話に入って止まるのを待つ（店頭カードは挟まない）。
+    await page.waitForFunction(() => window.__ch2Main?.scene === 'ch2_city_rei_inside');
+    await page.locator('#vn.active .vn-box').waitFor();
+    assert.equal(await page.locator(test('stop')).count(), 0, '配達は店頭カードを挟まず店内へ入る');
+    // 店内に入る前に配達の受け渡しは確定済み。中断で面識・配達完了は巻き戻らない。
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_deliveries.done.rei), true);
+    assert.equal(await page.evaluate(() => window.__remake.state.met.rei), true);
     await reloadSaved(page); await page.locator(test('map')).waitFor();
-    assert.equal(await page.evaluate(() => !!window.__remake.state.flags._ch2_city_inside_rei), false);
+    assert.equal(await page.evaluate(() => !!window.__remake.state.flags._ch2_city_inside_rei), false, '未読の店内は完了扱いにしない');
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_deliveries.done.rei), true);
+    assert.equal(await page.evaluate(() => window.__remake.state.met.rei), true, '完読した顔合わせの面識は残る');
     assert.equal(await page.locator(test('pin-rei')).getAttribute('data-read'), 'true');
+    assert.equal(await page.locator(test('pin-rei')).locator('.pin-status').textContent(), 'お届け済み');
     await preserved(page, before);
   });
 
@@ -384,6 +406,11 @@ await suite('ch2-main', async check => {
     await page.locator(test('pin-rei')).tap();
     await page.locator(test('go')).scrollIntoViewIfNeeded();
     await assertFits(page, '[data-test="ch2-main-go"]');
+    await page.locator(test('go')).tap();
+    // J05: 配達は店頭カードを挟まず、そのまま店内→地図へ戻る（訪問済みで戻るのを待つ）。
+    await page.waitForFunction(() => document.querySelector('[data-test="ch2-main-pin-rei"]')?.getAttribute('data-read') === 'true');
+    // 配達後の再訪では従来の店頭カードが出る。小画面でも操作が収まる。
+    await page.locator(test('pin-rei')).tap();
     await page.locator(test('go')).tap();
     await page.locator(test('stop')).waitFor();
     await page.locator(test('back-map')).scrollIntoViewIfNeeded();
