@@ -118,10 +118,10 @@ await suite("ch3-tournament", async check => {
         nodes.map(node => node.dataset.judge).sort()), ["dr_kemuri", "emil", "nagumo"]);
       assert.match(await page.locator(".ch2-contest-judges").textContent(), /エミル|Emil/);
       const explanation = await page.locator(t("vote-reason")).innerText();
-      if (round === 1) assert.doesNotMatch(explanation, /青柑橘/, "No tasting effect before service");
+      if (round === 1) assert.doesNotMatch(explanation, /鋭い苦みの余韻/, "No tasting effect before service");
       if (round === 2) assert.match(explanation, /南雲は水を飲んだ.*久世の直後にはじめを試喫.*比較-2/s,
         "Show the actual palate trap that affected Hajime");
-      if (round === 3) assert.match(explanation, /青柑橘は直後の比較に残らなかった/,
+      if (round === 3) assert.match(explanation, /鋭い苦みは直後の比較に残らなかった/,
         "Show when the same tactic failed because of order and water");
       await assertFits(page, ".ch2-contest .btn, .ch2-contest-rival, .judge-chip");
       if (round === 1) {

@@ -262,9 +262,9 @@ function voteReason(p, cs, final = false) {
     const target = displayName(tactic.affected, state);
     const contrast = tactic.delta > 0 ? "香りが強く映った" : "香りが薄く映った";
     const others = affected.filter(who => who !== judge);
-    lines.push(`南雲は水を飲んだ。${names([judge])}は水を挟まず、久世の直後に${target}を試喫。青柑橘の余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
+    lines.push(`南雲は水を飲んだ。${names([judge])}は水を挟まず、久世の直後に${target}を試喫。鋭い苦みの余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
   } else if (JUDGES.some(judge => last[judge]?.tactic)) {
-    lines.push("南雲は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、久世の青柑橘は直後の比較に残らなかった。");
+    lines.push("南雲は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、久世の鋭い苦みは直後の比較に残らなかった。");
   }
   return lines;
 }
