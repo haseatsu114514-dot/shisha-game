@@ -63,8 +63,6 @@
 .audience-single .audience-people { grid-template-columns: 1fr; width: 84px; flex: none; padding: 4px; }
 .audience-speech { flex: 1; min-width: 0; }
 .audience-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
-.audience-heading:has(.audience-rating[hidden]) { display: none; }
-.bench-audience:is([data-voice="inner"], [data-voice="mc"]) .audience-heading { display: flex; }
 .audience-rating { font-size: 20px; line-height: 1; font-weight: 700; color: #d3d9cb; }
 .audience-caption { font-size: 10px; color: #bdb7ac; letter-spacing: 0.08em; }
 .audience-note { margin: 0; font-size: 13px; color: #d1c7b6; line-height: 1.45; overflow-wrap: anywhere; }

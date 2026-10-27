@@ -2,7 +2,7 @@
 import { el } from "../core/util.js";
 import { displayName, portraitInfo, faceIconUrl } from "../core/data.js";
 import { state } from "../core/state.js";
-import { evaluationOf, feedbackLine, commentaryLine, tutorialGuide, innerVoiceLine } from "./feedback.js";
+import { evaluationOf, feedbackLine, commentaryLine, tutorialGuide, innerVoiceLine, watchLine } from "./feedback.js";
 import { autoWrap } from "../vn/text.js";
 import { imageReady } from "../core/ui.js";
 
@@ -68,7 +68,7 @@ export function buildAudience(cs) {
   const caption = el("span.audience-caption", { text: ids[0] === "hajime" ? "心の声" : "" });
   const note = el("p.audience-note", { dataset: { test: "craft-feedback" } });
   const setNote = (text) => { note.dataset.raw = text; delete note.dataset.wrapped; note.textContent = text; wrapNote(note); };
-  setNote(ids[0] === "hajime" ? innerVoiceLine("default", "watch") : "手元を見守っている");
+  setNote(ids[0] === "hajime" ? innerVoiceLine("default", "watch") : watchLine(ids[0], "default"));
   if (typeof ResizeObserver === "function") new ResizeObserver(() => wrapNote(note)).observe(note);
   const root = el("aside.bench-audience.audience-single", { "aria-label": cs.mode === "drill" ? "はじめの心の声" : cs.mode === "tournament" ? "審査員と大会実況" : "見守る人", dataset: { test: "craft-audience" } }, [
     el("div.audience-people", [person]), el("div.audience-speech", { "aria-live": "polite" }, [el("div.audience-heading", [mark, speaker, caption]), note]),
@@ -107,8 +107,8 @@ export function buildAudience(cs) {
       showPerson(primary, "watch");
       mark.hidden = true; caption.textContent = active === "hajime" ? "心の声" : ""; delete root.dataset.tone;
       setNote(active === "hajime" ? innerVoiceLine(step, "watch") : cs.mode === "tutorial" && active === "sumi"
-        ? (hint.startsWith("スミ「") ? hint.slice(3, -1) : tutorialGuide(step) || "手元を見守っている")
-        : "手元を見守っている");
+        ? (hint.startsWith("スミ「") ? hint.slice(3, -1) : tutorialGuide(step) || watchLine("sumi", step))
+        : watchLine(active, step));
     },
     say(text) {
       if (cs.mode !== "tournament") return;
@@ -125,7 +125,7 @@ export function buildAudience(cs) {
       showPerson(id, mood, kind);
       if (!final) {
         mark.hidden = true; caption.textContent = id === "hajime" ? "心の声" : ""; delete root.dataset.tone;
-        setNote(text || (kind === "watch" ? id === "hajime" ? innerVoiceLine(step, "watch") : "手元を見守っている" : commentaryLine(id, step, positive, { tutorial: cs.mode === "tutorial" })));
+        setNote(text || (kind === "watch" ? id === "hajime" ? innerVoiceLine(step, "watch") : watchLine(id, step) : commentaryLine(id, step, positive, { tutorial: cs.mode === "tutorial" })));
       } else {
         const evaluation = evaluationOf(score ?? (kind === "just" || kind === "perfect" ? 100 : positive ? 75 : 40));
         mark.hidden = false; mark.textContent = evaluation.mark;
