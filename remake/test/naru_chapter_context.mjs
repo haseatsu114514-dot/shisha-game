@@ -1,4 +1,4 @@
-// Actual bondCondition/playFinale + actual VN condition handler; unrelated ports controlled.
+// Actual playFinale + native VN tournament condition; unrelated ports controlled.
 // No browser, real play SAVE/LOAD or user storage is opened.
 import fs from "node:fs";
 import vm from "node:vm";
@@ -7,6 +7,7 @@ import { pathToFileURL } from "node:url";
 import path from "node:path";
 const root = process.env.A1044_SOURCE_ROOT ? pathToFileURL(path.resolve(process.env.A1044_SOURCE_ROOT) + "/") : new URL("../../", import.meta.url);
 const read = p => fs.readFileSync(new URL(p, root), "utf8");
+const { tournamentFinished } = await import(new URL("remake/js/core/story-context.js", root));
 const source = read("remake/js/daily/bonds.js"), engine = read("remake/js/vn/engine.js");
 const DB = { dialogues: {}, equipById: { suyaki_naru: { id: "suyaki_naru", name: "なるの素焼き" } }, flavorById: {} };
 for (const file of ["ch1_naru", "ch1_bonds"]) for (const d of JSON.parse(read(`data/dialogue/${file}.json`)).dialogues) DB.dialogues[d.dialogue_id] = d;
@@ -20,7 +21,7 @@ function exactFunction(text, name) {
   const start = text.indexOf(`function ${name}(`); assert(start >= 0);
   const end = text.indexOf("\n}\n", start); assert(end > start); return text.slice(start, end + 2);
 }
-const handlerContext = vm.createContext({ DB, STAT_EN: {}, jumpTo: () => { throw Error("Unexpected cross-scene jump"); } });
+const handlerContext = vm.createContext({ tournamentFinished, DB, STAT_EN: {}, jumpTo: () => { throw Error("Unexpected cross-scene jump"); } });
 vm.runInContext(exactFunction(engine, "handleCondition"), handlerContext);
 function rows(id) {
   const d = DB.dialogues[id]; assert(d); const running = { queue: [...d.lines], branches: d.branches || {} }, out = [];
@@ -64,7 +65,7 @@ for (const chapter of [2, 3]) {
 results.push("later chapters with no new flags preserve memory/effects and avoid pre-match lines");
 for (const phase of ["aftermath", "cleared"]) { reset(1, phase); assert.doesNotMatch(text("ch1_naru_fifth"), beforeText); }
 results.push("post-promise chapter1 phases use completed-match wording");
-assert(read("remake/js/chapters/ch1.js").includes('line.condition_type === "story_seen" ? storySeen(line.dialogue) : bondCondition(line)'), "Actual public setupHooks must forward the new condition");
+assert(engine.includes('kind === "tournament_finished"'), "Tournament context must work natively, without chapter hooks");
 reset(2); assert.equal(await bonds.playFinale("naru"), true); assert.deepEqual(state.owned, ["suyaki_naru"]); assert.equal(gifts, 1); assert.equal(saves, 1);
 assert.equal(await bonds.playFinale("naru"), false); assert.equal(gifts, 1); assert.equal(saves, 1);
 results.push("actual playFinale retains one-time gift and save");

@@ -10,59 +10,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "「零-ZERO-」。外からでも重厚なロック音楽が聞こえてくる。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ドアを開けると、薄暗い店内に目が慣れるまで少し時間がかかった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "カウンターの中に、人がいた。赤と黒に染めた非対称の髪。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "首から手の甲まで続くタトゥーが、ろうそくの照明に浮かび上がっている。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その目が、こちらを向いた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……と思った瞬間、カウンター奥でガタンと音がした。REIが炭トングを倒したらしい。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（……え？ あの外見で、今焦った？）"
-        },
-        {
-          "speaker": "rei",
-          "face": "serious",
-          "text": "……"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "REIは視線を逸らして、トングを拾い上げた。何も言わない。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（どう判断すればいいんだ。怖い人なのか、それとも……）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "あの、tonariというシーシャ屋から来た蒸野といいます。大会前に他のお店を勉強させてもらおうかと……"
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "rei",
+          "next_true": "already_met",
+          "next_false": "first_meeting"
         },
         {
           "speaker": "rei",
@@ -193,7 +145,94 @@
           "type": "remember",
           "memory_id": "rei_listen"
         }
-      ]
+      ],
+      "branches": {
+        "visit_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの、tonariというシーシャ屋から来た蒸野といいます。大会前に他のお店を勉強させてもらおうかと……"
+          }
+        ],
+        "visit_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの、tonariの蒸野です。今日はお店の煙を勉強させてもらおうかと……"
+          }
+        ],
+        "already_met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "零-ZERO-のカウンターに座ると、REIがこちらを向いた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "REIさん。今日は、お店の煙を勉強させてください"
+          }
+        ],
+        "first_meeting": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「零-ZERO-」。外からでも重厚なロック音楽が聞こえてくる。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ドアを開けると、薄暗い店内に目が慣れるまで少し時間がかかった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターの中に、人がいた。赤と黒に染めた非対称の髪。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "首から手の甲まで続くタトゥーが、ろうそくの照明に浮かび上がっている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "その目が、こちらを向いた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "……と思った瞬間、カウンター奥でガタンと音がした。REIが炭トングを倒したらしい。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……え？ あの外見で、今焦った？）"
+          },
+          {
+            "speaker": "rei",
+            "face": "serious",
+            "text": "……"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "REIは視線を逸らして、トングを拾い上げた。何も言わない。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（どう判断すればいいんだ。怖い人なのか、それとも……）"
+          },
+          {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 2,
+            "next_true": "visit_after",
+            "next_false": "visit_before"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_rei_second",
@@ -655,9 +694,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "大会前、最後の訪問。REIはカウンターで、ぼそっと言いながら仕込みをしていた。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "arrival_after",
+          "next_false": "arrival_before"
         },
         {
           "speaker": "rei",
@@ -675,19 +716,11 @@
           "text": "……来るかと思ってた。ああ、名前を考えてる"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "大会前なのに、いつも通りですね"
-        },
-        {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……変わらない方がいい。緊張すると煙が乱れる"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（それは確かに）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "routine_after",
+          "next_false": "routine_before"
         },
         {
           "speaker": "rei",
@@ -740,19 +773,11 @@
           "text": "REIは顔を下に向けた。耳が少し赤かった。"
         },
         {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……大会で戦うことになるが"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい"
-        },
-        {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……負けない。本気で煙を出す。だが……お前には、ちゃんと届けたい"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "offering_after",
+          "next_false": "offering_before"
         },
         {
           "speaker": "hajime",
@@ -838,7 +863,91 @@
           "face": "",
           "text": "……【センス】と【根性】が上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "arrival_before": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "大会前、最後の訪問。REIはカウンターで、ぼそっと言いながら仕込みをしていた。"
+          }
+        ],
+        "arrival_after": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "零-ZERO-を訪ねると、REIはカウンターで、ぼそっと言いながら仕込みをしていた。"
+          }
+        ],
+        "routine_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "大会前なのに、いつも通りですね"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……変わらない方がいい。緊張すると煙が乱れる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（それは確かに）"
+          }
+        ],
+        "routine_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "仕込みの時も、曲を考えてるんですね"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……浮かぶ時は、勝手に浮かぶ。手は止めない"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（名前も、作りながら探すんだな）"
+          }
+        ],
+        "offering_before": [
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……大会で戦うことになるが"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……負けない。本気で煙を出す。だが……お前には、ちゃんと届けたい"
+          }
+        ],
+        "offering_after": [
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……今日は、ひとつ吸っていけ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……まだ名前は決まらない。だが……お前には、ちゃんと届けたい"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_rei_group_concert_prep",

@@ -645,14 +645,11 @@
       "dialogue_id": "ch1_adam_fifth",
       "lines": [
         {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "……挑戦者の来訪か。いよいよ大会だな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。tonariの代表として、精一杯やってきます"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "greeting_after",
+          "next_false": "greeting_before"
         },
         {
           "speaker": "adam",
@@ -762,6 +759,30 @@
             "speaker": "adam",
             "face": "normal",
             "text": "……ふむ。俺はさっきの濃さも残したいところだが"
+          }
+        ],
+        "greeting_before": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……挑戦者の来訪か。いよいよ大会だな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。tonariの代表として、精一杯やってきます"
+          }
+        ],
+        "greeting_after": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……来たか、同志よ。今日はお前の意見も聞きたい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。俺でよければ、ぜひ"
           }
         ]
       }
@@ -1021,70 +1042,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "大会が終わってから、初めてエデンに足を踏み入れた。重厚な木のドア。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "押し寄せるダブルアップルの甘い香り。大会会場とは違う、この人の本拠地だ。"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "……初めて来たな、お前がここに来るのは"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "大会で戦ったのに、店には来ていなかったので"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "大会の会場でお前の煙を見ていた。嘘がなかった。……どこで身につけた？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "tonariのバイトで。見様見真似で"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "ふむ。環境の匂いを吸い込んで育ったか。それは本物の習得だ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "アダムがフレーバーをボウルに詰め始めた。緻密で、迷いがない。"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "エデンへようこそ。一度はここの果実を知っておけ"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "お前の煙が、どこに向かうべきか、少し見えてくるかもしれない"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "出てきたシーシャは、暴力的なほど甘くて、それなのにどこか誠実な味がした。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【センス】が上がった。"
-        },
-        {
-          "type": "set_flag",
-          "flag": "ch1_adam_after_ch1_done"
+          "type": "jump",
+          "next_id": "ch1_adam_after_ch1"
         }
-      ]
+      ],
+      "comment": "旧ID互換。大会前の顔合わせを無視した初対面版は使わず、通常の後日談へ進む。"
     }
   ]
 }

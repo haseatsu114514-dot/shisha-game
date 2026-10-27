@@ -8,7 +8,7 @@
           "condition_type": "flag",
           "flag": "_delivery_minto",
           "next_true": "dl_door",
-          "next_false": "self_door"
+          "next_false": "check_known"
         },
         {
           "type": "bg",
@@ -433,7 +433,7 @@
           {
             "speaker": "minto",
             "face": "wink",
-            "text": "ふふっ、初めましては１回だけだもん。大事にしてね♡"
+            "text": "ふふっ、初ご来店の記念だもん。大事にしてね♡"
           },
           {
             "type": "buy_keepsake",
@@ -512,6 +512,22 @@
             "speaker": "minto",
             "face": "wink",
             "text": "もちろんっ♡ どうぞ、こっちへ！"
+          }
+        ],
+        "check_known": [
+          {
+            "type": "condition",
+            "condition_type": "met",
+            "char_id": "minto",
+            "next_true": "known_door",
+            "next_false": "self_door"
+          }
+        ],
+        "known_door": [
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "あっ、はじめくんっ♡ 今日はゆっくり吸っていってね！"
           }
         ]
       },
@@ -685,9 +701,10 @@
         },
         {
           "type": "condition",
-          "condition_type": "local_match_finished",
+          "condition_type": "tournament_finished",
           "next_true": "after_local_match",
-          "next_false": "before_local_match"
+          "next_false": "before_local_match",
+          "tournament_chapter": 1
         },
         {
           "speaker": "",
@@ -697,10 +714,18 @@
       ],
       "branches": {
         "before_local_match": [
-          { "speaker": "hajime", "face": "normal", "text": "（なのに大会では、あの『可愛さ』という武器に負けるかもしれないんだ）" }
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（なのに大会では、あの『可愛さ』という武器に負けるかもしれないんだ）"
+          }
         ],
         "after_local_match": [
-          { "speaker": "hajime", "face": "normal", "text": "（あの「可愛さ」も、煙と一緒に人を惹きつける彼女の武器なんだ）" }
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの「可愛さ」も、煙と一緒に人を惹きつける彼女の武器なんだ）"
+          }
         ],
         "cb_shibui": [
           {
@@ -1962,85 +1987,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "大会が終わってから、初めてぺぱーみんとに来てみた。"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "おかえりなさーいっ♡ ……あれっ、はじめくん！？ みんとのお店に来てくれたの！？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "大会ぶりです。一度来てみたくて"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "えへへっ、嬉しいなー♡ 初ご来店ありがとうございますっ♡"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "ちゃんと来てくれると思ってなかったから"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "店内はパステルカラーの内装で、大会会場とは別世界のような可愛らしさだ。これがみんとの本拠地か。"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "……大会、おめでとう。本当に"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "みんとのシーシャも、すごかったよ。そこはちゃんと思ってた"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "えへ……まあ、負けは負けだから。でも悔しい気持ちより、なんか……続けたい、ってなってる"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……この人、キャピキャピした見た目の裏に、ちゃんと熱いものを持ってる）"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "ねっ、せっかく来てくれたんだから、"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "みんと特製のオススメ作っちゃうね♡ ゆっくり味わっていってねー♡ ……あ、お水も出すから、"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "ちゃんと水分も取るんだよ？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "出されたシーシャには、エディブルフラワーが浮いていた。甘くて、でも確かな技術の煙だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が上がった。"
-        },
-        {
-          "type": "set_flag",
-          "flag": "ch1_minto_after_ch1_done"
+          "type": "jump",
+          "next_id": "ch1_minto_after_ch1"
         }
-      ]
+      ],
+      "comment": "旧ID互換。大会前の顔合わせを無視した初対面版は使わず、通常の後日談へ進む。"
     },
     {
       "dialogue_id": "ch1_minto_group_regulars",

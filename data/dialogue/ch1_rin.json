@@ -407,9 +407,11 @@
           "text": "いいんですか、本当に"
         },
         {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "君の大会、見に行けないからさ。代わりに練習で、私の仕事を確かめてよ"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "sample_after",
+          "next_false": "sample_before"
         },
         {
           "speaker": "rin",
@@ -489,7 +491,23 @@
           "face": "",
           "text": "……【センス】が大きく上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "sample_before": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "君の大会、見に行けないからさ。代わりに練習で、私の仕事を確かめてよ"
+          }
+        ],
+        "sample_after": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "君の手でどんな香りになるか知りたいんだ。練習で、私の仕事を確かめてよ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_rin_repeat",

@@ -7,44 +7,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "「神崎煙草店」。店名だけ見れば、ただの老舗タバコ屋だ。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "暖簾をくぐると、古い木と葉巻の香りが迎えた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "奥に、シーシャのセットが見える。客は誰もいない。静かすぎるくらい静かだ。"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "おう、いらっしゃい、……見ねえ顔だな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（……目つきも声も、堅気じゃない。それに、腕、見えてる。インクが）"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "俺は神崎。……お前、大会に出る口か"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。県大会に出ていて、この辺りのシーシャ屋を回っていたら、ここが気になって"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "……ほう。大会、ときたか"
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "kumicho",
+          "next_true": "already_met",
+          "next_false": "first_meeting"
         },
         {
           "speaker": "",
@@ -120,7 +87,94 @@
           "face": "",
           "text": "……【技術】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "already_met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "神崎煙草店の暖簾をくぐると、神崎が顔を上げた。"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "おう、小僧。今日は一服していくか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。お店の煙を吸ってみたくて"
+          }
+        ],
+        "first_meeting": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「神崎煙草店」。店名だけ見れば、ただの老舗タバコ屋だ。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "暖簾をくぐると、古い木と葉巻の香りが迎えた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "奥に、シーシャのセットが見える。客は誰もいない。静かすぎるくらい静かだ。"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "おう、いらっしゃい、……見ねえ顔だな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……目つきも声も、堅気じゃない。それに、腕、見えてる。インクが）"
+          },
+          {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 2,
+            "next_true": "introduction_after",
+            "next_false": "introduction_before"
+          }
+        ],
+        "introduction_before": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "俺は神崎。……お前、大会に出る口か"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。県大会に出ていて、この辺りのシーシャ屋を回っていたら、ここが気になって"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "……ほう。大会、ときたか"
+          }
+        ],
+        "introduction_after": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "俺は神崎。……この店はどうやって知った"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariの蒸野です。この辺りのお店を回っていたら、ここが気になって"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "……ほう。tonariから来たか"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_kumicho_second",
@@ -705,75 +759,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "大会が終わってから、神崎煙草店に初めて足を踏み入れた。古い木の香り。奥に見えるシーシャのセット。"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "おう、いらっしゃい。……お前、大会にいた顔だな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。大会で戦って、それでここのことが気になって"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "……ほう。負かした相手の店に来るたぁ、なかなか肝が据わってるじゃねえか"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……笑ってる。怖いけど笑ってる）"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "優勝おめでとさん。結果は結果だ、……胸張って受け止めな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "神崎さんのシーシャも、圧倒されました。本当に"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "（少し間を置いて）……嬉しいこと言うじゃねえか。一服してきな、うちのドラゴンフルーツだ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "出てきたシーシャは、大会の舞台で見たどれとも違う、静かな一杯だった。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（神崎さんの仕事、来てみても全部は分からない）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（でも、俺に丁寧に作ってくれたのは分かる）"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "縁があったら、また来な"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】が上がった。"
-        },
-        {
-          "type": "set_flag",
-          "flag": "ch2_kumicho_after_ch2_done"
+          "type": "jump",
+          "next_id": "ch2_kumicho_after_ch2"
         }
-      ]
+      ],
+      "comment": "旧ID互換。大会前の顔合わせを無視した初対面版は使わず、通常の後日談へ進む。"
     }
   ]
 }

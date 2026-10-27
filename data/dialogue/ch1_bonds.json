@@ -482,9 +482,10 @@
       "lines": [
         {
           "type": "condition",
-          "condition_type": "naru_local_match_finished",
+          "condition_type": "tournament_finished",
           "next_true": "after_local_match",
-          "next_false": "before_local_match"
+          "next_false": "before_local_match",
+          "tournament_chapter": 1
         },
         {
           "speaker": "hajime",
