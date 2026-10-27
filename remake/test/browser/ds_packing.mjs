@@ -113,6 +113,8 @@ try {
         Object.assign(s, {phase:"daily",day:6,slot:0,money:45678,stamina:90,weatherSeed:4});
         Object.assign(s.flags, {_morning_6:true,_lime_tut:1,_lime_opened:true,_qa_ds678:"isolated"});
         s.owned.push("home_rig_set");
+        // アルミを使うHMDで作り、穴あけ工程の盤面スケーリングを検査する（ロートスは穴あけを飛ばす/#1107）。
+        s.owned = s.owned.filter(id => id !== "lotos_hagal"); s.owned.push("tanukish_lid"); s.equip.hms = "tanukish_lid";
         s.flavorStock = {double_apple:20,mint:10};
         localStorage.setItem(core.SAVE_KEY,JSON.stringify(s)); localStorage.setItem("suien_remake_slot1",JSON.stringify(s));
         return s;
