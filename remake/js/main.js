@@ -167,6 +167,12 @@ window.__remake = {
           ...(destination ? { to: destination } : {}),
         });
       }
+      if (name.startsWith("shinkansen")) {
+        const destination = name.split("-")[1] === "home" ? "home" : "tokyo";
+        await setBg(bgUrl(destination === "home" ? "bg_mukai_shop" : "bg_tonari_inside", "day"));
+        return motions.shinkansenRide(() => setBg(bgUrl(destination === "home" ? "bg_tonari_inside" : "bg_ch3_train_arrival"), { instant: true }),
+          { from: destination === "home" ? "tokyo" : "home", to: destination });
+      }
       if (name === "shark") {
         await setBg(bgUrl("bg_street", "night"));
         return (await import("./daily/samechan.js")).playSamechanEncounter();

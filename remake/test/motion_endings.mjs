@@ -302,8 +302,74 @@ async function checkTrains() {
   }
 }
 
+// 新幹線(#1059)は電車(#891)と別クラス・別SEの一度きりの演出。往路/復路の行先表示・遮蔽・保存不変を確認。
+async function checkShinkansen() {
+  const cases = [
+    ["outbound", { from: "home", to: "tokyo" }, "のぞみ ▶ 東京"],
+    ["inbound", { from: "tokyo", to: "home" }, "のぞみ ▶ 地元"],
+  ];
+  for (const [name, options, label] of cases) {
+    const { page, context } = await open({ width: 1280, height: 720 }, `shinkansen-${name}`);
+    try {
+      await page.evaluate(options => {
+        window.shnAudit = { mid: 0, opacity: null, fades: [], done: false, before: JSON.stringify(T.core.state), start: performance.now() };
+        const animate = Element.prototype.animate;
+        Element.prototype.animate = function (frames, timing) {
+          if (this.matches(".mo-shinkansen")) shnAudit.fades.push({ frames, duration: timing.duration });
+          return animate.call(this, frames, timing);
+        };
+        window.shnRun = T.motions.shinkansenRide(async () => {
+          shnAudit.mid++;
+          const node = document.querySelector(".mo-shinkansen");
+          shnAudit.opacity = Number(getComputedStyle(node).opacity);
+          shnAudit.covering = T.transitions.isCovering();
+          document.getElementById("bg").style.backgroundColor = "rgb(9, 7, 19)";
+        }, options).then(() => {
+          shnAudit.elapsed = performance.now() - shnAudit.start;
+          shnAudit.unchanged = shnAudit.before === JSON.stringify(T.core.state);
+          shnAudit.done = true;
+        });
+      }, options);
+      await page.waitForFunction(() => window.shnAudit.opacity === 1);
+      await page.keyboard.press("Enter");
+      const visible = await page.evaluate(() => ({
+        sign: document.querySelector(".mo-shinkansen text")?.textContent,
+        backdrop: document.querySelector(".mo-shinkansen .mo-back").style.backgroundColor,
+        keys: audit.keys,
+      }));
+      assert.deepEqual(visible, { sign: label, backdrop: "rgb(21, 14, 48)", keys: 0 });
+      if (shots) await page.screenshot({ path: `${shots}/shinkansen-${name}-covered.png` });
+      await page.waitForFunction(() => shnAudit.done);
+      const result = await page.evaluate(() => ({ ...shnAudit,
+        overlays: document.querySelectorAll(".mo-shinkansen").length, coveringAfter: T.transitions.isCovering() }));
+      assert.equal(result.mid, 1); assert.equal(result.opacity, 1); assert.equal(result.covering, true);
+      assert.equal(result.unchanged, true); assert.equal(result.overlays, 0); assert.equal(result.coveringAfter, false);
+      assert.deepEqual(result.fades.map(f => [f.frames[0].opacity, f.frames.at(-1).opacity, f.duration]), [[0, 1, 240], [1, 0, 300]]);
+      assert(result.elapsed < 2600, `${name}: ${result.elapsed}ms took too long`);
+      await page.keyboard.press("Enter"); assert.equal(await page.evaluate(() => audit.keys), 1);
+      console.log(`PASS shinkansen ${name}: ${Math.round(result.elapsed)}ms, sign/fade/cover/cleanup/save`);
+    } finally { await context.close(); }
+  }
+  for (const mode of ["skip", "reduced", "turbo", "exception"]) {
+    const { page, context } = await open({ width: 1280, height: 720 }, `shinkansen-${mode}`, mode === "reduced" ? "reduce" : "no-preference");
+    try {
+      const result = await page.evaluate(async mode => {
+        if (mode === "skip") document.body.classList.add("vn-skip");
+        if (mode === "turbo") window.__remake.vnTest.turbo = true;
+        let mid = 0, rejected = false;
+        try { await T.motions.shinkansenRide(() => { mid++; if (mode === "exception") throw Error("expected shinkansen failure"); }); }
+        catch (e) { if (e.message !== "expected shinkansen failure") throw e; rejected = true; }
+        return { mid, rejected, overlays: document.querySelectorAll(".mo-shinkansen").length, covering: T.transitions.isCovering() };
+      }, mode);
+      assert.deepEqual(result, { mid: 1, rejected: mode === "exception", overlays: 0, covering: false });
+      console.log(`PASS shinkansen ${mode}`);
+    } finally { await context.close(); }
+  }
+}
+
 try {
   await checkTrains();
+  await checkShinkansen();
   if (!process.argv.includes("--train-only")) {
   const desktop = { width: 1280, height: 720 }, mobile = { width: 844, height: 390 };
   const { page: auditPage, context: auditContext } = await open(desktop, "pen-audit");

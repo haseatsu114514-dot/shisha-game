@@ -7,6 +7,7 @@ import { layers, showScreen, setBg, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { shinkansenRide } from "../core/scene-motions.js";
 import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene } from "./ch3-aftermath-progress.js";
 
@@ -121,7 +122,13 @@ export async function runChapterThreeAftermath() {
 async function readScene(owner, scene) {
   const source = DB.dialogues[scene.id];
   if (!source) throw new Error(`台本がありません: ${scene.id}`);
-  await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true });
+  if (scene.id === "ch3_home_customer") {
+    // 東京→地元の復路。帰郷した夜の場面へ入る直前だけ新幹線の車窓を見せる（#1059）。
+    await shinkansenRide(async () => { await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true }); },
+      { from: "tokyo", to: "home" });
+  } else {
+    await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true });
+  }
   if (!live(owner)) return false;
   showScreen("none", null);
   // 制御行とカットインは読了後のcheckpointまで未確定。会話中の保存は出さない。
@@ -147,7 +154,9 @@ async function renderStage(owner) {
     ], "次の章は、今後の更新で追加されます。");
     return;
   }
-  await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true });
+  // 帰郷の夜(#1059)は、新幹線の車窓が覆うまで東京側の背景のままにし、tonariを先見せしない。
+  const preBg = scene.id === "ch3_home_customer" ? "bg_mukai_shop" : scene.bg;
+  await setBg(preBg ? bgUrl(preBg) : null, { instant: true });
   if (!live(owner)) return;
   card(owner, "scene", `DAY ${chapterDay(state)}・${scene.slot ? "夜" : "昼"} ／ ${scene.label}`,
     `${scene.location}で、次の話を聞く。`, [
