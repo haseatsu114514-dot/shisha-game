@@ -1,5 +1,5 @@
 // #1081 J08: 第2章の雨演出（背景分類・窓座標・3層雨粒・水紋・色調判定・天候抽選不変）の単体検証
-// node remake/test/ch2_rain_j08.mjs
+// node --experimental-vm-modules remake/test/ch2_rain_j08.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { newGame, state } from "../js/core/state.js";
@@ -12,7 +12,7 @@ import {
   renderWeatherLayer,
 } from "../js/daily/weather.js";
 import { MAP, STATION, ROOMS } from "../js/chapters/ch2-city-data.js";
-import { CH2_LOCATIONS, YUZUGAYA_BG } from "../js/core/city-locations.js";
+import { CH2_SCENE_BACKGROUNDS, CITY_BACKGROUNDS } from "../js/core/city-locations.js";
 
 function mockEl(spec, attrs = {}, children = []) {
   if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
@@ -42,13 +42,14 @@ state.day = 1;
 assert.equal(isRainy(1), false, "DAY1は常に晴れ");
 assert.equal(weatherOf(1), "sun");
 
-// 既存の代表シード（ch2_daily.mjs 等で使われる weatherSeed=4, day=15 は雨、weatherSeed=7, day=15 は晴れ）
-state.day = 15;
+// 既存の代表シード（ch2_daily.mjs で使われる day=16: weatherSeed=4 は雨、weatherSeed=0 は晴れ）
+state.day = 16;
 state.weatherSeed = 4;
-assert.equal(isRainy(), true, "weatherSeed=4, day=15 は雨");
+assert.equal(isRainy(), true, "weatherSeed=4, day=16 は雨");
 assert.equal(weatherOf(), "rain");
-state.weatherSeed = 7;
-assert.equal(isRainy(), false, "weatherSeed=7, day=15 は晴れまたは曇り（雨ではない）");
+state.weatherSeed = 0;
+assert.equal(isRainy(), false, "weatherSeed=0, day=16 は晴れ（雨ではない）");
+assert.equal(weatherOf(), "sun");
 
 state.weatherSeed = 4;
 state.phase = "tournament";
@@ -61,7 +62,8 @@ for (const bg of [
   MAP.day,
   MAP.night,
   STATION,
-  CH2_LOCATIONS.venueBench,
+  CH2_SCENE_BACKGROUNDS.venueBench,
+  CH2_SCENE_BACKGROUNDS.naruWindow,
   "img/backgrounds/bg_ch2_venue_bench_night.webp",
   "img/backgrounds/bg_kemurikusa_outside_night.webp",
 ]) {
@@ -69,28 +71,28 @@ for (const bg of [
   assert.deepEqual(scene, { mode: "outdoor", windows: [] }, `屋外背景が outdoor になっていない: ${bg}`);
 }
 
-// 3. 第2章の窓なし室内（MELTY PUFF・神崎煙草店奥・零-ZERO-・閉店後あげは店・TRPGカフェ）は部屋の中に雨を降らせない
+// 3. 第2章の窓なし室内（MELTY PUFF・神崎煙草店奥・零-ZERO-・閉店後あげは店・TRPGカフェ・神崎煙草店店先）は部屋の中に雨を降らせない
 for (const bg of [
   ROOMS.ageha,
   ROOMS.kumicho,
   ROOMS.rei,
-  CH2_LOCATIONS.agehaClosed,
-  YUZUGAYA_BG.trpg,
+  CH2_SCENE_BACKGROUNDS.agehaClosed,
+  CITY_BACKGROUNDS.trpg,
   "img/backgrounds/bg_ageha_shop.webp",
+  "img/backgrounds/bg_ryuji_shop.webp",
 ]) {
   const scene = rainScene(bg, "vn");
   assert.deepEqual(scene, { mode: "indoor", windows: [] }, `窓なし室内に雨が漏れている: ${bg}`);
 }
 
-// 4. 第2章の窓あり室内（C.STATION柚ヶ谷昼夜・Dr.fookah柚ヶ谷・都市型水族館・銭湯・鉄の煙・神崎煙草店店先）は窓領域だけに雨を出す
+// 4. 第2章の窓あり室内（C.STATION柚ヶ谷昼夜・Dr.fookah柚ヶ谷・都市型水族館・銭湯・鉄の煙）は窓ガラス領域だけに雨を出す
 const windowedCh2 = [
-  [YUZUGAYA_BG.c_station, 5],
-  [YUZUGAYA_BG.c_station_night, 5],
-  [YUZUGAYA_BG.shop, 4],
-  [YUZUGAYA_BG.aquarium, 5],
-  [YUZUGAYA_BG.sento, 4],
+  [CITY_BACKGROUNDS.c_station, 5],
+  [CITY_BACKGROUNDS.c_station_night, 5],
+  [CITY_BACKGROUNDS.shop, 3],
+  [CITY_BACKGROUNDS.aquarium, 4],
+  [CITY_BACKGROUNDS.sento, 4],
   ["img/backgrounds/bg_volk_shop.webp", 4],
-  ["img/backgrounds/bg_ryuji_shop.webp", 1],
 ];
 for (const [bg, expectedPanes] of windowedCh2) {
   const scene = rainScene(bg, "vn");
@@ -99,7 +101,7 @@ for (const [bg, expectedPanes] of windowedCh2) {
   for (const [x, y, w, h] of scene.windows) {
     assert(x >= 0 && y >= 0 && w > 0 && h > 0 && x + w <= 1280 && y + h <= 720,
       `窓座標が 1280x720 ステージ外に出ている (${bg}): [${x},${y},${w},${h}]`);
-    if (bg === YUZUGAYA_BG.aquarium) {
+    if (bg === CITY_BACKGROUNDS.aquarium) {
       assert(x + w <= 460, `水族館の外窓雨が右側の水槽領域に重なっている: x+w=${x + w}`);
     }
   }
@@ -114,8 +116,8 @@ assert.equal(weatherSkyTone("img/backgrounds/bg_street_overcast_day.webp", ""), 
 
 assert.equal(weatherViewKind(MAP.day, rainScene(MAP.day, "map")), "map");
 assert.equal(weatherViewKind(STATION, rainScene(STATION, "ch2-city")), "station");
-assert.equal(weatherViewKind(CH2_LOCATIONS.venueBench, rainScene(CH2_LOCATIONS.venueBench, "vn")), "street");
-assert.equal(weatherViewKind(YUZUGAYA_BG.c_station, rainScene(YUZUGAYA_BG.c_station, "vn")), "indoor");
+assert.equal(weatherViewKind(CH2_SCENE_BACKGROUNDS.venueBench, rainScene(CH2_SCENE_BACKGROUNDS.venueBench, "vn")), "street");
+assert.equal(weatherViewKind(CITY_BACKGROUNDS.c_station, rainScene(CITY_BACKGROUNDS.c_station, "vn")), "indoor");
 
 // 6. DOM 構築（屋外3層 far/mid/near + 霧 + 水紋、室内は1窓5粒の契約維持）
 const host = mockEl("div#weather");
@@ -136,7 +138,7 @@ const depths = new Set(outdoorDrops.map((d) => d.dataset.depth));
 assert.deepEqual(depths, new Set(["far", "mid", "near"]), "遠・中・近の3層雨粒が揃っている");
 
 // 室内窓の構築（ch1_facility_art 互換の 1窓5粒 = windows.length * 5）
-const indoorScene = rainScene(YUZUGAYA_BG.c_station, "vn");
+const indoorScene = rainScene(CITY_BACKGROUNDS.c_station, "vn");
 renderWeatherLayer(host, indoorScene, { sky: "day", view: "indoor", el: mockEl });
 assert.equal(host.dataset.mode, "indoor");
 assert.equal(host.children.length, indoorScene.windows.length);

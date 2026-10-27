@@ -10,30 +10,35 @@ fs.mkdirSync(shotsDir, { recursive: true });
 
 await suite("ch2-rain-j08", async (check) => {
   await check("ch2-rain-outdoor-indoor-and-sunny", async (page) => {
-    // 1. 第2章・雨の日（weatherSeed=4, day=15）の柚ヶ谷マップ
+    // 1. 第2章・雨の日（weatherSeed=4, day=16）の柚ヶ谷マップ
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
       const s = core.newGame();
       Object.assign(s, {
         chapter: 2,
         phase: "daily",
-        day: 15,
+        day: 16,
         slot: 0,
         money: 32000,
         stamina: 100,
-        weatherSeed: 4, // day=15 で isRainy() === true
+        weatherSeed: 4, // day=16 で isRainy(16) === true
       });
       s.flags = {
         _ch1_cleared: true,
         _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
-        _ch2_region: "widehanga",
         _ch2_preparation_started: true,
+        _ch2_region: "widehanga",
+        _morning_16: true,
+        _ch2_morning_departed: 16,
+        _ch2_commute_v1: true,
         _ch2_city_visit_c_station: true,
         _ageha_aquarium_introduced: true,
         _kumicho_sento_introduced: true,
         _rei_trpg_introduced: true,
         _lime_tut: 1,
         _lime_opened: true,
+        _hiyori_meeting_done: true,
+        _hiyori_message_delivered: true,
       };
       s.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, rei: true };
       core.save();
@@ -42,8 +47,8 @@ await suite("ch2-rain-j08", async (check) => {
       void (await import("./js/chapters/ch2.js")).resumeChapterTwo();
     });
 
-    await page.locator('[data-test="ch2-main-next-day"]').waitFor({ timeout: 30000 });
-    const day1MapRain = await page.evaluate(() => ({
+    await page.locator('.map[data-destination-selection][data-region="widehanga"]:not(.done) [data-test="pin-ch2_ageha"]').waitFor({ timeout: 30000 });
+    const day2MapRain = await page.evaluate(() => ({
       weather: document.body.dataset.weather,
       sky: document.body.dataset.weatherSky,
       mode: document.querySelector("#weather")?.dataset.mode,
@@ -55,22 +60,21 @@ await suite("ch2-rain-j08", async (check) => {
       weatherZ: Number(getComputedStyle(document.querySelector("#weather")).zIndex),
       screenZ: Number(getComputedStyle(document.querySelector("#screen")).zIndex),
     }));
-    assert.equal(day1MapRain.weather, "outdoor");
-    assert.equal(day1MapRain.sky, "day");
-    assert.equal(day1MapRain.mode, "outdoor");
-    assert.equal(day1MapRain.view, "map");
-    assert.equal(day1MapRain.drops, 36);
-    assert.deepEqual(day1MapRain.depths, ["far", "mid", "near"]);
-    assert.equal(day1MapRain.ripples, 8);
-    assert.equal(day1MapRain.mist, 1);
-    assert(day1MapRain.weatherZ < day1MapRain.screenZ, "雨レイヤーは常にUI(#screen)の背面にある");
+    assert.equal(day2MapRain.weather, "outdoor");
+    assert.equal(day2MapRain.sky, "day");
+    assert.equal(day2MapRain.mode, "outdoor");
+    assert.equal(day2MapRain.view, "map");
+    assert.equal(day2MapRain.drops, 36);
+    assert.deepEqual(day2MapRain.depths, ["far", "mid", "near"]);
+    assert.equal(day2MapRain.ripples, 8);
+    assert.equal(day2MapRain.mist, 1);
+    assert(day2MapRain.weatherZ < day2MapRain.screenZ, "雨レイヤーは常にUI(#screen)の背面にある");
     await page.screenshot({ path: path.join(shotsDir, "01-ch2-rain-map-day.png") });
 
     // 2. 柚ヶ谷駅前広場（屋外・昼の雨）と C.STATION 柚ヶ谷店（窓あり室内・5窓×5粒=25粒）と MELTY PUFF（窓なし室内・0粒）
     const sceneChecks = await page.evaluate(async () => {
       const ui = await import("./js/core/ui.js");
-      const { STATION, ROOMS } = await import("./js/chapters/ch2-city-data.js");
-      const { YUZUGAYA_BG } = await import("./js/core/city-locations.js");
+      const { STATION } = await import("./js/chapters/ch2-city-data.js");
       const out = {};
 
       await ui.setBg(STATION, { instant: true });
@@ -87,8 +91,8 @@ await suite("ch2-rain-j08", async (check) => {
 
     const cStationRain = await page.evaluate(async () => {
       const ui = await import("./js/core/ui.js");
-      const { YUZUGAYA_BG } = await import("./js/core/city-locations.js");
-      await ui.setBg(YUZUGAYA_BG.c_station, { instant: true });
+      const { CITY_BACKGROUNDS } = await import("./js/core/city-locations.js");
+      await ui.setBg(CITY_BACKGROUNDS.c_station, { instant: true });
       return {
         mode: document.querySelector("#weather")?.dataset.mode,
         windows: document.querySelectorAll("#weather .weather-sheet.window").length,
@@ -111,12 +115,12 @@ await suite("ch2-rain-j08", async (check) => {
     assert.deepEqual(agehaIndoor, { mode: "indoor", windows: 0, drops: 0 });
     await page.screenshot({ path: path.join(shotsDir, "04-ch2-rain-indoor-windowless-ageha.png") });
 
-    // 3. 晴れの日（weatherSeed=7, day=15）は雨が一切出ない
+    // 3. 晴れの日（weatherSeed=0, day=16）は雨が一切出ない
     const sunnyCheck = await page.evaluate(async () => {
       const { state } = await import("./js/core/state.js");
       const ui = await import("./js/core/ui.js");
       const { MAP } = await import("./js/chapters/ch2-city-data.js");
-      state.weatherSeed = 7;
+      state.weatherSeed = 0;
       await ui.setBg(MAP.day, { instant: true });
       ui.refreshWeather();
       return {

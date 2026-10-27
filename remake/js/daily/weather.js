@@ -37,13 +37,12 @@ const C_STATION_WINDOWS = [[540,190,17,99],[572,183,23,118],[609,174,39,129],[74
 const CHOIZAP_WINDOWS = [[731,152,61,28],[815,152,50,28],[1123,156,104,24]];
 // 新カフェ店内の窓ガラスだけ。枠・室内の椅子・テーブルへ雨を重ねない。
 const CAFE_WINDOWS = [[355,167,72,140],[456,167,93,141],[581,153,143,178],[765,153,91,174],[893,145,54,186],[963,119,231,207]];
-// 第2章・柚ヶ谷の窓がある室内（1280×720 背景の外窓ガラス領域のみ。柱・家具・水槽・立ち絵領域を避ける）
-const YUZUGAYA_C_STATION_WINDOWS = [[870,92,34,286],[912,74,38,306],[958,52,42,358],[1108,12,72,440],[1184,6,76,448]];
-const YUZUGAYA_SHOP_WINDOWS = [[60,20,88,340],[158,60,84,390],[252,98,60,360],[320,128,50,330]];
-const YUZUGAYA_AQUARIUM_WINDOWS = [[4,8,84,490],[120,84,72,410],[212,152,52,336],[282,202,42,282],[340,240,46,240]];
-const YUZUGAYA_SENTO_WINDOWS = [[52,76,140,306],[216,222,88,214],[520,174,124,66],[1236,100,42,164]];
-const VOLK_SHOP_WINDOWS = [[2,4,68,236],[126,8,56,346],[189,54,50,294],[245,94,34,250]];
-const RYUJI_SHOP_WINDOWS = [[2,364,66,186]];
+// 第2章・柚ヶ谷の窓がある室内（1280×720 背景の実画像で確認した外窓ガラス領域のみ。柱・家具・水槽・暖簾・障子を避ける）
+const YUZUGAYA_C_STATION_WINDOWS = [[878,100,24,168],[914,78,34,190],[962,54,34,284],[1114,8,64,300],[1182,8,64,300]];
+const YUZUGAYA_SHOP_WINDOWS = [[60,66,96,102],[172,112,70,228],[256,146,48,172]];
+const YUZUGAYA_AQUARIUM_WINDOWS = [[6,38,66,310],[152,144,84,204],[272,224,60,124],[358,276,42,72]];
+const YUZUGAYA_SENTO_WINDOWS = [[52,114,74,110],[130,158,62,100],[218,228,82,68],[518,126,128,48]];
+const VOLK_SHOP_WINDOWS = [[2,8,64,232],[126,48,70,300],[204,80,44,264],[256,98,26,242]];
 
 const OUTDOOR_BG_RE = /^bg_(?:osu_map|map_local|widehanga_map|widehanga_station|street|kannon|tonari_outside|shishark|shishark_preparing|ch2_venue_bench|kemurikusa_outside)(?:_day|_night)?\.png$/;
 
@@ -58,7 +57,6 @@ const INDOOR_WINDOWS_BY_BG = [
   [/^bg_yuzugaya_aquarium\.png$/, YUZUGAYA_AQUARIUM_WINDOWS],
   [/^bg_yuzugaya_sento\.png$/, YUZUGAYA_SENTO_WINDOWS],
   [/^bg_volk_shop\.png$/, VOLK_SHOP_WINDOWS],
-  [/^bg_ryuji_shop\.png$/, RYUJI_SHOP_WINDOWS],
 ];
 
 /** 見えている背景と画面に対応する雨。抽選とセーブ値は既存 isRainy を使う。 */
