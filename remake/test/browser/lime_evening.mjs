@@ -15,7 +15,8 @@ await suite('lime-evening', async check => {
       const s = core.newGame(); Object.assign(s, { phase: 'daily', day: 4, slot: legacy ? 1 : 0, money: 30000, stamina: 100 });
       Object.assign(s.flags, { _morning_4: true, _morning_5: true, _errand_scout_done: true,
         _delivery_adam_done: true, _delivery_minto_done: true, _lime_tut: 1, _intro_minto: true, known_name_minto: true, _lime_opened: true });
-      s.met.minto = true; s.contacts.push('minto');
+      // #814: 連絡先を交換した最初の会話（1本目）は読み終えている。読んでいなければ♥1へは上がらない。
+      s.met.minto = true; s.contacts.push('minto'); s.story.minto = 1;
       const m = QA.data.DB.lime.find(m => m.id === 'lime_minto_day4');
       s.inbox.push({ id: m.id, originId: m.id, day: 4, msg: structuredClone(m), read, done: legacy,
         replyState: legacy ? 'expired' : 'waiting', ...(legacy ? { result: 'expired' } : {}), log: [] });
@@ -40,7 +41,7 @@ await suite('lime-evening', async check => {
     await page.locator('[data-test="phone-next"]').click(); await page.locator('[data-test="phone-close"]').click();
     await page.waitForFunction(() => QA.core.state.day === 5 && document.querySelector('#screen .map:not(.done)'));
     const result = await page.evaluate(() => {
-      const s = QA.core.state, entries = QA.vn.backlog().filter(l => l.text.startsWith('夜のPEPPERMINT'));
+      const s = QA.core.state, entries = QA.vn.backlog().filter(l => l.text.startsWith('夜のぺぱーみんと'));
       const msg = QA.data.DB.dialogues.interaction_minto_noon_01;
       QA.core.save(); const loaded = QA.core.load();
       return { money: s.money, affinity: s.affinity.minto, day: s.day, slot: s.slot, pending: s.pendingInvite,

@@ -32,7 +32,7 @@ async function open(viewport, name, reducedMotion = "no-preference", variant = n
     await ui.setBg(data.bgUrl("bg_tonari_inside", "night"), { instant: true });
 
     // Animationを早送りしない。実際に幕を外す瞬間の、まだ見える光を記録する。
-    window.audit = { cutLights: [], penJumps: [], dotLoops: [], mid: [], keys: 0, handoff: null };
+    window.audit = { cutLights: [], penJumps: [], dotLoops: [], mid: [], keys: 0, handoff: null, stalls: 0, penFrameGap: 0 };
     const originalAnimate = Element.prototype.animate;
     Element.prototype.animate = function (...args) {
       const a = originalAnimate.apply(this, args);
@@ -54,6 +54,20 @@ async function open(viewport, name, reducedMotion = "no-preference", variant = n
       }
       return cancel.call(this);
     };
+    // コールバックの実行間隔は描画フレームの間隔ではない。重いフレームの後には
+    // 別フレームの更新が3ms未満で届くため、rAFのtimestampで同一フレームを判定する。
+    let frame = null, penUpdated = false;
+    const raf = window.requestAnimationFrame;
+    const frameCallback = callback => timestamp => {
+      frame = timestamp; penUpdated = false;
+      callback(timestamp);
+      if (audit.stallPenFrames && penUpdated && audit.stalls < 4) {
+        audit.stalls++;
+        const until = performance.now() + 80;
+        while (performance.now() < until) {} // 実際に描画を落とす。演出の時計は早送りしない。
+      }
+    };
+    window.requestAnimationFrame = callback => raf.call(window, frameCallback(callback));
     // ペンの移動終了と書き出しが同じフレームで高さを変えていないか。
     const previous = new WeakMap();
     const setAttribute = Element.prototype.setAttribute;
@@ -61,23 +75,47 @@ async function open(viewport, name, reducedMotion = "no-preference", variant = n
       if (name === "transform" && this.firstElementChild?.getAttribute("d") === "M -8 -48 L -4 -7 Q 0 0 4 -7 L 8 -48 Z") {
         const match = String(value).match(/^translate\([^ ]+ ([^)]+)\)/);
         if (match) {
-          const now = performance.now(), y = Number(match[1]), prev = previous.get(this);
-          if (prev && now - prev.time < 3 && Math.abs(y - prev.y) > 8 && getComputedStyle(this.parentElement).opacity !== "0") {
+          const y = Number(match[1]), prev = previous.get(this);
+          if (prev && frame !== null && frame === prev.frame && Math.abs(y - prev.y) > 8 && getComputedStyle(this.parentElement).opacity !== "0") {
             audit.penJumps.push(Math.abs(y - prev.y));
           }
-          previous.set(this, { y, time: now });
+          if (prev && frame !== null && prev.frame !== null) audit.penFrameGap = Math.max(audit.penFrameGap, frame - prev.frame);
+          previous.set(this, { y, frame }); penUpdated = true;
         }
       }
       return setAttribute.call(this, name, value);
+    };
+    // 同じ監視を合成フレームでも検査。壁時計を固定し、旧3ms判定の誤検出を再現する。
+    window.checkPenAudit = () => {
+      const ns = "http://www.w3.org/2000/svg", root = document.createElementNS(ns, "svg");
+      const pen = document.createElementNS(ns, "g"), tip = document.createElementNS(ns, "path");
+      tip.setAttribute("d", "M -8 -48 L -4 -7 Q 0 0 4 -7 L 8 -48 Z");
+      pen.append(tip); root.append(pen); document.body.append(root);
+      const now = Object.getOwnPropertyDescriptor(performance, "now");
+      Object.defineProperty(performance, "now", { configurable: true, value: () => 1000 });
+      const place = (timestamp, y) => frameCallback(() => pen.setAttribute("transform", `translate(0 ${y})`))(timestamp);
+      try {
+        place(100, -30); place(116.667, -18.182);
+        const separateFrames = audit.penJumps.splice(0);
+        place(133.333, -30); audit.penJumps.length = 0;
+        place(133.333, 0);
+        const sameFrame = audit.penJumps.splice(0);
+        root.style.opacity = "0"; place(133.333, -30);
+        return { separateFrames, sameFrame, hidden: audit.penJumps.splice(0) };
+      } finally {
+        if (now) Object.defineProperty(performance, "now", now); else delete performance.now;
+        root.remove(); frame = null; audit.penFrameGap = 0;
+      }
     };
     document.addEventListener("keydown", (e) => { if (e.key === "Enter") audit.keys++; });
   });
   return { context, page };
 }
 
-async function checkScene(name, viewport, label, variant = null) {
+async function checkScene(name, viewport, label, variant = null, stallPenFrames = false) {
   const { context, page } = await open(viewport, `${label}-${name}`, "no-preference", variant);
   try {
+    await page.evaluate(stall => { audit.stallPenFrames = stall; }, stallPenFrames);
     await page.evaluate((name) => {
       window.motionDone = false;
       window.motionRun = (async () => {
@@ -142,6 +180,10 @@ async function checkScene(name, viewport, label, variant = null) {
     }));
     assert.deepEqual(result.cutLights, [], `${name}: visible twinkles were cut off`);
     assert.deepEqual(result.penJumps, [], `${name}: marker snapped to the paper`);
+    if (stallPenFrames) {
+      assert.equal(result.stalls, 4, "exercise marker updates with dropped frames");
+      assert.ok(result.penFrameGap >= 64, `no dropped marker frame: ${result.penFrameGap}ms`);
+    }
     assert.equal(result.leftovers, 0); assert.equal(result.covering, false);
     if (["shark", "sketch"].includes(name) || name.startsWith("dawn-")) assert.deepEqual(result.mid, [true]);
     if (name === "cheki") {
@@ -159,8 +201,116 @@ async function checkScene(name, viewport, label, variant = null) {
   }
 }
 
+// 電車は実際のアニメーションを通常速度で測る。紫・遮蔽・任意の乗客・保存不変を確認。
+async function checkTrains() {
+  const cases = [
+    ["normal", { width: 1280, height: 720 }, { cameo: null, tone: "night" }],
+    ...["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "rei"].map(cameo => [cameo, { width: 1280, height: 720 }, { cameo }]),
+    ["halloween", { width: 844, height: 390 }, { halloween: true, cameo: "samechan" }],
+    ["portrait", { width: 390, height: 844 }, { halloween: true, cameo: "hiyori" }],
+    ["slow-arrival", { width: 1280, height: 720 }, { cameo: null, delay: 1300 }],
+    ["missing-crowd", { width: 1280, height: 720 }, { cameo: null, unavailable: true }],
+  ];
+  const selectedCases = cases.filter(c => !process.env.TRAIN_CASE_FILTER || c[0] === process.env.TRAIN_CASE_FILTER);
+  assert(selectedCases.length, "TRAIN_CASE_FILTER matched no case");
+  for (const [name, viewport, options] of selectedCases) {
+    const { page, context } = await open(viewport, `train-${name}`);
+    try {
+      if (options.unavailable) await page.route("**/ui/transitions/train/crowd_*.webp", route => route.fulfill({ status: 404, body: "test missing image" }));
+      if (name === "normal") await page.evaluate(async () => (await import("./js/core/mg-kit.js")).setMotionPalette("free"));
+      await page.evaluate(options => {
+        T.core.state.chapter = 2;
+        window.trainAudit = { mid: 0, opacity: null, fades: [], done: false, before: JSON.stringify(T.core.state), start: performance.now() };
+        const animate = Element.prototype.animate;
+        Element.prototype.animate = function (frames, timing) {
+          if (this.matches(".mo-train")) trainAudit.fades.push({ frames, duration: timing.duration });
+          return animate.call(this, frames, timing);
+        };
+        window.trainRun = T.motions.trainRide(async () => {
+          trainAudit.mid++;
+          const node = document.querySelector(".mo-train");
+          trainAudit.opacity = Number(getComputedStyle(node).opacity);
+          trainAudit.covering = T.transitions.isCovering();
+          if (options.delay) await new Promise(r => setTimeout(r, options.delay));
+          document.getElementById("bg").style.backgroundColor = "rgb(9, 7, 19)";
+        }, options).then(() => {
+          trainAudit.elapsed = performance.now() - trainAudit.start;
+          trainAudit.unchanged = trainAudit.before === JSON.stringify(T.core.state);
+          trainAudit.done = true;
+        });
+      }, options);
+      await page.waitForFunction(() => window.trainAudit.opacity === 1);
+      await page.keyboard.press("Enter");
+      const visible = await page.evaluate(() => ({
+        guests: document.querySelectorAll(".train-guest").length,
+        costumes: document.querySelectorAll(".train-costume").length,
+        backdrop: document.querySelector(".mo-train .mo-back").style.backgroundColor,
+        keys: audit.keys,
+      }));
+      assert.deepEqual(visible, { guests: options.cameo ? 1 : 0, costumes: options.halloween ? 2 : 0, backdrop: "rgb(21, 14, 48)", keys: 0 });
+      if (options.unavailable) assert.equal(await page.locator('.mo-train image[href*="/transitions/train/"]').count(), 0);
+      if (shots) await page.screenshot({ path: `${shots}/train-${name}-covered.png` });
+      await page.waitForFunction(() => trainAudit.done);
+      const result = await page.evaluate(() => ({ ...trainAudit,
+        overlays: document.querySelectorAll(".mo-train").length, coveringAfter: T.transitions.isCovering() }));
+      assert.equal(result.mid, 1); assert.equal(result.opacity, 1); assert.equal(result.covering, true);
+      assert.equal(result.unchanged, true); assert.equal(result.overlays, 0); assert.equal(result.coveringAfter, false);
+      assert.deepEqual(result.fades.map(f => [f.frames[0].opacity, f.frames.at(-1).opacity, f.duration]), [[0, 1, 220], [1, 0, 280]]);
+      assert(result.elapsed < 2800, `${name}: ${result.elapsed}ms took too long`);
+      await page.keyboard.press("Enter"); assert.equal(await page.evaluate(() => audit.keys), 1);
+      if (name === "normal") {
+        const policy = await page.evaluate(async () => {
+          const { trainPassengers } = await import("./js/motions/train-passengers.js");
+          const value = { chapter: 2, day: 17, slot: 0, weatherSeed: 1, flags: {}, met: Object.fromEntries(["samechan", "hiyori", "minto", "adam", "tsumugi", "ageha", "kumicho", "rei", "naru"].map(id => [id, true])) };
+          const before = JSON.stringify(value), seen = new Set(), inbound = new Set();
+          for (let weatherSeed = 0; weatherSeed < 500; weatherSeed++) {
+            seen.add(trainPassengers({ ...value, weatherSeed }, { from: "home", to: "widehanga" }).cameo);
+            inbound.add(trainPassengers({ ...value, weatherSeed }, { from: "widehanga", to: "home" }).cameo);
+          }
+          const selected = trainPassengers(value);
+          return { seen: [...seen].filter(Boolean).sort(), inbound: [...inbound].filter(Boolean).sort(),
+            invalidRoute: trainPassengers(value, { from: "home", to: "home" }).cameo,
+            invalidCity: trainPassengers(value, { from: "other", to: "home" }).cameo,
+            unknownInbound: trainPassengers({ ...value, met: {} }, { from: "widehanga", to: "home" }).cameo,
+            occasional: seen.has(null), stable: JSON.stringify(selected) === JSON.stringify(trainPassengers(value)),
+            chapter1: trainPassengers({ ...value, chapter: 1 }).cameo, unknown: trainPassengers({ ...value, met: {} }).cameo,
+            seasonal: trainPassengers({ ...value, flags: { _ch2_halloween_active: true } }).halloween,
+            ordinary: selected.halloween, chapter3: trainPassengers({ ...value, chapter: 3, flags: { _ch2_halloween_active: true } }).halloween,
+            unchanged: before === JSON.stringify(value) };
+        });
+        assert.deepEqual(policy, { seen: ["adam", "hiyori", "minto", "samechan", "tsumugi"], inbound: ["ageha", "kumicho", "rei"], invalidRoute: null, invalidCity: null, unknownInbound: null, occasional: true, stable: true,
+          chapter1: null, unknown: null, seasonal: true, ordinary: false, chapter3: false, unchanged: true });
+      }
+      console.log(`PASS train ${name}: ${Math.round(result.elapsed)}ms, fade/cover/cleanup/save`);
+    } finally { await context.close(); }
+  }
+  if (process.env.TRAIN_CASE_FILTER) return;
+  for (const mode of ["skip", "reduced", "turbo", "exception"]) {
+    const { page, context } = await open({ width: 1280, height: 720 }, `train-${mode}`, mode === "reduced" ? "reduce" : "no-preference");
+    try {
+      const result = await page.evaluate(async mode => {
+        if (mode === "skip") document.body.classList.add("vn-skip");
+        if (mode === "turbo") window.__remake.vnTest.turbo = true;
+        let mid = 0, rejected = false;
+        try { await T.motions.trainRide(() => { mid++; if (mode === "exception") throw Error("expected train failure"); }); }
+        catch (e) { if (e.message !== "expected train failure") throw e; rejected = true; }
+        return { mid, rejected, overlays: document.querySelectorAll(".mo-train").length, covering: T.transitions.isCovering() };
+      }, mode);
+      assert.deepEqual(result, { mid: 1, rejected: mode === "exception", overlays: 0, covering: false });
+      console.log(`PASS train ${mode}`);
+    } finally { await context.close(); }
+  }
+}
+
 try {
+  await checkTrains();
+  if (!process.argv.includes("--train-only")) {
   const desktop = { width: 1280, height: 720 }, mobile = { width: 844, height: 390 };
+  const { page: auditPage, context: auditContext } = await open(desktop, "pen-audit");
+  try {
+    assert.deepEqual(await auditPage.evaluate(() => checkPenAudit()), { separateFrames: [], sameFrame: [30], hidden: [] });
+    console.log("PASS marker audit: separate frames, same-frame snap, hidden pen");
+  } finally { await auditContext.close(); }
   const alternatesOnly = process.argv.includes("--alternates-only");
   if (!alternatesOnly) {
     for (const name of ["door", "cheki", "tarot", "gift", "shift", "shark", "sketch", "dawn-sun", "dawn-cloud", "dawn-rain", "dawn-sick"]) await checkScene(name, desktop, "desktop");
@@ -169,6 +319,7 @@ try {
   // 共通のペン・finish()を使う別案も確認（採用の変更はしない）。
   await checkScene("cheki", desktop, "alternate-a", "a");
   await checkScene("gift", desktop, "alternate-b", "b");
+  await checkScene("cheki", desktop, "dropped-frames", null, true);
   for (const reduced of [false, true]) {
     const { page, context } = await open(desktop, reduced ? "reduced" : "skip", reduced ? "reduce" : "no-preference");
     try {
@@ -201,5 +352,7 @@ try {
     console.log("PASS exception cleanup");
   } finally { await context.close(); }
   assert.deepEqual(errors, []);
-  console.log(`PASS motion endings: ${alternatesOnly ? 2 : 21} normal-speed scenes, skip/reduced motion, CG handoff and exception cleanup; browser errors 0`);
+  console.log(`PASS motion endings: ${alternatesOnly ? 3 : 22} normal-speed scenes (including dropped frames), marker audit, skip/reduced motion, CG handoff and exception cleanup; browser errors 0`);
+  }
+  assert.deepEqual(errors, []);
 } finally { await browser.close(); }

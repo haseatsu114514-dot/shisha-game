@@ -16,6 +16,27 @@
       "alpha_range": [
         0,
         255
+      ],
+      "derivatives": [
+        {
+          "file": "remake/img/ui/axe_throw/target_board_display.webp",
+          "source": "assets/ui/axe_throw/target_board.png",
+          "source_sha256": "51d054ad2e0c170145c13e036fbc4d3b6fc033d296266e4d88aacf8f1dd87bdc",
+          "size": [
+            800,
+            800
+          ],
+          "format": "WEBP",
+          "mode": "RGBA",
+          "resample": "LANCZOS",
+          "quality": 90,
+          "method": 6,
+          "lossless": false,
+          "sha256": "48495d279c7a3ea13501a60c87833bf688f19a6ba75cd92a79d99f8d334ac9d4",
+          "bytes": 228052,
+          "purpose": "#785 ゲーム内表示用（表示約390pxの約2倍）",
+          "max_mean_abs_diff": 3.0
+        }
       ]
     },
     {

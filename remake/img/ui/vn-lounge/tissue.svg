@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" preserveAspectRatio="none">
+<defs><pattern id="fibers" width="19" height="13" patternUnits="userSpaceOnUse"><path d="m1 6 4-1m8 6 2-1M11 2l3 1" stroke="#c2b497" stroke-width=".4" opacity=".23"/></pattern></defs>
+<path d="m16 35 1168-13 10 208L9 227Z" fill="#eadfc6" fill-opacity=".52"/>
+<path d="M5 53 1189 38 1178 237 17 217Z" fill="#f4ead2" fill-opacity=".5"/>
+<path d="m25 49 1153 6 7 166-1169-7Z" fill="#29292b" fill-opacity=".96"/>
+<path d="m25 49 1153 6 7 166-1169-7Z" fill="url(#fibers)"/>
+<path d="m30 53 1144 7 6 156-1159-7Z" fill="none" stroke="#dbc496" stroke-width=".8"/>
+<path d="m15 42 1162-14 11 194M9 62l5 156 1156 12" fill="none" stroke="#eee0bf" stroke-width=".7" opacity=".8"/>
+</svg>

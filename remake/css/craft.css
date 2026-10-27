@@ -181,7 +181,8 @@
 
 /* 配合: 葉と器、香りの返事を中心に置く。 */
 .mix { display: grid; grid-template-columns: 300px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 18px 24px; height: 100%; }
-.mix-side { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0; }
+.mix-side { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0; overflow-y: auto; }
+.mix-side > * { flex: none; }
 .mix-vessel { position: relative; flex: none; width: 300px; height: 332px; overflow: hidden; background: radial-gradient(ellipse at 50% 40%, #d5a26012, transparent 70%); }
 .mix-vessel-art { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; }
 .mix-vessel-art > .art { flex: none; }
@@ -192,14 +193,20 @@
 .mix-taste-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .mix-taste-tags span { padding: 3px 9px; border: 1px solid #c4ab7a44; border-radius: 20px; font-size: 12px; color: #d0bda0; }
 .mix-list { min-width: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 5px; }
+.mix-list-head { flex: none; display: grid; gap: 6px; }
 .mix-list-caption { margin: 8px 0 2px; font-size: 16px; letter-spacing: .08em; color: #d3c2a8; }
 .flavor-row { display: flex; align-items: center; gap: 8px; padding: 12px; min-height: 76px; background: linear-gradient(120deg, #a2815520, #ffffff04); border: 1px solid #ae906c38; border-radius: 10px; }
+.fr-package { flex: none; grid-area: 1 / 1; width: 54px; height: 64px; display: grid; place-items: center; }
+.fr-package .shop-product-art { width: 54px; height: 64px; }
 .fr-swatch { flex: none; width: 28px; height: 38px; border-radius: 70% 18% 70% 18%; box-shadow: inset 0 -4px 8px #0006; transform: rotate(-20deg); }
 .fr-name { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .fr-name b { font-size: 16px; }
 .fr-name small { font-size: 12px; line-height: 1.5; color: var(--text-dim); }
 .fr-name .fr-reg { color: var(--accent); }
 .fr-name .fr-stock { color: #cfe6b8; }
+.fr-name .fr-ratio { color: var(--accent); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fr-name .fr-ratio { min-height: 21px; }
+.fr-name .fr-ratio:empty { visibility: hidden; }
 .fr-btn { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #bba17566; background: #08070c80; color: var(--text); font-size: 24px; cursor: pointer; }
 .fr-btn:hover { border-color: var(--accent); color: var(--accent); }
 .fr-g { flex: none; width: 36px; text-align: center; font-family: var(--font); font-size: 18px; font-variant-numeric: tabular-nums; }
@@ -209,24 +216,24 @@
 .mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-name b { font-size: 20px; }
 .mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-btn { width: 54px; height: 54px; }
 .mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-g { width: 100%; font-size: 28px; }
-.mix-footer { grid-column: 1 / -1; display: grid; grid-template-columns: 210px 150px minmax(0, 1fr); align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid #d1b48633; }
+.mix-footer { grid-column: 1 / -1; display: grid; grid-template-columns: 180px minmax(260px, 1fr) minmax(240px, 1fr); align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid #d1b48633; }
 .mix-footer > .btn { min-height: 64px; }
 .lcd { padding: 2px 0; text-align: left; font-family: var(--font); font-size: 23px; font-variant-numeric: tabular-nums; color: #bbd4b8; }
 .lcd:not(.ok) { color: #d2bea0; }
 .reg-line { font-size: 12px; color: #ff9b9b; line-height: 1.5; }
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 13px; color: var(--gold-hi); }
-.mix-hint { font-size: 12px; color: #afc7d2; line-height: 1.5; padding: 6px 10px; border-left: 1px solid #afc7d244; }
-.mix-temperature-preview { position: relative; font-size: 13px; color: var(--text-dim); }
-.mix-temperature-preview summary { cursor: pointer; padding: 12px 0; }
-.mix-temperature-preview[open] { z-index: 8; }
-.mix-temperature-preview[open] > .thermo, .mix-temperature-preview[open] > .mix-temperature-legend { position: absolute; bottom: 58px; box-shadow: 0 8px 30px #0009; background: #171020; border: 1px solid #c1a37555; }
-.mix-temperature-preview[open] > .thermo { left: -16px; width: 72px; height: 224px; padding: 12px 18px; border-radius: 10px 0 0 10px; }
-.mix-temperature-preview[open] > .mix-temperature-legend { left: 56px; width: 235px; height: 224px; padding: 70px 14px 20px; border-radius: 0 10px 10px 0; }
-.mix-temperature-legend { display: flex; flex-direction: column; gap: 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.mix-hint { font-size: 14px; color: #afc7d2; line-height: 1.5; padding: 6px 10px; border-left: 2px solid #afc7d266; background: #afc7d20d; }
+.mix-temperature-preview { min-width: 0; display: grid; gap: 5px; font-size: 13px; color: var(--text-dim); }
+.mix-temperature-legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.mix-thermal-scale { position: relative; height: 22px; overflow: hidden; background: #55515d; border: 1px solid #eadbc2; border-radius: 4px; }
+.mix-thermal-ideal, .mix-thermal-optimal, .mix-thermal-center { position: absolute; top: 0; height: 100%; }
+.mix-thermal-ideal { border-inline: 2px solid #111; background: repeating-linear-gradient(135deg, #fff0 0 4px, #162b2540 4px 6px); }
+.mix-thermal-optimal { border: 1px solid #fff; background: linear-gradient(90deg, #f6a4c0, #fae0a5, #b6edd2, #bad3fa, #e7bbf5); }
+.mix-thermal-center { width: 2px; background: #171020; box-shadow: 0 0 0 1px #fff; }
+.mix-temperature [hidden] { display: none; }
 .mix-ideal { color: #74e0b0; }
 .mix-optimal { color: #ffe5ff; }
-.mix-temperature [hidden] { display: none; }
 .packing { height: 100%; display: flex; flex-direction: column; gap: 10px; }
 .pack-aroma { margin: 0; padding: 7px 14px; border-left: 2px solid #c3a576; background: #d4aa6310; color: #e0c69f; font-size: 15px; line-height: 1.6; }
 .pack-vessel { flex: 1; min-height: 300px; display: grid; place-items: center; position: relative; background: radial-gradient(ellipse at 50% 70%, #ab794821, transparent 63%); }
@@ -259,6 +266,8 @@
   touch-action: none;
 }
 .foil .foil-surface { position: absolute; inset: 0; border-radius: 50%; image-rendering: auto; pointer-events: none; }
+/* The silver top is above the crimped lower rim of the adopted foil image. */
+.foil-target-plane { position: absolute; inset: -3% 0 3%; pointer-events: none; }
 .foil-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; border: 1px dashed #29253266; pointer-events: none; }
 .foil-ring.cur { border: 1px solid #30263099; box-shadow: 0 0 0 1px #fff5; }
 .foil-markers, .foil-holes { position: absolute; inset: 0; pointer-events: none; }
@@ -313,26 +322,25 @@
 .bench[data-step="heat"] .bench-right { left: 348px; background: radial-gradient(ellipse at 48% 55%, #58251355, transparent 75%), linear-gradient(135deg, #190e18f2, #140c13f2); }
 .bench[data-step="heat"] .bench-title { font-family: "Craft Mincho", var(--font); font-size: 36px; }
 .heat { display: grid; grid-template-columns: minmax(0, 1fr) 240px; align-items: start; gap: 18px; min-width: 0; height: 100%; }
+.heat:not(.heat-compact) { padding-top: 40px; }
 .stove { position: relative; flex: none; margin: 66px auto 0; }
 .stove-img { pointer-events: none; image-rendering: auto; }
 .coal { position: absolute; width: 100px; height: 90px; transform: translate(-50%, -100%); padding: 0; border: 0; background: none; cursor: pointer; touch-action: manipulation; transition: opacity .2s; }
-.coal-sprite { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); pointer-events: none; }
+.coal-sprite { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%) rotate(var(--coal-angle, 0deg)); transform-origin: center bottom; pointer-events: none; }
 .coal-sprite > .art { position: absolute; left: 0; bottom: 0; pointer-events: none; image-rendering: auto; }
 .c-red { opacity: var(--red, 0); }
 .c-hot { opacity: var(--hot, 0); filter: brightness(1.14) saturate(.9); }
 .c-ash { opacity: var(--ash, 0); filter: grayscale(.95) brightness(.8); }
 .coal-corners { position: absolute; inset: 0; border: 2px solid #ddd7c077; border-radius: 5px; pointer-events: none; mask-image: linear-gradient(#000 0 15px, transparent 15px calc(100% - 15px), #000 calc(100% - 15px)), linear-gradient(90deg, #000 0 15px, transparent 15px calc(100% - 15px), #000 calc(100% - 15px)); mask-composite: intersect; }
-.coal-now { position: absolute; top: calc(100% + 3px); left: 50%; transform: translateX(-50%); color: #ffe29a; font-family: "Craft Mincho", var(--font); font-size: 20px; line-height: 1.2; opacity: 0; text-shadow: 0 0 8px #ffab46aa; pointer-events: none; }
-.c-core { position: absolute; left: 50%; top: 44%; width: 7px; height: 7px; margin: -3.5px; border-radius: 50%; opacity: 0; background: #fff4d3; box-shadow: 0 0 8px 3px #ffe3aabb; pointer-events: none; }
-.coal.pikan .coal-corners, .coal:focus-visible .coal-corners { border-color: #ffdc87; filter: drop-shadow(0 0 4px #ff9c40); }
-.coal.pikan .coal-now { opacity: 1; }
-.coal.pikan .c-core { animation: coal-core .5s ease-out infinite; }
+.c-core { position: absolute; left: 50%; top: 44%; width: 32px; height: 32px; margin: -16px; border-radius: 50%; opacity: 0; background: radial-gradient(circle, #fff 0 35%, #fff9d9 55%, #ffe6a600 100%); box-shadow: 0 0 6px 5px #fffde7, 0 0 18px 12px #ffe3aaee, 0 0 34px 18px #ff8a45bb; pointer-events: none; }
+.coal.pikan .coal-corners, .coal:focus-visible .coal-corners { border-color: #fff3bf; filter: drop-shadow(0 0 7px #ffb45c); }
+.coal.pikan .c-core { opacity: 1; }
+.coal.pikan .c-hot { opacity: 1; filter: brightness(2.2) saturate(.75) drop-shadow(0 0 10px #ffe1a0); }
 .coal.soon .coal-corners { border-color: #e6a160; }
 .coal:focus-visible { outline: 2px solid #fff0bf; outline-offset: 4px; border-radius: 5px; }
 .coal.picked { opacity: 0; pointer-events: none; }
-@keyframes coal-core { from { opacity: 1; } to { opacity: .35; } }
 .heat-info { position: relative; margin-top: 0; padding: 12px 12px 8px; border: 1.5px solid #e5d598; border-radius: 18px; background: linear-gradient(145deg, #100b0eea, #1b100dec); box-shadow: 0 10px 25px #0005; font-variant-numeric: tabular-nums; }
-.heat-carrier-head { display: flex; justify-content: space-between; align-items: start; color: #eee6d7; }
+.heat-carrier-head { display: flex; justify-content: space-between; align-items: start; padding-right: 26px; color: #eee6d7; }
 .heat-carrier-head h2 { margin: 0; font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 27px; line-height: 1.2; }
 .heat-carrier-head small { font-size: 12px; letter-spacing: .08em; }
 .heat-collected-count { font-size: 23px; letter-spacing: .08em; white-space: nowrap; }
@@ -354,7 +362,6 @@
 .heat-compact { grid-template-columns: minmax(0, 1fr) 200px; gap: 12px; height: 355px; }
 .heat-compact .stove { margin-top: 56px; }
 .heat-compact .coal { width: 84px; height: 72px; }
-.heat-compact .coal-now { font-size: 17px; }
 .heat-compact .heat-info { padding: 10px 10px 6px; }
 .heat-compact .heat-carrier-head h2 { font-size: 24px; }
 .heat-compact .heat-collected-count { font-size: 20px; }
@@ -593,7 +600,8 @@
 /* ---------------------------------------------------------------- 大会の生放送レイヤー（ニコ動風コメント・体感スコア） */
 /* 上はヘッダー、下は実況テロップを避けて流す。操作の邪魔をしない */
 .bc-lane { position: absolute; left: 0; right: 0; top: 76px; bottom: 145px; z-index: 6; overflow: hidden; pointer-events: none; user-select: none; container-type: inline-size;
-  mask-image: linear-gradient(90deg, #000b 0 36%, #0005 46% 96%, #0008 100%); }
+  mask-image: linear-gradient(90deg, #000b 0 36%, #0005 46% 96%, #0008 100%);
+  clip-path: polygon(0 0, calc(100% - 180px) 0, calc(100% - 180px) 80px, 100% 80px, 100% 100%, 0 100%); }
 .nico {
   position: absolute;
   left: 0;
@@ -917,18 +925,6 @@
 @keyframes thermo-pop { 0% { opacity: 0; transform: translateY(0) scale(.6); } 22% { opacity: 1; transform: translateY(0) scale(1.15); } 100% { opacity: 0; transform: translateY(var(--pop-dy)) scale(1); } }
 @media (prefers-reduced-motion: reduce) { .pull-read .pull-state, .pull-drift, .thermo-pop { animation: none; } }
 
-/* 総合スコア（TH42）: アーケードのように作業台の右上へ。工程の結果が出るたびに数字が回り、＋の点が浮かぶ。 */
-.arcade-score { position: relative; margin-left: auto; flex: none; display: flex; align-items: baseline; gap: 10px; padding: 5px 14px; border-radius: 8px;
-  background: linear-gradient(180deg, #120d1ccc, #07050dcc); border: 1px solid #ffd25a55; box-shadow: inset 0 0 12px #0008, 0 0 14px #ffd25a22; }
-.arcade-label { font-size: 12px; font-weight: 800; letter-spacing: .24em; color: #ffd25a; }
-.arcade-num { font-size: 24px; font-weight: 900; line-height: 1; letter-spacing: .12em; font-variant-numeric: tabular-nums; color: #fff6dc; text-shadow: 0 0 8px #ffcf5a99; }
-.arcade-score.bump .arcade-num { animation: arcade-bump .45s ease-out; }
-.arcade-pop { position: absolute; right: 10px; top: 100%; margin-top: 4px; z-index: 8; white-space: nowrap; pointer-events: none; font-size: 22px; font-weight: 900; color: #fff36b;
-  text-shadow: 0 0 10px #ffd25aee, 0 0 2px #000; animation: arcade-pop 1.3s ease-out forwards; }
-.arcade-pop small { margin-left: 6px; font-size: 13px; color: #e6e0ff; }
-@keyframes arcade-bump { 40% { transform: scale(1.18); color: #fff36b; } }
-@keyframes arcade-pop { 0% { opacity: 0; transform: translateY(8px) scale(.8); } 20% { opacity: 1; transform: translateY(0) scale(1.1); } 100% { opacity: 0; transform: translateY(-14px); } }
-.rt-part.score .arcade-num { font-size: 20px; }
 /* はじめの疲れ（TH43）: 作業中の姿の顔の横に汗、ばてると荒い息。吸いすぎた瞬間は一度びくっとする。 */
 .worker-sweat, .worker-breath { position: absolute; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s; }
 .worker-sweat { left: 53%; top: 20%; width: 40px; height: 50px; }
@@ -944,7 +940,7 @@
 @keyframes sweat-drip { 0% { transform: translateY(0) scale(.6); opacity: 0; } 20% { opacity: 1; transform: translateY(0) scale(1); } 100% { transform: translateY(26px) scale(.9); opacity: 0; } }
 @keyframes breath-puff { 0% { transform: translate(0, 0) scale(.4); opacity: 0; } 30% { opacity: .9; } 100% { transform: translate(-16px, 4px) scale(1.3); opacity: 0; } }
 @keyframes worker-flinch { 0%, 100% { transform: none; } 25% { transform: translateX(-5px) rotate(-1deg); } 60% { transform: translateX(3px); } }
-@media (prefers-reduced-motion: reduce) { .arcade-score.bump .arcade-num, .arcade-pop, .worker-sweat i, .worker-breath::before, .bench-worker.flinch .worker-actor { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .worker-sweat i, .worker-breath::before, .bench-worker.flinch .worker-actor { animation: none; } }
 
 /* 制作ウインドウの比率と吸引中の接続（TH47〜51）。背景アニメーションは既存の層を使う。 */
 .bench-left .bench-worker { border-radius: 6px; }
@@ -1021,6 +1017,9 @@
 .audience-single .audience-person { width: 82px; }
 .audience-single .audience-face { height: 82px; border-radius: 5px; border: 1px solid #93816e26; background: #0e0b14; }
 .audience-face img.audience-icon { width: 82px !important; height: 82px; left: 0 !important; top: 0 !important; }
+.audience-face-label { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;
+  color: #cbd8f2; font-size: 15px; letter-spacing: .04em; background: linear-gradient(145deg, #172134, #111018); }
+.audience-face-label[hidden] { display: none; }
 .audience-person figcaption { display: none; }
 .audience-single .audience-heading { display: flex; margin-bottom: 5px; }
 .audience-name { font-size: 12px; letter-spacing: .10em; font-weight: 700; color: #bfb0b6; }
@@ -1069,8 +1068,6 @@
 .bench[data-art-skin] .pull-btns .btn:disabled { opacity: .65; }
 .pull-btn-icon { width: 48px; height: 48px; color: #fff0cd; filter: drop-shadow(0 0 5px #ffd29188); }
 .pull-serve-icon { width: 48px; height: 40px; flex: none; }
-.arcade-score { padding: 4px 12px; }
-.arcade-num { font-size: 30px; letter-spacing: .17em; }
 .bench[data-art-skin] .pull-btns .btn.primary,
 .bench[data-art-skin] .pull-btns .btn.primary:hover:not(:disabled) {
   border: 0; background-color: #241622; background-image: var(--craft-inhale-art);
@@ -1158,3 +1155,34 @@
 .pull-summary > .pull-count-box { flex: 1; min-width: 0; gap: 18px; }
 .pull-count-box .pull-pips { gap: 8px; }
 .pull-count-box .pull-pip { width: 18px; height: 18px; }
+
+/* #703: 作業絵は台詞の背後まで。台詞と工程表示を前景に重ねる。 */
+.bench-left { gap: 0; }
+.bench-left .bench-worker { position: relative; }
+.bench-left .bench-worker-name { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; border: 0; background: linear-gradient(0deg, #110b1ad0, transparent); }
+.bench-left:has(.bench-audience) .bench-worker-name { bottom: 128px; }
+.bench-left .bench-audience { position: absolute; left: 11px; right: 11px; bottom: 11px; margin: 0; z-index: 2; background: linear-gradient(145deg, #1b1522ee, #100c18ed); }
+.bench-left .bench-audience .audience-note { max-height: 100%; overflow-y: auto; }
+/* 配合も吸い出しと同じ左位置・同じ縦管。操作欄のfooterには置かない。 */
+.mix-temperature-preview { position: absolute; left: -140px; top: -3px; width: 88px; height: 454px; padding: 34px 12px 60px; display: block; z-index: 3; }
+.mix-temperature-preview::before { content: ""; position: absolute; inset: 0; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); }
+.mix-temperature-preview > b { position: absolute; top: 10px; left: 12px; width: 64px; text-align: center; font-size: 11px; }
+.mix-temperature-preview > .thermo { height: 100%; }
+.mix-temperature-legend { position: absolute; top: calc(100% - 51px); left: 4px; right: 4px; justify-content: center; font-size: 11px; line-height: 1.2; gap: 2px 5px; }
+.mix-temperature-preview > small { position: absolute; top: calc(100% - 19px); left: 2px; width: 84px; text-align: center; font-size: 8px; }
+.mix-temperature[data-selected="false"] .thermo-scale { background: #55515d; }
+.thermo[hidden], .mix-temperature-preview[hidden] { display: none; }
+/* DSの上画面でも両工程を同じ位置へ。既存の下画面スクロールから独立させる。 */
+body.game-ds .bench[data-step] .pull > .thermo { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 96px); top: calc(64px + var(--ds-vy) + 90px); height: max(80px, calc(var(--ds-vh) - 302px)); }
+body.game-ds .bench[data-step] .mix-temperature-preview { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 108px); top: calc(64px + var(--ds-vy) + 56px); height: max(134px, calc(var(--ds-vh) - 248px)); padding-bottom: 20px; }
+.mix-footer { grid-template-columns: 180px minmax(240px, 1fr); }
+
+.bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { right: 104px; bottom: 140px; width: 102px; height: 260px; }
+.mix-temperature-preview:has([data-selected="false"]) > small { display: none; }
+
+body.game-ds .mix-temperature-legend { top: calc(100% - 15px); }
+body.game-ds .mix-temperature-preview > small { display: none; }
+body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { bottom: 128px; transform: scale(.4); transform-origin: 50% 100%; }
+@media (min-height: 600px) and (min-width: 761px) {
+  body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { transform: none; }
+}

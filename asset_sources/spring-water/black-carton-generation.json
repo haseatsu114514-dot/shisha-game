@@ -1,0 +1,25 @@
+{
+  "tool": "image_gen",
+  "source": "source.png",
+  "reference": "remake/img/shop/heaven10/lemon.webp",
+  "delivery": "remake/img/shop/character-flavors/spring-water.webp",
+  "flavor_id": "spring_water",
+  "maker": "afsahr",
+  "prompt": "Create ONE new game inventory product package illustration for the single shisha flavor SPRING WATER, using the attached fictional product only as a style/scale reference. Transparent background. Square canvas. Entire upright small rectangular black carton in 3/4 front view, all edges within canvas, centered with generous transparent margins. Premium anime game item rendering with crisp painted detail, matching the provided black carton material and viewing angle. This is fictional AFSАHR brand: replace the wing/halo symbol with a small simple silver geometric droplet emblem, do NOT use any real brand logo. Front artwork: a luminous turquoise and clear blue freshwater spring flowing between pale stones, elegant water ripple, fresh silver-blue brushstroke near upper middle. No fruit, no berries, no mint leaves, no shark illustration, no ocean salt, no people, no hookah or smoke. The flavor is a clean aromatic perfume-like spring-water flavor, rather than literally plain drinking water. Keep the image readable as a small game shop icon. No words, letters, numerals, label text or watermark anywhere. Generate the artwork and make the resulting original file available for incorporation into this repository.",
+  "sha256": "ea30758bf15ba5c593c0b24ac020086c166533a4887bfed80f51d3e1f9b4e0d2",
+  "delivery_size": [
+    512,
+    512
+  ],
+  "delivery_visible_box": [
+    104,
+    49,
+    307,
+    415
+  ],
+  "source_size": [
+    1280,
+    1280
+  ],
+  "lfs_upload": "uploaded: 2026-10-26 via existing local GitHub authentication; SHA-256 and size verified"
+}

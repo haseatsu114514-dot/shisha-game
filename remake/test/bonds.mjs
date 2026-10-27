@@ -28,6 +28,7 @@ try {
       data: await import("./js/core/data.js"),
       vn: await import("./js/vn/engine.js"),
       ch1: await import("./js/chapters/ch1.js"),
+      tsumugiStory: await import("./js/chapters/tsumugi-story.js"),
       bonds: await import("./js/daily/bonds.js"),
       romance: await import("./js/daily/romance.js"),
       spots: await import("./js/daily/spots.js"),
@@ -48,18 +49,34 @@ try {
     };
     /** 選択肢を文言で選ぶ（含まれる語の順に探す。見つからなければ先頭） */
     T.pick = (...words) => { T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex((l) => words.some((w) => l.includes(w)))); };
+    /** 応募の既読を注入せず、本筋の実モジュールでDAY11まで読む。 */
+    T.submitTsumugi = async () => {
+      T.core.state.day = 11;
+      await T.tsumugiStory.playTsumugiStory(11);
+      if (!T.core.state.flags._tsumugi_contest_submitted) throw Error("Tsumugi submission was not completed");
+    };
+    T.waitFor = async (selector) => {
+      const until = performance.now() + 20000;
+      while (performance.now() < until) {
+        const node = document.querySelector(selector);
+        if (node) return node;
+        await new Promise((resolve) => setTimeout(resolve, 20));
+      }
+      throw Error(`Control did not appear: ${selector}`);
+    };
     T.names = () => T.vn.backlog().filter((l) => l.name && l.name !== "▶");
     window.T = T;
   });
 
   // ================================================================ HF01 好感度の伸び
-  const pace = await page.evaluate(() => {
-    const { fresh, stats } = window.T;
+  const pace = await page.evaluate(async () => {
+    const { fresh, stats, spots, pick } = window.T;
     const out = [];
     for (const charm of [10, 30, 50, 70, 90]) { // ★1〜★5
       for (const [pts, times] of [[1, 100], [2, 100], [5, 40], [10, 10]]) {
         const state = fresh();
         state.stats.charm = charm;
+        state.story.naru = spots.VISIT_SEQ.naru.length; // pace arithmetic after all normal stages
         const mult = 1 + 0.2 * stats.tier01("charm");
         for (let i = 0; i < times; i++) stats.gainAffinity("naru", pts);
         out.push({ charm, pts, times, got: state.affinity.naru, legacy: Math.round(pts * mult) * times, carry: state.affinityCarry.naru });
@@ -67,6 +84,7 @@ try {
     }
     // 占い（一度だけ ×1.5）
     let state = fresh();
+    state.story.rin = spots.VISIT_SEQ.rin.length;
     state.fortune = { char: "rin" };
     stats.gainAffinity("rin", 10);
     const fortune = { got: state.affinity.rin, carry: state.affinityCarry.rin, left: state.fortune };
@@ -82,11 +100,19 @@ try {
     stats.gainAffinity("tsumugi", 1);
     stats.bond.private = false;
     const lover = { shop, after: state.lovePts.tsumugi, carry: state.loveCarry.tsumugi };
-    // MAXだけでは告白を予約しない
-    state = fresh();
+    // 未回答では♥3。実際の質問に答えた後のMAXでも告白を予約しない。
+    state = fresh({ met: { tsumugi: true }, story: { tsumugi: 3 } });
     for (let i = 0; i < 12; i++) stats.gainAffinity("tsumugi", 10);
+    const waiting = { level: stats.affinityLevel("tsumugi"), answer: state.romanceChoices.bond_q1_tsumugi ?? null,
+      due: state.flags._confession_due ?? null };
+    pick("会いたい", "声をかける", "気持ち悪くなんかない");
+    await spots.visitChar("tsumugi");
+    const answer = state.romanceChoices.bond_q1_tsumugi?.value;
+    for (let i = 0; i < 12; i++) stats.gainAffinity("tsumugi", 10);
+    await spots.visitChar("tsumugi"); // heart4 story must finish before heart5
+    await spots.visitChar("tsumugi"); // remaining heart5 story precedes the finale
     const max = { level: stats.affinityLevel("tsumugi"), due: state.flags._confession_due ?? null };
-    return { out, fortune, lover, max };
+    return { out, fortune, lover, waiting, answer, max };
   });
   for (const r of pace.out) {
     assert(r.got <= r.legacy, `more than legacy: ${JSON.stringify(r)}`);
@@ -96,6 +122,8 @@ try {
   assert.equal(pace.fortune.got, 12); assert.equal(pace.fortune.left, undefined); assert.equal(pace.fortune.second, 12 + 9); // 0.75 の端数を持ち越す
   assert.equal(pace.lover.shop, 9, "lover affinity must not grow outside private scenes");
   assert.equal(pace.lover.after, 9 + 5 + 1); assert.equal(pace.lover.carry, 0);
+  assert.deepEqual(pace.waiting, { level: 3, answer: null, due: null });
+  assert.equal(pace.answer, 1);
   assert.equal(pace.max.level, 5); assert.equal(pace.max.due, null);
   log("HF01 pace: small rewards <= legacy, 85% at every charm tier, fortune once, lover half/private only, no MAX auto-confession");
 
@@ -119,12 +147,12 @@ try {
       romance: migrated.romance, choices: migrated.romanceChoices, finales: migrated.finales, before: state === loaded };
   });
   assert.equal(carry.carry, 0.85); assert.equal(carry.pts, 0);
-  assert.equal(carry.schema, carry.expected); assert.equal(carry.expected, 8);
+  assert.equal(carry.schema, carry.expected); assert(carry.expected > 7);
   assert.equal(carry.oldAff, 40); assert.equal(carry.oldCarry, 0.7); assert.equal(carry.loveCarry, 0.5); assert.deepEqual(carry.lovers, ["rin"]);
   assert.equal(carry.due, null, "old automatic confession reservation must be dropped");
   assert.equal(carry.wait, null);
   assert.deepEqual(carry.romance, {}); assert.deepEqual(carry.choices, {}); assert.deepEqual(carry.finales, {});
-  log("HF01 save/load: carry and bond kept, schema 7 -> 8, old auto confession dropped, lovers kept");
+  log(`HF01 save/load: carry and bond kept, schema 7 -> ${carry.expected}, old auto confession dropped, lovers kept`);
 
   // ================================================================ HF02 みんとの公私の呼び名
   const names = await page.evaluate(async () => {
@@ -152,11 +180,11 @@ try {
     await vn.play("confession_minto");
     const confession = [...new Set(names().filter((l) => /栞|みんと/.test(l.name)).map((l) => l.name))];
     const lover = state.lovers.slice();
-    // ジム: 本名を聞く前後で呼び方と地の文が変わる
-    state = fresh({ met: { minto: true } });
+    // ジム: 正体が判明済みの状態で、本名を聞く前後の呼び方と地の文を比べる。
+    state = fresh({ met: { minto: true }, flags: { _minto_identity_revealed: true } });
     await vn.play("choizap_minto");
     const gymBefore = { names: [...new Set(names().map((l) => l.name).filter((x) => x !== "はじめ"))], text: vn.backlog().map((l) => l.text).join("|") };
-    state = fresh({ met: { minto: true }, flags: { _minto_name_known: true } });
+    state = fresh({ met: { minto: true }, flags: { _minto_identity_revealed: true, _minto_name_known: true } });
     await vn.play("choizap_minto");
     const gymAfter = { names: [...new Set(names().map((l) => l.name).filter((x) => x !== "はじめ"))], text: vn.backlog().map((l) => l.text).join("|") };
     // お姉さん（名乗る前の tonari の私服客）
@@ -217,7 +245,7 @@ try {
   });
   // みんとのLIMEは店の『お仕事用』。本名を知った後も「みんと＠ぺぱーみんと」・営業姿のアイコン（HF10）
   assert.equal(privateUi.listName, "みんと＠ぺぱーみんと");
-  assert(privateUi.listFace.endsWith("face_minto.png"), privateUi.listFace);
+  assert(privateUi.listFace.split("?")[0].endsWith("face_minto.png"), privateUi.listFace);
   assert(privateUi.delivered >= 1 && privateUi.introAccount === "minto_private", JSON.stringify(privateUi));
   assert(privateUi.introText.includes("栞です"), privateUi.introText);
   const privateRow = privateUi.rows.find((r) => r.test === "lime-chat-minto_private");
@@ -271,7 +299,7 @@ try {
   // つむぎ: 友情寄りの答え → 締めくくりは友情の着地、贈り物あり、告白なし。再読で恋愛値を稼げない
   const friend = await page.evaluate(async () => {
     const { fresh, spots, bonds, romance, vn, pick, core } = window.T;
-    const state = fresh({ met: { tsumugi: true }, story: { tsumugi: 3 }, slot: 1 });
+    const state = fresh({ met: { tsumugi: true }, story: { tsumugi: 3 }, affinity: { tsumugi: 33 }, slot: 1 });
     pick("ゆっくりしていって", "声をかける", "気持ち悪くなんかない");
     await spots.visitChar("tsumugi"); // 4つ目の固有会話 → 続けて途中の質問
     const afterFourth = { story: state.story.tsumugi, answer: { ...state.romanceChoices.bond_q1_tsumugi }, romance: bonds.romanceValue("tsumugi") };
@@ -284,6 +312,8 @@ try {
     await spots.visitChar("tsumugi");
     await spots.visitChar("tsumugi");
     const storiesFirst = { story: state.story.tsumugi, seen: !!state.finales.tsumugi };
+    const beforeSubmission = bonds.finaleDue("tsumugi");
+    await window.T.submitTsumugi();
     // 締めくくりは閉店後（夜）だけ
     state.slot = 0;
     const noonBadge = spots.hasNewStory("tsumugi");
@@ -302,12 +332,13 @@ try {
     const again = (await spots.visitChar("tsumugi"), state.owned.filter((x) => x === "suyaki_tsumugi").length);
     const lavenderAfter = state.flavorStock.lavender;
     core.save();
-    return { afterFourth, reread, storiesFirst, noonBadge, noon, nightBadge, finaleText, record, owned, lavender, confessed, again, lavenderAfter,
+    return { afterFourth, reread, storiesFirst, beforeSubmission, noonBadge, noon, nightBadge, finaleText, record, owned, lavender, confessed, again, lavenderAfter,
       due: state.flags._confession_due ?? null, after: bonds.finaleAtVisit("tsumugi") };
   });
   assert.equal(friend.afterFourth.story, 4); assert.equal(friend.afterFourth.answer.value, 0); assert.equal(friend.afterFourth.romance, 0);
   assert.equal(friend.reread.answer, 0); assert.equal(friend.reread.romance, 0);
   assert.equal(friend.storiesFirst.story, 6); assert.equal(friend.storiesFirst.seen, false);
+  assert.equal(friend.beforeSubmission, false);
   assert.equal(friend.noonBadge, false); assert.equal(friend.noon, false); assert.equal(friend.nightBadge, true);
   assert(friend.finaleText.includes("描き終わった絵、最初に見てほしくて"));
   assert(friend.finaleText.includes("いつもの席で"), "friendship landing missing");
@@ -320,11 +351,12 @@ try {
   // つむぎ: 恋愛寄りに答え続けた → 締めくくりの最後の質問 → 恋愛ルート → 夜の帰り道で告白 → 恋人
   const love = await page.evaluate(async () => {
     const { fresh, spots, bonds, romance, vn, pick } = window.T;
-    const state = fresh({ met: { tsumugi: true }, story: { tsumugi: 3 }, slot: 1 });
+    const state = fresh({ met: { tsumugi: true }, story: { tsumugi: 3 }, affinity: { tsumugi: 33 }, slot: 1 });
     pick("会いたい", "声をかける", "気持ち悪くなんかない");
     await spots.visitChar("tsumugi");
     const q1 = bonds.romanceValue("tsumugi");
     state.story.tsumugi = 6; state.affinity.tsumugi = 90;
+    await window.T.submitTsumugi();
     pick("今度は２人で");
     vn.backlog().length = 0;
     await spots.visitChar("tsumugi");
@@ -340,19 +372,20 @@ try {
   assert.equal(love.confessed, true); assert.deepEqual(love.lovers, ["tsumugi"]); assert.equal(love.romance, 2); assert(love.owned);
   log("HF04/05 tsumugi romance: two romantic answers -> romance route -> confession at night -> lovers, gift too");
 
-  // 恋愛寄り→最後に友情寄り: 友情の着地・告白なし ／ 旧セーブ（質問を読み終えていた）: 最後の質問だけで決める
+  // 恋愛寄り→最後に友情寄り: 友情の着地・告白なし ／ 未回答の旧セーブ: 実際の質問・応募を経て締めくくる
   const mixed = await page.evaluate(async () => {
     const { fresh, spots, bonds, romance, pick, core } = window.T;
-    let state = fresh({ met: { tsumugi: true }, story: { tsumugi: 3 }, slot: 1 });
+    let state = fresh({ met: { tsumugi: true }, story: { tsumugi: 3 }, affinity: { tsumugi: 33 }, slot: 1 });
     pick("会いたい", "声をかける", "気持ち悪くなんかない");
     await spots.visitChar("tsumugi");
     state.story.tsumugi = 6; state.affinity.tsumugi = 90;
+    await window.T.submitTsumugi();
     pick("大事に使うよ");
     await spots.visitChar("tsumugi");
     const lateFriend = { route: state.finales.tsumugi.route, due: state.flags._confession_due ?? null };
     state.slot = 2;
     lateFriend.confessed = await romance.maybeConfession(async () => {});
-    // 旧スキーマ7: 好感度MAX・固有会話済み・自動予約あり → 予約は消え、締めくくりで答えた分だけで判断
+    // 旧スキーマ7: 既存MAXを保持し、自動予約だけを消す。訪問回数から実回答・応募を補わない。
     const old = core.newState();
     Object.assign(old, { schema: 7, phase: "daily", day: 9, slot: 1, met: { tsumugi: true }, story: { tsumugi: 6 }, affinity: { tsumugi: 80 } });
     old.flags._confession_due = "tsumugi";
@@ -360,15 +393,23 @@ try {
     localStorage.setItem(core.SAVE_KEY, JSON.stringify(old));
     state = core.load();
     const dueAfterLoad = state.flags._confession_due ?? null;
+    const unanswered = !state.romanceChoices.bond_q1_tsumugi;
+    pick("会いたい");
+    await spots.visitChar("tsumugi");
+    const questionVisit = { answer: state.romanceChoices.bond_q1_tsumugi?.value,
+      finale: !!state.finales.tsumugi, due: state.flags._confession_due ?? null };
+    await window.T.submitTsumugi();
     pick("今度は２人で");
     await spots.visitChar("tsumugi");
     const oldRoute = { route: state.finales.tsumugi.route, due: state.flags._confession_due ?? null, missed: !state.romanceChoices.bond_q1_tsumugi };
-    return { lateFriend, dueAfterLoad, oldRoute };
+    return { lateFriend, dueAfterLoad, unanswered, questionVisit, oldRoute };
   });
   assert.deepEqual(mixed.lateFriend, { route: "friend", due: null, confessed: false });
   assert.equal(mixed.dueAfterLoad, null);
-  assert.deepEqual(mixed.oldRoute, { route: "romance", due: "tsumugi", missed: true });
-  log("HF04/05 late friendly answer -> friendship; old MAX save: auto reservation dropped, finale question decides");
+  assert(mixed.unanswered);
+  assert.deepEqual(mixed.questionVisit, { answer: 1, finale: false, due: null });
+  assert.deepEqual(mixed.oldRoute, { route: "romance", due: "tsumugi", missed: false });
+  log("HF04/05 late friendly answer -> friendship; old MAX save: no inferred answer, real question and submission before finale");
 
   // 元から恋人の旧セーブ: 関係は維持、締めくくりは恋人の着地で一度だけ、告白の予約なし
   const loverSave = await page.evaluate(async () => {
@@ -379,6 +420,7 @@ try {
     delete old.romance; delete old.romanceChoices; delete old.finales;
     localStorage.setItem(core.SAVE_KEY, JSON.stringify(old));
     const state = core.load();
+    await window.T.submitTsumugi();
     vn.backlog().length = 0;
     await spots.visitChar("tsumugi");
     const text = vn.backlog().map((l) => l.text).join("|");
@@ -406,7 +448,8 @@ try {
     return { badge, finaleBlocked, first, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
   });
   assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
-  assert(rin.first.includes("試香の感想を言いに")); assert(!rin.first.includes("ラベルも同意書もない"));
+  assert(rin.first.includes("試香の口実もないのに")); assert(rin.first.includes("頼りにしてるよ、……仕事仲間として"));
+  assert(!rin.first.includes("ラベルも同意書もない"));
   assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);
   log("HF04/05 rin: question visit before the MAX finale, friendship landing with a personal gift");
@@ -437,9 +480,11 @@ try {
     const base = { met: { minto: true }, contacts: ["minto"], story: { minto: 6 }, affinity: { minto: 90 },
       flags: { _minto_identity_revealed: true, _minto_name_known: true, _minto_fifth_done: true }, slot: 0 };
     let state = fresh({ ...base, flags: { ...base.flags }, day: 13 }); // 13 % 7 === 6 → PEPPERMINT の定休日
+    await bonds.afterStory("ch1_minto_fifth");
     const atShop = bonds.finaleAtVisit("minto");
     const holiday = phone.morningMessages({ fixedNight: () => false }).find((m) => m.accept_event === "ch1_minto_bond_finale");
     state = fresh({ ...base, flags: { ...base.flags }, day: 8 });
+    await bonds.afterStory("ch1_minto_fifth");
     const workday = phone.morningMessages({ fixedNight: () => false }).find((m) => m.accept_event === "ch1_minto_bond_finale");
     const fixedNight = phone.morningMessages({ fixedNight: () => true }).find((m) => m.accept_event === "ch1_minto_bond_finale") || null;
     // 受け取って断る → 翌日は来ない → 二日後に改めて（前置きつき）
@@ -572,15 +617,14 @@ try {
     const cs = session.newSession("rehearsal");
     session.openBench(cs, { steps: [["setup", "SETUP"]] });
     const choosing = steps.stepSetup(cs);
-    await new Promise((r) => setTimeout(r, 150));
-    const option = document.querySelector('[data-test="opt-suyaki_tsumugi"]');
+    const option = await window.T.waitFor('[data-test="opt-suyaki_tsumugi"]');
     const offered = !!option;
-    option?.click();
+    option.click();
     await choosing;
     const equipped = cs.equip.bowl;
     const status = await import("./js/daily/status.js");
     const opened = status.openStatus();
-    await new Promise((r) => setTimeout(r, 150));
+    await window.T.waitFor('[data-tab="items"]');
     [...document.querySelectorAll(".st-tab")].find((b) => b.dataset.tab === "items").click();
     const note = document.querySelector('[data-test="gift-suyaki_tsumugi"]')?.textContent || "";
     const flavors = [...document.querySelectorAll(".st-items .chip")].map((c) => c.textContent).join("|");

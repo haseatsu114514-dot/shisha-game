@@ -2,6 +2,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
+import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+prepareAppearanceCatalog();
 const shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
@@ -34,6 +36,79 @@ async function init(page) {
 }
 
 await suite("ch1-tournament", async check => {
+  for (const touch of [false, true]) await check(`completion-comments-${touch ? "touch" : "pc"}`, async page => {
+    await init(page);
+    await page.evaluate(async () => {
+      window.cs = T.session.newSession("tournament");
+      await T.open(cs);
+      T.broadcast.block(cs, "foil");
+      T.session.stepPanel("holes", "穴あけ");
+    });
+    await page.waitForTimeout(2900);
+    assert.equal(await page.locator('.nico').count(), 0, "Comments appeared during play");
+    await page.evaluate(async () => {
+      cs.holes = { score: 95 };
+      const { resultCard } = await import("./js/craft/common.js");
+      window.confirmResult = resultCard(document.querySelector(".bench-panel"), { title: "穴あけ 結果" });
+    });
+    await page.locator('.nico').first().waitFor();
+    assert.match(await page.locator('.nico').first().textContent(), /穴あけ/);
+    await page.locator('[data-test="step-next"]').click();
+    await page.evaluate(async () => {
+      await window.confirmResult;
+      T.session.stepPanel("place", "炭の配置");
+    });
+    assert.equal(await page.locator('.nico').count(), 0, "Visible comments survived next step");
+    await page.waitForTimeout(1800);
+    assert.equal(await page.locator('.nico').count(), 0, "Pending comments survived next step");
+    // Result reactions still match a lower score; fast AUTO-style transitions cancel all timers.
+    await page.evaluate(() => {
+      T.session.stepPanel("holes", "穴あけ");
+      cs.holes.score = 20;
+      T.session.presentBenchResult(document.querySelector(".bench-panel"), "穴あけ 結果");
+    });
+    assert.match(await page.locator('.nico.miss').first().textContent(), /穴あけ/);
+    assert.equal(await page.locator('.nico:not(.miss)').count(), 0);
+    await page.evaluate(() => T.session.stepPanel("heat", "炭焼き"));
+    await page.waitForTimeout(1800);
+    assert.equal(await page.locator('.nico').count(), 0);
+  }, touch ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
+
+  await check("completion-comment-variety", async page => {
+    await init(page);
+    const groups = await page.evaluate(async () => {
+      window.cs = T.session.newSession("tournament");
+      await T.open(cs);
+      const before = JSON.stringify(cs), groups = [];
+      for (const step of ["holes", "heat", "steam", "pull", "care"]) {
+        for (const [kind, score] of [["perfect", 95], ["great", 80], ["good", 65], ["miss", 20]]) {
+          const pool = T.data.DB.broadcast.completion[step][kind];
+          const seen = [];
+          for (let i = 0; i < 5; i++) {
+            T.broadcast.completed(cs, step, score);
+            const text = document.querySelector('.nico').textContent.replace(/^【[^】]+】/, "");
+            seen.push(text);
+          }
+          groups.push({ step, kind, seen, pool });
+        }
+      }
+      return { groups, before, after: JSON.stringify(cs) };
+    });
+    assert.equal(groups.after, groups.before, "Comment history changed saved craft state");
+    for (const { step, kind, seen, pool } of groups.groups) {
+      assert.equal(pool.length, 10, `${step}/${kind}: missing variants`);
+      assert.equal(new Set(pool).size, pool.length);
+      assert(seen.every(text => pool.includes(text)), `${step}/${kind}: wrong reaction`);
+      assert.equal(new Set(seen).size, 5, `${step}/${kind}: recent reaction repeated`);
+    }
+    await page.waitForTimeout(1600);
+    const visible = await page.locator('.nico').allTextContents();
+    assert.equal(visible.length, 3);
+    assert.equal(new Set(visible).size, 3, "Duplicate comments within one result");
+    await page.evaluate(() => T.session.stepPanel("heat", "炭焼き"));
+    assert.equal(await page.locator('.nico').count(), 0);
+  });
+
   await check("delayed-assets-gate", async page => {
     await init(page);
     let release;
@@ -83,7 +158,7 @@ await suite("ch1-tournament", async check => {
         const { chapter, vn, intro } = T;
         const { TSUMUGI_STORY } = T.story;
         const { state } = T.core;
-        Object.assign(state, { phase: "tournament", day: 14, flavors: ["double_apple", "mint", "blueberry"], flavorStock: { double_apple: 50, mint: 50, blueberry: 50 } });
+        Object.assign(state, { phase: "tournament", day: 14, flavors: ["double_apple", "mint", "blueberry"], flavorStock: { double_apple: 50, mint: 50, blueberry: 50, lemon: 50 } });
         for (const step of TSUMUGI_STORY) state.flags[step.flag] = true;
         if (variant === "current-read") state.flags._ev_first_practice = true;
         if (baselineArrival) T.data.DB.dialogues.ch1_tournament_arrival = baselineArrival;
@@ -116,7 +191,10 @@ await suite("ch1-tournament", async check => {
     } finally { release(); }
     const deadline = Date.now() + 15000;
     while (!(await page.locator('.bench .opt-grid, [data-test="mix-ok"]').count())) {
-      // 初期機材が一種類ずつなら機材選択は省略され、配合へ進む。
+      // 現行の外観選択を実入力で確定してから、元の機材/配合到達を検査する。
+      if (await page.locator('[data-test="appearance-confirm"]').isVisible()) {
+        await confirmAppearanceSetup(page);
+      }
       assert(Date.now() < deadline, "Tournament did not resume after the image arrived");
       const skip = page.locator('#vn.active [data-test="vn-skip"]:not(.on)');
       if (await skip.count()) await skip.click();
@@ -130,15 +208,14 @@ await suite("ch1-tournament", async check => {
     await init(page);
     await page.evaluate(async () => {
       window.cs = T.session.newSession("tournament"); await T.open(cs);
-      window.placement = T.steps.stepPlace(cs);
+      await T.steps.stepPlace(cs);
     });
-    await page.locator('[data-test="opt-triangle"]').waitFor();
+    assert.equal(await page.locator('[data-test="opt-triangle"]').count(), 0);
     assert.equal(await page.locator('[data-test="opt-four"]').count(), 0);
     assert.equal(await page.locator('[data-test="opt-mixed"]').count(), 0);
-    await page.locator('[data-test="opt-triangle"]').click();
-    await page.evaluate(() => window.placement);
+    assert.deepEqual(await page.evaluate(() => cs.coalTypes), Array(3).fill("flat_charcoal"));
     await page.evaluate(() => {
-      Object.assign(T.core.state.flags, { _coal_four_unlocked: true, _coal_mix_unlocked: true });
+      Object.assign(T.core.state.flags, { _coal_cube_learned: true, _coal_four_unlocked: true, _coal_mix_unlocked: true });
       T.core.state.owned.push("cube_charcoal");
       window.placement = T.steps.stepPlace(cs);
     });
@@ -189,27 +266,26 @@ await suite("ch1-tournament", async check => {
     await init(page);
     await page.evaluate(() => {
       T.core.state.money = 0; T.core.state.day = 7;
-      T.core.state.flavorStock.blueberry = 1;
-      T.core.state.flavors.push("blueberry");
+      T.core.state.flavorStock.lemon = 1;
+      T.core.state.flavors.push("lemon");
       window.preparing = T.preparation.prepareFlavorStock();
     });
-    await page.locator('[data-test="prep-flavor-blueberry"]').click();
     await page.locator('[data-test="shop-leave"]').click();
     assert.equal(await page.locator('.shop').count(), 1, "Insufficient stock could leave preparation");
-    await page.locator('.shop-row.errand [data-test="buy-blueberry"]').click();
+    await page.locator('.shop-row.errand [data-test="buy-lemon"]').click();
     await page.locator('[data-test="shop-checkout"]').click();
     await page.locator('[data-test="shop-leave"]').click();
     await page.evaluate(() => window.preparing);
-    const prepared = await page.evaluate(() => ({ money: T.core.state.money, stock: T.core.state.flavorStock.blueberry, flavor: T.core.state.flags._prep_flavor }));
-    assert.deepEqual(prepared, { money: 0, stock: 51, flavor: "blueberry" });
+    const prepared = await page.evaluate(() => ({ money: T.core.state.money, stock: T.core.state.flavorStock.lemon, flavor: T.core.state.flags._prep_flavor }));
+    assert.deepEqual(prepared, { money: 0, stock: 51, flavor: "lemon" });
     await page.evaluate(async () => {
       window.cs = T.session.newSession("rehearsal"); await T.open(cs);
       window.mixing = T.steps.stepMix(cs);
     });
     await page.locator('[data-test="mix-ok"]').click();
     await page.evaluate(() => window.mixing);
-    assert.deepEqual(await page.evaluate(() => cs.mix), { blueberry: 10, mint: 2 });
-    assert.equal(await page.evaluate(() => T.core.state.flavorStock.blueberry), 51);
+    assert.deepEqual(await page.evaluate(() => cs.mix), { lemon: 10, mint: 2 });
+    assert.equal(await page.evaluate(() => T.core.state.flavorStock.lemon), 51);
     await page.evaluate(async () => {
       T.session.craftTest.auto = "good";
       await T.practice.runCarePractice({ kind: "midweek" }); T.core.save();
@@ -219,7 +295,7 @@ await suite("ch1-tournament", async check => {
     const record = await page.evaluate(() => __remake.state.flags._craft_practice_runs.at(-1));
     assert.equal(record.day, 7); assert.equal(record.kind, "midweek");
     assert.equal(record.scope, "care"); assert.equal(record.success, true); assert.equal(record.served, false);
-    assert.deepEqual(record.mix, { blueberry: 10, mint: 2 }); assert.equal(record.adjustments, 2);
+    assert.deepEqual(record.mix, { lemon: 10, mint: 2 }); assert.equal(record.adjustments, 2);
     assert.deepEqual(record.scores, {}); assert.equal(record.careScores.length, 2);
   });
 
@@ -256,7 +332,9 @@ await suite("ch1-tournament", async check => {
     await page.waitForTimeout(550);
     await assertFits(page, '.result-table, .rt-layout, .rt-row, .rt-detail, [data-test="result-next"]');
     const labels = await page.locator('.rt-part > span').allTextContents();
-    assert.deepEqual(labels, ["穴あけ", "炭焼き", "完成品", "調整1回目", "調整2回目", "総合", "SCORE"]);
+    assert.deepEqual(labels, ["穴あけ", "炭焼き", "完成品", "調整1回目", "調整2回目", "総合"]);
+    assert.match(await page.locator('.rt-judge-comment').innerText(), /上園「.+」/);
+    assert.equal(await page.locator('.arcade-score, [data-test="result-score"], .rt-meter').count(), 0);
     assert.equal(await page.locator('.rt-row.me .rt-rank').textContent(), "1位");
   }, { viewport, isMobile: mobile, hasTouch: mobile });
 });

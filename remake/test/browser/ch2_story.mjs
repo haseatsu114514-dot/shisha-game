@@ -1,9 +1,10 @@
 // Production DAY4–13 calendar: real rest inputs, story checkpoints, reload and failure recovery.
 import assert from 'node:assert/strict';
 import { suite, assertFits } from './support.mjs';
+import { travelToCity } from './station_helpers.mjs';
 const t = id => `[data-test="${id}"]`;
 const map = '[data-destination-selection]:not(.done)';
-const end = t('ch2-main-preparation-limit');
+const end = t('ch2-tournament-entry');
 async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, sick = false } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async opts => {
@@ -15,9 +16,12 @@ async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, s
       _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true }, _ch2_preparation_started: true,
       _ch2_naru_warm_done: true, _ch2_city_visit_c_station: true,
       _lime_opened: true, _lime_tut: 1, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
+    if (opts.slot === 2) s.flags._ch2_morning_departed = s.day; // 夜の途中から再開する保存
+    if (opts.day <= 3) delete s.flags._ch2_naru_warm_done;
+    s.owned.push('home_rig_set'); // 第1章DAY7で受け取り済みの現行保存
     s.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true };
     for (const id of Object.keys(s.met)) s.flags[`_intro_${id}`] = true;
-    s.contacts = []; s.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
+    s.contacts = opts.day <= 3 ? ['sumi'] : []; s.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
     s.relationshipMemories = ['tsumugi_creature']; s.keepsakes = ['qa_old_keepsake'];
     s.flavorStock = { mint: 21.5 }; s.affinity = { tsumugi: 15, minto: 20, naru: 30, adam: 25 };
     s.lovers = ['minto']; s.loverSince = { minto: 10 }; s.lastDate = { minto: 16 };
@@ -44,15 +48,20 @@ async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, s
 }
 async function state(page) { return page.evaluate(() => structuredClone(window.__remake.state)); }
 async function atMap(page, day, slot) {
+  await page.locator(`${map}, ${t('ch2-morning-home')}`).first().waitFor();
+  if (await page.locator(t('ch2-morning-home')).isVisible()) await page.locator(t('ch2-morning-home')).click();
   await page.waitForFunction(([day, slot]) => window.__remake.state.day === day + 14
     && window.__remake.state.slot === slot && document.querySelector('[data-destination-selection]:not(.done)')
-    && !document.querySelector('#modal.show'), [day, slot]);
+    && !document.querySelector('#modal.show') && !document.querySelector('.map[data-revealing="true"]'), [day, slot]); // #780: 新ピンの解錠演出中は選択を受け付けない
 }
 async function rest(page, touch = false) {
   const before = await state(page);
   const click = sel => touch ? page.locator(sel).tap() : page.locator(sel).click();
+  await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); // #780: 新ピンの解錠演出中は選択を受け付けない
   await click(t('pin-rest')); await click(t('map-go'));
   await page.waitForFunction(v => window.__remake.state.day > v.day || window.__remake.state.slot > v.slot, before);
+  await page.locator(`${map}, ${end}, ${t('ch2-morning-home')}`).first().waitFor();
+  if (await page.locator(t('ch2-morning-home')).isVisible()) await page.locator(t('ch2-morning-home')).click();
   await page.locator(`${map}, ${end}`).first().waitFor();
 }
 async function reload(page) {
@@ -65,6 +74,46 @@ async function reload(page) {
   await page.locator(t('slot-0')).click();
 }
 await suite('ch2-story', async check => {
+  for (const touch of [false, true]) await check(`day9-yuzugaya-tasting-night-${touch ? 'touch' : 'pc'}`, async page => {
+    await seed(page, { day: 9, slot: 2, pause: 'remake_ch2_ageha_tasting' });
+    await page.waitForFunction(() => window.__storyTrace.includes('remake_ch2_ageha_tasting'));
+    await page.locator('#vn.active .vn-box').waitFor();
+    const bg = await page.locator('#bg > .bg-img').last().evaluate(async node => {
+      const image = new Image();
+      image.src = node.style.backgroundImage.slice(5, -2);
+      await image.decode();
+      return { url: image.src, width: image.naturalWidth, height: image.naturalHeight };
+    });
+    assert(bg.url.endsWith('/assets/backgrounds/bg_yuzugaya_c_station_night.webp'), bg.url);
+    assert.equal(bg.width, 1280); assert.equal(bg.height, 720);
+    await assertFits(page, '#vn.active .vn-box');
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser'}/ch2-story-day9-night-${touch ? 'touch' : 'pc'}-conversation.png` });
+    // 未完読の保存から実LOADし、試煙会を完了して翌朝へ。追加の費用・在庫付与はない。
+    const before = await state(page);
+    await reload(page); await atMap(page, 10, 0);
+    const after = await state(page);
+    assert(after.flags._ch2_read_remake_ch2_ageha_tasting && after.flags._ch2_night_9_done);
+    for (const key of ['money', 'flavorStock', 'owned']) assert.deepEqual(after[key], before[key], key);
+    await reload(page); await atMap(page, 10, 0);
+    assert(!await page.evaluate(() => __storyTrace.includes('remake_ch2_ageha_tasting')), '既読の試煙会を再生しない');
+  }, { viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 }, isMobile: touch, hasTouch: touch, reducedMotion: 'reduce' });
+  await check('day2-free-night-then-day3-naru-and-ageha-once', async page => {
+    await seed(page, { day: 2 }); await atMap(page, 2, 0);
+    const before = await state(page);
+    await rest(page); await atMap(page, 2, 1); await rest(page); await atMap(page, 3, 0);
+    assert(!await page.evaluate(() => __storyTrace.includes('remake_ch2_ageha_scout')), 'DAY2 must remain a free night');
+    await rest(page); await atMap(page, 3, 1); await rest(page); await atMap(page, 4, 0);
+    const after = await state(page);
+    assert(after.flags._ch2_read_ch2_naru_warm && after.flags._ch2_read_remake_ch2_ageha_scout);
+    assert(after.contacts.includes('ageha'));
+    const scenes = await page.evaluate(() => __storyTrace.filter(id => ['ch2_naru_warm', 'remake_ch2_ageha_scout'].includes(id)));
+    assert.deepEqual(scenes, ['ch2_naru_warm', 'remake_ch2_ageha_scout']);
+    for (const key of ['money', 'stats', 'statXp', 'owned', 'equip', 'flavorStock']) assert.deepEqual(after[key], before[key], key);
+    await reload(page); await atMap(page, 4, 0);
+    const loaded = await state(page);
+    for (const key of ['money', 'stats', 'statXp', 'owned', 'equip', 'flavorStock', 'contacts']) assert.deepEqual(loaded[key], after[key], key);
+    assert(!await page.evaluate(() => __storyTrace.some(id => ['ch2_naru_warm', 'remake_ch2_ageha_scout'].includes(id))), 'LOAD must not replay completed DAY3 scenes');
+  }, { reducedMotion: 'reduce' });
   await check('day4-through-eve-actual-calendar-and-preserved-relationships', async page => {
     await seed(page); await atMap(page, 4, 0);
     const before = await state(page);
@@ -79,13 +128,18 @@ await suite('ch2-story', async check => {
     assert(s.flags._ch2_taste_distant); assert(s.flags._ch2_eve_done); assert(!s.flags.ch2_taste_recovered);
     assert(s.met.ageha); assert(!s.contacts.includes('ageha')); assert(!s.visits.ageha); assert(!s.met.volk);
     const trace = await page.evaluate(() => window.__storyTrace);
-    const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_slump_taste','ch2_lingering_smell','ch2_adam_distance',
-      'ch2_sumi_silence','ch2_naru_confrontation','ch2_minto_warning','ch2_tsumugi_color','remake_ch2_eve_arrival','ch2_pre_tournament_realisation'];
+    const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_kumicho_greeting','ch2_slump_taste','ch2_lingering_smell','ch2_adam_distance',
+      'remake_ch2_ageha_tasting','ch2_sumi_silence','ch2_naru_confrontation','ch2_minto_warning','ch2_naru_window','ch2_tsumugi_color',
+      'remake_ch2_eve_arrival','remake_ch2_eve_rei','ch2_pre_tournament_realisation'];
     assert.deepEqual(trace.filter(id => expected.includes(id)), expected);
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));
     assert(!/ヴォルク|組長の|鉄の煙/.test(texts));
+    // #929: DAY9はC.STATION柚ヶ谷店のアフサール新作試煙会。未対面の神崎・REIはそこで名乗り、面識が残る
+    assert.match(texts, /アフサール新作 先行試煙会/); assert(!/店長同士の試飲会/.test(texts));
+    assert(s.met.kumicho && s.met.rei); assert(s.flags._ch2_afsahr_tasting);
+    assert(s.flags._ch2_scout_seen && !s.met.volk); // #929: 名乗らない偵察の男を見た記録だけ残す
     assert(!trace.includes('ch2_empty_victory')); assert(!trace.includes('ch2_rivals_first_sight'));
-    await assertFits(page, '.ch2-end-card .btn');
+    await assertFits(page, '.ch2-contest .btn');
     await reload(page); await page.locator(end).waitFor();
     const loaded = await state(page); assert.equal(loaded.day, 28); assert.deepEqual(loaded.stats, s.stats); assert.equal(loaded.money, s.money);
   }, { reducedMotion: 'reduce' });
@@ -97,7 +151,7 @@ await suite('ch2-story', async check => {
     await reload(page); await atMap(page, 5, 0);
     const s = await state(page); assert(s.flags._ch2_read_ch2_abyss_baito); assert(s.flags._ch2_night_4_done); assert.equal(s.money, 36000);
     const log = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(l => l.text).join('\n'));
-    assert(!log.includes('──炭を、落とした。')); assert(log.includes('同じ夜'));
+    assert(!log.includes('炭を、落とした。')); assert(log.includes('同じ夜'));
   });
   await check('full-rest-still-reads-fixed-accident-without-payment', async page => {
     await seed(page, { sick: true }); await atMap(page, 4, 0);
@@ -106,13 +160,20 @@ await suite('ch2-story', async check => {
     await page.locator(t('rest-full')).tap(); await atMap(page, 5, 0);
     const s = await state(page); assert(s.flags._ch2_night_4_done); assert.equal(s.money, 36000); assert(Object.values(s.stats).every(n => n === 31));
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
-  await check('eve-checkpoint-and-night-map-failure-retry', async page => {
+  await check('eve-checkpoint-and-venue-background-failure-retry', async page => {
     let bad = true;
-    await page.route('**/bg_widehanga_map_night.webp', r => bad ? r.fulfill({ status: 200, contentType: 'image/webp', body: 'invalid' }) : r.continue());
+    let failures = 0, retries = 0;
+    await page.route('**/bg_ch2_venue_bench_night.webp', r => {
+      if (!bad) { retries++; return r.continue(); }
+      failures++;
+      return r.fulfill({ status: 200, contentType: 'image/webp', body: 'invalid' });
+    });
     await seed(page, { day: 13, slot: 2 }); await page.locator(t('ch2-main-error')).waitFor();
+    assert(failures > 0, 'The eve background failure must be injected');
     let s = await state(page); assert.equal(s.day, 27); assert(s.flags._ch2_read_ch2_tsumugi_color);
     assert(!s.flags._ch2_eve_done); assert(!s.met.ageha);
     bad = false; await page.locator(t('ch2-main-retry')).click(); await page.locator(end).waitFor();
+    assert(retries > 0, 'Retry must request the recovered venue background');
     s = await state(page); assert.equal(s.day, 28); assert(s.flags._ch2_eve_done); assert(s.met.ageha);
     const trace = await page.evaluate(() => window.__storyTrace);
     assert.equal(trace.filter(id => id === 'ch2_tsumugi_color').length, 1);
@@ -133,14 +194,15 @@ await suite('ch2-story', async check => {
   });
   await check('legacy-volk-records-kept-without-chapter2-entrance', async page => {
     await seed(page, { legacyVolk: true }); await atMap(page, 4, 0);
-    await page.locator(t('map-region-widehanga')).click();
-    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(), 3);
+    await travelToCity(page,'widehanga');
+    assert.equal(await page.locator('.spot-pin[data-test^="pin-ch2_"]').count(), 5);
     assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
-      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-trpg_bar'].sort());
+      ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-ch2_shop','pin-ch2_c_station','station-open'].sort());
     assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
+    assert.equal(await page.locator(t('pin-trpg_bar')).count(), 0, 'TRPG bar waits for REI introduction');
     const logos = await page.locator('.store-logo img').evaluateAll(async imgs => {
       await Promise.all(imgs.map(i => i.decode())); return imgs.map(i => i.naturalWidth);
-    }); assert.deepEqual(logos, [768,768,768]);
+    }); assert.equal(logos.length, 5); assert(logos.every(width => width > 0), "All five adopted store logos must decode");
     await reload(page); await page.locator(map).waitFor();
     const s = await state(page); assert.equal(s.visits.volk, 2); assert.equal(s.affinity.volk, 12); assert(s.met.volk);
     assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);

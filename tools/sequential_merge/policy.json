@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "repository": "haseatsu114514-dot/shisha-game",
+  "base": "main",
+  "approved": false,
+  "ciCoverageApproved": false,
+  "serverPolicyApproved": false,
+  "maxAgeSeconds": 300,
+  "actionsAppId": null,
+  "ciRules": [],
+  "reviewerAllowlist": [],
+  "recordAuthorities": []
+}

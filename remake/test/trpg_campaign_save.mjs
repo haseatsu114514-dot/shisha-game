@@ -19,7 +19,7 @@ legacy.lovers = ["hiyori"]; legacy.affinity.hiyori = 66;
 for (const key of [core.SAVE_KEY, "suien_remake_slot1"]) {
   storage.set(key, JSON.stringify(legacy));
   const state = copy(key === core.SAVE_KEY ? core.load() : core.loadFromSlot(key));
-  assert.equal(state.schema, 15); assert.equal(state.money, 12345); assert.equal(state.slot, 1);
+  assert.equal(state.schema, core.SCHEMA); assert.equal(state.money, 12345); assert.equal(state.slot, 1);
   assert.deepEqual(state.trpg, { stock: [], owned: [], cleared: {}, shifts: [], club: { founded: null, members: {} } });
   assert.deepEqual(state.lovers, ["hiyori"]);
 }
@@ -122,6 +122,8 @@ for (const fixture of cases) {
       relationshipMemories: ["actually-read"], flags: { _test_read: true } });
     const relationKeys = ["lovers", "affinity", "story", "romance", "romanceChoices", "relationshipMemories", "flags"];
     const relationships = Object.fromEntries(relationKeys.map(k => [k, copy(source[k])]));
+    relationships.flags._axe_bar_legacy_access = true; // schema14のBAR互換許可。既読・関係のassertは維持。
+    relationships.flags._sumi_double_apple_received = true; // schema19より前は冒頭の葉を受取済み。
     storage.clear();
     const serialized = JSON.stringify(source);
     storage.set(key, serialized);

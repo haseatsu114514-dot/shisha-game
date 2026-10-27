@@ -1,4 +1,5 @@
 {
+  "comment": "第4章正史台本。第3章全国から世界まで六週間。実際の章進行は未接続。",
   "dialogues": [
     {
       "dialogue_id": "ch4_opening",
@@ -6,163 +7,392 @@
         {
           "speaker": "",
           "face": "",
-          "text": "【第4章: 世界大会（ドバイ編）】"
+          "text": "【第四章　継承の煙】"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "全国大会から六週間後。世界大会のため、ドバイへ来た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "空港の案内板の前で、なるが機材ケースを持ち上げた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ついにここまで来た"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "飛行機を降りた瞬間、肌を刺すような乾燥した熱風と、"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "異国情緒あふれる強烈な香辛料の匂いが全身を包み込んだ。世界大会の舞台、ドバイ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……喉の奥がカラカラになるようなこの熱気の中で、世界最高の煙を創り出す"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "泣いても笑ってもこれが最後だ。全部出し切ろう"
+          "text": "……来たな、第二代表"
         },
         {
           "speaker": "naru",
-          "face": "smile",
-          "text": "おせーぞ、はじめ！"
+          "face": "normal",
+          "text": "おう。今度は、最初から同じ会場だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日本の二枠。全国王者と、ラストチャンス代表決定大会の優勝者だ。"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "なる！ お前も無事に着いてたんだな"
+          "face": "normal",
+          "text": "戻ってからの店、どうだった？"
         },
         {
           "speaker": "naru",
-          "face": "serious",
-          "text": "当たり前だろ。県で負けた後、また地元大会から全部勝ち直して這い上がってきたんだ"
+          "face": "normal",
+          "text": "待ってたってさ。しばらく、あのノートを客に見せろって言われた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も見たい。旅先で何をしてたか、まだ全部聞けてない"
         },
         {
           "speaker": "naru",
-          "face": "serious",
-          "text": "一回こっきりの大会を、何度もイチからな……その分、誰よりも多く戦場に立ってきた"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "……決勝で待ってるからな"
+          "face": "normal",
+          "text": "吸いながら話す。まずはお前に勝ってからな"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "なると拳を突き合わせる。"
+          "text": "二人でケースを運ぶ。出口の熱気に、同時に顔をしかめた。"
+        }
+      ],
+      "comment": "予選突破は第3章で並行して描写済み。第4章冒頭では旅と休業から戻った話を短く拾い、第二代表として対等に再登場する。"
+    },
+    {
+      "dialogue_id": "ch4_sumi_training",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出発前のtonari。スミさんは、はじめのノートを机へ戻した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今日は相手を変えて、同じ配合で作れ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一台ずつですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一人ずつだ。葉より先に顔を見ろ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "地元大会で敗れ、また地元大会からイチで勝ち上がり直した。"
+          "text": "サラリーマンさんには休憩の長さを、仕込み中のスミさんには吸える時間を聞いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……県大会の頃、話しかけても手元しか見なかったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "勝てば、全部戻ると思ってました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺にも、ああいう顔をした時期があった。今は、飯も食えてるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。診てもらいながらですけど"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "県で再び敗れ、それでもまた這い上がってきた男。"
+          "text": "スミさんはうなずいた。次の客へ、空いた椅子を引く。"
         },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "じゃあ、その人の注文、聞いてこい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_festa",
+      "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "出会った頃からずっと惜しみなく教えてくれた、最高のライバル。今、そいつと拳を突き合わせている。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その直後、背後から底抜けに明るい声が響いた。"
+          "text": "FESTAの扉を開けると、手拍子が一つ増えた。ダ・シルヴァ太陽が炭を置く。"
         },
         {
           "speaker": "da_silva",
-          "face": "smile",
-          "text": "オイオイ、シリアスな顔してどうした！ シーシャはフェスタ（祝祭）だぜ、もっと楽しもうじゃないか！"
+          "face": "normal",
+          "text": "来たな、日本の二人！　まず座れ。暑かっただろ"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（えっ……陽気なブラジル人の集団……！？ アサイーの甘い香りがする）"
+          "speaker": "naru",
+          "face": "normal",
+          "text": "派手な店だな。でも、ホースの置き場、広い"
         },
         {
           "speaker": "da_silva",
-          "face": "smile",
-          "text": "味の追求も大事だが、ショーマンシップが足りねえと観客は沸かねえぜ、ボーイ！ HAHAHA!"
+          "face": "normal",
+          "text": "踊る人も、座ってる人もいる。どっちも邪魔されたくないだろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめの足が通路へはみ出す前に、太陽が椅子を回した。"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "（こっちのアメリカ人からはバブルガムのポップな香り……。彼らも大会の出場者か？）"
+          "face": "normal",
+          "text": "店、持ちたいんです。こういうことまで、まだ考えてなくて"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "誰に来てほしい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "また来るって言った人が、次も来られる店にしたいです"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "いいな。じゃ、休みの日は誰が開ける？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それ、なるにも聞かれました"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "一人で全部やるつもりなら、そこから相談な"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "そして、ふと異国情緒あふれる路地裏へ視線を向けると、"
+          "text": "笑いながら、営業日と仕入れの話になった。太陽は閉店の札も見せてくれた。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "明日は俺も休み。次は大会で会おう。審査席から見てるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_stranger_first",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "市場の端。地味な旅装の男が、落ちた紙コップを拾っていた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "すまない。その袋を開けてもらえるかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。……この辺に、座れる店ありますか"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "疲れた顔だ。煙より先に、水がいるね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "信じられないほど静かで深い煙を吐いている老人の姿があった。"
+          "text": "一緒に日陰へ入る。男は王冠も肩書きも持たず、椅子を一つ引いた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "君も作る人か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "日本のtonariで。まだ、店は持ってないです"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "なら、今日は客になろう。作る話は、そのあとでいい"
+        }
+      ],
+      "comment": "old_manの正体はシェイク。表示名と正装の立ち絵は大会当日の公開まで伏せる。"
+    },
+    {
+      "dialogue_id": "ch4_stranger_second",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数日後、路地裏のカフェ。同じ男が、古びた台のホースをほどいていた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "また会ったね。一本、頼めるかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここの葉、使ってもいいですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員のうなずきを確かめ、いつもと同じブロンドの袋を選んだ。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "もっと高い葉もあるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まず、この台の熱を覚えたいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の換気扇が止まった。炭を少し離して、煙の立ち方を見直す。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "……値段の話より、先にそれを見るのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "さっきより、吸いづらくなかったですか"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "もう一口、確かめさせてくれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "答えを待つ間、男はゆっくりと笑った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_stranger_third",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜。路地裏の店に、借りたトングを返しに来た。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "明日が本番だね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。あなたも、見に来るんですか"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "君の煙は、もう一度吸いたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "昨日と同じにできるか、まだ分かりません"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "同じでなくていい。明日の私に、出してくれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "男は店員に礼を言って去った。カップは、洗いやすいように重ねてあった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_wang_reception",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜祭。金色の装束の王煙楼が、客席のざわめきが静まるのを待っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "長い呼吸から、龍のような煙が立ち上がる。県大会のモニターで見た技だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あの人だ"
         },
         {
           "speaker": "master_hookah",
           "face": "normal",
-          "text": "フッフ……見とるのう。お主の煙が『陰陽五行の理』に届くかどうか、楽しみにしておるぞ"
+          "text": "映像より、音が静かだろう"
         },
         {
           "speaker": "hajime",
-          "face": "serious",
-          "text": "（ライチの香り……ただ者じゃない。これが世界のレベルか……！）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その日の夜。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "現地の空気を味わうため街角を歩いていると、"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "店の前にボロボロの布を被りながらも異様なオーラを放つ男が座っていた。"
-        },
-        {
-          "speaker": "sheikh",
           "face": "normal",
-          "text": "……異国の若者よ。お前の煙には、どんな祈りが込められている？"
+          "text": "はい。吸う音まで、見てたんですね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "観客が息を止めると、煙がよく見える"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は、ホースを持ったまま迷う客へ椅子を向け直した。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "こちらの都合で待たせるのと、相手を待つのは違う。君はどちらかな"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "（祈り……？ シーシャの煙に、そんなことを聞かれたのは初めてだ"
+          "face": "normal",
+          "text": "明日、確かめてください"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "なんだ、この謎の地元の男から放たれる圧倒的な威圧感は……強烈なローズとカルダモンの香りがする）"
-        },
-        {
-          "type": "choice",
-          "choices": [
-            {
-              "text": "大会に向けて準備する",
-              "next_id": "ch4_tournament_start"
-            }
-          ]
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "楽しみにしている。私も、君の前で作る"
         }
-      ]
+      ],
+      "comment": "王煙楼はシェイクの師。推薦選手として正面から登場する。老人語は使わない。"
     },
     {
       "dialogue_id": "ch4_tournament_start",
@@ -170,325 +400,198 @@
         {
           "speaker": "",
           "face": "",
-          "text": "HAZE: GRAND SMOKE 本戦会場。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "会場の熱気たるや、日本の大会とは比較にならない。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "世界中の猛者たちが集い、それぞれが独自の「哲学」を煙に乗せて準備を進めている。"
+          "text": "GRAND SMOKE当日。四人分の台が、一列に並んでいる。"
         },
         {
           "speaker": "pakki",
-          "face": "smile",
-          "text": "Ladies and Gentlemen!! Welcome to the HAZE: GRAND SMOKE!!"
-        },
-        {
-          "speaker": "pakki",
-          "face": "smile",
-          "text": "今年の審査員は超豪華！ ブラジルのフェスタ野郎『ダ・シルヴァ太陽』だァー！"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（えっ！？ ドバイに着いた日に街でシーシャの魅力を語ってくれたあの人が……審査員だったのか！？）"
-        },
-        {
-          "speaker": "da_silva",
-          "face": "smile",
-          "text": "Hey!! 会ったばっかだなボーイ！ シーシャはフェスタだ！"
-        },
-        {
-          "speaker": "da_silva",
-          "face": "smile",
-          "text": "お前の煙のショーマンシップ、見せてもらうぜ？ HAHAHA!"
-        },
-        {
-          "speaker": "pakki",
-          "face": "smile",
-          "text": "そして……今年の注目選手たちを紹介しよう！ 日本からやってきた『鳴切亮太』！"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "……（静かに自分の炭に集中している）"
-        },
-        {
-          "speaker": "pakki",
-          "face": "smile",
-          "text": "さらに！ アジア圏シーシャ協会の推薦枠……『王 煙楼』！"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（あ……！ あの路地裏で安物のパイプを吸ってたおじさん！？ なんで選手としてここに……！）"
-        },
-        {
-          "speaker": "master_hookah",
           "face": "normal",
-          "text": "フッフ……若者よ。お前の煙には『命』がある。だが、ワシの『陰陽五行の理』に届くかのう？"
+          "text": "日本第一代表、蒸野はじめ！　第二代表、鳴切亮太！"
         },
         {
           "speaker": "pakki",
-          "face": "smile",
-          "text": "そして最後は……開催国UAEから、圧倒的な絶対王者！ 『シェイク・アル=ガリヤーン』だァァァッ！"
+          "face": "normal",
+          "text": "アジア圏シーシャ協会推薦、王煙楼！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後に、白いカンドゥーラと白い頭布の男が入場した。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "そして現王者、シェイク・アル=ガリヤーン！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……路地裏の"
         },
         {
           "speaker": "sheikh",
           "face": "normal",
-          "text": "……"
+          "text": "約束どおり、また吸いに来た。今日は私にも作らせてくれ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "散歩は済んだか。今度は、私も相手だ"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "ええ、先生。遠慮はしません"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "おい、はじめ。驚くのは終わってからな"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "（純金で作られた機材……あれが王族の使うシーシャか"
+          "face": "normal",
+          "text": "うん。全員に、勝ちたい"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "でも、あの人の目……どこか遠くを、誰かの影を探しているように見える……）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ついに、世界最高の煙を決める戦いの火蓋が切って落とされた。"
-        },
-        {
-          "type": "choice",
-          "choices": [
-            {
-              "text": "決勝（4人一斉の最終決戦）へ",
-              "next_id": "ch4_final"
-            }
-          ]
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "四人同時、一試合！　途中の順位では決まらない。最後の調整までどうぞ！"
         }
       ]
     },
     {
       "dialogue_id": "ch4_final",
-      "comment": "決勝は4人一斉の一戦（はじめ・なる・王煙楼・シェイク）。各章1大会1試合の正史（2026-07-20）。山場はなる→王煙楼→シェイクの順（brand【転−１】〜【転−３】準拠）",
-      "metadata": {},
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "決勝の前夜、なるからLIMEが届いていた。"
+          "text": "四人が同時に動き出す。なるの台から、バニラと焼き菓子を思わせる甘い香りが届いた。"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "明日、決着な。──で、約束も更新だ"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "勝った方が作る。今度は、世界のてっぺんの味だぞ"
+          "text": "バニラの甘さで、最後まで吸わせる。今日は譲らないぞ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "──決勝。4人の台が、同じステージに並ぶ。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "なる。王煙楼。そして純金の機材を携えた絶対王者、シェイク・アル=ガリヤーン。"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "蒸野。──今日は、はじめじゃなくてそう呼ぶ。敵だからな"
-        },
-        {
-          "speaker": "naru",
-          "face": "serious",
-          "text": "お前のことは誰より見てきた。癖も、全部な"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "なるのシーシャは最高傑作だった。お菓子系フレーバーの繊細な重ね方。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "そこに、二度イチからやり直した男の全部が込められている。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──なるの煙は、審査員ではなく客席に向かって開いていた。届け先の見える煙だった。"
+          "text": "王煙楼は一口目の長さを測る。シェイクの金の台には、継ぎ目一つ揺らがない。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（すごい……なるのシーシャは、本当に最高だ。俺も、ここまで練習してきた手を全部使おう）"
-        },
-        {
-          "type": "reflection"
+          "text": "（俺は、こっちから）"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "トングを持ち直す。見て覚えた動きも、何度も焦がして直した火加減も、今の手に残っていた。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（教わったことばかりでもいい。消して俺だけにするより、今日ここで吸う人に使いたい）"
+          "text": "はじめは普通のブロンドをほぐす。和の配合は、何度も試したものだ。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "はじめが選んだのは、練習で何度も確かめてきた和の組み合わせだった。"
+          "text": "久世との勝負を思い出し、隣の台から目を戻す。まず息を吐いた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "抹茶の苦み、柚子の立ち上がり、ほうじ茶の余韻。"
+          "text": "スティーブのタイマーを思い出し、炭を戻す手を待つ。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "tonariで教わった蒸らしを土台に、乾いた会場で喉を休められる「間」を作る。立ち上がりを急がず、今日の吸い方を見て熱を決める。"
+          "text": "ヴォルクのノートと同じ欄に、開場後の温度を書く。数字を見てから、客の顔へ戻る。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "中間発表──僅差で、はじめが前に出る。"
+          "text": "中間発表。なるが先頭だった。王煙楼もシェイクも、手を止めない。"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "…………"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "宿題、やってきたんだけどな。……お前が相手じゃ、それでも足りなかったか"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "……いたよ。今日の煙のど真ん中に、お前が"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "最高のシーシャだった。──優勝、絶対勝ち取れよ"
+          "text": "最後の炭替えまで、逃げきる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。ありがとう、なる"
+          "text": "追いつくよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "──続いて、金色の装束の男が静かに炭を組む。吐いた煙が龍のようにうねり、会場がどよめく。"
-        },
-        {
-          "speaker": "master_hookah",
-          "face": "normal",
-          "text": "フッフ……お前の煙には『命』がある。だが若いな。まだ、誰にでも優しい"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "王煙楼の一台は「観察」の極致だった。審査員一人ひとりの顔色を読み、"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "それぞれに、自分のためだけに作られた薬のような煙を差し出していく。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "（吸う間まで見てる……。俺も、さっき決めた熱を、そのまま押しつけないようにしよう）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "香りの組み合わせは保ったまま、はじめは炭の位置を変えた。急いで吸う人には少し熱を離し、"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ゆっくり味わう人には立ち上がりをもう一息待つ。相手の吸い方を確かめて、また直した。"
-        },
-        {
-          "speaker": "master_hookah",
-          "face": "normal",
-          "text": "……決めた手順に縛られぬ、か。吸う者を見ておる。あの男も、そうしていた"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "最後に、シェイクが完璧なシーシャを作り上げる。暴力的なまでの完成度に、審査員全員が息を呑む。"
-        },
-        {
-          "speaker": "sheikh",
-          "face": "normal",
-          "text": "日本の若者よ。お前がここまで勝ち上がってくるとはな。……お前の煙、どこか懐かしい匂いがする"
+          "text": "二度目の調整。客がホースを持ち直した。はじめは、吸い終わるのを待ってから声をかける。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（シェイクの機材は純金……フレーバーもとんでもない高級品だろう。でも、関係ない）"
+          "text": "今の重さ、どうですか"
         },
         {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "（今の俺にできることを、最後までやろう。あの人が、もう一口吸えるように）"
+          "speaker": "customer",
+          "face": "normal",
+          "text": "少し休んだら、また吸いたい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "はじめの一台が回る。何度も練習してきた待ち方と、今日その場で直した熱が、香りを途切れさせずに届けた。"
+          "text": "王煙楼が椅子を回した場面を思い出す。急がせず、炭を一つ離した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクも火を直す。なるはチョコとバニラの余韻を保ち、王煙楼は残った葉へ熱を戻す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "四台とも、最後まで誰かの手が入っていた。"
         },
         {
           "speaker": "da_silva",
-          "face": "surprise",
-          "text": "…………Oh my god. 俺の知ってるショーマンシップとは対極の……静寂のショーだ"
-        },
+          "face": "normal",
+          "text": "……静かでも、いいフェスタだ"
+        }
+      ],
+      "comment": "成功時。全て同じ一台・同時進行の一試合。なるの敗北受容は最終集計後だけ。"
+    },
+    {
+      "dialogue_id": "ch4_result",
+      "lines": [
         {
-          "speaker": "da_silva",
-          "face": "smile",
-          "text": "派手じゃないけど……心の中が暖かくなる、本当のフェスタの煙だ"
+          "speaker": "",
+          "face": "",
+          "text": "審査員の残った持ち点が、順に投入された。パッキーが集計を確認する。"
         },
         {
           "speaker": "pakki",
-          "face": "surprise",
-          "text": "…………ッッッ！！！"
+          "face": "normal",
+          "text": "勝者は、日本、蒸野はじめ！"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "MCのパッキーが沈黙した。そして、彼の口から吐き出された煙が、照明に反射して一瞬、虹色に輝いた。"
+          "text": "全ての点が出揃ってから、なるがトングを置いた。"
         },
         {
-          "speaker": "pakki",
-          "face": "excited",
-          "text": "勝者は……！！ 日本、蒸野はじめェェェェェッ！！！"
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……くそ。これ、俺の最高だったんだけどな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、今日のなるの煙、好きだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "お前のも。……優勝おめでとう。次は、俺が取る"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "会場全体が揺れるような大歓声に包まれた。"
-        },
-        {
-          "type": "choice",
-          "choices": [
-            {
-              "text": "大会を終えて",
-              "next_id": "ch4_ending"
-            }
-          ]
+          "text": "差し出された手を、強く握った。王煙楼とシェイクの台からも、まだ煙が立っていた。"
         }
       ]
     },
@@ -498,109 +601,462 @@
         {
           "speaker": "",
           "face": "",
-          "text": "大会終了後。はじめはシェイクの屋敷に招かれた。"
-        },
-        {
-          "speaker": "sheikh",
-          "face": "smile",
-          "text": "見事な煙だった。……実はな、私がシーシャを始めたきっかけは日本人なのだ"
-        },
-        {
-          "speaker": "sheikh",
-          "face": "smile",
-          "text": "15年前、ドバイの路地裏のカフェで出会った名もない店員。あの男のシーシャだけは忘れられない"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "日本人……？"
-        },
-        {
-          "speaker": "sheikh",
-          "face": "smile",
-          "text": "彼の名は……墨田丈一郎"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "…………スミさん……！？"
+          "text": "大会のあと。シェイクの屋敷で、使い慣れた小さな台が出てきた。"
         },
         {
           "speaker": "sheikh",
           "face": "normal",
-          "text": "彼は当時、世界大会の準優勝者だった"
-        },
-        {
-          "speaker": "sheikh",
-          "face": "normal",
-          "text": "勝つための煙ばかり追ううちに、客の顔が見えなくなったと言って世界を放浪し、"
-        },
-        {
-          "speaker": "sheikh",
-          "face": "normal",
-          "text": "ドバイの小さなカフェで働いていた。でも彼のシーシャは折れた人間の煙じゃなかった"
-        },
-        {
-          "speaker": "sheikh",
-          "face": "normal",
-          "text": "私が吸った中で、今でも最も心に残る一杯だ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "はじめの頭の中で、全てが繋がる。スミさんがあの特訓で見せた、ただの店長とは思えない精度。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "「長くやってりゃ、な」とだけ答えた横顔。大会に出ないかと聞いたときの「俺はいいよ」という言葉。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "（あの『ただのシーシャ好きな店長』が……シェイクさんの原体験だったんだ）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "師弟の系譜が、世界規模で繋がった瞬間だった。"
+          "text": "祝いには、私が作ろう。君も王者も、今日は客だ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（スミさんから渡った手つきが、ここにも、俺の手にもある）"
+          "text": "あの店にも、よく行くんですか"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "上着には、遠いtonariの煙と炭の匂いが残っていた。"
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "十五年前、そこで吸った一台が、私を作る側へ回らせた"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "当時、私は店員の名も知らなかった。あとで、世界大会準優勝者だと知った"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "墨田丈一郎。君の、スミさんだ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（誰かにもらった匂いなのに、俺からしている）"
+          "text": "……あの店で、ですか"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "携帯には「世界王者」の文字と祝福が並んでいた。うれしくて、何度も開き直した。"
-        },
-        {
-          "speaker": "hajime",
+          "speaker": "sheikh",
           "face": "normal",
-          "text": "（帰ったら、一台作ろう。いつもの席で、今日の話をしながら）"
+          "text": "王族の注文ではなく、疲れた客の注文を聞いてくれた"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "作り始めてからは王煙楼に叩き直された。道具も、あの街の職人にずいぶん壊されたよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "誰にも教わっていない新しい技を探すより、向かいで吸ってくれる顔を思い浮かべていた。"
+          "text": "苦笑して、直した跡のある継ぎ目を見せてくれた。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "君の一台は、あの日とは違った。だから、次も吸いたい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "第4章 世界大会編・完"
+          "text": "携帯には祝福が並んでいる。はじめは何度も画面を開き、うれしさを確かめた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch4_sumi_return",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰国後。tonariのカウンターで、スミさんにシェイクの話をした。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……あのお客さんが。作るようになったのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんは、どうして大会を離れたんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "味は分かった。なのに、客の顔が一人も浮かばなくなった"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "次の点を取ることばかり考えてた。負けた晩、店に帰る用事まで忘れてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "県大会の頃の、俺みたいですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "似てた。けど、お前の不調の理由まで俺が決めることじゃない"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "南雲にも、勝ち負けの話はしてないって言われた"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "負けたやつの説教だと思った。あいつの店の話を、聞かなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺も、なるの話を途中で止めました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今は、どうなんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "帰ったら作り合おうって。なるの新作も、吸いたいんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは伏せていた携帯を、自分の方へ引き寄せた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは携帯を出し、南雲の名前を探した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺も、話しそびれたことがある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日、連絡します？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お前が片づけを手伝うならな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で椅子を上げた。スミさんの携帯に、短い返信が届いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……来週、飯だとさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ俺、その日、店の番します"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "翌月の休業日も決めることになった。優勝の写真を飾る場所は、そのあとで探した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_defeat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の票が入る。俺の名前は、一番上にはなかった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……最後まで吸いたくなる一台だった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとう、……悔しいな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "帰って来い。話は、飯食いながら聞く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "結果を確かめて、道具を片付けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_strategy",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出発前。スミさんと、世界大会へ持っていく配合のメモを広げた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "日本って書いた札を外しても、吸いたくなるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "説明の前に、もう一口欲しくなるようにしたいです"
+        },
+        {
+          "type": "choice",
+          "id": "ch4_strategy_choice",
+          "choices": [
+            {
+              "text": "桜の香りを先に届けたい",
+              "next": "sakura"
+            },
+            {
+              "text": "桃の甘さでやわらかく迎えたい",
+              "next": "peach"
+            },
+            {
+              "text": "お茶の余韻を長く残したい",
+              "next": "tea"
+            }
+          ]
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "向こうの暑さでも、同じになるか。試してこい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。道具と葉は、使ってきたもので"
+        }
+      ],
+      "branches": {
+        "sakura": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "その香り、強すぎないところを探そう"
+          }
+        ],
+        "peach": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "甘いまま、重くならない火を考えよう"
+          }
+        ],
+        "tea": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "渋みも残る。飲み込んだ後まで確かめろ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_nagumo_old_rival",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "表彰が終わり、なると機材を片づけた。南雲が審査席から戻ってくる。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "帰ったら、勝った方が作る。忘れんなよ"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "……懐かしい約束だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "南雲さんも、してたんですか"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "ああ。あいつに何度も作らせた。悔しくて、感想だけは長くなった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんに？"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "ある晩、店を増やす話をした。あいつは、次の大会の点を数えていた"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "勝ち負けの話はしてない。……そう言ったら、黙り込んだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめはなるを見る。なるは畳みかけたクロスを、静かにケースへしまった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そのあと、話せたんですか"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "会えば今の店の話はする。だが、あの晩の話はしていない"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "次は向こうから言うだろうと、互いに待ちすぎた"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……店を増やすのって、負けたからですか"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "勝ちたかったよ。それとは別に、帰れる店を増やしたかった"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "あいつの店も、うちの店も続いている。まだ話すことはある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "南雲はスタッフに呼ばれて戻っていった。なるはもう一度、ケースの留め具を確かめた。"
+        }
+      ],
+      "comment": "競技の採点が確定した後。過去の友情を採点理由にせず、はじめとなるを同じ結末へ固定しない。"
+    },
+    {
+      "dialogue_id": "ch4_two_tables",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "翌週の閉店後。南雲がネクタイを緩め、tonariのカウンターに座った。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "まだそのトングか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お前も、まだそんな堅い襟してんのか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが出したのは、カルダモンの一台だった。南雲が二口目を吸う。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "勝った方が作る約束、まだ有効か"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ずいぶん、溜まってるだろうな"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "俺の店の話も、今日は最後まで聞け"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう。炭は俺が見る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "片づけ終わりました。俺、なるの店に行ってきます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今日は、どっちが作るんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二人ともです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアを閉める前に、南雲の笑い声が聞こえた。いつもの低い声が、少しだけ裏返っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ケムリクサでは、なるがバニラの袋を開けて待っていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "勝った方だけじゃ、俺の出番が来ないからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、先にもらう。俺のもあとで吸って"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "甘いぞ。クリーム、増やしたから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "バニラ、好きだな"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "好きだから、まだ変えたいんだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが作る間に、水を二つ用意した。俺のボウルは、その隣に置いた。"
+        }
+      ],
+      "comment": "四人の相似は約束・口調・二つの店の行動で見せる。なるは経営へ退く南雲の再演ではなく、菓子の甘さを追う現役の好敵手。"
     }
   ]
 }

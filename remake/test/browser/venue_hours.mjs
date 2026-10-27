@@ -15,8 +15,15 @@ async function setup(page, { chapter = 1, slot = 0 } = {}) {
     const s = V.core.newGame();
     Object.assign(s, { chapter, slot, day: chapter === 1 ? 5 : 16, phase: "daily", money: 15000, stamina: 80 });
     Object.assign(s.met, { naru: true, adam: true, minto: true });
-    Object.assign(s.flags, { _gym_member: true, _ch2_day1: { startDay: 15, stage: "complete" } });
-    V.vn.vnTest.turbo = true; V.core.config.textSpeed = 4; V.core.config.bgmVolume = 0;
+    // #577: 営業時間と店主UIを検査するため、噂・実目撃を完読済みの保存を使う。
+    // 未発見のロック／目撃の中断・無報酬はaxe_bar_discovery.mjsの専用回帰で検査する。
+    // #780: 喫茶店は紹介フラグ後に解放される。ロック判定は別途 axe_bar_discovery で検査する。
+    Object.assign(s.flags, { _cafe_introduced: true, _axe_bar_rumor_done: true, _axe_bar_sighting_done: true,
+      _intro_maki: true, _intro_sai: true, // 初登場はrecent_introsで検査。ここは来店後の案内・消費なしを検査する。
+      _axe_bar_sighting_day: s.day - 1, _axe_bar_sighting_chapter: chapter,
+      _gym_member: true, _ch2_day1: { startDay: 15, stage: "complete" },
+      _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true });
+    s.flags._rei_trpg_introduced = true; V.vn.vnTest.turbo = true; V.core.config.textSpeed = 4; V.core.config.bgmVolume = 0;
     (await import("./js/chapters/ch1.js")).setupHooks();
     V.ui.clearScreen(); V.hud.initHud({}); V.hud.showHud();
     V.openCafe = async () => {
@@ -84,7 +91,7 @@ await suite("venue-hours", async runCheck => {
       assert.match(await page.locator(t("venue-host-line")).innerText(), /越えましたね/);
       await assertFits(page, ".venue-host, .trpg-trial-actions button");
       assert.equal(await snapshot(page), before);
-      await hit(page, "trpg-trial-back"); await hit(page, "trpg-club-found");
+      await hit(page, "trpg-trial-back"); await hit(page, "trpg-club-choice-time");
       assert(await page.evaluate(() => !!V.core.state.trpg.club.founded));
       await hit(page, "trpg-trial-open");
     }, options);
@@ -110,7 +117,7 @@ await suite("venue-hours", async runCheck => {
 
   await check("night-cafe-has-no-free-day-trial", async page => {
     await setup(page, { chapter: 2, slot: 1 }); await page.evaluate(() => V.openCafe());
-    await portraitReady(page, "sai"); await page.locator(t("trpg-club-found")).waitFor();
+    await portraitReady(page, "sai"); await page.locator(t("trpg-club-choice-time")).waitFor();
     assert.equal(await page.locator(t("trpg-trial-open")).count(), 0);
     assert.match(await page.locator(t("venue-host-line")).innerText(), /今夜/);
   });

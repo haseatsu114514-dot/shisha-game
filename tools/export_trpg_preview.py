@@ -37,6 +37,7 @@ def main():
              "remake/trpg-preview.html", "remake/css/base.css", "remake/css/trpg.css", "remake/js/core/util.js",
              "remake/js/core/chapter-clock.js", "remake/js/core/rules.js", "remake/js/core/venue-host.js", "remake/css/venue-host.css"}
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/js/trpg").decode().splitlines())
+    files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/css/trpg-stage.css", "remake/img/ui/trpg").decode().splitlines())
     files.update("data/" + file for file in catalog.get("characterProfiles", []))
     if catalog.get("club", {}).get("file"):
         files.add("data/" + catalog["club"]["file"])
@@ -49,6 +50,12 @@ def main():
         files.add("remake/img/" + rel.removesuffix(".png") + ".webp" if rel in webp else "assets/" + rel)
 
     portrait("sai")
+
+    if catalog.get("tableTalk"):
+        files.add("data/" + catalog["tableTalk"])
+        for block in json.loads(read("data/" + catalog["tableTalk"])).get("dialogues", []):
+            for line in block["lines"]:
+                portrait(line["speaker"], line.get("face", "normal"))
 
     for entry in catalog["scenarios"]:
         path = "data/" + entry["file"]

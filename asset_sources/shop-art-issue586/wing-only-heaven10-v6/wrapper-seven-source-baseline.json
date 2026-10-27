@@ -1,0 +1,96 @@
+{
+  "checked_at": "2026-10-16T03:44:18.383072+00:00",
+  "sources": [
+    {
+      "id": "blueberry",
+      "path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/blueberry.png",
+      "kind": "immutable existing v4 native candidate baseline; not an approved-v3 counterpart or runtime adoption",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "png_sha256": "ec85f47fe720c5644f16ae6e5e91c859652b927fe9490a07e017fd2f291ad8e6",
+      "rgba_sha256": "eb62dfab52e52488340d19e215e296f0089a76b231c32a61b2b6edf2022ed37a",
+      "alpha_sha256": "05e3d74770edf547931db8bc4769a9749af2ff8482417a1e0bbc6e1cea2072f8"
+    },
+    {
+      "id": "strawberry",
+      "path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/strawberry.png",
+      "kind": "immutable existing v4 native candidate baseline; not an approved-v3 counterpart or runtime adoption",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "png_sha256": "05e65c8a4bbc200ed274c61d1ab3bbff63e49c4f10f054764664138306cd2384",
+      "rgba_sha256": "c0918cef09f2ba4468863abeacee1a977a9e68f2397fce1bbdc47abcb764a497",
+      "alpha_sha256": "0262815ea2848acfb9c1551c5c4903bf6afe0158f7273e73cff312fce6987974"
+    },
+    {
+      "id": "pineapple",
+      "path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/pineapple.png",
+      "kind": "immutable existing v4 native candidate baseline; not an approved-v3 counterpart or runtime adoption",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "png_sha256": "1be28601f5e19b1626ae22c7030d28b9839af012e70bd18f846d8de7a67bd2dc",
+      "rgba_sha256": "5cf2f167fa19ee1e21132620e3fb8e9bde3ef6115546c89f50c26b9c90fb0015",
+      "alpha_sha256": "cac33707c3dfb19e77dab193d28bc9e327a37ef06d6e6b564bfe323dde48c1e3"
+    },
+    {
+      "id": "lemon",
+      "path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/lemon.png",
+      "kind": "immutable existing v4 native candidate baseline; not an approved-v3 counterpart or runtime adoption",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "png_sha256": "43c91a22ddc74733d3dc8656fa83e32eacd8fdd34a2c73c34feb9fbbcb4cc2fe",
+      "rgba_sha256": "5a02b679977969619c3eb75dc407d55513426b21b9618c9e5180c6b2db7bbb68",
+      "alpha_sha256": "eeb38c6a0a4c83492b02982e3011e653445e2debf1f0e671b237516ce718cca6"
+    },
+    {
+      "id": "orange",
+      "path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/orange.png",
+      "kind": "immutable existing v4 native candidate baseline; not an approved-v3 counterpart or runtime adoption",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "png_sha256": "98fcb1049f2972eb70bdaa5dad4cf884d4768634948cacbe67f933190535daa4",
+      "rgba_sha256": "adf373e6060cd72cad980dac9dff98c6a2598e934b745bc5ffc1dcbef4ca4383",
+      "alpha_sha256": "ea8b930375722bab0f1c0f2342fab20a3b6d1f39348656398656e0e727c16e59"
+    },
+    {
+      "id": "watermelon",
+      "path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/watermelon.png",
+      "kind": "immutable existing v4 native candidate baseline; not an approved-v3 counterpart or runtime adoption",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "png_sha256": "592442bc17f205d1eeec6461bd0d1b5ee0af7f44fc228771b7714c4e9b6cd65e",
+      "rgba_sha256": "5bcfcfeebdedb03710a8aa938c39f3d03831b8e62f3fd5a5325cd5f3f23a795f",
+      "alpha_sha256": "c20b61919ed0622075f8d65308f53152d273bce0b06bc3cd4bc8fdae3d77ea58"
+    },
+    {
+      "id": "cinnamon",
+      "path": "/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-3/work/shisha-game/asset_sources/shop-art-issue586/retail-angel-finish-v4/originals/cinnamon.png",
+      "kind": "immutable existing v4 native candidate baseline; not an approved-v3 counterpart or runtime adoption",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "png_sha256": "b6c730f5970c83026231e805ab788fd4c5d0e0ee706cdd7108823d4b5d5f38b7",
+      "rgba_sha256": "3a6ca693a0c01c1843e493df2d2441a7ade33f646c5e8d764b2060b57c18a098",
+      "alpha_sha256": "28dd54ccf91e5f188c1e197b9d7e132b29220c4181d530fa50fe4add157e7ba1"
+    }
+  ]
+}

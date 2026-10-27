@@ -3,11 +3,13 @@
 // 状態の形を変えたら SCHEMA を上げ、migrate() に1段足す（互換コードはここだけに置く）。
 
 import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
+import { MASTERY_THRESHOLDS } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
+import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 15; // 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 21; // 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -21,6 +23,7 @@ export let state = null;
 export function newState() {
   return {
     schema: SCHEMA,
+    tokyoVisits: emptyTokyoVisits(),
     chapter: 1,
     phase: "opening",          // opening | daily | tournament | aftermath | cleared
     day: 1,
@@ -43,8 +46,11 @@ export function newState() {
     visitedDay: {},            // スポット -> 最後に訪れた日（同じ店は1日1回）
     owned: STARTER_EQUIPMENT.slice(),
     equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
-    flavors: ["double_apple"], // 一度でも手に入れたフレーバー（図鑑的な記録）。使えるかどうかは flavorStock で決まる
-    flavorStock: { double_apple: 50 }, // フレーバーの在庫（g）。1箱50g。大会で詰んだ分だけ減る（課題フレーバーは主催支給）
+    flavors: [], // 一度でも手に入れたフレーバー（図鑑的な記録）。使えるかどうかは flavorStock で決まる
+    flavorMastery: {}, // 味の系統 -> 経験値（Lv.1〜5）
+    flavorLessons: [], // 熟練度を受け取った会話
+    staffPractice: null, // その日のまかない使用量
+    flavorStock: {}, // フレーバーの在庫（g）。1箱50g。大会・家の試作・店の私物持ち込みで消費
     weatherSeed: Math.floor(Math.random() * 100000), // 雨の日の抽選種（セーブごとに違う）
     baitoCount: 0,
     lastBaitoDay: 0,           // 最後にシフトに入った日（スミさんのバイト誘いの判定）
@@ -60,7 +66,7 @@ export function newState() {
     keepsakes: [],             // 購入・入手した記念品のID（売却しない）
     best: {},                  // 練習ドリルの自己ベスト（0..2）
     rehearsal: null,           // 前日リハーサルの出来（great/good/rough）
-    tournament: { attempts: 0, lastRank: null },
+    tournament: { attempts: 0, lastRank: null, losses: 0, lastLossAttempt: null, retryAssist: false },
     // MOKUMOKUパッキー（日常スロット）。抽選は seed＋総回転数の決定論＝ロードしても結果は変わらない
     reel: {
       seed: (Math.random() * 0x100000000) >>> 0,
@@ -69,7 +75,14 @@ export function newState() {
       installed: false,        // C.STATIONの初回来場・参加登録で導入
       introDone: false,
       lastChapter: 0,
-      note: {},                // スロノート（役ごとの回数）
+      note: {},                // パッキースロットノート（役ごとの回数・ハマり・当たり履歴・フリーズ殿堂入り）
+      setting: 0,              // 設定1〜6（0=未決定。シードから決める）。観音堂で引き直す（#621）
+      settingDraws: 0,         // 設定の引き直し回数
+      settingSince: null,      // 今の設定になった日 {chapter, day}。7日で自動で変わる
+      settingNotice: false,    // 次に筐体が出たとき「設定変更完了〜」を見せる（"kannon"／"weekly"）
+      resetNext: false,        // 設定変更直後の1回転でガックン
+      lock: null,              // 文字色予告を出した次ゲームの抽選結果
+      settingGuideDone: false, // 設定のシステム説明を見た（新規は初回説明の中、旧セーブは一度だけの通知）
     },
     kuji: {},                  // くじの箱（grade -> {order, drawn, emptyDay}）
     goods: [],                 // くじ等で得た売れる小物 [{name, sell}]
@@ -125,7 +138,10 @@ function migrate(s) {
       return [key, Math.max(0, Math.min(1 - Number.EPSILON, xp / cost))];
     }));
   }
-  s.flags ||= {};
+  if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
+  // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
+  // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
+  if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;
   // スキーマ12。古いセーブの延期は空から始め、読了を推測しない。
   const nightIds = new Set();
   s.deferredNightEvents = (Array.isArray(s.deferredNightEvents) ? s.deferredNightEvents : []).filter((entry) => {
@@ -230,13 +246,55 @@ function migrate(s) {
   if (!Array.isArray(s.contacts)) s.contacts = [];
   if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
   s.reel = { ...fresh.reel, ...s.reel };
+  if (s.reel.installed) s.flags.pakki_app_installed = true; // 導入済みの旧セーブも観音堂の会話の条件を満たす
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {
     s.reel.installed = !!(s.reel.introDone || s.reel.count || s.reel.pending.length || s.spotVisits?.c_station);
   }
+  // 廃止パイプ（pipe_middle / pipe_high / pipe_highest）は買値で全額返金し、所持・装備から外す。
+  const pipeRefunds = { pipe_middle: 30000, pipe_high: 100000, pipe_highest: 300000 };
+  if (Array.isArray(s.owned) && s.owned.some((id) => id in pipeRefunds)) {
+    let refund = 0;
+    for (const id of new Set(s.owned)) {
+      if (id in pipeRefunds) refund += pipeRefunds[id];
+    }
+    s.owned = s.owned.filter((id) => !(id in pipeRefunds));
+    s.money = (Number(s.money) || 0) + refund;
+  }
+  if (s.equip && typeof s.equip === "object" && s.equip.pipe in pipeRefunds) {
+    s.equip.pipe = "harry_the_moon";
+  }
   s.money = Math.min(MAX_MONEY, Math.max(0, Math.round(s.money)));
+  // 旧版は冒頭で50gを所持していた。消費済み・売却済みの分も渡し直さず、
+  // 現在の在庫と進行を保つ。新規19の受取は home-rig.js で一度だけ確定する。
+  if (oldSchema < 19) s.flags._sumi_double_apple_received = true;
+  // 家シーシャ（#638）: スミさんが卓上台を譲る中間準備（第1章 DAY7）を終えた旧セーブにも台を渡す（能力はさかのぼらない）
+  const midDone = !!(s.flags?._ev_midcheck || s.flags?._ch1_mid?.feedbackRead) || (Number(s.chapter) || 1) >= 2;
+  if (midDone && Array.isArray(s.owned) && !s.owned.includes("home_rig_set")) s.owned.push("home_rig_set");
   // 以前のDAY15大会セーブも、進行状況を保って正しい大会日に揃える。
   if (s.chapter === 1 && s.day > TOURNAMENT_DAY) s.day = TOURNAMENT_DAY;
+  s.tournament ||= { attempts: 0, lastRank: null };
+  s.tournament.losses ??= 0;
+  s.tournament.lastLossAttempt ??= null;
+  s.tournament.retryAssist ??= false;
+  if (oldSchema < 18 && s.chapter === 1 && s.phase === "tournament"
+    && !s.tournament.entryResources && s.tournament.stockSnap
+    && Number.isFinite(s.stamina)) {
+    // 失われた開始体力は逆算しない。移行時の現在値を一度固定し、再保存後も維持する。
+    s.tournament.entryResources = {
+      version: 1, flavorStock: { ...s.tournament.stockSnap },
+      stamina: s.stamina, source: "legacy-load",
+    };
+  }
+  s.tokyoVisits = restoreTokyoVisits(oldSchema < 20 ? null : s.tokyoVisits);
+  s.flavorMastery = Object.fromEntries(Object.entries(record(s.flavorMastery))
+    .filter(([id, xp]) => /^[a-z0-9_]+$/.test(id) && Number.isFinite(xp) && xp >= 0)
+    .map(([id, xp]) => [id, Math.min(MASTERY_THRESHOLDS.at(-1), xp)]));
+  s.flavorLessons = Array.isArray(s.flavorLessons) ? [...new Set(s.flavorLessons.filter(x => typeof x === "string"))] : [];
+  if (!s.staffPractice || typeof s.staffPractice.day !== "string") s.staffPractice = null;
+  else s.staffPractice.used = Object.fromEntries(Object.entries(record(s.staffPractice.used))
+    .filter(([, g]) => Number.isFinite(g) && g >= 0).map(([id, g]) => [id, Math.min(6, g)]));
+  if (oldSchema < 21 && s.chapter === 1 && s.phase === "tournament") s.flags._legacy_mint_tournament = true;
   s.schema = SCHEMA;
   return s;
 }
@@ -253,6 +311,9 @@ export function newGame() {
 
 export function save() {
   if (!state) return;
+  // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
+  try { recordGalleryProgress(peekSave()); } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
+  recordGalleryProgress(state);
   state.savedAt = Date.now();
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
@@ -333,11 +394,13 @@ export function consumeResumeOnBoot() {
 }
 
 export function wipeSave() {
+  recordGalleryProgress(peekSave());
   try { localStorage.removeItem(SAVE_KEY); } catch { /* noop */ }
 }
 
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
+  uiTheme: "classic",  // 会話枠と共通UI。ゲームの進行とは別の端末設定。
   bgmVolume: 0.5,
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時
@@ -360,3 +423,36 @@ export const flag = (name) => !!(state && state.flags[name]);
 export const setFlag = (name, v = true) => { if (state) state.flags[name] = v; };
 export const markMet = (id) => { if (state && id) state.met[id] = true; };
 export const timeOfDay = () => (state && state.slot >= 1 ? "night" : "day");
+
+export const emptyTokyoVisits = () => ({ version: 1, plans: [], offers: {}, closedSlots: [], chats: {} });
+
+/** 保存の構造だけを検査。旧セーブから訪問・読了・関係を推測しない。 */
+function restoreTokyoVisits(raw) {
+  if (!raw || raw.version !== 1 || !Array.isArray(raw.plans)) return emptyTokyoVisits();
+  const restored = emptyTokyoVisits();
+  restored.closedSlots = [...new Set((Array.isArray(raw.closedSlots) ? raw.closedSlots : [])
+    .filter(id => /^d\d+-(noon|night)$/.test(id)))];
+  const validTime = time => time && Number.isInteger(time.day) && time.day > 0 && [0, 1].includes(time.slot)
+    && /^d\d+-(noon|night)$/.test(time.id);
+  for (const plan of raw.plans) {
+    if (!plan || typeof plan.id !== "string" || typeof plan.characterId !== "string"
+      || !["booked", "arrived", "staying", "returned"].includes(plan.status)
+      || !Number.isInteger(plan.arrivalDay) || !Number.isInteger(plan.returnDay) || plan.arrivalDay >= plan.returnDay
+      || !validTime(plan.meetup) || !validTime(plan.date) || plan.meetup.day !== plan.arrivalDay
+      || (plan.meetup.day * 2 + plan.meetup.slot) >= (plan.date.day * 2 + plan.date.slot) || plan.date.day >= plan.returnDay
+      || typeof plan.met !== "boolean" || typeof plan.dateDone !== "boolean"
+      || restored.plans.some(other => other.id === plan.id)) continue;
+    restored.plans.push(structuredClone(plan));
+  }
+  if (raw.chats && typeof raw.chats === "object" && !Array.isArray(raw.chats)) {
+    restored.chats = Object.fromEntries(Object.entries(raw.chats).filter(([, day]) => typeof day === "string"));
+  }
+  if (raw.offers && typeof raw.offers === "object" && !Array.isArray(raw.offers)) {
+    restored.offers = Object.fromEntries(Object.entries(raw.offers).filter(([id, offer]) => offer
+      && offer.characterId === id && Number.isInteger(offer.arrivalDay) && Number.isInteger(offer.returnDay)
+      && offer.arrivalDay < offer.returnDay && validTime(offer.meetup) && validTime(offer.date)
+      && offer.meetup.day === offer.arrivalDay && offer.date.day < offer.returnDay
+      && (offer.meetup.day * 2 + offer.meetup.slot) < (offer.date.day * 2 + offer.date.slot)));
+  }
+  return restored;
+}

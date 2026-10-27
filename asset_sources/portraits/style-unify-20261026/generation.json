@@ -1,0 +1,1734 @@
+[
+  {
+    "character": "rei",
+    "face": "normal",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "d65855b091cd6544e199101b4da926f248ea1010156007ff8a09a058dd7a9707",
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "source_bbox_alpha16": [
+      280,
+      7,
+      776,
+      1524
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      275,
+      6,
+      626,
+      1188
+    ],
+    "fitted_bbox_alpha16": [
+      260,
+      6,
+      646,
+      1188
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.31,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "/workspace/generated_images/exec-355c92f7-ac08-4e4b-b341-9b45588332b1.png",
+        "sha256": "1281909f1d2478fe2631538f44247d90aea93013945b464f47161718c8f340ad"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "ab89bd5277249c637273f406b48ab7dc9876cfb219ca5e3fb99e2380b17b674f",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "kumicho",
+    "face": "normal",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": true,
+    "source_sha256": "0802fdf241304aedc075ac59d4efccd43a02ec61a21da2bb0fd2f0047a36fa30",
+    "source_dimensions": [
+      1084,
+      1451
+    ],
+    "source_bbox_alpha16": [
+      294,
+      27,
+      828,
+      1431
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      253,
+      33,
+      662,
+      1174
+    ],
+    "fitted_bbox_alpha16": [
+      248,
+      33,
+      682,
+      1174
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.06,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
+        "sha256": "6b79137e0a94abe335c6f137d34437933ed8ec5e899d637f218f107ff63edafc"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "bbc208952489047d112b07a57eafa94c8a794ce55867bfb858608ba42aa27338",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "kumicho",
+    "face": "sad",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "7c67949075d34baab0401ab4cd13778e2e166bbc5ab21aba4c951e60b96b8f58",
+    "source_dimensions": [
+      935,
+      1683
+    ],
+    "source_bbox_alpha16": [
+      186,
+      17,
+      798,
+      1614
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      251,
+      40,
+      662,
+      1174
+    ],
+    "fitted_bbox_alpha16": [
+      246,
+      40,
+      681,
+      1174
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.36,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/kumicho/normal-source.png",
+        "sha256": "0802fdf241304aedc075ac59d4efccd43a02ec61a21da2bb0fd2f0047a36fa30"
+      },
+      {
+        "path": "assets/sprites/characters/kumicho/chr_kumicho_sad.png",
+        "sha256": "a1980ad603a4127325e9fc1056398e9bb526641d9bba6a15eb26a95acc3a87c0"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "dd5d8c0cef4b513c6a78a9913e4f18e015fb398e04e3a926e0862d9c146a88c4",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "kumicho",
+    "face": "serious",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "7a7464d718bc8f973065a46522919b470e96b35bbebc8a3044517d2df034f8de",
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "source_bbox_alpha16": [
+      249,
+      11,
+      843,
+      1508
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      223,
+      39,
+      658,
+      1174
+    ],
+    "fitted_bbox_alpha16": [
+      234,
+      39,
+      684,
+      1174
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.34,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "/workspace/generated_images/exec-a1ed075b-aff9-4572-a650-6152cc6e7c1d.png",
+        "sha256": "9810183f8e0036c7ec8ead1bde86c4167b22dc57010a309d200ffa16d82a198c"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "355d9b40114d15a9f98840665b672749d4aefa989cb82f4a0da1266c3ecd1d17",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "kumicho",
+    "face": "smile",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "ff45d1f5a9e1b46201fbf07c2ccbdb88ce7b8509af57fd8f06ce11c6201259e5",
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "source_bbox_alpha16": [
+      248,
+      26,
+      825,
+      1512
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      204,
+      35,
+      659,
+      1174
+    ],
+    "fitted_bbox_alpha16": [
+      243,
+      35,
+      685,
+      1174
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.42,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "/workspace/generated_images/exec-e7af89fa-9ee5-456f-86fc-f8b7d5655625.png",
+        "sha256": "6bf5be6ed60e1f7256a2a74c9b4e0930cd0072f278311d8d9026f1ebc411a875"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "b16229bbfa096c09efe93864055057268ae1a178fc067bc37b28863d98fadf21",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "kumicho",
+    "face": "surprise",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "5f4a577e8a20b8ac6a0a5191674dbca0ba78ee613be95b2ed894f5385d65fc1c",
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "source_bbox_alpha16": [
+      248,
+      25,
+      833,
+      1523
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      248,
+      36,
+      662,
+      1174
+    ],
+    "fitted_bbox_alpha16": [
+      237,
+      36,
+      681,
+      1174
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.24,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "/workspace/generated_images/exec-2adca596-a9ac-4635-a1d8-e9a1eef3b5ba.png",
+        "sha256": "5f04339c937fd59f3605c90ea8c7a97d4df23aa357a626f19867989ddf3fb5ad"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "4ee8c9bb2d90b9fbf895fb105100cce614fa0d9bec71d52a112d7e28a02c8ca3",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "uranaishi",
+    "face": "normal",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": true,
+    "source_sha256": "e90a9461ad6d65246e4d5a715ecb50e7bce06d383fbfea670a7fae9c7048bc62",
+    "source_dimensions": [
+      1084,
+      1451
+    ],
+    "source_bbox_alpha16": [
+      293,
+      8,
+      859,
+      1443
+    ],
+    "reference_native_canvas": [
+      1084,
+      1451
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      242,
+      10,
+      676,
+      1180
+    ],
+    "fitted_bbox_alpha16": [
+      234,
+      10,
+      695,
+      1180
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.21,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "assets/sprites/characters/uranaishi/chr_uranaishi_normal.png",
+        "sha256": "f2897a4feacb76c9353ea037251f34c4d787a16238d8e65991fe87b0fca1501f"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "volk",
+    "face": "normal",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": true,
+    "source_sha256": "b5ce0aafa5530acca9a6b8817e2de73391ea9accb5a8e0afae9f6ff784045dd5",
+    "source_dimensions": [
+      1084,
+      1451
+    ],
+    "source_bbox_alpha16": [
+      326,
+      14,
+      806,
+      1441
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      270,
+      17,
+      643,
+      1180
+    ],
+    "fitted_bbox_alpha16": [
+      260,
+      17,
+      651,
+      1180
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.43,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "assets/sprites/characters/volk/chr_volk_normal.png",
+        "sha256": "7d096196d6ad952694943299e3113244804d4b6fe33c246b34ec96046bbdc917"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "d27c36f36b074daadb9a860255c4a6cc04c11059d336f198867736630a681533",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "dr_kemuri",
+    "face": "normal",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": true,
+    "source_sha256": "37de8804ec233bfa6abc85a706872b5891be50f5a4dfb3d198ec5cf7fe1212ce",
+    "source_dimensions": [
+      1084,
+      1451
+    ],
+    "source_bbox_alpha16": [
+      322,
+      18,
+      833,
+      1434
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      275,
+      86,
+      659,
+      1172
+    ],
+    "fitted_bbox_alpha16": [
+      271,
+      86,
+      663,
+      1172
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.47,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+        "sha256": "ae7627d22c4461657afdbacab04e39c0d49e9e98e5b53c424bfc18f182f15e38"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "0930e24deb62543289a70c7b5d860ae7093e27d8440433c8d285c435447fb259",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "dr_kemuri",
+    "face": "evil",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "a001bd74719e166c257b9ee0e8fe179452804e9756ec31c8177aaff0154003c3",
+    "source_dimensions": [
+      1054,
+      1492
+    ],
+    "source_bbox_alpha16": [
+      273,
+      7,
+      843,
+      1474
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      255,
+      85,
+      657,
+      1172
+    ],
+    "fitted_bbox_alpha16": [
+      249,
+      85,
+      671,
+      1172
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.28,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/dr_kemuri/normal-source.png",
+        "sha256": "37de8804ec233bfa6abc85a706872b5891be50f5a4dfb3d198ec5cf7fe1212ce"
+      },
+      {
+        "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png",
+        "sha256": "da763c17f531a3bd65c28d97f1f03138a4180cdea89e4af35ac07ed3bf175ca0"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "04a82018046cbc1da0be0c97ef1744803a94f11940fa58b48da0548819daf921",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "dr_kemuri",
+    "face": "serious",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "6790cbb7b4d0cef386abcfa40a06c840057f3e10bbf8a0a15ebdb150ac0358d5",
+    "source_dimensions": [
+      1054,
+      1492
+    ],
+    "source_bbox_alpha16": [
+      261,
+      15,
+      847,
+      1479
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      258,
+      87,
+      666,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      244,
+      87,
+      679,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.46,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/dr_kemuri/normal-source.png",
+        "sha256": "37de8804ec233bfa6abc85a706872b5891be50f5a4dfb3d198ec5cf7fe1212ce"
+      },
+      {
+        "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_serious.png",
+        "sha256": "b5f808c647d9d13b4addfad8125da5f60a29314eab05baf002500abbbf095bf3"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "1f356d759d6d903ee9f519a672b0d83058d924be93221d24bfe4c4789673b2be",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "dr_kemuri",
+    "face": "smile",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "e30883a67f774f6a5391d49f175b59a6e46ac3cd0a56eabce543a9ffacefce9a",
+    "source_dimensions": [
+      1054,
+      1492
+    ],
+    "source_bbox_alpha16": [
+      233,
+      10,
+      851,
+      1481
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      237,
+      86,
+      660,
+      1172
+    ],
+    "fitted_bbox_alpha16": [
+      220,
+      86,
+      676,
+      1172
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.16,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/dr_kemuri/normal-source.png",
+        "sha256": "37de8804ec233bfa6abc85a706872b5891be50f5a4dfb3d198ec5cf7fe1212ce"
+      },
+      {
+        "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_smile.png",
+        "sha256": "df71fa86213f88328e0b5808fc666ea9cd84284ab2ac2e624188b9ae6b484518"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "81085482a09e546468a8a7d82840046412ab02810ca845e31ee1b4cce587afb2",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "dr_kemuri",
+    "face": "surprise",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "d4340d9786d662a05a2867342150f2de88b7b51fc347ba3e48b501a06723d1ee",
+    "source_dimensions": [
+      1054,
+      1492
+    ],
+    "source_bbox_alpha16": [
+      264,
+      16,
+      848,
+      1475
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      263,
+      89,
+      655,
+      1172
+    ],
+    "fitted_bbox_alpha16": [
+      241,
+      89,
+      674,
+      1172
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.5,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/dr_kemuri/normal-source.png",
+        "sha256": "37de8804ec233bfa6abc85a706872b5891be50f5a4dfb3d198ec5cf7fe1212ce"
+      },
+      {
+        "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_surprise.png",
+        "sha256": "f078b051bf041431503dcc81f1e416f071ef9f639e4795ecdd10cf1838a9fc5f"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "90011145efd006bdec73991f39bc69de374401c0fbb77ec8a41b845f9b24a733",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "normal",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": true,
+    "source_sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2",
+    "source_dimensions": [
+      1084,
+      1451
+    ],
+    "source_bbox_alpha16": [
+      313,
+      12,
+      818,
+      1424
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      275,
+      173,
+      621,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      272,
+      173,
+      630,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.12,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+        "sha256": "b5f0e3efab144381e76f488c2f30e72b319de20abe4a1e3ab76dd3d7b8a1cd36"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "sha256": "5add4cc412ac95d087e4f76a4a0b6d72cb57550a741ef6f0cfbe704492a46893"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "c931de1b9e2debf7f0123ae0f4711acbb8cc9188be620d7f7f7b4e1ed6ddce52",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "sad",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "a1a89d1c1783161d2084a83f04f4746cd8a037d115fc0ffceff3c8d7c363f1b6",
+    "source_dimensions": [
+      1054,
+      1492
+    ],
+    "source_bbox_alpha16": [
+      291,
+      9,
+      820,
+      1461
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      268,
+      173,
+      627,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      265,
+      173,
+      629,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.39,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_sad.png",
+        "sha256": "83dea2eff402fe3082718875bf2d0296028593458762a6d9e5264b0d3977c810"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "7d2533517528ff2bb6018c999a96bac84873a049505fb68a5318b05fc048933d",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "serious",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "89e64c1336dc8ee3a761178524e1dfc54bf07a2102ffd368bf4b5ae0078519d8",
+    "source_dimensions": [
+      1054,
+      1492
+    ],
+    "source_bbox_alpha16": [
+      288,
+      11,
+      831,
+      1479
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      274,
+      173,
+      621,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      267,
+      173,
+      637,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.15,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_serious.png",
+        "sha256": "71ef7d2a409c570338de65558d1d4286c8ead26eec405743898e96a5ebe8fe27"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "5f2f2ad1e6f6077e28afbd4bc85af58d50b0b2c2ebd9a78509cdccb38c8df853",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "smile",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "4037e49f92ada7232ec6726e413eb11e7c7fcc1deb7ee84b8e12384f5eec80d0",
+    "source_dimensions": [
+      1054,
+      1492
+    ],
+    "source_bbox_alpha16": [
+      275,
+      12,
+      815,
+      1486
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      269,
+      173,
+      626,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      268,
+      173,
+      634,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.17,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_smile.png",
+        "sha256": "9034ae6ed776bc2d7974ba1bcd747c5c634f7fda851a194e18e0b65fd9b216bf"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "8b9e698ee9c22f56540b379650c7d793d8d799405ba564209d017584ca62cfdc",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "surprise",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "5ead83e5ce796fd651f0922d5ce0d8c86013498b6d236b348fad4f2c0d6c00b2",
+    "source_dimensions": [
+      1054,
+      1492
+    ],
+    "source_bbox_alpha16": [
+      295,
+      15,
+      838,
+      1485
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      274,
+      173,
+      622,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      266,
+      173,
+      635,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.38,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_surprise.png",
+        "sha256": "3dfe65528b0a6672ff5e7dbc2ba4819cd2401aedc86fe1bbc55d6f179dc109d6"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "c03d23ca3af9e4211cc6a3c4c2472804c13fccdfd1b21785046e54d39490b652",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "tears",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "ff1b6c10f892ffce45a237a9f5313188971c678d672bf851a28455c9722b1f9c",
+    "source_dimensions": [
+      1054,
+      1492
+    ],
+    "source_bbox_alpha16": [
+      289,
+      10,
+      819,
+      1463
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      274,
+      173,
+      622,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      268,
+      173,
+      633,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.33,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_tears.png",
+        "sha256": "71380cd1646d407e8bf3262aab8fd2d32f46ee94f506fd2e6978dfdef44a47ab"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "1f33899f5e52d98b0408056acc855ca72b5278455071c00a1df2137a0d1aa4fa",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "love_blush",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "9c049ed518655ef41cbbed92efad06f2cadba3cdfdcd657769ff7bd6f2914fe3",
+    "source_dimensions": [
+      971,
+      1620
+    ],
+    "source_bbox_alpha16": [
+      229,
+      9,
+      806,
+      1591
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      270,
+      173,
+      626,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      267,
+      173,
+      632,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.01,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_love_blush.png",
+        "sha256": "e8459d8b498bdc2ed691ba7b14002557fb04fbd95e4ea2a2118092a99bb43420"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "565f9deb6b5e943424802bcf1d14d447ae0b6634ba2d90434c693f61c66d7f39",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "office_mukii",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "6083d52fc25a605137d6591c1be171eeadb392e9820cb01e33a4eeb7e5e168b0",
+    "source_dimensions": [
+      972,
+      1618
+    ],
+    "source_bbox_alpha16": [
+      215,
+      21,
+      812,
+      1596
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      273,
+      173,
+      622,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      257,
+      173,
+      636,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.06,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_office_mukii.png",
+        "sha256": "fdb561892f81aae55f32865134469996e71df24756ee2990de224a2ef58e2284"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "40324678e274f713cea442fedb574fb1bda3860d877b0efe180351bb76a19e59",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "axe_normal",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "f9d23c2416df460c3c640686c65176213a7059d2817a18361079bb508ce9ac43",
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "source_bbox_alpha16": [
+      246,
+      10,
+      822,
+      1522
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      254,
+      173,
+      641,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      264,
+      173,
+      645,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.38,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_axe_normal.png",
+        "sha256": "007694005e041ac77e86a951e746b2fbe5634beb9bd449f5483b82109cfd1bb3"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "a2ea25e44c93f051ff43c30a0c95f59671fccfc6c17ea97785f921a30faabab1",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "axe_laugh",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "35b63f8574dfc7448622f00870325ffd0877661ace7693a1c7c918c138914463",
+    "source_dimensions": [
+      1054,
+      1493
+    ],
+    "source_bbox_alpha16": [
+      278,
+      11,
+      827,
+      1481
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      272,
+      173,
+      624,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      260,
+      173,
+      633,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": 0.36,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_axe_laugh.png",
+        "sha256": "5aca4154144860c66c31090a32673e3fb4341ce0d847f0f78da92228d6185835"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "339a52163532241983ea6f5a52da38bf8f2c492c78bcdf6e903d58c3eb210845",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "axe_shout",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "f532ca66638375834cbd688d8b4046fbc794d19d9584b3103419a3588726cb56",
+    "source_dimensions": [
+      1054,
+      1493
+    ],
+    "source_bbox_alpha16": [
+      276,
+      2,
+      842,
+      1492
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      260,
+      173,
+      635,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      249,
+      173,
+      629,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.02,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_axe_shout.png",
+        "sha256": "425c89b6967c3148c8ea47947549dc1a599618f28f43933b7dfeb28cf65dc565"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "592c0554bc66aafc3241c301503e8db1b91f47f8a02fd6374130f3ce2d9c2b88",
+    "adopted_date": "2026-10-26"
+  },
+  {
+    "character": "hiyori",
+    "face": "axe_throw",
+    "tool": "image_gen.imagegen",
+    "generated_date": "2026-10-26",
+    "reused_trial_normal": false,
+    "source_sha256": "25fd48e115b2f762351635ae54097dacabcdcd416ddfe5e491ea31c65bd85094",
+    "source_dimensions": [
+      1024,
+      1536
+    ],
+    "source_bbox_alpha16": [
+      9,
+      53,
+      999,
+      1525
+    ],
+    "reference_native_canvas": [
+      896,
+      1200
+    ],
+    "normalized_reference_canvas": [
+      896,
+      1200
+    ],
+    "target_bbox_alpha16": [
+      107,
+      173,
+      788,
+      1173
+    ],
+    "fitted_bbox_alpha16": [
+      114,
+      173,
+      787,
+      1173
+    ],
+    "fitted_dimensions": [
+      896,
+      1200
+    ],
+    "height_delta_px": 0,
+    "foot_bottom_delta_px": 0,
+    "horizontal_mass_delta_px": -0.37,
+    "source_touches_edge": false,
+    "fitted_touches_edge": false,
+    "references": [
+      {
+        "path": "asset_sources/portraits/style-trials-20261026/hiyori/normal-source.png",
+        "sha256": "ffa9c684a362dd54cbe2c2e40670bfddf602194c16f9c80b2cda3945c7c0bbb2"
+      },
+      {
+        "path": "assets/sprites/characters/hiyori/chr_hiyori_axe_throw.png",
+        "sha256": "7fb8799592928c37237da3dd63e5d9a09048015edde79341a2366c4ca5b39a56"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_smile.png",
+        "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+      }
+    ],
+    "status": "adopted-in-remake",
+    "limitations": [
+      "Generated facial/garment details may differ slightly from original; not pixel-identical.",
+      "Apparent head size is visually reviewed separately; body-height/foot alignment does not prove head sizes identical."
+    ],
+    "fitted_sha256": "a32da87f96d9491a0794abf870fd4d2bcf74624f2157f08a62877edab019bef7",
+    "adopted_date": "2026-10-26"
+  }
+]

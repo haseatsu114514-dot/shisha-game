@@ -1,10 +1,13 @@
 // 蒸らし ── 雑念を躱す（CLAUDE.md: 蒸らしミニゲームは雑念弾幕。「覚悟＋締め」には戻さない）
 // 選んだ蒸らし時間のあいだ、飛んでくる雑念（言葉と物体）を心(♥)で避け続ける。被弾が少ないほど良い。
+import { state } from "../core/state.js";
+import { hasAttackTraining } from "./attack-training.js";
 import { el, sleep, clamp, rand, pick } from "../core/util.js";
+import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
-import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
@@ -38,14 +41,19 @@ export function refreshEffect() {
 }
 
 export async function runSteamDodge(cs) {
+  const owner = state;
   await waitBenchReady(cs, "steam");
+  const root = benchRoot(cs);
+  if (state !== owner || !root) return;
   SE.coalPlace();
   const stock = refreshStock();
   const effect = refreshEffect();
   const tutorial = cs.mode === "tutorial";
+  const eased = tutorial || cs.retryAssist;
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
   const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。被弾するとコンボは途切れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
+  const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
@@ -65,7 +73,9 @@ export async function runSteamDodge(cs) {
     el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashGrowth]),
     el("span.refresh-copy", { text: "アタック" }),
   ]);
-  const slashControl = el("div.slash-control", [slashBtn, slashFeedback]);
+  const slashLock = el("span.slash-lock", { text: "🔒", "aria-hidden": "true",
+    style: { fontSize: "20px", lineHeight: "28px" }, dataset: { test: "slash-lock" } });
+  const slashControl = el("div.slash-control", [slashBtn, slashFeedback, slashLock]);
   const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
   const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
     el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),
@@ -90,7 +100,7 @@ export async function runSteamDodge(cs) {
   const hitR = heartHitRadius(tier01("guts"), focus);
   heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
   heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
-  const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
+  const spawnEvery = (eased ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
   let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
@@ -170,6 +180,14 @@ export async function runSteamDodge(cs) {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
     rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
       `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
+    const learned = hasAttackTraining(state.flags);
+    slashBtn.dataset.locked = String(!learned);
+    slashLock.hidden = learned;
+    slashBtn.title = learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可";
+    if (!learned) {
+      slashBtn.disabled = true;
+      slashBtn.setAttribute("aria-label", "アタック。使用不可");
+    }
     slashBtn.dataset.cutWords = String(wordsCut);
     slashBtn.dataset.totalWordsCut = String(totalWordsCut);
     slashBtn.dataset.maxCombo = String(maxCombo);
@@ -197,7 +215,7 @@ export async function runSteamDodge(cs) {
   // キーボードや支援技術による click でも使える（pointerdown と重ねて消費しない）。
   listen(refreshBtn, "click", (e) => { if (e.detail === 0) refresh(); });
   const slash = () => {
-    if (!running || time < slashReadyAt) return;
+    if (!running || !hasAttackTraining(state.flags) || time < slashReadyAt) return;
     const direction = "u", angle = slashAngle(direction);
     const before = slashProfile(wordsCut);
     const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle, before.reach));
@@ -235,7 +253,7 @@ export async function runSteamDodge(cs) {
     ["X", (e) => { if (!e.repeat) refresh(); }],
     ["z", (e) => { if (!e.repeat) slash(); }],
     ["Z", (e) => { if (!e.repeat) slash(); }],
-  ]));
+  ]), { actionSpace: true });
   listen(window, "keyup", (e) => keysDown.delete(direction[e.key]));
 
   const addBullet = (type, x, y, angle, speed) => {
@@ -253,11 +271,11 @@ export async function runSteamDodge(cs) {
     const side = Math.floor(rand(0, 4));
     const x = side === 0 ? -24 : side === 1 ? W + 24 : rand(20, W - 20);
     const y = side === 2 ? -24 : side === 3 ? H + 24 : rand(20, H - 20);
-    const angle = Math.atan2(hy - y, hx - x), speed = rand(140, 190) * (tutorial ? 0.7 : 1);
+    const angle = Math.atan2(hy - y, hx - x), speed = rand(140, 190) * (eased ? 0.7 : 1);
     const isWord = spawnCount++ % 5 !== 4;
     if (isWord) addBullet("word", x, y, angle, speed * 0.8);
     else {
-      const count = tutorial ? 1 : 2;
+      const count = eased ? 1 : 2;
       const type = pick(OBJECTS);
       for (let i = 0; i < count; i++) addBullet(type, x, y, angle + (i - (count - 1) / 2) * 0.24, speed);
     }
@@ -266,7 +284,7 @@ export async function runSteamDodge(cs) {
     const lanes = 9;
     for (let i = 0; i < lanes; i++) {
       if (Math.abs(i - gap) <= 1) continue; // 予告を見て移動できる広さの安全な通り道
-      addBullet(i % 2 ? "word" : "orb", side ? W + 20 : -20, (i + 0.5) * H / lanes, side ? Math.PI : 0, tutorial ? 140 : 205);
+      addBullet(i % 2 ? "word" : "orb", side ? W + 20 : -20, (i + 0.5) * H / lanes, side ? Math.PI : 0, eased ? 140 : 205);
     }
     box.classList.remove("warning");
   };
@@ -274,15 +292,33 @@ export async function runSteamDodge(cs) {
   clock.update(seconds);
   refreshLabel();
   slashLabel();
-  await countdown();
-  running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
-  const auto = autoSkill();
   try {
+    if (!await explainTutorialStep(cs, "steam") || !isCurrent()) return;
+    await countdown();
+    if (!isCurrent()) return;
+    running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
+    const auto = autoSkill();
     if (auto) { await sleep(200); hits = auto === "good" ? 0 : 4; }
     else await new Promise((resolve) => {
-      let last = performance.now();
+      const gameClock = createCraftClock(panel);
+      let last = gameClock.now();
+      const pressedPads = new Set();
+      const pollAttackPad = enabled => {
+        const pads = navigator.getGamepads?.() || [];
+        for (let i = 0; i < pads.length; i++) {
+          const pressed = pads[i]?.mapping === "standard" && pads[i].buttons[0]?.pressed;
+          if (pressed && !pressedPads.has(i) && enabled) slash();
+          if (pressed) pressedPads.add(i); else pressedPads.delete(i);
+        }
+      };
+      pollAttackPad(false);
+
       const loop = (now) => {
-        const dt = Math.min(0.05, (now - last) / 1000); last = now;
+        if (!isCurrent()) { gameClock.dispose(); return resolve(); }
+        const current = gameClock.now();
+        const dt = Math.min(0.05, (current - last) / 1000); last = current;
+        pollAttackPad(!gameClock.paused);
+        if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
         time += dt;
         if (!refreshes && time >= refreshReadyAt) refreshes = stock;
         refreshLabel(); slashLabel();
@@ -297,7 +333,7 @@ export async function runSteamDodge(cs) {
         if (time >= nextWave && time < dur - 2) {
           warning = { side: Math.round(rand(0, 1)), gap: Math.floor(rand(2, 7)), due: time + 0.75 };
           box.classList.add("warning"); box.dataset.side = warning.side ? "right" : "left";
-          nextWave = time + (tutorial ? 4 : 2.8);
+          nextWave = time + (eased ? 4 : 2.8);
         }
         if (warning && time >= warning.due) { launchWave(warning); warning = null; }
         inv = Math.max(0, inv - dt); heart.classList.toggle("shield", inv > 0);
@@ -324,7 +360,7 @@ export async function runSteamDodge(cs) {
         for (let i = transients.length - 1; i >= 0; i--) {
           if (time >= transients[i].until) { transients[i].node.remove(); transients.splice(i, 1); }
         }
-        if (time >= dur) return resolve();
+        if (time >= dur) { gameClock.dispose(); return resolve(); }
         raf = requestAnimationFrame(loop);
       };
       raf = requestAnimationFrame(loop);
@@ -335,7 +371,12 @@ export async function runSteamDodge(cs) {
     world.draw(time + 1, hx, hy);
     heart.classList.remove("shield"); box.classList.remove("warning");
     setPlayerMental(cs, "steady");
+    if (!isCurrent() && panel.dataset.step === "steam") {
+      root.querySelector(".bench-guide").open = false;
+      panel.inert = false; root.dataset.helpPaused = "false";
+    }
   }
+  if (!isCurrent()) return;
   const score = clamp(100 - hits * 14, 0, 100);
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
@@ -345,6 +386,7 @@ export async function runSteamDodge(cs) {
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
   await sleep(400);
+  if (!isCurrent()) return;
   await resultCard(panel, {
     title: "蒸らし 結果",
     lines: [
@@ -352,7 +394,7 @@ export async function runSteamDodge(cs) {
       `${steamTimeLabel(seconds)}蒸らした。${hits === 0 ? "最後まで一度も揺れなかった" : `雑念に${hits}回つかまった`}`,
       cs.steam.refreshesUsed ? `リフレッシュで${cs.steam.refreshesUsed}回、雑念を吹き払った` : "",
       hits === 0 ? "呼吸が整った。吸い出しも落ち着いて取りかかれそう" : "気が少し急いている。吸い出しは手元をよく見よう",
-      "蒸らしで入った熱を、吸い出しで最適温へ整える",
+      "蒸らしで入った熱を、吸い出しで適温へ整える",
       min >= 8 ? "じっくり待った分、熱が入り、吸い出しに余裕ができる" : min <= 3 ? "早めの立ち上げ。温度合わせは忙しくなる" : "香りの輪郭を残した。吸い出しでしっかり熱を入れよう",
     ],
   });

@@ -1,14 +1,14 @@
 [
   {
     "id": "hajime",
-    "name": "はじめ / 蒸野 始（むしの はじめ）",
+    "name": "はじめ / 蒸野 はじめ（むしの はじめ）",
     "role": "protagonist",
     "age": 22,
     "nationality": "Japan",
     "affiliation": "tonari（地元店）",
     "play_style": "「素直さ」",
     "description": "感じのいい普通の青年。礼儀正しく働き者で、常連からも好かれている。「tonariのはじめくん」と呼ばれることが密かな誇りで、自分の店を持つことを夢見る。人の良さに素直に感動し、いつの間にか手つきや話し方を取り入れている。大会で認められるほど「自分だけの強み」を証明したくなり、相手の話より点数を気にするようになる。挫折を経て、誰にも影響されていない本当の自分を探す必要はないと気づく。出会った人や、その日の自分との関わりから、今の一台を作っていく。教わったことを認めた上で練習を積み、世界大会王者になる。その頃には個性を証明することより、身近な人がもう一口吸って喜ぶことを、次の一台を作るいちばんの動機に感じている。周囲から「世界大会の人」と呼ばれても、その呼び名で作り方や自分を決め切らない。",
-    "background_secret": "一人っ子で共働きの平凡な家庭。夕食は一人が多く、大学卒業後はバイトを転々とし、tonariで働き始めて3ヶ月で物語が始まる。大学時代に友達と行った初シーシャが、店への憧れのきっかけ。平凡な生い立ちや他人から始まった憧れは、人格の欠落ではない。成功後は評価に急ぎすぎ、なるの話を遮り、頼ることも難しくなっていく。東京で味覚が分からなくなる時期を経験し、mukaiで作れない日も座れる時間を過ごす。味覚の回復や勝利の前から仲間との連絡と居場所を取り戻す。回復は一度の気づきや恋愛成立で完了させない。詳細は brand/story_and_structure.md。",
+    "background_secret": "一人っ子で共働きの平凡な家庭。夕食は一人が多く、大学卒業後はバイトを転々とし、tonariで働き始めて3ヶ月で物語が始まる。大学時代に友達と行った初シーシャが、店への憧れのきっかけ。平凡な生い立ちや他人から始まった憧れは、人格の欠落ではない。成功後は評価に急ぎすぎ、なるの話を遮り、頼ることも難しくなっていく。第2章DAY5から味の輪郭が遠くなる不調が始まり、受診して経過を見ながら東京へ向かう。第3章では分かったふりをやめ、mukaiで作れない日も座れる時間を過ごす。味覚の回復や勝利の前から仲間との連絡と居場所を取り戻す。回復は一度の気づきや恋愛成立で完了させない。詳細は brand/story_and_structure.md。",
     "favorite_flavor": "特に推しフレーバーなし",
     "specialty_flavor": "ミックス全般（特に客に合わせた味）",
     "growth_stats": {
@@ -25,6 +25,9 @@
       "line": "いつか自分の店を持ちたい",
       "face": "normal",
       "color": "#eee0bd"
+    },
+    "voice": {
+      "first_person": "俺"
     }
   },
   {
@@ -36,7 +39,7 @@
     "affiliation": "tonari（地元店）",
     "play_style": "「基本に忠実、かつ自由」",
     "description": "主人公の師匠であり、良き理解者。\nかつては名の知れたシーシャプレイヤーだったが、現在は飄々とした態度で地元の小さな店を営む。",
-    "background_secret": "15年前の世界大会（HAZE: GRAND SMOKE）準優勝者。負けて折れたのではなく、勝つための煙を作り続けるうちに客の顔が見えなくなり、決勝の夜に自分の煙を吸って何も感じなかったことが世界を捨てた理由。放浪先のドバイの路地裏で「目の前の一人のためだけに作る」うちに客の顔を取り戻し、その時期の一杯がイスタンブール（エミル）やドバイ（若きシェイク）に伝説として残った。はじめに自らの夢の続きを託す。",
+    "background_secret": "15年前の世界大会準優勝者。味覚は失っていない。吸い出しの味を説明できても客の顔を思い出せなくなり、競技を離れた。旧友は南雲。ドバイの路地裏で働いた頃、客の一人だったシェイクが作る側へ回るきっかけを作った。はじめの優勝を自分の雪辱にせず、店を続ける仲間として迎える。 南雲とは「勝った方が作る」と約束して競った。点を気にするあまり、彼の店の話を敗者の説教と受け取った晩がある。今も交流はあるが、その話だけは避けてきた。第4章帰国後に自分から誘い直し、話を聞きながら炭を見る。",
     "favorite_flavor": "カルダモン",
     "specialty_flavor": "クラシックスパイス系",
     "growth_stats": {
@@ -54,6 +57,10 @@
       "line": "客が満足したなら、それでいい",
       "face": "normal",
       "color": "#e0843e"
+    },
+    "voice": {
+      "first_person": "俺",
+      "hajime": "はじめ"
     }
   },
   {
@@ -64,14 +71,14 @@
     "nationality": "Japan",
     "affiliation": "ケムリクサ",
     "play_style": "「甘さ（お菓子系）の追求」と「誠実な理論」",
-    "description": "実力・人格ともに地元最強格の好敵手。料理の専門学校で学んだ元料理畑の作り手。実際の菓子や料理の味・香り・後味をイメージし、フレーバーでミックスを組み立てる。シーシャ歴が長く、理論派だが知識をひけらかさない。聞かれれば惜しみなく教える面倒見の良さがあり、口癖は「うまくなりたいなら全部見てけ」。負けると人目もはばからず本気で悔しがるが、相手を称えることを絶対に忘れない。はじめにとって最初の壁であり、最初の目標であり、のちに最も痛いことを言ってくれる友人になる。第2章でははじめの慢心に正面から苦言を呈する唯一の人物。",
-    "background_secret": "実家は商店街の喫茶店だったが、中学のときに潰れた。「店を続けることの重さ」を体で知っている。はじめが軽々しく語る「店を持ちたい」という夢に厳しいのはそのため。本人は多くを語らないが、ケムリクサで働くのは「潰れない店の作り方」を学ぶためでもある。",
+    "description": "実力・人格ともに地元最強格の好敵手。料理の専門学校で学んだ元料理畑の作り手。実際の菓子や料理の味・香り・後味をイメージし、フレーバーでミックスを組み立てる。シーシャ歴が長く、理論派だが知識をひけらかさない。聞かれれば惜しみなく教える面倒見の良さがあり、口癖は「うまくなりたいなら全部見てけ」。負けると人目もはばからず本気で悔しがるが、相手を称えることを絶対に忘れない。はじめにとって最初の壁であり、最初の目標であり、のちに最も痛いことを言ってくれる友人になる。第2章でははじめの慢心に正面から苦言を呈する唯一の人物。 得意な味の軸はバニラと甘いお菓子系。チョコ、クリーム、パンや焼き菓子の香りを追求し、試作会でも世界大会でもその軸は変わらない。",
+    "background_secret": "実家は商店街の喫茶店だったが、中学のときに潰れた。「店を続けることの重さ」を体で知っている。はじめが軽々しく語る「店を持ちたい」という夢に厳しいのはそのため。本人は多くを語らないが、ケムリクサで働くのは「潰れない店の作り方」を学ぶためでもある。 第2章の対峙後はケムリクサを長期休業し、行き先を告げず修行へ出る。旅先の店や借りた作業場で、違う器具や客の吸う速度に合わせて甘さを出し直す練習を積む。第3章では、はじめの東京での歩みと並行してラストチャンス予選を勝ち抜く。推薦や救済ではなく本人が勝ち取る枠。 はじめとの「勝った方が作る」という約束は、スミと南雲の昔の競争に重なる。話を聞き直す電話を経て、帰国後は互いの一台を作る。南雲と同じ引退を辿るのではなく、現役の好敵手として自分の甘さを磨く。",
     "favorite_flavor": "バニラ",
     "specialty_flavor": "激甘お菓子系（パン・バニラ系）",
     "growth_stats": {
       "primary": "技術",
       "secondary": "根性",
-      "notes": "負けた夜ほど静かにノートを開く男。全国大会の敗北のあとも誰のせいにもせず、また地元からイチで勝ち上がり直す執念が板についていた。"
+      "notes": "前年に県大会で敗退。今季は地元大会ではじめに敗れ、通常の県・全国には出場しない。第2章の対峙後は店を長期休業して修行へ。通常ルートと並行する独立シリーズ、ラストチャンス予選に挑み、第3章DAY7の地域大会を通過。はじめの全国大会と同日の代表決定大会で優勝し、日本第二代表になる。各大会は一試合。"
     },
     "visual_concepts": [
       "23s japanese male, confident and slightly cocky expression, short dyed silver hair, wearing a stylish streetwear jacket and multiple silver rings, holding a digital thermometer, cyberpunk-lite cafe vibe",
@@ -93,7 +100,7 @@
     "nationality": "Japan",
     "affiliation": "Eden",
     "play_style": "「ダブルアップル特化」",
-    "description": "純日本人であり、Edenに所属するダブルアップル特化のプレイヤー。本人は頑なに「アダム」と名乗り、ダブルアップルを宇宙の原点のように語る愛すべき変人。\nローランド風の名言と過剰な自己演出で周囲を振り回すが、一つの味を徹底的に掘り下げる技術は本物。\nEDENの営業設定: 表向きのメニューには多くの味があるが、実際の在庫はメーカー違いのダブルアップル約十種類と、ミントなど数種類だけ。ほかの味を尋ねられると「在庫切れ」と答え、初見のおすすめも、甘い・さっぱり・変わり種の希望も、結局ダブルアップルを勧める。常連は承知してメニューを見ず、メーカーや今日の重さを指定する。メーカーごとの甘さ・アニスやリコリスの釣り合い・熱の入り方を掘り下げ、客に合わせた一台を出す腕と常連との関係で、この異質な店が街の中で続いている。ダブルアップル以外の在庫が完全にゼロという設定にはせず、大会課題のミント使用とも両立する。",
+    "description": "純日本人であり、Edenに所属するダブルアップル特化のプレイヤー。本人は頑なに「アダム」と名乗り、ダブルアップルを宇宙の原点のように語る愛すべき変人。\nローランド風の名言と過剰な自己演出で周囲を振り回すが、一つの味を徹底的に掘り下げる技術は本物。\nEDENの営業設定: 表向きのメニューには多くの味があるが、実際の在庫はメーカー違いのダブルアップル約十種類と、ミントなど数種類だけ。ほかの味を尋ねられると「在庫切れ」と答え、初見のおすすめも、甘い・さっぱり・変わり種の希望も、結局ダブルアップルを勧める。常連は承知してメニューを見ず、メーカーや今日の重さを指定する。メーカーごとの甘さ・アニスやリコリスの釣り合い・熱の入り方を掘り下げ、客に合わせた一台を出す腕と常連との関係で、この異質な店が街の中で続いている。ダブルアップル以外の在庫が完全にゼロという設定にはせず、大会課題のレモン使用とも両立する。",
     "background_secret": "私生活は少しポンコツだが、ダブルアップルだけは誰よりも真剣。原点の味を極めることで、自分の弱さや不器用さも含めて肯定しようとしている。",
     "favorite_flavor": "ダブルアップル",
     "specialty_flavor": "ダブルアップル（アニス強め）",
@@ -103,8 +110,8 @@
       "notes": "はじめの『誰にでも合わせる』シーシャに触れたことで、頑固な彼もいつの間にか、客のコンディションに合わせてダブルアップルの強さを微調整する柔軟さを覚えていた。"
     },
     "visual_concepts": [
-      "28s japanese male, eccentric but lovable expression, stylish Eden shop outfit, surrounded by red apples and anise props, performing grandly while preparing a shisha bowl",
-      "japanese double apple specialist, dramatic self-styled Adam persona, playful confidence, slightly messy private-life vibe, modern shisha lounge Eden background"
+      "28-year-old Japanese male, eccentric but lovable expression, stylish Eden shop outfit, surrounded by red and green apples and anise props, performing grandly while preparing a shisha bowl. Hair is green-apple green on HIS OWN LEFT and red-apple red on HIS OWN RIGHT: in a front-facing view SCREEN LEFT is red and SCREEN RIGHT is green. Keep those anatomical sides when he turns or appears in profile; do not divide a side view into arbitrary screen halves, and do not use blue for green. Preserve the adopted face, expression, pose, short hairstyle, black Henley shirt and waist apron.",
+      "Japanese double apple specialist, dramatic self-styled Adam persona, playful confidence, slightly messy private-life vibe, modern shisha lounge Eden background. Paired apples and corresponding EDEN or intro motifs are SCREEN LEFT red apple and SCREEN RIGHT green apple, aligned with front-facing Adam. Preserve adopted names, labels, lettering, poses, faces, clothing, composition and apple count; leave extra apples outside the pair and already-correct art unchanged."
     ],
     "spriteScale": 1.03,
     "intro_cutin": {
@@ -188,31 +195,35 @@
     }
   },
   {
-    "id": "nandi",
-    "name": "ナンディ / ナンディ・カルダモン",
+    "id": "kuze",
+    "name": "久世 朔（くぜ さく）",
     "role": "rival_ch3",
-    "age": 31,
-    "nationality": "India",
-    "affiliation": "Prana Dhūm（プラーナ・ドゥーム）",
-    "play_style": "「伝統的なスパイスと生命の煙」",
-    "description": "東京に出店しているインド流シーシャ伝統店の代表。\n本場の中東・南アジアのクラシックスタイルを重んじ、スパイスやハーブを巧みに操る。",
-    "background_secret": "伝統を重んじるがゆえに、現代のフレーバーを内心見下していた時期があった。しかし、日本の若手たちの真剣な姿勢に触れ、新しいものと古いものの融合を模索し始めている。",
-    "favorite_flavor": "パンラースナ",
-    "specialty_flavor": "お香・ハーブ・パンラースナ系",
+    "age": 23,
+    "nationality": "Japan",
+    "affiliation": "福岡を拠点に活動／東京の期間限定の間借り店・煙幕（えんまく）",
+    "play_style": "「香りの物語と相手の判断を操る勝負師」",
+    "description": "東京育ちの23歳。今は福岡を拠点に活動し、全国大会のため故郷の東京へ戻った。知人の店を数週間だけ間借りして『煙幕』を一人で営む。店の大げさな噂は自分で流すが、閉店後の片付けも客の好みの記録も自分で行う。果実と茶などの葉を熱の順番で立たせ、入れていない菓子を連想させる一台が得意。材料を先に見るか、味の名前を伏せるかは客が選べる。ましろとは幼なじみ。小柄で丸い顔、あどけない笑顔と軽口が似合う。普段は感じがよく、自己評価が低くて少し頼りない。はじめからましろが自分の話をしたと聞くと嬉しいが、疎遠だった年月を思って「今会っても何を話せばいいか」と弱気になる。何を考えているかは読み切れない。斜めに三本留める短い墨黒の仕事着、えんじの裏地、白紙の味カードがのぞく胸ポケット、ノートを入れた腰のポーチが目印。首元は何も巻かず、普段はまっすぐ立つ。柔らかな目と片側だけ上がる笑顔は少し意味ありげ。勝負では目つきと言葉の速さが一変し、相手の手を読んだ瞬間に目を見開いて笑う。客への親切は本心で、予想外の感想も好き。しかし全国大会では正しい助言を相手が迷う時機に伝え、自分の一台の最初の一口を意図的に濃くして、審査員の次の一口の比較基準を揺らそうとする。効果は試喫順や給水によって変わり、客や他選手の道具には手を加えない。",
+    "background_secret": "幼い頃は体調を崩しやすく、絵に描いた菓子の味をお茶に感じると言って「嘘つき」と笑われた。ましろだけは味を合わせず「お茶。でも好き」と言い、隣にいてくれた。今も彼女が好きだが、優勝を恋の返事と交換する気はない。福岡で技術を磨き、彼女に自分の足で立つ姿を見せたい。同時に、想像の味を熱の技術として証明し世界一になるのは久世自身の夢。彼女への思いと独立した勝負への欲が混じり、大会では同じ答えへ誘導したくなる。福岡へ移ってからは疎遠で、ましろは昔の優しさと勝負で無理をする姿の両方を知るから警戒し心配する。試すことを嫌がる客には材料を明かし、店で嘘の助言はしない。親切を勝負に利用した責任は相手へ押しつけず認める。敗北は本気で悔しがる。",
+    "favorite_flavor": "アフサール ブラックティー",
+    "specialty_flavor": "フローズンシトラスの立ち上がりとブラックティーの余韻",
     "growth_stats": {
-      "primary": "センス",
+      "primary": "洞察",
       "secondary": "技術",
-      "notes": "伝統的なスパイス一本槍だったが、はじめの煙の柔軟さに触れ、いつの間にか現代的なトロピカルフルーツ系フレーバーにカルダモンを隠し味として忍ばせるモダンなスタイルを習得していた。"
+      "notes": "予想と実際の感想を並べて記録する。客の記憶まで自分の技術と呼びたかった弱さを知り、はじめが策を読んでも自分の一台を作り切った経験を次の勝負の材料にする。"
     },
     "visual_concepts": [
-      "31s indian man, deep spiritual calm expression, long dark beard, wearing a beautifully patterned traditional kurta, manipulating smoke with graceful hand gestures, surrounding by ethnic spices and brass hookahs",
-      "charismatic indian shisha master, mystical aura, wearing rich gold and deep red ethnic clothing, blowing vibrant thick smoke that seems alive, background filled with antique rugs and warm light"
+      "23 year old adult Japanese shisha shop owner with a slim compact silhouette, uneven espresso-brown hair and warm amber eyes, short soot-black work jacket with three diagonal closure tabs, a glimpse of burgundy lining, blank tasting cards in a broken-stitch chest pocket, cream open-neck henley with no scarf, practical charcoal trousers, indigo notebook pouch, soft rounder amber eyes and an inviting but faintly knowing uneven smile",
+      "the same young adult competitor on stage, one hand spread by his face and notebook in the other, eyebrows uneven and amber eyes suddenly wide in a delighted crooked grin; his kindness remains real while he reads the opponent's next choice"
     ],
+    "spriteScale": 0.99,
     "intro_cutin": {
-      "title": "インド流シーシャの継承者",
-      "line": "スパイスは、嘘をつかない",
+      "title": "煙幕の勝負師",
+      "line": "一口目の話を、二口目で裏切る",
       "face": "normal",
-      "color": "#e0a030"
+      "color": "#8c7564"
+    },
+    "voice": {
+      "first_person": "僕"
     }
   },
   {
@@ -222,23 +233,23 @@
     "age": 30,
     "nationality": "USA",
     "affiliation": "Smoke & Glory（スモーク・アンド・グローリー）",
-    "play_style": "「繊細な超低温管理とアメリカンフレーバーの妙技」",
-    "description": "ピザやジャンクフードを愛食する巨漢（ピザデブ体型）だが、その見た目に反してシーシャの作り方は異常なまでに繊細。\nSupreme SmokeやPerfectaなど、火の扱いやクセが強いアメリカ産フレーバーを極めて低い温度帯でじっくり育て上げ、芳醇な味わいを引き出す達人。",
-    "background_secret": "実は過去に高熱で高級フレーバーをダメにしたトラウマがあり、それ以来「絶対に焦がさない」という強迫観念から超低温管理の技術が生まれた。",
-    "favorite_flavor": "Mountain Fog（マウンテンフォグ）",
-    "specialty_flavor": "Mountain Fog（マウンテンフォグ）",
+    "play_style": "「レモンライムの爽快さを、二口目まで軽く残す低温の研究家」",
+    "description": "ふくよかな体格の白人アメリカ人。レトロな柄シャツに眼鏡、タイマーと手書きのレシピカードを持ち歩く。ピザとバーベキューも好きだが、シーシャではレモンライム系のマウンテンミストを好む。低温で熱を待ち、レモンの立ち上がりからライムの後味までを軽くつなぐ。大きな手で炭を数ミリずつ動かす繊細な職人。",
+    "background_secret": "かつて急いで炭を足し、柑橘の輪郭を飛ばしてしまった。以来、熱を急がないためのタイマーと記録を続けるが、慎重すぎて香りの山を逃すこともある。予想外に軽い二口目を客が喜ぶと、レシピカードの余白へその反応を書き足す。",
+    "favorite_flavor": "フォースフェクタ マウンテンミスト（レモンライム系）",
+    "specialty_flavor": "マウンテンミストのレモンとライムを低温で順に立たせる一台",
     "growth_stats": {
       "primary": "技術",
       "secondary": "センス",
-      "notes": "超低温での安全管理に固執していたが、はじめの『相手を信じて少し火力を攻める』姿勢を見て、いつの間にかアメリカンフレーバーの香りを一気に爆発させる高温域のコントロールも身につけていた。"
+      "notes": "柑橘の香りを飛ばす怖さから低温に固執していたが、はじめの『今の一口を見て調整する』姿勢を受け、タイマーの数字だけでなく客の二口目も見るようになる。"
     },
     "visual_concepts": [
-      "30s overweight american man, friendly but very focused, wearing a casual snapback cap and oversized graphic t-shirt, large hands delicately adjusting small charcoals with tweezers, eating a slice of pizza on the side",
-      "large american guy with a beard, gentle giant vibe, wearing a zip-up hoodie, sitting in a laid-back western style lounge, expertly handling American flavor tobacco with surgical precision"
+      "30-year-old obese white American shisha craftsman, round body and warm focused eyes behind vintage glasses, short dark hair and neat beard, colorful retro patterned camp shirt under a dark work apron, a tiny analog timer in one large hand and a handwritten recipe card in the other",
+      "lemon-lime shisha craftsman in a Tokyo diner-like lounge, cheerful when serving guests but exacting about seconds and millimeters of low-temperature heat; never a caricature of his size or nationality"
     ],
     "intro_cutin": {
-      "title": "低温の巨匠",
-      "line": "火は小さく、ゆっくりね",
+      "title": "柑橘の研究家",
+      "line": "二口目まで、軽く爽やかに",
       "face": "normal",
       "color": "#f07a3a"
     }
@@ -249,12 +260,12 @@
     "role": "rival_ch3",
     "age": 37,
     "nationality": "Russia",
-    "affiliation": "東京の強豪店 Железный Дым（ジェレーズヌイ・ドゥイム／鉄の煙）",
+    "affiliation": "東京に最近できた謎の店 Железный Дым（ジェレーズヌイ・ドゥイム／鉄の煙）",
     "play_style": "「完璧な熱管理と精度（Точность）」",
-    "description": "データと徹底した温度管理システムによる「ブレない完璧な提供」を行う。機械のように精密なシーシャを作るロシア代表。",
-    "background_secret": "極寒の地で『絶対に温かい煙を途切れさせない』ために精度を極めた。彼の精密さは、客への冷たい態度ではなく、実は過酷な環境から客を気遣うための深い優しさからきている。",
-    "favorite_flavor": "ダークミント / シガー",
-    "specialty_flavor": "高ニコチンのダークリーフ系",
+    "description": "データと徹底した温度管理システムによる「ブレない完璧な提供」を行う。機械のように精密なシーシャを作る、ロシア出身で東京を拠点とする全国出場者。東京の店は最近できたばかりで、短期間で全国大会へ上がった経緯や以前の活動には謎が多い。",
+    "background_secret": "極寒の地で『絶対に温かい煙を途切れさせない』ために精度を極めた。彼の精密さは、客への冷たい態度ではなく、実は過酷な環境から客を気遣うための深い優しさからきている。軍にいた頃に叩き込まれた偵察と情報収集を、勝負の前に徹底する。第2章では名乗らないまま柚ヶ谷の試煙会・大会前夜の搬入口・県大会の客席に現れ、第3章では偵察の一端だけを話すが、東京の店が急に大会へ上がった経緯までは明かさない。",
+    "favorite_flavor": "発売されたばかりのナイトサイド ブラストミント",
+    "specialty_flavor": "ナイトサイド ブラストミントを使った精密な熱管理",
     "growth_stats": {
       "primary": "技術",
       "secondary": "根性",
@@ -279,8 +290,8 @@
     "nationality": "Japan",
     "affiliation": "V系コンセプトカフェ「零-ZERO-」店長",
     "play_style": "「カリスマ」",
-    "description": "V系コンセプトカフェ「零-ZERO-」の店長兼シーシャ職人。第2章大会に初登場し、第3章でも因縁が続く強敵。\n首・腕・肩甲骨にまで及ぶ全身の刺青（和柄と西洋ゴシックを組み合わせた複雑なデザイン）、血のように深い赤と漆黒の非対称カラーリング。ステージに立てばそれだけで空気が変わる。\n使うミックス名はすべてV系バンドへのオマージュ。代表作は「嘘の薔薇（うそのばら）」「CASSIS MEMORIAL」「DOLLS REQUIEM」「FILTH IN AMBER」。\nフローラル系フレーバーを極限まで重ね、煙そのものをパフォーマンスに変える。演奏が始まったかのように静まり返る大会会場は、REIが始めるだけで「ライブ」になる。",
-    "background_secret": "極度の人見知りであり、派手なメイクと芝居がかった「カリスマ」のペルソナは、素の自分を守るための鎧。本名「田中健太」という極めて平凡な名前をコンプレックスに思っており、本当は誰より真面目で神経質な努力家。かつては地方の小さなシーシャ店でアルバイトをしながら独学で技術を磨き、技術は超一流と評される。タトゥーはすべてが「誰かに影響を受けた瞬間の記念碑」。その中に、スミさん（墨田丈一郎）の煙への出会いを記した一本が隠れている。",
+    "description": "V系コンセプトカフェ「零-ZERO-」の店長兼シーシャ職人。第2章の県大会に出場し、第3章でも交友が続く。\nV系の音楽とファッションが本当に好きな一般の青年。黒とワインレッドで髪と服を作り込むが、ステージのスターやバンドのフロントマンではない。人見知りで口数は少ないが、慣れると気の良い友人になる。\n使うミックス名は好きなV系バンドへのオマージュ。代表作は「嘘の薔薇（うそのばら）」「CASSIS MEMORIAL」「DOLLS REQUIEM」「FILTH IN AMBER」。\nフローラル系フレーバーを重ね、香りの余韻を曲と曲の間のように聴かせる。制作中は目を閉じて拍を取り、煙が上がる間を待つ。",
+    "background_secret": "作り込んだ見た目のREIも、人見知りの健太も本人。私生活を偽の顔と断定しない。煙のタトゥーは、初めて客として行ったライブの帰りに決めた図案で、スミとは無関係。第2章ではじめに敗れ、第3章は東京のライブ遠征と交友で登場する。",
     "favorite_flavor": "ローズ",
     "specialty_flavor": "フローラル系全般（薔薇・ジャスミン・ラベンダーの重ね掛け）",
     "signature_mixes": [
@@ -304,7 +315,7 @@
     "growth_stats": {
       "primary": "魅力",
       "secondary": "センス",
-      "notes": "完璧なカリスマを演じることで客を圧倒していたが、はじめの等身大の接客を見て、いつの間にか素の自分のミスに対してファンに少しだけ照れ笑いを見せるようになっていた。"
+      "notes": "見た目で距離を置かれることに慣れていたが、はじめの等身大の接客を見て、自分から客に好きな曲の話をして、ミスにも照れ笑いを見せるようになっていた。"
     },
     "visual_concepts": [
       "25s japanese visual-kei male, charismatic and mysterious, deep red and black asymmetrical styled hair with dramatic volume, visible tattoos on neck and hands mixing japanese traditional and gothic western motifs, heavy dramatic eyeliner and pale foundation, wearing a dark velvet embroidered coat with silver accents, holding an ornate hookah hose like a microphone on stage, moody spotlight behind",
@@ -320,14 +331,14 @@
   },
   {
     "id": "master_hookah",
-    "name": "マスター・フーカ / 王 煙楼（ワン・イェンロウ）",
+    "name": "王 煙楼（ワン・イェンロウ / 煙楼先生）",
     "role": "rival_ch4",
     "age": 58,
     "nationality": "Asia",
     "affiliation": "アジア圏のシーシャ協会",
-    "play_style": "「陰陽五行の理」",
-    "description": "「お前の煙には『命』がある」と語る、仙人のようなシーシャ職人。感覚と精神論を交えた究極のシーシャを作る世界大会のボス的存在。吐いた煙で龍を形作るという伝説的な技を持つ。陰陽五行の理に通じており、漢方のようにその人の体質や精神状態にぴったり合ったシーシャを調合できる。彼のシーシャを吸った者は『自分のためだけに作られた薬のような煙』だと感じる。",
-    "background_secret": "実はスミさんが世界放浪中に一時期教えを乞うたこともある人物。スミさんの『基本に忠実、かつ自由』というスタイルの源流の一部となっている。",
+    "play_style": "相手の呼吸を読む観察と、龍の煙",
+    "description": "58歳の現役職人。派手な龍の煙で名を知られるが、手元では客の呼吸と残された時間を見て調整する。シェイクに観察を教えた師で、アジア圏シーシャ協会推薦選手。前夜祭に正面から登場する。一人称は私。",
+    "background_secret": "シェイクに観察と客を待つ流儀を教えた師。アジア圏シーシャ協会の推薦で世界大会へ。スミの弟子・旧友ではない。前夜祭で正面からはじめを見定める。路地裏の変装人物ではない。",
     "favorite_flavor": "ライチ",
     "specialty_flavor": "ウッディ・和モダン系",
     "growth_stats": {
@@ -345,6 +356,9 @@
       "line": "お前の煙には『命』がある",
       "face": "normal",
       "color": "#3fbf7f"
+    },
+    "voice": {
+      "first_person": "私"
     }
   },
   {
@@ -391,7 +405,11 @@
       "selected_work": "会場での作品展示",
       "subject": "tonariで過ごす時間",
       "submission_dialogue_id": "ch1_tsumugi_sketch",
-      "result": "第1章では応募まで。結果は後続の物語で扱う"
+      "result": "第3章の帰郷後に入選を本人が報告。応募した作品が会場に展示される"
+    },
+    "voice": {
+      "first_person": "私",
+      "hajime_address": "はじめさん"
     }
   },
   {
@@ -436,7 +454,7 @@
     "affiliation": "MELTY PUFF（雇われ店長）",
     "play_style": "「バイブスと直感」",
     "description": "第2章で立ちはだかるライバルでありヒロイン候補の一人。はじめと同い年の22歳。\nベースは平成ギャルマインド──「カワイイは最強」「バイブスで全部OK」「人に優しく、自分にもゆるく」が信条。ギャル友のグループとよく連む。\n雑誌の読者モデルとして活動しており、雑誌掲載をきっかけにファンになったオタクたちが通うようになった（見た目に反して誰にでも分け隔てなく接してくれるため）。シーシャ好き・ギャル仲間・オタクと、客層の幅がとびきり広い。\n理論ではなく「バイブス」だけで最高の一杯を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。\nもともと体が丈夫でなく、手が震える日や感覚が鈍る日がある。朝起きるたびに「今日、感覚あるかな…」と確かめるのが習慣になっており、このことは主人公だけが知る秘密になる。",
-    "background_secret": "誰よりも周りの空気を読むことに長けているため、逆に「自分自身」が分からなくなっている。他人に合わせる『バイブス』を自分の才能だと自己暗示をかけている。\n教えられない本当の理由は「言語化した瞬間に魔法が消える気がする」という恐怖心。理屈にした瞬間に自分が凡人になる気がして、『理論に負けたくない』という意地が根底にある。主人公がその感覚を少しずつ言語化していく構図が彼女の成長軸になる。\nホワイトグミベアは子供の頃の安心の象徴。病院帰りに母親がよく買ってくれたため、甘い匂いに今でも救われる。だから「ただかわいいから好き」以上の意味がある。\n雑誌の読者モデルは「友達に頼まれてノリで応募したら受かった」がきっかけ。本人はシーシャ職人として見られたいので、雑誌モデルの話を店では積極的にしない。",
+    "background_secret": "幼い頃から体調に波があり、今も手が震える日がある。味覚喪失ではない。周りを不安にさせまいと、相手ごとに明るく振る舞ううち、自分の希望を言いにくくなった。モデルとしてのあげはも店長としてのあげはも本人。第2章の県大会で負けても、はじめを拒絶したり姿を消したりしない。悔しさのまま祝い、友人関係は続く。第3章の帰郷で、手が震えていた日のことを自分から話す。はじめに救われるだけでなく、してほしいことを言葉にする練習を続ける。周りからは天才に見えるが、崩れた日に直し方が分からない感覚派の弱さを本人が一番知っている。調子が悪くても手順と言葉で戻ってくるはじめの才能に壁を感じており、県大会の夜に心の中でだけ嫉妬する（本人には言わない）。",
     "favorite_flavor": "ホワイトグミベアとレッドグミベア",
     "specialty_flavor": "トロピカルフルーツ系",
     "growth_stats": {
@@ -451,7 +469,7 @@
     "spriteScale": 0.93,
     "intro_cutin": {
       "title": "バイブスの天才",
-      "line": "あたし超感覚派なんだよね〜",
+      "line": "うち超感覚派なんだよね〜",
       "face": "normal",
       "color": "#ff8fc8"
     },
@@ -462,6 +480,10 @@
       "face": "smile",
       "color": "#ff8fc8",
       "name": "alias"
+    },
+    "voice": {
+      "first_person": "うち",
+      "hajime_address": "ハジメっち"
     }
   },
   {
@@ -491,12 +513,12 @@
     "name": "シーシャ組長 / 神崎 竜二（かんざき りゅうじ）",
     "display_name": "神崎竜二",
     "role": "rival_ch2",
-    "age": 39,
+    "age": 53,
     "nationality": "Japan",
     "affiliation": "神崎煙草店（表向き）",
     "play_style": "「スジを通す煙」",
     "description": "口調も気性もヤクザ丸出しにアツい老舗シーシャ屋の店主。だが炭とフレーバーを扱う手つきは誰より丁寧で、出てくる煙はどこまでも穏やか。シーシャを共にすることを盃事に例える癖があり、気に入った相手は回し飲みで「兄弟の盃」を交わしたことにする（はじめは「五厘の兄弟」認定）。任侠の例えを口走っては「映画の話だ」とごまかす。その正体はヤクザの組長だが、現在はシノギで店を営んでいることを隠している。",
-    "background_secret": "かつて抗争で若衆を失った後悔から、穏やかな時間を提供するシーシャに救いを見出した。ヤクザであることを隠し、一人の職人として生きようとしている。ch2決勝当日、客席のSNS拡散で素性が公になるが、逃げも隠れもせず客席に深く一礼して「今日は、いち職人として来た。文句なら、俺の煙に言いな」と言い放って戦う。敗退後は、常連たちが普段どおり暖簾をくぐり続けることで店が守られる（詳細は brand/story_and_structure.md ch2「神崎の素性バレ」）。",
+    "background_secret": "かつて抗争で若衆を失った後悔から、穏やかな時間を提供する店を大切にしている。普段は過去を詳しく話さないが、県大会の入場時に肩書きを問われ、自分で明かす。「今日は、いち職人として来た。文句なら、俺の煙に言いな」。迫力ある顔も丁寧に接客する顔も本人。どちらかを本性と断定しない。",
     "favorite_flavor": "ドラゴンフルーツ",
     "specialty_flavor": "ドラゴンフルーツ",
     "growth_stats": {
@@ -505,27 +527,29 @@
       "notes": "力と威圧感で自分を保っていたが、はじめの『相手を否定しない』姿勢に触れ、いつの間にか若衆の失敗を怒鳴るのではなく、静かに煙を分かち合って諭すような度量を持っていた。"
     },
     "visual_concepts": [
-      "39s japanese yakuza boss, intimidating sharp face with a small scar, slicked back hair, wearing a tailored dark suit without a tie showing traditional irezumi tattoos on his chest, very delicate and precise hands handling hot charcoal",
-      "former bōsōzoku turned yakuza, stern expression, wearing a dark luxurious patterned silk shirt, intricate japanese tattoos visible on forearms, holding silver tongs with extreme care, cinematic lighting in a VIP room"
+      "53歳の日本人男性。細め〜普通の中年体格、短い黒白髪、険しい眉間と口ひげ、色付き眼鏡。白系大柄チェックのダブルスーツ、黒シャツ、紫のネクタイとポケットチーフ。小指はポケットや身体で自然に隠し有無を断定しない。"
     ],
     "spriteScale": 1.06,
     "intro_cutin": {
-      "title": "シーシャ組長",
+      "title": "水煙の龍",
       "line": "回し飲みはな、盃と同じだ",
       "face": "normal",
-      "color": "#d23a3a"
+      "color": "#b6a4cf"
+    },
+    "voice": {
+      "first_person": "俺"
     }
   },
   {
     "id": "dr_kemuri",
-    "name": "チャコール博士 / 炭場 創（たんば そう）",
+    "name": "チャコール博士 / 火浦 理一（ひうら りいち）",
     "role": "judge_and_hidden_boss",
     "age": 38,
     "nationality": "Japan",
     "affiliation": "審査員兼研究者 / SMOKE LAB",
     "play_style": "「全てをデータで最適化する研究者」",
     "description": "多種のヒートマネジメントシステムなど数々の画期的な機材を開発した研究者。「シーシャ業界のさらなる発展」を本気で信じており、南雲会長（旧知の仲）と協力して審査員を務める。普段は温和で紳士的だが、業界の発展のためなら人体実験まがいのことも厭わないという噂が密かに囁かれており、「やっていそうでもあり、やっていなさそうでもある」という危うい二面性を持つ。穏やかな笑顔の奥にサイコパス的な気配を感じさせる瞬間があるが、真相は誰にも分からない。一方でシーシャへの愛情は本物であり、機材やヒートマネジメントへのこだわりは尋常ではない。自分が開発した機材の話になると子供のように目を輝かせ、「そいつの開発者俺だもん」と得意げに言ってしまう無邪気さがある（『サマーウォーズ』パロディ）。不思議な魅力と危険さが同居するキャラクター。\n第5章の裏ボス戦の仕掛け人。SHISHA-9000戦の敗北後、はじめに促されて十数年ぶりに自分の舌で一台を作り、はじめと確かめながら、作る時間を取り戻す（9000は破壊されず、名職人の煙を学ぶ教材として稼働を続ける）。",
-    "background_secret": "かつては自分の舌で作る職人だった。自分の感覚で作ったシーシャを『不味い』と全否定されたことを引き金に味覚を失い（何を吸っても砂の味）、誰にも言えないまま職人を辞めた過去を持つ。『否定不可能なデータ』は二度と賭けて傷つかないための盾。はじめのch2の味覚喪失は彼の過去の鏡像であり、ch5で「君は戻れたのか」と問う。SMOKE LABの廊下には選手時代（眼鏡なし）の写真が残っている。",
+    "background_secret": "かつては自分の舌で作る職人だった。味の感覚を失った時期に厳しい批評が重なり、職人を離れた。原因を批評一つと診断しない。何を吸っても砂のように感じる経験から、誰でも失敗を怖がらずに作れる道具を目指す。大会記録には作れない日の生活が映らないことをはじめとの対話で考え、9000を育て続ける。はじめの不調を知るのは県大会の頃。",
     "favorite_flavor": "コーラ",
     "specialty_flavor": "酸味・シトラス系の変わり種",
     "growth_stats": {
@@ -544,6 +568,10 @@
       "line": "データは嘘をつきません",
       "face": "smile",
       "color": "#38f0ff"
+    },
+    "voice": {
+      "first_person": "私",
+      "hajime_address": "はじめくん"
     }
   },
   {
@@ -555,8 +583,8 @@
     "affiliation": "大会MC（マスコット）",
     "play_style": "N/A",
     "description": "シーシャ大会の名物MC兼マスコット。実況・進行を一手に担う。常にハイテンションで喋り倒すが、本当に美味いシーシャが出た時だけ沈黙し、煙が虹色になるという伝説を持つ。笑い声は「ぷぷぷっ！」。",
-    "background_secret": "実は初期の世界大会を立ち上げた創設メンバーの一人。声帯を痛めて本来の声が出なくなったため、着ぐるみとハイテンションな合成音声でMCとしてシーンを支え続けている。キャラクターデザインの原型は、初期大会のマスコット公募に採用された若き日の墨田丈一郎（スミさん）の応募案（ch4終盤のスケッチブックの落書きがそれ。作中では最後まで説明しない・2026-07-19確定）。",
-    "favorite_flavor": "ガムシナモン（仮）",
+    "background_secret": "初期大会を立ち上げた運営の一人。声帯を痛め、本来の声の代わりに合成音声とマスコットでMCを続ける。衣装は初期大会の公募で集まった図案を運営スタッフがまとめた。スミさん個人の作品ではない。",
+    "favorite_flavor": "ガムシナモン",
     "specialty_flavor": "N/A",
     "growth_stats": {
       "primary": "魅力",
@@ -583,7 +611,7 @@
     "affiliation": "大会審査員長 / 大手シーシャチェーン「シーステーション」会長",
     "play_style": "N/A",
     "description": "大手シーシャチェーン「シーステーション」（誰でも入りやすい大衆向け店舗）の会長であり大会審査員長。C.STATIONを一代で築き、大会運営を支える。SMOKE CROWN CUPは、自社店舗と同じビルのイベントホールを借りて大規模に開催している。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては味や技術の正確さではなく「作り手の生き様が煙ににじみ出ているか」──つまりその人間がどんな人生を歩み、何を背負い、誰のために煙を作っているのかを最重要基準にするという恐ろしいほどの二面性を持つ。\n自社の煙はあくまで入り口であり、若者たちが自社チェーンを踏み台にして本物の煙へ至ることを望んでいる。だからこそ、プロの大会では容赦のない採点を行う。\nスミさんとは旧知の仲で、「真逆の道を選んだ」ライバルでもある。酒の席でだけ、若い頃の話をする。",
-    "background_secret": "かつてスミさんと同じ大会を戦った元選手（勝てないまま選手を退き、経営の道へ・2026-07-19確定）。根底にあるのは『かつて自分が救われたあの小さな古びたシーシャ屋のような空間を、全国どこでも味わえるようにしたい』という泥臭く熱い理念。スミさんとは旧知の仲で、真逆の道を歩んだライバル関係でもある。お忍びで自社チェーンの若手の煙を吸いに行きひっそり評価する「不器用だが泥臭い親父」の側面を持つ。",
+    "background_secret": "かつてスミさんと同じ大会を戦った元選手（勝てないまま選手を退き、経営の道へ・2026-07-19確定）。根底にあるのは『かつて自分が救われたあの小さな古びたシーシャ屋のような空間を、全国どこでも味わえるようにしたい』という泥臭く熱い理念。スミさんとは旧知の仲で、真逆の道を歩んだライバル関係でもある。お忍びで自社チェーンの若手の煙を吸いに行きひっそり評価する「不器用だが泥臭い親父」の側面を持つ。 スミと「勝った方が作る」と約束したが、店を増やす話をした晩、次の大会の点ばかり数えられた。「勝ち負けの話はしてない」と言った先を互いに待ちすぎ、今もその晩の話だけ避けてきた。第4章の競技後、はじめとなるの同じ約束を聞いて過去を話す。経営は競技で勝てなかった代わりではなく、自分で選んだ仕事。友情を審査の便宜にはしない。",
     "favorite_flavor": "シーガ（葉巻系）",
     "specialty_flavor": "N/A（審査のため作らない）",
     "growth_stats": {
@@ -611,14 +639,14 @@
     "nationality": "Turkey",
     "affiliation": "大会審査員（元トプハーネ地区ナルギレ職人）",
     "play_style": "N/A",
-    "description": "シーシャ大会の審査員の一人。トルコのトプハーネ地区出身の元ナルギレ職人。\n伝統と歴史に根ざしたシーシャの深みを誰よりも理解しており、「新しいだけでは本物ではない」という信念で技術の奥にある人の煙を見極める。\nかつて出会った放浪の日本人（スミさん）の煙が審査員を目指したきっかけとも噂される。\n普段は無口だが、本当に感動したシーシャに出会うと母国語（トルコ語）でぽつりとつぶやく。その言葉を理解できた者には、特別な視線で見られるという。",
-    "background_secret": "トプハーネの再開発で自分の店を失った過去を持つ。失われた『あの頃の街の煙』をもう一度体験したくて、審査員として世界中を彷徨っている。",
-    "favorite_flavor": "ピスタチオ（仮）",
+    "description": "シーシャ大会の審査員の一人。トルコのトプハーネ地区出身の元ナルギレ職人。\n伝統と歴史に根ざしたシーシャの深みを誰よりも理解しており、「新しいだけでは本物ではない」という信念で技術の奥にある人の煙を見極める。\n南雲と職人交流会で知り合い、家族の店や修理職人から受け取った仕事を若い人へ伝える。\n普段は無口だが、本当に感動したシーシャに出会うと母国語（トルコ語）でぽつりとつぶやく。その言葉を理解できた者には、特別な視線で見られるという。",
+    "background_secret": "南雲と職人交流会で知り合ったナルギレ職人。家族の店と各地の修理職人から手順を受け継ぎ、若い職人の工夫も試す。伝説の日本人としてスミを探す設定は持たない。",
+    "favorite_flavor": "ピスタチオ",
     "specialty_flavor": "N/A",
     "growth_stats": {
       "primary": "洞察",
       "secondary": "センス",
-      "notes": "『失われた伝統とスミさんの亡霊』ばかりを探していたが、はじめの新しい時代の煙に触れたことで、いつの間にか過去との比較ではなく『今の若者の表現』そのものを愛せるように変わっていた。"
+      "notes": "古い手順を守るだけでなく、若い職人の修理や新しい道具を試す。家族や同業者との仕事を持ち寄る。"
     },
     "visual_concepts": [
       "48s turkish man, rugged and distinguished, thick mustache and short dark hair with greying temples, wearing a smart casual vest and rolled-up shirtsleeves, deep intense eyes evaluating smoke",
@@ -639,7 +667,7 @@
     "nationality": "UAE",
     "affiliation": "ドバイ王族",
     "play_style": "「純金機材と至上の煙」",
-    "description": "世界大会の決勝相手。王族という立場と純金の特別機材を持つが、15年前に路地裏のカフェで吸った「ある日本人（若きスミさん）」のシーシャが原体験。\nあの「本物の煙」をもう一度超えるためだけに戦い続けている。",
+    "description": "世界大会の現王者。大会では白いカンドゥーラと白い頭布の正装。普段から煙の文化に親しんできたが、15年前、ドバイの路地裏で出会った日本人店員の一台が、自分も作る側へ回るきっかけになった。ドバイでは地味な旅装で素性を伏せてはじめと三度会う。",
     "background_secret": "莫大な富と権力ゆえに、誰も自分に本音で接してくれないという絶望的な孤独を抱えている。15年前のスミさんだけが、王族としてではなく『ただの疲れた一人の客』として彼を扱い、極上の煙を出してくれた。",
     "favorite_flavor": "グレープ",
     "specialty_flavor": "究極に洗練された単一フレーバー",
@@ -696,10 +724,10 @@
     "nationality": "Japan",
     "affiliation": "mukai（tonari姉妹店）",
     "play_style": "N/A",
-    "description": "第3章、東京のtonari姉妹店mukaiの同僚。一人称は「僕」。いつも眠たげで、ゆるっとした同期のような存在。ダークリーフやシガーリーフを好み、普通のシーシャには「お水ですか？」と尋ねるほど味の感じ方が独特。相手と話したり一緒に作ったりするうち、同じ煙が近く感じられる時がある。その感想は彼女と作り手の間で生じるもので、人の魂や本物らしさを採点する能力ではない。はじめが作れない日にも、お茶と座る時間を差し出す。巷で噂の凄腕職人シガーマンの正体だが、本人は別に怖い男がいると思って怯えている。ブロンドも作れる。",
-    "background_secret": "【公式隠し設定】シガーマンの正体。性別すら知られておらず、いかつい男だと勘違いされている。昔から煙の受け取り方が繊細で、味が遠く感じる時期に重い葉を好むようになった。今も感じ方にはむらがあり、人と過ごした時間で印象が変わる。深淵期にははじめの煙をうまく受け取れなかったが、彼が空っぽな人間だったからではない。回復の途上で少しずつ温かく感じられる日ができる。彼女だけが救える特別な相手にはせず、日常・休息・仲間との連絡・練習が一緒に回復を支える。",
-    "favorite_flavor": "シガーリーフ全般",
-    "specialty_flavor": "シガーリーフ全般（重厚なシガーリーフミックス）",
+    "description": "第3章、東京のtonari姉妹店mukaiの同僚。一人称は「僕」。いつも眠たげで、ゆるっとした同期のような存在。ダークリーフやシガーリーフを好み、濃く重い煙を好むが、軽い煙の味も分かる。好みと味覚の欠落を同一視しない。相手と話したり一緒に作ったりするうち、同じ煙が近く感じられる時がある。その感想は彼女と作り手の間で生じるもので、人の魂や本物らしさを採点する能力ではない。はじめが作れない日にも、お茶と座る時間を差し出す。巷で噂の凄腕職人シガーマンの正体だが、本人は別に怖い男がいると思って怯えている。ブロンドも作れる。",
+    "background_secret": "シガーマンの正体。噂が大柄な男性像へ膨らんだため、本人は別に怖い人がいると思っている。濃く重い葉を好むがブロンドも作れる。東京で一緒に育った久世朔とは幼なじみで、一歳違い。彼が福岡へ移ってから疎遠になり、大会の間借り店「煙幕」で久しぶりに会う。昔の優しさを覚えているからこそ、人の答えを読もうと無理をする彼を警戒し、心配もしている。期待された菓子の名を無理には言わない。感じ方にむらはあっても、味覚喪失の人物ではない。はじめの回復を一台で起こすのではなく、作れない日の席と、答えを急がない日々を一緒に過ごす。噂の正体は初日に明かさない。",
+    "favorite_flavor": "ダークのアールグレイ",
+    "specialty_flavor": "ダークのアールグレイ。香りが出やすいので分量を抑え、他の葉を消さない配合をブロンドにも教える",
     "growth_stats": {
       "primary": "技術",
       "secondary": "魅力",
@@ -712,9 +740,13 @@
     "spriteScale": 0.9,
     "intro_cutin": {
       "title": "mukaiの眠たげな同期",
-      "line": "……これ、お水ですか？",
+      "line": "……今日は、お茶でもいいよぉ",
       "face": "normal",
       "color": "#e8eef6"
+    },
+    "voice": {
+      "first_person": "僕",
+      "hajime_address": "はじめくん"
     }
   },
   {
@@ -781,7 +813,13 @@
     },
     "visual_concepts": [
       "elderly female tarot fortune teller like a witch, deep hooded dark robe, face mostly hidden in the hood's shadow with only a wrinkled chin and a knowing smile visible, wrinkled hands spreading worn tarot cards on purple cloth over a folding table, japanese shopping arcade back alley at dusk, suspicious yet strangely convincing aura"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "路地裏の縁を読む老婆",
+      "line": "縁があれば、また会える",
+      "face": "normal",
+      "color": "#aa83c7"
+    }
   },
   {
     "id": "tetsuko",
@@ -813,8 +851,8 @@
     "nationality": "Japan",
     "affiliation": "mukai（店長）",
     "play_style": "N/A",
-    "description": "第3章（東京編）での溜まり場となるtonari姉妹店「mukai」の店長。ハットを深く被り、髭を蓄えた次元大輔のようなルックスの超絶渋いダンディなおじ様。常に落ち着いた低音ボイスで喋る。コーヒーが好きで、タバコに特別な執着はなくシーシャが好きなくらい。実はシガー（葉巻）が得意ではない。",
-    "background_secret": "ルックスがハードボイルドすぎるため、周囲から「伝説のシガーマンの正体」だと勘違いされているが、本当のシガーマンは水瀬 ましろである。本人は適当に話を合わせているだけ。実際には可愛い飲み物（甘めのラテやフルーツティーなど）を好み、可愛い趣味を持ち、重くないものを嗜むのが本来の性格。見た目とのギャップが大きい。「tonari」のスミさんとは古くからの知り合い。",
+    "description": "第3章（東京編）での溜まり場となるtonari姉妹店「mukai」の店長。ハットを深く被り、髭を蓄えた次元大介のようなルックスの超絶渋いダンディなおじ様。常に落ち着いた低音ボイスで喋る。コーヒーが好きで、タバコに特別な執着はなくシーシャが好きなくらい。実はシガー（葉巻）が得意ではない。",
+    "background_secret": "渋い見た目からシガーマンと思われがちだが、重い葉は苦手。低い声も甘いラテ好きも、どちらも本人。スミとは仕入れの共同発注で知り合った同業者で、師弟ではない。姉妹店とは人手や仕入れを助け合う関係。独自に店と常連の居場所を築いてきた。",
     "favorite_flavor": "ブラックコーヒーなど",
     "specialty_flavor": "お茶・コーヒー系のビターミックス",
     "growth_stats": {
@@ -831,6 +869,10 @@
       "line": "まあ、コーヒーでも飲んでいけ",
       "face": "normal",
       "color": "#b08a5e"
+    },
+    "voice": {
+      "first_person": "俺",
+      "hajime": "はじめくん"
     }
   },
   {
@@ -943,7 +985,7 @@
       "casual": "黒系のパーカー、カーゴパンツ、スニーカーのボーイッシュな私服",
       "lounge": "少し気だるげで大人っぽい私服。煙と照明に似合う雰囲気。元スタッフ時代の衣装とは別",
       "date": "カーディガンや柔らかいニット。少し女性らしい服装",
-      "axe": "キャップ、ラフなTシャツ、動きやすい服。儚い演技を忘れて全力で楽しむ",
+      "axe": "普段と同じアイボリーのレースブラウス、黒スラックスと黒ローファー。投擲中はバッグを画面外に置く。儚い演技を忘れ、姿勢と笑顔で全力で楽しむ",
       "student": "大学時代の回想用。ピンクブラウンのミディアムヘア、黒Tシャツと店員エプロン。元気な笑顔。現在の服装と混同しない。"
     },
     "expressions_required": [
@@ -971,7 +1013,7 @@
       "hajime": "他店で偶然『どこかで働いてるの？』と儚げに話しかけ、tonari勤務と聞いて初めて元バイトの先輩と明かす。序盤から中盤は儚いお姉さんを全力で演じ、スミさんへの本当の尊敬やはじめへの心からの応援はtonari再会エピソードの終盤で初めて言葉にする。演技から素顔を知り、どちらも面白いと思う相手。恋愛になるとひよりは不器用になる",
       "sumi": "大学時代のtonari勤務からの知り合いで、実は心から尊敬する男性の師匠。序盤はその気持ちを深く語らず、素顔を知るスミさんの前で演技するのを恥ずかしがる。久しぶりのtonari帰還で変わらぬ優しさに涙し、感動エピソード終盤で初めて師匠を高く評価してはじめを励ます"
     },
-    "asset_status": "現在のレース衣装5表情（normal/sad/smile/surprise/tears）と学生時代のstudent_smileを本編で使用。現在はポニーテール、過去はミディアムヘア。原画・プロンプトはasset_sources/portraits/hiyori-office-v1/。斧投げキャップ/Tシャツのaxe_normal/axe_laugh/axe_shout、現在のレース衣装serious/love_blushと専用背景を#477で追加。原画・指示・登録記録はasset_sources/hiyori-axe-issue477/。後半の正式台本、その他の衣装・未使用表情は未制作。",
+    "asset_status": "#664で現在の11表情を再制作し、axe_throwとoffice_mukiiを追加。現在の12表情は普段と同じレースブラウスと黒スラックス、学生時代のstudent_smileのみミディアムヘアと店員服。全13表情の原画・生成指示・書き出し手順はasset_sources/portraits/hiyori-redesign-issue664/に保存。正式立ち絵は896×1200で人物高1000px。旧斧投げキャップ/Tシャツ案は不採用。",
     "height_cm": 157,
     "spriteScale": 0.94,
     "intro_cutin": {
@@ -1000,7 +1042,13 @@
     "visual_concepts": [
       "34歳の大柄な女性。短い赤茶の髪に銅色の一房、そばかす、琥珀色の目。錆赤の作業シャツ、濃茶の革エプロン、作業靴。"
     ],
-    "spriteScale": 1.035
+    "spriteScale": 1.035,
+    "intro_cutin": {
+      "title": "一投を見守る斧投げBarの店主",
+      "line": "斧に仕事をさせな",
+      "face": "normal",
+      "color": "#bd6547"
+    }
   },
   {
     "id": "sai",
@@ -1011,10 +1059,16 @@
     "nationality": "Japan",
     "affiliation": "ワイドハンガのボドゲカフェ",
     "play_style": "何が起きても同じ笑顔",
-    "description": "ボドゲカフェの男性店長。黒髪、細身、深緑のベストと長いエプロン。糸目でいつも自然に微笑み、丁寧に接客する。その笑顔と言葉の間が逆に少し怖いが、本人は普通に親切。わざと威圧したり悪役を演じたりしない。「では、その選択で」「続きも気になりますね」と静かに遊びを見守る。相手が困ればルールを言い直す。TRPGの部活設立と本の入荷を支え、ひより・サメちゃんのGM役を奪わない。",
+    "description": "ボドゲカフェの男性店長。黒髪、細身、深緑のベストと長いエプロン。糸目でいつも自然に微笑み、丁寧に接客する。その笑顔と言葉の間が逆に少し怖いが、本人は普通に親切。わざと威圧したり悪役を演じたりしない。ただ、なぜか誰も彼の提案を断れず、気づけば体が頷いている（本人は無自覚）。「では、その選択で」「続きも気になりますね」と静かに遊びを見守る。相手が困ればルールを言い直す。TRPGの部活設立と本の入荷を支え、ひより・サメちゃんのGM役を奪わない。",
     "visual_concepts": [
       "28歳の細身の男性。黒髪の横分け、糸目、自然で柔らかな閉じた口の笑顔。眼鏡なし。深緑のベスト、生成りシャツ、炭色エプロン、小さな六角形の真鍮ピン。怖がらせる陰影や悪意のある笑いは付けない。"
     ],
-    "spriteScale": 1.035
+    "spriteScale": 1.035,
+    "intro_cutin": {
+      "title": "笑顔のボドゲカフェ店長",
+      "line": "では、その選択で",
+      "face": "normal",
+      "color": "#589579"
+    }
   }
 ]

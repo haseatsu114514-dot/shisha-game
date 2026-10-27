@@ -1,3 +1,5 @@
+import { storeLogo } from "../core/store-logos.js";
+import { spendableMoney } from "../core/travel-budget.js";
 import { el, yen } from "../core/util.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { venueHost } from "../core/venue-host.js";
@@ -14,6 +16,8 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   const visitStamp = owner && `${owner.chapter}:${owner.day}:${owner.slot}`;
   let trial = null;
   let reflection = null;
+  let justFounded = false; // 設立した直後だけ、気づけば部長になっていた場面を出す
+  let foundingChoice = null;
   let disposed = false, resources = null, busy = false, completed = false, root = null;
   let resolveFinished;
   const finished = new Promise(r => { resolveFinished = r; });
@@ -41,9 +45,13 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const options = { nightBusy: nightBusy() };
     const time = tableStatus(state, catalog, options);
     const name = id => displayName(characters, id);
+    // 設立の場面の1行。サイは「」、はじめは名前付き、地の文はそのまま
+    const clubLine = line => line.speaker ? el("p.trpg-club-line", { dataset: { speaker: line.speaker } }, [
+      el("small", { text: name(line.speaker) }), line.speaker === "hajime" && line.text.startsWith("（") ? line.text : "「" + line.text + "」",
+    ]) : el("p.trpg-club-line.trpg-club-narration", { text: line.text });
     root = el("section.trpg-root.trpg-campaign", { tabindex: "-1", dataset: { phase: "campaign" } });
     root.append(el("header.trpg-campaign-header", [
-      el("div", [el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
+      el("div", [!readOnly ? storeLogo("trpg_bar", { width: 130, height: 72 }) : null, el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
         el("h1", { text: readOnly ? "みんなと遊んだ、本の棚。" : completed ? "この夜の物語が、本棚に残った。" : daytime ? "昼の一卓、本棚の一冊。" : "今夜、誰と物語を囲む？" })]),
       el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${chapterDay(state)} · ${yen(state.money)}` : "まだ本棚は空です" }),
         button(closeLabel, "trpg-campaign-close", close)]),
@@ -89,13 +97,22 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       root.append(el("section.trpg-club-proposal", { dataset: { test: "trpg-club-proposal" } }, [
         el("span.trpg-kicker", { text: "六角サイからの提案" }),
         el("h2", { text: "ここで、部活を作ってみませんか？" }),
-        ...club.lines.map(line => el("p", { text: line.text })),
-        button("「" + catalog.club.name + "」を作る", "trpg-club-found", () => {
-          if (foundTrpgClub(getState(), catalog)) { save(); render("部活ができました。仲のいい相手に会って、声をかけてみよう。"); }
-        }, state.phase !== "daily"),
+        ...club.lines.map(clubLine),
+        ...[
+          ["店の仕事があると伝える", "trpg-club-choice-time", "proposal_time"],
+          ["知り合いを誘うのは苦手と伝える", "trpg-club-choice-people", "proposal_people"],
+        ].map(([label, test, choice]) => button(label, test, () => {
+          // どちらの断り文句も「手伝う」返事に言い換えられる。
+          if (foundTrpgClub(getState(), catalog)) { save(); foundingChoice = choice; justFounded = true; render("「" + catalog.club.name + "」の部長になりました（いつの間にか）。仲のいい相手と対面した時に、部活へ誘ってみよう。"); }
+        }, state.phase !== "daily")),
       ]));
       root.append(el("p", { text: "好感度MAXの友人も恋人も、興味があれば入部。勧誘に追加の時間はかかりません。本の購入も時間を使いません。" }));
       host.replaceChildren(root); root.focus({ preventScroll: true }); return;
+    }
+    if (justFounded && club.branches.founded) {
+      root.append(el("section.trpg-club-proposal.trpg-club-founded", { dataset: { test: "trpg-club-founded" } },
+        [...(club.branches[foundingChoice] || []), ...club.branches.founded].map(clubLine)));
+      justFounded = false;
     }
     const party = el("div.trpg-campaign-party", { "aria-label": "仲間の今夜の予定" });
     for (const person of catalog.participants.filter(p => state?.met?.[p.id])) {
@@ -143,6 +160,9 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         copy.append(el("div.trpg-campaign-memory", { dataset: { test: "trpg-memory-" + book.id } }, [
           el("strong", { text: memory.endingTitle || scenario.endings[memory.ending]?.title || memory.ending }),
           el("p", { text: `CH.${memory.chapter} · DAY ${chapterDay(memoryClock)} / ${memory.participants.map(name).join("・")}` }),
+          Number.isInteger(memory.stars) ? el("span.trpg-campaign-stars", { text: "★".repeat(memory.stars) + "☆".repeat(3 - memory.stars),
+            "aria-label": "卓の評価 星" + memory.stars + "つ", dataset: { test: "trpg-memory-stars" } }) : null,
+          memory.night ? el("small.trpg-campaign-night", { text: memory.night + "（盛り上がり " + memory.heat + "）" }) : null,
           el("small", { text: "この夜の結末を、みんなとの思い出に。" }),
         ]));
       } else if (!stocked && !owned) {
@@ -152,7 +172,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
           button("本棚に加える · " + yen(book.price), "trpg-buy-" + book.id, () => {
             if (buyTrpgBook(getState(), catalog, book.id)) { save(); render("新しいTRPGが、本棚に加わりました。"); }
             else render("本棚に加えられませんでした。所持金と入荷状況を確認してください。");
-          }, readOnly || state.money < book.price));
+          }, readOnly || spendableMoney(state) < book.price));
       } else {
         copy.append(el("p", { text: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason }),
           el("small", { text: scenario.duration + " · 夜の1枠 · 結末を迎えた本は一度きり" }),
@@ -160,7 +180,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       }
       card.append(copy); books.append(card);
     }
-    root.append(books, el("footer.trpg-campaign-footer", { text: "部員の空いている夜に招集。中断した本は、また遊べます。" }));
+    root.append(books, el("footer.trpg-campaign-footer", { text: "営業が終わるまで待ってから、空いている部員と集まる。中断した本は、また遊べます。" }));
     host.replaceChildren(root); root.focus({ preventScroll: true });
   }
 

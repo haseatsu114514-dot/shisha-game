@@ -1,0 +1,747 @@
+{
+  "kind": "code composition, not new generator output",
+  "source_manifest": "../prototype-retail-angel-mark-v3/manifest.json",
+  "canonical_sha256": "909a26df9e58dcf18fba26754a3227a6c63a2811d232bc6726096aebcb509e7c",
+  "items": [
+    {
+      "id": "mint",
+      "source": "../prototype-retail-angel-mark-v3/originals/mint-angel-aligned.png",
+      "source_sha256": "00f24d96beec54e32fd192a204501da2a234ff2247b34b6d640f9d60deec93be",
+      "output": "outputs/mint-wings-composite.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_changed_pixels": 0,
+      "off_allowed_mask_changed_rgba_pixels": 0,
+      "old_glyph_core_components": 2,
+      "old_mask_pixels": 23037,
+      "new_mask_pixels": 14634,
+      "allowed_union_pixels": 23301,
+      "allowed_canvas_fraction": 0.014817655273459856,
+      "changed_pixels": 22286,
+      "allowed_bbox": [
+        461,
+        345,
+        741,
+        462
+      ],
+      "brand_roi_bbox": [
+        440,
+        325,
+        760,
+        480
+      ],
+      "old_mask_dilation_px": 6,
+      "restored_old_ink_bright_pixels": 0,
+      "restoration_cubic_rgb_coefficients": [
+        [
+          23.89425172478959,
+          26.197446468011595,
+          27.249131991339752
+        ],
+        [
+          -13.685770522969648,
+          -14.042636682780586,
+          -14.152807384878543
+        ],
+        [
+          -6.945268577969067,
+          -6.734614426923283,
+          -7.263583874297273
+        ],
+        [
+          27.203012937354707,
+          28.26481357192025,
+          29.405652970053424
+        ],
+        [
+          11.903429310277868,
+          11.682467543254964,
+          12.052905870569642
+        ],
+        [
+          14.705500881801841,
+          15.325125297565306,
+          16.238761777783157
+        ],
+        [
+          -22.96617623739202,
+          -24.901063194491687,
+          -27.541680533869066
+        ],
+        [
+          0.3412504628145847,
+          0.8313255187113036,
+          2.1548341634665222
+        ],
+        [
+          -14.95451238778106,
+          -15.71634135026807,
+          -17.46244540260025
+        ],
+        [
+          -5.752224141015004,
+          -6.730640505836001,
+          -6.4159467892798645
+        ]
+      ],
+      "restoration_known_pixels": 23208,
+      "restoration_known_rgb_fit_rmse": 0.9469245475927088,
+      "front_unit_to_native_homography": [
+        [
+          571.077694235589,
+          0.0,
+          310.0
+        ],
+        [
+          -2.506265664160401,
+          790.0,
+          250.0
+        ],
+        [
+          -0.010025062656641603,
+          0.0,
+          1.0
+        ]
+      ],
+      "glyph_to_native_homography": [
+        [
+          0.23008506364122822,
+          0.0,
+          468.3375244140625
+        ],
+        [
+          -0.001009846146143725,
+          0.22280168533325195,
+          346.6464538574219
+        ],
+        [
+          -4.039261939101739e-06,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_quad_uv": [
+        [
+          0.2750000059604645,
+          0.12200000137090683
+        ],
+        [
+          0.7250000238418579,
+          0.12200000137090683
+        ],
+        [
+          0.7250000238418579,
+          0.24799999594688416
+        ],
+        [
+          0.2750000059604645,
+          0.24799999594688416
+        ]
+      ],
+      "target_quad_native": [
+        [
+          468.3375244140625,
+          346.6464538574219
+        ],
+        [
+          729.332275390625,
+          347.08563232421875
+        ],
+        [
+          729.332275390625,
+          447.3544006347656
+        ],
+        [
+          468.3375244140625,
+          446.46160888671875
+        ]
+      ],
+      "target_native_center": [
+        598.5390428211587,
+        396.8862720403023
+      ],
+      "actual_rectified_bbox": [
+        193,
+        123,
+        507,
+        248
+      ],
+      "actual_rectified_normalized": {
+        "width": 0.44857142857142857,
+        "height": 0.125,
+        "center_u": 0.5,
+        "center_v": 0.1855
+      },
+      "actual_result_rgb210_geometry": {
+        "bbox": [
+          194,
+          124,
+          507,
+          248
+        ],
+        "normalized": {
+          "width": 0.4471428571428571,
+          "height": 0.124,
+          "center_u": 0.5007142857142857,
+          "center_v": 0.186
+        },
+        "halo_bbox": [
+          286,
+          124,
+          415,
+          167
+        ],
+        "wings_bbox": [
+          194,
+          139,
+          507,
+          248
+        ],
+        "minimum_halo_wing_pixel_center_distance": 15.181396484375,
+        "gap_over_mark_width": 0.048502864167332266
+      },
+      "canonical_plane_geometry": {
+        "bbox": [
+          194,
+          123,
+          507,
+          248
+        ],
+        "normalized": {
+          "width": 0.4471428571428571,
+          "height": 0.125,
+          "center_u": 0.5007142857142857,
+          "center_v": 0.1855
+        },
+        "halo_bbox": [
+          285,
+          123,
+          416,
+          168
+        ],
+        "wings_bbox": [
+          194,
+          138,
+          507,
+          248
+        ],
+        "minimum_halo_wing_pixel_center_distance": 13.9844970703125,
+        "gap_over_mark_width": 0.04467890437799521
+      },
+      "original_allowed_region_max_rgb_chroma": 11,
+      "original_png_metadata_keys": [],
+      "color_profile_conversion": false,
+      "rectified_shape_iou_vs_same_canonical": 0.9952479239667835,
+      "target_print_top_edge_degrees": 0.09641208499670029,
+      "raw_nonzero_mask_uv_bounds": [
+        [
+          0.2744154057771664,
+          0.12213866407308345
+        ],
+        [
+          0.7244297500606647,
+          0.2483869845741813
+        ]
+      ],
+      "output_sha256": "d65bf690203e60c140cc85b9b9789e5573938b7b672e90502574c28e76b79d71"
+    },
+    {
+      "id": "double_apple",
+      "source": "../prototype-retail-angel-mark-v3/originals/double_apple-angel-positioned.png",
+      "source_sha256": "33147d875cc50d84e61bea2d2371e1a0eecaebffee8516a3de127bbc1e47d563",
+      "output": "outputs/double_apple-wings-composite.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_changed_pixels": 0,
+      "off_allowed_mask_changed_rgba_pixels": 0,
+      "old_glyph_core_components": 2,
+      "old_mask_pixels": 29182,
+      "new_mask_pixels": 18777,
+      "allowed_union_pixels": 29974,
+      "allowed_canvas_fraction": 0.019061173304436966,
+      "changed_pixels": 28414,
+      "allowed_bbox": [
+        419,
+        285,
+        737,
+        420
+      ],
+      "brand_roi_bbox": [
+        400,
+        270,
+        770,
+        430
+      ],
+      "old_mask_dilation_px": 6,
+      "restored_old_ink_bright_pixels": 0,
+      "restoration_cubic_rgb_coefficients": [
+        [
+          22.522020865578174,
+          22.666081090348356,
+          22.48712239992889
+        ],
+        [
+          -10.615395078461392,
+          -10.1860242347922,
+          -9.925712851686287
+        ],
+        [
+          -7.076444162456618,
+          -6.799076395504271,
+          -6.839904871572494
+        ],
+        [
+          23.870732298551495,
+          23.827873656089555,
+          24.18157909749868
+        ],
+        [
+          3.580268074127441,
+          3.832155937709506,
+          3.646193310691779
+        ],
+        [
+          9.637595432985057,
+          9.409538938431151,
+          9.607580826500776
+        ],
+        [
+          -13.319964217560619,
+          -13.568566533825583,
+          -15.531912240081152
+        ],
+        [
+          1.9624209040169178,
+          1.2775474819330894,
+          1.2431276078937055
+        ],
+        [
+          -8.805693197670678,
+          -8.088231467105524,
+          -8.774705765264086
+        ],
+        [
+          11.516149434613306,
+          10.55401139153159,
+          10.918970428486585
+        ]
+      ],
+      "restoration_known_pixels": 26001,
+      "restoration_known_rgb_fit_rmse": 0.928585324097652,
+      "front_unit_to_native_homography": [
+        [
+          650.0,
+          0.0,
+          265.0
+        ],
+        [
+          20.0,
+          915.0,
+          175.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "glyph_to_native_homography": [
+        [
+          0.2611607142857143,
+          0.0,
+          443.75
+        ],
+        [
+          0.008035714285714285,
+          0.2573437009538923,
+          292.1300048828125
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_quad_uv": [
+        [
+          0.2750000059604645,
+          0.12200000137090683
+        ],
+        [
+          0.7250000238418579,
+          0.12200000137090683
+        ],
+        [
+          0.7250000238418579,
+          0.24799999594688416
+        ],
+        [
+          0.2750000059604645,
+          0.24799999594688416
+        ]
+      ],
+      "target_quad_native": [
+        [
+          443.75,
+          292.1300048828125
+        ],
+        [
+          736.25,
+          301.1300048828125
+        ],
+        [
+          736.25,
+          416.41998291015625
+        ],
+        [
+          443.75,
+          407.41998291015625
+        ]
+      ],
+      "target_native_center": [
+        590.0,
+        354.275
+      ],
+      "actual_rectified_bbox": [
+        194,
+        123,
+        507,
+        248
+      ],
+      "actual_rectified_normalized": {
+        "width": 0.4471428571428571,
+        "height": 0.125,
+        "center_u": 0.5007142857142857,
+        "center_v": 0.1855
+      },
+      "actual_result_rgb210_geometry": {
+        "bbox": [
+          194,
+          123,
+          507,
+          248
+        ],
+        "normalized": {
+          "width": 0.4471428571428571,
+          "height": 0.125,
+          "center_u": 0.5007142857142857,
+          "center_v": 0.1855
+        },
+        "halo_bbox": [
+          286,
+          123,
+          415,
+          168
+        ],
+        "wings_bbox": [
+          194,
+          138,
+          507,
+          248
+        ],
+        "minimum_halo_wing_pixel_center_distance": 15.181396484375,
+        "gap_over_mark_width": 0.048502864167332266
+      },
+      "canonical_plane_geometry": {
+        "bbox": [
+          194,
+          123,
+          507,
+          248
+        ],
+        "normalized": {
+          "width": 0.4471428571428571,
+          "height": 0.125,
+          "center_u": 0.5007142857142857,
+          "center_v": 0.1855
+        },
+        "halo_bbox": [
+          285,
+          123,
+          416,
+          168
+        ],
+        "wings_bbox": [
+          194,
+          138,
+          507,
+          248
+        ],
+        "minimum_halo_wing_pixel_center_distance": 13.9844970703125,
+        "gap_over_mark_width": 0.04467890437799521
+      },
+      "original_allowed_region_max_rgb_chroma": 12,
+      "original_png_metadata_keys": [],
+      "color_profile_conversion": false,
+      "rectified_shape_iou_vs_same_canonical": 0.9953928108652877,
+      "target_print_top_edge_degrees": 1.7623909711837769,
+      "raw_nonzero_mask_uv_bounds": [
+        [
+          0.27538461538461534,
+          0.12196721311475409
+        ],
+        [
+          0.7246153846153846,
+          0.248255569567045
+        ]
+      ],
+      "output_sha256": "5f663c8d24ffdf00d462aa710270564e1c9afb5f7730f22e528ce9d9eae9e674"
+    },
+    {
+      "id": "grape",
+      "source": "../prototype-retail-angel-mark-v3/originals/grape-angel-prototype.png",
+      "source_sha256": "17f4703c6795e02481f42b2c0734d8c7910a6a33dc51665d499f3beb5413c9d8",
+      "output": "outputs/grape-wings-composite.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_changed_pixels": 0,
+      "off_allowed_mask_changed_rgba_pixels": 0,
+      "old_glyph_core_components": 2,
+      "old_mask_pixels": 25876,
+      "new_mask_pixels": 18123,
+      "allowed_union_pixels": 26024,
+      "allowed_canvas_fraction": 0.01654927517430665,
+      "changed_pixels": 24341,
+      "allowed_bbox": [
+        452,
+        307,
+        750,
+        432
+      ],
+      "brand_roi_bbox": [
+        430,
+        285,
+        775,
+        444
+      ],
+      "old_mask_dilation_px": 6,
+      "restored_old_ink_bright_pixels": 0,
+      "restoration_cubic_rgb_coefficients": [
+        [
+          24.774505482559963,
+          25.577283315281175,
+          25.601738344721618
+        ],
+        [
+          -15.373706167874435,
+          -14.924982110883477,
+          -14.636316738792909
+        ],
+        [
+          -9.531931960690036,
+          -9.895942183062894,
+          -10.159775748303343
+        ],
+        [
+          25.353736849635187,
+          26.001459987271833,
+          26.931915550833608
+        ],
+        [
+          7.088777157881921,
+          7.019703712443062,
+          7.239922869640254
+        ],
+        [
+          13.411352952594523,
+          14.164308874961486,
+          14.761037184047709
+        ],
+        [
+          -11.289360885709167,
+          -11.631567044668524,
+          -13.495454551092426
+        ],
+        [
+          11.269899652198596,
+          12.567876985744867,
+          13.455721520236866
+        ],
+        [
+          -2.0950930787742967,
+          -0.764886588388935,
+          -0.6924613571198832
+        ],
+        [
+          6.6133164520003,
+          6.945530058004256,
+          6.8394196025177365
+        ]
+      ],
+      "restoration_known_pixels": 25341,
+      "restoration_known_rgb_fit_rmse": 1.0115162081452598,
+      "front_unit_to_native_homography": [
+        [
+          628.0,
+          0.0,
+          279.0
+        ],
+        [
+          14.307692307692308,
+          907.0,
+          195.0
+        ],
+        [
+          -0.0032967032967032967,
+          0.0,
+          1.0
+        ]
+      ],
+      "glyph_to_native_homography": [
+        [
+          0.2525505233595356,
+          0.0,
+          452.1098937988281
+        ],
+        [
+          0.00575392133595688,
+          0.2553252492632185,
+          309.8695373535156
+        ],
+        [
+          -1.3255740370657236e-06,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_quad_uv": [
+        [
+          0.2750000059604645,
+          0.12200000137090683
+        ],
+        [
+          0.7250000238418579,
+          0.12200000137090683
+        ],
+        [
+          0.7250000238418579,
+          0.24799999594688416
+        ],
+        [
+          0.2750000059604645,
+          0.24799999594688416
+        ]
+      ],
+      "target_quad_native": [
+        [
+          452.1098937988281,
+          309.8695373535156
+        ],
+        [
+          736.0592651367188,
+          316.78424072265625
+        ],
+        [
+          736.0592651367188,
+          431.34002685546875
+        ],
+        [
+          452.1098937988281,
+          424.2552490234375
+        ]
+      ],
+      "target_native_center": [
+        593.979086406164,
+        370.5596587782058
+      ],
+      "actual_rectified_bbox": [
+        193,
+        123,
+        507,
+        248
+      ],
+      "actual_rectified_normalized": {
+        "width": 0.44857142857142857,
+        "height": 0.125,
+        "center_u": 0.5,
+        "center_v": 0.1855
+      },
+      "actual_result_rgb210_geometry": {
+        "bbox": [
+          194,
+          123,
+          507,
+          248
+        ],
+        "normalized": {
+          "width": 0.4471428571428571,
+          "height": 0.125,
+          "center_u": 0.5007142857142857,
+          "center_v": 0.1855
+        },
+        "halo_bbox": [
+          286,
+          123,
+          415,
+          168
+        ],
+        "wings_bbox": [
+          194,
+          139,
+          507,
+          248
+        ],
+        "minimum_halo_wing_pixel_center_distance": 15.3782958984375,
+        "gap_over_mark_width": 0.04913193577775559
+      },
+      "canonical_plane_geometry": {
+        "bbox": [
+          194,
+          123,
+          507,
+          248
+        ],
+        "normalized": {
+          "width": 0.4471428571428571,
+          "height": 0.125,
+          "center_u": 0.5007142857142857,
+          "center_v": 0.1855
+        },
+        "halo_bbox": [
+          285,
+          123,
+          416,
+          168
+        ],
+        "wings_bbox": [
+          194,
+          138,
+          507,
+          248
+        ],
+        "minimum_halo_wing_pixel_center_distance": 13.9844970703125,
+        "gap_over_mark_width": 0.04467890437799521
+      },
+      "original_allowed_region_max_rgb_chroma": 8,
+      "original_png_metadata_keys": [],
+      "color_profile_conversion": false,
+      "rectified_shape_iou_vs_same_canonical": 0.9946246880399309,
+      "target_print_top_edge_degrees": 1.3949846029281616,
+      "raw_nonzero_mask_uv_bounds": [
+        [
+          0.27482560453602767,
+          0.12161565768013052
+        ],
+        [
+          0.7249062208029452,
+          0.24802850745930063
+        ]
+      ],
+      "output_sha256": "33a1e94de92a0ba4070865bab1f296aa484706c8b532d63eae78dcc8b998e4e8"
+    }
+  ],
+  "caveats": "Front corners manually estimated; metric center/tilt depends on that plane. Hidden cardboard is locally inferred only, not exact historical recovery. Native source PNGs/entire result alpha/off-mask RGBA unchanged.",
+  "dependencies": {
+    "opencv": "4.13.0",
+    "numpy": "2.4.2"
+  }
+}

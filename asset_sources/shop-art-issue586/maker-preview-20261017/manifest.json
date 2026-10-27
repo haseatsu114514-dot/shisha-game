@@ -1,0 +1,284 @@
+{
+  "scope": "8-product comparison source: Dobaj6 and アフサール2. Representatives approved; remaining6 generated following user approval, pending full-set visual review. No runtime adoption.",
+  "authorization": "User: そのチャット見当たらないからここで作るってこと　許可する",
+  "ownership": "User expressly authorized making new preview art in this chat after prior chat could not be found. This is not evidence of prior worker stopping, a successful formal reservation transfer, or release. Prior claim and source branch remain unchanged.",
+  "images": [
+    {
+      "id": "vanilla",
+      "maker": "Dobaj",
+      "filename": "dobaj-vanilla.png",
+      "native_source": "/workspace/generated_images/exec-a7e18867-0789-48bc-85d0-2c7d63dd40bf.png",
+      "sha256": "4195ec16307dca6e24cfed823748bb3a3b7d24b0cb2d460ddf3dce081022436b",
+      "bytes": 1417722
+    },
+    {
+      "id": "rose",
+      "maker": "アフサール",
+      "filename": "afsaal-rose.png",
+      "native_source": "/workspace/generated_images/exec-64693e1f-2eea-4d8a-b526-07f70088adb6.png",
+      "sha256": "2d5b754959d5cfeda65de599d23d6afd10edd289eb6f32a35a607c4c40712014",
+      "bytes": 1289573
+    },
+    {
+      "id": "coconut",
+      "maker": "Dobaj",
+      "filename": "dobaj-coconut.png",
+      "native_source": "/workspace/generated_images/exec-2820697a-396a-4a27-b28b-76536be43c0b.png",
+      "sha256": "5ca18ec7f43f18084edc22b0bd33b2464c019b2b5fca149a6ee35cef21359c76",
+      "bytes": 1365039,
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        0,
+        93,
+        1162,
+        1216
+      ],
+      "reference": "dobaj-vanilla.png",
+      "git_blob_sha": "6803fc50906ec5034bbb133edeb9701203acb4ed"
+    },
+    {
+      "id": "mango",
+      "maker": "Dobaj",
+      "filename": "dobaj-mango.png",
+      "native_source": "/workspace/generated_images/exec-70e5ba29-367f-4737-a4ef-87f147ceffae.png",
+      "sha256": "ded8b1d962e33806d4691bc5324ec8f0b08c5cd572bac4260277340b2ea24c70",
+      "bytes": 1301182,
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        0,
+        53,
+        1236,
+        1226
+      ],
+      "reference": "dobaj-vanilla.png",
+      "git_blob_sha": "d42bfc6a7fa505b9e2e87023cd66d1fdee4fbcf6"
+    },
+    {
+      "id": "peach",
+      "maker": "Dobaj",
+      "filename": "dobaj-peach.png",
+      "native_source": "/workspace/generated_images/exec-b6eb7523-4c48-4ada-a801-62953fabe51b.png",
+      "sha256": "005d21d32e5e32105f4a8a6e6c18ec0e1b2f76792f503d273c6b35753a990391",
+      "bytes": 1323546,
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        0,
+        33,
+        1236,
+        1254
+      ],
+      "reference": "dobaj-vanilla.png",
+      "git_blob_sha": "4b7748b53d0ba495258392db527a2c7bc04c8f18"
+    },
+    {
+      "id": "melon",
+      "maker": "Dobaj",
+      "filename": "dobaj-melon.png",
+      "native_source": "/workspace/generated_images/exec-85e07fdb-425a-4275-8c14-d892f753c96d.png",
+      "sha256": "ee6799daf2d3a20ecb5025b985cd99812b0df30e9bce44f6c6e341d725643d63",
+      "bytes": 1359186,
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        0,
+        109,
+        1142,
+        1254
+      ],
+      "reference": "dobaj-vanilla.png",
+      "git_blob_sha": "fa7878ba36bf196c214ed54880bfd26a0efa5684"
+    },
+    {
+      "id": "banana",
+      "maker": "Dobaj",
+      "filename": "dobaj-banana.png",
+      "native_source": "/workspace/generated_images/exec-ad9dc9e3-44d8-4863-8dc1-867a6a70e494.png",
+      "sha256": "4a8f29d77c767d0cfe3134d0e8005c9c2c74d92c9624b4efa0bbdffb034da167",
+      "bytes": 1308934,
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        0,
+        107,
+        1228,
+        1158
+      ],
+      "reference": "dobaj-vanilla.png",
+      "git_blob_sha": "d2868c7e084325bd7cdfd9459150ca0f063a4280"
+    },
+    {
+      "id": "lychee",
+      "maker": "アフサール",
+      "filename": "afsaal-lychee.png",
+      "native_source": "/workspace/generated_images/exec-7bceefb8-76d6-4853-a02c-e612a4205436.png",
+      "sha256": "9449e7548aa1194d9b62e78e6a1b227a2b5e7c11c258f9d2556e523ac3ca92f0",
+      "bytes": 1222307,
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "alpha_bbox": [
+        0,
+        0,
+        1240,
+        1254
+      ],
+      "reference": "afsaal-rose.png",
+      "git_blob_sha": "6e883a8cf912bc0c5d29d8efc358ac9cf228e6f4"
+    }
+  ],
+  "format": {
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "transparent_background": true
+  },
+  "provenance": {
+    "tool": "image_gen.imagegen",
+    "calls": 8,
+    "referenced_images": [
+      {
+        "for": [
+          "coconut",
+          "mango",
+          "peach",
+          "melon",
+          "banana"
+        ],
+        "reference": "dobaj-vanilla.png",
+        "sha256": "4195ec16307dca6e24cfed823748bb3a3b7d24b0cb2d460ddf3dce081022436b"
+      },
+      {
+        "for": [
+          "lychee"
+        ],
+        "reference": "afsaal-rose.png",
+        "sha256": "2d5b754959d5cfeda65de599d23d6afd10edd289eb6f32a35a607c4c40712014"
+      }
+    ],
+    "reused_art": "Approved vanilla and rose retained byte-identically and used as visual references for6 new variants.",
+    "source_editing": "6 imagegen edits using approved representative references; native output PNGs unchanged; no code pixel editing"
+  },
+  "prompts": [
+    {
+      "id": "dobaj-vanilla",
+      "prompt": "Create ONE new original finished game inventory product illustration, square PNG approximately 1024x1024, true transparent background. A convincing small retail folded PAPERBOARD CARTON for the fictional manufacturer DOBAJ, flavor VANILLA. Single closed carton only, centered with at least 12 percent empty transparent margin on every edge. Three-quarter product view, showing a broad front face, a narrow RIGHT side and a modest visible top. Physical proportions: front width 70, height 95, depth 19; a shallow rectangular carton, definitely folded printed paperboard rather than a tin, casket, pouch or gift box. Subtle folded edges, a thin flush top flap seam, fine matte paper grain, coherent perspective, soft warm light from upper left, realistic edge thickness and gentle contact shading. No separate cap or lid and no protrusion. Art style: polished softly painterly hand-painted game item, botanical-food illustration printed on actual box faces, refined detailed brushwork with clear readable silhouette at thumbnail size. Manufacturer identity: predominantly clean warm WHITE matte carton with generous blank paper, restrained charcoal typography and a dark original paired-arch/droplet emblem high on the front. Print the small word DOBAJ and below it VANILLA in crisp simple lettering. Use a narrow pale vanilla-yellow lower stripe and a tiny charcoal side identification panel. On the lower front PRINT two dark-brown vanilla pods and ONE creamy ivory vanilla flower with a warm yellow center. The vanilla artwork must visibly be flat printed illustration that follows the face, not physical objects attached to or in front of the box. NO green leaves, NO grass, NO vines, NO foliage, NO all-over plant pattern, NO ornamental leaf corners or botanical frame. No loose ingredient outside the carton. No wings, halo, crown, real-world brand logo, advertising claims, price, warning blocks or extra words. No hookah, HMD, bowl, charcoal, metal, knobs, raised top, chimney, top handle or equipment. Avoid festive luxury gift packaging. The result should look like a plausible modest commercially printed individual flavor carton with its own understated manufacturer identity. Output just this single isolated original carton, no comparison panel, no mockup canvas, no checkerboard pattern, no labels outside the product."
+    },
+    {
+      "id": "afsaal-rose",
+      "prompt": "Create ONE new original finished game inventory product illustration, square PNG approximately 1024x1024, true transparent background. A convincing small retail folded PAPERBOARD CARTON for a fictional manufacturer named アフサール, flavor ROSE. Single closed carton only, centered with at least 12 percent empty transparent margin on every edge. Three-quarter product view showing broad front, narrow RIGHT side and modest visible top; soft warm light from upper left. Physical proportions front width 62, height 105, depth 27: a slender upright rectangular paper carton. Fine matte printed paper grain, subtle folded edges, thin flush top flap seam, coherent perspective, realistic paper thickness and natural gentle shading. No separate cap or lid, no raised top and no protrusion. Art style: polished softly painterly hand-painted game item with a detailed rose illustration printed onto the flat paper front, refined brushwork, readable silhouette at thumbnail size. It should have a distinct manufacturer identity: rich dark BURGUNDY / PLUM paper carton over all faces, elegant restrained IVORY lettering, an original ivory abstract sunrise enclosed inside a simple arch as a small flat printed emblem near the upper front, and a broad muted rose-pink lower flavor band. Print アフサール carefully as the only manufacturer name below the emblem, and ROSE in simple small lettering in the lower band. Do not use DOBAJ or another brand name. Central front print: ONE richly layered dusky pink rose blossom, beautifully detailed, only the flower head, with a few restrained petal shapes printed below; absolutely no green leaves, stems, grass, vines, foliage or ornamental plant frame. Rose artwork must visibly be flat printed artwork following the carton face, not a physical flower attached to the box or beside it. The dark plum vertical carton, ivory arch motif and rose-pink band should feel visibly different in manufacturer personality and layout from a white minimalist shallow carton, while preserving the same soft painterly game-item visual quality. No wings, halo, crown, real-world logos, advertising claims, price, extra words, warning blocks. No loose flower or ingredient outside the package. No hookah, HMD, bowl, charcoal, metal, knobs, top handle, chimney or equipment. This is a plausible modest commercially printed flavor carton, not a decorative gift box, tin or casket. Output just the single isolated original paper carton, no comparison panel, no mockup canvas, no checkerboard pattern, no labels outside the product."
+    },
+    {
+      "id": "coconut",
+      "prompt": "Edit the attached approved DOBAJ VANILLA game-item carton to make ONE new matching flavor product. Retain the same recognizable white matte shallow folded PAPERBOARD box, proportions, size in the square image, camera angle with front/right/top, soft upper-left lighting, paper grain, closed flush top-flap folds, charcoal paired-arch/droplet emblem, DOBAJ wordmark, generous white space and typographic layout. Keep it a real plausible small carton, not a tin or gift casket. The ONLY intentional design changes are the flavor word on BOTH front and right-side label, the printed ingredient illustration on the lower front, and the flavor-color bottom stripe. Completely REMOVE all vanilla pods and the vanilla flower from every panel. New ingredient artwork must be flat printed on the paper face in the SAME softly painterly detailed illustration style, not loose objects in front of the box. NO green leaves, grass, vines, stems, foliage, ornamental plant frame or shared botanical corners. No unrelated fruit, no wings, halo, crown, real-world logo, prices, promotional claims or extra words. No HMD, charcoal, bowl, hookah, hose, metal lid, top knob, protrusion, chimney or handle. Preserve a plain closed top and the dark right-side brand panel. Single carton centered; true transparent background with at least 10 percent margin on all edges, roughly same square resolution as the reference, no checkerboard printed into image, no external labels or comparison panels. New flavor word COCONUT in place of VANILLA, including the right-side label. Print one rough brown coconut half with a clearly white flesh rim and one modest coconut wedge; use a subtle warm taupe/sand bottom stripe. No palm fronds, palm trees, leaves or green background, and no vanilla flower.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-a7e18867-0789-48bc-85d0-2c7d63dd40bf.png"
+      ],
+      "transparent_background": true
+    },
+    {
+      "id": "mango",
+      "prompt": "Edit the attached approved DOBAJ VANILLA game-item carton to make ONE new matching flavor product. Retain the same recognizable white matte shallow folded PAPERBOARD box, proportions, size in the square image, camera angle with front/right/top, soft upper-left lighting, paper grain, closed flush top-flap folds, charcoal paired-arch/droplet emblem, DOBAJ wordmark, generous white space and typographic layout. Keep it a real plausible small carton, not a tin or gift casket. The ONLY intentional design changes are the flavor word on BOTH front and right-side label, the printed ingredient illustration on the lower front, and the flavor-color bottom stripe. Completely REMOVE all vanilla pods and the vanilla flower from every panel. New ingredient artwork must be flat printed on the paper face in the SAME softly painterly detailed illustration style, not loose objects in front of the box. NO green leaves, grass, vines, stems, foliage, ornamental plant frame or shared botanical corners. No unrelated fruit, no wings, halo, crown, real-world logo, prices, promotional claims or extra words. No HMD, charcoal, bowl, hookah, hose, metal lid, top knob, protrusion, chimney or handle. Preserve a plain closed top and the dark right-side brand panel. Single carton centered; true transparent background with at least 10 percent margin on all edges, roughly same square resolution as the reference, no checkerboard printed into image, no external labels or comparison panels. New flavor word MANGO in place of VANILLA, including the right-side label. Print one recognizable mango with smooth red-gold skin and a cut mango cheek with rich golden-orange flesh, optionally clean mango cubes cut in the cheek. Use a muted ripe mango-orange bottom stripe. Absolutely NO orange fruit, lemon, citrus slice, segmented citrus flesh or vanilla flower.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-a7e18867-0789-48bc-85d0-2c7d63dd40bf.png"
+      ],
+      "transparent_background": true
+    },
+    {
+      "id": "peach",
+      "prompt": "Edit the attached approved DOBAJ VANILLA game-item carton to make ONE new matching flavor product. Retain the same recognizable white matte shallow folded PAPERBOARD box, proportions, size in the square image, camera angle with front/right/top, soft upper-left lighting, paper grain, closed flush top-flap folds, charcoal paired-arch/droplet emblem, DOBAJ wordmark, generous white space and typographic layout. Keep it a real plausible small carton, not a tin or gift casket. The ONLY intentional design changes are the flavor word on BOTH front and right-side label, the printed ingredient illustration on the lower front, and the flavor-color bottom stripe. Completely REMOVE all vanilla pods and the vanilla flower from every panel. New ingredient artwork must be flat printed on the paper face in the SAME softly painterly detailed illustration style, not loose objects in front of the box. NO green leaves, grass, vines, stems, foliage, ornamental plant frame or shared botanical corners. No unrelated fruit, no wings, halo, crown, real-world logo, prices, promotional claims or extra words. No HMD, charcoal, bowl, hookah, hose, metal lid, top knob, protrusion, chimney or handle. Preserve a plain closed top and the dark right-side brand panel. Single carton centered; true transparent background with at least 10 percent margin on all edges, roughly same square resolution as the reference, no checkerboard printed into image, no external labels or comparison panels. New flavor word PEACH in place of VANILLA, including the right-side label. Print one soft pink-gold whole peach with its natural central crease and a peach half showing a single brown stone and pale yellow-pink flesh. Use a gentle peach-pink bottom stripe. No leaves, no orange or apple, no vanilla flower. Keep all illustrated fruit within the flat printed front panel.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-a7e18867-0789-48bc-85d0-2c7d63dd40bf.png"
+      ],
+      "transparent_background": true
+    },
+    {
+      "id": "melon",
+      "prompt": "Edit the attached approved DOBAJ VANILLA game-item carton to make ONE new matching flavor product. Retain the same recognizable white matte shallow folded PAPERBOARD box, proportions, size in the square image, camera angle with front/right/top, soft upper-left lighting, paper grain, closed flush top-flap folds, charcoal paired-arch/droplet emblem, DOBAJ wordmark, generous white space and typographic layout. Keep it a real plausible small carton, not a tin or gift casket. The ONLY intentional design changes are the flavor word on BOTH front and right-side label, the printed ingredient illustration on the lower front, and the flavor-color bottom stripe. Completely REMOVE all vanilla pods and the vanilla flower from every panel. New ingredient artwork must be flat printed on the paper face in the SAME softly painterly detailed illustration style, not loose objects in front of the box. NO green leaves, grass, vines, stems, foliage, ornamental plant frame or shared botanical corners. No unrelated fruit, no wings, halo, crown, real-world logo, prices, promotional claims or extra words. No HMD, charcoal, bowl, hookah, hose, metal lid, top knob, protrusion, chimney or handle. Preserve a plain closed top and the dark right-side brand panel. Single carton centered; true transparent background with at least 10 percent margin on all edges, roughly same square resolution as the reference, no checkerboard printed into image, no external labels or comparison panels. New flavor word MELON in place of VANILLA, including the right-side label. Print one compact round netted muskmelon with clearly visible fine tan net rind and a cut wedge showing PALE GREEN flesh and a modest central seed cavity. Use a soft pale sage-green bottom stripe. No watermelon, dark striped rind or red flesh, no citrus, no leaves, no vanilla flower. The green is on the melon fruit and lower stripe only, not decorative foliage.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-a7e18867-0789-48bc-85d0-2c7d63dd40bf.png"
+      ],
+      "transparent_background": true
+    },
+    {
+      "id": "banana",
+      "prompt": "Edit the attached approved DOBAJ VANILLA game-item carton to make ONE new matching flavor product. Retain the same recognizable white matte shallow folded PAPERBOARD box, proportions, size in the square image, camera angle with front/right/top, soft upper-left lighting, paper grain, closed flush top-flap folds, charcoal paired-arch/droplet emblem, DOBAJ wordmark, generous white space and typographic layout. Keep it a real plausible small carton, not a tin or gift casket. The ONLY intentional design changes are the flavor word on BOTH front and right-side label, the printed ingredient illustration on the lower front, and the flavor-color bottom stripe. Completely REMOVE all vanilla pods and the vanilla flower from every panel. New ingredient artwork must be flat printed on the paper face in the SAME softly painterly detailed illustration style, not loose objects in front of the box. NO green leaves, grass, vines, stems, foliage, ornamental plant frame or shared botanical corners. No unrelated fruit, no wings, halo, crown, real-world logo, prices, promotional claims or extra words. No HMD, charcoal, bowl, hookah, hose, metal lid, top knob, protrusion, chimney or handle. Preserve a plain closed top and the dark right-side brand panel. Single carton centered; true transparent background with at least 10 percent margin on all edges, roughly same square resolution as the reference, no checkerboard printed into image, no external labels or comparison panels. New flavor word BANANA in place of VANILLA, including the right-side label. Print a small gently curved bunch of two or three ripe yellow bananas and one partially peeled banana showing creamy ivory flesh, visually restrained and grounded as printed art on the lower front. Use a warm muted golden-yellow bottom stripe. No banana leaves, palm leaves, grass, green pedestal or vanilla flower.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-a7e18867-0789-48bc-85d0-2c7d63dd40bf.png"
+      ],
+      "transparent_background": true
+    },
+    {
+      "id": "lychee",
+      "prompt": "Edit the attached approved アフサール ROSE game-item carton into ONE matching LYCHEE product. Preserve the same slender upright folded PAPERBOARD carton, burgundy/plum matte printed paper on all faces, proportions, front/right/top camera, lighting, fine paper grain, thin flush closed top-flap seams, ivory sunrise-in-arch emblem on front and top, and exact manufacturer lettering アフサール. Retain its visibly different manufacturer identity from white DOBAJ cartons. Replace ROSE with LYCHEE on the lower flavor band. Remove the entire rose blossom and ALL rose petals from the front. Instead PRINT a painterly realistic still life of two or three small lychees: rough reddish-pink lychee shells, one peeled lychee with translucent ivory white flesh, and one split lychee with a small glossy brown seed visible. All fruit is FLAT printed artwork on the box front, within its plane, in the reference's detailed softly painterly game illustration style. Make the lower band a gentle dusty lychee-pink. No physical fruit outside the box. NO flower, rose petal, green leaf, stem, grass, vine, foliage or decorative plant frame. No vanilla, mango, citrus, wings, halo, crown, real-world logos, prices, promotional claims, or extra words. No HMD, charcoal, bowl, hookah, hose, metal, raised top, knob, protrusion, chimney or handle. One closed paper carton centered, true transparent background with at least10 percent empty margin on all sides, same square resolution and visual scale as the reference, no checkerboard pattern, no comparison panels or labels outside product.",
+      "referenced_image_paths": [
+        "/workspace/generated_images/exec-64693e1f-2eea-4d8a-b526-07f70088adb6.png"
+      ],
+      "transparent_background": true
+    }
+  ],
+  "visual_review": "8 native outputs inspected: six white DOBAJ cartons and two burgundy アフサール cartons; no decorative grass/leaf/vine, HMD or structural top protrusion; flavor words and subjects checked; mango without citrus and lychee without rose carry-over",
+  "approval": "Representatives approved for direction; all8 comparison ready; new6 final adoption/runtime integration awaiting visual review.",
+  "network": {
+    "original8_png_bytes": 10587489,
+    "new6_png_bytes": 7880194,
+    "new6_base64_payload_bytes": 10506932,
+    "note": "Cached representative references reused. Native2 unchanged and not reuploaded. No full clone or unrelated image/video checkout. Exact total service/reference/API network traffic not metered; no external login, paid API or account switch."
+  },
+  "preservation": {
+    "base_commit": "cf71f73c27a4fe026240125b9523b6d42fa48145",
+    "branch": "codex/586-maker-preview-20261017",
+    "directory": "asset_sources/shop-art-issue586/maker-preview-20261017",
+    "native_pngs": "exact generated bytes; originals in /workspace/generated_images retained",
+    "previous_head": "e0fd8bc415f139fa0a01300738ad438c85d7903f"
+  },
+  "approvals": [
+    {
+      "stage": "representatives",
+      "user_message": "いい感じだから続けて",
+      "effect": "Approve representative visual direction and authorize generation of remaining six."
+    }
+  ],
+  "qa": {
+    "decode": "8/8 PNG fully decoded; RGBA1254x1254, alpha0..255; SHA recorded",
+    "representative_preservation": "2/2 exact original SHA256 preserved; no regeneration or upload of representative source blobs",
+    "visual": "8 native outputs inspected: six white DOBAJ cartons and two burgundy アフサール cartons; no decorative grass/leaf/vine, HMD or structural top protrusion; flavor words and subjects checked; mango without citrus and lychee without rose carry-over",
+    "limits": "Low-alpha native output noise reaches image edges in several files. At alpha>=16 object bounds are interior. No cleanup/cropping/compositing performed. Margin is not uniformly10 percent, logo placement is visually consistent rather than pixel-identical; small-size/runtime/HTTP QA not performed.",
+    "runtime": "unchanged; game tests not run for source-only art"
+  }
+}

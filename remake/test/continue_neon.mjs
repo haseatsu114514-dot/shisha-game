@@ -1,6 +1,7 @@
 // 参照UI専用: 1080p/720p/スマホ、顔の保護、実時計HUD、軽減・停止・キーボード。
 // CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/continue_neon.mjs
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
@@ -10,7 +11,7 @@ const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
 const errors = [], missing = [];
 page.on("pageerror", e => errors.push(e.message));
 page.on("response", r => { if (r.status() >= 400 && /\.(webp|png|woff2|css|js)/.test(r.url())) missing.push(r.url()); });
-await page.route("https://bgmer.net/**", r => r.abort());
+await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", r => r.abort());
 async function mount(options = {}) {
   await page.evaluate(async options => {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
@@ -44,13 +45,20 @@ try {
     assert.equal(await page.locator(".gameover").getAttribute("data-layout"), "neon");
     assert.equal(await page.locator(".gameover").getAttribute("data-background"), "stage");
     assert.equal(await page.locator(".go-title").getAttribute("aria-label"), "コンティニューする？");
-    assert.equal(await page.locator(".go-retry").textContent(), "大会に戻る");
+    assert.equal(await page.locator(".go-retry").textContent(), "最初から再挑戦");
     assert.equal(await page.locator(".go-quit").textContent(), "諦める");
-    const safe = await page.evaluate(() => {
+    const safe = await page.evaluate(async () => {
       const root = document.querySelector(".gameover"), stage = document.querySelector("#stage").getBoundingClientRect();
-      const k = stage.width / 1280, portrait = root.querySelector(".go-left").getBoundingClientRect();
-      const face = { x: (portrait.left - stage.left) / k + portrait.width / k / 2 - 72,
-        y: (portrait.top - stage.top) / k + 256 * .45, w: 144, h: 256 * .5 };
+      const k = stage.width / 1280, image = root.querySelector(".go-sumi-img");
+      for (const animation of image.getAnimations()) animation.finish();
+      const { DB, portraitInfo } = await import("./js/core/data.js");
+      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion);
+      const framing = DB.manifest.continuePortraits[info.folder][info.face], r = image.getBoundingClientRect();
+      const size = r.height / k * framing.size;
+      const cx = (r.left - stage.left + r.width * framing.cx) / k;
+      const cy = (r.top - stage.top + r.height * (framing.top + framing.size / 2)) / k;
+      // 採用Cでは帽子/髪と見出しの重なりを許容。実測顔bboxの目〜口を保護する。
+      const face = { x: cx - size * .34, y: cy - size * .1, w: size * .68, h: size * .55 };
       const title = root.querySelector(".go-title"), art = root.querySelector(".go-neon-title");
       // 実際の透過筆跡をステージ座標へ描き、中心の顔にタイトルが重ならないことを検査。
       const canvas = document.createElement("canvas"); canvas.width = 1280; canvas.height = 720;
@@ -62,14 +70,62 @@ try {
       ctx.drawImage(art, -title.offsetWidth / 2, -title.offsetHeight / 2, title.offsetWidth, title.offsetHeight);
       const data = ctx.getImageData(face.x, face.y, face.w, face.h).data;
       const hud = root.querySelector(".go-clock").getBoundingClientRect();
-      return { inkOnFace: Array.from(data).filter((a, i) => i % 4 === 3 && a > 24).length,
+      return { size, cx, cy, inkOnFace: Array.from(data).filter((a, i) => i % 4 === 3 && a > 24).length,
         hudOutsideFace: (hud.left - stage.left) / k > face.x + face.w,
         imagesLoaded: [...root.querySelectorAll("img")].every(i => i.complete && i.naturalWidth > 0) };
     });
-    assert.equal(safe.inkOnFace, 0, "brush title must not obscure the face");
+    assert(Math.abs(safe.size - 524.8) < .1 && Math.abs(safe.cx - 640) < .1 && Math.abs(safe.cy - 273) < .1,
+      "adopted C face bbox must keep its size and center");
+    assert.equal(safe.inkOnFace, 0, "brush title must not obscure eyes or mouth");
     assert(safe.hudOutsideFace && safe.imagesLoaded);
   }
   console.log("PASS: generated brush title / frames, dynamic labels, face protection and 1080p / 720p / phone");
+  // #590: measure the actual scaled target, feedback handoff, guard and both callbacks.
+  const saved = await page.evaluate(async () => JSON.stringify({ state: (await import("./js/core/state.js")).state, storage: { ...localStorage } }));
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 667, height: 375 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    for (const reducedMotion of [false, true]) for (const choice of ["retry", "quit"]) {
+      await mount({ variant: 0, reducedMotion });
+      await page.evaluate(choice => document.querySelector(`.go-${choice}`).click(), choice);
+      await page.clock.runFor(100);
+      assert(await page.locator(".go-proceed").isHidden(), "keep the selected choice visible for 180ms");
+      assert(await page.locator(".end-actions").isVisible());
+      await page.clock.runFor(100);
+      assert(await page.locator(".end-actions").isHidden());
+      assert(await page.locator(".go-proceed").isVisible());
+      const target = await page.locator(".go-proceed").evaluate(button => {
+        const r = button.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
+        const dialogue = document.querySelector(".go-dialogue").getBoundingClientRect();
+        return { width: r.width, height: r.height, centered: Math.abs(r.x + r.width / 2 - (stage.x + stage.width / 2)) < 1,
+          inside: r.left >= stage.left && r.right <= stage.right && r.top >= stage.top && r.bottom <= stage.bottom + .1,
+          separate: r.top >= dialogue.bottom, focused: document.activeElement === button };
+      });
+      assert(target.width >= 44 && target.height >= 44, `scaled target >=44 CSS px: ${JSON.stringify(target)}`);
+      assert(target.centered && target.inside && target.separate && target.focused, JSON.stringify(target));
+      assert.equal(await page.locator(".go-clock").evaluate(n => getComputedStyle(n).visibility), "hidden");
+      const firstLine = await page.locator(".go-speech-text").textContent();
+      await page.clock.runFor(200);
+      await page.evaluate(() => { for (let i = 0; i < 10; i++) document.querySelector(".go-proceed").click(); });
+      assert.equal(await page.locator(".go-speech-text").textContent(), firstLine, "450ms reaction guard survives handoff");
+      assert.deepEqual(await page.evaluate(() => __decisions), []);
+      await page.clock.runFor(100);
+      const revealed = await page.locator(".go-letter").evaluateAll(letters => letters.every(n => n.classList.contains("go-on")));
+      if (!revealed) await page.evaluate(() => document.querySelector(".go-proceed").click()); // reveal all before advancing
+      assert(await page.locator(".go-letter").evaluateAll(letters => letters.every(n => n.classList.contains("go-on"))));
+      if (process.env.SHOTS && choice === "retry" && !reducedMotion) {
+        fs.mkdirSync(process.env.SHOTS, { recursive: true });
+        await page.screenshot({ path: `${process.env.SHOTS}/proceed-${viewport.width}.png` });
+      }
+      await page.evaluate(() => document.querySelector(".go-proceed").click());
+      assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "leaving", "next press leaves after the full reaction");
+      await page.clock.runFor(9000);
+      assert.deepEqual(await page.evaluate(() => __decisions), [choice === "retry" ? "retry" : "title"]);
+      await page.clock.runFor(9000);
+      assert.deepEqual(await page.evaluate(() => __decisions), [choice === "retry" ? "retry" : "title"], "callback fires once");
+    }
+  }
+  assert.equal(await page.evaluate(async () => JSON.stringify({ state: (await import("./js/core/state.js")).state, storage: { ...localStorage } })), saved);
+  console.log("PASS: centered proceed >=44 CSS px at 1280/844/667/390 widths; 180ms feedback, 450ms guard, both branches, normal/reduced, save unchanged");
   await page.setViewportSize({ width: 1280, height: 720 }); await mount();
   const initial = await reading(); assert.equal(initial.count, "20"); assert.equal(initial.echo, "20");
   await page.clock.runFor(5200);
@@ -130,6 +186,38 @@ try {
   assert(await page.locator("#continue-delayed").isVisible());
   await page.clock.runFor(5200);
   assert.equal(await page.locator("#continue-delayed .go-count").textContent(), "15", "a deferred mount must start its visible countdown");
+  // #590: actual contextual captions and shortened scripts keep the independent 20-second deadline.
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  for (const reason of ["burnt", "cold", "leaf", "rank"]) for (const lossOrdinal of [1, 2, 3]) {
+    await mount({ variant: 0, context: { reason, rank: 3, parts: { heat: 42, holes: 60 }, completedParts: ["holes", "heat"], lossOrdinal, sameReasonOrdinal: lossOrdinal } });
+    const first = await page.locator(".go-speech-text").textContent();
+    assert.match(first, new RegExp({ burnt: "熱", cold: "冷え", leaf: "香り", rank: "3位" }[reason]));
+    const script = await page.evaluate(async context => {
+      const { prepareContinueScript, normalizeContinueContext } = await import("./js/chapters/continue-context.js");
+      const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
+      return prepareContinueScript(SUMI_CONTINUE_SCRIPTS[0], normalizeContinueContext(context));
+    }, { reason, rank: 3, parts: { heat: 42, holes: 60 }, completedParts: ["holes", "heat"], lossOrdinal, sameReasonOrdinal: lossOrdinal });
+    await page.clock.runFor(2500);
+    assert.equal(await page.locator(".go-speech-text").textContent(), script.cues[1].text);
+    assert.notEqual(await page.locator(".gameover").getAttribute("data-quiet"), "true", "the opening keeps its normal sound level");
+    await page.clock.runFor(14500);
+    assert.equal(await page.locator(".gameover").getAttribute("data-quiet"), "true", "first and shortened repeat scripts both enter the quiet second half");
+    assert.equal(await page.locator(".go-speech-text").textContent(), script.cues.at(-1).text);
+    assert.equal((await reading()).count, "3");
+    assert.deepEqual(await page.evaluate(() => __decisions), []);
+    await page.clock.runFor(3000);
+    assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "gameover");
+  }
+  // Measure every visible input after stage scaling, including the portrait-sized DS stage.
+  for (const viewport of [{ width: 844, height: 390 }, { width: 667, height: 375 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport); await mount({ variant: 0, reducedMotion: true });
+    const targets = await page.locator(".go-retry,.go-quit,.go-next,.go-dialogue").evaluateAll(nodes => nodes.map(n => {
+      const r = n.getBoundingClientRect();
+      return { name: n.className, x: r.x, y: r.y, w: r.width, h: r.height, right: r.right, bottom: r.bottom };
+    }));
+    for (const r of targets) assert(r.w >= 44 && r.h >= 44 && r.x >= 0 && r.y >= 0 && r.right <= viewport.width && r.bottom <= viewport.height, JSON.stringify(r));
+  }
+  console.log("PASS: four reasons x first/repeat/third loss, real advice, 7/4 cues with 20 seconds, all scaled inputs >=44px");
   assert.deepEqual(errors, []); assert.deepEqual(missing, []);
   console.log("PASS: reduced motion by option / OS, keyboard retry and deferred mounting; page errors / missing art 0");
 } finally { await browser.close(); }

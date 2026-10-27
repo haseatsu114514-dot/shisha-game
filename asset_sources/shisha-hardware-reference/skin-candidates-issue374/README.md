@@ -63,3 +63,46 @@ Git Safety・diff check・4PNGデコード／透明角／ハッシュPASS。`ass
 3. PC／スマホ／縦回転、明暗背景、ホース接続・装着時の縮尺、保存／読込／旧セーブの画面QAと証跡。
 
 本採用記録では原画の加工・再生成・ゲーム導入を行っていない。トングは引き続き対象外。親 #374 は採用記録PRのレビュー・反映までopenとし、導入の未完は #437 で追跡する。
+
+## 独立した外観カタログの確認（#437 第1段階）
+
+リポジトリルートから実行する。Python 3.10以降の標準ライブラリのみを使用する。
+
+```sh
+python3 tools/shisha_appearance_catalog.py
+python3 tools/shisha_appearance_catalog.py --json
+python3 -m unittest discover -s tools -p test_shisha_appearance_catalog.py
+```
+
+`candidates.json` が引き続きID・名称・カテゴリ・原画パス・SHA256・寸法・採用範囲の唯一の正本。ツールは実行のたびに正本を読み、独立カタログを標準出力へ導出する。別のカタログJSONは保存せず、ゲームのmanifestや装備へ登録しない。出力の `adoption` と `approved` / `approval_scope` / `runtime_integrated` を分け、デザイン採用をゲーム導入完了と扱わない。`source_sha256` は読んだ正本の照合用。
+
+正常時は終了コード0と `PASS: 4 originals validated ...` を出力する。4点とも1536×1024・RGBA・`approval=design_only`・`runtime_integrated=False`。異常時は終了コード1と、該当項目の位置・ID・理由（例：`duplicate id`、`SHA256 mismatch`、`invalid category`）を標準エラーへ出す。重複ID・JSON同名キー・欠落原画・ハッシュ不一致・不正カテゴリ・寸法/モード不整合・不正な採用情報をfixtureで検査する。原画・正本が取得できない場合も成功扱いにしない。`--source` で検査するJSONも原画パスも、このリポジトリ内に限定する（外部へ向かうsymlinkも拒否）。過去の `generated_original` は生成履歴なので検査対象外。
+
+PNG検査は元バイトのSHA256とIHDRの寸法・RGBA宣言・CRCまで。画像全体のデコード、実ピクセルのalpha再測定、実機嵌合や画面QAではない。`alpha_extrema` と長さ目安は正本メタデータの継承で、配信用仕上げ済み／実寸検証済みの主張ではない。切り抜き・bbox・アンカー・相対縮尺・実物適合ID（`compatible_ids`）・配信用パス・透過処理は、派生カタログの `render_contract` では引き続き `null`（未確定）。接続候補と接続位置/径の扱いは以下の契約に従う。後続の素材仕上げ・選択・描画・保存導入は本段階の対象外。
+
+
+## 接続候補の機械検証（#437 接続契約v1）
+
+### 原画を組み合わせる実表示プレビュー（2026-10-26）
+
+[`remake/appearance-preview.html`](../../../remake/appearance-preview.html) は採用原画を別々の層で「ホース→ハンドル→任意の短いチップ」に配置する比較ページ。正本の4デザインを再生成・描き換えず、表示上の一様拡縮と回転で接続する。明暗背景・未選択・2ハンドル×2チップを比較でき、確定と取消も操作できる。本編・GAME OVER・本編セーブには接続しない。
+
+画像上の接続中心は [`render-preview.json`](render-preview.json) に記録した原画px。画面上の長さ340/46は図示上の比率で、実測寸法や実物の嵌合を証明しない。正式カタログの `distribution_assets_ready:false`、`runtime_integrated:false`、`physical_fit:null` と未確定径は保持する。原画の光彩・半透明の縁を残した確認段階で、配信用仕上げ・手持ちの確認・本編の選択導線が残る。
+
+実ChromiumでPCと844×390横タッチ、既定を含む9組、全画像の復号、確定・取消・本編ストレージ無変更を確認。既存の外観選択/SAVEテスト6件とカタログ26件も成功。外観テストは後から追加されたギャラリー保存処理の実モジュールも読ませ、旧fixtureの依存欠落を修正した。実機・縦回転・人物の手持ち・物理適合は未確認。
+
+| 暗背景 | 明背景 |
+|---|---|
+| ![PC暗背景](preview-qa/pc-dark.png) | ![PC明背景](preview-qa/pc-light.png) |
+| ![横持ち暗背景](preview-qa/touch-dark.png) | ![横持ち明背景](preview-qa/touch-light.png) |
+
+同じ `candidates.json` に各項目の `connection` と、トップレベルの `connection_contract` を追加する。別カタログ・runtimeデータは作らない。契約v1はデザイン採用段階専用で、`approval_scope: design_only`、`runtime_integrated: false` と `adoption.distribution_assets_ready: false` を維持する。
+
+- `connection_contract.version` は整数 `1`。`candidate_pairs` は検討対象の組を `{handle_id, mouthpiece_id, physical_fit}` で列挙する。現在は採用2ハンドル×2マウスピースの4組。存在する採用IDをハンドル→マウスピースの順で参照し、同じ組の重複・逆順・同カテゴリ・未知ID・未採用IDを拒否する。配列にない組を自動補完しない。候補がない場合は空配列を許容する。
+- `physical_fit` はv1では必ず `null`（未検証）。候補列挙はカテゴリ上の整合だけで、どの組も実物嵌合・装着承認・描画可能を表さない。`true` も `false` も拒否し、未検証を「適合しない」とも判定しない。
+- 各素材の `connection` は `position_px` と `diameter_mm` の2キーを必須とし、未知値は省略や0でなく `null`。現在の4点は両方とも `null` のまま。`concept_length_cm` や原画寸法から接続位置・径・相対縮尺を推定しない。
+- `position_px` は原画左上を原点、右を+x、下を+yとする接続中心 `[x, y]`。ハンドルはチップ側、マウスピースはハンドル側の接続部を対象とする。数値を与える場合は有限数かつ `0 <= x < width`、`0 <= y < height`。`diameter_mm` はその接続部の径の数値欄で、有限の正数のみ。bool・文字列・NaN・無限大・範囲外座標・0以下の径を拒否する。これは値の形式検査であり、内外径・差し込み方式・挿入量・公差・実測根拠を確定する物理嵌合仕様ではない。数値を記入しても適合や実測済みとは判定しない。
+
+派生出力では `connection_contract` を継承し、各素材の `position_px` / `diameter_mm` を `render_contract.connection_position` / `connection_diameter` へそれぞれ転記する（単位は原画px / mm）。`compatible_ids` は候補リストから生成せず `null` を維持する。数値のあるsynthetic fixtureでも `physical_fit` と `relative_scale` は `null` のまま検査する。
+
+上記の既存コマンドで、原画SHA256・PNG IHDR検査に加えて接続契約を検査する。終了コード0の `Connection metadata PASS` はID・カテゴリ・値域の検証のみ。画像全体のデコード・実物/画像QA・装着承認・配信用仕上げ・ゲーム導入・選択/保存の完了ではない。原画・採用履歴・本編state/manifest/レンダラーは変更しない。

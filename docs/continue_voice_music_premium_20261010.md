@@ -76,3 +76,9 @@ VOICEVOX 公式:
 
 ## 次回実装用 V4 仕様書（2026-10-10）
 ボタンごとの全キャラ専用台詞（スミさん3台本＋恋人6人×「大会に戻る／諦める」＝18種類）、残り5秒のカウントSE、BGMと効果音の同期、元ネタ寄せレイアウト・スマホ対応を [continue_button_reactions_sfx_20261010.md](continue_button_reactions_sfx_20261010.md) に保存。**現時点では企画書のみでコードは変更しない**。
+
+## 2026-10-23 同梱配信への切替（#850）
+
+正式採用済みの同じ「EMGコール」（BGMer）を `assets/audio/bgm/bgm_continue_urgent.mp3` に同梱。外部配信のORB失敗を避け、既存の速度・音量・合成BGM fallbackを維持する。公式配布元: https://bgmer.net/music/163/ 、規約: https://bgmer.net/terms/ （個人・商用ゲーム利用、改変、再配布を許可。作者偽称・無許可の販売等は禁止）。音楽：BGMer https://bgmer.net/ 。取得日2026-10-23、元名163_BPM115.mp3、2,811,497 bytes、106.445333秒、SHA256 `836bbd54f2fbe68fd73255c7a143f4aa047acce54657434528c6d5442e0d89a9`。変換なし。
+
+manifestは既存 `build_manifest.py --audio-only` の生成ロジックを使い、sparse checkoutによる既存曲の脱落を防ぐため、GitHubの確定mainの非空BGM一覧と追加ファイルを入力した。画像・人物等の既存manifest値が不変であることを比較確認した。

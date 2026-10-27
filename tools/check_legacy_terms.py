@@ -34,6 +34,7 @@ SKIP_PATTERNS = {
     "data.js",
     "node_modules",
     ".git",
+    "_legacy",  # 隔離した旧台本は履歴。正史へ戻す参照はcheck_story_canon.pyが検出。
 }
 
 SKIP_FILES = {
@@ -46,7 +47,8 @@ LEGACY_ERROR = {
     "ドクター・ケムリ": "チャコール博士（dr_kemuri）に統一",
     "シーシャ・ステーション": "C.STATION に統一",
     "シーシャステーション": "C.STATION に統一",
-    "蒸野 はじめ": "蒸野 始 に統一",
+    "蒸野 始": "蒸野 はじめ に統一（2026-10-16 オーナー指定: 主人公の表記は平仮名の「はじめ」）",
+    "蒸野始": "蒸野はじめ に統一（2026-10-16 オーナー指定）",
     "ましろさん": "ましろちゃん に統一",
     "筋肉の記憶": "「体で覚えた手つき」等に言い換え（2026-07-20オーナー指定・禁止）",
 }
@@ -99,6 +101,8 @@ def scan_character_identity(errors: list):
         check=True, stdout=subprocess.PIPE,
     )
     for rel in sorted(set(result.stdout.decode("utf-8").split("\0")) - {""}):
+        if "_legacy" in Path(rel).parts:
+            continue
         if LEGACY_CHARACTER_RE.search(rel):
             errors.append(f"{rel}: 旧キャラIDのファイル名 → samechan に統一")
         if rel in IDENTITY_FIXTURES:

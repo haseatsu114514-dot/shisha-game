@@ -1,0 +1,190 @@
+{
+  "metadata": {
+    "minigame": "axe-throw",
+    "description": "斧崎マキが案内する無料1投レッスン用のUI台詞。章・物語・関係・報酬は進行しない。"
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "axe_tutorial_welcome",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "welcome",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "よく来たね！　まずは無料で1投、あたしとやってみよう"
+        },
+        {
+          "id": "welcome_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "点は記録に残らないし、お金も体力も使わないよ"
+        },
+        {
+          "id": "welcome_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "横、縦、力の順で止める。肩の力、抜きな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_target",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "target",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "通常はリング1〜5点、中央と外の4つの赤い中心が6点"
+        },
+        {
+          "id": "target_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "青は投げる前に1つ宣言、外7点・中心8点、その青以外は0点だよ"
+        },
+        {
+          "id": "target_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "宣言は2回まで。成功した高さの青は左右とも閉じる！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_horizontal",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "horizontal",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "まずは横の位置だ。針が左右に動くから、狙いたい所で的をタップ"
+        },
+        {
+          "id": "horizontal_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "ボタンかSpaceでも止められるよ。止めた位置は金色の印だ"
+        },
+        {
+          "id": "horizontal_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "焦らなくていい、あんたの間でいきな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_vertical",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "vertical",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "次は縦。さっき止めた横の位置はそのままだよ"
+        },
+        {
+          "id": "vertical_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "上下に動く針を見て、的のタップ、ボタンかSpaceで止めな"
+        },
+        {
+          "id": "vertical_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "金色の印が狙いだ。赤い中心まで、あとひと息！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_power",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "power",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "最後は力！　緑の54〜70%で止めな。弱すぎても強すぎても落下して0点だ"
+        },
+        {
+          "id": "power_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "白い照準が予測着地点だよ。息を整えるかFで、1投に1回だけブレを抑えられる"
+        },
+        {
+          "id": "power_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "斧に仕事をさせな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_result",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "result",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "よし、今の一投を見てみよう"
+        },
+        {
+          "id": "result_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "通常なら刺さった場所、青を宣言したならその青に当たったかで点が決まる"
+        },
+        {
+          "id": "result_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "力が合わず落下したら0点だ。点数と着地点を見て、次の狙いを決めな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_finish",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "finish",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "お疲れ！　横、縦、力の順でよく投げたね。迷ったら、いつでも無料で復習できるよ"
+        },
+        {
+          "id": "finish_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "記録は変わらないし、お金も体力も使わない。店の本番は別料金"
+        },
+        {
+          "id": "finish_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "準備ができたら、自分の一投を楽しみな！"
+        }
+      ]
+    }
+  ]
+}

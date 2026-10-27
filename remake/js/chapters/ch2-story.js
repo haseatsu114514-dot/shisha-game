@@ -1,25 +1,42 @@
-import { DB } from "../core/data.js";
-import { state, save } from "../core/state.js";
+import { DB, bgUrl } from "../core/data.js";
+import { state, save, markMet } from "../core/state.js";
 import { imageReady, setBg } from "../core/ui.js";
 import { play } from "../vn/engine.js";
-import { MAP } from "./ch2-city-data.js";
-import { CH2_NIGHTS } from "./ch2-story-data.js";
+import { MAP, ROOMS } from "./ch2-city-data.js";
+import { CH2_NIGHTS, syncAgehaVibes } from "./ch2-story-data.js";
 
 // 会話途中では完了にしない。連続する場面は一つずつ保存し、LOAD時に読了分を飛ばす。
 async function readStep(step) {
   const owner = state;
   const flag = `_ch2_read_${step.id}`;
-  if (owner.flags[flag]) return;
+  if (owner.flags[flag] || (step.when && !step.when(owner))) return;
   if (!DB.dialogues[step.id]) throw new Error(`台本がありません: ${step.id}`);
-  if (["remake_ch2_eve_arrival", "ch2_pre_tournament_realisation"].includes(step.id)) {
+  if (!step.bg && ["remake_ch2_eve_arrival", "remake_ch2_eve_rei", "ch2_pre_tournament_realisation"].includes(step.id)) {
     if (!await imageReady(MAP.night, 15000)) throw new Error("大会前夜の街を読み込めませんでした");
     await setBg(MAP.night, { instant: true });
   }
+  const place = (step.bg && (bgUrl(step.bg) || step.bg)) || (step.room && ROOMS[step.room]);
+  if (place) {
+    if (!await imageReady(place, 15000)) throw new Error(`場面の背景を読み込めませんでした: ${step.bg || step.room}`);
+    await setBg(place, { instant: true });
+  }
+  syncAgehaVibes(owner.flags);
   const result = await play(step.id);
   if (state !== owner || !result || result.cancelled) throw new Error(`未読の場面: ${step.id}`);
   owner.flags[flag] = true;
   if (step.flag) owner.flags[step.flag] = true;
+  if (step.contact) addContact(owner, step.contact);
+  syncAgehaVibes(owner.flags);
   save();
+}
+
+// 店で連絡先を交換していなくても、その夜に会ったらLIMEが届くようにする
+function addContact(owner, id) {
+  markMet(id);
+  owner.flags[`_ch2_${id}_contact`] = true;
+  owner.flags[`_lime_contact_${id}`] = true;
+  owner.contacts ||= [];
+  if (!owner.contacts.includes(id)) owner.contacts.push(id);
 }
 
 export function chapterTwoNights(startDay) {

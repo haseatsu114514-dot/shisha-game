@@ -26,7 +26,8 @@ try {
     }))).observe(document.querySelector("#fx"), { childList: true });
     assertArt();
     function assertArt() {
-      if (Object.keys(DB.manifest.introArt).length !== 15) throw new Error("登場背景が15種ではない");
+      const missing = ["hajime", "sumi", "tsumugi", "oneesan", "naru", "adam", "minto", "rin", "samechan", "nagumo", "maezono", "dr_kemuri", "pakki", "ageha", "hiyori", "kumicho", "rei"].filter(id => !DB.manifest.introArt[id]);
+      if (missing.length) throw new Error(`採用済みの登場背景がない: ${missing.join(", ")}`);
     }
     return Object.fromEntries(["hajime", "adam", "naru", "dr_kemuri", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));
   });
@@ -54,7 +55,7 @@ try {
   assert.equal(unknown.name, "？？？");
   assert.equal(unknown.title, "実在したオタクに優しいギャル");
   assert.equal(unknown.line.replace(/\s/g, ""), "「大丈夫？ケガしてない？」");
-  assert(unknown.face.endsWith("chr_ageha_smile.webp"));
+  assert(unknown.face.split("?")[0].endsWith("chr_ageha_smile.webp"));
   assert(!unknown.text.includes("バイブス"));
   assert(!unknown.met && unknown.initialSeen && !unknown.namedSeen && unknown.backgroundLoaded);
   if (shots) await page.screenshot({ path: `${shots}/ageha_unknown_in_story.png` });
@@ -83,8 +84,8 @@ try {
   await page.waitForTimeout(1300);
   assert.equal(await page.locator(".cutin .ci-name").textContent(), "あげは");
   assert.equal(await page.locator(".cutin .ci-title").textContent(), "バイブスの天才");
-  assert.equal(await page.locator(".cutin .ci-line").textContent(), "「あたし超感覚派なんだよね〜」");
-  assert((await page.locator(".cutin .ci-portrait").getAttribute("src")).endsWith("chr_ageha_normal.webp"));
+  assert.equal(await page.locator(".cutin .ci-line").textContent(), "「うち超感覚派なんだよね〜」");
+  assert((await page.locator(".cutin .ci-portrait").getAttribute("src")).split("?")[0].endsWith("chr_ageha_normal.webp"));
   if (shots) await page.screenshot({ path: `${shots}/ageha_professional.png` });
   await page.evaluate(() => T.done);
   assert.equal(await page.evaluate(() => T.intro.needsIntro("ageha")), false);
@@ -134,6 +135,7 @@ try {
   const workerFaces = await page.evaluate(async () => {
     const w = T.worker.buildWorkerScene({ mode: "practice" });
     document.querySelector("#screen").replaceChildren(w.root);
+    await w.ready; // 表情の事前読み込みによるsrc変更が終わってからdecodeする。
     const result = [];
     for (const level of ["steady", "unsteady", "shaken"]) {
       w.setMental(level);
@@ -152,6 +154,8 @@ try {
     await page.evaluate((slot) => {
       T.core.state.phase = "daily"; T.core.state.day = 6; T.core.state.slot = slot;
       T.core.state.weatherSeed = 0;
+      for (const id of ["naru", "adam", "minto"]) T.core.state.flags[`_spot_guide_${id}`] = true;
+      T.core.state.flags._cafe_introduced = true; // 座標確認は紹介を読了したマップで行う。
       T.mapTask = T.map.chooseSpot();
     }, slot);
     await page.waitForSelector(`.map[data-night="${!!slot}"]`);
@@ -159,7 +163,9 @@ try {
     await page.waitForFunction(() => !document.querySelector(".scene-curtain") && getComputedStyle(document.querySelector("#bg > div:last-child")).opacity === "1");
     for (const pin of pins) {
       const position = await page.locator(`.map [data-spot="${pin.id}"]`).evaluate((node) => ({ x: parseFloat(node.style.left), y: parseFloat(node.style.top) }));
-      assert.deepEqual(position, { x: pin.x_percent, y: pin.y_percent }, `${tod}:${pin.id}の座標が変わった`);
+      const moved = { cafe: { x: 72, y: 45 }, kannon: { x: 18, y: 57 }, choizap: { x: 20, y: 24 }, fortune: { x: 63, y: 69 }, rest: { x: 89, y: 44 } };
+      const expected = moved[pin.id] || { x: pin.x_percent, y: pin.y_percent }; // mainでHUDを避けて移動済みの施設を反映。
+      assert.deepEqual(position, expected, `${tod}:${pin.id}の座標が変わった`);
     }
     if (shots) await page.screenshot({ path: `${shots}/map_${tod}.png` });
     await page.evaluate(() => T.map.interruptMap("__test_done"));

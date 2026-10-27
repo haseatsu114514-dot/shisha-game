@@ -6,7 +6,7 @@
   （必ずリポジトリルートで実行。保存は data/dialogue/*.json へ直接書き戻す）
 
 できること（画面上のボタン）:
-  - 検索・編集・保存（本編と同じ autoWrap プレビュー／文字クリックで手動改行）
+  - 検索・編集・保存（本編と共通の組版プレビュー／文字クリックで手動改行）
   - 「台詞の検査」= 台詞リンタを実行（現行版はJSONを直接読むためビルド不要）
   - 「コミット & プッシュ」= data/ の正本を現在のブランチへコミット、任意で push
     （main/master へのコミット・pushは安全のため拒否＝PR運用を壊さない）
@@ -15,6 +15,7 @@
 マニュアル: docs/text_editor_manual.md（アプリ内の「ヘルプ」ボタンからも読める）
 """
 import json
+import mimetypes
 import re
 import subprocess
 import urllib.parse
@@ -28,6 +29,18 @@ PORT = 8321
 # コミットで巻き取る対象（台詞の正本）。これ以外は触らない
 COMMIT_PATHS = ["data/dialogue"]
 PROTECTED_BRANCHES = {"main", "master"}
+
+# プレビュー専用。リポジトリ全体や任意パスは公開しない。
+PREVIEW_FILES = {
+    "/preview.html": "tools/browser/text_editor_preview.html",
+    **{f"/remake/{path}": f"remake/{path}" for path in (
+        "css/base.css", "css/vn.css", "css/ui-art.css", "css/ui-inner.css",
+        "js/vn/text.js", "js/vn/budoux_ja.js", "js/vn/inner.js", "js/vn/layout.js",
+        "fonts/ZenKakuGothicNew-Medium.woff2", "fonts/ZenKakuGothicNew-Bold.woff2",
+        "img/ui/lounge/panel.webp", "img/ui/lounge/button.webp",
+    )},
+}
+
 
 
 def run(cmd, timeout=600):
@@ -74,7 +87,8 @@ def load_lines(fname: str):
         for i, ln in enumerate(lines):
             if isinstance(ln, dict) and isinstance(ln.get("text"), str):
                 out.append({"path": f"{prefix}/{i}", "speaker": ln.get("speaker", ""),
-                            "text": ln["text"], "did": did})
+                            "text": ln["text"], "did": did,
+                            "inner": ln.get("inner", ""), "type": ln.get("type", "")})
 
     for di, dl in enumerate(d.get("dialogues", [])):
         did = dl.get("dialogue_id", f"#{di}")
@@ -169,6 +183,9 @@ class Handler(BaseHTTPRequestHandler):
             if u.path in ("/", "/index.html"):
                 return self._send((ROOT / "tools" / "browser" / "text_editor.html").read_bytes(),
                                    "text/html; charset=utf-8")
+            if u.path in PREVIEW_FILES:
+                path = ROOT / PREVIEW_FILES[u.path]
+                return self._send(path.read_bytes(), mimetypes.guess_type(path)[0] or "application/octet-stream")
             if u.path == "/manual":
                 md = (ROOT / "docs" / "text_editor_manual.md").read_text()
                 return self._send(md.encode(), "text/markdown; charset=utf-8")

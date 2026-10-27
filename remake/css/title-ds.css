@@ -2,10 +2,13 @@
 :root { --title-layout-ready: 1; }
 .title-layout-toolbar {
   position: absolute; top: max(8px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right));
-  z-index: 110; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end;
+  z-index: 110;
   max-width: calc(100% - 20px); padding: 4px; border: 1px solid #b68d53; border-radius: 5px;
   background: #1b1023f2; color: #f6dfaf; font-size: 14px;
 }
+.title-layout-toolbar summary { font-size: 13px; }
+.title-layout-options { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: flex-end; max-width: 300px; }
+body[data-screen="title"]:has(#modal.show) .title-layout-toolbar { visibility: hidden; }
 .title-layout-toolbar button, .title-layout-toolbar a { padding: 10px 12px; min-height: 40px; background: transparent; border: 0; color: inherit; cursor: pointer; text-decoration: none; }
 .title-layout-toolbar button[aria-pressed="true"] { background: #67422d; border-radius: 3px; }
 .title-layout-toolbar :focus-visible { outline: 2px solid #ffe3a7; outline-offset: -2px; }
@@ -62,10 +65,37 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .mo
 }
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .cfg { min-width: 0; }
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .cfg-row { flex-wrap: wrap; }
-body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal { width: min(900px, calc(100% - 24px)); max-height: calc(100% - 28px); }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-overlay { top: 64px; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal { min-width: 0; min-height: 0; width: min(900px, calc(100% - 24px)); max-height: calc(100% - 28px); }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-head { align-items: center; flex-wrap: wrap; gap: 8px; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-head h2 { font-size: clamp(18px, 6vw, 28px); letter-spacing: .2em; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-count { flex: none; white-space: nowrap; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-close { flex: none; min-height: 38px; }
+body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-grid { min-height: 0; }
+@media (max-width: 500px) {
+  body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .gal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* 本編と同じ上下2画面（上=見る画面4:3、下=触る画面）。寸法は ds-geometry.js の --ds-*。 */
+.title[data-layout="ds"] {
+  display: block; padding: 0; overflow: hidden;
+  background: radial-gradient(120% 60% at 50% 0%, #2a2033 0%, #140f1b 55%, #0c0910 100%);
+}
+.title[data-layout="ds"] .title-ds-panel { position: absolute; border-radius: 7px; border: 0; box-shadow: 0 0 0 2px #050307, 0 0 0 3px #3a2c45; }
+.title[data-layout="ds"] .title-ds-visual { left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); }
+.title[data-layout="ds"] .title-ds-controls { left: var(--ds-cx); top: var(--ds-cy); width: var(--ds-cw); height: var(--ds-ch); justify-content: flex-start; padding: 0 22px 18px; }
+.title[data-layout="ds"] .title-ds-controls::before {
+  content: "MAIN MENU"; display: flex; align-items: center; align-self: stretch; height: 34px; margin: 0 -22px 18px; padding: 0 14px;
+  border-bottom: 1px solid #e8c27a33; background: linear-gradient(#2a1f36, #1a1324); color: #ffe2a6;
+  font-family: "Chapter Preview Dot", "DS Dot", var(--font); font-size: 14px; letter-spacing: .08em;
+}
+.title[data-layout="ds"] .title-ds-visual::after {
+  content: ""; position: absolute; left: 50%; top: calc(100% + 7px); width: 64px; height: 8px; transform: translateX(-50%);
+  border-radius: 8px; background: linear-gradient(#3b2e47, #1a1320); box-shadow: inset 0 1px 0 #ffffff1c, 0 1px 3px #000;
+}
+:root[data-ds-layout="side"] .title[data-layout="ds"] .title-ds-visual::after { display: none; }
+.title[data-layout="ds"] .title-ds-visual { overflow: visible; }
+.title[data-layout="ds"] .title-art { border-radius: 7px; }
 @media (max-width: 760px) and (orientation: portrait) {
-  .title[data-layout="ds"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(300px, 1fr)); padding-top: 66px; }
-  .title[data-layout="ds"] .title-ds-controls { padding: 14px 18px; }
   .title[data-layout="ds"] .title-menu { gap: 8px; }
   .title[data-layout="ds"] .title-item { min-height: 44px; padding: 6px 12px; flex-direction: row; }
   .title[data-layout="ds"] .ti-en { display: none; }

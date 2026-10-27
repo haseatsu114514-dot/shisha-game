@@ -1,0 +1,13 @@
+{
+  "commit": "aa8b559ed5f358135981feeba1e24141bc32f697",
+  "results": [
+    {
+      "label": "ordinary-keyboard-pc",
+      "status": "passed"
+    },
+    {
+      "label": "ordinary-touch-reduced-motion",
+      "status": "passed"
+    }
+  ]
+}

@@ -213,13 +213,13 @@ try {
     await toggle(); assert.equal(await precision.getAttribute('aria-pressed'), 'false');
     const restoredSpeed = await stickSpeed(page, mobile);
     assert(Math.abs(restoredSpeed - normalSpeed) < normalSpeed * .3 && restoredSpeed > slowSpeed * 1.5, `${name}: second press did not restore normal movement`);
-    await precision.focus(); await page.keyboard.press('Space');
+    await precision.focus(); await page.keyboard.press('Enter');
     assert.equal(await precision.getAttribute('aria-pressed'), 'true');
     await page.keyboard.press('Enter');
     assert.equal(await precision.getAttribute('aria-pressed'), 'false');
     assert.equal(await page.locator('.dodge-refresh').getAttribute('data-remaining'), '1', 'Precision toggle spent the refresh');
     assert.equal(await page.locator('.dodge-pad.held').count(), 0, 'Released stick stayed held');
-    console.log(`[precision] PASS: ${name} real ${mobile ? 'touch' : 'mouse'} stick ${normalSpeed.toFixed(0)} -> ${slowSpeed.toFixed(0)} -> ${restoredSpeed.toFixed(0)} px/s; Space/Enter toggle independently of refresh`);
+    console.log(`[precision] PASS: ${name} real ${mobile ? 'touch' : 'mouse'} stick ${normalSpeed.toFixed(0)} -> ${slowSpeed.toFixed(0)} -> ${restoredSpeed.toFixed(0)} px/s; Enter toggles independently of refresh`);
     await page.waitForSelector('.dodge-object');
     await page.waitForTimeout(1200);
     assert.notEqual(await page.locator('[data-test="steam-clock"] .clock-value').textContent(), remaining, 'Background clock stopped counting down');

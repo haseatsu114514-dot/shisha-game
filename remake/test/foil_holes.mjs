@@ -28,6 +28,7 @@ const values = {
   "util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo) => lo },
   "ui.js": { countdown: async () => {} },
   "data.js": { DB: { flavorById: {} } },
+  "state.js": { state: null },
   "art.js": { artImg: () => el("div.art") },
   "audio.js": { SE: Object.fromEntries(["foilPunch", "perfect", "good", "miss", "just", "whoosh"].map((name) => [name, () => seCalls.push(name)])) },
   "session.js": { waitBenchReady: async () => {}, stepPanel: () => { panel ||= new Element("div.panel"); panel.replaceChildren(); return panel; }, refreshBench: () => {}, tickerSay: () => {}, reactAudience: () => {}, scoreStep: () => {},
@@ -41,7 +42,7 @@ const mods = new Map();
 async function load(name) {
   if (mods.has(name)) return mods.get(name);
   const mod = values[name] ? new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name })
-    : new vm.SourceTextModule(await fs.readFile(new URL(name === "condition.js" ? "../core/condition.js" : name, craftRoot), "utf8"), { context, identifier: name });
+    : new vm.SourceTextModule(await fs.readFile(new URL(["condition.js", "flavor-mastery.js"].includes(name) ? `../core/${name}` : name, craftRoot), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const holesModule = await load("holes.js"); await holesModule.evaluate();
@@ -64,8 +65,10 @@ assert.equal(logic.foilDensityProfile(rings([22, 8, 4])).density, 1);
 
 // 新しい種類は定義の追加と永続フラグで解放でき、0穴のリングは生成しない。
 const future = { id: "future-sparse", counts: { outer: 12, middle: 0, inner: 0 }, unlockFlag: "met_teacher" };
-assert.equal(templates.availableHoleTemplates({}, [...templates.HOLE_TEMPLATES, future]).length, 2);
-assert.equal(templates.availableHoleTemplates({ met_teacher: true }, [...templates.HOLE_TEMPLATES, future]).length, 3);
+assert.equal(templates.availableHoleTemplates({}, [...templates.HOLE_TEMPLATES, future]).length, 1);
+assert.equal(templates.availableHoleTemplates({ met_teacher: true }, [...templates.HOLE_TEMPLATES, future]).length, 2);
+assert.equal(templates.availableHoleTemplates({ _hole_outer24_unlocked: true }).length, 2);
+assert.equal(templates.DEFAULT_HOLE_TEMPLATE, "outer12-middle12");
 assert.equal(templates.ringsForTemplate(future).length, 1);
 const templateResults = templates.HOLE_TEMPLATES.map((template) => {
   const rs = templates.ringsForTemplate(template).map((ring) => ({ ...ring, taken: new Array(ring.targets).fill(true),
@@ -115,7 +118,11 @@ assert.equal(visualHoles[0].target[0], .8); assert.equal(visualHoles[0].target[1
 // 完成後の連打で余分な穴や自動送りを増やさない。
 const stampCount = stamps.length; for (let i = 0; i < 5; i++) fire("hole-punch", "pointerdown"); assert.equal(stamps.length, stampCount); assert.equal(delayed.length, 0);
 assert.equal(visualHoles.length, 24, "Disabled input added a visual hole");
-await frame(now + 400); assert.equal(active.cs.holes, null); keymap.Enter(); await active.running;
+const completedTime = panel.querySelector("b").style.width;
+await frame(now + 60000);
+assert.equal(panel.querySelector("b").style.width, completedTime, "completed foil timer kept running");
+assert.equal(active.cs.holes, null); assert.equal(results.length, 0);
+keymap.Enter(); await active.running;
 assert.equal(active.cs.holes.templateId, "outer24"); assert.equal(active.cs.holes.outer, 24);
 assert.equal(active.cs.holes.middle, 0); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.total, 24); assert(active.cs.holes.minimumComplete); assert.equal(active.cs.holes.densityProfile.sparse, 0);
 assert(stamps.some((stamp) => stamp.text === "EXCELLENT"));
@@ -123,13 +130,37 @@ assert(stamps.some((stamp) => stamp.text === "EXCELLENT"));
 active = await start(null, "outer12-middle12"); await punchCircle(6.4, 12);
 assert(find("hole-done").disabled); assert(!find("hole-next").disabled);
 fire("hole-done"); keymap.Enter(); assert.equal(active.cs.holes, null);
-fire("hole-next"); await punchCircle(5.2, 12, 10.4); fire("hole-done"); await active.running;
+fire("hole-next"); await punchCircle(5.2, 12, 10.4);
+const mixedTime = panel.querySelector("b").style.width;
+await frame(now + 60000); assert.equal(panel.querySelector("b").style.width, mixedTime);
+assert.equal(active.cs.holes, null); fire("hole-done"); await active.running;
 assert.equal(active.cs.holes.templateId, "outer12-middle12"); assert.equal(active.cs.holes.outer, 12);
 assert.equal(active.cs.holes.middle, 12); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.grade, "S");
+// 時間0の12+12: 案内は、その時点で有効な次操作に一致する。
+active = await start(null, "outer12-middle12"); await frame(35000);
+assert(find("hole-plan").textContent.includes("穴あけは続けられます"));
+assert(!find("hole-punch").disabled); assert(find("hole-next").disabled); assert(find("hole-done").disabled);
+await punchCircle(6.4, 12, 38.4);
+assert(find("hole-plan").textContent.includes("次のリングへ"));
+assert(!find("hole-plan").textContent.includes("続けられます"));
+assert(find("hole-punch").disabled); assert(!find("hole-next").disabled); assert(find("hole-done").disabled);
+fire("hole-next");
+assert(find("hole-plan").textContent.includes("穴あけは続けられます"));
+assert(!find("hole-punch").disabled); assert(find("hole-done").disabled);
+await punchCircle(5.2, 12, 52);
+assert(find("hole-plan").textContent.includes("結果を確認しよう"));
+assert(!find("hole-plan").textContent.includes("続けられます"));
+assert(find("hole-punch").disabled); assert(find("hole-next").disabled); assert(!find("hole-done").disabled);
+assert.equal(active.cs.holes, null); fire("hole-done"); await active.running;
+assert.equal(active.cs.holes.timeRatio, 0); assert.equal(results.at(-1).button, "確認して次の工程へ");
 // 時間が0になってもテンプレート未完成では終えない。完成後は時間評価0で終了。
-active = await start(); await frame(35000); assert.equal(active.cs.holes, null); assert(find("hole-plan").textContent.includes("時間0"));
+active = await start(); await frame(35000); assert.equal(active.cs.holes, null); assert(find("hole-plan").textContent.includes("時間評価は終了。穴あけは続けられます"));
 fire("hole-done"); fire("hole-next"); keymap.Enter(); assert.equal(active.cs.holes, null);
-await punchCircle(6.4, 24, 38.4); await frame(now + 1); await active.running;
+await punchCircle(6.4, 24, 38.4); await frame(now + 1);
+assert.equal(active.cs.holes, null, "timeout must not bypass the explicit finish");
+assert(!find("hole-plan").textContent.includes("続けられます"), "Completed foil must guide to the result instead of further punching");
+fire("hole-done"); await active.running;
+assert.equal(results.at(-1).button, "確認して次の工程へ");
 assert(active.cs.holes.minimumComplete); assert.equal(active.cs.holes.total, 24); assert.equal(active.cs.holes.timeRatio, 0);
 assert.equal(active.cs.holes.score, sparse.score - 5);
 // 両テンプレートの既存good/badフックを通し、少穴の品質計算も引き続き同じ尺度に保つ。

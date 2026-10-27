@@ -11,6 +11,7 @@ import { buildSteamTemperature, buildSteamForecast } from "./steam-forecast.js";
 export function runSteamTimer(cs) {
   const panel = stepPanel("steam", "蒸らし", "", { brief: "", lessonStep: "timer" });
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
+  const minimumSeconds = cs.mode === "tutorial" ? 180 : 10;
   const clock = buildDigitalClock("timer-display", { live: true, test: "timer-display" });
   const thermometer = buildSteamTemperature(cs);
   const forecast = buildSteamForecast(cs, thermometer);
@@ -18,7 +19,7 @@ export function runSteamTimer(cs) {
   const render = () => {
     clock.update(seconds);
     forecast.update(seconds);
-    start.disabled = seconds === 0;
+    start.disabled = seconds < minimumSeconds;
     panel.querySelectorAll("[data-test='timer-minute-up'], [data-test='timer-second-up']").forEach((b) => { b.disabled = seconds >= MAX_STEAM_SECONDS; });
   };
   return new Promise((resolve) => {
@@ -28,7 +29,7 @@ export function runSteamTimer(cs) {
       text: label, dataset: { test }, style: { left: `${[15, 34, 60, 85][column - 1]}%` }, onclick: action,
     });
     start = button("", "timer-start", 3, () => {
-      if (!seconds) return;
+      if (seconds < minimumSeconds) return;
       SE.select(); cs.steamSeconds = seconds; cs.steamMin = seconds / 60;
       resolve();
     });

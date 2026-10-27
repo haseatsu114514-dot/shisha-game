@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 const json = async path => JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
-const module = async path => import("data:text/javascript;base64," + Buffer.from(await readFile(new URL(path, import.meta.url), "utf8")).toString("base64"));
+const module = async path => import(new URL(path, import.meta.url).href);
 const rules = await module("../js/trpg/campaign.js");
 const { scheduleChapterTwoTrpgNight } = await module("../js/chapters/ch2-progress.js");
 const { CH2_NIGHTS } = await module("../js/chapters/ch2-story-data.js");
@@ -34,10 +34,10 @@ function finish(scenario) {
   return session.result();
 }
 
-test("chapter two DAY8 is a playable shark night with only the approved individual shift", () => {
+test("chapter two club meets after ordinary shifts; DAY8 compatibility override preserves existing saves", () => {
   const s = own(friends(state()), shark.id); s.day = 22;
   const before = structuredClone(s), originalCatalog = structuredClone(catalog);
-  assert(!rules.castTrpgTable(s, catalog, shark).ok, "The ordinary weekly shift is busy on elapsed day 22");
+  assert(rules.castTrpgTable(s, catalog, shark).ok, "Members can arrive after ordinary shifts");
   assert(scheduleChapterTwoTrpgNight(s, 15));
   assert.deepEqual(s.trpg.shifts, [{ id: "samechan", chapter: 2, day: 22, slot: 1, busy: false }]);
   const cast = rules.castTrpgTable(s, catalog, shark);
@@ -52,7 +52,7 @@ test("chapter two DAY8 is a playable shark night with only the approved individu
   for (let localDay = 2; localDay <= 13; localDay++) {
     s.day = 15 + localDay - 1;
     const ready = rules.castTrpgTable(s, catalog, shark, { nightBusy: CH2_NIGHTS.some(night => night.day === localDay) });
-    assert.equal(ready.ok, localDay === 8, `Unexpected normal-calendar shark availability on DAY${localDay}`);
+    assert.equal(ready.ok, !CH2_NIGHTS.some(night => night.day === localDay), `Unexpected story-night availability on DAY${localDay}`);
   }
   assert.deepEqual(catalog, originalCatalog, "Weekly schedules must stay unchanged");
 });
@@ -109,9 +109,9 @@ test("known MAX friends or lovers may join; work does not prevent face-to-face r
   assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
   s.lovers = ["hiyori"]; s.loveLevel = { hiyori: 1 };
   assert(rules.joinTrpgClub(s, catalog, "hiyori"));
-  s.met.adam = true; s.affinity.adam = 66; // His shop is working tonight.
+  s.met.adam = true; s.affinity.adam = 66; // His shop closes before the club meets.
   assert(rules.joinTrpgClub(s, catalog, "adam"));
-  assert(!rules.participantStatus(s, catalog.participants.find(p => p.id === "adam")).ok);
+  assert(rules.participantStatus(s, catalog.participants.find(p => p.id === "adam")).ok);
   const before = structuredClone(s);
   for (const id of ["sumi", "naru", "unknown"]) assert(!rules.joinTrpgClub(s, catalog, id));
   const uninterested = structuredClone(catalog); uninterested.participants[2].interested = false;
@@ -130,12 +130,13 @@ test("buy once, charge once, preserve the clock, and keep purchased books when s
   const poor = friends(state()); poor.money = 499; rules.syncTrpgStock(poor, catalog);
   assert(!rules.buyTrpgBook(poor, catalog, ordinary.id)); assert.equal(poor.money, 499);
 });
-test("work, explicit shift overrides, temporary closure and existing appointments affect participants", () => {
+test("ordinary work ends before the night table; explicit plans and appointments still block", () => {
   const s = friends(state()); s.day = 4;
   const sharkPerson = catalog.participants.find(p => p.id === "samechan");
-  assert(!rules.participantStatus(s, sharkPerson).ok);
-  s.flags._temporary_closed_samechan = "2:4";
   assert(rules.participantStatus(s, sharkPerson).ok);
+  s.slot = 0; assert(!rules.participantStatus(s, sharkPerson).ok);
+  s.flags._temporary_closed_samechan = "2:4";
+  assert(rules.participantStatus(s, sharkPerson).ok); s.slot = 1;
   s.trpg.shifts = [{ id: "samechan", chapter: 2, day: 4, slot: 1, busy: true }];
   assert(!rules.participantStatus(s, sharkPerson).ok);
   s.day = 3; assert(rules.participantStatus(s, sharkPerson).ok);
@@ -159,7 +160,8 @@ test("Sumi/Naru never join; unrecruited companions are not invited", () => {
 });
 test("a required shark GM cannot be replaced, while Adam fills Hiyori's optional seat with authored lines", () => {
   const s = own(friends(state()), shark.id);
-  s.day = 4; assert(!rules.castTrpgTable(s, catalog, shark).ok);
+  s.day = 4; s.trpg.shifts.push({ id: "samechan", chapter: 2, day: 4, slot: 1, busy: true });
+  assert(!rules.castTrpgTable(s, catalog, shark).ok);
   s.day = 5; s.trpg.shifts.push({ id: "hiyori", chapter: 2, day: 5, slot: 1, busy: true });
   const cast = rules.castTrpgTable(s, catalog, shark);
   assert.deepEqual(cast.participants, ["samechan", "hajime", "adam", "tsumugi"]);
@@ -203,7 +205,16 @@ test("alternate dialogue, small-table intro and cast have canonical actors and f
 });
 
 test("club copy fits dialogue limits and the catalog explicitly marks interest", () => {
-  const lines = [...club.lines, ...club.branches.invite].map(l => l.text);
+  const lines = [...club.lines, ...club.branches.invite, ...club.branches.founded,
+    ...club.branches.proposal_time, ...club.branches.proposal_people].map(l => l.text);
+  // 二つの断り文句を、サイがどちらも手伝う返事へ言い換える。
+  for (const choice of ["proposal_time", "proposal_people"]) {
+    assert(club.branches[choice][0].speaker === "hajime", choice + "で断ろうとする");
+    assert(club.branches[choice][1].speaker === "sai" && club.branches[choice][1].text.includes("手伝ってくださる"), choice + "で手伝う返事に変わる");
+  }
+  assert(club.branches.founded.some(l => l.speaker === "sai" && l.text.includes("部長")), "気づけば部長");
+  assert(club.branches.founded.some(l => l.text.includes("部員集め")), "人集めまで任される");
+  assert(club.branches.invite[0].text.includes("部長"));
   for (const p of catalog.participants) {
     assert.equal(typeof p.interested, "boolean"); assert(Number.isInteger(p.maxAffinity));
     if (p.interested) { assert(club.branches[p.id].length >= 2); assert(club.branches[p.id].every(l => l.speaker === p.id)); lines.push(...club.branches[p.id].map(l => l.text)); }

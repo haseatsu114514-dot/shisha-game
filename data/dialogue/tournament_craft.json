@@ -1,0 +1,479 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "tournament_craft_opening_1",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "はじめ、なる、アダム、みんと！ 四人の手元にご注目ッ！"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "配合で何を届けたいのか。最後の調整まで、それが通っているかを見る"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "私は詰め方と熱のつながりを。立ち上げた後も、同じ一台ですからね"
+        },
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "私は最初の香りと、吸い進めたときの変化が楽しみだねえ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_opening_2",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "お題はストロベリー！ はじめ、あげは、神崎、REIの四選手ですッ！"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "課題の香りをどう届けるか。提供して終わりではないぞ"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "詰め方と熱、それに提供後の二度の調整。つながりを見せてください"
+        },
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "同じストロベリーでも、四人で違う煙になる。楽しみだねえ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_packed_intro",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "はじめ選手、パッキング完了！ 審査員の皆さん、手元のどこに注目ですか？"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "表面の整い方と、空気の通り道ですね。ただ、見た目だけでは決まりません"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_pack_fluffy",
+      "lines": [
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "ふわっと詰めましたね。熱が回ったときの立ち上がりに注目しましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_pack_normal",
+      "lines": [
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "均等にならしましたね。この詰め方に、どう熱を合わせるでしょうか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_pack_firm",
+      "lines": [
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "しっかり詰めましたね。内側までどう熱を届けるか、見たいですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_mix_single",
+      "lines": [
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "{flavors}を一本で。最初にどんな香りが届くのか、気になるねえ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_mix_blend",
+      "lines": [
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "{flavors}という配合だねえ。どの香りを前に出してくれるのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_packed_end",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "配合と詰め方がそろいました！ ここから火が入って、狙いが見えてきますッ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（手元まで見られてる。……決めた詰め方に、熱を合わせよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_waiting_1",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "加熱が進む間、お隣も見てみましょう！ なる選手、トングを置きましたね？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "今は待つところっす。甘さを出したいから、ここで触りすぎたくない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは台から目を離さず、指先だけを膝の上で動かしていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（落ち着いて見えても、見続けてるんだ。俺も、自分の一台を）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_waiting_2",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "加熱の間に、お隣も見てみましょう！ 神崎選手、炭を一つ外しましたね？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "苺は熱に弱え。急かすより、待った方が早え"
+        },
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "迷いのない置き方だねえ。毎日やってる手だ"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "REI選手は目を閉じて、指で拍を取っています。あげは選手も、じっと台を見て……？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……煙が上がるまでの間を、聴いてる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "今しゃべったら、つい触っちゃいそう。ここは待つって決めたの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一瞬、あげはの目が、こっちの手元で止まった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（待ち方まで違う。……俺は、時間と手順を確かめよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_crowd_0",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席の話し声が少し静まり、四台の炭へ視線が集まった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_crowd_1",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "ぷぷぷっ！ トングを置いた手にも、客席の視線が集まっていますッ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_crowd_2",
+      "lines": [
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "待っていると、つい隣が気になるねえ。煙を吸うのは、もう少し先だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_tasting_intro",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "二度の調整まで終了！ 先ほど注目していた配合と詰め方、煙ではどう届きましたか？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_aroma_good",
+      "lines": [
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "さっきの{flavors}だねえ。最初の香りがはっきり届いたよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_aroma_work",
+      "lines": [
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "さっきの{flavors}、香りは感じたよ。最初の一口でもう少し輪郭が出るといいねえ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_serve_good",
+      "lines": [
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "{packing}の立ち上がりを見ていましたが、提供時には熱を合わせられましたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_serve_hot",
+      "lines": [
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "{packing}の立ち上がりは、熱が強めでした。熱を逃がす余地がありましたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_serve_cold",
+      "lines": [
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "{packing}の立ち上がりは、まだ熱が足りませんでした。内側へ熱を届けたいですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_care_steady",
+      "lines": [
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "提供と二度の調整で、適温に合わせた。最初に見せた狙いを、最後まで届けたな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_care_recovered",
+      "lines": [
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "途中は熱が合っていなかったが、最後の調整で戻した。客の前で立て直した仕事は見ている"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_care_hot",
+      "lines": [
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "最後の調整は熱が強い。最初の香りだけでなく、吸い続ける客に合わせて落ち着かせたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_care_cold",
+      "lines": [
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "最後の調整では熱が足りなかった。吸い進めた一台に、もう一度香りを届けるところが課題だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_care_incomplete",
+      "lines": [
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "提供後の変化まで見て、一台を仕上げる。それも審査する仕事のうちだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_tasting_end",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "詰めたところから最後のひと手間まで、審査員は見ていました！ さあ、判定へッ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_aroma_unknown",
+      "lines": [
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "さっきの{flavors}だねえ。詰め方と合わせて、最後まで味わわせてもらうよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_opening_3",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "HAZE: NATIONAL TOKYO！ はじめ、久世、スティーブ、ヴォルクの四台が同時に始まる！"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "最初の香りだけで決めない。提供後の変化と二度の調整まで見せてもらう"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "詰め方と熱を、最後の一口までどうつなぐか。手順を見ています"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "古い手順も新しい道具も、煙に理由があればいい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_waiting_3",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "加熱の時間！ 四人とも、隣の台より自分の煙を見ているか！？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世はノートを閉じ、審査員の動線を確かめた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "香ばしさが先。甘さはまだ。炭を戻すのは、もう一呼吸あと"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "室温が変わった。次の計測値で合わせる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（先に自分の温度を見よう。隣の速さは、俺の答えじゃない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_mix_single_3",
+      "lines": [
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "{flavors}を一本で。葉の変化まで見せてくれ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_mix_blend_3",
+      "lines": [
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "{flavors}か。香りが重なる順番を確かめたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_crowd_2_3",
+      "lines": [
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "隣を見る時間もある。だが、台へ戻る手を見ている"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_aroma_good_3",
+      "lines": [
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "{flavors}の最初の香りが届いた。次の一口でも確かめよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_aroma_work_3",
+      "lines": [
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "{flavors}は届いている。最初の輪郭をもう少し確かめたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_aroma_unknown_3",
+      "lines": [
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "{flavors}だな。提供から最後の調整まで、続けて味わおう"
+        }
+      ]
+    }
+  ]
+}

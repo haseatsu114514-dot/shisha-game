@@ -1,3 +1,4 @@
+import { spendableMoney } from "../core/travel-budget.js";
 // Campaign rules only. All mutations are explicit; this module has no DOM/storage.
 const clone = value => JSON.parse(JSON.stringify(value));
 const excluded = new Set(["sumi", "naru"]);
@@ -39,7 +40,8 @@ export function participantStatus(state, person) {
   const override = (state.trpg?.shifts || []).find(s => s.id === person.id && s.chapter === state.chapter
     && s.day === state.day && s.slot === state.slot);
   const temporaryClosed = state.flags?.[`_temporary_closed_${person.id}`] === `${state.chapter}:${state.day}`;
-  const shift = override ? override.busy : !temporaryClosed && (person.shifts || []).some(s =>
+  // 夜の卓は各店の営業が終わるまで待つ。通常シフトは昼だけを遮り、個別の予定は夜も優先する。
+  const shift = override ? override.busy : state.slot === 0 && !temporaryClosed && (person.shifts || []).some(s =>
     s.slot === state.slot && s.days.includes(state.day % 7));
   if (shift) return { ok: false, reason: override?.reason || person.workLabel || "シフト中" };
   const invite = state.pendingInvite;
@@ -76,7 +78,7 @@ export function syncTrpgStock(state, catalog) {
 export function buyTrpgBook(state, catalog, id) {
   const book = catalog.scenarios.find(b => b.id === id);
   if (!book || state.chapter < catalog.unlockChapter || !state.trpg?.stock.includes(id)
-    || state.trpg.owned.includes(id) || !Number.isInteger(book.price) || book.price < 0 || state.money < book.price) return false;
+    || state.trpg.owned.includes(id) || !Number.isInteger(book.price) || book.price < 0 || spendableMoney(state) < book.price) return false;
   state.money -= book.price;
   state.trpg.owned.push(id);
   return true;
@@ -144,6 +146,8 @@ export function completeTrpgTable(state, catalog, scenario, ticket, result, opti
     chapter: state.chapter, day: state.day, gm: current.gm, participants: [...current.participants],
     ending: result.ending, endingTitle: scenario.endings[result.ending].title,
     variant: result.variant, plan: clone(result.plan), version: scenario.version,
+    ...(Number.isInteger(result.rating?.stars) ? { stars: result.rating.stars } : {}),
+    ...(Number.isInteger(result.heat?.value) ? { heat: result.heat.value, night: result.heat.night } : {}),
   };
   state.slot++;
   return true;

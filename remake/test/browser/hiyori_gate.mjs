@@ -12,6 +12,7 @@ async function setup(page) {
     H.ch1.setupHooks(); H.vn.vnTest.turbo = true; H.vn.vnTest.choose = () => 0;
     H.fresh = () => {
       const s = H.core.newGame();
+      s.flags._axe_bar_legacy_access = true; // #577: 既存の好感度・正式ルート条件を維持
       Object.assign(s, { phase: 'daily', day: 9, slot: 1, seed: 131, money: 30000, stamina: 100, lastBaitoDay: 9 });
       Object.assign(s.flags, { _morning_9: true, _morning_10: true, _delivery_minto_done: true,
         _delivery_adam_done: true, _errand_scout_done: true, _lime_tut: 1, _hiyori_meeting_done: true,
@@ -39,11 +40,12 @@ await suite('hiyori-gate', async check => {
           const beforeRead = H.stats.releaseHiyoriAffinity();
           H.vn.backlog().length = 0;
           const read = await H.hiyori.playHiyoriEvent('tonari_return');
-          const after = s.affinity.hiyori, rescued = s.flags._hiyori_affinity_released_pts;
+          const after = s.affinity.hiyori, legacyReleased = s.flags._hiyori_affinity_released_pts || 0,
+            stageReleased = s.flags._hiyori_affinity_stage_released_pts || 0;
           const duplicate = await H.hiyori.playHiyoriEvent('tonari_return');
           H.core.save(); H.core.load();
           const again = H.stats.releaseHiyoriAffinity();
-          rows.push({ start, locked, held, carry, beforeRead, read, after, rescued, duplicate, again,
+          rows.push({ start, locked, held, carry, beforeRead, read, after, legacyReleased, stageReleased, duplicate, again,
             final: H.core.state.affinity.hiyori, done: H.core.state.flags._hiyori_tonari_return_done,
             retained: H.core.state.flags._hiyori_affinity_waiting_pts, fortuneUsed: !H.core.state.fortune });
         }
@@ -60,8 +62,9 @@ await suite('hiyori-gate', async check => {
       for (const r of results.rows) {
         assert.equal(r.locked, Math.max(r.start, 33)); assert(r.held > 100);
         assert.equal(r.beforeRead, 0); assert(r.read && r.done && r.fortuneUsed);
-        assert(r.rescued >= 0 && r.rescued <= 15); assert.equal(r.retained, r.held);
-        if (r.start < 48) assert(r.after >= 48 && r.after < 66, JSON.stringify(r));
+        assert.equal(r.legacyReleased, 0); assert.equal(r.stageReleased, Math.max(0, 47 - Math.max(r.start, 33)));
+        assert.equal(r.retained, r.held + 10);
+        assert.equal(r.after, Math.max(r.start, 47), JSON.stringify(r));
         assert(!r.duplicate); assert.equal(r.again, 0); assert.equal(r.final, r.after);
       }
       assert.deepEqual(results.guarantee, { points: 33, guaranteed: 15, again: 15 });

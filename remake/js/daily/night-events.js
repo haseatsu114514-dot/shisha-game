@@ -65,6 +65,26 @@ export function nightPlan(events, { resting = restingToday(), appointment = stat
   return next ? [next.ev] : [];
 }
 
+/** 自由訪問だけの案内。runNightPlanと同じ実行順を読むが、キュー・既読・保存は更新しない。 */
+export function fixedNightVisitBlock(events, spot) {
+  if (spot?.id !== "tonari" || ![0, 1].includes(state.slot) || chapterDay(state) >= TOURNAMENT_DAY) return null;
+  const plan = nightPlan(events).slice();
+  const fixed = events[state.day];
+  // 期限救済の準備が先でも、その後の固定回を見落とさない。
+  if (fixed && !postponeable(fixed) && !fixed.done?.() && !plan.includes(fixed)) plan.push(fixed);
+  const flags = new Set(Object.keys(state.flags).filter(key => state.flags[key]));
+  for (const ev of plan) {
+    if (ev.done?.()) continue;
+    if (!(ev.prerequisites || []).every(key => flags.has(key))) break;
+    const mandatory = !postponeable(ev) || ev.schedule === "preparation" && ev.deadline <= state.day;
+    if (mandatory && ev.pin === spot.id) {
+      return { ok: false, why: "この後もtonariに行くから、今は別のところにしよう", tag: "この後、必須の予定あり" };
+    }
+    for (const key of ev.doneKeys || []) flags.add(key);
+  }
+  return null;
+}
+
 export function nightOccupied(events, day) {
   if (day !== state.day) return !!events[day] && !events[day].done?.();
   // 受諾済みの約束がある夜は通常の延期候補を実行しない。新規受諾前は予定を予約する。
@@ -80,8 +100,8 @@ export async function runNightPlan(events, before = async () => {}) {
   for (const ev of plan) {
     if (ev.done?.()) continue;
     if (!ready(ev)) throw new Error(`Night event prerequisites missing: ${ev.id}`);
-    await before(ev);
-    await ev.run();
+    const context = await before(ev);
+    await ev.run(context);
     state.flags._night_event_day = `${state.chapter}:${state.day}`;
     count++;
     syncNightQueue(events, { resting: false });

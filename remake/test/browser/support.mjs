@@ -10,8 +10,13 @@ export const baseURL = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const artifacts = path.resolve(root, process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser");
 
 // Each case uses a new browser context: no existing player's storage is opened.
-export async function suite(name, run) {
+export async function suite(name, run, {
+  entry = baseURL,
+  readySelector = process.env.READY_SELECTOR || '[data-test="title-new"]',
+  initScript = null,
+} = {}) {
   fs.mkdirSync(artifacts, { recursive: true });
+  const timeoutMs = Number(process.env.BROWSER_TIMEOUT_MS || 10000);
   const results = [];
   const browser = await chromium.launch({
     headless: true,
@@ -21,9 +26,10 @@ export async function suite(name, run) {
     if (process.env.CASE_FILTER && label !== process.env.CASE_FILTER) return;
     const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
     const page = await context.newPage();
+    if (initScript) await page.addInitScript(initScript);
     const errors = [];
     const failedResources = [];
-    page.setDefaultTimeout(10000);
+    page.setDefaultTimeout(timeoutMs);
     page.on("pageerror", error => errors.push(error.message));
     page.on("response", response => {
       if (response.status() >= 400) failedResources.push(`${response.status()} ${response.url()}`);
@@ -36,9 +42,9 @@ export async function suite(name, run) {
     });
     const prefix = path.join(artifacts, `${name}-${label}`);
     try {
-      await page.goto(baseURL, { waitUntil: "load" });
+      await page.goto(entry, { waitUntil: "load" });
       // 起動時は書体と選んだタイトル画像を待つ。工程中の操作とは別の上限。
-      await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
+      await page.locator(readySelector).waitFor({ timeout: 30000 });
       await page.locator("#boot").waitFor({ state: "detached" });
       await body(page);
       assert.deepEqual(errors, [], "Unexpected browser errors");
@@ -59,7 +65,7 @@ export async function suite(name, run) {
   } finally {
     await browser.close();
     fs.writeFileSync(path.join(artifacts, `${name}.json`), JSON.stringify({
-      name, baseURL, ref: process.env.TEST_REF || null, results,
+      name, baseURL: entry, timeoutMs, ref: process.env.TEST_REF || null, results,
     }, null, 2) + "\n");
   }
   assert(results.length > 0, "No browser cases were selected");
@@ -83,7 +89,18 @@ export async function assertFits(page, selector) {
         contained: r.left >= stage.left - 1 && r.top >= stage.top - 1
           && r.right <= stage.right + 1 && r.bottom <= stage.bottom + 1
           && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1,
-        textFits: node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1 };
+        textFits: node.matches(".vn-box")
+          ? [...node.querySelectorAll(".vn-text, .vn-inner:not([hidden])")].every(part => {
+            const b = part.getBoundingClientRect();
+            return b.left >= r.left - 1 && b.right <= r.right + 1 && b.top >= r.top - 1 && b.bottom <= r.bottom + 1
+              && part.scrollWidth <= part.clientWidth + 1 && part.scrollHeight <= part.clientHeight + 1;
+          }) && [...node.querySelectorAll(".vn-name:not([hidden])")].every(part => {
+            if (!part.textContent || !part.getBoundingClientRect().width) return true;
+            const text = document.createRange(); text.selectNodeContents(part);
+            const b = text.getBoundingClientRect();
+            return b.left >= -1 && b.top >= -1 && b.right <= innerWidth + 1 && b.bottom <= innerHeight + 1;
+          })
+          : node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1 };
     });
   });
   assert(results.length > 0, `Missing layout target: ${selector}`);

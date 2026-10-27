@@ -5,6 +5,7 @@ import { loadAll, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
+import { applyUiTheme } from "./core/ui-theme.js";
 import { vnTest } from "./vn/engine.js";
 import { createDevInspector } from "./core/dev-inspector.js";
 import { createEventPreview } from "./core/dev-event-preview.js";
@@ -18,8 +19,13 @@ import { resumeGame } from "./chapters/ch1.js";
 
 function fitStage() {
   const stage = $("#stage");
-  const w = window.visualViewport?.width || window.innerWidth;
-  const h = window.visualViewport?.height || window.innerHeight;
+  const viewport = window.visualViewport;
+  // Browser zoom shrinks visualViewport in CSS pixels. Normalize that zoom out
+  // of the game fit so it does not also change --k (or cancel accessible zoom).
+  // Keep following the visible height when browser chrome / the keyboard moves.
+  const zoom = viewport?.scale || 1;
+  const w = viewport ? viewport.width * zoom : window.innerWidth;
+  const h = viewport ? viewport.height * zoom : window.innerHeight;
   stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
 }
 
@@ -30,7 +36,7 @@ export async function boot() {
   window.visualViewport?.addEventListener("resize", fitStage);
   initLayers();
   initGameLayout();
-  loadConfig();
+  applyUiTheme(loadConfig().uiTheme);
   // 自動再生制限: 最初の操作で音を解禁（以後も操作のたびに保険で呼ぶ・軽い）
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);
@@ -108,7 +114,7 @@ window.__remake = {
       return Object.fromEntries(Object.keys(kit.ADOPTED_VARIANT).map((k) => [k, kit.motionVariant(k)]));
     },
     // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
-    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。※今のセーブを上書きする
+    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
       const { play } = await import("./vn/engine.js");
@@ -126,6 +132,15 @@ window.__remake = {
         const scene = DB.dialogues.ch1_minto_first;
         return play({ dialogue_id: "dev_cheki", metadata: {}, lines: scene.branches.cheki_taken }, { bg: bgRef("peppermint") });
       }
+      // LIME交換: lime（なる）／lime-adam／lime-minto-private（栞の私用アカウント）
+      if (name.startsWith("lime")) {
+        const [, id = "naru", context = null] = name.split("-");
+        state.contacts = ["sumi", "tsumugi", "minto", "adam", "naru"].filter((c) => c !== id || context === "private");
+        if (context === "private") Object.assign(state.flags, { _minto_name_known: true, _lime_exchange_shown_minto_private: true });
+        state.flags[`_lime_contact_${id}`] = true;
+        await setBg(bgUrl("bg_tonari_inside", "night"));
+        return motions.limeExchange(id, context);
+      }
       if (name === "tarot") {
         state.fortune = { char: "tsumugi" };
         return play("remake_fortune_result", { bg: bgRef("bg_street") });
@@ -140,9 +155,34 @@ window.__remake = {
         await motions.shiftClose();
         return play("remake_baito_end", { bg: "res://assets/backgrounds/bg_tonari_inside.png" });
       }
+      if (name.startsWith("train")) {
+        const tone = name.split("-")[1] === "night" ? "night" : "day";
+        await setBg(bgUrl("bg_tonari_inside", tone));
+        const { PRIVATE_PASSENGERS } = await import("./motions/train-passengers.js");
+        const tokens = name.split("-").slice(1);
+        const passenger = tokens.find(id => Object.hasOwn(PRIVATE_PASSENGERS, id));
+        const destination = tokens.find(id => ["home", "widehanga"].includes(id));
+        return motions.trainRide(() => setBg(bgUrl("bg_street", tone), { instant: true }), {
+          ...(name.includes("halloween") ? { halloween: true } : {}), ...(passenger ? { cameo: passenger } : {}),
+          ...(destination ? { to: destination } : {}),
+        });
+      }
       if (name === "shark") {
         await setBg(bgUrl("bg_street", "night"));
         return (await import("./daily/samechan.js")).playSamechanEncounter();
+      }
+      if (name.startsWith("chapter")) {
+        const n = Number(name.split("-")[1] || 1);
+        const { CHAPTER_TITLE_ART } = await import("./core/chapter-title-art.js");
+        const { chapterTitle } = await import("./core/ui.js");
+        const entry = CHAPTER_TITLE_ART.find((c) => c.chapter === n) || { no: `第${n}章`, name: "", read: "" };
+        await setBg(null);
+        return chapterTitle(entry);
+      }
+      if (name.startsWith("garagara")) {
+        const rank = name.split("-")[1] || "S";
+        await setBg(bgUrl("bg_shop"));
+        return (await import("./daily/kuji.js")).previewReveal(rank);
       }
       if (name.startsWith("dawn")) {
         const kind = name.split("-")[1] || "sun";
@@ -158,6 +198,16 @@ window.__remake = {
           const weather = (await import("./daily/weather.js")).weatherOf();
           return { fromDay: 3, day: 4, fromLeft: TOURNAMENT_DAY - 3, left: TOURNAMENT_DAY - 4, rain: weather === "rain", weather, sick: kind === "sick" };
         });
+      }
+      // プリクラ（#939）: purikura は演出だけ、purikura-scene はあげはのギャル友の回を通しで
+      if (name.startsWith("purikura")) {
+        const { ROOMS, readDialogues } = await import("./chapters/ch2-city-data.js");
+        Object.assign(state, { chapter: 2, slot: 0 });
+        state.met.ageha = true;
+        await setBg(ROOMS.ageha);
+        if (name !== "purikura-scene") return motions.purikuraShot();
+        Object.assign(DB.dialogues, await readDialogues("ch2_ageha_story", ["remake_ch2_ageha_gyaru"]));
+        return play("remake_ch2_ageha_gyaru", { bg: ROOMS.ageha });
       }
       if (name === "sketch") {
         const art = sceneBg(tonariNight, "night");

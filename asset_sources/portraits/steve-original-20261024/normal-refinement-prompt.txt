@@ -1,0 +1,7 @@
+Refine the FIRST reference image as a visual novel portrait of the SAME original character, Steve Davis. The second and third images are only style and composition references for this game's adopted character portraits; they are Kuze and Volk, different characters who must not appear in the result.
+
+Keep Steve's appealing face and warm, attentive expression, backward muted orange cap, short beard, smoke blue abstract T-shirt, open charcoal hoodie, dark jeans, sneakers, and the small unmarked kitchen timer in one hand. Keep him a broad, stocky 30-year-old American adult with a believable substantial build, never a caricature. Preserve the soft painterly contemporary 2D anime visual novel rendering, clean ink outlines and textured folds.
+
+Adjust Steve's pose and composition to match the two style references' full body framing: stand a little more upright with both arms closer to the torso, from cap to shoes, centered in a 3:4 transparent canvas. The body silhouette should occupy approximately 65–70% of the canvas width at its broadest point, leaving generous transparent space at both sides for an in-game VN portrait; the head and shoes should remain near the top and bottom. Keep natural anatomy and two normal hands. Make the art about as drawn and refined as the style references, with no photorealistic or 3D treatment.
+
+Transparent alpha background only, with no floor, room, cast shadow, border, text, watermark, smoke, hookah, shisha hardware, fire, pizza or additional characters. Exactly one Steve, one cap, one timer, two hands and two feet.

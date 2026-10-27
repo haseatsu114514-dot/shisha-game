@@ -315,6 +315,21 @@
           "text": "（笑われると思ってたけど、ここだと俺もつい喋ってしまう）"
         },
         {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "そうだ、はじめくん、ジムは行ってる？ チョイザップっていう店が、みんとのおすすめなんだ♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ジムですか。あまり考えたことなかったな"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "見た目も武器だよ♡ 煙を吐く姿だって、お客さんはちゃんと見てるからね？"
+        },
+        {
           "type": "remember",
           "memory_id": "minto_welcome"
         },
@@ -452,7 +467,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "PEPPERMINTのドアを開けると、明るい声が飛んできた。"
+            "text": "ぺぱーみんとのドアを開けると、明るい声が飛んできた。"
           },
           {
             "speaker": "minto",
@@ -470,7 +485,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "蒸野始です。tonariでバイトをしていて……"
+            "text": "蒸野はじめです。tonariでバイトをしていて……"
           },
           {
             "speaker": "minto",
@@ -481,7 +496,7 @@
         "dl_door": [
           {
             "speaker": "",
-            "text": "配達のあと、改めてPEPPERMINTの入口をくぐった。"
+            "text": "配達のあと、改めてぺぱーみんとの入口をくぐった。"
           },
           {
             "speaker": "minto",
@@ -740,6 +755,11 @@
             "text": "はいそこ、ちゃんとついてきて♡"
           }
         ]
+      },
+      "metadata": {
+        "flavor_lesson": {
+          "mint": 1
+        }
       }
     },
     {
@@ -751,7 +771,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "PEPPERMINTのドアを開けると、カウンターの奥に見覚えのある横顔があった。",
+          "text": "ぺぱーみんとのドアを開けると、カウンターの奥に見覚えのある横顔があった。",
           "portrait": "oneesan"
         },
         {
@@ -821,7 +841,7 @@
         {
           "speaker": "oneesan",
           "face": "smile",
-          "text": "いつもの席、どうぞ。……準備してくるね"
+          "text": "いつもの席、どうぞ、……準備してくるね"
         },
         {
           "type": "hide_portrait",
@@ -1013,7 +1033,10 @@
         }
       ],
       "metadata": {
-        "bg": "res://assets/backgrounds/peppermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png",
+        "flavor_lesson": {
+          "mint": 1
+        }
       }
     },
     {
@@ -1624,12 +1647,12 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "ええっ！？ じゃあ、初めてお姉さんに出した、あの１台って"
+            "text": "ええっ！？ じゃあ、初めてお姉さんに出した、あの一台って"
           },
           {
             "speaker": "minto",
             "face": "ura_normal",
-            "text": "……うん。あの日、初めてきみに作ってもらった１台を、私が飲んだの。……年齢確認も、されたけど"
+            "text": "……うん。あの日、初めてきみに作ってもらった一台を、私が飲んだの。……年齢確認も、されたけど"
           },
           {
             "speaker": "hajime",
@@ -1644,7 +1667,7 @@
           {
             "speaker": "minto",
             "face": "ura_smile",
-            "text": "……でも、あの１台が思ったより良くてさ。なんか、言いそびれちゃった"
+            "text": "……でも、あの一台が思ったより良くてさ。なんか、言いそびれちゃった"
           },
           {
             "speaker": "hajime",
@@ -1661,7 +1684,7 @@
           {
             "speaker": "minto",
             "face": "ura_normal",
-            "text": "……あの時、初めて作ってくれた１台、覚えてる？"
+            "text": "……あの時、初めて作ってくれた一台、覚えてる？"
           },
           {
             "speaker": "hajime",
@@ -1671,7 +1694,7 @@
           {
             "speaker": "minto",
             "face": "ura_smile",
-            "text": "最初は偵察のつもりだったけど。あの１台、うれしかったの"
+            "text": "最初は偵察のつもりだったけど。あの一台、うれしかったの"
           },
           {
             "speaker": "hajime",
@@ -1894,7 +1917,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "みんとはね、大会より自分のお店かな。自分のやり方で、もっといい１台を出せるように磨くよ"
+          "text": "みんとはね、大会より自分のお店かな。自分のやり方で、もっといい一台を出せるように磨くよ"
         },
         {
           "speaker": "minto",

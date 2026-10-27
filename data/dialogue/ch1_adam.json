@@ -123,7 +123,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "出されたシーシャを吸う。──重い。だが、嫌な重さじゃない。"
+          "text": "出されたシーシャを吸う。重い。だが、嫌な重さじゃない。"
         },
         {
           "speaker": "",
@@ -170,6 +170,13 @@
         {
           "type": "remember",
           "memory_id": "adam_origin"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_adam",
+          "next_true": "",
+          "next_false": "early_lime_exchange"
         }
       ],
       "branches": {
@@ -177,21 +184,21 @@
           {
             "speaker": "",
             "face": "",
-            "text": "「Eden（エデン）」。下町の路地にある、スミさんの届け先だ。"
+            "text": "「EDEN（エデン）」。下町の路地にある、スミさんの届け先だ。"
           }
         ],
         "self_open": [
           {
             "speaker": "",
             "face": "",
-            "text": "「Eden（エデン）」。下町の路地にある、ダブルアップルの店だ。"
+            "text": "「EDEN（エデン）」。下町の路地にある、ダブルアップルの店だ。"
           }
         ],
         "self_study": [
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "あ、俺、tonariの蒸野と言います。勉強のために――"
+            "text": "あ、俺、tonariの蒸野と言います。勉強のために……"
           },
           {
             "speaker": "adam",
@@ -203,7 +210,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "あ、俺、tonariの蒸野です。スミさんから、届け物を――"
+            "text": "あ、俺、tonariの蒸野です。スミさんから、届け物を……"
           },
           {
             "speaker": "",
@@ -246,6 +253,32 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。必ず伝えます"
+          }
+        ],
+        "early_lime_exchange": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "煙の求道者よ。リンゴの導きで出会った縁だ。LIME、交換しておこう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、はい……"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "ふっ……リンゴの導きが繋いだ縁だ。大切にせよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "こうして、アダムとLIMEの連絡先を交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_adam"
           }
         ]
       }
@@ -423,35 +456,51 @@
           "text": "お前も、その魂の片鱗を持っている。だからこそ、俺の店に引き寄せられたのだ……"
         },
         {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "……ならば、煙の求道者同士として繋がっておくのは道理。LIME、交換しておこう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "あ、はい……"
-        },
-        {
-          "speaker": "adam",
-          "face": "smile",
-          "text": "ふっ……リンゴの導きが繋いだ縁だ。大切にせよ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──こうして、アダムとLIMEの連絡先を交換した。"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_lime_contact_adam"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_adam",
+          "next_true": "",
+          "next_false": "early_lime_exchange"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "early_lime_exchange": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……ならば、煙の求道者同士として繋がっておくのは道理。LIME、交換しておこう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、はい……"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "ふっ……リンゴの導きが繋いだ縁だ。大切にせよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "こうして、アダムとLIMEの連絡先を交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_adam"
+          }
+        ]
+      },
+      "metadata": {
+        "flavor_lesson": {
+          "double_apple": 1
+        }
+      }
     },
     {
       "dialogue_id": "ch1_adam_fourth",
@@ -534,7 +583,7 @@
         {
           "speaker": "adam",
           "face": "smug",
-          "text": "……いい問いだ。俺にはもう１つ、極めし道がある。──ナイフ投げよ"
+          "text": "……いい問いだ。俺にはもう１つ、極めし道がある。ナイフ投げよ"
         },
         {
           "speaker": "hajime",
@@ -554,7 +603,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──壁際に置かれた１個のリンゴに、ナイフが寸分違わず突き立っていた。"
+          "text": "壁際に置かれた１個のリンゴに、ナイフが寸分違わず突き立っていた。"
         },
         {
           "speaker": "hajime",
@@ -751,7 +800,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──総督。アダムは二つのタッパーを、それぞれの客の前に置いた。"
+          "text": "総督。アダムは二つのタッパーを、それぞれの客の前に置いた。"
         },
         {
           "speaker": "hajime",
@@ -864,7 +913,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "アームが下りる。──見事、一発で掴んだ。"
+          "text": "アームが下りる。見事、一発で掴んだ。"
         },
         {
           "speaker": "hajime",
@@ -917,7 +966,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "疲れはない。ただ、己の果実が最善を尽くせたかどうか──それだけを考えていた"
+          "text": "疲れはない。ただ、己の果実が最善を尽くせたかどうか、それだけを考えていた"
         },
         {
           "speaker": "",
@@ -1019,7 +1068,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "お前の煙が、どこに向かうべきか──少し見えてくるかもしれない"
+          "text": "お前の煙が、どこに向かうべきか、少し見えてくるかもしれない"
         },
         {
           "speaker": "",

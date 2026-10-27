@@ -10,6 +10,60 @@ const browser = await chromium.launch({ headless: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
 });
 try {
+  // 開始ごとの小さな位置・角度差でも、1〜4炭と交換用の狭い配置を安全に操作できる。
+  const placementPage = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  try {
+    await placementPage.goto(base); await placementPage.waitForSelector('[data-test="title-new"]');
+    const failures = await placementPage.evaluate(async () => {
+      const core = await import("./js/core/state.js"); core.newGame();
+      const session = await import("./js/craft/session.js");
+      const { buildHeatView, coalSpots } = await import("./js/craft/heat_view.js");
+      const cs = session.newSession("drill"); session.openBench(cs); await session.waitBenchReady(cs, "heat");
+      const random = Math.random, failures = [];
+      try {
+        for (const compact of [false, true]) for (const count of [1, 2, 3, 4]) for (const type of ["flat_charcoal", "cube_charcoal"]) {
+          const samples = [];
+          // 8通りの端点と、隣接する炭を互いに近づけた場合。
+          for (let pattern = 0; pattern < 9; pattern++) {
+            const spots = coalSpots(count); let calls = 0;
+            Math.random = () => {
+              const i = Math.floor(calls / 3) % count, axis = calls++ % 3;
+              const high = pattern < 8 ? (pattern >> axis) & 1
+                : axis === 0 ? spots[i][0] < .45 : axis === 1 ? spots[i][1] < .4 : i % 2;
+              return high ? 1 - Number.EPSILON : 0;
+            };
+            const panel = session.stepPanel(compact ? "care" : "heat", "炭の配置確認");
+            const view = buildHeatView(Array(count).fill(type), { count, compact }); panel.replaceChildren(view.root);
+            const bounds = view.stove.getBoundingClientRect(), panelBounds = panel.getBoundingClientRect();
+            const rects = view.coals.map(c => c.node.getBoundingClientRect());
+            const snapshot = view.coals.map(c => [c.node.style.left, c.node.style.top, c.visual.style.getPropertyValue("--coal-angle")]);
+            samples.push(JSON.stringify(snapshot));
+            const label = `${compact ? "compact" : "full"}/${count}/${type}/${pattern}`;
+            for (let i = 0; i < count; i++) {
+              const c = view.coals[i], r = rects[i], [x, y, name] = spots[i];
+              const angle = parseFloat(c.visual.style.getPropertyValue("--coal-angle"));
+              if (Math.abs(parseFloat(c.node.style.left) / 100 - x) * bounds.width > 11.01
+                || Math.abs(parseFloat(c.node.style.top) / 100 - y) * bounds.height > 5.01 || Math.abs(angle) > 3
+                || c.label !== name) failures.push(label + ": excessive variation or changed label");
+              if (r.left < bounds.left || r.right > bounds.right || r.top < panelBounds.top || r.bottom > bounds.bottom
+                || !c.node.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2))) failures.push(label + ": inaccessible coal");
+              if (rects.slice(i + 1).some(o => r.left < o.right && o.left < r.right && r.top < o.bottom && o.top < r.bottom)) failures.push(label + ": overlapping targets");
+            }
+            view.recordPick(0, { phase: "just", rating: "PERFECT", errorText: "JUST", label: "ジャスト" });
+            const stored = view.root.querySelector(".coal-stored .coal-sprite");
+            const matrix = new DOMMatrix(getComputedStyle(stored).transform);
+            const storedAngle = Math.atan2(matrix.b, matrix.a) * 180 / Math.PI;
+            if (Math.abs(storedAngle - parseFloat(snapshot[0][2])) > .01) failures.push(label + ": stored coal lost its angle");
+            if (JSON.stringify(view.coals.map(c => [c.node.style.left, c.node.style.top, c.visual.style.getPropertyValue("--coal-angle")])) !== samples.at(-1)) failures.push(label + ": placement moved after a pick");
+          }
+          if (samples[0] === samples[7]) failures.push("New starts must vary both position and angle");
+        }
+      } finally { Math.random = random; }
+      return failures;
+    });
+    assert.deepEqual(failures, [], "Coal placement boundaries");
+    console.log("PASS heat placement: 144 boundary layouts, stable labels/targets and stored angles");
+  } finally { await placementPage.close(); }
   for (const [name, viewport, touch] of [["pc", { width: 1280, height: 720 }, false],
     ["touch", { width: 844, height: 390 }, true], ["portrait", { width: 390, height: 844 }, false]]) {
     const cases = name === "portrait" ? [[false, 4, false], [true, 4, false]] :
@@ -33,6 +87,8 @@ try {
       }
       await page.evaluate(async ({ compact, count }) => {
         const core = await import("./js/core/state.js"); core.newGame();
+        // Advanced-count fixture: learning and four-point layout are independent prerequisites.
+        Object.assign(core.state.flags, { _coal_cube_learned: true, _coal_four_unlocked: true });
         const session = await import("./js/craft/session.js"), heat = await import("./js/craft/heat.js");
         const pull = await import("./js/craft/pull.js"), common = await import("./js/craft/common.js");
         window.QA = { core, session, heat, pull, common };

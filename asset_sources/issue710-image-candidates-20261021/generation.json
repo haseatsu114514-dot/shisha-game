@@ -1,0 +1,139 @@
+{
+  "issue": 710,
+  "owner": "codex-c-img710-20261021-2a6b",
+  "status": "candidate-only / user selection pending / do not integrate",
+  "route": "built-in image_gen.imagegen; no API key, login, CLI API or paid upgrade",
+  "transfer_comment": "https://github.com/haseatsu114514-dot/shisha-game/issues/710#issuecomment-6307460880",
+  "transfer_run": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/39539904188",
+  "base_main": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "files": [
+    {
+      "file": "opening-coal-v1.png",
+      "bytes": 1987908,
+      "sha256": "7e812996bf3f8aacceacc621945210c125f6f34a53e2568e1070ada77a106393",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "bbox": [
+        0,
+        0,
+        1672,
+        941
+      ]
+    },
+    {
+      "file": "opening-coal-v2.png",
+      "bytes": 1834131,
+      "sha256": "70bde55034358800c3c9e5ae6c8c9b3fa11a48d3e8e0fbc28625432b4e92245b",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "alpha_extrema": null,
+      "bbox": [
+        0,
+        0,
+        1672,
+        941
+      ]
+    },
+    {
+      "file": "salaryman-normal-v1.png",
+      "bytes": 717087,
+      "sha256": "efa68511b363679676ae36d95755e2f69b0b94780a690a7812ead6a49f88e29c",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "bbox": [
+        39,
+        32,
+        1062,
+        1423
+      ]
+    },
+    {
+      "file": "salaryman-smile-v1.png",
+      "bytes": 721006,
+      "sha256": "4a497003ba2f5d6523274ca2bd227a42ca3c0da49a74079adae06ef05e203c40",
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "bbox": [
+        47,
+        31,
+        1052,
+        1429
+      ]
+    }
+  ],
+  "references": [
+    {
+      "path": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+      "sha256": "ed407e102f6e85196b2662d8d6995b205423dc24c59b2b9de0023cbedcc6e22a",
+      "role": "identity and costume"
+    },
+    {
+      "path": "assets/sprites/characters/salaryman/chr_salaryman_smile.png",
+      "sha256": "eb715b9f3c06419436ac119c0dbea6c89a21cb03d2c672a39fc78f1114cb9253",
+      "role": "identity and costume"
+    },
+    {
+      "path": "assets/ui/making/hajime_craft_heat.png",
+      "sha256": "825582bcb0fb6777a647bdf596eda29d953d591ec198f0d1ae7096d8f2401cf1",
+      "role": "hand/sleeve/rendering only; face not drawn"
+    },
+    {
+      "path": "docs/qa/issue531-opening/integration/desktop-coal.png",
+      "sha256": "cabf8454158eda050cb5d0b8dce918621e06767fa041b72b1ed41afb446853b5",
+      "role": "composition only; do not copy UI or incorrect composite scale"
+    },
+    {
+      "path": "asset_sources/shisha-hardware-reference/heat-management-reference-20261009.webp",
+      "sha256": "bb4d278249e172d46ad06bda87cb8b8b78e9d8b27c0f1c93c0fda008962a35b5",
+      "role": "equipment photograph only; H2 center; no product/people copying"
+    }
+  ],
+  "actual_reference_order": {
+    "salaryman-normal-v1.png": [
+      "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+      "assets/sprites/characters/salaryman/chr_salaryman_smile.png"
+    ],
+    "salaryman-smile-v1.png": [
+      "salaryman-normal-v1.png",
+      "assets/sprites/characters/salaryman/chr_salaryman_smile.png"
+    ],
+    "opening-coal-v1.png": [
+      "assets/ui/making/hajime_craft_heat.png",
+      "docs/qa/issue531-opening/integration/desktop-coal.png",
+      "asset_sources/shisha-hardware-reference/heat-management-reference-20261009.webp"
+    ],
+    "opening-coal-v2.png": [
+      "assets/ui/making/hajime_craft_heat.png",
+      "docs/qa/issue531-opening/integration/desktop-coal.png",
+      "asset_sources/shisha-hardware-reference/heat-management-reference-20261009.webp"
+    ]
+  },
+  "prompts": {
+    "salaryman-normal-v1.png": "salaryman-normal-prompt.txt",
+    "salaryman-smile-v1.png": "salaryman-smile-prompt.txt",
+    "opening-coal-v1.png": "coal-prompt.txt",
+    "opening-coal-v2.png": "coal-v2-prompt.txt"
+  },
+  "operations": "Unmodified generated PNG originals. No painting, collage, alpha cleanup, rescaling, game asset replacement or integration."
+}

@@ -7,8 +7,10 @@ import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene } from "../daily/weather.js";
-import { createSceneCurtain, nightToMorning, isCovering } from "./transitions.js";
+import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
+import { chapterTitleArt } from "./chapter-title-art.js";
+import { uiThemeFrame } from "./ui-theme.js";
 
 export const layers = {};
 
@@ -55,6 +57,7 @@ export function initLayers() {
 
 let bgNow = "";
 let bgTask = Promise.resolve();
+let bgAssetsReady = Promise.resolve();
 let activeCurtain = null;
 let weatherBg = "";
 let weatherKey = "";
@@ -103,10 +106,11 @@ let uiArtDone = false;
 /** UIの絵と顔アイコンをまとめて読む（一度だけ。全部そろうか、遅い回線では15秒で解決） */
 export function warmUiArt() {
   if (!uiArt) {
-    const urls = [...LOUNGE_ART, ...SLOT_ART, "img/ui/chapters/ch1_keyart.webp", ...allFaceIconUrls(), ...allStoreLogoUrls()];
+    const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls(), ...allStoreLogoUrls()];
     uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
-  return uiArt;
+  // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
+  return Promise.all([uiArt, imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true })]);
 }
 
 /** 顔アイコンやスロットが出る画面の前に呼ぶ。読み終わっていれば null（待たない）、まだなら最大 ms 待つ Promise */
@@ -117,24 +121,34 @@ export function uiArtReady(ms = 2000) {
 
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
- * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ
+ * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
+ * assetsReady は画像の取得・デコードだけを待つ。読み込み表示と操作解禁の条件を混同しない。
  */
-export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [] } = {}) {
+export function setBg(url, { instant = false, tint = null, fast = false, brief = false, ready = [], homeRigs = true } = {}) {
   const host = layers.bg;
-  const key = `${url}|${tint || ""}`;
-  if (key === bgNow) { refreshWeather(); return Promise.all([bgTask, ...ready.map((u) => imageReady(u, 15000))]); }
+  const art = { homeRigs };
+  const key = `${url}|${tint || ""}|${sceneArtUrls(url, art).join("|")}`;
+  const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
+  if (key === bgNow) {
+    refreshWeather();
+    const assetsReady = Promise.all([bgAssetsReady, ...ready.map((u) => imageReady(u, 15000))]);
+    return Object.assign(Promise.all([bgTask, assetsReady]), { assetsReady });
+  }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
-  const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip") }) : null;
+  const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
   if (curtain) activeCurtain = curtain;
   bgNow = key;
-  bgTask = Promise.all([curtain?.covered, ...[...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000))]).then(() => {
+  bgAssetsReady = Promise.all([...sceneArtUrls(url, art), ...ready].map((u) => imageReady(u, 15000)));
+  bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(() => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
     const next = el("div.bg-img");
-    renderSceneArt(next, url);
+    renderSceneArt(next, url, art);
     if (!url) next.classList.add("black");
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
     host.append(next);
+    curtain?.commitArrival?.(url);
+    if (!curtain) sceneArrival.commitArrival(url);
     weatherBg = url || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);
@@ -151,7 +165,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
       finally { if (activeCurtain === curtain) activeCurtain = null; }
     }
   });
-  return bgTask;
+  return Object.assign(bgTask, { assetsReady: bgAssetsReady });
 }
 
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
@@ -310,7 +324,8 @@ function pumpBanners() {
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
-          o.points > 0 ? el("span.gc-points", o.kind === "stat" ? [
+          o.kind === "stat" && o.points > 0 ? el("span.gc-earned", { text: "今回" }) : null,
+          o.points > 0 ? el("span.gc-points", { "aria-label": o.kind === "stat" ? `今回の増加 +${o.points}P` : null }, o.kind === "stat" ? [
             el("span.gc-count", { text: `+${o.points}` }), el("small.gc-unit", { text: "P" }),
           ] : [el("span", { text: `+${o.points}P` })]) : null]),
         o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
@@ -456,28 +471,68 @@ export function shake(target = document.getElementById("stage"), ms = 380) {
 
 /** 章タイトル（煙の中から浮かぶ） */
 export async function chapterTitle({ no, name, read, sub }) {
-  const rich = no === "第一章";
-  const art = rich ? assetUrl("ui/chapters/ch1_keyart.png") : null;
-  const card = el(`div.chapter-card${rich ? ".rich" : ""}`, [
-    art ? el("img.cc-art", { src: art, alt: "" }) : null,
-    rich ? el("div.cc-frame", { "aria-hidden": "true" }, [el("i"), el("i")]) : null,
-    el("div.cc-copy", [
-      rich ? el("div.cc-kicker", { text: "SUIEN ZENSEN / CHAPTER 01" }) : null,
+  // 読込中も前場面を見せたまま、クリック・タップ・会話送りキーを吸収する。
+  const swallow = event => { event.preventDefault(); event.stopPropagation(); };
+  const blockAdvance = event => {
+    if (["Enter", " ", "Control"].includes(event.key)) swallow(event);
+  };
+  const shield = el("div.chapter-title-shield", {
+    onpointerdown: swallow, onpointerup: swallow, onclick: swallow, dataset: { motion: "chapter" },
+  });
+  layers.fx.append(shield);
+  window.addEventListener("keydown", blockAdvance, true);
+  // Controlのkeyupは既存SKIP解除へ通す。押しっぱなし状態を次の会話へ残さない。
+  const blockRelease = event => { if (event.key !== "Control") blockAdvance(event); };
+  window.addEventListener("keyup", blockRelease, true);
+  try {
+    const art = chapterTitleArt(no);
+    const copy = el("div.cc-copy", [
       el("div.cc-no", { text: no }),
       el("div.cc-name", { text: name }),
       el("div.cc-read", { text: read }),
       sub ? el("div.cc-sub", { text: sub }) : null,
-    ]),
-  ]);
-  layers.fx.append(card);
-  SE.jingle();
-  if (art) await imageReady(art, 15000);
-  await nextFrame();
-  card.classList.add("show");
-  await sleep(3200);
-  card.classList.add("out");
-  await sleep(900);
-  card.remove();
+    ]);
+    const card = el("div.chapter-card", { dataset: { chapter: no, art: "text" } }, [copy]);
+    // 動き（motions/chapter-title.js）が読めなければ、従来の静止表示のまま進める。
+    const motion = await import("../motions/chapter-title.js").catch(() => null);
+    let play = null;
+    // 画像が準備できるまでは本編の上に空白のカードを出さない。
+    // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
+    if (art && await imageReady(art, 15000)) {
+      copy.hidden = true; // 章名は採用画像に含まれているため重ねて描かない。
+      card.classList.add("illustrated");
+      card.dataset.art = "ready";
+      const full = el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") });
+      card.append(full);
+      // 分けたレイヤーが一枚でも欠けたら、採用画像の静止表示にする。
+      const extra = motion?.chapterArtUrls(no) || [];
+      if (extra.length && (await Promise.all(extra.map(url => imageReady(url, 15000)))).every(Boolean)) {
+        play = motion.mountChapterTitle(card, { no, full });
+      }
+    } else if (motion) {
+      play = motion.mountChapterTitle(card, { no });
+    }
+    shield.append(card);
+    // 単一rAFだけでは追加とshowが同じ初回描画にまとまり、画像が突然現れる。
+    // 透明な初期スタイルを確定してから既存のopacityトランジションを開始する。
+    void card.offsetWidth;
+    SE.jingle();
+    await nextFrame();
+    card.classList.add("show");
+    // 動きは退場してよい時刻まで待つ。動きの不具合で章進行を止めない。
+    if (play) await Promise.race([play().catch(() => {}), sleep(7000)]);
+    else await sleep(3200);
+    card.classList.add("out");
+    // タイマーだけで消すと最後の描画より先にremoveされる。動き軽減や背景タブでも待ち続けない。
+    await Promise.race([
+      Promise.all(card.getAnimations().map(animation => animation.finished.catch(() => {}))),
+      sleep(1100),
+    ]);
+  } finally {
+    shield.remove();
+    window.removeEventListener("keydown", blockAdvance, true);
+    window.removeEventListener("keyup", blockRelease, true);
+  }
 }
 
 /** DAYカード（日付の区切り）。クリックを吸い込み、読み終わるまで待つ。weather は小見出しの後ろに出す天気（sun／cloud／rain） */

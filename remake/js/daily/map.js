@@ -2,27 +2,37 @@
 // 見た目は旧版を踏襲: 栄・大須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
-import { showScreen, setBg, retire, uiArtReady, imageReady, layers } from "../core/ui.js";
+import { showScreen, setBg, retire, uiArtReady, imageReady, layers, toast } from "../core/ui.js";
 import { cueTransition } from "../core/transitions.js";
+import { trainRide } from "../core/scene-motions.js";
+import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
-import { state, timeOfDay } from "../core/state.js";
+import { state, save, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
-import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent } from "./spots.js";
+import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
-import { spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
+import { spotVisible, spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotTimeNote } from "./spot-hours.js";
 import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
+import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
+import { newlyRevealedSpots, startSpotReveal, spotRevealNotice } from "./map-reveals.js";
+import { createMapFacilityIcon, hasFacilityIcon, FACILITY_SHEET } from "./facility-icons.js";
+import { STATION_FARE, WALK_HOME_STAMINA, stationDestinations, prepareStationTrip, stationArrival } from "./station-travel.js";
 
-/** 看板に出す顔（面識のある相手だけ。tonari はスミさん） */
-function spotFace(s) {
-  if (!s.face) return null;
-  if (s.face !== "sumi" && !state.met[s.face]) return null;
-  return faceIconUrl(s.face);
+/** 未面識の相手は共通の人影。画像URL・名前・DOM属性にも正体を出さない。 */
+function peopleRow(people) {
+  if (!people.length) return null;
+  return el("span.pin-people", { "aria-label": `在店：${people.map(p => p.name).join("、")}` }, people.map(person => {
+    const face = person.known && faceIconUrl(person.id);
+    return face ? el("img.pin-person", { src: face, alt: person.name, title: person.name, dataset: { personRole: person.role } })
+      : el("span.pin-person.pin-unknown", { role: "img", "aria-label": person.name, title: person.name, dataset: { personRole: person.role }, html:
+        '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="10" r="6"/><path d="M5 30v-4a11 11 0 0 1 22 0v4Z"/></svg><b>?</b>' });
+  }));
 }
 const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
 
@@ -65,7 +75,7 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
  * @param opts.eventPin 今夜イベントがある場所のピン id（! バッジ）
  * @param opts.guide    { pin, title, text, free } 1日目の案内・配達用。その1か所だけ選べるようにして光らせる。
  *                      free（表示する一言）があれば、その行き先は代金がかからない
- * @param opts.onShown  マップを出し終えたとき（LIME の初回案内など）
+ * @param opts.onShown  マップと解禁の余韻を出し終えたとき（LIME の初回案内など）
  * @param opts.onBeforeGo (spot) => boolean | Promise<boolean>。false ならマップを開いたまま移動を中止する。
  * 戻り値: スポットID。interruptMap(v) で外から閉じたときは v
  */
@@ -77,7 +87,7 @@ export async function chooseSpot(opts = {}) {
     layers.fx.append(notice);
   }, 500);
   try {
-    await Promise.all([uiArtReady(), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+    await Promise.all([uiArtReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
   } finally { clearTimeout(timer); notice?.remove(); }
   let walking = false;
   for (;;) {
@@ -106,7 +116,7 @@ function cueMove(shield, spot) {
   });
 }
 
-function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, regions = null, regionId = null, onRegionChange = null }) {
+function openMap({ notice = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
@@ -117,10 +127,25 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
     updateHud();
     const info = el("div.map-info");
     const pins = el("div.map-pins");
+    // DS風の上画面：街の全体図に行き先の点を打つ（表示だけ。操作は下画面のカード）。通常版ではCSSで出さない。
+    const markers = el("div.ds-map-markers", { "aria-hidden": "true" });
+    const markSelected = (id) => markers.querySelectorAll(".ds-map-marker").forEach(m => m.classList.toggle("sel", m.dataset.marker === id));
     let selected = null;
+    const owner = state;
+    let stationTrip = null;
+    let revealing = false;
+    let stopReveal = () => {};
+    const revealNotice = el("div.map-notice.map-unlock-notice", { role: "status" });
+    let mapShown = false, promptsShown = false;
+    const showPrompts = () => {
+      if (!mapShown || promptsShown || revealing || state !== owner || root.classList.contains("done")) return;
+      promptsShown = true;
+      mountReel(root); // 中断・旧保存に残った演出も解禁後に提示する。
+      onShown?.();
+    };
 
     const freeGuide = (s) => isFreeGuide(s, guide);
-    const availability = (s) => spotAvailability(s, { guide });
+    const availability = (s) => spotAvailability(s, { guide, visitBlock });
 
     const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける");
     const idleInfo = () => {
@@ -151,7 +176,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       }
       const known = knowsOwner(s);
       const charName = s.charId && known ? displayName(s.charId, state) : null;
-      const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : "体力を使う") : s.kind === "tonari" ? "体力を使う" : "";
+      const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : "体力を使う（根性で軽減）") : s.kind === "tonari" ? "体力を使う" : "";
       const warn = s.stamina < 0 && state.stamina + s.stamina < STAMINA_LOW;
       const previewId = s.preview || SPOT_PREVIEW[s.id];
       const pv = s.previewUrl ? { url: s.previewUrl, tint: null } : previewId ? sceneBg(previewId, tod) : null;
@@ -169,10 +194,10 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
           renderSceneArt(preview, pv.url);
         });
       }
-      info.replaceChildren(
-        el("div.mi-banner", { text: known ? s.label : s.unknownLabel || s.label }),
+      info.replaceChildren(...[
+        el("div.mi-banner", { text: known ? spotDetailLabel(s) : s.unknownLabel || s.label }),
         preview,
-        el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
+        charName ? el("div.mi-area", { text: charName }) : null,
         el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
         el("div.mi-tags", [
           spotTimeNote(s, state) ? el("span.tag", { text: spotTimeNote(s, state), dataset: { test: "spot-hours" } }) : null,
@@ -183,19 +208,86 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         av.ok
           ? el("button.mi-go", { dataset: { test: "map-go" }, onclick: () => go(s) }, [el("span", { text: s.kind === "rest" ? "家に帰る" : "ここへ行く" })])
           : el("div.mi-no", { text: av.why }),
-      );
+      ].filter(child => child != null));
     };
 
     const select = (s, btn) => {
+      if (moving || revealing || root.classList.contains("done")) return;
+      stationTrip?.cancel(); stationTrip = null;
       selected = s;
       pins.querySelectorAll(".spot-pin").forEach((p) => p.classList.toggle("sel", p === btn));
+      markSelected(s.id);
       SE.click();
       renderInfo(s);
     };
 
     let moving = false;
-    const go = async (s) => {
-      if (moving || root.classList.contains("done")) return;
+    const stationActive = () => state === owner && root.isConnected && !root.classList.contains("done") && !document.hidden;
+    const openStation = () => {
+      if (moving || revealing || !stationActive()) return;
+      stationTrip?.cancel(); stationTrip = null; selected = null;
+      pins.querySelectorAll(".spot-pin").forEach(p => p.classList.remove("sel"));
+      markSelected(null);
+      const cancel = () => { stationTrip?.cancel(); stationTrip = null; idleInfo(); };
+      const destinations = stationDestinations(state, regions || [], region?.id);
+      const choose = (item) => {
+        if (moving || !stationActive()) return;
+        stationTrip?.cancel();
+        const trip = stationTrip = prepareStationTrip(state, regions, item.id);
+        if (!trip) return;
+        const depart = (walk) => async () => {
+            if (moving || !stationActive()) return;
+            moving = true; confirm.disabled = true; if (walkHome) walkHome.disabled = true;
+            try {
+              if (!trip.commit(state, { active: stationActive(), persist: save, walk })) {
+                openStationAfterFailure(); return;
+              }
+              region = item; selected = null; root.dataset.region = item.id;
+              onRegionChange?.(item.id);
+              SE.select(); updateHud();
+              const arrive = () => stationArrival(trip, async () => {
+                if (!stationActive()) return;
+                await setMapBackground();
+                if (!stationActive()) return;
+                renderPins(); idleInfo();
+                root.dataset.stationArrived = item.id;
+              });
+              // 徒歩は電車の演出を使わない。体力の減りはHUDと一言で伝える。
+              if (walk) { await arrive(); toast(`歩いて${item.label}へ帰った。かなり疲れた`); }
+              else await trainRide(arrive, { from: trip.from, to: trip.to });
+              if (!stationActive()) return;
+              // 短いDS縦画面では駅の確認ボタンに合わせて外側がスクロールする。
+              // 到着後は新しい街の上画面（HUDと地図）から見せる。
+              if (document.body.classList.contains("game-ds")) root.closest("#viewport")?.scrollTo(0, 0);
+            } finally { moving = false; }
+          };
+        const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
+          dataset: { test: "station-confirm" }, disabled: state.money < trip.required, onclick: depart(false) });
+        const walkHome = trip.walkable() ? el("button.mi-go", { type: "button", text: "歩いて帰る（かなり疲れる）",
+          dataset: { test: "station-walk" }, onclick: depart(true) }) : null;
+        info.replaceChildren(el("div.mi-banner", { text: walkHome ? "帰り道" : "乗車の確認" }),
+          el("p.mi-desc", { text: `${region.label} → ${item.label} ／ 片道 ${yen(trip.fare)}` }),
+          el("p", { text: `所持金 ${yen(state.money)}${state.money < trip.required ? " ／ 帰りの切符代も残す必要があります" : ""}` }),
+          walkHome ? el("p.mi-desc", { text: "電車に乗れないので、歩いて帰れる。お金は使わず、かなり疲れる。時間は進まない。" }) : null,
+          walkHome || confirm, el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
+      };
+      const openStationAfterFailure = () => {
+        info.replaceChildren(el("p.mi-desc", { text: "移動できませんでした。運賃は使っていません。駅から選び直してください。" }),
+          el("button.mi-go", { text: "戻る", onclick: cancel }));
+      };
+      if (!destinations.length) {
+        info.replaceChildren(el("div.mi-banner", { text: "駅" }),
+          el("p.mi-desc", { text: "今日はこの街で過ごそう。街へ出かける用事ができたら、ここから電車に乗れる。" }));
+        return;
+      }
+      info.replaceChildren(el("div.mi-banner", { text: "駅・行き先を選ぶ" }),
+        el("p.mi-desc", { text: `現在地 ${region?.label || ""} ／ 片道 ${yen(STATION_FARE)} ／ 時間・行動消費なし` }),
+        ...destinations.map(item => el("button.mi-go", { type: "button", text: `${item.label} ／ ${yen(STATION_FARE)}`,
+          dataset: { test: `station-destination-${item.id}` }, onclick: () => choose(item) })),
+        el("button.mi-go.mi-go-alt", { type: "button", text: "キャンセル", dataset: { test: "station-cancel" }, onclick: cancel }));
+    };
+    const go = async (s, mode = null) => {
+      if (moving || revealing || root.classList.contains("done")) return;
       if (!availability(s).ok) { renderInfo(s); return; }
       moving = true;
       try {
@@ -204,80 +296,144 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         if (root.classList.contains("done")) return;
         if (!availability(s).ok) { renderInfo(s); return; }
         SE.select();
+        stationTrip?.cancel(); stationTrip = null;
         cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
+        stopReveal();
         retire(root);
         info.classList.add("leaving");
         interrupt = null;
-        resolve(s.id);
+        resolve(mode ? `${s.id}:${mode}` : s.id);
       } finally {
         moving = false;
       }
     };
 
     function renderPins() {
+      stopReveal();
       pins.replaceChildren();
-      for (const s of mapSpots()) {
-      if (s.kind === "fortune" && !fortuneToday()) continue; // 占い師は週2日だけ出店
+      markers.replaceChildren();
+      const freshPins = [];
+      const spots = mapSpots().filter(s => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()));
+      const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
+        id: s.id, revealed: isUnlocked(s) && !(!knowsOwner(s) && s.unknownLabel),
+      })));
+      for (const s of spots) {
       const av = availability(s);
       const locked = av.why === "locked";
       const known = knowsOwner(s);
-      const face = locked ? null : spotFace(s);
-      const logo = !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 92, height: 52 }) : null;
+      const people = locked ? [] : spotPeople(s, { visitBlock });
+      const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
+      const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
         : null;
       const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}`, {
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}`,
+        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
-        el("div.shield", [
-          badge,
-          el("div.ico", [logo || (face ? el("img.pin-face", { src: face, alt: "" }) : locked || !known && s.unknownLabel
-            ? el("span", { text: "？" }) : pinSymbol(s))]),
-          logo && face ? el("img.pin-face.pin-owner-face", { src: face, alt: "" }) : null,
+        el("div.pin-visual", [
+          el("div.shield", [
+            badge,
+            el("div.ico", [facility || logo || (locked || !known && s.unknownLabel
+              ? el("span", { text: "？" }) : pinSymbol(s))]),
+          ]),
+          peopleRow(people),
         ]),
         el("div.sub-label", { text: caption }),
         av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
-      pins.append(btn);
+      if (facility) {
+        const crop = facility.querySelector('.facility-icon-crop');
+        btn.style.setProperty('--facility-art-width', crop.style.width);
+        btn.style.setProperty('--facility-art-height', crop.style.height);
+        for (const axis of ['x', 'y']) btn.style.setProperty(`--facility-badge-${axis}`, facility.style.getPropertyValue(`--facility-badge-${axis}`));
       }
+      const revealIndex = reveals.indexOf(s.id);
+      if (revealIndex >= 0) {
+        btn.style.visibility = "hidden";
+        freshPins.push({ btn, spot: s, index: revealIndex });
+      }
+      pins.append(btn);
+      markers.append(el("i.ds-map-marker", { className: `ds-map-marker${av.ok || av.guided ? "" : " off"}${selected?.id === s.id ? " sel" : ""}`,
+        dataset: { marker: s.id, label: caption }, style: { left: `${s.x}%`, top: `${s.y}%` } }));
+      }
+      if (!guide && state.chapter <= 2) {
+        const station = region?.id === "widehanga" ? { x: 15, y: 34 } : { x: 15, y: 15 };
+        const travelReady = stationDestinations(state, regions || [], region?.id).length > 0;
+        pins.append(el(`button.spot-pin.pin-station${travelReady ? "" : ".station-waiting"}`, {
+          type: "button", style: { left: `${station.x}%`, top: `${station.y}%` },
+          dataset: { test: "station-open", spot: "station" },
+          "aria-label": travelReady ? "駅から電車で街を移動する" : "駅。今は街移動の予定がない",
+          onclick: openStation,
+        }, [el("div.pin-visual", [el("div.shield", [el("div.ico", [el("span.pin-symbol", { html: TRAIN_ICON_SVG })])])]),
+          el("div.sub-label", { text: "駅" })]));
+        markers.append(el("i.ds-map-marker", { dataset: { marker: "station", label: "駅" },
+          style: { left: `${station.x}%`, top: `${station.y}%` } }));
+      }
+      if (freshPins.length) {
+        revealing = true;
+        root.dataset.revealing = "true";
+        const clearReveal = () => {
+          for (const { btn } of freshPins) {
+            btn.style.visibility = "";
+            btn.classList.remove("newly-revealed");
+            btn.querySelectorAll(".pin-reveal-ring, .pin-reveal-label").forEach(node => node.remove());
+          }
+          revealNotice.textContent = "";
+        };
+        stopReveal = startSpotReveal({
+          pop: () => {
+            for (const { btn, index } of freshPins) {
+              btn.style.visibility = "";
+              btn.classList.add("newly-revealed");
+              btn.style.setProperty("--reveal-delay", `${Math.min(index * 90, 360)}ms`);
+              btn.querySelector(".shield").append(el("span.pin-reveal-ring", { "aria-hidden": "true" }),
+                el("span.pin-reveal-label", { text: "NEW", "aria-hidden": "true" }));
+            }
+            revealNotice.textContent = freshPins.map(({ spot }) => spotRevealNotice(spot)).join("。 ");
+          },
+          settle: () => {
+            clearReveal();
+            root.dataset.revealPhase = "pause";
+          },
+          done: ({ cancelled }) => {
+            revealing = false;
+            delete root.dataset.revealing;
+            delete root.dataset.revealPhase;
+            clearReveal();
+            if (!cancelled) showPrompts();
+          },
+        });
+      }
+
     }
 
     idleInfo();
     const rainy = isRainy();
     const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
+      markers,
       pins,
-      regions ? el("nav.map-regions", { "aria-label": "街を選ぶ" }, regions.map(item => el("button", {
-        type: "button", text: item.label, "aria-pressed": String(item === region),
-        dataset: { test: `map-region-${item.id}`, region: item.id },
-        onclick: () => {
-          if (moving || root.classList.contains("done") || region === item) return;
-          region = item; selected = null;
-          onRegionChange?.(item.id);
-          root.dataset.region = item.id;
-          root.querySelectorAll(".map-regions button").forEach(node => node.setAttribute("aria-pressed", String(node.dataset.region === item.id)));
-          void setMapBackground(); updateHud(); renderPins(); idleInfo();
-        },
-      }))) : null,
-      canWalkStreet({ guide }) ? el("button.map-walk", { text: "繁華街を歩く（仮導入）", dataset: { test: "map-walk" }, onclick: () => {
-        SE.select(); interrupt = null; retire(root); resolve(WALK_STREET);
+      canWalkStreet({ guide }) ? el("button.map-walk", { text: "商店街を歩く", dataset: { test: "map-walk" }, onclick: () => {
+        if (moving || revealing || root.classList.contains("done")) return;
+        SE.select(); stopReveal(); interrupt = null; retire(root); resolve(WALK_STREET);
       } }) : null,
       notice ? el("div.map-notice", { text: notice }) : null,
+      revealNotice,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
       info,
     ]);
     if (region) root.dataset.region = region.id;
     renderPins();
     showScreen("map", root);
-    interrupt = (v) => { interrupt = null; retire(root); resolve(v); };
-    mountReel(root); // 溜まったスロットの結果をここで見せる（報酬は行動時に確定済み）
-    onShown?.();
+    interrupt = (v) => { stationTrip?.cancel(); stationTrip = null; interrupt = null; stopReveal(); retire(root); resolve(v); };
+    mapShown = true;
+    showPrompts();
     // 今行ける場所だけを2通信ずつ準備。マップ表示やボタン操作は待たせない。
     const previews = [...new Set(mapSpots().filter(isUnlocked)
       .flatMap((spot) => sceneArtUrls(spot.previewUrl || sceneBg(spot.preview || SPOT_PREVIEW[spot.id], tod).url)))];

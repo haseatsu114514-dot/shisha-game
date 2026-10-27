@@ -63,7 +63,7 @@ const questions = {
 };
 const reactions = {
   tsumugi: [/絵じゃなくて、私に/, /この席は、描かなくても/],
-  rin: [/口実なしで上がってくる人/, /次のロットも/],
+  rin: [/今日は、何を話してもレポートにしない/, /向こうの机まで届かない感想/],
   minto: [/私も。お店の外だと、ちょっと緊張する/, /お店の話、気楽にできる人/],
 };
 
@@ -158,6 +158,7 @@ await suite("relationship-ui", async check => {
       ]) {
         await page.evaluate(f => {
           const s = R.fresh(); s.met.rin = true; s.affinity.rin = f.points; s.story.rin = 3;
+          if (f.points === 66 && f.answer !== undefined && f.finalAnswer === undefined && !f.finale) s.flags._rin_affinity_question_done = true;
           if (f.answer !== undefined) s.romanceChoices.bond_q1_rin = { char: "rin", value: f.answer, day: 7 };
           if (f.finalAnswer !== undefined) s.romanceChoices.bond_q2_rin = { char: "rin", value: f.finalAnswer, day: 8 };
           if (f.finale) s.finales.rin = { route: f.finale, chapter: 1, day: 8 };

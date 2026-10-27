@@ -1,3 +1,4 @@
+import { spendableMoney } from "../core/travel-budget.js";
 // LIME（スマホ）。朝に届くメッセージ・返信の選択肢・誘い。
 // ルール: 同じ相手からは1日1話題まで（小分けの連投はOK）／連絡先を交換した相手だけ（master_spec #7/#26）
 // 朝は通知だけ出して受信箱に積み、プレイヤーが好きなときにアプリを開いて読む（オーナー指定）。
@@ -18,8 +19,9 @@ import { loverMessages, isLover, dateSchedule } from "./romance.js";
 import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
+import { tsumugiMessages } from "./tsumugi-schedule.js";
 
-import { invitationCost, storeInvitationSpot, visitReminderSpot } from "./invitations.js";
+import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitationNote } from "./invitations.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -241,7 +243,7 @@ export function morningMessages(opts = {}) {
     senders.add("sumi");
   }
   // 大事な外出の誘いは、通常の雑談より先に届ける。同じ相手からは1朝1話題。
-  const messages = [...DB.lime].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
+  const messages = [...DB.lime, ...tsumugiMessages(state, DB.friends)].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
   for (const template of messages) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || !eligible(template, opts)) continue;
@@ -291,7 +293,7 @@ function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) 
   const spot = open[Math.floor(state.day / 4) % open.length];
   return { id: `_hiyori_shop_c${state.chapter}_d${state.day}`, sender: "hiyori", type: "invitation",
     time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: spot.id,
-    messages: [`……今夜、${spot.label}で一緒に一服しない？`], accept_text: "今夜、行くね",
+    messages: [`……今夜、${spot.label}で一緒に一服しない？ 私が煙になっちゃう前に`], accept_text: "今夜、行くね",
     decline_response: { text: "……うん。また都合のいい日に" } };
 }
 
@@ -409,7 +411,7 @@ export function pushNotice(count, { onOpen = null } = {}) {
     el("div.lp-faces", senders.map((s) => avatar(s, true))),
   ]);
   layers.toasts.append(card);
-  SE.phone();
+  SE.phoneReceive();
   requestAnimationFrame(() => card.classList.add("show"));
   setTimeout(() => { card.classList.remove("show"); setTimeout(() => card.remove(), 500); }, 3200);
 }
@@ -513,7 +515,7 @@ function phoneShell({ time, title }) {
     chat.append(el(`div.lime-row.${side}${animate ? "" : ".past"}`, [face, b]));
     ui.lastSide = side;
     ui.scroll();
-    if (animate) { SE.phone(); await sleep(mine ? 260 : 380); }
+    if (animate) { (mine ? SE.phoneSend : SE.phoneReceive)(); await sleep(mine ? 260 : 380); }
   };
   ui.note = (t, cls = "") => {
     chat.append(el(`div.lime-note${cls}`, { text: t }));
@@ -538,8 +540,11 @@ function phoneShell({ time, title }) {
     ui.cancel?.();
     overlay.classList.remove("show");
     await sleep(300);
-    layers.modal.classList.remove("show");
-    layers.modal.replaceChildren();
+    // LIMEからの誘いは閉じる間に次の行動へ進む。新しい注文画面などは消さない。
+    if (overlay.parentNode === layers.modal) {
+      layers.modal.classList.remove("show");
+      overlay.remove();
+    }
   };
   return ui;
 }
@@ -573,9 +578,10 @@ function declineConflictingInvites(acceptedItem, opts = {}) {
 
 /**
  * 1件ぶんのやりとり（未読なら吹き出しを流す→返信・誘いの返事）。
- * 戻る/閉じるで途中で抜けたら、返事は次に開いたときに続きから
+ * 返信を選ぶ前に戻る/閉じるで抜けたら、次に開いたときに選択から再開
  */
 async function runItem(item, ui, accepted, { forced = false } = {}) {
+  const session = state;
   const m = item.msg;
   const g = ui.gen;
   const alive = () => ui.live(g);
@@ -595,6 +601,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   }
   if (!alive()) return;
   if (item.done) {
+    const missed = missedInvitationNote(item);
+    if (missed) { ui.note(missed); return; }
     for (const entry of item.log || []) {
       if (entry.note) ui.note(entry.note);
       else await ui.bubble(entry.text, entry.me, from, false);
@@ -608,14 +616,14 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       item.done = true;
       item.result = "expired";
       item.replyState = "expired";
-      const note = importantInvite(m) ? "返事をしそびれた……。また都合の合う日に誘ってくれるそうだ" : "返事をしそびれた……";
+      const note = missedInvitationNote(item);
       item.log.push({ note });
       ui.note(note);
       return;
     }
     const polite = POLITE.has(m.sender);
     const cost = invitationCost(m.accept_event);
-    const affordable = state.money >= cost;
+    const affordable = spendableMoney(state) >= cost;
     const go = m.accept_text || (polite ? "行きます！" : "行く！");
     const no = st === "busy"
       ? polite ? "すみません、先に別の約束があって……" : "ごめん、先に別の約束をしてしまった"
@@ -665,20 +673,35 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
         delete state.flags[`_invited_${originId(item)}`];
       }
       if (m.decline_response) await theirs(m.decline_response.text);
-      gainAffinity(m.sender, 1);
+      gainAffinity(m.sender, 1, { source: "lime" });
     }
     return;
   }
   if (m.replies && m.replies.length) {
     const r = await ui.choose(m.replies);
-    if (!r || !alive()) return;
-    await mine(r.text);
-    if (r.response) await theirs(r.response);
+    if (!r || !alive() || state !== session || item.done) return;
+    // 返信は演出を待つ前に一度だけ確定。戻る/再入室では確定済みの履歴を表示する。
+    item.done = true;
+    item.replyState = "replied";
+    item.log.push({ me: true, text: r.text });
+    if (r.response) item.log.push({ me: false, text: r.response });
     bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
-    // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
-    const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
-    gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1));
-    bond.private = false;
+    try {
+      // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
+      const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
+      gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1), {
+        source: "lime",
+        // 確定した返信だけに添える。履歴には保存せず、再表示では通知しない。
+        onGain: () => ui.note(isLover(m.sender) ? "♡ 心の距離がほんの少し近づいた" : "♡ ほんの少し仲良くなった"),
+      });
+    } finally {
+      bond.private = false;
+    }
+    // 以降は表示のみ。古い画面/セーブの待機処理を新しい画面へ持ち越さない。
+    await ui.bubble(r.text, true);
+    if (!alive() || state !== session) return;
+    if (r.response) await ui.bubble(r.response, false, from);
+    return;
   }
   item.done = true;
   item.replyState = m.replies?.length ? "replied" : "none";
@@ -691,6 +714,8 @@ function drawHistory(items, ui) {
     if (it.day !== lastDay) { ui.note(dayLabel(it.day), ".day"); lastDay = it.day; }
     if (!it.read) continue;
     for (const msg of it.msg.messages || []) ui.bubble(typeof msg === "string" ? msg : msg.text, false, accountOf(it), false);
+    const missed = missedInvitationNote(it);
+    if (missed) { ui.note(missed); continue; }
     for (const l of it.log || []) {
       if (l.note) ui.note(l.note);
       else ui.bubble(l.text, l.me, accountOf(it), false);
@@ -704,7 +729,7 @@ function drawHistory(items, ui) {
  * @param opts.tutorial 初回の説明を一覧の上に出す
  * @param opts.sender   最初に開くトーク（アカウント。みんとの私用は "minto_private"）
  */
-export async function openLime({ tutorial = false, sender = null, fixedNight = () => false } = {}) {
+export async function openLime({ tutorial = false, sender = null, fixedNight = () => false, beforeClose = null } = {}) {
   // HUD・案内の穴・プッシュ通知のどこから開いても、地図の上の初回案内を片付ける。
   layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
   state.flags._lime_tut = 1;
@@ -753,7 +778,7 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
         ]),
         el("div.lcr-side", [
           el("small", { text: dayLabel(last.day) }),
-          openInv ? el("span.lcr-tag", { text: "誘い" }) : null,
+          openInv ? el("span.lcr-tag", { text: "誘い" }) : last.msg.type === "chat" ? el("span.lcr-tag", { text: "雑談" }) : null,
         ]),
       ]));
     }
@@ -797,7 +822,8 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
   if (sender && thread(sender).length) showThread(sender);
   else showList();
   await closed;
-  await ui.close();
+  // 準備が失敗した場合もスマホの操作ロックを残さない。
+  try { await beforeClose?.(); } finally { await ui.close(); }
   return accepted;
 }
 
@@ -869,6 +895,59 @@ export function limeCoach(onOpen) {
     ]),
   ]);
   layers.fx.append(coach);
-  SE.phone();
+  SE.phoneReceive();
   return true;
+}
+
+/** 章の旅程相談。既存端末とアカウントを使い、当日招待の失効・報酬処理へ流さない。 */
+export async function openContactLime({ contacts, summary, actions, onAction, signal = null }) {
+  const owner = state;
+  const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
+  let resolveClose;
+  const closed = new Promise(resolve => { resolveClose = resolve; });
+  const alive = () => ui.open && state === owner && !signal?.aborted;
+  const close = () => resolveClose();
+  const backButton = () => el("button.lime-reply.ghost", { text: "‹ トーク一覧へ",
+    dataset: { test: "phone-next" }, onclick: showList });
+  function showList() {
+    if (!alive()) return;
+    ui.gen++;
+    ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: "恋人との連絡" }));
+    ui.chat.classList.add("list");
+    ui.chat.replaceChildren();
+    for (const id of contacts()) {
+      const account = accountFor(id);
+      ui.chat.append(el("button.lime-chat-row", { dataset: { test: `lime-contact-${id}` }, onclick: () => showThread(id) }, [
+        el("div.lcr-face", [avatar(account)]),
+        el("div.lcr-main", [el("div.lcr-name", { text: limeName(account) }), el("div.lcr-preview", { text: summary(id) })]),
+      ]));
+    }
+    if (!contacts().length) ui.chat.append(el("p.lime-empty", { text: "連絡先を交換した恋人ができると、ここから連絡できます。" }));
+    ui.actions.replaceChildren(el("button.lime-reply.ghost", { text: "スマホを閉じる", dataset: { test: "phone-close" }, onclick: close }));
+  }
+  function showThread(id) {
+    if (!alive() || !contacts().includes(id)) return;
+    const account = accountFor(id);
+    ui.gen++;
+    ui.lastSide = null;
+    ui.chat.classList.remove("list");
+    ui.chat.replaceChildren();
+    ui.header.replaceChildren(el("button.lime-back.lime-contact-back", { text: "‹", ariaLabel: "トーク一覧へ戻る", dataset: { test: "lime-back" }, onclick: showList }),
+      avatar(account), el("span.lime-name", { text: limeName(account) }));
+    drawHistory(thread(account).filter(item => item.msg?.tokyoVisit), ui);
+    ui.note(summary(id));
+    ui.actions.replaceChildren(...actions(id).map(action => el("button.lime-reply", {
+      text: action.label, dataset: { test: `lime-travel-${action.id}` }, onclick: () => {
+        if (!alive() || !contacts().includes(id)) return;
+        onAction(id, action.id);
+        showThread(id);
+      },
+    })), backButton());
+  }
+  signal?.addEventListener("abort", close, { once: true });
+  if (signal?.aborted) close(); else showList();
+  try { await closed; } finally {
+    signal?.removeEventListener("abort", close);
+    await ui.close();
+  }
 }

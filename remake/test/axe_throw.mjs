@@ -3,6 +3,16 @@ import test from "node:test";
 import { RINGS, BULLS, KILLS, MODES, POWER, scoreAt, resolveThrow, gaugeAt, axisAt, swayAt, releaseAimAt, totalOf, gradeOf, canCall, killState } from "../js/minigames/axe-model.js";
 import { reaction } from "../js/minigames/axe-companions.js";
 import { TARGET, CAMERA, AXE, FLIGHT, flightPose, impactPose, projectAxePoint, worldPoint } from "../js/minigames/axe-flight.js";
+
+test("an axe beyond the visible wood falls with zero points even at ideal power", () => {
+  for (const [x, y] of [[1.08, 0], [-1.08, 0], [0, 1.08], [0, -1.08], [1.08, 1.08]]) {
+    const result = resolveThrow({ x, y, power: .62 });
+    assert.equal(result.score, 0); assert.equal(result.stuck, false);
+    assert.equal(result.outcome, "miss"); assert.equal(result.dropReason, "off-board");
+    assert.equal(flightPose(result, FLIGHT.travel + FLIGHT.fall).opacity, 0);
+  }
+  assert(resolveThrow({ x: .9, y: .9, power: .62 }).stuck, "An unscored wood corner can still hold the axe");
+});
 import { projectedAxe } from "../js/minigames/axe-geometry.js";
 const shot = (x = 0, y = 0, power = POWER.ideal, called = null, history = []) => resolveThrow({ x, y, power, called }, history);
 test("painted circles match scores; black boundaries use lower neighbouring zones", () => {
@@ -95,6 +105,15 @@ test("visible release positions remain finite and legal at the edges", () => {
   assert.throws(()=>swayAt(-1),RangeError);assert.throws(()=>swayAt(1,.62,.5),RangeError);
   assert.throws(()=>releaseAimAt({x:2,y:0},1,.62,0,false),RangeError);
 });
+test("throws arrive within half a second and drops finish within three quarters without changing the shot", () => {
+  for (const power of [.1, .62, .95]) {
+    const result = shot(0, 0, power), before = structuredClone(result);
+    assert.equal(flightPose(result, 0).contact, false);
+    assert.equal(flightPose(result, 500).contact, true);
+    assert.equal(flightPose(result, 750).done, true);
+    assert.deepEqual(result, before);
+  }
+});
 test("flight shrinks toward the board and contacts the scored blade point without a pose jump", () => {
   for (const x of [-1.08,0,1.08]) for (const y of [-1.08,0,1.08]) for (const power of [.42,.62,.82]) {
     const result=shot(x,y,power),end=impactPose(result),arrival=flightPose(result,FLIGHT.travel);
@@ -102,7 +121,9 @@ test("flight shrinks toward the board and contacts the scored blade point withou
     assert.equal(arrival.pitch,end.pitch); assert.equal(arrival.scale,end.scale);
     assert(Math.abs(arrival.bladeX-(TARGET.x+result.landing.x*TARGET.radius))<1e-9);
     assert(Math.abs(arrival.bladeY-(TARGET.y+result.landing.y*TARGET.radius))<1e-9);
-    assert(arrival.done); const first=flightPose(result,0);
+    assert.equal(arrival.done, result.stuck);
+    assert(flightPose(result, FLIGHT.travel + FLIGHT.fall).done);
+    const first=flightPose(result,0);
     for(let ms=0;ms<=FLIGHT.travel;ms+=40){const pose=flightPose(result,ms);
       assert(pose.scale<=first.scale&&pose.scale>=end.scale);
       assert(pose.z>=first.z&&pose.z<=end.z,"The axe travels toward the board in depth");

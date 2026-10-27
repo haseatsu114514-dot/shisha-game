@@ -1,0 +1,522 @@
+[
+  {
+    "path": "inventory/integration-browser-qa-c/qa-pc-all10-detail-crops.png",
+    "sha256": "362dd1b44f615b4d5c0a46849033372dbdc9781fcd326f6cff86f1de7fa9c282"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-blueberry.png",
+    "sha256": "b1cb40ac8b4b5b95c6032010b86b70ae6f0a32a482ef7d2203b8dde8237d5b20"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-cinnamon.png",
+    "sha256": "b5252feb5ed562cc0983df0bef34d4934e806a69cd0f0195bfe74358f8ddd3cd"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-double_apple.png",
+    "sha256": "c5869047f688b7d61f1de38ad9b5ffd827fd0451f31c31c9b4bc9eb73ad40409"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-grape.png",
+    "sha256": "676d5ba3e3e5fea08fd10ab81dfc979d412b349c9e7f60a05b6c145503129f30"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-lemon.png",
+    "sha256": "fec00f8ee256fd216ed69f032c86906a2f9a40b0cf7fa3c42ead83219fa39ab4"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-mint.png",
+    "sha256": "690fbdf5cf1d6cddc5aaf8178e38e614e69c25ef8a2e44c78bdde78e1f5dbd88"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-orange.png",
+    "sha256": "1010ea7c0dbfad92c0374f5ecb4906fe694a5fb932b8f66da148788ff8b6be5a"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-pineapple.png",
+    "sha256": "cef5b1dc0e03474b8e9f56c3465e069951d1a0d89efb8b27b4bf2d6aaf324aeb"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-strawberry.png",
+    "sha256": "f5729fdff4915419082737348e46b0b9c9608a118e0ec801fe84ea30f0bd31b1"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-vanilla.png",
+    "sha256": "db01bf17b51d70b91d5eb30672c16cf6059850dbb81bd52acb847a242eaf4b86"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-detail-watermelon.png",
+    "sha256": "4bbea59c2e0fc5084512bfb0666b0edbeff26051ee1dd826a84aa7ac2d34a75e"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-failed-both-detail.png",
+    "sha256": "124bf5ef2e4b33296f0159071504158ae4daad86dd3f3c19203496f156383c0b"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-failed-both-text.png",
+    "sha256": "c1459232db07185281a4597966e5352cb5242623db9c5a2222eaa23dfa0e8b3d"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-failed-delivery-detail.png",
+    "sha256": "8206d6155cc859eea8c55f4b2397be5f2062a7433cb9fc692223c6af051ba3cd"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-failed-delivery-sheet.png",
+    "sha256": "da49428e3d8da705948d501f81678c317cfcc731899e661eea1dc1693bb89885"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-held-amaburst_hms.png",
+    "sha256": "bd897ef039ddf94e0ca64e8dd2077de6524cd56b31e9844fec5ae7eccfa5f81b"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-held-lotos_hagal.png",
+    "sha256": "316984d499043be642bacbf1ce2b3fad2f1da8b646bdb54453ee59d14e79217f"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-held-tanukish_lid.png",
+    "sha256": "877677d85cf3cda7802ef826d0b343e0de300615f0d7194f73fb58ac001a81f9"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-banana.png",
+    "sha256": "16d61fe64cd8eea2706b071b14478175f23976c6bfd75dfe9d031bc2effd4e47"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-blueberry.png",
+    "sha256": "147500c090493b80656777c51a65718c71c35229589504b78b214e19957055e8"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-cinnamon.png",
+    "sha256": "16d61fe64cd8eea2706b071b14478175f23976c6bfd75dfe9d031bc2effd4e47"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-coconut.png",
+    "sha256": "4a1a01ad8f5f346342a8dcec7f2b02ce4503d4ae7e4db275fb7342dbf9a5abd6"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-double_apple.png",
+    "sha256": "5aebd7f89c8d500d46227619e650cebd85b3e163157a6e7ceb740d46e711e64a"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-grape.png",
+    "sha256": "d77f4ec9aaf7192bbe4f0641c66a554fc99e3a1a343ecca9ecf452c5e23b2c75"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-lemon.png",
+    "sha256": "ce586cd8557ffff7334163eb271529787213e1bc8b9b80f1d2bf951f3bc74d15"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-lychee.png",
+    "sha256": "243b6d4a4f65cf7da36f1963d77f1c1421fff1ac2acb6413c8c24ad60e4c50fb"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-mango.png",
+    "sha256": "4a1a01ad8f5f346342a8dcec7f2b02ce4503d4ae7e4db275fb7342dbf9a5abd6"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-melon.png",
+    "sha256": "a10308fb11c0fdd053d7785d076fcae7f448674e78384fcddbfb211297def456"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-mint.png",
+    "sha256": "7923f55ee22817a4e9f77dca6849a93cffe79c390e91e94e27269bd4095a1a7c"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-orange.png",
+    "sha256": "e47e878730ec73ca111800b5b669af0f54b8f5734ae2155dbe2cf2d63f717185"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-peach.png",
+    "sha256": "ce586cd8557ffff7334163eb271529787213e1bc8b9b80f1d2bf951f3bc74d15"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-pineapple.png",
+    "sha256": "4a1a01ad8f5f346342a8dcec7f2b02ce4503d4ae7e4db275fb7342dbf9a5abd6"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-rose.png",
+    "sha256": "a346d23610db5d616d2014f26ae91e0be772045c0aefd81b1ef2857f12ab25ba"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-strawberry.png",
+    "sha256": "5aebd7f89c8d500d46227619e650cebd85b3e163157a6e7ceb740d46e711e64a"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-vanilla.png",
+    "sha256": "569e997ce7c38d095d99572796a3c8101b556954a54afe9e4a48408a9c5a3c60"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-list-watermelon.png",
+    "sha256": "d77f4ec9aaf7192bbe4f0641c66a554fc99e3a1a343ecca9ecf452c5e23b2c75"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-compact-purchased-mint.png",
+    "sha256": "17410099470b3768587aa8e03701a30163ec4b93d11fff8ea5782308b4553d9b"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-blueberry.png",
+    "sha256": "8ba70d6f93ac0b5e4c7050ac604c659620112e7dd37a9bd69f4bc0bb151e3046"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-cinnamon.png",
+    "sha256": "1a223a81c62fb7b3bd08ab3550104b8ec8a33e5d61bf5ff200e45a4e6739710f"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-double_apple.png",
+    "sha256": "d7d018bc4058271e9f9878a092bf37d9c0477605223b828e46e2cd78e334b213"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-grape.png",
+    "sha256": "c1636f75cf5ea338fe0145fa760814b79c1fa7cf187c6b8266188fc1e86e1412"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-lemon.png",
+    "sha256": "e17aade4274d8c4021a9de78b570173d4d01fa7e47d0498373df3871a092ae5b"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-mint.png",
+    "sha256": "5802a206fd24b9eb8b304b61c2124f9f5d92b83f0d5f6ca0e3887cba43a72009"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-orange.png",
+    "sha256": "bc7a6eefb5dcdb0a9b6fd9fdde021a8773b0dc73efe602c520ae1cc974c29795"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-pineapple.png",
+    "sha256": "13ff157bbeb034f6676c29a960e5aa83e364e801dece9021881ac75e808f6b14"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-strawberry.png",
+    "sha256": "e738d77a41e268e8aa8a0c67c9f00e0e0e309b289950b00a1bfb99f04e7eedb8"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-vanilla.png",
+    "sha256": "f8373486968a308735efc852e2e8dc3d99ef9f13e8d7498dd791dfd790f82806"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-detail-watermelon.png",
+    "sha256": "d10b79513cd598a9b9aa216990291fbf8278b0cfd0e33d5c0dcf951e68fe2055"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-failed-both-detail.png",
+    "sha256": "a38c6594b5ba01b6baee382018cecf72924f00d299a37daeb0877d39833d895e"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-failed-both-text.png",
+    "sha256": "2d56a9456b13487df5286496321b48ce5f44b5f1e9925d0b2c6a529daccb2c5f"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-failed-delivery-detail.png",
+    "sha256": "d8dd5568ed9415be3ec85a3a64fcb941772712a67a9103fd4771afa030eeae97"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-failed-delivery-sheet.png",
+    "sha256": "0a7948f1a0db6c005febdd8695a17c30e66c41e5151839ce03f14fc47eb87adf"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-held-amaburst_hms.png",
+    "sha256": "a4fb0187a0d0e059bd89a1b8fc8a6673673d33f77405fff47a821d5b15d0f717"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-held-lotos_hagal.png",
+    "sha256": "0bbe5ab0d602148831f81189f3668d8753b21bf4be29798f74456a3ef7ac9e42"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-held-tanukish_lid.png",
+    "sha256": "e67129d0ab69085a1fc16ca65d53f5c0186de79a9bca13fa1519657663cf3fa8"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-banana.png",
+    "sha256": "17aa5e4f63041b73836d0ed244057056abb3fb70c15da3c51a2aabbbc2db5679"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-blueberry.png",
+    "sha256": "dcaeee491139f352640f4928bfdc2a7eb2f4b29ea4daea8bf00de17f30632661"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-cinnamon.png",
+    "sha256": "17aa5e4f63041b73836d0ed244057056abb3fb70c15da3c51a2aabbbc2db5679"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-coconut.png",
+    "sha256": "09e712a16a4c48343a0ce4124a5b0120faf94260c2679866b8a6cb7ba5251d82"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-double_apple.png",
+    "sha256": "c633ba08f21a15821af548d29422dbf4cca74fce2f59d97c8f2dd6e6dcb08bed"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-grape.png",
+    "sha256": "8bbf5e8502decc30c0b900ba470e7f454d057cebf44085a553e140ab63efcc81"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-lemon.png",
+    "sha256": "9b8bb16dee78f0422b97c4c680b4a71d54a8209252385d1a5d4790db3702fa0a"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-lychee.png",
+    "sha256": "837c135b5d1a5834d369d1f91da54a44112eff1ab05482a3b0ab38a0640e6ba1"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-mango.png",
+    "sha256": "dbeba19b10b41558a7af2f088f2fae204f3fd7ed7967be37ca127dcb332c7ab4"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-melon.png",
+    "sha256": "3cf65ef33546febb95451de373942a1dfadebea3785a990152e32a0ec77fa063"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-mint.png",
+    "sha256": "52fe0a1bb77b9fa3c22eb5dbd1a4820769ffc30122b623fd4b273c920c3180be"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-orange.png",
+    "sha256": "0b358ddeae674f4f6db15790a7dd28867f7bc24820c5cd971373ca02602635f7"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-peach.png",
+    "sha256": "9b8bb16dee78f0422b97c4c680b4a71d54a8209252385d1a5d4790db3702fa0a"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-pineapple.png",
+    "sha256": "09e712a16a4c48343a0ce4124a5b0120faf94260c2679866b8a6cb7ba5251d82"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-rose.png",
+    "sha256": "e04b4c6261b7817f8ebf42586dec8323409cb3d1d5a72a641b822d0dd0e342d8"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-strawberry.png",
+    "sha256": "c633ba08f21a15821af548d29422dbf4cca74fce2f59d97c8f2dd6e6dcb08bed"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-vanilla.png",
+    "sha256": "9208ba72db5eeb77841a05ec2e377eb46f3a09c0d46f832253679eb19a347572"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-list-watermelon.png",
+    "sha256": "144cf027eecfe2b3402b0aaeb4d74199e6d7123484b855051c69cda89598b935"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-pc-purchased-mint.png",
+    "sha256": "b6af732af3473f33e1b83df8dfcbfbfe786c5c5e59c37083ebc5c7a8f85f555c"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-blueberry.png",
+    "sha256": "e1c3c1ffca7d506ec9f1926798e8206e3eadfab3dece52df6aaa123edd146497"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-cinnamon.png",
+    "sha256": "7733df6baa6b0a26070b83e2d055bb01b3fce5f96afbcf5131aed412d1fd94f3"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-double_apple.png",
+    "sha256": "a980b0af9533a8137a6adb3e16abf906016d3c39dee867024845e38cef73161f"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-grape.png",
+    "sha256": "2bc9a1db9b9ce84cad1df4cb0d20c32db70d19b96ef92aa39a4185cbbd0767ca"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-lemon.png",
+    "sha256": "9475db7320c745b4f002adc38ab3b08f9f51691ff6e3573e0b3a19814e943fbc"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-mint.png",
+    "sha256": "0bb34c833fa164d8e29ab0cfd5c01d09808d140b71ec4586cc239b1f03d1cad2"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-orange.png",
+    "sha256": "0e89eee2c511fe24e658fda561262bbb41ebffc8bdcf9ae26588fe5171c5f713"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-pineapple.png",
+    "sha256": "e075ce0476ff33fa591f09e8ff7f0dd4472dfbdf9720af9979f18708938f4022"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-strawberry.png",
+    "sha256": "f6a6b7c11d29f9fe6950162c03d87e84a787e3368c6a9db9aef0e98fe68bd377"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-vanilla.png",
+    "sha256": "3f7d0fd7e5b36bd2a670616583a89c4b62135f3cc36cc1d4d8653ee8f5e2e172"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-detail-watermelon.png",
+    "sha256": "5042fba93c2ad720c3603ed63ec4867189efb493df5771552f58c3f13d4b4225"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-failed-both-detail.png",
+    "sha256": "8bc7f09367f16d21d2031bbe295ba02acc2aa9451444528f631430fca771155b"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-failed-both-text.png",
+    "sha256": "f12bf4509dafb211754b5d8b18f33cce40158d0f9ce257e43bb20b8210741f25"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-failed-delivery-detail.png",
+    "sha256": "45e5c546c0be84a78bbac149701606f701cd7acfeda6719666ae95a721e86ca6"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-failed-delivery-sheet.png",
+    "sha256": "397046684fb788b7bc34831cca4922452e760bdb0d234f036c787fa63478b7ab"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-held-amaburst_hms.png",
+    "sha256": "1e55eaea3848b3efd54d9d5b078d225b8395072ae62943e25b6cd3ee84f153af"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-held-lotos_hagal.png",
+    "sha256": "587e3385604193a9bc3ea4793d85f99983f6d338be372a596cfdee50c92fa77f"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-held-tanukish_lid.png",
+    "sha256": "ed697a7be29cff80bac64c890d04155613e384cd23357f206473f851bde31d5c"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-banana.png",
+    "sha256": "3d9899dbb08eab6417ef7c6ae416b6e6bc815656d71fde7e518afc3af15a2a2c"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-blueberry.png",
+    "sha256": "6bd163c54c768cda07e7feda9e6d26e54c5843853bce57ef35dd3fd27f4adc13"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-cinnamon.png",
+    "sha256": "3d9899dbb08eab6417ef7c6ae416b6e6bc815656d71fde7e518afc3af15a2a2c"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-coconut.png",
+    "sha256": "8ecf65b0bfcb14b89d2e9156dabe96a554d6971b7d0c1ddb38711ca793ca7c01"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-double_apple.png",
+    "sha256": "a2829f9630bd91f4d61f4bb1cbefa2ba3087010904954e71f71e3299d4ee0254"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-grape.png",
+    "sha256": "3fb21abeff8389976a3dfafec8f4176929edb1033217bb52b6e8fca1402090d4"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-lemon.png",
+    "sha256": "6c23e91bd6a829f99936b6339df215b52d3440eaae762cdeee7d24dd2c1f0fbf"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-lychee.png",
+    "sha256": "51e431629e8348917c43567ea2fdca6940c213978c86d7df92eae4a3ce24e4b1"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-mango.png",
+    "sha256": "817e86a27897ce2c3f3f93ab508447ac643c915df6041afed2910743614643c6"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-melon.png",
+    "sha256": "68257714448d1e057efefead46d62c7339d1c8744bfab3690793fdadd6bb2a88"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-mint.png",
+    "sha256": "60bb432d8efb85d455e87f983a4a7c550894ac687b305b7febdf0898fe83e9ef"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-orange.png",
+    "sha256": "7cb4b053cd10f7dbc98172d2aa258a53602f6d310ff3dff65f72119d82edf381"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-peach.png",
+    "sha256": "6c23e91bd6a829f99936b6339df215b52d3440eaae762cdeee7d24dd2c1f0fbf"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-pineapple.png",
+    "sha256": "a51e822968279aab979a74c0d4ae2b65ea2a18cb8381a8bcbe5a11cad1c79468"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-rose.png",
+    "sha256": "cff330cf0ba3c969e6708582cf78f05a883d19ce50b567bde43731a966bd5813"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-strawberry.png",
+    "sha256": "a2829f9630bd91f4d61f4bb1cbefa2ba3087010904954e71f71e3299d4ee0254"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-vanilla.png",
+    "sha256": "f1404bb22fc45ac01aad1cc436d778e2e43887b337b2353a594bdbfa7ca87038"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-list-watermelon.png",
+    "sha256": "c2d1f18be8de5ff8f9ccdefa99203c6387dd5f6f6b0321b1f1aae68840713a5e"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-art-touch-purchased-mint.png",
+    "sha256": "48df2c195433c17c9e816dc8351d10e6f5af112e678df6189ca117abadec8f90"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-ui-compact-both-art-fallback.png",
+    "sha256": "6bf64d2d2ba025316b804f150c51ad3b87955a4fc84a854ccd7b8e3db302a58f"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-ui-compact-missing-art-fallback.png",
+    "sha256": "bc663792f90ea976c85a7cbe241ebb47610c138b8817fc87e4f8e423b4718e80"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-ui-compact-product-art-legacy-save.png",
+    "sha256": "3604e0491de2df799f9846da27d885eed0def1d58aa65a71d42f86e13253cd57"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-ui-pc-both-art-fallback.png",
+    "sha256": "e279ca59b3196bf7006c707c2261eb48d2525d2326b02bc4d2769ccaa05262fb"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-ui-pc-missing-art-fallback.png",
+    "sha256": "8723d09551c3212bc44c692784bcbebef6238abccfc26db878ab22953af75cb8"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-ui-pc-product-art-legacy-save.png",
+    "sha256": "87cc2115ec76ebff642618477dd27326943cd74c1f8a5363fc0363fcf93925ea"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-ui-touch-both-art-fallback.png",
+    "sha256": "87f01b366f617780f6a35193362508660f73d21bc059a04782d59702cbd26aa4"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-ui-touch-missing-art-fallback.png",
+    "sha256": "a9d14667c39cc7bd2a37839a344ad53f137bdfe9f026c345f06214c8d446b53d"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c/shop-ui-touch-product-art-legacy-save.png",
+    "sha256": "1d6c4391cdd5cde6410d2d1bbbe371268c2f9daa6fcaca9260657e54bc9f4c9b"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c-final/shop-art-compact-failed-both-detail.png",
+    "sha256": "2351547a35f33ff41931b04bda105f2db36064aa2e15737f5f7a8b264f7c91d4"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c-final/shop-art-compact-failed-both-text.png",
+    "sha256": "0fd3f79676ed766217ba990c984896d6b870af16b7c0aeef7b17f443204c9d00"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c-final/shop-art-pc-failed-both-detail.png",
+    "sha256": "8fe8935ba02b540d665a0ac293b84f8cba3708cad2bdc3eb2f6f3eb606161fb4"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c-final/shop-art-pc-failed-both-text.png",
+    "sha256": "637911ea23e0cd07cdaa8872978f4eb94704957aca2212765088fbb6648961ec"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c-final/shop-art-touch-failed-both-detail.png",
+    "sha256": "72c9e43c1cf6a0fe8d99ab043a3f63cfd65aa340a1e8e3864387c27ae3e18b8f"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c-final/shop-art-touch-failed-both-text.png",
+    "sha256": "1860057e139ab155cb8cd1500905342c9f62724ccf052fee716cc09a87839aab"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c-final/shop-ui-compact-both-art-fallback.png",
+    "sha256": "019e0eb2d1c6d40970801cd7ce5ecd3493e5c1b79f4cdf69ed418dcfe43659bb"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c-final/shop-ui-pc-both-art-fallback.png",
+    "sha256": "e279ca59b3196bf7006c707c2261eb48d2525d2326b02bc4d2769ccaa05262fb"
+  },
+  {
+    "path": "inventory/integration-browser-qa-c-final/shop-ui-touch-both-art-fallback.png",
+    "sha256": "37c25cc3ce6dd2cb67f1b59086191deca854efd45993f6e256d8d73dc57c904a"
+  }
+]

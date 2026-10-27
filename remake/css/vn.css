@@ -3,6 +3,8 @@
    ============================================================ */
 #vn { opacity: 0; transition: opacity 0.25s ease; }
 #vn.active { opacity: 1; }
+/* 会話終了と同時に次画面が見えるため、前の文字と操作欄は残像にしない。 */
+#vn:not(.active) :is(.vn-box, .vn-choices, .vn-controls, .vn-log) { visibility: hidden; }
 
 .vn-loading { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 101;
   display: flex; align-items: center; gap: 14px; padding: 16px 24px; border: 1px solid #b59d7166; border-radius: 8px;
@@ -228,8 +230,8 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
   gap: 14px;
 }
 .vn-choices.show { display: flex; }
-/* 2択だけ少し上へ（16px）。本文枠と3択以上の位置はそのまま。 */
-.vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 306px; }
+/* 2択は質問・操作札から離して上へ寄せる。 */
+.vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 338px; }
 .vn-choice {
   width: 720px;
   padding: 16px 30px;

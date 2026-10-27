@@ -1,0 +1,27 @@
+{
+  "tool": "image_gen.imagegen",
+  "generation_count": 2,
+  "reference": "assets/backgrounds/kemurikusa.png",
+  "source_size": [
+    1672,
+    941
+  ],
+  "source_mode": "RGB",
+  "source_sha256": "255bfa2d9a06439205b53173f46bf8a0542e5da0685b65aececdd79c4273cff0",
+  "delivery": "remake/img/backgrounds/bg_kemurikusa_outside_night.webp",
+  "delivery_size": [
+    1280,
+    720
+  ],
+  "delivery_bytes": 136600,
+  "delivery_sha256": "411ca31dc2f4d489eacd8fdc30b45f2426a61028f6b957a8e76e32a9f1c3b580",
+  "delivery_box": [
+    0,
+    0,
+    1280,
+    720
+  ],
+  "processing": "Format conversion and uniform resizing only; original retained unchanged.",
+  "fallback": "assets/backgrounds/bg_kemurikusa_outside_night.png",
+  "revision_reference": "outside-lit-source.png"
+}

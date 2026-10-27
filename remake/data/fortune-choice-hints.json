@@ -1,0 +1,146 @@
+{
+  "includeRomance": false,
+  "note": "会話内容に沿う仮の推奨返答。既存の好感度報酬や分岐は変更しない。味の好み・購入・創作方針・相手の不在の選択は示さない。",
+  "choices": {
+    "ch1_naru_first:naru_first_scout": {
+      "target": "naru",
+      "kind": "conversation",
+      "options": [
+        "scout_honest",
+        "scout_bluff"
+      ],
+      "preferred": "scout_honest",
+      "reason": "正直な偵察をなるが肯定する"
+    },
+    "ch1_naru_first:naru_first_nose": {
+      "target": "naru",
+      "kind": "conversation",
+      "options": [
+        "nose_wow",
+        "nose_bitter"
+      ],
+      "preferred": "nose_wow",
+      "reason": "作り方への興味を言葉で伝える"
+    },
+    "ch1_rin_first:rin_first_pen": {
+      "target": "rin",
+      "kind": "conversation",
+      "options": [
+        "pen_rush",
+        "pen_watch"
+      ],
+      "preferred": "pen_watch",
+      "reason": "丁寧な仕事を見抜いた返答を凛が明確に気に入る"
+    },
+    "ch1_tsumugi_first:tsumugi_first_serve": {
+      "target": "tsumugi",
+      "kind": "conversation",
+      "options": [
+        "serve_quiet",
+        "serve_call"
+      ],
+      "preferred": "serve_quiet",
+      "reason": "描く集中を途切れさせない"
+    },
+    "ch1_tsumugi_fourth:tsumugi_fourth_open": {
+      "target": "tsumugi",
+      "kind": "conversation",
+      "options": [
+        "open_call",
+        "open_wait"
+      ],
+      "preferred": "open_wait",
+      "reason": "本人が話し始める間を尊重する"
+    },
+    "ch1_tsumugi_fourth:tsumugi_fourth_memo": {
+      "target": "tsumugi",
+      "kind": "conversation",
+      "options": [
+        "memo_warm",
+        "memo_honest"
+      ],
+      "preferred": "memo_warm",
+      "reason": "絵を描いた気持ちを否定しないと先に伝える"
+    },
+    "ch1_tsumugi_fifth:tsumugi_fifth_heart": {
+      "target": "tsumugi",
+      "kind": "conversation",
+      "options": [
+        "heart_word",
+        "heart_nod"
+      ],
+      "preferred": "heart_word",
+      "reason": "今の作品への好意を明確な言葉で伝える"
+    },
+    "ch1_day5_sumi_story:day5_hand": {
+      "target": "sumi",
+      "kind": "conversation",
+      "options": [
+        "hand_ask",
+        "hand_silent"
+      ],
+      "preferred": "hand_silent",
+      "reason": "触れてほしくなさそうな様子を尊重"
+    },
+    "ch1_day5_sumi_story:day5_taste": {
+      "target": "sumi",
+      "kind": "conversation",
+      "options": [
+        "taste_honest",
+        "taste_rival"
+      ],
+      "preferred": "taste_honest",
+      "reason": "作り手への率直な感想を伝え、スミが肯定する"
+    },
+    "ch1_minto_second:minto_second_charm": {
+      "target": "minto",
+      "kind": "conversation",
+      "options": [
+        "charm_ride",
+        "charm_dizzy"
+      ],
+      "preferred": "charm_ride",
+      "reason": "話についてきてほしいみんとの呼びかけに乗る"
+    },
+    "ch1_tsumugi_bond_question:bond_q1_tsumugi": {
+      "target": "tsumugi",
+      "kind": "romance",
+      "options": [
+        "meet",
+        "seat"
+      ],
+      "preferred": "meet",
+      "reason": "個人的に会いたいと伝える"
+    },
+    "ch1_rin_bond_question:bond_q1_rin": {
+      "target": "rin",
+      "kind": "romance",
+      "options": [
+        "personal",
+        "work"
+      ],
+      "preferred": "personal",
+      "reason": "用事を越えた個人への関心"
+    },
+    "hiyori_bond_question:bond_q1_hiyori": {
+      "target": "hiyori",
+      "kind": "romance",
+      "options": [
+        "friend",
+        "romance"
+      ],
+      "preferred": "romance",
+      "reason": "二人で会いたいと伝える"
+    },
+    "samechan_shop_bond_question:bond_q1_samechan": {
+      "target": "samechan",
+      "kind": "romance",
+      "options": [
+        "romance",
+        "friend"
+      ],
+      "preferred": "romance",
+      "reason": "サメちゃん個人に会いたいと伝える"
+    }
+  }
+}

@@ -26,4 +26,6 @@ QA：旧6＋新5の全11表情を実VNでPC・タッチ横持ちに表示（22�
 
 追加の斧と木製ボードもimage_genで制作。`props/raw/` に原画と透過改訂前の斧、`props/prompts/` に実指示、`props/generation.json` に採用記録、`props/registration.json` にPNG/WebPのSHA・寸法・RGBA一致を保存する。生成プレビューは透明部分のRGBが見えるが、実ブラウザではalphaを検証し、画像の全外周はalpha=0。WebPは可逆・exactでRGBAを保持する。PC/タッチの追加2ケースで本編背景への重ね表示・実デコード・透明度・画面内収まりを確認した。点数のリング・照準・ゲームへの参照接続は #480 の機能PRで扱い、現時点の `minigame_connected` はfalse。
 
+的（`target_board`）の表示用派生 `remake/img/ui/axe_throw/target_board_display.webp` は、正本PNGから RGBA のまま 800×800 へ LANCZOS 縮小し、WebP lossy（quality 90, method 6, exact）で作成した。ゲーム内表示は約390pxのため、この派生を使う。正本PNGと既存の可逆 `target_board.webp` は変更しない。
+派生は `props/registration.json` の `derivatives` に SHA・サイズ・平均絶対差の上限を登録し、`validate.py` が正本との同寸縮小比較で検査する。
 共有manifestはこの単位の追加だけを登録し、全体再生成のtimestampは保持する。この単位の登録時刻は `registration.json` に記録する。最新main #473店舗ロゴ・#453イベントCGを保持して統合し、元のひより13ファイルと新5表情のバイナリ・足元を再確認した。

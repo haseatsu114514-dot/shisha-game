@@ -1,0 +1,75 @@
+{
+  "issue": 750,
+  "worker": "codex-sumi750-task7-20261020-4e5c9d21",
+  "claim_run": "39399838135",
+  "base_main": "df3d9897b94a9f4d8e5a628ebb85b890ba7255a9",
+  "tool": "built-in image_gen.imagegen",
+  "submitted_calls": 1,
+  "completed_calls": 1,
+  "generation_executor": "parent supervisor; image worker did not invoke generation",
+  "native_output": {
+    "width": 1672,
+    "height": 941,
+    "mode": "RGB",
+    "opaque": true,
+    "bytes": 2423241,
+    "sha256": "fe2d3dbc1b3efd12e305d6b92f04366a1b1c595139b1b61754a9d0c6eff5cef7",
+    "git_blob_sha1": "034969c54af1f68a2e7d90f604b494ff9c7406c0"
+  },
+  "preview": {
+    "width": 1000,
+    "height": 563,
+    "conversion_only": "Pillow LANCZOS resize, WebP quality85; no second image generation",
+    "bytes": 103988,
+    "sha256": "f3d8991da9bc573dfdf0ee248a623812fe44a018f845fb010332b828f0571146",
+    "git_blob_sha1": "9e8c40065ce23b519fa1250f7bce695d5cb90406"
+  },
+  "prompt": {
+    "bytes": 2258,
+    "sha256": "fddc0d78c40727b2d6199f18b424dfac90d3e0e906499a6d6703ed49d1bee980",
+    "git_blob_sha1": "6fecc4f889cf92cd4801093b4a6a1f084e372d15"
+  },
+  "references": [
+    {
+      "role": "edit target / exact art style and layout",
+      "repository_path": "remake/img/ui/character_intros/sumi.webp",
+      "blob_sha1": "c2d1c6225c0d4ed6c52dd34e7a836d51ecc1f9e9",
+      "bytes": 307550,
+      "sha256": "994c3841a1a43559f459db4c04fd67631841a992c651a472cbedef95a500afb6"
+    },
+    {
+      "role": "equipment structure only; original product photo viewed and attached, no photograph redistributed",
+      "product_url": "https://shishatabak.nl/products/dum-hot-plate-1000-watt-elektrische-kolenbrander",
+      "photo_url": "https://cdn.shopify.com/s/files/1/0949/8142/3370/files/dum-hot-plate-1000-watt-elektrische-kolenbrander-voor-waterpijp-kolen-zijaanzicht.jpg",
+      "bytes": 48238,
+      "sha256": "f846b171c13dd11afd6fb37b59d73d6a9a4474e0c05dbb2aadb33c036cad375f",
+      "restriction": "Do not reproduce product branding, warning labels or exact design; rights for photo redistribution not established."
+    }
+  ],
+  "adoption_history": {
+    "existing_v3": "Unchanged and still the current adopted background. Existing generation.json and canonical PNG/WebP not edited.",
+    "this_v1": "New unadopted candidate. Await owner comparison and selection. No automatic adoption."
+  },
+  "qa": {
+    "review_status": "candidate_not_adopted_owner_review_required",
+    "review_method": "Parent and image worker each directly viewed current image, equipment photo and generated output. Static image QA only.",
+    "passes": [
+      "Low stable burner housing, supported spiral coil and three individual coals are readable.",
+      "Coals contact the coil; no floating cubes or flames.",
+      "Copper/ivory/deep navy print palette and engraved silkscreen style retained.",
+      "Left portrait field and lower-right quote field stay dark. No humans, names or UI baked in.",
+      "Main upper-right motif and faint lower-right repetition changed; original source/runtime assets remain unchanged."
+    ],
+    "limitations": [
+      "Tongs retain ornate engraving despite requested slim plain tool.",
+      "Coals retain strong porous texture; fine compressed-charcoal grain instruction is only partly satisfied.",
+      "Power lead is not continuously identifiable from housing to frame edge; no definitive electrical routing pass. Do not infer hidden connections.",
+      "No portrait/name-band/quote composition or PC/touch runtime test performed.",
+      "Owner adoption not received; no runtime integration, manifest change, merge or publication."
+    ],
+    "not_applicable": [
+      "No smoking person, hose, mouthpiece, bowl/HMD stack or hand scale in the edited hero motif.",
+      "Local Git Safety/root/hooks scripts: API-only route without checkout."
+    ]
+  }
+}

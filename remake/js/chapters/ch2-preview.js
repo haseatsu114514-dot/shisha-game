@@ -3,6 +3,7 @@ import { DB, loadAll } from "../core/data.js";
 import { newState, setState, state } from "../core/state.js";
 import { el } from "../core/util.js";
 import { storeLogo } from "../core/store-logos.js";
+import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { initLayers, layers, setBg, imageReady } from "../core/ui.js";
 import { unlockAudio } from "../core/audio.js";
 import { play, vnTest } from "../vn/engine.js";
@@ -83,7 +84,7 @@ function renderEntry() {
   layers.screen.replaceChildren(el("main.ch2-shell.ch2-entry", { dataset: { test: "ch2-preview-entry" } }, [
     el("div.ch2-entry-card", [
       el("p.ch2-kicker", { text: "水煙前線 -EN:CODE- / CHAPTER 02" }),
-      el("h1", [el("small", { text: "第2章・街歩き試遊" }), "ワイドハンガ街"]),
+      el("h1", [el("small", { text: "第2章・街歩き試遊" }), "柚ヶ谷"]),
       el("p.ch2-entry-description", { text: "地元の大会の、その先へ。隣町の大きな駅を出ると、人の流れと、まだ知らない煙が待っている。" }),
       el("p.ch2-preview-note", { text: "街と4つの訪問先・県大会ホールの挨拶、準備中の室内見学を遊べます。あげはも県大会のライバルです。日常の続きと県大会は未収録。本編と別に進み、本編のセーブは変更せず、再読み込みでリセットされます。" }),
       el("div.ch2-actions", [button("隣町へ向かう", "ch2-preview-start", () => perform(startPreview), "btn primary"), el("a.ch2-text-link", { href: "index.html", text: "本編タイトルへ" })]),
@@ -118,7 +119,7 @@ async function startPreview() {
   arrivalRead = true;
   state.phase = "daily";
   renderMap();
-  say("ワイドハンガ街に到着しました。地図から行き先を選んでください。");
+  say("柚ヶ谷に到着しました。地図から行き先を選んでください。");
   focusTest("ch2-preview-pin-ageha");
 }
 
@@ -136,7 +137,7 @@ function mapPin(stop, index) {
       if (ROOMS[stop.id]) renderStopMenu(stop);
       else renderMap();
       say(`${stop.name}での挨拶を読みました。${visited.size}か所、全${STOPS.length}か所。`);
-      focusTest(ROOMS[stop.id] ? "ch2-preview-inside" : (allRead() ? "ch2-preview-return" : `ch2-preview-pin-${stop.id}`));
+      focusTest(ROOMS[stop.id] ? "ch2-preview-inside" : (allRead() ? "ch2-preview-station" : `ch2-preview-pin-${stop.id}`));
     }),
   }, [
     el("span.ch2-pin-num", { text: read ? "✓" : String(index + 1), "aria-hidden": "true" }),
@@ -185,7 +186,7 @@ async function visitInside(stop) {
   if (!await showMapBackground()) return;
   renderMap();
   say(`${stop.name}の見学を終えました。`);
-  focusTest(allRead() ? "ch2-preview-return" : `ch2-preview-pin-${stop.id}`);
+  focusTest(allRead() ? "ch2-preview-station" : `ch2-preview-pin-${stop.id}`);
 }
 
 function allRead() { return arrivalRead && visited.size === STOPS.length; }
@@ -195,7 +196,7 @@ function renderMap() {
   layers.hud.replaceChildren();
   const station = el("li", { style: { left: "15%", top: "34%" } }, [
     el("button.ch2-pin.station", { type: "button", disabled: busy, dataset: { test: "ch2-preview-station" }, "aria-label": "駅へ戻り、試遊を終える", onclick: () => perform(returnHome) }, [
-      el("span.ch2-pin-num", { text: "↖", "aria-hidden": "true" }),
+      el("span.ch2-pin-num.train-icon", { html: TRAIN_ICON_SVG }),
       el("span.ch2-pin-title", { text: "駅へ戻る" }),
       el("span.ch2-pin-caption", { text: "地元へ戻る" }),
     ]),
@@ -204,7 +205,7 @@ function renderMap() {
     el("header.ch2-map-header", [
       el("div", [
         el("p.ch2-kicker", { text: "CHAPTER 02 / 同じ県の、隣町へ" }),
-        el("h1", { text: "ワイドハンガ街" }),
+        el("h1", { text: "柚ヶ谷" }),
         el("p", { text: `${time === "day" ? "昼" : "夜"}の駅前　｜　気になる店の入口へ。訪問の順番は自由です。` }),
       ]),
       el("div.ch2-time-control", { role: "group", "aria-label": "街の昼夜を切り替える" }, [
@@ -221,7 +222,6 @@ function renderMap() {
         `${visited.size} / ${STOPS.length}`, el("small", { text: "か所読了" }),
       ]),
       el("p", { text: allRead() ? "今日はここまで。駅へ戻り、地元の店へ持ち帰ろう。" : "店と会場で短い挨拶ができます。途中でも、駅から地元へ戻れます。" }),
-      button("駅へ戻る", "ch2-preview-return", () => perform(returnHome), allRead() ? "btn primary" : "btn"),
     ]),
     el("footer.ch2-map-footer", [
       el("p", { text: "第2章・街歩き試遊　｜　初日の街歩き・県大会未収録・セーブ変更なし" }),

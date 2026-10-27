@@ -16,7 +16,7 @@ async function setup(page, { load = false, choice = "skip", auto = "good", pause
     vn.vnTest.choose = (id, labels) => {
       if (id !== "remake_tutorial_offer") return 0;
       O.choices.push(labels);
-      return labels.indexOf(options.choice === "practice" ? "練習していく" : "今は練習しない");
+      return labels.indexOf("一台作る");
     };
     vn.hooks.onLine = (id, line) => {
       if (O.entries.at(-1) !== id) O.entries.push(id);
@@ -78,10 +78,10 @@ await suite("ch1-opening-resume", async check => {
     assert(result.entries.includes("ch1_opening"));
     assert(result.entries.includes("ch1_tutorial_oneesan"));
     assert.equal(result.state.flags._ch1_opening.introDone, true);
-    assert.equal(practiceCount(result.state), 0);
+    assert.equal(practiceCount(result.state), 1);
   });
 
-  await check("new-game-skip-and-daily-reload", async page => {
+  await check("new-game-mandatory-craft-and-daily-reload", async page => {
     await setup(page);
     await page.evaluate(() => O.run("new"));
     const finished = await daily(page);
@@ -89,9 +89,9 @@ await suite("ch1-opening-resume", async check => {
     for (const id of ["ch1_cold_open", "ch1_opening", "ch1_tsumugi_research", "ch1_tsumugi_departure",
       "remake_tutorial_offer", "ch1_tutorial_oneesan"]) assert(entries.includes(id), id);
     assert(entries.indexOf("ch1_tsumugi_research") < entries.indexOf("ch1_tutorial_oneesan"));
-    assert(!entries.includes("remake_tutorial_intro"));
-    assert.equal(finished.state.flags._tutorial_skipped, true);
-    assert.equal(practiceCount(finished.state), 0);
+    assert(entries.includes("remake_tutorial_intro"));
+    assert(!finished.state.flags._tutorial_skipped);
+    assert.equal(practiceCount(finished.state), 1);
     await reloadAndResume(page);
     const reloaded = await daily(page);
     assert(!reloaded.entries.includes("ch1_tutorial_oneesan"));
@@ -114,27 +114,43 @@ await suite("ch1-opening-resume", async check => {
     assert(result.entries.includes("ch1_tsumugi_research"));
     assert(result.entries.includes("remake_tutorial_offer"));
     assert(result.entries.includes("ch1_tutorial_oneesan"));
-    assert.equal(result.choices.length, 1);
-    assert.equal(result.state.flags._tutorial_skipped, true);
-    assert.equal(practiceCount(result.state), 0);
+    assert.equal(result.choices.length, 0, "旧セーブの再開も一択メニューを挟まない");
+    assert(!result.state.flags._tutorial_skipped);
+    assert.equal(practiceCount(result.state), 1);
   });
 
-  for (const choice of ["skip", "practice"]) {
-    await check(`choice-${choice}-saved-before-branch-finished`, async page => {
+  await check("legacy-unfinished-skip-resumes-required-lesson", async page => {
+    await setup(page);
+    await page.evaluate(() => {
+      Object.assign(O.core.state.flags, { _tutorial_skipped: true, _tsumugi_contest_research: true,
+        _ch1_opening: { introDone: true, departureDone: true, firstOrderDone: true,
+          offerDone: true, tutorialChoice: "skip" } });
+      O.core.save(); O.run("resume");
+    });
+    const result = await daily(page);
+    assert(!result.state.flags._tutorial_skipped);
+    assert.equal(result.state.flags._ch1_opening.tutorialChoice, "practice");
+    assert.equal(practiceCount(result.state), 1);
+    assert.deepEqual(result.choices, [], "手順のおさらいへ一択メニューを挟まず進む");
+    assert(result.state.flags._ch1_opening.firstBrew.guided);
+  });
+
+  for (const choice of ["practice"]) {
+    await check(`interrupted-offer-${choice}-replays-before-lesson`, async page => {
       await setup(page, { choice, pauseAt: "remake_tutorial_offer",
         pauseText: choice === "practice" ? "お願いします" : "今日はこのまま" });
       await page.evaluate(() => O.run("new"));
       await page.waitForFunction(() => O.paused);
       const interrupted = await page.evaluate(() => O.snapshot());
       assert.equal(interrupted.saved.phase, "opening");
-      assert.equal(interrupted.saved.flags._ch1_opening.tutorialChoice, choice);
+      assert(!interrupted.saved.flags._ch1_opening.firstBrew, "おさらい未完の保存から再開する");
       assert(!interrupted.saved.flags._ch1_opening.offerDone);
       // 再開後の自動選択を反対にしても、保存した方針を守る。
       await reloadAndResume(page, { choice: choice === "skip" ? "practice" : "skip" });
       const result = await daily(page);
       assert.equal(result.choices.length, 0);
       assert.equal(result.state.flags._ch1_opening.tutorialChoice, choice);
-      assert.equal(practiceCount(result.state), choice === "practice" ? 1 : 0);
+      assert.equal(practiceCount(result.state), 1);
       assert.equal(result.entries.filter(id => id === "ch1_tutorial_oneesan").length, 1);
       assert.equal(result.entries.includes("remake_tutorial_result"), choice === "practice");
       assert.deepEqual(resources(result.state), resources(interrupted.saved));
@@ -215,19 +231,19 @@ await suite("ch1-opening-resume", async check => {
     assert.deepEqual(resources(result.state), resources(interrupted.saved));
   });
 
-  await check("interrupted-service-is-required-after-skipping-lesson", async page => {
+  await check("interrupted-service-is-required-after-lesson", async page => {
     await setup(page, { pauseAt: "ch1_tutorial_oneesan" });
     await page.evaluate(() => O.run("new"));
     await page.waitForFunction(() => O.paused);
     const interrupted = await page.evaluate(() => O.snapshot());
     assert.equal(interrupted.saved.phase, "opening");
-    assert.equal(interrupted.saved.flags._tutorial_skipped, true);
+    assert.equal(interrupted.saved.flags._tutorial_done, true);
     assert(!interrupted.saved.flags._ch1_opening.oneesanDone);
     await reloadAndResume(page, { choice: "practice", auto: null });
     const result = await daily(page);
     assert.deepEqual(result.entries.filter(id => /tutorial|tsumugi_departure/.test(id)), ["ch1_tutorial_oneesan"]);
     assert.equal(result.choices.length, 0);
-    assert.equal(practiceCount(result.state), 0);
+    assert.equal(practiceCount(result.state), 1);
     assert.equal(result.state.flags._oneesan_id_checked, true);
     assert.deepEqual(resources(result.state), resources(interrupted.saved));
   });

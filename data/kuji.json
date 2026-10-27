@@ -1,7 +1,179 @@
 {
-  "_comment": "シーシャくじ（master_spec #25 / A2）。ボックス制・上位集約。type: goods/stand=売却可, flavor/consumable=売却不可。sell=中古売値。equipId は実機能に紐づくもののみ（home_rig_set）。くじ専用の小物は goods 扱いで売却可。",
-  "meta": { "refillDays": 3 },
+  "_comment": "シーシャくじ。新品箱は各50枚・S賞1枚。定価換算は実際に付与する葉のg×店頭50g価格、非売品は既存中古評価額で保守的に計算する。売却益のプラスは保証しない。旧箱はlegacyGradesの景品・残り順を引き切る。",
+  "meta": {
+    "refillDays": 3,
+    "version": 2
+  },
   "grades": {
+    "g500": {
+      "price": 500,
+      "boxSize": 50,
+      "chapterMin": 1,
+      "label": "シーシャくじ（1回500円）",
+      "ev_comment": "50枚25,000円。S1/50。葉は店頭価格×実g/50、非売品グッズは中古額で保守的に評価。通常賞25,541円相当（102.164%）、最後のハガルを中古評価3,000円で加えると28,541円相当（114.164%）。通常賞の売却可能額は8,900円（35.6%）。葉は実在庫へ付与。旧箱のホースは引き切るまで保持。",
+      "prizes": [
+        {
+          "rank": "S",
+          "name": "限定コラボ・ガラスハガル",
+          "type": "goods",
+          "sell": 6000,
+          "count": 1,
+          "desc": "コラボ限定の硝子製ハガル。コレクター垂涎の一品。"
+        },
+        {
+          "rank": "A",
+          "name": "ステンレストング（上物）",
+          "type": "goods",
+          "sell": 1000,
+          "count": 2,
+          "desc": "握りの良い業務用トング。所持中は炭の取り頃が少し長くなる。複数でも効果は同じ。"
+        },
+        {
+          "rank": "A",
+          "name": "AF バニラ（25g）",
+          "type": "flavor",
+          "flavorId": "vanilla",
+          "grams": 25,
+          "sell": 0,
+          "count": 2,
+          "desc": "甘い香りのバニラ25g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "A",
+          "name": "木製マウスピース",
+          "type": "goods",
+          "sell": 900,
+          "count": 1,
+          "desc": "手に馴染む木工マウスピース。"
+        },
+        {
+          "rank": "B",
+          "name": "AF ミント（お試し3g）",
+          "type": "flavor",
+          "flavorId": "mint",
+          "grams": 3,
+          "sell": 0,
+          "count": 20,
+          "desc": "ミックスや家シーシャに使えるミント3g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "B",
+          "name": "AF ダブルアップル（お試し3g）",
+          "type": "flavor",
+          "flavorId": "double_apple",
+          "grams": 3,
+          "sell": 0,
+          "count": 17,
+          "desc": "ミックスや家シーシャに使えるダブルアップル3g。手持ちの葉に加わる。"
+        },
+        {
+          "rank": "C",
+          "name": "AF グレープ（50g）",
+          "type": "flavor",
+          "flavorId": "grape",
+          "sell": 0,
+          "count": 4,
+          "desc": "Dr.fookah入荷の人気フレーバー。当たればミックスで使えるようになる。",
+          "grams": 50
+        },
+        {
+          "rank": "C",
+          "name": "アフサール ローズ（50g）",
+          "type": "flavor",
+          "flavorId": "rose",
+          "sell": 0,
+          "count": 3,
+          "desc": "Dr.fookah入荷の限定フローラル。当たればミックスで使える。",
+          "grams": 50
+        }
+      ],
+      "lastOne": {
+        "rank": "LAST",
+        "name": "ラストワン賞・ナイトサイド プレミアハガル",
+        "equipId": "nightside_premier_hagal",
+        "type": "equip",
+        "sell": 3000,
+        "count": 1,
+        "desc": "箱を引き切った人だけがもらえる、NIGHTSIDEのプレミアムなハガル。",
+        "secret": true
+      }
+    },
+    "g1000": {
+      "price": 1000,
+      "boxSize": 50,
+      "chapterMin": 1,
+      "label": "プレミアムくじ（1回1,000円）",
+      "ev_comment": "50枚50,000円。S1/50。葉の定価45,660円＋クリアパイプ中古評価2,000円＋非売品台の既存景品評価3,000円＝50,660円相当（101.32%）。ラストワンを中古評価3,000円で加えると53,660円相当（107.32%）。台の実売却は不可、重複時のみ既存の1,500円補償。葉は実在庫へ付与。",
+      "prizes": [
+        {
+          "rank": "S",
+          "name": "大会公式モデルの台",
+          "type": "stand",
+          "equipId": "home_rig_pro",
+          "sell": 3000,
+          "count": 1,
+          "desc": "大会の本番と同じ台。家で試作したフレーバーの熟練度が、少し育ちやすくなる。"
+        },
+        {
+          "rank": "A",
+          "name": "クリアパイプ（中級機）",
+          "type": "goods",
+          "sell": 2000,
+          "count": 1,
+          "desc": "扱いやすい中級パイプ。売れば良い値段。"
+        },
+        {
+          "rank": "A",
+          "name": "人気フレーバー詰め合わせ",
+          "type": "flavor",
+          "sell": 0,
+          "count": 2,
+          "desc": "グレープとローズを各50g。両方が手持ちの葉に加わる。",
+          "flavors": [
+            {
+              "id": "grape",
+              "grams": 50
+            },
+            {
+              "id": "rose",
+              "grams": 50
+            }
+          ]
+        },
+        {
+          "rank": "B",
+          "name": "AF ミント（50g）",
+          "type": "flavor",
+          "flavorId": "mint",
+          "grams": 50,
+          "sell": 0,
+          "count": 20,
+          "desc": "家シーシャやミックスで使えるミント1箱50g。"
+        },
+        {
+          "rank": "B",
+          "name": "AF ブルーベリー（お試し10g）",
+          "type": "flavor",
+          "flavorId": "blueberry",
+          "grams": 10,
+          "sell": 0,
+          "count": 26,
+          "desc": "ミックスに使えるブルーベリー10g。手持ちの葉に加わる。"
+        }
+      ],
+      "lastOne": {
+        "rank": "LAST",
+        "name": "ラストワン賞・ナイトサイド プレミアハガル",
+        "equipId": "nightside_premier_hagal",
+        "type": "equip",
+        "sell": 3000,
+        "count": 1,
+        "desc": "箱を引き切った人だけがもらえる、NIGHTSIDEのプレミアムなハガル。",
+        "secret": true
+      }
+    }
+  },
+  "legacyGrades": {
     "g500": {
       "price": 500,
       "boxSize": 20,
@@ -9,31 +181,141 @@
       "label": "シーシャくじ（1回500円）",
       "ev_comment": "投資10,000円。フルボックス(20枚)の売却可現金=S(6000)+A5枚(計4500)=10,500 ⇒ 還元105%。ラストワン賞(1,000)込みで11,500=115%。下位14枚は売却不可の消耗品(使用価値のみ)。Sを引かないと黒字化せず、1箱の最大現金利益は約+1,500円でバイト1回(8,000)に遠く及ばない。",
       "prizes": [
-        { "rank": "S", "name": "限定コラボ・ガラスハガル", "type": "goods", "sell": 6000, "count": 1, "desc": "コラボ限定の硝子製ハガル。コレクター垂涎の一品。" },
-        { "rank": "A", "name": "ステンレストング（上物）", "type": "goods", "sell": 1000, "count": 2, "desc": "握りの良い業務用トング。売れば良い値段。" },
-        { "rank": "A", "name": "シリコンホース（限定色）", "type": "goods", "sell": 800, "count": 2, "desc": "限定カラーのシリコンホース。" },
-        { "rank": "A", "name": "木製マウスピース", "type": "goods", "sell": 900, "count": 1, "desc": "手に馴染む木工マウスピース。" },
-        { "rank": "B", "name": "ココナッツ炭（1箱）", "type": "consumable", "sell": 0, "count": 5, "desc": "火付きの良い定番の炭。実用品。" },
-        { "rank": "B", "name": "アルミホイル（業務用）", "type": "consumable", "sell": 0, "count": 6, "desc": "厚手の業務用アルミ。実用品。" },
-        { "rank": "C", "name": "AF グレープ（フレーバー1袋）", "type": "flavor", "flavorId": "grape", "sell": 0, "count": 2, "desc": "Dr.fookah入荷の人気フレーバー。当たればミックスで使えるようになる。" },
-        { "rank": "C", "name": "AF ローズ（フレーバー1袋）", "type": "flavor", "flavorId": "rose", "sell": 0, "count": 1, "desc": "Dr.fookah入荷の限定フローラル。当たればミックスで使える。" }
+        {
+          "rank": "S",
+          "name": "限定コラボ・ガラスハガル",
+          "type": "goods",
+          "sell": 6000,
+          "count": 1,
+          "desc": "コラボ限定の硝子製ハガル。コレクター垂涎の一品。"
+        },
+        {
+          "rank": "A",
+          "name": "ステンレストング（上物）",
+          "type": "goods",
+          "sell": 1000,
+          "count": 2,
+          "desc": "握りの良い業務用トング。売れば良い値段。"
+        },
+        {
+          "rank": "A",
+          "name": "シリコンホース（限定色）",
+          "type": "goods",
+          "sell": 800,
+          "count": 2,
+          "desc": "限定カラーのシリコンホース。"
+        },
+        {
+          "rank": "A",
+          "name": "木製マウスピース",
+          "type": "goods",
+          "sell": 900,
+          "count": 1,
+          "desc": "手に馴染む木工マウスピース。"
+        },
+        {
+          "rank": "B",
+          "name": "ココナッツ炭（1箱）",
+          "type": "consumable",
+          "sell": 0,
+          "count": 5,
+          "desc": "火付きの良い定番の炭。実用品。"
+        },
+        {
+          "rank": "B",
+          "name": "アルミホイル（業務用）",
+          "type": "consumable",
+          "sell": 0,
+          "count": 6,
+          "desc": "厚手の業務用アルミ。実用品。"
+        },
+        {
+          "rank": "C",
+          "name": "AF グレープ（フレーバー1袋）",
+          "type": "flavor",
+          "flavorId": "grape",
+          "sell": 0,
+          "count": 2,
+          "desc": "Dr.fookah入荷の人気フレーバー。当たればミックスで使えるようになる。"
+        },
+        {
+          "rank": "C",
+          "name": "AF ローズ（フレーバー1袋）",
+          "type": "flavor",
+          "flavorId": "rose",
+          "sell": 0,
+          "count": 1,
+          "desc": "Dr.fookah入荷の限定フローラル。当たればミックスで使える。"
+        }
       ],
-      "lastOne": { "rank": "LAST", "name": "ラストワン賞・木製スタンド", "type": "goods", "sell": 1000, "count": 1, "desc": "箱を引き切った人だけがもらえる、ちょっと良い木工スタンド。" }
+      "lastOne": {
+        "rank": "LAST",
+        "name": "ラストワン賞・ナイトサイド プレミアハガル",
+        "equipId": "nightside_premier_hagal",
+        "type": "equip",
+        "sell": 3000,
+        "count": 1,
+        "desc": "箱を引き切った人だけがもらえる、NIGHTSIDEのプレミアムなハガル。"
+      }
     },
     "g1000": {
       "price": 1000,
       "boxSize": 12,
-      "chapterMin": 2,
+      "chapterMin": 1,
       "label": "プレミアムくじ（1回1,000円）",
-      "ev_comment": "投資12,000円。上位賞は『台（家シーシャ本体）』＝使用価値が主、ダブり売値は低め(3,000)。台量産→売却は割に合わない設計。家シーシャ未所持なら破格の当たり。",
+      "ev_comment": "投資12,000円。第1章から並ぶ（#638 オーナー指定）。上位賞は『大会公式モデルの台』＝寝る前の家の一服の伸びがよくなる使用価値が主（スミさんの卓上台 0.5P → 0.75P）。ダブりは売値の半額（1,500）だけで、台量産→売却は割に合わない設計。",
       "prizes": [
-        { "rank": "S", "name": "家シーシャ一式（コンパクト台）", "type": "stand", "equipId": "home_rig_set", "sell": 3000, "count": 1, "desc": "家で吸える小型の台一式。家シーシャが解禁される。" },
-        { "rank": "A", "name": "クリアパイプ（中級機）", "type": "goods", "sell": 2000, "count": 1, "desc": "扱いやすい中級パイプ。売れば良い値段。" },
-        { "rank": "A", "name": "人気フレーバー詰め合わせ", "type": "flavor", "sell": 0, "count": 2, "desc": "人気どころのフレーバー数種。使用価値の塊。" },
-        { "rank": "B", "name": "ココナッツ炭（大箱）", "type": "consumable", "sell": 0, "count": 5, "desc": "大容量の炭。実用品。" },
-        { "rank": "B", "name": "くじ屋オリジナル・ステッカー", "type": "goods", "sell": 100, "count": 3, "desc": "ほぼ景品。集めると可愛い、かも。" }
+        {
+          "rank": "S",
+          "name": "大会公式モデルの台",
+          "type": "stand",
+          "equipId": "home_rig_pro",
+          "sell": 3000,
+          "count": 1,
+          "desc": "大会の本番と同じ台。家で試作したフレーバーの熟練度が、少し育ちやすくなる。"
+        },
+        {
+          "rank": "A",
+          "name": "クリアパイプ（中級機）",
+          "type": "goods",
+          "sell": 2000,
+          "count": 1,
+          "desc": "扱いやすい中級パイプ。売れば良い値段。"
+        },
+        {
+          "rank": "A",
+          "name": "人気フレーバー詰め合わせ",
+          "type": "flavor",
+          "sell": 0,
+          "count": 2,
+          "desc": "人気どころのフレーバー数種。使用価値の塊。"
+        },
+        {
+          "rank": "B",
+          "name": "ココナッツ炭（大箱）",
+          "type": "consumable",
+          "sell": 0,
+          "count": 5,
+          "desc": "大容量の炭。実用品。"
+        },
+        {
+          "rank": "B",
+          "name": "くじ屋オリジナル・ステッカー",
+          "type": "goods",
+          "sell": 100,
+          "count": 3,
+          "desc": "ほぼ景品。集めると可愛い、かも。"
+        }
       ],
-      "lastOne": { "rank": "LAST", "name": "ラストワン賞・限定ボウル", "type": "goods", "sell": 3000, "count": 1, "desc": "箱を引き切った人だけの限定ボウル。" }
+      "lastOne": {
+        "rank": "LAST",
+        "name": "ラストワン賞・ナイトサイド プレミアハガル",
+        "equipId": "nightside_premier_hagal",
+        "type": "equip",
+        "sell": 3000,
+        "count": 1,
+        "desc": "箱を引き切った人だけがもらえる、NIGHTSIDEのプレミアムなハガル。"
+      }
     }
   }
 }

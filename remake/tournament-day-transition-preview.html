@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大会当日・日付切り替え比較 — 水煙前線</title>
+<link rel="stylesheet" href="css/base.css">
+<style>
+:root { color-scheme:dark; }
+body { position:static; min-height:100vh; margin:0; overflow:auto; background:radial-gradient(circle at 50% -15%,#423165,transparent 55%),#100c1d; color:#f7f1ff; font-family:var(--font),sans-serif; }
+main { max-width:1100px; margin:auto; padding:24px 18px 45px; }
+h1 { margin:0 0 8px; font-size:clamp(25px,3vw,40px); }
+p { line-height:1.6; }
+.kicker { margin:0 0 5px; color:#e5c188; font-size:12px; font-weight:900; letter-spacing:.2em; }
+.intro,.hint { color:#cbbddd; font-size:14px; }
+.controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:18px 0; }
+button { min-height:44px; padding:8px 14px; border:1px solid #a68ac9; border-radius:7px; background:#302349; color:white; font:700 14px var(--font),sans-serif; cursor:pointer; }
+button:hover,button[aria-pressed="true"] { border-color:#efca89; background:#63476e; }
+button:focus-visible { outline:3px solid #f5d494; outline-offset:2px; }
+button:disabled { opacity:.6; cursor:wait; }
+#replay { background:#80562e; border-color:#e7bd78; }
+#sound { margin-left:auto; }
+.viewport { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; border:1px solid #876bb1; border-radius:10px; background:#120d21; box-shadow:0 18px 45px #0007; }
+.stage { position:absolute; left:0; top:0; width:1280px; height:720px; overflow:hidden; transform-origin:top left; }
+.backdrop { position:absolute; inset:0; background:center/cover no-repeat; }
+.backdrop.night { background-image:url('img/backgrounds/bg_home_night.webp'); }
+.backdrop.day { background-image:url('img/backgrounds/bg_home_day.webp'); }
+.stage-info { position:absolute; top:24px; left:28px; padding:9px 16px; border:1px solid #e2cff0aa; border-radius:6px; background:#1c1439d8; color:#f5eaff; font-size:25px; font-weight:900; text-shadow:0 1px 3px #000; }
+.stage-info small { display:block; font-size:16px; font-weight:700; letter-spacing:.04em; }
+#fx { position:absolute; inset:0; overflow:hidden; }
+.motion { position:absolute; inset:0; overflow:hidden; background:#34246a; color:white; }
+.motion.smoke { background:radial-gradient(circle at 50% 45%,#584584,#24183f 72%); }
+.motion.spot { background:#34246a; }
+.motion .title { position:absolute; top:255px; left:0; right:0; text-align:center; font-size:104px; line-height:1; font-weight:900; letter-spacing:.07em; text-shadow:0 2px 16px #110c27; }
+.motion .title small { margin-right:20px; color:#dcd1f4; font-size:46px; letter-spacing:.22em; }
+.motion .subtitle { position:absolute; top:385px; left:0; right:0; text-align:center; color:#eadbff; font-size:29px; font-weight:800; letter-spacing:.13em; text-shadow:0 2px 12px #160a2c; }
+.motion .gold { color:#ffe1aa; }
+.motion .horizon { position:absolute; left:0; right:0; bottom:0; height:4px; background:#f6dcaf; box-shadow:0 0 24px 10px #f5d99d77; }
+.motion .cross { position:absolute; left:50%; top:52%; width:980px; height:3px; margin-left:-490px; background:linear-gradient(90deg,transparent,#e8bd84,transparent); box-shadow:0 0 16px #f8d99a; }
+.motion .cross.one { transform:rotate(10deg); }.motion .cross.two { transform:rotate(-10deg); }
+.motion .haze { position:absolute; width:1000px; height:610px; border-radius:50%; filter:blur(48px); background:radial-gradient(ellipse,#b6a1deaa 0,#7b64af77 45%,transparent 72%); }
+.motion .haze.one { left:-320px; top:50px; }.motion .haze.two { right:-320px; top:25px; }
+.motion .beam { position:absolute; top:-110px; width:220px; height:800px; transform-origin:50% 0; clip-path:polygon(48% 0,52% 0,100% 100%,0 100%); background:linear-gradient(#fff1d299,#dcd1f430 65%,transparent); }
+.motion .beam.center { left:530px; }.motion .beam.left { left:260px; transform:rotate(-17deg); }.motion .beam.right { right:260px; transform:rotate(17deg); }
+.motion .ring { position:absolute; left:50%; top:50%; width:480px; height:480px; margin:-240px; border:2px solid #dcd1f4; border-radius:50%; box-shadow:0 0 28px #dcd1f444; }
+.motion .ambient { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 110%,#dcd1f426,transparent 58%); }
+.details { display:flex; flex-wrap:wrap; align-items:baseline; gap:12px; margin-top:14px; }
+.details h2 { margin:0; font-size:22px; }.details span { color:#f1cf95; font-size:13px; font-weight:700; }
+#description { margin:6px 0 0; color:#d2c3e3; font-size:14px; }
+#status { min-height:1.5em; color:#cebce2; font-size:13px; }
+.compare { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:18px 0; }
+.compare button { min-height:76px; text-align:left; }
+.compare button strong,.compare button small { display:block; }.compare button small { margin-top:3px; color:#c8b9d9; font-weight:400; }
+@media(max-width:700px) { .compare { grid-template-columns:repeat(2,minmax(0,1fr)); } #sound { margin-left:0; } }
+@media(prefers-reduced-motion:reduce) { .motion * { animation:none!important; } }
+</style>
+</head>
+<body><main>
+<p class="kicker">SMOKE CROWN CUP / DAY 13 → DAY 14</p><h1>大会当日の日付切り替え・4種比較</h1>
+<p class="intro">同じ自宅の夜から朝へ。3案と通常の日替わりを選び、何度でも再生できます。C案「開幕のスポットライト」が採用候補です。</p>
+<div class="controls"><button id="replay" type="button">選択中の案を再生</button><button id="sound" type="button" aria-pressed="false">音 OFF</button><span id="status" role="status" aria-live="polite">案3を選択中</span></div>
+<div class="viewport"><div class="stage" id="preview-stage"><div class="backdrop night" id="backdrop"></div><div class="stage-info" id="stage-info">DAY 13<small>SMOKE CROWN CUP まで あと1日</small></div><div id="fx"></div></div></div>
+<div class="details"><h2 id="heading">案3｜開幕のスポットライト</h2><span id="duration">約2.3秒</span></div><p id="description">細い光からDAY 14を照らし、淡い左右のライトが広がって自宅の朝へ戻ります。</p>
+<div class="compare" aria-label="演出を選択"><button type="button" data-choice="1" aria-pressed="false"><strong>案1｜カウントダウン反転</strong><small>約2.5秒</small></button><button type="button" data-choice="2" aria-pressed="false"><strong>案2｜煙の先に会場</strong><small>約2.3秒</small></button><button type="button" data-choice="3" aria-pressed="true"><strong>案3｜開幕のスポットライト</strong><small>約2.3秒</small></button><button type="button" data-choice="normal" aria-pressed="false"><strong>通常の日替わり</strong><small>約3.1秒</small></button></div>
+<p class="hint">比較用の試作です。本編の保存データは読み書きしません。音が出せない環境でも映像だけで確認できます。</p>
+</main><script type="module">
+import { nightToMorning } from './js/core/transitions.js';
+import { move, EASE, reducedMotion } from './js/core/transition-kit.js';
+import { sleep } from './js/core/util.js';
+import { SE, unlockAudio } from './js/core/audio.js';
+const stage=document.getElementById('preview-stage'), backdrop=document.getElementById('backdrop'), info=document.getElementById('stage-info'), fx=document.getElementById('fx');
+const status=document.getElementById('status'), replay=document.getElementById('replay'), sound=document.getElementById('sound');
+const names={'1':'案1｜カウントダウン反転','2':'案2｜煙の先に会場','3':'案3｜開幕のスポットライト',normal:'通常の日替わり'};
+const descriptions={'1':'紫の波と数字めくりに続き、金の細い光が交差して朝の地平線へ。','2':'残り日数が煙に溶け、抽象的な会場の光を見せてから自宅の朝へ。','3':'細い光からDAY 14を照らし、淡い左右のライトが広がって自宅の朝へ戻ります。',normal:'本編で通常の日に使う夜明け演出を、そのまま同じ画面で再生します。'};
+let choice='3', playing=false, audioOn=false;
+function fit(){stage.style.transform=`scale(${stage.parentElement.clientWidth/1280})`;}
+new ResizeObserver(fit).observe(stage.parentElement);fit();
+function reset(){backdrop.className='backdrop night';info.innerHTML='DAY 13<small>SMOKE CROWN CUP まで あと1日</small>';fx.replaceChildren();}
+function morning(){backdrop.className='backdrop day';info.innerHTML='DAY 14<small>SMOKE CROWN CUP 当日</small>';}
+function node(className,text='',parent=fx){const n=document.createElement('div');n.className=className;n.textContent=text;parent.append(n);return n;}
+function animate(n,frames,ms,options={}){return move(n,frames,reducedMotion()?Math.min(ms,80):ms,{easing:EASE.out,...options});}
+function cue(method='tick'){if(audioOn){unlockAudio();SE[method]?.();}}
+async function reveal(n){await animate(n,[{opacity:0,transform:'translateY(18px)'},{opacity:1,transform:'translateY(0)'}],220);}
+async function flip(n,from,to){n.innerHTML=`<span class="tr-flip"><i>${from}</i><i style="transform:rotateX(-90deg);opacity:0">${to}</i></span>`;const [a,b]=n.firstChild.children;await animate(a,[{transform:'rotateX(0)',opacity:1},{transform:'rotateX(90deg)',opacity:0}],160);cue();await animate(b,[{transform:'rotateX(-90deg)',opacity:0},{transform:'rotateX(0)',opacity:1}],220);}
+async function runVariant(which){
+ const reduced=reducedMotion(), layer=node(`motion ${which==='2'?'smoke':which==='3'?'spot':''}`);layer.style.opacity='0';
+ const title=node('title','',layer), sub=node('subtitle','SMOKE CROWN CUP まで あと1日',layer);title.innerHTML='<small>DAY</small><span>13</span>';
+ if(which==='1'){
+   await animate(layer,[{opacity:0,clipPath:'inset(0 0 100% 0)'},{opacity:1,clipPath:'inset(0 0 0 0)'}],460,{easing:EASE.in});morning();
+   if(!reduced){await flip(title.querySelector('span'),'13','14');sub.textContent='SMOKE CROWN CUP 当日';cue('select');await reveal(sub);const a=node('cross one','',layer),b=node('cross two','',layer);await Promise.all([animate(a,[{opacity:0,transform:'translateX(-80px) rotate(10deg)'},{opacity:1,transform:'rotate(10deg)'}],320),animate(b,[{opacity:0,transform:'translateX(80px) rotate(-10deg)'},{opacity:1,transform:'rotate(-10deg)'}],320)]);await sleep(230);}
+   else{title.querySelector('span').textContent='14';sub.textContent='SMOKE CROWN CUP 当日';}
+   node('horizon','',layer);await sleep(reduced?300:150);await animate(layer,[{clipPath:'inset(0 0 0 0)'},{clipPath:'inset(0 0 100% 0)'}],600);
+ }else if(which==='2'){
+   const a=node('haze one','',layer),b=node('haze two','',layer);await animate(layer,[{opacity:0},{opacity:1}],reduced?80:350);morning();
+   if(!reduced){await Promise.all([animate(a,[{transform:'translateX(-400px)'},{transform:'translateX(40px)'}],500),animate(b,[{transform:'translateX(400px)'},{transform:'translateX(-40px)'}],500)]);title.querySelector('span').textContent='14';sub.textContent='SMOKE CROWN CUP 当日';cue('select');await Promise.all([animate(a,[{opacity:1},{opacity:.22}],320),animate(b,[{opacity:1},{opacity:.22}],320)]);await sleep(250);await animate(layer,[{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-100%)'}],650);}
+   else{title.querySelector('span').textContent='14';sub.textContent='SMOKE CROWN CUP 当日';await sleep(350);}
+ }else{
+   layer.append(node('ambient','',layer));const center=node('beam center','',layer),left=node('beam left','',layer),right=node('beam right','',layer),ring=node('ring','',layer);for(const n of [center,left,right,ring,title,sub])n.style.opacity='0';
+   sub.textContent='SMOKE CROWN CUP 当日';title.querySelector('span').textContent='14';await animate(layer,[{opacity:0},{opacity:1}],reduced?80:350);morning();
+   if(!reduced){await animate(center,[{opacity:0},{opacity:.7}],260);await reveal(title);cue('tick');await reveal(sub);await Promise.all([animate(left,[{opacity:0},{opacity:.65}],270),animate(right,[{opacity:0},{opacity:.65}],270),animate(ring,[{opacity:0,transform:'scale(.85)'},{opacity:.6,transform:'scale(1)'}],270)]);cue('select');await sleep(260);await animate(layer,[{opacity:1},{opacity:0}],600);}
+   else{title.style.opacity=sub.style.opacity='1';await sleep(350);}
+ }
+ layer.remove();
+}
+async function play(){if(playing)return;playing=true;replay.disabled=true;document.querySelectorAll('[data-choice]').forEach(b=>b.disabled=true);reset();status.textContent=`${names[choice]}を再生中…`;const start=performance.now();
+ try{if(choice==='normal'){const tick=SE.tick;if(!audioOn)SE.tick=()=>{};const observer=new MutationObserver(()=>{const sub=fx.querySelector('.tr-dawn-sub');if(sub&&sub.textContent.includes('あと')){observer.disconnect();sub.textContent='SMOKE CROWN CUP 当日';}});observer.observe(fx,{childList:true,subtree:true});try{await nightToMorning(fx,async()=>{morning();return{fromDay:13,day:14,fromLeft:1,left:0,weather:null};});}finally{observer.disconnect();SE.tick=tick;}}else await runVariant(choice);status.textContent=`${names[choice]}を再生しました（${((performance.now()-start)/1000).toFixed(1)}秒）。`;}
+ catch(e){status.textContent=`再生エラー: ${e.message}`;console.error(e);}
+ finally{playing=false;replay.disabled=false;document.querySelectorAll('[data-choice]').forEach(b=>b.disabled=false);}
+}
+document.querySelectorAll('[data-choice]').forEach(b=>b.addEventListener('click',()=>{if(playing)return;choice=b.dataset.choice;document.querySelectorAll('[data-choice]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));document.getElementById('heading').textContent=names[choice];document.getElementById('duration').textContent=b.querySelector('small').textContent;document.getElementById('description').textContent=descriptions[choice];status.textContent=`${names[choice]}を選択中`;play();}));
+replay.addEventListener('click',play);sound.addEventListener('click',()=>{audioOn=!audioOn;sound.setAttribute('aria-pressed',String(audioOn));sound.textContent=`音 ${audioOn?'ON':'OFF'}`;if(audioOn)unlockAudio();});
+</script></body></html>

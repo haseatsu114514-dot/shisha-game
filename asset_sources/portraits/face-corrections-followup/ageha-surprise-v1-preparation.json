@@ -1,0 +1,32 @@
+{
+  "character": "ageha",
+  "expression": "surprise",
+  "version": 1,
+  "source": "ageha-surprise-v1-source.png",
+  "source_sha256": "1574db73f4202dc5458603817ba0e409f382eb58ba69bd3215329a7c19cb6383",
+  "source_size": [
+    1084,
+    1451
+  ],
+  "source_visible_height": 1399,
+  "scale": 0.6947819871336669,
+  "translation": [
+    -6,
+    -1
+  ],
+  "preview": "ageha-surprise-v1-preview.png",
+  "preview_sha256": "2a05eae860312c29c6d0052501e29428f3a21d6f07235736268e26654a35c774",
+  "before_metrics": {
+    "top": 0.17083333333333334,
+    "bottom": 0.98,
+    "ax": 0.5785481672932331,
+    "aspect": 0.7466666666666667
+  },
+  "after_metrics": {
+    "top": 0.17,
+    "bottom": 0.98,
+    "ax": 0.578016910336537,
+    "aspect": 0.7466666666666667
+  },
+  "operation": "uniform downscale and feet-aligned canvas placement; no face compositing"
+}

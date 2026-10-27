@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+import { confirmWaterSetup } from "./water_setup.mjs";
+prepareAppearanceCatalog();
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const dir = process.env.ARTIFACT_DIR || ".codex/artifacts/game-layout";
@@ -11,6 +14,13 @@ const browserOptions = { headless: true, ...(process.env.CHROME_EXECUTABLE_PATH 
 const results = [];
 const button = (p, id) => p.locator(`[data-test="${id}"]`);
 const activate = async (p, id, touch) => {
+  if (["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id)
+    && !(await p.locator(".title-layout-toolbar").evaluate(node => node.open)))
+    await activate(p, "title-layout-settings", touch);
+  // 本編の表示切替も「表示」を開いてから選ぶ（DS風ではヒンジの小さなボタン）。
+  if (["game-layout-normal", "game-layout-ds", "game-layout-recover"].includes(id)
+    && !(await p.locator(".game-layout-toolbar").evaluate(node => node.open)))
+    await activate(p, "game-layout-settings", touch);
   const target = button(p, id); await target.scrollIntoViewIfNeeded();
   if (touch) await target.tap(); else await target.click();
 };
@@ -61,8 +71,10 @@ async function dsGeometry(p) {
   assert(Math.abs(rects[0].w-rects[1].w)<1&&Math.abs(rects[0].h-rects[1].h)<1);
   assert(rects[1].x>=rects[0].x+rects[0].w+9||rects[1].y>=rects[0].y+rects[0].h+9,"two panels overlap or gap missing");
   if (await p.locator("body").getAttribute("data-ds-view")==="map") {
-    const menu=await button(p,"hud-menu").boundingBox();
-    assert(menu && menu.x>=rects[0].x && menu.x+menu.width<=rects[0].x+rects[0].w+1,"MENU clipped outside scene panel");
+    // MENUは下画面（触る画面）のタッチバーにある。
+    const menu=await button(p,"hud-menu").boundingBox(), touchPanel=rects[1];
+    assert(menu && menu.x>=touchPanel.x-1 && menu.x+menu.width<=touchPanel.x+touchPanel.w+1
+      && menu.y>=touchPanel.y-1 && menu.y+menu.height<=touchPanel.y+touchPanel.h+1,"MENU clipped outside touch panel");
   }
 }
 async function normalGeometry(p) {
@@ -71,6 +83,7 @@ async function normalGeometry(p) {
   assert.deepEqual(await p.locator("#viewport").evaluate(n=>[n.getBoundingClientRect().top,n.scrollLeft,n.scrollTop]),[0,0,0]);
 }
 async function check(name, options, run, setup) {
+  if (process.env.CASE_FILTER && name !== process.env.CASE_FILTER) return;
   // Isolate device emulation/input as well as storage between landscape/portrait fixtures.
   const browser=await chromium.launch(browserOptions);
   const context=await browser.newContext(options), p=await context.newPage(); const errors=[];
@@ -102,7 +115,10 @@ try {
         await p.evaluate(async()=>{
           const core=await import("./js/core/state.js"), s=core.newState();
           Object.assign(s,{schema:14,phase:"daily",day:6,slot:0,money:45678,stamina:90,weatherSeed:4});
+          // This is an old save that already received the former starting box.
+          s.flavors=["double_apple"];s.flavorStock={double_apple:50};
           Object.assign(s.flags,{_morning_6:true,_lime_tut:1,_lime_opened:true,_qa_ds:"preserved",_hiyori_meeting_done:true});
+          s.owned.push("home_rig_set");
           s.lovers=["hiyori"];s.affinity.hiyori=66;s.relationshipMemories=["actually-read"];
           localStorage.setItem(core.SAVE_KEY,JSON.stringify(s));localStorage.setItem("suien_remake_slot1",JSON.stringify(s));
         });
@@ -130,12 +146,17 @@ try {
           await activate(p,"game-layout-ds",touch);await dsGeometry(p);
           assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
         }
-        await activate(p,"pin-tonari",touch);await activate(p,"map-go",touch);
-        await button(p,"tonari-practice").waitFor();if(mode==="ds")await dsGeometry(p);
-        await activate(p,"tonari-practice",touch);await button(p,"mix-ok").waitFor();
+        // 店の制作本体の表示を検査する。日常の1行動は消費しない。
+        await p.evaluate(() => {
+          import("./js/craft/practice.js").then(m => m.runFullPractice())
+            .then(() => import("./js/daily/map.js")).then(m => { window.__layoutMap = m.chooseSpot(); });
+        });
+        await confirmAppearanceSetup(p, { touch });
+        await confirmWaterSetup(p, { touch });
+        await button(p,"mix-ok").waitFor();
         if(mode==="ds")await dsGeometry(p);
         for(let n=0;n<10;n++)await activate(p,"mix-plus-double_apple",touch);
-        for(let n=0;n<2;n++)await activate(p,"mix-plus-mint",touch);
+        for(let n=0;n<2;n++)await activate(p,"mix-plus-lemon",touch);
         assert.equal(await button(p,"mix-ok").isEnabled(),true);
         await p.screenshot({path:path.join(dir,`${device}-${mode}-mix.png`)});
         await activate(p,"mix-ok",touch);await button(p,"pack-confirm").waitFor();
@@ -144,27 +165,27 @@ try {
         // No state/score/slot/result is synthesized by this test.
         await p.evaluate(()=>{__remake.craftTest.auto="good";});
         await activate(p,"pack-confirm",touch);
-        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===1,touch,90000);
-        const after=await state(p);assert.equal(after.day,6);assert.equal(after.slot,1);assert.equal(after.money,before.money);
+        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===0,touch,90000);
+        const after=await state(p);assert.equal(after.day,6);assert.equal(after.slot,0);assert.equal(after.money,before.money);
         assert.equal(after.marker,"preserved");assert.deepEqual(after.lovers,before.lovers);assert.deepEqual(after.memory,before.memory);
         assert.equal(after.runs.length,before.runs.length+1);assert.equal(after.runs.at(-1).served,true);
         assert.equal(after.runs.at(-1).adjustments,2);assert.equal(after.runs.at(-1).success,true);
-        assert.deepEqual(after.runs.at(-1).mix,{double_apple:10,mint:2});
+        assert.deepEqual(after.runs.at(-1).mix,{double_apple:10,lemon:2});
         await p.screenshot({path:path.join(dir,`${device}-${mode}-result.png`)});
         await activate(p,"hud-menu",touch);await activate(p,"menu-save",touch);await activate(p,"slot-2",touch);
         await p.waitForFunction(()=>!document.querySelector("#modal.show"));
         const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")));
-        assert.equal(saved.slot,1);assert.equal(saved.money,after.money);assert.deepEqual(saved.flags._craft_practice_runs,after.runs);
+        assert.equal(saved.slot,0);assert.equal(saved.money,after.money);assert.deepEqual(saved.flags._craft_practice_runs,after.runs);
         await activate(p,"hud-menu",touch);await activate(p,"menu-load",touch);await activate(p,"slot-2",touch);
         const navigation=p.waitForNavigation({waitUntil:"load"});
         await activate(p,"confirm-load",touch);await navigation;
         await p.locator("#boot").waitFor({state:"detached",timeout:35000});
-        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===1,touch);
+        await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===0,touch);
         assert.deepEqual(await state(p),after);if(mode==="ds")await dsGeometry(p);else await normalGeometry(p);
         if(mode==="ds"){
           await activate(p,"game-layout-recover",touch);await ready(p);
           assert.equal(await p.locator(".title").getAttribute("data-layout"),"normal");
-          assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")).slot),1);
+          assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")).slot),0);
         }
       });
     }
@@ -178,11 +199,28 @@ try {
           branches:{done:[{speaker:"sumi",face:"normal",text:"選択できた。"}]}},{bg:"res://assets/backgrounds/bg_tonari_inside.png"});
       });
       await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),touch);await dsGeometry(p);
+      for(const theme of ["smoke","smoke-purple","cut-paper","amber","tissue","classic"]){
+        await p.evaluate(async id=>(await import("./js/core/ui-theme.js")).applyUiTheme(id),theme);
+        const toolbar=await p.evaluate(()=>{
+          const visual=document.querySelector(".game-ds-visual").getBoundingClientRect();
+          const ctl=document.querySelector(".vn-controls").getBoundingClientRect();
+          const text=document.querySelector(".vn-text").getBoundingClientRect();
+          return { inside:ctl.left>=visual.left && ctl.right<=visual.right && ctl.top>=visual.top && ctl.bottom<visual.bottom,
+            clearText:!(ctl.right>text.left && ctl.left<text.right && ctl.bottom>text.top && ctl.top<text.bottom), upperRight:visual.right-ctl.right<12 && ctl.top-visual.top<12,
+            sizes:[...document.querySelectorAll(".vn-ctl")].map(n=>n.getBoundingClientRect().height) };
+        });
+        assert(toolbar.inside && toolbar.clearText && toolbar.upperRight,"DS toolbar remains in scene upper right for "+theme);
+        assert(toolbar.sizes.every(h=>h>=44),"DS controls keep 44px touch targets");
+      }
       if(!touch){
         const before=await p.evaluate(()=>JSON.stringify(__remake.state));
-        await button(p,"game-layout-normal").focus();await p.keyboard.press("Enter");
+        const keyboardSwitch=async id=>{
+          if(!(await p.locator(".game-layout-toolbar").evaluate(n=>n.open))){await button(p,"game-layout-settings").focus();await p.keyboard.press("Enter");}
+          await button(p,id).focus();await p.keyboard.press("Enter");
+        };
+        await keyboardSwitch("game-layout-normal");
         await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));await normalGeometry(p);
-        await button(p,"game-layout-ds").focus();await p.keyboard.press("Enter");await dsGeometry(p);
+        await keyboardSwitch("game-layout-ds");await dsGeometry(p);
         assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),before);
         assert.equal(await p.locator(".vn-choices.show button").count(),3);
       }
@@ -209,6 +247,42 @@ try {
     await activate(p,"game-layout-normal",true);await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));
     await normalGeometry(p);
     assert.deepEqual(await p.locator("#stage").evaluate(n=>[n.scrollLeft,n.scrollTop]),[0,0]);
+  });
+  await check("small-phone-station-arrival-shows-map-top",{viewport:{width:320,height:568},isMobile:true,hasTouch:true},async p=>{
+    await activate(p,"title-layout-ds",true);
+    await p.evaluate(async()=>{
+      const core=await import("./js/core/state.js"),s=core.newGame();
+      Object.assign(s,{chapter:2,phase:"daily",day:15,slot:2,money:36000,stamina:100,weatherSeed:7});
+      s.flags={_ch1_cleared:true,_ch2_day1:{startDay:15,stage:"complete",titleSeen:true},
+        _ch2_city_visit_c_station:true,_lime_tut:1,_lime_opened:true,
+        _hiyori_meeting_done:true,_hiyori_message_delivered:true};
+      s.stats={technique:31,sense:31,guts:31,charm:31,insight:31};
+      s.flavorStock={mint:21.5,double_apple:6};
+      core.save();__remake.vnTest.turbo=true;
+      (await import("./js/chapters/ch1.js")).setupHooks();
+      void (await import("./js/chapters/ch2.js")).resumeChapterTwo();
+    });
+    // The fixture's completion screen uses the normal portrait rotate hint;
+    // enter the DS map before testing its real touch controls.
+    await button(p,"ch2-main-next-day").evaluate(n=>n.click());
+    await activate(p,"ch2-morning-home",true);
+    await p.locator('[data-destination-selection]:not(.done)').waitFor();
+    await p.waitForFunction(()=>!document.querySelector('.map[data-revealing="true"]'));
+    await activate(p,"station-open",true);
+    await activate(p,"station-destination-widehanga",true);
+    // DS風では行き先の一覧が下画面の中でスクロールする。決定ボタンが画面内に見えていればよい。
+    const confirm=await button(p,"station-confirm").boundingBox(), view=p.viewportSize();
+    assert(confirm&&confirm.y>=0&&confirm.y+confirm.height<=view.height,"Station confirm is offscreen on the short viewport");
+    await activate(p,"station-confirm",true);
+    await button(p,"pin-ch2_rei").waitFor();
+    await p.waitForFunction(()=>document.querySelector("#viewport").scrollTop===0);
+    const layout=await p.evaluate(()=>{
+      const viewport=document.querySelector("#viewport").getBoundingClientRect();
+      const hud=document.querySelector(".hud-card").getBoundingClientRect();
+      return {visible:hud.top>=viewport.top&&hud.bottom<=viewport.bottom,region:document.querySelector(".map")?.dataset.region};
+    });
+    assert.equal(layout.region,"widehanga");assert(layout.visible,"Station arrival left the HUD offscreen");
+    await p.screenshot({path:path.join(dir,"small-phone-station-arrival.png")});
   });
   await check("old-auto-load-ds-conversation",{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async p=>{
     await activate(p,"title-layout-ds",true);
@@ -237,4 +311,5 @@ try {
 } finally {
   fs.writeFileSync(path.join(dir,"results.json"),JSON.stringify({base,results},null,2)+"\n");
 }
+assert(results.length > 0, "No game layout cases were selected");
 assert.equal(results.filter(r=>r.status==="failed").length,0);

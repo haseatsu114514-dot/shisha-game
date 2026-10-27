@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "id": "nightside_earlgrey",
+      "source": "asset_sources/limited-flavors-issue896/nightside_earlgrey.png",
+      "sha256": "fbad3af5459cb584db3c3bcb221ae2c40a07e1108b2e2a9af132bde6ba0b0e31",
+      "reference": "remake/img/shop/heaven10/mint.webp",
+      "prompt": "asset_sources/limited-flavors-issue896/nightside_earlgrey.prompt.txt",
+      "generator": "image_gen.imagegen",
+      "transparent_background": true
+    },
+    {
+      "id": "cardamom",
+      "source": "asset_sources/limited-flavors-issue896/cardamom.png",
+      "sha256": "343cb4e589416092bfdbbc3a1e78bfad6a7aa9b3487545110d3914f49a7b5669",
+      "reference": "remake/img/shop/remaining8/rose.webp",
+      "prompt": "asset_sources/limited-flavors-issue896/cardamom.prompt.txt",
+      "generator": "image_gen.imagegen",
+      "transparent_background": true
+    },
+    {
+      "id": "lavender",
+      "source": "asset_sources/limited-flavors-issue896/lavender.png",
+      "sha256": "f4c2c7fee6a653c3b100d01354d5281a12666b4b42e702093a55073fe4ad34dc",
+      "reference": "remake/img/shop/heaven10/mint.webp",
+      "prompt": "asset_sources/limited-flavors-issue896/lavender.prompt.txt",
+      "generator": "image_gen.imagegen",
+      "transparent_background": true
+    }
+  ]
+}

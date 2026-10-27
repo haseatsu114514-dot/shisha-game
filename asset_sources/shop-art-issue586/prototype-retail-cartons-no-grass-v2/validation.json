@@ -1,0 +1,146 @@
+{
+  "scope": "prototype-only; no game integration/adoption",
+  "png_checks": [
+    {
+      "id": "mint",
+      "decode": "PASS",
+      "source_bytes_unchanged": true,
+      "visible_object_uncropped": true,
+      "sha256": "22f128aa61cf0d03a9bd8323b643e50983c0f2b1b1b143a89f85bd237fd9386f",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        73,
+        29,
+        1224,
+        1220
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        308,
+        214,
+        946,
+        1055
+      ],
+      "edge_alpha_max": 0
+    },
+    {
+      "id": "double_apple",
+      "decode": "PASS",
+      "source_bytes_unchanged": true,
+      "visible_object_uncropped": true,
+      "sha256": "98304f23c32e84d9a35a36f2b16082e070303cabdb639eb0819e2877e43c5ed1",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        0,
+        0,
+        1216,
+        1254
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        263,
+        139,
+        993,
+        1116
+      ],
+      "edge_alpha_max": 1
+    },
+    {
+      "id": "grape",
+      "decode": "PASS",
+      "source_bytes_unchanged": true,
+      "visible_object_uncropped": true,
+      "sha256": "16d1c6b68428494da9c675c4a9f07f5a549cbb0f4afd76942e8656fe45ba3730",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        119,
+        8,
+        1216,
+        1254
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        277,
+        147,
+        982,
+        1123
+      ],
+      "edge_alpha_max": 1
+    },
+    {
+      "id": "tanukish_lid",
+      "decode": "PASS",
+      "source_bytes_unchanged": true,
+      "visible_object_uncropped": true,
+      "sha256": "e1015b5ed88d31ef81f236905aa5538c6d78ac04bf513eac83901aca57df4466",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha": [
+        0,
+        255
+      ],
+      "raw_alpha_bbox": [
+        0,
+        94,
+        1232,
+        1254
+      ],
+      "visible_bbox_threshold": 8,
+      "visible_bbox": [
+        96,
+        274,
+        1159,
+        1079
+      ],
+      "edge_alpha_max": 1
+    }
+  ],
+  "old_alternative_preservation": {
+    "baseline_head": "7c58a04e3674d5b4a559947ee9d7da6cd77fad00",
+    "checked_tracked_files": 129,
+    "changed_paths": [],
+    "result": "PASS"
+  },
+  "runtime_data_delivery_diff": "EMPTY",
+  "visual_review": {
+    "packages": "Black shallow cartons; AF upper hierarchy; own ingredients only; no shared grass/vines/botanical wallpaper. No manufacturer name/crown/Arabic text. AF letterform/framing vary: final standardization pending review.",
+    "hmd": "Tall central cylinder/collar removed; domed top, existing vent pattern and lower rim retained. No added handle/replacement protrusion. Human approval of interpretation pending.",
+    "alpha": "Real RGBA alpha. Some alpha=1 noise at edges; visible object threshold alpha>=8 uncropped with clear margins. Original bytes untouched; production cleanup pending.",
+    "comparison": "Preview only may crop/scale to visible alpha>=8; original PNGs never rewritten."
+  },
+  "local_checks": {
+    "png_decode": "PASS (4/4)",
+    "git_diff_check": "PASS",
+    "agent_docs": "PASS (5 instruction files, links, rules and safety)"
+  },
+  "game_tests": "Not rerun: no consumer/data/delivery changes. Old-head 12 PASS is separate, not adoption approval. Required CI runs normally on prototype head.",
+  "photos_redistributed": false,
+  "adoption": "HOLD"
+}

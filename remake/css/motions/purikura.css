@@ -1,0 +1,133 @@
+/* プリクラ（remake/js/motions/purikura.js・#939）。紫は使わず、ピンク・豹柄・金のラメ・白の平成ギャル寄り。
+   位置の数値は purikura.js の VIEW・SLOT・TOOL_X と同じ。DOMの初期値は「撮り終えた画面」 */
+.mo-purikura { --pk-hot: #ff3d9a; --pk-pink: #ff8fc7; --pk-baby: #ffd6ea; --pk-gold: #ffc93c; --pk-ink: #2a1420; }
+.mo-pk-bg {
+  position: absolute; inset: 0;
+  /* ピンクの豹柄。大きさと向きの違う斑点を1枚のタイルに散らす */
+  background:
+    radial-gradient(ellipse 15px 11px at 14% 22%, #ffa8d6 0 38%, #b8106a 42% 72%, transparent 76%),
+    radial-gradient(ellipse 10px 13px at 52% 12%, #ffa8d6 0 30%, #b8106a 36% 70%, transparent 75%),
+    radial-gradient(ellipse 13px 9px at 82% 38%, #ffa8d6 0 34%, #b8106a 40% 70%, transparent 75%),
+    radial-gradient(ellipse 11px 14px at 34% 62%, #ffa8d6 0 36%, #b8106a 42% 72%, transparent 76%),
+    radial-gradient(ellipse 16px 10px at 70% 80%, #ffa8d6 0 36%, #b8106a 42% 70%, transparent 75%),
+    radial-gradient(ellipse 5px 4px at 92% 8%, #b8106a 80%, transparent 85%),
+    radial-gradient(ellipse 4px 6px at 6% 74%, #b8106a 80%, transparent 85%),
+    radial-gradient(ellipse 6px 4px at 58% 42%, #b8106a 80%, transparent 85%),
+    #ff6db3;
+  background-size: 112px 96px;
+}
+.mo-pk-bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, transparent 40%, #ff3d9a55 100%); }
+.mo-pk-twinkle {
+  position: absolute; width: 34px; height: 34px; margin: -17px; opacity: 0; background: #fff;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+}
+/* プリ機の画面 */
+.mo-pk-machine {
+  position: absolute; left: 140px; top: 36px; width: 1000px; height: 648px;
+  background: linear-gradient(180deg, #fff5fa, #ffe3f0); border: 10px solid var(--pk-hot); border-radius: 36px;
+  box-shadow: 0 0 0 4px #fff, 0 18px 50px #5a0f3a88; overflow: hidden;
+}
+.mo-pk-head {
+  position: absolute; left: 0; right: 0; top: 0; height: 82px; border-bottom: 6px solid #fff;
+  background:
+    radial-gradient(ellipse 11px 8px at 16% 26%, #c98a3c 0 36%, #3b2216 42% 72%, transparent 76%),
+    radial-gradient(ellipse 8px 10px at 54% 18%, #c98a3c 0 30%, #3b2216 36% 70%, transparent 75%),
+    radial-gradient(ellipse 10px 7px at 84% 48%, #c98a3c 0 34%, #3b2216 40% 70%, transparent 75%),
+    radial-gradient(ellipse 9px 11px at 32% 74%, #c98a3c 0 36%, #3b2216 42% 72%, transparent 76%),
+    radial-gradient(ellipse 4px 3px at 70% 84%, #3b2216 80%, transparent 85%),
+    radial-gradient(ellipse 3px 5px at 6% 66%, #3b2216 80%, transparent 85%),
+    linear-gradient(180deg, #f7cf95, #e9ad62);
+  background-size: 84px 70px, 84px 70px, 84px 70px, 84px 70px, 84px 70px, 84px 70px, auto;
+}
+.mo-pk-label { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; }
+.mo-pk-label span {
+  padding: 6px 30px; border-radius: 999px; background: var(--pk-hot); color: #fff;
+  font-size: 34px; font-weight: 900; letter-spacing: 0.08em; box-shadow: 0 0 0 4px #fff, 0 6px 14px #0003; white-space: nowrap;
+}
+.mo-pk-view { position: absolute; left: 60px; top: 100px; width: 640px; height: 480px; }
+.mo-pk-view > .mo-pk-photo { border-radius: 18px; box-shadow: 0 0 0 6px #fff, 0 0 0 10px var(--pk-pink); }
+.mo-pk-photo { position: absolute; left: 0; top: 0; width: 640px; height: 480px; overflow: hidden; background: #fff; }
+.mo-pk-booth {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 18% 22%, #ffffffaa 0 22px, transparent 23px),
+    radial-gradient(circle at 82% 16%, #ffffff88 0 14px, transparent 15px),
+    radial-gradient(circle at 88% 78%, #ffffff77 0 30px, transparent 31px),
+    radial-gradient(circle at 10% 84%, #ffffff66 0 18px, transparent 19px),
+    radial-gradient(ellipse at 50% 30%, #fff7fb, #ffc7e1 70%, #ffadd3);
+}
+.mo-pk-sprite { position: absolute; width: 130.2%; height: auto; image-rendering: auto; }
+.mo-pk-sprite.ageha.lean { transform: translate(-7%, 2%) rotate(-4deg); transform-origin: 53.5% 26%; }
+.mo-pk-photo.mori { filter: brightness(1.1) saturate(1.22) contrast(1.03); }
+.mo-pk-glow {
+  position: absolute; inset: 0; mix-blend-mode: screen;
+  background: radial-gradient(ellipse at 50% 38%, #ffffff8c, #ffd0e655 50%, transparent 78%);
+}
+.mo-pk-ink { position: absolute; left: 0; top: 0; width: 640px; height: 480px; border-radius: 18px; }
+.mo-pk-word { font-family: var(--font); font-weight: 900; letter-spacing: 0.04em; }
+.mo-pk-pop { transform-box: fill-box; transform-origin: center; }
+.mo-pk-count {
+  position: absolute; left: 0; right: 0; top: 24px; text-align: center; opacity: 0; z-index: 3;
+  font-size: 150px; font-weight: 900; line-height: 1; color: #fff;
+  -webkit-text-stroke: 10px var(--pk-hot); paint-order: stroke fill; text-shadow: 0 8px 0 #c21f72;
+}
+/* ペン（要素の左上がペン先） */
+.mo-pk-pen { position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; z-index: 4; --pen: var(--pk-hot); }
+.mo-pk-pen.gold { --pen: var(--pk-gold); }
+.mo-pk-pen::before {
+  content: ""; position: absolute; left: -2px; bottom: 6px; width: 16px; height: 78px; border-radius: 8px 8px 4px 4px;
+  background: linear-gradient(90deg, #ffffffcc, var(--pen) 35%, var(--pen) 70%, #00000022);
+  border: 2px solid #fff; transform-origin: 2px 100%; transform: rotate(26deg); box-shadow: 0 6px 12px #0004;
+}
+.mo-pk-pen::after { content: ""; position: absolute; left: -5px; top: -5px; width: 10px; height: 10px; border-radius: 50%; background: var(--pen); border: 2px solid #fff; }
+/* 右の列 */
+.mo-pk-mini { position: absolute; overflow: hidden; border-radius: 8px; background: #fff; transform-origin: 0 0; }
+.mo-pk-mini-in { position: absolute; left: 0; top: 0; width: 640px; height: 480px; transform-origin: 0 0; }
+.mo-pk-print { position: absolute; left: 0; top: 0; width: 640px; height: 480px; }
+.mo-pk-thumb { box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--pk-pink), 0 6px 14px #0003; }
+.mo-pk-mori-btn, .mo-pk-tool {
+  position: absolute; left: 740px; width: 200px; height: 90px; display: grid; place-items: center;
+  border-radius: 999px; background: #fff; color: var(--pk-hot); border: 4px solid var(--pk-pink);
+  font-size: 28px; font-weight: 900; letter-spacing: 0.06em; box-shadow: 0 6px 14px #c21f7233;
+}
+.mo-pk-mori-btn.pick { background: var(--pk-hot); color: #fff; border-color: #fff; }
+.mo-pk-tool { height: 104px; border-radius: 26px; grid-template-rows: auto auto; gap: 4px; align-content: center; font-size: 20px; }
+.mo-pk-dot { display: block; width: 40px; height: 40px; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 0 0 2px var(--pk-pink); }
+.mo-pk-dot.pink { background: var(--pk-hot); }
+.mo-pk-dot.gold { background: linear-gradient(135deg, #fff3b0, var(--pk-gold) 50%, #e49a12); }
+.mo-pk-dot.stamp { background: var(--pk-baby); clip-path: none; position: relative; }
+.mo-pk-dot.stamp::after { content: "♡"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--pk-hot); font-size: 24px; font-weight: 900; }
+.mo-pk-pick { position: absolute; left: 732px; top: 112px; width: 216px; height: 120px; border-radius: 32px; border: 5px dashed var(--pk-hot); opacity: 0; pointer-events: none; }
+.mo-pk-nail {
+  position: absolute; left: 952px; top: 413px; width: 56px; height: 56px; opacity: 0; z-index: 6;
+  border-radius: 50%; background: #ff8fc799; border: 4px solid #fff; box-shadow: 0 6px 16px #0005;
+}
+.mo-pk-flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 7; pointer-events: none; }
+/* 印刷したシールと半分こ */
+.mo-pk-sheet { position: absolute; } /* 位置と大きさは purikura.js の SHEET */
+.mo-pk-half {
+  position: absolute; top: 0; width: 267px; height: 480px; padding: 20px 7px 0 20px; background: #fff;
+  display: flex; flex-direction: column; gap: 14px; box-shadow: 0 16px 34px #5a0f3a66;
+}
+.mo-pk-half.left { left: 0; border-radius: 14px 0 0 14px; }
+.mo-pk-half.right { left: 267px; padding: 20px 20px 0 7px; border-radius: 0 14px 14px 0; }
+.mo-pk-half > .mo-pk-mini { position: relative; flex: none; }
+.mo-pk-half::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 52px;
+  background: radial-gradient(circle, var(--pk-pink) 0 5px, transparent 5.5px) 0 0 / 22px 22px, var(--pk-baby);
+}
+.mo-pk-half.left::after { border-radius: 0 0 0 14px; }
+.mo-pk-half.right::after { border-radius: 0 0 14px 0; }
+/* #921 の4コマのシール（CG）。1枚の絵を左右半分ずつ見せる */
+.mo-pk-half.cg { width: 50%; height: 100%; padding: 0; background-size: 200% 100%; background-repeat: no-repeat; }
+.mo-pk-half.cg.left { left: 0; background-position: 0 0; border-radius: 10px 0 0 10px; }
+.mo-pk-half.cg.right { left: 50%; background-position: 100% 0; border-radius: 0 10px 10px 0; }
+.mo-pk-half.cg::after { content: none; }
+.mo-pk-half.cg.strip { background-size: 100% 100%; background-position: 0 0; } /* 1列分の絵をそのまま左右に1枚ずつ */
+.mo-pk-cutline { position: absolute; top: 10px; bottom: 10px; border-left: 3px dashed var(--pk-hot); opacity: 0; transform-origin: top; z-index: 2; }
+.mo-pk-shine {
+  position: absolute; inset: 0; opacity: 0; z-index: 2; border-radius: 14px; pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, #ffffffb0 47%, #ffffff40 52%, transparent 60%) no-repeat; background-size: 260% 100%; background-position: 130% 0;
+}
+.mo-pk-scissors { position: absolute; top: -30px; width: 60px; height: 80px; opacity: 0; z-index: 3; overflow: visible; filter: drop-shadow(0 4px 6px #0005); }
+.mo-pk-blade { transform-box: view-box; transform-origin: 30px 40px; }

@@ -9,13 +9,14 @@ async function setup(page) {
     (await import("./js/chapters/ch1.js")).setupHooks();
     S.fresh=()=>{
       const s=S.core.newGame();Object.assign(s,{phase:"daily",day:10,slot:1,money:90000,stamina:80});
-      s.met.hiyori=true;s.contacts.push("hiyori");s.affinity.hiyori=51;s.flags._intro_hiyori=true;
+      s.met.hiyori=true;s.contacts.push("hiyori");s.affinity.hiyori=51;s.story.hiyori=2;
+      s.flags._intro_hiyori=true;s.flags._hiyori_meeting_done=true;
       for(const f of required)s.flags[f]=true;
       Object.assign(s.flags,{_errand_scout_done:true,_delivery_adam_done:true,_delivery_minto_done:true,_lime_tut:true,_morning_10:true});
       S.core.config.textSpeed=4;S.vn.vnTest.turbo=true;return s;
     };S.fresh();
     S.before=()=>({money:S.core.state.money,stamina:S.core.state.stamina,slot:S.core.state.slot,
-      affinity:S.core.state.affinity.hiyori,story:S.core.state.story.hiyori||0,known:!!S.core.state.flags._hiyori_real_self_known});
+      affinity:S.core.state.affinity.hiyori,held:S.core.state.flags._hiyori_affinity_waiting_pts||0,story:S.core.state.story.hiyori||0,known:!!S.core.state.flags._hiyori_real_self_known});
   },required);
 }
 async function phase(page,value){await page.waitForFunction(value=>document.querySelector('[data-test="axe-game"]')?.dataset.phase===value,value);}
@@ -57,8 +58,8 @@ await suite("hiyori-axe-story",async check=>{
           dialogues:S.vn.backlog().filter(l=>l.name==="ひより").map(l=>l.text)};
       });
       assert.equal(result.done.money,87000);assert.equal(result.done.stamina,70);assert.equal(result.done.slot,2);
-      assert.equal(result.done.story,1);assert(result.done.known&&!result.replay&&!result.work);assert.deepEqual(result.loaded,result.done);
-      assert(result.done.affinity>51);assert(result.dialogues.some(t=>t.includes("よっしゃあ")));assert(result.dialogues.some(t=>t.includes("仕事で疲れてるのは")));
+      assert.equal(result.done.story,3);assert(result.done.known&&!result.replay&&!result.work);assert.deepEqual(result.loaded,result.done);
+      assert.equal(result.done.affinity,51);assert.equal(result.done.held,8);assert(result.dialogues.some(t=>t.includes("よっしゃあ")));assert(result.dialogues.some(t=>t.includes("仕事で疲れてるのは")));
     },options);
   await check("cancel-and-unread-retry",async page=>{
     await setup(page);await start(page);await page.locator('[data-test="axe-cancel"]').click();assert(!await page.evaluate(()=>S.run));await unchanged(page);

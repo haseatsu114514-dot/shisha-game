@@ -108,22 +108,32 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ショールームに上がると、凛さんは作業台の隅で、私物の１台を吸っていた。"
+          "text": "ショールームの作業台に、今日は試香紙がなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは報告書を送信すると、椅子をこちらへ向けた。"
         },
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "ん、モルモットくん。今日はサンプル便、なし"
-        },
-        {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "……今日は何しに来たの？ 試香の口実もないのに"
+          "text": "今日の便、終わり。モニター料が出る仕事も、もうないよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（仕事の用事がなくても、俺はここに来たいんだろうか）"
+          "text": "じゃあ、邪魔じゃなければ少しだけ"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "君、帰ってからでも感想を送れるでしょ。わざわざ階段を上がってくるの、何で？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつものからかう声なのに、クリップボードを取らずに返事を待っていた。"
         },
         {
           "type": "apply",
@@ -152,49 +162,70 @@
       "branches": {
         "personal": [
           {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "サンプルが欲しい日と、凛さんに会いたい日は、別です"
+          },
+          {
             "speaker": "rin",
             "face": "surprise",
             "text": "……へえ"
           },
           {
-            "speaker": "rin",
-            "face": "smile",
-            "text": "口実なしで上がってくる人、ここには少ないんだけどね"
+            "speaker": "",
+            "face": "",
+            "text": "凛さんは机の端に指を置いたまま、少し考えた。"
           },
           {
             "speaker": "rin",
             "face": "normal",
-            "text": "……いいよ。そういう日は、私物のブルーベリーを出してあげる"
+            "text": "じゃあ今日は、何を話してもレポートにしない"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "凛さん、仕事が終わると何してるんですか"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "遅い夕飯。たいてい、同じ店で同じもの"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "……今度、別のもの頼んでみようかな。君が向かいに座るなら"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんは自分の１台のホースを、こちらへ差し出した。"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "仕事の顔より、少しだけ眠そうな笑い方だった。"
+            "text": "誘いなのか聞き返そうとした時、先に「今のは業務外」と付け足された。"
           }
         ],
         "work": [
           {
             "speaker": "rin",
             "face": "normal",
-            "text": "言ったね。じゃあ次のロットも、君の舌を当てにしてる"
+            "text": "頼もしいね。じゃあ、結果がよくなかった時も、そのまま教えて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。tonariで試した話も、持ってきます"
           },
           {
             "speaker": "rin",
             "face": "normal",
-            "text": "頼りにしてるよ、……仕事仲間として"
+            "text": "助かる。向こうの机まで届かない感想って、結構あるから"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんはもうクリップボードに目を戻していた。口の端だけが、まだ笑っていた。"
+            "text": "次に確かめるものを二人で書き出した。相談を遠慮しなくてよい、仕事仲間の時間だった。"
           }
         ]
-      }
+      },
+      "comment": "♥3の既存分岐。恋愛は業務外で会う誘い、友情は互いの仕事を信頼する着地。選択ID・報酬・既読条件は維持。"
     },
     {
       "dialogue_id": "ch1_minto_bond_question",
@@ -288,7 +319,10 @@
       "dialogue_id": "ch1_sumi_bond_finale",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
-        "bond_finale": "sumi"
+        "bond_finale": "sumi",
+        "flavor_lesson": {
+          "cardamom": 1
+        }
       },
       "lines": [
         {
@@ -299,7 +333,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "いつもなら、スミさんが自分の１台を作り始める時間だ。今日はカウンターの奥で腕を組んでいる。"
+          "text": "いつもなら、スミさんが自分の一台を作り始める時間だ。今日はカウンターの奥で腕を組んでいる。"
         },
         {
           "speaker": "sumi",
@@ -319,7 +353,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（スミさんに、お任せで１台……。トングを持つ手が少し震える）"
+          "text": "（スミさんに、お任せで一台……。トングを持つ手が少し震える）"
         },
         {
           "speaker": "",
@@ -354,7 +388,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "軽くして、熱を抑えた。客の顔を見て作った１台だ"
+          "text": "軽くして、熱を抑えた。客の顔を見て作った一台だ"
         },
         {
           "speaker": "",
@@ -414,7 +448,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "……それと、今日の１台。金を取るなら半額だな"
+          "text": "……それと、今日の一台。金を取るなら半額だな"
         },
         {
           "speaker": "hajime",
@@ -474,7 +508,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "この店に入った頃から使ってた１台。バニラばっか詰めてたら、土まで甘くなった"
+          "text": "この店に入った頃から使ってた一台。バニラばっか詰めてたら、土まで甘くなった"
         },
         {
           "speaker": "naru",
@@ -499,7 +533,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "次はお前の煙を吸わせろ。こいつで作った、お前の１台をな"
+          "text": "次はお前の煙を吸わせろ。こいつで作った、お前の一台をな"
         },
         {
           "speaker": "hajime",
@@ -569,7 +603,7 @@
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "アニスとリコリスの残り香が、千の夜を越えて土に宿った１台だ"
+          "text": "アニスとリコリスの残り香が、千の夜を越えて土に宿った一台だ"
         },
         {
           "speaker": "",
@@ -756,7 +790,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……これ、私の１台です。スミさんに預けてました"
+          "text": "……これ、私の一台です。スミさんに預けてました"
         },
         {
           "speaker": "hajime",
@@ -833,7 +867,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（つむぎちゃんの１台。受け取るなら、ちゃんと気持ちも返したい）"
+            "text": "（つむぎちゃんの一台。受け取るなら、ちゃんと気持ちも返したい）"
           },
           {
             "type": "choice",
@@ -955,7 +989,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "家で使ってた１台。……ミントしか、詰めたことないの"
+          "text": "家で使ってた一台。……ミントしか、詰めたことないの"
         },
         {
           "speaker": "minto",
@@ -980,7 +1014,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "きみの１台を待つ時間とか。こうして外で話す時間とか"
+          "text": "きみの一台を待つ時間とか。こうして外で話す時間とか"
         },
         {
           "speaker": "minto",
@@ -1168,6 +1202,31 @@
           "text": "……個人から、君へのプレゼント。それだけ"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これを使ってた日の話も、聞いていいですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "初めて日本の担当を任された日。説明は覚えたのに、誰も何も聞いてくれなくてさ"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "閉めてから、これでブルーベリーを吸った。そういう日の道具"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "売ってるものの説明とは、違いますね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "説明じゃないから。君に渡す理由、ちゃんと言っておこうと思って"
+        },
+        {
           "type": "condition",
           "condition_type": "lover",
           "char_id": "rin",
@@ -1217,7 +1276,7 @@
           {
             "speaker": "rin",
             "face": "normal",
-            "text": "君がこれで作った１台、いつか吸わせてね、……仕事じゃない日に"
+            "text": "君がこれで作った一台、いつか吸わせてね、……仕事じゃない日に"
           },
           {
             "speaker": "hajime",
@@ -1246,17 +1305,27 @@
           {
             "speaker": "rin",
             "face": "surprise",
-            "text": "……２人で、ね"
+            "text": "二人で、ね"
           },
           {
             "speaker": "rin",
             "face": "smile",
-            "text": "いいよ。その日は、私も仕事の顔を置いてくる"
+            "text": "じゃあ、空いてる日を送る。仕事の予定とは別に"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "俺もシフトを確かめて、返します"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "約束したからね。便が増えたから中止、はやめる"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんはそれだけ言って、珍しく先に目を逸らした。"
+            "text": "凛さんは仕事用の予定表を閉じ、スマホの方へ日付を入れた。"
           }
         ],
         "ask_friend": [

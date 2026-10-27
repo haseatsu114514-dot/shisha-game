@@ -51,6 +51,9 @@ export function createTrpgAudio(initialTheme = "harbor") {
     if (disposed || !enabled || !context || context.state !== "running") return;
     if (kind === "roll") [0, .12, .26, .4].forEach((delay, i) => tone(170 + i * 18, delay, .075, .15, "triangle"));
     else if (kind === "clue") { tone(523.25, 0, .19, .06); tone(783.99, .08, .28, .04); }
+    else if (kind === "success") { tone(130.81, 0, .18, .16, "triangle"); [523.25, 659.25, 783.99].forEach((f, i) => tone(f, .035 + i * .07, .35, .075)); }
+    else if (kind === "mixed") { tone(174.61, 0, .16, .13, "triangle"); tone(440, .09, .24, .06); }
+    else if (kind === "trouble") { tone(146.83, 0, .2, .12, "triangle"); tone(196, .08, .26, .06); }
     else if (kind === "ending") [261.63, 329.63, 392].forEach((f, i) => tone(f, i * .14, .6, .055));
     else tone(kind === "open" ? 300 : 540, 0, .045, .06, "triangle");
   }

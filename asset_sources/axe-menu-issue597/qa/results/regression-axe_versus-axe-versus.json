@@ -1,0 +1,39 @@
+{
+  "name": "axe-versus",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "timeoutMs": 10000,
+  "ref": "working-1ec3ddd-597",
+  "results": [
+    {
+      "label": "pc-twenty-throws",
+      "status": "passed"
+    },
+    {
+      "label": "touch-landscape-twenty-throws",
+      "status": "passed"
+    },
+    {
+      "label": "touch-portrait-twenty-throws",
+      "status": "failed",
+      "error": "AssertionError [ERR_ASSERTION]: {\"text\":\"遊び方・得点ルール\",\"visible\":true,\"fits\":false}\n    at fit (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_versus.mjs:17:42)\n    at runNextTicks (node:internal/process/task_queues:64:5)\n    at process.processImmediate (node:internal/timers:472:9)\n    at async start (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_versus.mjs:67:3)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_versus.mjs:82:5\n    at async check (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:44:7)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_versus.mjs:81:6\n    at async suite (file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_versus.mjs:75:1",
+      "errors": [],
+      "failedResources": []
+    },
+    {
+      "label": "keyboard-reduced-twenty-throws",
+      "status": "passed"
+    },
+    {
+      "label": "seeded-draw-ends-at-ten-and-retry-clears-both-histories",
+      "status": "passed"
+    },
+    {
+      "label": "opponent-lock-pause-double-input-and-cancel",
+      "status": "passed"
+    },
+    {
+      "label": "abort-detach-load-and-same-host-lifecycle",
+      "status": "passed"
+    }
+  ]
+}

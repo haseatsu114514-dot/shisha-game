@@ -10,7 +10,7 @@ const errors = [], missing = [];
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 page.on("pageerror", e => errors.push(e.message));
 page.on("response", r => { if (r.status() >= 400 && /\.(webp|png|woff2)/.test(r.url())) missing.push(r.url()); });
-await page.route("https://bgmer.net/**", route => route.abort()); // オフラインでも成立する。
+await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.abort()); // オフラインでも成立する。
 async function mount(variant = 0, options = {}) {
   await page.evaluate(async ({ variant, options }) => {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
@@ -131,7 +131,7 @@ try {
         await page.evaluate(() => document.querySelector('[data-test="continue-next"]').click());
       }
       assert.equal(await page.locator(".gameover").getAttribute("data-last-cue"), "true", "reached the final cue");
-      assert(seen.size >= 8, `most one-line cues were displayed: ${[...seen]}`);
+      assert.equal(seen.size, 7, `all seven cues were displayed: ${[...seen]}`);
       await page.locator(`[data-test="${choice === "retry" ? "retry" : "game-over-title"}"]`).click();
       assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
       const expected = await page.evaluate(async ({ variant, choice }) => {
@@ -140,7 +140,7 @@ try {
         const script = typeof variant === "number" ? SUMI_CONTINUE_SCRIPTS[variant] : PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)];
         return script.reactions[choice];
       }, { variant, choice });
-      assert.equal(await page.locator(".go-a11y").textContent(), expected.text.join(""));
+      assert.equal(await page.locator(".go-a11y[aria-live]:not(.go-time-announcement)").textContent(), expected.text.join(""));
       assert.equal(await page.locator(".go-speech-text").textContent(), expected.text[0], "reaction starts with its first line");
       assert.deepEqual(await page.evaluate(() => window.__decisions), [], "reaction must precede navigation");
       await geometry();
@@ -351,7 +351,7 @@ try {
   // プレビューは両分岐を見せ、セーブと恋人抽選履歴を変えない。
   const preview = await browser.newPage({ viewport: { width: 844, height: 390 } });
   preview.on("pageerror", e => errors.push(e.message));
-  await preview.route("https://bgmer.net/**", route => route.abort());
+  await preview.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.abort());
   await preview.goto(new URL("continue-preview.html", base).href);
   await preview.waitForFunction(() => !document.querySelector("#preview-play").disabled);
   await preview.evaluate(() => localStorage.setItem("suien_remake_save", "preview-sentinel"));

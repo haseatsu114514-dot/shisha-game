@@ -1,0 +1,31 @@
+{
+  "source_main": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "purpose": "chapter1 animation production references; inferred views are not official character settings",
+  "completed": [
+    "samechan",
+    "tsumugi",
+    "rin",
+    "naru",
+    "hiyori",
+    "nagumo",
+    "maezono",
+    "pakki",
+    "salaryman",
+    "maki"
+  ],
+  "held": [
+    "minto: parallel production status unresolved; duplicate generation avoided",
+    "uranaishi: source image could not be visually verified; not generated"
+  ],
+  "already_prepared_elsewhere": [
+    "ageha",
+    "hajime",
+    "mashiro",
+    "sumi",
+    "dr_kemuri",
+    "adam"
+  ],
+  "library_status": "all ten completed images saved by commander",
+  "archive_root": "asset_sources/video-reference-sheets-20261021/",
+  "game_integration": "none; production documentation only"
+}

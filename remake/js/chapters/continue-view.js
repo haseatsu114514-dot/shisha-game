@@ -7,6 +7,9 @@ const EMPHASIS = ["俺たち全員", "俺たちはまだやれる", "断固反�
 // 顔の高さ(px)。テロップを1行にした分、人物を大きく映す（2026-10-10）。
 const FACE_PX = 256;
 const HEAD_PADDING = 24;
+// #590 採用C。neonだけ、最初から顔bboxを2.05倍・同じ中心へ揃える。
+const NEON_FACE_PX = 524.8;
+const NEON_FACE_CENTER_Y = 273;
 
 export function createContinueView({ script, speaker, character, premium, layout = "neon", background = "stage", onType = null }) {
   const neon = layout === "neon";
@@ -22,14 +25,19 @@ export function createContinueView({ script, speaker, character, premium, layout
     if (!info) return;
     // 正規画像の顔の範囲を計測し、画像全体を拡大・配置する。画像や色は加工しない。
     const framing = DB.manifest.continuePortraits?.[info.folder]?.[info.face];
-    const height = FACE_PX / (framing?.size || info.h * .2), width = height * info.aspect;
-    // 顔アイコンの上端は髪/帽子の上端と異なる。全表情の人物bboxを基準に頭を枠内へ収める。
+    const faceSize = framing?.size || info.h * .2;
+    const height = (neon ? NEON_FACE_PX : FACE_PX) / faceSize, width = height * info.aspect;
+    // neonは顔bbox中心を固定。比較用レイアウトは従来の頭上端基準を保つ。
     const top = 1 - info.h - info.b;
+    const imageTop = neon ? NEON_FACE_CENTER_Y - ((framing?.top ?? top) + faceSize / 2) * height
+      : HEAD_PADDING - top * height;
     Object.assign(image.style, { height: `${height}px`, width: `${width}px`,
-      left: `calc(50% + ${(0.5 - (framing?.cx ?? .5)) * width}px)`, top: `${HEAD_PADDING - top * height}px` });
+      left: `calc(50% + ${(0.5 - (framing?.cx ?? .5)) * width}px)`, top: `${imageTop}px` });
   }
   framePortrait(portrait);
   const caption = el("p.go-speech-text", { "aria-hidden": "true" });
+  const timerLive = el("p.go-a11y.go-time-announcement", { "aria-live": "polite", "aria-atomic": "true" });
+  const description = el("p.go-a11y.go-return-description", { id: "continue-return", text: "大会の最初から作り直します。在庫と体力は保存された大会開始時の値に戻ります。救済を選ぶと体力が最大まで回復します。" });
   const live = el("p.go-a11y", { "aria-live": "polite", "aria-atomic": "true" });
   const dialogue = el("button.go-dialogue", { type: "button", "aria-label": "台詞を送る", dataset: { test: "continue-caption" } }, [caption]);
   const count = el("span.go-count", { text: "20" });
@@ -40,10 +48,10 @@ export function createContinueView({ script, speaker, character, premium, layout
   const next = el("button.go-next", { type: "button", text: "›", "aria-label": "台詞を送る", dataset: { test: "continue-next" } });
   const proceed = el("button.go-proceed", { type: "button", text: "進む →", hidden: true, dataset: { test: "continue-proceed" } });
   // セリフと区別できる2択ボタン。見た目はCSS、文言は実テキストで表示する。
-  const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "大会に戻る", dataset: { test: "retry" } },
+  const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "最初から再挑戦", dataset: { test: "retry" } },
     [...(neon ? choiceFrames() : []),
-      el("span.go-choice-label", { text: topActions ? "する" : "大会に戻る" })]);
-  const quit = el("button.go-choice.go-quit", { type: "button", dataset: { test: "game-over-title" } },
+      el("span.go-choice-label", { text: topActions ? "する" : "最初から再挑戦" })]);
+  const quit = el("button.go-choice.go-quit", { type: "button", "aria-label": "諦める・タイトルへ戻る", dataset: { test: "game-over-title" } },
     [...(neon ? choiceFrames() : []),
       el("span.go-choice-label", { text: "諦める" })]);
   function choiceFrames() {
@@ -51,6 +59,8 @@ export function createContinueView({ script, speaker, character, premium, layout
       el("img.go-choice-frame.go-choice-frame-selected", { src: art("neon_retry_frame"), alt: "", "aria-hidden": "true", draggable: "false" })];
   }
   const actions = el("div.end-actions", [retry, quit]);
+  retry.setAttribute("aria-describedby", "continue-return");
+  quit.setAttribute("aria-describedby", "continue-return");
   const effectWord = el("span.go-effect-word", { "aria-hidden": "true" });
   const heading = neon ? "コンティニューする？" : "コンティニュー？";
   const titleLabel = el("span.go-title-label", { text: heading });
@@ -68,9 +78,9 @@ export function createContinueView({ script, speaker, character, premium, layout
     el("header.go-heading", [title, clock, ...(topActions ? [actions] : [])]),
     el("div.go-left", [el("div.go-portrait", [image])]),
     el("div.go-right", [
-      dialogue, live,
-      el("div.go-playback", [el("div.go-caption-controls", [next, proceed])]),
       ...(!topActions ? [actions] : []),
+      dialogue, live, timerLive, description,
+      el("div.go-playback", [el("div.go-caption-controls", [next, proceed])]),
     ]),
     el("div.go-effect", { "aria-hidden": "true" }, [effectWord,
       el("img.go-approval", { src: art("approval_stamp"), alt: "可決", draggable: "false" }), el("i.go-pencil"), el("i.go-scan"),
@@ -134,11 +144,16 @@ export function createContinueView({ script, speaker, character, premium, layout
   function reaction(data, choice) {
     root.dataset.choice = choice;
     root.dataset.effect = data.effect;
-    face(data.faces[0]);
+    face(data.faces[0], root.dataset.reducedMotion !== "true");
     effectWord.textContent = choice === "retry"
       ? ({ cheer: "っしゃあ！", shark: "ジャバーン！", scan: "再計測" }[data.effect] || "") : "";
     [retry, quit, next, dialogue].forEach(button => { button.disabled = true; });
     next.hidden = true;
+    if (!neon) showProceed();
+  }
+  function showProceed() {
+    if (!proceed.hidden) return;
+    if (neon) actions.hidden = true;
     proceed.hidden = false;
     proceed.focus({ preventScroll: true });
   }
@@ -157,5 +172,5 @@ export function createContinueView({ script, speaker, character, premium, layout
   // 読み上げ支援には文字ごとでなく、台詞のまとまりを一度だけ通知する。
   const announce = text => { live.textContent = text; };
   return { root, caption, dialogue, count, next, proceed, retry, quit,
-    setCaption, reveal, face, reaction, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
+    announceTime: text => { timerLive.textContent = text; }, setCaption, reveal, face, reaction, showProceed, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
 }

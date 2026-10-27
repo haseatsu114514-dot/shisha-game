@@ -1,16 +1,20 @@
 // 蒸らし・吸い出し・熱管理で同じ温度の目盛り・適温帯を使う。
 // 管は一本のグラデーション（クリーム→黄→適温のミント→橙→赤→深紅）。薄い横目盛りを重ね、現在地より上だけ少し暗くする。
-// 文字の目盛りは置かず、管の中の印で示す: 適温の両端に刻み、真ん中に虹の最適温（適温／最適温／適温のサンド）、
+// 文字の目盛りは置かず、管の中の印で示す。低め・高めを作り分ける配合では、中央だけを虹で強調しない。
 // 一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶（TH32〜TH35）。
 import { el } from "../core/util.js";
 import { DANGER_TEMP, temperatureBands, isIdealTemperature, isOptimalTemperature, visualTemperature } from "./temperature-model.js";
-import { makingUrl } from "../core/data.js";
+import { DB, makingUrl } from "../core/data.js";
 import { artImg } from "./art.js";
 
 const FLAME = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8.2 1c.6 2.6 3.8 4.1 3.8 7.6A4 4 0 0 1 4 8.9c0-1.7.8-2.9 1.9-3.8-.1 1.6.6 2.6 1.6 2.8C7 6 7.3 3.3 8.2 1Z"/></svg>`;
 const SNOW = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v13M2.4 4.75l11.2 6.5M2.4 11.25l11.2-6.5M6.3 2.6 8 4.2l1.7-1.6M6.3 13.4 8 11.8l1.7 1.6" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const POINTER = `<svg viewBox="0 0 30 30"><path d="M2.5 15 27 3.5 21.5 15 27 26.5Z" stroke="#120a10" stroke-width="3" stroke-linejoin="round"/></svg>`;
 const pct = (f) => `${f * 100}%`;
+const fullExpression = bands => (bands.expressionWeight || 0) >= .999;
+const bandDescription = bands => fullExpression(bands)
+  ? "配合の温度帯：緑がおいしく作れる範囲。低めと高めで香りが変わる"
+  : "配合の温度帯：緑が適温の目安、中央の虹色が合わせやすい範囲";
 const SCALE_COLORS = [[0, "#fff4d2"], [.13, "#ffedb0"], [.26, "#ffe270"], [.37, "#ffd12a"], [.40, "#f6d559"], [.42, "#67d2a3"],
   [.44, "#4fcf98"], [.54, "#74e0b0"], [.64, "#4fcf98"], [.66, "#79d9a9"], [.71, "#ffb247"], [.76, "#ff8a2a"],
   [.83, "#ff3f17"], [.89, "#eb210d"], [.94, "#b0140a"], [1, "#650609"]];
@@ -36,11 +40,21 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   ]);
   const framed = !!makingUrl("ui_temperature_frame.png");
   const frameWidth = width;
+  const skin = framed ? artImg("ui_temperature_frame.png", frameWidth, "thermo-skin", { h: height }) : null;
+  const frameBox = DB.manifest.makingBox?.["ui_temperature_frame.png"];
+  if (skin && frameBox) {
+    // 同じbboxの切り取りを比率で指定し、DSの短い管にも枠を追従させる。
+    const [l, t, r, b] = frameBox, w = r - l, h = b - t;
+    Object.assign(skin.style, { height: "100%", backgroundSize: `${100 / w}% ${100 / h}%`,
+      backgroundPosition: `${w < 1 ? l / (1 - w) * 100 : 0}% ${h < 1 ? t / (1 - h) * 100 : 0}%` });
+  }
   const housing = framed ? el("div.thermo-housing", { style: { "--thermo-width": `${frameWidth}px` } }, [
-    tube, artImg("ui_temperature_frame.png", frameWidth, "thermo-skin", { h: height }),
+    tube, skin,
   ]) : tube;
   const root = el(`div.thermo${compact ? ".steam-temperature" : ""}${bandPreview ? ".mix-temperature" : ""}${unsteady ? ".unsteady" : ""}`, {
-    role: bandPreview ? "img" : "meter", "aria-label": bandPreview ? "配合の適温・最適温" : "煙の温度",
+    // 初回も時間設定から実温度計を表示。配合中のプレビューは引き続き隠す。
+    hidden: cs?.mode === "tutorial" && bandPreview,
+    role: bandPreview ? "img" : "meter", "aria-label": bandPreview ? "配合の温度帯" : "煙の温度",
     "aria-valuemin": bandPreview ? null : "0", "aria-valuemax": bandPreview ? null : "1", dataset: { test: bandPreview ? "mix-temperature" : compact ? "steam-temperature" : "pull-temperature" },
     style: { "--thermo-inset": framed ? "10%" : "0%", "--thermo-span": framed ? `${frameWidth}px` : "44px" },
   }, [
@@ -54,14 +68,18 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   if (bandPreview) { pointer.hidden = mark.hidden = dim.hidden = true; }
   const updateBands = () => {
     const next = temperatureBands(cs);
-    if (bands?.t === next.t) return bands;
+    if (bands?.center === next.center && bands?.totalWidthScale === next.totalWidthScale
+      && bands?.expressionWeight === next.expressionWeight && bands?.selected === next.selected) return bands;
     bands = next;
+    const expressive = fullExpression(bands);
     zone.style.bottom = pct(bands.ideal[0]); zone.style.height = pct(bands.ideal[1] - bands.ideal[0]);
+    zone.title = expressive ? "おいしく作れる範囲" : "適温の目安";
+    optimal.hidden = expressive;
     optimal.style.bottom = pct(bands.optimal[0]); optimal.style.height = pct(bands.optimal[1] - bands.optimal[0]);
     heat.style.bottom = pct(bands.ideal[1]);
     root.style.setProperty("--thermo-gradient", `linear-gradient(0deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${pct(visualTemperature(at, bands))}`).join(", ")})`);
-    Object.assign(root.dataset, { tolerance: bands.t, idealLow: bands.ideal[0], idealHigh: bands.ideal[1], optimalLow: bands.optimal[0], optimalHigh: bands.optimal[1] });
-    if (bandPreview) root.setAttribute("aria-label", `配合の温度帯：緑の適温 ${formatTemperatureRange(bands.ideal)}、虹の最適温 ${formatTemperatureRange(bands.optimal)}`);
+    Object.assign(root.dataset, { tolerance: bands.t, idealLow: bands.ideal[0], idealHigh: bands.ideal[1], optimalLow: bands.optimal[0], optimalHigh: bands.optimal[1], expressionMode: expressive ? "broad" : "focused" });
+    if (bandPreview) root.setAttribute("aria-label", bandDescription(bands));
     return bands;
   };
   updateBands();
@@ -73,13 +91,14 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     dim.style.bottom = pct(temp);
     pointer.style.bottom = `calc(var(--thermo-inset) + ${temp} * (100% - 2 * var(--thermo-inset)) - 15px)`;
     root.classList.toggle("ok", isIdealTemperature(temp, bands));
-    root.classList.toggle("optimal", isOptimalTemperature(temp, bands));
+    root.classList.toggle("optimal", !fullExpression(bands) && isOptimalTemperature(temp, bands));
     root.classList.toggle("danger", temp >= DANGER_TEMP);
     root.classList.toggle("hot", temp > bands.ideal[1] && temp < DANGER_TEMP);
     root.classList.toggle("cool", temp < bands.ideal[0]);
     root.classList.toggle("freezing", !!coldLimit && temp <= coldLimit + 0.06);
     root.setAttribute("aria-valuenow", temp.toFixed(4));
-    root.setAttribute("aria-valuetext", temp >= DANGER_TEMP ? "焦げる寸前" : isOptimalTemperature(temp, bands) ? "最適温" : temp > bands.ideal[1] ? "熱い" : isIdealTemperature(temp, bands) ? "適温" : "ぬるい");
+    root.setAttribute("aria-valuetext", temp >= DANGER_TEMP ? "焦げる寸前" : temp > bands.ideal[1] ? "熱い"
+      : isIdealTemperature(temp, bands) ? fullExpression(bands) ? "おいしく作れる範囲" : isOptimalTemperature(temp, bands) ? "最適温" : "適温" : "ぬるい");
   },
   /** 吸った直後、今の温度の横に ▲／＝／▼ の印を浮かべる（判定の文字の代わり TH36）。 */
   pop(text, dir = "keep") {
@@ -104,3 +123,47 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
 }
 
 export const formatTemperatureRange = (band) => `${(band[0] * 100).toFixed(1)}〜${(band[1] * 100).toFixed(1)}%`;
+
+/** 配合中は現在温度を持たない。左プレビューは共通の縦管、既存の横ゲージも維持する。 */
+export function buildMixTemperatureGauge(cs, { vertical = false } = {}) {
+  if (vertical) {
+    const meter = buildThermometer({ cs, bandPreview: true, height: 360, width: 64 });
+    return { root: meter.root, updateBands() {
+      meter.updateBands();
+      const bands = temperatureBands(cs);
+      meter.root.dataset.selected = String(bands.selected);
+      for (const node of meter.root.querySelectorAll(".thermo-zone, .thermo-danger, .thermo-heat")) node.hidden = !bands.selected;
+      meter.root.querySelector(".thermo-optimal").hidden = !bands.selected || fullExpression(bands);
+      meter.root.setAttribute("aria-label", bands.selected
+        ? bandDescription(bands)
+        : "フレーバー未選択。葉を加えると合成温度帯を表示");
+      return bands;
+    } };
+  }
+  const ideal = el("i.mix-thermal-ideal", { title: "適温" });
+  const optimal = el("i.mix-thermal-optimal", { title: "最適温" });
+  const center = el("i.mix-thermal-center", { title: "適温中心" });
+  const scale = el("div.mix-thermal-scale", { "aria-hidden": "true" }, [ideal, optimal, center]);
+  const root = el("div.mix-temperature", { role: "img", dataset: { test: "mix-temperature" } }, [scale]);
+  return { root, updateBands() {
+    const bands = temperatureBands(cs);
+    root.dataset.selected = String(bands.selected);
+    Object.assign(root.dataset, { tolerance: bands.t, idealLow: bands.ideal[0], idealHigh: bands.ideal[1],
+      optimalLow: bands.optimal[0], optimalHigh: bands.optimal[1], center: bands.center,
+      expressionMode: fullExpression(bands) ? "broad" : "focused" });
+    for (const [node, range] of [[ideal, bands.ideal], [optimal, bands.optimal]]) {
+      node.hidden = !bands.selected;
+      node.style.left = pct(range[0]); node.style.width = pct(range[1] - range[0]);
+    }
+    ideal.title = fullExpression(bands) ? "おいしく作れる範囲" : "適温の目安";
+    optimal.hidden = !bands.selected || fullExpression(bands);
+    center.hidden = !bands.selected || fullExpression(bands);
+    center.style.left = pct(bands.center);
+    scale.style.background = bands.selected
+      ? `linear-gradient(90deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${pct(visualTemperature(at, bands))}`).join(", ")})` : "";
+    root.setAttribute("aria-label", bands.selected
+      ? bandDescription(bands)
+      : "フレーバー未選択。葉を加えると合成温度帯を表示");
+    return bands;
+  } };
+}

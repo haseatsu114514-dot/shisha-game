@@ -1,3 +1,4 @@
+import { masteryLabel } from "../core/flavor-mastery.js";
 // ステータス画面（master_spec #19 / #19-a）。数値は見せず、★・呼称・レーダーの形で伸びを見せる。
 import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
@@ -7,6 +8,7 @@ import { star, starText, rankLabel, affinityLevel, currentCondition } from "../c
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
+import { triedLater, comboName } from "./cafe-ideas.js";
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
@@ -95,7 +97,7 @@ function meTab() {
       ...rows,
       el("div.st-misc", [
         el("div", { text: `所持金 ${yen(state.money)}` }),
-        el("div", { text: `体力 ${condition.label} ── ${condition.hint}` }),
+        el("div", { text: `体力 ${condition.label} ── ${condition.hint}。眠ると回復し、外出すると行き先に応じて疲れる。` }),
       ]),
       note,
     ]),
@@ -158,8 +160,8 @@ function giftNote(e) {
 
 function itemsTab() {
   const eq = state.owned.map((id) => DB.equipById[id]).filter(Boolean);
-  const fl = ownedFlavorIds().map((id) => DB.flavorById[id]);
-  const grams = (id) => `${flavorStock(id)}g`;
+  const fl = [...new Set([...ownedFlavorIds(), ...Object.keys(state.flavorMastery || {})])].map(id => DB.flavorById[id]).filter(Boolean);
+  const grams = (id) => `${flavorStock(id)}g · ${masteryLabel(state, id, DB.flavorById)}`;
   const inUse = new Set(Object.values(state.equip));
   const gifts = eq.filter((e) => e.gift);
   return el("div.st-items", [
@@ -177,9 +179,15 @@ function itemsTab() {
     gifts.length ? el("div.gift-notes", gifts.map(giftNote)) : null,
     el("h4", { text: "フレーバー" }),
     el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "所持0" })]),
-    el("p.st-note", { text: "フレーバーは1箱50g。大会では持ち込んだ在庫から詰み、使った分だけ減る（課題フレーバーは主催支給）。" }),
+    el("p.st-note", { text: "1箱50g。大会・自宅の試作・店への私物持ち込みで消費。熟練度はLv.5まで。第2章の課題苺のみ主催者支給。" }),
     el("h4", { text: "レシピ帳" }),
     el("div.chips", DB.recipes.filter((r) => state.recipes[r.id]).map((r) => el("span.chip.gold", { text: r.name })).concat(
       Object.keys(state.recipes).length ? [] : [el("span.chip.dim", { text: "まだ白紙" })])),
+    // 喫茶こはくで思いついた・ライバルから聞いた、まだ作っていない配合
+    ...(() => {
+      const later = triedLater(state, DB.recipes);
+      return later.length ? [el("h4", { text: "試したい配合" }),
+        el("div.chips", later.map((r) => el("span.chip", { text: comboName(r, DB.flavors) })))] : [];
+    })(),
   ]);
 }

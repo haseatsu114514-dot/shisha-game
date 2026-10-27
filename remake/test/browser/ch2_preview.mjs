@@ -89,7 +89,7 @@ async function mapLayout(page) {
   // The pin's decorative tail intentionally overflows its button. Test text nodes and
   // button rectangles separately so decoration cannot hide real text clipping.
   await page.locator(`${test("map")}[data-phase="ready"]`).waitFor();
-  await assertFits(page, [".ch2-pin-title", ".ch2-pin-caption", ".ch2-pin-num", test("day"), test("night"), test("return"), test("progress")].join(","));
+  await assertFits(page, [".ch2-pin-title", ".ch2-pin-caption", ".ch2-pin-num", test("day"), test("night"), test("progress")].join(","));
   const textContained = await page.locator(".ch2-pin").evaluateAll(nodes => nodes.map(node => {
     const outer = node.getBoundingClientRect();
     return { name: node.textContent, contained: [...node.children].every(child => {
@@ -159,9 +159,10 @@ async function manualToMap(page, { watch = null, captureUnknown = null, inside =
     assert(frame.textFits, `Production VN text was clipped: ${JSON.stringify(frame)}`);
     if (!observed.some(old => old.name === frame.name && old.text === frame.text && old.met === frame.met)) observed.push(frame);
     if (captureUnknown && frame.name === "？？？") { await screenshot(page, captureUnknown); captureUnknown = null; }
-    if (captureRoom && await page.evaluate(id => {
+    if (captureRoom && await page.evaluate(async id => {
+      const { ROOMS } = await import("./js/chapters/ch2-city-data.js");
       const portrait = document.querySelector(`.vn-portraits img[data-speaker="${id}"].active`);
-      return document.querySelector('#bg > .bg-img:last-child')?.style.backgroundImage.includes(`bg_ch2_${id}_entry.webp`) && portrait?.complete && portrait.naturalWidth > 0;
+      return document.querySelector('#bg > .bg-img:last-child')?.style.backgroundImage.includes(ROOMS[id].split("/").at(-1)) && portrait?.complete && portrait.naturalWidth > 0;
     }, watch)) {
       const portrait = await page.locator(`.vn-portraits img[data-speaker="${watch}"].active`).evaluate(node => ({ src: node.getAttribute("src"), width: node.naturalWidth, height: node.naturalHeight }));
       if (watch !== "ageha") assert(portrait.src.endsWith(`/chr_${watch}_normal.webp`), `Wrong normal portrait: ${JSON.stringify(portrait)}`);
@@ -200,7 +201,7 @@ await suite("ch2-preview", async check => {
     await changeTime(page, "day");
     for (const id of ["ageha", "c_station", "rei", "kumicho"]) await visit(page, id, { double: id === "ageha" });
     assert.deepEqual(await progress(page), ["ageha", "c_station", "rei", "kumicho"]);
-    await page.locator(test("return")).dblclick({ delay: 30 });
+    await page.locator(test("station")).dblclick({ delay: 30 });
     await page.locator(test("end")).waitFor();
     assert.match(await page.locator(test("end")).textContent(), /4|全|歩/);
     await screenshot(page, "desktop-end.png");
@@ -229,7 +230,7 @@ await suite("ch2-preview", async check => {
     assert.deepEqual(await progress(page), ["rei", "c_station", "kumicho", "ageha"], "Revisiting counted the same destination twice");
     await changeTime(page, "night", true);
     await screenshot(page, "touch-map-night.png");
-    await page.locator(test("return")).tap();
+    await page.locator(test("station")).tap();
     await page.locator(test("end")).waitFor();
     await assertFits(page, test("restart"));
     await preserved(page, before);
@@ -254,10 +255,10 @@ await suite("ch2-preview", async check => {
       assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_city_inside_${id}`], id), true);
       assert(fs.existsSync(path.join(evidence, `desktop-room-${id}.png`)), `Room portrait was not displayed: ${id}`);
       if (id === 'kumicho') assert(!frames.some(frame => /組長/.test(frame.title || '')), 'Kanzaki secret revealed before DAY14');
-      if (id === 'ageha') assert(frames.some(frame => frame.text.includes('あたしも！')), 'Ageha must remain a chapter-two tournament rival');
+      if (id === 'ageha') assert(frames.some(frame => frame.text.includes('うちも！')), 'Ageha must remain a chapter-two tournament rival');
     }
     await turbo(page);
-    await page.locator(test("return")).click();
+    await page.locator(test("station")).click();
     await page.locator(test("end")).waitFor();
     await preserved(page, before);
   });
@@ -266,7 +267,7 @@ await suite("ch2-preview", async check => {
     const before = await seedAndOpen(page);
     await launch(page);
     await visit(page, "c_station");
-    await page.locator(test("return")).click();
+    await page.locator(test("station")).click();
     await page.locator(test("end")).waitFor();
     assert.deepEqual(await progress(page), ["c_station"]);
     await page.locator(test("restart")).dblclick({ delay: 30 });
@@ -310,7 +311,7 @@ await suite("ch2-preview", async check => {
     await page.unroute("**/data/dialogue/ch2_city.json");
     await page.locator(test("retry")).click();
     await launch(page);
-    await page.locator(test("return")).click();
+    await page.locator(test("station")).click();
     await page.locator(test("end")).waitFor();
     await preserved(page, before);
   });
@@ -325,7 +326,7 @@ await suite("ch2-preview", async check => {
     await page.locator(test("retry-map")).waitFor({ state: "detached" });
     await mapLayout(page);
     await changeTime(page, "night");
-    await page.locator(test("return")).click();
+    await page.locator(test("station")).click();
     await page.locator(test("end")).waitFor();
     await preserved(page, before);
   });
@@ -337,7 +338,7 @@ await suite("ch2-preview", async check => {
       await launch(page);
       for (const id of itinerary) await visit(page, id);
       await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().splice(0));
-      await page.locator(test('return')).click();
+      await page.locator(test('station')).click();
       await page.locator(test('end')).waitFor();
       const text = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(line => line.text).join('\n'));
       for (const [id, name] of Object.entries(people)) assert.equal(text.includes(name), itinerary.includes(id), `Unvisited person appeared in return: ${text}`);
@@ -353,7 +354,7 @@ await suite("ch2-preview", async check => {
     const before = await seedAndOpen(page, () => page.route('**/bg_widehanga_station_day.webp', route => route.fulfill({ status: 200, contentType: 'image/webp', body: 'invalid image' })));
     await launch(page);
     await visit(page, 'c_station');
-    await page.locator(test('return')).click();
+    await page.locator(test('station')).click();
     await page.locator(test('end')).waitFor();
     await preserved(page, before);
   });

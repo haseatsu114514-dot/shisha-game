@@ -18,11 +18,13 @@ async function setup(page) {
     H.ch1.setupHooks();
     H.fresh = () => {
       const s = H.core.newGame();
-      // This save seed has encounters at the scripted relay/cracks/repeat visits.
+      s.flags._axe_bar_legacy_access = true; // #577: 新規の噂・目撃は専用回帰で検査
+      // Fixed seed; meetings follow the same displayed schedule as the map.
       Object.assign(s, { phase: "daily", day: 4, slot: 0, money: 90000, seed: 131 });
       Object.assign(s.flags, { _errand_scout_done: true, _delivery_adam_done: true,
         _delivery_minto_done: true, _lime_tut: true, _morning_4: true });
       s.met.naru = s.met.adam = s.met.minto = s.met.rin = s.met.sumi = true;
+      s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
       H.core.config.textSpeed = 4; H.vn.vnTest.turbo = true; H.vn.vnTest.choose = () => 0;
       return s;
     };
@@ -34,9 +36,13 @@ async function setup(page) {
       const s = H.fresh();
       await H.visit("naru");
       s.day++; await H.spots.visitChar("sumi");
-      s.day++; await H.visit("minto");
-      s.day++; await H.visit("adam");
-      s.day++; await H.visit("c_station");
+      let encounters = 0;
+      for (let day = s.day + 1; day <= 14 && encounters < 3; day++) {
+        s.day = day;
+        const id = H.daily.hiyoriShopLocation();
+        if (id && await H.visit(id)) encounters++;
+      }
+      if (encounters !== 3) throw Error("Scheduled meetings did not reach three encounters");
       s.contacts = ["sumi", "hiyori"]; s.lastBaitoDay = s.day;
       return s;
     };
@@ -51,8 +57,10 @@ await suite("hiyori-encounters", async (check) => {
     await setup(page);
     const result = await page.evaluate(async () => {
       const shops = [];
-      for (const id of ["naru", "adam", "minto", "shop", "c_station"]) {
-        const s = H.fresh();
+      for (const id of ["naru", "adam", "minto", "c_station"]) {
+        const s = H.fresh(); s.slot = 1;
+        while (H.daily.hiyoriShopLocation() !== id && s.seed < 10000) s.seed++;
+        if (s.seed >= 10000) throw Error(`No schedule for ${id}`);
         const unknown = H.data.displayName("hiyori", s);
         const met = await H.visit(id);
         const points = s.affinity.hiyori;
@@ -62,7 +70,7 @@ await suite("hiyori-encounters", async (check) => {
           shop: s.flags._hiyori_meeting_shop, contact: s.contacts.includes("hiyori") });
       }
       H.fresh();
-      const excluded = ["tonari", "rest", "cafe", "kannon", "choizap", "fortune"].map((id) => H.daily.hiyoriShopEligible(H.spots.spotById(id)));
+      const excluded = ["tonari", "rest", "cafe", "kannon", "choizap", "fortune", "shop"].map((id) => H.daily.hiyoriShopEligible(H.spots.spotById(id)));
       H.core.state.chapter = 2;
       const futureShop = H.daily.hiyoriShopEligible(H.data.DB.samechan.spot);
       return { shops, excluded, futureShop };
@@ -97,7 +105,8 @@ await suite("hiyori-encounters", async (check) => {
       const missedAgain = await H.visit("minto");
       const s = H.core.state;
       Object.assign(s, { seed: 131, day: 6 });
-      const hit = await H.visit("minto"), points = s.affinity.hiyori, count = s.flags._hiyori_repeat_count;
+      while (!H.daily.hiyoriShopLocation() && s.day <= 14) s.day++;
+      const hit = await H.visit(H.daily.hiyoriShopLocation()), points = s.affinity.hiyori, count = s.flags._hiyori_repeat_count;
       H.core.saveToSlot("suien_remake_slot1"); H.core.newGame(); H.core.loadFromSlot("suien_remake_slot1");
       const hitAgain = await H.visit("adam");
       return { missed, missedAgain, hit, hitAgain, count,
@@ -112,10 +121,14 @@ await suite("hiyori-encounters", async (check) => {
     await setup(page);
     for (const path of ["customer", "work"]) {
       await page.evaluate(async (which) => {
-        H.fresh(); await H.visit("adam"); H.core.state.day++;
+        H.fresh(); await H.visit(H.daily.hiyoriShopLocation()); H.core.state.day++;
         H.contact = which === "work" ? H.tonari.doBaito() : H.tonari.tonariCustomer();
       }, path);
-      if (path === "work") await page.locator('[data-test="after-none"]').click();
+      // 接客・配達台詞とシフト演出の完了を待つ。メニュー表示前の全シフトを10秒に制限しない。
+      if (path === "work") {
+        await page.locator('[data-test="shift-order-0"]').click({ timeout: 30000 });
+        await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
+      }
       await page.evaluate(() => H.contact);
       const result = await page.evaluate(() => ({ report: H.core.state.flags._hiyori_sumi_message_done,
         relay: H.core.state.flags._hiyori_message_delivered, known: H.core.state.flags._hiyori_real_self_known }));

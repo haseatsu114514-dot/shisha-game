@@ -4,6 +4,8 @@
 //   3) 「もう一度挑戦する」→「上手」で南雲票の逆転優勝 → 第1章クリアになること
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
+import { purchasePlannedFlavor } from "./playthrough-shopping.mjs";
+import { PLAN, nextPlanAction } from "./playthrough-plan.mjs";
 import { createRequire } from "module";
 import { recordLoad } from "../tools/load-recorder.mjs";
 const require = createRequire(import.meta.url);
@@ -16,25 +18,9 @@ const STREET_MODE = process.env.STREET_MODE === "1";
 const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
-// 行動計画（上から順に消費）。shop:* は時間を使わない買い物、after:* はバイト後の過ごし方
-// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY1 の夜・DAY2 の昼はスミさんの配達（EDEN・PEPPERMINT）で埋まる
-// （配達の2枠は計画を消費しない。DAY2 の夜から下の計画どおりで、定休日との並びは配達前と同じ）
-const PLAN = [
-  "baito:holes",
-  "adam", "customer",
-  "minto", "baito:sumi",
-  "naru", "rest",
-  "baito:heat", "cafe",
-  "c_station", "customer",
-  "adam", "baito:sumi",
-  "rin", "kannon",
-  "baito:pull", "rest",
-  "naru", "choizap",
-  "shop:lemon", "rin", "baito:sumi",
-  "adam", "rest",
-  "baito:steam", "customer",
-  "minto", "customer", "rest", "rest",
-];
+// 時間を使う行動計画は上から順に消費。必須購入は中間準備後の最初の自由マップで行う。
+// DAY1 の昼は案内つきのおつかい（Dr.fookah でレモン→KEMURIKUSA 偵察）、DAY2 は参加登録の後、スミさんの配達（PEPPERMINT・EDEN）で埋まる
+// （配達の2枠は計画を消費しない。DAY3 から下の計画へ進む）
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
@@ -57,7 +43,11 @@ await page.addInitScript(() => {
   });
 });
 const errors = [];
-page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
+page.on("pageerror", (e) => {
+  const text = e.stack || e.message;
+  console.error("[pageerror]", text);
+  errors.push(`pageerror: ${text}`);
+});
 page.on("console", (m) => {
   // Webフォント（外部）の読み込み失敗はサンドボックス都合なので無視
   if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push(`console: ${m.text()}`);
@@ -76,7 +66,10 @@ await page.evaluate(() => { const s = window.__remake.state; s.weatherSeed = 4; 
 let planIdx = 0;
 let pendingAfter = null;
 let pendingShopBuy = null;
+let lemonPurchased = false;
+let lastPlanTrace = "";
 let kujiDrawn = false;
+let firstKujiBlocked = false;
 let tournamentAttempt = 0;
 let lastProgress = Date.now();
 let lastKey = "";
@@ -103,8 +96,28 @@ const deadline = Date.now() + 12 * 60 * 1000;
 
 async function click(sel) {
   const el = await page.$(sel);
-  if (!el) return false;
-  try { await el.click({ timeout: 2000 }); return true; } catch { return false; }
+  let ok = false;
+  let error = null;
+  if (el) try { await el.click({ timeout: 2000 }); ok = true; } catch (e) { error = e.message; }
+  if (pendingShopBuy || /shop|buy-|kuji/.test(sel))
+    log("shopping-click", JSON.stringify({ sel, ok, error, planIdx, pendingShopBuy, state: await shoppingSnapshot() }));
+  return ok;
+}
+
+// Read-only evidence: no inventory, money or random source is rewritten.
+async function shoppingSnapshot(id = pendingShopBuy) {
+  return page.evaluate((id) => {
+    const s = window.__remake.state;
+    return { screen: document.body.dataset.screen, day: s.day, slot: s.slot,
+      money: s.money, stock: s.flavorStock?.[id] || 0, owned: s.flavors.includes(id),
+      price: window.__remake.DB.flavorById[id]?.price,
+      quantity: Number(document.querySelector(`[data-test="quantity-${id}"]`)?.textContent || 0),
+      flavorStock: { ...s.flavorStock }, kuji: s.kuji,
+      goods: s.goods, equipment: s.owned };
+  }, id);
+}
+async function shoppingRequired(sel) {
+  if (!await click(sel)) throw new Error(`Shopping input failed: ${sel}; planIdx=${planIdx} pendingShopBuy=${pendingShopBuy}`);
 }
 
 // 任意の街歩き経由でも、同じ行動計画と大会の検証を実行する。
@@ -139,14 +152,20 @@ for (;;) {
       modal: document.querySelector("#modal")?.classList.contains("show"),
       day: s?.day, slot: s?.slot, phase: s?.phase, stamina: s?.stamina, money: s?.money,
       errandDone: !!s?.flags?._errand_scout_done,
+      midcheckDone: !!s?.flags?._ev_midcheck,
+      coldPending: !!s?.flags?._cold_pending,
+      sickOnce: !!s?.flags?._sick_once,
+      restDay: s?.restDay,
       deliveriesDone: !!(s?.flags?._delivery_adam_done && s?.flags?._delivery_minto_done),
       stats: s?.stats,
       lastRank: s?.tournament?.lastRank,
       endTitle: document.querySelector(".end-screen.gameover") ? "GAME OVER" : document.querySelector(".end-title")?.textContent || "",
       rain: document.querySelector("#screen .map:not(.done)")?.dataset.rain === "true",
-      feel: /[1-9]/.test(document.querySelector('[data-test="arcade-score"] .arcade-num')?.textContent || ""),
+      feel: !!document.querySelector('.bench .bench-audience') && !document.querySelector('.arcade-score'),
       nico: !!document.querySelector(".nico"),
-      rtFeel: !!document.querySelector('[data-test="result-score"]'),
+      rtFeel: !!document.querySelector('.result-table .rt-judge-comment')
+        && !!document.querySelector('.result-table .craft-evaluation')
+        && !document.querySelector('[data-test="result-score"], .rt-meter'),
       // 会話中に前の画面（作業台・結果表・マップ等）が後ろに見えていないか
       leak: document.querySelector("#vn")?.classList.contains("active") && !!document.querySelector("#screen > *") && getComputedStyle(document.querySelector("#screen")).visibility !== "hidden",
       // 優勝の夜の LIME の後ろに結果表が残っていないか
@@ -154,6 +173,7 @@ for (;;) {
       sub: document.querySelector(".sub-title")?.textContent || "",
       // 選択済み（.done）の画面は次の画面待ち。触らない
       live: !!document.querySelector("#screen > *:not(.done)"),
+      revealing: !!document.querySelector('#screen .map:not(.done)[data-revealing="true"]'),
       step: document.querySelector(".bench-panel")?.dataset.step || "",
       mode: document.querySelector(".bench")?.dataset.mode || "",
     };
@@ -167,9 +187,16 @@ for (;;) {
     checkedTutorialGrowth = true;
     log("tutorial/forced growth remains zero");
   }
-  if (snap.day !== lastDay) { loadReport?.snapshot(`day-${snap.day}`); lastDay = snap.day; log(`DAY ${snap.day} (${snap.phase}) money=${snap.money} stamina=${snap.stamina}`); }
+  if (snap.day !== lastDay) {
+    loadReport?.snapshot(`day-${snap.day}`); lastDay = snap.day;
+    log(`DAY ${snap.day} (${snap.phase}) money=${snap.money} stamina=${snap.stamina}`,
+      JSON.stringify({ slot: snap.slot, planIdx, next: PLAN[planIdx] || "rest", lemonPurchased,
+        coldPending: snap.coldPending, sickOnce: snap.sickOnce, restDay: snap.restDay }));
+  }
   if (key !== lastKey) { lastKey = key; lastProgress = Date.now(); }
   if (Date.now() - lastProgress > 30000) {
+    log("stall-detail", JSON.stringify({ snap, limeCoach, limeOpened, fortuneTried,
+      text: await page.locator('body').innerText() }));
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/stuck.png` });
     if (errors.length) log("errors before stall:", JSON.stringify(errors));
     throw new Error(`stuck: ${key}`);
@@ -201,7 +228,8 @@ for (;;) {
   // 画面の種類ごとに最初の1枚だけ記録（SHOTS 指定時）
   const tag = `${snap.screen}${snap.step ? "-" + snap.mode + "-" + snap.step : ""}${snap.vn ? "-vn" : ""}`;
   if (SHOTS && !seenShots.has(tag)) { seenShots.add(tag); await page.waitForTimeout(snap.step ? 700 : 250); await page.screenshot({ path: `${SHOTS}/${String(seenShots.size).padStart(2, "0")}_${tag}.png` }); }
-  if (snap.vn || !snap.live) continue; // 会話はターボで自動送り／選択済みの画面は次を待つ
+  // 解禁後にLIME案内等が現れるため、待機後は画面全体を読み直してから操作する。
+  if (snap.vn || !snap.live || snap.revealing) continue; // 会話・画面切替・解禁の終了を待つ
 
   if (snap.screen === "end") {
     if (/GAME OVER/.test(snap.endTitle)) {
@@ -269,9 +297,12 @@ for (;;) {
 
   // 1日目の案内・スミさんの配達: 光っている1か所だけ選べる。計画は進めない
   if (snap.screen === "map" && (await page.$('[data-test="map-guide"]'))) {
-    if (!snap.errandDone) guided++; else deliveryGuided++;
     const id = await page.locator(".spot-pin.guide").getAttribute("data-spot");
-    if (id === "c_station" && snap.slot !== 0) throw new Error("DAY1 scout consumed the action before registration");
+    if (!snap.errandDone || id === "c_station") guided++; else deliveryGuided++;
+    if (snap.day === 1 && !["shop", "naru"].includes(id)) throw new Error("DAY1 must end after scouting");
+    if (id === "minto" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Minto must be the first DAY2 delivery");
+    if (id === "adam" && (snap.day !== 2 || snap.slot !== 1)) throw new Error("Adam must be the second DAY2 delivery");
+    if (id === "c_station" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Registration must happen before DAY2 deliveries");
     await chooseDestination(id);
     continue;
   }
@@ -281,27 +312,33 @@ for (;;) {
     const minto = await page.evaluate(() => { const s = window.__remake.state; return { story: s.story.minto || 0, visits: s.visits.minto || 0, visited: s.visitedDay.minto === s.day }; });
     if (minto.story || minto.visits || minto.visited) throw new Error(`Delivery consumed normal minto visit: ${JSON.stringify(minto)}`);
     checkedDeliveryBoundary = true;
-    log("DAY2 minto storefront delivery preserves normal first visit");
+    log("DAY2 minto indoor delivery preserves normal first visit");
   }
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
   if (snap.screen === "map" && snap.rain) rainMaps++;
   // 路上占い師（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
   if (snap.screen === "map" && !fortuneTried && snap.money >= 3000 && (await page.$('[data-test="pin-fortune"]:not(.off)'))) {
+    if (!await click('[data-test="pin-fortune"]') || !await click('[data-test="map-go"]'))
+      throw new Error("Fortune input failed before visiting");
     fortuneTried = true;
-    await click('[data-test="pin-fortune"]'); await click('[data-test="map-go"]');
     continue;
   }
   if (snap.screen === "map" && (await page.$(".hud-lime.has")) && (await click('[data-test="hud-phone"]'))) { limeOpened++; continue; }
   if (snap.screen === "map") {
-    const item = PLAN[planIdx] || "rest";
+    const { item, requiredPurchase } = nextPlanAction({ planIdx, phase: snap.phase,
+      midcheckDone: snap.midcheckDone, lemonPurchased });
     const [kind, arg] = item.split(":");
+    const decision = JSON.stringify({ day: snap.day, slot: snap.slot, planIdx, item, requiredPurchase,
+      stamina: snap.stamina, midcheckDone: snap.midcheckDone, lemonPurchased,
+      coldPending: snap.coldPending, sickOnce: snap.sickOnce, restDay: snap.restDay });
+    if (decision !== lastPlanTrace) { lastPlanTrace = decision; log("plan-decision", decision); }
     // 体力が心細ければ計画を進めずに休む
     if (snap.stamina < 38 && kind !== "shop" && kind !== "rest") {
       await click('[data-test="pin-rest"]'); await click('[data-test="map-go"]');
       continue;
     }
-    planIdx++;
+    if (kind !== "shop") planIdx++;
     if (kind === "baito" || kind === "customer") {
       pendingAfter = kind === "baito" ? arg : null;
       await click('[data-test="pin-tonari"]'); await click('[data-test="map-go"]');
@@ -309,7 +346,10 @@ for (;;) {
       await click(kind === "baito" ? '[data-test="tonari-baito"]' : '[data-test="tonari-customer"]');
     } else if (kind === "shop" || kind === "rin") {
       pendingShopBuy = kind === "shop" ? arg : "__upstairs";
-      await click('[data-test="pin-shop"]'); await click('[data-test="map-go"]');
+      log("shopping-plan", JSON.stringify({ planIdx, pendingShopBuy, state: await shoppingSnapshot() }));
+      await shoppingRequired('[data-test="pin-shop"]');
+      await shoppingRequired('[data-test="map-go"]');
+      await page.waitForSelector('.shop-entry:not(.done)', { timeout: 5000 });
     } else {
       const ok = await chooseDestination(kind);
       if (!ok) { log(`  (DAY ${snap.day}: ${kind} に行けないので休む)`); await click('[data-test="pin-rest"]'); await click('[data-test="map-go"]'); }
@@ -319,12 +359,14 @@ for (;;) {
   if (snap.screen === "preparation") { await click('[data-test="prep-flavor-blueberry"]'); continue; }
   if (snap.screen === "shop-entry") {
     const upstairs = pendingShopBuy === "__upstairs" && await page.$('[data-test="shop-upstairs"]:not([disabled])');
-    await click(upstairs ? '[data-test="shop-upstairs"]' : '[data-test="shop-enter"]');
+    await shoppingRequired(upstairs ? '[data-test="shop-upstairs"]' : '[data-test="shop-enter"]');
     if (pendingShopBuy === "__upstairs") pendingShopBuy = null;
     continue;
   }
   if (snap.screen === "shop") {
-    // スミさんの頼み（ミント）を買うまでは店を出られない
+    const firstErrandVisit = await page.evaluate(() => !window.__remake.state.flags._errand_shop_done
+      && !!document.querySelector(".shop-errand"));
+    // スミさんの頼み（レモン）を買うまでは店を出られない
     if (await page.$(".shop-errand:not(.done)")) {
       if (await click('[data-test="shop-leave"]')) { await page.waitForTimeout(200); errandBlocked ||= !!(await page.$(".shop-errand:not(.done)")); }
       const errand = await page.locator('.shop-row.errand [data-test^="buy-"]').first().getAttribute('data-test');
@@ -332,29 +374,43 @@ for (;;) {
       await click('[data-test="shop-checkout"]');
     }
     if (pendingShopBuy && pendingShopBuy !== "__upstairs") {
-      await page.locator('.shop-tab[data-tab="flavor"]').click();
-      await page.locator(`[data-test="buy-${pendingShopBuy}"]`).click();
-      await click('[data-test="shop-checkout"]');
+      await purchasePlannedFlavor({
+        id: pendingShopBuy, read: shoppingSnapshot, click,
+        trace: event => log("shopping-purchase", JSON.stringify({ planIdx, pendingShopBuy, ...event })),
+        // Buying is independent of PLAN: preserve the next time-consuming action.
+        consume: () => { lemonPurchased = true; pendingShopBuy = null; },
+      });
     }
-    // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
+    // 初回買い出しでは拒否され、後日の通常営業で1回引ける。
     if (!kujiDrawn) {
-      kujiDrawn = true;
-      await click('.shop-tab[data-tab="kuji"]');
-      await click('[data-test="kuji-g500"]');
-      await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
-      await click('[data-test="kuji-reveal"]');
+      await shoppingRequired('.shop-tab[data-tab="kuji"]');
+      const before = await shoppingSnapshot();
+      await shoppingRequired('[data-test="kuji-g500"]');
+      const after = await shoppingSnapshot();
+      log("shopping-kuji", JSON.stringify({ planIdx, pendingShopBuy, before, after }));
+      if (firstErrandVisit) {
+        if (JSON.stringify(after) !== JSON.stringify(before) || await page.$('.kuji-card.reveal'))
+          throw new Error("First lemon errand allowed a kuji purchase");
+        firstKujiBlocked = true;
+      } else {
+        if (after.kuji.g500.drawn !== before.kuji.g500.drawn + 1 || after.money !== before.money - 500)
+          throw new Error("Kuji input did not produce expected draw/payment");
+        kujiDrawn = true;
+        await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
+        await click('[data-test="kuji-reveal"]');
+      }
     }
-    pendingShopBuy = null;
-    await click('[data-test="shop-leave"]');
+    await shoppingRequired('[data-test="shop-leave"]');
     continue;
   }
   if (snap.screen === "tonari") {
     if (/今日の復習/.test(snap.sub)) { await click('[data-test="drill-pull"]'); continue; }
     if (/シフト上がり/.test(snap.sub)) {
       const a = pendingAfter;
-      const selected = await click(a === "sumi" ? '[data-test="after-sumi"]' : a ? '[data-test="after-drill"]' : '[data-test="after-none"]');
+      // シフト後の自主練は家へ移した（#638）。計画の "baito:holes" などはシフトだけを行い、そのまま上がる。
+      const selected = await click(a === "sumi" ? '[data-test="after-sumi"]' : '[data-test="after-none"]');
       // 画面の切替中に押せなかった場合は、予定した選択を消さず次の入力で再試行する。
-      if (selected) { pendingDrill = a && a !== "sumi" ? a : null; pendingAfter = null; }
+      if (selected) { pendingDrill = null; pendingAfter = null; }
       continue;
     }
     if (snap.sub === "自主練" && pendingDrill) {
@@ -376,6 +432,7 @@ if (practiceRuns.length < 3 || !s.flavors.includes("lemon") || !s.flavors.includ
   || !(practiceRuns.find(run => run.kind === "midcheck")?.mix?.[prepared] > 0)) {
   throw new Error(`Missing practice/shopping: prepared=${prepared} runs=${JSON.stringify(practiceRuns)} flavors=${JSON.stringify(s.flavors)}`);
 }
+if (!lemonPurchased) throw new Error("Required lemon purchase was never confirmed");
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 const recognitionComments = await page.evaluate(() => Object.entries((window.__remake.DB || {}).dialogues || {}).flatMap(([id, d]) =>
@@ -394,7 +451,7 @@ for (let attempt = 1; attempt <= s.tournament.attempts; attempt++) {
     ["ch1_tournament_r2_end", "bgm_tournament_craft"],
     ["ch1_tournament_r3_end", "bgm_tournament_craft"],
     ["remake_round4_end", "bgm_tournament_craft"],
-    ["remake_judging_intro", "bgm_tournament_wait"],
+    ["remake_judging_intro", "bgm_judging"],
   ]) {
     if (bgmCues[`${attempt}:${id}`] !== expected) throw new Error(`Wrong BGM at attempt ${attempt} ${id}: ${bgmCues[`${attempt}:${id}`]}`);
   }
@@ -406,10 +463,10 @@ if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=
 if (!s.reel.introDone) throw new Error("slot intro not shown");
 // 夜の行動の分もその夜のうちに回し切る＝章の終わりに見せていない回転が残らない
 if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pending.length}`);
-// 1日目の案内: 仕入れ→偵察の2回、案内マップを通った／ミントを買う前は店を出られない
-log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} mint=${s.flavors.includes("mint")}`);
-if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("mint")) throw new Error("day1 errands not completed as guided");
-// スミさんの配達（DAY1 夜 EDEN・DAY2 昼 PEPPERMINT）: 初来店を配達の場面で通す
+// 1日目の案内: レモンの仕入れ→偵察→スミさんから私物として贈られる。
+log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} lemon=${s.flavors.includes("lemon")}`);
+if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("lemon") || !s.flags._lemon_gift_read) throw new Error("day1 errands not completed as guided");
+// スミさんの配達（DAY2 昼 PEPPERMINT・夜 EDEN）: 初来店を配達の場面で通す
 log(`deliveries: guided=${deliveryGuided} adam=${s.flags._delivery_adam_done}@${s.flags._delivery_adam} minto=${s.flags._delivery_minto_done}@${s.flags._delivery_minto}`);
 if (deliveryGuided !== 2 || !s.flags._delivery_adam || !s.flags._delivery_minto || !s.flags._delivery_adam_done || !s.flags._delivery_minto_done)
   throw new Error("EDEN/PEPPERMINT deliveries not completed as guided");
@@ -431,17 +488,19 @@ log(`rain maps=${rainMaps} / slot load=${slotLoaded} / fortune day=${s.fortuneDa
 if (!rainMaps) throw new Error("no rainy map shown");
 if (!slotLoaded) throw new Error("manual save/load not verified");
 if (!s.flags._fortune_met || !s.fortuneDay) throw new Error("fortune teller not visited");
-// 実況: 大会中に総合スコア（SCORE）が増えて流れるコメントが出て、結果表に SCORE が載る
+// 実況と観客の反応、結果表の印と審査員コメントで手応えを伝える
 log(`broadcast: feel=${feelSeen} nico=${nicoSeen} resultFeel=${rtFeelSeen}`);
 if (!feelSeen || !nicoSeen || !rtFeelSeen) throw new Error("tournament broadcast layer missing");
-// グラム在庫: 大会では詰んだ分だけ減る（再挑戦は会場入り前に戻す）。課題のミントは主催支給で減らない
+// グラム在庫: 大会では課題のレモンも私物から減る（再挑戦は会場入り前に戻す）。
 log(`stock: before=${JSON.stringify(stock0)} after=${JSON.stringify(s.flavorStock)}`);
 if (!stock0 || s.flavorStock.double_apple !== stock0.double_apple - 9) throw new Error("flavor stock not consumed as expected");
-if ((s.flavorStock.mint || 0) !== (stock0.mint || 0)) throw new Error("supplied mint should not be consumed");
+if (s.flavorStock.lemon !== stock0.lemon - 3) throw new Error("private lemon should be consumed");
+if ((s.flavorStock.mint || 0) !== (stock0.mint || 0)) throw new Error("unused mint should not be consumed");
 // 常連ノート: バイトで接客した客が記録されている
 log(`notes: ${Object.keys(s.notes).length}`);
 if (!Object.keys(s.notes).length) throw new Error("customer notes empty");
 // くじ: 1枚引いて箱が減っている
+if (!firstKujiBlocked) throw new Error("First lemon errand kuji refusal not verified");
 if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
 // ch1 のソフトキャップ（48）を超えていない
 for (const [k, v] of Object.entries(s.stats)) if (v > 48) throw new Error(`stat ${k}=${v} exceeds ch1 soft cap`);

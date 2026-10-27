@@ -57,10 +57,8 @@ await suite("venue-invite-reminder", async (check) => {
       enter = async () => {
         await frame.evaluate(() => __street.warp("peppermint"));
         if (options.hasTouch) {
-          const x = await frame.evaluate(() => __street.layout().doors.find(d => d.id === "peppermint").cx - __street.state().camX);
-          const canvas = frame.locator('#view');
-          const box = await canvas.boundingBox();
-          await canvas.tap({ position: { x: x / 640 * box.width, y: 210 / 360 * box.height } });
+          // 来店前の返信確認を実タッチで開く。試作の640x360座標には依存しない。
+          await frame.locator('#btn-act').tap();
         } else {
           await frame.locator('#view').focus();
           await page.keyboard.press('KeyZ');

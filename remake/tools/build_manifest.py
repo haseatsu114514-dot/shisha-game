@@ -168,16 +168,20 @@ def continue_portraits():
     return out
 
 
-def intro_art():
+def intro_art(character_ids=None):
     """採用した登場背景の配色と、現行人物PNGの配置だけを目録化する。
 
     文言・表情・名前はゲームで正本データから読む。レビューの台詞を複製しない。
     """
     source = ROOT / "asset_sources/character-intros/ch1-v3/characters.json"
     records = json.loads(source.read_text())
+    for collection in ("ch3-v1", "recent-cast"):
+        records += json.loads((ROOT / f"asset_sources/character-intros/{collection}/characters.json").read_text())
     out = {}
     for record in records:
         cid = record["id"].removesuffix("_unknown")
+        if character_ids is not None and cid not in character_ids:
+            continue
         background = ASSETS / f"ui/character_intros/{cid}.png"
         if not background.exists():
             continue
@@ -210,7 +214,7 @@ def intro_art():
         # 採用時の構図が現在の同じ人物PNGに対応している場合はそのまま使う。
         face = record["expression"]
         png = ASSETS / f"sprites/characters/{folder}/chr_{folder}_{face}.png"
-        if png.exists() and hashlib.sha256(png.read_bytes()).hexdigest() == record["portrait_sha256"]:
+        if record.get("frame") and png.exists() and hashlib.sha256(png.read_bytes()).hexdigest() == record["portrait_sha256"]:
             art["frames"][face] = record["frame"]
     return out
 
@@ -229,10 +233,56 @@ def main():
     scope.add_argument("--audio-only", action="store_true", help="既存の画像目録を保ち、BGM一覧だけ更新")
     scope.add_argument("--title-only", action="store_true", help="採用済みタイトル絵の目録・WebPだけ更新")
     scope.add_argument("--backgrounds-only", nargs="+", metavar="PNG", help="指定した背景の目録・WebPだけ更新")
+    scope.add_argument("--cgs-only", nargs="+", metavar="PNG", help="指定したCGの目録・WebPだけ更新")
     scope.add_argument("--making-only", nargs="+", metavar="PNG", help="指定した制作UIパーツの目録・WebPだけ更新")
+    scope.add_argument("--scene-props-only", nargs="+", metavar="PNG", help="指定した背景の重ね素材の目録・WebPだけ更新")
     scope.add_argument("--portraits-only", nargs="+", metavar="ID", help="指定した人物の立ち絵計測・WebPだけ更新")
+    scope.add_argument("--intros-only", nargs="+", metavar="ID", help="指定した人物の登場背景・配置・WebPだけ更新")
     args = parser.parse_args()
     generated = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    if args.intros_only:
+        import build_images
+        ids = set(args.intros_only)
+        entries = intro_art(ids)
+        if ids != entries.keys() or any(not art["frames"] for art in entries.values()):
+            parser.error("指定した登場背景・立ち絵が揃っていません")
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest["generated"] = generated
+        manifest.setdefault("introArt", {}).update(entries)
+        webp = list(manifest.get("webp", []))
+        for art in entries.values():
+            rel = art["background"]
+            dst = build_images.OUT / Path(rel).with_suffix(".webp")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+            if rel not in webp:
+                webp.append(rel)
+        manifest["webp"] = webp
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(entries)} intro backgrounds, portrait frames and WebP files")
+        return
+    if args.cgs_only:
+        import build_images
+        names = sorted(set(args.cgs_only))
+        for name in names:
+            src = ASSETS / "cgs" / name
+            if Path(name).name != name or not name.endswith(".png") or not src.is_file() or is_placeholder(src):
+                parser.error(f"完成CGのPNGがありません: {name}")
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest["generated"] = generated
+        manifest["cgs"] = sorted(set(manifest["cgs"]) | set(names))
+        webp = list(manifest.get("webp", []))
+        for name in names:
+            rel = f"cgs/{name}"
+            dst = build_images.OUT / Path(rel).with_suffix(".webp")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+            if rel not in webp:
+                webp.append(rel)
+        manifest["webp"] = webp
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(names)} CGs and WebP files (other images unchanged)")
+        return
     if args.portraits_only:
         import build_images
         ids = sorted(set(args.portraits_only))
@@ -294,6 +344,26 @@ def main():
         manifest["webp"] = sorted(webp)
         OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         print(f"wrote {len(manifest['titleArts'])} title arts and WebP files (other images unchanged)")
+        return
+    if args.scene_props_only:
+        import build_images
+        names = sorted(set(args.scene_props_only))
+        for name in names:
+            if Path(name).name != name or not name.endswith(".png") or not (ASSETS / "ui/scene_props" / name).is_file():
+                parser.error(f"背景の重ね素材PNGがありません: {name}")
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest["generated"] = generated
+        manifest["sceneProps"] = sorted(set(manifest.get("sceneProps", [])) | set(names))
+        webp = set(manifest.get("webp", []))
+        for name in names:
+            rel = f"ui/scene_props/{name}"
+            dst = build_images.OUT / Path(rel).with_suffix(".webp")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+            webp.add(rel)
+        manifest["webp"] = sorted(webp)
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(names)} scene props and WebP files (other images unchanged)")
         return
     if args.making_only:
         import build_images

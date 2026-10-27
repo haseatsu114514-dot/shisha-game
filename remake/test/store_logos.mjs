@@ -24,8 +24,10 @@ try {
     window.T = { core, ui, map, spots, data, hud, transitions, logos, util, shop, tonari };
     core.newGame(); Object.assign(core.state, { phase: "daily", day: 4, slot: 0, money: 30000 });
     for (const id of ["naru", "adam", "minto", "rin", "tsumugi"]) core.state.met[id] = true;
+    Object.assign(core.state.flags, { _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true,
+      _tsumugi_contest_research: true, _tsumugi_contest_progress: true, _cafe_introduced: true }); // #782: 固定回を見終えた日だけつむぎが在店 / #780: 喫茶店は紹介後に出る
     // 顔画像を持つ既知の店主の小バッジを、空のmanifestでも実物素材で検証する。
-    data.DB.manifest.faceIcons = ["sumi", "naru", "adam", "minto"].map(id => `face_${id}.png`);
+    data.DB.manifest.faceIcons = ["sumi", "naru", "adam", "minto", "tsumugi", "hiyori"].map(id => `face_${id}.png`);
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
     T.openMap = async () => { map.interruptMap(null); ui.dropRetired(); T.mapPromise = map.chooseSpot({ eventPin: "naru" }); };
     await T.openMap();
@@ -33,22 +35,29 @@ try {
   for (const size of [{ width: 1331, height: 760 }, { width: 844, height: 390 }, { width: 591, height: 1280 }]) {
     await page.setViewportSize(size);
     await page.waitForSelector('.spot-pin.branded');
+    await page.locator('.facility-icon img').evaluateAll(images => Promise.all(images.map(i => i.decode())));
     await page.waitForTimeout(200);
     const info = await page.evaluate(() => {
       const pins = [...document.querySelectorAll('.spot-pin')];
       const box = n => { const r=n.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom}; };
       const overlaps = (a,b) => Math.min(a.right,b.right)>Math.max(a.x,b.x)+1 && Math.min(a.bottom,b.bottom)>Math.max(a.y,b.y)+1;
       return { logos: [...document.querySelectorAll('.spot-pin .store-logo')].map(n=>({id:n.dataset.storeLogo,loaded:n.querySelector('img')?.complete && n.querySelector('img')?.naturalWidth>0})),
-        owners:[...document.querySelectorAll('.pin-owner-face')].map(n=>({id:n.closest('.spot-pin').dataset.spot,loaded:n.complete && n.naturalWidth>0,width:parseFloat(getComputedStyle(n).width),clear:!n.parentElement.querySelector('.evt-badge') || !overlaps(box(n),box(n.parentElement.querySelector('.evt-badge')))})),
+        owners:[...document.querySelectorAll('.pin-person[data-person-role="owner"]:not(.pin-unknown)')].map(n=>({id:n.closest('.spot-pin').dataset.spot,loaded:n.complete && n.naturalWidth>0,width:parseFloat(getComputedStyle(n).width),clear:!n.closest('.spot-pin').querySelector('.evt-badge') || !overlaps(box(n),box(n.closest('.spot-pin').querySelector('.evt-badge')))})),
+        people:[...document.querySelectorAll('.pin-person')].map(n=>({
+          role:n.dataset.personRole, loaded:n.tagName!=="IMG" || n.complete && n.naturalWidth>0,
+          clear:[...n.closest('.spot-pin').querySelectorAll('.pin-person,.evt-badge')].every(other=>other===n || !overlaps(box(n),box(other))) })),
         eventBadges:[...document.querySelectorAll('.spot-pin .evt-badge')].map(n=>n.closest('.spot-pin').dataset.spot),
         collisions:pins.flatMap((a,i)=>pins.slice(i+1).filter(b=>overlaps(box(a),box(b))).map(b=>[a.dataset.spot,b.dataset.spot])),
         labels:[...document.querySelectorAll('.sub-label')].map(n=>n.textContent),
         overflow:document.documentElement.scrollWidth>innerWidth };
     });
-    assert.deepEqual(info.logos.map(n=>n.id).sort(), [...stores].sort());
+    assert.deepEqual(info.logos.map(n=>n.id).sort(), stores.filter(id => id !== 'choizap').sort());
+    assert.equal(await page.locator('[data-test="pin-choizap"] .facility-icon[data-facility="choizap"]').count(), 1);
     assert(info.logos.every(n=>n.loaded)); assert.deepEqual(info.collisions, []);
     assert.deepEqual(info.owners.map(n=>n.id).sort(), ["adam","minto","naru","tonari"]);
-    assert(info.owners.every(n=>n.loaded && n.width===32 && n.clear));
+    assert(info.owners.every(n=>n.loaded && n.width===30 && n.clear));
+    assert(info.people.every(n=>["owner","guest"].includes(n.role) && n.loaded && n.clear));
+    assert(info.people.some(n=>n.role==="guest"));
     assert(info.eventBadges.includes("naru"));
     assert(info.labels.includes("喫茶こはく") && !info.overflow);
     if (shots) await page.screenshot({path:`${shots}/map-${size.width}.png`});
@@ -102,10 +111,23 @@ try {
   await page.waitForFunction(()=>T.delayedVisitDone);
   assert.equal(await page.locator('.store-arrival,.scene-curtain').count(),0);checks++;
   // 会う前は店主の顔を隠す。未解放の店舗・カフェには採用ロゴを出さない。
-  await page.evaluate(async()=>{T.core.state.met={}; await T.openMap();});
-  await page.waitForSelector('[data-test="pin-choizap"]');
+  await page.evaluate(async()=>{
+    T.core.state.met = {};
+    delete T.core.state.flags._spot_guide_naru;
+    delete T.core.state.flags._spot_guide_adam;
+    delete T.core.state.flags._spot_guide_minto;
+    delete T.core.state.flags._cafe_introduced;
+    await T.openMap();
+  });
+  await page.waitForSelector('[data-test="pin-naru"]');
   assert.equal(await page.locator('[data-test="pin-choizap"] .store-logo,[data-test="pin-c_station"] .store-logo,[data-test="pin-cafe"] .store-logo').count(),0);
-  assert.equal(await page.locator('[data-test="pin-naru"] .pin-face').count(),0); checks++;
+  assert.equal(await page.locator('[data-test="pin-choizap"],[data-test="pin-c_station"],[data-test="pin-cafe"]').count(),0);
+  assert.equal(await page.locator('[data-test="pin-naru"] img.pin-person').count(),0);
+  const anonymous = await page.locator('.pin-unknown').evaluateAll(ns=>ns.map(n=>({
+    name:n.getAttribute("aria-label"), html:n.outerHTML, role:n.dataset.personRole })));
+  assert(anonymous.some(n=>n.role==="guest"));
+  assert(anonymous.every(n=>n.name==="見知らぬ客" && !/hiyori|tsumugi|ひより|つむぎ/.test(n.html)));
+  checks++;
   // SKIPは短く、減らした動きでは静止ロゴ。別の場面にロゴ予約を持ち越さない。
   for(const mode of ["skip","reduced"]){
     await page.emulateMedia({reducedMotion:mode==="reduced"?"reduce":"no-preference"});

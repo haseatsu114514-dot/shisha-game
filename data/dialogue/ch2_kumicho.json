@@ -29,7 +29,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（……目つきも声も、堅気じゃない。それに──腕、見えてる。インクが）"
+          "text": "（……目つきも声も、堅気じゃない。それに、腕、見えてる。インクが）"
         },
         {
           "speaker": "kumicho",
@@ -54,7 +54,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "まあ座れ、一服してきな。──うちはドラゴンフルーツだ"
+          "text": "まあ座れ、一服してきな。うちはドラゴンフルーツだ"
         },
         {
           "speaker": "",
@@ -94,7 +94,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "フレーバーにも仁義がある。持って生まれた声を、殺さず引き出す──それだけだ"
+          "text": "フレーバーにも仁義がある。持って生まれた声を、殺さず引き出す、それだけだ"
         },
         {
           "speaker": "hajime",
@@ -125,7 +125,10 @@
     {
       "dialogue_id": "ch2_kumicho_second",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_ryuji_shop.png"
+        "bg": "res://assets/backgrounds/bg_ryuji_shop.png",
+        "flavor_lesson": {
+          "dragonfruit": 1
+        }
       },
       "lines": [
         {
@@ -176,7 +179,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "兄弟の盃、親子の盃。うちの業界じゃ、盃の重さで──"
+          "text": "兄弟の盃、親子の盃。うちの業界じゃ、盃の重さで……"
         },
         {
           "speaker": "kumicho",
@@ -201,7 +204,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "ただ──また来た時に、顔を覚えていたいだけだ"
+          "text": "ただ、また来た時に、顔を覚えていたいだけだ"
         },
         {
           "speaker": "hajime",
@@ -221,7 +224,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "組長が炭を載せる。──だが、蒸らさない。"
+          "text": "組長が炭を載せる。だが、蒸らさない。"
         },
         {
           "speaker": "",
@@ -231,7 +234,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（え……蒸らさないのか？ 炭を載せて、すぐ吸って──）"
+          "text": "（え……蒸らさないのか？ 炭を載せて、すぐ吸って……）"
         },
         {
           "speaker": "",
@@ -285,7 +288,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──神崎竜二の「0分立ち上げ」を教わった。これから、蒸らし時間に「0分」を選べる。"
+          "text": "神崎竜二の「0分立ち上げ」を教わった。これから、蒸らし時間に「0分」を選べる。"
         },
         {
           "type": "remember",
@@ -490,7 +493,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "回し飲みだ。──同じ一台に、口をつけて回す"
+          "text": "回し飲みだ。同じ一台に、口をつけて回す"
         },
         {
           "speaker": "",
@@ -617,7 +620,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "大会でのお前の煙、しかと見せてもらった。──スジが通ってた"
+          "text": "大会でのお前の煙、しかと見せてもらった。スジが通ってた"
         },
         {
           "speaker": "hajime",
@@ -672,7 +675,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "困り事があったら言え。──カタギの範囲でな"
+          "text": "困り事があったら言え。カタギの範囲でな"
         },
         {
           "speaker": "hajime",
@@ -739,7 +742,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "（少し間を置いて）……嬉しいこと言うじゃねえか。一服してきな──うちのドラゴンフルーツだ"
+          "text": "（少し間を置いて）……嬉しいこと言うじゃねえか。一服してきな、うちのドラゴンフルーツだ"
         },
         {
           "speaker": "",
@@ -749,12 +752,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……この人の本職がヤクザなのかシーシャ屋なのか、来てみてもやっぱりわからない"
+          "text": "（神崎さんの仕事、来てみても全部は分からない）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "でも、この煙は本物だ）"
+          "text": "（でも、俺に丁寧に作ってくれたのは分かる）"
         },
         {
           "speaker": "kumicho",

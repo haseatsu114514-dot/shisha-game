@@ -1,7 +1,6 @@
 // マップ→場所の「扉」の移動（?move=door）。a／b の2パターン（?movar=b）、配色は紫1色／場面ごとの色（?mopal=free）。
 // 戻り値は transition-kit の curtain()（covered／release）。地図の上でピン（x, y）から始まる。
 import { sleep } from "../core/util.js";
-import { SE } from "../core/audio.js";
 import { W, H, svg, stageSvg, move, curtain } from "../core/transition-kit.js";
 import { MG_EASE as MG, pick, burst, ring } from "../core/mg-kit.js";
 
@@ -64,7 +63,6 @@ export function a(host, { x = W / 2, y = H / 2 } = {}) {
     burst(fx, dx + dw + 14, dy - 14, { n: 3, r0: 18, r1: 56, color: P.light, width: 5, turn: -Math.PI * 0.43, dur: 300 });
   }, async () => {
     await sleep(60);
-    SE.doorbell();
     // 3. 扉が蝶番側へたたまれて開き、光と放射線が出る
     move(p.floor, [{ opacity: 1 }, { opacity: 0 }], 130);
     p.panel.style.transformOrigin = "left center";
@@ -128,7 +126,6 @@ export function b(host, { x = W / 2, y = H / 2 } = {}) {
     dots.forEach((d, i) => move(d, [{ transform: "scale(0)" }, { transform: "scale(1)" }], 260, { easing: MG.back, delay: i * 50 }));
   }, async () => {
     await sleep(120);
-    SE.doorbell();
     // 3. 線が左右に割れて縦長の窓が開き、縁の帯が外へはじける
     const open = [{ transform: "scaleX(0)" }, { transform: "scaleX(1.06)", offset: 0.75 }, { transform: "scaleX(1)" }];
     move(p.line, [{ opacity: 1 }, { opacity: 0 }], 120);

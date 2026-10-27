@@ -1,19 +1,24 @@
+import { learnFlavorStory, masteryLabel } from "../core/flavor-mastery.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
+import { createNameFit } from "./name-fit.js";
+import { uiThemeFrame } from "../core/ui-theme.js";
+import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
 import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
-import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
-import { playerInner, paginateInner } from "./inner.js";
+import { formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
+import { playerInner } from "./inner.js";
+import { dialoguePages } from "./layout.js";
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
-import { chekiShot, tarotFlip, limeExchange } from "../core/scene-motions.js";
+import { chekiShot, tarotFlip, limeExchange, purikuraShot } from "../core/scene-motions.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -33,6 +38,7 @@ export const hooks = {
 
 const log = [];
 let dom = null;
+let nameFit = null;
 let running = null;     // 再生中の会話の状態
 let autoMode = false;
 let skipMode = false;
@@ -66,8 +72,11 @@ function buildDom() {
   const ctl = (label, fn, test) => el("button.vn-ctl", { text: label, dataset: { test }, onclick: (e) => { e.stopPropagation(); fn(); } });
   dom.autoBtn = ctl("AUTO", () => setAuto(!autoMode), "vn-auto");
   dom.skipBtn = ctl("SKIP", () => setSkip(!skipMode), "vn-skip");
+  dom.autoBtn.setAttribute("aria-pressed", "false");
+  dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"));
   host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
+  nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
     if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
     if (performance.now() < running.openLockUntil) return;
@@ -84,11 +93,20 @@ function buildDom() {
   window.addEventListener("keyup", (e) => { if (e.key === "Control") setSkip(false); });
 }
 
-function setAuto(v) { autoMode = v; dom?.autoBtn.classList.toggle("on", v); if (v) kickAuto(); }
+function setAuto(v) {
+  if (v) setSkip(false);
+  autoMode = v;
+  dom?.autoBtn.classList.toggle("on", v);
+  dom?.autoBtn.setAttribute("aria-pressed", String(v));
+  clearTimeout(autoTimer);
+  if (v) kickAuto();
+}
 function setSkip(v) {
+  if (v) setAuto(false);
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
   dom?.skipBtn.classList.toggle("on", v);
+  dom?.skipBtn.setAttribute("aria-pressed", String(v));
   clearTimeout(autoTimer);
   if (v && running?.typing) completeTyping();
   if (v || autoMode) kickAuto();
@@ -116,7 +134,7 @@ function kickAuto() {
 // ---------------------------------------------------------------- 再生
 
 /** 同じ背景へ続く会話でも、長い素材待ちには案内を出す。既存のreadyガードで操作を保護する。 */
-function waitSceneAssets(task, owner = running) {
+function waitSceneAssets(task, owner = running, assets = task.assetsReady || task) {
   let notice = null;
   const timer = setTimeout(() => {
     if (running !== owner) return;
@@ -124,7 +142,9 @@ function waitSceneAssets(task, owner = running) {
       text: "場面を準備しています…", dataset: { test: "vn-loading" } });
     layers.fx.append(notice);
   }, 500);
-  return Promise.resolve(task).finally(() => { clearTimeout(timer); notice?.remove(); });
+  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); notice?.remove(); });
+  // 場面転換の演出は最後まで待つが、取得・デコード済みなら読み込み表示を延長しない。
+  return Promise.all([task, loaded]).then(([value]) => value);
 }
 
 /**
@@ -170,6 +190,7 @@ export function play(idOrDlg, opts = {}) {
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
+    dom.next.classList.remove("show");
     dom.inner.replaceChildren();
     dom.inner.hidden = true;
     dom.box.classList.remove("has-inner");
@@ -194,7 +215,8 @@ export function play(idOrDlg, opts = {}) {
     }
     prefetch(dlg);
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
-    waitSceneAssets(Promise.all([bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]), me).then(() => {
+    const assetsReady = Promise.all([bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
+    waitSceneAssets(bgReady, me, assetsReady).then(() => {
       if (running !== me) return;
       me.ready = true;
       layers.vn.classList.add("active");
@@ -224,18 +246,22 @@ function speakerBgm(id) {
 /** 仕事を離れた私的な場面か（metadata.private_scene）。名前欄の呼び名に使う */
 const sceneContext = (dlg) => (dlg?.metadata?.private_scene ? "private" : null);
 
-/** 最初の数行で出る立ち絵の URL */
+/** 実際にこの行に出す立ち絵。無言の同席者と話者が別なら両方待つ。 */
+function linePortraits(line) {
+  return [...new Set([
+    line.portrait !== false && !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
+    line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
+  ].filter(Boolean))];
+}
+
+/** 最初の表示行に必要な絵だけを幕の内側で準備する。後続の表情は先読みへ任せる。 */
 function firstPortraits(dlg) {
-  const out = [];
-  for (const l of dlg.lines || []) {
-    if (out.length >= 2) break;
-    const character = l.portrait === false ? null : l.portrait || l.speaker;
-    if (character && !NO_PORTRAIT.has(character)) {
-      const p = portraitInfo(character, l.portrait_face || l.face);
-      if (p && !out.includes(p.src)) out.push(p.src);
-    }
+  for (const l of dlg?.lines || []) {
+    if (!l.type) return linePortraits(l);
+    // 分岐・別場面・演出を越えた行を、今の場面の開始条件にしない。
+    if (["choice", "condition", "jump", "bg", "show_cg", "hide_cg", "motion", "reflection", "game_over"].includes(l.type)) break;
   }
-  return out;
+  return [];
 }
 
 /** 会話の背景（昼夜の差分・夜の色調補正つき） */
@@ -245,6 +271,7 @@ function sceneSetBg(ref, ready = []) {
 }
 
 function prefetch(dlg) {
+  if (!dlg) return;
   const urls = new Set();
   const collect = (lines) => {
     for (const l of lines || []) {
@@ -272,6 +299,9 @@ function finish(cancelled = false) {
   if (!cancelled && meta.add_stat) applyStats(meta.add_stat);
   if (!cancelled && meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
+  if (!cancelled && meta.flavor_lesson) for (const gain of learnFlavorStory(state, r.dlg, DB.flavorById)) {
+    toast(`${DB.flavorById[gain.id]?.short_name || gain.id} ${masteryLabel(state, gain.id, DB.flavorById)}`, { kind: "good" });
+  }
   layers.vn.classList.remove("active");
   document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");
@@ -291,13 +321,14 @@ function advance() {
     renderPage();
     return;
   }
-  if (!skipMode && !vnTest.turbo) SE.click();
   next();
 }
 
 function next() {
   const r = running;
   if (!r) return;
+  // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
+  dom.next.classList.remove("show");
   r.pages = null;
   // 制御行はまとめて処理し、表示する台詞行に着いたら止まる
   for (;;) {
@@ -338,7 +369,7 @@ function next() {
     // 一度きりのモーショングラフィックス（core/scene-motions.js）。終わるまで次の行へ進まない
     if (type === "motion") {
       if (vnTest.turbo) continue;
-      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context) }[line.id];
+      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot() }[line.id];
       if (!run) continue;
       if (line.id === "lime") {
         const key = `_lime_exchange_shown_${line.char_id}_${line.context || "work"}`;
@@ -485,6 +516,7 @@ async function showCg(id, effect = "") {
   if (running !== r || !loaded) return;
   // effect:"cheki": シャッター→フラッシュ→フィルムが出てきて現像されたところで、同じ位置にCGを置く
   const place = (instant) => {
+    if (running !== r) return;
     dom.cg.dataset.cg = id;
     dom.cg.style.backgroundImage = `url("${url}")`;
     if (instant) dom.cg.style.transition = "none";
@@ -495,6 +527,7 @@ async function showCg(id, effect = "") {
   if (running !== r) return;
   if (!dom.cg.classList.contains("show") || dom.cg.dataset.cg !== id) place(false);
   if (!vnTest.turbo) await visualSettled(dom.cg);
+  if (running !== r) return;
   if (hooks.onCg) hooks.onCg(id);
 }
 
@@ -536,22 +569,29 @@ async function showLine(line) {
   if (!r) return;
   r.ready = false;
   clearTimeout(autoTimer);
-  const images = [
-    line.portrait !== false && !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
-    line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
-  ].filter(Boolean);
-  // 最初の2枚や先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
-  await waitSceneAssets(Promise.all(images.map((url) => imageReady(url, 15000))), r);
+  const images = linePortraits(line);
+  // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
+  const fontReady = Promise.all([dom.text, dom.name].map(node => {
+    const type = getComputedStyle(node);
+    const font = `${type.fontStyle} ${type.fontWeight} ${type.fontSize} ${type.fontFamily}`;
+    return document.fonts.load(font, node === dom.text ? String(line.text || "あ") : "あ").catch(() => []);
+  }));
+  // 先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
+  const frameReady = imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true });
+  await waitSceneAssets(Promise.all([fontReady, frameReady, ...images.map((url) => imageReady(url, 15000))]), r);
   if (running !== r) return;
   if (hooks.onLine) hooks.onLine(r.id, line);
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
-  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん（腹話術）"
+  const name = speaker === "samechan" && line.voice === "korochan" ? "コロちゃん"
     : speaker ? displayName(speaker, state, { context: r.context }) : "";
   if (speaker) {
     dom.name.textContent = name;
+    dom.name.style.setProperty("--vn-name-length", String([...name].length));
+    dom.name.title = name;
     dom.name.classList.add("show");
+    nameFit.fit();
   } else {
     dom.name.classList.remove("show");
   }
@@ -592,43 +632,13 @@ async function showLine(line) {
   log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });
   if (log.length > 300) log.shift();
   dom.box.classList.toggle("has-inner", !!inner);
-  r.pages = paginateForBox(text, dom.text, paginate, inner ? 1 : 2).map((value) => ({ text: value, inner: "" }));
-  if (inner) {
-    // 本心は最後の発言ページの下に出す。長い本心の続きでは発言を残し、打ち直さない。
-    dom.inner.hidden = false; // 本心の書体・実幅を計測する間だけ表示状態にする
-    const thoughts = paginateForBox(inner, dom.inner, paginateInner);
-    const last = r.pages.at(-1);
-    last.inner = thoughts[0];
-    r.pages.push(...thoughts.slice(1).map((value) => ({ text: last.text, inner: value, continuation: true })));
-  }
+  r.pages = dialoguePages(text, inner, dom.text, dom.inner);
   r.pageIdx = 0;
   if (!NO_PORTRAIT.has(speaker) && Object.hasOwn(r.slots, speaker)) {
     r.spoken.add(speaker);
     if (needsIntro(speaker)) queueIntro({ id: speaker });
   }
   renderPage();
-}
-
-// 文字数だけでなく、読み込み済み書体と本文の内幅でも折り返しを決める。
-let measurementContext = null;
-function paginateForBox(text, target = dom.text, split = paginate, maxLines = 2) {
-  measurementContext ||= document.createElement("canvas").getContext("2d");
-  if (!measurementContext || !target.clientWidth) return split(text, { maxLines });
-  const style = getComputedStyle(target);
-  const normal = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-  const emphasis = `${style.fontStyle} 700 ${style.fontSize} ${style.fontFamily}`;
-  const tracking = parseFloat(style.letterSpacing) || 0;
-  return split(text, {
-    maxLines,
-    maxWidth: target.clientWidth - 4,
-    measure(value) {
-      measurementContext.font = normal;
-      const regularWidth = measurementContext.measureText(value).width;
-      measurementContext.font = emphasis; // [imp]も本文からはみ出さない幅に収める
-      return Math.max(regularWidth, measurementContext.measureText(value).width) +
-        Math.max(0, Array.from(value).length - 1) * tracking;
-    },
-  });
 }
 
 // 報酬キュー: 「……【技術】と【センス】が少し上がった。」の規定フレーズを読んで加算する
@@ -784,9 +794,11 @@ function layoutPortraits() {
 function showChoices(line) {
   const r = running;
   r.waitingChoice = true;
-  // 関係の方向は返答と相手の反応で伝える。実回答の記録はpickChoiceのフックへ渡す。
-  const buttons = (line.choices || []).map((c, i) => el("button.vn-choice", {
+  // 実回答の記録はpickChoiceのフックへ。占いは対象/期限/台詞照合済みの2択だけ示す。
+  const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
+  const buttons = (line.choices || []).map((c, i) => el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}`, {
     html: formatHtml(c.text || "……"),
+    "aria-label": i === fortuneHint ? `${c.text}（占いの予感）` : null,
     disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
     style: { animationDelay: `${i * 80}ms` },
     dataset: { test: `choice-${i}` },

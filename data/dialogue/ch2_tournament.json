@@ -1,0 +1,500 @@
+{
+  "comment": "第2章DAY14。実制作の前後だけ。既存関係・LIMEを消さず、味覚回復と離脱理由は後章に残す。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch2_tournament_lobby",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "県大会の控室。あげはが、ドアの前で足を止めた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "ageha",
+          "next_true": "known",
+          "next_false": "first"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "顔色、悪くないですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……なんでもない。うちの一台、ちゃんと見てて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑っているのに、鞄を握る指はほどけなかった。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "ハジメっち。来たね。今日は、同じ舞台だ"
+          }
+        ],
+        "first": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "MELTY PUFFのあげは。……ハジメっち、だよね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。蒸野はじめです。よろしくお願いします"
+          }
+        ],
+        "secret": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "（朝、指を確かめる話を思い出す。……今日は、ダメな日なのかもしれない）"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "……見なかったことにして。今日は、ちゃんと勝負したいの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "分かりました。……終わったら、水、持っていきます"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_tournament_entrance",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "HAZE: OPEN CLOUD！　4人一斉、一発勝負でお送りします！"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "kumicho",
+          "next_true": "kanzaki_known",
+          "next_false": "kanzaki_first"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "神崎竜二選手！　その肩書きも、ご自身からどうぞ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "おう、そのとおり。俺はヤクザだ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "だが今日は、いち職人として来た。文句なら、俺の煙に言いな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "rei",
+          "next_true": "rei_known",
+          "next_false": "rei_first"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "そしてMELTY PUFFのあげは選手、tonariの蒸野はじめ選手！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "4台の向こうで、上園、チャコール博士、南雲が席についた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席の一番後ろ、壁際に、背の高い男が一人で立っていた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_scout_seen",
+          "next_true": "scout_seen",
+          "next_false": "scout_first"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "volk"
+        }
+      ],
+      "branches": {
+        "kanzaki_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（神崎さんだ。今日は、あの人も対戦相手なんだ）"
+          }
+        ],
+        "kanzaki_first": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの大きな人も、出場者か。名前を聞くのは初めてだ）"
+          }
+        ],
+        "rei_known": [
+          {
+            "speaker": "rei",
+            "face": "smile",
+            "text": "また会ったな。今日は、煙で話そう"
+          }
+        ],
+        "rei_first": [
+          {
+            "speaker": "rei",
+            "face": "smile",
+            "text": "零-ZERO-のREI。今日の煙、楽しみにしてる"
+          }
+        ],
+        "scout_seen": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（また、あの人だ。試煙会にも、会場の外にもいた）"
+          }
+        ],
+        "scout_first": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（一人だけ、手帳を開いてる。誰だろう）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_tournament_rules",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "シーシャ勝負・第壱条ッ！ 課題はストロベリー！ 葉はアフサールの新作を支給します！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "第弐条ッ！ 一台を作って提供し、二度の調整まで同じ一台で勝負です！ ぷぷぷっ！"
+        },
+        {
+          "speaker": "maezono",
+          "face": "serious",
+          "text": "一人につき一台。吸い出して提供したあとも、2回の調整まで見ます"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "私たちは、一人10点ずつ持っている。気になった煙へ、途中でも投入するよ"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "serious",
+          "text": "一度入れた点は戻さない。最後に合計して、県代表を決める"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（香りの輪郭が、まだつかめない。でも、手順は忘れていない）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_afsahr_tasting",
+          "next_true": "tasted"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "準備ができた選手から、制作を始めてください！"
+        }
+      ],
+      "branches": {
+        "tasted": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（試煙会で吸った苺だ。熱に弱い。神崎さんは、炭を一つ抜いていた）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_tournament_farewell",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "県代表は、tonariの蒸野はじめ選手です！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トロフィーを受け取る。拍手の向こうで、神崎さんが一度だけ大きくうなずいた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "スジの通った一台だった。東京でも、その手を雑に扱うなよ"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……おめでとう。最後の調整、音が揃ったみたいだった"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "kumicho"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "rei"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "舞台を降りると、出口の手前であげはが待っていた。目の縁が、少し赤い。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "……悔しい。めっちゃ悔しい。うち、今日いちばん頑張ったのに"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でも、おめでと、ハジメっち。ちゃんと、すごかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ありがとうございます。あげはさんの一台も、すごかったです"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "今日はちょっと疲れたから、帰って休む。落ち着いたら、また一台作ろ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "前夜に言ったでしょ。次は、うちの店ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは手を振って、迎えに来たギャル友たちの方へ歩いていった。"
+        }
+      ],
+      "comment": "DAY14優勝後（#929）。あげはは消えない。負けた悔しさと祝福を両立し、次は店で一台をと約束して友人関係を続ける。神崎・REIも勝者を認める。手の震えは秘密を知る保存でだけ、はじめが気づく。",
+      "branches": {
+        "secret": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（握った指先が、まだ少し震えていた。それでも、最後まで作りきったんだ）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_tournament_tasteless",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの済んだ台で、自分の一台を確かめた。煙は出る。味の輪郭は戻らない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（勝った。嬉しいはずなのに、体が追いつかない）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_no_audience",
+          "next_true": "alone",
+          "next_false": "other"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホには、おめでとうの文字が届いていた。勝ったことを喜んでくれる人がいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはの「おめでと」も、神崎さんやREIさんの言葉も、ちゃんと届いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なのに、受け取る場所だけが、どこにも見つからない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ありがとう、と打つ。送信するまで、ずいぶん時間がかかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんから、新しいメッセージが届いた。"
+        }
+      ],
+      "branches": {
+        "alone": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "空いた応援席を見た。来ないでほしいと送ったのは、自分だった。"
+          }
+        ],
+        "other": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_audience_welcome",
+            "next_true": "welcome",
+            "next_false": "old_save"
+          }
+        ],
+        "welcome": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "出口でつむぎが手を振っていた。礼を言おうとして、声が詰まった。"
+          }
+        ],
+        "old_save": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "片づけが終わると、ようやくスマホを見る余裕ができた。"
+          }
+        ]
+      },
+      "metadata": {
+        "bgm": "bgm_taste_distant"
+      }
+    },
+    {
+      "dialogue_id": "ch2_tournament_ageha_heart",
+      "comment": "第2章の最後（#929・オーナー指定）。はじめのいない場面で、あげはの心の声だけを見せる。「才能の壁」は両側にあった。感覚派は崩れた日に直し方が分からない。調子が悪かったはずのはじめが手順で戻って優勝したことに、本人へは言わない嫉妬を抱く。祝福は本心のまま。手の震えは秘密を知る保存だけで描く。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ夜。閉店後のMELTY PUFFで、あげはは一人、ソファに座っていた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret",
+          "next_false": "plain"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "（……感覚って、来る日は来るのに、来ない日は何やっても来ない）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "（崩れたら、直し方が分かんない。うちは、ずっとそうだった）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "（ハジメっちも、最近ずっと調子悪かった。煙に出てたもん）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "（なのに、手順を一個ずつ確かめて、最後まで崩れなかった）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "（崩れても、言葉で戻ってこられるんだ。……うちには、それがない）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "（ハジメっち、うちのこと天才だと思ってるでしょ。でも、逆だよ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚のホワイトグミベアを手に取る。甘い匂いに、少しだけ肩の力が抜けた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "（優勝、すごかった。おめでとって言ったのも、ほんと）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "（でも、……こんなの、ズルいよ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは小さく笑って、店の明かりを落とした。"
+        }
+      ],
+      "branches": {
+        "secret": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "膝の上で、指を握ったり開いたりする。今日は朝から、震えが止まらなかった。"
+          }
+        ],
+        "plain": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "膝の上で、指を握ったり開いたりする。今日の一台は、思った通りに作れなかった。"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "name": "axe-throw",
+  "baseURL": "http://127.0.0.1:8123/remake/",
+  "timeoutMs": 10000,
+  "ref": "working-1ec3ddd-597",
+  "results": [
+    {
+      "label": "front-perspective-actual-flight-frames",
+      "status": "passed"
+    },
+    {
+      "label": "flight-ui-pc",
+      "status": "passed"
+    },
+    {
+      "label": "flight-ui-touch-portrait",
+      "status": "passed"
+    },
+    {
+      "label": "flight-ui-touch-landscape",
+      "status": "passed"
+    },
+    {
+      "label": "rules-pc",
+      "status": "passed"
+    },
+    {
+      "label": "rules-touch-portrait",
+      "status": "failed",
+      "error": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-test=\"title-new\"]') to be visible\u001b[22m\n\n    at check (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:42:53)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_throw.mjs:158:6\n    at async suite (/Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/support.mjs:59:5)\n    at async file:///Users/hasegawaatsuki/Documents/Codex/2026-10-16/task-8/work/shisha-game/remake/test/browser/axe_throw.mjs:78:1",
+      "errors": [],
+      "failedResources": [
+        "net::ERR_CONNECTION_RESET http://127.0.0.1:8123/data/relationship_memories.json"
+      ]
+    },
+    {
+      "label": "rules-touch-landscape",
+      "status": "passed"
+    },
+    {
+      "label": "visible-sway-focus-budget-and-release",
+      "status": "passed"
+    },
+    {
+      "label": "pc",
+      "status": "passed"
+    },
+    {
+      "label": "touch-landscape",
+      "status": "passed"
+    },
+    {
+      "label": "touch-portrait",
+      "status": "passed"
+    },
+    {
+      "label": "keyboard-reduced",
+      "status": "passed"
+    },
+    {
+      "label": "ten-throws-killshots-and-companion",
+      "status": "passed"
+    },
+    {
+      "label": "pause-reaim-and-repeat",
+      "status": "passed"
+    },
+    {
+      "label": "pointer-double-click",
+      "status": "passed"
+    },
+    {
+      "label": "pre-abort-and-host-detach",
+      "status": "passed"
+    },
+    {
+      "label": "art-catalog-names-and-retry",
+      "status": "passed"
+    },
+    {
+      "label": "api-friend-legacy",
+      "status": "passed"
+    },
+    {
+      "label": "api-friend",
+      "status": "passed"
+    },
+    {
+      "label": "api-lover",
+      "status": "passed"
+    }
+  ]
+}

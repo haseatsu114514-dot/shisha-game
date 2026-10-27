@@ -1,0 +1,117 @@
+[
+  {
+    "id": "kuze",
+    "color": "#8c7564",
+    "secondary": "#dcc4a1",
+    "shadow": "#26191b",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/kuze/chr_kuze_normal.png",
+    "motif_label": "味カード・手帳・茶の香り",
+    "caption_source": "data/characters.json: kuze.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/recent-cast/backgrounds/kuze.png",
+        "sha256": "d57c1d1b56150b74afbf978a8dd40e73f370ebb7cb0dd97395cf88618bdb73b0"
+      }
+    },
+    "generation": {
+      "tool": "image_gen.imagegen",
+      "date": "2026-10-26",
+      "source_image_id": "319979cb-6483-4007-a4d4-8f436e7c5178",
+      "brief": "Background only, no people or text. Dark left 43% for approved portrait, illustrated objects upper right, blank middle right for white name ribbon, dark lower right for quotation. Gouache editorial illustration. Palette #8c7564, motifs: 味カード・手帳・茶の香り. No hookah or hose."
+    },
+    "portrait_sha256": "c39ee51522b8082b831f0814959cc071b5104c808dc7452d5ec9b5890dba68ee"
+  },
+  {
+    "id": "steve",
+    "color": "#f07a3a",
+    "secondary": "#ffe1ac",
+    "shadow": "#301a14",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/steve/chr_steve_normal.png",
+    "motif_label": "シリアル・ポップコーン・タイマー",
+    "caption_source": "data/characters.json: steve.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/recent-cast/backgrounds/steve.png",
+        "sha256": "1d85a6c41aa8a4773e2adcd1dcabaed4e891cc0b67b75becf4bbd5b42c4443b7"
+      }
+    },
+    "generation": {
+      "tool": "image_gen.imagegen",
+      "date": "2026-10-26",
+      "source_image_id": "dff7ae7a-197c-4fb5-abf0-1a16a26393c6",
+      "brief": "Background only, no people or text. Dark left 43% for approved portrait, illustrated objects upper right, blank middle right for white name ribbon, dark lower right for quotation. Gouache editorial illustration. Palette #f07a3a, motifs: シリアル・ポップコーン・タイマー. No hookah or hose."
+    },
+    "portrait_sha256": "6053510bfa3b52e3fe66dde0071af133fdae931410ad919eb47323a6b5d89735"
+  },
+  {
+    "id": "maki",
+    "color": "#bd6547",
+    "secondary": "#e4b586",
+    "shadow": "#2b1814",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/maki/chr_maki_normal.png",
+    "motif_label": "斧投げの的・木目・銅色",
+    "caption_source": "data/characters.json: maki.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/recent-cast/backgrounds/maki.png",
+        "sha256": "2eb884a10724dd50b557c4d1bfdb33712baf606afc0a374e17416146bc05d002"
+      }
+    },
+    "generation": {
+      "tool": "image_gen.imagegen",
+      "date": "2026-10-26",
+      "source_image_id": "05e7d2dd-a48d-4dcd-b2ce-8f62c9bae25c",
+      "brief": "Background only, no people or text. Dark left 43% for approved portrait, illustrated objects upper right, blank middle right for white name ribbon, dark lower right for quotation. Gouache editorial illustration. Palette #bd6547, motifs: 斧投げの的・木目・銅色. No hookah or hose."
+    },
+    "portrait_sha256": "d762ff2e09e14c6747ebc91379c7b9032380a1834a48d185f56a7f95832190a8"
+  },
+  {
+    "id": "sai",
+    "color": "#589579",
+    "secondary": "#e5d7ad",
+    "shadow": "#102c22",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/sai/chr_sai_normal.png",
+    "motif_label": "六面ダイス・六角タイル・ルールブック",
+    "caption_source": "data/characters.json: sai.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/recent-cast/backgrounds/sai.png",
+        "sha256": "b9fcaffcc26c83ca89271e6c2af0330d53761f52f360de3fa43ffa474e994386"
+      }
+    },
+    "generation": {
+      "tool": "image_gen.imagegen",
+      "date": "2026-10-26",
+      "source_image_id": "794f0e9c-5aea-4bb6-8d3d-711cf73262c4",
+      "brief": "Background only, no people or text. Dark left 43% for approved portrait, illustrated objects upper right, blank middle right for white name ribbon, dark lower right for quotation. Gouache editorial illustration. Palette #589579, motifs: 六面ダイス・六角タイル・ルールブック. No hookah or hose."
+    },
+    "portrait_sha256": "8ac2f8a17d45a29b3cb97913b910fe2614fb93f94c111517a85e46bde52dd5f1"
+  },
+  {
+    "id": "uranaishi",
+    "color": "#aa83c7",
+    "secondary": "#ddc296",
+    "shadow": "#20132e",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/uranaishi/chr_uranaishi_normal.png",
+    "motif_label": "タロット・紫布・月",
+    "caption_source": "data/characters.json: uranaishi.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/recent-cast/backgrounds/uranaishi.png",
+        "sha256": "e862ffda31f15c9c00ebd14e5087c61b0de93dc7db5b9c009fdd065a76af351e"
+      }
+    },
+    "generation": {
+      "tool": "image_gen.imagegen",
+      "date": "2026-10-26",
+      "source_image_id": "608d5ecd-861e-4f47-b9a0-b2216dcc3f62",
+      "brief": "Background only, no people or text. Dark left 43% for approved portrait, illustrated objects upper right, blank middle right for white name ribbon, dark lower right for quotation. Gouache editorial illustration. Palette #aa83c7, motifs: タロット・紫布・月. No hookah or hose."
+    },
+    "portrait_sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d"
+  }
+]

@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { seeded } from "../js/core/util.js";
 import { conditionForRatio } from "../js/core/condition.js";
 const root = new URL("../", import.meta.url), dataRoot = new URL("../../", import.meta.url);
 const baitoData = JSON.parse(await fs.readFile(new URL("data/baito_events.json", dataRoot), "utf8"));
@@ -11,40 +12,45 @@ const events = baitoData.events.filter((e) => categories.has(e.category));
 const scenes = JSON.parse(await fs.readFile(new URL("data/dialogue/remake_ch1.json", dataRoot), "utf8")).dialogues;
 const sumi = JSON.parse(await fs.readFile(new URL("data/dialogue/ch1_sumi.json", dataRoot), "utf8")).dialogues;
 const state = {}, db = { baito: events, dialogues: {} }, plays = [], money = [], menus = [];
-let rainy = false, selectedPools = [], charmStar = 1;
+let rainy = false, selectedPools = [], charmStar = 1, hiyoriDue = false;
 class Element { constructor(spec) { this.spec = spec; this.children = []; this.dataset = {}; } append(...nodes) { this.children.push(...nodes.flat().filter(Boolean)); } }
 function el(spec, attrs = {}, children = []) { if (Array.isArray(attrs)) { children = attrs; attrs = {}; } const node = new Element(spec); Object.assign(node, attrs); node.append(children); return node; }
 function find(node, id) { if (node.dataset?.test === id) return node; return node.children?.map((child) => find(child, id)).find(Boolean); }
 const values = {
   "practice.js": { runFullPractice: async () => {} },
-  "hiyori.js": { meetHiyoriAtTonari: async () => false },
+  "hiyori.js": { meetHiyoriAtTonari: async () => false, hiyoriShopEncounterDue: () => hiyoriDue, hiyoriAtTonari: () => false },
   "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false },
-  "util.js": { el, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
-  "data.js": { DB: db, bgUrl: () => "bg" },
-  "ui.js": { showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
+  "util.js": { el, seeded, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
+  "data.js": { DB: db, sceneBg: () => ({}), bgUrl: () => "bg", displayName: id => id },
+  "ui.js": { imageReady: async () => false, showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
   "transitions.js": { refreshPlaceCue() {} },
-  "state.js": { state, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
-  "stats.js": { addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, star: () => charmStar,
-    currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, earnStat() {}, affinityLevel: () => 0 },
+  "state.js": { state, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
+  "stats.js": { AFFINITY_RANK_PTS: [0,9,20,33,48,66], setStoryAffinityCap() {}, affinityGateWaiting: () => false, addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, star: () => charmStar,
+    currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, releaseAffinity() {}, earnStat() {}, affinityLevel: id => [9,20,33,48,66].filter(n => (state.affinity?.[id] || 0) >= n).length },
+
   "audio.js": { SE: { select() {}, cancel() {} }, playBgm() {} },
-  "engine.js": { play: async (scene) => plays.push(scene), dialogueSequence: (run) => run() },
+  "engine.js": { isPlaying: () => false, play: async (scene) => { plays.push(scene); return {id: typeof scene === "string" ? scene : scene.dialogue_id, visited: []}; }, dialogueSequence: (run) => run() },
   "story-knowledge.js": { syncMintoKnowledge() {} },
   "session.js": { runDrill: async () => 0, DRILLS: {} },
-  "samechan.js": { samechanSpot: () => null },
+  "samechan.js": { samechanSpot: () => null, samechanVisitDialogue: () => null },
   "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
   "scene-motions.js": { shiftClose: async () => {} },
-  "bus.js": { emit() {}, on() {} },
+  "bus.js": { emit() {}, on: () => () => {} },
   "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };
-const context = vm.createContext({ Math, Set, Promise, console }); const mods = new Map();
+const context = vm.createContext({ Math, Set, Promise, console, AbortController }); const mods = new Map();
 async function load(name) { if (mods.has(name)) return mods.get(name); const mod = values[name]
   ? new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name })
-  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "rules.js" ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
+  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
 function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, notes: {}, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {} }, overrides);
+  // 既読段階を注入する在店fixtureでは、その段階を読める♥も明示する（加算の検証は別suite）。
+  if (!overrides.affinity) state.affinity = Object.fromEntries(Object.entries(state.story).map(([id,n]) => [id,[0,9,20,33,48,66][Math.min(5,n)] || 0]));
+  // DAY8の接客fixtureは、それまでの必須場面を読了した通常営業。
+  Object.assign(state.flags, { _tsumugi_contest_research: true, _tsumugi_contest_progress: true });
   db.baito = events; rainy = false; charmStar = 1; plays.length = 0; money.length = 0; menus.length = 0; selectedPools = []; }
 function selected() { return plays.find((scene) => typeof scene === "object" && scene.dialogue_id?.startsWith("baito_"))?.dialogue_id; }
 const custom = (id, fields = {}) => ({ id, category: "regular", text: "注文を受けた", choices: [], customers: [id], ...fields });
@@ -54,7 +60,7 @@ for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, 
   reset(known); rainy = true; db.baito = [byid.baito_tsumugi_rain]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_tsumugi_rain");
 }
 reset(); db.baito = [byid.baito_tsumugi_closing]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset({ slot: 1, met: { tsumugi: true } }); db.baito = [byid.baito_tsumugi_closing]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_tsumugi_closing");
+reset({ day: 6, slot: 1, met: { tsumugi: true } }); db.baito = [byid.baito_tsumugi_closing]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_tsumugi_closing");
 // chapter、正/否定flag、set_flag、既読旧記録をすべて尊重。
 reset({ chapter: 2 }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
 reset(); db.baito = [custom("locked", { trigger_flag: "needs_contact" })]; await tonari.doBaito(); assert.equal(selected(), undefined);
@@ -103,10 +109,13 @@ for (const [stamina, expectedPay, expectedChoice] of [[75, 15075, 2300], [74, 14
 }
 reset({ stamina: 24 }); db.baito = []; await tonari.doBaito(); assert.equal(money[0], 8000, "Exhaustion cut the guaranteed base wage");
 // 統合spots.jsの夜限定gateをそのまま使い、昼のシフト上がりで夜限定固有会話を案内しない。
-reset({ story: { sumi: 2 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("落ち着いた一台")); assert(!JSON.stringify(menus).includes("今日は何か教えて"));
-reset({ slot: 1, story: { sumi: 2 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("今日は何か教えて"));
+reset({ story: { sumi: 2 }, affinity: {sumi:20} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("落ち着いた一台")); assert(!JSON.stringify(menus).includes("今日は何か教えて"));
+reset({ slot: 1, story: { sumi: 2 }, affinity: {sumi:20} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("今日は何か教えて"));
+
 const handoff = scenes.find((s) => s.dialogue_id === "remake_delivery_minto_handoff");
-assert(handoff && /PEPPERMINT/.test(JSON.stringify(handoff)) && /この後よかったら/.test(JSON.stringify(handoff)));
+assert(handoff && /peppermint/.test(handoff.metadata.bg) && /この後よかったら/.test(JSON.stringify(handoff)));
+assert.equal(handoff.lines[0].speaker, "minto");
+assert(!/bg_street|到着した|看板を確かめ|ドアを|店内に入ると/.test(JSON.stringify(handoff)));
 assert(!/一服してって|どうぞ、こっちへ/.test(JSON.stringify(handoff)), "Delivery must not auto-enter PEPPERMINT");
 const mintoFirst = JSON.parse(await fs.readFile(new URL("data/dialogue/ch1_minto.json", dataRoot), "utf8")).dialogues.find((d) => d.dialogue_id === "ch1_minto_first");
 assert(mintoFirst?.branches?.dl_door?.some((line) => /配達してくれた/.test(line.text || "")));
@@ -116,8 +125,109 @@ assert(!JSON.stringify(scenes.find((s) => s.dialogue_id === "remake_repeat_sumi_
 const closing = sumi.find((s) => s.dialogue_id === "ch1_sumi_closing"); assert(JSON.stringify(closing).includes("閉店後"));
 for (const id of ["ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_final"]) assert(JSON.stringify(sumi.find((s) => s.dialogue_id === id)).includes("閉店後"), id);
 assert(JSON.stringify(sumi.find((s) => s.dialogue_id === "ch1_sumi_eve")).includes("大会前夜"));
+// #782: 同じ在店判定がマップ/入店/シフトに届く。固定回・延期回を通常回で重ねない。
+const spots = mods.get("spots.js").namespace;
+const peopleModule = await load("spot-people.js"); await peopleModule.evaluate();
+for (const [day, slot, present] of [[6, 0, false], [6, 1, true], [8, 0, true], [8, 1, false], [11, 0, false], [11, 1, false]]) {
+  reset({ day, slot, story: { tsumugi: 1 }, hearts: { tsumugi: 1 }, visits: {}, contacts: [], visitedDay: { tonari_baito: day } }); // #814: 2本目は♥1で開く
+  db.dialogues = { ch1_tsumugi_second: { lines: [] } };
+  assert.equal(peopleModule.namespace.spotPeople({ id: "tonari", kind: "tonari" }).some(p => p.id === "tsumugi"), present);
+  assert.equal(spots.hasNewEvent({ id: "tonari", kind: "tonari" }), present);
+  await tonari.tonariCustomer();
+  assert.equal(plays.includes("ch1_tsumugi_second"), present);
+  assert.equal(state.story.tsumugi, present ? 2 : 1);
+  plays.length = 0;
+  db.baito = [byid.baito_tsumugi_rain]; rainy = true;
+  await tonari.doBaito();
+  assert.equal(selected() === "baito_baito_tsumugi_rain", present);
+}
+// #782 P2: DAY8昼の実来店で個別会話3→4へ進んでも、その日の夜に再登場しない。
+reset({ day: 8, slot: 0, story: { tsumugi: 3 }, hearts: { tsumugi: 3 }, visits: {}, contacts: [],
+  visitedDay: { tonari_baito: 8, tonari_customer: 8 } });
+db.dialogues = { ch1_tsumugi_fourth: { lines: [] } };
+await tonari.tonariCustomer();
+assert.equal(state.story.tsumugi, 4);
+assert(plays.includes("ch1_tsumugi_fourth"));
+state.slot = 1;
+assert(!peopleModule.namespace.spotPeople({ id: "tonari", kind: "tonari" }).some(p => p.id === "tsumugi"),
+  "昼の会話進行で同じ夜の在店表示が復活した");
+assert.equal(spots.hasNewEvent({ id: "tonari", kind: "tonari" }), false);
+plays.length = 0; rainy = true; db.baito = [byid.baito_tsumugi_rain];
+await tonari.doBaito();
+assert.equal(selected(), undefined, "昼に会ったつむぎが夜の接客候補へ戻った");
+// 後半の夜専用会話はDAY12夜に引き続き到達できる。
+reset({ day: 12, slot: 1, story: { tsumugi: 4 }, hearts: { tsumugi: 4 }, visits: {}, contacts: [],
+  flags: { _tsumugi_contest_submitted: true }, visitedDay: {} });
+db.dialogues = { ch1_tsumugi_fifth: { lines: [] } };
+await tonari.tonariCustomer();
+assert(plays.includes("ch1_tsumugi_fifth"));
+assert.equal(state.story.tsumugi, 5);
+// 相席日は昼の単独挨拶だけを省略。通常昼・夜の挨拶と来店報酬はそのまま。
+for (const [slot, guest, welcome] of [[0, true, false], [0, false, true], [1, true, true]]) {
+  reset({ day: 8, slot, story: { minto: 1 }, visits: {}, contacts: [], visitedDay: {} }); hiyoriDue = guest;
+  const id = `venue_minto_${slot ? "night" : "day"}`;
+  db.dialogues = { [id]: { lines: [] }, ch1_minto_second: { lines: [] } };
+  await spots.visitRival({ id: "minto", kind: "rival", charId: "minto", cost: 3000, stamina: -16 });
+  assert.equal(plays.includes(id), welcome);
+  assert(plays.includes("ch1_minto_second"));
+  assert.equal(money[0], -3000);
+  assert.equal(state.stamina, 58);
+  assert.equal(state.story.minto, 2);
+}
 for (const event of events) {
   if (event.time_slot !== "night") assert(!/金曜の夜|土曜の夜|夕方6時|毎週木曜|閉店後/.test(JSON.stringify(event)), event.id);
   assert(Array.isArray(event.customers));
 }
 console.log("[remake daily] customer flags/chapter/weather/time, legacy one-off history, recurring families, four records, cameos, shift-time copy: PASS");
+
+// 隣町からの私用の客。実際の抽選・地図・読了記録を使い、料金や好感度は増やさない。
+const cityModule = await load("city-guests.js"); await cityModule.evaluate();
+const cityGuests = cityModule.namespace;
+const guestScript = JSON.parse(await fs.readFile(new URL("data/dialogue/ch2_city_guests.json", dataRoot), "utf8")).dialogues;
+const guestIds = ["ageha", "kumicho", "rei"];
+const guestSpots = { ageha: "minto", kumicho: "adam", rei: "tonari" };
+function guestState(id, day = 17, extra = {}) {
+  reset({ chapter: 2, phase: "daily", day, slot: 0, weatherSeed: 0, stamina: 90, money: 10000,
+    met: Object.fromEntries([...guestIds, "minto", "adam", "sumi"].map(id => [id, true])),
+    visits: {}, visitedDay: {}, contacts: [], ...extra });
+  db.dialogues = Object.fromEntries(guestScript.map(s => [s.dialogue_id, s]));
+  for (let weatherSeed = 0; weatherSeed < 10000; weatherSeed++) {
+    state.weatherSeed = weatherSeed;
+    if (cityGuests.cityGuestVisit()?.id === id) return;
+  }
+  throw Error("No guest seed for " + id);
+}
+for (const id of guestIds) {
+  guestState(id);
+  const spot = spots.SPOTS.find(s => s.id === guestSpots[id]);
+  // 17日はEDEN、PEPPERMINTとも定休日ではない。
+  const before = JSON.stringify(state);
+  const planned = cityGuests.cityGuestAtShop(spot);
+  assert.equal(planned?.id, id);
+  assert(peopleModule.namespace.spotPeople(spot).some(p => p.id === id && p.known && p.role === "guest"));
+  assert.equal(JSON.stringify(state), before, "Map must only read the schedule");
+  assert.equal(cityGuests.cityGuestAtShop({ ...spot, closedOn: state.day % 7 }), null);
+  assert.equal(cityGuests.cityGuestAtShop({ ...spot, unavailable: "準備中" }), null);
+  assert(!await cityGuests.visitCityGuestAtShop({ id: "wrong-shop" }, { scheduledVisit: planned }));
+  const resources = JSON.stringify([state.money, state.stamina, state.slot, state.stats, state.affinity, state.visits]);
+  assert(await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: planned }));
+  assert(plays.includes(`ch2_city_guest_${id}_first`));
+  assert.equal(state.flags[`_city_guest_seen_${id}`], true);
+  assert.equal(state.flags._city_guest_day, "2:17");
+  assert.equal(cityGuests.cityGuestVisit(), null);
+  assert(!await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: planned }));
+  assert.equal(JSON.stringify([state.money, state.stamina, state.slot, state.stats, state.affinity, state.visits]), resources);
+  guestState(id, 18); state.flags[`_city_guest_seen_${id}`] = true;
+  const repeat = cityGuests.cityGuestAtShop(spot);
+  assert(repeat); assert(await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: repeat }));
+  assert(plays.includes(`ch2_city_guest_${id}_repeat`));
+  guestState(id); const stale = cityGuests.cityGuestAtShop(spot); state.day++;
+  assert(!await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: stale }));
+  assert.equal(state.flags._city_guest_day, undefined);
+}
+guestState("ageha"); state.chapter = 1; assert.equal(cityGuests.cityGuestVisit(), null);
+guestState("ageha"); state.met = {}; assert.equal(cityGuests.cityGuestVisit(), null);
+guestState("ageha"); state.slot = 2; assert.equal(cityGuests.cityGuestVisit(), null);
+guestState("ageha"); state.phase = "tournament"; assert.equal(cityGuests.cityGuestVisit(), null);
+guestState("ageha"); state.pendingInvite = { sender: "ageha", day: state.day, slot: 1 }; assert.equal(cityGuests.cityGuestVisit(), null);
+console.log("[city guests] PASS: three matching map/shop schedules, known/closed/date guards, first/repeat, once daily, no added resources");

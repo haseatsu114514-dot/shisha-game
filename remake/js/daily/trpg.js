@@ -1,9 +1,12 @@
+import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { state } from "../core/state.js";
+import { knowsTrpgBar } from "../core/trpg-discovery.js";
+import { DB } from "../core/data.js";
 
-export const trpgSpot = () => state?.chapter >= 2 ? {
-  id: "trpg_bar", kind: "trpg", label: "ボドゲカフェ", area: "隣町の遊び場", x: 48, y: 46,
-  theme: "cafe", glyph: "卓", preview: "bg_cafe", minChapter: 2,
-  desc: "糸目で微笑む六角サイのボドゲカフェ。昼は店長と無料試遊、夜は仲間とTRPG。入店・部活設立・試遊・本の購入は時間消費なし。TRPGは夜の1枠。",
+export const trpgSpot = () => knowsTrpgBar(state) ? {
+  id: "trpg_bar", kind: "trpg", label: "ボドゲカフェ", area: "隣町の遊び場", x: 48, y: 27,
+  theme: "cafe", glyph: "卓", previewUrl: CITY_BACKGROUNDS.trpg, minChapter: 2,
+  desc: "糸目で微笑む六角サイのボドゲカフェ。昼は店長と無料試遊、営業後は部員を待ってTRPG。入店・部活設立・試遊・本の購入は時間消費なし。TRPGは夜の1枠。",
 } : null;
 
 let recruiting = false;
@@ -44,9 +47,9 @@ export async function maybeRecruitTrpgMember(personId) {
 /** The table saves its completion and night action atomically; calendar must not advance twice. */
 export async function openTrpgBar({ nightBusy = () => false } = {}) {
   const owner = state;
-  if (!owner || owner.chapter < 2 || owner.phase !== "daily") return { completed: false };
+  if (!knowsTrpgBar(owner) || owner.phase !== "daily") return { completed: false };
   const { save } = await import("../core/state.js");
-  const [{ el }, { layers, showScreen }, { stopBgm, playBgm }, { mountTrpgCampaign }, { showHud }, { on }] = await Promise.all([
+  const [{ el }, { layers, showScreen, setBg }, { playBgm }, { mountTrpgCampaign }, { showHud }, { on }] = await Promise.all([
     import("../core/util.js"), import("../core/ui.js"), import("../core/audio.js"),
     import("../trpg/campaign-view.js"), import("./hud.js"), import("../core/bus.js"),
   ]);
@@ -54,7 +57,15 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
   const host = el("section.trpg-screen", { "aria-label": "ボドゲカフェのシナリオ棚" });
   const hadHud = document.getElementById("hud")?.classList.contains("show");
   showHud(false);
-  showScreen("trpg", host); stopBgm(.2);
+  await setBg(CITY_BACKGROUNDS.trpg, { instant: true });
+  if (state !== owner) return { completed: false };
+  showScreen("trpg", host); playBgm("bgm_trpg"); // #788 採用曲。倍率は既定1.0（asset_sources/music/adopted-minigame-bgm-20261020.md）
+  if (!owner.flags._intro_sai) {
+    const { playIntro } = await import("../vn/intro.js");
+    if (state !== owner || !host.isConnected) return { completed: false };
+    await playIntro("sai", { override: { display_name: DB.characters.sai.display_name } });
+    if (state !== owner || !host.isConnected) return { completed: false };
+  }
   const controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy });
   const unsubscribe = on("hud", () => { if (state !== owner) controller.destroy(); });
   const observer = new MutationObserver(() => { if (!host.isConnected) controller.destroy(); });

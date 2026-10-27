@@ -1,13 +1,341 @@
 {
   "flavors": [
     {
+      "id": "white_gummy_bear",
+      "name": "アルファーヘブン ホワイトグミベア",
+      "short_name": "AF ホワイトグミベア",
+      "category": "sweet",
+      "price": 1650,
+      "description": "あげはが好きな白いグミベア。パイナップルを思わせるやわらかな甘さ。",
+      "heat_tolerance": 0.9,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.0,
+      "chapter_min": 2,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 6,
+        "sweet_confection": 7,
+        "cooling": 2,
+        "assertiveness": 5,
+        "acquired_taste": 3,
+        "smoke_body": 4,
+        "sourness": 3,
+        "spiciness": 1,
+        "floral": 2,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "red_gummy_bear",
+      "name": "アルファーヘブン レッドグミベア",
+      "short_name": "AF レッドグミベア",
+      "category": "sweet",
+      "price": 1650,
+      "description": "赤いグミベアのベリー系の甘酸っぱさ。あげはの白いグミとの対比にも使える。",
+      "heat_tolerance": 0.95,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.0,
+      "chapter_min": 2,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 4,
+        "sweet_natural": 5,
+        "sweet_confection": 7,
+        "cooling": 2,
+        "assertiveness": 5,
+        "acquired_taste": 3,
+        "smoke_body": 4,
+        "sourness": 5,
+        "spiciness": 1,
+        "floral": 2,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "cola",
+      "name": "アルファーヘブン コーラ",
+      "short_name": "AF コーラ",
+      "category": "sweet",
+      "price": 1650,
+      "description": "博士が好む、スパイスと柑橘の効いたコーラの香り。",
+      "heat_tolerance": 1.05,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.0,
+      "chapter_min": 1,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 4,
+        "sweet_confection": 5,
+        "cooling": 2,
+        "assertiveness": 5,
+        "acquired_taste": 3,
+        "smoke_body": 4,
+        "sourness": 4,
+        "spiciness": 4,
+        "floral": 2,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "raspberry",
+      "name": "アルファーヘブン ラズベリー",
+      "short_name": "AF ラズベリー",
+      "category": "fruit",
+      "price": 1650,
+      "description": "りらが好む、輪郭のある甘酸っぱいラズベリー。",
+      "heat_tolerance": 0.95,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.0,
+      "chapter_min": 1,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 6,
+        "sweet_confection": 3,
+        "cooling": 2,
+        "assertiveness": 5,
+        "acquired_taste": 3,
+        "smoke_body": 4,
+        "sourness": 6,
+        "spiciness": 1,
+        "floral": 2,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "pistachio",
+      "name": "アルファーヘブン ピスタチオ",
+      "short_name": "AF ピスタチオ",
+      "category": "sweet",
+      "price": 1650,
+      "description": "エミルの好むナッツ系。青い香ばしさと穏やかな甘さ。",
+      "heat_tolerance": 0.9,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.0,
+      "chapter_min": 3,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 4,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 2,
+        "assertiveness": 5,
+        "acquired_taste": 4,
+        "smoke_body": 6,
+        "sourness": 2,
+        "spiciness": 1,
+        "floral": 2,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "gum_cinnamon",
+      "name": "アルファーヘブン ガムシナモン",
+      "short_name": "AF ガムシナモン",
+      "category": "spice",
+      "price": 1650,
+      "description": "パッキーが気にする、ガムの軽い甘さとシナモンの刺激。",
+      "heat_tolerance": 1.1,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.0,
+      "chapter_min": 1,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 4,
+        "sweet_confection": 5,
+        "cooling": 2,
+        "assertiveness": 7,
+        "acquired_taste": 3,
+        "smoke_body": 4,
+        "sourness": 2,
+        "spiciness": 7,
+        "floral": 2,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "bombshell",
+      "name": "アルファーヘブン ボムシェル",
+      "short_name": "AF ボムシェル",
+      "category": "fruit",
+      "price": 1650,
+      "description": "かこの好む華やかなベリーと花の重なり。",
+      "heat_tolerance": 0.95,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.0,
+      "chapter_min": 1,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 4,
+        "sweet_natural": 6,
+        "sweet_confection": 3,
+        "cooling": 2,
+        "assertiveness": 7,
+        "acquired_taste": 3,
+        "smoke_body": 4,
+        "sourness": 4,
+        "spiciness": 1,
+        "floral": 5,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "white_musk",
+      "name": "アルファーヘブン ホワイトムスク",
+      "short_name": "AF ホワイトムスク",
+      "category": "floral",
+      "price": 1650,
+      "description": "かこの好む、白い花とやわらかな余韻をもつ香り。",
+      "heat_tolerance": 0.9,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.0,
+      "chapter_min": 1,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 4,
+        "sweet_natural": 4,
+        "sweet_confection": 3,
+        "cooling": 2,
+        "assertiveness": 4,
+        "acquired_taste": 3,
+        "smoke_body": 4,
+        "sourness": 2,
+        "spiciness": 1,
+        "floral": 8,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "dark_earlgrey",
+      "name": "アルファーヘブン ダーク アールグレイ",
+      "short_name": "AF ダーク アールグレイ",
+      "category": "floral",
+      "price": 1650,
+      "description": "ましろが使うダークリーフのアールグレイ。香りが出やすく、他の葉を消さない分量が大事。",
+      "heat_tolerance": 1.1,
+      "smoke_weight": 1.35,
+      "steam_bias": 0.0,
+      "chapter_min": 3,
+      "leaf": "dark",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 4,
+        "sweet_natural": 4,
+        "sweet_confection": 3,
+        "cooling": 2,
+        "assertiveness": 8,
+        "acquired_taste": 6,
+        "smoke_body": 8,
+        "sourness": 2,
+        "spiciness": 1,
+        "floral": 8,
+        "nicotine": 8
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "siga",
+      "name": "アルファーヘブン シーガ",
+      "short_name": "AF シーガ",
+      "category": "spice",
+      "price": 1650,
+      "description": "南雲が好む葉巻系の重いダークリーフ。主人公は制作しない。",
+      "heat_tolerance": 1.15,
+      "smoke_weight": 1.4,
+      "steam_bias": 0.0,
+      "chapter_min": 3,
+      "leaf": "dark",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 4,
+        "sweet_natural": 4,
+        "sweet_confection": 3,
+        "cooling": 2,
+        "assertiveness": 8,
+        "acquired_taste": 7,
+        "smoke_body": 8,
+        "sourness": 2,
+        "spiciness": 1,
+        "floral": 2,
+        "nicotine": 8
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "nightside_blast_mint",
+      "name": "ナイトサイド ブラストミント",
+      "short_name": "ナイトサイド ブラストミント",
+      "category": "cooling",
+      "price": 1750,
+      "description": "発売されたばかりのナイトサイドの強い清涼ミント。ヴォルクは熱を精密に管理し、鋭い立ち上がりから最後の一口まで清涼感を揃える。",
+      "heat_tolerance": 1.2,
+      "smoke_weight": 0.7,
+      "steam_bias": -1.0,
+      "chapter_min": 3,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 9,
+        "sweet_natural": 1,
+        "sweet_confection": 3,
+        "cooling": 9,
+        "assertiveness": 7,
+        "acquired_taste": 3,
+        "smoke_body": 3,
+        "sourness": 2,
+        "spiciness": 1,
+        "floral": 2,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "nightside"
+    },
+    {
       "id": "mint",
       "name": "アルファーヘブン ミント",
       "short_name": "AF ミント",
       "category": "cooling",
       "price": 1550,
-      "description": "アルファーヘブンのミント。キレのある清涼感で、熱を上げる戦略とも噛み合う。",
+      "description": "アルファーヘブンのミント。冴えのある清涼感で、熱を上げる戦略とも噛み合う。",
       "heat_tolerance": 1.2,
+      "thermal_expression": {
+        "quality": "range",
+        "low_label": "やわらかな甘い香り",
+        "middle_label": "甘い香りと清涼感",
+        "high_label": "清涼感くっきり",
+        "low": { "sweetness": 4.2, "cooling": 6, "body": 2.8, "spiciness": 2.4 },
+        "middle": { "sweetness": 4, "cooling": 7.5, "body": 3.4, "spiciness": 3 },
+        "high": { "sweetness": 3.5, "cooling": 9, "body": 4, "spiciness": 3.6 }
+      },
       "smoke_weight": 0.7,
       "steam_bias": -1.0,
       "leaf": "blond",
@@ -25,7 +353,9 @@
         "floral": 2,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af",
+      "family": "mint"
     },
     {
       "id": "double_apple",
@@ -35,6 +365,15 @@
       "price": 1550,
       "description": "アルファーヘブンのダブルアップル。シーシャの王道にして奥が深い定番——ただし万人向けではなく、アニスの香りで好き嫌いがはっきり分かれる。リコリスとアニスのバランスを作り手の技量で操れて、甘くも、さっぱりにも化ける。",
       "heat_tolerance": 1.0,
+      "thermal_expression": {
+        "quality": "range",
+        "low_label": "甘い余韻が丸い",
+        "middle_label": "甘い余韻とアニス",
+        "high_label": "アニスの輪郭",
+        "low": { "sweetness": 7, "body": 6, "spiciness": 5 },
+        "middle": { "sweetness": 6.3, "body": 7, "spiciness": 6.5 },
+        "high": { "sweetness": 5.2, "body": 7.8, "spiciness": 8 }
+      },
       "smoke_weight": 1.3,
       "steam_bias": 0.5,
       "leaf": "blond",
@@ -52,7 +391,9 @@
         "floral": 3,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af",
+      "family": "double_apple"
     },
     {
       "id": "blueberry",
@@ -79,7 +420,8 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "strawberry",
@@ -89,6 +431,7 @@
       "price": 1550,
       "description": "県特産の苺を使った限定ロット。想像する甘さは無く、輪郭の見えにくい高難度フレーバー。熱を入れすぎると青臭さが顔を出す。",
       "heat_tolerance": 0.85,
+      "perceived_sweetness": 2,
       "smoke_weight": 0.9,
       "steam_bias": 0.5,
       "leaf": "blond",
@@ -106,15 +449,16 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "vanilla",
-      "name": "ドバージュ バニラ",
-      "short_name": "dobaj バニラ",
+      "name": "ドバジ バニラ",
+      "short_name": "ドバジ バニラ",
       "category": "sweet",
       "price": 1750,
-      "description": "ドバージュのバニラ。甘みの厚みを乗せやすく、全体を丸くまとめる。",
+      "description": "ドバジのバニラ。甘みの厚みを乗せやすく、全体を丸くまとめる。",
       "heat_tolerance": 0.8,
       "smoke_weight": 1.1,
       "steam_bias": 0.3,
@@ -133,7 +477,8 @@
         "floral": 3,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "pineapple",
@@ -160,15 +505,16 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "coconut",
-      "name": "ドバージュ ココナッツ",
-      "short_name": "dobaj ココナッツ",
+      "name": "ドバジ ココナッツ",
+      "short_name": "ドバジ ココナッツ",
       "category": "fruit",
       "price": 1750,
-      "description": "ドバージュのココナッツ。甘い余韻が長く、重心を下げたい配合で強い。",
+      "description": "ドバジのココナッツ。甘い余韻が長く、重心を下げたいミックスで強い。",
       "heat_tolerance": 0.85,
       "smoke_weight": 1.2,
       "steam_bias": 0.6,
@@ -187,15 +533,16 @@
         "floral": 2,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "mango",
-      "name": "ドバージュ マンゴー",
-      "short_name": "dobaj マンゴー",
+      "name": "ドバジ マンゴー",
+      "short_name": "ドバジ マンゴー",
       "category": "fruit",
       "price": 1750,
-      "description": "ドバージュのマンゴー。トロピカルな甘みが一口目から広がり、果実系ミックスの華になる。",
+      "description": "ドバジのマンゴー。トロピカルな甘みが一口目から広がり、果実系ミックスの華になる。",
       "heat_tolerance": 0.95,
       "smoke_weight": 1.0,
       "steam_bias": 0.2,
@@ -213,7 +560,8 @@
         "spiciness": 1,
         "floral": 3,
         "nicotine": 3
-      }
+      },
+      "maker": "dobaj"
     },
     {
       "id": "nightside_earlgrey",
@@ -244,7 +592,9 @@
         "floral": 7,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "nightside",
+      "family": "earlgrey"
     },
     {
       "id": "nightside_earlgrey_release",
@@ -252,11 +602,11 @@
       "short_name": "NS アールグレイ",
       "category": "floral",
       "price": 1700,
-      "description": "NIGHTSIDEから正式発売されたアールグレイ。試香モニター『モルモットくん』の感想が、最後のひと匙を決めたという。ch3以降、_rin_release フラグで解放（時差発売の回収）。",
+      "description": "第3章で発売されたNIGHTSIDEのアールグレイ。凛の試作品とは別の正式発売品で、東京店でも買える。試香モニターの感想が最後の調整に生きたという。",
       "heat_tolerance": 1.15,
       "smoke_weight": 1.05,
       "steam_bias": 0.5,
-      "requires_flag": "_rin_release",
+      "chapter_min": 3,
       "leaf": "blond",
       "stats": {
         "heat_resistance": 5,
@@ -272,7 +622,9 @@
         "floral": 8,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "nightside",
+      "family": "earlgrey"
     },
     {
       "id": "grape",
@@ -302,12 +654,13 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "rose",
-      "name": "アブサル ローズ",
-      "short_name": "アブサル ローズ",
+      "name": "アフサール ローズ",
+      "short_name": "アフサール ローズ",
       "category": "floral",
       "price": 1750,
       "description": "Dr.fookah入荷の限定フローラル。華やかな薔薇の含み香で、余韻を伸ばす一台に化ける。扱いは少し気難しい。",
@@ -332,15 +685,16 @@
         "floral": 9,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "peach",
-      "name": "ドバージュ ピーチ",
-      "short_name": "dobaj ピーチ",
+      "name": "ドバジ ピーチ",
+      "short_name": "ドバジ ピーチ",
       "category": "fruit",
       "price": 1750,
-      "description": "ドバージュのピーチ。やわらかな桃の甘みが広がり、ミックスに丸みを足してくれる。",
+      "description": "ドバジのピーチ。やわらかな桃の甘みが広がり、ミックスに丸みを足してくれる。",
       "heat_tolerance": 0.9,
       "smoke_weight": 1.0,
       "steam_bias": 0.2,
@@ -359,7 +713,8 @@
         "floral": 3,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "orange",
@@ -386,7 +741,8 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "lemon",
@@ -394,8 +750,17 @@
       "short_name": "AF レモン",
       "category": "fruit",
       "price": 1550,
-      "description": "アルファーヘブンのレモン。鋭い酸味が配合全体を引き締め、冷涼系との相性も良い。",
+      "description": "アルファーヘブンのレモン。鋭い酸味がミックス全体を引き締め、冷涼系との相性も良い。",
       "heat_tolerance": 1.1,
+      "thermal_expression": {
+        "quality": "range",
+        "low_label": "丸い柑橘の香り",
+        "middle_label": "柑橘と酸味の均衡",
+        "high_label": "酸味すっきり",
+        "low": { "sweetness": 4.5, "cooling": 2, "body": 2.5, "sourness": 5.5 },
+        "middle": { "sweetness": 4.2, "cooling": 2.5, "body": 3, "sourness": 7 },
+        "high": { "sweetness": 3.8, "cooling": 3, "body": 3.6, "sourness": 9 }
+      },
       "smoke_weight": 0.8,
       "steam_bias": -0.5,
       "leaf": "blond",
@@ -413,7 +778,8 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "watermelon",
@@ -421,7 +787,7 @@
       "short_name": "AF スイカ",
       "category": "fruit",
       "price": 1550,
-      "description": "アルファーヘブンのスイカ。みずみずしい果汁感が涼しげで、夏の配合に欠かせない。",
+      "description": "アルファーヘブンのスイカ。みずみずしい果汁感が涼しげで、夏のミックスに欠かせない。",
       "heat_tolerance": 0.85,
       "smoke_weight": 0.9,
       "steam_bias": 0.1,
@@ -440,7 +806,8 @@
         "floral": 1,
         "nicotine": 2
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "guava",
@@ -470,7 +837,8 @@
         "floral": 3,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "dragonfruit",
@@ -478,7 +846,7 @@
       "short_name": "AF ドラゴンフルーツ",
       "category": "fruit",
       "price": 1550,
-      "description": "Dr.fookah入荷の希少枠。見た目に反して穏やかな甘みで、個性的な配合の核になる。",
+      "description": "Dr.fookah入荷の希少枠。見た目に反して穏やかな甘みで、個性的なミックスの核になる。",
       "heat_tolerance": 0.9,
       "smoke_weight": 1.05,
       "steam_bias": 0.2,
@@ -500,7 +868,8 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "kiwi",
@@ -527,15 +896,16 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "melon",
-      "name": "ドバージュ メロン",
-      "short_name": "dobaj メロン",
+      "name": "ドバジ メロン",
+      "short_name": "ドバジ メロン",
       "category": "fruit",
       "price": 1750,
-      "description": "ドバージュのメロン。濃厚な甘みが煙にしっかり乗り、甘系ミックスの芯になれる。",
+      "description": "ドバジのメロン。濃厚な甘みが煙にしっかり乗り、甘系ミックスの芯になれる。",
       "heat_tolerance": 0.85,
       "smoke_weight": 1.0,
       "steam_bias": 0.3,
@@ -554,15 +924,16 @@
         "floral": 3,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "banana",
-      "name": "ドバージュ バナナ",
-      "short_name": "dobaj バナナ",
+      "name": "ドバジ バナナ",
+      "short_name": "ドバジ バナナ",
       "category": "fruit",
       "price": 1750,
-      "description": "ドバージュのバナナ。クリーミーな甘さと重めの煙で、甘系の土台として優秀。",
+      "description": "ドバジのバナナ。クリーミーな甘さと重めの煙で、甘系の土台として優秀。",
       "heat_tolerance": 0.8,
       "smoke_weight": 1.1,
       "steam_bias": 0.4,
@@ -581,12 +952,13 @@
         "floral": 1,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "lychee",
-      "name": "アブサル ライチ",
-      "short_name": "アブサル ライチ",
+      "name": "アフサール ライチ",
+      "short_name": "アフサール ライチ",
       "category": "fruit",
       "price": 1750,
       "description": "Dr.fookah入荷の華やか枠。上品な甘みとほのかな花香が、ミックスに繊細さを加える。",
@@ -611,7 +983,8 @@
         "floral": 6,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "cool_mint",
@@ -619,7 +992,7 @@
       "short_name": "AF クールミント",
       "category": "cooling",
       "price": 1550,
-      "description": "通常ミントよりさらに冷涼感を追求した上位ロット。清涼の刃で配合を一気に引き締める。",
+      "description": "通常ミントよりさらに冷涼感を追求した上位ロット。清涼の刃でミックスを一気に引き締める。",
       "heat_tolerance": 1.25,
       "smoke_weight": 0.65,
       "steam_bias": -1.0,
@@ -638,7 +1011,8 @@
         "floral": 1,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "twice_ice",
@@ -668,12 +1042,13 @@
         "floral": 1,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "peppermint_shake",
-      "name": "ドバージュ ペパーミントシェイク",
-      "short_name": "dobaj ペパーミントシェイク",
+      "name": "ドバジ ペパーミントシェイク",
+      "short_name": "ドバジ ペパーミントシェイク",
       "category": "cooling",
       "price": 1750,
       "description": "Dr.fookah入荷のデザート冷涼枠。ミントの冷たさにミルクのような甘さが重なる変わり種。",
@@ -698,7 +1073,8 @@
         "floral": 1,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "ice_grape",
@@ -728,7 +1104,8 @@
         "floral": 1,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "ice_lemon",
@@ -736,7 +1113,7 @@
       "short_name": "AF アイスレモン",
       "category": "cooling",
       "price": 1550,
-      "description": "Dr.fookah入荷の柑橘冷涼枠。レモンの酸味をアイスで包み、キレと爽快感を両立させた一品。",
+      "description": "Dr.fookah入荷の柑橘冷涼枠。レモンの酸味をアイスで包み、鋭い輪郭と爽快感を両立させた一品。",
       "heat_tolerance": 1.1,
       "smoke_weight": 0.8,
       "steam_bias": -0.5,
@@ -758,7 +1135,8 @@
         "floral": 1,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "death_by_ice",
@@ -766,7 +1144,7 @@
       "short_name": "AF デスバイアイス",
       "category": "cooling",
       "price": 1550,
-      "description": "Dr.fookah入荷の最強冷涼枠。限界を超えた冷涼感で口腔を凍てつかせる——扱いを誤ると配合ごと壊す劇薬。",
+      "description": "Dr.fookah入荷の最強冷涼枠。限界を超えた冷涼感で口腔を凍てつかせる——扱いを誤るとミックスごと壊す劇薬。",
       "heat_tolerance": 1.3,
       "smoke_weight": 0.6,
       "steam_bias": -1.0,
@@ -788,7 +1166,8 @@
         "floral": 1,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "blueberry_mint",
@@ -815,7 +1194,8 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "frozen_citrus",
@@ -842,7 +1222,8 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "frozen_berry",
@@ -869,15 +1250,16 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "cardamom",
-      "name": "アブサル カルダモン",
-      "short_name": "アブサル カルダモン",
+      "name": "アフサール カルダモン",
+      "short_name": "アフサール カルダモン",
       "category": "spice",
       "price": 1750,
-      "description": "Dr.fookah入荷のスパイス枠。エキゾチックな香気が煙に深みを与え、チャイ系配合の要。",
+      "description": "Dr.fookah入荷のスパイス枠。エキゾチックな香気が煙に深みを与え、チャイ系ミックスの要。",
       "heat_tolerance": 1.1,
       "smoke_weight": 1.1,
       "steam_bias": 0.5,
@@ -899,7 +1281,8 @@
         "floral": 4,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "cinnamon",
@@ -907,7 +1290,7 @@
       "short_name": "AF シナモン",
       "category": "spice",
       "price": 1550,
-      "description": "アルファーヘブンのシナモン。温かみのあるスパイス感がスイーツ系の配合に奥行きを出す。",
+      "description": "アルファーヘブンのシナモン。温かみのあるスパイス感がスイーツ系のミックスに奥行きを出す。",
       "heat_tolerance": 1.05,
       "smoke_weight": 1.1,
       "steam_bias": 0.4,
@@ -926,15 +1309,16 @@
         "floral": 3,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "clove",
-      "name": "アブサル クローブ",
-      "short_name": "アブサル クローブ",
+      "name": "アフサール クローブ",
+      "short_name": "アフサール クローブ",
       "category": "spice",
       "price": 1750,
-      "description": "アブサルのクローブ。重厚なスパイス香が煙の密度を底上げし、存在感のある一台になる。",
+      "description": "アフサールのクローブ。重厚なスパイス香が煙の密度を底上げし、存在感のある一台になる。",
       "heat_tolerance": 1.1,
       "smoke_weight": 1.15,
       "steam_bias": 0.5,
@@ -953,12 +1337,13 @@
         "floral": 3,
         "nicotine": 6
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "basil",
-      "name": "アブサル バジル",
-      "short_name": "アブサル バジル",
+      "name": "アフサール バジル",
+      "short_name": "アフサール バジル",
       "category": "spice",
       "price": 1750,
       "description": "Dr.fookah入荷のハーブスパイス枠。青い爽やかさとスパイスが同居する異色の一品。",
@@ -983,12 +1368,13 @@
         "floral": 4,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "anise",
-      "name": "アブサル アニス",
-      "short_name": "アブサル アニス",
+      "name": "アフサール アニス",
+      "short_name": "アフサール アニス",
       "category": "spice",
       "price": 1750,
       "description": "Dr.fookah入荷のアニス単体。ダブルアップルの骨格を成す香りを、単独で操りたい上級者向け。",
@@ -1013,12 +1399,13 @@
         "floral": 3,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "licorice",
-      "name": "アブサル リコリス",
-      "short_name": "アブサル リコリス",
+      "name": "アフサール リコリス",
+      "short_name": "アフサール リコリス",
       "category": "spice",
       "price": 1750,
       "description": "Dr.fookah入荷の甘草スパイス枠。独特の甘苦さが煙に残り、好みが極端に分かれる上級素材。",
@@ -1043,15 +1430,16 @@
         "floral": 2,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "nutmeg",
-      "name": "アブサル ナツメグ",
-      "short_name": "アブサル ナツメグ",
+      "name": "アフサール ナツメグ",
+      "short_name": "アフサール ナツメグ",
       "category": "spice",
       "price": 1750,
-      "description": "アブサルのナツメグ。ほんのり甘いスパイスが煙を温かく包み、秋冬の配合で映える。",
+      "description": "アフサールのナツメグ。ほんのり甘いスパイスが煙を温かく包み、秋冬のミックスで映える。",
       "heat_tolerance": 1.0,
       "smoke_weight": 1.1,
       "steam_bias": 0.4,
@@ -1070,12 +1458,13 @@
         "floral": 3,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "black_pepper",
-      "name": "アブサル ブラックペッパー",
-      "short_name": "アブサル ブラックペッパー",
+      "name": "アフサール ブラックペッパー",
+      "short_name": "アフサール ブラックペッパー",
       "category": "spice",
       "price": 1750,
       "description": "Dr.fookah入荷の刺激スパイス枠。ピリッとした辛みが他の香りを際立たせるアクセント要員。",
@@ -1100,12 +1489,13 @@
         "floral": 1,
         "nicotine": 6
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "ginger",
-      "name": "アブサル ジンジャー",
-      "short_name": "アブサル ジンジャー",
+      "name": "アフサール ジンジャー",
+      "short_name": "アフサール ジンジャー",
       "category": "spice",
       "price": 1750,
       "description": "Dr.fookah入荷の生姜スパイス枠。じんわりとした辛みが体を温め、冷涼系と合わせると面白い。",
@@ -1130,7 +1520,8 @@
         "floral": 2,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "lavender",
@@ -1160,15 +1551,16 @@
         "floral": 8,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "jasmine",
-      "name": "アブサル ジャスミン",
-      "short_name": "アブサル ジャスミン",
+      "name": "アフサール ジャスミン",
+      "short_name": "アフサール ジャスミン",
       "category": "floral",
       "price": 1750,
-      "description": "Dr.fookah入荷のフローラル枠。上品なジャスミンの花香が煙に華を添え、配合の品格を上げる。",
+      "description": "Dr.fookah入荷のフローラル枠。上品なジャスミンの花香が煙に華を添え、ミックスの品格を上げる。",
       "heat_tolerance": 0.9,
       "smoke_weight": 0.9,
       "steam_bias": 0.2,
@@ -1190,7 +1582,8 @@
         "floral": 9,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "chamomile",
@@ -1198,7 +1591,7 @@
       "short_name": "AF カモミール",
       "category": "floral",
       "price": 1550,
-      "description": "アルファーヘブンのカモミール。穏やかなハーブの甘みで配合を落ち着かせる、安らぎの花枠。",
+      "description": "アルファーヘブンのカモミール。穏やかなハーブの甘みでミックスを落ち着かせる、安らぎの花枠。",
       "heat_tolerance": 0.8,
       "smoke_weight": 0.85,
       "steam_bias": 0.2,
@@ -1217,7 +1610,8 @@
         "floral": 7,
         "nicotine": 2
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "sakura",
@@ -1247,7 +1641,8 @@
         "floral": 8,
         "nicotine": 2
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "lily",
@@ -1255,7 +1650,7 @@
       "short_name": "AF リリー",
       "category": "floral",
       "price": 1550,
-      "description": "アルファーヘブンのリリー。百合の凛とした花香が煙に気品を与え、フローラル配合の軸になる。",
+      "description": "アルファーヘブンのリリー。百合の凛とした花香が煙に気品を与え、フローラルミックスの軸になる。",
       "heat_tolerance": 0.85,
       "smoke_weight": 0.9,
       "steam_bias": 0.3,
@@ -1274,7 +1669,8 @@
         "floral": 8,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "white_rose",
@@ -1304,12 +1700,13 @@
         "floral": 8,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "violet_rose",
-      "name": "ドバージュ バイオレットローズ",
-      "short_name": "dobaj バイオレットローズ",
+      "name": "ドバジ バイオレットローズ",
+      "short_name": "ドバジ バイオレットローズ",
       "category": "floral",
       "price": 1750,
       "description": "Dr.fookah入荷のプレミアムローズ。紫薔薇の妖艶な香りが煙に奥深さを足し、記憶に残る一台を作る。",
@@ -1334,12 +1731,13 @@
         "floral": 9,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "gardenia",
-      "name": "ドバージュ ガーデニア",
-      "short_name": "dobaj ガーデニア",
+      "name": "ドバジ ガーデニア",
+      "short_name": "ドバジ ガーデニア",
       "category": "floral",
       "price": 1750,
       "description": "Dr.fookah入荷のフローラル枠。クチナシの甘く濃密な香りが、一台の完成度を一段引き上げる。",
@@ -1364,15 +1762,16 @@
         "floral": 8,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "chocolate",
-      "name": "ドバージュ チョコレート",
-      "short_name": "dobaj チョコレート",
+      "name": "ドバジ チョコレート",
+      "short_name": "ドバジ チョコレート",
       "category": "sweet",
       "price": 1750,
-      "description": "ドバージュのチョコレート。甘くビターな香りが煙を重厚に仕上げ、デザート配合の王道。",
+      "description": "ドバジのチョコレート。甘くビターな香りが煙を重厚に仕上げ、デザートミックスの王道。",
       "heat_tolerance": 0.85,
       "smoke_weight": 1.15,
       "steam_bias": 0.5,
@@ -1391,12 +1790,13 @@
         "floral": 1,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "dark_chocolate",
-      "name": "ドバージュ ダークチョコレート",
-      "short_name": "dobaj ダークチョコ",
+      "name": "ドバジ ダークチョコレート",
+      "short_name": "ドバジ ダークチョコ",
       "category": "sweet",
       "price": 1750,
       "description": "Dr.fookah入荷の大人甘枠。苦みの奥に潜む甘さが煙に深みを与え、重厚な一台を求める人向け。",
@@ -1421,15 +1821,16 @@
         "floral": 1,
         "nicotine": 6
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "caramel",
-      "name": "ドバージュ キャラメル",
-      "short_name": "dobaj キャラメル",
+      "name": "ドバジ キャラメル",
+      "short_name": "ドバジ キャラメル",
       "category": "sweet",
       "price": 1750,
-      "description": "ドバージュのキャラメル。焦がし砂糖の濃厚な甘みが煙にべっとり乗り、甘党を唸らせる。",
+      "description": "ドバジのキャラメル。焦がし砂糖の濃厚な甘みが煙にべっとり乗り、甘党を唸らせる。",
       "heat_tolerance": 0.8,
       "smoke_weight": 1.15,
       "steam_bias": 0.5,
@@ -1448,7 +1849,8 @@
         "floral": 1,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "cotton_candy",
@@ -1475,7 +1877,37 @@
         "floral": 1,
         "nicotine": 2
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
+      "id": "mountain_mist",
+      "name": "フォースフェクタ マウンテンミスト",
+      "short_name": "フォースフェクタ マウンテンミスト",
+      "category": "fruit",
+      "price": 1650,
+      "description": "レモンとライムの軽い酸味が重なる、爽やかなブロンドリーフ。熱を急がず、二口目まで柑橘の輪郭を残したい。",
+      "heat_tolerance": 1.1,
+      "smoke_weight": 0.75,
+      "steam_bias": -0.4,
+      "chapter_min": 3,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 8,
+        "sweet_natural": 4,
+        "sweet_confection": 1,
+        "cooling": 4,
+        "assertiveness": 5,
+        "acquired_taste": 2,
+        "smoke_body": 3,
+        "sourness": 7,
+        "spiciness": 1,
+        "floral": 1,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "forcefect"
     },
     {
       "id": "popcorn",
@@ -1483,7 +1915,7 @@
       "short_name": "AF ポップコーン",
       "category": "sweet",
       "price": 1550,
-      "description": "Dr.fookah入荷の変わり種スイーツ枠。香ばしさと甘さが交錯し、個性的な配合に化ける。",
+      "description": "Dr.fookah入荷の変わり種スイーツ枠。香ばしさと甘さが交錯し、個性的なミックスに化ける。",
       "heat_tolerance": 0.9,
       "smoke_weight": 1.05,
       "steam_bias": 0.3,
@@ -1505,15 +1937,16 @@
         "floral": 1,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "hazelnut",
-      "name": "ドバージュ ヘーゼルナッツ",
-      "short_name": "dobaj ヘーゼルナッツ",
+      "name": "ドバジ ヘーゼルナッツ",
+      "short_name": "ドバジ ヘーゼルナッツ",
       "category": "sweet",
       "price": 1750,
-      "description": "ドバージュのヘーゼルナッツ。ナッツの香ばしさとほのかな甘みが、配合に落ち着きを足す。",
+      "description": "ドバジのヘーゼルナッツ。ナッツの香ばしさとほのかな甘みが、ミックスに落ち着きを足す。",
       "heat_tolerance": 0.85,
       "smoke_weight": 1.1,
       "steam_bias": 0.4,
@@ -1532,12 +1965,13 @@
         "floral": 1,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "cappuccino",
-      "name": "ドバージュ カプチーノ",
-      "short_name": "dobaj カプチーノ",
+      "name": "ドバジ カプチーノ",
+      "short_name": "ドバジ カプチーノ",
       "category": "sweet",
       "price": 1750,
       "description": "Dr.fookah入荷のカフェ枠。ミルクフォームの甘さとコーヒーの苦みが煙の中で溶け合う。",
@@ -1562,12 +1996,13 @@
         "floral": 1,
         "nicotine": 6
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "coffee",
-      "name": "ドバージュ コーヒー",
-      "short_name": "dobaj コーヒー",
+      "name": "ドバジ コーヒー",
+      "short_name": "ドバジ コーヒー",
       "category": "sweet",
       "price": 1750,
       "description": "Dr.fookah入荷のカフェ枠。焙煎豆の深い苦みが煙に芯を通し、重厚な大人の一台になる。",
@@ -1592,12 +2027,13 @@
         "floral": 1,
         "nicotine": 7
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "espresso",
-      "name": "ドバージュ エスプレッソ",
-      "short_name": "dobaj エスプレッソ",
+      "name": "ドバジ エスプレッソ",
+      "short_name": "ドバジ エスプレッソ",
       "category": "sweet",
       "price": 1750,
       "description": "Dr.fookah入荷の濃厚カフェ枠。凝縮された苦みと香りが煙に強烈な個性を与える上級素材。",
@@ -1622,15 +2058,16 @@
         "floral": 1,
         "nicotine": 8
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj"
     },
     {
       "id": "black_tea",
-      "name": "アブサル ブラックティー",
-      "short_name": "アブサル ブラックティー",
+      "name": "アフサール ブラックティー",
+      "short_name": "アフサール ブラックティー",
       "category": "spice",
       "price": 1750,
-      "description": "アブサルのブラックティー。紅茶の渋みと落ち着いた香りが、スパイス系配合にも花系配合にも馴染む。",
+      "description": "アフサールのブラックティー。紅茶の渋みと落ち着いた香りが、スパイス系ミックスにも花系ミックスにも馴染む。",
       "heat_tolerance": 1.0,
       "smoke_weight": 1.0,
       "steam_bias": 0.3,
@@ -1649,15 +2086,16 @@
         "floral": 4,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr"
     },
     {
       "id": "absal_earlgrey",
-      "name": "アブサル アールグレイ",
-      "short_name": "アブサル アールグレイ",
+      "name": "アフサール アールグレイ",
+      "short_name": "アフサール アールグレイ",
       "category": "floral",
       "price": 1750,
-      "description": "アブサルのアールグレイ。ベルガモットの柑橘香と紅茶の渋みが調和した、落ち着きのある一台。ナイトサイドの試作品とは別のアプローチで、伝統的な茶葉感を前面に出している。",
+      "description": "アフサールのアールグレイ。ベルガモットの柑橘香と紅茶の渋みが調和した、落ち着きのある一台。ナイトサイドの試作品とは別のアプローチで、伝統的な茶葉感を前面に出している。",
       "heat_tolerance": 0.9,
       "smoke_weight": 1.0,
       "steam_bias": 0.2,
@@ -1676,7 +2114,9 @@
         "floral": 7,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr",
+      "family": "earlgrey"
     },
     {
       "id": "lemon_tea",
@@ -1703,15 +2143,16 @@
         "floral": 4,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "af"
     },
     {
       "id": "dobaj_double_apple",
-      "name": "ドバージュ ダブルアップル",
-      "short_name": "dobaj ダブルアップル",
+      "name": "ドバジ ダブルアップル",
+      "short_name": "ドバジ ダブルアップル",
       "category": "spice",
       "price": 1750,
-      "description": "ドバージュのダブルアップル。AFより甘みが強くクリーミーな仕上がり。アニス感は控えめで、万人受けする柔らかさがある。",
+      "description": "ドバジのダブルアップル。AFより甘みが強くクリーミーな仕上がり。アニス感は控えめで、万人受けする柔らかさがある。",
       "heat_tolerance": 1.0,
       "smoke_weight": 1.4,
       "steam_bias": 0.6,
@@ -1730,15 +2171,17 @@
         "floral": 4,
         "nicotine": 4
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj",
+      "family": "double_apple"
     },
     {
       "id": "absal_double_apple",
-      "name": "アブサル ダブルアップル",
-      "short_name": "アブサル ダブルアップル",
+      "name": "アフサール ダブルアップル",
+      "short_name": "アフサール ダブルアップル",
       "category": "spice",
       "price": 1750,
-      "description": "アブサルのダブルアップル。アニスとリコリスの主張が強く、伝統的な中東スタイル。癖が強い分、ハマる人にはたまらない。",
+      "description": "アフサールのダブルアップル。アニスとリコリスの主張が強く、伝統的な中東スタイル。癖が強い分、ハマる人にはたまらない。",
       "heat_tolerance": 1.1,
       "smoke_weight": 1.5,
       "steam_bias": 0.4,
@@ -1757,16 +2200,27 @@
         "floral": 3,
         "nicotine": 6
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr",
+      "family": "double_apple"
     },
     {
       "id": "dobaj_mint",
-      "name": "ドバージュ ミント",
-      "short_name": "dobaj ミント",
+      "name": "ドバジ ミント",
+      "short_name": "ドバジ ミント",
       "category": "cooling",
       "price": 1750,
-      "description": "ドバージュのミント。ペパーミントキャンディのような甘い清涼感。AFのキレとは違う、まろやかでリッチなミント。",
+      "description": "ドバジのミント。ペパーミントキャンディのような甘い清涼感。AFの鋭さとは違う、まろやかでリッチなミント。",
       "heat_tolerance": 1.1,
+      "thermal_expression": {
+        "quality": "range",
+        "low_label": "軽いミントの香り",
+        "middle_label": "丸い甘さと清涼感",
+        "high_label": "甘い余韻がふくらむ",
+        "low": { "sweetness": 3.8, "cooling": 5, "body": 3.2, "spiciness": 1.6 },
+        "middle": { "sweetness": 5.2, "cooling": 6.5, "body": 4.2, "spiciness": 2 },
+        "high": { "sweetness": 5.8, "cooling": 8, "body": 5, "spiciness": 2.4 }
+      },
       "smoke_weight": 0.8,
       "steam_bias": -0.8,
       "leaf": "blond",
@@ -1784,15 +2238,17 @@
         "floral": 2,
         "nicotine": 3
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "dobaj",
+      "family": "mint"
     },
     {
       "id": "absal_mint",
-      "name": "アブサル ミント",
-      "short_name": "アブサル ミント",
+      "name": "アフサール ミント",
+      "short_name": "アフサール ミント",
       "category": "cooling",
       "price": 1750,
-      "description": "アブサルのミント。スペアミントベースで、スパイシーなキックが残る。清涼感の奥にハーブの苦味が立つ、上級者好みの一品。",
+      "description": "アフサールのミント。スペアミントベースで、スパイシーなキックが残る。清涼感の奥にハーブの苦味が立つ、上級者好みの一品。",
       "heat_tolerance": 1.3,
       "smoke_weight": 0.9,
       "steam_bias": -0.6,
@@ -1811,7 +2267,70 @@
         "floral": 3,
         "nicotine": 5
       },
-      "ng_flavors": []
+      "ng_flavors": [],
+      "maker": "afsahr",
+      "family": "mint"
+    },
+    {
+      "id": "afsahr_strawberry",
+      "name": "アフサール ストロベリー",
+      "short_name": "アフサール ストロベリー",
+      "category": "fruit",
+      "price": 1750,
+      "description": "アフサールの新作。華やかな苺の香りが早く立ち、早く抜ける。熱に弱く、炭を急ぐと香りが荒れる。第2章の県大会で課題として支給される。",
+      "heat_tolerance": 0.8,
+      "smoke_weight": 0.85,
+      "steam_bias": 0.4,
+      "chapter_min": 2,
+      "not_for_sale": true,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 3,
+        "refreshing": 5,
+        "sweet_natural": 7,
+        "sweet_confection": 5,
+        "cooling": 1,
+        "assertiveness": 5,
+        "acquired_taste": 1,
+        "smoke_body": 4,
+        "sourness": 3,
+        "spiciness": 1,
+        "floral": 3,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "afsahr",
+      "family": "strawberry"
+    },
+    {
+      "id": "spring_water",
+      "name": "アフサール スプリングウォーター",
+      "short_name": "アフサール スプリングウォーター",
+      "category": "floral",
+      "price": 1750,
+      "description": "サメちゃんが好む単体フレーバー。香水のような独特の香りと、吸い終わりに残る爽やかさが特徴。",
+      "heat_tolerance": 0.95,
+      "smoke_weight": 0.85,
+      "steam_bias": -0.2,
+      "chapter_min": 2,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 7,
+        "sweet_natural": 2,
+        "sweet_confection": 1,
+        "cooling": 3,
+        "assertiveness": 6,
+        "acquired_taste": 6,
+        "smoke_body": 4,
+        "sourness": 1,
+        "spiciness": 1,
+        "floral": 8,
+        "nicotine": 4
+      },
+      "ng_flavors": [],
+      "maker": "afsahr",
+      "family": "spring_water"
     }
   ]
 }

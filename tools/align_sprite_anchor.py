@@ -64,9 +64,9 @@ def align_character(bd, char_dir: Path, dry_run: bool) -> int:
                 trims[p] = t
         if len(trims) < 2:
             continue
-        ref = next(
-            (p for p in trims if p.stem.endswith("_normal")), next(iter(trims))
-        )
+        # axe_normal is an action pose, not the base normal for the main outfit.
+        reference_name = f"chr_{char_dir.name}_{'ura_' if gname == 'ura' else ''}normal"
+        ref = next((p for p in trims if p.stem == reference_name), next(iter(trims)))
         rt = trims[ref]
         for p, t in trims.items():
             if p == ref:

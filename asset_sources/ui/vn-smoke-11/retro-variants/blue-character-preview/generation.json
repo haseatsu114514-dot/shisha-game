@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-24",
+  "tool": "image_gen.imagegen",
+  "reference": "asset_sources/ui/vn-smoke-11/retro-variants/02-heisei-blue.png",
+  "original": "ui-source.png",
+  "original_sha256": "329532711b1026ab545e63c25f49811cc74c7ecbec09c8281e6cd1e0bbcc1b09",
+  "prompt": "ui-prompt.txt",
+  "status": "preview only; not available in main CONFIG",
+  "crop_operation": "mechanical rectangular crop and lossless WebP encoding; no redraw or alpha threshold",
+  "crops": [
+    {
+      "runtime": "remake/img/ui/blue-preview/name.webp",
+      "box": [
+        55,
+        45,
+        705,
+        242
+      ],
+      "sha256": "31b2109abbbd9bc4d3db56dd4037e1e10a328e7601758d82241f8acdda7fa51d"
+    },
+    {
+      "runtime": "remake/img/ui/blue-preview/controls.webp",
+      "box": [
+        1130,
+        115,
+        2125,
+        230
+      ],
+      "sha256": "c12372e61dc7f8a1686f901f702f38e89cb348f7f4f84f8d6cd55a79eb710e45"
+    },
+    {
+      "runtime": "remake/img/ui/blue-preview/panel.webp",
+      "box": [
+        8,
+        290,
+        2164,
+        676
+      ],
+      "sha256": "06b8f538ba79f7efe21d2dc9ff6d17fe8f8a4195034658af711dd2954c2cd0c9"
+    }
+  ],
+  "font": {
+    "name": "Zen Old Mincho Regular",
+    "author": "The Zen Old Mincho Project Authors",
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/zenoldmincho/ZenOldMincho-Regular.ttf",
+    "license": "SIL Open Font License 1.1",
+    "license_file": "remake/fonts/OFL-ZenOldMincho.txt",
+    "runtime": "remake/fonts/ZenOldMincho-Blue-Regular.woff2",
+    "source_sha256": "4c051a78a21c4e8e9dccf1c754776d33f356b8cc6ef95d9b64761b9bae814b84",
+    "runtime_sha256": "bea0a47a034ec7489e3344789dd7e0b4ded70761d06e03d6b2141e2d29919477",
+    "change": "lossless TTF to WOFF2 conversion; cmap and horizontal metrics verified identical"
+  },
+  "portraits": [
+    {
+      "id": "minto",
+      "path": "remake/img/sprites/characters/minto/chr_minto_normal.webp",
+      "sha256": "4646ce81de71d07cd040796e91f9c171d82130a0a507145eb676daaf61791d6e"
+    },
+    {
+      "id": "ageha",
+      "path": "remake/img/sprites/characters/ageha/chr_ageha_normal.webp",
+      "sha256": "9135aefab7e11d4e0fbd986da8d5c286649a986536db88de66f5e9e7223dfdc4"
+    },
+    {
+      "id": "tsumugi",
+      "path": "remake/img/sprites/characters/tsumugi/chr_tsumugi_normal.webp",
+      "sha256": "d8b5dde0e40ba46959a88ffd1c81f33e54d71da8ba9846397981aecd58fca32e"
+    },
+    {
+      "id": "hiyori",
+      "path": "remake/img/sprites/characters/hiyori/chr_hiyori_smile.webp",
+      "sha256": "9931d1499e2eeedbf040ff5c2a6c467bbe09d992298cb3dc33f5955ec8590d71"
+    }
+  ],
+  "qa": {
+    "source_viewed": true,
+    "four_character_screenshots_viewed": true,
+    "formal_sprites_preserved": true,
+    "saved_storage_unchanged": true,
+    "viewport_sizes": [
+      [
+        1280,
+        768
+      ],
+      [
+        844,
+        438
+      ]
+    ],
+    "dropdown_roundtrip": "blue -> smoke -> blue passed",
+    "main_config_unchanged": true,
+    "quick": "7/7 passed",
+    "composition": "body 28px, name 22px, commands 17px; name and command tabs project above the body; fixed across characters and AUTO on/off; 1280x768 and 844x438 passed"
+  }
+}

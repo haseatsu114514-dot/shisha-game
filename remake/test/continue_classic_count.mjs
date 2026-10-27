@@ -10,7 +10,7 @@ const errors = [], missing = [];
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 page.on("pageerror", e => errors.push(e.message));
 page.on("response", r => { if (r.status() >= 400 && /\.(webp|png|woff2)/.test(r.url())) missing.push(r.url()); });
-await page.route("https://bgmer.net/**", route => route.abort());
+await page.route("**/assets/audio/bgm/bgm_continue_urgent.mp3", route => route.abort());
 async function mount(variant = 0, options = {}) {
   await page.evaluate(async ({ variant, options }) => {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
@@ -81,7 +81,7 @@ try {
       const g = await measurements(); checkClassic(g);
       assert.equal(g.count, "20", "caption advance must not shorten classic deadline");
       assert.equal(g.echo.fontSize, 1000);
-      assert.equal(await page.locator(".go-retry").textContent(), "大会に戻る");
+      assert.equal(await page.locator(".go-retry").textContent(), "最初から再挑戦");
       const choice = index % 2 ? "quit" : "retry";
       await page.locator(choice === "retry" ? ".go-retry" : ".go-quit").click();
       await page.clock.runFor(8000);

@@ -1,3 +1,4 @@
+import { CH2_CITY_EN, CH2_CITY_NAME, HOME_CITY_EN, HOME_CITY_NAME } from "../core/city-locations.js";
 // 日常パートの常時表示（日付・時間帯・大会までの日数・所持金・体力・スマホ・ステータス）。
 // 見た目は旧版の墨×金を踏襲: 左上に DAY カード、右上に体力・ステータスの五角形・LIME・MENU。
 import { el, yen, sleep } from "../core/util.js";
@@ -78,7 +79,7 @@ export function initHud(h) {
   pendingRecovery = null;
   handlers = { ...handlers, ...h };
   dom = {
-    area: el("div.dc-area", { text: "SAKAE" }),
+    area: el("div.dc-area", { text: HOME_CITY_EN }),
     day: el("div.dc-day"),
     slot: el("div.dc-slot"),
     money: el("b"),
@@ -94,9 +95,9 @@ export function initHud(h) {
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left])]),
+      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left]), dom.stamina]),
     ]),
-    el("div.hud-right", [dom.stamina, dom.status, dom.phone, dom.menu]),
+    el("div.hud-right", [dom.status, dom.phone, dom.menu]),
   ]);
   dom.moneyRow = moneyRow;
   layers.hud.replaceChildren(root);
@@ -119,7 +120,13 @@ export function showHud(v = true) {
 
 export function updateHud() {
   if (!dom || !state) return;
-  dom.area.textContent = state.chapter === 2 && state.flags._ch2_region === "widehanga" ? "WIDEHANGA" : "SAKAE";
+  const widehanga = state.chapter === 2 && state.flags._ch2_region === "widehanga";
+  dom.area.dataset.region = widehanga ? "widehanga" : "sakae";
+  dom.area.setAttribute("aria-label", widehanga ? CH2_CITY_EN : HOME_CITY_EN);
+  dom.area.replaceChildren(
+    el("span.dc-area-full", { text: widehanga ? CH2_CITY_EN : HOME_CITY_EN }),
+    el("span.dc-area-short", { text: widehanga ? CH2_CITY_NAME : HOME_CITY_NAME }),
+  );
   dom.day.replaceChildren(el("b", { text: String(chapterDay(state)) }), el("small", { text: `/${TOURNAMENT_DAY}` }));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";
@@ -148,7 +155,10 @@ export function setPhoneBadge(unread) {
   const count = typeof unread === "number" ? unread : unread ? 1 : 0;
   const name = count ? `LIME（未読${count}件）` : "LIME";
   dom.phone.classList.toggle("has", count > 0);
-  dom.phone.querySelector(".badge").textContent = count > 9 ? "9+" : String(count || "");
+  const badge = dom.phone.querySelector(".badge");
+  badge.classList.toggle("single", count > 0 && count < 10);
+  badge.replaceChildren(el("b.badge-number", { text: count > 99 ? "99" : String(count || "") }));
+  if (count > 99) badge.append(el("small.badge-plus", { text: "+" }));
   dom.phone.title = name;
   dom.phone.setAttribute("aria-label", name);
 }
@@ -161,15 +171,14 @@ export async function presentSleepRecovery({ before, after }) {
   const fill = el("b", { style: `width:${Math.min(100, before / maximum * 100)}%` });
   const panel = el("div.sleep-recovery", { dataset: { test: "sleep-recovery" }, role: "status" }, [
     el("p", { text: "ぐっすり眠って、体力が回復した" }),
-    el("div.sleep-gauge", { role: "progressbar", "aria-label": "睡眠後の体力", "aria-valuemin": "0",
-      "aria-valuemax": String(maximum), "aria-valuenow": String(before) }, [fill]),
+    el("div.sleep-gauge", { role: "img", "aria-label": "睡眠で体力が回復している" }, [fill]),
   ]);
   layers.fx.append(panel);
   await sleep(30);
   panel.classList.add("show");
   await sleep(180);
   fill.style.width = `${Math.min(100, after / maximum * 100)}%`;
-  panel.querySelector(".sleep-gauge").setAttribute("aria-valuenow", String(after));
+  panel.querySelector(".sleep-gauge").setAttribute("aria-label", "睡眠で体力が回復した");
   await sleep(1250);
   panel.classList.remove("show");
   await sleep(220);

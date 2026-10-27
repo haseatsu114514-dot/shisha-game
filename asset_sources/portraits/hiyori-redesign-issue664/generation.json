@@ -1,0 +1,251 @@
+{
+  "issue": 664,
+  "generated_utc": "2026-10-18",
+  "notes": "Reference order matches image_gen input order. Original PNGs are preserved under raw/. Earlier axe outfit versions remain in Git history; the current four raw/axe files use the same lace blouse and black slacks as Hiyori's everyday outfit.",
+  "records": [
+    {
+      "variant": "normal",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+      "sha256": "69ce357c5dac841cad72fd910adabc7edd6b22f500501770b8c6f7f483499401",
+      "references": [
+        "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png",
+        "assets/sprites/characters/ageha/chr_ageha_normal.png"
+      ],
+      "prompt": "Redraw ONLY the standing person in image 1 as a new full-body visual-novel sprite. Preserve her identifiable face, warm brown eyes, reddish pink-brown high ponytail, modest ivory floral lace cap-sleeve blouse, black tailored trousers, small black handbag, loafers, earrings, adult proportions. Keep her expression like image 1 but a touch more deliberate: slightly lowered eyelids, gently drooping eyebrows, tiny calm wistful smile, relaxed shoulders. She is a healthy 25-year-old office worker. Images 2 and 3 show the matching game's crisp thin outline, fine painterly pixel texture, restrained shading and consistent sprite quality; use them for style only. Paint no pixel outside the woman's actual body, hair, shoes, clothes and handbag. The entire rest of the canvas, including near her hair and under her feet, is completely transparent, with absolutely no glow, brown haze, dark patch, lighting effect, cast shadow, scenery, text or props. Complete head-to-shoes figure with margins. Avoid glossy smooth rendering. No extra fingers.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_normal.webp"
+    },
+    {
+      "variant": "sad",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/sad-source.png",
+      "sha256": "438c8cf783f869980116c5eacdcdee1b5844f7d979ee2325936075a9bbdd95b7",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "assets/sprites/characters/hiyori/chr_hiyori_sad.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Redraw a new full-body expression sprite of Asagiri Hiyori. Image 1 is the exact NEW canonical identity, outfit, body scale, hair, color palette and drawing style to retain. Image 2 indicates only the scene's expression and hand gesture. Image 3 is another game character for matching fine crisp outline and subtle painterly pixel texture, not face or clothing. Change Hiyori to a truly tired, wistful expression with lowered eyelids, inward-lifted eyebrows and a tiny closed worried mouth, one free hand lightly near her collarbone. She is healthy and competent, the tiredness is real, the 'fragile woman' performance is deliberate; no illness or trauma. Preserve Hiyori's recognizable adult 25-year-old face, high reddish pink-brown ponytail, brown eyes, ivory floral lace cap-sleeve blouse, black tailored trousers, small black handbag and black loafers. The whole figure from ponytail to both shoes must fit with safety margins. Truly clean transparent alpha beyond only the person and handbag; absolutely no aura, brown haze, backdrop, glow, vignette, floor shadow, text, smoke or scenery. Crisp game sprite, coherent hands, no extra fingers.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_sad.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_sad.webp"
+    },
+    {
+      "variant": "smile",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/smile-source.png",
+      "sha256": "303da37a41f983f550002a0f9c279146d0bedeb9bbad0805ba91604b8234110f",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "assets/sprites/characters/hiyori/chr_hiyori_smile.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Redraw a new full-body expression sprite of Asagiri Hiyori. Image 1 is the exact NEW canonical identity, outfit, body scale, hair, color palette and drawing style to retain. Image 2 indicates only the scene's expression and hand gesture. Image 3 is another game character for matching fine crisp outline and subtle painterly pixel texture, not face or clothing. Change Hiyori to a small tender genuine smile. Eyes softly lifted, light blush, closed lips, relaxed shoulders, free hand gently near her cheek. Keep this subtle and different from the explosive axe-bar grin. Preserve Hiyori's recognizable adult 25-year-old face, high reddish pink-brown ponytail, brown eyes, ivory floral lace cap-sleeve blouse, black tailored trousers, small black handbag and black loafers. The whole figure from ponytail to both shoes must fit with safety margins. Truly clean transparent alpha beyond only the person and handbag; absolutely no aura, brown haze, backdrop, glow, vignette, floor shadow, text, smoke or scenery. Crisp game sprite, coherent hands, no extra fingers.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_smile.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_smile.webp"
+    },
+    {
+      "variant": "surprise",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/surprise-source.png",
+      "sha256": "2168129be994e8ab5f8d01328a6e986f0ea7d5345b30b012813350c94a44a9ec",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "assets/sprites/characters/hiyori/chr_hiyori_surprise.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Redraw a new full-body expression sprite of Asagiri Hiyori. Image 1 fixes her exact NEW canonical face, outfit, hair, proportions and visual-novel rendering; image 2 is a guide only for the relevant expression and gesture; image 3 is another character from the same game and determines fine crisp outlines and subtle painterly pixel texture ONLY. A quiet frozen surprise when seen unexpectedly: eyes opened a little wider, lifted brows, small parted mouth, faint blush, free hand momentarily held near cheek. Keep this restrained; it is not the axe-bar shout. Preserve the high reddish pink-brown ponytail, warm brown eyes, adult 25-year-old facial identity, ivory floral lace cap-sleeve blouse, black tailored trousers, small black handbag, black loafers. Entire person from ponytail to both shoes within generous margins. Only the person and handbag may have nonzero alpha. No atmospheric haze, glow, backdrop, vignette, floor shadow, text, smoke, scenery, extra fingers, or additional character.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_surprise.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_surprise.webp"
+    },
+    {
+      "variant": "tears",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/tears-source.png",
+      "sha256": "9f8b06c878b82984521a3dc8df8208a1b87490737d09c7c7a13a6118113e15e2",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "assets/sprites/characters/hiyori/chr_hiyori_tears.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Redraw a new full-body expression sprite of Asagiri Hiyori. Image 1 fixes her exact NEW canonical face, outfit, hair, proportions and visual-novel rendering; image 2 is a guide only for the relevant expression and gesture; image 3 is another character from the same game and determines fine crisp outlines and subtle painterly pixel texture ONLY. A sincerely moved emotional reaction at her old workplace: one or two small tears at lower eyelids, inward-lifted brows, tiny trembling gentle smile, free hand lightly wiping an eye. Her health and competence remain clear; no sobbing or dramatic grief. Preserve the high reddish pink-brown ponytail, warm brown eyes, adult 25-year-old facial identity, ivory floral lace cap-sleeve blouse, black tailored trousers, small black handbag, black loafers. Entire person from ponytail to both shoes within generous margins. Only the person and handbag may have nonzero alpha. No atmospheric haze, glow, backdrop, vignette, floor shadow, text, smoke, scenery, extra fingers, or additional character.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_tears.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_tears.webp"
+    },
+    {
+      "variant": "serious",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/serious-source.png",
+      "sha256": "a3be7832b821c96102b42e1e8bcaead606f5400ad1c9d09a8298d998b65afb1c",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "assets/sprites/characters/hiyori/chr_hiyori_serious.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Create a NEW full-body Hiyori expression sprite. Image 1 is the NEW canonical Hiyori identity, color, adult proportions, outfit and visual-novel rendering that MUST stay consistent. Image 2 is the old expression's emotional guide only. Image 3 is another character from the same game for crisp thin outline and fine painterly pixel texture, not face or outfit. A competent office worker speaking earnestly about real fatigue and responsibilities. Eyes look more directly forward and focused, eyebrows set with quiet resolve, lips lightly pressed, posture a little straighter, free hand resting at her chest. Still gentle and recognizably Hiyori; no scowl. Preserve high reddish pink-brown ponytail, brown eyes, adult 25-year-old face, opaque ivory floral lace cap-sleeve blouse, black tailored trousers, small black handbag and black loafers. Complete single figure from ponytail to both shoes within comfortable transparent margins. Outside the actual person and handbag alpha must be exactly transparent: no aura, background, brown haze, glow, floor shadow, text, smoke, scenery, effects or extra fingers.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_serious.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_serious.webp"
+    },
+    {
+      "variant": "love_blush",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/love_blush-source.png",
+      "sha256": "9ad5e8e1e0a51c00d18a5135e01d5323a3ba51a95294d6a704d809ee51fc1970",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "assets/sprites/characters/hiyori/chr_hiyori_love_blush.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Create a NEW full-body Hiyori expression sprite. Image 1 is the NEW canonical Hiyori identity, color, adult proportions, outfit and visual-novel rendering that MUST stay consistent. Image 2 is the old expression's emotional guide only. Image 3 is another character from the same game for crisp thin outline and fine painterly pixel texture, not face or outfit. A private romantic moment: cheeks visibly but delicately blushed, eyes shyly averted, eyebrows softened, a small awkward smile trying to hold her wistful persona. Free hand near cheek. No exaggerated hearts, kissing pose or childlike expression. Preserve high reddish pink-brown ponytail, brown eyes, adult 25-year-old face, opaque ivory floral lace cap-sleeve blouse, black tailored trousers, small black handbag and black loafers. Complete single figure from ponytail to both shoes within comfortable transparent margins. Outside the actual person and handbag alpha must be exactly transparent: no aura, background, brown haze, glow, floor shadow, text, smoke, scenery, effects or extra fingers.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_love_blush.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_love_blush.webp"
+    },
+    {
+      "variant": "student_smile",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/student_smile-source.png",
+      "sha256": "04dde4742fdce66a215c73ce50a9b8c6336527a1ab888db275a62ac1b0f73e30",
+      "references": [
+        "assets/sprites/characters/hiyori/chr_hiyori_student_smile.png",
+        "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "assets/sprites/characters/hiyori/chr_hiyori_normal.png"
+      ],
+      "prompt": "Generate ONE clean-cutout full-body sprite of ASAGIRI HIYORI IN HER UNIVERSITY CAFÉ STAFF YEARS. FIRST IMAGE is the canonical student version and is the main reference for face, SHORT SHOULDER-LENGTH MEDIUM HAIR (NOT long; no ponytail; hair ends at the shoulders), black short-sleeve T-shirt, practical muted gray apron tied at waist, black slim trousers, black shoes, cheerful open laughing mouth and friendly raised hand. THIRD IMAGE is her current older self for matching same warm brown eyes and reddish pink-brown hair hue ONLY; do not transfer the current high ponytail, long hair or white blouse. SECOND IMAGE is a different game's heroine for fine thin crisp outlined painterly sprite quality and subtle pixel texture ONLY. Draw her healthy, lively, 21-year-old adult self. Complete single figure head to shoes, hands anatomically correct, with generous transparent margins. Outside her body and clothes alpha must be fully zero. No dark/brown halo, glow, aura, vignette, spotlit background, floor shadow, writing, scenery, smoke or props. White/transparent cutout presentation only, no backdrop.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_student_smile.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_student_smile.webp"
+    },
+    {
+      "variant": "axe_normal",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_normal-source.png",
+      "sha256": "079aa8419f91514f6cb2f48d17deae3ffd2672457a519aad8d0722b6ef6e21f3",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "git:48a4b0713010d7049d43a717a9242f32c4f2e6b2:asset_sources/portraits/hiyori-redesign-issue664/raw/axe_normal-source.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Create a NEW full-body transparent visual novel sprite of the SAME Hiyori from reference 1. Reference 1 is the canonical identity, outfit, face and art style. Reference 2 shows only the recent axe pose concept; its BLUE TRACKSUIT MUST BE COMPLETELY DISCARDED. Keep Hiyori's everyday outfit EXACTLY: elegant ivory French-sleeve floral lace blouse buttoned at the neck, high-waisted tailored BLACK slacks and black belt, black gold-detail loafers, small gold earrings, wristwatch, high reddish pink-brown ponytail, warm brown eyes. She has set her handbag off-frame at the throwing lane, so no bag is held. Casual low-key pre-throw stance: weight on one leg, other foot a modest half-step forward, ONE short wood-handled recreational throwing axe held down in her right hand with blade pointing safely downward, left fingers gently resting near her collarbone. Her face looks tired and delicate, tiny sly smile starting to break through, hinting she secretly enjoys this. Clean natural anatomy, polished painterly Japanese game sprite matching reference 3, sharp detailed lace and hair, full figure and whole axe in frame, transparent background. No tracksuit, blue jacket, cap, sneakers, handbag, text, scenery, aura, shadows or extra weapons.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "iteration": 3,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_axe_normal.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_axe_normal.webp"
+    },
+    {
+      "variant": "axe_laugh",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_laugh-source.png",
+      "sha256": "a45bef8037233a4ef49bd579c118cd8f40544bbf8e553059de3cb92493cc2c1e",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_normal-source.png",
+        "git:48a4b0713010d7049d43a717a9242f32c4f2e6b2:asset_sources/portraits/hiyori-redesign-issue664/raw/axe_laugh-source.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Edit reference 1 into a new FULL-BODY transparent game character sprite of the SAME adult Hiyori in the EXACT SAME everyday clothes: ivory short French-sleeve blouse with intricate vertical floral lace and buttoned neck, black tailored slacks and belt, black gold-detail loafers, gold earrings, watch, high pink-brown ponytail. Reference 2 shows only the emotional beat of the axe-lane laugh; discard its tracksuit and sneakers entirely. Hiyori has just released the axe, so no axe or handbag is in frame. Show a markedly different pose from her usually fragile stillness: she bends a little forward at the waist, one hand cupping her mouth as an involuntary giggle turns into a genuine big laugh, eyes closed in joyful crescents, cheeks lightly pink, other hand resting playfully at her waist, shoulders relaxed, knees soft. This is cathartic amusement, not rage and not a fist-pump. Adult, graceful, cute, believable anatomy and fingers, same face and ponytail. High-quality finely shaded visual-novel portrait in the game's crisp detailed style from reference 3, full body shoes included, ample transparent margins. No blue garment, stripe, sneakers, hat, bag, axe, text, scenery or effects.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "iteration": 3,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_axe_laugh.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_axe_laugh.webp"
+    },
+    {
+      "variant": "axe_shout",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_shout-source.png",
+      "sha256": "cd2bec41b789f32b964573328e9ea76fc45140400292a6bfd1b9f3f1a2d81681",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_normal-source.png",
+        "git:48a4b0713010d7049d43a717a9242f32c4f2e6b2:asset_sources/portraits/hiyori-redesign-issue664/raw/axe_shout-source.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Edit reference 1 into a new FULL-BODY transparent game character sprite of the SAME adult Hiyori in the EXACT SAME everyday clothes: ivory French-sleeve buttoned blouse with intricate vertical floral lace, black high-waisted tailored slacks and belt, black gold-detail loafers, gold earrings and watch, high pink-brown ponytail and brown eyes. Reference 2 shows only the energy of stress release; replace every bit of its BLUE TRACKSUIT and sneakers with the outfit from reference 1. She just hit the target off-frame: NO axe or handbag in frame. Depict a distinctly JOYFUL, adorably overexcited victory whoop, different from her angry office 'mukii' face and from the hand-over-mouth laughter: she straightens up and leans slightly forward, raises her right fist near shoulder height in a small triumphant pump, other fist at her waist, mouth wide open in a delighted \"yaa!\" grin, eyes bright and wide, eyebrows lifted with surprise, cheeks flushed, ponytail bouncing. Feet naturally staggered only a little, stable and anatomically plausible, not a wide dramatic lunge. Delicate-persona facade collapses into happy unguarded stress relief. Preserve her mature face, exact lace design and game character rendering from reference 3. Entire person and both loafers fit with transparent margins, no jacket, cap, athletic clothes, second person, weapon, effects, text or scenery.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "iteration": 3,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_axe_shout.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_axe_shout.webp"
+    },
+    {
+      "variant": "axe_throw",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/axe_throw-source.png",
+      "sha256": "924ffb9ea267a5272c0b4f6135f5b1a9dd90a349525753ba009882b428158608",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "git:48a4b0713010d7049d43a717a9242f32c4f2e6b2:asset_sources/portraits/hiyori-redesign-issue664/raw/axe_throw-source.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Edit reference 1 into a NEW full-body transparent Japanese game character sprite. Preserve Hiyori's exact distinctive face, warm brown eyes, high reddish pink-brown ponytail and polished fine linework, and the realistic release posture and flying single axe from reference 2. CRITICAL outfit change: replace the ENTIRE blue tracksuit and white sneakers from reference 2 with the EXACT everyday clothes in reference 1: ivory French-sleeve lace blouse with buttoned neck and intricate central floral lace panels, tailored straight black slacks with black belt, black gold-detail loafers, gold earrings and wristwatch. No bag in her hands (placed safely off-frame). A plausible controlled one-handed overhand release: right arm reaches up and forward after the ONE short hatchet leaves her fingertips, blade leading toward target outside frame to viewer's left; modest forward step with left foot, rear heel lifted, torso leaning just a little, left arm gently balancing near her ribs, no huge lunge or odd arm splay. Expression: adorable earnest frustration turning into cathartic joy, blushing cheeks, brows knit, mouth open. She is not dressed for sports; this contrast between delicate office clothes and animated throw is the point. Complete full-body silhouette with both loafers and axe in canvas and transparent margins. Crisp painterly anime visual novel sprite style matching reference 3. No blue clothing, side stripes, tracksuit, sneakers, cap, handbag, text, target, flames, floor or background.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "iteration": 3,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_axe_throw.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_axe_throw.webp"
+    },
+    {
+      "variant": "office_mukii",
+      "source": "asset_sources/portraits/hiyori-redesign-issue664/raw/office_mukii-source.png",
+      "sha256": "5767ff073e47bc9ac632c58add38c970406cb5e9637ebef3d00ee1bb3449a8de",
+      "references": [
+        "asset_sources/portraits/hiyori-redesign-issue664/raw/normal-source.png",
+        "assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "prompt": "Edit the first reference into an original full-body transparent-background Japanese visual novel character sprite of the SAME Hiyori in the exact SAME office outfit and hairstyle: ivory French-sleeve lace blouse buttoned to neck, tailored black slacks and belt, small black handbag, high reddish pink-brown ponytail and face-framing curls, brown eyes. The second reference is the game's illustration finish. Expression and body language: her carefully performed delicate \"fragile woman\" persona suddenly bursts into an adorably comical pent-up emotional outburst, a clear cute \"MUKII!\" feeling. Eyebrows sharply scrunched, eyes wide and shining, cheeks flushed and puffed, mouth open in a tiny indignant angry cry. Both hands make small clenched fists up near her chest/cheeks; shoulders rise, her ponytail bounces slightly. Keep her adult identity, cute and sincere rather than sinister or feral. Keep black bag on her bent forearm so clothing remains consistent. Her lower body remains naturally balanced, no extreme lunging. Polished high-quality anime visual novel character sprite matching reference linework, detailed lace and satin-like hair shading, full body shoes included, centered, transparent background, no flames or explosions, no graphic symbols, no text.",
+      "transparent_background": true,
+      "tool": "OpenAI image_gen",
+      "status": "adopted",
+      "runtime_registered": true,
+      "iteration": 2,
+      "runtime_png": "assets/sprites/characters/hiyori/chr_hiyori_office_mukii.png",
+      "runtime_webp": "remake/img/sprites/characters/hiyori/chr_hiyori_office_mukii.webp"
+    }
+  ],
+  "runtime_preview": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "opaque_figure_target_height_px": 1000,
+    "opaque_figure_baseline_y": 1173,
+    "comparison": "Rin normal 1000px; Ageha normal 973px; Minto normal 938px; current Hiyori normal 1152px."
+  },
+  "approved_utc": "2026-10-18",
+  "runtime_export": {
+    "canvas_px": [
+      896,
+      1200
+    ],
+    "figure_height_px": 1000,
+    "baseline_y_px": 1173,
+    "metadata": "asset_sources/portraits/hiyori-redesign-issue664/runtime_export.json"
+  }
+}

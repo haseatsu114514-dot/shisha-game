@@ -33,7 +33,7 @@ fi
 
 # Godot版は 2026-06-15 に削除済み。project.godot が残っているのは削除前の古いコピー
 if [ -f "project.godot" ]; then
-  fail "project.godot exists: this is a stale pre-2026-06-15 (Godot era) copy. Clone origin/main again"
+  fail "project.godot exists: this is a stale pre-2026-06-15 (Godot era) copy. Use the canonical checkout or a worktree of origin/main (do not full-clone)"
 fi
 
 [ -d "data" ] || fail "git root is missing data/"
@@ -60,7 +60,7 @@ if git show-ref --verify --quiet "refs/remotes/origin/main"; then
   fi
   behind="$(git rev-list --count HEAD..refs/remotes/origin/main 2>/dev/null || echo 0)"
   if [ "$behind" -gt 0 ]; then
-    warn "this branch is $behind commit(s) behind origin/main. Bring in origin/main (merge, not force) before editing, or start a new branch from it."
+    warn "this branch is $behind commit(s) behind origin/main (advisory). Merge origin/main only when needed for conflicts or dependencies; new work should start from origin/main."
   fi
 else
   warn "origin/main is not available locally. Run 'git fetch origin main'."

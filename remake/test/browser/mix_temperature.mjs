@@ -1,42 +1,53 @@
 // #401: real gram buttons and production steam/pull/care routes; rendering and judgments must agree.
 import assert from "node:assert/strict";
 import path from "node:path";
+import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
 
 const near = (actual, expected, label = "") => assert(Math.abs(actual - expected) < .002, `${label}: ${actual} != ${expected}`);
 const shots = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
-const bandsOf = async (page, selector = ".thermo") => {
-  const preview = page.locator('details[data-test="mix-temperature-preview"]:not([open])');
-  if (await preview.count()) await preview.locator("summary").click();
+const bandsOf = async (page, selector = ".mix-temperature, .thermo") => {
   const thermometer = page.locator(selector);
-  await thermometer.locator(".thermo-tube").waitFor({ state: "visible" });
+  await thermometer.locator(".mix-thermal-scale, .thermo-tube").waitFor({ state: "visible" });
   return thermometer.evaluate(root => {
-  const tube = root.querySelector(".thermo-tube").getBoundingClientRect();
+  const horizontal = !!root.querySelector(".mix-thermal-scale");
+  const bar = root.querySelector(horizontal ? ".mix-thermal-scale" : ".thermo-tube");
+  const tube = bar.getBoundingClientRect();
+  const scaleX = tube.width / bar.offsetWidth;
   if (!root.isConnected || tube.height <= 0) throw new Error("Thermometer detached or has no measurable tube");
   const bounds = selector => {
-    const band = root.querySelector(selector).getBoundingClientRect();
-    return [(tube.bottom - band.bottom) / tube.height, (tube.bottom - band.top) / tube.height];
+    const node = root.querySelector(selector);
+    if (node.hidden) return null;
+    const band = node.getBoundingClientRect();
+    return horizontal ? [(band.left - tube.left - bar.clientLeft * scaleX) / (bar.clientWidth * scaleX), (band.right - tube.left - bar.clientLeft * scaleX) / (bar.clientWidth * scaleX)]
+      : [(tube.bottom - band.bottom) / tube.height, (tube.bottom - band.top) / tube.height];
   };
-  return { t: Number(root.dataset.tolerance), ideal: bounds(".thermo-zone"), optimal: bounds(".thermo-optimal"),
-    gradient: getComputedStyle(root.querySelector(".thermo-scale")).backgroundImage };
+  return { t: Number(root.dataset.tolerance), ideal: bounds(horizontal ? ".mix-thermal-ideal" : ".thermo-zone"), optimal: bounds(horizontal ? ".mix-thermal-optimal" : ".thermo-optimal"),
+    expressionMode: root.dataset.expressionMode,
+    gradient: getComputedStyle(root.querySelector(horizontal ? ".mix-thermal-scale" : ".thermo-scale")).backgroundImage };
 });
 };
 const expectBands = async (page, t, selector) => {
   const bands = await bandsOf(page, selector);
   near(bands.t, t);
-  for (const [key, expected] of [["ideal", [.42 * t, .66 * t]], ["optimal", [.49 * t, .59 * t]]]) {
+  const model = await page.evaluate(() => QA.conditions.temperatureBands(QA.cs));
+  for (const [key, expected] of [["ideal", model.ideal], ["optimal", model.optimal]]) {
+    if (key === "optimal" && model.expressionWeight >= .999) { assert.equal(bands[key], null, "Expressive blends must not mark only the middle as best"); continue; }
     expected.forEach((value, i) => near(bands[key][i], value, key));
   }
+  assert.equal(bands.expressionMode, model.expressionWeight >= .999 ? "broad" : "focused");
   assert(bands.gradient.includes("linear-gradient"));
   // The green color itself moves, in addition to the band outlines.
   const greenStop = /rgb\(103, 210, 163\) ([\d.]+)%/.exec(bands.gradient);
-  assert(greenStop, bands.gradient); near(Number(greenStop[1]) / 100, .42 * t, "green gradient");
+  assert(greenStop, bands.gradient); near(Number(greenStop[1]) / 100, model.ideal[0], "green gradient");
   return bands;
 };
 async function prepare(page, mode = "tournament") {
   await page.evaluate(async mode => {
     const core = await import("./js/core/state.js"); core.newGame();
-    core.state.flavorStock = { double_apple: 50, vanilla: 24 }; // mint comes from the real regulation
+    core.state.flavorStock = { double_apple: 50, vanilla: 24 };
+    // この温度回帰は既に開始済みの旧ミント大会を継続する経路。新大会の私物レモンはflavor_masteryで検証する。
+    if (mode === "tournament") { core.state.schema = 20; core.state.phase = "tournament"; core.save(); core.load(); }
     const session = await import("./js/craft/session.js");
     const steps = await import("./js/craft/steps.js"), steam = await import("./js/craft/steam.js");
     const pull = await import("./js/craft/pull.js"), conditions = await import("./js/craft/conditions.js");
@@ -72,10 +83,11 @@ await suite("mix-temperature", async check => {
       await prepare(page);
       await page.evaluate(() => { QA.run = QA.steps.stepMix(QA.cs); });
       await page.locator('[data-test="mix-temperature-preview"]').waitFor();
-      await expectBands(page, 1);
+      assert.equal(await page.locator('[data-test="mix-temperature"]').getAttribute("data-selected"), "false");
+      assert.match(await page.locator(".mix-temperature-legend").textContent(), /未選択/);
       assert.equal(await page.locator('[data-test="thermo-pointer"]').isVisible(), false);
-      assert.match(await page.locator(".mix-temperature").getAttribute("aria-label"), /緑.*42\.0.*虹.*49\.0/);
-      await assertFits(page, '.mix-temperature-preview > summary, .mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
+      assert.match(await page.locator(".mix-temperature").getAttribute("aria-label"), /未選択/);
+      await assertFits(page, '.mix-temperature-preview, .mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
       await repeatClick(page, "mix-plus-vanilla", 3); await repeatClick(page, "mix-plus-mint", 1);
       const small = await expectBands(page, .9);
       await repeatClick(page, "mix-plus-vanilla", 3); await repeatClick(page, "mix-plus-mint", 1);
@@ -85,10 +97,15 @@ await suite("mix-temperature", async check => {
       await repeatClick(page, "mix-plus-mint", 4); await expectBands(page, 1);
       await repeatClick(page, "mix-minus-vanilla", 6); await repeatClick(page, "mix-plus-mint", 6);
       const preview = await expectBands(page, 1.2);
-      assert.equal(await page.locator(".mix-ideal").textContent(), "緑 · 適温 50.4〜79.2%");
-      assert.equal(await page.locator(".mix-optimal").textContent(), "虹 · 最適温 58.8〜70.8%");
+      assert.equal(await page.locator(".mix-ideal").textContent(), "おいしい範囲");
+      assert.equal(await page.locator(".mix-optimal").textContent(), "低め／高め");
+      assert.equal(await page.locator('[data-test="mix-optimal"]').isVisible(), false);
+      assert.match(await page.locator(".mix-temperature").getAttribute("aria-label"), /低めと高めで香りが変わる/);
+      assert.doesNotMatch(await page.locator(".mix-temperature-legend").textContent(), /[\d%]/);
+      assert.doesNotMatch(await page.locator(".mix-temperature").getAttribute("aria-label"), /[\d%]/);
+      assert.equal(await page.locator('[data-test="mix-ratio-mint"]').textContent(), "比率 100%");
       assert.match(await page.locator('.flavor-row[data-flavor="mint"]').textContent(), /課題（支給）/);
-      await assertFits(page, '.mix-temperature-preview > summary, .mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
+      await assertFits(page, '.mix-temperature-preview, .mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
       await page.screenshot({ path: path.join(shots, `mix-temperature-preview-${name}.png`) });
       await page.locator('[data-test="mix-ok"]').click(); await page.evaluate(() => QA.run);
       const mix = await page.evaluate(() => ({ mix: QA.cs.mix, mintStock: QA.core.state.flavorStock.mint || 0 }));
@@ -104,7 +121,7 @@ await suite("mix-temperature", async check => {
         QA.run = QA.steps.stepSteamTime(QA.cs);
       });
       await page.locator('[data-test="timer-start"]').waitFor(); await expectBands(page, preview.t);
-      assert.match(await page.locator('[data-test="steam-forecast-text"]').textContent(), /適温|最適温/);
+      assert.match(await page.locator('[data-test="steam-forecast-text"]').textContent(), /適温|おいし/);
       await page.locator('[data-test="timer-start"]').click(); await page.evaluate(() => QA.run);
       // Desktop exercises the live steam clock. Other profiles use the existing auto hook for completion.
       await page.evaluate(name => { QA.session.craftTest.auto = name === "desktop" ? null : "good"; QA.run = QA.steam.runSteamDodge(QA.cs); }, name);
@@ -128,7 +145,8 @@ await suite("mix-temperature", async check => {
         background: document.querySelector(".bench").dataset.thermalBand,
         score: QA.cs.arcade.parts.pull, strain: QA.cs.strain || 0 }));
       assert.equal(result.pull.optimal, true); assert.equal(result.pull.inZone, true);
-      assert.equal(result.pull.score, result.expected.score); assert.equal(result.background, "optimal");
+      assert.equal(result.pull.score, result.expected.score); assert.equal(result.background, "ready");
+      assert.equal(result.pull.score, 100);
       assert.equal(result.score, result.pull.score * 100); assert.equal(result.strain, 0);
       await finishResult(page);
 
@@ -152,6 +170,75 @@ await suite("mix-temperature", async check => {
     }, options);
   }
 
+  for (const [name, options] of [["desktop", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`recipe-and-width-comparison-${name}`, async page => {
+      await prepare(page, "drill");
+      await page.evaluate(() => {
+        QA.core.state.flavors.push("mint", "nightside_earlgrey", "dobaj_double_apple");
+        Object.assign(QA.core.state.flavorStock, { mint: 24, nightside_earlgrey: 24, dobaj_double_apple: 24 });
+      });
+      const rows = [];
+      for (const [id, mix] of [["basic", { double_apple: 9, mint: 3 }], ["peaky", { nightside_earlgrey: 12 }],
+        ["peaky-dobaj", { nightside_earlgrey: 9, vanilla: 3 }]]) {
+        await page.evaluate(async () => {
+          QA.cs = QA.session.newSession("drill"); QA.cs.staffPractice = true;
+          await QA.session.openBench(QA.cs).ready;
+          QA.run = QA.steps.stepMix(QA.cs);
+        });
+        await page.locator('[data-test="mix-plus-double_apple"]').waitFor();
+        for (const [flavor, grams] of Object.entries(mix)) for (let i = 0; i < grams; i++) {
+          const button = page.locator(`[data-test="mix-plus-${flavor}"]`);
+          if (name === "touch") await button.tap(); else await button.click();
+        }
+        const bands = await page.evaluate(() => QA.conditions.temperatureBands(QA.cs));
+        await expectBands(page, bands.t);
+        await assertFits(page, '.mix-temperature-preview, .mix-temperature-legend, [data-test="mix-ok"]');
+        rows.push({ id, ...bands });
+        await page.screenshot({ path: path.join(shots, `thermal-${id}-${name}.png`) });
+        await page.locator('[data-test="mix-ok"]').click(); await page.evaluate(() => QA.run);
+        // Same initial heat, weather, equipment, packing and two keep inputs; only the recipe changes.
+        await page.evaluate(() => {
+          Object.assign(QA.cs, { steamSeconds: 300, steam: { temp: .64, score: 100, seconds: 300 }, pack: "normal", place: "triangle",
+            environment: { rainy: false, ambientC: 23, humidityPercent: 52 },
+            heat: { heatPower: 50, heatStability: 50, burnRisk: 30, aromaRetention: 55, score: 60 },
+            holes: { total: 24, minimumComplete: true, outerEven: 1, evenness: 1, innerExcess: 0, inner: 2, score: 80 } });
+          QA.session.craftTest.auto = null; QA.run = QA.pull.runPull(QA.cs);
+        });
+        await keep(page); await keep(page); await page.locator('[data-test="pull-serve"]').click();
+        await page.locator('[data-test="step-next"]:enabled').waitFor();
+        const measured = await page.evaluate(() => ({ pull: QA.cs.pull, quality: QA.score.computeShisha(QA.cs),
+          expected: QA.conditions.pullResult(QA.cs.pull.temp, QA.cs.pull.pulls, QA.cs.pull.justs, QA.conditions.temperatureBands(QA.cs)) }));
+        assert.equal(measured.pull.score, measured.expected.score);
+        assert.equal(measured.pull.inZone, measured.expected.inZone);
+        assert.equal(measured.pull.optimal, measured.expected.optimal);
+        Object.assign(rows.at(-1), measured);
+        await finishResult(page);
+      }
+      assert(rows[2].ideal[1] - rows[2].ideal[0] > rows[1].ideal[1] - rows[1].ideal[0]);
+      assert(rows[2].center < rows[1].center);
+      fs.writeFileSync(path.join(shots, `thermal-comparison-${name}.json`), JSON.stringify({
+        initialTemperature: .64, totalGrams: 12, steamSeconds: 300, pulls: 2, rows,
+      }, null, 2) + "\n");
+      // Reuse live meters. Same-t maker and equipment edits must move the endpoints without moving center.
+      const changed = await page.evaluate(() => {
+        QA.cs.mix = { double_apple: 12 };
+        const meter = QA.thermometer.buildThermometer({ cs: QA.cs });
+        const gauge = QA.thermometer.buildMixTemperatureGauge(QA.cs);
+        QA.session.stepPanel("pull", "幅変更の確認").append(meter.root, gauge.root);
+        const read = () => { meter.update(.54); const b = gauge.updateBands(); return { ...b, meter: { ...meter.root.dataset }, gauge: { ...gauge.root.dataset } }; };
+        const a = read(); QA.cs.mix = { dobaj_double_apple: 12 }; const b = read();
+        QA.cs.equip.charcoal = "cube_charcoal"; const c = read();
+        return [a, b, c];
+      });
+      for (const row of changed) {
+        near(row.center, .54);
+        for (const view of [row.meter, row.gauge]) { near(Number(view.idealLow), row.ideal[0]); near(Number(view.optimalHigh), row.optimal[1]); }
+      }
+      assert.notEqual(changed[0].meter.idealLow, changed[1].meter.idealLow);
+      assert.notEqual(changed[1].meter.idealLow, changed[2].meter.idealLow);
+    }, options);
+  }
+
   await check("highest-tolerance-green-does-not-strain", async page => {
     await prepare(page, "drill");
     await page.evaluate(async () => {
@@ -168,10 +255,55 @@ await suite("mix-temperature", async check => {
     await page.locator('[data-test="step-next"]:enabled').waitFor();
     const result = await page.evaluate(() => ({ actual: QA.cs.pull, strain: QA.cs.strain || 0,
       effect: document.querySelector(".bench").dataset.thermalBand, haze: document.querySelector(".bench").dataset.thermalHaze }));
-    assert(result.actual.temp > .80 && result.actual.inZone && !result.actual.over && !result.actual.optimal);
+    assert(result.actual.temp > .75 && result.actual.inZone && !result.actual.over && !result.actual.optimal);
     assert.equal(result.strain, 0); assert.equal(result.effect, "ready"); assert.equal(result.haze, "0");
     await finishResult(page);
   });
+
+  await check("expressive-labels-fit-through-care", async page => {
+    await page.evaluate(async () => {
+      const { TITLE_LAYOUT_KEY } = await import("./js/scenes/title-layout.js");
+      localStorage.setItem(TITLE_LAYOUT_KEY, "ds");
+      window.dispatchEvent(new Event("display-layout-change"));
+    });
+    await prepare(page, "drill");
+    await page.locator("body.game-ds").waitFor();
+    for (const care of [false, true]) for (const high of [false, true]) {
+      await page.evaluate(async ({ care, high }) => {
+        const cs = QA.session.newSession("drill");
+        cs.mix = { mint: 12 }; cs.mixInfo = { total: 12 }; cs.pack = "normal";
+        const bands = QA.conditions.temperatureBands(cs);
+        const temp = high ? bands.ideal[1] - .04 : bands.ideal[0] + .04;
+        cs.steam = { temp, score: 100 };
+        cs.holes = { total: 24, minimumComplete: true };
+        if (care) cs.pull = { temp, score: 100, pulls: 2 };
+        QA.cs = cs; QA.session.craftTest.auto = null;
+        await QA.session.openBench(cs).ready;
+        QA.run = care ? QA.pull.runCare(cs) : QA.pull.runPull(cs);
+      }, { care, high });
+      if (care) await page.locator('[data-test="care-coal-0"]').click();
+      await page.locator('[data-test="pull-stop"]:enabled').waitFor();
+      await page.locator(".pull-state").filter({ hasText: high ? "適温・高" : "適温・低" }).waitFor();
+      await assertFits(page, ".pull-read");
+      assert.equal(await page.locator(".thermo-optimal").isVisible(), false);
+      assert.equal(await page.locator(".pull-drift").count(), care ? 1 : 0);
+      // render() replaces the live label each frame; query it and measure it in one browser task.
+      assert(await page.evaluate(() => {
+        const node = document.querySelector(".pull-state");
+        const text = node.getBoundingClientRect(), box = node.parentElement.getBoundingClientRect();
+        const front = document.elementFromPoint(text.left + text.width / 2, text.top + text.height / 2);
+        return text.width > 0 && text.height > 0 && node.scrollWidth <= node.clientWidth + 1
+          && node.scrollHeight <= node.clientHeight + 1 && text.left >= box.left - 1 && text.right <= box.right + 1
+          && text.top >= box.top - 1 && text.bottom <= box.bottom + 1 && node.contains(front);
+      }), "The low/high label must fit and remain in front of the audience panel, including while coals are cooling");
+      await page.screenshot({ path: path.join(shots, `expression-${care ? "care" : "pull"}-${high ? "high" : "low"}-ds.png`) });
+      // Finish each live stage before mounting the next shisha; a cancelled care is an error.
+      await keep(page);
+      if (!care) await keep(page);
+      await page.locator('[data-test="pull-serve"]').click();
+      await finishResult(page);
+    }
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
 
   await check("all-bands-boundaries-and-session-isolation", async page => {
     await prepare(page, "drill");
@@ -188,10 +320,30 @@ await suite("mix-temperature", async check => {
         for (const band of [bands.ideal, bands.optimal]) for (const temp of [band[0] - 1e-7, band[0], band[0] + 1e-7, band[1] - 1e-7, band[1], band[1] + 1e-7]) {
           meter.update(temp); steam.update(temp);
           const actual = conditions.pullResult(temp, 2, 0, bands), effect = thermal.thermalBand(temp, bands);
-          rows.push({ id: flavor.id, temp, ideal: meter.root.classList.contains("ok"), optimal: meter.root.classList.contains("optimal"),
+          rows.push({ id: flavor.id, temp, expressive: bands.expressionWeight >= .999,
+            ideal: meter.root.classList.contains("ok"), optimal: meter.root.classList.contains("optimal"),
             steamIdeal: steam.root.classList.contains("ok"), steamOptimal: steam.root.classList.contains("optimal"), actual,
             ready: effect.id === "ready" || effect.id === "optimal", rainbow: effect.id === "optimal" });
         }
+      }
+      // Reusing a meter must update its expression mode even when center and width are unchanged.
+      const switched = { mix: { orange: 12 } };
+      const switchedMeter = thermometer.buildThermometer({ cs: switched });
+      const switchedGauge = thermometer.buildMixTemperatureGauge(switched);
+      session.stepPanel("pull", "味の作り分け").append(switchedMeter.root, switchedGauge.root);
+      const modes = [];
+      for (const id of ["orange", "double_apple", "orange"]) {
+        switched.mix = { [id]: 12 };
+        const bands = conditions.temperatureBands(switched);
+        switchedMeter.update(bands.center); switchedGauge.updateBands();
+        modes.push({ id, center: bands.center, width: bands.totalWidthScale,
+          mode: switchedMeter.root.dataset.expressionMode,
+          centerHidden: switchedMeter.root.querySelector(".thermo-optimal").hidden,
+          horizontalCenterHidden: switchedGauge.root.querySelector(".mix-thermal-optimal").hidden,
+          optimal: switchedMeter.root.classList.contains("optimal"),
+          text: switchedMeter.root.getAttribute("aria-valuetext"),
+          lowScore: conditions.pullResult(bands.ideal[0], 2, 0, bands).score,
+          highScore: conditions.pullResult(bands.ideal[1], 2, 0, bands).score });
       }
       const a = session.newSession("drill"), b = session.newSession("drill");
       a.mix = { mint: 12 }; b.mix = { vanilla: 12 };
@@ -205,18 +357,31 @@ await suite("mix-temperature", async check => {
       const base = { equip: {}, mix: { mint: 12 }, pull: { score: 80, temp: .76, pulls: 2, over: true } };
       const mintRisk = score.computeShisha(base).burnRisk;
       const mintCenterRisk = score.computeShisha({ ...base, pull: { ...base.pull, temp: .648, over: false } }).burnRisk;
-      const vanillaBase = { ...base, mix: { vanilla: 12 }, pull: { ...base.pull, temp: .54, over: false } };
+      const afBase = { ...base, mix: { cotton_candy: 12 }, pull: { ...base.pull, temp: .58, over: false } };
+      const afRisk = score.computeShisha(afBase).burnRisk;
+      const afCenterRisk = score.computeShisha({ ...afBase, pull: { ...afBase.pull, temp: .432 } }).burnRisk;
+      const vanillaBase = { ...base, mix: { vanilla: 12 }, pull: { ...base.pull, temp: .61, over: false } };
       const vanillaRisk = score.computeShisha(vanillaBase).burnRisk;
       const vanillaCenterRisk = score.computeShisha({ ...vanillaBase, pull: { ...vanillaBase.pull, temp: .432 } }).burnRisk;
-      return { rows, isolated, mintRisk, mintCenterRisk, vanillaRisk, vanillaCenterRisk };
+      return { rows, modes, isolated, mintRisk, mintCenterRisk, afRisk, afCenterRisk, vanillaRisk, vanillaCenterRisk };
     });
     for (const row of results.rows) {
-      assert.equal(row.ideal, row.actual.inZone, JSON.stringify(row)); assert.equal(row.optimal, row.actual.optimal, JSON.stringify(row));
+      assert.equal(row.ideal, row.actual.inZone, JSON.stringify(row)); assert.equal(row.optimal, row.actual.optimal && !row.expressive, JSON.stringify(row));
       assert.equal(row.steamIdeal, row.ideal); assert.equal(row.steamOptimal, row.optimal);
       assert.equal(row.ready, row.ideal); assert.equal(row.rainbow, row.optimal);
     }
     assert(results.rows.length >= 768); assert(results.isolated);
-    assert.equal(results.mintRisk, results.mintCenterRisk); assert.equal(results.vanillaRisk - results.vanillaCenterRisk, 12);
+    assert.deepEqual(results.modes.map(m => m.mode), ["focused", "broad", "focused"]);
+    assert.deepEqual(results.modes.map(m => m.centerHidden), [false, true, false]);
+    assert.deepEqual(results.modes.map(m => m.horizontalCenterHidden), [false, true, false]);
+    assert.deepEqual(results.modes.map(m => m.optimal), [true, false, true]);
+    assert.equal(new Set(results.modes.map(m => m.center)).size, 1);
+    assert.equal(new Set(results.modes.map(m => m.width)).size, 1);
+    assert.match(results.modes[1].text, /おいしく作れる範囲/);
+    assert.equal(results.modes[1].lowScore, 100); assert.equal(results.modes[1].highScore, 100);
+    assert.equal(results.mintRisk, results.mintCenterRisk);
+    assert.equal(results.afRisk - results.afCenterRisk, 12);
+    assert.equal(results.vanillaRisk - results.vanillaCenterRisk, 6);
   });
 
   await check("legacy-save-care-start-and-auto-targets", async page => {

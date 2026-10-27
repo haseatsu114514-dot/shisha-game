@@ -1,0 +1,52 @@
+{
+  "tool": "built-in image_gen",
+  "semantic_edits": false,
+  "source": "asset_sources/trpg-polyhedral-issue596/spare-polyhedral-kit-v1.png",
+  "prompt": "prompts.json",
+  "reference": "PR #600 tabletop direction and Issue #596 follow-up",
+  "conversion": "Pillow LANCZOS 768x512; WebP quality=90 method=6; alpha preserved",
+  "files": [
+    {
+      "path": "asset_sources/trpg-polyhedral-issue596/spare-polyhedral-kit-v1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "bytes": 2249375,
+      "sha256": "ea4d141216afd1ce0992acc32dc7dc9a512e40e93d43a3d3c832f5be41798841"
+    },
+    {
+      "path": "assets/ui/trpg/spare-polyhedral-kit-v1.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "bytes": 2249375,
+      "sha256": "ea4d141216afd1ce0992acc32dc7dc9a512e40e93d43a3d3c832f5be41798841"
+    },
+    {
+      "path": "remake/img/ui/trpg/spare-polyhedral-kit.webp",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "bytes": 103738,
+      "sha256": "e8560a0af48895ef94e09897c3f24740b99e572638e5621b5c14deac598235d6"
+    }
+  ]
+}

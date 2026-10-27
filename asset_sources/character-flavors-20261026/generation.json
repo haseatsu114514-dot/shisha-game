@@ -1,0 +1,70 @@
+{
+  "tool": "image_gen",
+  "reference": "remake/img/shop/heaven10/lemon.webp",
+  "items": [
+    {
+      "name": "sheet-nine",
+      "ids": [
+        "white_gummy_bear",
+        "red_gummy_bear",
+        "mountain_mist",
+        "nightside_earlgrey_release",
+        "cola",
+        "raspberry",
+        "pistachio",
+        "gum_cinnamon",
+        "dark_earlgrey"
+      ],
+      "source": "asset_sources/character-flavors-20261026/sheet-nine.png",
+      "delivery": "remake/img/shop/character-flavors/sheet-nine.webp",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "f762c6dca2805f05910eb123155fa088de67a9052aa1f64193561b3c36fd2082"
+    },
+    {
+      "name": "sheet-three",
+      "ids": [
+        "bombshell",
+        "white_musk",
+        "siga"
+      ],
+      "source": "asset_sources/character-flavors-20261026/sheet-three.png",
+      "delivery": "remake/img/shop/character-flavors/sheet-three.webp",
+      "size": [
+        2172,
+        724
+      ],
+      "sha256": "d35a61b489d06d8e10cead6445bf36964559c01e779b86f6751144a06fbafa43"
+    },
+    {
+      "name": "nightside-blast-mint",
+      "ids": [
+        "nightside_blast_mint"
+      ],
+      "source": "asset_sources/character-flavors-20261026/nightside-blast-mint.png",
+      "delivery": "remake/img/shop/character-flavors/nightside-blast-mint.webp",
+      "note": "生成時はフロストミントの呼称。オーナー指定のブラストミントへ変更し、同じミント画像を採用。",
+      "size": [
+        1254,
+        1254
+      ],
+      "sha256": "f31c086196159f5a723b3accd42c79ff5e2e5dadbfbcf8507fe90bd8e46d4724"
+    },
+    {
+      "name": "dragonfruit-black-tea",
+      "ids": [
+        "dragonfruit",
+        "black_tea"
+      ],
+      "source": "asset_sources/character-flavors-20261026/dragonfruit-black-tea.png",
+      "delivery": "remake/img/shop/character-flavors/dragonfruit-black-tea.webp",
+      "size": [
+        1774,
+        887
+      ],
+      "sha256": "247f916dd5e39a0cf3f3a92a84e36f5a19dd3226cb32fb057eee2df7dce085ce"
+    }
+  ]
+}

@@ -16,7 +16,14 @@ async function loader(fetch, timers = {}) {
     console, AbortController, setTimeout, clearTimeout, ...timers, fetch,
   });
   const mod = new vm.SourceTextModule(source, { context, identifier: dataFile });
-  await mod.link(() => { throw new Error("The data loader should have no imports"); });
+  const modules = new Map([[dataFile, mod]]);
+  await mod.link((specifier, parent) => {
+    assert(specifier.startsWith("./"), "loader dependencies must stay in core");
+    const filename = path.resolve(path.dirname(parent.identifier), specifier);
+    assert.equal(path.dirname(filename), path.dirname(dataFile));
+    if (!modules.has(filename)) modules.set(filename, new vm.SourceTextModule(fs.readFileSync(filename, "utf8"), { context, identifier: filename }));
+    return modules.get(filename);
+  });
   await mod.evaluate();
   return mod.namespace;
 }
@@ -26,7 +33,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 35ファイルを読み、本文の受信中も同時接続が4本を超えない。
+// ギャラリー台帳・大会制作会話・映画館を含む42ファイルを読み、同時接続が4本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -41,15 +48,31 @@ const all = await loader(async (url, options) => {
   } };
 });
 const progress = [];
+// manifest読込前のPNG経路でも、旧版の顔画像キャッシュを使わない。
+assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=face-line-20261026");
 await all.loadAll((p) => progress.push(p));
-assert.equal(requests.length, 36);
-assert.equal(new Set(requests).size, 36);
+for (const id of ["minto", "ageha"]) {
+  for (const face of all.DB.manifest.portraits[id].faces) {
+    const version = id === "ageha" || face === "normal" ? "?v=face-line-20261026" : "";
+    assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
+  }
+  assert.equal(all.faceIconUrl(id), `../assets/ui/face_icons/face_${id}.png?v=face-line-20261026`);
+  assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
+}
+assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
+assert.equal(all.faceIconUrl("oneesan"), "../assets/ui/face_icons/face_minto_private.png");
+assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
+assert.equal(requests.length, 42);
+assert.equal(new Set(requests).size, 42);
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 36);
+assert.equal(progress.length, 42);
+assert(all.DB.dialogues.samechan_cinema_introduction);
+assert(all.DB.dialogues.cinema_first_screening);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
+assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
 assert.equal(all.DB.characters.hiyori.name, "朝霧ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
 assert.equal(all.DB.hiyori.route.enabled, true);
@@ -60,8 +83,14 @@ assert(all.faceIconUrl("hiyori"));
 assert.equal(all.DB.relationshipMemories.tsumugi_creature.char_id, "tsumugi");
 assert(all.DB.dialogues.ch1_tsumugi_third);
 assert(all.DB.dialogues.remake_midcheck);
+assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 56);
+assert(all.DB.dialogues.remake_fortune_trivia_naru_1, "fortune results were not registered after loading");
+assert(all.DB.dialogues.remake_fortune_trivia_sumi_13, "added fortune readings were not registered after loading");
+assert(!all.DB.dialogues.remake_fortune_trivia_adam_1, "excluded fortune readings must not be registered");
 assert.equal(all.DB.dialogues.craft_inner_heat_watch.lines[0].speaker, "hajime");
 assert(all.DB.dialogues.craft_inner_heat_watch.lines[0].text);
+assert.equal(all.DB.dialogues.tournament_craft_packed_intro.lines[0].speaker, "pakki");
+assert(all.DB.dialogues.tournament_craft_care_recovered.lines[0].text);
 assert.equal(all.DB.characters.maki.display_name, "斧崎マキ");
 assert.equal(all.DB.characters.sai.display_name, "六角サイ");
 assert(all.DB.dialogues.venue_maki_greet.lines[0].text);
@@ -121,4 +150,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 36 JSON files, max 4 requests, hiyori foundation, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 42 JSON files, max 4 requests, gallery catalog, hiyori foundation, venue hosts, cinema, progress, HTTP/network/JSON errors, headers/body timeout: PASS");

@@ -24,7 +24,7 @@ async function prepare(page, options = {}) {
     for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) { s.met[id] = true; s.affinity[id] = 66; }
     if (club) s.trpg.club = { founded: { chapter: 2, day: 1 }, members: Object.fromEntries(
       ["hiyori", "samechan", "tsumugi", "adam"].map(id => [id, { chapter: 2, day: 2 }])) };
-    s.flags._qa_preserved = true; s.flavorStock.double_apple = 37; s.reel.count = 3;
+    s.flags._rei_trpg_introduced = true; s.flags._qa_preserved = true; s.flavorStock.double_apple = 37; s.reel.count = 3;
     core.config.textSpeed = 4; core.config.bgmVolume = 0; core.saveConfig(); core.saveToSlot("suien_remake_slot1");
     localStorage.setItem("qa_unrelated", "keep"); sessionStorage.setItem("qa_unrelated", "keep");
   }, options);
@@ -55,11 +55,13 @@ await suite("trpg-main", async check => {
   ]) await check(label, async page => {
     await prepare(page, { club: false }); const before = await storageSnapshot(page);
     await page.goto(new URL("trpg-campaign-preview.html", baseURL).href);
-    await button(page, "trpg-club-found").waitFor();
+    await button(page, "trpg-club-choice-time").waitFor();
+    assert.equal(await button(page, "trpg-club-choice-people").count(), 1);
     assert.equal(await button(page, "trpg-buy-shark-last-order").count(), 0);
     await assertShelfControls(page);
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-club-proposal-" + label + ".png" });
-    await hit(page, "trpg-club-found");
+    await hit(page, label === "club-recruit-pc" ? "trpg-club-choice-time" : "trpg-club-choice-people");
+    assert((await button(page, "trpg-club-founded").textContent()).includes(label === "club-recruit-pc" ? "営業が終わるまで" : "声をかけるところから"));
     assert.equal(await button(page, "trpg-buy-shark-last-order").count(), 0, "MAX alone must not stock a book");
     await hit(page, "trpg-demo-meet-samechan"); await assertFits(page, ".trpg-club-dialog button");
     await hit(page, "trpg-recruit-later");
@@ -77,7 +79,7 @@ await suite("trpg-main", async check => {
     const joined = await page.evaluate(() => __trpgCampaignPreview.snapshot());
     assert.equal(Object.keys(joined.trpg.club.members).length, 4); assert.equal(joined.slot, 1); assert.equal(joined.money, 3000);
     await hit(page, "trpg-buy-shark-last-order"); assert(await button(page, "trpg-play-shark-last-order").isEnabled());
-    assert.equal(await button(page, "trpg-person-adam").getAttribute("data-available"), "false");
+    assert.equal(await button(page, "trpg-person-adam").getAttribute("data-available"), "true");
     await assertShelfControls(page); assert.deepEqual(await storageSnapshot(page), before);
   }, options);
   await check("actual-visits-recruit-and-save-members", async page => {
@@ -85,7 +87,7 @@ await suite("trpg-main", async check => {
     await page.evaluate(async () => {
       const { openTrpgBar } = await import("./js/daily/trpg.js"); openTrpgBar();
     });
-    await hit(page, "trpg-club-found"); await hit(page, "trpg-campaign-close");
+    await hit(page, "trpg-club-choice-people"); await hit(page, "trpg-campaign-close");
     assert.equal(await button(page, "trpg-demo-meet-samechan").count(), 0, "Real bar has no remote recruitment");
     await page.evaluate(async () => {
       const { vnTest } = await import("./js/vn/engine.js"); vnTest.turbo = true;
@@ -171,7 +173,10 @@ await suite("trpg-main", async check => {
   }, options);
   await check("purchase-cancel-and-small-table", async page => {
     await prepare(page); await open(page); await hit(page, "trpg-buy-ordinary-cup");
-    await page.evaluate(() => { delete __remake.state.trpg.club.members.tsumugi; });
+    await page.evaluate(() => {
+      delete __remake.state.trpg.club.members.tsumugi;
+      delete __remake.state.trpg.club.members.adam;
+    });
     await hit(page, "trpg-campaign-close"); await open(page);
     const before = await snapshot(page);
     await hit(page, "trpg-play-ordinary-cup");
@@ -197,20 +202,30 @@ await suite("trpg-main", async check => {
   });
   await check("required-gm-and-prior-appointment", async page => {
     await prepare(page, { day: 4 }); await open(page); await hit(page, "trpg-buy-shark-last-order");
+    assert(await button(page, "trpg-play-shark-last-order").isEnabled());
+    await page.evaluate(() => { __remake.state.trpg.shifts.push({ id: "samechan", chapter: 2, day: 4, slot: 1, busy: true, reason: "別の約束" }); });
+    await hit(page, "trpg-campaign-close"); await open(page);
     assert(await button(page, "trpg-play-shark-last-order").isDisabled());
     await hit(page, "trpg-campaign-close"); await open(page, { nightBusy: true });
     assert((await button(page, "trpg-campaign-notice").textContent()).includes("予定"));
     await hit(page, "trpg-buy-ordinary-cup"); assert(await button(page, "trpg-play-ordinary-cup").isDisabled());
   });
-  await check("title-shelf-is-read-only-and-restores-focus", async page => {
+  await check("retained-shelf-module-is-read-only-without-title-entry", async page => {
     await prepare(page);
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.state.trpg.stock = ["ordinary-cup"]; core.save(); const { showTitle } = await import("./js/scenes/title.js"); showTitle(); });
     const before = await storageSnapshot(page), stateBefore = await snapshot(page);
-    await hit(page, "title-trpg"); await button(page, "trpg-buy-ordinary-cup").waitFor();
+    assert.equal(await button(page, "title-trpg").count(), 0);
+    // Exercise the retained module directly; it is no longer a player-facing title route.
+    await page.evaluate(async () => {
+      const { openTrpgRoom } = await import("./js/scenes/trpg-room.js");
+      const { showTitle } = await import("./js/scenes/title.js");
+      openTrpgRoom(() => showTitle());
+    });
+    await button(page, "trpg-buy-ordinary-cup").waitFor();
     assert(await button(page, "trpg-buy-ordinary-cup").isDisabled());
     assert.equal(await page.locator('[data-test^="trpg-play-"]:enabled').count(), 0);
-    await hit(page, "trpg-campaign-close"); await button(page, "title-trpg").waitFor();
-    assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "title-trpg");
+    await hit(page, "trpg-campaign-close"); await button(page, "title-new").waitFor();
+    assert.equal(await button(page, "title-trpg").count(), 0);
     assert.deepEqual(await storageSnapshot(page), before); assert.deepEqual(await snapshot(page), stateBefore);
   });
   await check("load-retry-cancel-and-owner-cleanup", async page => {
@@ -247,7 +262,7 @@ await suite("trpg-main", async check => {
   await check("isolated-demo-and-chapter-gate", async page => {
     await prepare(page); const before = await storageSnapshot(page);
     await page.goto(new URL("trpg-campaign-preview.html", baseURL).href);
-    await hit(page, "trpg-club-found"); await hit(page, "trpg-demo-meet-samechan");
+    await hit(page, "trpg-club-choice-time"); await hit(page, "trpg-demo-meet-samechan");
     await hit(page, "trpg-recruit-invite"); await hit(page, "trpg-recruit-next"); await hit(page, "trpg-recruit-next");
     await hit(page, "trpg-buy-shark-last-order"); await hit(page, "trpg-campaign-close");
     await hit(page, "trpg-demo-ch1");

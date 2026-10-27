@@ -1,0 +1,74 @@
+{
+  "main_sha": "ea0229dbd6635299b78faba04c4956f28a9e0577",
+  "manifest": "remake/data/manifest.json",
+  "portrait": {
+    "faces": [
+      "angry",
+      "normal",
+      "smile",
+      "smoke",
+      "surprise"
+    ],
+    "h": 0.8067,
+    "b": 0.0217,
+    "ax": 0.5007,
+    "aspect": 0.7467
+  },
+  "setting_source": "data/characters.json",
+  "setting": {
+    "id": "pakki",
+    "name": "パッキー",
+    "role": "mc",
+    "age": "年齢不詳",
+    "nationality": "Japan",
+    "affiliation": "大会MC（マスコット）",
+    "play_style": "N/A",
+    "description": "シーシャ大会の名物MC兼マスコット。実況・進行を一手に担う。常にハイテンションで喋り倒すが、本当に美味いシーシャが出た時だけ沈黙し、煙が虹色になるという伝説を持つ。笑い声は「ぷぷぷっ！」。",
+    "background_secret": "初期大会を立ち上げた運営の一人。声帯を痛め、本来の声の代わりに合成音声とマスコットでMCを続ける。衣装は初期大会の公募で集まった図案を運営スタッフがまとめた。スミさん個人の作品ではない。",
+    "favorite_flavor": "ガムシナモン（仮）",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "魅力",
+      "secondary": "洞察",
+      "notes": "ただの盛り上げ役として振る舞っていたが、はじめの全てを肯定するようなプレイを見て、いつの間にか参加者へのイジリが減り、敗者の魅力を引き出すような温かい実況スタイルに変わっていた。"
+    },
+    "visual_concepts": [
+      "mysterious mascot character, wearing a cute but slightly weird fluffy colorful animal costume holding a microphone, very upbeat and energetic body language, festival stage lighting",
+      "eccentric tournament MC, wearing an oversized flashy plush head mascot suit (perhaps a surreal tapir or cloud creature), holding a golden mic, standing in front of a cheering crowd, comic pop-art style"
+    ],
+    "intro_cutin": {
+      "title": "大会名物MC兼マスコット",
+      "line": "ぷぷぷっ！ 会場は満席御礼ッ！",
+      "face": "smile",
+      "color": "#ff3fa4"
+    }
+  },
+  "assets": [
+    {
+      "path": "assets/sprites/characters/pakki/chr_pakki_angry.png",
+      "sha": "16bed521dca2e3b647484255f33c827d53d05617",
+      "size": 529903
+    },
+    {
+      "path": "assets/sprites/characters/pakki/chr_pakki_normal.png",
+      "sha": "05561f4ddc66fef241210bc6e23263742a0a29fe",
+      "size": 521132
+    },
+    {
+      "path": "assets/sprites/characters/pakki/chr_pakki_smile.png",
+      "sha": "fa005c6f8599967caaa099a3e9cf376612fbc5fa",
+      "size": 545351
+    },
+    {
+      "path": "assets/sprites/characters/pakki/chr_pakki_smoke.png",
+      "sha": "01adeccaa40c0c192c2e743757f23d66d83c40b1",
+      "size": 538614
+    },
+    {
+      "path": "assets/sprites/characters/pakki/chr_pakki_surprise.png",
+      "sha": "e78fbe8022b988c8662345c83215fffb05b4a50b",
+      "size": 509507
+    }
+  ],
+  "input_selection": "normal sprite only; no other character images as input"
+}

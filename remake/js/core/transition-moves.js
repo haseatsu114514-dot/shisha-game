@@ -215,7 +215,6 @@ function walkDoorMove(host, opts = {}) {
   }, async (node) => {
     const wait = 900 - (performance.now() - shownAt); // 扉の前まで歩く
     if (wait > 0) await sleep(wait);
-    SE.doorbell();
     light.setAttribute("opacity", "1");
     await move(doorFill, [{ transform: "scaleX(1)" }, { transform: "scaleX(0.08)" }], 300, { easing: EASE.out });
     await move(figPos, [{ opacity: 1 }, { opacity: 0 }], 240);

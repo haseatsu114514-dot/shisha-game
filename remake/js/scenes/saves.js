@@ -5,14 +5,16 @@ import { SAVE_SLOTS, readSlot, saveToSlot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { SE } from "../core/audio.js";
 
-const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "大会当日", cleared: "第1章クリア" };
+const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "大会当日", aftermath: "大会後", cleared: "第1章クリア" };
 
 function slotInfo(data) {
   if (!data) return "── 空き ──";
   const when = data.savedAt ? new Date(data.savedAt).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
   const time = data.phase === "daily" ? (data.slot >= 1 ? "夜" : "昼") : "";
-  const chapter = data.chapter === 2 ? "第2章・" : "";
-  const label = data.chapter === 2 && chapterDay(data) === 1 && data.flags?._ch2_day1?.stage === "complete" ? "初日終了" : PHASE_LABEL[data.phase] || "";
+  const chapter = data.chapter === 2 ? "第2章・" : data.chapter === 3 ? "第3章・" : "";
+  const label = data.chapter === 3 && data.phase === "cleared" ? "第3章クリア"
+    : data.chapter === 2 && data.phase === "cleared" ? "第2章クリア"
+    : data.chapter === 2 && chapterDay(data) === 1 && data.flags?._ch2_day1?.stage === "complete" ? "初日終了" : PHASE_LABEL[data.phase] || "";
   return { head: `${chapter}DAY ${chapterDay(data)}${time ? `・${time}` : ""}　${label}`, sub: `所持金 ${yen(data.money || 0)}${when ? `　${when}` : ""}` };
 }
 

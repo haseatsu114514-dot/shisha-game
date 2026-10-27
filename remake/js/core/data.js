@@ -3,7 +3,11 @@
 // 実行時に fetch するだけで、書き換えも二重コピーもしない。
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
+import { registerFortuneReadings } from "./fortune-effects.js";
+
 const ROOT = "../";
+// 章の追加台本は必要になった時だけ読み、起動や他章の通信を増やさない。
+export const CHAPTER_DIALOGUE_FILES = { ch2Tournament: "ch2_tournament", cityGuests: "ch2_city_guests" };
 // データローダは状態モジュールを読み込まない。天気側が表示用の読み取り関数を登録する。
 let backgroundWeather = () => null;
 export function setBackgroundWeatherSource(source) { backgroundWeather = source; }
@@ -12,6 +16,8 @@ export function setBackgroundWeatherSource(source) { backgroundWeather = source;
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
   samechan: {},         // シーシャークのprofile・会話・LIME・店（独立overlay）
+  fortuneTrivia: {},
+  fortuneHints: {},
   hiyori: {},         // 登場方法が決まるまで無効のルート定義と、表示確認用台本
   flavors: [],
   flavorById: {},
@@ -31,6 +37,7 @@ export const DB = {
   statusTexts: { statPurpose: {}, statTierFx: {}, customerNotes: [] }, // ステの説明・★効果・常連ノート
   broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
+  gallery: { items: [] }, // 採用済み漫画・ムービー。候補画像はここへ登録しない。
 };
 
 const DIALOGUE_FILES = [
@@ -40,9 +47,12 @@ const DIALOGUE_FILES = [
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "samechan", // 帰り道の出会いと、章2からのシーシャーク
+  "cinema", // サメちゃんの自主訪問紹介と、地元の小さな名画座
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
+  "tournament_craft", // 制作中の注目点と、試喫でその工程を振り返る掛け合い
   "venue_hours", // 店主の案内と街の昼夜差分
   "hiyori", // ひよりの本心表示サンプル・未接続のイベント定義
+  "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
@@ -66,6 +76,7 @@ async function getJSON(path) {
 }
 
 export async function loadAll(onProgress = () => {}) {
+  globalThis.performance?.setResourceTimingBufferSize?.(1000);
   const jobs = [
     ["characters", `${ROOT}data/characters.json`],
     ["relationshipMemories", `${ROOT}data/relationship_memories.json`],
@@ -83,6 +94,9 @@ export async function loadAll(onProgress = () => {}) {
     ["statusTexts", "data/status_texts.json"],
     ["broadcast", "data/broadcast.json"],
     ["manifest", "data/manifest.json"],
+    ["gallery", "data/gallery.json"],
+    ["fortuneTrivia", "data/fortune-trivia.json"],
+    ["fortuneHints", "data/fortune-choice-hints.json"],
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
   ];
   let done = 0;
@@ -118,12 +132,16 @@ export async function loadAll(onProgress = () => {}) {
   DB.friends = raw.friends;
   DB.statusTexts = raw.statusTexts;
   DB.broadcast = raw.broadcast;
+  DB.fortuneTrivia = raw.fortuneTrivia;
+  DB.fortuneHints = raw.fortuneHints;
   DB.manifest = raw.manifest;
+  DB.gallery = raw.gallery;
   WEBP = new Set(DB.manifest.webp || []);
   for (const [key, v] of Object.entries(raw)) {
     if (!key.startsWith("dlg:")) continue;
     for (const d of v.dialogues || []) DB.dialogues[d.dialogue_id] = d;
   }
+  registerFortuneReadings(DB);
   return DB;
 }
 
@@ -185,9 +203,16 @@ export function callName(id, state, opts = {}) {
 
 // 表示用の軽い WebP（remake/img/・tools/build_images.py が作る）。一覧に無い画像は assets/ の PNG を読む
 let WEBP = new Set();
+// #983で採用した顔修正を、同名URLに残った旧画像のキャッシュと区別する。
+const FACE_CORRECTION_REVISION = "face-line-20261026";
+function faceCorrectionVersion(rel) {
+  return /^(sprites\/characters\/(minto\/chr_minto_normal|ageha\/chr_ageha_[a-z]+)\.png|ui\/face_icons\/face_(minto|ageha)\.png)$/.test(rel)
+    ? `?v=${FACE_CORRECTION_REVISION}` : "";
+}
 /** assets/ からの相対パス（例 "backgrounds/bg_x.png"）→ 実際に読む URL */
 export function img(rel) {
-  return WEBP.has(rel) ? `img/${rel.replace(/\.png$/, ".webp")}` : `${ROOT}assets/${rel}`;
+  const url = WEBP.has(rel) ? `img/${rel.replace(/\.png$/, ".webp")}` : `${ROOT}assets/${rel}`;
+  return url + faceCorrectionVersion(rel);
 }
 
 // 旧ファイル名 → 最新版（参照だけ差し替える）
@@ -204,6 +229,8 @@ const BG_ALIASES = {
 const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap"]);
 // 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
 const BG_NO_NIGHT_TINT = new Set([
+  "bg_rojiura_cinema.png",
+  "bg_rojiura_cinema_space.png", "bg_rojiura_cinema_monster.png", "bg_rojiura_cinema_detective.png",
   "bg_eden_shop.png", "bg_ageha_shop.png", "bg_ryuji_shop.png", "bg_shop.png", "bg_fookah_showroom.png",
   "bg_hideaway.png", "kemurikusa.png", "peppermint.png", "bg_tournament_stage.png", "bg_c_station_lobby.png",
 ]);
@@ -273,12 +300,12 @@ export function faceIconUrl(id, state = null, { context = null } = {}) {
   const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
   if (privateMinto) return icons.includes("face_minto_private.png") ? `${ROOT}assets/ui/face_icons/face_minto_private.png` : null;
   const folder = SPEAKER_ALIAS[id] || id;
-  return icons.includes(`face_${folder}.png`) ? `${ROOT}assets/ui/face_icons/face_${folder}.png` : null;
+  return icons.includes(`face_${folder}.png`) ? img(`ui/face_icons/face_${folder}.png`) : null;
 }
 
 /** 顔アイコンの全URL（起動時の先読み用） */
 export function allFaceIconUrls() {
-  return (DB.manifest.faceIcons || []).map((f) => `${ROOT}assets/ui/face_icons/${f}`);
+  return (DB.manifest.faceIcons || []).map((f) => img(`ui/face_icons/${f}`));
 }
 
 export function makingUrl(name) {
@@ -289,10 +316,6 @@ export function bgmUrl(key) {
   const files = DB.manifest.bgm || [];
   const file = [`${key}.bgm`, `${key}.mp3`].find((name) => files.includes(name));
   if (file) return `${ROOT}assets/audio/bgm/${file}`;
-  // BGMer公式配布のEMGコール。個人・商用ゲームへの利用、加工、再配布が許可される。
-  // 本体へ音源を正式同梱した場合は上記のローカルファイルが優先される。
-  // HTTPS配信ができない環境ではcore/audio.jsのWebAudio緊迫ループへ自動フォールバック。
-  if (key === "bgm_continue_urgent") return "https://bgmer.net/wp-content/uploads/2021/10/163_BPM115.mp3";
   return null;
 }
 

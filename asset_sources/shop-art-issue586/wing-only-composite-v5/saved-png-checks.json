@@ -1,0 +1,86 @@
+{
+  "kind": "independent saved-PNG roundtrip verification; no image edits",
+  "items": [
+    {
+      "id": "mint",
+      "decode": "PASS",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "original_alpha_extrema": [
+        0,
+        255
+      ],
+      "result_alpha_extrema": [
+        0,
+        255
+      ],
+      "source_sha256": "00f24d96beec54e32fd192a204501da2a234ff2247b34b6d640f9d60deec93be",
+      "result_sha256": "d65bf690203e60c140cc85b9b9789e5573938b7b672e90502574c28e76b79d71",
+      "full_alpha_changed_pixels": 0,
+      "off_mask_rgba_changed_pixels": 0,
+      "saved_union_matches_old_or_new": true,
+      "saved_changed_mask_matches_real_diff": true,
+      "allowed_pixels": 23301,
+      "changed_pixels": 22286,
+      "fruit_region_negative_control_detected": true
+    },
+    {
+      "id": "double_apple",
+      "decode": "PASS",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "original_alpha_extrema": [
+        0,
+        255
+      ],
+      "result_alpha_extrema": [
+        0,
+        255
+      ],
+      "source_sha256": "33147d875cc50d84e61bea2d2371e1a0eecaebffee8516a3de127bbc1e47d563",
+      "result_sha256": "5f663c8d24ffdf00d462aa710270564e1c9afb5f7730f22e528ce9d9eae9e674",
+      "full_alpha_changed_pixels": 0,
+      "off_mask_rgba_changed_pixels": 0,
+      "saved_union_matches_old_or_new": true,
+      "saved_changed_mask_matches_real_diff": true,
+      "allowed_pixels": 29974,
+      "changed_pixels": 28414,
+      "fruit_region_negative_control_detected": true
+    },
+    {
+      "id": "grape",
+      "decode": "PASS",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "original_alpha_extrema": [
+        0,
+        255
+      ],
+      "result_alpha_extrema": [
+        0,
+        255
+      ],
+      "source_sha256": "17f4703c6795e02481f42b2c0734d8c7910a6a33dc51665d499f3beb5413c9d8",
+      "result_sha256": "33a1e94de92a0ba4070865bab1f296aa484706c8b532d63eae78dcc8b998e4e8",
+      "full_alpha_changed_pixels": 0,
+      "off_mask_rgba_changed_pixels": 0,
+      "saved_union_matches_old_or_new": true,
+      "saved_changed_mask_matches_real_diff": true,
+      "allowed_pixels": 26024,
+      "changed_pixels": 24341,
+      "fruit_region_negative_control_detected": true
+    }
+  ],
+  "preedit_head": "0ec190c5368a10bae7124ca37415c549c274edb7",
+  "previous_shop_art_files_exact_bytes": 113,
+  "data_assets_remake_or_previous_art_changed_paths": []
+}

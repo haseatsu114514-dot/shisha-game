@@ -27,7 +27,7 @@ try {
     await page.goto(process.env.BASE_URL||'http://127.0.0.1:8123/remake/');
     await page.waitForSelector('[data-test="title-new"]');
     await page.evaluate(async()=>{
-      const core=await import('./js/core/state.js');core.newGame();core.state.stamina=80;
+      const core=await import('./js/core/state.js');core.newGame();core.state.flags._sumi_attack_learned=true;core.state.stamina=80;
       core.state.stats.guts=10;core.state.stats.insight=10;
       const session=await import('./js/craft/session.js'),steam=await import('./js/craft/steam.js');
       __remake.craftTest.auto=null;window.cs=session.newSession('drill');cs.steamSeconds=600;
@@ -103,10 +103,13 @@ try {
         assert.equal(await button.getAttribute('data-direction'),'u',`Movement ${direction} must not turn the attack`);assert.equal(await button.getAttribute('data-uses'),String(++uses));
       }
       await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-slash"]').disabled);
-      await button.focus();await page.keyboard.press('Space');
+      await button.focus();await page.keyboard.press('Enter');
       assert.equal(await button.getAttribute('data-direction'),'u','Released movement must keep the attack facing forward');
       assert.equal(await button.getAttribute('data-uses'),String(++uses));
-      assert.equal(await page.locator('.dodge-refresh').getAttribute('data-remaining'),'1','Space on slash accidentally refreshed');
+      assert.equal(await page.locator('.dodge-refresh').getAttribute('data-remaining'),'1','Enter on slash accidentally refreshed');
+      await page.keyboard.press('Space');
+      assert.equal(await button.getAttribute('data-uses'),String(uses),'Space on slash must not also attack');
+      assert.equal(await page.locator('.dodge-refresh').getAttribute('data-remaining'),'0','Space shortcut was swallowed by slash focus');
     } else {
       const pad=await page.locator('.dodge-pad').boundingBox(),r=await button.boundingBox();
       for(const [dx,dy,direction] of [[-.8,0,'l'],[0,.8,'d'],[.8,0,'r'],[0,-.8,'u']]) {
@@ -131,7 +134,7 @@ try {
     assert.equal(await page.locator('.dodge-slash-fx,.dodge-refresh-fx,.dodge-thought-echo,.dodge-word-cut,.dodge-word,.dodge-object').count(),0);
     assert(await button.isDisabled());
     const result=await page.evaluate(()=>({...cs.steam}));
-    assert(result.slashesUsed>=5);assert.equal(result.refreshesUsed,0);assert.equal(result.score,Math.max(0,100-result.hits*14));
+    assert(result.slashesUsed>=5);assert.equal(result.refreshesUsed,mobile?0:1);assert.equal(result.score,Math.max(0,100-result.hits*14));
     await page.close();
     console.log(`[slash] PASS: ${name} real bullets, bounded/no-heal strike, forward fixed while moving in four directions, cooldown, white hit circle, raised neutral knob, distinct hit color and end cleanup`);
   }

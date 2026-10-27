@@ -8,6 +8,8 @@ const ENCOUNTERS = {
   kannon: [
     { id: "kannon_adam", met: "adam", slot: 0 },
     { id: "kannon_oldman", slot: 0 },
+    // パッキーのアプリ導入後: 観音堂で設定が変わることをアダムが匂わせる（#621）
+    { id: "kannon_adam_pakki", met: "adam", flag: "pakki_app_installed", slot: 0 },
   ],
   choizap: [
     { id: "choizap_minto", met: "minto", flag: "_minto_identity_revealed" },

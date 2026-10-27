@@ -164,11 +164,16 @@ await suite('hiyori-hagal', async allCheck => {
       await page.evaluate(async () => {
         // This is an explicit equipment UI fixture, not natural inventory acquisition.
         H.shop.addFlavorStock('peach', 50); H.shop.addFlavorStock('mint', 50);
-        H.cs = H.session.newSession('drill'); await H.session.openBench(H.cs).ready;
+        H.cs = H.session.newSession('drill'); H.cs.staffPractice = true; await H.session.openBench(H.cs).ready;
         H.running = H.steps.stepSetup(H.cs);
       });
       const choose = page.locator('[data-test="opt-suyaki_hiyori"]');
       await choose.waitFor(); await (touch ? choose.tap() : choose.click());
+      // 準備工程が外観選択を出すときだけ実際に確定する（出ない版では準備がそのまま終わる）。
+      const appearance = page.locator('[data-test="appearance-confirm"]');
+      const shown = await Promise.race([appearance.waitFor({ state: 'visible' }).then(() => true, () => false),
+        page.evaluate(() => H.running).then(() => false)]);
+      if (shown) await (touch ? appearance.tap() : appearance.click());
       await page.evaluate(() => H.running);
       assert.equal(await page.evaluate(() => H.core.state.equip.bowl), gift);
       await page.evaluate(() => { H.running = H.steps.stepMix(H.cs); });

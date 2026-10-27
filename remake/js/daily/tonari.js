@@ -1,18 +1,23 @@
-// tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん・自主練）。
+import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
+// tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
+// シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
 import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
-import { showScreen, setBg, toast, modal, retire } from "../core/ui.js";
+import { showScreen, setBg, toast, retire, modal } from "../core/ui.js";
 import { state, timeOfDay } from "../core/state.js";
 import { addMoney, addStamina, applyStats, star, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
-import { runDrill, DRILLS } from "../craft/session.js";
-import { runFullPractice } from "../craft/practice.js";
+import { hearFortuneRumor } from "./fortune-rumor.js";
+import { DRILLS } from "../craft/session.js";
 import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
 import { shiftClose } from "../core/scene-motions.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
 import { hiyoriAxeReady, hiyoriAxeAffordable } from "./hiyori-axe.js";
+import { canStudyAttack, studyAttack } from "./attack-lesson.js";
+import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
+import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
@@ -31,11 +36,12 @@ export function tonariMenu() {
       el("h2.sub-title", { text: "tonari" }),
       el("p.sub-lead", { text: state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
       el("div.sub-choices", [
-        opt("お客さんとして一服", tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
-        opt("一台を通して練習", "配合から提供・2回の調整まで。材料は店の葉を使う", "practice", "tonari-practice"),
-        opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話すか、裏で自主練もできる", "baito", "tonari-baito"),
+        opt("お客さんとして一服", !tsumugiAtTonari(state) ? "客席でゆっくり一服する"
+          : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
+        opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
+        opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話せる", "baito", "tonari-baito"),
         hiyoriAxeReady() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
-          ? "夜の寄り道。参加3000円・体力10・行動1回。3投を一緒に楽しむ"
+          ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
       ]),
       el("button.btn.ghost.small.sub-back", { text: "← マップに戻る", dataset: { test: "sub-back" }, onclick: () => { SE.cancel(); pickIt(null); } }),
@@ -43,16 +49,24 @@ export function tonariMenu() {
   });
 }
 
-export async function tonariCustomer() {
-  addStamina(-10);
-  await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG });
-  await meetHiyoriAtTonari();
-  await visitChar("tsumugi");
-}
-
-export async function tonariPractice() {
-  addStamina(-12);
-  await runFullPractice();
+const customerVisits = new WeakSet();
+export async function tonariCustomer({ signal = null } = {}) {
+  const owner = state;
+  if (customerVisits.has(owner) || signal?.aborted) return false;
+  customerVisits.add(owner);
+  try {
+    const live = () => state === owner && !signal?.aborted;
+    addStamina(-16);
+    const greeting = await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG, signal });
+    if (!live() || !greeting || greeting.cancelled) return false;
+    await meetHiyoriAtTonari();
+    if (!live()) return false;
+    if (tsumugiAtTonari(state)) {
+      if (!await visitChar("tsumugi") || !live()) return false;
+      if (!await hearFortuneRumor({ signal }) || !live()) return false;
+    }
+    return live();
+  } finally { customerVisits.delete(owner); }
 }
 
 // ---------------------------------------------------------------- バイト
@@ -94,6 +108,7 @@ async function baitoShift({ called }) {
   } else {
     await customerEvent(condition);
   }
+  await serveShiftOrder();
   const bonus = Math.round(CHARM_BONUS[star("charm") - 1] * condition.bonusRate);
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
@@ -125,6 +140,8 @@ async function afterShiftErrand() {
 /** 台本の条件は、初回でも再来店でも守る。名前を知る条件には旧セーブの進行も使う */
 function customerEligible(event, rainy) {
   if (event.chapter && event.chapter !== state.chapter) return false;
+  if ((customerFamilies(event).includes("tsumugi") || event.id.startsWith("baito_tsumugi_"))
+    && !tsumugiAtTonari(state)) return false;
   const flagKnown = (flag) => flag === "ch1_tsumugi_regular"
     ? !!(state.met.tsumugi || state.flags._met_tsumugi || (state.story.tsumugi || 0) > 0)
     : !!state.flags[flag];
@@ -191,7 +208,7 @@ async function customerEvent(condition) {
   rememberBaito(ev.id, customerFamilies(ev));
 }
 
-/** シフト後: スミさんと話す（固有会話）／裏で自主練（ドリル）／そのまま上がる */
+/** シフト後: スミさんと話す（固有会話）／そのまま上がる。練習は店の固定イベントで（#783） */
 function afterShiftMenu() {
   return new Promise((resolve) => {
     const sumiNew = hasNewStory("sumi");
@@ -202,8 +219,8 @@ function afterShiftMenu() {
       el("p.sub-lead", { text: "シフトの片付けを終えて、まだ少しだけ時間がある。" }),
       el("div.sub-choices", [
         opt("スミさんと話す", sumiNew ? "今日は何か教えてもらえそうだ" : "落ち着いた一台を分けてもらう", "sumi", "after-sumi"),
-        opt("一台を通して練習", "本番と同じ制作と2回の調整（体力を少し使う）", "full", "after-full"),
-        opt("裏の作業台で自主練", "工程をひとつ選んで反復する（体力を少し使う）", "drill", "after-drill"),
+        canStudyAttack() ? opt("雑念を切る特訓を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
+        canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
       ]),
     ]));
@@ -212,26 +229,9 @@ function afterShiftMenu() {
 
 async function afterShift() {
   const pickAfter = await afterShiftMenu();
-  if (pickAfter === "sumi") {
-    await visitChar("sumi");
-  } else if (pickAfter === "full") {
-    addStamina(-8);
-    await runFullPractice();
-  } else if (pickAfter === "drill") {
-    const kind = await chooseDrill();
-    addStamina(-8);
-    let again;
-    do {
-      const tier = await runDrill(kind);
-      state.best[kind] = Math.max(state.best[kind] ?? -1, tier);
-      again = await modal({ title: "もう一回練習しますか？",
-        body: "同じ工程を繰り返せます。能力値は増えません。",
-        options: [
-          { label: "もう一回練習する", value: true, test: "drill-again" },
-          { label: "練習を終える", value: false, primary: true, test: "drill-finish" },
-        ] });
-    } while (again);
-  }
+  if (pickAfter === "attack") await studyAttack();
+  if (pickAfter === "sumi") await visitChar("sumi");
+  if (pickAfter === "cube_coals") await studyCubeCoals();
 }
 
 export function chooseDrill({ title = "自主練", lead = "苦手な工程を反復しよう。能力値は増えません。", recommended = null } = {}) {
@@ -247,4 +247,27 @@ export function chooseDrill({ title = "自主練", lead = "苦手な工程を反
       )),
     ]));
   });
+}
+
+const SHIFT_ORDERS = [
+  { text: "甘すぎない、柑橘のさっぱりしたものを", mixes: [{ lemon: 9, mint: 3 }, { orange: 9, lemon: 3 }], labels: ["レモン＋ミント", "オレンジ＋レモン"] },
+  { text: "果物の甘さで、ミントは抜きにして", mixes: [{ blueberry: 9, peach: 3 }, { grape: 8, orange: 4 }], labels: ["ブルーベリー＋ピーチ", "グレープ＋オレンジ"] },
+  { text: "お菓子みたいに、甘くて丸い味がいいな", mixes: [{ vanilla: 8, coconut: 4 }, { peach: 8, vanilla: 4 }], labels: ["バニラ＋ココナッツ", "ピーチ＋バニラ"] },
+  { text: "ダブルアップルを。清涼感は少しだけ", mixes: [{ double_apple: 10, mint: 2 }, { double_apple: 12 }], labels: ["ダブルアップル＋ミント少量", "ダブルアップル単体"] },
+];
+async function serveShiftOrder() {
+  const owner = state;
+  const key = `_shift_order_${state.chapter}:${state.day}`;
+  if (state.flags[key]) return;
+  const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
+  const order = SHIFT_ORDERS[((seed ^ (seed >>> 16)) >>> 0) % SHIFT_ORDERS.length];
+  const index = await modal({ title: "今日の注文", body: `「${order.text}」 店の葉で一台を作る。`,
+    options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
+  if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
+  const result = await play({ dialogue_id: "shift_flavor_order", lines: [
+    { speaker: "hajime", face: "normal", text: "注文を思い返して葉を量り、火を整える。飲み口を確かめて、お客さんへ出した。" },
+  ] }, { bg: TONARI_BG });
+  if (state !== owner || result?.cancelled) return;
+  // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
+  state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
 }

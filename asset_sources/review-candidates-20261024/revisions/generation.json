@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-24",
+  "tool": "image_gen.imagegen",
+  "source_reference": {
+    "branch": "codex/review-images-20261024-task5",
+    "path": "asset_sources/review-candidates-20261024/stills-flavor/05-ch2-sofa-burn-contained.png"
+  },
+  "status": "revised still candidates; no production CG installed",
+  "qa": {
+    "saved_source_viewed": true,
+    "focal_scorch_above_dialogue_region": true,
+    "small_relative_to_hand": true,
+    "leather_revision_matches_story_material": true,
+    "no_flames_smoke_or_remaining_charcoal": true
+  },
+  "files": [
+    {
+      "path": "sofa-leather-charcoal-closeup.png",
+      "sha256": "f203e014dfafdc84ea1b66e1e03ac50a46f3bb65b6b26bba5cbc959ada08b863",
+      "bytes": 2700375
+    },
+    {
+      "path": "README.md",
+      "sha256": "6edd3f14dcf0472edd29ecb481d84c6797fe34d7568d611572ac2e19106aa171",
+      "bytes": 2517
+    },
+    {
+      "path": "sofa-charcoal-closeup.png",
+      "sha256": "477f992f95f8a97ee49433540498e0157abc4ecbbb23757ff32e604f1d0e4750",
+      "bytes": 2842991
+    },
+    {
+      "path": "sofa-leather-prompt.txt",
+      "sha256": "b428f637d187a56b8566ef00dcb12fc9a8ffb727cfd3851c2085db5dc5433cb6",
+      "bytes": 1218
+    },
+    {
+      "path": "sofa-prompt.txt",
+      "sha256": "ef9c3c9c93ea168e60e00bcf0a4232c2b90566e5ae1cd827afcdf9dd6bce3bb1",
+      "bytes": 1324
+    }
+  ]
+}

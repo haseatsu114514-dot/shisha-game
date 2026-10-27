@@ -21,7 +21,10 @@ try {
         stats: await import("./js/core/stats.js"), phone: await import("./js/daily/phone.js"), vn: await import("./js/vn/engine.js") };
       QA.core.newGame();
       const s = QA.core.state;
-      s.phase = "daily"; s.met.naru = true; s.affinity.naru = 17;
+      // #814: LIMEを交換した2本目まで読んでいる（読まずに♥1を超えない）。
+      s.phase = "daily"; s.met.naru = true; s.story.naru = 2; s.affinity.naru = 17;
+      // LIME返信は0.25倍のため、端数繰り越しを足して1回の返信で+1に届くようにする（期待値18は変えない）。
+      s.affinityCarry = { ...(s.affinityCarry || {}), naru: 0.9 };
       // 正式な返信処理を通すためのテスト専用の雑談。
       s.inbox = [{ id: "qa_layout", day: s.day, read: true, done: false, log: [],
         msg: { id: "qa_layout", sender: "naru", type: "chat", messages: ["今日もいい煙だったな"],
@@ -29,17 +32,31 @@ try {
       QA.phoneRun = QA.phone.openLime({ sender: "naru" });
     });
     await page.locator('[data-test="reply-0"]').click();
+    const feedback = page.locator('.lime-note').filter({ hasText: '♡ ほんの少し仲良くなった' });
+    await feedback.waitFor();
+    assert.equal(await feedback.count(), 1, "実返信の微小上昇はLIME内に一度だけ表示する");
+    assert.equal(await page.locator('.gain-card.affinity').count(), 0, "LIME返信は大きな獲得カードと重複しない");
+    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 18);
+    const feedbackFits = await feedback.evaluate(node => {
+      const r = node.getBoundingClientRect();
+      return r.width > 0 && r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight
+        && node.scrollWidth <= node.clientWidth + 1;
+    });
+    assert(feedbackFits, "LIME内の微小上昇通知が画面内に収まる");
+    // 通常の獲得カードの重なり・非阻害性は、LIME倍率を使わない実獲得で別途検査する。
+    await page.evaluate(() => QA.stats.gainAffinity("naru", 1));
     await page.waitForSelector(".gain-card.affinity.show");
     await page.waitForTimeout(500);
     assert.equal(await page.locator(".gc-sub").textContent(), "好感度が少し上がった");
-    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 18);
+    assert.equal(await page.evaluate(() => QA.core.state.affinity.naru), 19);
     const layer = await page.evaluate(() => {
-      const banners = document.getElementById("banners"), modal = document.getElementById("modal");
+      const banners = document.getElementById("banners"), modal = document.getElementById("modal"), wipe = document.getElementById("wipe");
       const r = banners.querySelector(".gain-card").getBoundingClientRect();
       return { front: +getComputedStyle(banners).zIndex > +getComputedStyle(modal).zIndex,
+        coveredByWipe: +getComputedStyle(wipe).zIndex > +getComputedStyle(banners).zIndex,
         pointer: getComputedStyle(banners).pointerEvents, fits: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight };
     });
-    assert.deepEqual(layer, { front: true, pointer: "none", fits: true });
+    assert.deepEqual(layer, { front: true, coveredByWipe: true, pointer: "none", fits: true });
     if (shots) await page.screenshot({ path: `${shots}/${label}-lime.png` });
     // カードが表示中でもLIMEを操作できる。
     await page.locator('[data-test="lime-back"]').click();
@@ -53,7 +70,8 @@ try {
         QA.stats.gainStat("charm", amount);
       }, { from, amount });
       await page.waitForSelector(".gain-card.st-charm.show");
-      assert.equal(await page.locator(".gc-earned").count(), 0, "能力通知に『今回』を表示しない");
+      assert.equal(await page.locator(".gc-earned").count(), 1, "能力通知に今回の増分ラベルを1つ表示する");
+      assert.equal(await page.locator(".gc-earned").textContent(), "今回");
       assert.equal(await page.locator(".gc-points").textContent(), `+${amount}P`);
       assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
       const after = await page.evaluate(() => JSON.stringify(QA.core.state));
@@ -83,10 +101,10 @@ try {
         return { height: box.offsetHeight, inner: !inner.hidden,
           contained: [document.querySelector(".vn-text"), ...(!inner.hidden ? [inner] : [])].every(n => {
             const b = n.getBoundingClientRect();
-            return b.top >= r.top && b.bottom <= r.bottom - 19 * scale && n.scrollWidth <= n.clientWidth + 1;
+            return b.top >= r.top && b.bottom <= r.bottom - 15 * scale && n.scrollWidth <= n.clientWidth + 1;
           }) };
       });
-      assert.equal(geometry.height, 178);
+      assert.equal(geometry.height, 176); // 名前と操作を上辺へ出し、本文2行を収める共通会話枠
       assert(geometry.contained, JSON.stringify(geometry));
       if (geometry.inner) {
         innerPages++;

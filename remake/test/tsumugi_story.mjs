@@ -1,4 +1,4 @@
-// 本筋だけの♥2、前後する個別交流、旧セーブ、実際の夜イベントをブラウザで確認する。
+// 本筋では最初の♥1だけを保証し、個別交流・旧セーブ・実際の夜イベントをブラウザで確認する。
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
@@ -43,7 +43,7 @@ try {
     const result = await page.evaluate(async draftChoice => {
       const s = T.fresh();
       T.vn.vnTest.choose = () => draftChoice;
-      // 魅力と占いを持っていても、固定進行では♥2を超えず、占いを消費しない。
+      // 魅力と占いを持っていても、固定進行は最初の♥1だけで、占いを消費しない。
       s.stats.charm = 90; s.fortune = { char: "tsumugi" };
       const before = T.resources();
       const levels = [];
@@ -57,13 +57,13 @@ try {
       T.vn.backlog().length = 0;
       await T.story.playTsumugiStory(13);
       const saved = T.core.state;
-      return { levels, pts: saved.affinity.tsumugi, sameResources: before === T.resources(),
+      return { levels, pts: saved.affinity.tsumugi || 0, sameResources: before === T.resources(),
         fortune: saved.fortune, contacts: saved.contacts, visits: saved.visits.tsumugi || 0,
         stories: saved.story.tsumugi || 0, lovers: saved.lovers, answers: saved.romanceChoices,
         memories: saved.relationshipMemories, lines, reread: T.lines() };
     }, draftChoice);
-    assert.deepEqual(result.levels, [1, 1, 2, 2]);
-    assert.equal(result.pts, 20); assert(result.sameResources);
+    assert.deepEqual(result.levels, [1, 1, 1, 1]);
+    assert.equal(result.pts, 9); assert(result.sameResources);
     assert.deepEqual(result.fortune, { char: "tsumugi" });
     assert.deepEqual(result.contacts, ["sumi", "tsumugi"]);
     assert.equal(result.visits, 0); assert.equal(result.stories, 0);
@@ -75,7 +75,7 @@ try {
     assert(!result.lines.some(t => /共感覚|約[5５]万|\{tsumugiContestTheme\}/.test(t)));
     assert.deepEqual(result.reread, [], "Loading replayed or rewarded the fixed story");
   }
-  console.log("[tsumugi story] PASS: both draft choices, fixed ♥1→♥2, no action/skill/bond bonus, saved progress");
+  console.log("[tsumugi story] PASS: both draft choices, fixed scenes grant only initial heart, saved progress");
 
   const legacy = await page.evaluate(async () => {
     const s = T.fresh();
@@ -110,7 +110,8 @@ try {
 
   const early = await page.evaluate(async () => {
     const s = T.fresh(); s.day = 2;
-    await T.spots.visitChar("tsumugi"); await T.spots.visitChar("tsumugi");
+    // #814: 2本目の会話は♥1で開く。間にハートが上がった状態を作る（ペースは別テスト）。
+    await T.spots.visitChar("tsumugi"); s.affinity.tsumugi = Math.max(s.affinity.tsumugi || 0, 9); await T.spots.visitChar("tsumugi");
     const first = T.lines(); T.vn.backlog().length = 0;
     await T.story.playTsumugiStory(1);
     return { first, later: T.lines(), stories: s.story.tsumugi, hasContact: T.spots.hasContact("tsumugi") };
@@ -126,7 +127,11 @@ try {
       await T.story.playTsumugiStory(12); T.vn.backlog().length = 0;
       T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => friend
         ? /ゆっくり|思い出ごと|友達/.test(l) : /会いたい|２人|想いを伝え|付き合/.test(l)));
-      for (let i = 0; i < 6; i++) await T.spots.visitChar("tsumugi");
+      // #814: k本目は♥k で開く。各回の前にそのハートへ届いた状態を作る（読む順と内容を検査する）。
+      for (let i = 0; i < 6; i++) {
+        s.affinity.tsumugi = Math.max(s.affinity.tsumugi || 0, T.stats.AFFINITY_RANK_PTS[Math.min(5, s.story.tsumugi || 0)]);
+        await T.spots.visitChar("tsumugi");
+      }
       const visits = T.lines();
       s.affinity.tsumugi = 80; s.slot = 2; s.day = 13;
       await T.bonds.playFinale("tsumugi");
@@ -145,14 +150,14 @@ try {
   }
   console.log("[tsumugi story] PASS: early exchange once, all optional scenes, friendship and dating still available");
 
-  // ゲーム開始から取材・♥1へ。配達やみんとの登場より先に読める。
+  // ゲーム開始から取材へ。配達やみんとの登場より先に読める。
   const opening = await open();
   await opening.evaluate(() => {
     T.core.newGame(); T.vn.backlog().length = 0;
     T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("今は練習しない")));
     T.ch1.startNewGame().catch(e => { window.calendarError = e.message; });
   });
-  await opening.waitForFunction(() => T.core.state.affinity.tsumugi === 9, null, { timeout: 30000 });
+  await opening.waitForFunction(() => T.core.state.flags._tsumugi_contest_research, null, { timeout: 30000 });
   const intro = await opening.evaluate(() => ({ day: T.core.state.day, stories: T.core.state.story.tsumugi || 0,
     met: T.core.state.met.tsumugi, contact: T.spots.hasContact("tsumugi"), lines: T.lines(), error: window.calendarError }));
   assert.equal(intro.error, undefined); assert.equal(intro.day, 1); assert.equal(intro.stories, 0);
@@ -161,6 +166,56 @@ try {
   assert(!intro.lines.some(t => /みんと|コンカフェ|ケムリクサへ偵察/.test(t)));
   await opening.close();
   console.log("[tsumugi story] PASS: first-day introduction and contact before other errands/characters");
+
+  // #815: 客席の固有会話は客の視点。取材・連絡先交換の後は、初回でも初対面の態度へ戻らない。
+  const seat = await open();
+  for (const researched of [true, false]) {
+    const visit = await seat.evaluate(async researched => {
+      const s = T.fresh(); s.day = 2;
+      if (researched) await T.story.playTsumugiStory(1);
+      T.vn.backlog().length = 0;
+      T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("一声かけて")));
+      for (let i = 0; i < 6; i++) {
+        s.affinity.tsumugi = Math.max(s.affinity.tsumugi || 0, T.stats.AFFINITY_RANK_PTS[Math.min(5, s.story.tsumugi || 0)]); // #814
+        await T.spots.visitChar("tsumugi");
+      }
+      return { lines: T.lines(), research: !!s.flags._tsumugi_contest_research };
+    }, researched);
+    assert.equal(visit.research, true);
+    assert(!visit.lines.some(t => /シフト中|バイト中|閉店作業|別のお客さんの一台|あなた、最初の日/.test(t)));
+    assert.equal(visit.lines.includes("……どうも"), !researched, "Known regular returned to a first meeting");
+    assert.equal(visit.lines.includes("……ありがとうございます"), researched);
+  }
+  await seat.close();
+  console.log("[tsumugi story] PASS: customer-seat scenes, known after the interview, first meeting kept before it");
+
+  // #814: ハートと会話イベントの連動（第1章の固有会話）。実際の spots/stats を使う。
+  const gate = await open();
+  const g = await gate.evaluate(async () => {
+    const s = T.fresh(); s.day = 4; s.slot = 0; s.met.naru = true;
+    const lv = () => T.stats.affinityLevel("naru");
+    await T.spots.visitChar("naru");
+    const first = { story: s.story.naru, lv: lv(), open: T.spots.hasNewStory("naru") };
+    T.stats.gainAffinity("naru", 30); // LIMEや贈り物で大きく増えても、2本目を読むまで♥2にはならない
+    const capped = { pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_affinity_waiting_pts || 0, open: T.spots.hasNewStory("naru") };
+    T.vn.backlog().length = 0;
+    await T.spots.visitChar("naru");
+    const second = { story: s.story.naru, pts: s.affinity.naru, lv: lv(), waiting: s.flags._naru_affinity_waiting_pts || 0,
+      read: T.lines().length > 0, released: s.flags._naru_affinity_stage_released_pts || 0 };
+    // 第2章でも未読の第1章会話を勝手に完読扱いにしない。
+    const ch2 = T.fresh(); ch2.chapter = 2; ch2.met.naru = true; T.stats.gainAffinity("naru", 60);
+    return { first, capped, second, ch2: { level: T.stats.affinityLevel("naru"), points: ch2.affinity.naru,
+      waiting: ch2.flags._naru_affinity_waiting_pts || 0 } };
+  });
+  assert.deepEqual(g.first, { story: 1, lv: 0, open: false }, "2nd talk waits for ♥1");
+  assert.equal(g.capped.lv, 1); assert.equal(g.capped.pts, 19, "Capped just below ♥2 until the 2nd talk");
+  assert(g.capped.waiting > 0, "The excess is kept, not lost"); assert.equal(g.capped.open, true, "♥1 opens the 2nd talk");
+  assert.equal(g.second.story, 2); assert.equal(g.second.lv, 2, "Reading the talk releases the kept points up to the next cap");
+  assert.equal(g.second.pts, 32); assert(g.second.waiting - g.second.released < g.capped.waiting);
+  assert.equal(g.ch2.level, 0); assert.equal(g.ch2.points, 8);
+  assert(g.ch2.waiting > 0, "Unread chapter 1 talk still holds later gains");
+  await gate.close();
+  console.log("[tsumugi story] PASS: #814 heart opens the next talk, talks cap the next heart, kept points released, chapter 2 holds unread gains");
 
   // 本番カレンダーの夜枠で必須イベントが発火し、翌日のマップへ戻る。全章通しは不要。
   for (const day of [3, 11, 13]) {
@@ -179,6 +234,7 @@ try {
       T.ch1.resumeGame().catch(e => { window.calendarError = e.message; });
     }, day);
     await calendar.waitForSelector('.map:not(.done) [data-spot="rest"]', { timeout: 20000 });
+    await calendar.locator('.map:not(.done):not([data-revealing="true"])').waitFor(); // #780: 解錠演出中は選択を受け付けない
     await calendar.locator('.map:not(.done) [data-spot="rest"]').click();
     await calendar.locator('[data-test="map-go"]').click();
     if (day < 13) {
@@ -187,10 +243,10 @@ try {
     } else {
       await calendar.waitForFunction(() => window.T.core.state.day === 14, null, { timeout: 30000 });
     }
-    const end = await calendar.evaluate(() => ({ pts: T.core.state.affinity.tsumugi,
+    const end = await calendar.evaluate(() => ({ pts: T.core.state.affinity.tsumugi || 0,
       flags: T.core.state.flags, stories: T.core.state.story.tsumugi || 0, lines: T.lines(), error: window.calendarError }));
     assert.equal(end.error, undefined); assert.equal(end.stories, 0);
-    assert.equal(end.pts, day < 11 ? 9 : 20);
+    assert.equal(end.pts, 9);
     const expected = { 3: "_tsumugi_contest_progress",
       11: "_tsumugi_contest_submitted", 13: "_tsumugi_contest_eve" }[day];
     assert(end.flags[expected], `DAY${day} missed its mandatory Tsumugi scene`);
@@ -218,9 +274,9 @@ try {
         T.core.load(); T.vn.backlog().length = 0;
         await T.story.playTsumugiStory(day - 1);
         return { first, repeat: T.lines(), sameResources: before === T.resources(),
-          submitted: T.core.state.flags._tsumugi_contest_submitted, pts: T.core.state.affinity.tsumugi };
+          submitted: T.core.state.flags._tsumugi_contest_submitted, pts: T.core.state.affinity.tsumugi || 0 };
       }, { day, submitted });
-      assert(old.submitted); assert.equal(old.pts, 20); assert(old.sameResources);
+      assert(old.submitted); assert.equal(old.pts, 9); assert(old.sameResources);
       assert.equal(old.first.some(t => t.includes("応募完了")), !submitted);
       assert.deepEqual(old.repeat, []);
     }
@@ -234,7 +290,7 @@ try {
     await T.story.playTsumugiStory(10);
     s.flags._morning_11 = true;
     s.flags._lime_tut = 1; // DAY11まで遊んだ状態。初回LIME案内の操作は別の検証で扱う。
-    s.flavors.push("blueberry"); s.flavorStock.blueberry = 50;
+    s.flavors.push("blueberry", "lemon"); s.flavorStock.blueberry = 50; s.flavorStock.lemon = 50;
     const { craftTest } = await import("./js/craft/session.js"); craftTest.auto = "good";
     T.vn.backlog().length = 0;
     T.trace = [];
@@ -243,7 +299,7 @@ try {
       hook?.(id, line);
       if (T.trace.at(-1) !== id) T.trace.push(id);
     };
-    T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("早寝")));
+    T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("通しリハーサル")));
     T.ch1.resumeGame().catch(e => { window.calendarError = e.message; });
   });
   for (const day of [11, 12, 13]) {
@@ -258,6 +314,7 @@ try {
         assert(before.flags._tsumugi_contest_submitted);
         assert.equal(before.trace.filter(id => id === "ch1_tsumugi_sketch").length, 1);
       }
+      await consecutive.locator('.map:not(.done):not([data-revealing="true"])').waitFor(); // #780: 解錠演出中は選択を受け付けない
       await consecutive.locator('.map:not(.done) [data-spot="rest"]').click();
       await consecutive.locator('[data-test="map-go"]').click();
       // Keep resting through the real invitation deadline prompt without
@@ -279,8 +336,8 @@ try {
   }
   await consecutive.waitForFunction(() => T.core.state.day === 14, null, { timeout: 60000 });
   const final = await consecutive.evaluate(() => ({ trace: T.trace, flags: T.core.state.flags,
-    pts: T.core.state.affinity.tsumugi, error: window.calendarError }));
-  assert.equal(final.error, undefined); assert.equal(final.pts, 20);
+    pts: T.core.state.affinity.tsumugi || 0, error: window.calendarError }));
+  assert.equal(final.error, undefined); assert.equal(final.pts, 9);
   assert.equal(final.trace.filter(id => id === "ch1_tsumugi_sketch").length, 1);
   assert.equal(final.trace.filter(id => id === "ch1_tsumugi_eve").length, 1);
   assert(final.trace.indexOf("ch1_tsumugi_sketch") < final.trace.indexOf("ch1_tsumugi_eve"));

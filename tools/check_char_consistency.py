@@ -48,7 +48,7 @@ def parse_profiles() -> dict:
 
 
 NAME_TO_ID = {
-    "蒸野 始": "hajime",
+    "蒸野 はじめ": "hajime",
     "はじめ": "hajime",
     "墨田 丈一郎": "sumi",
     "スミさん": "sumi",
@@ -70,7 +70,7 @@ NAME_TO_ID = {
     "田中 健太": "rei",
     "零-REI-": "rei",
     "チャコール博士": "dr_kemuri",
-    "チャコール博士 / 炭場 創": "dr_kemuri",
+    "チャコール博士 / 火浦 理一": "dr_kemuri",
     "水瀬 ましろ": "mashiro",
     "ましろ": "mashiro",
     "ムカイさん / 向井": "mukai_master",
@@ -85,7 +85,7 @@ NAME_TO_ID = {
     "シェイク・アル=ガリヤーン": "sheikh",
     "SHISHA-9000": "shisha_9000",
     "ダ・シルヴァ太陽": "da_silva",
-    "ナンディ・カルダモン": "nandi",
+    "久世 朔": "kuze",
     "スティーブ・デイビス": "steve",
     "ヴォルク・イヴァノフ": "volk",
 }

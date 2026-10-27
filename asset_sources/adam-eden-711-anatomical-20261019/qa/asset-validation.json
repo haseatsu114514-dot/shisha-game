@@ -1,0 +1,287 @@
+{
+  "checks": [
+    {
+      "asset": "adam_normal",
+      "dimensions_unchanged": true,
+      "alpha_identical": true,
+      "outside_mask_identical": true,
+      "excluded_source_colors_unchanged": true,
+      "changed_pixels": 11236
+    },
+    {
+      "asset": "adam_smile",
+      "dimensions_unchanged": true,
+      "alpha_identical": true,
+      "outside_mask_identical": true,
+      "excluded_source_colors_unchanged": true,
+      "changed_pixels": 11249
+    },
+    {
+      "asset": "adam_serious",
+      "dimensions_unchanged": true,
+      "alpha_identical": true,
+      "outside_mask_identical": true,
+      "excluded_source_colors_unchanged": true,
+      "changed_pixels": 11429
+    },
+    {
+      "asset": "adam_surprise",
+      "dimensions_unchanged": true,
+      "alpha_identical": true,
+      "outside_mask_identical": true,
+      "excluded_source_colors_unchanged": true,
+      "changed_pixels": 11194
+    },
+    {
+      "asset": "adam_intense",
+      "dimensions_unchanged": true,
+      "alpha_identical": true,
+      "outside_mask_identical": true,
+      "excluded_source_colors_unchanged": true,
+      "changed_pixels": 11614
+    },
+    {
+      "asset": "eden_background",
+      "dimensions_unchanged": true,
+      "alpha_identical": true,
+      "outside_mask_identical": true,
+      "excluded_source_colors_unchanged": true,
+      "changed_pixels": 1468
+    },
+    {
+      "asset": "adam_intro",
+      "dimensions_unchanged": true,
+      "alpha_identical": true,
+      "outside_mask_identical": true,
+      "excluded_source_colors_unchanged": true,
+      "changed_pixels": 117050
+    },
+    {
+      "asset": "adam_tournament_cg",
+      "dimensions_unchanged": true,
+      "alpha_identical": true,
+      "outside_mask_identical": true,
+      "excluded_source_colors_unchanged": true,
+      "changed_pixels": 15323
+    },
+    {
+      "adam_webp_lossless_RGBA_equal": 5
+    },
+    {
+      "face_icon_160px_alpha_identical": true,
+      "quantization": "existing make_face_icons.py:160px,256colors,Adam f=.188/dy=.03"
+    },
+    {
+      "manifest_changed_keys": [
+        "generated"
+      ],
+      "all_entries_geometry_and_membership_preserved": true,
+      "adam": {
+        "faces": [
+          "intense",
+          "normal",
+          "serious",
+          "smile",
+          "surprise"
+        ],
+        "h": 0.8717,
+        "b": 0.0258,
+        "ax": 0.5053,
+        "aspect": 0.7467
+      }
+    }
+  ],
+  "files": {
+    "assets/sprites/characters/adam/chr_adam_normal.png": {
+      "bytes": 450844,
+      "sha256": "b1200dd85c3949eeb534f28ba90f4219a1fe3b1bc442f35cd24ec581023c5baf",
+      "git_blob_sha1": "9ee76e3d2713b15022dfb78b4528a416ec64a6da",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/sprites/characters/adam/chr_adam_smile.png": {
+      "bytes": 441084,
+      "sha256": "a9663ef76a2b8efdd3fa4362a6519c97302d0a3a5068098b55c7d576d1e711c9",
+      "git_blob_sha1": "388b9f7594d9878deb969d8d209086fea9011019",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/sprites/characters/adam/chr_adam_serious.png": {
+      "bytes": 449258,
+      "sha256": "c8efbed43ecf0ad88338e14c23b9cf5db4238130e5f55a82e1147e1439329b3b",
+      "git_blob_sha1": "873064ac9238a4494fa8393a7e18ae93e225d06e",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/sprites/characters/adam/chr_adam_surprise.png": {
+      "bytes": 452763,
+      "sha256": "b9d11d4bc616b37fd114f304cffcf3838b7d53744780af31280e4dbce7b9ccad",
+      "git_blob_sha1": "a069c3c8a07fe0dcd19c6dded5644e729a6fcd90",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/sprites/characters/adam/chr_adam_intense.png": {
+      "bytes": 418820,
+      "sha256": "79bf60369bc7a6eee4b3fbc5d16464b3d9a4b2e89a60c0c534c4adc74d8a4399",
+      "git_blob_sha1": "b8e940dbab2f9d7cbf66a39f2268a5cbf1798604",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/backgrounds/bg_eden_shop.png": {
+      "bytes": 405458,
+      "sha256": "222d93d7a94854d4420120df53914c3d4553cd719cf0b2c119bb094dcb43f770",
+      "git_blob_sha1": "933de5ce0b9b992156f5907d1ae6db3db28b52c1",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    "assets/ui/character_intros/adam.png": {
+      "bytes": 3077020,
+      "sha256": "e373cd560a82a6cf7416a47cd48eb1fe6de6bce18e2c94ffdd484522ec23a8c6",
+      "git_blob_sha1": "7b1c4743717d92e660409878ff3ba65c4bf29db0",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    "assets/cgs/cg_ch1_tournament_battle.png": {
+      "bytes": 2798440,
+      "sha256": "cf59f7021f45f51c005d4ff84a8f05b35fbdf4d6e65eca1a21bedefb7f785d53",
+      "git_blob_sha1": "799fac1a563b009cb309592decc09b6fd36068ac",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_normal.webp": {
+      "bytes": 310280,
+      "sha256": "b193efa1028acdc6139ed37a7ae258807dd2590e22112f70b611e0f54bb1fe1c",
+      "git_blob_sha1": "2b1c616e1d1dc12657ebbe8307157e2c520284e8",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_smile.webp": {
+      "bytes": 299526,
+      "sha256": "bde8b43d251383445986c10a7e67fab35faeae14895ed3a02f54f5bdad16f59f",
+      "git_blob_sha1": "7f716340d288a48a294c57f505b201534eca007e",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_serious.webp": {
+      "bytes": 308346,
+      "sha256": "4d28b8cdbd6f447b566d555a25fbedf39a6f45e614e65707bd1a7c857cc14dd0",
+      "git_blob_sha1": "f1a6efe89edb271783b2fc10fcb4f55ddbd47dc2",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_surprise.webp": {
+      "bytes": 308340,
+      "sha256": "b5a3f03260cf1a2ffeff50c73a7a121e0085b28f5475a3d247be6cbd930a06db",
+      "git_blob_sha1": "76f6599eb571696dfdb6bb73e956863a9cb95be2",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "remake/img/sprites/characters/adam/chr_adam_intense.webp": {
+      "bytes": 283078,
+      "sha256": "4583ccd5b2fb6cf3818b6ef6a6ca8615ed1390eb81417a00be2bcf248bd456b0",
+      "git_blob_sha1": "22d3f90ea467b56796b02522c9fb58f65441da81",
+      "size": [
+        896,
+        1200
+      ],
+      "mode": "RGBA"
+    },
+    "assets/backgrounds/eden.png": {
+      "bytes": 405458,
+      "sha256": "222d93d7a94854d4420120df53914c3d4553cd719cf0b2c119bb094dcb43f770",
+      "git_blob_sha1": "933de5ce0b9b992156f5907d1ae6db3db28b52c1",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/backgrounds/bg_eden_shop.webp": {
+      "bytes": 155184,
+      "sha256": "577227cbda42b8739d53c28eb60d5fac0130ae570bab9beb032b738f44c1a7b8",
+      "git_blob_sha1": "f404ecf214ae4b9107f82ab0bf7230614dd4a0c4",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/backgrounds/eden.webp": {
+      "bytes": 155184,
+      "sha256": "577227cbda42b8739d53c28eb60d5fac0130ae570bab9beb032b738f44c1a7b8",
+      "git_blob_sha1": "f404ecf214ae4b9107f82ab0bf7230614dd4a0c4",
+      "size": [
+        1280,
+        720
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/ui/character_intros/adam.webp": {
+      "bytes": 576302,
+      "sha256": "4a515a42e925b31fa835bd2836ec5005d8719c04793c2aef497a7c898837f080",
+      "git_blob_sha1": "69e8004914b854304bed3481ba63ed0494d32721",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB"
+    },
+    "remake/img/cgs/cg_ch1_tournament_battle.webp": {
+      "bytes": 385392,
+      "sha256": "2bf20cc24999f9793dd397954ba2dde5724b2c17d1f942af0b574bc0c239787b",
+      "git_blob_sha1": "adaae647abeb067c086dbd061c9275ee98eb8a20",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "RGB"
+    },
+    "assets/ui/face_icons/face_adam.png": {
+      "bytes": 42385,
+      "sha256": "593a00769659a284095be0268ee432c062b53af8a8d093b486b456261a9eb6c2",
+      "git_blob_sha1": "3e62f8f167f75818ff35132971154885bc2e5a6f",
+      "size": [
+        160,
+        160
+      ],
+      "mode": "RGBA"
+    }
+  },
+  "runtime_visual_qa": "Pending exact-head CI screenshots. Local browser unavailable; no pass claimed."
+}
