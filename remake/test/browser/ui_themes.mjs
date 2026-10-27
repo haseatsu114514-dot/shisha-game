@@ -264,7 +264,15 @@ await suite("ui-themes-config",async check=>{
       });
       await press('[data-test="title-load"]');
       await press('[data-test="slot-0"]');
-      await page.locator("#screen .map:not(.done)").waitFor();
+      if (await page.locator('[data-test="confirm-load"]').count()) await press('[data-test="confirm-load"]');
+      // DAY6の再開時に固定会話が先に入ることがある。読み飛ばしてから地図のMENUを試す。
+      await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = true; });
+      for (let i = 0; i < 60 && !(await page.locator("#screen .map:not(.done)").isVisible()); i++) {
+        const choice = page.locator("#vn.active .vn-choices button").first();
+        if (await choice.isVisible().catch(() => false)) await choice.click(); else await page.waitForTimeout(500);
+      }
+      await page.locator("#screen .map:not(.done)").waitFor({ timeout: 30000 });
+      await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = false; });
       const savedBefore = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
       await press('[data-test="hud-menu"]');
       await assertFits(page, '.menu-modal .modal-actions .btn');
