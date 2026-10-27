@@ -5,7 +5,7 @@
 }
 html:root[data-ui-theme] {
   --vn-caption-top:-36px; --vn-body-top:44px; --vn-body-side:96px;
-  --vn-command-width:356px; --vn-command-inset:68px; --vn-name-inset:68px; --vn-command-rise:16px;
+  --vn-command-width:420px; --vn-command-inset:68px; --vn-name-inset:68px; --vn-command-rise:16px;
   --vn-next-right:64px; --vn-next-bottom:30px;
   --vn-tab-face:linear-gradient(160deg,#17272c,#0c151c 75%);
   --vn-tab-edge:#91bbb5; --vn-tab-inner:#c9f3e526; --vn-tab-text:#e6f6f1;
@@ -77,13 +77,13 @@ html:root[data-ui-theme] body:not(.game-ds) .vn-controls {
   right:calc((1280px - var(--vn-dialogue-width)) / 2 + var(--vn-command-inset));
   bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - var(--vn-caption-top) - 50px + var(--vn-command-rise));
   width:var(--vn-command-width); height:50px; padding:2px 6px; gap:0;
-  display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+  display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
   background:var(--vn-tab-face); border:1px solid var(--vn-tab-edge); box-shadow:var(--vn-tab-shadow);
   border-radius:var(--vn-tab-radius); clip-path:none;
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls::after { content:none; }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl {
-  position:relative; min-width:0; min-height:44px; height:44px; padding:0 9px;
+  position:relative; min-width:0; min-height:44px; height:44px; padding:0 6px;
   border:0; border-radius:8px; font-family:var(--font); font-size:17px; font-weight:500;
   line-height:1.2; letter-spacing:.035em; background:none; box-shadow:none; color:var(--vn-tab-text);
 }

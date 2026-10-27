@@ -291,6 +291,9 @@ try {
   console.log("[tsumugi story] PASS: unread/read DAY12/13 legacy submissions, save/load without duplicate reward");
 
   // DAY11→12→13を同じカレンダーで連続プレイ。自由行動2回を保ち、間の夜は強制回なし。
+  // H08: DAY11の応募は、完成を告げる前半→完成画の提示・応募の後半に分かれる。
+  const sketchTrace = ["ch1_tsumugi_sketch_presentation", "ch1_tsumugi_sketch"];
+  const mandatoryTrace = trace => trace.filter(id => /tsumugi|preparation|midcheck|rehearsal/.test(id));
   const consecutive = await open();
   await consecutive.evaluate(async () => {
     const s = T.fresh(); Object.assign(s, { day: 11, slot: 0 });
@@ -319,7 +322,8 @@ try {
           return { flags: T.core.state.flags, trace: T.trace };
         });
         assert(before.flags._tsumugi_contest_submitted);
-        assert.equal(before.trace.filter(id => id === "ch1_tsumugi_sketch").length, 1);
+        assert.deepEqual(mandatoryTrace(before.trace), sketchTrace,
+          "DAY11 must finish the presentation and submission exactly once before DAY12");
       }
       await consecutive.locator('.map:not(.done):not([data-revealing="true"])').waitFor(); // #780: 解錠演出中は選択を受け付けない
       await consecutive.locator('.map:not(.done) [data-spot="rest"]').click();
@@ -335,9 +339,8 @@ try {
       await consecutive.waitForFunction(day => T.core.state.day === day + 1
         && document.querySelector('.map:not(.done)'), day, { timeout: 60000 });
       if (day === 12) {
-        assert.deepEqual(await consecutive.evaluate(() => T.trace.filter(id =>
-          /tsumugi|preparation|midcheck|rehearsal/.test(id))),
-        ["ch1_tsumugi_sketch"], "DAY12 repeated or added a mandatory training/story scene");
+        assert.deepEqual(mandatoryTrace(await consecutive.evaluate(() => T.trace)),
+          sketchTrace, "DAY12 repeated or added a mandatory training/story scene");
       }
     }
   }
@@ -345,8 +348,10 @@ try {
   const final = await consecutive.evaluate(() => ({ trace: T.trace, flags: T.core.state.flags,
     pts: T.core.state.affinity.tsumugi || 0, error: window.calendarError }));
   assert.equal(final.error, undefined); assert.equal(final.pts, 9);
+  assert.equal(final.trace.filter(id => id === "ch1_tsumugi_sketch_presentation").length, 1);
   assert.equal(final.trace.filter(id => id === "ch1_tsumugi_sketch").length, 1);
   assert.equal(final.trace.filter(id => id === "ch1_tsumugi_eve").length, 1);
+  assert(final.trace.indexOf("ch1_tsumugi_sketch_presentation") < final.trace.indexOf("ch1_tsumugi_sketch"));
   assert(final.trace.indexOf("ch1_tsumugi_sketch") < final.trace.indexOf("ch1_tsumugi_eve"));
   assert(final.flags._ev_rehearsal && final.flags._ev_last_night);
   assert.equal(final.flags._craft_practice_runs.length, 1);

@@ -227,10 +227,11 @@ async function openMenu() {
     options: [
       { label: "セーブ", value: "save", test: "menu-save" },
       { label: "ロード", value: "load", test: "menu-load" },
-      { label: "用語集", value: "glossary" },
+      { label: "設定", value: "config", test: "menu-config" },
+      { label: "用語集", value: "glossary", test: "menu-glossary" },
       { label: "大会の規則", value: "rules", test: "menu-rules" },
       { label: "タイトルへ戻る", value: "title", test: "menu-title" },
-      { label: "閉じる", value: null, primary: true },
+      { label: "閉じる", value: null, primary: true, test: "menu-close" },
     ],
   });
   if (v === "save") {
@@ -242,6 +243,7 @@ async function openMenu() {
     const key = await loadFlow({ inGame: true });
     if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
   }
+  if (v === "config") await (await import("../scenes/title.js")).openConfig();
   if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
   if (v === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
   // タイトルへ戻るときも、手動セーブと同じく行き先を選んでいるときだけ保存する。
