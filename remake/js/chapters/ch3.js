@@ -4,6 +4,7 @@ import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { glossaryPanel } from "../vn/glossary.js";
 import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { shinkansenRide } from "../core/scene-motions.js";
@@ -64,6 +65,7 @@ async function openMenu(owner) {
       { label: "セーブ", value: "save", test: test("save") },
       { label: "ロード", value: "load", test: test("load") },
       { label: "設定", value: "config", test: test("config") },
+      { label: "用語集", value: "glossary", test: test("glossary") },
       { label: "大会の規則", value: "rules", test: test("rules") },
       { label: "タイトルへ戻る", value: "title", test: test("title") },
       { label: "閉じる", value: null, primary: true },
@@ -71,6 +73,7 @@ async function openMenu(owner) {
     if (!current(owner)) return;
     if (choice === "save") await saveFlow();
     if (choice === "config") await (await import("../scenes/title.js")).openConfig();
+    if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
     if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });

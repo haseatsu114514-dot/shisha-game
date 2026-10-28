@@ -6,6 +6,7 @@ import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core
 import { layers, showScreen, setBg, modal } from "../core/ui.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { glossaryPanel } from "../vn/glossary.js";
 import { maxStamina } from "../core/stats.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
@@ -70,12 +71,16 @@ async function openMenu(owner) {
     const choice = await modal({ title: "全国大会 MENU", body: "途中の工程は、その工程の始めから再開できます。", options: [
       { label: "セーブ", value: "save", test: id("save") },
       { label: "ロード", value: "load", test: id("load") },
+      { label: "設定", value: "config", test: id("config") },
+      { label: "用語集", value: "glossary", test: id("glossary") },
       { label: "大会の規則", value: "rules", test: id("rules") },
       { label: "タイトルへ戻る", value: "title", test: id("title") },
       { label: "閉じる", value: null, primary: true },
     ] });
     if (!live(owner)) return;
     if (choice === "save") await saveFlow();
+    if (choice === "config") await (await import("../scenes/title.js")).openConfig();
+    if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
     if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
@@ -342,6 +347,7 @@ function renderComplete(owner) {
   const p = progress();
   if (p.result?.rank !== 1 || !state.flags._ch3_tournament_won)
     throw new Error("全国大会の勝利記録を確認できません");
+  playBgm("bgm_aftermath");
   card(owner, "complete", "全国大会・優勝／日本第一代表", "四人の一試合で、はじめが日本の第一代表になった。東京で伝えることが、まだ残っている。", [
     button(owner, "第三章の続きへ", "aftermath", async () => {
       await (await import("./ch3-aftermath.js")).runChapterThreeAftermath();
