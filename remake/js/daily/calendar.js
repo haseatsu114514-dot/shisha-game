@@ -808,7 +808,7 @@ async function advanceDay() {
     // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
     await dayTurn(async () => {
       wake();
-      return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted };
+      return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted, tournamentName: chapterDef?.tournamentName };
     });
     dawnShownDay = state.day;
   } else await fadeBlack(wake, 500);

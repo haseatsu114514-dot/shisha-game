@@ -100,8 +100,11 @@ await suite("relationship-ui", async check => {
         await status(page);
         const row = page.locator(`[data-person="${id}"]`);
         assert.equal(await row.locator(".pp-relation").textContent(), route === "romance" ? "恋愛ルート" : "友人ルート");
-        assert((await row.locator(".pp-next").textContent()).includes("♥5"));
-        await assertFits(page, ".pp-guide, .pp-row, .pp-heading, .pp-next");
+        // ♥5までの反復説明は各人の行から外し、全体ガイドに一度だけまとめる（#1044 A09）
+        assert.equal(await row.locator(".pp-next").count(), 0, "mid-tier row should not repeat the ♥ explanation");
+        const guide = await page.locator(".pp-guide").textContent();
+        assert(guide.includes("♥3") && guide.includes("♥5"), "the ♥3/♥5 stage explanation belongs in the shared guide");
+        await assertFits(page, ".pp-guide, .pp-row, .pp-heading, .pp-next, .pp-memory");
         await closeStatus(page);
       }
       // 最終画像は、数値を満たしただけでは告白にならない♥3の待機導線。
@@ -145,13 +148,14 @@ await suite("relationship-ui", async check => {
 
     await check(`${device}-legacy-and-progress-guidance`, async page => {
       await setup(page);
+      // hint が null のものは、反復する♥説明を全体ガイドへ集約したため各人の行に導線文を出さない（#1044 A09）
       for (const [name, fixture, label, hint] of [
-        ["low-heart", { points: 20 }, "交流中", /♥3/],
+        ["low-heart", { points: 20 }, "交流中", null],
         ["unanswered-old-heart5", { points: 66, hiddenRomance: 9 }, "関係を考える会話待ち", /恋愛・友情/],
-        ["real-romance", { points: 33, answer: 1 }, "恋愛ルート", /♥5/],
-        ["real-friend", { points: 33, answer: 0 }, "友人ルート", /友情でも/],
+        ["real-romance", { points: 33, answer: 1 }, "恋愛ルート", null],
+        ["real-friend", { points: 33, answer: 0 }, "友人ルート", null],
         ["ready-finale", { points: 66, answer: 1 }, "恋愛ルート", /Dr\.fookahの2階/],
-        ["old-friend-flag", { points: 66, friendFlag: true }, "友人ルート", /♥5/],
+        ["old-friend-flag", { points: 66, friendFlag: true }, "友人ルート", /特別なイベント/],
         ["unanswered-old-finale", { points: 66, finale: "romance" }, "交流の節目", /見届けた/],
         ["legacy-final-answer", { points: 66, finalAnswer: 1, finale: "romance" }, "告白を選べる", /帰り道/],
         ["held-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", wait: true }, "告白を選べる", /後日の夜/],
@@ -170,9 +174,10 @@ await suite("relationship-ui", async check => {
         await status(page);
         const row = page.locator('[data-person="rin"]');
         assert.equal(await row.locator(".pp-relation").textContent(), label, name);
-        assert.match(await row.locator(".pp-next").textContent(), hint, name);
+        if (hint) assert.match(await row.locator(".pp-next").textContent(), hint, name);
+        else assert.equal(await row.locator(".pp-next").count(), 0, name);
         assert(!await row.evaluate(n => n.classList.contains("lover")), name);
-        await assertFits(page, ".pp-row, .pp-heading, .pp-next");
+        await assertFits(page, ".pp-row, .pp-heading, .pp-next, .pp-memory");
         await closeStatus(page);
       }
       const summaries = await page.evaluate(() => {
@@ -234,6 +239,28 @@ await suite("relationship-ui", async check => {
         s.finales.rin = { route: "romance", chapter: 1, day: 8 }; R.core.save();
       });
       await status(page);
+    }, { ...options, reducedMotion: "reduce" });
+
+    // #1044 A09: 反復する♥3/♥5説明は全体ガイドに集約し、各人の行は直近の思い出を前面に出す
+    await check(`${device}-recent-memories-foregrounded`, async page => {
+      await setup(page);
+      await page.evaluate(() => {
+        const s = R.fresh();
+        s.met.naru = true; s.met.hiyori = true;
+        s.affinity.naru = 20; s.affinity.hiyori = 20;
+        s.relationshipMemories = ["naru_hands", "naru_inherit"]; // 直近に積んだ naru_inherit を出す
+        R.core.save();
+      });
+      await status(page);
+      const naru = page.locator('[data-person="naru"]');
+      assert.equal(await naru.locator(".pp-memory").count(), 1, "直近の思い出を前面に出す");
+      const echo = await page.evaluate(() => R.data.DB.relationshipMemories.naru_inherit.echo);
+      assert.equal(await naru.locator(".pp-memory").textContent(), echo, "最新の思い出を表示する");
+      assert.equal(await naru.locator(".pp-next").count(), 0, "♥の反復説明は行から外す");
+      // 思い出のない人は中立の短い表示（思い出の行は出さない）
+      assert.equal(await page.locator('[data-person="hiyori"] .pp-memory').count(), 0);
+      await assertFits(page, ".pp-guide, .pp-row, .pp-heading, .pp-memory, .pp-next");
+      await closeStatus(page);
     }, { ...options, reducedMotion: "reduce" });
 
     await check(`${device}-final-choices-and-ordinary-dialogue`, async page => {
