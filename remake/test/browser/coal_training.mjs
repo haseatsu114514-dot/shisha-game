@@ -4,7 +4,6 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { execFileSync } from "node:child_process";
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
 const root = path.resolve(fileURLToPath(new URL("../../../", import.meta.url)));
 const output = path.resolve(root, process.env.COAL_ARTIFACTS || ".codex/artifacts/coal-694");
@@ -103,7 +102,10 @@ try {
     console.log(`[coal browser] ${label}: abort and AUTO reread complete`);
 
     // Existing snapshot survives the new data; replenishment switches only after exhaustion + three days.
-    const oldKuji = JSON.parse(execFileSync("git", ["show", "origin/main:data/kuji.json"], { cwd: root, encoding: "utf8" }));
+    // Frozen pre-#694 data (remake/test/fixtures/kuji-legacy.json). Reading origin/main via git is not
+    // possible in CI checkouts (no such ref) and drifts as main moves; the case guards that a snapshot
+    // written against THIS old data survives, so the old data must be a fixed fixture.
+    const oldKuji = JSON.parse(fs.readFileSync(path.join(root, "remake/test/fixtures/kuji-legacy.json"), "utf8"));
     await page.evaluate(async oldKuji => {
       Q.vn.vnTest.turbo = true;
       const old = oldKuji.grades.g500;
@@ -172,7 +174,8 @@ try {
       for (const c of view.coals) { c.node.classList.add("pikan"); c.node.dataset.phase = "just";
         c.node.style.setProperty("--red", "1"); c.node.style.setProperty("--hot", ".6"); }
     });
-    const baseline = execFileSync("git", ["show", "origin/main:remake/css/craft.css"], { cwd: root, encoding: "utf8" });
+    // Frozen pre-#694 sheet for the before/after screenshots; see the kuji fixture note above.
+    const baseline = fs.readFileSync(path.join(root, "remake/test/fixtures/craft-css-legacy.css"), "utf8");
     // Disable the entire new sheet: layering the old sheet alone would leave new-only selectors active.
     await page.locator('link[href$="css/craft.css"]').evaluate(n => { n.disabled = true; });
     const oldStyle = await page.addStyleTag({ content: baseline });
