@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createRequire } from "node:module";
+import { installLoadingComicReader } from "./browser/loading_reader.mjs";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const browser = await chromium.launch({ headless: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
@@ -17,6 +18,7 @@ const capture = async (page, name) => {
 async function open(viewport, mobile = false) {
   const context = await browser.newContext({ viewport, isMobile: mobile, hasTouch: mobile });
   const page = await context.newPage(); page.on("pageerror", (error) => errors.push(error.message));
+  await installLoadingComicReader(page);
   await page.goto(base); await page.waitForSelector('[data-test="title-new"]');
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame();
