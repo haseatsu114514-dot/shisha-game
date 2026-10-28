@@ -295,8 +295,14 @@
           "speaker": "",
           "face": "",
           "text": "答えを待つ間、男はゆっくりと笑った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、男が自分のトングを差し出した。断る間もなく、それは俺の手の中にあった。"
         }
-      ]
+      ],
+      "comment": "最終行はドラフト追加（出典: 第4章本文ドラフト §4-2、Q9 の仮置き）。ch4_stranger_third の「借りたトングを返しに来た」に対応させるための一行。"
     },
     {
       "dialogue_id": "ch4_stranger_third",
@@ -731,7 +737,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんは携帯を出し、南雲の名前を探した。"
+          "text": "スミさんは画面を点け、南雲の名前を探した。"
         },
         {
           "speaker": "sumi",
@@ -1023,7 +1029,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ケムリクサでは、なるがバニラの袋を開けて待っていた。"
+          "text": "KEMURIKUSAでは、なるがバニラの袋を開けて待っていた。"
         },
         {
           "speaker": "naru",
@@ -1057,6 +1063,431 @@
         }
       ],
       "comment": "四人の相似は約束・口調・二つの店の行動で見せる。なるは経営へ退く南雲の再演ではなく、菓子の甘さを追う現役の好敵手。"
+    },
+    {
+      "dialogue_id": "ch4_arrival_inn",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿に着いたのは、昼を過ぎた頃だった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "部屋、隣だってさ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "俺は会場の下見。夜まで別行動な"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ああ。……迷うなよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは片手を上げただけで、廊下の向こうへ消えた。"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章本文ドラフト §2-1。ch4_opening の直後に置く想定。1行目（時間帯）・2行目（Q4: 同じ宿の別室。#516 の決定で上書きの可能性）・4行目・5行目は仮置き。"
+    },
+    {
+      "dialogue_id": "ch4_festa_revisit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "FESTAをひと回りした。今日は、見知った顔はなかった。"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章本文ドラフト §2-5。ch4_festa を2回目以降に選んだときの想定で仮置き（この訪問で日が進むかは Q11 判断待ち）。"
+    },
+    {
+      "dialogue_id": "ch4_alley_cafe_quiet",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "路地裏のカフェ。換気扇が、低い音で回っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥に、古びた台がひとつ置かれていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員が、こちらに気づいて小さく会釈した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あの男は、今日はいなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……前夜にでも、返しに来るか）"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章本文ドラフト §4-3。ch4_stranger_second を読んだ後、前夜祭の前に置く想定の訪問場面。全行仮置き。"
+    },
+    {
+      "dialogue_id": "ch4_stranger_first_forced_in",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "部屋の水を、いつの間にか飲み切っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "買い足しに出て、香辛料の匂いがする方へ、足が向いた。"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章新規ドラフト NEW-TEXT.md §1。強制発生用の繋ぎ（未接続）。期限日等の接続条件は未定義（TEXT.md §3-2 に先行定義なし、Q11 判断待ち）。本文2行は全体仮置き。演出想定: first の期限日にマップを経由せず発生させ、ch4_stranger_first の直前に置く。スークを一度も選ばずに期限日を迎えた場合だけ使う想定も仮置き。first の期限日は second や reception より前に置き、second の「数日後」が大会前に収まる想定だが、期限日の開始点と数え方・強制発生の共通条件は未定義で、日数は決めていない。"
+    },
+    {
+      "dialogue_id": "ch4_wang_reception_forced_in",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "机に出しておいた大会の案内に、目が行った。前夜祭は、今夜だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……行かないと）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上着を取って、部屋を出た。"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章新規ドラフト NEW-TEXT.md §2。強制発生用の繋ぎ（未接続）。期限日等の接続条件は未定義（TEXT.md §3-2 に先行定義なし、Q11 判断待ち）。本文3行（地の文2行・独白1行）は全体仮置き。演出想定: 前夜祭の日の夜、マップを経由せず発生させ、ch4_wang_reception の直前に置く。時刻と、third も強制発生させる場合の ch4_wang_reception → third の繋ぎ → ch4_stranger_third の順番も仮置き。期限日の開始点と数え方・強制発生の共通条件は未定義。1行目は TEXT.md §2-2 の大会の案内を取り出す描写に対応する主文面を採用。TEXT.md §1 の案内の行を削った場合は「スマホの案内に、前夜祭の通知が出ていた。」へ替える代替案がある。前夜祭の場所や客の描写には踏み込まない。"
+    },
+    {
+      "dialogue_id": "ch4_dubai_souq_revisit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "またスークへ来た。昼の熱が、香辛料の匂いを押し上げている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前に足を止めた店で、店主が袋の口を折り返していた。"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "また来たね。今日は買う？　それとも、嗅ぐだけ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……嗅ぐだけで、すみません"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "いいよ。嗅ぐ人は、あとで買いに来る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店主はカルダモンの袋を少しだけ開けて、すぐに閉じた。"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "開けた最初が、いちばん強い。開けっぱなしだと、昼のうちに飛んでいく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "暑いと、早いんですか"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "早いよ。だから、うちは朝に挽く。夕方の客には、夕方に挽く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（客が来る時間に合わせて、挽く……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（葉も、ケースを開ける時間まで考えた方がいいな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店主はもう、次の客へ顔を向けていた。礼を言って、店を離れた。"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章新規ドラフト NEW-TEXT.md §3。スークの2回目以降の訪問を想定。既存の ch4_dubai_souq の代わりに再生するか、その前に差し込むかは仮置き。ch4_stranger_first が起きる訪問では出さない想定も仮置き。spice_merchant（スパイス屋の店主）の人物・話者IDは新規の仮置き（立ち絵なしの単発話者として face は空文字）。香辛料のカルダモンも仮置き。最後は既存の choice「ホテルに戻る」（ch4_return）へつなぐ想定のみで、choice・接続は追加しない。能力上昇・数値は追加しない。"
+    },
+    {
+      "dialogue_id": "ch4_dubai_cafe_revisit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "また、中心地のカフェに入った。冷えた空気で、汗が引いていく。"
+        },
+        {
+          "speaker": "cafe_staff",
+          "face": "",
+          "text": "いらっしゃいませ。前と同じ、窓際のお席でよろしいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……覚えてたんですか"
+        },
+        {
+          "speaker": "cafe_staff",
+          "face": "",
+          "text": "前回は、ずっと外をご覧になっていましたので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席に着くと、頼む前に水が置かれた。"
+        },
+        {
+          "speaker": "cafe_staff",
+          "face": "",
+          "text": "本日は、どれくらいお過ごしになれますか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一時間くらいです"
+        },
+        {
+          "speaker": "cafe_staff",
+          "face": "",
+          "text": "では、炭は軽めにいたします。お時間の終わりに合わせて、仕上げてまいります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんも、最初に吸える時間を聞いてたな）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（値段が違っても、最初に聞くことは同じなんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席では、別の店員が、客の利き手の側へホースの向きを直していた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……俺は、そこまで見てたか）"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章新規ドラフト NEW-TEXT.md §4。中心地のカフェの2回目以降の訪問を想定。既存の ch4_dubai_cafe の代わりに再生するか、その前に差し込むかは仮置き。cafe_staff（中心地のカフェの店員）の話者IDは新規の仮置き（路地裏のカフェの店員とは別人。立ち絵なしの単発話者として face は空文字）。最後は既存の choice「ホテルに戻る」（ch4_return）へつなぐ想定のみで、choice・接続は追加しない。値段や能力の数値は追加しない。"
+    },
+    {
+      "dialogue_id": "ch4_samechan_dubai_evening",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方、ロビーでサメちゃんと待ち合わせた。手には、昼に一緒に見た案内の地図がある。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "印をつけておいたのじゃ。夕飯はここ、明日の朝はここじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "朝まで決めてくれたんですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "旅先では、まず腹を整えるのじゃ。……昼は、何を食べたのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……水と、パンを半分"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "うむ。では今夜は、しっかり食べてもらうのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。ちゃんと食べます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "よい返事じゃ。明日のことは、明日の朝に考えればよいのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地図の印を指でなぞってから、サメちゃんは先に歩き出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……こっちに来てから、いちばんちゃんとした予定かもしれない）"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章新規ドラフト NEW-TEXT.md §5。ch4_samechan_dubai_girlfriend の後に任意で読む想定。休みの札と渡航を済ませ、実際に到着した恋人のときだけという到着場面と同じ条件を想定するが、条件フィールドは追加しない。ch4_visitors.json が未接続の台本のため挿入位置・場面全体が仮置き。話者IDは同ファイルの samechan に合わせた。大会と結果には触れていない。"
+    },
+    {
+      "dialogue_id": "ch4_hiyori_dubai_evening",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜、LIMEが届いた。「起きました」とだけあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーに下りると、ひよりは窓際の椅子に座っていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "おはようございます。……夜ですけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "よく眠れましたか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "はい。ちゃんと、儚くならずに済みました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "よかった。夕飯、近くでいいですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "うん。静かなところがいいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "宿の近くに、落ち着いてそうな店がありました"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "じゃあ、そこで。……明日、朝の散歩に付き合ってくれる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。暑くなる前に"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "うん。約束"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "並んで歩き出す。ひよりの歩幅に合わせて、少しだけ足をゆるめた。"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章新規ドラフト NEW-TEXT.md §6。ch4_hiyori_dubai_girlfriend の後に任意で読む想定。休暇・渡航を済ませ、実際に到着した恋人のときだけという到着場面と同じ条件を想定するが、条件フィールドは追加しない。ch4_visitors.json が未接続の台本のため挿入位置・場面全体が仮置き。話者IDは同ファイルの hiyori に合わせた。はじめからひよりへの呼び方を素材で確かめられなかったため、呼びかけは使っていない（素材の仮置き事項）。大会と結果には触れていない。"
+    },
+    {
+      "dialogue_id": "ch4_inn_tool_care",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "部屋の床にタオルを敷いて、ケースの中身を並べた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ボウル、ホース、炭のトレー。日本から持ってきたものは、どれも少しずつ傷がある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（道具と葉は、使ってきたもので。……そう言ったのは、俺だ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ボウルの縁に残った焦げを、指の腹で落とす。tonariの流しで、何度もやった手つきだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ボトルを洗い、明かりにかざす。底まで、くもりはない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースの口を拭いて、窓際に掛けた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここは乾いてる。日本より、ずっと早く乾きそうだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……葉より先に顔を見ろ、か。道具の顔なら、毎日見てる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の外で、遠くのクラクションが長く鳴った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後に、ケースの留め具を閉める。いつもの音がした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（よし。明日も、これで作る）"
+        }
+      ],
+      "comment": "ドラフト追加（未接続）。出典: 第4章新規ドラフト NEW-TEXT.md §7。宿の部屋での道具の手入れ。2日目以降にマップで「宿」を選んだとき、その日を終える前に任意で読む想定。「道具の手入れをする」等の選択肢の文言と出す条件は仮置きで、choice・条件フィールドは追加しない。この場面を読むことで日が進むかは未定義（Q11 判断待ち）。TEXT.md §2-3 の初日の夜の回想ブロックや ch4_arrival_inn とは別の場面。second の後にも読む可能性があるため、借りたトングには触れていない。地の文の「宿」と既存 choice の「ホテルに戻る」の表記差は素材の仮置き事項として保持し、既存 choice は変更しない。"
     }
   ]
 }

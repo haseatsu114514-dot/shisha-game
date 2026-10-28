@@ -69,7 +69,7 @@
     "role": "rival_ch1",
     "age": 23,
     "nationality": "Japan",
-    "affiliation": "ケムリクサ",
+    "affiliation": "KEMURIKUSA",
     "play_style": "「甘さ（お菓子系）の追求」と「誠実な理論」",
     "description": "実力・人格ともに地元最強格の好敵手。料理の専門学校で学んだ元料理畑の作り手。実際の菓子や料理の味・香り・後味をイメージし、フレーバーでミックスを組み立てる。シーシャ歴が長く、理論派だが知識をひけらかさない。聞かれれば惜しみなく教える面倒見の良さがあり、口癖は「うまくなりたいなら全部見てけ」。負けると人目もはばからず本気で悔しがるが、相手を称えることを絶対に忘れない。はじめにとって最初の壁であり、最初の目標であり、のちに最も痛いことを言ってくれる友人になる。第2章でははじめの慢心に正面から苦言を呈する唯一の人物。 得意な味の軸はバニラと甘いお菓子系。チョコ、クリーム、パンや焼き菓子の香りを追求し、試作会でも世界大会でもその軸は変わらない。",
     "background_secret": "実家は商店街の喫茶店だったが、中学のときに潰れた。「店を続けることの重さ」を体で知っている。はじめが軽々しく語る「店を持ちたい」という夢に厳しいのはそのため。本人は多くを語らないが、ケムリクサで働くのは「潰れない店の作り方」を学ぶためでもある。 第2章の対峙後はケムリクサを長期休業し、行き先を告げず修行へ出る。旅先の店や借りた作業場で、違う器具や客の吸う速度に合わせて甘さを出し直す練習を積む。第3章では、はじめの東京での歩みと並行してラストチャンス予選を勝ち抜く。推薦や救済ではなく本人が勝ち取る枠。 はじめとの「勝った方が作る」という約束は、スミと南雲の昔の競争に重なる。話を聞き直す電話を経て、帰国後は互いの一台を作る。南雲と同じ引退を辿るのではなく、現役の好敵手として自分の甘さを磨く。",
@@ -125,11 +125,11 @@
     "id": "minto",
     "name": "みんと / 緑川 栞（みどりかわ しおり）",
     "private_name": "栞",
-    "lime_name": "みんと＠ぺぱーみんと",
+    "lime_name": "みんと＠PEPPERMINT",
     "role": "rival_ch1",
     "age": "20（自称）",
     "nationality": "Japan",
-    "affiliation": "ぺぱーみんと",
+    "affiliation": "PEPPERMINT",
     "play_style": "「客商売（魅せ方）の極意」",
     "description": "コンセプトカフェ「ぺぱーみんと」をひとりで切り盛りするオーナー兼キャスト（キャストは彼女ひとりなのに『人気No.1』と名乗るのが持ちネタ・2026-10-04 HF14）。可愛らしい容姿と明るい接客で、一人ひとりが楽しく過ごせる時間を作る。客の好みや様子を細かく見て声をかける戦略家。悲願だった「精肉店に乗っ取られた実家の純喫茶の場所の買い戻し」を果たし、その跡地を改装したのが今の店ぺぱーみんとである（＝買い戻し済みが正史・2026-07-11）。\nすでにクリーニングされ生肉の匂いなど一切残っていないにも関わらず、彼女の心には『生々しい血と肉の匂い』が幻臭としてこびりついている。ミントの強烈な香りと空間すべてを飲み込む煙で、その嫌な幻の匂いと記憶を完全に上書きすることが、彼女の強迫観念に近い真の目的。\n私服・素の姿（立ち絵 ura_*）でtonariに客として来ることがあり、はじめが自分に初めて淹れた一台を飲んだ客でもある（はじめには既にバイトでの提供経験がある）（表示名「お姉さん」= speakerエイリアス oneesan）。PEPPERMINTへ通って親しくなった後（好感度♥3以上・固有会話2回以上）、店内のカウンターで準備中の私服のお姉さんに会う。はじめが「こちらで働いてるんですね」と挨拶すると、もじもじしながら「キャストです……はじめくん」と返し、正体がつながる。その日は店でも照れて接客がぎこちない（2026-10-08 PF72）。本名は後の私的な約束（ch1_minto_fifth）で明かす。初めてはじめの一台を飲んだ夜、年齢確認された身分証の記憶が「自称20歳」の嘘の伏線になっている。",
     "background_secret": "【公式隠し設定】自称20歳だが実年齢は29歳のアラサー。実家は看板メニューが「チョコミントのパフェ」の純喫茶だったが自己破産で消滅し、居抜きで「精肉店」に改造されてしまった。精肉店が辞めるタイミングで物件を買い戻すため死に物狂いで資金を貯め、買い戻して今の店を開いた頃には29歳になっていた。すでにクリーニングされ実際の匂いは残っていないにも関わらず、心にこびりついた「生々しい肉（ミンチ）の幻臭」が消えない。頭では分かっていても鼻の奥に焼きついたあの匂いを「ミント」の煙で完全に上書きしなければ気が済まないという強迫観念が、コンカフェシーシャ嬢になった真の理由。",
@@ -318,8 +318,8 @@
       "notes": "見た目で距離を置かれることに慣れていたが、はじめの等身大の接客を見て、自分から客に好きな曲の話をして、ミスにも照れ笑いを見せるようになっていた。"
     },
     "visual_concepts": [
-      "25s japanese visual-kei male, charismatic and mysterious, deep red and black asymmetrical styled hair with dramatic volume, visible tattoos on neck and hands mixing japanese traditional and gothic western motifs, heavy dramatic eyeliner and pale foundation, wearing a dark velvet embroidered coat with silver accents, holding an ornate hookah hose like a microphone on stage, moody spotlight behind",
-      "visual kei cafe master, striking androgynous features, full body tattoo hints visible under rolled-up sleeves showing intricate floral and gothic patterns, wearing a form-fitting black high-neck top with chain decorations, intense gaze, performing shisha preparation as if conducting an orchestra, dark gothic lounge atmosphere with dim candlelight and rose petals"
+      "25-year-old Japanese man, handsome slightly androgynous owner of the visual-kei concept shisha cafe ZERO, an ordinary music and fashion enthusiast. Match the approved chr_rei_normal.png: layered black hair with irregular deep burgundy mesh/streaks interspersed on both sides, never left/right split dye; embroidered black long coat with red lining, black shirt and waistcoat, black trousers and boots, existing silver accents and waist chain. Preserve the approved face, restrained eye makeup, pose, and visible neck and hand tattoos without adding makeup, tattoos or costume decorations. Full-body standing portrait, same rendering as the approved sprite, transparent background, no stage performance, microphone-like hose pose, spotlight, text or logos",
+      "Face icon of the same 25-year-old ZERO cafe owner, matching the approved chr_rei_normal.png and face_rei.png. Same slightly androgynous face and layered black hair with irregular deep burgundy mesh/streaks across both sides, not a half-black half-red division. Retain the approved black embroidered coat collar and visible neck tattoo details only as shown; do not intensify makeup or add tattoo coverage or accessories. Quiet, approachable normal expression, same rendering as the approved portrait, transparent background, no stage lighting, text or logos"
     ],
     "intro_cutin": {
       "title": "煙のヴィジュアル系",
@@ -752,51 +752,6 @@
     }
   },
   {
-    "id": "kako",
-    "name": "かこ",
-    "role": "sub_character",
-    "age": 26,
-    "nationality": "Japan",
-    "affiliation": "tonari常連（フリーランスデザイナー）",
-    "play_style": "N/A",
-    "description": "フリーランスのデザイナー。シーシャをただ「吸う」だけでなく「作ること」が好きで、自分なりの一杯を探求しているオタク気質の女性。\nVTuberやネットミームが好きな「オタク」で、言葉は少ないが話しかけると話が長くなる。\n姫カット黒髪ロングで日本人形のような顔立ち、モード系の服装。\n※シークレット常連（ちょい役枠）：システム上の好感度は表示されないが、裏ステータスとして持つ。最大値は3。3回遭遇してMAXになると主人公に好意的になり、第5章や世界大会でギャラリーとして応援に来てくれる。",
-    "background_secret": "デザイナーの仕事において「クライアントの言いなりになること」に疲れ切っており、誰の指図も受けず完全に自分の世界観だけで構築できる『自宅シーシャ機材沼』に深く沈み込んでいる。",
-    "favorite_flavor": "ボムシェル",
-    "specialty_flavor": "ホワイトムスク",
-    "growth_stats": {
-      "primary": "センス",
-      "secondary": "魅力",
-      "notes": "自分の好きなレシピ（BombshellとWhite Muskの黄金比）を絶対に曲げない頑固なオタクだったが、はじめのブレンド提案を一度受け入れた後、いつの間にか他人の好みに合わせてフレーバーを調整する楽しさに目覚めていた。"
-    },
-    "visual_concepts": [
-      "26s japanese female, pale skin like a japanese doll, hime-cut long black hair, wearing stylish black monochrome mode fashion, typing rapidly on a customized keyboard, slightly slouching, socially awkward but intense vibe",
-      "introverted female designer, dark elegant hime-cut hair, wearing oversized dark avant-garde clothing, surrounded by personal shisha equipment, mixing flavors very methodically like a nerd, computer screens glowing in the background"
-    ],
-    "spriteScale": 0.93
-  },
-  {
-    "id": "rira",
-    "name": "りら",
-    "role": "sub_character",
-    "age": 28,
-    "nationality": "Japan",
-    "affiliation": "tonari常連",
-    "play_style": "N/A",
-    "description": "tonariの常連客でちょい役。黒髪ボブに茶色の目、可愛い系の童顔だが、ライダースジャケットを着こなすなど少し男勝りな部分もある。\n4歳年下の彼氏がおり、なんだかんだ好きでお姉さんとして接しているが、たまにシーシャを吸いながら主人公に彼氏の愚痴をこぼしていく。\n※シークレット常連（ちょい役枠）：システム上の好感度は表示されないが、裏ステータスとして持つ。最大値は3。3回遭遇してMAXになると主人公に好意的になり、第5章や世界大会でギャラリーとして応援に来てくれる。",
-    "background_secret": "男勝りな態度とは裏腹に、恋愛においては乙女で不器用な一面を持つ。",
-    "favorite_flavor": "ラズベリー",
-    "specialty_flavor": "ラズベリー",
-    "growth_stats": {
-      "primary": "魅力",
-      "secondary": "洞察",
-      "notes": "最初は主人公にただ愚痴を聞いてもらうだけだったが、徐々にシーシャの味の奥深さに気づき、自分でも色々なフレーバーを楽しむようになる。"
-    },
-    "visual_concepts": [
-      "28s japanese female, cute baby face with black bob hair and brown eyes, wearing a tough leather riders jacket over a simple white inner shirt, sitting at a counter smoking shisha, looking slightly annoyed venting about boyfriend",
-      "attractive young woman complaining while smoking hookah, tomboyish yet girly, dark bob haircut, biker jacket fashion, expressive face"
-    ]
-  },
-  {
     "id": "uranaishi",
     "name": "路上占い師",
     "role": "sub_character",
@@ -943,6 +898,18 @@
     "name": "マスター",
     "role": "mob",
     "description": "商店街のカフェのマスター。ハンドドリップの所作が美しい。なるの行きつけ。"
+  },
+  {
+    "id": "spice_merchant",
+    "name": "スパイス屋の店主",
+    "role": "mob",
+    "description": "ドバイのスーク（市場）のスパイス屋の店主。第4章の任意場面に登場（話者IDは仮置き）。"
+  },
+  {
+    "id": "cafe_staff",
+    "name": "店員",
+    "role": "mob",
+    "description": "ドバイ中心地の高級カフェの店員。路地裏のカフェの店員とは別人。第4章の任意場面に登場（話者IDは仮置き）。"
   },
   {
     "id": "everyone",

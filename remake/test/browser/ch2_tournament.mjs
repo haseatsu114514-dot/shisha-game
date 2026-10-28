@@ -378,7 +378,7 @@ await suite('ch2-tournament',async check=>{
     await page.locator(t('craft-start')).tap();
     await page.locator(t('votes')).waitFor();const retried=await get(page);
     assert.equal(retried.flags._ch2_tournament.attempts,2);assert.equal(retried.flags._ch2_tournament.history.length,1);
-    assert.equal(retried.flavorStock.double_apple,before.flavorStock.double_apple-9);
+    assert.equal(retried.flavorStock.double_apple,before.flavorStock.double_apple-8);
     assert.equal(retried.money,before.money);assert.deepEqual(retried.tournament,before.tournament);
     await assertFits(page,'.ch2-contest .btn, .ch2-contest-rival');
   },{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
@@ -397,21 +397,21 @@ await suite('ch2-tournament',async check=>{
     assert.deepEqual(await page.locator('.bench-phase-copy b').allTextContents(),['パッキング','炭焼き','蒸らし','吸い出し','提供','調整']);
     await assertFits(page,'.bench-top > *, .bench-phase-copy b');
     await capture(page,touch?'touch-mix-header':'pc-mix-header');
-    for(let n=0;n<3;n++)await press(dt('mix-plus-afsahr_strawberry'));
-    for(let n=0;n<9;n++)await press(dt('mix-plus-double_apple'));
+    for(let n=0;n<4;n++)await press(dt('mix-plus-afsahr_strawberry'));
+    for(let n=0;n<8;n++)await press(dt('mix-plus-double_apple'));
     const before=await get(page);
     await press(t('menu'));await press(t('save'));await press(dt('slot-1'));
     await page.clock.resume();
     await reload(page,1,touch);await page.locator(dt('mix-plus-afsahr_strawberry')).waitFor();
     let s=await get(page);assert.deepEqual(s.flavorStock,before.flavorStock);assert.equal(s.flags._ch2_tournament.step,1);
-    for(let n=0;n<3;n++)await press(dt('mix-plus-afsahr_strawberry'));
-    for(let n=0;n<9;n++)await press(dt('mix-plus-double_apple'));
+    for(let n=0;n<4;n++)await press(dt('mix-plus-afsahr_strawberry'));
+    for(let n=0;n<8;n++)await press(dt('mix-plus-double_apple'));
     await assertFits(page,dt('mix-ok'));await page.evaluate(async()=>{(await import('./js/craft/session.js')).craftTest.auto='good';});
     await press(dt('mix-ok'));await page.locator(t('votes')).waitFor();
-    s=await get(page);assert.equal(s.flavorStock.double_apple,before.flavorStock.double_apple-9);
+    s=await get(page);assert.equal(s.flavorStock.double_apple,before.flavorStock.double_apple-8);
     const snapshot=structuredClone(s.flags._ch2_tournament.votes);
     await reload(page,0,touch);await page.locator(t('votes')).waitFor();s=await get(page);assert.deepEqual(s.flags._ch2_tournament.votes,snapshot);
-    assert.equal(s.flavorStock.double_apple,before.flavorStock.double_apple-9);
+    assert.equal(s.flavorStock.double_apple,before.flavorStock.double_apple-8);
   },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
   for (const touch of [false,true]) await check(`continue-menu-${touch?'touch':'pc'}`,async page=>{
     const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();

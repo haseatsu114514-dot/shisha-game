@@ -15,6 +15,8 @@ const start = source.indexOf('function handleCondition('), end = source.indexOf(
 assert(start >= 0 && end > start);
 const context = vm.createContext({DB, STAT_EN:{}, tournamentFinished, affinityLevel:()=>5,
   hooks:{evalCondition:line=>line.condition_type==='story_seen' ? context.storySeen(line.dialogue) : false}, jumpTo:()=>{throw Error('Unexpected cross-scene condition');}});
+// VNの制作経験条件も、本番と同じ履歴判定を共有する（DOM・セーブ領域は使わない）。
+vm.runInContext(read('remake/js/craft/practice-history.js').replace(/^import .*;\n/gm, '').replace(/^export /gm, ''), context);
 vm.runInContext(source.slice(start,end+2),context);
 const spotsSource=read('remake/js/daily/spots.js');
 const seenStart=spotsSource.indexOf('function storySeen('), seenEnd=spotsSource.indexOf('\n}\n',seenStart);
@@ -45,7 +47,7 @@ function paths(id, state, knownFlags = false) {
   if (knownFlags) for (const row of JSON.stringify(scene).matchAll(/"flag":"([^"]+)"/g)) value.flags[row[1]]=true;
   return run(scene.lines,scene.branches || {},value,[]);
 }
-const state = (chapter,phase='daily',met={}) => ({chapter,phase,day:1,flags:{},met,stats:{},notes:{},money:100000});
+const state = (chapter,phase='daily',met={}) => ({chapter,phase,day:1,flags:{},met,stats:{},money:100000});
 for (let target=1;target<=5;target++) {
   for (const phase of ['opening','daily','tournament','aftermath','cleared']) {
     const value=state(target,phase), before=JSON.stringify(value);
@@ -59,6 +61,51 @@ for(const bad of [undefined,null,0,-1,1.5,'2',NaN])assert.equal(tournamentFinish
 const sensitive = /大会前|本番、よろしく|いよいよ大会|大会が近い|大会の日の煙|大会の……お守り|君の大会、見に行けない|なのに大会では|大会で戦うことになる|大会では焦り|大会の本番|今度の大会|大会出るの|大会のお願い|大会の日も描く|今回のSMOKE|大会ステージの準備|大会で使うん|参加登録はもう|大会に出す理由|SMOKE CROWN CUP、俺も出る/;
 const effects = rows => rows.filter(r => ['remember','apply','set_flag','buy_keepsake','flavor_lesson'].includes(r.type)
   || r.text && /【.+】.*上がった/.test(r.text));
+const fullRun = {scope:'full',success:true,served:true,kind:'practice'};
+const sumiCases = [
+  ['未体験', {}, false],
+  ['未完了の手本', {_tutorial_requested:true}, false],
+  ['旧スキップ', {_tutorial_done:true,_tutorial_skipped:true}, false],
+  ['旧制作完了', {_tutorial_done:true}, true],
+  ['制作1回', {_craft_practice_runs:[fullRun]}, true],
+  ['制作複数回', {_craft_practice_runs:[fullRun,fullRun]}, true],
+  ['吸い出し失敗', {_craft_practice_runs:[{...fullRun,success:false,served:false}]}, false],
+  ['提供未完了', {_tutorial_done:true,_craft_practice_runs:[{...fullRun,kind:'tutorial',served:false}]}, false],
+  ['調整練習だけ', {_craft_practice_runs:[{...fullRun,scope:'care'}]}, false],
+];
+const sumiFirst = paths('ch1_sumi_basics', state(1))[0];
+for (const [label,flags,review] of sumiCases) for (const [chapter,phase] of [[1,'daily'],[1,'aftermath'],[2,'daily']]) {
+  const value = {...state(chapter,phase),day:9,flags:structuredClone(flags)};
+  const before = JSON.stringify(value);
+  const rows = paths('ch1_sumi_basics', value)[0];
+  assert.equal(rows.some(r=>r.text?.includes('今日は復習だ')), review, label);
+  assert.deepEqual(rows.filter(r=>r.diagram).map(r=>r.diagram),
+    review ? ['hose','hide'] : ['show','heat','smoke','bubble','hose','hide'], label);
+  assert.deepEqual(effects(rows), effects(sumiFirst), `${label}: 記憶と技術報酬は各1回`);
+  assert.equal(rows.filter(r=>r.type==='remember' && r.memory_id==='sumi_heat').length, 1);
+  assert(rows.some(r=>r.text?.includes('今ここにある一台を見ろ')), `${label}: 記憶が参照する言葉を保持`);
+  if (review) assert(rows.length < sumiFirst.length / 2, `${label}: 短い復習`);
+  else assert.deepEqual(rows, sumiFirst, `${label}: 従来の説明を保持`);
+  assert.deepEqual(paths('ch1_sumi_basics', JSON.parse(before))[0], rows, `${label}: 保存復元後も同じ分岐`);
+  assert.equal(JSON.stringify(value), before, `${label}: 分岐だけで状態を変更しない`);
+}
+console.log(`PASS: スミの基礎説明 ${sumiCases.length * 3} 状態（制作履歴・旧セーブ・大会後・保存復元・図解・共通報酬）`);
+// #1253: the private finale is valid before/after chapter 1's tournament and in later chapters.
+// Exercise friendship, the final romance question and already-lover branches with the real VN condition handler.
+const originalEval = context.hooks.evalCondition;
+for (const route of ['friend', 'romance', 'lover']) {
+  context.hooks.evalCondition = line => line.condition_type === 'lover' ? route === 'lover'
+    : line.condition_type === 'romance_open' ? route === 'romance' : originalEval(line);
+  const before = paths('ch1_minto_bond_finale', state(1));
+  for (const [chapter, phase] of [[1, 'aftermath'], [2, 'daily'], [3, 'daily'], [4, 'daily'], [5, 'daily']]) {
+    const value = state(chapter, phase);
+    const after = paths('ch1_minto_bond_finale', JSON.parse(JSON.stringify(value)));
+    assert.deepEqual(after, before, `Minto ${route} ch${chapter}/${phase}: same dialogue, choices and effects`);
+    for (const rows of after) assert.doesNotMatch(rows.map(r => r.text || '').join('\n'), sensitive);
+  }
+}
+context.hooks.evalCondition = originalEval;
+console.log('PASS: Minto finale friendship/romance/lover chronology before tournament, aftermath and chapters 2–5');
 const changed = ['ch1_naru_first','ch1_naru_second','ch1_naru_third','ch1_naru_fifth','ch1_naru_bond_finale',
   'ch1_minto_second','ch1_adam_fifth','ch1_tsumugi_fifth','ch1_tsumugi_smoke_color','ch1_rin_third','ch2_rei_first','ch2_rei_fifth','remake_ch2_kumicho_chat'];
 let count=0;

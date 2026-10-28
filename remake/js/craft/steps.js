@@ -26,8 +26,8 @@ import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipment
 export const REGULATION = {
   1: { flavor: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（私物持ち込み）" },
   // 判定は同系統（AFの持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
-  2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 1, label: "課題フレーバー「ストロベリー」を使う" },
-  // オーナー決定 10/28：ドバジ・4g以上・持ち込み。通常/ダークは未確定（既定=通常 chocolate）。
+  2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 4, label: "課題フレーバー「ストロベリー」を4g以上" },
+  // オーナー決定 10/28：ドバジ・4g以上・持ち込み。チョコは通常（chocolate）。
   3: { flavor: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（私物持ち込み）" },
 };
 export const regulationFor = (cs) => cs.staffPractice ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
@@ -181,7 +181,8 @@ export function evaluateMix(cs) {
   const main = Math.max(...ids.map((id) => mix[id]), 0) / (total || 1);
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
   const reg = regulationFor(cs);
-  const regOk = !reg || flavorFamilyGrams(mix, reg.flavor) >= reg.min;
+  const competitionLegal = cs.mode !== "tournament" || ids.every(id => DB.flavorById[id]?.competition_legal !== false);
+  const regOk = competitionLegal && (!reg || flavorFamilyGrams(mix, reg.flavor) >= reg.min);
   if (reg && ids.length > 1 && flavorFamilyGrams(mix, "mint") > 6) { score -= 6; notes.push("ミントが強すぎて、他の香りが隠れている"); }
   // 味の傾向（重さ平均）
   const prof = {};
@@ -222,6 +223,22 @@ export function fitMixToStock(mix, ids, limit, cap, minTotal = 0) {
   return out;
 }
 
+export function mixFlavorIds(cs) {
+  const reg = regulationFor(cs);
+  // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
+  const consumes = cs.mode === "tournament";
+  const supplyId = reg?.supply || null;
+  let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
+  if (!consumes) ids = [...new Set(["lemon", "mint", "double_apple", state.flags._prep_flavor].filter(Boolean))].filter(id => DB.flavorById[id]);
+  if (supplyId && !ids.includes(supplyId)) ids.unshift(supplyId);
+  if (cs.staffPractice) ids = [...new Set([...staffFlavors(state), ...ownedFlavorIds()])].filter(id => DB.flavorById[id]);
+  if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
+  if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
+  // 支給・注文指定・まかないの経路でも、大会使用不可の葉を再混入させない。
+  if (consumes) ids = ids.filter(id => DB.flavorById[id]?.competition_legal !== false);
+  return ids;
+}
+
 export async function stepMix(cs) {
   const owner = state;
   await waitBenchReady(cs, "mix");
@@ -229,16 +246,10 @@ export async function stepMix(cs) {
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
-  // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   const supplied = (id) => !!reg && id === supplyId;
-  let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
-  if (!consumes) ids = [...new Set(["lemon", "mint", "double_apple", state.flags._prep_flavor].filter(Boolean))].filter(id => DB.flavorById[id]);
-  if (supplyId && !ids.includes(supplyId)) ids.unshift(supplyId);
-  if (cs.staffPractice) ids = [...new Set([...staffFlavors(state), ...ownedFlavorIds()])].filter(id => DB.flavorById[id]);
-  if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
-  if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
+  const ids = mixFlavorIds(cs);
   const limit = (id) => cs.staffPractice ? staffStock(state, id) + flavorStock(id) : (consumes && !supplied(id) ? flavorStock(id) : Infinity);
   const practiceFlavor = cs.mode === "rehearsal" && !cs.staffPractice ? state.flags._prep_flavor : null;
   cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? (practiceFlavor === "lemon" ? { lemon: 10, mint: 2 } : { [practiceFlavor]: 10, lemon: 2 }) : {};
@@ -385,7 +396,7 @@ export async function stepMix(cs) {
       }
       else { cs.mix = { double_apple: 5, mint: 7 }; }
       if (reg?.flavor === "strawberry") {
-        const apple = autoSkill() === "good" ? Math.min(9, flavorStock("double_apple")) : 0;
+        const apple = autoSkill() === "good" ? Math.min(12 - reg.min, flavorStock("double_apple")) : 0;
         cs.mix = { [supplyId]: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
       }
       if (reg?.flavor === "lemon") cs.mix = { lemon: 3, double_apple: 9 };

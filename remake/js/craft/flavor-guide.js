@@ -60,6 +60,10 @@ export function flavorFeatureCard(flavor, { description = "", makerLabel = "" } 
 
 export function mixForecastCard(cs, { precision = 0, mastery, aroma, compact = false } = {}) {
   const forecast = forecastExpression(cs, { precision });
+  // 配合の加重平均は表示時だけ切り捨て、次の段階やMAXを先取りしない。
+  // 全葉MAXの平均が5未満になるような、整数境界の浮動小数誤差だけを補う。
+  const level = mastery ? Math.floor(clamp(mastery.level + Number.EPSILON * 5, 1, 5)) : 1;
+  const stars = `${"★".repeat(level)}${"☆".repeat(5 - level)}${level === 5 ? " MAX" : ""}`;
   const title = el("b", { text: aroma?.headline || "仕上がりの目安" });
   if (!forecast.selected) return el("div.flavor-forecast", [title,
     el("p.flavor-guide-note", { text: "葉を足すと、仕上がりの予想を表示します。" })]);
@@ -73,12 +77,12 @@ export function mixForecastCard(cs, { precision = 0, mastery, aroma, compact = f
     ]) : null,
     el("details.flavor-guide-more", [
       el("summary", { dataset: { test: "mix-mastery-summary" }, text: mastery
-        ? `熟練 Lv.${mastery.level.toFixed(1)} · ${cs.mode === "tournament" ? `大会 +${mastery.bonus.toFixed(1)}` : "香りと予想に効く"}`
+        ? `熟練 ${stars} · ${cs.mode === "tournament" ? `大会 +${mastery.bonus.toFixed(1)}` : "香りと予想に効く"}`
         : "予想の読み方" }),
       aroma?.detail ? el("p", { text: aroma.detail }) : null,
       el("p", { text: `${forecast.note}。実際の仕上がりは加熱で変わります。` }),
       el("p", { text: "棒が長いほど強い傾向。品質の高さではありません。使い慣れた葉ほど予想幅が絞れます。" }),
-      mastery ? el("p", { text: "熟練は使った量の比率で、香りの再現・予測・大会点に効きます。葉の基本情報はLv.1から見られます。" }) : null,
+      mastery ? el("p", { text: "熟練は使った量の比率で、香りの再現・予測・大会点に効きます。葉の基本情報は最初から見られます。" }) : null,
     ]),
   ];
   return el(`div.flavor-forecast${compact ? ".is-compact" : ""}`, { dataset: { test: "mix-forecast", precision: format(precision), expressive: String(forecast.expressive) } },
@@ -88,7 +92,7 @@ export function mixForecastCard(cs, { precision = 0, mastery, aroma, compact = f
 
 // 文言は現行の計算に効く性能に限る。HMDの未接続の温まり方・蓄熱は説明しない。
 const EQUIPMENT_USE = {
-  silicone_bowl: ["12gで組み立てる基本の器", "容量を増やしたい時は別の器へ"],
+  silicone_bowl: ["12gの葉を使う基本の器", "容量を増やしたい時は別の器へ"],
   hagal_80beat: ["最大15g。葉を増やして厚みを出す", "多く詰めるほど蒸らしは長め"],
   nightside_premier_hagal: ["最大15g。温度を合わせやすい器", "多く詰めるほど蒸らしは長め"],
   suyaki_hagal: ["最大20g。量を使って厚い味へ", "適温幅は狭め。温度合わせが要る"],
