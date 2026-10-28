@@ -15,6 +15,7 @@ import { imgFileUrl } from "./img-file.js";
 // 表示枠は 43:25 のままレターボックスで収めるので、作画は 43:25 を推奨する。
 const src = imgFileUrl("loading/adam-chaos.webp");
 const batch1Src = imgFileUrl("loading/loading-batch1.webp");
+const batch2Src = imgFileUrl("loading/loading-batch2.webp");
 export const LOADING_COMICS = [{
   id: "adam-menu-25",
   title: "メニュー改訂",
@@ -40,5 +41,18 @@ export const LOADING_COMICS = [{
       region: { x: 22, y: 135, width: 510, height: 399, sourceWidth: 1086, sourceHeight: 1448 } },
     { src: batch1Src, alt: "炭箱の中で小さな炭たちが一斉にざわめき、スミさんが真剣にメモを取る。はじめ「議事録とってる！？」",
       region: { x: 545, y: 135, width: 520, height: 399, sourceWidth: 1086, sourceHeight: 1448 } },
+  ],
+}, {
+  id: "mashiro-body-clock",
+  title: "体内時計",
+  contexts: ["craft"],
+  minChapter: 3,
+  note: "番外編のギャグ漫画です。左から右へお読みください。",
+  caption: "番外編のギャグ漫画。ましろの体内時計は砂時計と同調している。",
+  panels: [
+    { src: batch2Src, alt: "はじめ「蒸らしって、何分待てばいいの？」。頬杖をついたましろが眠そうに答える。「砂時計ひとつ分。……僕は寝て待つ。」",
+      region: { x: 51, y: 292, width: 478, height: 680, sourceWidth: 1086, sourceHeight: 1448 } },
+    { src: batch2Src, alt: "砂時計の砂が落ちきり、うたた寝していたましろが目を開ける。「……落ちた。」はじめ「目覚ましより正確！？」",
+      region: { x: 557, y: 292, width: 477, height: 680, sourceWidth: 1086, sourceHeight: 1448 } },
   ],
 }];
