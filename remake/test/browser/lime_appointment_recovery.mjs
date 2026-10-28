@@ -72,7 +72,7 @@ await suite("lime-appointment-recovery", async check => {
       // 日常ループへ入り直す（calendar.js の loadFlow → location.reload に対応）。
       // #1081 D03（58bdcf114）で runDaily に入った owner 照合により、旧ループは
       // 日付境界で静かに止まるため、ここでも入り直してから続ける。
-      await page.evaluate(() => QA.run());
+      await page.evaluate(() => { QA.run(); }); // 起動側と同じく完了を待たない（ループは終わらない）
       await mapAt(page, 5, 1);
       await go(page, "rest"); await mapAt(page, 6, 0);
       const retries = await page.evaluate(() => QA.core.state.inbox.filter(i => i.originId === "lime_minto_first_holiday"));
