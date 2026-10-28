@@ -2688,10 +2688,6 @@
           "type": "choice",
           "choices": [
             {
-              "text": "炭交換と調整を復習する",
-              "next": "care"
-            },
-            {
               "text": "今日は仕入れだけにする",
               "next": "stock"
             },
@@ -2703,7 +2699,6 @@
         }
       ],
       "branches": {
-        "care": [],
         "stock": [],
         "full": []
       }

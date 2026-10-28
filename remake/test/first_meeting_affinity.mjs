@@ -26,7 +26,7 @@ async function fixture() {
     trpgSpot: () => ({id:'trpg',kind:'trpg'}), AXE_BAR: {id:'axe_bar',kind:'axe'}, RAIN_SPOT_TEXTS: {}, isRainy: () => rainy,
     spotFollowupDue: () => null, syncMintoKnowledge() {}, 
     maybeRecruitTrpgMember: (...args) => recruitImpl(...args), sharkSwim: async swap => swap(),
-    imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
+    withScenePreparation: task => task, imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
     
     openingStatus: () => ({ok:true}), refreshPlaceCue() {}, playBgm() {}, 
   };
