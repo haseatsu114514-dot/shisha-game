@@ -27,7 +27,8 @@ export function openGallery() {
   // 旧保存もロード/上書きせず、明示的な実績だけを取り込む。
   recordGalleryProgress(state);
   SAVE_SLOTS.forEach(slot => recordGalleryProgress(readSlot(slot.key)));
-  const entries = galleryEntries(DB.manifest, DB.gallery, readGalleryProgress(), seen());
+  const progress = readGalleryProgress();
+  const entries = galleryEntries(DB.manifest, DB.gallery, progress, seen());
   const stats = galleryStats(entries);
   const fraction = s => `${s.unlocked} / ${s.total}（${s.rate}%）`;
   return new Promise(resolve => {
@@ -45,6 +46,16 @@ export function openGallery() {
         const s = stats.byChar[char];
         return el("span", { text: `${label} ${s.unlocked}/${s.total}（${s.rate}%）` });
       }));
+    const recordedRoutes = Object.entries(progress.routeRecords);
+    const routes = recordedRoutes.length ? el("section.gal-route-records", { "aria-label": "ルート記録" }, [
+      el("h3", { text: "ルート記録" }),
+      ...recordedRoutes.map(([char, record]) => el("div.gal-route-record", [
+        el("strong", { text: Object.hasOwn(CHAR_LABELS, char) ? CHAR_LABELS[char] : char }),
+        record.becameLover ? el("p", { text: "恋人成立" }) : null,
+        record.eventsSeen.length ? el("p", { text: `閲覧した段階・派生：${record.eventsSeen.join("、")}` }) : null,
+        record.trueEndAsLover ? el("p", { text: "真エンド同行" }) : null,
+      ])),
+    ]) : null;
     const grid = el("div.gal-grid", { id: "gallery-items", role: "tabpanel" });
     const note = el("p.gal-note", { text: "見た一枚や受け取った写真が残ります。漫画・ムービーは章クリアで解放。" });
     const tools = el("div.gal-viewer-tools");
@@ -58,7 +69,7 @@ export function openGallery() {
       el("button.gal-tab", { text: `${name} ${fraction(kind === "all" ? stats : stats.byKind[kind])}`, role: "tab", "aria-controls": "gallery-items", "aria-selected": kind === tab ? "true" : "false",
         dataset: { kind, test: "gallery-tab-" + kind }, onclick: () => { tab = kind; render(); SE.select(); } })));
     const box = el("div.gal", [
-      el("div.gal-head", [el("h2", { text: "GALLERY" }), collection, count, closeButton]), tabs, characters, grid, note,
+      el("div.gal-head", [el("h2", { text: "GALLERY" }), collection, count, closeButton]), tabs, characters, routes, grid, note,
     ]);
     const overlay = el("div.gal-overlay", [box, viewer]);
     const restoreMusic = () => {

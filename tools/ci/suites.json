@@ -16,6 +16,18 @@
       "run": ["node --experimental-vm-modules remake/test/load_save_failure.mjs"]
     },
     {
+      "id": "corrupt-save-migrate",
+      "title": "Structurally corrupt saves migrate or fail gracefully",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/corrupt_save_migrate.mjs"]
+    },
+    {
+      "id": "kuji-sell-guard",
+      "title": "Kuji goods sell handler identity and stale clicks",
+      "kind": "quick",
+      "run": ["node remake/test/kuji_sell_guard.mjs"]
+    },
+    {
       "id": "station-j01",
       "title": "Station availability, layout and save/load",
       "kind": "browser",
@@ -34,10 +46,22 @@
       "run": ["node remake/test/browser/dj_preview.mjs"]
     },
     {
+      "id": "title-art-met",
+      "title": "Title art unlocks by characters met in the latest save",
+      "kind": "quick",
+      "run": ["node remake/test/title_art_met.mjs"]
+    },
+    {
       "id": "loading-prefetch",
       "title": "Bounded preparation queue and retries",
       "kind": "quick",
       "run": ["node remake/test/loading_prefetch.mjs"]
+    },
+    {
+      "id": "ngplus-measurement",
+      "title": "NG+ measurement harness (U5): scenario sweep, rival observer, aggregation",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_measurement.mjs"]
     },
     {
       "id": "ngplus-carry",
@@ -141,6 +165,7 @@
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
@@ -184,6 +209,7 @@
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
+        "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
         "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
@@ -220,7 +246,7 @@
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs",
-        "node --experimental-vm-modules remake/test/gallery.mjs",
+        "node --experimental-vm-modules remake/test/gallery.mjs", "node --experimental-vm-modules remake/test/gallery_route_records.mjs",
         "node --experimental-vm-modules remake/test/story_guidance_1045.mjs",
         "node --experimental-vm-modules remake/test/purikura_fee.mjs",
         "node --experimental-vm-modules remake/test/appearance_selection.mjs",
@@ -250,6 +276,7 @@
         "node --experimental-vm-modules remake/test/recorded_se.mjs",
         "node --experimental-vm-modules remake/test/entry_phone_audio.mjs",
         "node --experimental-vm-modules remake/test/continue_audio.mjs",
+        "node --experimental-vm-modules remake/test/title_audio_entry.mjs",
         "node --experimental-vm-modules remake/test/continue_context.mjs",
         "node --experimental-vm-modules remake/test/bgm_gain.mjs",
         "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
@@ -808,6 +835,24 @@
       ],
       "run": [
         "node remake/test/browser/ch4_full_flow.mjs"
+      ]
+    },
+    {
+      "id": "ch5-full-flow",
+      "title": "Chapter 5 full playthrough on one save",
+      "kind": "browser",
+      "weight": 2.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch5*.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch1.js",
+        "data/dialogue/ch5_main.json",
+        "data/dialogue/ending.json",
+        "remake/test/browser/ch5_full_flow.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_full_flow.mjs"
       ]
     },
     {
@@ -2633,6 +2678,7 @@
       "run": [
         "node remake/test/flavor_mastery.mjs",
         "node remake/test/flavor_expression.mjs",
+        "node remake/test/flavor_data_contract.mjs",
         "node remake/test/mastery_balance.mjs",
         "node remake/test/craft_review.mjs",
         "node --experimental-vm-modules remake/test/shop_display_775.mjs"
