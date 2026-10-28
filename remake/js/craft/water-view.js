@@ -1,6 +1,7 @@
 import { el } from "../core/util.js";
 import { state } from "../core/state.js";
 import { stepPanel, benchRoot, craftTest, setBenchWater } from "./session.js";
+import { STEP_BRIEFS } from "./bench-ui.js";
 import { waterQuantity, changeWater, waterBand } from "./water.js";
 
 function ensureStyle() {
@@ -151,9 +152,10 @@ export async function stepWater(cs) {
   ensureStyle();
   const ownerState = state;
   // 水はSETUP内の準備。既存の番号付き工程と進捗表示を保つ。
+  // 説明文は water 専用（常設 brief と初回レッスン）を使い、setup の文は流用しない。
   const panel = stepPanel("setup", "水入れ", cs.mode === "tutorial"
     ? "スミ「注ぐときは長押し。二本の線を目安に、こぼして戻してもいい」"
-    : "長押しで注ぐ・こぼす。水量を決めてから配合へ進む");
+    : "長押しで注ぐ・こぼす。水量を決めてから配合へ進む", { brief: STEP_BRIEFS.water, lessonStep: "water" });
   const view = mountWater(panel, { quantity: cs.water, isCurrent: () => state === ownerState && !!benchRoot(cs) });
   if (craftTest.auto) queueMicrotask(view.confirm);
   cs.water = await view.result;
