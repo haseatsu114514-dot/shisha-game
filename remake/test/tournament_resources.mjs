@@ -86,11 +86,11 @@ const prefix = source.slice(start, end) + '  return newSession("tournament");\n}
 core.newGame(); // regulationFor closes over the real core.state, not the sandbox's `state`; reset it to Chapter 1 defaults
 const entrant = core.newState();
 Object.assign(entrant, { phase: "daily", day: 14, stamina: 52, flavorStock: {} });
-const saves = [], sessions = [], stub = () => {};
+const saves = [], sessions = [], notices = [], stub = () => {};
 const context = vm.createContext({
   state: entrant, TOURNAMENT_DAY: 14, NIGHT_EVENTS: [], SHOP_FLAVORS: ["lemon"], TONARI: "", TONARI_N: "", STAGE: "",
   syncNightQueue: stub, runNightPlan: stub, playTsumugiStory: stub, sketchScene: stub,
-  prepareFlavorStock: stub, lastNight: stub, warmCraftAssets: stub, clearScreen: stub, initHud: stub,
+  prepareFlavorStock: stub, lastNight: stub, warmCraftAssets: () => Promise.resolve([]), clearScreen: stub, initHud: stub,
   showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], openPhone: stub,
   play: stub, ownsFlavor: () => false, flavorStock: id => entrant.flavorStock[id] || 0,
   addFlavorStock: (id, amount) => { entrant.flavorStock[id] = (entrant.flavorStock[id] || 0) + amount; },
@@ -98,6 +98,8 @@ const context = vm.createContext({
   save: () => saves.push(copy(entrant)), toast: stub,
   markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(), maybeShuraba: stub,
   entrance: stub, newSession: () => { sessions.push(copy(entrant)); return {}; },
+  loadingNotice: label => ({ label }),
+  withLoadingNotice: async (task, notice) => { notices.push(notice); return await task; },
 });
 await vm.runInContext(prefix + "\ntournamentDay()", context);
 assert.deepEqual(saves[0].tournament.entryResources.flavorStock, { lemon: 12 }, "capture follows rescue grant");
@@ -118,6 +120,8 @@ await vm.runInContext("tournamentDay()", context);
 assert.equal(sessions[3].stamina, 52, "declining the assist keeps the entry stamina");
 assert.equal(applyAssistRecovery({ stamina: 9 }, "yes", 130), false, "only an explicit true assists");
 assert.equal(saves.length, 1, "recovery never writes a new entry save");
+assert.equal(notices.length, 4, "every tournamentDay run wraps the entry wait in the loading notice");
+for (const notice of notices) assert.deepEqual(notice, { label: "大会の準備をしています…" });
 const victory = source.slice(source.indexOf("async function victory(cs)"), source.indexOf('  await play("ch1_tournament_after"'));
 assert(victory.includes("delete state.tournament.entryResources"), "victory clears the retry snapshot");
 
