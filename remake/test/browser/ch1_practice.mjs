@@ -225,6 +225,20 @@ await suite("ch1-practice", async run => {
     assert.deepEqual(result.normal, [{}, null, undefined]); assert.equal(result.records, undefined);
   });
   await check("mid-failure-is-not-success", async page => {
+    // 提供前の失敗を固定する。蒸らしの温度上限から実際の上げ吸いで焦がす。
+    await page.route("**/js/craft/practice.js", async route => {
+      const response = await route.fetch();
+      const source = await response.text();
+      const call = "  await runPull(cs);";
+      assert.equal(source.split(call).length, 2, "吸い出し直前の入力を一箇所だけ固定する");
+      await route.fulfill({
+        response,
+        body: source.replace(call, "  cs.steam.temp = 0.88;\n" + call),
+      });
+    });
+    await page.reload();
+    await page.locator('[data-test="title-new"]').waitFor();
+    await page.locator("#boot").waitFor({ state: "detached" });
     await setup(page, { day: 7, auto: "burn" }); await page.evaluate(() => P.run()); await finish(page);
     const r = await snapshot(page), record = r.state.flags._craft_practice_runs.at(-1);
     assert.equal(record.scope, "full"); assert.equal(record.success, false); assert.equal(record.served, false);
