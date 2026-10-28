@@ -68,7 +68,6 @@ export function newState() {
     limeRead: [],              // 既読の LIME id
     pendingInvite: null, // day/slot/originIdつきの予約
     inbox: [],                 // LIME の受信箱 [{id, day, msg, read, done, log}]（朝に届き、好きなときに読む）
-    notes: {},                 // 常連ノート（接客した客 -> 回数）
     relationshipMemories: [],   // 読んだ交流だけを残す。人数・恋愛・大会の加点には使わない
     trpg: { stock: [], owned: [], cleared: {}, shifts: [], club: { founded: null, members: {} } },
     recipes: {},               // 発見したレシピ
@@ -148,6 +147,7 @@ function migrate(s) {
     }));
   }
   if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
+  delete s.notes; // 常連ノートは廃止。旧セーブの残存キーを捨てる
   // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
   // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
   if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;

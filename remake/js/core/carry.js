@@ -50,7 +50,6 @@ export const STATE_KEY_RULES = {
   limeRead: { verdict: "reset", note: "§2.2" },
   pendingInvite: { verdict: "reset", note: "§2.2" },
   inbox: { verdict: "reset", note: "§2.2" },
-  notes: { verdict: "reset", note: "§2.2" },
   relationshipMemories: { verdict: "reset", note: "§2.2" },
   trpg: { verdict: "conditional", note: "在庫・所持・クリア・シフトは引き継ぐ。部活（club）は加入が人物イベント依存のためリセット（§2.1）" },
   recipes: { verdict: "carry", note: "発見レシピ（§2.1）" },
