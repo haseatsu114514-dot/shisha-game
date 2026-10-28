@@ -788,7 +788,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
 /** 既読ぶんを履歴として一気に描く（日付の区切りつき） */
 function drawHistory(items, ui) {
   // 同期的に描き切るため途中経過は描画されない。スクロールは最後の1回だけにまとめる。
-  ui.withDeferredScroll(() => {
+  const draw = () => {
     let lastItem = null;
     for (const it of items) {
       if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
@@ -801,7 +801,9 @@ function drawHistory(items, ui) {
         else ui.bubble(l.text, l.me, accountOf(it), false);
       }
     }
-  });
+  };
+  if (typeof ui.withDeferredScroll === "function") ui.withDeferredScroll(draw);
+  else draw();
 }
 
 /**
