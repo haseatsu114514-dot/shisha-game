@@ -6,9 +6,10 @@ import { FACILITY_ICONS, FACILITY_ICON_SIZES, FACILITY_SHEET, FACILITY_EXTRA_SHE
 
 const source = new URL('../../asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/facilities-source.png', import.meta.url);
 const bytes = fs.readFileSync(source);
-const published = new URL('../../assets/ui/map-facilities-579.png', import.meta.url);
+const published = new URL('../../assets/ui/map-facilities-579.webp', import.meta.url);
 assert.equal(FACILITY_SHEET, published.href);
-const copy = fs.readFileSync(published);
+const master = new URL('../../assets/ui/map-facilities-579.png', import.meta.url);
+const copy = fs.readFileSync(master);
 assert.deepEqual(copy, bytes, 'Published sheet must remain byte-identical to the original');
 for (const data of [bytes, copy]) {
   assert.equal(createHash('sha256').update(data).digest('hex'), '7289b74ffe67290a444f2e6e95dee7be209ec31ae33d31cd26b39903ed51a284');

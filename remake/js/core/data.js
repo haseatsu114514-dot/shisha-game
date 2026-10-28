@@ -300,7 +300,7 @@ export function cgUrl(id) {
 export function faceIconUrl(id, state = null, { context = null } = {}) {
   const icons = DB.manifest.faceIcons || [];
   const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
-  if (privateMinto) return icons.includes("face_minto_private.png") ? `${ROOT}assets/ui/face_icons/face_minto_private.png` : null;
+  if (privateMinto) return icons.includes("face_minto_private.png") ? img("ui/face_icons/face_minto_private.png") : null;
   const folder = SPEAKER_ALIAS[id] || id;
   return icons.includes(`face_${folder}.png`) ? img(`ui/face_icons/face_${folder}.png`) : null;
 }

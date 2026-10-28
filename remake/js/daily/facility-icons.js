@@ -1,5 +1,5 @@
 // Reusable facility art. No unlock, guest or save dependencies.
-export const FACILITY_SHEET = new URL('../../../assets/ui/map-facilities-579.png', import.meta.url).href;
+export const FACILITY_SHEET = new URL('../../../assets/ui/map-facilities-579.webp', import.meta.url).href;
 export const FACILITY_SHEET_SIZE = Object.freeze([2172, 724]);
 export const FACILITY_EXTRA_SHEET = new URL('../../../assets/ui/map-facilities-extra-579.webp', import.meta.url).href;
 export const CINEMA_ICON = new URL('../../../assets/ui/map-rojiura-cinema.webp', import.meta.url).href;
