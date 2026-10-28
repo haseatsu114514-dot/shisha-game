@@ -101,7 +101,8 @@ export function setupHooks() {
       save();
     }
     // チョイザップ入会（初月分4,000円。初回キャンペーンで3か月は追加料金なし。3か月後の失効・再課金は未実装で、会員フラグは恒久）
-    if (dialogueId === "ch1_choizap_first" && branch === "register") {
+    // 所持金が足りないときは引き落とさず会員化もしない（選択肢の無効化に加えた二重防御。分岐側が会員フラグで成否を読む）
+    if (dialogueId === "ch1_choizap_first" && branch === "register" && state.money >= 4000) {
       addMoney(-4000);
       setFlag("_gym_member");
     }
