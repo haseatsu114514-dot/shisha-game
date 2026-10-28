@@ -508,6 +508,14 @@ function bubble(text, ms = 1800, cls = null) {
   clearTimeout(bubble.t);
   if (ms) bubble.t = setTimeout(() => b.classList.remove("show"), ms);
 }
+// 表示できた学習反応だけを保存。旧セーブの過去の体験は推測しない。
+async function learnOnce(key, text, reel, host) {
+  if (state.reel !== reel || widget !== host || !alive() || reel.learned?.[key]) return;
+  bubble(text, 2400);
+  (reel.learned ||= {})[key] = true;
+  save();
+  await sleep(2400);
+}
 const recent = [];
 function pick(pool) {
   let c, tries = 0;
@@ -715,6 +723,11 @@ async function afterStop(r, fast) {
           const pool = r.ceilingRemain <= 1 ? CEILING_HINTS.soon : r.ceilingRemain <= 3 ? CEILING_HINTS.near : CEILING_HINTS.far;
           bubble(pick(pool), 1500, r.ceilingRemain <= 1 ? "hot" : null);
           if (r.ceilingRemain <= 2) SE.puka();
+          const reel = state.reel, host = widget;
+          if (alive() && !reel.learned?.ceiling) {
+            await sleep(1500);
+            await learnOnce("ceiling", "こんな気配のあとは、近々かならず光るよ！", reel, host);
+          }
         } else if (Math.random() < 0.04) bubble(pick(RARE_MISS), 2200);
         else bubble(pick(FUN_MISS), 1400);
       }
@@ -780,6 +793,7 @@ function peka(r, fast, premium, line) {
 
 /** ボーナスを揃える。mode: "post"=後告知（もう1回転して揃える）／"pre"=先告知（この回転で揃える） */
 function settleBonus(b, fast, mode = "post") {
+  const reel = state.reel, host = widget;
   bonusWait = null;
   lampOff();
   bubble("", 1);
@@ -790,17 +804,24 @@ function settleBonus(b, fast, mode = "post") {
     setTimeout(() => widget?.classList.remove("bonus-pop"), 700);
   }
   const isBig = b.role === "big" || b.role === "rare" || b.overlap === "big";
-  const finish = () => {
+  const finish = async () => {
     announce(b);
     if (!fast) {
       const cls = isBig ? "hot" : null;
       bubble(`${bonusName(b)}ッ！`, 950, cls);
       setTimeout(() => bubble(benefitLine(b), 1900, cls), 1000);
       // ボーナスのあと、ときどき設定示唆（水色の吹き出し）
+      let learningDelay = 3000;
       if (b.n >= 0 && Math.random() < 0.3) {
         const hint = settingHint(ensureSetting(state.reel));
         rememberHint(hint);
         setTimeout(() => bubble(hint, 2600, "setting"), 3000);
+        learningDelay = 5700;
+      }
+      // 揃え・報酬表示と設定示唆が終わってから。次の演出も補足の終了を待つ。
+      if (b.zone && state.reel === reel && widget === host && alive() && !reel.learned?.zone) {
+        await sleep(learningDelay);
+        await learnOnce("zone", "パッキータイムのあいだは、当たりが近づきやすいよ！", reel, host);
       }
     }
     if (b.done) { const d = b.done; b.done = null; d(); }
@@ -1003,21 +1024,27 @@ export const GUIDE = [
   { head: "ハズレでも", body: "能力は少し伸びる。天井で必ず当たる" },
   { head: "設定1〜6", body: "大きいほど当たりやすい（必ず当たるわけではない）" },
   { head: "設定が変わる", body: "前回の抽選から7日／章が変わると選び直し。同じ設定や低い設定もある" },
-  { head: "ガックン", body: "リールがガクッ＝設定が変わった合図" },
+  { head: "ガックン", body: "リールがガクッ＝章の始まり・設定変更後・ロード後の合図" },
   { head: "水色の吹き出し", body: "設定のヒント（確定ではない）" },
   { head: "ひみつ", body: "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！" },
+];
+const DETAIL_GUIDE = [
+  { head: "先ペカと後ペカ", body: "レバーと同時に光る先ペカ、止まってから光る後ペカがあるよ" },
+  { head: "揃え直し", body: "光ったあとのもうひと回転は精算用。新しい抽選ではないよ" },
+  { head: "天井の気配", body: "長く光らなくても、必ず当たる天井があるよ。近づくとパッキーがそわそわ" },
+  { head: "ヒントの読み方", body: "水色の偶奇・高低ヒントにはガセもあるよ。でも「確定」は本当！" },
 ];
 const CUE_JA = { blue: "青", green: "緑", red: "赤" };
 
 /** ラミネートの遊技説明のようなカード（ノートの遊び方と、初回の説明で使う） */
-function guideCard() {
+function guideCard(tiles = GUIDE) {
   const art = (g) => {
     if (g.art === "lamp") return el("span.rn-art.lamp", [pakkiFace()]);
     if (g.art === "cue") return el("span.rn-art.cue", CUE_ORDER.map((c) => el(`i.cue-chip.cue-${c}`, { text: CUE_JA[c] })));
     if (Array.isArray(g.art)) return el("span.rn-art.syms", g.art.map((id) => el("span.rn-sym", { html: SYM[id]() })));
     return null;
   };
-  return el("div.rn-card", { dataset: { test: "reel-guide-card" } }, GUIDE.map((g) => el(`div.rn-tile${g.art ? ".has-art" : ""}`, [
+  return el("div.rn-card", { dataset: { test: "reel-guide-card" } }, tiles.map((g) => el(`div.rn-tile${g.art ? ".has-art" : ""}`, [
     el("b.rn-tile-head", { text: g.head }), art(g), el("span.rn-tile-body", { text: g.body }),
   ])));
 }
@@ -1065,6 +1092,12 @@ export function openNote() {
     const guide = el("div.rn-panel.rn-guide", [
       el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "パッキースロットの遊び方" })]),
       guideCard(),
+      el("span.ri-next", { text: "▼ タップで詳しい説明" }),
+    ]);
+    // 3ページ目: 気になったときに読む詳しい説明
+    const details = el("div.rn-panel.rn-guide", [
+      el("div.ri-head", [pakkiFace(".big"), el("span.ri-app", { text: "パッキースロットの詳しい説明" })]),
+      guideCard(DETAIL_GUIDE),
       el("span.ri-next", { text: "▼ タップで閉じる" }),
     ]);
     const box = el("div.reel-intro.reel-note", { role: "dialog", "aria-label": "パッキースロットノート", dataset: { test: "reel-note" } }, [panel]);
@@ -1072,7 +1105,8 @@ export function openNote() {
     layers.modal.classList.add("show");
     let page = 0;
     box.onclick = () => {
-      if (page++ === 0) { SE.click?.(); box.replaceChildren(guide); return; }
+      page += 1;
+      if (page <= 2) { SE.click?.(); box.replaceChildren(page === 1 ? guide : details); return; }
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
       resolve();
