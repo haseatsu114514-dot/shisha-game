@@ -54,6 +54,19 @@ function reset(overrides = {}) { Object.keys(state).forEach((key) => delete stat
   db.baito = events; rainy = false; charmStar = 1; plays.length = 0; money.length = 0; menus.length = 0; selectedPools = []; }
 function selected() { return plays.find((scene) => typeof scene === "object" && scene.dialogue_id?.startsWith("baito_"))?.dialogue_id; }
 const custom = (id, fields = {}) => ({ id, category: "regular", text: "注文を受けた", choices: [], customers: [id], ...fields });
+// #1178 C1-01: 読み込んだ常連回は面識・在店予定を守り、別IDの同じ客も連日出さない。
+assert(byid.baito_tsumugi_art, "つむぎの絵の接客回がロード対象にない");
+reset(); db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito(); assert.equal(selected(), undefined);
+for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
+  reset(known); db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito();
+  assert.equal(selected(), "baito_baito_tsumugi_art");
+}
+for (const schedule of [{ day: 8, slot: 1 }, { day: 11, slot: 1 }]) {
+  reset({ ...schedule, met: { tsumugi: true } }); db.baito = [byid.baito_tsumugi_art];
+  await tonari.doBaito(); assert.equal(selected(), undefined);
+}
+reset({ met: { tsumugi: true }, baitoRecent: [{ id: "baito_tsumugi_rain", chapter: 1, day: 7, customers: ["tsumugi"] }] });
+db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito(); assert.equal(selected(), undefined);
 // 未対面つむぎは雨でも閉店でも選ばない。旧進行とmet/flagの各記録なら永久封鎖しない。
 reset(); rainy = true; db.baito = [byid.baito_tsumugi_rain]; await tonari.doBaito(); assert.equal(selected(), undefined); assert(plays.some((s) => s.dialogue_id === "remake_baito_routine"));
 for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
