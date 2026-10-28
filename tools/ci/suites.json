@@ -19,7 +19,7 @@
       "id": "water-comfort",
       "title": "Water comfort bands and craft scoring invariants",
       "kind": "quick",
-      "run": ["node remake/test/water_comfort.mjs"]
+      "run": ["node remake/test/water_comfort.mjs", "node remake/test/pull_water.mjs"]
     },
     {
       "id": "station-j01",
