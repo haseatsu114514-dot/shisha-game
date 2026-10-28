@@ -3,7 +3,8 @@ import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, modal, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
@@ -151,9 +152,14 @@ async function renderStage(owner) {
     await setBg(bgUrl("bg_ageha_shop"), { instant: true });
     if (!live(owner)) return;
     card(owner, "complete", "第三章・完", "全国大会を終え、帰る場所にも新しい約束ができた。", [
+      // 第3章側の第4章への接続点はここ1か所（状態遷移は ch4-progress.js の advanceToChapterFour）。
+      button(owner, "第4章へ進む", "chapter-four", async () => {
+        const mod = await withLoadingNotice(import("./ch4.js"), loadingNotice("第4章のドバイへ向かっています…"));
+        await mod.beginChapterFour();
+      }, true),
       button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
       button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-    ], "次の章は、今後の更新で追加されます。");
+    ], "第四章・ドバイ編へ進めます。");
     return;
   }
   // 帰郷の夜(#1059)は、新幹線の車窓が覆うまで東京側の背景のままにし、tonariを先見せしない。
