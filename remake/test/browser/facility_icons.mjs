@@ -19,6 +19,7 @@ const files = new Map([
   ['remake/js/daily/facility-icons.js', 'text/javascript; charset=utf-8'],
   ['assets/ui/map-facilities-579.png', 'image/png'],
   ['assets/ui/map-facilities-extra-579.webp', 'image/webp'],
+  ['assets/ui/map-rojiura-cinema.webp', 'image/webp'],
 ]);
 for (const file of files.keys()) {
   const target = path.join(stage, file);
@@ -71,9 +72,10 @@ try {
     }));
     const origins = Object.fromEntries(Object.entries(FACILITY_ICONS).map(([id,e]) => [id,e.rect.slice(0,2)]));
     for (const g of geometry) {
-      const extra = FACILITY_ICONS[g.id].extra;
-      assert.deepEqual(g.source, extra ? [1536,1024] : [2172,724]); assert.equal(g.overflow, 'hidden');
-      assert.equal(g.imagePath, `${mount}assets/ui/map-facilities-${extra ? 'extra-579.webp' : '579.png'}`);
+      const entry = FACILITY_ICONS[g.id];
+      const extra = entry.extra;
+      assert.deepEqual(g.source, entry.sheetSize || (extra ? [1536,1024] : [2172,724])); assert.equal(g.overflow, 'hidden');
+      assert.equal(g.imagePath, `${mount}assets/ui/${entry.src ? 'map-rojiura-cinema.webp' : `map-facilities-${extra ? 'extra-579.webp' : '579.png'}`}`);
       assert(g.crop.every(value => value > 0 && value <= g.size + .1));
       g.sourceOrigin.forEach((value,index) => assert(Math.abs(value-origins[g.id][index]) < 1, JSON.stringify(g)));
       assert(g.button.every(value => value >= 48)); assert(g.fits); assert.equal(g.decoration, 'none');

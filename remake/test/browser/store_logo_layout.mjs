@@ -67,7 +67,7 @@ await suite('store-logo-layout', async check => {
       // Current-schema re-save and reload retain the same map rendering.
       await page.evaluate(() => { L.core.save(); L.core.load(); L.open(); });
       await page.locator('[data-test="pin-shop"] .store-logo').waitFor();
-      assert.equal(await page.locator('.spot-pin.branded').count(), 7);
+      assert.equal(await page.locator('.spot-pin.branded').count(), 6); // choizap: facility icon takes precedence (map.js)
       // No logo/name disclosure before the existing unlock condition is met.
       await page.evaluate(() => { delete L.core.state.flags._spot_guide_naru; L.open(); });
       await page.locator('.map:not(.done)').waitFor();
@@ -96,7 +96,7 @@ await suite('store-logo-layout', async check => {
           if (touch) await button.tap(); else await button.click();
         }
         await page.waitForFunction(() => L.finished);
-        assert.equal(await page.locator('.spot-pin.branded').count(), 7);
+        assert.equal(await page.locator('.spot-pin.branded').count(), 6); // choizap: facility icon takes precedence (map.js)
         assert.deepEqual(await storageSnapshot(page), saved);
       }
     }, { viewport, isMobile: touch, hasTouch: touch });
