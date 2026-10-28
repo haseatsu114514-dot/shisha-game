@@ -1882,12 +1882,16 @@
         "assets/cgs/*tsumugi*",
         "remake/img/cgs/*tsumugi*",
         "remake/test/browser/tsumugi_draft_response.mjs",
-        "remake/test/browser/tsumugi_sketch_timing.mjs"
+        "remake/test/browser/tsumugi_sketch_timing.mjs",
+        "docs/qa/issue452-tsumugi/baseline-scenes.json"
       ],
       "run": [
         "node remake/test/tsumugi_story.mjs",
         "node remake/test/browser/tsumugi_draft_response.mjs",
         "node remake/test/browser/tsumugi_sketch_timing.mjs"
+      ],
+      "sparse": [
+        "/docs/qa/issue452-tsumugi/"
       ],
       "chrome": "playwright"
     },
