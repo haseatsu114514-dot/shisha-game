@@ -80,6 +80,7 @@ await suite('loading-craft', async check => {
     await page.waitForFunction(() => document.querySelector('.bench-panel')?.childElementCount > 0);
   }, { viewport: { width: 390, height: 844 } });
 }, {
+  readLoadingComics: false,
   entry: new URL('craft-preview.html?loading=comic', baseURL).href,
   readySelector: '.loading-gate',
   initScript: () => localStorage.setItem('suien_remake_save', 'untouched-loading-preview'),
