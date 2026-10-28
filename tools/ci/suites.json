@@ -2621,6 +2621,7 @@
       "run": [
         "node remake/test/flavor_mastery.mjs",
         "node remake/test/flavor_expression.mjs",
+        "node remake/test/flavor_data_contract.mjs",
         "node remake/test/mastery_balance.mjs",
         "node remake/test/craft_review.mjs",
         "node --experimental-vm-modules remake/test/shop_display_775.mjs"
