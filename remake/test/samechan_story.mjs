@@ -35,7 +35,7 @@ let saves=0;
 const deps={
  '../core/data.js':data,
  '../core/state.js':{state,save:()=>saves++,markMet:id=>state.met[id]=true,timeOfDay:()=> 'night'},
- '../core/ui.js':{imageReady:async()=>false,toast:()=>{},setBg:async()=>{}},
+ '../core/ui.js':{withScenePreparation: task => task, imageReady:async()=>false,toast:()=>{},setBg:async()=>{}},
  '../core/travel-budget.js':{spendableMoney:s=>s.money||0},
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
  '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},

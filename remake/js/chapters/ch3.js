@@ -2,7 +2,7 @@
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { play, hooks } from "../vn/engine.js";
@@ -293,7 +293,7 @@ async function readScene(owner, scene) {
   // 行き先を決めた時点で前のカードを外し、背景待ちを同じ自由時間と誤認させない。
   showScreen("none", null);
   hud(owner);
-  await setBg(background, { instant: true });
+  await withScenePreparation(setBg(background, { instant: true }));
   if (!current(owner)) return false;
   // 名乗りの制御行などは読了時のcheckpointまで未確定。会話中の保存を避ける。
   hud(owner);
@@ -347,7 +347,7 @@ async function renderStage(owner) {
     return;
   }
   if (scene.id === "ch3_opening" && state.flags._ch3_opening_read) {
-    await setBg(bgUrl("bg_tournament_stage"), { instant: true });
+    await withScenePreparation(setBg(bgUrl("bg_tournament_stage"), { instant: true }));
     if (!current(owner)) return;
     card(owner, "scene", "DAY 1・全国大会の参加登録", "東京駅から会場へ。受付で出場手続きを済ませ、競技規則を受け取る。", [
       button(owner, state.flags._ch3_rules_read ? "mukaiへ向かう"
@@ -371,7 +371,7 @@ async function renderStage(owner) {
     return;
   }
   const background = bgUrl(scene.bg);
-  await setBg(background, { instant: true });
+  await withScenePreparation(setBg(background, { instant: true }));
   if (!current(owner)) return;
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
     button(owner, "続きを読む", "continue", async () => {

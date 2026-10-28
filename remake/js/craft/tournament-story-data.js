@@ -13,6 +13,7 @@ export function tournamentStoryDialogue(cs, event, random = Math.random) {
   const flavors = ingredients.map(([id, g]) => `${DB.flavorById[id]?.short_name || id} ${g}g`).join("、");
   const ids = [];
   if (event === "opening") ids.push(`opening_${chapter}`);
+  else if (event.startsWith("interlude")) ids.push(`${event}_${chapter}`);
   else if (event === "packed") ids.push("packed_intro", `pack_${PACKING[cs.pack] ? cs.pack : "normal"}`,
     ingredients.length > 1 ? "mix_blend" : "mix_single", "packed_end");
   else if (event === "waiting") ids.push(`waiting_${chapter}`, `crowd_${Math.min(2, Math.max(0, Math.floor(random() * 3)))}`);

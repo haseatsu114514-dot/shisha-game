@@ -7,14 +7,24 @@ const read = path => fs.readFile(new URL(path, import.meta.url), "utf8");
 const flush = async () => { for (let i = 0; i < 8; i++) await Promise.resolve(); };
 async function load(code, values, globals = {}) {
   const context = vm.createContext({ console, ...globals });
-  const mod = new vm.SourceTextModule(code, { context });
-  await mod.link(spec => {
-    const names = [...code.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)]
-      .filter(m => m[2] === spec).flatMap(m => m[1].split(",").map(n => n.trim()));
+  // Static imports and destructured dynamic imports share the same value mocks.
+  const namesFor = spec => [...new Set([
+    ...[...code.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)].filter(m => m[2] === spec),
+    ...[...code.matchAll(/(?:const|let|var)\s*\{([^}]+)\}\s*=\s*await\s+import\s*\(\s*["']([^"']+)["']\s*\)/g)].filter(m => m[2] === spec),
+  ].flatMap(m => m[1].split(",").map(n => n.trim())))];
+  const synthetic = spec => {
+    const names = namesFor(spec);
     return new vm.SyntheticModule(names, function () {
       for (const name of names) this.setExport(name, values[name] ?? (() => {}));
     }, { context });
-  });
+  };
+  const mod = new vm.SourceTextModule(code, { context, importModuleDynamically: async spec => {
+    const dep = synthetic(spec);
+    await dep.link(() => { throw new Error(`unexpected nested import from ${spec}`); });
+    await dep.evaluate();
+    return dep;
+  } });
+  await mod.link(spec => synthetic(spec));
   await mod.evaluate();
   return mod.namespace;
 }
@@ -89,7 +99,9 @@ for (const action of ["start", "stop", "replace", "repeat", "reject-resume"]) {
 }
 console.log("PASS: first gesture, deferred/rejected resume, stop/replacement races, deduplication, mute/volume and autoplay retry");
 
-// Production title callbacks: cancelled/closed subviews rotate art; accepted exits do not.
+// Production title callbacks: cancelled/closed subviews redraw reusing the current art
+// (title.js keeps currentArt across menu redraws; a new pick happens only on boot/reload);
+// accepted exits do not redraw.
 let buttons = new Map(), selectedSlot = null, confirm = false, renders = 0, picks = 0, wipes = 0;
 const events = [], hudClasses = new Set(["show"]), galleryCloses = [], configCloses = [];
 const body = { dataset: { screen: "title" } };
@@ -118,8 +130,9 @@ const title = await load(await read("../js/scenes/title.js"), {
   resumeGame: () => events.push("resume"), startNewGame: () => events.push("new"),
   openGallery: () => new Promise(resolve => galleryCloses.push(resolve)),
   pickTitleArt: () => ({ ready: true, file: `art-${++picks}`, character: `character-${picks}`, url: "test" }),
+  createUiThemeSelect: () => el("select"),
   config: {},
-}, { document: { body } });
+}, { document: { body }, performance: { now: () => 0 }, window: {} });
 const art = { ready: true, file: "test", character: "test", url: "test" };
 const show = () => { buttons = new Map(); title.showTitle(art); };
 const click = async id => { buttons.get(id).onclick(); await flush(); };
@@ -129,12 +142,12 @@ for (const [id, closes] of [["title-gallery", galleryCloses], ["title-config", c
   const before = renders, beforePicks = picks;
   await click(id); assert.equal(renders, before, "keep title until subview closes");
   closes.shift()(); await flush();
-  assert.equal(renders, before + 1); assert.equal(picks, beforePicks + 1);
+  assert.equal(renders, before + 1); assert.equal(picks, beforePicks, "closing a subview reuses the current art");
 }
 for (const id of ["title-new", "title-load"]) {
   const before = renders, beforePicks = picks;
   await click(id);
-  assert.equal(renders, before + 1); assert.equal(picks, beforePicks + 1);
+  assert.equal(renders, before + 1); assert.equal(picks, beforePicks, "cancelling reuses the current art");
   assert.equal(wipes, 0, "cancelling must not erase saves");
 }
 for (const [id, expected] of [["title-load", "resume"], ["title-new", "new"]]) {

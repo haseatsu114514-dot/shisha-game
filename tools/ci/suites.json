@@ -16,6 +16,18 @@
       "run": ["node --experimental-vm-modules remake/test/load_save_failure.mjs"]
     },
     {
+      "id": "corrupt-save-migrate",
+      "title": "Structurally corrupt saves migrate or fail gracefully",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/corrupt_save_migrate.mjs"]
+    },
+    {
+      "id": "kuji-sell-guard",
+      "title": "Kuji goods sell handler identity and stale clicks",
+      "kind": "quick",
+      "run": ["node remake/test/kuji_sell_guard.mjs"]
+    },
+    {
       "id": "station-j01",
       "title": "Station availability, layout and save/load",
       "kind": "browser",
@@ -50,6 +62,12 @@
       "title": "NG+ measurement harness (U5): scenario sweep, rival observer, aggregation",
       "kind": "quick",
       "run": ["node remake/test/ngplus_measurement.mjs"]
+    },
+    {
+      "id": "ngplus-carry",
+      "title": "NG+ SCHEMA 22 migration, carry classification coverage and package extraction (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_carry.mjs"]
     },
     {
       "id": "module-loading",
@@ -186,6 +204,7 @@
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
+        "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
         "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
@@ -252,6 +271,7 @@
         "node --experimental-vm-modules remake/test/recorded_se.mjs",
         "node --experimental-vm-modules remake/test/entry_phone_audio.mjs",
         "node --experimental-vm-modules remake/test/continue_audio.mjs",
+        "node --experimental-vm-modules remake/test/title_audio_entry.mjs",
         "node --experimental-vm-modules remake/test/continue_context.mjs",
         "node --experimental-vm-modules remake/test/bgm_gain.mjs",
         "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
