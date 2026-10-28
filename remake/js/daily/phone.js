@@ -589,7 +589,7 @@ function phoneShell({ time, title }) {
         onclick: () => { SE.select(); actions.replaceChildren(); ui.cancel = null; resolve(o); },
       }));
     actions.replaceChildren(...[hint ? el("div.lime-hint", { text: hint }) : null, ...buttons].filter(Boolean));
-    buttons.forEach((b) => fitOneLine(b, 11)); // 返信も1行（GUI22）
+    buttons.forEach((b) => fitOneLine(b, 14)); // 返信も1行（GUI22）
   });
   ui.close = async () => {
     ui.open = false;

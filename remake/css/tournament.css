@@ -178,7 +178,7 @@
 .bench-progress-track:has(> .bench-phase:nth-child(6)) { gap: 10px; }
 .bench-progress-track:has(> .bench-phase:nth-child(6)) > .bench-phase { gap: 5px; padding: 4px 5px; }
 .bench-progress-track:has(> .bench-phase:nth-child(6)) .bench-phase-icon { width: 23px; height: 30px; }
-.bench-progress-track:has(> .bench-phase:nth-child(6)) .bench-phase-copy b { font-size: 12px; }
+.bench-progress-track:has(> .bench-phase:nth-child(6)) .bench-phase-copy b { font-size: 14px; }
 @keyframes craft-load { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
   .tournament-board *, .result-table *, .nagumo-cut *, .count-screen .rc-card, .count-screen::before, .nc-rays, .rt-rays, .craft-loading::before, .tournament-live::before { animation: none !important; transition: none !important; }
