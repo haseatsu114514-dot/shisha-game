@@ -11,7 +11,7 @@
   --loading-panel-ratio: 3 / 2;
   position: absolute; inset: 0; z-index: 110; isolation: isolate; overflow: hidden;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 14px; padding: 12px 16px 16px;
+  gap: 10px; padding: 10px 14px 14px;
   background: var(--loading-backdrop); color: #ede2ce; pointer-events: auto;
   animation: loading-appear 160ms ease-out both;
 }
@@ -19,17 +19,20 @@
 .loading-gate::after { content: ""; position: absolute; inset: 120px -80px; z-index: -1; background: #291638; clip-path: polygon(0 15%, 100% 0, 100% 85%, 0 100%); transform: rotate(-3deg); pointer-events: none; }
 
 /* Logo: moved up and kept small per the mockup. Purely decorative (title text lives in the art). */
-.loading-logo { flex: none; width: min(340px, 30%); height: 72px; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 4px 12px #0008); }
+.loading-logo { flex: none; width: min(360px, 32%); height: 80px; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 4px 12px #0008); }
 .loading-gate:not(.has-logo) .loading-logo { display: none; }
 
-.loading-card { width: min(1180px, 94%); padding: 14px 16px; background: #e9dfca; border: 1px solid #fff4dc99; box-shadow: 0 20px 48px #0006; animation: loading-sheet 260ms cubic-bezier(.2,.65,.3,1) both; }
+/* Card padding stays thin and symmetric so the panels, not the sheet margins, own the width. */
+.loading-card { width: min(1180px, 96%); padding: 10px 12px; background: #e9dfca; border: 1px solid #fff4dc99; box-shadow: 0 20px 48px #0006; animation: loading-sheet 260ms cubic-bezier(.2,.65,.3,1) both; }
 /* With no decoded comic, the intermission remains just the ink and its mark. */
 .loading-card:has(.loading-comic:empty) { visibility: hidden; }
-.loading-comic-title { margin: 0 0 11px; padding: 2px 4px 9px; border-bottom: 1px solid #59423255; color: #302333; font-size: 26px; font-weight: 900; line-height: 1.3; letter-spacing: .09em; text-align: left; }
-.loading-panels { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.loading-comic-title { margin: 0 0 8px; padding: 0 2px 6px; border-bottom: 1px solid #59423255; color: #302333; font-size: 26px; font-weight: 900; line-height: 1.3; letter-spacing: .09em; text-align: left; }
+.loading-panels { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .loading-panels figure { margin: 0; min-width: 0; }
-/* Fixed display frame = 3:2 for every panel, so each comic is drawn and shown to the same box. */
-.loading-panel-art { position: relative; overflow: hidden; width: 100%; aspect-ratio: var(--loading-panel-ratio); background: #d9cdb3; container-type: size; }
+/* Fixed display frame = 3:2 for every panel, so each comic is drawn and shown to the same box.
+   The frame background matches the sheet, so a letterboxed region reads as sheet margin,
+   not as a differently coloured pillar inside the card. */
+.loading-panel-art { position: relative; overflow: hidden; width: 100%; aspect-ratio: var(--loading-panel-ratio); background: #e9dfca; container-type: size; }
 /* The cropped region keeps its own proportions and is letterboxed inside the 3:2 frame (no distortion).
    width = min(full width, ratio * full height) contains any ratio without stretching. */
 .loading-panel-crop { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); overflow: hidden; background: #e9dfca; }
@@ -37,14 +40,16 @@
 /* Optional text bubbles: bubble shape is in the art, the words are live DOM text (typo-fixable). */
 .loading-bubble { position: absolute; margin: 0; color: #20161f; font-weight: 800; line-height: 1.25; text-align: center; white-space: pre-line; transform: translate(-50%, -50%); pointer-events: none; }
 /* Beginner-friendly one-line note under the panels (per-comic data). */
-.loading-comic-caption { margin: 10px 2px 0; color: #4a3a30; font-size: 15px; font-weight: 700; line-height: 1.4; letter-spacing: .02em; }
+.loading-comic-caption { margin: 8px 2px 0; color: #4a3a30; font-size: 15px; font-weight: 700; line-height: 1.4; letter-spacing: .02em; }
 
 /* Progress bar (placeholder colours). Until the first real report(done, total) arrives, the fill is
    an indeterminate sliding segment: the bar never shows an invented percentage (a caller that never
    reports, like the bench entry, stays indeterminate). The first report adds .is-determinate and the
    width then follows the real counts; a shine sweep runs while work continues. At the reading hold
    (.is-ready) the bar rests at 100% and the sweep stops. */
-.loading-bar { position: relative; flex: none; width: min(620px, 64%); height: 14px; border-radius: 999px; background: #2a1d3a; box-shadow: inset 0 0 0 1px #ffffff14; overflow: hidden; }
+/* The bar spans exactly the card's width (same expression as .loading-card) so the sheet
+   and the gauge read as one block, as in the owner's mockup. */
+.loading-bar { position: relative; flex: none; width: min(1180px, 96%); height: 14px; border-radius: 999px; background: #2a1d3a; box-shadow: inset 0 0 0 1px #ffffff14; overflow: hidden; }
 .loading-bar-fill { height: 100%; width: 36%; border-radius: inherit; background: var(--loading-bar-gradient); animation: loading-bar-indeterminate 1.3s ease-in-out infinite alternate; }
 .loading-bar.is-determinate .loading-bar-fill { width: calc(var(--loading-progress, 0) * 100%); animation: none; transform: none; transition: width .3s ease; }
 .loading-gate.is-ready .loading-bar-fill { width: 100%; animation: none; transform: none; }
@@ -75,13 +80,13 @@
 
 /* Phone/tablet portrait: stack the two panels nearly full-width so each is large and the text reads. */
 @media (orientation: portrait) {
-  .loading-gate { gap: 2vh; padding: 2vh 3vw; }
+  .loading-gate { gap: 1.5vh; padding: 2vh 3vw; }
   .loading-logo { width: min(260px, 52vw); height: 7vh; }
-  .loading-card { width: 94vw; padding: 1.4vh 2.2vw; }
-  .loading-comic-title { font-size: clamp(18px, 5.2vw, 30px); margin-bottom: 1.2vh; padding-bottom: 1vh; }
-  .loading-panels { grid-template-columns: 1fr; gap: 1.4vh; }
-  .loading-comic-caption { font-size: clamp(12px, 3.6vw, 18px); margin-top: 1.2vh; line-height: 1.35; }
-  .loading-bar { width: 80vw; height: 1.6vh; }
+  .loading-card { width: 94vw; padding: 1.2vh 2.2vw; }
+  .loading-comic-title { font-size: clamp(18px, 5.2vw, 30px); margin-bottom: 1vh; padding-bottom: 0.8vh; }
+  .loading-panels { grid-template-columns: 1fr; gap: 1.2vh; }
+  .loading-comic-caption { font-size: clamp(12px, 3.6vw, 18px); margin-top: 1vh; line-height: 1.35; }
+  .loading-bar { width: 94vw; height: 1.6vh; }
   .loading-status { font-size: clamp(15px, 4.2vw, 22px); }
   .loading-proceed { min-height: 1em; font-size: clamp(12px, 3.6vw, 16px); }
 }
