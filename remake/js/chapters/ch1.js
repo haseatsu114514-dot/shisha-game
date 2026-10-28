@@ -86,6 +86,13 @@ export function setupHooks() {
       state.flags._salaryman_service_water = branch === "regular_water";
       save();
     }
+    // 初回提供の二択の記録。大会後のスミの一言は、才能ルート（顔を見ろと言われた側）を実際に選んだ時だけ変える。
+    if (dialogueId === "ch1_tutorial_oneesan" && choiceId === "oneesan_praise_feel"
+      && ["op_talent", "op_report"].includes(branch)) {
+      state.flags._op_praise_talent = branch === "op_talent";
+      state.flags._op_praise_report = branch === "op_report";
+      save();
+    }
     // 練習を選んだ直後に閉じても、再開時に選択を変えたり接客を飛ばしたりしない。
     if (dialogueId === "remake_tutorial_offer" && branch === "practice") {
       const progress = openingProgress();

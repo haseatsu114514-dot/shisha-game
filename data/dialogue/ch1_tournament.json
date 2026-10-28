@@ -1070,6 +1070,12 @@
           "text": "グラスが鳴った。スミさんが、トロフィーを置く場所を空ける。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_op_praise_talent",
+          "next_true": "ta_growth_echo"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "祝いに、自分用の一台を作って吸った。馬鹿みたいに、うまい。どの一服よりも濃い。"
@@ -1170,6 +1176,33 @@
         }
       ],
       "branches": {
+        "ta_growth_echo": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "師匠。審査のとき、南雲さんが二回吸ったの、見てました"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "一回で終わる人と、二回吸う人がいて。……顔も、ちゃんと見てました"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……そこを見たか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。次に店に来てくれる人の顔も、覚えます"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……おう"
+          }
+        ],
         "iv_pride": [
           {
             "speaker": "hajime",
