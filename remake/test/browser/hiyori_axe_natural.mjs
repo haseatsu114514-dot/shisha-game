@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { installLoadingComicReader } from './loading_reader.mjs';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(dir, '../../../');
@@ -30,6 +31,7 @@ try {
     if (process.env.ONLY_DEVICE && process.env.ONLY_DEVICE !== label) continue;
     const context = await browser.newContext(options);
     const page = await context.newPage();
+    await installLoadingComicReader(page);
     const errors = [], failedResources = [], cache = { cold: 0, warm: 0 };
     const revalidated = { cold: 0, warm: 0 };
     const cdp = await context.newCDPSession(page);
