@@ -5,6 +5,8 @@ import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js
 import { chapterDay } from "../core/chapter-clock.js";
 import { layers, showScreen, setBg, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { glossaryPanel } from "../vn/glossary.js";
+import { playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { shinkansenRide } from "../core/scene-motions.js";
@@ -39,12 +41,14 @@ async function openMenu(owner) {
       { label: "セーブ", value: "save", test: test("save") },
       { label: "ロード", value: "load", test: test("load") },
       { label: "設定", value: "config", test: test("config") },
+      { label: "用語集", value: "glossary", test: test("glossary") },
       { label: "タイトルへ戻る", value: "title", test: test("title") },
       { label: "閉じる", value: null, primary: true },
     ] });
     if (!live(owner)) return;
     if (choice === "save") await saveFlow();
     if (choice === "config") await (await import("../scenes/title.js")).openConfig();
+    if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
       if (key && loadFromSlot(key)) {
@@ -117,6 +121,8 @@ export async function runChapterThreeAftermath() {
       beginChapterThreeAftermath(state);
       save();
     } else chapterThreeAftermathProgress(state);
+    // 通し進行で勝利時から続く曲を、タイトルのLOADからも復元する。
+    playBgm("bgm_aftermath");
     await renderStage(owner);
   });
 }
