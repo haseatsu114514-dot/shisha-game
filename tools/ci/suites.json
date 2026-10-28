@@ -58,6 +58,12 @@
       "run": ["node remake/test/loading_prefetch.mjs"]
     },
     {
+      "id": "loading-comics-spec",
+      "title": "Loading comic registrations fit the fixed 43:25 display frame",
+      "kind": "quick",
+      "run": ["node remake/test/loading_comics_spec.mjs"]
+    },
+    {
       "id": "ngplus-measurement",
       "title": "NG+ measurement harness (U5): scenario sweep, rival observer, aggregation",
       "kind": "quick",
