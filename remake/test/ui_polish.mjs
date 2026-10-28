@@ -115,7 +115,7 @@ try {
   await page.waitForSelector(".gain-card.st-insight");
   assert.equal(await page.locator(".gc-evolution, .gc-fx").count(), 0);
   await page.evaluate(() => T.ui.bannersIdle());
-  // 実際に効く根性レベル4の恩恵とボム回数を一致させる。
+  // 実際に効く根性レベル4の恩恵と、SF63（1回分＋8秒リチャージ）の持ち分を確認する。
   await page.evaluate(() => {
     T.core.state.chapter = 5; T.core.state.stats.guts = 60; T.stats.gainStat("guts", 4);
   });
@@ -123,7 +123,8 @@ try {
   assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.4に到達");
   assert.doesNotMatch(await page.locator(".gain-card").textContent(), /少し上がった|かなり上がった|大きく上がった/);
   assert.match(await page.locator(".gc-fx").textContent(), /リフレッシュが3回/);
-  assert.equal(await page.evaluate(() => T.steam.refreshStock()), 3);
+  assert.equal(await page.evaluate(() => T.steam.refreshStock()), 1);
+  assert.equal(await page.evaluate(() => T.steam.REFRESH_RECHARGE_SECONDS), 8);
   await page.evaluate(() => T.ui.bannersIdle());
   const reward = await page.evaluate(() => {
     T.core.state.phase = "tournament"; T.reel.onAction({ spent: 10 });
