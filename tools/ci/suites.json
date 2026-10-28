@@ -22,6 +22,12 @@
       "run": ["node --experimental-vm-modules remake/test/corrupt_save_migrate.mjs"]
     },
     {
+      "id": "kuji-sell-guard",
+      "title": "Kuji goods sell handler identity and stale clicks",
+      "kind": "quick",
+      "run": ["node remake/test/kuji_sell_guard.mjs"]
+    },
+    {
       "id": "station-j01",
       "title": "Station availability, layout and save/load",
       "kind": "browser",
