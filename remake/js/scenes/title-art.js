@@ -1,10 +1,11 @@
-// 専用キービジュアル（core/title-art-unlock.js の対応表）を、キャラごとに同じ確率で選ぶ。
+// 表示候補のキャラは core/title-art-unlock.js の対応表で決まる（#1243）。
+// 絵はそのキャラの登録済みタイトル原画（manifest）から、キャラごとに同じ確率で選ぶ。
 // 最新のセーブを読むだけで書き込まない。セーブがあれば「出会ったキャラ」の絵だけに絞る（#1243）。
-import { assetUrl } from "../core/data.js";
+import { DB, assetUrl } from "../core/data.js";
 import { pick } from "../core/util.js";
 import { imageReady } from "../core/ui.js";
 import { peekLatestSave } from "../core/state.js";
-import { TITLE_KEY_VISUALS, titleArtDisplayCharacters } from "../core/title-art-unlock.js";
+import { titleArtDisplayCharacters } from "../core/title-art-unlock.js";
 
 let previousCharacter = null;
 const fallback = () => ({ character: "keyvisual", file: "title_art_keyvisual_01.png", url: assetUrl("ui/title_arts/title_art_keyvisual_01.png") });
@@ -14,13 +15,15 @@ function latestSave() {
 }
 
 export function pickTitleArt() {
-  const characters = titleArtDisplayCharacters(latestSave());
+  const pool = DB.manifest.titleArts || [];
+  const characters = titleArtDisplayCharacters(latestSave())
+    .filter((id) => pool.some((art) => art.character === id));
   if (!characters.length) return fallback();
   const fresh = characters.filter((id) => id !== previousCharacter);
   const character = pick(fresh.length ? fresh : characters);
+  const art = pick(pool.filter((entry) => entry.character === character));
   previousCharacter = character;
-  const file = TITLE_KEY_VISUALS[character];
-  return { character, file, url: assetUrl(`ui/title_arts/${file}`) };
+  return { ...art, url: assetUrl(`ui/title_arts/${art.file}`) };
 }
 
 export async function prepareTitleArt(art = pickTitleArt()) {
