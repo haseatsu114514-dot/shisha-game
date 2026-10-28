@@ -2,10 +2,18 @@
 // チェキ（PEPPERMINT）／占いのタロット／締めくくりの贈り物／バイトの終わり／サメちゃんとの出会い／つむぎのスケッチ。
 // 各場面に a／b の2パターンがあり、本編は場面ごとの採用（mg-kit.js の ADOPTED_VARIANT）。比べるときは ?movar=b か __remake.dev.motionVariant("b")、配色は紫1色／場面ごとの色（?mopal=free）。
 // 動きを減らす設定では省く（背景を替える mid() だけは呼ぶ）。SKIP中は省かず最後まで見せる（#1081 H05・一度きりの演出を飛ばして見逃さない）。
-import { state } from "./state.js";
+import { state, config } from "./state.js";
 import { DB } from "./data.js";
 import { reducedMotion } from "./transition-kit.js";
 import { motionVariant } from "./mg-kit.js";
+
+// A10後半: 「見た演出を短く」設定（config.shortSeen、既定オフ）。初回は必ずフルで見せ、見た記録を
+// state.flags._motion_seen_<key> に付ける。2回目以降は設定がオンのときだけ短縮する。記録は設定と
+// 独立に付く（後で設定をオンにしても過去に見た演出は短くなる）。くじ・チェキ・MG(#1081 H05)は対象外。
+// 記録は演出を見せ終えてから付ける（途中でLOADされた演出はセーブを書き換えない）。
+const seenFlag = (key) => `_motion_seen_${key}`;
+const shortenSeen = (key) => !!(state && state.flags[seenFlag(key)]) && !!config.shortSeen;
+const markSeen = (key) => { if (state) state.flags[seenFlag(key)] = true; };
 
 // 場面のファイルは使うときに読む（一つの場面の不具合がほかの場面やゲームの起動を止めないように）
 const cheki = () => import("../motions/cheki.js");
@@ -25,7 +33,11 @@ export async function limeExchange(charId, context = null) {
   const owner = state;
   const mod = await lime().catch((e) => { console.error(e); return null; });
   if (state !== owner) return; // 読み込み中のLOADから、前のセーブの交換を始めない。
-  await mod?.exchange(charId, context, { still: reducedMotion() });
+  const reduce = reducedMotion();
+  // 2回目以降の連絡先交換は、設定がオンなら「追加し終えた画面だけ」の短い表示にする（still と同じ）。
+  const short = !reduce && shortenSeen("lime");
+  await mod?.exchange(charId, context, { still: reduce || short });
+  if (!reduce && state === owner) markSeen("lime"); // 見せ終えてから記録（LOADで中断したら残さない）
 }
 
 // 演出を省くのは動きを減らす設定のときだけ。SKIP中は一度きりの演出を飛ばさず最後まで再生する（#1081 H05）。
@@ -65,8 +77,15 @@ export async function giftOpen(giftId) {
 }
 
 export async function shiftClose() {
-  const run = omitMotion() ? null : await variant("shift", shift);
+  if (omitMotion()) return;
+  const owner = state;
+  // 2回目以降のシフト終了は、設定がオンなら CLOSED の札だけを短く見せる（brief）。
+  const short = shortenSeen("shift");
+  const mod = await shift().catch((e) => { console.error(e); return null; });
+  if (!mod || state !== owner) return;
+  const run = short ? mod.brief : (motionVariant("shift") === "b" ? mod.b : mod.a);
   if (run) await run();
+  if (state === owner) markSeen("shift"); // 見せ終えてから記録
 }
 
 /** mid(): 覆っている間に次の背景へ替える */

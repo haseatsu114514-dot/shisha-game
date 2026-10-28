@@ -1,5 +1,5 @@
 // 8秒リチャージ式の範囲消去、初期の回復なし、成長による範囲・1段階回復。
-// サーバー8123: node remake/test/steam_refresh.mjs （SHOTS=<フォルダ>）
+// PC／横持ちタッチ。BASE_URL=<プレビューURL> node remake/test/steam_refresh.mjs （SHOTS=<フォルダ>）
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -10,8 +10,8 @@ const browser = await chromium.launch({headless:true,
 });
 const shots=process.env.SHOTS;
 if(shots) fs.mkdirSync(shots,{recursive:true});
-try {
-  const page=await browser.newPage({viewport:{width:1280,height:720}}),errors=[];
+async function checkRefresh(name, viewport, mobile) {
+  const page=await browser.newPage({viewport,isMobile:mobile,hasTouch:mobile}),errors=[];
   await installLoadingComicReader(page);
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
@@ -38,6 +38,8 @@ try {
       const level=mental.dataset.level,misses=mental.dataset.hits,temp=thermo.getAttribute('aria-valuenow'),shieldBefore=document.querySelector('.dodge-heart').classList.contains('shield');
       window.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));
       return {radius,near:before.filter(b=>b.distance<=radius).length,far:before.filter(b=>b.distance>radius).length,
+        // E11: 旧Lv1（180px）なら消えていた弾が、新Lv1の外側に残る。
+        oldRangeKept:before.filter(b=>b.distance>radius&&b.distance<=180&&b.node.isConnected).length,
         correctlyRemoved:before.every(b=>b.node.isConnected===(b.distance>radius)),
         remaining:enemies().length,shieldBefore,levelBefore:level,levelAfter:mental.dataset.level,missesUnchanged:misses===mental.dataset.hits,tempUnchanged:temp===thermo.getAttribute('aria-valuenow')};
     };
@@ -46,7 +48,7 @@ try {
     T.core.state.stats.guts=guts;const effect=T.steam.refreshEffect();
     return {radius:Number.isFinite(effect.radius)?effect.radius:'all',recovery:effect.mentalRecovery,stock:T.steam.refreshStock()};
   }));
-  assert.deepEqual(perks,[{radius:180,recovery:false,stock:1},{radius:220,recovery:false,stock:1},{radius:265,recovery:true,stock:1},{radius:310,recovery:true,stock:1},{radius:'all',recovery:true,stock:1}]);
+  assert.deepEqual(perks,[{radius:90,recovery:false,stock:1},{radius:150,recovery:false,stock:1},{radius:220,recovery:true,stock:1},{radius:310,recovery:true,stock:1},{radius:'all',recovery:true,stock:1}]);
   const finish=async()=>{
     // The 20-second simulation caps RAF dt at 50ms; slow frames take longer in
     // wall time, then the result needs another 400ms and a presentation frame.
@@ -62,17 +64,20 @@ try {
 
   await page.evaluate(()=>startSteam(10));
   const button=page.locator('[data-test="dodge-refresh"]');await button.waitFor();
+  const field=await page.locator('.dodge').evaluate(n=>({width:parseFloat(n.style.width),height:parseFloat(n.style.height),radius:Number(n.dataset.refreshRadius)}));
+  assert.deepEqual(field,{width:784,height:414,radius:90});
+  assert(field.radius/Math.min(field.width,field.height)<.25,'Lv1 radius must be less than a quarter of the short side');
   assert(await button.isDisabled());assert.equal(await button.getAttribute('data-remaining'),'1');
   await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled);
   await page.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'x',repeat:true,bubbles:true})));
   assert.equal(await button.getAttribute('data-remaining'),'1','Repeated key spent the only refresh');
-  if(shots) await page.screenshot({path:`${shots}/refresh-medium-before.png`});
+  if(shots) await page.screenshot({path:`${shots}/${name}-refresh-medium-before.png`});
   const medium=await page.evaluate(()=>new Promise((resolve,reject)=>{
     const deadline=performance.now()+8000;
     const attempt=()=>{
       const radius=T.steam.refreshEffect().radius,b=enemies();
       if(!document.querySelector('.dodge-heart').classList.contains('shield')&&
-          b.some(b=>b.distance<=radius)&&b.some(b=>b.distance>radius)) {
+          b.some(b=>b.distance<=radius)&&b.some(b=>b.distance>radius&&b.distance<=180)) {
         const times=window.spawnTimes={at:performance.now(),next:0};
         const observer=new MutationObserver(list=>{
           if(list.some(m=>[...m.addedNodes].some(n=>n.classList?.contains('dodge-word')||n.classList?.contains('dodge-object')))) {
@@ -89,6 +94,8 @@ try {
   }));
   assert(medium.near>0&&medium.far>0,JSON.stringify(medium));assert(medium.correctlyRemoved);
   assert.equal(medium.remaining,medium.far,'Refresh removed bullets outside its radius');
+  assert(medium.oldRangeKept>0,'Lv1 must preserve real bullets inside the old 180px radius but outside the new radius');
+  console.log(`[refresh] PASS: ${name} Lv1 90px / short side 414px = ${(field.radius/field.height*100).toFixed(1)}%; ${medium.oldRangeKept} real bullets in the old range survived`);
   assert.equal(medium.levelAfter,medium.levelBefore,'Base refresh healed mental state');
   assert(medium.missesUnchanged&&medium.tempUnchanged);
   assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());assert.equal(await page.locator('.dodge-refresh-fx').count(),1);
@@ -98,7 +105,7 @@ try {
     return {same:hit===mental.dataset.hits,shield:document.querySelector('.dodge-heart').classList.contains('shield')};
   });
   if(shield.same&&!medium.shieldBefore) assert(!shield.shield,'Base refresh granted invulnerability');
-  if(shots) await page.screenshot({path:`${shots}/refresh-medium-after.png`});
+  if(shots) await page.screenshot({path:`${shots}/${name}-refresh-medium-after.png`});
   await page.waitForFunction(()=>spawnTimes.next,null,{timeout:1500});
   assert(await page.evaluate(()=>spawnTimes.next-spawnTimes.at)<800,'Refresh postponed the spawning schedule');
   await page.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'x',repeat:true,bubbles:true})));
@@ -119,7 +126,7 @@ try {
   assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());
   const baseResult=await finish();assert.equal(baseResult.stats.refreshesUsed,2);
   assert.match(baseResult.result,/リフレッシュで2回/);
-  console.log('[refresh] PASS: actual 8-second recharge and second use, medium range, no base healing/invulnerability/spawn delay, repeat/cooldown guards and hit-based score');
+  console.log('[refresh] PASS: actual 8-second recharge and second use, small range, no base healing/invulnerability/spawn delay, repeat/cooldown guards and hit-based score');
 
   await page.evaluate(()=>startSteam(41));
   // 新しい作業台は素材decode後に蒸らし画面を作る。未生成のtraceを参照しない。
@@ -128,7 +135,7 @@ try {
   const recovered=await page.evaluate(()=>consume('x'));
   assert.equal(recovered.levelBefore,'shaken');assert.equal(recovered.levelAfter,'unsteady','Growth refresh must recover exactly one mental level');
   assert(recovered.missesUnchanged&&recovered.tempUnchanged&&recovered.correctlyRemoved);
-  if(shots) await page.screenshot({path:`${shots}/refresh-grown-recovery.png`});
+  if(shots) await page.screenshot({path:`${shots}/${name}-refresh-grown-recovery.png`});
   await finish();
 
   await page.evaluate(()=>startSteam(81));
@@ -157,11 +164,17 @@ try {
   await precision.focus(); await page.keyboard.press('X');
   assert.equal(await button.getAttribute('data-remaining'),'0','Focused action swallowed X refresh');
   await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled,null,{timeout:10000});
-  await button.click();
+  if(mobile) await button.tap(); else await button.click();
   assert.equal(await button.getAttribute('data-remaining'),'0','Pointer refresh failed after keyboard use');
   const focusedResult=await finish();
   assert.equal(focusedResult.stats.refreshesUsed,3,'Focus/native click or repeat caused duplicate/missing uses');
   console.log('[refresh] PASS: focused Space/X, Enter activation, repeat/cooldown guards and pointer recharge; exactly three uses');
   assert.deepEqual(errors,[]);
   console.log('[refresh] PASS: one charge at a time; growth expands range, adds one-step mental recovery, and unlocks full-field clearing');
+  await page.close();
+}
+try {
+  for (const [name,viewport,mobile] of [['desktop',{width:1280,height:720},false],['mobile',{width:844,height:390},true]]) {
+    await checkRefresh(name,viewport,mobile);
+  }
 } finally {await browser.close();}

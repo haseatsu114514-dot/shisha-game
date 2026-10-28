@@ -6,7 +6,7 @@ import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
-import { relationshipStatus } from "./relationship-status.js";
+import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 
@@ -55,9 +55,9 @@ export function openStatus() {
   const body = el("div.st-body");
   const show = (id) => {
     tabs.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.tab === id));
-    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : id === "notes" ? notesTab() : itemsTab());
+    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : itemsTab());
   };
-  for (const [id, label] of [["me", "ステータス"], ["people", "人間関係"], ["notes", "常連ノート"], ["items", "持ち物"]]) {
+  for (const [id, label] of [["me", "ステータス"], ["people", "人間関係"], ["items", "持ち物"]]) {
     tabs.append(el("button.st-tab", { text: label, dataset: { tab: id }, onclick: () => show(id) }));
   }
   show("me");
@@ -111,6 +111,8 @@ function peopleTab() {
     const face = faceIconUrl(id);
     const lover = (state.lovers || []).includes(id);
     const relation = relationshipStatus(id);
+    // 直近の交流の思い出を前面に。無い人は中立のまま（反復する♥説明は全体ガイドへ集約）
+    const memory = recentMemoryEcho(id);
     const hearts = heartRow(Array.from({ length: 5 }, (_, i) => i < lv ? 100 : 0), {
       className: "heart-row", bond: lover, label: lover ? "恋人（♥5）" : "好感度",
     });
@@ -122,31 +124,14 @@ function peopleTab() {
           el("span.pp-hearts", [hearts, el("span.pp-relation", { text: relation.label })]),
           state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
         ]),
-        !lover && relation.label !== "友達" ? el("p.pp-next", { text: relation.hint }) : null,
+        memory ? el("p.pp-memory", { text: memory }) : null,
+        !lover && relation.label !== "友達" && relation.hint ? el("p.pp-next", { text: relation.hint }) : null,
       ]),
     ]);
   });
   return el("div.st-people", [
-    el("p.pp-guide", { text: "♥は親しさ。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。友情でも♥5の特別なイベントと贈り物があり、友達・恋人になった後もLIMEで交流は続く。" }),
+    el("p.pp-guide", { text: "♥は親しさ。♥3で恋愛・友情のどちらで続けるかを選び、♥5で特別なイベントと贈り物（どちらを選んでも受け取れる）。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。友達・恋人になった後もLIMEで交流は続く。" }),
     ...(rows.length ? rows : [el("p", { text: "まだ誰とも親しくなっていない。" })]),
-  ]);
-}
-
-/** 常連ノート: バイトで接客した客の記録（会った客は名前・回数・メモ、未接客は？？？） */
-function notesTab() {
-  const notes = state.notes || {};
-  const all = Object.entries(DB.statusTexts?.customerNotes || {});
-  // 取得済みを先に並べる（未取得の？？？は後ろ）。同じ側の中では元の順を保つ
-  const entries = [...all.filter(([id]) => notes[id]), ...all.filter(([id]) => !notes[id])];
-  const found = all.filter(([id]) => notes[id]).length;
-  return el("div.st-notes", [
-    el("p.note-progress", { text: `${found} / ${entries.length} 人` }),
-    el("div.note-list", entries.map(([id, e]) => notes[id]
-      ? el("div.note-entry.found", [
-        el("div.note-head", [el("span.note-name", { text: e.name }), el("span.note-count", { text: `×${notes[id]}` })]),
-        el("p.note-memo", { text: e.memo }),
-      ])
-      : el("div.note-entry.locked", [el("span.note-name", { text: "？？？" })]))),
   ]);
 }
 

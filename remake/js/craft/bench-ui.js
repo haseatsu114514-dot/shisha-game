@@ -33,9 +33,9 @@ export const TUTORIAL_STEP_HELP = Object.freeze({
 export function buildGuide() {
   const note = el("p");
   const root = el("details.bench-guide", [
-    el("summary", { text: "?", "aria-label": "操作の説明", title: "操作の説明" }),
+    el("summary", { text: "?", "aria-label": "操作の説明（開くと時間が止まる）", title: "操作の説明（開くと時間が止まる）" }),
     el("div.bench-guide-tip", [el("b", { text: "操作の説明" }), note,
-      el("small", { text: "説明を閉じると制作を再開します。" })]),
+      el("small", { text: "開くと時間が止まり、閉じると再開します。" })]),
   ]);
   root.addEventListener("toggle", () => {
     const bench = root.closest(".bench"), panel = bench?.querySelector(".bench-panel");

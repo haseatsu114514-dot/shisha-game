@@ -2,6 +2,7 @@
 // node remake/test/home_shisha.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import vm from "node:vm";
 
 globalThis.document ||= { addEventListener() {}, querySelector() { return null; } };
 globalThis.window ||= {};
@@ -9,7 +10,7 @@ const store = new Map();
 globalThis.localStorage ||= { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
 
 const { DB } = await import("../js/core/data.js");
-const { newGame, STAT_KEYS, SCHEMA, SAVE_KEY, save: saveGame, load: loadGame, loadFromSlot } = await import("../js/core/state.js");
+const { newGame, STAT_KEYS, SCHEMA, SAVE_KEY, save: saveGame, load: loadGame, saveToSlot, loadFromSlot } = await import("../js/core/state.js");
 const { mixPercents } = await import("../js/craft/mix-ratio.js");
 let state;
 const home = await import("../js/daily/home-shisha.js");
@@ -28,6 +29,25 @@ DB.dialogues = {};
 
 // データ: スミさんの卓上台（ミャア）と、くじの大会公式モデルの台。どちらも非売品・売れない
 const sumiRig = DB.equipById[rig.SUMI_RIG], proRig = DB.equipById[rig.PRO_RIG];
+// D01: 受取で見せるのは、採用済みで自室の机上にも置いている同じ台。
+{
+  const { sceneArtUrls } = await import("../js/core/scene-art.js");
+  const { img } = await import("../js/core/data.js");
+  const oldManifest = DB.manifest;
+  DB.manifest = read("../data/manifest.json");
+  const s = newGame(); s.owned.push(rig.SUMI_RIG);
+  assert(sceneArtUrls("img/backgrounds/bg_home_day.webp").includes(img(rig.SUMI_RIG_IMAGE)), "受取と自室で同じ採用済み台を使う");
+  assert(DB.manifest.webp.includes(rig.SUMI_RIG_IMAGE), "既存の配信用WebPを使う");
+  // CI の quick ジョブは画像を取得しない（sparse checkout）。画像がある環境でだけ中身を確かめる。
+  const originalUrl = new URL(`../../assets/${rig.SUMI_RIG_IMAGE}`, import.meta.url);
+  if (fs.existsSync(originalUrl)) {
+    const original = fs.readFileSync(originalUrl);
+    assert.equal(original.subarray(1, 4).toString(), "PNG", "LFSポインタではなく画像実体がある");
+  }
+  const servedUrl = new URL(`../img/${rig.SUMI_RIG_IMAGE.replace(/\.png$/, ".webp")}`, import.meta.url);
+  if (fs.existsSync(servedUrl)) assert.equal(fs.readFileSync(servedUrl).subarray(8, 12).toString(), "WEBP");
+  DB.manifest = oldManifest;
+}
 assert.equal(sumiRig.name, "ミャア 卓上台");
 assert.equal(proRig.name, "大会公式モデルの台");
 for (const e of [sumiRig, proRig]) { assert.equal(e.chapter_min, 1); assert(e.unsellable && e.not_for_sale, e.id); }
@@ -43,6 +63,76 @@ assert.equal(sumiScene.lines.find((l) => l.speaker === "sumi").text, "これや�
 const ch1Source = fs.readFileSync(new URL("../js/chapters/ch1.js", import.meta.url), "utf8");
 const midPrep = ch1Source.slice(ch1Source.indexOf("async function midPreparation"), ch1Source.indexOf("async function rehearsal"));
 assert(midPrep.includes("giveSumiRig("), "中間準備の最後にスミさんが台を渡す");
+
+// D03: 受取日だけの自室演出。体力や葉の有無は誘いの条件と分ける。
+{
+  const scene = read("../../data/dialogue/ch1_sumi.json").dialogues.find(d => d.dialogue_id === rig.RIG_HOME_SCENE);
+  assert.equal(scene.metadata.bg, "res://assets/backgrounds/bg_home_night.png");
+  assert.equal(scene.lines.length, 2);
+  assert(scene.lines.every(l => l.speaker === "" && l.text.length <= 48 && !l.text.includes("\n")));
+  assert(scene.lines.some(l => l.text.includes("卓上台") && l.text.includes("机")));
+  const s = newGame(); Object.assign(s, { day: 2, slot: 2 });
+  assert.equal(rig.sumiRigHomecomingDue(), false, "受取前");
+  await rig.giveEarlyHomeRig();
+  assert.equal(s.flags._sumi_rig_received_day, "1:2", "D01の受取確定と同時に記録する");
+  assert.equal(rig.sumiRigHomecomingDue(), true);
+  for (const stamina of [0, 25, 50, 80]) {
+    s.stamina = stamina;
+    assert.equal(rig.sumiRigHomecomingDue(), true, `体力${stamina}でも置いたことは伝える`);
+  }
+  assert.equal(rig.sumiRigHomecomingDue({ ...s, owned: [rig.PRO_RIG] }), false);
+  assert.equal(rig.sumiRigHomecomingDue({ ...s, day: 3 }), false, "翌日に持ち越さない");
+  assert.equal(rig.sumiRigHomecomingDue({ ...s, chapter: 2 }), false, "別章の同じ日付に出さない");
+  assert.equal(rig.sumiRigHomecomingDue({ ...s, flags: {} }), false, "台だけ持つ旧セーブでは再生しない");
+  saveGame();
+  assert.equal(rig.sumiRigHomecomingDue(loadGame()), true, "受取後のLOADでもその夜に表示できる");
+  const loaded = loadGame(); loaded.flags._sumi_rig_home_seen = true; saveGame();
+  const seen = loadGame();
+  const before = JSON.stringify(seen);
+  assert.equal(await rig.showSumiRigAtHome(), false, "既読の実行はSAVE/LOAD後もスキップする");
+  assert.equal(JSON.stringify(seen), before);
+
+  // 本物のhome-rig全体を評価し、VNだけを読了待ちにする。保存とLOADは実API。
+  let current, finishScene;
+  const played = [];
+  const source = fs.readFileSync(new URL("../js/daily/home-rig.js", import.meta.url), "utf8")
+    .replace(/^import .*;\n/gm, "").replace(/^export /gm, "");
+  const isolated = vm.runInNewContext(`${source}\n({ showSumiRigAtHome });`, {
+    get state() { return current; }, save: saveGame,
+    DB: { dialogues: { [rig.RIG_HOME_SCENE]: scene } },
+    play: id => { played.push(id); return new Promise(resolve => { finishScene = resolve; }); },
+  });
+  current = newGame(); Object.assign(current, { day: 2, slot: 2 });
+  await rig.giveEarlyHomeRig();
+  const pending = isolated.showSumiRigAtHome();
+  assert.equal(current.flags._sumi_rig_home_seen, true);
+  assert.equal(await isolated.showSumiRigAtHome(), false, "表示中の重複呼出しを防ぐ");
+  current = loadGame();
+  assert.equal(current.flags._sumi_rig_home_seen, true, "読了前でもオートセーブに既読が残る");
+  assert.equal(await isolated.showSumiRigAtHome(), false, "表示中のLOADで再生しない");
+  finishScene({});
+  assert.equal(await pending, false, "旧SAVEの継続を止める");
+  assert.deepEqual(played, [rig.RIG_HOME_SCENE]);
+
+  current = newGame(); Object.assign(current, { day: 2, slot: 2 });
+  saveToSlot("suien_remake_slot1"); // 台のない別の保存
+  await rig.giveEarlyHomeRig();
+  const interrupted = isolated.showSumiRigAtHome();
+  current = loadFromSlot("suien_remake_slot1");
+  const otherSave = JSON.stringify(current);
+  finishScene({});
+  assert.equal(await interrupted, false);
+  assert.equal(JSON.stringify(current), otherSave, "別SAVEに台や既読を付けない");
+
+  await rig.giveEarlyHomeRig();
+  const completed = isolated.showSumiRigAtHome();
+  finishScene({});
+  assert.equal(await completed, true);
+  saveToSlot("suien_remake_slot2");
+  current = loadFromSlot("suien_remake_slot2");
+  assert.equal(await isolated.showSumiRigAtHome(), false, "読了後の手動SAVE/LOADで再生しない");
+  assert.equal(played.length, 3);
+}
 
 // 比率の表示: 整数%で合計がちょうど100（表示用）
 assert.deepEqual(mixPercents({ lemon: 9, mint: 3 }), { lemon: 75, mint: 25 });
@@ -226,34 +316,35 @@ assert.deepEqual({stats:state.stats,xp:state.statXp},statsBefore);
 
 // #1081 D07: 単品もミックスも使った銘柄の味を学ぶ。内部評価・量の講評は出さない。
 const dialogueFor = (mix, taste = "great", distant = false) => home.homeShishaDialogue({ mix, taste }, { id: rig.SUMI_RIG }, () => 0, { distant });
+const textLines = (d) => d.lines.filter((l) => typeof l.text === "string");
 for (const flavor of flavors) {
   const mix = { [flavor.id]: 12 };
   const d = dialogueFor(mix);
   const name = (flavor.short_name || flavor.name).split(" ").pop();
-  assert(d.lines[1].text.includes(name), flavor.id);
-  assert(!/確かめたい/.test(d.lines[1].text), `${flavor.id}: 現行の葉には具体的な感想がある`);
+  assert(textLines(d)[1].text.includes(name), flavor.id);
+  assert(!/確かめたい/.test(textLines(d)[1].text), `${flavor.id}: 現行の葉には具体的な感想がある`);
   assert.deepEqual(dialogueFor(mix, "meh"), d, "点数で出来栄え感想へ戻さない");
-  for (const l of d.lines) assert(!/美味しい|普通に吸える|もう一歩|イマイチ|点|[0-9]|多すぎ|少なすぎ|配合/.test(l.text), l.text);
+  for (const l of textLines(d)) assert(!/美味しい|普通に吸える|もう一歩|イマイチ|点|[0-9]|多すぎ|少なすぎ|配合/.test(l.text), l.text);
 }
 const lemonMint = dialogueFor({ lemon: 9, mint: 3, rose: 0 });
-assert.match(lemonMint.lines[1].text, /レモン.*酸味/);
-assert.match(lemonMint.lines[2].text, /ミント.*清涼感/);
-assert.equal(lemonMint.lines.length, 4, "使った葉だけを一言ずつ振り返る");
-assert.match(dialogueFor({ double_apple: 12 }).lines[1].text, /アニス/);
-assert.match(dialogueFor({ dobaj_double_apple: 12 }).lines[1].text, /クリーミー/);
-assert.match(dialogueFor({ dobaj_mint: 12 }).lines[1].text, /甘/);
-assert.match(dialogueFor({ absal_mint: 12 }).lines[1].text, /苦/);
-assert.notEqual(dialogueFor({ strawberry: 12 }).lines[1].text, dialogueFor({ afsahr_strawberry: 12 }).lines[1].text);
+assert.match(textLines(lemonMint)[1].text, /レモン.*酸味/);
+assert.match(textLines(lemonMint)[2].text, /ミント.*清涼感/);
+assert.equal(textLines(lemonMint).length, 4, "使った葉だけを一言ずつ振り返る");
+assert.match(textLines(dialogueFor({ double_apple: 12 }))[1].text, /アニス/);
+assert.match(textLines(dialogueFor({ dobaj_double_apple: 12 }))[1].text, /クリーミー/);
+assert.match(textLines(dialogueFor({ dobaj_mint: 12 }))[1].text, /甘/);
+assert.match(textLines(dialogueFor({ absal_mint: 12 }))[1].text, /苦/);
+assert.notEqual(textLines(dialogueFor({ strawberry: 12 }))[1].text, textLines(dialogueFor({ afsahr_strawberry: 12 }))[1].text);
 assert.doesNotThrow(() => dialogueFor({ unknown_legacy_leaf: 12 }));
-assert.match(dialogueFor({ unknown_legacy_leaf: 12 }).lines[1].text, /確かめたい/);
-assert.equal(dialogueFor(single.mix).lines[1].text, home.homeShishaDialogue(single, { id: rig.SUMI_RIG }, () => 0).lines[1].text);
+assert.match(textLines(dialogueFor({ unknown_legacy_leaf: 12 }))[1].text, /確かめたい/);
+assert.equal(textLines(dialogueFor(single.mix))[1].text, textLines(home.homeShishaDialogue(single, { id: rig.SUMI_RIG }, () => 0))[1].text);
 assert.equal(Object.hasOwn(state, "mix"), false, "感想のためのSAVEフィールドは追加しない");
 
 // 場面の台本: 全角48字以内・手動改行なし・心の声は（）で閉じる
 const width = (t) => [...t].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? .5 : 1), 0);
 for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, rig.PRO_RIG]) for (const pick of [0, .5, .99]) for (const distant of [false, true]) {
   const d = home.homeShishaDialogue({ taste, mix: Object.fromEntries(flavors.map(f => [f.id, 1])) }, { id }, () => pick, { distant });
-  for (const l of d.lines) {
+  for (const l of textLines(d)) {
     assert(!l.text.includes("配合"), l.text);
     assert(width(l.text) <= 48 && !l.text.includes("\n"), l.text);
     if (l.speaker === "hajime") assert(l.text.startsWith("（") && l.text.endsWith("）"), l.text);
@@ -262,8 +353,8 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
 
 // #952: 第2章の味覚不調中は「舌では受け取れない」主観を保つ。評価・成長・消費は同じ。
 {
-  const lines = taste => ({ normal: home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0).lines[1].text,
-    distant: home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0, { distant: true }).lines[1].text });
+  const lines = taste => ({ normal: textLines(home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0))[1].text,
+    distant: textLines(home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0, { distant: true }))[1].text });
   for (const taste of ["great", "fine", "meh"]) {
     const { normal, distant } = lines(taste);
     assert.notEqual(normal, distant);
@@ -271,8 +362,13 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
   }
   assert.match(lines("great").distant, /遠い/);
   const distant = dialogueFor({ lemon: 9, mint: 3 }, "great", true);
-  assert.equal(distant.lines.length, 3);
-  assert(!distant.lines.some(l => /酸味|冴え|覚えておこう/.test(l.text)), "味覚不調中に味の特徴を受け取ったと断定しない");
+  assert.equal(textLines(distant).length, 3);
+  assert(!textLines(distant).some(l => /酸味|冴え|覚えておこう/.test(l.text)), "味覚不調中に味の特徴を受け取ったと断定しない");
+  // 演出: 炭を置く→吹かす→パチパチの順の効果音と、会話中だけの曲
+  const normal = dialogueFor({ lemon: 9, mint: 3 });
+  assert.deepEqual(normal.lines.filter((l) => l.type === "sfx").map((l) => l.id), ["coalPlace", "bubbling", "crackle"], "効果音は炭→泡→パチパチの順");
+  assert.equal(normal.metadata.bgm, "kansetsu_shomei_to_black_coffee");
+  assert.equal(distant.metadata.bgm, "bgm_taste_distant", "味覚不調中は ch2 の曲");
   const s = newGame();
   assert.equal(home.tasteDistant(s), false, "Chapter 1 never");
   s.chapter = 2; assert.equal(home.tasteDistant(s), false, "Before the DAY5 slump");

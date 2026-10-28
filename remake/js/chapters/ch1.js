@@ -86,6 +86,13 @@ export function setupHooks() {
       state.flags._salaryman_service_water = branch === "regular_water";
       save();
     }
+    // 初回提供の二択の記録。大会後のスミの一言は、才能ルート（顔を見ろと言われた側）を実際に選んだ時だけ変える。
+    if (dialogueId === "ch1_tutorial_oneesan" && choiceId === "oneesan_praise_feel"
+      && ["op_talent", "op_report"].includes(branch)) {
+      state.flags._op_praise_talent = branch === "op_talent";
+      state.flags._op_praise_report = branch === "op_report";
+      save();
+    }
     // 練習を選んだ直後に閉じても、再開時に選択を変えたり接客を飛ばしたりしない。
     if (dialogueId === "remake_tutorial_offer" && branch === "practice") {
       const progress = openingProgress();
@@ -94,7 +101,8 @@ export function setupHooks() {
       save();
     }
     // チョイザップ入会（初月分4,000円。初回キャンペーンで3か月は追加料金なし。3か月後の失効・再課金は未実装で、会員フラグは恒久）
-    if (dialogueId === "ch1_choizap_first" && branch === "register") {
+    // 所持金が足りないときは引き落とさず会員化もしない（選択肢の無効化に加えた二重防御。分岐側が会員フラグで成否を読む）
+    if (dialogueId === "ch1_choizap_first" && branch === "register" && state.money >= 4000) {
       addMoney(-4000);
       setFlag("_gym_member");
     }
@@ -189,6 +197,7 @@ export async function resumeGame() {
   setupHooks();
   if (state.chapter === 2) return resumeChapterModule(() => import("./ch2.js"), m => m.resumeChapterTwo(), "第2章の街へ戻っています…");
   if (state.chapter === 3) return resumeChapterModule(() => import("./ch3.js"), m => m.resumeChapterThree(), "第3章へ戻っています…");
+  if (state.chapter === 4) return resumeChapterModule(() => import("./ch4.js"), m => m.resumeChapterFour(), "第4章へ戻っています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
@@ -532,11 +541,11 @@ async function tournamentDay() {
   await assetsReady;
   await entrance();
 
-  // ROUND 1 ── 組み立て
+  // ROUND 1 ── 準備
   playBgm("bgm_tournament_craft");
   const cs = newSession("tournament");
   cs.retryAssist = state.tournament.retryAssist === true;
-  await roundCut("ROUND 1", "組み立て");
+  await roundCut("ROUND 1", "準備");
   await play("remake_round1_intro", { bg: STAGE });
   await playTournamentEvent(cs, "opening", { bg: STAGE });
   openBench(cs, { steps: STEPS_ALL });

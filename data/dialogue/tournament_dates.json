@@ -1,5 +1,5 @@
 {
-  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ未接続台本。能力・大会加点なし。",
+  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.jsの前夜に接続済み（会う約束が成立した恋人だけ）。第4章は未接続。能力・大会加点なし。",
   "dialogues": [
     {
       "dialogue_id": "tournament_date_tsumugi",

@@ -97,12 +97,10 @@ async function baitoShift({ called }) {
     rememberBaito("ch1_rei_cameo", ["rei"]);
   } else if (state.chapter === 1 && n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
     state.flags._ev_reviewer_cameo = true;
-    state.notes.baito_incognito_reviewer = (state.notes.baito_incognito_reviewer || 0) + 1; // 常連ノート（C.STATIONで回収）
     await play("ch1_reviewer_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_reviewer_cameo", ["reviewer"]);
   } else if (state.chapter === 1 && n >= 4 && state.day >= 6 && !state.flags._ev_maezono_cameo) {
     state.flags._ev_maezono_cameo = true;
-    state.notes.baito_incognito_maezono = (state.notes.baito_incognito_maezono || 0) + 1; // 常連ノート（大会当日に回収）
     await play("ch1_maezono_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_maezono_cameo", ["maezono"]);
   } else {
@@ -153,8 +151,8 @@ function customerEligible(event, rainy) {
   if ((RAIN_BAITO.includes(event.id) || event.trigger_day_weather === "rainy") && !rainy) return false;
   if (event.trigger_day_weather === "sunny" && rainy) return false;
   if (event.time_slot && event.time_slot !== (timeOfDay() === "night" ? "night" : "noon")) return false;
-  // 初来店や誕生日などの一度だけの話は、旧セーブの既読記録でも再抽選を防ぐ。
-  if ((event.once || event.set_flag) && ((state.usedBaito || []).includes(event.id) || (state.notes[event.id] || 0) > 0)) return false;
+  // 初来店や誕生日などの一度だけの話は、接客済みの記録（usedBaito）で再抽選を防ぐ。
+  if ((event.once || event.set_flag) && (state.usedBaito || []).includes(event.id)) return false;
   return true;
 }
 
@@ -203,8 +201,8 @@ async function customerEvent(condition) {
   };
   await play(dlg, { bg: TONARI_BG });
   if (!used.includes(ev.id)) used.push(ev.id);
-  state.notes[ev.id] = (state.notes[ev.id] || 0) + 1;
   if (ev.set_flag) state.flags[ev.set_flag] = true;
+  if (ev.mark_flag) state.flags[ev.mark_flag] = (Number(state.flags[ev.mark_flag]) || 0) + 1; // 繰り返し来る常連の接客回数（大会の回想分岐用。set_flag と違い一度きり化しない）
   rememberBaito(ev.id, customerFamilies(ev));
 }
 
@@ -265,7 +263,7 @@ async function serveShiftOrder() {
   if (state.flags[key]) return;
   const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
   const order = SHIFT_ORDERS[((seed ^ (seed >>> 16)) >>> 0) % SHIFT_ORDERS.length];
-  const index = await modal({ title: "今日の注文", body: `「${order.text}」 店の葉で一台を作る。`,
+  const index = await modal({ title: "今日の注文", body: `前のお客さんを見送って、次の卓につく。<br>「${order.text}」 店の葉で一台を作る。`,
     options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
   if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
   // 注文と配合に対応した客の反応を返す（#1073）。給料・行動消費は従来どおり後続のcalendarで確定。

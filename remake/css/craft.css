@@ -222,6 +222,13 @@
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 13px; color: var(--gold-hi); }
 .mix-hint { font-size: 14px; color: #afc7d2; line-height: 1.5; padding: 6px 10px; border-left: 2px solid #afc7d266; background: #afc7d20d; }
+/* #1081 E02: フレーバーを決めるこの工程でも「フレーバーの持ち」を左の窓で先に見せる。 */
+.mix-life-preview { width: 100%; display: grid; justify-items: center; gap: 4px; padding: 6px 4px; border-top: 1px solid #d1b48622; }
+.mix-life-preview > b { font-size: 13px; letter-spacing: .04em; color: #d3c2a8; }
+.mix-life-preview .leaf-icon { gap: 6px; }
+.mix-life-preview .flavor-leaf { width: 24px; height: 24px; }
+.mix-life-preview .leaf-skin { width: 24px; height: 24px; }
+.mix-life-note { font-size: 12px; line-height: 1.4; min-height: 16px; color: #cfe6b8; text-align: center; }
 .mix-temperature-preview { min-width: 0; display: grid; gap: 5px; font-size: 13px; color: var(--text-dim); }
 .mix-temperature-legend { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
 .mix-thermal-scale { position: relative; height: 22px; overflow: hidden; background: #55515d; border: 1px solid #eadbc2; border-radius: 4px; }
@@ -974,6 +981,13 @@
 .pull-play[data-draw] .pull-draw-status { color: #ffe2a8; }
 .pull-play[data-draw] .pull-summary { position: relative; overflow: hidden; }
 .pull-play[data-draw] .pull-summary::after { content: ""; position: absolute; left: 0; bottom: 0; width: calc(var(--draw-progress, 0) * 100%); height: 2px; background: #e4c786; box-shadow: 0 0 8px #f1c975; }
+/* 確定した水位をベルの胴に溜まる水として見せる。ガラス（.worker-base）の奥に置き、本体越しに見える。 */
+.worker-water-level { border-radius: 40% 40% 50% 50% / 18% 18% 62% 62%; overflow: hidden; pointer-events: none; opacity: 1; }
+.worker-water-level[hidden] { display: none; }
+.worker-water-body { position: absolute; left: 0; bottom: 0; width: 100%; height: calc(var(--water-q, 0) * 100%);
+  background: linear-gradient(to top, #2f84a8cc, #4cb0cfc2 55%, #86dcefb0 100%); box-shadow: inset 0 3px 10px #cdf4ff55, inset 0 -6px 12px #0c2a3466; transition: height .35s ease; }
+.worker-water-surface { position: absolute; left: 4%; width: 92%; height: 3px; border-radius: 50%; bottom: calc(var(--water-q, 0) * 100%); transform: translateY(1px);
+  background: linear-gradient(90deg, transparent, #d6f4ffdd 30%, #f2fdffff 50%, #d6f4ffdd 70%, transparent); box-shadow: 0 0 6px #aee6f6aa; opacity: calc(min(1, var(--water-q, 0) * 6)); transition: bottom .35s ease; }
 .worker-water { width: 62px; border-radius: 48%; overflow: hidden; opacity: 0; background: radial-gradient(ellipse, #b2b9dd18, #9794c30a 60%, transparent 70%); transition: opacity .15s; }
 .worker-water i { position: absolute; left: var(--bubble-x); bottom: 0; width: 5px; height: 6px; border-radius: 50%; border: 1px solid #e3ebffa6; background: #dbe9ff30; box-shadow: 0 0 4px #9abfff55; }
 .bench-worker[data-draw] .worker-water { opacity: 1; }
@@ -987,6 +1001,7 @@
 @media (prefers-reduced-motion: reduce) {
   .bench-worker[data-draw] .worker-actor, .bench-worker[data-draw] .worker-water i { animation: none; }
   .bench-worker[data-draw] .worker-water i { opacity: .7; bottom: 35%; }
+  .worker-water-body, .worker-water-surface { transition: none; }
 }
 
 /* TH57: 拡大したモックアップの配置に合わせる。ダイヤル・情報欄・ボタンを下段の固定行に収める。 */

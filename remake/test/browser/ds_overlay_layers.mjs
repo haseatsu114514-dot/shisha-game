@@ -173,7 +173,7 @@ await suite("ds-overlay-layers", async check => {
       await page.screenshot({ path: path.join(out, `ds-overlay-${label}-status.png`) });
       await reachable(page.locator('[data-test="st-insight"]'));
       await press('[data-test="st-insight"]');
-      for (const tab of ["people", "notes", "items", "me"]) {
+      for (const tab of ["people", "items", "me"]) {
         const button = page.locator(`[data-tab="${tab}"]`);
         await reachable(button);
         await button.tap();
