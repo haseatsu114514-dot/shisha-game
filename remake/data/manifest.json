@@ -422,7 +422,11 @@
   "face_kumicho.png",
   "face_rei.png",
   "face_uranaishi.png",
-  "face_volk.png"
+  "face_volk.png",
+  "face_kuze.png",
+  "face_maki.png",
+  "face_salaryman.png",
+  "face_steve.png"
  ],
  "making": [
   "bench_base.png",
