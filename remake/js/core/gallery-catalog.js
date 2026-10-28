@@ -22,7 +22,8 @@ export function galleryEntries(manifest, catalog, progress, seen) {
   const got = new Set(seen);
   progress.keepsakes.forEach(id => got.add(PHOTO_KEEPSAKES[id]));
   const entries = [...new Set((manifest.cgs || []).map(file => file.replace(/\.png$/, "")))]
-    .filter(id => !/^cg_ch2_ageha_purikura_strip_(?:soft|gal)$/.test(id)).sort().map((id, i) => ({
+    // 制作途中の下描き（#1076 DAY3 で見せる素材）は収集スチルではないので一覧に出さない。
+    .filter(id => !/^cg_ch2_ageha_purikura_strip_(?:soft|gal)$/.test(id) && id !== "cg_ch1_tsumugi_sketch_wip").sort().map((id, i) => ({
     id, cg: id, kind: id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still",
     title: labels[id] || "物語のスチル " + (i + 1), unlocked: got.has(id),
   }));
