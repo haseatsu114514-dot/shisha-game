@@ -107,6 +107,7 @@ function setAuto(v) {
   if (v) kickAuto();
 }
 function setSkip(v) {
+  if (v && running?.cancelOnSkip) return finish(true);
   if (v) setAuto(false);
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
@@ -159,6 +160,7 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param idOrDlg dialogue_id か dialogue オブジェクト
  * @param opts.bg  背景の上書き（res:// パス可）
  * @param opts.signal 呼出し元が場面を破棄したとき、読了・末尾報酬なしで閉じる
+ * @param opts.cancelOnSkip SKIPを中断として扱い、呼出し元で次回の再読を可能にする
  */
 export function play(idOrDlg, opts = {}) {
   if (!dom) buildDom();
@@ -176,6 +178,7 @@ export function play(idOrDlg, opts = {}) {
       queue: (dlg.lines || []).slice(),
       branches: dlg.branches || {},
       resolve,
+      cancelOnSkip: !!opts.cancelOnSkip,
       waitingChoice: false,
       typing: false,
       pages: null,
@@ -215,6 +218,7 @@ export function play(idOrDlg, opts = {}) {
     // 会話の間は、まだ片付いていない画面（大会の作業台・結果表など）も後ろに見せない（会話が終われば戻る）
     document.body.classList.add("vn-open");
     const me = running;
+    if (me.cancelOnSkip && skipMode) { setSkip(false); finish(true); return; }
     if (opts.signal) {
       const cancel = () => { if (running === me) finish(true); };
       me.removeAbort = () => opts.signal.removeEventListener("abort", cancel);

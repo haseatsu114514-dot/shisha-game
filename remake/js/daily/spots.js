@@ -312,7 +312,10 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       if (!await playQuestionVisit(charId, { bg, signal, deferSave: true }) || !live()) return false;
       gainAffinity(charId, 5);
     } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
-      if (!await read(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg })) return false;
+      const opts = DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg };
+      // 試供品は完読で受領する。SKIPでは進行を確定せず、次回読み直せるようにする。
+      if (charId === "rin" && seq[idx] === "ch1_rin_third") opts.cancelOnSkip = true;
+      if (!await read(seq[idx], opts)) return false;
       state.story[charId] = idx + 1;
       gainAffinity(charId, 10);
       // 初回読了と通常獲得はここで確定する。後続の質問・勧誘の中断で保証だけを失わない。
