@@ -431,7 +431,6 @@ function next() {
     }
     if (type === "sfx") { playSe(line.id); continue; }
     if (type === "fx") { runFx(line); continue; }
-    if (type === "customer_note") { state.notes[line.note_id] = (state.notes[line.note_id] || 0) + 1; continue; }
     // 未知の行タイプは黙って飛ばす（データ先行で書けるように）
   }
 }
@@ -473,10 +472,10 @@ function handleCondition(line) {
     ok = state.money >= Number(line.threshold || 0);
   } else if (kind === "flag") {
     ok = !!state.flags[line.flag];
+  } else if (kind === "flag_count") {
+    ok = (Number(state.flags[line.flag]) || 0) >= Number(line.threshold || 1);
   } else if (kind === "met") {
     ok = !!state.met[line.char_id];
-  } else if (kind === "customer_note") {
-    ok = (state.notes[line.note_id] || 0) >= Number(line.threshold || 1);
   } else if (kind === "affinity") {
     ok = affinityLevel(line.char_id) >= Number(line.threshold || 0);
   } else {

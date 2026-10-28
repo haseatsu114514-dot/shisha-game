@@ -46,7 +46,7 @@ async function load(name) { if (mods.has(name)) return mods.get(name); const mod
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
-function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, notes: {}, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {} }, overrides);
+function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {} }, overrides);
   // 既読段階を注入する在店fixtureでは、その段階を読める♥も明示する（加算の検証は別suite）。
   if (!overrides.affinity) state.affinity = Object.fromEntries(Object.entries(state.story).map(([id,n]) => [id,[0,9,20,33,48,66][Math.min(5,n)] || 0]));
   // DAY8の接客fixtureは、それまでの必須場面を読了した通常営業。
@@ -81,7 +81,6 @@ state.flags.needs_contact = true; await tonari.doBaito(); assert.equal(selected(
 reset(); db.baito = [byid.baito_mob_flavor_police]; await tonari.doBaito(); assert(state.flags.ch1_flavor_police_event); plays.length = 0; state.day++;
 await tonari.doBaito(); assert.equal(selected(), undefined);
 reset({ usedBaito: ["baito_mob_flavor_police"] }); db.baito = [byid.baito_mob_flavor_police]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset({ notes: { baito_mob_flavor_police: 1 } }); db.baito = [byid.baito_mob_flavor_police]; await tonari.doBaito(); assert.equal(selected(), undefined);
 // 同じ常連が複数IDに居ても今日/昨日に再登場しない。当章の履歴4件を記録。
 for (const family of ["occhan", "takahashi", "freelancer"]) {
   reset({ baitoRecent: [{ id: "previous", chapter: 1, day: 7, customers: [family] }] }); db.baito = [custom("same_face", { customers: [family] }), custom("different_face")];

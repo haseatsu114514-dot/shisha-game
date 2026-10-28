@@ -182,7 +182,7 @@ export function shortNormalVisit(spot) {
   if (spot?.id === "c_station") {
     const n = (state.spotVisits?.[spot.id] || 0) + 1;
     if (n < 2 || !state.reel?.introDone || state.flags._pakki_first_spin_pending
-      || state.notes?.baito_incognito_reviewer && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) return false;
+      || state.flags._ev_reviewer_cameo && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) return false;
     const pool = quietSpotPool(spot, state.slot);
     const rain = RAIN_SPOT_TEXTS[spot.id];
     const id = rain && isRainy() && DB.dialogues[rain] ? rain : pool[Math.max(0, n - 2) % pool.length];
@@ -389,7 +389,7 @@ export async function visitSpot(spot) {
   const rainId = RAIN_SPOT_TEXTS[spot.id];
   if (rainId && n > 1 && isRainy() && !(state.slot === 1 && spot.nightPool) && DB.dialogues[rainId]) id = rainId;
   // お忍び客の回収: tonari で覆面レビュアーを接客していたら、2回目以降の来店で記事の噂を聞く
-  if (spot.id === "c_station" && n > 1 && state.notes?.baito_incognito_reviewer && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) {
+  if (spot.id === "c_station" && n > 1 && state.flags._ev_reviewer_cameo && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) {
     state.flags._ev_reviewer_payoff = true;
     id = "ch1_reviewer_payoff";
   }

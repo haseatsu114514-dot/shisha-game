@@ -750,51 +750,6 @@
     }
   },
   {
-    "id": "kako",
-    "name": "かこ",
-    "role": "sub_character",
-    "age": 26,
-    "nationality": "Japan",
-    "affiliation": "tonari常連（フリーランスデザイナー）",
-    "play_style": "N/A",
-    "description": "フリーランスのデザイナー。シーシャをただ「吸う」だけでなく「作ること」が好きで、自分なりの一杯を探求しているオタク気質の女性。\nVTuberやネットミームが好きな「オタク」で、言葉は少ないが話しかけると話が長くなる。\n姫カット黒髪ロングで日本人形のような顔立ち、モード系の服装。\n※シークレット常連（ちょい役枠）：システム上の好感度は表示されないが、裏ステータスとして持つ。最大値は3。3回遭遇してMAXになると主人公に好意的になり、第5章や世界大会でギャラリーとして応援に来てくれる。",
-    "background_secret": "デザイナーの仕事において「クライアントの言いなりになること」に疲れ切っており、誰の指図も受けず完全に自分の世界観だけで構築できる『自宅シーシャ機材沼』に深く沈み込んでいる。",
-    "favorite_flavor": "ボムシェル",
-    "specialty_flavor": "ホワイトムスク",
-    "growth_stats": {
-      "primary": "センス",
-      "secondary": "魅力",
-      "notes": "自分の好きなレシピ（BombshellとWhite Muskの黄金比）を絶対に曲げない頑固なオタクだったが、はじめのブレンド提案を一度受け入れた後、いつの間にか他人の好みに合わせてフレーバーを調整する楽しさに目覚めていた。"
-    },
-    "visual_concepts": [
-      "26s japanese female, pale skin like a japanese doll, hime-cut long black hair, wearing stylish black monochrome mode fashion, typing rapidly on a customized keyboard, slightly slouching, socially awkward but intense vibe",
-      "introverted female designer, dark elegant hime-cut hair, wearing oversized dark avant-garde clothing, surrounded by personal shisha equipment, mixing flavors very methodically like a nerd, computer screens glowing in the background"
-    ],
-    "spriteScale": 0.93
-  },
-  {
-    "id": "rira",
-    "name": "りら",
-    "role": "sub_character",
-    "age": 28,
-    "nationality": "Japan",
-    "affiliation": "tonari常連",
-    "play_style": "N/A",
-    "description": "tonariの常連客でちょい役。黒髪ボブに茶色の目、可愛い系の童顔だが、ライダースジャケットを着こなすなど少し男勝りな部分もある。\n4歳年下の彼氏がおり、なんだかんだ好きでお姉さんとして接しているが、たまにシーシャを吸いながら主人公に彼氏の愚痴をこぼしていく。\n※シークレット常連（ちょい役枠）：システム上の好感度は表示されないが、裏ステータスとして持つ。最大値は3。3回遭遇してMAXになると主人公に好意的になり、第5章や世界大会でギャラリーとして応援に来てくれる。",
-    "background_secret": "男勝りな態度とは裏腹に、恋愛においては乙女で不器用な一面を持つ。",
-    "favorite_flavor": "ラズベリー",
-    "specialty_flavor": "ラズベリー",
-    "growth_stats": {
-      "primary": "魅力",
-      "secondary": "洞察",
-      "notes": "最初は主人公にただ愚痴を聞いてもらうだけだったが、徐々にシーシャの味の奥深さに気づき、自分でも色々なフレーバーを楽しむようになる。"
-    },
-    "visual_concepts": [
-      "28s japanese female, cute baby face with black bob hair and brown eyes, wearing a tough leather riders jacket over a simple white inner shirt, sitting at a counter smoking shisha, looking slightly annoyed venting about boyfriend",
-      "attractive young woman complaining while smoking hookah, tomboyish yet girly, dark bob haircut, biker jacket fashion, expressive face"
-    ]
-  },
-  {
     "id": "uranaishi",
     "name": "路上占い師",
     "role": "sub_character",
