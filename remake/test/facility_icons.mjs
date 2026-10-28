@@ -15,9 +15,9 @@ for (const data of [bytes, copy]) {
   assert.equal(createHash('sha1').update(`blob ${data.length}\0`).update(data).digest('hex'), '76fea0c4c5d0fd46364b9ed5df5fa0826d11eda4');
 }
 assert.deepEqual(Object.entries(FACILITY_ICONS).map(([id, { label }]) => [id, label]),
-  [['kannondo', '観音堂'], ['home', '自宅'], ['kohaku', '喫茶こはく'], ['axe_bar', '斧投げBar'],
+  [['rojiura_cinema', '路地裏シネマ'], ['kannondo', '観音堂'], ['home', '自宅'], ['kohaku', '喫茶こはく'], ['axe_bar', '斧投げBar'],
     ['choizap', 'チョイザップ'], ['fortune', '路上占い'], ['trpg_bar', 'ボドゲカフェ']]);
-for (const id of ['kannon', 'rest', 'cafe', 'axe_bar', 'choizap', 'fortune', 'trpg_bar']) assert(hasFacilityIcon(id));
+for (const id of ['kannon', 'rest', 'cafe', 'rojiura_cinema', 'axe_bar', 'choizap', 'fortune', 'trpg_bar']) assert(hasFacilityIcon(id));
 for (const id of ['tonari', 'naru', 'adam', 'minto', 'shop', 'c_station', '__proto__']) assert(!hasFacilityIcon(id), 'Store logos must keep their own role');
 // Inspect source alpha independently of layout math; a mistaken equal-third crop fails here.
 const analysis = spawnSync('python3', ['-c', `
@@ -36,7 +36,7 @@ assert.equal(analysis.status, 0, analysis.stderr);
 const observed = JSON.parse(analysis.stdout);
 assert.deepEqual(observed.bounds, [[23, 89, 834, 646], [844, 127, 1503, 679], [1554, 106, 2118, 641]]);
 assert.equal(observed.alpha252, 188024); assert.equal(observed.alpha253, 476313);
-const entries = Object.values(FACILITY_ICONS).filter(entry => !entry.extra);
+const entries = Object.values(FACILITY_ICONS).filter(entry => !entry.extra && !entry.src);
 for (const [index, entry] of entries.entries()) {
   const [x, y, w, h] = entry.rect, [left, top, right, bottom] = observed.bounds[index];
   assert(x <= left - 2 && y <= top - 2 && x + w >= right + 2 && y + h >= bottom + 2, 'Source art clipped');
@@ -70,24 +70,25 @@ assert(fs.statSync(new URL('../../assets/ui/map-facilities-extra-579.webp', impo
 const anchors = spawnSync('python3', ['-c', `
 from PIL import Image
 import json,sys
-sheets=[Image.open(p).getchannel('A') for p in sys.argv[1:3]]
-for entry in json.loads(sys.argv[3]).values():
- a=sheets[bool(entry.get('extra'))]; x,y=entry['badge']; left,top,w,h=entry['rect']
+sheets=[Image.open(p).getchannel('A') for p in sys.argv[1:4]]
+for entry in json.loads(sys.argv[4]).values():
+ a=sheets[2 if entry.get('src') else (1 if entry.get('extra') else 0)]; x,y=entry['badge']; left,top,w,h=entry['rect']
  assert left<=x<left+w and top<=y<top+h
  assert a.getpixel((x,y))>=128, 'event anchor is transparent'
  assert all(a.getpixel((xx,y))<128 for xx in range(x+1,left+w)), 'anchor is inside the artwork rather than at its right contour'
 `, new URL('../../assets/ui/map-facilities-579.png', import.meta.url).pathname,
 new URL('../../assets/ui/map-facilities-extra-579.webp', import.meta.url).pathname,
+new URL('../../assets/ui/map-rojiura-cinema.webp', import.meta.url).pathname,
 JSON.stringify(FACILITY_ICONS)], { encoding: 'utf8' });
 assert.equal(anchors.status, 0, anchors.stderr);
 for (const id of Object.keys(FACILITY_ICONS)) for (const size of FACILITY_ICON_SIZES) {
   const entry = FACILITY_ICONS[id], l = facilityIconLayout(id, size), [x, y, w, h] = entry.rect;
-  const [sw,sh] = entry.extra ? [1536,1024] : [2172,724];
+  const [sw,sh] = entry.sheetSize || (entry.extra ? [1536,1024] : [2172,724]);
   assert(Math.abs(Math.max(l.width, l.height) - size) < 1e-10);
   assert(Math.abs(l.width / l.height - w / h) < 1e-10, 'Distorted aspect');
   assert(Math.abs(-l.left / l.sheetWidth * sw - x) < 1e-10);
   assert(Math.abs(-l.top / l.sheetHeight * sh - y) < 1e-10);
-  assert.equal(l.src, entry.extra ? FACILITY_EXTRA_SHEET : FACILITY_SHEET);
+  assert.equal(l.src, entry.src || (entry.extra ? FACILITY_EXTRA_SHEET : FACILITY_SHEET));
 }
 for (const id of ['missing', '__proto__', 'constructor']) assert.throws(() => facilityIconLayout(id), RangeError);
 for (const size of [0, -1, NaN, Infinity, '48', 33]) assert.throws(() => facilityIconLayout('home', size), RangeError);

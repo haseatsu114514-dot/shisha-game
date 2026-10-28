@@ -152,10 +152,11 @@ try {
   for (const slot of [0, 1]) {
     const tod = slot ? "night" : "day";
     await page.evaluate((slot) => {
-      T.core.state.phase = "daily"; T.core.state.day = 6; T.core.state.slot = slot;
+      T.core.state.phase = "daily"; T.core.state.day = 13; T.core.state.slot = slot; // 13日目: 6日目と同じ曜日（占いの出店日）で、seed 0 では晴れ（6日目は雨で占いが閉店する）
       T.core.state.weatherSeed = 0;
       for (const id of ["naru", "adam", "minto"]) T.core.state.flags[`_spot_guide_${id}`] = true;
       T.core.state.flags._cafe_introduced = true; // 座標確認は紹介を読了したマップで行う。
+      T.core.state.flags._fortune_rumor_heard = true; // 占いピンは噂を聞き終えた後だけマップに出る（#780 fortune-schedule）
       T.mapTask = T.map.chooseSpot();
     }, slot);
     await page.waitForSelector(`.map[data-night="${!!slot}"]`);
