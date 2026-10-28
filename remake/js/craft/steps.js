@@ -26,8 +26,8 @@ import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipment
 export const REGULATION = {
   1: { flavor: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（私物持ち込み）" },
   // 判定は同系統（AFの持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
-  2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 1, label: "課題フレーバー「ストロベリー」を使う" },
-  // オーナー決定 10/28：ドバジ・4g以上・持ち込み。通常/ダークは未確定（既定=通常 chocolate）。
+  2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 4, label: "課題フレーバー「ストロベリー」を4g以上" },
+  // オーナー決定 10/28：ドバジ・4g以上・持ち込み。チョコは通常（chocolate）。
   3: { flavor: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（私物持ち込み）" },
 };
 export const regulationFor = (cs) => cs.staffPractice ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
@@ -385,7 +385,7 @@ export async function stepMix(cs) {
       }
       else { cs.mix = { double_apple: 5, mint: 7 }; }
       if (reg?.flavor === "strawberry") {
-        const apple = autoSkill() === "good" ? Math.min(9, flavorStock("double_apple")) : 0;
+        const apple = autoSkill() === "good" ? Math.min(12 - reg.min, flavorStock("double_apple")) : 0;
         cs.mix = { [supplyId]: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
       }
       if (reg?.flavor === "lemon") cs.mix = { lemon: 3, double_apple: 9 };
