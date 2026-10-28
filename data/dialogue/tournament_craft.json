@@ -474,6 +474,238 @@
           "text": "{flavors}だな。提供から最後の調整まで、続けて味わおう"
         }
       ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_1",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "えー、点差ちっちゃ！ これ、みんとの可愛さで押し切れちゃう？"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "ハハッ、押せるもんなら押してみな！ うちのダブルアップルは重いぞ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "順位は途中の記録です。組み立ての精度は、熱を入れてから出ます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（数字より、ボウルの詰め具合だ。あれで熱が通るかどうか）"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "はじめさん、詰めが丁寧でした。熱の入り方、見ています"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ありがと。じゃあ俺も、なるの火の入れ方を見とく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude2_1",
+      "lines": [
+        {
+          "speaker": "maezono",
+          "face": "normal",
+          "text": "最初のひと口、香りがふわっと立つ台が多かったねえ"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "立ち上がりはどれも悪くない。差が出るのは、煙が痩せずに続くかどうかです"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "出して終わりではない。残り半分で、配合の意図が問われる"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "おっ、南雲さんの言う通りだ。りんごは後半にこそ甘さが乗るんでね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（後半か。俺の一台、まだ伝えきれてないところがある）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude3_1",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "炭の爆ぜる小さな音だけが、会場に残った。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ね、はじめくん。ちょっとだけしゃべっていい？ 静かすぎて手が冷えちゃう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいよ。俺もさっきから、自分の心臓の音しか聞こえてない"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "ふふ、おそろいだ。じゃ、あとは煙にお任せしよっか"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "手を離せ。ここから先は、一台が語る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "票、入ってる……！ でもまだ一回目だもんね。浮かれない、浮かれない"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "嬢ちゃん、それでいい。一回目の票なんざ、顔見せみてえなもんでさ"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……数字は、見てない。苺が、まだ眠ってるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（眠ってる、か。俺の苺も、香りが立ちきってない気がする）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、顔に出てますぜ。直すとこを見つけた顔だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。次の調整で、苺を起こしにいきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude2_2",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "残り時間の表示が、赤に変わった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "審査員さん、私の台の前でちょっと長く止まるの。いい意味かな、悪い意味かな……"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……視線より、甘さの残り方。答えは、そっちにある"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "時計が赤くなってからが勝負どころですわ。焦った手は、苺がすぐ見抜きやがる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここで足し算はしない。ずれた一点だけ、元に戻す）"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "手数ではなく、意図を見せろ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_3",
+      "lines": [
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "審査員は左から回った。次は逆回りだろう。届く順番が変わる"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "室温、二十四・一度。一回目より〇・六上昇。炭の間隔を詰める"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "順番も数字も、大事。でも私は、煙の色を待つ。白が細くなるまで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "三人とも、見てるところが全然違う……"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "違っていい。それで、君は何を見る？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（吸った人の顔だ。一回目、少し眉が動いた。そこを直す）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude2_3",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "配信の視聴者数が、また一段跳ね上がった。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "客席の熱で室温がまた上がった。全国の会場は、空気まで重い"
+        },
+        {
+          "speaker": "emil",
+          "face": "normal",
+          "text": "二回目で奥行きが見えた台がある。最後に、底まで見せてくれるかな"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "最後の炭。置いたら、もう戻さない"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "これだけの目が、一台ずつに集まっている。流れはまだ決まっていない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（大須から、ここまで来たんだ。最後も、俺の温度でやる）"
+        }
+      ]
     }
   ]
 }
