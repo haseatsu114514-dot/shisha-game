@@ -282,9 +282,8 @@
         },
         {
           "type": "condition",
-          "condition_type": "customer_note",
-          "note_id": "baito_incognito_maezono",
-          "threshold": 1,
+          "condition_type": "flag",
+          "flag": "_ev_maezono_cameo",
           "next_true": "maezono_recall",
           "next_false": ""
         },
@@ -1464,7 +1463,7 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "さあ、ラウンド1『組み立て』が完了！"
+          "text": "さあ、ラウンド1『準備』が完了！"
         },
         {
           "speaker": "pakki",
@@ -1538,8 +1537,8 @@
         },
         {
           "type": "condition",
-          "condition_type": "customer_note",
-          "note_id": "baito_regular_02",
+          "condition_type": "flag_count",
+          "flag": "_ev_baito_regular_02",
           "threshold": 2,
           "next_true": "recall_notes",
           "next_false": "recall_base"

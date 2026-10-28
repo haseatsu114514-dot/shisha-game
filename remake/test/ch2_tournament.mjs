@@ -59,3 +59,4 @@ for(const [quality,expected] of [[98,1],[20,4]]) {
 console.log('PASS: chapter2 irrevocable 3×10 votes, good/bad ranks, JSON checkpoint rollback, committed consumption, retry, two cares and chapter1/relationships');
 // 登録済みの大会ロジック入口から、独立した全国大会stateの回帰も走らせる。
 await import('./ch3_tournament_state.mjs');
+await import('./ngplus_difficulty.mjs');

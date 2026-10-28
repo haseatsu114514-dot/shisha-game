@@ -2,8 +2,8 @@
   "flavors": [
     {
       "id": "white_gummy_bear",
-      "name": "アルファーヘブン ホワイトグミベア",
-      "short_name": "AF ホワイトグミベア",
+      "name": "フワリ ホワイトグミベア",
+      "short_name": "フワリ ホワイトグミベア",
       "category": "sweet",
       "price": 1650,
       "description": "あげはが好きな白いグミベア。パイナップルを思わせるやわらかな甘さ。",
@@ -27,7 +27,7 @@
         "nicotine": 3
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "fuwari"
     },
     {
       "id": "red_gummy_bear",

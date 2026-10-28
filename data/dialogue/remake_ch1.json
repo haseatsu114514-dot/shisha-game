@@ -1423,7 +1423,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "今日はもう上がっていい。帰りに『ケムリクサ』を覗いてこい"
+          "text": "今日はもう上がっていい。帰りに『KEMURIKUSA』を覗いてこい"
         },
         {
           "speaker": "sumi",
@@ -2093,7 +2093,7 @@
         {
           "speaker": "pakki",
           "face": "smile",
-          "text": "ROUND 1は『組み立て』！ 機材選びから蒸らしまで、一気にいきますよ〜ッ！"
+          "text": "ROUND 1は『準備』！ 機材選びから蒸らしまで、一気にいきますよ〜ッ！"
         },
         {
           "speaker": "hajime",
@@ -2688,10 +2688,6 @@
           "type": "choice",
           "choices": [
             {
-              "text": "炭交換と調整を復習する",
-              "next": "care"
-            },
-            {
               "text": "今日は仕入れだけにする",
               "next": "stock"
             },
@@ -2703,28 +2699,9 @@
         }
       ],
       "branches": {
-        "care": [],
         "stock": [],
         "full": []
       }
-    },
-    {
-      "dialogue_id": "remake_preparation_confirm",
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
-      },
-      "lines": [
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "詰めて、炭を熾して、蒸らす。それから温度を合わせて出す"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "そうだ。次に触るときは、迷ったところを一つ覚えておけ"
-        }
-      ]
     },
     {
       "dialogue_id": "remake_preparation_failed",

@@ -14,6 +14,7 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { runHomeShisha } from "./home-shisha.js";
+import { showSumiRigAtHome } from "./home-rig.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
@@ -123,6 +124,7 @@ export async function runDaily(def) {
     const reported = state.chapter === 1 ? await reportDeliveryBatch() : null;
     if (reported === false) return;
     await endDay({ returnedToTonari: reported === true });
+    if (state !== owner) return;
     save();
   }
 }
@@ -289,7 +291,7 @@ async function day1Errands() {
     f._errand_scout_told = true;
     save();
   }
-  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "ケムリクサへ偵察に。KEMURIKUSA をタップ！" } });
+  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。KEMURIKUSA をタップ！" } });
   if (!f._errand_naru_visited) {
     await visitRival(naru);
     state.visitedDay.naru = state.day;
@@ -795,6 +797,9 @@ async function endDay({ returnedToTonari = false } = {}) {
     await play(`remake_homecoming_${state.day % 3}`);
   }
   await bannersIdle();
+  const homeOwner = state;
+  await showSumiRigAtHome();
+  if (state !== homeOwner) return;
   // 夜の行動を終え、余力があるときだけ家シーシャを選べる。大会前夜は聞かない。
   if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
   delete state.flags._home_trial_plan; // 予約方式の旧セーブを読んだ場合も持ち越さない

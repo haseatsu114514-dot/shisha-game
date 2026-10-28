@@ -283,9 +283,11 @@ async function drive(owner) {
       ])) { if (live(owner)) renderEntry(owner); return; }
       checkpoint("lobby");
     } else if (p.stage === "lobby") {
+      playBgm("bgm_tournament_wait");
       if (!await read(owner, "lobby")) return;
       markMet("ageha"); checkpoint("entrance");
     } else if (p.stage === "entrance") {
+      playBgm("bgm_tournament_edm");
       if (!await read(owner, "entrance")) return;
       for (const who of ["kumicho", "rei", ...JUDGES]) markMet(who);
       state.flags._ch2_kumicho_public_reveal = true;
@@ -298,6 +300,9 @@ async function drive(owner) {
       owner.cs ||= clone(p.craft);
       const cs = owner.cs;
       playBgm("bgm_tournament_craft");
+      // 投票の後、調整に入る合間の掛け合い（#1290）。見た目は commentary と同じ経路で一度だけ。
+      const interlude = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
+      if (interlude && !await commentary(owner, interlude)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
       hud(owner); openBench(cs, { steps: CRAFT_STEPS }); await waitBenchReady(cs);

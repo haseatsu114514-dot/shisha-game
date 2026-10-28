@@ -10,6 +10,25 @@ const chapter = n => Number.isInteger(n) && n >= 1 && n <= 5;
 const list = value => Array.isArray(value) ? value : [];
 const unique = value => [...new Set(value)];
 
+const charIdValid = id => typeof id === "string" && /^[a-z][a-z0-9_]*$/.test(id);
+const eventStageValid = stage => typeof stage === "number" && Number.isFinite(stage)
+  || typeof stage === "string" && stage.length > 0;
+const emptyRouteRecord = () => ({ becameLover: false, eventsSeen: [], trueEndAsLover: false });
+
+function routeRecords(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(Object.entries(value).filter(([id]) => charIdValid(id)).flatMap(([id, record]) => {
+    if (!record || typeof record !== "object" || Array.isArray(record)) return [];
+    const normalized = {
+      becameLover: record.becameLover === true,
+      eventsSeen: unique(list(record.eventsSeen).filter(eventStageValid)),
+      trueEndAsLover: record.trueEndAsLover === true,
+    };
+    return normalized.becameLover || normalized.eventsSeen.length || normalized.trueEndAsLover
+      ? [[id, normalized]] : [];
+  }));
+}
+
 function photo(value) {
   if (!value || !chapter(value.chapter) || !Number.isInteger(value.day) || value.day < 1
     || ![0, 1, 2].includes(value.slot) || !["solo", "pair", "guest"].includes(value.mode)) return null;
@@ -17,7 +36,9 @@ function photo(value) {
   if (people[0] !== "hajime" || people.length !== (value.mode === "solo" ? 1 : 2)
     || people.some(id => typeof id !== "string" || !/^[a-z][a-z0-9_]*$/.test(id))
     || unique(people).length !== people.length || value.mode === "pair" && people[1] !== "ageha") return null;
-  return { chapter: value.chapter, day: value.day, slot: value.slot, mode: value.mode, people: [...people] };
+  return { chapter: value.chapter, day: value.day, slot: value.slot, mode: value.mode, people: [...people],
+    ...(Number.isInteger(value.chapterDay) && value.chapterDay > 0 ? { chapterDay: value.chapterDay } : {}),
+  };
 }
 export const purikuraId = p => ["purikura", p.chapter, p.day, p.slot, p.mode, ...p.people].join("-");
 
@@ -28,6 +49,7 @@ export function readGalleryProgress() {
     clearedChapters: unique(list(value?.clearedChapters).filter(chapter)).sort(),
     keepsakes: unique(list(value?.keepsakes).filter(id => Object.hasOwn(PHOTO_KEEPSAKES, id))),
     purikura: [...new Map(list(value?.purikura).map(photo).filter(Boolean).map(p => [purikuraId(p), p])).values()],
+    routeRecords: routeRecords(value?.routeRecords),
   };
 }
 
@@ -41,12 +63,62 @@ export function recordGalleryProgress(value) {
   }
   // 接続済みの章の旧セーブ。章番号・日数・大会勝利・予告視聴だけではクリアとしない。
   if ([1, 2].includes(value.chapter) && value.phase === "cleared") cleared.push(value.chapter);
-  const photos = list(value.flags?._ageha_purikura_history).map(photo).filter(Boolean);
+  const photos = list(value.flags?._ageha_purikura_history).map(photo).filter(Boolean).map(p => {
+    // この写真を持つセーブの開始日だけを使う。別セーブの写真を推測で換算しない。
+    const start = p.chapter === 2 ? value.flags?._ch2_day1?.startDay
+      : p.chapter === 3 ? value.flags?._ch3_intro?.startDay : null;
+    if (!p.chapterDay && (p.chapter === 1 || Number.isInteger(start) && start > 0 && p.day >= start)) {
+      p.chapterDay = p.chapter === 1 ? p.day : p.day - start + 1;
+    }
+    return p;
+  });
+  const merged = new Map(before.purikura.map(p => [purikuraId(p), p]));
+  for (const p of photos) {
+    const id = purikuraId(p);
+    merged.set(id, { ...merged.get(id), ...p }); // 日付のない旧セーブで補完済みの日付を消さない
+  }
   const next = {
     clearedChapters: unique([...before.clearedChapters, ...cleared]).sort(),
     keepsakes: unique([...before.keepsakes, ...list(value.keepsakes).filter(id => Object.hasOwn(PHOTO_KEEPSAKES, id))]),
-    purikura: [...new Map([...before.purikura, ...photos].map(p => [purikuraId(p), p])).values()],
+    purikura: [...merged.values()],
+    routeRecords: before.routeRecords,
   };
   if (JSON.stringify(before) === JSON.stringify(next)) return;
   try { localStorage.setItem(GALLERY_PROGRESS_KEY, JSON.stringify(next)); } catch { /* ゲームの保存は妨げない */ }
+}
+
+function saveRouteProgress(before, next) {
+  if (JSON.stringify(before) === JSON.stringify(next)) return;
+  try { localStorage.setItem(GALLERY_PROGRESS_KEY, JSON.stringify(next)); } catch { /* ゲームの保存は妨げない */ }
+}
+
+export function recordRouteLover(charId) {
+  if (!charIdValid(charId)) return;
+  const before = readGalleryProgress();
+  const record = Object.hasOwn(before.routeRecords, charId) ? before.routeRecords[charId] : emptyRouteRecord();
+  const next = { ...before, routeRecords: { ...before.routeRecords, [charId]: { ...record, becameLover: true } } };
+  saveRouteProgress(before, next);
+}
+
+export function recordRouteEvent(charId, eventStage) {
+  if (!charIdValid(charId) || !eventStageValid(eventStage)) return;
+  const before = readGalleryProgress();
+  const record = Object.hasOwn(before.routeRecords, charId) ? before.routeRecords[charId] : emptyRouteRecord();
+  const next = { ...before, routeRecords: { ...before.routeRecords,
+    [charId]: { ...record, eventsSeen: unique([...record.eventsSeen, eventStage]) },
+  } };
+  saveRouteProgress(before, next);
+}
+
+export function recordRouteTrueEnd(loversAtEnd) {
+  if (!Array.isArray(loversAtEnd)) return;
+  const before = readGalleryProgress();
+  const records = { ...before.routeRecords };
+  for (const charId of loversAtEnd) {
+    if (!charIdValid(charId)) continue;
+    const record = Object.hasOwn(records, charId) ? records[charId] : emptyRouteRecord();
+    records[charId] = { ...record, trueEndAsLover: true };
+  }
+  const next = { ...before, clearedChapters: unique([...before.clearedChapters, 5]).sort(), routeRecords: records };
+  saveRouteProgress(before, next);
 }

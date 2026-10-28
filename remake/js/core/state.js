@@ -9,7 +9,7 @@ import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 21; // 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 22; // 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -20,9 +20,18 @@ export const STARTER_EQUIPMENT = ["silicone_bowl", "lotos_hagal", "flat_charcoal
 /** 現在の状態。load()/newGame() で差し替わる。各モジュールは常にこの参照を読む */
 export let state = null;
 
+/** 周回ごとの一意なID。真エンド記録の冪等化と誤ロード防止に使う（設計書 §1.1） */
+export function newCycleId() {
+  return `c${Date.now().toString(36)}_${Math.floor(Math.random() * 0x100000000).toString(36)}`;
+}
+
 export function newState() {
   return {
     schema: SCHEMA,
+    cycle: 1,                  // 周回数（1周目=1）。真エンド到達で次の周回が解放される
+    cycleId: newCycleId(),     // この周回の識別子
+    cycleStartStats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 }, // 周回開始時に確定する5能力（難易度の入力）
+    carryOptions: null,        // 引き継ぎのグループ選択（1周目は null）
     tokyoVisits: emptyTokyoVisits(),
     chapter: 1,
     phase: "opening",          // opening | daily | tournament | aftermath | cleared
@@ -59,7 +68,6 @@ export function newState() {
     limeRead: [],              // 既読の LIME id
     pendingInvite: null, // day/slot/originIdつきの予約
     inbox: [],                 // LIME の受信箱 [{id, day, msg, read, done, log}]（朝に届き、好きなときに読む）
-    notes: {},                 // 常連ノート（接客した客 -> 回数）
     relationshipMemories: [],   // 読んだ交流だけを残す。人数・恋愛・大会の加点には使わない
     trpg: { stock: [], owned: [], cleared: {}, shifts: [], club: { founded: null, members: {} } },
     recipes: {},               // 発見したレシピ
@@ -121,7 +129,32 @@ function migrateSamechanIdentity(value) {
 
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
+  // 配列など、状態として解釈できない形は移行せず読み込み不可にする。
+  if (!s || typeof s !== "object" || Array.isArray(s)) return null;
   const oldSchema = Number(s.schema) || 0;
+  // 未来版は解釈・再保存せず、保存元とプレイ中の状態を保ったまま読込失敗にする。
+  if (oldSchema > SCHEMA) return null;
+  // 欠落キーの補完は「キーが無い場合」だけを見るため、null や型の違う値が残ると
+  // 後段の移行処理が例外で落ちる。新規の形と突き合わせ、型の合わない値は既定値へ戻す。
+  // （解釈できる部分はそのまま進め、解釈できない部分だけを無効化する）
+  const fresh = newState();
+  for (const k of Object.keys(fresh)) {
+    if (!(k in s)) continue;
+    const def = fresh[k];
+    if (def === null) continue; // null が正規の値（restDay・pendingInvite 等）は個別処理で検証する
+    if (Array.isArray(def)) {
+      if (!Array.isArray(s[k])) s[k] = def;
+    } else if (typeof def === "object") {
+      if (!s[k] || typeof s[k] !== "object" || Array.isArray(s[k])) s[k] = def;
+    } else if (typeof s[k] !== typeof def) {
+      s[k] = def;
+    }
+  }
+  // 能力値の中身が数値でない場合も、表示や計算で NaN が広がらないよう既定値へ戻す。
+  for (const key of STAT_KEYS) {
+    if (s.stats && !Number.isFinite(s.stats[key])) s.stats[key] = fresh.stats[key];
+    if (s.statsAtChapterStart && !Number.isFinite(s.statsAtChapterStart[key])) s.statsAtChapterStart[key] = fresh.statsAtChapterStart[key];
+  }
   if (oldSchema < 13) {
     s = migrateSamechanIdentity(s);
     for (const key of ["contacts", "lovers", "limeRead", "loverEventsSeen", "relationshipMemories"]) {
@@ -139,6 +172,7 @@ function migrate(s) {
     }));
   }
   if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
+  delete s.notes; // 常連ノートは廃止。旧セーブの残存キーを捨てる
   // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
   // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
   if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;
@@ -192,6 +226,7 @@ function migrate(s) {
       }
     }
   }
+  if (s.pendingInvite && (typeof s.pendingInvite !== "object" || Array.isArray(s.pendingInvite))) s.pendingInvite = null;
   if (s.pendingInvite && typeof s.pendingInvite === "object") {
     const inv = s.pendingInvite;
     const candidates = [...s.inbox].reverse().filter((i) => i.msg.sender === inv.sender && i.msg.accept_event === inv.event);
@@ -240,17 +275,19 @@ function migrate(s) {
       .filter(([id, date]) => id && !["sumi", "naru"].includes(id) && clubDate(date)
         && (date.chapter > founded.chapter || date.chapter === founded.chapter && date.day >= founded.day))) : {} },
   };
-  const fresh = newState();
   for (const k of Object.keys(fresh)) if (!(k in s)) s[k] = fresh[k];
   // 旧/現行セーブで欠落した上司の連絡先だけを補い、交流やひよりの読了は推測しない。
   if (!Array.isArray(s.contacts)) s.contacts = [];
   if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
   s.reel = { ...fresh.reel, ...s.reel };
-  if (s.reel.installed) s.flags.pakki_app_installed = true; // 導入済みの旧セーブも観音堂の会話の条件を満たす
+  // reel の中身に null が残ると、<10 の導入判定や後段の演出で落ちる。形だけ先にそろえる。
+  if (!Array.isArray(s.reel.pending)) s.reel.pending = [];
+  if (!s.reel.note || typeof s.reel.note !== "object" || Array.isArray(s.reel.note)) s.reel.note = {};
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {
     s.reel.installed = !!(s.reel.introDone || s.reel.count || s.reel.pending.length || s.spotVisits?.c_station);
   }
+  if (s.reel.installed) s.flags.pakki_app_installed = true; // 導入済みの旧セーブも観音堂の会話の条件を満たす
   // 廃止パイプ（pipe_middle / pipe_high / pipe_highest）は買値で全額返金し、所持・装備から外す。
   const pipeRefunds = { pipe_middle: 30000, pipe_high: 100000, pipe_highest: 300000 };
   if (Array.isArray(s.owned) && s.owned.some((id) => id in pipeRefunds)) {
@@ -295,6 +332,22 @@ function migrate(s) {
   else s.staffPractice.used = Object.fromEntries(Object.entries(record(s.staffPractice.used))
     .filter(([, g]) => Number.isFinite(g) && g >= 0).map(([id, g]) => [id, Math.min(6, g)]));
   if (oldSchema < 21 && s.chapter === 1 && s.phase === "tournament") s.flags._legacy_mint_tournament = true;
+  // スキーマ22。周回（NG+）の土台。既存セーブはすべて1周目で、既存の値は変えない。
+  // cycleId は欠けているときだけ発行する（移行を冪等に保ち、再読込でIDが揺れないようにする）。
+  if (oldSchema < 22) {
+    s.cycle = 1;
+    if (typeof s.cycleId !== "string" || !s.cycleId) s.cycleId = newCycleId();
+    s.cycleStartStats = Object.fromEntries(STAT_KEYS.map((k) => [k, 10]));
+    s.carryOptions = null;
+  }
+  // 壊れた周回メタは、開始時能力（難易度の入力になる）を守るため初期値側へ倒す。
+  if (!Number.isInteger(s.cycle) || s.cycle < 1) s.cycle = 1;
+  if (typeof s.cycleId !== "string" || !s.cycleId) s.cycleId = newCycleId();
+  if (!s.cycleStartStats || typeof s.cycleStartStats !== "object" || Array.isArray(s.cycleStartStats)
+    || STAT_KEYS.some((k) => !Number.isFinite(s.cycleStartStats[k]))) {
+    s.cycleStartStats = Object.fromEntries(STAT_KEYS.map((k) => [k, 10]));
+  }
+  if (s.carryOptions !== null && (typeof s.carryOptions !== "object" || Array.isArray(s.carryOptions))) s.carryOptions = null;
   s.schema = SCHEMA;
   return s;
 }
@@ -310,15 +363,17 @@ export function newGame() {
 }
 
 export function save() {
-  if (!state) return;
+  if (!state) return false;
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try { recordGalleryProgress(peekSave()); } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
   recordGalleryProgress(state);
   state.savedAt = Date.now();
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    return true;
   } catch {
     /* プライベートウィンドウ等で失敗しても遊べるようにする */
+    return false;
   }
 }
 
@@ -335,7 +390,11 @@ export function peekSave() {
 
 export function load() {
   const s = peekSave();
-  return s ? setState(migrate(s)) : null;
+  if (!s) return null;
+  // 移行で想定外の例外が出ても、タイトルやブートを巻き込まず読み込み失敗にする。
+  let migrated = null;
+  try { migrated = migrate(s); } catch { migrated = null; }
+  return migrated ? setState(migrated) : null;
 }
 
 // ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
@@ -357,6 +416,17 @@ export function readSlot(key) {
     return null;
   }
 }
+/** 全枠のうち savedAt が最新のセーブ（同点・欠落は SAVE_SLOTS 順で先のもの）。無ければ null */
+export function peekLatestSave() {
+  let best = null, bestAt = -Infinity;
+  for (const slot of SAVE_SLOTS) {
+    const s = readSlot(slot.key);
+    if (!s) continue;
+    const at = Number.isFinite(s.savedAt) ? s.savedAt : -Infinity;
+    if (!best || at > bestAt) { best = s; bestAt = at; }
+  }
+  return best;
+}
 export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
 /** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
@@ -374,8 +444,18 @@ export function saveToSlot(key) {
 export function loadFromSlot(key) {
   const s = readSlot(key);
   if (!s) return null;
-  setState(migrate(s));
-  save();
+  // 移行で想定外の例外が出ても、進行中の状態と保存元を保ったまま読み込み失敗にする。
+  let migrated = null;
+  try { migrated = migrate(s); } catch { migrated = null; }
+  if (!migrated) return null;
+  const previous = state;
+  setState(migrated);
+  const saved = save();
+  // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
+  if (!saved && key !== SAVE_KEY) {
+    setState(previous);
+    return null;
+  }
   return state;
 }
 

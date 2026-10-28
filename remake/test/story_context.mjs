@@ -47,7 +47,7 @@ function paths(id, state, knownFlags = false) {
   if (knownFlags) for (const row of JSON.stringify(scene).matchAll(/"flag":"([^"]+)"/g)) value.flags[row[1]]=true;
   return run(scene.lines,scene.branches || {},value,[]);
 }
-const state = (chapter,phase='daily',met={}) => ({chapter,phase,day:1,flags:{},met,stats:{},notes:{},money:100000});
+const state = (chapter,phase='daily',met={}) => ({chapter,phase,day:1,flags:{},met,stats:{},money:100000});
 for (let target=1;target<=5;target++) {
   for (const phase of ['opening','daily','tournament','aftermath','cleared']) {
     const value=state(target,phase), before=JSON.stringify(value);
@@ -90,6 +90,22 @@ for (const [label,flags,review] of sumiCases) for (const [chapter,phase] of [[1,
   assert.equal(JSON.stringify(value), before, `${label}: 分岐だけで状態を変更しない`);
 }
 console.log(`PASS: スミの基礎説明 ${sumiCases.length * 3} 状態（制作履歴・旧セーブ・大会後・保存復元・図解・共通報酬）`);
+// #1253: the private finale is valid before/after chapter 1's tournament and in later chapters.
+// Exercise friendship, the final romance question and already-lover branches with the real VN condition handler.
+const originalEval = context.hooks.evalCondition;
+for (const route of ['friend', 'romance', 'lover']) {
+  context.hooks.evalCondition = line => line.condition_type === 'lover' ? route === 'lover'
+    : line.condition_type === 'romance_open' ? route === 'romance' : originalEval(line);
+  const before = paths('ch1_minto_bond_finale', state(1));
+  for (const [chapter, phase] of [[1, 'aftermath'], [2, 'daily'], [3, 'daily'], [4, 'daily'], [5, 'daily']]) {
+    const value = state(chapter, phase);
+    const after = paths('ch1_minto_bond_finale', JSON.parse(JSON.stringify(value)));
+    assert.deepEqual(after, before, `Minto ${route} ch${chapter}/${phase}: same dialogue, choices and effects`);
+    for (const rows of after) assert.doesNotMatch(rows.map(r => r.text || '').join('\n'), sensitive);
+  }
+}
+context.hooks.evalCondition = originalEval;
+console.log('PASS: Minto finale friendship/romance/lover chronology before tournament, aftermath and chapters 2–5');
 const changed = ['ch1_naru_first','ch1_naru_second','ch1_naru_third','ch1_naru_fifth','ch1_naru_bond_finale',
   'ch1_minto_second','ch1_adam_fifth','ch1_tsumugi_fifth','ch1_tsumugi_smoke_color','ch1_rin_third','ch2_rei_first','ch2_rei_fifth','remake_ch2_kumicho_chat'];
 let count=0;
