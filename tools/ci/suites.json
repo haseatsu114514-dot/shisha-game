@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "ch1-interval-connection",
+      "title": "Chapter 1 victory interval connections",
+      "kind": "quick",
+      "run": ["node remake/test/ch1_interval_connection.mjs"]
+    },
+    {
       "id": "load-save-failure",
       "title": "Slot load persistence failure and state rollback",
       "kind": "quick",
