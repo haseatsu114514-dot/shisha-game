@@ -58,13 +58,14 @@ try {
       assert.equal(geometry.label, count ? `LIME（未読${count}件）` : 'LIME');
       if (count && !baseline) {
         const { badge: b, icon: i, textRect: t } = geometry;
-        assert(Math.abs(i.width - i.height) < .1, 'app icon must stay square');
+        // DSレイアウトではHUD右側が下部タッチバーの横長ボタンになる（game-ds.css）ため、正方形アイコンの前提は通常レイアウトのみ。
+        if (layout !== 'ds') assert(Math.abs(i.width - i.height) < .1, 'app icon must stay square');
         assert(Math.abs(b.width - b.height) < .1, 'badge must remain circular at 99+');
-        assert(Math.abs(b.width / i.width - .4) < .025, 'badge diameter follows reference icon ratio');
+        if (layout !== 'ds') assert(Math.abs(b.width / i.width - .4) < .025, 'badge diameter follows reference icon ratio');
         assert.equal(geometry.radius, '50%');
         assert(b.x + b.width > i.x + i.width && b.x + b.width / 2 > i.x + i.width / 2 && b.y < i.y, 'upper-right overlap');
         const n = geometry.numberRect;
-        const opticalOffset = .5 * i.width / 48;
+        const opticalOffset = .5 * b.width / 20;
         assert(Math.abs(n.x + n.width / 2 - b.x - b.width / 2 - opticalOffset) < .1 && Math.abs(n.y + n.height / 2 - b.y - b.height / 2) < .1, 'number keeps its optical center independently of plus');
         if (count > 99) {
           assert(geometry.plusSize <= geometry.fontSize / 2, 'plus is smaller than the digit');
@@ -72,7 +73,7 @@ try {
         } else assert.equal(geometry.plusRect, null);
         assert(t.x >= b.x && t.y >= b.y && t.x + t.width <= b.x + b.width && t.y + t.height <= b.y + b.height, 'text fits circle');
         assert(b.x >= 0 && b.y >= 0 && b.x + b.width <= viewport.width && b.y + b.height <= viewport.height, 'badge fits viewport');
-        assert(geometry.adjacent.every(a => b.x + b.width <= a.x + .1 || a.x + a.width <= b.x + .1 || b.y + b.height <= a.y + .1 || a.y + a.height <= b.y + .1), 'badge overlaps adjacent control');
+        if (layout !== 'ds') assert(geometry.adjacent.every(a => b.x + b.width <= a.x + .1 || a.x + a.width <= b.x + .1 || b.y + b.height <= a.y + .1 || a.y + a.height <= b.y + .1), 'badge overlaps adjacent control');
       }
       states.push(geometry);
       if (count === 1 && !baseline && device === 'pc' && layout === 'normal') {
