@@ -9,7 +9,7 @@ import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 21; // 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 22; // 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -20,9 +20,18 @@ export const STARTER_EQUIPMENT = ["silicone_bowl", "lotos_hagal", "flat_charcoal
 /** 現在の状態。load()/newGame() で差し替わる。各モジュールは常にこの参照を読む */
 export let state = null;
 
+/** 周回ごとの一意なID。真エンド記録の冪等化と誤ロード防止に使う（設計書 §1.1） */
+export function newCycleId() {
+  return `c${Date.now().toString(36)}_${Math.floor(Math.random() * 0x100000000).toString(36)}`;
+}
+
 export function newState() {
   return {
     schema: SCHEMA,
+    cycle: 1,                  // 周回数（1周目=1）。真エンド到達で次の周回が解放される
+    cycleId: newCycleId(),     // この周回の識別子
+    cycleStartStats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 }, // 周回開始時に確定する5能力（難易度の入力）
+    carryOptions: null,        // 引き継ぎのグループ選択（1周目は null）
     tokyoVisits: emptyTokyoVisits(),
     chapter: 1,
     phase: "opening",          // opening | daily | tournament | aftermath | cleared
@@ -295,6 +304,22 @@ function migrate(s) {
   else s.staffPractice.used = Object.fromEntries(Object.entries(record(s.staffPractice.used))
     .filter(([, g]) => Number.isFinite(g) && g >= 0).map(([id, g]) => [id, Math.min(6, g)]));
   if (oldSchema < 21 && s.chapter === 1 && s.phase === "tournament") s.flags._legacy_mint_tournament = true;
+  // スキーマ22。周回（NG+）の土台。既存セーブはすべて1周目で、既存の値は変えない。
+  // cycleId は欠けているときだけ発行する（移行を冪等に保ち、再読込でIDが揺れないようにする）。
+  if (oldSchema < 22) {
+    s.cycle = 1;
+    if (typeof s.cycleId !== "string" || !s.cycleId) s.cycleId = newCycleId();
+    s.cycleStartStats = Object.fromEntries(STAT_KEYS.map((k) => [k, 10]));
+    s.carryOptions = null;
+  }
+  // 壊れた周回メタは、開始時能力（難易度の入力になる）を守るため初期値側へ倒す。
+  if (!Number.isInteger(s.cycle) || s.cycle < 1) s.cycle = 1;
+  if (typeof s.cycleId !== "string" || !s.cycleId) s.cycleId = newCycleId();
+  if (!s.cycleStartStats || typeof s.cycleStartStats !== "object" || Array.isArray(s.cycleStartStats)
+    || STAT_KEYS.some((k) => !Number.isFinite(s.cycleStartStats[k]))) {
+    s.cycleStartStats = Object.fromEntries(STAT_KEYS.map((k) => [k, 10]));
+  }
+  if (s.carryOptions !== null && (typeof s.carryOptions !== "object" || Array.isArray(s.carryOptions))) s.carryOptions = null;
   s.schema = SCHEMA;
   return s;
 }
