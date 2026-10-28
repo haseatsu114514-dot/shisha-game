@@ -29,6 +29,7 @@ import { playTournamentEvent } from "../craft/tournament-story.js";
 import { servedEvaluationLines } from "../craft/served-eval.js";
 import { naruTastingLine } from "../craft/naru-tasting.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, regulationFor } from "../craft/steps.js";
+import { stepWater } from "../craft/water-view.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
 import { runSteamDodge } from "../craft/steam.js";
@@ -539,7 +540,7 @@ async function tournamentDay() {
     { speaker: "pakki", face: "excited", text: `シーシャ勝負・第壱条ッ！ 課題の${challenge}を2g以上！ ${source}` },
     { speaker: "pakki", face: "excited", text: "第弐条ッ！ 一台を作って提供、二度の調整まで同じ一台で勝負です！ ぷぷぷっ！" },
   ] }, { bg: STAGE });
-  await assetsReady;
+  await withLoadingNotice(assetsReady, loadingNotice("大会の準備をしています…"));
   await entrance();
 
   // ROUND 1 ── 準備
@@ -554,6 +555,7 @@ async function tournamentDay() {
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
   // 工程の頭でパッキーが前振り、出来に応じて観客のコメントが流れる（生放送レイヤー）。
   await stepSetup(cs);
+  await stepWater(cs);
   bc.block(cs, "mix");
   await stepMix(cs);
   bc.judge(cs, bc.judgeOf(cs.mixInfo.score), "配合");
@@ -575,6 +577,7 @@ async function tournamentDay() {
   await play("ch1_tournament_match", { bg: STAGE });
   await play("ch1_tournament_r1_end", { bg: STAGE });
   await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs);
+  await playTournamentEvent(cs, "interlude1", { bg: STAGE });
 
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
@@ -595,6 +598,7 @@ async function tournamentDay() {
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
   await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs);
+  await playTournamentEvent(cs, "interlude2", { bg: STAGE });
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
   for (const round of [1, 2]) {
@@ -610,6 +614,8 @@ async function tournamentDay() {
     await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
     if (round === 1) await showStandings(3, avgScore(cs.holes.score, cs.heat.score, computeShisha(cs).craftQuality, cs.care.score), cs);
   }
+
+  await playTournamentEvent(cs, "interlude3", { bg: STAGE });
 
   // 審査は完成品と2回の調整の実績で決まる。
   playBgm("bgm_judging");

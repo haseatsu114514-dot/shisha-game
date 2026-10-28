@@ -35,7 +35,7 @@ const values = {
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
-  "ui.js": { imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
+  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { await mid?.(); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
   "transitions.js": { refreshPlaceCue: noop },
   "data.js": { sceneBg: () => ({}), DB: db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
