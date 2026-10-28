@@ -2940,6 +2940,30 @@
         "assets/backgrounds/bg_yuzugaya_*.webp"
       ],
       "run": ["node remake/test/ch2_spot_images.mjs"]
+    },
+    {
+      "id": "future-schema-save",
+      "title": "Future schema saves preserve state and remain compatible",
+      "kind": "quick",
+      "run": ["node remake/test/future_schema_save.mjs"]
+    },
+    {
+      "id": "store-logo-comparison",
+      "title": "Store logo map pin layout metrics and screenshots (#574)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/map.js",
+        "remake/js/core/store-logos.js",
+        "remake/css/store-logos.css",
+        "remake/test/browser/store_logo_comparison.mjs"
+      ],
+      "run": ["node remake/test/browser/store_logo_comparison.mjs"],
+      "env": {
+        "BASE_URL": "http://127.0.0.1:8123/remake/",
+        "ARTIFACT_DIR": ".codex/artifacts/store-logo-comparison"
+      }
     }
   ]
 }
