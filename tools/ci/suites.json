@@ -390,10 +390,25 @@
     {
       "id": "facility-icons",
       "title": "Facility icons: sheet byte equality, alpha bounds, badge anchors on right contour, layout",
-      "kind": "quick",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 10,
+      "paths": [
+        "remake/js/daily/facility-icons.js",
+        "remake/test/facility_icons.mjs",
+        "assets/ui/map-facilities-579.png",
+        "assets/ui/map-facilities-extra-579.webp",
+        "asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/**",
+        "asset_sources/map-facilities-579/**"
+      ],
       "run": [
         "node remake/test/facility_icons.mjs"
-      ]
+      ],
+      "sparse": [
+        "/asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/",
+        "/asset_sources/map-facilities-579/"
+      ],
+      "pillow": true
     },
     {
       "id": "ch1-presentation",
