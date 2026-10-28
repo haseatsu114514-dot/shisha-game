@@ -469,6 +469,10 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .map-info::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
 .map-info::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
 .map-info { right: 16px; bottom: 16px; z-index: 7; width: 270px; padding: 9px 12px 11px; transition: opacity 0.2s, transform 0.2s; }
+/* 行き先パネルは見た目だけ前面に置き、裏に隠れる行き先ピン（右下の「家に帰る」等）の操作を奪わない。
+   クリックはパネル内のボタン（ここへ行く・乗車確認など）だけが受け取り、余白は背後のピンへ素通りさせる。 */
+.map-info { pointer-events: none; }
+.map-info button { pointer-events: auto; }
 .map-info.leaving { opacity: 0; transform: translateY(8px); }
 .mi-banner {
   display: inline-block;
