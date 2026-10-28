@@ -114,6 +114,31 @@ await suite("save-load", async check => {
     assert(result.outcomes.every(value => value === null)); assert(result.unchanged);
   });
 
+  await check("future-schema-slot-notice", async page => {
+    await prepare(page);
+    await page.evaluate(async () => {
+      const { core } = QA;
+      const future = {
+        schema: core.SCHEMA + 1, chapter: 1, phase: "daily",
+        day: 6, slot: 1, money: 45678,
+      };
+      localStorage.setItem(core.SAVE_SLOTS[1].key, JSON.stringify(future));
+      (await import("./js/scenes/title.js")).showTitle();
+    });
+    const before = await storageSnapshot(page);
+    await page.locator('[data-test="title-load"]').click();
+    const slot = page.locator('[data-test="slot-1"]');
+    assert.equal(await slot.locator(".ss-info b").textContent(), "新しいバージョンのセーブです");
+    assert.equal(await slot.locator(".ss-info small").textContent(), "今のバージョンでは読み込めません");
+    await slot.click();
+    const warning = page.locator("#toasts .toast.warn");
+    await warning.waitFor({ state: "visible" });
+    assert.equal(await warning.textContent(), "新しいバージョンのセーブです");
+    assert(await page.locator('#modal.show [data-test="slot-1"]').isVisible());
+    assert.deepEqual(await storageSnapshot(page), before);
+    await page.locator('[data-test="slot-cancel"]').click();
+  });
+
   for (const [label, options] of [
     ["desktop-ui", { viewport: { width: 1280, height: 720 } }],
     ["mobile-ui", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
