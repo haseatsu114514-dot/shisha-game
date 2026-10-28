@@ -6,7 +6,7 @@
  * - core/stats.js の ROMANCEABLE: tsumugi, minto, rin, ageha, hiyori, samechan
  * - daily/bonds.js の BOND_FINALES（好感度MAXの締めくくり）: sumi, naru, adam, tsumugi, minto, rin, samechan, hiyori
  * - data/story_routes.json の heroine_ids: tsumugi, minto, rin, ageha, mashiro, samechan, hiyori
- * 並びは manifest の titleArts のキャラ順に合わせ、アート未採用の sumi, naru, adam を後ろに置く。
+ * 並びは manifest の titleArts のキャラ順に合わせる。
  */
 export const TITLE_ART_CHARACTERS = [
   "ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi",
@@ -15,20 +15,21 @@ export const TITLE_ART_CHARACTERS = [
 
 /**
  * 専用キービジュアル対応表（キャラ -> 採用アート1枚）。
- * 採用アートが決まったら、この表のファイル名だけを差し替える（#1243 の素材生成単元と連動）。
- * null は未採用で表示対象外。仮置きは既存タイトル原画の代表1枚（ファイル名は manifest の表記に合わせる）。
+ * 2026-10-29、オーナーが候補50枚（Draft PR #1287）から全10キャラ分を選定し、採用した
+ * （選定記録は Issue #1243 のコメント 6476391764）。ファイル名は manifest の表記に合わせる。
+ * null は未採用で表示対象外（現在は全員採用済み）。
  */
 export const TITLE_KEY_VISUALS = {
-  ageha: "title_art_ageha_01_professional_taste.png",
-  hiyori: "title_art_hiyori_01_twilight_walk.png",
-  samechan: "title_art_samechan_01_shishark_test_run.png",
-  mashiro: "title_art_mashiro_01_heavy_smoke.png",
-  minto: "title_art_minto_01_cafe_welcome.png",
-  rin: "title_art_rin_01_night_tasting.png",
-  tsumugi: "title_art_tsumugi_01_smoke_colors.png",
-  sumi: null,
-  naru: null,
-  adam: null,
+  ageha: "title_art_ageha_04_gummy_light.png",
+  hiyori: "title_art_hiyori_06_riverside_hoodie.png",
+  samechan: "title_art_samechan_04_throne_pose.png",
+  mashiro: "title_art_mashiro_04_cherry_petals.png",
+  minto: "title_art_minto_05_mint_cloud.png",
+  rin: "title_art_rin_04_rainy_neon_umbrella.png",
+  tsumugi: "title_art_tsumugi_04_painting_studio.png",
+  sumi: "title_art_sumi_01_own_clay_bowl.png",
+  naru: "title_art_naru_01_bakery_morning.png",
+  adam: "title_art_adam_01_sunset_proclamation.png",
 };
 
 // state.met のほか、既存コードが「出会った」と等価に扱う補助シグナルだけを認める。
