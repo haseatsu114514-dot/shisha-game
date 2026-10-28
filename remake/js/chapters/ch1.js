@@ -250,7 +250,7 @@ async function tutorial(progress = null) {
     await play("remake_tutorial_intro", { bg: TONARI });
     const cs = newSession("tutorial");
     if (progress?.firstOrderDone) configureFirstBrew(cs);
-    openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
+    openBench(cs, { steps: TUTORIAL_STEPS });
     await stepMix(cs);
     await stepPack(cs);
     await runHoles(cs);
@@ -263,7 +263,7 @@ async function tutorial(progress = null) {
     while (cs.failed) {
       await play(cs.failed === "burnt" ? "remake_tutorial_burnt" : "remake_tutorial_retry", { bg: TONARI });
       Object.assign(cs, { failed: null, burnt: false, pull: null, pullDone: false, leaf: null });
-      openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
+      openBench(cs, { steps: TUTORIAL_STEPS });
       await runPull(cs);
     }
     recordPractice(cs, "tutorial");
@@ -481,6 +481,8 @@ async function rehearsal(progress = null) {
 // ---------------------------------------------------------------- 大会当日
 
 const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includes(id));
+// チュートリアルは吸い出し・提供まで同じ作業台で進むため、進捗ヘッダーにも pull を含める（大会R1用の STEPS_R1 とは分ける）。
+export const TUTORIAL_STEPS = CRAFT_STEPS.filter(([id]) => !["setup", "care1", "care2"].includes(id));
 const STEPS_ALL = CRAFT_STEPS;
 // 中間順位の出来栄えは、ある工程の点だけで平均する（ロートスでアルミを飛ばすと穴あけの点が無い）。
 const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
