@@ -28,6 +28,12 @@
       "run": ["node remake/test/browser/dj_preview.mjs"]
     },
     {
+      "id": "title-art-met",
+      "title": "Title art unlocks by characters met in the latest save",
+      "kind": "quick",
+      "run": ["node remake/test/title_art_met.mjs"]
+    },
+    {
       "id": "loading-prefetch",
       "title": "Bounded preparation queue and retries",
       "kind": "quick",

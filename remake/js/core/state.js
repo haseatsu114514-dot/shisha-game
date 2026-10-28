@@ -357,6 +357,17 @@ export function readSlot(key) {
     return null;
   }
 }
+/** 全枠のうち savedAt が最新のセーブ（同点・欠落は SAVE_SLOTS 順で先のもの）。無ければ null */
+export function peekLatestSave() {
+  let best = null, bestAt = -Infinity;
+  for (const slot of SAVE_SLOTS) {
+    const s = readSlot(slot.key);
+    if (!s) continue;
+    const at = Number.isFinite(s.savedAt) ? s.savedAt : -Infinity;
+    if (!best || at > bestAt) { best = s; bestAt = at; }
+  }
+  return best;
+}
 export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
 /** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
