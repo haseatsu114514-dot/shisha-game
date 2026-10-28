@@ -130,6 +130,8 @@ function migrateSamechanIdentity(value) {
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
   const oldSchema = Number(s.schema) || 0;
+  // #1254: 現行より新しいスキーマは移行できない。原本を書き換えず、呼び出し側で拒否する（null）。
+  if (oldSchema > SCHEMA) return null;
   if (oldSchema < 13) {
     s = migrateSamechanIdentity(s);
     for (const key of ["contacts", "lovers", "limeRead", "loverEventsSeen", "relationshipMemories"]) {
@@ -360,7 +362,9 @@ export function peekSave() {
 
 export function load() {
   const s = peekSave();
-  return s ? setState(migrate(s)) : null;
+  if (!s) return null;
+  const m = migrate(s);
+  return m ? setState(m) : null; // 未来スキーマは原本保持のまま拒否
 }
 
 // ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
@@ -399,7 +403,9 @@ export function saveToSlot(key) {
 export function loadFromSlot(key) {
   const s = readSlot(key);
   if (!s) return null;
-  setState(migrate(s));
+  const m = migrate(s);
+  if (!m) return null; // 未来スキーマは原本保持のまま拒否し、オートセーブへ進ませない
+  setState(m);
   save();
   return state;
 }
