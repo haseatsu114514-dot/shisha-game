@@ -8,6 +8,7 @@ import { purchasePlannedFlavor } from "./playthrough-shopping.mjs";
 import { PLAN, nextPlanAction } from "./playthrough-plan.mjs";
 import { createRequire } from "module";
 import { recordLoad } from "../tools/load-recorder.mjs";
+import { installLoadingComicReader } from "./browser/loading_reader.mjs";
 const require = createRequire(import.meta.url);
 const { chromium } = (() => {
   try { return require("playwright"); } catch { return require("/opt/node22/lib/node_modules/playwright"); }
@@ -24,6 +25,7 @@ const log = (...a) => console.log("[remake]", ...a);
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+await installLoadingComicReader(page);
 const loadReport = process.env.LOAD_REPORT ? await recordLoad(page, BASE) : null;
 await page.addInitScript(() => {
   if (window.top !== window) return; // 会話計測フックは本編だけ。歩行frameに相対importを注入しない。

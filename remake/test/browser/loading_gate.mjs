@@ -155,4 +155,4 @@ await suite("loading-gate", async check => {
     });
     assert(Object.values(result).every(Boolean), JSON.stringify(result));
   });
-}, { entry: new URL('loading-preview.html', baseURL).href, readySelector: '[data-demo="plain"]' });
+}, { entry: new URL('loading-preview.html', baseURL).href, readySelector: '[data-demo="plain"]', readLoadingComics: false });
