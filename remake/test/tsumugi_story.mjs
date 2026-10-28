@@ -364,7 +364,7 @@ try {
   // #1076 DAY3: つむぎの描きかけ下描き（cg_ch1_tsumugi_sketch_wip）を全景で見せ、回答した箇所へ
   // 一度だけ寄せる。選んでいない側は寄せず、SKIP・低減モーションでは全景のまま。中断後は残さない。
   const SKETCH = "cg_ch1_tsumugi_sketch_wip";
-  const FOCUS = ["cg-focus-sketch-window", "cg-focus-sketch-hands"]; // 0=窓辺 1=手元（選択肢の順と一致）
+  const FOCUS = ["cg-focus-sketch-cat", "cg-focus-sketch-blank"]; // 0=猫の顔 1=未着色の右側（選択肢の順と一致）
   const draft = await open();
   await draft.evaluate(() => { T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; });
   const cgSnap = () => {
@@ -388,7 +388,7 @@ try {
       if (await draft.evaluate(() => window.finished)) break;
       const choices = draft.locator(".vn-choices button");
       if (await choices.count()) {
-        assert.deepEqual(await choices.allTextContents(), ["窓辺の煙と猫", "カウンターの手元"]);
+        assert.deepEqual(await choices.allTextContents(), ["ほどけていく煙と猫", "まだ色のない右側"]);
         await choices.nth(answer).click();
         await draft.waitForFunction(() => window.finished || !document.querySelector(".vn-choices button"));
         continue;

@@ -46,12 +46,14 @@
 .vn-cg[data-cg="cg_ch1_tsumugi_sketch_wip"] {
   transition: opacity 0.7s ease, background-position .22s ease, background-size .22s ease;
 }
-.vn-cg[data-cg="cg_ch1_tsumugi_sketch_wip"].cg-focus-sketch-window {
-  background-position: 0% 35%;
+/* v3 の抽象スケッチ：(a) 葉の耳の猫の顔（左寄り上）、(b) 未着色の右側と色見本（右寄り）。
+   座標は asset_sources の焦点目安に合わせる。150% の控えめな寄せ。 */
+.vn-cg[data-cg="cg_ch1_tsumugi_sketch_wip"].cg-focus-sketch-cat {
+  background-position: 0% 8%;
   background-size: 150% 150%;
 }
-.vn-cg[data-cg="cg_ch1_tsumugi_sketch_wip"].cg-focus-sketch-hands {
-  background-position: 80% 20%;
+.vn-cg[data-cg="cg_ch1_tsumugi_sketch_wip"].cg-focus-sketch-blank {
+  background-position: 100% 35%;
   background-size: 150% 150%;
 }
 
