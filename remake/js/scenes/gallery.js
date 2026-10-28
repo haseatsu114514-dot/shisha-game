@@ -1,7 +1,8 @@
 // タイトルのコレクション。見たCG・受取写真と、章クリアで開く採用済み漫画/動画。
 import { el } from "../core/util.js";
 import { DB, cgUrl, realName } from "../core/data.js";
-import { layers } from "../core/ui.js";
+import { layers, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { state, SAVE_SLOTS, readSlot, config } from "../core/state.js";
 import { SE, currentBgm, playBgm, stopBgm } from "../core/audio.js";
 import { readGalleryProgress, recordGalleryProgress } from "../core/gallery-progress.js";
@@ -33,6 +34,7 @@ export function openGallery() {
   return new Promise(resolve => {
     let tab = "all", closed = false, active = null, page = 0, trigger = null;
     let video = null, movieBgm = null, observer;
+    let cancelImageLoad = null;
     const galleryOwner = document.body.dataset.screen;
     const count = el("span.gal-count");
     const collection = el("div.gal-collection", [
@@ -70,12 +72,14 @@ export function openGallery() {
       restoreMusic();
     }
     function closeViewer() {
+      cancelImageLoad?.();
       releaseVideo(); active = null; content.replaceChildren(); tools.replaceChildren();
       viewer.classList.remove("show");
       trigger?.focus({ preventScroll: true }); SE.cancel();
     }
     function close() {
       if (closed) return;
+      cancelImageLoad?.();
       releaseVideo(); closed = true; observer?.disconnect();
       document.removeEventListener("keydown", onKey);
       if (overlay.parentNode === layers.modal) { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); }
@@ -102,12 +106,38 @@ export function openGallery() {
         content.append(el("p.gal-media-error", { text: "画像を読み込めませんでした。閉じて、もう一度開いてください。" }));
       } });
     }
+    // CGの実際のimgを待つ。失敗表示はimage()の既存ハンドラに任せる。
+    function trackImageLoad(img) {
+      if (img.complete) return;
+      const notice = loadingNotice("画像を読み込んでいます…");
+      let finish;
+      const task = new Promise(resolve => {
+        finish = () => {
+          img.removeEventListener("load", finish);
+          img.removeEventListener("error", finish);
+          if (cancelImageLoad === finish) cancelImageLoad = null;
+          // 閉じる・差し替え時はfinallyのマイクロタスクを待たずに消す。
+          notice.onHide();
+          resolve();
+        };
+        img.addEventListener("load", finish);
+        img.addEventListener("error", finish);
+      });
+      cancelImageLoad = finish;
+      void withLoadingNotice(task, {
+        onShow: () => {
+          if (cancelImageLoad === finish && img.isConnected && content.contains(img)) notice.onShow();
+        },
+        onHide: notice.onHide,
+      });
+    }
     function show(entry, button) {
       if (!entry.unlocked || closed) return;
       releaseVideo(); active = entry; page = 0; trigger = button;
       viewer.classList.add("show"); drawViewer(); SE.select();
     }
     function drawViewer() {
+      cancelImageLoad?.();
       content.replaceChildren();
       const back = el("button.btn", { text: "一覧へ戻る", dataset: { test: "gallery-viewer-close" }, onclick: closeViewer });
       const controls = [el("strong", { text: active.title }), back];
@@ -139,7 +169,9 @@ export function openGallery() {
         content.append(stickerPhoto(active.photo.people, active.photo.mode, photoName));
       } else {
         const url = cgUrl(active.cg);
-        content.append(image(url, active.title));
+        const img = image(url, active.title);
+        content.append(img);
+        trackImageLoad(img);
       }
       tools.replaceChildren(...controls); back.focus({ preventScroll: true });
     }
