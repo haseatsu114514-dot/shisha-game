@@ -316,34 +316,35 @@ assert.deepEqual({stats:state.stats,xp:state.statXp},statsBefore);
 
 // #1081 D07: 単品もミックスも使った銘柄の味を学ぶ。内部評価・量の講評は出さない。
 const dialogueFor = (mix, taste = "great", distant = false) => home.homeShishaDialogue({ mix, taste }, { id: rig.SUMI_RIG }, () => 0, { distant });
+const textLines = (d) => d.lines.filter((l) => typeof l.text === "string");
 for (const flavor of flavors) {
   const mix = { [flavor.id]: 12 };
   const d = dialogueFor(mix);
   const name = (flavor.short_name || flavor.name).split(" ").pop();
-  assert(d.lines[1].text.includes(name), flavor.id);
-  assert(!/確かめたい/.test(d.lines[1].text), `${flavor.id}: 現行の葉には具体的な感想がある`);
+  assert(textLines(d)[1].text.includes(name), flavor.id);
+  assert(!/確かめたい/.test(textLines(d)[1].text), `${flavor.id}: 現行の葉には具体的な感想がある`);
   assert.deepEqual(dialogueFor(mix, "meh"), d, "点数で出来栄え感想へ戻さない");
-  for (const l of d.lines) assert(!/美味しい|普通に吸える|もう一歩|イマイチ|点|[0-9]|多すぎ|少なすぎ|配合/.test(l.text), l.text);
+  for (const l of textLines(d)) assert(!/美味しい|普通に吸える|もう一歩|イマイチ|点|[0-9]|多すぎ|少なすぎ|配合/.test(l.text), l.text);
 }
 const lemonMint = dialogueFor({ lemon: 9, mint: 3, rose: 0 });
-assert.match(lemonMint.lines[1].text, /レモン.*酸味/);
-assert.match(lemonMint.lines[2].text, /ミント.*清涼感/);
-assert.equal(lemonMint.lines.length, 4, "使った葉だけを一言ずつ振り返る");
-assert.match(dialogueFor({ double_apple: 12 }).lines[1].text, /アニス/);
-assert.match(dialogueFor({ dobaj_double_apple: 12 }).lines[1].text, /クリーミー/);
-assert.match(dialogueFor({ dobaj_mint: 12 }).lines[1].text, /甘/);
-assert.match(dialogueFor({ absal_mint: 12 }).lines[1].text, /苦/);
-assert.notEqual(dialogueFor({ strawberry: 12 }).lines[1].text, dialogueFor({ afsahr_strawberry: 12 }).lines[1].text);
+assert.match(textLines(lemonMint)[1].text, /レモン.*酸味/);
+assert.match(textLines(lemonMint)[2].text, /ミント.*清涼感/);
+assert.equal(textLines(lemonMint).length, 4, "使った葉だけを一言ずつ振り返る");
+assert.match(textLines(dialogueFor({ double_apple: 12 }))[1].text, /アニス/);
+assert.match(textLines(dialogueFor({ dobaj_double_apple: 12 }))[1].text, /クリーミー/);
+assert.match(textLines(dialogueFor({ dobaj_mint: 12 }))[1].text, /甘/);
+assert.match(textLines(dialogueFor({ absal_mint: 12 }))[1].text, /苦/);
+assert.notEqual(textLines(dialogueFor({ strawberry: 12 }))[1].text, textLines(dialogueFor({ afsahr_strawberry: 12 }))[1].text);
 assert.doesNotThrow(() => dialogueFor({ unknown_legacy_leaf: 12 }));
-assert.match(dialogueFor({ unknown_legacy_leaf: 12 }).lines[1].text, /確かめたい/);
-assert.equal(dialogueFor(single.mix).lines[1].text, home.homeShishaDialogue(single, { id: rig.SUMI_RIG }, () => 0).lines[1].text);
+assert.match(textLines(dialogueFor({ unknown_legacy_leaf: 12 }))[1].text, /確かめたい/);
+assert.equal(textLines(dialogueFor(single.mix))[1].text, textLines(home.homeShishaDialogue(single, { id: rig.SUMI_RIG }, () => 0))[1].text);
 assert.equal(Object.hasOwn(state, "mix"), false, "感想のためのSAVEフィールドは追加しない");
 
 // 場面の台本: 全角48字以内・手動改行なし・心の声は（）で閉じる
 const width = (t) => [...t].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? .5 : 1), 0);
 for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, rig.PRO_RIG]) for (const pick of [0, .5, .99]) for (const distant of [false, true]) {
   const d = home.homeShishaDialogue({ taste, mix: Object.fromEntries(flavors.map(f => [f.id, 1])) }, { id }, () => pick, { distant });
-  for (const l of d.lines) {
+  for (const l of textLines(d)) {
     assert(!l.text.includes("配合"), l.text);
     assert(width(l.text) <= 48 && !l.text.includes("\n"), l.text);
     if (l.speaker === "hajime") assert(l.text.startsWith("（") && l.text.endsWith("）"), l.text);
@@ -352,8 +353,8 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
 
 // #952: 第2章の味覚不調中は「舌では受け取れない」主観を保つ。評価・成長・消費は同じ。
 {
-  const lines = taste => ({ normal: home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0).lines[1].text,
-    distant: home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0, { distant: true }).lines[1].text });
+  const lines = taste => ({ normal: textLines(home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0))[1].text,
+    distant: textLines(home.homeShishaDialogue({ taste }, { id: rig.SUMI_RIG }, () => 0, { distant: true }))[1].text });
   for (const taste of ["great", "fine", "meh"]) {
     const { normal, distant } = lines(taste);
     assert.notEqual(normal, distant);
@@ -361,8 +362,13 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
   }
   assert.match(lines("great").distant, /遠い/);
   const distant = dialogueFor({ lemon: 9, mint: 3 }, "great", true);
-  assert.equal(distant.lines.length, 3);
-  assert(!distant.lines.some(l => /酸味|冴え|覚えておこう/.test(l.text)), "味覚不調中に味の特徴を受け取ったと断定しない");
+  assert.equal(textLines(distant).length, 3);
+  assert(!textLines(distant).some(l => /酸味|冴え|覚えておこう/.test(l.text)), "味覚不調中に味の特徴を受け取ったと断定しない");
+  // 演出: 炭を置く→吹かす→パチパチの順の効果音と、会話中だけの曲
+  const normal = dialogueFor({ lemon: 9, mint: 3 });
+  assert.deepEqual(normal.lines.filter((l) => l.type === "sfx").map((l) => l.id), ["coalPlace", "bubbling", "crackle"], "効果音は炭→泡→パチパチの順");
+  assert.equal(normal.metadata.bgm, "kansetsu_shomei_to_black_coffee");
+  assert.equal(distant.metadata.bgm, "bgm_taste_distant", "味覚不調中は ch2 の曲");
   const s = newGame();
   assert.equal(home.tasteDistant(s), false, "Chapter 1 never");
   s.chapter = 2; assert.equal(home.tasteDistant(s), false, "Before the DAY5 slump");

@@ -8,7 +8,7 @@ import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
-  rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "シーシャーク",
+  rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
@@ -80,7 +80,7 @@ export function relationshipStatus(id) {
     }
   }
   if (id === "samechan" && (state.chapter || 1) < 2) {
-    return summary("neutral", "交流中", "今はLIMEで連絡を取り合える。シーシャークでの交流は第2章から。");
+    return summary("neutral", "交流中", "今はLIMEで連絡を取り合える。SHISHARKでの交流は第2章から。");
   }
 
   const question = BOND_QUESTIONS[id];

@@ -291,7 +291,7 @@ async function day1Errands() {
     f._errand_scout_told = true;
     save();
   }
-  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "ケムリクサへ偵察に。KEMURIKUSA をタップ！" } });
+  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。KEMURIKUSA をタップ！" } });
   if (!f._errand_naru_visited) {
     await visitRival(naru);
     state.visitedDay.naru = state.day;

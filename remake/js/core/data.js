@@ -34,7 +34,7 @@ export const DB = {
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
   friends: { friends: {} }, // 友人になった相手からの、たまのLIME・一服の場面（remake/data/friends.json）
-  statusTexts: { statPurpose: {}, statTierFx: {}, customerNotes: [] }, // ステの説明・★効果・常連ノート
+  statusTexts: { statPurpose: {}, statTierFx: {} }, // ステの説明・★効果
   broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
   gallery: { items: [] }, // 採用済み漫画・ムービー。候補画像はここへ登録しない。
@@ -149,7 +149,7 @@ export async function loadAll(onProgress = () => {}) {
 
 // 最初から知っている相手・モブ。それ以外は名乗るまで「？？？」（master_spec #1）
 const ALWAYS_KNOWN = new Set([
-  "hajime", "sumi", "tsumugi", "salaryman", "kako", "rira", "oneesan", "pakki",
+  "hajime", "sumi", "tsumugi", "salaryman", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
   "spice_merchant", "cafe_staff",
 ]);
