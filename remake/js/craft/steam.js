@@ -8,7 +8,7 @@ import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
 import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
-import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
+import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions, temperatureAfterSteam } from "./conditions.js";
@@ -94,7 +94,9 @@ export async function runSteamDodge(cs) {
   ]);
   panel.append(steamRoot);
 
-  const dur = steamPlaySeconds(seconds) * (tutorial ? 0.7 : 1);
+  // B08: 既習プレイヤーが短縮を選んだときは遊ぶ尺だけ縮める。弾の密度・採点・温度は変わらない。
+  let dur = steamPlaySeconds(seconds) * (tutorial ? 0.7 : 1);
+  if (cs.steamShorten && !tutorial) dur = Math.min(dur, SHORT_DODGE_SECONDS);
   const focus = craftCondition(cs).focus;
   const hitR = heartHitRadius(tier01("guts"), focus);
   heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);

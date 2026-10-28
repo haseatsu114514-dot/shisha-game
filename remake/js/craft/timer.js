@@ -5,25 +5,43 @@ import { stepPanel } from "./session.js";
 import { autoSkill } from "./common.js";
 import { artImg } from "./art.js";
 import { buildDigitalClock } from "./digital-clock.js";
-import { MAX_STEAM_SECONDS, normalizeSteamSeconds, steamPlaySeconds } from "./steam-time.js";
+import { MAX_STEAM_SECONDS, normalizeSteamSeconds, steamPlaySeconds, SHORT_DODGE_SECONDS } from "./steam-time.js";
 import { buildSteamTemperature, buildSteamForecast } from "./steam-forecast.js";
+import { basicsExperienced } from "./practice-history.js";
 
 export function runSteamTimer(cs) {
   const panel = stepPanel("steam", "蒸らし", "", { brief: "", lessonStep: "timer" });
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
   const minimumSeconds = cs.mode === "tutorial" ? 180 : 10;
+  // B08: 制作と提供を一度終えた既習プレイヤーだけ、繰り返す雑念回避を任意で短くできる。初回・チュートリアルは従来どおり。
+  const canShorten = cs.mode !== "tutorial" && basicsExperienced();
   const clock = buildDigitalClock("timer-display", { live: true, test: "timer-display" });
   const thermometer = buildSteamTemperature(cs);
   const forecast = buildSteamForecast(cs, thermometer);
   const durationHint = el("p", { role: "status", "aria-live": "polite", dataset: { test: "steam-duration-hint" } });
+  const shorten = canShorten ? el("button.btn.steam-shorten", {
+    type: "button",
+    dataset: { test: "steam-shorten" },
+    "aria-pressed": String(!!cs.steamShorten),
+    style: { marginTop: "0.4em" },
+    onclick: () => { SE.click(); cs.steamShorten = !cs.steamShorten; render(); },
+  }) : null;
   let start;
   const render = () => {
     clock.update(seconds);
     forecast.update(seconds);
     const playSeconds = steamPlaySeconds(seconds) * (cs.mode === "tutorial" ? 0.7 : 1);
+    const shortened = canShorten && cs.steamShorten;
+    const effective = shortened ? Math.min(playSeconds, SHORT_DODGE_SECONDS) : playSeconds;
     durationHint.textContent = seconds < minimumSeconds
       ? "時間を設定すると、雑念回避の長さが分かります。"
-      : `雑念回避は約${Math.ceil(playSeconds)}秒。選んだ蒸らし時間をこの長さに縮めて遊びます。`;
+      : shortened
+        ? `雑念回避は約${Math.ceil(effective)}秒に短縮。蒸らし時間・温度・採点はそのままです。`
+        : `雑念回避は約${Math.ceil(effective)}秒。選んだ蒸らし時間をこの長さに縮めて遊びます。`;
+    if (shorten) {
+      shorten.setAttribute("aria-pressed", String(!!cs.steamShorten));
+      shorten.textContent = cs.steamShorten ? "雑念回避：短め（押すと元に戻す）" : "慣れたので雑念回避を短めにする";
+    }
     start.disabled = seconds < minimumSeconds;
     panel.querySelectorAll("[data-test='timer-minute-up'], [data-test='timer-second-up']").forEach((b) => { b.disabled = seconds >= MAX_STEAM_SECONDS; });
   };
@@ -47,7 +65,7 @@ export function runSteamTimer(cs) {
         button("分", "timer-minute-up", 1, addMinute),
         button("秒", "timer-second-up", 2, addSecond), start,
         button("リセット", "timer-reset", 4, () => { SE.click(); seconds = 0; render(); }),
-      ]), durationHint, forecast.root, thermometer.root,
+      ]), durationHint, shorten, forecast.root, thermometer.root,
     ]));
     render();
     if (autoSkill()) { seconds = 300; render(); setTimeout(() => start.click(), 40); }

@@ -23,7 +23,7 @@ for (const choice of ['_ch2_naru_listened','_ch2_naru_hurt']) {
 }
 console.log('PASS contact context: only completed story, both choices, chapter exit and pure reload');
 
-async function timerFixture(mode) {
+async function timerFixture(mode, experienced=false) {
   const nodes=[];
   const node=(attrs={})=>({children:[],dataset:{},style:{},...attrs,
     append(...children){this.children.push(...children.filter(Boolean));},
@@ -44,6 +44,7 @@ async function timerFixture(mode) {
     ['craft/art.js',port('art',{artImg:()=>node()})],
     ['craft/digital-clock.js',port('clock',{buildDigitalClock:()=>({root:node(),update(){}})})],
     ['craft/steam-forecast.js',port('forecast',{buildSteamTemperature:()=>({root:node()}),buildSteamForecast:()=>({root:node(),update(){}})})],
+    ['craft/practice-history.js',port('history',{basicsExperienced:()=>experienced})],
   ]);
   for(const path of ['craft/timer.js','craft/steam-time.js'])mods.set(path,new vm.SourceTextModule(read(path),{context:ctx,identifier:path}));
   const entry=mods.get('craft/timer.js');
@@ -56,6 +57,7 @@ async function timerFixture(mode) {
 for(const mode of ['practice','tutorial']) {
   const f=await timerFixture(mode);
   assert(f.get('timer-start').disabled);
+  assert(!f.get('steam-shorten'),'First-time/tutorial players never see the shorten toggle');
   assert(!f.get('steam-duration-hint').textContent.includes('約'));
   for(let i=0;i<9;i++)f.get('timer-minute-up').click();
   assert(f.get('steam-duration-hint').textContent.includes(mode==='tutorial'?'約13秒':'約18秒'));
@@ -67,3 +69,26 @@ for(const mode of ['practice','tutorial']) {
   assert.deepEqual(f.cs,{...f.before,steamSeconds:300,steamMin:5});
 }
 console.log('PASS actual timer: selected duration, tutorial scale, reset and unchanged commit contract');
+
+// B08: 既習プレイヤーだけ、雑念回避の任意短縮を使える。初回・温度・採点・保存には触れない。
+{
+  const f=await timerFixture('practice',true);
+  const toggle=f.get('steam-shorten');
+  assert(toggle,'Experienced players get an optional shorten toggle');
+  assert.equal(toggle['aria-pressed'],'false');
+  for(let i=0;i<9;i++)f.get('timer-minute-up').click();
+  assert(f.get('steam-duration-hint').textContent.includes('約18秒'));
+  toggle.click();
+  assert.equal(f.cs.steamShorten,true);
+  assert.equal(toggle['aria-pressed'],'true');
+  const hint=f.get('steam-duration-hint').textContent;
+  assert(hint.includes('約8秒')&&hint.includes('短縮'),'Shortened hint shows the reduced dodge length');
+  assert(hint.includes('採点はそのまま'),'Shortening must not change scoring/temperature');
+  toggle.click();
+  assert.equal(f.cs.steamShorten,false,'The shorten choice can be toggled back off');
+  assert(f.get('steam-duration-hint').textContent.includes('約18秒'));
+  toggle.click();
+  f.get('timer-start').click();await f.pending;
+  assert.deepEqual(f.cs,{...f.before,steamSeconds:540,steamMin:9,steamShorten:true},'Only the opted-in shorten flag is added to craft state');
+}
+console.log('PASS B08 shorten: experienced-only toggle, reduced length, scoring/temperature untouched');
