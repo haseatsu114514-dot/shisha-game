@@ -115,6 +115,7 @@
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/ch3_map.mjs",
+        "node --experimental-vm-modules remake/test/ch4_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
@@ -739,6 +740,24 @@
       ],
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
+      ]
+    },
+    {
+      "id": "ch4-full-flow",
+      "title": "Chapter 4 full playthrough on one save",
+      "kind": "browser",
+      "weight": 2.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch4*.js",
+        "remake/js/chapters/ch3-aftermath*.js",
+        "remake/js/chapters/ch1.js",
+        "data/dialogue/ch4_main.json",
+        "data/dialogue/ch4_spots.json",
+        "remake/test/browser/ch4_full_flow.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch4_full_flow.mjs"
       ]
     },
     {
