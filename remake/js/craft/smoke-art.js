@@ -35,19 +35,30 @@ function paintWisp({ w, h, seed, scale = .012, sway = .2, lean = 0, alpha = .55,
   const img = ctx.createImageData(cw, ch), data = img.data, fbm = noiseOf(seed), k = scale / res;
   for (let y = 0; y < ch; y++) {
     const t = 1 - y / ch;
+    const py = y * k;
+    const bend = Math.sin(t * freq + seed) + .45 * Math.sin(t * freq * 2.3 + seed * 1.7);
+    const bandDenom = cw * (base + .3 * t ** 1.2);
+    const rise = Math.min(1, t * 6), fade = (1 - t) ** 1.3;
+    const center0 = cw * (.5 + lean * (t - .5)) + bend * cw * sway * (.25 + t);
+    const drift = Math.abs(cw * curl * t) / 2;
+    const left = center0 - drift - bandDenom - 1, right = center0 + drift + bandDenom + 1;
     for (let x = 0; x < cw; x++) {
-      const px = x * k, py = y * k;
+      const i = (y * cw + x) * 4;
+      // 帯から確実に外れる画素は body=0 で alpha 0 が確定する（fbm の戻り値は [0,1]）。
+      if (x < left || x > right) {
+        data[i] = 238; data[i + 1] = 230; data[i + 2] = 245; data[i + 3] = 0;
+        continue;
+      }
+      const px = x * k;
       // 二重にゆがめた座標で、渦と細い筋をつくる。
       const qx = fbm(px + 1.7, py + 9.2), qy = fbm(px + 8.3, py + 2.8);
       const r = fbm(px + 3 * qx + 4.1, py + 3 * qy + 1.3);
-      const bend = Math.sin(t * freq + seed) + .45 * Math.sin(t * freq * 2.3 + seed * 1.7);
       const center = cw * (.5 + lean * (t - .5)) + bend * cw * sway * (.25 + t) + (qx - .5) * cw * curl * t;
-      const dist = Math.abs(x - center) / (cw * (base + .3 * t ** 1.2));
+      const dist = Math.abs(x - center) / bandDenom;
       let body = Math.max(0, 1 - dist);
       body = body * body * (3 - 2 * body);
       const ridge = 1 - Math.abs(2 * r - 1);
-      const density = body * (.35 + .9 * ridge ** 3) * Math.min(1, t * 6) * (1 - t) ** 1.3 * (.6 + .8 * qy);
-      const i = (y * cw + x) * 4;
+      const density = body * (.35 + .9 * ridge ** 3) * rise * fade * (.6 + .8 * qy);
       data[i] = 238; data[i + 1] = 230; data[i + 2] = 245; data[i + 3] = Math.min(1, density * 1.4) * alpha * 255;
     }
   }
@@ -71,11 +82,24 @@ export function smokeUrl(key) {
 export function buildPanelSmoke(host) {
   const parts = ["corner", "left", "right"].map((key) => el(`i.panel-smoke-wisp.w-${key}`, { "aria-hidden": "true" }));
   const root = el("div.panel-smoke", { "aria-hidden": "true" }, parts);
+  const keys = ["corner", "left", "right"];
+  // 未生成の煙は1枚ずつ別のタスクで描き、1タスクの長さを短くする。全て揃ってから ready。
+  const paintNext = (i) => {
+    if (i === parts.length) {
+      root.classList.add("ready");
+      return;
+    }
+    const paint = () => {
+      parts[i].style.setProperty("--smoke", `url("${smokeUrl(keys[i])}")`);
+      paintNext(i + 1);
+    };
+    if (urls.has(keys[i])) paint();
+    else setTimeout(paint, 0);
+  };
   // 開いた直後の描画を止めないよう、少し後に描く。
   setTimeout(() => {
     host.style.setProperty("--smoke-title", `url("${smokeUrl("title")}")`);
-    parts.forEach((part, i) => part.style.setProperty("--smoke", `url("${smokeUrl(["corner", "left", "right"][i])}")`));
-    root.classList.add("ready");
+    paintNext(0);
   }, 0);
   return root;
 }
