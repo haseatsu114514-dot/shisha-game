@@ -1,14 +1,20 @@
 // セーブ／ロードの枠選び（オートセーブ＋手動3枠）。タイトルの「ロード」と、日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
-import { SAVE_SLOTS, readSlot, saveToSlot } from "../core/state.js";
+import { SCHEMA, SAVE_SLOTS, readSlot, saveToSlot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { SE } from "../core/audio.js";
 
 const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "大会当日", aftermath: "大会後", cleared: "第1章クリア" };
 
+/** 現行 SCHEMA より新しいバージョンで保存された枠か（表示側の判定。拒否そのものは保存層の責務） */
+function isFutureSave(data) {
+  return !!data && (Number(data.schema) || 0) > SCHEMA;
+}
+
 function slotInfo(data) {
   if (!data) return "── 空き ──";
+  if (isFutureSave(data)) return { head: "新しいバージョンのセーブです", sub: "今のバージョンでは読み込めません" };
   const when = data.savedAt ? new Date(data.savedAt).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
   const time = data.phase === "daily" ? (data.slot >= 1 ? "夜" : "昼") : "";
   const chapter = data.chapter === 2 ? "第2章・" : data.chapter === 3 ? "第3章・" : "";
@@ -28,11 +34,20 @@ function pickSlot(mode) {
     const rows = SAVE_SLOTS.map((s, i) => {
       const data = readSlot(s.key);
       const info = slotInfo(data);
+      const future = isFutureSave(data);
       const off = mode === "save" ? s.auto : !data;
       return el(`button.save-slot${off ? ".off" : ""}${s.auto ? ".auto" : ""}`, {
         disabled: off || null,
         dataset: { test: `slot-${i}` },
-        onclick: () => { SE.select(); close(s.key); },
+        onclick: () => {
+          if (mode === "load" && future) {
+            SE.cancel();
+            toast("新しいバージョンのセーブです", { kind: "warn" });
+            return;
+          }
+          SE.select();
+          close(s.key);
+        },
       }, [
         el("span.ss-label", { text: s.label }),
         data ? el("span.ss-info", [el("b", { text: info.head }), el("small", { text: info.sub })]) : el("span.ss-info.empty", { text: info }),

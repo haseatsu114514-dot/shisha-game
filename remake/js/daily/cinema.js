@@ -1,6 +1,6 @@
 import { state } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
-import { imageReady, toast } from "../core/ui.js";
+import { imageReady, toast, withScenePreparation } from "../core/ui.js";
 import { addMoney, addStamina, earnStat } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { play, isPlaying } from "../vn/engine.js";
@@ -42,7 +42,7 @@ export async function visitCinema({ signal = null } = {}) {
   try {
     // 未登録・読込失敗でも課金しない。候補原画を自動採用して回避しない。
     const bg = sceneBg(film.bg, "day").url;
-    if (!await imageReady(bg, 4000)) {
+    if (!await withScenePreparation(imageReady(bg, 4000))) {
       if (current()) toast("上映を始められませんでした。街へ戻ります");
       return false;
     }

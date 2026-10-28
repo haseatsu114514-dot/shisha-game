@@ -32,7 +32,8 @@ export const REGULATION = {
   // オーナー決定 10/28：ドバジ・4g以上・大会支給。チョコは通常（chocolate）。
   3: { flavor: "chocolate", supply: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（大会支給）" },
 };
-export const regulationFor = (cs) => cs.staffPractice ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
+// DAY7の固定練習は仕入れた葉を試す。大会・前日リハーサルの課題は維持する。
+export const regulationFor = (cs) => cs.staffPractice || (cs.mode === "rehearsal" && cs.practiceKind === "midcheck") ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
   ? { flavor: "mint", supply: "mint", min: 2, label: "再開中の旧大会：ミント2g以上" }
   : (cs.mode === "tournament" || cs.mode === "rehearsal" ? REGULATION[state.chapter] : null);
 
