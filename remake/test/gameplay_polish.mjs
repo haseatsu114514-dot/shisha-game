@@ -155,18 +155,19 @@ try {
   await phone.waitForSelector('.dodge-object');
   await phone.locator('.dodge-refresh').tap();
   await phone.waitForSelector('.dodge-refresh-fx');
-  assert.equal(await phone.locator('.dodge').getAttribute('data-refresh-radius'),'180');
-  assert.match(await phone.locator('.dodge-refresh').textContent(), /×1/);
+  // E11(#1196): 半径は根性★連動で初期Lv1は90。所持は1回分・使用後8秒リチャージ、残数は data-remaining で見る。
+  assert.equal(await phone.locator('.dodge').getAttribute('data-refresh-radius'), '90');
+  assert.equal(await phone.locator('.dodge-refresh').getAttribute('data-remaining'), '0');
   if (shots) await phone.screenshot({ path: `${shots}/mobile-refresh.png` });
   await phone.keyboard.down('Space'); await phone.waitForTimeout(100);
   await phone.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space', repeat: true })));
   await phone.keyboard.up('Space');
-  assert.match(await phone.locator('.dodge-refresh').textContent(), /×0/);
+  assert.equal(await phone.locator('.dodge-refresh').getAttribute('data-remaining'), '0', 'リチャージ中は再使用できない');
   assert(await phone.locator('.dodge-refresh').isDisabled());
   await phone.waitForSelector('.result-card.show', { timeout: 15000 });
   assert.equal(await phone.locator('.dodge-object, .dodge-word').count(), 0);
   await phone.locator('[data-test="step-next"]').tap(); await phone.evaluate(() => window.steamRun);
-  assert.equal(await phone.evaluate(() => cs.steam.refreshesUsed), 2);
-  console.log('[polish] PASS: center before countdown, touch pad below the field, release stops movement, visible mixed bullets, refresh clear/effect/two-use limit and cleanup');
+  assert.equal(await phone.evaluate(() => cs.steam.refreshesUsed), 1);
+  console.log('[polish] PASS: center before countdown, touch pad below the field, release stops movement, visible mixed bullets, refresh clear/effect/single-stock recharge lock and cleanup');
   assert.deepEqual(errors, []);
 } finally { await browser.close(); }
