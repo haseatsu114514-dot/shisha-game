@@ -1,13 +1,18 @@
 // セーブ／ロードの枠選び（オートセーブ＋手動3枠）。タイトルの「ロード」と、日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
-import { SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlot } from "../core/state.js";
+import { SCHEMA, SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlot } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { SE } from "../core/audio.js";
 
 const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "大会当日", aftermath: "大会後" };
 const MAX_FACES = 8;
+
+/** 現行 SCHEMA より新しいバージョンで保存された枠か（表示側の判定。拒否そのものは保存層の責務） */
+function isFutureSave(data) {
+  return !!data && (Number(data.schema) || 0) > SCHEMA;
+}
 
 /** 保存データの chapter／phase から、見出しの章札・日付・フェーズ札を組む */
 function slotInfo(data) {
@@ -51,6 +56,10 @@ function metFaces(data) {
 
 function slotBody(data) {
   if (!data) return [el("span.ss-info.empty", { text: "── 空き ──" })];
+  if (isFutureSave(data)) return [el("span.ss-info", [
+    el("b", { text: "新しいバージョンのセーブです" }),
+    el("small", { text: "今のバージョンでは読み込めません" }),
+  ])];
   const info = slotInfo(data);
   return [
     el("span.ss-info", [
@@ -71,11 +80,20 @@ function pickSlot(mode) {
     const close = (v) => { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); resolve(v); };
     const rows = SAVE_SLOTS.map((s, i) => {
       const data = readSlot(s.key);
+      const future = isFutureSave(data);
       const off = mode === "save" ? s.auto : !data;
       return el(`button.save-slot${off ? ".off" : ""}${s.auto ? ".auto" : ""}${data ? "" : ".blank"}`, {
         disabled: off || null,
         dataset: { test: `slot-${i}` },
-        onclick: () => { SE.select(); close(s.key); },
+        onclick: () => {
+          if (mode === "load" && future) {
+            SE.cancel();
+            toast("新しいバージョンのセーブです", { kind: "warn" });
+            return;
+          }
+          SE.select();
+          close(s.key);
+        },
       }, [
         el("span.ss-label", [el("small", { text: s.auto ? "AUTO" : `No.${i}` }), el("span", { text: s.label })]),
         ...slotBody(data),

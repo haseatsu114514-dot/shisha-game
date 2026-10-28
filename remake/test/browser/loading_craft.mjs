@@ -1,6 +1,18 @@
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { suite, baseURL } from './support.mjs';
+import { LOADING_COMICS } from '../../js/core/loading-comics.js';
+
+// The bench preview picks one eligible comic at random (see selectLoadingComic
+// in js/core/loading.js), so expectations are derived from whichever registered
+// comic actually appears instead of pinning one episode.
+const eligibleComics = LOADING_COMICS.filter(comic =>
+  comic.panels?.length === 2 &&
+  Number.isInteger(comic.minChapter) && comic.minChapter <= 1 &&
+  (!comic.contexts || comic.contexts.includes('craft')));
+assert(eligibleComics.length > 0, 'At least one registered comic must be eligible for craft at chapter 1');
+
+const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 await suite('loading-craft', async check => {
   for (const [label, viewport] of [['pc', { width: 1280, height: 720 }], ['mobile', { width: 844, height: 390 }]]) {
@@ -9,9 +21,11 @@ await suite('loading-craft', async check => {
       assert.equal(await page.locator('.bench').count(), 1, 'Use the actual game bench');
       await page.locator('.loading-panels img').first().waitFor();
       assert.equal(await page.locator('.loading-panels img').count(), 2);
-      assert.match(await page.locator('.loading-comic').getAttribute('aria-label'), /メニュー改訂/);
+      const shownTitle = await page.locator('.loading-comic-title').innerText();
+      const comic = eligibleComics.find(entry => entry.title === shownTitle);
+      assert(comic, `Shown comic "${shownTitle}" must be a registered comic eligible for craft`);
+      assert.match(await page.locator('.loading-comic').getAttribute('aria-label'), new RegExp(escapeRegExp(comic.title)));
       assert.equal(await page.locator('.loading-status').innerText(), 'LOADING…');
-      assert.equal(await page.locator('.loading-comic-title').innerText(), 'メニュー改訂');
       assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate figcaption').count(), 0);
       assert.equal(await page.locator('.bench-panel > *').count(), 0, 'No gameplay before preparation');
       await page.keyboard.press('Enter');
@@ -20,15 +34,30 @@ await suite('loading-craft', async check => {
         const box = node.getBoundingClientRect(), image = node.querySelector('img');
         const stage = document.querySelector('#stage').getBoundingClientRect();
         return { inside: box.left >= stage.left && box.right <= stage.right && box.bottom <= stage.bottom,
-          ratio: box.width / box.height, decoded: image.complete && image.naturalWidth === 1086,
+          ratio: box.width / box.height, decoded: image.complete && image.naturalWidth > 0,
+          naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
           overflow: getComputedStyle(node).overflow, src: image.getAttribute('src') };
       }));
       assert(regions.every(region => region.inside && region.decoded && region.overflow === 'hidden'));
       assert(regions.every(region => Math.abs(region.ratio - 43 / 25) < 0.03), 'Every panel uses the fixed 43:25 display frame');
+      // The decoded image must be the shown comic's registered sheet, at its registered size.
+      regions.forEach((region, index) => {
+        const panel = comic.panels[index];
+        const srcTail = panel.src.split('/').slice(-2).join('/');
+        assert(region.src.endsWith(srcTail), `Panel ${index} must show the registered ${srcTail}`);
+        if (panel.region) {
+          assert.equal(region.naturalWidth, panel.region.sourceWidth, `Panel ${index} sheet width matches the registration`);
+          assert.equal(region.naturalHeight, panel.region.sourceHeight, `Panel ${index} sheet height matches the registration`);
+        }
+      });
       // The cropped region keeps its own proportions, letterboxed inside the frame (no stretching).
       const crops = await page.locator('.loading-panel-crop').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().width / node.getBoundingClientRect().height));
-      assert(crops[0] > 1.5 && crops[1] > 1.8, 'The cropped art keeps the original region proportions');
-      assert(regions.every(region => region.src.endsWith('adam-chaos.webp')));
+      crops.forEach((crop, index) => {
+        const panel = comic.panels[index];
+        const expected = panel.region ? panel.region.width / panel.region.height
+          : regions[index].naturalWidth / regions[index].naturalHeight;
+        assert(Math.abs(crop - expected) < 0.06, `Panel ${index} crop keeps the registered region proportions (${expected})`);
+      });
       await page.locator(".loading-card").evaluate(node => Promise.all(node.getAnimations().map(animation => animation.finished)));
       assert.equal(await page.locator('.loading-card').evaluate(node => {
         const matrix = new DOMMatrix(getComputedStyle(node).transform);
