@@ -100,6 +100,12 @@
       ]
     },
     {
+      "id": "manifest-dependencies",
+      "title": "Manifest generator required dependency diagnostics",
+      "kind": "quick",
+      "run": ["python3 -B tools/test_build_manifest_dependencies.py"]
+    },
+    {
       "id": "data-smoke",
       "title": "Data loading and daily flow smoke",
       "kind": "quick",

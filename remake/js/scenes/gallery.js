@@ -143,6 +143,11 @@ export function openGallery() {
       }
       tools.replaceChildren(...controls); back.focus({ preventScroll: true });
     }
+    function thumbnail(url) {
+      return el("img", { src: url, alt: "", loading: "lazy", onerror: e => {
+        e.target.replaceWith(el("span.gal-media-symbol", { text: "画像なし", "aria-hidden": "true" }));
+      } });
+    }
     function render() {
       const items = entries.filter(entry => tab === "all" || entry.kind === tab);
       count.textContent = fraction(tab === "all" ? stats : stats.byKind[tab]);
@@ -154,8 +159,8 @@ export function openGallery() {
         ]);
         const button = el("button.gal-cell", { title: entry.title, "aria-label": entry.title,
           dataset: { test: "gal-" + entry.id, cg: entry.cg, kind: entry.kind }, onclick: () => show(entry, button) });
-        if (entry.cg) button.append(el("img", { src: cgUrl(entry.cg), alt: "", loading: "lazy" }));
-        else if (entry.kind === "comic") button.append(el("img", { src: entry.pages[0], alt: "", loading: "lazy" }));
+        if (entry.cg) button.append(thumbnail(cgUrl(entry.cg)));
+        else if (entry.kind === "comic") button.append(thumbnail(entry.pages[0]));
         else if (entry.photo) {
           const thumb = stickerPhoto(entry.photo.people, entry.photo.mode, photoName); thumb.classList.add("gal-photo-thumb"); button.append(thumb);
         }
