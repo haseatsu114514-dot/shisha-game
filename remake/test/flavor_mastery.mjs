@@ -60,7 +60,7 @@ const snapshot=structuredClone(s);assert.equal(spendPracticeMix(s,{[a]:100}),nul
 core.save();s=core.load();assert.equal(staffStock(s,a),0);assert.deepEqual(s.flavorMastery,snapshot.flavorMastery);learnFlavorStory(s,d);assert.equal(s.flavorMastery.orange,12);
 s.day++;assert.equal(staffStock(s,staffFlavors(s)[0]),6);
 s=core.newGame();s.schema=20;s.flavorStock={mint:37};s.flavorMastery={lemon:Infinity,mint:-4};core.save();s=core.load();assert.deepEqual(s.flavorStock,{mint:37});assert.deepEqual(s.flavorMastery,{});
-assert.equal(regulationFor({mode:'tournament'}).flavor,'lemon');assert.equal(regulationFor({mode:'tournament'}).supply,undefined);
+assert.equal(regulationFor({mode:'tournament'}).flavor,'lemon');assert.equal(regulationFor({mode:'tournament'}).supply,'lemon');
 s.schema=20;s.phase='tournament';core.save();s=core.load();assert.equal(regulationFor({mode:'tournament'}).flavor,'mint');
 // Spring Water is a purchasable blond flavor with its own persistent mastery family.
 const spring=DB.flavorById.spring_water;
