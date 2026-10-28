@@ -1,5 +1,6 @@
 // タイトル画面。用語集は会話画面・ゲーム中のメニューから開く。
 import { el } from "../core/util.js";
+import { imgFileUrl } from "../core/img-file.js";
 import { DB, bgUrl } from "../core/data.js";
 import { readGalleryProgress } from "../core/gallery-progress.js";
 import { galleryEntries, galleryStats } from "../core/gallery-catalog.js";
@@ -76,7 +77,7 @@ export function showTitle(preparedArt = null) {
     el("div.title-left", [
       el("div.title-brand", [
         el("div.title-logo-smoke", { "aria-hidden": "true" }, [el("i"), el("i"), el("i"), el("i")]),
-        el("img.title-logo", { src: "img/ui/ui_title_logo_rich.webp", alt: "水煙前線 -EN:CODE-" }),
+        el("img.title-logo", { src: imgFileUrl("ui/ui_title_logo_rich.webp"), alt: "水煙前線 -EN:CODE-" }),
       ]),
       menu,
     ]),
