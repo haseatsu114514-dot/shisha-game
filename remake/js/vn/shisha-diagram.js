@@ -14,9 +14,10 @@ const STEPS = [
 
 let root = null; // 表示中の図（1つだけ。二重に出さない）
 
-// 装置の線画（炭→ボウル→ステム→ダウンステム→ボトルの水→ホース）。viewBox 0 0 220 340。
+// 装置の線画（炭→ボウル→ステム→ダウンステム→ボトルの水→ホース）。viewBox 0 0 300 340。
+// 左右の余白に部位ラベル（炭・フレーバー・ステム・水・ホース）を置き、初見でも「どこで何が起きるか」分かるようにする。
 const APPARATUS = `
-<svg class="sd-art" viewBox="0 0 220 340" aria-hidden="true">
+<svg class="sd-art" viewBox="0 0 300 340" aria-hidden="true">
   <defs>
     <marker id="sd-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
       <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
@@ -75,6 +76,25 @@ const APPARATUS = `
   <path class="sd-hose" d="M122 150 Q182 150 188 206 Q192 262 150 300" fill="none" stroke="#2a2320" stroke-width="9" stroke-linecap="round"/>
   <rect class="sd-mouthpiece" x="142" y="300" width="20" height="9" rx="3" fill="#2a2320"/>
   <path class="sd-flow sd-flow-hose" d="M122 150 Q182 150 188 206 Q192 262 150 300" fill="none" stroke="#d7d2e0" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 部位ラベル（初見でも「どこで何が起きるか」分かるように。段階に関わらず常に表示） -->
+  <g class="sd-tags">
+    <!-- 炭（ボウルの上） -->
+    <line class="sd-lead" x1="124" y1="23" x2="152" y2="23"/>
+    <text class="sd-tag" x="156" y="27" text-anchor="start">炭</text>
+    <!-- フレーバー（ボウルの中身） -->
+    <line class="sd-lead" x1="98" y1="40" x2="64" y2="40"/>
+    <text class="sd-tag" x="60" y="44" text-anchor="end">フレーバー</text>
+    <!-- ステム（上の細い管） -->
+    <line class="sd-lead" x1="104" y1="92" x2="64" y2="92"/>
+    <text class="sd-tag" x="60" y="96" text-anchor="end">ステム</text>
+    <!-- 水（ボトルの中） -->
+    <line class="sd-lead" x1="78" y1="298" x2="52" y2="298"/>
+    <text class="sd-tag" x="48" y="302" text-anchor="end">水</text>
+    <!-- ホース（横の口） -->
+    <line class="sd-lead" x1="188" y1="200" x2="214" y2="190"/>
+    <text class="sd-tag" x="218" y="194" text-anchor="start">ホース</text>
+  </g>
 </svg>`;
 
 function build(host) {

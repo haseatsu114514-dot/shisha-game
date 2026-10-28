@@ -4,6 +4,9 @@ import fs from "node:fs";
 import vm from "node:vm";
 import * as core from "../js/core/state.js";
 import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "../js/chapters/tournament-resources.js";
+globalThis.document ||= { addEventListener() {} };
+globalThis.window ||= {};
+const { regulationFor } = await import("../js/craft/steps.js");
 
 const storage = new Map();
 globalThis.localStorage = {
@@ -80,34 +83,35 @@ const start = source.indexOf("async function tournamentDay()");
 const end = source.indexOf('  const cs = newSession("tournament");', start);
 assert(start >= 0 && end > start);
 const prefix = source.slice(start, end) + '  return newSession("tournament");\n}';
+core.newGame(); // regulationFor closes over the real core.state, not the sandbox's `state`; reset it to Chapter 1 defaults
 const entrant = core.newState();
 Object.assign(entrant, { phase: "daily", day: 14, stamina: 52, flavorStock: {} });
 const saves = [], sessions = [], stub = () => {};
 const context = vm.createContext({
-  state: entrant, TOURNAMENT_DAY: 14, NIGHT_EVENTS: [], SHOP_FLAVORS: ["double_apple"], TONARI: "", TONARI_N: "", STAGE: "",
+  state: entrant, TOURNAMENT_DAY: 14, NIGHT_EVENTS: [], SHOP_FLAVORS: ["lemon"], TONARI: "", TONARI_N: "", STAGE: "",
   syncNightQueue: stub, runNightPlan: stub, playTsumugiStory: stub, sketchScene: stub,
   prepareFlavorStock: stub, lastNight: stub, warmCraftAssets: stub, clearScreen: stub, initHud: stub,
   showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], openPhone: stub,
   play: stub, ownsFlavor: () => false, flavorStock: id => entrant.flavorStock[id] || 0,
   addFlavorStock: (id, amount) => { entrant.flavorStock[id] = (entrant.flavorStock[id] || 0) + amount; },
-  captureEntryResources, restoreEntryResources, applyAssistRecovery, maxStamina: () => 130,
+  captureEntryResources, restoreEntryResources, applyAssistRecovery, maxStamina: () => 130, regulationFor,
   save: () => saves.push(copy(entrant)), toast: stub,
   markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(), maybeShuraba: stub,
   entrance: stub, newSession: () => { sessions.push(copy(entrant)); return {}; },
 });
 await vm.runInContext(prefix + "\ntournamentDay()", context);
-assert.deepEqual(saves[0].tournament.entryResources.flavorStock, { double_apple: 12 }, "capture follows rescue grant");
+assert.deepEqual(saves[0].tournament.entryResources.flavorStock, { lemon: 12 }, "capture follows rescue grant");
 assert.equal(sessions[0].stamina, 52);
-entrant.stamina = 48; entrant.flavorStock.double_apple = 0;
+entrant.stamina = 48; entrant.flavorStock.lemon = 0;
 await vm.runInContext("tournamentDay()", context);
 assert.equal(saves.length, 1, "retry never overwrites the entry save");
 assert.equal(sessions[1].stamina, 52);
-assert.deepEqual(sessions[1].flavorStock, { double_apple: 12 });
+assert.deepEqual(sessions[1].flavorStock, { lemon: 12 });
 // #590: 救済を選んだ挑戦だけ、戻した直後に現在の最大体力（根性込みの値）へ。entryは書き換えない。
 entrant.stamina = 3; entrant.tournament.retryAssist = true;
 await vm.runInContext("tournamentDay()", context);
 assert.equal(sessions[2].stamina, 130, "assisted retry recovers to the current maximum");
-assert.deepEqual(sessions[2].flavorStock, { double_apple: 12 }, "stock is restored once, unchanged by recovery");
+assert.deepEqual(sessions[2].flavorStock, { lemon: 12 }, "stock is restored once, unchanged by recovery");
 assert.equal(entrant.tournament.entryResources.stamina, 52, "the entry snapshot keeps the original stamina");
 entrant.stamina = 3; entrant.tournament.retryAssist = false;
 await vm.runInContext("tournamentDay()", context);
