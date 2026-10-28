@@ -1,0 +1,37 @@
+## ageha（あげは）
+
+### 6. perfect_coal_moment
+- コンセプト: 今日はぴたりと止まった手で炭を置ききり、トングを持つ手を離した瞬間、空いた手で小さくガッツポーズするあげは。炭の位置と安堵の笑顔を同時に読ませる。
+- 狙い: 普段の明るさの奥にある緊張がほどける瞬間を、シーシャ作りの小さな成功として輝かせる。
+- プロンプト:
+```text
+A 22-year-old Japanese woman with a bright, friendly, youthful face: amber eyes, soft cheeks, small nose, short gentle chin, honey-blonde twin ponytails with pink and cream bear hair clips, leopard-print jacket over a pink heart crop top, black pleated skirt, thigh-high stockings, black choker and a gold heart necklace; no heavy makeup. Preserve her soft youthful facial proportions without making her look older. The skirt is high-waisted and the jacket provides modest coverage.
+
+At her pastel shisha lounge's preparation counter, capture the instant after she has placed the final charcoal neatly onto a shisha heat-management device. Her right hand holds empty metal tongs slightly clear of the bowl, visibly steady; her left hand makes a small celebratory fist close to her shoulder. Her shoulders relax and a tiny relieved smile opens into delight. Use a close three-quarter composition linking the sharply readable bowl and evenly arranged charcoal in the foreground to her brightly lit face immediately behind them. The metal stem and upper glass base establish a complete shisha below the working area. Keep both hands anatomically clear and separate from the hot charcoal. Gentle charcoal glow, warm coral highlights, quiet private triumph, no dramatic sparks or exaggerated distress.
+
+Warm anime-style illustration matching a cozy slice-of-life visual novel: clean confident linework, soft painterly cel shading, gentle warm lighting with soft bloom, calm friendly everyday atmosphere, rich but soft color palette. Vertical portrait composition, aspect ratio 2:3 (1024x1536), designed as a title-screen key visual: one single character is the clear, large focal point (figure fills roughly 60–80% of the frame height, face clearly readable), background softly detailed with gentle depth of field. Exactly one person in the image; no other people, no crowds, no silhouettes of bystanders. Absolutely no text, letters, numbers, logos, watermarks or readable signage; all packaging, paper, screens and signs are blank or blurred. Wholesome, modest framing. Negative: text, lettering, logo, watermark, signature, extra people, crowd, extra fingers, deformed hands, blurry face, nsfw, revealing clothing, pixel art, photorealistic, 3d render.
+```
+
+### 7. tropical_bowl_parfait
+- コンセプト: マンゴーとパッションフルーツの葉を彩りよく詰めたボウルを、パフェの仕上げのような得意顔で見せるあげは。切った果物ではなく、装着前のボウルと巻いたホースを主役にした仕込み完了の一枚。
+- 狙い: 理屈より感覚で味と見た目をまとめる天才肌を、シーシャ職人としての手元から伝える。
+- プロンプト:
+```text
+A 22-year-old Japanese woman with a bright, friendly, youthful face: amber eyes, soft cheeks, small nose, short gentle chin, honey-blonde twin ponytails with pink and cream bear hair clips, leopard-print jacket over a pink heart crop top, black pleated skirt, thigh-high stockings, black choker and a gold heart necklace; no heavy makeup. Preserve her soft youthful facial proportions without making her look older. The skirt is high-waisted and the jacket provides modest coverage.
+
+Behind a peach-pink shisha preparation counter, she proudly presents a freshly packed ceramic shisha bowl as though revealing the finishing touch on a beautiful parfait. The bowl contains mango- and passion-fruit-flavored shisha leaf arranged neatly below the rim, with natural amber and russet tones: no edible cream, fruit chunks or food decorations inside it. She supports the unheated bowl at chest height in one hand and gestures toward it with an open palm, smiling with spontaneous confidence. A cream-colored hose coils across the foreground beside the waiting metal stem and translucent apricot glass base. Two small, unmarked ingredient dishes and a resting packing fork indicate completed preparation. Use a slightly elevated three-quarter view so both the packed leaf and her delighted face are visible. Parfait-like visual rhythm comes from rounded ceramic shapes, layered colors and presentation, while the object remains unmistakably a functional shisha bowl.
+
+Warm anime-style illustration matching a cozy slice-of-life visual novel: clean confident linework, soft painterly cel shading, gentle warm lighting with soft bloom, calm friendly everyday atmosphere, rich but soft color palette. Vertical portrait composition, aspect ratio 2:3 (1024x1536), designed as a title-screen key visual: one single character is the clear, large focal point (figure fills roughly 60–80% of the frame height, face clearly readable), background softly detailed with gentle depth of field. Exactly one person in the image; no other people, no crowds, no silhouettes of bystanders. Absolutely no text, letters, numbers, logos, watermarks or readable signage; all packaging, paper, screens and signs are blank or blurred. Wholesome, modest framing. Negative: text, lettering, logo, watermark, signature, extra people, crowd, extra fingers, deformed hands, blurry face, nsfw, revealing clothing, pixel art, photorealistic, 3d render.
+```
+
+### 8. peach_cloud_wink
+- コンセプト: パステルラウンジのソファの端で、丸いクッションのような煙の塊を斜め前へ吐き、薄い煙の縁越しにウインクするあげは。煙は顔を囲まず画面右下へ大きく膨らませ、ピーチとコーラルの光で形を出す。
+- 狙い: 輪でも全面を覆う霧でもない、丸く弾む煙の量感で彼女の人懐っこい遊び心を見せる。
+- プロンプト:
+```text
+A 22-year-old Japanese woman with a bright, friendly, youthful face: amber eyes, soft cheeks, small nose, short gentle chin, honey-blonde twin ponytails with pink and cream bear hair clips, leopard-print jacket over a pink heart crop top, black pleated skirt, thigh-high stockings, black choker and a gold heart necklace; no heavy makeup. Preserve her soft youthful facial proportions without making her look older. The skirt is high-waisted and the jacket provides modest coverage.
+
+She sits upright at the end of a pastel lounge sofa, knees together and angled away from the camera, holding a shisha mouthpiece loosely near her shoulder. Having exhaled diagonally forward, she gives a friendly wink past the thin upper edge of a large, rounded smoke puff. Place the dense puff in the lower-right foreground, shaped like an asymmetrical cluster of soft cushion-like lobes, not a ring, not a halo around her head and not a room-filling cloud. Her face remains unobstructed. A complete shisha with a peach-tinted glass base stands prominently on a low table at the lower left; its hose sweeps toward her hand and connects the composition. View from slightly above sofa-arm height, with her upper body large in the frame. Cream, peach and coral upholstery, warm smoke-edge lighting, playful everyday warmth.
+
+Warm anime-style illustration matching a cozy slice-of-life visual novel: clean confident linework, soft painterly cel shading, gentle warm lighting with soft bloom, calm friendly everyday atmosphere, rich but soft color palette. Vertical portrait composition, aspect ratio 2:3 (1024x1536), designed as a title-screen key visual: one single character is the clear, large focal point (figure fills roughly 60–80% of the frame height, face clearly readable), background softly detailed with gentle depth of field. Exactly one person in the image; no other people, no crowds, no silhouettes of bystanders. Absolutely no text, letters, numbers, logos, watermarks or readable signage; all packaging, paper, screens and signs are blank or blurred. Wholesome, modest framing. Negative: text, lettering, logo, watermark, signature, extra people, crowd, extra fingers, deformed hands, blurry face, nsfw, revealing clothing, pixel art, photorealistic, 3d render.
+```
