@@ -85,7 +85,7 @@ try {
     T.stats.gainStat("technique", 3);
   });
   await page.waitForSelector(".gc-evolution");
-  assert.equal(await page.locator(".gc-evolution").textContent(), "レベル2に進化！");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
   assert.match(await page.locator(".gc-fx").textContent(), /ゲージ.*ゆっくり/);
   assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "LEVEL UP");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
@@ -120,7 +120,7 @@ try {
     T.core.state.chapter = 5; T.core.state.stats.guts = 60; T.stats.gainStat("guts", 4);
   });
   await page.waitForSelector(".gain-card.st-guts .gc-evolution");
-  assert.equal(await page.locator(".gc-evolution").textContent(), "レベル4に進化！");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.4に到達");
   assert.doesNotMatch(await page.locator(".gain-card").textContent(), /少し上がった|かなり上がった|大きく上がった/);
   assert.match(await page.locator(".gc-fx").textContent(), /リフレッシュが3回/);
   assert.equal(await page.evaluate(() => T.steam.refreshStock()), 3);
@@ -142,7 +142,7 @@ try {
   });
   assert.equal(reward.starTo, 2);
   await page.waitForSelector(".gain-card .gc-evolution", { timeout: 15000 });
-  assert.equal(await page.locator(".gc-evolution").textContent(), "レベル2に進化！");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
   assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "SLOT BONUS");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
   assert((await page.locator(".gc-fx").textContent()).length > 0);
