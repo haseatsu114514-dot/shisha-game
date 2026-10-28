@@ -38,7 +38,7 @@ try {
       state.newGame(); state.state.met.rin = true; vn.vnTest.turbo = false;
       window.__rinPortraitTest = vn.play({
         dialogue_id: "__rin_portrait_test", metadata: scene.metadata,
-        lines: faces.map(face => ({ ...scene.lines[5], face })),
+        lines: faces.map(face => ({ ...scene.lines.find((l) => l.speaker === "rin"), face })),
       });
     }, faces);
     const frames = [];
