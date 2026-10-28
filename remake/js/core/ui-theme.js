@@ -1,3 +1,5 @@
+import { imgFileUrl } from "./img-file.js";
+
 // 配色・素材だけの設定。進行や報酬・判定・セーブデータには触れない。
 export const UI_THEMES = Object.freeze([
   { id: "smoke", label: "11 煙だけの輪郭", note: "透ける墨色と、淡い煙の線" },
@@ -9,10 +11,10 @@ export const UI_THEMES = Object.freeze([
 ]);
 export const DEFAULT_UI_THEME = "classic";
 const FRAME_ART = Object.freeze({
-  smoke:"img/ui/vn-faithful/smoke.webp", "smoke-purple":"img/ui/vn-faithful/smoke-purple.webp",
-  "cut-paper":"img/ui/vn-calm/paper.webp", amber:"img/ui/vn-lounge/amber.svg",
-  tissue:"img/ui/vn-faithful/tissue.webp", classic:"img/ui/vn-lounge/narration.svg",
-  "heisei-blue":"img/ui/blue-preview/panel.webp",
+  smoke: imgFileUrl("ui/vn-faithful/smoke.webp"), "smoke-purple": imgFileUrl("ui/vn-faithful/smoke-purple.webp"),
+  "cut-paper": imgFileUrl("ui/vn-calm/paper.webp"), amber: imgFileUrl("ui/vn-lounge/amber.svg"),
+  tissue: imgFileUrl("ui/vn-faithful/tissue.webp"), classic: imgFileUrl("ui/vn-lounge/narration.svg"),
+  "heisei-blue": imgFileUrl("ui/blue-preview/panel.webp"),
 });
 export function uiThemeFrame(value) { return FRAME_ART[value] || FRAME_ART[DEFAULT_UI_THEME]; }
 export function normalizeUiTheme(value) {

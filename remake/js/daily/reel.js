@@ -791,23 +791,30 @@ function settleBonus(b, fast, mode = "post") {
   }
   const isBig = b.role === "big" || b.role === "rare" || b.overlap === "big";
   const finish = () => {
-    announce(b);
-    if (!fast) {
-      const cls = isBig ? "hot" : null;
-      bubble(`${bonusName(b)}ッ！`, 950, cls);
-      setTimeout(() => bubble(benefitLine(b), 1900, cls), 1000);
-      // ボーナスのあと、ときどき設定示唆（水色の吹き出し）
-      if (b.n >= 0 && Math.random() < 0.3) {
-        const hint = settingHint(ensureSetting(state.reel));
-        rememberHint(hint);
-        setTimeout(() => bubble(hint, 2600, "setting"), 3000);
+    // 演出の途中で何が落ちても done は必ず解決する（未解決だと mountReel の busy が固まる） #1359
+    try {
+      announce(b);
+      if (!fast) {
+        const cls = isBig ? "hot" : null;
+        bubble(`${bonusName(b)}ッ！`, 950, cls);
+        setTimeout(() => bubble(benefitLine(b), 1900, cls), 1000);
+        // ボーナスのあと、ときどき設定示唆（水色の吹き出し）
+        if (b.n >= 0 && Math.random() < 0.3) {
+          const hint = settingHint(ensureSetting(state.reel));
+          rememberHint(hint);
+          setTimeout(() => bubble(hint, 2600, "setting"), 3000);
+        }
       }
+    } catch (e) {
+      console.warn("[reel] bonus finish", e);
+    } finally {
+      if (b.done) { const d = b.done; b.done = null; d(); }
     }
-    if (b.done) { const d = b.done; b.done = null; d(); }
   };
   const lineUp = bonusLine(isBig);
   if (fast || !alive()) { if (alive()) setStops(lineUp); state.reel.shown = lineUp; SE.fanfare(); return finish(); }
-  alignBonus(isBig, lineUp, b.zone, mode).then(finish);
+  // 揃え演出が reject しても finish を実行し、done（= 進行の再開）を保証する #1359
+  alignBonus(isBig, lineUp, b.zone, mode).then(finish, (e) => { console.warn("[reel] alignBonus", e); finish(); });
 }
 
 // ボーナスの揃い目: 赤7・赤7 ＋ 右リールは「7の真下にBAR」の並びから BIG=7／REG=BAR
