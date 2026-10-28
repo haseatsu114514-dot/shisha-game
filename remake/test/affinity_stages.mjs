@@ -24,7 +24,7 @@ async function fixture() {
     AXE_BAR: {id:'axe_bar'}, RAIN_SPOT_TEXTS: {}, isRainy: () => false,
     spotFollowupDue: () => null, syncMintoKnowledge() {}, meetHiyoriAtTonari: async () => false,
     maybeRecruitTrpgMember: async () => false, sharkSwim: async swap => swap(),
-    imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
+    withScenePreparation: task => task, imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
     hiyoriFirstMeetingReady: () => true,
     tsumugiMessages: () => [], hooks: {}, giftOpen: async () => {},
     openingStatus: () => ({ok:true}), refreshPlaceCue() {}, playBgm() {}, hiyoriShopEncounterDue: () => false,

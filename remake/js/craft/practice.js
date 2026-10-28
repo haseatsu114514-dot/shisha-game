@@ -27,6 +27,7 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
   };
   checkCurrent();
   const cs = newSession(coached ? "tutorial" : "rehearsal");
+  cs.practiceKind = kind;
   cs.staffPractice = staffPractice;
   if (staffPractice) { cs.eventTitle = "PRACTICE"; cs.eventNote = "まかないで練習"; }
   openBench(cs, { steps: adjustments ? CRAFT_STEPS : CRAFT_STEPS.filter(([id]) => !id.startsWith("care")) });
