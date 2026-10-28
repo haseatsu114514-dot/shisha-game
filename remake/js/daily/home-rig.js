@@ -4,7 +4,7 @@ import { DB, img } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { emit } from "../core/bus.js";
 import { el } from "../core/util.js";
-import { imageReady, modal } from "../core/ui.js";
+import { imageReady, modal, withScenePreparation } from "../core/ui.js";
 import { play, vnTest } from "../vn/engine.js";
 
 export const SUMI_RIG = "home_rig_set";   // ミャア 卓上台（試作の熟練度経験値6）
@@ -34,7 +34,7 @@ export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
     if (state !== owner || result?.cancelled) return false;
     if (!vnTest.turbo) {
       const url = img(SUMI_RIG_IMAGE);
-      const loaded = await imageReady(url, 15000);
+      const loaded = await withScenePreparation(imageReady(url, 15000));
       if (state !== owner) return false;
       if (loaded) {
         await modal({ title: name, className: "home-rig-gift",

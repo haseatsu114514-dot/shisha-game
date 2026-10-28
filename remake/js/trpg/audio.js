@@ -1,6 +1,7 @@
 // Original, low-volume synthesized ambience and table sounds. No external recordings.
 export function createTrpgAudio(initialTheme = "harbor") {
   let context = null, master = null, bed = [], voices = new Set();
+  let bedBuffer = null;
   let enabled = false, disposed = false, theme = initialTheme;
   const Audio = globalThis.AudioContext || globalThis.webkitAudioContext;
   function stopBed() {
@@ -10,10 +11,12 @@ export function createTrpgAudio(initialTheme = "harbor") {
   function makeBed() {
     stopBed();
     if (!enabled || disposed || !context || context.state !== "running") return;
-    const buffer = context.createBuffer(1, context.sampleRate * 2, context.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-    const noise = context.createBufferSource(); noise.buffer = buffer; noise.loop = true;
+    if (!bedBuffer) {
+      bedBuffer = context.createBuffer(1, context.sampleRate * 2, context.sampleRate);
+      const data = bedBuffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    }
+    const noise = context.createBufferSource(); noise.buffer = bedBuffer; noise.loop = true;
     const filter = context.createBiquadFilter();
     filter.type = theme === "shark" ? "lowpass" : "highpass";
     filter.frequency.value = theme === "shark" ? 420 : 1100;
