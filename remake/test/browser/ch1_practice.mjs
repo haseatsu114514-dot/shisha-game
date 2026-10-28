@@ -169,6 +169,7 @@ await suite("ch1-practice", async run => {
     for (const experienced of [false, true]) await check(`${device}-mid-full-${experienced ? "review" : "first"}`, async page => {
       await setup(page, { day: 7 });
       await page.evaluate(experienced => {
+        P.core.state.flags._coal_cube_learned = true;
         if (experienced) P.core.state.flags._craft_practice_runs = [{ day: 6, kind: "practice", success: true, adjustments: 2 }];
         P.vn.vnTest.choose = () => 1;
         P.run();
@@ -249,6 +250,7 @@ await suite("ch1-practice", async run => {
   for (const choice of ["full", "care"]) await check(`mid-interrupted-save-${choice}-restarts-full`, async page => {
     await setup(page, { day: 7, auto: null });
     await page.evaluate(choice => {
+      P.core.state.flags._coal_cube_learned = true;
       // 旧版で仕入れと選択を終え、単独調整を始める前に保存した状態。
       if (choice === "care") P.core.state.flags._ch1_mid = { introRead: true, stockDone: true, choice };
       P.run();
