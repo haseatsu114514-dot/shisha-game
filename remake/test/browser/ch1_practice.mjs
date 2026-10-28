@@ -51,6 +51,9 @@ async function until(page, predicate, touch = false) {
   while (!await page.evaluate(predicate)) {
     assert(Date.now() < deadline, "Practice timed out");
     assert(!await page.evaluate(() => P.error), await page.evaluate(() => P.error));
+    // 手動SKIPでも卓上台の受け取りは別操作。閉じてからイベント完了を待つ。
+    const gift = '[data-test="home-rig-gift-close"]';
+    if (await page.locator(gift).isVisible()) await select(page, gift, touch);
     const skip = '#vn.active [data-test="vn-skip"]:not(.on)';
     // SKIPで会話を終えても、卓上台の受領モーダルは手動で閉じる。
     const gift = '[data-test="home-rig-gift-close"]';

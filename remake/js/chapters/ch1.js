@@ -539,11 +539,11 @@ async function tournamentDay() {
   await assetsReady;
   await entrance();
 
-  // ROUND 1 ── 組み立て
+  // ROUND 1 ── 準備
   playBgm("bgm_tournament_craft");
   const cs = newSession("tournament");
   cs.retryAssist = state.tournament.retryAssist === true;
-  await roundCut("ROUND 1", "組み立て");
+  await roundCut("ROUND 1", "準備");
   await play("remake_round1_intro", { bg: STAGE });
   await playTournamentEvent(cs, "opening", { bg: STAGE });
   openBench(cs, { steps: STEPS_ALL });
