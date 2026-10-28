@@ -88,6 +88,12 @@
       "run": ["node remake/test/ngplus_cycle_meta.mjs"]
     },
     {
+      "id": "ngplus-cycle-start",
+      "title": "NG+ cycle start, carry groups, reset and integration hooks (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_cycle_start.mjs"]
+    },
+    {
       "id": "module-loading",
       "title": "Deferred module loading notice: delay, failure cleanup, retry, single-flight",
       "kind": "quick",
