@@ -114,4 +114,51 @@ await suite("shisha-diagram", async check => {
     assert.equal(r.anim, "none", "no animation under reduced motion");
     assert.equal(await stepOf(page), "smoke", "step still advances when motion is reduced");
   }, { reducedMotion: "reduce" });
+
+  // 部位ラベル（炭・フレーバー・ステム・水・ホース）が初見でも分かるよう常に出ている
+  await check("part-labels", async page => {
+    await selectScene(page);
+    await advanceTo(page, stepText.show);
+    await page.waitForFunction(() => document.querySelector(".sd-diagram")?.dataset.step === "show");
+    const tags = await page.evaluate(() =>
+      [...document.querySelectorAll(".sd-diagram .sd-tag")].map(t => t.textContent.trim()));
+    for (const label of ["炭", "フレーバー", "ステム", "水", "ホース"]) {
+      assert(tags.includes(label), `part label present: ${label}`);
+    }
+    // ラベルは図カード（.sd-art）の枠内に収まり、切れていない
+    const fits = await page.evaluate(() => {
+      const art = document.querySelector(".sd-art").getBoundingClientRect();
+      return [...document.querySelectorAll(".sd-diagram .sd-tag")].every(t => {
+        const b = t.getBoundingClientRect();
+        return b.left >= art.left - 1 && b.right <= art.right + 1;
+      });
+    });
+    assert(fits, "part labels stay within the diagram art box");
+  });
+
+  // スマホ縦（390x844）：図が台詞枠・名前欄と重ならず、ステージ内に収まる
+  await check("portrait-layout", async page => {
+    await selectScene(page);
+    const order = ["show", "heat", "smoke", "bubble", "hose"];
+    for (const step of order) {
+      await advanceTo(page, stepText[step]);
+      await page.waitForFunction(s => document.querySelector(".sd-diagram")?.dataset.step === s, step);
+      const geo = await page.evaluate(() => {
+        const d = document.querySelector(".sd-diagram").getBoundingClientRect();
+        const box = document.querySelector(".vn-box").getBoundingClientRect();
+        const name = document.querySelector(".vn-name:not([hidden])")?.getBoundingClientRect();
+        const stage = document.getElementById("stage").getBoundingClientRect();
+        return {
+          overlapBox: d.bottom > box.top && d.right > box.left && d.left < box.right,
+          overlapName: !!name && name.width > 0 && d.bottom > name.top && d.right > name.left && d.left < name.right,
+          inStage: d.right <= stage.right + 1 && d.top >= stage.top - 1 && d.left >= stage.left - 1,
+          single: document.querySelectorAll(".sd-diagram").length === 1,
+        };
+      });
+      assert(!geo.overlapBox, `portrait: diagram clear of dialogue box at ${step}`);
+      assert(!geo.overlapName, `portrait: diagram clear of name plate at ${step}`);
+      assert(geo.inStage, `portrait: diagram within stage at ${step}`);
+      assert(geo.single, `portrait: single diagram at ${step}`);
+    }
+  }, { viewport: { width: 390, height: 844 } });
 }, { entry: PREVIEW, readySelector: "#preview-scene:not([disabled])" });

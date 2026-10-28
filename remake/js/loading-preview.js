@@ -13,9 +13,13 @@ function fit() {
 window.addEventListener("resize", fit); fit();
 
 // Wireframe only: no story, dialogue or final illustration is invented here.
-const panel = number => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="480" height="400" viewBox="0 0 480 400"><rect width="480" height="400" fill="#eee7dc"/><rect x="25" y="25" width="430" height="350" fill="none" stroke="#574562" stroke-width="3"/><text x="240" y="205" text-anchor="middle" fill="#574562" font-size="40">PANEL ${number}</text></svg>`)}`;
+// Authoring size is 860x500 (43:25); the wireframe is drawn to that ratio.
+const panel = number => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="860" height="500" viewBox="0 0 860 500"><rect width="860" height="500" fill="#eee7dc"/><rect x="25" y="25" width="810" height="450" fill="none" stroke="#574562" stroke-width="3"/><text x="430" y="265" text-anchor="middle" fill="#574562" font-size="56">PANEL ${number}</text><ellipse cx="300" cy="150" rx="150" ry="70" fill="#fff" stroke="#574562" stroke-width="3"/></svg>`)}`;
 const comics = [{ id: "layout-preview", title: "２コマ漫画・配置確認", minChapter: 1,
-  panels: [1, 2].map(number => ({ src: panel(number), alt: `${number}コマ目の仮枠。ここに採用した漫画を表示します。` })) }];
+  caption: "初心者向けの一行解説をここに表示できます（漫画ごとに指定）。",
+  panels: [1, 2].map(number => ({ src: panel(number), alt: `${number}コマ目の仮枠。ここに採用した漫画を表示します。`,
+    // Bubble shape is in the art; the words are live DOM text so typos stay fixable.
+    bubbles: [{ text: `テキスト台詞${number}`, x: 35, y: 30, width: 34, fontSize: 5 }] })) }];
 let controller;
 cancel.onclick = () => controller?.abort();
 document.querySelector("#underlying").onclick = () => { result.textContent = "本編側の操作を受け付けました。"; };
