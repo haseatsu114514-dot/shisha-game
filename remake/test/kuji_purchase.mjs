@@ -9,9 +9,10 @@ import path from "node:path";
 
 const read = file => readFile(new URL(file, import.meta.url), "utf8");
 const strip = source => source.replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
-const [kuji, core, util, stats, data, travelBudget] = await Promise.all([
+const [kuji, core, util, stats, data, travelBudget, galleryProgress] = await Promise.all([
   read("../js/daily/kuji.js"), read("../js/core/state.js"), read("../js/core/util.js"),
   read("../js/core/stats.js"), read("../../data/kuji.json"), read("../js/core/travel-budget.js"),
+  read("../js/core/gallery-progress.js"),
 ]);
 const html = `<!doctype html><meta charset="utf-8"><div id="screen"></div><div id="modal"></div><script>
 ${strip(util)}
@@ -21,6 +22,7 @@ const MAX_MONEY = 999999999, TOURNAMENT_DAY = 14;
 const emit = event => {
   if (event === 'money') { moneyEvents++; const callback=reentry; reentry=null; callback?.(); }
 };
+${strip(galleryProgress)}
 ${strip(core).replace('function save()', 'function persistState()')}
 function save() { saves++; persistState(); }
 ${strip(stats.match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)[0])}
