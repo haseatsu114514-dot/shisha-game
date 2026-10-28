@@ -122,7 +122,7 @@ try {
   await page.waitForSelector(".gain-card.st-guts .gc-evolution");
   assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.4に到達");
   assert.doesNotMatch(await page.locator(".gain-card").textContent(), /少し上がった|かなり上がった|大きく上がった/);
-  assert.match(await page.locator(".gc-fx").textContent(), /リフレッシュが3回/);
+  assert.match(await page.locator(".gc-fx").textContent(), /体力と範囲が大きく増え、メンタルも回復する/);
   assert.equal(await page.evaluate(() => T.steam.refreshStock()), 1);
   assert.equal(await page.evaluate(() => T.steam.REFRESH_RECHARGE_SECONDS), 8);
   await page.evaluate(() => T.ui.bannersIdle());
