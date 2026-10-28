@@ -70,7 +70,7 @@ try {
   await page.evaluate(() => { __remake.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(cs); });
   await page.waitForSelector('.bench[data-step="heat"] .heat');
   assert(!(await page.locator('[data-test="craft-rating"]').isVisible()),'Rating appeared during active charcoal work');
-  assert.match(await page.locator('[data-test="craft-feedback"]').textContent(), /光.*(?:押|タップ)/,'Tutorial Sumi did not explain the game controls');
+  assert.match(await page.locator('[data-test="craft-feedback"]').textContent(), /全面.*タップ/,'Tutorial Sumi did not explain the game controls');
   await page.waitForFunction(() => cs.heat?.score > 0);
   await page.evaluate(() => { __remake.craftTest.auto = null; });
   await page.waitForSelector('.result-card.show');
