@@ -52,7 +52,11 @@ async function until(page, predicate, touch = false) {
     assert(Date.now() < deadline, "Practice timed out");
     assert(!await page.evaluate(() => P.error), await page.evaluate(() => P.error));
     const skip = '#vn.active [data-test="vn-skip"]:not(.on)';
-    if (!await page.evaluate(() => P.vn.vnTest.turbo) && await page.locator(skip).isVisible().catch(() => false)) {
+    // SKIPで会話を終えても、卓上台の受領モーダルは手動で閉じる。
+    const gift = '[data-test="home-rig-gift-close"]';
+    if (await page.locator(gift).isVisible()) {
+      await select(page, gift, touch);
+    } else if (!await page.evaluate(() => P.vn.vnTest.turbo) && await page.locator(skip).isVisible().catch(() => false)) {
       await select(page, skip, touch);
     }
     await page.waitForTimeout(40);

@@ -2,6 +2,7 @@
 // node remake/test/home_shisha.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import vm from "node:vm";
 
 globalThis.document ||= { addEventListener() {}, querySelector() { return null; } };
 globalThis.window ||= {};
@@ -9,7 +10,7 @@ const store = new Map();
 globalThis.localStorage ||= { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
 
 const { DB } = await import("../js/core/data.js");
-const { newGame, STAT_KEYS, SCHEMA, SAVE_KEY, save: saveGame, load: loadGame, loadFromSlot } = await import("../js/core/state.js");
+const { newGame, STAT_KEYS, SCHEMA, SAVE_KEY, save: saveGame, load: loadGame, saveToSlot, loadFromSlot } = await import("../js/core/state.js");
 const { mixPercents } = await import("../js/craft/mix-ratio.js");
 let state;
 const home = await import("../js/daily/home-shisha.js");
@@ -62,6 +63,76 @@ assert.equal(sumiScene.lines.find((l) => l.speaker === "sumi").text, "これや�
 const ch1Source = fs.readFileSync(new URL("../js/chapters/ch1.js", import.meta.url), "utf8");
 const midPrep = ch1Source.slice(ch1Source.indexOf("async function midPreparation"), ch1Source.indexOf("async function rehearsal"));
 assert(midPrep.includes("giveSumiRig("), "中間準備の最後にスミさんが台を渡す");
+
+// D03: 受取日だけの自室演出。体力や葉の有無は誘いの条件と分ける。
+{
+  const scene = read("../../data/dialogue/ch1_sumi.json").dialogues.find(d => d.dialogue_id === rig.RIG_HOME_SCENE);
+  assert.equal(scene.metadata.bg, "res://assets/backgrounds/bg_home_night.png");
+  assert.equal(scene.lines.length, 2);
+  assert(scene.lines.every(l => l.speaker === "" && l.text.length <= 48 && !l.text.includes("\n")));
+  assert(scene.lines.some(l => l.text.includes("卓上台") && l.text.includes("机")));
+  const s = newGame(); Object.assign(s, { day: 2, slot: 2 });
+  assert.equal(rig.sumiRigHomecomingDue(), false, "受取前");
+  await rig.giveEarlyHomeRig();
+  assert.equal(s.flags._sumi_rig_received_day, "1:2", "D01の受取確定と同時に記録する");
+  assert.equal(rig.sumiRigHomecomingDue(), true);
+  for (const stamina of [0, 25, 50, 80]) {
+    s.stamina = stamina;
+    assert.equal(rig.sumiRigHomecomingDue(), true, `体力${stamina}でも置いたことは伝える`);
+  }
+  assert.equal(rig.sumiRigHomecomingDue({ ...s, owned: [rig.PRO_RIG] }), false);
+  assert.equal(rig.sumiRigHomecomingDue({ ...s, day: 3 }), false, "翌日に持ち越さない");
+  assert.equal(rig.sumiRigHomecomingDue({ ...s, chapter: 2 }), false, "別章の同じ日付に出さない");
+  assert.equal(rig.sumiRigHomecomingDue({ ...s, flags: {} }), false, "台だけ持つ旧セーブでは再生しない");
+  saveGame();
+  assert.equal(rig.sumiRigHomecomingDue(loadGame()), true, "受取後のLOADでもその夜に表示できる");
+  const loaded = loadGame(); loaded.flags._sumi_rig_home_seen = true; saveGame();
+  const seen = loadGame();
+  const before = JSON.stringify(seen);
+  assert.equal(await rig.showSumiRigAtHome(), false, "既読の実行はSAVE/LOAD後もスキップする");
+  assert.equal(JSON.stringify(seen), before);
+
+  // 本物のhome-rig全体を評価し、VNだけを読了待ちにする。保存とLOADは実API。
+  let current, finishScene;
+  const played = [];
+  const source = fs.readFileSync(new URL("../js/daily/home-rig.js", import.meta.url), "utf8")
+    .replace(/^import .*;\n/gm, "").replace(/^export /gm, "");
+  const isolated = vm.runInNewContext(`${source}\n({ showSumiRigAtHome });`, {
+    get state() { return current; }, save: saveGame,
+    DB: { dialogues: { [rig.RIG_HOME_SCENE]: scene } },
+    play: id => { played.push(id); return new Promise(resolve => { finishScene = resolve; }); },
+  });
+  current = newGame(); Object.assign(current, { day: 2, slot: 2 });
+  await rig.giveEarlyHomeRig();
+  const pending = isolated.showSumiRigAtHome();
+  assert.equal(current.flags._sumi_rig_home_seen, true);
+  assert.equal(await isolated.showSumiRigAtHome(), false, "表示中の重複呼出しを防ぐ");
+  current = loadGame();
+  assert.equal(current.flags._sumi_rig_home_seen, true, "読了前でもオートセーブに既読が残る");
+  assert.equal(await isolated.showSumiRigAtHome(), false, "表示中のLOADで再生しない");
+  finishScene({});
+  assert.equal(await pending, false, "旧SAVEの継続を止める");
+  assert.deepEqual(played, [rig.RIG_HOME_SCENE]);
+
+  current = newGame(); Object.assign(current, { day: 2, slot: 2 });
+  saveToSlot("suien_remake_slot1"); // 台のない別の保存
+  await rig.giveEarlyHomeRig();
+  const interrupted = isolated.showSumiRigAtHome();
+  current = loadFromSlot("suien_remake_slot1");
+  const otherSave = JSON.stringify(current);
+  finishScene({});
+  assert.equal(await interrupted, false);
+  assert.equal(JSON.stringify(current), otherSave, "別SAVEに台や既読を付けない");
+
+  await rig.giveEarlyHomeRig();
+  const completed = isolated.showSumiRigAtHome();
+  finishScene({});
+  assert.equal(await completed, true);
+  saveToSlot("suien_remake_slot2");
+  current = loadFromSlot("suien_remake_slot2");
+  assert.equal(await isolated.showSumiRigAtHome(), false, "読了後の手動SAVE/LOADで再生しない");
+  assert.equal(played.length, 3);
+}
 
 // 比率の表示: 整数%で合計がちょうど100（表示用）
 assert.deepEqual(mixPercents({ lemon: 9, mint: 3 }), { lemon: 75, mint: 25 });

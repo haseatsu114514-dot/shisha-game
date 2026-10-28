@@ -81,6 +81,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
     maybeConfession: async () => { trace.push('confession'); return false; },
     maybeSamechanEncounter: async () => { trace.push('encounter'); },
     play: async id => { trace.push(id); return {}; }, beat() {},
+    showSumiRigAtHome: async () => { trace.push('rig-homecoming'); return false; },
     runHomeShisha: async () => { trace.push('home-shisha'); return false; },
     conditionForRatio: () => ({ health: 'healthy' }), staminaRatio: () => fixture.stamina / 100,
     addStamina: n => { fixture.stamina += n; trace.push('recovery'); },
@@ -101,7 +102,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   }), error => error === stop);
   assert.equal(fixture.day, 16); assert.equal(fixture.slot, 0); assert.equal(fixture.stamina, 74); assert.equal(fixture.money, 1000);
   assert.deepEqual(trace.filter(x => !x.startsWith('save:')), [
-    'night', 'confession', 'return-home', 'encounter', 'remake_homecoming_0', 'home-shisha',
+    'night', 'confession', 'return-home', 'encounter', 'remake_homecoming_0', 'rig-homecoming', 'home-shisha',
     'dawn', 'recovery', 'weather:16', 'bg_home:day', 'recovery-ui',
     'weather:16', 'kansetsu_shomei_to_black_coffee', 'lime', 'notice',
   ]);
@@ -109,6 +110,19 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   assert(snapshots.some(s => s.day === 15 && s.stamina === 60), 'Night checkpoint precedes sleep');
   assert(snapshots.some(s => s.day === 16 && !s.flags._morning_16 && s.stamina === 74), 'Sleep is saved before morning delivery');
   assert(snapshots.some(s => s.day === 16 && s.flags._morning_16 && s.stamina === 74), 'Morning completion is saved');
+  if (chapter === 1 && weather === 'sun') {
+    Object.assign(fixture, { day: 15, slot: 2, stamina: 60, flags: { _morning_15: true } });
+    trace.length = 0;
+    ctx.showSumiRigAtHome = async () => {
+      ctx.state = structuredClone(fixture); // D03表示中に別のSAVEへ切替
+      ctx.state.money = 4321;
+      return false;
+    };
+    await ctx.runDaily({ untilDay: 16, nightEvents: {} });
+    assert.equal(ctx.state.day, 15, 'LOAD後に旧日付を進めない');
+    assert.equal(ctx.state.stamina, 60, 'LOAD後に旧日の睡眠回復を適用しない');
+    assert(!trace.includes('home-shisha') && !trace.includes('dawn'));
+  }
 }
 console.log('PASS: chapter 1 / chapter 2 actual calendar night → home → sleep → autosave → weather/BGM/LIME, once each (sun/rain)');
 
