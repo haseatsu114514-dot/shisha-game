@@ -524,7 +524,7 @@ await suite('ch2-tournament',async check=>{
     assert.equal((await get(page)).flags._ch3_intro.stage,1);
     // 1場面を確定後にロード。冒頭が再生されず、次の場面から続く。
     await page.reload();await page.locator(dt('title-load')).click();
-    assert.match(await page.locator(dt('slot-0')).innerText(),/第3章・DAY 1/);
+    assert.match(await page.locator(dt('slot-0')).innerText(),/第3章\s*DAY 1(?!\d)/);
     await page.evaluate(async()=>{
       const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
       window.__chapterThreeTrace=[];

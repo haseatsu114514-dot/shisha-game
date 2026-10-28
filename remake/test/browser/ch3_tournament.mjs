@@ -218,7 +218,7 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.flags._ch3_tournament.history.length, 1);
     await page.reload();
     await page.locator('[data-test="title-load"]').click();
-    assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章・DAY 17.*第3章クリア/);
+    assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章\s*DAY 17[\s\S]*第3章クリア/);
   }, { reducedMotion: "reduce" });
   await check("actual-losing-rank-reads-defeat-and-retries-without-win", async page => {
     await seed(page);
