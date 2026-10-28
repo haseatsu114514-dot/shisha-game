@@ -91,14 +91,21 @@ try {
     window.heatRun = heat.runHeat(cs);
   });
   await page.waitForSelector('.bench-worker[data-step="heat"]');
-  const geometry = await page.evaluate(() => {
+  const geometry = await page.evaluate(async () => {
+    const { coalSpots } = await import('./js/craft/heat_view.js');
     const worker = document.querySelector('.bench-worker').getBoundingClientRect();
     const panel = document.querySelector('.bench-right').getBoundingClientRect();
     const coals = [...document.querySelectorAll('.stove .coal')].map(n => [parseFloat(n.style.left), parseFloat(n.style.top)]);
-    return { overlaps: worker.right > panel.left, height: worker.height, rigCount: document.querySelectorAll('.bench .rig').length, actor: !!document.querySelector('.worker-actor'), coals, step: document.querySelector('.bench-worker').dataset.step };
+    const baseSpots = coalSpots(3).map(([x, y]) => [x * 100, y * 100]);
+    return { overlaps: worker.right > panel.left, height: worker.height, rigCount: document.querySelectorAll('.bench .rig').length, actor: !!document.querySelector('.worker-actor'), coals, baseSpots, step: document.querySelector('.bench-worker').dataset.step };
   });
   assert(!geometry.overlaps); assert(geometry.height > 350); assert.equal(geometry.rigCount, 0); assert(geometry.actor); assert.equal(geometry.step, 'heat');
-  assert.deepEqual(geometry.coals, [[50, 30], [38, 45], [62, 45]]);
+  // 炭の基準位置は heat_view の coalSpots(3)。配置時に微小なランダムずれ（x±1.8pt / y±1.2pt）が
+  // 意図的に入るため、固定値ではなく基準位置からの範囲で三角形の並びを検証する（heat_feedback と同方針）。
+  assert.equal(geometry.coals.length, 3);
+  geometry.coals.forEach(([x, y], i) => { const [bx, by] = geometry.baseSpots[i];
+    assert(Math.abs(x - bx) <= 1.9, `coal ${i} left ${x} vs base ${bx}`);
+    assert(Math.abs(y - by) <= 1.3, `coal ${i} top ${y} vs base ${by}`); });
   if (shots) await page.screenshot({ path: `${shots}/centered-coals.png` });
   await page.evaluate(() => window.heatRun);
   await page.evaluate(async () => {
