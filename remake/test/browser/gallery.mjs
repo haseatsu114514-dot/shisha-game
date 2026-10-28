@@ -213,6 +213,13 @@ try {
       return rects.every((a, i) => rects.slice(i + 1).every(b => a.right <= b.left + 1 || b.right <= a.left + 1 || a.bottom <= b.top + 1 || b.bottom <= a.top + 1));
     }), "mixed still/portrait photo cards must not overlap or intercept another card");
     await page.locator(t("gallery-tab-cheki")).click();
+    // A failed thumbnail must leave a named, usable card without a broken img.
+    const cheki = page.locator(t("gal-cg_minto_first_cheki"));
+    await cheki.locator("img").evaluate(n => n.dispatchEvent(new Event("error")));
+    assert.equal(await cheki.locator("img").count(), 0);
+    assert.equal(await cheki.locator(".gal-media-symbol").textContent(), "画像なし");
+    assert.equal(await cheki.getAttribute("aria-label"), "みんとの初来店チェキ");
+    assert.equal(await cheki.locator(".gal-caption").textContent(), "みんとの初来店チェキ");
     await page.locator(t("gal-cg_minto_first_cheki")).click();
     await page.locator(".gal-viewer.show .gal-media-image").waitFor();
     await page.waitForFunction(() => document.querySelector(".gal-viewer img").naturalWidth > 0);
@@ -245,6 +252,12 @@ try {
     assert(!(await page.locator(".gal").textContent()).includes("未来の題名"));
     assert(!(await page.locator(".gal").textContent()).includes("未採用候補"));
     assert(!requests.some(url => /qa-(late|rejected)/.test(url)));
+    const comicCard = page.locator(t("gal-qa_comic"));
+    await comicCard.locator("img").evaluate(n => n.dispatchEvent(new Event("error")));
+    assert.equal(await comicCard.locator("img").count(), 0);
+    assert.equal(await comicCard.locator(".gal-media-symbol").textContent(), "画像なし");
+    assert.equal(await comicCard.getAttribute("aria-label"), "閲覧テスト");
+    assert.equal(await comicCard.locator(".gal-caption").textContent(), "閲覧テスト");
     await page.locator(t("gal-qa_comic")).click();
     assert.equal(await page.locator(t("gallery-page-count")).textContent(), "1 / 2");
     assert(await page.locator(t("gallery-page-prev")).isDisabled());

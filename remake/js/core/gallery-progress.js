@@ -17,7 +17,9 @@ function photo(value) {
   if (people[0] !== "hajime" || people.length !== (value.mode === "solo" ? 1 : 2)
     || people.some(id => typeof id !== "string" || !/^[a-z][a-z0-9_]*$/.test(id))
     || unique(people).length !== people.length || value.mode === "pair" && people[1] !== "ageha") return null;
-  return { chapter: value.chapter, day: value.day, slot: value.slot, mode: value.mode, people: [...people] };
+  return { chapter: value.chapter, day: value.day, slot: value.slot, mode: value.mode, people: [...people],
+    ...(Number.isInteger(value.chapterDay) && value.chapterDay > 0 ? { chapterDay: value.chapterDay } : {}),
+  };
 }
 export const purikuraId = p => ["purikura", p.chapter, p.day, p.slot, p.mode, ...p.people].join("-");
 
@@ -41,11 +43,24 @@ export function recordGalleryProgress(value) {
   }
   // 接続済みの章の旧セーブ。章番号・日数・大会勝利・予告視聴だけではクリアとしない。
   if ([1, 2].includes(value.chapter) && value.phase === "cleared") cleared.push(value.chapter);
-  const photos = list(value.flags?._ageha_purikura_history).map(photo).filter(Boolean);
+  const photos = list(value.flags?._ageha_purikura_history).map(photo).filter(Boolean).map(p => {
+    // この写真を持つセーブの開始日だけを使う。別セーブの写真を推測で換算しない。
+    const start = p.chapter === 2 ? value.flags?._ch2_day1?.startDay
+      : p.chapter === 3 ? value.flags?._ch3_intro?.startDay : null;
+    if (!p.chapterDay && (p.chapter === 1 || Number.isInteger(start) && start > 0 && p.day >= start)) {
+      p.chapterDay = p.chapter === 1 ? p.day : p.day - start + 1;
+    }
+    return p;
+  });
+  const merged = new Map(before.purikura.map(p => [purikuraId(p), p]));
+  for (const p of photos) {
+    const id = purikuraId(p);
+    merged.set(id, { ...merged.get(id), ...p }); // 日付のない旧セーブで補完済みの日付を消さない
+  }
   const next = {
     clearedChapters: unique([...before.clearedChapters, ...cleared]).sort(),
     keepsakes: unique([...before.keepsakes, ...list(value.keepsakes).filter(id => Object.hasOwn(PHOTO_KEEPSAKES, id))]),
-    purikura: [...new Map([...before.purikura, ...photos].map(p => [purikuraId(p), p])).values()],
+    purikura: [...merged.values()],
   };
   if (JSON.stringify(before) === JSON.stringify(next)) return;
   try { localStorage.setItem(GALLERY_PROGRESS_KEY, JSON.stringify(next)); } catch { /* ゲームの保存は妨げない */ }
