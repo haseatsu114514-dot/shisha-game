@@ -68,6 +68,12 @@ await suite("lime-appointment-recovery", async check => {
       assert.equal(missed.pending, null); assert.equal(missed.day, 5); assert.equal(missed.slot, 1); assert.equal(missed.money, 700);
       assert.equal(missed.result, "expired"); assert(missed.resend && missed.read && missed.limeRead);
       assert(!missed.invited && !missed.complete && !missed.scene); assert(missed.logs.some(l => /所持金/.test(l.note || "")));
+      // 製品のロードはセッション差し替えが前提で、実プレイではロード直後に再起動して
+      // 日常ループへ入り直す（calendar.js の loadFlow → location.reload に対応）。
+      // #1081 D03（58bdcf114）で runDaily に入った owner 照合により、旧ループは
+      // 日付境界で静かに止まるため、ここでも入り直してから続ける。
+      await page.evaluate(() => QA.run());
+      await mapAt(page, 5, 1);
       await go(page, "rest"); await mapAt(page, 6, 0);
       const retries = await page.evaluate(() => QA.core.state.inbox.filter(i => i.originId === "lime_minto_first_holiday"));
       assert.equal(retries.length, 2); assert.equal(retries[1].day, 6); assert(!retries[1].done);
