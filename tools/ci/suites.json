@@ -2804,6 +2804,15 @@
       "run": [
         "node remake/test/kuji_purchase.mjs"
       ]
+    },
+    {
+      "id": "demo-record-holes",
+      "title": "Tutorial pilot: record the holes step demo (frames to artifacts)",
+      "kind": "browser",
+      "weight": 3,
+      "timeout": 5,
+      "paths": ["remake/test/browser/demo_record_holes.mjs", "tools/ci/suites.json"],
+      "run": ["node remake/test/browser/demo_record_holes.mjs"]
     }
   ]
 }
