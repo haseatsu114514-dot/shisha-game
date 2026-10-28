@@ -21,13 +21,15 @@ function interim(round){
   return vm.runInNewContext('(function(round){'+literal+';return table;})')(round);
 }
 const clone=v=>JSON.parse(JSON.stringify(v));
+// #1282（オーナー決定 2026-10-28）: 第1章の逆転優勝を廃止。はじめは上園・博士からも点が入り票前から首位で競り、
+// 南雲の10点は最後の一票。凍結値はこの形に合わせて更新した（南雲の10点配分自体は不変）。
 const frozenFinal={
-  1:{maezono:{naru:5,adam:2,minto:2,hajime:1},dr_kemuri:{adam:5,minto:3,naru:2},nagumo:{hajime:10}},
+  1:{maezono:{hajime:4,naru:2,adam:2,minto:2},dr_kemuri:{hajime:3,adam:3,naru:3,minto:1},nagumo:{hajime:10}},
   3:{maezono:{naru:4,adam:3,hajime:2,minto:1},dr_kemuri:{adam:5,minto:2,hajime:2,naru:1},nagumo:{naru:10}},
-  4:{maezono:{naru:5,adam:3,minto:2},dr_kemuri:{adam:5,minto:4,naru:1},nagumo:{naru:10}}
+  4:{maezono:{naru:4,adam:3,minto:1,hajime:2},dr_kemuri:{adam:5,minto:3,naru:1,hajime:1},nagumo:{naru:10}}
 };
 for(const rank of [1,3,4]){
-  assert.deepEqual(clone(pointTable(rank)),frozenFinal[rank],'Final votes and Nagumo ten points unchanged');
+  assert.deepEqual(clone(pointTable(rank)),frozenFinal[rank],'Final votes match the frozen table (updated for #1282 no-reversal); Nagumo ten points unchanged');
   let previous={};
   for(const current of [interim(1),interim(2),interim(3),pointTable(rank)]){
     for(const judge of ['maezono','dr_kemuri','nagumo']){
