@@ -388,6 +388,14 @@
       }
     },
     {
+      "id": "facility-icons",
+      "title": "Facility icons: sheet byte equality, alpha bounds, badge anchors on right contour, layout",
+      "kind": "quick",
+      "run": [
+        "node remake/test/facility_icons.mjs"
+      ]
+    },
+    {
       "id": "ch1-presentation",
       "title": "Chapter 1 presentation, first brew and deliveries",
       "kind": "browser",
