@@ -84,6 +84,41 @@ const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", 
   assert.equal(storage.get(slot), JSON.stringify(earlier));
   failWrites = false; storage.clear();
 }
+// 写真の日付は撮影元の章開始日でだけ補完し、保存枠を替えても失わない。
+{
+  const title = () => galleryEntries({ cgs: [] }, {}, g.readGalleryProgress(), []).find(e => e.photo).title;
+  const owner = { chapter: 3, flags: { _ch2_day1: { startDay: 15 }, _ageha_purikura_history: [{ ...photo, day: 17 }] } };
+  const id = g.purikuraId(owner.flags._ageha_purikura_history[0]);
+  g.recordGalleryProgress(owner);
+  assert.equal(g.readGalleryProgress().purikura[0].chapterDay, 3);
+  assert.equal(g.purikuraId(g.readGalleryProgress().purikura[0]), id, "chapter DAY does not change identity");
+  assert.match(title(), /第2章・DAY3 /);
+  g.recordGalleryProgress({ flags: { _ageha_purikura_history: [{ ...photo, day: 17 }] } });
+  assert.equal(g.readGalleryProgress().purikura.length, 1);
+  assert.equal(g.readGalleryProgress().purikura[0].chapterDay, 3, "older save cannot erase enriched date");
+  storage.clear();
+  g.recordGalleryProgress({ flags: { _ageha_purikura_history: [{ ...photo, day: 17 }] } });
+  assert.match(title(), /DAY17 /, "no start date keeps the legacy display");
+  g.recordGalleryProgress(owner);
+  assert.match(title(), /DAY3 /, "a later matching save enriches the same record");
+  assert.equal(g.readGalleryProgress().purikura.length, 1);
+  storage.clear();
+  for (const startDay of [undefined, 0, -1, "15", 18]) {
+    g.recordGalleryProgress({ flags: { _ch2_day1: { startDay }, _ageha_purikura_history: [{ ...photo, day: 17 }] } });
+    assert.equal(g.readGalleryProgress().purikura[0].chapterDay, undefined, "unusable start date is not guessed");
+  }
+  storage.clear();
+  for (const invalid of [0, -1, 1.5, "3", null]) {
+    storage.set(g.GALLERY_PROGRESS_KEY, JSON.stringify({ purikura: [{ ...photo, chapterDay: invalid }] }));
+    assert.deepEqual(copy(g.readGalleryProgress().purikura), [photo], "invalid optional date does not destroy photo");
+  }
+  storage.clear();
+  g.recordGalleryProgress({ flags: { _ageha_purikura_history: [{ ...photo, chapterDay: 4 }], _ch2_day1: { startDay: 1 } } });
+  assert.equal(g.readGalleryProgress().purikura[0].chapterDay, 4, "explicit date wins over conversion");
+  g.recordGalleryProgress({ flags: { _ch2_day1: { startDay: 15 } } });
+  assert.equal(g.readGalleryProgress().purikura[0].chapterDay, 4, "another save cannot redate collection-only evidence");
+  storage.clear();
+}
 const value = core.newGame();
 core.save(); assert(!storage.has(g.GALLERY_PROGRESS_KEY), "a fresh save does not create unlocks");
 Object.assign(value, { chapter: 3, phase: "daily", day: 100 });
