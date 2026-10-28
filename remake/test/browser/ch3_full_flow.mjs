@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 const dt = name => `[data-test="${name}"]`;
+const intro = id => `[data-test="ch3-intro-scene"][data-scene="${id}"]`;
 const t = name => `[data-test="ch3-tournament-${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 const arm = page => page.evaluate(async () => {
@@ -13,6 +14,15 @@ const arm = page => page.evaluate(async () => {
   vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
   (await import("./js/craft/session.js")).craftTest.auto = "good";
 });
+
+// 次に再生される会話のIDを記録する。前夜が訪問デート(ch3_visit_*_date)と二重に再生されないことの確認に使う。
+const recordEntered = page => page.evaluate(async () => {
+  const { hooks } = await import("./js/vn/engine.js");
+  const previous = hooks.onEnter;
+  window.__entered = [];
+  hooks.onEnter = (id, dialogue) => { window.__entered.push(id); previous?.(id, dialogue); };
+});
+const entered = page => page.evaluate(() => window.__entered);
 
 async function seed(page) {
   page.setDefaultTimeout(30000);
@@ -45,7 +55,6 @@ await suite("ch3-full-flow", async check => {
   await check("chapter-three-intro-tournament-win-and-aftermath-on-one-save", async page => {
     await seed(page);
     // 1. プロローグ完了
-    const intro = id => `[data-test="ch3-intro-scene"][data-scene="${id}"]`;
     await page.locator(intro("ch3_opening")).waitFor({ timeout: 60000 });
     let state = await get(page);
     assert.equal(state.chapter, 3);
@@ -82,8 +91,79 @@ await suite("ch3-full-flow", async check => {
       state = await get(page);
       assert.equal(state.day, startDay + day - 1, `Wrong elapsed day before ${id}`);
       assert.equal(state.slot, slot, `Wrong time slot before ${id}`);
+      if (id === "ch3_rest_before_recovery") {
+        // 任意場面(#1176 GAP 3-B): 場面カードの「寄り道」から読める。必須の進行・日付・時間帯は動かない。
+        const optional = name => dt(`ch3-intro-optional-${name}`);
+        await page.locator(dt("ch3-intro-optional-open")).click();
+        for (const name of ["ch3_minto_small_lies", "ch3_cigarman_rumor", "ch3_mashiro_play_1", "ch3_mashiro_practice"]) {
+          await page.locator(optional(name)).waitFor();
+        }
+        for (const name of ["ch3_mashiro_play_2", "ch3_emil_workshop", "ch3_cigarman_trace"]) {
+          assert.equal(await page.locator(optional(name)).count(), 0, `${name} must not be offered yet`);
+        }
+        await page.locator(optional("ch3_minto_small_lies")).click();
+        await page.locator(intro(id)).waitFor();
+        let read = await get(page);
+        assert.equal(read.flags._ch3_read_ch3_minto_small_lies, true);
+        assert.equal(read.flags._ch3_intro.stage, state.flags._ch3_intro.stage);
+        assert.equal(read.day, state.day); assert.equal(read.slot, state.slot); assert.equal(read.phase, state.phase);
+        assert.deepEqual(read.tokyoVisits.closedSlots, state.tokyoVisits.closedSlots, "Optional reads must not use a free-time window");
+        // 一つ読むと、続きの場面(ましろ2)は読んだ後にだけ現れる。
+        await page.locator(dt("ch3-intro-optional-open")).click();
+        assert.equal(await page.locator(optional("ch3_minto_small_lies")).count(), 0, "A read scene must not be offered again");
+        await page.locator(optional("ch3_mashiro_play_1")).click();
+        await page.locator(intro(id)).waitFor();
+        await page.locator(dt("ch3-intro-optional-open")).click();
+        await page.locator(optional("ch3_mashiro_play_2")).waitFor();
+        await page.locator(dt("ch3-intro-optional-back")).click();
+        await page.locator(intro(id)).waitFor();
+        // リロード跨ぎ: 読了は保存され、再演されず再び提示されない。
+        await page.reload();
+        await page.locator(dt("title-load")).click();
+        await arm(page);
+        await page.locator(dt("slot-0")).click();
+        await page.locator(intro(id)).waitFor();
+        read = await get(page);
+        assert.equal(read.flags._ch3_read_ch3_minto_small_lies, true);
+        assert.equal(read.flags._ch3_read_ch3_mashiro_play_1, true);
+        assert.equal(read.flags._ch3_intro.stage, state.flags._ch3_intro.stage);
+        await page.locator(dt("ch3-intro-optional-open")).click();
+        assert.equal(await page.locator(optional("ch3_minto_small_lies")).count(), 0, "Reload must not offer a read scene");
+        assert.equal(await page.locator(optional("ch3_mashiro_play_1")).count(), 0);
+        await page.locator(dt("ch3-intro-optional-back")).click();
+        await page.locator(intro(id)).waitFor();
+      }
+      if (id === "ch3_tournament_eve") {
+        // 前夜に会う約束が成立した恋人(みんと)。滞在は大会前日まで、会う時間は前夜の自由時間。
+        await page.evaluate(async () => {
+          const core = await import("./js/core/state.js");
+          const first = core.state.flags._ch3_intro.startDay + 11;
+          core.state.tokyoVisits.plans.push({ id: `tokyo.minto.${first}`, characterId: "minto", status: "staying",
+            met: true, dateDone: false, arrivalDay: first, returnDay: first + 2,
+            meetup: { id: "d12-noon", day: first, slot: 0 }, date: { id: "d13-night", day: first + 1, slot: 1 } });
+          core.state.tokyoVisits.closedSlots.push("d12-noon");
+          core.save();
+        });
+      }
       await page.locator(next).click();
     }
+    // 前夜(#1176 GAP 3-B): 訪問デートの代わりに前夜の場面を、一度だけ再生する。
+    await page.locator(dt("ch3-intro-free")).waitFor();
+    state = await get(page);
+    assert.equal(state.day, startDay + 12);
+    assert.equal(state.slot, 1);
+    assert.equal(state.flags._ch3_evening, undefined);
+    await recordEntered(page);
+    await page.locator(dt("ch3-intro-visit")).click();
+    await page.locator(dt("ch3-intro-ready")).waitFor();
+    const played = await entered(page);
+    assert(played.includes("tournament_date_minto"), `Eve date was not played: ${played}`);
+    assert(!played.some(name => name.startsWith("ch3_visit_")), `Eve date played twice: ${played}`);
+    state = await get(page);
+    assert.deepEqual(state.flags._ch3_evening, { kind: "date", participants: ["minto"], deferred: [] });
+    assert.equal(state.flags._story_shuraba_unresolved, undefined);
+    assert(state.tokyoVisits.plans[0].dateDone);
+    assert(state.tokyoVisits.closedSlots.includes("d13-night"));
     await page.locator(dt("ch3-intro-ready")).waitFor();
     state = await get(page);
     assert.equal(state.flags._ch3_intro.stage, scenes.length);
@@ -172,11 +252,72 @@ await suite("ch3-full-flow", async check => {
     assert.equal(state.flags._ch3_tournament_won, true);
     assert.equal(state.flags._ch3_japan_first_representative, true);
     assert.equal(state.flags._ch3_intro.stage, scenes.length);
+    assert.equal(state.flags._ch3_evening.kind, "date", "The eve is resolved once and kept");
+    assert.equal(state.flags._ch3_read_ch3_minto_small_lies, true);
     assert.equal(state.flags._ch3_aftermath.stage, after.length);
     assert.equal(state.flags._ch3_tournament.history.length, 1);
     assert(state.day > 42, "Aftermath must advance the calendar past the tournament day");
     await page.reload();
     await page.locator(dt("title-load")).click();
     assert.match(await page.locator(dt("slot-0")).innerText(), /第3章クリア/);
+  }, { reducedMotion: "reduce" });
+
+  await check("chapter-three-eve-near-conflict-is-deferred-not-settled", async page => {
+    // 前夜に恋人二人が実際に東京にいて、スティーブとも面識がある。茶化しで保留にし、謝罪・破局・和解を確定しない。
+    await seed(page);
+    await page.locator(intro("ch3_opening")).waitFor({ timeout: 60000 });
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.state;
+      Object.assign(value, { lovers: ["minto", "tsumugi"], contacts: ["sumi", "minto", "tsumugi"] });
+      value.flags._ch3_intro.titleSeen = true; value.flags._ch3_intro.prologueStep = 4;
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      value.met.steve = true;
+      while (progress.chapterThreeScenes(value)[value.flags._ch3_intro.stage]?.id !== "ch3_tournament_eve") {
+        const scene = progress.chapterThreeScenes(value)[value.flags._ch3_intro.stage];
+        if (!scene || !progress.completeChapterThreeScene(value, scene.id)) throw new Error("Cannot reach the eve");
+      }
+      const first = value.flags._ch3_intro.startDay + 11;
+      for (const id of ["minto", "tsumugi"]) {
+        value.tokyoVisits.plans.push({ id: `tokyo.${id}.${first}`, characterId: id, status: "staying", met: true,
+          dateDone: false, arrivalDay: first, returnDay: first + 2, meetup: { id: "d12-noon", day: first, slot: 0 },
+          date: { id: "d13-night", day: first + 1, slot: 1 } });
+      }
+      value.tokyoVisits.closedSlots.push("d12-noon");
+      if (!progress.completeChapterThreeScene(value, "ch3_tournament_eve")) throw new Error("Eve scene was not completed");
+      core.save(); core.requestResumeOnBoot();
+    });
+    await page.reload();
+    await page.locator(dt("ch3-intro-free")).waitFor({ timeout: 60000 });
+    await arm(page);
+    await recordEntered(page);
+    const before = await get(page);
+    assert.equal(before.slot, 1);
+    await page.locator(dt("ch3-intro-visit")).click();
+    await page.locator(dt("ch3-intro-ready")).waitFor();
+    const played = await entered(page);
+    for (const id of ["ch3_shuraba_open", "ch3_shuraba_minto", "ch3_shuraba_tsumugi", "ch3_shuraba_steve"]) {
+      assert(played.includes(id), `${id} was not played: ${played}`);
+    }
+    assert(!played.some(id => id.startsWith("tournament_date_") || id.startsWith("ch3_visit_") || id.startsWith("shuraba_")),
+      `Only the near-conflict is played on the eve: ${played}`);
+    let state = await get(page);
+    assert.deepEqual(state.flags._ch3_evening, { kind: "near_conflict", participants: ["minto", "tsumugi"],
+      deferred: ["minto", "tsumugi"] });
+    assert.equal(state.flags._ch3_shuraba_deferred, true);
+    assert.equal(state.flags._story_shuraba_unresolved, undefined, "The joke must not record a real unresolved dispute");
+    assert.deepEqual(state.lovers, ["minto", "tsumugi"], "Nobody is dumped or reconciled on the eve");
+    assert(state.tokyoVisits.plans.every(plan => !plan.dateDone), "Nobody had the eve date");
+    assert(state.tokyoVisits.closedSlots.includes("d13-night"));
+    assert.equal(state.day, 42); assert.equal(state.phase, "tournament");
+    // リロードしても前夜は再演されない。
+    await page.reload();
+    await page.locator(dt("title-load")).click();
+    await arm(page);
+    await page.locator(dt("slot-0")).click();
+    await page.locator(dt("ch3-intro-ready")).waitFor();
+    state = await get(page);
+    assert.equal(state.flags._ch3_evening.kind, "near_conflict");
   }, { reducedMotion: "reduce" });
 });
