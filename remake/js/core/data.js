@@ -151,6 +151,7 @@ export async function loadAll(onProgress = () => {}) {
 const ALWAYS_KNOWN = new Set([
   "hajime", "sumi", "tsumugi", "salaryman", "kako", "rira", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
+  "spice_merchant", "cafe_staff",
 ]);
 // 立ち絵フォルダ・別名（oneesan はみんとの私服＝ura_* 差分）
 export const SPEAKER_ALIAS = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };
