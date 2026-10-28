@@ -15,6 +15,7 @@ const core = await import("../js/core/state.js");
 const { newState, newGame, setState, save, SAVE_KEY } = core;
 const { buildCarryPackage, KEEPSAKE_ORIGINS } = await import("../js/core/carry.js");
 const { startNextCycle, difficultyEvidence, confirmRunDifficulty, isNextCycleUnlocked } = await import("../js/core/cycle-start.js");
+const { CYCLE_META_KEY, CYCLE_META_VERSION } = await import("../js/core/cycle-meta.js");
 const { maxStamina } = await import("../js/core/stats.js");
 const { MAX_MONEY } = await import("../js/core/rules.js");
 const { readGalleryProgress, GALLERY_PROGRESS_KEY } = await import("../js/core/gallery-progress.js");
@@ -140,17 +141,26 @@ try {
   Math.random = realRandom;
 }
 
-// ---------------------------------------------------------------- D. fromCycle の優先順位と解放の仮置き
+// ---------------------------------------------------------------- D. fromCycle の優先順位とメタ層の解放判定
 assert.equal(startNextCycle({ ...pkg, fromCycle: 4 }, { fromCycle: 2 }).cycle, 5);
 assert.equal(startNextCycle(pkg, { fromCycle: 2 }).cycle, 3);
 assert.equal(startNextCycle(pkg).cycle, 4);
 setState(null);
 assert.equal(startNextCycle(pkg).cycle, 2);
-assert.equal(isNextCycleUnlocked({ clearedChapters: [1, 5] }), true);
-assert.equal(isNextCycleUnlocked({ clearedChapters: [1, 4] }), false);
-assert.equal(isNextCycleUnlocked({ clearedChapters: [] }), false);
-assert.equal(isNextCycleUnlocked({}), false);
+localStorage.removeItem(CYCLE_META_KEY);
+assert.ok(readGalleryProgress().clearedChapters.includes(5));
+assert.equal(isNextCycleUnlocked(), false, "第5章クリアだけでは解放しない");
+localStorage.setItem(CYCLE_META_KEY, JSON.stringify({ version: CYCLE_META_VERSION, unlocked: false }));
 assert.equal(isNextCycleUnlocked(), false);
+localStorage.setItem(CYCLE_META_KEY, JSON.stringify({ version: CYCLE_META_VERSION, unlocked: true }));
+assert.equal(isNextCycleUnlocked(), true);
+localStorage.setItem(CYCLE_META_KEY, JSON.stringify({ version: CYCLE_META_VERSION, unlocked: "true" }));
+assert.equal(isNextCycleUnlocked(), false, "真偽値 true 以外は解放しない");
+localStorage.setItem(CYCLE_META_KEY, JSON.stringify({ version: CYCLE_META_VERSION + 1, unlocked: true }));
+assert.equal(isNextCycleUnlocked(), false, "未対応 version は採用しない");
+localStorage.setItem(CYCLE_META_KEY, "{broken json");
+assert.equal(isNextCycleUnlocked(), false, "壊れた保存は解放しない");
+localStorage.removeItem(CYCLE_META_KEY);
 
 // ---------------------------------------------------------------- E. 1周目への無影響（§3.3）
 for (const fresh of [newState(), newGame()]) {

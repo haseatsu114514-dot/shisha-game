@@ -1,5 +1,6 @@
 // 周回開始（Issue #1228、NGPLUS-DESIGN.md §2・§3.3〜§3.5・§8）。
 import { state, newState, newCycleId, setState, save, STAT_KEYS } from "./state.js";
+import { readCycleMeta } from "./cycle-meta.js";
 import { MAX_MONEY } from "./rules.js";
 import { maxStamina } from "./stats.js";
 
@@ -26,13 +27,12 @@ export function confirmRunDifficulty(state, difficultyForRunFn) {
 }
 
 /**
- * §3.2・§7: 解放判定の仮置き。progress は readGalleryProgress() の戻り値。
- * 本来の正本は U2 の recordTrueEnd が書く周回メタ層 suien_remake_cycle.unlocked。
+ * §3.2・§7: 解放判定は U2 の周回メタ層（suien_remake_cycle）を正本とする。
+ * 解放の書き込みは recordTrueEnd の明示通知だけが行い、章クリアだけでは解放しない。
  * 真エンド到達の判定自体は #517 / D7 の領域であり、ここでは決めない。
- * 正本への差し替えはこの1関数だけで行う。
  */
-export function isNextCycleUnlocked(progress) {
-  return progress?.clearedChapters?.includes(5) ?? false;
+export function isNextCycleUnlocked() {
+  return readCycleMeta().unlocked === true;
 }
 
 /** 抽出済みパッケージを適用して次の周回を開始する（§3.4）。 */
