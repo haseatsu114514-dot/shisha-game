@@ -4,14 +4,12 @@ import { state } from "../core/state.js";
 import { REGULATION, regulationFor } from "../craft/steps.js";
 
 export function ruleSheetPanel(chapter = state?.chapter || 1) {
-  const regulation = chapter <= 2 ? chapter === state?.chapter ? regulationFor({ mode: "tournament" }) : REGULATION[chapter] : null;
+  const regulation = chapter === state?.chapter ? regulationFor({ mode: "tournament" }) : REGULATION[chapter];
   const tournament = { 1: "SMOKE CROWN CUP", 2: "県大会", 3: "全国大会" }[chapter] || "大会";
-  const challenge = chapter === 3
-    ? "大会前夜までに決めた一台を制作する。"
+  const challenge = chapter === 3 && regulation?.label
+    ? `${regulation.label}。甘み・苦み・後味の調整で一台に仕上げる。`
     : regulation?.label || "大会の課題を確認する。";
-  const stock = chapter === 3
-    ? "当日は道具と材料を確認して持ち込む。"
-    : regulation?.supply ? "指定の葉は主催者が用意する。" : "大会の葉は、自分の在庫から持ち込む。";
+  const stock = regulation?.supply ? "指定の葉は主催者が用意する。" : "大会の葉は、自分の在庫から持ち込む。";
   const article = (number, title, body) => el("section.rule-article", [
     el("h3", { text: `第${number}条　${title}` }), el("p", { text: body }),
   ]);

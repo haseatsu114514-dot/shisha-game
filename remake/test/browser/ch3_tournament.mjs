@@ -5,14 +5,14 @@ import { suite, assertFits } from "./support.mjs";
 const t = name => `[data-test="ch3-tournament-${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 
-async function seed(page, auto = "good") {
+async function seed(page, auto = "good", overrides = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async auto => {
+  await page.evaluate(async ({ auto, overrides }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
     const { CH3_INTRO_SCENES } = await import("./js/chapters/ch3-progress.js");
     Object.assign(value, { chapter: 3, day: 42, slot: 0, phase: "tournament", stamina: 100,
-      money: 35000, flavorStock: { double_apple: 100, mint: 100 }, weatherSeed: 5 });
+      money: 35000, flavorStock: { double_apple: 100, mint: 100, chocolate: 100 }, weatherSeed: 5 }, overrides);
     value.flags = { _elapsed_calendar: true, _ch2_cleared: true,
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] },
       _ch3_intro: { startDay: 29, stage: CH3_INTRO_SCENES.length, titleSeen: true, routeVersion: 2 } };
@@ -27,7 +27,7 @@ async function seed(page, auto = "good") {
     vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
     const craft = await import("./js/craft/session.js"); craft.craftTest.auto = auto;
     void (await import("./js/chapters/ch3-tournament.js")).runChapterThreeTournament();
-  }, auto);
+  }, { auto, overrides });
 }
 
 await suite("ch3-tournament", async check => {
@@ -76,6 +76,22 @@ await suite("ch3-tournament", async check => {
     assert.equal(retried.flags._ch3_tournament.attempts, before.flags._ch3_tournament.attempts);
     assert.deepEqual(retried.flavorStock, before.flavorStock);
   }, { reducedMotion: "reduce" });
+  await check("arriving-with-no-chocolate-still-lets-the-craft-begin", async page => {
+    // 課題のチョコレートを一度も買わずに来ても、本番前に最低量（4g）が手元へ補われ、
+    // ミックス工程で課題を満たせず詰む、ということがない（#1052）。
+    await seed(page, "good", { flavorStock: { double_apple: 100, mint: 100 } });
+    await page.locator(t("entry")).waitFor();
+    const topped = await get(page);
+    assert.equal(topped.flavorStock.chocolate, 4,
+      "Arriving with no chocolate tops up to the 4g minimum before the craft");
+    await page.locator(t("start")).click();
+    await page.locator(t("ready")).waitFor();
+    await page.locator(t("craft-start")).click();
+    // 0gなら配合の決定ボタンが押せず votes まで到達できない。補填により一台を仕上げられる。
+    await page.locator(t("votes")).waitFor();
+    assert.equal((await get(page)).flags._ch3_tournament.voted, 1,
+      "The craft reaches the first vote instead of dead-ending at the mix step");
+  }, { reducedMotion: "reduce" });
   await check("burned-pull-still-counts-as-a-loss", async page => {
     await seed(page, "burn");
     await page.locator(t("entry")).waitFor();
@@ -118,10 +134,10 @@ await suite("ch3-tournament", async check => {
         nodes.map(node => node.dataset.judge).sort()), ["dr_kemuri", "emil", "nagumo"]);
       assert.match(await page.locator(".ch2-contest-judges").textContent(), /エミル|Emil/);
       const explanation = await page.locator(t("vote-reason")).innerText();
-      if (round === 1) assert.doesNotMatch(explanation, /青柑橘/, "No tasting effect before service");
+      if (round === 1) assert.doesNotMatch(explanation, /鋭い苦みの余韻/, "No tasting effect before service");
       if (round === 2) assert.match(explanation, /南雲は水を飲んだ.*久世の直後にはじめを試喫.*比較-2/s,
         "Show the actual palate trap that affected Hajime");
-      if (round === 3) assert.match(explanation, /青柑橘は直後の比較に残らなかった/,
+      if (round === 3) assert.match(explanation, /鋭い苦みは直後の比較に残らなかった/,
         "Show when the same tactic failed because of order and water");
       await assertFits(page, ".ch2-contest .btn, .ch2-contest-rival, .judge-chip");
       if (round === 1) {
