@@ -321,6 +321,10 @@ export function dockBenchLeaf(cs, host) {
   const root = bench.leaf.root;
   host.prepend(root);
 }
+/** 配合（フレーバーを決める工程）でも「フレーバーの持ち」を先に見せたいときに使う（#1081 E02）。 */
+export function setBenchLeafVisible(cs, visible) {
+  if (bench?.cs === cs) bench.leaf.root.hidden = !visible;
+}
 
 /**
  * はじめの疲れ（TH29・TH43）。札や文字は出さず、作業中のはじめの表情と汗で見せる。
