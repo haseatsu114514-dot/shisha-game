@@ -122,6 +122,7 @@
         "node --experimental-vm-modules remake/test/reel_hints.mjs",
         "node remake/test/cafe_ideas.mjs",
         "node remake/test/ch2_ageha_story.mjs",
+        "node remake/test/ch1_adam_taste_carryover.mjs",
         "node --experimental-vm-modules remake/test/fortune_rumor.mjs",
         "node remake/test/lover_dates.mjs",
         "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs",
@@ -146,6 +147,8 @@
         "node --experimental-vm-modules remake/test/ch3_deliveries.mjs",
         "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
+        "node --experimental-vm-modules remake/test/tournament_resources.mjs",
+        "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
@@ -176,6 +179,7 @@
         "node remake/test/ch2_tournament.mjs",
         "node remake/test/tournament_story.mjs",
         "node remake/test/served_eval.mjs",
+        "node remake/test/naru_tasting.mjs",
         "node --experimental-vm-modules remake/test/tournament_vote_progression.mjs",
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
@@ -2415,6 +2419,25 @@
       ],
       "run": [
         "node remake/test/browser/ui_themes.mjs"
+      ]
+    },
+    {
+      "id": "shisha-diagram",
+      "title": "Sumi's shisha mechanism diagram (step sync, skip, load, portrait)",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 5,
+      "paths": [
+        "remake/js/vn/shisha-diagram.js",
+        "remake/css/vn/shisha-diagram.css",
+        "remake/js/vn/engine.js",
+        "remake/js/vn/conversation-preview.js",
+        "remake/conversation-preview.html",
+        "data/dialogue/ch1_sumi.json",
+        "remake/test/browser/shisha_diagram.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/shisha_diagram.mjs"
       ]
     },
     {

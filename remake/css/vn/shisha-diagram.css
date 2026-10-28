@@ -29,6 +29,10 @@
 }
 .sd-art { display: block; width: 100%; height: 262px; overflow: visible; }
 
+/* 部位ラベル：装置のどこが何か（炭・フレーバー・ステム・水・ホース）を常に示す */
+.sd-tag { fill: #efe7d2; font-size: 12px; font-weight: 700; }
+.sd-lead { stroke: #c9a86a; stroke-width: 1.5; }
+
 .sd-legend { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 3px; }
 .sd-step {
   display: flex; align-items: center; gap: 7px;
