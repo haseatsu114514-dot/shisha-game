@@ -8,7 +8,7 @@ import { CITY_BACKGROUNDS, CH2_SCENE_BACKGROUNDS } from "../core/city-locations.
 // #921の柚ヶ谷店の客席を夜景にした背景。県大会ホールや地元店と区別する。
 export const C_STATION_TASTING_BG = CITY_BACKGROUNDS.c_station_night;
 export const CH2_NIGHTS = [
-  { day: 3, pin: "naru", label: "なるの祝福", beat: "夜。なるの話を聞きに、ケムリクサへ──", doneFlag: "_ch2_naru_warm_done", steps: [
+  { day: 3, pin: "naru", label: "なるの祝福", beat: "夜。なるの話を聞きに、KEMURIKUSAへ──", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
     { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", contact: "ageha" },
   ] },
@@ -24,7 +24,7 @@ export const CH2_NIGHTS = [
   { day: 6, pin: "tonari", label: "残る匂い", beat: "夜。残る匂いのことが気になって、tonariへ──", prerequisites: ["_ch2_read_ch2_sofa_burn"], steps: [
     { id: "ch2_lingering_smell", file: "ch2_main" },
   ] },
-  { day: 7, pin: "adam", label: "アダムとの距離", beat: "夜。アダムの試作を味わいに、エデンへ──", steps: [
+  { day: 7, pin: "adam", label: "アダムとの距離", beat: "夜。アダムの試作を味わいに、EDENへ──", steps: [
     { id: "ch2_adam_distance", file: "ch2_isolation" },
   ] },
   { day: 9, pin: "ch2_c_station", label: "アフサール新作の試煙会", beat: "夜。C.STATIONの試煙会へ──", steps: [
@@ -34,10 +34,10 @@ export const CH2_NIGHTS = [
     { id: "ch2_sumi_silence", file: "ch2_main" },
     { id: "remake_ch2_ageha_slump", file: "ch2_ageha_story" },
   ] },
-  { day: 11, pin: "naru", label: "なるの言葉", beat: "夜。試作の話をしに、ケムリクサへ──", steps: [
+  { day: 11, pin: "naru", label: "なるの言葉", beat: "夜。試作の話をしに、KEMURIKUSAへ──", steps: [
     { id: "ch2_naru_confrontation", file: "ch2_isolation" },
   ] },
-  { day: 12, pin: "minto", label: "みんとの心配", beat: "夜。みんとの様子を見に、ぺぱーみんとへ──", steps: [
+  { day: 12, pin: "minto", label: "みんとの心配", beat: "夜。みんとの様子を見に、PEPPERMINTへ──", steps: [
     { id: "ch2_minto_warning", file: "ch2_isolation" },
     // #929: 帰り道のケムリクサ。DAY11の選択の記録がある時だけ、距離の違いを見せる
     { id: "ch2_naru_window", file: "ch2_isolation", bg: CH2_SCENE_BACKGROUNDS.naruWindow, when: ({ flags }) =>
