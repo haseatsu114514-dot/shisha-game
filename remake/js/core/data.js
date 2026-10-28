@@ -293,6 +293,11 @@ export function cgUrl(id) {
   return (DB.manifest.cgs || []).includes(`${id}.png`) ? img(`cgs/${id}.png`) : null;
 }
 
+/** ギャラリー一覧用サムネイル（元CGの WebP から生成した縮小版・最大512px） */
+export function cgThumbUrl(id) {
+  return (DB.manifest.cgs || []).includes(`${id}.png`) ? `img/cgs/thumbs/${id}.webp` : null;
+}
+
 /**
  * 顔ドット絵アイコン。名前欄と同じ条件で、本名を聞いた後の私的な場面のみんと（栞）は私服の顔
  * （face_minto_private）。私服の「お姉さん」も、営業姿の顔で正体が見た目に出ないよう私服の顔にする
