@@ -217,12 +217,16 @@ export function previewReveal(rank = "S") {
 
 /** 売れる小物（くじの景品など）の買い取り行 */
 export function goodsSellRows(rerender) {
-  return (state.goods || []).map((g, i) => el("div.shop-row", [
+  return (state.goods || []).map((g) => el("div.shop-row", [
     el("span.shop-cat", { text: "小物" }),
     el("div.shop-main", [el("b", { text: g.name }), el("small", { text: "くじの景品・中古買い取り" })]),
     el("button.btn.small", {
       text: `${yen(g.sell)}で売る`,
-      onclick: () => { state.goods.splice(i, 1); addMoney(g.sell); SE.money(); rerender(); },
+      onclick: () => {
+        const idx = (state.goods || []).indexOf(g);
+        if (idx < 0) return;
+        state.goods.splice(idx, 1); addMoney(g.sell); SE.money(); rerender();
+      },
     }),
   ]));
 }
