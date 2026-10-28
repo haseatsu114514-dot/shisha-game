@@ -68,7 +68,6 @@ export function newState() {
     limeRead: [],              // 既読の LIME id
     pendingInvite: null, // day/slot/originIdつきの予約
     inbox: [],                 // LIME の受信箱 [{id, day, msg, read, done, log}]（朝に届き、好きなときに読む）
-    notes: {},                 // 常連ノート（接客した客 -> 回数）
     relationshipMemories: [],   // 読んだ交流だけを残す。人数・恋愛・大会の加点には使わない
     trpg: { stock: [], owned: [], cleared: {}, shifts: [], club: { founded: null, members: {} } },
     recipes: {},               // 発見したレシピ
@@ -131,6 +130,8 @@ function migrateSamechanIdentity(value) {
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
   const oldSchema = Number(s.schema) || 0;
+  // #1254: 現行より新しいスキーマは移行できない。原本を書き換えず、呼び出し側で拒否する（null）。
+  if (oldSchema > SCHEMA) return null;
   if (oldSchema < 13) {
     s = migrateSamechanIdentity(s);
     for (const key of ["contacts", "lovers", "limeRead", "loverEventsSeen", "relationshipMemories"]) {
@@ -148,6 +149,7 @@ function migrate(s) {
     }));
   }
   if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
+  delete s.notes; // 常連ノートは廃止。旧セーブの残存キーを捨てる
   // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
   // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
   if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;
@@ -255,11 +257,11 @@ function migrate(s) {
   if (!Array.isArray(s.contacts)) s.contacts = [];
   if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
   s.reel = { ...fresh.reel, ...s.reel };
-  if (s.reel.installed) s.flags.pakki_app_installed = true; // 導入済みの旧セーブも観音堂の会話の条件を満たす
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {
     s.reel.installed = !!(s.reel.introDone || s.reel.count || s.reel.pending.length || s.spotVisits?.c_station);
   }
+  if (s.reel.installed) s.flags.pakki_app_installed = true; // 導入済みの旧セーブも観音堂の会話の条件を満たす
   // 廃止パイプ（pipe_middle / pipe_high / pipe_highest）は買値で全額返金し、所持・装備から外す。
   const pipeRefunds = { pipe_middle: 30000, pipe_high: 100000, pipe_highest: 300000 };
   if (Array.isArray(s.owned) && s.owned.some((id) => id in pipeRefunds)) {
@@ -335,15 +337,17 @@ export function newGame() {
 }
 
 export function save() {
-  if (!state) return;
+  if (!state) return false;
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try { recordGalleryProgress(peekSave()); } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
   recordGalleryProgress(state);
   state.savedAt = Date.now();
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    return true;
   } catch {
     /* プライベートウィンドウ等で失敗しても遊べるようにする */
+    return false;
   }
 }
 
@@ -360,7 +364,9 @@ export function peekSave() {
 
 export function load() {
   const s = peekSave();
-  return s ? setState(migrate(s)) : null;
+  if (!s) return null;
+  const m = migrate(s);
+  return m ? setState(m) : null; // 未来スキーマは原本保持のまま拒否
 }
 
 // ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
@@ -399,8 +405,16 @@ export function saveToSlot(key) {
 export function loadFromSlot(key) {
   const s = readSlot(key);
   if (!s) return null;
-  setState(migrate(s));
-  save();
+  const m = migrate(s);
+  if (!m) return null; // 未来スキーマは原本保持のまま拒否し、オートセーブへ進ませない
+  const previous = state;
+  setState(m);
+  const saved = save();
+  // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう（#1256）。
+  if (!saved && key !== SAVE_KEY) {
+    setState(previous);
+    return null;
+  }
   return state;
 }
 

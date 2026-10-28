@@ -234,4 +234,19 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   assert.deepEqual(Object.keys(KEEPSAKE_ORIGINS).sort(), ids);
 }
 
-console.log("ngplus carry: PASS (schema 22 migration, state/flag classification coverage, package extraction, data cross-check)");
+// ---------------------------------------------------------------- F. 未来スキーマの拒否（#1254）
+{
+  const futureRaw = JSON.stringify((() => { const s = copy(newState()); s.schema = SCHEMA + 1; return s; })());
+  // オートセーブ: 読まず、原本も書き換えない
+  localStorage.setItem(SAVE_KEY, futureRaw);
+  assert.equal(load(), null, "未来スキーマのオートセーブは拒否する");
+  assert.equal(localStorage.getItem(SAVE_KEY), futureRaw, "拒否した原本は書き換えない");
+  // 手動枠: 拒否し、オートセーブへ進ませない（SAVE_KEY は置いたまま＝上書きされていない）
+  const slotKey = SAVE_SLOTS[1].key;
+  localStorage.setItem(slotKey, futureRaw);
+  assert.equal(loadFromSlot(slotKey), null, "未来スキーマの手動枠は拒否する");
+  assert.equal(localStorage.getItem(SAVE_KEY), futureRaw, "手動枠の拒否でオートセーブを上書きしない");
+  assert.equal(localStorage.getItem(slotKey), futureRaw, "手動枠の原本も書き換えない");
+}
+
+console.log("ngplus carry: PASS (schema 22 migration, state/flag classification coverage, package extraction, data cross-check, future schema refusal)");

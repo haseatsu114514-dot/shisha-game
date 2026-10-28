@@ -1,5 +1,5 @@
 {
-  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。未接続。",
+  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*（エンディング後）は未接続。",
   "dialogues": [
     {
       "dialogue_id": "ch3_shuraba_open",

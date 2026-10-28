@@ -10,7 +10,9 @@ const { DB } = await import("../js/core/data.js");
 const { state, newGame, setState } = await import("../js/core/state.js");
 const { MAKER_SPECS, makerOfFlavor, makerMixProfile, compareEquipment, flavorThermalGuide } = await import("../js/craft/temperature-model.js");
 const { coalWarmth } = await import("../js/craft/coals.js");
-const { flavorFamilyGrams, giftBowlEffect, computeShisha, bonusOf } = await import("../js/craft/score.js");
+const { flavorFamilyGrams, giftBowlEffect, computeShisha, bonusOf, finalize } = await import("../js/craft/score.js");
+const { advanceToChapterTwo } = await import("../js/chapters/ch2-progress.js");
+const { advanceToChapterThree } = await import("../js/chapters/ch3-progress.js");
 const { evaluateMix, isSuyakiBowl } = await import("../js/craft/steps.js");
 const { BASE_PREF_SCALE, JUDGE_PROFILES, judgeMaxPrefDelta, evaluateJudgeScore } = await import("../js/chapters/ch2-tournament-state.js");
 
@@ -312,4 +314,59 @@ const vanillaGuide = flavorThermalGuide(DB.flavorById.vanilla);
 assert.match(vanillaGuide.tempBandLabel, /低温・繊細/);
 
 console.log("[craft scoring spec] PASS: 6 makers, +2.5 ceiling, flat vs cube charcoal, shop equipment comparison, canonical judge formula, and pipe refund migration verified");
+
+// #1255: 第1章の準備記録は保持するが、後章の採点には持ち越さない。
+const evenCup = chapter => ({
+  mode: "tournament", ...(chapter == null ? {} : { chapter }),
+  holes: { score: 70 }, heat: { score: 70 }, stats: { craftQuality: 70 },
+  careHistory: [{ score: 70 }, { score: 70 }],
+});
+const prepared = newGame();
+prepared.rehearsal = "great";
+prepared.flags._last_night = "practice";
+assert.equal(finalize(evenCup(1)).total, 75);
+prepared.phase = "cleared";
+assert.equal(advanceToChapterTwo(prepared), true);
+assert.equal(finalize(evenCup(2)).total, 70, "real chapter 2 transition must stop the +5 carry-over");
+prepared.phase = "cleared";
+Object.assign(prepared.flags, {
+  _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
+  _ch2_tournament: { stage: "complete" },
+});
+assert.equal(advanceToChapterThree(prepared), true);
+assert.equal(finalize(evenCup(3)).total, 70, "real chapter 3 transition must stop the +5 carry-over");
+assert.equal(prepared.rehearsal, "great", "keep the historical preparation record");
+assert.equal(prepared.flags._last_night, "practice");
+
+for (const chapter of [1, 2, 3, 4, 5]) {
+  for (const rehearsal of [null, "rough", "good", "great"]) {
+    for (const choice of [undefined, "sleep_early", "talk_sumi", "practice"]) {
+      const saved = newGame();
+      Object.assign(saved, { chapter, rehearsal });
+      if (choice !== undefined) saved.flags._last_night = choice;
+      // LOAD既存セーブ経由。旧セッションはchapterを持たない場合もある。
+      localStorage.setItem("suien_remake_save", JSON.stringify(saved));
+      const restored = load();
+      const expected = chapter === 1
+        ? ({ great: 3, good: 1.5 }[rehearsal] || 0) + (choice === "practice" ? 2 : 0) : 0;
+      for (const cup of [evenCup(chapter), evenCup()]) {
+        assert.equal(finalize(cup).total, 70 + expected, `chapter=${chapter}, ${rehearsal}, ${choice}`);
+        if (chapter > 1) assert.deepEqual(cup.bonusNotes, [], "no stale preparation notes");
+      }
+      assert.equal(bonusOf().bonus, expected, "chapter fallback also applies without a session");
+      assert.equal(restored.rehearsal, rehearsal);
+      assert.equal(restored.flags._last_night, choice);
+    }
+  }
+  // 章制限は準備加点だけ。贈り物・熟練度は後章も有効。
+  const current = newGame();
+  current.chapter = chapter;
+  current.rehearsal = "great"; current.flags._last_night = "practice";
+  current.owned.push("suyaki_minto"); current.flavorMastery = { mint: 60 };
+  const cup = { ...evenCup(chapter), equip: { bowl: "suyaki_minto" }, mix: { mint: 12 } };
+  assert.equal(bonusOf(cup).bonus, 9 + (chapter === 1 ? 5 : 0));
+  current.chapter = chapter === 1 ? 2 : 1;
+  assert.equal(bonusOf(cup).bonus, 9 + (chapter === 1 ? 5 : 0), "session chapter takes priority");
+}
+console.log("[craft scoring spec] PASS: chapter-scoped preparation, real transitions, legacy LOAD, and independent gift/mastery bonuses");
 

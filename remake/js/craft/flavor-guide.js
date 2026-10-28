@@ -92,7 +92,7 @@ export function mixForecastCard(cs, { precision = 0, mastery, aroma, compact = f
 
 // 文言は現行の計算に効く性能に限る。HMDの未接続の温まり方・蓄熱は説明しない。
 const EQUIPMENT_USE = {
-  silicone_bowl: ["12gで組み立てる基本の器", "容量を増やしたい時は別の器へ"],
+  silicone_bowl: ["12gの葉を使う基本の器", "容量を増やしたい時は別の器へ"],
   hagal_80beat: ["最大15g。葉を増やして厚みを出す", "多く詰めるほど蒸らしは長め"],
   nightside_premier_hagal: ["最大15g。温度を合わせやすい器", "多く詰めるほど蒸らしは長め"],
   suyaki_hagal: ["最大20g。量を使って厚い味へ", "適温幅は狭め。温度合わせが要る"],
