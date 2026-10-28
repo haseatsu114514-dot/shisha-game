@@ -27,7 +27,7 @@ import { temperatureAfterSteam } from "./conditions.js";
 import { steamEnvironment, steamForecastProfile } from "./steam-climate.js";
 import { screenBlast } from "./blast.js";
 import { artImg } from "./art.js";
-import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
+import { LEAF_MAX, flavorLeafStages, ensureFlavorLife } from "./flavor-life.js";
 import { buildCraftProgress } from "./progress.js";
 import { warmCraftAssets } from "./readiness.js";
 import { prepareBenchEntry } from "./loading.js";
@@ -82,6 +82,9 @@ export function newSession(mode) {
     retryUsed: false,
   };
   applyCoalTraining(cs, state.flags);
+  // E07(#1081): 葉の持ち/消耗は一台の全工程で共有する状態として、ここで一度だけ生む。
+  // 蒸らし・提供で傷んだ葉を、調整（熱管理）や場面切替・SAVE/LOAD で新品へ戻さない。
+  ensureFlavorLife(cs);
   return cs;
 }
 
@@ -284,6 +287,10 @@ export function setBenchTemperature(cs, temp) {
 export function setBenchDraw(cs, kind, duration = 0) {
   if (bench?.cs === cs) bench.worker.setDraw(kind, duration);
 }
+/** 確定した水量を左の作業風景のボトル内部の水位へ反映する。 */
+export function setBenchWater(cs) {
+  if (bench?.cs === cs && bench.root.isConnected) bench.worker.setWater(cs?.water);
+}
 /** 穴あけ側が確定した実穴の座標だけを、左の手元へ渡す。 */
 export function setBenchHoleAction(cs, event) {
   if (bench?.cs === cs && bench.root.isConnected) bench.worker.punch(event);
@@ -320,6 +327,10 @@ export function dockBenchLeaf(cs, host) {
   if (bench?.cs !== cs) return;
   const root = bench.leaf.root;
   host.prepend(root);
+}
+/** 配合（フレーバーを決める工程）でも「フレーバーの持ち」を先に見せたいときに使う（#1081 E02）。 */
+export function setBenchLeafVisible(cs, visible) {
+  if (bench?.cs === cs) bench.leaf.root.hidden = !visible;
 }
 
 /**

@@ -1,6 +1,7 @@
 import { notifyMastery } from "../core/mastery-notice.js";
 import { learnFlavorStory } from "../core/flavor-mastery.js";
 import { tournamentFinished } from "../core/story-context.js";
+import { basicsExperienced } from "../craft/practice-history.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
@@ -106,6 +107,7 @@ function setAuto(v) {
   if (v) kickAuto();
 }
 function setSkip(v) {
+  if (v && running?.cancelOnSkip) return finish(true);
   if (v) setAuto(false);
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
@@ -158,6 +160,7 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param idOrDlg dialogue_id か dialogue オブジェクト
  * @param opts.bg  背景の上書き（res:// パス可）
  * @param opts.signal 呼出し元が場面を破棄したとき、読了・末尾報酬なしで閉じる
+ * @param opts.cancelOnSkip SKIPを中断として扱い、呼出し元で次回の再読を可能にする
  */
 export function play(idOrDlg, opts = {}) {
   if (!dom) buildDom();
@@ -175,6 +178,7 @@ export function play(idOrDlg, opts = {}) {
       queue: (dlg.lines || []).slice(),
       branches: dlg.branches || {},
       resolve,
+      cancelOnSkip: !!opts.cancelOnSkip,
       waitingChoice: false,
       typing: false,
       pages: null,
@@ -214,6 +218,7 @@ export function play(idOrDlg, opts = {}) {
     // 会話の間は、まだ片付いていない画面（大会の作業台・結果表など）も後ろに見せない（会話が終われば戻る）
     document.body.classList.add("vn-open");
     const me = running;
+    if (me.cancelOnSkip && skipMode) { setSkip(false); finish(true); return; }
     if (opts.signal) {
       const cancel = () => { if (running === me) finish(true); };
       me.removeAbort = () => opts.signal.removeEventListener("abort", cancel);
@@ -430,7 +435,6 @@ function next() {
     }
     if (type === "sfx") { playSe(line.id); continue; }
     if (type === "fx") { runFx(line); continue; }
-    if (type === "customer_note") { state.notes[line.note_id] = (state.notes[line.note_id] || 0) + 1; continue; }
     // 未知の行タイプは黙って飛ばす（データ先行で書けるように）
   }
 }
@@ -466,14 +470,16 @@ function handleCondition(line) {
     ok = (state.stats[key] || 0) >= Number(line.threshold || 0);
   } else if (kind === "tournament_finished") {
     ok = tournamentFinished(state, line.tournament_chapter);
+  } else if (kind === "craft_basics_experienced") {
+    ok = basicsExperienced();
   } else if (kind === "money") {
     ok = state.money >= Number(line.threshold || 0);
   } else if (kind === "flag") {
     ok = !!state.flags[line.flag];
+  } else if (kind === "flag_count") {
+    ok = (Number(state.flags[line.flag]) || 0) >= Number(line.threshold || 1);
   } else if (kind === "met") {
     ok = !!state.met[line.char_id];
-  } else if (kind === "customer_note") {
-    ok = (state.notes[line.note_id] || 0) >= Number(line.threshold || 1);
   } else if (kind === "affinity") {
     ok = affinityLevel(line.char_id) >= Number(line.threshold || 0);
   } else {

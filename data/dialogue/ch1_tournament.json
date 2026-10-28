@@ -77,11 +77,6 @@
           "text": "テーブルの下で、ペンを持つ右手の指が微かにリズムを刻んでいる。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "いつもの癖だろうが、今日はそれが少し速い。"
-        },
-        {
           "speaker": "naru",
           "face": "smile",
           "text": "お、はじめ。来たな。大衆チェーンが仕切る大会か……息苦しいだろ？"
@@ -99,17 +94,27 @@
         {
           "speaker": "",
           "face": "",
+          "text": "そう言って、なるはまたタブレットの数字へ目を戻した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "アダムは隅の椅子に座り、黙々とボウルを磨いている。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ステンレスの表面は既に鏡のように光っているのに、まだ磨いている。止められないのだ。"
+          "text": "ステンレスの表面はもう鏡のように光っている。それでも、磨く手は止まらない。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "一度目が合った。アダムは無言で小さく頷いた。それだけで、少し落ち着いた気がした。"
+          "text": "一度だけ目が合った。アダムは無言で小さく頷き、また手元の器へ視線を戻す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけで、少し落ち着いた気がした。"
         },
         {
           "speaker": "",
@@ -277,9 +282,8 @@
         },
         {
           "type": "condition",
-          "condition_type": "customer_note",
-          "note_id": "baito_incognito_maezono",
-          "threshold": 1,
+          "condition_type": "flag",
+          "flag": "_ev_maezono_cameo",
           "next_true": "maezono_recall",
           "next_false": ""
         },
@@ -1065,6 +1069,12 @@
           "text": "グラスが鳴った。スミさんが、トロフィーを置く場所を空ける。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_op_praise_talent",
+          "next_true": "ta_growth_echo"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "祝いに、自分用の一台を作って吸った。馬鹿みたいに、うまい。どの一服よりも濃い。"
@@ -1165,6 +1175,33 @@
         }
       ],
       "branches": {
+        "ta_growth_echo": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "師匠。審査のとき、南雲さんが二回吸ったの、見てました"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "一回で終わる人と、二回吸う人がいて。……顔も、ちゃんと見てました"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……そこを見たか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。次に店に来てくれる人の顔も、覚えます"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……おう"
+          }
+        ],
         "iv_pride": [
           {
             "speaker": "hajime",
@@ -1336,6 +1373,15 @@
         ],
         "ta_tsumugi_today": [
           {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_tsumugi_contest_draft_hands",
+            "next_true": "ta_tsumugi_today_cared",
+            "next_false": "ta_tsumugi_today_plain"
+          }
+        ],
+        "ta_tsumugi_today_plain": [
+          {
             "speaker": "tsumugi",
             "face": "normal",
             "text": "……今日も少し、描きました。あとで、見てもらえますか"
@@ -1361,6 +1407,53 @@
             "text": "画面を開きかけた手が、鞄の中に戻った。はじめは、そこまで見ていなかった。"
           }
         ],
+        "ta_tsumugi_today_cared": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……今日も少し、描きました。あとで、見てもらえますか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うん。……手、また描き直した？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎの指が、タブレットの上で止まった。はじめのスマホは、通知で何度も震えている。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "――その、あとでちゃんと……ごめん、今、優勝の写真を送ってて"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい。急がなくて、いいです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "画面を開きかけた手が、鞄の中に戻る。それでも、いつもより一拍、遅かった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "――手のとこ、あとで一番に見るから"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……はい。待ってます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "それだけ言って、はじめはまた画面に目を落とした。約束は、口の端に残ったままだった。"
+          }
+        ],
         "ta_tsumugi_no_draft": []
       }
     },
@@ -1370,7 +1463,7 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "さあ、ラウンド1『組み立て』が完了！"
+          "text": "さあ、ラウンド1『準備』が完了！"
         },
         {
           "speaker": "pakki",
@@ -1444,8 +1537,8 @@
         },
         {
           "type": "condition",
-          "condition_type": "customer_note",
-          "note_id": "baito_regular_02",
+          "condition_type": "flag_count",
+          "flag": "_ev_baito_regular_02",
           "threshold": 2,
           "next_true": "recall_notes",
           "next_false": "recall_base"

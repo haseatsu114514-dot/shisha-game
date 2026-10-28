@@ -256,6 +256,8 @@
 .pp-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 16px; }
 .pp-hearts { flex-wrap: wrap; }
 .pp-guide { margin: 0 0 2px; font-size: 16px; line-height: 1.5; color: var(--text-dim); }
+/* 直近の思い出（内心）。導線より前に、やわらかい色で前面に出す */
+.pp-memory { margin: 2px 0 0; font-size: 15px; line-height: 1.5; color: rgba(255, 255, 255, 0.72); font-style: italic; }
 .pp-next { margin: 2px 0 0; font-size: 16px; line-height: 1.5; letter-spacing: 0.02em; color: var(--text-dim); }
 .pp-row[data-relation="romance"] .pp-relation { color: #ff9dbd; }
 .pp-row[data-relation="friend"] .pp-relation { color: #9fd9ec; }

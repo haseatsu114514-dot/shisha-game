@@ -397,12 +397,19 @@ export async function visitRin() {
   cueTransition("place", { spotId: "shop", label: "Dr.fookah", area: "問屋街" });
   addStamina(-14);
   state.visitedDay.rin = state.day;
-  await visitChar("rin");
+  const owner = state;
+  const completed = await visitChar("rin");
+  if (!completed || state !== owner) return false;
   // 3回目で限定フレーバー（NIGHTSIDE アールグレイ試作）を分けてもらえる
-  if ((state.story.rin || 0) >= 3 && !state.flags._rin_sample) {
-    state.flags._rin_sample = true;
-    addFlavorStock("nightside_earlgrey", FLAVOR_BOX_GRAMS);
-    toast("限定フレーバー「NS アールグレイ（試作）」を手に入れた", { kind: "good" });
+  if ((state.story.rin || 0) >= 3 && state.flags._rin_sample && !state.flags._rin_sample_received) {
+    // 旧セーブも、0gのキー／所持履歴があれば受領済み。使い切った葉を補充しない。
+    const received = Object.hasOwn(state.flavorStock || {}, "nightside_earlgrey")
+      || state.flavors.includes("nightside_earlgrey");
+    state.flags._rin_sample_received = true;
+    if (!received) {
+      addFlavorStock("nightside_earlgrey", FLAVOR_BOX_GRAMS);
+      toast("限定フレーバー「NS アールグレイ（試作）」を手に入れた", { kind: "good" });
+    }
   }
   return true;
 }

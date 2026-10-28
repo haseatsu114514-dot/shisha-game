@@ -41,7 +41,7 @@ async function harness({ manual = false } = {}) {
       explainTutorialStep: () => help.promise, refreshBench: noop, reactAudience: noop, setPlayerMental: noop,
       setBenchTemperature: noop, scoreStep: () => metrics.score++ },
     './attack-training.js': { hasAttackTraining: () => false, ATTACK_LOCK_REASON: 'locked' },
-    './steam-time.js': { steamSecondsOf: () => 300, steamPlaySeconds: () => 30, steamTimeLabel: () => '5min' },
+    './steam-time.js': { steamSecondsOf: () => 300, steamPlaySeconds: () => 30, steamTimeLabel: () => '5min', SHORT_DODGE_SECONDS: 8 },
     './digital-clock.js': { buildDigitalClock: () => ({ root: new Node(), update: noop }) },
     './common.js': { autoSkill: () => manual ? null : 'good', resultCard: async () => { metrics.result++; }, keys: () => () => metrics.unkey++, popStamp: noop },
     './conditions.js': { craftConditions: () => ({ rainy: false }), temperatureAfterSteam: () => .5 },

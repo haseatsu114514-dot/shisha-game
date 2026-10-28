@@ -1,6 +1,6 @@
 import { el } from "../core/util.js";
 import { state } from "../core/state.js";
-import { stepPanel, benchRoot, craftTest } from "./session.js";
+import { stepPanel, benchRoot, craftTest, setBenchWater } from "./session.js";
 import { waterQuantity, changeWater, waterBand } from "./water.js";
 
 function ensureStyle() {
@@ -157,5 +157,7 @@ export async function stepWater(cs) {
   const view = mountWater(panel, { quantity: cs.water, isCurrent: () => state === ownerState && !!benchRoot(cs) });
   if (craftTest.auto) queueMicrotask(view.confirm);
   cs.water = await view.result;
+  // 確定した水位を左の作業風景のボトル内部へ描く（本編・練習共通）。
+  setBenchWater(cs);
   return cs.water;
 }

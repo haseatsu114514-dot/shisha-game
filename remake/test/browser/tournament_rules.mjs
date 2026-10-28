@@ -20,7 +20,7 @@ await suite("tournament-rules", async check => {
     assert.match(rules.first, /レモン.*2g以上.*私物/);
     assert.match(rules.legacy, /ミント2g以上/);
     assert.match(rules.second, /ストロベリー.*主催者が用意/);
-    assert.match(rules.third, /大会前夜までに決めた一台/);
+    assert.match(rules.third, /ドバジ チョコレート.*4g以上.*私物持ち込み/s);
     assert(!/スコア|票|持ち点/.test(rules.first));
     await page.evaluate(async () => { const s = await import('./js/core/state.js'); s.state.chapter = 1;
       void (await import('./js/scenes/rule-sheet.js')).openRuleSheet(); });

@@ -46,7 +46,7 @@ async function fixture({ waitAt = null, faceReady = true } = {}) {
     if (waitAt === boundary) { requested.resolve(); await resume.promise; }
   };
   const values = {
-    'state.js': { state: original },
+    'state.js': { state: original, config: { shortSeen: false } },
     'util.js': { el, sleep: async () => {}, nextFrame: async () => wait('frame') },
     'data.js': { DB: {}, displayName: () => 'なる', faceIconUrl: () => 'existing-face' },
     'ui.js': { imageReady: async () => { counters.images++; await wait('image'); return faceReady; } },

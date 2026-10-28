@@ -48,6 +48,44 @@ await suite("ch1-story-feedback", async check => {
     assert(r.lines.some(t => t.includes(choice === 0 ? "戻して確かめよう" : "濃さも残したい")));
     assert(!r.lines.some(t => t.includes("全方向を素直に受け入れる")));
   });
+  await check("praise-choice-records-real-route", async page => {
+    await setup(page);
+    const r = await page.evaluate(async () => {
+      const out = {};
+      for (const [key, idx] of [["talent", 0], ["report", 1]]) {
+        F.fresh(); F.intro.markIntroSeen("oneesan");
+        F.vn.vnTest.choose = () => idx;
+        await F.vn.play("ch1_tutorial_oneesan");
+        out[key] = { talent: !!F.core.state.flags._op_praise_talent, report: !!F.core.state.flags._op_praise_report };
+      }
+      return out;
+    });
+    assert(r.talent.talent && !r.talent.report);
+    assert(r.report.report && !r.report.talent);
+  });
+  await check("growth-echo-only-after-talent-route", async page => {
+    await setup(page);
+    const r = await page.evaluate(async () => {
+      const play = async flag => {
+        F.fresh(); await F.story.playTsumugiStory(11);
+        if (flag) F.core.state.flags[flag] = true;
+        F.vn.backlog().length = 0;
+        F.vn.vnTest.choose = id => id === "ch1_tournament_after" ? 1 : 0;
+        await F.vn.play("ch1_tournament_after");
+        return F.lines();
+      };
+      return { talent: await play("_op_praise_talent"), report: await play("_op_praise_report"), none: await play(null) };
+    });
+    const ECHO = "……そこを見たか", SAW = "二回吸ったの、見てました";
+    // 才能ルートを実際に選んだ時だけ、スミの一言が「次は顔を見ろ」から「そこを見たか」へ変わる
+    assert(r.talent.some(t => t.includes(ECHO)) && r.talent.some(t => t.includes(SAW)));
+    // 報酬ルート・記録なし（旧セーブ）では反応を捏造しない
+    assert(!r.report.some(t => t.includes(ECHO)) && !r.report.some(t => t.includes(SAW)));
+    assert(!r.none.some(t => t.includes(ECHO)) && !r.none.some(t => t.includes(SAW)));
+    // 現行の祝いの流れは、才能ルートでも保たれる
+    assert(r.talent.some(t => t.includes("グラスが鳴った")) && r.talent.some(t => t.includes("濁ってた")));
+    assert(r.none.some(t => t.includes("グラスが鳴った")));
+  });
   await check("celebration-preserves-interview-and-tsumugi-action", async page => {
     await setup(page);
     const r = await page.evaluate(async () => {

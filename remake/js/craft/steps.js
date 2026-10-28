@@ -6,7 +6,8 @@ import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience, waitBenchReady } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible } from "./session.js";
+import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
 import { mixTaste } from "./mix-taste.js";
@@ -21,11 +22,13 @@ import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
 
-// 章ごとの課題。第1章は自分のレモン、第2章の新作苺のみ主催者支給。
+// 章ごとの課題。第1章は自分のレモン、第2章の新作苺のみ主催者支給、第3章は自分のドバジ チョコレート。
 export const REGULATION = {
   1: { flavor: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（私物持ち込み）" },
   // 判定は同系統（AFの持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
-  2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 1, label: "課題フレーバー「ストロベリー」を使う" },
+  2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 4, label: "課題フレーバー「ストロベリー」を4g以上" },
+  // オーナー決定 10/28：ドバジ・4g以上・持ち込み。チョコは通常（chocolate）。
+  3: { flavor: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（私物持ち込み）" },
 };
 export const regulationFor = (cs) => cs.staffPractice ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
   ? { flavor: "mint", supply: "mint", min: 2, label: "再開中の旧大会：ミント2g以上" }
@@ -178,7 +181,8 @@ export function evaluateMix(cs) {
   const main = Math.max(...ids.map((id) => mix[id]), 0) / (total || 1);
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
   const reg = regulationFor(cs);
-  const regOk = !reg || flavorFamilyGrams(mix, reg.flavor) >= reg.min;
+  const competitionLegal = cs.mode !== "tournament" || ids.every(id => DB.flavorById[id]?.competition_legal !== false);
+  const regOk = competitionLegal && (!reg || flavorFamilyGrams(mix, reg.flavor) >= reg.min);
   if (reg && ids.length > 1 && flavorFamilyGrams(mix, "mint") > 6) { score -= 6; notes.push("ミントが強すぎて、他の香りが隠れている"); }
   // 味の傾向（重さ平均）
   const prof = {};
@@ -219,6 +223,22 @@ export function fitMixToStock(mix, ids, limit, cap, minTotal = 0) {
   return out;
 }
 
+export function mixFlavorIds(cs) {
+  const reg = regulationFor(cs);
+  // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
+  const consumes = cs.mode === "tournament";
+  const supplyId = reg?.supply || null;
+  let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
+  if (!consumes) ids = [...new Set(["lemon", "mint", "double_apple", state.flags._prep_flavor].filter(Boolean))].filter(id => DB.flavorById[id]);
+  if (supplyId && !ids.includes(supplyId)) ids.unshift(supplyId);
+  if (cs.staffPractice) ids = [...new Set([...staffFlavors(state), ...ownedFlavorIds()])].filter(id => DB.flavorById[id]);
+  if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
+  if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
+  // 支給・注文指定・まかないの経路でも、大会使用不可の葉を再混入させない。
+  if (consumes) ids = ids.filter(id => DB.flavorById[id]?.competition_legal !== false);
+  return ids;
+}
+
 export async function stepMix(cs) {
   const owner = state;
   await waitBenchReady(cs, "mix");
@@ -226,16 +246,10 @@ export async function stepMix(cs) {
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
-  // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   const supplied = (id) => !!reg && id === supplyId;
-  let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
-  if (!consumes) ids = [...new Set(["lemon", "mint", "double_apple", state.flags._prep_flavor].filter(Boolean))].filter(id => DB.flavorById[id]);
-  if (supplyId && !ids.includes(supplyId)) ids.unshift(supplyId);
-  if (cs.staffPractice) ids = [...new Set([...staffFlavors(state), ...ownedFlavorIds()])].filter(id => DB.flavorById[id]);
-  if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
-  if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
+  const ids = mixFlavorIds(cs);
   const limit = (id) => cs.staffPractice ? staffStock(state, id) + flavorStock(id) : (consumes && !supplied(id) ? flavorStock(id) : Infinity);
   const practiceFlavor = cs.mode === "rehearsal" && !cs.staffPractice ? state.flags._prep_flavor : null;
   cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? (practiceFlavor === "lemon" ? { lemon: 10, mint: 2 } : { [practiceFlavor]: 10, lemon: 2 }) : {};
@@ -248,6 +262,13 @@ export async function stepMix(cs) {
   const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
   const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
   const temperatureHint = el("small", { text: "上が高温" });
+  // #1081 E02: 蒸らし・吸い出しで初めて出る「フレーバーの持ち」を、葉を決めるこの工程でも左の窓で先に見せる。
+  // 既存の共有ゲージ（bench.leaf）と flavorMixLife をそのまま表示するだけで、新しい計算はしない。
+  const lifeHost = el("span.mix-life-leaves");
+  const lifeNote = el("small.mix-life-note", { "aria-live": "polite" });
+  const lifePreview = cs.mode === "tutorial" ? null : el("div.mix-life-preview", { dataset: { test: "mix-life-preview" } }, [
+    el("b", { text: "フレーバーの持ち" }), lifeHost, lifeNote,
+  ]);
   const temperaturePreview = el("div.mix-temperature-preview", { hidden: cs.mode === "tutorial", dataset: { test: "mix-temperature-preview" } }, [
     el("b", { text: "温度帯" }),
     thermometer.root,
@@ -291,6 +312,14 @@ export async function stepMix(cs) {
     regLine.classList.toggle("ok", info.regOk);
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
     okBtn.disabled = !(total >= 12 && total <= cap && info.regOk);
+    // フレーバーの持ち（#1081 E02）: 配合で決まる傷みにくさ（flavorMixLife）を一言で。基準1.0との比較だけで、新しい閾値は作らない。
+    if (lifePreview) {
+      const life = flavorMixLife(cs);
+      lifeNote.textContent = total <= 0 ? "葉を選ぶと表示"
+        : life > LEAF_DAMAGE.mixLifeDefault ? "この配合は少し長持ち"
+        : life < LEAF_DAMAGE.mixLifeDefault ? "この配合は少し早く傷みやすい"
+        : "持ちは標準";
+    }
     // 比率（#638）: グラムだけでなく、今の割合も見せる（表示のみ・判定には使わない）
     const pct = mixPercents(cs.mix);
     rows.forEach((r) => { r.g.textContent = `${cs.mix[r.id] || 0}g`; r.ratio.textContent = cs.mix[r.id] ? `比率 ${pct[r.id]}%` : ""; });
@@ -342,7 +371,7 @@ export async function stepMix(cs) {
     : null;
 
   panel.append(el("div.mix", [
-    el("div.mix-side", [vessel, taste, recipeLine]),
+    el("div.mix-side", [vessel, taste, lifePreview, recipeLine]),
     // ひらめきは葉の組み合わせの助言なので葉の一覧の頭に置き、決定欄に隠れないようにする（#907）。
     // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
     el("div.mix-list", [el("div.mix-list-head", [
@@ -354,6 +383,8 @@ export async function stepMix(cs) {
     el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), okBtn]),
   ]));
   redraw();
+  // 共有の葉ゲージを左の窓へ移し、配合中だけ見えるようにする（蒸らし以降は既存どおり元の位置へ戻る）。
+  if (lifePreview) { dockBenchLeaf(cs, lifeHost); setBenchLeafVisible(cs, true); }
   await new Promise((resolve) => {
     okBtn.addEventListener("click", () => { SE.select(); resolve(); });
     if (autoSkill()) {
@@ -365,10 +396,11 @@ export async function stepMix(cs) {
       }
       else { cs.mix = { double_apple: 5, mint: 7 }; }
       if (reg?.flavor === "strawberry") {
-        const apple = autoSkill() === "good" ? Math.min(9, flavorStock("double_apple")) : 0;
+        const apple = autoSkill() === "good" ? Math.min(12 - reg.min, flavorStock("double_apple")) : 0;
         cs.mix = { [supplyId]: 12 - apple, ...(apple ? { double_apple: apple } : {}) };
       }
       if (reg?.flavor === "lemon") cs.mix = { lemon: 3, double_apple: 9 };
+      if (reg?.flavor === "chocolate") cs.mix = { chocolate: 4, double_apple: 8 };
       if (cs.staffPractice || consumes) cs.mix = fitMixToStock(cs.mix, ids, limit, cap, 12);
       if (cs.orderFlavorIds) cs.mix = fitMixToStock({ lemon: 9, mint: 3 }, ids, limit, cap, 12);
       redraw();

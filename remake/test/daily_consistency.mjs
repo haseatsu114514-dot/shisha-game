@@ -46,7 +46,7 @@ async function load(name) { if (mods.has(name)) return mods.get(name); const mod
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
-function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, notes: {}, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {} }, overrides);
+function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {} }, overrides);
   // 既読段階を注入する在店fixtureでは、その段階を読める♥も明示する（加算の検証は別suite）。
   if (!overrides.affinity) state.affinity = Object.fromEntries(Object.entries(state.story).map(([id,n]) => [id,[0,9,20,33,48,66][Math.min(5,n)] || 0]));
   // DAY8の接客fixtureは、それまでの必須場面を読了した通常営業。
@@ -54,6 +54,19 @@ function reset(overrides = {}) { Object.keys(state).forEach((key) => delete stat
   db.baito = events; rainy = false; charmStar = 1; plays.length = 0; money.length = 0; menus.length = 0; selectedPools = []; }
 function selected() { return plays.find((scene) => typeof scene === "object" && scene.dialogue_id?.startsWith("baito_"))?.dialogue_id; }
 const custom = (id, fields = {}) => ({ id, category: "regular", text: "注文を受けた", choices: [], customers: [id], ...fields });
+// #1178 C1-01: 読み込んだ常連回は面識・在店予定を守り、別IDの同じ客も連日出さない。
+assert(byid.baito_tsumugi_art, "つむぎの絵の接客回がロード対象にない");
+reset(); db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito(); assert.equal(selected(), undefined);
+for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
+  reset(known); db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito();
+  assert.equal(selected(), "baito_baito_tsumugi_art");
+}
+for (const schedule of [{ day: 8, slot: 1 }, { day: 11, slot: 1 }]) {
+  reset({ ...schedule, met: { tsumugi: true } }); db.baito = [byid.baito_tsumugi_art];
+  await tonari.doBaito(); assert.equal(selected(), undefined);
+}
+reset({ met: { tsumugi: true }, baitoRecent: [{ id: "baito_tsumugi_rain", chapter: 1, day: 7, customers: ["tsumugi"] }] });
+db.baito = [byid.baito_tsumugi_art]; await tonari.doBaito(); assert.equal(selected(), undefined);
 // 未対面つむぎは雨でも閉店でも選ばない。旧進行とmet/flagの各記録なら永久封鎖しない。
 reset(); rainy = true; db.baito = [byid.baito_tsumugi_rain]; await tonari.doBaito(); assert.equal(selected(), undefined); assert(plays.some((s) => s.dialogue_id === "remake_baito_routine"));
 for (const known of [{ met: { tsumugi: true } }, { flags: { _met_tsumugi: true, _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true } }, { story: { tsumugi: 1 } }]) {
@@ -68,7 +81,6 @@ state.flags.needs_contact = true; await tonari.doBaito(); assert.equal(selected(
 reset(); db.baito = [byid.baito_mob_flavor_police]; await tonari.doBaito(); assert(state.flags.ch1_flavor_police_event); plays.length = 0; state.day++;
 await tonari.doBaito(); assert.equal(selected(), undefined);
 reset({ usedBaito: ["baito_mob_flavor_police"] }); db.baito = [byid.baito_mob_flavor_police]; await tonari.doBaito(); assert.equal(selected(), undefined);
-reset({ notes: { baito_mob_flavor_police: 1 } }); db.baito = [byid.baito_mob_flavor_police]; await tonari.doBaito(); assert.equal(selected(), undefined);
 // 同じ常連が複数IDに居ても今日/昨日に再登場しない。当章の履歴4件を記録。
 for (const family of ["occhan", "takahashi", "freelancer"]) {
   reset({ baitoRecent: [{ id: "previous", chapter: 1, day: 7, customers: [family] }] }); db.baito = [custom("same_face", { customers: [family] }), custom("different_face")];

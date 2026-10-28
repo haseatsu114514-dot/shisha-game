@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import { installLoadingComicReader } from './browser/loading_reader.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const browser = await chromium.launch({ headless: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
@@ -13,6 +14,7 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8123/remake/';
 const errors = [];
 const open = async (context) => {
   const page = await context.newPage(); page.on('pageerror', (e) => errors.push(e.message));
+  await installLoadingComicReader(page);
   await page.goto(base); await page.waitForSelector('[data-test="title-new"]'); return page;
 };
 try {
@@ -89,14 +91,21 @@ try {
     window.heatRun = heat.runHeat(cs);
   });
   await page.waitForSelector('.bench-worker[data-step="heat"]');
-  const geometry = await page.evaluate(() => {
+  const geometry = await page.evaluate(async () => {
+    const { coalSpots } = await import('./js/craft/heat_view.js');
     const worker = document.querySelector('.bench-worker').getBoundingClientRect();
     const panel = document.querySelector('.bench-right').getBoundingClientRect();
     const coals = [...document.querySelectorAll('.stove .coal')].map(n => [parseFloat(n.style.left), parseFloat(n.style.top)]);
-    return { overlaps: worker.right > panel.left, height: worker.height, rigCount: document.querySelectorAll('.bench .rig').length, actor: !!document.querySelector('.worker-actor'), coals, step: document.querySelector('.bench-worker').dataset.step };
+    const baseSpots = coalSpots(3).map(([x, y]) => [x * 100, y * 100]);
+    return { overlaps: worker.right > panel.left, height: worker.height, rigCount: document.querySelectorAll('.bench .rig').length, actor: !!document.querySelector('.worker-actor'), coals, baseSpots, step: document.querySelector('.bench-worker').dataset.step };
   });
   assert(!geometry.overlaps); assert(geometry.height > 350); assert.equal(geometry.rigCount, 0); assert(geometry.actor); assert.equal(geometry.step, 'heat');
-  assert.deepEqual(geometry.coals, [[50, 30], [38, 45], [62, 45]]);
+  // 炭の基準位置は heat_view の coalSpots(3)。配置時に微小なランダムずれ（x±1.8pt / y±1.2pt）が
+  // 意図的に入るため、固定値ではなく基準位置からの範囲で三角形の並びを検証する（heat_feedback と同方針）。
+  assert.equal(geometry.coals.length, 3);
+  geometry.coals.forEach(([x, y], i) => { const [bx, by] = geometry.baseSpots[i];
+    assert(Math.abs(x - bx) <= 1.9, `coal ${i} left ${x} vs base ${bx}`);
+    assert(Math.abs(y - by) <= 1.3, `coal ${i} top ${y} vs base ${by}`); });
   if (shots) await page.screenshot({ path: `${shots}/centered-coals.png` });
   await page.evaluate(() => window.heatRun);
   await page.evaluate(async () => {
@@ -146,18 +155,19 @@ try {
   await phone.waitForSelector('.dodge-object');
   await phone.locator('.dodge-refresh').tap();
   await phone.waitForSelector('.dodge-refresh-fx');
-  assert.equal(await phone.locator('.dodge').getAttribute('data-refresh-radius'),'180');
-  assert.match(await phone.locator('.dodge-refresh').textContent(), /×1/);
+  // E11(#1196): 半径は根性★連動で初期Lv1は90。所持は1回分・使用後8秒リチャージ、残数は data-remaining で見る。
+  assert.equal(await phone.locator('.dodge').getAttribute('data-refresh-radius'), '90');
+  assert.equal(await phone.locator('.dodge-refresh').getAttribute('data-remaining'), '0');
   if (shots) await phone.screenshot({ path: `${shots}/mobile-refresh.png` });
   await phone.keyboard.down('Space'); await phone.waitForTimeout(100);
   await phone.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space', repeat: true })));
   await phone.keyboard.up('Space');
-  assert.match(await phone.locator('.dodge-refresh').textContent(), /×0/);
+  assert.equal(await phone.locator('.dodge-refresh').getAttribute('data-remaining'), '0', 'リチャージ中は再使用できない');
   assert(await phone.locator('.dodge-refresh').isDisabled());
   await phone.waitForSelector('.result-card.show', { timeout: 15000 });
   assert.equal(await phone.locator('.dodge-object, .dodge-word').count(), 0);
   await phone.locator('[data-test="step-next"]').tap(); await phone.evaluate(() => window.steamRun);
-  assert.equal(await phone.evaluate(() => cs.steam.refreshesUsed), 2);
-  console.log('[polish] PASS: center before countdown, touch pad below the field, release stops movement, visible mixed bullets, refresh clear/effect/two-use limit and cleanup');
+  assert.equal(await phone.evaluate(() => cs.steam.refreshesUsed), 1);
+  console.log('[polish] PASS: center before countdown, touch pad below the field, release stops movement, visible mixed bullets, refresh clear/effect/single-stock recharge lock and cleanup');
   assert.deepEqual(errors, []);
 } finally { await browser.close(); }
