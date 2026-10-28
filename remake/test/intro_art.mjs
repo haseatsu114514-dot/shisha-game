@@ -156,6 +156,7 @@ try {
       T.core.state.weatherSeed = 0;
       for (const id of ["naru", "adam", "minto"]) T.core.state.flags[`_spot_guide_${id}`] = true;
       T.core.state.flags._cafe_introduced = true; // 座標確認は紹介を読了したマップで行う。
+      T.core.state.flags._fortune_rumor_heard = true; // 占いピンは噂を聞き終えた後だけマップに出る（#780 fortune-schedule）
       T.mapTask = T.map.chooseSpot();
     }, slot);
     await page.waitForSelector(`.map[data-night="${!!slot}"]`);
