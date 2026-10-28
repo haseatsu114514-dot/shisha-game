@@ -197,7 +197,6 @@ export async function resumeGame() {
   setupHooks();
   if (state.chapter === 2) return resumeChapterModule(() => import("./ch2.js"), m => m.resumeChapterTwo(), "第2章の街へ戻っています…");
   if (state.chapter === 3) return resumeChapterModule(() => import("./ch3.js"), m => m.resumeChapterThree(), "第3章へ戻っています…");
-  if (state.chapter === 4) return resumeChapterModule(() => import("./ch4.js"), m => m.resumeChapterFour(), "第4章へ戻っています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
@@ -574,6 +573,7 @@ async function tournamentDay() {
   await play("ch1_tournament_match", { bg: STAGE });
   await play("ch1_tournament_r1_end", { bg: STAGE });
   await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs);
+  await playTournamentEvent(cs, "interlude1", { bg: STAGE });
 
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
@@ -594,6 +594,7 @@ async function tournamentDay() {
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
   await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs);
+  await playTournamentEvent(cs, "interlude2", { bg: STAGE });
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
   for (const round of [1, 2]) {
@@ -609,6 +610,8 @@ async function tournamentDay() {
     await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
     if (round === 1) await showStandings(3, avgScore(cs.holes.score, cs.heat.score, computeShisha(cs).craftQuality, cs.care.score), cs);
   }
+
+  await playTournamentEvent(cs, "interlude3", { bg: STAGE });
 
   // 審査は完成品と2回の調整の実績で決まる。
   playBgm("bgm_judging");
