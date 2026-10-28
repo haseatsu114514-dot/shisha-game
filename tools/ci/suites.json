@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "water-comfort",
+      "title": "Water comfort bands and craft scoring invariants",
+      "kind": "quick",
+      "run": ["node remake/test/water_comfort.mjs"]
+    },
+    {
       "id": "station-j01",
       "title": "Station availability, layout and save/load",
       "kind": "browser",
