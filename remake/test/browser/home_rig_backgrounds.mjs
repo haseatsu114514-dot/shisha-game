@@ -75,6 +75,64 @@ async function home(page, owned, tod) {
 
 await suite("home-rig-backgrounds", async check => {
   for (const [label, opts] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`${label}-tabletop-gift-image`, async page => {
+      await setup(page); await home(page, [], "day");
+      const startGift = async () => {
+        await page.evaluate(async () => {
+          HQ.rig = await import("./js/daily/home-rig.js");
+          HQ.beforeGift = structuredClone(HQ.core.state);
+          HQ.giftDone = false;
+          HQ.giftStarted = performance.now();
+          HQ.vn.vnTest.turbo = true;
+          // 実台本を最後の地の文まで読み、受取の直前から実クリックで進める。
+          const scene = HQ.data.DB.dialogues[HQ.rig.RIG_SCENE];
+          const last = scene.lines.at(-1);
+          HQ.vn.hooks.onLine = (id, line) => {
+            if (id === HQ.rig.RIG_SCENE && line === last) HQ.vn.vnTest.turbo = false;
+          };
+          HQ.giftTask = HQ.rig.giveSumiRig({ bg: "res://assets/backgrounds/bg_tonari_inside.png" })
+            .then(result => { HQ.giftDone = true; return result; });
+        });
+        // VNの既存の誤クリック防止(320ms)が明けてから、通常のpointer入力を送る。
+        await page.waitForFunction(() => !HQ.vn.vnTest.turbo && performance.now() > HQ.giftStarted + 350
+          && document.querySelector(".vn-next.show"));
+        await hit(page, label, ".vn-box");
+        await page.locator(".home-rig-gift").waitFor();
+      };
+      await startGift();
+      const image = page.locator(".home-rig-gift img");
+      assert.equal(await image.getAttribute("alt"), "ミャア 卓上台");
+      assert.match(await image.getAttribute("src"), /ui\/scene_props\/shisha_home_tabletop\.(webp|png)$/);
+      assert(await image.evaluate(n => n.complete && n.naturalWidth > 0), "採用済み卓上台をデコードしてから表示する");
+      await assertFits(page, ".home-rig-gift h3, .home-rig-gift img, .home-rig-gift .modal-actions button");
+      assert.deepEqual(await page.evaluate(() => HQ.core.state.owned), await page.evaluate(() => HQ.beforeGift.owned));
+      assert.equal(await page.evaluate(() => HQ.giftDone), false, "クリック前は受取を確定しない");
+      await page.screenshot({ path: `${out}/tabletop-gift-${label}.png`, animations: "disabled" });
+      await hit(page, label, '[data-test="home-rig-gift-close"]');
+      assert.equal(await page.evaluate(() => HQ.giftTask), true);
+      assert.equal(await page.locator(".home-rig-gift").count(), 0);
+      const result = await page.evaluate(async () => {
+        const before = HQ.beforeGift, after = structuredClone(HQ.core.state);
+        HQ.core.load();
+        return { before, after, loaded: structuredClone(HQ.core.state), repeated: await HQ.rig.giveSumiRig() };
+      });
+      assert.equal(result.after.owned.filter(id => id === "home_rig_set").length, 1);
+      for (const key of ["flavorStock", "money", "stamina", "day", "slot", "stats", "statXp"]) {
+        assert.deepEqual(result.after[key], result.before[key], key);
+        assert.deepEqual(result.loaded[key], result.after[key], `LOAD ${key}`);
+      }
+      assert.equal(result.repeated, false);
+      assert.equal(await page.locator(".home-rig-gift").count(), 0, "受領済みでは表示を繰り返さない");
+
+      // 表示中に別SAVEをLOADしたら、そのSAVEへ台を付与しない。
+      await page.evaluate(() => { HQ.core.newGame(); HQ.core.saveToSlot("suien_remake_slot1"); });
+      await startGift();
+      await page.evaluate(() => HQ.core.loadFromSlot("suien_remake_slot1"));
+      await hit(page, label, '[data-test="home-rig-gift-close"]');
+      assert.equal(await page.evaluate(() => HQ.giftTask), false);
+      assert(!await page.evaluate(() => HQ.core.state.owned.includes("home_rig_set")));
+    }, opts);
+
     await check(`${label}-four-states-day-night`, async page => {
       await setup(page);
       for (const tod of ["day", "night"]) for (const [i, owned] of variants.entries()) {

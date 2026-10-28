@@ -1,13 +1,17 @@
 // 家シーシャの台（#638）。スミさんの卓上台（第1章 DAY2以降の帰宅前に譲られる）と、くじの大会公式モデルの台。
 // 寝る前の一服の流れは home-shisha.js。ここは台の持ち物と受け取りだけ（会話の差し込みから呼ぶので軽く保つ）。
-import { DB } from "../core/data.js";
+import { DB, img } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { emit } from "../core/bus.js";
-import { play } from "../vn/engine.js";
+import { el } from "../core/util.js";
+import { imageReady, modal } from "../core/ui.js";
+import { play, vnTest } from "../vn/engine.js";
 
 export const SUMI_RIG = "home_rig_set";   // ミャア 卓上台（試作の熟練度経験値6）
 export const PRO_RIG = "home_rig_pro";    // 大会公式モデルの台（試作の熟練度経験値7.5・くじの景品）
 export const RIG_SCENE = "ch1_sumi_home_rig";
+// #640で採用済み。scene-art.jsが自室の机上に置くものと同じ台。
+export const SUMI_RIG_IMAGE = "ui/scene_props/shisha_home_tabletop.png";
 const FALLBACK_GROWTH = { [SUMI_RIG]: 0.5, [PRO_RIG]: 0.75 };
 
 /** 家で使う台（両方あれば伸びのいい大会公式モデル）。なければ null */
@@ -23,13 +27,27 @@ export function homeRig(s = state) {
 export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
   if (state.owned?.includes(SUMI_RIG)) return false;
   const owner = state;
+  const name = DB.equipById?.[SUMI_RIG]?.name || "卓上台";
   if (DB.dialogues[RIG_SCENE]) {
     const result = await play(RIG_SCENE, bg ? { bg } : {});
     if (state !== owner || result?.cancelled) return false;
+    if (!vnTest.turbo) {
+      const url = img(SUMI_RIG_IMAGE);
+      const loaded = await imageReady(url, 15000);
+      if (state !== owner) return false;
+      if (loaded) {
+        await modal({ title: name, className: "home-rig-gift",
+          body: el("img", { src: url, alt: name, style: {
+            display: "block", width: "300px", height: "300px", maxWidth: "100%", objectFit: "contain", margin: "0 auto",
+          } }),
+          options: [{ label: "受け取る", value: true, primary: true, test: "home-rig-gift-close" }],
+        });
+        if (state !== owner) return false;
+      }
+    }
   }
   state.owned ||= [];
   if (!state.owned.includes(SUMI_RIG)) state.owned.push(SUMI_RIG);
-  const name = DB.equipById?.[SUMI_RIG]?.name || "卓上台";
   emit("notice", { text: `「${name}」をもらった。体力に余裕がある夜は、寝る前に家シーシャができる` });
   if (!deferSave) save(); // 有料訪問は calendar の支払い・行動確定と同時に保存する
   return true;
