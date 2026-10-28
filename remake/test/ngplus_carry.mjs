@@ -43,6 +43,21 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
     s.lovers = ["minto"];
     s.chapter = 2;
     s.day = 5;
+    s.tokyoVisits = {
+      version: 1,
+      plans: [{
+        id: "minto-33", characterId: "minto", status: "staying",
+        arrivalDay: 33, returnDay: 35,
+        meetup: { id: "d33-noon", day: 33, slot: 0 },
+        date: { id: "d34-night", day: 34, slot: 1 },
+        met: true, dateDone: false,
+      }],
+      offers: {}, closedSlots: ["d33-noon"], chats: { minto: "3-33" },
+    };
+    s.flavorMastery = { fruit: 3 };
+    s.flavorLessons = ["minto_fruit"];
+    s.flavorStock = { double_apple: 37 };
+    s.staffPractice = { day: "2-5", used: { double_apple: 4 } };
     return s;
   };
   const checkMigrated = (s) => {
@@ -58,6 +73,10 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
     assert.deepEqual(s.lovers, ["minto"]);
     assert.equal(s.chapter, 2);
     assert.equal(s.day, 5);
+    const original = legacy();
+    for (const k of ["tokyoVisits", "flavorMastery", "flavorLessons", "flavorStock", "staffPractice"]) {
+      assert.deepEqual(s[k], original[k], `schema 21 の ${k} を保持する`);
+    }
   };
 
   localStorage.setItem(SAVE_KEY, JSON.stringify(legacy()));
@@ -185,12 +204,14 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   s.affinity = { minto: 9 };
   s.lovers = ["minto"];
   s.loveLevel = { minto: 3 };
+  s._brand_new_unclassified = { value: 123 };
   const before = copy(s);
 
   const pkg = buildCarryPackage(s);
   const allowed = ["stats", "statXp", "money", "flavors", "flavorStock", "flavorMastery", "flavorLessons",
     "recipes", "goods", "kuji", "reel", "best", "owned", "equip", "keepsakes", "trpg", "flags"];
   assert.deepEqual(Object.keys(pkg).sort(), [...allowed].sort());
+  assert.ok(!("_brand_new_unclassified" in pkg), "未知のトップレベルキーは引き継がない");
 
   const forbidden = new Set(["affinity", "affinityCarry", "story", "lovers", "loveLevel", "lovePts", "loveCarry",
     "loverSince", "lastDate", "loverEventsSeen", "guilt", "romance", "romanceChoices", "finales", "friendHangouts",
@@ -236,17 +257,28 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
 
 // ---------------------------------------------------------------- F. 未来スキーマの拒否（#1254）
 {
-  const futureRaw = JSON.stringify((() => { const s = copy(newState()); s.schema = SCHEMA + 1; return s; })());
-  // オートセーブ: 読まず、原本も書き換えない
+  const future = copy(newState());
+  future.schema = SCHEMA + 1;
+  future.money = 12345;
+  const futureRaw = JSON.stringify(future);
+  const slotRaw = JSON.stringify({ ...future, money: 23456 });
+  const slotKey = SAVE_SLOTS[1].key;
   localStorage.setItem(SAVE_KEY, futureRaw);
+  localStorage.setItem(slotKey, slotRaw);
+  const stateBefore = core.state;
+  const before = copy(core.state);
+  // オートセーブ: 拒否後も両方の原本と現在の state を保持する
   assert.equal(load(), null, "未来スキーマのオートセーブは拒否する");
   assert.equal(localStorage.getItem(SAVE_KEY), futureRaw, "拒否した原本は書き換えない");
-  // 手動枠: 拒否し、オートセーブへ進ませない（SAVE_KEY は置いたまま＝上書きされていない）
-  const slotKey = SAVE_SLOTS[1].key;
-  localStorage.setItem(slotKey, futureRaw);
+  assert.equal(localStorage.getItem(slotKey), slotRaw, "オートセーブの拒否で手動枠を書き換えない");
+  assert.equal(core.state, stateBefore, "拒否で state を差し替えない");
+  assert.deepEqual(core.state, before, "拒否で state の内容を変えない");
+  // 手動枠: 拒否し、オートセーブへ進ませない
   assert.equal(loadFromSlot(slotKey), null, "未来スキーマの手動枠は拒否する");
   assert.equal(localStorage.getItem(SAVE_KEY), futureRaw, "手動枠の拒否でオートセーブを上書きしない");
-  assert.equal(localStorage.getItem(slotKey), futureRaw, "手動枠の原本も書き換えない");
+  assert.equal(localStorage.getItem(slotKey), slotRaw, "手動枠の原本も書き換えない");
+  assert.equal(core.state, stateBefore, "手動枠の拒否で state を差し替えない");
+  assert.deepEqual(core.state, before, "手動枠の拒否で state の内容を変えない");
 }
 
 console.log("ngplus carry: PASS (schema 22 migration, state/flag classification coverage, package extraction, data cross-check, future schema refusal)");
