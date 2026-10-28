@@ -1653,14 +1653,14 @@
           "text": "俺はレモン2gでいく。ダブルアップルの香りは譲れん"
         },
         {
-          "speaker": "adam",
-          "face": "serious",
-          "text": "熱の入れ方を変えて、もう一度試すか"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "アダムさんは持ち時間の欄に、炭を動かす印を書き込んだ。"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "みんとはミントが主役♪ レモンで香りを足して、ぱっと涼しくするよ"
         },
         {
           "speaker": "minto",
@@ -1670,7 +1670,17 @@
         {
           "speaker": "minto",
           "face": "wink",
-          "text": "みんとはミントが主役♪ レモンで香りを足して、ぱっと涼しくするよ"
+          "text": "ふたりとも、最初のひと口の顔まで見てる？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "見てるさ。だから、二口目まで待ちたいんだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "一口で終わらせて、なるものか"
         },
         {
           "speaker": "minto",
