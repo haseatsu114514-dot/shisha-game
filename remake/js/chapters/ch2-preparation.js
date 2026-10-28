@@ -5,7 +5,7 @@ import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { DB, bgUrl } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
 import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel } from "../core/stats.js";
-import { imageReady, setBg, toast } from "../core/ui.js";
+import { imageReady, setBg, toast, withScenePreparation } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { allSpots, VISIT_COST } from "../daily/spots.js";
@@ -75,21 +75,21 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return { used: false, exerted: false };
   }
-  if (!await imageReady(ROOMS[spot.charId], 15000)) {
+  if (!await withScenePreparation(imageReady(ROOMS[spot.charId], 15000))) {
     toast("室内を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return { used: false, exerted: false };
   }
   if (state !== owner) return { used: false, exerted: false };
   // 未訪問なら先に実際の名乗りを読む。見学・顔合わせだけで交流回数を増やさない。
   if (!state.met[id]) {
-    await setBg(MAP[timeOfDay()], { instant: true });
+    await withScenePreparation(setBg(MAP[timeOfDay()], { instant: true }));
     const result = await play(`ch2_city_${id}`);
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
     recordCityVisit(state, id);
   }
   // 新しい続編・再訪には制御行・報酬を持たせず、正常終端まで請求を保留する。
   // cancelled/途中LOAD/例外で、追加の街紹介の前に費用だけが残らない。
-  await setBg(ROOMS[id], { instant: true });
+  await withScenePreparation(setBg(ROOMS[id], { instant: true }));
   if (state !== owner) return { used: false, exerted: false };
   const result = await play(scene);
   if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
