@@ -64,6 +64,12 @@
       "run": ["node remake/test/loading_prefetch.mjs"]
     },
     {
+      "id": "loading-comics-spec",
+      "title": "Loading comic registrations fit the fixed 43:25 display frame",
+      "kind": "quick",
+      "run": ["node remake/test/loading_comics_spec.mjs"]
+    },
+    {
       "id": "ngplus-measurement",
       "title": "NG+ measurement harness (U5): scenario sweep, rival observer, aggregation",
       "kind": "quick",
@@ -74,6 +80,12 @@
       "title": "NG+ SCHEMA 22 migration, carry classification coverage and package extraction (#1228)",
       "kind": "quick",
       "run": ["node remake/test/ngplus_carry.mjs"]
+    },
+    {
+      "id": "ngplus-cycle-meta",
+      "title": "NG+ cycle meta layer (U2): true-end record, idempotent re-notify, cycle-start notice (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_cycle_meta.mjs"]
     },
     {
       "id": "module-loading",
@@ -412,6 +424,29 @@
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/facility-art"
       }
+    },
+    {
+      "id": "facility-icons",
+      "title": "Facility icons: sheet byte equality, alpha bounds, badge anchors on right contour, layout",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 10,
+      "paths": [
+        "remake/js/daily/facility-icons.js",
+        "remake/test/facility_icons.mjs",
+        "assets/ui/map-facilities-579.png",
+        "assets/ui/map-facilities-extra-579.webp",
+        "asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/**",
+        "asset_sources/map-facilities-579/**"
+      ],
+      "run": [
+        "node remake/test/facility_icons.mjs"
+      ],
+      "sparse": [
+        "/asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/",
+        "/asset_sources/map-facilities-579/"
+      ],
+      "pillow": true
     },
     {
       "id": "ch1-presentation",
@@ -1492,6 +1527,7 @@
       },
       "sparse": [
         "/docs/qa/issue508-theme/",
+        "/docs/qa/issue452-regular/",
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
       ]
     },
@@ -2743,6 +2779,9 @@
         "node remake/test/browser/recent_intros.mjs",
         "node remake/test/intro_art.mjs",
         "node remake/test/intro_cutin.mjs"
+      ],
+      "sparse": [
+        "/asset_sources/backgrounds/osu-sakae-map-remaster-v1/"
       ]
     },
     {
@@ -2853,6 +2892,7 @@
       "id": "kuji-purchase",
       "title": "Native kuji purchase and rapid draw regression",
       "kind": "browser",
+      "chrome": "playwright",
       "weight": 1.5,
       "timeout": 10,
       "paths": [
