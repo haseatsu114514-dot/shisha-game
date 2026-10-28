@@ -140,7 +140,7 @@ try {
   });
   await page.waitForSelector('[data-test="pin-shop"]');
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge').count(),0);
-  assert.equal(await page.locator('[data-test="pin-choizap"] .sub-label').textContent(),"？？？");
+  assert.equal(await page.locator('[data-test="pin-choizap"]').count(),0);
   assert.equal(await page.locator('[data-test="pin-naru"] .pin-face').count(),0);
   assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSAへ行く");
   await page.evaluate(async () => { T.core.state.chapter=2; await T.openMap(); });
