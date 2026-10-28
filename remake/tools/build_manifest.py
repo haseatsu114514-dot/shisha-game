@@ -14,8 +14,7 @@
 新規キャラの立ち絵だけを追加するとき（他の採用済み画像を維持する）:
     python3 remake/tools/build_manifest.py --portraits-only kumicho rei volk
 
-依存: Pillow（必須）、numpy + scipy（推奨。無いと足元アンカー ax が
-bbox 中心で代用され、表情差分で立ち絵が左右にずれやすくなる）
+依存: Pillow・NumPy・SciPy（すべて必須）。pip install Pillow numpy scipy
 """
 
 import datetime
@@ -33,15 +32,28 @@ except ImportError:  # pragma: no cover
 
 try:
     import numpy as np
+except ImportError:  # pragma: no cover
+    sys.exit("NumPy が必要です: pip install Pillow numpy scipy")
+
+try:
     from scipy import ndimage
 except ImportError:  # pragma: no cover
-    np = None
-    ndimage = None
-    print("WARN: numpy/scipy が無いので ax は bbox 中心で代用します", file=sys.stderr)
+    sys.exit("SciPy が必要です: pip install Pillow numpy scipy")
 
 ROOT = Path(__file__).resolve().parents[2]
 ASSETS = ROOT / "assets"
 OUT = ROOT / "remake" / "data" / "manifest.json"
+
+
+def load_characters():
+    """ゲームの DB.characters と同じ順序で人物定義と独立 profile を合成する。"""
+    characters = {c["id"]: c for c in json.loads(
+        (ROOT / "data/characters.json").read_text(encoding="utf-8"))}
+    samechan = json.loads((ROOT / "data/dialogue/samechan.json").read_text(encoding="utf-8"))
+    profile = samechan.get("profile")
+    if profile and profile.get("id"):
+        characters[profile["id"]] = profile
+    return characters
 
 
 def measure(png: Path, anchor="feet"):
@@ -50,34 +62,27 @@ def measure(png: Path, anchor="feet"):
         raise ValueError(f"Unknown spriteAnchor: {anchor}")
     im = Image.open(png).convert("RGBA")
     w, h = im.size
-    if np is not None:
-        alpha = np.asarray(im)[..., 3]
-        visible = alpha >= 24
-        if not visible.any():
-            return None
-        labels, n = ndimage.label(visible)
-        mask = visible
-        if n > 1:
-            # 背景消し残りの小さな島を除外し、本体（最大成分とその近傍）だけを測る
-            sizes = ndimage.sum(visible, labels, range(1, n + 1))
-            main = int(np.argmax(sizes)) + 1
-            near = ndimage.binary_dilation(labels == main, iterations=12)
-            keep = np.zeros(n + 1, dtype=bool)
-            for i, size in enumerate(sizes, start=1):
-                keep[i] = i == main or size >= sizes[main - 1] * 0.01 or bool((labels == i)[near].any())
-            mask = keep[labels]
-        ys, xs = np.where(mask)
-        x0, x1, y0, y1 = int(xs.min()), int(xs.max()) + 1, int(ys.min()), int(ys.max()) + 1
-        band = max(1, int((y1 - y0) * 0.2))
-        anchor_top, anchor_bottom = (y0, y0 + band) if anchor == "head" else (y1 - band, y1)
-        _, fxs = np.where(mask[anchor_top:anchor_bottom])
-        feet = float(fxs.mean()) if len(fxs) else (x0 + x1) / 2
-    else:
-        bbox = im.getbbox()
-        if not bbox:
-            return None
-        x0, y0, x1, y1 = bbox
-        feet = (x0 + x1) / 2
+    alpha = np.asarray(im)[..., 3]
+    visible = alpha >= 24
+    if not visible.any():
+        return None
+    labels, n = ndimage.label(visible)
+    mask = visible
+    if n > 1:
+        # 背景消し残りの小さな島を除外し、本体（最大成分とその近傍）だけを測る
+        sizes = ndimage.sum(visible, labels, range(1, n + 1))
+        main = int(np.argmax(sizes)) + 1
+        near = ndimage.binary_dilation(labels == main, iterations=12)
+        keep = np.zeros(n + 1, dtype=bool)
+        for i, size in enumerate(sizes, start=1):
+            keep[i] = i == main or size >= sizes[main - 1] * 0.01 or bool((labels == i)[near].any())
+        mask = keep[labels]
+    ys, xs = np.where(mask)
+    x0, x1, y0, y1 = int(xs.min()), int(xs.max()) + 1, int(ys.min()), int(ys.max()) + 1
+    band = max(1, int((y1 - y0) * 0.2))
+    anchor_top, anchor_bottom = (y0, y0 + band) if anchor == "head" else (y1 - band, y1)
+    _, fxs = np.where(mask[anchor_top:anchor_bottom])
+    feet = float(fxs.mean()) if len(fxs) else (x0 + x1) / 2
     return {"top": y0 / h, "bottom": y1 / h, "ax": feet / w, "aspect": w / h}
 
 
@@ -85,8 +90,8 @@ def portraits(character_ids=None):
     """キャラごとに表情一覧と共通の framing 値（全表情で同じ＝表情を変えても絵が動かない）。"""
     out = {}
     base = ASSETS / "sprites" / "characters"
-    anchor_modes = {c["id"]: c.get("spriteAnchor", "feet")
-                    for c in json.loads((ROOT / "data" / "characters.json").read_text())}
+    anchor_modes = {cid: c.get("spriteAnchor", "feet")
+                    for cid, c in load_characters().items()}
     for d in sorted(p for p in base.iterdir() if p.is_dir()):
         if character_ids is not None and d.name not in character_ids:
             continue
@@ -286,7 +291,7 @@ def main():
     if args.portraits_only:
         import build_images
         ids = sorted(set(args.portraits_only))
-        known = {character["id"] for character in json.loads((ROOT / "data/characters.json").read_text())}
+        known = load_characters()
         for cid in ids:
             if cid not in known:
                 parser.error(f"人物設定がありません: {cid}")
