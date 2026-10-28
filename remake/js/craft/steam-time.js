@@ -24,5 +24,7 @@ function interpolate(seconds, points) {
 // 3/5/8/10分の従来の温まり方と弾幕の長さを保ち、その間を連続的につなぐ。
 export const steamHeatFor = (seconds) => interpolate(seconds, [[0, -0.14], [180, -0.06], [300, 0], [480, 0.12], [600, 0.18]]);
 export const steamPlaySeconds = (seconds) => interpolate(seconds, [[10, 4], [180, 9], [300, 12], [480, 16], [600, 20]]);
+// B08: 既習プレイヤーが任意で雑念回避を短くするときの上限。蒸らし時間・温度・採点は変えず、遊ぶ尺だけ縮める。
+export const SHORT_DODGE_SECONDS = 8;
 export const steamOpening = (seconds) => clamp((seconds - 300) / 180, 0, 1);
 export const steamBurnRisk = (seconds) => interpolate(seconds, [[0, 0], [480, 0], [600, 9]]);
