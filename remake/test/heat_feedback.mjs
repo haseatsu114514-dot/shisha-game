@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createRequire } from "node:module";
+import { installLoadingComicReader } from "./browser/loading_reader.mjs";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const shots = process.env.SHOTS;
@@ -12,6 +13,7 @@ const browser = await chromium.launch({ headless: true,
 try {
   // 開始ごとの小さな位置・角度差でも、1〜4炭と交換用の狭い配置を安全に操作できる。
   const placementPage = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  await installLoadingComicReader(placementPage);
   try {
     await placementPage.goto(base); await placementPage.waitForSelector('[data-test="title-new"]');
     const failures = await placementPage.evaluate(async () => {
@@ -71,6 +73,7 @@ try {
     for (const [compact, count, excellentOnly] of cases) {
       const label = `${name}-${compact ? "care" : "heat"}-${count}${excellentOnly ? "-excellent" : ""}`;
       const page = await browser.newPage({ viewport, isMobile: touch, hasTouch: touch });
+      await installLoadingComicReader(page);
       const errors = []; page.on("pageerror", e => errors.push(e.message));
       if (process.env.ASSET_REV) await page.route("**/*", route => {
         const u = new URL(route.request().url());
