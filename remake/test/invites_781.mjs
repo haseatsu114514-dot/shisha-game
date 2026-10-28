@@ -4,19 +4,20 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import * as invitations from '../js/daily/invitations.js';
+import { spendableMoney } from '../js/core/travel-budget.js';
 const state={}, trace=[], notes=[], DB={lime:[],dialogues:{}};
 const noop=()=>{};
 class Node {
  constructor(spec,attrs={},children=[]){this.spec=spec;this.children=[];this.dataset={};const classes=new Set(spec.split('.').slice(1));this.classList={add:(...xs)=>xs.forEach(x=>classes.add(x)),remove:(...xs)=>xs.forEach(x=>classes.delete(x)),contains:x=>classes.has(x)};if(Array.isArray(attrs)){children=attrs;attrs={};}Object.assign(this,attrs);this.append(children);}
- append(...xs){for(const x of xs.flat(Infinity).filter(Boolean)){this.children.push(x);x.parent=this;}}
- replaceChildren(...xs){this.children=[];this.append(xs);} remove(){if(this.parent)this.parent.children=this.parent.children.filter(n=>n!==this);}
+ append(...xs){for(const x of xs.flat(Infinity).filter(Boolean)){this.children.push(x);x.parentNode=this;}}
+ replaceChildren(...xs){for(const c of this.children)c.parentNode=null;this.children=[];this.append(xs);} remove(){if(this.parentNode)this.parentNode.children=this.parentNode.children.filter(n=>n!==this);this.parentNode=null;}
  querySelectorAll(selector){return this.children.flatMap(n=>[...(n.classList.contains(selector.slice(1))?[n]:[]),...n.querySelectorAll(selector)]);}
 }
 const el=(...args)=>new Node(...args), layers={modal:el('div'),fx:el('div')};
 const values={state,DB,el,layers,SE:{cancel:noop,click:noop,select:noop},hooks:{interpolate:x=>x},bond:{},TOURNAMENT_DAY:14,
  sleep:async()=>{},chapterDay:()=>state.day,displayName:String,faceIconUrl:()=>null,
  gainAffinity:()=>trace.push('affinity'),addMoney:n=>{state.money+=n;trace.push(`money:${n}`);},addStamina:noop,
- ...invitations,CHAR_STAT:{},VISIT_BG:{minto:'peppermint'},spotById:id=>id?{id,kind:'rival',charId:id,bg:'peppermint'}:null,
+ ...invitations,spendableMoney,CHAR_STAT:{},VISIT_BG:{minto:'peppermint'},spotById:id=>id?{id,kind:'rival',charId:id,bg:'peppermint'}:null,
  isClosed:()=>false,isUnlocked:()=>true,isTemporaryClosed:()=>false,visitedToday:id=>state.visitedDay[id]===state.day,openingStatus:()=>({ok:true}),yen:String,
  completeInvitation:()=>trace.push('completed'),afterStory:async()=>{},save:()=>trace.push('save'),
  play:async()=>{trace.push('play');return {cancelled:state.cancelled};},
