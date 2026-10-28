@@ -2835,6 +2835,32 @@
       "run": [
         "node remake/test/kuji_purchase.mjs"
       ]
+    },
+    {
+      "id": "ngplus-difficulty",
+      "title": "NG+ difficulty carry index and rival score lift (U4)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_difficulty.mjs"]
+    },
+    {
+      "id": "ch3-menu-bgm",
+      "title": "Chapter 3 MENU entries, BGM and LOAD checkpoints (#1258/#1261)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch3_menu_bgm.mjs"]
+    },
+    {
+      "id": "ch2-spot-images",
+      "title": "Chapter 2 spot backgrounds are real image files, not LFS pointers",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch2-city-data.js",
+        "remake/js/chapters/ch2-outings.js",
+        "remake/test/ch2_spot_images.mjs",
+        "assets/backgrounds/**"
+      ],
+      "run": ["node remake/test/ch2_spot_images.mjs"]
     }
   ]
 }
