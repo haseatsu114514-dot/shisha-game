@@ -72,6 +72,10 @@ assert(all.DB.dialogues.cinema_first_screening);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
+assert(all.DB.baito.some(event => event.id === "baito_tsumugi_art"), "つむぎの常連接客が起動時に除外された");
+for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romance"]) {
+  assert(!all.DB.baito.some(event => event.id === id), `未接続の物語イベントを一括解放しない: ${id}`);
+}
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
 assert.equal(all.DB.characters.hiyori.name, "朝霧ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);

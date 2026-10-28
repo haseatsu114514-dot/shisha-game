@@ -398,7 +398,7 @@
     },
     {
       "id": "baito_tsumugi_art",
-      "category": "story",
+      "category": "atmosphere",
       "trigger_flag": "ch1_tsumugi_regular",
       "text": "つむぎがいつもの席にいる。今日はタブレットではなく、紙のメモに何かを描いている。鉛筆が走る音がシーシャのゴボゴボという音と交互に聞こえる。\n……よく見ると、シーシャのボトルを描いているようだ。それも、tonariのボトルを。",
       "choices": [
@@ -425,7 +425,8 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["tsumugi"]
     },
     {
       "id": "baito_tsumugi_rain",
