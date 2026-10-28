@@ -13,6 +13,10 @@ await suite("loading-gate", async check => {
       assert.equal(await page.locator('.loading-panels img').count(), 2);
       assert.equal(await page.locator('.loading-status').innerText(), 'LOADING…');
       assert.equal(await page.locator('.loading-comic-title').innerText(), '２コマ漫画・配置確認');
+      // Per-comic one-line note and live text bubbles overlaid on the art (typo-fixable dialogue).
+      assert.match(await page.locator('.loading-comic-caption').innerText(), /一行解説/);
+      assert.equal(await page.locator('.loading-bubble').count(), 2);
+      assert.match(await page.locator('.loading-bubble').first().innerText(), /テキスト台詞1/);
       assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate figcaption').count(), 0);
       await page.screenshot({ path: path.resolve(`.codex/artifacts/remake-browser/loading-comic-${label}.png`) });
       const boxes = await page.locator('.loading-panels img').evaluateAll(nodes => nodes.map(node => {
@@ -25,6 +29,9 @@ await suite("loading-gate", async check => {
       await page.evaluate(() => { window.clicksBehindGate = 0; window.addEventListener('click', () => { window.clicksBehindGate++; }, { once: true }); });
       await page.locator('.loading-status').click();
       assert.equal(await page.locator('.loading-gate').count(), 1, 'Input must not skip preparation');
+      // When a comic is shown, preparation finishing opens a reading hold; a key advances past it.
+      await page.locator('.loading-gate.is-ready').waitFor();
+      assert.equal(await page.locator('.loading-proceed').evaluate(node => getComputedStyle(node).opacity !== '0'), true, 'The reading prompt appears');
       await page.keyboard.press('Enter');
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), false);
@@ -33,6 +40,33 @@ await suite("loading-gate", async check => {
       assert.equal(await page.evaluate(() => JSON.stringify({ local: { ...localStorage }, session: { ...sessionStorage } })), storage);
     }, { viewport });
   }
+  await check("portrait-readable", async page => {
+    // Portrait escapes the shrunken #stage: the overlay covers the real viewport and stacks the
+    // two panels large so the bubble text stays readable (and still advances on a key press).
+    await page.locator('[data-demo="comic"]').click();
+    await page.locator('.loading-gate').waitFor();
+    await page.locator('.loading-panels img').first().waitFor();
+    assert.equal(await page.locator('.loading-gate').evaluate(node => node.classList.contains('is-viewport') && node.parentElement === document.body), true, 'Portrait renders at viewport scale, outside #stage');
+    const layout = await page.evaluate(() => {
+      const arts = [...document.querySelectorAll('.loading-panel-art')].map(node => node.getBoundingClientRect());
+      const bubble = document.querySelector('.loading-bubble');
+      return {
+        widths: arts.map(box => box.width),
+        stacked: arts.length === 2 && arts[1].top >= arts[0].bottom - 2,
+        bubbleFont: bubble ? parseFloat(getComputedStyle(bubble).fontSize) : 0,
+        withinViewport: arts.every(box => box.left >= -1 && box.right <= window.innerWidth + 1 && box.bottom <= window.innerHeight + 1),
+      };
+    });
+    assert(layout.stacked, 'Portrait stacks the two panels vertically');
+    assert(layout.widths.every(width => width >= 280), `Panels must be large in portrait, got ${layout.widths}`);
+    assert(layout.bubbleFont >= 14, `Bubble text must stay readable in portrait, got ${layout.bubbleFont}px`);
+    assert(layout.withinViewport, 'Portrait layout stays within the viewport');
+    await page.screenshot({ path: path.resolve('.codex/artifacts/remake-browser/loading-comic-portrait.png') });
+    await page.locator('.loading-gate.is-ready').waitFor();
+    await page.keyboard.press('Enter');
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
+    assert.match(await page.locator('#result').textContent(), /準備完了/);
+  }, { viewport: { width: 390, height: 844 } });
   await check("fast-error-cancel", async page => {
     await page.evaluate(() => {
       window.gatesShown = 0;
@@ -57,7 +91,8 @@ await suite("loading-gate", async check => {
     await page.locator('[data-demo="plain"]').click();
     await page.locator('.loading-gate').waitFor();
     assert.equal(await page.locator('.loading-comic img').count(), 0);
-    assert.equal(await page.locator('.loading-proceed').count(), 0);
+    // No comic means no reading hold: the gate never becomes ready-to-advance and closes on its own.
+    assert.equal(await page.locator('.loading-gate.is-ready').count(), 0);
     await page.getByText('準備完了。次の場面を開始できます。', { exact: true }).waitFor();
     assert.equal(await page.locator('.loading-gate').count(), 0);
   });
