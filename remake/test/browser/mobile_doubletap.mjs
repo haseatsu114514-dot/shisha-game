@@ -148,7 +148,13 @@ try {
         for (let i = 0; i < 4; i++) { await tap(90, 100); await page.waitForTimeout(70); }
       });
     }
-    await page.evaluate(async () => { void window.__remake.dev.drill("steam"); });
+    await page.evaluate(async () => {
+      // The slash attack is learned from Sumi's special training (#712); without the
+      // flag the button stays disabled forever, so grant it like steam_slash.mjs does.
+      const core = await import("./js/core/state.js");
+      core.state.flags._sumi_attack_learned = true;
+      void window.__remake.dev.drill("steam");
+    });
     await page.locator('[data-test="dodge-slash"]:not(:disabled)').waitFor({ state: "visible", timeout: 20000 });
     const pad = page.locator('[data-test="dodge-pad"]');
     assert.equal(await pad.evaluate(el => getComputedStyle(el).touchAction), "none");
