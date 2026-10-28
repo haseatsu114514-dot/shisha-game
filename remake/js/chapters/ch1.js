@@ -36,7 +36,7 @@ import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "./tournament-resources.js";
-import { runFullPractice, runCarePractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
+import { runFullPractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { basicsExperienced, fullPracticeToday, careExperienced, recommendedDrill } from "../craft/practice-history.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
 import { chooseDrill } from "../daily/tonari.js";
@@ -431,11 +431,11 @@ async function midPreparation() {
   if (!progress.stockDone) { await prepareFlavorStock(); progress.stockDone = true; save(); }
   if (!progress.choice) {
     if (careExperienced()) await play({ ...DB.dialogues.remake_midcheck_review, branches: {} }, { bg: TONARI_N });
-    else { progress.choice = "care"; save(); }
+    else { progress.choice = "full"; save(); }
   }
   if (!progress.practiceDone && progress.choice !== "stock") {
     beginEvePractice(progress);
-    const cs = progress.choice === "full" ? await runFullPractice({ kind: "midcheck" }) : await runCarePractice({ kind: "midcheck" });
+    const cs = await runFullPractice({ kind: "midcheck" });
     progress.failed = cs.failed || null;
     progress.practiceDone = true;
     save();
