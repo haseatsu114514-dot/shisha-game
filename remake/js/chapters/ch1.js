@@ -8,7 +8,7 @@ import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
-import { addMoney, maxStamina, addStamina } from "../core/stats.js";
+import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -691,6 +691,8 @@ async function victory(cs) {
   delete state.tournament.stockSnap;
   delete state.tournament.entryResources;
   await play("ch1_tournament_after", { bg: STAGE });
+  await play("interval_day1_naru_lime");
+  gainStat("guts", 1);
   // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
   await openPhone([
     {
@@ -707,7 +709,11 @@ async function victory(cs) {
       ], close_label: "……誰？",
     },
   ], { time: "PM 11:47", title: "優勝の夜" });
+  await play("interval_day1_morning_win");
   await play("ch1_naru_promise");
+  await play("interval_day2_adam_lime");
+  gainStat("insight", 1);
+  await play("interval_day5_eve");
   state.phase = "aftermath";
   save();
   await finishAfterTournament();
