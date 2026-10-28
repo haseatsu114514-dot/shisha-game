@@ -5,7 +5,7 @@ import { el, yen } from "../core/util.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, imageReady, chapterTitle, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, imageReady, chapterTitle, modal, withScenePreparation } from "../core/ui.js";
 import { showHud } from "../daily/hud.js";
 import { openStatus } from "../daily/status.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -113,7 +113,7 @@ async function scene(id, label, background) {
   if (!DB.dialogues[id]) throw new Error(`台本がありません: ${id}`);
   owner.scene = id;
   if (background) {
-    await setBg(background, { instant: true });
+    await withScenePreparation(setBg(background, { instant: true }));
   }
   if (!current(owner)) return false;
   playBgm(background?.includes("bg_tonari_inside") ? "tonari" : CITY_BGM);
@@ -130,10 +130,10 @@ async function scene(id, label, background) {
 
 async function mapBackground() {
   const owner = session;
-  const ready = await imageReady(MAP.day, 15000);
+  const ready = await withScenePreparation(imageReady(MAP.day, 15000));
   if (!current(owner)) return false;
   owner.mapAvailable = ready;
-  await setBg(ready ? MAP.day : null, { instant: true });
+  await withScenePreparation(setBg(ready ? MAP.day : null, { instant: true }));
   if (!current(owner)) return false;
   playBgm(CITY_BGM);
   return true;
@@ -162,7 +162,7 @@ async function continueDayOne() {
       if (!current(owner)) return;
       await checkpoint("arrival");
     } else if (stage === "arrival") {
-      const ready = await imageReady(STATION, 15000);
+      const ready = await withScenePreparation(imageReady(STATION, 15000));
       if (!current(owner)) return;
       if (!await scene("ch2_city_arrival", "隣町の駅前", ready ? STATION : MAP.day)) return;
       await checkpoint("map");
@@ -227,7 +227,7 @@ async function visit(stop) {
   // J05: 配達で来たら、そのまま店内へ入って店主と話す（「店内をのぞく」は出さない）。
   // 室内の絵が間に合わないときだけ、通常訪問と同じ店頭カード（再読み込みできる）に落とす。
   if (delivering && ROOMS[stop.id]) {
-    const ready = await imageReady(ROOMS[stop.id], 15000);
+    const ready = await withScenePreparation(imageReady(ROOMS[stop.id], 15000));
     if (!current(owner)) return;
     if (ready) {
       if (!await scene(`ch2_city_${stop.id}_inside`, stop.sceneLabel || stop.name, ROOMS[stop.id])) return;
@@ -252,7 +252,7 @@ function renderStop(stop, failed = false) {
     el("div.ch2-actions", [
       button(failed ? "室内を再読み込み" : "店内をのぞく", "inside", async () => {
         const owner = session;
-        const ready = await imageReady(ROOMS[stop.id], 15000);
+        const ready = await withScenePreparation(imageReady(ROOMS[stop.id], 15000));
         if (!current(owner)) return;
         if (!ready) { renderStop(stop, true); return; }
         if (!await scene(`ch2_city_${stop.id}_inside`, stop.sceneLabel || stop.name, ROOMS[stop.id])) return;

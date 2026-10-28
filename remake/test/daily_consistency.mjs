@@ -22,7 +22,7 @@ const values = {
   "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false },
   "util.js": { el, seeded, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
   "data.js": { DB: db, sceneBg: () => ({}), bgUrl: () => "bg", displayName: id => id },
-  "ui.js": { imageReady: async () => false, showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
+  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
   "transitions.js": { refreshPlaceCue() {} },
   "state.js": { state, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
   "stats.js": { AFFINITY_RANK_PTS: [0,9,20,33,48,66], setStoryAffinityCap() {}, affinityGateWaiting: () => false, addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, star: () => charmStar,

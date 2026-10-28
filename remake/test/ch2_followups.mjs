@@ -28,7 +28,7 @@ const mocks = {
     addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
     earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); },
   },
-  "../core/ui.js": { imageReady: async () => mode !== "bad-image", setBg: async () => {}, toast: () => {} },
+  "../core/ui.js": { withScenePreparation: task => task, imageReady: async () => mode !== "bad-image", setBg: async () => {}, toast: () => {} },
   "../vn/engine.js": { play: async id => {
     played.push(id);
     if (mode === "cancel") return { cancelled: true };
