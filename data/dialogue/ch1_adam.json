@@ -352,6 +352,12 @@
           "text": "今日の煙は、前より軽く抜けた。奥の甘さは、ちゃんと残っている。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_afsahr_tasting",
+          "next_true": "taste_carryover"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "同じ味のはずなのに、違いますね"
@@ -395,7 +401,16 @@
           "type": "remember",
           "memory_id": "adam_blend"
         }
-      ]
+      ],
+      "branches": {
+        "taste_carryover": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（抜け方も、奥の甘さも分かる。……なのに俺は、その先の味に確信が持てない）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_adam_third",

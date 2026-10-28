@@ -56,7 +56,31 @@ await suite('loading-craft', async check => {
       assert.equal(await page.evaluate(() => JSON.stringify({ ...localStorage })), storage);
     }, { viewport, reducedMotion: label === 'mobile' ? 'reduce' : 'no-preference' });
   }
+  await check('portrait', async page => {
+    // In the real game canvas too, portrait shows the comic at viewport scale with large panels.
+    await page.locator('.loading-gate').waitFor();
+    await page.locator('.loading-panels img').first().waitFor();
+    const layout = await page.evaluate(() => {
+      const gate = document.querySelector('.loading-gate');
+      const arts = [...document.querySelectorAll('.loading-panel-art')].map(node => node.getBoundingClientRect());
+      return {
+        viewport: gate.classList.contains('is-viewport') && gate.parentElement === document.body,
+        widths: arts.map(box => box.width),
+        stacked: arts.length === 2 && arts[1].top >= arts[0].bottom - 2,
+        within: arts.every(box => box.right <= window.innerWidth + 1 && box.bottom <= window.innerHeight + 1),
+      };
+    });
+    assert(layout.viewport, 'Portrait renders the gate at viewport scale, outside #stage');
+    assert(layout.stacked, 'Portrait stacks the two panels');
+    assert(layout.widths.every(width => width >= 280), `Panels must be large in portrait, got ${layout.widths}`);
+    assert(layout.within, 'Portrait layout stays within the viewport');
+    await page.locator('.loading-gate.is-ready').waitFor();
+    await page.keyboard.press('Enter');
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
+    await page.waitForFunction(() => document.querySelector('.bench-panel')?.childElementCount > 0);
+  }, { viewport: { width: 390, height: 844 } });
 }, {
+  readLoadingComics: false,
   entry: new URL('craft-preview.html?loading=comic', baseURL).href,
   readySelector: '.loading-gate',
   initScript: () => localStorage.setItem('suien_remake_save', 'untouched-loading-preview'),

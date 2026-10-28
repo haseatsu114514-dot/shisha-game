@@ -43,7 +43,7 @@ await suite("home-shisha", async check => {
       assert.equal(await page.evaluate(() => secondRigGrant), false);
       const before = await snapshot(page);
       assert.equal(before.owned.filter(id => id === "home_rig_set").length, 1);
-      assert.equal(before.flavorStock.double_apple, 50, "The rig includes one box, granted only once");
+      assert.deepEqual(before.flavorStock, { lemon: 20, mint: 20 }, "The rig gift and repeated receipt must leave all private leaves unchanged");
 
       await offer(page);
       assert.match(await page.locator(".home-shisha-dialog").innerText(), /寝る前の家シーシャ/);
