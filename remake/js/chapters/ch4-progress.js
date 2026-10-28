@@ -12,6 +12,7 @@
 // ドバイ専用の背景が無いので、全て既存 bg の流用。#1177 でドバイ素材に差し替える時はこの表だけ直す。
 export const CH4_PLACE_BG = Object.freeze({
   map: "bg_dubai_map",            // #1177 選定マップ（ch4_dubai_10・真昼）
+  mapDusk: "bg_dubai_map_dusk",   // #1177 候補4（ch4_dubai_04・夕景）。前夜日（DAY4）の自由行動マップに使う
   souq: "bg_street_day",          // 仮置き bg（#1177 でドバイ素材に差し替え）
   festa: "bg_tournament_stage",   // 仮置き bg（#1177 でドバイ素材に差し替え）
   center_cafe: "bg_cafe_day",     // 仮置き bg（#1177 でドバイ素材に差し替え）
