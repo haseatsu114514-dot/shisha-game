@@ -44,6 +44,17 @@ ASSETS = ROOT / "assets"
 OUT = ROOT / "remake" / "data" / "manifest.json"
 
 
+def load_characters():
+    """ゲームの DB.characters と同じ順序で人物定義と独立 profile を合成する。"""
+    characters = {c["id"]: c for c in json.loads(
+        (ROOT / "data/characters.json").read_text(encoding="utf-8"))}
+    samechan = json.loads((ROOT / "data/dialogue/samechan.json").read_text(encoding="utf-8"))
+    profile = samechan.get("profile")
+    if profile and profile.get("id"):
+        characters[profile["id"]] = profile
+    return characters
+
+
 def measure(png: Path, anchor="feet"):
     """本体の bbox と横アンカー。通常は足元、指定時は頭部の重心を使う。"""
     if anchor not in ("feet", "head"):
@@ -85,8 +96,8 @@ def portraits(character_ids=None):
     """キャラごとに表情一覧と共通の framing 値（全表情で同じ＝表情を変えても絵が動かない）。"""
     out = {}
     base = ASSETS / "sprites" / "characters"
-    anchor_modes = {c["id"]: c.get("spriteAnchor", "feet")
-                    for c in json.loads((ROOT / "data" / "characters.json").read_text())}
+    anchor_modes = {cid: c.get("spriteAnchor", "feet")
+                    for cid, c in load_characters().items()}
     for d in sorted(p for p in base.iterdir() if p.is_dir()):
         if character_ids is not None and d.name not in character_ids:
             continue
@@ -286,7 +297,7 @@ def main():
     if args.portraits_only:
         import build_images
         ids = sorted(set(args.portraits_only))
-        known = {character["id"] for character in json.loads((ROOT / "data/characters.json").read_text())}
+        known = load_characters()
         for cid in ids:
             if cid not in known:
                 parser.error(f"人物設定がありません: {cid}")
