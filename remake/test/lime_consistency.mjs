@@ -478,6 +478,49 @@ reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 } }, lovers: ["m
 db.lime = []; db.lover = { inviteLines: { minto: ["仕事のあと"] } };
 assert.equal(phone.morningMessages()[0].type, "invitation", "Dates remain available before the chapter-two tournament");
 
+// #1178 CH2-TF-02/03: 実データの日数指定LIMEを章内日で配信する。
+for (const [id, sender, due] of [
+  ["lime_ageha_day3", "ageha", 3],
+  ["lime_ageha_day5", "ageha", 5],
+  ["rumor_kemuri_experiments", "naru", 3],
+]) {
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  for (const startDay of [8, 15]) {
+    const setup = (localDay, overrides = {}) => {
+      reset({ chapter: 2, day: startDay + localDay - 1, lastBaitoDay: startDay + localDay - 1,
+        flags: { _ch2_day1: { startDay } }, contacts: [sender], ...overrides });
+      db.lime = [message];
+    };
+    for (const [day, expected] of [[due - 1, 0], [due, 1], [due + 1, 1], [due + 2, 0]]) {
+      setup(day);
+      assert.equal(phone.deliverMorning(), expected, `${id}: start=${startDay}, DAY${day}`);
+      if (expected) {
+        assert.equal(state.inbox[0].id, id);
+        assert.equal(phone.deliverMorning(), 0, `${id}: 未読を二重配信しない`);
+        state.inbox[0].read = true; state.inbox[0].done = true; state.limeRead.push(id);
+        const saved = clone(state);
+        assert.equal(phone.deliverMorning(), 0, `${id}: 既読を再配信しない`);
+        setup(day, saved);
+        assert.equal(phone.deliverMorning(), 0, `${id}: 保存復元後も一度きり`);
+      }
+    }
+    setup(due, { contacts: [] });
+    assert.equal(phone.deliverMorning(), 0, `${id}: 連絡先交換前は配信しない`);
+    for (const chapter of [1, 3]) {
+      setup(due, { chapter, day: due, lastBaitoDay: due });
+      phone.deliverMorning(); // 第1章DAY3にはスミの固定バイト連絡もある。
+      assert(!state.inbox.some(item => item.id === id), `${id}: 第${chapter}章では配信しない`);
+    }
+    setup(due);
+    state.inbox.push(item({ id: `older_${id}`, sender, type: "chat" }));
+    assert.equal(phone.deliverMorning(), 0, `${id}: 同じ相手の未読を優先`);
+    setup(due);
+    assert.equal(phone.deliverMorning({ tournamentDay: true }), 0, `${id}: 大会当日は配信しない`);
+  }
+}
+console.log("[1178 CH2-TF-02/03] PASS actual messages/local days/contacts/chapter/once/restore");
+
 // #782: 追加候補も本番の連絡先/未読/1話題/一度きり/最大3通の制御を通す。
 db.friends = JSON.parse(await fs.readFile(new URL("data/friends.json", root), "utf8"));
 for (const day of [5, 10]) {

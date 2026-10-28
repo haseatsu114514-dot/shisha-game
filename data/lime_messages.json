@@ -364,6 +364,7 @@
     {
       "id": "lime_ageha_day3",
       "sender": "ageha",
+      "chapter": 2,
       "trigger_day": 3,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
@@ -475,6 +476,7 @@
     {
       "id": "lime_ageha_day5",
       "sender": "ageha",
+      "chapter": 2,
       "trigger_day": 5,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
@@ -658,7 +660,7 @@
     {
       "id": "rumor_kemuri_experiments",
       "sender": "naru",
-      "trigger_condition": "ch2_started",
+      "trigger_condition": "lime_exchanged",
       "type": "rumor",
       "rumor_about": "dr_kemuri",
       "messages": [
