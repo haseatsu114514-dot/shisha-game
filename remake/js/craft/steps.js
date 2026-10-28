@@ -22,13 +22,15 @@ import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
 
-// 章ごとの課題。第1章は自分のレモン、第2章の新作苺のみ主催者支給、第3章は自分のドバジ チョコレート。
+// 章ごとの課題。第1章レモン・第2章の新作苺・第3章ドバジ チョコレート。
+// オーナー決定（2026-10-28 13:29）：課題フレーバーは大会が当日 supply で用意し、本番中は無制限に使える。
+// 私物在庫は減らさず持ち越しもしない。熟練度は事前の練習でのみ上がるので、買って練習した方が有利。
 export const REGULATION = {
-  1: { flavor: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（私物持ち込み）" },
-  // 判定は同系統（AFの持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
+  1: { flavor: "lemon", supply: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（大会支給）" },
+  // 判定は同系統（同じ苺系統の持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
   2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 4, label: "課題フレーバー「ストロベリー」を4g以上" },
-  // オーナー決定 10/28：ドバジ・4g以上・持ち込み。チョコは通常（chocolate）。
-  3: { flavor: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（私物持ち込み）" },
+  // オーナー決定 10/28：ドバジ・4g以上・大会支給。チョコは通常（chocolate）。
+  3: { flavor: "chocolate", supply: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（大会支給）" },
 };
 export const regulationFor = (cs) => cs.staffPractice ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
   ? { flavor: "mint", supply: "mint", min: 2, label: "再開中の旧大会：ミント2g以上" }
@@ -229,7 +231,8 @@ export async function stepMix(cs) {
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
-  // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
+  // 大会は課題フレーバーを無制限に支給（私物在庫は減らさない・持ち越さない）。課題以外の葉だけ在庫から持ち込む。
+  // 店の練習は店頭の葉も使え、私物を減らさない（#783）。
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   const supplied = (id) => !!reg && id === supplyId;
