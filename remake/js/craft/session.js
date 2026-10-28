@@ -407,7 +407,6 @@ export async function failBench(cs, kind) {
   flash(kind === "cold" ? "white" : "red", 300);
   await sleep(reduced ? 300 : 1200);
 }
-export const burstBench = (cs) => failBench(cs, "burnt");
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
 export function refreshBench() {
