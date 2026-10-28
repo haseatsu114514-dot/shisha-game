@@ -49,14 +49,14 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 // manifest読込前のPNG経路でも、旧版の顔画像キャッシュを使わない。
-assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=face-line-20261026");
+assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=face-restore-20261028");
 await all.loadAll((p) => progress.push(p));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
-    const version = id === "ageha" || face === "normal" ? "?v=face-line-20261026" : "";
+    const version = id === "ageha" || face === "normal" ? "?v=face-restore-20261028" : "";
     assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
-  assert.equal(all.faceIconUrl(id), `../assets/ui/face_icons/face_${id}.png?v=face-line-20261026`);
+  assert.equal(all.faceIconUrl(id), `../assets/ui/face_icons/face_${id}.png?v=face-restore-20261028`);
   assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
 }
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
