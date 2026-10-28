@@ -63,11 +63,11 @@ for (const id of ["minto", "ageha"]) {
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
 assert.equal(all.faceIconUrl("oneesan"), "../assets/ui/face_icons/face_minto_private.png");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
-assert.equal(requests.length, 42);
-assert.equal(new Set(requests).size, 42);
+assert.equal(requests.length, 43);
+assert.equal(new Set(requests).size, 43);
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 42);
+assert.equal(progress.length, 43);
 assert(all.DB.dialogues.samechan_cinema_introduction);
 assert(all.DB.dialogues.cinema_first_screening);
 assert.equal(progress.at(-1), 1);
