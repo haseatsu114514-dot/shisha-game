@@ -23,7 +23,7 @@ await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
 const origin = `http://127.0.0.1:${server.address().port}`;
 let browser;
 try {
-  browser = await chromium.launch({ headless: true, chromiumSandbox: true,
+  browser = await chromium.launch({ headless: true,
     ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}) });
   for (const [label, viewport, touch, reducedMotion] of [
     ["pc", { width: 1280, height: 720 }, false, "no-preference"],
