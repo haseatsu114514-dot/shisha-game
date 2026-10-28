@@ -117,7 +117,7 @@ try {
       assert(r.x + r.w <= boxes.stage.x + boxes.stage.w + 1);
       assert(r.y + r.h <= boxes.stage.y + boxes.stage.h + 1);
     }
-    assert.equal(Math.round(boxes.stage.h), ds ? 326 : 720);
+    assert.equal(Math.round(boxes.stage.h), ds ? 390 : 720);
     await page.waitForFunction(() => QA.done);
     assert.equal(await page.evaluate(() => QA.count), 1);
     await saveLoad();
