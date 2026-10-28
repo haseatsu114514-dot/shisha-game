@@ -540,7 +540,7 @@ async function tournamentDay() {
     { speaker: "pakki", face: "excited", text: `シーシャ勝負・第壱条ッ！ 課題の${challenge}を2g以上！ ${source}` },
     { speaker: "pakki", face: "excited", text: "第弐条ッ！ 一台を作って提供、二度の調整まで同じ一台で勝負です！ ぷぷぷっ！" },
   ] }, { bg: STAGE });
-  await assetsReady;
+  await withLoadingNotice(assetsReady, loadingNotice("大会の準備をしています…"));
   await entrance();
 
   // ROUND 1 ── 準備
