@@ -621,14 +621,14 @@ async function tournamentDay() {
     await resultCountdown(cs, out.kind);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
-    await nagumoCutin(1);
+    await nagumoCutin(1, { close: out.close });
     await play("ch1_tournament_reveal", { bg: STAGE });
     await resultTable(cs, 1);
     await victory(cs);
   } else {
     await resultCountdown(cs, out.kind);
     retireScreen();
-    await nagumoCutin(out.rank);
+    await nagumoCutin(out.rank, { close: out.close });
     await resultTable(cs, out.rank);
     await play("ch1_tournament_defeat", { bg: STAGE });
     await play("remake_defeat_follow", { bg: TONARI_N });

@@ -7,7 +7,7 @@ globalThis.document = { addEventListener() {} };
 globalThis.window = {};
 const { DB } = await import("../js/core/data.js");
 const { newGame } = await import("../js/core/state.js");
-const { computeShisha, finalize, bonusOf, NAGUMO_BAR, WEIGHTS } = await import("../js/craft/score.js");
+const { computeShisha, finalize, bonusOf, NAGUMO_BAR, CLOSE_MARGIN, WEIGHTS } = await import("../js/craft/score.js");
 const { outcomeOf, pointTable } = await import("../js/craft/result.js");
 const { evaluateMix } = await import("../js/craft/steps.js");
 const { temperatureBands, temperatureFitness } = await import("../js/craft/temperature-model.js");
@@ -122,6 +122,18 @@ assert.equal(novice.cs.parts.care1, 76);
 assert.equal(novice.cs.parts.care2, 75);
 assert.equal(outcomeOf(NAGUMO_BAR - .1).rank, 3);
 assert.equal(outcomeOf(NAGUMO_BAR).rank, 1);
+// G01: 接戦だけ南雲が最後まで迷う。合否ライン ±CLOSE_MARGIN が接戦、大差は迷わせない。
+assert.equal(CLOSE_MARGIN, 5, "close-contest margin is a single documented constant");
+assert.equal(outcomeOf(NAGUMO_BAR).close, true, "a bare clear is a close win → Nagumo hesitates");
+assert.equal(outcomeOf(NAGUMO_BAR + CLOSE_MARGIN).close, true, "the top of the close band still hesitates");
+assert.equal(outcomeOf(NAGUMO_BAR - CLOSE_MARGIN).close, true, "a near-miss loss hesitates then loses");
+assert.equal(outcomeOf(NAGUMO_BAR + CLOSE_MARGIN + .1).close, false, "a comfortable win does not hesitate");
+assert.equal(outcomeOf(NAGUMO_BAR - CLOSE_MARGIN - .1).close, false, "a clear loss does not hesitate");
+assert.equal(outcomeOf(95).close, false, "a premium win never hesitates");
+assert.equal(outcomeOf(20).close, false, "a disaster never hesitates");
+// close は演出のみ。勝敗は total が基準を超えたかどうかで決まり、close では変わらない。
+assert.equal(outcomeOf(NAGUMO_BAR).rank, 1, "a close win is still rank 1");
+assert.equal(outcomeOf(NAGUMO_BAR - CLOSE_MARGIN).rank, 3, "a close loss is still a loss");
 assert.deepEqual(pointTable(1).nagumo, { hajime: 10 }, "the story's voting method stays separate from flavor preferences");
 
 // The displayed mastery bonus, aroma and forecast all use the same selected mix's weighting.

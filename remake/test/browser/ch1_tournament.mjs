@@ -366,4 +366,53 @@ await suite("ch1-tournament", async check => {
     for(const [id,points] of Object.entries(interim.points))assert(finalVotes[id].points>=points,`${id}: displayed allocated points returned`);
     await assertFits(page,'.rt-name, .rt-votes, .rt-pt');
   }, { viewport, isMobile: mobile, hasTouch: mobile });
+
+  // G01: 接戦のときだけ、南雲は最後の一票を迷ってから入れる。大差では迷わない。勝敗は実成績どおり。
+  await check("nagumo-hesitates-only-in-close-contest", async page => {
+    await init(page);
+    await page.evaluate(() => { ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"].forEach(T.core.markMet); });
+    // 接戦判定は score.js の CLOSE_MARGIN 一か所から来る outcomeOf.close。閾値そのものを通して検証する。
+    const closeOf = (t) => page.evaluate(x => T.result.outcomeOf(x).close, t);
+    const rankOf = (t) => page.evaluate(x => T.result.outcomeOf(x).rank, t);
+    assert.equal(await closeOf(84), true, "a bare clear (84) is a close win");
+    assert.equal(await closeOf(80), true, "a near-miss (80) is a close loss");
+    assert.equal(await closeOf(95), false, "a premium win (95) is a blowout");
+    assert.equal(await closeOf(60), false, "a clear loss (60) is a blowout");
+    // 迷いの演出は勝敗を変えない: 接戦の勝ちは1位、接戦の負けは3位のまま。
+    assert.equal(await rankOf(84), 1);
+    assert.equal(await rankOf(80), 3);
+
+    const start = (total) => page.evaluate(t => {
+      const out = T.result.outcomeOf(t);
+      window.cs = { mix: { blueberry: 10, mint: 2 }, total: t, parts: {} };
+      window.cut = T.result.nagumoCutin(out.rank, { close: out.close });
+      return out;
+    }, total);
+    const hesitate = page.locator('[data-test="nagumo-hesitate"]');
+
+    // 接戦の勝ち: 票が動く前に、迷いの一拍が出る。得意げな文言でなく、迷い・吸い直しの言葉。
+    assert.deepEqual(await start(84), { rank: 1, kind: "win", close: true });
+    await hesitate.waitFor();
+    assert.match(await hesitate.innerText(), /止ま|もう一度/);
+    await page.evaluate(() => window.cut);
+    assert.equal(await hesitate.count(), 0, "hesitation caption is cleaned up after the vote");
+
+    // 接戦の負け: 同じ迷いを見せてから負ける（南雲票はなるへ。はじめは1位にならない）。
+    assert.deepEqual(await start(80), { rank: 3, kind: "close", close: true });
+    await hesitate.waitFor();
+    await page.evaluate(() => window.cut);
+    assert.equal(await hesitate.count(), 0);
+
+    // 大差の勝ち: カットインは立ち上がるが、一拍を挟まず票が動く。
+    assert.equal((await start(95)).close, false);
+    await page.locator('.nc-cut.show').waitFor();
+    assert.equal(await hesitate.count(), 0, "a blowout win must not hesitate");
+    await page.evaluate(() => window.cut);
+
+    // 大差の負け: こちらも迷わない。
+    assert.equal((await start(60)).close, false);
+    await page.locator('.nc-cut.show').waitFor();
+    assert.equal(await hesitate.count(), 0, "a blowout loss must not hesitate");
+    await page.evaluate(() => window.cut);
+  });
 });

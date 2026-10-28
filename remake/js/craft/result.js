@@ -9,7 +9,7 @@ import { state } from "../core/state.js";
 import { SE, stopBgm } from "../core/audio.js";
 import { autoSkill } from "./common.js";
 import { mixColor } from "./art.js";
-import { NAGUMO_BAR } from "./score.js";
+import { NAGUMO_BAR, CLOSE_MARGIN } from "./score.js";
 import { evaluationOf, feedbackLine } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp } from "./tournament-graphics.js";
@@ -24,9 +24,13 @@ const JUDGES = [
 
 /** 総合スコア → 結末。1位は南雲票（基準超え）だけが生む（ch1の正史） */
 export function outcomeOf(total) {
-  if (total >= NAGUMO_BAR) return { rank: 1, kind: total >= 90 ? "premium" : "win" };
-  if (total >= NAGUMO_BAR - 12) return { rank: 3, kind: "close" };
-  return { rank: 4, kind: total < 38 ? "disaster" : "lose" };
+  // 接戦（僅差）＝合否ライン NAGUMO_BAR に CLOSE_MARGIN 以内で肉薄した結果だけ。
+  // このときだけ南雲が最後まで迷ってから票を入れる。大差の勝ち負けでは迷わせない。
+  // 勝敗自体は total が基準を超えたかどうかで決まり、close は演出用の付加情報。
+  const close = Math.abs(total - NAGUMO_BAR) <= CLOSE_MARGIN;
+  if (total >= NAGUMO_BAR) return { rank: 1, kind: total >= 90 ? "premium" : "win", close };
+  if (total >= NAGUMO_BAR - 12) return { rank: 3, kind: "close", close };
+  return { rank: 4, kind: total < 38 ? "disaster" : "lose", close };
 }
 
 /** 審査員の持ち点（各10点）の最終配分。はじめへの点は「ほとんどない」まま、南雲の10点だけが動く */
@@ -213,7 +217,7 @@ async function parin(screen, disaster) {
 
 // ---------------------------------------------------------------- 南雲カットイン（持ち点の一括投入）
 
-export async function nagumoCutin(rank) {
+export async function nagumoCutin(rank, { close = false } = {}) {
   const table = pointTable(rank);
   const before = totals(table, 2);
   const after = totals(table, 3);
@@ -240,6 +244,21 @@ export async function nagumoCutin(rank) {
   await sleep(fast ? 100 : 1600);
   cut.classList.add("show");
   ov.classList.add("cutting");
+  if (close) {
+    // 接戦だけ: 決定の金フラッシュの前に、南雲が最後まで迷う短い一拍を挟む。
+    // 一拍→もう一度だけ吸い直す視線、までを見せてから票が動く。勝敗自体は実成績で確定済み。
+    // 得意げにはせず、審査員が本気で測りかねている緊張だけを置く。AUTO/SKIP では fast 側で詰める。
+    const musing = el("div.nc-hesitate", { dataset: { test: "nagumo-hesitate" } }, [
+      el("span", { text: "南雲は、持ち点に手をかけたまま、止まった。" }),
+      el("span.nc-hesitate-late", { text: "もう一度だけ、吸い口に口をつける。" }),
+    ]);
+    ov.append(musing);
+    SE.heartbeat();
+    await sleep(fast ? 90 : 1300);
+    musing.classList.add("out");
+    await sleep(fast ? 20 : 260);
+    musing.remove();
+  }
   SE.just();
   flash("gold");
   await sleep(fast ? 100 : 1400);

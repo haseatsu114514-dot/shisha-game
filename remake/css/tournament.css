@@ -125,6 +125,12 @@
 .nc-cut-pt strong { font-size: 64px; line-height: .9; font-style: italic; font-weight: 900; background: linear-gradient(180deg, #fff6dc, #f6c95e 55%, #b07a20); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 #000a); }
 .nc-stamp { position: absolute; left: 30%; top: 15%; z-index: 5; padding: 6px 30px; border: 5px solid #ff4d6d; border-radius: 10px; color: #ff4d6d; font-size: 72px; font-weight: 900; letter-spacing: .14em; transform: translate(-50%, -50%) rotate(-10deg); background: #12081099; text-shadow: 0 0 20px #ff4d6d88; animation: stamp-in .4s cubic-bezier(.2, 1.4, .3, 1) backwards; pointer-events: none; }
 @keyframes stamp-in { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(2.4); } }
+/* 接戦のときだけ出る、南雲が最後まで迷う一拍のキャプション（得意げにしない静かな帯） */
+.nagumo-cut .nc-hesitate { position: absolute; z-index: 6; left: 60px; right: 470px; top: 50%; transform: translateY(-50%); display: grid; gap: 10px; padding: 18px 26px; text-align: center; background: #0c0814ee; border: 1px solid #f6c95e55; border-radius: 10px; box-shadow: 0 14px 40px #000b; transition: opacity .25s ease; animation: nc-hesitate-in .3s ease-out backwards; }
+.nagumo-cut .nc-hesitate span { font-size: 21px; font-weight: 700; letter-spacing: .04em; color: #f4ede0; }
+.nagumo-cut .nc-hesitate .nc-hesitate-late { color: #f6d68e; animation: nc-hesitate-in .3s ease-out .55s backwards; }
+.nagumo-cut .nc-hesitate.out { opacity: 0; }
+@keyframes nc-hesitate-in { from { opacity: 0; transform: translateY(6px); } }
 
 /* ---- 最終結果 */
 .result-table { padding: 26px 44px 24px; display: grid; grid-template-rows: 128px minmax(0, 1fr) 54px; gap: 16px; align-items: stretch; justify-content: stretch; overflow: hidden; }

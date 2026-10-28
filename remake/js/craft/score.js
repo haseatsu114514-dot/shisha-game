@@ -14,6 +14,13 @@ import { coalWarmth } from "./coals.js";
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
 /** 南雲が持ち点を動かす基準（これ未満なら南雲票は入らず、普通に負ける） */
 export const NAGUMO_BAR = 84;
+/**
+ * 接戦（僅差）の判定幅。総合が合否ライン NAGUMO_BAR からこの点数以内に収まったときだけ、
+ * 南雲は最終審査で最後まで迷ってから票を入れる。大差の勝ち負けでは迷わせない。
+ * 幅5点は「あと一口の調整で結果が入れ替わりうる」範囲＝84点ラインの ±5（79〜89点）。
+ * これ未満・これ超の総合では迷いの演出を出さず、勝敗は実成績どおりに確定する。
+ */
+export const CLOSE_MARGIN = 5;
 
 /** 同系統フレーバー（AF/ドバジ/アフサールのミント・ダブルアップル等）の合計グラム数 */
 export function flavorFamilyGrams(mix, family, flavorById = DB.flavorById) {
