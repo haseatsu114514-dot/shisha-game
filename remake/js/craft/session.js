@@ -158,8 +158,10 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
   const background = bg();
-  const assets = Promise.all([background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets]);
-  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter);
+  // A missing entryAssets is an already completed fourth step in the loading count.
+  const preparationSteps = [background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets];
+  const assets = Promise.all(preparationSteps);
+  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps);
   renderFatigue();
   return bench;
 }
