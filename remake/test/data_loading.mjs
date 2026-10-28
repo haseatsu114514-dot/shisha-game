@@ -103,6 +103,49 @@ assert(all.DB.friends.friends.naru.chats.length > 0); // 友人のたまのLIME�
 assert(all.DB.manifest.backgrounds.includes("bg_tonari_inside_day.png"));
 assert(all.DB.flavors.every((f) => (f.leaf || "blond") === "blond"));
 
+// LIMEの素材参照は本文とlogを合わせて検証する。既存テキスト形式も受理する。
+function validateLimeMedia(messages, catalog) {
+  for (const thread of messages) {
+    let count = 0, previousMedia = false;
+    for (const line of [...(thread.messages || []), ...(thread.log || [])]) {
+      if (typeof line === "string" || line.note) { previousMedia = false; continue; }
+      const kinds = ["text", "stamp", "image"].filter(key => key in line);
+      assert.equal(kinds.length, 1, `${thread.id}: mixed message kinds`);
+      const kind = kinds[0];
+      if (kind === "text") { previousMedia = false; continue; }
+      const asset = catalog[line[kind]];
+      assert(asset, `${thread.id}: unknown media ID`);
+      assert.equal(asset.kind, kind);
+      assert.equal(asset.owner, thread.sender, `${thread.id}: media owner mismatch`);
+      if (line.sender) assert.equal(line.sender, thread.sender, `${thread.id}: media owner mismatch`);
+      assert(!line.me, "player media is unsupported");
+      assert(!previousMedia, `${thread.id}: adjacent media`);
+      assert(++count <= 1, `${thread.id}: multiple media`);
+      previousMedia = true;
+    }
+  }
+}
+const catalog = all.DB.manifest.limeMedia;
+assert.deepEqual(JSON.parse(JSON.stringify(catalog)), realJSON("data/lime_media.json"));
+assert.equal(Object.keys(catalog).length, 11);
+for (const asset of Object.values(catalog)) {
+  assert(fs.existsSync(path.resolve(documentRoot, asset.src)), asset.src);
+  assert(asset.alt && asset.preview);
+  assert.equal(asset.width, asset.kind === "stamp" ? 320 : 960);
+  assert.equal(asset.height, asset.kind === "stamp" ? 320 : 720);
+}
+validateLimeMedia(all.DB.lime, catalog);
+const stamp = { sender: "adam", stamp: "st_adam_bless" };
+for (const [lines, error] of [
+  [[{ ...stamp, stamp: "missing" }], /unknown media/],
+  [[{ ...stamp, sender: "naru" }], /owner mismatch/],
+  [[{ ...stamp, text: "text" }], /mixed message/],
+  [[stamp, "text", stamp], /multiple media/],
+  [[stamp, stamp], /adjacent media/],
+]) assert.throws(() => validateLimeMedia([{ id: "invalid", sender: "adam", messages: lines }], catalog), error);
+validateLimeMedia([{ sender: "adam", messages: ["legacy", { text: "text" }, stamp] }], catalog);
+console.log("[LIME media] catalog, files, unknown ID, owner, mixed kinds, count, adjacency: PASS");
+
 // HTTP・通信・JSONの各失敗にはファイル名が付き、以後の組は読まず、DBも公開しない。
 const badPath = "../data/relationship_memories.json";
 for (const [response, expected] of [

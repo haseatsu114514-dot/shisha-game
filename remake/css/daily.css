@@ -1113,3 +1113,10 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 
 /* 旅程相談の戻るボタンは、字形を切らずタッチでも押せる大きさにする。 */
 .lime-back.lime-contact-back { width: 44px; height: 44px; font: 24px/1 sans-serif; }
+
+/* LIMEの受信素材。透過スタンプは吹き出しを付けない。 */
+.lime-media { flex: 0 1 auto; min-width: 0; max-width: calc(100% - 42px); overflow: hidden; }
+.lime-stamp { width: 128px; aspect-ratio: 1; }
+.lime-image { width: 224px; aspect-ratio: 4 / 3; border-radius: 12px; background: #e4e9ed; }
+.lime-media img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.lime-media-fallback { display: flex; align-items: center; justify-content: center; color: #354352; font-size: 12px; overflow-wrap: anywhere; }
