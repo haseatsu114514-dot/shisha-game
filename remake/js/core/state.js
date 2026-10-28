@@ -310,15 +310,17 @@ export function newGame() {
 }
 
 export function save() {
-  if (!state) return;
+  if (!state) return false;
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try { recordGalleryProgress(peekSave()); } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
   recordGalleryProgress(state);
   state.savedAt = Date.now();
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    return true;
   } catch {
     /* プライベートウィンドウ等で失敗しても遊べるようにする */
+    return false;
   }
 }
 
@@ -374,8 +376,14 @@ export function saveToSlot(key) {
 export function loadFromSlot(key) {
   const s = readSlot(key);
   if (!s) return null;
+  const previous = state;
   setState(migrate(s));
-  save();
+  const saved = save();
+  // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
+  if (!saved && key !== SAVE_KEY) {
+    setState(previous);
+    return null;
+  }
   return state;
 }
 
