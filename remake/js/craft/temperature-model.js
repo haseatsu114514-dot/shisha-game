@@ -73,7 +73,7 @@ export function temperatureFitness(temp, bands = temperatureBands()) {
   return Math.max(0, Math.min(100, value));
 }
 
-// ---------------------------------------------------------------- メーカー5社プロファイル・混合帯幅モデル
+// ---------------------------------------------------------------- メーカー6社プロファイル・混合帯幅モデル
 
 export const MAKER_SPECS = Object.freeze({
   af: Object.freeze({
@@ -90,6 +90,11 @@ export const MAKER_SPECS = Object.freeze({
   }),
   forcefect: Object.freeze({
     id: "forcefect", label: "フォースフェクタ", widthFactor: 0.72,
+    bonuses: Object.freeze({ aroma: 8, heatStability: 0, taste: 3, smoke: 1, duration: 0, draw: 2 }),
+  }),
+  // フワリ（実在 Fumari のパロディ）。性質は同じアメリカ系のフォースフェクタに準じる（オーナー決定 2026-10-28）。
+  fuwari: Object.freeze({
+    id: "fuwari", label: "フワリ", widthFactor: 0.72,
     bonuses: Object.freeze({ aroma: 8, heatStability: 0, taste: 3, smoke: 1, duration: 0, draw: 2 }),
   }),
   nightside: Object.freeze({
@@ -122,6 +127,7 @@ export function makerOfFlavor(id, flavorById = DB.flavorById) {
   const explicit = flavorById?.[id]?.maker;
   if (explicit && MAKER_SPECS[explicit]) return explicit;
   const s = String(id || "");
+  if (s.startsWith("fuwari_")) return "fuwari";
   if (s.startsWith("forcefect_")) return "forcefect";
   if (s.startsWith("nightside_")) return "nightside";
   if (s.startsWith("dobaj_")) return "dobaj";
