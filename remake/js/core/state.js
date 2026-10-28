@@ -405,6 +405,9 @@ export const config = {
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時
   voiceBlip: true,   // 文字送りの声（キャラ別の音程）
+  // 一度見た演出（連絡先交換・シフト終了）を2回目以降だけ短くする。初回は必ずフルで見せる。
+  // 既定オフ＝現状どおり。くじ・チェキ・MG(#1081 H05)は短縮しない。既読判定は state.flags を使う。
+  shortSeen: false,
 };
 
 export function loadConfig() {
