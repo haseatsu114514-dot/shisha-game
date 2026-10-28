@@ -3,12 +3,14 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import { installLoadingComicReader } from './browser/loading_reader.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_EXECUTABLE_PATH || '/usr/bin/chromium' });
 const errors = [], shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const open = async (viewport, mobile, insight = 10) => {
   const page = await browser.newPage({ viewport, isMobile: mobile, hasTouch: mobile });
+  await installLoadingComicReader(page);
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
   await page.waitForSelector('[data-test="title-new"]');

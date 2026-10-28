@@ -27,6 +27,7 @@ import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../c
 import * as bc from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { servedEvaluationLines } from "../craft/served-eval.js";
+import { naruTastingLine } from "../craft/naru-tasting.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, regulationFor } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
@@ -612,7 +613,11 @@ async function tournamentDay() {
 
   if (out.rank === 1) {
     // 南雲の二口 →「もうだめだ」→ 10カウント → プチュン → 南雲の持ち点10一括投入 → 優勝
-    await play("ch1_tournament_judging", { bg: STAGE });
+    // 審査待ちのなるの一言は、実際の調整実績（安定／立て直し／終盤帯外／記録不足）に合わせて差し替える。
+    const judging = DB.dialogues.ch1_tournament_judging;
+    const judgingLines = judging.lines.map(line =>
+      line.cue === "naru_tasting" ? { ...line, text: naruTastingLine(cs) } : line);
+    await play({ ...judging, lines: judgingLines }, { bg: STAGE });
     await resultCountdown(cs, out.kind);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
