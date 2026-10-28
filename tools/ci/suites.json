@@ -16,6 +16,12 @@
       "run": ["node --experimental-vm-modules remake/test/load_save_failure.mjs"]
     },
     {
+      "id": "corrupt-save-migrate",
+      "title": "Structurally corrupt saves migrate or fail gracefully",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/corrupt_save_migrate.mjs"]
+    },
+    {
       "id": "station-j01",
       "title": "Station availability, layout and save/load",
       "kind": "browser",
