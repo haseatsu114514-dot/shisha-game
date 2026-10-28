@@ -198,6 +198,7 @@ export async function resumeGame() {
   if (state.chapter === 2) return resumeChapterModule(() => import("./ch2.js"), m => m.resumeChapterTwo(), "第2章の街へ戻っています…");
   if (state.chapter === 3) return resumeChapterModule(() => import("./ch3.js"), m => m.resumeChapterThree(), "第3章へ戻っています…");
   if (state.chapter === 4) return resumeChapterModule(() => import("./ch4.js"), m => m.resumeChapterFour(), "第4章へ戻っています…");
+  if (state.chapter === 5) return resumeChapterModule(() => import("./ch5.js"), m => m.resumeChapterFive(), "第5章へ戻っています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   if (state.phase === "tournament") return tournamentDay();
