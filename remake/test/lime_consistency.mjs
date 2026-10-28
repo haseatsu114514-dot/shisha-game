@@ -529,4 +529,22 @@ await click("lime-chat-minto");
 assert.deepEqual(layers.modal.querySelectorAll(".day").map((node) => node.text), ["第1章 DAY 14", "第1章 DAY 3", "今日", "昨日"]);
 await closeThread(session);
 
-console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority: PASS");
+// #1081 C04: 未読の誘いを前提に約束の場面を始めない。先に開かせるトークを返し、既読や予約済みなら案内しない。
+reset({ day: 5, contacts: ["minto"] });
+const c04Invite = { originId: "c04_minto", sender: "minto", event: "ch1_minto_fifth", day: 5, slot: 1 };
+// 予約だけ残り、本文を読んでいない（旧セーブ/復元）→ そのトークを先に開かせる。
+state.inbox.push(item(invitation("c04_minto", "minto"), { read: false, done: true, result: "accepted", replyState: "replied" }));
+assert.equal(phone.invitationReadBeforeMeeting(c04Invite), "minto");
+// 読み終えていれば案内しない。
+state.inbox[0].read = true;
+assert.equal(phone.invitationReadBeforeMeeting(c04Invite), null);
+// 受信箱に無い予約・予約そのものが無い場合は何も返さない（進行を止めない）。
+assert.equal(phone.invitationReadBeforeMeeting({ originId: "missing", sender: "naru" }), null);
+assert.equal(phone.invitationReadBeforeMeeting(null), null);
+// みんとの私用アカウントなど、トーク単位（account）が分かれていてもその単位で開かせる。
+reset({ day: 5, contacts: ["minto"], lovers: ["minto"], loveLevel: { minto: 1 }, met: { minto: true } });
+state.inbox.push(item(invitation("c04_private", "minto"), { account: "minto_private", read: false, done: true, result: "accepted" }));
+assert.equal(phone.invitationReadBeforeMeeting({ originId: "c04_private", sender: "minto" }), "minto_private");
+reset();
+
+console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority + #1081 C04 unread guard: PASS");

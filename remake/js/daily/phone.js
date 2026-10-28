@@ -510,6 +510,19 @@ export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
 // 旧テスト/呼び出しとの互換性を維持する。
 export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingReply("minto", opts);
 
+/**
+ * C04: 約束の場面（強制イベント）を始める前に、まだ読んでいない誘いのトークがあれば、その相手を返す。
+ * プレイヤーが本文を読まないまま面会の台本が始まる流れを防ぐための導線用。
+ * 返事・承諾は変えず（自動で承諾・返信したことにしない）、ロード時の予約復元・旧セーブにも効く。
+ * @returns {string|null} 先に開かせるトークのアカウント（送り主）。読む必要がなければ null。
+ */
+export function invitationReadBeforeMeeting(invite) {
+  if (!invite) return null;
+  const item = (state.inbox || []).find((i) => i.id === invite.originId || originId(i) === invite.originId);
+  if (!item || item.read) return null;
+  return accountOf(item) || invite.sender || null;
+}
+
 const thread = (account) => state.inbox.filter((i) => accountOf(i) === account);
 const plain = (raw) => String(hooks.interpolate ? hooks.interpolate(String(raw)) : raw).replace(/\[\/?[a-z]+[^\]]*\]/gi, "").replace(/<[^>]+>/g, "");
 const dayLabel = (item) => (item.chapter != null && item.chapter !== state.chapter

@@ -1,6 +1,7 @@
 import { notifyMastery } from "../core/mastery-notice.js";
 import { learnFlavorStory } from "../core/flavor-mastery.js";
 import { tournamentFinished } from "../core/story-context.js";
+import { basicsExperienced } from "../craft/practice-history.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
@@ -466,6 +467,8 @@ function handleCondition(line) {
     ok = (state.stats[key] || 0) >= Number(line.threshold || 0);
   } else if (kind === "tournament_finished") {
     ok = tournamentFinished(state, line.tournament_chapter);
+  } else if (kind === "craft_basics_experienced") {
+    ok = basicsExperienced();
   } else if (kind === "money") {
     ok = state.money >= Number(line.threshold || 0);
   } else if (kind === "flag") {

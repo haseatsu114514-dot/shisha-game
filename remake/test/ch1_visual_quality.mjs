@@ -43,7 +43,7 @@ await suite("ch1-visual-quality", async check => {
               : (time === "day" ? "はじめ、時間があるなら" : "大会まであと");
           await page.locator(".vn-text").filter({ hasText: text }).waitFor();
           await page.waitForFunction(() => Number(getComputedStyle(document.getElementById("vn")).opacity) >= .99);
-          assert.equal(await page.locator("#weather .weather-drop").count(), weather === "rain" ? (place === "street" ? 34 : result.windows.length * 5) : 0);
+          assert.equal(await page.locator("#weather .weather-drop").count(), weather === "rain" ? (place === "street" ? 54 : result.windows.length * 5) : 0);
           if (weather === "rain") {
             assert.equal(result.rain.mode, place === "street" ? "outdoor" : "indoor");
             assert.deepEqual(result.rain.windows, result.windows, "Overcast variant lost the established window mask");

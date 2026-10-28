@@ -130,6 +130,12 @@ export async function openConfig(opts = {}) {
     onchange: (e) => { config.voiceBlip = e.target.checked; persist(); opts.onChange?.("voiceBlip", config.voiceBlip); },
   });
   blip.checked = config.voiceBlip;
+  const shortSeen = el("input", {
+    type: "checkbox",
+    dataset: { test: "cfg-short-seen" },
+    onchange: (e) => { config.shortSeen = e.target.checked; persist(); opts.onChange?.("shortSeen", config.shortSeen); },
+  });
+  shortSeen.checked = config.shortSeen;
   return modal({
     title: "設定",
     body: el("div.cfg", [
@@ -138,6 +144,7 @@ export async function openConfig(opts = {}) {
       row("効果音 音量", range("seVolume", 0, 1, 0.05, "cfg-se-volume")),
       row("文字の速さ", speed),
       row("文字送りの声", blip),
+      row("見た演出を短く", shortSeen),
     ]),
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
   });

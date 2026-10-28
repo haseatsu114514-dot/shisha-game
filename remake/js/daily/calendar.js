@@ -23,7 +23,7 @@ import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
-import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation } from "./phone.js";
+import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting, installReel } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
@@ -445,6 +445,14 @@ async function takeAction() {
       state.slot++;
       return;
     }
+    // C04: 未読のLIMEを前提に約束の場面を始めない。先に該当トークを開いて読ませる（自動で承諾・返信はしない）。
+    const invOwner = state;
+    const unreadThread = invitationReadBeforeMeeting(inv);
+    if (unreadThread) {
+      await readLime(unreadThread);
+      // ロードで別セッションに切り替わった／LIME内で予約が変わったら、次の行動で選び直す。
+      if (state !== invOwner || state.pendingInvite !== inv) return;
+    }
     if (inv.event === "date_samechan") {
       const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
       if (result.done) { completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent }); }
@@ -744,6 +752,13 @@ async function endDay({ returnedToTonari = false } = {}) {
     && (appointment.afterClose && appointment.queuedAfterClose || rested && appointment.slot === 1
       || state.day === 1 && state.flags._day1_shift_ended && appointment.slot === 1)
     && !postponeUnaffordableInvitation(appointment)) {
+    // C04: 営業後・休養後の約束も、未読のLIMEを前提に場面を始めない。先に該当トークを読ませる。
+    const apptOwner = state;
+    const unreadAppt = invitationReadBeforeMeeting(appointment);
+    if (unreadAppt) {
+      await readLime(unreadAppt);
+      if (state !== apptOwner) return;
+    }
     if (appointment.event !== "date_samechan") state.pendingInvite = null;
     delete state.flags._home_tonight;
     await beat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。"
@@ -808,7 +823,7 @@ async function advanceDay() {
     // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
     await dayTurn(async () => {
       wake();
-      return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted };
+      return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted, tournamentName: chapterDef?.tournamentName };
     });
     dawnShownDay = state.day;
   } else await fadeBlack(wake, 500);
