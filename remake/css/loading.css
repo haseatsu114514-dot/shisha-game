@@ -39,10 +39,17 @@
 /* Beginner-friendly one-line note under the panels (per-comic data). */
 .loading-comic-caption { margin: 10px 2px 0; color: #4a3a30; font-size: 15px; font-weight: 700; line-height: 1.4; letter-spacing: .02em; }
 
-/* Progress bar (placeholder colours). Width follows real preparation counts; a sweep shows motion. */
+/* Progress bar (placeholder colours). Until the first real report(done, total) arrives, the fill is
+   an indeterminate sliding segment: the bar never shows an invented percentage (a caller that never
+   reports, like the bench entry, stays indeterminate). The first report adds .is-determinate and the
+   width then follows the real counts; a shine sweep runs while work continues. At the reading hold
+   (.is-ready) the bar rests at 100% and the sweep stops. */
 .loading-bar { position: relative; flex: none; width: min(620px, 64%); height: 14px; border-radius: 999px; background: #2a1d3a; box-shadow: inset 0 0 0 1px #ffffff14; overflow: hidden; }
-.loading-bar-fill { height: 100%; width: calc(var(--loading-progress, 0) * 100%); min-width: 8%; border-radius: inherit; background: var(--loading-bar-gradient); transition: width .3s ease; }
+.loading-bar-fill { height: 100%; width: 36%; border-radius: inherit; background: var(--loading-bar-gradient); animation: loading-bar-indeterminate 1.3s ease-in-out infinite alternate; }
+.loading-bar.is-determinate .loading-bar-fill { width: calc(var(--loading-progress, 0) * 100%); animation: none; transform: none; transition: width .3s ease; }
+.loading-gate.is-ready .loading-bar-fill { width: 100%; animation: none; transform: none; }
 .loading-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, #ffffff55, transparent); transform: translateX(-100%); animation: loading-bar-sweep 1.6s ease-in-out infinite; }
+.loading-gate.is-ready .loading-bar::after { animation: none; opacity: 0; }
 
 .loading-status { position: static; display: flex; align-items: center; gap: 12px; margin: 0; color: #e8dabd; font-size: 19px; font-weight: 900; font-style: italic; letter-spacing: .12em; }
 .loading-emblem { width: 48px; height: 40px; overflow: visible; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
@@ -58,6 +65,7 @@
 @keyframes loading-sheet { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes loading-smoke { 0% { stroke-dashoffset: 30; opacity: .15; } 45% { opacity: .9; } 100% { stroke-dashoffset: -66; opacity: .15; } }
 @keyframes loading-bar-sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
+@keyframes loading-bar-indeterminate { from { transform: translateX(-110%); } to { transform: translateX(300%); } }
 @keyframes loading-proceed-pulse { 0%, 100% { opacity: .5; } 50% { opacity: .95; } }
 
 /* Portrait: break out of the scaled #stage and cover the real viewport, so panels and bubble text can
@@ -79,7 +87,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .loading-gate, .loading-card, .loading-emblem path, .loading-bar::after, .loading-proceed { animation: none; }
+  .loading-gate, .loading-card, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
   .loading-emblem path { stroke-dasharray: none; opacity: .8; }
   .loading-gate.is-ready .loading-proceed { opacity: .92; }
 }
