@@ -84,7 +84,8 @@
         "python3 tools/check_story_canon.py",
         "python3 tools/check_dialogue_links.py",
         "python3 tools/test_story_canon.py",
-        "node remake/test/story_routes.mjs"
+        "node remake/test/story_routes.mjs",
+        "node remake/test/ch2_relationships_929.mjs"
       ]
     },
     {
@@ -127,7 +128,10 @@
         "node remake/test/lover_dates.mjs",
         "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs",
         "node remake/test/tokyo_visits.mjs",
-        "node --experimental-vm-modules remake/test/ch2_night_commute.mjs"
+        "node --experimental-vm-modules remake/test/ch2_night_commute.mjs",
+        "node --experimental-vm-modules remake/test/tsumugi_schedule_782.mjs",
+        "node remake/test/ch2_rain_j08.mjs",
+        "node remake/test/ch3_aftermath.mjs"
       ]
     },
     {
@@ -192,7 +196,24 @@
         "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs",
         "node --experimental-vm-modules remake/test/gallery.mjs",
         "node --experimental-vm-modules remake/test/story_guidance_1045.mjs",
-        "node --experimental-vm-modules remake/test/purikura_fee.mjs"
+        "node --experimental-vm-modules remake/test/purikura_fee.mjs",
+        "node --experimental-vm-modules remake/test/appearance_selection.mjs",
+        "node --experimental-vm-modules remake/test/ch1_eve_setup.mjs",
+        "node remake/test/coal_training.mjs",
+        "node remake/test/continue_premium.mjs",
+        "node --experimental-vm-modules remake/test/craft_keys_focus.mjs",
+        "node remake/test/craft_scoring_spec.mjs",
+        "node remake/test/foil_skip.mjs",
+        "node remake/test/kuji_balance.mjs",
+        "node --experimental-vm-modules remake/test/map_unlock_780.mjs",
+        "node --experimental-vm-modules remake/test/stat_growth_balance.mjs",
+        "node --experimental-vm-modules remake/test/station_travel.mjs",
+        "node --experimental-vm-modules --test remake/test/steam_lifetime.mjs",
+        "node remake/test/story_edit_564.mjs",
+        "node --experimental-vm-modules remake/test/tsumugi_sketch_timing.mjs",
+        "node --experimental-vm-modules --test remake/test/tutorial_step_help.mjs",
+        "node remake/test/ch3_tournament_state.mjs",
+        "node --experimental-vm-modules remake/test/appearance_setup_helper.mjs"
       ]
     },
     {
@@ -229,7 +250,8 @@
       "run": [
         "node --test tools/ci/test_ci.mjs",
         "node --test tools/sequential_merge/test.mjs",
-        "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'"
+        "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
+        "node remake/test/dev_inspector.mjs"
       ]
     },
     {
@@ -2490,7 +2512,8 @@
         "node remake/test/flavor_mastery.mjs",
         "node remake/test/flavor_expression.mjs",
         "node remake/test/mastery_balance.mjs",
-        "node remake/test/craft_review.mjs"
+        "node remake/test/craft_review.mjs",
+        "node --experimental-vm-modules remake/test/shop_display_775.mjs"
       ]
     },
     {
