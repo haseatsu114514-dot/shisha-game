@@ -929,6 +929,24 @@
       }
     },
     {
+      "dialogue_id": "ch1_sumi_home_rig_homecoming",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんにもらった卓上台を、部屋の机に置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "青いガラスに、部屋の明かりが映っている。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch1_sumi_attack",
       "lines": [
         {
