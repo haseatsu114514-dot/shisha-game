@@ -19,6 +19,8 @@ try {
     window.T = { core, stats, ui, hud, map, spots, vn };
     core.newGame(); Object.assign(core.state, { phase: "daily", day: 4, slot: 1 });
     for (const id of ["naru", "minto", "adam", "tsumugi", "rin"]) core.state.met[id] = true;
+    for (const s of spots.SPOTS) if (s.requiresMet) core.state.flags[`_spot_guide_${s.requiresMet}`] = true;
+    core.state.flags._cafe_introduced = true;
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
     T.openMap = async () => { map.interruptMap(null); ui.dropRetired(); T.mapPromise = map.chooseSpot(); };
     T.inkOffset = n => {

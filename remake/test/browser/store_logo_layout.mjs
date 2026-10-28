@@ -44,7 +44,7 @@ await suite('store-logo-layout', async check => {
             loaded: logo.querySelector('img').naturalWidth > 0 };
         });
       });
-      assert.equal(measurements.length, 7);
+      assert.equal(measurements.length, 6); // 7 logo spots; choizap renders its facility icon instead (facility-icons precedence in map.js)
       assert(measurements.every(m => m.centerError < .1), JSON.stringify(measurements));
       assert(measurements.every(m => m.clear && m.contained && m.loaded));
       // Actual selection includes enlarged selected shields, people and badges.

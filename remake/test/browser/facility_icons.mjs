@@ -58,7 +58,7 @@ try {
     await page.addInitScript(() => localStorage.setItem('suien_remake_save', '{"facilityPreviewSentinel":579}'));
     await page.goto(previewURL);
     await page.locator('.facility-icon img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
-    assert.equal(await page.locator('button').count(), 84);
+    assert.equal(await page.locator('button').count(), 96);
     const geometry = await page.locator('.facility-icon').evaluateAll(icons => icons.map(icon => {
       const crop = icon.firstElementChild, image = crop.firstElementChild;
       const c = crop.getBoundingClientRect(), i = image.getBoundingClientRect(), b = icon.parentElement.getBoundingClientRect();

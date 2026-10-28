@@ -1435,6 +1435,7 @@
       },
       "sparse": [
         "/docs/qa/issue508-theme/",
+        "/docs/qa/issue452-regular/",
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
       ]
     },
@@ -2686,6 +2687,9 @@
         "node remake/test/browser/recent_intros.mjs",
         "node remake/test/intro_art.mjs",
         "node remake/test/intro_cutin.mjs"
+      ],
+      "sparse": [
+        "/asset_sources/backgrounds/osu-sakae-map-remaster-v1/"
       ]
     },
     {
@@ -2796,6 +2800,7 @@
       "id": "kuji-purchase",
       "title": "Native kuji purchase and rapid draw regression",
       "kind": "browser",
+      "chrome": "playwright",
       "weight": 1.5,
       "timeout": 10,
       "paths": [
