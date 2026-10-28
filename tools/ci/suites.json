@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "ch1-interval-connection",
+      "title": "Chapter 1 victory interval connections",
+      "kind": "quick",
+      "run": ["node remake/test/ch1_interval_connection.mjs"]
+    },
+    {
       "id": "load-save-failure",
       "title": "Slot load persistence failure and state rollback",
       "kind": "quick",
@@ -80,6 +86,12 @@
       "title": "NG+ cycle meta layer (U2): true-end record, idempotent re-notify, cycle-start notice (#1228)",
       "kind": "quick",
       "run": ["node remake/test/ngplus_cycle_meta.mjs"]
+    },
+    {
+      "id": "ngplus-cycle-start",
+      "title": "NG+ cycle start, carry groups, reset and integration hooks (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_cycle_start.mjs"]
     },
     {
       "id": "module-loading",
@@ -523,13 +535,9 @@
         "remake/css/chapter-preview-samples.css",
         "remake/chapter-preview.html",
         "remake/chapter-preview-samples.html",
-        "remake/js/chapter-preview.js",
-        "assets/ui/chapter_previews/**",
         "assets/cgs/ch2_preview/**",
         "assets/audio/**",
         "assets/fonts/**",
-        "remake/img/ui/chapter_previews/**",
-        "remake/img/cgs/ch2_preview/**",
         "remake/test/browser/ch1_preview.mjs",
         "remake/test/browser/chapter_preview_samples.mjs"
       ],
@@ -1129,6 +1137,7 @@
         "remake/js/craft/session.js",
         "remake/js/craft/pull.js",
         "remake/js/craft/progress.js",
+        "remake/js/daily/coal-lesson.js",
         "remake/css/craft.css",
         "remake/css/base.css",
         "remake/test/heat_feedback.mjs",
@@ -1474,8 +1483,6 @@
         "remake/test/browser/ch1_loading.mjs",
         "remake/test/browser/issue439.mjs",
         "remake/test/browser/early_contacts_705.mjs",
-        "assets/backgrounds/bg_ch1*",
-        "remake/img/backgrounds/bg_ch1*",
         "data/lime_messages.json"
       ],
       "run": [
@@ -1504,6 +1511,7 @@
         "remake/test/browser/ch1_tournament.mjs",
         "remake/test/browser/support.mjs",
         "docs/qa/issue508-theme/baseline-scenes.json",
+        "docs/qa/issue452-regular/baseline-scenes.json",
         "remake/test/browser/conversation_ui.mjs",
         "remake/test/browser/regular_service_response.mjs",
         "remake/test/portrait_unify.mjs",
@@ -1969,12 +1977,16 @@
         "assets/cgs/*tsumugi*",
         "remake/img/cgs/*tsumugi*",
         "remake/test/browser/tsumugi_draft_response.mjs",
-        "remake/test/browser/tsumugi_sketch_timing.mjs"
+        "remake/test/browser/tsumugi_sketch_timing.mjs",
+        "docs/qa/issue452-tsumugi/baseline-scenes.json"
       ],
       "run": [
         "node remake/test/tsumugi_story.mjs",
         "node remake/test/browser/tsumugi_draft_response.mjs",
         "node remake/test/browser/tsumugi_sketch_timing.mjs"
+      ],
+      "sparse": [
+        "/docs/qa/issue452-tsumugi/"
       ],
       "chrome": "playwright"
     },
@@ -2176,9 +2188,7 @@
       "paths": [
         "remake/js/daily/map.js",
         "remake/js/daily/shop.js",
-        "remake/css/map*.css",
         "remake/css/shop*.css",
-        "assets/ui/maps/**",
         "remake/test/store_logos.mjs",
         "remake/test/browser/facility_map.mjs",
         "remake/test/browser/map_reveals.mjs",
@@ -2187,7 +2197,10 @@
         "remake/test/browser/store_logo_layout.mjs",
         "remake/test/compact_gains_map.mjs",
         "remake/test/temporary_closures.mjs",
-        "remake/test/browser/facility_icons.mjs"
+        "remake/test/browser/facility_icons.mjs",
+        "remake/js/daily/facility-icons.js",
+        "remake/css/facility-icons.css",
+        "remake/facility-icons-preview.html"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
@@ -2895,6 +2908,59 @@
       "run": [
         "node remake/test/kuji_purchase.mjs"
       ]
+    },
+    {
+      "id": "ngplus-difficulty",
+      "title": "NG+ difficulty carry index and rival score lift (U4)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_difficulty.mjs"]
+    },
+    {
+      "id": "ch3-menu-bgm",
+      "title": "Chapter 3 MENU entries, BGM and LOAD checkpoints (#1258/#1261)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch3_menu_bgm.mjs"]
+    },
+    {
+      "id": "ch2-spot-images",
+      "title": "Chapter 2 spot backgrounds are real image files, not LFS pointers",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch2-city-data.js",
+        "remake/js/chapters/ch2-outings.js",
+        "remake/test/ch2_spot_images.mjs",
+        "assets/backgrounds/bg_ch2_*_entry.webp",
+        "assets/backgrounds/bg_widehanga_map_*.webp",
+        "assets/backgrounds/bg_widehanga_station_day.webp",
+        "assets/backgrounds/bg_yuzugaya_*.webp"
+      ],
+      "run": ["node remake/test/ch2_spot_images.mjs"]
+    },
+    {
+      "id": "future-schema-save",
+      "title": "Future schema saves preserve state and remain compatible",
+      "kind": "quick",
+      "run": ["node remake/test/future_schema_save.mjs"]
+    },
+    {
+      "id": "store-logo-comparison",
+      "title": "Store logo map pin layout metrics and screenshots (#574)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/map.js",
+        "remake/js/core/store-logos.js",
+        "remake/css/store-logos.css",
+        "remake/test/browser/store_logo_comparison.mjs"
+      ],
+      "run": ["node remake/test/browser/store_logo_comparison.mjs"],
+      "env": {
+        "BASE_URL": "http://127.0.0.1:8123/remake/",
+        "ARTIFACT_DIR": ".codex/artifacts/store-logo-comparison"
+      }
     }
   ]
 }
