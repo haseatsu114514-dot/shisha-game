@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { slashProfile, slashTouchesBullet, slashAngle } from '../js/craft/steam-slash.js';
+import { installLoadingComicReader } from './browser/loading_reader.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 for (const [count, reach, recharge] of [[0,80,1.8],[2,80,1.8],[3,90,1.5],[5,90,1.5],[6,100,1.2],[50,100,1.2]]) {
   const p = slashProfile(count);
@@ -31,6 +32,7 @@ const shot=async(page,name)=>{
 try {
   for (const mobile of [false,true]) {
     const page = await browser.newPage({viewport:mobile?{width:844,height:390}:{width:1280,height:720},hasTouch:mobile,isMobile:mobile,reducedMotion:mobile?'reduce':'no-preference'});
+    await installLoadingComicReader(page);
     const errors=[]; page.on('pageerror',e=>errors.push(e.message));
     await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
     await page.waitForSelector('[data-test="title-new"]');
