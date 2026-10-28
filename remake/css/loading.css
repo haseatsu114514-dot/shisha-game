@@ -58,7 +58,7 @@
 @keyframes loading-sheet { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes loading-smoke { 0% { stroke-dashoffset: 30; opacity: .15; } 45% { opacity: .9; } 100% { stroke-dashoffset: -66; opacity: .15; } }
 @keyframes loading-bar-sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
-@keyframes loading-proceed-pulse { 0%, 100% { opacity: .5; } 50% { opacity: .95; } }
+@keyframes loading-proceed-pulse { 0%, 100% { opacity: .75; } 50% { opacity: .95; } }
 
 /* Portrait: break out of the scaled #stage and cover the real viewport, so panels and bubble text can
    be sized in vw/vh and stay readable. Kept below #rotate-hint (z-index 999) so touch phones still get
@@ -75,7 +75,7 @@
   .loading-comic-caption { font-size: clamp(12px, 3.6vw, 18px); margin-top: 1.2vh; line-height: 1.35; }
   .loading-bar { width: 80vw; height: 1.6vh; }
   .loading-status { font-size: clamp(15px, 4.2vw, 22px); }
-  .loading-proceed { min-height: 1em; font-size: clamp(12px, 3.6vw, 16px); }
+  .loading-proceed { min-height: 1em; font-size: clamp(14px, 3.6vw, 16px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

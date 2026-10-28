@@ -380,7 +380,7 @@ body.game-ds .standings .sd-name { font-size: 14px; white-space: nowrap; overflo
 body.game-ds .standings .sd-bar { height: 10px; }
 body.game-ds .standings .sd-points { font-size: 22px; }
 body.game-ds .standings .sd-points small { font-size: 10px; }
-body.game-ds .judge-legend { gap: 10px; font-size: 10px; }
+body.game-ds .judge-legend { gap: 10px; font-size: 14px; }
 body.game-ds .standings .judge-panel {
   position: absolute; left: calc(var(--ds-cx) + 10px); top: calc(var(--ds-cy) + 10px); width: calc(var(--ds-cw) - 20px);
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
@@ -391,7 +391,7 @@ body.game-ds .judge-chip .judge-face { grid-row: auto; width: 34px; height: 34px
 body.game-ds .judge-name { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 body.game-ds .judge-pips { width: 100%; gap: 2px; }
 body.game-ds .judge-pips b { height: 7px; }
-body.game-ds .judge-left { font-size: 10px; }
+body.game-ds .judge-left { font-size: 14px; }
 body.game-ds .judge-chip.held::after { right: 6px; top: 4px; font-size: 11px; }
 body.game-ds .standings .sd-status {
   position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); margin: 0;
@@ -405,7 +405,7 @@ body.game-ds .standings .sd-feed {
   position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); margin: 0;
   bottom: calc(100% - var(--ds-cy) - var(--ds-ch) + 10px); font-size: 12px;
 }
-body.game-ds .standings .sd-feed-tag { padding: 0 10px; font-size: 11px; }
+body.game-ds .standings .sd-feed-tag { padding: 0 10px; font-size: 12px; }
 
 /* 南雲の10点：上＝カットイン（立ち絵と10点）、下＝見出しと票の帯 */
 body.game-ds .nagumo-cut { padding: 0; display: block; }
@@ -462,7 +462,7 @@ body.game-ds .result-table .rt-hero {
 }
 body.game-ds .rt-emblem { width: 56px; height: 56px; }
 body.game-ds .rt-emblem b { font-size: 26px; }
-body.game-ds .rt-emblem small { font-size: 8px; }
+body.game-ds .rt-emblem small { font-size: 12px; letter-spacing: 0.02em; }
 body.game-ds .result-table .tournament-eyebrow { font-size: 9px; letter-spacing: .12em; }
 body.game-ds .result-table .tournament-heading h1 { font-size: 30px; }
 body.game-ds .result-table .tournament-heading p { font-size: 11px; margin-top: 0; }

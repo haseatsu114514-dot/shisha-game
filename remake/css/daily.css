@@ -101,10 +101,10 @@
 }
 .title-item:disabled { opacity: 0.35; cursor: default; }
 .ti-en { font-family: var(--font); font-size: 26px; line-height: 1.25; letter-spacing: 0.16em; }
-.ti-ja { font-size: 15px; color: var(--text-dim); letter-spacing: 0.2em; }
+.ti-ja { font-size: 15px; color: var(--text-dim); letter-spacing: 0.04em; }
 .title-item:hover:not(:disabled), .title-item:focus-visible { color: var(--gold-hi); transform: translateX(10px); outline: none; }
 .title-item:hover:not(:disabled) .ti-en::before { content: "◆ "; font-size: 18px; color: var(--gold); }
-.title-foot { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-size: 12px; letter-spacing: 0.35em; color: rgba(255, 255, 255, 0.4); pointer-events: none; }
+.title-foot { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-size: 14px; letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.75); pointer-events: none; }
 .cfg { display: flex; flex-direction: column; gap: 14px; min-width: 420px; }
 .cfg-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .cfg-row input[type="range"] { width: 220px; accent-color: var(--gold); }
@@ -825,8 +825,8 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
 .lime-chat-row.unread .lcr-preview { color: #1d2433; font-weight: 700; }
 .lcr-side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .lcr-side small { font-size: 12px; color: #8a93a0; }
-.lcr-tag { padding: 1px 7px; font-size: 12px; font-weight: 700; color: #fff; background: #f08a24; border-radius: 999px; }
-.lime-empty { margin: 40px 0; text-align: center; font-size: 13px; color: #8a93a0; }
+.lcr-tag { padding: 1px 7px; font-size: 12px; font-weight: 700; color: #402b00; background: #f08a24; border-radius: 999px; }
+.lime-empty { margin: 40px 0; text-align: center; font-size: 14px; color: #626d7c; }
 .lime-tip {
   display: flex;
   flex-direction: column;
@@ -971,7 +971,7 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .gift-notes { display: grid; gap: 4px; margin-top: 8px; max-height: 128px; overflow-y: auto; padding-right: 6px; }
 .gift-note { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 3px 10px; border-left: 3px solid var(--gold); background: rgba(232, 194, 122, 0.08); }
 .gift-note b { font-size: 13px; }
-.gift-note small { font-size: 12px; color: var(--text-dim); }
+.gift-note small { font-size: 14px; color: var(--text-dim); }
 
 /* ---------------------------------------------------------------- つなぎ・コールドオープン・終章 */
 .beat {
