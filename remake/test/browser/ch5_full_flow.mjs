@@ -7,6 +7,8 @@ import { suite } from "./support.mjs";
 
 const dt = name => `[data-test="${name}"]`;
 const scene = id => `[data-test="ch5-scene"][data-scene="${id}"]`;
+// 試合当日のカードは renderMatch が data-test="ch5-match" で出す（ch4 の eve と同じく段階ごとに寄せる）。
+const matchScene = id => `${dt("ch5-match")}[data-scene="${id}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 const arm = page => page.evaluate(async () => {
   const vn = await import("./js/vn/engine.js");
@@ -115,18 +117,18 @@ await suite("ch5-full-flow", async check => {
     await page.locator(dt("ch5-scheduled")).waitFor();
     await page.locator(dt("ch5-go-venue")).click();
     await page.locator(dt("ch5-venue-go")).click();
-    await page.locator(scene("ch5_match_day_arrival")).waitFor();
+    await page.locator(matchScene("ch5_match_day_arrival")).waitFor();
     state = await get(page);
     assert.equal(state.flags._ch5.part, "match");
     assert.equal(state.flags._ch5_match_started, true);
 
     // 8. 試合: 到着→一杯目→二杯目の前→二杯目（勝ち＋余韻）。
     await page.locator(dt("ch5-continue")).click();
-    await page.locator(scene("ch5_copy_first_cup")).waitFor();
+    await page.locator(matchScene("ch5_copy_first_cup")).waitFor();
     await page.locator(dt("ch5-continue")).click();
-    await page.locator(scene("ch5_relationship_before_second_cup")).waitFor();
+    await page.locator(matchScene("ch5_relationship_before_second_cup")).waitFor();
     await page.locator(dt("ch5-continue")).click();
-    await page.locator(scene("ch5_second_cup_result")).waitFor();
+    await page.locator(matchScene("ch5_second_cup_result")).waitFor();
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_doctor_after_match")).waitFor();
     state = await get(page);
