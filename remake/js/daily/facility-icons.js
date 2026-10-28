@@ -5,7 +5,7 @@ export const FACILITY_EXTRA_SHEET = new URL('../../../assets/ui/map-facilities-e
 export const CINEMA_ICON = new URL('../../../assets/ui/map-rojiura-cinema.webp', import.meta.url).href;
 // Half-open crops with two source pixels of breathing room. Badge anchors touch an opaque right-side contour.
 export const FACILITY_ICONS = Object.freeze({
-  rojiura_cinema: Object.freeze({ badge: Object.freeze([450, 170]), label: '路地裏シネマ', src: CINEMA_ICON,
+  rojiura_cinema: Object.freeze({ badge: Object.freeze([476, 170]), label: '路地裏シネマ', src: CINEMA_ICON,
     sheetSize: Object.freeze([512, 512]), rect: Object.freeze([0, 0, 512, 512]) }),
   kannondo: Object.freeze({ badge: Object.freeze([743, 244]), label: '観音堂', rect: Object.freeze([21, 87, 815, 561]) }),
   home: Object.freeze({ badge: Object.freeze([1453, 281]), label: '自宅', rect: Object.freeze([842, 125, 663, 556]) }),
