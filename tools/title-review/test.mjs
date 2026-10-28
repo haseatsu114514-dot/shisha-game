@@ -116,7 +116,11 @@ try {
       assert.equal(await page.evaluate(k=>localStorage.getItem(k),STORAGE_KEY),unchanged);
       await page.locator('#file').setInputFiles(filename); await page.locator('#cancel-import').click();
       assert.equal(await page.evaluate(k=>localStorage.getItem(k),STORAGE_KEY),unchanged);
-      // Change then restore from the real exported file.
+      // Change then restore from the real exported file. Target the art that owns
+      // the exported decision (the first ageha card): the catalog's first card is a
+      // different art, and the merge-style import would leave a temporary decision
+      // for it behind, breaking the deep-equal below.
+      await page.locator('#character').selectOption('ageha');
       await page.locator('.card').first().locator('.art-button').click();
       await page.locator('[data-status=reject]').click(); await page.locator('textarea').fill('temporary'); await page.locator('#close-viewer').click();
       await page.locator('#file').setInputFiles(filename); await page.locator('#apply-import').click();
