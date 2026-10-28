@@ -2688,10 +2688,6 @@
           "type": "choice",
           "choices": [
             {
-              "text": "炭交換と調整を復習する",
-              "next": "care"
-            },
-            {
               "text": "今日は仕入れだけにする",
               "next": "stock"
             },
@@ -2703,28 +2699,9 @@
         }
       ],
       "branches": {
-        "care": [],
         "stock": [],
         "full": []
       }
-    },
-    {
-      "dialogue_id": "remake_preparation_confirm",
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
-      },
-      "lines": [
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "詰めて、炭を熾して、蒸らす。それから温度を合わせて出す"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "そうだ。次に触るときは、迷ったところを一つ覚えておけ"
-        }
-      ]
     },
     {
       "dialogue_id": "remake_preparation_failed",

@@ -173,6 +173,32 @@ try {
   assert.deepEqual(errors, []);
   console.log('[reel lifecycle] remount while spinning, correct stops, night spin once, no repeated rewards, intro remount: PASS');
 
+  // #1359: 揃え演出（alignBonus）が例外で落ちても mountReel が固まらず、次の回転まで進める。
+  await page.evaluate(() => {
+    const { core, reel, layers } = window.reelProbe;
+    layers.screen.replaceChildren();
+    core.state.reel.pending.push({
+      role: "big", variant: "before", ceiling: null, zone: null, n: 1,
+      exp: 0, got: 0, quiet: true, target: null, stops: [0, 0, 0],
+    });
+    // 拡大盤の位置読み取り（DOMMatrixReadOnly）を壊し、alignBonus を reject させる
+    window.__RealDOMMatrixReadOnly = window.DOMMatrixReadOnly;
+    window.DOMMatrixReadOnly = class { constructor() { throw new Error("forced alignBonus failure (#1359)"); } };
+    window.bonusFailSpin = reel.mountReel(layers.screen);
+  });
+  await waitForSpin(page.evaluate(() => window.bonusFailSpin), "bonus failure spin");
+  await page.evaluate(() => {
+    const { core, reel, layers } = window.reelProbe;
+    window.DOMMatrixReadOnly = window.__RealDOMMatrixReadOnly;
+    // busy が解除されていれば、次の回転も最後まで見せられる
+    core.state.reel.pending.push({ role: "miss", stops: [1, 1, 2], ceilingRemain: 99, exp: 0, got: 0, quiet: true, target: null });
+    window.afterFailSpin = reel.mountReel(layers.screen);
+  });
+  await waitForSpin(page.evaluate(() => window.afterFailSpin), "spin after bonus failure");
+  assert.equal(await page.evaluate(() => window.reelProbe.core.state.reel.pending.length), 0, "ボーナス演出の失敗後に回転が再開できなかった");
+  assert.deepEqual(errors, [], "bonus failure spin: browser errors");
+  console.log("[reel lifecycle] bonus presentation failure does not wedge the reel: PASS");
+
   for (const touch of [false, true]) await checkInstallation(`first-spin-${touch ? "touch" : "pc"}`, async ({ page, readIntro, finish }) => {
     const expected = await page.evaluate(() => {
       const { core, reel } = installProbe;

@@ -12,6 +12,7 @@ let lastPhoneReceiveAt = -Infinity;
 let rainMode = null;
 let rainLoop = null;
 let rainBuffer = null;
+let noiseBuffer = null;
 let bgmDuck = 1;
 let bgmPaused = false;
 const seBuffers = new Map();
@@ -230,9 +231,20 @@ function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type =
   if (!c) return;
   const t = c.currentTime + delay;
   const len = Math.max(1, Math.floor(c.sampleRate * dur));
-  const buf = c.createBuffer(1, len, c.sampleRate);
-  const d = buf.getChannelData(0);
-  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  let buf, offset = 0;
+  if (dur <= 3) {
+    if (!noiseBuffer) {
+      noiseBuffer = c.createBuffer(1, Math.floor(c.sampleRate * 3), c.sampleRate);
+      const d = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    buf = noiseBuffer;
+    offset = Math.random() * Math.max(0, buf.duration - dur);
+  } else {
+    buf = c.createBuffer(1, len, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  }
   const src = c.createBufferSource();
   src.buffer = buf;
   const f = c.createBiquadFilter();
@@ -245,7 +257,7 @@ function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type =
   g.gain.linearRampToValueAtTime(vol, t + Math.min(0.04, dur / 3));
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   src.connect(f).connect(g).connect(seBus);
-  src.start(t);
+  src.start(t, offset, dur);
 }
 
 /** 一口の間だけ録音ループ。止め際は最後の一泡。非表示/消音中は止め、同じ一口だけ再開。 */

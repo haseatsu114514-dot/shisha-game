@@ -80,6 +80,6 @@ await suite('tournament-story',async check=>{
       window.tournamentRun=chapter.devTournament();
     });
     await page.waitForFunction(()=>events.includes('tournament_craft_1_tasting'),null,{timeout:60000});
-    assert.deepEqual(await page.evaluate(()=>events),['opening','packed','waiting','tasting'].map(e=>`tournament_craft_1_${e}`));
+    assert.deepEqual(await page.evaluate(()=>events),['opening','packed','waiting','interlude1','interlude2','interlude3','tasting'].map(e=>`tournament_craft_1_${e}`));
   });
 });
