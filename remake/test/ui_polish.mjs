@@ -130,7 +130,7 @@ try {
     T.core.state.phase = "tournament"; T.reel.onAction({ spent: 10 });
     T.core.newGame(); T.core.state.phase = "daily";
     for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 20;
-    Object.assign(T.core.state.reel, { introDone: true, lastChapter: 1 });
+    Object.assign(T.core.state.reel, { introDone: true, lastChapter: 1, installed: true }); // onAction は設置済みリールでのみ回る（現行仕様）
     for (let seed = 1; seed < 10000; seed++) {
       const sample = T.reel.core.spinSeries({ ...T.core.state.reel, seed }, { chapterFirst: false });
       if (sample.length === 1 && sample[0].exp >= 2 && !sample[0].overlap && !T.reel.core.PEKA.includes(sample[0].role)) {
