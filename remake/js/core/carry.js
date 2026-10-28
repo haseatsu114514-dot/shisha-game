@@ -338,6 +338,7 @@ export const FLAG_EXACT_RULES = [
   ["_rei_trpg_introduced", "person"],
   ["_rest_after_tournament", "progression"],
   ["_rin_sample", "person"],
+  ["_rin_sample_received", "person"],
   ["_ryuji_melty_greeting", "person"],
   ["_ryuji_melty_visit", "person"],
   ["_salaryman_service_order", "progression"],
