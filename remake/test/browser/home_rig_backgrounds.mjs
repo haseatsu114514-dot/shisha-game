@@ -82,7 +82,8 @@ await suite("home-rig-backgrounds", async check => {
         HQ.rig = await import("./js/daily/home-rig.js");
         HQ.calendar = await import("./js/daily/calendar.js");
         const s = HQ.core.state;
-        Object.assign(s, { day: 2, slot: 2, stamina: 40 });
+        // DAY2を晴れに固定し、曇天差分の抽選で背景の厳密照合を揺らさない。
+        Object.assign(s, { day: 2, slot: 2, stamina: 40, weatherSeed: 0 });
         s.flags._morning_2 = true;
         HQ.beforeNight = structuredClone(s);
         HQ.entered = [];
