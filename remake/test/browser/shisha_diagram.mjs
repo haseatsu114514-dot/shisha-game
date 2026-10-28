@@ -29,13 +29,57 @@ async function advanceTo(page, substr) {
     await page.locator(".vn-text").click({ force: true });
     await page.waitForTimeout(70);
   }
-  throw new Error("line not reached: " + substr);
+  const reached = await page.evaluate(async () => {
+    const { backlog } = await import("./js/vn/engine.js");
+    return backlog().slice(-30).map(row => row.text);
+  });
+  throw new Error(`line not reached: ${substr}; backlog=${JSON.stringify(reached)}`);
 }
 
 const stepOf = page => page.evaluate(() => document.querySelector(".sd-diagram")?.dataset.step || null);
 const count = page => page.locator(".sd-diagram").count();
 
 await suite("shisha-diagram", async check => {
+  await check("experienced-short-review", async page => {
+    await selectScene(page);
+    const before = await page.evaluate(async () => {
+      const { state } = await import("./js/core/state.js");
+      const { paidAction } = await import("./js/core/stats.js");
+      state.day = 9;
+      state.flags._craft_practice_runs = [1, 2].map(() => ({ scope: "full", success: true, served: true }));
+      // 本編の自由行動と同じ成長候補の預かり・精算を使う。プレビュー単独では成長しない。
+      window.__sumiReviewAction = paidAction(() => new Promise(resolve => {
+        window.__finishSumiReviewAction = resolve;
+      }), { consumed: () => true });
+      return state.stats.technique;
+    });
+    await advanceTo(page, "今日は復習だ");
+    assert.equal(await stepOf(page), "hose", "review shows the completed flow once");
+    assert.equal(await count(page), 1);
+    await advanceTo(page, "一度で全部覚えなくていい");
+    assert.equal(await count(page), 0, "review hides the diagram before closing");
+    // 能力の報酬キューは画面の台詞を省いて適用される。最後の発話から会話終了まで送る。
+    await advanceTo(page, "はい。ありがとうございます、スミさん");
+    for (let i = 0; i < 5; i++) {
+      if (await page.evaluate(() => document.querySelector("#preview-status")?.textContent.includes("会話終了"))) break;
+      await page.locator(".vn-text").click({ force: true });
+      await page.waitForTimeout(70);
+    }
+    await page.waitForFunction(() => document.querySelector("#preview-status")?.textContent.includes("会話終了"));
+    const result = await page.evaluate(async () => {
+      window.__finishSumiReviewAction();
+      await window.__sumiReviewAction;
+      const { state } = await import("./js/core/state.js");
+      const { backlog } = await import("./js/vn/engine.js");
+      return { technique: state.stats.technique, memories: state.relationshipMemories,
+        text: backlog().map(row => row.text).join("\n") };
+    });
+    assert.equal(result.technique - before, 1, "technique cue settles once as the normal action's 1P reward");
+    assert.equal(result.memories.filter(id => id === "sumi_heat").length, 1, "same memory, once");
+    assert.doesNotMatch(result.text, /そもそもなんで|解像度を上げろ|グリセリン/);
+    assert.equal(await count(page), 0, "no diagram after review ends");
+  });
+
   await check("steps-and-cleanup", async page => {
     await selectScene(page);
     assert.equal(await count(page), 0, "no diagram before its cue");
