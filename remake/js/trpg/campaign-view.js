@@ -4,7 +4,7 @@ import { el, yen } from "../core/util.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { venueHost } from "../core/venue-host.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
-import { loadTrpgLibrary, runTrpg } from "./index.js";
+import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { displayName, portraitUrl, portraitTop, sceneUrl } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
 
@@ -198,6 +198,8 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const ticket = { ...cast, chapter: state.chapter, day: state.day, slot: state.slot };
     try {
       const table = materializeTrpgCast(scenario, cast.assignments);
+      // 本棚では待たなかった分を、選んだシナリオについてだけここで先読みする。
+      await preloadTrpgAssets(resources, table, { signal: abort.signal });
       await runTrpg(host, { resources: { ...resources, scenario: table }, signal: abort.signal,
         seed: ((state.seed || 1) ^ state.day * 7919 ^ state.chapter * 104729 ^ scenario.title.length * 997) >>> 0,
         allowReplay: false, closeLabel: "思い出を本棚へ", onComplete: result => {
@@ -210,7 +212,8 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       if (completed) render(); else render("卓を片付けました。本は未クリアのまま、また遊べます。");
     } catch (error) {
       busy = false;
-      if (!disposed) render("卓を開けませんでした。本と今夜の行動は残っています。");
+      if (disposed) return;
+      render("卓を開けませんでした。本と今夜の行動は残っています。");
       console.error(error);
     }
   }
@@ -219,7 +222,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     if (disposed) return;
     host.replaceChildren(el("div.trpg-loading", [el("p", { text: "本棚と、仲間の予定を確認しています…" }),
       button(closeLabel, "trpg-campaign-close", close)]));
-    try { resources = suppliedResources || await loadTrpgLibrary({ signal: abort.signal }); render(); }
+    try { resources = suppliedResources || await loadTrpgLibrary({ signal: abort.signal, preloadAssets: false }); render(); }
     catch {
       if (disposed) return;
       host.replaceChildren(el("div.trpg-loading", [el("p", { role: "status", text: "本棚を読み込めませんでした。もう一度お試しください。" }),
