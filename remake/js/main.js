@@ -6,6 +6,7 @@ import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
+import { imgFileUrl } from "./core/img-file.js";
 import { vnTest } from "./vn/engine.js";
 import { createDevInspector } from "./core/dev-inspector.js";
 import { createEventPreview } from "./core/dev-event-preview.js";
@@ -50,7 +51,7 @@ export async function boot() {
   await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
   // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
   const [titleArt] = await Promise.all([prepareTitleArt(), Promise.all([
-    imageReady("img/ui/ui_title_logo_rich.webp", 3000),
+    imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
     ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
   ])]);
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する

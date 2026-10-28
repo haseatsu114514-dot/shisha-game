@@ -130,7 +130,7 @@ function migrateSamechanIdentity(value) {
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
   const oldSchema = Number(s.schema) || 0;
-  // #1254: 現行より新しいスキーマは移行できない。原本を書き換えず、呼び出し側で拒否する（null）。
+  // 未来版は解釈・再保存せず、保存元とプレイ中の状態を保ったまま読込失敗にする。
   if (oldSchema > SCHEMA) return null;
   if (oldSchema < 13) {
     s = migrateSamechanIdentity(s);
@@ -364,9 +364,8 @@ export function peekSave() {
 
 export function load() {
   const s = peekSave();
-  if (!s) return null;
-  const m = migrate(s);
-  return m ? setState(m) : null; // 未来スキーマは原本保持のまま拒否
+  const migrated = s ? migrate(s) : null;
+  return migrated ? setState(migrated) : null;
 }
 
 // ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
@@ -388,6 +387,17 @@ export function readSlot(key) {
     return null;
   }
 }
+/** 全枠のうち savedAt が最新のセーブ（同点・欠落は SAVE_SLOTS 順で先のもの）。無ければ null */
+export function peekLatestSave() {
+  let best = null, bestAt = -Infinity;
+  for (const slot of SAVE_SLOTS) {
+    const s = readSlot(slot.key);
+    if (!s) continue;
+    const at = Number.isFinite(s.savedAt) ? s.savedAt : -Infinity;
+    if (!best || at > bestAt) { best = s; bestAt = at; }
+  }
+  return best;
+}
 export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
 /** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
@@ -405,12 +415,12 @@ export function saveToSlot(key) {
 export function loadFromSlot(key) {
   const s = readSlot(key);
   if (!s) return null;
-  const m = migrate(s);
-  if (!m) return null; // 未来スキーマは原本保持のまま拒否し、オートセーブへ進ませない
+  const migrated = migrate(s);
+  if (!migrated) return null;
   const previous = state;
-  setState(m);
+  setState(migrated);
   const saved = save();
-  // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう（#1256）。
+  // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
   if (!saved && key !== SAVE_KEY) {
     setState(previous);
     return null;

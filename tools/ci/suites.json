@@ -34,10 +34,28 @@
       "run": ["node remake/test/browser/dj_preview.mjs"]
     },
     {
+      "id": "title-art-met",
+      "title": "Title art unlocks by characters met in the latest save",
+      "kind": "quick",
+      "run": ["node remake/test/title_art_met.mjs"]
+    },
+    {
       "id": "loading-prefetch",
       "title": "Bounded preparation queue and retries",
       "kind": "quick",
       "run": ["node remake/test/loading_prefetch.mjs"]
+    },
+    {
+      "id": "ngplus-measurement",
+      "title": "NG+ measurement harness (U5): scenario sweep, rival observer, aggregation",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_measurement.mjs"]
+    },
+    {
+      "id": "ngplus-carry",
+      "title": "NG+ SCHEMA 22 migration, carry classification coverage and package extraction (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_carry.mjs"]
     },
     {
       "id": "module-loading",
@@ -129,6 +147,7 @@
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
@@ -208,7 +227,7 @@
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs",
-        "node --experimental-vm-modules remake/test/gallery.mjs",
+        "node --experimental-vm-modules remake/test/gallery.mjs", "node --experimental-vm-modules remake/test/gallery_route_records.mjs",
         "node --experimental-vm-modules remake/test/story_guidance_1045.mjs",
         "node --experimental-vm-modules remake/test/purikura_fee.mjs",
         "node --experimental-vm-modules remake/test/appearance_selection.mjs",
@@ -796,6 +815,24 @@
       ],
       "run": [
         "node remake/test/browser/ch4_full_flow.mjs"
+      ]
+    },
+    {
+      "id": "ch5-full-flow",
+      "title": "Chapter 5 full playthrough on one save",
+      "kind": "browser",
+      "weight": 2.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch5*.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch1.js",
+        "data/dialogue/ch5_main.json",
+        "data/dialogue/ending.json",
+        "remake/test/browser/ch5_full_flow.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_full_flow.mjs"
       ]
     },
     {

@@ -1,3 +1,5 @@
+import { imgFileUrl } from "./img-file.js";
+
 // Approved for loading screens by the owner's request to use existing repository comics.
 // The source sheet stays intact; regions display only episode 25, left -> right.
 //
@@ -11,7 +13,7 @@
 //   }
 // 1コマの作画サイズは 1920x1080 基準で 860x500（43:25）固定。原画が 43:25 以外でも、
 // 表示枠は 43:25 のままレターボックスで収めるので、作画は 43:25 を推奨する。
-const src = "img/loading/adam-chaos.webp";
+const src = imgFileUrl("loading/adam-chaos.webp");
 export const LOADING_COMICS = [{
   id: "adam-menu-25",
   title: "メニュー改訂",
