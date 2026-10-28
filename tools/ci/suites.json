@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "load-save-failure",
+      "title": "Slot load persistence failure and state rollback",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/load_save_failure.mjs"]
+    },
+    {
       "id": "station-j01",
       "title": "Station availability, layout and save/load",
       "kind": "browser",
