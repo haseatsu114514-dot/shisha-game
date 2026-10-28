@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { flavorMakerProblems } from "../js/craft/temperature-model.js";
 
 const dataFile = fileURLToPath(new URL("../js/core/data.js", import.meta.url));
 const documentRoot = fileURLToPath(new URL("../", import.meta.url));
@@ -49,14 +50,14 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 // manifest読込前のPNG経路でも、旧版の顔画像キャッシュを使わない。
-assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=face-line-20261026");
+assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=face-restore-20261028");
 await all.loadAll((p) => progress.push(p));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
-    const version = id === "ageha" || face === "normal" ? "?v=face-line-20261026" : "";
+    const version = id === "ageha" || face === "normal" ? "?v=face-restore-20261028" : "";
     assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
-  assert.equal(all.faceIconUrl(id), `../assets/ui/face_icons/face_${id}.png?v=face-line-20261026`);
+  assert.equal(all.faceIconUrl(id), `../assets/ui/face_icons/face_${id}.png?v=face-restore-20261028`);
   assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
 }
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
@@ -102,6 +103,21 @@ assert(all.DB.dialogues.ch1_tsumugi_bond_finale && all.DB.dialogues.ch1_rin_bond
 assert(all.DB.friends.friends.naru.chats.length > 0); // 友人のたまのLIME（remake/data/friends.json）
 assert(all.DB.manifest.backgrounds.includes("bg_tonari_inside_day.png"));
 assert(all.DB.flavors.every((f) => (f.leaf || "blond") === "blond"));
+// DB.flavors はローダがブロンドのみに絞るため、メーカー検証は生データ全78種を対象にする。
+const rawFlavors = realJSON("../data/flavors.json").flavors;
+assert.equal(rawFlavors.length, 78);
+const makerProblems = flavorMakerProblems(rawFlavors);
+assert.equal(makerProblems.length, 0, `Invalid flavor makers: ${JSON.stringify(makerProblems)}`);
+assert.deepEqual(flavorMakerProblems([
+  { id: "missing" },
+  { id: "unknown", maker: "unknown" },
+  { id: "inherited_key", maker: "toString" },
+  { id: "valid", maker: "fuwari" },
+]), [
+  { id: "missing", reason: "missing maker" },
+  { id: "unknown", reason: "invalid maker: unknown" },
+  { id: "inherited_key", reason: "invalid maker: toString" },
+]);
 
 // LIMEの素材参照は本文とlogを合わせて検証する。既存テキスト形式も受理する。
 function validateLimeMedia(messages, catalog) {

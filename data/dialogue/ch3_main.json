@@ -1,5 +1,5 @@
 {
-  "comment": "第3章の正史台本。必須本編の進行順はdata/story_routes.json、実行はremake/js/chapters。任意場面は未接続。",
+  "comment": "第3章の正史台本。必須本編の進行順はdata/story_routes.json、実行はremake/js/chapters。任意場面の台本はch3_double_apple/ch3_mashiro/ch3_mukai/ch3_rivals.jsonにあり、大会前に読める分はremake/js/chapters/ch3.jsが接続済み。",
   "dialogues": [
     {
       "dialogue_id": "ch3_opening",
@@ -1111,7 +1111,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "最終結果、日本第二代表――ケムリクサ、なる。"
+          "text": "最終結果、日本第二代表――KEMURIKUSA、なる。"
         },
         {
           "type": "show_cg",

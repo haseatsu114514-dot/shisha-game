@@ -1,5 +1,6 @@
 import { ryujiGreetingDue, visitStamp as visitorStamp } from "../core/ryuji-visit.js";
 import { state, save } from "../core/state.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { buyKeepsake } from "../core/keepsakes.js";
 import { addMoney } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
@@ -90,7 +91,7 @@ async function revisitPurikura(background, spot, { live, read, stamp }) {
     if (ryuji && !buyKeepsake("ryuji_purikura")) return false;
     addMoney(-REVISIT_FEE);
     const history = state.flags._ageha_purikura_history ||= [];
-    history.push({ chapter: state.chapter, day: state.day, slot: state.slot, people, mode });
+    history.push({ chapter: state.chapter, day: state.day, chapterDay: chapterDay(state), slot: state.slot, people, mode });
   }
   state.flags._ageha_purikura_offer = stamp;
   save();

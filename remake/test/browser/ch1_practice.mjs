@@ -51,8 +51,12 @@ async function until(page, predicate, touch = false) {
   while (!await page.evaluate(predicate)) {
     assert(Date.now() < deadline, "Practice timed out");
     assert(!await page.evaluate(() => P.error), await page.evaluate(() => P.error));
+    // 手動SKIPでも卓上台の受け取りは別操作。受領モーダルは手動で閉じ、無いときだけSKIPを押す。
+    const gift = '[data-test="home-rig-gift-close"]';
     const skip = '#vn.active [data-test="vn-skip"]:not(.on)';
-    if (!await page.evaluate(() => P.vn.vnTest.turbo) && await page.locator(skip).isVisible().catch(() => false)) {
+    if (await page.locator(gift).isVisible()) {
+      await select(page, gift, touch);
+    } else if (!await page.evaluate(() => P.vn.vnTest.turbo) && await page.locator(skip).isVisible().catch(() => false)) {
       await select(page, skip, touch);
     }
     await page.waitForTimeout(40);

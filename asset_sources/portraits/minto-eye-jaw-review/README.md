@@ -15,3 +15,9 @@ v4は頭を正面・直立寄りに描き直し、両目の幅・縦の開き・
 他表情は未変更。`smile` は同型の目の左右差が残る修正候補。`sad`・`ura_smug` の半目、`wink` の閉眼は表情なので機械的に開かない。全キャラの結果は [点検一覧](../../../docs/qa/portrait-jawline/audit/README.md)。
 
 v1〜v3、`current-vs-candidate.png`、`normal-face-comparison.png`、`background-comparison.png`、`game-current-*` / `game-candidate-*`、旧 `browser-check.json` / `check-browser.cjs` は**不採用候補の履歴**。現行v4と取り違えない。元の通常は `../jawline-cleanup/minto-normal-before.png`。GitHub接続はForbiddenで、push・PR・公開反映は未実施。
+
+# 2026-10-28 復元記録（#1081 I03・オーナー判断）
+
+オーナー判断により、コンカフェ通常を正面寄り v4 から斜め向きの旧採用画像（`../jawline-cleanup/minto-normal-before.png`）へ復元した。反映先: 本編PNG `assets/sprites/characters/minto/chr_minto_normal.png`（内容は before と同一）、配信用 WebP（再生成し RGBA 一致を確認）、顔アイコン `face_minto.png`（`tools/make_face_icons.py minto` で再生成。私服アイコンは再生成しても同一で不変）。manifest の共通 framing（h/b/ax/aspect）は `build_manifest.py --portraits-only minto` の再計測でも不変で、`continuePortraits` の normal だけ顔枠の再計測値へ更新した。URL キャッシュ revision は `face-restore-20261028` へ更新（`remake/js/core/data.js`）。
+
+差し替え前の v4 本編PNG は `normal-v4-ingame.png` として本フォルダに保存した（生成原画は `normal-v4-source.png`、経緯は上記 v4 の記録）。他9表情・私服・タイトル絵・CG は未変更。黒線（I02）は本記録の対象外。

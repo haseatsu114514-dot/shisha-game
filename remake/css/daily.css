@@ -952,16 +952,6 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .st-misc { display: flex; gap: 24px; margin-top: 4px; font-size: 15px; color: var(--text); }
 .st-note { font-size: 14px; color: var(--text-dim); margin: 4px 0 0; }
 .st-people { display: flex; flex-direction: column; gap: 8px; }
-.st-notes { display: flex; flex-direction: column; gap: 8px; }
-.note-progress { margin: 0; font-size: 14px; color: var(--gold); letter-spacing: 0.1em; }
-.note-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; max-height: 360px; overflow-y: auto; padding-right: 6px; align-content: start; }
-.note-entry { padding: 7px 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.04); border-left: 3px solid rgba(255, 255, 255, 0.12); }
-.note-entry.found { border-left-color: var(--gold); background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), rgba(255, 255, 255, 0.03) 70%); }
-.note-entry.locked .note-name { color: rgba(255, 255, 255, 0.3); letter-spacing: 0.3em; }
-.note-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.note-name { font-size: 14px; font-weight: 700; }
-.note-count { font-size: 13px; color: var(--gold); }
-.note-memo { margin: 3px 0 0; font-size: 14px; line-height: 1.5; color: var(--text-dim); }
 .pp-row { display: flex; align-items: center; gap: 14px; padding: 8px 14px; background: rgba(255, 255, 255, 0.04); border-radius: 8px; }
 .pp-face { width: 40px; height: 40px; border-radius: 50%; image-rendering: pixelated; background: #000; }
 .pp-face.ph { display: grid; place-items: center; background: var(--gold); color: #1b1208; font-weight: 800; }
