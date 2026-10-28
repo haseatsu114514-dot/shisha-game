@@ -1,0 +1,15 @@
+{
+  "tool": "media.generate_image (Muse media pipeline)",
+  "generation_count": 1,
+  "reference": [
+    "remake/img/shop/character-flavors/sheet-nine.webp タイル(2,0) mountain_mist（箱の形式の参照）"
+  ],
+  "source": "twice_ice/candidate.png",
+  "source_size": [
+    1600,
+    1600
+  ],
+  "source_mode": "RGB",
+  "source_sha256": "72123545d71192b5854e356bcb062471cdc4ba5f99ddd7bd8394c82542fe6fc3",
+  "note": "候補段階。remake/img への配信変換（512 WebP化・box実測）は未実施で、採用決定後に別途行う。"
+}
