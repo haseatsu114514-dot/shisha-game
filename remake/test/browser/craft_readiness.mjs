@@ -22,7 +22,7 @@ await suite("craft-readiness", async check => {
       .some(entry => /\/ui\/making\/hookah_base\.(png|webp)(\?|$)/.test(entry.name)));
     await init(page);
     const scope = await page.evaluate(() => {
-      const { DB, makingUrl, faceIconUrl, portraitInfo, bgUrl } = T.data;
+      const { DB, img, makingUrl, faceIconUrl, portraitInfo, bgUrl } = T.data;
       window.cs = T.session.newSession("tournament");
       const current = T.readiness.craftAssetUrls(cs.mode, { step: "heat", cs });
       const allowed = new Set([...current, ...T.readiness.craftAssetUrls(cs.mode, { cs }),
@@ -30,7 +30,7 @@ await suite("craft-readiness", async check => {
       const people = ["hajime", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"];
       const oldMaking = DB.manifest.making.filter(name => !/^(heat_|hajime_heat_scene)/.test(name));
       const previous = [...new Set([
-        ...oldMaking.map(makingUrl), "img/ui/continue/backdrop_stage.webp", bgUrl("bg_tournament_stage"),
+        ...oldMaking.map(makingUrl), img("ui/continue/backdrop_stage.png"), bgUrl("bg_tournament_stage"),
         ...people.flatMap(id => [faceIconUrl(id), ...DB.manifest.portraits[id].faces.map(face => portraitInfo(id, face)?.src)]),
       ].filter(Boolean))];
       return { beforeCount: previous.length, currentCount: current.length,

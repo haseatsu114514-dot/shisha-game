@@ -22,7 +22,9 @@ const origin = `http://127.0.0.1:${server.address().port}`;
 let browser;
 const results = [];
 try {
-  browser = await chromium.launch({ headless: true, chromiumSandbox: true,
+  // Launch with the Playwright default like support.mjs: opting into chromiumSandbox
+  // fails with "No usable sandbox!" on AppArmor-restricted CI runners.
+  browser = await chromium.launch({ headless: true,
     ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}) });
   for (const mobile of [false, true]) {
     const context = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: mobile, hasTouch: mobile });
@@ -147,6 +149,14 @@ try {
       });
     }
     await page.evaluate(async () => { void window.__remake.dev.drill("steam"); });
+    // dev.drill restarts from a new game, wiping save flags. The slash attack is a
+    // learned skill (#712) whose button stays disabled while unlearned, so grant the
+    // flag once the dodge UI exists; the label refresh at game start re-reads it.
+    await page.locator('[data-test="dodge-slash"]').waitFor({ state: "attached", timeout: 20000 });
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      core.state.flags._sumi_attack_learned = true;
+    });
     await page.locator('[data-test="dodge-slash"]:not(:disabled)').waitFor({ state: "visible", timeout: 20000 });
     const pad = page.locator('[data-test="dodge-pad"]');
     assert.equal(await pad.evaluate(el => getComputedStyle(el).touchAction), "none");

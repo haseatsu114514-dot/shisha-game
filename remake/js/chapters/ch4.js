@@ -278,9 +278,14 @@ async function runTournament(owner) {
 
 function renderComplete(owner) {
   card(owner, "complete", "第四章・完", "世界大会を終え、日本へ戻った。", [
+    // 第4章側の第5章への接続点はここ1か所（状態遷移は ch5-progress.js の advanceToChapterFive）。
+    button(owner, "第5章へ進む", "chapter-five", async () => {
+      const mod = await import("./ch5.js");
+      await mod.beginChapterFive();
+    }, true),
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-  ], "次の章は、今後の更新で追加されます。");
+  ], "第五章・機械仕掛けの神へ進めます。");
 }
 
 function renderError(owner) {

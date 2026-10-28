@@ -20,7 +20,7 @@ const find = (node,test) => node?.dataset?.test===test ? node : (node?.children|
 const mocks = {
   DB, el, yen: String, clamp: (n, lo, hi) => Math.max(lo, Math.min(hi, n)), bgUrl: x => x, displayName: x => x,
   layers: { modal: el(), fx: el() }, SE: new Proxy({}, { get: () => noop }), DRILLS: {}, AXE_BAR: null,
-  sceneBg: () => ({}), imageReady: async () => false, setBackgroundWeatherSource: noop, setBg: async () => {}, showScreen: noop,
+  sceneBg: () => ({}), withScenePreparation: task => task, imageReady: async () => false, setBackgroundWeatherSource: noop, setBg: async () => {}, showScreen: noop,
   addStamina: n => { core.state.stamina += n; }, addMoney: n => { core.state.money += n; },
   gainAffinity: noop, releaseAffinity: () => 0, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap: noop, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, earnStat: noop, ensureAffinityLevel: (id,level) => { core.state.affinity[id] = Math.max(core.state.affinity[id] || 0, [0,9,20,33,48,66][level]); }, syncMintoKnowledge: noop, meetHiyoriAtTonari: async () => false, afterStory: async () => true, playBgm: noop, syncSamechanKnowledge: noop, syncNightQueue: noop, expireInvitations: noop, initHud: noop, showHud: noop, setPhoneBadge: noop, presentNow: async ({label}={}) => { if(mode==="calendar"&&label==="今回のスロット")throw Error("after-action boundary"); }, spendableMoney: s => s.money, returnFareReserve: () => 0, affinityLevel: () => 0, currentCondition: () => ({ bonusRate: 1, shiftBonus: 0 }),
   questionVisitDue: () => false, finaleAtVisit: () => false, spotFollowupDue: () => null, maybeRecruitTrpgMember: async () => {},
