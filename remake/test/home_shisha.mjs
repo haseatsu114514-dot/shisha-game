@@ -28,6 +28,25 @@ DB.dialogues = {};
 
 // データ: スミさんの卓上台（ミャア）と、くじの大会公式モデルの台。どちらも非売品・売れない
 const sumiRig = DB.equipById[rig.SUMI_RIG], proRig = DB.equipById[rig.PRO_RIG];
+// D01: 受取で見せるのは、採用済みで自室の机上にも置いている同じ台。
+{
+  const { sceneArtUrls } = await import("../js/core/scene-art.js");
+  const { img } = await import("../js/core/data.js");
+  const oldManifest = DB.manifest;
+  DB.manifest = read("../data/manifest.json");
+  const s = newGame(); s.owned.push(rig.SUMI_RIG);
+  assert(sceneArtUrls("img/backgrounds/bg_home_day.webp").includes(img(rig.SUMI_RIG_IMAGE)), "受取と自室で同じ採用済み台を使う");
+  assert(DB.manifest.webp.includes(rig.SUMI_RIG_IMAGE), "既存の配信用WebPを使う");
+  // CI の quick ジョブは画像を取得しない（sparse checkout）。画像がある環境でだけ中身を確かめる。
+  const originalUrl = new URL(`../../assets/${rig.SUMI_RIG_IMAGE}`, import.meta.url);
+  if (fs.existsSync(originalUrl)) {
+    const original = fs.readFileSync(originalUrl);
+    assert.equal(original.subarray(1, 4).toString(), "PNG", "LFSポインタではなく画像実体がある");
+  }
+  const servedUrl = new URL(`../img/${rig.SUMI_RIG_IMAGE.replace(/\.png$/, ".webp")}`, import.meta.url);
+  if (fs.existsSync(servedUrl)) assert.equal(fs.readFileSync(servedUrl).subarray(8, 12).toString(), "WEBP");
+  DB.manifest = oldManifest;
+}
 assert.equal(sumiRig.name, "ミャア 卓上台");
 assert.equal(proRig.name, "大会公式モデルの台");
 for (const e of [sumiRig, proRig]) { assert.equal(e.chapter_min, 1); assert(e.unsellable && e.not_for_sale, e.id); }
