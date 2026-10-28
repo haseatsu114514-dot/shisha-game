@@ -51,8 +51,8 @@ export const LOADING_COMICS = [{
   caption: "番外編のギャグ漫画。ましろの体内時計は砂時計と同調している。",
   panels: [
     { src: batch2Src, alt: "はじめ「蒸らしって、何分待てばいいの？」。頬杖をついたましろが眠そうに答える。「砂時計ひとつ分。……僕は寝て待つ。」",
-      region: { x: 51, y: 292, width: 478, height: 680, sourceWidth: 1086, sourceHeight: 1448 } },
+      region: { x: 18, y: 113, width: 510, height: 296, sourceWidth: 1086, sourceHeight: 1448 } },
     { src: batch2Src, alt: "砂時計の砂が落ちきり、うたた寝していたましろが目を開ける。「……落ちた。」はじめ「目覚ましより正確！？」",
-      region: { x: 557, y: 292, width: 477, height: 680, sourceWidth: 1086, sourceHeight: 1448 } },
+      region: { x: 549, y: 113, width: 522, height: 296, sourceWidth: 1086, sourceHeight: 1448 } },
   ],
 }];
