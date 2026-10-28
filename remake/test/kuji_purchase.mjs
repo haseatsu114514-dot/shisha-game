@@ -91,7 +91,7 @@ await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
 const profile = await mkdtemp(path.join(tmpdir(), "kuji817-"));
 const chrome = process.env.CHROME_EXECUTABLE_PATH || (process.platform === "darwin"
   ? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" : "chromium");
-const child = spawn(chrome, ["--headless=new", "--disable-background-networking", "--disable-component-update",
+const child = spawn(chrome, ["--headless=new", "--no-sandbox", "--disable-background-networking", "--disable-component-update",
   "--disable-sync", "--no-first-run", "--no-default-browser-check", `--user-data-dir=${profile}`,
   "--remote-debugging-pipe", "about:blank"], {stdio:["ignore","ignore","pipe","pipe","pipe"]});
 let seq = 0, buffer = "";
