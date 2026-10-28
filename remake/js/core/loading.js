@@ -163,6 +163,9 @@ export async function withLoading(prepare, {
     const result = await Promise.race([
       Promise.resolve().then(() => prepare({ signal: controller.signal, report(done, total) {
         if (settled || controller.signal.aborted || !Number.isFinite(done) || !Number.isFinite(total) || total <= 0) return;
+        // The bar is indeterminate until this first real count arrives; only then does it
+        // switch to showing the reported fraction (see .loading-bar in css/loading.css).
+        bar.classList.add("is-determinate");
         const value = Math.max(0, Math.min(done, total));
         status.setAttribute("aria-label", `${label} ${value} / ${total}`);
         overlay.style.setProperty("--loading-progress", value / total);
