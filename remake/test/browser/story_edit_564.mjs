@@ -18,19 +18,31 @@ await suite('story-edit-564', async check => {
       E.core.state.flavorStock.double_apple = 25;
       const first = await E.rig.giveSumiRig();
       const stock = structuredClone(E.core.state.flavorStock);
+      const firstFlag = E.core.state.flags._sumi_double_apple_received;
       E.core.load();
       const second = await E.rig.giveSumiRig();
+      const stockAfterReload = structuredClone(E.core.state.flavorStock);
       const giftLines = [...E.lines]; E.lines.length = 0;
       E.core.newGame(); E.core.state.schema = 18;
       E.core.state.flavorStock.double_apple = 0;
       E.core.save(); E.core.load();
-      await E.rig.giveSumiRig();
-      return { first, second, stock, giftLines, legacyLines:E.lines,
+      const legacyFlag = E.core.state.flags._sumi_double_apple_received;
+      const legacyGiven = await E.rig.giveSumiRig();
+      return { first, second, stock, stockAfterReload, firstFlag, giftLines,
+        legacyGiven, legacyFlag, legacyLines:E.lines,
         legacyStock: E.core.state.flavorStock.double_apple };
     });
+    // Current spec (#1081 D02; owner decision 2026-10-29): only the rig is
+    // gifted. The scene sends the player to their own stock on both branches
+    // ("手持ちを使え") and no double_apple is ever added.
     assert(result.first); assert.equal(result.second, false);
-    assert.equal(result.stock.double_apple, 75);
-    assert(result.giftLines.some(text => text?.includes('一箱やる')));
+    assert.equal(result.stock.double_apple, 25, 'gift adds no leaves: stock is preserved');
+    assert.equal(result.stockAfterReload.double_apple, 25, 'reload neither grants nor restores leaves');
+    assert.equal(result.firstFlag, undefined, 'current schema never sets the receipt flag');
+    assert(!result.giftLines.some(text => text?.includes('一箱やる')));
+    assert(result.giftLines.some(text => text?.includes('手持ちを使え')));
+    assert.equal(result.legacyFlag, true, 'schema <19 load migrates the receipt flag');
+    assert(result.legacyGiven);
     assert(!result.legacyLines.some(text => text?.includes('一箱やる')));
     assert(result.legacyLines.some(text => text?.includes('手持ちを使え')));
     assert.equal(result.legacyStock, 0);

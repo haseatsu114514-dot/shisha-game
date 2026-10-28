@@ -248,11 +248,11 @@ function migrate(s) {
   if (!Array.isArray(s.contacts)) s.contacts = [];
   if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
   s.reel = { ...fresh.reel, ...s.reel };
-  if (s.reel.installed) s.flags.pakki_app_installed = true; // 導入済みの旧セーブも観音堂の会話の条件を満たす
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {
     s.reel.installed = !!(s.reel.introDone || s.reel.count || s.reel.pending.length || s.spotVisits?.c_station);
   }
+  if (s.reel.installed) s.flags.pakki_app_installed = true; // 導入済みの旧セーブも観音堂の会話の条件を満たす
   // 廃止パイプ（pipe_middle / pipe_high / pipe_highest）は買値で全額返金し、所持・装備から外す。
   const pipeRefunds = { pipe_middle: 30000, pipe_high: 100000, pipe_highest: 300000 };
   if (Array.isArray(s.owned) && s.owned.some((id) => id in pipeRefunds)) {
@@ -312,15 +312,17 @@ export function newGame() {
 }
 
 export function save() {
-  if (!state) return;
+  if (!state) return false;
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try { recordGalleryProgress(peekSave()); } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
   recordGalleryProgress(state);
   state.savedAt = Date.now();
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    return true;
   } catch {
     /* プライベートウィンドウ等で失敗しても遊べるようにする */
+    return false;
   }
 }
 
@@ -379,8 +381,14 @@ export function loadFromSlot(key) {
   if (!s) return null;
   const migrated = migrate(s);
   if (!migrated) return null;
+  const previous = state;
   setState(migrated);
-  save();
+  const saved = save();
+  // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
+  if (!saved && key !== SAVE_KEY) {
+    setState(previous);
+    return null;
+  }
   return state;
 }
 
