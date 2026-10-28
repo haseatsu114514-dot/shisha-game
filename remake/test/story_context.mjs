@@ -47,7 +47,7 @@ function paths(id, state, knownFlags = false) {
   if (knownFlags) for (const row of JSON.stringify(scene).matchAll(/"flag":"([^"]+)"/g)) value.flags[row[1]]=true;
   return run(scene.lines,scene.branches || {},value,[]);
 }
-const state = (chapter,phase='daily',met={}) => ({chapter,phase,day:1,flags:{},met,stats:{},notes:{},money:100000});
+const state = (chapter,phase='daily',met={}) => ({chapter,phase,day:1,flags:{},met,stats:{},money:100000});
 for (let target=1;target<=5;target++) {
   for (const phase of ['opening','daily','tournament','aftermath','cleared']) {
     const value=state(target,phase), before=JSON.stringify(value);
