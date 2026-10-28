@@ -791,8 +791,7 @@ async function afterStop(r, fast) {
     case "big":
       // 後告知: 止まったリールを一拍見せてから、ペカッ
       await sleep(fast ? 0 : 420);
-      return peka(r, fast, r.ceiling === "main", r.ceiling === "main" ? "おたすけパッキー！"
-        : r.ren ? pickFresh(REN_LINES, "ren") : pickFresh(WIN_LINES, "win"));
+      return peka(r, fast, false, r.ren ? pickFresh(REN_LINES, "ren") : pickFresh(WIN_LINES, "win"));
     default:
       announce(r);
   }
@@ -800,9 +799,9 @@ async function afterStop(r, fast) {
 
 // 先告知: レバーを叩いた瞬間にランプが光る → 小筐体は回したまま、大きなリールでこの回転を赤7に止める
 async function presentPreAnnounce(r) {
-  lampOn(r.ceiling === "main");
+  lampOn(false);
   SE.puka();
-  bubble(r.ceiling === "main" ? "おたすけパッキー！" : "先ペカッ！ このまま7を狙って！", 0);
+  bubble("先ペカッ！ このまま7を狙って！", 0);
   await sleep(900);
   await new Promise((resolve) => settleBonus({ ...r, done: resolve }, false, "pre"));
 }
