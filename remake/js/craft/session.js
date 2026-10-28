@@ -27,7 +27,7 @@ import { temperatureAfterSteam } from "./conditions.js";
 import { steamEnvironment, steamForecastProfile } from "./steam-climate.js";
 import { screenBlast } from "./blast.js";
 import { artImg } from "./art.js";
-import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
+import { LEAF_MAX, flavorLeafStages, ensureFlavorLife } from "./flavor-life.js";
 import { buildCraftProgress } from "./progress.js";
 import { warmCraftAssets } from "./readiness.js";
 import { prepareBenchEntry } from "./loading.js";
@@ -82,6 +82,9 @@ export function newSession(mode) {
     retryUsed: false,
   };
   applyCoalTraining(cs, state.flags);
+  // E07(#1081): 葉の持ち/消耗は一台の全工程で共有する状態として、ここで一度だけ生む。
+  // 蒸らし・提供で傷んだ葉を、調整（熱管理）や場面切替・SAVE/LOAD で新品へ戻さない。
+  ensureFlavorLife(cs);
   return cs;
 }
 
