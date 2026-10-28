@@ -87,11 +87,82 @@ eq(reel.splitHints({ note: { lastHint: "もっと旧" } }).past.map((h) => h.tex
 // ノートの表示用まとめも同じ分け方
 const summary = reel.noteSummary(s.reel);
 assert.equal(summary.currentHints.length, 0);
+// 設定期間別の観測: 数値順で最新3件まで。現在の記録が無ければ過去から補わない。
+const observed = {
+  settingDraws: 12,
+  note: { periods: {
+    1: { spins: 10, big: 1, reg: 0, bell: 1 },
+    2: { spins: 20, big: 0, reg: 2, bell: 2 },
+    9: { spins: 25, big: 1, reg: 1, bell: 3 },
+    10: { spins: 30, big: 1, reg: 2, bell: 4 },
+    12: { spins: 42, big: 2, reg: 3, bell: 5 },
+  } },
+};
+const observedBefore = JSON.stringify(observed);
+eq(reel.noteSummary(observed).periodStats, {
+  current: { period: 12, spins: 42, big: 2, reg: 3, bell: 5 },
+  past: [
+    { period: 10, spins: 30, big: 1, reg: 2, bell: 4 },
+    { period: 9, spins: 25, big: 1, reg: 1, bell: 3 },
+    { period: 2, spins: 20, big: 0, reg: 2, bell: 2 },
+  ],
+});
+assert.equal(JSON.stringify(observed), observedBefore, "集計表示は記録を書き換えない");
+eq(reel.noteSummary(JSON.parse(observedBefore)).periodStats, reel.noteSummary(observed).periodStats);
+assert.equal(reel.noteSummary({ ...observed, settingDraws: 13 }).periodStats.current, null);
+for (const legacy of [undefined, {}, { count: 100, note: { big: 5, reg: 6, bell: 7 } }]) {
+  eq(reel.noteSummary(legacy).periodStats, { current: null, past: [] });
+}
+for (const settingDraws of [undefined, null, "12", 1.5, NaN]) {
+  eq(reel.noteSummary({ settingDraws, note: { periods: {
+    0: { spins: 1, big: 0, reg: 0, bell: 0 },
+  } } }).periodStats, {
+    current: { period: 0, spins: 1, big: 0, reg: 0, bell: 0 }, past: [],
+  });
+}
+// 実際の行動で新しい期間にだけ記録される（上の章更新で初めて回した結果）。
+const recorded = s.reel.pending;
+eq(summary.periodStats, {
+  current: {
+    period: s.reel.settingDraws, spins: recorded.length,
+    big: recorded.filter((r) => r.role === "big" || r.role === "rare" || r.overlap === "big").length,
+    reg: recorded.filter((r) => r.role === "reg" || r.overlap === "reg").length,
+    bell: recorded.filter((r) => r.role === "bell").length,
+  },
+  past: [],
+});
+eq(summary.history.map((h) => h.ren), recorded.filter((r) => reel.core.PEKA.includes(r.role) || !!r.overlap).reverse().map((r) => r.ren));
+
+// 固定シード群から連チャンの実例を探す。リプレイも1回転として前回当選との差を数える。
+let renSeed = null, sawLongGap = false, sawFive = false, sawSix = false, sawEarlyFirst = false;
+for (let seed = 1; seed <= 32; seed++) {
+  const machine = { seed, count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0, setting: 3 };
+  let previousBonus = null;
+  for (let action = 0; action < 300; action++) {
+    for (const r of reel.core.spinSeries(machine, {})) {
+      const win = reel.core.PEKA.includes(r.role) || !!r.overlap;
+      const gap = previousBonus === null ? r.n + 1 : r.n - previousBonus;
+      assert.equal(r.games, gap, `games: seed=${seed}, spin=${r.n}`);
+      assert.equal(r.ren, win && previousBonus !== null && gap <= 5, `ren: seed=${seed}, spin=${r.n}`);
+      if (r.ren) renSeed ??= seed;
+      if (win && previousBonus !== null && gap >= 6) sawLongGap = true;
+      if (win && previousBonus !== null && gap === 5) sawFive = true;
+      if (win && previousBonus !== null && gap === 6) sawSix = true;
+      if (win && previousBonus === null && gap <= 5) sawEarlyFirst = true;
+      if (win) previousBonus = r.n;
+    }
+  }
+}
+assert.notEqual(renSeed, null, "固定シード群に連チャン当選が実在する");
+assert(sawLongGap, "6回転以上あいた当選も検証した");
+assert(sawFive && sawSix, "5回転と6回転の境界を両方検証した");
+assert(sawEarlyFirst, "開始5回転以内の初当選には連を付けない");
+
 // 設定示唆の取得（フォールバックと安全確認）
 for (const setting of [1, 2, 3, 4, 5, 6, 0, undefined, null, NaN]) {
   const line = reel.settingHint(setting);
   assert(typeof line === "string" && line.length > 0, `settingHint must return non-empty string for setting=${setting}`);
   assert(allHintText.includes(line), `settingHint line must belong to known hint lines: ${line}`);
 }
-console.log("[reel hints] PASS: approved odd/even lines, unchanged weights and settings, spoiler-free guide, period-separated history across same-day change, SAVE/LOAD, chapter redraw and legacy saves, guarded settingHint");
+console.log("[reel hints] PASS: approved odd/even lines, unchanged weights and settings, spoiler-free guide, period-separated history across same-day change, SAVE/LOAD, chapter redraw and legacy saves, guarded settingHint, period observations and ren boundaries");
 

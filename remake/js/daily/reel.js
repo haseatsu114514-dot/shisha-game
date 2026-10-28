@@ -267,6 +267,7 @@ function spinSeries(reel, ctx) {
     if (lock && variant === "before") variant = "after";
     const result = {
       n: reel.count, role, overlap, premium,
+      ren: isPeka && st.bonusCount > 0 && (st.bonusGap + 1) <= JUG_REN.games,
       stops: stopsFor(role, rng),
       variant,
       exp: (eff.exp || 0) + (overlap ? EFFECTS[overlap].exp : 0),
@@ -394,8 +395,15 @@ function recordNote(reel, r) {
   }
   note.maxGap = Math.max(note.maxGap || 0, r.games); // 最大ハマり（当たった回転も含めた回転数）
   const kind = bonusKind(r);
+  const period = Number.isInteger(reel.settingDraws) ? reel.settingDraws : 0;
+  const periods = note.periods || (note.periods = {});
+  const stats = periods[period] || (periods[period] = { spins: 0, big: 0, reg: 0, bell: 0 });
+  stats.spins += 1;
+  if (kind === "BIG" || kind === "PREMIUM") stats.big += 1;
+  if (kind === "REG") stats.reg += 1;
+  if (r.role === "bell") stats.bell += 1;
   if (kind) {
-    (note.history ||= []).unshift({ kind, games: r.games, chapter: state.chapter, day: state.day });
+    (note.history ||= []).unshift({ kind, games: r.games, ren: !!r.ren, chapter: state.chapter, day: state.day });
     note.history.length = Math.min(note.history.length, HISTORY_MAX);
   }
   if (r.role === "freeze") (note.freezeLog ||= []).push({ chapter: state.chapter, day: state.day, spin: r.n + 1 });
@@ -522,6 +530,25 @@ function pick(pool) {
   do { c = pool[Math.floor(Math.random() * pool.length)]; tries++; } while (recent.includes(c) && tries < 10 && pool.length > 3);
   recent.push(c); if (recent.length > 3) recent.shift();
   return c;
+}
+// 短い当選反応だけを未見優先にする。抽選用の乱数は使わない。
+const WIN_LINES = ["ぷぷぷっ！ 光った！", "ペカッ！ 光ったよ！", "ほら、光った！", "ぷぷっ、来た来た！"];
+const REN_LINES = ["また光った！", "さっき光ったばかりなのに！", "ついてる、今！"];
+function pickFresh(pool, key) {
+  if (!pool.length) return "";
+  const seenLines = state.reel.seenLines || (state.reel.seenLines = {});
+  let seen = Array.isArray(seenLines[key]) ? seenLines[key] : [];
+  if (pool.every((_, i) => seen.includes(i))) seen = [];
+  seenLines[key] = seen;
+  const weights = pool.map((_, i) => seen.includes(i) ? 1 : 3);
+  let remaining = Math.random() * weights.reduce((sum, weight) => sum + weight, 0);
+  let index = pool.length - 1;
+  for (let i = 0; i < pool.length; i++) {
+    remaining -= weights[i];
+    if (remaining < 0) { index = i; break; }
+  }
+  if (!seen.includes(index)) seen.push(index);
+  return pool[index];
 }
 function lampOn(premium) {
   if (!alive()) return;
@@ -764,7 +791,8 @@ async function afterStop(r, fast) {
     case "big":
       // 後告知: 止まったリールを一拍見せてから、ペカッ
       await sleep(fast ? 0 : 420);
-      return peka(r, fast, r.ceiling === "main", r.ceiling === "main" ? "おたすけパッキー！" : "ぷぷぷっ！ 光った！");
+      return peka(r, fast, r.ceiling === "main", r.ceiling === "main" ? "おたすけパッキー！"
+        : r.ren ? pickFresh(REN_LINES, "ren") : pickFresh(WIN_LINES, "win"));
     default:
       announce(r);
   }
@@ -992,6 +1020,10 @@ export function noteSummary(reel) {
   const reg = (n.reg || 0) + (n.overlapReg || 0);
   const freeze = n.freeze || 0;
   const rate = (k) => (k > 0 && spins > 0 ? `1/${(spins / k).toFixed(1)}` : "—");
+  const period = Number.isInteger(reel?.settingDraws) ? reel.settingDraws : 0;
+  const periods = Object.entries(n.periods || {}).map(([key, stats]) => ({
+    period: Number(key), spins: stats.spins, big: stats.big, reg: stats.reg, bell: stats.bell,
+  })).sort((a, b) => b.period - a.period);
   return {
     spins, big, reg, freeze,
     rows: [
@@ -1006,6 +1038,10 @@ export function noteSummary(reel) {
     maxGap: n.maxGap || 0,
     history: n.history || [],
     freezeLog: n.freezeLog || [],
+    periodStats: {
+      current: periods.find((stats) => stats.period === period) || null,
+      past: periods.filter((stats) => stats.period !== period).slice(0, 3),
+    },
     settingChanges: n.settingChanges || 0,
     lastHint: n.lastHint || "",
     ...(() => { const h = splitHints(reel); return { currentHints: h.current, pastHints: h.past }; })(),
@@ -1052,6 +1088,7 @@ function guideCard(tiles = GUIDE) {
 export function openNote() {
   if (!state?.reel?.installed) return Promise.resolve();
   const s = noteSummary(state.reel);
+  const periodLine = (label, stats) => `${label}: ${stats.spins}回転・BIG ${stats.big}・REG ${stats.reg}・ベル ${stats.bell}`;
   SE.click?.();
   return new Promise((resolve) => {
     const table = el("table.rn-table", [
@@ -1062,7 +1099,8 @@ export function openNote() {
     ]);
     const history = s.history.length
       ? el("ol.rn-history", s.history.map((h) => el(`li.k-${h.kind.toLowerCase()}`, [
-        el("b", { text: h.kind }), el("span", { text: `${h.games}G` }), el("small", { text: `第${h.chapter}章 DAY${h.day}` }),
+        el("b", [h.kind, h.ren ? el("span.rn-ren", { text: "連" }) : null]),
+        el("span", { text: `${h.games}G` }), el("small", { text: `第${h.chapter}章 DAY${h.day}` }),
       ])))
       : el("p.rn-empty", { text: "まだ当たりはないよ。光るのを待とう！" });
     const hall = s.freezeLog.length
@@ -1077,6 +1115,8 @@ export function openNote() {
           el("h3", { text: "フリーズ殿堂入り" }), hall,
           el("h3", { text: "設定" }),
           el("p.rn-setting", { text: `今の設定は？？？。${s.settingChanges ? `これまでに${s.settingChanges}回変わったよ。` : ""}前回の抽選から7日たつか、章が変わると選び直されるよ` }),
+          s.periodStats.current ? el("p.rn-setting", { text: periodLine("今の設定のあいだ", s.periodStats.current) }) : null,
+          s.periodStats.past.length ? el("p.rn-setting", [el("small", { text: periodLine("前の設定のあいだ", s.periodStats.past[0]) })]) : null,
           el("h4.rn-hint-head", { text: s.settingSince ? `今の設定のヒント（第${s.settingSince.chapter}章 DAY${s.settingSince.day}から）` : "今の設定のヒント" }),
           s.currentHints.length
             ? el("ul.rn-hints", s.currentHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` })))
