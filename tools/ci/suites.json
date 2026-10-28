@@ -70,6 +70,12 @@
       "run": ["node remake/test/ngplus_carry.mjs"]
     },
     {
+      "id": "ngplus-save-display",
+      "title": "NG+ U9 save-slot cycle badge and cross-cycle overwrite note (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_save_display.mjs"]
+    },
+    {
       "id": "module-loading",
       "title": "Deferred module loading notice: delay, failure cleanup, retry, single-flight",
       "kind": "quick",
