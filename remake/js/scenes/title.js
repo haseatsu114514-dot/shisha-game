@@ -1,6 +1,8 @@
 // タイトル画面。用語集は会話画面・ゲーム中のメニューから開く。
 import { el } from "../core/util.js";
-import { bgUrl } from "../core/data.js";
+import { DB, bgUrl } from "../core/data.js";
+import { readGalleryProgress } from "../core/gallery-progress.js";
+import { galleryEntries, galleryStats } from "../core/gallery-catalog.js";
 import { layers, showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
 import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
 import { playBgm, stopBgm, SE, applyVolumes } from "../core/audio.js";
@@ -14,6 +16,15 @@ let titleRevision = 0;
 // 直近に表示したキャラアート。メニューを閉じて再描画するだけのときは同じ絵を使い回し、
 // 読込待ちや無駄な抽選切替を起こさない。新しい絵はブート/タイトル復帰（reload）でだけ選ぶ。
 let currentArt = null;
+
+function galleryLabel() {
+  try {
+    const value = JSON.parse(localStorage.getItem("suien_remake_gallery") || "[]");
+    const seenIds = new Set(Array.isArray(value) ? value.filter(id => typeof id === "string") : []);
+    const stats = galleryStats(galleryEntries(DB.manifest, DB.gallery, readGalleryProgress(), seenIds));
+    return stats.unlocked > 0 ? `GALLERY ${stats.rate}%` : "GALLERY";
+  } catch { return "GALLERY"; }
+}
 
 export function showTitle(preparedArt = null) {
   const revision = ++titleRevision;
@@ -51,7 +62,7 @@ export function showTitle(preparedArt = null) {
       leaving = true;
       smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
     }, "title-load", !anySlotSaved()),
-    item("GALLERY", "ギャラリー", () => openGallery().then(refresh), "title-gallery"),
+    item(galleryLabel(), "ギャラリー", () => openGallery().then(refresh), "title-gallery"),
     item("CONFIG", "設定", () => openConfig().then(refresh), "title-config"),
   );
 

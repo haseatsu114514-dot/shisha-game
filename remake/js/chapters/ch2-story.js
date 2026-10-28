@@ -43,7 +43,7 @@ export function chapterTwoNights(startDay) {
   return Object.fromEntries(CH2_NIGHTS.map(night => {
     const flag = night.doneFlag || `_ch2_night_${night.day}_done`;
     return [startDay + night.day - 1, {
-      id: `remake_ch2_night_${night.day}`, pin: night.pin, label: night.label,
+      id: `remake_ch2_night_${night.day}`, pin: night.pin, label: night.label, beat: night.beat,
       schedule: "fixed", prerequisites: night.prerequisites,
       done: () => !!state.flags[flag],
       run: async () => {

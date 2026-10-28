@@ -13,7 +13,7 @@ DB.recipes=[]; DB.ngMixes=[];
 const { addStamina } = await import('../js/core/stats.js');
 const { SPOTS } = await import('../js/daily/spots.js');
 const { applyHomeShisha } = await import('../js/daily/home-shisha.js');
-const { regulationFor } = await import('../js/craft/steps.js');
+const { regulationFor, REGULATION, mixFlavorIds, evaluateMix } = await import('../js/craft/steps.js');
 let s=core.newGame();
 assert.equal(masteryLevel(s,'lemon'),1);
 for(let i=0;i<MASTERY_THRESHOLDS.length;i++){s.flavorMastery.lemon=MASTERY_THRESHOLDS[i];assert.equal(masteryLevel(s,'lemon'),i+1);}
@@ -89,3 +89,38 @@ assert(applyHomeShisha({lemon:12},{id:'home_rig_set'},s));assert.equal(s.stamina
 const once=structuredClone(s);assert.equal(applyHomeShisha({lemon:12},{id:'home_rig_set'},s),null);assert.deepEqual(s,once);
 core.save();s=core.load();assert.equal(applyHomeShisha({lemon:12},{id:'home_rig_set'},s),null);
 console.log('PASS mastery levels, weighting, lessons once, valid flavor data, private/staff stock, SAVE/LOAD, legacy tournament, daily budgets, home settlement once');
+
+// #1279: 大会の候補と確定ゲートの両方で試作葉を拒否し、練習には残す。
+const trial = 'nightside_earlgrey';
+const { ownedFlavorIds } = await import('../js/daily/shop.js');
+const { preparationFlavors } = await import('../js/daily/preparation.js');
+const { recipeMix } = await import('../js/daily/home-shisha.js');
+assert.equal(DB.flavorById[trial].competition_legal, false);
+assert.equal(DB.flavorById[trial].serve_legal, false);
+for (const [chapter, required] of [[1, 'lemon'], [2, 'afsahr_strawberry'], [3, 'chocolate']]) {
+ s=core.newGame();s.chapter=chapter;s.flavorStock={[trial]:50,lemon:50,chocolate:50};
+ assert(ownedFlavorIds().includes(trial), '共有在庫・一覧には試作葉が残る');
+ const tournament={mode:'tournament',equip:{bowl:'silicone_bowl'}};
+ for (const options of [{}, {orderFlavorIds:[trial,required]}, {staffPractice:true}]) {
+  assert(!mixFlavorIds({...tournament,...options}).includes(trial), `第${chapter}章: 全候補経路で試作葉を除外`);
+ }
+ assert(mixFlavorIds(tournament).includes(required), '通常の課題葉・支給葉は使える');
+ assert.equal(evaluateMix({...tournament,mix:{[required]:12}}).regOk,true,'フラグ欠損の葉は従来どおり許可');
+ assert.equal(evaluateMix({...tournament,mix:{[required]:4,[trial]:8}}).regOk,false,
+  '容量・課題量を満たしても、注入された試作葉を含む配合は確定不可');
+ assert.equal(evaluateMix({...tournament,staffPractice:true,mix:{[trial]:12}}).regOk,false,
+  '大会モードはstaffPractice指定でも使用可否を検査');
+ assert.equal(evaluateMix({...tournament,mix:{[required]:12,[trial]:0}}).regOk,true,'0gは配合に含めない');
+ s.flags._prep_flavor=trial;
+ for (const options of [{}, {staffPractice:true}, {orderFlavorIds:[trial,required]}]) {
+  const rehearsal={...tournament,mode:'rehearsal',...options,mix:{[required]:4,[trial]:8}};
+  assert(mixFlavorIds(rehearsal).includes(trial),'リハーサル・まかない・指定練習では試作葉を選べる');
+  assert.equal(evaluateMix(rehearsal).regOk,true,'練習では試作葉を理由に拒否しない');
+ }
+ assert(preparationFlavors().includes(trial),'preparationに試作葉が残る');
+ assert.deepEqual(recipeMix({flavors:[DB.flavorById[trial].family||trial]}),{[trial]:12},'自宅でも試作葉を選べる');
+}
+for (const [chapter, reg] of Object.entries(REGULATION)) {
+ assert.notEqual(DB.flavorById[reg.supply]?.competition_legal,false,`データ矛盾: 第${chapter}章の課題支給葉が大会使用不可`);
+}
+console.log('PASS #1279 tournament candidates and injected mixes reject trial leaves; rehearsal, staff practice, preparation and home retain them; 課題支給葉のデータ矛盾なし');

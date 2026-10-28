@@ -31,6 +31,23 @@ const core = modules.get(new URL("core/state.js", root).href).namespace;
 const plain = (x) => JSON.parse(JSON.stringify(x));
 const eq = (a, b, msg) => assert.deepEqual(plain(a), plain(b), msg);
 
+// schema9以前の導入記録は初回LOADから会話条件も揃う。現行の欠落補完も維持。
+for (const schema of [8, 9, core.SCHEMA]) for (const evidence of ["none", "installed", "introDone", "count", "pending", "visit"]) {
+  const source = core.newState(); source.schema = schema;
+  if (evidence === "visit") source.spotVisits = { c_station: 1 };
+  else if (evidence !== "none") source.reel[evidence] = evidence === "pending" ? [{ id: "legacy" }] : evidence === "count" ? 1 : true;
+  for (const key of [core.SAVE_KEY, "suien_remake_slot1"]) {
+    storage.set(key, JSON.stringify(source));
+    const loaded = key === core.SAVE_KEY ? core.load() : core.loadFromSlot(key);
+    const expected = schema < 10 ? !["none", "installed"].includes(evidence) : evidence === "installed";
+    assert.equal(loaded.reel.installed, expected, `${schema}/${evidence}/${key}`);
+    assert.equal(loaded.flags.pakki_app_installed === true, expected, "first LOAD must agree with installed");
+    core.save(); core.load();
+    assert.equal(core.state.flags.pakki_app_installed === true, expected, "second LOAD must stay consistent");
+  }
+}
+storage.clear();
+
 // 偶奇の台詞はオーナー承認の文言だけ。分類ごとの出やすさは従来どおり
 const kind = (id) => reel.SETTING_HINTS.find((h) => h.id === id);
 eq(kind("odd").lines, ["いち、さん、ご！ 今日はこのリズムが好き♪", "今日は奇数が気になるな〜"]);

@@ -1,10 +1,12 @@
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
+import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, modal } from "../core/ui.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { glossaryPanel } from "../vn/glossary.js";
 import { maxStamina } from "../core/stats.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
@@ -68,12 +70,16 @@ async function openMenu(owner) {
     const choice = await modal({ title: "全国大会 MENU", body: "途中の工程は、その工程の始めから再開できます。", options: [
       { label: "セーブ", value: "save", test: id("save") },
       { label: "ロード", value: "load", test: id("load") },
+      { label: "設定", value: "config", test: id("config") },
+      { label: "用語集", value: "glossary", test: id("glossary") },
       { label: "大会の規則", value: "rules", test: id("rules") },
       { label: "タイトルへ戻る", value: "title", test: id("title") },
       { label: "閉じる", value: null, primary: true },
     ] });
     if (!live(owner)) return;
     if (choice === "save") await saveFlow();
+    if (choice === "config") await (await import("../scenes/title.js")).openConfig();
+    if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
     if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
@@ -331,6 +337,7 @@ function renderComplete(owner) {
   const p = progress();
   if (p.result?.rank !== 1 || !state.flags._ch3_tournament_won)
     throw new Error("全国大会の勝利記録を確認できません");
+  playBgm("bgm_aftermath");
   card(owner, "complete", "全国大会・優勝／日本第一代表", "四人の一試合で、はじめが日本の第一代表になった。東京で伝えることが、まだ残っている。", [
     button(owner, "第三章の続きへ", "aftermath", async () => {
       await (await import("./ch3-aftermath.js")).runChapterThreeAftermath();
@@ -393,7 +400,7 @@ async function drive(owner) {
         else if (p.step === 10) p.stage = "national_adjustment";
         else {
           const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
-          if (!castVotes(p, round, quality)) throw new Error("全国大会の投票地点を確認できません");
+          if (!castVotes(p, round, quality, null, difficultyForRun(state))) throw new Error("全国大会の投票地点を確認できません");
           p.stage = p.step === STEPS.length ? "tasting" : "votes";
           if (p.stage === "tasting") recordResult(state, cs.total);
         }
@@ -401,11 +408,11 @@ async function drive(owner) {
       save();
     } else if (p.stage === "national_craft") {
       if (!await read(owner, "national_craft")) return;
-      if (!castVotes(p, 1, partialQuality(p.craft, 1))) throw new Error("全国大会の提供後の投票地点を確認できません");
+      if (!castVotes(p, 1, partialQuality(p.craft, 1), null, difficultyForRun(state))) throw new Error("全国大会の提供後の投票地点を確認できません");
       checkpoint("votes");
     } else if (p.stage === "national_adjustment") {
       if (!await read(owner, "national_adjustment")) return;
-      if (!castVotes(p, 2, partialQuality(p.craft, 2))) throw new Error("全国大会の調整後の投票地点を確認できません");
+      if (!castVotes(p, 2, partialQuality(p.craft, 2), null, difficultyForRun(state))) throw new Error("全国大会の調整後の投票地点を確認できません");
       checkpoint("votes");
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
