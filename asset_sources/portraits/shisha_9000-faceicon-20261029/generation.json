@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-29",
+  "tool": "image_gen.imagegen (Codex A)",
+  "status": "new portrait candidate; not installed in production",
+  "character": "shisha_9000",
+  "character_name": "SHISHA-9000",
+  "design_basis": "asset_sources/portraits/shisha_9000-remaster-v1/normal-source.png (existing portrait candidate)",
+  "files": [
+    {
+      "path": "asset_sources/portraits/shisha_9000-faceicon-20261029/face-icon.png",
+      "bytes": 21882,
+      "sha256": "ff0e94f8ba3fab4c70e87bcce8b6f3eeb5a4faa8ba0aa2049985a7bb43fc9020"
+    }
+  ],
+  "qa": {
+    "face_icon": "160x160 RGBA machine crop (head) from the existing normal portrait; portrait itself already existed and is unchanged",
+    "limits": [
+      "Icon candidate only; not installed in production"
+    ]
+  }
+}

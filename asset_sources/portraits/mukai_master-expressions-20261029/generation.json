@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-29",
+  "tool": "image_gen.imagegen (Codex A)",
+  "status": "new portrait candidate; not installed in production",
+  "character": "mukai_master",
+  "character_name": "ムカイさん",
+  "design_basis": "asset_sources/portraits/mukai_master-remaster-v1/normal-source.png (existing adopted-design candidate, used as identity reference)",
+  "files": [
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/sad-source.png",
+      "bytes": 817870,
+      "sha256": "4c1a8ef57e28b6ef4c1ee97868fa508204480e87337a184257b7e9025c510c48"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/sad-preview.png",
+      "bytes": 417478,
+      "sha256": "4f12b041371d0b106cc51a7428c351c4e963f174fc5e02a1b88f53918e7ef4a5"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/serious-source.png",
+      "bytes": 828340,
+      "sha256": "df0d607b2c49b4b87a0931d85bc2b6b50b91365876477ddb237c0c3e47de2590"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/serious-preview.png",
+      "bytes": 423009,
+      "sha256": "a74a6292021ce88c234a35dbc5c0d29611d4d921fb788cbf4c5ed4fcb05bba92"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/smile-source.png",
+      "bytes": 831376,
+      "sha256": "30574df0f9079b31589449ae45d1c2931310159cbaa44983cfb396e7a181722a"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/smile-preview.png",
+      "bytes": 424081,
+      "sha256": "e75f69432df804b918276c015434f7aaa20cb616c019a8c7881fa782e55570dd"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/surprise-source.png",
+      "bytes": 819457,
+      "sha256": "4ce6a1a6f573e58a47ab907ca5200b39f5f7d0f1a238f62575c0c997aad05b56"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/surprise-preview.png",
+      "bytes": 420729,
+      "sha256": "695878265d8ba6f2bfe0e6a71be5dcf6479ae639267b9fb5a927f08dbe03867c"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/face-icon.png",
+      "bytes": 19801,
+      "sha256": "0dc1cd556559e63fc475dce60bdb93113ebc15b656153cf4c3722d29afc90133"
+    },
+    {
+      "path": "asset_sources/portraits/mukai_master-expressions-20261029/expressions-prompt.txt",
+      "bytes": 1849,
+      "sha256": "382cdea43f39154cfb50094a5ad8469b0d4cfad6bd620287a00c1ff4336d6b60"
+    }
+  ],
+  "qa": {
+    "actually_viewed_saved_source": true,
+    "identity_consistency": "face-crop comparison sheet checked: same fedora/hair/beard/suit across normal+sad+serious+smile+surprise",
+    "alignment": "all variants normalized with the SAME bbox transform as the existing normal portrait so expressions do not shift",
+    "preview": "896x1200 RGBA, proportional fit only",
+    "face_icon": "160x160 RGBA machine crop from the existing normal portrait",
+    "limits": [
+      "Candidates only; not installed in production"
+    ]
+  }
+}

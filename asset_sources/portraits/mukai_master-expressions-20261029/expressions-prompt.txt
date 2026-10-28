@@ -1,0 +1,9 @@
+Base design (DO NOT redesign): asset_sources/portraits/mukai_master-remaster-v1/normal-source.png - Mukai, 48-year-old Japanese cafe owner: dark brown fedora pulled low, short dark hair with salt-and-pepper temples, trimmed full beard with grey mixed in, espresso-brown tailored three-piece suit with charcoal waistcoat, white open-collar shirt, white pocket square, brown leather shoes.
+
+Task: using that exact portrait as the identity and outfit reference, generate the four remaining standard expression variants as separate single full-body portraits, changing ONLY the facial expression (and at most a minimal matching shift of head angle):
+1. sad - gentle melancholic concern, brows slightly raised inward, mouth a restrained flat line; still composed and dandy, never tearful caricature.
+2. serious - focused shopkeeper gravity, narrower eyes under the fedora brim, mouth closed firm; the hard-boiled exterior at work.
+3. smile - his real warmth showing: a small, low-key, kind smile, eyes softened; restrained, not a grin.
+4. surprise - quietly startled: eyebrows up, eyes slightly wider, mouth barely parted; he stays dignified even when surprised (comic timing comes from the contrast).
+
+Hard constraints for every variant: same fedora, same hair and beard shape and grey placement, same suit/waistcoat/shirt/pocket square, same body proportions and standing pose family, no cigar/cigarette/smoking props, no hookah or hose, no text. Clean detailed anime VN illustration style matching the reference exactly, modest painterly shading, believable hands. Full body head to shoes, 8-10 percent transparent blank margin on ALL four sides, REAL TRANSPARENT EMPTY BACKGROUND: absolutely no black vignette, no light gradient, no floor shadow, no glow field, no painted backdrop. One character per image, no contact sheet. Canvas 1084x1451, RGBA.

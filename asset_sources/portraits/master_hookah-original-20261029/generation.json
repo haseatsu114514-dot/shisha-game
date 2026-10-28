@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-29",
+  "tool": "image_gen.imagegen (Codex A)",
+  "status": "new portrait candidate; not installed in production",
+  "character": "master_hookah",
+  "character_name": "王 煙楼",
+  "design_basis": "data/characters.json visual_concepts (58yo, long white hair, long white beard tied at end) + data/dialogue/ch4_main.json (golden robe at eve festival)",
+  "files": [
+    {
+      "path": "asset_sources/portraits/master_hookah-original-20261029/normal-source.png",
+      "bytes": 1372667,
+      "sha256": "9afd9e22db62e3eafcc0790ad83c39d196cbf3326a1fa7238f34bcdc91711aa9"
+    },
+    {
+      "path": "asset_sources/portraits/master_hookah-original-20261029/normal-preview.png",
+      "bytes": 746002,
+      "sha256": "1c1808ec3ac8bc7f2b4ae8827165e734449e26900c6737f86f04edef74b27339"
+    },
+    {
+      "path": "asset_sources/portraits/master_hookah-original-20261029/face-icon.png",
+      "bytes": 21853,
+      "sha256": "276b6582b03c2b78d0f9253216bb57a97ecee9bbb15f472b513a60d25aafdec4"
+    },
+    {
+      "path": "asset_sources/portraits/master_hookah-original-20261029/normal-prompt.txt",
+      "bytes": 1462,
+      "sha256": "288675001269a23611b74f123680e1c2491ddf4ee0344912f492c71e34c80717"
+    }
+  ],
+  "qa": {
+    "actually_viewed_saved_source": true,
+    "full_body_visible": true,
+    "alpha_present": true,
+    "preview": "896x1200 RGBA; subject fitted into 84% box on transparent canvas (scale/placement only, no repainting)",
+    "face_icon": "160x160 RGBA machine crop from normalized portrait; framing to be confirmed at adoption",
+    "limits": [
+      "Normal expression only; sad/serious/smile/surprise variants not yet generated",
+      "No runtime manifest or sprite installation"
+    ]
+  }
+}

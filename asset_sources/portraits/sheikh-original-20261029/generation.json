@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-29",
+  "tool": "image_gen.imagegen (Codex A)",
+  "status": "new portrait candidate; not installed in production",
+  "character": "sheikh",
+  "character_name": "シェイク・アル=ガリヤーン",
+  "design_basis": "data/characters.json (52yo UAE royal, white kandura + white ghutra) + data/dialogue/ch4_main.json",
+  "files": [
+    {
+      "path": "asset_sources/portraits/sheikh-original-20261029/normal-source.png",
+      "bytes": 1058572,
+      "sha256": "9993306c7e90c83337bee6dc20d5231a51edf30a8c788dba585fe7df5efac2b3"
+    },
+    {
+      "path": "asset_sources/portraits/sheikh-original-20261029/normal-preview.png",
+      "bytes": 574806,
+      "sha256": "47d6eed5a28a5b158eb730975206d7fd01b0d9288db7eb3bf69fc42b78cfb01d"
+    },
+    {
+      "path": "asset_sources/portraits/sheikh-original-20261029/face-icon.png",
+      "bytes": 23571,
+      "sha256": "7843bf1e1c4d5aa6916553a6f040eae07e62e3205fb60015358a788182e91183"
+    },
+    {
+      "path": "asset_sources/portraits/sheikh-original-20261029/normal-prompt.txt",
+      "bytes": 1435,
+      "sha256": "17a513fde7a0231b0f0b1e1f0953c6e44b618c71622e41049602621ba790bcef"
+    }
+  ],
+  "qa": {
+    "actually_viewed_saved_source": true,
+    "full_body_visible": true,
+    "alpha_present": true,
+    "preview": "896x1200 RGBA; subject fitted into 84% box on transparent canvas (scale/placement only, no repainting)",
+    "face_icon": "160x160 RGBA machine crop from normalized portrait; framing to be confirmed at adoption",
+    "limits": [
+      "Normal expression only; sad/serious/smile/surprise variants not yet generated",
+      "No runtime manifest or sprite installation"
+    ]
+  }
+}

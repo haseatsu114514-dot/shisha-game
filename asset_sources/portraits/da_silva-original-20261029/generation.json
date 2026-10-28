@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-29",
+  "tool": "image_gen.imagegen (Codex A)",
+  "status": "new portrait candidate; not installed in production",
+  "character": "da_silva",
+  "character_name": "ダ・シルヴァ太陽",
+  "design_basis": "data/characters.json visual_concepts (28yo Brazilian, tanned, dark curly hair, tropical shirt) / docs/setting_book/02_characters.md",
+  "files": [
+    {
+      "path": "asset_sources/portraits/da_silva-original-20261029/normal-source.png",
+      "bytes": 1003739,
+      "sha256": "2a6691295a959855d22eba5902dcf1dfc376f3ea6325613d6414f522c9b6f59a"
+    },
+    {
+      "path": "asset_sources/portraits/da_silva-original-20261029/normal-preview.png",
+      "bytes": 518415,
+      "sha256": "40650cfe904bebcf7fd27d3efb1257bf34d1655c32805e11fa6fbcb555565f71"
+    },
+    {
+      "path": "asset_sources/portraits/da_silva-original-20261029/face-icon.png",
+      "bytes": 23855,
+      "sha256": "5b07543c338acd794b622175bf3a218364ef184dac5ce2e1a016d3c0e60234e8"
+    },
+    {
+      "path": "asset_sources/portraits/da_silva-original-20261029/normal-prompt.txt",
+      "bytes": 1253,
+      "sha256": "f830aada7e1013e3fa4faa4d7c115f1069083a7ff2b99de84ddd97aeefa647c3"
+    }
+  ],
+  "qa": {
+    "actually_viewed_saved_source": true,
+    "full_body_visible": true,
+    "alpha_present": true,
+    "preview": "896x1200 RGBA; subject fitted into 84% box on transparent canvas (scale/placement only, no repainting)",
+    "face_icon": "160x160 RGBA machine crop from normalized portrait; framing to be confirmed at adoption",
+    "limits": [
+      "Normal expression only; sad/serious/smile/surprise variants not yet generated",
+      "No runtime manifest or sprite installation"
+    ]
+  }
+}

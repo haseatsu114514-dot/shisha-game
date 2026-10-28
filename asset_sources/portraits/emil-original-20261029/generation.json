@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-29",
+  "tool": "image_gen.imagegen (Codex A)",
+  "status": "new portrait candidate; not installed in production",
+  "character": "emil",
+  "character_name": "エミル・ユルマズ",
+  "design_basis": "data/characters.json visual_concepts (48yo Turkish ex-nargile craftsman, thick mustache, greying temples, vest + rolled sleeves) / docs/setting_book/02_characters.md",
+  "files": [
+    {
+      "path": "asset_sources/portraits/emil-original-20261029/normal-source.png",
+      "bytes": 745628,
+      "sha256": "b1d6e85af792e5fd0a059e65a03d73388c8ade4e0604002982776449587c9c16"
+    },
+    {
+      "path": "asset_sources/portraits/emil-original-20261029/normal-preview.png",
+      "bytes": 398584,
+      "sha256": "ebc224c87a8feff581ce68b1a0ecfa69441cebd742da6d276d57e0ca47c6397c"
+    },
+    {
+      "path": "asset_sources/portraits/emil-original-20261029/face-icon.png",
+      "bytes": 21274,
+      "sha256": "d86f8bf20e9d11dd7ba7224bfdc0e10e620e406ce2d99d0b6431d46627a02e8c"
+    },
+    {
+      "path": "asset_sources/portraits/emil-original-20261029/normal-prompt.txt",
+      "bytes": 1335,
+      "sha256": "b7748746f75c4bbb4fa883d16a3fa6ad99be1ef8a921e23c06fa90ba70a934fa"
+    }
+  ],
+  "qa": {
+    "actually_viewed_saved_source": true,
+    "full_body_visible": true,
+    "alpha_present": true,
+    "preview": "896x1200 RGBA; subject fitted into 84% box on transparent canvas (scale/placement only, no repainting)",
+    "face_icon": "160x160 RGBA machine crop from normalized portrait; framing to be confirmed at adoption",
+    "limits": [
+      "Normal expression only; sad/serious/smile/surprise variants not yet generated",
+      "No runtime manifest or sprite installation"
+    ]
+  }
+}
