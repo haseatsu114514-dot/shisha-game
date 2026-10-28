@@ -129,6 +129,7 @@
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
@@ -796,6 +797,24 @@
       ],
       "run": [
         "node remake/test/browser/ch4_full_flow.mjs"
+      ]
+    },
+    {
+      "id": "ch5-full-flow",
+      "title": "Chapter 5 full playthrough on one save",
+      "kind": "browser",
+      "weight": 2.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch5*.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch1.js",
+        "data/dialogue/ch5_main.json",
+        "data/dialogue/ending.json",
+        "remake/test/browser/ch5_full_flow.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_full_flow.mjs"
       ]
     },
     {
