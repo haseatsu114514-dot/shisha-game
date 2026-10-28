@@ -789,6 +789,26 @@
       ]
     },
     {
+      "id": "ch3-full-flow",
+      "title": "Chapter 3 full playthrough on one save",
+      "kind": "browser",
+      "weight": 3.5,
+      "timeout": 15,
+      "paths": [
+        "remake/index.html",
+        "remake/js/chapters/ch3*.js",
+        "remake/js/craft/**",
+        "remake/js/core/state.js",
+        "remake/js/scenes/saves.js",
+        "data/dialogue/ch3_main.json",
+        "data/characters.json",
+        "remake/test/browser/ch3_full_flow.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch3_full_flow.mjs"
+      ]
+    },
+    {
       "id": "ch2-followups",
       "title": "Chapter 2 browser suite ch2_followups",
       "kind": "browser",
