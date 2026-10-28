@@ -195,6 +195,17 @@ const STRIPS = [
   ["seven", "replay", "smoke", "cherry", "smoke", "replay", "bell", "smoke", "replay", "bar", "smoke", "replay", "smoke", "pakki", "replay", "smoke", "cherry", "smoke", "replay", "smoke", "smoke"],
   ["replay", "smoke", "seven", "bar", "smoke", "replay", "cherry", "smoke", "replay", "bell", "smoke", "replay", "smoke", "seven", "smoke", "replay", "pakki", "smoke", "replay", "bar", "smoke"],
 ];
+// 当選済みの後告知だけで使う表示位置。抽選用の乱数・結果には触れない。
+export function reachStops(n) {
+  const spin = Number.isInteger(n) ? n : 0;
+  return STRIPS.map((strip, reel) => {
+    if (reel === 2) return strip.indexOf("pakki");
+    const candidates = [];
+    strip.forEach((sym, i) => { if (sym === "replay") candidates.push(i); });
+    return candidates[((spin % candidates.length) + candidates.length) % candidates.length];
+  });
+}
+
 function stripIdx(strip, sym, rng) {
   const cands = [];
   strip.forEach((s, i) => { if (s === sym) cands.push(i); });
@@ -673,23 +684,36 @@ async function presentSpin(r, fast) {
   const willPeka = PEKA.includes(r.role) || !!r.overlap;
   const tension = !fast && (willPeka || !!cued);
   const tensionMs = tension ? 560 : 0;
+  let pres = null;
+  if (!fast && !r.cued && !r.overlap && !r.premium && r.variant === "after" && (r.role === "reg" || r.role === "big")) {
+    const patterns = [{ id: "beat", weight: 50 }, { id: "sync", weight: 25 }, { id: "reach", weight: 25 }];
+    let seen = Array.isArray(state.reel.seenPres) ? state.reel.seenPres : [];
+    if (patterns.every(({ id }) => seen.includes(id))) seen = [];
+    pres = pickWeighted(Math.random, patterns.map(({ id, weight }) => ({
+      id, weight: weight * (seen.includes(id) ? 1 : 2),
+    })));
+    if (!seen.includes(pres)) seen.push(pres);
+    state.reel.seenPres = patterns.every(({ id }) => seen.includes(id)) ? [] : seen;
+  }
+  const shownStops = pres === "reach" ? reachStops(r.n) : r.stops;
   await sleep(spinMs);
   for (let i = 0; i < 3; i++) {
     await sleep(i === 0 ? 0 : gap + (i === 2 ? tensionMs : 0));
     if (!alive()) break;
     const s = ss[i];
     s.classList.remove("spinning");
-    s.style.transform = `translateY(${tyFor(r.stops[i])}px)`;
+    s.style.transform = `translateY(${tyFor(shownStops[i])}px)`;
     s.classList.add("land");
     setTimeout(() => s.classList.remove("land"), 240);
     if (!fast) SE.reelStop();
     if (tension && i === 1) widget.classList.add("tension");
     if (i === 2) widget.classList.remove("tension");
   }
-  await sleep(fast ? 60 : 200);
+  // 同期点灯とリーチ目は、第三停止からの待ちを afterStop だけで管理する。
+  if (pres !== "sync" && pres !== "reach") await sleep(fast ? 60 : 200);
   if (alive()) widget.classList.remove("tension", "cued", ...CUE_ORDER.map((c) => `cued-${c}`));
-  state.reel.shown = r.stops;
-  await afterStop(r, fast);
+  state.reel.shown = shownStops;
+  await afterStop(r, fast, pres);
   // 文字色予告（次ゲーム）: 止まったあとにパッキーが色付きの文字でつぶやく
   if (r.nextCue && !fast && alive()) {
     if (r.role !== "miss") await sleep(900);
@@ -739,7 +763,7 @@ const RARE_MISS = [
 ];
 const bonusName = (r) => (r.role === "big" || r.overlap === "big" ? "ビッグボーナス" : r.role === "rare" ? "プレミア" : "レギュラーボーナス");
 
-async function afterStop(r, fast) {
+async function afterStop(r, fast, pres = null) {
   switch (r.role) {
     case "miss":
       if (alive()) widget.classList.toggle("warm", r.ceilingRemain > 0 && r.ceilingRemain <= 3);
@@ -789,8 +813,8 @@ async function afterStop(r, fast) {
       return peka(r, fast, true, "ぷぷぷぷぷ！！");
     case "reg":
     case "big":
-      // 後告知: 止まったリールを一拍見せてから、ペカッ
-      await sleep(fast ? 0 : 420);
+      // 後告知: 同期点灯／リーチ目を見せる間／従来の一拍。
+      await sleep(fast ? 0 : pres === "sync" ? 40 : pres === "reach" ? 600 : 420);
       return peka(r, fast, false, r.ren ? pickFresh(REN_LINES, "ren") : pickFresh(WIN_LINES, "win"));
     default:
       announce(r);
@@ -921,6 +945,26 @@ async function alignBonus(isBig, line, zone, mode = "post") {
     cabinetParts(lamp, el("div.rw-machine.rc-reels", reels)));
   const board = el(`div.rc-board.${mode}`, [aim, machine, label]);
   const cut = el("div.reel-cutin.bonus", [board]);
+  // タップは今かかっている待ちだけを解決する。先押しは持ち越さない。
+  let advance = null, waitTimer = null;
+  const waitStop = (ms, onTap) => new Promise((resolve) => {
+    const finish = (tapped = false) => {
+      if (advance !== finish) return;
+      advance = null;
+      clearTimeout(waitTimer);
+      waitTimer = null;
+      if (tapped) onTap?.();
+      resolve();
+    };
+    advance = finish;
+    waitTimer = setTimeout(() => finish(), ms);
+  });
+  const tap = (event) => {
+    event.stopPropagation();
+    advance?.(true);
+  };
+  cut.style.pointerEvents = "auto";
+  cut.addEventListener("click", tap);
   layers.fx.append(cut);
   if (mode === "post") {
     machine.classList.add("lever-pull");
@@ -936,13 +980,13 @@ async function alignBonus(isBig, line, zone, mode = "post") {
       st.classList.add("land");
       SE.reelStop();
     };
-    await sleep(650); stop(0);
-    await sleep(420); stop(1);
+    await waitStop(650); stop(0);
+    await waitStop(420); stop(1);
     aim.textContent = "赤7・赤7……";
     board.classList.add("reach");
     SE.heartbeat();
-    await sleep(750); SE.heartbeat();
-    await sleep(750);
+    await waitStop(750); SE.heartbeat();
+    await waitStop(750);
     // 最後の右リール: 4コマ手前から、減速しながら止める
     const r3 = strips3[2];
     const r = STRIPS[2];
@@ -952,7 +996,10 @@ async function alignBonus(isBig, line, zone, mode = "post") {
     void r3.offsetWidth;
     r3.style.transition = "transform 1.25s cubic-bezier(0.1, 0.62, 0.16, 1)";
     r3.style.transform = `translateY(${bty(r, line[2])}px)`;
-    await sleep(1280);
+    await waitStop(1280, () => {
+      r3.style.transition = "none";
+      r3.style.transform = `translateY(${bty(r, line[2])}px)`;
+    });
     SE.reelStop();
     board.classList.remove("reach");
     board.classList.add("done", isBig ? "big" : "reg");
@@ -966,6 +1013,9 @@ async function alignBonus(isBig, line, zone, mode = "post") {
     cut.classList.add("out");
     await sleep(250);
   } finally {
+    advance = null;
+    clearTimeout(waitTimer);
+    cut.removeEventListener("click", tap);
     stopMirroring();
     cut.remove();
   }

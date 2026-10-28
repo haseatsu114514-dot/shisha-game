@@ -31,6 +31,23 @@ const core = modules.get(new URL("core/state.js", root).href).namespace;
 const plain = (x) => JSON.parse(JSON.stringify(x));
 const eq = (a, b, msg) => assert.deepEqual(plain(a), plain(b), msg);
 
+// 専用リーチ目は実配列の中段位置。見本の n=-1 も有効で、決定的に選べる。
+const stripsBefore = JSON.stringify(reel.core.STRIPS);
+for (const n of [-1, 0, 1, 5, 20, 21, 127, 10000]) {
+  const stops = reel.reachStops(n);
+  assert.equal(stops.length, 3);
+  stops.forEach((index, i) => {
+    assert(Number.isInteger(index) && index >= 0 && index < reel.core.STRIPS[i].length, `reach index: n=${n}, reel=${i}`);
+  });
+  eq(stops.map((index, i) => reel.core.STRIPS[i][index]), ["replay", "replay", "pakki"]);
+  eq(reel.reachStops(n), stops, `reach is deterministic: n=${n}`);
+}
+assert.equal(JSON.stringify(reel.core.STRIPS), stripsBefore, "リーチ目生成は配列を変更しない");
+for (let seed = 1; seed <= 128; seed++) {
+  const stops = reel.core.stopsFor("miss", reel.core.mulberry32(seed));
+  assert.equal(reel.core.STRIPS[0][stops[0]], "smoke", "ハズレの左は煙でリーチ目と区別できる");
+}
+
 // 偶奇の台詞はオーナー承認の文言だけ。分類ごとの出やすさは従来どおり
 const kind = (id) => reel.SETTING_HINTS.find((h) => h.id === id);
 eq(kind("odd").lines, ["いち、さん、ご！ 今日はこのリズムが好き♪", "今日は奇数が気になるな〜"]);
