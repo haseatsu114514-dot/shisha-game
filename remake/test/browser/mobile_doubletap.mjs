@@ -22,7 +22,9 @@ const origin = `http://127.0.0.1:${server.address().port}`;
 let browser;
 const results = [];
 try {
-  browser = await chromium.launch({ headless: true, chromiumSandbox: true,
+  // Launch with the Playwright default like support.mjs: opting into chromiumSandbox
+  // fails with "No usable sandbox!" on AppArmor-restricted CI runners.
+  browser = await chromium.launch({ headless: true,
     ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}) });
   for (const mobile of [false, true]) {
     const context = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: mobile, hasTouch: mobile });
