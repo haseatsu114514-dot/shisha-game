@@ -284,6 +284,10 @@ export function setBenchTemperature(cs, temp) {
 export function setBenchDraw(cs, kind, duration = 0) {
   if (bench?.cs === cs) bench.worker.setDraw(kind, duration);
 }
+/** 確定した水量を左の作業風景のボトル内部の水位へ反映する。 */
+export function setBenchWater(cs) {
+  if (bench?.cs === cs && bench.root.isConnected) bench.worker.setWater(cs?.water);
+}
 /** 穴あけ側が確定した実穴の座標だけを、左の手元へ渡す。 */
 export function setBenchHoleAction(cs, event) {
   if (bench?.cs === cs && bench.root.isConnected) bench.worker.punch(event);
