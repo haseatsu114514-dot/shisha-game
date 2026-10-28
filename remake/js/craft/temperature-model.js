@@ -103,6 +103,17 @@ export const MAKER_SPECS = Object.freeze({
   }),
 });
 
+/** フレーバーの明示メーカーを定義済みキーと照合する。 */
+export function flavorMakerProblems(items) {
+  return items.flatMap((f) => {
+    if (!Object.hasOwn(f, "maker")) return [{ id: f.id, reason: "missing maker" }];
+    if (typeof f.maker !== "string" || !Object.hasOwn(MAKER_SPECS, f.maker)) {
+      return [{ id: f.id, reason: `invalid maker: ${String(f.maker)}` }];
+    }
+    return [];
+  });
+}
+
 export const EQUIP_WIDTH_FACTORS = Object.freeze({
   bowl: Object.freeze({
     silicone_bowl: 1.00, hagal_80beat: 1.08, nightside_premier_hagal: 1.12,
