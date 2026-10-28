@@ -33,7 +33,8 @@ const server = http.createServer(async (req, res) => {
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
-const browser = await chromium.launch({ headless: true, chromiumSandbox: true,
+const browser = await chromium.launch({ headless: true, // CIランナーではChromiumサンドボックスが使えない（headless shell / 通常Chromiumとも起動失敗を実測）。他テストと同じPlaywright既定（sandboxなし）に合わせる。
+
   ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
 const results = [];
 try {
