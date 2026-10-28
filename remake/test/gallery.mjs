@@ -54,7 +54,7 @@ const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", 
   assert.equal(loaded, core.state);
   assert.deepEqual([loaded.day, loaded.money, loaded.stamina], [2, 12345, 61]);
   const kept = copy(g.readGalleryProgress());
-  assert.deepEqual(kept, { clearedChapters: [1], keepsakes: ["minto_first_cheki"], purikura: [photo] },
+  assert.deepEqual(kept, { clearedChapters: [1], keepsakes: ["minto_first_cheki"], purikura: [photo], routeRecords: {} },
     "older-slot LOAD preserves legacy autosave-only photos and explicit clear before overwrite");
   assert.deepEqual([storage.get(slot), storage.get(otherSlot)], slotsBefore, "manual slots are read-only");
   assert.equal(storage.get("suien_remake_gallery"), '["cg_minto_cheki"]', "seen CGs stay untouched");
@@ -71,11 +71,11 @@ const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", 
   assert.deepEqual([written.day, written.money, written.stamina], [2, 12345, 61],
     "valid LOAD must replace the old autosave even if legacy collection import throws");
   assert.equal(storage.get(slot), JSON.stringify(earlier), "malformed legacy import cannot rewrite the source slot");
-  assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [] },
+  assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {} },
     "malformed collection IDs cannot manufacture unlocks");
   seed(); storage.set(core.SAVE_KEY, "{broken");
   assert.doesNotThrow(() => core.loadFromSlot(slot));
-  assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [] },
+  assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {} },
     "corrupt autosave and chapter/day alone cannot manufacture unlocks");
   seed(); failWrites = true;
   assert.doesNotThrow(() => core.loadFromSlot(slot));
@@ -154,7 +154,7 @@ assert(entries.find(e => e.id === comic.id).unlocked);
 assert(!entries.find(e => e.id === movie.id).unlocked, "a later-chapter movie remains locked");
 assert.equal(entries.filter(e => ["comic", "movie"].includes(e.kind)).length, 2, "candidates and invalid entries never enter the collection");
 assert.equal(entries.filter(e => e.photo).length, 1);
-const empty = { clearedChapters: [], keepsakes: [], purikura: [] };
+const empty = { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {} };
 assert(!galleryEntries(manifest, { items: [comic] }, empty, new Set()).find(e => e.id === comic.id).unlocked);
 // 採用シールだけを命名・解放し、旧manifestや既見記録に候補が残っていても隠す。
 const actualManifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));

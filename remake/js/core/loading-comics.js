@@ -1,3 +1,5 @@
+import { imgFileUrl } from "./img-file.js";
+
 // Approved for loading screens by the owner's request to use existing repository comics.
 // The source sheet stays intact; regions display only episode 25, left -> right.
 //
@@ -11,7 +13,8 @@
 //   }
 // 1コマの作画サイズは 1920x1080 基準で 860x500（43:25）固定。原画が 43:25 以外でも、
 // 表示枠は 43:25 のままレターボックスで収めるので、作画は 43:25 を推奨する。
-const src = "img/loading/adam-chaos.webp";
+const src = imgFileUrl("loading/adam-chaos.webp");
+const batch1Src = imgFileUrl("loading/loading-batch1.webp");
 export const LOADING_COMICS = [{
   id: "adam-menu-25",
   title: "メニュー改訂",
@@ -24,5 +27,18 @@ export const LOADING_COMICS = [{
       region: { x: 14, y: 110, width: 486, height: 307, sourceWidth: 1086, sourceHeight: 1448 } },
     { src, alt: "赤と緑のリンゴで埋まった宇宙。アダム「選び放題だ。」はじめ「どこが。」",
       region: { x: 510, y: 110, width: 565, height: 307, sourceWidth: 1086, sourceHeight: 1448 } },
+  ],
+}, {
+  id: "sumi-charcoal-ear",
+  title: "炭の耳",
+  contexts: ["craft"],
+  minChapter: 1,
+  note: "番外編のギャグ漫画です。左から右へお読みください。",
+  caption: "番外編のギャグ漫画。スミさんは炭の熾き具合を、音と色で見分ける。",
+  panels: [
+    { src: batch1Src, alt: "はじめ「炭の温度って、何で測るんですか？」。作業台のボウルにスミさんが耳を寄せている。",
+      region: { x: 22, y: 135, width: 510, height: 399, sourceWidth: 1086, sourceHeight: 1448 } },
+    { src: batch1Src, alt: "炭箱の中で小さな炭たちが一斉にざわめき、スミさんが真剣にメモを取る。はじめ「議事録とってる！？」",
+      region: { x: 545, y: 135, width: 520, height: 399, sourceWidth: 1086, sourceHeight: 1448 } },
   ],
 }];
