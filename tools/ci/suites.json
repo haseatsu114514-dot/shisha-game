@@ -2858,7 +2858,10 @@
         "remake/js/chapters/ch2-city-data.js",
         "remake/js/chapters/ch2-outings.js",
         "remake/test/ch2_spot_images.mjs",
-        "assets/backgrounds/**"
+        "assets/backgrounds/bg_ch2_*_entry.webp",
+        "assets/backgrounds/bg_widehanga_map_*.webp",
+        "assets/backgrounds/bg_widehanga_station_day.webp",
+        "assets/backgrounds/bg_yuzugaya_*.webp"
       ],
       "run": ["node remake/test/ch2_spot_images.mjs"]
     }
