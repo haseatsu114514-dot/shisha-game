@@ -4,7 +4,7 @@ import { el, yen } from "../core/util.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { venueHost } from "../core/venue-host.js";
 import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
-import { loadTrpgLibrary, runTrpg } from "./index.js";
+import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { displayName, portraitUrl, portraitTop, sceneUrl } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
 
@@ -176,7 +176,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       } else if (!owned) {
         copy.append(el("p", { text: `シナリオ本 ${yen(book.price)} · 買い物は時間を使いません` }),
           button("本棚に加える · " + yen(book.price), "trpg-buy-" + book.id, () => {
-            if (buyTrpgBook(getState(), catalog, book.id)) { save(); render("新しいTRPGが、本棚に加わりました。"); }
+            if (buyTrpgBook(getState(), catalog, book.id)) { save(); warmOwnedScenarios(); render("新しいTRPGが、本棚に加わりました。"); }
             else render("本棚に加えられませんでした。所持金と入荷状況を確認してください。");
           }, readOnly || spendableMoney(state) < book.price));
       } else {
@@ -215,11 +215,23 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     }
   }
 
+  const warmed = new Set();
+  // 所持している本の素材は、本棚の表示を待たせずに裏で先読みする（卓の開始は同期のまま）。
+  function warmOwnedScenarios() {
+    const state = getState();
+    if (readOnly || !resources || !state?.trpg?.owned) return;
+    for (const scenario of resources.scenarios) {
+      if (!state.trpg.owned.includes(scenario.id) || warmed.has(scenario.id)) continue;
+      warmed.add(scenario.id);
+      preloadTrpgAssets(resources, scenario, { signal: abort.signal }).catch(() => {});
+    }
+  }
+
   async function load() {
     if (disposed) return;
     host.replaceChildren(el("div.trpg-loading", [el("p", { text: "本棚と、仲間の予定を確認しています…" }),
       button(closeLabel, "trpg-campaign-close", close)]));
-    try { resources = suppliedResources || await loadTrpgLibrary({ signal: abort.signal }); render(); }
+    try { resources = suppliedResources || await loadTrpgLibrary({ signal: abort.signal, preloadAssets: false }); render(); warmOwnedScenarios(); }
     catch {
       if (disposed) return;
       host.replaceChildren(el("div.trpg-loading", [el("p", { role: "status", text: "本棚を読み込めませんでした。もう一度お試しください。" }),

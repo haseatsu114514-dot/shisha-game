@@ -132,4 +132,65 @@ function recoveryHarness() {
   assert.deepEqual(h.events, [], 'Successful resume needs no recovery screen or reload');
 }
 
+// R07: 実際のUIヘルパーとVN通知を、小さなDOMポートで接続して検証する。
+{
+  const uiSource = readFileSync(new URL('../js/core/ui.js', import.meta.url), 'utf8');
+  const engineSource = readFileSync(new URL('../js/vn/engine.js', import.meta.url), 'utf8');
+  const uiStart = uiSource.indexOf('export function loadingNotice(');
+  const uiEnd = uiSource.indexOf('\n// ステ上昇などのバナー', uiStart);
+  const vnStart = engineSource.indexOf('function waitSceneAssets(');
+  const vnEnd = engineSource.indexOf('\n/**', vnStart);
+  assert(uiStart >= 0 && uiEnd > uiStart && vnStart >= 0 && vnEnd > vnStart);
+  const nodes = new Set(), added = [];
+  const fx = { append(node) { nodes.add(node); added.push(node); } };
+  const el = (spec, attrs) => ({ spec, ...attrs, remove() { nodes.delete(this); } });
+  const context = vm.createContext({ withLoadingNotice, layers: { fx }, el,
+    running: {}, setTimeout, clearTimeout });
+  vm.runInContext(uiSource.slice(uiStart, uiEnd).replaceAll('export ', '')
+    + '\n' + engineSource.slice(vnStart, vnEnd), context);
+  const wait = context.withScenePreparation;
+  const pause = () => new Promise(resolve => setTimeout(resolve, 550));
+
+  assert.equal(await wait(Promise.resolve('fast')), 'fast');
+  await pause();
+  assert.equal(added.length, 0, 'Fast preparation must never append a notice');
+
+  const pending = defer();
+  const slow = wait(pending.promise);
+  await pause();
+  assert.equal(nodes.size, 1);
+  assert.equal([...nodes][0].dataset.test, 'module-loading');
+  pending.resolve('prepared');
+  assert.equal(await slow, 'prepared');
+  assert.equal(nodes.size, 0, 'Remove before the caller can start VN');
+
+  // 同じcallerが次にVNの素材を待っても、前段通知が重ならない。
+  const vnPending = defer();
+  const vnWait = context.waitSceneAssets(vnPending.promise);
+  await pause();
+  assert.equal(nodes.size, 1);
+  assert.equal([...nodes][0].dataset.test, 'vn-loading');
+  vnPending.resolve();
+  await vnWait;
+  assert.equal(nodes.size, 0);
+
+  const failed = defer();
+  const failure = wait(failed.promise);
+  const failureCheck = assert.rejects(failure, /image failure/);
+  await pause();
+  assert.equal(nodes.size, 1);
+  failed.reject(new Error('image failure'));
+  await failureCheck;
+  assert.equal(nodes.size, 0, 'Reject must remove the notice');
+
+  // imageReadyの時間切れはrejectではなくfalse。値と分岐を維持する。
+  const timed = defer();
+  const timeout = wait(timed.promise);
+  await pause();
+  assert.equal(nodes.size, 1);
+  timed.resolve(false);
+  assert.equal(await timeout, false);
+  assert.equal(nodes.size, 0, 'False timeout result must remove the notice');
+}
+
 console.log('module loading: PASS (delay suppress/show/hide, failure cleanup, retry, single-flight, resume recovery navigation)');
