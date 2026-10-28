@@ -99,13 +99,16 @@ await suite('ch1-feedback', async check => {
       });
       await page.locator('[data-test="mix-plus-mint"]').waitFor();
       assert.equal(await page.locator('.mix-temperature').getAttribute('data-selected'), 'false');
+      // 配合の温度計は共通の縦型温度計（thermometer.js の帯プレビュー）へ移行済み（#703, 4137635de）。
+      // 帯の中心は dataset の idealLow/idealHigh の中点。表示仕様の詳細は mix_temperature.mjs が検証する。
+      // ここでは入力した同じイベント内で帯が即時に追随すること（フレーム・タイマーを挟まない）を見る。
+      // チュートリアルではプレビュー自体は隠れるが、帯の状態は同じ経路で更新される。
       const immediate = await page.evaluate(() => {
         const gauge = document.querySelector('.mix-temperature');
-        const sample = () => ({ selected: gauge.dataset.selected, center: Number(gauge.dataset.center),
-          left: gauge.querySelector('.mix-thermal-center').style.left,
-          hidden: gauge.querySelector('.mix-thermal-ideal').hidden,
-          text: document.querySelector('.mix-temperature-legend').textContent,
-          transition: getComputedStyle(gauge.querySelector('.mix-thermal-center')).transitionDuration });
+        const sample = () => ({ selected: gauge.dataset.selected,
+          center: (Number(gauge.dataset.idealLow) + Number(gauge.dataset.idealHigh)) / 2,
+          zoneHidden: gauge.querySelector('.thermo-zone').hidden,
+          text: document.querySelector('.mix-temperature-legend').textContent });
         document.querySelector('[data-test="mix-plus-mint"]').click(); const mint = sample();
         document.querySelector('[data-test="mix-plus-double_apple"]').click(); const blend = sample();
         document.querySelector('[data-test="mix-minus-mint"]').click(); const apple = sample();
@@ -114,14 +117,13 @@ await suite('ch1-feedback', async check => {
         return { mint, blend, apple, empty };
       });
       for (const kind of ['mint', 'blend', 'apple']) {
-        const s = immediate[kind]; assert.equal(s.selected, 'true'); assert.equal(s.hidden, false);
-        assert.equal(s.transition, '0s'); assert.match(s.text, /適温.*最適温/);
-        assert(Math.abs(parseFloat(s.left) / 100 - s.center) < 1e-8);
+        const s = immediate[kind]; assert.equal(s.selected, 'true'); assert.equal(s.zoneHidden, false);
+        assert.match(s.text, /適温|おいしい/); assert(!/未選択/.test(s.text));
       }
       assert(immediate.mint.center > immediate.blend.center && immediate.blend.center > immediate.apple.center);
-      assert.equal(immediate.empty.selected, 'false'); assert(immediate.empty.hidden); assert.match(immediate.empty.text, /未選択/);
+      assert.equal(immediate.empty.selected, 'false'); assert(immediate.empty.zoneHidden); assert.match(immediate.empty.text, /未選択/);
       await tap(page, '[data-test="mix-plus-mint"]', touch);
-      await assertFits(page, '.mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
+      await assertFits(page, '[data-test="mix-ok"]');
       await page.screenshot({ path: `${shots}/${name}-immediate-mix.png` });
     }, options);
     await check(`${name}-single-mint-at-home`, async page => {
@@ -143,7 +145,9 @@ await suite('ch1-feedback', async check => {
       await page.evaluate(() => F.running);
       const result = await page.evaluate(() => ({ lines: F.vn.backlog().map(l => l.text), s: F.core.state,
         saved: JSON.parse(localStorage.getItem(F.core.SAVE_KEY)) }));
-      assert(result.lines.some(t => /美味しい/.test(t))); assert(!result.lines.some(t => /イマイチ/.test(t)));
+      // #1081 D07（7b51a7bd0）: 家シーシャの感想は出来の評価（美味しい／イマイチ）ではなく、
+      // 銘柄ごとの気づきに変わった。ミント単体ではミントの気づきが出て、旧い評価文は出ない。
+      assert(result.lines.some(t => /冴えのある清涼感/.test(t))); assert(!result.lines.some(t => /イマイチ|美味しい/.test(t)));
       assert.equal(result.s.flavorStock.mint, 38); assert.equal(result.s.stamina, 56);
       assert.equal(result.s.slot, 0); assert.equal(result.saved.flavorStock.mint, 38);
     }, options);

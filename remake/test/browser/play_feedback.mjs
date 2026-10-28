@@ -85,14 +85,24 @@ await suite('play-feedback', async check => {
           width: parseFloat(getComputedStyle(n).width), inStage: b.right <= innerWidth && b.bottom <= innerHeight };
       });
       assert(geometry.info > geometry.pins); assert.equal(geometry.width, 270); assert(geometry.inStage);
-      // ピンを説明の下へ置き、重なり位置の実ヒットテストでも説明が手前か確認。
-      assert(await page.evaluate(() => {
+      // #1081 J08（699d48310）: 説明パネルは見た目だけ前面に置き、余白のクリックは背後のピンへ
+      // 素通りさせる（操作を奪わない）。クリックを受けるのはパネル内のボタンだけ。
+      // ピンをパネルの余白へ重ね、実ヒットテストでピンが押せて、ボタンも押せることを確認する。
+      const hit = await page.evaluate(() => {
         const info = document.querySelector('.map-info'), pin = document.querySelector('[data-spot="rest"]');
         const b = info.getBoundingClientRect(), stage = document.querySelector('#stage').getBoundingClientRect();
-        pin.style.left = `${(b.x + 40 - stage.x) * 1280 / stage.width}px`;
-        pin.style.top = `${(b.y + 40 - stage.y) * 720 / stage.height}px`;
-        return !!document.elementFromPoint(b.x + 40, b.y + 40)?.closest('.map-info');
-      }));
+        pin.style.left = `${(b.x + 70 - stage.x) * 1280 / stage.width}px`;
+        pin.style.top = `${(b.y + 100 - stage.y) * 720 / stage.height}px`;
+        const r = pin.getBoundingClientRect();
+        const atPin = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        const goBtn = document.querySelector('[data-test="map-go"]');
+        const gb = goBtn.getBoundingClientRect();
+        const atGo = document.elementFromPoint(gb.x + gb.width / 2, gb.y + gb.height / 2);
+        return { pinHit: !!atPin?.closest('[data-spot="rest"]'), infoHit: !!atPin?.closest('.map-info'),
+          goHit: !!atGo?.closest('[data-test="map-go"]') };
+      });
+      assert(hit.pinHit && !hit.infoHit, 'パネルの余白に重なったピンはパネル越しに押せる');
+      assert(hit.goHit, 'パネル内のボタンはクリックを受ける');
       await page.evaluate(() => { F.map.interruptMap(null); F.core.state.owned.push(F.rig.SUMI_RIG); F.openMap(); });
       await page.locator('.map:not(.done)').waitFor(); await press(page, '[data-spot="rest"]');
       assert.equal(await page.locator('[data-test="map-home-practice"]').count(), 0, '台を持っていても家練習はない');
