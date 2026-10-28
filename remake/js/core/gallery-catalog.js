@@ -63,7 +63,7 @@ export function galleryEntries(manifest, catalog, progress, seen) {
   }));
   progress.purikura.forEach(p => entries.push({
     id: purikuraId(p), kind: "purikura", photo: p, unlocked: true,
-    title: "第" + p.chapter + "章・DAY" + p.day + (p.slot === 0 ? " 昼" : " 夜") + "のプリクラ",
+    title: "第" + p.chapter + "章・DAY" + (p.chapterDay ?? p.day) + (p.slot === 0 ? " 昼" : " 夜") + "のプリクラ",
   }));
   const used = new Set(entries.map(e => e.id));
   for (const item of Array.isArray(catalog?.items) ? catalog.items : []) {

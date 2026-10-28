@@ -71,13 +71,20 @@ function defer(cs, fn, delay) {
   timers.add(timer);
 }
 
+/** 章別の文面節（broadcast.json の chapter1/2/3）。無い章は null */
+const chapterSection = (cs) => DB.broadcast?.[`chapter${cs?.chapter}`] || null;
+
+/** 反応プールは共通分へ章別の追加分をマージする（章の空気だけ少し変える） */
+const nicoPool = (cs, kind) => [
+  ...(DB.broadcast?.nico?.[kind] || []),
+  ...(chapterSection(cs)?.nico?.[kind] || []),
+];
+
 /** 同じ種類のコメントを n 本、少しずつずらして流す */
 export function burst(cs, kind, n = null) {
-  const pool = cs?.chapter === 3 && kind === "rival"
-    ? DB.broadcast?.chapter3?.rivalComments || []
-    : cs?.chapter === 2 && kind === "rival"
-    ? ["あげはの一台、気になる", "神崎選手、手が落ち着いてる", "REI選手も仕上げてる", "4人とも型が違って面白い"]
-    : DB.broadcast?.nico?.[kind] || [];
+  const pool = kind === "rival"
+    ? chapterSection(cs)?.rivalComments || DB.broadcast?.nico?.rival || []
+    : nicoPool(cs, kind);
   if (!live(cs) || !pool.length) return;
   n = n ?? (kind === "perfect" ? 3 : 2);
   const cls = ["perfect", "miss", "rival"].includes(kind) ? kind : "";
@@ -111,7 +118,7 @@ export function completed(cs, step, score) {
   const genericKind = kind === "great" ? "perfect" : kind;
   const cls = genericKind;
   const specific = DB.broadcast?.completion?.[step]?.[kind] || [];
-  const generic = DB.broadcast?.nico?.[genericKind] || [];
+  const generic = nicoPool(cs, genericKind);
   // 工程に触れた視聴者コメント2本を先頭に、短い歓声3本を続けて数を増やす。
   // 以前の「【炭焼き】…」のような機械的な工程ラベルは付けない（コメント自体が工程に触れている）。
   const lines = specific.length
