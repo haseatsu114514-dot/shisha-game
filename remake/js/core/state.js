@@ -120,9 +120,32 @@ function migrateSamechanIdentity(value) {
 
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
+  // 配列など、状態として解釈できない形は移行せず読み込み不可にする。
+  if (!s || typeof s !== "object" || Array.isArray(s)) return null;
   const oldSchema = Number(s.schema) || 0;
   // 未来版は解釈・再保存せず、保存元とプレイ中の状態を保ったまま読込失敗にする。
   if (oldSchema > SCHEMA) return null;
+  // 欠落キーの補完は「キーが無い場合」だけを見るため、null や型の違う値が残ると
+  // 後段の移行処理が例外で落ちる。新規の形と突き合わせ、型の合わない値は既定値へ戻す。
+  // （解釈できる部分はそのまま進め、解釈できない部分だけを無効化する）
+  const fresh = newState();
+  for (const k of Object.keys(fresh)) {
+    if (!(k in s)) continue;
+    const def = fresh[k];
+    if (def === null) continue; // null が正規の値（restDay・pendingInvite 等）は個別処理で検証する
+    if (Array.isArray(def)) {
+      if (!Array.isArray(s[k])) s[k] = def;
+    } else if (typeof def === "object") {
+      if (!s[k] || typeof s[k] !== "object" || Array.isArray(s[k])) s[k] = def;
+    } else if (typeof s[k] !== typeof def) {
+      s[k] = def;
+    }
+  }
+  // 能力値の中身が数値でない場合も、表示や計算で NaN が広がらないよう既定値へ戻す。
+  for (const key of STAT_KEYS) {
+    if (s.stats && !Number.isFinite(s.stats[key])) s.stats[key] = fresh.stats[key];
+    if (s.statsAtChapterStart && !Number.isFinite(s.statsAtChapterStart[key])) s.statsAtChapterStart[key] = fresh.statsAtChapterStart[key];
+  }
   if (oldSchema < 13) {
     s = migrateSamechanIdentity(s);
     for (const key of ["contacts", "lovers", "limeRead", "loverEventsSeen", "relationshipMemories"]) {
@@ -194,6 +217,7 @@ function migrate(s) {
       }
     }
   }
+  if (s.pendingInvite && (typeof s.pendingInvite !== "object" || Array.isArray(s.pendingInvite))) s.pendingInvite = null;
   if (s.pendingInvite && typeof s.pendingInvite === "object") {
     const inv = s.pendingInvite;
     const candidates = [...s.inbox].reverse().filter((i) => i.msg.sender === inv.sender && i.msg.accept_event === inv.event);
@@ -242,12 +266,14 @@ function migrate(s) {
       .filter(([id, date]) => id && !["sumi", "naru"].includes(id) && clubDate(date)
         && (date.chapter > founded.chapter || date.chapter === founded.chapter && date.day >= founded.day))) : {} },
   };
-  const fresh = newState();
   for (const k of Object.keys(fresh)) if (!(k in s)) s[k] = fresh[k];
   // 旧/現行セーブで欠落した上司の連絡先だけを補い、交流やひよりの読了は推測しない。
   if (!Array.isArray(s.contacts)) s.contacts = [];
   if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
   s.reel = { ...fresh.reel, ...s.reel };
+  // reel の中身に null が残ると、<10 の導入判定や後段の演出で落ちる。形だけ先にそろえる。
+  if (!Array.isArray(s.reel.pending)) s.reel.pending = [];
+  if (!s.reel.note || typeof s.reel.note !== "object" || Array.isArray(s.reel.note)) s.reel.note = {};
   s.keepsakes = [...new Set((Array.isArray(s.keepsakes) ? s.keepsakes : []).filter((id) => typeof id === "string"))];
   if (oldSchema < 10) {
     s.reel.installed = !!(s.reel.introDone || s.reel.count || s.reel.pending.length || s.spotVisits?.c_station);
@@ -339,7 +365,10 @@ export function peekSave() {
 
 export function load() {
   const s = peekSave();
-  const migrated = s ? migrate(s) : null;
+  if (!s) return null;
+  // 移行で想定外の例外が出ても、タイトルやブートを巻き込まず読み込み失敗にする。
+  let migrated = null;
+  try { migrated = migrate(s); } catch { migrated = null; }
   return migrated ? setState(migrated) : null;
 }
 
@@ -390,7 +419,9 @@ export function saveToSlot(key) {
 export function loadFromSlot(key) {
   const s = readSlot(key);
   if (!s) return null;
-  const migrated = migrate(s);
+  // 移行で想定外の例外が出ても、進行中の状態と保存元を保ったまま読み込み失敗にする。
+  let migrated = null;
+  try { migrated = migrate(s); } catch { migrated = null; }
   if (!migrated) return null;
   const previous = state;
   setState(migrated);
