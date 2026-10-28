@@ -550,7 +550,24 @@ function phoneShell({ time, title }) {
   // gen: 画面（一覧⇄トーク）を切り替えるたびに進める。古い画面の続き（吹き出し）が新しい画面に混ざらないように
   const ui = { header, chat, actions, phone, open: true, gen: 0, lastSide: null, cancel: null };
   ui.live = (g) => ui.open && ui.gen === g;
-  ui.scroll = () => { chat.scrollTop = chat.scrollHeight; };
+  // 履歴の一括描画中はスクロールを保留し、最後に1回だけ実行する（scrollHeight の連続参照による強制リフローを避ける）。
+  let scrollHold = 0;
+  let scrollPending = false;
+  ui.scroll = () => {
+    if (scrollHold) { scrollPending = true; return; }
+    chat.scrollTop = chat.scrollHeight;
+  };
+  ui.withDeferredScroll = (draw) => {
+    scrollHold++;
+    try { return draw(); }
+    finally {
+      scrollHold--;
+      if (!scrollHold && scrollPending) {
+        scrollPending = false;
+        ui.scroll();
+      }
+    }
+  };
   /** 吹き出し。animate=false は履歴（既読）をまとめて描くとき */
   ui.bubble = async (raw, mine = false, sender = null, animate = true) => {
     const g = ui.gen;
@@ -770,18 +787,21 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
 
 /** 既読ぶんを履歴として一気に描く（日付の区切りつき） */
 function drawHistory(items, ui) {
-  let lastItem = null;
-  for (const it of items) {
-    if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
-    if (!it.read) continue;
-    for (const msg of it.msg.messages || []) ui.bubble(typeof msg === "string" ? msg : msg.text, false, accountOf(it), false);
-    const missed = missedInvitationNote(it);
-    if (missed) { ui.note(missed); continue; }
-    for (const l of it.log || []) {
-      if (l.note) ui.note(l.note);
-      else ui.bubble(l.text, l.me, accountOf(it), false);
+  // 同期的に描き切るため途中経過は描画されない。スクロールは最後の1回だけにまとめる。
+  ui.withDeferredScroll(() => {
+    let lastItem = null;
+    for (const it of items) {
+      if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
+      if (!it.read) continue;
+      for (const msg of it.msg.messages || []) ui.bubble(typeof msg === "string" ? msg : msg.text, false, accountOf(it), false);
+      const missed = missedInvitationNote(it);
+      if (missed) { ui.note(missed); continue; }
+      for (const l of it.log || []) {
+        if (l.note) ui.note(l.note);
+        else ui.bubble(l.text, l.me, accountOf(it), false);
+      }
     }
-  }
+  });
 }
 
 /**
