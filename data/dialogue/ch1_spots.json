@@ -34,7 +34,9 @@
           "choices": [
             {
               "text": "会員登録する（4,000円）",
-              "next": "register"
+              "next": "register",
+              "condition_type": "money",
+              "threshold": 4000
             },
             {
               "text": "やめておく",
@@ -45,6 +47,32 @@
       ],
       "branches": {
         "register": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_gym_member",
+            "next_true": "register_ok",
+            "next_false": "register_short"
+          }
+        ],
+        "register_short": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（アプリをダウンロードして、会員登録……あれ、決済エラー？）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "残高が足りず、初月分の4,000円が引き落とせなかった。会員登録は完了していない。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（お金を用意してから出直そう）"
+          }
+        ],
+        "register_ok": [
           {
             "speaker": "hajime",
             "face": "normal",
@@ -616,17 +644,17 @@
           {
             "speaker": "old_man",
             "face": "",
-            "text": "ケムリクサの焼き菓子みたいな香り、また吸いたいなあ"
+            "text": "KEMURIKUSAの焼き菓子みたいな香り、また吸いたいなあ"
           },
           {
             "speaker": "old_man",
             "face": "",
-            "text": "俺はエデンのダブルアップルだな。あれは忘れられん"
+            "text": "俺はEDENのダブルアップルだな。あれは忘れられん"
           },
           {
             "speaker": "old_man",
             "face": "",
-            "text": "ぺぱーみんともいいぞ。つい長居しちゃうんだよ"
+            "text": "PEPPERMINTもいいぞ。つい長居しちゃうんだよ"
           },
           {
             "speaker": "hajime",
@@ -876,12 +904,12 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "きみに１つだけ。炭の火入れは、見た目より0.5秒長く。それだけで味が変わるよ"
+          "text": "ダブルアップルの芯はアネトール。アニス由来で熱に強く、長く吸っても香りが崩れにくい"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（0.5秒……。覚えておこう）"
+          "text": "（アネトール……覚えておこう）"
         },
         {
           "speaker": "",

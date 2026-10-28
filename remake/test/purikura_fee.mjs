@@ -34,7 +34,7 @@ async function fixture() {
  ['vn/engine.js',fixed('vn/engine.js',{play:async(id,opts)=>{log.push({kind:'play',id,opts});return playImpl(id,opts);}})]
  ]);
  const modules=new Map(ports);
- const real=['chapters/ch2-purikura.js','core/keepsakes.js','core/travel-budget.js','core/purikura-photo.js','core/rules.js','core/ryuji-visit.js'];
+ const real=['chapters/ch2-purikura.js','core/keepsakes.js','core/travel-budget.js','core/purikura-photo.js','core/rules.js','core/ryuji-visit.js','core/chapter-clock.js'];
  for(const p of real)modules.set(p,new vm.SourceTextModule(read(p),{context:ctx,identifier:p}));
  const money=read('core/stats.js').match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)?.[0];assert(money,'actual addMoney source');
  modules.set('core/stats.js',new vm.SourceTextModule('import {state} from "./state.js";import {MAX_MONEY} from "./rules.js";import {emit} from "./bus.js";\n'+money,{context:ctx,identifier:'core/stats.js'}));
@@ -60,6 +60,13 @@ for(const money of [0,399,400,401])await check(`paid funds boundary ${money} bef
  assert.equal(f.log.filter(l=>l.id==='remake_ch2_purikura_solo').length,money>=400?1:0);
  assert.deepEqual({stamina:f.state.stamina,inventory:f.state.inventory,story:f.state.story,slot:f.state.slot},resources);
  if(money<400)assert.equal(f.saved.length,0);
+});
+await check('photo stores chapter DAY while retaining elapsed day and visit identity',async f=>{
+ f.state.day=17;f.state.met={};f.state.flags._ch2_day1={startDay:15};
+ assert.equal(await f.offer(),true);
+ const row=f.state.flags._ageha_purikura_history[0];
+ assert.equal(row.day,17);assert.equal(row.chapterDay,3);assert.equal(f.state.flags._ageha_purikura_offer,'2:17:0');
+ f.roundTrip();assert.equal(f.state.flags._ageha_purikura_history[0].chapterDay,3);
 });
 await check('shop visit cost and 200-yen return fare remain reserved',async f=>{
  f.state.flags._ch2_preparation_started=true;f.state.flags._ch2_region='widehanga';const spot={cost:3000};

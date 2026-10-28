@@ -7,7 +7,7 @@ import { suite, assertFits, storageSnapshot } from "./support.mjs";
 const evidence = process.env.COMPARISON_DIR || fileURLToPath(new URL("../../../docs/qa/ch2-main/", import.meta.url));
 fs.mkdirSync(evidence, { recursive: true });
 const test = name => `[data-test="ch2-main-${name}"]`;
-const preservedKeys = ["money", "stamina", "stats", "statXp", "owned", "equip", "flavors", "flavorStock", "affinity", "affinityCarry", "story", "visits", "visitedDay", "lovers", "loveLevel", "lovePts", "loveCarry", "loverSince", "lastDate", "loverEventsSeen", "relationshipMemories", "romance", "romanceChoices", "finales", "friendHangouts", "contacts", "inbox", "pendingInvite", "recipes", "keepsakes", "best", "reel", "kuji", "goods", "trpg", "notes", "usedBaito", "baitoRecent"];
+const preservedKeys = ["money", "stamina", "stats", "statXp", "owned", "equip", "flavors", "flavorStock", "affinity", "affinityCarry", "story", "visits", "visitedDay", "lovers", "loveLevel", "lovePts", "loveCarry", "loverSince", "lastDate", "loverEventsSeen", "relationshipMemories", "romance", "romanceChoices", "finales", "friendHangouts", "contacts", "inbox", "pendingInvite", "recipes", "keepsakes", "best", "reel", "kuji", "goods", "trpg", "usedBaito", "baitoRecent"];
 
 async function setup(page, { knownDoctor = true, knownRei = false, legacy = false, knownTrpg = true } = {}) {
   const before = await page.evaluate(async ({ knownDoctor, knownRei, legacy, knownTrpg }) => {
@@ -40,7 +40,7 @@ async function setup(page, { knownDoctor = true, knownRei = false, legacy = fals
     value.loveLevel = { tsumugi: 2, minto: 1 }; value.lovePts = { tsumugi: 3, minto: 1 }; value.loveCarry = { tsumugi: .5 };
     value.relationshipMemories = ['tsumugi_creature'];
     value.story = { naru: 3 }; value.visits = { eden: 4 }; value.visitedDay = { eden: 13 };
-    value.notes = { customer_memory: 2 }; value.usedBaito = ['regular_old']; value.recipes = { past_recipe: true };
+    value.usedBaito = ['regular_old']; value.recipes = { past_recipe: true };
     value.keepsakes = ['qa_keepsake']; value.goods = [{ name: 'qa_good', sell: 500 }];
     value.best = { heat: 2 }; value.reel.count = 9; value.reel.lastChapter = 1;
     value.trpg.owned = knownTrpg ? ['qa_book'] : [];
