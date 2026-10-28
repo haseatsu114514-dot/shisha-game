@@ -60,18 +60,22 @@
 @keyframes loading-bar-sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
 @keyframes loading-proceed-pulse { 0%, 100% { opacity: .5; } 50% { opacity: .95; } }
 
-/* Phone portrait: stack the two panels (full-width each) so bubble text is larger than side-by-side.
-   The game canvas stays 1280x720, so the stacked column is sized to fit that height without clipping.
-   (The game still asks phones to rotate to landscape for the roomier view.) */
+/* Portrait: break out of the scaled #stage and cover the real viewport, so panels and bubble text can
+   be sized in vw/vh and stay readable. Kept below #rotate-hint (z-index 999) so touch phones still get
+   the "rotate to landscape" hint; tablets / narrow windows that skip that hint see the large layout. */
+.loading-gate.is-viewport { position: fixed; z-index: 900; }
+
+/* Phone/tablet portrait: stack the two panels nearly full-width so each is large and the text reads. */
 @media (orientation: portrait) {
-  .loading-gate { gap: 9px; padding: 8px 10px; }
-  .loading-logo { width: min(240px, 40%); height: 46px; }
-  .loading-card { width: min(430px, 94%); padding: 9px 11px; }
-  .loading-comic-title { font-size: 21px; margin-bottom: 7px; padding-bottom: 6px; }
-  .loading-panels { grid-template-columns: 1fr; gap: 7px; }
-  .loading-comic-caption { font-size: 12px; margin-top: 6px; line-height: 1.3; }
-  .loading-bar { width: min(430px, 82%); }
-  .loading-proceed { min-height: 1em; font-size: 13px; }
+  .loading-gate { gap: 2vh; padding: 2vh 3vw; }
+  .loading-logo { width: min(260px, 52vw); height: 7vh; }
+  .loading-card { width: 94vw; padding: 1.4vh 2.2vw; }
+  .loading-comic-title { font-size: clamp(18px, 5.2vw, 30px); margin-bottom: 1.2vh; padding-bottom: 1vh; }
+  .loading-panels { grid-template-columns: 1fr; gap: 1.4vh; }
+  .loading-comic-caption { font-size: clamp(12px, 3.6vw, 18px); margin-top: 1.2vh; line-height: 1.35; }
+  .loading-bar { width: 80vw; height: 1.6vh; }
+  .loading-status { font-size: clamp(15px, 4.2vw, 22px); }
+  .loading-proceed { min-height: 1em; font-size: clamp(12px, 3.6vw, 16px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

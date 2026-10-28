@@ -81,8 +81,11 @@ for (const multiplier of [.63, 1, 1.45, 2.175]) for (const tutorial of [false, t
 }
 console.log("[coal training] PASS: normal/old-name/multiple/sold tongs, post-multiplier +0.05s, identical phase/error/auto ideal, 100 cap");
 
-// Import the actual baseline modules from origin/main; do not manufacture a baseline formula.
-const original = path => execFileSync("git", ["show", "origin/main:remake/js/craft/" + path], { encoding: "utf8" });
+// Import the actual pre-#694 baseline modules; do not manufacture a baseline formula.
+// origin/main is a moving ref (it becomes this same code once #694 merges), so pin to the
+// commit immediately before #694's flat3-nerf change instead of a branch name.
+const PRE_694_BASELINE = "5facee3dccd98727cd6f40cc8b361438c9bc9b4b^";
+const original = path => execFileSync("git", ["show", PRE_694_BASELINE + ":remake/js/craft/" + path], { encoding: "utf8" });
 const dataURL = source => "data:text/javascript;base64," + Buffer.from(source).toString("base64");
 const originalCoals = dataURL(original("coals.js"));
 const originalConditions = original("conditions.js").replace(/(["'])(\.\.?\/[^"']+)\1/g, (_, q, spec) =>
