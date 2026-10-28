@@ -1341,6 +1341,15 @@
         ],
         "ta_tsumugi_today": [
           {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_tsumugi_contest_draft_hands",
+            "next_true": "ta_tsumugi_today_cared",
+            "next_false": "ta_tsumugi_today_plain"
+          }
+        ],
+        "ta_tsumugi_today_plain": [
+          {
             "speaker": "tsumugi",
             "face": "normal",
             "text": "……今日も少し、描きました。あとで、見てもらえますか"
@@ -1364,6 +1373,53 @@
             "speaker": "",
             "face": "",
             "text": "画面を開きかけた手が、鞄の中に戻った。はじめは、そこまで見ていなかった。"
+          }
+        ],
+        "ta_tsumugi_today_cared": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……今日も少し、描きました。あとで、見てもらえますか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うん。……手、また描き直した？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎの指が、タブレットの上で止まった。はじめのスマホは、通知で何度も震えている。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "――その、あとでちゃんと……ごめん、今、優勝の写真を送ってて"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい。急がなくて、いいです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "画面を開きかけた手が、鞄の中に戻る。それでも、いつもより一拍、遅かった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "――手のとこ、あとで一番に見るから"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……はい。待ってます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "それだけ言って、はじめはまた画面に目を落とした。約束は、口の端に残ったままだった。"
           }
         ],
         "ta_tsumugi_no_draft": []
