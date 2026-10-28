@@ -75,6 +75,105 @@ async function home(page, owned, tod) {
 
 await suite("home-rig-backgrounds", async check => {
   for (const [label, opts] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`${label}-tabletop-first-night`, async page => {
+      await setup(page);
+      await home(page, [], "night");
+      await page.evaluate(async () => {
+        HQ.rig = await import("./js/daily/home-rig.js");
+        HQ.calendar = await import("./js/daily/calendar.js");
+        const s = HQ.core.state;
+        // DAY2を晴れに固定し、曇天差分の抽選で背景の厳密照合を揺らさない。
+        Object.assign(s, { day: 2, slot: 2, stamina: 40, weatherSeed: 0 });
+        s.flags._morning_2 = true;
+        HQ.beforeNight = structuredClone(s);
+        HQ.entered = [];
+        HQ.vn.vnTest.turbo = true;
+        HQ.vn.hooks.onEnter = id => {
+          HQ.entered.push(id);
+          if (id === HQ.rig.RIG_HOME_SCENE) {
+            HQ.vn.vnTest.turbo = false;
+            HQ.firstNightStarted = performance.now();
+          }
+        };
+        // 本編と同じ贈呈→帰宅→就寝をcalendar経由で通す。
+        HQ.nightTask = HQ.calendar.runDaily({ nightEvents: {}, untilDay: 3,
+          beforeHomecoming: HQ.rig.giveEarlyHomeRig });
+      });
+      const lines = await page.evaluate(() => HQ.data.DB.dialogues[HQ.rig.RIG_HOME_SCENE].lines.map(l => l.text));
+      await page.waitForFunction(text => document.querySelector(".vn-text")?.textContent === text
+        && document.querySelector(".vn-next.show") && performance.now() > HQ.firstNightStarted + 350, lines[0]);
+      assert.deepEqual(await rigs(page), ["home_rig_set"]);
+      const image = page.locator('#bg > :last-child [data-home-rig="home_rig_set"] image');
+      assert.match(await image.getAttribute("href"), /ui\/scene_props\/shisha_home_tabletop\.(webp|png)$/);
+      assert.equal(await page.locator("#bg > :last-child").getAttribute("data-scene-bg"), "bg_home_night.png");
+      await assertFits(page, ".vn-box");
+      await page.screenshot({ path: `${out}/tabletop-first-night-${label}.png`, animations: "disabled" });
+      assert.equal(await page.evaluate(() => HQ.rig.showSumiRigAtHome()), false, "表示中の再入室でも再生しない");
+      const during = await page.evaluate(() => {
+        HQ.core.saveToSlot("suien_remake_slot1");
+        return JSON.parse(localStorage.getItem(HQ.core.SAVE_KEY));
+      });
+      assert.equal(during.flags._sumi_rig_home_seen, true, "表示開始時に既読を保存済み");
+      assert.equal(during.flags._sumi_rig_received_day, "1:2");
+      await hit(page, label, ".vn-box");
+      await page.waitForFunction(text => document.querySelector(".vn-text")?.textContent === text
+        && document.querySelector(".vn-next.show"), lines[1]);
+      await hit(page, label, ".vn-box");
+      await page.evaluate(() => HQ.nightTask);
+      const after = await page.evaluate(() => structuredClone(HQ.core.state));
+      assert.equal(after.day, 3, "演出後は通常どおり翌朝へ進む");
+      assert.equal(after.stamina, 54, "追加の体力消費はなく、通常の睡眠回復だけ");
+      for (const key of ["money", "flavorStock", "stats", "statXp"]) {
+        assert.deepEqual(after[key], await page.evaluate(key => HQ.beforeNight[key], key), key);
+      }
+      assert.equal(await page.locator(".home-shisha-dialog").count(), 0, "黄色の夜に家シーシャの誘いを追加しない");
+      const entered = await page.evaluate(() => HQ.entered);
+      assert(entered.includes("remake_homecoming_2"));
+      assert(entered.indexOf("remake_homecoming_2") < entered.indexOf("ch1_sumi_home_rig_homecoming"));
+      assert.equal(entered.filter(id => id === "ch1_sumi_home_rig_homecoming").length, 1);
+      for (const key of ["suien_remake_slot1", "suien_remake_save"]) {
+        const result = await page.evaluate(async key => {
+          HQ.core.loadFromSlot(key);
+          const before = JSON.stringify(HQ.core.state);
+          return { played: await HQ.rig.showSumiRigAtHome(), unchanged: before === JSON.stringify(HQ.core.state) };
+        }, key);
+        assert.deepEqual(result, { played: false, unchanged: true }, `${key}: 同じ夜の保存からLOADしても再生しない`);
+      }
+    }, opts);
+
+    await check(`${label}-tabletop-first-night-load`, async page => {
+      await setup(page); await home(page, [], "night");
+      await page.evaluate(async () => {
+        HQ.rig = await import("./js/daily/home-rig.js");
+        Object.assign(HQ.core.state, { day: 2, slot: 2 });
+        HQ.core.saveToSlot("suien_remake_slot1"); // 台を受け取る前の別の保存
+        HQ.vn.vnTest.turbo = true;
+        await HQ.rig.giveEarlyHomeRig();
+        await HQ.ui.bannersIdle();
+        HQ.core.saveToSlot("suien_remake_slot2"); // 受取後・自室演出前
+        HQ.vn.vnTest.turbo = false;
+        HQ.interruptedStarted = performance.now();
+        HQ.interruptedTask = HQ.rig.showSumiRigAtHome();
+      });
+      await page.waitForFunction(() => document.querySelector("#vn.active .vn-next.show")
+        && performance.now() > HQ.interruptedStarted + 350);
+      const loaded = await page.evaluate(() => {
+        HQ.core.loadFromSlot("suien_remake_slot1");
+        HQ.vn.vnTest.turbo = true;
+        return structuredClone(HQ.core.state);
+      });
+      await hit(page, label, ".vn-box");
+      assert.equal(await page.evaluate(() => HQ.interruptedTask), false);
+      assert.deepEqual(await page.evaluate(() => structuredClone(HQ.core.state)), loaded, "表示中LOADで別SAVEに既読や台を付けない");
+      const replay = await page.evaluate(async () => {
+        HQ.core.loadFromSlot("suien_remake_slot2");
+        const first = await HQ.rig.showSumiRigAtHome();
+        HQ.core.load();
+        return [first, await HQ.rig.showSumiRigAtHome()];
+      });
+      assert.deepEqual(replay, [true, false], "未見の保存では一度再生し、その後のLOADでは再生しない");
+    }, opts);
+
     await check(`${label}-tabletop-gift-image`, async page => {
       await setup(page); await home(page, [], "day");
       const startGift = async () => {

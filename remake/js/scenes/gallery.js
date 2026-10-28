@@ -5,7 +5,7 @@ import { layers } from "../core/ui.js";
 import { state, SAVE_SLOTS, readSlot, config } from "../core/state.js";
 import { SE, currentBgm, playBgm, stopBgm } from "../core/audio.js";
 import { readGalleryProgress, recordGalleryProgress } from "../core/gallery-progress.js";
-import { GALLERY_TABS, galleryEntries } from "../core/gallery-catalog.js";
+import { CHAR_LABELS, GALLERY_TABS, galleryEntries, galleryStats } from "../core/gallery-catalog.js";
 import { stickerPhoto } from "../core/purikura-photo.js";
 
 const KEY = "suien_remake_gallery";
@@ -28,11 +28,23 @@ export function openGallery() {
   recordGalleryProgress(state);
   SAVE_SLOTS.forEach(slot => recordGalleryProgress(readSlot(slot.key)));
   const entries = galleryEntries(DB.manifest, DB.gallery, readGalleryProgress(), seen());
+  const stats = galleryStats(entries);
+  const fraction = s => `${s.unlocked} / ${s.total}（${s.rate}%）`;
   return new Promise(resolve => {
     let tab = "all", closed = false, active = null, page = 0, trigger = null;
     let video = null, movieBgm = null, observer;
     const galleryOwner = document.body.dataset.screen;
     const count = el("span.gal-count");
+    const collection = el("div.gal-collection", [
+      el("strong.gal-rate", { text: `収集率 ${stats.rate}%（${stats.unlocked}/${stats.total}）` }),
+      stats.total > 0 && stats.rate === 100 ? el("span.gal-complete", { text: "★コンプリート" }) : null,
+      el("small.gal-photos", { text: `プリクラ撮影記録 ${stats.purikuraPhotos}枚` }),
+    ]);
+    const characters = el("div.gal-characters", { "aria-label": "キャラ別収集率" },
+      Object.entries(CHAR_LABELS).filter(([char]) => stats.byChar[char].total > 0).map(([char, label]) => {
+        const s = stats.byChar[char];
+        return el("span", { text: `${label} ${s.unlocked}/${s.total}（${s.rate}%）` });
+      }));
     const grid = el("div.gal-grid", { id: "gallery-items", role: "tabpanel" });
     const note = el("p.gal-note", { text: "見た一枚や受け取った写真が残ります。漫画・ムービーは章クリアで解放。" });
     const tools = el("div.gal-viewer-tools");
@@ -43,10 +55,10 @@ export function openGallery() {
     } }, [tools, content]);
     const closeButton = el("button.gal-close", { text: "閉じる", dataset: { test: "gallery-close" }, onclick: () => close() });
     const tabs = el("div.gal-tabs", { role: "tablist", "aria-label": "コレクションの種類" }, GALLERY_TABS.map(([kind, name]) =>
-      el("button.gal-tab", { text: name, role: "tab", "aria-controls": "gallery-items", "aria-selected": kind === tab ? "true" : "false",
+      el("button.gal-tab", { text: `${name} ${fraction(kind === "all" ? stats : stats.byKind[kind])}`, role: "tab", "aria-controls": "gallery-items", "aria-selected": kind === tab ? "true" : "false",
         dataset: { kind, test: "gallery-tab-" + kind }, onclick: () => { tab = kind; render(); SE.select(); } })));
     const box = el("div.gal", [
-      el("div.gal-head", [el("h2", { text: "GALLERY" }), count, closeButton]), tabs, grid, note,
+      el("div.gal-head", [el("h2", { text: "GALLERY" }), collection, count, closeButton]), tabs, characters, grid, note,
     ]);
     const overlay = el("div.gal-overlay", [box, viewer]);
     const restoreMusic = () => {
@@ -133,7 +145,7 @@ export function openGallery() {
     }
     function render() {
       const items = entries.filter(entry => tab === "all" || entry.kind === tab);
-      count.textContent = items.filter(entry => entry.unlocked).length + " / " + items.length;
+      count.textContent = fraction(tab === "all" ? stats : stats.byKind[tab]);
       tabs.querySelectorAll("button").forEach(button => button.setAttribute("aria-selected", String(button.dataset.kind === tab)));
       grid.dataset.kind = tab;
       grid.replaceChildren(...items.map(entry => {

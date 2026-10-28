@@ -27,7 +27,7 @@ DB.recipes = recipes;
 DB.ngMixes = [];
 DB.characters = Object.fromEntries(characters.map((c) => [c.id, c]));
 
-// 1. データ整合性: メーカー5社・表記統一・禁止語チェック
+// 1. データ整合性: メーカー6社・表記統一・禁止語チェック
 assert.equal(flavors.length, 78); // 人物に結びつく11種・マウンテンミスト・サメちゃんのスプリングウォーター
 const expectedPrefixToMaker = {
   "アルファーヘブン": "af",
@@ -35,6 +35,7 @@ const expectedPrefixToMaker = {
   "アフサール": "afsahr",
   "ナイトサイド": "nightside",
   "フォースフェクタ": "forcefect",
+  "フワリ": "fuwari",
 };
 for (const f of flavors) {
   assert(f.maker in MAKER_SPECS, `Invalid maker on ${f.id}: ${f.maker}`);
@@ -95,7 +96,7 @@ for (const pid of ["pipe_middle", "pipe_high", "pipe_highest"]) {
   assert.equal(DB.equipById[pid].not_for_sale, true);
 }
 
-// 2. メーカー5社・加算天井（単社時は主要4社が +2.50、初心者安定枠のドバジが +0.80）
+// 2. メーカー6社・加算天井（単社時は主要4社が +2.50、初心者安定枠のドバジが +0.80）
 const sampleByMaker = {
   af: ["double_apple", 2.5],
   dobaj: ["dobaj_double_apple", 0.8],
@@ -310,5 +311,5 @@ assert.match(mintGuide.tempBandLabel, /高温向き/);
 const vanillaGuide = flavorThermalGuide(DB.flavorById.vanilla);
 assert.match(vanillaGuide.tempBandLabel, /低温・繊細/);
 
-console.log("[craft scoring spec] PASS: 5 makers, +2.5 ceiling, flat vs cube charcoal, shop equipment comparison, canonical judge formula, and pipe refund migration verified");
+console.log("[craft scoring spec] PASS: 6 makers, +2.5 ceiling, flat vs cube charcoal, shop equipment comparison, canonical judge formula, and pipe refund migration verified");
 

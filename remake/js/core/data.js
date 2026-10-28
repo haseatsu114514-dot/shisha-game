@@ -151,6 +151,7 @@ export async function loadAll(onProgress = () => {}) {
 const ALWAYS_KNOWN = new Set([
   "hajime", "sumi", "tsumugi", "salaryman", "kako", "rira", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
+  "spice_merchant", "cafe_staff",
 ]);
 // 立ち絵フォルダ・別名（oneesan はみんとの私服＝ura_* 差分）
 export const SPEAKER_ALIAS = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };
@@ -204,7 +205,8 @@ export function callName(id, state, opts = {}) {
 // 表示用の軽い WebP（remake/img/・tools/build_images.py が作る）。一覧に無い画像は assets/ の PNG を読む
 let WEBP = new Set();
 // #983で採用した顔修正を、同名URLに残った旧画像のキャッシュと区別する。
-const FACE_CORRECTION_REVISION = "face-line-20261026";
+// 2026-10-28: #1081 I03 でみんと通常を斜め向きへ復元したため revision を更新。
+const FACE_CORRECTION_REVISION = "face-restore-20261028";
 function faceCorrectionVersion(rel) {
   return /^(sprites\/characters\/(minto\/chr_minto_normal|ageha\/chr_ageha_[a-z]+)\.png|ui\/face_icons\/face_(minto|ageha)\.png)$/.test(rel)
     ? `?v=${FACE_CORRECTION_REVISION}` : "";

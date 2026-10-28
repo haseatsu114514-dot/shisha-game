@@ -4,6 +4,41 @@ export const GALLERY_TABS = [
   ["all", "すべて"], ["still", "スチル"], ["cheki", "チェキ"],
   ["purikura", "プリクラ"], ["comic", "漫画"], ["movie", "ムービー"],
 ];
+export const CHAR_LABELS = {
+  minto: "みんと", ageha: "あげは", tsumugi: "つむぎ", naru: "なる",
+  rin: "りん", mashiro: "ましろ", other: "その他",
+};
+const cgChars = Object.fromEntries(Object.entries({
+  ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip"],
+  minto: ["cg_ch1_minto_casual_reveal", "cg_minto_casual", "cg_minto_cheki", "cg_minto_confession", "cg_minto_first_cheki"],
+  tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color"],
+  naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry"],
+  rin: ["cg_rin_confession"],
+  mashiro: ["cg_ch3_childhood_offered_hand", "cg_kuze_mashiro_childhood", "cg_mashiro_double_apple"],
+}).flatMap(([char, ids]) => ids.map(id => [id, char])));
+const charTag = char => Object.hasOwn(CHAR_LABELS, char) ? char : "other";
+
+/** 撮影ごとに増えるプリクラ記録は収集率に含めず、件数だけを返す。 */
+export function galleryStats(entries) {
+  const counter = () => ({ total: 0, unlocked: 0, rate: 0 });
+  const stats = {
+    ...counter(),
+    byKind: Object.fromEntries(GALLERY_TABS.slice(1).map(([kind]) => [kind, counter()])),
+    byChar: Object.fromEntries(Object.keys(CHAR_LABELS).map(char => [char, counter()])),
+    purikuraPhotos: 0,
+  };
+  for (const entry of entries) {
+    if (Object.hasOwn(entry, "photo")) { stats.purikuraPhotos++; continue; }
+    for (const group of [stats, stats.byKind[entry.kind], stats.byChar[charTag(entry.char)]]) {
+      group.total++;
+      if (entry.unlocked) group.unlocked++;
+    }
+  }
+  for (const group of [stats, ...Object.values(stats.byKind), ...Object.values(stats.byChar)]) {
+    group.rate = group.total ? Math.floor(group.unlocked / group.total * 100) : 0;
+  }
+  return stats;
+}
 const labels = {
   cg_naru_after_hours: "なる・旅先のやり直し",
   cg_naru_last_chance: "なる・勝って帰る日",
@@ -23,7 +58,7 @@ export function galleryEntries(manifest, catalog, progress, seen) {
   progress.keepsakes.forEach(id => got.add(PHOTO_KEEPSAKES[id]));
   const entries = [...new Set((manifest.cgs || []).map(file => file.replace(/\.png$/, "")))]
     .filter(id => !/^cg_ch2_ageha_purikura_strip_(?:soft|gal)$/.test(id)).sort().map((id, i) => ({
-    id, cg: id, kind: id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still",
+    id, cg: id, char: cgChars[id] || "other", kind: id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still",
     title: labels[id] || "物語のスチル " + (i + 1), unlocked: got.has(id),
   }));
   progress.purikura.forEach(p => entries.push({
@@ -40,7 +75,7 @@ export function galleryEntries(manifest, catalog, progress, seen) {
       || !item.pages.every(p => localAsset(p, /\.(?:png|webp|jpe?g)$/i)))) continue;
     if (item.kind === "movie" && !localAsset(item.src, /\.(?:webm|mp4)$/i)) continue;
     used.add(item.id);
-    entries.push({ ...item, unlocked: progress.clearedChapters.includes(item.requiredChapter) });
+    entries.push({ ...item, char: charTag(item.char), unlocked: progress.clearedChapters.includes(item.requiredChapter) });
   }
   return entries;
 }

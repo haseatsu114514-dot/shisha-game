@@ -10,6 +10,7 @@ import { showHud } from "../daily/hud.js";
 import { openStatus } from "../daily/status.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play } from "../vn/engine.js";
+import { glossaryPanel } from "../vn/glossary.js";
 import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { trainRide } from "../core/scene-motions.js";
 import { playBgm } from "../core/audio.js";
@@ -368,6 +369,7 @@ async function openMenu() {
   const owner = session;
   const choice = await modal({ title: "MENU", body: `第${state.chapter}章・DAY ${chapterDay(state)} ／ 場面の区切りで自動セーブしています。`, options: [
     { label: "セーブ", value: "save", test: test("save") }, { label: "ロード", value: "load", test: test("load") },
+    { label: "設定", value: "config", test: test("config") }, { label: "用語集", value: "glossary", test: test("glossary") },
     { label: "ステータス・人間関係", value: "status", test: test("status") },
     { label: "大会の規則", value: "rules", test: test("rules") },
     { label: "タイトルへ戻る", value: "title", test: test("title") },
@@ -375,6 +377,8 @@ async function openMenu() {
   ] });
   if (!current(owner)) return;
   if (choice === "save") await saveFlow();
+  if (choice === "config") await (await import("../scenes/title.js")).openConfig();
+  if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
   if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
   if (choice === "load") {
     const key = await loadFlow({ inGame: true });

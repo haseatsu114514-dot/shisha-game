@@ -1,5 +1,5 @@
 // 家シーシャの台（#638）。スミさんの卓上台（第1章 DAY2以降の帰宅前に譲られる）と、くじの大会公式モデルの台。
-// 寝る前の一服の流れは home-shisha.js。ここは台の持ち物と受け取りだけ（会話の差し込みから呼ぶので軽く保つ）。
+// 寝る前の一服の流れは home-shisha.js。ここは台の持ち物・受け取りと、その夜の自室でのお披露目。
 import { DB, img } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { emit } from "../core/bus.js";
@@ -10,6 +10,7 @@ import { play, vnTest } from "../vn/engine.js";
 export const SUMI_RIG = "home_rig_set";   // ミャア 卓上台（試作の熟練度経験値6）
 export const PRO_RIG = "home_rig_pro";    // 大会公式モデルの台（試作の熟練度経験値7.5・くじの景品）
 export const RIG_SCENE = "ch1_sumi_home_rig";
+export const RIG_HOME_SCENE = "ch1_sumi_home_rig_homecoming";
 // #640で採用済み。scene-art.jsが自室の机上に置くものと同じ台。
 export const SUMI_RIG_IMAGE = "ui/scene_props/shisha_home_tabletop.png";
 const FALLBACK_GROWTH = { [SUMI_RIG]: 0.5, [PRO_RIG]: 0.75 };
@@ -48,9 +49,26 @@ export async function giveSumiRig({ bg = null, deferSave = false } = {}) {
   }
   state.owned ||= [];
   if (!state.owned.includes(SUMI_RIG)) state.owned.push(SUMI_RIG);
+  state.flags._sumi_rig_received_day = `${state.chapter}:${state.day}`;
   emit("notice", { text: `「${name}」をもらった。体力に余裕がある夜は、寝る前に家シーシャができる` });
   if (!deferSave) save(); // 有料訪問は calendar の支払い・行動確定と同時に保存する
   return true;
+}
+
+/** 実際に受け取った当日の夜だけ。受領済みの旧セーブへ日付を推測して足さない。 */
+export function sumiRigHomecomingDue(s = state) {
+  return !!s?.owned?.includes(SUMI_RIG) && !s.flags?._sumi_rig_home_seen
+    && s.flags?._sumi_rig_received_day === `${s.chapter}:${s.day}`;
+}
+
+/** 帰宅後・家シーシャの誘いの前。表示中のSAVE/LOADや再入室でも繰り返さない。 */
+export async function showSumiRigAtHome() {
+  if (!sumiRigHomecomingDue() || !DB.dialogues[RIG_HOME_SCENE]) return false;
+  const owner = state;
+  state.flags._sumi_rig_home_seen = true;
+  save();
+  const result = await play(RIG_HOME_SCENE);
+  return state === owner && !result?.cancelled;
 }
 
 /** DAY2から、体調を崩していない夜にお下がりを渡す。旧セーブでも次の夜に受け取れる。 */
