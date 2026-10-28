@@ -70,6 +70,12 @@
       "run": ["node remake/test/ngplus_carry.mjs"]
     },
     {
+      "id": "ngplus-title",
+      "title": "NG+ title next-cycle entry and start options (U10, #1228)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ngplus_title.mjs"]
+    },
+    {
       "id": "module-loading",
       "title": "Deferred module loading notice: delay, failure cleanup, retry, single-flight",
       "kind": "quick",
