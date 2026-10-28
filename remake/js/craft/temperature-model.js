@@ -204,8 +204,8 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
   }),
   lotos_hagal: Object.freeze({
     id: "lotos_hagal", type: "hms", widthFactor: 1.00, stabilityBonus: 2,
-    warmup: "早い（標準）", response: "素直（基準）", fitNote: "全ボウル対応",
-    summary: "立ち上がりと熱安定のバランスが良い標準HMD。練習でも大会でも再現性が高い。",
+    warmup: "じんわり（標準）", response: "素直（基準）", fitNote: "全ボウル対応",
+    summary: "じんわり温まる標準HMD。蓋の通気で熱のこもり方を変えられる。",
   }),
   tanukish_lid: Object.freeze({
     id: "tanukish_lid", type: "hms", widthFactor: 1.08, stabilityBonus: 5,
