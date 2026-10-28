@@ -283,9 +283,11 @@ async function drive(owner) {
       ])) { if (live(owner)) renderEntry(owner); return; }
       checkpoint("lobby");
     } else if (p.stage === "lobby") {
+      playBgm("bgm_tournament_wait");
       if (!await read(owner, "lobby")) return;
       markMet("ageha"); checkpoint("entrance");
     } else if (p.stage === "entrance") {
+      playBgm("bgm_tournament_edm");
       if (!await read(owner, "entrance")) return;
       for (const who of ["kumicho", "rei", ...JUDGES]) markMet(who);
       state.flags._ch2_kumicho_public_reveal = true;

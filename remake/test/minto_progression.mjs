@@ -109,7 +109,7 @@ try {
   assert.equal(romance.afterThird, false);
   assert.deepEqual(romance.heart3Waiting, { hearts: 3, known: false, privateInvite: false });
   assert.equal(romance.afterIdentity, true);
-  assert(romance.commute.some(t => t.includes("ぺぱーみんと")), "Commute narration names the shop (narration spelling since #805)");
+  assert(romance.commute.some(t => t.includes("PEPPERMINT")), "Commute narration names the shop (store name in English since #1251; was #805 katakana)");
   assert(romance.commute.every(t => !t.includes("向かう道") && !t.includes("店の少し手前")));
   assert(romance.noSpoiler);
   assert.deepEqual(romance.invite, { slot: "night", after: true });
