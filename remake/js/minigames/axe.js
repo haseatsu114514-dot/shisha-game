@@ -1,5 +1,6 @@
 // Caller awaits preceding VN. Practice never reads or writes story/save state.
 import { el } from "../core/util.js";
+import { imgFileUrl } from "../core/img-file.js";
 import { svg } from "../core/transition-kit.js";
 import { SE, unlockAudio } from "../core/audio.js";
 import { RINGS, BULLS, KILLS, POWER, SWAY, MODES, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall } from "./axe-model.js";
@@ -19,11 +20,10 @@ function decodeArt(url) {
   }
   return artReady.get(url);
 }
-const art = name => new URL("../../img/" + name, import.meta.url).href;
-const ART = { bg: art("backgrounds/bg_axe_lounge_night.webp"), board: art("ui/axe_throw/target_board_display.webp") };
+const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_display.webp") };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
-const faceArt = (id, face) => art("sprites/characters/" + id + "/chr_" + id + "_" + face + ".webp");
+const faceArt = (id, face) => imgFileUrl("sprites/characters/" + id + "/chr_" + id + "_" + face + ".webp");
 const { x: CX, y: CY, radius: R } = TARGET;
 const cycles = { horizontal: 3200, vertical: 3600, power: 2400 };
 export function runAxeThrow({ host = document.getElementById("stage") || document.getElementById("axe-app"),
