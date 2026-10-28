@@ -18,7 +18,7 @@ async function load(url) {
 const stateModule = await load(new URL("state.js", root)); await stateModule.evaluate();
 const catalogModule = await load(new URL("gallery-catalog.js", root)); await catalogModule.evaluate();
 const core = stateModule.namespace, g = modules.get(new URL("gallery-progress.js", root).href).namespace;
-const { galleryEntries } = catalogModule.namespace;
+const { galleryEntries, galleryStats, CHAR_LABELS } = catalogModule.namespace;
 const copy = v => JSON.parse(JSON.stringify(v));
 const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", "samechan"] };
 // First upgraded LOAD: seed pre-feature disk data directly, without save() or a gallery scan.
@@ -134,6 +134,58 @@ for (const seen of [[], [strip, ...candidates]]) {
   assert.equal(photos[0].kind, "purikura");
   assert.equal(photos[0].unlocked, seen.includes(strip));
 }
+// 収集対象は正式CG＋採用済み作品。撮影記録は別の件数として扱う。
+const actualCatalog = JSON.parse(fs.readFileSync(new URL("../data/gallery.json", import.meta.url), "utf8"));
+const actualEntries = galleryEntries(actualManifest, actualCatalog, empty, new Set());
+const actualStats = galleryStats(actualEntries);
+assert.equal(actualManifest.cgs.length, 25);
+assert.equal(actualEntries.filter(e => e.cg).length, 23, "two alternate strips are excluded");
+assert.equal(actualStats.total, 23, "current catalog has no approved additions");
+assert.equal(actualStats.unlocked, 0);
+assert.equal(actualStats.rate, 0);
+const expectedChars = {
+  minto: 5, ageha: 2, tsumugi: 3, naru: 3, rin: 1, mashiro: 3, other: 6,
+};
+for (const entry of actualEntries) assert(Object.hasOwn(CHAR_LABELS, entry.char), `${entry.id} has a character tag`);
+assert.equal(actualEntries.find(e => e.id === "cg_ch3_childhood_offered_hand").char, "mashiro");
+for (const [char, total] of Object.entries(expectedChars)) assert.equal(actualStats.byChar[char].total, total, char);
+assert.equal(Object.values(actualStats.byChar).reduce((sum, s) => sum + s.total, 0), actualStats.total);
+assert.equal(Object.values(actualStats.byKind).reduce((sum, s) => sum + s.total, 0), actualStats.total);
+const fullStats = galleryStats(galleryEntries(actualManifest, actualCatalog, empty, new Set(actualEntries.map(e => e.id))));
+assert.equal(fullStats.unlocked, 23);
+assert.equal(fullStats.rate, 100);
+for (const s of Object.values(fullStats.byChar)) assert.equal(s.rate, 100);
+const withPhotos = galleryStats(galleryEntries(actualManifest, actualCatalog, { ...empty, purikura: [photo, { ...photo, day: 19 }] }, new Set()));
+assert.deepEqual(copy(withPhotos), { ...copy(actualStats), purikuraPhotos: 2 });
+const thirds = [
+  { kind: "still", char: "minto", unlocked: true },
+  { kind: "still", char: "minto", unlocked: false },
+  { kind: "still", char: "minto", unlocked: false },
+];
+const thirdsBefore = copy(thirds);
+const partialStats = galleryStats(thirds);
+assert.equal(partialStats.rate, 33);
+assert.equal(partialStats.byKind.still.rate, 33);
+assert.equal(partialStats.byChar.minto.rate, 33);
+assert.deepEqual(thirds, thirdsBefore, "aggregation does not mutate entries");
+assert.equal(galleryStats([]).rate, 0);
+assert.equal(partialStats.byKind.movie.rate, 0);
+assert.equal(partialStats.byChar.other.rate, 0);
+const adopted = galleryEntries(actualManifest, { items: [
+  { ...comic, char: "ageha" }, { ...movie, char: "unknown" },
+  { ...comic, id: "not_approved", approved: false },
+  { ...comic, id: "not_explicitly_approved", approved: undefined },
+] }, { ...empty, clearedChapters: [1] }, new Set());
+const adoptedStats = galleryStats(adopted);
+assert.equal(adoptedStats.total, 25, "only approved comic and movie add to T");
+assert.equal(adoptedStats.unlocked, 1);
+assert.deepEqual(copy(adoptedStats.byKind.comic), { total: 1, unlocked: 1, rate: 100 });
+assert.deepEqual(copy(adoptedStats.byKind.movie), { total: 1, unlocked: 0, rate: 0 });
+assert.equal(adopted.find(e => e.id === comic.id).char, "ageha");
+assert.equal(adopted.find(e => e.id === movie.id).char, "other");
+assert.equal(entries.find(e => e.id === comic.id).char, "other", "missing character falls back to other");
+assert.equal(Object.values(adoptedStats.byChar).reduce((sum, s) => sum + s.total, 0), adoptedStats.total);
+console.log(`REAL DATA: raw CGs=${actualManifest.cgs.length}, total=${actualStats.total}, empty seen=${actualStats.unlocked}/${actualStats.total} (${actualStats.rate}%), all seen=${fullStats.unlocked}/${fullStats.total} (${fullStats.rate}%)`);
 storage.set(g.GALLERY_PROGRESS_KEY, "{broken"); assert.deepEqual(copy(g.readGalleryProgress()), empty);
 storage.set(g.GALLERY_PROGRESS_KEY, JSON.stringify({ clearedChapters: [0, 1, "2", 99], keepsakes: {}, purikura: [null] }));
 assert.deepEqual(copy(g.readGalleryProgress()), { ...empty, clearedChapters: [1] });
