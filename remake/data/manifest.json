@@ -1495,14 +1495,6 @@
  },
  "titleArts": [
   {
-   "character": "adam",
-   "file": "title_art_adam_01_sunset_proclamation.png"
-  },
-  {
-   "character": "adam",
-   "file": "title_art_adam_02_twin_apple_throne.png"
-  },
-  {
    "character": "ageha",
    "file": "title_art_ageha_01_professional_taste.png"
   },
@@ -1541,6 +1533,22 @@
   {
    "character": "hiyori",
    "file": "title_art_hiyori_06_riverside_hoodie.png"
+  },
+  {
+   "character": "samechan",
+   "file": "title_art_samechan_01_shishark_test_run.png"
+  },
+  {
+   "character": "samechan",
+   "file": "title_art_samechan_02_shark_movie.png"
+  },
+  {
+   "character": "samechan",
+   "file": "title_art_samechan_03_aquarium.png"
+  },
+  {
+   "character": "samechan",
+   "file": "title_art_samechan_04_throne_pose.png"
   },
   {
    "character": "mashiro",
@@ -1583,10 +1591,6 @@
    "file": "title_art_minto_06_after_hours_glasscare.png"
   },
   {
-   "character": "naru",
-   "file": "title_art_naru_01_bakery_morning.png"
-  },
-  {
    "character": "rin",
    "file": "title_art_rin_01_night_tasting.png"
   },
@@ -1601,26 +1605,6 @@
   {
    "character": "rin",
    "file": "title_art_rin_05_blend_library_command.png"
-  },
-  {
-   "character": "samechan",
-   "file": "title_art_samechan_01_shishark_test_run.png"
-  },
-  {
-   "character": "samechan",
-   "file": "title_art_samechan_02_shark_movie.png"
-  },
-  {
-   "character": "samechan",
-   "file": "title_art_samechan_03_aquarium.png"
-  },
-  {
-   "character": "samechan",
-   "file": "title_art_samechan_04_throne_pose.png"
-  },
-  {
-   "character": "sumi",
-   "file": "title_art_sumi_01_own_clay_bowl.png"
   },
   {
    "character": "tsumugi",
@@ -1641,6 +1625,22 @@
   {
    "character": "tsumugi",
    "file": "title_art_tsumugi_05_pencil_and_hose.png"
+  },
+  {
+   "character": "sumi",
+   "file": "title_art_sumi_01_own_clay_bowl.png"
+  },
+  {
+   "character": "naru",
+   "file": "title_art_naru_01_bakery_morning.png"
+  },
+  {
+   "character": "adam",
+   "file": "title_art_adam_01_sunset_proclamation.png"
+  },
+  {
+   "character": "adam",
+   "file": "title_art_adam_02_twin_apple_throne.png"
   }
  ],
  "makingBox": {
