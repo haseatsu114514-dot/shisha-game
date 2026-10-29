@@ -164,6 +164,9 @@ async function renderStage(owner) {
       await mod.beginChapterFour();
     }, true);
     const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
+    // 外側の busy(false) は data-locked を見て disabled を再設定するため、両方を連動させる。
+    const lock = (btn, locked) => { btn.dataset.locked = String(locked); btn.disabled = locked; };
+    lock(next, !state.flags._ch3_preview_seen);
     // 予告2（第3章末→第4章）。第1章と同じ挙動: 再生中は第4章ボタンを押せず、
     // 完走/明示スキップのときだけ既読を保存し、中断・別画面への遷移では何も残さない。
     const preview = async (first) => {
@@ -174,7 +177,7 @@ async function renderStage(owner) {
         observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
         observer.observe(layers.screen, { childList: true });
       }
-      next.disabled = true; replay.disabled = true;
+      lock(next, true); lock(replay, true);
       try {
         const result = await playChapterPreview("ch4", { signal: controller.signal });
         if (first && (result === "completed" || result === "skipped") && live(owner)) {
@@ -184,8 +187,8 @@ async function renderStage(owner) {
       } catch { /* 次回予告は任意演出。失敗しても完了画面はそのまま使える。 */ }
       finally {
         observer?.disconnect();
+        lock(next, !state.flags._ch3_preview_seen); lock(replay, false);
         if (next.isConnected) {
-          next.disabled = false; replay.disabled = false;
           playBgm("bgm_aftermath");
           replay.focus();
         }
