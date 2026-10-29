@@ -10,7 +10,8 @@ const output = path.resolve(root, process.env.COAL_ARTIFACTS || ".codex/artifact
 fs.mkdirSync(output, { recursive: true });
 const missing = new Set(), results = [];
 const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff2": "font/woff2" };
-const vnAssets = ["/remake/img/ui/vn-lounge/dialogue.svg", "/remake/img/ui/vn-lounge/controls.svg", "/remake/fonts/ZenOldMincho-Name-Bold.woff2"];
+// #964: classic の会話枠原画は narration.svg（dialogue.svg は要求されない）。
+const vnAssets = ["/remake/img/ui/vn-lounge/narration.svg", "/remake/img/ui/vn-lounge/controls.svg", "/remake/fonts/ZenOldMincho-Name-Bold.woff2"];
 const server = http.createServer((req, res) => {
   const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
   const file = path.resolve(root, "." + (pathname.endsWith("/") ? pathname + "index.html" : pathname));
