@@ -8,7 +8,7 @@ const BASE_LOGOS = {
   minto: { name: "PEPPERMINT", file: "peppermint", ext: "webp", sheet: [2172, 724], frame: [772, 242, 640, 231] },
   shop: { name: "Dr.fookah", file: "dr-fookah", ext: "webp", sheet: [2048, 768], frame: [1337, 281, 662, 260] },
   c_station: { name: "C.STATION", file: "c-station", ext: "webp", sheet: [2048, 768], frame: [1533, 157, 481, 440] },
-  choizap: { name: "チョイザップ", file: "choizap", ext: "webp", sheet: [2172, 724], frame: [754, 89, 693, 547] },
+  choizap: { name: "CHOI-ZAP", file: "choizap", ext: "webp", sheet: [2172, 724], frame: [754, 89, 693, 547] },
   ch2_ageha: { name: "MELTY PUFF", file: "melty-puff", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch2_kumicho: { name: "神崎煙草店", file: "kanzaki", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch2_rei: { name: "零-ZERO-", file: "zero", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
