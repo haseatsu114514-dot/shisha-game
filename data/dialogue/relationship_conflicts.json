@@ -1,5 +1,5 @@
 {
-  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。未接続。",
+  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*（エンディング後）は未接続。",
   "dialogues": [
     {
       "dialogue_id": "ch3_shuraba_open",
@@ -200,22 +200,22 @@
       "lines": [
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "私たち、付き合ってるよね"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_sad",
           "text": "それを、この人には言ってなかったんだ"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "店で笑うのも、ここで怒るのも私だよ"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "笑って済ませてあげると思わないで"
         }
       ]
@@ -326,13 +326,13 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者よ、ほかにも誓いを立てておったのか",
+          "text": "勇者よ、ほかにも誓いを立てていたのか",
           "voice": "korochan"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "サメちゃんはコロちゃんを鞄にしまった。"
+          "text": "サメちゃんは右手からコロちゃんを外し、膝に置いた。"
         },
         {
           "speaker": "samechan",

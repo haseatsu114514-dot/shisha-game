@@ -31,10 +31,10 @@ const seed=()=>localStorage.setItem('suien_remake_save','{"schema":5,"day":9,"ow
 try {
   await check('all-images-and-catalog',async page=>{
     catalog=await page.evaluate(async()=>await(await fetch('catalog.json')).json());
-    assert.equal(catalog.summary.current,23); assert.equal(new Set(catalog.items.map(a=>a.id)).size,catalog.items.length);
+    assert.equal(catalog.summary.current,37); assert.equal(new Set(catalog.items.map(a=>a.id)).size,catalog.items.length);
     assert.equal(catalog.items.filter(a=>a.groups.includes('アゲハ修正')).length,5);
     assert.equal(catalog.items.filter(a=>a.groups.includes('タッパー修正')).length,5);
-    assert.equal(catalog.items.filter(a=>a.current&&a.character==='hiyori').length,5);
+    assert.equal(catalog.items.filter(a=>a.current&&a.character==='hiyori').length,6);
     assert.equal(catalog.characters.samechan,'サメちゃん／波多野なぎさ');
     const urls=[...catalog.items.flatMap(a=>[a.image,a.thumbnail]),...Object.values(catalog.references).flat().map(a=>a.url)];
     const failures=await page.evaluate(async urls=>{
@@ -100,7 +100,7 @@ try {
       await page.locator('#close-viewer').click();
       await page.locator('#decision').selectOption('candidate'); assert.equal(await page.locator('.card').count(),1);
       await page.locator('#reset').click();
-      await page.locator('#current').selectOption('yes'); assert.equal(await page.locator('.card').count(),23);
+      await page.locator('#current').selectOption('yes'); assert.equal(await page.locator('.card').count(),37);
       await page.locator('#reset').click();
       await page.locator('#search').fill('タッパー'); assert.ok(await page.locator('.card').count()>=5);
       await page.locator('#reset').click();
@@ -116,7 +116,11 @@ try {
       assert.equal(await page.evaluate(k=>localStorage.getItem(k),STORAGE_KEY),unchanged);
       await page.locator('#file').setInputFiles(filename); await page.locator('#cancel-import').click();
       assert.equal(await page.evaluate(k=>localStorage.getItem(k),STORAGE_KEY),unchanged);
-      // Change then restore from the real exported file.
+      // Change then restore from the real exported file. Target the art that owns
+      // the exported decision (the first ageha card): the catalog's first card is a
+      // different art, and the merge-style import would leave a temporary decision
+      // for it behind, breaking the deep-equal below.
+      await page.locator('#character').selectOption('ageha');
       await page.locator('.card').first().locator('.art-button').click();
       await page.locator('[data-status=reject]').click(); await page.locator('textarea').fill('temporary'); await page.locator('#close-viewer').click();
       await page.locator('#file').setInputFiles(filename); await page.locator('#apply-import').click();

@@ -1,5 +1,5 @@
 {
-  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ未接続台本。能力・大会加点なし。",
+  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.jsの前夜に接続済み（会う約束が成立した恋人だけ）。第4章は未接続。能力・大会加点なし。",
   "dialogues": [
     {
       "dialogue_id": "tournament_date_tsumugi",
@@ -74,7 +74,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "会えて、うれしかったです"
+            "text": "会えてよかった。……手、ありがとう"
           },
           {
             "speaker": "",
@@ -256,7 +256,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "待ち合わせに来たあげはさんは、いつもより静かだった。"
+          "text": "待ち合わせに来たあげはは、いつもより静かだった。"
         },
         {
           "speaker": "ageha",
@@ -266,7 +266,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。何したいですか"
+          "text": "うん。何したい？"
         },
         {
           "speaker": "ageha",
@@ -276,7 +276,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "それ、俺もしたいです"
+          "text": "それ、俺もしたい"
         },
         {
           "speaker": "ageha",
@@ -323,7 +323,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "会えて、うれしかったです"
+            "text": "今日、会えてよかった"
           },
           {
             "speaker": "",
@@ -406,7 +406,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "会えて、うれしかったです"
+            "text": "会えてよかった。お茶、ごちそうさま"
           },
           {
             "speaker": "",
@@ -490,7 +490,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "会えて、うれしかったです"
+            "text": "土産、大事にする。会えてよかった"
           },
           {
             "speaker": "",

@@ -64,7 +64,7 @@ await suite('lime-close-1081', async check => {
 
     await page.waitForFunction(() => QA.core.state.day === 5 && document.querySelector('#screen .map:not(.done)'));
     const result = await page.evaluate(() => {
-      const s = QA.core.state, entries = QA.vn.backlog().filter(l => l.text.startsWith('夜のぺぱーみんと'));
+      const s = QA.core.state, entries = QA.vn.backlog().filter(l => l.text.startsWith('夜のPEPPERMINT'));
       const msg = QA.data.DB.dialogues.interaction_minto_noon_01;
       QA.core.save(); const loaded = QA.core.load();
       return { money: s.money, affinity: s.affinity.minto, day: s.day, slot: s.slot, pending: s.pendingInvite,

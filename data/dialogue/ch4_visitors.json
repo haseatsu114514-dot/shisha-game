@@ -1,5 +1,5 @@
 {
-  "comment": "休暇・店の休みと渡航予定を確定し、到着した実際の恋人のみ。未接続台本。",
+  "comment": "休暇・店の休みと渡航予定を確定し、到着した実際の恋人のみを扱う。未接続台本。",
   "dialogues": [
     {
       "dialogue_id": "ch4_samechan_dubai_girlfriend",

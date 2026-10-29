@@ -10,7 +10,7 @@ import { buildSteamTemperature, buildSteamForecast } from "./steam-forecast.js";
 import { basicsExperienced } from "./practice-history.js";
 
 export function runSteamTimer(cs) {
-  const panel = stepPanel("steam", "蒸らし", "", { brief: "", lessonStep: "timer" });
+  const panel = stepPanel("steam", "蒸らし", "分・秒ボタンで蒸らし時間を設定し、スタートで開始する", { brief: "", lessonStep: "timer" });
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
   const minimumSeconds = cs.mode === "tutorial" ? 180 : 10;
   // B08: 制作と提供を一度終えた既習プレイヤーだけ、繰り返す雑念回避を任意で短くできる。初回・チュートリアルは従来どおり。

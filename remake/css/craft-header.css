@@ -10,8 +10,8 @@
 .bench-phase-copy { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .bench .bench-phase .bench-phase-copy { height: auto; flex: none; border-radius: 0; background: none; box-shadow: none; }
 .bench[data-art-skin] .bench-phase-copy { box-shadow: none; }
-.bench-phase-copy small { font-size: 11px; font-variant-numeric: tabular-nums; letter-spacing: .08em; }
-.bench-phase-copy b { font-size: 13px; letter-spacing: .025em; white-space: nowrap; }
+.bench-phase-copy small { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.bench-phase-copy b { font-size: 14px; letter-spacing: .025em; white-space: nowrap; }
 .bench-progress-track > .bench-phase.seen { color: #bba57e; background: #19132144; }
 .bench-phase.seen small::after { content: " ✓"; color: #b4d4a4; }
 .bench[data-art-skin] .bench-progress-track > .bench-phase.now { color: #f4deb3; border-color: #d4a46a9c; background: linear-gradient(135deg, #6a3a2029, #28152699); box-shadow: inset 0 0 12px #cf89381c, 0 0 8px #e6a25324; }

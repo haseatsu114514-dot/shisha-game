@@ -21,7 +21,7 @@ const checkModel = (cs, expected, catalog, width = 1.04) => {
   return bands;
 };
 
-const widths = { af: 1, dobaj: 1.25, afsahr: .92, forcefect: .72, nightside: .75 };
+const widths = { af: 1, dobaj: 1.25, afsahr: .92, forcefect: .72, fuwari: .72, nightside: .75 };
 for (const flavor of flavors) checkModel({ mix: { [flavor.id]: 12 } }, flavor.heat_tolerance, undefined, 1.04 * widths[flavor.maker]);
 const vanilla = checkModel({ mix: { vanilla: 12 } }, .8, undefined, 1.3);
 const apple = checkModel({ mix: { double_apple: 12 } }, 1);

@@ -126,7 +126,6 @@ const FLAVOR_IMPRESSIONS = {
   banana: "クリーミーな甘さなんだな",
   lychee: "上品な甘みに、ほのかな花の香りがある",
   cool_mint: "ひときわ強い清涼感なんだな",
-  twice_ice: "冷涼感の刺激が後まで残るんだな",
   peppermint_shake: "ミントの冷たさにミルクみたいな甘さもある",
   ice_grape: "ぶどうの甘酸っぱさと冷たさが重なるんだな",
   ice_lemon: "レモンの酸味に冷涼感が重なるんだな",
@@ -181,11 +180,16 @@ export function homeShishaDialogue(result, rig, random = Math.random, { distant 
     : Object.entries(result.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0)
       .map(([id]) => `（${leafName(id)}。${FLAVOR_IMPRESSIONS[id] || "どんな味か、またゆっくり確かめたい"}）`);
   const lines = [{ speaker: "", face: "", text: intros[Math.floor(random() * intros.length)] },
+    { type: "sfx", id: "coalPlace" },
+    { type: "sfx", id: "bubbling" },
     ...(impressions.length ? impressions : ["（今夜の味を、またゆっくり確かめたい）"]).map(text => ({ speaker: "hajime", face: "normal", text }))];
+  lines.push({ type: "sfx", id: "crackle" });
   lines.push({ speaker: "hajime", face: "normal", text: distant
     ? "（また香りを感じられる日に。片付けたら今日は寝よう）"
     : "（この味の感触、覚えておこう。片付けたら今日は寝よう）" });
-  return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG }, lines };
+  // 会話の間だけ夜の曲に替え、終わったら元の曲へ戻る。味覚不調の章は ch2 の既存曲に合わせる
+  const bgm = distant ? "bgm_taste_distant" : "kansetsu_shomei_to_black_coffee";
+  return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG, bgm }, lines };
 }
 
 /** 自分で配合する（合計12gちょうど）。決めたら mix、やめたら null */

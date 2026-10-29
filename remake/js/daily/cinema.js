@@ -1,6 +1,6 @@
 import { state } from "../core/state.js";
-import { DB, sceneBg } from "../core/data.js";
-import { imageReady, toast } from "../core/ui.js";
+import { DB, sceneBg, loadCinemaDialogue } from "../core/data.js";
+import { imageReady, toast, withScenePreparation } from "../core/ui.js";
 import { addMoney, addStamina, earnStat } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { play, isPlaying } from "../vn/engine.js";
@@ -13,9 +13,12 @@ export const cinemaSpot = () => state?.chapter >= 2 ? CINEMA : null;
 
 /** 読了結果だけを返す。解放flag・料金・行動の確定は自主訪問callerに一緒に任せる。 */
 export async function readCinemaIntroduction({ signal = null } = {}) {
-  if (!cinemaIntroductionDue(state) || !DB.dialogues[CINEMA_INTRO]?.lines?.length
-    || signal?.aborted || isPlaying() || introductions.has(state)) return false;
-  const owner = state, before = stamp(owner);
+  if (!cinemaIntroductionDue(state) || signal?.aborted || isPlaying() || introductions.has(state)) return false;
+  const owner = state;
+  await loadCinemaDialogue();
+  if (state !== owner || !cinemaIntroductionDue(state) || signal?.aborted || isPlaying() || introductions.has(state)
+    || !DB.dialogues[CINEMA_INTRO]?.lines?.length) return false;
+  const before = stamp(owner);
   introductions.add(owner);
   try {
     const result = await play(CINEMA_INTRO, { signal });
@@ -33,6 +36,10 @@ export async function visitCinema({ signal = null } = {}) {
     && state.phase === "daily" && !signal?.aborted;
   if (state.flags._cinema_visit === visitStamp || state.visitedDay.rojiura_cinema === state.day
     || spendableMoney(state) < CINEMA.cost) return false;
+  await loadCinemaDialogue();
+  if (!current() || isPlaying() || active.has(state)
+    || state.flags._cinema_visit === visitStamp || state.visitedDay.rojiura_cinema === state.day
+    || spendableMoney(state) < CINEMA.cost) return false;
   const count = state.spotVisits?.rojiura_cinema || 0;
   const id = count === 0 ? CINEMA.first : CINEMA.pool[(count - 1) % CINEMA.pool.length];
   if (!DB.dialogues[id]?.lines?.length) return false;
@@ -42,7 +49,7 @@ export async function visitCinema({ signal = null } = {}) {
   try {
     // 未登録・読込失敗でも課金しない。候補原画を自動採用して回避しない。
     const bg = sceneBg(film.bg, "day").url;
-    if (!await imageReady(bg, 4000)) {
+    if (!await withScenePreparation(imageReady(bg, 4000))) {
       if (current()) toast("上映を始められませんでした。街へ戻ります");
       return false;
     }

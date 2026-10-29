@@ -291,7 +291,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "二本目は、はじめへの挙手が多かった。一本目の差を上回り、合計でも僅かに届いた。"
+          "text": "二本目は、はじめへの挙手が多かった。一本目の差を返し、合計でも僅かに上回った。"
         },
         {
           "speaker": "dr_kemuri",
@@ -457,6 +457,734 @@
         }
       ],
       "comment": "服の匂いと主題の明言の回収はここ一度だけ。次にending_startへ。"
+    },
+    {
+      "dialogue_id": "ch5_bridge_after_return",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "世界大会から帰ってきて、予約の帳面が少しだけ厚くなった。",
+          "comment": "※仮置き"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "これ見た？　決勝の動画、また回ってきたんだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたスマホの中で、はじめが炭を置いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……こうして見ると、手、遅いですね"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "遅いもんか。会社じゃ、世界一の店の常連だって自慢してるんだから",
+          "comment": "※仮置き（優勝前提の一行）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（画面の中の俺は、何度再生しても、同じところで炭を置く）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "見とれてる暇があったら、三番の炭替えろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シャッターを下ろすと、店の中の音が急に少なくなった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "帰ってきてから、ずっと落ち着かねえ顔してんな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そうですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "勝ったあとってのは、そういうもんだ。そのうち、次の注文が来る",
+          "comment": "※仮置き（優勝前提の一行）"
+        }
+      ],
+      "comment": "出典: NEW-TEXT.md §1。未接続。場面全体が※仮置き（第4章優勝前提、Q5・Q19判断待ち）。ch4_ending／ch4_sumi_return後、翌週の二つの店がその後なら同場面後からch5_openingへ、という挿入位置も※仮置き。背景tonari夕方、通常BGM、閉店後への時間経過、暗転は演出想定。予約帳面の地の文も※仮置き。salarymanは既存話者IDを確認済みだが、素材で未確認だった口調は※仮置き。大会動画をch5_openingへの前振りとする。"
+    },
+    {
+      "dialogue_id": "ch5_free_tonari_practice",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のカウンターで、ダブルアップルの缶を開けた。量りの上で、12グラムに合わせる。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "また、それか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "勝負、これだけなんで"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "同じ匂いばっか嗅いでると、鼻が慣れる。慣れた鼻で作ると、客の鼻とずれるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……じゃあ、どうすれば"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "たまには、客が頼んだもんを吸え。練習は、そのあとだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは棚から別の缶を出して、はじめの前に置いた。今日、いちばん注文が多かったフレーバーだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（勝負の葉より先に、今日の客の葉か）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "缶の蓋を開ける。ダブルアップルとは違う、甘い匂いがした。"
+        }
+      ],
+      "comment": "出典: NEW-TEXT.md §2。未接続。背景tonari閉店後は※仮置き。日程決定前（_ch5_match_scheduled未成立）にtonari選択で1回、という条件・自動発生か選択肢か・博士への連絡との並べ方はすべて※仮置き。フラグはcomment上の想定のみ。日数・行動回数消費は①待ち（Q11）。"
+    },
+    {
+      "dialogue_id": "ch5_free_mashiro_visit",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんが、紙袋を胸に抱えて立っていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "こんにちは。……今、忙しい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大丈夫。開けたばっかりだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……東京から？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "用事のついで。顔だけ見に来た"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "これ、お茶。僕、最近これにはまってて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとう。……いい匂いだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "なんか、顔が硬いね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今度、ちょっと大きい勝負があって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "そっか。じゃあ、それは勝負のない日に飲んで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（勝負のない日、か）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お茶の袋だけ置いて、ましろちゃんは手を振って帰っていった。"
+        }
+      ],
+      "comment": "出典: NEW-TEXT.md §3。未接続。背景tonari昼は※仮置き、入口の鈴はSE想定。日程決定前のtonari来客として1回という再生条件は※仮置き。ch5_unrecorded_day前後どちらでも読める想定。関係状態を確定せず、関係フラグは参照しない。素材で呼び方未確認のため呼びかけなし。一人称は僕。日数・行動回数消費は①待ち（Q11）。博士と9000に関するましろの知識を決めず、作らない日の椅子を言語化しない。"
+    },
+    {
+      "dialogue_id": "ch5_free_first_visitor",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見慣れない客が、入口でスマホの画面と看板を見比べていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あの、ここって……世界大会の",
+          "comment": "※仮置き（優勝前提の一行）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。いらっしゃいませ"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "動画で見たのと同じのを、お願いできますか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "分かりました。……今日は、どれくらいいられますか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "え。えっと、一時間くらいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、あの日よりも少し軽くします。あれは大会用の作り方なんで"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……じゃあ、それで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を置きながら、画面の中の自分の手つきを思い出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日は、あれより一つ遅く置く。"
+        }
+      ],
+      "comment": "出典: NEW-TEXT.md §4。未接続。場面全体・背景tonari夕方・橋渡し後の日程決定前にtonariで1回という条件は※仮置き。選択肢か自動発生かは未定。世界大会の一言は素材上の優勝前提として①待ち（Q5・Q19）。素材の仮ID first_visitor は採用せず既存の汎用話者customerに合わせた。対決の酸っぱい顔の客とは別人で、対決客席へは接続しない（Q14）。決勝で使った葉の名は未確認のため出さない。日数・行動回数消費は①待ち（Q11）。"
+    },
+    {
+      "dialogue_id": "ch5_second_cup_result_afterglow",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席から、短い拍手が起きた。",
+          "comment": "※仮置き【①待ち（Q14）】（客の人数と出どころに触れない最小の一行）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "酸っぱい顔の人が、ホースを台へ戻した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ごちそうさま。……いつもの、また店で頼むよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。お待ちしてます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トングを置こうとした。指が、なかなか柄から離れない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが客席から下りてきて、はじめの台の炭皿をのぞきこんだ。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭、一つ余らせたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……離したやつです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけ言って、スミさんははじめの背中を一度だけ叩いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の台で、9000のアームがゆっくり折りたたまれていく。最後まで、関節の音は小さかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（勝った。……勝ったのに、手がまだ二本目の途中にいる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士は、記録の画面から目を上げなかった。"
+        }
+      ],
+      "comment": "出典: NEW-TEXT.md §5。未接続。勝利ルート専用でch5_second_cup_defeat後には置かない想定。ch5_second_cup_result末行「ありがとうございます。最初の一台、また吸わせてください」の後、ch5_doctor_after_match冒頭「片づけの途中。博士が、二本目の記録の空白を見つめていた。」の前という挿入位置・接続は推定のため※仮置き。拍手の行は①待ち（Q14）の最小仮置き。customerは既存の酸っぱい顔の人。会場（Q13）・勝利フラグ・到達条件（Q20）は決めない。関節の音の描写は優先3件§6に合わせた※仮置きで、同節改稿時には要照合。"
+    },
+    {
+      "dialogue_id": "ch5_dream_in",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "灯りを消しても、画面の中の手つきが、まぶたの裏に残っていた。",
+          "comment": "※仮置き"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……もう寝ろ、俺）",
+          "comment": "※仮置き"
+        }
+      ],
+      "comment": "出典: NEW-TEXT.md §6。未接続。場面全体と2行の文面は※仮置き。ch5_dream直前の候補1はch5_unrecorded_dayを読んだ日の夜、候補2は対決前夜（優先3件§5末尾の暗転と§6当日朝の間）。候補を選ばず両方保持。暗転・dream_digitalは演出想定のみで実フィールドを追加しない。日の進め方は①待ち（Q11）。"
+    },
+    {
+      "dialogue_id": "ch5_dream_out",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "洗ったカップを、水切りかごに伏せた。",
+          "comment": "※仮置き"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……受け取れなかったな）",
+          "comment": "※仮置き"
+        }
+      ],
+      "comment": "出典: NEW-TEXT.md §7。未接続。差し込み位置と2行の文面は※仮置き。ch5_dream末行「目を覚ますと、机の上に昨日のカップがあった。まず、それを洗った。」直後の想定。候補1（ch5_unrecorded_dayの夜）なら自由行動、候補2（対決前夜）なら優先3件§6「休業日の朝の店は、音が少ない。」へ。候補は未選択。夢でお茶を出した人物や関係状態は決めない（Q16・Q17）。"
+    },
+    {
+      "dialogue_id": "ch5_schedule_contact",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の札を出したあと、カウンターの内側でスミさんが帳面を広げていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "来月の休業日を決めると言っていた、その帳面だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん。来月の休み、もう決まりました？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今、決めてる。……なんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "博士との勝負、その日にしようと思って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはペンを止めて、帳面をはじめのほうへ向けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "丸で囲んだ日が、一つだけある。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ここだ。店はやらねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この日、ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺も行くからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "見に行くに決まってんだろ。うちの店の名前でやるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……決めるなら、今か）"
+        },
+        {
+          "type": "choice",
+          "id": "ch5_schedule_contact_choice",
+          "choices": [
+            {
+              "text": "日を決めて連絡する",
+              "next": "decide"
+            },
+            {
+              "text": "まだ決めない",
+              "next": "defer"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "decide": [
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "はい。お電話ありがとうございます"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariのはじめです。勝負の日、決めました。来月の、店の休業日でお願いできますか"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "ええ、その日で構いません"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "条件、もう一回だけ確かめさせてください"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "どうぞ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "葉はダブルアップルだけ。お互い12グラム"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "はい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "機材の条件も揃える。同じお客さんに、二本とも吸ってもらう"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "はい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "もう一度吸いたいほうに、一回ごとに一票。二本の合計で決めて、同じ数なら引き分け"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "そのとおりです。足すことも、引くこともありません"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "当日まで、私も調整を続けます"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "その日の9000で、お相手します"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……よろしくお願いします"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "決まったか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "決まりました"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "なら今日はもう上がれ。片付けは俺がやる"
+          }
+        ],
+        "defer": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……もう少しだけ、考えます"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "好きにしろ。急かす相手でもねえだろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はじめです。すみません、日取り、もう少しだけ待ってもらえますか"
+          }
+        ]
+      },
+      "comment": "出典: CH5-PRIORITY3-TEXT.md §5。未接続。既存ch4_strategy等と同じchoice/choices/text/nextとbranches形式でAをdecide、Bをdeferに収録。ch5_unrecorded_day後のtonari選択「博士に連絡する」が入口、未読なら先に同場面を再生して冒頭へ、という条件は※仮置き（Q12）。背景tonari夕方・客なし、通常BGM、通話発信音・終了音、電話で博士は立ち絵なし名前のみ（LIMEへの変更含む）は演出想定・※仮置き。Aの博士「そのとおりです。足すことも、引くこともありません」の直後、博士「当日まで、私も調整を続けます」の直前に会場の行（Q13）と客の行（Q14）が入る（①待ち・空欄）。空欄2行は本文に未収録。会場の用意者、公平性や酸っぱい顔の客がいる理由も判断待ち。Q18が同一人物ならAの挨拶後に面識の一言を足す余地のみ。A終了で_ch5_match_scheduled成立、暗転して前日の自由行動を挟まず§6当日朝へ（Q15）、日数表示はQ11待ち、という想定はすべて※仮置きで実フラグなし。Bは発信後ch5_timeoutへ、終了後自由行動へ戻り同フラグを立てない想定。B追加台詞とtimeout冒頭は同文でないため保持したが、既存の連絡済み地の文による意味の反復は接続時に要確認。会場入り前の取り消しでtimeoutを流用する想定も※仮置き（Q15）。"
+    },
+    {
+      "dialogue_id": "ch5_match_day_arrival",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休業日の朝の店は、音が少ない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上着を羽織って、ケースの留め金を確かめた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "忘れもんは"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ないです。葉も、トングも"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "水は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……向こうにありますよ、たぶん"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "たぶんで行くな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは、ペットボトルを一本、はじめのケースの横に押し込んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場に着いた。",
+          "comment": "※仮置き（Q13）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "部屋の奥に、それはあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "細いアームが二本、台の上で折りたたまれている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "脚の付け根から配線の束が床へ這い、その配線に小さな検品札が付いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHA-9000。博士がそう呼んでいた装置だ。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "おはようございます。来てくださって、ありがとうございます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "おはようございます。今日は、よろしくお願いします"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "始める前に、揃えましょう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士が台の上に、同じ缶を二つ並べた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蓋を開けて、量りに載せる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめの量りが12グラムで止まり、隣の量りも12グラムで止まった。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "ボウルは、こちらとこちら。炭も同じ箱から"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ホースの長さも、合わせてもらっていいですか"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "ええ、もちろん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "9000のアームが、ゆっくり開いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "関節が鳴る音が、思ったより小さい。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは客席の端に座って、腕を組んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席に、人が座りはじめた。",
+          "comment": "※仮置き（Q14）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あれが、俺の煙をなぞってくる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なぞられるのは、記録の中の俺だ。……今ここで手が震えたら、そっちに負ける）"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "では、一本目を"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
+        }
+      ],
+      "comment": "出典: CH5-PRIORITY3-TEXT.md §6。未接続。§5後からch5_copy_first_cup冒頭「一本目。同じダブルアップル12グラムを、二つのボウルへ詰めた。」へつなぐ想定。背景tonari朝・シャッターが下りた状態、BGMなし環境音、会場への暗転は演出想定。マップ行き先を「会場へ行く」のみにし、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」に「向かう」「まだ行かない」を出す仕様は※仮置き（Q15）。今回は演出・UI想定としてcommentのみとしchoiceにしない。「向かう」で_ch5_match_started成立、「まだ行かない」でch5_timeout流用・_ch5_match_scheduled解除・自由行動へ、というフラグ名と処理も※仮置きで未実装。Q13会場名・外観・内装・背景（#896）判断待ちのためマップ表示は「会場」の仮置き。「会場に着いた。」と「客席に、人が座りはじめた。」はそれぞれQ13/Q14の最小仮置きとして本文に収録。客の出どころ・人数は未記述。酸っぱい顔の客の先出しはQ17待ちで追加せず、同行者の客席描写は#516の範囲として未記入。SHISHA-9000一枚絵またはスチルは※仮置き。Q18が同一人物なら挨拶に面識の一言を足す余地のみ。検品札の中身と職人の話はdoctor_after_matchへ、上着の匂いはreturn_to_tonariへ残し、判定ルールや作らない日の椅子を繰り返さない。第4章優勝前提の追加はしていない。"
+    },
+    {
+      "dialogue_id": "ch5_reflection_placeholder",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ボウルの縁に置いた指を、一度離した。",
+          "comment": "※仮置き"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "息を吐いて、もう一度、トングを持った。",
+          "comment": "※仮置き"
+        }
+      ],
+      "comment": "出典: CH5-PRIORITY3-TEXT.md §7テスト用の最小の仮置き。未接続。差し込み先はch5_relationship_before_second_cupのlines[3]（0始まり、4行目）の{\"type\": \"reflection\"}の位置。前はスミ「はじめ。終わったら、店で一服するぞ」、はじめ「……はい」、後は地の文「客席に、tonariへ来た酸っぱい顔の人がいた。今日はホースを膝に置いて、待っている。」。既存対象エントリは変更しない。中身はQ17/Q16判断待ちで2行とも全差し替え前提。F案（間だけ）の採用を意味しない。reflection演出は※仮置きでエンジン効果未確認。_ch5_reflection_variant記録枠は※仮置きで実フラグを作らない。A・G案の個別後日談と同じ判定、複数交際ending_relationship_pendingの扱いはQ16待ち。D案の優勝前提はQ5待ち、B案ならましろの一人称は僕。主題・酸っぱい顔の客の回想・関係状態を確定しない。"
     }
   ]
 }

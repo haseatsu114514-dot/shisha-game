@@ -10,8 +10,8 @@
       },
       "lines": [
         { "speaker": "samechan", "face": "smile", "text": "お主、また顔を出してくれたのう。今日は少し、地元の案内でもしようか" },
-        { "speaker": "hajime", "face": "normal", "text": "サメちゃん、この辺りは昔から詳しいんですか？" },
-        { "speaker": "samechan", "face": "normal", "text": "うむ、わしの地元じゃ。遊びに行くなら、まず水族館……" },
+        { "speaker": "hajime", "face": "normal", "text": "俺もこの辺の生まれなのに、案内されるの初めてです" },
+        { "speaker": "samechan", "face": "normal", "text": "地元同士でも、知らぬ路地はあるものじゃ。遊びに行くなら、まず水族館……" },
         { "speaker": "samechan", "face": "serious", "text": "いや、それでは無難すぎる。お主には、とっておきを教えよう" },
         { "speaker": "samechan", "face": "smile", "text": "路地裏シネマじゃ。小さな映画館なのじゃが、サメ映画の聖地でのう！" },
         { "speaker": "hajime", "face": "surprise", "text": "聖地。そんなにサメ映画をやってるんですか？" },
