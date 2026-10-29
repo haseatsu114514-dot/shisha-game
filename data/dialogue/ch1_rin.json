@@ -216,7 +216,11 @@
       "dialogue_id": "ch1_rin_second",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "試香モニター"
+        "topic": "試香モニター",
+        "flavor_lesson": {
+          "rose": 1,
+          "lychee": 1
+        }
       },
       "lines": [
         {
@@ -364,11 +368,7 @@
       "dialogue_id": "ch1_rin_third",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "夜の側のサンプル",
-        "flavor_lesson": {
-          "rose": 1,
-          "lychee": 1
-        }
+        "topic": "夜の側のサンプル"
       },
       "lines": [
         {
