@@ -189,7 +189,7 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.tournament.lastRank, before.tournament.lastRank);
     assert.equal(state.tournament.lastTotal, before.tournament.lastTotal);
     assert.equal(state.flags._ch3_cleared, undefined, "Post-win Tokyo scenes still remain");
-    assert.equal(state.money, before.money);
+    assert.equal(state.money, before.money + 100000, "Chapter 3 prize is paid once on the win");
     assert.deepEqual(state.lovers, before.lovers);
     await page.locator(t("aftermath")).click();
     const aftermath = scene => `[data-test="ch3-aftermath-scene"][data-scene="${scene}"]`;

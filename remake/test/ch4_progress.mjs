@@ -351,6 +351,7 @@ for (const dialogue of files.ch4_spots.filter(row => ["ch4_dubai_souq", "ch4_dub
 
 // #1660: 大会に勝ったとき賞金を一度だけ付与する（敗北では付けない）。
 {
+  assert.equal(CH4_PRIZE, 200000, "decided chapter 4 prize");
   const prizeSave = clearedSave();
   advanceToChapterFour(prizeSave);
   const progress = chapterFourProgress(prizeSave);
