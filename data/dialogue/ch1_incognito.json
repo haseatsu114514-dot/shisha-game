@@ -35,7 +35,7 @@
       "dialogue_id": "ch1_maezono_cameo",
       "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
       "lines": [
-        { "speaker": "", "face": "", "text": "夕方前の、店がいちばん静かな時間。上品なジャケットの男性が、ふらりと入ってきた。" },
+        { "speaker": "", "face": "", "text": "夕方前の、店がいちばん静かな時間。上品なジャケットに、目深な帽子とメガネの男性が、ふらりと入ってきた。" },
         { "speaker": "???", "face": "normal", "text": "若いの、一台お願いできるかな。甘すぎないのがいい" },
         { "speaker": "hajime", "face": "normal", "text": "はい、少々お待ちください" },
         { "speaker": "", "face": "", "text": "一台を出す。男性は一口ごとに目を閉じて、ゆっくり、ゆっくり味わっている。" },
