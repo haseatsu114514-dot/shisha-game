@@ -291,7 +291,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "二本目は、はじめへの挙手が多かった。一本目の差を上回り、合計でも僅かに届いた。"
+          "text": "二本目は、はじめへの挙手が多かった。一本目の差を返し、合計でも僅かに上回った。"
         },
         {
           "speaker": "dr_kemuri",
@@ -595,6 +595,16 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "大丈夫。開けたばっかりだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……東京から？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "用事のついで。顔だけ見に来た"
         },
         {
           "speaker": "mashiro",
