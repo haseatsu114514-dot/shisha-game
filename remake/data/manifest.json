@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-28 09:58 UTC",
+ "generated": "2026-10-28 18:13 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -1507,6 +1507,10 @@
    "file": "title_art_ageha_03_model_moment.png"
   },
   {
+   "character": "ageha",
+   "file": "title_art_ageha_04_gummy_light.png"
+  },
+  {
    "character": "hiyori",
    "file": "title_art_hiyori_01_twilight_walk.png"
   },
@@ -1527,6 +1531,10 @@
    "file": "title_art_hiyori_05_ramen_break.png"
   },
   {
+   "character": "hiyori",
+   "file": "title_art_hiyori_06_riverside_hoodie.png"
+  },
+  {
    "character": "samechan",
    "file": "title_art_samechan_01_shishark_test_run.png"
   },
@@ -1539,6 +1547,10 @@
    "file": "title_art_samechan_03_aquarium.png"
   },
   {
+   "character": "samechan",
+   "file": "title_art_samechan_04_throne_pose.png"
+  },
+  {
    "character": "mashiro",
    "file": "title_art_mashiro_01_heavy_smoke.png"
   },
@@ -1549,6 +1561,10 @@
   {
    "character": "mashiro",
    "file": "title_art_mashiro_03_after_rain.png"
+  },
+  {
+   "character": "mashiro",
+   "file": "title_art_mashiro_04_cherry_petals.png"
   },
   {
    "character": "minto",
@@ -1567,12 +1583,20 @@
    "file": "title_art_minto_04_after_hours.png"
   },
   {
+   "character": "minto",
+   "file": "title_art_minto_05_mint_cloud.png"
+  },
+  {
    "character": "rin",
    "file": "title_art_rin_01_night_tasting.png"
   },
   {
    "character": "rin",
    "file": "title_art_rin_03_late_coffee.png"
+  },
+  {
+   "character": "rin",
+   "file": "title_art_rin_04_rainy_neon_umbrella.png"
   },
   {
    "character": "tsumugi",
@@ -1585,6 +1609,22 @@
   {
    "character": "tsumugi",
    "file": "title_art_tsumugi_03_twilight_sketch.png"
+  },
+  {
+   "character": "tsumugi",
+   "file": "title_art_tsumugi_04_painting_studio.png"
+  },
+  {
+   "character": "sumi",
+   "file": "title_art_sumi_01_own_clay_bowl.png"
+  },
+  {
+   "character": "naru",
+   "file": "title_art_naru_01_bakery_morning.png"
+  },
+  {
+   "character": "adam",
+   "file": "title_art_adam_01_sunset_proclamation.png"
   }
  ],
  "makingBox": {
@@ -2344,7 +2384,17 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+  "ui/title_arts/title_art_adam_01_sunset_proclamation.png",
+  "ui/title_arts/title_art_ageha_04_gummy_light.png",
+  "ui/title_arts/title_art_hiyori_06_riverside_hoodie.png",
+  "ui/title_arts/title_art_mashiro_04_cherry_petals.png",
+  "ui/title_arts/title_art_minto_05_mint_cloud.png",
+  "ui/title_arts/title_art_naru_01_bakery_morning.png",
+  "ui/title_arts/title_art_rin_04_rainy_neon_umbrella.png",
+  "ui/title_arts/title_art_samechan_04_throne_pose.png",
+  "ui/title_arts/title_art_sumi_01_own_clay_bowl.png",
+  "ui/title_arts/title_art_tsumugi_04_painting_studio.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
