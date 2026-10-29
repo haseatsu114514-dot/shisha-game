@@ -12,7 +12,7 @@ export const CHAPTER_DIALOGUE_FILES = { ch2Tournament: "ch2_tournament", cityGue
 let backgroundWeather = () => null;
 export function setBackgroundWeatherSource(source) { backgroundWeather = source; }
 
-/** 読み込んだ全データ。起動時に loadAll() が埋める */
+/** 読み込んだ全データ。起動時に loadAll()、タイトル後に後段ローダが埋める */
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
   samechan: {},         // シーシャークのprofile・会話・LIME・店（独立overlay）
@@ -52,9 +52,10 @@ const DIALOGUE_FILES = [
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
   "tournament_craft", // 制作中の注目点と、試喫でその工程を振り返る掛け合い
   "venue_hours", // 店主の案内と街の昼夜差分
-  "hiyori", // ひよりの本心表示サンプル・未接続のイベント定義
   "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
 ];
+// ひよりの参照先は DB.hiyori.route が無い間 disabled に倒れるため、タイトル後に読める。
+const DEFERRED_DIALOGUE_FILES = ["hiyori"];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
 const JSON_CONCURRENCY = 4;
@@ -74,6 +75,25 @@ async function getJSON(path) {
   } finally {
     clearTimeout(timer);
   }
+}
+
+let deferredDialoguesPromise;
+export function loadDeferredDialogues() {
+  if (!deferredDialoguesPromise) {
+    deferredDialoguesPromise = Promise.all(DEFERRED_DIALOGUE_FILES.map((file) =>
+      getJSON(`${ROOT}data/dialogue/${file}.json`).then((data) => [file, data])
+    )).then((files) => {
+      for (const [file, data] of files) {
+        if (file === "hiyori") DB.hiyori = data;
+        for (const d of data.dialogues || []) DB.dialogues[d.dialogue_id] = d;
+      }
+      return DB;
+    }).catch((error) => {
+      deferredDialoguesPromise = null; // 先読み失敗後は次の呼び出しで再試行できる
+      throw error;
+    });
+  }
+  return deferredDialoguesPromise;
 }
 
 export async function loadAll(onProgress = () => {}) {
