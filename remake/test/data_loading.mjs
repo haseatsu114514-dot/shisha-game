@@ -63,11 +63,12 @@ for (const id of ["minto", "ageha"]) {
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
 assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
-assert.equal(requests.length, 43);
-assert.equal(new Set(requests).size, 43);
+assert.equal(requests.length, 42);
+assert.equal(new Set(requests).size, 42);
+assert(!requests.includes("../data/dialogue/hiyori.json"));
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 43);
+assert.equal(progress.length, 42);
 assert(all.DB.dialogues.samechan_cinema_introduction);
 assert(all.DB.dialogues.cinema_first_screening);
 assert.equal(progress.at(-1), 1);
@@ -80,8 +81,8 @@ for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romanc
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
 assert.equal(all.DB.characters.hiyori.name, "朝霧ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
-assert.equal(all.DB.hiyori.route.enabled, true);
-assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
+assert.equal(all.DB.hiyori.route, undefined);
+assert.equal(all.DB.dialogues.hiyori_meeting, undefined);
 assert(all.DB.lover.dates.hiyori && all.DB.friends.friends.hiyori);
 assert(all.portraitInfo("hiyori", "normal"));
 assert(all.faceIconUrl("hiyori"));
@@ -118,6 +119,33 @@ assert.deepEqual(flavorMakerProblems([
   { id: "unknown", reason: "invalid maker: unknown" },
   { id: "inherited_key", reason: "invalid maker: toString" },
 ]);
+
+// タイトル後の後段読みは同じ Promise を共有し、ひよりの全体データと台詞を公開する。
+const deferred = all.loadDeferredDialogues();
+assert.equal(all.loadDeferredDialogues(), deferred);
+await deferred;
+assert.equal(requests.length, 43);
+assert.equal(requests.at(-1), "../data/dialogue/hiyori.json");
+assert.equal(all.DB.hiyori.route.enabled, true);
+assert(all.DB.dialogues.hiyori_meeting);
+assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
+assert.equal(all.loadDeferredDialogues(), deferred);
+assert.equal(requests.length, 43);
+
+// 後段読みの失敗はキャッシュせず、次の呼び出しで再試行できる。
+let deferredAttempts = 0;
+const retryDeferred = await loader(async (url) => {
+  assert.equal(url, "../data/dialogue/hiyori.json");
+  if (++deferredAttempts === 1) return { ok: false, status: 503 };
+  return fixtureFetch(url);
+});
+await assert.rejects(retryDeferred.loadDeferredDialogues(), /hiyori\.json: HTTP 503/);
+assert.equal(retryDeferred.DB.hiyori.route, undefined);
+assert.equal(retryDeferred.DB.dialogues.hiyori_meeting, undefined);
+await retryDeferred.loadDeferredDialogues();
+assert.equal(deferredAttempts, 2);
+assert.equal(retryDeferred.DB.hiyori.route.enabled, true);
+assert(retryDeferred.DB.dialogues.hiyori_meeting);
 
 // LIMEの素材参照は本文とlogを合わせて検証する。既存テキスト形式も受理する。
 function validateLimeMedia(messages, catalog) {
@@ -216,4 +244,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 42 JSON files, max 4 requests, gallery catalog, hiyori foundation, venue hosts, cinema, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 42 boot JSON files, deferred hiyori and retry, max 4 requests, gallery catalog, venue hosts, cinema, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
