@@ -37,7 +37,7 @@ import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocati
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
-import { presentNight } from "../core/growth.js";
+import { presentNight, growthMenuItems, openGrowthBoard } from "../core/growth.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -228,6 +228,7 @@ async function openMenu() {
     className: "menu-modal",
     body: `DAY ${chapterDay(state)}・${state.slot >= 1 ? "夜" : "昼"}　／　行動のたびに自動でセーブされています。`,
     options: [
+      ...growthMenuItems(),
       { label: "セーブ", value: "save", test: "menu-save" },
       { label: "ロード", value: "load", test: "menu-load" },
       { label: "設定", value: "config", test: "menu-config" },
@@ -246,6 +247,7 @@ async function openMenu() {
     const key = await loadFlow({ inGame: true });
     if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
   }
+  if (v === "board") await openGrowthBoard();
   if (v === "config") await (await import("../scenes/title.js")).openConfig();
   if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
   if (v === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();

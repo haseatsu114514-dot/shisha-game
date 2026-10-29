@@ -13,7 +13,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs"]
     },
     {
       "id": "vent-lid",
@@ -66,6 +66,8 @@
       "paths": [
         "remake/js/core/growth.js",
         "remake/js/daily/levelup.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/daily/growth-board-screen.js",
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
         "remake/test/browser/growth_levelup.mjs"
