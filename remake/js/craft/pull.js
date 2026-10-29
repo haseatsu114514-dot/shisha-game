@@ -95,9 +95,10 @@ const MODES = {
 };
 
 export function runPull(cs) { return pullGame(cs, MODES.pull); }
-export async function runCare(cs, { round = 0 } = {}) {
+export async function runCare(cs, { round = 0, coached } = {}) {
   cs.careRound = round;
-  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" });
+  // coached を渡した呼出しは、本番モードの一台でも調整だけ初回レッスンの手引きにできる（DAY7 の統合練習）。
+  const completed = await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理", coached });
   if (completed === false) throw new Error("Care interrupted before finishing");
   if (round && cs.care) {
     cs.careHistory ??= [];
@@ -107,7 +108,7 @@ export async function runCare(cs, { round = 0 } = {}) {
 
 async function pullGame(cs, mode) {
   await waitBenchReady(cs, mode.store);
-  const tutorial = cs.mode === "tutorial";
+  const tutorial = mode.coached ?? (cs.mode === "tutorial");
   // 葉が傷むと適温帯が細くなるので、ダメージのたびに bands/ideal を取り直す。中心は動かないので一度だけ。
   let bands = temperatureBands(cs), ideal = bands.ideal;
   const center = bands.center;

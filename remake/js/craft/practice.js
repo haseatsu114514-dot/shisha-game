@@ -18,7 +18,7 @@ export { practiceRecords, recordPractice } from "./practice-history.js";
 
 export const CRAFT_STEPS = [["setup", "SETUP"], ["mix", "MIX"], ["pack", "PACK"], ["holes", "FOIL"], ["place", "SET"], ["heat", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"], ["care1", "調整1回目"], ["care2", "調整2回目"]];
 
-export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", staffPractice = false, isCurrent = null } = {}) {
+export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", staffPractice = false, isCurrent = null, coachCare = coached } = {}) {
   // 呼出し元が指定した制作だけを中断判定する。既存の自由練習等は従来どおり。
   const owner = state;
   const checkCurrent = () => {
@@ -54,7 +54,7 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
   checkCurrent();
   if (adjustments) for (const round of [1, 2]) {
     if (cs.failed) break;
-    await runCare(cs, { round });
+    await runCare(cs, { round, coached: coachCare });
     checkCurrent();
   }
   if (!recordPractice(cs, kind)) throw new Error("Practice interrupted before serving");

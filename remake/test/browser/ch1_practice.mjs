@@ -147,13 +147,13 @@ await suite("ch1-practice", async run => {
       assert.equal(r.state.stamina, before.state.stamina); assert(r.state.flags._ev_first_practice);
       resourcesUnchanged(r.state);
     }, options);
-    await check(`${device}-mid-care`, async page => {
+    await check(`${device}-mid-full`, async page => {
+      // #1081 E05: 初回の中間準備は調整だけの練習ではなく、一台を通して作り提供し、そのまま調整まで覚える。
       await setup(page, { day: 7 }); await page.evaluate(() => P.run()); await finish(page);
       const r = await snapshot(page), record = r.state.flags._craft_practice_runs.at(-1);
-      assert.deepEqual(r.steps, ["care"]); assert.equal(r.benches, 1);
-      assert.equal(record.scope, "care"); assert.equal(record.served, false); assert.equal(record.adjustments, 2);
-      assert.deepEqual(record.mix, { blueberry: 10, mint: 2 }, "調整練習は店が用意した葉を使う");
-      assert.deepEqual(record.scores, {}); assert(record.success); assert(r.state.flags._ev_midcheck);
+      assert.equal(r.benches, 1); assert(r.steps.includes("care"), "提供のあと同じ一台で調整まで通す");
+      assert.equal(record.scope, "full"); assert.equal(record.served, true); assert.equal(record.adjustments, 2);
+      assert(record.success); assert(r.state.flags._ev_midcheck); assert.equal(r.state.flags._ch1_mid.choice, "full");
       resourcesUnchanged(r.state, true); await assertFits(page, ".vn-box");
     }, options);
     await check(`${device}-mid-experienced-skip`, async page => {
@@ -203,22 +203,22 @@ await suite("ch1-practice", async run => {
   await check("mid-failure-is-not-success", async page => {
     await setup(page, { day: 7, auto: "burn" }); await page.evaluate(() => P.run()); await finish(page);
     const r = await snapshot(page), record = r.state.flags._craft_practice_runs.at(-1);
-    assert.equal(record.success, false); assert.equal(record.served, false); assert.equal(record.adjustments, 1);
+    assert.equal(record.scope, "full"); assert.equal(record.success, false); assert.equal(record.served, false);
     assert(r.state.flags._ev_midcheck); assert(r.entries.includes("remake_preparation_failed"));
     resourcesUnchanged(r.state, true);
   });
-  await check("mid-interrupted-save-restarts-only-care", async page => {
+  await check("mid-interrupted-save-restarts-full-practice", async page => {
     await setup(page, { day: 7, auto: null }); await page.evaluate(() => P.run());
-    await page.locator('[data-test="care-coals"]').waitFor();
+    await page.waitForFunction(() => P.benches === 1 && P.core.state.flags._ch1_mid?.choice === "full");
     await page.evaluate(() => P.core.save());
     const before = await snapshot(page); assert.equal(before.state.flags._ev_midcheck, undefined);
     assert.equal(before.state.flags._craft_practice_runs, undefined);
-    assert.deepEqual(before.state.flavorStock, { double_apple: 50, blueberry: 50, mint: 50, lemon: 50 }, "調整中の保存でも私物の葉は減らない");
+    assert.deepEqual(before.state.flavorStock, { double_apple: 50, blueberry: 50, mint: 50, lemon: 50 }, "制作途中の保存でも私物の葉は減らない");
     await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await setup(page, { day: 7, fresh: false });
     await page.evaluate(() => P.run()); await finish(page);
-    const r = await snapshot(page); assert.deepEqual(r.steps, ["care"]); assert.equal(r.state.flags._craft_practice_runs.length, 1);
-    assert.deepEqual(r.state.flags._craft_practice_runs[0].mix, { blueberry: 10, mint: 2 });
-    assert(!r.entries.includes("remake_midcheck_intro")); assert.equal(r.state.flags._ch1_mid.choice, "care");
+    const r = await snapshot(page); assert.equal(r.benches, 1); assert.equal(r.state.flags._craft_practice_runs.length, 1);
+    assert.equal(r.state.flags._craft_practice_runs[0].scope, "full");
+    assert(!r.entries.includes("remake_midcheck_intro")); assert.equal(r.state.flags._ch1_mid.choice, "full");
     resourcesUnchanged(r.state, true);
   });
   await check("completed-practice-unread-feedback-does-not-repeat", async page => {

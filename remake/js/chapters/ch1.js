@@ -421,11 +421,15 @@ async function midPreparation() {
   if (!progress.stockDone) { await prepareFlavorStock(); progress.stockDone = true; save(); }
   if (!progress.choice) {
     if (careExperienced()) await play({ ...DB.dialogues.remake_midcheck_review, branches: {} }, { bg: TONARI_N });
-    else { progress.choice = "care"; save(); }
+    // 初回は調整だけの練習ではなく、一台を通して作って提供し、そのまま調整まで覚える（#1081 E05）。
+    else { progress.choice = "full"; progress.coachCare = true; save(); }
   }
   if (!progress.practiceDone && progress.choice !== "stock") {
     beginEvePractice(progress);
-    const cs = progress.choice === "full" ? await runFullPractice({ kind: "midcheck" }) : await runCarePractice({ kind: "midcheck" });
+    // choice==="care" は旧セーブ（調整だけの練習の途中）と復習選択の互換で残す。
+    const cs = progress.choice === "care"
+      ? await runCarePractice({ kind: "midcheck" })
+      : await runFullPractice({ kind: "midcheck", coachCare: progress.coachCare });
     progress.failed = cs.failed || null;
     progress.practiceDone = true;
     save();
