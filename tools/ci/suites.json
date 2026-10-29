@@ -2041,6 +2041,25 @@
       "chrome": "system"
     },
     {
+      "id": "reel-visuals",
+      "title": "Pakki reel visuals: BIG/REG announce, right-reel spin/slowdown, remount",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/reel*.js",
+        "remake/css/reel.css",
+        "remake/test/reel_visuals.mjs",
+        "remake/test/reel_visuals.html",
+        "remake/test/browser/reel_visuals.mjs",
+        "remake/img/ui/pakki-slot/*"
+      ],
+      "run": [
+        "node remake/test/browser/reel_visuals.mjs"
+      ],
+      "chrome": "system"
+    },
+    {
       "id": "save-load",
       "title": "Save/load and legacy migration",
       "kind": "browser",
