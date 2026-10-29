@@ -115,6 +115,7 @@ export const FLAG_EXACT_RULES = [
   ["_axe_bar_sighting_chapter", "progression"],
   ["_axe_bar_sighting_day", "progression"],
   ["_axe_bar_sighting_done", "progression"],
+  ["_axe_throw_unlocked", "person"],
   ["_c_station_registered", "unlock"],
   ["_cafe_idea_wait", "pending"],
   ["_cafe_introduced", "progression"],

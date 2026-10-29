@@ -1668,6 +1668,37 @@
       ]
     },
     {
+      "dialogue_id": "remake_sumi_after_shift",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お疲れさん。あとは任せて、もう上がれ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_sumi_axe_hint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そういや、ひよりが言ってたぞ。あんたと斧投げに行きたいってな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "斧投げ、ですか。……分かりました、今度誘ってみます"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_rain_opener",
       "metadata": {},
       "lines": [

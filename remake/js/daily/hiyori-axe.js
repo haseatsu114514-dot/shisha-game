@@ -1,7 +1,7 @@
 // 正式な前後の会話と実プレイをつなぐ。得点・練習だけでは読了にしない。
 import { state } from "../core/state.js";
 import { on } from "../core/bus.js";
-import { hiyoriRoute, hiyoriEventStatus } from "../core/hiyori-route.js";
+import { hiyoriRoute, hiyoriEventStatus, hiyoriEventPrereqsMet } from "../core/hiyori-route.js";
 import { play } from "../vn/engine.js";
 import { runAxeThrow } from "../minigames/axe.js";
 import { bgUrl } from "../core/data.js";
@@ -17,6 +17,12 @@ export function hiyoriAxeAffordable() {
 }
 
 export const hiyoriAxeReady = () => hiyoriEventStatus("axe_reveal") === "ready";
+
+/** #1081 B06: ひより前提（時間帯・費用を除く）を満たしたか。前提チェーン自体は現状維持。 */
+export const hiyoriAxePrereqsMet = () => hiyoriEventPrereqsMet("axe_reveal");
+
+/** #1081 B06: バイト上がりのスミ会話で露出済みか。露出はこのフラグだけで決まる。 */
+export const axeThrowExposed = () => !!state?.flags?._axe_throw_unlocked;
 
 export async function playHiyoriAxeSequence(event, { signal } = {}) {
   const owner = state, abort = new AbortController();

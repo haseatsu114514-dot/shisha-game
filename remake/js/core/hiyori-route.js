@@ -41,6 +41,28 @@ export function hiyoriEventStatus(id) {
 
 export const availableHiyoriEvents = () => (hiyoriRoute().events || []).filter((e) => hiyoriEventStatus(e.id) === "ready");
 
+/**
+ * 露出判定用: 時間帯（slot）と費用を除く前提だけを見る（hiyoriEventStatus の time 判定を外したもの）。
+ * 既読（seen）は「これから前提を満たす」対象ではないので false。前提そのものは変えない。
+ */
+export function hiyoriEventPrereqsMet(id) {
+  const route = hiyoriRoute();
+  const event = route.events?.find((e) => e.id === id);
+  if (!state || !route.enabled || !event) return false;
+  const dialogue = DB.dialogues[event.dialogue];
+  const scripts = [dialogue, ...(event.outro ? [DB.dialogues[event.outro]] : [])];
+  if (scripts.some((script) => !script?.lines?.length || script.metadata?.preview_only)) return false;
+  if (state.flags[event.flag]) return false;
+  if (!event.chapters.includes(state.chapter)) return false;
+  if (id === "meeting" && !hiyoriFirstMeetingReady(state)) return false;
+  if (event.requires.some((flag) => !state.flags[flag]) || event.met && !state.met.hiyori
+    || event.contact && !hiyoriHasContact() || affinityLevel("hiyori") < (event.minAffinity || 0)) return false;
+  if (event.relationship === "lover" && !state.lovers.includes("hiyori")
+    || event.relationship === "friend" && !hiyoriIsFriend()
+    || (state.loveLevel.hiyori || 0) < (event.minLoveLevel || 0)) return false;
+  return true;
+}
+
 /** 専用ハガルと正式な締めくくりを揃えるまで、既存の恋愛／友人ルートを起動しない。 */
 export function hiyoriFinaleReady() {
   const { finale, question } = hiyoriRoute();
