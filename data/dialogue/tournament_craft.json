@@ -580,7 +580,12 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "嬢ちゃん、それでいい。一回目の票なんざ、顔見せみてえなもんでさ"
+          "text": "葉子の姉貴、それでいい。一回目の票なんざ、顔見せみてえなもんでさ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ちょっ、本名はやめてってば……！"
         },
         {
           "speaker": "rei",
@@ -635,6 +640,79 @@
           "speaker": "nagumo",
           "face": "normal",
           "text": "手数ではなく、意図を見せろ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude_pull_2",
+      "comment": "第2章・1回目の票の後、吸い出しの直前。4人の心の声（第1章の提供前の独白に対応）。",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "蒸らし、全台完了ッ！ ここから吸い出し、そして審査員への提供ですッ！"
+        },
+        {
+          "speaker": "",
+          "text": "四台のホースが、ほとんど同時に持ち上がった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "（ドラゴンフルーツは崩れねえ。あとは客の口に入るまで、筋を通すだけでさ）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "（ここからがサビだ。……薔薇は、走らせない）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "（苺とグミベア、ちゃんと笑ってる。大丈夫、うちの一台はかわいい）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（温度は帯の中。点を拾える順番で吸い出す。……間違えなければ、落ちない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude3_2",
+      "comment": "第2章・二度目の調整の後、講評の直前。結果は言わない。あげはの『今日いちばん頑張った』は送別の悔しさへつながる。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "最後の調整が終わった。四台が並び、審査員が順に吸い比べていく。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……やりきった。うち、今日いちばん頑張ったかも"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "待つのも仕事のうちでさ。……あんちゃん、息しなせえ"
+        },
+        {
+          "speaker": "",
+          "text": "言われて、ずっと息を止めていたことに気づいた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……四台とも、ちゃんと鳴ってた。誰が勝っても、いい夜だ"
+        },
+        {
+          "speaker": "",
+          "text": "客席の一番後ろで、背の高い男が手帳を閉じた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（自分の煙の味が、うまく分からない。答えは、審査員の顔にしかない）"
         }
       ]
     },

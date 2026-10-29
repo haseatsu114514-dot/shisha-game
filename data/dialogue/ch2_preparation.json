@@ -683,7 +683,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "だから、急いで次の曲にしない。……少し、そのままにしてる"
+          "text": "……だから、急いで次の曲にしない"
         },
         {
           "speaker": "hajime",
@@ -693,12 +693,17 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……ああ、……喋りすぎた"
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIさんはそこで口を閉じ、CDケースの角を指でそろえた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "いえ。どんなふうに聴いてるのか、少し分かりました"
+          "text": "どんなふうに聴いてるのか、少し分かりました"
         },
         {
           "speaker": "rei",

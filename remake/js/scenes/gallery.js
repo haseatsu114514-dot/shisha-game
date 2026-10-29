@@ -5,8 +5,8 @@ import { layers, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { state, SAVE_SLOTS, readSlot, config } from "../core/state.js";
 import { SE, currentBgm, playBgm, stopBgm } from "../core/audio.js";
-import { readGalleryProgress, recordGalleryProgress } from "../core/gallery-progress.js";
-import { CHAR_LABELS, GALLERY_TABS, galleryEntries, galleryStats } from "../core/gallery-catalog.js";
+import { readGalleryProgress, recordGalleryProgress, shouldAnnounceCompletion, markCompletionAnnounced } from "../core/gallery-progress.js";
+import { CHAR_LABELS, GALLERY_TABS, galleryEntries, galleryStats, galleryHint } from "../core/gallery-catalog.js";
 import { stickerPhoto } from "../core/purikura-photo.js";
 
 const KEY = "suien_remake_gallery";
@@ -31,6 +31,8 @@ export function openGallery() {
   const progress = readGalleryProgress();
   const entries = galleryEntries(DB.manifest, DB.gallery, progress, seen());
   const stats = galleryStats(entries);
+  const announceComplete = shouldAnnounceCompletion(stats, progress);
+  if (announceComplete) markCompletionAnnounced();
   const fraction = s => `${s.unlocked} / ${s.total}（${s.rate}%）`;
   return new Promise(resolve => {
     let tab = "all", closed = false, active = null, page = 0, trigger = null;
@@ -41,6 +43,7 @@ export function openGallery() {
     const collection = el("div.gal-collection", [
       el("strong.gal-rate", { text: `収集率 ${stats.rate}%（${stats.unlocked}/${stats.total}）` }),
       stats.total > 0 && stats.rate === 100 ? el("span.gal-complete", { text: "★コンプリート" }) : null,
+      announceComplete ? el("span.gal-complete-notice", { text: "収集率100%を達成しました" }) : null,
       el("small.gal-photos", { text: `プリクラ撮影記録 ${stats.purikuraPhotos}枚` }),
     ]);
     const characters = el("div.gal-characters", { "aria-label": "キャラ別収集率" },
@@ -198,7 +201,7 @@ export function openGallery() {
       grid.dataset.kind = tab;
       grid.replaceChildren(...items.map(entry => {
         if (!entry.unlocked) return el("div.gal-cell.locked", [
-          el("span", { text: "？？？" }), entry.requiredChapter ? el("small", { text: "第" + entry.requiredChapter + "章クリアで解放" }) : null,
+          el("span", { text: "？？？" }), galleryHint(entry) ? el("small", { text: galleryHint(entry) }) : null,
         ]);
         const button = el("button.gal-cell", { title: entry.title, "aria-label": entry.title,
           dataset: { test: "gal-" + entry.id, cg: entry.cg, kind: entry.kind }, onclick: () => show(entry, button) });

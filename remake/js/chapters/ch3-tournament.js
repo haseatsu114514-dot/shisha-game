@@ -1,5 +1,6 @@
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
+import { difficultyEvidence } from "../core/cycle-start.js";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, loadTournamentCraftDialogue } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
@@ -406,7 +407,7 @@ async function drive(owner) {
         else if (p.step === 10) p.stage = "national_adjustment";
         else {
           const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
-          if (!castVotes(p, round, quality, null, difficultyForRun(state))) throw new Error("全国大会の投票地点を確認できません");
+          if (!castVotes(p, round, quality, null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の投票地点を確認できません");
           p.stage = p.step === STEPS.length ? "tasting" : "votes";
           if (p.stage === "tasting") recordResult(state, cs.total);
         }
@@ -414,11 +415,11 @@ async function drive(owner) {
       save();
     } else if (p.stage === "national_craft") {
       if (!await read(owner, "national_craft")) return;
-      if (!castVotes(p, 1, partialQuality(p.craft, 1), null, difficultyForRun(state))) throw new Error("全国大会の提供後の投票地点を確認できません");
+      if (!castVotes(p, 1, partialQuality(p.craft, 1), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の提供後の投票地点を確認できません");
       checkpoint("votes");
     } else if (p.stage === "national_adjustment") {
       if (!await read(owner, "national_adjustment")) return;
-      if (!castVotes(p, 2, partialQuality(p.craft, 2), null, difficultyForRun(state))) throw new Error("全国大会の調整後の投票地点を確認できません");
+      if (!castVotes(p, 2, partialQuality(p.craft, 2), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の調整後の投票地点を確認できません");
       checkpoint("votes");
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
