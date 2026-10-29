@@ -342,6 +342,10 @@ body.vn-open .weather-sheet.outdoor {
 .toast.show { opacity: 1; transform: none; }
 .toast.warn { border-color: var(--danger); color: #ffd6d6; }
 .toast.good { border-color: var(--good); }
+.toast.charm-bonus { border-color: var(--stat-charm); color: var(--stat-charm); }
+.toast.insight-hint { border-color: var(--stat-insight); color: var(--stat-insight); }
+.toast.charm-bonus, .toast.insight-hint { display: flex; align-items: center; gap: 6px; }
+.toast-badge { display: inline-grid; place-items: center; width: 18px; height: 18px; border: 1px solid currentColor; border-radius: 3px; font-size: 12px; font-weight: 800; }
 
 /* 報酬カード（旧版の Persona 風カード）。ステ色は旧版の --stat-* と同じ */
 #banners {

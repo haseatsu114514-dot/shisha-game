@@ -24,6 +24,7 @@ import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { mixExpression } from "./flavor-profile.js";
 import { createCraftClock } from "./clock.js";
+import { effectVisible, effectBadge, effectLine, senseExtra, effectTier } from "./effect-visual.js";
 import { waterComfort } from "./water.js";
 import { waterComfortLine } from "./pull-water.js";
 
@@ -155,9 +156,10 @@ async function pullGame(cs, mode) {
     <path class="dial-ring" d="${dialSector(0, 1)}" fill="url(#dial-grad-${id})"/>
     <path class="dial-shade" d="${dialSector(0, 1)}" fill="url(#dial-shade-${id})"/>
     <path class="dial-gloss" d="${dialSector(0, 1, DIAL.r1 - 18, DIAL.r1)}"/>
-    ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-just"/></g>`).join("")}
+    ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-sense-extra"/><path class="pg-just"/></g>`).join("")}
     <path class="dial-rim" d="${dialSector(0, 1)}"/>
     <g class="pg-needle" data-test="pull-needle">
+      <path class="needle-trail" d="M${DIAL.cx} ${DIAL.cy - 9}V${DIAL.cy - DIAL.r1 + 7}"/>
       <path class="needle-body" d="M${DIAL.cx - 3} ${DIAL.cy}L${DIAL.cx - 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 3} ${DIAL.cy}Z"/>
       <path class="needle-light" d="M${DIAL.cx} ${DIAL.cy - 9}V${DIAL.cy - DIAL.r1 + 7}"/>
       <path class="needle-cap" d="M${DIAL.cx} ${DIAL.cy - DIAL.r1 - 8}l-5 11h10Z"/>
@@ -169,12 +171,19 @@ async function pullGame(cs, mode) {
     el("b", { text: z.id === "keep" ? z.label : `${z.mark} ${z.label}` }),
     el("span", { text: z.id === "keep" ? "この温度を維持" : z.id === "down" ? "温度を下げる" : "温度を上げる" }),
   ].filter(Boolean))));
+  if (effectVisible("sense")) dial.append(effectBadge("sense", "感"));
+  if (effectVisible("technique")) dial.append(effectBadge("technique", "技"));
   const dialRow = el("div.pull-dial-row", [dial, labels]);
   const needle = dial.querySelector(".pg-needle");
   const justs$ = [...dial.querySelectorAll(".pg-just")];
+  const senseExtras = [...dial.querySelectorAll(".pg-sense-extra")];
   const placeJusts = () => ZONES.forEach((z, i) => {
     const span = (z.just[1] - z.just[0]) * widen;
-    justs$[i].setAttribute("d", dialSector(z.just[0], z.just[0] + span));
+    const base = effectVisible("sense") ? span / (1 + 0.45 * effectTier("sense")) : span;
+    const extra = senseExtra(base);
+    justs$[i].setAttribute("d", dialSector(z.just[0], z.just[0] + base));
+    senseExtras[i].setAttribute("d", extra > 0 ? dialSector(z.just[0] + base, z.just[0] + span) : "");
+    senseExtras[i].dataset.span = extra.toFixed(4);
     justs$[i].dataset.span = span.toFixed(4); // 芯（成功帯）の実際の幅（ダイヤル一周＝1）
   });
   placeJusts();
@@ -201,7 +210,7 @@ async function pullGame(cs, mode) {
     el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves, tags, drawStatus]),
     el("div.pull-life.pull-count-box", [el("span.pull-life-label", { text: mode.drift ? "吸った回数" : "吸い出し回数" }), counter]),
   ]);
-  const play = el("div.pull-play", [dialRow, summary, el("div.pull-btns", [pullBtn, serveBtn])]);
+  const play = el("div.pull-play", [dialRow, effectLine("technique", "技", "技術でゲージがゆっくり"), summary, el("div.pull-btns", [pullBtn, serveBtn])]);
   play.setAttribute("aria-label", "左の下げ吸いで温度を下げ、中央でキープ、右の上げ吸いで温度を上げる");
   const main = el("div.pull-main", [play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));

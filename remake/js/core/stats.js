@@ -21,6 +21,10 @@ export function statCap(key) {
 export function star(key) {
   return clamp(Math.ceil((state.stats[key] || 0) / 20), 1, 5);
 }
+/** 第一弾の表示用。W2 の共通10段実装との統合時はそちらに寄せる。 */
+export function step(key) {
+  return clamp(Math.ceil((state.stats[key] || 0) / 10), 1, 10);
+}
 /** 0（★1）〜1（★5）。効果量は ★ 刻みで効く（連続値にしない） */
 export function tier01(key) {
   return (star(key) - 1) / 4;

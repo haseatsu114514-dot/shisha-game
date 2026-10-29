@@ -303,6 +303,11 @@ export async function openConfig(opts = {}) {
     onchange: (e) => { config.shortSeen = e.target.checked; persist(); opts.onChange?.("shortSeen", config.shortSeen); },
   });
   shortSeen.checked = config.shortSeen;
+  const effectColors = el("input", {
+    type: "checkbox", dataset: { test: "cfg-stat-effect-colors" },
+    onchange: (e) => { config.statEffectColors = e.target.checked; persist(); opts.onChange?.("statEffectColors", config.statEffectColors); },
+  });
+  effectColors.checked = config.statEffectColors !== false;
   return modal({
     title: "設定",
     body: el("div.cfg", [
@@ -312,6 +317,7 @@ export async function openConfig(opts = {}) {
       row("文字の速さ", speed),
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),
+      row("能力の効き目を色で表示", effectColors),
     ]),
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
   });
