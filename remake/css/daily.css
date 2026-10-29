@@ -419,7 +419,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
   line-height: 1;
   letter-spacing: 0;
   text-align: center;
-  padding: 0;
+  padding: 0 0 2px; /* 基本書体では「!」の字面が約1px下がるため、字面だけを上に寄せる。 */
   font-family: var(--font);
   color: #2a1a00;
   background: #ffd35e;
