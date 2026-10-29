@@ -21,7 +21,9 @@ import { finalize } from "../craft/score.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import { servedEvaluationLines } from "../craft/served-eval.js";
 import { naruTastingCategory } from "../craft/naru-tasting.js";
-import { CH5_SCENE_BG, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES,
+import { CH5_SCENE_BG, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES, CH5_PREP_TRIALS,
+  chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho,
+  recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
@@ -34,7 +36,7 @@ const test = name => `ch5-${name}`;
 // 試合当日の場面カード文案（到着→一杯目→二杯目の前の順）。
 const MATCH_CARDS = {
   arrival: { title: "試合当日", description: "会場に着いた。あとは、二本の煙だけ。" },
-  firstCup: { title: "一杯目", description: "博士の作る一杯を、はじめが再現する。" },
+  firstCup: { title: "一杯目", description: "一本目は、9000が、はじめの待ち方を再現する。" },
   beforeSecond: { title: "二杯目の前に", description: "ここまでの日々が、二杯目を作る。" },
 };
 const MATCH_ORDER = ["arrival", "firstCup", "beforeSecond"];
@@ -198,7 +200,12 @@ async function readScene(owner, id) {
   // 台本の metadata.bg は持ち込まず、ch5-progress.js の対応表（仮置き）で背景を決める。
   // 二本目の調整の行は、制作の後で実績に合わせて読む（ここでは外す）。
   const lines = id === CH5_MATCH_SCENES.beforeSecond ? source.lines.filter(line => line.cue !== ADJUST_CUE) : source.lines;
-  const dialogue = { ...source, lines, metadata: { ...source.metadata, bg: "" } };
+  // 試作の返り（#1666）は同じ場面の末尾に続けて読み、読了の確定も親場面と一緒にする。
+  const echo = chapterFivePrepEcho(state, id).map(echoId => {
+    if (!DB.dialogues[echoId]) throw new Error(`台本がありません: ${echoId}`);
+    return DB.dialogues[echoId].lines;
+  });
+  const dialogue = { ...source, lines: [...lines, ...echo.flat()], metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
   await setBg(bgUrl(CH5_SCENE_BG[id]), { instant: true });
@@ -239,7 +246,10 @@ async function renderStage(owner) {
   if (!current(owner)) return;
   const progress = chapterFiveProgress(state);
   if (progress.part === "prologue") return renderScene(owner, CH5_PROLOGUE[progress.stage], "");
-  if (progress.part === "free") return chapterFiveTimeoutPending(state) ? renderTimeoutCard(owner) : renderFree(owner);
+  if (progress.part === "free") {
+    if (chapterFiveTimeoutPending(state)) return renderTimeoutCard(owner);
+    return chapterFivePrepPending(state) ? renderPrep(owner) : renderFree(owner);
+  }
   if (progress.part === "scheduled") return renderScheduled(owner);
   if (progress.part === "match") return renderMatch(owner);
   if (progress.part === "aftermath") return renderScene(owner, CH5_AFTERMATH[progress.aftermath], "");
@@ -270,13 +280,41 @@ async function renderTimeoutCard(owner) {
   ], "", "ch5_timeout");
 }
 
+/** 閉店後の試作（#1666）: 何を試すか → スミさんが吸って返す → 直すか、そのまま覚えるか。 */
+async function renderPrep(owner) {
+  await setBg(bgUrl(CH5_SCENE_BG.ch5_free_tonari_practice), { instant: true });
+  if (!current(owner)) return;
+  const prep = chapterFivePreparation(state);
+  if (!prep) {
+    card(owner, "prep", "閉店後の試作", "ダブルアップル12グラム。今夜は、何を試す？",
+      CH5_PREP_TRIALS.map(trial => button(owner, trial.label, `prep-${trial.id}`, async () => {
+        if (!await readScene(owner, chapterFivePrepScene("trial", trial.id))) return;
+        if (!recordChapterFivePrepTrial(state, trial.id)) return;
+        save();
+        await renderStage(owner);
+      })), "できた一台は、スミさんが吸って返してくれる。");
+    return;
+  }
+  const trial = CH5_PREP_TRIALS.find(entry => entry.id === prep.trial);
+  const settle = (adjusted, sceneId) => async () => {
+    if (!await readScene(owner, sceneId)) return;
+    if (!recordChapterFivePrepAdjustment(state, adjusted)) return;
+    save();
+    await renderStage(owner);
+  };
+  card(owner, "prep", "もう一台か、このままか", `スミさんの返答: ${trial.point}`, [
+    button(owner, trial.adjust, "prep-adjust", settle(true, chapterFivePrepScene("adjust", trial.id)), true),
+    button(owner, "このまま、手に覚えさせる", "prep-keep", settle(false, chapterFivePrepScene("keep"))),
+  ], `試したこと: ${trial.label}`);
+}
+
 async function renderFree(owner) {
   await setBg(bgUrl(CH5_SCENE_BG.ch5_free), { instant: true });
   if (!current(owner)) return;
   const remaining = chapterFiveFreeRemaining(state);
   const actions = [];
   if (remaining.length) {
-    actions.push(button(owner, "tonari で過ごす", "spend-tonari", async () => {
+    actions.push(button(owner, `tonari で過ごす（${remaining[0].label}）`, "spend-tonari", async () => {
       const [next] = chapterFiveFreeRemaining(state);
       if (!next || !await readAndCommit(owner, next.id)) return;
       await renderStage(owner);
@@ -289,8 +327,13 @@ async function renderFree(owner) {
     if (!await readAndCommit(owner, "ch5_schedule_contact")) return;
     await renderStage(owner);
   }, true));
-  card(owner, "free", "自由行動", "大須の街と tonari。勝負の日程は、まだ決まっていない。", actions,
-    remaining.length ? "" : "tonari の用事は済んだ。あとは日程だけ。");
+  const description = remaining.length
+    ? "勝負の前に、tonari で済ませておきたいことが残っている。博士との日程は、まだ決まっていない。"
+    : "tonari での準備は済んだ。博士に連絡して、勝負の日を決める。";
+  const note = remaining.length
+    ? `次は「${remaining[0].label}」。残り${remaining.length}件は任意で、博士への連絡はいつでもできる。`
+    : "tonari の用事は済んだ。あとは日程だけ。";
+  card(owner, "free", "自由行動", description, actions, note);
 }
 
 async function renderScheduled(owner) {
@@ -304,18 +347,19 @@ async function renderScheduled(owner) {
         { label: "まだ行かない", value: "stay", test: test("venue-stay") },
       ] });
       if (!current(owner)) return;
+      // 「まだ行かない」は保留だけ。日程はそのままで、このカードに留まる（取り消しは別ボタン）。
       if (choice === "go") {
         if (!beginChapterFiveMatch(state)) throw new Error("試合を開始できません");
         save();
         await renderStage(owner);
       }
-      if (choice === "stay") {
-        // 取り消しは ch5_timeout を読んで自由行動へ戻る（日程は白紙）。
-        if (!await readAndCommit(owner, "ch5_timeout")) return;
-        await renderStage(owner);
-      }
     }, true),
-  ], "");
+    button(owner, "日程を取り消す", "cancel-schedule", async () => {
+      // 取り消しは ch5_timeout を読んで自由行動へ戻る（日程は白紙）。
+      if (!await readAndCommit(owner, "ch5_timeout")) return;
+      await renderStage(owner);
+    }),
+  ], "会場へ向かう準備ができたら「会場へ行く」。日程を変えたいときは取り消せる。");
 }
 
 async function renderMatch(owner) {
@@ -327,7 +371,12 @@ async function renderMatch(owner) {
     if (!current(owner)) return;
     card(owner, "match", text.title, text.description, [
       button(owner, "続きを読む", "continue", async () => {
-        if (!await readAndCommit(owner, id)) return;
+        // 到着→一杯目→二杯目の前は短い連続場面なので、カードを挟まず続けて読む。各場面の読了ごとに保存する。
+        for (const name of MATCH_ORDER) {
+          const sceneId = CH5_MATCH_SCENES[name];
+          if (chapterFiveRead(state, sceneId)) continue;
+          if (!await readAndCommit(owner, sceneId)) return;
+        }
         await renderStage(owner);
       }, true),
     ], "", id);

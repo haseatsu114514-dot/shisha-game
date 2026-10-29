@@ -32,7 +32,7 @@
           "type": "choice",
           "choices": [
             {
-              "text": "ホテルに戻る",
+              "text": "市場をあとにする",
               "next_id": "ch4_return"
             }
           ]
@@ -76,7 +76,7 @@
           "type": "choice",
           "choices": [
             {
-              "text": "ホテルに戻る",
+              "text": "店をあとにする",
               "next_id": "ch4_return"
             }
           ]

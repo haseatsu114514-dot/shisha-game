@@ -1193,32 +1193,17 @@
         },
         {
           "speaker": "hajime",
-          "text": "一緒に遊ぶ時間も、何もせずに話す時間も、もっと過ごしたいです"
-        },
-        {
-          "speaker": "hajime",
-          "text": "ひよりさんのことが、好きです"
-        },
-        {
-          "speaker": "hiyori",
-          "text": "はじめくん……。私も、好き……",
-          "face": "love_blush"
-        },
-        {
-          "speaker": "hiyori",
-          "text": "でも、かっこよくは言えないな……。今、すごくうれしくて……",
-          "face": "love_blush",
-          "inner": "言えた。ちゃんと、声に出して言えた"
+          "text": "（一緒に遊ぶ時間も、何もせずに話す時間も、もっと過ごしたい。……この気持ちを、どう伝えよう）"
         },
         {
           "type": "choice",
           "choices": [
             {
-              "text": "恋人として、これからも一緒にいたい",
+              "text": "「ひよりさんのことが、好きです」と伝える",
               "next_id": "confession_hiyori_accept"
             },
             {
-              "text": "やっぱり、友達として一緒にいたい",
+              "text": "「これからも、遊びに誘っていいですか」と聞く",
               "next_id": "confession_hiyori_reject"
             }
           ]
@@ -1233,8 +1218,27 @@
       },
       "lines": [
         {
+          "speaker": "hajime",
+          "text": "一緒に遊ぶ時間も、何もせずに話す時間も、もっと過ごしたいです"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ひよりさんのことが、好きです"
+        },
+        {
           "type": "show_cg",
           "cg_id": "cg_hiyori_confession"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "はじめくん……。私も、好き……",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "でも、かっこよくは言えないな……。今、すごくうれしくて……",
+          "face": "love_blush",
+          "inner": "言えた。ちゃんと、声に出して言えた"
         },
         {
           "speaker": "hiyori",
@@ -1272,9 +1276,14 @@
       },
       "lines": [
         {
+          "speaker": "hajime",
+          "text": "これからも、遊びに誘っていいですか"
+        },
+        {
           "speaker": "hiyori",
-          "text": "……うん。ちゃんと言ってくれて、ありがとう……",
-          "face": "normal"
+          "text": "……うん。もちろん。誘ってくれたら、ちゃんと行くよ……",
+          "face": "normal",
+          "inner": "続きは、今日じゃなかったか。……でも、次の約束はもらえた"
         },
         {
           "speaker": "hiyori",

@@ -56,6 +56,18 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_two_tables: "bg_tonari_inside_night",       // 仮置き bg（#1177 でドバイ素材に差し替え）
 });
 
+// ---- BGM の対応表（演出の山だけ切り替える。無い場面は tonari）-------------------------
+// ドバイ専用曲が無いので既存曲の流用。#1177 / 専用曲が入ったらこの表だけ直す。
+export const CH4_DEFAULT_BGM = "tonari";
+export const CH4_SCENE_BGM = Object.freeze({
+  ch4_tournament_start: "bgm_tournament_wait",
+  ch4_final: "bgm_tournament_craft",
+  ch4_defeat: "bgm_aftermath",
+  ch4_result: "bgm_judging",
+  ch4_nagumo_old_rival: "bgm_aftermath",
+  ch4_ending: "bgm_aftermath",
+});
+
 // ---- 日数・解放条件 -----------------------------------------------------------------
 export const CH4_EVE_DAY = 4;
 export const CH4_TOURNAMENT_DAY = 5;

@@ -4,6 +4,7 @@
 // 流れ（骨格）:
 //   prologue   : 橋渡し → 帰郷 → 自由行動へ
 //   free       : tonari の自由場面（任意）→「博士に連絡する」で日程の場面へ
+//     prep     : 「閉店後の練習」のあと、試作→スミさんの返答→再調整の選択（#1666。結果は試合と後日談に返る）
 //     decide   : 日程が決まる → scheduled へ（自由行動の日は挟まない。Q15）
 //     defer    : ch5_timeout を読んで free に戻る（日程は未定のまま）
 //   scheduled  : 「会場へ行く」の確認でだけ試合へ。取り消しは ch5_timeout を読んで free へ戻る
@@ -29,16 +30,35 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_free_mashiro_visit: "bg_tonari_inside_day",    // 仮置き bg（台本コメント: tonari・昼）
   ch5_free_first_visitor: "bg_tonari_inside",        // 仮置き bg（台本コメント: tonari・夕）
   ch5_free_tonari_practice: "bg_tonari_inside_night", // 仮置き bg（台本コメント: tonari・夜）
+  ch5_prep_trial_heat: "bg_tonari_inside_night",     // 仮置き bg（閉店後の試作。以下 ch5_prep_* も同じ）
+  ch5_prep_trial_pack: "bg_tonari_inside_night",
+  ch5_prep_trial_aroma: "bg_tonari_inside_night",
+  ch5_prep_adjust_heat: "bg_tonari_inside_night",
+  ch5_prep_adjust_pack: "bg_tonari_inside_night",
+  ch5_prep_adjust_aroma: "bg_tonari_inside_night",
+  ch5_prep_keep: "bg_tonari_inside_night",
   ch5_schedule_contact: "bg_tonari_inside_night",    // 仮置き bg（閉店後の場面）
   ch5_timeout: "bg_tonari_inside_night",             // 仮置き bg
-  ch5_match_day_arrival: "bg_tournament_stage",      // 仮置き bg（Q13: 会場の固有名は出さない）
+  ch5_match_day_arrival: "bg_tonari_inside_day",      // 休業日の朝の店から始まる場面なので tonari・昼（Q13: 会場の固有名は出さない）
   ch5_copy_first_cup: "bg_tournament_stage",         // 仮置き bg
   ch5_relationship_before_second_cup: "bg_tournament_stage", // 仮置き bg
   ch5_second_cup_result: "bg_tournament_stage",      // 仮置き bg
   ch5_second_cup_result_afterglow: "bg_tournament_stage", // 仮置き bg
   ch5_second_cup_defeat: "bg_tournament_stage",      // 仮置き bg
+  ch5_prep_recall_heat_adjusted: "bg_tournament_stage", // 二杯目の前の末尾に続く（表示は親場面の bg）
+  ch5_prep_recall_heat_kept: "bg_tournament_stage",
+  ch5_prep_recall_pack_adjusted: "bg_tournament_stage",
+  ch5_prep_recall_pack_kept: "bg_tournament_stage",
+  ch5_prep_recall_aroma_adjusted: "bg_tournament_stage",
+  ch5_prep_recall_aroma_kept: "bg_tournament_stage",
   ch5_doctor_after_match: "bg_tournament_stage",     // 仮置き bg
   ch5_return_to_tonari: "bg_tonari_inside_night",    // 仮置き bg
+  ch5_prep_answer_heat_adjusted: "bg_tonari_inside_night", // 帰店後の末尾に続く（表示は親場面の bg）
+  ch5_prep_answer_heat_kept: "bg_tonari_inside_night",
+  ch5_prep_answer_pack_adjusted: "bg_tonari_inside_night",
+  ch5_prep_answer_pack_kept: "bg_tonari_inside_night",
+  ch5_prep_answer_aroma_adjusted: "bg_tonari_inside_night",
+  ch5_prep_answer_aroma_kept: "bg_tonari_inside_night",
   ending_start: "bg_tonari_inside_night",            // 仮置き bg
   ending_normal: "bg_tonari_inside_night",           // 仮置き bg
   epilogue_tsumugi: "bg_tonari_inside_night",        // 仮置き bg
@@ -65,6 +85,22 @@ export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_free_first_visitor", label: "初めての客", location: "tonari" },
   { id: "ch5_free_tonari_practice", label: "閉店後の練習", location: "tonari" },
 ].map(scene => Object.freeze(scene)));
+
+// 閉店後の試作（#1666）。「閉店後の練習」を読んだあと、何を試すか→スミさんが吸って返す→
+// 直すか、そのまま手に覚えさせるかを選ぶ。能力値・日・体力は動かさない（成長は自由行動のみ。
+// 日数・体力の消費は Q11 のオーナー判断待ち）。選んだ内容は二杯目の前と帰店後の会話に返る。
+const PREP_PRACTICE = "ch5_free_tonari_practice";
+export const CH5_PREP_TRIALS = Object.freeze([
+  { id: "heat", label: "炭を一つ減らして、温度を抑える", point: "柔らかいが、最初の三口が薄い。", adjust: "蒸らしを足して、もう一台" },
+  { id: "pack", label: "詰めをふんわりにして、軽くする", point: "軽いが、炭を寄せたら一気に焦げる。", adjust: "炭を縁へ逃がして、もう一台" },
+  { id: "aroma", label: "立ち上がりの香りを、強く出す", point: "派手だが、一時間吸う客には重い。", adjust: "炭を一つ離して、もう一台" },
+].map(trial => Object.freeze(trial)));
+const PREP_TRIAL_IDS = CH5_PREP_TRIALS.map(trial => trial.id);
+const prepEchoId = (kind, prep) => `ch5_prep_${kind}_${prep.trial}_${prep.adjusted ? "adjusted" : "kept"}`;
+const PREP_ECHO_IDS = ["recall", "answer"].flatMap(kind => PREP_TRIAL_IDS.flatMap(trial =>
+  [true, false].map(adjusted => prepEchoId(kind, { trial, adjusted }))));
+/** 試作の場面ID（試す／直す／そのまま）。 */
+export const chapterFivePrepScene = (step, trial) => step === "keep" ? "ch5_prep_keep" : `ch5_prep_${step}_${trial}`;
 
 // 試合当日の場面（story_routes の first_cup / second_cup / on_win / on_loss_or_tie に対応）。
 export const CH5_MATCH_SCENES = Object.freeze({
@@ -97,6 +133,8 @@ export const CH5_SCENE_FILES = Object.freeze({
     ...CH5_PROLOGUE.map(scene => scene.id),
     "ch5_unrecorded_day",
     ...CH5_FREE_SCENES.map(scene => scene.id),
+    ...PREP_TRIAL_IDS.flatMap(trial => [chapterFivePrepScene("trial", trial), chapterFivePrepScene("adjust", trial)]),
+    chapterFivePrepScene("keep"), ...PREP_ECHO_IDS,
     "ch5_schedule_contact", "ch5_timeout",
     ...Object.values(CH5_MATCH_SCENES),
     ...CH5_AFTERMATH.map(scene => scene.id),
@@ -179,7 +217,11 @@ export function chapterFiveProgress(value) {
     && (!["prologue", "free"].includes(progress.part)
       || (value.flags._ch5_match_scheduled !== true && value.flags._ch5_match_started !== true))
     && (progress.part !== "prologue" || progress.scheduleDecision === null)
-    && ((progress.part === "cleared") === (value.flags._ch5_cleared === true));
+    && ((progress.part === "cleared") === (value.flags._ch5_cleared === true))
+    // 試作の記録は任意（旧保存には無い）。あるときは「閉店後の練習」の読了後に限る。
+    && (progress.prep === undefined || (!!progress.prep && typeof progress.prep === "object"
+      && PREP_TRIAL_IDS.includes(progress.prep.trial)
+      && [null, true, false].includes(progress.prep.adjusted) && progress.read[PREP_PRACTICE] === true));
   if (!valid) throw new Error("第5章の保存地点を確認できません");
   return progress;
 }
@@ -192,6 +234,48 @@ export function chapterFiveFreeRemaining(value) {
   const progress = chapterFiveProgress(value);
   if (progress.part !== "free") return [];
   return CH5_FREE_SCENES.filter(scene => progress.read[scene.id] !== true);
+}
+
+// ---- 閉店後の試作（#1666）-------------------------------------------------------------
+/** 試作の記録（{ trial, adjusted }）の写し。未着手なら null。決戦の判定（#1665）の受け口もここ。 */
+export function chapterFivePreparation(value) {
+  const { prep } = chapterFiveProgress(value);
+  return prep ? { ...prep } : null;
+}
+
+/** 「閉店後の練習」を読んだが、試作か再調整の選択が済んでいない自由行動か。 */
+export function chapterFivePrepPending(value) {
+  const progress = chapterFiveProgress(value);
+  return progress.part === "free" && progress.read[PREP_PRACTICE] === true
+    && (progress.prep === undefined || progress.prep.adjusted === null);
+}
+
+/** 試作の場面を読み終えたら、何を試したかを保存する。 */
+export function recordChapterFivePrepTrial(value, trial) {
+  const progress = chapterFiveProgress(value);
+  if (!chapterFivePrepPending(value) || progress.prep !== undefined || !PREP_TRIAL_IDS.includes(trial)) return false;
+  progress.prep = { trial, adjusted: null };
+  return true;
+}
+
+/** スミさんの返答を受けて、直したか（true）そのまま覚えたか（false）を保存する。 */
+export function recordChapterFivePrepAdjustment(value, adjusted) {
+  const progress = chapterFiveProgress(value);
+  if (!chapterFivePrepPending(value) || progress.prep === undefined || typeof adjusted !== "boolean") return false;
+  progress.prep.adjusted = adjusted;
+  return true;
+}
+
+/**
+ * 場面の末尾に続けて読む、試作の返り（二杯目の前の手応え／帰店後のスミさんの返答）。
+ * 試作と再調整を終えた保存だけ。勝敗はここでは決めない（#1665）。
+ */
+export function chapterFivePrepEcho(value, id) {
+  const { prep } = chapterFiveProgress(value);
+  if (!prep || prep.adjusted === null) return [];
+  if (id === CH5_MATCH_SCENES.beforeSecond) return [prepEchoId("recall", prep)];
+  if (id === CH5_AFTERMATH[CH5_AFTERMATH.length - 1].id) return [prepEchoId("answer", prep)];
+  return [];
 }
 
 /** 連絡で先送りを選んだ直後の保存か（復帰時に ch5_timeout を先に消化するための判定）。 */

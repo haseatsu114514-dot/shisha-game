@@ -2,6 +2,7 @@
   "dialogues": [
     {
       "dialogue_id": "ch3_kuze_first",
+      "metadata": { "flavor_lesson": { "chocolate": 1 } },
       "lines": [
         {
           "type": "condition",
@@ -374,6 +375,7 @@
     },
     {
       "dialogue_id": "ch3_kuze_advice",
+      "metadata": { "flavor_lesson": { "orange": 1 } },
       "lines": [
         {
           "speaker": "",
@@ -567,7 +569,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "マウンテンミスト。レモンとライム、最初と二口目で違うだろ"
+          "text": "ヘイ、ハジメ。マウンテンミストだ。レモンとライム、最初と二口目で違うだろ"
         },
         {
           "speaker": "hajime",
@@ -612,7 +614,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "……あと少し。俺の都合で、早めない"
+          "text": "ノー、ノー。……あと少し。ミーの都合で、早めない"
         },
         {
           "speaker": "",
