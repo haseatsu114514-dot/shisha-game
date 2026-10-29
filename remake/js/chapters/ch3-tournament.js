@@ -14,8 +14,7 @@ import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { newSession, openBench, waitBenchReady, benchRoot } from "../craft/session.js";
-import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, regulationFor } from "../craft/steps.js";
-import { flavorStock, addFlavorStock } from "../daily/shop.js";
+import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { stepWater } from "../craft/water-view.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
@@ -170,17 +169,9 @@ async function commentary(owner, event) {
   return true;
 }
 
-// 課題フレーバーを私物で持ち込む章（第3章＝ドバジ チョコレート）は、0gのまま会場へ来ると
-// ミックス工程で課題（4g以上）を満たせず、決定ボタンが押せないまま詰む。第1章レモンと同じ考え方で、
-// 本番前に最低量だけは確実に手元へ置き、詰みだけを防ぐ。開始資源を捕まえるstartAttemptより前に行う。
-// TODO(#1052): 無償の補填のままにするか、東京の店での購入へ促す/強制するか、費用をどう扱うかはオーナー判断。
-//              いまは詰み回避の最小量（規定の下限）だけを補う。
-function ensureTournamentChallengeFlavor() {
-  const reg = regulationFor({ mode: "tournament" });
-  if (!reg || reg.supply) return; // 支給葉は在庫を消費しないので0gでも詰まない
-  const short = (reg.min || 0) - flavorStock(reg.flavor);
-  if (short > 0) addFlavorStock(reg.flavor, short);
-}
+// 課題フレーバー（第3章＝ドバジ チョコレート）は大会が supply で無制限に支給するので、
+// 私物を1gも持たずに来てもミックスで課題量を満たせる。0g到着の詰みは steps.js の supply 扱いで解消済み。
+// 支給分は在庫を増やさず持ち越さないので、ここで在庫を補填しない（オーナー決定 2026-10-28 13:29）。
 
 export async function runChapterThreeTournament() {
   if (state?.chapter !== 3 || (!state.flags._ch3_tournament &&
@@ -195,7 +186,6 @@ export async function runChapterThreeTournament() {
     const dialogues = await readDialogues("ch3_main", REQUIRED);
     if (!live(owner)) return;
     Object.assign(DB.dialogues, Object.fromEntries(REQUIRED.map(key => [key, dialogues[key]])));
-    ensureTournamentChallengeFlavor();
     recoverStep(state);
     save();
     await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });

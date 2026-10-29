@@ -9,7 +9,7 @@ export function ruleSheetPanel(chapter = state?.chapter || 1) {
   const challenge = chapter === 3 && regulation?.label
     ? `${regulation.label}。甘み・苦み・後味の調整で一台に仕上げる。`
     : regulation?.label || "大会の課題を確認する。";
-  const stock = regulation?.supply ? "指定の葉は主催者が用意する。" : "大会の葉は、自分の在庫から持ち込む。";
+  const stock = "課題の葉は大会が用意し、当日は好きなだけ使える。ほかの葉は自分の在庫から持ち込む。事前に買って練習した葉ほど、本番で手に馴染む。";
   const article = (number, title, body) => el("section.rule-article", [
     el("h3", { text: `第${number}条　${title}` }), el("p", { text: body }),
   ]);

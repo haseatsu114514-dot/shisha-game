@@ -59,7 +59,7 @@ export function newState() {
     flavorMastery: {}, // 味の系統 -> 経験値（Lv.1〜5）
     flavorLessons: [], // 熟練度を受け取った会話
     staffPractice: null, // その日のまかない使用量
-    flavorStock: {}, // フレーバーの在庫（g）。1箱50g。大会・家の試作・店の私物持ち込みで消費
+    flavorStock: {}, // フレーバーの在庫（g）。1箱50g。家の試作・店の持ち込み・大会の課題以外の葉で消費（課題は大会が支給＝減らない）
     weatherSeed: Math.floor(Math.random() * 100000), // 雨の日の抽選種（セーブごとに違う）
     baitoCount: 0,
     lastBaitoDay: 0,           // 最後にシフトに入った日（スミさんのバイト誘いの判定）
