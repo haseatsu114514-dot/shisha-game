@@ -99,6 +99,11 @@ function flushBatch() {
 export const ACTION_GROWTH_BUDGET = 2;
 let earningAction = null;
 
+// 経験値（core/growth.js）は自分をここへ登録する。stats.js からは読みに行かない（未公開の機能に依存させない）。
+let expHooks = null;
+export function setExpHooks(hooks) { expHooks = hooks || null; }
+const noop = () => {};
+
 /** 台本・訪問・制作の成長候補。確定済み報酬用の gainStat と分ける。 */
 export function earnStat(key, amount = 1) {
   if (!earningAction || earningAction.owner !== state || !STAT_KEYS.includes(key) || !(amount > 0)) return;
@@ -106,14 +111,24 @@ export function earnStat(key, amount = 1) {
   earningAction.gains[key] = Math.max(earningAction.gains[key] || 0, amount);
 }
 
-/** 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。 */
-export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false } = {}) {
+/**
+ * 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。
+ * @param opts.exp 経験値の対象 {key, person, place}。関数なら行動の結果から決める（core/growth.js）
+ */
+export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false, exp = null } = {}) {
   const parent = earningAction;
   const action = { owner: state, gains: {}, spent: 0 };
   earningAction = action;
+  const releaseChip = expHooks?.hold?.() || noop;
   let value;
   try { value = await run(); }
+  catch (error) { releaseChip(); throw error; }
   finally { earningAction = parent; }
+  try { return settleAction(action, parent, value, { budget, points, primary, consumed, exp }); }
+  finally { releaseChip(); }
+}
+
+function settleAction(action, parent, value, { budget, points, primary, consumed, exp }) {
   if (action.owner !== state) return { value, spent: 0 };
   if (parent?.owner === state) parent.spent += action.spent;
   if (action.spent > 0 || consumed(value)) {
@@ -125,6 +140,7 @@ export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 
       gainStat(key, points, { excludedKeys: rewarded });
       for (const k of STAT_KEYS) if (state.stats[k] > before[k]) rewarded.push(k);
     }
+    if (expHooks?.enabled()) expHooks.action(typeof exp === "function" ? exp(value) : exp);
   }
   return { value, spent: action.spent };
 }
@@ -279,6 +295,8 @@ const affinityBatch = new Map();
 let affinityBatchTimer = null;
 
 function queueAffinityGain(payload) {
+  // 自由行動の中で段が上がった分だけ経験値にする（LIME・強制イベントでは入らない。SPEC 1.1・X4）
+  if (earningAction?.owner === state && expHooks?.enabled()) expHooks.affinity(payload.id, rankOf(payload.pts) - rankOf(payload.prevPts));
   const key = `${payload.id}:${!!payload.bond}`;
   const pending = affinityBatch.get(key);
   const previous = pending?.owner === state ? pending.payload : null;

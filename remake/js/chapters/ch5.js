@@ -36,8 +36,8 @@ const test = name => `ch5-${name}`;
 // 試合当日の場面カード文案（到着→一杯目→二杯目の前の順）。
 const MATCH_CARDS = {
   arrival: { title: "試合当日", description: "会場に着いた。あとは、二本の煙だけ。" },
-  firstCup: { title: "一杯目", description: "一本目は、9000が、はじめの待ち方を再現する。" },
-  beforeSecond: { title: "二杯目の前に", description: "ここまでの日々が、二杯目を作る。" },
+  firstCup: { title: "一台目", description: "一本目は、9000が、はじめの待ち方を再現する。" },
+  beforeSecond: { title: "二台目の前に", description: "ここまでの日々が、二台目を作る。" },
 };
 const MATCH_ORDER = ["arrival", "firstCup", "beforeSecond"];
 // 二本目の前の場面のうち、この cue の行は制作後に回し、実際の調整実績で差し替える。

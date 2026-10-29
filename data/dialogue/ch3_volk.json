@@ -214,6 +214,36 @@
           "speaker": "volk",
           "face": "normal",
           "text": "やってみろ。次の一台で違えば、また書き直す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、ヴォルクが小さなガラス皿と紅茶を置いた。皿には、赤いジャムが少しだけ。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "ジャムは紅茶に入れない。舐めながら飲め"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "甘い……！　これも、何グラムって決まってるんですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "決めていない。祖母に、これだけは測るなと言われた"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……一杯で足りない日もある。それでいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（計器だらけの店で、ここだけは測らないんだ）"
         }
       ],
       "branches": {
