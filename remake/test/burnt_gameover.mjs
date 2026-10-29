@@ -3,6 +3,7 @@
 // NODE_PATH=... [CHROME_EXECUTABLE_PATH=...] node remake/test/burnt_gameover.mjs
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import { installLoadingComicReader } from './browser/loading_reader.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const browser = await chromium.launch({ headless: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
@@ -12,6 +13,8 @@ const BASE = process.env.BASE_URL || 'http://127.0.0.1:8123/remake/';
 async function open() {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
   page.on('pageerror', e => errors.push(e.message));
+  // 作業台に入るロード画面は、漫画が出ると準備完了後にタップ待ちになる。プレイヤーと同じく読んで進む。
+  await installLoadingComicReader(page);
   await page.addInitScript(() => {
     window.addEventListener('DOMContentLoaded', async () => {
       const { hooks } = await import('./js/vn/engine.js');
@@ -29,6 +32,9 @@ try {
   // 実画面も20秒でGAME OVERを表示し、location.reload後にタイトルへ戻る。
   let page = await open();
   await page.clock.install();
+  // 兄弟スイート（continue_keyboard 等）と同じく時計を止める。performance.now は
+  // 実時間でも流れるため、止めないと20秒判定が実行速度に依存して 'speaking' で揺れる。
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.evaluate(() => window.__remake.dev.gameOver('rank', 0));
   await page.clock.runFor(1000);
   assert.equal(await page.locator('.go-title').textContent(), 'コンティニューする？');
@@ -60,7 +66,8 @@ try {
   await page.locator('[data-test="retry"]').click();
   assert.equal(await page.locator('[data-test="game-over"]').getAttribute('data-phase'), 'reaction');
   assert.equal(await page.evaluate(() => window.__remake.state.tournament.attempts), 1, 'reaction plays before rewinding the tournament');
-  assert.match(await page.locator('.go-a11y').textContent(), /最後まで付き合う|絶滅回避|全会一致/);
+  // 読み上げ領域は台詞の live だけを見る（残り時間・戻り先の説明も .go-a11y）。読み上げるのは retry 反応の text。
+  assert.match(await page.locator('.go-a11y[aria-live]:not(.go-time-announcement)').textContent(), /一緒に戻るぞ|絶滅回避|俺たちの大会へ/);
   await page.waitForFunction(() => window.__remake.state.tournament.attempts === 2, null, { timeout: 30000 });
   console.log('PASS: tournament burn → immediate GAME OVER (no judging) → retry from the tournament start');
   await page.close();
@@ -90,7 +97,8 @@ try {
     window.__run = ch1.devRehearsal().then(() => { window.__done = true; });
   });
   // 新規保存には持込在庫がない。旧セーブ救済の仕入れを実操作してから制作へ進む。
-  await page.locator('[data-test="buy-blueberry"]').click();
+  // 第1章はレモン課題の仕入れ（12g以上）を済ませないと店を出られない（#1018）。1箱でその香りの準備も揃う。
+  await page.locator('[data-test="buy-lemon"]').click();
   await page.locator('[data-test="shop-checkout"]').click();
   await page.locator('[data-test="shop-leave"]').click();
   await page.waitForFunction(() => window.__done, null, { timeout: 180000 });
