@@ -28,7 +28,7 @@
 | **03** | [`03_world_shops.md`](03_world_shops.md) | 4つの舞台（橙須・柚ヶ谷・東京・ドバイ）・シーシャ店・街スポット・電車移動・日常パートと1日の流れ |
 | **04** | [`04_glossary.md`](04_glossary.md) | 作中用語・シーシャ機材＆工程（水入れ・炭・キッチンタイマー蒸らし等）・UI/LIME・小ネタ解説 |
 | **05** | [`05_tournament.md`](05_tournament.md) | 大会システム（全章4人同時1試合制）・大会採点（5工程各20%＋別枠の加点・投票）・各章課題と特別審査ルール・クラフト工程 |
-| **06** | [`06_flavors_recipes.md`](06_flavors_recipes.md) | 5メーカー全78フレーバー・温度帯表現・フレーバー熟練度Lv.1〜5・定番13レシピ・裏レシピ7種・機材一覧 |
+| **06** | [`06_flavors_recipes.md`](06_flavors_recipes.md) | 5メーカー全77フレーバー・温度帯表現・フレーバー熟練度Lv.1〜5・定番13レシピ・裏レシピ7種・機材一覧 |
 | **引き継ぎ** | [`HANDOVER.md`](HANDOVER.md) | 確定裁定一覧（`master_spec.md` 照合済み）・旧版の引き継ぎ（参考） |
 
 ---
@@ -196,6 +196,6 @@
   - 第1章の街名を「橙須（とうす）」、第2章の街名を「柚ヶ谷（ゆずがや）」へ統一。あげはの店を「MELTY PUFF」、久世の間借り店「煙幕」、サメちゃんの「SHISHARK」、橙須・柚ヶ谷の各スポットを追加（根拠：[`docs/master_spec.md`](../master_spec.md), [`brand/story_and_structure.md`](../../brand/story_and_structure.md)）。
   - **スミの水の説明（#1113 / #1128）**：「煙を冷やして吸いやすくする」だけとし、有害物質への影響は「諸説ある」（断定しない）へ統一。爆煙の理由は「グリセリンと熱の仕事」（K14）を明記（根拠：[`docs/master_spec.md`](../master_spec.md), [`data/glossary.json`](../../data/glossary.json)）。
   - **水入れ開始水量0（#1081 E01）**、キッチンタイマー蒸らし（#541）、はじめの【魅力】の2効果（指名売上＋好感度倍率 GG3/GG4）を反映（根拠：[`docs/master_spec.md`](../master_spec.md)）。
-  - 5メーカー全78フレーバー（`アルファーヘブン` 39種・`ドバジ` 18種・`アフサール` 17種・`フォースフェクタ` 1種・`ナイトサイド` 3種）、定番13レシピ（「メルティ・サマー」追加、氷レモネード黄金比7:3）、裏レシピ7種、専用素焼きハガル8種を含む最新機材データを反映（根拠：[`data/flavors.json`](../../data/flavors.json), [`data/recipes.json`](../../data/recipes.json), [`data/secret_recipes.json`](../../data/secret_recipes.json), [`data/equipment.json`](../../data/equipment.json)）。
+  - 5メーカー全77フレーバー（`アルファーヘブン` 38種・`ドバジ` 18種・`アフサール` 17種・`フォースフェクタ` 1種・`ナイトサイド` 3種）、定番13レシピ（「メルティ・サマー」追加、氷レモネード黄金比7:3）、裏レシピ7種、専用素焼きハガル8種を含む最新機材データを反映（根拠：[`data/flavors.json`](../../data/flavors.json), [`data/recipes.json`](../../data/recipes.json), [`data/secret_recipes.json`](../../data/secret_recipes.json), [`data/equipment.json`](../../data/equipment.json)）。
 - **HTML生成スクリプト（`tools/build_setting_reference.py`）**
   - `assets/` 内に実在する最新立ち絵（`kumicho`, `rei`, `volk`, `kuze`, `steve`, `hiyori`, `samechan`, `maki`, `sai`, `salaryman`, `uranaishi` 等）および背景・CGパスへ更新し、存在しない旧キャラ（`nandi`）を除外。本文データを設定資料集と完全同期（根拠：[`remake/data/manifest.json`](../../remake/data/manifest.json)）。

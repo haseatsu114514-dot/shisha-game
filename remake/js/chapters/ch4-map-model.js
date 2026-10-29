@@ -55,8 +55,11 @@ export function chapterFourMapModel(value) {
     day === CH4_EVE_DAY ? "部屋へ戻り、夜に備える。" : "部屋へ戻り、この日を終える。", false,
     { kind: "end_day", label: day === CH4_EVE_DAY ? "宿へ戻る（前夜へ）" : "宿へ戻って、この日を終える" }));
   const daysLeft = Math.max(0, CH4_TOURNAMENT_DAY - day);
+  // 夕景への切替は日の境界でのみ起きる（宿で終えて前夜日に入る時）。日中の訪問では切り替わらない。
+  const mode = day >= CH4_EVE_DAY ? "dusk" : "day";
   return {
-    day, tournamentDay: CH4_TOURNAMENT_DAY, daysLeft, background: CH4_PLACE_BG.map,
+    day, tournamentDay: CH4_TOURNAMENT_DAY, daysLeft, mode,
+    background: mode === "dusk" ? CH4_PLACE_BG.mapDusk : CH4_PLACE_BG.map,
     destinations,
     // 大会会場は当日まで選べない。一覧には出さず、日数だけ示す。
     venue: { ...DUBAI_MAP_PLACES.venue, selectable: false, text: `大会は${CH4_TOURNAMENT_DAY}日目。あと${daysLeft}日。` },

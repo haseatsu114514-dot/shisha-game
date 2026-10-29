@@ -49,6 +49,7 @@ async function fixture({ waitAt = null, faceReady = true } = {}) {
     'state.js': { state: original, config: { shortSeen: false } },
     'util.js': { el, sleep: async () => {}, nextFrame: async () => wait('frame') },
     'data.js': { DB: {}, displayName: () => 'なる', faceIconUrl: () => 'existing-face' },
+    'lime-icons.js': { customLimeIconUrl: () => null },
     'ui.js': { imageReady: async () => { counters.images++; await wait('image'); return faceReady; } },
     'audio.js': { SE: { phone() { counters.phones++; } } },
     'transition-kit.js': {

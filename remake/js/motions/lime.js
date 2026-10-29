@@ -6,6 +6,7 @@
 import { el, sleep } from "../core/util.js";
 import { state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
+import { customLimeIconUrl } from "../daily/lime-icons.js";
 import { imageReady } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { move, svg } from "../core/transition-kit.js";
@@ -35,7 +36,7 @@ function accountName(id, context) {
   if (context === "private") return c?.private_name || displayName(id, state, { context });
   return c?.lime_name || displayName(id, state, { context: "private" });
 }
-const faceOf = (id, context) => faceIconUrl(context === "private" && PRIVATE_FACE[id] || id, state, { context });
+const faceOf = (id, context) => (context !== "private" && customLimeIconUrl(id)) || faceIconUrl(context === "private" && PRIVATE_FACE[id] || id, state, { context });
 
 /** 交換の前からつながっていた相手（新しい順）。今つながった相手は含めない */
 function earlierFriends(charId, context) {
@@ -52,8 +53,9 @@ function earlierFriends(charId, context) {
 }
 
 function face(cls, url, name) {
-  if (url) return el(`img.${cls}`, { src: url, alt: "" });
-  return el(`span.${cls}.blank`, { text: [...name][0] || "？" });
+  if (!url) return el(`span.${cls}.blank`, { text: [...name][0] || "？" });
+  const custom = url.includes("/ui/lime/");
+  return el(`img.${cls}${custom ? ".custom" : ""}`, { src: url, alt: "", onerror: (e) => e.currentTarget.replaceWith(el(`span.${cls}.blank`, { text: [...name][0] || "？" })) });
 }
 
 function friendRow(friend, isNew) {

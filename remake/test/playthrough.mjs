@@ -1,7 +1,7 @@
 // リメイク版 第1章の通しテスト。
 //   1) 新規ゲーム → コールドオープン → チュートリアル → DAY1〜13の日常 → DAY14の大会
 //   2) 大会1回目は「下手」で挑んで GAME OVER になること
-//   3) 「もう一度挑戦する」→「上手」で南雲票の逆転優勝 → 第1章クリアになること
+//   3) 「もう一度挑戦する」→「上手」で南雲の最後の一票による優勝 → 第1章クリアになること
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
 import { purchasePlannedFlavor } from "./playthrough-shopping.mjs";

@@ -13,8 +13,8 @@ function fit() {
 window.addEventListener("resize", fit); fit();
 
 // Wireframe only: no story, dialogue or final illustration is invented here.
-// Authoring size is 860x500 (43:25); the wireframe is drawn to that ratio.
-const panel = number => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="860" height="500" viewBox="0 0 860 500"><rect width="860" height="500" fill="#eee7dc"/><rect x="25" y="25" width="810" height="450" fill="none" stroke="#574562" stroke-width="3"/><text x="430" y="265" text-anchor="middle" fill="#574562" font-size="56">PANEL ${number}</text><ellipse cx="300" cy="150" rx="150" ry="70" fill="#fff" stroke="#574562" stroke-width="3"/></svg>`)}`;
+// Authoring size is 860x573 (3:2); the wireframe is drawn to that ratio.
+const panel = number => `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="860" height="573" viewBox="0 0 860 573"><rect width="860" height="573" fill="#eee7dc"/><rect x="25" y="25" width="810" height="523" fill="none" stroke="#574562" stroke-width="3"/><text x="430" y="300" text-anchor="middle" fill="#574562" font-size="56">PANEL ${number}</text><ellipse cx="300" cy="170" rx="150" ry="70" fill="#fff" stroke="#574562" stroke-width="3"/></svg>`)}`;
 const comics = [{ id: "layout-preview", title: "２コマ漫画・配置確認", minChapter: 1,
   caption: "初心者向けの一行解説をここに表示できます（漫画ごとに指定）。",
   panels: [1, 2].map(number => ({ src: panel(number), alt: `${number}コマ目の仮枠。ここに採用した漫画を表示します。`,

@@ -8,7 +8,7 @@ import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
-import { addMoney, maxStamina, addStamina } from "../core/stats.js";
+import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -252,7 +252,7 @@ async function tutorial(progress = null) {
     await play("remake_tutorial_intro", { bg: TONARI });
     const cs = newSession("tutorial");
     if (progress?.firstOrderDone) configureFirstBrew(cs);
-    openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
+    openBench(cs, { steps: TUTORIAL_STEPS });
     await stepMix(cs);
     await stepPack(cs);
     await runHoles(cs);
@@ -265,7 +265,7 @@ async function tutorial(progress = null) {
     while (cs.failed) {
       await play(cs.failed === "burnt" ? "remake_tutorial_burnt" : "remake_tutorial_retry", { bg: TONARI });
       Object.assign(cs, { failed: null, burnt: false, pull: null, pullDone: false, leaf: null });
-      openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
+      openBench(cs, { steps: TUTORIAL_STEPS });
       await runPull(cs);
     }
     recordPractice(cs, "tutorial");
@@ -438,12 +438,23 @@ async function midPreparation() {
     beginEvePractice(progress);
     const cs = await runFullPractice({ kind: "midcheck" });
     progress.failed = cs.failed || null;
+    if (cs.failed) progress.midBranch = null;
+    else {
+      const shisha = computeShisha(cs);
+      const score = avgScore(cs.holes.score, cs.heat.score, shisha.craftQuality, cs.careHistory?.[0]?.score, cs.careHistory?.[1]?.score);
+      // リハーサルの good / rough 境界で中間講評を二択に分ける。
+      progress.midBranch = score >= 68 ? "mid_good" : "mid_rough";
+    }
     progress.practiceDone = true;
     save();
   }
   if (!progress.feedbackRead) {
     if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
-    await play("remake_midcheck", { bg: TONARI_N });
+    const midcheck = DB.dialogues.remake_midcheck;
+    const branch = progress.midBranch ? midcheck?.branches?.[progress.midBranch] : undefined;
+    // 旧セーブなど分岐記録がない場合は、従来の会話をそのまま読む。
+    if (branch) await play({ ...midcheck, lines: [...branch, ...midcheck.lines], branches: {} }, { bg: TONARI_N });
+    else await play("remake_midcheck", { bg: TONARI_N });
     progress.feedbackRead = true;
     save();
   }
@@ -483,6 +494,8 @@ async function rehearsal(progress = null) {
 // ---------------------------------------------------------------- 大会当日
 
 const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includes(id));
+// チュートリアルは吸い出し・提供まで同じ作業台で進むため、進捗ヘッダーにも pull を含める（大会R1用の STEPS_R1 とは分ける）。
+export const TUTORIAL_STEPS = CRAFT_STEPS.filter(([id]) => !["setup", "care1", "care2"].includes(id));
 const STEPS_ALL = CRAFT_STEPS;
 // 中間順位の出来栄えは、ある工程の点だけで平均する（ロートスでアルミを飛ばすと穴あけの点が無い）。
 const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
@@ -691,6 +704,8 @@ async function victory(cs) {
   delete state.tournament.stockSnap;
   delete state.tournament.entryResources;
   await play("ch1_tournament_after", { bg: STAGE });
+  await play("interval_day1_naru_lime");
+  gainStat("guts", 1);
   // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
   await openPhone([
     {
@@ -707,7 +722,11 @@ async function victory(cs) {
       ], close_label: "……誰？",
     },
   ], { time: "PM 11:47", title: "優勝の夜" });
+  await play("interval_day1_morning_win");
   await play("ch1_naru_promise");
+  await play("interval_day2_adam_lime");
+  gainStat("insight", 1);
+  await play("interval_day5_eve");
   state.phase = "aftermath";
   save();
   await finishAfterTournament();
