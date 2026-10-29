@@ -12,11 +12,9 @@ const KINDS = new Set(["prologue", "slate", "image", "title", "echo"]);
 const CUES = new Set(["intro", "slate", "build", "title", "echo"]);
 
 // 完全一致から外れる個別事情（各台本の source_notes にも理由を残すこと。新規の安易な追加は禁止）。
-// - ch2 の empty-victory: 原文を書き換えた旧編集（ch2.json の source_notes と #929 の改訂記録が根拠）。
 // - ch5 の same-return: DESIGN 4-3 が反復カットに原文の断片を指定したもの（台本化で3種から1種を選択）。
 const EXCERPT_EXCEPTIONS = new Map([
-  ["ch2.json:empty-victory", "地の文「スマホには、おめでとうの文字が届いていた」を凝縮した旧編集"],
-  ["ch5.json:same-return", "DESIGN 4-3 の反復指定による原文の断片「同じ葉で——」"],
+  ["ch5.json:same-return", "DESIGN 4-3 の反復指定による原文の断片「同じところで——」"],
 ]);
 
 const errors = [];

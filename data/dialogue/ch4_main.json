@@ -206,6 +206,11 @@
           "text": "市場の端。地味な旅装の男が、落ちた紙コップを拾っていた。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "男はゆっくりした英語で話した。はじめも、同じ速さで返した。"
+        },
+        {
           "speaker": "old_man",
           "face": "normal",
           "text": "悪い、そこのごみ袋、開けてくれるか"
@@ -378,6 +383,11 @@
           "text": "前夜祭。金色の装束の王煙楼が、客席のざわめきが静まるのを待っていた。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "壇上の王者の席だけが、最後まで空いていた。"
+        },
+        {
           "type": "condition",
           "condition_type": "flag",
           "flag": "_ch2_city_visit_c_station",
@@ -455,6 +465,11 @@
           "speaker": "",
           "face": "",
           "text": "GRAND SMOKE当日。四人分の台が、一列に並んでいる。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "世界の予選を抜けた、最後の四人だ！"
         },
         {
           "speaker": "pakki",
@@ -891,6 +906,21 @@
           "speaker": "",
           "face": "",
           "text": "スミさんは包みを、カウンターの奥の棚にしまった。古い瓶の、隣だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつか、自分の店も持ちたいです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……休みの日は、誰が開ける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そこから、考えます"
         },
         {
           "speaker": "",

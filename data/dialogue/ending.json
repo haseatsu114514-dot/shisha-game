@@ -594,6 +594,37 @@
           "speaker": "",
           "face": "",
           "text": "返事を聞きながら、もう一つボウルを出す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の少し前。奥まった席に、いつものサラリーマンが座った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップルにミント少し、ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "やがて、ホースの持ち手をそっとテーブルに置く。会計を済ませ、帰り際にポツリと。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……今日の、良かったよ",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。……また明日"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"
         }
       ]
     }
