@@ -1,6 +1,7 @@
 // 本編の初日と独立試遊が使う同じ街・同じ台本。セーブ操作を含めない。
 import { DB } from "../core/data.js";
 import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY } from "./ch2-story-data.js";
+import { CH2_VISIT_STORIES } from "../core/affinity-stages.js";
 
 export const MAP = {
   day: "../assets/backgrounds/bg_widehanga_map_day.webp",
@@ -58,6 +59,8 @@ export async function loadPreparationDialogues() {
   required.push(...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`));
   const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
+  // 神崎・REIの長い段階会話（味の学習を含む）も通常訪問列として公開する（#1648）。
+  for (const entry of Object.values(CH2_VISIT_STORIES).flat()) if (entry.file) (files[entry.file] ||= []).push(entry.scene);
   const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id].filter(Boolean); // 店に通う回（#626）
   if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。

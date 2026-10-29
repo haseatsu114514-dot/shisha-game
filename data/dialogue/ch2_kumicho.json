@@ -377,7 +377,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "神崎竜二の「0分立ち上げ」を教わった。これから、蒸らし時間に「0分」を選べる。"
+          "text": "神崎さんの「0分立ち上げ」を、目の前で見せてもらった。"
         },
         {
           "type": "remember",
@@ -507,9 +507,11 @@
           "text": "……それ以来、人に穏やかな時間を作ることだけが、俺の仕事だと決めたんですわ"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（若い衆。組の人間なのか、それとも……）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "young_after",
+          "next_false": "young_before"
         },
         {
           "speaker": "kumicho",
@@ -541,7 +543,23 @@
           "face": "",
           "text": "……【洞察】が上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "young_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（若い衆。組の人間なのか、それとも……）"
+          }
+        ],
+        "young_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（若い衆。大会の受付で話していた、昔の組の人たちのことだろうか）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_kumicho_fourth",
@@ -620,34 +638,11 @@
           "text": "しばらく、二人で黙ってシーシャを吸った。煙が二筋、天井に向かって静かに昇っていく。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……聞いていいですか。神崎さんは、本当にヤクザなんですか"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "一瞬、静寂が落ちた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "神崎さんは煙をゆっくり吐いた。"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "……こうして煙を吸ってる間はね"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "そういう話は、野暮ってもんですわ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……答えなかった。でもその答え方が、答えのような気もした）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "question_after",
+          "next_false": "question_before"
         },
         {
           "speaker": "kumicho",
@@ -693,7 +688,73 @@
           "face": "",
           "text": "……【根性】と【洞察】が上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "question_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……聞いていいですか。神崎さんは、本当にヤクザなんですか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一瞬、静寂が落ちた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "神崎さんは煙をゆっくり吐いた。"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "……こうして煙を吸ってる間はね"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "そういう話は、野暮ってもんですわ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……答えなかった。でもその答え方が、答えのような気もした）"
+          }
+        ],
+        "question_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……大会の受付で、昔のことを自分から話してましたね"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一瞬、静寂が落ちた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "神崎さんは煙をゆっくり吐いた。"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "……隠したまま同じ舞台に立つのは、スジが違うと思いやしてね"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "だが、こうして煙を吸ってる間は、昔の話は野暮ってもんですわ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（話すべき場所では、自分から話した。ここでは、それ以上を語らない）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_kumicho_after_ch2",
