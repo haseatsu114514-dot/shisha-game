@@ -51,7 +51,7 @@ const values = {
   "story-knowledge.js": { syncMintoKnowledge: () => {} },
 };
 // 同じVM stateに実statsを接続。新しいexportを空の成功stubで埋めない。
-const coreFiles = { "production-stats.js": "stats.js", "condition.js": "condition.js", "affinity-stages.js": "affinity-stages.js", "travel-budget.js": "travel-budget.js" };
+const coreFiles = { "stat-step-tables.js": "stat-step-tables.js", "production-stats.js": "stats.js", "condition.js": "condition.js", "affinity-stages.js": "affinity-stages.js", "travel-budget.js": "travel-budget.js" };
 async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;

@@ -4,8 +4,8 @@ import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
 import { state, STAT_KEYS } from "./state.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
-import { AFFINITY_RANK_PTS, step } from "./stats.js";
-import { nextStepProgress, stepOfValue } from "./stat-progress.js";
+import { AFFINITY_RANK_PTS } from "./stats.js";
+import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
@@ -27,9 +27,7 @@ export function initLayers() {
     layers[id] = $(`#${id}`);
   }
   // 報酬カード（旧版の Persona 風カードを踏襲）。ステはステ色の漢字バッジ、好感度は顔＋ハート
-  on("stat-gain", ({ key, total, name }) => {
-    const currentStep = step(key);
-    const stepped = currentStep > stepOfValue((state.stats[key] || 0) - total);
+  on("stat-gain", ({ key, total, name, starUp: stepped, star: currentStep }) => {
     const fx = stepped ? DB.statusTexts?.statTierFx?.[key]?.[currentStep - 1] : "";
     const progress = nextStepProgress(key);
     gainCard({ kind: "stat", stat: key, points: stepped ? 0 : total, badge: STAT_BADGE[key], top: stepped ? "STEP UP" : "STATUS UP",
@@ -347,7 +345,11 @@ export function banner(title, sub = null) {
  * @param o.source "slot" の場合だけ当たりの枠の光と専用音。通知位置・報酬の適用は変えない。
  */
 export function gainCard(o) {
-  bannerQueue.push({ ...o, owner: state });
+  const statEvolution = o.kind === "stat" && typeof o.evolution === "string" && o.evolution;
+  bannerQueue.push({ ...o,
+    ...(statEvolution ? { main: `${o.main} ${statEvolution}`, evolution: true } : {}),
+    ...(o.kind === "stat" ? { progress: o.progress || nextStepProgress(o.stat) } : {}),
+    owner: state });
   pumpBanners();
 }
 

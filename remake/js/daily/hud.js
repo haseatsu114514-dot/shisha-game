@@ -153,7 +153,7 @@ export function updateHud() {
   dom.stamina.classList.toggle("low", health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる
   dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(92 * (maxStamina() / 100))}px`;
-  dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 4 + 1.6 * step(k))).join(" "));
+  dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 7.2 + 12.8 * (step(k) - 1) / 9)).join(" "));
 }
 
 let recoveryObserver = null;

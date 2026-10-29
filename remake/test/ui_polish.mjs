@@ -85,9 +85,9 @@ try {
     T.stats.gainStat("technique", 3);
   });
   await page.waitForSelector(".gc-evolution");
-  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "3段に上がった");
   assert.match(await page.locator(".gc-fx").textContent(), /ゲージ.*ゆっくり/);
-  assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "LEVEL UP");
+  assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "STEP UP");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
   assert.doesNotMatch(await page.locator(".gain-card.stat").textContent(), /様になってきた/);
   await page.waitForTimeout(500); // 通知の出現アニメーションが止まってから配置を測る
@@ -115,14 +115,15 @@ try {
   await page.waitForSelector(".gain-card.st-insight");
   assert.equal(await page.locator(".gc-evolution, .gc-fx").count(), 0);
   await page.evaluate(() => T.ui.bannersIdle());
-  // 実際に効く根性レベル4の恩恵と、SF63（1回分＋8秒リチャージ）の持ち分を確認する。
+  // 実際に効く根性7段の恩恵と、SF63（1回分＋8秒リチャージ）の持ち分を確認する。
   await page.evaluate(() => {
     T.core.state.chapter = 5; T.core.state.stats.guts = 60; T.stats.gainStat("guts", 4);
   });
   await page.waitForSelector(".gain-card.st-guts .gc-evolution");
-  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.4に到達");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "7段に上がった");
   assert.doesNotMatch(await page.locator(".gain-card").textContent(), /少し上がった|かなり上がった|大きく上がった/);
-  assert.match(await page.locator(".gc-fx").textContent(), /体力と範囲が大きく増え、メンタルも回復する/);
+  assert.equal(await page.locator(".gc-fx").textContent(), "弾消しがかなり広い");
+  assert.deepEqual(await page.evaluate(() => T.steam.refreshEffect()), { radius: 310, mentalRecovery: true, label: "かなり広い範囲" });
   assert.equal(await page.evaluate(() => T.steam.refreshStock()), 1);
   assert.equal(await page.evaluate(() => T.steam.REFRESH_RECHARGE_SECONDS), 8);
   await page.evaluate(() => T.ui.bannersIdle());
@@ -141,9 +142,9 @@ try {
     window.presenting = T.reel.presentNow();
     return { starTo: r.starTo, stats: { ...T.core.state.stats } };
   });
-  assert.equal(reward.starTo, 2);
+  assert.equal(reward.starTo, 3);
   await page.waitForSelector(".gain-card .gc-evolution", { timeout: 15000 });
-  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "3段に上がった");
   assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "SLOT BONUS");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
   assert((await page.locator(".gc-fx").textContent()).length > 0);
