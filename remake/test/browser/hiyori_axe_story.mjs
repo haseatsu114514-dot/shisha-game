@@ -119,7 +119,19 @@ await suite("hiyori-axe-story",async check=>{
     assert(await page.evaluate(()=>{const s=S.core.state;return JSON.stringify({finales:s.finales,lovers:s.lovers,friend:s.flags._friend_hiyori,lovePts:s.lovePts,loveLevel:s.loveLevel,choices:s.romanceChoices})===S.relationship;}));
   });
   await check("calendar-menu-cancel-does-not-spend-action",async page=>{
-    await setup(page);await page.evaluate(()=>{S.runDaily=S.calendar.runDaily({nightEvents:{},onQuit(){}});});
+    await setup(page);
+    // B06 exposes the axe outing only after the mandatory Sumi talk at shift end.
+    await page.evaluate(async()=>{
+      const timer=setInterval(()=>{
+        document.querySelector('[data-test="shift-order-0"]')?.click();
+        document.querySelector('[data-test="after-none"]')?.click();
+      },20);
+      try { await S.tonari.doBaito(); } finally { clearInterval(timer); }
+      if(!S.core.state.flags._axe_throw_unlocked) throw new Error("Sumi shift talk did not expose axe throwing");
+      // Isolate the calendar cancellation from the paid shift used to unlock it.
+      Object.assign(S.core.state,{money:90000,stamina:80,slot:1});
+      S.runDaily=S.calendar.runDaily({nightEvents:{},onQuit(){}});
+    });
     await page.locator('[data-test="pin-tonari"]').click();await page.locator('[data-test="map-go"]').click();
     await page.locator('[data-test="tonari-hiyori-axe"]').waitFor();await assertFits(page,".sub-choices button");
     await page.locator('[data-test="tonari-hiyori-axe"]').click();await phase(page,"choice");
