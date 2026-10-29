@@ -1,4 +1,4 @@
-// #1107 B2: ロートスHMDではアルミ穴あけの画面が出ず工程を飛ばすこと、任意トグル/他HMDでは従来通り穴あけをすることを実UIで確認。
+// ロートスでは蓋の通気を選び、アルミ付きの台では従来通り穴あけをする。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
@@ -23,12 +23,23 @@ await suite("foil-skip", async run => {
   await run("lotus-skips-foil", async page => {
     await init(page);
     await page.evaluate(() => T.start());
+    await page.locator('[data-test="opt-closed"]').click();
     await page.evaluate(() => window.running);
     assert.equal(await page.locator('[data-test="hole-start"]').count(), 0, "ロートスで穴あけ画面が出た");
     assert.equal(await page.locator('[data-test="foil"], .foil-target-plane').count(), 0, "ロートスで穴あけの盤面が出た");
     const holes = await page.evaluate(() => cs.holes);
     assert.equal(holes.skipped, true, "穴あけが飛ばされていない");
     assert.equal(holes.score, null, "飛ばした穴あけに点が付いている");
+    assert.equal(await page.evaluate(() => cs.vent), "closed");
+    assert.equal(holes.vent, "closed");
+  });
+
+  await run("lotus-auto-opens-vent", async page => {
+    await init(page);
+    await page.evaluate(() => { T.session.craftTest.auto = "good"; return T.start(); });
+    await page.evaluate(() => window.running);
+    assert.equal(await page.evaluate(() => cs.vent), "open");
+    assert.equal(await page.locator('[data-test="hole-start"]').count(), 0);
   });
 
   await run("opt-in-uses-foil", async page => {

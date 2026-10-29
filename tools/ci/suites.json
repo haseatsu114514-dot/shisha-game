@@ -10,6 +10,18 @@
   ],
   "suites": [
     {
+      "id": "vent-lid",
+      "title": "Lotos lid vent heat and eligibility",
+      "kind": "quick",
+      "run": ["node remake/test/vent_lid.mjs"]
+    },
+    {
+      "id": "water-comfort",
+      "title": "Water comfort bands and craft scoring invariants",
+      "kind": "quick",
+      "run": ["node remake/test/water_comfort.mjs"]
+    },
+    {
       "id": "shift-mix-record",
       "title": "Shift mix recording, dialogue and tournament feedback (#1414, #1415)",
       "kind": "quick",
@@ -158,6 +170,14 @@
         "remake/img/loading/*"
       ],
       "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
+    },
+    {
+      "id": "chapter-preview-scripts",
+      "title": "Chapter preview scripts: structure, sources and excerpt fidelity",
+      "kind": "quick",
+      "run": [
+        "node remake/test/chapter_preview_scripts.mjs"
+      ]
     },
     {
       "id": "dialogue-lint",
@@ -554,6 +574,8 @@
         "data/chapter_previews/**",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch1-preview.js",
+        "remake/js/chapters/chapter-preview.js",
+        "remake/js/chapters/preview-cue.js",
         "remake/js/chapters/preview-score.js",
         "remake/js/chapters/chapter-preview-samples.js",
         "remake/js/core/audio.js",
