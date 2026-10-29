@@ -148,6 +148,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_naru_warm_done", "person"],
   ["_ch2_no_audience", "progression"],
   ["_ch2_preparation_started", "progression"],
+  ["_ch2_preview_seen", "progression"],
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],

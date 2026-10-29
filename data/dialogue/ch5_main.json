@@ -12,7 +12,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "世界大会からしばらく経ったtonari。博士が、小さなケースをカウンターに置いた。"
+          "text": "世界大会からしばらく経ったtonari。博士から、封書が届いた。表書きは『挑戦状』。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その翌日、博士本人が来て、小さなケースをカウンターに置いた。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "手紙だけでは、失礼かと思いまして"
         },
         {
           "speaker": "dr_kemuri",
@@ -28,6 +38,11 @@
           "speaker": "dr_kemuri",
           "face": "normal",
           "text": "ええ。失敗した調整も、そこから立て直した動きも"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "土台は、世界中の名手の記録と、熱の計算です。その上に、君を重ねました"
         },
         {
           "speaker": "dr_kemuri",
@@ -371,14 +386,19 @@
           "text": "このアームは職人に何度も直してもらった。葉の記録も、店の人たちに"
         },
         {
-          "speaker": "hajime",
+          "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "この一台も、みんなの仕事でできてるんですね"
+          "text": "鉄の煙の記録も借りました。君の待ち時間まで、測ってあった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは、検品札に指で触れた。端が、何度もめくられて柔らかくなっている。"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "ええ。……私も昔は、店で作っていました"
+          "text": "……私も昔は、店で作っていました"
         },
         {
           "speaker": "dr_kemuri",

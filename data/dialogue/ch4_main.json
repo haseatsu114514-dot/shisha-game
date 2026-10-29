@@ -206,6 +206,11 @@
           "text": "市場の端。地味な旅装の男が、落ちた紙コップを拾っていた。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "男はゆっくりした英語で話した。はじめも、同じ速さで返した。"
+        },
+        {
           "speaker": "old_man",
           "face": "normal",
           "text": "悪い、そこのごみ袋、開けてくれるか"
@@ -260,6 +265,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "ここの葉、使ってもいいですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の端に、見覚えのある外国語のラベルがあった。"
         },
         {
           "speaker": "",
@@ -350,6 +360,16 @@
         {
           "speaker": "",
           "face": "",
+          "text": "帰り際、男は古びた台の脇で足を止め、ホースの継ぎ目に手を置いた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "この店には、昔の借りがある"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "男は店員に礼を言って去った。カップは、洗いやすいように重ねてあった。"
         }
       ]
@@ -361,6 +381,11 @@
           "speaker": "",
           "face": "",
           "text": "前夜祭。金色の装束の王煙楼が、客席のざわめきが静まるのを待っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "壇上の王者の席だけが、最後まで空いていた。"
         },
         {
           "type": "condition",
@@ -440,6 +465,11 @@
           "speaker": "",
           "face": "",
           "text": "GRAND SMOKE当日。四人分の台が、一列に並んでいる。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "世界の予選を抜けた、最後の四人だ！"
         },
         {
           "speaker": "pakki",
@@ -542,19 +572,14 @@
           "text": "ヴォルクのノートと同じ欄に、開場後の温度を書く。数字を見てから、客の顔へ戻る。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "中間発表。なるが先頭だった。王煙楼もシェイクも、手を止めない。"
-        },
-        {
           "speaker": "naru",
           "face": "normal",
-          "text": "最後の炭替えまで、逃げきる"
+          "text": "最後の炭替えまで、手は緩めない"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "追いつくよ"
+          "text": "こっちもだ"
         },
         {
           "speaker": "",
@@ -665,12 +690,22 @@
         {
           "speaker": "sheikh",
           "face": "normal",
+          "text": "大会のあいだ、あの店を手伝っていた日本の選手だった。私が座ったのは、決勝の翌日だ"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
           "text": "墨田丈一郎。君の、スミさんだ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "……あの店で、ですか"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "注文より先に、水が置かれた"
         },
         {
           "speaker": "sheikh",
@@ -705,12 +740,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "帰国後。tonariのカウンターで、スミさんにシェイクの話をした。"
+          "text": "帰国後。荷をほどくと、路地裏の店の炭の匂いがした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariのカウンターで、スミさんにシェイクの話をした。"
         },
         {
           "speaker": "sumi",
           "face": "normal",
           "text": "……あのお客さんが。作るようになったのか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……あの店、まだあったか"
         },
         {
           "speaker": "hajime",
@@ -736,6 +781,31 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "似てた。けど、お前の不調の理由まで俺が決めることじゃない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……県大会の前、夜のtonariで聞いちゃったんです。『その人は、どうなったんです』って"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……聞いてたのか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "あれは、俺の話だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そのあと、路地裏の店で、あのお客さんに一台作った。点のことは考えずに、顔だけ見てな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……それで、戻れた"
         },
         {
           "speaker": "sumi",
@@ -801,6 +871,51 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "じゃあ俺、その日は早めに片づけます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後に、小さな包みをカウンターへ置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お土産です。路地裏の店で、分けてもらいました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みに伸びたスミさんの手が、一瞬だけ止まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "外国語のラベル。あの夜、奥の棚から出てきた傷だらけの瓶と、同じ字だ。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……そうか。あの店の葉か"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは包みを、カウンターの奥の棚にしまった。古い瓶の、隣だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつか、自分の店も持ちたいです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……休みの日は、誰が開ける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そこから、考えます"
         },
         {
           "speaker": "",
@@ -994,9 +1109,14 @@
           "text": "あいつの店も、うちの店も続いている。まだ話すことはある"
         },
         {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "鳴切くん。今日は、届け先が見えた"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "南雲はスタッフに呼ばれて戻っていった。なるはもう一度、ケースの留め具を確かめた。"
+          "text": "なるは何も言わず、もう一度ケースの留め具を確かめた。南雲はスタッフに呼ばれて戻っていった。"
         }
       ],
       "comment": "競技の採点が確定した後。過去の友情を採点理由にせず、はじめとなるを同じ結末へ固定しない。"

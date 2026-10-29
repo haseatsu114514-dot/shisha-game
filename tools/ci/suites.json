@@ -583,14 +583,22 @@
         "remake/css/chapter-preview-samples.css",
         "remake/chapter-preview.html",
         "remake/chapter-preview-samples.html",
+        "remake/js/chapters/ch2-tournament.js",
+        "remake/js/chapters/ch3-aftermath.js",
+        "remake/js/chapters/ch4.js",
         "assets/cgs/ch2_preview/**",
+        "assets/cgs/ch3_preview/**",
+        "assets/cgs/ch4_preview/**",
+        "assets/cgs/ch5_preview/**",
         "assets/audio/**",
         "assets/fonts/**",
         "remake/test/browser/ch1_preview.mjs",
+        "remake/test/browser/chapter_preview.mjs",
         "remake/test/browser/chapter_preview_samples.mjs"
       ],
       "run": [
         "node remake/test/browser/ch1_preview.mjs",
+        "node remake/test/browser/chapter_preview.mjs",
         "node remake/test/browser/chapter_preview_samples.mjs"
       ]
     },

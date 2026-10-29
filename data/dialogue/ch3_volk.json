@@ -17,12 +17,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "扉を開けると、温度計と数字が並んだパネルが壁を埋めている。"
+          "text": "むき出しの鉄とコンクリートの壁に、温度計と数字が並んだパネルが埋め込まれている。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "シーシャの器具は最小限で、代わりに精密な金属製の装置がいくつも並んでいた。"
+          "text": "飾り気のない鉄の台に、分厚い金属のボウルと炭の箱。その脇に、精密な計器がいくつも並んでいた。"
         },
         {
           "speaker": "volk",
@@ -57,11 +57,6 @@
           "next_false": "delivery_original_recognition"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。地方から来て、この辺のシーシャ屋を回っていて"
-        },
-        {
           "type": "condition",
           "condition_type": "flag",
           "flag": "_ch3_delivery_volk",
@@ -79,6 +74,13 @@
           "speaker": "volk",
           "face": "normal",
           "text": "日本の窓口は凛に任せている。あいつの上司だ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ev_rin_monitor",
+          "next_true": "rin_report",
+          "next_false": ""
         },
         {
           "speaker": "hajime",
@@ -107,7 +109,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "壁の計器を見ている。室温、湿度、お前が連れてきた外気。そこから最適な炭量と熱量を算出する"
+          "text": "壁の計器を見ている。室温、湿度、外気。火をどこまで強くできるか、測って決める"
         },
         {
           "speaker": "volk",
@@ -117,7 +119,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヴォルクは壁一面の計器に視線を走らせ、モニターに数字を打ち込んでいく。"
+          "text": "ヴォルクは計器に視線を走らせ、数字を打ち込むと、熾った炭を迷いなくボウルへ積んだ。"
         },
         {
           "speaker": "volk",
@@ -132,12 +134,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "新しいナイトサイドのブラストミントが届いた。最初の一口から最後まで、温度と密度が一切ブレない。"
+          "text": "届いたブラストミントは、強い火でも焦げない。重く冷たい煙が、胸の底まで沈んでくる。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "完璧に均一な煙だ。"
+          "text": "最初の一口から最後まで、その重さが一切崩れない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……あの火力で、この重さを最後まで保つのか。これは人間が作れるものなのか）"
         },
         {
           "speaker": "volk",
@@ -210,11 +217,49 @@
         }
       ],
       "branches": {
+        "rin_report": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "rin",
+            "next_true": "rin_report_lover",
+            "next_false": "rin_report_plain"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "凛の報告に、名前を伏せたモニターがいた。舌が素直だ、と書いてあった"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "……県大会で、それらしい手を見ていた"
+          }
+        ],
+        "rin_report_plain": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "凛さんの……？"
+          }
+        ],
+        "rin_report_lover": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……凛さんから、聞いてます"
+          }
+        ],
         "unseen": [
           {
             "speaker": "volk",
             "face": "normal",
-            "text": "（向き直り、淡々と）大会の参加者か。初めて見る顔だ"
+            "text": "（向き直り、淡々と）大会の参加者か、……資料で見た顔だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。地方から来て、この辺のシーシャ屋を回っていて"
           }
         ],
         "seen_in_ch2": [
@@ -241,7 +286,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（偵察の理由は聞けた。でも、開いたばかりの店がどう勝ち上がったのかは分からない）"
+            "text": "（偵察の理由は聞けた。あの大きな人が、この鉄の煙の店主だったのか）"
           }
         ],
         "delivery_known_open": [
@@ -260,7 +305,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "東京に開いたばかりだという店。店の来歴を調べても、短い告知しか見つからなかった。"
+            "text": "無骨な鉄とコンクリートの店。ナイトサイドを扱うハードコアな名店として知られている。"
           }
         ],
         "delivery_known_name": [
@@ -308,7 +353,7 @@
           }
         ]
       },
-      "comment": "第2章の姿は第3章で偵察だったと分かる。新しい東京の店と急な躍進の経緯は未解明のまま残す。"
+      "comment": "第2章の姿は第3章で偵察だったと分かる。鉄の煙はナイトサイドを扱う東京の名店として描く。"
     },
     {
       "dialogue_id": "ch3_volk_second",
@@ -339,7 +384,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "3度違えば、最適な炭量は変わる。今日は少し下げる"
+          "text": "3度違えば、最適な炭量は変わる。今日は一つ減らし、火を詰める。重さは熱で支えるものだ"
         },
         {
           "speaker": "hajime",
@@ -379,12 +424,12 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "狙撃手は、呼吸と体温と風速を計算する。ブレたら、終わりだ、……シーシャも同じだ"
+          "text": "軍では、呼吸と体温と風速を読む。ブレたら、終わりだ、……シーシャも同じだ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……狙撃手。この人、本当に元軍人なのか）"
+          "text": "（……元軍人。この人の精度は、そこで叩き込まれたのか）"
         },
         {
           "speaker": "volk",
@@ -763,7 +808,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヴォルクは壁の計器に視線を走らせ、数字を書き留めた。大会とは全然違う、この人の本領だ。"
+          "text": "ヴォルクは計器に視線を走らせ、数字を書き留めた。大会の手つきが、壁一面になっている。"
         },
         {
           "speaker": "volk",

@@ -52,6 +52,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "裏返して、店の名前を書きかけたところで、ペンを止めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "店を出る前に、明日のシフトを確かめる。"
         }
       ]
@@ -363,7 +368,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "休むのも仕事、と店の子に叱られたのじゃ"
+          "text": "休むのも王命、とコロちゃんに叱られたのじゃ"
         },
         {
           "speaker": "hajime",
@@ -538,6 +543,46 @@
         {
           "speaker": "",
           "face": "",
+          "text": "ドアベルがもう一度鳴った。白衣ではない上着の博士が、空いた席に座る。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "少し軽めで。……時間は、一時間あります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。じゃあ、炭は遠めに置きますね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "9000は、どうしてますか"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "ラボにいます。近ごろは最初に『本日は、どれくらいお時間がありますか』と尋ねるようになりました"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "私も、白衣はラボに置いてきました。来週から、知り合いの店のカウンターに立ちます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、今日は偵察ですね"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "いえ。今日は、客です"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "優勝の写真は、カウンターの端に飾ってある。"
         },
         {
@@ -554,6 +599,37 @@
           "speaker": "",
           "face": "",
           "text": "返事を聞きながら、もう一つボウルを出す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の少し前。奥まった席に、いつものサラリーマンが座った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップルにミント少し、ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "やがて、ホースの持ち手をそっとテーブルに置く。会計を済ませ、帰り際にポツリと。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……今日の、良かったよ",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。……また明日"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"
         }
       ]
     }

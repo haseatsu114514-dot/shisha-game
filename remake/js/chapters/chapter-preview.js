@@ -28,6 +28,19 @@ export const PREVIEWS = {
     // 共通スコア（arrangement に air/bell/titleChord/level の章別パラメータを書く）。
     score: { kind: "legacy" },
   },
+  // 予告1（第2章末→第3章『嘘つきたちの夜』）。曲は cue 駆動で、調を第1章より少し上げる。
+  ch3: {
+    scriptUrl: "../data/chapter_previews/ch3.json",
+    assetDir: "../assets/cgs/ch3_preview/",
+    seenFlag: "_ch2_preview_seen",
+    labels: {
+      aria: "第2章の終わりと第3章の次回予告",
+      counter: "次回予告",
+      prologueCounter: "トロフィーの、そのあと。",
+      loading: "次回予告を準備しています……",
+    },
+    score: { kind: "cue", arrangement: { air: 47, bell: 79, titleChord: [59, 62, 66, 71], level: 1 } },
+  },
 };
 
 let active = null;

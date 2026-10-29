@@ -16,16 +16,6 @@
         {
           "speaker": "",
           "face": "",
-          "text": "目が、一瞬だけ細くなった。値踏みするような、でも品のある目だ。すぐに柔らかくなる。"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "まあ座んな。一服していきなせえ。うちはドラゴンフルーツですわ"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "大きな手。でも動作は繊細で、トングを扱う精度が異常に高い。炭が一ミリもズレない。"
         },
         {
@@ -104,6 +94,11 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。お店の煙を吸ってみたくて"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "座んな。今日の葉も、ドラゴンフルーツですわ"
           }
         ],
         "first_meeting": [
@@ -155,6 +150,16 @@
             "speaker": "kumicho",
             "face": "normal",
             "text": "……ほう。大会、ときなすったか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "目が、一瞬だけ細くなった。値踏みするような、でも品のある目だ。すぐに柔らかくなる。"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "まあ座んな。一服していきなせえ。うちはドラゴンフルーツですわ"
           }
         ],
         "introduction_after": [
@@ -172,6 +177,16 @@
             "speaker": "kumicho",
             "face": "normal",
             "text": "……ほう。tonariから来なすったか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "目が、一瞬だけ細くなった。値踏みするような、でも品のある目だ。すぐに柔らかくなる。"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "まあ座んな。一服していきなせえ。うちはドラゴンフルーツですわ"
           }
         ]
       }
@@ -193,12 +208,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "昨日のドラゴンフルーツ、ずっと頭に残ってて"
+          "text": "この前のドラゴンフルーツ、ずっと頭に残ってて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんの口角が、わずかに上がった。"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "（口角が、わずかに上がった）……そうかい"
+          "text": "……そうかい"
         },
         {
           "speaker": "hajime",
@@ -442,9 +462,14 @@
           "text": "あの……いつものドラゴンフルーツで"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんの目元が、少しだけゆるんだ。"
+        },
+        {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "（少し嬉しそうに）……おう、まかせときな"
+          "text": "……おう、まかせときな"
         },
         {
           "speaker": "",
@@ -605,9 +630,14 @@
           "text": "一瞬、静寂が落ちた。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは煙をゆっくり吐いた。"
+        },
+        {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……（煙をゆっくり吐いて）こうして煙を吸ってる間はね"
+          "text": "……こうして煙を吸ってる間はね"
         },
         {
           "speaker": "kumicho",

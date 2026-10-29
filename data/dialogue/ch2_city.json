@@ -132,7 +132,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "県大会ホールなら、交差点を渡って右。C.STATIONと同じビルだよ"
+            "text": "県大会ホールなら、交差点を渡って右。C.STATION柚ヶ谷店と同じビルだよ"
           },
           {
             "speaker": "dr_kemuri",
@@ -173,7 +173,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "会場なら交差点を渡って右。C.STATIONと同じビルだ"
+            "text": "会場なら交差点を渡って右。C.STATION柚ヶ谷店と同じビルだ"
           }
         ]
       }
@@ -433,17 +433,7 @@
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "今度、煙を囲めば縁ができる。盃ってのは、そういうもんですわ"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "盃……？"
-          },
-          {
-            "speaker": "kumicho",
-            "face": "normal",
-            "text": "……映画の話でさ。気にしなさんな。街、よく見てきな"
+            "text": "まずは街を、よく見てきな"
           },
           {
             "speaker": "",
@@ -563,7 +553,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "その「嘘の薔薇」って、ミックスの名前ですか？"
+            "text": "その「イエス」って、ミックスの名前ですか？"
           },
           {
             "speaker": "rei",

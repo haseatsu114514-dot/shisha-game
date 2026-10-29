@@ -31,6 +31,7 @@ import { buildCraftProgress } from "./progress.js";
 import { warmCraftAssets } from "./readiness.js";
 import { prepareBenchEntry } from "./loading.js";
 import { applyCoalTraining } from "./coals.js";
+import { attachBenchAppearance } from "../appearance/bench.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -61,6 +62,7 @@ export function newSession(mode) {
     steamPrediction: steamForecastProfile(tier01("insight"), steamVariation),
     masteryAtStart: { ...state.flavorMastery }, // 練習後の成長で、作り終えた一台の評価を変えない
     equip: { ...state.equip },
+    appearance: { ...state.appearance },
     mix: {},
     mixInfo: null,
     pack: null,
@@ -154,6 +156,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   showScreen("bench", root);
   bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
+  attachBenchAppearance(bench, cs);
   const background = bg();
   // A missing entryAssets is an already completed fourth step in the loading count.
   const preparationSteps = [background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets];

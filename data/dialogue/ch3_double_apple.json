@@ -10,7 +10,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "初めて訪ねるmukai。機材ケースを持ち上げ、狭い階段を三階まで上がった。"
+          "text": "初めて訪ねるmukai。高架下の商店街を抜け、機材ケースを抱えたまま店の戸をくぐった。"
         },
         {
           "speaker": "mukai_master",
@@ -59,6 +59,36 @@
           "speaker": "",
           "face": "",
           "text": "持つ場所を空けてもらう。肩から、少し重さが抜けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "荷を解いたあと、ムカイさんに言われて、いつものブロンドで一台組んだ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕も、一口いい？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろはホースを受け取り、ゆっくり吸って、首をかしげた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……これ、お水？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろはそれ以上何も言わず、ホースをこちらへ返した。"
         }
       ]
     },

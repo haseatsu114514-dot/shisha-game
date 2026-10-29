@@ -93,6 +93,16 @@ assert(!all(window).some((l) => l.speaker === "naru" && /明後日|来たよ/.te
 assert.match(window.branches.hurt.map((l) => l.text).join("\n"), /既読[\s\S]*電話に出なかった/);
 assert.match(window.branches.listened.map((l) => l.text).join("\n"), /もう一回[\s\S]*返事が来ない/);
 
+// DAY14の入場後: 4台の前の掛け合い。神崎はあげはを『葉子の姉貴』と呼び、応援席は前夜の選択に従う。震えは秘密を知る保存だけ
+const stations = tournament.ch2_tournament_stations;
+assert.match(text(stations), /葉子の姉貴[\s\S]*本名で呼ぶな/);
+assert.doesNotMatch(stations.lines.map((l) => l.text || "").join("\n"), /指先|震え/, "秘密の描写は分岐の中だけ");
+assert(stations.lines.some((l) => l.flag === "_ch2_ageha_secret" && l.next_true === "secret"));
+assert(stations.lines.some((l) => l.flag === "_ch2_no_audience" && l.next_true === "alone" && l.next_false === "other"));
+assert.equal(stations.branches.other[0].flag, "_ch2_audience_welcome");
+assert.match(stations.branches.welcome.map((l) => l.text).join("\n"), /つむぎ/);
+assert(!all(stations).some((l) => ["apply", "note", "set_flag"].includes(l.type) || l.affinity || l.stats), "報酬・保存フラグを足さない");
+
 // 章の最後: はじめのいない場面で、あげはの心の声だけ。才能の壁は両側にあった（本人には言わない嫉妬）
 const heart = tournament.ch2_tournament_ageha_heart;
 assert(!all(heart).some((l) => l.speaker === "hajime"), "はじめはこの場にいない");

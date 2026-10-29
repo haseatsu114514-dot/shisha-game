@@ -60,6 +60,7 @@ export function readGalleryProgress() {
   let value;
   try { value = JSON.parse(raw || "null"); } catch { /* 初回・保存不可 */ }
   const result = {
+    completeAnnounced: value?.completeAnnounced === true,
     clearedChapters: unique(list(value?.clearedChapters).filter(chapter)).sort(),
     keepsakes: unique(list(value?.keepsakes).filter(id => Object.hasOwn(PHOTO_KEEPSAKES, id))),
     purikura: [...new Map(list(value?.purikura).map(photo).filter(Boolean).map(p => [purikuraId(p), p])).values()],
@@ -95,6 +96,7 @@ export function recordGalleryProgress(value) {
     merged.set(id, { ...merged.get(id), ...p }); // 日付のない旧セーブで補完済みの日付を消さない
   }
   const next = {
+    completeAnnounced: before.completeAnnounced,
     clearedChapters: unique([...before.clearedChapters, ...cleared]).sort(),
     keepsakes: unique([...before.keepsakes, ...list(value.keepsakes).filter(id => Object.hasOwn(PHOTO_KEEPSAKES, id))]),
     purikura: [...merged.values()],
@@ -107,6 +109,16 @@ export function recordGalleryProgress(value) {
 function saveRouteProgress(before, next) {
   if (JSON.stringify(before) === JSON.stringify(next)) return;
   try { localStorage.setItem(GALLERY_PROGRESS_KEY, JSON.stringify(next)); invalidateProgressCache(); } catch { /* ゲームの保存は妨げない */ }
+}
+
+export function shouldAnnounceCompletion(stats, progress) {
+  return stats?.total > 0 && stats.unlocked === stats.total && progress?.completeAnnounced !== true;
+}
+
+export function markCompletionAnnounced() {
+  const before = readGalleryProgress();
+  if (before.completeAnnounced) return;
+  saveRouteProgress(before, { ...before, completeAnnounced: true });
 }
 
 export function recordRouteLover(charId) {
