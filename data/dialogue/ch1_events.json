@@ -253,7 +253,7 @@
           "condition_type": "flag",
           "flag": "_minto_identity_revealed",
           "next_true": "familiar",
-          "next_false": "unfamiliar"
+          "next_false": ""
         },
         {
           "speaker": "minto",
@@ -375,27 +375,6 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "tonariで会う時と同じ服ですね。……今日はよろしくお願いします"
-          }
-        ],
-        "unfamiliar": [
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "あれ……？ tonariに来てた、お姉さん……？"
-          },
-          {
-            "speaker": "minto",
-            "face": "ura_surprise",
-            "text": "……う、うん。……キャストの、みんとです"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "（お店のみんとと、tonariの静かなお姉さん。同じ人だったんだ）"
-          },
-          {
-            "type": "set_flag",
-            "flag": "_minto_identity_revealed"
           }
         ]
       }
@@ -554,12 +533,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "押し切られるままツーショットを１枚。"
+          "text": "押し切られるまま、みんとのチェキを一枚。余白に『はじめくん専用♡』と書き足された。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "「営業用じゃない笑顔、いただきましたー♪」とみんとは満足げだった。"
+          "text": "「営業用じゃない笑顔だからね、大事にしてよー？」と、みんとは満足げにチェキを差し出した。"
         },
         {
           "speaker": "",
