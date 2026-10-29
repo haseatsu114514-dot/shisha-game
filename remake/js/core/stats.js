@@ -242,12 +242,27 @@ export const bond = {
   get private() { return privateOwner === state && privateValue; },
   set private(value) { privateOwner = state; privateValue = !!value; privateRevision++; },
 };
-/** LOAD後の旧finallyが、新しい私的会話のスコープを閉じない。 */
+/** LOAD後の旧finallyが、新しい私的会話のスコープを閉じない。
+ *  スコープはスタックで管理し、入れ子・順不同の復元でも private が残留しないよう防御する（#1361）。 */
+const privateScopeStack = [];
 export function privateBondScope() {
   const owner = state, previous = bond.private;
+  const entry = { owner, previous };
+  privateScopeStack.push(entry);
   bond.private = true;
-  const revision = privateRevision;
-  return () => { if (privateRevision === revision) bond.private = state === owner && previous; };
+  return () => {
+    const idx = privateScopeStack.indexOf(entry);
+    if (idx === -1) return; // 復元済み、または陳腐化した旧finally
+    privateScopeStack.splice(idx, 1);
+    if (idx < privateScopeStack.length) {
+      // 外側から先に閉じた: 内側の復元先を、このスコープ開始前の値へ引き継ぐ
+      privateScopeStack[idx].previous = entry.previous;
+      return;
+    }
+    // 最後に開いたスコープの復元だけが実値を戻す。所有stateが現行と異なる（LOAD済み）
+    // 場合は、新しい会話のスコープを閉じないよう触らない。
+    if (state === owner) bond.private = entry.previous;
+  };
 }
 
 /** 普通の好感度は従来の加算量の85%（HF01）。恋人の絆は従来の半分 */
