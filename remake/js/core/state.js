@@ -362,19 +362,35 @@ export function newGame() {
   return setState(newState());
 }
 
-export function save() {
-  if (!state) return false;
+let lastComplementedAutosaveRaw = null;
+
+function writeSave() {
+  if (!state) return { raw: null, saved: false };
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
-  try { recordGalleryProgress(peekSave()); } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
+  try {
+    const oldRaw = localStorage.getItem(SAVE_KEY);
+    if (oldRaw && oldRaw !== lastComplementedAutosaveRaw) {
+      const oldSave = JSON.parse(oldRaw);
+      if (oldSave && typeof oldSave === "object") recordGalleryProgress(oldSave);
+      lastComplementedAutosaveRaw = oldRaw;
+    }
+  } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
   recordGalleryProgress(state);
   state.savedAt = Date.now();
+  let raw = null;
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-    return true;
+    raw = JSON.stringify(state);
+    localStorage.setItem(SAVE_KEY, raw);
+    lastComplementedAutosaveRaw = raw;
+    return { raw, saved: true };
   } catch {
     /* プライベートウィンドウ等で失敗しても遊べるようにする */
-    return false;
+    return { raw, saved: false };
   }
+}
+
+export function save() {
+  return writeSave().saved;
 }
 
 export function peekSave() {
@@ -431,9 +447,9 @@ export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
 /** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
 export function saveToSlot(key) {
-  save();
+  const { raw } = writeSave();
   try {
-    localStorage.setItem(key, JSON.stringify(state));
+    localStorage.setItem(key, raw === null ? JSON.stringify(state) : raw);
     return true;
   } catch {
     return false;
