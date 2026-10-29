@@ -5,7 +5,10 @@ import { CH5_SCENE_BG, CH5_PROLOGUE, CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTE
   CH5_ENDING_IDS, CH5_SCENE_FILES, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, beginChapterFiveFinale,
-  completeChapterFiveScene } from "../js/chapters/ch5-progress.js";
+  completeChapterFiveScene, recordChapterFiveSecondCup, chapterFiveSecondCupVotes, chapterFiveVoteTally,
+  CH5_AUDIENCE, CH5_FIRST_CUP_VOTES, CH5_PREP_TRIALS, chapterFivePrepScene, chapterFivePreparation,
+  chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial,
+  recordChapterFivePrepAdjustment } from "../js/chapters/ch5-progress.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -81,6 +84,7 @@ function toBeforeSecond() {
 }
 function toAftermath() {
   const value = toBeforeSecond();
+  assert.equal(recordChapterFiveSecondCup(value, { total: 90, category: "steady" }), true);
   assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.win), true);
   assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.afterglow), true);
   return value;
@@ -115,7 +119,7 @@ assert.equal(value.phase, "opening");
 assert.deepEqual(value.statsAtChapterStart, value.stats);
 assert.notEqual(value.statsAtChapterStart, value.stats);
 assert.deepEqual(value.flags._ch5, { startDay: 61, stage: 0, part: "prologue", titleSeen: false,
-  read: {}, scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null });
+  read: {}, scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null });
 assert.equal(value.flags._ch5_match_scheduled, false);
 assert.equal(value.flags._ch5_match_started, false);
 assert.equal(value.flags._ch4_cleared, true, "The Chapter 4 clear record must stay");
@@ -189,13 +193,14 @@ rejects(value, v => completeChapterFiveScene(v, "ch5_match_day_arrival"));
   assert.equal(cancelled.flags._ch5.part, "scheduled");
 }
 
-// 試合: begin でだけ match へ。順序は arrival → firstCup → beforeSecond、勝敗はシームで win 固定。
+// 試合: begin でだけ match へ。順序は arrival → firstCup → beforeSecond → 二本目の制作 → 挙手の合計で勝敗。
 assert.equal(beginChapterFiveMatch(value), true);
 assert.equal(value.flags._ch5.part, "match");
 assert.equal(value.flags._ch5_match_started, true);
 assert.equal(value.phase, "tournament");
 rejects(value, beginChapterFiveMatch);
-assert.equal(chapterFiveMatchOutcome(value), "win");
+assert.equal(chapterFiveMatchOutcome(value), null, "No outcome before the second cup is made");
+rejects(value, v => recordChapterFiveSecondCup(v, { total: 90, category: "steady" }));
 rejects(value, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.firstCup));
 assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.arrival), true);
 rejects(value, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.beforeSecond));
@@ -203,6 +208,17 @@ assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.firstCup), true);
 rejects(value, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.win));
 assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.beforeSecond), true);
 rejects(value, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.afterglow));
+// 二本目を作るまで、勝ちの場面も負けの場面も読めない。
+rejects(value, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.win));
+rejects(value, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.loss));
+for (const bad of [{ total: 90, category: "bogus" }, { total: Number.NaN, category: "steady" }])
+  rejects(value, v => recordChapterFiveSecondCup(v, bad));
+assert.equal(recordChapterFiveSecondCup(value, { total: 90, category: "steady" }), true);
+rejects(value, v => recordChapterFiveSecondCup(v, { total: 10, category: "offband" }));
+assert.equal(chapterFiveMatchOutcome(value), "win");
+assert.deepEqual(chapterFiveVoteTally(value), { first: { hajime: 19, machine: 21 },
+  second: { hajime: 26, machine: 14 }, total: { hajime: 45, machine: 35 } });
+roundTrip(value);
 assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.win), true);
 rejects(value, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.loss));
 assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.afterglow), true);
@@ -211,10 +227,69 @@ assert.equal(value.flags._ch5.won, true);
 assert.equal(value.phase, "aftermath");
 roundTrip(value);
 
+// 挙手: 一本目は台本どおり 9000 が僅かに先取。二本目は出来で動き、一方的にはならない。
+assert.equal(CH5_FIRST_CUP_VOTES.hajime + CH5_FIRST_CUP_VOTES.machine, CH5_AUDIENCE);
+assert(CH5_FIRST_CUP_VOTES.machine > CH5_FIRST_CUP_VOTES.hajime);
+for (let total = 0; total <= 100; total += 1) {
+  assert(chapterFiveSecondCupVotes(total) >= chapterFiveSecondCupVotes(Math.max(0, total - 1)), `monotonic at ${total}`);
+  assert(chapterFiveSecondCupVotes(total) < CH5_AUDIENCE * 0.7, `not one-sided at ${total}`);
+}
+assert.equal(chapterFiveSecondCupVotes(100, true), chapterFiveSecondCupVotes(0));
+
+// 勝敗は二本目の出来だけで変わる。能力値・任意場面の既読は二本目の制作を通してだけ効く。
+{
+  const outcomeFor = (total, category = "steady", failed = false, tweak = () => {}) => {
+    const match = toBeforeSecond();
+    tweak(match);
+    assert.equal(recordChapterFiveSecondCup(match, { total, category, failed }), true);
+    return chapterFiveMatchOutcome(match);
+  };
+  assert.equal(outcomeFor(95), "win");
+  assert.equal(outcomeFor(78, "recovered"), "win");
+  assert.equal(outcomeFor(76, "recovered"), "tie");
+  assert.equal(outcomeFor(60, "offband"), "loss");
+  assert.equal(outcomeFor(95, "steady", true), "loss", "An unserved cup cannot win");
+  for (const level of [1, 100]) {
+    const tweak = save => { for (const key of Object.keys(save.stats)) save.stats[key] = level; };
+    assert.equal(outcomeFor(60, "offband", false, tweak), "loss");
+    assert.equal(outcomeFor(90, "steady", false, tweak), "win");
+  }
+}
+
+// 同数も負けと同じく、勝利フラグなしで後日談へ続く。
+{
+  const tied = toBeforeSecond();
+  assert.equal(recordChapterFiveSecondCup(tied, { total: 76, category: "recovered" }), true);
+  assert.equal(chapterFiveMatchOutcome(tied), "tie");
+  rejects(tied, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.win));
+  assert.equal(completeChapterFiveScene(tied, CH5_MATCH_SCENES.loss), true);
+  assert.equal(tied.flags._ch5.won, false);
+  for (const scene of CH5_AFTERMATH) assert.equal(completeChapterFiveScene(tied, scene.id), true, scene.id);
+  assert.equal(tied.flags._ch5.part, "finale");
+  roundTrip(tied);
+}
+
+// 勝ち固定の頃の保存（二本目の記録なしで勝ちの場面まで読んだ）は、そのまま余韻へ続けられる。
+{
+  const legacy = toBeforeSecond();
+  delete legacy.flags._ch5.secondCup;
+  legacy.flags._ch5.read[CH5_MATCH_SCENES.win] = true;
+  assert.equal(chapterFiveMatchOutcome(legacy), "win");
+  assert.equal(completeChapterFiveScene(legacy, CH5_MATCH_SCENES.afterglow), true);
+  assert.equal(legacy.flags._ch5.won, true);
+  const before = toBeforeSecond();
+  delete before.flags._ch5.secondCup;
+  assert.equal(chapterFiveMatchOutcome(before), null);
+  assert.equal(recordChapterFiveSecondCup(before, { total: 60, category: "offband" }), true);
+}
+
 // 試合（負け・分岐）: 負け/同数は勝利フラグなしで後日談へ。余韻は入らない。
 {
   const lost = toBeforeSecond();
   rejects(lost, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.afterglow));
+  assert.equal(recordChapterFiveSecondCup(lost, { total: 55, category: "offband" }), true);
+  assert.equal(chapterFiveMatchOutcome(lost), "loss");
+  rejects(lost, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.win));
   assert.equal(completeChapterFiveScene(lost, CH5_MATCH_SCENES.loss), true);
   assert.equal(lost.flags._ch5.part, "aftermath");
   assert.equal(lost.flags._ch5.won, false);
@@ -261,6 +336,52 @@ rejects(value, v => completeChapterFiveScene(v, "ending_start"));
   assert.equal(withEpilogue.flags._ch5_cleared, true);
 }
 
+// 閉店後の試作（#1666）: 練習を読んでから、試作→再調整の順に1回だけ記録する。能力・日・所持金・体力は動かない。
+for (const trial of CH5_PREP_TRIALS) for (const adjusted of [true, false]) {
+  const prepared = toFree();
+  assert.equal(chapterFivePrepPending(prepared), false, "Prep waits for the practice scene");
+  rejects(prepared, v => recordChapterFivePrepTrial(v, trial.id));
+  assert.equal(completeChapterFiveScene(prepared, "ch5_free_tonari_practice"), true);
+  assert.equal(chapterFivePrepPending(prepared), true);
+  assert.equal(chapterFivePreparation(prepared), null);
+  const before = structuredClone(prepared);
+  rejects(prepared, v => recordChapterFivePrepAdjustment(v, adjusted));
+  rejects(prepared, v => recordChapterFivePrepTrial(v, "bogus"));
+  assert.equal(recordChapterFivePrepTrial(prepared, trial.id), true);
+  rejects(prepared, v => recordChapterFivePrepTrial(v, trial.id));
+  rejects(prepared, v => recordChapterFivePrepAdjustment(v, "yes"));
+  assert.equal(chapterFivePrepPending(prepared), true, "Re-adjustment is still to choose");
+  assert.deepEqual(chapterFivePrepEcho(prepared, CH5_MATCH_SCENES.beforeSecond), [], "No echo before the choice is done");
+  roundTrip(prepared);
+  assert.equal(recordChapterFivePrepAdjustment(prepared, adjusted), true);
+  rejects(prepared, v => recordChapterFivePrepAdjustment(v, !adjusted));
+  assert.equal(chapterFivePrepPending(prepared), false);
+  assert.deepEqual(chapterFivePreparation(prepared), { trial: trial.id, adjusted });
+  for (const key of ["day", "slot", "money", "stamina", "stats"])
+    assert.deepEqual(prepared[key], before[key], `${key} must not change by reading the prep`);
+  roundTrip(prepared);
+  // 結果は二杯目の前と帰店後の会話へ返る。勝ち・負けのどちらの後日談でも同じ返答を読む。
+  const suffix = adjusted ? "adjusted" : "kept";
+  assert.deepEqual(chapterFivePrepEcho(prepared, CH5_MATCH_SCENES.beforeSecond), [`ch5_prep_recall_${trial.id}_${suffix}`]);
+  assert.deepEqual(chapterFivePrepEcho(prepared, "ch5_return_to_tonari"), [`ch5_prep_answer_${trial.id}_${suffix}`]);
+  assert.deepEqual(chapterFivePrepEcho(prepared, "ch5_doctor_after_match"), []);
+  for (const id of [chapterFivePrepScene("trial", trial.id), chapterFivePrepScene("adjust", trial.id),
+    chapterFivePrepScene("keep"), ...chapterFivePrepEcho(prepared, CH5_MATCH_SCENES.beforeSecond),
+    ...chapterFivePrepEcho(prepared, "ch5_return_to_tonari")]) assert(connected.includes(id), `${id} must be loaded`);
+  assert.equal(completeChapterFiveScene(prepared, "ch5_unrecorded_day"), true);
+  assert.equal(recordChapterFiveScheduleDecision(prepared, "decide"), true);
+  assert.equal(completeChapterFiveScene(prepared, "ch5_schedule_contact"), true);
+  assert.equal(beginChapterFiveMatch(prepared), true);
+  assert.deepEqual(chapterFivePreparation(prepared), { trial: trial.id, adjusted }, "The record survives into the match");
+  roundTrip(prepared);
+}
+// 旧保存（試作の記録なし）は試作なしで最後まで読め、返りの会話は足さない。
+{
+  const legacy = toAftermath();
+  assert.equal(chapterFivePreparation(legacy), null);
+  assert.deepEqual(chapterFivePrepEcho(legacy, "ch5_return_to_tonari"), []);
+}
+
 // 保存の検証: 壊れた保存・part とフラグの食い違いは throw。
 for (const [base, change] of [
   [toFree(), save => { save.chapter = 4; }],
@@ -270,6 +391,12 @@ for (const [base, change] of [
   [toFree(), save => { save.flags._ch5.read = []; }],
   [toScheduled(), save => { save.flags._ch5_match_scheduled = false; }],
   [toAftermath(), save => { save.flags._ch5.won = null; }],
+  [toAftermath(), save => { save.flags._ch5.won = false; }],
+  [toAftermath(), save => { save.flags._ch5.secondCup.votes.hajime = 41; }],
+  [toAftermath(), save => { save.flags._ch5.secondCup.category = "bogus"; }],
+  [toFree(), save => { save.flags._ch5.prep = { trial: "heat", adjusted: true }; }], // 練習の読了前
+  [toFree(), save => { save.flags._ch5.read.ch5_free_tonari_practice = true; save.flags._ch5.prep = { trial: "bogus", adjusted: null }; }],
+  [toFree(), save => { save.flags._ch5.read.ch5_free_tonari_practice = true; save.flags._ch5.prep = null; }],
 ]) {
   const broken = JSON.parse(JSON.stringify(base)); change(broken);
   assert.throws(() => chapterFiveProgress(broken));

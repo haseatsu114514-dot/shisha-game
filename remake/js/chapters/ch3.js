@@ -16,6 +16,7 @@ import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, ch
 import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
+import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { openShop } from "../daily/shop.js";
 import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
 import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, loadStoryRoutes, availableOptionalScenes, commitOptionalRead,
@@ -394,6 +395,7 @@ async function renderStage(owner) {
       save();
       await renderStage(owner);
     }, true),
+    ...trialActions(owner),
     ...await optionalActions(owner),
   ], scene.id === "ch3_kuze_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
 }
@@ -406,6 +408,36 @@ async function renderStage(owner) {
 async function optionalActions(owner) {
   const scenes = availableOptionalScenes(await loadStoryRoutes(), state);
   return scenes.length ? [button(owner, `寄り道をする（${scenes.length}）`, "optional-open", () => renderOptional(owner))] : [];
+}
+
+/**
+ * 回復後の試作（#1654）。久世・スティーブの場面を読んだあと、大会前の場面カードに一度ずつ出す。
+ * 寄り道と同じく本筋の予定は進めない。完了と講評の既読は ch3-trials.js が保存する。
+ */
+function trialActions(owner) {
+  const trials = availableChapterThreeTrials(state);
+  return trials.length ? [button(owner, `mukaiで試作する（${trials.length}）`, "trial-open", () => renderTrials(owner))] : [];
+}
+
+async function renderTrials(owner) {
+  if (!current(owner)) return;
+  const trials = availableChapterThreeTrials(state);
+  if (!trials.length) { await renderStage(owner); return; }
+  await withScenePreparation(setBg(bgUrl("bg_mukai_shop"), { instant: true }));
+  if (!current(owner)) return;
+  card(owner, "trial", "mukaiの作業台", "聞いたことを、自分の一台で確かめる。作っても、予定は進まない。", [
+    ...trials.map(trial => button(owner, trial.label, `trial-${trial.id}`, () => runTrial(owner, trial.id))),
+    button(owner, "戻る", "trial-back", () => renderStage(owner)),
+  ], "ましろちゃんと客席の反応まで見て、一度ずつ試せる。");
+}
+
+async function runTrial(owner, id) {
+  const trials = await withLoadingNotice(import("./ch3-trials.js"), loadingNotice("作業台を準備しています…"));
+  if (!current(owner)) return;
+  const controller = owner.controller = new AbortController();
+  try { await trials.runChapterThreeTrial(id, { signal: controller.signal, isCurrent: () => current(owner) }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
+  if (current(owner)) await renderStage(owner);
 }
 
 async function renderOptional(owner) {

@@ -242,6 +242,7 @@
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
+        "node remake/test/ch3_trials.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
         "node remake/test/practice_shop_only_783.mjs",
@@ -341,6 +342,7 @@
         "node --experimental-vm-modules remake/test/tsumugi_sketch_timing.mjs",
         "node --experimental-vm-modules --test remake/test/tutorial_step_help.mjs",
         "node remake/test/ch3_tournament_state.mjs",
+        "node remake/test/ch3_verdict.mjs",
         "node --experimental-vm-modules remake/test/appearance_setup_helper.mjs"
       ]
     },
@@ -980,6 +982,22 @@
         "remake/test/browser/ch3_map_activities.mjs"
       ],
       "run": ["node remake/test/browser/ch3_map_activities.mjs"]
+    },
+    {
+      "id": "ch3-trials",
+      "title": "Chapter 3 post-recovery workbench trials (#1654)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch3.js",
+        "remake/js/chapters/ch3-trial*.js",
+        "remake/js/chapters/ch3-progress.js",
+        "remake/js/craft/practice.js",
+        "data/dialogue/ch3_trials.json",
+        "remake/test/browser/ch3_trials.mjs"
+      ],
+      "run": ["node remake/test/browser/ch3_trials.mjs"]
     },
     {
       "id": "ch3-tournament",

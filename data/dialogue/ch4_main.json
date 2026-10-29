@@ -226,6 +226,16 @@
           "text": "疲れた顔だな。煙より先に水だ"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "水の次は、何を吸うんですか"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "葡萄だ。あれ以外は舌が浮気する。昨日、ミントを薦められて三口で返した"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "一緒に日陰へ入る。男は名乗らないまま、椅子を一つ引いた。"
@@ -403,6 +413,11 @@
           "speaker": "master_hookah",
           "face": "normal",
           "text": "観客が息を止めると、煙がよく見える"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "もっとも、待ちすぎて炭を三度冷ましたことがある。助手の目が怖かった"
         },
         {
           "speaker": "",
