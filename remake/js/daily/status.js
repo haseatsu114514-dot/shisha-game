@@ -4,6 +4,7 @@ import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { cycleBadgeText } from "../core/cycle-display.js";
 import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
@@ -61,7 +62,9 @@ export function openStatus() {
     tabs.append(el("button.st-tab", { text: label, dataset: { tab: id }, onclick: () => show(id) }));
   }
   show("me");
-  return modal({ title: "STATUS", body: el("div.status", [tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
+  // 周回数の表示はステータス見出しとセーブ枠だけ（HUDには出さない）。2周目以降のみ・小さく（設計 §3.6）
+  const badge = cycleBadgeText(state);
+  return modal({ title: "STATUS", body: el("div.status", [badge ? el("div.st-cycle", { text: badge, dataset: { test: "status-cycle" } }) : null, tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
 }
 
 
@@ -166,7 +169,7 @@ function itemsTab() {
     gifts.length ? el("div.gift-notes", gifts.map(giftNote)) : null,
     el("h4", { text: "フレーバー" }),
     el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "所持0" })]),
-    el("p.st-note", { text: "1箱50g。大会・自宅の試作・店への私物持ち込みで消費。熟練度はLv.5まで。第2章の課題苺のみ主催者支給。" }),
+    el("p.st-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
     el("h4", { text: "レシピ帳" }),
     el("div.chips", DB.recipes.filter((r) => state.recipes[r.id]).map((r) => el("span.chip.gold", { text: r.name })).concat(
       Object.keys(state.recipes).length ? [] : [el("span.chip.dim", { text: "まだ白紙" })])),

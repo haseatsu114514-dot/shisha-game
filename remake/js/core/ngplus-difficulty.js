@@ -1,10 +1,10 @@
-// U4: 保存状態から独立した持ち込み指数と案B。係数の確定はD1（オーナー判断）。
+// 保存状態から独立した持ち込み指数と案B。採用値は MEASURE.md に基づく。
 const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 const S0 = 50;
 const SMAX = 500;
-export const CARRY_GAMMA = 1; // D1で確定する仮置き（線形＝恒等）。
-export const KB = 0; // U4設計指定: no-opを維持する。
-export const RMAX = 99; // 未確定の仮置き（100未満）。KB=0なので挙動には無関係。
+export const CARRY_GAMMA = 1; // 線形。
+export const KB = 0.40; // MEASURE.md: c2-mid・mid/Lv5 勝率 63.6%（636/1000）。
+export const RMAX = 99; // 相手スコアの上限（100未満）。
 
 /** 能力スナップショットだけから算出する純関数。欠損能力は初期値とする。 */
 export function carryIndex(stats) {
@@ -14,12 +14,11 @@ export function carryIndex(stats) {
 
 /** U1/U3の接続口。周回・引き継ぎの確証がない既存セーブは必ずP=0。 */
 export function difficultyForRun(value, { cycle = 1, carryStats = false } = {}) {
-  // U3のcycleStartStats実装時に差し替える暫定入力。保存項目は追加しない。
-  return cycle > 1 && carryStats === true ? carryIndex(value?.statsAtChapterStart) : 0;
+  return cycle > 1 && carryStats === true ? carryIndex(value?.cycleStartStats) : 0;
 }
 
 export function chapterFactor(chapter) {
-  return 1; // g(章)はD1待ち。全章1の仮置き。
+  return 1; // g(章)は全章一律。
 }
 
 /** 案Bの純関数。ゼロ係数・P=0では浮動小数点演算も行わない。 */

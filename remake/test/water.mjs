@@ -82,6 +82,8 @@ async function moduleAt(filename) {
   return mod;
 }
 const load = async relative => { const mod = await moduleAt(path.join(root, relative)); await mod.evaluate(); return mod.namespace; };
+const notices = [];
+stub("js/core/ui.js", { toast: text => notices.push(text), retireScreen: () => {} });
 const model = await load("js/craft/water.js"), view = await load("js/craft/water-view.js");
 const state = await load("js/core/state.js"), tournament = await load("js/chapters/ch2-tournament-state.js");
 const history = await load("js/craft/practice-history.js");
@@ -93,9 +95,29 @@ function mounted(options = {}) {
   return { ...m, panel, button: name => m.root.querySelector(`[data-test="water-${name}"]`) };
 }
 const down = (m, which = "pour") => fire(m.button(which), "pointerdown", { button: 0, isPrimary: true, pointerId: 1 });
-const quantity = m => Number.parseFloat(m.root.querySelector('[data-test="water-quantity"]').textContent) / 100;
+const quantity = m => Number.parseFloat(m.root.querySelector('[data-test="water-meter"]').getAttribute("aria-valuenow")) / 100;
 async function finish(m) { m.confirm(); const q = await m.result; m.panel.remove(); return q; }
 
+await check("four water bands render and confirm their messages", async () => {
+  for (const [q, band, label, message] of [
+    [0, "none", "ステムに届いていない", "ステムが水に届いていない。煙が冷えないぞ"],
+    [model.STEM_TIP, "shallow", "浸かりが浅い", "浅め。煙が冷えきらず、喉に当たるかも"],
+    [model.WATER.low, "ideal", "ちょうどよく浸かっている", "ステムがほどよく浸かった。すっきりした吸い心地になりそう"],
+    [model.WATER.high + .01, "deep", "深い", "深め。吸い心地が重くなりそう"],
+  ]) {
+    const m = mounted({ quantity: q });
+    const status = m.button("status"), tip = m.button("tip");
+    assert.equal(status.textContent, label); assert.equal(status.dataset.band, band);
+    assert.equal(tip.textContent, "ステムの先"); assert.equal(tip.style.bottom, `${model.STEM_TIP * 100}%`);
+    assert.equal(m.button("meter").getAttribute("aria-valuetext"), label);
+    assert.ok(!m.root.descendants().some(node => node.textContent?.includes("%")));
+    m.cancel(); await assert.rejects(m.result, { name: "AbortError" }); m.panel.remove();
+    session.namespace.craftTest.auto = "good";
+    const cs = { water: q }; await view.stepWater(cs);
+    assert.equal(cs.water, q); assert.equal(notices.at(-1), message);
+    session.namespace.craftTest.auto = null;
+  }
+});
 await check("rates use elapsed seconds, including partitioned frames and long hold", () => {
   near(model.changeWater(.5, "pour", 1), .62); near(model.changeWater(.5, "drain", 1), .47);
   let q = .5; for (let i = 0; i < 100; i++) q = model.changeWater(q, "pour", .01); near(q, .62);
@@ -204,7 +226,6 @@ await check("real practice orchestration puts confirmed water between SETUP and 
   stub("js/craft/heat.js", { runHeat: async () => {} });
   stub("js/craft/steam.js", { runSteamDodge: async () => {} });
   stub("js/craft/pull.js", { runPull: async cs => { cs.pullDone = true; }, runCare: async cs => cs.careHistory.push({ score: 80 }) });
-  stub("js/core/ui.js", { retireScreen: () => {} });
   stub("js/core/mastery-notice.js", { notifyMastery: () => {} });
   stub("js/craft/conditions.js", { temperatureAfterSteam: () => 0 });
   stub("js/craft/flavor-life.js", { ensureFlavorLife: () => {} });

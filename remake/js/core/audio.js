@@ -12,6 +12,7 @@ let lastPhoneReceiveAt = -Infinity;
 let rainMode = null;
 let rainLoop = null;
 let rainBuffer = null;
+let noiseBuffer = null;
 let bgmDuck = 1;
 let bgmPaused = false;
 const seBuffers = new Map();
@@ -230,9 +231,20 @@ function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type =
   if (!c) return;
   const t = c.currentTime + delay;
   const len = Math.max(1, Math.floor(c.sampleRate * dur));
-  const buf = c.createBuffer(1, len, c.sampleRate);
-  const d = buf.getChannelData(0);
-  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  let buf, offset = 0;
+  if (dur <= 3) {
+    if (!noiseBuffer) {
+      noiseBuffer = c.createBuffer(1, Math.floor(c.sampleRate * 3), c.sampleRate);
+      const d = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    buf = noiseBuffer;
+    offset = Math.random() * Math.max(0, buf.duration - dur);
+  } else {
+    buf = c.createBuffer(1, len, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  }
   const src = c.createBufferSource();
   src.buffer = buf;
   const f = c.createBiquadFilter();
@@ -245,7 +257,7 @@ function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type =
   g.gain.linearRampToValueAtTime(vol, t + Math.min(0.04, dur / 3));
   g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   src.connect(f).connect(g).connect(seBus);
-  src.start(t);
+  src.start(t, offset, dur);
 }
 
 /** 一口の間だけ録音ループ。止め際は最後の一泡。非表示/消音中は止め、同じ一口だけ再開。 */
@@ -530,7 +542,35 @@ const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
 const PACKED_MAGIC = "SUIENBGM1";
 const PACKED_KEY = "ac0152dff6217d519198cfba347e25d5dc5d853aaee8252f72da0bbdc626b8f2";
 const packedSources = new Map();
+// 復元済み Blob の保持は直近分だけに絞る（1曲2〜4.6MB、全10曲で約31MBが
+// セッション中ずっと残り続けるのを防ぐ）。再生中・フェード中・復元したばかりの曲は破棄しない。
+const PACKED_CACHE_MAX = 5;
+const packedBlobs = new Map(); // url -> blobUrl（解決済みのみ。挿入順＝古い順）
+const packedInUse = new Set(); // 要素へ割り当て済みの blobUrl（止まるまで解放しない）
 let packedCryptoKey = null;
+
+function evictPacked(keepUrl = null) {
+  while (packedBlobs.size > PACKED_CACHE_MAX) {
+    const victim = [...packedBlobs.keys()].find((u) => u !== keepUrl
+      && !packedInUse.has(packedBlobs.get(u)) && packedBlobs.get(u) !== currentEl?.src);
+    if (!victim) return; // 全候補が使用中なら一時的に上限を超えてよい
+    const evicted = packedBlobs.get(victim);
+    packedBlobs.delete(victim);
+    packedSources.delete(victim); // 次に必要になったら取得・復元し直す
+    if (typeof URL.revokeObjectURL === "function") URL.revokeObjectURL(evicted);
+  }
+}
+
+function retainPacked(url, blobUrl) {
+  packedBlobs.delete(url);
+  packedBlobs.set(url, blobUrl);
+  evictPacked(url);
+}
+
+// 要素が止まったら使用中を外し、たまっていた破棄を進める。
+function releasePacked(blobUrl) {
+  if (blobUrl && packedInUse.delete(blobUrl)) evictPacked();
+}
 
 function bgmSource(url) {
   if (!url.endsWith(".bgm")) return Promise.resolve(url);
@@ -551,7 +591,13 @@ function bgmSource(url) {
       return URL.createObjectURL(new Blob([audio], { type: "audio/mpeg" }));
     })();
     packedSources.set(url, source);
-    source.catch(() => { packedSources.delete(url); }); // 一時的な取得失敗は次回に再試行できる。
+    source.then((blobUrl) => {
+      try { retainPacked(url, blobUrl); } catch { /* 保持管理の失敗で再生を止めない */ }
+    }, () => { packedSources.delete(url); }); // 一時的な取得失敗は次回に再試行できる。
+  } else if (packedBlobs.has(url)) {
+    const blobUrl = packedBlobs.get(url); // 使った曲は新しい側へ寄せ、破棄順を後ろにする
+    packedBlobs.delete(url);
+    packedBlobs.set(url, blobUrl);
   }
   return packedSources.get(url);
 }
@@ -619,6 +665,7 @@ export function playBgm(key) {
       if (currentEl !== a || key !== "bgm_continue_urgent") return false;
       currentEl = null;
       a.pause();
+      releasePacked(a.src);
       if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
       return true;
     };
@@ -635,6 +682,7 @@ export function playBgm(key) {
     if (packed) {
       bgmSource(url).then((source) => {
         if (currentEl !== a) return;
+        packedInUse.add(source); // 止まるまで Blob を解放しない
         a.src = source;
         start();
       }, (error) => {
@@ -656,7 +704,7 @@ export function stopBgm(fadeSec = 0.8) {
   if (currentEl) {
     const a = currentEl;
     currentEl = null;
-    fadeEl(a, 0, fadeSec * 1000).then((finished) => { if (finished) a.pause(); });
+    fadeEl(a, 0, fadeSec * 1000).then((finished) => { if (finished) { a.pause(); releasePacked(a.src); } });
   }
   if (synthStop) { synthStop(fadeSec); synthStop = null; }
   bgmDuck = 1;

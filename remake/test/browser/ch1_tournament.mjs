@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
-import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+import { prepareAppearanceCatalog } from "./appearance_setup.mjs";
 prepareAppearanceCatalog();
 const shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
@@ -194,15 +194,20 @@ await suite("ch1-tournament", async check => {
     } finally { release(); }
     const deadline = Date.now() + 15000;
     while (!(await page.locator('.bench .opt-grid, [data-test="mix-ok"]').count())) {
-      // 現行の外観選択を実入力で確定してから、元の機材/配合到達を検査する。
-      if (await page.locator('[data-test="appearance-confirm"]').isVisible()) {
-        await confirmAppearanceSetup(page);
-      }
       assert(Date.now() < deadline, "Tournament did not resume after the image arrived");
+      // 漫画の読書ホールドと水入れを本番入力で進め、機材/配合への到達を検査する。
+      if (await page.locator('.loading-gate.is-ready').isVisible()) {
+        await page.keyboard.press("Enter");
+      }
+      const water = page.locator('.bench [data-test="water-confirm"]');
+      if (await water.isVisible()) {
+        await water.click({ timeout: Math.max(1, deadline - Date.now()) });
+      }
       const skip = page.locator('#vn.active [data-test="vn-skip"]:not(.on)');
       if (await skip.count()) await skip.click();
       await page.waitForTimeout(60);
     }
+    assert.equal(await page.locator('.loading-gate').count(), 0);
     assert.equal(await page.locator('[data-test="craft-loading"]').count(), 0);
     assert.equal(await page.locator('.bench').evaluate(n => n.inert), false);
   });
@@ -229,7 +234,7 @@ await suite("ch1-tournament", async check => {
     await page.evaluate(async () => {
       T.session.craftTest.auto = "good";
       await T.heat.runHeat(cs);
-      cs.mix = { blueberry: 9, mint: 3 }; cs.mixInfo = T.steps.evaluateMix(cs); cs.pack = "normal";
+      cs.mix = { blueberry: 9, mint: 3 }; cs.mixInfo = T.steps.evaluateMix(cs); cs.pack = "normal"; cs.water = 0.5;
       cs.holes = { score: 95, outerEven: .95, innerExcess: 0, outer: 24, middle: 0, inner: 0 };
       cs.steam = { score: 100, seconds: 480, temp: .54 }; cs.steamSeconds = 480;
       await T.pull.runPull(cs);
@@ -330,10 +335,10 @@ await suite("ch1-tournament", async check => {
     }));
     assert.deepEqual(interim.judges, {
       maezono:{spent:7,left:'投入 7 ／ 残り 3'},
-      dr_kemuri:{spent:8,left:'投入 8 ／ 残り 2'},
+      dr_kemuri:{spent:6,left:'投入 6 ／ 残り 4'},
       nagumo:{spent:0,left:'10点を保留中'},
     });
-    assert.deepEqual(interim.points,{adam:7,naru:5,minto:3,hajime:0});
+    assert.deepEqual(interim.points,{adam:5,naru:3,minto:2,hajime:3});
     // The second feed line starts after a 0.5s delay and slides in for 0.5s.
     // Measure its settled layout, not its temporarily translated overflow.
     await page.waitForTimeout(1100);
@@ -358,10 +363,10 @@ await suite("ch1-tournament", async check => {
     const finalVotes = await page.locator('.rt-row').evaluateAll(rows => Object.fromEntries(rows.map(row =>
       [row.dataset.id,{points:parseInt(row.querySelector('.rt-pt').textContent,10),votes:row.querySelector('.rt-votes').textContent}])));
     assert.deepEqual(finalVotes,{
-      naru:{points:7,votes:'上園 5 · 博士 2 · 南雲 0'},
-      adam:{points:7,votes:'上園 2 · 博士 5 · 南雲 0'},
-      minto:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
-      hajime:{points:11,votes:'上園 1 · 博士 0 · 南雲 10'},
+      naru:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
+      adam:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
+      minto:{points:3,votes:'上園 2 · 博士 1 · 南雲 0'},
+      hajime:{points:17,votes:'上園 4 · 博士 3 · 南雲 10'},
     });
     for(const [id,points] of Object.entries(interim.points))assert(finalVotes[id].points>=points,`${id}: displayed allocated points returned`);
     await assertFits(page,'.rt-name, .rt-votes, .rt-pt');

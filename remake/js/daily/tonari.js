@@ -14,7 +14,8 @@ import { DRILLS } from "../craft/session.js";
 import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
 import { shiftClose } from "../core/scene-motions.js";
 import { meetHiyoriAtTonari } from "./hiyori.js";
-import { hiyoriAxeReady, hiyoriAxeAffordable } from "./hiyori-axe.js";
+import { hiyoriAxeReady, hiyoriAxeAffordable, hiyoriAxePrereqsMet, axeThrowExposed } from "./hiyori-axe.js";
+import { spotFollowupDue } from "./spot-encounters.js";
 import { canStudyAttack, studyAttack } from "./attack-lesson.js";
 import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
@@ -40,7 +41,7 @@ export function tonariMenu() {
           : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
         opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
         opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話せる", "baito", "tonari-baito"),
-        hiyoriAxeReady() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
+        hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
       ]),
@@ -206,17 +207,15 @@ async function customerEvent(condition) {
   rememberBaito(ev.id, customerFamilies(ev));
 }
 
-/** シフト後: スミさんと話す（固有会話）／そのまま上がる。練習は店の固定イベントで（#783） */
+/** シフト後: スミ会話（必須）のあと、任意の特訓・授業だけを選ぶ。練習は店の固定イベントで（#783） */
 function afterShiftMenu() {
   return new Promise((resolve) => {
-    const sumiNew = hasNewStory("sumi");
     const opt = (title, desc, value, test) =>
       el("button.big-choice", { dataset: { test }, onclick: () => { SE.select(); retire(root); resolve(value); } }, [el("b", { text: title }), el("small", { text: desc })]);
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "シフト上がり" }),
-      el("p.sub-lead", { text: "シフトの片付けを終えて、まだ少しだけ時間がある。" }),
+      el("p.sub-lead", { text: "スミさんと話し終えて、まだ少しだけ時間がある。" }),
       el("div.sub-choices", [
-        opt("スミさんと話す", sumiNew ? "今日は何か教えてもらえそうだ" : "落ち着いた一台を分けてもらう", "sumi", "after-sumi"),
         canStudyAttack() ? opt("雑念を切る特訓を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
         canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
@@ -226,10 +225,29 @@ function afterShiftMenu() {
 }
 
 async function afterShift() {
+  await afterShiftSumiTalk();
   const pickAfter = await afterShiftMenu();
   if (pickAfter === "attack") await studyAttack();
-  if (pickAfter === "sumi") await visitChar("sumi");
   if (pickAfter === "cube_coals") await studyCubeCoals();
+}
+
+/**
+ * #1081 B05: シフト上がりのスミ会話は選択式でなく必ず流れる。
+ * 固有会話（次の段階会話・節目・店側の続き）がある日はそれ、無い日は定型の一言。
+ * 固有会話は visitChar 側の既読管理で進むため、旧・任意会話が二重再生されることはない。
+ * #1081 B06: ひより前提を満たした後の最初のバイト上がりでは、このスミ会話の中で
+ * 斧投げが露出する（露出フラグのみ。ひより前提チェーンは現状維持）。
+ */
+async function afterShiftSumiTalk() {
+  if (hasNewStory("sumi") || spotFollowupDue("sumi", state, DB.dialogues)) {
+    await visitChar("sumi");
+  } else {
+    await play("remake_sumi_after_shift", { bg: TONARI_BG });
+  }
+  if (!axeThrowExposed() && hiyoriAxePrereqsMet()) {
+    await play("remake_sumi_axe_hint", { bg: TONARI_BG });
+    state.flags._axe_throw_unlocked = true;
+  }
 }
 
 export function chooseDrill({ title = "自主練", lead = "苦手な工程を反復しよう。能力値は増えません。", recommended = null } = {}) {
@@ -271,4 +289,5 @@ async function serveShiftOrder() {
   if (state !== owner || result?.cancelled) return;
   // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
+  state.flags[`_shift_mix_${order.id}`] = index;
 }

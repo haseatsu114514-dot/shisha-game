@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { newState } from '../js/core/state.js';
 import { tournamentProgress, startAttempt, beginStep, finishStep, recoverStep,
-  castVotes, standings, recordResult, JUDGES } from '../js/chapters/ch2-tournament-state.js';
+  castVotes, standings, recordResult, JUDGES, CH2_PRIZE } from '../js/chapters/ch2-tournament-state.js';
 const copy = value => JSON.parse(JSON.stringify(value));
 const s = newState();
 s.chapter = 2; s.day = 28; s.stamina = 79; s.flavorStock = { double_apple: 40, mint: 8 };
@@ -50,11 +50,19 @@ const result = recordResult(s,96); assert.deepEqual(recordResult(s,96),result); 
 assert.equal(result.careHistory.length,2);
 startAttempt(s,craft); assert.equal(p.attempts,2); assert.equal(p.history.length,1);
 assert.deepEqual(s.flavorStock,before.flavorStock); assert.equal(s.stamina,79);
-for(const key of ['tournament','lovers','loverSince','lastDate','inbox','contacts','money','keepsakes','relationshipMemories']) assert.deepEqual(s[key],before[key],key);
+assert.equal(CH2_PRIZE,50000,'decided chapter 2 prize');
+assert.equal(s.money, before.money + (result.rank === 1 ? CH2_PRIZE : 0), 'prize follows the recorded result and survives retry');
+for(const key of ['tournament','lovers','loverSince','lastDate','inbox','contacts','keepsakes','relationshipMemories']) assert.deepEqual(s[key],before[key],key);
 for(const [quality,expected] of [[98,1],[20,4]]) {
   const v=newState(); v.chapter=2; const t=startAttempt(v,craft);
   for(let r=0;r<4;r++)castVotes(t,r,quality);
   assert.equal(standings(t).find(row=>row.id==='hajime').rank,expected);
+  t.craft.careHistory = [{score:quality},{score:quality}];
+  const moneyBefore = v.money;
+  recordResult(v,quality);
+  assert.equal(v.money, moneyBefore + (expected === 1 ? CH2_PRIZE : 0), 'prize only on a win');
+  recordResult(v,quality);
+  assert.equal(v.money, moneyBefore + (expected === 1 ? CH2_PRIZE : 0), 'prize is paid once');
 }
 console.log('PASS: chapter2 irrevocable 3×10 votes, good/bad ranks, JSON checkpoint rollback, committed consumption, retry, two cares and chapter1/relationships');
 // 登録済みの大会ロジック入口から、独立した全国大会stateの回帰も走らせる。

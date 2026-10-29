@@ -18,11 +18,13 @@ await suite("craft-readiness", async check => {
   await check("unrelated-art-and-cached-reopen", async page => {
     // main.warmUp() ends with this image. Do not attribute its background
     // stove_coil request to the bench that this case has not opened yet.
+    // (The tournament stage bg is idle-deferred by warmUp and may arrive later;
+    // it is part of the allowed bench set below, so it is never held here.)
     await page.waitForFunction(() => performance.getEntriesByType("resource")
       .some(entry => /\/ui\/making\/hookah_base\.(png|webp)(\?|$)/.test(entry.name)));
     await init(page);
     const scope = await page.evaluate(() => {
-      const { DB, makingUrl, faceIconUrl, portraitInfo, bgUrl } = T.data;
+      const { DB, img, makingUrl, faceIconUrl, portraitInfo, bgUrl } = T.data;
       window.cs = T.session.newSession("tournament");
       const current = T.readiness.craftAssetUrls(cs.mode, { step: "heat", cs });
       const allowed = new Set([...current, ...T.readiness.craftAssetUrls(cs.mode, { cs }),
@@ -30,7 +32,7 @@ await suite("craft-readiness", async check => {
       const people = ["hajime", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"];
       const oldMaking = DB.manifest.making.filter(name => !/^(heat_|hajime_heat_scene)/.test(name));
       const previous = [...new Set([
-        ...oldMaking.map(makingUrl), "img/ui/continue/backdrop_stage.webp", bgUrl("bg_tournament_stage"),
+        ...oldMaking.map(makingUrl), img("ui/continue/backdrop_stage.png"), bgUrl("bg_tournament_stage"),
         ...people.flatMap(id => [faceIconUrl(id), ...DB.manifest.portraits[id].faces.map(face => portraitInfo(id, face)?.src)]),
       ].filter(Boolean))];
       return { beforeCount: previous.length, currentCount: current.length,
@@ -60,7 +62,13 @@ await suite("craft-readiness", async check => {
       const heldAtStart = blocked.length;
       await page.evaluate(() => heatRun);
       const requests = [];
-      page.on("request", request => { if (/\.(webp|png)(\?|$)/.test(request.url())) requests.push(request.url()); });
+      page.on("request", request => {
+        // warmUp がアイドル時へ遅らせた大会ステージの先読みがこの窓に着くことがある。
+        // 工程素材の再通信ではないので数えない（ステージ自体は初回の準備で読み込み済み）。
+        // Loading-comic art is prepared on every bench open by design; it is not a craft material.
+        if (/\.(webp|png)(\?|$)/.test(request.url()) && !/bg_tournament_stage\./.test(request.url())
+          && !/\/img\/loading\//.test(request.url())) requests.push(request.url());
+      });
       await page.evaluate(async () => {
         window.loadingAdded = 0;
         const observer = new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(n => {

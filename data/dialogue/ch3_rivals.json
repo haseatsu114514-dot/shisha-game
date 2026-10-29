@@ -2,6 +2,7 @@
   "dialogues": [
     {
       "dialogue_id": "ch3_kuze_first",
+      "metadata": { "flavor_lesson": { "chocolate": 1 } },
       "lines": [
         {
           "type": "condition",
@@ -212,17 +213,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "そうなんだ。あの子とは保育園から一緒でさ。昔、絵を半分に折って渡したことがある"
-        },
-        {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "ましろは僕の言う味に合わせなかった。でも、隣にはいてくれた。……覚えてるかな、あの絵"
-        },
-        {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "僕、昔はすぐ体調を崩してさ。あの子には、ずいぶん助けられた。……あ、重い話じゃないよ"
+          "text": "ましろとは昔なじみなんだ、……続きは、また今度"
         },
         {
           "speaker": "kuze",
@@ -325,6 +316,16 @@
           "text": "見直したけど、映像じゃ最後の一口まで分からないから"
         },
         {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "朔、……いらっしゃい"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "ましろ、ここで働いてるって聞いてたから。今日は一台だけ、よろしくね"
+        },
+        {
           "speaker": "",
           "text": "はじめは今分かる範囲をましろに伝え、二人で炭の位置を決めた。"
         },
@@ -374,11 +375,12 @@
     },
     {
       "dialogue_id": "ch3_kuze_advice",
+      "metadata": { "flavor_lesson": { "orange": 1 } },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "数日後の煙幕。ましろは客席にいた。久しぶりに会う幼なじみとの間には、少しだけ距離がある。"
+          "text": "数日後の煙幕。ましろは客席にいた。mukaiで顔を合わせた幼なじみと、ちゃんと話すのは初めてだ。"
         },
         {
           "speaker": "kuze",
@@ -388,7 +390,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "久しぶり、朔。店を借りてまで出るって聞いたから、気になって"
+          "text": "今日はちゃんと話せるね、朔。店を借りてまで出るって聞いたから、気になって"
         },
         {
           "speaker": "kuze",
@@ -448,12 +450,12 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "僕には、ちゃんとお茶、……好きだよ"
+          "text": "僕には、ちゃんとお茶"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "また外した。ましろの「でも好き」、昔から難しいな"
+          "text": "また外した"
         },
         {
           "speaker": "hajime",
@@ -567,7 +569,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "マウンテンミスト。レモンとライム、最初と二口目で違うだろ"
+          "text": "ヘイ、ハジメ。マウンテンミストだ。レモンとライム、最初と二口目で違うだろ"
         },
         {
           "speaker": "hajime",
@@ -612,7 +614,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "……あと少し。俺の都合で、早めない"
+          "text": "ノー、ノー。……あと少し。ミーの都合で、早めない"
         },
         {
           "speaker": "",

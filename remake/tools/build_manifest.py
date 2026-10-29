@@ -146,12 +146,19 @@ def listing(sub: str, pattern: str = "*.png"):
 
 def title_arts():
     """採用済みPNGだけをキャラ別に登録。修正待ちの候補はassetsへコピーしない。"""
+    # titleArtDisplayCharacters uses this character order when picking a title art.
+    # Keep manifest groups aligned so callers indexing its unique characters agree.
+    character_order = (
+        "ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi",
+        "sumi", "naru", "adam",
+    )
+    rank = {character: index for index, character in enumerate(character_order)}
     out = []
     for name in listing("ui/title_arts"):
         match = re.fullmatch(r"title_art_([a-z]+)_\d{2}_.+\.png", name)
         if match:
             out.append({"character": match[1], "file": name})
-    return out
+    return sorted(out, key=lambda art: (rank.get(art["character"], len(rank)), art["file"]))
 
 
 def continue_portraits():
@@ -232,9 +239,20 @@ def is_placeholder(path: Path) -> bool:
     return counts.max() / len(a) > 0.8
 
 
+def lime_media():
+    """LIME の採用素材だけを登録し、ゲーム用ファイルの寸法を照合する。"""
+    catalog = json.loads((ROOT / "remake/data/lime_media.json").read_text(encoding="utf-8"))
+    for entry in catalog.values():
+        with Image.open(ROOT / "remake" / entry["src"]) as image:
+            if image.size != (entry["width"], entry["height"]):
+                raise ValueError(f"LIME素材の寸法が不一致: {entry['src']}")
+    return catalog
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     scope = parser.add_mutually_exclusive_group()
+    scope.add_argument("--lime-only", action="store_true", help="LIME素材台帳だけ更新")
     scope.add_argument("--audio-only", action="store_true", help="既存の画像目録を保ち、BGM一覧だけ更新")
     scope.add_argument("--title-only", action="store_true", help="採用済みタイトル絵の目録・WebPだけ更新")
     scope.add_argument("--backgrounds-only", nargs="+", metavar="PNG", help="指定した背景の目録・WebPだけ更新")
@@ -392,6 +410,12 @@ def main():
         OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         print(f"wrote {OUT.relative_to(ROOT)}: {len(names)} making parts and WebP files (other images unchanged)")
         return
+    if args.lime_only:
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest["limeMedia"] = lime_media()
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print("wrote remake/data/manifest.json: LIME media (other assets unchanged)")
+        return
     bgm = sorted(listing("audio/bgm", "*.mp3") + listing("audio/bgm", "*.bgm"))
     if args.audio_only:
         manifest = json.loads(OUT.read_text(encoding="utf-8"))
@@ -402,6 +426,7 @@ def main():
     manifest = {
         "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
         "generated": generated,
+        "limeMedia": lime_media(),
         "portraits": portraits(),
         "backgrounds": listing("backgrounds"),
         # 仮置きCG（文字だけの画像）は載せない＝場面では飛ばし、ギャラリーにも出さない

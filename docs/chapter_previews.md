@@ -58,3 +58,11 @@ node remake/tools/record_chapter_preview.mjs
 ```
 
 録画は実ブラウザの描画時刻を保持した30fpsのH.264/AAC。独立した録画用ブラウザだけに音声ミックスを追加し、ゲームコードには録画処理を入れない。導入画面と再生後の画面があるため、ファイルの長さは予告本体より約5秒長い。
+
+## 第2章以降への展開（#1558）
+
+共通プレイヤー `remake/js/chapters/chapter-preview.js` の登録表 `PREVIEWS` に、予告1（第2章末→第3章『嘘つきたちの夜』）・予告2（第3章末→第4章『継承の煙』）・予告3（第4章末→第5章『機械仕掛けの神』）を追加した。台本は `data/chapter_previews/ch3.json` / `ch4.json` / `ch5.json`（全12カット・47.5秒）、素材は `assets/cgs/ch3_preview/` / `ch4_preview/` / `ch5_preview/` に各6枚（1664×936 WebP、章合計1.0MiB以内。原画と採用記録は `asset_sources/ch3-preview/` 等）。曲は第1章の固定作曲を使わず、各カットの `cue` で進む共通スコア（`preview-cue.js`）に章ごとの調の移し替え（arrangement）を付けた。話者名は新規分では表示しない（台本に speaker を持たない）。
+
+接続は第1章と同じ挙動で、各章の完了カードから行う: 第2章は `ch2-tournament.js` の完了カード、第3章は `ch3-aftermath.js` の完了カード、第4章は `ch4.js` の完了カード。未視聴なら自動再生し、再生中は「第N章へ進む」を押せない。完走/明示スキップのときだけ既読（`_ch2_preview_seen` / `_ch3_preview_seen` / `_ch4_preview_seen`）を保存し、再視聴ボタン「次回予告をもう一度」を置く。第5章の終わりには予告を置かない（スタッフロールで完結）。
+
+確認ページは `remake/chapter-preview.html?ch=ch3` のように `?ch=` で切り替える（既定は ch2）。検証は台本・登録・素材の実在を `node remake/test/chapter_preview_scripts.mjs`、登録表の全予告の再生・操作・保存不変と第2章完了カードの統合を `node remake/test/browser/chapter_preview.mjs` が担う。

@@ -200,22 +200,22 @@
       "lines": [
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "私たち、付き合ってるよね"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_sad",
           "text": "それを、この人には言ってなかったんだ"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "店で笑うのも、ここで怒るのも私だよ"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "笑って済ませてあげると思わないで"
         }
       ]
@@ -326,13 +326,13 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者よ、ほかにも誓いを立てておったのか",
+          "text": "勇者よ、ほかにも誓いを立てていたのか",
           "voice": "korochan"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "サメちゃんはコロちゃんを鞄にしまった。"
+          "text": "サメちゃんは右手からコロちゃんを外し、膝に置いた。"
         },
         {
           "speaker": "samechan",

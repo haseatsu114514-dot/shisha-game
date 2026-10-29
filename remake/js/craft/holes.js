@@ -12,6 +12,7 @@ import { artImg } from "./art.js";
 
 import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil, skippedFoilResult } from "./holes_logic.js";
 import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
+import { stepVent } from "./steps.js";
 export { RINGS } from "./holes_logic.js";
 const TIME_LIMIT = 32;
 const DEG = Math.PI / 180;
@@ -80,7 +81,8 @@ async function chooseTemplate(panel, cs) {
 export async function runHoles(cs) {
   // ロートスHMDはアルミなし。穴あけ工程を飛ばし、中立な穴あけ相当値だけ残して次の工程へ。
   if (!usesFoil(cs)) {
-    cs.holes = skippedFoilResult();
+    await stepVent(cs);
+    cs.holes = skippedFoilResult(cs.vent);
     refreshBench();
     return;
   }

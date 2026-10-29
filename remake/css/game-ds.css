@@ -6,9 +6,8 @@
   --ds-shell: #140f1b; --ds-screen-edge: #050307; --ds-rim: #3a2c45;
   --ds-gold: #e8c27a; --ds-gold-hi: #ffe2a6; --ds-text: #f4ede0; --ds-dim: #b6aa96;
   --ds-panel: linear-gradient(#1a1324, #110c19);
-  --ds-dot: "DS Dot", var(--font);
+  --ds-dot: "Chapter Preview Dot", var(--font);
 }
-@font-face { font-family: "DS Dot"; src: url("../../assets/fonts/DotGothic16-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
 
 /* 表示の切替（「表示」を押すと開く）。CSSが無い時は game-layout.js の固定表示で上端に残る。 */
 .game-layout-toolbar[hidden], .game-ds-panel[hidden] { display: none; }
@@ -89,7 +88,7 @@ body.game-ds .dc-area { display: none; }
 body.game-ds .dc-day { font-family: var(--ds-dot); font-size: 12px; color: var(--ds-dim); }
 body.game-ds .dc-day::before { content: "DAY "; font-size: 11px; }
 body.game-ds .dc-day b { font-size: 18px; color: var(--ds-gold-hi); }
-body.game-ds .dc-slot { font-family: var(--ds-dot); font-size: 13px; padding: 0 0 0 2px; background: none; border: 0; }
+body.game-ds .dc-slot { font-family: var(--ds-dot); font-size: 14px; padding: 0 0 0 2px; background: none; border: 0; }
 body.game-ds .dc-meta { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; flex: 1; min-width: 0; margin: 0; }
 body.game-ds .dc-main { flex-direction: row; flex-wrap: nowrap; }
 body.game-ds .dc-row:not(.money):not(.hud-stamina) { display: none; }
@@ -99,7 +98,7 @@ body.game-ds .dc-row.money { order: 3; margin-left: auto; }
 body.game-ds .dc-row.money b { font-size: 14px; color: var(--ds-gold-hi); }
 body.game-ds .dc-row:not(.money) b { font-size: 12px; color: var(--ds-dim); }
 body.game-ds .hud-card .hud-stamina { display: flex; align-items: center; gap: 4px; width: auto; height: auto; padding: 0; min-width: 0; }
-body.game-ds .hud-card .hud-stamina > span { font-family: var(--ds-dot); font-size: 11px; color: var(--ds-dim); }
+body.game-ds .hud-card .hud-stamina > span { font-family: var(--ds-dot); font-size: 14px; color: var(--ds-dim); }
 body.game-ds .hud-card .hud-stamina .hud-bar { width: 58px !important; margin: 0; }
 body.game-ds .hud-right {
   position: fixed; left: calc(var(--ds-cx) + 8px); top: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) + 6px);
@@ -119,7 +118,7 @@ body.game-ds .hud-level::after {
   font-size: 11px; line-height: 1; color: var(--ds-text);
 }
 body.game-ds .hud-lime { font-size: 13px; }
-body.game-ds .hud-menu { font-size: 13px; letter-spacing: .06em; }
+body.game-ds .hud-menu { font-size: 14px; letter-spacing: .06em; }
 body.game-ds .hud-menu i { display: none; }
 
 /* ---------------------------------------------------------------- 会話：上は絵だけ、下に名前と本文・選択・操作 */
@@ -201,7 +200,7 @@ body.game-ds .map .spot-pin .sub-label {
   font-size: 14px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: none; border: 0; box-shadow: none;
   grid-column: 2; padding-right: 24px; color: var(--ds-text); text-shadow: none;
 }
-body.game-ds .map .spot-pin .pin-status { position: static; grid-column: 2; font-size: 10px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0; background: none; }
+body.game-ds .map .spot-pin .pin-status { position: static; grid-column: 2; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0; background: none; }
 body.game-ds .map .spot-pin::before, body.game-ds .map .spot-pin::after { display: none; }
 body.game-ds .map-info {
   left: calc(var(--ds-cx) + 8px); top: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) - 120px); right: auto; bottom: auto;
@@ -256,6 +255,9 @@ body.game-ds .bench-top {
   left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: 40px; right: auto; padding: 4px 8px; gap: 6px;
   overflow: hidden; background: #000b; border-radius: 7px 7px 0 0; z-index: 6;
 }
+body.game-ds .bench-appearance-button { left: calc(var(--ds-cx) + var(--ds-cw) - 126px); right: auto; top: calc(var(--ds-cy) + 7px); }
+body.game-ds .bench-appearance-dialog { left: calc(var(--ds-cx) + 8px); right: auto; top: calc(var(--ds-cy) + 8px); width: calc(var(--ds-cw) - 16px); height: calc(var(--ds-ch) - 16px); }
+body.game-ds .bench-top .bench-progress { padding-right: 0; }
 body.game-ds .bench-mode { width: 74px; font-size: 10px; }
 body.game-ds .bench-progress { min-width: 0; overflow: auto; }
 body.game-ds .bench-progress-track { width: max-content; gap: 3px; }
@@ -380,7 +382,7 @@ body.game-ds .standings .sd-name { font-size: 14px; white-space: nowrap; overflo
 body.game-ds .standings .sd-bar { height: 10px; }
 body.game-ds .standings .sd-points { font-size: 22px; }
 body.game-ds .standings .sd-points small { font-size: 10px; }
-body.game-ds .judge-legend { gap: 10px; font-size: 10px; }
+body.game-ds .judge-legend { gap: 10px; font-size: 14px; }
 body.game-ds .standings .judge-panel {
   position: absolute; left: calc(var(--ds-cx) + 10px); top: calc(var(--ds-cy) + 10px); width: calc(var(--ds-cw) - 20px);
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
@@ -391,7 +393,7 @@ body.game-ds .judge-chip .judge-face { grid-row: auto; width: 34px; height: 34px
 body.game-ds .judge-name { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 body.game-ds .judge-pips { width: 100%; gap: 2px; }
 body.game-ds .judge-pips b { height: 7px; }
-body.game-ds .judge-left { font-size: 10px; }
+body.game-ds .judge-left { font-size: 14px; }
 body.game-ds .judge-chip.held::after { right: 6px; top: 4px; font-size: 11px; }
 body.game-ds .standings .sd-status {
   position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); margin: 0;
@@ -405,7 +407,7 @@ body.game-ds .standings .sd-feed {
   position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); margin: 0;
   bottom: calc(100% - var(--ds-cy) - var(--ds-ch) + 10px); font-size: 12px;
 }
-body.game-ds .standings .sd-feed-tag { padding: 0 10px; font-size: 11px; }
+body.game-ds .standings .sd-feed-tag { padding: 0 10px; font-size: 12px; }
 
 /* 南雲の10点：上＝カットイン（立ち絵と10点）、下＝見出しと票の帯 */
 body.game-ds .nagumo-cut { padding: 0; display: block; }
@@ -462,7 +464,7 @@ body.game-ds .result-table .rt-hero {
 }
 body.game-ds .rt-emblem { width: 56px; height: 56px; }
 body.game-ds .rt-emblem b { font-size: 26px; }
-body.game-ds .rt-emblem small { font-size: 8px; }
+body.game-ds .rt-emblem small { font-size: 12px; letter-spacing: 0.02em; }
 body.game-ds .result-table .tournament-eyebrow { font-size: 9px; letter-spacing: .12em; }
 body.game-ds .result-table .tournament-heading h1 { font-size: 30px; }
 body.game-ds .result-table .tournament-heading p { font-size: 11px; margin-top: 0; }

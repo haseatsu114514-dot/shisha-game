@@ -9,9 +9,12 @@ import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
-/** 章ごとのソフトキャップ（ch1で上限に張り付かない・ch5で全100を狙える） */
-export function statCap() {
-  return { 1: 48, 2: 66, 3: 82, 4: 90, 5: 100 }[state?.chapter || 1] || 100;
+/** 章キャップと周回開始値から能力ごとに決めるソフトキャップ。 */
+export const CYCLE_START_CAP_MARGIN = 10;
+export function statCap(key) {
+  const chapterCap = { 1: 48, 2: 66, 3: 82, 4: 90, 5: 100 }[state?.chapter || 1] || 100;
+  const start = state?.cycleStartStats?.[key];
+  return Math.max(chapterCap, (Number.isFinite(start) ? start : 10) + CYCLE_START_CAP_MARGIN);
 }
 
 /** ★1〜5（内部値 0〜100 を 20 刻み） */
@@ -54,12 +57,13 @@ export function gainWord(total) {
  */
 export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } = {}) {
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
-  const cap = statCap();
+  let cap = statCap(key);
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
   if (state.stats[key] >= cap || excludedKeys.includes(key)) {
-    const open = STAT_KEYS.filter((k) => state.stats[k] < cap && !excludedKeys.includes(k));
+    const open = STAT_KEYS.filter((k) => state.stats[k] < statCap(k) && !excludedKeys.includes(k));
     if (!open.length) return 0;
     key = open[Math.floor(Math.random() * open.length)];
+    cap = statCap(key);
   }
   const before = state.stats[key];
   let xp = (state.statXp[key] || 0) + amount;
@@ -242,12 +246,27 @@ export const bond = {
   get private() { return privateOwner === state && privateValue; },
   set private(value) { privateOwner = state; privateValue = !!value; privateRevision++; },
 };
-/** LOAD後の旧finallyが、新しい私的会話のスコープを閉じない。 */
+/** LOAD後の旧finallyが、新しい私的会話のスコープを閉じない。
+ *  スコープはスタックで管理し、入れ子・順不同の復元でも private が残留しないよう防御する（#1361）。 */
+const privateScopeStack = [];
 export function privateBondScope() {
   const owner = state, previous = bond.private;
+  const entry = { owner, previous };
+  privateScopeStack.push(entry);
   bond.private = true;
-  const revision = privateRevision;
-  return () => { if (privateRevision === revision) bond.private = state === owner && previous; };
+  return () => {
+    const idx = privateScopeStack.indexOf(entry);
+    if (idx === -1) return; // 復元済み、または陳腐化した旧finally
+    privateScopeStack.splice(idx, 1);
+    if (idx < privateScopeStack.length) {
+      // 外側から先に閉じた: 内側の復元先を、このスコープ開始前の値へ引き継ぐ
+      privateScopeStack[idx].previous = entry.previous;
+      return;
+    }
+    // 最後に開いたスコープの復元だけが実値を戻す。所有stateが現行と異なる（LOAD済み）
+    // 場合は、新しい会話のスコープを閉じないよう触らない。
+    if (state === owner) bond.private = entry.previous;
+  };
 }
 
 /** 普通の好感度は従来の加算量の85%（HF01）。恋人の絆は従来の半分 */

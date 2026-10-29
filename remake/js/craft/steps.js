@@ -22,15 +22,20 @@ import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
 
-// 章ごとの課題。第1章は自分のレモン、第2章の新作苺のみ主催者支給、第3章は自分のドバジ チョコレート。
+// 章ごとの課題。第1章レモン・第2章の新作苺・第3章ドバジ チョコレート。
+// オーナー決定（2026-10-28 13:29）：課題フレーバーは大会が当日 supply で用意し、本番中は無制限に使える。
+// 私物在庫は減らさず持ち越しもしない。熟練度は事前の練習でのみ上がるので、買って練習した方が有利。
 export const REGULATION = {
-  1: { flavor: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（私物持ち込み）" },
-  // 判定は同系統（AFの持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
+  1: { flavor: "lemon", supply: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（大会支給）" },
+  // 判定は同系統（同じ苺系統の持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
   2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 4, label: "課題フレーバー「ストロベリー」を4g以上" },
-  // オーナー決定 10/28：ドバジ・4g以上・持ち込み。チョコは通常（chocolate）。
-  3: { flavor: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（私物持ち込み）" },
+  // オーナー決定 10/28：ドバジ・4g以上・大会支給。チョコは通常（chocolate）。
+  3: { flavor: "chocolate", supply: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（大会支給）" },
+  // 第5章 SHISHA-9000 戦（docs/setting_book/05_tournament.md）。ミックスなし。単体は runner が葉を絞って守る。
+  5: { flavor: "double_apple", supply: "double_apple", min: 12, label: "課題「ダブルアップル単体12g」（主催支給）" },
 };
-export const regulationFor = (cs) => cs.staffPractice ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
+// DAY7の固定練習は仕入れた葉を試す。大会・前日リハーサルの課題は維持する。
+export const regulationFor = (cs) => cs.staffPractice || (cs.mode === "rehearsal" && cs.practiceKind === "midcheck") ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
   ? { flavor: "mint", supply: "mint", min: 2, label: "再開中の旧大会：ミント2g以上" }
   : (cs.mode === "tournament" || cs.mode === "rehearsal" ? REGULATION[state.chapter] : null);
 
@@ -181,7 +186,7 @@ export function evaluateMix(cs) {
   const main = Math.max(...ids.map((id) => mix[id]), 0) / (total || 1);
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
   const reg = regulationFor(cs);
-  const competitionLegal = cs.mode !== "tournament" || ids.every(id => DB.flavorById[id]?.competition_legal !== false);
+  const competitionLegal = cs.mode !== "tournament" || ids.every(id => isTournamentFlavorLegal(id));
   const regOk = competitionLegal && (!reg || flavorFamilyGrams(mix, reg.flavor) >= reg.min);
   if (reg && ids.length > 1 && flavorFamilyGrams(mix, "mint") > 6) { score -= 6; notes.push("ミントが強すぎて、他の香りが隠れている"); }
   // 味の傾向（重さ平均）
@@ -223,9 +228,18 @@ export function fitMixToStock(mix, ids, limit, cap, minTotal = 0) {
   return out;
 }
 
+/** 大会で使える葉か（#1279 明示ゲート）: 未発売の試作葉（competition_legal: false）は章によらず不可。
+ *  発売章 chapter_min が現在の章（その周回の進行）に達していない葉は、持ち越し在庫でも大会では使えない。 */
+export function isTournamentFlavorLegal(id, chapter = state.chapter) {
+  const f = DB.flavorById[id];
+  if (!f || f.competition_legal === false) return false;
+  return (f.chapter_min || 1) <= chapter;
+}
+
 export function mixFlavorIds(cs) {
   const reg = regulationFor(cs);
-  // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
+  // 大会は課題フレーバーを無制限に支給（私物在庫は減らさない・持ち越さない）。課題以外の葉だけ在庫から持ち込む。
+  // 店の練習は店頭の葉も使え、私物を減らさない（#783）。
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
@@ -235,7 +249,7 @@ export function mixFlavorIds(cs) {
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
   if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
   // 支給・注文指定・まかないの経路でも、大会使用不可の葉を再混入させない。
-  if (consumes) ids = ids.filter(id => DB.flavorById[id]?.competition_legal !== false);
+  if (consumes) ids = ids.filter(id => isTournamentFlavorLegal(id));
   return ids;
 }
 
@@ -472,6 +486,18 @@ export async function stepPack(cs) {
   });
   SE.stamp();
   refreshBench();
+}
+
+export async function stepVent(cs) {
+  await waitBenchReady(cs, "holes");
+  const first = ["rehearsal", "practice", "tournament"].includes(cs.mode) && !state.flags._lotos_vent_hint;
+  const hint = first ? "スミ「迷ったら通気は開けとけ。閉じれば熱がこもって、待ちも一口も強くなる」" : "";
+  const panel = stepPanel("holes", "蓋の通気", hint, { brief: "蓋の通気を選ぶ" });
+  if (first) state.flags._lotos_vent_hint = true;
+  cs.vent = await choose(panel, [
+    { value: "open", label: "通気を開ける（標準）", auto: true },
+    { value: "closed", label: "通気を閉じる（熱がこもる）" },
+  ]);
 }
 
 export async function stepPlace(cs) {

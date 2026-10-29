@@ -245,12 +245,12 @@ try {
   });
   // みんとのLIMEは店の『お仕事用』。本名を知った後も「みんと＠PEPPERMINT」・営業姿のアイコン（HF10）
   assert.equal(privateUi.listName, "みんと＠PEPPERMINT");
-  assert(privateUi.listFace.split("?")[0].endsWith("face_minto.png"), privateUi.listFace);
+  assert(privateUi.listFace.split("?")[0].endsWith("face_minto.webp"), privateUi.listFace);
   assert(privateUi.delivered >= 1 && privateUi.introAccount === "minto_private", JSON.stringify(privateUi));
   assert(privateUi.introText.includes("栞です"), privateUi.introText);
   const privateRow = privateUi.rows.find((r) => r.test === "lime-chat-minto_private");
   const workRow = privateUi.rows.find((r) => r.test === "lime-chat-minto");
-  assert(privateRow && privateRow.name === "栞" && privateRow.face.endsWith("face_minto_private.png"), JSON.stringify(privateUi.rows));
+  assert(privateRow && privateRow.name === "栞" && privateRow.face.endsWith("face_minto_private.webp"), JSON.stringify(privateUi.rows));
   assert(workRow && workRow.name === "みんと＠PEPPERMINT", "the work thread stays after becoming lovers");
   assert(privateUi.beat.includes("栞さん"), privateUi.beat);
   assert(privateUi.gate.includes("栞さんのことを考えると"), privateUi.gate);
@@ -557,7 +557,7 @@ try {
     document.querySelector('[data-test="shop-leave"]').click();
     await opening;
     // 効き: 装備・所持・対象フレーバー3g以上のときだけ
-    const cs = (bowl, mix) => ({ mode: "tournament", equip: { bowl, hms: "lotos_hagal", charcoal: "flat_charcoal" }, mix,
+    const cs = (bowl, mix) => ({ mode: "tournament", water: 0.5, equip: { bowl, hms: "lotos_hagal", charcoal: "flat_charcoal" }, mix,
       mixInfo: { score: 70, intensity: 5, total: 12 }, holes: { total: 22, outerEven: 0.8, innerExcess: 0, score: 80, minimumComplete: true },
       heat: { heatPower: 60, heatStability: 70, burnRisk: 20, aromaRetention: 60, score: 80 }, pull: { score: 75, pulls: 3 }, steam: { min: 5, score: 75 },
       care: { score: 70 }, pack: "normal", place: "triangle", trial: { score: 70 } });

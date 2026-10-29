@@ -7,6 +7,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 見た目は旧版の LIME（ノッチ付きの端末・緑のヘッダー・白と黄緑の吹き出し・明るい返信欄）を踏襲する。
 import { el, sleep, fitOneLine, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
+import { customLimeIconUrl } from "./lime-icons.js";
 import { layers, toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
@@ -65,11 +66,11 @@ function scheduledInvitation(m, opts = {}) {
   // DBの雛形を変更せず、その日の受信トークへ解決済みの時刻を保存する。
   const resolved = { ...m, ...schedule, after_close: !!schedule.after_close };
   if (schedule.closed_on == null) delete resolved.closed_on;
-  resolved.messages = (m.messages || []).map((line) => typeof line === "string" ? render(line) : { ...line, text: render(line.text) });
+  resolved.messages = (m.messages || []).map((line) => typeof line === "string" ? render(line) : typeof line?.text === "string" ? { ...line, text: render(line.text) } : { ...line });
   if (schedule.temporary_closed && !JSON.stringify(m.messages).includes("{privateContext}")) {
-    const text = { naru: "今日は店を臨時で休みにした。午後、付き合ってくれないか？",
+    const text = { naru: "今日は店を臨時で閉めたから、午後ちょっと付き合えよ",
       adam: "今日は店を臨時で休む。午後、共に出かけよう",
-      minto: "今日は臨時でお店を休みにしたの。午後、会えたらうれしいな" }[m.sender]
+      minto: "今日は臨時でお店を休みにしたの。午後、会えたら嬉しいな" }[m.sender]
       || "今日は臨時のお休み。午後、会えたらうれしいな";
     resolved.messages.unshift({ sender: m.sender, text });
   }
@@ -312,6 +313,12 @@ function sumiBaitoInvite({ tournamentDay = false } = {}) {
   const fixed = state.day === 3 || state.day === 8;
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
+  // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）
+  const reasons = [
+    "常連の団体が入ってな。人手が足りん",
+    "仕入れの業者と昼が重なってな。手が回らん",
+    "昼に貸切の予約が入った。炭番が一人足りん",
+  ];
   return {
     id,
     sender: "sumi",
@@ -322,10 +329,10 @@ function sumiBaitoInvite({ tournamentDay = false } = {}) {
     hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
     messages: [
       "急で悪い。今日、昼のシフト入れるか？",
-      "常連の団体が入ってな。人手が足りん",
+      reasons[state.day % reasons.length],
       "……代わりと言っちゃなんだが、給料は弾むぞ",
     ],
-    decline_response: { text: "おう、わかった。無理はするな" },
+    decline_response: { text: "……そうか。なら、こっちで回す" },
   };
 }
 
@@ -346,6 +353,56 @@ function stampAccount(item) {
   return item;
 }
 
+/** 本文・履歴・一覧で同じ種別と台帳を使う。壊れた素材参照も代替表示で読める。 */
+function messageContent(line) {
+  if (typeof line === "string") return { kind: "text", text: line };
+  if (!line || typeof line !== "object") return null;
+  const kind = ["stamp", "image"].find((key) => key in line);
+  if (kind) {
+    const asset = DB.manifest?.limeMedia?.[line[kind]];
+    return { kind, asset: asset?.kind === kind ? asset : null,
+      fallback: kind === "stamp" ? "［スタンプを表示できません］" : "［画像を表示できません］" };
+  }
+  return typeof line.text === "string" ? { kind: "text", text: line.text } : null;
+}
+async function drawMessage(ui, line, mine = false, sender = null, animate = true) {
+  const content = messageContent(line);
+  if (!content) return;
+  if (content.kind === "text") return ui.bubble(content.text, mine, sender, animate);
+  return ui.media(mine ? { ...content, asset: null } : content, sender, animate);
+}
+const mediaLines = (item) => [...(item.msg?.messages || []), ...(item.log || [])]
+  .filter((line) => ["stamp", "image"].includes(messageContent(line)?.kind));
+
+/** 受信時だけ素材を選別し、DBや過去の受信箱を変更しない。dayは章をまたぐ通算日。 */
+function receiveItem(m) {
+  const item = stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, chapter: state.chapter,
+    msg: { ...m }, read: false, done: false,
+    replyState: m.type === "invitation" || m.replies?.length ? "waiting" : "none", log: [] });
+  const history = (state.inbox || []).filter((old) => accountOwner(accountOf(old)) === m.sender);
+  const previousMedia = history.filter((old) => mediaLines(old).length);
+  const repeated = (state.inbox || []).some((old) => originId(old) === originId(item));
+  const blocked = repeated || !!mediaLines(history.at(-1) || {}).length
+    || previousMedia.some((old) => !Number.isFinite(old.day) || state.day - old.day < 3);
+  let count = 0;
+  const freeze = (value) => hooks.interpolate ? hooks.interpolate(value) : value;
+  item.msg.messages = (m.messages || []).flatMap((line) => {
+    const content = messageContent(line);
+    if (content && content.kind !== "text") {
+      const asset = content.asset;
+      if (blocked || count >= 1 || !asset || asset.owner !== m.sender || line.sender && line.sender !== m.sender
+        || ![1, 2, 3].includes(state.chapter)
+        || line.media_chapters && !line.media_chapters.includes(state.chapter)
+        || asset.allowed_accounts && !asset.allowed_accounts.includes(accountOf(item))) return [];
+      count++;
+      return [{ ...line, ...(line.media_chapters ? { media_chapters: [...line.media_chapters] } : {}) }];
+    }
+    return [typeof line === "string" ? freeze(line)
+      : typeof line?.text === "string" ? { ...line, text: freeze(line.text) } : { ...line }];
+  });
+  return item;
+}
+
 /** LIME の表示名。アカウント名の決まっている相手（みんと）はそれ、私用は本名。ほかは私的な場面の呼び名 */
 const limeName = (account) => {
   if (account === "???") return "？？？";
@@ -362,6 +419,16 @@ function avatar(account, small = false) {
   const known = id && id !== "???" && (state.met[id] || id === "sumi");
   // お仕事用は営業姿、私用は私服の顔（名前 limeName と揃える）
   const url = known ? faceIconUrl(account !== id ? PRIVATE_ACCOUNTS[id].face : id) : null;
+  // 採用済みカスタムアイコンはお仕事用アカウントだけに使う（私用は正体保護のため従来どおり）
+  const custom = known && account === id ? customLimeIconUrl(id) : null;
+  if (custom) {
+    return el(`img.${cls}.custom`, { src: custom, alt: "", onerror: (e) => {
+      const node = e.currentTarget;
+      node.onerror = null;
+      if (url) { node.classList.remove("custom"); node.src = url; }
+      else node.replaceWith(el(`span.${cls}.blank`, { text: [...limeName(account)][0] || "？" }));
+    } });
+  }
   if (url) return el(`img.${cls}`, { src: url, alt: "" });
   const name = known ? limeName(account) : "？";
   return el(`span.${cls}.blank`, { text: [...name][0] || "？" });
@@ -418,12 +485,9 @@ function nudgeWaitingContacts(opts) {
 export function deliverMorning(opts = {}) {
   const msgs = morningMessages(opts);
   // {daysLeft} などは届いた日の値で固定する（数日後に読んでも「あと◯日」がずれない）
-  const freeze = (t) => (hooks.interpolate ? hooks.interpolate(String(t)) : t);
   for (const m of msgs) {
     if (m.temporary_closed) state.flags[`_temporary_closed_${m.sender}`] = `${state.chapter || 1}:${state.day}`;
-    const msg = { ...m, messages: (m.messages || []).map((x) => (typeof x === "string" ? freeze(x) : { ...x, text: freeze(x.text) })) };
-    state.inbox.push(stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, chapter: state.chapter, msg,
-      read: false, done: false, replyState: m.type === "invitation" || m.replies?.length ? "waiting" : "none", log: [] }));
+    state.inbox.push(receiveItem(m));
   }
   nudgeWaitingContacts(opts);
   return msgs.length;
@@ -507,9 +571,6 @@ export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
   return expiring ? { item: expiring, kind: "deadline" } : null;
 }
 
-// 旧テスト/呼び出しとの互換性を維持する。
-export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingReply("minto", opts);
-
 /**
  * C04: 約束の場面（強制イベント）を始める前に、まだ読んでいない誘いのトークがあれば、その相手を返す。
  * プレイヤーが本文を読まないまま面会の台本が始まる流れを防ぐための導線用。
@@ -532,6 +593,7 @@ const clockNow = () => (state.phase === "tournament" ? "大会の朝" : state.sl
 
 /** 端末の枠（ノッチ・ステータスバー・ヘッダー・本文・返信欄）。openLime と openPhone で共用 */
 function phoneShell({ time, title }) {
+  const owner = state;
   const header = el("div.lime-header");
   const chat = el("div.lime-chat");
   const actions = el("div.lime-actions");
@@ -549,8 +611,25 @@ function phoneShell({ time, title }) {
 
   // gen: 画面（一覧⇄トーク）を切り替えるたびに進める。古い画面の続き（吹き出し）が新しい画面に混ざらないように
   const ui = { header, chat, actions, phone, open: true, gen: 0, lastSide: null, cancel: null };
-  ui.live = (g) => ui.open && ui.gen === g;
-  ui.scroll = () => { chat.scrollTop = chat.scrollHeight; };
+  ui.live = (g) => ui.open && ui.gen === g && state === owner;
+  // 履歴の一括描画中はスクロールを保留し、最後に1回だけ実行する（scrollHeight の連続参照による強制リフローを避ける）。
+  let scrollHold = 0;
+  let scrollPending = false;
+  ui.scroll = () => {
+    if (scrollHold) { scrollPending = true; return; }
+    chat.scrollTop = chat.scrollHeight;
+  };
+  ui.withDeferredScroll = (draw) => {
+    scrollHold++;
+    try { return draw(); }
+    finally {
+      scrollHold--;
+      if (!scrollHold && scrollPending) {
+        scrollPending = false;
+        ui.scroll();
+      }
+    }
+  };
   /** 吹き出し。animate=false は履歴（既読）をまとめて描くとき */
   ui.bubble = async (raw, mine = false, sender = null, animate = true) => {
     const g = ui.gen;
@@ -573,6 +652,44 @@ function phoneShell({ time, title }) {
     ui.scroll();
     if (animate) { (mine ? SE.phoneSend : SE.phoneReceive)(); await sleep(mine ? 260 : 380); }
   };
+  /** 素材は先に枠を置く。履歴は読込を待たず、初読だけ最大3秒待つ。 */
+  ui.media = async (content, sender, animate) => {
+    const g = ui.gen;
+    const session = state;
+    const live = () => ui.live(g) && state === session && row.isConnected;
+    const face = ui.lastSide === "peer" ? el("span.lime-face.sm.gap") : avatar(sender, true);
+    const box = el(`div.lime-media.lime-${content.kind}`);
+    const row = el(`div.lime-row.peer${animate ? "" : ".past"}`, [face, box]);
+    chat.append(row);
+    ui.lastSide = "peer";
+    ui.scroll();
+    if (animate) SE.phoneReceive();
+    const asset = content.asset;
+    const fallback = () => {
+      box.classList.add("lime-media-fallback");
+      box.replaceChildren(el("span", { text: content.fallback }));
+    };
+    if (!asset) { fallback(); return; }
+    const image = el("img", { alt: asset.alt, width: asset.width, height: asset.height });
+    box.style.aspectRatio = `${asset.width} / ${asset.height}`;
+    box.append(image);
+    await new Promise((resolve) => {
+      let settled = false;
+      const finish = (ok) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        image.onload = image.onerror = null;
+        if (live() && !ok) fallback();
+        resolve();
+      };
+      const timer = setTimeout(() => finish(false), 3000);
+      image.onload = () => finish(true);
+      image.onerror = () => finish(false);
+      image.src = asset.src;
+      if (!animate) resolve(); // 履歴同士の読込待機を積まない
+    });
+  };
   ui.note = (t, cls = "") => {
     chat.append(el(`div.lime-note${cls}`, { text: t }));
     ui.lastSide = null;
@@ -589,7 +706,7 @@ function phoneShell({ time, title }) {
         onclick: () => { SE.select(); actions.replaceChildren(); ui.cancel = null; resolve(o); },
       }));
     actions.replaceChildren(...[hint ? el("div.lime-hint", { text: hint }) : null, ...buttons].filter(Boolean));
-    buttons.forEach((b) => fitOneLine(b, 11)); // 返信も1行（GUI22）
+    buttons.forEach((b) => fitOneLine(b, 14)); // 返信も1行（GUI22）
   });
   ui.close = async () => {
     ui.open = false;
@@ -640,11 +757,11 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   const session = state;
   const m = item.msg;
   const g = ui.gen;
-  const alive = () => ui.live(g);
+  const alive = () => ui.live(g) && state === session;
   const from = accountOf(item);
   if (!item.read) {
     for (const msg of m.messages || []) {
-      await ui.bubble(typeof msg === "string" ? msg : msg.text, false, from);
+      await drawMessage(ui, msg, false, from);
       if (!alive()) break;
     }
     if (!alive()) return; // 読み終える前に戻ったら、既読・報酬を付けない
@@ -659,7 +776,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     if (missed) { ui.note(missed); return; }
     for (const entry of item.log || []) {
       if (entry.note) ui.note(entry.note);
-      else await ui.bubble(entry.text, entry.me, from, false);
+      else await drawMessage(ui, entry, entry.me, from, false);
     }
     return;
   }
@@ -770,18 +887,23 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
 
 /** 既読ぶんを履歴として一気に描く（日付の区切りつき） */
 function drawHistory(items, ui) {
-  let lastItem = null;
-  for (const it of items) {
-    if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
-    if (!it.read) continue;
-    for (const msg of it.msg.messages || []) ui.bubble(typeof msg === "string" ? msg : msg.text, false, accountOf(it), false);
-    const missed = missedInvitationNote(it);
-    if (missed) { ui.note(missed); continue; }
-    for (const l of it.log || []) {
-      if (l.note) ui.note(l.note);
-      else ui.bubble(l.text, l.me, accountOf(it), false);
+  // 同期的に描き切るため途中経過は描画されない。スクロールは最後の1回だけにまとめる。
+  const draw = () => {
+    let lastItem = null;
+    for (const it of items) {
+      if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
+      if (!it.read) continue;
+      for (const msg of it.msg.messages || []) drawMessage(ui, msg, false, accountOf(it), false);
+      const missed = missedInvitationNote(it);
+      if (missed) { ui.note(missed); continue; }
+      for (const l of it.log || []) {
+        if (l.note) ui.note(l.note);
+        else drawMessage(ui, l, l.me, accountOf(it), false);
+      }
     }
-  }
+  };
+  if (typeof ui.withDeferredScroll === "function") ui.withDeferredScroll(draw);
+  else draw();
 }
 
 /**
@@ -825,10 +947,10 @@ export async function openLime({ tutorial = false, sender = null, fixedNight = (
       const last = items.at(-1);
       const unread = items.some((i) => !i.read);
       const openInv = items.some((i) => i.msg.type === "invitation" && !i.done && inviteState(i, ui.inviteOptions) !== "expired");
-      const lastText = last.read
-        ? (last.log.filter((l) => l.text).at(-1)?.text || [].concat(last.msg.messages || []).at(-1))
-        : [].concat(last.msg.messages || [])[0];
-      const preview = plain(typeof lastText === "string" ? lastText : lastText?.text || "");
+      const lastContent = [...(last.msg.messages || []), ...(last.read ? last.log || [] : [])]
+        .map(messageContent).filter(Boolean).at(-1);
+      const preview = lastContent?.kind === "text" ? plain(lastContent.text)
+        : lastContent?.asset?.preview || lastContent?.fallback || "";
       ui.chat.append(el(`button.lime-chat-row${unread ? ".unread" : ""}`, {
         dataset: { test: `lime-chat-${sender === "???" ? "unknown" : sender}` },
         onclick: () => { SE.click(); showThread(sender); },
@@ -905,9 +1027,9 @@ export async function openPhone(messages, { title = null, time = "朝" } = {}) {
   const accepted = [];
   const ui = phoneShell({ time, title: title || (state.phase === "tournament" ? "大会当日" : `DAY ${chapterDay(state)}`) });
   await sleep(420);
+  if (!ui.live(ui.gen)) return accepted;
   for (const m of messages) {
-    const item = stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, msg: m,
-      read: false, done: false, replyState: m.type === "invitation" || m.replies?.length ? "waiting" : "none", log: [] });
+    const item = receiveItem(m);
     state.inbox.push(item);
     ui.chat.replaceChildren();
     ui.actions.replaceChildren();
@@ -919,6 +1041,7 @@ export async function openPhone(messages, { title = null, time = "朝" } = {}) {
       el("span.lime-unread", { text: left ? `未読 ${left}` : "" }),
     );
     await runItem(item, ui, accepted, { forced: true });
+    if (!ui.live(ui.gen)) return accepted;
     item.done = true;
     await new Promise((resolve) => {
       const last = messages.at(-1) === m;

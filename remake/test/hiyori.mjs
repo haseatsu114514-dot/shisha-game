@@ -285,6 +285,8 @@ try {
       const manual = manualState.flags._hiyori_real_self_known && manualState.lovePts.rin === 33 && manualState.lovePts.hiyori === 20;
       const original = JSON.parse(JSON.stringify(data.DB.hiyori));
       data.DB.hiyori.route.enabled = true;
+      // 台本未執筆の第3〜5章イベントは route.unscriptedEvents に退避中（#1498）。条件判定だけは仮台本で確認する。
+      data.DB.hiyori.route.events = [...data.DB.hiyori.route.events, ...(data.DB.hiyori.route.unscriptedEvents || [])];
       const originals = { ...data.DB.dialogues };
       for (const event of route.hiyoriRoute().events) data.DB.dialogues[event.dialogue] = { lines: [{ speaker: "hiyori", text: "条件確認" }] };
       const statuses = [];

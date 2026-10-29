@@ -24,7 +24,7 @@ async function fixture() {
     AXE_BAR: {id:'axe_bar'}, RAIN_SPOT_TEXTS: {}, isRainy: () => false,
     spotFollowupDue: () => null, syncMintoKnowledge() {}, meetHiyoriAtTonari: async () => false,
     maybeRecruitTrpgMember: async () => false, sharkSwim: async swap => swap(),
-    imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
+    withScenePreparation: task => task, imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
     hiyoriFirstMeetingReady: () => true,
     tsumugiMessages: () => [], hooks: {}, giftOpen: async () => {},
     openingStatus: () => ({ok:true}), refreshPlaceCue() {}, playBgm() {}, hiyoriShopEncounterDue: () => false,
@@ -270,6 +270,36 @@ await check('LOAD during old private scope cannot leak into new public gain or c
   const restore=f.stats.privateBondScope();resolve(done);assert.equal(await pending,false);
   assert.equal(f.stats.bond.private,true,'old finally closed new context');
   f.stats.gainAffinity('rin',10);assert.equal(s.lovePts.rin,14);restore();assert.equal(f.stats.bond.private,false);
+});
+await check('privateBondScope: nested scopes restore fully in LIFO order (#1361)',async f=>{
+  assert.equal(f.stats.bond.private,false);
+  const outer=f.stats.privateBondScope();assert.equal(f.stats.bond.private,true);
+  const inner=f.stats.privateBondScope();
+  inner();assert.equal(f.stats.bond.private,true,'inner close must keep the outer scope');
+  outer();assert.equal(f.stats.bond.private,false,'outer close must restore the pre-scope value');
+});
+await check('privateBondScope: out-of-order close hands the restore target down (#1361)',async f=>{
+  const outer=f.stats.privateBondScope();
+  const inner=f.stats.privateBondScope();
+  outer();assert.equal(f.stats.bond.private,true,'early outer close must not close the inner scope');
+  inner();assert.equal(f.stats.bond.private,false,'last close must restore the pre-scope value');
+});
+await check('privateBondScope: sequential scopes, stale and double restores are inert (#1361)',async f=>{
+  const first=f.stats.privateBondScope();first();assert.equal(f.stats.bond.private,false);
+  const second=f.stats.privateBondScope();
+  first();assert.equal(f.stats.bond.private,true,'stale restore must not close a live scope');
+  second();second();assert.equal(f.stats.bond.private,false,'double restore must be a no-op');
+  f.stats.bond.private=true;
+  const third=f.stats.privateBondScope();third();
+  assert.equal(f.stats.bond.private,true,'scope opened while private must restore to true');
+  f.stats.bond.private=false;
+});
+await check('privateBondScope: LOAD-stale scope cannot close a scope on the new state (#1361)',async f=>{
+  const stale=f.stats.privateBondScope();
+  f.fresh();
+  const live=f.stats.privateBondScope();
+  stale();assert.equal(f.stats.bond.private,true,'stale restore must not close the new-state scope');
+  live();assert.equal(f.stats.bond.private,false);
 });
 await check('question pending public caller rejects duplicate entry without a second play',async f=>{
   const s=f.core.state;s.affinity.rin=33;s.story.rin=3;let resolve;

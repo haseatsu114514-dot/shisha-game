@@ -19,7 +19,7 @@ export async function loadAppearanceOptions() {
 export function chooseAppearance(panel, current, options) {
   return new Promise(resolve => {
     const draft = normalizeAppearance(current, options);
-    panel.append(el("p", { text: "選択はSAVE時に保存されます。ゲーム画面への反映は準備中です。" }));
+    panel.append(el("p", { text: "選択はSAVE時に保存され、制作中の作業台に表示されます。" }));
     const fields = el("div", { style: { display: "grid", gap: "12px" } });
     for (const category of APPEARANCE_CATEGORIES) {
       const select = el("select.btn", {

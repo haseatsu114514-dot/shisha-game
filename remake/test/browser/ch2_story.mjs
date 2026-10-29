@@ -207,4 +207,87 @@ await suite('ch2-story', async check => {
     const s = await state(page); assert.equal(s.visits.volk, 2); assert.equal(s.affinity.volk, 12); assert(s.met.volk);
     assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
   });
+  // #1262: 同じセーブで第2章入口(DAY2)→前夜→大会→大会後を通す。途中に実LOADを1回挟み、前提フラグは注入しない。
+  await check('entrance-through-tournament-and-aftermath-same-save', async page => {
+    const dt = name => `[data-test="${name}"]`, ct = name => t(`ch2-tournament-${name}`);
+    const keep = ['money', 'stats', 'statXp', 'flavorStock', 'affinity', 'lovers', 'met', 'contacts', 'day', 'slot', 'chapter'];
+    // reload() と違い、LOAD直後の自動再開より前に台詞トレースを入れ直し、既読場面の再生を検出できるようにする。
+    const reloadTraced = async () => {
+      await page.reload(); await page.locator(t('title-load')).click();
+      await page.evaluate(async () => {
+        const vn = await import('./js/vn/engine.js');
+        window.__storyTrace = []; window.__storyTexts = [];
+        vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
+        vn.hooks.onLine = (id, line) => {
+          if (window.__storyTrace.at(-1) !== id) window.__storyTrace.push(id);
+          if (line.text) window.__storyTexts.push(line.text);
+        };
+      });
+      await page.locator(t('slot-0')).click();
+    };
+    await seed(page, { day: 2 }); await atMap(page, 2, 0);
+    const start = await state(page);
+    let readBeforeLoad = [];
+    for (let day = 2; day <= 13; day++) {
+      await rest(page); await atMap(page, day, 1); await rest(page);
+      if (day < 13) await atMap(page, day + 1, 0);
+      if (day === 6) { // DAY7朝の保存を実LOADし、ロード前の状態が一致して既読場面を再生しないことを確かめる
+        const mid = await state(page);
+        readBeforeLoad = await page.evaluate(() => window.__storyTrace.slice());
+        assert(readBeforeLoad.length > 0, 'DAY2–6 must have read scenes before the save/load');
+        await reloadTraced(); await atMap(page, 7, 0);
+        const loaded = await state(page);
+        for (const key of keep) assert.deepEqual(loaded[key], mid[key], `LOAD keeps ${key}`);
+        const replayed = await page.evaluate(ids => window.__storyTrace.filter(id => ids.includes(id)), readBeforeLoad);
+        assert.deepEqual(replayed, [], 'LOAD must not replay completed scenes');
+      }
+    }
+    await page.locator(end).waitFor();
+    const eve = await state(page);
+    assert.equal(eve.day, 28); assert.equal(eve.slot, 0); assert.equal(eve.chapter, 2);
+    assert(eve.flags._ch2_eve_done && eve.flags._ch2_taste_distant && eve.met.ageha && eve.met.kumicho && eve.met.rei);
+    for (const key of ['money', 'stats', 'statXp', 'flavorStock', 'lovers', 'loverSince']) assert.deepEqual(eve[key], start[key], key);
+    for (const [who, value] of Object.entries(start.affinity)) assert(eve.affinity[who] >= value, `affinity ${who}`);
+    for (const who of Object.keys(start.met)) assert(eve.met[who], `met ${who}`);
+    for (const who of start.contacts) assert(eve.contacts.includes(who), `contact ${who}`);
+    // 大会: 入口fixtureから先は実フロー。craftTest.auto はch2_tournamentの実演手法と同じ。
+    await page.evaluate(async () => { (await import('./js/craft/session.js')).craftTest.auto = 'good'; });
+    await page.locator(ct('start')).click(); await page.locator(dt('phone-next')).click();
+    await page.locator(ct('ready')).waitFor();
+    await page.locator(ct('craft-start')).click();
+    for (let round = 1; round <= 3; round++) {
+      await page.locator(ct('votes')).waitFor();
+      assert.equal((await state(page)).flags._ch2_tournament.voted, round);
+      await page.locator(ct('continue')).click();
+    }
+    await page.locator(ct('result')).waitFor();
+    const judged = await state(page), record = judged.flags._ch2_tournament;
+    assert.equal(record.history.length, 1); assert.equal(record.result.rank, 1);
+    assert.equal(record.result.total, record.craft.total);
+    await page.locator(ct('continue')).click(); await page.locator(dt('phone-next')).click();
+    await page.locator(ct('complete')).waitFor();
+    const after = await state(page);
+    assert.equal(after.phase, 'cleared'); assert.equal(after.chapter, 2); assert(after.flags._ch2_tokyo_invitation);
+    assert.equal(after.flags._ch2_tournament.history.length, 1);
+    // 大会の正規の効果以外で、蓄積した記録が欠落・巻き戻りしない。
+    for (const key of ['stats', 'statXp', 'lovers', 'loverSince']) assert.deepEqual(after[key], eve[key], key);
+    // 大会の正規の効果として、優勝賞金50,000円が一度だけ入る。
+    assert.equal(after.money, eve.money + 50000, 'money は優勝賞金50,000円だけ増える');
+    // 大会の制作は持ち込み在庫を消費するのが正規の効果（craft/steps.js の consumes）。
+    // 記録された配合の分だけ減り、それ以外の欠落・巻き戻しがないことを確かめる。
+    const usedMix = after.flags._ch2_tournament.craft.mix || {};
+    for (const [id, grams] of Object.entries(eve.flavorStock)) {
+      assert.equal(after.flavorStock[id], Math.round((grams - (usedMix[id] || 0)) * 10) / 10, `flavorStock ${id} は配合の消費分だけ減る`);
+    }
+    for (const [who, value] of Object.entries(eve.affinity)) assert(after.affinity[who] >= value, `affinity ${who}`);
+    for (const who of Object.keys(eve.met)) assert(after.met[who], `met ${who}`);
+    for (const who of eve.contacts) assert(after.contacts.includes(who), `contact ${who}`);
+    for (const id of eve.keepsakes) assert(after.keepsakes.includes(id), `keepsake ${id}`);
+    for (const id of eve.relationshipMemories) assert(after.relationshipMemories.includes(id), `memory ${id}`);
+    // 大会後の保存をLOADしても結果は繰り返されず、同じ記録のまま。
+    await reloadTraced(); await page.locator(ct('complete')).waitFor();
+    const resumed = await state(page);
+    assert.equal(resumed.flags._ch2_tournament.history.length, 1); assert.equal(resumed.phase, 'cleared');
+    for (const key of ['money', 'stats', 'statXp', 'flavorStock', 'affinity', 'lovers', 'met', 'contacts']) assert.deepEqual(resumed[key], after[key], key);
+  }, { reducedMotion: 'reduce' });
 });

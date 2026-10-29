@@ -1,0 +1,77 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_trial_kuze_intro",
+      "lines": [
+        { "speaker": "", "text": "mukaiの作業台。営業前の店は、まだ炭の匂いも薄い。" },
+        { "speaker": "mashiro", "face": "normal", "text": "はじめくん、朔の店で言ってたよね。自分の台で、もう一度確かめるって" },
+        { "speaker": "hajime", "face": "normal", "text": "うん。炭の順番で、思い出すものが変わるって話" },
+        { "speaker": "hajime", "face": "serious", "text": "聞いただけだと、まだ自分の手の話になってない気がする" },
+        { "speaker": "mashiro", "face": "smile", "text": "じゃあ、一台作ってみよ。僕、後半まで吸って確かめるねぇ" },
+        { "speaker": "", "text": "葉を選び、詰め方と炭の置き方を決める。今日は、調整なしで一台を出し切る。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_trial_kuze_end",
+      "lines": [
+        { "speaker": "hajime", "face": "normal", "text": "聞いた話を、自分の手で一回通せた" },
+        { "speaker": "mashiro", "face": "normal", "text": "大会で、どこを残すか。今日の一台も材料にしよ" }
+      ],
+      "branches": {
+        "good": [
+          { "speaker": "", "text": "開店してすぐの客に、試作の一台をそのまま出した。" },
+          { "speaker": "customer", "text": "最初は軽いのに、あとから甘いのが来るね" },
+          { "speaker": "mashiro", "face": "smile", "text": "僕も同じ。後半も、まだ吸っていたいなぁ" },
+          { "speaker": "hajime", "face": "smile", "text": "炭を急がなかった分、後ろに残ったのかも" }
+        ],
+        "rough": [
+          { "speaker": "", "text": "開店してすぐの客に、試作の一台を出した。" },
+          { "speaker": "customer", "text": "香りはいいけど、途中で少し重くなるかな" },
+          { "speaker": "mashiro", "face": "normal", "text": "僕もそこ。始まりは良かったよ" },
+          { "speaker": "hajime", "face": "serious", "text": "後半を急いだかもしれない。どこで変わったか、覚えておく" }
+        ],
+        "failed": [
+          { "speaker": "", "text": "客席へ出す前に、ましろちゃんが一口確かめた。" },
+          { "speaker": "mashiro", "face": "sad", "text": "これは、まだお客さんには出せないねぇ" },
+          { "speaker": "hajime", "face": "sad", "text": "……うん。どこで崩れたか、分かる気はする" },
+          { "speaker": "mashiro", "face": "normal", "text": "分かるなら、今日作った意味はあったよ" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_trial_steve_intro",
+      "lines": [
+        { "speaker": "", "text": "mukaiの客席に、提供したばかりの一台が置いてある。" },
+        { "speaker": "mashiro", "face": "normal", "text": "スティーブさんのタイマーの話、試してみる？" },
+        { "speaker": "hajime", "face": "normal", "text": "うん。熱を足したくなっても、少し待つ" },
+        { "speaker": "hajime", "face": "serious", "text": "一口目だけじゃなくて、二口目も軽く吸えるように" },
+        { "speaker": "mashiro", "face": "smile", "text": "お客さんの様子、僕も一緒に見てるねぇ" },
+        { "speaker": "", "text": "提供したあとの一台を、二度だけ手直しする。急がず、煙と客の顔を見て決める。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_trial_steve_end",
+      "lines": [
+        { "speaker": "hajime", "face": "normal", "text": "待つのも、手を動かすのと同じくらい難しい" },
+        { "speaker": "mashiro", "face": "normal", "text": "でも、今日は待つところまで自分で決めたよ" }
+      ],
+      "branches": {
+        "good": [
+          { "speaker": "customer", "text": "このくらいなら、もう少し吸ってたい" },
+          { "speaker": "mashiro", "face": "smile", "text": "ほら、二口目もちゃんと届いてる" },
+          { "speaker": "hajime", "face": "smile", "text": "足したくなった時に、一回止まれた" }
+        ],
+        "rough": [
+          { "speaker": "customer", "text": "今は少し落ち着いたけど、さっき一瞬きつかったかな" },
+          { "speaker": "mashiro", "face": "normal", "text": "途中で、少し急いだねぇ" },
+          { "speaker": "hajime", "face": "serious", "text": "うん。焦ったところ、手が先に動いてた" }
+        ],
+        "failed": [
+          { "speaker": "customer", "text": "ごめん、今日はここまでにしておくよ" },
+          { "speaker": "mashiro", "face": "sad", "text": "戻しきれなかったねぇ。お客さん、無理させちゃった" },
+          { "speaker": "hajime", "face": "sad", "text": "……待つ前に、足しすぎた。次は先に止まる" }
+        ]
+      }
+    }
+  ]
+}

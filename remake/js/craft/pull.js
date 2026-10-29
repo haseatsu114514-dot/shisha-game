@@ -24,6 +24,8 @@ import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { mixExpression } from "./flavor-profile.js";
 import { createCraftClock } from "./clock.js";
+import { waterComfort } from "./water.js";
+import { waterComfortLine } from "./pull-water.js";
 
 export { IDEAL } from "./conditions.js";
 const HOSE_PATH = "M25.5 21.5C18 25 9 26 7.5 33s8 9.5 15 7 9-1 9.5 2.5";
@@ -38,7 +40,7 @@ const HOSE_ICON = `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" s
   <path d="m38.8 7.8 3.4-3.6" stroke="currentColor" stroke-width="3.2"/>
 </svg>`;
 // 針の位置の帯（0〜1）。下げ吸い=左、キープ=中、上げ吸い=右。芯に止めると上げ下げが強い。
-const ZONES = [
+export const ZONES = [
   { id: "down", from: 0, to: 0.34, just: [0.14, 0.205], label: "下げ吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
   { id: "keep", from: 0.34, to: 0.66, just: [0.468, 0.532], label: "キープ", mark: "＝", delta: 0, justDelta: 0 },
   { id: "up", from: 0.66, to: 1, just: [0.795, 0.86], label: "上げ吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
@@ -224,6 +226,7 @@ async function pullGame(cs, mode) {
     tags.replaceChildren(...[
       coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `消耗した炭を${coals}個交換した` : "炭は交換していない" }),
       conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
+      cs.vent === "closed" && el("span.pull-tag", { text: "蓋：閉" }),
       conditions.rainy && el("span.pull-tag", { text: "雨", title: "熱が入りづらい" }),
     ].filter(Boolean));
     pips.forEach((pip, i) => pip.classList.toggle("on", i < pulls));
@@ -308,7 +311,9 @@ async function pullGame(cs, mode) {
     pullLabel.textContent = "吸っている…";
     drawStatus.textContent = `${z.label}で吸っている…`;
     setBenchDraw(cs, z.id, duration);
-    stopBubbles = startBubbling({ strength: z.id === "keep" ? .65 : 1 });
+    const strength = (z.id === "keep" ? .65 : 1) * waterComfort(cs.water).bubble;
+    // startBubbling は strength=0 を1に置き換えるため、水に届かない台では開始しない。
+    stopBubbles = strength > 0 ? startBubbling({ strength }) : () => {};
     render();
     try {
       const complete = await animateDraw({ duration,
@@ -480,7 +485,7 @@ async function pullGame(cs, mode) {
     if (failed === "burnt") cs.burnt = true;
     if (mode.store === "pull") { cs.pullDone = true; refreshBench(); }
     tickerSay(text.ticker);
-    await resultCard(panel, { title: text.title, lines: [text.line, `${pulls}回吸った`] });
+    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`] });
     return true;
   }
 
@@ -499,6 +504,7 @@ async function pullGame(cs, mode) {
       lines: [
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えて提供できた" : optimal ? "最適温に合わせて提供できた" : inZone ? "適温で提供できた" : T > ideal[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
         tasteLine,
+        waterComfortLine(cs.water),
         `${pulls}回吸った`,
       ],
     });
@@ -510,6 +516,7 @@ async function pullGame(cs, mode) {
     lines: [
       inZone ? "適温に整えて、審査員へ戻せた" : T > ideal[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
       tasteLine,
+      waterComfortLine(cs.water),
       coals ? `消耗した炭を${coals}個交換した` : "炭は交換せずに整えた",
       `${pulls}回吸った`,
     ],

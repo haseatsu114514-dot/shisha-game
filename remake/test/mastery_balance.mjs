@@ -70,7 +70,7 @@ function temperatureFor(score, bands) {
 
 function craftHistory({ holes, picks, serving, care, steamHits = 1 }) {
   const cs = {
-    mode: "tournament", chapter: 1,
+    mode: "tournament", chapter: 1, water: 0.5,
     equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
     mix: { lemon: 9, mint: 3 }, pack: "normal", place: "triangle",
     holes: { score: holes, outerEven: holes / 100, innerExcess: 0, total: 22, minimumComplete: true },
@@ -106,13 +106,16 @@ function scoreScenario(name, experience = {}, prepared = false) {
   return { cs, rank: outcomeOf(cs.total).rank };
 }
 
-assert.equal(NAGUMO_BAR, 84, "chapter 1's provisional target requires preparation or accurate operation");
+assert.equal(NAGUMO_BAR, 90.8, "calibrated chapter 1 mid first-clear target");
 assert.deepEqual(WEIGHTS, { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 });
 assert.equal(scoreScenario("precise").rank, 1, "starter equipment and Lv.1 can win with precise execution");
-assert.equal(scoreScenario("careful").rank, 1, "winning at Lv.1 does not demand all-perfect operation");
+assert.equal(scoreScenario("careful").rank, 3, "calibrated bar makes this unprepared Lv.1 run close");
+assert.equal(scoreScenario("careful", mastered.flavorMastery).rank, 1, "mastery lets careful operation win");
 const novice = scoreScenario("needsPractice"), experienced = scoreScenario("needsPractice", mastered.flavorMastery);
 assert.notEqual(novice.rank, 1, "middling execution without preparation should not clear chapter 1 automatically");
-assert.equal(experienced.rank, 1, "practicing the selected flavors has a meaningful effect on a close contest");
+assert.equal(experienced.rank, 3, "calibrated bar keeps this middling run below a win despite mastery");
+assert.equal(scoreScenario("needsPractice", mastered.flavorMastery, true).rank, 1,
+  "mastery and preparation together can turn a close run into a win");
 assert(experienced.cs.total - novice.cs.total >= 8, "full mastery is worth at least its disclosed eight points");
 assert.notEqual(scoreScenario("rough", mastered.flavorMastery, true).rank, 1,
   "max mastery and all rehearsal bonuses cannot turn rough execution into a win");
@@ -159,7 +162,7 @@ console.log(JSON.stringify({
   }])),
   scope: "real scoring with supplied operation histories; not a timed browser playthrough",
 }, null, 2));
-console.log("PASS weighted mastery, forecasts, starter wins, preparation limits, two adjustments and unchanged story voting");
+console.log("PASS weighted mastery, forecasts, calibrated chapter 1 wins, preparation limits, two adjustments and unchanged story voting");
 
 // U5雛形: 実時間操作のシミュレーターではなく、工程結果を与えて実finalizeを計測する。
 // 能力から各操作結果への伝播・乱数分布・装備/配合の総当たりはU5本体で追加する。

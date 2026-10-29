@@ -114,7 +114,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "座れたじゃねえか。飲み物、そこ置いていいぞ"
+          "text": "座れたじゃねえか。飲み物、そこ置いていいですぜ"
         },
         {
           "speaker": "hajime",
@@ -124,7 +124,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……忙しい時ほど、置く場所を決める。手に持ったまま迷うな"
+          "text": "……忙しい時ほど、置く場所を決めるんでさ。手に持ったまま迷いなさんな"
         },
         {
           "speaker": "hajime",
@@ -134,7 +134,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "卓の端で考え始めるとな、ろくなことにならねえ。いったん置いて、見直す"
+          "text": "卓の端で考え始めるとな、ろくなことにならねえ。いったん置いて、見直すんでさ"
         },
         {
           "type": "condition",
@@ -146,7 +146,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "好きなもんを雑に扱わねえためだ。小僧、お前の店の卓で試してみな"
+          "text": "好きなもんを雑に扱わねえためでさ。あんちゃん、お前の店の卓で試してみな"
         },
         {
           "speaker": "hajime",
@@ -170,7 +170,7 @@
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "ああ。俺の真似だけじゃ、お前の卓には合わねえ。実際に手を伸ばしてみろ"
+            "text": "ああ。俺の真似だけじゃ、あんちゃんの卓には合わねえ。実際に手を伸ばしてみな"
           },
           {
             "speaker": "hajime",
@@ -188,7 +188,7 @@
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "焦るだろうよ。それでも止まれる場所を、普段から作っとけ"
+            "text": "焦るでしょうよ。それでも止まれる場所を、普段から作っときな"
           },
           {
             "speaker": "hajime",
@@ -368,7 +368,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "小僧、作業台の方はどうだ"
+          "text": "あんちゃん、作業台の方はどうだい"
         },
         {
           "speaker": "hajime",
@@ -378,7 +378,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "使わなきゃ分かんねえもんだ。動かして、また確かめろ"
+          "text": "使わなきゃ分かんねえもんでさ。動かして、また確かめな"
         },
         {
           "speaker": "hajime",
@@ -513,7 +513,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "おう、小僧。今日は何が引っかかってる"
+          "text": "おう、あんちゃん。今日は何が引っかかってる"
         },
         {
           "speaker": "hajime",
@@ -523,7 +523,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "手に持ってると、そいつをどうするかばっかり考えちまうからな"
+          "text": "手に持ってると、そいつをどうするかばっかり考えちまうんでね"
         },
         {
           "speaker": "",
@@ -533,7 +533,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "置きゃ、ほかも見える。肘の先とか、次に手を出す場所とかよ"
+          "text": "置きゃ、ほかも見えてくる。肘の先とか、次に手を出す場所とかね"
         },
         {
           "speaker": "hajime",
@@ -543,7 +543,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "そういうこった。急ぐ時ほど、持ったまま迷うな"
+          "text": "そういうこってさ。急ぐ時ほど、持ったまま迷いなさんな"
         },
         {
           "speaker": "hajime",
@@ -553,7 +553,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "おう。置き場所だって、一度決めりゃ終いじゃねえぞ"
+          "text": "おう。置き場所だって、一度決めりゃ終いじゃねえんでさ"
         },
         {
           "speaker": "hajime",
@@ -563,7 +563,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "ああ。お前の手に合う場所を探せばいい"
+          "text": "ああ。あんちゃんの手に合う場所を探しゃいい"
         }
       ]
     },
@@ -583,7 +583,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "おう、小僧。店の卓、試したか"
+          "text": "おう、あんちゃん。店の卓、試しなすったか"
         },
         {
           "speaker": "hajime",
@@ -593,7 +593,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "そうか。……そいつは、お前の手が見つけた場所だ"
+          "text": "そうかい。……そいつは、あんちゃんの手が見つけた場所でさ"
         },
         {
           "speaker": "hajime",
@@ -603,7 +603,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "お前の話を聞いて、俺も一つ足した。客のグラスを置く場所だ"
+          "text": "あんちゃんの話を聞いて、俺も一つ足した。客のグラスを置く場所でさ"
         },
         {
           "speaker": "hajime",
@@ -613,7 +613,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "教えたら終いじゃねえ。こっちも、使って確かめる"
+          "text": "教えたら終いじゃねえ。こっちも、使って確かめるんでさ"
         },
         {
           "speaker": "",
@@ -623,7 +623,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "今日はお前が置いてみろ。どこがいいと思う"
+          "text": "今日はあんちゃんが置いてみな。どこがいいと思う"
         },
         {
           "speaker": "hajime",
@@ -683,7 +683,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "だから、急いで次の曲にしない。……少し、そのままにしてる"
+          "text": "……だから、急いで次の曲にしない"
         },
         {
           "speaker": "hajime",
@@ -693,12 +693,17 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……ああ、……喋りすぎた"
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIさんはそこで口を閉じ、CDケースの角を指でそろえた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "いえ。どんなふうに聴いてるのか、少し分かりました"
+          "text": "どんなふうに聴いてるのか、少し分かりました"
         },
         {
           "speaker": "rei",

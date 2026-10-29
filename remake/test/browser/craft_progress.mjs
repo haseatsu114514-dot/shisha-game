@@ -10,7 +10,7 @@ async function init(page, steps = null) {
       pull: await import("./js/craft/pull.js"), practice: await import("./js/craft/practice.js"),
       score: await import("./js/craft/score.js") };
     window.cs = T.session.newSession("tournament");
-    Object.assign(cs, { place: "triangle", heat: { score: 100, heatPower: 70, heatStability: 80, burnRisk: 10, aromaRetention: 80 },
+    Object.assign(cs, { water: 0.5, place: "triangle", heat: { score: 100, heatPower: 70, heatStability: 80, burnRisk: 10, aromaRetention: 80 },
       steam: { temp: .54, score: 100, seconds: 480 }, steamSeconds: 480,
       holes: { score: 95, total: 24, outerEven: .95, innerExcess: 0, outer: 24, middle: 0, inner: 0 },
       mix: { blueberry: 9, mint: 3 }, mixInfo: { score: 90, total: 12, intensity: 5 }, pack: "normal" });
@@ -153,5 +153,25 @@ await suite("craft-progress", async check => {
       assert.equal(phase.active, phase.expected);
       assert.deepEqual(phase.labels, labels, "Substep titles must keep the six phase labels");
     }
+  });
+
+  await check("tutorial-progress-includes-pull-and-serve", async page => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); core.newGame();
+      const session = await import("./js/craft/session.js");
+      const ch1 = await import("./js/chapters/ch1.js");
+      window.Q = { session };
+      window.qcs = session.newSession("tutorial");
+      session.openBench(qcs, { steps: ch1.TUTORIAL_STEPS });
+      await session.waitBenchReady(qcs);
+    });
+    assert.deepEqual(await headerLabels(page), ["パッキング", "炭焼き", "蒸らし", "吸い出し", "提供"],
+      "Tutorial header lists every phase the lesson actually plays");
+    await page.evaluate(() => { Q.session.stepPanel("pull", "吸い出し"); });
+    assert.equal(await active(page), "pull");
+    assert.equal(await page.locator(".bench-progress-count").textContent(), "4 / 5");
+    await page.evaluate(() => { qcs.pullDone = true; qcs.pull = { failed: false }; Q.session.refreshBench(); });
+    assert.equal(await active(page), "serve");
+    assert.equal(await page.locator(".bench-progress-count").textContent(), "5 / 5");
   });
 });

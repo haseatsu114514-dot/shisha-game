@@ -10,6 +10,7 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene } from "./ch3-aftermath-progress.js";
@@ -157,15 +158,49 @@ async function renderStage(owner) {
   if (!scene) {
     await setBg(bgUrl("bg_ageha_shop"), { instant: true });
     if (!live(owner)) return;
+    // 第3章側の第4章への接続点はここ1か所（状態遷移は ch4-progress.js の advanceToChapterFour）。
+    const next = button(owner, "第4章へ進む", "chapter-four", async () => {
+      const mod = await withLoadingNotice(import("./ch4.js"), loadingNotice("第4章のドバイへ向かっています…"));
+      await mod.beginChapterFour();
+    }, true);
+    const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
+    // 外側の busy(false) は data-locked を見て disabled を再設定するため、両方を連動させる。
+    const lock = (btn, locked) => { if (btn.dataset) btn.dataset.locked = String(locked); btn.disabled = locked; };
+    lock(next, !state.flags._ch3_preview_seen);
+    // 予告2（第3章末→第4章）。第1章と同じ挙動: 再生中は第4章ボタンを押せず、
+    // 完走/明示スキップのときだけ既読を保存し、中断・別画面への遷移では何も残さない。
+    const preview = async (first) => {
+      const controller = new AbortController();
+      // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
+      let observer;
+      if (typeof MutationObserver !== "undefined") {
+        observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
+        observer.observe(layers.screen, { childList: true });
+      }
+      lock(next, true); lock(replay, true);
+      try {
+        const result = await playChapterPreview("ch4", { signal: controller.signal });
+        if (first && (result === "completed" || result === "skipped") && live(owner)) {
+          state.flags._ch3_preview_seen = true;
+          save();
+        }
+      } catch { /* 次回予告は任意演出。失敗しても完了画面はそのまま使える。 */ }
+      finally {
+        observer?.disconnect();
+        lock(next, !state.flags._ch3_preview_seen); lock(replay, false);
+        if (next.isConnected) {
+          playBgm("bgm_aftermath");
+          replay.focus();
+        }
+      }
+    };
     card(owner, "complete", "第三章・完", "全国大会を終え、帰る場所にも新しい約束ができた。", [
-      // 第3章側の第4章への接続点はここ1か所（状態遷移は ch4-progress.js の advanceToChapterFour）。
-      button(owner, "第4章へ進む", "chapter-four", async () => {
-        const mod = await withLoadingNotice(import("./ch4.js"), loadingNotice("第4章のドバイへ向かっています…"));
-        await mod.beginChapterFour();
-      }, true),
+      next,
+      replay,
       button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
       button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
     ], "第四章・ドバイ編へ進めます。");
+    if (!state.flags._ch3_preview_seen) void preview(true);
     return;
   }
   // 帰郷の夜(#1059)は、新幹線の車窓が覆うまで東京側の背景のままにし、tonariを先見せしない。
