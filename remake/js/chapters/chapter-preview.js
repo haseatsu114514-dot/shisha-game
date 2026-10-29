@@ -5,6 +5,7 @@ import { layers, imageReady } from "../core/ui.js";
 import { config } from "../core/state.js";
 import { stopBgm } from "../core/audio.js";
 import { createPreviewScore } from "./preview-score.js";
+import { composeCueNotes } from "./preview-cue.js";
 import { createChapterSample } from "./chapter-preview-samples.js";
 
 // キーは「予告が映す次章」の番号で、台本ファイル名・素材フォルダと揃える。
@@ -23,7 +24,8 @@ export const PREVIEWS = {
     },
     // A/B/C の比較案（chapter-preview-samples）は第2章予告だけの仕組み。
     samples: true,
-    // 第1章の曲は 47.8 秒固定で作曲された専用品。cue 駆動の共通スコアは PR2 で足す。
+    // score.kind: "legacy"=第1章の47.8秒固定の専用曲のまま、"cue"=preview-cue.js の
+    // 共通スコア（arrangement に air/bell/titleChord/level の章別パラメータを書く）。
     score: { kind: "legacy" },
   },
 };
@@ -201,9 +203,11 @@ export function playChapterPreview(key, { signal, sample } = {}) {
         if (data.sample) root.classList.add(`sample-${data.sample}`);
         root.dataset.sample = data.sample || "production";
         stopBgm(0.15);
-        score = createPreviewScore(data.sample === "rush"
-          ? { timeline: data.frames, originalTimeline: next.frames }
-          : data.sample === "quiet" ? { timeline: data.frames, quiet: true } : {});
+        score = entry.score?.kind === "cue"
+          ? createPreviewScore({ timeline: data.frames, events: composeCueNotes(data.frames, entry.score.arrangement) })
+          : createPreviewScore(data.sample === "rush"
+            ? { timeline: data.frames, originalTimeline: next.frames }
+            : data.sample === "quiet" ? { timeline: data.frames, quiet: true } : {});
         score.setMuted(soundOff);
         time = 0; last = performance.now();
         pause.disabled = false;
