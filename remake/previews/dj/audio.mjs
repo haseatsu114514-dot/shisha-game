@@ -1,8 +1,18 @@
-import { createMix, resumeMix, playDeck, pauseDeck, pauseMix, beatAt, gains, mod, setTempo, nudgeDeck } from './model.mjs';
-import { renderTrack } from './synth.mjs';
+import { createMix, createStageMix, resumeMix, playDeck, pauseDeck, pauseMix, beatAt, gains, mod, setTempo, nudgeDeck } from './model.mjs';
+import { TRACKS, STAGES, buildTrackData } from './tracks.mjs';
 export class DJAudio {
-  constructor(Context = globalThis.AudioContext) {
-    this.Context = Context; this.mix = createMix(); this.context = null; this.voices = [null, null];
+  constructor(Context = globalThis.AudioContext, options = {}) {
+    this.stage=STAGES[options.stageIndex ?? 0];
+    const legacy=options.loadTracks && options.stageIndex === undefined;
+    const detune=options.detuneFactor ?? (this.stage.detune==='random'?1+(Math.random()<.5?-1:1)*(.012+Math.random()*.016):1);
+    this.loadTracks=options.loadTracks || (async context=>Promise.all([this.stage.a,this.stage.b].map(async key=>{
+      const cfg=TRACKS[key],response=await fetch(new URL('../../../assets/audio/dj/'+cfg.file,import.meta.url));
+      if(!response.ok)throw new Error(`音源読み込み失敗: ${cfg.title}`);
+      const buffer=await context.decodeAudioData(await response.arrayBuffer());
+      return {...buildTrackData(buffer.getChannelData(0),buffer.sampleRate,cfg),buffer,trimDb:cfg.trimDb};
+    })));
+    this.legacy=legacy;
+    this.Context = Context; this.mix = legacy ? createMix() : createStageMix(this.stage,detune); this.context = null; this.voices = [null, null];
     this.retiring = new Set(); this.volume = .18; this.muted = false; this.busy = false; this.disposed = false; this.revision = 0;
   }
   get now() { return this.context?.currentTime || 0; }
@@ -25,10 +35,12 @@ export class DJAudio {
         this.analyser = this.context.createAnalyser(); this.analyser.fftSize = 256;
         this.output.connect(this.analyser); this.analyser.connect(this.context.destination);
         this.meterData = new Float32Array(this.analyser.fftSize);
-        this.tracks = [0, 1].map(id => renderTrack(id, this.context.sampleRate));
-        this.buffers = this.tracks.map(t => { const b = this.context.createBuffer(1, t.samples.length, t.sampleRate); b.copyToChannel(t.samples, 0); return b; });
+        this.initialResume = this.context.resume();
+        this.initialResume.catch(()=>{});
+        this.tracks = await this.loadTracks(this.context);
+        this.buffers = this.tracks.map(t => { if(t.buffer)return t.buffer; const b = this.context.createBuffer(1, t.samples.length, t.sampleRate); b.copyToChannel(t.samples, 0); return b; });
       }
-      await this.context.resume();
+      await (this.initialResume || this.context.resume()); this.initialResume=null;
       if (this.disposed || revision !== this.revision) {
         try { await this.context.suspend(); } catch { /* A concurrent dispose may close it. */ }
         return false;
@@ -40,6 +52,7 @@ export class DJAudio {
       this.setMix(this.mix.mix); this.setVolume(this.volume);
       return true;
     } catch (error) {
+      this.initialResume=null;
       if (this.context) pauseMix(this.mix, this.now);
       this.clearVoices();
       try { await this.context?.suspend(); } catch { /* Preserve original start failure. */ }
@@ -59,8 +72,10 @@ export class DJAudio {
     const voice = { source, gain, stopped: false };
     source.onended = () => { source.disconnect(); gain.disconnect(); this.retiring.delete(voice); };
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(gains(this.mix.mix)[id], now + .008);
-    source.start(now, mod(beatAt(this.mix.decks[id], now), 32) * 60 / this.tracks[id].nativeBpm);
+    gain.gain.linearRampToValueAtTime(gains(this.mix.mix)[id] * 10 ** ((this.tracks[id].trimDb || 0)/20), now + .008);
+    const track=this.tracks[id];
+    source.loopStart=track.firstBeat || 0; source.loopEnd=(track.firstBeat || 0)+track.beats*60/track.nativeBpm;
+    source.start(now, (track.firstBeat || 0)+mod(beatAt(this.mix.decks[id], now), track.beats) * 60 / track.nativeBpm);
     if (old) {
       this.retiring.add(old); old.gain.gain.cancelScheduledValues(now);
       old.gain.gain.setValueAtTime(old.gain.gain.value, now); old.gain.gain.linearRampToValueAtTime(0, now + .008);
@@ -91,7 +106,7 @@ export class DJAudio {
     if (!this.context) return;
     gains(this.mix.mix).forEach((g, id) => {
       const p = this.voices[id]?.gain.gain;
-      if (p) { p.cancelScheduledValues(this.now); p.setValueAtTime(p.value, this.now); p.linearRampToValueAtTime(g, this.now + .012); }
+      if (p) { p.cancelScheduledValues(this.now); p.setValueAtTime(p.value, this.now); p.linearRampToValueAtTime(g * 10 ** ((this.tracks[id].trimDb || 0)/20), this.now + .012); }
     });
   }
   setVolume(value) {
@@ -102,7 +117,7 @@ export class DJAudio {
     setTempo(this.mix.decks[id], value, this.now);
     this.voices[id]?.source.playbackRate.setValueAtTime(this.mix.decks[id].bpm / this.tracks[id].nativeBpm, this.now);
   }
-  syncBpm(id) { this.tempo(id, this.mix.decks[1 - id].bpm); }
+  nudgeMs(id, ms) { return this.nudge(id, ms/1000*this.mix.decks[id].bpm/60); }
   play(id) { return this.start(id); }
   pauseDeck(id) {
     pauseDeck(this.mix, id, this.now);
