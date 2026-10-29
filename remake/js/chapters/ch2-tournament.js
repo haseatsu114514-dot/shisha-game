@@ -259,13 +259,19 @@ async function renderDefeat(owner, variant = null) {
   showScreen("end", root);
 }
 function renderComplete(owner) {
+  // 第2章の外側の perform() は終了時に画面内ボタンを再設定する。
+  // その処理にも予告中の操作禁止を伝えるため、disabled と locked を一緒に更新する。
+  const lock = (button, locked) => {
+    button.dataset.locked = String(locked);
+    button.disabled = locked;
+  };
   const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
     if (owner.previewing) return;
     const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
     await mod.beginChapterThree();
   }, true);
   // 初回の予告が終わるまで、完了カードの導線を最初から無効にしておく。
-  next.disabled = !state.flags._ch2_preview_seen;
+  lock(next, !state.flags._ch2_preview_seen);
   const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
     next,
@@ -278,7 +284,7 @@ function renderComplete(owner) {
   async function preview(first = false) {
     if (!live(owner) || owner.previewing) return;
     owner.previewing = true;
-    next.disabled = true; replay.disabled = true;
+    lock(next, true); lock(replay, true);
     const controller = new AbortController();
     // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
     let observer;
@@ -301,7 +307,8 @@ function renderComplete(owner) {
       save();
     }
     owner.previewing = false;
-    next.disabled = false; replay.disabled = false;
+    lock(next, !state.flags._ch2_preview_seen);
+    lock(replay, false);
     if (live(owner) && next.isConnected) {
       playBgm("bgm_aftermath");
       replay.focus({ preventScroll: true });
