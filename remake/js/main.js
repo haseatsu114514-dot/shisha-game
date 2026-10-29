@@ -7,6 +7,7 @@ import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
 import { imgFileUrl } from "./core/img-file.js";
+import { withLoading } from "./core/loading.js";
 import { vnTest } from "./vn/engine.js";
 import { createDevInspector } from "./core/dev-inspector.js";
 import { createEventPreview } from "./core/dev-event-preview.js";
@@ -42,19 +43,26 @@ export async function boot() {
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);
 
-  const bar = $("#boot .boot-bar i");
-  // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
-  const fonts = Promise.race([
-    Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
-    new Promise((r) => setTimeout(r, 4000)),
-  ]).catch(() => {});
-  await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
-  $("#boot .boot-msg").textContent = "タイトル画像を準備しています…";
-  // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
-  const [titleArt] = await Promise.all([prepareTitleArt(), Promise.all([
-    imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
-    ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
-  ])]);
+  // 起動の待ち時間も、ゲーム内と同じ共通ロード画面（背景イラスト案B・ロゴ・発光ゲージ）で見せる。
+  // 静的な #boot はモジュール読込前と起動失敗時の受け皿として残し、ゲートが閉じた後に役目を終える。
+  // 漫画は boot 文脈の登録がないため表示されず、読了待ちも入らない（起動に追加の待ちを足さない）。
+  let titleArt;
+  await withLoading(async ({ report }) => {
+    // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
+    const fonts = Promise.race([
+      Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
+      new Promise((r) => setTimeout(r, 4000)),
+    ]).catch(() => {});
+    await Promise.all([loadAll((p) => {
+      // ゲージはデータ読込の実績（済んだ割合）にだけ追従させる。表示の進捗で起動を止めない。
+      try { report(Math.round(p * 100), 100); } catch { /* 表示だけの進捗で起動を止めない */ }
+    }), fonts]);
+    // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
+    [titleArt] = await Promise.all([prepareTitleArt(), Promise.all([
+      imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
+      ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
+    ])]);
+  }, { label: "ゲームを準備しています…", context: "boot", chapter: 1 });
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
   // 復旧URLは通常タイトルを開く。セーブの読込・書換えは行わない。
