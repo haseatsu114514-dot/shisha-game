@@ -1146,6 +1146,10 @@
           "text": "はい。俺も、つなぎたいです"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_samechan_confession"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "指先を重ねると、彼女がぎゅっと握り返した。"
@@ -1169,6 +1173,9 @@
           "speaker": "",
           "face": "",
           "text": "駅が見えても、二人とも手を離すのを少しだけ遅らせた。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
