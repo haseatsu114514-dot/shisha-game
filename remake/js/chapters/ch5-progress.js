@@ -8,7 +8,8 @@
 //     decide   : 日程が決まる → scheduled へ（自由行動の日は挟まない。Q15）
 //     defer    : ch5_timeout を読んで free に戻る（日程は未定のまま）
 //   scheduled  : 「会場へ行く」の確認でだけ試合へ。取り消しは ch5_timeout を読んで free へ戻る
-//   match      : 会場入り → 一杯目 → 二杯目の前 → 勝敗（シーム）→（勝ち）余韻／（負け）そのまま後日談へ
+//   match      : 会場入り → 一杯目 → 二杯目の前 → 二本目の制作（recordChapterFiveSecondCup）
+//                → 観客の挙手の合計で勝敗 →（勝ち）余韻／（負け・同数）そのまま後日談へ
 //   aftermath  : 博士の後日談 → tonari へ戻る
 //   finale     : ending の3場面（開始 → 中間 → 日常）→ cleared
 //
@@ -168,7 +169,8 @@ export function advanceToChapterFive(value) {
   value.phase = "opening";
   value.statsAtChapterStart = { ...value.stats };
   value.flags._ch5 = { startDay: value.day, stage: 0, part: "prologue", titleSeen: false,
-    read: {}, scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null };
+    read: {}, scheduleDecision: null, aftermath: 0, finale: 0, finaleScenes: null, won: null,
+    secondCup: null };
   // 台本コメントが名指しする日程フラグ。進行との対応は chapterFiveProgress が検証する。
   value.flags._ch5_match_scheduled = false;
   value.flags._ch5_match_started = false;
@@ -201,6 +203,10 @@ export function chapterFiveProgress(value) {
     && (progress.part !== "cleared" || isValidFinaleScenes(progress.finaleScenes))
     && (progress.part !== "finale" || progress.finaleScenes !== null || progress.finale === 0)
     && (progress.won === null || progress.won === true || progress.won === false)
+    // 二本目の記録より前の保存（勝ち固定だった頃）には secondCup が無い。無い／null は未制作として読む。
+    && (progress.secondCup == null || isValidSecondCup(progress.secondCup))
+    && (progress.secondCup == null || progress.won === null
+      || progress.won === (secondCupOutcome(progress.secondCup) === "win"))
     && (!["aftermath", "finale", "cleared"].includes(progress.part) || progress.won !== null)
     && ((progress.part === "scheduled") === (value.flags._ch5_match_scheduled === true
       && value.flags._ch5_match_started !== true)
@@ -300,13 +306,77 @@ export function beginChapterFiveMatch(value) {
 }
 
 // ---- 試合 ---------------------------------------------------------------------------
+// 正本（docs/setting_book/05_tournament.md）: 同じ観客が一本目・二本目の両方を吸い、それぞれ良かった方へ
+// 挙手する。二本の合計票で勝敗を決める。審査員の採点や恋愛人数の加点は持ち込まない。
+// 一本目は台本どおり 9000 が僅かに先取（固定）。二本目は、はじめが実際に作った一台の出来で挙手が動く。
+export const CH5_AUDIENCE = 40;
+export const CH5_FIRST_CUP_VOTES = Object.freeze({ hajime: 19, machine: 21 });
+// 9000 も吸う速さに合わせて調整するので、どれだけ良い一台でも二本目の挙手は一方的にならない。
+const SECOND_CUP_VOTES = Object.freeze({ min: 4, max: 26 });
+const SECOND_CUP_CATEGORIES = Object.freeze(["steady", "recovered", "offband", "unknown", "failed"]);
+
 /**
- * SHISHA-9000 の勝敗。骨格では台本どおり "win" 固定。実試合（制作・審査）の接続点はこの関数1つ。
- * 負け/同数の台本（ch5_second_cup_defeat）も completeChapterFiveScene 側で受けられる。
+ * 二本目の出来（finalize の総合 0〜100）→ はじめへの挙手数。
+ * 総合77前後で一本目の差を返し、合計で上回る（76前後は同数）。提供できなかった一台は最少。
+ */
+export function chapterFiveSecondCupVotes(total, failed = false) {
+  if (failed || !Number.isFinite(total)) return SECOND_CUP_VOTES.min;
+  const votes = Math.round((Math.max(0, Math.min(100, total)) - 50) / 2) + 8;
+  return Math.max(SECOND_CUP_VOTES.min, Math.min(SECOND_CUP_VOTES.max, votes));
+}
+
+function isValidSecondCup(cup) {
+  const count = number => Number.isInteger(number) && number >= 0 && number <= CH5_AUDIENCE;
+  return !!cup && typeof cup === "object"
+    && Number.isFinite(cup.total) && cup.total >= 0 && cup.total <= 100
+    && SECOND_CUP_CATEGORIES.includes(cup.category)
+    && count(cup.votes?.hajime) && count(cup.votes?.machine)
+    && cup.votes.hajime + cup.votes.machine === CH5_AUDIENCE;
+}
+
+const secondCupTally = cup => ({
+  hajime: CH5_FIRST_CUP_VOTES.hajime + cup.votes.hajime,
+  machine: CH5_FIRST_CUP_VOTES.machine + cup.votes.machine,
+});
+
+function secondCupOutcome(cup) {
+  const tally = secondCupTally(cup);
+  return tally.hajime > tally.machine ? "win" : tally.hajime === tally.machine ? "tie" : "loss";
+}
+
+/** 二本の挙手（一本目・二本目・合計）。二本目が未制作なら null。 */
+export function chapterFiveVoteTally(value) {
+  const cup = chapterFiveProgress(value).secondCup;
+  if (cup == null) return null;
+  return { first: { ...CH5_FIRST_CUP_VOTES }, second: { ...cup.votes }, total: secondCupTally(cup) };
+}
+
+/**
+ * 二本目を作り終えたときに runner が呼ぶ。二本目の前の場面を読み終え、まだ記録が無い試合だけ受け付ける。
+ * total は finalize の総合、category は調整実績の区分（naruTastingCategory と同じ土台）か "failed"。
+ */
+export function recordChapterFiveSecondCup(value, { total, category, failed = false }) {
+  const progress = chapterFiveProgress(value);
+  if (progress.part !== "match" || progress.secondCup != null
+    || progress.read[CH5_MATCH_SCENES.beforeSecond] !== true
+    || progress.read[CH5_MATCH_SCENES.win] === true || progress.read[CH5_MATCH_SCENES.loss] === true) return false;
+  const score = failed ? 0 : Math.round(Math.max(0, Math.min(100, Number(total))) * 10) / 10;
+  const kind = failed ? "failed" : category;
+  if (!Number.isFinite(score) || !SECOND_CUP_CATEGORIES.includes(kind)) return false;
+  const hajime = chapterFiveSecondCupVotes(score, failed);
+  progress.secondCup = { total: score, category: kind, votes: { hajime, machine: CH5_AUDIENCE - hajime } };
+  return true;
+}
+
+/**
+ * SHISHA-9000 との勝敗。"win" / "tie" / "loss"。二本目が未制作なら null。
+ * 二本目の記録が無いまま勝ちの場面を読んだ旧保存（勝ち固定の頃）だけは "win" として続きを読ませる。
  */
 export function chapterFiveMatchOutcome(value) {
-  chapterFiveProgress(value);
-  return "win";
+  const progress = chapterFiveProgress(value);
+  if (progress.secondCup != null) return secondCupOutcome(progress.secondCup);
+  if (progress.read[CH5_MATCH_SCENES.win] === true) return "win";
+  return null;
 }
 
 // ---- フィナーレ ---------------------------------------------------------------------
@@ -391,6 +461,8 @@ export function completeChapterFiveScene(value, id) {
     if (id === CH5_MATCH_SCENES.win) {
       if (progress.read[CH5_MATCH_SCENES.win] === true
         || progress.read[CH5_MATCH_SCENES.loss] === true) return false;
+      // 二本の合計で上回ったときだけ（台本コメント: 僅差一勝一敗を理由なく勝利にはしない）。
+      if (chapterFiveMatchOutcome(value) !== "win") return false;
       progress.read[id] = true;
       return true;
     }
@@ -407,6 +479,7 @@ export function completeChapterFiveScene(value, id) {
       // 負け/同数は勝利フラグなしで後日談へ続く（progression_contract.loss）。
       if (progress.read[CH5_MATCH_SCENES.win] === true
         || progress.read[CH5_MATCH_SCENES.loss] === true) return false;
+      if (!["loss", "tie"].includes(chapterFiveMatchOutcome(value))) return false;
       progress.read[id] = true;
       progress.won = false;
       progress.part = "aftermath";

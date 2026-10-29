@@ -10,11 +10,24 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { newSession, openBench, waitBenchReady } from "../craft/session.js";
+import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
+import { stepWater } from "../craft/water-view.js";
+import { runHoles } from "../craft/holes.js";
+import { runHeat } from "../craft/heat.js";
+import { runSteamDodge } from "../craft/steam.js";
+import { runPull, runCare } from "../craft/pull.js";
+import { finalize } from "../craft/score.js";
+import { CRAFT_STEPS } from "../craft/practice.js";
+import { servedEvaluationLines } from "../craft/served-eval.js";
+import { naruTastingCategory } from "../craft/naru-tasting.js";
 import { CH5_SCENE_BG, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho,
-  recordChapterFivePrepTrial, recordChapterFivePrepAdjustment, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
+  recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
+  canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
-  beginChapterFiveMatch, chapterFiveMatchOutcome, beginChapterFiveFinale, completeChapterFiveScene } from "./ch5-progress.js";
+  beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
+  beginChapterFiveFinale, completeChapterFiveScene } from "./ch5-progress.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -27,6 +40,14 @@ const MATCH_CARDS = {
   beforeSecond: { title: "二杯目の前に", description: "ここまでの日々が、二杯目を作る。" },
 };
 const MATCH_ORDER = ["arrival", "firstCup", "beforeSecond"];
+// 二本目の前の場面のうち、この cue の行は制作後に回し、実際の調整実績で差し替える。
+const ADJUST_CUE = "second_cup_adjust";
+// 調整の区分（naruTastingCategory と同じ土台）→ 制作直後の地の文。steady / unknown は台本の本文のまま。
+const ADJUST_LINES = {
+  recovered: "一度、熱が揺れた。炭を一つ離して、戻す。客がもう一度ホースを持つまで、待った。",
+  offband: "炭を動かした。それでも最後まで、熱は落ち着ききらなかった。客は黙って、ホースを持った。",
+  failed: "煙が、途中で荒れた。客は一口だけ吸って、ホースを置いた。",
+};
 
 function button(owner, text, name, action, primary = false) {
   return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text,
@@ -177,12 +198,14 @@ async function readScene(owner, id) {
   const source = DB.dialogues[id];
   if (!source) throw new Error(`台本がありません: ${id}`);
   // 台本の metadata.bg は持ち込まず、ch5-progress.js の対応表（仮置き）で背景を決める。
+  // 二本目の調整の行は、制作の後で実績に合わせて読む（ここでは外す）。
+  const lines = id === CH5_MATCH_SCENES.beforeSecond ? source.lines.filter(line => line.cue !== ADJUST_CUE) : source.lines;
   // 試作の返り（#1666）は同じ場面の末尾に続けて読み、読了の確定も親場面と一緒にする。
   const echo = chapterFivePrepEcho(state, id).map(echoId => {
     if (!DB.dialogues[echoId]) throw new Error(`台本がありません: ${echoId}`);
     return DB.dialogues[echoId].lines;
   });
-  const dialogue = { ...source, lines: [...source.lines, ...echo.flat()], metadata: { ...source.metadata, bg: "" } };
+  const dialogue = { ...source, lines: [...lines, ...echo.flat()], metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
   await setBg(bgUrl(CH5_SCENE_BG[id]), { instant: true });
@@ -359,21 +382,96 @@ async function renderMatch(owner) {
     ], "", id);
     return;
   }
-  // 二杯目: 勝敗は chapterFiveMatchOutcome の接続点1つで決まる。骨格では勝ち固定。
-  const sequence = chapterFiveMatchOutcome(state) === "win"
+  // 二本目: はじめが同じダブルアップル12gで実際に作り、その出来で観客の挙手が動く。
+  const outcome = chapterFiveMatchOutcome(state);
+  if (outcome === null) return renderSecondCupReady(owner);
+  const sequence = outcome === "win"
     ? [CH5_MATCH_SCENES.win, CH5_MATCH_SCENES.afterglow] : [CH5_MATCH_SCENES.loss];
   const first = sequence.find(id => !chapterFiveRead(state, id)) ?? sequence[0];
   await setBg(bgUrl(CH5_SCENE_BG[first]), { instant: true });
   if (!current(owner)) return;
-  card(owner, "match", "二杯目", "二本の合計で決まる。", [
-    button(owner, "二杯目を出す", "continue", async () => {
+  const tally = chapterFiveVoteTally(state);
+  card(owner, "match", "二本の挙手", "同じ観客が、二本とも吸った。合計で決まる。", [
+    button(owner, "結果を聞く", "continue", async () => {
       for (const id of sequence) {
         if (chapterFiveRead(state, id)) continue;
         if (!await readAndCommit(owner, id)) return;
       }
       await renderStage(owner);
     }, true),
-  ], "", first);
+  ], tally ? voteNote(tally) : "", first);
+}
+
+// 挙手の数だけを並べる。審査員の採点表や恋愛の加点は出さない（第5章は観客投票）。
+function voteNote(tally) {
+  return `一本目 はじめ ${tally.first.hajime}／9000 ${tally.first.machine}　`
+    + `二本目 はじめ ${tally.second.hajime}／9000 ${tally.second.machine}　`
+    + `合計 はじめ ${tally.total.hajime}／9000 ${tally.total.machine}`;
+}
+
+async function renderSecondCupReady(owner) {
+  await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]), { instant: true });
+  if (!current(owner)) return;
+  const tally = `一本目の挙手は はじめ ${CH5_FIRST_CUP_VOTES.hajime}／9000 ${CH5_FIRST_CUP_VOTES.machine}。`;
+  card(owner, "second-cup", "二本目", "同じダブルアップル12g。今度は、目の前の客を待つ一台を作る。", [
+    button(owner, "二本目を作る", "second-cup-start", () => craftSecondCup(owner), true),
+  ], `${tally}二本目は提供のあと、同じ一台を二度調整する。`, CH5_MATCH_SCENES.beforeSecond);
+}
+
+/** 二本目の制作。作り終えるまで保存しない（途中で離れたら二本目の作り直しから）。 */
+async function craftSecondCup(owner) {
+  const cs = newSession("tournament");
+  cs.eventTitle = "EXHIBITION MATCH";
+  cs.eventNote = "SHISHA-9000 戦・二本目";
+  cs.orderFlavorIds = ["double_apple"]; // 課題はダブルアップル単体。ほかの葉は混ぜない。
+  hud();
+  openBench(cs, { steps: CRAFT_STEPS });
+  await waitBenchReady(cs);
+  if (!current(owner)) return;
+  for (const step of [stepSetup, stepWater, stepMix, stepPack, runHoles, stepPlace, runHeat, stepSteamTime, runSteamDodge]) {
+    await step(cs);
+    if (!current(owner)) return;
+    if (cs.failed) break;
+  }
+  // 吸い出しの画面離脱は負けにしない。記録を残さず二本目の前へ戻す。
+  if (!cs.failed && await runPull(cs) === false) { if (current(owner)) await renderStage(owner); return; }
+  if (!current(owner)) return;
+  if (!cs.failed) {
+    // 提供直後のひと口。実配合と提供時の温度から（第1章と同じ部品）。
+    if (!await playLines(owner, "ch5_second_cup_served", servedEvaluationLines(cs))) return;
+    for (const round of [1, 2]) {
+      openBench(cs, { steps: CRAFT_STEPS });
+      await waitBenchReady(cs);
+      if (!current(owner)) return;
+      await runCare(cs, { round });
+      if (!current(owner) || cs.failed) break;
+    }
+  }
+  if (!current(owner)) return;
+  const failed = !!cs.failed;
+  if (!failed) finalize(cs);
+  const category = failed ? "failed" : naruTastingCategory(cs);
+  if (!recordChapterFiveSecondCup(state, { total: cs.total, category, failed })) throw new Error("二本目の記録を確定できません");
+  save();
+  const source = DB.dialogues[CH5_MATCH_SCENES.beforeSecond]?.lines.find(line => line.cue === ADJUST_CUE);
+  const text = ADJUST_LINES[category] || source?.text;
+  if (text && !await playLines(owner, "ch5_second_cup_adjust", [{ speaker: "", face: "", text }])) return;
+  await renderStage(owner);
+}
+
+/** 場面として保存しない短い地の文（制作の合間）を読む。 */
+async function playLines(owner, id, lines) {
+  if (!current(owner)) return false;
+  showScreen("none", null);
+  hud();
+  await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]), { instant: true });
+  if (!current(owner)) return false;
+  const controller = new AbortController();
+  owner.controller = controller;
+  try {
+    const result = await play({ dialogue_id: id, lines }, { signal: controller.signal });
+    return current(owner) && !controller.signal.aborted && !!result && !result.cancelled;
+  } finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 async function renderFinale(owner) {
