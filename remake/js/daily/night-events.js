@@ -61,7 +61,9 @@ export function nightPlan(events, { resting = restingToday(), appointment = stat
   const bookedNight = state.flags._private_night_day === state.day
     || appointment && (appointment.day ?? state.day) === state.day && appointment.slot === 1;
   if (resting || bookedNight) return [];
-  const next = pending.find(({ entry, ev }) => entry.deferredOn < state.day && ready(ev));
+  // 章が守る自由な夜（freeNights）には、後送りした予定を入れない。期限の救済だけは上で優先する。
+  const next = pending.find(({ entry, ev }) => entry.deferredOn < state.day && ready(ev)
+    && !(ev.freeNights || []).includes(state.day));
   return next ? [next.ev] : [];
 }
 
