@@ -15,7 +15,7 @@
   --bg:#141019;--panel:#1e1826;--panel2:#271f31;--line:#4a3d58;--text:#efe9f4;--dim:#a99bb8;
   --gold:#e8c27a;--gold-hi:#ffe2a6;--gold-lo:#7a6236;--amber:#f0a64a;--danger:#ff6b6b;--good:#8ee6a8;
   --technique:#f2c34c;--sense:#6cc6e8;--guts:#ef7a5e;--charm:#b49aef;--insight:#65c9bb;
-  --body:#ef7a5e;--wisdom:#65c9bb; /* 2026-10-30 3項目化: 体・センス・知 */
+  --body:#ef7a5e;--wisdom:#65c9bb; /* 2026-10-30 3項目化: 才・感・理 */
   --font:"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
 }
 *{box-sizing:border-box}
@@ -250,10 +250,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 <script>
 "use strict";
 // ======================= SPEC の数値 =======================
-// 2026-10-30 オーナー指示: 能力は3つ（体・センス・知）。魅力は没。技術の「ゲージがゆっくり」はセンスへ、根性は体へ、洞察は知へ
+// 2026-10-30 オーナー指示: 能力は3つ（才・感・理）。魅力は没。才＝体力など（旧 根性）、感＝旧 センス＋旧 技術のゲージ、理＝旧 洞察
 const KEYS=["body","sense","wisdom"];
-const JA={body:"体",sense:"センス",wisdom:"知"};
-const K1={body:"体",sense:"感",wisdom:"知"};
+const JA={body:"才",sense:"感",wisdom:"理"};
+const K1={body:"才",sense:"感",wisdom:"理"};
 const LETTER={body:"B",sense:"S",wisdom:"W"};
 // 2.1: 時計回りに 技術→センス→洞察→魅力→根性
 const ANG={body:-90,sense:30,wisdom:150};
@@ -262,14 +262,14 @@ const need=L=>200+5*L;       // 1.5
 const RING_STAT=[0,4,2,1,1,1]; // 各輪の各色の能力ノード数
 const RANK={body:["三日坊主","粘り気味","へこたれない","不屈","鋼メンタル"],sense:["ふつう","光るものがある","冴えてる","唯一無二","天才肌"],
   wisdom:["鈍め","気が利く","よく見てる","見抜く目","千里眼"]};
-const TIER={ // 3.7 を3項目に合わせた仮の文（センスは旧技術＋旧センス）
+const TIER={ // 3.7 を3項目に合わせた仮の文（感は旧技術＋旧センス）
  body:["体力はふつう・小さな範囲の弾を消す","体力が少し増えた","体力が増え、弾消しの範囲が広がった","疲れにくくなった","弾消しでメンタルも回復する","体力と範囲が大きく増えた","弾消しがかなり広い","一日中動いてもへこたれない","体力ほぼ最大・弾消しがとても広い","体力最大・画面全体の弾消し"],
  sense:["ゲージは速く、ジャスト帯は狭め","ゲージがほんの少しゆっくり、帯もほんの少し広く","ゲージが少しゆっくり、帯も少し広く","ゲージがゆっくり、帯が広く","ゲージがだいぶゆっくり、帯がだいぶ広く","ゲージがかなりゆっくり、帯がかなり広く","針がよく見え、いい瞬間を掴みやすい","ゲージがとてもゆっくり、帯がとても広く","ほとんど止まって見え、外す方が難しい","ゲージが最もゆっくり、帯が最も広く"],
  wisdom:["配合も炭も、まだ勘だのみ","炭の気配がかすかに分かる","配合の相性ヒントが出るように","蒸らしの弾が少し減った","黄金比まで何を足すか分かる","炭の気配に早めに気づける","蒸らしの読みが当たってきた","熱の読み違いがかなり減った","炭も配合も、ほとんど読める","読めるものは全部読める"]};
 const WHERE={body:"体力・蒸らし",sense:"穴あけ・炭焼き・吸い出し（ゲージとジャスト帯）",wisdom:"配合・炭焼き・蒸らし（読み）"};
 // 段ごとに「新しくできること」が増える段（3.4〜3.6 の ○ の入口）。評価で見通しの印に使う
 const NEWTHING={body:{5:"弾消しでメンタル回復"},wisdom:{3:"配合の相性ヒント",5:"黄金比のヒント"}};
-const SKILLS=[ // 2.5 の14個を3項目に付け替えた仮の配置（魅力のスキルは体・センス・知へ）
+const SKILLS=[ // 2.5 の14個を3項目に付け替えた仮の配置（魅力のスキルは才・感・理へ）
  ["K01","段取り八分",["sense"],1,2,"穴あけの制限時間が少し長く","第2章以降の穴あけ"],
  ["K02","香りの記憶",["wisdom"],1,2,"前回の配合・レシピ帳を1タップで呼び出せる","配合"],
  ["K03","早寝早起き",["body"],1,2,"ふつうに眠ったときの体力の戻りが増える","日常"],
@@ -658,7 +658,7 @@ document.addEventListener("keydown",e=>{if(!B||$("#board").hidden)return;if(e.ke
 let feelTimer=null;
 function openFeel(stat="sense",fromTut=false){
   const ov=$("#feelOv");ov.hidden=false;const box=$("#feelBox");
-  const s=stepOf("sense"),t=stepOf("sense"); // 3項目化でゲージの遅さもセンス
+  const s=stepOf("sense"),t=stepOf("sense"); // 3項目化でゲージの遅さも感
   box.innerHTML=`<h3>炭焼きの取り出し（モック）</h3>
    <div style="font-size:12px;color:var(--dim)">ジャスト帯で「取る」。白枠＝素の帯、<span style="color:var(--sense)">水色＝センスで広がった分</span>。針の残像が<span style="color:var(--technique)">金</span>なら技術でゆっくり（本当の炭焼きは技術を読まない：比較用）。</div>
    <div class="row" style="margin-top:8px">
