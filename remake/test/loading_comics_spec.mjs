@@ -2,15 +2,15 @@ import assert from 'node:assert/strict';
 import { LOADING_COMICS } from '../js/core/loading-comics.js';
 
 // Registration guard: every comic offered to the loading screen must fit the fixed
-// display frame (43:25, css/loading.css --loading-panel-ratio; see the authoring spec in
+// display frame (3:2, css/loading.css --loading-panel-ratio; see the authoring spec in
 // remake/README.md and work/loading-comic-ref/REFERENCE.md §2). Panels are letterboxed
 // without distortion or cropping, so a region whose ratio strays too far from the frame
 // shows as a small picture floating in a large beige field. The band below keeps the
-// letterbox occupancy at >= ~70% of the frame width (ratio < 43:25) or >= ~86% of the
-// frame height (ratio > 43:25). Adopted precedents: episode 25 = 1.583 / 1.840,
+// letterbox occupancy at >= 80% of the frame width (ratio < 3:2) or >= 75% of the
+// frame height (ratio > 3:2). Adopted precedents: episode 25 = 1.583 / 1.840,
 // Batch 1 "炭の耳" = 1.278 / 1.303. A near-portrait episode at 0.70 was rejected by the
 // owner on 2026-10-29; this guard makes that frame/spec mismatch fail at registration.
-const FRAME_RATIO = 43 / 25;
+const FRAME_RATIO = 3 / 2;
 const MIN_RATIO = 1.2;
 const MAX_RATIO = 2.0;
 
@@ -32,7 +32,7 @@ for (const comic of LOADING_COMICS) {
       // No region: the whole image is the panel. Its own ratio is only known at decode
       // time, so ratio enforcement applies to region-based registrations (the sheet
       // method used by every adopted episode); whole-image panels must be authored at
-      // 43:25 per the README spec.
+      // 3:2 per the README spec.
       return;
     }
     const fields = [region.x, region.y, region.width, region.height, region.sourceWidth, region.sourceHeight];
@@ -48,4 +48,4 @@ for (const comic of LOADING_COMICS) {
   });
 }
 
-console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 43:25 frame band)`);
+console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 3:2 frame band)`);

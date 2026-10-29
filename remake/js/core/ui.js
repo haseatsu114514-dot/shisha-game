@@ -12,6 +12,7 @@ import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
 import { withLoadingNotice } from "./module-loading.js";
+import { loadingPrefetch, prepareImage } from "./loading-prefetch.js";
 
 export const layers = {};
 
@@ -104,14 +105,14 @@ const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakk
 export const FRAME_ART = LOUNGE_ART.slice(0, 2);
 let uiArt = null;
 let uiArtDone = false;
-
 let uiStores = null;
 let uiStoresDone = false;
 
 /** 店ロゴだけをまとめて読む（一度だけ）。初めて要るのはマップ画面なので本体とは分けてある。 */
 export function warmStoreLogos() {
   if (!uiStores) {
-    uiStores = Promise.all(allStoreLogoUrls().map((u) => imageReady(u, 15000, { keep: true })))
+    const urls = [...new Set(allStoreLogoUrls())];
+    uiStores = Promise.all(urls.map((u) => loadingPrefetch.warm(u, () => prepareImage(u, { timeoutMs: 15000 }))))
       .then(() => { uiStoresDone = true; });
   }
   return uiStores;
@@ -149,7 +150,8 @@ export function warmUiArt({ deferStores = false } = {}) {
     deferStoreLogos();
     return core;
   }
-  return Promise.all([core, warmStoreLogos()]);
+  // 前段の成否にかかわらず店ロゴを後段で読む。通常呼び出しの完了には店ロゴも含める。
+  return core.then(() => warmStoreLogos(), () => warmStoreLogos());
 }
 
 /** 顔アイコンやスロットが出る画面の前に呼ぶ。読み終わっていれば null（待たない）、まだなら最大 ms 待つ Promise */

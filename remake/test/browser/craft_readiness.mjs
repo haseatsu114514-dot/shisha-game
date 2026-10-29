@@ -65,7 +65,9 @@ await suite("craft-readiness", async check => {
       page.on("request", request => {
         // warmUp がアイドル時へ遅らせた大会ステージの先読みがこの窓に着くことがある。
         // 工程素材の再通信ではないので数えない（ステージ自体は初回の準備で読み込み済み）。
-        if (/\.(webp|png)(\?|$)/.test(request.url()) && !/bg_tournament_stage\./.test(request.url())) requests.push(request.url());
+        // Loading-comic art is prepared on every bench open by design; it is not a craft material.
+        if (/\.(webp|png)(\?|$)/.test(request.url()) && !/bg_tournament_stage\./.test(request.url())
+          && !/\/img\/loading\//.test(request.url())) requests.push(request.url());
       });
       await page.evaluate(async () => {
         window.loadingAdded = 0;

@@ -1,6 +1,6 @@
 // タイトルのコレクション。見たCG・受取写真と、章クリアで開く採用済み漫画/動画。
 import { el } from "../core/util.js";
-import { DB, cgUrl, realName } from "../core/data.js";
+import { DB, cgUrl, cgThumbUrl, realName } from "../core/data.js";
 import { layers } from "../core/ui.js";
 import { state, SAVE_SLOTS, readSlot, config } from "../core/state.js";
 import { SE, currentBgm, playBgm, stopBgm } from "../core/audio.js";
@@ -170,7 +170,7 @@ export function openGallery() {
         ]);
         const button = el("button.gal-cell", { title: entry.title, "aria-label": entry.title,
           dataset: { test: "gal-" + entry.id, cg: entry.cg, kind: entry.kind }, onclick: () => show(entry, button) });
-        if (entry.cg) button.append(thumbnail(cgUrl(entry.cg)));
+        if (entry.cg) button.append(thumbnail(cgThumbUrl(entry.cg) || cgUrl(entry.cg)));
         else if (entry.kind === "comic") button.append(thumbnail(entry.pages[0]));
         else if (entry.photo) {
           const thumb = stickerPhoto(entry.photo.people, entry.photo.mode, photoName); thumb.classList.add("gal-photo-thumb"); button.append(thumb);

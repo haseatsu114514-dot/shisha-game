@@ -37,6 +37,15 @@ async function loadUi() {
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
     "module-loading.js": { withLoadingNotice: (p) => p },
+    "loading-prefetch.js": {
+      prepareImage: (url) => new Promise((resolve) => {
+        const image = new Image();
+        image.onload = () => resolve(true);
+        image.onerror = () => resolve(false);
+        image.src = url;
+      }),
+      loadingPrefetch: { warm: (_key, prepare) => Promise.resolve().then(prepare).then(Boolean, () => false) },
+    },
   };
   await module.link((specifier) => {
     const name = specifier.split("/").at(-1);
