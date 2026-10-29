@@ -250,9 +250,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 <script>
 "use strict";
 // ======================= SPEC の数値 =======================
-// 2026-10-30 オーナー指示: 能力は3つ（才・感・理）。魅力は没。才＝体力など（旧 根性）、感＝旧 センス＋旧 技術のゲージ、理＝旧 洞察
+// 2026-10-30 オーナー指示: 能力は3つ。才能（体力・カリスマ・社交性）／感覚（直感的なもの）／理論（知恵・後天的なもの）
 const KEYS=["body","sense","wisdom"];
-const JA={body:"才",sense:"感",wisdom:"理"};
+const JA={body:"才能",sense:"感覚",wisdom:"理論"};
 const K1={body:"才",sense:"感",wisdom:"理"};
 const LETTER={body:"B",sense:"S",wisdom:"W"};
 // 2.1: 時計回りに 技術→センス→洞察→魅力→根性
@@ -260,30 +260,30 @@ const ANG={body:-90,sense:30,wisdom:150};
 const M=[1,1.25,1.5,1.75,2]; // 章倍率
 const need=L=>200+5*L;       // 1.5
 const RING_STAT=[0,4,2,1,1,1]; // 各輪の各色の能力ノード数
-const RANK={body:["三日坊主","粘り気味","へこたれない","不屈","鋼メンタル"],sense:["ふつう","光るものがある","冴えてる","唯一無二","天才肌"],
-  wisdom:["鈍め","気が利く","よく見てる","見抜く目","千里眼"]};
-const TIER={ // 3.7 を3項目に合わせた仮の文（感は旧技術＋旧センス）
- body:["体力はふつう・小さな範囲の弾を消す","体力が少し増えた","体力が増え、弾消しの範囲が広がった","疲れにくくなった","弾消しでメンタルも回復する","体力と範囲が大きく増えた","弾消しがかなり広い","一日中動いてもへこたれない","体力ほぼ最大・弾消しがとても広い","体力最大・画面全体の弾消し"],
- sense:["ゲージは速く、ジャスト帯は狭め","ゲージがほんの少しゆっくり、帯もほんの少し広く","ゲージが少しゆっくり、帯も少し広く","ゲージがゆっくり、帯が広く","ゲージがだいぶゆっくり、帯がだいぶ広く","ゲージがかなりゆっくり、帯がかなり広く","針がよく見え、いい瞬間を掴みやすい","ゲージがとてもゆっくり、帯がとても広く","ほとんど止まって見え、外す方が難しい","ゲージが最もゆっくり、帯が最も広く"],
- wisdom:["配合も炭も、まだ勘だのみ","炭の気配がかすかに分かる","配合の相性ヒントが出るように","蒸らしの弾が少し減った","黄金比まで何を足すか分かる","炭の気配に早めに気づける","蒸らしの読みが当たってきた","熱の読み違いがかなり減った","炭も配合も、ほとんど読める","読めるものは全部読める"]};
-const WHERE={body:"体力・蒸らし",sense:"穴あけ・炭焼き・吸い出し（ゲージとジャスト帯）",wisdom:"配合・炭焼き・蒸らし（読み）"};
+const RANK={body:["影うすい","親しみやすい","華がある","目が離せない","カリスマ"],sense:["ふつう","光るものがある","冴えてる","唯一無二","天才肌"],
+  wisdom:["見習い","様になってきた","一人前","職人肌","神業"]};
+const TIER={ // 3.7 を3項目に組み直した仮の文
+ body:["体力はふつう・指名はまだ","体力が少し増え、指名ボーナスが少しつく","体力が増え、少し好かれやすく","疲れにくく、指名が増えてきた","弾消しでメンタルも回復する","体力が大きく増え、常連に覚えられてきた","弾消しがかなり広く、指名ボーナス大","一日中動いてもへこたれない","体力ほぼ最大、指名が途切れない","体力最大・画面全体の弾消し・指名ボーナス最大"],
+ sense:["ジャスト帯は狭め、炭の気配はまだ","ジャスト帯がほんの少し広く","炭の気配がかすかに分かる","ジャスト帯が広く","ジャスト帯がだいぶ広く","炭の気配に早めに気づける","いい瞬間を掴みやすい","ジャスト帯がとても広く","外す方が難しい","ジャスト帯が最も広く、気配も全部分かる"],
+ wisdom:["ゲージは速く、配合は勘だのみ","ゲージがほんの少しゆっくり","配合の相性ヒントが出るように","蒸らしの弾が少し減った","黄金比まで何を足すか分かる","ゲージがかなりゆっくり","蒸らしの読みが当たってきた","熱の読み違いがかなり減った","ほとんど止まって見え、配合も読める","ゲージが最もゆっくり、読めるものは全部読める"]};
+const WHERE={body:"体力・蒸らしの粘り・バイトの指名・好感度",sense:"穴あけ・炭焼き・吸い出しのジャスト帯、炭の気配",wisdom:"作りのゲージ（身につけた手順）・配合・蒸らしの予測"};
 // 段ごとに「新しくできること」が増える段（3.4〜3.6 の ○ の入口）。評価で見通しの印に使う
-const NEWTHING={body:{5:"弾消しでメンタル回復"},wisdom:{3:"配合の相性ヒント",5:"黄金比のヒント"}};
-const SKILLS=[ // 2.5 の14個を3項目に付け替えた仮の配置（魅力のスキルは才・感・理へ）
- ["K01","段取り八分",["sense"],1,2,"穴あけの制限時間が少し長く","第2章以降の穴あけ"],
+const NEWTHING={body:{2:"指名ボーナス",5:"弾消しでメンタル回復"},wisdom:{3:"配合の相性ヒント",5:"黄金比のヒント"}};
+const SKILLS=[ // 2.5 の14個を3項目に付け替えた仮の配置（2色＝両方の盤に出る）。どの盤もスキル6マスにそろえた
+ ["K01","段取り八分",["wisdom"],1,2,"穴あけの制限時間が少し長く","第2章以降の穴あけ"],
  ["K02","香りの記憶",["wisdom"],1,2,"前回の配合・レシピ帳を1タップで呼び出せる","配合"],
  ["K03","早寝早起き",["body"],1,2,"ふつうに眠ったときの体力の戻りが増える","日常"],
- ["K04","人見知りしない",["sense"],1,2,"はじめての相手・場所・場面の経験値が増える","日常"],
- ["K05","空模様",["wisdom"],1,2,"明日の天気が分かる","日常・蒸らし"],
+ ["K04","人見知りしない",["body"],1,2,"はじめての相手・場所・場面の経験値が増える","日常"],
+ ["K05","空模様",["sense"],1,2,"明日の天気が分かる","日常・蒸らし"],
  ["K06","二枚目のリフレッシュ",["body"],2,3,"蒸らしのリフレッシュが2回使える","蒸らし"],
- ["K07","空気を読む",["wisdom"],2,3,"好感度の上がる選択肢に小さな煙の印","会話"],
- ["K08","疲れ知らず",["body"],3,3,"吸いすぎ・熱すぎの疲れがたまりにくい","熱管理・吸い出し"],
- ["K09","熟練の舌",["sense"],3,3,"フレーバー熟練度が早く上がる","制作全般"],
+ ["K07","空気を読む",["body","sense"],2,3,"好感度の上がる選択肢に小さな煙の印","会話"],
+ ["K08","疲れ知らず",["wisdom"],3,3,"吸いすぎ・熱すぎの疲れがたまりにくい","熱管理・吸い出し"],
+ ["K09","熟練の舌",["sense","wisdom"],3,3,"フレーバー熟練度が早く上がる","制作全般"],
  ["K10","審査員の目",["wisdom"],3,3,"大会の工程ごとに審査員の受け止めが分かる","大会"],
  ["K11","火の番",["sense"],4,4,"熱管理中の炭の交換のジャスト幅が広く","熱管理"],
  ["K12","大一番の胆力",["body"],4,4,"大会本番だけ体調を1段良く扱う","大会"],
  ["K13","声援",["body","sense"],4,4,"大会のリフレッシュでメンタル回復","大会の蒸らし"],
- ["K14","炭の声",["wisdom"],4,4,"蒸らし予測で読める揺らぎが増える","蒸らし"]];
+ ["K14","炭の声",["sense","wisdom"],4,4,"蒸らし予測で読める揺らぎが増える","蒸らし"]];
 const SPOTS=[
  {id:"sumi",label:"tonari（バイト）",who:"バイト",key:"tonari_shift",stamina:24},
  {id:"tsumugi",label:"つむぎの店",who:"つむぎ",key:"tsumugi",stamina:16},
@@ -302,15 +302,15 @@ const LEARN={sumi:"スミさんの手元",tsumugi:"つむぎの色の話",naru:"
 // 火種は龍が如く並みに細かく: SPEC の量を5倍にそろえた（レベルアップ1回で火種5、能力ノードは火種1で「段の1/5」、5つで1段）。
 // スキルは火種10／15／20（SPEC の 2／3／4 の5倍）。盤全部で 能力225＋スキル205＝430（SPEC 86 の5倍）。1周目の埋まりの比率は SPEC のまま。
 function pol(a,r){const t=a*Math.PI/180;return [Math.cos(t)*r,Math.sin(t)*r];}
-const SCALE=5;                       // 火種の細かさ（SPEC 比）
-const PER_STEP=8;                    // 1段に要る能力ノードの数（3項目にしたので、盤の合計が SPEC の5倍に近くなるよう8に）
-const STAT_RING=[0,32,16,8,8,8];     // 盤ごとの能力ノード（輪ごと）＝SPEC の4・2・1・1・1段 ×8。3盤で216＋スキル205＝421（SPEC×5＝430とほぼ同じ）
-const CELL=40, HUB=[320,150];
+const SCALE=2;                       // 火種の細かさ（SPEC 比）。2026-10-30「細かすぎる」でレベルアップ1回＝火種2に
+const PER_STEP=3;                    // 1段に要る能力のマス（3つで1段）
+const STAT_RING=[0,12,6,3,3,3];      // 盤ごとの能力のマス（輪ごと）＝SPEC の4・2・1・1・1段 ×3。盤1枚＝能力27＋スキル6＋修行1＝34マス（7×5の方眼ぴったり）
+const CELL=70, HUB=[320,180];
 // 修行（仮）: 誰との交流で開くか・どんな場面の絵になるかだけを置く。名前・効果は第二弾の詳細設計で決める
 const TRAINS={
- body:{who:"minto",whoJa:"みんと",need:4,hint:"みんとと交流を深めると、何か教えてもらえそう"},
- sense:{who:"sumi",whoJa:"スミさん",need:4,hint:"スミさんとバイトを重ねると、何か教えてもらえそう"},
- wisdom:{who:"naru",whoJa:"なる",need:4,hint:"なるの話をよく聞くと、何か見えてきそう"}};
+ body:{who:"minto",whoJa:"みんと",need:4,hint:"みんとと交流を深めると、人の惹きつけ方を教えてもらえそう"},
+ sense:{who:"sumi",whoJa:"スミさん",need:4,hint:"スミさんとバイトを重ねると、何か掴めそう"},
+ wisdom:{who:"naru",whoJa:"なる",need:4,hint:"なるの話をよく聞くと、組み立て方が見えてきそう"}};
 function buildNodes(){
   const n=[];
   for(const k of KEYS){let i=0;for(let ring=1;ring<=5;ring++)for(let j=0;j<STAT_RING[ring];j++){i++;n.push({id:LETTER[k]+i,kind:"stat",stat:k,ring,cost:1});}}
@@ -326,8 +326,8 @@ function boardOf(k){ // その盤のマスと方眼の位置（盤ごとにス�
   const stats=NODES.filter(n=>n.kind==="stat"&&n.stat===k);
   const skills=NODES.filter(n=>n.kind==="skill"&&n.colors.includes(k)).sort((a,b)=>a.ring-b.ring);
   const train=byId["M-"+LETTER[k]];
-  // はじまりから何マス（上下左右に数える）の順。同じ遠さなら横の腕を先に（上下は3マスまで）
-  const cells=[];for(let x=-10;x<=10;x++)for(let y=-3;y<=3;y++)if(x||y)cells.push({x,y,d:Math.abs(x)+Math.abs(y)});
+  // はじまりから何マス（上下左右に数える）の順。遠いほど後の章
+  const cells=[];for(let x=-3;x<=3;x++)for(let y=-2;y<=2;y++)if(x||y)cells.push({x,y,d:Math.abs(x)+Math.abs(y)}); // 7×5 のきれいな長方形。はじまりは真ん中
   cells.sort((p,q)=>p.d-q.d||Math.abs(p.y)-Math.abs(q.y)||Math.atan2(p.y,p.x)-Math.atan2(q.y,q.x));
   const out=[];let ci=0;
   const DIRS=[c=>-c.x-Math.abs(c.y)*.3,c=>-c.y*2-Math.abs(c.x)*.1,c=>c.x-Math.abs(c.y)*.3,c=>c.y*2-Math.abs(c.x)*.1]; // 左・上・右・下
@@ -367,7 +367,7 @@ function progress(k,owned=S.owned){const ns=boardOf(k).map(b=>b.n);const tot=ns.
   return ns.filter(n=>owned.has(n.id)).reduce((a,n)=>a+n.cost,0)/tot;}
 // 右のパネルの「発動イラスト」の中身（素材の依頼の下書きを兼ねる）
 const ILLUST={
- body:"蒸らしの雑念を、息を整えて払う",sense:"炭焼きのジャストの一瞬、炭が赤く光る",wisdom:"炭の気配を読む目元のアップ",
+ body:"客席に一台を差し出し、常連が笑う（体力と人を惹きつける力）",sense:"炭焼きのジャストの一瞬、炭が赤く光る",wisdom:"レシピ帳と温度計を前に、手順を組み立てる",
  K01:"時計を横目に、迷いなく穴をあける手元",K02:"レシピ帳を開くと、前の配合が香りとともに浮かぶ",K03:"朝日の差す部屋で、すっきり起きる",K04:"知らない店の扉を、笑顔で開ける",K05:"窓の外の雲を見上げて、明日の空を読む",
  K06:"蒸らしの画面いっぱいに、二重の波紋が広がる",K07:"会話の選択肢に、小さな煙の印が立つ",K08:"長い一台の終盤でも、手が震えない",K09:"葉を口に含み、味の層を聞き分ける",K10:"審査員の表情から、評価の色が見える",
  K11:"熱管理の炭ばさみが、ジャストで炭を入れ替える",K12:"大会の本番、胸の奥に火が灯る",K13:"客席からの声援が、雑念を吹き飛ばす",K14:"炭に耳を寄せると、揺らぎが聞こえる"};
@@ -524,7 +524,7 @@ function openBoard({tutorial=false,place="menu"}={}){
   const edit=S.boardMode==="menu"||place==="kannon";
   B={owned:new Set(S.owned),hid:{...S.hidane},pend:[],sel:null,forceAny:false,tutorial,tstep:tutorial?4:0,k:S.lastBoard||"body",edit,place};
   $("#board").hidden=false;$("#app").classList.add("boardopen");drawBoard();
-  if(tutorial){S.tutorial.board=true;caption("盤は能力ごとに5枚。上の札で入れ替える。真ん中の「はじまり」から上下左右に広がっていて、どの方向から進めてもいい。隣が灯っているマスが次に取れる。8つ灯すと1段上がる。",[["次へ",()=>{B.tstep=5;drawBoard();caption(edit?"右の絵と説明を見て、好きなものを1つ選ぼう。欲しいものは「目標にする」で道しるべが出る。":"盤は見るだけ。火種を灯すのは観音堂で。欲しいものは「目標にする」で道しるべが出る。",[])}]]);}
+  if(tutorial){S.tutorial.board=true;caption("盤は能力ごとに5枚。上の札で入れ替える。真ん中の「はじまり」から上下左右に広がっていて、どの方向から進めてもいい。隣が灯っているマスが次に取れる。3つ灯すと1段上がる。",[["次へ",()=>{B.tstep=5;drawBoard();caption(edit?"右の絵と説明を見て、好きなものを1つ選ぼう。欲しいものは「目標にする」で道しるべが出る。":"盤は見るだけ。火種を灯すのは観音堂で。欲しいものは「目標にする」で道しるべが出る。",[])}]]);}
 }
 function closeBoard(confirm=true){
   if(B.pend.length&&confirm){if(!window.confirm("仮置きを決定しますか？（キャンセルで仮置きを捨てて閉じる）")){B=null;$("#board").hidden=true;$("#app").classList.remove("boardopen");hideCap();render();return;}commit();return;}
@@ -561,25 +561,25 @@ function drawBoard(){
   for(const b of items)for(const nid of b.nb){const key=[b.n.id,nid].sort().join("|");if(drawn.has(key))continue;drawn.add(key);
     const o=nid==="HUB"?hubP:pos[nid];const lit=ownP.has(b.n.id)&&(nid==="HUB"||ownP.has(nid));
     const tg=tgtPath.has(b.n.id)&&(nid==="HUB"||tgtPath.has(nid)||ownP.has(nid));g+=line(b,o,lit,tg);}
-  g+=`<g transform="translate(${HUB[0]},${HUB[1]})"><rect x="-21" y="-17" width="42" height="34" rx="6" fill="#2b2235" stroke="var(--gold)" stroke-width="2"/><text y="4" font-size="9" fill="var(--gold-hi)" text-anchor="middle">はじまり</text></g>`;
+  g+=`<g transform="translate(${HUB[0]},${HUB[1]})"><rect x="-26" y="-20" width="52" height="40" rx="8" fill="#2b2235" stroke="var(--gold)" stroke-width="2"/><text y="4" font-size="11" fill="var(--gold-hi)" text-anchor="middle">はじまり</text></g>`;
   for(const {n,x,y} of items){
     const st=pendIds.has(n.id)?"pend":nodeState(n,ownP,hid);const sel=B.sel===n.id;
     const col=`var(--${n.kind==="skill"?n.colors[0]:n.stat})`;
     const col2=n.kind==="skill"&&n.colors[1]?`var(--${n.colors.find(c=>c!==k)||n.colors[1]})`:null;
-    const big=n.kind!=="stat"||n.peak;const r=n.peak?19:big?18:9;
+    const big=n.kind!=="stat"||n.peak;const r=n.peak?26:big?24:14;
     const shape=n.kind==="stat"&&!n.peak?`<circle r="${r}"`:`<polygon points="${[0,1,2,3,4,5].map(i=>pol(i*60-90,r).join(",")).join(" ")}"`;
     let fill="#140f19",stroke=col,sw=2,op=1,dash="",cls="";
     if(st==="own")fill=col;else if(st==="pend"){fill=col;op=.6;dash="3 2";}else if(st==="can"){cls="can";sw=3.5;}
     else if(st==="short"){sw=1.5;}else if(st==="far"){op=.55;}else if(st==="ring"){stroke="#5a4a2a";op=.45;}else if(st==="train"){stroke="#8a7a5a";dash="3 3";}
     const lab=n.kind==="stat"?(n.peak?"極":""):n.kind==="train"?"修":n.name.slice(0,2);
     g+=`<g class="node" data-id="${n.id}" transform="translate(${x},${y})" opacity="${op}">
-      <circle r="21" fill="transparent"/>
+      <circle r="30" fill="transparent"/>
       ${sel?`<circle r="${r+7}" fill="none" stroke="var(--gold-hi)" stroke-width="2.5"/>`:""}
       ${S.target===n.id?`<text x="${r-2}" y="${-r+2}" font-size="14">🎯</text>`:""}
       ${col2?`<polygon points="${[0,1,2,3,4,5].map(i=>pol(i*60-90,r+4).join(",")).join(" ")}" fill="none" stroke="${col2}" stroke-width="2.5"/>`:""}
       ${shape} class="${cls}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" ${dash?`stroke-dasharray="${dash}"`:""}/>
-      ${lab?`<text y="4" font-size="${n.peak?15:10}" font-weight="800" text-anchor="middle" fill="${st==="own"||st==="pend"?"#140f19":st==="train"?"#c9b27a":col}">${lab}</text>`:""}
-      ${n.kind!=="stat"?`<text y="${r+11}" font-size="9" text-anchor="middle" fill="var(--dim)">${n.kind==="train"?(st==="train"?"🔒"+n.whoJa:n.whoJa):"火種"+n.cost}</text>`:""}
+      ${lab?`<text y="5" font-size="${n.peak?20:13}" font-weight="800" text-anchor="middle" fill="${st==="own"||st==="pend"?"#140f19":st==="train"?"#c9b27a":col}">${lab}</text>`:""}
+      ${n.kind!=="stat"?`<text y="${r+14}" font-size="11" text-anchor="middle" fill="var(--dim)">${n.kind==="train"?(st==="train"?"🔒"+n.whoJa:n.whoJa):"火種"+n.cost}</text>`:""}
       ${st==="ring"&&big?`<text x="${r-6}" y="${-r+6}" font-size="11">🔒</text>`:""}
     </g>`;
   }
@@ -593,7 +593,7 @@ function drawBoard(){
     ${B.edit?"":`<span style="color:var(--amber)">見るだけ（火種を灯すのは観音堂で）</span>`}${B.place==="kannon"?`<span style="color:var(--sense)">観音堂</span>`:""}
     <span class="sp"></span>${S.respecOpen&&B.edit?`<button id="respec">組み直す</button>`:""}<button id="help">？</button><button id="bclose">閉じる</button>`;
   $("#bclose").onclick=()=>closeBoard();
-  $("#help").onclick=()=>alert("盤は能力ごとに5枚（技術盤〜洞察盤）。上の札で入れ替える。\n真ん中の「はじまり」から上下左右に広がる方眼。線は上下左右の隣だけ。\n取れるのは、上下左右の隣が灯っているマスだけ。どの方向から攻めてもよい。\n小さな丸＝能力の火（火種1）。8つ灯すと1段上がる。\n六角形＝スキル（火種10〜20）／修＝修行（交流で開く）／極＝いちばん奥\n明滅＝今取れる／薄い＝まだつながっていない／暗い＝章で開く\n🎯＝目標。一番安い道を金の点線で出す。「目標まで灯す」でまとめて仮置き");
+  $("#help").onclick=()=>alert("盤は能力ごとに5枚（技術盤〜洞察盤）。上の札で入れ替える。\n真ん中の「はじまり」から上下左右に広がる方眼。線は上下左右の隣だけ。\n取れるのは、上下左右の隣が灯っているマスだけ。どの方向から攻めてもよい。\n小さな丸＝能力の火（火種1）。3つ灯すと1段上がる。\n六角形＝スキル（火種10〜20）／修＝修行（交流で開く）／極＝いちばん奥\n明滅＝今取れる／薄い＝まだつながっていない／暗い＝章で開く\n🎯＝目標。一番安い道を金の点線で出す。「目標まで灯す」でまとめて仮置き");
   if($("#respec"))$("#respec").onclick=()=>{if(!confirm("全部の火種が戻ります。組み直しますか？"))return;
     for(const id of B.owned){const u=S.paid[id]||{any:byId[id].cost};for(const[kk,v]of Object.entries(u))B.hid[kk]+=v;}B.owned=new Set();B.pend=[];drawBoard();};
   $("#btabs").replaceChildren(...KEYS.map(kk=>{const pr=progress(kk,ownP);const can=B.edit&&boardOf(kk).some(b=>!pendIds.has(b.n.id)&&nodeState(b.n,ownP,hid)==="can");
@@ -608,7 +608,7 @@ function drawBoard(){
   const cnt=statCount(k,ownP),cur=stepOf(k,ownP),rem=PER_STEP-cnt%PER_STEP;
   const nt=Object.entries(NEWTHING[k]||{}).find(([x])=>+x>cur);
   let body;
-  if(sel.kind==="stat")body=`<h4>${nodeName(sel)}</h4><small>第${sel.ring}輪・火種1・8つ灯すと1段</small><br>${JA[k]} ${cur}段 <span style="letter-spacing:2px">${"●".repeat(cnt%PER_STEP)}${"○".repeat(rem)}</span>　あと${rem}つで${Math.min(10,cur+1)}段：${TIER[k][Math.min(9,cur)]}<br><small>効くところ：${WHERE[k]}</small>`+
+  if(sel.kind==="stat")body=`<h4>${nodeName(sel)}</h4><small>第${sel.ring}輪・火種1・3つ灯すと1段</small><br>${JA[k]} ${cur}段 <span style="letter-spacing:2px">${"●".repeat(cnt%PER_STEP)}${"○".repeat(rem)}</span>　あと${rem}つで${Math.min(10,cur+1)}段：${TIER[k][Math.min(9,cur)]}<br><small>効くところ：${WHERE[k]}</small>`+
      (nt?`<br><small style="color:var(--gold-hi)">✦${nt[0]}段で「${nt[1]}」（あと火${(nt[0]-cur-1)*PER_STEP+rem}つ）</small>`:"");
   else if(sel.kind==="skill")body=`<h4>${sel.name}</h4><small>スキル・${sel.colors.map(c=>JA[c]).join("×")}・第${sel.ring}輪・火種${sel.cost}</small><br>${sel.fx}<br><small>効く場面：${sel.scene}</small>`;
   else body=`<h4>${st==="train"?"？？？の修行":sel.name}</h4><small>修行・火種${sel.cost}</small><br>${st==="train"?`<span style="color:var(--gold-hi)">ヒント：${sel.hint}</span><br><small>${sel.whoJa}との交流 ${Math.min(S.affPts[sel.who]||0,sel.need)}/${sel.need}</small>`:`${sel.whoJa}との交流で開いた。効果は詳細設計で決める（仮）`}`;
@@ -658,7 +658,7 @@ document.addEventListener("keydown",e=>{if(!B||$("#board").hidden)return;if(e.ke
 let feelTimer=null;
 function openFeel(stat="sense",fromTut=false){
   const ov=$("#feelOv");ov.hidden=false;const box=$("#feelBox");
-  const s=stepOf("sense"),t=stepOf("sense"); // 3項目化でゲージの遅さも感
+  const s=stepOf("sense"),t=stepOf("wisdom"); // 帯の広さは感覚、ゲージの遅さは理論
   box.innerHTML=`<h3>炭焼きの取り出し（モック）</h3>
    <div style="font-size:12px;color:var(--dim)">ジャスト帯で「取る」。白枠＝素の帯、<span style="color:var(--sense)">水色＝センスで広がった分</span>。針の残像が<span style="color:var(--technique)">金</span>なら技術でゆっくり（本当の炭焼きは技術を読まない：比較用）。</div>
    <div class="row" style="margin-top:8px">
@@ -702,7 +702,7 @@ function hideCap(){$("#cap").hidden=true;document.querySelectorAll(".ring-pulse"
 function dev(k){
   if(k==="exp"){S.exp+=500;log("EXP +500（開発用）");}
   if(k==="tourn"){const best=KEYS[Math.floor(Math.random()*KEYS.length)];S.hidane[best]+=SCALE;
-    S.exp+=Math.round((100+200+150)*M[S.chapter-1]);card({c:`var(--${best})`,k:K1[best],top:"大会の火種",main:`${K1[best]}の火種 ＋${SCALE}`,sub:`いちばん良かったのは${{body:"蒸らし",sense:"炭焼き",wisdom:"完成品（配合）"}[best]}`});log(`大会: ${K1[best]}の火種＋1・EXP+${Math.round(450*M[S.chapter-1])}（章末の精算は寝る時にまとめた扱い）`);}
+    S.exp+=Math.round((100+200+150)*M[S.chapter-1]);card({c:`var(--${best})`,k:K1[best],top:"大会の火種",main:`${K1[best]}の火種 ＋${SCALE}`,sub:`いちばん良かったのは${{body:"提供後の調整（お客さんへの届け方）",sense:"炭焼き",wisdom:"完成品（配合）"}[best]}`});log(`大会: ${K1[best]}の火種＋1・EXP+${Math.round(450*M[S.chapter-1])}（章末の精算は寝る時にまとめた扱い）`);}
   if(k==="chapter"){if(S.chapter<5){S.chapter++;S.day=1;S.slot=0;S.freshCount={};S.respecOpen=true;
     card({c:"var(--gold)",k:"盤",top:"RING OPEN",main:`心得の盤 第${S.chapter}輪が開いた`,sub:"最初の行動までは盤を組み直せる"});log(`第${S.chapter}章へ。第${S.chapter}輪が開いた・組み直しは最初の行動まで`);}}
   if(k==="mid"){const m=S.boardMode;S=fresh();S.boardMode=m;S.day=13;let acc=0;for(let L=1;L<9;L++)acc+=need(L);S.exp=S.settled=acc+120;S.lv=9;S.hidane.any=8*SCALE;S.tutorial.board=true;
