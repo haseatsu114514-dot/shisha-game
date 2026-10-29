@@ -260,7 +260,7 @@ CANON_ROWS = [
     ("各章あらすじ・世界観・構成の正本", "brand/story_and_structure.md"),
     ("キャラクター設定・人物像の正本", "brand/character_profiles.md ・ data/characters.json"),
     ("台詞・イベント・フレーバーうんちく", "data/dialogue/*.json ・ data/story_routes.json"),
-    ("フレーバー（5社78種）・レシピ（13種＋裏7種）・機材", "data/flavors.json ・ data/recipes.json ・ data/secret_recipes.json ・ data/equipment.json"),
+    ("フレーバー（5社77種）・レシピ（13種＋裏7種）・機材", "data/flavors.json ・ data/recipes.json ・ data/secret_recipes.json ・ data/equipment.json"),
 ]
 
 CANON_NOTES = [
@@ -577,7 +577,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
     <div class="fact"><h4>審査5軸（20%×5）</h4><p><strong>煙量・持続・香り・再現度・提供演出</strong>の各20%＝100点満点。第1章の南雲は持ち点10を基準（84点以上）達成者1人に一括投入。</p></div>
     <div class="fact"><h4>水入れ・スミの水の説明</h4><p>水入れは<strong>開始水量0（空）からスタート</strong>（#1081 E01）。水の役割は<strong>「煙を冷やして吸いやすくする」だけ</strong>（有害物質への影響は「諸説ある」とし断定しない、#1113/#1128）。</p></div>
     <div class="fact"><h4>蒸らし＆温度帯表現</h4><p>蒸らしは<strong>キッチンタイマーの実時間計測</strong>（#541）。温度計の数値表示はなく、陽炎・炭の赤熱・煙・音・香り描写で温度帯を読む。</p></div>
-    <div class="fact"><h4>フレーバー＆レシピ</h4><p><strong>5メーカー全78種</strong>（アルファーヘブン39・ドバジ18・アフサール17・フォースフェクタ1・ナイトサイド3）。定番<strong>13レシピ</strong>＋裏<strong>7レシピ</strong>。</p></div>
+    <div class="fact"><h4>フレーバー＆レシピ</h4><p><strong>5メーカー全77種</strong>（アルファーヘブン38・ドバジ18・アフサール17・フォースフェクタ1・ナイトサイド3）。定番<strong>13レシピ</strong>＋裏<strong>7レシピ</strong>。</p></div>
   </div>
 </section>
 
