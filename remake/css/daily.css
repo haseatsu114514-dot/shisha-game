@@ -681,7 +681,7 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
   border-radius: 6px;
 }
 .lime-peer { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.lime-name { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+.lime-name { font-family: "Suien Name", serif; font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
 .lime-unread { margin-left: auto; flex: none; font-size: 13px; padding: 2px 8px; border-radius: 999px; background: rgba(0, 0, 0, 0.25); }
 .lime-unread:empty { display: none; }
 .lime-face {
@@ -821,7 +821,7 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
   border-radius: 50%;
 }
 .lcr-main { flex: 1; min-width: 0; }
-.lcr-name { font-size: 14px; font-weight: 700; }
+.lcr-name { font-family: "Suien Name", serif; font-size: 14px; font-weight: 700; }
 .lcr-preview { margin-top: 2px; font-size: 14px; color: #6b7482; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lime-chat-row.unread .lcr-preview { color: #1d2433; font-weight: 700; }
 .lcr-side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
