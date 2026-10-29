@@ -37,7 +37,7 @@ import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocati
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
-import { growthEnabled } from "../core/growth.js";
+import { presentNight } from "../core/growth.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -822,11 +822,8 @@ async function endDay({ returnedToTonari = false } = {}) {
   if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
   delete state.flags._home_trial_plan; // 予約方式の旧セーブを読んだ場合も持ち越さない
   // 寝る直前（夜明けの幕の前）にその日の経験値を精算する。大会前夜もここで火種が届く（REPORT P2・R1）
-  if (growthEnabled()) {
-    const { presentNightGrowth } = await import("./levelup.js");
-    await presentNightGrowth();
-    if (state !== homeOwner) return;
-  }
+  await presentNight();
+  if (state !== homeOwner) return;
   await advanceDay();
 }
 

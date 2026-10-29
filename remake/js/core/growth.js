@@ -209,6 +209,13 @@ export function settleGrowth() {
   return { from, to, xpFrom, xpTo: g.xp, gains, learned, milestone, full, boardFull: g.earned >= BOARD_TOTAL };
 }
 
+/** 寝る直前の精算と演出。無効のときは何もしない（演出の画面は使う時だけ読む）。 */
+export async function presentNight() {
+  if (!growthEnabled()) return null;
+  const { presentNightGrowth } = await import("../daily/levelup.js");
+  return presentNightGrowth();
+}
+
 // ---------------------------------------------------------------- ゲージ（6.1a）
 
 /** 今のレベルの区間での割合。settled=濃い金（精算済み）、now=薄い金（今日の分まで）。 */
