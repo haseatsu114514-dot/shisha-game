@@ -18,7 +18,8 @@ async function seed(page, { known = false, stage = '', auto = 'good', progress =
     Object.assign(s,{ chapter:2,day:28,slot:0,phase:'daily',money:23456,stamina:100,
       flavorStock:{double_apple:40,mint:12},lovers:['minto'],loverSince:{minto:10},lastDate:{minto:25},contacts:['sumi','minto'],
       keepsakes:['qa_memory'],relationshipMemories:['tsumugi_creature'] });
-    s.flags = { _elapsed_calendar:true,_ch1_cleared:true,_ch2_day1:{startDay:15,stage:'complete'},_ch2_eve_done:true,_ch2_taste_distant:true };
+    // 予告1の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして大会本体に集中する。
+    s.flags = { _elapsed_calendar:true,_ch1_cleared:true,_ch2_day1:{startDay:15,stage:'complete'},_ch2_eve_done:true,_ch2_taste_distant:true,_ch2_preview_seen:true };
     s.stats={technique:42,sense:42,guts:42,charm:42,insight:42};
     s.inbox=[{id:'qa_old',originId:'qa_old',day:20,read:true,done:true,replyState:'none',log:[{text:'大切な約束'}],msg:{sender:'minto',type:'message',messages:['また会おうね']}}];
     s.tournament.lastRank=1; s.tournament.lastTotal=88;

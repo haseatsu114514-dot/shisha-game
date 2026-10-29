@@ -28,6 +28,7 @@ import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { playChapterPreview } from "./chapter-preview.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
@@ -258,14 +259,62 @@ async function renderDefeat(owner, variant = null) {
   showScreen("end", root);
 }
 function renderComplete(owner) {
+  // 第2章の外側の perform() は終了時に画面内ボタンを再設定する。
+  // その処理にも予告中の操作禁止を伝えるため、disabled と locked を一緒に更新する。
+  const lock = (button, locked) => {
+    button.dataset.locked = String(locked);
+    button.disabled = locked;
+  };
+  const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
+    if (owner.previewing) return;
+    const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
+    await mod.beginChapterThree();
+  }, true);
+  // 初回の予告が終わるまで、完了カードの導線を最初から無効にしておく。
+  lock(next, !state.flags._ch2_preview_seen);
+  const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
-    button(owner, "第三章・東京へ", "chapter-three", async () => {
-      const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
-      await mod.beginChapterThree();
-    }, true),
+    next,
+    replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], [el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" })]);
+  // 第1章と同じ挙動: 未視聴なら完了カードで自動再生し、再生中は「次章へ」を押せない。
+  // 完走/明示スキップのときだけ既読（_ch2_preview_seen）を保存する（DESIGN 7-4）。
+  async function preview(first = false) {
+    if (!live(owner) || owner.previewing) return;
+    owner.previewing = true;
+    lock(next, true); lock(replay, true);
+    const controller = new AbortController();
+    // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
+    let observer;
+    if (typeof MutationObserver !== "undefined") {
+      // showScreen は幕の切替中、カードの DOM への接続を遅らせることがある。
+      // 初回の未接続を離脱と誤認せず、一度表示されたカードが外れたときだけ中断する。
+      let mounted = next.isConnected;
+      observer = new MutationObserver(() => {
+        if (next.isConnected) mounted = true;
+        else if (mounted) controller.abort();
+      });
+      observer.observe(layers.screen, { childList: true });
+    }
+    let result;
+    try { result = await playChapterPreview("ch3", { signal: controller.signal }); }
+    catch { /* 次回予告は任意演出。失敗しても完了画面はそのまま使える。 */ }
+    finally { observer?.disconnect(); }
+    if (first && ["completed", "skipped"].includes(result) && live(owner) && state.phase === "cleared") {
+      state.flags._ch2_preview_seen = true;
+      save();
+    }
+    owner.previewing = false;
+    lock(next, !state.flags._ch2_preview_seen);
+    lock(replay, false);
+    if (live(owner) && next.isConnected) {
+      playBgm("bgm_aftermath");
+      replay.focus({ preventScroll: true });
+    }
+  }
+  if (!state.flags._ch2_preview_seen) preview(true);
 }
 function renderError(owner) {
   broadcast.clearComments();
