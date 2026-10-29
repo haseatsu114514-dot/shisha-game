@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "shift-mix-record",
+      "title": "Shift mix recording, dialogue and tournament feedback (#1414, #1415)",
+      "kind": "quick",
+      "run": ["node remake/test/shift_mix_record.mjs"]
+    },
+    {
       "id": "ch1-interval-connection",
       "title": "Chapter 1 victory interval connections",
       "kind": "quick",
