@@ -208,7 +208,7 @@
         {
           "speaker": "old_man",
           "face": "normal",
-          "text": "すまない。そこのごみ袋を開けてもらえるかな"
+          "text": "悪い、そこのごみ袋、開けてくれるか"
         },
         {
           "speaker": "hajime",
@@ -218,7 +218,7 @@
         {
           "speaker": "old_man",
           "face": "normal",
-          "text": "疲れた顔だ。煙より先に、水がいるね"
+          "text": "疲れた顔だな。煙より先に水だ"
         },
         {
           "speaker": "",
@@ -228,17 +228,17 @@
         {
           "speaker": "old_man",
           "face": "normal",
-          "text": "君も作る人か"
+          "text": "……作る側の人間か"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "日本のtonariで。まだ、店は持ってないです"
+          "text": "はじめです。日本のtonariで。まだ、店は持ってないです"
         },
         {
           "speaker": "old_man",
           "face": "normal",
-          "text": "なら、今日は客になろう。作る話は、そのあとでいい"
+          "text": "そうか、ハジメ。なら今日は俺が客だ。作る話は、そのあとでいい"
         }
       ],
       "comment": "old_manの正体はシェイク。表示名と正装の立ち絵は大会当日の公開まで伏せる。"
@@ -254,7 +254,7 @@
         {
           "speaker": "old_man",
           "face": "normal",
-          "text": "また会ったね。一本、頼めるかな"
+          "text": "また会ったな、ハジメ。一本、頼めるか"
         },
         {
           "speaker": "hajime",
@@ -269,7 +269,7 @@
         {
           "speaker": "old_man",
           "face": "normal",
-          "text": "もっと高い葉もあるよ"
+          "text": "もっと高い葉もあるぞ"
         },
         {
           "speaker": "hajime",
@@ -320,7 +320,7 @@
         {
           "speaker": "old_man",
           "face": "normal",
-          "text": "明日が本番だね"
+          "text": "明日が本番だな、ハジメ"
         },
         {
           "speaker": "hajime",
@@ -330,12 +330,17 @@
         {
           "speaker": "old_man",
           "face": "normal",
-          "text": "君の煙は、もう一度吸いたい"
+          "text": "ああ。ハジメの煙は、もう一度吸いたいからな"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "この前と同じにできるか、まだ分かりません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トングを差し出すと、男は受け取って柄を一度拭いた。"
         },
         {
           "speaker": "old_man",
