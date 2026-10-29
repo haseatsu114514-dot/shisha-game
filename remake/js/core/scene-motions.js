@@ -6,6 +6,8 @@ import { state, config } from "./state.js";
 import { DB } from "./data.js";
 import { reducedMotion } from "./transition-kit.js";
 import { motionVariant } from "./mg-kit.js";
+import { withLoadingNotice } from "./module-loading.js";
+import { loadingNotice } from "./ui.js";
 
 // A10後半: 「見た演出を短く」設定（config.shortSeen、既定オフ）。初回は必ずフルで見せ、見た記録を
 // state.flags._motion_seen_<key> に付ける。2回目以降は設定がオンのときだけ短縮する。記録は設定と
@@ -31,7 +33,8 @@ const purikura = () => import("../motions/purikura.js");
 // 動かないカードで見せる。省くと二度と見られない（#833）。
 export async function limeExchange(charId, context = null) {
   const owner = state;
-  const mod = await lime().catch((e) => { console.error(e); return null; });
+  const mod = await withLoadingNotice(lime(), { ...loadingNotice("LIME演出を準備しています…"), delayMs: 500 })
+    .catch((e) => { console.error(e); return null; });
   if (state !== owner) return; // 読み込み中のLOADから、前のセーブの交換を始めない。
   const reduce = reducedMotion();
   // 2回目以降の連絡先交換は、設定がオンなら「追加し終えた画面だけ」の短い表示にする（still と同じ）。
@@ -44,7 +47,8 @@ export async function limeExchange(charId, context = null) {
 const omitMotion = () => reducedMotion();
 /** 今のパターンの関数。読めなかったときは null（演出を省いて先へ進む） */
 const variant = async (scene, load) => {
-  const mod = await load().catch((e) => { console.error(e); return null; });
+  const mod = await withLoadingNotice(load(), { ...loadingNotice("演出を準備しています…"), delayMs: 500 })
+    .catch((e) => { console.error(e); return null; });
   return mod && (motionVariant(scene) === "b" ? mod.b : mod.a);
 };
 
