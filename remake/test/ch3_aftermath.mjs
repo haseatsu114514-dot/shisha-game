@@ -36,7 +36,7 @@ const text = id => scenes[id].lines.map(line => line.text || "").join("\n");
 assert.match(text("ch3_kuze_first"), /柑橘とアールグレイ/);
 assert.match(text("ch3_work_without_taste"), /ブラックティーが得意/);
 assert.match(text("ch3_mashiro_play_1"), /自分用のダーク/);
-assert.match(text("ch3_double_apple_incident"), /いつもより薄くて/);
+assert.match(text("ch3_double_apple_incident"), /分からない」と言ったら、終わる気がした/);
 assert.doesNotMatch(text("ch3_double_apple_incident"), /味がしない/);
 assert.match(text("ch3_abyss_recovery"), /十分な味.*薄く思え.*炭を足し/);
 assert.match(text("ch3_abyss_recovery"), /焦げた苦さは分かる/);

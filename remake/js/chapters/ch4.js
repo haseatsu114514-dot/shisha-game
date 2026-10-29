@@ -14,6 +14,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_TOURNA
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy } from "./ch4-progress.js";
 import { chapterFourMapModel } from "./ch4-map-model.js";
+import { playChapterPreview } from "./chapter-preview.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -277,15 +278,49 @@ async function runTournament(owner) {
 }
 
 function renderComplete(owner) {
+  // 第4章側の第5章への接続点はここ1か所（状態遷移は ch5-progress.js の advanceToChapterFive）。
+  const next = button(owner, "第5章へ進む", "chapter-five", async () => {
+    const mod = await import("./ch5.js");
+    await mod.beginChapterFive();
+  }, true);
+  const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
+  // 外側の busy(false) は data-locked を見て disabled を再設定するため、両方を連動させる。
+  const lock = (btn, locked) => { if (btn.dataset) btn.dataset.locked = String(locked); btn.disabled = locked; };
+  lock(next, !state.flags._ch4_preview_seen);
+  // 予告3（第4章末→第5章）。設計 7-4: 「第5章へ進む」は予告の終了後にだけ押せる。
+  // 完走/明示スキップのときだけ既読を保存し、中断・別画面への遷移では何も残さない。
+  const preview = async (first) => {
+    const controller = new AbortController();
+    // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
+    let observer;
+    if (typeof MutationObserver !== "undefined") {
+      observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
+      observer.observe(layers.screen, { childList: true });
+    }
+    lock(next, true); lock(replay, true);
+    try {
+      const result = await playChapterPreview("ch5", { signal: controller.signal });
+      if (first && (result === "completed" || result === "skipped") && current(owner) && state.phase === "cleared") {
+        state.flags._ch4_preview_seen = true;
+        save();
+      }
+    } catch { /* 次回予告は任意演出。失敗しても完了画面はそのまま使える。 */ }
+    finally {
+      observer?.disconnect();
+      lock(next, !state.flags._ch4_preview_seen); lock(replay, false);
+      if (next.isConnected) {
+        playBgm("tonari");
+        replay.focus();
+      }
+    }
+  };
   card(owner, "complete", "第四章・完", "世界大会を終え、日本へ戻った。", [
-    // 第4章側の第5章への接続点はここ1か所（状態遷移は ch5-progress.js の advanceToChapterFive）。
-    button(owner, "第5章へ進む", "chapter-five", async () => {
-      const mod = await import("./ch5.js");
-      await mod.beginChapterFive();
-    }, true),
+    next,
+    replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], "第五章・機械仕掛けの神へ進めます。");
+  if (!state.flags._ch4_preview_seen) void preview(true);
 }
 
 function renderError(owner) {
