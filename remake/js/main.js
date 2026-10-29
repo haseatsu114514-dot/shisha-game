@@ -49,6 +49,7 @@ export async function boot() {
     new Promise((r) => setTimeout(r, 4000)),
   ]).catch(() => {});
   await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
+  $("#boot .boot-msg").textContent = "タイトル画像を準備しています…";
   // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
   const [titleArt] = await Promise.all([prepareTitleArt(), Promise.all([
     imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
