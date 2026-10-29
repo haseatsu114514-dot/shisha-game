@@ -196,4 +196,45 @@ await suite("chapter-preview", async check => {
     await page.locator('[data-test="preview-skip"]').click();
     await page.locator(preview).waitFor({ state: "detached" });
   });
+
+  // 第4章の完了カード（予告3の接続点）: 設計 7-4 のとおり「第5章へ進む」は予告の終了後にだけ押せる。
+  // スキップで既読が保存され、再視聴の後で第5章へ進めることも確認する。
+  if (entries.some(entry => entry.key === "ch5")) await check("ch4-complete-card-autoplay-flag-and-rewatch", async page => {
+    page.setDefaultTimeout(60000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const s = core.newGame();
+      Object.assign(s, { chapter: 4, day: 50, slot: 1, phase: "cleared", money: 50000, stamina: 100,
+        weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      s.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
+        _ch4_cleared: true, _ch4_sheikh_revealed: true,
+        _ch4: { startDay: 46, day: 5, stage: 4, part: "cleared", titleSeen: true, read: {},
+          firstDay: 1, resolution: 5, attempts: 1 } };
+      s.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await page.reload();
+    await page.locator('[data-test="title-load"]').click();
+    await page.locator('[data-test="slot-0"]').click();
+    const complete = page.locator('[data-test="ch4-complete"]');
+    await complete.waitFor();
+    await playing(page);
+    assert.equal(await page.locator(preview).getAttribute("aria-label"), "第4章の終わりと第5章の次回予告");
+    assert(await page.locator('[data-test="ch4-chapter-five"]').isDisabled(),
+      "再生中に「第5章へ進む」が押せてしまう");
+    await page.locator('[data-test="preview-skip"]').click();
+    await page.locator(preview).waitFor({ state: "detached" });
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch4_preview_seen), true,
+      "スキップしても既読が保存されない");
+    assert.equal(await page.evaluate(async () =>
+      (await import("./js/core/state.js")).peekSave().flags._ch4_preview_seen), true,
+      "既読がセーブへ保存されない");
+    assert(!(await page.locator('[data-test="ch4-chapter-five"]').isDisabled()),
+      "予告の終了後も「第5章へ進む」が押せない");
+    await page.locator('[data-test="ch4-complete-preview"]').click();
+    await playing(page);
+    await page.locator('[data-test="preview-skip"]').click();
+    await page.locator(preview).waitFor({ state: "detached" });
+  });
 });
