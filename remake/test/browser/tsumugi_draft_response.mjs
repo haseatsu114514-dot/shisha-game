@@ -1,6 +1,7 @@
 // #452 B: actual draft answers, neutral legacy saves, and production VN inputs.
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { isDeepStrictEqual } from "node:util";
 import { suite, assertFits } from "./support.mjs";
 
 const baseline = JSON.parse(fs.readFileSync(new URL("../../../docs/qa/issue452-tsumugi/baseline-scenes.json", import.meta.url)));
@@ -44,6 +45,23 @@ function assertResponse(lines, answer) {
   assert.equal(lines.includes(NEUTRAL), answer === null);
   RESPONSES.forEach((text, i) => assert.equal(lines.includes(text), answer === i));
   assert.equal(lines.filter(text => text === "「応募完了」。短い文字を、２人で確かめた。").length, 1);
+}
+
+function stateDifferences(expected, actual, path = "") {
+  if (isDeepStrictEqual(expected, actual)) return [];
+  if (expected && actual && typeof expected === "object" && typeof actual === "object"
+    && Array.isArray(expected) === Array.isArray(actual)) {
+    const keys = new Set([...Object.keys(expected), ...Object.keys(actual)]);
+    const differences = [...keys].flatMap(key => {
+      const childPath = path ? `${path}.${key}` : key;
+      if (!Object.hasOwn(expected, key) || !Object.hasOwn(actual, key)) {
+        return [{ key: childPath, expected: expected[key], actual: actual[key] }];
+      }
+      return stateDifferences(expected[key], actual[key], childPath);
+    });
+    return differences.length ? differences : [{ key: path || "<root>", expected, actual }];
+  }
+  return [{ key: path || "<root>", expected, actual }];
 }
 
 async function input(locator, touch) { if (touch) await locator.tap(); else await locator.click(); }
@@ -131,8 +149,12 @@ await suite("tsumugi-draft-response", async check => {
         }
       return out;
     }, { baseline, WIP, ART, KEYS });
+    const differences = [];
     for (const r of rows) {
-      assert.deepEqual(r.current, r.before, `State effect changed: ${r.answer}/${r.route}/${r.known}`);
+      const row = `${r.answer}/${r.route}/${r.known}`;
+      for (const difference of stateDifferences(r.before, r.current)) {
+        differences.push(`${row} ${difference.key}: expected ${JSON.stringify(difference.expected)}, actual ${JSON.stringify(difference.actual)}`);
+      }
       assert.deepEqual(r.repeated, r.current, "Repeat story duplicated an effect");
       assert.deepEqual(r.reread, []);
       assert.deepEqual(r.keys, r.answer === null ? [null, null] : [r.answer === 0, r.answer === 1]);
@@ -141,6 +163,7 @@ await suite("tsumugi-draft-response", async check => {
       assert(r.current.flags._tsumugi_contest_submitted && r.current.flags._tsumugi_contest_art_seen);
       assert.equal(r.current.relationshipMemories.filter(m => m === "tsumugi_submission").length, 1);
     }
+    assert.equal(differences.length, 0, `State effect changed:\n${differences.join("\n")}`);
     console.log(`Compared ${rows.length} paths: full game state, CG, routes, submission and rewards unchanged`);
   });
 
