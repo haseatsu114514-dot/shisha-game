@@ -1020,37 +1020,6 @@
       "maker": "af"
     },
     {
-      "id": "twice_ice",
-      "name": "アルファーヘブン トワイスアイス",
-      "short_name": "AF トワイスアイス",
-      "category": "cooling",
-      "price": 1550,
-      "description": "Dr.fookah入荷の極冷枠。二段構えの冷涼感が舌を貫き、後を引く刺激がある。",
-      "heat_tolerance": 1.2,
-      "smoke_weight": 0.7,
-      "steam_bias": -0.8,
-      "requires_flag": "_flavor_twice_ice",
-      "unlockable": true,
-      "chapter_min": 1,
-      "leaf": "blond",
-      "stats": {
-        "heat_resistance": 6,
-        "refreshing": 8,
-        "sweet_natural": 2,
-        "sweet_confection": 2,
-        "cooling": 9,
-        "assertiveness": 7,
-        "acquired_taste": 4,
-        "smoke_body": 3,
-        "sourness": 1,
-        "spiciness": 2,
-        "floral": 1,
-        "nicotine": 4
-      },
-      "ng_flavors": [],
-      "maker": "af"
-    },
-    {
       "id": "peppermint_shake",
       "name": "ドバジ ペパーミントシェイク",
       "short_name": "ドバジ ペパーミントシェイク",

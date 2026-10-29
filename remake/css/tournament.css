@@ -1,6 +1,6 @@
 /* 制作画面と同じ暗い紫・真鍮・銀の面で、大会の記録を一つの放送画面に揃える。 */
 .tournament-heading { position: relative; width: 100%; color: #f4efe5; }
-.tournament-eyebrow { display: block; color: #c9b78e; font-size: 13px; font-weight: 700; letter-spacing: .24em; }
+.tournament-eyebrow { display: block; color: #c9b78e; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
 .tournament-heading h1 { margin: 8px 0 0; font-size: 52px; font-weight: 900; letter-spacing: .04em; line-height: 1.18; }
 .tournament-heading p { margin: 10px 0 0; font-size: 17px; color: #b7afb9; }
 .tournament-face { position: relative; display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 12px; overflow: hidden; background: #30283c; border: 1px solid #a997762e; image-rendering: auto; }
@@ -23,7 +23,7 @@
 /* 審査員ごとに色分けした票の帯 */
 .vote-stack { position: relative; display: flex; height: 14px; min-width: 0; overflow: hidden; border-radius: 3px; background: repeating-linear-gradient(90deg, #ffffff10 0 calc(5% - 1px), transparent calc(5% - 1px) 5%), #08060d; box-shadow: inset 0 0 0 1px #ffffff14, inset 0 2px 4px #0009; transform: skewX(-12deg); }
 .vote-stack > b { display: block; flex: none; height: 100%; background: linear-gradient(180deg, color-mix(in srgb, var(--c) 70%, #fff), var(--c) 55%, color-mix(in srgb, var(--c) 70%, #000)); box-shadow: inset -1px 0 0 #0006; transition: width 1s cubic-bezier(.2, .8, .2, 1); }
-.judge-legend { display: flex; gap: 14px; font-size: 12px; color: #b9b0c3; letter-spacing: .06em; }
+.judge-legend { display: flex; gap: 14px; font-size: 14px; color: #b9b0c3; letter-spacing: 0.04em; }
 .judge-legend span { display: flex; align-items: center; gap: 5px; }
 .judge-legend i { width: 14px; height: 8px; transform: skewX(-12deg); background: var(--c); border-radius: 1px; }
 
@@ -36,7 +36,7 @@
 .judge-pips { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
 .judge-pips b { height: 9px; border-radius: 2px; background: #ffffff14; box-shadow: inset 0 0 0 1px #ffffff12; }
 .judge-pips b.on { background: var(--c); box-shadow: 0 0 6px color-mix(in srgb, var(--c) 70%, transparent); }
-.judge-left { font-size: 12px; color: #b8afc2; }
+.judge-left { font-size: 14px; color: #b8afc2; }
 .judge-chip.held { background: linear-gradient(110deg, #3a2a0c, #140f19 75%); }
 .judge-chip.held .judge-pips b { background: repeating-linear-gradient(135deg, #f6c95e33 0 3px, #f6c95e12 3px 6px); }
 .judge-chip.held .judge-left { color: #f6d68e; font-weight: 700; }
@@ -65,7 +65,7 @@
 .sd-status { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding: 8px 14px; border-radius: 8px; background: #5fe2cf0d; border: 1px solid #5fe2cf26; font-size: 14px; color: #c4bfc9; }
 .sd-status > :last-child { margin-left: auto; color: #9fe7d9; }
 .standings .sd-feed { display: flex; flex-direction: row; align-items: stretch; gap: 0; margin-top: 10px; overflow: hidden; border-radius: 6px; background: #000a; font-size: 15px; color: #f2ead9; line-height: 1.45; }
-.sd-feed-tag { display: grid; place-items: center; padding: 0 14px; background: #d8304f; color: #fff; font-size: 13px; letter-spacing: .2em; }
+.sd-feed-tag { display: grid; place-items: center; padding: 0 14px; background: #d8304f; color: #fff; font-size: 13px; letter-spacing: 0.02em; }
 .sd-feed-lines { display: flex; flex-direction: column; justify-content: center; padding: 6px 14px; }
 .sd-feed-lines > div { animation: feed-in .5s ease-out backwards; }
 .sd-feed-lines > div + div { animation-delay: .5s; color: #f6d68e; }
@@ -119,7 +119,7 @@
 .nc-cut-art img { position: absolute; left: 12%; bottom: -6%; width: 104%; height: auto; filter: drop-shadow(-8px 0 0 #3b2405aa); }
 .nc-cut-art .nc-cut-face { position: absolute; left: 30%; top: 20%; width: 160px; height: 160px; border-radius: 50%; }
 .nc-cut-text { position: absolute; left: 0; bottom: 36px; padding: 10px 26px 12px 34px; background: #120c1aee; color: #f4ede0; clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%); box-shadow: 0 10px 30px #000a; }
-.nc-cut-text small { font-size: 13px; letter-spacing: .24em; color: #f6d68e; }
+.nc-cut-text small { font-size: 13px; letter-spacing: 0.02em; color: #f6d68e; }
 .nc-cut-text b { display: block; font-size: 30px; letter-spacing: .1em; }
 .nc-cut-pt { display: flex; align-items: baseline; gap: 10px; margin-top: 2px; font-size: 15px; font-weight: 700; color: #f6d68e; }
 .nc-cut-pt strong { font-size: 64px; line-height: .9; font-style: italic; font-weight: 900; background: linear-gradient(180deg, #fff6dc, #f6c95e 55%, #b07a20); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 #000a); }
@@ -138,7 +138,7 @@
 .rt-emblem[data-rank='2'] { background: linear-gradient(160deg, #ffffff, #b9c0cc 45%, #5b6270); color: #1f2430; }
 .rt-emblem[data-rank='3'] { background: linear-gradient(160deg, #ffd9b8, #c47a45 45%, #5e3014); color: #2c1405; }
 .rt-emblem b { font-size: 52px; font-weight: 900; font-style: italic; line-height: 1; }
-.rt-emblem small { font-size: 12px; font-weight: 900; letter-spacing: .2em; }
+.rt-emblem small { font-size: 12px; font-weight: 900; letter-spacing: 0.02em; }
 @keyframes emblem-in { from { opacity: 0; transform: scale(.3) rotate(-30deg); } }
 .result-table .tournament-heading { padding-bottom: 0; border: 0; }
 .result-table .tournament-heading h1 { margin-top: 4px; color: #e6d0a2; font-size: 64px; font-style: italic; letter-spacing: .08em; line-height: 1.05; }
@@ -154,14 +154,14 @@
 .result-table .rt-face { grid-area: face; width: 48px; height: 48px; border-radius: 10px; }
 .result-table .rt-name { grid-area: name; width: auto; font-size: 18px; font-weight: 800; display: flex; align-items: baseline; gap: 10px; min-width: 0; }
 .result-table .rt-row.me .rt-name, .result-table .rt-row.me .rt-pt { color: #ffe2a6; }
-.rt-votes { display: inline; margin: 0; font-size: 11px; font-weight: 500; color: #a79dae; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rt-votes { display: inline; margin: 0; font-size: 14px; font-weight: 500; color: #a79dae; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .result-table .rt-bar { grid-area: bar; display: flex; height: 12px; }
 .result-table .rt-pt { grid-area: pt; width: auto; text-align: right; font-size: 26px; font-weight: 900; font-style: italic; color: #eee6d4; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .result-table .rt-detail { width: auto; display: grid; grid-template-columns: 1fr 1fr; align-content: start; align-items: start; gap: 8px 12px; padding: 16px 18px; border: 1px solid #e8c27a2e; border-radius: 12px; background: linear-gradient(160deg, #1a1226d9, #0d0a15d9); }
 .result-table .rt-detail h4 { grid-column: 1 / -1; margin: 0 0 4px; font-size: 14px; letter-spacing: .08em; color: #cfc4d8; }
 .result-table .rt-part { position: relative; display: grid; grid-template-columns: 1fr 40px; align-items: center; gap: 2px 8px; padding: 7px 12px 9px; border-radius: 8px; background: #ffffff07; border: 1px solid #ffffff0f; font-size: 14px; font-weight: 700; }
 .result-table .rt-part b { grid-column: 2; grid-row: 1 / 3; font-size: 28px; text-align: center; }
-.result-table .rt-part small { width: auto; font-size: 11px; color: #a39cae; font-weight: 500; }
+.result-table .rt-part small { width: auto; font-size: 14px; color: #a39cae; font-weight: 500; }
 .result-table .rt-part.total { margin: 0; background: linear-gradient(110deg, #f6c95e22, #f6c95e08); border-color: #f6c95e55; }
 .result-table .rt-detail > small { grid-column: 1 / -1; font-size: 12px; line-height: 1.5; color: #a39baa; }
 .result-table .rt-judge-comment { color: #f6d68e !important; }
