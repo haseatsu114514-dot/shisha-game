@@ -95,7 +95,7 @@ await suite("ch1-presentation", async check => {
       await assertFits(page, ".mix-temperature-preview, .mix-temperature, .mix-temperature-legend");
       await select(page, '[data-test="mix-ok"]', touch); await page.evaluate(() => V.running);
       assert.equal(await page.evaluate(() => V.core.state.flavorStock.grape), 20);
-      assert.equal(await page.evaluate(() => V.core.state.flavorStock.lemon), 28); // 課題のレモンも私物から消費。
+      assert.equal(await page.evaluate(() => V.core.state.flavorStock.lemon), 30); // 課題のレモンは大会支給（オーナー決定 2026-10-28）で私物在庫は減らない。
     }, options);
     await check(`${device}-gift-bowl-leaf-plane`, async page => {
       await setup(page);
