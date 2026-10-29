@@ -631,7 +631,7 @@
       "id": "ch2-main",
       "title": "Chapter 2 browser suite ch2_main",
       "kind": "browser",
-      "weight": 1.5,
+      "weight": 2.8,
       "timeout": 10,
       "paths": [
         "remake/chapter2-preview.html",
@@ -692,7 +692,7 @@
       "id": "ch2-daily",
       "title": "Chapter 2 browser suite ch2_daily",
       "kind": "browser",
-      "weight": 4.5,
+      "weight": 5.0,
       "timeout": 10,
       "paths": [
         "remake/chapter2-preview.html",
@@ -753,7 +753,7 @@
       "id": "ch2-story",
       "title": "Chapter 2 browser suite ch2_story",
       "kind": "browser",
-      "weight": 2.6,
+      "weight": 3.8,
       "timeout": 10,
       "paths": [
         "remake/chapter2-preview.html",
@@ -1428,7 +1428,7 @@
       "id": "hiyori-title-five",
       "title": "Hiyori five title illustrations",
       "kind": "browser",
-      "weight": 1,
+      "weight": 0.3,
       "timeout": 15,
       "paths": [
         "assets/ui/title_arts/**",
@@ -1585,7 +1585,7 @@
       "id": "lime-evening",
       "title": "LIME evening visit",
       "kind": "browser",
-      "weight": 1,
+      "weight": 3.0,
       "timeout": 10,
       "paths": [
         "remake/js/daily/phone.js",
@@ -1646,7 +1646,7 @@
       "id": "motion-endings",
       "title": "Motion endings and transitions",
       "kind": "browser",
-      "weight": 3,
+      "weight": 4.5,
       "timeout": 20,
       "paths": [
         "remake/js/motions/**",
@@ -1802,7 +1802,7 @@
       "id": "progression-recovery",
       "title": "Opening checkpoints and lover milestones",
       "kind": "browser",
-      "weight": 8,
+      "weight": 11.5,
       "timeout": 25,
       "paths": [
         "tools/check_legacy_terms.py",
@@ -1890,7 +1890,7 @@
       "id": "adam-eden",
       "title": "Adam and EDEN adopted art",
       "kind": "browser",
-      "weight": 2,
+      "weight": 1.2,
       "timeout": 15,
       "paths": [
         "remake/js/daily/adam*.js",
@@ -2014,7 +2014,7 @@
       "id": "dev-tools",
       "title": "Developer tools available on this branch",
       "kind": "browser",
-      "weight": 1,
+      "weight": 0.2,
       "timeout": 15,
       "paths": [
         "remake/js/core/dev-*.js",
@@ -2037,6 +2037,25 @@
       ],
       "run": [
         "node remake/test/reel_lifecycle.mjs"
+      ],
+      "chrome": "system"
+    },
+    {
+      "id": "reel-visuals",
+      "title": "Pakki reel visuals: BIG/REG announce, right-reel spin/slowdown, remount",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/reel*.js",
+        "remake/css/reel.css",
+        "remake/test/reel_visuals.mjs",
+        "remake/test/reel_visuals.html",
+        "remake/test/browser/reel_visuals.mjs",
+        "remake/img/ui/pakki-slot/*"
+      ],
+      "run": [
+        "node remake/test/browser/reel_visuals.mjs"
       ],
       "chrome": "system"
     },
@@ -2158,7 +2177,7 @@
       "id": "title-arts",
       "title": "Title art rotation",
       "kind": "browser",
-      "weight": 1,
+      "weight": 0.4,
       "timeout": 15,
       "paths": [
         "assets/ui/title_arts/**",
@@ -2317,7 +2336,7 @@
       "id": "steam-attack",
       "title": "Steam slash, recharge and thermometer",
       "kind": "browser",
-      "weight": 8.5,
+      "weight": 10,
       "timeout": 20,
       "paths": [
         "remake/js/craft/**",
@@ -2364,7 +2383,7 @@
       "id": "ch1-practice",
       "title": "Chapter 1 focused practice and saves",
       "kind": "browser",
-      "weight": 4.8,
+      "weight": 5.0,
       "timeout": 25,
       "paths": [
         "remake/js/chapters/ch1*.js",
@@ -2554,7 +2573,7 @@
       "id": "trpg",
       "title": "TRPG two-story collection",
       "kind": "browser",
-      "weight": 4.6,
+      "weight": 5.0,
       "timeout": 15,
       "paths": [
         "data/dialogue/trpg_ordinary.json",
@@ -2668,7 +2687,7 @@
       "id": "ui-themes",
       "title": "UI theme switching and preference persistence",
       "kind": "browser",
-      "weight": 0.3,
+      "weight": 1.7,
       "timeout": 5,
       "paths": [
         "remake/css/ui-themes.css",
@@ -2761,7 +2780,7 @@
       "run": [
         "node remake/test/browser/tournament_rules.mjs"
       ],
-      "weight": 1,
+      "weight": 0.2,
       "timeout": 8
     },
     {
@@ -2852,7 +2871,7 @@
       "id": "shopping-tutorial",
       "title": "Tutorial shopping order and return dialogue",
       "kind": "browser",
-      "weight": 1,
+      "weight": 0.4,
       "timeout": 5,
       "paths": [
         "remake/js/daily/shop.js",

@@ -1,4 +1,4 @@
-// 実際の起動・再表示、採用した10人33枚、PC/スマホのメニューとセーブ不変を確認。
+// 実際の起動・再表示、採用した10人37枚、PC/スマホのメニューとセーブ不変を確認。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -68,17 +68,18 @@ await suite("title-arts", async (check) => {
   for (const [label, viewport] of [["pc", { width: 1280, height: 720 }], ["mobile", { width: 844, height: 390 }]]) {
     await check(label, async page => {
       const arts = await page.evaluate(() => __remake.DB.manifest.titleArts);
-      assert.equal(arts.length, 33);
+      assert.equal(arts.length, 37);
       const sharkOwner = arts.find(art => art.file.endsWith("_01_shishark_test_run.png")).character;
       assert.deepEqual([...new Set(arts.map(art => art.character))].sort(), ["ageha", "hiyori", sharkOwner, "mashiro", "minto", "rin", "tsumugi", "sumi", "naru", "adam"].sort());
       assert.deepEqual(arts.filter(art => art.character === "hiyori").map(art => art.file).sort(), [
         "title_art_hiyori_01_twilight_walk.png", "title_art_hiyori_02_window_pause.png", "title_art_hiyori_03_after_rain.png",
         "title_art_hiyori_04_daylight_bookshop.png", "title_art_hiyori_05_ramen_break.png", "title_art_hiyori_06_riverside_hoodie.png",
       ]);
-      // #1243 のオーナー選定で初めて採用された3人は、選定アートが唯一のタイトル絵。
+      // #1243 のオーナー選定で初めて採用された3人のうち、スミ・なるは選定アートが唯一のタイトル絵。
       assert.deepEqual(arts.filter(art => art.character === "sumi").map(art => art.file), ["title_art_sumi_01_own_clay_bowl.png"]);
       assert.deepEqual(arts.filter(art => art.character === "naru").map(art => art.file), ["title_art_naru_01_bakery_morning.png"]);
-      assert.deepEqual(arts.filter(art => art.character === "adam").map(art => art.file), ["title_art_adam_01_sunset_proclamation.png"]);
+      // アダムは選定アートに加え、拡充候補（Draft PR #1387）から追加採用された1枚を持つ。
+      assert.deepEqual(arts.filter(art => art.character === "adam").map(art => art.file), ["title_art_adam_01_sunset_proclamation.png", "title_art_adam_02_twin_apple_throne.png"]);
       assert.ok(!arts.some(art => art.file.includes("rin_02")), "The refinement-pending Rin image was adopted");
       const before = await storageSnapshot(page);
       const output = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser", "title-variants");

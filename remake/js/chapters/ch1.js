@@ -438,12 +438,23 @@ async function midPreparation() {
     beginEvePractice(progress);
     const cs = await runFullPractice({ kind: "midcheck" });
     progress.failed = cs.failed || null;
+    if (cs.failed) progress.midBranch = null;
+    else {
+      const shisha = computeShisha(cs);
+      const score = avgScore(cs.holes.score, cs.heat.score, shisha.craftQuality, cs.careHistory?.[0]?.score, cs.careHistory?.[1]?.score);
+      // リハーサルの good / rough 境界で中間講評を二択に分ける。
+      progress.midBranch = score >= 68 ? "mid_good" : "mid_rough";
+    }
     progress.practiceDone = true;
     save();
   }
   if (!progress.feedbackRead) {
     if (progress.failed) await play("remake_preparation_failed", { bg: TONARI_N });
-    await play("remake_midcheck", { bg: TONARI_N });
+    const midcheck = DB.dialogues.remake_midcheck;
+    const branch = progress.midBranch ? midcheck?.branches?.[progress.midBranch] : undefined;
+    // 旧セーブなど分岐記録がない場合は、従来の会話をそのまま読む。
+    if (branch) await play({ ...midcheck, lines: [...branch, ...midcheck.lines], branches: {} }, { bg: TONARI_N });
+    else await play("remake_midcheck", { bg: TONARI_N });
     progress.feedbackRead = true;
     save();
   }

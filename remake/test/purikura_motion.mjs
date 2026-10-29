@@ -205,7 +205,7 @@ async function wrapperCase({ skip = false, reduce = false, loadDuringImport = fa
       return motion;
     },
   });
-  const imports = { "state.js": { state: owner, config: { shortSeen: false } }, "data.js": { DB: {} }, "transition-kit.js": { reducedMotion: () => reduce }, "mg-kit.js": { motionVariant: () => "a" } };
+  const imports = { "state.js": { state: owner, config: { shortSeen: false } }, "data.js": { DB: {} }, "transition-kit.js": { reducedMotion: () => reduce }, "mg-kit.js": { motionVariant: () => "a" }, "ui.js": { loadingNotice: () => ({}) }, "module-loading.js": { withLoadingNotice: async (task, _opts) => await task } };
   await wrapper.link(async (path) => {
     const name = path.split("/").at(-1), values = imports[name];
     const m = new vm.SyntheticModule(Object.keys(values), function () { for (const [k, v] of Object.entries(values)) this.setExport(k, v); }, { context });

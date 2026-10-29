@@ -173,13 +173,13 @@ for (const seen of [[], [strip, ...candidates]]) {
 const actualCatalog = JSON.parse(fs.readFileSync(new URL("../data/gallery.json", import.meta.url), "utf8"));
 const actualEntries = galleryEntries(actualManifest, actualCatalog, empty, new Set());
 const actualStats = galleryStats(actualEntries);
-assert.equal(actualManifest.cgs.length, 25);
-assert.equal(actualEntries.filter(e => e.cg).length, 23, "two alternate strips are excluded");
-assert.equal(actualStats.total, 23, "current catalog has no approved additions");
+assert.equal(actualManifest.cgs.length, 29);
+assert.equal(actualEntries.filter(e => e.cg).length, 27, "two alternate strips are excluded");
+assert.equal(actualStats.total, 27, "current catalog has no approved additions");
 assert.equal(actualStats.unlocked, 0);
 assert.equal(actualStats.rate, 0);
 const expectedChars = {
-  minto: 5, ageha: 2, tsumugi: 3, naru: 3, rin: 1, mashiro: 3, other: 6,
+  minto: 5, ageha: 3, tsumugi: 3, naru: 3, rin: 1, mashiro: 4, other: 8,
 };
 for (const entry of actualEntries) assert(Object.hasOwn(CHAR_LABELS, entry.char), `${entry.id} has a character tag`);
 assert.equal(actualEntries.find(e => e.id === "cg_ch3_childhood_offered_hand").char, "mashiro");
@@ -187,7 +187,7 @@ for (const [char, total] of Object.entries(expectedChars)) assert.equal(actualSt
 assert.equal(Object.values(actualStats.byChar).reduce((sum, s) => sum + s.total, 0), actualStats.total);
 assert.equal(Object.values(actualStats.byKind).reduce((sum, s) => sum + s.total, 0), actualStats.total);
 const fullStats = galleryStats(galleryEntries(actualManifest, actualCatalog, empty, new Set(actualEntries.map(e => e.id))));
-assert.equal(fullStats.unlocked, 23);
+assert.equal(fullStats.unlocked, 27);
 assert.equal(fullStats.rate, 100);
 for (const s of Object.values(fullStats.byChar)) assert.equal(s.rate, 100);
 const withPhotos = galleryStats(galleryEntries(actualManifest, actualCatalog, { ...empty, purikura: [photo, { ...photo, day: 19 }] }, new Set()));
@@ -212,7 +212,7 @@ const adopted = galleryEntries(actualManifest, { items: [
   { ...comic, id: "not_explicitly_approved", approved: undefined },
 ] }, { ...empty, clearedChapters: [1] }, new Set());
 const adoptedStats = galleryStats(adopted);
-assert.equal(adoptedStats.total, 25, "only approved comic and movie add to T");
+assert.equal(adoptedStats.total, 29, "only approved comic and movie add to T");
 assert.equal(adoptedStats.unlocked, 1);
 assert.deepEqual(copy(adoptedStats.byKind.comic), { total: 1, unlocked: 1, rate: 100 });
 assert.deepEqual(copy(adoptedStats.byKind.movie), { total: 1, unlocked: 0, rate: 0 });
