@@ -294,7 +294,9 @@ await suite('ch2-tournament',async check=>{
     assert.equal(after.day,before.day);
     assert.equal(after.slot,before.slot);
     assert.deepEqual(p.votes,before.flags._ch2_tournament.votes);
-    assert.deepEqual(p.craft,before.flags._ch2_tournament.craft);
+    // 吸い出しの前に読んだ提供前の掛け合いだけは既読として残る（読み直させない）。工程・在庫・票は戻る。
+    const expectedCraft=structuredClone(before.flags._ch2_tournament.craft);expectedCraft.tournamentStory.seen.push('interlude_pull');
+    assert.deepEqual(p.craft,expectedCraft);
     assert.equal(p.rollback,null);
     assert.equal(after.stamina,before.stamina);
     assert.deepEqual(after.flavorStock,before.flavorStock);
