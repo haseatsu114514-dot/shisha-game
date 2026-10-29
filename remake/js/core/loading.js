@@ -103,7 +103,7 @@ export async function withLoading(prepare, {
       img.alt = panel.alt;
       const crop = el("div.loading-panel-crop", [img]);
       if (region) {
-        // The crop box keeps the region's own ratio; the 43:25 frame letterboxes it without distortion.
+        // The crop box keeps the region's own ratio; the 3:2 frame letterboxes it without distortion.
         const ratio = region.width / region.height;
         crop.style.aspectRatio = `${region.width} / ${region.height}`;
         crop.style.width = `min(100%, ${ratio} * 100cqh)`;
