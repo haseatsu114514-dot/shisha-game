@@ -122,8 +122,8 @@ await suite("ch1-presentation", async check => {
       });
       await page.locator('[data-test="standings-recognition"]').waitFor();
       await assertFits(page, ".sd-recognition");
-      assert.match(await page.locator('[data-test="standings-recognition"]').textContent(), /焼き炭/);
-      assert.equal(await page.locator('.sd-row[data-id="hajime"] .sd-points').textContent(), "0pt");
+      assert.match(await page.locator('[data-test="standings-recognition"]').textContent(), /コンロの上で、炭は角まで赤く焼けていた/);
+      assert.equal(await page.locator('.sd-row[data-id="hajime"] .sd-points').textContent(), "1pt");
       await page.waitForTimeout(100); await page.screenshot({ path: `${shots}/${device}-recognition.png` });
       await page.evaluate(() => V.running);
       assert(await page.evaluate(() => V.table === JSON.stringify(V.result.pointTable(1))));
