@@ -3,7 +3,8 @@ import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, modal, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
@@ -340,7 +341,8 @@ function renderComplete(owner) {
   playBgm("bgm_aftermath");
   card(owner, "complete", "全国大会・優勝／日本第一代表", "四人の一試合で、はじめが日本の第一代表になった。東京で伝えることが、まだ残っている。", [
     button(owner, "第三章の続きへ", "aftermath", async () => {
-      await (await import("./ch3-aftermath.js")).runChapterThreeAftermath();
+      const mod = await withLoadingNotice(import("./ch3-aftermath.js"), loadingNotice("第三章の続きを準備しています…"));
+      await mod.runChapterThreeAftermath();
     }, true),
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),

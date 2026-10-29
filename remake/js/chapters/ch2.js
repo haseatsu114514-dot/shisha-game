@@ -5,7 +5,8 @@ import { el, yen } from "../core/util.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, imageReady, chapterTitle, modal, withScenePreparation } from "../core/ui.js";
+import { layers, showScreen, setBg, imageReady, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { showHud } from "../daily/hud.js";
 import { openStatus } from "../daily/status.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -413,7 +414,8 @@ async function continuePreparation() {
 async function tournament() {
   session.scene = "tournament";
   showHud(false);
-  await (await import("./ch2-tournament.js")).runChapterTwoTournament();
+  const mod = await withLoadingNotice(import("./ch2-tournament.js"), loadingNotice("第2章の大会を準備しています…"));
+  await mod.runChapterTwoTournament();
 }
 
 function renderError(retry) {
