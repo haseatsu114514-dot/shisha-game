@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
-import { confirmAppearanceSetup, prepareAppearanceCatalog } from "./appearance_setup.mjs";
+import { prepareAppearanceCatalog } from "./appearance_setup.mjs";
 prepareAppearanceCatalog();
 const shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
@@ -194,15 +194,20 @@ await suite("ch1-tournament", async check => {
     } finally { release(); }
     const deadline = Date.now() + 15000;
     while (!(await page.locator('.bench .opt-grid, [data-test="mix-ok"]').count())) {
-      // 現行の外観選択を実入力で確定してから、元の機材/配合到達を検査する。
-      if (await page.locator('[data-test="appearance-confirm"]').isVisible()) {
-        await confirmAppearanceSetup(page);
-      }
       assert(Date.now() < deadline, "Tournament did not resume after the image arrived");
+      // 漫画の読書ホールドと水入れを本番入力で進め、機材/配合への到達を検査する。
+      if (await page.locator('.loading-gate.is-ready').isVisible()) {
+        await page.keyboard.press("Enter");
+      }
+      const water = page.locator('.bench [data-test="water-confirm"]');
+      if (await water.isVisible()) {
+        await water.click({ timeout: Math.max(1, deadline - Date.now()) });
+      }
       const skip = page.locator('#vn.active [data-test="vn-skip"]:not(.on)');
       if (await skip.count()) await skip.click();
       await page.waitForTimeout(60);
     }
+    assert.equal(await page.locator('.loading-gate').count(), 0);
     assert.equal(await page.locator('[data-test="craft-loading"]').count(), 0);
     assert.equal(await page.locator('.bench').evaluate(n => n.inert), false);
   });
