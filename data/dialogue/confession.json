@@ -87,12 +87,12 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "歳を偽っていたのは、謝りたい。そこは、ちゃんと"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "みんとも、栞も、私。嘘だったのは歳だけなの"
         },
         {
@@ -468,7 +468,7 @@
           "type": "choice",
           "choices": [
             {
-              "text": "はい、アゲハさんのものです",
+              "text": "はい、あげはさんのものです",
               "next_id": "confession_ageha_accept"
             },
             {
@@ -502,12 +502,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "アゲハは満面の笑みを浮かべたかと思うと、突然俺の手首を強く引き寄せた。"
+          "text": "あげはは満面の笑みを浮かべたかと思うと、突然俺の手首を強く引き寄せた。"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "えっ、ちょ、アゲハさん！？"
+          "text": "えっ、ちょ、あげはさん！？"
         },
         {
           "speaker": "",
@@ -567,7 +567,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "アゲハは俺の胸にすり寄るように顔を埋め、指先で俺の胸元をなぞる。"
+          "text": "あげはは俺の胸にすり寄るように顔を埋め、指先で俺の胸元をなぞる。"
         },
         {
           "speaker": "ageha",
@@ -1056,7 +1056,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "コロちゃんを抱える腕が少しだけ強くなる。彼女は口を開きかけ、そのまま自分の声で続けた。"
+          "text": "右手のコロちゃんが、少しだけ下を向く。彼女は口を開きかけ、そのまま自分の声で続けた。"
         },
         {
           "speaker": "samechan",
@@ -1133,7 +1133,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "コロちゃんを片腕に抱き直し、空いた方の手が俺の前へ伸びてきた。"
+          "text": "コロちゃんの右手を胸元に引き寄せ、空いた左手が俺の前へ伸びてきた。"
         },
         {
           "speaker": "samechan",
@@ -1144,6 +1144,10 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "はい。俺も、つなぎたいです"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_samechan_confession"
         },
         {
           "speaker": "",
@@ -1169,6 +1173,9 @@
           "speaker": "",
           "face": "",
           "text": "駅が見えても、二人とも手を離すのを少しだけ遅らせた。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
@@ -1281,6 +1288,10 @@
       },
       "lines": [
         {
+          "type": "show_cg",
+          "cg_id": "cg_hiyori_confession"
+        },
+        {
           "speaker": "hiyori",
           "text": "……よろしく、お願いします……",
           "face": "love_blush"
@@ -1303,6 +1314,9 @@
         {
           "speaker": "",
           "text": "笑い合ってから、ひよりと並んで歩いた。いつもの静かな微笑みも、もう遠いものには見えない。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },

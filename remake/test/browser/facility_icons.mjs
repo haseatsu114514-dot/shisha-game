@@ -9,7 +9,7 @@ import { FACILITY_ICONS } from '../../js/daily/facility-icons.js';
 const out = process.env.ARTIFACT_DIR ? new URL(path.resolve(process.env.ARTIFACT_DIR) + '/', 'file:')
   : new URL('../../../asset_sources/store-logos/ch1-issue470/ingame-qa/facility-icons-579/', import.meta.url);
 fs.mkdirSync(out, { recursive: true });
-// Pages copies assets + remake, excluding asset_sources. Stage only the five runtime files.
+// Pages copies assets + remake, excluding asset_sources. Stage only the six runtime files.
 // A project subpath also catches URLs that accidentally depend on the domain root.
 const stage = fs.mkdtempSync(path.join(os.tmpdir(), 'facility-icons-579-delivery-'));
 const mount = '/shisha-game/';
@@ -17,7 +17,7 @@ const files = new Map([
   ['remake/facility-icons-preview.html', 'text/html; charset=utf-8'],
   ['remake/css/facility-icons.css', 'text/css; charset=utf-8'],
   ['remake/js/daily/facility-icons.js', 'text/javascript; charset=utf-8'],
-  ['assets/ui/map-facilities-579.png', 'image/png'],
+  ['assets/ui/map-facilities-579.webp', 'image/webp'],
   ['assets/ui/map-facilities-extra-579.webp', 'image/webp'],
   ['assets/ui/map-rojiura-cinema.webp', 'image/webp'],
 ]);
@@ -75,7 +75,7 @@ try {
       const entry = FACILITY_ICONS[g.id];
       const extra = entry.extra;
       assert.deepEqual(g.source, entry.sheetSize || (extra ? [1536,1024] : [2172,724])); assert.equal(g.overflow, 'hidden');
-      assert.equal(g.imagePath, `${mount}assets/ui/${entry.src ? 'map-rojiura-cinema.webp' : `map-facilities-${extra ? 'extra-579.webp' : '579.png'}`}`);
+      assert.equal(g.imagePath, `${mount}assets/ui/${entry.src ? 'map-rojiura-cinema.webp' : `map-facilities-${extra ? 'extra-579.webp' : '579.webp'}`}`);
       assert(g.crop.every(value => value > 0 && value <= g.size + .1));
       g.sourceOrigin.forEach((value,index) => assert(Math.abs(value-origins[g.id][index]) < 1, JSON.stringify(g)));
       assert(g.button.every(value => value >= 48)); assert(g.fits); assert.equal(g.decoration, 'none');

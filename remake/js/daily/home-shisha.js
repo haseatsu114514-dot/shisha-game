@@ -126,7 +126,6 @@ const FLAVOR_IMPRESSIONS = {
   banana: "クリーミーな甘さなんだな",
   lychee: "上品な甘みに、ほのかな花の香りがある",
   cool_mint: "ひときわ強い清涼感なんだな",
-  twice_ice: "冷涼感の刺激が後まで残るんだな",
   peppermint_shake: "ミントの冷たさにミルクみたいな甘さもある",
   ice_grape: "ぶどうの甘酸っぱさと冷たさが重なるんだな",
   ice_lemon: "レモンの酸味に冷涼感が重なるんだな",

@@ -129,5 +129,3 @@ export function finalize(cs) {
   cs.bonusNotes = notes;
   return cs;
 }
-
-export const flavorName = (id) => DB.flavorById[id]?.short_name?.replace(/^AF /, "") || id;

@@ -46,7 +46,7 @@ const mocks = {
   "core/util.js": { el: (...a) => new Element(...a), yen: n => `${n}円` },
   "core/data.js": { bgUrl: x => x, sceneBg: () => ({}), faceIconUrl: noop, displayName: noop },
   "core/ui.js": { showScreen: (_, node) => screen.replaceChildren(node), setBg: async () => { backgrounds++; if (transitionRelease) await transitionRelease.promise; },
-    retire: n => n.classList.add("done"), uiArtReady: noop, imageReady: yes, layers: { fx: new Element() }, toast: t => toasts.push(t) },
+    retire: n => n.classList.add("done"), uiArtReady: noop, storeLogosReady: noop, imageReady: yes, layers: { fx: new Element() }, toast: t => toasts.push(t) },
   "core/transitions.js": { cueTransition: noop }, "core/scene-art.js": { renderSceneArt: noop, sceneArtUrls: () => [] },
   "core/audio.js": { SE: { click: noop, select: noop } }, "core/stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap() {}, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, STAMINA_LOW: 20 },
   "daily/spots.js": { allSpots: () => [], SPOT_PREVIEW: {}, isUnlocked: yes, hasNewEvent: noop, spotDetailLabel: s => s.label },

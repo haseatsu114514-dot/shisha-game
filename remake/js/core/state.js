@@ -59,7 +59,7 @@ export function newState() {
     flavorMastery: {}, // 味の系統 -> 経験値（Lv.1〜5）
     flavorLessons: [], // 熟練度を受け取った会話
     staffPractice: null, // その日のまかない使用量
-    flavorStock: {}, // フレーバーの在庫（g）。1箱50g。大会・家の試作・店の私物持ち込みで消費
+    flavorStock: {}, // フレーバーの在庫（g）。1箱50g。家の試作・店の持ち込み・大会の課題以外の葉で消費（課題は大会が支給＝減らない）
     weatherSeed: Math.floor(Math.random() * 100000), // 雨の日の抽選種（セーブごとに違う）
     baitoCount: 0,
     lastBaitoDay: 0,           // 最後にシフトに入った日（スミさんのバイト誘いの判定）
@@ -362,19 +362,35 @@ export function newGame() {
   return setState(newState());
 }
 
-export function save() {
-  if (!state) return false;
+let lastComplementedAutosaveRaw = null;
+
+function writeSave() {
+  if (!state) return { raw: null, saved: false };
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
-  try { recordGalleryProgress(peekSave()); } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
+  try {
+    const oldRaw = localStorage.getItem(SAVE_KEY);
+    if (oldRaw && oldRaw !== lastComplementedAutosaveRaw) {
+      const oldSave = JSON.parse(oldRaw);
+      if (oldSave && typeof oldSave === "object") recordGalleryProgress(oldSave);
+      lastComplementedAutosaveRaw = oldRaw;
+    }
+  } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
   recordGalleryProgress(state);
   state.savedAt = Date.now();
+  let raw = null;
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-    return true;
+    raw = JSON.stringify(state);
+    localStorage.setItem(SAVE_KEY, raw);
+    lastComplementedAutosaveRaw = raw;
+    return { raw, saved: true };
   } catch {
     /* プライベートウィンドウ等で失敗しても遊べるようにする */
-    return false;
+    return { raw, saved: false };
   }
+}
+
+export function save() {
+  return writeSave().saved;
 }
 
 export function peekSave() {
@@ -431,9 +447,9 @@ export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
 /** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
 export function saveToSlot(key) {
-  save();
+  const { raw } = writeSave();
   try {
-    localStorage.setItem(key, JSON.stringify(state));
+    localStorage.setItem(key, raw === null ? JSON.stringify(state) : raw);
     return true;
   } catch {
     return false;
@@ -513,6 +529,7 @@ export const emptyTokyoVisits = () => ({ version: 1, plans: [], offers: {}, clos
 function restoreTokyoVisits(raw) {
   if (!raw || raw.version !== 1 || !Array.isArray(raw.plans)) return emptyTokyoVisits();
   const restored = emptyTokyoVisits();
+  const seenIds = new Set();
   restored.closedSlots = [...new Set((Array.isArray(raw.closedSlots) ? raw.closedSlots : [])
     .filter(id => /^d\d+-(noon|night)$/.test(id)))];
   const validTime = time => time && Number.isInteger(time.day) && time.day > 0 && [0, 1].includes(time.slot)
@@ -524,8 +541,9 @@ function restoreTokyoVisits(raw) {
       || !validTime(plan.meetup) || !validTime(plan.date) || plan.meetup.day !== plan.arrivalDay
       || (plan.meetup.day * 2 + plan.meetup.slot) >= (plan.date.day * 2 + plan.date.slot) || plan.date.day >= plan.returnDay
       || typeof plan.met !== "boolean" || typeof plan.dateDone !== "boolean"
-      || restored.plans.some(other => other.id === plan.id)) continue;
+      || seenIds.has(plan.id)) continue;
     restored.plans.push(structuredClone(plan));
+    seenIds.add(plan.id);
   }
   if (raw.chats && typeof raw.chats === "object" && !Array.isArray(raw.chats)) {
     restored.chats = Object.fromEntries(Object.entries(raw.chats).filter(([, day]) => typeof day === "string"));

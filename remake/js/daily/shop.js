@@ -36,7 +36,7 @@ const CAT_LABEL = { cooling: "清涼", sweet: "スイート", fruit: "フルー�
 const TYPE_LABEL = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭" };
 export { RIN_AWAY_DAY };
 
-// フレーバーは1箱50g（旧版 N3）。買う＝在庫+50g、大会で詰んだ分だけ減る（課題フレーバーは主催支給＝減らない）
+// フレーバーは1箱50g（旧版 N3）。買う＝在庫+50g。自宅の試作・店への持ち込み・大会の課題以外の葉で減る（課題フレーバーは大会が支給＝減らない）
 export const FLAVOR_BOX_GRAMS = 50;
 export const flavorStock = (id) => Math.max(0, state.flavorStock?.[id] || 0);
 export function addFlavorStock(id, grams) {
@@ -75,7 +75,7 @@ const FLAVOR_BOXES = [
 ];
 const EQUIP_ART = {
   silicone_bowl: "bowl_empty_silicone.png", hagal_80beat: "bowl_empty_phunnel.png",
-  suyaki_hagal: "bowl_empty_clay.png",
+  suyaki_hagal: "bowl_empty_clay.png", suyaki_hiyori: "bowl_empty_hiyori.png",
 };
 // A real <img> error handler also covers failed/aborted delivery requests.
 // Cropping retains the approved main sheet windows and the measured carton margin.

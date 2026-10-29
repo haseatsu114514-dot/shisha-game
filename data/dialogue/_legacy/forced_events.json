@@ -175,19 +175,6 @@
   ],
   "interval_1": [
     {
-      "id": "interval_day1_morning",
-      "day": 1,
-      "time_slot": "morning",
-      "flag": "interval_day1_morning_done",
-      "title": "大会の余韻",
-      "description": "大会が終わった翌朝。静かな朝が戻ってきた。",
-      "dialogue_file": "res://data/dialogue/ch1_interval.json",
-      "dialogue_id": "interval_day1_morning",
-      "condition_flag": "ch1_tournament_rank_not_1",
-      "stat_changes": {},
-      "next_scene": "map"
-    },
-    {
       "id": "interval_day1_morning_win",
       "day": 1,
       "time_slot": "morning",

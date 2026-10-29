@@ -4,6 +4,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import { installLoadingComicReader } from './browser/loading_reader.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const browser = await chromium.launch({ headless: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
@@ -13,6 +14,7 @@ const shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  await installLoadingComicReader(page);
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
   await page.waitForSelector('[data-test="title-new"]');

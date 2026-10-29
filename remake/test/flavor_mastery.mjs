@@ -13,7 +13,8 @@ DB.recipes=[]; DB.ngMixes=[];
 const { addStamina } = await import('../js/core/stats.js');
 const { SPOTS } = await import('../js/daily/spots.js');
 const { applyHomeShisha } = await import('../js/daily/home-shisha.js');
-const { regulationFor, REGULATION, mixFlavorIds, evaluateMix } = await import('../js/craft/steps.js');
+const { regulationFor, REGULATION, mixFlavorIds, evaluateMix, isTournamentFlavorLegal } = await import('../js/craft/steps.js');
+const { buildCarryPackage } = await import('../js/core/carry.js');
 let s=core.newGame();
 assert.equal(masteryLevel(s,'lemon'),1);
 for(let i=0;i<MASTERY_THRESHOLDS.length;i++){s.flavorMastery.lemon=MASTERY_THRESHOLDS[i];assert.equal(masteryLevel(s,'lemon'),i+1);}
@@ -60,7 +61,7 @@ const snapshot=structuredClone(s);assert.equal(spendPracticeMix(s,{[a]:100}),nul
 core.save();s=core.load();assert.equal(staffStock(s,a),0);assert.deepEqual(s.flavorMastery,snapshot.flavorMastery);learnFlavorStory(s,d);assert.equal(s.flavorMastery.orange,12);
 s.day++;assert.equal(staffStock(s,staffFlavors(s)[0]),6);
 s=core.newGame();s.schema=20;s.flavorStock={mint:37};s.flavorMastery={lemon:Infinity,mint:-4};core.save();s=core.load();assert.deepEqual(s.flavorStock,{mint:37});assert.deepEqual(s.flavorMastery,{});
-assert.equal(regulationFor({mode:'tournament'}).flavor,'lemon');assert.equal(regulationFor({mode:'tournament'}).supply,undefined);
+assert.equal(regulationFor({mode:'tournament'}).flavor,'lemon');assert.equal(regulationFor({mode:'tournament'}).supply,'lemon');
 s.schema=20;s.phase='tournament';core.save();s=core.load();assert.equal(regulationFor({mode:'tournament'}).flavor,'mint');
 // Spring Water is a purchasable blond flavor with its own persistent mastery family.
 const spring=DB.flavorById.spring_water;
@@ -120,7 +121,41 @@ for (const [chapter, required] of [[1, 'lemon'], [2, 'afsahr_strawberry'], [3, '
  assert(preparationFlavors().includes(trial),'preparationに試作葉が残る');
  assert.deepEqual(recipeMix({flavors:[DB.flavorById[trial].family||trial]}),{[trial]:12},'自宅でも試作葉を選べる');
 }
+const release = 'nightside_earlgrey_release';
+assert.equal(DB.flavorById[release].chapter_min, 3);
+assert.equal(isTournamentFlavorLegal(release, 2), false);
+assert.equal(isTournamentFlavorLegal(release, 3), true);
+assert.equal(isTournamentFlavorLegal(trial, 5), false);
+assert.equal(isTournamentFlavorLegal('lemon', 1), true);
+const tournament = {mode:'tournament',equip:{bowl:'silicone_bowl'}};
+for (const [chapter, required] of [[1, 'lemon'], [2, 'afsahr_strawberry']]) {
+ s=core.newGame();s.chapter=chapter;s.flavorStock={[release]:50,lemon:50,chocolate:50};
+ for (const options of [{}, {orderFlavorIds:[release,required]}, {staffPractice:true}]) {
+  assert(!mixFlavorIds({...tournament,...options}).includes(release), `第${chapter}章: 発売前の葉は大会候補から除外`);
+ }
+ assert.equal(evaluateMix({...tournament,mix:{[required]:4,[release]:8}}).regOk,false,`第${chapter}章: 発売前の葉を含む配合は不可`);
+ assert.equal(evaluateMix({...tournament,mix:{[required]:12}}).regOk,true,`第${chapter}章: 課題葉のみの配合は可`);
+}
+s=core.newGame();s.chapter=3;s.flavorStock={[release]:50,lemon:50,chocolate:50};
+assert(mixFlavorIds(tournament).includes(release),'第3章: 発売品を大会候補に表示');
+assert.equal(evaluateMix({...tournament,mix:{chocolate:4,[release]:8}}).regOk,true,'第3章: 発売品を含む配合は可');
+
+s=core.newGame();s.chapter=5;s.flavorStock={[release]:50,lemon:50,chocolate:50};
+const pkg=buildCarryPackage(s);
+assert.equal(pkg.flavorStock[release],50,'発売品の在庫は持ち越される');
+s=core.newGame();assert.equal(s.chapter,1);s.flavorStock=pkg.flavorStock;
+for (const [chapter, required] of [[1,'lemon'],[2,'afsahr_strawberry']]) {
+ s.chapter=chapter;
+ for (const options of [{}, {orderFlavorIds:[release,required]}, {staffPractice:true}]) {
+  assert(!mixFlavorIds({...tournament,...options}).includes(release), `NG+ 第${chapter}章: 持ち越し在庫は大会候補から除外`);
+ }
+ assert.equal(evaluateMix({...tournament,mix:{[required]:4,[release]:8}}).regOk,false,`NG+ 第${chapter}章: 持ち越し在庫の注入配合は不可`);
+}
+s.chapter=3;
+assert(mixFlavorIds(tournament).includes(release),'NG+ 第3章: 発売後は持ち越し在庫を大会候補に表示');
+assert.equal(evaluateMix({...tournament,mix:{chocolate:4,[release]:8}}).regOk,true,'NG+ 第3章: 発売後は持ち越し在庫を使える');
 for (const [chapter, reg] of Object.entries(REGULATION)) {
  assert.notEqual(DB.flavorById[reg.supply]?.competition_legal,false,`データ矛盾: 第${chapter}章の課題支給葉が大会使用不可`);
+ if (reg.supply) assert.equal(isTournamentFlavorLegal(reg.supply,Number(chapter)),true,`データ矛盾: 第${chapter}章の課題支給葉が未発売`);
 }
-console.log('PASS #1279 tournament candidates and injected mixes reject trial leaves; rehearsal, staff practice, preparation and home retain them; 課題支給葉のデータ矛盾なし');
+console.log('PASS #1279 tournament candidates and injected mixes reject trial and prerelease leaves, including NG+ carry; release in chapter 3; 課題支給葉のデータ矛盾なし');
