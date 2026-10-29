@@ -262,7 +262,7 @@ function renderComplete(owner) {
   // 第2章の外側の perform() は終了時に画面内ボタンを再設定する。
   // その処理にも予告中の操作禁止を伝えるため、disabled と locked を一緒に更新する。
   const lock = (button, locked) => {
-    button.dataset.locked = String(locked);
+    if (button.dataset) button.dataset.locked = String(locked);
     button.disabled = locked;
   };
   const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
