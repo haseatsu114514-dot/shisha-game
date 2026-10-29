@@ -71,6 +71,13 @@
           "text": "日本の窓口は凛に任せている。あいつの上司だ"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ev_rin_monitor",
+          "next_true": "rin_report",
+          "next_false": ""
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "メーカーの方が、お店まで？"
@@ -210,6 +217,39 @@
         }
       ],
       "branches": {
+        "rin_report": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "rin",
+            "next_true": "rin_report_lover",
+            "next_false": "rin_report_plain"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "凛の報告に、名前を伏せたモニターがいた。舌が素直だ、と書いてあった"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "……県大会で、それらしい手を見ていた"
+          }
+        ],
+        "rin_report_plain": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "凛さんの……？"
+          }
+        ],
+        "rin_report_lover": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……凛さんから、聞いてます"
+          }
+        ],
         "unseen": [
           {
             "speaker": "volk",
