@@ -1017,6 +1017,10 @@
           "flag": "_ch2_scout_seen"
         },
         {
+          "type": "set_flag",
+          "flag": "_ch2_scout_tasting"
+        },
+        {
           "type": "choice",
           "id": "ch2_tasting_turn",
           "choices": [

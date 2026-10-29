@@ -1091,6 +1091,10 @@
           "text": "行きます"
         },
         {
+          "type": "set_flag",
+          "flag": "_ch2_rei_ticket"
+        },
+        {
           "speaker": "rei",
           "face": "normal",
           "text": "……そうか"
