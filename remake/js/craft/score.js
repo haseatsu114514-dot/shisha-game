@@ -1,7 +1,7 @@
 import { mixMasteryProfile } from "../core/flavor-mastery.js";
 // 完成品の性能と総合評価。
 //   穴あけ・炭焼き・配合・蒸らし・吸い出し・熱管理 → 完成品ステータス（shishaStats）
-//   総合スコア = 穴あけ20% + 炭焼き20% + 完成品20% + 調整1回目20% + 調整2回目20%
+//   通常の総合スコア = 穴あけ20% + 炭焼き20% + 完成品20% + 調整1回目20% + 調整2回目20%
 import { clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
@@ -16,7 +16,7 @@ const WATER_TASTE_FACTOR = .5;
 
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
 /** 南雲が持ち点を動かす基準（これ未満なら南雲票は入らず、普通に負ける） */
-export const NAGUMO_BAR = 84;
+export const NAGUMO_BAR = 90.8; // MEASURE.md: 第1章・mid 初回突破率 74.2%（742/1000）。
 
 /** 同系統フレーバー（AF/ドバジ/アフサールのミント・ダブルアップル等）の合計グラム数 */
 export function flavorFamilyGrams(mix, family, flavorById = DB.flavorById) {
@@ -116,10 +116,15 @@ export function finalize(cs) {
     care1: cs.careHistory?.[0]?.score ?? 0,
     care2: cs.careHistory?.[1]?.score ?? 0,
   };
-  // アルミ穴あけを飛ばした一台は穴あけの重みを外し、残りの工程で割り直す（損も得もしない）。
+  // アルミ穴あけを飛ばした一台は穴あけの重みを外す。第1章大会だけ完成品を40%にする。
   const foilSkipped = !!cs.holes?.skipped;
   const weights = { ...WEIGHTS };
-  if (foilSkipped) delete weights.holes;
+  if (foilSkipped) {
+    delete weights.holes;
+    if ((cs?.chapter ?? state?.chapter) === 1 && cs.mode === "tournament") {
+      Object.assign(weights, { heat: .2, shisha: .4, care1: .2, care2: .2 });
+    }
+  }
   const wsum = Object.values(weights).reduce((sum, w) => sum + w, 0) || 1;
   const total = clamp(Object.entries(weights).reduce((s, [k, w]) => s + parts[k] * (w / wsum), 0) + bonus, 0, 100);
   cs.total = Math.round(total * 10) / 10;
