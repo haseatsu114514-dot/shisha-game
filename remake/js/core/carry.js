@@ -478,6 +478,7 @@ export const FLAG_FAMILY_RULES = [
   ["_*_story_waiting_pts", "person"],
   ["_ch2_*", "progression"],
   ["_ch3_read_*", "progression"],
+  ["_ch3_trial_*", "progression"],
   ["_cafe_recall_*", "progression"],
   ["_city_guest_seen_*", "progression"],
   ["_date_inv_*", "person"],
