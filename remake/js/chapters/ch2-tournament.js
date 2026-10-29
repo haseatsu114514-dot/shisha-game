@@ -28,6 +28,7 @@ import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { playChapterPreview } from "./chapter-preview.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
@@ -258,14 +259,41 @@ async function renderDefeat(owner, variant = null) {
   showScreen("end", root);
 }
 function renderComplete(owner) {
+  const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
+    const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
+    await mod.beginChapterThree();
+  }, true);
+  const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
-    button(owner, "第三章・東京へ", "chapter-three", async () => {
-      const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
-      await mod.beginChapterThree();
-    }, true),
+    next,
+    replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], [el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" })]);
+  // 第1章と同じ挙動: 未視聴なら完了カードで自動再生し、再生中は「次章へ」を押せない。
+  // 完走/明示スキップのときだけ既読（_ch2_preview_seen）を保存する（DESIGN 7-4）。
+  async function preview(first = false) {
+    if (!live(owner) || owner.previewing) return;
+    owner.previewing = true;
+    next.disabled = true; replay.disabled = true;
+    const controller = new AbortController();
+    const observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
+    observer.observe(layers.screen, { childList: true });
+    let result;
+    try { result = await playChapterPreview("ch3", { signal: controller.signal }); }
+    finally { observer.disconnect(); }
+    if (first && ["completed", "skipped"].includes(result) && live(owner) && state.phase === "cleared") {
+      state.flags._ch2_preview_seen = true;
+      save();
+    }
+    owner.previewing = false;
+    next.disabled = false; replay.disabled = false;
+    if (live(owner) && next.isConnected) {
+      playBgm("bgm_aftermath");
+      replay.focus({ preventScroll: true });
+    }
+  }
+  if (!state.flags._ch2_preview_seen) preview(true);
 }
 function renderError(owner) {
   broadcast.clearComments();
