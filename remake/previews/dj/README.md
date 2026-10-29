@@ -1,27 +1,13 @@
-# Manual DJ prototype — Issue1064
+# Manual DJ — Issue #1064
 
-Entry: `remake/previews/dj/index.html`, using the existing permitted HTTP preview/normal PR CI environment. Buildless; no dependency installation, external media or game SAVE required. This revision did not launch a local server/browser or change a recorded browser restriction.
+Entry: `remake/previews/dj/index.html`. Kevin MacLeodの実曲5曲（CC BY 4.0）を、ゲームが提示する3ステージでつなぎます。Stage 1はDance Monster / Digital Lemonade、Stage 2はRaving Energy / Cut and Dry、Stage 3はRising Tide (faster) / Dance Monsterです。全曲の帰属・ISRCは画面下部に掲載しています。
 
-1. Prepare audio (initial volume 18%). Preparation alone starts neither deck. Mute/volume are available before playback.
-2. BPM SYNC: press a deck’s button to copy the other deck’s current BPM once, including decimals. It does not start playback, seek or align beat/phrase positions, change the other deck, or keep following later tempo changes. Fine pitch remains available afterwards.
+ステージ選択でAが開始し、Bは待機します。Stage 1・2のBにはランダムな±1.2〜2.8%のデチューン、Stage 3には122/120 BPMの差があります。既定はStage 1。音声準備だけでは再生しません。
 
-Fine pitch: each deck has −0.01/+0.01 BPM buttons (also usable before playback), with two-decimal BPM/difference readouts and a 0.01-step slider. Tempo is retained after release; these controls do not seek the beat, start a deck or sync the other deck. Range is 110–140 BPM; the outward button is disabled at each limit.
+手動PITCH（スライダー・±0.01 BPM）で合わせ、大きなPLAYを押します。PLAYは即時開始し、フレーズ頭へ予約・同期しません。拍からの符号つきずれをPERFECT / GOOD / OK / EARLY / LATEで表示します。上下の実PCM波形、±1/16拍、Bの±10msナッジで位相を合わせ、8小節ガイドに沿って等パワーの横フェーダーを動かします。テンポは音程にも反映します。
 
-Manually match PITCH/BPM: the fixed test pair starts at A128/B126. Press PLAY A, then press the separate large PLAY B at the displayed phrase head yourself. There is no continuous sync, automatic tempo blending, scheduled PLAY, automatic seek or automatic fader movement. PLAY uses the audio clock when its user request is accepted; it does not quantize to the guide.
-3. Use the upper A/lower B actual-PCM waveforms and ±1/16-beat nudges to align phase. Both use the same seven-second scale/current line. Nudging seeks the playing audio; stopped-deck nudge is disabled. The B half-beat button is a labelled test control.
-4. Move the horizontal crossfader over the indicated eight bars. It changes equal-power gains only. There is no EQ/CUE, tapping mini-game, scoring or pass/fail. Fader percentages show position, not linear gain.
+両デッキ再生中かつ対象PLAY記録後に判定できます。ピッチ誤差・PLAYずれ・位相ドリフトの3項目を平均し、S/A/B/Cを表示します。8小節完了時には未判定なら自動判定します。ガイドは開始・同期・テンポ変更をしません。
 
-Remaining bars, the last four beats and NEXT HEAD are provisional visual entry guidance, not an input tolerance or reservation mechanism. Missing a head never starts a stopped deck. Initial PLAY begins at beat zero; per-deck PAUSE/PLAY preserves its head. A subsequent transfer requires the player to stop/start or time the other deck; there is no CUE/reset-to-head feature. Beat-phase and 32-beat phrase offset are separately displayed; matching beats alone does not repair a whole-bar error. This remains a fixed-pair prototype rather than a finished set-management interface.
+全体停止/再開は直前の再生デッキだけを復帰し、個別PAUSEはヘッドを保持します。タブ非表示・音声中断時は停止し、自動再開しません。本編SAVE・経済・章進行には接続しません。小窓のコード仮ドット/仮キャラ・生成背景は従来の試作表示です。
 
-Both mono tracks are original procedural test sound (kick/hat/snare/bass), 32 beats each. Buffer rounding is included in the actual playback-rate calculation. B's existing bass is pretransposed for manually matching 128 BPM; there is no key lock and pitch follows tempo. No finished EDM, recorded songs, third-party samples, sprites or product interface images are included.
-
-AudioContext time drives playback, waveforms and beat positions. A/B keep independent anchors and rates. The active/louder deck chooses the visual beat master with 40/60% hysteresis. The outgoing guide deck measures the eight-bar window, but never modifies audio. The VJ uses mixed-output RMS. A small passive window below the controls shows a four-beat original code dancer and, separately, a short geometric glamorous-character proposal. These are labelled placeholders, not adopted character art. Reduced motion uses static background VJ; no flashing or overlay over PLAY/waveforms.
-
-Pause, hidden tabs and audio interruption stop/disconnect voices. Whole-transport resume restores only previously playing decks, without pitch matching. Individual pause preserves its position. Seek ramps old/new sources over 8ms and releases old nodes. Page exit disconnects/closes the graph; bfcache navigation pauses. No localStorage/sessionStorage, game-state import, economy, time or SAVE-schema changes.
-
-Validation: `node remake/test/dj_preview.mjs` runs the actual model/audio/synth with controlled WebAudio ports. The current revision passes 24 groups; old16 results are not carried forward. This is not actual browser or physical listening acceptance. The existing `dj-preview` normal CI command `node remake/test/browser/dj_preview.mjs` now checks manual pitch/individual PLAY, stopped waveform, actual clock/offset, eight-bar guidance, PC1280×720/touch844×390/reduced-motion and large target/small-window geometry. It is saved and syntax-checked, not run locally. Physical listening, latency/clicks/loop quality, real-device touch, visibility/OS interruption UI and audio/video capture remain acceptance work. Do not bypass recorded local browser restrictions.
-
-RED ROOM is a prototype label, not an adopted story venue. No new assets or changes to the main game are included.
-
-## Visual pass — 2026-10-27
-Original generated red-lit club background, dark metal panels, red/amber deck identities, two-decimal tempo displays, passive audio-clock platter rings and ON AIR state indicators. All controls remain native HTML inputs/buttons; background contains no baked labels or controls. Reduced motion freezes the platter ring. Existing small dancer/VJ remains below the console. Background source, prompt and QA: `asset_sources/dj-red-room/README.md`. Audio remains procedural test loops, not finished EDM.
+検証: `node remake/test/dj_preview.mjs`。音声ローダを注入した制御WebAudioと純関数を検証します。ブラウザテスト `remake/test/browser/dj_preview.mjs` は通常PR CI用です。記録済みの制限に従いローカルでは実行せず、`node --check` のみ行います。実機発音、ループ品質、遅延、タッチ、OS中断の確認はCIと司令塔側の担当です。
