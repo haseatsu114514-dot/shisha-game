@@ -11,8 +11,8 @@ import { imgFileUrl } from "./img-file.js";
 //     bubbles? : [{ text, x, y, width?, fontSize? }] ... 吹き出し画像の上にゲーム内テキストを重ねる
 //                （x/y/width は art 枠に対する % 、fontSize は cqw。誤字を直せる差し込み方式）。
 //   }
-// 1コマの作画サイズは 1920x1080 基準で 860x500（43:25）固定。原画が 43:25 以外でも、
-// 表示枠は 43:25 のままレターボックスで収めるので、作画は 43:25 を推奨する。
+// 1コマの作画サイズは 1920x1080 基準で 860x573（3:2）固定。原画が 3:2 以外でも、
+// 表示枠は 3:2 のままレターボックスで収めるので、作画は 3:2 を推奨する。
 const src = imgFileUrl("loading/adam-chaos.webp");
 const batch1Src = imgFileUrl("loading/loading-batch1.webp");
 export const LOADING_COMICS = [{

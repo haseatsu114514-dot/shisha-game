@@ -320,8 +320,12 @@ try {
         && document.querySelector('.map:not(.done) [data-spot="rest"]'), { day, slot }, { timeout: 60000 });
       if (day === 12 && slot === 0) {
         const before = await consecutive.evaluate(() => {
-          T.core.saveToSlot("suien_remake_slot1"); T.core.loadFromSlot("suien_remake_slot1");
-          return { flags: T.core.state.flags, trace: T.trace };
+          // 保存された側で永続性を確認する。ここで loadFromSlot すると state が
+          // 差し替わり、カレンダーのセッション同一性ガード（runDaily の owner 照合）が
+          // 働いて進行中のループが終了し、DAY13 のマップへ進めなくなる。
+          T.core.saveToSlot("suien_remake_slot1");
+          const saved = JSON.parse(localStorage.getItem("suien_remake_slot1"));
+          return { flags: saved.flags, trace: T.trace };
         });
         assert(before.flags._tsumugi_contest_submitted);
         assert.deepEqual(mandatoryTrace(before.trace), sketchTrace,

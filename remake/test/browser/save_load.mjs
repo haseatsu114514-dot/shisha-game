@@ -78,11 +78,24 @@ await suite("save-load", async check => {
       const automaticSourcePreserved = localStorage.getItem(core.SAVE_KEY) === raw;
       const manual = copy(core.loadFromSlot("suien_remake_slot1"));
       const manualSourcePreserved = localStorage.getItem("suien_remake_slot1") === raw;
+      const persisted = copy(JSON.parse(localStorage.getItem(core.SAVE_KEY)));
+      // cycleId is a per-cycle unique stamp issued on SCHEMA 22 migration
+      // (state.js: issued only when missing). Two independent migrations of
+      // the same legacy raw are two adoptions and receive different stamps,
+      // so exclude it from the purity comparison — like savedAt in copy() —
+      // and verify the issuance itself separately below.
+      const cycleIds = { auto: auto.cycleId, manual: manual.cycleId, persisted: persisted.cycleId };
+      delete auto.cycleId; delete manual.cycleId; delete persisted.cycleId;
       return { auto, manual, schema: core.SCHEMA, automaticSourcePreserved, manualSourcePreserved,
-        persisted: copy(JSON.parse(localStorage.getItem(core.SAVE_KEY))) };
+        persisted, cycleIds };
     });
     assert.deepEqual(result.auto, result.manual);
     assert.deepEqual(result.persisted, result.manual);
+    for (const id of Object.values(result.cycleIds)) {
+      assert.equal(typeof id, "string"); assert(id.length > 0, "migration must issue a cycleId");
+    }
+    assert.equal(result.cycleIds.persisted, result.cycleIds.manual,
+      "manual load must refresh the autosave with the same cycleId");
     const s = result.auto;
     assert.equal(s.schema, result.schema); assert.equal(s.day, 14); assert.equal(s.money, 999999);
     assert.equal(s.tournament.attempts, 2); assert.equal(s.phase, "daily");
