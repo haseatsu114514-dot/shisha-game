@@ -9,9 +9,12 @@ import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
-/** 章ごとのソフトキャップ（ch1で上限に張り付かない・ch5で全100を狙える） */
-export function statCap() {
-  return { 1: 48, 2: 66, 3: 82, 4: 90, 5: 100 }[state?.chapter || 1] || 100;
+/** 章キャップと周回開始値から能力ごとに決めるソフトキャップ。 */
+export const CYCLE_START_CAP_MARGIN = 10;
+export function statCap(key) {
+  const chapterCap = { 1: 48, 2: 66, 3: 82, 4: 90, 5: 100 }[state?.chapter || 1] || 100;
+  const start = state?.cycleStartStats?.[key];
+  return Math.max(chapterCap, (Number.isFinite(start) ? start : 10) + CYCLE_START_CAP_MARGIN);
 }
 
 /** ★1〜5（内部値 0〜100 を 20 刻み） */
@@ -54,12 +57,13 @@ export function gainWord(total) {
  */
 export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } = {}) {
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
-  const cap = statCap();
+  let cap = statCap(key);
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
   if (state.stats[key] >= cap || excludedKeys.includes(key)) {
-    const open = STAT_KEYS.filter((k) => state.stats[k] < cap && !excludedKeys.includes(k));
+    const open = STAT_KEYS.filter((k) => state.stats[k] < statCap(k) && !excludedKeys.includes(k));
     if (!open.length) return 0;
     key = open[Math.floor(Math.random() * open.length)];
+    cap = statCap(key);
   }
   const before = state.stats[key];
   let xp = (state.statXp[key] || 0) + amount;
