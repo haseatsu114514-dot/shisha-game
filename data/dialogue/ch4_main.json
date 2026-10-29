@@ -675,6 +675,11 @@
         {
           "speaker": "sheikh",
           "face": "normal",
+          "text": "注文より先に、水が置かれた"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
           "text": "王族の注文ではなく、疲れた客の注文を聞いてくれた"
         },
         {
@@ -705,7 +710,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "帰国後。tonariのカウンターで、スミさんにシェイクの話をした。"
+          "text": "帰国後。荷をほどくと、路地裏の店の炭の匂いがした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariのカウンターで、スミさんにシェイクの話をした。"
         },
         {
           "speaker": "sumi",
