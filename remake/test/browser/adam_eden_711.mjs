@@ -212,8 +212,8 @@ async function runScene(page, row, touch) {
     if (touch) await pin.tap(); else await pin.click();
     await page.waitForTimeout(450);
     row.pinImages = await images(page, '[data-test="pin-adam"] img');
-    const face = row.pinImages.find(x => x.src.endsWith('/face_adam.png'));
-    const logo = row.pinImages.find(x => x.src.endsWith('/store_logos/eden.png'));
+    const face = row.pinImages.find(x => x.src.endsWith('/face_adam.webp'));
+    const logo = row.pinImages.find(x => x.src.endsWith('/store_logos/eden.webp'));
     assert(face && logo, 'Actual Adam face or adopted EDEN logo missing');
     assert.deepEqual([face.width, face.height], [160, 160]);
     assert.deepEqual([logo.width, logo.height], [1960, 802]);
@@ -231,7 +231,7 @@ async function runScene(page, row, touch) {
     const card = page.locator('[data-test="store-arrival"][data-store="adam"]');
     await card.waitFor({ state: 'visible' });
     row.entryImages = await images(page, '[data-test="store-arrival"][data-store="adam"] img');
-    assert(row.entryImages.some(x => x.src.endsWith('/store_logos/eden.png')));
+    assert(row.entryImages.some(x => x.src.endsWith('/store_logos/eden.webp')));
     await page.waitForTimeout(180);
     row.screenshots.push(await shot(page, prefix + '-arrival'));
     await page.waitForFunction(() => A711.arrived);
