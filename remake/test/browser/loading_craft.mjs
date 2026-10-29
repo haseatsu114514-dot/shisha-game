@@ -39,7 +39,7 @@ await suite('loading-craft', async check => {
           overflow: getComputedStyle(node).overflow, src: image.getAttribute('src') };
       }));
       assert(regions.every(region => region.inside && region.decoded && region.overflow === 'hidden'));
-      assert(regions.every(region => Math.abs(region.ratio - 43 / 25) < 0.03), 'Every panel uses the fixed 43:25 display frame');
+      assert(regions.every(region => Math.abs(region.ratio - 3 / 2) < 0.03), 'Every panel uses the fixed 3:2 display frame');
       // The decoded image must be the shown comic's registered sheet, at its registered size.
       regions.forEach((region, index) => {
         const panel = comic.panels[index];

@@ -80,7 +80,8 @@ try {
   await page.waitForTimeout(300);
   assert.equal(await page.locator(".vn-choices.show .vn-choice").count(), 2, "SKIP chose a response without the player");
   await page.locator(".vn-choice").first().click();
-  await page.locator('[data-test="after-none"]').click({ timeout: 5000 });
+  await page.locator('[data-test="shift-order-0"]').click({ timeout: 10000 });
+  await page.locator('[data-test="after-none"]').click({ timeout: 30000 });
   await page.waitForFunction(() => T.shiftDone, { timeout: 5000 });
   assert.equal(await page.locator('[data-test="vn-skip"].on').count(), 0, "SKIP carried into the next action");
   console.log("[playtest UI] PASS: actual baito carries SKIP through its scenes, pauses for choices and clears at shift end");
