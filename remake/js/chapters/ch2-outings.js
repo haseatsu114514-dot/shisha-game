@@ -21,7 +21,7 @@ export const CITY_SHOP = { id: "ch2_shop", kind: "shop", label: `Dr.fookah ${CH2
 export const CITY_CHAIN = { id: "ch2_c_station", label: "C.STATION", name: `C.STATION ${CH2_CITY_NAME}店`, kind: "outing", region: "widehanga", area: "シーステーション支店", theme: "stadium", glyph: "C", x: 46, y: 54,
   previewUrl: CITY_BACKGROUNDS.c_station, look: "remake_ch2_chain_look", first: "remake_ch2_chain_visit", repeat: "remake_ch2_chain_repeat", cost: 2500, stamina: -16, stat: "insight",
   dayOneDesc: "地元でも見た大手シーシャチェーンの支店。県大会ホールと同じビルだが、客席は別のフロアにある。",
-  desc: "慣れた雰囲気に少し違う席配置。チェーンの一杯と柚ヶ谷の接客を確かめる（1行動・2,500円）。" };
+  desc: "慣れた雰囲気に少し違う席配置。チェーンの一台と柚ヶ谷の接客を確かめる（1行動・2,500円）。" };
 
 export function introduceCitySpot(value, character) {
   const spot = CITY_OUTINGS.find(item => item.introducedBy === character);
