@@ -353,19 +353,11 @@
           "text": "前夜祭。金色の装束の王煙楼が、客席のざわめきが静まるのを待っていた。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "長い呼吸から、龍のような煙が立ち上がる。県大会のモニターで見た技だった。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……あの人だ"
-        },
-        {
-          "speaker": "master_hookah",
-          "face": "normal",
-          "text": "映像より、音が静かだろう"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_city_visit_c_station",
+          "next_true": "seen_on_monitor",
+          "next_false": "heard_only"
         },
         {
           "speaker": "hajime",
@@ -398,6 +390,37 @@
           "text": "楽しみにしている。私も、君の前で作る"
         }
       ],
+      "branches": {
+        "seen_on_monitor": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "長い呼吸から、龍のような煙が立ち上がる。県大会のモニターで見た技だった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……あの人だ"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "映像より、音が静かだろう"
+          }
+        ],
+        "heard_only": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "長い呼吸から、龍のような煙が立ち上がる。名前だけは、聞いたことがあった。"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "煙より先に、客席を見ていた。気づいたかな"
+          }
+        ]
+      },
       "comment": "王煙楼はシェイクの師。推薦選手として正面から登場する。老人語は使わない。"
     },
     {
@@ -762,12 +785,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……来週、飯だとさ"
+          "text": "……来週、店に来るとさ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "じゃあ俺、その日、店の番します"
+          "text": "じゃあ俺、その日は早めに片づけます"
         },
         {
           "speaker": "",
@@ -793,6 +816,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "ありがとう、……悔しいな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホが震えた。スミさんからだった。"
         },
         {
           "speaker": "sumi",
