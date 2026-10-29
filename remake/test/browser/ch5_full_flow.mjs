@@ -25,7 +25,9 @@ async function seed(page) {
     // 第4章の勝ち側の本線まで終えた保存（ch4 の完了状態）を直接組む。
     Object.assign(value, { chapter: 4, day: 50, slot: 1, phase: "cleared", money: 50000, stamina: 100,
       weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+    // 予告3の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして第5章本体に集中する。
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
+      _ch4_preview_seen: true,
       _ch4_cleared: true, _ch4_sheikh_revealed: true,
       _ch4: { startDay: 46, day: 5, stage: 4, part: "cleared", titleSeen: true, read: {},
         firstDay: 1, resolution: 5, attempts: 1 } };
