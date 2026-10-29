@@ -46,9 +46,11 @@
           "flag": "_met_kuze"
         },
         {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "いらっしゃい。東京の煙を裏から動かす男、って聞いたことある？"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch3_delivery_kuze",
+          "next_true": "delivery_known_greet",
+          "next_false": "delivery_new_greet"
         },
         {
           "speaker": "hajime",
@@ -153,12 +155,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "一口。香ばしい茶の余韻が鼻へ抜け、舌には焙じた葉の甘さが残った。"
+          "text": "一口。香ばしい茶の匂いが鼻へ抜けた。舌の上は、まだぼんやりしている。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……ほうじ茶だ。まだ味に自信はないのに、これははっきり分かる"
+          "text": "……ほうじ茶の匂いがします。味は自信ないけど、鼻はそう言ってる"
         },
         {
           "speaker": "hajime",
@@ -183,7 +185,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "実物でいつでも同じに出せる、とは言わないけどね。今日の君の舌と、この一台の話"
+          "text": "実物でいつでも同じに出せる、とは言わないけどね。今日の君と、この一台の話"
         },
         {
           "speaker": "hajime",
@@ -290,6 +292,25 @@
             "face": "",
             "text": "mukaiの休憩中。はじめが出場者一覧の「久世朔」の名を読み上げると、ましろの手が止まった。"
           }
+        ],
+        "delivery_known_greet": [
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "いらっしゃい。ほんとに用事なしで来てくれたんだ"
+          },
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "じゃあ改めて。東京の煙を裏から動かす男、って聞いたことある？"
+          }
+        ],
+        "delivery_new_greet": [
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "いらっしゃい。東京の煙を裏から動かす男、って聞いたことある？"
+          }
         ]
       }
     },
@@ -303,12 +324,12 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "今日は客で来たよ。君がここで作る一台、飲んでみたくて"
+          "text": "今日は客で来たよ。県大会の動画は見たけど、君がここで作る一台を吸ってみたくて"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "県大会の動画だけじゃ足りませんでした？"
+          "text": "動画、見たんですか。……何か分かりました？"
         },
         {
           "speaker": "kuze",
