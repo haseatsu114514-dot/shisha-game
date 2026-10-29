@@ -17,7 +17,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "君の大会記録を、すべて学習させました"
+          "text": "今日は、挑戦者として来ました。君の大会記録を、すべて学習させました"
         },
         {
           "speaker": "hajime",
@@ -296,7 +296,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "二本の合計は、君だ、……おめでとう"
+          "text": "二本の合計は、君です。……おめでとうございます"
         },
         {
           "speaker": "hajime",
@@ -470,7 +470,7 @@
         {
           "speaker": "salaryman",
           "face": "normal",
-          "text": "これ見た？　決勝の動画、また回ってきたんだよ"
+          "text": "……動画、回ってきた"
         },
         {
           "speaker": "",
@@ -485,7 +485,7 @@
         {
           "speaker": "salaryman",
           "face": "normal",
-          "text": "遅いもんか。会社じゃ、世界一の店の常連だって自慢してるんだから",
+          "text": "遅くていい。……いつもの置き方だ",
           "comment": "※仮置き（優勝前提の一行）"
         },
         {
