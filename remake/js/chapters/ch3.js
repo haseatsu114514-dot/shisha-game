@@ -181,14 +181,14 @@ export function beginChapterThree() {
   return openChapter(true);
 }
 
-export function resumeChapterThree() {
+export async function resumeChapterThree() {
   if (state?.chapter !== 3) return false;
   if (state.flags?._ch3_tournament_won || state.flags?._ch3_aftermath || state.flags?._ch3_cleared) {
-    import("./ch3-aftermath.js").then(module => module.runChapterThreeAftermath());
+    await (await import("./ch3-aftermath.js")).runChapterThreeAftermath();
     return true;
   }
   if (state.flags?._ch3_tournament && chapterThreeProgress(state).stage === chapterThreeScenes(state).length) {
-    import("./ch3-tournament.js").then(module => module.runChapterThreeTournament());
+    await (await import("./ch3-tournament.js")).runChapterThreeTournament();
     return true;
   }
   return openChapter(false);
