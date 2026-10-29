@@ -12,6 +12,7 @@ import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
 import { withLoadingNotice } from "./module-loading.js";
+import { loadingPrefetch, prepareImage } from "./loading-prefetch.js";
 
 export const layers = {};
 
@@ -104,12 +105,25 @@ const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakk
 export const FRAME_ART = LOUNGE_ART.slice(0, 2);
 let uiArt = null;
 let uiArtDone = false;
+let storeLogoArt = null;
 
-/** UIの絵と顔アイコンをまとめて読む（一度だけ。全部そろうか、遅い回線では15秒で解決） */
+/** 店ロゴ（第2章の店を含む・実体13件）はマップで初めて要る重い絵なので、前段とは分けて
+ *  同時2件の共有キューで静かに読む。失敗しても先読みの失敗に留め、待ち手へは伝えない。 */
+function warmStoreLogos() {
+  if (!storeLogoArt) {
+    const urls = [...new Set(allStoreLogoUrls())];
+    storeLogoArt = Promise.all(urls.map((u) => loadingPrefetch.warm(u, () => prepareImage(u, { timeoutMs: 15000 }))));
+  }
+  return storeLogoArt;
+}
+
+/** UIの絵と顔アイコンをまとめて読む（一度だけ）。店ロゴは前段がそろってから後段で読む */
 export function warmUiArt() {
   if (!uiArt) {
-    const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls(), ...allStoreLogoUrls()];
-    uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
+    const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
+    const front = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true })));
+    // 店ロゴは後段。前段の成否にかかわらず始め、完了は uiArt に含める（従来の待ち手の前提を保つ）
+    uiArt = front.then(() => warmStoreLogos(), () => warmStoreLogos()).then(() => { uiArtDone = true; });
   }
   // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
   return Promise.all([uiArt, imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true })]);
