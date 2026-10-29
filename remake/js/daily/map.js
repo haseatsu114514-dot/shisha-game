@@ -2,7 +2,7 @@
 // 見た目は旧版を踏襲: 栄・大須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
-import { showScreen, setBg, retire, uiArtReady, imageReady, layers, toast } from "../core/ui.js";
+import { showScreen, setBg, retire, uiArtReady, storeLogosReady, imageReady, layers, toast } from "../core/ui.js";
 import { cueTransition } from "../core/transitions.js";
 import { trainRide } from "../core/scene-motions.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
@@ -87,7 +87,7 @@ export async function chooseSpot(opts = {}) {
     layers.fx.append(notice);
   }, 500);
   try {
-    await Promise.all([uiArtReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+    await Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
   } finally { clearTimeout(timer); notice?.remove(); }
   let walking = false;
   for (;;) {

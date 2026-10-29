@@ -18,6 +18,9 @@ try {
     page.on("pageerror", e => errors.push(e.message));
     await page.route(/^https?:\/\/(?!127\.0\.0\.1|localhost)/, r => r.abort());
     await page.route("**/assets/audio/se/**", r => r.abort()); // unrelated recorded SE; existing synth BGM fallback
+    // Local BGM uses HTMLAudioElement outside the WebAudio recording graph;
+    // block it to use the existing synth fallback in the capture.
+    await page.route("**/assets/audio/bgm/**", r => r.abort());
     await page.addInitScript(() => {
       const AC = window.AudioContext;
       window.__contexts = []; window.__notes = [];
@@ -152,7 +155,7 @@ try {
     if (music) assert(mix.rms > se.rms * 1.1, "BGM-on capture includes the existing synth music");
     counts.forEach((n, i) => assert(Math.abs(n.at - counts[0].at - i * 1000
       - (i >= 3 ? rendered.pause.duration : 0)) < 150, `display/audio boundary ${i}`));
-    results.push({ music, mode: "native MediaRecorder/Opus decoded PCM; external BGM unavailable, existing synth fallback",
+    results.push({ music, mode: "native MediaRecorder/Opus decoded PCM; BGM files unavailable, existing synth fallback",
       listening: "not performed", captures: rendered.captures, calls: rendered.calls,
       contextState: rendered.contextState, pause: rendered.pause, observedOscillators: rendered.notes.length, counts });
     await context.close();

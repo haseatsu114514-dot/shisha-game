@@ -115,8 +115,15 @@ await suite("tsumugi-draft-response", async check => {
           T.core.setState(structuredClone(initial)); T.vn.backlog().length = 0;
           await T.story.playTsumugiStory(11);
           const current = T.game(), lines = T.lines();
-          // The story wrapper guarantees ♥2 in both versions; compare the same guarantee.
-          T.core.setState(before); T.stats.ensureAffinityLevel("tsumugi", 2); const expected = T.game();
+          // The story wrapper guarantees only the initial ♥1 (the day-1
+          // introduction); story completion and personal affinity are separate,
+          // so the day-11 sketch grants no level. Mirror that guarantee (♥1).
+          // It also stamps the day the story was read (_tsumugi_story_day), which the
+          // raw baseline scene cannot produce; mirror the stamp the same way.
+          T.core.setState(before); T.stats.ensureAffinityLevel("tsumugi", 1);
+          if (current.flags._tsumugi_story_day === undefined) delete T.core.state.flags._tsumugi_story_day;
+          else T.core.state.flags._tsumugi_story_day = current.flags._tsumugi_story_day;
+          const expected = T.game();
           T.core.setState(current); T.vn.backlog().length = 0; await T.story.playTsumugiStory(11);
           const repeated = T.game();
           out.push({ answer, route, known, before: expected, current, repeated, lines,
