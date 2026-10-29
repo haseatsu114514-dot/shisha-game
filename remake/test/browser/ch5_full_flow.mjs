@@ -92,7 +92,17 @@ await suite("ch5-full-flow", async check => {
     await page.locator(dt("ch5-free")).waitFor();
     await page.locator(dt("ch5-spend-tonari")).click();
     await committed(page, "ch5_free_tonari_practice");
+    // 閉店後の試作（#1666）: 試す→スミさんの返答→直す。能力・日・所持金は動かない。
+    await page.locator(dt("ch5-prep")).waitFor();
+    const beforePrep = await get(page);
+    await page.locator(dt("ch5-prep-heat")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch5.prep?.trial === "heat");
+    await page.locator(dt("ch5-prep-adjust")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch5.prep?.adjusted === true);
     await page.locator(dt("ch5-free")).waitFor();
+    state = await get(page);
+    for (const key of ["day", "slot", "money", "stamina", "stats"])
+      assert.deepEqual(state[key], beforePrep[key], `${key} must not change by the prep`);
     assert.equal(await page.locator(dt("ch5-spend-tonari")).count(), 0);
 
     // 5. 連絡（1回目）: 「記録に残らない一日」を先に読み、選択肢で日程が決まる。
@@ -155,6 +165,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_cleared, true);
     assert.equal(state.phase, "cleared");
     assert.equal(state.flags._ch4_cleared, true);
+    assert.deepEqual(state.flags._ch5.prep, { trial: "heat", adjusted: true }, "The prep record must survive to the end");
     for (const id of ["ch5_bridge_after_return", "ch5_opening", "ch5_free_mashiro_visit", "ch5_free_first_visitor",
       "ch5_free_tonari_practice", "ch5_unrecorded_day", "ch5_schedule_contact", "ch5_timeout",
       "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup",
