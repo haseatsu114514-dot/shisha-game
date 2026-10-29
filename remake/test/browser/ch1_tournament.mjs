@@ -330,10 +330,10 @@ await suite("ch1-tournament", async check => {
     }));
     assert.deepEqual(interim.judges, {
       maezono:{spent:7,left:'投入 7 ／ 残り 3'},
-      dr_kemuri:{spent:8,left:'投入 8 ／ 残り 2'},
+      dr_kemuri:{spent:6,left:'投入 6 ／ 残り 4'},
       nagumo:{spent:0,left:'10点を保留中'},
     });
-    assert.deepEqual(interim.points,{adam:7,naru:5,minto:3,hajime:0});
+    assert.deepEqual(interim.points,{adam:5,naru:3,minto:2,hajime:3});
     // The second feed line starts after a 0.5s delay and slides in for 0.5s.
     // Measure its settled layout, not its temporarily translated overflow.
     await page.waitForTimeout(1100);
@@ -358,10 +358,10 @@ await suite("ch1-tournament", async check => {
     const finalVotes = await page.locator('.rt-row').evaluateAll(rows => Object.fromEntries(rows.map(row =>
       [row.dataset.id,{points:parseInt(row.querySelector('.rt-pt').textContent,10),votes:row.querySelector('.rt-votes').textContent}])));
     assert.deepEqual(finalVotes,{
-      naru:{points:7,votes:'上園 5 · 博士 2 · 南雲 0'},
-      adam:{points:7,votes:'上園 2 · 博士 5 · 南雲 0'},
-      minto:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
-      hajime:{points:11,votes:'上園 1 · 博士 0 · 南雲 10'},
+      naru:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
+      adam:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
+      minto:{points:3,votes:'上園 2 · 博士 1 · 南雲 0'},
+      hajime:{points:17,votes:'上園 4 · 博士 3 · 南雲 10'},
     });
     for(const [id,points] of Object.entries(interim.points))assert(finalVotes[id].points>=points,`${id}: displayed allocated points returned`);
     await assertFits(page,'.rt-name, .rt-votes, .rt-pt');
