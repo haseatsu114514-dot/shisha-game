@@ -8,9 +8,60 @@
     "minto": "みんと",
     "rin": "凛",
     "tsumugi": "つむぎ",
+    "sumi": "スミ",
+    "naru": "なる",
+    "adam": "アダム",
     "other": "その他"
   },
   "items": [
+    {
+      "id": "ac0e8efbc3e6faeb4b3041a67d089acfff8e51c485c7235bc64dad5b3bd36150",
+      "sha256": "ac0e8efbc3e6faeb4b3041a67d089acfff8e51c485c7235bc64dad5b3bd36150",
+      "character": "adam",
+      "label": "title_art_adam_01_sunset_proclamation",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_adam_01_sunset_proclamation.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/ac0e8efbc3e6faeb4b3041a67d089acfff8e51c485c7235bc64dad5b3bd36150.webp",
+      "thumbnail": "media/ac0e8efbc3e6faeb4b3041a67d089acfff8e51c485c7235bc64dad5b3bd36150-thumb.webp"
+    },
+    {
+      "id": "1cfd2e3e5e1b43430f2ba1aa87cd8a4a03642fa3a36be2d837770ed9b9d35278",
+      "sha256": "1cfd2e3e5e1b43430f2ba1aa87cd8a4a03642fa3a36be2d837770ed9b9d35278",
+      "character": "ageha",
+      "label": "title_art_ageha_04_gummy_light",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_ageha_04_gummy_light.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/1cfd2e3e5e1b43430f2ba1aa87cd8a4a03642fa3a36be2d837770ed9b9d35278.webp",
+      "thumbnail": "media/1cfd2e3e5e1b43430f2ba1aa87cd8a4a03642fa3a36be2d837770ed9b9d35278-thumb.webp"
+    },
     {
       "id": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
       "sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
@@ -156,6 +207,30 @@
       "thumbnail": "media/77f205675d45d49aa7603a85c1f098d5572c594a8c757d5eaa40848c60f239c9-thumb.webp"
     },
     {
+      "id": "861ee67c84fde94d5dd06530cedb4372faf9b4fa61e1f3220434f22da1886d34",
+      "sha256": "861ee67c84fde94d5dd06530cedb4372faf9b4fa61e1f3220434f22da1886d34",
+      "character": "hiyori",
+      "label": "title_art_hiyori_06_riverside_hoodie",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_hiyori_06_riverside_hoodie.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/861ee67c84fde94d5dd06530cedb4372faf9b4fa61e1f3220434f22da1886d34.webp",
+      "thumbnail": "media/861ee67c84fde94d5dd06530cedb4372faf9b4fa61e1f3220434f22da1886d34-thumb.webp"
+    },
+    {
       "id": "01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3",
       "sha256": "01e8fcd9396bf7f25d96f0b0d1632aeb97d8be08f48ded8105ffe833a5a890a3",
       "character": "hiyori",
@@ -243,6 +318,30 @@
       ],
       "image": "media/2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6.webp",
       "thumbnail": "media/2d855e34efdc803f88bb04d06b89f8f5c6e2c3e38359910c61ee3454e1c72cd6-thumb.webp"
+    },
+    {
+      "id": "3d1be37becf76aaeda73578ff5e8c17bc8092cc0ff7b5f654e4eb169cb7b623b",
+      "sha256": "3d1be37becf76aaeda73578ff5e8c17bc8092cc0ff7b5f654e4eb169cb7b623b",
+      "character": "mashiro",
+      "label": "title_art_mashiro_04_cherry_petals",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_mashiro_04_cherry_petals.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/3d1be37becf76aaeda73578ff5e8c17bc8092cc0ff7b5f654e4eb169cb7b623b.webp",
+      "thumbnail": "media/3d1be37becf76aaeda73578ff5e8c17bc8092cc0ff7b5f654e4eb169cb7b623b-thumb.webp"
     },
     {
       "id": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
@@ -338,6 +437,30 @@
       ],
       "image": "media/1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9.webp",
       "thumbnail": "media/1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9-thumb.webp"
+    },
+    {
+      "id": "34607f649caa13a6c0aee89acb0e6ad942e5afe7d02aa8230268a1e443d96b77",
+      "sha256": "34607f649caa13a6c0aee89acb0e6ad942e5afe7d02aa8230268a1e443d96b77",
+      "character": "minto",
+      "label": "title_art_minto_05_mint_cloud",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_minto_05_mint_cloud.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/34607f649caa13a6c0aee89acb0e6ad942e5afe7d02aa8230268a1e443d96b77.webp",
+      "thumbnail": "media/34607f649caa13a6c0aee89acb0e6ad942e5afe7d02aa8230268a1e443d96b77-thumb.webp"
     },
     {
       "id": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
@@ -464,6 +587,54 @@
       "thumbnail": "media/7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53-thumb.webp"
     },
     {
+      "id": "a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12",
+      "sha256": "a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12",
+      "character": "naru",
+      "label": "title_art_naru_01_bakery_morning",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_naru_01_bakery_morning.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12.webp",
+      "thumbnail": "media/a3c087dcbaceb7dbc4f619efc4a3ed1180d2b03661ae1f5f77bae6d73e164a12-thumb.webp"
+    },
+    {
+      "id": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
+      "sha256": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
+      "character": "rin",
+      "label": "title_art_rin_04_rainy_neon_umbrella",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_rin_04_rainy_neon_umbrella.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18.webp",
+      "thumbnail": "media/308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18-thumb.webp"
+    },
+    {
       "id": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
       "sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
       "character": "rin",
@@ -528,6 +699,30 @@
       ],
       "image": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19.webp",
       "thumbnail": "media/bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19-thumb.webp"
+    },
+    {
+      "id": "68069f432237be2a9e40d209fbc71aefbf6f7d8ee874ed0ec80e60412f26c802",
+      "sha256": "68069f432237be2a9e40d209fbc71aefbf6f7d8ee874ed0ec80e60412f26c802",
+      "character": "samechan",
+      "label": "title_art_samechan_04_throne_pose",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_samechan_04_throne_pose.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/68069f432237be2a9e40d209fbc71aefbf6f7d8ee874ed0ec80e60412f26c802.webp",
+      "thumbnail": "media/68069f432237be2a9e40d209fbc71aefbf6f7d8ee874ed0ec80e60412f26c802-thumb.webp"
     },
     {
       "id": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
@@ -620,6 +815,54 @@
       "related": [],
       "image": "media/cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334.webp",
       "thumbnail": "media/cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334-thumb.webp"
+    },
+    {
+      "id": "f4ce7823a49506defe7e2d91d9be6056f29a17b982d9b5c23b6e4287ac4b377e",
+      "sha256": "f4ce7823a49506defe7e2d91d9be6056f29a17b982d9b5c23b6e4287ac4b377e",
+      "character": "sumi",
+      "label": "title_art_sumi_01_own_clay_bowl",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_sumi_01_own_clay_bowl.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/f4ce7823a49506defe7e2d91d9be6056f29a17b982d9b5c23b6e4287ac4b377e.webp",
+      "thumbnail": "media/f4ce7823a49506defe7e2d91d9be6056f29a17b982d9b5c23b6e4287ac4b377e-thumb.webp"
+    },
+    {
+      "id": "a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab",
+      "sha256": "a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab",
+      "character": "tsumugi",
+      "label": "title_art_tsumugi_04_painting_studio",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_tsumugi_04_painting_studio.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab.webp",
+      "thumbnail": "media/a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab-thumb.webp"
     },
     {
       "id": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
@@ -2690,13 +2933,49 @@
         "label": "正式顔",
         "url": "../../assets/ui/face_icons/face_tsumugi.png"
       }
+    ],
+    "sumi": [
+      {
+        "path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/sumi/chr_sumi_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_sumi.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_sumi.png"
+      }
+    ],
+    "naru": [
+      {
+        "path": "assets/sprites/characters/naru/chr_naru_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/naru/chr_naru_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_naru.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_naru.png"
+      }
+    ],
+    "adam": [
+      {
+        "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+        "label": "正式立ち絵",
+        "url": "../../assets/sprites/characters/adam/chr_adam_normal.png"
+      },
+      {
+        "path": "assets/ui/face_icons/face_adam.png",
+        "label": "正式顔",
+        "url": "../../assets/ui/face_icons/face_adam.png"
+      }
     ]
   },
   "summary": {
-    "originalPaths": 116,
-    "uniqueArt": 94,
+    "originalPaths": 126,
+    "uniqueArt": 104,
     "duplicatePaths": 22,
-    "current": 23,
+    "current": 33,
     "missingHistoricalSlots": [
       {
         "slot": "ageha01",

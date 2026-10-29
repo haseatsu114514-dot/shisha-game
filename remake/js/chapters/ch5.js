@@ -249,7 +249,7 @@ async function renderTimeoutCard(owner) {
 }
 
 async function renderFree(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG.ch5_opening), { instant: true });
+  await setBg(bgUrl(CH5_SCENE_BG.ch5_free), { instant: true });
   if (!current(owner)) return;
   const remaining = chapterFiveFreeRemaining(state);
   const actions = [];

@@ -18,6 +18,8 @@ await suite("craft-readiness", async check => {
   await check("unrelated-art-and-cached-reopen", async page => {
     // main.warmUp() ends with this image. Do not attribute its background
     // stove_coil request to the bench that this case has not opened yet.
+    // (The tournament stage bg is idle-deferred by warmUp and may arrive later;
+    // it is part of the allowed bench set below, so it is never held here.)
     await page.waitForFunction(() => performance.getEntriesByType("resource")
       .some(entry => /\/ui\/making\/hookah_base\.(png|webp)(\?|$)/.test(entry.name)));
     await init(page);
@@ -60,10 +62,13 @@ await suite("craft-readiness", async check => {
       const heldAtStart = blocked.length;
       await page.evaluate(() => heatRun);
       const requests = [];
-      // Loading-comic art is not a craft material: the loading system
-      // prepares it on every bench open by design (covered by the loading
-      // suites). Scope the re-fetch check to craft materials.
-      page.on("request", request => { if (/\.(webp|png)(\?|$)/.test(request.url()) && !/\/img\/loading\//.test(request.url())) requests.push(request.url()); });
+      page.on("request", request => {
+        // warmUp がアイドル時へ遅らせた大会ステージの先読みがこの窓に着くことがある。
+        // 工程素材の再通信ではないので数えない（ステージ自体は初回の準備で読み込み済み）。
+        // Loading-comic art is prepared on every bench open by design; it is not a craft material.
+        if (/\.(webp|png)(\?|$)/.test(request.url()) && !/bg_tournament_stage\./.test(request.url())
+          && !/\/img\/loading\//.test(request.url())) requests.push(request.url());
+      });
       await page.evaluate(async () => {
         window.loadingAdded = 0;
         const observer = new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(n => {

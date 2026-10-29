@@ -154,4 +154,24 @@ await suite("craft-progress", async check => {
       assert.deepEqual(phase.labels, labels, "Substep titles must keep the six phase labels");
     }
   });
+
+  await check("tutorial-progress-includes-pull-and-serve", async page => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); core.newGame();
+      const session = await import("./js/craft/session.js");
+      const ch1 = await import("./js/chapters/ch1.js");
+      window.Q = { session };
+      window.qcs = session.newSession("tutorial");
+      session.openBench(qcs, { steps: ch1.TUTORIAL_STEPS });
+      await session.waitBenchReady(qcs);
+    });
+    assert.deepEqual(await headerLabels(page), ["パッキング", "炭焼き", "蒸らし", "吸い出し", "提供"],
+      "Tutorial header lists every phase the lesson actually plays");
+    await page.evaluate(() => { Q.session.stepPanel("pull", "吸い出し"); });
+    assert.equal(await active(page), "pull");
+    assert.equal(await page.locator(".bench-progress-count").textContent(), "4 / 5");
+    await page.evaluate(() => { qcs.pullDone = true; qcs.pull = { failed: false }; Q.session.refreshBench(); });
+    assert.equal(await active(page), "serve");
+    assert.equal(await page.locator(".bench-progress-count").textContent(), "5 / 5");
+  });
 });
