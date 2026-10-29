@@ -256,6 +256,7 @@
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
+        "node remake/test/ch3_outings.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
         "node remake/test/practice_shop_only_783.mjs",
@@ -1013,6 +1014,23 @@
         "remake/test/browser/ch3_trials.mjs"
       ],
       "run": ["node remake/test/browser/ch3_trials.mjs"]
+    },
+    {
+      "id": "ch3-outings",
+      "title": "Chapter 3 Tokyo free-time destinations from the map (#1655)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch3-outing*.js",
+        "remake/js/chapters/ch3-activit*.js",
+        "remake/js/chapters/ch3-map*.js",
+        "remake/js/core/tokyo-clock.js",
+        "remake/css/ch3-wayfinding.css",
+        "data/dialogue/ch3_outings.json",
+        "remake/test/browser/ch3_outings.mjs"
+      ],
+      "run": ["node remake/test/browser/ch3_outings.mjs"]
     },
     {
       "id": "ch3-tournament",
