@@ -254,7 +254,7 @@
       ],
       "accept_event": "ch1_minto_bond_finale",
       "accept_text": "{privateWhen}、会おう",
-      "reminder_text": "渡したいもの、まだ私の手元にあるよ。{privateContext}、もし空いていたら",
+      "reminder_text": "この前は都合が合わなかったね。渡したいもの、まだ私の手元にあるよ。{privateContext}、もし空いていたら",
       "decline_response": {
         "sender": "minto",
         "text": "……うん、わかった。ちゃんと取っておくね。渡せる日が来るまで"
