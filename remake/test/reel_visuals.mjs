@@ -8,6 +8,12 @@ import { sleep, nextFrame } from "../js/core/util.js";
 
 const output = document.querySelector("#checks");
 const check = (ok, message) => { if (!ok) throw new Error(message); };
+const reelWarns = [];
+const originalWarn = console.warn.bind(console);
+console.warn = (...args) => {
+  reelWarns.push(args.map(String).join(" "));
+  originalWarn(...args);
+};
 const fit = () => document.querySelector("#stage").style.setProperty("--k", Math.min(innerWidth / 1280, innerHeight / 720));
 fit(); window.addEventListener("resize", fit);
 
@@ -27,8 +33,10 @@ async function runCase(role, variant, remount = false) {
   await waitFor(() => document.querySelector(".rc-board"));
   let frames = 0, rightOnly = 0, slowing = 0, remounted = false;
   const slowPositions = new Set();
+  const frameTimes = [];
   while (document.querySelector(".rc-board")) {
     await nextFrame();
+    frameTimes.push(performance.now());
     const large = [...document.querySelectorAll(".rc-strip")];
     if (!large.length) break;
     const mini = [...document.querySelectorAll(".rw-strip")];
@@ -55,8 +63,11 @@ async function runCase(role, variant, remount = false) {
     }
     frames++;
   }
-  check(frames > 60 && rightOnly > 10 && slowing > 10, "右だけ回転・減速する区間を検証できなかった");
-  check(slowPositions.size > 10, "最後のリールが実際に減速しながら動いていない");
+  const elapsedSeconds = (frameTimes.at(-1) - frameTimes[0]) / 1000;
+  const rafFps = elapsedSeconds > 0 ? frames / elapsedSeconds : 0;
+  const diag = `frames=${frames} rightOnly=${rightOnly} slowing=${slowing} slowPositions=${slowPositions.size} rafFps=${rafFps.toFixed(1)} warns=${JSON.stringify(reelWarns)}`;
+  check(frames > 60 && rightOnly > 10 && slowing > 10, `右だけ回転・減速する区間を検証できなかった [${diag}]`);
+  check(slowPositions.size > 10, `最後のリールが実際に減速しながら動いていない [${diag}]`);
   check(!remount || remounted, "筐体の再マウントを検証できなかった");
   check(!document.querySelector(".rw-strip.mirrored"), "演出終了後に同期処理が残っている");
   const right = core.STRIPS[2];
@@ -67,7 +78,7 @@ async function runCase(role, variant, remount = false) {
       `${role}/${variant}: 小筐体の最終出目が7・7・${role === "reg" ? "BAR" : "7"}になっていない`);
   });
   check(JSON.stringify({ stats: state.stats, count: state.reel.count }) === rewardBefore, "表示テストで報酬または回転数が変わった");
-  console.log(`[reel-visuals] PASS ${role}/${variant}: ${frames} frames, right-only ${rightOnly}, slow ${slowing}${remount ? ', remount' : ''}`);
+  console.log(`[reel-visuals] PASS ${role}/${variant}: ${frames} frames, right-only ${rightOnly}, slow ${slowing}, rafFps ${rafFps.toFixed(1)}, slowPositions ${slowPositions.size}, warns ${reelWarns.length}${remount ? ', remount' : ''}`);
 }
 
 function colorPreview() {
