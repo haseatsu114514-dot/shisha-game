@@ -152,7 +152,7 @@
       "id": "lime_outing_minto_1",
       "important": true,
       "closed_on": 6,
-      "reminder_text": "この前はタイミングが合わなかったね。今日はお店がお休みだから、もし空いていたら。",
+      "reminder_text": "フレーバー、まだ買えてないの。今日はお店がお休みだから、選ぶの付き合ってくれたら嬉しいな。",
       "sender": "minto",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
@@ -172,7 +172,7 @@
       "accept_event": "outing_minto_1",
       "decline_response": {
         "sender": "minto",
-        "text": "うん、わかった。今日は無理しないでね"
+        "text": "そっか。じゃあ今日は一人で選んでくるね。……どれにしたかは、また今度教える"
       },
       "private_schedule": "holiday_or_temporary"
     },
@@ -193,12 +193,12 @@
         },
         {
           "sender": "minto",
-          "text": "お店のことを気にせず、ゆっくり話してみたくて"
+          "text": "いつもはカウンター越しだから、隣に座って話してみたくて"
         }
       ],
       "accept_event": "ch1_minto_fifth",
       "accept_text": "うん、会おう",
-      "reminder_text": "この前のお誘い、返事は気にしないでね。今日、空いていたら",
+      "reminder_text": "この前のお誘い、返事は気にしないでね。今日、隣の席が空いてるから",
       "decline_response": {
         "sender": "minto",
         "text": "うん、わかった。無理しないでね。お店では、またいつでも"
@@ -209,7 +209,7 @@
     {
       "id": "lime_outing_minto_2",
       "important": true,
-      "reminder_text": "この前はタイミングが合わなかったね。{privateContext}、もし空いていたら。",
+      "reminder_text": "前の話、急がなくていいからね。{privateContext}、気が向いたらでいいよ。",
       "sender": "minto",
       "trigger_condition": "flag",
       "trigger_flag": "_minto_fifth_done",
@@ -221,7 +221,7 @@
         },
         {
           "sender": "minto",
-          "text": "お店では話せないようなことも、ゆっくり話せたらなって。……少し、緊張はするけど"
+          "text": "『みんと』じゃない方の私の話、聞いてほしくて。……少し、緊張はするけど"
         }
       ],
       "accept_event": "ch1_minto_private_1",
@@ -249,15 +249,15 @@
         },
         {
           "sender": "minto",
-          "text": "渡したいものがあるの。お店じゃなくて、外で渡したくて"
+          "text": "渡したいものがあるの。お店の棚には並べられない、私の個人的なもの"
         }
       ],
       "accept_event": "ch1_minto_bond_finale",
       "accept_text": "{privateWhen}、会おう",
-      "reminder_text": "この前は都合が合わなかったね。{privateContext}、もし空いていたら",
+      "reminder_text": "この前は都合が合わなかったね。渡したいもの、まだ私の手元にあるよ。{privateContext}、もし空いていたら",
       "decline_response": {
         "sender": "minto",
-        "text": "うん、わかった。また誘うね"
+        "text": "……うん、わかった。ちゃんと取っておくね。渡せる日が来るまで"
       }
     },
     {
