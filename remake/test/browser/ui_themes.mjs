@@ -201,7 +201,7 @@ await suite("ui-themes-preview", async check => {
       assert.equal(await page.locator('.vn-next.show').count(),0,'a loading scene must not retain the old next indicator');
     } finally { release(); }
     await page.locator('.vn-next.show').waitFor();
-    assert(await page.evaluate(()=>document.fonts.check('400 28px "Suien Reading Mincho"','今日はここで')));
+    assert(await page.evaluate(()=>document.fonts.check('400 28px "Suien Blue Mincho"','今日はここで')));
     for(const [background,asset] of [['tonari','bg_tonari_inside_day'],['street','bg_street_night'],['eden','bg_eden_shop']]) {
       await page.selectOption('#preview-background',background);
       await page.locator('.vn-next.show').waitFor();
