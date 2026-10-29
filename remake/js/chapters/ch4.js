@@ -10,7 +10,7 @@ import { paidAction } from "../core/stats.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { readDialogues } from "./ch2-city-data.js";
-import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
+import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
   canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "./ch4-progress.js";
@@ -156,6 +156,7 @@ async function readScene(owner, id) {
   hud();
   await setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true });
   if (!current(owner)) return false;
+  playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。
   const controller = new AbortController();
   owner.controller = controller;
@@ -289,6 +290,27 @@ async function runTournament(owner) {
   await renderStage(owner);
 }
 
+const RECAP_STRATEGY = Object.freeze({
+  sakura: "桜を軸にした配合で、世界の卓に立った。",
+  peach: "桃を軸にした配合で、世界の卓に立った。",
+  tea: "茶を軸にした配合で、世界の卓に立った。",
+});
+
+/** 完了カードの振り返り。選んだ配合と、ドバイで足を運んだ場所だけを短く添える。 */
+function chapterFourRecap(value) {
+  const { read } = chapterFourProgress(value);
+  const lines = ["世界大会を終え、日本へ戻った。"];
+  const strategy = RECAP_STRATEGY[value.flags._ch4_strategy];
+  if (strategy) lines.push(strategy);
+  const visited = [];
+  if (read.ch4_dubai_souq) visited.push("スーク");
+  if (read.ch4_festa) visited.push("FESTA");
+  if (read.ch4_dubai_cafe) visited.push("カフェ");
+  if (visited.length) lines.push(`ドバイでは${visited.join("・")}に足を運んだ。`);
+  if (read.ch4_alley_cafe_quiet) lines.push("路地のカフェで、静かな夜も過ごした。");
+  return lines.join("");
+}
+
 function renderComplete(owner) {
   // 第4章側の第5章への接続点はここ1か所（状態遷移は ch5-progress.js の advanceToChapterFive）。
   const next = button(owner, "第5章へ進む", "chapter-five", async () => {
@@ -326,7 +348,7 @@ function renderComplete(owner) {
       }
     }
   };
-  card(owner, "complete", "第四章・完", "世界大会を終え、日本へ戻った。", [
+  card(owner, "complete", "第四章・完", chapterFourRecap(state), [
     next,
     replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
