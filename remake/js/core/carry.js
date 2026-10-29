@@ -299,6 +299,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_tsumugi", "person"],
   ["_lime_opened", "ui"],
   ["_lime_tut", "ui"],
+  ["_lotos_vent_hint", "ui"],
   ["_met_adam", "person"],
   ["_met_ageha", "person"],
   ["_met_dr_kemuri", "person"],
