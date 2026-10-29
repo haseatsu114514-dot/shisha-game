@@ -554,6 +554,7 @@
         "data/chapter_previews/**",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch1-preview.js",
+        "remake/js/chapters/chapter-preview.js",
         "remake/js/chapters/preview-score.js",
         "remake/js/chapters/chapter-preview-samples.js",
         "remake/js/core/audio.js",
