@@ -85,7 +85,10 @@ try {
           image: img ? { src: new URL(img.currentSrc).pathname, width: img.naturalWidth, height: img.naturalHeight } : null,
           eventContactDelta: crop && pin.querySelector('.evt-badge') ? (() => {
             const c = crop.getBoundingClientRect(), b = pin.querySelector('.evt-badge').getBoundingClientRect();
-            const scale = c.width / parseFloat(crop.style.width), unit = b.width / 21;
+            const scale = c.width / parseFloat(crop.style.width);
+            const shield = pin.querySelector('.shield');
+            // バッジの脈動アニメーション（evt-pulse）を測定単位から除くため、共通親 .shield の倍率を使う。
+            const unit = shield.getBoundingClientRect().width / parseFloat(getComputedStyle(shield).width);
             const x = c.left + parseFloat(pin.style.getPropertyValue('--facility-badge-x')) * scale;
             const y = c.top + parseFloat(pin.style.getPropertyValue('--facility-badge-y')) * scale;
             return [(b.x + b.width/2 - x)/unit, (b.y + b.height/2 - y)/unit];
@@ -197,7 +200,10 @@ try {
       await pin.locator('.facility-icon img').evaluate(i => i.decode());
       const delta = await pin.evaluate(pin => {
         const crop = pin.querySelector('.facility-icon-crop'), c = crop.getBoundingClientRect();
-        const b = pin.querySelector('.evt-badge').getBoundingClientRect(), scale = c.width / parseFloat(crop.style.width), unit = b.width / 21;
+        const b = pin.querySelector('.evt-badge').getBoundingClientRect(), scale = c.width / parseFloat(crop.style.width);
+        const shield = pin.querySelector('.shield');
+        // バッジの脈動アニメーション（evt-pulse）を測定単位から除くため、共通親 .shield の倍率を使う。
+        const unit = shield.getBoundingClientRect().width / parseFloat(getComputedStyle(shield).width);
         const x = c.left + parseFloat(pin.style.getPropertyValue('--facility-badge-x')) * scale;
         const y = c.top + parseFloat(pin.style.getPropertyValue('--facility-badge-y')) * scale;
         return [(b.x+b.width/2-x)/unit, (b.y+b.height/2-y)/unit];
