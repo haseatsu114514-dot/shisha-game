@@ -337,7 +337,7 @@ await suite('ch2-tournament',async check=>{
     await assertFits(page,'.ch2-contest .btn');await page.locator(t('start')).click();await phone(page);
     await page.locator(t('ready')).waitFor();
     const texts=await page.evaluate(()=>window.__texts.join('\n'));
-    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のREI/);assert.match(texts,/俺はヤクザだ/);
+    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のREI/);assert.match(texts,/昔は組を張ってやした/);
     const entryTrace=await page.evaluate(()=>window.__trace);
     const result=await playAttempt(page,false,true);assert.equal(result.flags._ch2_tournament.result.rank,1);
     // 最終票を確定した直後、講評の途中で離脱した保存を再現する。
