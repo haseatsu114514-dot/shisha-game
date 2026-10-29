@@ -1,52 +1,12 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "interval_day1_morning",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "大会が終わった翌朝。目覚ましをかけていないのに、いつもと同じ時間に目が覚めた。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……静かだな"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "大会に向けて走り続けた日々が、嘘みたいに遠い。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スマホを見ると、スミさんから「今日も店開いてるよ」とだけ届いていた。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（なるもアダムも、みんとも、本気だった）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（それぞれの理由があって、それぞれの全力だった）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（でも、終わったんだ。今はとりあえず……普通の一日を過ごそう）"
-        }
-      ]
-    },
-    {
       "dialogue_id": "interval_day1_morning_win",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "大会で優勝した翌朝。トロフィーが部屋の隅に置いてある。現実感がまだ追いついていない。"
+          "text": "大会で優勝した翌朝。目が覚めて、まずトロフィーを探した。……そうだ、店のカウンターに飾ったんだった。現実感がまだ追いついていない。"
         },
         {
           "speaker": "hajime",

@@ -89,7 +89,7 @@ body.game-ds .dc-area { display: none; }
 body.game-ds .dc-day { font-family: var(--ds-dot); font-size: 12px; color: var(--ds-dim); }
 body.game-ds .dc-day::before { content: "DAY "; font-size: 11px; }
 body.game-ds .dc-day b { font-size: 18px; color: var(--ds-gold-hi); }
-body.game-ds .dc-slot { font-family: var(--ds-dot); font-size: 13px; padding: 0 0 0 2px; background: none; border: 0; }
+body.game-ds .dc-slot { font-family: var(--ds-dot); font-size: 14px; padding: 0 0 0 2px; background: none; border: 0; }
 body.game-ds .dc-meta { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; flex: 1; min-width: 0; margin: 0; }
 body.game-ds .dc-main { flex-direction: row; flex-wrap: nowrap; }
 body.game-ds .dc-row:not(.money):not(.hud-stamina) { display: none; }
@@ -99,7 +99,7 @@ body.game-ds .dc-row.money { order: 3; margin-left: auto; }
 body.game-ds .dc-row.money b { font-size: 14px; color: var(--ds-gold-hi); }
 body.game-ds .dc-row:not(.money) b { font-size: 12px; color: var(--ds-dim); }
 body.game-ds .hud-card .hud-stamina { display: flex; align-items: center; gap: 4px; width: auto; height: auto; padding: 0; min-width: 0; }
-body.game-ds .hud-card .hud-stamina > span { font-family: var(--ds-dot); font-size: 11px; color: var(--ds-dim); }
+body.game-ds .hud-card .hud-stamina > span { font-family: var(--ds-dot); font-size: 14px; color: var(--ds-dim); }
 body.game-ds .hud-card .hud-stamina .hud-bar { width: 58px !important; margin: 0; }
 body.game-ds .hud-right {
   position: fixed; left: calc(var(--ds-cx) + 8px); top: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) + 6px);
@@ -119,7 +119,7 @@ body.game-ds .hud-level::after {
   font-size: 11px; line-height: 1; color: var(--ds-text);
 }
 body.game-ds .hud-lime { font-size: 13px; }
-body.game-ds .hud-menu { font-size: 13px; letter-spacing: .06em; }
+body.game-ds .hud-menu { font-size: 14px; letter-spacing: .06em; }
 body.game-ds .hud-menu i { display: none; }
 
 /* ---------------------------------------------------------------- 会話：上は絵だけ、下に名前と本文・選択・操作 */
@@ -201,7 +201,7 @@ body.game-ds .map .spot-pin .sub-label {
   font-size: 14px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: none; border: 0; box-shadow: none;
   grid-column: 2; padding-right: 24px; color: var(--ds-text); text-shadow: none;
 }
-body.game-ds .map .spot-pin .pin-status { position: static; grid-column: 2; font-size: 10px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0; background: none; }
+body.game-ds .map .spot-pin .pin-status { position: static; grid-column: 2; font-size: 14px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0; background: none; }
 body.game-ds .map .spot-pin::before, body.game-ds .map .spot-pin::after { display: none; }
 body.game-ds .map-info {
   left: calc(var(--ds-cx) + 8px); top: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) - 120px); right: auto; bottom: auto;
