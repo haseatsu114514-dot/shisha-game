@@ -1,7 +1,7 @@
 // リメイク版 第1章の通しテスト。
 //   1) 新規ゲーム → コールドオープン → チュートリアル → DAY1〜13の日常 → DAY14の大会
 //   2) 大会1回目は「下手」で挑んで GAME OVER になること
-//   3) 「もう一度挑戦する」→「上手」で南雲票の逆転優勝 → 第1章クリアになること
+//   3) 「もう一度挑戦する」→「上手」で南雲の最後の一票による優勝 → 第1章クリアになること
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
 import { purchasePlannedFlavor } from "./playthrough-shopping.mjs";
@@ -498,9 +498,6 @@ log(`stock: before=${JSON.stringify(stock0)} after=${JSON.stringify(s.flavorStoc
 if (!stock0 || s.flavorStock.double_apple !== stock0.double_apple - 9) throw new Error("flavor stock not consumed as expected");
 if (s.flavorStock.lemon !== stock0.lemon - 3) throw new Error("private lemon should be consumed");
 if ((s.flavorStock.mint || 0) !== (stock0.mint || 0)) throw new Error("unused mint should not be consumed");
-// 常連ノート: バイトで接客した客が記録されている
-log(`notes: ${Object.keys(s.notes).length}`);
-if (!Object.keys(s.notes).length) throw new Error("customer notes empty");
 // くじ: 1枚引いて箱が減っている
 if (!firstKujiBlocked) throw new Error("First lemon errand kuji refusal not verified");
 if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);

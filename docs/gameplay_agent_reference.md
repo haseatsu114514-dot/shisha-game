@@ -186,8 +186,6 @@ Godot版も2026-06-15に削除済みで、`project.godot` が無いのが正し�
 | `rin` | 匂坂 凛 | ヒロイン ch1〜（27歳・年上枠。問屋街『Dr.fookah』2階、海外メーカーNIGHTSIDE日本代理店。はじめを「モルモットくん」と呼ぶ） |
 | `hiyori` | 朝霧ひより | 地元の会社員・tonari元アルバイトの追加ヒロイン。他店の相席からスミさんの伝言とLIMEを経てtonariへ。設定の正本は `data/characters.json`、接続仕様は `docs/hiyori_implementation.md` |
 | `salaryman` | サラリーマン | tonari 常連（ストーリー専用） |
-| `kako` | かこ | tonari 常連ちょい役（FLデザイナー） |
-| `rira` | りら | tonari 常連ちょい役 |
 | `ageha` | 宵野 葉子 | ライバル ch2（ch1 DAY4以降の実際のシフト後に「謎のギャル」としてカメオ。香り=ホワイトグミベア） |
 | `kumicho` | 神崎 竜二 | ライバル ch2（シーシャ組長） |
 | `rei` | 田中 健太 | ライバル ch2（V系。ch1バイトに正体を伏せてカメオ来店済み。県大会で敗退し、ch3は東京のシーンで本格登場＝大会には出ない・2026-07-20確定） |

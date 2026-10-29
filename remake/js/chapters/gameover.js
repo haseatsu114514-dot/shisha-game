@@ -9,12 +9,6 @@ import { DB, img, portraitInfo } from "../core/data.js";
 import { imageReady } from "../core/ui.js";
 import { createContinueView } from "./continue-view.js";
 
-export const GAME_OVER_TEXT = {
-  burnt: { title: "シーシャが焦げてしまった", sub: "まだ、ここで終わる必要はない。" },
-  cold: { title: "シーシャが冷え切ってしまった", sub: "仕切り直せば、もう一度勝負できる。" },
-  leaf: { title: "フレーバーがダメになってしまった", sub: "次の一台で、俺たちの答えを出そう。" },
-  rank: { title: "", sub: "この結果で、俺たちの挑戦を終わらせるのか？" },
-};
 
 // at = 開始からの秒数。全体の台詞表示は約20秒。テロップは1キュー1行（全角22字以内）に小分けする。
 // reactions の text も1行ずつの配列で、順に表示する。

@@ -23,6 +23,8 @@ async function selectScene(page) {
 // 目的の台詞まで会話を送る（打ち切り・連打でも図は1つだけ）。
 async function advanceTo(page, substr) {
   for (let i = 0; i < 60; i++) {
+    // 次の行の素材待ち中は前の文が残る。表示完了後に検査してから送る。
+    await page.locator("#vn.active .vn-next.show").waitFor();
     const here = await page.evaluate(s => document.querySelector(".vn-text")?.textContent.includes(s) || false, substr);
     if (here) return;
     assert((await page.locator(".sd-diagram").count()) <= 1, "diagram never duplicates");

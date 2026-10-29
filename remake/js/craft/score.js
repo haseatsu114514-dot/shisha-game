@@ -92,9 +92,12 @@ export function computeShisha(cs) {
 export function bonusOf(cs = null) {
   let b = 0;
   const notes = [];
-  if (state?.rehearsal === "great") { b += 3; notes.push("前日リハーサルの手応え"); }
-  else if (state?.rehearsal === "good") { b += 1.5; notes.push("前日リハーサルの手応え"); }
-  if (state?.flags?._last_night === "practice") { b += 2; notes.push("前夜の最終調整"); }
+  // この2記録は第1章の準備。後章の旧セーブに残っていても、その章の加点にはしない。
+  if ((cs?.chapter ?? state?.chapter) === 1) {
+    if (state?.rehearsal === "great") { b += 3; notes.push("前日リハーサルの手応え"); }
+    else if (state?.rehearsal === "good") { b += 1.5; notes.push("前日リハーサルの手応え"); }
+    if (state?.flags?._last_night === "practice") { b += 2; notes.push("前夜の最終調整"); }
+  }
   const gift = cs && giftBowlEffect(cs);
   if (gift?.bonus) { b += gift.bonus; notes.push(gift.note); }
   const mastery = cs && cs.mode === "tournament"
@@ -126,5 +129,3 @@ export function finalize(cs) {
   cs.bonusNotes = notes;
   return cs;
 }
-
-export const flavorName = (id) => DB.flavorById[id]?.short_name?.replace(/^AF /, "") || id;

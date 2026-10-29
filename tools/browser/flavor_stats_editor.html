@@ -696,7 +696,7 @@ td.action-cell { min-width: 120px; }
       <dt>スパイス感</dt><dd>スパイス・ハーブ系の刺激</dd>
       <dt>華やかさ</dt><dd>フローラル系の香り。9=華やか</dd>
       <dt>ニコチンの強さ</dt><dd>葉のニコチン感。9=ガツンとくる</dd>
-      <dt>NGフレーバー</dt><dd>一緒に混ぜると大幅減点の組み合わせ</dd>
+      <dt>NGフレーバー</dt><dd>組み合わせの資料・メモ用設定。ゲームの採点には反映されません</dd>
     </dl>
   </div>
 </div>
@@ -734,6 +734,7 @@ td.action-cell { min-width: 120px; }
   </div>
 </div>
 
+<p>NGフレーバーの設定は資料・メモ専用で、ゲームの採点には反映されません。採点に使う NG 組み合わせの正本は <code>data/ng_mixes.json</code> です。採点を変更する場合はそちらを編集してください。</p>
 <div class="table-wrap">
   <table id="flavor-table">
     <thead>
@@ -775,7 +776,6 @@ const BASE_FLAVORS = [
   { id: "banana", name: "dobaj バナナ", full: "ドバージュ バナナ", cat: "fruit", stats: { heat_resistance: 3, refreshing: 3, sweet_natural: 6, sweet_confection: 7, cooling: 1, assertiveness: 5, acquired_taste: 3, smoke_body: 6, sourness: 1, spiciness: 1, floral: 1, nicotine: 4 } },
   { id: "lychee", name: "アブサル ライチ", full: "アブサル ライチ", cat: "fruit", stats: { heat_resistance: 4, refreshing: 6, sweet_natural: 7, sweet_confection: 3, cooling: 2, assertiveness: 5, acquired_taste: 4, smoke_body: 4, sourness: 2, spiciness: 1, floral: 6, nicotine: 4 } },
   { id: "cool_mint", name: "AF クールミント", full: "アルファーヘブン クールミント", cat: "cooling", stats: { heat_resistance: 6, refreshing: 9, sweet_natural: 1, sweet_confection: 1, cooling: 9, assertiveness: 7, acquired_taste: 3, smoke_body: 3, sourness: 1, spiciness: 3, floral: 1, nicotine: 4 } },
-  { id: "twice_ice", name: "AF トワイスアイス", full: "アルファーヘブン トワイスアイス", cat: "cooling", stats: { heat_resistance: 6, refreshing: 8, sweet_natural: 2, sweet_confection: 2, cooling: 9, assertiveness: 7, acquired_taste: 4, smoke_body: 3, sourness: 1, spiciness: 2, floral: 1, nicotine: 4 } },
   { id: "peppermint_shake", name: "dobaj ペパーミントシェイク", full: "ドバージュ ペパーミントシェイク", cat: "cooling", stats: { heat_resistance: 5, refreshing: 6, sweet_natural: 3, sweet_confection: 7, cooling: 7, assertiveness: 5, acquired_taste: 2, smoke_body: 5, sourness: 1, spiciness: 2, floral: 1, nicotine: 3 } },
   { id: "ice_grape", name: "AF アイスグレープ", full: "アルファーヘブン アイスグレープ", cat: "cooling", stats: { heat_resistance: 5, refreshing: 7, sweet_natural: 5, sweet_confection: 3, cooling: 6, assertiveness: 5, acquired_taste: 2, smoke_body: 4, sourness: 3, spiciness: 1, floral: 1, nicotine: 3 } },
   { id: "ice_lemon", name: "AF アイスレモン", full: "アルファーヘブン アイスレモン", cat: "cooling", stats: { heat_resistance: 5, refreshing: 8, sweet_natural: 2, sweet_confection: 2, cooling: 7, assertiveness: 5, acquired_taste: 3, smoke_body: 3, sourness: 7, spiciness: 1, floral: 1, nicotine: 3 } },
@@ -1058,7 +1058,7 @@ function buildTable() {
     hr.appendChild(th);
   }
   const thNg = document.createElement("th");
-  thNg.innerHTML = 'NGフレーバー<span class="th-desc">大幅減点の組合せ</span>';
+  thNg.innerHTML = 'NGフレーバー<span class="th-desc">資料・メモ用</span>';
   hr.appendChild(thNg);
 
   const thAction = document.createElement("th");

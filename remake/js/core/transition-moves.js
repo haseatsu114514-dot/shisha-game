@@ -4,6 +4,8 @@ import { el, sleep } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, curtain, openLeaf, stepIntoBg, walker, everyFrame } from "./transition-kit.js";
 import { motionVariant } from "./mg-kit.js";
+import { withLoadingNotice } from "./module-loading.js";
+import { loadingNotice } from "./ui.js";
 
 export const MOVE_STYLES = ["pin", "steps", "walk", "door", "noren", "walkdoor"];
 const STORE_KEY = "suien_move_style";
@@ -23,7 +25,7 @@ export function setMoveStyle(style) {
 
 /** 扉は motions/door.js を使うときに読む（a／b は ?movar）。読み込みを待つ間も covered／release の約束は同じ */
 function doorMove(host, opts) {
-  const made = import("../motions/door.js")
+  const made = withLoadingNotice(import("../motions/door.js"), { ...loadingNotice("移動演出を準備しています…"), delayMs: 500 })
     .then((m) => (motionVariant("door") === "b" ? m.b : m.a)(host, opts))
     .catch((e) => { console.error(e); return pinMove(host, opts); });
   return { covered: made.then((c) => c.covered), release: () => made.then((c) => c.release()) };

@@ -2,8 +2,10 @@
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { glossaryPanel } from "../vn/glossary.js";
 import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { shinkansenRide } from "../core/scene-motions.js";
@@ -16,6 +18,8 @@ import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 import { openShop } from "../daily/shop.js";
 import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
+import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, loadStoryRoutes, availableOptionalScenes, commitOptionalRead,
+  selectChapterThreeEvening, eveningRecord } from "./ch3-story-wiring.js";
 
 const FILES = {
   ch3_prologue: ["ch3_childhood_opening", "ch3_kuze_research", "ch3_train_arrival"],
@@ -28,6 +32,8 @@ const FILES = {
   ch3_rivals: ["ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_kuze_advice", "ch3_steve_low_heat"],
   ch3_volk: ["ch3_volk_first"],
 };
+// 任意8場面・前夜デート・前夜の修羅場未遂（#1176 GAP 3-B）。既存ファイルの配列へ足し、新しいファイルはそのまま加える。
+for (const [file, ids] of Object.entries(CH3_STORY_DIALOGUE_FILES)) FILES[file] = [...(FILES[file] || []), ...ids];
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -60,6 +66,7 @@ async function openMenu(owner) {
       { label: "セーブ", value: "save", test: test("save") },
       { label: "ロード", value: "load", test: test("load") },
       { label: "設定", value: "config", test: test("config") },
+      { label: "用語集", value: "glossary", test: test("glossary") },
       { label: "大会の規則", value: "rules", test: test("rules") },
       { label: "タイトルへ戻る", value: "title", test: test("title") },
       { label: "閉じる", value: null, primary: true },
@@ -67,6 +74,7 @@ async function openMenu(owner) {
     if (!current(owner)) return;
     if (choice === "save") await saveFlow();
     if (choice === "config") await (await import("../scenes/title.js")).openConfig();
+    if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
     if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
@@ -103,7 +111,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     note ? el("p.ch2-contest-note", { text: note }) : null,
     el("div.ch2-contest-actions", [...actions,
       ...(["free", "ready"].includes(name) ? [button(owner, "東京の地図", "map", async () => {
-        const { openChapterThreeMap } = await import("./ch3-map.js");
+        const { openChapterThreeMap } = await withLoadingNotice(import("./ch3-map.js"), loadingNotice("東京の地図を準備しています…"));
         if (!current(owner)) return;
         const window = chapterThreeFreeTime(state);
         const selection = await openChapterThreeMap(state, chapterThreeScenes(state), {
@@ -119,7 +127,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
         if (current(owner)) await renderStage(owner);
       }),
       button(owner, "LIME・恋人との連絡", "lime", async () => {
-        const social = await import("./ch3-social.js");
+        const social = await withLoadingNotice(import("./ch3-social.js"), loadingNotice("LIMEを準備しています…"));
         if (!current(owner)) return;
         const controller = owner.controller = new AbortController();
         try { await social.openTokyoLime({ signal: controller.signal }); }
@@ -132,6 +140,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 
 /** 必要な四ファイルをすべて確認してから DB に公開する。 */
 async function loadIntroDialogues() {
+  await loadStoryRoutes();
   const groups = await Promise.all(Object.entries(FILES).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
@@ -173,14 +182,14 @@ export function beginChapterThree() {
   return openChapter(true);
 }
 
-export function resumeChapterThree() {
+export async function resumeChapterThree() {
   if (state?.chapter !== 3) return false;
   if (state.flags?._ch3_tournament_won || state.flags?._ch3_aftermath || state.flags?._ch3_cleared) {
-    import("./ch3-aftermath.js").then(module => module.runChapterThreeAftermath());
+    await (await import("./ch3-aftermath.js")).runChapterThreeAftermath();
     return true;
   }
   if (state.flags?._ch3_tournament && chapterThreeProgress(state).stage === chapterThreeScenes(state).length) {
-    import("./ch3-tournament.js").then(module => module.runChapterThreeTournament());
+    await (await import("./ch3-tournament.js")).runChapterThreeTournament();
     return true;
   }
   return openChapter(false);
@@ -285,7 +294,7 @@ async function readScene(owner, scene) {
   // 行き先を決めた時点で前のカードを外し、背景待ちを同じ自由時間と誤認させない。
   showScreen("none", null);
   hud(owner);
-  await setBg(background, { instant: true });
+  await withScenePreparation(setBg(background, { instant: true }));
   if (!current(owner)) return false;
   // 名乗りの制御行などは読了時のcheckpointまで未確定。会話中の保存を避ける。
   hud(owner);
@@ -327,16 +336,20 @@ async function renderStage(owner) {
   const free = chapterThreeFreeTime(state);
   if (free) { await renderFreeTime(owner, free); return; }
   if (!scene) {
+    // 前夜の自由時間を通らなかった夜（約束がない・休んだ）は、ここで一度だけ「過ごさなかった」と確定する。
+    if (!state.flags._ch3_evening && !await settleEveningAtReady(owner)) return;
+    if (!current(owner)) return;
     card(owner, "ready", "全国大会の朝", "久世、スティーブ、ヴォルクと同じ舞台へ。手順と、昨日決めた一台を確かめる。", [
       button(owner, "HAZE: NATIONAL TOKYOへ", "tournament", async () => {
-        await (await import("./ch3-tournament.js")).runChapterThreeTournament();
+        const mod = await withLoadingNotice(import("./ch3-tournament.js"), loadingNotice("全国大会を準備しています…"));
+        await mod.runChapterThreeTournament();
       }, true),
       button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     ], "四人一斉に制作し、客席への提供と二度の調整まで競います。");
     return;
   }
   if (scene.id === "ch3_opening" && state.flags._ch3_opening_read) {
-    await setBg(bgUrl("bg_tournament_stage"), { instant: true });
+    await withScenePreparation(setBg(bgUrl("bg_tournament_stage"), { instant: true }));
     if (!current(owner)) return;
     card(owner, "scene", "DAY 1・全国大会の参加登録", "東京駅から会場へ。受付で出場手続きを済ませ、競技規則を受け取る。", [
       button(owner, state.flags._ch3_rules_read ? "mukaiへ向かう"
@@ -360,7 +373,7 @@ async function renderStage(owner) {
     return;
   }
   const background = bgUrl(scene.bg);
-  await setBg(background, { instant: true });
+  await withScenePreparation(setBg(background, { instant: true }));
   if (!current(owner)) return;
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
     button(owner, "続きを読む", "continue", async () => {
@@ -381,7 +394,64 @@ async function renderStage(owner) {
       save();
       await renderStage(owner);
     }, true),
+    ...await optionalActions(owner),
   ], scene.id === "ch3_kuze_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
+}
+
+/**
+ * 任意場面の入口は、毎日必ず出る場面カードに置く。自由時間のカードは約束かジム会員の時だけ開く
+ * ため、そこに置くと任意場面の多くに届かない。読んでも自由時間ウィンドウは消費しない（仮置き。
+ * 差し替えは ch3-story-wiring.js の commitOptionalRead だけ）。
+ */
+async function optionalActions(owner) {
+  const scenes = availableOptionalScenes(await loadStoryRoutes(), state);
+  return scenes.length ? [button(owner, `寄り道をする（${scenes.length}）`, "optional-open", () => renderOptional(owner))] : [];
+}
+
+async function renderOptional(owner) {
+  if (!current(owner)) return;
+  const scenes = availableOptionalScenes(await loadStoryRoutes(), state);
+  if (!scenes.length) { await renderStage(owner); return; }
+  card(owner, "optional", "寄り道", "本筋の合間に、立ち寄れる場面がある。読んでも、予定は進まない。", [
+    ...scenes.map(scene => button(owner, `${scene.label}（${scene.location}）`, `optional-${scene.id}`,
+      () => readOptional(owner, scene.id))),
+    button(owner, "戻る", "optional-back", () => renderStage(owner)),
+  ], "読んだ場面は、あとから読み返せません。");
+}
+
+async function readOptional(owner, id) {
+  // 押した時点で条件を引き直す。古い画面・二重クリックで再読や条件外の場面を読まない。
+  const scene = availableOptionalScenes(await loadStoryRoutes(), state).find(item => item.id === id);
+  if (scene && !await readScene(owner, scene)) return;
+  if (scene) {
+    commitOptionalRead(state, id);
+    save();
+  }
+  await renderStage(owner);
+}
+
+/** 前夜の再生と確定。ウィンドウを通る場合は訪問の完了・自由時間の消費も同じ一回で行う。 */
+async function playEvening(owner, result, { plan = null, window = null, definitions = null } = {}) {
+  for (const id of result.scenes) {
+    if (!await readScene(owner, { id, bg: "bg_street_night" })) return false;
+  }
+  // 前夜デートは訪問デートと同じ一回の行動。ch3_visit_*_date は再生せず、完了だけを訪問の記録へ渡す。
+  if (result.kind === "date" && !completeTokyoVisitAction(state, definitions, plan.id, window)) return false;
+  if (window && !completeChapterThreeFreeTime(state, window.id)) return false;
+  state.flags._ch3_evening = eveningRecord(result);
+  save();
+  return true;
+}
+
+async function settleEveningAtReady(owner) {
+  const [routes, social] = await Promise.all([loadStoryRoutes(), import("./ch3-social.js")]);
+  const definitions = await social.loadTokyoSocial();
+  if (!current(owner)) return false;
+  const result = selectChapterThreeEvening(routes, state, definitions);
+  if (result.kind !== "rest") return playEvening(owner, result, { definitions });
+  state.flags._ch3_evening = eveningRecord(result);
+  save();
+  return true;
 }
 
 async function renderFreeTime(owner, window) {
@@ -393,16 +463,29 @@ async function renderFreeTime(owner, window) {
   const eligible = id && visitContacts(state, definitions).includes(id)
     && (!plan.met || !state.flags._story_shuraba_unresolved);
   const name = id ? displayName(id, state, { context: "private" }) : "";
+  // 前夜に会う約束がある時は、訪問デート（ch3_visit_*_date）の代わりに前夜の場面を一度だけ再生する。
+  const routes = await loadStoryRoutes();
+  const evening = eligible && plan.met && window.id === EVENING_WINDOW
+    ? selectChapterThreeEvening(routes, state, definitions, window) : null;
+  const eveningNow = evening?.kind === "rest" ? null : evening;
   const gym = chapterThreeGymAvailability(state, window.id);
   await setBg(bgUrl(window.slot ? "bg_tokyo_map_night" : "bg_tokyo_map_day"), { instant: true });
   if (!current(owner)) return;
   card(owner, "free", `DAY ${window.day - state.flags._ch3_intro.startDay + 1}・${window.slot ? "夜" : "昼"}${plan ? "の約束" : "の自由時間"}`,
-    eligible ? `${name}と${plan.met ? "東京の街を散歩する" : "東京駅で合流する"}時間になった。`
+    eveningNow ? eveningNow.kind === "date" ? `大会前夜。${name}と過ごす時間になった。`
+      : "大会前夜。誰と過ごすか、決めきれないまま夜になった。"
+      : eligible ? `${name}と${plan.met ? "東京の街を散歩する" : "東京駅で合流する"}時間になった。`
       : plan ? "この時間は静かに過ごそう。会えなくても、二人の関係は変わらない。"
         : "次の予定まで、少し時間がある。街で体を動かすか、休んで過ごそう。", [
-    ...(eligible ? [button(owner, plan.met ? "二人で散歩する" : "東京駅へ迎えに行く", "visit", async () => {
+    ...(eligible ? [button(owner, eveningNow ? "前夜を過ごす" : plan.met ? "二人で散歩する" : "東京駅へ迎えに行く", "visit", async () => {
       const kind = plan.met ? "date" : "meetup";
       if (dueTokyoVisit(state, window)?.id !== plan.id) return;
+      if (eveningNow) {
+        const result = selectChapterThreeEvening(routes, state, definitions, window);
+        if (result.kind !== "rest" && !await playEvening(owner, result, { plan, window, definitions })) return;
+        await renderStage(owner);
+        return;
+      }
       if (!await readScene(owner, { id: `ch3_visit_${id}_${kind}`, bg: window.slot ? "bg_street_night" : "bg_street_day" })) return;
       if (!completeTokyoVisitAction(state, definitions, plan.id, window)) return;
       completeChapterThreeFreeTime(state, window.id);
@@ -417,7 +500,8 @@ async function renderFreeTime(owner, window) {
       if (!restChapterThreeFreeTime(window.id, { isCurrent: () => current(owner) })) return;
       await renderStage(owner);
     }),
-  ], plan ? "合流と散歩は、それぞれ一回の自由時間を使います。"
+  ], eveningNow ? "前夜の過ごし方は、一回の自由時間を使います。"
+    : plan ? "合流と散歩は、それぞれ一回の自由時間を使います。"
     : "会員証は東京でも使えます。トレーニングは一日一回、追加料金はかかりません。", "");
 }
 

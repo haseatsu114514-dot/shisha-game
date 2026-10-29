@@ -4,6 +4,7 @@ import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { cycleBadgeText } from "../core/cycle-display.js";
 import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
@@ -55,13 +56,15 @@ export function openStatus() {
   const body = el("div.st-body");
   const show = (id) => {
     tabs.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.tab === id));
-    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : id === "notes" ? notesTab() : itemsTab());
+    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : itemsTab());
   };
-  for (const [id, label] of [["me", "ステータス"], ["people", "人間関係"], ["notes", "常連ノート"], ["items", "持ち物"]]) {
+  for (const [id, label] of [["me", "ステータス"], ["people", "人間関係"], ["items", "持ち物"]]) {
     tabs.append(el("button.st-tab", { text: label, dataset: { tab: id }, onclick: () => show(id) }));
   }
   show("me");
-  return modal({ title: "STATUS", body: el("div.status", [tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
+  // 周回数の表示はステータス見出しとセーブ枠だけ（HUDには出さない）。2周目以降のみ・小さく（設計 §3.6）
+  const badge = cycleBadgeText(state);
+  return modal({ title: "STATUS", body: el("div.status", [badge ? el("div.st-cycle", { text: badge, dataset: { test: "status-cycle" } }) : null, tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
 }
 
 
@@ -135,24 +138,6 @@ function peopleTab() {
   ]);
 }
 
-/** 常連ノート: バイトで接客した客の記録（会った客は名前・回数・メモ、未接客は？？？） */
-function notesTab() {
-  const notes = state.notes || {};
-  const all = Object.entries(DB.statusTexts?.customerNotes || {});
-  // 取得済みを先に並べる（未取得の？？？は後ろ）。同じ側の中では元の順を保つ
-  const entries = [...all.filter(([id]) => notes[id]), ...all.filter(([id]) => !notes[id])];
-  const found = all.filter(([id]) => notes[id]).length;
-  return el("div.st-notes", [
-    el("p.note-progress", { text: `${found} / ${entries.length} 人` }),
-    el("div.note-list", entries.map(([id, e]) => notes[id]
-      ? el("div.note-entry.found", [
-        el("div.note-head", [el("span.note-name", { text: e.name }), el("span.note-count", { text: `×${notes[id]}` })]),
-        el("p.note-memo", { text: e.memo }),
-      ])
-      : el("div.note-entry.locked", [el("span.note-name", { text: "？？？" })]))),
-  ]);
-}
-
 /** 贈られた機材の札（贈り主・染み付いた香り・効き・売却不可）。1行に収める */
 function giftNote(e) {
   const flavor = DB.flavorById[e.gift.flavor];
@@ -184,7 +169,7 @@ function itemsTab() {
     gifts.length ? el("div.gift-notes", gifts.map(giftNote)) : null,
     el("h4", { text: "フレーバー" }),
     el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "所持0" })]),
-    el("p.st-note", { text: "1箱50g。大会・自宅の試作・店への私物持ち込みで消費。熟練度はLv.5まで。第2章の課題苺のみ主催者支給。" }),
+    el("p.st-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
     el("h4", { text: "レシピ帳" }),
     el("div.chips", DB.recipes.filter((r) => state.recipes[r.id]).map((r) => el("span.chip.gold", { text: r.name })).concat(
       Object.keys(state.recipes).length ? [] : [el("span.chip.dim", { text: "まだ白紙" })])),
