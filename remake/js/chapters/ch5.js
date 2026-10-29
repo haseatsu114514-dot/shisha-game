@@ -10,8 +10,9 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
 import { readDialogues } from "./ch2-city-data.js";
-import { CH5_SCENE_BG, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES,
-  canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
+import { CH5_SCENE_BG, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES, CH5_PREP_TRIALS,
+  chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho,
+  recordChapterFivePrepTrial, recordChapterFivePrepAdjustment, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, beginChapterFiveFinale, completeChapterFiveScene } from "./ch5-progress.js";
 
@@ -176,7 +177,12 @@ async function readScene(owner, id) {
   const source = DB.dialogues[id];
   if (!source) throw new Error(`台本がありません: ${id}`);
   // 台本の metadata.bg は持ち込まず、ch5-progress.js の対応表（仮置き）で背景を決める。
-  const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
+  // 試作の返り（#1666）は同じ場面の末尾に続けて読み、読了の確定も親場面と一緒にする。
+  const echo = chapterFivePrepEcho(state, id).map(echoId => {
+    if (!DB.dialogues[echoId]) throw new Error(`台本がありません: ${echoId}`);
+    return DB.dialogues[echoId].lines;
+  });
+  const dialogue = { ...source, lines: [...source.lines, ...echo.flat()], metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
   await setBg(bgUrl(CH5_SCENE_BG[id]), { instant: true });
@@ -217,7 +223,10 @@ async function renderStage(owner) {
   if (!current(owner)) return;
   const progress = chapterFiveProgress(state);
   if (progress.part === "prologue") return renderScene(owner, CH5_PROLOGUE[progress.stage], "");
-  if (progress.part === "free") return chapterFiveTimeoutPending(state) ? renderTimeoutCard(owner) : renderFree(owner);
+  if (progress.part === "free") {
+    if (chapterFiveTimeoutPending(state)) return renderTimeoutCard(owner);
+    return chapterFivePrepPending(state) ? renderPrep(owner) : renderFree(owner);
+  }
   if (progress.part === "scheduled") return renderScheduled(owner);
   if (progress.part === "match") return renderMatch(owner);
   if (progress.part === "aftermath") return renderScene(owner, CH5_AFTERMATH[progress.aftermath], "");
@@ -246,6 +255,34 @@ async function renderTimeoutCard(owner) {
       await renderStage(owner);
     }, true),
   ], "", "ch5_timeout");
+}
+
+/** 閉店後の試作（#1666）: 何を試すか → スミさんが吸って返す → 直すか、そのまま覚えるか。 */
+async function renderPrep(owner) {
+  await setBg(bgUrl(CH5_SCENE_BG.ch5_free_tonari_practice), { instant: true });
+  if (!current(owner)) return;
+  const prep = chapterFivePreparation(state);
+  if (!prep) {
+    card(owner, "prep", "閉店後の試作", "ダブルアップル12グラム。今夜は、何を試す？",
+      CH5_PREP_TRIALS.map(trial => button(owner, trial.label, `prep-${trial.id}`, async () => {
+        if (!await readScene(owner, chapterFivePrepScene("trial", trial.id))) return;
+        if (!recordChapterFivePrepTrial(state, trial.id)) return;
+        save();
+        await renderStage(owner);
+      })), "できた一台は、スミさんが吸って返してくれる。");
+    return;
+  }
+  const trial = CH5_PREP_TRIALS.find(entry => entry.id === prep.trial);
+  const settle = (adjusted, sceneId) => async () => {
+    if (!await readScene(owner, sceneId)) return;
+    if (!recordChapterFivePrepAdjustment(state, adjusted)) return;
+    save();
+    await renderStage(owner);
+  };
+  card(owner, "prep", "もう一台か、このままか", `スミさんの返答: ${trial.point}`, [
+    button(owner, trial.adjust, "prep-adjust", settle(true, chapterFivePrepScene("adjust", trial.id)), true),
+    button(owner, "このまま、手に覚えさせる", "prep-keep", settle(false, chapterFivePrepScene("keep"))),
+  ], `試したこと: ${trial.label}`);
 }
 
 async function renderFree(owner) {
