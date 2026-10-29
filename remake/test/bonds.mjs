@@ -245,12 +245,12 @@ try {
   });
   // みんとのLIMEは店の『お仕事用』。本名を知った後も「みんと＠PEPPERMINT」・営業姿のアイコン（HF10）
   assert.equal(privateUi.listName, "みんと＠PEPPERMINT");
-  assert(privateUi.listFace.split("?")[0].endsWith("face_minto.png"), privateUi.listFace);
+  assert(privateUi.listFace.split("?")[0].endsWith("face_minto.webp"), privateUi.listFace);
   assert(privateUi.delivered >= 1 && privateUi.introAccount === "minto_private", JSON.stringify(privateUi));
   assert(privateUi.introText.includes("栞です"), privateUi.introText);
   const privateRow = privateUi.rows.find((r) => r.test === "lime-chat-minto_private");
   const workRow = privateUi.rows.find((r) => r.test === "lime-chat-minto");
-  assert(privateRow && privateRow.name === "栞" && privateRow.face.endsWith("face_minto_private.png"), JSON.stringify(privateUi.rows));
+  assert(privateRow && privateRow.name === "栞" && privateRow.face.endsWith("face_minto_private.webp"), JSON.stringify(privateUi.rows));
   assert(workRow && workRow.name === "みんと＠PEPPERMINT", "the work thread stays after becoming lovers");
   assert(privateUi.beat.includes("栞さん"), privateUi.beat);
   assert(privateUi.gate.includes("栞さんのことを考えると"), privateUi.gate);

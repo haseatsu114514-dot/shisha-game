@@ -46,7 +46,6 @@ export const nextFrame = () => new Promise((r) => requestAnimationFrame(() => r(
 export const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 export const lerp = (a, b, t) => a + (b - a) * t;
 export const rand = (lo, hi) => lo + Math.random() * (hi - lo);
-export const randInt = (lo, hi) => Math.floor(rand(lo, hi + 1));
 export const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 export const sum = (arr) => arr.reduce((a, b) => a + b, 0);
 export const yen = (n) => `${Math.round(n).toLocaleString("ja-JP")}円`;
@@ -75,48 +74,6 @@ export function seeded(seed, salt = 0) {
   h ^= h >>> 15;
   h = Math.imul(h, 2246822519) >>> 0;
   return (h % 100000) / 100000;
-}
-
-/** クリック/タップ/Enter のどれかを1回待つ（会話送り・演出の区切りに使う） */
-export function waitTap(target = document, { keys = ["Enter", " "], ignoreMs = 0 } = {}) {
-  return new Promise((resolve) => {
-    const start = performance.now();
-    const done = (e) => {
-      if (performance.now() - start < ignoreMs) return;
-      if (e.type === "keydown" && !keys.includes(e.key)) return;
-      target.removeEventListener("pointerup", done);
-      window.removeEventListener("keydown", done);
-      resolve();
-    };
-    target.addEventListener("pointerup", done);
-    window.addEventListener("keydown", done);
-  });
-}
-
-/** ボタン群から1つ選ばせる。options: [{label, value, disabled, desc}] */
-export function chooseFrom(container, options, { className = "btn", onRender } = {}) {
-  return new Promise((resolve) => {
-    container.replaceChildren();
-    options.forEach((o, i) => {
-      const b = el(`button.${className}`, {
-        disabled: o.disabled || null,
-        dataset: { value: String(o.value ?? i), test: o.test || "" },
-        onclick: () => resolve(o.value ?? i),
-      }, [
-        el("span.btn-label", { text: o.label }),
-        o.desc ? el("small.btn-desc", { text: o.desc }) : null,
-      ]);
-      container.append(b);
-    });
-    if (onRender) onRender(container);
-  });
-}
-
-/** 文字列の全角換算の長さ（半角=0.5）。改行判定に使う */
-export function zenLength(s) {
-  let n = 0;
-  for (const ch of s) n += /[\x20-\x7e｡-ﾟ]/.test(ch) ? 0.5 : 1;
-  return n;
 }
 
 /**

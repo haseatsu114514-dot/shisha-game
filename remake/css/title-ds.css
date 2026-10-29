@@ -55,11 +55,11 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #rotate-hi
 .title[data-layout="ds"] .title-item:hover:not(:disabled), .title[data-layout="ds"] .title-item:focus-visible {
   background: #643328; outline: 2px solid #ffe4aa; outline-offset: 2px; transform: none;
 }
-.title[data-layout="ds"] .ti-en { order: 2; font-size: 11px; letter-spacing: .14em; color: #cfb28a; }
+.title[data-layout="ds"] .ti-en { order: 2; font-size: 14px; letter-spacing: .14em; color: #cfb28a; }
 .title[data-layout="ds"] .ti-ja { font-size: 22px; line-height: 1.25; letter-spacing: .08em; color: inherit; }
 .title[data-layout="ds"] .ti-en::before { content: none; }
 .title[data-layout="ds"] .title-ds-caption { margin: 24px 0 6px; font-size: 16px; color: #d6b58a; }
-.title[data-layout="ds"] .title-ds-chapter { margin: 0; font-size: 11px; letter-spacing: .12em; color: #c3a37a; }
+.title[data-layout="ds"] .title-ds-chapter { margin: 0; font-size: 14px; letter-spacing: .12em; color: #c3a37a; }
 body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .modal-box {
   min-width: 0; width: min(620px, calc(100% - 24px)); max-height: calc(100% - 28px); padding: 22px;
 }
@@ -86,7 +86,7 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .ga
 .title[data-layout="ds"] .title-ds-controls::before {
   content: "MAIN MENU"; display: flex; align-items: center; align-self: stretch; height: 34px; margin: 0 -22px 18px; padding: 0 14px;
   border-bottom: 1px solid #e8c27a33; background: linear-gradient(#2a1f36, #1a1324); color: #ffe2a6;
-  font-family: "Chapter Preview Dot", "DS Dot", var(--font); font-size: 14px; letter-spacing: .08em;
+  font-family: "Chapter Preview Dot", var(--font); font-size: 14px; letter-spacing: .08em;
 }
 .title[data-layout="ds"] .title-ds-visual::after {
   content: ""; position: absolute; left: 50%; top: calc(100% + 7px); width: 64px; height: 8px; transform: translateX(-50%);

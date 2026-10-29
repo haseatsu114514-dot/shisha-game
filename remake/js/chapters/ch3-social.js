@@ -115,4 +115,3 @@ export async function openTokyoLime({ signal = null } = {}) {
   } });
 }
 
-export const tokyoSocialDefinitions = () => definitions;

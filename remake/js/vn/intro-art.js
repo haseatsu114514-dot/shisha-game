@@ -33,11 +33,29 @@ export function layoutIntro(host, id, variant, intro) {
   const name = host.querySelector(".ci-name");
   let size = 150;
   name.style.fontSize = `${size}px`;
-  while (name.offsetWidth * .86 > 596 && size > 60) name.style.fontSize = `${--size}px`;
+  if (name.offsetWidth * .86 > 596) {
+    let low = 60, high = 149;
+    while (low < high) {
+      size = Math.ceil((low + high) / 2);
+      name.style.fontSize = `${size}px`;
+      if (name.offsetWidth * .86 > 596) high = size - 1;
+      else low = size;
+    }
+    name.style.fontSize = `${low}px`;
+  }
   const title = host.querySelector(".ci-title");
   size = 28;
   title.style.fontSize = `${size}px`;
-  while (title.scrollWidth > 580 && size > 20) title.style.fontSize = `${--size}px`;
+  if (title.scrollWidth > 580) {
+    let low = 20, high = 27;
+    while (low < high) {
+      size = Math.ceil((low + high) / 2);
+      title.style.fontSize = `${size}px`;
+      if (title.scrollWidth > 580) high = size - 1;
+      else low = size;
+    }
+    title.style.fontSize = `${low}px`;
+  }
   const quote = host.querySelector(".ci-line"), text = intro.line || "";
   const preferred = {
     adam: text.indexOf("。") + 1, minto: text.indexOf(" ") + 1,

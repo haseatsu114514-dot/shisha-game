@@ -128,6 +128,8 @@ assert.equal(value.flags._ch4_strategy, "peach");
 
 // 自由行動: 初日のマップ。路地裏は出ない。
 let model = chapterFourMapModel(value);
+assert.equal(model.mode, "day");
+assert.equal(model.background, "bg_dubai_map");
 assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "inn"]);
 assert.deepEqual(model.destinations.find(item => item.id === "souq").scenes, ["ch4_dubai_souq", "ch4_stranger_first"]);
 assert.deepEqual(model.destinations.find(item => item.id === "festa").scenes, ["ch4_festa"]);
@@ -182,6 +184,8 @@ assert.equal(value.flags._ch4.day, 3);
 assert.equal(elapsed(), 3);
 assert.equal(chapterFourSecondAvailable(value), true);
 model = chapterFourMapModel(value);
+assert.equal(model.mode, "day", "DAY 3 still shows the midday map");
+assert.equal(model.background, "bg_dubai_map");
 assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "alley_cafe", "inn"]);
 assert.deepEqual(model.destinations.find(item => item.id === "alley_cafe").scenes, ["ch4_stranger_second"]);
 assert.equal(model.daysLeft, 2);
@@ -197,6 +201,8 @@ roundTrip();
 assert.equal(endChapterFourDay(value), "next_day");
 assert.equal(value.flags._ch4.day, CH4_EVE_DAY);
 model = chapterFourMapModel(value);
+assert.equal(model.mode, "dusk", "The eve day shows the Dubai map at dusk");
+assert.equal(model.background, "bg_dubai_map_dusk");
 assert.equal(model.daysLeft, 1);
 assert.match(model.destinations.find(item => item.id === "inn").label, /前夜/);
 secrecy();
@@ -301,6 +307,21 @@ assert.equal(completeChapterFourScene(value, "ch4_two_tables"), false, "A cleare
   for (const id of ["ch4_stranger_second", "ch4_wang_reception_forced_in", "ch4_wang_reception", "ch4_stranger_third"])
     assert.equal(completeChapterFourScene(forced, id), true, id);
   assert.equal(finishChapterFourEve(forced), true);
+}
+
+// 前夜日のマップは夕景。訪問しても切り替わらず、保存を復元しても夕景のまま。
+{
+  const eveDaySave = clearedSave();
+  advanceToChapterFour(eveDaySave);
+  for (const scene of CH4_PROLOGUE) completeChapterFourScene(eveDaySave, scene.id);
+  for (let step = 0; step < 3; step++) assert.equal(endChapterFourDay(eveDaySave), "next_day");
+  assert.equal(eveDaySave.flags._ch4.day, CH4_EVE_DAY);
+  assert.equal(chapterFourMapModel(eveDaySave).mode, "dusk");
+  assert.equal(chapterFourMapModel(eveDaySave).background, "bg_dubai_map_dusk");
+  assert.equal(completeChapterFourScene(eveDaySave, "ch4_dubai_souq"), true);
+  assert.equal(chapterFourMapModel(eveDaySave).background, "bg_dubai_map_dusk", "Visits must not switch the eve-day map back");
+  const restored = JSON.parse(JSON.stringify(eveDaySave));
+  assert.equal(chapterFourMapModel(restored).background, "bg_dubai_map_dusk", "A restored save keeps the dusk map");
 }
 
 // 保存の検証: 壊れた保存・part と日付の食い違いは throw。

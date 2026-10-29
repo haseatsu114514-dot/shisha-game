@@ -25,7 +25,9 @@ export function tsumugiMessages(save, friends) {
   if (recent) return [];
   return [5, 10].flatMap((day, index) => {
     const chat = friends?.friends?.tsumugi?.chats?.[index];
-    if (!chat || save.day < day || save.day > day + 1) return [];
+    // #1507 TL-05: 2通目（スケッチブック）は提出日 DAY11 と重ならないよう当日限り
+    const lastDay = day + (index === 1 ? 0 : 1);
+    if (!chat || save.day < day || save.day > lastDay) return [];
     return [{ id: `lime_tsumugi_note_day${day}`, sender: "tsumugi", chapter: 1,
       trigger_condition: "lime_exchanged", trigger_day: day, type: "chat",
       messages: chat.m.slice(), replies: chat.r }];

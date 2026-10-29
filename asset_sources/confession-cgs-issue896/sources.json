@@ -62,6 +62,89 @@
         "assets/ui/title_arts/title_art_keyvisual_01.png",
         "assets/sprites/characters/rin/chr_rin_normal.png"
       ]
+    },
+    {
+      "id": "cg_ageha_confession",
+      "source": "assets/cgs/cg_ageha_confession.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "1524372e4fc12f68968740b5ec4b7017d019efe11ce0bd30dc6a14083527581d",
+      "delivery": "remake/img/cgs/cg_ageha_confession.webp",
+      "deliveryBytes": 438420,
+      "prompt": "ageha.prompt.txt",
+      "generator": "codex-a image generation (gpt-6.1-sol)",
+      "transparent_background": false,
+      "references": [
+        "assets/ui/title_arts/title_art_keyvisual_01.png",
+        "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "assets/sprites/characters/ageha/chr_ageha_smile.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "remake/img/backgrounds/bg_street_night.webp"
+      ]
+    },
+    {
+      "id": "cg_mashiro_confession",
+      "source": "assets/cgs/cg_mashiro_confession.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "4841cd62af99e62c2e8443f07ac26b8d6159ecd5a5a8e07950d6328922773973",
+      "delivery": "remake/img/cgs/cg_mashiro_confession.webp",
+      "deliveryBytes": 415170,
+      "prompt": "mashiro.prompt.txt",
+      "generator": "codex-a image generation (gpt-6.1-sol)",
+      "transparent_background": false,
+      "references": [
+        "assets/ui/title_arts/title_art_keyvisual_01.png",
+        "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+        "assets/sprites/characters/mashiro/chr_mashiro_smile.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png"
+      ]
+    },
+    {
+      "id": "cg_hiyori_confession",
+      "source": "assets/cgs/cg_hiyori_confession.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "sha256": "748a19cfaeeb93d014cd2e0f91bea64a3a6b024066a89518952e77c128875082",
+      "delivery": "remake/img/cgs/cg_hiyori_confession.webp",
+      "deliveryBytes": 297742,
+      "prompt": "hiyori.prompt.txt",
+      "generator": "codex-a image generation (gpt-6.1-sol)",
+      "transparent_background": false,
+      "references": [
+        "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+        "assets/sprites/characters/hiyori/chr_hiyori_smile.png",
+        "assets/sprites/characters/hiyori/chr_hiyori_love_blush.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "remake/img/backgrounds/bg_street_night.webp"
+      ]
+    },
+    {
+      "id": "cg_samechan_confession",
+      "source": "assets/cgs/cg_samechan_confession.png",
+      "size": [
+        1672,
+        940
+      ],
+      "sha256": "fe4ddab4d3f0a8d9e3438613609db25aa6cb4ceb717f210d47f82e70744bd0cc",
+      "delivery": "remake/img/cgs/cg_samechan_confession.webp",
+      "deliveryBytes": 386410,
+      "prompt": "samechan.prompt.txt",
+      "generator": "codex-a image generation (gpt-6.1-sol)",
+      "transparent_background": false,
+      "references": [
+        "assets/ui/title_arts/title_art_keyvisual_01.png",
+        "assets/sprites/characters/samechan/chr_samechan_normal.png",
+        "assets/sprites/characters/samechan/chr_samechan_smile.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "remake/img/backgrounds/bg_street_night.webp"
+      ]
     }
   ],
   "rejected": [

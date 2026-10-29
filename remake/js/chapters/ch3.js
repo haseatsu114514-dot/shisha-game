@@ -2,7 +2,8 @@
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation } from "../core/ui.js";
+import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { play, hooks } from "../vn/engine.js";
@@ -110,7 +111,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     note ? el("p.ch2-contest-note", { text: note }) : null,
     el("div.ch2-contest-actions", [...actions,
       ...(["free", "ready"].includes(name) ? [button(owner, "東京の地図", "map", async () => {
-        const { openChapterThreeMap } = await import("./ch3-map.js");
+        const { openChapterThreeMap } = await withLoadingNotice(import("./ch3-map.js"), loadingNotice("東京の地図を準備しています…"));
         if (!current(owner)) return;
         const window = chapterThreeFreeTime(state);
         const selection = await openChapterThreeMap(state, chapterThreeScenes(state), {
@@ -126,7 +127,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
         if (current(owner)) await renderStage(owner);
       }),
       button(owner, "LIME・恋人との連絡", "lime", async () => {
-        const social = await import("./ch3-social.js");
+        const social = await withLoadingNotice(import("./ch3-social.js"), loadingNotice("LIMEを準備しています…"));
         if (!current(owner)) return;
         const controller = owner.controller = new AbortController();
         try { await social.openTokyoLime({ signal: controller.signal }); }
@@ -181,14 +182,14 @@ export function beginChapterThree() {
   return openChapter(true);
 }
 
-export function resumeChapterThree() {
+export async function resumeChapterThree() {
   if (state?.chapter !== 3) return false;
   if (state.flags?._ch3_tournament_won || state.flags?._ch3_aftermath || state.flags?._ch3_cleared) {
-    import("./ch3-aftermath.js").then(module => module.runChapterThreeAftermath());
+    await (await import("./ch3-aftermath.js")).runChapterThreeAftermath();
     return true;
   }
   if (state.flags?._ch3_tournament && chapterThreeProgress(state).stage === chapterThreeScenes(state).length) {
-    import("./ch3-tournament.js").then(module => module.runChapterThreeTournament());
+    await (await import("./ch3-tournament.js")).runChapterThreeTournament();
     return true;
   }
   return openChapter(false);
@@ -340,7 +341,8 @@ async function renderStage(owner) {
     if (!current(owner)) return;
     card(owner, "ready", "全国大会の朝", "久世、スティーブ、ヴォルクと同じ舞台へ。手順と、昨日決めた一台を確かめる。", [
       button(owner, "HAZE: NATIONAL TOKYOへ", "tournament", async () => {
-        await (await import("./ch3-tournament.js")).runChapterThreeTournament();
+        const mod = await withLoadingNotice(import("./ch3-tournament.js"), loadingNotice("全国大会を準備しています…"));
+        await mod.runChapterThreeTournament();
       }, true),
       button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     ], "四人一斉に制作し、客席への提供と二度の調整まで競います。");

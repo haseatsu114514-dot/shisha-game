@@ -9,12 +9,12 @@ export const CHAR_LABELS = {
   rin: "りん", mashiro: "ましろ", other: "その他",
 };
 const cgChars = Object.fromEntries(Object.entries({
-  ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip"],
+  ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession"],
   minto: ["cg_ch1_minto_casual_reveal", "cg_minto_casual", "cg_minto_cheki", "cg_minto_confession", "cg_minto_first_cheki"],
   tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color"],
   naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry"],
   rin: ["cg_rin_confession"],
-  mashiro: ["cg_ch3_childhood_offered_hand", "cg_kuze_mashiro_childhood", "cg_mashiro_double_apple"],
+  mashiro: ["cg_ch3_childhood_offered_hand", "cg_kuze_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession"],
 }).flatMap(([char, ids]) => ids.map(id => [id, char])));
 const charTag = char => Object.hasOwn(CHAR_LABELS, char) ? char : "other";
 

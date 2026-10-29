@@ -182,7 +182,7 @@ export function evaluateMix(cs) {
   const main = Math.max(...ids.map((id) => mix[id]), 0) / (total || 1);
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
   const reg = regulationFor(cs);
-  const competitionLegal = cs.mode !== "tournament" || ids.every(id => DB.flavorById[id]?.competition_legal !== false);
+  const competitionLegal = cs.mode !== "tournament" || ids.every(id => isTournamentFlavorLegal(id));
   const regOk = competitionLegal && (!reg || flavorFamilyGrams(mix, reg.flavor) >= reg.min);
   if (reg && ids.length > 1 && flavorFamilyGrams(mix, "mint") > 6) { score -= 6; notes.push("ミントが強すぎて、他の香りが隠れている"); }
   // 味の傾向（重さ平均）
@@ -224,6 +224,14 @@ export function fitMixToStock(mix, ids, limit, cap, minTotal = 0) {
   return out;
 }
 
+/** 大会で使える葉か（#1279 明示ゲート）: 未発売の試作葉（competition_legal: false）は章によらず不可。
+ *  発売章 chapter_min が現在の章（その周回の進行）に達していない葉は、持ち越し在庫でも大会では使えない。 */
+export function isTournamentFlavorLegal(id, chapter = state.chapter) {
+  const f = DB.flavorById[id];
+  if (!f || f.competition_legal === false) return false;
+  return (f.chapter_min || 1) <= chapter;
+}
+
 export function mixFlavorIds(cs) {
   const reg = regulationFor(cs);
   // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
@@ -236,7 +244,7 @@ export function mixFlavorIds(cs) {
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
   if (cs.orderFlavorIds) ids = cs.orderFlavorIds.filter(id => DB.flavorById[id]);
   // 支給・注文指定・まかないの経路でも、大会使用不可の葉を再混入させない。
-  if (consumes) ids = ids.filter(id => DB.flavorById[id]?.competition_legal !== false);
+  if (consumes) ids = ids.filter(id => isTournamentFlavorLegal(id));
   return ids;
 }
 
