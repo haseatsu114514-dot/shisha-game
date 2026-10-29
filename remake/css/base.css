@@ -417,7 +417,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 }
 .gc-badge.face { object-fit: cover; image-rendering: pixelated; background: #1a1422; border: 2px solid var(--gc); padding: 0; }
 .gc-meta { display: flex; flex-direction: column; gap: 2px; }
-.gc-top { font-family: var(--font); font-size: 12px; letter-spacing: 0.28em; color: var(--gc); }
+.gc-top { font-family: var(--font); font-size: 14px; letter-spacing: 0.04em; color: var(--gc); }
 .gc-main { font-size: 21px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
 .gc-sub { font-size: 13px; letter-spacing: 0.06em; color: var(--text-dim); }
 .gc-evolution { font-size: 20px; line-height: 1.5; color: var(--gold-hi); }
@@ -590,7 +590,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .smoke.reveal .st-lines { opacity: 0; }
 .st-sign { inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 7px; color: #e8c27a; }
 .st-sign span { font-size: 24px; letter-spacing: .5em; padding-left: .5em; }
-.st-sign small { font-size: 10px; letter-spacing: .32em; color: #e8c27a99; }
+.st-sign small { font-size: 12px; letter-spacing: 0.02em; color: #e8c27acc; }
 .st-sign { transform: translateY(12px); transition: opacity var(--st-ms), transform calc(var(--st-ms) * 2) var(--ease-out); }
 .cover .st-sign { transform: none; }
 .reveal .st-sign { transform: translateY(-12px); }
@@ -693,7 +693,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .boot-subtitle { font-size: 20px; font-weight: 500; letter-spacing: 0.3em; color: var(--text-dim); }
 .boot-bar { width: 360px; height: 3px; background: rgba(255, 255, 255, 0.12); border-radius: 2px; overflow: hidden; }
 .boot-bar i { display: block; height: 100%; width: 0; background: var(--gold); transition: width 0.2s; }
-.boot-msg { max-width: 900px; font-size: 15px; color: var(--text-dim); letter-spacing: 0.2em; text-align: center; line-height: 1.8; }
+.boot-msg { max-width: 900px; font-size: 15px; color: var(--text-dim); letter-spacing: 0.04em; text-align: center; line-height: 1.8; }
 .boot-retry[hidden] { display: none; }
 
 #rotate-hint {
