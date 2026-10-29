@@ -1,7 +1,7 @@
 // 起動: ステージの拡縮 → データ読込 → タイトル。
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
-import { loadAll, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
+import { loadAll, loadDeferredDialogues, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
@@ -67,6 +67,8 @@ export async function boot() {
 
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
 async function warmUp() {
+  // ひより台詞はタイトル後に先読みする。失敗しても起動を妨げず、次の呼び出しで再試行できる。
+  loadDeferredDialogues().catch(() => {});
   // 先に小さなUIの絵（枠・看板・顔アイコン・スロットの図柄）を並行で。背景・立ち絵はそのあと1枚ずつ
   // 店ロゴはマップまで要らないので、タイトル直後の帯域を空けるためアイドル時に回す（ui.js 側）。
   await Promise.all([warmUiArt({ deferStores: true }), ...["bg_osu_map_day", "bg_osu_map_night"].map((bg) => imageReady(bgUrl(bg), 8000, { keep: true }))]);

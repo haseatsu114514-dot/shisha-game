@@ -249,7 +249,6 @@ export const FLAG_EXACT_RULES = [
   ["_flavor_popcorn", "unlock"],
   ["_flavor_rose", "unlock"],
   ["_flavor_sakura", "unlock"],
-  ["_flavor_twice_ice", "unlock"],
   ["_flavor_violet_rose", "unlock"],
   ["_flavor_white_rose", "unlock"],
   ["_fortune_go", "progression"],

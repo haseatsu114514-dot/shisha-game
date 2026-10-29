@@ -9,6 +9,7 @@
       "lines": [
         {
           "speaker": "sumi",
+          "face": "normal",
           "text": "裏通りに斧投げBarがあるの、知ってるか？"
         },
         {
@@ -17,10 +18,12 @@
         },
         {
           "speaker": "sumi",
+          "face": "normal",
           "text": "そう。投げてすっきりして帰る店だ"
         },
         {
           "speaker": "sumi",
+          "face": "normal",
           "text": "のぞくだけなら金はかからん。仕事帰りに寄ってみな"
         },
         {

@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-29 04:03 UTC",
+ "generated": "2026-10-29 05:28 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -303,6 +303,64 @@
    "b": 0.0033,
    "ax": 0.5057,
    "aspect": 0.7467
+  },
+  "da_silva": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.97,
+   "b": 0.0175,
+   "ax": 0.4794,
+   "aspect": 0.7467
+  },
+  "emil": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9617,
+   "b": 0.0192,
+   "ax": 0.493,
+   "aspect": 0.7467
+  },
+  "master_hookah": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.95,
+   "b": 0.0183,
+   "ax": 0.4996,
+   "aspect": 0.7467
+  },
+  "mukai_master": {
+   "faces": [
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.985,
+   "b": 0.0083,
+   "ax": 0.5639,
+   "aspect": 0.7467
+  },
+  "sheikh": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9692,
+   "b": 0.0167,
+   "ax": 0.5368,
+   "aspect": 0.7467
+  },
+  "shisha_9000": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.965,
+   "b": 0.0167,
+   "ax": 0.5133,
+   "aspect": 0.7467
   }
  },
  "backgrounds": [
@@ -427,7 +485,13 @@
   "face_rei.png",
   "face_uranaishi.png",
   "face_volk.png",
-  "face_sai.png"
+  "face_sai.png",
+  "face_emil.png",
+  "face_da_silva.png",
+  "face_master_hookah.png",
+  "face_sheikh.png",
+  "face_mukai_master.png",
+  "face_shisha_9000.png"
  ],
  "making": [
   "bench_base.png",
@@ -2165,11 +2229,13 @@
   "sprites/characters/ageha/chr_ageha_serious.png",
   "sprites/characters/ageha/chr_ageha_smile.png",
   "sprites/characters/ageha/chr_ageha_surprise.png",
+  "sprites/characters/da_silva/chr_da_silva_normal.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_serious.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_smile.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_surprise.png",
+  "sprites/characters/emil/chr_emil_normal.png",
   "sprites/characters/hajime/chr_hajime_normal.png",
   "sprites/characters/hajime/chr_hajime_sad.png",
   "sprites/characters/hajime/chr_hajime_serious.png",
@@ -2209,6 +2275,7 @@
   "sprites/characters/mashiro/chr_mashiro_sleep.png",
   "sprites/characters/mashiro/chr_mashiro_smile.png",
   "sprites/characters/mashiro/chr_mashiro_surprise.png",
+  "sprites/characters/master_hookah/chr_master_hookah_normal.png",
   "sprites/characters/minto/chr_minto_normal.png",
   "sprites/characters/minto/chr_minto_sad.png",
   "sprites/characters/minto/chr_minto_smile.png",
@@ -2219,6 +2286,11 @@
   "sprites/characters/minto/chr_minto_ura_smug.png",
   "sprites/characters/minto/chr_minto_ura_surprise.png",
   "sprites/characters/minto/chr_minto_wink.png",
+  "sprites/characters/mukai_master/chr_mukai_master_normal.png",
+  "sprites/characters/mukai_master/chr_mukai_master_sad.png",
+  "sprites/characters/mukai_master/chr_mukai_master_serious.png",
+  "sprites/characters/mukai_master/chr_mukai_master_smile.png",
+  "sprites/characters/mukai_master/chr_mukai_master_surprise.png",
   "sprites/characters/nagumo/chr_nagumo_normal.png",
   "sprites/characters/nagumo/chr_nagumo_serious.png",
   "sprites/characters/nagumo/chr_nagumo_smile.png",
@@ -2249,6 +2321,8 @@
   "sprites/characters/samechan/chr_samechan_smile.png",
   "sprites/characters/samechan/chr_samechan_surprise.png",
   "sprites/characters/samechan/chr_samechan_ventriloquism.png",
+  "sprites/characters/sheikh/chr_sheikh_normal.png",
+  "sprites/characters/shisha_9000/chr_shisha_9000_normal.png",
   "sprites/characters/steve/chr_steve_normal.png",
   "sprites/characters/sumi/chr_sumi_normal.png",
   "sprites/characters/sumi/chr_sumi_serious.png",

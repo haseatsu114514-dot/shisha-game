@@ -7,6 +7,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 見た目は旧版の LIME（ノッチ付きの端末・緑のヘッダー・白と黄緑の吹き出し・明るい返信欄）を踏襲する。
 import { el, sleep, fitOneLine, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
+import { customLimeIconUrl } from "./lime-icons.js";
 import { layers, toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
@@ -412,6 +413,16 @@ function avatar(account, small = false) {
   const known = id && id !== "???" && (state.met[id] || id === "sumi");
   // お仕事用は営業姿、私用は私服の顔（名前 limeName と揃える）
   const url = known ? faceIconUrl(account !== id ? PRIVATE_ACCOUNTS[id].face : id) : null;
+  // 採用済みカスタムアイコンはお仕事用アカウントだけに使う（私用は正体保護のため従来どおり）
+  const custom = known && account === id ? customLimeIconUrl(id) : null;
+  if (custom) {
+    return el(`img.${cls}.custom`, { src: custom, alt: "", onerror: (e) => {
+      const node = e.currentTarget;
+      node.onerror = null;
+      if (url) { node.classList.remove("custom"); node.src = url; }
+      else node.replaceWith(el(`span.${cls}.blank`, { text: [...limeName(account)][0] || "？" }));
+    } });
+  }
   if (url) return el(`img.${cls}`, { src: url, alt: "" });
   const name = known ? limeName(account) : "？";
   return el(`span.${cls}.blank`, { text: [...name][0] || "？" });
@@ -554,9 +565,6 @@ export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
   return expiring ? { item: expiring, kind: "deadline" } : null;
 }
 
-// 旧テスト/呼び出しとの互換性を維持する。
-export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingReply("minto", opts);
-
 /**
  * C04: 約束の場面（強制イベント）を始める前に、まだ読んでいない誘いのトークがあれば、その相手を返す。
  * プレイヤーが本文を読まないまま面会の台本が始まる流れを防ぐための導線用。
@@ -598,7 +606,24 @@ function phoneShell({ time, title }) {
   // gen: 画面（一覧⇄トーク）を切り替えるたびに進める。古い画面の続き（吹き出し）が新しい画面に混ざらないように
   const ui = { header, chat, actions, phone, open: true, gen: 0, lastSide: null, cancel: null };
   ui.live = (g) => ui.open && ui.gen === g && state === owner;
-  ui.scroll = () => { chat.scrollTop = chat.scrollHeight; };
+  // 履歴の一括描画中はスクロールを保留し、最後に1回だけ実行する（scrollHeight の連続参照による強制リフローを避ける）。
+  let scrollHold = 0;
+  let scrollPending = false;
+  ui.scroll = () => {
+    if (scrollHold) { scrollPending = true; return; }
+    chat.scrollTop = chat.scrollHeight;
+  };
+  ui.withDeferredScroll = (draw) => {
+    scrollHold++;
+    try { return draw(); }
+    finally {
+      scrollHold--;
+      if (!scrollHold && scrollPending) {
+        scrollPending = false;
+        ui.scroll();
+      }
+    }
+  };
   /** 吹き出し。animate=false は履歴（既読）をまとめて描くとき */
   ui.bubble = async (raw, mine = false, sender = null, animate = true) => {
     const g = ui.gen;
@@ -856,18 +881,23 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
 
 /** 既読ぶんを履歴として一気に描く（日付の区切りつき） */
 function drawHistory(items, ui) {
-  let lastItem = null;
-  for (const it of items) {
-    if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
-    if (!it.read) continue;
-    for (const msg of it.msg.messages || []) drawMessage(ui, msg, false, accountOf(it), false);
-    const missed = missedInvitationNote(it);
-    if (missed) { ui.note(missed); continue; }
-    for (const l of it.log || []) {
-      if (l.note) ui.note(l.note);
-      else drawMessage(ui, l, l.me, accountOf(it), false);
+  // 同期的に描き切るため途中経過は描画されない。スクロールは最後の1回だけにまとめる。
+  const draw = () => {
+    let lastItem = null;
+    for (const it of items) {
+      if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
+      if (!it.read) continue;
+      for (const msg of it.msg.messages || []) drawMessage(ui, msg, false, accountOf(it), false);
+      const missed = missedInvitationNote(it);
+      if (missed) { ui.note(missed); continue; }
+      for (const l of it.log || []) {
+        if (l.note) ui.note(l.note);
+        else drawMessage(ui, l, l.me, accountOf(it), false);
+      }
     }
-  }
+  };
+  if (typeof ui.withDeferredScroll === "function") ui.withDeferredScroll(draw);
+  else draw();
 }
 
 /**
