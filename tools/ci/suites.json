@@ -82,6 +82,12 @@
       "run": ["node remake/test/ngplus_carry.mjs"]
     },
     {
+      "id": "ngplus-title",
+      "title": "NG+ title next-cycle entry and start options (U10, #1228)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ngplus_title.mjs"]
+    },
+    {
       "id": "ngplus-cycle-meta",
       "title": "NG+ cycle meta layer (U2): true-end record, idempotent re-notify, cycle-start notice (#1228)",
       "kind": "quick",
