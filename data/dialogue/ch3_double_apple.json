@@ -89,6 +89,10 @@
           "speaker": "",
           "face": "",
           "text": "ましろはそれ以上何も言わず、ホースをこちらへ返した。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "mashiro_pace"
         }
       ]
     },

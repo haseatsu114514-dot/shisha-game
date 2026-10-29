@@ -106,6 +106,10 @@
           "speaker": "",
           "face": "",
           "text": "あげはは手を振って、甘い匂いを残して帰っていった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_today"
         }
       ],
       "branches": {
@@ -292,6 +296,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……ありがとうございます。大事にします"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_words"
         },
         {
           "type": "condition",
@@ -549,6 +557,10 @@
           "speaker": "ageha",
           "face": "normal",
           "text": "……ハジメっち。取材、ちょっと楽しみになったかも"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_roles"
         }
       ],
       "branches": {
