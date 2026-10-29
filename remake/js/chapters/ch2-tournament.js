@@ -32,7 +32,7 @@ import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
 
-const REQUIRED = ["lobby", "entrance", "rules", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
+const REQUIRED = ["lobby", "entrance", "stations", "rules", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
 // SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
 const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
@@ -292,6 +292,10 @@ async function drive(owner) {
       if (!await read(owner, "entrance")) return;
       for (const who of ["kumicho", "rei", ...JUDGES]) markMet(who);
       state.flags._ch2_kumicho_public_reveal = true;
+      checkpoint("stations");
+    } else if (p.stage === "stations") {
+      // 4台の前で開始を待つ掛け合い。追加前に "rules" 以降へ進んだ保存では読まない。
+      if (!await read(owner, "stations")) return;
       checkpoint("rules");
     } else if (p.stage === "rules") {
       if (!await read(owner, "rules")) return;
@@ -301,8 +305,9 @@ async function drive(owner) {
       owner.cs ||= clone(p.craft);
       const cs = owner.cs;
       playBgm("bgm_tournament_craft");
-      // 投票の後、調整に入る合間の掛け合い（#1290）。見た目は commentary と同じ経路で一度だけ。
-      const interlude = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
+      // 投票の後の合間の掛け合い（#1290）。見た目は commentary と同じ経路で一度だけ。
+      // 1回目の票の後は、提供前の4人の心の声（第2章だけ）。
+      const interlude = p.step === 8 ? "interlude_pull" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
@@ -340,6 +345,8 @@ async function drive(owner) {
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
       playBgm("bgm_judging");
+      // 講評の前に、手を離した4人の待ち時間（第1章の interlude3 に対応）。
+      if (!await commentary(owner, "interlude3")) return;
       if (!await commentary(owner, "tasting")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
