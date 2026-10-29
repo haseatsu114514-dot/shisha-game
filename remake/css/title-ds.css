@@ -86,7 +86,7 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .ga
 .title[data-layout="ds"] .title-ds-controls::before {
   content: "MAIN MENU"; display: flex; align-items: center; align-self: stretch; height: 34px; margin: 0 -22px 18px; padding: 0 14px;
   border-bottom: 1px solid #e8c27a33; background: linear-gradient(#2a1f36, #1a1324); color: #ffe2a6;
-  font-family: "Chapter Preview Dot", "DS Dot", var(--font); font-size: 14px; letter-spacing: .08em;
+  font-family: "Chapter Preview Dot", var(--font); font-size: 14px; letter-spacing: .08em;
 }
 .title[data-layout="ds"] .title-ds-visual::after {
   content: ""; position: absolute; left: 50%; top: calc(100% + 7px); width: 64px; height: 8px; transform: translateX(-50%);
