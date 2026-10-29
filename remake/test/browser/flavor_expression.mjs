@@ -124,7 +124,7 @@ await suite("flavor-expression", async check => {
         const model = await import("./js/craft/temperature-model.js");
         core.newGame();
         const cs = session.newSession("tournament");
-        cs.mix = { mint: 12 }; cs.mixInfo = { total: 12, score: 80, intensity: 5 }; cs.pack = "normal";
+        cs.mix = { mint: 12 }; cs.mixInfo = { total: 12, score: 80, intensity: 5 }; cs.pack = "normal"; cs.water = 0.5;
         const bands = model.temperatureBands(cs), low = bands.ideal[0] + .02;
         cs.holes = { total: 24, outerEven: .9, innerExcess: 0, score: 90 };
         cs.heat = { heatPower: 50, heatStability: 75, aromaRetention: 75, burnRisk: 15, score: 85 };
