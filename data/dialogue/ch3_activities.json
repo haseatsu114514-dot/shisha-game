@@ -4,7 +4,7 @@
     {
       "dialogue_id": "ch3_choizap_day",
       "lines": [
-        { "speaker": "", "text": "チョイザップの東京店。入口で、いつもの会員アプリを開いた。" },
+        { "speaker": "", "text": "CHOI-ZAPの東京店。入口で、いつもの会員アプリを開いた。" },
         { "speaker": "hajime", "face": "normal", "text": "（同じ会員証で入れるんだ。旅先でも、少し体を動かそう）" },
         { "speaker": "", "text": "ランニングマシンの速度を落とし、窓の向こうの高架を眺めた。" },
         { "speaker": "", "text": "軽い筋トレを終え、水を飲む。肩に入っていた力が少し抜けた。" }
@@ -13,7 +13,7 @@
     {
       "dialogue_id": "ch3_choizap_night",
       "lines": [
-        { "speaker": "", "text": "東京のチョイザップ。会員アプリをかざすと、入口の鍵が開いた。" },
+        { "speaker": "", "text": "東京のCHOI-ZAP。会員アプリをかざすと、入口の鍵が開いた。" },
         { "speaker": "", "text": "ランニングマシンの足音が、夜の店内に静かに響く。" },
         { "speaker": "hajime", "face": "normal", "text": "（知らない街でも、この手順は同じだな）" },
         { "speaker": "", "text": "無理のない重さで一組ずつ。汗を拭き、来た道を戻った。" }

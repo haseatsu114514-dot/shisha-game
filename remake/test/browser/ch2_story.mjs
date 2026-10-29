@@ -270,7 +270,9 @@ await suite('ch2-story', async check => {
     assert.equal(after.phase, 'cleared'); assert.equal(after.chapter, 2); assert(after.flags._ch2_tokyo_invitation);
     assert.equal(after.flags._ch2_tournament.history.length, 1);
     // 大会の正規の効果以外で、蓄積した記録が欠落・巻き戻りしない。
-    for (const key of ['money', 'stats', 'statXp', 'lovers', 'loverSince']) assert.deepEqual(after[key], eve[key], key);
+    for (const key of ['stats', 'statXp', 'lovers', 'loverSince']) assert.deepEqual(after[key], eve[key], key);
+    // 大会の正規の効果として、優勝賞金50,000円が一度だけ入る。
+    assert.equal(after.money, eve.money + 50000, 'money は優勝賞金50,000円だけ増える');
     // 大会の制作は持ち込み在庫を消費するのが正規の効果（craft/steps.js の consumes）。
     // 記録された配合の分だけ減り、それ以外の欠落・巻き戻しがないことを確かめる。
     const usedMix = after.flags._ch2_tournament.craft.mix || {};
