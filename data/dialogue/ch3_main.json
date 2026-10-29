@@ -229,7 +229,27 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "俺もまだ勉強中。今度はお前が休む日の話からな"
+          "text": "俺もまだ勉強中だ。借りた台が毎回違う。甘さが一口で重くなるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それで、どうしたんですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "待った。合うまで、何度も。まだ途中だけどな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "相づちだけ打った。点の話は、一度もしなかった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……聞いてくれて、ありがとな。今度はお前が休む日の話からな"
         },
         {
           "speaker": "",
@@ -803,7 +823,7 @@
         {
           "speaker": "kuze",
           "face": "wild",
-          "text": "煙幕で話した甘さ、まだいる？　答えを出すの、早いよ！"
+          "text": "煙幕で言ったよね、最後の甘さは長いって。今なら直せるよ？"
         },
         {
           "speaker": "",
@@ -903,7 +923,12 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "君の炭は動かなかった。仕掛けたのは僕。ごめん"
+          "text": "君の炭は動かなかった。助言は、本当だよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "言う時を選んだのは僕。ごめん"
         },
         {
           "speaker": "hajime",
@@ -913,7 +938,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "ましろは味を合わせなかった。でも「好き」って隣にいてくれた"
+          "text": "……ましろ、客席で立ち上がりかけてたね"
         },
         {
           "speaker": "kuze",
@@ -989,6 +1014,11 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "僕も何て言えばいいか分からなかった。疎遠になったの、二人のことだよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "……そっか。二人とも、黙ってただけか"
         },
         {
           "speaker": "mashiro",

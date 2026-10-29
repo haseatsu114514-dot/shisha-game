@@ -510,7 +510,17 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "ほら、答えも分かれた。君はどうしたい？"
+          "text": "ほら、答えも分かれた。……でも、正直に言うとね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "最後の甘さは、少し長い。二度目の調整で炭を一つ外すと締まるよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "決めるのは君。どうしたい？"
         },
         {
           "speaker": "hajime",
