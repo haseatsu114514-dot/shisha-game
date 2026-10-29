@@ -75,7 +75,7 @@ storage.clear();
 g.recordGalleryProgress(state);
 assert.deepEqual(read(), {
   clearedChapters: [1], keepsakes: ["minto_first_cheki"],
-  purikura: [{ ...photo, chapterDay: 2 }], routeRecords: {},
+  purikura: [{ ...photo, chapterDay: 2 }], routeRecords: {}, completeAnnounced: false,
 });
 unchanged(() => g.recordGalleryProgress(state));
 
