@@ -261,6 +261,12 @@
           "text": "差し出されたイヤホンの片方を、耳に入れた。静かなギターが、ゆっくり鳴る。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_rei_ticket",
+          "next_true": "ticket"
+        },
+        {
           "speaker": "rei",
           "face": "normal",
           "text": "最後の音が消えたあと、三秒くらい空白がある"
@@ -337,6 +343,18 @@
             "face": "normal",
             "text": "tonariの蒸野はじめです。よろしくお願いします"
           }
+        ],
+        "ticket": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（この曲、……あの日、チケットを置いたときにREIさんが言っていたライブの曲だ）"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……来週、隣は空けとく。この曲、そこでやるから"
+          }
         ]
       },
       "metadata": {
@@ -345,4 +363,3 @@
     }
   ]
 }
-

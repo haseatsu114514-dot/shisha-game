@@ -119,6 +119,21 @@
         },
         {
           "speaker": "sumi",
+          "face": "normal",
+          "text": "最近、ちゃんと寝てるか。飯は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……練習の後は、あんまり"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "同じ一台でも、吸う日の体で味は変わる。葉より先に、お前を見ろ"
+        },
+        {
+          "speaker": "sumi",
           "face": "serious",
           "text": "俺には原因までは分からん。今日は切り上げろ。続くなら、ちゃんと診てもらえ"
         },
@@ -418,9 +433,11 @@
           "text": "何も頼まないで、メモだけ取って帰ったの。誰なんだろね"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（さっきの人だ。……でも今は、考える余裕がない）"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_scout_tasting",
+          "next_true": "scout_tasting",
+          "next_false": "scout_plain"
         },
         {
           "speaker": "ageha",
@@ -463,7 +480,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "帰りの電車でLIMEを開いた。応援の予定を聞かれていた。"
+          "text": "帰りの電車でLIMEを開くと、つむぎからだった。明日の応援をどうするか、聞かれていた。"
         },
         {
           "type": "choice",
@@ -571,6 +588,25 @@
           {
             "type": "set_flag",
             "flag": "_ch2_audience_welcome"
+          }
+        ],
+        "scout_tasting": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（さっきの人だ。試煙会の客席の奥にもいた。神崎さんが「人を見る訓練を受けた目」と言っていた人）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……でも今は、考える余裕がない）"
+          }
+        ],
+        "scout_plain": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（さっきの人だ。……でも今は、考える余裕がない）"
           }
         ]
       },

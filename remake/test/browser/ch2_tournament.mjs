@@ -354,7 +354,8 @@ await suite('ch2-tournament',async check=>{
     assert.deepEqual(resumed.flags._ch2_tournament.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','interlude1','interlude2','interlude3','tasting']);
     await page.locator(t('continue')).click();await phone(page);await page.locator(t('complete')).waitFor();
     let s=await get(page);assert(s.flags._ch2_tokyo_invitation);assert(s.flags._ch2_taste_distant);assert(!s.flags.ch2_taste_recovered);assert.equal(s.phase,'cleared');assert.equal(s.day,28);assert.equal(s.slot,1);
-    for(const key of ['tournament','lovers','loverSince','lastDate','contacts','keepsakes','relationshipMemories','money','stats'])assert.deepEqual(s[key],before[key],key);
+    // 初期所持金23,456円 + 第2章優勝賞金50,000円。
+    for(const key of ['tournament','lovers','loverSince','lastDate','contacts','keepsakes','relationshipMemories','money','stats'])assert.deepEqual(s[key],key==='money'?before.money+50000:before[key],key);
     assert.deepEqual(s.inbox[0],before.inbox[0]);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
     assert.equal(await page.getByRole('button',{name:'第三章・東京へ'}).count(),1);
     assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_stations','ch2_tournament_rules']);

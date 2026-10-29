@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>レベルアップ体験モック（使い捨て）</title>
+<!--
+  使い捨ての評価用モック。SPEC（docs/stat-design/SPEC.md 案A）の数値で
+  経験値→寝る時のレベルアップ→火種→心得の盤→効果の実感 を一通り触るためのもの。
+  ゲーム本体のコードは読まない・書かない。画像素材は使わない（図形と文字だけ）。
+  ?flow=sleep-first のように URL で既定を変えない。操作はすべて画面のボタンで行う。
+-->
+<style>
+:root{
+  --bg:#141019;--panel:#1e1826;--panel2:#271f31;--line:#4a3d58;--text:#efe9f4;--dim:#a99bb8;
+  --gold:#e8c27a;--gold-hi:#ffe2a6;--gold-lo:#7a6236;--amber:#f0a64a;--danger:#ff6b6b;--good:#8ee6a8;
+  --technique:#f2c34c;--sense:#6cc6e8;--guts:#ef7a5e;--charm:#b49aef;--insight:#65c9bb;
+  --body:#ef7a5e;--wisdom:#65c9bb; /* 2026-10-30 3項目化: 才・感・理 */
+  --font:"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px}
+button{font:inherit;color:inherit;cursor:pointer}
+#app{position:relative;height:100%;min-height:380px;overflow:hidden;background:
+  radial-gradient(ellipse at 30% 20%,#2b2238 0,#141019 70%)}
+/* ---------- HUD ---------- */
+.hud{position:absolute;left:12px;top:12px;display:flex;gap:10px;background:rgba(20,15,26,.92);border:1px solid var(--gold-lo);
+  border-radius:8px;padding:8px 10px;z-index:5}
+.hud .day{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:44px}
+.hud .day b{font-size:26px;line-height:1}
+.hud .day small{color:var(--dim)}
+.hud .rows{display:flex;flex-direction:column;gap:4px;min-width:210px}
+.hud .row{display:flex;align-items:center;gap:6px;font-size:12px}
+.hud .row>span:first-child{color:var(--dim);width:3.2em}
+.bar{position:relative;height:8px;border-radius:4px;background:#0b0810;border:1px solid #3a2f46;flex:1;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.bar .st{background:var(--good)}
+.bar .done{background:var(--gold)}
+.bar .today{background:rgba(232,194,122,.42)}
+.bar.full{box-shadow:0 0 8px var(--gold-hi);border-color:var(--gold)}
+.lvrow b{color:var(--gold-hi);min-width:3.6em}
+.lvrow .left{min-width:5.6em;text-align:right;color:var(--gold)}
+.lvrow .left.tonight{color:var(--gold-hi);font-weight:700;animation:pulse 1.2s infinite}
+.mile{color:var(--amber);font-size:11px}
+.hidane{display:inline-flex;align-items:center;gap:3px}
+.flame{display:inline-block;width:10px;height:13px;border-radius:50% 50% 45% 45%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%,#fff3c4 0,#ffb347 40%,#e0602c 80%);vertical-align:-1px}
+.flame.c-technique{background:radial-gradient(circle at 50% 70%,#fff 0,var(--technique) 55%,#8a6a1c)}
+.flame.c-sense{background:radial-gradient(circle at 50% 70%,#fff 0,var(--sense) 55%,#2d6b84)}
+.flame.c-guts{background:radial-gradient(circle at 50% 70%,#fff 0,var(--guts) 55%,#8a3a28)}
+.flame.c-charm{background:radial-gradient(circle at 50% 70%,#fff 0,var(--charm) 55%,#5b4a8a)}
+.flame.c-body{background:radial-gradient(circle at 50% 70%,#fff 0,var(--body) 55%,#8a3a28)}
+.flame.c-wisdom{background:radial-gradient(circle at 50% 70%,#fff 0,var(--wisdom) 55%,#2b6b62)}
+.flame.c-insight{background:radial-gradient(circle at 50% 70%,#fff 0,var(--insight) 55%,#2b6b62)}
+.wind{color:var(--sense);font-size:12px}
+.topright{position:absolute;right:12px;top:12px;display:flex;gap:8px;z-index:5}
+.icon-btn{position:relative;width:46px;height:46px;border-radius:8px;border:1px solid var(--gold-lo);background:rgba(20,15,26,.92);display:grid;place-items:center}
+.icon-btn.menu{width:auto;padding:0 12px;letter-spacing:.12em}
+.badge{position:absolute;right:-5px;top:-5px;min-width:18px;height:18px;border-radius:9px;font-size:11px;line-height:18px;text-align:center;padding:0 4px}
+.badge.red{background:var(--danger);color:#fff}
+.badge.ember{background:radial-gradient(circle at 50% 65%,#ffe9a8,#f08a2c 70%);color:#3a1a00;font-weight:700;box-shadow:0 0 6px #f0a64a}
+.badge.lime{background:var(--danger);color:#fff}
+/* ---------- map (simplified) ---------- */
+.map{position:absolute;inset:0;padding:96px 16px 16px;display:grid;grid-template-columns:1fr 280px;gap:12px}
+.spots{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;align-content:start;overflow:auto}
+.spot{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;text-align:left;min-height:68px}
+.spot:hover{border-color:var(--gold)}
+.spot b{display:block;font-size:15px}
+.spot small{color:var(--dim)}
+.tag{display:inline-block;font-size:11px;border-radius:3px;padding:0 5px;margin-left:4px;border:1px solid}
+.tag.first{color:var(--gold-hi);border-color:var(--gold)}
+.tag.fam{color:var(--dim);border-color:#5c506a}
+.side{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.side h3{margin:0;font-size:13px;color:var(--gold)}
+.side .log{font-size:12px;color:var(--dim);line-height:1.6;flex:1;overflow:auto}
+.side button{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px}
+.side button.primary{border-color:var(--gold);color:var(--gold-hi)}
+.devrow{display:flex;flex-wrap:wrap;gap:4px}
+.devrow button{font-size:11px;padding:4px 6px}
+.respec-band{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(108,198,232,.15);border:1px solid var(--sense);
+  color:var(--sense);border-radius:14px;padding:3px 12px;font-size:12px;z-index:4;white-space:nowrap}
+/* ---------- chips & cards ---------- */
+.chips{position:absolute;left:12px;top:100px;display:flex;flex-direction:column;gap:4px;z-index:6;pointer-events:none}
+.chip{background:rgba(30,22,40,.95);border:1px solid var(--gold);color:var(--gold-hi);border-radius:12px;padding:2px 10px;font-size:12px;
+  animation:chipIn .25s ease-out,chipOut .4s ease-in 2.2s forwards;white-space:nowrap}
+.chip em{font-style:normal;color:var(--dim);margin-left:4px}
+.chip .w{color:var(--sense)}
+.cards{position:absolute;right:12px;top:70px;display:flex;flex-direction:column;gap:8px;z-index:7;pointer-events:none}
+.card{width:272px;min-height:68px;background:linear-gradient(135deg,#2b2235,#18121f);border:2px solid var(--c,var(--gold));border-radius:6px;padding:8px 10px 8px 56px;position:relative;
+  animation:cardIn .3s ease-out,chipOut .4s ease-in 3s forwards}
+.card .k{position:absolute;left:10px;top:12px;width:36px;height:36px;border:2px solid var(--c);border-radius:4px;display:grid;place-items:center;font-weight:800;color:var(--c)}
+.card small{color:var(--c);letter-spacing:.12em;font-size:11px}
+.card b{display:block;font-size:16px}
+.card span{font-size:12px;color:var(--dim)}
+@keyframes chipIn{from{opacity:0;transform:translateX(-12px)}}
+@keyframes chipOut{to{opacity:0}}
+@keyframes cardIn{from{opacity:0;transform:translateX(20px)}}
+@keyframes pulse{50%{opacity:.55}}
+/* ---------- overlays ---------- */
+.ov{position:absolute;inset:0;background:rgba(8,5,12,.86);z-index:20;display:flex;align-items:center;justify-content:center}
+.ov[hidden]{display:none}
+.sleep{width:min(560px,92vw);text-align:center}
+.sleep h2{font-size:34px;letter-spacing:.2em;color:var(--gold-hi);margin:6px 0;min-height:44px}
+.sleep .big{height:14px}
+.sleep .lv{font-size:20px;margin:8px 0}
+.sleep .learned{color:var(--dim);font-size:13px;margin:10px 0;line-height:1.7}
+.sleep .got{margin:8px 0;font-size:15px}
+.sleep .btns{display:flex;gap:10px;justify-content:center;margin-top:14px}
+.sleep .btns button{padding:9px 20px;border-radius:6px;border:1px solid var(--line);background:var(--panel2)}
+.sleep .btns button.primary{border-color:var(--gold);color:var(--gold-hi)}
+.sleep .hint{font-size:11px;color:var(--dim);margin-top:10px}
+.flyer{position:absolute;z-index:30;width:16px;height:20px;transition:all .7s cubic-bezier(.5,0,.2,1)}
+/* ---------- board（秘孔盤ふう: 能力ごとの盤を入れ替える。2026-10-30 オーナー指示） ---------- */
+.board{position:absolute;inset:0;z-index:15;background:#120d17;display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);
+  grid-template-rows:auto auto minmax(0,1fr) auto auto}
+.board[hidden]{display:none}
+.bhead{grid-column:1/3;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:6px 12px;border-bottom:1px solid var(--line);font-size:13px}
+.bhead .sp{flex:1}
+.bhead .bar{max-width:260px}
+.bhead button,.bfoot button{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:5px 12px}
+.btabs{grid-column:1/3;display:flex;gap:6px;padding:6px 12px;align-items:stretch}
+.btab{flex:1;display:flex;flex-direction:column;gap:3px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 8px;text-align:left;position:relative}
+.btab.on{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c);background:var(--panel2)}
+.btab .t{display:flex;align-items:center;gap:6px;font-size:12px}
+.btab .pg{height:4px;background:#0b0810;border-radius:2px;overflow:hidden}
+.btab .pg i{display:block;height:100%;background:var(--c)}
+.btab .dot{position:absolute;right:4px;top:3px}
+.bsvg{min-height:0;display:flex;align-items:center;justify-content:center;padding:6px}
+.bsvg svg{width:100%;height:100%;max-height:100%}
+.bdetail{min-height:0;overflow:auto;padding:8px 12px 8px 4px;display:flex;flex-direction:column;gap:8px}
+.emb{position:relative;flex:0 0 auto;height:150px;border:2px solid var(--c);border-radius:6px;overflow:hidden;
+  background:radial-gradient(ellipse at 70% 40%,color-mix(in srgb,var(--c) 45%,transparent),transparent 70%),linear-gradient(135deg,#2b2235,#120d17)}
+.emb .big{position:absolute;right:14px;top:-6px;font-size:120px;font-weight:900;color:var(--c);opacity:.85;line-height:1.1;text-shadow:0 0 18px color-mix(in srgb,var(--c) 70%,transparent)}
+.emb .ttl{position:absolute;left:12px;top:10px;font-size:13px;color:var(--gold-hi);background:rgba(0,0,0,.45);padding:2px 8px;border-radius:3px}
+.emb .art{position:absolute;left:12px;bottom:8px;font-size:11px;color:var(--dim)}
+.dtext{font-size:13px;line-height:1.6}
+.bdetail>button{align-self:flex-start;background:var(--panel2);border:1px solid var(--gold);color:var(--gold-hi);border-radius:6px;padding:6px 14px}
+.dtext h4{margin:0;font-size:16px}
+.dtext small{color:var(--dim)}
+.bcur{grid-column:1/3;display:flex;flex-wrap:wrap;gap:14px;padding:6px 12px;border-top:1px solid var(--line);font-size:13px;align-items:center}
+.bcur .z{color:var(--dim)}
+.bfoot{grid-column:1/3;border-top:1px solid var(--line);padding:6px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bfoot .sp{flex:1}
+.bfoot button.primary{border-color:var(--gold);color:var(--gold-hi)}
+.bfoot button:disabled{opacity:.4;cursor:default}
+.node{cursor:pointer}
+.node text{pointer-events:none;font-family:var(--font)}
+.legend{font-size:11px;color:var(--dim)}
+@keyframes blink{50%{stroke-opacity:.25}}
+.can{animation:blink 1.1s infinite}
+/* ---------- feel (炭焼き) ---------- */
+.feel{width:min(640px,94vw);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.feel h3{margin:0 0 6px;color:var(--gold)}
+.track{position:relative;height:42px;background:#0b0810;border:1px solid var(--line);border-radius:6px;margin:16px 0 6px;overflow:hidden}
+.track .base{position:absolute;top:0;bottom:0;background:rgba(239,233,244,.18);border-left:1px solid #fff;border-right:1px solid #fff}
+.track .ext{position:absolute;top:0;bottom:0;background:var(--sense);opacity:.55}
+.track .needle{position:absolute;top:-2px;bottom:-2px;width:3px;background:var(--gold-hi);box-shadow:0 0 6px var(--gold-hi)}
+.track .ghost{position:absolute;top:0;bottom:0;width:10px;background:linear-gradient(90deg,transparent,var(--technique));opacity:.6}
+.feel .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.feel button{padding:7px 14px;border-radius:6px;border:1px solid var(--line);background:var(--panel2)}
+.feel button.primary{border-color:var(--gold);color:var(--gold-hi)}
+.feel .res{min-height:22px;font-size:13px;margin-top:6px}
+.cap{position:absolute;z-index:40;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(20,15,26,.97);border:1px dashed var(--gold);
+  border-radius:8px;padding:8px 14px;max-width:min(560px,92vw);font-size:13px;line-height:1.5}
+.cap[hidden]{display:none}
+/* 盤を開いている間は下の帯（決定ボタン）と重ならないよう上に出す。844×390 で重なった反省 */
+#app.boardopen .cap{bottom:auto;top:96px}
+/* 案内文は文字の部分ではタップを素通りさせ、下の札やボタンを塞がない（ボタンだけ押せる） */
+.cap{pointer-events:none}.cap button{pointer-events:auto}
+.cap button{margin-left:8px;font-size:12px;background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:2px 8px}
+.ring-pulse{outline:2px dashed var(--gold);outline-offset:3px;animation:pulse 1s infinite}
+/* ---------- narrow ---------- */
+@media (max-width:720px),(max-height:460px){
+  .map{grid-template-columns:1fr 210px;padding-top:86px}
+  .hud .rows{min-width:170px}
+  .emb{height:84px}.emb .big{font-size:72px}.emb .art{display:none}
+  .btab .t span.n{display:none}
+  .bhead{padding:3px 10px}.btabs{padding:3px 10px}.bcur,.bfoot{padding:3px 10px}
+}
+/* スマホ横（高さが低い）: 見出しと札を1行、所持数と操作を1行にまとめて盤を大きくする */
+@media (max-height:460px) and (min-width:621px){
+  .board{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto}
+  .bhead{grid-column:1;grid-row:1;border-bottom:1px solid var(--line)}
+  .bhead .bar,.bhead>span[style]{display:none}
+  .btabs{grid-column:2;grid-row:1;border-bottom:1px solid var(--line);gap:3px}
+  .btab{padding:2px 4px}.btab .t{font-size:11px;gap:2px}
+  .bsvg{grid-row:2;padding:2px}.bdetail{grid-row:2}
+  .bcur{grid-column:1;grid-row:3;gap:8px;font-size:12px}
+  .bfoot{grid-column:2;grid-row:3;gap:6px}.bfoot .legend{display:none}
+  .bfoot button{padding:5px 8px}
+  .bfoot>button:nth-child(1),.bfoot>button:nth-child(3){display:none}
+}
+@media (max-width:620px){
+  .map{grid-template-columns:1fr;grid-template-rows:1fr 180px}
+  .board{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr) auto auto auto}
+  .bhead,.btabs,.bcur,.bfoot{grid-column:1}
+  .bdetail{padding:0 10px;max-height:300px}
+  .bsvg{align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hud" id="hud"></div>
+  <div class="respec-band" id="respecBand" hidden>組み直し：最初の行動まで</div>
+  <div class="topright">
+    <button class="icon-btn" id="radarBtn" title="ステータス（五角形）／盤"></button>
+    <button class="icon-btn" title="LIME（未読の例）">LIME<span class="badge lime">2</span></button>
+    <button class="icon-btn menu" id="menuBtn">MENU</button>
+  </div>
+  <div class="map" id="map">
+    <div class="spots" id="spots"></div>
+    <div class="side">
+      <h3>モックの操作</h3>
+      <div class="devrow">
+        <button id="sleepBtn" class="primary">家に帰って寝る</button>
+        <button id="feelBtn">炭焼きを試す（効果の実感）</button>
+      </div>
+      <div class="devrow">
+        <button data-dev="exp">+EXP 500</button>
+        <button data-dev="tourn">大会を終える（限定の火種）</button>
+        <button data-dev="chapter">次の章へ（輪が開く）</button>
+        <button data-dev="mid">中央の大会前（Lv.9・火種40）</button>
+        <button data-dev="bond">交流を深める（♥5・修行が開く）</button>
+        <button data-dev="ng">2周目へ（盤と火種を引き継ぐ）</button>
+        <button data-dev="reset">最初から</button>
+      </div>
+      <div class="legend">火種を灯せる場所：<label><input type="radio" name="bm" value="menu" checked> メニューからいつでも</label> <label><input type="radio" name="bm" value="kannon"> 観音堂だけ（メニューでは見るだけ）</label></div>
+      <label class="legend"><input type="checkbox" id="redDot"> 未使用の火種を「赤丸」で出す（既定は火の色）</label>
+      <h3>記録</h3>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="cards" id="cards"></div>
+
+  <div class="ov" id="sleepOv" hidden><div class="sleep" id="sleepBox"></div></div>
+
+  <div class="board" id="board" hidden>
+    <div class="bhead" id="bhead"></div>
+    <div class="btabs" id="btabs"></div>
+    <div class="bsvg"><svg id="bsvg" viewBox="0 0 640 300" role="img" aria-label="心得の盤"></svg></div>
+    <div class="bdetail" id="bdetail"></div>
+    <div class="bcur" id="bcur"></div>
+    <div class="bfoot" id="bfoot"></div>
+  </div>
+
+  <div class="ov" id="feelOv" hidden><div class="feel" id="feelBox"></div></div>
+  <div class="cap" id="cap" hidden></div>
+</div>
+
+<script>
+"use strict";
+// ======================= SPEC の数値 =======================
+// 2026-10-30 オーナー指示: 能力は3つ。才能（体力・カリスマ・社交性）／感覚（直感的なもの）／理論（知恵・後天的なもの）
+const KEYS=["body","sense","wisdom"];
+const JA={body:"才能",sense:"感覚",wisdom:"理論"};
+const K1={body:"才",sense:"感",wisdom:"理"};
+const LETTER={body:"B",sense:"S",wisdom:"W"};
+// 2.1: 時計回りに 技術→センス→洞察→魅力→根性
+const ANG={body:-90,sense:30,wisdom:150};
+const M=[1,1.25,1.5,1.75,2]; // 章倍率
+const need=L=>200+5*L;       // 1.5
+const RING_STAT=[0,4,2,1,1,1]; // 各輪の各色の能力ノード数
+const RANK={body:["影うすい","親しみやすい","華がある","目が離せない","カリスマ"],sense:["ふつう","光るものがある","冴えてる","唯一無二","天才肌"],
+  wisdom:["見習い","様になってきた","一人前","職人肌","神業"]};
+const TIER={ // 2026-10-30 オーナーの定義（才能＝体力・好感度・加点／感覚＝守り・直感・技／理論＝熟練度・ゲージ・事前に見える）で組み直した仮の文
+ body:["体力はふつう","体力が少し増えた","好かれやすくなってきた","疲れにくくなった","審査員の第一印象が良く、少し加点される","体力が大きく増えた","人に好かれやすい","一日中動いてもへこたれない","体力ほぼ最大、加点されやすい","体力最大・誰とでもすぐ打ち解ける"],
+ sense:["ジャスト帯は狭め","ジャスト帯がほんの少し広く","事故の予兆（焦げ・熱すぎ・吸いすぎ）が見える","蒸らしで弾に当たりにくい","弾消しでメンタルも回復する","ジャスト帯がかなり広く","大会の一台で一度だけ、大失敗を防ぐ","リフレッシュの範囲がかなり広い","外す方が難しい","ジャスト帯が最も広く、画面全体の弾消し"],
+ wisdom:["ゲージは速く、配合は勘だのみ","ゲージがほんの少しゆっくり","配合の相性ヒントが出るように","熟練度が少し早く上がり、葉が傷みにくい","黄金比まで何を足すか分かる","炭の気配・蒸らしの揺らぎが早めに見える","ゲージがかなりゆっくり","熟練度がかなり早く上がる","炭も配合も、ほとんど読める","ゲージが最もゆっくり、読めるものは全部読める"]};
+const WHERE={body:"普段の体力・好感度の上がりやすさ・大会の加点（第一印象）",sense:"ジャスト帯・事故の予兆と保険・蒸らし（当たり判定・リフレッシュ・メンタル回復）。スキルで上振れ",wisdom:"作りのゲージ・葉の体力・熟練度の伸び・事前に見えるもの（配合・黄金比・炭の気配・蒸らし予測）。スキルで作りの選択肢が増える"};
+const NEWTHING={body:{5:"大会で加点されやすく"},sense:{3:"事故の予兆が見える",5:"弾消しでメンタル回復",7:"大会で一度だけの保険"},wisdom:{3:"配合の相性ヒント",5:"黄金比のヒント"}};
+const SKILLS=[ // 2026-10-30 オーナー指示で18個に（既存14＋新規4）。2色は無くし、各盤6つずつ
+ // 才能（体力・人付き合い・大会の粘り）
+ ["K03","早寝早起き",["body"],1,2,"ふつうに眠ったときの体力の戻りが増える","日常"],
+ ["K04","人見知りしない",["body"],1,2,"はじめての相手・場所・場面の経験値が増える","日常"],
+ ["K07","空気を読む",["body"],2,3,"好感度の上がる選択肢に小さな煙の印","会話"],
+ ["K08","疲れ知らず",["body"],3,3,"吸いすぎ・熱すぎの疲れがたまりにくい","熱管理・吸い出し"],
+ ["K12","大一番の胆力",["body"],4,4,"大会本番だけ体調を1段良く扱う","大会"],
+ ["K13","声援",["body"],4,4,"大会のリフレッシュでメンタル回復","大会の蒸らし"],
+ // 感覚（守り・直感・技。上振れ）
+ ["K15","会心の一服",["sense"],1,2,"ジャスト帯のど真ん中で取ると「会心」。その工程の点が少し上振れする（新規）","炭焼き・吸い出し"],
+ ["K06","二枚目のリフレッシュ",["sense"],2,3,"蒸らしのリフレッシュが2回使える","蒸らし"],
+ ["K10","審査員の目",["sense"],3,3,"大会の工程ごとに審査員の受け止めが肌で分かる","大会"],
+ ["K16","勝負勘",["sense"],3,3,"大会で前の工程が会心・ジャストだと、次の工程の点が少し上振れする（流れに乗る。新規）","大会"],
+ ["K11","火の番",["sense"],4,4,"熱管理中の炭の交換のジャスト幅が広く","熱管理"],
+ ["K14","炭の声",["sense"],4,4,"蒸らし予測で読める揺らぎが増える","蒸らし"],
+ // 理論（知識・熟練度・作りの選択肢）
+ ["K01","段取り八分",["wisdom"],1,2,"穴あけの制限時間が少し長く","第2章以降の穴あけ"],
+ ["K02","香りの記憶",["wisdom"],1,2,"前回の配合・レシピ帳を1タップで呼び出せる","配合"],
+ ["K05","空模様",["wisdom"],1,2,"明日の天気が分かる","日常・蒸らし"],
+ ["K17","葉の持ち",["wisdom"],2,3,"吸いすぎでの葉の傷みが減る（葉の体力が伸びる。新規）","吸い出し・調整"],
+ ["K09","熟練の舌",["wisdom"],3,3,"フレーバー熟練度が早く上がる","制作全般"]
+];
+const SPOTS=[
+ {id:"sumi",label:"tonari（バイト）",who:"バイト",key:"tonari_shift",stamina:24},
+ {id:"tsumugi",label:"つむぎの店",who:"つむぎ",key:"tsumugi",stamina:16},
+ {id:"naru",label:"Dr.fookah",who:"なる",key:"naru",stamina:16},
+ {id:"adam",label:"EDEN",who:"アダム",key:"adam",stamina:16},
+ {id:"minto",label:"PEPPERMINT",who:"みんと",key:"minto",stamina:16},
+ {id:"kannon",label:"観音堂",who:"観音堂の静けさ",key:"kannon",stamina:4,spot:true},
+ {id:"cafe",label:"喫茶こはく",who:"喫茶こはくの思いつき",key:"cafe",stamina:4,spot:true},
+ {id:"cinema",label:"路地裏シネマ",who:"シネマの一本",key:"cinema",stamina:4,spot:true}];
+const LEARN={sumi:"スミさんの手元",tsumugi:"つむぎの色の話",naru:"なるのバニラの話",adam:"アダムの段取り",minto:"みんとの接客",
+ kannon:"観音堂の静けさ",cafe:"喫茶こはくの思いつき",cinema:"シネマの一本"};
+
+// ======================= 盤のデータ（2026-10-30 オーナー指示: 能力ごとの盤・つながる・好きな方向から・斜めなしの4方向・火種は細かく） =======================
+// 技術盤〜洞察盤の5枚。各盤は方眼で、真ん中の「はじまり」から上下左右に広がる。線は上下左右の隣だけ（斜めは無し）。
+// 取れるのは、上下左右の隣が解放済み（か、はじまり）のノードだけ。どの方向から攻めてもよい。
+// 火種は龍が如く並みに細かく: SPEC の量を5倍にそろえた（レベルアップ1回で火種5、能力ノードは火種1で「段の1/5」、5つで1段）。
+// スキルは火種10／15／20（SPEC の 2／3／4 の5倍）。盤全部で 能力225＋スキル205＝430（SPEC 86 の5倍）。1周目の埋まりの比率は SPEC のまま。
+function pol(a,r){const t=a*Math.PI/180;return [Math.cos(t)*r,Math.sin(t)*r];}
+const SCALE=2;                       // 火種の細かさ（SPEC 比）。2026-10-30「細かすぎる」でレベルアップ1回＝火種2に
+const PER_STEP=3;                    // 1段に要る能力のマス（3つで1段）
+const STAT_RING=[0,12,6,3,3,3];      // 盤ごとの能力のマス（輪ごと）＝SPEC の4・2・1・1・1段 ×3。盤1枚＝能力27＋スキル6＋修行1＝34マス（7×5の方眼ぴったり）
+const CELL=60, HUB=[320,224];
+// 盤の型（2026-10-30「如くシリーズ参考に」→「全部つながってるのが気になる、こんな感じで離していい」）:
+// 秘孔盤のように、方眼に並んでいても隣どうしを全部はつながない。真ん中の大きな紋から4本の道が出て、
+// 曲がり・枝分かれしながら行き止まりの要所（スキル・修行・極み）へ向かう。隣にあっても線のないマスは別の道。
+// 形は点対称（半分を設計して180度回す）。9×7 の方眼に36マス（要所10か所。使わない要所は盤に出さない）。
+const LAYOUT=(()=>{
+  const half={paths:[
+    [[0,-1],[0,-2],[-1,-2],[-2,-2],[-2,-3]],   // 上の道 → 左上の要所
+    [[0,-2],[0,-3],[1,-3],[2,-3]],             // 上の道の枝 → 上の要所
+    [[1,0],[2,0],[3,0],[4,0]],                 // 右の道 → 右端の要所
+    [[3,0],[3,-1],[3,-2],[4,-2],[4,-3]],       // 右の道の枝 → 右上の隅の要所
+    [[2,0],[2,1],[3,1]]],                      // 短い枝 → 要所
+    special:[[-2,-3],[2,-3],[4,0],[4,-3],[3,1]]};
+  const cells=new Map();const edges=[];const key=(x,y)=>x+","+y;
+  for(const rot of [1,-1]){
+    for(const path of half.paths){const pts=path.map(([x,y])=>[x*rot,y*rot]);
+      pts.forEach(([x,y])=>{if(!cells.has(key(x,y)))cells.set(key(x,y),{x,y,special:false});});
+      for(let i=1;i<pts.length;i++)edges.push([key(...pts[i-1]),key(...pts[i])]);}
+    for(const [x,y] of half.special)cells.get(key(x*rot,y*rot)).special=true;
+  }
+  return {cells:[...cells.values()],edges};
+})();
+// 修行（仮）: 誰との交流で開くか・どんな場面の絵になるかだけを置く。名前・効果は第二弾の詳細設計で決める
+// 修行（仮）: 開く条件は「その相手の好感度が♥5」かつ「盤の道が修行のマスの手前まで届いている」（2026-10-30 オーナー指示）。
+// 周回で関係は毎周やり直すので、2周目以降は、取っていない修行はまた♥5まで仲良くならないと開かない（取った修行は引き継ぐ）。
+// まだ会っていない相手は名前もヒントも伏せて「？？？」。
+// 修行の一覧（2026-10-30「キャラの修行は特別感・そのキャラらしさ・強めに」「スミさんから教わるのも増やす」「今のアタック習得などを修行へ」）
+// スミさんの修行は、今のゲームの特訓（アタック♥3・キューブ炭♥2）を移したもの＋新しい四つ置き。キャラの修行は♥5で開く、その人らしい強い技。
+const TRAININGS=[
+ {id:"M-B1",board:"body",who:"minto",whoJa:"みんと",need:5,cost:12,name:"看板の笑顔",sig:true,hint:"みんとと仲良くなると、人の惹きつけ方を教えてもらえそう",
+  fx:"大会の「審査員の第一印象」の加点が2倍。提供後の調整で、審査員の受け止めが一段良くなる（魅せ方）",art:"みんとに鏡の前で笑顔の作り方を教わる"},
+ {id:"M-S1",board:"sense",who:"tonari_shift",whoJa:"スミさん",need:3,cost:4,name:"蒸らしアタック",hint:"スミさんと仲良くなると、蒸らしの特訓をしてくれそう",
+  fx:"蒸らしで雑念の言葉を斬れる（今のゲームの「スミさん♥3の特訓」を移した）",art:"スミさんがカウンター越しに煙を斬ってみせる",legacy:"_sumi_attack_learned"},
+ {id:"M-S2",board:"sense",who:"adam",whoJa:"アダム",need:5,cost:12,name:"一筋の手元",sig:true,hint:"アダムと仲良くなると、職人の勘を教えてもらえそう",
+  fx:"推しの葉を1つ決める。その葉が主役の配合では、ジャスト帯がさらに広く、会心が出やすい",art:"アダムがダブルアップルだけを並べて手元を見せる"},
+ {id:"M-W1",board:"wisdom",who:"tonari_shift",whoJa:"スミさん",need:2,cost:4,name:"キューブ炭",hint:"スミさんと仲良くなると、炭の扱いを教えてくれそう",
+  fx:"キューブ炭を選べる（今のゲームの「スミさん♥2の授業」を移した）",art:"スミさんがキューブ炭を三角に置いてみせる",legacy:"_coal_cube_learned"},
+ {id:"M-W2",board:"wisdom",who:"tonari_shift",whoJa:"スミさん",need:4,cost:8,name:"四つ置き・混ぜ置き",hint:"スミさんともっと仲良くなると、炭の置き方の奥を教えてくれそう",
+  fx:"炭の四つ置きと、フラット炭とキューブ炭の混ぜ置きを選べる（今は授業が無いフラグを、ここで開く）",art:"スミさんが炭を四つ、迷いなく並べる"},
+ {id:"M-W3",board:"wisdom",who:"naru",whoJa:"なる",need:5,cost:12,name:"甘さの組み立て",sig:true,hint:"なると仲良くなると、組み立て方を教えてもらえそう",
+  fx:"配合の相性ヒントが「あと何g」まで見える。甘い系（バニラ・チョコ・焼き菓子）の熟練度が2倍で伸びる",art:"なるがノートに菓子の味を分解して書いてみせる"}];
+const TRAINS={}; // 旧名（盤ごとの代表）。表示の互換のため
+const heartOf=who=>Math.min(5,Math.floor((S.affPts[who]||0)/2)); // モックでは2回会うごとに♥1
+const metOf=who=>who==="tonari_shift"||(S.affPts[who]||0)>0; // スミさんは最初から知っている
+function buildNodes(){
+  const n=[];
+  for(const k of KEYS){let i=0;for(let ring=1;ring<=5;ring++)for(let j=0;j<STAT_RING[ring];j++){i++;n.push({id:LETTER[k]+i,kind:"stat",stat:k,ring,cost:1});}}
+  for(const [id,name,colors,ring,cost,fx,scene] of SKILLS)n.push({id,kind:"skill",name,colors,ring,cost:cost*SCALE,fx,scene});
+  for(const t of TRAININGS)n.push({...t,kind:"train",stat:t.board,colors:[t.board],ring:1});
+  return n;
+}
+const NODES=buildNodes();
+const byId=Object.fromEntries(NODES.map(n=>[n.id,n]));
+const boardCache={};
+function boardOf(k){ // その盤のマスを LAYOUT に割り当てる（特別な8か所＝修行・スキル6・極み、ほかは能力のマス）
+  if(boardCache[k])return boardCache[k];
+  const stats=NODES.filter(n=>n.kind==="stat"&&n.stat===k);
+  const skills=NODES.filter(n=>n.kind==="skill"&&n.colors.includes(k)).sort((a,b)=>a.ring-b.ring);
+  const trains=TRAININGS.filter(t=>t.board===k).sort((a,b)=>a.need-b.need).map(t=>byId[t.id]);
+  const K=c=>c.x+","+c.y;const adj={};
+  for(const [a,b] of LAYOUT.edges){(adj[a]??=[]).push(b);(adj[b]??=[]).push(a);}
+  // はじまりからの近さ（道を歩いた数）
+  const dist={};const q=[];for(const c of LAYOUT.cells)if(Math.abs(c.x)+Math.abs(c.y)===1){dist[K(c)]=1;q.push(K(c));}
+  while(q.length){const u=q.shift();for(const v of adj[u]||[])if(dist[v]==null){dist[v]=dist[u]+1;q.push(v);}}
+  const order=(a,b)=>dist[K(a)]-dist[K(b)]||Math.abs(a.y)-Math.abs(b.y)||Math.atan2(a.y,a.x)-Math.atan2(b.y,b.x);
+  const sp=LAYOUT.cells.filter(c=>c.special).sort(order);
+  const reg=LAYOUT.cells.filter(c=>!c.special).sort(order);
+  const peak=stats[stats.length-1];peak.peak=true;
+  const out=[];
+  // 要所は近い順に: 修行（♥の低い順）→スキル（章の順）→極み。極みはいちばん奥の要所。使わない要所は出さない
+  const specials=[...trains,...skills];specials.forEach((n,i)=>out.push({n,gx:sp[i].x,gy:sp[i].y}));const far=sp[sp.length-1];out.push({n:peak,gx:far.x,gy:far.y});
+  stats.slice(0,-1).forEach((n,i)=>out.push({n,gx:reg[i].x,gy:reg[i].y}));
+  const at=Object.fromEntries(out.map(b=>[b.gx+","+b.gy,b]));
+  for(const b of out){b.x=HUB[0]+b.gx*CELL;b.y=HUB[1]+b.gy*CELL;
+    b.nb=(adj[b.gx+","+b.gy]||[]).map(key=>at[key]?.n.id).filter(Boolean);
+    if(Math.abs(b.gx)+Math.abs(b.gy)===1)b.nb.push("HUB");}
+  return boardCache[k]=out;
+}
+/** つながり: 上下左右の隣に解放済み（か、はじまり）がある。2色のスキルはどちらかの盤で届けばよい */
+function connected(n,owned){return KEYS.some(k=>boardOf(k).some(b=>b.n.id===n.id&&b.nb.some(id=>id==="HUB"||owned.has(id))));}
+/** 目標までの一番安い道（解放済みは0、未解放はそのコスト）。2色のスキルは安い方の盤で */
+function cheapestPath(id,owned){
+  let best=null;
+  for(const k of KEYS){const b=boardOf(k);if(!b.some(x=>x.n.id===id))continue;const m=Object.fromEntries(b.map(x=>[x.n.id,x]));
+    const dist={HUB:0},prev={},q=["HUB"],done=new Set();
+    while(q.length){q.sort((a,c)=>dist[a]-dist[c]);const u=q.shift();if(done.has(u))continue;done.add(u);
+      const nbs=u==="HUB"?b.filter(x=>Math.abs(x.gx)+Math.abs(x.gy)===1).map(x=>x.n.id):m[u].nb;
+      for(const v of nbs){if(v==="HUB")continue;const w=owned.has(v)?0:byId[v].cost;if(dist[u]+w<(dist[v]??1e9)){dist[v]=dist[u]+w;prev[v]=u;q.push(v);}}}
+    if(dist[id]==null)continue;const path=[];let c=id;while(c&&c!=="HUB"){path.unshift(c);c=prev[c];}
+    if(!best||dist[id]<best.cost)best={k,cost:dist[id],path};}
+  return best||{k:null,cost:0,path:[]};
+}
+function pathTo(k,id){const own=B?new Set([...B.owned,...B.pend.map(q=>q.id)]):S.owned;const p=cheapestPath(id,own);return p.k===k?p.path:[];}
+function trainOpen(n){return heartOf(n.who)>=n.need;}
+function statCount(k,owned){return NODES.filter(n=>n.kind==="stat"&&n.stat===k&&owned.has(n.id)).length;}
+function progress(k,owned=S.owned){const ns=boardOf(k).map(b=>b.n);const tot=ns.reduce((a,n)=>a+n.cost,0);
+  return ns.filter(n=>owned.has(n.id)).reduce((a,n)=>a+n.cost,0)/tot;}
+// 右のパネルの「発動イラスト」の中身（素材の依頼の下書きを兼ねる）
+const ILLUST={
+ body:"客席に一台を差し出し、審査員と常連が笑う（体力と人を惹きつける力）",sense:"焦げる寸前の煙の色に気づき、とっさに炭をずらす",wisdom:"レシピ帳と温度計を前に、手順を組み立てる",
+ K01:"時計を横目に、迷いなく穴をあける手元",K02:"レシピ帳を開くと、前の配合が香りとともに浮かぶ",K03:"朝日の差す部屋で、すっきり起きる",K04:"知らない店の扉を、笑顔で開ける",K05:"窓の外の雲を見上げて、明日の空を読む",
+ K06:"蒸らしの画面いっぱいに、二重の波紋が広がる",K07:"会話の選択肢に、小さな煙の印が立つ",K08:"長い一台の終盤でも、手が震えない",K09:"葉を口に含み、味の層を聞き分ける",K10:"審査員の表情から、評価の色が見える",
+ K11:"熱管理の炭ばさみが、ジャストで炭を入れ替える",K12:"大会の本番、胸の奥に火が灯る",K13:"客席からの声援が、雑念を吹き飛ばす",K14:"炭に耳を寄せると、揺らぎが聞こえる"};
+
+// ======================= 状態 =======================
+let S;
+function fresh(){return {chapter:1,day:1,slot:0,stamina:100,exp:0,settled:0,lv:1,pendingLv:0,
+  hidane:{any:0,body:0,sense:0,wisdom:0},lastBoard:null,target:null,boardMode:"menu",trainDone:{},owned:new Set(),paid:{},spent10:{},
+  firsts:new Set(),freshCount:{},readCount:{},today:{},affPts:{},boost:{mult:1,left:0},
+  draft:null,sel:null,tutorial:{board:false,step:0},respecOpen:false,lastNode:"HUB",log:[]};}
+function stepOf(k,owned=S.owned){return 1+Math.floor(statCount(k,owned)/PER_STEP);} // 段＝解放した能力ノード÷5＋1
+function totalHidane(h=S.hidane){return Object.values(h).reduce((a,b)=>a+b,0);}
+function ringsOpen(){return Math.max(S.chapter,S.ringsCarry||1);} // 周回で引き継いだ輪は開いたまま（SPEC 5.4）
+function log(t){S.log.unshift(t);if(S.log.length>40)S.log.pop();$("#log").innerHTML=S.log.map(x=>"・"+x).join("<br>");}
+const $=q=>document.querySelector(q);
+const h=(tag,attrs={},kids=[])=>{const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==="text")e.textContent=v;else if(k==="html")e.innerHTML=v;else if(k.startsWith("on"))e[k]=v;else e.setAttribute(k,v);}for(const c of [].concat(kids))if(c!=null)e.append(c);return e;};
+
+// ======================= 経験値（1.2・1.3・1.8） =======================
+function freshMult(key){const c=(S.freshCount[key]||0)+1;return c<=2?1:c===3?.8:c===4?.6:.4;}
+function gainExp(amount,{boost=true,label=""}={}){
+  let v=amount*M[S.chapter-1];let w="";
+  if(boost&&S.boost.left>0){v*=S.boost.mult;w=` 追い風×${S.boost.mult}`;}
+  v=Math.round(v);S.exp+=v;S.today.sum=(S.today.sum||0)+v;
+  return {v,w};
+}
+function doAction(sp){
+  if(S.slot>=2){toast("今日はもう動けない。家に帰って寝よう");return;}
+  if(S.respecOpen){S.respecOpen=false;log("最初の行動をしたので、この章の組み直しは閉じた");}
+  const parts=[];const mult=freshMult(sp.key);
+  const base=gainExp(30*mult);let lbl=`EXP +${base.v}`;if(mult<1)lbl+=" <em>（なじみ）</em>";if(base.w)lbl+=` <span class="w">${base.w}</span>`;parts.push(lbl);
+  S.freshCount[sp.key]=(S.freshCount[sp.key]||0)+1;
+  if(!S.firsts.has(sp.key)){S.firsts.add(sp.key);const f=gainExp(40);parts.push(`はじめて +${f.v}${f.w?` <span class="w">${f.w}</span>`:""}`);}
+  const reads=S.readCount[sp.key]||0;
+  if(reads<3&&S.freshCount[sp.key]<=3){S.readCount[sp.key]=reads+1;const r=gainExp(20);parts.push(`${sp.spot?"場面":"会話"}を読んだ +${r.v}`);}
+  if(!sp.spot){S.affPts[sp.key]=(S.affPts[sp.key]||0)+1;if(S.affPts[sp.key]%2===0){const a=gainExp(30);parts.push(`仲が深まった +${a.v}`);}}
+  if(S.boost.left>0){S.boost.left--;if(!S.boost.left)S.boost.mult=1;}
+  S.today[sp.key]=(S.today[sp.key]||0)+base.v;
+  S.slot++;S.stamina=Math.max(0,S.stamina-sp.stamina);
+  parts.forEach((p,i)=>setTimeout(()=>chip(p),i*260));
+  log(`${S.day}日目: ${sp.label} → ${parts.map(p=>p.replace(/<[^>]+>/g,"")).join("／")}`);
+  // スロット（1章30回転・ペカ合算 約1/9.4 を雑に再現）
+  const r=Math.random();
+  if(r<1/9.4){const big=Math.random()<.6;addBoost(big?1.5:1.5,big?5:3,big?"BIG":"REG");}
+  else if(r<1/9.4+.12){addBoost(1.25,Math.random()<.5?1:2,"小役");}
+  render();
+  if(sp.id==="kannon"&&S.boardMode==="kannon")setTimeout(()=>{openBoard({place:"kannon"});caption("観音堂で手を合わせると、学んだことが火になる。火種を灯そう。",[["わかった",()=>hideCap()]]);},900);
+}
+function addBoost(mult,n,role){const before=S.boost.left;S.boost.mult=Math.max(S.boost.mult,mult);S.boost.left=Math.min(10,S.boost.left+n);
+  setTimeout(()=>card({c:"var(--sense)",k:"P",top:"PAKKI SLOT",main:`追い風 ×${S.boost.mult}`,sub:before?`あと${before} → あと${S.boost.left}`:`あと${S.boost.left}回 経験値の入りが増える`}),900);
+  log(`スロット ${role}: 追い風 ×${S.boost.mult} あと${S.boost.left}`);}
+
+// ======================= HUD =======================
+function lvProgress(){ // 精算済みレベル S.lv に対する、ゲージの中身
+  let lv=S.lv,acc=0;for(let L=1;L<lv;L++)acc+=need(L);
+  const inLv=S.exp-acc, settledIn=Math.min(S.settled-acc,need(lv));
+  let over=0,lvs=0,x=inLv;let L=lv;while(L<80&&x>=need(L)){x-=need(L);L++;lvs++;}
+  return {lv,inLv,settledIn:Math.max(0,settledIn),need:need(lv),lvs,over:x};
+}
+function boardIcon(){return `<span style="font-weight:800;font-size:18px;color:var(--gold-hi)">盤</span>`;}
+function render(){
+  const p=lvProgress();const tot=totalHidane();
+  const done=Math.min(100,p.settledIn/p.need*100),today=Math.min(100,p.inLv/p.need*100);
+  const nextMile=(p.lv+1)%10===0&&p.lv+1<=70;
+  const tonight=p.lvs>0;
+  const lim=KEYS.filter(k=>S.hidane[k]).map(k=>`<span class="flame c-${k}" title="${K1[k]}の火種"></span>${S.hidane[k]}`).join(" ");
+  $("#hud").innerHTML=`<div class="day"><b>${S.day}</b><small>/14 第${S.chapter}章</small></div>
+   <div class="rows">
+    <div class="row"><span>体力</span><div class="bar"><i class="st" style="width:${S.stamina}%"></i></div></div>
+    <div class="row lvrow"><b>Lv.${p.lv}</b><div class="bar ${tonight?"full":""}"><i class="today" style="width:${today}%"></i><i class="done" style="width:${done}%"></i></div>
+      <span class="left ${tonight?"tonight":""}">${tonight?`今夜 Lv UP${p.lvs>1?" ×"+p.lvs:""}`:`あと ${p.need-p.inLv}`}</span>${nextMile&&!tonight?`<span class="mile" title="次は火種が2つ">●●</span>`:""}</div>
+    <div class="row"><span>火種</span><span class="hidane">${tot?`<span class="flame"></span>${S.hidane.any} ${lim}`:`<span style="color:var(--dim)">なし</span>`}</span>
+      ${S.boost.left?`<span class="wind">➶ 追い風 ×${S.boost.mult} あと${S.boost.left}</span>`:""}</div>
+    ${S.target?`<div class="row"><span>目標</span><span style="color:var(--gold-hi)">${nodeName(byId[S.target])}まで 火種${remainTo(S.target)}</span></div>`:""}
+   </div>`;
+  const red=$("#redDot").checked;
+  $("#radarBtn").innerHTML=boardIcon()+(tot&&canSpendAny()?`<span class="badge ${red?"red":"ember"}">${red?"":tot}</span>`:"");
+  $("#menuBtn").innerHTML="MENU"+(tot&&canSpendAny()?`<span class="badge ${red?"red":"ember"}">${red?"":"!"}</span>`:"");
+  $("#respecBand").hidden=!S.respecOpen;
+  $("#spots").replaceChildren(...SPOTS.map(sp=>{
+    const first=!S.firsts.has(sp.key),fam=(S.freshCount[sp.key]||0)>=2;
+    return h("button",{class:"spot",onclick:()=>doAction(sp)},[h("b",{text:sp.label}),
+      h("small",{html:`${sp.spot?"スポット":"会う："+sp.who}${first?'<span class="tag first">初</span>':fam?'<span class="tag fam">なじみ</span>':""}`})]);
+  }));
+  $("#sleepBtn").textContent=S.slot>=2?"家に帰って寝る（今日はもう動けない）":`家に帰って寝る（あと${2-S.slot}回動ける）`;
+}
+function canSpendAny(){return NODES.some(n=>nodeState(n,S.owned,S.hidane)==="can");}
+function chip(html){const c=h("div",{class:"chip",html});$("#chips").append(c);setTimeout(()=>c.remove(),2700);}
+function card({c="var(--gold)",k="",top,main,sub}){const e=h("div",{class:"card",style:`--c:${c}`},[h("div",{class:"k",text:k}),h("small",{text:top}),h("b",{text:main}),h("span",{text:sub||""})]);$("#cards").append(e);setTimeout(()=>e.remove(),3500);}
+function toast(t){chip(t);}
+
+// ======================= 寝る → レベルアップ（1.7・6.1a・6.3） =======================
+let skipAnim=false;
+async function wait(ms){if(skipAnim)return;await new Promise(r=>setTimeout(r,ms));}
+async function sleepFlow(){
+  const ov=$("#sleepOv"),box=$("#sleepBox");ov.hidden=false;skipAnim=false;
+  ov.onclick=()=>{skipAnim=true;};
+  box.innerHTML=`<p>ぐっすり眠って、体力が回復した</p>`;await wait(900);
+  const p=lvProgress();
+  const learned=Object.entries(S.today).filter(([k])=>k!=="sum").sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k])=>LEARN[SPOTS.find(s=>s.key===k)?.id]||k);
+  if(p.lvs>0){
+    const from=S.lv,gained={any:0};let milestone=null;
+    box.innerHTML=`<h2 id="lvTitle"></h2><div class="bar big"><i class="done" id="lvFill" style="width:${p.settledIn/p.need*100}%"></i></div>
+      <div class="lv" id="lvText">Lv.${from}</div><div class="got" id="got"></div>
+      <div class="learned">今日学んだこと：${learned.join("／")||"—"}</div><div class="btns" id="btns"></div><div class="hint">画面のどこかを押すと最後まで早送り</div>`;
+    let x=p.inLv;
+    for(let i=0;i<p.lvs;i++){
+      $("#lvFill").style.transition=skipAnim?"none":"width .6s ease-in";$("#lvFill").style.width="100%";await wait(650);
+      $("#lvTitle").textContent="LEVEL UP";x-=need(S.lv);S.lv++;
+      $("#lvText").textContent=`Lv.${from} → Lv.${S.lv}`;
+      S.hidane.any+=SCALE;gained.any+=SCALE;
+      if(S.lv%10===0&&S.lv<=70){const k=milestoneColor();S.hidane[k]+=SCALE;milestone=k;S.spent10={};}
+      flyHidane(milestone);
+      $("#lvFill").style.transition="none";$("#lvFill").style.width="0%";await wait(250);
+    }
+    $("#lvFill").style.transition=skipAnim?"none":"width .4s";$("#lvFill").style.width=`${x/need(S.lv)*100}%`;
+    $("#got").innerHTML=`<span class="flame"></span> 火種 ＋${gained.any+(milestone?SCALE:0)}`+(milestone?`<br><span style="color:var(--${milestone})">節目のレベル！ さらに${K1[milestone]}の火種＋${SCALE}— この10レベルで一番伸ばした${JA[milestone]}の火種</span>`:"");
+    S.settled=S.exp;S.today={};
+    log(`寝る: Lv.${from}→Lv.${S.lv}・火種＋${gained.any+(milestone?SCALE:0)}`);
+    const first=!S.tutorial.board;
+    $("#btns").replaceChildren(h("button",{class:"primary",text:S.boardMode==="menu"?"盤を開く":"盤を見る",onclick:e=>{e.stopPropagation();ov.hidden=true;nextDay();openBoard({tutorial:first});}}),
+      h("button",{text:"あとで",onclick:e=>{e.stopPropagation();ov.hidden=true;nextDay();if(first)caption(S.boardMode==="menu"?"火種はたまったまま持ち越せる。盤は右上の「盤」かMENUから開ける。":"火種はたまったまま持ち越せる。火種を灯すのは観音堂で。盤はMENUから見られる。",[["わかった",()=>hideCap()]],"#radarBtn");}}));
+  }else{
+    S.settled=S.exp;S.today={};
+    box.innerHTML=`<p>今夜はレベルは上がらなかった。</p><div class="bar big"><i class="done" style="width:${p.inLv/p.need*100}%"></i></div><div class="lv">Lv.${S.lv}　あと ${p.need-p.inLv}</div>`;
+    await wait(1100);ov.hidden=true;nextDay();log(`寝る: レベルは上がらず（あと${p.need-p.inLv}）`);
+  }
+  render();
+}
+function milestoneColor(){const c=KEYS.map(k=>[k,S.spent10[k]||0]).sort((a,b)=>b[1]-a[1]||stepOf(a[0])-stepOf(b[0]));return c[0][1]?c[0][0]:KEYS.slice().sort((a,b)=>stepOf(a)-stepOf(b))[0];}
+function flyHidane(color){const r=$("#hud").getBoundingClientRect();const f=h("div",{class:"flyer"},[h("span",{class:"flame"+(color?" c-"+color:""),style:"width:16px;height:20px"})]);
+  f.style.left="50%";f.style.top="50%";$("#app").append(f);requestAnimationFrame(()=>{f.style.left=(r.left+60)+"px";f.style.top=(r.bottom-18)+"px";f.style.opacity=".2";});setTimeout(()=>f.remove(),800);}
+function nextDay(){S.day++;S.slot=0;S.stamina=Math.min(100,S.stamina+14+30);if(S.day>14){S.day=14;}}
+
+// ======================= 盤（2.2・6.2） =======================
+function nodeState(n,owned,hid){
+  if(owned.has(n.id))return "own";
+  if(n.ring>ringsOpen())return "ring";
+  if(n.kind==="train"&&!trainOpen(n))return "train";
+  if(!connected(n,owned))return "far";
+  return payable(n,hid)?"can":"short";
+}
+/** 章ごとにスキルが現れる（2026-10-30「章が進むごとに増えていくのも楽しみの一つ」）。
+ *  開いている輪＝全部見える／次の章の輪＝名前と発動イラストの影絵だけ／その先＝「？？？」 */
+function revealOf(n){if(n.kind!=="skill")return "full";const d=n.ring-ringsOpen();return d<=0?"full":d===1?"name":"hidden";}
+function nodeName(n){return n.kind==="stat"?(n.peak?`極み・${JA[n.stat]}`:`${JA[n.stat]}の火`):n.name;}
+function remainTo(id){const own=B?new Set([...B.owned,...B.pend.map(q=>q.id)]):S.owned;return cheapestPath(id,own).cost;}
+function payable(n,hid){const cols=n.kind==="skill"?n.colors:[n.stat];
+  let lim=cols.reduce((a,k)=>a+hid[k],0);return lim+hid.any>=n.cost;}
+function pay(n,hid,{forceAny=false}={}){const cols=n.kind==="skill"?n.colors:[n.stat];let left=n.cost;const used={};
+  if(!forceAny)for(const k of cols){const u=Math.min(hid[k],left);if(u){hid[k]-=u;used[k]=u;left-=u;}}
+  const u=Math.min(hid.any,left);if(u){hid.any-=u;used.any=u;left-=u;}
+  if(left>0){for(const k of cols){const v=Math.min(hid[k],left);if(v){hid[k]-=v;used[k]=(used[k]||0)+v;left-=v;}}}
+  return used;}
+function payText(used){return Object.entries(used).map(([k,v])=>k==="any"?`万能の火種${v}`:`${K1[k]}の火種${v}`).join("＋");}
+let B=null; // 盤を開いている間の仮状態
+function openBoard({tutorial=false,place="menu"}={}){
+  const edit=S.boardMode==="menu"||place==="kannon";
+  B={owned:new Set(S.owned),hid:{...S.hidane},pend:[],sel:null,forceAny:false,tutorial,tstep:tutorial?4:0,k:S.lastBoard||"body",edit,place};
+  $("#board").hidden=false;$("#app").classList.add("boardopen");drawBoard();
+  if(tutorial){S.tutorial.board=true;caption("盤は能力ごとに5枚。上の札で入れ替える。真ん中の「はじまり」から上下左右に広がっていて、どの方向から進めてもいい。隣が灯っているマスが次に取れる。3つ灯すと1段上がる。",[["次へ",()=>{B.tstep=5;drawBoard();caption(edit?"右の絵と説明を見て、好きなものを1つ選ぼう。欲しいものは「目標にする」で道しるべが出る。":"盤は見るだけ。火種を灯すのは観音堂で。欲しいものは「目標にする」で道しるべが出る。",[])}]]);}
+}
+function closeBoard(confirm=true){
+  if(B.pend.length&&confirm){if(!window.confirm("仮置きを決定しますか？（キャンセルで仮置きを捨てて閉じる）")){B=null;$("#board").hidden=true;$("#app").classList.remove("boardopen");hideCap();render();return;}commit();return;}
+  B=null;$("#board").hidden=true;$("#app").classList.remove("boardopen");hideCap();render();
+}
+function commit(){
+  const ups=[];
+  for(const p of B.pend){S.owned.add(p.id);S.paid[p.id]=p.used;const n=NODES.find(x=>x.id===p.id);
+    const cols=n.kind==="skill"?n.colors:[n.stat];cols.forEach(k=>S.spent10[k]=(S.spent10[k]||0)+n.cost/cols.length);
+    ups.push(n);if(S.target===n.id){S.target=null;log(`目標「${nodeName(n)}」に届いた`);}}
+  S.hidane=B.hid;const wasTut=B.tutorial;
+  B=null;$("#board").hidden=true;$("#app").classList.remove("boardopen");hideCap();render();
+  const before={};for(const kk of KEYS)before[kk]=stepOf(kk,new Set([...S.owned].filter(id=>!ups.some(u=>u.id===id))));
+  const lit=ups.filter(n=>n.kind==="stat").length;let i=0;
+  if(lit)setTimeout(()=>card({c:"var(--gold)",k:"火",top:"LIT",main:`能力の火を${lit}つ灯した`,sub:KEYS.filter(kk=>ups.some(u=>u.stat===kk&&u.kind==="stat")).map(kk=>`${K1[kk]}${statCount(kk,S.owned)%PER_STEP}/${PER_STEP}`).join("　")}),0),i++;
+  for(const kk of KEYS){const now=stepOf(kk);if(now>before[kk]){const to=now;setTimeout(()=>card({c:`var(--${kk})`,k:K1[kk],top:"STEP UP",main:`${JA[kk]} ${to}段`,sub:TIER[kk][to-1]}),(i++)*400);ups.filter(u=>u.stat===kk).forEach(u=>u._to=to);}}
+  ups.filter(n=>n.kind!=="stat").forEach(n=>setTimeout(()=>card({c:`var(--${n.colors[0]})`,k:n.kind==="train"?"修":"技",top:n.kind==="train"?"TRAINING":"SKILL",main:n.name,sub:n.fx||"修行で身につけた"}),(i++)*400));
+  log(`盤で決定: 火種${ups.reduce((a,n)=>a+n.cost,0)}（${KEYS.map(kk=>`${K1[kk]}${stepOf(kk)}段`).join(" ")}）${ups.filter(n=>n.kind!=="stat").map(n=>"・"+n.name).join("")}`);
+  if(wasTut&&ups.length){const n=ups.find(u=>u.kind==="stat")||ups[0];const c=n.kind==="stat"?statCount(n.stat,S.owned)%PER_STEP:0;
+    setTimeout(()=>caption(n.kind==="stat"?(n._to?`${JA[n.stat]}が${n._to}段になった。${TIER[n.stat][n._to-1]}。作りの画面では、効いているところがこの色で光る。`:`${JA[n.stat]}の火を灯した。あと${PER_STEP-c}つで${stepOf(n.stat)+1}段。`):`${n.name}を覚えた。${n.fx}。`,
+      [["試してみる",()=>{hideCap();openFeel(n.kind==="stat"?n.stat:"sense",true);}],["あとで",()=>hideCap()]]),1200);}
+}
+function drawBoard(){
+  const own=B.owned,hid=B.hid,k=B.k;const pendIds=new Set(B.pend.map(p=>p.id));const ownP=new Set([...own,...pendIds]);
+  const items=boardOf(k);const pos=Object.fromEntries(items.map(b=>[b.n.id,b]));
+  const tgtPath=S.target?new Set(pathTo(k,S.target)):new Set();
+  const W=HUB[0]*2, H=HUB[1]*2;
+  let g=`<rect x="4" y="4" width="${W-8}" height="${H-8}" rx="14" fill="#1a1420" stroke="var(--${k})" stroke-opacity=".45" stroke-width="2"/>
+    <text x="18" y="26" fill="var(--${k})" font-size="16" font-weight="800">${JA[k]}盤</text>`;
+  // 線: 上下左右の隣だけ（斜めは無し）
+  const drawn=new Set();
+  const line=(a,b,lit,tg)=>`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${lit?`var(--${k})`:tg?"var(--gold-hi)":"#3a3046"}" stroke-width="${lit?5:tg?3:2.5}" ${tg&&!lit?'stroke-dasharray="5 4"':""} stroke-linecap="round"/>`;
+  const hubP={x:HUB[0],y:HUB[1]};
+  for(const b of items)for(const nid of b.nb){const key=[b.n.id,nid].sort().join("|");if(drawn.has(key))continue;drawn.add(key);
+    const o=nid==="HUB"?hubP:pos[nid];const lit=ownP.has(b.n.id)&&(nid==="HUB"||ownP.has(nid));
+    const tg=tgtPath.has(b.n.id)&&(nid==="HUB"||tgtPath.has(nid)||ownP.has(nid));g+=line(b,o,lit,tg);}
+  g+=`<g transform="translate(${HUB[0]},${HUB[1]})"><circle r="34" fill="#1d1626" stroke="var(--${k})" stroke-width="3"/><circle r="27" fill="none" stroke="var(--${k})" stroke-opacity=".45" stroke-dasharray="2 3"/><text y="12" font-size="34" font-weight="900" fill="var(--${k})" text-anchor="middle">${K1[k]}</text></g>`;
+  for(const {n,x,y} of items){
+    const st=pendIds.has(n.id)?"pend":nodeState(n,ownP,hid);const sel=B.sel===n.id;
+    const col=`var(--${n.kind==="skill"?n.colors[0]:n.stat})`;
+    const col2=n.kind==="skill"&&n.colors[1]?`var(--${n.colors.find(c=>c!==k)||n.colors[1]})`:null;
+    const big=n.kind!=="stat"||n.peak;const r=n.peak?26:n.sig?27:big?24:14;
+    const shape=n.kind==="stat"&&!n.peak?`<circle r="${r}"`:`<polygon points="${[0,1,2,3,4,5].map(i=>pol(i*60-90,r).join(",")).join(" ")}"`;
+    let fill="#140f19",stroke=col,sw=2,op=1,dash="",cls="";
+    if(st==="own")fill=col;else if(st==="pend"){fill=col;op=.6;dash="3 2";}else if(st==="can"){cls="can";sw=3.5;}
+    else if(st==="short"){sw=1.5;}else if(st==="far"){op=.55;}else if(st==="ring"){stroke="#5a4a2a";op=.45;}else if(st==="train"){stroke="#8a7a5a";dash="3 3";}
+    const rv=revealOf(n);const lab=n.kind==="stat"?(n.peak?"極":""):n.kind==="train"?"修":rv==="hidden"?"？":n.name.slice(0,2);
+    g+=`<g class="node" data-id="${n.id}" transform="translate(${x},${y})" opacity="${op}">
+      <circle r="30" fill="transparent"/>
+      ${sel?`<circle r="${r+7}" fill="none" stroke="var(--gold-hi)" stroke-width="2.5"/>`:""}
+      ${S.target===n.id?`<text x="${r-2}" y="${-r+2}" font-size="14">🎯</text>`:""}
+      ${col2?`<polygon points="${[0,1,2,3,4,5].map(i=>pol(i*60-90,r+4).join(",")).join(" ")}" fill="none" stroke="${col2}" stroke-width="2.5"/>`:""}${n.sig?`<polygon points="${[0,1,2,3,4,5].map(i=>pol(i*60-90,r+6).join(",")).join(" ")}" fill="none" stroke="var(--gold-hi)" stroke-width="2"/>`:""}
+      ${shape} class="${cls}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" ${dash?`stroke-dasharray="${dash}"`:""}/>
+      ${lab?`<text y="5" font-size="${n.peak?20:13}" font-weight="800" text-anchor="middle" fill="${st==="own"||st==="pend"?"#140f19":st==="train"?"#c9b27a":col}">${lab}</text>`:""}
+      ${n.kind!=="stat"?`<text y="${r+14}" font-size="11" text-anchor="middle" fill="var(--dim)">${n.kind==="train"?(st==="train"?"🔒"+(metOf(n.who)?n.whoJa+" ♥"+heartOf(n.who)+"/5":"？？？"):n.whoJa):"火種"+n.cost}</text>`:""}
+      ${st==="ring"&&big?`<text x="${r-6}" y="${-r+6}" font-size="11">🔒</text>`:""}
+    </g>`;
+  }
+  // 章で開く範囲の目安（輪の境目を薄く）
+  $("#bsvg").setAttribute("viewBox",`0 0 ${W} ${H}`);
+  $("#bsvg").innerHTML=g;
+  $("#bsvg").querySelectorAll(".node").forEach(e=>e.onclick=()=>{B.sel=e.dataset.id;drawBoard();});
+  const p=lvProgress();
+  $("#bhead").innerHTML=`<b style="color:var(--gold-hi)">心得の盤</b><b>Lv.${S.lv}</b>
+    <div class="bar"><i class="done" style="width:${Math.min(100,p.inLv/p.need*100)}%"></i></div><span style="color:var(--dim)">${p.lvs?"今夜 Lv UP":`次のLvまで EXP ${p.need-p.inLv}`}</span>
+    ${B.edit?"":`<span style="color:var(--amber)">見るだけ（火種を灯すのは観音堂で）</span>`}${B.place==="kannon"?`<span style="color:var(--sense)">観音堂</span>`:""}
+    <span class="sp"></span>${S.respecOpen&&B.edit?`<button id="respec">組み直す</button>`:""}<button id="help">？</button><button id="bclose">閉じる</button>`;
+  $("#bclose").onclick=()=>closeBoard();
+  $("#help").onclick=()=>alert("盤は能力ごとに5枚（技術盤〜洞察盤）。上の札で入れ替える。\n真ん中の「はじまり」から上下左右に広がる方眼。線は上下左右の隣だけ。\n取れるのは、上下左右の隣が灯っているマスだけ。どの方向から攻めてもよい。\n小さな丸＝能力の火（火種1）。3つ灯すと1段上がる。\n六角形＝スキル（火種10〜20）／修＝修行（交流で開く）／極＝いちばん奥\n明滅＝今取れる／薄い＝まだつながっていない／暗い＝章で開く\n🎯＝目標。一番安い道を金の点線で出す。「目標まで灯す」でまとめて仮置き");
+  if($("#respec"))$("#respec").onclick=()=>{if(!confirm("全部の火種が戻ります。組み直しますか？"))return;
+    for(const id of B.owned){const u=S.paid[id]||{any:byId[id].cost};for(const[kk,v]of Object.entries(u))B.hid[kk]+=v;}B.owned=new Set();B.pend=[];drawBoard();};
+  $("#btabs").replaceChildren(...KEYS.map(kk=>{const pr=progress(kk,ownP);const can=B.edit&&boardOf(kk).some(b=>!pendIds.has(b.n.id)&&nodeState(b.n,ownP,hid)==="can");
+    const hasT=S.target&&boardOf(kk).some(b=>b.n.id===S.target);const c=statCount(kk,ownP)%PER_STEP;
+    const t=h("button",{class:"btab"+(kk===k?" on":""),style:`--c:var(--${kk})`,onclick:()=>{B.k=kk;S.lastBoard=kk;B.sel=null;drawBoard();}});
+    t.innerHTML=`<span class="t"><span class="kb">${K1[kk]}</span><span class="n">${JA[kk]}盤</span><span style="margin-left:auto">${hasT?"🎯":""}${stepOf(kk,ownP)}段<small style="color:var(--dim)">+${c}/${PER_STEP}</small></span></span><span class="pg"><i style="width:${pr*100}%"></i></span>${can?'<span class="dot flame" title="今取れるノードがある"></span>':""}`;return t;}));
+  // 右: 発動イラスト＋説明
+  const sel=(B.sel&&byId[B.sel])||items.find(b=>!pendIds.has(b.n.id)&&nodeState(b.n,ownP,hid)==="can")?.n||items[0].n;
+  const st=pendIds.has(sel.id)?"pend":nodeState(sel,ownP,hid);
+  const ecol=sel.kind==="skill"?sel.colors[0]:sel.stat;const locked=st==="train"||st==="ring";
+  const art=sel.kind==="train"?(st==="train"?"（影絵だけ見せる）":sel.art):sel.kind==="stat"?ILLUST[sel.stat]:sel.kind==="skill"?(revealOf(sel)==="full"?ILLUST[sel.id]:revealOf(sel)==="name"?"（影絵だけ見せる）":"（まだ見えない）"):`${sel.whoJa}に教わっている場面（中身は詳細設計で決める）`;
+  const cnt=statCount(k,ownP),cur=stepOf(k,ownP),rem=PER_STEP-cnt%PER_STEP;
+  const nt=Object.entries(NEWTHING[k]||{}).find(([x])=>+x>cur);
+  let body;
+  if(sel.kind==="stat")body=`<h4>${nodeName(sel)}</h4><small>第${sel.ring}輪・火種1・3つ灯すと1段</small><br>${JA[k]} ${cur}段 <span style="letter-spacing:2px">${"●".repeat(cnt%PER_STEP)}${"○".repeat(rem)}</span>　あと${rem}つで${Math.min(10,cur+1)}段：${TIER[k][Math.min(9,cur)]}<br><small>効くところ：${WHERE[k]}</small>`+
+     (nt?`<br><small style="color:var(--gold-hi)">✦${nt[0]}段で「${nt[1]}」（あと火${(nt[0]-cur-1)*PER_STEP+rem}つ）</small>`:"");
+  else if(sel.kind==="skill")body=revealOf(sel)==="hidden"?`<h4>？？？</h4><small>スキル・第${sel.ring}章で盤に現れる</small><br>どんな技かは、その章になってのお楽しみ`:revealOf(sel)==="name"?`<h4>${sel.name}</h4><small>スキル・次の章（第${sel.ring}章）で取れるようになる・火種${sel.cost}</small><br>${sel.fx}`:`<h4>${sel.name}</h4><small>スキル・${sel.colors.map(c=>JA[c]).join("×")}・第${sel.ring}輪・火種${sel.cost}</small><br>${sel.fx}<br><small>効く場面：${sel.scene}</small>`;
+  else {const met=metOf(sel.who);const reach=connected(sel,ownP);
+    body=`<h4>${st==="train"?"？？？の修行":sel.name}</h4><small>${sel.sig?"特別な修行（その人だけの技）":"スミさんの修行"}・火種${sel.cost}</small><br>${st==="train"?(met?`<span style="color:var(--gold-hi)">ヒント：${sel.hint}</span><br><small>${sel.whoJa}との好感度 ♥${heartOf(sel.who)}/${sel.need}（♥${sel.need}で開く）</small>`:`<span style="color:var(--gold-hi)">ヒント：まだ会っていない誰かが、何か教えてくれるらしい</span><br><small>？？？との好感度 ♥?/5</small>`):`<b>${sel.fx}</b><br><small>${sel.whoJa}との好感度が♥${sel.need}になって開いた${sel.legacy?"（今のゲームで習得済みなら、移行時に灯った状態で始める）":""}</small>`}<br><small>盤の道：${reach?"修行のマスまで届いている":"まだ届いていない（手前のマスを灯す）"}</small>`;}
+  const tag={own:"灯した",pend:"仮置き中",ring:`第${sel.ring}章で開く`,far:`まだつながっていない（ここまで火種${remainTo(sel.id)}）`,short:`火種が${sel.cost}要る`,train:"修行がまだ"}[st];
+  let payLine="";if(st==="can"){const tmp={...hid};payLine=`<br><small>${payText(pay(sel,tmp,{forceAny:B.forceAny}))}で払う</small>`;}
+  $("#bdetail").innerHTML=`<div class="emb" style="--c:var(--${ecol})"><span class="ttl">${st==="train"||revealOf(sel)==="hidden"?"？？？":nodeName(sel)}</span><span class="big" style="${locked?"opacity:.25":""}">${sel.kind==="stat"?K1[sel.stat]:sel.kind==="train"?(st==="train"?"？":"修"):revealOf(sel)==="hidden"?"？":sel.name[0]}</span>
+      <span class="art" style="display:block;right:110px">発動イラスト：${st==="train"?"（シルエットだけ見せる）":art}</span></div>
+    <div class="dtext">${body}${tag?`<br><small style="color:var(--amber)">${tag}</small>`:""}${payLine}</div>`;
+  if(sel.kind!=="stat"||sel.peak){const tb=h("button",{text:S.target===sel.id?"目標を外す":"🎯 目標にする",onclick:()=>{S.target=S.target===sel.id?null:sel.id;drawBoard();render();}});$("#bdetail").append(tb);}
+  if(S.target&&B.edit){const go=h("button",{text:"目標まで灯す",onclick:()=>fillToTarget()});$("#bdetail").append(go);}
+  $("#bcur").innerHTML=`<span><span class="flame"></span> 万能×${hid.any}</span>`+KEYS.map(kk=>`<span class="${hid[kk]?"":"z"}"><span class="flame c-${kk}"></span> ${K1[kk]}×${hid[kk]}</span>`).join("")+
+    (S.target?`<span style="color:var(--gold-hi)">🎯 ${nodeName(byId[S.target])}まで 火種${remainTo(S.target)}</span>`:"")+(B.pend.length?`<span style="color:var(--dim)">（仮置き ${B.pend.length}）</span>`:"");
+  const canPlace=st==="can"&&B.edit,isPend=st==="pend";
+  $("#bfoot").innerHTML="";
+  const prev=h("button",{text:"◀",title:"前の盤（Q）",onclick:()=>switchBoard(-1)}),next=h("button",{text:"▶",title:"次の盤（E）",onclick:()=>switchBoard(1)});
+  const place=h("button",{text:isPend?"取り消す":B.edit?"仮置きする":"観音堂で灯せる",onclick:()=>{
+    if(isPend){unplace(sel.id);B.sel=sel.id;}else{const used=pay(sel,B.hid,{forceAny:B.forceAny});B.pend.push({id:sel.id,used});
+      // 細かいノードを続けて灯せるよう、隣の取れるマス（なければ盤の取れるマス）へ選択を進める
+      const o=new Set([...B.owned,...B.pend.map(q=>q.id)]);const me=pos[sel.id];
+      const nx=(me?.nb||[]).map(id=>byId[id]).filter(x=>x&&nodeState(x,o,B.hid)==="can")[0]||items.map(b=>b.n).find(x=>!o.has(x.id)&&nodeState(x,o,B.hid)==="can");
+      B.sel=nx?nx.id:sel.id;}
+    drawBoard();}});
+  if(!(canPlace||isPend))place.disabled=true;
+  const anyT=h("label",{class:"legend"},[]);anyT.innerHTML=`<input type="checkbox" ${B.forceAny?"checked":""}> 万能を使う`;anyT.querySelector("input").onchange=e=>{B.forceAny=e.target.checked;drawBoard();};
+  const ok=h("button",{class:"primary",text:B.edit?"決定して閉じる":"閉じる",onclick:()=>B.edit?commit():closeBoard()});
+  $("#bfoot").append(prev,h("span",{class:"legend",text:"盤の入れ替え"}),next,h("span",{class:"sp"}),anyT,place,ok);
+}
+/** 仮置きを外す。つながりが切れた後の仮置きも外して火種を戻す */
+function unplace(id){
+  const drop=new Set([id]);let changed=true;
+  while(changed){changed=false;const keep=new Set([...B.owned,...B.pend.filter(q=>!drop.has(q.id)).map(q=>q.id)]);
+    for(const q of B.pend)if(!drop.has(q.id)&&!connected(byId[q.id],new Set([...keep].filter(x=>x!==q.id)))){drop.add(q.id);changed=true;}}
+  for(const q of B.pend)if(drop.has(q.id))for(const[kk,v]of Object.entries(q.used))B.hid[kk]+=v;
+  B.pend=B.pend.filter(q=>!drop.has(q.id));
+}
+/** 目標までの一番安い道を、火種と章の範囲が許すところまで順に仮置き */
+function fillToTarget(){
+  const own=()=>new Set([...B.owned,...B.pend.map(q=>q.id)]);
+  const path=cheapestPath(S.target,own()).path;let n=0;
+  for(const id of path){const nd=byId[id];if(own().has(id))continue;if(nodeState(nd,own(),B.hid)!=="can")break;B.pend.push({id,used:pay(nd,B.hid,{forceAny:B.forceAny})});n++;}
+  log(n?`目標まで ${n}マス仮置き`:"目標へ進めない（火種・章・修行を確認）");B.sel=S.target;drawBoard();
+}
+function switchBoard(d){const i=KEYS.indexOf(B.k);B.k=KEYS[(i+d+5)%5];S.lastBoard=B.k;B.sel=null;drawBoard();}
+document.addEventListener("keydown",e=>{if(!B||$("#board").hidden)return;if(e.key==="q"||e.key==="ArrowLeft")switchBoard(-1);if(e.key==="e"||e.key==="ArrowRight")switchBoard(1);});
+
+// ======================= 効果の実感: 炭焼きの取り出し（7.3 の色付け込み） =======================
+let feelTimer=null;
+function openFeel(stat="sense",fromTut=false){
+  const ov=$("#feelOv");ov.hidden=false;const box=$("#feelBox");
+  const s=stepOf("sense"),t=stepOf("wisdom"); // 帯の広さは感覚、ゲージの遅さは理論
+  box.innerHTML=`<h3>炭焼きの取り出し（モック）</h3>
+   <div style="font-size:12px;color:var(--dim)">ジャスト帯で「取る」。白枠＝素の帯、<span style="color:var(--sense)">水色＝センスで広がった分</span>。針の残像が<span style="color:var(--technique)">金</span>なら技術でゆっくり（本当の炭焼きは技術を読まない：比較用）。</div>
+   <div class="row" style="margin-top:8px">
+     <label>感覚 <select id="fs">${Array.from({length:10},(_,i)=>`<option ${i+1===s?"selected":""}>${i+1}</option>`).join("")}</select>段</label>
+     <label>理論 <select id="ft">${Array.from({length:10},(_,i)=>`<option ${i+1===t?"selected":""}>${i+1}</option>`).join("")}</select>段</label>
+     <label><input type="checkbox" id="fcol" checked> 能力の効き目を色で表示</label>
+   </div>
+   <div class="track" id="track"><div class="base" id="fbase"></div><div class="ext" id="fextL"></div><div class="ext" id="fextR"></div><div class="ghost" id="fghost"></div><div class="needle" id="fneedle"></div></div>
+   <div class="row"><button class="primary" id="ftake">取る（Space）</button><button id="fbefore">1段と今を並べて試す</button><span class="sp" style="flex:1"></span><button id="fclose">閉じる</button></div>
+   <div class="res" id="fres"></div><div class="legend" id="fstat"></div>`;
+  let hits=0,tries=0,pos=0,dir=1,lastT=performance.now();
+  const layout=()=>{const S1=+$("#fs").value,T1=+$("#ft").value;const tS=(S1-1)/9,tT=(T1-1)/9;
+    const W=$("#track").clientWidth;const base=W*0.11;const full=base*(1+.35*tS);const c=W*.62;
+    const show=$("#fcol").checked&&S1>1;
+    Object.assign($("#fbase").style,{left:(c-base/2)+"px",width:base+"px"});
+    Object.assign($("#fextL").style,{left:(c-full/2)+"px",width:show?((full-base)/2)+"px":"0"});
+    Object.assign($("#fextR").style,{left:(c+base/2)+"px",width:show?((full-base)/2)+"px":"0"});
+    $("#fghost").style.display=$("#fcol").checked&&T1>1?"block":"none";
+    return {c,full,W,speed:W/1.6/(1+.30*tT)};};
+  let L=layout();["#fs","#ft","#fcol"].forEach(q=>$(q).onchange=()=>{L=layout();});
+  cancelAnimationFrame(feelTimer);
+  const tick=now=>{const dt=(now-lastT)/1000;lastT=now;pos+=dir*L.speed*dt;if(pos>L.W-3){pos=L.W-3;dir=-1;}if(pos<0){pos=0;dir=1;}
+    $("#fneedle").style.left=pos+"px";$("#fghost").style.left=(pos-10*dir)+"px";feelTimer=requestAnimationFrame(tick);};
+  feelTimer=requestAnimationFrame(tick);
+  const take=()=>{tries++;const ok=Math.abs(pos-L.c)<=L.full/2;if(ok)hits++;$("#fres").innerHTML=ok?`<b style="color:var(--good)">ジャスト！</b>`:`<span style="color:var(--amber)">${pos<L.c?"早い":"遅い"}</span>`;
+    $("#fstat").textContent=`${hits}/${tries} 成功（帯の幅：素の ×${(1+.35*(+$("#fs").value-1)/9).toFixed(2)}　針の速さ：×${(1/(1+.30*(+$("#ft").value-1)/9)).toFixed(2)}）`;};
+  $("#ftake").onclick=take;
+  document.onkeydown=e=>{if(!ov.hidden&&e.code==="Space"){e.preventDefault();take();}};
+  $("#fbefore").onclick=()=>{const cur=+$("#fs").value;$("#fs").value=1;L=layout();$("#fres").textContent="1段の帯。もう一度押すと今の段に戻る";
+    $("#fbefore").onclick=()=>{$("#fs").value=cur;L=layout();$("#fres").textContent=`${cur}段の帯`;};};
+  $("#fclose").onclick=()=>{cancelAnimationFrame(feelTimer);ov.hidden=true;document.onkeydown=null;};
+}
+
+// ======================= キャプション（チュートリアルの雰囲気だけ） =======================
+function caption(text,buttons=[],targetSel){const c=$("#cap");c.hidden=false;c.innerHTML="";c.append(h("span",{text}));
+  for(const[l,f]of buttons)c.append(h("button",{text:l,onclick:f}));
+  document.querySelectorAll(".ring-pulse").forEach(e=>e.classList.remove("ring-pulse"));if(targetSel)$(targetSel)?.classList.add("ring-pulse");}
+function hideCap(){$("#cap").hidden=true;document.querySelectorAll(".ring-pulse").forEach(e=>e.classList.remove("ring-pulse"));}
+
+// ======================= 開発用 =======================
+function dev(k){
+  if(k==="exp"){S.exp+=500;log("EXP +500（開発用）");}
+  if(k==="tourn"){const best=KEYS[Math.floor(Math.random()*KEYS.length)];S.hidane[best]+=SCALE;
+    S.exp+=Math.round((100+200+150)*M[S.chapter-1]);card({c:`var(--${best})`,k:K1[best],top:"大会の火種",main:`${K1[best]}の火種 ＋${SCALE}`,sub:`いちばん良かったのは${{body:"提供後の調整（お客さんへの届け方）",sense:"炭焼き",wisdom:"完成品（配合）"}[best]}`});log(`大会: ${K1[best]}の火種＋1・EXP+${Math.round(450*M[S.chapter-1])}（章末の精算は寝る時にまとめた扱い）`);}
+  if(k==="chapter"){if(S.chapter<5){const before=new Set(NODES.filter(n=>n.kind==="skill"&&revealOf(n)==="full").map(n=>n.id));S.chapter++;const now=NODES.filter(n=>n.kind==="skill"&&revealOf(n)==="full"&&!before.has(n.id));
+    if(now.length)setTimeout(()=>card({c:"var(--gold)",k:"新",top:"NEW SKILLS",main:`盤に新しいスキルが${now.length}つ`,sub:now.map(n=>n.name).join("・")}),600);S.day=1;S.slot=0;S.freshCount={};S.respecOpen=true;
+    card({c:"var(--gold)",k:"盤",top:"RING OPEN",main:`心得の盤 第${S.chapter}輪が開いた`,sub:"最初の行動までは盤を組み直せる"});log(`第${S.chapter}章へ。第${S.chapter}輪が開いた・組み直しは最初の行動まで`);}}
+  if(k==="mid"){const m=S.boardMode;S=fresh();S.boardMode=m;S.day=13;let acc=0;for(let L=1;L<9;L++)acc+=need(L);S.exp=S.settled=acc+120;S.lv=9;S.hidane.any=8*SCALE;S.tutorial.board=true;
+    ["tsumugi","naru","adam","kannon"].forEach(x=>{S.firsts.add(x);S.freshCount[x]=3;});log("中央の遊び方・第1章大会前の状態（Lv.9・火種40・未使用）");}
+  if(k==="ng"){const keep={owned:S.owned,paid:S.paid,hidane:S.hidane,lv:S.lv,exp:S.exp,settled:S.settled,boardMode:S.boardMode,ringsCarry:Math.max(S.chapter,S.ringsCarry||1),tutorial:S.tutorial};
+    S=Object.assign(fresh(),keep);S.chapter=1;card({c:"var(--gold)",k:"周",top:"NEW CYCLE",main:"2周目",sub:"盤は引き継いだ。取っていない修行は、また仲良くなると開く"});log("2周目へ: 盤・火種・レベルは引き継ぎ、好感度・面識は最初から。取っていない修行は錠に戻った");}
+  if(k==="bond"){TRAININGS.forEach(t=>{S.affPts[t.who]=10;});card({c:"var(--body)",k:"修",top:"TRAINING OPEN",main:"修行が開いた",sub:"スミさん・みんと・アダム・なるが、何か教えてくれるらしい"});log("交流を深めた（開発用）: 各盤の修行が開いた");}
+  if(k==="reset"){const m=S.boardMode;S=fresh();S.boardMode=m;log("最初から");}
+  render();
+}
+document.querySelectorAll("[data-dev]").forEach(b=>b.onclick=()=>dev(b.dataset.dev));
+$("#sleepBtn").onclick=()=>sleepFlow();
+$("#feelBtn").onclick=()=>openFeel();
+$("#radarBtn").onclick=()=>openBoard();
+$("#menuBtn").onclick=()=>openBoard();
+document.querySelectorAll('input[name="bm"]').forEach(r=>r.onchange=()=>{S.boardMode=r.value;log(r.value==="menu"?"火種はメニューからいつでも灯せる":"火種を灯せるのは観音堂だけ（メニューでは見るだけ）");render();});
+$("#redDot").onchange=()=>render();
+S=fresh();render();log("第1章1日目。行き先を押すと経験値が入る（1日2回）。寝るとレベルアップの精算。");
+</script>
+</body>
+</html>

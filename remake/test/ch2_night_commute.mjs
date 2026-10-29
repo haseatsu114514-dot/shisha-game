@@ -83,6 +83,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
     play: async id => { trace.push(id); return {}; }, beat() {},
     showSumiRigAtHome: async () => { trace.push('rig-homecoming'); return false; },
     runHomeShisha: async () => { trace.push('home-shisha'); return false; },
+    presentNight: async () => { trace.push('night-growth'); return null; },
     conditionForRatio: () => ({ health: 'healthy' }), staminaRatio: () => fixture.stamina / 100,
     addStamina: n => { fixture.stamina += n; trace.push('recovery'); },
     daysLeft: () => 28 - fixture.day, updateHud() {},
@@ -103,7 +104,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   assert.equal(fixture.day, 16); assert.equal(fixture.slot, 0); assert.equal(fixture.stamina, 74); assert.equal(fixture.money, 1000);
   assert.deepEqual(trace.filter(x => !x.startsWith('save:')), [
     'night', 'confession', 'return-home', 'encounter', 'remake_homecoming_0', 'rig-homecoming', 'home-shisha',
-    'dawn', 'recovery', 'weather:16', 'bg_home:day', 'recovery-ui',
+    'night-growth', 'dawn', 'recovery', 'weather:16', 'bg_home:day', 'recovery-ui',
     'weather:16', 'kansetsu_shomei_to_black_coffee', 'lime', 'notice',
   ]);
   assert.equal(trace.filter(x => x === 'lime').length, 1);

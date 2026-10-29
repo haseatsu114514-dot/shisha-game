@@ -58,7 +58,7 @@ for (let target=1;target<=5;target++) {
   if(target>1)assert.equal(tournamentFinished(state(target-1,'cleared'),target),false);
 }
 for(const bad of [undefined,null,0,-1,1.5,'2',NaN])assert.equal(tournamentFinished(state(5,'cleared'),bad),false);
-const sensitive = /大会前|本番、よろしく|いよいよ大会|大会が近い|大会の日の煙|大会の……お守り|君の大会、見に行けない|なのに大会では|大会で戦うことになる|大会では焦り|大会の本番|今度の大会|大会出るの|大会のお願い|大会の日も描く|今回のSMOKE|大会ステージの準備|大会で使うん|参加登録はもう|大会に出す理由|SMOKE CROWN CUP、俺も出る/;
+const sensitive = /大会前|本番、よろしく|いよいよ大会|大会が近い|大会の日の煙|大会の……お守り|君の大会、見に行けない|なのに大会では|大会で戦うことになる|大会では焦り|大会の本番|今度の大会|大会出るの|大会のお願い|大会の日も描く|今回のSMOKE|大会ステージの準備|大会で使うん|参加登録はもう|大会に出す理由|SMOKE CROWN CUP、俺も出る|同じ卓で会おう|本番までに決めて/;
 const effects = rows => rows.filter(r => ['remember','apply','set_flag','buy_keepsake','flavor_lesson'].includes(r.type)
   || r.text && /【.+】.*上がった/.test(r.text));
 const fullRun = {scope:'full',success:true,served:true,kind:'practice'};

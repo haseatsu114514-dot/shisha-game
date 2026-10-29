@@ -10,7 +10,7 @@ export const TOKYO_MAP_PLACES = Object.freeze({
   enmaku: place("enmaku", "煙幕", 45.3, 49.7),
   steve: place("steve", "Smoke & Glory", 23.3, 36.1),
   volk: place("volk", "鉄の煙", 55.9, 40.4),
-  gym: place("gym", "チョイザップ", 34.9, 75.9),
+  gym: place("gym", "CHOI-ZAP", 34.9, 75.9),
   park: place("park", "公園", 69, 62),
 });
 

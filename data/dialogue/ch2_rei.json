@@ -561,7 +561,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "でも、大会で出す一杯は……ちゃんと伝わってほしい"
+          "text": "でも、大会で出す一台は……ちゃんと伝わってほしい"
         },
         {
           "speaker": "rei",
@@ -1089,6 +1089,10 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "行きます"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_rei_ticket"
         },
         {
           "speaker": "rei",

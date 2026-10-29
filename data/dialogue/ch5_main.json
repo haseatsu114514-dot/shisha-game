@@ -7,11 +7,6 @@
         {
           "speaker": "",
           "face": "",
-          "text": "【第五章　機械仕掛けの神】"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "世界大会からしばらく経ったtonari。博士から、封書が届いた。表書きは『挑戦状』。"
         },
         {
@@ -211,6 +206,11 @@
           "text": "一本目の挙手は、9000が僅かに多かった。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "同じ葉、同じ器具。それでも挙がる手は、席ごとに割れていた。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（同じ順番を、俺より丁寧に作ってる）"
@@ -376,6 +376,26 @@
           "speaker": "dr_kemuri",
           "face": "normal",
           "text": "次は聞けるようにする。装置も、私も"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "同じ条件で作っても、票は席ごとに割れました。誤差だと思っていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰の舌も、間違ってないんだと思います"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ一台の、違うところを吸ってるだけで"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……正解の味を、一つだけ探していたのかもしれません"
         },
         {
           "speaker": "",

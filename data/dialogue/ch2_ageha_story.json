@@ -924,6 +924,26 @@
           "text": "甘さが消えたあと、一拍だけ残る。……曲と曲の間みたいに"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "同じ一台を回したのに、誰の苺も少しずつ違っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "え〜、わたしのはミルクっぽかったよ？ 同じ台なのに"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "吐くの早いんだよ。鼻に抜くと、奥に紅茶が残ってる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "誰の舌も外れちゃいねえ。同じ苺の、違う所を拾ってるだけでさ"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（菓子、宇宙、お客さん、顔、熱、音。みんな、自分の言葉で吸ってる）"
@@ -995,6 +1015,10 @@
         {
           "type": "set_flag",
           "flag": "_ch2_scout_seen"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_scout_tasting"
         },
         {
           "type": "choice",
@@ -1253,6 +1277,11 @@
             "speaker": "minto",
             "face": "smile",
             "text": "お客さんの顔を思い浮かべるかな。誰に出したいか、って"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……後味だけ、探す。最後に何が残るか"
           },
           {
             "speaker": "hajime",

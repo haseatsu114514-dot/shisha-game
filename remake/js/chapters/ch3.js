@@ -516,7 +516,7 @@ async function renderFreeTime(owner, window) {
       save();
       await renderStage(owner);
     }, true)] : []),
-    ...(gym.ok ? [button(owner, "チョイザップで体を動かす", "gym", async () => {
+    ...(gym.ok ? [button(owner, "CHOI-ZAPで体を動かす", "gym", async () => {
       await trainInTokyo(owner, window.id);
       if (current(owner)) await renderStage(owner);
     }, true)] : []),

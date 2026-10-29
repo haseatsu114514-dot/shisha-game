@@ -3319,3 +3319,5 @@ remake/img/ui/trpg/walnut-brass-frame.webp !filter !diff !merge text=auto eol=lf
 remake/img/ui/ui_title_logo.webp !filter !diff !merge text=auto eol=lf
 remake/img/ui/ui_title_logo_rich.webp !filter !diff !merge text=auto eol=lf
 # END legacy non-LFS images
+
+assets/audio/dj/*.mp3 filter=lfs diff=lfs merge=lfs -text
