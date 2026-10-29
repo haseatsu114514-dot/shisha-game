@@ -521,6 +521,24 @@ for (const [id, sender, due] of [
 }
 console.log("[1178 CH2-TF-02/03] PASS actual messages/local days/contacts/chapter/once/restore");
 
+// #1210: 訪問直後の返信は、同じ朝に窓が開く定期雑談より先。定期雑談は次の朝（+1日）に届く。
+{
+  const day3 = allMessages.find(m => m.id === "lime_ageha_day3");
+  const afterVisit = allMessages.find(m => m.id === "lime_ch2_ageha_after_visit");
+  assert(day3 && afterVisit);
+  reset({ chapter: 2, day: 17, flags: { _ch2_day1: { startDay: 15 }, _ch2_ageha_contact: true }, contacts: ["ageha"] });
+  db.lime = [day3, afterVisit]; // ファイル順では定期雑談が先。priority で返信を先に届ける。
+  assert.equal(phone.deliverMorning(), 1);
+  assert.equal(state.inbox.map(i => i.id).join(), "lime_ch2_ageha_after_visit");
+  state.inbox[0].read = true; state.inbox[0].done = true; state.limeRead.push(afterVisit.id);
+  state.day = 18; // chapterDay 4。day3 の trigger_day 3 は +1 日まで有効。
+  assert.equal(phone.deliverMorning(), 1);
+  assert.equal(state.inbox.at(-1).id, "lime_ageha_day3");
+  assert.equal(state.inbox.filter(i => i.id === "lime_ageha_day3").length, 1);
+  assert.equal(state.inbox.filter(i => i.id === "lime_ch2_ageha_after_visit").length, 1);
+}
+console.log("[1210] PASS ageha after-visit precedes day3; day3 arrives the next morning");
+
 // #782: 追加候補も本番の連絡先/未読/1話題/一度きり/最大3通の制御を通す。
 db.friends = JSON.parse(await fs.readFile(new URL("data/friends.json", root), "utf8"));
 for (const day of [5, 10]) {

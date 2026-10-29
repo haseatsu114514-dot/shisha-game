@@ -1223,6 +1223,7 @@
       "type": "chat",
       "trigger_condition": "flag",
       "trigger_flag": "_ch2_ageha_contact",
+      "priority": 1,
       "messages": [
         {
           "sender": "ageha",
