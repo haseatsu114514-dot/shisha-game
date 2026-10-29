@@ -106,6 +106,12 @@
       "run": ["node remake/test/module_loading.mjs"]
     },
     {
+      "id": "warmup-defer",
+      "title": "Title warm-up defers store logos to idle and waits are split (core / store logos)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
+    },
+    {
       "id": "resume-loading-a01",
       "title": "Resume into a later chapter recovers from a failed module fetch (#1081 A01)",
       "kind": "browser",
@@ -305,6 +311,7 @@
         "node --experimental-vm-modules remake/test/continue_context.mjs",
         "node --experimental-vm-modules remake/test/bgm_gain.mjs",
         "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
+        "node --experimental-vm-modules remake/test/bgm_packed_cache.mjs",
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",

@@ -105,34 +105,59 @@ const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakk
 export const FRAME_ART = LOUNGE_ART.slice(0, 2);
 let uiArt = null;
 let uiArtDone = false;
-let storeLogoArt = null;
+let uiStores = null;
+let uiStoresDone = false;
 
-/** 店ロゴ（第2章の店を含む・実体13件）はマップで初めて要る重い絵なので、前段とは分けて
- *  同時2件の共有キューで静かに読む。失敗しても先読みの失敗に留め、待ち手へは伝えない。 */
-function warmStoreLogos() {
-  if (!storeLogoArt) {
+/** 店ロゴだけをまとめて読む（一度だけ）。初めて要るのはマップ画面なので本体とは分けてある。 */
+export function warmStoreLogos() {
+  if (!uiStores) {
     const urls = [...new Set(allStoreLogoUrls())];
-    storeLogoArt = Promise.all(urls.map((u) => loadingPrefetch.warm(u, () => prepareImage(u, { timeoutMs: 15000 }))));
+    uiStores = Promise.all(urls.map((u) => loadingPrefetch.warm(u, () => prepareImage(u, { timeoutMs: 15000 }))))
+      .then(() => { uiStoresDone = true; });
   }
-  return storeLogoArt;
+  return uiStores;
 }
 
-/** UIの絵と顔アイコンをまとめて読む（一度だけ）。店ロゴは前段がそろってから後段で読む */
-export function warmUiArt() {
+/** 店ロゴが出る画面の前に呼ぶ。読み終わっていれば null（待たない）、まだなら最大 ms 待つ Promise */
+export function storeLogosReady(ms = 2000) {
+  if (uiStoresDone) return null;
+  return Promise.race([warmStoreLogos(), sleep(ms)]);
+}
+
+// タイトル直後は帯域を取り合わないよう、店ロゴはアイドル時に回す（遅くとも4秒で必ず始める）。
+function deferStoreLogos() {
+  if (uiStores) return;
+  const start = () => warmStoreLogos();
+  if (typeof requestIdleCallback === "function") requestIdleCallback(start, { timeout: 4000 });
+  else setTimeout(start, 1500);
+}
+
+/** UIの絵・顔アイコンと選択中の会話枠を読む（店ロゴは含まない。一度だけ） */
+function warmCoreArt() {
   if (!uiArt) {
     const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
-    const front = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true })));
-    // 店ロゴは後段。前段の成否にかかわらず始め、完了は uiArt に含める（従来の待ち手の前提を保つ）
-    uiArt = front.then(() => warmStoreLogos(), () => warmStoreLogos()).then(() => { uiArtDone = true; });
+    uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
   // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
-  return Promise.all([uiArt, imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true })]);
+  return Promise.all([uiArt, imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep: true })]);
+}
+
+/** UIの絵と顔アイコンをまとめて読む（一度だけ。全部そろうか、遅い回線では15秒で解決）
+ *  deferStores: タイトル表示直後の呼び出しだけ true。店ロゴをアイドル時へ遅らせる。 */
+export function warmUiArt({ deferStores = false } = {}) {
+  const core = warmCoreArt();
+  if (deferStores) {
+    deferStoreLogos();
+    return core;
+  }
+  // 前段の成否にかかわらず店ロゴを後段で読む。通常呼び出しの完了には店ロゴも含める。
+  return core.then(() => warmStoreLogos(), () => warmStoreLogos());
 }
 
 /** 顔アイコンやスロットが出る画面の前に呼ぶ。読み終わっていれば null（待たない）、まだなら最大 ms 待つ Promise */
 export function uiArtReady(ms = 2000) {
   if (uiArtDone) return null;
-  return Promise.race([warmUiArt(), sleep(ms)]);
+  return Promise.race([warmCoreArt(), sleep(ms)]);
 }
 
 /**

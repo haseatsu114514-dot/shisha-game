@@ -67,11 +67,10 @@ export async function boot() {
 
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
 async function warmUp() {
-  // 先に小さなUIの絵（枠・顔アイコン・スロットの図柄）と大須の地図を並行で。背景・立ち絵はそのあと1枚ずつ。
-  // 店ロゴは warmUiArt の後段で同時数を絞って読むため、ここでは完了を待たずに進める
-  const ui = warmUiArt();
-  await Promise.all(["bg_osu_map_day", "bg_osu_map_night"].map((bg) => imageReady(bgUrl(bg), 8000, { keep: true })));
-  const bgs = ["bg_osu_map_day", "bg_osu_map_night", "bg_tonari_inside_day", "bg_tonari_inside_night", "bg_home_day", "bg_home_night", "bg_shop", "bg_tournament_stage"];
+  // 先に小さなUIの絵（枠・看板・顔アイコン・スロットの図柄）を並行で。背景・立ち絵はそのあと1枚ずつ
+  // 店ロゴはマップまで要らないので、タイトル直後の帯域を空けるためアイドル時に回す（ui.js 側）。
+  await Promise.all([warmUiArt({ deferStores: true }), ...["bg_osu_map_day", "bg_osu_map_night"].map((bg) => imageReady(bgUrl(bg), 8000, { keep: true }))]);
+  const bgs = ["bg_osu_map_day", "bg_osu_map_night", "bg_tonari_inside_day", "bg_tonari_inside_night", "bg_home_day", "bg_home_night", "bg_shop"];
   const faces = [["sumi", "normal"], ["tsumugi", "normal"], ["naru", "normal"], ["adam", "normal"], ["minto", "normal"], ["rin", "normal"], ["pakki", "normal"]];
   const urls = [
     ...bgs.map((b) => bgUrl(b)),
@@ -79,7 +78,10 @@ async function warmUp() {
     ...["bench_base.png", "stove_coil.png", "hookah_base.png"].map((m) => makingUrl(m)),
   ].filter(Boolean);
   for (const u of urls) await imageReady(u, 8000);
-  await ui; // warmUp の完了は、従来どおり先読み全体（店ロゴの後段を含む）の完了に合わせる
+  // 大会ステージは大会当日にしか出ないので、最後にアイドル時へ回す（遅くとも8秒で必ず始める）。
+  const warmStage = () => imageReady(bgUrl("bg_tournament_stage"), 8000);
+  if (typeof requestIdleCallback === "function") requestIdleCallback(warmStage, { timeout: 8000 });
+  else setTimeout(warmStage, 4000);
 }
 
 // テスト・デバッグ用フック（見た目を変えてもテストが壊れないよう、ここだけに依存させる）
