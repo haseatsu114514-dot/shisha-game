@@ -23,11 +23,13 @@ export function usesFoil(cs) {
  * 穴あけを飛ばした一台の、採点に中立な穴あけ相当値。ロートスは直のせで熱が均一に回るので、
  * そこそこ揃った外周（得も損もしない中庸）として後工程の熱・完成品へ渡す。score は付けない（評価項目から外す）。
  */
-export function skippedFoilResult() {
+export const VENT_CLOSED_FACTOR = 1.10;
+export function skippedFoilResult(vent) {
   return {
     skipped: true, total: 24, outer: 12, middle: 8, inner: 4,
     evenness: 0.75, outerEven: 0.75, precision: 0.75, completion: 1,
     innerExcess: 0, minimumComplete: true, dots: [], score: null,
+    ...(vent === "closed" ? { vent } : {}),
   };
 }
 export const normalizeAngle = (angle) => ((angle % TAU) + TAU) % TAU;
@@ -58,10 +60,11 @@ export function foilHeatProfile(holes) {
   const sparsity = holes ? clamp((24 - count) / 12, 0, 1) : 0;
   const hasLayout = [holes?.outer, holes?.middle, holes?.inner].every(Number.isFinite);
   const spread = hasLayout && count > 0 ? clamp((holes.outer - holes.middle - holes.inner) / count, -1, 1) : 0;
+  const ventFactor = holes?.vent === "closed" ? VENT_CLOSED_FACTOR : 1;
   return {
     sparsity,
-    warmup: 1 - sparsity * 0.2 - spread * 0.03,
-    response: 1 + sparsity * 0.25 - spread * 0.05,
+    warmup: (1 - sparsity * 0.2 - spread * 0.03) * ventFactor,
+    response: (1 + sparsity * 0.25 - spread * 0.05) * ventFactor,
     stability: spread * 4 - sparsity * 6,
   };
 }

@@ -38,7 +38,7 @@ const HOSE_ICON = `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" s
   <path d="m38.8 7.8 3.4-3.6" stroke="currentColor" stroke-width="3.2"/>
 </svg>`;
 // 針の位置の帯（0〜1）。下げ吸い=左、キープ=中、上げ吸い=右。芯に止めると上げ下げが強い。
-const ZONES = [
+export const ZONES = [
   { id: "down", from: 0, to: 0.34, just: [0.14, 0.205], label: "下げ吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
   { id: "keep", from: 0.34, to: 0.66, just: [0.468, 0.532], label: "キープ", mark: "＝", delta: 0, justDelta: 0 },
   { id: "up", from: 0.66, to: 1, just: [0.795, 0.86], label: "上げ吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
@@ -224,6 +224,7 @@ async function pullGame(cs, mode) {
     tags.replaceChildren(...[
       coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `消耗した炭を${coals}個交換した` : "炭は交換していない" }),
       conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
+      cs.vent === "closed" && el("span.pull-tag", { text: "蓋：閉" }),
       conditions.rainy && el("span.pull-tag", { text: "雨", title: "熱が入りづらい" }),
     ].filter(Boolean));
     pips.forEach((pip, i) => pip.classList.toggle("on", i < pulls));
