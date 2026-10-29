@@ -285,7 +285,7 @@ function renderComplete(owner) {
   }, true);
   const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
   // 外側の busy(false) は data-locked を見て disabled を再設定するため、両方を連動させる。
-  const lock = (btn, locked) => { btn.dataset.locked = String(locked); btn.disabled = locked; };
+  const lock = (btn, locked) => { if (btn.dataset) btn.dataset.locked = String(locked); btn.disabled = locked; };
   lock(next, !state.flags._ch4_preview_seen);
   // 予告3（第4章末→第5章）。設計 7-4: 「第5章へ進む」は予告の終了後にだけ押せる。
   // 完走/明示スキップのときだけ既読を保存し、中断・別画面への遷移では何も残さない。
