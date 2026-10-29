@@ -329,6 +329,7 @@
         "node --experimental-vm-modules remake/test/tsumugi_sketch_timing.mjs",
         "node --experimental-vm-modules --test remake/test/tutorial_step_help.mjs",
         "node remake/test/ch3_tournament_state.mjs",
+        "node remake/test/ch3_verdict.mjs",
         "node --experimental-vm-modules remake/test/appearance_setup_helper.mjs"
       ]
     },
