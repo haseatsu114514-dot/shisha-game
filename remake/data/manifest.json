@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-28 09:58 UTC",
+ "generated": "2026-10-29 03:36 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -380,6 +380,7 @@
   "peppermint.png"
  ],
  "cgs": [
+  "cg_ageha_confession.png",
   "cg_ageha_first_purikura.png",
   "cg_ch1_dr_kemuri_hook.png",
   "cg_ch1_minto_casual_reveal.png",
@@ -391,7 +392,9 @@
   "cg_ch2_ageha_purikura_strip_gal.png",
   "cg_ch2_ageha_purikura_strip_soft.png",
   "cg_ch3_childhood_offered_hand.png",
+  "cg_hiyori_confession.png",
   "cg_kuze_mashiro_childhood.png",
+  "cg_mashiro_confession.png",
   "cg_mashiro_double_apple.png",
   "cg_minto_casual.png",
   "cg_minto_cheki.png",
@@ -403,6 +406,7 @@
   "cg_oneesan_first_smoke.png",
   "cg_rin_confession.png",
   "cg_ryuji_purikura.png",
+  "cg_samechan_confession.png",
   "cg_tsumugi_confession.png",
   "cg_tsumugi_smoke_color.png"
  ],
@@ -2344,7 +2348,11 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+  "cgs/cg_ageha_confession.png",
+  "cgs/cg_hiyori_confession.png",
+  "cgs/cg_mashiro_confession.png",
+  "cgs/cg_samechan_confession.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
