@@ -277,11 +277,16 @@ function renderComplete(owner) {
     owner.previewing = true;
     next.disabled = true; replay.disabled = true;
     const controller = new AbortController();
-    const observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
-    observer.observe(layers.screen, { childList: true });
+    // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
+    let observer;
+    if (typeof MutationObserver !== "undefined") {
+      observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
+      observer.observe(layers.screen, { childList: true });
+    }
     let result;
     try { result = await playChapterPreview("ch3", { signal: controller.signal }); }
-    finally { observer.disconnect(); }
+    catch { /* 次回予告は任意演出。失敗しても完了画面はそのまま使える。 */ }
+    finally { observer?.disconnect(); }
     if (first && ["completed", "skipped"].includes(result) && live(owner) && state.phase === "cleared") {
       state.flags._ch2_preview_seen = true;
       save();
