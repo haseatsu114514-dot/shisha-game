@@ -529,6 +529,7 @@ export const emptyTokyoVisits = () => ({ version: 1, plans: [], offers: {}, clos
 function restoreTokyoVisits(raw) {
   if (!raw || raw.version !== 1 || !Array.isArray(raw.plans)) return emptyTokyoVisits();
   const restored = emptyTokyoVisits();
+  const seenIds = new Set();
   restored.closedSlots = [...new Set((Array.isArray(raw.closedSlots) ? raw.closedSlots : [])
     .filter(id => /^d\d+-(noon|night)$/.test(id)))];
   const validTime = time => time && Number.isInteger(time.day) && time.day > 0 && [0, 1].includes(time.slot)
@@ -540,8 +541,9 @@ function restoreTokyoVisits(raw) {
       || !validTime(plan.meetup) || !validTime(plan.date) || plan.meetup.day !== plan.arrivalDay
       || (plan.meetup.day * 2 + plan.meetup.slot) >= (plan.date.day * 2 + plan.date.slot) || plan.date.day >= plan.returnDay
       || typeof plan.met !== "boolean" || typeof plan.dateDone !== "boolean"
-      || restored.plans.some(other => other.id === plan.id)) continue;
+      || seenIds.has(plan.id)) continue;
     restored.plans.push(structuredClone(plan));
+    seenIds.add(plan.id);
   }
   if (raw.chats && typeof raw.chats === "object" && !Array.isArray(raw.chats)) {
     restored.chats = Object.fromEntries(Object.entries(raw.chats).filter(([, day]) => typeof day === "string"));
