@@ -1,0 +1,165 @@
+{
+  "source_issue": 1558,
+  "request": "章末予告編（第2章末→第3章／第3章末→第4章／第4章末→第5章）の画像カット生成。設計は work/trailer-expansion/DESIGN.md、台本は PR #1560。",
+  "encoding": "原画は Codex 生成 PNG (1672x941)。構図全体を 1664x936 へ contain して WebP method6、品質は章合計 1.0MiB 以内に収まるよう個別調整。PNG 原画は asset_sources 側にそのまま残す。",
+  "frame_policy": "16:9 画面へ全構図を収める（第1章予告 ch2_preview の採用形式に倣う）。",
+  "runtime_bytes": 1026780,
+  "images": [
+    {
+      "id": "01-tonari-night-video",
+      "source": "asset_sources/ch5-preview/01-tonari-night-video.png",
+      "source_sha256": "76904c00db2bf850d9c32b09f132d0efe5e475092aa30722b3fbcd4bdee51aac",
+      "source_bytes": 2019107,
+      "runtime": "assets/cgs/ch5_preview/01-tonari-night-video.webp",
+      "runtime_sha256": "7ff0e18288957e7293df20b619a77cbc241116a7b4a9458b5e7fa5cbd0af09b7",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 160620,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality84 method6; no crop or color filter"
+    },
+    {
+      "id": "02-smoke-lab",
+      "source": "asset_sources/ch5-preview/02-smoke-lab.png",
+      "source_sha256": "30cef9ca5b9fec68b190d86a75ebef4afa483e860b1aa54cb616d393722f4510",
+      "source_bytes": 1984033,
+      "runtime": "assets/cgs/ch5_preview/02-smoke-lab.webp",
+      "runtime_sha256": "4912b8b7b621d9c68ea29f697abbed107d619ebd56434a9bc8e34dd8018596a5",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 148510,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality87 method6; no crop or color filter"
+    },
+    {
+      "id": "03-robot-arm",
+      "source": "asset_sources/ch5-preview/03-robot-arm.png",
+      "source_sha256": "17d0e7a7face001862f800d8e1d8aeaa24b5bca16e06c12366106ca47157dc0d",
+      "source_bytes": 2042439,
+      "runtime": "assets/cgs/ch5_preview/03-robot-arm.webp",
+      "runtime_sha256": "f2e592553417fe409f2c3ef45f783259fb9b678cbc6b81b06552dfcb5f71af30",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 175698,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality90 method6; no crop or color filter"
+    },
+    {
+      "id": "04-tonari-day-tea",
+      "source": "asset_sources/ch5-preview/04-tonari-day-tea.png",
+      "source_sha256": "460967959b16acc0f90102f81afe502d0c356eb9876414a244ce34c10a532f35",
+      "source_bytes": 2248809,
+      "runtime": "assets/cgs/ch5_preview/04-tonari-day-tea.webp",
+      "runtime_sha256": "768a698b989bc948edec6125a6cd0c9427a8e5a7a45acfbcbc1ead8661779600",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 169560,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality81 method6; no crop or color filter"
+    },
+    {
+      "id": "05-sumi-calendar",
+      "source": "asset_sources/ch5-preview/05-sumi-calendar.png",
+      "source_sha256": "072c3957229ea5ee2d5742268aeee103aa76ae9af2bf8b5b9adf4617bd5c8f3f",
+      "source_bytes": 2049658,
+      "runtime": "assets/cgs/ch5_preview/05-sumi-calendar.webp",
+      "runtime_sha256": "cc78bf41d728de80fda9a275c343fbcdd89f4eec510239770b855719ccd0b3cf",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 176968,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality87 method6; no crop or color filter"
+    },
+    {
+      "id": "06-two-rigs",
+      "source": "asset_sources/ch5-preview/06-two-rigs.png",
+      "source_sha256": "db33c4e82dee6f8bdca84e55065ed79cab0f1d4599dca51fa3839bc7904b9049",
+      "source_bytes": 1943409,
+      "runtime": "assets/cgs/ch5_preview/06-two-rigs.webp",
+      "runtime_sha256": "3cc0bba59c0e01dc676338c43beb733118e431b6284150402905d72b59094eff",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 195424,
+      "source_dimensions": [
+        1672,
+        940
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality90 method6; no crop or color filter"
+    }
+  ]
+}
