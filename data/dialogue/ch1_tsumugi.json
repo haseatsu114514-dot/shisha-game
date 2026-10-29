@@ -670,6 +670,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "「フレーバー選び：客の顔を見てから棚へ。他の人はやらない」"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "フレーバーの配合比率。炭の温度管理パターン。客の反応。"
         },
         {
@@ -734,17 +739,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "はじめさんがフレーバーを選ぶ時、お客さんの顔を見てから棚に向かうでしょう"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "あれ、他のスタッフはやらないんです"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "炭を替える時も、音を立てないようにそっと置く。お客さんの時間を邪魔しないように"
+          "text": "炭を替える時は、音を立てないようにそっと置く。お客さんの時間を邪魔しないように"
         },
         {
           "speaker": "tsumugi",
@@ -755,11 +750,6 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "絵を描いてても……はじめさんの手つきを、思い出すようになって"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "はじめさんの動きも、私の描くものに混ざってきました"
         },
         {
           "speaker": "",
@@ -958,16 +948,6 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "はじめさんが、お客さんの顔を見てから、フレーバーを選ぶでしょう"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "あの手つきが、ここの煙を描く時に混ざるんです"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
           "text": "……窓のそばには、あの猫もいます"
         },
         {
@@ -1146,12 +1126,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "でも、不思議なことに、その傷が絵の一部になっていた。"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "まるで、煙が傷に沿って流れているように見える。"
+            "text": "煙が、傷に沿って流れている。"
           },
           {
             "type": "choice",
@@ -1180,22 +1155,12 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
-            "text": "……傷を避けないで描いたのは、この絵が初めてです"
+            "text": "……傷の上に描いたの、初めてです"
           },
           {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "……ずっと避けてました。傷のある場所には描けない、って思ってた"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "でも……はじめさんのシーシャの煙を描いてたら、気づいたら傷の上まで線を引いてて"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "傷があるのに、いや、傷があるからこそ、煙が自然に流れてるように見えた"
+            "speaker": "",
+            "face": "",
+            "text": "傷に沿って流れる煙の線を、目で追った。"
           },
           {
             "speaker": "",
@@ -1206,11 +1171,6 @@
             "speaker": "tsumugi",
             "face": "sad",
             "text": "……ここに来る前に見ていたものも、入ってます"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "いつも見てるものも、前に見てたものも、自然に混ざって"
           },
           {
             "speaker": "tsumugi",
@@ -1604,7 +1564,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……私、この店を愛してるので"
+          "text": "……ここが、好きなので"
         },
         {
           "speaker": "hajime",
@@ -1777,12 +1737,12 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "渡す前に、一度お客さんの方を見るので"
+          "text": "渡す前の、手です"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "その時の手が、描きたくて"
+          "text": "……それが、描きたくて"
         },
         {
           "speaker": "hajime",
