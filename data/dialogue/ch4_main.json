@@ -345,6 +345,16 @@
         {
           "speaker": "",
           "face": "",
+          "text": "帰り際、男は古びた台の脇で足を止め、ホースの継ぎ目に手を置いた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "この店には、昔の借りがある"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "男は店員に礼を言って去った。カップは、洗いやすいように重ねてあった。"
         }
       ]
@@ -660,6 +670,11 @@
         {
           "speaker": "sheikh",
           "face": "normal",
+          "text": "大会のあいだ、あの店を手伝っていた日本の選手だった。私が座ったのは、決勝の翌日だ"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
           "text": "墨田丈一郎。君の、スミさんだ"
         },
         {
@@ -706,6 +721,11 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "……あのお客さんが。作るようになったのか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……あの店、まだあったか"
         },
         {
           "speaker": "hajime",
