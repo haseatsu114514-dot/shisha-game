@@ -119,7 +119,8 @@ function checkpoint(stage) { progress().stage = stage; save(); }
 async function commentary(owner, event) {
   hud(owner, true);
   const controller = new AbortController(); owner.controller = controller;
-  const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal });
+  // 掛け合いは保存済みの実際の票を読んで台詞を選ぶ（#1649）。
+  const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal, context: { progress: clone(progress()) } });
   if (owner.controller === controller) owner.controller = null;
   if (!live(owner) || !result) return false;
   progress().craft = clone(owner.cs); save();

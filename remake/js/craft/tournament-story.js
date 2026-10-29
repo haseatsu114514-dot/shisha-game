@@ -8,7 +8,9 @@ export async function playTournamentEvent(cs, event, options = {}) {
   story.seen ||= [];
   if (story.seen.includes(event)) return true;
   clearComments();
-  const result = await play(tournamentStoryDialogue(cs, event), options);
+  // context は台本の選択だけに使う（票・在庫は読むだけ）。play には渡さない。
+  const { context, ...playOptions } = options;
+  const result = await play(tournamentStoryDialogue(cs, event, Math.random, context), playOptions);
   if (!result || result.cancelled) return false;
   story.seen.push(event);
   return true;
