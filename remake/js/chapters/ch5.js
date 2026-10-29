@@ -22,7 +22,7 @@ const test = name => `ch5-${name}`;
 // 試合当日の場面カード文案（到着→一杯目→二杯目の前の順）。
 const MATCH_CARDS = {
   arrival: { title: "試合当日", description: "会場に着いた。あとは、二本の煙だけ。" },
-  firstCup: { title: "一杯目", description: "博士の作る一杯を、はじめが再現する。" },
+  firstCup: { title: "一杯目", description: "一本目は、9000が、はじめの待ち方を再現する。" },
   beforeSecond: { title: "二杯目の前に", description: "ここまでの日々が、二杯目を作る。" },
 };
 const MATCH_ORDER = ["arrival", "firstCup", "beforeSecond"];
@@ -254,7 +254,7 @@ async function renderFree(owner) {
   const remaining = chapterFiveFreeRemaining(state);
   const actions = [];
   if (remaining.length) {
-    actions.push(button(owner, "tonari で過ごす", "spend-tonari", async () => {
+    actions.push(button(owner, `tonari で過ごす（${remaining[0].label}）`, "spend-tonari", async () => {
       const [next] = chapterFiveFreeRemaining(state);
       if (!next || !await readAndCommit(owner, next.id)) return;
       await renderStage(owner);
@@ -267,8 +267,13 @@ async function renderFree(owner) {
     if (!await readAndCommit(owner, "ch5_schedule_contact")) return;
     await renderStage(owner);
   }, true));
-  card(owner, "free", "自由行動", "大須の街と tonari。勝負の日程は、まだ決まっていない。", actions,
-    remaining.length ? "" : "tonari の用事は済んだ。あとは日程だけ。");
+  const description = remaining.length
+    ? "勝負の前に、tonari で済ませておきたいことが残っている。博士との日程は、まだ決まっていない。"
+    : "tonari での準備は済んだ。博士に連絡して、勝負の日を決める。";
+  const note = remaining.length
+    ? `次は「${remaining[0].label}」。残り${remaining.length}件は任意で、博士への連絡はいつでもできる。`
+    : "tonari の用事は済んだ。あとは日程だけ。";
+  card(owner, "free", "自由行動", description, actions, note);
 }
 
 async function renderScheduled(owner) {
