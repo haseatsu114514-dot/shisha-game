@@ -100,6 +100,7 @@ const context = vm.createContext({
   entrance: stub, newSession: () => { sessions.push(copy(entrant)); return {}; },
   loadingNotice: label => ({ label }),
   withLoadingNotice: async (task, notice) => { notices.push(notice); return await task; },
+  loadTournamentCraftDialogue: async () => {},
 });
 await vm.runInContext(prefix + "\ntournamentDay()", context);
 assert.deepEqual(saves[0].tournament.entryResources.flavorStock, { lemon: 12 }, "capture follows rescue grant");

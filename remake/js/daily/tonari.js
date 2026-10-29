@@ -271,4 +271,5 @@ async function serveShiftOrder() {
   if (state !== owner || result?.cancelled) return;
   // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
+  state.flags[`_shift_mix_${order.id}`] = index;
 }

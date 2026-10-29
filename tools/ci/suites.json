@@ -16,6 +16,12 @@
       "run": ["node remake/test/water_comfort.mjs"]
     },
     {
+      "id": "shift-mix-record",
+      "title": "Shift mix recording, dialogue and tournament feedback (#1414, #1415)",
+      "kind": "quick",
+      "run": ["node remake/test/shift_mix_record.mjs"]
+    },
+    {
       "id": "ch1-interval-connection",
       "title": "Chapter 1 victory interval connections",
       "kind": "quick",
@@ -158,6 +164,14 @@
         "remake/img/loading/*"
       ],
       "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
+    },
+    {
+      "id": "chapter-preview-scripts",
+      "title": "Chapter preview scripts: structure, sources and excerpt fidelity",
+      "kind": "quick",
+      "run": [
+        "node remake/test/chapter_preview_scripts.mjs"
+      ]
     },
     {
       "id": "dialogue-lint",
