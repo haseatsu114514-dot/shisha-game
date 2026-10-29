@@ -158,4 +158,42 @@ await suite("chapter-preview", async check => {
     await page.waitForTimeout(1500);
     assert.equal(await page.locator(preview).count(), 0, "既読の予告が自動再生した");
   });
+
+  // 第3章の完了カード（予告2の接続点）: 後日談を終えたセーブを読み込むと自動再生し、
+  // 再生中は第4章ボタンが押せず、スキップで既読が保存され、再視聴できる。
+  if (entries.some(entry => entry.key === "ch4")) await check("ch3-complete-card-autoplay-flag-and-rewatch", async page => {
+    page.setDefaultTimeout(60000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const s = core.newGame();
+      Object.assign(s, { chapter: 3, day: 128, slot: 1, phase: "cleared", money: 23456, stamina: 100,
+        flavorStock: { double_apple: 40, mint: 12 }, lovers: ["minto"], contacts: ["sumi", "minto"] });
+      s.flags._elapsed_calendar = true; s.flags._ageha_mastery = true;
+      s.flags._ch2_cleared = true; s.flags._ch3_cleared = true;
+      s.flags._ch3_tournament = { startDay: 113, stage: "complete" };
+      s.flags._ch3_aftermath = { stage: 6, step: "scene" };
+      s.stats = { technique: 42, sense: 42, guts: 42, charm: 42, insight: 42 };
+      core.save();
+    });
+    await page.reload();
+    await page.locator('[data-test="title-load"]').click();
+    await page.locator('[data-test="slot-0"]').click();
+    const complete = page.locator('[data-test="ch3-aftermath-complete"]');
+    await complete.waitFor();
+    await playing(page);
+    assert.equal(await page.locator(preview).getAttribute("aria-label"), "第3章の終わりと第4章の次回予告");
+    assert(await page.locator('[data-test="ch3-aftermath-chapter-four"]').isDisabled(),
+      "再生中に「第4章へ進む」が押せてしまう");
+    await page.locator('[data-test="preview-skip"]').click();
+    await page.locator(preview).waitFor({ state: "detached" });
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch3_preview_seen), true,
+      "スキップしても既読が保存されない");
+    assert.equal(await page.evaluate(async () =>
+      (await import("./js/core/state.js")).peekSave().flags._ch3_preview_seen), true,
+      "既読がセーブへ保存されない");
+    await page.locator('[data-test="ch3-aftermath-complete-preview"]').click();
+    await playing(page);
+    await page.locator('[data-test="preview-skip"]').click();
+    await page.locator(preview).waitFor({ state: "detached" });
+  });
 });
