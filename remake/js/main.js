@@ -2,6 +2,7 @@
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
+import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
@@ -80,6 +81,8 @@ async function warmUp() {
   loadDeferredDialogues().catch(() => {});
   loadCinemaDialogue().catch(() => {});
   loadTournamentCraftDialogue().catch(() => {});
+  // 会話用の明朝2書体はタイトル後に先読みし、失敗時は会話開始時に再試行する。
+  loadVnFonts().catch(() => {});
   // 先に小さなUIの絵（枠・看板・顔アイコン・スロットの図柄）を並行で。背景・立ち絵はそのあと1枚ずつ
   // 店ロゴはマップまで要らないので、タイトル直後の帯域を空けるためアイドル時に回す（ui.js 側）。
   await Promise.all([warmUiArt({ deferStores: true }), ...["bg_osu_map_day", "bg_osu_map_night"].map((bg) => imageReady(bgUrl(bg), 8000, { keep: true }))]);
