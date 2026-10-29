@@ -53,7 +53,7 @@
     ],
     "spriteScale": 1.05,
     "intro_cutin": {
-      "title": "表舞台を降りた名人",
+      "title": "はじめの師匠",
       "line": "客が満足したなら、それでいい",
       "face": "normal",
       "color": "#e0843e"
@@ -86,7 +86,7 @@
     ],
     "spriteScale": 1.02,
     "intro_cutin": {
-      "title": "地元最強の好敵手",
+      "title": "甘い煙の好敵手",
       "line": "うまくなりたいなら全部見てけ",
       "face": "smile",
       "color": "#f0d8a0"
@@ -323,7 +323,7 @@
     ],
     "intro_cutin": {
       "title": "煙のヴィジュアル系",
-      "line": "静かに。……開演だ",
+      "line": "……一曲だけ、聴く？",
       "face": "normal",
       "color": "#b0102a",
       "name": "alias"
@@ -353,7 +353,7 @@
     "spriteScale": 0.96,
     "intro_cutin": {
       "title": "龍を吐く仙人",
-      "line": "お前の煙には『命』がある",
+      "line": "君の煙には、命がある",
       "face": "normal",
       "color": "#3fbf7f"
     },
@@ -394,7 +394,7 @@
       "daily_motif": "耳の葉っぱが落ちた日の猫"
     },
     "intro_cutin": {
-      "title": "tonariの常連・芸大生",
+      "title": "窓際席の絵描き",
       "line": "……煙って、形がないから",
       "face": "normal",
       "color": "#b9a4e8"
@@ -475,7 +475,7 @@
     },
     "intro_cutin_unknown": {
       "display_name": "？？？",
-      "title": "実在したオタクに優しいギャル",
+      "title": "甘い風のギャル",
       "line": "大丈夫？ ケガしてない？",
       "face": "smile",
       "color": "#ff8fc8",
@@ -532,7 +532,7 @@
     "spriteScale": 1.06,
     "intro_cutin": {
       "title": "水煙の龍",
-      "line": "回し飲みはな、盃と同じだ",
+      "line": "火の前じゃ、礼儀が先ですわ",
       "face": "normal",
       "color": "#b6a4cf"
     },
@@ -741,7 +741,7 @@
     ],
     "spriteScale": 0.9,
     "intro_cutin": {
-      "title": "mukaiの眠たげな同期",
+      "title": "mukaiの眠たげな店員",
       "line": "……今日は、お茶でもいいよぉ",
       "face": "normal",
       "color": "#e8eef6"
@@ -1013,7 +1013,7 @@
     ],
     "spriteScale": 1.035,
     "intro_cutin": {
-      "title": "一投を見守る斧投げBarの店主",
+      "title": "斧投げBarの姉御",
       "line": "斧に仕事をさせな",
       "face": "normal",
       "color": "#bd6547"
