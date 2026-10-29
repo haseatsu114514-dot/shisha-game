@@ -1,5 +1,5 @@
 {
-  "comment": "第3章の正史台本。必須本編の進行順はdata/story_routes.json、実行はremake/js/chapters。任意場面の台本はch3_double_apple/ch3_mashiro/ch3_mukai/ch3_rivals.jsonにあり、大会前に読める分はremake/js/chapters/ch3.jsが接続済み。",
+  "comment": "第3章の正史台本。必須本編の進行順はdata/story_routes.json、実行はremake/js/chapters。ch3_double_apple/ch3_mukai/ch3_rivals.jsonの台本は必須本編の場面（久世の煙幕訪問ch3_kuze_first・ch3_kuze_adviceを含む）と任意場面が同居し、任意場面の一覧はstory_routes.jsonのoptionalとremake/js/chapters/ch3-story-wiring.js。大会前に読める任意場面はremake/js/chapters/ch3.jsが接続済み。",
   "dialogues": [
     {
       "dialogue_id": "ch3_opening",
@@ -498,12 +498,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……俺の作り方、誰かに教わったことばっかりですね"
+          "text": "……俺の作り方、誰かに教わったことばっかりです。どこからが俺のなのか、ずっと分からなかった"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
           "text": "僕もだよぉ。教わったことと、失敗したことばっかり"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……明日は、それ全部で作ります"
         },
         {
           "speaker": "mashiro",
