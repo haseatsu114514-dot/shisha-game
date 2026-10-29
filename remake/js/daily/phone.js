@@ -554,9 +554,6 @@ export function actionInviteNeedingReply(spotId, opts = {}, ignoredIds = []) {
   return expiring ? { item: expiring, kind: "deadline" } : null;
 }
 
-// 旧テスト/呼び出しとの互換性を維持する。
-export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingReply("minto", opts);
-
 /**
  * C04: 約束の場面（強制イベント）を始める前に、まだ読んでいない誘いのトークがあれば、その相手を返す。
  * プレイヤーが本文を読まないまま面会の台本が始まる流れを防ぐための導線用。

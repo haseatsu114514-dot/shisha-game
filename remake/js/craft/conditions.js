@@ -75,11 +75,6 @@ export function craftConditions(cs) {
   return { rainy: !!cs.environment?.rainy, sparsity };
 }
 
-/** 時刻に連続した振れ。フレームごとに乱数を引かず、見える動きへ合わせられる。 */
-export function temperatureWave(cs, seconds) {
-  return craftConditions(cs).sparsity * 0.09 * Math.sin(seconds * Math.PI * 2 / 2.6);
-}
-
 /** 少穴は上下の調整が大きく、雨は熱が入る側だけ少し鈍い。 */
 export function heatDelta(cs, delta) {
   const { rainy } = craftConditions(cs);

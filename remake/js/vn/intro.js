@@ -30,21 +30,6 @@ export function markIntroSeen(id, variant = "") {
   if (introOf(id, variant)) state.flags[introSeenKey(id, variant)] = true;
 }
 
-/**
- * name の書式から本名・読み・呼び名を取り出す
- *   「呼び名 / 本名（読み）」「本名（読み / 呼び名）」「呼び名 / 本名」「本名」
- */
-export function nameParts(id) {
-  const c = DB.characters[id] || {};
-  const raw = String(c.full_name || c.name || id);
-  const paren = /（([^）]*)）/.exec(raw);
-  const inner = paren ? paren[1].split(" / ").map((s) => s.trim()) : [];
-  const outer = raw.replace(/（[^）]*）/g, "").split(" / ").map((s) => s.trim()).filter(Boolean);
-  const full = outer.length > 1 ? outer[1] : outer[0];
-  const alias = outer.length > 1 ? outer[0] : inner[1] || "";
-  return { full, reading: inner[0] || "", alias };
-}
-
 /** カットインに出す名前。呼び名のみ、本名は表示しない */
 export function introName(id) {
   return { main: displayName(id, state), full: "" };
