@@ -540,6 +540,9 @@ function nodeState(n,owned,hid){
   if(!connected(n,owned))return "far";
   return payable(n,hid)?"can":"short";
 }
+/** 章ごとにスキルが現れる（2026-10-30「章が進むごとに増えていくのも楽しみの一つ」）。
+ *  開いている輪＝全部見える／次の章の輪＝名前と発動イラストの影絵だけ／その先＝「？？？」 */
+function revealOf(n){if(n.kind!=="skill")return "full";const d=n.ring-ringsOpen();return d<=0?"full":d===1?"name":"hidden";}
 function nodeName(n){return n.kind==="stat"?(n.peak?`極み・${JA[n.stat]}`:`${JA[n.stat]}の火`):n.name;}
 function remainTo(id){const own=B?new Set([...B.owned,...B.pend.map(q=>q.id)]):S.owned;return cheapestPath(id,own).cost;}
 function payable(n,hid){const cols=n.kind==="skill"?n.colors:[n.stat];
@@ -602,7 +605,7 @@ function drawBoard(){
     let fill="#140f19",stroke=col,sw=2,op=1,dash="",cls="";
     if(st==="own")fill=col;else if(st==="pend"){fill=col;op=.6;dash="3 2";}else if(st==="can"){cls="can";sw=3.5;}
     else if(st==="short"){sw=1.5;}else if(st==="far"){op=.55;}else if(st==="ring"){stroke="#5a4a2a";op=.45;}else if(st==="train"){stroke="#8a7a5a";dash="3 3";}
-    const lab=n.kind==="stat"?(n.peak?"極":""):n.kind==="train"?"修":n.name.slice(0,2);
+    const rv=revealOf(n);const lab=n.kind==="stat"?(n.peak?"極":""):n.kind==="train"?"修":rv==="hidden"?"？":n.name.slice(0,2);
     g+=`<g class="node" data-id="${n.id}" transform="translate(${x},${y})" opacity="${op}">
       <circle r="30" fill="transparent"/>
       ${sel?`<circle r="${r+7}" fill="none" stroke="var(--gold-hi)" stroke-width="2.5"/>`:""}
@@ -635,18 +638,18 @@ function drawBoard(){
   const sel=(B.sel&&byId[B.sel])||items.find(b=>!pendIds.has(b.n.id)&&nodeState(b.n,ownP,hid)==="can")?.n||items[0].n;
   const st=pendIds.has(sel.id)?"pend":nodeState(sel,ownP,hid);
   const ecol=sel.kind==="skill"?sel.colors[0]:sel.stat;const locked=st==="train"||st==="ring";
-  const art=sel.kind==="stat"?ILLUST[sel.stat]:sel.kind==="skill"?ILLUST[sel.id]:`${sel.whoJa}に教わっている場面（中身は詳細設計で決める）`;
+  const art=sel.kind==="stat"?ILLUST[sel.stat]:sel.kind==="skill"?(revealOf(sel)==="full"?ILLUST[sel.id]:revealOf(sel)==="name"?"（影絵だけ見せる）":"（まだ見えない）"):`${sel.whoJa}に教わっている場面（中身は詳細設計で決める）`;
   const cnt=statCount(k,ownP),cur=stepOf(k,ownP),rem=PER_STEP-cnt%PER_STEP;
   const nt=Object.entries(NEWTHING[k]||{}).find(([x])=>+x>cur);
   let body;
   if(sel.kind==="stat")body=`<h4>${nodeName(sel)}</h4><small>第${sel.ring}輪・火種1・3つ灯すと1段</small><br>${JA[k]} ${cur}段 <span style="letter-spacing:2px">${"●".repeat(cnt%PER_STEP)}${"○".repeat(rem)}</span>　あと${rem}つで${Math.min(10,cur+1)}段：${TIER[k][Math.min(9,cur)]}<br><small>効くところ：${WHERE[k]}</small>`+
      (nt?`<br><small style="color:var(--gold-hi)">✦${nt[0]}段で「${nt[1]}」（あと火${(nt[0]-cur-1)*PER_STEP+rem}つ）</small>`:"");
-  else if(sel.kind==="skill")body=`<h4>${sel.name}</h4><small>スキル・${sel.colors.map(c=>JA[c]).join("×")}・第${sel.ring}輪・火種${sel.cost}</small><br>${sel.fx}<br><small>効く場面：${sel.scene}</small>`;
+  else if(sel.kind==="skill")body=revealOf(sel)==="hidden"?`<h4>？？？</h4><small>スキル・第${sel.ring}章で盤に現れる</small><br>どんな技かは、その章になってのお楽しみ`:revealOf(sel)==="name"?`<h4>${sel.name}</h4><small>スキル・次の章（第${sel.ring}章）で取れるようになる・火種${sel.cost}</small><br>${sel.fx}`:`<h4>${sel.name}</h4><small>スキル・${sel.colors.map(c=>JA[c]).join("×")}・第${sel.ring}輪・火種${sel.cost}</small><br>${sel.fx}<br><small>効く場面：${sel.scene}</small>`;
   else {const met=metOf(sel.who);const reach=connected(sel,ownP);
     body=`<h4>${st==="train"?"？？？の修行":sel.name}</h4><small>修行・火種${sel.cost}</small><br>${st==="train"?(met?`<span style="color:var(--gold-hi)">ヒント：${sel.hint}</span><br><small>${sel.whoJa}との好感度 ♥${heartOf(sel.who)}/5（♥5で開く）</small>`:`<span style="color:var(--gold-hi)">ヒント：まだ会っていない誰かが、何か教えてくれるらしい</span><br><small>？？？との好感度 ♥?/5</small>`):`${sel.whoJa}との好感度が♥5になって開いた。効果は詳細設計で決める（仮）`}<br><small>盤の道：${reach?"修行のマスまで届いている":"まだ届いていない（手前のマスを灯す）"}</small>`;}
   const tag={own:"灯した",pend:"仮置き中",ring:`第${sel.ring}章で開く`,far:`まだつながっていない（ここまで火種${remainTo(sel.id)}）`,short:`火種が${sel.cost}要る`,train:"修行がまだ"}[st];
   let payLine="";if(st==="can"){const tmp={...hid};payLine=`<br><small>${payText(pay(sel,tmp,{forceAny:B.forceAny}))}で払う</small>`;}
-  $("#bdetail").innerHTML=`<div class="emb" style="--c:var(--${ecol})"><span class="ttl">${st==="train"?"？？？":nodeName(sel)}</span><span class="big" style="${locked?"opacity:.25":""}">${sel.kind==="stat"?K1[sel.stat]:sel.kind==="train"?(st==="train"?"？":"修"):sel.name[0]}</span>
+  $("#bdetail").innerHTML=`<div class="emb" style="--c:var(--${ecol})"><span class="ttl">${st==="train"||revealOf(sel)==="hidden"?"？？？":nodeName(sel)}</span><span class="big" style="${locked?"opacity:.25":""}">${sel.kind==="stat"?K1[sel.stat]:sel.kind==="train"?(st==="train"?"？":"修"):revealOf(sel)==="hidden"?"？":sel.name[0]}</span>
       <span class="art" style="display:block;right:110px">発動イラスト：${st==="train"?"（シルエットだけ見せる）":art}</span></div>
     <div class="dtext">${body}${tag?`<br><small style="color:var(--amber)">${tag}</small>`:""}${payLine}</div>`;
   if(sel.kind!=="stat"||sel.peak){const tb=h("button",{text:S.target===sel.id?"目標を外す":"🎯 目標にする",onclick:()=>{S.target=S.target===sel.id?null:sel.id;drawBoard();render();}});$("#bdetail").append(tb);}
@@ -735,7 +738,8 @@ function dev(k){
   if(k==="exp"){S.exp+=500;log("EXP +500（開発用）");}
   if(k==="tourn"){const best=KEYS[Math.floor(Math.random()*KEYS.length)];S.hidane[best]+=SCALE;
     S.exp+=Math.round((100+200+150)*M[S.chapter-1]);card({c:`var(--${best})`,k:K1[best],top:"大会の火種",main:`${K1[best]}の火種 ＋${SCALE}`,sub:`いちばん良かったのは${{body:"提供後の調整（お客さんへの届け方）",sense:"炭焼き",wisdom:"完成品（配合）"}[best]}`});log(`大会: ${K1[best]}の火種＋1・EXP+${Math.round(450*M[S.chapter-1])}（章末の精算は寝る時にまとめた扱い）`);}
-  if(k==="chapter"){if(S.chapter<5){S.chapter++;S.day=1;S.slot=0;S.freshCount={};S.respecOpen=true;
+  if(k==="chapter"){if(S.chapter<5){const before=new Set(NODES.filter(n=>n.kind==="skill"&&revealOf(n)==="full").map(n=>n.id));S.chapter++;const now=NODES.filter(n=>n.kind==="skill"&&revealOf(n)==="full"&&!before.has(n.id));
+    if(now.length)setTimeout(()=>card({c:"var(--gold)",k:"新",top:"NEW SKILLS",main:`盤に新しいスキルが${now.length}つ`,sub:now.map(n=>n.name).join("・")}),600);S.day=1;S.slot=0;S.freshCount={};S.respecOpen=true;
     card({c:"var(--gold)",k:"盤",top:"RING OPEN",main:`心得の盤 第${S.chapter}輪が開いた`,sub:"最初の行動までは盤を組み直せる"});log(`第${S.chapter}章へ。第${S.chapter}輪が開いた・組み直しは最初の行動まで`);}}
   if(k==="mid"){const m=S.boardMode;S=fresh();S.boardMode=m;S.day=13;let acc=0;for(let L=1;L<9;L++)acc+=need(L);S.exp=S.settled=acc+120;S.lv=9;S.hidane.any=8*SCALE;S.tutorial.board=true;
     ["tsumugi","naru","adam","kannon"].forEach(x=>{S.firsts.add(x);S.freshCount[x]=3;});log("中央の遊び方・第1章大会前の状態（Lv.9・火種40・未使用）");}
