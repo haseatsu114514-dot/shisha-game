@@ -1186,6 +1186,10 @@
           "speaker": "",
           "face": "",
           "text": "ましろがホースを置いて、椅子へ沈む。今度は、はじめがお茶をいれた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "mashiro_living"
         }
       ],
       "comment": "旧IDを保持した大会翌日の場面。再救済や二度目の味覚回復ではない。"
