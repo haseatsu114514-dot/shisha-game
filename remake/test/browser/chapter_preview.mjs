@@ -170,8 +170,9 @@ await suite("chapter-preview", async check => {
         flavorStock: { double_apple: 40, mint: 12 }, lovers: ["minto"], contacts: ["sumi", "minto"] });
       s.flags._elapsed_calendar = true; s.flags._ageha_mastery = true;
       s.flags._ch2_cleared = true; s.flags._ch3_cleared = true;
-      s.flags._ch3_tournament = { startDay: 113, stage: "complete" };
-      s.flags._ch3_aftermath = { stage: 6, step: "scene" };
+      s.flags._ch3_tournament_won = true;
+      s.flags._ch3_tournament = { startDay: 113, stage: "complete", result: { rank: 1, win: true } };
+      s.flags._ch3_aftermath = { version: 2, winDay: 125, stage: 6 };
       s.stats = { technique: 42, sense: 42, guts: 42, charm: 42, insight: 42 };
       core.save();
     });
