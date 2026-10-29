@@ -156,7 +156,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "隣のテーブルを見かけて、手元へ目を戻した。"
+          "text": "隣のテーブルに目が行きかけて、手元へ目を戻した。"
         },
         {
           "speaker": "hajime",
@@ -197,17 +197,17 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "みなさん、おまたせしましたーーーッ！！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "SMOKE CROWN CUP、[imp]開幕[/imp]ですッ！！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "MCはパッキーが務めますッ！ ぷぷぷっ！"
         },
         {
@@ -217,7 +217,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "今日の出場者は4名！ それぞれの「自分だけの一杯」をかけてぶつかり合いますッ！"
         },
         {
@@ -232,27 +232,27 @@
         },
         {
           "speaker": "pakki",
-          "face": "evil",
-          "text": "優勝して次の大会に進めるのは、たった1人！ 残りの3人は……ここで終わり"
-        },
-        {
-          "speaker": "pakki",
-          "face": "evil",
-          "text": "しかも全部、満席のお客さんの目の前！ 手の震えまで丸見えですよ〜？ ぷぷぷっ！"
+          "face": "excited",
+          "text": "優勝して次の大会に進めるのは、たった1人！ 4台同時の一発勝負、最後の一口まで目が離せませんよッ！"
         },
         {
           "speaker": "pakki",
           "face": "excited",
+          "text": "しかも全部、満席のお客さんの目の前！ MCは4台ぜんぶの見せ場を拾うのが仕事、パッキーも瞬きしませんよ〜！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
           "text": "それでは審査員の紹介ですッ！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "まずは、大会を運営する「C.STATION」の生みの親、業界の鉄壁！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "南雲修二（なぐも しゅうじ）さんッ！"
         },
         {
@@ -262,7 +262,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "相変わらず厳しィィィ！ さあ続きまして！ データの鬼、チャコール博士こと火浦理一さんッ！"
         },
         {
@@ -272,7 +272,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "そしてゲスト審査員！ シーシャはおいしいねえ、でおなじみ！ 上園文太郎さんッ！"
         },
         {
@@ -309,12 +309,12 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "さあッ！ それでは！！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "SMOKE CROWN CUP、[warn]開始ィィィッ！！[/warn]"
         }
       ],
@@ -412,9 +412,11 @@
       "branches": {
         "insight_high": [
           {
+            "speaker": "",
             "text": "南雲会長は腕を組んで目を閉じている。味に集中したいタイプか。"
           },
           {
+            "speaker": "",
             "text": "上園さんは笑顔でキョロキョロしている。楽しみたいタイプだ。"
           },
           {
@@ -425,6 +427,7 @@
         ],
         "insight_low": [
           {
+            "speaker": "",
             "text": "南雲会長は無表情で、何を考えているか分からない。上園さんは……ただ笑ってるだけ？"
           },
           {
@@ -450,18 +453,13 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "各選手、完成！ いよいよ審査員への提出ですッ！！"
         },
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "（……俺の魂の一台。今日は規定に合わせた『ダブルアップルレモン』だ）"
-        },
-        {
-          "speaker": "adam",
-          "face": "serious",
-          "text": "（レモン2gはリンゴを裏切らない。酸味が甘みの輪郭を研ぐ……温度も水分量も、全てが完璧だ）"
+          "text": "（……林檎は、裏切らない）"
         },
         {
           "speaker": "minto",
@@ -551,12 +549,12 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "さあ、審査員の協議に入りました！ 今日の4台、どれも力作揃いッ！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "果たして、結果やいかにィィ！？"
         },
         {
@@ -566,13 +564,13 @@
         },
         {
           "speaker": "pakki",
-          "face": "evil",
-          "text": "さあ、ここからは選手の皆さん、祈るしかありませんよ〜♪"
+          "face": "normal",
+          "text": "さあ、選手の皆さんはやれることを全部やりました！ ここからは審査員の時間ですよ〜♪"
         },
         {
           "speaker": "pakki",
-          "face": "evil",
-          "text": "あ、でもパッキーは祈りが通じたの見たことないんですよね〜♪ ぷぷぷっ！"
+          "face": "excited",
+          "text": "会場の皆さんも一緒に待ちましょう！ 4台とも、最後の一口まで見応えありましたからね〜！"
         },
         {
           "type": "choice",
@@ -601,27 +599,27 @@
         },
         {
           "speaker": "pakki",
-          "face": "evil",
+          "face": "excited",
           "text": "さあさあさあっ！！！ パッキーから特別アナウンスですよ〜！！！"
         },
         {
           "speaker": "pakki",
-          "face": "evil",
-          "text": "ワクワクの！ ドキドキの！ 結果発表タイム〜〜〜！！！ ぷぷぷっ！！！ 今日一番の瞬間ですよ〜！"
-        },
-        {
-          "speaker": "pakki",
-          "face": "evil",
-          "text": "スクリーンの棒が伸びるたび、顔色が変わる！ 残りの持ち点、見逃し厳禁ですよ〜！？ ね！？"
-        },
-        {
-          "speaker": "pakki",
-          "face": "evil",
-          "text": "た・ま・ら・な・い！！！"
+          "face": "excited",
+          "text": "ワクワクの！ ドキドキの！ 結果発表タイム〜〜〜！！！ 今日一番の瞬間ですよ〜！"
         },
         {
           "speaker": "pakki",
           "face": "excited",
+          "text": "スクリーンの棒が伸びるたび、会場の空気が動く！ 残りの評価、見逃し厳禁ですよ〜！？ ね！？"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "勝てるのは一人！ さあ、どの一台だ〜〜！！！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
           "text": "それでは！ SMOKE CROWN CUP、結果発表ですッ！"
         },
         {
@@ -674,7 +672,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "evil",
+          "face": "excited",
           "text": "投票タイム、残りわずかッ！ なのに南雲審査員長、10点まるまる温存ッ！"
         }
       ],
@@ -718,12 +716,12 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "SMOKE CROWN CUP……優勝はッ！！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "蒸野はじめ選手ッ！！！ 最後の一票で逃げ切り、優勝ですッ！！"
         },
         {
@@ -1472,18 +1470,18 @@
         },
         {
           "speaker": "pakki",
-          "face": "evil",
+          "face": "excited",
           "text": "おお〜、4台とも煙が立ち上がってきましたよ〜♪ いい出だし！"
         },
         {
           "speaker": "pakki",
-          "face": "evil",
-          "text": "……でもね、審査員の目は最初の一筋でだいたい当たりをつけるんです"
+          "face": "normal",
+          "text": "審査員の皆さん、最初の一筋からしっかり見てますよ〜！ 一口目の印象、大事です！"
         },
         {
           "speaker": "pakki",
-          "face": "evil",
-          "text": "立ち上がりで気を抜いた一台は、もう印象が決まっちゃってるかも〜。くふふ！"
+          "face": "excited",
+          "text": "4台とも立ち上がりから全力！ さあ、ここから誰が抜け出すか〜！"
         },
         {
           "speaker": "naru",
@@ -1571,12 +1569,12 @@
           {
             "speaker": "",
             "face": "",
-            "text": "ダブルアップルに、ミントを少し。炭はトライアングル。注文を聞く前に手が動く、あの木曜の味。"
+            "text": "ダブルアップルに、ミントを少し。炭はトライアングル。注文を聞く前に手が動く、いつもの味。"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "帰り際の「今日の、良かったよ」。ネクタイの下の肩が、ゆっくり下がるあの瞬間。"
+            "text": "帰り際の「今日の、良かったよ」。ネクタイを緩めた肩が、ゆっくり下がるあの瞬間。"
           }
         ]
       }
@@ -1644,13 +1642,13 @@
         },
         {
           "speaker": "pakki",
-          "face": "evil",
-          "text": "あら〜〜！ 残念でしたね〜〜〜！！ ぷぷぷっ！！！"
+          "face": "excited",
+          "text": "出場4選手、最後まで見応えのある一台でした！ 皆さん、大きな拍手をッ！"
         },
         {
           "speaker": "pakki",
-          "face": "evil",
-          "text": "パッキーね、最初からうすうす気付いてたんですよ〜？"
+          "face": "normal",
+          "text": "勝てるのは一人。でも今日の4台、ぜんぶがこの会場を沸かせてくれましたよ〜！"
         },
         {
           "speaker": "hajime",
@@ -1704,7 +1702,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "提供と2回の調整を、すべて適温に収めた。"
+          "text": "最後の炭を置き直して、トングを下ろす。指先に、まだ熱が残っていた。"
         },
         {
           "speaker": "sumi",
@@ -1719,7 +1717,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ずれた熱を、調整で適温に戻せた。"
+          "text": "炭を寄せ直した手の甲に、じんわり汗がにじんでいた。"
         },
         {
           "speaker": "sumi",
@@ -1734,7 +1732,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "吸われた後の一台を、適温に整え直した。"
+          "text": "ボウルの縁に落ちた灰を、トングの先でそっと払った。"
         },
         {
           "speaker": "sumi",
@@ -1749,7 +1747,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "提供の温度を、適温に合わせた。"
+          "text": "ホースを差し出す前に、一度だけ自分で吸って確かめた。"
         },
         {
           "speaker": "sumi",
@@ -1764,7 +1762,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "焼き炭を、きちんと用意できた。"
+          "text": "コンロの上で、炭は角まで赤く焼けていた。"
         },
         {
           "speaker": "sumi",
@@ -1779,7 +1777,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "穴の間隔を揃え、熱の通り道を作れた。"
+          "text": "ホイルに並んだ小さな穴を、もう一度だけ目でなぞった。"
         },
         {
           "speaker": "sumi",
@@ -1794,7 +1792,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "蒸らしの間、集中を切らさなかった。"
+          "text": "蒸らしの間、時計とボウルを交互に見ていた。"
         },
         {
           "speaker": "sumi",

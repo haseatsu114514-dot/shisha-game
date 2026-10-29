@@ -223,6 +223,57 @@ await suite("save-load", async check => {
     }, options);
   }
 
+  // #1262: 書き込み失敗は実UIで警告し、既存の枠を壊さず、解消後は同じ手順で保存し直せる。
+  await check("save-failure-ui-preserves-slot-and-recovers", async page => {
+    await prepare(page);
+    await page.evaluate(async () => {
+      (await import("./js/vn/engine.js")).vnTest.turbo = true;
+      QA.core.save();
+      (await import("./js/scenes/title.js")).showTitle();
+    });
+    await page.locator('[data-test="title-load"]').click();
+    await page.locator('[data-test="slot-0"]').click();
+    await page.locator("#screen .map:not(.done)").waitFor();
+    const uiSave = async () => {
+      await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-save"]').click();
+      await page.locator('[data-test="slot-1"]').click();
+    };
+    // 目印の既知セーブを手動枠1へ通常保存する。
+    await uiSave();
+    await page.locator(".toast.good", { hasText: "にセーブした" }).waitFor();
+    await page.locator("#modal.show").waitFor({ state: "hidden" });
+    assert.equal(await page.evaluate(() => QA.core.readSlot("suien_remake_slot1").money), 45678);
+    // 枠1への書き込みだけ失敗させる（saveToSlot が先に行うオートセーブは通常どおり成功させる）。
+    await page.evaluate(() => {
+      QA.core.state.money = 11111;
+      QA.setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        if (key === "suien_remake_slot1") throw new DOMException("quota", "QuotaExceededError");
+        return QA.setItem.call(this, key, value);
+      };
+    });
+    await uiSave();
+    await page.locator('[data-test="confirm-overwrite"]').click();
+    const warn = page.locator(".toast.warn");
+    await warn.waitFor();
+    assert.equal(await warn.textContent(), "セーブできなかった（ブラウザの保存領域がいっぱいかも）");
+    await page.locator("#modal.show").waitFor({ state: "hidden" });
+    const failed = await page.evaluate(() => ({ slot: QA.core.readSlot("suien_remake_slot1").money,
+      auto: QA.core.readSlot(QA.core.SAVE_KEY).money, current: QA.core.state.money }));
+    assert.equal(failed.slot, 45678, "失敗した上書きは既存の枠1を保持する");
+    assert.equal(failed.auto, 11111); assert.equal(failed.current, 11111);
+    // 原因が解消したら、同じ実UI手順で保存できる。
+    await page.evaluate(() => { Storage.prototype.setItem = QA.setItem; });
+    await warn.waitFor({ state: "detached" }); // 固定待ちではなく toast の消滅を待つ
+    await uiSave();
+    await page.locator('[data-test="confirm-overwrite"]').click();
+    await page.locator(".toast.good", { hasText: "にセーブした" }).waitFor();
+    await page.locator("#modal.show").waitFor({ state: "hidden" });
+    assert.equal(await page.locator(".toast.warn").count(), 0);
+    assert.equal(await page.evaluate(() => QA.core.readSlot("suien_remake_slot1").money), 11111);
+  }, { viewport: { width: 1280, height: 720 } });
+
   // #782: a valid DAY11 free-time checkpoint. Earlier fixed stories are read;
   // today's submission/done flags are deliberately absent. Only the normal daily
   // runner may complete them. All storage belongs to check()'s isolated context.

@@ -75,7 +75,7 @@ const FLAVOR_BOXES = [
 ];
 const EQUIP_ART = {
   silicone_bowl: "bowl_empty_silicone.png", hagal_80beat: "bowl_empty_phunnel.png",
-  suyaki_hagal: "bowl_empty_clay.png",
+  suyaki_hagal: "bowl_empty_clay.png", suyaki_hiyori: "bowl_empty_hiyori.png",
 };
 // A real <img> error handler also covers failed/aborted delivery requests.
 // Cropping retains the approved main sheet windows and the measured carton margin.

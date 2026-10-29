@@ -364,6 +364,11 @@ try {
     await page.locator(t("gallery-zoom")).click();
     await page.waitForFunction(() => document.querySelector(".gal-comic-scroll").scrollHeight > document.querySelector(".gal-comic-scroll").clientHeight);
     await shot(page, name + "-comic-zoom-fixture.png");
+    // 現在表示中のページ画像が失敗したら、その画像を隠して案内を1件だけ出す。
+    await page.locator(".gal-comic-scroll img").evaluate(n => n.dispatchEvent(new Event("error")));
+    assert.equal(await page.locator(".gal-media-error").count(), 1);
+    assert.equal(await page.locator(".gal-media-error").textContent(), "画像を読み込めませんでした。閉じて、もう一度開いてください。");
+    assert(await page.locator(".gal-comic-scroll img").evaluate(n => n.hidden), "the failed current page image is hidden");
     await page.keyboard.press("Escape");
     assert.equal(await page.locator(".gal-viewer.show").count(), 0);
     await page.locator(t("gallery-tab-movie")).click();
@@ -395,6 +400,30 @@ try {
     assert.equal(await page.locator("video").count(), 0);
     await page.evaluate(() => qaVideo.dispatchEvent(new Event("play")));
     assert(await page.evaluate(() => qaVideo.paused), "detached video cannot restart from a late event");
+    // 自然終了: 再生中は BGM が止まり、ended で再生前の BGM に戻る。失敗表示は出ない。
+    const bgm = () => page.evaluate(async () => (await import("./js/core/audio.js")).currentBgm());
+    const playMovie = async () => {
+      await page.locator(t("gal-qa_movie")).click();
+      await page.locator("video.gal-movie").evaluate(async n => { window.qaMusic = (await import("./js/core/audio.js")).currentBgm(); window.qaVideo = n; await n.play(); });
+      await page.waitForFunction(() => qaVideo.currentTime > 0);
+      assert.equal(await bgm(), null, "BGM is stopped while the movie plays");
+    };
+    await playMovie();
+    await page.locator("video.gal-movie").evaluate(n => n.dispatchEvent(new Event("ended")));
+    assert(await page.evaluate(async () => (await import("./js/core/audio.js")).currentBgm() === qaMusic), "BGM returns when the movie ends naturally");
+    assert.equal(await page.locator(".gal-media-error").count(), 0, "a natural end is not a load failure");
+    await page.keyboard.press("Escape");
+    assert.equal(await page.locator(".gal-viewer.show").count(), 0);
+    assert.equal(await page.locator("video").count(), 0);
+    // 読み込み失敗: BGM が戻り、動画用の案内が出る。閉じられる。
+    await playMovie();
+    await page.locator("video.gal-movie").evaluate(n => n.dispatchEvent(new Event("error")));
+    assert(await page.evaluate(async () => (await import("./js/core/audio.js")).currentBgm() === qaMusic), "BGM returns when the movie fails");
+    assert.equal(await page.locator(".gal-media-error").count(), 1);
+    assert.equal(await page.locator(".gal-media-error").textContent(), "動画を読み込めませんでした。閉じて、もう一度開いてください。");
+    await page.keyboard.press("Escape");
+    assert.equal(await page.locator(".gal-viewer.show").count(), 0);
+    assert.equal(await page.locator("video").count(), 0);
     await close(page);
     assert.deepEqual(errors, [], "unexpected page errors");
     results.push({ name, passed: true }); console.log("PASS: gallery " + name);
