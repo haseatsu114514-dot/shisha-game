@@ -30,6 +30,7 @@ const values = {
   "data.js": { DB: { flavorById: {} } },
   "state.js": { state: null },
   "art.js": { artImg: () => el("div.art") },
+  "steps.js": { stepVent: async () => { throw new Error("Foil drill must not enter the vent step"); } },
   "audio.js": { SE: Object.fromEntries(["foilPunch", "perfect", "good", "miss", "just", "whoosh"].map((name) => [name, () => seCalls.push(name)])) },
   "session.js": { waitBenchReady: async () => {}, stepPanel: () => { panel ||= new Element("div.panel"); panel.replaceChildren(); return panel; }, refreshBench: () => {}, tickerSay: () => {}, reactAudience: () => {}, scoreStep: () => {},
     setBenchHoleAction: (cs, event) => visualHoles.push({ cs, ...event }) },
