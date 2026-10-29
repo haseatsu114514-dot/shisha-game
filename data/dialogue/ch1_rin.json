@@ -25,12 +25,12 @@
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "ちょっと、そこの君。……うん、君。いい肺してそうだね"
+          "text": "ちょっと、そこの君。……うん、君。吸い慣れてる顔だね"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "え？ 肺……ですか？"
+          "text": "え？ 顔……ですか？"
         },
         {
           "speaker": "",
@@ -45,7 +45,7 @@
         {
           "speaker": "rin",
           "face": "serious",
-          "text": "毎日シーシャを吸ってる肺。それも、仕事で"
+          "text": "毎日シーシャを吸ってる顔。それも、仕事で"
         },
         {
           "speaker": "rin",
@@ -216,7 +216,11 @@
       "dialogue_id": "ch1_rin_second",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "試香モニター"
+        "topic": "試香モニター",
+        "flavor_lesson": {
+          "rose": 1,
+          "lychee": 1
+        }
       },
       "lines": [
         {
@@ -336,7 +340,7 @@
           {
             "speaker": "rin",
             "face": "surprise",
-            "text": "へえ。それ、ベルガモットの裏のメンソールバインダー。気づく？ 普通"
+            "text": "へえ。それ、ベルガモットの裏にメンソールを薄く足してるやつ。気づく？ 普通"
           },
           {
             "speaker": "rin",
@@ -364,11 +368,7 @@
       "dialogue_id": "ch1_rin_third",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "夜の側のサンプル",
-        "flavor_lesson": {
-          "rose": 1,
-          "lychee": 1
-        }
+        "topic": "夜の側のサンプル"
       },
       "lines": [
         {

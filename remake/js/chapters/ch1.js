@@ -2,7 +2,7 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
+import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
@@ -501,6 +501,7 @@ const STEPS_ALL = CRAFT_STEPS;
 const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
 
 async function tournamentDay() {
+  await loadTournamentCraftDialogue();
   // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
   syncNightQueue(NIGHT_EVENTS, { resting: false });
   await runNightPlan(NIGHT_EVENTS, async () => {

@@ -159,6 +159,8 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   let started = 0;
   const warmUp = vm.runInNewContext(`${warmUpSource}\nwarmUp`, {
     loadDeferredDialogues: () => Promise.resolve(),
+    loadCinemaDialogue: () => Promise.resolve(),
+    loadTournamentCraftDialogue: () => Promise.resolve(),
     loadVnFonts: () => { started++; return new Promise(() => {}); },
     warmUiArt: () => Promise.resolve(),
     imageReady: () => Promise.resolve(),

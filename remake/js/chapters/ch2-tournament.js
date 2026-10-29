@@ -1,7 +1,7 @@
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
-import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES } from "../core/data.js";
+import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES, loadTournamentCraftDialogue } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, modal, imageReady, loadingNotice } from "../core/ui.js";
@@ -132,6 +132,7 @@ export async function runChapterTwoTournament() {
   document.body.classList.add("ch2-tournament");
   window.addEventListener("pagehide", () => { owner.active = false; owner.continueRoot?.cleanupContinue(); owner.controller?.abort(); }, { once: true });
   await perform(owner, async () => {
+    await loadTournamentCraftDialogue();
     // 全場面が揃うまでDAY14の保存や在庫を変更しない。
     const dialogues = await readDialogues(CHAPTER_DIALOGUE_FILES.ch2Tournament, REQUIRED);
     if (!live(owner)) return;

@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "shift-mix-record",
+      "title": "Shift mix recording, dialogue and tournament feedback (#1414, #1415)",
+      "kind": "quick",
+      "run": ["node remake/test/shift_mix_record.mjs"]
+    },
+    {
       "id": "ch1-interval-connection",
       "title": "Chapter 1 victory interval connections",
       "kind": "quick",
@@ -2037,6 +2043,25 @@
       ],
       "run": [
         "node remake/test/reel_lifecycle.mjs"
+      ],
+      "chrome": "system"
+    },
+    {
+      "id": "reel-visuals",
+      "title": "Pakki reel visuals: BIG/REG announce, right-reel spin/slowdown, remount",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/reel*.js",
+        "remake/css/reel.css",
+        "remake/test/reel_visuals.mjs",
+        "remake/test/reel_visuals.html",
+        "remake/test/browser/reel_visuals.mjs",
+        "remake/img/ui/pakki-slot/*"
+      ],
+      "run": [
+        "node remake/test/browser/reel_visuals.mjs"
       ],
       "chrome": "system"
     },
