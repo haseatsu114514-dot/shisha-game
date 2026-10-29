@@ -10,6 +10,7 @@ import { uiThemeFrame } from "../core/ui-theme.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
+import { loadVnFonts } from "../core/vn-fonts.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
@@ -241,7 +242,9 @@ export function play(idOrDlg, opts = {}) {
     }
     prefetch(dlg);
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
-    const assetsReady = Promise.all([bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
+    // 最初の行を出す前に名前欄と本文の明朝を待つ。失敗時は代替書体で続ける。
+    const fontsReady = loadVnFonts().catch(() => []);
+    const assetsReady = Promise.all([fontsReady, bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
     waitSceneAssets(bgReady, me, assetsReady).then(() => {
       if (running !== me) return;
       me.ready = true;

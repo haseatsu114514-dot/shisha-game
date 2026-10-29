@@ -50,7 +50,7 @@
           {
             "speaker": "ageha",
             "face": "normal",
-            "text": "MELTY PUFFのあげは。……ハジメっち、だよね"
+            "text": "MELTY PUFFのあげは。……tonariの人、だよね"
           },
           {
             "speaker": "hajime",
@@ -306,7 +306,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "今日はちょっと疲れたから、帰って休む。落ち着いたら、また一台作ろ"
+          "text": "今日は店に戻って、閉めたら休む。落ち着いたら、また一台作ろ"
         },
         {
           "speaker": "ageha",
@@ -326,6 +326,16 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "（握った指先が、まだ少し震えていた。それでも、最後まで作りきったんだ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "控室で約束した水のボトルを、あげはの手に握らせた。"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……覚えてたんだ。ありがと、ハジメっち"
           }
         ]
       }
@@ -337,6 +347,11 @@
           "speaker": "",
           "face": "",
           "text": "片づけの済んだ台で、自分の一台を確かめた。煙は出る。味の輪郭は戻らない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査席を片づける博士が、一度だけこちらを見た。"
         },
         {
           "speaker": "hajime",
