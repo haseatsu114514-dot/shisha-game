@@ -341,9 +341,9 @@
           "text": "あ、俺はそんなに詳しくなくて。その友達が好きだっただけで……"
         },
         {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……（じっとこちらを見る）"
+          "speaker": "",
+          "face": "",
+          "text": "REIが、じっとこちらを見ている。"
         },
         {
           "speaker": "hajime",
@@ -371,9 +371,14 @@
           "text": "だから友達が、という話で、俺はそんなに……"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "REIが、はじめの肩を軽く叩いた。"
+        },
+        {
           "speaker": "rei",
           "face": "normal",
-          "text": "……（はじめの肩を軽く叩く）仲間だ"
+          "text": "……仲間だ"
         },
         {
           "speaker": "hajime",
