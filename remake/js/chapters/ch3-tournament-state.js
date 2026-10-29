@@ -1,4 +1,8 @@
+import { MAX_MONEY } from "../core/rules.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
+
+// 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
+export const CH3_PRIZE = 100000;
 
 // HAZE: NATIONAL TOKYO。県大会とは別の一試合・一台・四人同時の保存状態。
 export const CONTESTANTS = Object.freeze(["hajime", "kuze", "steve", "volk"]);
@@ -53,7 +57,7 @@ export function tournamentProgress(value) {
   if (value?.chapter !== 3) throw new Error("第3章の保存ではありません");
   const p = value.flags._ch3_tournament ||= {
     version: 1, stage: "entry", attempts: 0, step: 0, craft: null, rollback: null,
-    votes: {}, voted: 0, result: null, history: [], entry: null,
+    votes: {}, voted: 0, result: null, history: [], entry: null, prizePaid: false,
     tastingSeed: null, tastingPlan: null,
   };
   if (p.version !== 1 || !Number.isInteger(p.step) || p.step < 0 || p.step > 11
@@ -186,6 +190,11 @@ export function recordResult(value, total) {
   p.result = { attempt: p.attempts, total, rank, win: rank === 1,
     rows, votes: copy(p.votes), careHistory: copy(p.craft.careHistory),
     tastingPlan: copy(p.tastingPlan) };
+  // 賞金は優勝の確定と同じ更新で一度だけ渡す（再挑戦・LOADで二重に付けない）。
+  if (rank === 1 && !p.prizePaid) {
+    p.prizePaid = true;
+    value.money = Math.min(MAX_MONEY, Math.max(0, Math.round((value.money || 0) + CH3_PRIZE)));
+  }
   p.history.push(copy(p.result));
   return p.result;
 }
