@@ -18,9 +18,8 @@ export function difficultyEvidence(state) {
 }
 
 /**
- * U4（PR #1239）の difficultyForRun(value, { cycle, carryStats }) への唯一の接続口。
- * #1239 マージ後に呼び出し側が実関数を渡す（またはここで import する）形へ差し替える。
- * U4 の係数 KB=0 のため、接続しても挙動は変わらない（no-op）。結果は state に保存しない。
+ * difficultyForRun(value, { cycle, carryStats }) へ渡す周回の根拠。
+ * 結果は state に保存しない。
  */
 export function confirmRunDifficulty(state, difficultyForRunFn) {
   return typeof difficultyForRunFn === "function" ? difficultyForRunFn(state, difficultyEvidence(state)) : 0;
