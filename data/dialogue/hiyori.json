@@ -114,6 +114,54 @@
         "slot": 1
       },
       {
+        "id": "tonari_afterwork",
+        "dialogue": "hiyori_tonari_afterwork",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_tonari_afterwork_done",
+        "requires": [
+          "_hiyori_tonari_followup_done"
+        ],
+        "met": true,
+        "minAffinity": 3,
+        "affinity": 5
+      },
+      {
+        "id": "tonari_return",
+        "dialogue": "hiyori_tonari_return",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_tonari_return_done",
+        "requires": [
+          "_hiyori_sumi_message_done",
+          "_hiyori_message_delivered",
+          "_hiyori_cracks_done"
+        ],
+        "met": true,
+        "minAffinity": 3,
+        "affinity": 10
+      },
+      {
+        "id": "tonari_followup",
+        "dialogue": "hiyori_tonari_followup",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_tonari_followup_done",
+        "requires": [
+          "_hiyori_tonari_return_done"
+        ],
+        "met": true,
+        "affinity": 5
+      }
+    ],
+    "unscriptedEvents": [
+      {
         "id": "tokyo_contact",
         "dialogue": "hiyori_tokyo_contact",
         "chapters": [
@@ -175,52 +223,6 @@
           "_hiyori_work_talk_done"
         ],
         "relationship": "lover"
-      },
-      {
-        "id": "tonari_afterwork",
-        "dialogue": "hiyori_tonari_afterwork",
-        "chapters": [
-          1,
-          2
-        ],
-        "flag": "_hiyori_tonari_afterwork_done",
-        "requires": [
-          "_hiyori_tonari_followup_done"
-        ],
-        "met": true,
-        "minAffinity": 3,
-        "affinity": 5
-      },
-      {
-        "id": "tonari_return",
-        "dialogue": "hiyori_tonari_return",
-        "chapters": [
-          1,
-          2
-        ],
-        "flag": "_hiyori_tonari_return_done",
-        "requires": [
-          "_hiyori_sumi_message_done",
-          "_hiyori_message_delivered",
-          "_hiyori_cracks_done"
-        ],
-        "met": true,
-        "minAffinity": 3,
-        "affinity": 10
-      },
-      {
-        "id": "tonari_followup",
-        "dialogue": "hiyori_tonari_followup",
-        "chapters": [
-          1,
-          2
-        ],
-        "flag": "_hiyori_tonari_followup_done",
-        "requires": [
-          "_hiyori_tonari_return_done"
-        ],
-        "met": true,
-        "affinity": 5
       }
     ]
   },
