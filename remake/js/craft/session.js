@@ -374,7 +374,10 @@ export function scoreStep(cs, key, score) {
   cs.arcade ??= { total: 0, parts: {} };
   const step = key.split(":")[0];
   if (!key.includes(":")) for (const k of Object.keys(cs.arcade.parts)) if (k.startsWith(`${step}:`)) delete cs.arcade.parts[k];
-  cs.arcade.parts[key] = Math.round(Math.max(0, score || 0) * (SCORE_WEIGHT[step] ?? 0));
+  // 旧保存由来の異常値（上限超・Infinity / NaN）が記録用スコアへ流れ込まないよう入口で丸める（#1364）
+  const numericScore = Number(score);
+  const cleanScore = Number.isFinite(numericScore) ? Math.min(100, Math.max(0, numericScore)) : 0;
+  cs.arcade.parts[key] = Math.round(cleanScore * (SCORE_WEIGHT[step] ?? 0));
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
   // 旧保存と記録の互換用。制作中や結果画面には表示しない。
   return cs.arcade.total;
