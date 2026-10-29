@@ -1,5 +1,5 @@
 // 本編と同じエンジン・CSSで会話UIを試す。保存済みゲームは読み書きしない。
-import { loadAll, DB } from "../core/data.js";
+import { loadAll, loadDeferredDialogues, DB } from "../core/data.js";
 import { newGame, state, config } from "../core/state.js";
 import { initLayers } from "../core/ui.js";
 import { play } from "./engine.js";
@@ -110,6 +110,7 @@ async function start() {
   controller?.abort();
   controller = new AbortController();
   const signal = controller.signal;
+  await loadDeferredDialogues();
   newGame();
   for (const id of Object.keys(DB.characters)) {
     state.met[id] = true;
