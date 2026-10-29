@@ -141,6 +141,7 @@ assert.equal(multi.qualityCeilingDelta, 1.95); // 2.5 * 0.78 = 1.95
 // 実際の得点式でも主要4社 = +2.500、ドバジ = +0.800 が正確に成立し、
 // 丸め後の craftQuality も主要4社で同点、ドバジで適正な差分となることを検証する。
 const baseCraftState = {
+  water: 0.5,
   equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
   holes: { total: 22, evenness: 0.6, outerEven: 0.6, innerExcess: 0, score: 60, minimumComplete: true },
   heat: { heatPower: 50, heatStability: 50, burnRisk: 30, aromaRetention: 55, score: 60 },
