@@ -241,6 +241,7 @@
         "node remake/test/lover_dates.mjs",
         "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs",
         "node remake/test/tokyo_visits.mjs",
+        "node remake/test/overseas_companion.mjs",
         "node --experimental-vm-modules remake/test/ch2_night_commute.mjs",
         "node --experimental-vm-modules remake/test/tsumugi_schedule_782.mjs",
         "node remake/test/ch2_rain_j08.mjs",
