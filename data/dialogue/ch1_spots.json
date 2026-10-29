@@ -132,49 +132,6 @@
       }
     },
     {
-      "dialogue_id": "ch1_choizap_visit",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "CHOI-ZAPに来た。入口でアプリのQRコードをかざして中に入る。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ランニングマシンに乗って、イヤホンで音楽を聴きながら走る。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "窓の外を行き交う人たちをぼんやり眺めながら、汗を流す。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ダンベルで軽く筋トレ。鏡に映る自分の姿。少しずつだけど、変わっている気がする。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（みんとが「見た目も武器だよ」って言ってたな……）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "シャワーを浴びて帰る。身体がスッキリして、なんだか自信が湧いてくる。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
-        }
-      ],
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_choizap.png"
-      }
-    },
-    {
       "dialogue_id": "ch1_kannon_visit",
       "lines": [
         {
