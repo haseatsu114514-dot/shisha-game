@@ -212,7 +212,7 @@
       "bg": "bg_eden_shop.png",
       "invite": {
         "messages": [
-          "同志よ。{privateContext}、エデンの扉を開けておく",
+          "同志よ。{privateContext}、EDENの扉を開けておく",
           "リンゴの導きに従い、一服しに来るがよい"
         ],
         "accept_text": "伺います",
