@@ -40,7 +40,29 @@ export async function loadTrpgClubResources({ signal } = {}) {
   return { catalog, characters: [...people.values()], manifest, club };
 }
 
-export async function loadTrpgLibrary({ signal, scenarioId = null } = {}) {
+function trpgAssetUrls({ characters, manifest, tableTalk }, scenarios) {
+  const people = new Set(characters.map(c => c.id));
+  const urls = new Set();
+  scenarios.forEach(s => {
+    urls.add(sceneUrl(s));
+    s.cast.forEach(c => {
+      if (!people.has(c.id) || !manifest.portraits[c.id]) throw new Error("Missing canonical character: " + c.id);
+      urls.add(portraitUrl(manifest, c.id));
+    });
+    s.dialogues.forEach(d => d.lines.forEach(l => urls.add(portraitUrl(manifest, l.speaker, l.face))));
+  });
+  Object.values(tableTalk).flat().forEach(l => { if (manifest.portraits[l.speaker]) urls.add(portraitUrl(manifest, l.speaker, l.face)); });
+  return urls;
+}
+
+/** 選んだシナリオ分の素材だけを先読みする（本棚表示では待たず、卓の開始時に使う）。 */
+export async function preloadTrpgAssets(resources, scenario, { signal } = {}) {
+  const urls = trpgAssetUrls(resources, [scenario]);
+  await Promise.all([...urls].map(url => preload(url, signal)));
+  if (signal?.aborted) throw signal.reason || new DOMException("Aborted", "AbortError");
+}
+
+export async function loadTrpgLibrary({ signal, scenarioId = null, preloadAssets = true } = {}) {
   const base = new URL("../../../data/", import.meta.url);
   const catalog = await json(new URL("trpg_catalog.json", base), signal);
   const entries = scenarioId ? catalog.scenarios.filter(s => s.id === scenarioId) : catalog.scenarios;
@@ -57,19 +79,12 @@ export async function loadTrpgLibrary({ signal, scenarioId = null } = {}) {
   const tableTalk = Object.fromEntries((talk?.dialogues || []).map(d => [d.dialogue_id, d.lines]));
   const people = new Map(characters.map(c => [c.id, c]));
   overlays.forEach(o => { if (o.profile?.id) people.set(o.profile.id, o.profile); });
-  const urls = new Set();
-  scenarios.forEach(s => {
-    urls.add(sceneUrl(s));
-    s.cast.forEach(c => {
-      if (!people.has(c.id) || !manifest.portraits[c.id]) throw new Error("Missing canonical character: " + c.id);
-      urls.add(portraitUrl(manifest, c.id));
-    });
-    s.dialogues.forEach(d => d.lines.forEach(l => urls.add(portraitUrl(manifest, l.speaker, l.face))));
-  });
-  Object.values(tableTalk).flat().forEach(l => { if (manifest.portraits[l.speaker]) urls.add(portraitUrl(manifest, l.speaker, l.face)); });
-  await Promise.all([...urls].map(url => preload(url, signal)));
+  const resources = { catalog, scenarios, characters: [...people.values()], manifest, club, tableTalk };
+  // cast 検証は先読みを省く場合も従来どおりここで行う。
+  const urls = trpgAssetUrls(resources, scenarios);
+  if (preloadAssets) await Promise.all([...urls].map(url => preload(url, signal)));
   if (signal?.aborted) throw signal.reason || new DOMException("Aborted", "AbortError");
-  return { catalog, scenarios, characters: [...people.values()], manifest, club, tableTalk };
+  return resources;
 }
 
 export async function loadTrpgResources({ scenarioId = "ordinary-cup", signal } = {}) {

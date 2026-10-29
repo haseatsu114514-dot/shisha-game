@@ -76,21 +76,24 @@ await suite("ch3-tournament", async check => {
     assert.equal(retried.flags._ch3_tournament.attempts, before.flags._ch3_tournament.attempts);
     assert.deepEqual(retried.flavorStock, before.flavorStock);
   }, { reducedMotion: "reduce" });
-  await check("arriving-with-no-chocolate-still-lets-the-craft-begin", async page => {
-    // 課題のチョコレートを一度も買わずに来ても、本番前に最低量（4g）が手元へ補われ、
-    // ミックス工程で課題を満たせず詰む、ということがない（#1052）。
+  await check("arriving-with-no-chocolate-is-supplied-during-the-tournament", async page => {
+    // 課題のチョコレートを一度も買わずに来ても、大会が本番中だけ無制限に支給するので、
+    // ミックスで課題（4g以上）を満たして一台を仕上げられる（#1052）。支給分は在庫に足さず持ち越さない。
     await seed(page, "good", { flavorStock: { double_apple: 100, mint: 100 } });
     await page.locator(t("entry")).waitFor();
-    const topped = await get(page);
-    assert.equal(topped.flavorStock.chocolate, 4,
-      "Arriving with no chocolate tops up to the 4g minimum before the craft");
+    const arrived = await get(page);
+    assert.equal(arrived.flavorStock.chocolate ?? 0, 0,
+      "Supply does not top up or add to the private stock before the craft");
     await page.locator(t("start")).click();
     await page.locator(t("ready")).waitFor();
     await page.locator(t("craft-start")).click();
-    // 0gなら配合の決定ボタンが押せず votes まで到達できない。補填により一台を仕上げられる。
+    // 0gでも支給で課題量を満たし votes まで到達できる（決定ボタンが押せないまま詰まない）。
     await page.locator(t("votes")).waitFor();
-    assert.equal((await get(page)).flags._ch3_tournament.voted, 1,
+    const after = await get(page);
+    assert.equal(after.flags._ch3_tournament.voted, 1,
       "The craft reaches the first vote instead of dead-ending at the mix step");
+    assert.equal(after.flavorStock.chocolate ?? 0, 0,
+      "The supplied challenge leaf never lands in the private stock (no carry-over)");
   }, { reducedMotion: "reduce" });
   await check("burned-pull-still-counts-as-a-loss", async page => {
     await seed(page, "burn");
@@ -218,7 +221,7 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.flags._ch3_tournament.history.length, 1);
     await page.reload();
     await page.locator('[data-test="title-load"]').click();
-    assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章・DAY 17.*第3章クリア/);
+    assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章\s*DAY 17[\s\S]*第3章クリア/);
   }, { reducedMotion: "reduce" });
   await check("actual-losing-rank-reads-defeat-and-retries-without-win", async page => {
     await seed(page);

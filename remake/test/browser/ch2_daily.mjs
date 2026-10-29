@@ -159,7 +159,7 @@ await suite('ch2-daily',async check=>{
     v=await value(page);assert.equal(v.money,36000-stationFares(page));assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
     await page.locator(t('hud-menu')).click();await page.locator(t('menu-save')).click();
     await page.locator(t('slot-0')).waitFor();
-    assert.match(await page.locator(t('slot-0')).textContent(),/第2章・DAY 2/);
+    assert.match(await page.locator(t('slot-0')).textContent(),/第2章\s*DAY 2(?!\d)/);
     assert(!/初日終了/.test(await page.locator(t('slot-0')).textContent()),'DAY2 saves must not keep the DAY1-complete caption');
     await page.locator(t('slot-1')).click();await page.locator(t('confirm-overwrite')).click();
     await page.locator('#modal.show').waitFor({state:'hidden'});

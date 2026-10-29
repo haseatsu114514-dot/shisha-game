@@ -279,10 +279,11 @@ export function grantGift(giftId) {
 
 /**
  * 今朝届く締めくくりの誘い（data/lime_messages.json の delivery: "bond_finale" を日付つきに複製）。
- * 断ったり約束が流れたりしても、締めくくりを読むまで二日おきに改めて届く。時刻は phone.js が休日午後か仕事後に決める
+ * 章をまたいでも、断ったり約束が流れたりしても、締めくくりを読むまで二日おきに改めて届く。
+ * 時刻は phone.js が休日午後か仕事後に決める
  */
 export function bondInvites({ tournamentDay = false } = {}) {
-  if (tournamentDay || state.phase !== "daily" || (state.chapter || 1) !== 1) return [];
+  if (tournamentDay || state.phase !== "daily") return [];
   const out = [];
   for (const [id, def] of Object.entries(BOND_FINALES)) {
     if (!def.invite || !finaleDue(id) || !hasContact(id)) continue;

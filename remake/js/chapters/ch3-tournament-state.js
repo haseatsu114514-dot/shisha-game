@@ -1,3 +1,5 @@
+import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
+
 // HAZE: NATIONAL TOKYO。県大会とは別の一試合・一台・四人同時の保存状態。
 export const CONTESTANTS = Object.freeze(["hajime", "kuze", "steve", "volk"]);
 export const JUDGES = Object.freeze(["emil", "dr_kemuri", "nagumo"]);
@@ -127,11 +129,16 @@ export function tastingEffect(plan, judge) {
 }
 
 /** 各審査員の一回分をまとめて確定し、持ち点の二重投入を防ぐ。 */
-export function castVotes(p, round, performance, prefByJudge = null) {
+export function castVotes(p, round, performance, prefByJudge = null, carryP = 0) {
   if (!p || p.result || round !== p.voted || round < 0 || round >= SPEND.length) return false;
   const plan = p.tastingPlan?.[round];
   if (!plan) throw new Error("試喫順を確認できません");
-  const quality = { ...RIVAL_QUALITY, hajime: bounded(performance) };
+  const quality = Object.fromEntries(Object.entries(RIVAL_QUALITY).map(([id, rival]) => {
+    const lifted = liftRivalScore(rival, carryP, 3);
+    observeRivalScore(rival, carryP, 3, lifted);
+    return [id, lifted];
+  }));
+  quality.hajime = bounded(performance);
   const additions = {};
   for (const judge of JUDGES) {
     const profile = JUDGE_PROFILES[judge], row = p.votes?.[judge];

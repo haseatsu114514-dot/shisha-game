@@ -26,13 +26,12 @@ await suite("loading-gate", async check => {
       assert(boxes[0].right < boxes[1].left, "Panels read from left to right");
       await page.keyboard.press('Tab');
       assert.equal(await page.locator('.loading-gate').evaluate(node => node === document.activeElement), true);
+      // Pending-phase input blocking is covered deterministically by input-held-until-ready.
+      // When a comic is shown, preparation finishing opens a reading hold; a click advances past it.
       await page.evaluate(() => { window.clicksBehindGate = 0; window.addEventListener('click', () => { window.clicksBehindGate++; }, { once: true }); });
-      await page.locator('.loading-status').click();
-      assert.equal(await page.locator('.loading-gate').count(), 1, 'Input must not skip preparation');
-      // When a comic is shown, preparation finishing opens a reading hold; a key advances past it.
       await page.locator('.loading-gate.is-ready').waitFor();
       assert.equal(await page.locator('.loading-proceed').evaluate(node => getComputedStyle(node).opacity !== '0'), true, 'The reading prompt appears');
-      await page.keyboard.press('Enter');
+      await page.locator('.loading-status').click();
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), false);
       assert.match(await page.locator('#result').textContent(), /準備完了/);
@@ -40,6 +39,42 @@ await suite("loading-gate", async check => {
       assert.equal(await page.evaluate(() => JSON.stringify({ local: { ...localStorage }, session: { ...sessionStorage } })), storage);
     }, { viewport });
   }
+  await check("input-held-until-ready", async page => {
+    await page.evaluate(async () => {
+      const { withLoading } = await import('./js/core/loading.js');
+      const host = document.querySelector('#loading-demo');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"/>';
+      const comics = [{ id: 'input-held', title: 'input-held', minChapter: 1,
+        panels: [{ src, alt: 'one' }, { src, alt: 'two' }] }];
+      let started;
+      const preparationStarted = new Promise(resolve => { started = resolve; });
+      window.clicksBehindGate = 0;
+      window.addEventListener('click', () => { window.clicksBehindGate++; }, { once: true });
+      withLoading(() => new Promise(resolve => {
+        window.__releaseLoadingGate = resolve;
+        started();
+      }), { host, delayMs: 0, comics }).then(() => {}, () => {});
+      await preparationStarted;
+    });
+    assert.equal(await page.locator('.loading-gate').count(), 1);
+    assert.equal(await page.locator('.loading-gate.is-ready').count(), 0);
+    // The preparation stays held by the test, so waiting for the comic to render
+    // first is safe — and keeps the layout shift from the panel pop-in out of
+    // the click's way.
+    await page.locator('.loading-panels img').first().waitFor();
+    assert.equal(await page.locator('.loading-panels img').count(), 2);
+    await page.locator('.loading-status').click();
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.locator('.loading-gate').count(), 1, 'Input must not skip preparation');
+    assert.equal(await page.evaluate(() => window.clicksBehindGate), 0);
+    await page.evaluate(() => window.__releaseLoadingGate());
+    await page.locator('.loading-gate.is-ready').waitFor();
+    assert.equal(await page.locator('.loading-proceed').evaluate(node => getComputedStyle(node).opacity !== '0'), true, 'The reading prompt appears');
+    assert.equal(await page.locator('.loading-gate').count(), 1);
+    await page.keyboard.press('Enter');
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
+  });
   await check("portrait-readable", async page => {
     // Portrait escapes the shrunken #stage: the overlay covers the real viewport and stacks the
     // two panels large so the bubble text stays readable (and still advances on a key press).

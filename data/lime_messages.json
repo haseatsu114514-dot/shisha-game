@@ -39,7 +39,14 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "【ぺぱーみんと】新作入荷♪ ……って、一斉送信じゃないよ、はじめくんっ♡"
+          "text": "【PEPPERMINT】新作入荷♪ ……って、一斉送信じゃないよ、はじめくんっ♡"
+        },
+        {
+          "sender": "minto",
+          "stamp": "st_minto_welcome",
+          "media_chapters": [
+            1
+          ]
         },
         {
           "sender": "minto",
@@ -341,7 +348,18 @@
         },
         {
           "sender": "minto",
-          "text": "わたしも出るけど、はじめくんの一台もちゃんと見てるね。優勝したら、お祝いの一台はわたしに任せて。……なんて、少し気が早いね。ちゃんと応援してるよ"
+          "text": "わたしも出るけど、はじめくんの一台もちゃんと見てるね。"
+        },
+        {
+          "sender": "minto",
+          "stamp": "st_minto_cheer",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "minto",
+          "text": "優勝したら、お祝いの一台はわたしに任せて。……なんて、少し気が早いね。ちゃんと応援してるよ"
         }
       ]
     },
@@ -364,6 +382,7 @@
     {
       "id": "lime_ageha_day3",
       "sender": "ageha",
+      "chapter": 2,
       "trigger_day": 3,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
@@ -371,6 +390,10 @@
         {
           "sender": "ageha",
           "text": "ハジメっちー！ LIMEしてみたっ"
+        },
+        {
+          "sender": "ageha",
+          "stamp": "st_ageha_ok"
         },
         {
           "sender": "ageha",
@@ -475,6 +498,7 @@
     {
       "id": "lime_ageha_day5",
       "sender": "ageha",
+      "chapter": 2,
       "trigger_day": 5,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
@@ -544,6 +568,13 @@
         {
           "sender": "adam",
           "text": "もうすぐ大会だな。リンゴの祝福は、受けているか？"
+        },
+        {
+          "sender": "adam",
+          "stamp": "st_adam_bless",
+          "media_chapters": [
+            1
+          ]
         }
       ],
       "replies": [
@@ -573,23 +604,23 @@
       "messages": [
         {
           "sender": "kumicho",
-          "text": "……おい、小僧"
+          "text": "……おい、あんちゃん"
         },
         {
           "sender": "kumicho",
-          "text": "お前、「シガーマン」って知っとるか"
+          "text": "あんちゃん、「シガーマン」って知ってるかい"
         },
         {
           "sender": "kumicho",
-          "text": "ウチの若衆がmukai行ったらしいんだが、そこで見たこともない煙にやられたって震えてやがる"
+          "text": "ウチの若衆がmukaiに行ったらしいんだが、そこで見たこともねえ煙にやられて、震えてやがるんでさ"
         },
         {
           "sender": "kumicho",
-          "text": "「あれは人間が作る煙じゃない」とか泣きながら電話してきよったわ"
+          "text": "「あれは人間が作る煙じゃねえ」とか、泣きながら電話してきやがってね"
         },
         {
           "sender": "kumicho",
-          "text": "……冗談だと思いたいがな。俺も少し気になる"
+          "text": "……冗談だと思いてえがな。俺も少し気になってる"
         }
       ],
       "trigger_day": 6,
@@ -597,12 +628,12 @@
       "replies": [
         {
           "text": "実際の煙、見てみたいです",
-          "response": "……肝が据わっとるな。見たらまず、何が違うか自分の舌で確かめろよ",
+          "response": "……肝が据わってるな。見たらまず、何が違うか自分の舌で確かめなせえ",
           "affinity": 1
         },
         {
           "text": "まずは噂として聞いておきます",
-          "response": "おう。聞いた話だけで決めつけるな、……それでいい",
+          "response": "おう。聞いた話だけで決めつけるんじゃねえ、……それでいいんでさ",
           "affinity": 0
         }
       ]
@@ -624,7 +655,7 @@
         },
         {
           "sender": "nagumo",
-          "text": "業界では「シガーマン」と呼ばれているらしい。ムカイさんがその人だと思っていたのだが……どうも違うようだ"
+          "text": "業界では「シガーマン」と呼ばれているらしい。mukaiの店主がそうだと言う者もいるが、確かめた者はおらん"
         },
         {
           "sender": "nagumo",
@@ -658,7 +689,7 @@
     {
       "id": "rumor_kemuri_experiments",
       "sender": "naru",
-      "trigger_condition": "ch2_started",
+      "trigger_condition": "lime_exchanged",
       "type": "rumor",
       "rumor_about": "dr_kemuri",
       "messages": [
@@ -751,23 +782,23 @@
         },
         {
           "sender": "ageha",
-          "text": "シガーリーフで煙出す女の子。見た目フツーなのに、煙だけバグってるって"
+          "text": "シガーリーフで、煙だけバグってる人がいるんだって。見た人みんな「シブいおっさん」って言うのに、顔はだれも覚えてないらしい"
         },
         {
           "sender": "ageha",
-          "text": "ムカイさんとこに出没するらしいんだけど。うちのバイブスで感じるのは"
+          "text": "ムカイさんとこで見たって話もあるんだけど。うちのバイブスで感じるのは"
         },
         {
           "sender": "ageha",
-          "text": "あの子、ガチの天才枠。うちらとは次元が違うかもしんない"
+          "text": "その人、ガチの天才枠。うちらとは次元が違うかもしんない"
         }
       ],
       "trigger_day": 6,
       "chapter": 3,
       "replies": [
         {
-          "text": "会えたら、その煙を見てみたい",
-          "response": "でしょ！ あの煙が何でできてるか、一緒に見てみたいね",
+          "text": "mukaiの話なら、店で気にかけておくよ",
+          "response": "そっか、ムカイさんとこにいるもんね！ もし見かけたら、うちにも教えて。どんな煙か、一緒に見てみたいし",
           "affinity": 1
         },
         {
@@ -862,6 +893,13 @@
         },
         {
           "sender": "adam",
+          "image": "im_adam_moon",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "adam",
           "text": "この前、一緒に見た月だ、……良い夜だった"
         }
       ],
@@ -890,6 +928,13 @@
         {
           "sender": "tsumugi",
           "text": "……おはようございます。変なお願いを、してもいいですか"
+        },
+        {
+          "sender": "tsumugi",
+          "stamp": "st_tsumugi_nod",
+          "media_chapters": [
+            1
+          ]
         },
         {
           "sender": "tsumugi",
@@ -957,6 +1002,13 @@
         },
         {
           "sender": "rin",
+          "stamp": "st_rin_smug",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "rin",
           "text": "次の便も近いうちに入る。……気が向いたら2階においで"
         }
       ],
@@ -988,6 +1040,13 @@
         {
           "sender": "tsumugi",
           "text": "おはようございます。……送った下描き、また少し直しました"
+        },
+        {
+          "sender": "tsumugi",
+          "image": "im_tsumugi_draft",
+          "media_chapters": [
+            1
+          ]
         },
         {
           "sender": "tsumugi",
@@ -1034,6 +1093,13 @@
         {
           "sender": "naru",
           "text": "新しいことに手ぇ出したくなるだろ、今。──出すなよ"
+        },
+        {
+          "sender": "naru",
+          "stamp": "st_naru_sleep",
+          "media_chapters": [
+            1
+          ]
         }
       ],
       "replies": [
@@ -1149,6 +1215,13 @@
         },
         {
           "sender": "rin",
+          "image": "im_rin_stock",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "rin",
           "text": "今期のイチ推しは『AF グレープ』。素直に旨い、迷ったらこれ。くじにも何袋か紛れてるらしい"
         },
         {
@@ -1221,10 +1294,18 @@
       "type": "chat",
       "trigger_condition": "flag",
       "trigger_flag": "_ch2_ageha_contact",
+      "priority": 1,
       "messages": [
         {
           "sender": "ageha",
           "text": "ハジメっち、来てくれてありがと〜！"
+        },
+        {
+          "sender": "ageha",
+          "stamp": "st_ageha_thanks",
+          "media_chapters": [
+            2
+          ]
         },
         {
           "sender": "ageha",

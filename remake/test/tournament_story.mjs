@@ -55,4 +55,17 @@ for (const event of ['opening','packed','waiting','tasting']) {
  assert.deepEqual(tournamentStoryDialogue(JSON.parse(saved),event,()=>0),tournamentStoryDialogue(base,event,()=>0));
 }
 assert.equal(JSON.stringify(base),saved,'Dialogue must not alter craft/results');
+// Interlude banter (#1290): scenes exist per chapter, stay within 4-7 lines,
+// and Chapter 3 interludes use only the national cast.
+for (const chapter of [1, 2, 3]) {
+ const c={...cs,chapter};
+ for (const event of ['interlude1','interlude2']) {
+  const d=tournamentStoryDialogue(c,event,()=>0);
+  assert(d.lines.length>=4&&d.lines.length<=7,`${event}_${chapter} line count`);
+ }
+}
+assert(tournamentStoryDialogue(cs,'interlude3',()=>0).lines.length>=4);
+const nationalInterludeSpeakers=[1,2].flatMap(n=>tournamentStoryDialogue({...cs,chapter:3},`interlude${n}`,()=>0).lines.map(l=>l.speaker));
+assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageha','kumicho','rei'].includes(s)),
+ 'Chapter 3 interludes used an earlier rival or judge');
 console.log('PASS: three tournaments, judges, packings, mix, crowds, temperature/care callbacks, legacy saves and no score mutation');
