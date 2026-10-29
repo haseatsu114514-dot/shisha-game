@@ -57,11 +57,11 @@ for (const id of ["minto", "ageha"]) {
     const version = id === "ageha" || face === "normal" ? "?v=face-restore-20261028" : "";
     assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
-  assert.equal(all.faceIconUrl(id), `../assets/ui/face_icons/face_${id}.png?v=face-restore-20261028`);
+  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=face-restore-20261028`);
   assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
 }
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
-assert.equal(all.faceIconUrl("oneesan"), "../assets/ui/face_icons/face_minto_private.png");
+assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
 assert.equal(requests.length, 43);
 assert.equal(new Set(requests).size, 43);

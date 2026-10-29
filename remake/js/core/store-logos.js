@@ -2,13 +2,13 @@
 import { el } from "./util.js";
 
 const BASE_LOGOS = {
-  tonari: { name: "tonari", file: "tonari", sheet: [2172, 724], frame: [812, 15, 551, 684] },
-  naru: { name: "KEMURIKUSA", file: "kemurikusa", sheet: [2172, 724], frame: [45, 240, 736, 248] },
-  adam: { name: "EDEN", file: "eden", sheet: [1960, 802], frame: [36, 53, 605, 719] },
-  minto: { name: "PEPPERMINT", file: "peppermint", sheet: [2172, 724], frame: [772, 242, 640, 231] },
-  shop: { name: "Dr.fookah", file: "dr-fookah", sheet: [2048, 768], frame: [1337, 281, 662, 260] },
-  c_station: { name: "C.STATION", file: "c-station", sheet: [2048, 768], frame: [1533, 157, 481, 440] },
-  choizap: { name: "チョイザップ", file: "choizap", sheet: [2172, 724], frame: [754, 89, 693, 547] },
+  tonari: { name: "tonari", file: "tonari", ext: "webp", sheet: [2172, 724], frame: [812, 15, 551, 684] },
+  naru: { name: "KEMURIKUSA", file: "kemurikusa", ext: "webp", sheet: [2172, 724], frame: [45, 240, 736, 248] },
+  adam: { name: "EDEN", file: "eden", ext: "webp", sheet: [1960, 802], frame: [36, 53, 605, 719] },
+  minto: { name: "PEPPERMINT", file: "peppermint", ext: "webp", sheet: [2172, 724], frame: [772, 242, 640, 231] },
+  shop: { name: "Dr.fookah", file: "dr-fookah", ext: "webp", sheet: [2048, 768], frame: [1337, 281, 662, 260] },
+  c_station: { name: "C.STATION", file: "c-station", ext: "webp", sheet: [2048, 768], frame: [1533, 157, 481, 440] },
+  choizap: { name: "チョイザップ", file: "choizap", ext: "webp", sheet: [2172, 724], frame: [754, 89, 693, 547] },
   ch2_ageha: { name: "MELTY PUFF", file: "melty-puff", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch2_kumicho: { name: "神崎煙草店", file: "kanzaki", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch2_rei: { name: "零-ZERO-", file: "zero", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
