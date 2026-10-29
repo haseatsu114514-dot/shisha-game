@@ -415,12 +415,31 @@
           "text": "……おめでとう。最後の調整、音が揃ったみたいだった"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "壇上を降りかけたところで、審査員席を離れた南雲が、俺の前で足を止めた。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "serious",
+          "text": "見事な正解だが、その煙に君自身の顔は見えたか？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "答えるより先に、南雲はもう背を向けていた。"
+        },
+        {
           "type": "hide_portrait",
           "char_id": "kumicho"
         },
         {
           "type": "hide_portrait",
           "char_id": "rei"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "nagumo"
         },
         {
           "speaker": "",
