@@ -9,7 +9,7 @@ async function loadedFriend(page) {
     const core=await import("./js/core/state.js"),route=await import("./js/core/hiyori-route.js");
     // #1243 でタイトルアートは最新セーブで出会ったキャラに絞られる。バケット・連続ガード・
     // レイアウトの検証が目的なので、表示候補の全員と出会った状態のセーブにする。
-    const s=core.newGame();for(const id of ["ageha","hiyori","samechan","mashiro","minto","rin","tsumugi"]) s.met[id]=true;s.flags._friend_hiyori=true;s.flags._hiyori_real_self_known=false;
+    const s=core.newGame();for(const id of ["ageha","hiyori","samechan","mashiro","minto","rin","tsumugi","sumi","naru","adam"]) s.met[id]=true;s.flags._friend_hiyori=true;s.flags._hiyori_real_self_known=false;
     s.finales.hiyori={route:"friend",chapter:1,day:4};s.lovers=["rin"];s.affinity.hiyori=66;s.money=45678;s.stamina=71;
     s.contacts.push("hiyori");s.inbox=[{id:"keep",read:true,log:["keep"]}];s.pendingInvite={sender:"hiyori",day:10,slot:1};
     core.save();window.titleCheck={core,route,before:JSON.stringify(core.state),friendBefore:route.hiyoriIsFriend()};
@@ -46,7 +46,7 @@ await suite("hiyori-title-five",async check=>{
       return {characters,chosen};
     });
     assert.deepEqual(result.chosen,result.characters,"A five-image heroine must not get a larger character weight");
-    assert.equal(result.characters.length,7);
+    assert.equal(result.characters.length,10);
     const chosen=[];
     for(let n=0;n<5;n++){const art=await selected(page,"hiyori",n);chosen.push(art.file);}
     assert.deepEqual(chosen,filenames,"Every equal image bucket must select its real registered image");

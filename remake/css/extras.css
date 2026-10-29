@@ -110,6 +110,8 @@
 .gal-cell[data-kind="comic"] img, .gal-cell[data-kind="cheki"] img, .gal-cell[data-kind="purikura"] img { object-fit: contain; }
 .gal-viewer { z-index: 2; background-color: #09070f; cursor: default; }
 .gal-viewer.show { display: flex; flex-direction: column; }
+/* fx内の遅延通知を、不透明なギャラリービューアより前へ出す。 */
+#stage:has(.gal-viewer.show) > #fx:has(> .vn-loading[data-test="module-loading"]) { z-index: 91; }
 .gal-viewer-tools { flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; background: rgba(12, 8, 20, .97); }
 .gal-viewer-tools strong { margin-right: auto; color: var(--gold-hi); }
 .gal-viewer-tools .btn { min-width: 0; min-height: 38px; padding: 7px 12px; font-size: 14px; }

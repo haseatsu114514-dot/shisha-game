@@ -11,7 +11,7 @@
 .flavor-axis-track i { position: absolute; top: 0; bottom: 0; left: 0; width: var(--axis-high); background: var(--guide-fill); border-radius: 1px; }
 .flavor-axes.is-forecast .flavor-axis { grid-template-columns: 5em minmax(38px, 1fr) 4.6em; }
 .flavor-axes.is-forecast .flavor-axis-track i { left: var(--axis-low); width: calc(var(--axis-high) - var(--axis-low)); min-width: 2px; background: repeating-linear-gradient(120deg, var(--guide-fill) 0 3px, transparent 3px 5px); border-inline: 1px solid var(--guide-fill); }
-.flavor-guide-caption { display: block; margin: 8px 0; color: var(--guide-muted); font-size: 12px; line-height: 1.4; }
+.flavor-guide-caption { display: block; margin: 8px 0; color: var(--guide-muted); font-size: 14px; line-height: 1.4; }
 .flavor-guide-note { margin: 8px 0; font-size: 14px; line-height: 1.5; }
 .flavor-guide-more { margin-top: 8px; font-size: 13px; line-height: 1.6; text-align: left; }
 .flavor-guide-more summary { cursor: pointer; min-height: 30px; padding: 5px 0; color: var(--guide-muted); }
@@ -23,10 +23,10 @@
 body:not(.game-ds) .bench[data-step="mix"] .mix-vessel { height: 230px; }
 body:not(.game-ds) .bench[data-step="mix"] .mix-vessel-art { top: auto; height: 332px; transform: scale(.69); transform-origin: 50% 100%; }
 .mix-taste .flavor-guide-note, .mix-taste .flavor-guide-more p { min-height: 0; margin: 5px 0; font-size: 13px; line-height: 1.5; }
-.mix-taste .flavor-guide-caption { font-size: 12px; }
+.mix-taste .flavor-guide-caption { font-size: 14px; }
 .mix-taste-compact { display: none; }
 .fr-feature { padding: 0; min-height: 30px; display: flex; align-items: center; justify-content: space-between; gap: 7px; border: 0; color: inherit; background: transparent; text-align: left; cursor: pointer; }
-.fr-feature::after { content: "特徴 ›"; flex: none; font-size: 11px; font-weight: 400; color: var(--text-dim); }
+.fr-feature::after { content: "特徴 ›"; flex: none; font-size: 14px; font-weight: 400; color: var(--text-dim); }
 .fr-feature:hover b { text-decoration: underline; text-underline-offset: 4px; }
 .flavor-guide-more summary:focus-visible, .fr-feature:focus-visible, .equipment-compare:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .equipment-compare { margin-bottom: 12px; }
@@ -54,7 +54,7 @@ body.game-ds .bench[data-step] .pull > .thermo { height: max(80px, calc(var(--ds
 body.game-ds .bench:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-right { z-index: 3; }
 .flavor-forecast-compact > summary { min-height: 34px; padding: 7px 0; cursor: pointer; color: var(--guide-muted); font-size: 13px; line-height: 1.4; }
 body.game-ds .bench[data-step="mix"] .fr-feature { min-height: 36px; }
-body.game-ds .bench[data-step="mix"] .fr-feature::after { font-size: 11px; }
+body.game-ds .bench[data-step="mix"] .fr-feature::after { font-size: 14px; }
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
   body:not(.game-ds) .bench[data-step="mix"] .mix-vessel { height: 150px; }
   body:not(.game-ds) .bench[data-step="mix"] .mix-vessel-art { transform: scale(.45); }

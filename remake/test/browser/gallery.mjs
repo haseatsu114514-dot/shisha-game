@@ -86,7 +86,7 @@ async function initialLegacyLoad(name, options, malformed) {
     assert.deepEqual(loaded.auto, { chapter: 1, day: fixture.day, slot: fixture.slot }, "LOAD must update auto, not leave DAY19 behind");
     assert.equal(loaded.rawSlot, fixture.rawSlot, "legacy manual slot must remain byte-identical");
     if (malformed) {
-      assert.deepEqual(loaded.progress, { clearedChapters: [], keepsakes: [], purikura: [] }, "malformed IDs must not invent collection records");
+      assert.deepEqual(loaded.progress, { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {} }, "malformed IDs must not invent collection records");
     } else {
       assert(loaded.rawProgress, "old-auto-only evidence must persist before gallery is ever opened");
       assert.deepEqual(loaded.progress.clearedChapters, [1]);
@@ -162,7 +162,101 @@ async function adoptedPurikura(name, viewport, random, variant) {
     results.push({ name, passed: true }); console.log("PASS: adopted purikura " + name);
   } finally { await context.close(); }
 }
+// R11: hold real img requests and advance browser timers explicitly.
+async function imageLoadingNotice() {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const page = await context.newPage(), errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  const notice = page.locator(t("module-loading"));
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect width="32" height="32" fill="gold"/></svg>';
+  try {
+    await page.goto(base);
+    await page.locator(t("title-gallery")).waitFor({ timeout: 45000 });
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await page.clock.install();
+    await page.clock.pauseAt(new Date(Date.now() + 1000));
+    await page.evaluate(() => {
+      window.qaNoticeAdds = 0;
+      new MutationObserver(records => {
+        for (const record of records) for (const node of record.addedNodes) {
+          if (node.nodeType === 1 && node.matches('[data-test="module-loading"]')) window.qaNoticeAdds++;
+        }
+      }).observe(document.querySelector("#fx"), { childList: true });
+    });
+    for (const mode of ["fast", "slow", "error", "early-close", "close", "gallery-close", "replace", "switch"]) {
+      const held = [];
+      let answer = null;
+      const respond = route => answer === "error" ? route.abort() : route.fulfill({ contentType: "image/svg+xml", body: svg });
+      const handler = route => { if (answer) return respond(route); held.push(route); };
+      await page.route("**/assets/cgs/cg_r11_*.png", handler);
+      const addedBefore = await page.evaluate(() => window.qaNoticeAdds);
+      await page.evaluate(async mode => {
+        const { DB } = await import("./js/core/data.js");
+        const gallery = await import("./js/scenes/gallery.js");
+        const id = "cg_r11_" + mode.replaceAll("-", "_");
+        DB.manifest.cgs = [id + ".png", id + "_next.png"];
+        DB.gallery = { items: [] };
+        gallery.recordCg(id); gallery.recordCg(id + "_next");
+        window.qaGalleryDone = gallery.openGallery();
+        document.querySelector('[data-test="gal-' + id + '"]').click();
+        window.qaNoticeImage = document.querySelector(".gal-viewer img");
+        window.qaNoticeNext = document.querySelector('[data-test="gal-' + id + '_next"]');
+      }, mode);
+      await page.clock.runFor(499);
+      assert.equal(await notice.count(), 0, mode + ": silent before 500ms");
+      if (mode !== "fast" && mode !== "early-close") {
+        await page.clock.runFor(1);
+        assert.equal(await notice.count(), 1, mode + ": one notice at 500ms");
+        assert(await page.evaluate(() => Number(getComputedStyle(document.querySelector("#fx")).zIndex)
+          > Number(getComputedStyle(document.querySelector("#modal")).zIndex)), "notice must be above the viewer");
+        await page.clock.runFor(1000);
+        assert.equal(await notice.count(), 1, "a long wait must not duplicate the notice");
+      }
+      if (["early-close", "close"].includes(mode)) await page.keyboard.press("Escape");
+      else if (mode === "gallery-close") await page.evaluate(() => document.querySelector('[data-test="gallery-close"]').click());
+      else if (mode === "replace") await page.evaluate(async () => {
+        (await import("./js/core/ui.js")).layers.modal.replaceChildren();
+      });
+      else if (mode === "switch") await page.evaluate(() => window.qaNoticeNext.click());
+      if (!["fast", "slow", "error"].includes(mode)) {
+        assert.equal(await notice.count(), 0, "close/replacement must remove the old notice immediately");
+        await page.evaluate(() => {
+          qaNoticeImage.dispatchEvent(new Event("load"));
+          qaNoticeImage.dispatchEvent(new Event("error"));
+        });
+        assert.equal(await page.locator(".gal-media-error").count(), 0, "late old events cannot damage the viewer");
+        await page.clock.runFor(500);
+        assert.equal(await notice.count(), mode === "switch" ? 1 : 0, "only the new image may show a notice");
+      }
+      answer = mode === "error" ? "error" : "ok";
+      await Promise.all(held.splice(0).map(respond));
+      if (mode === "error") {
+        await page.locator(".gal-viewer img").evaluate(img => img.hidden || new Promise(resolve => {
+          img.addEventListener("error", () => resolve(), { once: true });
+        }));
+        assert.equal(await page.locator(".gal-media-error").count(), 1);
+      } else if (["fast", "slow", "switch"].includes(mode)) {
+        const width = await page.locator(".gal-viewer img").evaluate(img => img.complete ? img.naturalWidth : new Promise((resolve, reject) => {
+          img.addEventListener("load", () => resolve(img.naturalWidth), { once: true });
+          img.addEventListener("error", () => reject(new Error("fixture image failed")), { once: true });
+        }));
+        assert(width > 0);
+      }
+      await notice.waitFor({ state: "detached" });
+      await page.clock.runFor(1000);
+      assert.equal(await notice.count(), 0, "no late reappearance");
+      if (mode === "fast") assert.equal(await page.evaluate(() => window.qaNoticeAdds), addedBefore, "fast load must never flash");
+      await page.evaluate(() => document.querySelector('[data-test="gallery-close"]')?.click());
+      await page.evaluate(() => window.qaGalleryDone);
+      await page.unroute("**/assets/cgs/cg_r11_*.png", handler);
+    }
+    assert.deepEqual(errors, []);
+    results.push({ name: "image-loading-notice", passed: true });
+    console.log("PASS: gallery image-loading-notice");
+  } finally { await context.close(); }
+}
 try {
+  await imageLoadingNotice();
   for (const [name, viewport, random, variant] of [
     ["strip-pc-low", { width: 1280, height: 720 }, 0, "a"],
     ["strip-pc-mid", { width: 1280, height: 720 }, .4, "a"],

@@ -45,6 +45,7 @@ const DIALOGUE_FILES = [
   "ch1_tsumugi", "ch1_rin", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
   "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
+  "ch1_interval",
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "samechan", // 帰り道の出会いと、章2からのシーシャーク
   "cinema", // サメちゃんの自主訪問紹介と、地元の小さな名画座
@@ -293,6 +294,11 @@ export function cgUrl(id) {
   return (DB.manifest.cgs || []).includes(`${id}.png`) ? img(`cgs/${id}.png`) : null;
 }
 
+/** ギャラリー一覧用サムネイル（元CGの WebP から生成した縮小版・最大512px） */
+export function cgThumbUrl(id) {
+  return (DB.manifest.cgs || []).includes(`${id}.png`) ? `img/cgs/thumbs/${id}.webp` : null;
+}
+
 /**
  * 顔ドット絵アイコン。名前欄と同じ条件で、本名を聞いた後の私的な場面のみんと（栞）は私服の顔
  * （face_minto_private）。私服の「お姉さん」も、営業姿の顔で正体が見た目に出ないよう私服の顔にする
@@ -300,7 +306,7 @@ export function cgUrl(id) {
 export function faceIconUrl(id, state = null, { context = null } = {}) {
   const icons = DB.manifest.faceIcons || [];
   const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
-  if (privateMinto) return icons.includes("face_minto_private.png") ? `${ROOT}assets/ui/face_icons/face_minto_private.png` : null;
+  if (privateMinto) return icons.includes("face_minto_private.png") ? img("ui/face_icons/face_minto_private.png") : null;
   const folder = SPEAKER_ALIAS[id] || id;
   return icons.includes(`face_${folder}.png`) ? img(`ui/face_icons/face_${folder}.png`) : null;
 }

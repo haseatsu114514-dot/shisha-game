@@ -10,7 +10,7 @@ const { TITLE_ART_CHARACTERS, TITLE_KEY_VISUALS, titleArtCharacters, titleArtDis
 const { peekLatestSave, SAVE_KEY } = await import("../js/core/state.js");
 
 const ROSTER = ["ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi", "sumi", "naru", "adam"];
-const MAPPED = ["ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi"];
+const MAPPED = ["ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi", "sumi", "naru", "adam"];
 const sv = (extra = {}) => ({ day: 3, met: {}, flags: {}, contacts: [], story: {}, ...extra });
 const sorted = a => [...a].sort();
 let count = 0;
@@ -41,9 +41,9 @@ check("save with nobody met -> no candidates (title-art.js falls back to keyvisu
   localStorage.setItem(SAVE_KEY, JSON.stringify(sv({ met: { kumicho: true } })));
   assert.deepEqual(titleArtDisplayCharacters(peekLatestSave()), []);
 });
-check("fresh save (only sumi known) -> unlocked but nothing displayable until her art is adopted", () => {
+check("fresh save (only sumi known) -> her adopted key visual is displayable", () => {
   assert.deepEqual(titleArtCharacters(sv({ contacts: ["sumi"] }), TITLE_ART_CHARACTERS), ["sumi"]);
-  assert.deepEqual(titleArtDisplayCharacters(sv({ contacts: ["sumi"] })), []);
+  assert.deepEqual(titleArtDisplayCharacters(sv({ contacts: ["sumi"] })), ["sumi"]);
 });
 check("key visual table matches the roster and the real manifest", () => {
   assert.deepEqual(sorted(Object.keys(TITLE_KEY_VISUALS)), sorted(ROSTER));
@@ -51,9 +51,9 @@ check("key visual table matches the roster and the real manifest", () => {
   const byFile = new Map(manifest.titleArts.map(a => [a.file, a.character]));
   for (const [id, file] of Object.entries(TITLE_KEY_VISUALS)) {
     if (file === null) continue;
-    assert.equal(byFile.get(file), id, `${id} の仮置きファイルが manifest の同キャラ素材を指している`);
+    assert.equal(byFile.get(file), id, `${id} の採用ファイルが manifest の同キャラ素材を指している`);
   }
-  assert.deepEqual(sorted(Object.entries(TITLE_KEY_VISUALS).filter(([, f]) => f === null).map(([id]) => id)), ["adam", "naru", "sumi"]);
+  assert.deepEqual(sorted(Object.entries(TITLE_KEY_VISUALS).filter(([, f]) => f === null).map(([id]) => id)), [], "全員に専用キービジュアルが割り当て済み");
 });
 check("latest save selection", () => {
   const slot = "suien_remake_slot2";
