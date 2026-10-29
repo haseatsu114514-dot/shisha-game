@@ -74,7 +74,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "会えて、うれしかったです"
+            "text": "会えてよかった。……手、ありがとう"
           },
           {
             "speaker": "",
@@ -256,7 +256,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "待ち合わせに来たあげはさんは、いつもより静かだった。"
+          "text": "待ち合わせに来たあげはは、いつもより静かだった。"
         },
         {
           "speaker": "ageha",
@@ -266,7 +266,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。何したいですか"
+          "text": "うん。何したい？"
         },
         {
           "speaker": "ageha",
@@ -276,7 +276,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "それ、俺もしたいです"
+          "text": "それ、俺もしたい"
         },
         {
           "speaker": "ageha",
@@ -323,7 +323,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "会えて、うれしかったです"
+            "text": "今日、会えてよかった"
           },
           {
             "speaker": "",
@@ -406,7 +406,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "会えて、うれしかったです"
+            "text": "会えてよかった。お茶、ごちそうさま"
           },
           {
             "speaker": "",
@@ -490,7 +490,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "会えて、うれしかったです"
+            "text": "土産、大事にする。会えてよかった"
           },
           {
             "speaker": "",
