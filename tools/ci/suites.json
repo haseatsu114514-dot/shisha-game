@@ -82,6 +82,12 @@
       "run": ["node remake/test/ngplus_carry.mjs"]
     },
     {
+      "id": "ngplus-save-display",
+      "title": "NG+ U9 save-slot cycle badge and cross-cycle overwrite note (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_save_display.mjs"]
+    },
+    {
       "id": "ngplus-title",
       "title": "NG+ title next-cycle entry and start options (U10, #1228)",
       "kind": "quick",
