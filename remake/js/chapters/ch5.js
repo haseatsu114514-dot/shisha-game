@@ -282,18 +282,19 @@ async function renderScheduled(owner) {
         { label: "まだ行かない", value: "stay", test: test("venue-stay") },
       ] });
       if (!current(owner)) return;
+      // 「まだ行かない」は保留だけ。日程はそのままで、このカードに留まる（取り消しは別ボタン）。
       if (choice === "go") {
         if (!beginChapterFiveMatch(state)) throw new Error("試合を開始できません");
         save();
         await renderStage(owner);
       }
-      if (choice === "stay") {
-        // 取り消しは ch5_timeout を読んで自由行動へ戻る（日程は白紙）。
-        if (!await readAndCommit(owner, "ch5_timeout")) return;
-        await renderStage(owner);
-      }
     }, true),
-  ], "");
+    button(owner, "日程を取り消す", "cancel-schedule", async () => {
+      // 取り消しは ch5_timeout を読んで自由行動へ戻る（日程は白紙）。
+      if (!await readAndCommit(owner, "ch5_timeout")) return;
+      await renderStage(owner);
+    }),
+  ], "会場へ向かう準備ができたら「会場へ行く」。日程を変えたいときは取り消せる。");
 }
 
 async function renderMatch(owner) {
@@ -305,7 +306,12 @@ async function renderMatch(owner) {
     if (!current(owner)) return;
     card(owner, "match", text.title, text.description, [
       button(owner, "続きを読む", "continue", async () => {
-        if (!await readAndCommit(owner, id)) return;
+        // 到着→一杯目→二杯目の前は短い連続場面なので、カードを挟まず続けて読む。各場面の読了ごとに保存する。
+        for (const name of MATCH_ORDER) {
+          const sceneId = CH5_MATCH_SCENES[name];
+          if (chapterFiveRead(state, sceneId)) continue;
+          if (!await readAndCommit(owner, sceneId)) return;
+        }
         await renderStage(owner);
       }, true),
     ], "", id);

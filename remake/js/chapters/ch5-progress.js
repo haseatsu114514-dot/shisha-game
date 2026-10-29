@@ -30,7 +30,7 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_free_tonari_practice: "bg_tonari_inside_night", // 仮置き bg（台本コメント: tonari・夜）
   ch5_schedule_contact: "bg_tonari_inside_night",    // 仮置き bg（閉店後の場面）
   ch5_timeout: "bg_tonari_inside_night",             // 仮置き bg
-  ch5_match_day_arrival: "bg_tournament_stage",      // 仮置き bg（Q13: 会場の固有名は出さない）
+  ch5_match_day_arrival: "bg_tonari_inside_day",      // 休業日の朝の店から始まる場面なので tonari・昼（Q13: 会場の固有名は出さない）
   ch5_copy_first_cup: "bg_tournament_stage",         // 仮置き bg
   ch5_relationship_before_second_cup: "bg_tournament_stage", // 仮置き bg
   ch5_second_cup_result: "bg_tournament_stage",      // 仮置き bg

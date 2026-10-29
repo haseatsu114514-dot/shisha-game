@@ -107,6 +107,10 @@ await suite("ch5-full-flow", async check => {
     // 6. 会場確認で「まだ行かない」: 先送りの場面を読んで自由行動へ戻る。
     await page.locator(dt("ch5-go-venue")).click();
     await page.locator(dt("ch5-venue-stay")).click();
+    // 「まだ行かない」は保留だけ。日程は残り、カードに留まる。
+    await page.locator(dt("ch5-scheduled")).waitFor();
+    assert.equal((await get(page)).flags._ch5_match_scheduled, true);
+    await page.locator(dt("ch5-cancel-schedule")).click();
     await committed(page, "ch5_timeout");
     await page.locator(dt("ch5-free")).waitFor();
     state = await get(page);
@@ -125,10 +129,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_match_started, true);
 
     // 8. 試合: 到着→一杯目→二杯目の前→二杯目（勝ち＋余韻）。
-    await page.locator(dt("ch5-continue")).click();
-    await page.locator(matchScene("ch5_copy_first_cup")).waitFor();
-    await page.locator(dt("ch5-continue")).click();
-    await page.locator(matchScene("ch5_relationship_before_second_cup")).waitFor();
+    // 到着→一杯目→二杯目の前は1回の「続きを読む」で連続再生される。
     await page.locator(dt("ch5-continue")).click();
     await page.locator(matchScene("ch5_second_cup_result")).waitFor();
     await page.locator(dt("ch5-continue")).click();
