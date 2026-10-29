@@ -5,7 +5,8 @@ import { DB, bgUrl } from "../core/data.js";
 import { readGalleryProgress } from "../core/gallery-progress.js";
 import { galleryEntries, galleryStats } from "../core/gallery-catalog.js";
 import { layers, showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
-import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
+import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot, readSlot, SAVE_SLOTS } from "../core/state.js";
+import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { playBgm, stopBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
@@ -17,6 +18,149 @@ let titleRevision = 0;
 // 直近に表示したキャラアート。メニューを閉じて再描画するだけのときは同じ絵を使い回し、
 // 読込待ちや無駄な抽選切替を起こさない。新しい絵はブート/タイトル復帰（reload）でだけ選ぶ。
 let currentArt = null;
+
+// ---------------------------------------------------------------- NG+ 周回開始（Issue #1228 U10）
+// 解放と引き継ぎパッケージの正本は周回メタ層（U2: core/cycle-meta.js）、
+// 開始処理の正本は U3（core/cycle-start.js）。どちらの着地順にも依存しないよう
+// 動的 import で接続し、未着・未解放の間は導線自体を出さない。
+let cycleMetaSeen = null; // 直近に確認したメタ層。未確認・未解放は null
+let cycleMetaSig = "none"; // 表示に効く部分（解放・パッケージ識別子）の署名
+
+function cycleMetaSignature(meta) {
+  if (!meta || meta.unlocked !== true) return "none";
+  const pkg = meta.carryPackage;
+  return `open|${pkg?.fromCycleId ?? ""}|${pkg?.fromCycle ?? ""}`;
+}
+
+async function loadCycleMeta(current, refresh) {
+  try {
+    const { readCycleMeta } = await import("../core/cycle-meta.js");
+    const meta = readCycleMeta();
+    cycleMetaSeen = meta;
+    const sig = cycleMetaSignature(meta);
+    if (sig !== cycleMetaSig) {
+      cycleMetaSig = sig;
+      if (current()) refresh();
+    }
+  } catch { /* メタ層が未着の間は導線を出さない */ }
+}
+
+/**
+ * メタ層のパッケージを startNextCycle に渡す形へ展開する。
+ * 外装（検証済みの fromCycle）が正本で、data の中に同名の値があっても採用しない。
+ * 解放済みでも有効なパッケージがなければ null。
+ */
+export function startPackageFromMeta(meta) {
+  const carried = meta?.unlocked === true ? meta.carryPackage : null;
+  if (!carried || typeof carried !== "object") return null;
+  const { fromCycle, data } = carried;
+  if (!Number.isFinite(fromCycle) || fromCycle < 1) return null;
+  if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+  return { ...structuredClone(data), fromCycle };
+}
+
+const CYCLE_GROUPS = [
+  ["stats", "能力"],
+  ["money", "所持金"],
+  ["items", "所持品"],
+  ["knowledge", "知識・記録"],
+];
+let nextCycleStarting = false;
+
+/**
+ * 周回開始のオプション選択→オートセーブ上書き確認→開始までを行う。
+ * 開始したら { started: true }、それ以外は理由つきで { started: false } を返す。
+ * 画面遷移は呼び出し側（タイトル）が行う。周回開始では newGame() を呼ばない。
+ */
+export async function openNextCycleOptions(meta) {
+  if (nextCycleStarting) return { started: false, reason: "busy" };
+  nextCycleStarting = true;
+  try {
+    const pkg = startPackageFromMeta(meta);
+    if (!pkg) {
+      await modal({
+        title: "周回開始",
+        body: "保存情報を確認できないため、周回を開始できません。",
+        options: [{ label: "閉じる", value: true, primary: true, test: "cycle-nopkg-close" }],
+      });
+      return { started: false, reason: "no-package" };
+    }
+    const nextCycle = pkg.fromCycle + 1;
+    const groups = Object.fromEntries(CYCLE_GROUPS.map(([key]) => [key, true]));
+    const rows = CYCLE_GROUPS.map(([key, label]) => {
+      const input = el("input", {
+        type: "checkbox",
+        dataset: { test: `cycle-group-${key}` },
+        onchange: (e) => { groups[key] = e.target.checked; },
+      });
+      input.checked = true;
+      return el("label.cfg-row", [el("span", { text: label }), input]);
+    });
+    const choice = await modal({
+      title: `${nextCycle}周目をはじめる`,
+      body: el("div.cfg", [
+        el("p", { text: "能力と持ち物を引き継いで、出会いからもう一度はじめます。" }),
+        el("p", { text: "好感度・恋愛や出会いの記録は引き継がれず、新しく始まります。" }),
+        ...rows,
+      ]),
+      options: [
+        { label: "はじめる", value: true, primary: true, test: "cycle-start" },
+        { label: "やめる", value: false, test: "cycle-cancel" },
+      ],
+    });
+    if (choice !== true) return { started: false, reason: "cancelled" };
+
+    // §8.3: 周回開始でオートセーブを上書きする前に確認する（U9 と共有する文面）。
+    const autoSlot = SAVE_SLOTS.find((s) => s.auto) ?? SAVE_SLOTS[0];
+    const auto = readSlot(autoSlot.key);
+    if (auto) {
+      const ok = await modal({
+        title: "周回開始",
+        body: `現在のオートセーブ（${auto.cycle ?? 1}周目・第${auto.chapter ?? 1}章）は上書きされます。手動セーブ枠は残ります`,
+        options: [
+          { label: "上書きしてはじめる", value: true, primary: true, test: "cycle-overwrite" },
+          { label: "やめる", value: false, test: "cycle-overwrite-cancel" },
+        ],
+      });
+      if (ok !== true) return { started: false, reason: "cancelled" };
+    }
+
+    let metaModule, startNextCycle;
+    try {
+      metaModule = await import("../core/cycle-meta.js");
+      ({ startNextCycle } = await import("../core/cycle-start.js"));
+    } catch {
+      await modal({
+        title: "周回開始",
+        body: "周回開始の準備ができていないため、開始できません。",
+        options: [{ label: "閉じる", value: true, primary: true, test: "cycle-unavailable-close" }],
+      });
+      return { started: false, reason: "unavailable" };
+    }
+    // 開始直前にメタ層を読み直し、表示に使ったパッケージと同一か確かめる。
+    const freshMeta = metaModule.readCycleMeta();
+    const freshPkg = startPackageFromMeta(freshMeta);
+    if (!freshPkg
+      || freshMeta.carryPackage.fromCycleId !== meta.carryPackage.fromCycleId
+      || freshMeta.carryPackage.at !== meta.carryPackage.at) {
+      await modal({
+        title: "周回開始",
+        body: "保存情報が変わったため、周回を開始できません。タイトルからやり直してください。",
+        options: [{ label: "閉じる", value: true, primary: true, test: "cycle-changed-close" }],
+      });
+      return { started: false, reason: "changed" };
+    }
+    // タイトルの有効性は呼び出し側の current() が担う（モーダル表示中は画面遷移しない）。
+    startNextCycle(freshPkg, {
+      groups: { ...groups },
+      onCycleStarted: metaModule.recordCycleStarted,
+      difficultyForRun,
+    });
+    return { started: true };
+  } finally {
+    nextCycleStarting = false;
+  }
+}
 
 function galleryLabel() {
   try {
@@ -36,6 +180,7 @@ export function showTitle(preparedArt = null) {
   setBg(bgUrl("bg_title"), { instant: true });
   playBgm("title");
   const saved = peekSave();
+  const cyclePkg = startPackageFromMeta(cycleMetaSeen);
   const menu = el("nav.title-menu");
   const item = (en, ja, fn, test, disabled = false) =>
     el("button.title-item", { disabled: disabled || null, dataset: { test }, onclick: () => { SE.select(); fn(); } }, [
@@ -56,6 +201,14 @@ export function showTitle(preparedArt = null) {
       newGame();
       smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" }); // 煙で覆った瞬間に開始（ゲーム本体の完了は待たない）
     }, "title-new"),
+    ...(cycleMetaSeen?.unlocked === true ? [item("NEXT CYCLE", cyclePkg ? `${cyclePkg.fromCycle + 1}周目をはじめる` : "次の周目をはじめる", async () => {
+      const result = await openNextCycleOptions(cycleMetaSeen);
+      if (!current()) return;
+      if (!result.started) { refresh(); return; }
+      leaving = true;
+      // 周回開始では wipeSave()/newGame() を呼ばず、startNextCycle が作った state のまま opening へ。
+      smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" });
+    }, "title-next-cycle")] : []),
     item("LOAD", "つづきから", async () => {
       const key = await loadFlow();
       if (!current()) return;
@@ -114,6 +267,8 @@ export function showTitle(preparedArt = null) {
   };
   if (art.ready) place(art);
   else prepareTitleArt(art).then(place);
+  // 周回メタ層を確認し、解放状態が変わっていたら導線の表示を更新する。
+  loadCycleMeta(current, refresh);
 }
 
 export async function openConfig(opts = {}) {

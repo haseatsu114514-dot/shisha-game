@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(new URL("./browser/package.json", import.meta.url))("playwright");
+import { installLoadingComicReader } from "./browser/loading_reader.mjs";
 const target = process.env.PACE_TARGET || "rin", mode = process.env.PACE_MODE || "fast", touch = process.env.PACE_TOUCH === "1";
 assert(["rin", "tsumugi", "minto"].includes(target)); assert(["fast", "usual", "friend", "hold", "boost", "fortune"].includes(mode));
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
@@ -15,6 +16,7 @@ const browser = await chromium.launch({ headless: true,
 const context = await browser.newContext({ viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 },
   isMobile: touch, hasTouch: touch, reducedMotion: "reduce" });
 const page = await context.newPage(); page.setDefaultTimeout(20000);
+await installLoadingComicReader(page);
 const errors = []; page.on("pageerror", e => errors.push(e.message));
 const actions = [], snapshots = []; let currentThread = null, lastKey = "", lastProgress = Date.now();
 async function press(selector) {

@@ -35,6 +35,7 @@ def targets(m):
     rel += [f"ui/title_arts/{art['file']}" for art in m.get("titleArts", [])]
     rel += ["ui/chapters/ch1_keyart.png"]
     rel += [f"ui/continue/{name}" for name in m.get("continueUI", [])]
+    rel += [f"ui/face_icons/{name}" for name in m.get("faceIcons", [])]
     return [r for r in rel if (ASSETS / r).exists()]
 
 

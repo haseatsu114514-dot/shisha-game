@@ -20,6 +20,7 @@ try {
       const state = T.core.state;
       Object.assign(state, { phase: "daily", day: 4, slot: 0, contacts: [id], lastBaitoDay: 4 });
       state.met[id] = true; state.affinity[id] = 90;
+      state.flags._minto_identity_revealed = true; // みんとの私的な誘いは正体判明が前提（phone.js eligible）
       const template = id === "adam" ? { id: "temporary_adam_story", sender: id, important: true, type: "invitation",
         private_schedule: "holiday_or_after_close", trigger_condition: "affinity_level", trigger_value: 3,
         accept_event: "outing_adam_1", messages: ["午後、共に出かけよう"] }
