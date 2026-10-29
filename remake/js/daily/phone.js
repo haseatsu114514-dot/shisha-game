@@ -7,6 +7,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 見た目は旧版の LIME（ノッチ付きの端末・緑のヘッダー・白と黄緑の吹き出し・明るい返信欄）を踏襲する。
 import { el, sleep, fitOneLine, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
+import { customLimeIconUrl } from "./lime-icons.js";
 import { layers, toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
@@ -412,6 +413,16 @@ function avatar(account, small = false) {
   const known = id && id !== "???" && (state.met[id] || id === "sumi");
   // お仕事用は営業姿、私用は私服の顔（名前 limeName と揃える）
   const url = known ? faceIconUrl(account !== id ? PRIVATE_ACCOUNTS[id].face : id) : null;
+  // 採用済みカスタムアイコンはお仕事用アカウントだけに使う（私用は正体保護のため従来どおり）
+  const custom = known && account === id ? customLimeIconUrl(id) : null;
+  if (custom) {
+    return el(`img.${cls}.custom`, { src: custom, alt: "", onerror: (e) => {
+      const node = e.currentTarget;
+      node.onerror = null;
+      if (url) { node.classList.remove("custom"); node.src = url; }
+      else node.replaceWith(el(`span.${cls}.blank`, { text: [...limeName(account)][0] || "？" }));
+    } });
+  }
   if (url) return el(`img.${cls}`, { src: url, alt: "" });
   const name = known ? limeName(account) : "？";
   return el(`span.${cls}.blank`, { text: [...name][0] || "？" });
