@@ -163,7 +163,7 @@ export function playChapterPreview({ signal, sample } = {}) {
         const arts = [...new Set(next.frames.map(f => f.art).filter(Boolean))];
         const fontReady = new Promise(resolve => {
           const timeout = setTimeout(resolve, 4000);
-          document.fonts.load('400 30px "Chapter Preview Dot"', "水煙前線次回予告みんと")
+          document.fonts.load('400 30px "DS Dot"', "水煙前線次回予告みんと")
             .catch(() => {}).finally(() => { clearTimeout(timeout); resolve(); });
         });
         const [loaded] = await Promise.all([

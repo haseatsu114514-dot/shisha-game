@@ -131,7 +131,7 @@ try {
     } catch (error) { return { error: String(error) }; }
   });
   await page.evaluate(async () => {
-    await document.fonts.load('400 30px \"Chapter Preview Dot\"', '水煙前線次回予告みんと');
+    await document.fonts.load('400 30px \"DS Dot\"', '水煙前線次回予告みんと');
     await document.fonts.ready;
     await Promise.all([...document.images].filter(img => !img.complete)
       .map(img => new Promise(resolve => {

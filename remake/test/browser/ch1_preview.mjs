@@ -45,9 +45,9 @@ async function setup(page, { cleared = false, restore = false } = {}) {
           wholeImageFits: a.left >= s.left - 1 && a.top >= s.top - 1 && a.right <= s.right + 1 && a.bottom <= s.bottom + 1,
           captionFits: !caption || (caption.scrollWidth <= caption.clientWidth + 1 && caption.scrollHeight <= caption.clientHeight + 1),
           captionFont: caption ? getComputedStyle(caption.querySelector("p")).fontFamily : "",
-          dotFontLoaded: [...document.fonts].some(f => f.family === "Chapter Preview Dot" && f.status === "loaded"),
-          dotFont: !!caption && getComputedStyle(caption).fontFamily.includes("Chapter Preview Dot")
-            && [...document.fonts].some(f => f.family === "Chapter Preview Dot" && f.status === "loaded") });
+          dotFontLoaded: [...document.fonts].some(f => f.family === "DS Dot" && f.status === "loaded"),
+          dotFont: !!caption && getComputedStyle(caption).fontFamily.includes("DS Dot")
+            && [...document.fonts].some(f => f.family === "DS Dot" && f.status === "loaded") });
       }
     });
     P.observer.observe(document.getElementById("stage"), { subtree: true, attributes: true, childList: true });
