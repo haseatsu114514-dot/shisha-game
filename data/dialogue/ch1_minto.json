@@ -693,8 +693,20 @@
         }
       ],
       "branches": {
-        "before_local_match": [],
-        "after_local_match": [],
+        "before_local_match": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（なのに大会では、あの『可愛さ』という武器に負けるかもしれないんだ）"
+          }
+        ],
+        "after_local_match": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの「可愛さ」も、煙と一緒に人を惹きつける彼女の武器なんだ）"
+          }
+        ],
         "cb_shibui": [
           {
             "speaker": "minto",
