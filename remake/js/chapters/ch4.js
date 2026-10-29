@@ -3,16 +3,19 @@
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
+import { paidAction } from "../core/stats.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
   canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
-  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy } from "./ch4-progress.js";
+  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "./ch4-progress.js";
+
+const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
 import { playChapterPreview } from "./chapter-preview.js";
 
@@ -219,7 +222,13 @@ async function visit(owner, id) {
   const destination = chapterFourMapModel(state)?.destinations.find(item => item.id === id);
   if (!destination) return;
   for (const sceneId of destination.scenes) {
-    if (!await readAndCommit(owner, sceneId)) return;
+    if (CH4_SPOT_SCENES.includes(sceneId)) {
+      // スポット初回は「……【センス】が少し上がった。」の台詞報酬を実際に加算する（通常の自由行動と同じ最大2能力各1P）。
+      // 最後まで読んだ時だけ精算し、中断では何も付けない。
+      const { value: done } = await paidAction(() => readAndCommit(owner, sceneId), { consumed: ok => ok });
+      if (!done) return;
+      save();
+    } else if (!await readAndCommit(owner, sceneId)) return;
   }
   if (destination.kind === "end_day") {
     if (!endChapterFourDay(state)) return;
@@ -268,6 +277,7 @@ async function runTournament(owner) {
   // 骨格では台本どおり勝ち固定。実試合を接続するときは chapterFourTournamentOutcome の中身を差し替える。
   if (chapterFourTournamentOutcome(state) === "win") {
     if (!await readAndCommit(owner, win)) return;
+    toast(`大会の賞金 ${CH4_PRIZE.toLocaleString("ja-JP")}円を受け取った`, { kind: "good" });
   } else {
     if (!await readAndCommit(owner, loss)) return;
     // ※仮置き（Q5・Q7 未決）: 大会の最初へ戻す暫定形。

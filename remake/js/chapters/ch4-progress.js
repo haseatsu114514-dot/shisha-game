@@ -8,6 +8,12 @@
 //   DAY5 大会当日 : tournament_start → 勝敗 →（勝ち）final → 後日談の本線 → 完了
 // マップ訪問では日は進まない。進むのは endChapterFourDay（宿でその日を終える）と前夜の終了だけ。
 
+import { MAX_MONEY } from "../core/rules.js";
+
+// 大会賞金。※暫定: 第2〜4章共通の額は WORK-QUEUE「大会賞金の額」が判断待ち。確定済みの実装値は第1章の30,000円のみなので、
+// 決定が出るまでそれに揃える。額が決まったらこの1か所だけを直す。
+export const CH4_PRIZE = 30000;
+
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // ドバイ専用の背景が無いので、全て既存 bg の流用。#1177 でドバイ素材に差し替える時はこの表だけ直す。
 export const CH4_PLACE_BG = Object.freeze({
@@ -234,6 +240,11 @@ export function completeChapterFourScene(value, id) {
     if (id !== CH4_TOURNAMENT_SCENES.start && progress.read[CH4_TOURNAMENT_SCENES.start] !== true) return false;
     progress.read[id] = true;
     if (id === CH4_TOURNAMENT_SCENES.win) {
+      // 賞金は勝利の確定と同じ更新で一度だけ渡す（再読・LOADで二重に付けない）。
+      if (!progress.prizePaid) {
+        progress.prizePaid = true;
+        value.money = Math.min(MAX_MONEY, Math.max(0, Math.round((value.money || 0) + CH4_PRIZE)));
+      }
       progress.part = "resolution";
       progress.resolution = 0;
       value.phase = "aftermath";
