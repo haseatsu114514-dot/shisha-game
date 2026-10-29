@@ -271,7 +271,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "カウンターの奥にいたのは、緑と赤のグラデーションカラーが鮮やかな青年だった。"
+            "text": "カウンターの奥にいたのは、左右で緑と赤にくっきり分かれた髪の青年だった。"
           },
           {
             "speaker": "",
@@ -453,7 +453,7 @@
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "林檎が“パイ”になる。俺はやらぬが……悪くはない"
+          "text": "林檎が“パイ”になる。客には出さぬが……俺だけの一服にはなる"
         },
         {
           "type": "note",
@@ -789,29 +789,11 @@
           "text": "（俺まで一緒に悩んでる。そろそろ帰るつもりだったのに）"
         },
         {
-          "speaker": "adam",
-          "face": "smile",
-          "text": "俺のエデンを揺るがすような、至高の煙を世界に見せつけてやるがいい……！"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "はい！ アダムさんの極上ダブルアップルにも負けないようなものを作ってきます！"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "ふっ……では、いいものを見せてもらおう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "アダムさんは、これからもダブルアップル一筋ですか？"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "無論だ。リンゴの栄光は永遠なり……！ 健闘を祈る、同志よ！"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "farewell_after",
+          "next_false": "farewell_before"
         },
         {
           "speaker": "hajime",
@@ -866,6 +848,55 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。俺でよければ、ぜひ"
+          }
+        ],
+        "farewell_before": [
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "……だが、迷うのも悪くない。本番の前に、己の林檎を確かめておける"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "本番……そうだ。アダムさんも、同じ卓に立つんですよね"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "無論だ。俺はダブルアップルで行く。香りは譲れん"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "同じ卓で会おう、同志よ。リンゴは手加減せぬ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "──はい。俺も、自分の一台で勝ちにいきます"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "ふっ……それでこそだ。お前の煙、正面から受けて立とう"
+          }
+        ],
+        "farewell_after": [
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "……だが、迷うのも悪くない。お前と吸うと、俺の林檎がまた揺れる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "アダムさんは、これからもダブルアップル一筋ですか？"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "無論だ。リンゴの栄光は永遠なり……！ また付き合え、同志よ"
           }
         ]
       }
