@@ -79,11 +79,13 @@ async function realModule(name, path) {
   return mod;
 }
 
+await realModule("stat-step-tables.js", "remake/js/core/stat-step-tables.js");
+
 synthetic("util.js", { el, pick: (list) => list[0] });
 synthetic("data.js", { DB: db, bgUrl: (id) => id });
 synthetic("state.js", { state, timeOfDay: () => "day" });
 synthetic("stats.js", {
-  addMoney() {}, addStamina() {}, applyStats() {}, star: () => "",
+  addMoney() {}, addStamina() {}, applyStats() {}, step: () => 1,
   currentCondition: () => ({}), affinityLevel,
 });
 synthetic("ui.js", {

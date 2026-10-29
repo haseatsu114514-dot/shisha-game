@@ -17,6 +17,7 @@ try {
     const reel = await import("./js/daily/reel.js"), { on } = await import("./js/core/bus.js");
     const { SE } = await import("./js/core/audio.js");
     core.newGame(); core.state.phase = "daily";
+    core.state.stats.technique = 11;
     ui.showScreen("map", document.createElement("div"));
     hud.initHud({}); hud.showHud();
     window.T = { core, stats, ui, hud, reel, events: [], flights: [], impacts: 0, bonusSounds: 0 };
@@ -36,7 +37,7 @@ try {
   assert.equal(await page.locator(".gain-card").count(), 1);
   assert.equal(await page.locator(".gc-top").textContent(), "STATUS UP");
   assert.equal(await page.locator(".gc-sub").count(), 0);
-  assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.clientHeight), 71);
+  assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.clientHeight), 68);
   const regularPosition = await page.locator(".gain-card.stat").evaluate(e => ({
     parent: e.parentElement.id, left: e.offsetLeft, top: e.offsetTop, width: e.offsetWidth, height: e.offsetHeight,
   }));
@@ -44,7 +45,7 @@ try {
   assert.equal(await page.evaluate(() => T.bonusSounds), 0, "通常の能力アップでスロット専用音が鳴った");
   await page.waitForFunction(() => T.impacts > 0);
   assert.deepEqual(await page.evaluate(() => ({ points: T.core.state.stats.technique, total: T.events[0].total,
-    count: T.events.length, flown: [...new Set(T.flights)] })), { points: 13, total: 3, count: 1, flown: ["technique"] });
+    count: T.events.length, flown: [...new Set(T.flights)] })), { points: 14, total: 3, count: 1, flown: ["technique"] });
   await page.evaluate(() => T.ui.bannersIdle());
 
   // 累計16を+16と表示しない。10刻みの境界前後と連続加算も、今回の実増分だけ。
@@ -155,7 +156,7 @@ try {
   await page.evaluate(() => {
     T.stats.gainStat("technique", 3);
     T.core.newGame(); T.core.state.phase = "daily"; T.events = []; T.flights = [];
-    T.stats.gainStat("insight", 3);
+    T.core.state.stats.insight = 11; T.stats.gainStat("insight", 3);
   });
   await page.waitForSelector(".gain-card.st-insight .gc-points");
   assert.equal(await page.locator(".gc-points").textContent(), "+3P");
