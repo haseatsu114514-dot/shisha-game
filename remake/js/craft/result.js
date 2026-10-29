@@ -29,19 +29,19 @@ export function outcomeOf(total) {
   return { rank: 4, kind: total < 38 ? "disaster" : "lose" };
 }
 
-/** 審査員の持ち点（各10点）の最終配分。はじめへの点は「ほとんどない」まま、南雲の10点だけが動く */
+/** 審査員の持ち点（各10点）の最終配分。はじめは上園・博士からも点が入り上位で競り、南雲の10点は「最後の一票」として締める（#1282 逆転優勝の廃止、オーナー決定 2026-10-28） */
 export function pointTable(rank) {
-  if (rank === 1) return { maezono: { naru: 5, adam: 2, minto: 2, hajime: 1 }, dr_kemuri: { adam: 5, minto: 3, naru: 2 }, nagumo: { hajime: 10 } };
+  if (rank === 1) return { maezono: { hajime: 4, naru: 2, adam: 2, minto: 2 }, dr_kemuri: { hajime: 3, adam: 3, naru: 3, minto: 1 }, nagumo: { hajime: 10 } };
   if (rank === 3) return { maezono: { naru: 4, adam: 3, hajime: 2, minto: 1 }, dr_kemuri: { adam: 5, minto: 2, hajime: 2, naru: 1 }, nagumo: { naru: 10 } };
-  return { maezono: { naru: 5, adam: 3, minto: 2 }, dr_kemuri: { adam: 5, minto: 4, naru: 1 }, nagumo: { naru: 10 } };
+  return { maezono: { naru: 4, adam: 3, minto: 1, hajime: 2 }, dr_kemuri: { adam: 5, minto: 3, naru: 1, hajime: 1 }, nagumo: { naru: 10 } };
 }
 /** 中間票は、どの最終結果にも残る確定分だけ。未投入票は最終審査まで保留する。 */
 export function interimPointTable(round) {
   return round === 1
-    ? { maezono: { naru: 3, adam: 1, minto: 1 }, dr_kemuri: {}, nagumo: {} }
+    ? { maezono: { naru: 2, adam: 1, minto: 1, hajime: 1 }, dr_kemuri: {}, nagumo: {} }
     : round === 2
-      ? { maezono: { naru: 4, adam: 2, minto: 1 }, dr_kemuri: { adam: 4, minto: 2, naru: 1 }, nagumo: {} }
-      : { maezono: { naru: 4, adam: 2, minto: 1 }, dr_kemuri: { adam: 5, minto: 2, naru: 1 }, nagumo: {} };
+      ? { maezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_kemuri: { adam: 3, minto: 1, naru: 1, hajime: 1 }, nagumo: {} }
+      : { maezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_kemuri: { adam: 3, minto: 1, naru: 1, hajime: 1 }, nagumo: {} };
 }
 
 const totals = (table, upto = JUDGES.length) => {
@@ -81,7 +81,7 @@ const judgeLegend = () => legendOf(JUDGE_IDS);
 // ---------------------------------------------------------------- 中間発表
 
 /**
- * 暫定順位（R1〜R3の後）。南雲票が入るまでは、演出上はじめは最大2位止まり。
+ * 暫定順位（R1〜R3の後）。確定分のみで集計する。はじめは序盤から上位で競っている。
  * @param round 1 | 2 | 3
  * @param mine  ここまでのはじめの出来（0〜100）
  */
@@ -90,9 +90,9 @@ export async function showStandings(round, mine, cs = null) {
   const table = interimPointTable(round);
   const values = totals(table);
   const feed = round === 1
-    ? [`${displayName("maezono", state)}、なるに3点投入！`, "南雲審査員長、まだ動かず"]
+    ? [`${displayName("maezono", state)}、なるに2点・はじめに1点投入！`, "南雲審査員長、まだ動かず"]
     : round === 2
-      ? ["チャコール博士、アダムに4点投入！", "南雲審査員長、10点まるまる温存"]
+      ? ["チャコール博士、アダムに3点投入！", "南雲審査員長、10点まるまる温存"]
       : [`${displayName("maezono", state)}・チャコール博士は、残りの配点を見極めている`, "南雲審査員長、依然10点を温存"];
   const review = evaluationOf(mine);
   const recognition = craftRecognition(cs, { careRounds: Math.max(0, round - 2) });
@@ -269,7 +269,8 @@ export async function nagumoCutin(rank) {
     row.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration: 700, easing: "cubic-bezier(.2,.8,.2,1)" });
   }
   if (order[0] === "hajime") {
-    ov.append(el("div.nc-stamp", { text: "逆転！" }));
+    // 南雲票の前から首位なら「確定」、追い抜いた時だけ「逆転」（#1282: 1位は票前から首位）
+    ov.append(el("div.nc-stamp", { text: rankOf("hajime", before) === 1 ? "確定！" : "逆転！" }));
     SE.stamp();
   }
   await sleep(fast ? 100 : 1500);

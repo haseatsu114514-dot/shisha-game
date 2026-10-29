@@ -82,6 +82,12 @@
       "run": ["node remake/test/ngplus_carry.mjs"]
     },
     {
+      "id": "ngplus-title",
+      "title": "NG+ title next-cycle entry and start options (U10, #1228)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ngplus_title.mjs"]
+    },
+    {
       "id": "ngplus-cycle-meta",
       "title": "NG+ cycle meta layer (U2): true-end record, idempotent re-notify, cycle-start notice (#1228)",
       "kind": "quick",
@@ -98,6 +104,12 @@
       "title": "Deferred module loading notice: delay, failure cleanup, retry, single-flight",
       "kind": "quick",
       "run": ["node remake/test/module_loading.mjs"]
+    },
+    {
+      "id": "warmup-defer",
+      "title": "Title warm-up defers store logos to idle and waits are split (core / store logos)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
     },
     {
       "id": "resume-loading-a01",
@@ -216,6 +228,7 @@
       "title": "Game logic without a browser",
       "kind": "quick",
       "run": [
+        "node --experimental-vm-modules remake/test/engine_robust.mjs",
         "node --experimental-vm-modules remake/test/ch3_deliveries.mjs",
         "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
@@ -298,6 +311,7 @@
         "node --experimental-vm-modules remake/test/continue_context.mjs",
         "node --experimental-vm-modules remake/test/bgm_gain.mjs",
         "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
+        "node --experimental-vm-modules remake/test/bgm_packed_cache.mjs",
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
@@ -435,7 +449,7 @@
       "id": "facility-icons",
       "title": "Facility icons: sheet byte equality, alpha bounds, badge anchors on right contour, layout",
       "kind": "browser",
-      "weight": 1,
+      "weight": 0.5,
       "timeout": 10,
       "paths": [
         "remake/js/daily/facility-icons.js",
@@ -458,7 +472,7 @@
       "id": "ch1-presentation",
       "title": "Chapter 1 presentation, first brew and deliveries",
       "kind": "browser",
-      "weight": 9,
+      "weight": 15,
       "timeout": 30,
       "paths": [
         "remake/js/chapters/ch1*.js",
@@ -672,7 +686,7 @@
       "id": "ch2-daily",
       "title": "Chapter 2 browser suite ch2_daily",
       "kind": "browser",
-      "weight": 2.5,
+      "weight": 4.5,
       "timeout": 10,
       "paths": [
         "remake/chapter2-preview.html",
@@ -796,7 +810,7 @@
       "id": "ch2-tournament",
       "title": "Chapter 2 browser suite ch2_tournament",
       "kind": "browser",
-      "weight": 3.3,
+      "weight": 6.5,
       "timeout": 10,
       "paths": [
         "remake/chapter2-preview.html",
@@ -860,7 +874,7 @@
       "id": "ch4-full-flow",
       "title": "Chapter 4 full playthrough on one save",
       "kind": "browser",
-      "weight": 2.5,
+      "weight": 0.5,
       "timeout": 10,
       "paths": [
         "remake/js/chapters/ch4*.js",
@@ -878,7 +892,7 @@
       "id": "ch5-full-flow",
       "title": "Chapter 5 full playthrough on one save",
       "kind": "browser",
-      "weight": 2.5,
+      "weight": 0.5,
       "timeout": 10,
       "paths": [
         "remake/js/chapters/ch5*.js",
@@ -944,7 +958,7 @@
       "id": "ch3-full-flow",
       "title": "Chapter 3 full playthrough on one save",
       "kind": "browser",
-      "weight": 3.5,
+      "weight": 1,
       "timeout": 15,
       "paths": [
         "remake/index.html",
@@ -1128,7 +1142,7 @@
       "id": "heat-feedback",
       "title": "Heat feedback and craft progress",
       "kind": "browser",
-      "weight": 5.5,
+      "weight": 3,
       "timeout": 10,
       "paths": [
         "remake/js/craft/heat*.js",
@@ -1164,7 +1178,7 @@
       "id": "ch1-tournament",
       "title": "Chapter 1 tournament",
       "kind": "browser",
-      "weight": 1.5,
+      "weight": 3,
       "timeout": 15,
       "paths": [
         "remake/js/craft/result.js",
@@ -1265,7 +1279,7 @@
       "id": "hiyori-axe-story",
       "title": "Hiyori formal axe story",
       "kind": "browser",
-      "weight": 7,
+      "weight": 1.5,
       "timeout": 20,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -1286,7 +1300,7 @@
       "id": "hiyori-natural",
       "title": "Natural New Game to the axe story",
       "kind": "browser",
-      "weight": 10,
+      "weight": 15,
       "timeout": 20,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -1307,7 +1321,7 @@
       "id": "hiyori-work",
       "title": "Hiyori work and relationship story",
       "kind": "browser",
-      "weight": 8,
+      "weight": 2.5,
       "timeout": 25,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -1333,7 +1347,7 @@
       "id": "hiyori-natural-work",
       "title": "Natural New Game to Hiyori work",
       "kind": "browser",
-      "weight": 11,
+      "weight": 16.5,
       "timeout": 25,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -1495,7 +1509,7 @@
       "id": "ch1-approved-scenes",
       "title": "Approved chapter 1 scenes and salaryman portraits",
       "kind": "browser",
-      "weight": 3.5,
+      "weight": 2,
       "timeout": 20,
       "paths": [
         "data/dialogue/ch1_main.json",
@@ -1894,7 +1908,7 @@
       "id": "relationships",
       "title": "Hiyori, Samechan and relationship UI",
       "kind": "browser",
-      "weight": 7,
+      "weight": 11.5,
       "timeout": 25,
       "paths": [
         "remake/js/daily/hiyori*.js",
@@ -1944,7 +1958,7 @@
       "id": "minto-progression",
       "title": "Minto identity and relationship progression",
       "kind": "browser",
-      "weight": 2,
+      "weight": 0.5,
       "timeout": 15,
       "paths": [
         "remake/js/daily/minto*.js",
@@ -1966,7 +1980,7 @@
       "id": "tsumugi-story",
       "title": "Tsumugi fixed events and chapter days",
       "kind": "browser",
-      "weight": 2,
+      "weight": 4,
       "timeout": 15,
       "paths": [
         "remake/js/daily/tsumugi*.js",
@@ -2121,7 +2135,7 @@
       "id": "lover-date-route",
       "title": "Saved-lover date routes",
       "kind": "browser",
-      "weight": 2,
+      "weight": 6,
       "timeout": 15,
       "paths": [
         "remake/js/daily/romance.js",
@@ -2158,7 +2172,7 @@
       "id": "opening-and-readiness",
       "title": "Visual readiness, opening and tutorial transition",
       "kind": "browser",
-      "weight": 3,
+      "weight": 1.5,
       "timeout": 20,
       "paths": [
         "remake/index.html",
@@ -2259,7 +2273,7 @@
       "id": "continue-screen",
       "title": "Continue captions, readiness and typing",
       "kind": "browser",
-      "weight": 3,
+      "weight": 5.5,
       "timeout": 15,
       "paths": [
         "remake/js/scenes/continue*.js",
@@ -2297,7 +2311,7 @@
       "id": "steam-attack",
       "title": "Steam slash, recharge and thermometer",
       "kind": "browser",
-      "weight": 5,
+      "weight": 8.5,
       "timeout": 20,
       "paths": [
         "remake/js/craft/**",
@@ -2762,14 +2776,14 @@
         "node remake/test/browser/flavor_mastery.mjs",
         "node remake/test/browser/mastery_display.mjs"
       ],
-      "weight": 3,
+      "weight": 1.5,
       "timeout": 10
     },
     {
       "id": "recent-intros",
       "title": "New cast introduction artwork and first-encounter state",
       "kind": "browser",
-      "weight": 2,
+      "weight": 4,
       "timeout": 6,
       "paths": [
         "remake/test/browser/recent_intros.mjs",
@@ -2860,7 +2874,7 @@
       "id": "ch1-visual-quality",
       "title": "Chapter 1 full visual quality across weather and devices",
       "kind": "browser",
-      "weight": 4,
+      "weight": 1.5,
       "timeout": 20,
       "paths": [
         "remake/test/ch1_visual_quality.mjs"
@@ -2886,7 +2900,7 @@
       "id": "ch2-rain-j08",
       "title": "Chapter 2 rain weather effects and window masks",
       "kind": "browser",
-      "weight": 1.5,
+      "weight": 0.5,
       "timeout": 10,
       "paths": [
         "remake/test/browser/ch2_rain_j08.mjs"
@@ -2900,7 +2914,7 @@
       "title": "Native kuji purchase and rapid draw regression",
       "kind": "browser",
       "chrome": "playwright",
-      "weight": 1.5,
+      "weight": 0.5,
       "timeout": 10,
       "paths": [
         "remake/test/kuji_purchase.mjs"
