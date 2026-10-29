@@ -316,39 +316,11 @@
           "text": "……なんとか。ご飯は食べました"
         },
         {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "よし。じゃ、聞いて。自称二十歳、何年目ですかって、またいじられた"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……あはは"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "歳ってさ、一度盛ると、次の誕生日にも辻褄を合わせるでしょ"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "嘘は育つの。年齢の話だけのはずが、戻り方まで分かんなくなる"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "グレープの煙を思い出した。返事を探している間も、通話は切れなかった。"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "でも、店のみんとまで嘘だったことにはしたくないんだよね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……はい。あの店、好きです"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_identity_revealed",
+          "next_true": "identity_known",
+          "next_false": "identity_new"
         },
         {
           "speaker": "minto",
@@ -360,7 +332,68 @@
           "face": "",
           "text": "通話を切って、明日言いたいことを一つだけメモした。"
         }
-      ]
+      ],
+      "branches": {
+        "identity_known": [
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "よし。じゃ、聞いて。自称二十歳、何年目ですかって、またいじられた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……あはは"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "歳ってさ、一度盛ると、次の誕生日にも辻褄を合わせるでしょ"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "嘘は育つの。年齢の話だけのはずが、戻り方まで分かんなくなる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "グレープの煙を思い出した。返事を探している間も、通話は切れなかった。"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "でも、店のみんとまで嘘だったことにはしたくないんだよね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……はい。あの店、好きです"
+          }
+        ],
+        "identity_new": [
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "よし。じゃ、聞いて。小さい嘘ってさ、一度つくと、次の場面でも辻褄を合わせたくなるでしょ"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "嘘は育つの。戻り方まで分かんなくなる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "グレープの煙を思い出した。返事を探している間も、通話は切れなかった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……分かる気がします"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_daily_cup_1",
