@@ -810,11 +810,13 @@ TOO CLOSE / BLANK SPACE / TOO MANY / RISKY
 | 状態 | 見た目 | 評価 | 影響 |
 |---|---|---|---|
 | 生焼け | 黒い芯が残る | 低 | 火力不足、立ち上がり遅 |
-| 早取り | 端だけ赤い | やや低 | 焦げにくいが煙量不足 |
-| 適温前 | 全体が赤くなり始め | テーマ次第で良 | 香り保持高、火力控えめ |
+| 早取り | 端だけ赤い | やや低 | 炭臭さが出る、火力が安定しない、煙量不足 |
+| 適温前 | 全体が赤くなり始め | やや低 | 炭臭さが出る、火力が安定しない |
 | **ジャスト** | 赤熱＋芯が一瞬ピカッ | **最高** | 火力安定、香り保持、立ち上がり良好 |
 | 攻め焼き | 白っぽく赤い | 煙量重視なら有利 | 煙量↑ 焦げリスク↑ 香り保持↓ |
-| 焼きすぎ | 灰被り・白すぎ | 低 | 熱暴走、香り飛び、焦げリスク高 |
+| 焼きすぎ | 白すぎ（身が痩せる） | 低 | 持ちが短い（持続↓）、香り飛び |
+
+> 灰かぶりについて: 炭に灰が厚くかぶると灰が断熱になり熱が弱まるため、灰かぶり自体は評価項目ではなく調整操作として扱う（灰を落とすと熱が戻る）。
 
 ### ピカン演出
 - ジャスト付近で炭そのものが一瞬光る
@@ -825,9 +827,9 @@ HEAT STABLE / AROMA KEEP
 
 ### 性能影響の数値例
 ```json
-早取り:   { "heatPower": -20, "heatStability": -10, "startupSpeed": -20, "burnRisk": -15, "aromaRetention": 10 }
+早取り:   { "heatPower": -20, "heatStability": -20, "startupSpeed": -20, "burnRisk": -15, "aromaRetention": -10 }
 ジャスト: { "heatPower": 20,  "heatStability": 30,  "startupSpeed": 15,  "burnRisk": 0,   "aromaRetention": 15 }
-焼きすぎ: { "heatPower": 35,  "heatStability": -10, "startupSpeed": 25,  "burnRisk": 30,  "aromaRetention": -20 }
+焼きすぎ: { "heatPower": 10,  "heatStability": -10, "startupSpeed": 25,  "burnRisk": 10,  "aromaRetention": -20, "duration": -20 }
 ```
 
 ### レモン大会での理想
