@@ -25,7 +25,7 @@
 .spot-pin .pin-person { display: block; flex: 0 0 30px; width: 30px; min-width: 0; height: 30px; border: 2px solid #e2d9c7; border-radius: 50%; object-fit: contain; background: #211c2b; box-shadow: 0 2px 4px #0008; }
 .spot-pin .pin-unknown { position: relative; color: #f2e8d1; }
 .pin-unknown svg { display: block; width: 100%; height: 100%; fill: #666171; }
-.pin-unknown b { position: absolute; inset: 0; display: grid; place-items: center; font: bold 16px/1 sans-serif; text-shadow: 0 1px 2px #000; }
+.pin-unknown b { position: absolute; inset: 0; display: grid; place-items: center; font: bold 16px/1 var(--font); text-shadow: 0 1px 2px #000; }
 body.game-ds .map .spot-pin .pin-visual { display: contents; }
 body.game-ds .map .spot-pin .pin-people { position: static; flex-basis: 100%; justify-content: flex-start; padding: 2px; }
 body.game-ds .map .spot-pin .pin-person { flex: none; }
