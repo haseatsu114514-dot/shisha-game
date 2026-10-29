@@ -47,10 +47,10 @@ try {
     count: T.events.length, flown: [...new Set(T.flights)] })), { points: 13, total: 3, count: 1, flown: ["technique"] });
   await page.evaluate(() => T.ui.bannersIdle());
 
-  // 累計16を+16と表示しない。20刻みの境界前後と連続加算も、今回の実増分だけ。
+  // 累計16を+16と表示しない。10刻みの境界前後と連続加算も、今回の実増分だけ。
   for (const [before, gains, level, width, height] of [
-    [15, [1], 1, 1280, 720], [19, [1], 1, 844, 390],
-    [20, [1], 2, 591, 1280], [39, [1, 1], 3, 1280, 720],
+    [15, [1], 2, 1280, 720], [19, [1], 2, 844, 390],
+    [20, [1], 3, 591, 1280], [39, [1, 1], 5, 1280, 720],
   ]) {
     await page.setViewportSize({ width, height });
     const expected = gains.reduce((sum, gain) => sum + gain, 0);
@@ -62,7 +62,7 @@ try {
     assert.deepEqual(committed.returned, gains);
     assert.equal(committed.stats.technique, before + expected);
     await page.waitForSelector(".gain-card.st-technique.show");
-    const levelUp = level > Math.max(1, Math.ceil(before / 20));
+    const levelUp = level > Math.max(1, Math.ceil(before / 10));
     if (levelUp) {
       assert.equal(await page.locator(".gc-earned").count(), 0);
       assert.equal(await page.locator(".gc-points").count(), 0, "レベル到達時は増分数字を表示しない");
@@ -79,8 +79,8 @@ try {
         && card.scrollWidth <= card.clientWidth;
     }), "今回の表示と名前・増分が重なるか、カードからはみ出した");
     }
-    assert.equal(await page.locator(".gc-top").textContent(), levelUp ? "LEVEL UP" : "STATUS UP");
-    assert.deepEqual(await page.locator(".gc-evolution").allTextContents(), levelUp ? [`Lv.${level}に到達`] : []);
+    assert.equal(await page.locator(".gc-top").textContent(), levelUp ? "STEP UP" : "STATUS UP");
+    assert.deepEqual(await page.locator(".gc-evolution").allTextContents(), levelUp ? [`${level}段に上がった`] : []);
     assert.deepEqual(await page.evaluate(() => T.events.map(({ total, starUp, star }) => ({ total, starUp, star }))),
       [{ total: expected, starUp: levelUp, star: level }]);
     await page.evaluate(() => T.ui.bannersIdle());

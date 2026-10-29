@@ -27,12 +27,12 @@ function slotInfo(data) {
   return { chapter: badge ? `${badge}・第${chapter}章` : `第${chapter}章`, day: `DAY ${chapterDay(data)}${time ? `・${time}` : ""}`, phase, money: `所持金 ${yen(data.money || 0)}`, when };
 }
 
-/** 能力5種を、★（20刻み）と細いゲージで。★の式は stats.js の star() と同じ（あちらは現在の state を読むので使えない） */
+/** 保存データの能力5種を10段と細いゲージで示す。現在の state を読む step() は使えない。 */
 function statGauges(stats) {
   return el("span.ss-stats", STAT_KEYS.map((k) => {
     const v = Math.max(0, Math.min(100, Number(stats?.[k]) || 0));
-    const star = Math.max(1, Math.min(5, Math.ceil(v / 20)));
-    return el("span.ss-stat", { title: `${STAT_JA[k]} ★${star}（${Math.round(v)}）`, "aria-label": `${STAT_JA[k]} ★${star}` }, [
+    const step = Math.max(1, Math.min(10, Math.ceil(v / 10)));
+    return el("span.ss-stat", { title: `${STAT_JA[k]} ${step}段（${Math.round(v)}）`, "aria-label": `${STAT_JA[k]} ${step}段` }, [
       el("small", { text: STAT_JA[k] }),
       el("i", { style: { "--v": `${v}%` } }),
     ]);

@@ -1,3 +1,4 @@
+import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
 // シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
@@ -5,7 +6,7 @@ import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire, modal } from "../core/ui.js";
 import { state, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, applyStats, star, currentCondition } from "../core/stats.js";
+import { addMoney, addStamina, applyStats, step, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
@@ -72,7 +73,7 @@ export async function tonariCustomer({ signal = null } = {}) {
 
 // ---------------------------------------------------------------- バイト
 
-const CHARM_BONUS = [0, 500, 1200, 2000, 3000]; // 魅力★で指名・リピートが増える
+// 魅力の段で指名・リピートが増える
 const CALLED_BONUS = 5000; // スミさんに急に呼ばれた日の上乗せ（店からの給料。チップではない）
 
 /** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ） */
@@ -108,7 +109,7 @@ async function baitoShift({ called }) {
     await customerEvent(condition);
   }
   await serveShiftOrder();
-  const bonus = Math.round(CHARM_BONUS[star("charm") - 1] * condition.bonusRate);
+  const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
   const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus;

@@ -5,7 +5,7 @@ import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { cycleBadgeText } from "../core/cycle-display.js";
-import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
+import { step, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
@@ -45,7 +45,7 @@ export function radar(stats, baseline, size = 340) {
     t.textContent = STAT_JA[k];
     svg.append(t);
     const s = svgEl("text", { x, y: y + 11, class: `radar-star rs-${k}`, "text-anchor": "middle", "dominant-baseline": "middle" });
-    s.textContent = "★".repeat(star(k));
+    s.textContent = "★".repeat(step(k));
     svg.append(s);
   });
   return svg;
@@ -68,9 +68,9 @@ export function openStatus() {
 }
 
 
-/** 今の★で効いていること（★が上がるたびに変わる一言） */
+/** 今の段で効いていること（段が上がるたびに変わる一言） */
 export function tierFx(k) {
-  return DB.statusTexts?.statTierFx?.[k]?.[star(k) - 1] || "";
+  return DB.statusTexts?.statTierFx?.[k]?.[step(k) - 1] || "";
 }
 
 function meTab() {

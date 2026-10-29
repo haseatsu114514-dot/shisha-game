@@ -85,9 +85,9 @@ try {
     T.stats.gainStat("technique", 3);
   });
   await page.waitForSelector(".gc-evolution");
-  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "3段に上がった");
   assert.match(await page.locator(".gc-fx").textContent(), /ゲージ.*ゆっくり/);
-  assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "LEVEL UP");
+  assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "STEP UP");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
   assert.doesNotMatch(await page.locator(".gain-card.stat").textContent(), /様になってきた/);
   await page.waitForTimeout(500); // 通知の出現アニメーションが止まってから配置を測る
@@ -141,9 +141,9 @@ try {
     window.presenting = T.reel.presentNow();
     return { starTo: r.starTo, stats: { ...T.core.state.stats } };
   });
-  assert.equal(reward.starTo, 2);
+  assert.equal(reward.starTo, 3);
   await page.waitForSelector(".gain-card .gc-evolution", { timeout: 15000 });
-  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "3段に上がった");
   assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "SLOT BONUS");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
   assert((await page.locator(".gc-fx").textContent()).length > 0);
