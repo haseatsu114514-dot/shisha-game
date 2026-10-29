@@ -10,9 +10,9 @@
   --loading-logo: url("../img/ui/ui_title_logo.webp");         /* 上中央のロゴ（仮: 既存タイトルロゴ） */
   --loading-bar-gradient: linear-gradient(90deg, #ff5fa8 0%, #b45cf0 50%, #3fd0e8 100%); /* 進捗バーの色 */
   --loading-backdrop: #100b18;                                  /* 背景の下地色 */
-  --loading-backdrop-art: none;                                 /* 背景イラスト（例: url("../img/ui/loading/loading_bg.webp")） */
+  --loading-backdrop-art: url("../img/ui/loading/loading_bg.webp"); /* 背景イラスト（正式アート: 案B「霞と奥行き」、原画は asset_sources/ui/loading/） */
   --loading-backdrop-art-pos: center;                           /* イラストの寄せ位置 */
-  --loading-backdrop-fx: 1;                                     /* CSS の窓・煙装飾の強さ（イラスト差し込み時は 0） */
+  --loading-backdrop-fx: 0;                                     /* CSS の窓・煙装飾の強さ（イラスト差し込み時は 0） */
   /* --- Comic panel authoring size: 1 panel = 860x573 at a 1920x1080 master (3:2). --- */
   --loading-panel-ratio: 3 / 2;
   /* Layout unit: 1280x720 reference scaled to the gate. Resolved on children (the gate is their size container). */

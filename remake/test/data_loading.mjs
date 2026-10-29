@@ -103,9 +103,9 @@ assert(all.DB.dialogues.ch1_tsumugi_bond_finale && all.DB.dialogues.ch1_rin_bond
 assert(all.DB.friends.friends.naru.chats.length > 0); // 友人のたまのLIME（remake/data/friends.json）
 assert(all.DB.manifest.backgrounds.includes("bg_tonari_inside_day.png"));
 assert(all.DB.flavors.every((f) => (f.leaf || "blond") === "blond"));
-// DB.flavors はローダがブロンドのみに絞るため、メーカー検証は生データ全78種を対象にする。
+// DB.flavors はローダがブロンドのみに絞るため、メーカー検証は生データ全77種を対象にする。
 const rawFlavors = realJSON("../data/flavors.json").flavors;
-assert.equal(rawFlavors.length, 78);
+assert.equal(rawFlavors.length, 77);
 const makerProblems = flavorMakerProblems(rawFlavors);
 assert.equal(makerProblems.length, 0, `Invalid flavor makers: ${JSON.stringify(makerProblems)}`);
 assert.deepEqual(flavorMakerProblems([
@@ -143,7 +143,7 @@ function validateLimeMedia(messages, catalog) {
 }
 const catalog = all.DB.manifest.limeMedia;
 assert.deepEqual(JSON.parse(JSON.stringify(catalog)), realJSON("data/lime_media.json"));
-assert.equal(Object.keys(catalog).length, 11);
+assert.equal(Object.keys(catalog).length, 29);
 // CI quick は画像を含まない sparse checkout のため、画像が展開されている環境でのみ実在チェックを行う
 const imgDir = path.resolve(documentRoot, "img");
 const hasImageTree = fs.existsSync(imgDir) && fs.readdirSync(imgDir, { recursive: true }).some((f) => /\.(png|webp|jpe?g)$/i.test(String(f)));

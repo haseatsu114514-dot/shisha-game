@@ -1,8 +1,9 @@
 // セーブ／ロードの枠選び（オートセーブ＋手動3枠）。タイトルの「ロード」と、日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
-import { SCHEMA, SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlot } from "../core/state.js";
+import { SCHEMA, SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlot, state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
+import { cycleBadgeText, overwriteCycleNote } from "../core/cycle-display.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { SE } from "../core/audio.js";
 
@@ -21,7 +22,9 @@ function slotInfo(data) {
   const phase = data.phase === "cleared" ? `第${chapter}章クリア`
     : chapter === 2 && chapterDay(data) === 1 && data.flags?._ch2_day1?.stage === "complete" ? "初日終了" : PHASE_LABEL[data.phase] || "";
   const when = data.savedAt ? new Date(data.savedAt).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
-  return { chapter: `第${chapter}章`, day: `DAY ${chapterDay(data)}${time ? `・${time}` : ""}`, phase, money: `所持金 ${yen(data.money || 0)}`, when };
+  // 2周目以降だけ章札の前に周回数を付ける（1周目・cycle欠損の旧セーブは従来表示のまま。設計 §3.6・§8.3）
+  const badge = cycleBadgeText(data);
+  return { chapter: badge ? `${badge}・第${chapter}章` : `第${chapter}章`, day: `DAY ${chapterDay(data)}${time ? `・${time}` : ""}`, phase, money: `所持金 ${yen(data.money || 0)}`, when };
 }
 
 /** 能力5種を、★（20刻み）と細いゲージで。★の式は stats.js の star() と同じ（あちらは現在の state を読むので使えない） */
@@ -116,10 +119,13 @@ export async function saveFlow() {
     const key = await pickSlot("save");
     if (!key) return false;
     const slot = SAVE_SLOTS.find((s) => s.key === key);
-    if (readSlot(key)) {
+    const existing = readSlot(key);
+    if (existing) {
+      // 別周回・旧セーブの上書きは、既存の確認1回に注意文を添えて知らせる（二重に確認は出さない）
+      const note = overwriteCycleNote(existing, state);
       const ok = await modal({
         title: "上書き",
-        body: `${slot.label} のデータを上書きします。よろしいですか？`,
+        body: `${slot.label} のデータを上書きします。よろしいですか？${note ? `<br>${note}` : ""}`,
         options: [{ label: "やめる", value: false }, { label: "上書きする", value: true, primary: true, test: "confirm-overwrite" }],
       });
       if (!ok) continue;

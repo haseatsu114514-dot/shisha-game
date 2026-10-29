@@ -4,6 +4,7 @@ import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { cycleBadgeText } from "../core/cycle-display.js";
 import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
@@ -61,7 +62,9 @@ export function openStatus() {
     tabs.append(el("button.st-tab", { text: label, dataset: { tab: id }, onclick: () => show(id) }));
   }
   show("me");
-  return modal({ title: "STATUS", body: el("div.status", [tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
+  // 周回数の表示はステータス見出しとセーブ枠だけ（HUDには出さない）。2周目以降のみ・小さく（設計 §3.6）
+  const badge = cycleBadgeText(state);
+  return modal({ title: "STATUS", body: el("div.status", [badge ? el("div.st-cycle", { text: badge, dataset: { test: "status-cycle" } }) : null, tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
 }
 
 
