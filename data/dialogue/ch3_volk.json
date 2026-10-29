@@ -35,9 +35,14 @@
           "text": "え、ロシア語……？"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは振り返らない。"
+        },
+        {
           "speaker": "volk",
           "face": "normal",
-          "text": "（振り返らずに）入れ、という意味だ。座れ"
+          "text": "入れ、という意味だ。座れ"
         },
         {
           "speaker": "hajime",
@@ -110,11 +115,6 @@
           "speaker": "volk",
           "face": "normal",
           "text": "それが俺のやり方だ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（……本気だ、この人）"
         },
         {
           "speaker": "",
@@ -372,14 +372,14 @@
           "text": "確認、ですか"
         },
         {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "前回、室温は22度だった。今日は、（壁の計器を一瞥して）25度。湿度も高い"
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは壁の計器を一瞥した。"
         },
         {
-          "speaker": "hajime",
+          "speaker": "volk",
           "face": "normal",
-          "text": "（ちらっと数字を見ただけで……）"
+          "text": "前回、室温は22度だった。今日は25度。湿度も高い"
         },
         {
           "speaker": "volk",
@@ -397,11 +397,6 @@
           "text": "昨日は、昨日の条件だった。同じにする理由がない"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（本当に、その日の空気で炭を変えるんだ……）"
-        },
-        {
           "speaker": "volk",
           "face": "normal",
           "text": "温度は嘘をつかない。空気も、炭も、フレーバーも。数字は必ず正直だ"
@@ -412,9 +407,14 @@
           "text": "……その精度、どこで身につけたんですか"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "少し間が空いた。"
+        },
+        {
           "speaker": "volk",
           "face": "normal",
-          "text": "（少し間が空いた）……軍にいた。昔"
+          "text": "……軍にいた。昔"
         },
         {
           "speaker": "hajime",
@@ -609,7 +609,17 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "いや。（モニターに打ち込む）……データに入れた"
+          "text": "いや。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクはモニターに打ち込んだ。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……データに入れた"
         },
         {
           "speaker": "hajime",
@@ -637,11 +647,6 @@
           "text": "わからない。だから、もっとデータが必要だ。また来い"
         },
         {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "俺の式も、ここへ来た客と作ってきたものだ。完成ではない"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "少し間が空いた後、ヴォルクが独り言のように言った。"
@@ -649,7 +654,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "……測らなくても信じられる人間を見ると、奇妙な感覚になる。羨ましい、という感覚かもしれない"
+          "text": "……測らなくても信じられる人間を見ると、奇妙な感覚になる"
         },
         {
           "speaker": "hajime",
@@ -665,11 +670,6 @@
           "speaker": "volk",
           "face": "normal",
           "text": "……ただの独り言だ。気にするな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "（……この人なりの、また来てくれということだと思う）"
         },
         {
           "type": "remember",
@@ -719,21 +719,6 @@
           "text": "精度は完璧だった。だが、俺の煙は、お前の煙に対して『反応』しなかった"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "反応……？"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "お前は、相手を見ながら煙を作る。俺は、データを見ながら煙を作る。大会では、その差が出た"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……そんなに深く分析してたのか）"
-        },
-        {
           "speaker": "volk",
           "face": "normal",
           "text": "俺は負けた。だが、このデータは貴重だ、……今日の体温は"
@@ -744,9 +729,14 @@
           "text": "36.6です"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは数字をモニターに打ち込んだ。"
+        },
+        {
           "speaker": "volk",
           "face": "normal",
-          "text": "（モニターに打ち込む）ふむ。作る。待て"
+          "text": "ふむ。作る。待て"
         },
         {
           "speaker": "hajime",
