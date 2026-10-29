@@ -131,9 +131,11 @@ await check('manual pitch updates actual rate without seeking beat/phrase or cha
  a.mix.decks.forEach((d,i)=>near(beatAt(d,5),beats[i]));assert.equal(a.context.sources.length,sources);assert.equal(JSON.stringify(a.mix.guide),guide);assert.deepEqual(a.mix.decks.map(d=>d.playing),[true,true]);
  a.tempo(0,130);near(a.mix.decks[1].bpm,129.37);a.tempo(1,129.38);near(a.mix.decks[1].bpm,129.38);await a.dispose();
 });
+// quick CIはGit LFSの実体を取らないので、ポインタなら記載された実体サイズで確かめる。
+const audioSize=url=>{const head=fs.readFileSync(url).subarray(0,200).toString();const m=head.startsWith('version https://git-lfs.github.com/spec/v1')&&head.match(/^size (\d+)$/m);return m?Number(m[1]):fs.statSync(url).size;};
 await check('stage metadata and real files',()=>{
  const expected=[[120,.006,'USUAN1100272'],[120,0,'USUAN1700010'],[122,.006,'USUAN1900013'],[122,.006,'USUAN1100852'],[122,.486,'USUAN1900011']];
- assert.equal(Object.keys(TRACKS).length,5);Object.values(TRACKS).forEach((t,i)=>{assert.deepEqual([t.bpm,t.firstBeat,t.isrc],expected[i]);assert(fs.statSync(new URL('../../assets/audio/dj/'+t.file,import.meta.url)).size>1e6);});
+ assert.equal(Object.keys(TRACKS).length,5);Object.values(TRACKS).forEach((t,i)=>{assert.deepEqual([t.bpm,t.firstBeat,t.isrc],expected[i]);assert(audioSize(new URL('../../assets/audio/dj/'+t.file,import.meta.url))>1e6);});
 });
 await check('stage mixes and injected detune',()=>{for(const stage of STAGES){const m=createStageMix(stage,1.02);near(m.decks[1].bpm,Math.round(TRACKS[stage.b].bpm*1.02*100)/100);}assert.deepEqual(createStageMix(STAGES[2],1).decks.map(d=>d.bpm),[122,120]);});
 await check('signed immediate PLAY feedback thresholds',()=>{for(const [ms,grade] of [[0,'PERFECT'],[29,'PERFECT'],[31,'GOOD'],[59,'GOOD'],[61,'OK'],[119,'OK'],[-150,'EARLY'],[150,'LATE']]){const m=createStageMix(STAGES[0]);playDeck(m,0,0);playDeck(m,1,.5+ms/1000);near(m.lastPlay.errorMs,ms);assert.equal(m.lastPlay.grade,grade);near(m.decks[1].beat,0);}});
