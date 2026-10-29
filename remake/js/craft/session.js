@@ -15,7 +15,6 @@ import { evaluationOf } from "./feedback.js";
 import { clearComments, completed } from "./broadcast.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
-import { usesFoil } from "./holes_logic.js";
 import { availableHoleTemplates } from "./holes_templates.js";
 import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
@@ -121,8 +120,6 @@ function waitForBenchAssets(b, task, assets = task, notice = true) {
  */
 export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   applyCoalTraining(cs, state.flags);
-  // ロートスでアルミを使わない一台は、工程バーからも穴あけを外す（runHoles 側も飛ばす）。
-  if (!usesFoil(cs)) steps = steps.filter(([step]) => step !== "holes");
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   // 制作中は大会用の台だけを見せる。家背景に所持品の台を重ねない（#873）。
   const bg = () => setBg(bgUrl(benchBgRef(cs), timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls(), homeRigs: false });
@@ -158,8 +155,10 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
   const background = bg();
-  const assets = Promise.all([background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets]);
-  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter);
+  // A missing entryAssets is an already completed fourth step in the loading count.
+  const preparationSteps = [background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets];
+  const assets = Promise.all(preparationSteps);
+  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps);
   renderFatigue();
   return bench;
 }
@@ -374,7 +373,10 @@ export function scoreStep(cs, key, score) {
   cs.arcade ??= { total: 0, parts: {} };
   const step = key.split(":")[0];
   if (!key.includes(":")) for (const k of Object.keys(cs.arcade.parts)) if (k.startsWith(`${step}:`)) delete cs.arcade.parts[k];
-  cs.arcade.parts[key] = Math.round(Math.max(0, score || 0) * (SCORE_WEIGHT[step] ?? 0));
+  // 旧保存由来の異常値（上限超・Infinity / NaN）が記録用スコアへ流れ込まないよう入口で丸める（#1364）
+  const numericScore = Number(score);
+  const cleanScore = Number.isFinite(numericScore) ? Math.min(100, Math.max(0, numericScore)) : 0;
+  cs.arcade.parts[key] = Math.round(cleanScore * (SCORE_WEIGHT[step] ?? 0));
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
   // 旧保存と記録の互換用。制作中や結果画面には表示しない。
   return cs.arcade.total;
@@ -407,7 +409,6 @@ export async function failBench(cs, kind) {
   flash(kind === "cold" ? "white" : "red", 300);
   await sleep(reduced ? 300 : 1200);
 }
-export const burstBench = (cs) => failBench(cs, "burnt");
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
 export function refreshBench() {

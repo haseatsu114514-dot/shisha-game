@@ -101,10 +101,10 @@
 }
 .title-item:disabled { opacity: 0.35; cursor: default; }
 .ti-en { font-family: var(--font); font-size: 26px; line-height: 1.25; letter-spacing: 0.16em; }
-.ti-ja { font-size: 15px; color: var(--text-dim); letter-spacing: 0.2em; }
+.ti-ja { font-size: 15px; color: var(--text-dim); letter-spacing: 0.04em; }
 .title-item:hover:not(:disabled), .title-item:focus-visible { color: var(--gold-hi); transform: translateX(10px); outline: none; }
 .title-item:hover:not(:disabled) .ti-en::before { content: "◆ "; font-size: 18px; color: var(--gold); }
-.title-foot { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-size: 12px; letter-spacing: 0.35em; color: rgba(255, 255, 255, 0.4); pointer-events: none; }
+.title-foot { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-size: 14px; letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.75); pointer-events: none; }
 .cfg { display: flex; flex-direction: column; gap: 14px; min-width: 420px; }
 .cfg-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .cfg-row input[type="range"] { width: 220px; accent-color: var(--gold); }
@@ -151,13 +151,13 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .hud-card::before, .hud-level::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
 .hud-card::after, .hud-level::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
 .dc-main { display: flex; flex-direction: column; justify-content: center; min-width: 70px; }
-.dc-area { font-family: var(--font); font-size: 12px; letter-spacing: 0.34em; color: var(--gold); line-height: 1; margin-bottom: 3px; }
+.dc-area { font-family: var(--font); font-size: 14px; letter-spacing: 0.02em; color: var(--gold); line-height: 1; margin-bottom: 3px; }
 .dc-area-short { display: none; }
-.dc-area[data-region="widehanga"] .dc-area-full { font-size: 11px; letter-spacing: .08em; }
+.dc-area[data-region="widehanga"] .dc-area-full { font-size: 14px; letter-spacing: .04em; }
 .dc-day { line-height: 1; }
 .dc-day b { font-size: 34px; font-weight: 800; }
 .dc-day small { margin-left: 2px; font-size: 13px; color: var(--text-dim); }
-.dc-slot { margin-top: 4px; font-family: var(--font); font-size: 12px; letter-spacing: 0.2em; color: var(--gold); white-space: nowrap; }
+.dc-slot { margin-top: 4px; font-family: var(--font); font-size: 14px; letter-spacing: 0.02em; color: var(--gold); white-space: nowrap; }
 .dc-slot[data-slot="night"] { color: #b8b4ff; }
 .dc-meta { display: flex; flex-direction: column; justify-content: center; gap: 5px; margin-left: 14px; font-family: var(--font); }
 .dc-row {
@@ -271,7 +271,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .hud-lime .badge.single { font-size: 14px; }
 .hud-lime .badge-plus { position: absolute; right: 1px; top: 2px; font-size: 6px; line-height: 1; }
 .hud-lime.has .badge { display: flex; }
-.hud-menu { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; font-size: 13px; letter-spacing: 0.16em; color: var(--text-dim); cursor: pointer; }
+.hud-menu { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px; font-size: 14px; letter-spacing: 0.16em; color: var(--text-dim); cursor: pointer; }
 .hud-menu i { width: 13px; height: 9px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; position: relative; }
 .hud-menu i::after { content: ""; position: absolute; left: 0; right: 0; top: 1.5px; border-top: 2px solid currentColor; }
 .hud-menu:hover { color: var(--gold-hi); border-color: var(--gold); }
@@ -359,7 +359,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
 }
 .spot-pin .sub-label.closed-tag { background: rgba(40, 18, 24, 0.92); color: #f0b9b9; border: 1px solid rgba(240, 185, 185, 0.4); }
-.pin-status { margin-top: 3px; padding: 2px 7px; color: #f0b9b9; background: rgba(20, 12, 20, 0.85); font-size: 11px; line-height: 1.25; white-space: nowrap; }
+.pin-status { margin-top: 3px; padding: 2px 7px; color: #f0b9b9; background: rgba(20, 12, 20, 0.85); font-size: 14px; line-height: 1.25; white-space: nowrap; }
 /* 行けない場所は「消えた」ではなく「無効化」に見せる（旧版 #6） */
 .spot-pin.off .shield { filter: grayscale(0.5) brightness(0.74); }
 .spot-pin.off { opacity: 0.9; }
@@ -500,7 +500,7 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .mi-preview[data-tint="night"] { filter: brightness(0.7) saturate(0.7); }
 .mi-area { font-size: 13px; letter-spacing: 0.12em; color: var(--gold); }
 .mi-desc { margin: 4px 0 8px; font-size: 14px; line-height: 1.6; color: var(--text-dim); }
-.mi-foot { font-size: 13px; letter-spacing: 0.06em; color: var(--text-dim); opacity: 0.8; }
+.mi-foot { font-size: 14px; letter-spacing: 0.06em; color: var(--text-dim); opacity: 0.8; }
 .mi-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
 .tag { padding: 2px 9px; font-size: 13px; border-radius: 999px; border: 1px solid rgba(244, 210, 122, 0.4); color: var(--gold-hi); }
 .tag.free { border-color: rgba(142, 230, 168, 0.5); color: var(--good); }
@@ -681,7 +681,7 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
   border-radius: 6px;
 }
 .lime-peer { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.lime-name { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+.lime-name { font-family: "Suien Name", serif; font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
 .lime-unread { margin-left: auto; flex: none; font-size: 13px; padding: 2px 8px; border-radius: 999px; background: rgba(0, 0, 0, 0.25); }
 .lime-unread:empty { display: none; }
 .lime-face {
@@ -702,6 +702,7 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .lime-face.blank { background: linear-gradient(160deg, #5d6f86, #394559); }
 .lime-face.sm { width: 28px; height: 28px; border-width: 1px; font-size: 12px; }
 .lime-face.gap { visibility: hidden; }
+.lime-face.custom { image-rendering: auto; }
 /* 左寄りの元絵だけ、円枠を動かさず右側を少し切り詰めて顔を中央へ。 */
 img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3px; object-position: left center; }
 .lcr-face img.lime-face[src$="/face_hiyori.png"] { padding-left: 4px; }
@@ -820,13 +821,13 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
   border-radius: 50%;
 }
 .lcr-main { flex: 1; min-width: 0; }
-.lcr-name { font-size: 14px; font-weight: 700; }
+.lcr-name { font-family: "Suien Name", serif; font-size: 14px; font-weight: 700; }
 .lcr-preview { margin-top: 2px; font-size: 14px; color: #6b7482; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .lime-chat-row.unread .lcr-preview { color: #1d2433; font-weight: 700; }
 .lcr-side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .lcr-side small { font-size: 12px; color: #8a93a0; }
-.lcr-tag { padding: 1px 7px; font-size: 12px; font-weight: 700; color: #fff; background: #f08a24; border-radius: 999px; }
-.lime-empty { margin: 40px 0; text-align: center; font-size: 13px; color: #8a93a0; }
+.lcr-tag { padding: 1px 7px; font-size: 12px; font-weight: 700; color: #402b00; background: #f08a24; border-radius: 999px; }
+.lime-empty { margin: 40px 0; text-align: center; font-size: 14px; color: #626d7c; }
 .lime-tip {
   display: flex;
   flex-direction: column;
@@ -951,17 +952,8 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .st-up { margin-left: auto; color: var(--good); font-weight: 800; }
 .st-misc { display: flex; gap: 24px; margin-top: 4px; font-size: 15px; color: var(--text); }
 .st-note { font-size: 14px; color: var(--text-dim); margin: 4px 0 0; }
+.st-cycle { font-size: 13px; color: var(--text-dim); letter-spacing: 0.12em; margin: 0 0 4px; }
 .st-people { display: flex; flex-direction: column; gap: 8px; }
-.st-notes { display: flex; flex-direction: column; gap: 8px; }
-.note-progress { margin: 0; font-size: 14px; color: var(--gold); letter-spacing: 0.1em; }
-.note-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; max-height: 360px; overflow-y: auto; padding-right: 6px; align-content: start; }
-.note-entry { padding: 7px 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.04); border-left: 3px solid rgba(255, 255, 255, 0.12); }
-.note-entry.found { border-left-color: var(--gold); background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), rgba(255, 255, 255, 0.03) 70%); }
-.note-entry.locked .note-name { color: rgba(255, 255, 255, 0.3); letter-spacing: 0.3em; }
-.note-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.note-name { font-size: 14px; font-weight: 700; }
-.note-count { font-size: 13px; color: var(--gold); }
-.note-memo { margin: 3px 0 0; font-size: 14px; line-height: 1.5; color: var(--text-dim); }
 .pp-row { display: flex; align-items: center; gap: 14px; padding: 8px 14px; background: rgba(255, 255, 255, 0.04); border-radius: 8px; }
 .pp-face { width: 40px; height: 40px; border-radius: 50%; image-rendering: pixelated; background: #000; }
 .pp-face.ph { display: grid; place-items: center; background: var(--gold); color: #1b1208; font-weight: 800; }
@@ -981,7 +973,7 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .gift-notes { display: grid; gap: 4px; margin-top: 8px; max-height: 128px; overflow-y: auto; padding-right: 6px; }
 .gift-note { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 3px 10px; border-left: 3px solid var(--gold); background: rgba(232, 194, 122, 0.08); }
 .gift-note b { font-size: 13px; }
-.gift-note small { font-size: 12px; color: var(--text-dim); }
+.gift-note small { font-size: 14px; color: var(--text-dim); }
 
 /* ---------------------------------------------------------------- つなぎ・コールドオープン・終章 */
 .beat {
@@ -1067,6 +1059,8 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .street-heading span { display: block; font-size: 16px; }
 .street-heading p { margin: 4px 0 0; font-size: 20px; }
 .street-back { position: absolute; top: 128px; right: 22px; font-size: 22px; padding: 12px 16px; background: #000; color: #fff; border: 2px solid var(--gold); border-radius: 6px; cursor: pointer; }
+.street-waiting { position: absolute; left: 50%; top: 50%; z-index: 4; transform: translate(-50%, -50%); max-width: 720px; padding: 16px 22px; background: #000; color: #fff; border: 2px solid var(--gold); border-radius: 6px; pointer-events: none; font-size: 22px; text-align: center; }
+.street-waiting[hidden] { display: none; }
 .mi-preview.loading { display: grid; place-items: center; font-size: 20px; color: #cdb8e6; background: #171225; }
 
 /* 寝る前の一服（家シーシャ・#638）: 自分の葉を1gずつ、合計12g */
@@ -1086,7 +1080,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 
 /* One frame for day/time, money, tournament countdown and stamina. */
 .hud-card .hud-stamina { box-sizing: border-box; width: 100%; min-width: 0; height: 18px; padding: 0 9px; gap: 8px; background: none; border: 0; border-image: none; box-shadow: none; }
-.hud-card .hud-stamina > span { font-size: 12px; }
+.hud-card .hud-stamina > span { font-size: 14px; }
 .hud-card .hud-stamina .hud-bar { flex: 1 1 auto; min-width: 24px; max-width: 100%; margin-right: -9px; }
 
 .vn-choice.fortune-hint, .vn-choice.fortune-hint:hover, .vn-choice.fortune-hint:focus-visible { color: #ff777f; text-shadow: 0 1px 2px #000; }
@@ -1113,3 +1107,10 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 
 /* 旅程相談の戻るボタンは、字形を切らずタッチでも押せる大きさにする。 */
 .lime-back.lime-contact-back { width: 44px; height: 44px; font: 24px/1 sans-serif; }
+
+/* LIMEの受信素材。透過スタンプは吹き出しを付けない。 */
+.lime-media { flex: 0 1 auto; min-width: 0; max-width: calc(100% - 42px); overflow: hidden; }
+.lime-stamp { width: 128px; aspect-ratio: 1; }
+.lime-image { width: 224px; aspect-ratio: 4 / 3; border-radius: 12px; background: #e4e9ed; }
+.lime-media img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.lime-media-fallback { display: flex; align-items: center; justify-content: center; color: #354352; font-size: 12px; overflow-wrap: anywhere; }

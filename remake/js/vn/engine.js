@@ -32,7 +32,7 @@ const FRAMING = { target: 1.36, sink: 0.4, pakkiTarget: 0.94, pakkiSink: 0.08 };
 
 /** 章の台本側が差し込むフック（特定の会話の選択肢で状態を変える等） */
 export const hooks = {
-  onChoice: null,      // (dialogueId, choiceId, branchKey, nextId, choice, line) => void（choice=選んだ項目・line=選択肢の行）
+  onChoice: null,      // (dialogueId, choiceId, branchKey, nextId, choice, line) => void（dialogueId は jump 先を含む表示中の台本。choice=選んだ項目・line=選択肢の行）
   interpolate: null,   // (text) => text（{daysLeft} など）
   evalCondition: null, // (line) => boolean | undefined（未知の条件タイプ）
   contextChar: null,   // 「【好感度】が上がった」の宛先（いま会っている相手）
@@ -40,6 +40,18 @@ export const hooks = {
   onCg: null,          // (cgId) => void … CG を見た（ギャラリーの解放）
   onLine: null,        // (dialogueId, line) => void … 台詞を1行出すたび（場面演出を台詞に合わせる用）
 };
+
+// エンジンが握りつぶしていた失敗の集約（#1362）。同じ内容は重複させず、記録と console.warn を1回だけにする。
+// ゲームの進行は変えず、テスト・開発時に getVnWarnings() で検出できるようにするためのもの。
+const vnWarnings = [];
+export function getVnWarnings() { return vnWarnings.slice(); }
+export function clearVnWarnings() { vnWarnings.length = 0; }
+function warnVn(kind, detail) {
+  const entry = { kind, detail: String(detail ?? "") };
+  if (vnWarnings.some((w) => w.kind === entry.kind && w.detail === entry.detail)) return;
+  vnWarnings.push(entry);
+  console.warn(`[vn] ${kind}:`, entry.detail);
+}
 
 const log = [];
 let dom = null;
@@ -107,6 +119,7 @@ function setAuto(v) {
   if (v) kickAuto();
 }
 function setSkip(v) {
+  if (v && running?.cancelOnSkip) return finish(true);
   if (v) setAuto(false);
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
@@ -159,23 +172,27 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param idOrDlg dialogue_id か dialogue オブジェクト
  * @param opts.bg  背景の上書き（res:// パス可）
  * @param opts.signal 呼出し元が場面を破棄したとき、読了・末尾報酬なしで閉じる
+ * @param opts.cancelOnSkip SKIPを中断として扱い、呼出し元で次回の再読を可能にする
  */
 export function play(idOrDlg, opts = {}) {
   if (!dom) buildDom();
   const dlg = typeof idOrDlg === "string" ? DB.dialogues[idOrDlg] : idOrDlg;
   if (opts.signal?.aborted) return Promise.resolve({ id: dlg?.dialogue_id || "", visited: [], cancelled: true });
   if (!dlg) {
-    console.warn("[vn] dialogue not found:", idOrDlg);
+    warnVn("dialogue-not-found", idOrDlg);
     return Promise.resolve();
   }
+  if (!(dlg.lines || []).length) warnVn("dialogue-empty", dlg.dialogue_id || "");
   return new Promise((resolve) => {
     layers.fx.querySelector(".vn-loading")?.remove();
     running = {
-      id: dlg.dialogue_id || "",
+      id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
+      currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
       queue: (dlg.lines || []).slice(),
       branches: dlg.branches || {},
       resolve,
+      cancelOnSkip: !!opts.cancelOnSkip,
       waitingChoice: false,
       typing: false,
       pages: null,
@@ -215,6 +232,7 @@ export function play(idOrDlg, opts = {}) {
     // 会話の間は、まだ片付いていない画面（大会の作業台・結果表など）も後ろに見せない（会話が終われば戻る）
     document.body.classList.add("vn-open");
     const me = running;
+    if (me.cancelOnSkip && skipMode) { setSkip(false); finish(true); return; }
     if (opts.signal) {
       const cancel = () => { if (running === me) finish(true); };
       me.removeAbort = () => opts.signal.removeEventListener("abort", cancel);
@@ -296,6 +314,8 @@ function prefetch(dlg) {
   preload([...urls].slice(0, 16), 0);
 }
 
+// 仕様（#1362）: 報酬（metadata / growth_stats）と解決値の id は開始台本（running.id / running.dlg）に属し、
+// jump 先の台本へは差し替えない。表示中の台本 ID は running.currentId が持つ。
 function finish(cancelled = false) {
   const r = running;
   running = null;
@@ -346,7 +366,7 @@ function next() {
     if (type === "choice") return showChoices(line);
     if (type === "game_over") return finish();
     if (type === "condition") { if (handleCondition(line)) return; continue; }
-    if (type === "jump") { if (line.next_id && jumpTo(line.next_id)) return; continue; }
+    if (type === "jump") { if (!line.next_id) warnVn("jump-missing-next-id", r.currentId || r.id); else if (jumpTo(line.next_id)) return; continue; }
     if (type === "set_flag") {
       const contact = /^_lime_contact_(.+)$/.exec(line.flag || "");
       const alreadyConnected = contact && (state.flags[line.flag] || state.contacts.includes(contact[1]));
@@ -431,14 +451,15 @@ function next() {
     }
     if (type === "sfx") { playSe(line.id); continue; }
     if (type === "fx") { runFx(line); continue; }
-    if (type === "customer_note") { state.notes[line.note_id] = (state.notes[line.note_id] || 0) + 1; continue; }
     // 未知の行タイプは黙って飛ばす（データ先行で書けるように）
   }
 }
 
 function jumpTo(id) {
   const target = DB.dialogues[id];
-  if (!target) return;
+  if (!target) { warnVn("jump-target-missing", id); return; }
+  // 表示中の台本として currentId を引き継ぐ。id / dlg は開始台本のまま（finish() の仕様・#1362）
+  running.currentId = id;
   running.queue = (target.lines || []).slice();
   running.branches = target.branches || {};
   running.context = sceneContext(target);
@@ -473,18 +494,21 @@ function handleCondition(line) {
     ok = state.money >= Number(line.threshold || 0);
   } else if (kind === "flag") {
     ok = !!state.flags[line.flag];
+  } else if (kind === "flag_count") {
+    ok = (Number(state.flags[line.flag]) || 0) >= Number(line.threshold === 0 ? 0 : (line.threshold || 1)); // 数値0だけ既定1に化かさない（文字列 "0" と結果をそろえる。#1362）
   } else if (kind === "met") {
     ok = !!state.met[line.char_id];
-  } else if (kind === "customer_note") {
-    ok = (state.notes[line.note_id] || 0) >= Number(line.threshold || 1);
   } else if (kind === "affinity") {
     ok = affinityLevel(line.char_id) >= Number(line.threshold || 0);
   } else {
-    ok = hooks.evalCondition ? !!hooks.evalCondition(line) : false;
+    const v = hooks.evalCondition ? hooks.evalCondition(line) : undefined;
+    if (v === undefined) { warnVn("condition-unknown", kind); ok = false; }
+    else ok = !!v;
   }
   const key = String((ok ? line.next_true : line.next_false) || "");
   if (key && running.branches[key]) running.queue.unshift(...running.branches[key]);
   else if (key && DB.dialogues[key]) return jumpTo(key);
+  else if (key) warnVn("branch-unresolved", key);
 }
 
 function applyLine(line) {
@@ -592,7 +616,7 @@ async function showLine(line) {
   const frameReady = imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true });
   await waitSceneAssets(Promise.all([fontReady, frameReady, ...images.map((url) => imageReady(url, 15000))]), r);
   if (running !== r) return;
-  if (hooks.onLine) hooks.onLine(r.id, line);
+  if (hooks.onLine) hooks.onLine(r.currentId || r.id, line);
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
@@ -858,8 +882,9 @@ function pickChoice(line, c) {
   let waitForScene = false;
   if (key && r.branches[key]) r.queue.unshift(...r.branches[key]);
   else if (c.next_id) waitForScene = jumpTo(String(c.next_id));
+  else if (key) warnVn("branch-unresolved", key);
   log.push({ name: "▶", text: stripTags(c.text || "") });
-  if (hooks.onChoice) hooks.onChoice(r.id, String(line.id || ""), key, String(c.next_id || ""), c, line);
+  if (hooks.onChoice) hooks.onChoice(r.currentId || r.id, String(line.id || ""), key, String(c.next_id || ""), c, line);
   if (!waitForScene) next();
 }
 

@@ -1,5 +1,5 @@
 // シーシャークの出会い・第2章からの店。競技のライバル枠とは分ける。
-import { DB, sceneBg } from "../core/data.js";
+import { DB, sceneBg, loadCinemaDialogue } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
 import { setBg } from "../core/ui.js";
 import { sharkSwim } from "../core/scene-motions.js";
@@ -125,6 +125,12 @@ export async function visitSamechan(spot, { signal = null } = {}) {
   // 静かな席を読む当日には先取りせず、成立後の次の自主訪問に添える。
   const introduceCinema = pending && typeof receipt.cinemaIntroduction === "boolean"
     ? receipt.cinemaIntroduction : cinemaIntroductionDue(state);
+  if (introduceCinema) {
+    const beforeLoad = state;
+    await loadCinemaDialogue();
+    if (state !== beforeLoad || visiting || isPlaying() || signal?.aborted
+      || `${state.chapter}:${state.day}:${state.slot}` !== stamp) return false;
+  }
   if (introduceCinema && !DB.dialogues[CINEMA_INTRO]?.lines?.length) return false;
   const owner = state;
   const current = () => state === owner && `${state.chapter}:${state.day}:${state.slot}` === stamp && !signal?.aborted;

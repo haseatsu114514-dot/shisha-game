@@ -66,7 +66,16 @@ try {
   await page.keyboard.press("Enter");
   await page.waitForSelector(".vn-choices.show .vn-choice");
   await page.waitForTimeout(500);
-  assert.equal(await page.locator(".vn-choices").evaluate(e => getComputedStyle(e).bottom), "306px");
+  // 2択の位置は現行組版（vn-composition.css）で「本文枠の上辺 + 62px、2択はさらに32px上」
+  // = 下端 var + 枠高 var + 94px と定められている（e5c34d0e6 で旧来の 306px 直書きから移行）。
+  // 枠の寸法は CSS 変数から読み、オフセット 94px そのものを検証する。
+  const choicesBottom = await page.locator(".vn-choices").evaluate(e => {
+    const rootStyle = getComputedStyle(document.documentElement);
+    const expected = parseFloat(rootStyle.getPropertyValue("--vn-dialogue-bottom"))
+      + parseFloat(rootStyle.getPropertyValue("--vn-dialogue-height")) + 94;
+    return { actual: getComputedStyle(e).bottom, expected: `${expected}px` };
+  });
+  assert.equal(choicesBottom.actual, choicesBottom.expected);
   if (shots) await page.screenshot({ path: `${shots}/choices.png` });
   await page.locator(".vn-choice").first().click();
   await page.evaluate(() => {
@@ -76,7 +85,7 @@ try {
     T.stats.gainStat("technique", 3);
   });
   await page.waitForSelector(".gc-evolution");
-  assert.equal(await page.locator(".gc-evolution").textContent(), "レベル2に進化！");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
   assert.match(await page.locator(".gc-fx").textContent(), /ゲージ.*ゆっくり/);
   assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "LEVEL UP");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
@@ -106,21 +115,22 @@ try {
   await page.waitForSelector(".gain-card.st-insight");
   assert.equal(await page.locator(".gc-evolution, .gc-fx").count(), 0);
   await page.evaluate(() => T.ui.bannersIdle());
-  // 実際に効く根性レベル4の恩恵とボム回数を一致させる。
+  // 実際に効く根性レベル4の恩恵と、SF63（1回分＋8秒リチャージ）の持ち分を確認する。
   await page.evaluate(() => {
     T.core.state.chapter = 5; T.core.state.stats.guts = 60; T.stats.gainStat("guts", 4);
   });
   await page.waitForSelector(".gain-card.st-guts .gc-evolution");
-  assert.equal(await page.locator(".gc-evolution").textContent(), "レベル4に進化！");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.4に到達");
   assert.doesNotMatch(await page.locator(".gain-card").textContent(), /少し上がった|かなり上がった|大きく上がった/);
-  assert.match(await page.locator(".gc-fx").textContent(), /リフレッシュが3回/);
-  assert.equal(await page.evaluate(() => T.steam.refreshStock()), 3);
+  assert.match(await page.locator(".gc-fx").textContent(), /体力と範囲が大きく増え、メンタルも回復する/);
+  assert.equal(await page.evaluate(() => T.steam.refreshStock()), 1);
+  assert.equal(await page.evaluate(() => T.steam.REFRESH_RECHARGE_SECONDS), 8);
   await page.evaluate(() => T.ui.bannersIdle());
   const reward = await page.evaluate(() => {
     T.core.state.phase = "tournament"; T.reel.onAction({ spent: 10 });
     T.core.newGame(); T.core.state.phase = "daily";
     for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 20;
-    Object.assign(T.core.state.reel, { introDone: true, lastChapter: 1 });
+    Object.assign(T.core.state.reel, { introDone: true, lastChapter: 1, installed: true }); // onAction は設置済みリールでのみ回る（現行仕様）
     for (let seed = 1; seed < 10000; seed++) {
       const sample = T.reel.core.spinSeries({ ...T.core.state.reel, seed }, { chapterFirst: false });
       if (sample.length === 1 && sample[0].exp >= 2 && !sample[0].overlap && !T.reel.core.PEKA.includes(sample[0].role)) {
@@ -133,7 +143,7 @@ try {
   });
   assert.equal(reward.starTo, 2);
   await page.waitForSelector(".gain-card .gc-evolution", { timeout: 15000 });
-  assert.equal(await page.locator(".gc-evolution").textContent(), "レベル2に進化！");
+  assert.equal(await page.locator(".gc-evolution").textContent(), "Lv.2に到達");
   assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "SLOT BONUS");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
   assert((await page.locator(".gc-fx").textContent()).length > 0);

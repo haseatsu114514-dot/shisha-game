@@ -128,6 +128,8 @@ try {
           const carrier = document.querySelector(".heat-info").getBoundingClientRect();
           const stamp = strip.querySelector(".stamp");
           const r = stamp.getBoundingClientRect();
+          const err = strip.querySelector(".heat-error");
+          const er = err ? err.getBoundingClientRect() : null;
           const inside = b => b.left >= panel.left - 1 && b.right <= panel.right + 1 && b.top >= panel.top - 1 && b.bottom <= panel.bottom + 1;
           const nodes = [...document.querySelectorAll(".stove .coal:not(:disabled)")];
           const active = nodes.map(n => n.getBoundingClientRect());
@@ -142,6 +144,7 @@ try {
               separate: active.every(r => r.right <= carrier.left), stripInside: inside(f), carrierInside: inside(carrier),
               separated: active.every((r, i) => active.slice(i + 1).every(o => r.right <= o.left || o.right <= r.left || r.bottom <= o.top || o.bottom <= r.top)),
               textInside: r.left >= f.left && r.right <= f.right,
+              errorInside: er !== null && er.left >= f.left && er.right <= f.right && er.top >= f.top && er.bottom <= f.bottom,
               accessible: nodes.every(n => { const r = n.getBoundingClientRect(); return [.5, .25, .75, .1, .9].some(y => [.5, .25, .75, .1, .9].some(x => n.contains(document.elementFromPoint(r.x + r.width * x, r.y + r.height * y)))); }),
               pointer: getComputedStyle(strip).pointerEvents, floating: document.querySelectorAll(".bench-panel > .stamp, .care-burn > .stamp").length,
             },
@@ -180,7 +183,7 @@ try {
         assert.equal(sample.stamps, 1, "連続評価は差し替えられる");
         assert.equal(sample.stamp, phase === "just" ? "EXCELLENT" : grade[0]);
         assert.deepEqual(sample.geometry, { separate: true, stripInside: true, carrierInside: true, separated: true,
-          textInside: true, accessible: true, pointer: "none", floating: 0 }, `${label}: ${JSON.stringify(sample.geometry)}`);
+          textInside: true, errorInside: true, accessible: true, pointer: "none", floating: 0 }, `${label}: ${JSON.stringify(sample.geometry)}`);
         if (shots && (i === count - 1 || phase === "just")) {
           await page.waitForTimeout(270); await page.screenshot({ path: `${shots}/${label}-${i + 1}.png` });
         }

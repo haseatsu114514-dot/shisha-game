@@ -10,6 +10,9 @@ import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
 import { temperatureBands, makerMixProfile } from "./temperature-model.js";
 import { coalWarmth } from "./coals.js";
+import { waterComfort } from "./water.js";
+
+const WATER_TASTE_FACTOR = .5;
 
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
 /** 南雲が持ち点を動かす基準（これ未満なら南雲票は入らず、普通に負ける） */
@@ -59,7 +62,8 @@ export function computeShisha(cs) {
   // 最低1周を満たせば、少ない穴数を煙量や総合点の直接の減点にしない。
   const holeDraw = h.minimumComplete ? 36 : (h.total - 14) * 3 + (h.inner >= 3 ? 6 : 0);
   const baseDraw = 42 + holeDraw + packDraw;
-  const draw = clamp(baseDraw + maker.bonuses.draw, 0, 100);
+  const { drawW } = waterComfort(cs.water);
+  const draw = clamp(baseDraw + maker.bonuses.draw + drawW, 0, 100);
   const smoke = clamp(baseDraw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + opening * 6 + coal.smokeBonus + maker.bonuses.smoke, 0, 100);
   const baseHeatStability = h.outerEven * 45 + c.heatStability * 0.38 + care.score * 0.12 + hms + foilHeatProfile(h).stability;
   const heatStability = clamp(baseHeatStability + maker.bonuses.heatStability, 0, 100);
@@ -71,7 +75,7 @@ export function computeShisha(cs) {
   const mastery = mixMasteryProfile(cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state, cs.mix, DB.flavorById);
   // 慣れた葉ほど香りを再現しやすい。甘さ・清涼感などの強さを品質点にしない。
   const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10 + (gift?.aroma || 0) + maker.bonuses.aroma + mastery.aromaBonus, 0, 100);
-  const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + opening * 8 + (m.intensity - 5) * 3 + maker.bonuses.taste, 0, 100);
+  const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + opening * 8 + (m.intensity - 5) * 3 + maker.bonuses.taste + WATER_TASTE_FACTOR * drawW, 0, 100);
   const duration = clamp(baseHeatStability * 0.55 + (grams - 12) * 3 + (cs.pack === "firm" ? 10 : 0) + care.score * 0.25 + maker.bonuses.duration, 0, 100);
   const rawQuality = aroma * 0.25 + heatStability * 0.15 + (100 - burnRisk) * 0.15 + taste * 0.10 + smoke * 0.10
     + duration * 0.05 + draw * 0.05 + m.score * 0.08 + p.score * 0.07;
@@ -88,9 +92,12 @@ export function computeShisha(cs) {
 export function bonusOf(cs = null) {
   let b = 0;
   const notes = [];
-  if (state?.rehearsal === "great") { b += 3; notes.push("前日リハーサルの手応え"); }
-  else if (state?.rehearsal === "good") { b += 1.5; notes.push("前日リハーサルの手応え"); }
-  if (state?.flags?._last_night === "practice") { b += 2; notes.push("前夜の最終調整"); }
+  // この2記録は第1章の準備。後章の旧セーブに残っていても、その章の加点にはしない。
+  if ((cs?.chapter ?? state?.chapter) === 1) {
+    if (state?.rehearsal === "great") { b += 3; notes.push("前日リハーサルの手応え"); }
+    else if (state?.rehearsal === "good") { b += 1.5; notes.push("前日リハーサルの手応え"); }
+    if (state?.flags?._last_night === "practice") { b += 2; notes.push("前夜の最終調整"); }
+  }
   const gift = cs && giftBowlEffect(cs);
   if (gift?.bonus) { b += gift.bonus; notes.push(gift.note); }
   const mastery = cs && cs.mode === "tournament"
@@ -122,5 +129,3 @@ export function finalize(cs) {
   cs.bonusNotes = notes;
   return cs;
 }
-
-export const flavorName = (id) => DB.flavorById[id]?.short_name?.replace(/^AF /, "") || id;

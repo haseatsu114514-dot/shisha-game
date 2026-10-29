@@ -7,14 +7,14 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.AFFINITY_SOURCE_ROOT || root;
-const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
-const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rin','ch1_bonds','samechan','hiyori','lover_events','cinema'];
+const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/invitations.js','core/chapter-clock.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
+const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rin','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
 async function fixture() {
   const memory = new Map(), events = [], plays = [], timers = new Map();
   let serial = 0, playImpl = async scene => ({ id: typeof scene === 'string' ? scene : scene.dialogue_id, visited: [] });
-  const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], equipById: {}, flavorById: {}, characters: {} };
+  const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], equipById: {}, flavorById: {}, characters: {}, lime: JSON.parse(fs.readFileSync(new URL('../../data/lime_messages.json', import.meta.url))).messages };
   const context = vm.createContext({ console, AbortController, setTimeout: fn => { timers.set(++serial,fn); return serial; }, clearTimeout: id => timers.delete(id), localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
   const known = {
     MAX_MONEY: 999999, TOURNAMENT_DAY: 14, DB: db, callName: String,
@@ -24,8 +24,9 @@ async function fixture() {
     AXE_BAR: {id:'axe_bar'}, RAIN_SPOT_TEXTS: {}, isRainy: () => false,
     spotFollowupDue: () => null, syncMintoKnowledge() {}, meetHiyoriAtTonari: async () => false,
     maybeRecruitTrpgMember: async () => false, sharkSwim: async swap => swap(),
-    imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
+    withScenePreparation: task => task, imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
     hiyoriFirstMeetingReady: () => true,
+    tsumugiMessages: () => [], hooks: {}, giftOpen: async () => {},
     openingStatus: () => ({ok:true}), refreshPlaceCue() {}, playBgm() {}, hiyoriShopEncounterDue: () => false,
   };
   const modules = new Map(), required = new Map();
@@ -49,7 +50,7 @@ async function fixture() {
   const core=ns('core/state.js'), stats=ns('core/stats.js');
   const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:1}); return s; };
   fresh();
-  return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), spots: ns('daily/spots.js'), bonds: ns('daily/bonds.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setPlay: fn => playImpl=fn,
+  return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), spots: ns('daily/spots.js'), bonds: ns('daily/bonds.js'), phone: ns('daily/phone.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setPlay: fn => playImpl=fn,
     tick: () => { for (const [id,fn] of [...timers]) { timers.delete(id); fn(); } },
     roundTrip: () => { core.save(); core.newGame(); assert(core.load()); return core.state; },
   };
@@ -270,6 +271,36 @@ await check('LOAD during old private scope cannot leak into new public gain or c
   assert.equal(f.stats.bond.private,true,'old finally closed new context');
   f.stats.gainAffinity('rin',10);assert.equal(s.lovePts.rin,14);restore();assert.equal(f.stats.bond.private,false);
 });
+await check('privateBondScope: nested scopes restore fully in LIFO order (#1361)',async f=>{
+  assert.equal(f.stats.bond.private,false);
+  const outer=f.stats.privateBondScope();assert.equal(f.stats.bond.private,true);
+  const inner=f.stats.privateBondScope();
+  inner();assert.equal(f.stats.bond.private,true,'inner close must keep the outer scope');
+  outer();assert.equal(f.stats.bond.private,false,'outer close must restore the pre-scope value');
+});
+await check('privateBondScope: out-of-order close hands the restore target down (#1361)',async f=>{
+  const outer=f.stats.privateBondScope();
+  const inner=f.stats.privateBondScope();
+  outer();assert.equal(f.stats.bond.private,true,'early outer close must not close the inner scope');
+  inner();assert.equal(f.stats.bond.private,false,'last close must restore the pre-scope value');
+});
+await check('privateBondScope: sequential scopes, stale and double restores are inert (#1361)',async f=>{
+  const first=f.stats.privateBondScope();first();assert.equal(f.stats.bond.private,false);
+  const second=f.stats.privateBondScope();
+  first();assert.equal(f.stats.bond.private,true,'stale restore must not close a live scope');
+  second();second();assert.equal(f.stats.bond.private,false,'double restore must be a no-op');
+  f.stats.bond.private=true;
+  const third=f.stats.privateBondScope();third();
+  assert.equal(f.stats.bond.private,true,'scope opened while private must restore to true');
+  f.stats.bond.private=false;
+});
+await check('privateBondScope: LOAD-stale scope cannot close a scope on the new state (#1361)',async f=>{
+  const stale=f.stats.privateBondScope();
+  f.fresh();
+  const live=f.stats.privateBondScope();
+  stale();assert.equal(f.stats.bond.private,true,'stale restore must not close the new-state scope');
+  live();assert.equal(f.stats.bond.private,false);
+});
 await check('question pending public caller rejects duplicate entry without a second play',async f=>{
   const s=f.core.state;s.affinity.rin=33;s.story.rin=3;let resolve;
   f.setPlay(()=>new Promise(r=>resolve=r));const p=f.bonds.playQuestionVisit('rin');
@@ -316,5 +347,99 @@ for (const outcome of ['cancel','missing','throw','abort','load']) await check(`
   if(outcome==='throw')await assert.rejects(p,/expected/);else assert.equal(await p,false);
   assert.equal(s.story.naru,2);assert.equal(s.affinity.naru,48);assert.equal(s.visits.naru||0,0);
 });
+
+// #1253: real delivery/expiry/save code, with controlled VN/presentation ports.
+function readyMinto(f, chapter = 1, day = 13) {
+  const s = f.fresh();
+  Object.assign(s, { chapter, day, slot: 0, contacts: ['minto'] });
+  s.met.minto = true;
+  s.story.minto = f.spots.VISIT_SEQ.minto.length;
+  s.affinity.minto = 90;
+  Object.assign(s.flags, { _minto_identity_revealed: true, _minto_name_known: true, _minto_affinity_question_done: true });
+  s.romanceChoices.bond_q1_minto = { char: 'minto', value: 1, day: 12 };
+  return s;
+}
+const finaleMail = s => s.inbox.filter(i => i.originId === 'lime_minto_bond_finale');
+await check('Minto finale invitation remains reachable after chapter advancement', async f => {
+  for (const chapter of [1, 2, 3, 4, 5]) {
+    const s = readyMinto(f, chapter, 13 + (chapter - 1) * 14);
+    assert.equal(f.bonds.finaleDue('minto'), true);
+    assert.equal(f.bonds.finaleAtVisit('minto'), false);
+    f.phone.deliverMorning();
+    assert.equal(finaleMail(s).length, 1, `chapter ${chapter}`);
+    const item = finaleMail(s)[0];
+    assert.equal(item.chapter, chapter);
+    assert.equal(item.id, `lime_minto_bond_finale_c${chapter}_d${s.day}`);
+    assert.equal(item.msg.time_slot, 'noon');
+    assert(!JSON.stringify(item.msg.messages).includes('{private'));
+    f.phone.deliverMorning();
+    assert.equal(finaleMail(s).length, 1, 'no duplicate delivery');
+  }
+});
+
+await check('Minto unanswered/declined/lost appointment expires and is re-offered across chapters and SAVE/LOAD', async f => {
+  for (const outcome of ['unanswered', 'declined', 'accepted', 'lost']) {
+    let s = readyMinto(f);
+    f.phone.deliverMorning();
+    const item = finaleMail(s)[0];
+    if (outcome !== 'unanswered') {
+      Object.assign(item, { read: true, done: true, result: outcome === 'declined' ? 'declined' : 'accepted' });
+      s.limeRead.push(item.id);
+    }
+    if (outcome === 'accepted') s.pendingInvite = { day: s.day, slot: 0, sender: 'minto', event: item.msg.accept_event, originId: item.originId };
+    s.chapter = 2; s.day = 14; s.slot = 0;
+    s = f.roundTrip();
+    f.phone.deliverMorning();
+    assert.equal(finaleMail(s).length, 1, 'two-day resend interval survives chapter change');
+    assert.equal(s.pendingInvite, null);
+    if (outcome !== 'declined') assert.equal(finaleMail(s)[0].result, 'expired');
+    s.day = 15;
+    f.phone.deliverMorning();
+    const retry = finaleMail(s)[1];
+    assert(retry, outcome);
+    assert.equal(retry.id, 'lime_minto_bond_finale_c2_d15');
+    assert.equal(retry.msg.time_slot, 'night');
+    assert.equal(retry.msg.after_close, true);
+    assert(retry.msg.messages[0].includes('この前は都合が合わなかった'));
+    assert(!JSON.stringify(retry.msg.messages).includes('{private'));
+    f.phone.deliverMorning();
+    assert.equal(finaleMail(s).length, 2);
+  }
+});
+await check('Minto finale invitations keep prerequisites, tournament and non-daily exclusions in later chapters', async f => {
+  for (const blocked of ['name', 'identity', 'question', 'story', 'affinity', 'seen', 'phase', 'tournament', 'pending']) {
+    const s = readyMinto(f, 2, 27);
+    if (blocked === 'name') delete s.flags._minto_name_known;
+    if (blocked === 'identity') delete s.flags._minto_identity_revealed;
+    if (blocked === 'question') delete s.flags._minto_affinity_question_done;
+    if (blocked === 'story') s.story.minto--;
+    if (blocked === 'affinity') s.affinity.minto = 0;
+    if (blocked === 'seen') s.finales.minto = { chapter: 1, day: 13, route: 'friend' };
+    if (blocked === 'phase') s.phase = 'aftermath';
+    if (blocked === 'pending') s.pendingInvite = { event: 'ch1_minto_bond_finale' };
+    assert.equal(f.bonds.bondInvites({ tournamentDay: blocked === 'tournament' }).length, 0, blocked);
+  }
+});
+await check('Minto later-chapter finale grants gift and romance reservation once, friendship remains available', async f => {
+  for (const chapter of [1, 2, 3, 4, 5]) for (const value of [0, 1]) {
+    let s = readyMinto(f, chapter, 13 + (chapter - 1) * 14);
+    f.db.equipById.suyaki_minto = { name: 'gift' };
+    f.setPlay(async () => {
+      f.bonds.recordRomanceChoice({ id: 'bond_q2_minto', romance_char: 'minto' }, { romance: value });
+      return done;
+    });
+    assert.equal(await f.bonds.playFinale('minto'), true);
+    s = f.roundTrip();
+    assert.equal(s.finales.minto.chapter, chapter);
+    assert.equal(s.finales.minto.route, value ? 'romance' : 'friend');
+    assert.equal(s.flags._confession_due, value ? 'minto' : undefined);
+    assert.equal(f.romance.romanceRouteOpen('minto'), !!value);
+    assert.equal(s.owned.filter(id => id === 'suyaki_minto').length, 1);
+    assert.equal(await f.bonds.playFinale('minto'), false);
+    assert.equal(f.bonds.bondInvites().length, 0);
+    assert.equal(s.owned.filter(id => id === 'suyaki_minto').length, 1);
+  }
+});
+
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);
 

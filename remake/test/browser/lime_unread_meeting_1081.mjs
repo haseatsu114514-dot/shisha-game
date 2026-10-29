@@ -51,7 +51,9 @@ await suite("lime-unread-meeting-1081", async check => {
       const act = test => page.locator(`[data-test="${test}"]`)[options.hasTouch ? "tap" : "click"]();
       await act("phone-next");
       await act("phone-close");
-      await page.waitForFunction(() => QA.played.includes("ch1_minto_fifth") && QA.core.state.flags._minto_fifth_done);
+      // 面会フラグの後にも途中の質問が続く。招待の完了まで待って精算を検査する。
+      await page.waitForFunction(() => QA.played.includes("ch1_minto_fifth") && QA.core.state.flags._minto_fifth_done
+        && QA.core.state.inbox[0].completed);
       const after = await page.evaluate(() => {
         const s = QA.core.state;
         return { money: s.money, pending: s.pendingInvite, affinity: s.affinity.minto,

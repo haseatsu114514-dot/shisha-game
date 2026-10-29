@@ -1,11 +1,12 @@
 // タイトルのコレクション。見たCG・受取写真と、章クリアで開く採用済み漫画/動画。
 import { el } from "../core/util.js";
-import { DB, cgUrl, realName } from "../core/data.js";
-import { layers } from "../core/ui.js";
+import { DB, cgUrl, cgThumbUrl, realName } from "../core/data.js";
+import { layers, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { state, SAVE_SLOTS, readSlot, config } from "../core/state.js";
 import { SE, currentBgm, playBgm, stopBgm } from "../core/audio.js";
 import { readGalleryProgress, recordGalleryProgress } from "../core/gallery-progress.js";
-import { GALLERY_TABS, galleryEntries } from "../core/gallery-catalog.js";
+import { CHAR_LABELS, GALLERY_TABS, galleryEntries, galleryStats } from "../core/gallery-catalog.js";
 import { stickerPhoto } from "../core/purikura-photo.js";
 
 const KEY = "suien_remake_gallery";
@@ -27,12 +28,36 @@ export function openGallery() {
   // 旧保存もロード/上書きせず、明示的な実績だけを取り込む。
   recordGalleryProgress(state);
   SAVE_SLOTS.forEach(slot => recordGalleryProgress(readSlot(slot.key)));
-  const entries = galleryEntries(DB.manifest, DB.gallery, readGalleryProgress(), seen());
+  const progress = readGalleryProgress();
+  const entries = galleryEntries(DB.manifest, DB.gallery, progress, seen());
+  const stats = galleryStats(entries);
+  const fraction = s => `${s.unlocked} / ${s.total}（${s.rate}%）`;
   return new Promise(resolve => {
     let tab = "all", closed = false, active = null, page = 0, trigger = null;
     let video = null, movieBgm = null, observer;
+    let cancelImageLoad = null;
     const galleryOwner = document.body.dataset.screen;
     const count = el("span.gal-count");
+    const collection = el("div.gal-collection", [
+      el("strong.gal-rate", { text: `収集率 ${stats.rate}%（${stats.unlocked}/${stats.total}）` }),
+      stats.total > 0 && stats.rate === 100 ? el("span.gal-complete", { text: "★コンプリート" }) : null,
+      el("small.gal-photos", { text: `プリクラ撮影記録 ${stats.purikuraPhotos}枚` }),
+    ]);
+    const characters = el("div.gal-characters", { "aria-label": "キャラ別収集率" },
+      Object.entries(CHAR_LABELS).filter(([char]) => stats.byChar[char].total > 0).map(([char, label]) => {
+        const s = stats.byChar[char];
+        return el("span", { text: `${label} ${s.unlocked}/${s.total}（${s.rate}%）` });
+      }));
+    const recordedRoutes = Object.entries(progress.routeRecords);
+    const routes = recordedRoutes.length ? el("section.gal-route-records", { "aria-label": "ルート記録" }, [
+      el("h3", { text: "ルート記録" }),
+      ...recordedRoutes.map(([char, record]) => el("div.gal-route-record", [
+        el("strong", { text: Object.hasOwn(CHAR_LABELS, char) ? CHAR_LABELS[char] : char }),
+        record.becameLover ? el("p", { text: "恋人成立" }) : null,
+        record.eventsSeen.length ? el("p", { text: `閲覧した段階・派生：${record.eventsSeen.join("、")}` }) : null,
+        record.trueEndAsLover ? el("p", { text: "真エンド同行" }) : null,
+      ])),
+    ]) : null;
     const grid = el("div.gal-grid", { id: "gallery-items", role: "tabpanel" });
     const note = el("p.gal-note", { text: "見た一枚や受け取った写真が残ります。漫画・ムービーは章クリアで解放。" });
     const tools = el("div.gal-viewer-tools");
@@ -43,10 +68,10 @@ export function openGallery() {
     } }, [tools, content]);
     const closeButton = el("button.gal-close", { text: "閉じる", dataset: { test: "gallery-close" }, onclick: () => close() });
     const tabs = el("div.gal-tabs", { role: "tablist", "aria-label": "コレクションの種類" }, GALLERY_TABS.map(([kind, name]) =>
-      el("button.gal-tab", { text: name, role: "tab", "aria-controls": "gallery-items", "aria-selected": kind === tab ? "true" : "false",
+      el("button.gal-tab", { text: `${name} ${fraction(kind === "all" ? stats : stats.byKind[kind])}`, role: "tab", "aria-controls": "gallery-items", "aria-selected": kind === tab ? "true" : "false",
         dataset: { kind, test: "gallery-tab-" + kind }, onclick: () => { tab = kind; render(); SE.select(); } })));
     const box = el("div.gal", [
-      el("div.gal-head", [el("h2", { text: "GALLERY" }), count, closeButton]), tabs, grid, note,
+      el("div.gal-head", [el("h2", { text: "GALLERY" }), collection, count, closeButton]), tabs, characters, routes, grid, note,
     ]);
     const overlay = el("div.gal-overlay", [box, viewer]);
     const restoreMusic = () => {
@@ -58,12 +83,14 @@ export function openGallery() {
       restoreMusic();
     }
     function closeViewer() {
+      cancelImageLoad?.();
       releaseVideo(); active = null; content.replaceChildren(); tools.replaceChildren();
       viewer.classList.remove("show");
       trigger?.focus({ preventScroll: true }); SE.cancel();
     }
     function close() {
       if (closed) return;
+      cancelImageLoad?.();
       releaseVideo(); closed = true; observer?.disconnect();
       document.removeEventListener("keydown", onKey);
       if (overlay.parentNode === layers.modal) { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); }
@@ -90,12 +117,38 @@ export function openGallery() {
         content.append(el("p.gal-media-error", { text: "画像を読み込めませんでした。閉じて、もう一度開いてください。" }));
       } });
     }
+    // CGの実際のimgを待つ。失敗表示はimage()の既存ハンドラに任せる。
+    function trackImageLoad(img) {
+      if (img.complete) return;
+      const notice = loadingNotice("画像を読み込んでいます…");
+      let finish;
+      const task = new Promise(resolve => {
+        finish = () => {
+          img.removeEventListener("load", finish);
+          img.removeEventListener("error", finish);
+          if (cancelImageLoad === finish) cancelImageLoad = null;
+          // 閉じる・差し替え時はfinallyのマイクロタスクを待たずに消す。
+          notice.onHide();
+          resolve();
+        };
+        img.addEventListener("load", finish);
+        img.addEventListener("error", finish);
+      });
+      cancelImageLoad = finish;
+      void withLoadingNotice(task, {
+        onShow: () => {
+          if (cancelImageLoad === finish && img.isConnected && content.contains(img)) notice.onShow();
+        },
+        onHide: notice.onHide,
+      });
+    }
     function show(entry, button) {
       if (!entry.unlocked || closed) return;
       releaseVideo(); active = entry; page = 0; trigger = button;
       viewer.classList.add("show"); drawViewer(); SE.select();
     }
     function drawViewer() {
+      cancelImageLoad?.();
       content.replaceChildren();
       const back = el("button.btn", { text: "一覧へ戻る", dataset: { test: "gallery-viewer-close" }, onclick: closeViewer });
       const controls = [el("strong", { text: active.title }), back];
@@ -127,13 +180,20 @@ export function openGallery() {
         content.append(stickerPhoto(active.photo.people, active.photo.mode, photoName));
       } else {
         const url = cgUrl(active.cg);
-        content.append(image(url, active.title));
+        const img = image(url, active.title);
+        content.append(img);
+        trackImageLoad(img);
       }
       tools.replaceChildren(...controls); back.focus({ preventScroll: true });
     }
+    function thumbnail(url) {
+      return el("img", { src: url, alt: "", loading: "lazy", onerror: e => {
+        e.target.replaceWith(el("span.gal-media-symbol", { text: "画像なし", "aria-hidden": "true" }));
+      } });
+    }
     function render() {
       const items = entries.filter(entry => tab === "all" || entry.kind === tab);
-      count.textContent = items.filter(entry => entry.unlocked).length + " / " + items.length;
+      count.textContent = fraction(tab === "all" ? stats : stats.byKind[tab]);
       tabs.querySelectorAll("button").forEach(button => button.setAttribute("aria-selected", String(button.dataset.kind === tab)));
       grid.dataset.kind = tab;
       grid.replaceChildren(...items.map(entry => {
@@ -142,8 +202,8 @@ export function openGallery() {
         ]);
         const button = el("button.gal-cell", { title: entry.title, "aria-label": entry.title,
           dataset: { test: "gal-" + entry.id, cg: entry.cg, kind: entry.kind }, onclick: () => show(entry, button) });
-        if (entry.cg) button.append(el("img", { src: cgUrl(entry.cg), alt: "", loading: "lazy" }));
-        else if (entry.kind === "comic") button.append(el("img", { src: entry.pages[0], alt: "", loading: "lazy" }));
+        if (entry.cg) button.append(thumbnail(cgThumbUrl(entry.cg) || cgUrl(entry.cg)));
+        else if (entry.kind === "comic") button.append(thumbnail(entry.pages[0]));
         else if (entry.photo) {
           const thumb = stickerPhoto(entry.photo.people, entry.photo.mode, photoName); thumb.classList.add("gal-photo-thumb"); button.append(thumb);
         }

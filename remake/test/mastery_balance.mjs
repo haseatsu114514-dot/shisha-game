@@ -70,7 +70,7 @@ function temperatureFor(score, bands) {
 
 function craftHistory({ holes, picks, serving, care, steamHits = 1 }) {
   const cs = {
-    mode: "tournament", chapter: 1,
+    mode: "tournament", chapter: 1, water: 0.5,
     equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
     mix: { lemon: 9, mint: 3 }, pack: "normal", place: "triangle",
     holes: { score: holes, outerEven: holes / 100, innerExcess: 0, total: 22, minimumComplete: true },
@@ -160,3 +160,28 @@ console.log(JSON.stringify({
   scope: "real scoring with supplied operation histories; not a timed browser playthrough",
 }, null, 2));
 console.log("PASS weighted mastery, forecasts, starter wins, preparation limits, two adjustments and unchanged story voting");
+
+// U5雛形: 実時間操作のシミュレーターではなく、工程結果を与えて実finalizeを計測する。
+// 能力から各操作結果への伝播・乱数分布・装備/配合の総当たりはU5本体で追加する。
+if (process.argv.includes("--ngplus-measure")) {
+  const rows = [];
+  for (const ability of [10, 100]) for (const mastery of [0, 60]) {
+    const value = newGame();
+    for (const key of Object.keys(value.stats)) value.stats[key] = ability;
+    value.flavorMastery = { lemon: mastery, mint: mastery };
+    const totals = {};
+    for (const [operation, history] of Object.entries({
+      rough: scenarios.rough,
+      perfect: { holes: 100, picks: ["just", "just", "just"], serving: 100, care: [100, 100], steamHits: 0 },
+    })) {
+      const cs = finalize(craftHistory(history));
+      totals[operation] = cs.total;
+      rows.push({ ability, masteryLevel: mastery === 60 ? 5 : 1, operation,
+        ...cs.parts, total: cs.total, saturated: cs.total === 100 });
+    }
+    rows.push({ ability, masteryLevel: mastery === 60 ? 5 : 1, operation: "perfect - rough",
+      total: Math.round((totals.perfect - totals.rough) * 10) / 10 });
+  }
+  console.log("U5 scaffold: fixed operation histories, starter equipment, no preparation bonuses");
+  console.table(rows);
+}

@@ -39,15 +39,22 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "【ぺぱーみんと】新作入荷♪ ……って、一斉送信じゃないよ、はじめくんっ♡"
+          "text": "【PEPPERMINT】新作入荷♪ ……って、一斉送信じゃないよ、はじめくんっ♡"
         },
         {
           "sender": "minto",
-          "text": "今日お店来ないのー？ 新しいの作ったから、感想聞かせてほしいなっ♪"
+          "stamp": "st_minto_welcome",
+          "media_chapters": [
+            1
+          ]
         },
         {
           "sender": "minto",
-          "text": "美味しかったらツーショットチェキ撮ろ♡（笑）"
+          "text": "今日お店来ないのー？ ハタチの感性で新しいの作ったから、感想聞かせてほしいなっ♪"
+        },
+        {
+          "sender": "minto",
+          "text": "美味しかったらツーショットチェキ撮ろ♡（笑） ……あ、年齢へのツッコミは有料オプションでーす♡"
         }
       ],
       "accept_event": "interaction_minto_noon_01",
@@ -111,7 +118,7 @@
       "reminder_text": "先日のリンゴの探求、まだ道は開かれている。今夜、閉店後ならどうだ。",
       "decline_response": {
         "sender": "adam",
-        "text": "そうか。無理に店を空けることはない、……また日を改めよう"
+        "text": "そうか。疲れた夜もあろう、……また日を改めよう"
       }
     },
     {
@@ -129,7 +136,7 @@
         },
         {
           "sender": "adam",
-          "text": "今宵、それぞれの仕事を終えてから観音で新たな『導き』を見つけに行く、……同行するか？"
+          "text": "今宵、それぞれの仕事を終えてから観音堂の石段を登る。熟れたリンゴのような月が、新たな『導き』をくれるはずだ。……同行するか？"
         }
       ],
       "accept_event": "outing_adam_1",
@@ -145,7 +152,7 @@
       "id": "lime_outing_minto_1",
       "important": true,
       "closed_on": 6,
-      "reminder_text": "この前はタイミングが合わなかったね。今日はお店がお休みだから、もし空いていたら。",
+      "reminder_text": "フレーバー、まだ買えてないの。今日はお店がお休みだから、選ぶの付き合ってくれたら嬉しいな。",
       "sender": "minto",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
@@ -159,13 +166,13 @@
         },
         {
           "sender": "minto",
-          "text": "フレーバーを買い足したくて。はじめくんの意見も聞けたら、嬉しいな"
+          "text": "フレーバーを買い足したくて。お店用じゃなくて、自分で吸う、強すぎるって言われるくらいのミント。……はじめくんの意見も聞けたら、嬉しいな"
         }
       ],
       "accept_event": "outing_minto_1",
       "decline_response": {
         "sender": "minto",
-        "text": "うん、わかった。今日は無理しないでね"
+        "text": "そっか。じゃあ今日は一人で選んでくるね。……どれにしたかは、また今度教える"
       },
       "private_schedule": "holiday_or_temporary"
     },
@@ -186,12 +193,12 @@
         },
         {
           "sender": "minto",
-          "text": "お店のことを気にせず、ゆっくり話してみたくて"
+          "text": "いつもはカウンター越しだから、隣に座って話してみたくて"
         }
       ],
       "accept_event": "ch1_minto_fifth",
       "accept_text": "うん、会おう",
-      "reminder_text": "この前のお誘い、返事は気にしないでね。今日、空いていたら",
+      "reminder_text": "この前のお誘い、返事は気にしないでね。今日、隣の席が空いてるから",
       "decline_response": {
         "sender": "minto",
         "text": "うん、わかった。無理しないでね。お店では、またいつでも"
@@ -202,7 +209,7 @@
     {
       "id": "lime_outing_minto_2",
       "important": true,
-      "reminder_text": "この前はタイミングが合わなかったね。{privateContext}、もし空いていたら。",
+      "reminder_text": "前の話、急がなくていいからね。{privateContext}、気が向いたらでいいよ。",
       "sender": "minto",
       "trigger_condition": "flag",
       "trigger_flag": "_minto_fifth_done",
@@ -214,7 +221,7 @@
         },
         {
           "sender": "minto",
-          "text": "お店では話せないようなことも、ゆっくり話せたらなって。……少し、緊張はするけど"
+          "text": "『みんと』じゃない方の私の話、聞いてほしくて。……少し、緊張はするけど"
         }
       ],
       "accept_event": "ch1_minto_private_1",
@@ -242,15 +249,15 @@
         },
         {
           "sender": "minto",
-          "text": "渡したいものがあるの。お店じゃなくて、外で渡したくて"
+          "text": "渡したいものがあるの。お店の棚には並べられない、私の個人的なもの"
         }
       ],
       "accept_event": "ch1_minto_bond_finale",
       "accept_text": "{privateWhen}、会おう",
-      "reminder_text": "この前は都合が合わなかったね。{privateContext}、もし空いていたら",
+      "reminder_text": "この前は都合が合わなかったね。渡したいもの、まだ私の手元にあるよ。{privateContext}、もし空いていたら",
       "decline_response": {
         "sender": "minto",
-        "text": "うん、わかった。また誘うね"
+        "text": "……うん、わかった。ちゃんと取っておくね。渡せる日が来るまで"
       }
     },
     {
@@ -341,6 +348,17 @@
         },
         {
           "sender": "minto",
+          "text": "わたしも出るけど、はじめくんの一台もちゃんと見てるね。"
+        },
+        {
+          "sender": "minto",
+          "stamp": "st_minto_cheer",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "minto",
           "text": "優勝したら、お祝いの一台はわたしに任せて。……なんて、少し気が早いね。ちゃんと応援してるよ"
         }
       ]
@@ -357,13 +375,14 @@
         },
         {
           "sender": "tsumugi",
-          "text": "会場にいます。緊張したら、深呼吸。……終わったら、感想を聞いてください"
+          "text": "会場にいます。……今日の空気、わたしには少し橙色です。緊張したら、深呼吸。……終わったら、感想を聞いてください"
         }
       ]
     },
     {
       "id": "lime_ageha_day3",
       "sender": "ageha",
+      "chapter": 2,
       "trigger_day": 3,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
@@ -371,6 +390,10 @@
         {
           "sender": "ageha",
           "text": "ハジメっちー！ LIMEしてみたっ"
+        },
+        {
+          "sender": "ageha",
+          "stamp": "st_ageha_ok"
         },
         {
           "sender": "ageha",
@@ -475,6 +498,7 @@
     {
       "id": "lime_ageha_day5",
       "sender": "ageha",
+      "chapter": 2,
       "trigger_day": 5,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
@@ -544,6 +568,13 @@
         {
           "sender": "adam",
           "text": "もうすぐ大会だな。リンゴの祝福は、受けているか？"
+        },
+        {
+          "sender": "adam",
+          "stamp": "st_adam_bless",
+          "media_chapters": [
+            1
+          ]
         }
       ],
       "replies": [
@@ -558,8 +589,8 @@
           "affinity": 1
         },
         {
-          "text": "アダムさんには負けません",
-          "response": "ふふ……原点の力、見せつけてやろう",
+          "text": "祝福って、具体的には何ですか",
+          "response": "……枕元にリンゴを一つ置いて眠る。それだけだ。笑うな、俺は大会前は毎晩そうしている",
           "affinity": 1
         }
       ]
@@ -573,23 +604,23 @@
       "messages": [
         {
           "sender": "kumicho",
-          "text": "……おい、小僧"
+          "text": "……おい、あんちゃん"
         },
         {
           "sender": "kumicho",
-          "text": "お前、「シガーマン」って知っとるか"
+          "text": "あんちゃん、「シガーマン」って知ってるかい"
         },
         {
           "sender": "kumicho",
-          "text": "ウチの若衆がmukai行ったらしいんだが、そこで見たこともない煙にやられたって震えてやがる"
+          "text": "ウチの若衆がmukaiに行ったらしいんだが、そこで見たこともねえ煙にやられて、震えてやがるんでさ"
         },
         {
           "sender": "kumicho",
-          "text": "「あれは人間が作る煙じゃない」とか泣きながら電話してきよったわ"
+          "text": "「あれは人間が作る煙じゃねえ」とか、泣きながら電話してきやがってね"
         },
         {
           "sender": "kumicho",
-          "text": "……冗談だと思いたいがな。俺も少し気になる"
+          "text": "……冗談だと思いてえがな。俺も少し気になってる"
         }
       ],
       "trigger_day": 6,
@@ -597,12 +628,12 @@
       "replies": [
         {
           "text": "実際の煙、見てみたいです",
-          "response": "……肝が据わっとるな。見たらまず、何が違うか自分の舌で確かめろよ",
+          "response": "……肝が据わってるな。見たらまず、何が違うか自分の舌で確かめなせえ",
           "affinity": 1
         },
         {
           "text": "まずは噂として聞いておきます",
-          "response": "おう。聞いた話だけで決めつけるな、……それでいい",
+          "response": "おう。聞いた話だけで決めつけるんじゃねえ、……それでいいんでさ",
           "affinity": 0
         }
       ]
@@ -624,7 +655,7 @@
         },
         {
           "sender": "nagumo",
-          "text": "業界では「シガーマン」と呼ばれているらしい。ムカイさんがその人だと思っていたのだが……どうも違うようだ"
+          "text": "業界では「シガーマン」と呼ばれているらしい。mukaiの店主がそうだと言う者もいるが、確かめた者はおらん"
         },
         {
           "sender": "nagumo",
@@ -658,7 +689,7 @@
     {
       "id": "rumor_kemuri_experiments",
       "sender": "naru",
-      "trigger_condition": "ch2_started",
+      "trigger_condition": "lime_exchanged",
       "type": "rumor",
       "rumor_about": "dr_kemuri",
       "messages": [
@@ -751,23 +782,23 @@
         },
         {
           "sender": "ageha",
-          "text": "シガーリーフで煙出す女の子。見た目フツーなのに、煙だけバグってるって"
+          "text": "シガーリーフで、煙だけバグってる人がいるんだって。見た人みんな「シブいおっさん」って言うのに、顔はだれも覚えてないらしい"
         },
         {
           "sender": "ageha",
-          "text": "ムカイさんとこに出没するらしいんだけど。うちのバイブスで感じるのは"
+          "text": "ムカイさんとこで見たって話もあるんだけど。うちのバイブスで感じるのは"
         },
         {
           "sender": "ageha",
-          "text": "あの子、ガチの天才枠。うちらとは次元が違うかもしんない"
+          "text": "その人、ガチの天才枠。うちらとは次元が違うかもしんない"
         }
       ],
       "trigger_day": 6,
       "chapter": 3,
       "replies": [
         {
-          "text": "会えたら、その煙を見てみたい",
-          "response": "でしょ！ あの煙が何でできてるか、一緒に見てみたいね",
+          "text": "mukaiの話なら、店で気にかけておくよ",
+          "response": "そっか、ムカイさんとこにいるもんね！ もし見かけたら、うちにも教えて。どんな煙か、一緒に見てみたいし",
           "affinity": 1
         },
         {
@@ -804,7 +835,7 @@
       ],
       "replies": [
         {
-          "text": "忘れない",
+          "text": "この前のこと、忘れないよ",
           "response": "……うん。ちょっと恥ずかしいけど、覚えていてくれるなら、嬉しい",
           "affinity": 2
         },
@@ -833,7 +864,7 @@
         },
         {
           "sender": "naru",
-          "text": "立ち上がりの3分だけ計っといて。新作と旧型で体感どれくらい違うか、お前の舌の感想が聞きたい"
+          "text": "立ち上がりの3分だけ計っといて。カラメルと一緒で、そこ急ぐと甘さが苦さに化けるから。新作と旧型で体感どれくらい違うか、お前の舌の感想が聞きたい"
         }
       ],
       "replies": [
@@ -862,6 +893,13 @@
         },
         {
           "sender": "adam",
+          "image": "im_adam_moon",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "adam",
           "text": "この前、一緒に見た月だ、……良い夜だった"
         }
       ],
@@ -874,6 +912,11 @@
         {
           "text": "また登りましょう",
           "response": "ああ。次は新たな『導き』と共に……",
+          "affinity": 1
+        },
+        {
+          "text": "リンゴに見えますね",
+          "response": "……気づいたか。そうだ、あの夜の月は熟れていた。お前も、ようやく見える目になってきたな",
           "affinity": 1
         }
       ]
@@ -890,6 +933,13 @@
         {
           "sender": "tsumugi",
           "text": "……おはようございます。変なお願いを、してもいいですか"
+        },
+        {
+          "sender": "tsumugi",
+          "stamp": "st_tsumugi_nod",
+          "media_chapters": [
+            1
+          ]
         },
         {
           "sender": "tsumugi",
@@ -957,6 +1007,13 @@
         },
         {
           "sender": "rin",
+          "stamp": "st_rin_smug",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "rin",
           "text": "次の便も近いうちに入る。……気が向いたら2階においで"
         }
       ],
@@ -988,6 +1045,13 @@
         {
           "sender": "tsumugi",
           "text": "おはようございます。……送った下描き、また少し直しました"
+        },
+        {
+          "sender": "tsumugi",
+          "image": "im_tsumugi_draft",
+          "media_chapters": [
+            1
+          ]
         },
         {
           "sender": "tsumugi",
@@ -1034,6 +1098,13 @@
         {
           "sender": "naru",
           "text": "新しいことに手ぇ出したくなるだろ、今。──出すなよ"
+        },
+        {
+          "sender": "naru",
+          "stamp": "st_naru_sleep",
+          "media_chapters": [
+            1
+          ]
         }
       ],
       "replies": [
@@ -1044,7 +1115,7 @@
         },
         {
           "text": "もう仕上げに入ってます",
-          "response": "上等。なら当日は、仕上げた分だけ堂々とやれ。お前の煙、楽しみにしてるからな",
+          "response": "上等。焼き菓子と一緒で、仕上げに入ったらオーブンは開けねえもんだ。当日は、仕上げた分だけ堂々とやれ。お前の煙、楽しみにしてるからな",
           "affinity": 1
         },
         {
@@ -1149,6 +1220,13 @@
         },
         {
           "sender": "rin",
+          "image": "im_rin_stock",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "rin",
           "text": "今期のイチ推しは『AF グレープ』。素直に旨い、迷ったらこれ。くじにも何袋か紛れてるらしい"
         },
         {
@@ -1160,6 +1238,11 @@
         {
           "text": "行ってみます",
           "response": "うん。財布と相談しなよ。……いいフレーバーは、いい一台の半分だからね",
+          "affinity": 0
+        },
+        {
+          "text": "モルモット呼び、そろそろやめません？",
+          "response": "やめない。被験者番号で呼ばれるよりマシでしょ。……試香の枠、ちゃんと空けとくから",
           "affinity": 0
         }
       ]
@@ -1188,6 +1271,11 @@
         {
           "text": "チェックします",
           "response": "よろしい。……本番、楽しみにしてる",
+          "affinity": 0
+        },
+        {
+          "text": "モルモットの分、取り置きしてもらえます？",
+          "response": "……しょうがないな、一袋だけね。モルモットの餌代は経費で落ちるから",
           "affinity": 0
         }
       ]
@@ -1221,6 +1309,7 @@
       "type": "chat",
       "trigger_condition": "flag",
       "trigger_flag": "_ch2_ageha_contact",
+      "priority": 1,
       "messages": [
         {
           "sender": "ageha",
@@ -1228,7 +1317,14 @@
         },
         {
           "sender": "ageha",
-          "text": "あの席の白いクマ、また空けとくね。無理せず、お互い準備しよ！"
+          "stamp": "st_ageha_thanks",
+          "media_chapters": [
+            2
+          ]
+        },
+        {
+          "sender": "ageha",
+          "text": "あの席の白いクマ、また空けとくね。次はハジメっちの一台も吸わせて！"
         }
       ],
       "replies": [
@@ -1239,7 +1335,7 @@
         },
         {
           "text": "教えてもらったこと、試してみます",
-          "response": "うん、ハジメっちの店でやってみて！",
+          "response": "え、うちちゃんと教えられてた？笑 なんとなくでやってるから、言葉にすると逃げちゃう気がしてさ。……ハジメっちの店でどうなったか、教えて！",
           "affinity": 1
         }
       ]

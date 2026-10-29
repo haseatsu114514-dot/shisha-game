@@ -12,7 +12,7 @@ export const CHAPTER_DIALOGUE_FILES = { ch2Tournament: "ch2_tournament", cityGue
 let backgroundWeather = () => null;
 export function setBackgroundWeatherSource(source) { backgroundWeather = source; }
 
-/** 読み込んだ全データ。起動時に loadAll() が埋める */
+/** 読み込んだ全データ。起動時に loadAll()、タイトル後に後段ローダが埋める */
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
   samechan: {},         // シーシャークのprofile・会話・LIME・店（独立overlay）
@@ -34,7 +34,7 @@ export const DB = {
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
   friends: { friends: {} }, // 友人になった相手からの、たまのLIME・一服の場面（remake/data/friends.json）
-  statusTexts: { statPurpose: {}, statTierFx: {}, customerNotes: [] }, // ステの説明・★効果・常連ノート
+  statusTexts: { statPurpose: {}, statTierFx: {} }, // ステの説明・★効果
   broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
   gallery: { items: [] }, // 採用済み漫画・ムービー。候補画像はここへ登録しない。
@@ -45,15 +45,18 @@ const DIALOGUE_FILES = [
   "ch1_tsumugi", "ch1_rin", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
   "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
+  "ch1_interval",
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "samechan", // 帰り道の出会いと、章2からのシーシャーク
-  "cinema", // サメちゃんの自主訪問紹介と、地元の小さな名画座
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
-  "tournament_craft", // 制作中の注目点と、試喫でその工程を振り返る掛け合い
   "venue_hours", // 店主の案内と街の昼夜差分
-  "hiyori", // ひよりの本心表示サンプル・未接続のイベント定義
   "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
 ];
+// ひよりの参照先は DB.hiyori.route が無い間 disabled に倒れるため、タイトル後に読める。
+const DEFERRED_DIALOGUE_FILES = ["hiyori"];
+// 映画館と大会制作会話はタイトル後に先読みし、各入口でも完了を待つ。
+const CINEMA_DIALOGUE_FILE = "cinema";
+const TOURNAMENT_CRAFT_DIALOGUE_FILE = "tournament_craft";
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
 const JSON_CONCURRENCY = 4;
@@ -74,6 +77,44 @@ async function getJSON(path) {
     clearTimeout(timer);
   }
 }
+
+let deferredDialoguesPromise;
+export function loadDeferredDialogues() {
+  if (!deferredDialoguesPromise) {
+    deferredDialoguesPromise = Promise.all(DEFERRED_DIALOGUE_FILES.map((file) =>
+      getJSON(`${ROOT}data/dialogue/${file}.json`).then((data) => [file, data])
+    )).then((files) => {
+      for (const [file, data] of files) {
+        if (file === "hiyori") DB.hiyori = data;
+        for (const d of data.dialogues || []) DB.dialogues[d.dialogue_id] = d;
+      }
+      return DB;
+    }).catch((error) => {
+      deferredDialoguesPromise = null; // 先読み失敗後は次の呼び出しで再試行できる
+      throw error;
+    });
+  }
+  return deferredDialoguesPromise;
+}
+
+function dialogueLoader(file) {
+  let promise;
+  return () => {
+    if (!promise) {
+      promise = getJSON(`${ROOT}data/dialogue/${file}.json`).then((data) => {
+        for (const d of data.dialogues || []) DB.dialogues[d.dialogue_id] = d;
+        return DB;
+      }).catch((error) => {
+        promise = null; // 先読み失敗後は入口から再試行できる
+        throw error;
+      });
+    }
+    return promise;
+  };
+}
+
+export const loadCinemaDialogue = dialogueLoader(CINEMA_DIALOGUE_FILE);
+export const loadTournamentCraftDialogue = dialogueLoader(TOURNAMENT_CRAFT_DIALOGUE_FILE);
 
 export async function loadAll(onProgress = () => {}) {
   globalThis.performance?.setResourceTimingBufferSize?.(1000);
@@ -149,8 +190,9 @@ export async function loadAll(onProgress = () => {}) {
 
 // 最初から知っている相手・モブ。それ以外は名乗るまで「？？？」（master_spec #1）
 const ALWAYS_KNOWN = new Set([
-  "hajime", "sumi", "tsumugi", "salaryman", "kako", "rira", "oneesan", "pakki",
+  "hajime", "sumi", "tsumugi", "salaryman", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
+  "spice_merchant", "cafe_staff",
 ]);
 // 立ち絵フォルダ・別名（oneesan はみんとの私服＝ura_* 差分）
 export const SPEAKER_ALIAS = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };
@@ -204,7 +246,8 @@ export function callName(id, state, opts = {}) {
 // 表示用の軽い WebP（remake/img/・tools/build_images.py が作る）。一覧に無い画像は assets/ の PNG を読む
 let WEBP = new Set();
 // #983で採用した顔修正を、同名URLに残った旧画像のキャッシュと区別する。
-const FACE_CORRECTION_REVISION = "face-line-20261026";
+// 2026-10-28: #1081 I03 でみんと通常を斜め向きへ復元したため revision を更新。
+const FACE_CORRECTION_REVISION = "face-restore-20261028";
 function faceCorrectionVersion(rel) {
   return /^(sprites\/characters\/(minto\/chr_minto_normal|ageha\/chr_ageha_[a-z]+)\.png|ui\/face_icons\/face_(minto|ageha)\.png)$/.test(rel)
     ? `?v=${FACE_CORRECTION_REVISION}` : "";
@@ -291,6 +334,11 @@ export function cgUrl(id) {
   return (DB.manifest.cgs || []).includes(`${id}.png`) ? img(`cgs/${id}.png`) : null;
 }
 
+/** ギャラリー一覧用サムネイル（元CGの WebP から生成した縮小版・最大512px） */
+export function cgThumbUrl(id) {
+  return (DB.manifest.cgs || []).includes(`${id}.png`) ? `img/cgs/thumbs/${id}.webp` : null;
+}
+
 /**
  * 顔ドット絵アイコン。名前欄と同じ条件で、本名を聞いた後の私的な場面のみんと（栞）は私服の顔
  * （face_minto_private）。私服の「お姉さん」も、営業姿の顔で正体が見た目に出ないよう私服の顔にする
@@ -298,7 +346,7 @@ export function cgUrl(id) {
 export function faceIconUrl(id, state = null, { context = null } = {}) {
   const icons = DB.manifest.faceIcons || [];
   const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
-  if (privateMinto) return icons.includes("face_minto_private.png") ? `${ROOT}assets/ui/face_icons/face_minto_private.png` : null;
+  if (privateMinto) return icons.includes("face_minto_private.png") ? img("ui/face_icons/face_minto_private.png") : null;
   const folder = SPEAKER_ALIAS[id] || id;
   return icons.includes(`face_${folder}.png`) ? img(`ui/face_icons/face_${folder}.png`) : null;
 }
