@@ -24,7 +24,9 @@ async function seed(page) {
     // 第3章の後日談まで終えた保存（ch3-aftermath の完了状態）を直接組む。
     Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100,
       weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+    // 予告2の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして第4章本体に集中する。
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
+      _ch3_preview_seen: true,
       _ch3_tournament_won: true, _ch3_japan_first_representative: true,
       _ch3_intro: { startDay: 29, stage: 18, titleSeen: true, routeVersion: 2 },
       _ch3_tournament: { stage: "complete", attempts: 1, voted: 4, history: [{ rank: 1, total: 88 }],
