@@ -242,10 +242,6 @@ export function isUnlocked(spot) {
 }
 
 /** マップに出す名前（店主に会う前は店名の看板だけ） */
-export function spotLabel(spot) {
-  return spot.label;
-}
-
 /** 店種は詳細カードだけに添える。ピン名・ID・保存値は変えない。 */
 export function spotDetailLabel(spot) {
   const category = ["tonari", "rival", "samechan"].includes(spot.kind) || spot.id === "c_station"

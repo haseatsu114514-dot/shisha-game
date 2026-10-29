@@ -22,7 +22,8 @@
 // 第5章専用の背景が無いので、全て既存 bg の流用。素材が届いたらこの表だけ直す。
 export const CH5_SCENE_BG = Object.freeze({
   ch5_bridge_after_return: "bg_tonari_inside_night", // 仮置き bg
-  ch5_opening: "bg_osu_map_day",                     // 仮置き bg
+  ch5_opening: "bg_osu_map_finale",                  // #1177 選定マップ（ch5_osu_07・夜／帰郷場面）
+  ch5_free: "bg_osu_map_finale",                     // #1177 選定マップ（ch5_osu_07・夜／自由行動カード画面）
   ch5_unrecorded_day: "bg_tonari_inside_day",        // 仮置き bg
   ch5_free_mashiro_visit: "bg_tonari_inside_day",    // 仮置き bg（台本コメント: tonari・昼）
   ch5_free_first_visitor: "bg_tonari_inside",        // 仮置き bg（台本コメント: tonari・夕）

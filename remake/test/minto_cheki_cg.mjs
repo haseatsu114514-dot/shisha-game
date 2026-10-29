@@ -1,4 +1,4 @@
-// Actual DAY4 LIME acceptance and saved appointment reach the existing two-shot command.
+// Actual DAY4 LIME acceptance and saved appointment reach the cheki scene.
 import assert from "node:assert/strict";
 import path from "node:path";
 import { suite, storageSnapshot, assertFits } from "./browser/support.mjs";
@@ -28,7 +28,7 @@ async function stopAtPhoto(page) {
   await page.waitForFunction(() => document.querySelector(".vn-cg.show")?.dataset.cg === "cg_minto_cheki");
   await page.locator('[data-test="vn-skip"]').click();
   await page.waitForFunction(() => Number(getComputedStyle(document.querySelector(".vn-cg")).opacity) >= .99
-    && document.querySelector(".vn-text")?.textContent.includes("ツーショット"));
+    && document.querySelector(".vn-text")?.textContent.includes("みんとのチェキ"));
   await assertFits(page, ".vn-text");
   const result = await page.evaluate(async () => {
     const image = new Image(); image.src = K.data.cgUrl("cg_minto_cheki"); await image.decode();
