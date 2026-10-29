@@ -510,3 +510,8 @@ body.game-ds .result-table .rt-ranking { overflow: auto; overscroll-behavior: co
   body.game-ds .result-table .rt-pt { font-size: 15px; }
   body.game-ds .result-table .rt-rows { gap: 3px; }
 }
+/* 経験値の行（GROWTH_BOARD の裏）: 上画面の帯では Lv とゲージだけ */
+body.game-ds .hud-exp { order: 2; height: auto; padding: 0; gap: 4px; font-family: var(--ds-dot); font-size: 13px; }
+body.game-ds .hud-exp .hx-bar { width: 46px; flex: none; }
+body.game-ds .hud-exp .hx-left { display: none; }
+body.game-ds .hud-exp .hx-lv { min-width: 0; }

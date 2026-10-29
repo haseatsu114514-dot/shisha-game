@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "growth-levelup",
+      "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
+      "kind": "quick",
+      "run": ["node remake/test/growth_levelup.mjs"]
+    },
+    {
       "id": "vent-lid",
       "title": "Lotos lid vent heat and eligibility",
       "kind": "quick",
@@ -50,6 +56,23 @@
       "title": "Kuji goods sell handler identity and stale clicks",
       "kind": "quick",
       "run": ["node remake/test/kuji_sell_guard.mjs"]
+    },
+    {
+      "id": "growth-levelup-browser",
+      "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/growth.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/daily/hud.js",
+        "remake/css/daily.css",
+        "remake/test/browser/growth_levelup.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/growth_levelup.mjs"
+      ]
     },
     {
       "id": "station-j01",
