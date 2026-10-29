@@ -1968,7 +1968,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "smile",
+          "face": "normal",
           "text": "アタシは出たり出なかったりさ。縁があれば、また会える"
         },
         {
@@ -1987,7 +1987,7 @@
       "lines": [
         {
           "speaker": "uranaishi",
-          "face": "smile",
+          "face": "normal",
           "text": "……また来たね。今日は誰との縁が気になるんだい？"
         }
       ]
@@ -2047,7 +2047,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "smile",
+          "face": "normal",
           "text": "縁は逃げやしない。稼いでから、また来な"
         }
       ]
@@ -2100,7 +2100,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "smile",
+          "face": "normal",
           "text": "……ヒヒ、いい札だ。{fortuneName}との縁は、いま撚りどきに入ってる"
         },
         {
