@@ -260,9 +260,12 @@ async function renderDefeat(owner, variant = null) {
 }
 function renderComplete(owner) {
   const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
+    if (owner.previewing) return;
     const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
     await mod.beginChapterThree();
   }, true);
+  // 初回の予告が終わるまで、完了カードの導線を最初から無効にしておく。
+  next.disabled = !state.flags._ch2_preview_seen;
   const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
     next,
@@ -280,7 +283,13 @@ function renderComplete(owner) {
     // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
     let observer;
     if (typeof MutationObserver !== "undefined") {
-      observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
+      // showScreen は幕の切替中、カードの DOM への接続を遅らせることがある。
+      // 初回の未接続を離脱と誤認せず、一度表示されたカードが外れたときだけ中断する。
+      let mounted = next.isConnected;
+      observer = new MutationObserver(() => {
+        if (next.isConnected) mounted = true;
+        else if (mounted) controller.abort();
+      });
       observer.observe(layers.screen, { childList: true });
     }
     let result;
