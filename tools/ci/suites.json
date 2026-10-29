@@ -2975,6 +2975,37 @@
         "BASE_URL": "http://127.0.0.1:8123/remake/",
         "ARTIFACT_DIR": ".codex/artifacts/store-logo-comparison"
       }
+    },
+    {
+      "id": "tutorial-transition-performance",
+      "title": "Tutorial transition performance under network and media profiles",
+      "kind": "browser",
+      "weight": 12,
+      "timeout": 25,
+      "paths": [
+        "remake/index.html",
+        "remake/js/core/state.js",
+        "remake/js/core/ui.js",
+        "remake/js/core/data.js",
+        "remake/js/vn/engine.js",
+        "remake/js/vn/intro.js",
+        "remake/js/chapters/ch1.js",
+        "remake/css/vn*.css",
+        "data/dialogue/ch1_main.json",
+        "data/dialogue/remake_ch1.json",
+        "remake/img/backgrounds/bg_tonari_inside*.webp",
+        "asset_sources/transitions/move-variants-20261010/3_walk.mp4",
+        "remake/test/browser/tutorial_transition_performance.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tutorial_transition_performance.mjs"
+      ],
+      "env": {
+        "BASE_URL": "http://127.0.0.1:8123/remake/"
+      },
+      "sparse": [
+        "/asset_sources/transitions/move-variants-20261010/"
+      ]
     }
   ]
 }
