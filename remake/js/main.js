@@ -231,8 +231,8 @@ window.__remake = {
       window.__remake.state.phase = "tournament";
       window.__remake.state.day = TOURNAMENT_DAY;
       // 開発ジャンプは日常の仕入れ案内を省き、検証用の持ち込みを用意する。
-      window.__remake.state.flavorStock = { double_apple: 50, mint: 50, blueberry: 50 };
-      window.__remake.state.flavors = ["double_apple", "mint", "blueberry"];
+      window.__remake.state.flavorStock = { double_apple: 50, mint: 50, blueberry: 50, lemon: 50 };
+      window.__remake.state.flavors = ["double_apple", "mint", "blueberry", "lemon"];
       return ch1.devTournament();
     },
     // リザルトを待たずに3種類のコンティニュー演出を確認（0〜2を指定）。
