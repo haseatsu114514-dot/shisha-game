@@ -8,9 +8,11 @@ const baseline = JSON.parse(fs.readFileSync(new URL("../../../docs/qa/issue452-t
 const WIP = "ch1_tsumugi_work_in_progress", ART = "ch1_tsumugi_sketch";
 const KEYS = ["_tsumugi_contest_draft_window", "_tsumugi_contest_draft_hands"];
 const RESPONSES = [
-  "……窓辺の煙と猫、残しました。好きって言ってくれたので",
-  "……カウンターの手元、描き込みました。好きって言ってくれたので",
+  "……ほどけていく煙と猫、残しました。好きって言ってくれたので",
+  "……色のなかった右側、描き込みました。好きって言ってくれたので",
 ];
+// DAY3の選択肢。baseline は v2（店内の下描き）当時の台本、current は v3（抽象スケッチ）。
+const DRAFT_LABELS = { baseline: ["窓辺の煙と猫", "カウンターの手元"], current: ["ほどけていく煙と猫", "まだ色のない右側"] };
 const NEUTRAL = "つむぎの指が、窓辺の猫のそばで止まった。";
 const artifacts = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 
@@ -76,13 +78,13 @@ async function start(page, scene) {
   await page.waitForTimeout(350);
 }
 
-async function finishByInput(page, { touch, answer = 0, snapshot = false } = {}) {
+async function finishByInput(page, { touch, answer = 0, snapshot = false, labels = DRAFT_LABELS.current } = {}) {
   let clicks = 0, choices = 0;
   for (let i = 0; i < 150; i++) {
     if (await page.evaluate(() => window.finished)) return { clicks, choices, lines: await page.evaluate(() => T.lines()) };
     const buttons = page.locator(".vn-choices button");
     if (await buttons.count()) {
-      assert.deepEqual(await buttons.allTextContents(), ["窓辺の煙と猫", "カウンターの手元"]);
+      assert.deepEqual(await buttons.allTextContents(), labels);
       await assertFits(page, ".vn-choices button");
       await input(buttons.nth(answer), touch); choices++;
       continue;
@@ -180,7 +182,7 @@ await suite("tsumugi-draft-response", async check => {
         let draft = { clicks: 0, choices: 0 };
         if (answer !== null) {
           await start(page, version === "baseline" ? baseline.scenes[WIP] : WIP);
-          draft = await finishByInput(page, { touch, answer });
+          draft = await finishByInput(page, { touch, answer, labels: DRAFT_LABELS[version] });
         } else await page.evaluate(() => {
           T.core.state.flags._tsumugi_contest_progress = true;
           T.core.state.story.tsumugi = 5; T.core.state.affinity.tsumugi = 66;
@@ -197,7 +199,7 @@ await suite("tsumugi-draft-response", async check => {
             answer === null ? [null, null] : [answer === 0, answer === 1]);
         }
         await start(page, version === "baseline" ? baseline.scenes[ART] : ART);
-        const art = await finishByInput(page, { touch, answer, snapshot: version === "current" });
+        const art = await finishByInput(page, { touch, answer, snapshot: version === "current", labels: DRAFT_LABELS[version] });
         assert.equal(art.choices, 0, "A new choice was added to the completed-art scene");
         if (version === "current") assertResponse(art.lines, answer);
         counts[version] = { draftClicks: draft.clicks, choices: draft.choices, artClicks: art.clicks };
