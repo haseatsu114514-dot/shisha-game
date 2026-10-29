@@ -60,7 +60,10 @@ await suite("craft-readiness", async check => {
       const heldAtStart = blocked.length;
       await page.evaluate(() => heatRun);
       const requests = [];
-      page.on("request", request => { if (/\.(webp|png)(\?|$)/.test(request.url())) requests.push(request.url()); });
+      // Loading-comic art is not a craft material: the loading system
+      // prepares it on every bench open by design (covered by the loading
+      // suites). Scope the re-fetch check to craft materials.
+      page.on("request", request => { if (/\.(webp|png)(\?|$)/.test(request.url()) && !/\/img\/loading\//.test(request.url())) requests.push(request.url()); });
       await page.evaluate(async () => {
         window.loadingAdded = 0;
         const observer = new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(n => {
