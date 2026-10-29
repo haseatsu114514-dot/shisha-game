@@ -21,47 +21,15 @@
           "text": "壁のメニューには果物の名前が並ぶ。棚のタッパーは、違うラベルなのにダブルアップルばかりだ。"
         },
         {
-          "type": "set_flag",
-          "flag": "_met_adam"
-        },
-        {
-          "speaker": "adam",
-          "face": "serious",
-          "text": "……おお、よく来た。迷える子羊よ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "えっ？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "カウンターの奥にいたのは、緑と赤のグラデーションカラーが鮮やかな青年だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "演劇がかった口調で、こちらを真っ直ぐ見つめている。"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "ようこそ、迷える旅人。俺はアダム。エデンの園の主にして、禁断の果実（ダブルアップル）の守護者だ"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "……お前も、甘き誘惑に囚われに来たか？"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_adam",
+          "next_true": "known_greet",
+          "next_false": "new_greet"
         },
         {
           "type": "set_flag",
           "flag": "known_name_adam"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（自称アダム……？ どう接すればいいんだこれ）"
         },
         {
           "type": "condition",
@@ -69,6 +37,10 @@
           "flag": "_delivery_adam",
           "next_true": "dl_can",
           "next_false": "self_study"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_adam"
         },
         {
           "speaker": "hajime",
@@ -196,9 +168,11 @@
         ],
         "self_study": [
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "あ、俺、tonariの蒸野と言います。勉強のために……"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_met_adam",
+            "next_true": "study_known",
+            "next_false": "study_new"
           },
           {
             "speaker": "adam",
@@ -208,9 +182,11 @@
         ],
         "dl_can": [
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "あ、俺、tonariの蒸野です。スミさんから、届け物を……"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_met_adam",
+            "next_true": "dl_can_known",
+            "next_false": "dl_can_new"
           },
           {
             "speaker": "",
@@ -279,6 +255,98 @@
           {
             "type": "set_flag",
             "flag": "_lime_contact_adam"
+          }
+        ],
+        "new_greet": [
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "……おお、よく来た。迷える子羊よ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "えっ？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターの奥にいたのは、緑と赤のグラデーションカラーが鮮やかな青年だった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "演劇がかった口調で、こちらを真っ直ぐ見つめている。"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "ようこそ、迷える旅人。俺はアダム。エデンの園の主にして、禁断の果実（ダブルアップル）の守護者だ"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……お前も、甘き誘惑に囚われに来たか？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（自称アダム……？ どう接すればいいんだこれ）"
+          }
+        ],
+        "known_greet": [
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "……おお、来たか。迷える子羊よ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……説明会の時と、声の張りがまるで違う）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "説明会の控室では、短く名乗ったきり黙っていた人だ。今はカウンターの奥で、片手を大きく広げている。"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "ここはエデン。禁断の果実（ダブルアップル）の園だ。……お前も、甘き誘惑に囚われに来たか？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（同じ人、だよな……？ どう接すればいいんだこれ）"
+          }
+        ],
+        "study_new": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、俺、tonariの蒸野と言います。勉強のために……"
+          }
+        ],
+        "study_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "説明会ではろくに話せなかったので、今日は勉強させてもらいに……"
+          }
+        ],
+        "dl_can_new": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、俺、tonariの蒸野です。スミさんから、届け物を……"
+          }
+        ],
+        "dl_can_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は届け物です。スミさんから、これを……"
           }
         ]
       }
