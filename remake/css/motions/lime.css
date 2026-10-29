@@ -72,6 +72,7 @@
 .mo-lime-row.new { z-index: 1; background: #f1faf3; }
 .mo-lime-face { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 2px solid #e3e7ec; object-fit: cover; image-rendering: pixelated; background: #1a1422; }
 .mo-lime-face.blank { font-size: 22px; }
+.mo-lime-icon.custom, .mo-lime-face.custom { image-rendering: auto; }
 .mo-lime-row b { flex: 1; min-width: 0; font-size: 22px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mo-lime-new { flex: none; padding: 3px 10px; font-size: 15px; font-weight: 900; letter-spacing: 0.08em; color: #fff; background: var(--lime-hi); border-radius: 999px; }
 .mo-lime-toast {

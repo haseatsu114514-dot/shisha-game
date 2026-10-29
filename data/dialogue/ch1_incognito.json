@@ -1,5 +1,5 @@
 {
-  "_comment": "お忍び客システム（S2/W3・2026-07-16）。正体を伏せた大物がバイトに一度だけ混ざり、常連ノートに残って後日回収される。ch1_reviewer_cameo/ch1_maezono_cameo は doBaito のカメオ割り込み（rei カメオと同方式）、ch1_reviewer_payoff は C.STATION 訪問で回収。上園の大会当日の回収は ch1_tournament.json 側の condition 分岐。南雲のお忍びは正史保護（ch1優勝は南雲の1票のみ）のため使わない",
+  "_comment": "お忍び客システム（S2/W3・2026-07-16）。正体を伏せた大物がバイトに一度だけ混ざり、接客時に立つフラグ（_ev_reviewer_cameo / _ev_maezono_cameo）で後日回収される。ch1_reviewer_cameo/ch1_maezono_cameo は doBaito のカメオ割り込み（rei カメオと同方式）、ch1_reviewer_payoff は C.STATION 訪問で回収。上園の大会当日の回収は ch1_tournament.json 側の condition 分岐。南雲のお忍びは正史保護（ch1優勝は南雲の1票のみ）のため使わない",
   "dialogues": [
     {
       "dialogue_id": "ch1_reviewer_cameo",
@@ -35,7 +35,7 @@
       "dialogue_id": "ch1_maezono_cameo",
       "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
       "lines": [
-        { "speaker": "", "face": "", "text": "夕方前の、店がいちばん静かな時間。上品なジャケットの男性が、ふらりと入ってきた。" },
+        { "speaker": "", "face": "", "text": "夕方前の、店がいちばん静かな時間。上品なジャケットに、目深な帽子とメガネの男性が、ふらりと入ってきた。" },
         { "speaker": "???", "face": "normal", "text": "若いの、一台お願いできるかな。甘すぎないのがいい" },
         { "speaker": "hajime", "face": "normal", "text": "はい、少々お待ちください" },
         { "speaker": "", "face": "", "text": "一台を出す。男性は一口ごとに目を閉じて、ゆっくり、ゆっくり味わっている。" },

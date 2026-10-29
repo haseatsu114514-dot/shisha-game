@@ -1,0 +1,15 @@
+{
+  "tool": "media.generate_image (Muse media pipeline)",
+  "generation_count": 1,
+  "reference": [
+    "remake/img/shop/character-flavors/sheet-nine.webp タイル(0,0)（現行画像の切り出し）"
+  ],
+  "source": "white_gummy_bear/candidate.png",
+  "source_size": [
+    1600,
+    1600
+  ],
+  "source_mode": "RGB",
+  "source_sha256": "ffbab8870623ba1744c261160530c679f21b05b0d4c84cc22317386c65989a80",
+  "note": "候補段階。remake/img への配信変換（512 WebP化・box実測）は未実施で、採用決定後に別途行う。"
+}

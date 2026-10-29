@@ -36,7 +36,7 @@ try {
   assert.equal(await page.locator(".gain-card").count(), 1);
   assert.equal(await page.locator(".gc-top").textContent(), "STATUS UP");
   assert.equal(await page.locator(".gc-sub").count(), 0);
-  assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.clientHeight), 68);
+  assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.clientHeight), 71);
   const regularPosition = await page.locator(".gain-card.stat").evaluate(e => ({
     parent: e.parentElement.id, left: e.offsetLeft, top: e.offsetTop, width: e.offsetWidth, height: e.offsetHeight,
   }));

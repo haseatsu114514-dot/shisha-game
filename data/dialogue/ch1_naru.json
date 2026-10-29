@@ -26,7 +26,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「シーシャバー ケムリクサ」。tonariから自転車で15分"
+          "text": "「シーシャバー KEMURIKUSA」。tonariから歩いて15分"
         },
         {
           "speaker": "",
@@ -44,9 +44,11 @@
           "text": "tonariとは違う香りだ。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "カウンターの中で、同い年くらいの店員がカップル客に何か説明している。"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_naru",
+          "next_true": "staff_known",
+          "next_false": "staff_new"
         },
         {
           "speaker": "naru",
@@ -64,28 +66,15 @@
           "text": "客のカップルがうなずく。説明は的確で、押しつけがましさがない。……正直、うまい接客だ。"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "ん？ ……あれ、お前。tonariの新人だろ。前に物販で見た顔だ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "え、分かるんですか"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "あの店の前掛けしてる奴は覚えるよ。スミさんの店だからな。──で、今日は客？ 偵察？"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_naru",
+          "next_true": "greet_known",
+          "next_false": "greet_new"
         },
         {
           "type": "set_flag",
           "flag": "met_naru"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "あ、蒸野はじめです。tonariでバイトしてて……"
         },
         {
           "type": "choice",
@@ -103,10 +92,10 @@
         },
         {
           "type": "condition",
-          "condition_type": "tournament_finished",
-          "tournament_chapter": 1,
-          "next_true": "name_after",
-          "next_false": "name_before"
+          "condition_type": "flag",
+          "flag": "_met_naru",
+          "next_true": "",
+          "next_false": "name_intro"
         },
         {
           "type": "set_flag",
@@ -496,6 +485,84 @@
             "speaker": "naru",
             "face": "normal",
             "text": "あー、そうだ。LIME交換しとこうぜ。煙のことで困ったら投げろ"
+          }
+        ],
+        "staff_new": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターの中で、同い年くらいの店員がカップル客に何か説明している。"
+          }
+        ],
+        "staff_known": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターの中で、説明会で会ったなるさんがカップル客に何か説明している。"
+          }
+        ],
+        "greet_new": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "ん？ ……あれ、お前。tonariの新人だろ。前に物販で見た顔だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、分かるんですか"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "あの店の前掛けしてる奴は覚えるよ。スミさんの店だからな。──で、今日は客？ 偵察？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、蒸野はじめです。tonariでバイトしてて……"
+          }
+        ],
+        "greet_known": [
+          {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 1,
+            "next_true": "greet_known_after",
+            "next_false": "greet_known_before"
+          }
+        ],
+        "greet_known_before": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "ん？ ……よう、はじめ。説明会ぶりだな"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "──で、今日は客？ 偵察？"
+          }
+        ],
+        "greet_known_after": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "ん？ ……おう、チャンピオン。客か、偵察か？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……その呼び方、まだ慣れないです"
+          }
+        ],
+        "name_intro": [
+          {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 1,
+            "next_true": "name_after",
+            "next_false": "name_before"
           }
         ]
       },
@@ -1117,7 +1184,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "優勝の翌日の夜。ケムリクサに呼び出された。閉店後の店に、道具が一式並べてある。"
+          "text": "優勝の翌日の夜。KEMURIKUSAに呼び出された。閉店後の店に、道具が一式並べてある。"
         },
         {
           "type": "condition",
@@ -1386,7 +1453,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "久しぶりにケムリクサに立ち寄ってみた。"
+          "text": "久しぶりにKEMURIKUSAに立ち寄ってみた。"
         },
         {
           "speaker": "naru",

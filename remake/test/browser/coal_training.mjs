@@ -4,14 +4,14 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { execFileSync } from "node:child_process";
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright");
 const root = path.resolve(fileURLToPath(new URL("../../../", import.meta.url)));
 const output = path.resolve(root, process.env.COAL_ARTIFACTS || ".codex/artifacts/coal-694");
 fs.mkdirSync(output, { recursive: true });
 const missing = new Set(), results = [];
 const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff2": "font/woff2" };
-const vnAssets = ["/remake/img/ui/vn-lounge/dialogue.svg", "/remake/img/ui/vn-lounge/controls.svg", "/remake/fonts/ZenOldMincho-Name-Bold.woff2"];
+// #964: classic の会話枠原画は narration.svg（dialogue.svg は要求されない）。
+const vnAssets = ["/remake/img/ui/vn-lounge/narration.svg", "/remake/img/ui/vn-lounge/controls.svg", "/remake/fonts/ZenOldMincho-Name-Bold.woff2"];
 const server = http.createServer((req, res) => {
   const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
   const file = path.resolve(root, "." + (pathname.endsWith("/") ? pathname + "index.html" : pathname));
@@ -23,7 +23,7 @@ await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
 const origin = `http://127.0.0.1:${server.address().port}`;
 let browser;
 try {
-  browser = await chromium.launch({ headless: true, chromiumSandbox: true,
+  browser = await chromium.launch({ headless: true,
     ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}) });
   for (const [label, viewport, touch, reducedMotion] of [
     ["pc", { width: 1280, height: 720 }, false, "no-preference"],
@@ -103,7 +103,10 @@ try {
     console.log(`[coal browser] ${label}: abort and AUTO reread complete`);
 
     // Existing snapshot survives the new data; replenishment switches only after exhaustion + three days.
-    const oldKuji = JSON.parse(execFileSync("git", ["show", "origin/main:data/kuji.json"], { cwd: root, encoding: "utf8" }));
+    // Frozen pre-#694 data (remake/test/fixtures/kuji-legacy.json). Reading origin/main via git is not
+    // possible in CI checkouts (no such ref) and drifts as main moves; the case guards that a snapshot
+    // written against THIS old data survives, so the old data must be a fixed fixture.
+    const oldKuji = JSON.parse(fs.readFileSync(path.join(root, "remake/test/fixtures/kuji-legacy.json"), "utf8"));
     await page.evaluate(async oldKuji => {
       Q.vn.vnTest.turbo = true;
       const old = oldKuji.grades.g500;
@@ -172,7 +175,8 @@ try {
       for (const c of view.coals) { c.node.classList.add("pikan"); c.node.dataset.phase = "just";
         c.node.style.setProperty("--red", "1"); c.node.style.setProperty("--hot", ".6"); }
     });
-    const baseline = execFileSync("git", ["show", "origin/main:remake/css/craft.css"], { cwd: root, encoding: "utf8" });
+    // Frozen pre-#694 sheet for the before/after screenshots; see the kuji fixture note above.
+    const baseline = fs.readFileSync(path.join(root, "remake/test/fixtures/craft-css-legacy.css"), "utf8");
     // Disable the entire new sheet: layering the old sheet alone would leave new-only selectors active.
     await page.locator('link[href$="css/craft.css"]').evaluate(n => { n.disabled = true; });
     const oldStyle = await page.addStyleTag({ content: baseline });

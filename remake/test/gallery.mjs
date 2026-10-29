@@ -18,7 +18,7 @@ async function load(url) {
 const stateModule = await load(new URL("state.js", root)); await stateModule.evaluate();
 const catalogModule = await load(new URL("gallery-catalog.js", root)); await catalogModule.evaluate();
 const core = stateModule.namespace, g = modules.get(new URL("gallery-progress.js", root).href).namespace;
-const { galleryEntries } = catalogModule.namespace;
+const { galleryEntries, galleryStats, CHAR_LABELS } = catalogModule.namespace;
 const copy = v => JSON.parse(JSON.stringify(v));
 const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", "samechan"] };
 // First upgraded LOAD: seed pre-feature disk data directly, without save() or a gallery scan.
@@ -54,7 +54,7 @@ const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", 
   assert.equal(loaded, core.state);
   assert.deepEqual([loaded.day, loaded.money, loaded.stamina], [2, 12345, 61]);
   const kept = copy(g.readGalleryProgress());
-  assert.deepEqual(kept, { clearedChapters: [1], keepsakes: ["minto_first_cheki"], purikura: [photo] },
+  assert.deepEqual(kept, { clearedChapters: [1], keepsakes: ["minto_first_cheki"], purikura: [photo], routeRecords: {} },
     "older-slot LOAD preserves legacy autosave-only photos and explicit clear before overwrite");
   assert.deepEqual([storage.get(slot), storage.get(otherSlot)], slotsBefore, "manual slots are read-only");
   assert.equal(storage.get("suien_remake_gallery"), '["cg_minto_cheki"]', "seen CGs stay untouched");
@@ -71,11 +71,11 @@ const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", 
   assert.deepEqual([written.day, written.money, written.stamina], [2, 12345, 61],
     "valid LOAD must replace the old autosave even if legacy collection import throws");
   assert.equal(storage.get(slot), JSON.stringify(earlier), "malformed legacy import cannot rewrite the source slot");
-  assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [] },
+  assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {} },
     "malformed collection IDs cannot manufacture unlocks");
   seed(); storage.set(core.SAVE_KEY, "{broken");
   assert.doesNotThrow(() => core.loadFromSlot(slot));
-  assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [] },
+  assert.deepEqual(copy(g.readGalleryProgress()), { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {} },
     "corrupt autosave and chapter/day alone cannot manufacture unlocks");
   seed(); failWrites = true;
   assert.doesNotThrow(() => core.loadFromSlot(slot));
@@ -83,6 +83,41 @@ const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", 
     "unavailable collection storage cannot block the existing LOAD contract");
   assert.equal(storage.get(slot), JSON.stringify(earlier));
   failWrites = false; storage.clear();
+}
+// 写真の日付は撮影元の章開始日でだけ補完し、保存枠を替えても失わない。
+{
+  const title = () => galleryEntries({ cgs: [] }, {}, g.readGalleryProgress(), []).find(e => e.photo).title;
+  const owner = { chapter: 3, flags: { _ch2_day1: { startDay: 15 }, _ageha_purikura_history: [{ ...photo, day: 17 }] } };
+  const id = g.purikuraId(owner.flags._ageha_purikura_history[0]);
+  g.recordGalleryProgress(owner);
+  assert.equal(g.readGalleryProgress().purikura[0].chapterDay, 3);
+  assert.equal(g.purikuraId(g.readGalleryProgress().purikura[0]), id, "chapter DAY does not change identity");
+  assert.match(title(), /第2章・DAY3 /);
+  g.recordGalleryProgress({ flags: { _ageha_purikura_history: [{ ...photo, day: 17 }] } });
+  assert.equal(g.readGalleryProgress().purikura.length, 1);
+  assert.equal(g.readGalleryProgress().purikura[0].chapterDay, 3, "older save cannot erase enriched date");
+  storage.clear();
+  g.recordGalleryProgress({ flags: { _ageha_purikura_history: [{ ...photo, day: 17 }] } });
+  assert.match(title(), /DAY17 /, "no start date keeps the legacy display");
+  g.recordGalleryProgress(owner);
+  assert.match(title(), /DAY3 /, "a later matching save enriches the same record");
+  assert.equal(g.readGalleryProgress().purikura.length, 1);
+  storage.clear();
+  for (const startDay of [undefined, 0, -1, "15", 18]) {
+    g.recordGalleryProgress({ flags: { _ch2_day1: { startDay }, _ageha_purikura_history: [{ ...photo, day: 17 }] } });
+    assert.equal(g.readGalleryProgress().purikura[0].chapterDay, undefined, "unusable start date is not guessed");
+  }
+  storage.clear();
+  for (const invalid of [0, -1, 1.5, "3", null]) {
+    storage.set(g.GALLERY_PROGRESS_KEY, JSON.stringify({ purikura: [{ ...photo, chapterDay: invalid }] }));
+    assert.deepEqual(copy(g.readGalleryProgress().purikura), [photo], "invalid optional date does not destroy photo");
+  }
+  storage.clear();
+  g.recordGalleryProgress({ flags: { _ageha_purikura_history: [{ ...photo, chapterDay: 4 }], _ch2_day1: { startDay: 1 } } });
+  assert.equal(g.readGalleryProgress().purikura[0].chapterDay, 4, "explicit date wins over conversion");
+  g.recordGalleryProgress({ flags: { _ch2_day1: { startDay: 15 } } });
+  assert.equal(g.readGalleryProgress().purikura[0].chapterDay, 4, "another save cannot redate collection-only evidence");
+  storage.clear();
 }
 const value = core.newGame();
 core.save(); assert(!storage.has(g.GALLERY_PROGRESS_KEY), "a fresh save does not create unlocks");
@@ -119,7 +154,7 @@ assert(entries.find(e => e.id === comic.id).unlocked);
 assert(!entries.find(e => e.id === movie.id).unlocked, "a later-chapter movie remains locked");
 assert.equal(entries.filter(e => ["comic", "movie"].includes(e.kind)).length, 2, "candidates and invalid entries never enter the collection");
 assert.equal(entries.filter(e => e.photo).length, 1);
-const empty = { clearedChapters: [], keepsakes: [], purikura: [] };
+const empty = { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {} };
 assert(!galleryEntries(manifest, { items: [comic] }, empty, new Set()).find(e => e.id === comic.id).unlocked);
 // 採用シールだけを命名・解放し、旧manifestや既見記録に候補が残っていても隠す。
 const actualManifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
@@ -134,6 +169,58 @@ for (const seen of [[], [strip, ...candidates]]) {
   assert.equal(photos[0].kind, "purikura");
   assert.equal(photos[0].unlocked, seen.includes(strip));
 }
+// 収集対象は正式CG＋採用済み作品。撮影記録は別の件数として扱う。
+const actualCatalog = JSON.parse(fs.readFileSync(new URL("../data/gallery.json", import.meta.url), "utf8"));
+const actualEntries = galleryEntries(actualManifest, actualCatalog, empty, new Set());
+const actualStats = galleryStats(actualEntries);
+assert.equal(actualManifest.cgs.length, 29);
+assert.equal(actualEntries.filter(e => e.cg).length, 27, "two alternate strips are excluded");
+assert.equal(actualStats.total, 27, "current catalog has no approved additions");
+assert.equal(actualStats.unlocked, 0);
+assert.equal(actualStats.rate, 0);
+const expectedChars = {
+  minto: 5, ageha: 3, tsumugi: 3, naru: 3, rin: 1, mashiro: 4, other: 8,
+};
+for (const entry of actualEntries) assert(Object.hasOwn(CHAR_LABELS, entry.char), `${entry.id} has a character tag`);
+assert.equal(actualEntries.find(e => e.id === "cg_ch3_childhood_offered_hand").char, "mashiro");
+for (const [char, total] of Object.entries(expectedChars)) assert.equal(actualStats.byChar[char].total, total, char);
+assert.equal(Object.values(actualStats.byChar).reduce((sum, s) => sum + s.total, 0), actualStats.total);
+assert.equal(Object.values(actualStats.byKind).reduce((sum, s) => sum + s.total, 0), actualStats.total);
+const fullStats = galleryStats(galleryEntries(actualManifest, actualCatalog, empty, new Set(actualEntries.map(e => e.id))));
+assert.equal(fullStats.unlocked, 27);
+assert.equal(fullStats.rate, 100);
+for (const s of Object.values(fullStats.byChar)) assert.equal(s.rate, 100);
+const withPhotos = galleryStats(galleryEntries(actualManifest, actualCatalog, { ...empty, purikura: [photo, { ...photo, day: 19 }] }, new Set()));
+assert.deepEqual(copy(withPhotos), { ...copy(actualStats), purikuraPhotos: 2 });
+const thirds = [
+  { kind: "still", char: "minto", unlocked: true },
+  { kind: "still", char: "minto", unlocked: false },
+  { kind: "still", char: "minto", unlocked: false },
+];
+const thirdsBefore = copy(thirds);
+const partialStats = galleryStats(thirds);
+assert.equal(partialStats.rate, 33);
+assert.equal(partialStats.byKind.still.rate, 33);
+assert.equal(partialStats.byChar.minto.rate, 33);
+assert.deepEqual(thirds, thirdsBefore, "aggregation does not mutate entries");
+assert.equal(galleryStats([]).rate, 0);
+assert.equal(partialStats.byKind.movie.rate, 0);
+assert.equal(partialStats.byChar.other.rate, 0);
+const adopted = galleryEntries(actualManifest, { items: [
+  { ...comic, char: "ageha" }, { ...movie, char: "unknown" },
+  { ...comic, id: "not_approved", approved: false },
+  { ...comic, id: "not_explicitly_approved", approved: undefined },
+] }, { ...empty, clearedChapters: [1] }, new Set());
+const adoptedStats = galleryStats(adopted);
+assert.equal(adoptedStats.total, 29, "only approved comic and movie add to T");
+assert.equal(adoptedStats.unlocked, 1);
+assert.deepEqual(copy(adoptedStats.byKind.comic), { total: 1, unlocked: 1, rate: 100 });
+assert.deepEqual(copy(adoptedStats.byKind.movie), { total: 1, unlocked: 0, rate: 0 });
+assert.equal(adopted.find(e => e.id === comic.id).char, "ageha");
+assert.equal(adopted.find(e => e.id === movie.id).char, "other");
+assert.equal(entries.find(e => e.id === comic.id).char, "other", "missing character falls back to other");
+assert.equal(Object.values(adoptedStats.byChar).reduce((sum, s) => sum + s.total, 0), adoptedStats.total);
+console.log(`REAL DATA: raw CGs=${actualManifest.cgs.length}, total=${actualStats.total}, empty seen=${actualStats.unlocked}/${actualStats.total} (${actualStats.rate}%), all seen=${fullStats.unlocked}/${fullStats.total} (${fullStats.rate}%)`);
 storage.set(g.GALLERY_PROGRESS_KEY, "{broken"); assert.deepEqual(copy(g.readGalleryProgress()), empty);
 storage.set(g.GALLERY_PROGRESS_KEY, JSON.stringify({ clearedChapters: [0, 1, "2", 99], keepsakes: {}, purikura: [null] }));
 assert.deepEqual(copy(g.readGalleryProgress()), { ...empty, clearedChapters: [1] });

@@ -48,8 +48,9 @@ await suite("hiyori-axe-assets", async check => {
     await check(`${label}-props`, async page => {
       await page.evaluate(async () => {
         const ui = await import("./js/core/ui.js");
+        const { img } = await import("./js/core/data.js");
         ui.clearScreen();
-        await ui.setBg("img/backgrounds/bg_axe_lounge_night.webp", { instant: true });
+        await ui.setBg(img("backgrounds/bg_axe_lounge_night.png"), { instant: true });
         const review = document.createElement("div"); review.id = "props-review";
         for (const [key, left, height] of [["target_board", 120, 520], ["throwing_axe", 840, 500]]) {
           const image = document.createElement("img"); image.src = `img/ui/axe_throw/${key}.webp`;

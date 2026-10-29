@@ -10,6 +10,36 @@
   ],
   "suites": [
     {
+      "id": "shift-mix-record",
+      "title": "Shift mix recording, dialogue and tournament feedback (#1414, #1415)",
+      "kind": "quick",
+      "run": ["node remake/test/shift_mix_record.mjs"]
+    },
+    {
+      "id": "ch1-interval-connection",
+      "title": "Chapter 1 victory interval connections",
+      "kind": "quick",
+      "run": ["node remake/test/ch1_interval_connection.mjs"]
+    },
+    {
+      "id": "load-save-failure",
+      "title": "Slot load persistence failure and state rollback",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/load_save_failure.mjs"]
+    },
+    {
+      "id": "corrupt-save-migrate",
+      "title": "Structurally corrupt saves migrate or fail gracefully",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/corrupt_save_migrate.mjs"]
+    },
+    {
+      "id": "kuji-sell-guard",
+      "title": "Kuji goods sell handler identity and stale clicks",
+      "kind": "quick",
+      "run": ["node remake/test/kuji_sell_guard.mjs"]
+    },
+    {
       "id": "station-j01",
       "title": "Station availability, layout and save/load",
       "kind": "browser",
@@ -28,16 +58,70 @@
       "run": ["node remake/test/browser/dj_preview.mjs"]
     },
     {
+      "id": "title-art-met",
+      "title": "Title art unlocks by characters met in the latest save",
+      "kind": "quick",
+      "run": ["node remake/test/title_art_met.mjs"]
+    },
+    {
       "id": "loading-prefetch",
       "title": "Bounded preparation queue and retries",
       "kind": "quick",
       "run": ["node remake/test/loading_prefetch.mjs"]
     },
     {
+      "id": "loading-comics-spec",
+      "title": "Loading comic registrations fit the fixed 43:25 display frame",
+      "kind": "quick",
+      "run": ["node remake/test/loading_comics_spec.mjs"]
+    },
+    {
+      "id": "ngplus-measurement",
+      "title": "NG+ measurement harness (U5): scenario sweep, rival observer, aggregation",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_measurement.mjs"]
+    },
+    {
+      "id": "ngplus-carry",
+      "title": "NG+ SCHEMA 22 migration, carry classification coverage and package extraction (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_carry.mjs"]
+    },
+    {
+      "id": "ngplus-save-display",
+      "title": "NG+ U9 save-slot cycle badge and cross-cycle overwrite note (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_save_display.mjs"]
+    },
+    {
+      "id": "ngplus-title",
+      "title": "NG+ title next-cycle entry and start options (U10, #1228)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ngplus_title.mjs"]
+    },
+    {
+      "id": "ngplus-cycle-meta",
+      "title": "NG+ cycle meta layer (U2): true-end record, idempotent re-notify, cycle-start notice (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_cycle_meta.mjs"]
+    },
+    {
+      "id": "ngplus-cycle-start",
+      "title": "NG+ cycle start, carry groups, reset and integration hooks (#1228)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_cycle_start.mjs"]
+    },
+    {
       "id": "module-loading",
       "title": "Deferred module loading notice: delay, failure cleanup, retry, single-flight",
       "kind": "quick",
       "run": ["node remake/test/module_loading.mjs"]
+    },
+    {
+      "id": "warmup-defer",
+      "title": "Title warm-up defers store logos to idle and waits are split (core / store logos)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
     },
     {
       "id": "resume-loading-a01",
@@ -76,6 +160,14 @@
       "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
     },
     {
+      "id": "chapter-preview-scripts",
+      "title": "Chapter preview scripts: structure, sources and excerpt fidelity",
+      "kind": "quick",
+      "run": [
+        "node remake/test/chapter_preview_scripts.mjs"
+      ]
+    },
+    {
       "id": "dialogue-lint",
       "title": "Dialogue lint, canon and story routes",
       "kind": "quick",
@@ -84,7 +176,8 @@
         "python3 tools/check_story_canon.py",
         "python3 tools/check_dialogue_links.py",
         "python3 tools/test_story_canon.py",
-        "node remake/test/story_routes.mjs"
+        "node remake/test/story_routes.mjs",
+        "node remake/test/ch2_relationships_929.mjs"
       ]
     },
     {
@@ -98,6 +191,12 @@
         "python3 -m unittest discover -s tools -p test_mashiro_address.py",
         "python3 tools/check_legacy_terms.py"
       ]
+    },
+    {
+      "id": "manifest-dependencies",
+      "title": "Manifest generator required dependency diagnostics",
+      "kind": "quick",
+      "run": ["python3 -B tools/test_build_manifest_dependencies.py"]
     },
     {
       "id": "data-smoke",
@@ -115,6 +214,8 @@
         "node --experimental-vm-modules remake/test/tonari_fixed_event_782.mjs",
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/ch3_map.mjs",
+        "node --experimental-vm-modules remake/test/ch4_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
@@ -127,7 +228,10 @@
         "node remake/test/lover_dates.mjs",
         "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs",
         "node remake/test/tokyo_visits.mjs",
-        "node --experimental-vm-modules remake/test/ch2_night_commute.mjs"
+        "node --experimental-vm-modules remake/test/ch2_night_commute.mjs",
+        "node --experimental-vm-modules remake/test/tsumugi_schedule_782.mjs",
+        "node remake/test/ch2_rain_j08.mjs",
+        "node remake/test/ch3_aftermath.mjs"
       ]
     },
     {
@@ -144,16 +248,19 @@
       "title": "Game logic without a browser",
       "kind": "quick",
       "run": [
+        "node --experimental-vm-modules remake/test/engine_robust.mjs",
         "node --experimental-vm-modules remake/test/ch3_deliveries.mjs",
         "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/tournament_resources.mjs",
+        "node --experimental-vm-modules remake/test/rin_sample.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
+        "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
         "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
@@ -190,9 +297,26 @@
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs",
-        "node --experimental-vm-modules remake/test/gallery.mjs",
+        "node --experimental-vm-modules remake/test/gallery.mjs", "node --experimental-vm-modules remake/test/gallery_route_records.mjs",
         "node --experimental-vm-modules remake/test/story_guidance_1045.mjs",
-        "node --experimental-vm-modules remake/test/purikura_fee.mjs"
+        "node --experimental-vm-modules remake/test/purikura_fee.mjs",
+        "node --experimental-vm-modules remake/test/appearance_selection.mjs",
+        "node --experimental-vm-modules remake/test/ch1_eve_setup.mjs",
+        "node remake/test/coal_training.mjs",
+        "node remake/test/continue_premium.mjs",
+        "node --experimental-vm-modules remake/test/craft_keys_focus.mjs",
+        "node remake/test/craft_scoring_spec.mjs",
+        "node remake/test/foil_skip.mjs",
+        "node remake/test/kuji_balance.mjs",
+        "node --experimental-vm-modules remake/test/map_unlock_780.mjs",
+        "node --experimental-vm-modules remake/test/stat_growth_balance.mjs",
+        "node --experimental-vm-modules remake/test/station_travel.mjs",
+        "node --experimental-vm-modules --test remake/test/steam_lifetime.mjs",
+        "node remake/test/story_edit_564.mjs",
+        "node --experimental-vm-modules remake/test/tsumugi_sketch_timing.mjs",
+        "node --experimental-vm-modules --test remake/test/tutorial_step_help.mjs",
+        "node remake/test/ch3_tournament_state.mjs",
+        "node --experimental-vm-modules remake/test/appearance_setup_helper.mjs"
       ]
     },
     {
@@ -203,9 +327,11 @@
         "node --experimental-vm-modules remake/test/recorded_se.mjs",
         "node --experimental-vm-modules remake/test/entry_phone_audio.mjs",
         "node --experimental-vm-modules remake/test/continue_audio.mjs",
+        "node --experimental-vm-modules remake/test/title_audio_entry.mjs",
         "node --experimental-vm-modules remake/test/continue_context.mjs",
         "node --experimental-vm-modules remake/test/bgm_gain.mjs",
         "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
+        "node --experimental-vm-modules remake/test/bgm_packed_cache.mjs",
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
@@ -229,7 +355,8 @@
       "run": [
         "node --test tools/ci/test_ci.mjs",
         "node --test tools/sequential_merge/test.mjs",
-        "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'"
+        "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
+        "node remake/test/dev_inspector.mjs"
       ]
     },
     {
@@ -281,14 +408,16 @@
         "data/dialogue/axe_tutorial.json",
         "assets/ui/axe_throw/**",
         "remake/img/ui/axe_throw/**",
-        "remake/img/backgrounds/bg_axe_lounge_night.webp"
+        "remake/img/backgrounds/bg_axe_lounge_night.webp",
+        "remake/test/browser/axe_bgm_788.mjs"
       ],
       "run": [
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-versus-poses node remake/test/browser/axe_versus.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-lesson-poses node remake/test/browser/axe_lesson.mjs",
-        "node remake/test/browser/axe_menu_decor.mjs"
+        "node remake/test/browser/axe_menu_decor.mjs",
+        "node remake/test/browser/axe_bgm_788.mjs"
       ]
     },
     {
@@ -337,10 +466,33 @@
       }
     },
     {
+      "id": "facility-icons",
+      "title": "Facility icons: sheet byte equality, alpha bounds, badge anchors on right contour, layout",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/daily/facility-icons.js",
+        "remake/test/facility_icons.mjs",
+        "assets/ui/map-facilities-579.png",
+        "assets/ui/map-facilities-extra-579.webp",
+        "asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/**",
+        "asset_sources/map-facilities-579/**"
+      ],
+      "run": [
+        "node remake/test/facility_icons.mjs"
+      ],
+      "sparse": [
+        "/asset_sources/store-logos/ch1-issue470/ingame-qa/pin-cutout-546/",
+        "/asset_sources/map-facilities-579/"
+      ],
+      "pillow": true
+    },
+    {
       "id": "ch1-presentation",
       "title": "Chapter 1 presentation, first brew and deliveries",
       "kind": "browser",
-      "weight": 9,
+      "weight": 15,
       "timeout": 30,
       "paths": [
         "remake/js/chapters/ch1*.js",
@@ -410,6 +562,8 @@
         "data/chapter_previews/**",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch1-preview.js",
+        "remake/js/chapters/chapter-preview.js",
+        "remake/js/chapters/preview-cue.js",
         "remake/js/chapters/preview-score.js",
         "remake/js/chapters/chapter-preview-samples.js",
         "remake/js/core/audio.js",
@@ -417,13 +571,9 @@
         "remake/css/chapter-preview-samples.css",
         "remake/chapter-preview.html",
         "remake/chapter-preview-samples.html",
-        "remake/js/chapter-preview.js",
-        "assets/ui/chapter_previews/**",
         "assets/cgs/ch2_preview/**",
         "assets/audio/**",
         "assets/fonts/**",
-        "remake/img/ui/chapter_previews/**",
-        "remake/img/cgs/ch2_preview/**",
         "remake/test/browser/ch1_preview.mjs",
         "remake/test/browser/chapter_preview_samples.mjs"
       ],
@@ -497,7 +647,7 @@
       "id": "ch2-main",
       "title": "Chapter 2 browser suite ch2_main",
       "kind": "browser",
-      "weight": 1.5,
+      "weight": 2.8,
       "timeout": 10,
       "paths": [
         "remake/chapter2-preview.html",
@@ -558,7 +708,7 @@
       "id": "ch2-daily",
       "title": "Chapter 2 browser suite ch2_daily",
       "kind": "browser",
-      "weight": 2.5,
+      "weight": 5.0,
       "timeout": 10,
       "paths": [
         "remake/chapter2-preview.html",
@@ -619,7 +769,7 @@
       "id": "ch2-story",
       "title": "Chapter 2 browser suite ch2_story",
       "kind": "browser",
-      "weight": 2.6,
+      "weight": 3.8,
       "timeout": 10,
       "paths": [
         "remake/chapter2-preview.html",
@@ -667,10 +817,12 @@
         "remake/js/daily/night-events.js",
         "remake/test/browser/ch2_*.mjs",
         "remake/test/ch2_progress.mjs",
-        "remake/test/ch2_followups.mjs"
+        "remake/test/ch2_followups.mjs",
+        "remake/test/browser/story_canon.mjs"
       ],
       "run": [
-        "node remake/test/browser/ch2_story.mjs"
+        "node remake/test/browser/ch2_story.mjs",
+        "node remake/test/browser/story_canon.mjs"
       ],
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
@@ -680,7 +832,7 @@
       "id": "ch2-tournament",
       "title": "Chapter 2 browser suite ch2_tournament",
       "kind": "browser",
-      "weight": 3.3,
+      "weight": 6.5,
       "timeout": 10,
       "paths": [
         "remake/chapter2-preview.html",
@@ -741,6 +893,42 @@
       ]
     },
     {
+      "id": "ch4-full-flow",
+      "title": "Chapter 4 full playthrough on one save",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch4*.js",
+        "remake/js/chapters/ch3-aftermath*.js",
+        "remake/js/chapters/ch1.js",
+        "data/dialogue/ch4_main.json",
+        "data/dialogue/ch4_spots.json",
+        "remake/test/browser/ch4_full_flow.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch4_full_flow.mjs"
+      ]
+    },
+    {
+      "id": "ch5-full-flow",
+      "title": "Chapter 5 full playthrough on one save",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch5*.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch1.js",
+        "data/dialogue/ch5_main.json",
+        "data/dialogue/ending.json",
+        "remake/test/browser/ch5_full_flow.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch5_full_flow.mjs"
+      ]
+    },
+    {
       "id": "ch3-map-activities",
       "title": "Tokyo map and nationwide gym membership",
       "kind": "browser",
@@ -786,6 +974,26 @@
       ],
       "run": [
         "node remake/test/browser/ch3_tournament.mjs"
+      ]
+    },
+    {
+      "id": "ch3-full-flow",
+      "title": "Chapter 3 full playthrough on one save",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 15,
+      "paths": [
+        "remake/index.html",
+        "remake/js/chapters/ch3*.js",
+        "remake/js/craft/**",
+        "remake/js/core/state.js",
+        "remake/js/scenes/saves.js",
+        "data/dialogue/ch3_main.json",
+        "data/characters.json",
+        "remake/test/browser/ch3_full_flow.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch3_full_flow.mjs"
       ]
     },
     {
@@ -888,11 +1096,13 @@
         "remake/img/ui/making/hajime_craft_*",
         "remake/test/browser/worker_scenes.mjs",
         "remake/test/browser/craft_readiness.mjs",
-        "remake/test/foil_holes.mjs"
+        "remake/test/foil_holes.mjs",
+        "remake/test/browser/foil_skip.mjs"
       ],
       "run": [
         "node remake/test/browser/worker_scenes.mjs",
-        "node remake/test/browser/craft_readiness.mjs"
+        "node remake/test/browser/craft_readiness.mjs",
+        "node remake/test/browser/foil_skip.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/craft-scenes",
@@ -912,11 +1122,13 @@
         "remake/js/craft/**",
         "remake/test/browser/ds_packing.mjs",
         "remake/test/browser/craft_layout_703.mjs",
-        "remake/test/browser/package*.json"
+        "remake/test/browser/package*.json",
+        "remake/test/browser/ds_overlay_layers.mjs"
       ],
       "run": [
         "node remake/test/browser/ds_packing.mjs",
-        "node remake/test/browser/craft_layout_703.mjs"
+        "node remake/test/browser/craft_layout_703.mjs",
+        "node remake/test/browser/ds_overlay_layers.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/ds-packing"
@@ -952,7 +1164,7 @@
       "id": "heat-feedback",
       "title": "Heat feedback and craft progress",
       "kind": "browser",
-      "weight": 5.5,
+      "weight": 3,
       "timeout": 10,
       "paths": [
         "remake/js/craft/heat*.js",
@@ -961,18 +1173,23 @@
         "remake/js/craft/session.js",
         "remake/js/craft/pull.js",
         "remake/js/craft/progress.js",
+        "remake/js/daily/coal-lesson.js",
         "remake/css/craft.css",
         "remake/css/base.css",
         "remake/test/heat_feedback.mjs",
         "remake/test/craft_templates_timing.mjs",
         "remake/test/browser/craft_progress.mjs",
         "remake/test/browser/ch1_tournament.mjs",
-        "remake/test/steam_forecast.mjs"
+        "remake/test/steam_forecast.mjs",
+        "remake/test/browser/coal_training.mjs",
+        "remake/test/browser/heat_advice.mjs"
       ],
       "run": [
         "node remake/test/craft_templates_timing.mjs",
         "node remake/test/heat_feedback.mjs",
-        "ARTIFACT_DIR=.codex/artifacts/heat-feedback/progress node remake/test/browser/craft_progress.mjs"
+        "ARTIFACT_DIR=.codex/artifacts/heat-feedback/progress node remake/test/browser/craft_progress.mjs",
+        "node remake/test/browser/coal_training.mjs",
+        "node remake/test/browser/heat_advice.mjs"
       ],
       "env": {
         "SHOTS": ".codex/artifacts/heat-feedback"
@@ -983,7 +1200,7 @@
       "id": "ch1-tournament",
       "title": "Chapter 1 tournament",
       "kind": "browser",
-      "weight": 1.5,
+      "weight": 3,
       "timeout": 15,
       "paths": [
         "remake/js/craft/result.js",
@@ -1084,7 +1301,7 @@
       "id": "hiyori-axe-story",
       "title": "Hiyori formal axe story",
       "kind": "browser",
-      "weight": 7,
+      "weight": 1.5,
       "timeout": 20,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -1105,7 +1322,7 @@
       "id": "hiyori-natural",
       "title": "Natural New Game to the axe story",
       "kind": "browser",
-      "weight": 10,
+      "weight": 15,
       "timeout": 20,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -1126,7 +1343,7 @@
       "id": "hiyori-work",
       "title": "Hiyori work and relationship story",
       "kind": "browser",
-      "weight": 8,
+      "weight": 2.5,
       "timeout": 25,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -1152,7 +1369,7 @@
       "id": "hiyori-natural-work",
       "title": "Natural New Game to Hiyori work",
       "kind": "browser",
-      "weight": 11,
+      "weight": 16.5,
       "timeout": 25,
       "paths": [
         "data/dialogue/hiyori.json",
@@ -1227,7 +1444,7 @@
       "id": "hiyori-title-five",
       "title": "Hiyori five title illustrations",
       "kind": "browser",
-      "weight": 1,
+      "weight": 0.3,
       "timeout": 15,
       "paths": [
         "assets/ui/title_arts/**",
@@ -1261,10 +1478,12 @@
         "remake/data/manifest.json",
         "remake/test/browser/home_rig_backgrounds.mjs",
         "assets/ui/scene_props/**",
-        "remake/img/ui/scene_props/**"
+        "remake/img/ui/scene_props/**",
+        "remake/test/browser/story_edit_564.mjs"
       ],
       "run": [
-        "node remake/test/browser/home_rig_backgrounds.mjs"
+        "node remake/test/browser/home_rig_backgrounds.mjs",
+        "node remake/test/browser/story_edit_564.mjs"
       ]
     },
     {
@@ -1300,8 +1519,6 @@
         "remake/test/browser/ch1_loading.mjs",
         "remake/test/browser/issue439.mjs",
         "remake/test/browser/early_contacts_705.mjs",
-        "assets/backgrounds/bg_ch1*",
-        "remake/img/backgrounds/bg_ch1*",
         "data/lime_messages.json"
       ],
       "run": [
@@ -1314,7 +1531,7 @@
       "id": "ch1-approved-scenes",
       "title": "Approved chapter 1 scenes and salaryman portraits",
       "kind": "browser",
-      "weight": 3.5,
+      "weight": 2,
       "timeout": 20,
       "paths": [
         "data/dialogue/ch1_main.json",
@@ -1329,16 +1546,26 @@
         "remake/js/vn/engine.js",
         "remake/test/browser/ch1_tournament.mjs",
         "remake/test/browser/support.mjs",
-        "docs/qa/issue508-theme/baseline-scenes.json"
+        "docs/qa/issue508-theme/baseline-scenes.json",
+        "docs/qa/issue452-regular/baseline-scenes.json",
+        "remake/test/browser/conversation_ui.mjs",
+        "remake/test/browser/regular_service_response.mjs",
+        "remake/test/portrait_unify.mjs",
+        "remake/test/rin_portraits.mjs"
       ],
       "run": [
-        "node remake/test/browser/issue508_theme.mjs"
+        "node remake/test/browser/issue508_theme.mjs",
+        "node remake/test/browser/conversation_ui.mjs",
+        "node remake/test/browser/regular_service_response.mjs",
+        "node remake/test/portrait_unify.mjs",
+        "node remake/test/rin_portraits.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/issue508-theme"
       },
       "sparse": [
         "/docs/qa/issue508-theme/",
+        "/docs/qa/issue452-regular/",
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
       ]
     },
@@ -1361,18 +1588,20 @@
         "remake/test/browser/hiyori_gate.mjs",
         "remake/test/lime_consistency.mjs",
         "remake/test/browser/lime_evening.mjs",
-        "remake/test/browser/minto_invite_reminder.mjs"
+        "remake/test/browser/minto_invite_reminder.mjs",
+        "remake/test/browser/lime_badge.mjs"
       ],
       "run": [
         "node remake/test/browser/minto_invite_reminder.mjs",
-        "node remake/test/browser/hiyori_gate.mjs"
+        "node remake/test/browser/hiyori_gate.mjs",
+        "node remake/test/browser/lime_badge.mjs"
       ]
     },
     {
       "id": "lime-evening",
       "title": "LIME evening visit",
       "kind": "browser",
-      "weight": 1,
+      "weight": 3.0,
       "timeout": 10,
       "paths": [
         "remake/js/daily/phone.js",
@@ -1392,12 +1621,16 @@
         "remake/js/daily/phone.js",
         "remake/js/daily/calendar.js",
         "remake/test/browser/minto_invite_reminder.mjs",
-        "tools/check_legacy_terms.py"
+        "tools/check_legacy_terms.py",
+        "remake/test/browser/lime_reply_once.mjs",
+        "remake/test/browser/lime_exchange_774.mjs"
       ],
       "run": [
         "node remake/test/browser/lime_evening.mjs",
         "node remake/test/browser/lime_close_1081.mjs",
-        "node remake/test/browser/lime_unread_meeting_1081.mjs"
+        "node remake/test/browser/lime_unread_meeting_1081.mjs",
+        "node remake/test/browser/lime_reply_once.mjs",
+        "node remake/test/browser/lime_exchange_774.mjs"
       ]
     },
     {
@@ -1429,7 +1662,7 @@
       "id": "motion-endings",
       "title": "Motion endings and transitions",
       "kind": "browser",
-      "weight": 3,
+      "weight": 4.5,
       "timeout": 20,
       "paths": [
         "remake/js/motions/**",
@@ -1539,10 +1772,12 @@
         "remake/test/text_wrap.mjs",
         "remake/test/natural_wrap*",
         "remake/test/browser/natural_wrap.mjs",
-        "tools/check_changed_dialogue_layout.mjs"
+        "tools/check_changed_dialogue_layout.mjs",
+        "remake/test/choice_oneline.mjs"
       ],
       "run": [
-        "PLAYWRIGHT_MODULE=\"$PWD/remake/test/browser/node_modules/playwright\" node remake/test/browser/natural_wrap.mjs"
+        "PLAYWRIGHT_MODULE=\"$PWD/remake/test/browser/node_modules/playwright\" node remake/test/browser/natural_wrap.mjs",
+        "node remake/test/choice_oneline.mjs"
       ],
       "env": {
         "CHROME_EXECUTABLE_PATH": "/usr/bin/google-chrome"
@@ -1583,7 +1818,7 @@
       "id": "progression-recovery",
       "title": "Opening checkpoints and lover milestones",
       "kind": "browser",
-      "weight": 8,
+      "weight": 11.5,
       "timeout": 25,
       "paths": [
         "tools/check_legacy_terms.py",
@@ -1598,13 +1833,17 @@
         "data/dialogue/*minto*.json",
         "data/dialogue/*tsumugi*.json",
         "data/dialogue/*samechan*.json",
-        "remake/js/daily/romance.js"
+        "remake/js/daily/romance.js",
+        "remake/test/browser/ch1_feedback.mjs",
+        "remake/test/relationship_memories.mjs"
       ],
       "run": [
         "node remake/test/browser/play_feedback.mjs",
         "node remake/test/browser/ch1_opening_resume.mjs",
         "node remake/test/browser/lover_milestones.mjs",
-        "node remake/test/browser/lime_appointment_recovery.mjs"
+        "node remake/test/browser/lime_appointment_recovery.mjs",
+        "node remake/test/browser/ch1_feedback.mjs",
+        "node remake/test/relationship_memories.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/progression-recovery"
@@ -1634,12 +1873,14 @@
         "remake/test/recorded_se.mjs",
         "remake/test/browser/recorded_se.mjs",
         "remake/test/foil_holes.mjs",
-        "assets/audio/se/**"
+        "assets/audio/se/**",
+        "remake/test/bgm_browser.mjs"
       ],
       "run": [
         "node remake/test/browser/recorded_se.mjs",
         "node remake/test/browser/audio_entry_diagnostics.mjs",
-        "node remake/test/browser/audio_modes.mjs"
+        "node remake/test/browser/audio_modes.mjs",
+        "node remake/test/bgm_browser.mjs"
       ]
     },
     {
@@ -1653,17 +1894,19 @@
         "remake/css/**",
         "remake/data/manifest.json",
         "assets/ui/**",
-        "remake/test/browser/game_layout.mjs"
+        "remake/test/browser/game_layout.mjs",
+        "remake/test/browser/mobile_doubletap.mjs"
       ],
       "run": [
-        "node remake/test/browser/game_layout.mjs"
+        "node remake/test/browser/game_layout.mjs",
+        "node remake/test/browser/mobile_doubletap.mjs"
       ]
     },
     {
       "id": "adam-eden",
       "title": "Adam and EDEN adopted art",
       "kind": "browser",
-      "weight": 2,
+      "weight": 1.2,
       "timeout": 15,
       "paths": [
         "remake/js/daily/adam*.js",
@@ -1687,7 +1930,7 @@
       "id": "relationships",
       "title": "Hiyori, Samechan and relationship UI",
       "kind": "browser",
-      "weight": 7,
+      "weight": 11.5,
       "timeout": 25,
       "paths": [
         "remake/js/daily/hiyori*.js",
@@ -1737,7 +1980,7 @@
       "id": "minto-progression",
       "title": "Minto identity and relationship progression",
       "kind": "browser",
-      "weight": 2,
+      "weight": 0.5,
       "timeout": 15,
       "paths": [
         "remake/js/daily/minto*.js",
@@ -1746,10 +1989,12 @@
         "remake/test/minto_progression.mjs",
         "data/dialogue/*minto*.json",
         "assets/cgs/*minto*",
-        "remake/img/cgs/*minto*"
+        "remake/img/cgs/*minto*",
+        "remake/test/affinity_notifications.mjs"
       ],
       "run": [
-        "node remake/test/minto_progression.mjs"
+        "node remake/test/minto_progression.mjs",
+        "node remake/test/affinity_notifications.mjs"
       ],
       "chrome": "playwright"
     },
@@ -1757,7 +2002,7 @@
       "id": "tsumugi-story",
       "title": "Tsumugi fixed events and chapter days",
       "kind": "browser",
-      "weight": 2,
+      "weight": 4,
       "timeout": 15,
       "paths": [
         "remake/js/daily/tsumugi*.js",
@@ -1766,10 +2011,18 @@
         "remake/test/tsumugi_story.mjs",
         "data/dialogue/*tsumugi*.json",
         "assets/cgs/*tsumugi*",
-        "remake/img/cgs/*tsumugi*"
+        "remake/img/cgs/*tsumugi*",
+        "remake/test/browser/tsumugi_draft_response.mjs",
+        "remake/test/browser/tsumugi_sketch_timing.mjs",
+        "docs/qa/issue452-tsumugi/baseline-scenes.json"
       ],
       "run": [
-        "node remake/test/tsumugi_story.mjs"
+        "node remake/test/tsumugi_story.mjs",
+        "node remake/test/browser/tsumugi_draft_response.mjs",
+        "node remake/test/browser/tsumugi_sketch_timing.mjs"
+      ],
+      "sparse": [
+        "/docs/qa/issue452-tsumugi/"
       ],
       "chrome": "playwright"
     },
@@ -1777,7 +2030,7 @@
       "id": "dev-tools",
       "title": "Developer tools available on this branch",
       "kind": "browser",
-      "weight": 1,
+      "weight": 0.2,
       "timeout": 15,
       "paths": [
         "remake/js/core/dev-*.js",
@@ -1800,6 +2053,25 @@
       ],
       "run": [
         "node remake/test/reel_lifecycle.mjs"
+      ],
+      "chrome": "system"
+    },
+    {
+      "id": "reel-visuals",
+      "title": "Pakki reel visuals: BIG/REG announce, right-reel spin/slowdown, remount",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/reel*.js",
+        "remake/css/reel.css",
+        "remake/test/reel_visuals.mjs",
+        "remake/test/reel_visuals.html",
+        "remake/test/browser/reel_visuals.mjs",
+        "remake/img/ui/pakki-slot/*"
+      ],
+      "run": [
+        "node remake/test/browser/reel_visuals.mjs"
       ],
       "chrome": "system"
     },
@@ -1887,7 +2159,8 @@
         "remake/test/browser/lover_hidden_growth.mjs",
         "remake/test/browser/home_shisha.mjs",
         "remake/test/browser/home_practice_leaves.mjs",
-        "remake/js/daily/practice*.js"
+        "remake/js/daily/practice*.js",
+        "remake/test/ui_polish.mjs"
       ],
       "run": [
         "node remake/test/browser/title_layout.mjs",
@@ -1895,14 +2168,15 @@
         "node remake/test/browser/sumi_contact.mjs",
         "node remake/test/browser/lover_hidden_growth.mjs",
         "node remake/test/browser/home_shisha.mjs",
-        "node remake/test/browser/home_practice_leaves.mjs"
+        "node remake/test/browser/home_practice_leaves.mjs",
+        "node remake/test/ui_polish.mjs"
       ]
     },
     {
       "id": "lover-date-route",
       "title": "Saved-lover date routes",
       "kind": "browser",
-      "weight": 2,
+      "weight": 6,
       "timeout": 15,
       "paths": [
         "remake/js/daily/romance.js",
@@ -1919,7 +2193,7 @@
       "id": "title-arts",
       "title": "Title art rotation",
       "kind": "browser",
-      "weight": 1,
+      "weight": 0.4,
       "timeout": 15,
       "paths": [
         "assets/ui/title_arts/**",
@@ -1939,7 +2213,7 @@
       "id": "opening-and-readiness",
       "title": "Visual readiness, opening and tutorial transition",
       "kind": "browser",
-      "weight": 3,
+      "weight": 1.5,
       "timeout": 20,
       "paths": [
         "remake/index.html",
@@ -1950,12 +2224,14 @@
         "remake/test/browser/tonari_opening.mjs",
         "remake/test/browser/tutorial_transition.mjs",
         "remake/css/ch1*.css",
-        "remake/js/daily/tutorial*.js"
+        "remake/js/daily/tutorial*.js",
+        "remake/test/gameplay_polish.mjs"
       ],
       "run": [
         "node remake/test/vn_visual_readiness.mjs",
         "node remake/test/browser/tonari_opening.mjs",
-        "node remake/test/browser/tutorial_transition.mjs"
+        "node remake/test/browser/tutorial_transition.mjs",
+        "node remake/test/gameplay_polish.mjs"
       ]
     },
     {
@@ -1967,20 +2243,29 @@
       "paths": [
         "remake/js/daily/map.js",
         "remake/js/daily/shop.js",
-        "remake/css/map*.css",
         "remake/css/shop*.css",
-        "assets/ui/maps/**",
         "remake/test/store_logos.mjs",
         "remake/test/browser/facility_map.mjs",
         "remake/test/browser/map_reveals.mjs",
         "remake/test/browser/shop_ui.mjs",
-        "remake/js/core/train-icon.js"
+        "remake/js/core/train-icon.js",
+        "remake/test/browser/store_logo_layout.mjs",
+        "remake/test/compact_gains_map.mjs",
+        "remake/test/temporary_closures.mjs",
+        "remake/test/browser/facility_icons.mjs",
+        "remake/js/daily/facility-icons.js",
+        "remake/css/facility-icons.css",
+        "remake/facility-icons-preview.html"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
         "ARTIFACT_DIR=.codex/artifacts/remake-browser/map-facilities node remake/test/browser/facility_map.mjs",
         "ARTIFACT_DIR=.codex/artifacts/remake-browser/map-reveals node remake/test/browser/map_reveals.mjs",
-        "node remake/test/browser/shop_ui.mjs"
+        "node remake/test/browser/shop_ui.mjs",
+        "node remake/test/browser/store_logo_layout.mjs",
+        "node remake/test/compact_gains_map.mjs",
+        "node remake/test/temporary_closures.mjs",
+        "node remake/test/browser/facility_icons.mjs"
       ],
       "env": {
         "SHOTS": ".codex/artifacts/remake-browser/store-logos"
@@ -2003,13 +2288,17 @@
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
         "remake/css/ui-art.css",
-        "remake/test/browser/fortune_readings.mjs"
+        "remake/test/browser/fortune_readings.mjs",
+        "remake/test/playtest_ui.mjs",
+        "remake/test/ui_skin.mjs"
       ],
       "run": [
         "node remake/test/fortune_readings.mjs",
         "node remake/test/browser/hud_fortune.mjs",
         "node remake/test/browser/stamina_recovery.mjs",
-        "node remake/test/browser/fortune_readings.mjs"
+        "node remake/test/browser/fortune_readings.mjs",
+        "node remake/test/playtest_ui.mjs",
+        "node remake/test/ui_skin.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/hud-fortune"
@@ -2025,7 +2314,7 @@
       "id": "continue-screen",
       "title": "Continue captions, readiness and typing",
       "kind": "browser",
-      "weight": 3,
+      "weight": 5.5,
       "timeout": 15,
       "paths": [
         "remake/js/scenes/continue*.js",
@@ -2034,20 +2323,36 @@
         "remake/test/continue_readiness.mjs",
         "remake/test/continue_output.mjs",
         "remake/test/continue_neon.mjs",
-        "remake/test/continue_typing.mjs"
+        "remake/test/continue_typing.mjs",
+        "remake/test/continue_screen.mjs",
+        "remake/test/continue_classic_count.mjs",
+        "remake/test/burnt_gameover.mjs",
+        "remake/test/browser/continue_closeup.mjs",
+        "remake/test/browser/continue_keyboard.mjs",
+        "remake/test/browser/continue_lifecycle.mjs",
+        "remake/test/browser/continue_output.mjs",
+        "remake/test/browser/gameover_title_center.mjs"
       ],
       "run": [
         "node remake/test/continue_readiness.mjs",
         "node remake/test/continue_output.mjs",
         "node remake/test/continue_neon.mjs",
-        "SHOTS=.codex/artifacts/remake-browser/continue-typing node remake/test/continue_typing.mjs"
+        "SHOTS=.codex/artifacts/remake-browser/continue-typing node remake/test/continue_typing.mjs",
+        "node remake/test/continue_screen.mjs",
+        "node remake/test/continue_classic_count.mjs",
+        "node remake/test/burnt_gameover.mjs",
+        "node remake/test/browser/continue_closeup.mjs",
+        "node remake/test/browser/continue_keyboard.mjs",
+        "node remake/test/browser/continue_lifecycle.mjs",
+        "node remake/test/browser/continue_output.mjs",
+        "node remake/test/browser/gameover_title_center.mjs"
       ]
     },
     {
       "id": "steam-attack",
       "title": "Steam slash, recharge and thermometer",
       "kind": "browser",
-      "weight": 5,
+      "weight": 10,
       "timeout": 20,
       "paths": [
         "remake/js/craft/**",
@@ -2094,7 +2399,7 @@
       "id": "ch1-practice",
       "title": "Chapter 1 focused practice and saves",
       "kind": "browser",
-      "weight": 4.8,
+      "weight": 5.0,
       "timeout": 25,
       "paths": [
         "remake/js/chapters/ch1*.js",
@@ -2284,7 +2589,7 @@
       "id": "trpg",
       "title": "TRPG two-story collection",
       "kind": "browser",
-      "weight": 4.6,
+      "weight": 5.0,
       "timeout": 15,
       "paths": [
         "data/dialogue/trpg_ordinary.json",
@@ -2398,7 +2703,7 @@
       "id": "ui-themes",
       "title": "UI theme switching and preference persistence",
       "kind": "browser",
-      "weight": 0.3,
+      "weight": 1.7,
       "timeout": 5,
       "paths": [
         "remake/css/ui-themes.css",
@@ -2416,10 +2721,12 @@
         "remake/js/vn/conversation-preview.js",
         "remake/conversation-preview.html",
         "remake/img/ui/vn-lounge/**",
-        "remake/test/browser/ui_themes.mjs"
+        "remake/test/browser/ui_themes.mjs",
+        "remake/test/browser/short_seen.mjs"
       ],
       "run": [
-        "node remake/test/browser/ui_themes.mjs"
+        "node remake/test/browser/ui_themes.mjs",
+        "node remake/test/browser/short_seen.mjs"
       ]
     },
     {
@@ -2469,8 +2776,10 @@
       "run": [
         "node remake/test/flavor_mastery.mjs",
         "node remake/test/flavor_expression.mjs",
+        "node remake/test/flavor_data_contract.mjs",
         "node remake/test/mastery_balance.mjs",
-        "node remake/test/craft_review.mjs"
+        "node remake/test/craft_review.mjs",
+        "node --experimental-vm-modules remake/test/shop_display_775.mjs"
       ]
     },
     {
@@ -2487,7 +2796,7 @@
       "run": [
         "node remake/test/browser/tournament_rules.mjs"
       ],
-      "weight": 1,
+      "weight": 0.2,
       "timeout": 8
     },
     {
@@ -2508,14 +2817,14 @@
         "node remake/test/browser/flavor_mastery.mjs",
         "node remake/test/browser/mastery_display.mjs"
       ],
-      "weight": 3,
+      "weight": 1.5,
       "timeout": 10
     },
     {
       "id": "recent-intros",
       "title": "New cast introduction artwork and first-encounter state",
       "kind": "browser",
-      "weight": 2,
+      "weight": 4,
       "timeout": 6,
       "paths": [
         "remake/test/browser/recent_intros.mjs",
@@ -2524,10 +2833,17 @@
         "remake/data/manifest.json",
         "assets/ui/character_intros/**",
         "remake/img/ui/character_intros/**",
-        "asset_sources/character-intros/recent-cast/**"
+        "asset_sources/character-intros/recent-cast/**",
+        "remake/test/intro_art.mjs",
+        "remake/test/intro_cutin.mjs"
       ],
       "run": [
-        "node remake/test/browser/recent_intros.mjs"
+        "node remake/test/browser/recent_intros.mjs",
+        "node remake/test/intro_art.mjs",
+        "node remake/test/intro_cutin.mjs"
+      ],
+      "sparse": [
+        "/asset_sources/backgrounds/osu-sakae-map-remaster-v1/"
       ]
     },
     {
@@ -2571,7 +2887,7 @@
       "id": "shopping-tutorial",
       "title": "Tutorial shopping order and return dialogue",
       "kind": "browser",
-      "weight": 1,
+      "weight": 0.4,
       "timeout": 5,
       "paths": [
         "remake/js/daily/shop.js",
@@ -2580,6 +2896,156 @@
       ],
       "run": [
         "node remake/test/browser/shopping_tutorial.mjs"
+      ]
+    },
+    {
+      "id": "bonds",
+      "title": "Complete bonds, nicknames and lover progression",
+      "kind": "browser",
+      "weight": 5,
+      "timeout": 20,
+      "paths": [
+        "remake/test/bonds.mjs"
+      ],
+      "run": [
+        "node remake/test/bonds.mjs"
+      ]
+    },
+    {
+      "id": "ch1-visual-quality",
+      "title": "Chapter 1 full visual quality across weather and devices",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 20,
+      "paths": [
+        "remake/test/ch1_visual_quality.mjs"
+      ],
+      "run": [
+        "node remake/test/ch1_visual_quality.mjs"
+      ]
+    },
+    {
+      "id": "ch1-cg-playthrough",
+      "title": "Chapter 1 natural playthrough CG gallery verification",
+      "kind": "browser",
+      "weight": 11,
+      "timeout": 25,
+      "paths": [
+        "remake/test/ch1_cg_playthrough.mjs"
+      ],
+      "run": [
+        "node remake/test/ch1_cg_playthrough.mjs"
+      ]
+    },
+    {
+      "id": "ch2-rain-j08",
+      "title": "Chapter 2 rain weather effects and window masks",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 10,
+      "paths": [
+        "remake/test/browser/ch2_rain_j08.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch2_rain_j08.mjs"
+      ]
+    },
+    {
+      "id": "kuji-purchase",
+      "title": "Native kuji purchase and rapid draw regression",
+      "kind": "browser",
+      "chrome": "playwright",
+      "weight": 0.5,
+      "timeout": 10,
+      "paths": [
+        "remake/test/kuji_purchase.mjs"
+      ],
+      "run": [
+        "node remake/test/kuji_purchase.mjs"
+      ]
+    },
+    {
+      "id": "ngplus-difficulty",
+      "title": "NG+ difficulty carry index and rival score lift (U4)",
+      "kind": "quick",
+      "run": ["node remake/test/ngplus_difficulty.mjs"]
+    },
+    {
+      "id": "ch3-menu-bgm",
+      "title": "Chapter 3 MENU entries, BGM and LOAD checkpoints (#1258/#1261)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch3_menu_bgm.mjs"]
+    },
+    {
+      "id": "ch2-spot-images",
+      "title": "Chapter 2 spot backgrounds are real image files, not LFS pointers",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/chapters/ch2-city-data.js",
+        "remake/js/chapters/ch2-outings.js",
+        "remake/test/ch2_spot_images.mjs",
+        "assets/backgrounds/bg_ch2_*_entry.webp",
+        "assets/backgrounds/bg_widehanga_map_*.webp",
+        "assets/backgrounds/bg_widehanga_station_day.webp",
+        "assets/backgrounds/bg_yuzugaya_*.webp"
+      ],
+      "run": ["node remake/test/ch2_spot_images.mjs"]
+    },
+    {
+      "id": "future-schema-save",
+      "title": "Future schema saves preserve state and remain compatible",
+      "kind": "quick",
+      "run": ["node remake/test/future_schema_save.mjs"]
+    },
+    {
+      "id": "store-logo-comparison",
+      "title": "Store logo map pin layout metrics and screenshots (#574)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/map.js",
+        "remake/js/core/store-logos.js",
+        "remake/css/store-logos.css",
+        "remake/test/browser/store_logo_comparison.mjs"
+      ],
+      "run": ["node remake/test/browser/store_logo_comparison.mjs"],
+      "env": {
+        "BASE_URL": "http://127.0.0.1:8123/remake/",
+        "ARTIFACT_DIR": ".codex/artifacts/store-logo-comparison"
+      }
+    },
+    {
+      "id": "tutorial-transition-performance",
+      "title": "Tutorial transition performance under network and media profiles",
+      "kind": "browser",
+      "weight": 12,
+      "timeout": 25,
+      "paths": [
+        "remake/index.html",
+        "remake/js/core/state.js",
+        "remake/js/core/ui.js",
+        "remake/js/core/data.js",
+        "remake/js/vn/engine.js",
+        "remake/js/vn/intro.js",
+        "remake/js/chapters/ch1.js",
+        "remake/css/vn*.css",
+        "data/dialogue/ch1_main.json",
+        "data/dialogue/remake_ch1.json",
+        "remake/img/backgrounds/bg_tonari_inside*.webp",
+        "asset_sources/transitions/move-variants-20261010/3_walk.mp4",
+        "remake/test/browser/tutorial_transition_performance.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tutorial_transition_performance.mjs"
+      ],
+      "env": {
+        "BASE_URL": "http://127.0.0.1:8123/remake/"
+      },
+      "sparse": [
+        "/asset_sources/transitions/move-variants-20261010/"
       ]
     }
   ]

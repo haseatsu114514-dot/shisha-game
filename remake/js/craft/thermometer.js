@@ -123,7 +123,6 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   } };
 }
 
-export const formatTemperatureRange = (band) => `${(band[0] * 100).toFixed(1)}〜${(band[1] * 100).toFixed(1)}%`;
 
 /** 配合中は現在温度を持たない。左プレビューは共通の縦管、既存の横ゲージも維持する。 */
 export function buildMixTemperatureGauge(cs, { vertical = false } = {}) {

@@ -38,3 +38,18 @@ remake/js/daily/calendar.jsの夜行動後にromance.jsのmaybeConfessionが呼�
 - 凛: 閉店間際の問屋街、シャッターの下りた通り。夜の問屋街CGは台本と一致。
 
 栞・凛もCG前には共通通り背景が使われ、専用の川沿い・問屋街背景は未実装。今回の変更はCGのみで、台本・発生条件・背景指定は変更していない。つむぎv4はPC/横タッチ/DSの3表示を再検証。
+
+## 告白CG 4枚の追加登録（2026-10-29）
+
+オーナー選定（2026-10-29、選別チャット経由）で採用された4枚を、上記3枚と同じ手順で登録した。
+
+| ID | 採用候補 | 寸法 |
+| --- | --- | --- |
+| cg_ageha_confession | 新規（Codex A 制作、work/codex-a-confession-cgs/） | 1920×1080 |
+| cg_mashiro_confession | 新規（同上） | 1920×1080 |
+| cg_hiyori_confession | 新規（同上） | 1920×1080 |
+| cg_samechan_confession | 新1「正面・手を取り合う」（Codex A 制作、work/codex-a-samechan-confession/ の samechan-candidate-1.png） | 1672×940 |
+
+- 原画は assets/cgs/ へ無加工保存（sha256 は sources.json、採用候補の台帳は各 work フォルダの LEDGER.md）。サメちゃん分は既存3枚の生成寸法（1672×941）と1px 異なる 1672×940 だが、採用原画を優先し無加工とした。
+- あげは・ましろ・ひよりの show_cg は台詞側に接続済み（ひよりは PR #1432）。サメちゃんは本登録にあわせて confession_samechan_accept の手つなぎ台詞の直前へ show_cg、末尾へ hide_cg を追加した。
+- 配信は build_manifest.py --cgs-only で WebP 化し manifest へ登録。ギャラリー一覧用サムネイル（remake/img/cgs/thumbs/、512×288）は既存分と同じ寸法・近い容量で生成した。

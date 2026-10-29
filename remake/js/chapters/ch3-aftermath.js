@@ -3,8 +3,11 @@ import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, modal, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { glossaryPanel } from "../vn/glossary.js";
+import { playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { shinkansenRide } from "../core/scene-motions.js";
@@ -39,12 +42,14 @@ async function openMenu(owner) {
       { label: "セーブ", value: "save", test: test("save") },
       { label: "ロード", value: "load", test: test("load") },
       { label: "設定", value: "config", test: test("config") },
+      { label: "用語集", value: "glossary", test: test("glossary") },
       { label: "タイトルへ戻る", value: "title", test: test("title") },
       { label: "閉じる", value: null, primary: true },
     ] });
     if (!live(owner)) return;
     if (choice === "save") await saveFlow();
     if (choice === "config") await (await import("../scenes/title.js")).openConfig();
+    if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
     if (choice === "load") {
       const key = await loadFlow({ inGame: true });
       if (key && loadFromSlot(key)) {
@@ -117,6 +122,8 @@ export async function runChapterThreeAftermath() {
       beginChapterThreeAftermath(state);
       save();
     } else chapterThreeAftermathProgress(state);
+    // 通し進行で勝利時から続く曲を、タイトルのLOADからも復元する。
+    playBgm("bgm_aftermath");
     await renderStage(owner);
   });
 }
@@ -151,9 +158,14 @@ async function renderStage(owner) {
     await setBg(bgUrl("bg_ageha_shop"), { instant: true });
     if (!live(owner)) return;
     card(owner, "complete", "第三章・完", "全国大会を終え、帰る場所にも新しい約束ができた。", [
+      // 第3章側の第4章への接続点はここ1か所（状態遷移は ch4-progress.js の advanceToChapterFour）。
+      button(owner, "第4章へ進む", "chapter-four", async () => {
+        const mod = await withLoadingNotice(import("./ch4.js"), loadingNotice("第4章のドバイへ向かっています…"));
+        await mod.beginChapterFour();
+      }, true),
       button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
       button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-    ], "次の章は、今後の更新で追加されます。");
+    ], "第四章・ドバイ編へ進めます。");
     return;
   }
   // 帰郷の夜(#1059)は、新幹線の車窓が覆うまで東京側の背景のままにし、tonariを先見せしない。
