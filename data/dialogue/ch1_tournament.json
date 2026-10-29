@@ -197,17 +197,17 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "みなさん、おまたせしましたーーーッ！！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "SMOKE CROWN CUP、[imp]開幕[/imp]ですッ！！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "MCはパッキーが務めますッ！ ぷぷぷっ！"
         },
         {
@@ -217,7 +217,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "今日の出場者は4名！ それぞれの「自分だけの一杯」をかけてぶつかり合いますッ！"
         },
         {
@@ -242,17 +242,17 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "それでは審査員の紹介ですッ！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "まずは、大会を運営する「C.STATION」の生みの親、業界の鉄壁！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "南雲修二（なぐも しゅうじ）さんッ！"
         },
         {
@@ -262,7 +262,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "相変わらず厳しィィィ！ さあ続きまして！ データの鬼、チャコール博士こと火浦理一さんッ！"
         },
         {
@@ -272,7 +272,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "そしてゲスト審査員！ シーシャはおいしいねえ、でおなじみ！ 上園文太郎さんッ！"
         },
         {
@@ -309,12 +309,12 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "さあッ！ それでは！！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "SMOKE CROWN CUP、[warn]開始ィィィッ！！[/warn]"
         }
       ],
@@ -412,9 +412,11 @@
       "branches": {
         "insight_high": [
           {
+            "speaker": "",
             "text": "南雲会長は腕を組んで目を閉じている。味に集中したいタイプか。"
           },
           {
+            "speaker": "",
             "text": "上園さんは笑顔でキョロキョロしている。楽しみたいタイプだ。"
           },
           {
@@ -425,6 +427,7 @@
         ],
         "insight_low": [
           {
+            "speaker": "",
             "text": "南雲会長は無表情で、何を考えているか分からない。上園さんは……ただ笑ってるだけ？"
           },
           {
@@ -450,7 +453,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "各選手、完成！ いよいよ審査員への提出ですッ！！"
         },
         {
@@ -546,12 +549,12 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "さあ、審査員の協議に入りました！ 今日の4台、どれも力作揃いッ！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "果たして、結果やいかにィィ！？"
         },
         {
@@ -616,7 +619,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "それでは！ SMOKE CROWN CUP、結果発表ですッ！"
         },
         {
@@ -713,12 +716,12 @@
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "SMOKE CROWN CUP……優勝はッ！！"
         },
         {
           "speaker": "pakki",
-          "face": "excited",
+          "face": "smile",
           "text": "蒸野はじめ選手ッ！！！ 最後の一票で逃げ切り、優勝ですッ！！"
         },
         {
