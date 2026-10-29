@@ -146,8 +146,8 @@ try {
   await page.emulateMedia({reducedMotion:"no-preference"});
   await page.evaluate(async()=>{const c=T.transitions.createSceneCurtain(T.ui.layers.fx,{fast:true});await c.covered;await c.release();});
   assert.equal(await page.locator('.store-arrival').count(),0);checks++;
-  // PNGが取得できなくても看板名と操作は残る。
-  await page.route('**/assets/ui/store_logos/tonari.png',r=>r.abort());
+  // WebPが取得できなくても看板名と操作は残る。
+  await page.route('**/assets/ui/store_logos/tonari.webp',r=>r.abort());
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
   await page.waitForSelector('[data-test="title-new"]');
   await page.evaluate(async()=>{
