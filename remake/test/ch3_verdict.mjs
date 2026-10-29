@@ -1,7 +1,7 @@
 // 全国大会の講評が調整履歴と前日方針に連動することを、実台本で確認する。
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { adjustmentLines, resultLines } from "../js/chapters/ch3-verdict.js";
+import { adjustmentLines, resultLines, defeatLines } from "../js/chapters/ch3-verdict.js";
 
 const data = JSON.parse(readFileSync(new URL("../../data/dialogue/ch3_main.json", import.meta.url), "utf8"));
 const find = id => (data.dialogues || data).find(d => d.dialogue_id === id).lines;
@@ -43,4 +43,10 @@ for (const key of ["aroma", "light", "sweet"]) {
   assert.equal(lines.length, res.length + 1);
 }
 assert.equal(resultLines(res, { careHistory: [care(0), care(0)] }, undefined).length, res.length);
+
+// 敗退: 一度も替えずに負けたら「待てた」ではなく「替えてもよかった」と振り返る
+const def = find("ch3_national_defeat");
+assert.equal(defeatLines(def, null), def);
+assert.match(text(defeatLines(def, { careHistory: [care(0), care(0)] })), /替えてもよかった/);
+assert.match(text(defeatLines(def, { careHistory: [care(1), care(0)] })), /待てた気がする/);
 console.log("ch3_verdict ok");

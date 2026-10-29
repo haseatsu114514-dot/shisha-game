@@ -66,3 +66,10 @@ export function resultLines(lines, craft, strategyKey) {
   if (at < 0) return out;
   return [...out.slice(0, at + 1), { speaker: "hajime", face: "normal", text: strategy }, ...out.slice(at + 1)];
 }
+
+// 敗退時の一言も、待ったのか替えたのかで振り返りを変える。
+export function defeatLines(lines, craft) {
+  const history = (craft?.careHistory || []).map(careOf).filter(Boolean);
+  if (!history.length || history.some(care => care.moved)) return lines;
+  return replaceLines(lines, new Map([["……もう少し、待てた気がする", [{ text: "……待つだけじゃなく、替えてもよかった気がする" }]]]));
+}
