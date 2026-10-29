@@ -370,7 +370,7 @@ await suite("blue-window-character-preview",async check=>{
         assert.equal(rendered.lines,2);
         assert(rendered.clear,"blue preview text is clear of name, controls and next indicator");
         assert(rendered.portrait?.includes("/"+id+"/"),"use the official character sprite");
-        assert(rendered.font.includes("Suien Blue Mincho"));
+        assert(rendered.font.includes("Suien Reading Mincho"));
       }
       await page.locator('[data-test="vn-auto"]').click();
       fixedCommands(await commandGeometry(page),fixedHeader,"blue AUTO on");

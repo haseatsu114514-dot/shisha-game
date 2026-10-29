@@ -146,12 +146,12 @@ html:root[data-ui-theme="classic"] body:not(.game-ds) .vn-controls { padding:3px
 /* R2はプレビューのみ。同じ上辺へ青と銀の札を合わせる。 */
 html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-box .vn-name {
   width:220px; padding:0 18px 2px 30px; background:url("../img/ui/blue-preview/name.webp") center / 100% 100% no-repeat;
-  border:0; box-shadow:none; font-family:"Suien Blue Mincho",serif; font-weight:400; color:#fff;
+  border:0; box-shadow:none; font-family:"Suien Reading Mincho",serif; font-weight:400; color:#fff;
 }
 html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls {
   background:url("../img/ui/blue-preview/controls.webp") center / 100% 100% no-repeat; border:0; box-shadow:none;
 }
-html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls .vn-ctl { font-family:"Suien Blue Mincho",serif; font-weight:400; color:#f4f3ff; }
+html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls .vn-ctl { font-family:"Suien Reading Mincho",serif; font-weight:400; color:#f4f3ff; }
 html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) :is(.vn-name,.vn-controls)::before,
 html:root[data-ui-theme="heisei-blue"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { content:none; }
 /* 2画面の16も同じ穏やかな素材へ。進行・操作の配置は既存の2画面を維持する。 */

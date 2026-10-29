@@ -1,6 +1,6 @@
 /* R2は比較プレビュー専用。本編CONFIGや既定テーマには登録しない。 */
 @font-face {
-  font-family:"Suien Blue Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2") format("woff2");
+  font-family:"Suien Reading Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2") format("woff2");
   font-style:normal; font-weight:400; font-display:block;
 }
 html[data-ui-theme="heisei-blue"] {
@@ -17,7 +17,7 @@ html[data-ui-theme][data-ui-theme="heisei-blue"] .vn-box:is(.narration,.thought)
 html[data-ui-theme][data-ui-theme="heisei-blue"] .vn-box .vn-name {
   left:28px; top:-66px; width:280px; height:76px; padding:4px 24px 0 40px; line-height:72px;
   background:url("../img/ui/blue-preview/name.webp") center / 100% 100% no-repeat;
-  font-family:"Suien Blue Mincho",serif; font-weight:400; color:#fff; text-shadow:0 2px 4px #000;
+  font-family:"Suien Reading Mincho",serif; font-weight:400; color:#fff; text-shadow:0 2px 4px #000;
   font-size:var(--vn-name-fit-size,clamp(14px,calc(216px / var(--vn-name-length,4)),32px));
 }
 html[data-ui-theme="heisei-blue"] .vn-name::after { content:none; }
@@ -27,9 +27,9 @@ html[data-ui-theme][data-ui-theme="heisei-blue"] .vn-controls {
 }
 html[data-ui-theme][data-ui-theme="heisei-blue"] .vn-controls .vn-ctl {
   background:none; border:0; border-radius:0; box-shadow:none; color:#fff;
-  font-family:"Suien Blue Mincho",serif; font-weight:400; text-shadow:0 1px 3px #000;
+  font-family:"Suien Reading Mincho",serif; font-weight:400; text-shadow:0 1px 3px #000;
 }
-html[data-ui-theme="heisei-blue"] :is(.vn-text,.vn-inner) { font-family:"Suien Blue Mincho",serif; font-weight:400; }
+html[data-ui-theme="heisei-blue"] :is(.vn-text,.vn-inner) { font-family:"Suien Reading Mincho",serif; font-weight:400; }
 html[data-ui-theme="heisei-blue"] .vn-text { color:#fff; text-shadow:0 2px 3px #000; }
 .preview-tools:has(#preview-character:not([hidden])) { height:auto; min-height:48px; flex-wrap:wrap; }
 #preview-character[hidden] { display:none; }

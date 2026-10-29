@@ -160,7 +160,7 @@ try {
   characterSelect.disabled = false;
   themeSelect.disabled = false;
   backgroundSelect.disabled = false;
-  if(theme==="heisei-blue") await document.fonts.load('400 32px "Suien Blue Mincho"',"みんとあげはつむぎ時間帯");
+  if(theme==="heisei-blue") await document.fonts.load('400 32px "Suien Reading Mincho"',"みんとあげはつむぎ時間帯");
   document.querySelector("#preview-restart").disabled = false;
   await start();
 } catch (error) {
