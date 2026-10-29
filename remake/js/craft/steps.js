@@ -461,7 +461,7 @@ export async function stepPack(cs) {
   await waitBenchReady(cs, "pack");
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   const options = [
-    { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一杯を狙う時に。温めすぎに注意" },
+    { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一台を狙う時に。温めすぎに注意" },
     { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
     { value: "firm", label: "デンスパック", surface: "密に詰める・厚い味へ", desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
   ];
