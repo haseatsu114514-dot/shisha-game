@@ -99,12 +99,27 @@ for (const legacy of [false, true]) {
   assert.equal(activity.chapterThreeGymAvailability(value, window.id).reason, "reserved");
 }
 
+// 旧ルートの非会員は従来どおり空き時間なし。新ルートは地図の行き先があるので会員でなくても開く（#1655）。
 {
-  const value = departure({ member: false });
+  const value = departure({ member: false, legacy: true });
   assert.equal(activity.chapterThreeGymAvailability(value, "d5-noon").reason, "member");
   for (const scene of chapterThreeScenes(value)) assert(completeChapterThreeScene(value, scene.id));
   assert.equal(value.day, 42); assert.equal(value.phase, "tournament");
-  assert.equal(chapterThreeFreeTime(value), null, "Nonmembers gained unrequested gym-only action windows");
+  assert.equal(chapterThreeFreeTime(value), null, "Legacy nonmembers gained unrequested action windows");
+}
+{
+  const value = departure({ member: false });
+  assert.equal(activity.chapterThreeGymAvailability(value, "d5-noon").reason, "member");
+  const windows = [];
+  for (const scene of chapterThreeScenes(value)) {
+    for (let window; (window = chapterThreeFreeTime(value));) {
+      windows.push(window.id);
+      assert(activity.claimChapterThreeRest(value, window.id));
+    }
+    assert(completeChapterThreeScene(value, scene.id));
+  }
+  assert.deepEqual(windows, ["d5-noon", "d6-night", "d8-night", "d9-night", "d10-noon", "d12-noon"]);
+  assert.equal(value.day, 42); assert.equal(value.phase, "tournament");
 }
 
 {

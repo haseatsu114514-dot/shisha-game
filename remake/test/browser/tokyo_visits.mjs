@@ -80,7 +80,7 @@ await suite("tokyo-visits", async check => {
         state.met[id] = true; state.flags[`_intro_${id}`] = true;
       }
     });
-    let meetings = 0, dates = 0;
+    let meetings = 0, dates = 0, restGain = 0;
     const ordered = await page.evaluate(async () => (await import("./js/chapters/ch3-progress.js")).CH3_INTRO_SCENES.map(scene => scene.id));
     for (const id of ordered) {
       await page.locator(`${t("ch3-intro-scene")}[data-scene="${id}"]`).waitFor();
@@ -96,6 +96,16 @@ await suite("tokyo-visits", async check => {
       await page.waitForFunction(() => !!document.querySelector('[data-test="ch3-intro-free"], [data-test="ch3-intro-scene"], [data-test="ch3-intro-ready"]'));
       if (id === "ch3_opening") assert.equal((await get(page)).flags._ch3_rules_read, true);
       while (await page.locator(t("ch3-intro-free")).count()) {
+        // 予約のない空き時間（#1655）は休んで進む。休養の回復分だけ体力の比較から除く。
+        if (!await page.locator(t("ch3-intro-visit")).count()) {
+          const rested = (await get(page)).stamina;
+          const card = await page.locator(t("ch3-intro-free")).elementHandle();
+          await page.locator(t("ch3-intro-visit-rest")).click();
+          await card.waitForElementState("hidden");
+          await page.waitForFunction(() => !!document.querySelector('[data-test="ch3-intro-free"], [data-test="ch3-intro-scene"], [data-test="ch3-intro-ready"]'));
+          restGain += (await get(page)).stamina - rested;
+          continue;
+        }
         const current = await get(page);
         const plan = current.tokyoVisits.plans.find(plan => plan.status !== "returned");
         assert(plan);
@@ -125,7 +135,8 @@ await suite("tokyo-visits", async check => {
     value = await get(page);
     assert.equal(meetings, 2); assert.equal(dates, 2);
     assert(value.tokyoVisits.plans.every(plan => plan.met && plan.dateDone && plan.status === "returned"));
-    for (const key of ["stats", "statXp", "lovePts", "loveLevel", "stamina", "money", "guilt"]) assert.deepEqual(value[key], before[key], key);
+    for (const key of ["stats", "statXp", "lovePts", "loveLevel", "money", "guilt"]) assert.deepEqual(value[key], before[key], key);
+    assert.equal(value.stamina, before.stamina + restGain, "Only resting may change stamina");
     await page.locator(t("ch3-intro-lime")).click();
     await page.locator(t("lime-contact-tsumugi")).click();
     assert.match(await page.locator(".lime-chat").innerText(), /帰郷済み/);

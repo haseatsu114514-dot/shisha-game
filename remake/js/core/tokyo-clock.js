@@ -39,6 +39,12 @@ export function tokyoWindowReserved(value, window) {
     && [plan.meetup, plan.date].some(time => time?.id === window.id && timeNumber(time) === timeNumber(window)));
 }
 
+/**
+ * 予約のない空き時間を開く条件。新ルートは地図の行き先（#1655）があるので会員でなくても開く。
+ * 旧ルートの保存は従来どおりジム会員だけ。
+ */
+export const tokyoOpenWindow = value => value.flags?._ch3_intro?.routeVersion === 2 || !!value.flags?._gym_member;
+
 /** 古い保存の過ぎた空き時間を再演しない。本筋のstageは増やさない。 */
 export function nextTokyoFreeTime(value, before) {
   if (!value.flags?._ch3_intro) return null;
@@ -48,6 +54,6 @@ export function nextTokyoFreeTime(value, before) {
     .map(window => tokyoTime(value, window))
     .filter(window => value.tokyoVisits?.plans.some(plan => plan.status !== "returned"
         && (plan.meetup.id === window.id || plan.date.id === window.id))
-      || (value.flags._gym_member && tokyoGymWindowAllowed(value, window) && !tokyoWindowReserved(value, window)))
+      || (tokyoOpenWindow(value) && tokyoGymWindowAllowed(value, window) && !tokyoWindowReserved(value, window)))
     .find(window => timeNumber(window) >= timeNumber(value)) || null;
 }

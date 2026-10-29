@@ -19,6 +19,7 @@ import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { openShop } from "../daily/shop.js";
 import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
+import { chapterThreeOutings, visitChapterThreeOuting } from "./ch3-outings.js";
 import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, loadStoryRoutes, availableOptionalScenes, commitOptionalRead,
   selectChapterThreeEvening, eveningRecord } from "./ch3-story-wiring.js";
 
@@ -111,18 +112,9 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     sceneId ? createChapterThreeWayfinding(state, chapterThreeScenes(state), sceneId) : null,
     note ? el("p.ch2-contest-note", { text: note }) : null,
     el("div.ch2-contest-actions", [...actions,
-      ...(["free", "ready"].includes(name) ? [button(owner, "東京の地図", "map", async () => {
-        const { openChapterThreeMap } = await withLoadingNotice(import("./ch3-map.js"), loadingNotice("東京の地図を準備しています…"));
-        if (!current(owner)) return;
-        const window = chapterThreeFreeTime(state);
-        const selection = await openChapterThreeMap(state, chapterThreeScenes(state), {
-          freeTime: !!window, allowGym: !!window && chapterThreeGymAvailability(state, window.id).ok,
-        });
-        if (!current(owner)) return;
-        if (selection !== "gym" || !window) return;
-        await trainInTokyo(owner, window.id);
-        if (current(owner)) await renderStage(owner);
-      })] : []), ...(["scene", "free", "ready"].includes(name) ? [
+      ...(["free", "ready"].includes(name) ? [button(owner, name === "free" && freeTimeChoices(state).length
+        ? "東京の地図で行き先を選ぶ" : "東京の地図", "map", () => openTokyoMap(owner), name === "free")] : []),
+      ...(["scene", "free", "ready"].includes(name) ? [
       button(owner, "東京の店で葉を買う", "shop", async () => {
         await openShop({ branch: "tokyo" });
         if (current(owner)) await renderStage(owner);
@@ -508,7 +500,7 @@ async function renderFreeTime(owner, window) {
       : "大会前夜。誰と過ごすか、決めきれないまま夜になった。"
       : eligible ? `${name}と${plan.met ? "東京の街を散歩する" : "東京駅で合流する"}時間になった。`
       : plan ? "この時間は静かに過ごそう。会えなくても、二人の関係は変わらない。"
-        : "次の予定まで、少し時間がある。街で体を動かすか、休んで過ごそう。", [
+        : "次の予定まで、少し時間がある。地図で行き先を選ぶか、休んで過ごそう。", [
     ...(eligible ? [button(owner, eveningNow ? "前夜を過ごす" : plan.met ? "二人で散歩する" : "東京駅へ迎えに行く", "visit", async () => {
       const kind = plan.met ? "date" : "meetup";
       if (dueTokyoVisit(state, window)?.id !== plan.id) return;
@@ -534,7 +526,57 @@ async function renderFreeTime(owner, window) {
     }),
   ], eveningNow ? "前夜の過ごし方は、一回の自由時間を使います。"
     : plan ? "合流と散歩は、それぞれ一回の自由時間を使います。"
-    : "会員証は東京でも使えます。トレーニングは一日一回、追加料金はかかりません。", "");
+    : freeTimeHint(window), "");
+}
+
+/** 「今日は誰に何を聞きに行くか」「大会までに何を試すか」を、行ける行き先の理由から短く示す。 */
+function freeTimeHint(window) {
+  const outings = chapterThreeOutings(state, window.id).filter(item => !item.repeat);
+  const trials = availableChapterThreeTrials(state);
+  const parts = [
+    ...outings.map(item => `${item.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${item.reasonText}`),
+    ...(trials.length ? [`mukaiの作業台：${trials.map(trial => trial.label).join("、")}`] : []),
+  ];
+  return parts.length ? `今日の候補 ― ${parts.slice(0, 2).join(" ／ ")}`
+    : "mukaiの手伝いや公園の散歩も、一回の自由時間を使います。";
+}
+
+/** 今の自由時間に地図から選べる行き先。試作は予定を進めないので、自由時間を消費しない。 */
+function freeTimeChoices(value) {
+  const window = chapterThreeFreeTime(value);
+  if (!window) return [];
+  return [
+    ...chapterThreeOutings(value, window.id),
+    ...availableChapterThreeTrials(value).map(trial => ({ id: `trial-${trial.id}`, trialId: trial.id, place: "mukai",
+      label: `作業台で${trial.label}`, reasonText: "聞いたことを、自分の一台で確かめる", ok: true, consumes: false })),
+  ];
+}
+
+async function openTokyoMap(owner) {
+  const { openChapterThreeMap } = await withLoadingNotice(import("./ch3-map.js"), loadingNotice("東京の地図を準備しています…"));
+  if (!current(owner)) return;
+  const window = chapterThreeFreeTime(state);
+  const actions = freeTimeChoices(state);
+  const selection = await openChapterThreeMap(state, chapterThreeScenes(state), {
+    freeTime: !!window, allowGym: !!window && chapterThreeGymAvailability(state, window.id).ok, actions,
+  });
+  if (!current(owner) || !selection || !window) return;
+  if (selection === "gym") await trainInTokyo(owner, window.id);
+  else {
+    const action = actions.find(item => item.id === selection.action);
+    if (action?.trialId) { await runTrial(owner, action.trialId); return; }
+    if (action) await goOuting(owner, window.id, action.id);
+  }
+  if (current(owner)) await renderStage(owner);
+}
+
+async function goOuting(owner, windowId, id) {
+  if (!current(owner)) return false;
+  showScreen("none", null);
+  hud(owner);
+  const controller = owner.controller = new AbortController();
+  try { return await visitChapterThreeOuting(windowId, id, { signal: controller.signal, isCurrent: () => current(owner) }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 async function trainInTokyo(owner, windowId) {

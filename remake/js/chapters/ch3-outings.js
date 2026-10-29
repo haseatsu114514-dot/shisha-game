@@ -1,0 +1,68 @@
+// 東京の自由時間に地図から選んだ行き先を再生し、読了後に一枠だけ確定する（#1655）。
+import { DB, bgUrl } from "../core/data.js";
+import { state, save } from "../core/state.js";
+import { addStamina, addMoney, earnStat, paidAction } from "../core/stats.js";
+import { layers, showScreen, setBg, toast } from "../core/ui.js";
+import { play } from "../vn/engine.js";
+import { readDialogues } from "./ch2-city-data.js";
+import { OUTING_DIALOGUE_IDS, chapterThreeOutings, claimChapterThreeOuting, outingDialogueId } from "./ch3-outing-progress.js";
+
+export { chapterThreeOutings } from "./ch3-outing-progress.js";
+let outingTask = null;
+let session = null;
+
+export function loadChapterThreeOutings() {
+  if (!outingTask) outingTask = readDialogues("ch3_outings", OUTING_DIALOGUE_IDS).then(dialogues => {
+    for (const id of OUTING_DIALOGUE_IDS) DB.dialogues[id] = dialogues[id];
+    return dialogues;
+  }).catch(error => { outingTask = null; throw error; });
+  return outingTask;
+}
+
+// 地図の行き先ごとの背景。公園は専用の絵ができるまで街の道で代用する（仮）。
+const OUTING_BG = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", park: "bg_street" };
+
+/** 地図で選んだ行き先（#1655）。消費・成長・記録は正常完読後だけ。中断は同じ自由時間へ戻る。 */
+export async function visitChapterThreeOuting(windowId, id, { signal = null, isCurrent = () => true } = {}) {
+  if (session?.value === state || signal?.aborted || !isCurrent()) return false;
+  const owner = { value: state, controller: new AbortController() };
+  session = owner;
+  const current = () => session === owner && owner.value === state
+    && !owner.controller.signal.aborted && !signal?.aborted && isCurrent();
+  const cancel = () => owner.controller.abort();
+  signal?.addEventListener("abort", cancel, { once: true });
+  window.addEventListener("pagehide", cancel, { once: true });
+  try {
+    const dialogues = await loadChapterThreeOutings();
+    if (!current()) return false;
+    const outing = chapterThreeOutings(state, windowId).find(item => item.id === id);
+    if (!outing?.ok) return false;
+    const night = !!outing.window.slot;
+    const bg = OUTING_BG[outing.place];
+    await setBg(bg === "bg_street" ? bgUrl(night ? "bg_street_night" : "bg_street_day") : bgUrl(bg, night ? "night" : "day"),
+      { instant: true });
+    if (!current()) return false;
+    showScreen("none", null);
+    layers.hud.replaceChildren();
+    layers.hud.classList.remove("show");
+    const result = await play(dialogues[outingDialogueId(state, outing, outing.window)], { signal: owner.controller.signal });
+    if (!current() || !result || result.cancelled) return false;
+    const settled = await paidAction(() => {
+      if (!current() || !claimChapterThreeOuting(state, windowId, id)) return false;
+      addStamina(outing.stamina);
+      if (outing.money) addMoney(outing.money);
+      if (outing.stat) earnStat(outing.stat, 4);
+      return true;
+    }, { consumed: used => used && !!outing.stat });
+    if (!settled.value || !current()) return false;
+    save();
+    toast(outing.money ? `日当 +${outing.money.toLocaleString()}円` : outing.stamina > 0 ? "少し体が休まった" : "訪ねてよかった",
+      { kind: "good" });
+    return true;
+  } finally {
+    signal?.removeEventListener("abort", cancel);
+    window.removeEventListener("pagehide", cancel);
+    owner.controller.abort();
+    if (session === owner) session = null;
+  }
+}
