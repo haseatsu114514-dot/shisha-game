@@ -7,17 +7,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "到着したというLIMEを見て、ロビーへ下りた。"
+          "text": "ロビーへ下りると、あげはがホワイトグミベアの袋を振っていた。"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "着いたー。連絡した便、ちゃんと乗れました"
+          "text": "着いたー！ 連絡した便、ちゃんと乗れたし。はい、差し入れ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "長旅、お疲れさまです"
+          "text": "長旅、お疲れ。……袋から、MELTY PUFFの匂いがする"
         },
         {
           "speaker": "ageha",
@@ -27,7 +27,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。無理なら言ってくださいね"
+          "text": "うん。無理なら言って"
         }
       ]
     }
