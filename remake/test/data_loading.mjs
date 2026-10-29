@@ -57,17 +57,17 @@ for (const id of ["minto", "ageha"]) {
     const version = id === "ageha" || face === "normal" ? "?v=face-restore-20261028" : "";
     assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
-  assert.equal(all.faceIconUrl(id), `../assets/ui/face_icons/face_${id}.png?v=face-restore-20261028`);
+  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=face-restore-20261028`);
   assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
 }
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
-assert.equal(all.faceIconUrl("oneesan"), "../assets/ui/face_icons/face_minto_private.png");
+assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
-assert.equal(requests.length, 42);
-assert.equal(new Set(requests).size, 42);
+assert.equal(requests.length, 43);
+assert.equal(new Set(requests).size, 43);
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 42);
+assert.equal(progress.length, 43);
 assert(all.DB.dialogues.samechan_cinema_introduction);
 assert(all.DB.dialogues.cinema_first_screening);
 assert.equal(progress.at(-1), 1);
@@ -118,6 +118,52 @@ assert.deepEqual(flavorMakerProblems([
   { id: "unknown", reason: "invalid maker: unknown" },
   { id: "inherited_key", reason: "invalid maker: toString" },
 ]);
+
+// LIMEの素材参照は本文とlogを合わせて検証する。既存テキスト形式も受理する。
+function validateLimeMedia(messages, catalog) {
+  for (const thread of messages) {
+    let count = 0, previousMedia = false;
+    for (const line of [...(thread.messages || []), ...(thread.log || [])]) {
+      if (typeof line === "string" || line.note) { previousMedia = false; continue; }
+      const kinds = ["text", "stamp", "image"].filter(key => key in line);
+      assert.equal(kinds.length, 1, `${thread.id}: mixed message kinds`);
+      const kind = kinds[0];
+      if (kind === "text") { previousMedia = false; continue; }
+      const asset = catalog[line[kind]];
+      assert(asset, `${thread.id}: unknown media ID`);
+      assert.equal(asset.kind, kind);
+      assert.equal(asset.owner, thread.sender, `${thread.id}: media owner mismatch`);
+      if (line.sender) assert.equal(line.sender, thread.sender, `${thread.id}: media owner mismatch`);
+      assert(!line.me, "player media is unsupported");
+      assert(!previousMedia, `${thread.id}: adjacent media`);
+      assert(++count <= 1, `${thread.id}: multiple media`);
+      previousMedia = true;
+    }
+  }
+}
+const catalog = all.DB.manifest.limeMedia;
+assert.deepEqual(JSON.parse(JSON.stringify(catalog)), realJSON("data/lime_media.json"));
+assert.equal(Object.keys(catalog).length, 11);
+// CI quick は画像を含まない sparse checkout のため、画像が展開されている環境でのみ実在チェックを行う
+const imgDir = path.resolve(documentRoot, "img");
+const hasImageTree = fs.existsSync(imgDir) && fs.readdirSync(imgDir, { recursive: true }).some((f) => /\.(png|webp|jpe?g)$/i.test(String(f)));
+for (const asset of Object.values(catalog)) {
+  if (hasImageTree) assert(fs.existsSync(path.resolve(documentRoot, asset.src)), asset.src);
+  assert(asset.alt && asset.preview);
+  assert.equal(asset.width, asset.kind === "stamp" ? 320 : 960);
+  assert.equal(asset.height, asset.kind === "stamp" ? 320 : 720);
+}
+validateLimeMedia(all.DB.lime, catalog);
+const stamp = { sender: "adam", stamp: "st_adam_bless" };
+for (const [lines, error] of [
+  [[{ ...stamp, stamp: "missing" }], /unknown media/],
+  [[{ ...stamp, sender: "naru" }], /owner mismatch/],
+  [[{ ...stamp, text: "text" }], /mixed message/],
+  [[stamp, "text", stamp], /multiple media/],
+  [[stamp, stamp], /adjacent media/],
+]) assert.throws(() => validateLimeMedia([{ id: "invalid", sender: "adam", messages: lines }], catalog), error);
+validateLimeMedia([{ sender: "adam", messages: ["legacy", { text: "text" }, stamp] }], catalog);
+console.log("[LIME media] catalog, files, unknown ID, owner, mixed kinds, count, adjacency: PASS");
 
 // HTTP・通信・JSONの各失敗にはファイル名が付き、以後の組は読まず、DBも公開しない。
 const badPath = "../data/relationship_memories.json";

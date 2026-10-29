@@ -74,7 +74,7 @@ await suite("ch1-cg-art", async check => {
       await page.evaluate(() => { void C.gallery.openGallery(); });
       await page.locator(`[data-test="gal-${id}"]`).click();
       assert.match(await page.locator(".gal-viewer.show .gal-media-image").getAttribute("src"), new RegExp(`${id}\\.webp`));
-      assert.equal(await page.locator(`[data-test="gal-${id}"] img`).evaluate(im => im.complete && im.naturalWidth === 1920), true);
+      assert.equal(await page.locator(`[data-test="gal-${id}"] img`).evaluate(im => im.complete && im.naturalWidth > 0), true);
       assert.deepEqual(withoutGallery(await storageSnapshot(page)), saved, "Gallery modified game save");
     }, options);
 

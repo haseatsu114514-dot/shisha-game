@@ -43,6 +43,13 @@
         },
         {
           "sender": "minto",
+          "stamp": "st_minto_welcome",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "minto",
           "text": "今日お店来ないのー？ 新しいの作ったから、感想聞かせてほしいなっ♪"
         },
         {
@@ -341,6 +348,13 @@
         },
         {
           "sender": "minto",
+          "stamp": "st_minto_cheer",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "minto",
           "text": "優勝したら、お祝いの一台はわたしに任せて。……なんて、少し気が早いね。ちゃんと応援してるよ"
         }
       ]
@@ -371,6 +385,10 @@
         {
           "sender": "ageha",
           "text": "ハジメっちー！ LIMEしてみたっ"
+        },
+        {
+          "sender": "ageha",
+          "stamp": "st_ageha_ok"
         },
         {
           "sender": "ageha",
@@ -544,6 +562,13 @@
         {
           "sender": "adam",
           "text": "もうすぐ大会だな。リンゴの祝福は、受けているか？"
+        },
+        {
+          "sender": "adam",
+          "stamp": "st_adam_bless",
+          "media_chapters": [
+            1
+          ]
         }
       ],
       "replies": [
@@ -862,6 +887,13 @@
         },
         {
           "sender": "adam",
+          "image": "im_adam_moon",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "adam",
           "text": "この前、一緒に見た月だ、……良い夜だった"
         }
       ],
@@ -890,6 +922,13 @@
         {
           "sender": "tsumugi",
           "text": "……おはようございます。変なお願いを、してもいいですか"
+        },
+        {
+          "sender": "tsumugi",
+          "stamp": "st_tsumugi_nod",
+          "media_chapters": [
+            1
+          ]
         },
         {
           "sender": "tsumugi",
@@ -957,6 +996,13 @@
         },
         {
           "sender": "rin",
+          "stamp": "st_rin_smug",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "rin",
           "text": "次の便も近いうちに入る。……気が向いたら2階においで"
         }
       ],
@@ -988,6 +1034,13 @@
         {
           "sender": "tsumugi",
           "text": "おはようございます。……送った下描き、また少し直しました"
+        },
+        {
+          "sender": "tsumugi",
+          "image": "im_tsumugi_draft",
+          "media_chapters": [
+            1
+          ]
         },
         {
           "sender": "tsumugi",
@@ -1034,6 +1087,13 @@
         {
           "sender": "naru",
           "text": "新しいことに手ぇ出したくなるだろ、今。──出すなよ"
+        },
+        {
+          "sender": "naru",
+          "stamp": "st_naru_sleep",
+          "media_chapters": [
+            1
+          ]
         }
       ],
       "replies": [
@@ -1149,6 +1209,13 @@
         },
         {
           "sender": "rin",
+          "image": "im_rin_stock",
+          "media_chapters": [
+            1
+          ]
+        },
+        {
+          "sender": "rin",
           "text": "今期のイチ推しは『AF グレープ』。素直に旨い、迷ったらこれ。くじにも何袋か紛れてるらしい"
         },
         {
@@ -1225,6 +1292,13 @@
         {
           "sender": "ageha",
           "text": "ハジメっち、来てくれてありがと〜！"
+        },
+        {
+          "sender": "ageha",
+          "stamp": "st_ageha_thanks",
+          "media_chapters": [
+            2
+          ]
         },
         {
           "sender": "ageha",

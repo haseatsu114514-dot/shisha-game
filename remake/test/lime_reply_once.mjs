@@ -7,25 +7,34 @@ import vm from 'node:vm';
 import test from 'node:test';
 
 const source = await fs.readFile(new URL('../js/daily/phone.js', import.meta.url), 'utf8');
+const mediaCatalog = JSON.parse(await fs.readFile(new URL('../data/lime_media.json', import.meta.url), 'utf8'));
 const response = { text: '頑張ります', response: 'うん、お互いにね', affinity: 1 };
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const flush = async () => { for (let i = 0; i < 12; i++) await Promise.resolve(); };
 
 async function fixture({ lover = false, reply = response, invitation = false } = {}) {
-  const original = { phase: 'daily', day: 5, slot: 0, flags: {}, inbox: [], limeRead: [], gains: [], lovers: lover ? ['minto'] : [] };
+  const nodes = [], timers = new Map();
+  const element = (spec, attrs = {}, children = []) => {
+    if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
+    const node = { spec, ...attrs, children: [...children], style: {}, isConnected: true,
+      classList: { add() {}, remove() {} }, append(...items) { this.children.push(...items); },
+      replaceChildren(...items) { this.children = items; }, remove() { this.isConnected = false; } };
+    nodes.push(node); return node;
+  };
+  const original = { phase: 'daily', chapter: 1, day: 5, slot: 0, met: {}, flags: {}, inbox: [], limeRead: [], gains: [], lovers: lover ? ['minto'] : [] };
   let current = original;
   const bond = { private: false };
   const notes = [];
   const noop = () => {};
   const imports = {
-    'util.js': { el: noop, sleep: async () => {}, fitOneLine: noop, yen: String },
-    'data.js': { DB: { lime: [] }, displayName: String, faceIconUrl: noop },
-    'ui.js': { layers: {}, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
+    'util.js': { el: element, sleep: async () => {}, fitOneLine: noop, yen: String },
+    'data.js': { DB: { lime: [], manifest: { limeMedia: mediaCatalog } }, displayName: String, faceIconUrl: noop },
+    'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
     'travel-budget.js': { spendableMoney: () => 30000 },
     'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private }); if (pts > 0) opts?.onGain?.(.2125); },
       affinityLevel: () => 1, applyStats: noop, bond },
-    'audio.js': { SE: {} }, 'engine.js': { hooks: {} }, 'text.js': { formatHtml: String },
+    'audio.js': { SE: { phoneReceive: noop } }, 'engine.js': { hooks: {} }, 'text.js': { formatHtml: String },
     'spots.js': { hasContact: noop, spotById: noop, isClosed: noop },
     'romance.js': { loverMessages: noop, isLover: id => current.lovers.includes(id), dateSchedule: noop },
     'bonds.js': { bondInvites: noop, friendMessages: noop },
@@ -33,9 +42,9 @@ async function fixture({ lover = false, reply = response, invitation = false } =
     'story-contact.js': { storyThreadStatus: () => null },
     'invitations.js': { invitationCost: () => 0, storeInvitationSpot: noop, visitReminderSpot: noop, invitationVisitSpot: noop, immediateInvitation: () => false, missedInvitationNote: () => null },
   };
-  const context = vm.createContext({ console, setTimeout, requestAnimationFrame: noop, document: {}, Math, Date, Set, Promise });
+  const context = vm.createContext({ console, setTimeout: (fn, ms) => { const id = {}; timers.set(id, { fn, ms }); return id; }, clearTimeout: id => timers.delete(id), requestAnimationFrame: noop, document: {}, Math, Date, Set, Promise });
   const modules = new Map();
-  const phone = new vm.SourceTextModule(source + '\nexport { runItem as testRunItem };', { context });
+  const phone = new vm.SourceTextModule(source + '\nexport { runItem as testRunItem, receiveItem, scheduledInvitation, messageContent, phoneShell };', { context });
   await phone.link(async specifier => {
     const key = specifier.split('/').at(-1);
     if (!modules.has(key)) {
@@ -59,7 +68,7 @@ async function fixture({ lover = false, reply = response, invitation = false } =
       if (!animate) return Promise.resolve();
       const hold = deferred(); held.push(hold); return hold.promise;
     }, note: value => notes.push(value) };
-  return { original, bond, item, ui, picks, bubbles, held, reply, notes,
+  return { nodes, timers, api: phone.namespace, original, bond, item, ui, picks, bubbles, held, reply, notes,
     run: (target = item) => phone.namespace.testRunItem(target, ui, []),
     replaceState() {
       current = { inbox: [], limeRead: [], gains: [], lovers: [] };
@@ -180,4 +189,99 @@ test('an invitation expiring while its selection is pending is not accepted', as
   const f = await fixture({ invitation: true }); const run = f.run();
   f.original.slot = 2; f.picks[0].resolve({ text: '行く！', go: true }); await run;
   assert.equal(f.original.pendingInvite, undefined); assert.equal(f.item.done, false);
+});
+
+
+test('media snapshots preserve templates and enforce chapter, account, owner, count and resend', async () => {
+  const f = await fixture();
+  const template = { id: 'media', sender: 'adam', messages: [
+    'hello', { sender: 'adam', stamp: 'st_adam_bless', media_chapters: [1] },
+    { sender: 'adam', image: 'im_adam_moon' }, { text: 'bye' },
+  ] };
+  const original = JSON.stringify(template);
+  const receive = () => JSON.parse(JSON.stringify(f.api.receiveItem(template)));
+  assert.equal(receive().msg.messages.length, 3);
+  assert.equal(JSON.stringify(template), original);
+  f.original.chapter = 2;
+  // The second asset has no explicit chapter limit and can appear in chapters 1–3.
+  assert.equal(receive().msg.messages[1].image, 'im_adam_moon');
+  f.original.chapter = 4;
+  assert.equal(receive().msg.messages.length, 2);
+  f.original.chapter = 1;
+  const first = receive(); f.original.inbox.push(first);
+  f.original.day += 4;
+  assert.equal(receive().msg.messages.length, 2); // same origin
+  template.id = 'next';
+  assert.equal(receive().msg.messages.length, 2); // consecutive topic
+  f.original.inbox.push({ id: 'text', day: 8, msg: { sender: 'adam', messages: ['text'] }, log: [] });
+  f.original.day = 7;
+  assert.equal(receive().msg.messages.length, 2); // less than 3 days
+  f.original.day = 8;
+  assert.equal(receive().msg.messages.length, 3); // exactly 3 days
+  delete first.day;
+  assert.equal(receive().msg.messages.length, 2); // unknown legacy date is conservative
+  const privateFixture = await fixture({ lover: true });
+  const minto = { id: 'welcome', sender: 'minto', messages: ['hi', { stamp: 'st_minto_welcome' }] };
+  assert.equal(privateFixture.api.receiveItem(minto).msg.messages.length, 1);
+  assert.equal(f.api.receiveItem(minto).msg.messages.length, 2);
+  assert.equal(f.api.messageContent({ image: 'missing' }).fallback, '［画像を表示できません］');
+});
+
+test('media received through log survives save-shaped history and spaces later media', async () => {
+  const f = await fixture();
+  const old = { id: 'old', day: 3, account: 'minto_private', msg: { sender: 'minto', messages: ['hi'] },
+    log: [{ me: false, stamp: 'st_minto_welcome' }] };
+  f.original.inbox.push(JSON.parse(JSON.stringify(old)), { id: 'text', day: 4, msg: { sender: 'minto', messages: ['text'] } });
+  const m = { id: 'new', sender: 'minto', messages: ['hi', { stamp: 'st_minto_welcome' }] };
+  assert.equal(f.api.receiveItem(m).msg.messages.length, 1);
+  f.original.day = 6;
+  assert.equal(f.api.receiveItem(m).msg.messages.length, 2);
+});
+
+
+test('scheduled invitation renders text only and keeps media attributes', async () => {
+  const f = await fixture();
+  const media = { sender: 'adam', image: 'im_adam_moon', media_chapters: [1] };
+  const m = { sender: 'adam', private_schedule: 'holiday_or_temporary', closed_on: 5,
+    messages: [{ text: '{privateContext}' }, media, '{privateWhen}'] };
+  const result = f.api.scheduledInvitation(m);
+  assert.equal(result.messages[0].text, '今日はお店がお休みだから、午後');
+  assert.deepEqual(JSON.parse(JSON.stringify(result.messages[1])), media);
+  assert.notEqual(result.messages[1], media);
+  assert.equal(result.messages[2], '午後');
+  assert(!JSON.stringify(result).includes('undefined'));
+});
+
+test('media wait is bounded, history is immediate and stale callbacks cannot change DOM', async () => {
+  const f = await fixture();
+  const ui = f.api.phoneShell({ time: '昼', title: 'test' });
+  const content = f.api.messageContent({ image: 'im_adam_moon' });
+  const drawing = ui.media(content, 'adam', true);
+  const image = f.nodes.findLast(node => node.spec === 'img');
+  const box = f.nodes.findLast(node => node.spec === 'div.lime-media.lime-image');
+  assert.equal(box.style.aspectRatio, '960 / 720');
+  assert.equal(image.alt, '夜空の月と枝先');
+  assert.equal([...f.timers.values()][0].ms, 3000);
+  [...f.timers.values()][0].fn();
+  await drawing;
+  assert.equal(box.children[0].text, '［画像を表示できません］');
+  assert.equal(image.onload, null);
+  assert.equal(f.timers.size, 0);
+  await ui.media(content, 'adam', false); // resolves before onload/error/timeout
+  const pastImage = f.nodes.findLast(node => node.spec === 'img');
+  pastImage.onload();
+  assert.equal(f.timers.size, 0);
+  const stale = ui.media(content, 'adam', true);
+  const staleImage = f.nodes.findLast(node => node.spec === 'img');
+  const staleBox = f.nodes.findLast(node => node.spec === 'div.lime-media.lime-image');
+  ui.gen++;
+  staleImage.onerror();
+  await stale;
+  assert.equal(staleBox.children[0], staleImage);
+  const loaded = ui.media(content, 'adam', true);
+  const loadImage = f.nodes.findLast(node => node.spec === 'img');
+  const loadBox = f.nodes.findLast(node => node.spec === 'div.lime-media.lime-image');
+  f.replaceState();
+  loadImage.onerror(); await loaded;
+  assert.equal(loadBox.children[0], loadImage);
 });

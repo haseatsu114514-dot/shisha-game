@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-28 09:58 UTC",
+ "generated": "2026-10-28 18:13 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -323,6 +323,8 @@
   "bg_ch3_train_arrival.png",
   "bg_choizap.png",
   "bg_choizap_night.png",
+  "bg_dubai_map.png",
+  "bg_dubai_map_dusk.png",
   "bg_eden_shop.png",
   "bg_fookah_showroom.png",
   "bg_hideaway.png",
@@ -337,6 +339,8 @@
   "bg_kemurikusa_outside_night.png",
   "bg_mukai_shop.png",
   "bg_osu_map_day.png",
+  "bg_osu_map_finale.png",
+  "bg_osu_map_finale_day.png",
   "bg_osu_map_night.png",
   "bg_rojiura_cinema.png",
   "bg_rojiura_cinema_detective.png",
@@ -422,7 +426,8 @@
   "face_kumicho.png",
   "face_rei.png",
   "face_uranaishi.png",
-  "face_volk.png"
+  "face_volk.png",
+  "face_sai.png"
  ],
  "making": [
   "bench_base.png",
@@ -1502,6 +1507,10 @@
    "file": "title_art_ageha_03_model_moment.png"
   },
   {
+   "character": "ageha",
+   "file": "title_art_ageha_04_gummy_light.png"
+  },
+  {
    "character": "hiyori",
    "file": "title_art_hiyori_01_twilight_walk.png"
   },
@@ -1522,6 +1531,10 @@
    "file": "title_art_hiyori_05_ramen_break.png"
   },
   {
+   "character": "hiyori",
+   "file": "title_art_hiyori_06_riverside_hoodie.png"
+  },
+  {
    "character": "samechan",
    "file": "title_art_samechan_01_shishark_test_run.png"
   },
@@ -1534,6 +1547,10 @@
    "file": "title_art_samechan_03_aquarium.png"
   },
   {
+   "character": "samechan",
+   "file": "title_art_samechan_04_throne_pose.png"
+  },
+  {
    "character": "mashiro",
    "file": "title_art_mashiro_01_heavy_smoke.png"
   },
@@ -1544,6 +1561,10 @@
   {
    "character": "mashiro",
    "file": "title_art_mashiro_03_after_rain.png"
+  },
+  {
+   "character": "mashiro",
+   "file": "title_art_mashiro_04_cherry_petals.png"
   },
   {
    "character": "minto",
@@ -1562,12 +1583,20 @@
    "file": "title_art_minto_04_after_hours.png"
   },
   {
+   "character": "minto",
+   "file": "title_art_minto_05_mint_cloud.png"
+  },
+  {
    "character": "rin",
    "file": "title_art_rin_01_night_tasting.png"
   },
   {
    "character": "rin",
    "file": "title_art_rin_03_late_coffee.png"
+  },
+  {
+   "character": "rin",
+   "file": "title_art_rin_04_rainy_neon_umbrella.png"
   },
   {
    "character": "tsumugi",
@@ -1580,6 +1609,22 @@
   {
    "character": "tsumugi",
    "file": "title_art_tsumugi_03_twilight_sketch.png"
+  },
+  {
+   "character": "tsumugi",
+   "file": "title_art_tsumugi_04_painting_studio.png"
+  },
+  {
+   "character": "sumi",
+   "file": "title_art_sumi_01_own_clay_bowl.png"
+  },
+  {
+   "character": "naru",
+   "file": "title_art_naru_01_bakery_morning.png"
+  },
+  {
+   "character": "adam",
+   "file": "title_art_adam_01_sunset_proclamation.png"
   }
  ],
  "makingBox": {
@@ -2019,6 +2064,8 @@
   "backgrounds/bg_ch3_train_arrival.png",
   "backgrounds/bg_choizap.png",
   "backgrounds/bg_choizap_night.png",
+  "backgrounds/bg_dubai_map.png",
+  "backgrounds/bg_dubai_map_dusk.png",
   "backgrounds/bg_eden_shop.png",
   "backgrounds/bg_fookah_showroom.png",
   "backgrounds/bg_hideaway.png",
@@ -2033,6 +2080,8 @@
   "backgrounds/bg_kemurikusa_outside_night.png",
   "backgrounds/bg_mukai_shop.png",
   "backgrounds/bg_osu_map_day.png",
+  "backgrounds/bg_osu_map_finale.png",
+  "backgrounds/bg_osu_map_finale_day.png",
   "backgrounds/bg_osu_map_night.png",
   "backgrounds/bg_rojiura_cinema.png",
   "backgrounds/bg_rojiura_cinema_detective.png",
@@ -2233,6 +2282,26 @@
   "ui/continue/neon_quit_frame.png",
   "ui/continue/neon_retry_frame.png",
   "ui/continue/neon_title.png",
+  "ui/face_icons/face_adam.png",
+  "ui/face_icons/face_ageha.png",
+  "ui/face_icons/face_dr_kemuri.png",
+  "ui/face_icons/face_hajime.png",
+  "ui/face_icons/face_hiyori.png",
+  "ui/face_icons/face_kumicho.png",
+  "ui/face_icons/face_maezono.png",
+  "ui/face_icons/face_mashiro.png",
+  "ui/face_icons/face_minto.png",
+  "ui/face_icons/face_minto_private.png",
+  "ui/face_icons/face_nagumo.png",
+  "ui/face_icons/face_naru.png",
+  "ui/face_icons/face_pakki.png",
+  "ui/face_icons/face_rei.png",
+  "ui/face_icons/face_rin.png",
+  "ui/face_icons/face_samechan.png",
+  "ui/face_icons/face_sumi.png",
+  "ui/face_icons/face_tsumugi.png",
+  "ui/face_icons/face_uranaishi.png",
+  "ui/face_icons/face_volk.png",
   "ui/making/bench_base.png",
   "ui/making/bowl_empty_clay.png",
   "ui/making/bowl_empty_hiyori.png",
@@ -2315,6 +2384,130 @@
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
-  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
- ]
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
+  "ui/title_arts/title_art_adam_01_sunset_proclamation.png",
+  "ui/title_arts/title_art_ageha_04_gummy_light.png",
+  "ui/title_arts/title_art_hiyori_06_riverside_hoodie.png",
+  "ui/title_arts/title_art_mashiro_04_cherry_petals.png",
+  "ui/title_arts/title_art_minto_05_mint_cloud.png",
+  "ui/title_arts/title_art_naru_01_bakery_morning.png",
+  "ui/title_arts/title_art_rin_04_rainy_neon_umbrella.png",
+  "ui/title_arts/title_art_samechan_04_throne_pose.png",
+  "ui/title_arts/title_art_sumi_01_own_clay_bowl.png",
+  "ui/title_arts/title_art_tsumugi_04_painting_studio.png"
+ ],
+ "limeMedia": {
+  "st_adam_bless": {
+   "kind": "stamp",
+   "owner": "adam",
+   "src": "img/ui/lime/stamps/st_adam_bless.png",
+   "width": 320,
+   "height": 320,
+   "alt": "赤と緑の林檎。林檎の祝福を",
+   "preview": "［スタンプ］林檎の祝福を",
+   "allowed_accounts": null
+  },
+  "st_minto_welcome": {
+   "kind": "stamp",
+   "owner": "minto",
+   "src": "img/ui/lime/stamps/st_minto_welcome.png",
+   "width": 320,
+   "height": 320,
+   "alt": "ミントの葉の店員。待ってるね♪",
+   "preview": "［スタンプ］待ってるね♪",
+   "allowed_accounts": [
+    "minto"
+   ]
+  },
+  "st_naru_sleep": {
+   "kind": "stamp",
+   "owner": "naru",
+   "src": "img/ui/lime/stamps/st_naru_sleep.png",
+   "width": 320,
+   "height": 320,
+   "alt": "マフィンと布団。ちゃんと寝ろよ",
+   "preview": "［スタンプ］ちゃんと寝ろよ",
+   "allowed_accounts": null
+  },
+  "im_adam_moon": {
+   "kind": "image",
+   "owner": "adam",
+   "src": "img/ui/lime/images/im_adam_moon.webp",
+   "width": 960,
+   "height": 720,
+   "alt": "夜空の月と枝先",
+   "preview": "［画像］月の写真",
+   "allowed_accounts": null
+  },
+  "im_rin_stock": {
+   "kind": "image",
+   "owner": "rin",
+   "src": "img/ui/lime/images/im_rin_stock.webp",
+   "width": 960,
+   "height": 720,
+   "alt": "棚に並ぶ新しい小袋",
+   "preview": "［画像］入荷した小袋",
+   "allowed_accounts": null
+  },
+  "im_tsumugi_draft": {
+   "kind": "image",
+   "owner": "tsumugi",
+   "src": "img/ui/lime/images/im_tsumugi_draft.webp",
+   "width": 960,
+   "height": 720,
+   "alt": "カウンターの手と窓辺の煙の下描き",
+   "preview": "［画像］下描き",
+   "allowed_accounts": null
+  },
+  "st_ageha_ok": {
+   "kind": "stamp",
+   "owner": "ageha",
+   "src": "img/ui/lime/stamps/st_ageha_ok.png",
+   "width": 320,
+   "height": 320,
+   "alt": "白いクマ。おっけー",
+   "preview": "［スタンプ］おっけー",
+   "allowed_accounts": null
+  },
+  "st_ageha_thanks": {
+   "kind": "stamp",
+   "owner": "ageha",
+   "src": "img/ui/lime/stamps/st_ageha_thanks.png",
+   "width": 320,
+   "height": 320,
+   "alt": "白いクマとハート。ありがと",
+   "preview": "［スタンプ］ありがと",
+   "allowed_accounts": null
+  },
+  "st_minto_cheer": {
+   "kind": "stamp",
+   "owner": "minto",
+   "src": "img/ui/lime/stamps/st_minto_cheer.png",
+   "width": 320,
+   "height": 320,
+   "alt": "ミントの葉の店員。がんばれ♪",
+   "preview": "［スタンプ］がんばれ♪",
+   "allowed_accounts": null
+  },
+  "st_rin_smug": {
+   "kind": "stamp",
+   "owner": "rin",
+   "src": "img/ui/lime/stamps/st_rin_smug.png",
+   "width": 320,
+   "height": 320,
+   "alt": "試料袋。ふふ",
+   "preview": "［スタンプ］ふふ",
+   "allowed_accounts": null
+  },
+  "st_tsumugi_nod": {
+   "kind": "stamp",
+   "owner": "tsumugi",
+   "src": "img/ui/lime/stamps/st_tsumugi_nod.png",
+   "width": 320,
+   "height": 320,
+   "alt": "葉の耳と煙の尾の猫。はい",
+   "preview": "［スタンプ］はい",
+   "allowed_accounts": null
+  }
+ }
 }
