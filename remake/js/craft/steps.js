@@ -486,6 +486,18 @@ export async function stepPack(cs) {
   refreshBench();
 }
 
+export async function stepVent(cs) {
+  await waitBenchReady(cs, "holes");
+  const first = ["rehearsal", "practice", "tournament"].includes(cs.mode) && !state.flags._lotos_vent_hint;
+  const hint = first ? "スミ「迷ったら通気は開けとけ。閉じれば熱がこもって、待ちも一口も強くなる」" : "";
+  const panel = stepPanel("holes", "蓋の通気", hint, { brief: "蓋の通気を選ぶ" });
+  if (first) state.flags._lotos_vent_hint = true;
+  cs.vent = await choose(panel, [
+    { value: "open", label: "通気を開ける（標準）", auto: true },
+    { value: "closed", label: "通気を閉じる（熱がこもる）" },
+  ]);
+}
+
 export async function stepPlace(cs) {
   if (!applyCoalTraining(cs, state.flags)) { refreshBench(); return; }
   await waitBenchReady(cs, "place");
