@@ -110,4 +110,56 @@ await suite("growth-levelup", async (check) => {
       assert.equal(await page.evaluate(() => __remake.state.growth.level), 4);
     }, options);
   }
+
+  for (const [label, options] of [
+    ["pc", { viewport: { width: 1331, height: 760 } }],
+    ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) {
+    await check(`${label}-board-from-levelup`, async (page) => {
+      const tap = (sel) => !options.hasTouch ? page.locator(sel).click() : page.locator(sel).tap();
+      await setupDaily(page);
+      await page.evaluate(async () => {
+        const g = await import("./js/core/growth.js");
+        g.gainExp(g.totalExpFor(3));
+        window.night = null;
+        void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.night = r; });
+      });
+      await page.locator(t("levelup")).waitFor();
+      await tap(".levelup-backdrop");
+      await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
+      await tap(t("levelup-board"));
+      const board = page.locator(t("growth-board"));
+      await board.waitFor();
+      assert.match(await page.locator(t("board-wallet")).innerText(), /2/);
+      // 段の順待ち・輪の鍵・今灯せる
+      assert.equal(await page.locator(t("board-node-T2")).getAttribute("data-status"), "waiting");
+      assert.equal(await page.locator(t("board-node-T5")).getAttribute("data-status"), "locked");
+      assert.equal(await page.locator(t("board-node-T1")).getAttribute("data-status"), "available");
+      await tap(t("board-node-S1"));
+      assert.match(await page.locator(t("board-preview")).innerText(), /センス 1段 → 2段[\s\S]*万能の火種1で払う/);
+      await tap(t("board-light"));
+      assert.equal(await page.locator(t("board-node-S1")).getAttribute("data-status"), "pending");
+      assert.equal(await page.locator(t("board-node-S2")).getAttribute("data-status"), "available");
+      await tap(t("board-node-S2"));
+      await tap(t("board-light"));
+      await tap(t("board-node-S1"));
+      await tap(t("board-undo"));
+      assert.equal(await page.locator(t("board-node-S2")).getAttribute("data-status"), "waiting", "下の段をやめると上の段の仮置きも外れる");
+      await tap(t("board-node-K05"));
+      assert.match(await page.locator(t("board-preview")).innerText(), /スキル「空模様」/);
+      await tap(t("board-light"));
+      await assertFits(page, '[data-test="board-decide"], [data-test="board-close"]');
+      await page.waitForTimeout(300);
+      await page.screenshot({ path: `${out}/growth-board-${label}.png` });
+      // 閉じる → 確認 → 決定
+      await tap(t("board-close"));
+      await tap(t("board-confirm-yes"));
+      await board.waitFor({ state: "detached" });
+      await page.waitForFunction(() => window.night?.to === 3);
+      assert.deepEqual(await page.evaluate(() => __remake.state.growth.nodes), ["K05"]);
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 0);
+      await page.locator(".gain-card", { hasText: "空模様" }).waitFor();
+      assert.equal(await page.locator(t("hud-hidane")).isVisible(), false, "使い切ったら印は消える");
+    }, options);
+  }
 }, { entry: `${baseURL}?growth=1` });
