@@ -160,6 +160,14 @@
       "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
     },
     {
+      "id": "chapter-preview-scripts",
+      "title": "Chapter preview scripts: structure, sources and excerpt fidelity",
+      "kind": "quick",
+      "run": [
+        "node remake/test/chapter_preview_scripts.mjs"
+      ]
+    },
+    {
       "id": "dialogue-lint",
       "title": "Dialogue lint, canon and story routes",
       "kind": "quick",
