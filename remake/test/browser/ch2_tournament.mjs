@@ -72,7 +72,7 @@ async function playAttempt(page,touch=false,reloadCare=false) {
   assert.equal(p.craft.careHistory.length,2);assert.equal(p.result.careHistory.length,2);assert.equal(p.history.length,1);
   for(const row of Object.values(p.votes))assert.equal(Object.values(row).reduce((a,b)=>a+b,0),10);
   assert.equal(p.craft.chapter,2);
-  assert.deepEqual(p.craft.tournamentStory.seen,['opening','packed','waiting','interlude1','interlude2','tasting']);
+  assert.deepEqual(p.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','interlude1','interlude2','interlude3','tasting']);
   assert(Number.isFinite(p.craft.tournamentStory.servedAroma));
   assert(await page.locator('.ch2-contest-rival img').evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));return imgs.every(i=>i.naturalWidth>0);}));assert.deepEqual(p.craft.audienceIds.slice().sort(),['dr_kemuri','maezono','nagumo']);
   // 同じ配分で計算された総合値がそのまま章2の記録に残る。
@@ -348,13 +348,13 @@ await suite('ch2-tournament',async check=>{
     assert.equal(resumed.flags._ch2_tournament.history.length,1);
     assert.deepEqual(resumed.flags._ch2_tournament.votes,result.flags._ch2_tournament.votes);
     assert.equal(resumed.flags._ch2_tournament.result.total,result.flags._ch2_tournament.result.total);
-    assert.deepEqual(resumed.flags._ch2_tournament.craft.tournamentStory.seen,['opening','packed','waiting','interlude1','interlude2','tasting']);
+    assert.deepEqual(resumed.flags._ch2_tournament.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','interlude1','interlude2','interlude3','tasting']);
     await page.locator(t('continue')).click();await phone(page);await page.locator(t('complete')).waitFor();
     let s=await get(page);assert(s.flags._ch2_tokyo_invitation);assert(s.flags._ch2_taste_distant);assert(!s.flags.ch2_taste_recovered);assert.equal(s.phase,'cleared');assert.equal(s.day,28);assert.equal(s.slot,1);
     for(const key of ['tournament','lovers','loverSince','lastDate','contacts','keepsakes','relationshipMemories','money','stats'])assert.deepEqual(s[key],before[key],key);
     assert.deepEqual(s.inbox[0],before.inbox[0]);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
     assert.equal(await page.getByRole('button',{name:'第三章・東京へ'}).count(),1);
-    assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_rules']);
+    assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_stations','ch2_tournament_rules']);
     const afterText=await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'));
     // #929: あげはは消えない。悔しさと祝福を両立し、店での次の一台を約束する
     assert.doesNotMatch(afterText,/理由は、聞かないで|扉の向こうへ消えた/);assert.match(afterText,/おめでと、ハジメっち/);assert.match(afterText,/次は、うちの店ね/);
