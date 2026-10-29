@@ -1203,7 +1203,7 @@
               "next_id": "confession_hiyori_accept"
             },
             {
-              "text": "「これからも、遊びに誘っていいですか」と聞く（友達のままでいる）",
+              "text": "「これからも、遊びに誘っていいですか」と聞く",
               "next_id": "confession_hiyori_reject"
             }
           ]
