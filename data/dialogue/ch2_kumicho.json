@@ -16,16 +16,6 @@
         {
           "speaker": "",
           "face": "",
-          "text": "目が、一瞬だけ細くなった。値踏みするような、でも品のある目だ。すぐに柔らかくなる。"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "まあ座れ、一服してきな。うちはドラゴンフルーツだ"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "大きな手。でも動作は繊細で、トングを扱う精度が異常に高い。炭が一ミリもズレない。"
         },
         {
@@ -104,6 +94,11 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。お店の煙を吸ってみたくて"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "座んな。今日の葉も、ドラゴンフルーツだ"
           }
         ],
         "first_meeting": [
@@ -155,6 +150,16 @@
             "speaker": "kumicho",
             "face": "normal",
             "text": "……ほう。大会、ときたか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "目が、一瞬だけ細くなった。値踏みするような、でも品のある目だ。すぐに柔らかくなる。"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "まあ座れ、一服してきな。うちはドラゴンフルーツだ"
           }
         ],
         "introduction_after": [
@@ -172,6 +177,16 @@
             "speaker": "kumicho",
             "face": "normal",
             "text": "……ほう。tonariから来たか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "目が、一瞬だけ細くなった。値踏みするような、でも品のある目だ。すぐに柔らかくなる。"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "まあ座れ、一服してきな。うちはドラゴンフルーツだ"
           }
         ]
       }
@@ -193,7 +208,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "昨日のドラゴンフルーツ、ずっと頭に残ってて"
+          "text": "この前のドラゴンフルーツ、ずっと頭に残ってて"
         },
         {
           "speaker": "kumicho",
