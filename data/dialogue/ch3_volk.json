@@ -363,9 +363,11 @@
         ],
         "delivery_known_recognition": [
           {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "この辺の店を回っているんだったな。今日は、ゆっくりしていけ"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_scout_seen",
+            "next_true": "delivery_seen_in_ch2",
+            "next_false": "delivery_known_unseen"
           }
         ],
         "delivery_new_question": [
@@ -380,6 +382,40 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "普段のお仕事も、聞いていいですか"
+          }
+        ],
+        "delivery_known_unseen": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "配達の礼だ。今日は、ゆっくりしていけ"
+          }
+        ],
+        "delivery_seen_in_ch2": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "（向き直り、淡々と）配達の礼だ。……今日は、顔をよく見せろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（配達の時は気づかなかった。……試煙会の奥の席にいた人だ。前の夜の搬入口にも、客席の後ろにも）"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "気づいたか。偵察だ。軍にいた頃に叩き込まれた。県大会の優勝者は、見ておく"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "怪しまれるのには慣れている。調べるのが癖なだけだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（偵察の理由は聞けた。配達先の店主が、あの大きな人だったのか）"
           }
         ]
       },
