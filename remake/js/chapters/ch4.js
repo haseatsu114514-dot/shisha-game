@@ -209,9 +209,11 @@ async function renderFree(owner) {
   await setBg(bgUrl(model.background), { instant: true });
   if (!current(owner)) return;
   card(owner, "free", `DAY ${model.day}・自由行動`, `ドバイの街を歩く。大会まであと${model.daysLeft}日。`,
-    model.destinations.map(destination => button(owner, destination.label, `go-${destination.id}`,
-      () => visit(owner, destination.id), destination.kind === "end_day")),
-    model.note);
+    model.destinations.map(destination => el("div.ch4-destination", [
+      button(owner, destination.label, `go-${destination.id}`, () => visit(owner, destination.id), destination.kind === "end_day"),
+      el("p.ch4-destination-purpose", { text: `${destination.purpose}${destination.unreadCount > 0 ? "（未読あり）" : ""}` }),
+    ])),
+    [model.guide, model.hint, model.note].filter(Boolean).join(" "));
 }
 
 /** 行き先の場面を順に再生してマップへ戻る。日が進むのは「その日を終える」だけ。 */
