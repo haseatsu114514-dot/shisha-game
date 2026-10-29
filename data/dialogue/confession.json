@@ -1281,6 +1281,10 @@
       },
       "lines": [
         {
+          "type": "show_cg",
+          "cg_id": "cg_hiyori_confession"
+        },
+        {
           "speaker": "hiyori",
           "text": "……よろしく、お願いします……",
           "face": "love_blush"
@@ -1303,6 +1307,9 @@
         {
           "speaker": "",
           "text": "笑い合ってから、ひよりと並んで歩いた。いつもの静かな微笑みも、もう遠いものには見えない。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
