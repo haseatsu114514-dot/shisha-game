@@ -288,8 +288,12 @@ function renderComplete(owner) {
   // 完走/明示スキップのときだけ既読を保存し、中断・別画面への遷移では何も残さない。
   const preview = async (first) => {
     const controller = new AbortController();
-    const observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
-    observer.observe(layers.screen, { childList: true });
+    // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
+    let observer;
+    if (typeof MutationObserver !== "undefined") {
+      observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
+      observer.observe(layers.screen, { childList: true });
+    }
     next.disabled = true; replay.disabled = true;
     try {
       const result = await playChapterPreview("ch5", { signal: controller.signal });
@@ -299,7 +303,7 @@ function renderComplete(owner) {
       }
     } catch { /* 次回予告は任意演出。失敗しても完了画面はそのまま使える。 */ }
     finally {
-      observer.disconnect();
+      observer?.disconnect();
       if (next.isConnected) {
         next.disabled = false; replay.disabled = false;
         playBgm("tonari");
