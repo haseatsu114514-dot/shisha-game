@@ -10,6 +10,18 @@
   ],
   "suites": [
     {
+      "id": "vent-lid",
+      "title": "Lotos lid vent heat and eligibility",
+      "kind": "quick",
+      "run": ["node remake/test/vent_lid.mjs"]
+    },
+    {
+      "id": "water-comfort",
+      "title": "Water comfort bands and craft scoring invariants",
+      "kind": "quick",
+      "run": ["node remake/test/water_comfort.mjs"]
+    },
+    {
       "id": "shift-mix-record",
       "title": "Shift mix recording, dialogue and tournament feedback (#1414, #1415)",
       "kind": "quick",

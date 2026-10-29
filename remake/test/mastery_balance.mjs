@@ -70,7 +70,7 @@ function temperatureFor(score, bands) {
 
 function craftHistory({ holes, picks, serving, care, steamHits = 1 }) {
   const cs = {
-    mode: "tournament", chapter: 1,
+    mode: "tournament", chapter: 1, water: 0.5,
     equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
     mix: { lemon: 9, mint: 3 }, pack: "normal", place: "triangle",
     holes: { score: holes, outerEven: holes / 100, innerExcess: 0, total: 22, minimumComplete: true },
