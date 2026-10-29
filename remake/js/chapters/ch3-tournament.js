@@ -1,6 +1,6 @@
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
-import { DB, bgUrl, displayName, faceIconUrl, portraitInfo } from "../core/data.js";
+import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, loadTournamentCraftDialogue } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, modal, loadingNotice } from "../core/ui.js";
@@ -182,6 +182,7 @@ export async function runChapterThreeTournament() {
   document.body.classList.add("ch2-tournament", "ch3-tournament");
   window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); }, { once: true });
   await perform(owner, async () => {
+    await loadTournamentCraftDialogue();
     // 必要な場面が揃うまで、保存・日付・大会の試行回数を変更しない。
     const dialogues = await readDialogues("ch3_main", REQUIRED);
     if (!live(owner)) return;

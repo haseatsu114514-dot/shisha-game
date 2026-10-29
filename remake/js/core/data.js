@@ -48,14 +48,15 @@ const DIALOGUE_FILES = [
   "ch1_interval",
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "samechan", // 帰り道の出会いと、章2からのシーシャーク
-  "cinema", // サメちゃんの自主訪問紹介と、地元の小さな名画座
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
-  "tournament_craft", // 制作中の注目点と、試喫でその工程を振り返る掛け合い
   "venue_hours", // 店主の案内と街の昼夜差分
   "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
 ];
 // ひよりの参照先は DB.hiyori.route が無い間 disabled に倒れるため、タイトル後に読める。
 const DEFERRED_DIALOGUE_FILES = ["hiyori"];
+// 映画館と大会制作会話はタイトル後に先読みし、各入口でも完了を待つ。
+const CINEMA_DIALOGUE_FILE = "cinema";
+const TOURNAMENT_CRAFT_DIALOGUE_FILE = "tournament_craft";
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
 const JSON_CONCURRENCY = 4;
@@ -95,6 +96,25 @@ export function loadDeferredDialogues() {
   }
   return deferredDialoguesPromise;
 }
+
+function dialogueLoader(file) {
+  let promise;
+  return () => {
+    if (!promise) {
+      promise = getJSON(`${ROOT}data/dialogue/${file}.json`).then((data) => {
+        for (const d of data.dialogues || []) DB.dialogues[d.dialogue_id] = d;
+        return DB;
+      }).catch((error) => {
+        promise = null; // 先読み失敗後は入口から再試行できる
+        throw error;
+      });
+    }
+    return promise;
+  };
+}
+
+export const loadCinemaDialogue = dialogueLoader(CINEMA_DIALOGUE_FILE);
+export const loadTournamentCraftDialogue = dialogueLoader(TOURNAMENT_CRAFT_DIALOGUE_FILE);
 
 export async function loadAll(onProgress = () => {}) {
   globalThis.performance?.setResourceTimingBufferSize?.(1000);
