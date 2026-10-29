@@ -5,7 +5,9 @@ import { CH5_SCENE_BG, CH5_PROLOGUE, CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTE
   CH5_ENDING_IDS, CH5_SCENE_FILES, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, beginChapterFiveFinale,
-  completeChapterFiveScene } from "../js/chapters/ch5-progress.js";
+  completeChapterFiveScene, CH5_PREP_TRIALS, chapterFivePrepScene, chapterFivePreparation,
+  chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial,
+  recordChapterFivePrepAdjustment } from "../js/chapters/ch5-progress.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -261,6 +263,52 @@ rejects(value, v => completeChapterFiveScene(v, "ending_start"));
   assert.equal(withEpilogue.flags._ch5_cleared, true);
 }
 
+// 閉店後の試作（#1666）: 練習を読んでから、試作→再調整の順に1回だけ記録する。能力・日・所持金・体力は動かない。
+for (const trial of CH5_PREP_TRIALS) for (const adjusted of [true, false]) {
+  const prepared = toFree();
+  assert.equal(chapterFivePrepPending(prepared), false, "Prep waits for the practice scene");
+  rejects(prepared, v => recordChapterFivePrepTrial(v, trial.id));
+  assert.equal(completeChapterFiveScene(prepared, "ch5_free_tonari_practice"), true);
+  assert.equal(chapterFivePrepPending(prepared), true);
+  assert.equal(chapterFivePreparation(prepared), null);
+  const before = structuredClone(prepared);
+  rejects(prepared, v => recordChapterFivePrepAdjustment(v, adjusted));
+  rejects(prepared, v => recordChapterFivePrepTrial(v, "bogus"));
+  assert.equal(recordChapterFivePrepTrial(prepared, trial.id), true);
+  rejects(prepared, v => recordChapterFivePrepTrial(v, trial.id));
+  rejects(prepared, v => recordChapterFivePrepAdjustment(v, "yes"));
+  assert.equal(chapterFivePrepPending(prepared), true, "Re-adjustment is still to choose");
+  assert.deepEqual(chapterFivePrepEcho(prepared, CH5_MATCH_SCENES.beforeSecond), [], "No echo before the choice is done");
+  roundTrip(prepared);
+  assert.equal(recordChapterFivePrepAdjustment(prepared, adjusted), true);
+  rejects(prepared, v => recordChapterFivePrepAdjustment(v, !adjusted));
+  assert.equal(chapterFivePrepPending(prepared), false);
+  assert.deepEqual(chapterFivePreparation(prepared), { trial: trial.id, adjusted });
+  for (const key of ["day", "slot", "money", "stamina", "stats"])
+    assert.deepEqual(prepared[key], before[key], `${key} must not change by reading the prep`);
+  roundTrip(prepared);
+  // 結果は二杯目の前と帰店後の会話へ返る。勝ち・負けのどちらの後日談でも同じ返答を読む。
+  const suffix = adjusted ? "adjusted" : "kept";
+  assert.deepEqual(chapterFivePrepEcho(prepared, CH5_MATCH_SCENES.beforeSecond), [`ch5_prep_recall_${trial.id}_${suffix}`]);
+  assert.deepEqual(chapterFivePrepEcho(prepared, "ch5_return_to_tonari"), [`ch5_prep_answer_${trial.id}_${suffix}`]);
+  assert.deepEqual(chapterFivePrepEcho(prepared, "ch5_doctor_after_match"), []);
+  for (const id of [chapterFivePrepScene("trial", trial.id), chapterFivePrepScene("adjust", trial.id),
+    chapterFivePrepScene("keep"), ...chapterFivePrepEcho(prepared, CH5_MATCH_SCENES.beforeSecond),
+    ...chapterFivePrepEcho(prepared, "ch5_return_to_tonari")]) assert(connected.includes(id), `${id} must be loaded`);
+  assert.equal(completeChapterFiveScene(prepared, "ch5_unrecorded_day"), true);
+  assert.equal(recordChapterFiveScheduleDecision(prepared, "decide"), true);
+  assert.equal(completeChapterFiveScene(prepared, "ch5_schedule_contact"), true);
+  assert.equal(beginChapterFiveMatch(prepared), true);
+  assert.deepEqual(chapterFivePreparation(prepared), { trial: trial.id, adjusted }, "The record survives into the match");
+  roundTrip(prepared);
+}
+// 旧保存（試作の記録なし）は試作なしで最後まで読め、返りの会話は足さない。
+{
+  const legacy = toAftermath();
+  assert.equal(chapterFivePreparation(legacy), null);
+  assert.deepEqual(chapterFivePrepEcho(legacy, "ch5_return_to_tonari"), []);
+}
+
 // 保存の検証: 壊れた保存・part とフラグの食い違いは throw。
 for (const [base, change] of [
   [toFree(), save => { save.chapter = 4; }],
@@ -270,6 +318,9 @@ for (const [base, change] of [
   [toFree(), save => { save.flags._ch5.read = []; }],
   [toScheduled(), save => { save.flags._ch5_match_scheduled = false; }],
   [toAftermath(), save => { save.flags._ch5.won = null; }],
+  [toFree(), save => { save.flags._ch5.prep = { trial: "heat", adjusted: true }; }], // 練習の読了前
+  [toFree(), save => { save.flags._ch5.read.ch5_free_tonari_practice = true; save.flags._ch5.prep = { trial: "bogus", adjusted: null }; }],
+  [toFree(), save => { save.flags._ch5.read.ch5_free_tonari_practice = true; save.flags._ch5.prep = null; }],
 ]) {
   const broken = JSON.parse(JSON.stringify(base)); change(broken);
   assert.throws(() => chapterFiveProgress(broken));
