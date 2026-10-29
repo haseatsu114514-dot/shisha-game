@@ -557,7 +557,7 @@ try {
     document.querySelector('[data-test="shop-leave"]').click();
     await opening;
     // 効き: 装備・所持・対象フレーバー3g以上のときだけ
-    const cs = (bowl, mix) => ({ mode: "tournament", equip: { bowl, hms: "lotos_hagal", charcoal: "flat_charcoal" }, mix,
+    const cs = (bowl, mix) => ({ mode: "tournament", water: 0.5, equip: { bowl, hms: "lotos_hagal", charcoal: "flat_charcoal" }, mix,
       mixInfo: { score: 70, intensity: 5, total: 12 }, holes: { total: 22, outerEven: 0.8, innerExcess: 0, score: 80, minimumComplete: true },
       heat: { heatPower: 60, heatStability: 70, burnRisk: 20, aromaRetention: 60, score: 80 }, pull: { score: 75, pulls: 3 }, steam: { min: 5, score: 75 },
       care: { score: 70 }, pack: "normal", place: "triangle", trial: { score: 70 } });

@@ -87,7 +87,7 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_smile",
           "text": "店のみんとは、きょうも頑張りました"
         },
         {
@@ -97,7 +97,7 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_smile",
           "text": "お腹ぺこぺこ。……あと、ちょっと甘やかしてほしい"
         },
         {
@@ -107,12 +107,12 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_sad",
           "text": "歳のことは、ごめんね。あれは、嘘だった"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "でも、みんとで笑ってる時も、私だから"
         },
         {
@@ -122,7 +122,7 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_smile",
           "text": "じゃあ、まず今日のお客さんの話からね"
         }
       ],
@@ -247,7 +247,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "休みの日。ましろちゃんは、道具箱を開けずに座っていた。"
+          "text": "mukaiの定休日。ましろちゃんは、道具箱を開けずに座っていた。"
         },
         {
           "speaker": "mashiro",
@@ -393,7 +393,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "王は見ておらぬぞ",
+          "text": "余は何も見ていない",
           "voice": "korochan"
         },
         {
