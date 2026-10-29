@@ -182,6 +182,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
   ["_ch3_preview_seen", "progression"],
+  ["_ch3_read_ch3_minto_small_lies", "progression"],
   ["_ch3_registration_read", "progression"],
   ["_ch3_rules_read", "progression"],
   ["_ch3_shuraba_deferred", "pending"],
