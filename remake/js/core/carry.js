@@ -492,6 +492,7 @@ export const FLAG_FAMILY_RULES = [
   ["_outing_done_*", "person"],
   ["_rescheduled_*", "pending"],
   ["_samechan_date_*", "person"],
+  ["_shift_mix_*", "progression"],
   ["_shift_order_*", "progression"],
   ["_spot_*", "progression"],
   ["_sumi_baito_inv_*", "pending"],

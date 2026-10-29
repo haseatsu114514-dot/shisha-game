@@ -83,7 +83,7 @@ await suite("ch1-story-feedback", async check => {
     assert(!r.report.some(t => t.includes(ECHO)) && !r.report.some(t => t.includes(SAW)));
     assert(!r.none.some(t => t.includes(ECHO)) && !r.none.some(t => t.includes(SAW)));
     // 現行の祝いの流れは、才能ルートでも保たれる
-    assert(r.talent.some(t => t.includes("グラスが鳴った")) && r.talent.some(t => t.includes("濁ってた")));
+    assert(r.talent.some(t => t.includes("グラスが鳴った")) && r.talent.some(t => t.includes("浮かれて見えました")));
     assert(r.none.some(t => t.includes("グラスが鳴った")));
   });
   await check("celebration-preserves-interview-and-tsumugi-action", async page => {
@@ -97,7 +97,7 @@ await suite("ch1-story-feedback", async check => {
     assert(r.flags.interview_honest);
     assert(r.lines.some(t => t.includes("グラスが鳴った")));
     assert(r.lines.some(t => t.includes("そこまで見ていなかった")));
-    assert(r.lines.some(t => t.includes("濁ってた")));
+    assert(r.lines.some(t => t.includes("浮かれて見えました")));
     assert(!r.lines.some(t => t.includes("忘れちゃいけない") || t.includes("意味をまだ半分も")));
   });
 });

@@ -19,6 +19,17 @@ const { SCHEMA, SAVE_KEY, SAVE_SLOTS, newState, load, save, loadFromSlot } = cor
 const { STATE_KEY_RULES, FLAG_EXACT_RULES, FLAG_FAMILY_RULES, GIFT_EQUIPMENT_IDS, KEEPSAKE_ORIGINS,
   buildCarryPackage } = carry;
 
+assert.equal(carry.classifyFlag("_shift_mix_citrus"), "progression");
+assert.equal(carry.flagVerdict("_shift_mix_citrus"), "reset");
+{
+  const s = core.newState();
+  s.flags._shift_mix_citrus = 0;
+  s.flags._shift_mix_double_apple = 1;
+  const pkg = buildCarryPackage(s);
+  assert.equal("_shift_mix_citrus" in pkg.flags, false);
+  assert.equal("_shift_mix_double_apple" in pkg.flags, false);
+}
+
 const root = new URL("../../", import.meta.url);
 const copy = (v) => JSON.parse(JSON.stringify(v));
 
