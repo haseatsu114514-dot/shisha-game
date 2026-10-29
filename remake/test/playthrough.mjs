@@ -408,9 +408,9 @@ for (;;) {
   if (snap.screen === "tonari") {
     if (/今日の復習/.test(snap.sub)) { await click('[data-test="drill-pull"]'); continue; }
     if (/シフト上がり/.test(snap.sub)) {
-      const a = pendingAfter;
       // シフト後の自主練は家へ移した（#638）。計画の "baito:holes" などはシフトだけを行い、そのまま上がる。
-      const selected = await click(a === "sumi" ? '[data-test="after-sumi"]' : '[data-test="after-none"]');
+      // スミ会話は #1081 B05 で必須化され、メニュー表示前に自動で流れる（"sumi" 計画も追加操作は不要）。
+      const selected = await click('[data-test="after-none"]');
       // 画面の切替中に押せなかった場合は、予定した選択を消さず次の入力で再試行する。
       if (selected) { pendingDrill = null; pendingAfter = null; }
       continue;

@@ -180,8 +180,8 @@ try {
           // DAY3's optional review can now open the same tonari drill menu.
           if (await click('[data-test="drill-heat"]')) continue;
           if (await click('[data-test="tonari-hiyori-axe"]:not([disabled])')) continue;
-          // Return -> followup -> afterwork has no night restriction. A real shift and
-          // its existing after-sumi choice can read those two talks in one action.
+          // Return -> followup -> afterwork has no night restriction. A real shift reads
+          // those talks in its mandatory after-shift Sumi conversation (#1081 B05).
           // Do this before axe/work, so later free-talk money invariants stay intact.
           const catchUp = await page.evaluate(() => {
             const s = Q.core.state, f = s.flags;
@@ -191,7 +191,8 @@ try {
           const earn = catchUp || snap.money < 6000 && !snap.flags._hiyori_real_self_known;
           if (earn && await click('[data-test="tonari-baito"]')) continue;
           if (await click('[data-test="tonari-customer"]')) continue;
-          if (!await click('[data-test="after-sumi"]')) await click('[data-test="after-none"]');
+          // The Sumi talk already ran (mandatory, #1081 B05); just leave the shift.
+          await click('[data-test="after-none"]');
         } else if (snap.map) {
           const mapKey = `${snap.day}:${snap.slot}`;
           if (lastMapKey !== mapKey) {

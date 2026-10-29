@@ -19,7 +19,7 @@ function find(node, id) { if (node.dataset?.test === id) return node; return nod
 const values = {
   "practice.js": { runFullPractice: async () => {} },
   "hiyori.js": { meetHiyoriAtTonari: async () => false, hiyoriShopEncounterDue: () => hiyoriDue, hiyoriAtTonari: () => false },
-  "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false },
+  "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false, hiyoriAxePrereqsMet: () => false, axeThrowExposed: () => false },
   "util.js": { el, seeded, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
   "data.js": { DB: db, sceneBg: () => ({}), loadCinemaDialogue: async () => db, bgUrl: () => "bg", displayName: id => id },
   "ui.js": { withScenePreparation: task => task, imageReady: async () => false, showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
@@ -46,7 +46,7 @@ async function load(name) { if (mods.has(name)) return mods.get(name); const mod
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
-function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {} }, overrides);
+function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {}, visits: {}, contacts: [], visitedDay: {}, lovers: [], loveLevel: {}, finales: {}, spotVisits: {} }, overrides);
   // 既読段階を注入する在店fixtureでは、その段階を読める♥も明示する（加算の検証は別suite）。
   if (!overrides.affinity) state.affinity = Object.fromEntries(Object.entries(state.story).map(([id,n]) => [id,[0,9,20,33,48,66][Math.min(5,n)] || 0]));
   // DAY8の接客fixtureは、それまでの必須場面を読了した通常営業。
@@ -120,9 +120,19 @@ for (const [stamina, expectedPay, expectedChoice] of [[75, 15075, 2300], [74, 14
   assert.equal(reward.stats.technique, 3);
 }
 reset({ stamina: 24 }); db.baito = []; await tonari.doBaito(); assert.equal(money[0], 8000, "Exhaustion cut the guaranteed base wage");
-// 統合spots.jsの夜限定gateをそのまま使い、昼のシフト上がりで夜限定固有会話を案内しない。
-reset({ story: { sumi: 2 }, affinity: {sumi:20} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("落ち着いた一台")); assert(!JSON.stringify(menus).includes("今日は何か教えて"));
-reset({ slot: 1, story: { sumi: 2 }, affinity: {sumi:20} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("今日は何か教えて"));
+// #1081 B05: シフト上がりのスミ会話は必須で、メニューに選択肢は無い。
+// 統合spots.jsの夜限定gateをそのまま使い、昼は夜限定の固有会話（ch1_sumi_training）を
+// 流さず定型の一言にし、夜は固有会話を流して既読（story）を進める。
+db.dialogues = Object.fromEntries([...scenes, ...sumi].map((s) => [s.dialogue_id, s]));
+reset({ story: { sumi: 2 }, affinity: { sumi: 20 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito();
+assert(plays.includes("remake_sumi_after_shift"), "昼のシフト上がりは定型の一言");
+assert(!plays.includes("ch1_sumi_training"), "昼は夜限定の固有会話を流さない");
+assert.equal(state.story.sumi, 2, "定型の一言では既読を進めない");
+assert(!JSON.stringify(menus).includes("スミさんと話す"), "シフト上がりメニューにスミ会話の選択肢は無い");
+reset({ slot: 1, story: { sumi: 2 }, affinity: { sumi: 20 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito();
+assert(plays.includes("ch1_sumi_training"), "夜のシフト上がりは固有会話を流す");
+assert(!plays.includes("remake_sumi_after_shift"), "固有会話がある日は定型の一言にしない");
+assert.equal(state.story.sumi, 3, "固有会話の既読が進む");
 
 const handoff = scenes.find((s) => s.dialogue_id === "remake_delivery_minto_handoff");
 assert(handoff && /peppermint/.test(handoff.metadata.bg) && /この後よかったら/.test(JSON.stringify(handoff)));
