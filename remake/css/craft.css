@@ -371,9 +371,9 @@
 .heat-compact .heat-carrier-head h2 { font-size: 24px; }
 .heat-compact .heat-collected-count { font-size: 20px; }
 .heat-compact .coal-carrier-view { width: 164px; height: 195px; }
-.heat-compact .heat-feedback { height: 37px; gap: 5px; }
+.heat-compact .heat-feedback { height: 44px; flex-direction: column; gap: 2px; }
 .heat-compact .heat-feedback .stamp { font-size: 14px; }
-.heat-compact .heat-error { font-size: 14px; padding-left: 5px; }
+.heat-compact .heat-error { font-size: 14px; line-height: 1.2; padding-left: 0; border-left: 0; }
 @media (prefers-reduced-motion: reduce) { .coal, .coal-stored { transition: none; animation: none; } .coal.pikan .c-core { animation: none; opacity: 1; } }
 
 /* キッチンタイマー：液晶と四つのボタンだけをコードで重ねる。 */
