@@ -1,0 +1,47 @@
+【依頼】心得の盤・火種・レベルアップまわりのUI画像 4枚（水煙前線 -EN:CODE- リメイク版）
+デザインの正本: asset_sources/ui/growth-board-20261030/README.md
+
+スタイル: 薄暗いシーシャラウンジの空気。`assets/backgrounds/bg_eden_shop.png` 程度の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調は避ける。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。手・腕は細身で中性的、明るいピーチ系の同一肌色に統一する。
+配色: 黒〜濃紫の闇に、琥珀／金（#f4d27a系）の暖色ネオンが差す。煙のかすみ。
+視点: 作りパートは一人称（プレイヤーの手元を上から見下ろす角度）。
+出力: PNG・透過指定のものは背景完全透過。@2x（実寸の2倍）で。指定なき限り 1280×720 基準。
+NG: 文字/ロゴ/UI/数字の焼き込み（数値はゲーム側UIで出すので画像に入れない）、watermark。
+
+Common rules for all 4 images:
+Use case: production game UI asset for a growth system called "Kokoroe no Ban" (a skill board). The theme is "lighting a fire": the currency is a small glowing charcoal ember called "hidane" (fire seed). Match the existing UI material: black-purple enamel, warm brass/gold edges, amber glow, faint smoke haze, crisp pixel-painter microtexture. Ability colors used across the game: technique #f2c34c (gold-yellow), sense #6cc6e8 (sky blue), guts #ef7a5e (coral red), charm #b49aef (lavender), insight #65c9bb (teal). DO NOT include any rendered words, letters, kanji, numbers, labels, gauges, progress bars, node circles, connecting lines, frames for buttons, or UI chrome; the game draws all of those. No hands, no people, no shisha hookah, no hose. No watermark. Clean edge alpha with no detached flecks on transparent images. Straight-on front view.
+
+--- 1/4: asset_sources/ui/growth-board-20261030/hidane_sheet.png ---
+A single horizontal sprite sheet, exactly 1536 x 256 pixels, transparent background, divided into 6 equal square cells of 256 x 256 (invisible grid, no drawn borders). Each cell contains ONE centered "hidane" ember icon, occupying about 70% of the cell, with at least 24 px empty transparent margin on every side so the sheet can be sliced mechanically. The ember is a small rounded chunk of glowing charcoal: a dark grey-black porous coal body with a bright molten core showing through cracks, and a soft teardrop-shaped flame halo rising from the top. Same silhouette, size, angle and lighting in all 6 cells; only the glow color changes:
+cell 1 (universal): warm amber core #fff1b8 -> #ffb43c -> #e86a12 outer glow;
+cell 2: core and halo tinted gold-yellow #f2c34c;
+cell 3: sky blue #6cc6e8;
+cell 4: coral red #ef7a5e;
+cell 5: lavender #b49aef;
+cell 6: teal #65c9bb.
+The shape must stay readable when shrunk to 16 x 16 px: bold simple silhouette, strong contrast between dark coal and bright core, no thin details. No sparks flying outside the cell, no smoke trails, no text or kanji on the ember.
+
+--- 2/4: asset_sources/ui/growth-board-20261030/skill_icons_sheet.png ---
+A sprite sheet of 14 skill emblem icons, exactly 1792 x 512 pixels, transparent background, 7 columns x 2 rows of equal 256 x 256 cells (invisible grid, no drawn borders). Each icon is centered in its cell, fits inside a 180 x 180 area, and leaves at least 32 px transparent margin on all sides. The game will draw a hexagonal brass frame around each icon, so draw ONLY the emblem: no hexagon, no circle badge, no background plate. Unified style for all 14: simple bold pictogram, about 2 px (at 64 px display) dark outline, flat-ish pixel-painter shading, the main color is the skill's ability color listed below plus small warm gold (#f4d27a) accents. Must read clearly at 44 x 44 px. No letters, no numbers, no kanji.
+Row 1, left to right:
+K01 "Dandori Hachibu" (technique #f2c34c): a small hourglass with a fine metal punching needle leaning against it.
+K02 "Kaori no Kioku" (sense #6cc6e8): a small closed recipe notebook with a single leaf as a bookmark.
+K03 "Hayane Hayaoki" (guts #ef7a5e): a crescent moon and a rising sun sharing one circle, split diagonally.
+K04 "Hitomishiri Shinai" (charm #b49aef): two soft puffs of smoke meeting and curling together like a friendly handshake.
+K05 "Sora Moyou" (insight #65c9bb): a cloud with sun rays breaking through its edge.
+K06 "Nimaime no Refresh" (guts #ef7a5e): two concentric ripple rings, the inner ring half the size of the outer.
+K07 "Kuuki wo Yomu" (charm #b49aef + insight #65c9bb, two-tone): a small wisp of smoke forming a gentle curl, left half lavender, right half teal.
+Row 2, left to right:
+K08 "Tsukare Shirazu" (technique #f2c34c): a tight sturdy rope knot that does not come loose.
+K09 "Jukuren no Shita" (sense #6cc6e8): a single fresh tobacco-like leaf with one small sparkle and a droplet.
+K10 "Shinsain no Me" (insight #65c9bb): a round monocle with a short chain.
+K11 "Hi no Ban" (technique #f2c34c + sense #6cc6e8, two-tone): short metal tongs holding one glowing cube of charcoal; tongs gold, glow sky blue.
+K12 "Oohitoban no Tanryoku" (guts #ef7a5e): a clenched fist in front of a small flame shaped like a heart.
+K13 "Seien" (charm #b49aef): three small raised hands in silhouette, like an audience cheering.
+K14 "Sumi no Koe" (insight #65c9bb): a charcoal cube with three small curved sound-wave arcs coming off one side.
+Keep every icon the same visual weight and scale. Do not merge icons across cells.
+
+--- 3/4: asset_sources/ui/growth-board-20261030/board_backdrop.png ---
+A full-screen background, exactly 1280 x 720 pixels (provide 2560 x 1440 at 2x if possible), OPAQUE, for the skill board screen. A dark black-purple surface like a smoke-darkened lacquer table seen straight from above, with very faint drifting smoke haze and a few tiny scattered gold dust specks. A soft warm amber glow sits at the visual center (x 38%, y 52%), fading outward into deep shadow toward the edges and corners (vignette). Keep the whole image LOW CONTRAST and QUIET so bright UI nodes drawn on top stay readable: no shapes, no circles, no pentagon, no rings, no lines, no symbols, no runes, no patterns that could be mistaken for board nodes. The right 30% of the image (x 70% to 100%) is slightly darker and plainer, because a text panel will sit there.
+
+--- 4/4: asset_sources/ui/growth-board-20261030/hub_emblem.png ---
+A single centered emblem for the board's center node called "the first puff", exactly 512 x 512 pixels, transparent background, emblem fits within a 400 x 400 area with even margins. Design: one small glowing amber ember (same style as the hidane ember: dark porous coal, molten amber core #ffb43c) resting at the center of a thin, softly glowing smoke ring that loops once around it; a single slender wisp of pale smoke rises from the ember and curls at the top. Around the outside, five very small evenly spaced points of light at the pentagon positions (top, upper right, lower right, lower left, upper left), colored in order clockwise from the top: #f2c34c, #6cc6e8, #65c9bb, #b49aef, #ef7a5e. Calm, warm, ceremonial, not busy. No text, no kanji, no hookah, no bowl, no frame or badge plate.

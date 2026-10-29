@@ -1114,3 +1114,64 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .lime-image { width: 224px; aspect-ratio: 4 / 3; border-radius: 12px; background: #e4e9ed; }
 .lime-media img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .lime-media-fallback { display: flex; align-items: center; justify-content: center; color: #354352; font-size: 12px; overflow-wrap: anywhere; }
+
+/* ---------------------------------------------------------------- 経験値・レベル・火種（SPEC 6.1a・6.3。GROWTH_BOARD の裏） */
+.hud-exp[hidden], .hidane-badge[hidden] { display: none; }
+.hud-exp { position: relative; display: flex; align-items: center; gap: 6px; height: 18px; padding: 0 9px; font-size: 13px; color: var(--gold); }
+.hud-exp .hx-lv { font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; min-width: 3.2em; }
+.hud-exp .hx-bar { position: relative; flex: 1 1 auto; min-width: 30px; height: 6px; border-color: rgba(244, 210, 122, 0.6); }
+.hud-exp .hx-bar b { position: absolute; left: 0; top: 0; bottom: 0; width: 0; }
+.hud-exp .hx-today { background: rgba(255, 226, 150, 0.55); }
+.hud-exp .hx-settled { z-index: 1; background: linear-gradient(90deg, #c08a2a, #f4d27a); }
+.hud-exp .hx-left { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+.hud-exp[data-milestone="true"] .hx-bar::after { content: ""; position: absolute; right: 1px; top: 1px; width: 8px; height: 2px; border-radius: 1px; background: radial-gradient(circle, #ffb347 40%, transparent 45%) 0 0 / 4px 2px repeat-x; }
+.hud-exp.ready .hx-left { color: #ffd88a; font-weight: 700; }
+.hud-exp.ready .hx-bar { box-shadow: 0 0 8px rgba(255, 196, 92, 0.85); animation: exp-ready 1.6s ease-in-out infinite; }
+@keyframes exp-ready { 50% { box-shadow: 0 0 2px rgba(255, 196, 92, 0.4); } }
+@media (prefers-reduced-motion: reduce) { .hud-exp.ready .hx-bar { animation: none; } }
+.exp-chip { position: absolute; left: 6px; top: 20px; z-index: 2; display: flex; gap: 6px; align-items: baseline; padding: 2px 8px; border-radius: 10px;
+  background: rgba(34, 22, 8, 0.92); border: 1px solid rgba(244, 210, 122, 0.7); white-space: nowrap; pointer-events: none; animation: exp-chip 2.2s ease-out forwards; }
+.exp-chip b { color: #ffe08a; font-size: 13px; }
+.exp-chip span { color: #f1dcb0; font-size: 11px; }
+@keyframes exp-chip { 0% { opacity: 0; transform: translateY(-4px); } 12% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(6px); } }
+/* 未使用の火種: 琥珀の炎の丸と個数（LIMEの赤丸と別の色） */
+.hud-level { position: relative; }
+.hidane-badge { position: absolute; right: -7px; top: -7px; min-width: 20px; height: 20px; padding: 0 4px; box-sizing: border-box; display: grid; place-items: center;
+  border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%; font: 700 12px/1 var(--font); font-style: normal; color: #3a1a00;
+  background: radial-gradient(circle at 50% 70%, #fff1b8, #ffb43c 55%, #e86a12); box-shadow: 0 0 8px rgba(255, 150, 40, 0.8); pointer-events: none; }
+
+.levelup-band { position: absolute; left: 50%; top: 26%; translate: -50% 0; display: grid; grid-template-columns: auto auto auto; column-gap: 18px; row-gap: 6px; align-items: baseline;
+  padding: 14px 26px; border-radius: 10px; border: 1px solid rgba(244, 210, 122, 0.8); background: rgba(22, 14, 30, 0.94); color: var(--text);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); opacity: 0; transform: translateY(-8px); transition: opacity .2s, transform .2s; pointer-events: auto; cursor: pointer; max-width: calc(100% - 32px); box-sizing: border-box; }
+.levelup-band.show { opacity: 1; transform: none; }
+.levelup-band .lb-top { color: #ffd35e; font-size: 20px; letter-spacing: 0.08em; }
+.levelup-band .lb-lv { font-size: 22px; font-weight: 700; }
+.levelup-band .lb-hidane { color: #ffb347; font-size: 18px; font-weight: 700; }
+.levelup-band .lb-learned { grid-column: 1 / -1; color: var(--text-dim); font-size: 15px; }
+
+.levelup-backdrop { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(6, 3, 12, 0.6); opacity: 0; transition: opacity .22s; pointer-events: auto; }
+.levelup-backdrop.show { opacity: 1; }
+.levelup { position: relative; width: 600px; max-width: calc(100% - 32px); box-sizing: border-box; padding: 26px 36px 24px; text-align: center; border-radius: 12px;
+  border: 1px solid rgba(244, 210, 122, 0.8); background: linear-gradient(160deg, rgba(20, 12, 30, 0.97), rgba(34, 22, 44, 0.97)); color: var(--text); box-shadow: 0 14px 60px rgba(0, 0, 0, 0.7); }
+.levelup .lu-head { margin: 0; font-size: 34px; letter-spacing: 0.14em; color: #ffd35e; opacity: 0.35; transition: opacity .2s; }
+.levelup.burst .lu-head, .levelup.lu-settled-state .lu-head { opacity: 1; text-shadow: 0 0 18px rgba(255, 196, 92, 0.8); }
+.levelup.burst .lu-head { animation: lu-burst .42s ease-out; }
+@keyframes lu-burst { 0% { transform: scale(1.35); } 100% { transform: none; } }
+.levelup .lu-lv { display: block; margin: 6px 0 10px; font-size: 26px; color: var(--gold-hi); }
+.lu-gauge { position: relative; height: 18px; border-radius: 10px; padding: 0; background: #07040d; border: 1px solid rgba(244, 210, 122, 0.7); overflow: hidden; }
+.lu-gauge b { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 9px; transition: width .6s cubic-bezier(.25, .65, .3, 1); }
+.lu-gauge .lu-fill { background: linear-gradient(90deg, #c08a2a, #ffe08a); box-shadow: 0 0 14px rgba(255, 210, 120, 0.7); }
+.lu-gauge .lu-settled { z-index: 1; background: #c08a2a; }
+.lu-details { margin-top: 14px; opacity: 0; transition: opacity .25s; }
+.levelup.lu-settled-state .lu-details { opacity: 1; }
+.lu-details p { margin: 6px 0; font-size: 18px; line-height: 1.5; }
+.lu-change { font-size: 22px !important; font-weight: 700; }
+.lu-hidane { display: flex; justify-content: center; align-items: center; gap: 8px; color: #ffb347; font-weight: 700; }
+.lu-hidane-icon, .hidane-flight { display: inline-block; width: 16px; height: 18px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: radial-gradient(circle at 50% 70%, #fff1b8, #ffb43c 55%, #e86a12); box-shadow: 0 0 10px rgba(255, 150, 40, 0.9); }
+.hidane-flight { position: absolute; left: 0; top: 0; margin: -9px 0 0 -8px; pointer-events: none; z-index: 5; }
+.lu-milestone { color: #ffe08a; }
+.lu-learned { color: var(--text); }
+.lu-note { color: var(--text-dim); font-size: 15px !important; }
+.levelup .lu-ok { margin-top: 12px; min-width: 140px; min-height: 44px; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.levelup.lu-settled-state .lu-ok { opacity: 1; pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .lu-gauge b, .levelup-band, .levelup-backdrop { transition: none; } .levelup.burst .lu-head { animation: none; } }

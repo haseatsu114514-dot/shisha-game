@@ -193,6 +193,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cleared", "progression"],
   ["_ch4_preview_seen", "progression"],
   ["_ch4_sheikh_revealed", "progression"],
+  ["_overseas_companion", "progression"],
   ["_ch4_strategy", "progression"],
   ["_ch5", "progression"],
   ["_ch5_cleared", "progression"],

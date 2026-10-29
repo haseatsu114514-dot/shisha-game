@@ -40,17 +40,21 @@ try{
    const count=()=>{window.__djTestFrames++;requestAnimationFrame(count);};requestAnimationFrame(count);
   });
   await page.goto(url);
+  assert.equal(await page.locator('#sync-a,#sync-b,.bpm-sync').count(),0);
+  assert.equal(await page.locator('.stage-btn').count(),3);
+  assert.equal(await page.locator('#track-a').textContent(),'Dance Monster');assert.equal(await page.locator('#track-b').textContent(),'Digital Lemonade');
+  assert((await page.locator('main').textContent()).includes('CC BY 4.0'));assert(await page.locator('#judge').isDisabled());
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height>=64&&r.width>=100,'Large individual PLAY targets');}
   const artwork=new URL('../../../assets/backgrounds/bg_dj_red_room.png',url).href;
   const art=await page.request.get(artwork);assert(art.ok(),'Generated background must be served');assert((await art.body()).length>10000,'Background must not be an LFS pointer');
   for(const key of ['a','b']){
    assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');
-   for(const control of ['#sync-'+key,`[data-pitch="${key==='a'?0:1},0.01"]`]){const b=await page.locator(control).boundingBox();assert(b.width>=44&&b.height>=44,'Touch controls remain at least 44px');}
+   for(const control of [`[data-pitch="${key==='a'?0:1},0.01"]`]){const b=await page.locator(control).boundingBox();assert(b.width>=44&&b.height>=44,'Touch controls remain at least 44px');}
   }
   assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No continuous sync/CUE/tap input workload');
   if(kind==='pc')await page.locator('#start').click();else await page.locator('#start').tap();
-  const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.deepEqual(ready.bpms,[128,126]);
+  const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.equal(ready.bpms[0],120);const delta=Math.abs(ready.bpms[1]/120-1);assert(delta>=.0119&&delta<=.0281);assert.notEqual(ready.bpms[1],120);
   for(const deck of [0,1]){
    const plus=page.locator(`[data-pitch="${deck},0.01"]`),minus=page.locator(`[data-pitch="${deck},-0.01"]`);
    const before=await snap(page);if(kind==='pc')await plus.click();else await plus.tap();
@@ -58,9 +62,10 @@ try{
    if(kind==='pc')await minus.click();else await minus.tap();near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
   }
   // Genuine native input, not setter/evaluate/forceclick.
-  if(kind==='pc'){await page.locator('#tempo-b').focus();for(let n=0;n<200;n++)await page.locator('#tempo-b').press('ArrowRight');}
-  else{const input=page.locator('#tempo-b');await input.scrollIntoViewIfNeeded();const r=await input.boundingBox();await page.touchscreen.tap(r.x+r.width*.6,r.y+r.height/2);}
-  const pitched=await snap(page),manual=pitched.bpms[1];assert.notEqual(manual,126);if(kind==='pc')near(manual,128,.001);
+  await page.locator('#tempo-b').focus();
+  const steps=Math.round((120-(await snap(page)).bpms[1])*100);
+  for(let n=0;n<Math.abs(steps);n++)await page.locator('#tempo-b').press(steps>0?'ArrowRight':'ArrowLeft');
+  const pitched=await snap(page),manual=pitched.bpms[1];near(manual,120,.001);
   if(kind==='pc')await page.locator('#play-a').click();else await page.locator('#play-a').tap();await wait(page,'audio',errors);
   assert.deepEqual((await snap(page)).playing,[true,false]);
   await waitRendered(page,'deck A DOM',()=>page.evaluate(()=>({indicator:document.getElementById('indicator-a').textContent,playing:document.getElementById('deck-a').dataset.playing})),state=>state.indicator==='ON AIR'&&state.playing==='true',errors);
@@ -69,6 +74,7 @@ try{
   const a=await hashWaves(page);const b=await waitRendered(page,'deck A waveform',()=>hashWaves(page),state=>state[0]!==a[0],errors);assert.notEqual(a[0],b[0]);assert.equal(a[1],b[1],'Stopped B waveform cannot advance');
   if(kind==='pc')await wait(page,'head',errors,19000);
   if(kind==='pc')await page.locator('#play-b').click();else await page.locator('#play-b').tap();
+  await waitRendered(page,'PLAY feedback',()=>page.locator('#play-feedback').textContent(),v=>v.length>0,errors);
   const entered=await snap(page);assert.deepEqual(entered.playing,[true,true]);assert(entered.beats[1]>=0&&entered.beats[1]<1,'Manual PLAY starts at its click, not pre-started by guide');near(entered.bpms[1],manual,.001);
   if(kind==='pc'){
    await page.locator('#crossfader').focus();await page.locator('#crossfader').press('End');await wait(page,'transfer',errors,19000);
@@ -77,13 +83,6 @@ try{
    const before=await snap(page);await page.locator('#offset').tap();const offset=await snap(page);near(offset.beats[1]-before.beats[1]-(offset.clock-before.clock)*manual/60,.5);
    for(let n=0;n<8;n++)await page.locator('[data-nudge="1,-0.0625"]').tap();const corrected=await snap(page);near(corrected.beats[1]-offset.beats[1]-(corrected.clock-offset.clock)*manual/60,-.5);
    const input=page.locator('#crossfader');await input.scrollIntoViewIfNeeded();const r=await input.boundingBox();await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2);near((await snap(page)).mix,.5,.1);near((await snap(page)).bpms[1],manual,.001);
-  }
-  {
-   const before=await snap(page);const button=page.locator('#sync-b');if(kind==='pc')await button.click();else await button.tap();
-   const after=await snap(page);near(after.bpms[1],before.bpms[0],.000001);assert.deepEqual(after.playing,before.playing);
-   for(let i=0;i<2;i++)near(after.beats[i]-before.beats[i]-(after.clock-before.clock)*before.bpms[i]/60,0,.03);
-   const plus=page.locator('[data-pitch="1,0.01"]');if(kind==='pc')await plus.click();else await plus.tap();
-   near((await snap(page)).bpms[1],after.bpms[1]+.01,.000001);
   }
   assert(await page.evaluate(()=>{const v=document.querySelector('.visual-slot').getBoundingClientRect(),box=document.querySelector('.console').getBoundingClientRect();return v.width<=180&&v.height<=160&&v.top>=box.bottom;}),'VJ small window stays below controls');
   if(kind==='reduced')assert((await page.locator('#visual-label').textContent()).includes('静止'));
