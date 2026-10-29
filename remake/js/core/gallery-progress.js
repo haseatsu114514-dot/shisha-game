@@ -42,15 +42,32 @@ function photo(value) {
 }
 export const purikuraId = p => ["purikura", p.chapter, p.day, p.slot, p.mode, ...p.people].join("-");
 
+// 直近に読み込んだ保存文字列と、その parse 結果。save() の二重記録や
+// ギャラリー表示時の全枠走査など、連続した readGalleryProgress() で
+// parse を繰り返さないための控え。書き込みはすべてこのモジュール経由
+// なので、保存のたびに無効化すれば実データとずれることはない。
+let progressCacheRaw;
+let progressCacheValue = null;
+function invalidateProgressCache() {
+  progressCacheRaw = undefined;
+  progressCacheValue = null;
+}
+
 export function readGalleryProgress() {
+  let raw = null;
+  try { raw = localStorage.getItem(GALLERY_PROGRESS_KEY); } catch { /* 初回・保存不可 */ }
+  if (progressCacheValue && progressCacheRaw === raw) return progressCacheValue;
   let value;
-  try { value = JSON.parse(localStorage.getItem(GALLERY_PROGRESS_KEY) || "null"); } catch { /* 初回・保存不可 */ }
-  return {
+  try { value = JSON.parse(raw || "null"); } catch { /* 初回・保存不可 */ }
+  const result = {
     clearedChapters: unique(list(value?.clearedChapters).filter(chapter)).sort(),
     keepsakes: unique(list(value?.keepsakes).filter(id => Object.hasOwn(PHOTO_KEEPSAKES, id))),
     purikura: [...new Map(list(value?.purikura).map(photo).filter(Boolean).map(p => [purikuraId(p), p])).values()],
     routeRecords: routeRecords(value?.routeRecords),
   };
+  progressCacheRaw = raw;
+  progressCacheValue = result;
+  return result;
 }
 
 export function recordGalleryProgress(value) {
@@ -84,12 +101,12 @@ export function recordGalleryProgress(value) {
     routeRecords: before.routeRecords,
   };
   if (JSON.stringify(before) === JSON.stringify(next)) return;
-  try { localStorage.setItem(GALLERY_PROGRESS_KEY, JSON.stringify(next)); } catch { /* ゲームの保存は妨げない */ }
+  try { localStorage.setItem(GALLERY_PROGRESS_KEY, JSON.stringify(next)); invalidateProgressCache(); } catch { /* ゲームの保存は妨げない */ }
 }
 
 function saveRouteProgress(before, next) {
   if (JSON.stringify(before) === JSON.stringify(next)) return;
-  try { localStorage.setItem(GALLERY_PROGRESS_KEY, JSON.stringify(next)); } catch { /* ゲームの保存は妨げない */ }
+  try { localStorage.setItem(GALLERY_PROGRESS_KEY, JSON.stringify(next)); invalidateProgressCache(); } catch { /* ゲームの保存は妨げない */ }
 }
 
 export function recordRouteLover(charId) {

@@ -242,7 +242,7 @@ await suite('ch2-main', async check => {
     await page.locator('[data-test="ch2-morning-home"]').click();
     await page.locator('[data-destination-selection]:not(.done)').waitFor();
     await page.locator('[data-test="hud-menu"]').click(); await page.locator('[data-test="menu-load"]').click();
-    assert.match(await page.locator('[data-test="slot-1"] .ss-info').textContent(), /第2章・DAY 1/);
+    assert.match(await page.locator('[data-test="slot-1"] .ss-info').textContent(), /第2章\s*DAY 1(?!\d)/);
     await page.locator('[data-test="slot-1"]').click(); await page.locator('[data-test="confirm-load"]').click();
     await page.locator(test('map')).waitFor();
     assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'MENU LOAD restores the city track');

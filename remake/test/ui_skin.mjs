@@ -33,6 +33,11 @@ try {
       if (!image.naturalWidth) throw new Error(`Failed to decode ${name}`);
     }));
   });
+  // 実フローでは chooseSpot() が地図画面を出して初めて HUD がレイアウトされる
+  // （タイトル画面では #hud が display:none で矩形が全て 0 になる）。
+  // 地図画面に着いて HUD の幅が出るまで待ってから計測する。
+  await page.waitForFunction(() => document.body.dataset.screen === "map"
+    && document.querySelector(".hud-stamina")?.getBoundingClientRect().width > 0, null, { timeout: 30000 });
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport);
     const geometry = await page.evaluate(() => {
@@ -50,7 +55,7 @@ try {
           const amount = document.querySelector(".dc-row.money b");
           const countdown = amount.closest(".dc-meta").querySelector(".dc-row:not(.money)");
           const time = document.querySelector(".dc-slot");
-          result.push({ money, day, rects: snapshot(), visible: amount.scrollWidth <= amount.clientWidth,
+          result.push({ money, day, rects: snapshot(), barWidth: parseFloat(document.querySelector(".hud-bar").style.width), visible: amount.scrollWidth <= amount.clientWidth,
             timeFits: time.scrollWidth <= time.clientWidth,
             countdown: countdown.textContent, countdownFits: countdown.scrollWidth <= countdown.clientWidth });
         }
@@ -66,7 +71,9 @@ try {
       assert(result.countdownFits, "Next tournament countdown was clipped");
       assert.equal(result.countdown, `次の大会まであと${14 - result.day}日`);
     }
-    assert(geometry[1].rects[1][2] > geometry[0].rects[1][2], "Stamina window did not grow with maximum capacity");
+    // 統合HUDではカード幅が固定でバーが列幅いっぱいに広がるため、器の伸びは
+    // バーに指定された幅（updateHud が最大体力から決める）で見る。
+    assert(geometry[1].barWidth > geometry[0].barWidth, "Stamina window did not grow with maximum capacity");
     if (shots) await page.screenshot({ path: `${shots}/fixed-hud-${viewport.width}.png` });
   }
   console.log("[ui skin] PASS: 7 generated images, stable money/controls and growing stamina window at desktop and mobile sizes");
@@ -115,10 +122,10 @@ try {
         T.core.state.stamina = Math.round(ratio * maximum);
         T.hud.updateHud();
         const holder = document.querySelector(".hud-stamina");
-        const bar = holder.querySelector(".hud-bar"), label = holder.querySelector(":scope > span"), style = getComputedStyle(holder);
+        const bar = holder.querySelector(".hud-bar"), label = holder.querySelector(":scope > span"), style = getComputedStyle(holder), barStyle = getComputedStyle(bar);
         out.push({ ratio, maximum, health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
-          width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth,
-          extra: holder.clientWidth - label.offsetWidth - bar.offsetWidth - parseFloat(style.gap) - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) });
+          width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth, barSpecifiedWidth: parseFloat(bar.style.width),
+          extra: holder.clientWidth - label.offsetWidth - bar.offsetWidth - parseFloat(barStyle.marginLeft) - parseFloat(barStyle.marginRight) - parseFloat(style.gap) - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) });
       }
     }
     return out;
@@ -127,13 +134,14 @@ try {
     const expected = value.ratio > .5 ? ["green", "rgb(142, 230, 168)"] : value.ratio > .25 ? ["yellow", "rgb(255, 212, 92)"] : ["red", "rgb(255, 105, 105)"];
     assert.deepEqual([value.health, value.color], expected);
     assert.equal(value.width, `${Math.round(value.ratio * 100)}%`);
+    // バーは margin-right: -9px でカード端まで張り出す設計のため、余白計算はバーのマージンボックス込みで数える。
     assert(Math.abs(value.extra) <= 1, `Unused horizontal stamina space: ${value.extra}px`);
   }
   for (const maximum of [100, 160]) {
     assert.equal(new Set(stamina.filter((value) => value.maximum === maximum).map((value) => value.windowWidth)).size, 1, "Losing stamina changed the capacity window");
   }
-  assert.equal(stamina[0].barWidth, 92);
-  assert.equal(stamina[7].barWidth, 147);
+  assert.equal(stamina[0].barSpecifiedWidth, 92);
+  assert.equal(stamina[7].barSpecifiedWidth, 147);
   console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, expanded stamina capacity");
   const sessions = await page.evaluate(async () => {
     const { newSession } = await import("./js/craft/session.js"), { skill } = await import("./js/craft/common.js");

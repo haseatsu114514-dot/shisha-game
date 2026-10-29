@@ -1,0 +1,114 @@
+{
+  "st_adam_bless": {
+    "kind": "stamp",
+    "owner": "adam",
+    "src": "img/ui/lime/stamps/st_adam_bless.png",
+    "width": 320,
+    "height": 320,
+    "alt": "赤と緑の林檎。林檎の祝福を",
+    "preview": "［スタンプ］林檎の祝福を",
+    "allowed_accounts": null
+  },
+  "st_minto_welcome": {
+    "kind": "stamp",
+    "owner": "minto",
+    "src": "img/ui/lime/stamps/st_minto_welcome.png",
+    "width": 320,
+    "height": 320,
+    "alt": "ミントの葉の店員。待ってるね♪",
+    "preview": "［スタンプ］待ってるね♪",
+    "allowed_accounts": [
+      "minto"
+    ]
+  },
+  "st_naru_sleep": {
+    "kind": "stamp",
+    "owner": "naru",
+    "src": "img/ui/lime/stamps/st_naru_sleep.png",
+    "width": 320,
+    "height": 320,
+    "alt": "マフィンと布団。ちゃんと寝ろよ",
+    "preview": "［スタンプ］ちゃんと寝ろよ",
+    "allowed_accounts": null
+  },
+  "im_adam_moon": {
+    "kind": "image",
+    "owner": "adam",
+    "src": "img/ui/lime/images/im_adam_moon.webp",
+    "width": 960,
+    "height": 720,
+    "alt": "夜空の月と枝先",
+    "preview": "［画像］月の写真",
+    "allowed_accounts": null
+  },
+  "im_rin_stock": {
+    "kind": "image",
+    "owner": "rin",
+    "src": "img/ui/lime/images/im_rin_stock.webp",
+    "width": 960,
+    "height": 720,
+    "alt": "棚に並ぶ新しい小袋",
+    "preview": "［画像］入荷した小袋",
+    "allowed_accounts": null
+  },
+  "im_tsumugi_draft": {
+    "kind": "image",
+    "owner": "tsumugi",
+    "src": "img/ui/lime/images/im_tsumugi_draft.webp",
+    "width": 960,
+    "height": 720,
+    "alt": "カウンターの手と窓辺の煙の下描き",
+    "preview": "［画像］下描き",
+    "allowed_accounts": null
+  },
+  "st_ageha_ok": {
+    "kind": "stamp",
+    "owner": "ageha",
+    "src": "img/ui/lime/stamps/st_ageha_ok.png",
+    "width": 320,
+    "height": 320,
+    "alt": "白いクマ。おっけー",
+    "preview": "［スタンプ］おっけー",
+    "allowed_accounts": null
+  },
+  "st_ageha_thanks": {
+    "kind": "stamp",
+    "owner": "ageha",
+    "src": "img/ui/lime/stamps/st_ageha_thanks.png",
+    "width": 320,
+    "height": 320,
+    "alt": "白いクマとハート。ありがと",
+    "preview": "［スタンプ］ありがと",
+    "allowed_accounts": null
+  },
+  "st_minto_cheer": {
+    "kind": "stamp",
+    "owner": "minto",
+    "src": "img/ui/lime/stamps/st_minto_cheer.png",
+    "width": 320,
+    "height": 320,
+    "alt": "ミントの葉の店員。がんばれ♪",
+    "preview": "［スタンプ］がんばれ♪",
+    "allowed_accounts": null
+  },
+  "st_rin_smug": {
+    "kind": "stamp",
+    "owner": "rin",
+    "src": "img/ui/lime/stamps/st_rin_smug.png",
+    "width": 320,
+    "height": 320,
+    "alt": "試料袋。ふふ",
+    "preview": "［スタンプ］ふふ",
+    "allowed_accounts": null
+  },
+  "st_tsumugi_nod": {
+    "kind": "stamp",
+    "owner": "tsumugi",
+    "src": "img/ui/lime/stamps/st_tsumugi_nod.png",
+    "width": 320,
+    "height": 320,
+    "alt": "葉の耳と煙の尾の猫。はい",
+    "preview": "［スタンプ］はい",
+    "allowed_accounts": null
+  }
+}
