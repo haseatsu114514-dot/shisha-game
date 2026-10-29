@@ -160,7 +160,7 @@ try {
               seen.add(shot);
             }
             if (!await click('.vn-choices.show button')) {
-              if (await page.locator('.vn-next.show').isVisible()) { await page.waitForTimeout(330); await click('.vn-box'); }
+              if (await page.locator('.vn-next.show').isVisible()) { await page.waitForTimeout(40); await click('.vn-box'); }
             }
           }
           continue;
