@@ -24,6 +24,8 @@ import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { mixExpression } from "./flavor-profile.js";
 import { createCraftClock } from "./clock.js";
+import { waterComfort } from "./water.js";
+import { waterComfortLine } from "./pull-water.js";
 
 export { IDEAL } from "./conditions.js";
 const HOSE_PATH = "M25.5 21.5C18 25 9 26 7.5 33s8 9.5 15 7 9-1 9.5 2.5";
@@ -309,7 +311,9 @@ async function pullGame(cs, mode) {
     pullLabel.textContent = "吸っている…";
     drawStatus.textContent = `${z.label}で吸っている…`;
     setBenchDraw(cs, z.id, duration);
-    stopBubbles = startBubbling({ strength: z.id === "keep" ? .65 : 1 });
+    const strength = (z.id === "keep" ? .65 : 1) * waterComfort(cs.water).bubble;
+    // startBubbling は strength=0 を1に置き換えるため、水に届かない台では開始しない。
+    stopBubbles = strength > 0 ? startBubbling({ strength }) : () => {};
     render();
     try {
       const complete = await animateDraw({ duration,
@@ -481,7 +485,7 @@ async function pullGame(cs, mode) {
     if (failed === "burnt") cs.burnt = true;
     if (mode.store === "pull") { cs.pullDone = true; refreshBench(); }
     tickerSay(text.ticker);
-    await resultCard(panel, { title: text.title, lines: [text.line, `${pulls}回吸った`] });
+    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`] });
     return true;
   }
 
@@ -500,6 +504,7 @@ async function pullGame(cs, mode) {
       lines: [
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えて提供できた" : optimal ? "最適温に合わせて提供できた" : inZone ? "適温で提供できた" : T > ideal[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
         tasteLine,
+        waterComfortLine(cs.water),
         `${pulls}回吸った`,
       ],
     });
@@ -511,6 +516,7 @@ async function pullGame(cs, mode) {
     lines: [
       inZone ? "適温に整えて、審査員へ戻せた" : T > ideal[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
       tasteLine,
+      waterComfortLine(cs.water),
       coals ? `消耗した炭を${coals}個交換した` : "炭は交換せずに整えた",
       `${pulls}回吸った`,
     ],
