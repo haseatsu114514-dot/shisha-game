@@ -685,6 +685,8 @@ async function meetInvitation(inv) {
     addStamina(-10);
   } else if (/^date_/.test(inv.event)) {
     await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
+    // ひよりの feelings_spoken（#1434 決定B）。恋人・絆Lv2以降のデートの帰りに一度だけ。条件は route.events。
+    if (inv.sender === "hiyori") await playHiyoriEvent("feelings_spoken");
   } else if (isFriendEvent(inv.event)) {
     // 友人からのシーシャのお誘い（HF09）。ステは場面側の apply
     await playFriendHangout(inv.sender);

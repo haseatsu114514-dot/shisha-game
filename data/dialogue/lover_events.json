@@ -1393,7 +1393,7 @@
     {
       "dialogue_id": "lover_mashiro_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
         "private_scene": true
       },
       "lines": [
