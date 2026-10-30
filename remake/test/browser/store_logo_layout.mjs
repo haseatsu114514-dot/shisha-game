@@ -99,7 +99,11 @@ await suite('store-logo-layout', async check => {
         assert.equal(await page.locator('.spot-pin.branded').count(), 6); // choizap: facility icon takes precedence (map.js)
         const after = await storageSnapshot(page);
         const seenKey = 'suien_remake_seen_dialogue_lines';
-        assert(JSON.parse(after.local[seenKey] || '[]').some(key => key.includes(`logo_layout_${mode}`)));
+        if (mode !== 'skip') {
+          assert(JSON.parse(after.local[seenKey] || '[]').some(key => key.includes(`logo_layout_${mode}`)));
+        } else {
+          assert.equal(after.local[seenKey], saved.local[seenKey]);
+        }
         // Reading dialogue intentionally persists its seen-line marker; map and save storage still stay unchanged.
         delete saved.local[seenKey];
         delete after.local[seenKey];
