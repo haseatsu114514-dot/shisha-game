@@ -10,7 +10,7 @@
 - タイトル: 縦長の原画を上画面いっぱいに置き、同じ絵のぼかしを後ろに敷かない。ロゴは左上の暗い帯、設定の入口はヒンジ（本編の「表示」と同じ）。低い端末では章名の行を詰める。
 - ヒンジの「表示」ボタンを小さくし、画面の角に食い込ませない。
 
-検証: `node remake/test/browser/game_layout.mjs`（操作バーの位置の期待値を更新）、`title_layout.mjs`、`ds_packing.mjs`、`ds_overlay_layers.mjs`、`hud_fortune.mjs`、`conversation_ui.mjs`。比較画像は [docs/qa/ds-portrait-20261030/](../docs/qa/ds-portrait-20261030/README.md)。残る課題（上画面4:3に16:9の地図を収めたときの上下の帯、座標操作の工程の0.47倍縮小、場面転換の円ワイプが2画面をまたぐ）は同READMEに記載。
+検証: `node remake/test/browser/game_layout.mjs`（操作バーの位置の期待値を更新）、`title_layout.mjs`、`ds_packing.mjs`、`ds_overlay_layers.mjs`、`hud_fortune.mjs`、`conversation_ui.mjs`。比較画像は [docs/qa/ds-portrait-20261030/](../docs/qa/ds-portrait-20261030/README.md)。地図の帯はぼかした地図で埋め、場面転換はDSでは全体の暗転、縮小工程の炭は当たり判定だけ広げる（同日決定、理由は同READMEの表）。
 
 ## 2026-10-30 経験値・レベル・火種（心得の盤 第二弾の芯・未公開）
 

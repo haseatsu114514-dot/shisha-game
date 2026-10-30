@@ -662,3 +662,31 @@ body.game-ds .dodge-action .refresh-copy, body.game-ds .precision-copy .refresh-
 /* 配合の温度計: 「低め／高め」の細かい行は省く（緑の帯と「おいしい範囲」で足りる）。 */
 body.game-ds .mix-temperature-legend > :nth-child(2) { display: none; }
 body.game-ds .bench[data-step="mix"] .mix-footer > .btn { white-space: nowrap; }
+
+/* ================================================================ 2026-10-30 残課題の対応（オーナー「判断は任せる」）
+   1) 地図の上下の帯: 地図は全体表示（ピンの位置を崩さない）のまま、帯は同じ地図をぼかして暗くした絵で埋める。
+      要素自身の背景は大きさ0で隠し、::before にぼかし（全面）、::after に全体表示を描く。 */
+body.game-ds[data-ds-view="map"] #bg .bg-img { background-size: 0 0; }
+body.game-ds[data-ds-view="map"] #bg .bg-img::before,
+body.game-ds[data-ds-view="map"] #bg .bg-img::after {
+  content: ""; position: absolute; pointer-events: none; background-image: inherit; background-repeat: no-repeat; background-position: center;
+}
+body.game-ds[data-ds-view="map"] #bg .bg-img::before { inset: -24px; background-size: cover; filter: blur(14px) brightness(.38) saturate(.8); }
+body.game-ds[data-ds-view="map"] #bg .bg-img::after { inset: 0; background-size: contain; }
+
+/* 2) 場面転換: 1280×720 用の斜め帯・円・店ロゴの幕は2画面をまたいで崩れるので、DSでは全体の暗転にする。
+      覆う・開くの時間と入力の止め方は既存の幕のまま。 */
+body.game-ds .scene-curtain { background: #0b0814; }
+body.game-ds .scene-curtain > * { display: none; }
+body.game-ds .scene-curtain:not(.move) { opacity: 0; transition: opacity var(--st-ms, 200ms) ease; }
+body.game-ds .scene-curtain:not(.move).cover { opacity: 1; }
+body.game-ds .scene-curtain:not(.move).reveal { opacity: 0; }
+body.game-ds .scene-curtain.move { animation: ds-veil-in 180ms ease-out both; }
+@keyframes ds-veil-in { from { opacity: 0; } to { opacity: 1; } }
+/* 店に入るときのロゴは上画面の中に小さく出す。 */
+body.game-ds .store-arrival { inset: auto; left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); }
+body.game-ds .store-arrival-card { zoom: .62; }
+
+/* 3) 座標で操作する工程（穴あけ・炭・蒸らし・吸い出し）は、タイミング操作中にスクロールさせないため縮小のまま。
+      代わりに押せる範囲が画面上で小さすぎる炭のつまみは、見た目を変えずに当たり判定だけを広げる（縮小倍率ぶんを打ち消す）。 */
+body.game-ds .bench button.coal::after { content: ""; position: absolute; inset: calc(-9px / var(--ds-k, 1)); }
