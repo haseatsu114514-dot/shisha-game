@@ -42,6 +42,7 @@ const context = vm.createContext({ console, document, setTimeout, clearTimeout, 
   removeItem: () => { throw Error("existing saves must not be deleted"); },
 } });
 const mocks = {
+  "core/growth.js": { growthEnabled: () => false, hidaneTotal: () => 0 },
   "core/scene-motions.js": { trainRide: async (mid, opts) => { rides++; lastRide = opts; await mid(); } },
   "core/util.js": { el: (...a) => new Element(...a), yen: n => `${n}円` },
   "core/data.js": { bgUrl: x => x, sceneBg: () => ({}), faceIconUrl: noop, displayName: noop },
