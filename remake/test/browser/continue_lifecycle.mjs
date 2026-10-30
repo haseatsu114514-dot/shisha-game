@@ -102,14 +102,19 @@ try {
           options: [{ label: "閉じる", test: "590-menu-close" }] });
       } else document.querySelector('[data-test="590-menu-close"]').click();
     }, value);
+    await mount({ context: { lossOrdinal: 1 }, soundEffects: false });
+    await page.clock.runFor(22000);
+    assert.equal((await snapshot()).phase, "speaking", "first loss has no automatic timeout");
+    assert.equal((await snapshot()).count, "∞", "first loss keeps the countdown animation before showing no limit");
+    assert(await page.locator('[data-test="retry"],[data-test="game-over-title"]').evaluateAll(buttons => buttons.every(button => !button.disabled)));
     if (touch) {
       await page.setViewportSize({ width: 390, height: 844 });
-      await mount();
+      await mount({ context: { lossOrdinal: 2 } });
       assert.equal(await page.locator("#rotate-hint").evaluate(n => getComputedStyle(n).display), "grid");
       const held = await snapshot(); await page.clock.runFor(30000);
       assert.deepEqual(await snapshot(), held, "30s initial rotation holds captions, count, callbacks and SE");
       await page.setViewportSize({ width: 844, height: 390 }); await page.clock.runFor(20);
-    } else await mount();
+    } else await mount({ context: { lossOrdinal: 2 } });
     await page.clock.runFor(3000);
     await menu(true); await hidden(true);
     const held = await snapshot(); await page.clock.runFor(30000);
@@ -133,7 +138,7 @@ try {
     console.log(`PASS ${touch ? "touch" : "PC"}: overlapping pauses and subtitle deadline`);
 
     // Normal countdown: requested sound boundaries use the same visible clock.
-    await mount();
+    await mount({ context: { lossOrdinal: 2 } });
     await page.clock.runFor(20000);
     const notes = (await snapshot()).notes;
     const counts = notes.filter(n => n.freq === 1000 || [620, 700, 780, 870, 990, 70].includes(n.freq));
@@ -147,7 +152,7 @@ try {
 
     // Selecting at 19s remaining and just before expiry stops countdown reservations.
     for (const elapsed of [1000, 19950]) {
-      await mount(); await page.clock.runFor(elapsed);
+      await mount({ context: { lossOrdinal: 2 } }); await page.clock.runFor(elapsed);
       await page.evaluate(() => {
         __go.querySelector('[data-test="retry"]').click();
         for (let i = 0; i < 10; i++) __go.querySelector('[data-test="game-over-title"]').click();
