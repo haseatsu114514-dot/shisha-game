@@ -5,7 +5,7 @@ import { affinityLevel } from "./stats.js";
 import { ensureGrowth, HIDANE_KEYS, noteLit, BOARD_TOTAL } from "./growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_PREFIX, STAT_SQUARES, BOARD_SHAPES,
-  SKILLS, LESSONS, LESSON_MIN_STEP, RANKS, PEAK_CELL, SQUARE_PERKS,
+  SKILLS, LESSONS, LESSON_MIN_STEP, RANKS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS,
 } from "./growth-board-data.js";
 
 export * from "./growth-board-data.js";
@@ -13,16 +13,17 @@ export * from "./growth-board-data.js";
 const cellKey = (x, y) => `${x},${y}`;
 export const HUB = "HUB";
 
-// ---------------------------------------------------------------- 盤の型（2.2・v3）
+// ---------------------------------------------------------------- 盤の型（2.2・v9）
 
-const isHubSide = (x, y) => Math.abs(x) + Math.abs(y) === 1;
+/** 紋（0,0。盤の下の端）の隣: 左・右・上の3つ */
+const isHubSide = (x, y) => Math.abs(x) + Math.abs(y) === 1 && y <= 0;
 
-/** 盤ごとの型: マス（座標・種類・章・紋からの道のり）と線 */
+/** 盤ごとの型: マス（座標・種類・章・恩恵・紋からの道のり・帯）と線 */
 function buildLayout(board) {
   const shape = BOARD_SHAPES[board];
-  const cells = new Map(shape.cells.map(([key, kind, ring]) => {
+  const cells = new Map(shape.cells.map(([key, kind, ring, perk]) => {
     const [x, y] = key.split(",").map(Number);
-    return [key, { key, x, y, kind, ring }];
+    return [key, { key, x, y, kind, ring, perk }];
   }));
   const adj = {};
   for (const [a, b] of shape.edges) {
@@ -33,6 +34,11 @@ function buildLayout(board) {
   for (const c of cells.values()) if (isHubSide(c.x, c.y)) { dist[c.key] = 1; queue.push(c.key); }
   while (queue.length) { const u = queue.shift(); for (const v of adj[u] || []) if (dist[v] == null) { dist[v] = dist[u] + 1; queue.push(v); } }
   for (const c of cells.values()) c.dist = dist[c.key];
+  // 帯（SBD62）: 関門を通らずに届くか。届く中で第1章なら「近く」、それ以外は「中ほど」、関門を通るなら「関門の先」
+  const free = new Set(), q2 = [];
+  for (const c of cells.values()) if (isHubSide(c.x, c.y) && c.kind !== "gate") { free.add(c.key); q2.push(c.key); }
+  while (q2.length) { const u = q2.shift(); for (const v of adj[u] || []) if (!free.has(v) && cells.get(v).kind !== "gate") { free.add(v); q2.push(v); } }
+  for (const c of cells.values()) c.band = c.kind === "gate" ? 2 : !free.has(c.key) ? 3 : c.ring === 1 ? 1 : 2;
   return { cells: [...cells.values()], edges: shape.edges, adj };
 }
 export const LAYOUTS = Object.freeze(Object.fromEntries(BOARD_KEYS.map((b) => [b, Object.freeze(buildLayout(b))])));
@@ -68,7 +74,7 @@ function buildNodes() {
   for (const n of nodes) {
     const c = LAYOUTS[n.board].cells.find((x) => x.key === n.cell);
     if (at[`${n.board}:${n.cell}`]) throw new Error(`${n.id} と ${at[`${n.board}:${n.cell}`]} が同じマス`);
-    Object.assign(n, { gx: c.x, gy: c.y, ring: c.ring });
+    Object.assign(n, { gx: c.x, gy: c.y, ring: c.ring, band: c.band, ...(n.kind === "stat" && c.perk ? { perk: c.perk } : {}) });
     at[`${n.board}:${n.cell}`] = n.id;
   }
   for (const n of nodes) {
@@ -93,15 +99,14 @@ export const NODE_BY_ID = Object.freeze(Object.fromEntries(NODES.map((n) => [n.i
 export const BOARD_TOTAL_COST = NODES.reduce((n, node) => n + node.cost, 0);
 export const boardNodes = (board) => NODES.filter((n) => n.board === board);
 
-const RING_ROAD = new Set(["1,0", "1,1", "0,1", "-1,1", "-1,0", "-1,-1", "0,-1", "1,-1"]);
-/** 普通のマスの恩恵（SBD59）。能力のマスでなければ null。極みは基礎 */
+const fmtNum = (v) => String(Math.round(v * 10) / 10);
+/** 普通のマスの恩恵（SBD59・SBD62）。能力のマスでなければ null。極みは基礎。強さは帯の倍率（近く×1・中ほど×2・関門の先×3） */
 export function perkOf(node) {
   if (node?.kind !== "stat") return null;
   const def = SQUARE_PERKS[node.board];
-  if (node.peak || RING_ROAD.has(node.cell)) return def.base;
-  const { gx: x, gy: y } = node;
-  const region = y === 0 ? (x > 0 ? "E" : "W") : x === 0 ? (y < 0 ? "N" : "S") : `${y < 0 ? "N" : "S"}${x > 0 ? "E" : "W"}`;
-  return def.perks[def.regions[region]] || def.base;
+  const perk = (!node.peak && def.perks[node.perk]) || def.base;
+  const tier = PERK_TIERS[node.band] || PERK_TIERS[1];
+  return { ...perk, tier: node.band, tierName: tier.name, text: perk.text.replace(/\{([\d.]+)\}/g, (_, v) => fmtNum(Number(v) * tier.mult)) };
 }
 
 export const nodeLabel = (node) => node.kind === "stat"
