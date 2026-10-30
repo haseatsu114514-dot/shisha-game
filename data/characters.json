@@ -247,6 +247,11 @@
       "30-year-old obese white American shisha craftsman, round body and warm focused eyes behind vintage glasses, short dark hair and neat beard, colorful retro patterned camp shirt under a dark work apron, a tiny analog timer in one large hand and a handwritten recipe card in the other",
       "lemon-lime shisha craftsman in a Tokyo diner-like lounge, cheerful when serving guests but exacting about seconds and millimeters of low-temperature heat; never a caricature of his size or nationality"
     ],
+    "voice": {
+      "first_person": "俺",
+      "hajime_address": "ハジメ",
+      "tone": "口癖は「ヘイ」「ノー、ノー」。一人称は「俺」で統一（「ミー」「私」は使わない）。ハジメへの呼び方は常に片仮名の「ハジメ」"
+    },
     "intro_cutin": {
       "title": "柑橘の研究家",
       "line": "二口目まで、軽く爽やかに",
