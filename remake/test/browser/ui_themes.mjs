@@ -330,6 +330,8 @@ await suite("ui-themes-config",async check=>{
       await press('[data-test="vn-auto"]');
       assert.equal(await page.locator('[data-test="vn-auto"]').getAttribute("aria-pressed"), "false");
       await page.waitForTimeout(350);
+      // #1846: フォーカス中のAUTOボタンではEnterがボタン操作になる。会話送りの前にフォーカスを外す。
+      if (!touch) await page.locator('[data-test="vn-auto"]').evaluate(button => button.blur());
       if (touch) await page.locator(".vn-box").tap(); else await page.keyboard.press("Enter");
       await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent?.includes("次の行もそのまま続けて読める。"));
       await page.locator(".vn-next.show").waitFor();
