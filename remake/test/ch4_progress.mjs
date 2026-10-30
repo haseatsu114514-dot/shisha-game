@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { newState } from "../js/core/state.js";
+import { newState, setState } from "../js/core/state.js";
+import { paidAction, applyStats } from "../js/core/stats.js";
 import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_PROLOGUE, CH4_RESOLUTION, CH4_MANDATORY,
   CH4_TOURNAMENT_DAY, CH4_EVE_DAY, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress,
   completeChapterFourScene, endChapterFourDay, finishChapterFourEve, chapterFourMandatory,
   chapterFourSecondAvailable, chapterFourSheikhRevealed, revealChapterFourSheikh,
-  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy } from "../js/chapters/ch4-progress.js";
+  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "../js/chapters/ch4-progress.js";
 import { chapterFourMapModel, DUBAI_MAP_PLACES } from "../js/chapters/ch4-map-model.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
@@ -322,6 +323,50 @@ assert.equal(completeChapterFourScene(value, "ch4_two_tables"), false, "A cleare
   assert.equal(chapterFourMapModel(eveDaySave).background, "bg_dubai_map_dusk", "Visits must not switch the eve-day map back");
   const restored = JSON.parse(JSON.stringify(eveDaySave));
   assert.equal(chapterFourMapModel(restored).background, "bg_dubai_map_dusk", "A restored save keeps the dusk map");
+}
+
+// #1660 回帰: スポットの「上がった」表示は、エンジンの報酬解析（文頭が「……」の1文）に必ず乗る。
+// 説明文の途中に埋めると解析が null になり、表示だけで加算されなかった。
+for (const dialogue of files.ch4_spots.filter(row => ["ch4_dubai_souq", "ch4_dubai_cafe"].includes(row.dialogue_id))) {
+  const cues = dialogue.lines.map(line => line.text || "").filter(text => text.includes("上がった"));
+  assert.equal(cues.length, 1, `${dialogue.dialogue_id} has one reward cue`);
+  assert(cues[0].startsWith("……"), `${dialogue.dialogue_id}: the cue must start the line: ${cues[0]}`);
+  assert(/^……【(技術|センス|根性|魅力|洞察)】(と【(技術|センス|根性|魅力|洞察)】)?が少し上がった。$/.test(cues[0]), cues[0]);
+}
+{
+  // 台本報酬は paidAction の中で読んだ時だけ、最大2能力各1P実際に入る。外では入らない。
+  const gameState = clearedSave();
+  gameState.stats = { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 };
+  gameState.statXp = {};
+  setState(gameState);
+  applyStats({ sense: 3, insight: 3 });
+  assert.equal(gameState.stats.sense, 10, "Reward outside an action must not add");
+  await paidAction(() => { applyStats({ sense: 3, insight: 3 }); return true; }, { consumed: ok => ok });
+  assert.equal(gameState.stats.sense, 11);
+  assert.equal(gameState.stats.insight, 11);
+  assert.equal(gameState.stats.technique, 10);
+  await paidAction(() => { applyStats({ sense: 3 }); return false; }, { consumed: ok => ok });
+  assert.equal(gameState.stats.sense, 11, "An interrupted visit must not pay");
+}
+
+// #1660: 大会に勝ったとき賞金を一度だけ付与する（敗北では付けない）。
+{
+  assert.equal(CH4_PRIZE, 200000, "decided chapter 4 prize");
+  const prizeSave = clearedSave();
+  advanceToChapterFour(prizeSave);
+  const progress = chapterFourProgress(prizeSave);
+  Object.assign(progress, { part: "tournament", day: CH4_TOURNAMENT_DAY, stage: CH4_PROLOGUE.length });
+  prizeSave.phase = "tournament";
+  prizeSave.money = 1000;
+  assert.equal(completeChapterFourScene(prizeSave, "ch4_tournament_start"), true);
+  assert.equal(prizeSave.money, 1000, "Reading the start scene pays nothing");
+  assert.equal(completeChapterFourScene(prizeSave, "ch4_defeat"), true);
+  assert.equal(prizeSave.money, 1000, "Defeat pays nothing");
+  assert.equal(completeChapterFourScene(prizeSave, "ch4_final"), true);
+  assert.equal(prizeSave.money, 1000 + CH4_PRIZE);
+  progress.part = "tournament"; progress.resolution = 0; // 再読・LOAD相当
+  assert.equal(completeChapterFourScene(prizeSave, "ch4_final"), true);
+  assert.equal(prizeSave.money, 1000 + CH4_PRIZE, "The prize is paid once");
 }
 
 // 保存の検証: 壊れた保存・part と日付の食い違いは throw。

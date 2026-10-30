@@ -37,6 +37,7 @@ import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocati
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
+import { presentNight, growthMenuItems, openGrowthBoard } from "../core/growth.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -227,6 +228,7 @@ async function openMenu() {
     className: "menu-modal",
     body: `DAY ${chapterDay(state)}・${state.slot >= 1 ? "夜" : "昼"}　／　行動のたびに自動でセーブされています。`,
     options: [
+      ...growthMenuItems(),
       { label: "セーブ", value: "save", test: "menu-save" },
       { label: "ロード", value: "load", test: "menu-load" },
       { label: "設定", value: "config", test: "menu-config" },
@@ -245,6 +247,7 @@ async function openMenu() {
     const key = await loadFlow({ inGame: true });
     if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
   }
+  if (v === "board") await openGrowthBoard();
   if (v === "config") await (await import("../scenes/title.js")).openConfig();
   if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
   if (v === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
@@ -463,7 +466,7 @@ async function takeAction() {
     state.pendingInvite = null;
     if (state.slot === 1) state.flags._private_night_day = state.day;
     if (state.slot === 1) state.flags._private_night_char = inv.sender;
-    const { value: met, spent } = await paidAction(() => meetInvitation(inv), { ...invitationGrowth(inv.event), primary: CHAR_STAT[inv.sender] });
+    const { value: met, spent } = await paidAction(() => meetInvitation(inv), { ...invitationGrowth(inv.event), primary: CHAR_STAT[inv.sender], exp: invitationExp(inv) });
     if (!met) {
       if (state.flags._private_night_day === state.day && state.flags._private_night_char === inv.sender) {
         delete state.flags._private_night_day;
@@ -500,6 +503,7 @@ async function takeAction() {
   const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
     ...facilityGrowth(spot),
     consumed: (result) => result.used && spot.kind === "spot",
+    exp: (result) => result.exp || spotExpTarget(spot),
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
@@ -539,9 +543,11 @@ async function performSpotAction(spot) {
   let used = true;
   let exerted = false;
   let slotsUsed = 1;
+  let exp = null;
   if (spot.kind === "tonari") {
     const sub = await tonariMenu();
     if (!sub) return { used: false, exerted };
+    exp = TONARI_EXP[sub] || null;
     if (sub === "hiyori_axe") {
       if (!(await staminaGuard(-10))) return { used: false, exerted };
       const completed = await playHiyoriEvent("axe_reveal");
@@ -619,9 +625,23 @@ async function performSpotAction(spot) {
   }
   if (used) await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside")) });
   if (used) await visitCityGuestAtShop(spot, { scheduledVisit: scheduledCityVisit });
-  return { used, exerted, slotsUsed };
+  return { used, exerted, slotsUsed, exp };
 }
 
+// 経験値の鍵（SPEC 1.3）: 相手のいる行動は相手のキャラID、相手のいない行動はスポットか行動の種類。
+const TONARI_EXP = {
+  baito: { key: "tonari_shift", place: "tonari_shift" },
+  practice: { key: "tonari_practice", place: "tonari_practice" },
+  customer: { key: "tonari_seat", place: "tonari_seat" },
+};
+function spotExpTarget(spot) {
+  if (spot.kind === "shop") return { key: "rin", person: "rin" };
+  if (spot.charId && ["rival", "samechan"].includes(spot.kind)) return { key: spot.charId, person: spot.charId };
+  if (spot.kind === "samechan") return { key: "samechan", person: "samechan" };
+  if (spot.kind === "rest" || spot.kind === "fortune") return null; // 休養・占いは学びにしない
+  return { key: spot.id, place: spot.id };
+}
+const invitationExp = (inv) => inv?.sender ? { key: inv.sender, person: inv.sender } : null;
 
 function postponeUnaffordableInvitation(inv) {
   const cost = invitationCost(inv.event);
@@ -781,7 +801,7 @@ async function endDay({ returnedToTonari = false } = {}) {
         }
       }
     } else {
-      const { value: met, spent } = await paidAction(() => meetInvitation(appointment), { ...invitationGrowth(appointment.event), primary: CHAR_STAT[appointment.sender] });
+      const { value: met, spent } = await paidAction(() => meetInvitation(appointment), { ...invitationGrowth(appointment.event), primary: CHAR_STAT[appointment.sender], exp: invitationExp(appointment) });
       if (met) {
         await afterAction({ exerted: true, spent });
         metTonight = true;
@@ -808,6 +828,9 @@ async function endDay({ returnedToTonari = false } = {}) {
   // 夜の行動を終え、余力があるときだけ家シーシャを選べる。大会前夜は聞かない。
   if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
   delete state.flags._home_trial_plan; // 予約方式の旧セーブを読んだ場合も持ち越さない
+  // 寝る直前（夜明けの幕の前）にその日の経験値を精算する。大会前夜もここで火種が届く（REPORT P2・R1）
+  await presentNight();
+  if (state !== homeOwner) return;
   await advanceDay();
 }
 

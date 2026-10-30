@@ -29,6 +29,7 @@ import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch3-tournament-state.js";
@@ -123,12 +124,16 @@ function card(owner, name, title, description, actions = [], extra = []) {
 function matchDialogue(name) {
   const source = DB.dialogues[`ch3_${name}`];
   if (!source) throw new Error(`台本がありません: ch3_${name}`);
+  const craft = progress().craft;
+  if (name === "national_result") return { ...source, lines: resultLines(source.lines, craft, state.flags._ch3_strategy) };
+  if (name === "national_defeat") return { ...source, lines: defeatLines(source.lines, craft) };
   if (name !== "national_adjustment") return source;
-  return { ...source, lines: source.lines.map((line, index) => {
+  const lines = source.lines.map((line, index) => {
     if (index === 0) return { ...line, text: "一度目の調整を終えた。まだ、全員に持ち点が残っている。" };
     if (index === source.lines.length - 1) return { ...line, text: "二度目の調整へ。残りの葉と温度を確かめる。" };
     return line;
-  }) };
+  });
+  return { ...source, lines: adjustmentLines(lines, craft) };
 }
 
 async function read(owner, name) {

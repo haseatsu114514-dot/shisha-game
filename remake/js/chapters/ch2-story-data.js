@@ -4,6 +4,10 @@ import { CITY_BACKGROUNDS, CH2_SCENE_BACKGROUNDS } from "../core/city-locations.
 // あげは（#626）: 3日目（なるの祝福のあと）の偵察返し・9日目の試煙会・10日目のスランプ来店を強制の夜にする。
 // 9日目はC.STATION柚ヶ谷店の客席で開くアフサール新作の先行試煙会（#929）。旧IDと読了フラグは保存互換のため維持。
 // 2日目と8日目の夜は、TRPGなど自由に使える夜として空けておく（#639）。
+// #1652: 事故・決裂・試煙会・前夜など前後すると成立しない転機は固定。DAY6の残る匂い・DAY7のアダム・DAY12のみんとは
+// 訪問・会話なので preparation にし、休養や夜の約束で後送りできる。deadline（章内日）までに必ず読み、大会後へ持ち越さない。
+// 後送りした夜は CH2_FREE_NIGHTS（DAY2・8）に入れない（期限の救済を除く）。
+export const CH2_FREE_NIGHTS = [2, 8];
 // room は会話の前に出す店内（.webp の店内画は metadata.bg で指定できないため）。bg は店内以外の場所の背景。contact はその夜に連絡先も交換する。
 // #921の柚ヶ谷店の客席を夜景にした背景。県大会ホールや地元店と区別する。
 export const C_STATION_TASTING_BG = CITY_BACKGROUNDS.c_station_night;
@@ -21,10 +25,10 @@ export const CH2_NIGHTS = [
     { id: "ch2_kumicho_greeting", file: "ch2_main", when: ({ flags }) => !flags._ch2_read_ch2_slump_taste },
     { id: "ch2_slump_taste", file: "ch2_main", flag: "_ch2_taste_distant" },
   ] },
-  { day: 6, pin: "tonari", label: "残る匂い", beat: "夜。残る匂いのことが気になって、tonariへ──", prerequisites: ["_ch2_read_ch2_sofa_burn"], steps: [
+  { day: 6, schedule: "preparation", deadline: 7, pin: "tonari", label: "残る匂い", beat: "夜。残る匂いのことが気になって、tonariへ──", prerequisites: ["_ch2_read_ch2_sofa_burn"], steps: [
     { id: "ch2_lingering_smell", file: "ch2_main" },
   ] },
-  { day: 7, pin: "adam", label: "アダムとの距離", beat: "夜。アダムの試作を味わいに、EDENへ──", steps: [
+  { day: 7, schedule: "preparation", deadline: 12, pin: "adam", label: "アダムとの距離", beat: "夜。アダムの試作を味わいに、EDENへ──", steps: [
     { id: "ch2_adam_distance", file: "ch2_isolation" },
   ] },
   { day: 9, pin: "ch2_c_station", label: "アフサール新作の試煙会", beat: "夜。C.STATIONの試煙会へ──", steps: [
@@ -33,13 +37,14 @@ export const CH2_NIGHTS = [
     { id: "ch2_strawberry_sample", file: "ch2_main", bg: C_STATION_TASTING_BG, sample: true },
   ] },
   { day: 10, pin: "tonari", label: "スミさんの沈黙", beat: "夜。配合ノートを受け取りに、tonariへ──", steps: [
-    { id: "ch2_sumi_silence", file: "ch2_main" },
+    // #1733: ノートを受け取りに寄った閉店間際にあげはが来る→駅まで送って店へ戻り、半分灯りの落ちた店でスミさんの話を聞く
     { id: "remake_ch2_ageha_slump", file: "ch2_ageha_story" },
+    { id: "ch2_sumi_silence", file: "ch2_main" },
   ] },
   { day: 11, pin: "naru", label: "なるの言葉", beat: "夜。試作の話をしに、KEMURIKUSAへ──", steps: [
     { id: "ch2_naru_confrontation", file: "ch2_isolation" },
   ] },
-  { day: 12, pin: "minto", label: "みんとの心配", beat: "夜。みんとの様子を見に、PEPPERMINTへ──", steps: [
+  { day: 12, schedule: "preparation", deadline: 13, pin: "minto", label: "みんとの心配", beat: "夜。みんとの様子を見に、PEPPERMINTへ──", steps: [
     { id: "ch2_minto_warning", file: "ch2_isolation" },
     // #929: 帰り道のケムリクサ。DAY11の選択の記録がある時だけ、距離の違いを見せる
     { id: "ch2_naru_window", file: "ch2_isolation", bg: CH2_SCENE_BACKGROUNDS.naruWindow, when: ({ flags }) =>

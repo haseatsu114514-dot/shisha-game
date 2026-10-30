@@ -7,6 +7,7 @@
 3. 現行の起動・テスト: `remake/README.md` と `README.md`。
 4. 仕様・オーナー要望: `docs/master_spec.md` と `docs/owner_requests.md`。履歴が混在するため、実装パス・採用状況は確認する。
 5. レビュー範囲: `docs/review_scope.md`。
+6. 成長（経験値・レベル・心得の盤・3能力）: 決定の正本は `docs/stat-design/ADDENDUM-BOARD-LAYOUT.md`、実装用の仕様は `docs/stat-design/SPEC.md`（第2版）。第1版の5能力・五角形の盤は古い。
 
 ## 過去の情報の扱い
 

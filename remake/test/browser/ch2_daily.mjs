@@ -87,6 +87,69 @@ async function reloadSave(page, slot = 0) {
 async function capture(page,file) { await page.waitForTimeout(700); await page.screenshot({path:evidence+file}); }
 
 await suite('ch2-daily',async check=>{
+  // #1045 B02: DAY8の柚ヶ谷。実際のスポットと地図を使い、画像失敗でも入店できる。
+  for (const failImage of [false, true]) await check(`boardgame-preview-${failImage ? 'failed' : 'normal'}`, async page => {
+    let imageRequests = 0;
+    await page.route('**/assets/backgrounds/bg_yuzugaya_trpg.webp', route => {
+      imageRequests++;
+      // 意図した通信失敗だけをsupport.mjsのリソース監視から除外する。
+      return failImage ? route.abort('aborted') : route.continue();
+    });
+    const spot = await page.evaluate(async () => {
+      const core = await import('./js/core/state.js');
+      const ui = await import('./js/core/ui.js');
+      const hud = await import('./js/daily/hud.js');
+      const map = await import('./js/daily/map.js');
+      const trpg = await import('./js/daily/trpg.js');
+      const { MAP } = await import('./js/chapters/ch2-city-data.js');
+      const s = core.newGame();
+      Object.assign(s, { chapter: 2, phase: 'daily', day: 22, slot: 0, money: 30000 });
+      Object.assign(s.flags, { _rei_trpg_introduced: true, _intro_sai: true,
+        _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true } });
+      hud.initHud({}); hud.showHud(true); await ui.warmUiArt();
+      const destination = trpg.trpgSpot();
+      window.__b02 = { selected: null, before: JSON.stringify(s) };
+      window.__b02.flow = map.chooseSpot({ regionId: 'widehanga', regions: [
+        { id: 'widehanga', label: '柚ヶ谷', background: MAP.day, spots: [destination] },
+      ] }).then(id => {
+        window.__b02.selected = id;
+        if (id === 'trpg_bar') return trpg.openTrpgBar();
+      });
+      return destination;
+    });
+    await page.locator(t('pin-trpg_bar')).click();
+    const preview = page.locator('.map-info .mi-preview');
+    await page.waitForFunction(() => {
+      const node = document.querySelector('.map-info .mi-preview');
+      return node && !node.classList.contains('loading');
+    });
+    assert(imageRequests > 0, 'プレビュー画像の実リクエストがない');
+    assert(await preview.isVisible());
+    assert.doesNotMatch(await page.locator('.map-info').innerText(), /画像を表示できませんでした|読込失敗|読み込みに失敗/);
+    if (failImage) {
+      assert.equal(await preview.innerText(), `${spot.label} — ${spot.area}`);
+      assert.match(await preview.getAttribute('aria-label'), /詳細と入店条件/);
+      assert.equal(await preview.evaluate(node => getComputedStyle(node).backgroundImage), 'none');
+    } else {
+      assert.equal(await preview.innerText(), '');
+      assert.match(await preview.evaluate(node => getComputedStyle(node).backgroundImage), /bg_yuzugaya_trpg\.webp/);
+      assert(await page.evaluate(async url => {
+        const image = new Image(); image.src = url;
+        await image.decode(); return image.naturalWidth > 0;
+      }, spot.previewUrl));
+    }
+    assert.equal(await page.locator('.map-info .mi-desc').innerText(), spot.desc);
+    assert.match(await page.locator('.map-info .mi-tags').innerText(), /入店・部活設立は無料/);
+    assert.equal(await page.evaluate(() => JSON.stringify(window.__remake.state)), await page.evaluate(() => __b02.before));
+    const enter = page.locator(t('map-go'));
+    assert(await enter.isVisible() && await enter.isEnabled());
+    await page.screenshot({ path: evidence + `boardgame-preview-${failImage ? 'failed' : 'normal'}.png` });
+    await enter.click();
+    await page.locator(t('trpg-campaign-close')).waitFor();
+    assert.equal(await page.evaluate(() => __b02.selected), 'trpg_bar');
+    await page.locator(t('trpg-campaign-close')).click();
+    await page.evaluate(() => __b02.flow);
+  });
   await check('city-guest-paid-visit-and-reload',async page=>{
     await setup(page,{guest:'ageha'}); await begin(page); await settled(page);
     const guestNames=await page.locator(t('pin-minto')).locator('.pin-person').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('title')));

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { newState } from "../js/core/state.js";
 import { CONTESTANTS, JUDGES, SPEND, tournamentProgress, resources, startAttempt,
   beginStep, finishStep, recoverStep, buildTastingPlan, tastingEffect,
-  castVotes, standings, recordResult } from "../js/chapters/ch3-tournament-state.js";
+  castVotes, standings, recordResult, CH3_PRIZE } from "../js/chapters/ch3-tournament-state.js";
 
 const copy = value => JSON.parse(JSON.stringify(value));
 const makeState = () => {
@@ -115,7 +115,9 @@ assert.equal(p.voted, 0);
 assert.equal(p.defeatRead, false, "A new failed attempt must be able to read its own defeat scene");
 assert.deepEqual(resources(value), resources(before));
 assert.equal(p.history.length, 1);
-for (const key of ["tournament", "lovers", "contacts", "money", "inbox", "keepsakes", "relationshipMemories"]) {
+assert.equal(CH3_PRIZE, 100000, "decided chapter 3 prize");
+assert.equal(value.money, before.money + (result.win ? CH3_PRIZE : 0), "prize follows the recorded result and survives retry");
+for (const key of ["tournament", "lovers", "contacts", "inbox", "keepsakes", "relationshipMemories"]) {
   assert.deepEqual(value[key], before[key], key);
 }
 
@@ -125,9 +127,13 @@ for (const [quality, expectedWin] of [[98, true], [25, false]]) {
   for (let round = 0; round < SPEND.length; round++) castVotes(caseProgress, round, quality);
   caseProgress.step = 11;
   caseProgress.craft.careHistory = [{ score: quality }, { score: quality }];
+  const moneyBefore = caseState.money;
   const outcome = recordResult(caseState, quality);
   assert.equal(outcome.win, expectedWin);
   assert.equal(outcome.rank, standings(caseProgress).find(row => row.id === "hajime").rank);
+  assert.equal(caseState.money, moneyBefore + (expectedWin ? CH3_PRIZE : 0), "prize only on a win");
+  recordResult(caseState, quality);
+  assert.equal(caseState.money, moneyBefore + (expectedWin ? CH3_PRIZE : 0), "prize is paid once");
 }
 assert.throws(() => tournamentProgress({ chapter: 2, flags: {} }), /第3章/);
 console.log("PASS: chapter3 four-person 3x10 voting, conditional citrus, save rollback, retry and honest ranking");
