@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-30 09:35 UTC",
+ "generated": "2026-10-30 20:21 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -1638,6 +1638,10 @@
    "file": "title_art_mashiro_04_cherry_petals.png"
   },
   {
+   "character": "mashiro",
+   "file": "title_art_mashiro_05_rooftop_dusk_yawn.png"
+  },
+  {
    "character": "minto",
    "file": "title_art_minto_01_cafe_welcome.png"
   },
@@ -1660,6 +1664,10 @@
   {
    "character": "minto",
    "file": "title_art_minto_06_after_hours_glasscare.png"
+  },
+  {
+   "character": "minto",
+   "file": "title_art_minto_07_balcony_mint.png"
   },
   {
    "character": "rin",
@@ -2314,6 +2322,7 @@
   "sprites/characters/naru/chr_naru_smile.png",
   "sprites/characters/naru/chr_naru_surprise.png",
   "sprites/characters/pakki/chr_pakki_angry.png",
+  "sprites/characters/pakki/chr_pakki_evil.png",
   "sprites/characters/pakki/chr_pakki_normal.png",
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
@@ -2349,6 +2358,7 @@
   "sprites/characters/tsumugi/chr_tsumugi_smile.png",
   "sprites/characters/tsumugi/chr_tsumugi_surprise.png",
   "sprites/characters/uranaishi/chr_uranaishi_normal.png",
+  "sprites/characters/uranaishi/chr_uranaishi_smile.png",
   "sprites/characters/volk/chr_volk_normal.png",
   "ui/chapters/ch1_keyart.png",
   "ui/character_intros/adam.png",
@@ -2480,12 +2490,14 @@
   "ui/title_arts/title_art_mashiro_02_tea_break.png",
   "ui/title_arts/title_art_mashiro_03_after_rain.png",
   "ui/title_arts/title_art_mashiro_04_cherry_petals.png",
+  "ui/title_arts/title_art_mashiro_05_rooftop_dusk_yawn.png",
   "ui/title_arts/title_art_minto_01_cafe_welcome.png",
   "ui/title_arts/title_art_minto_02_instant_photo.png",
   "ui/title_arts/title_art_minto_03_private_window.png",
   "ui/title_arts/title_art_minto_04_after_hours.png",
   "ui/title_arts/title_art_minto_05_mint_cloud.png",
   "ui/title_arts/title_art_minto_06_after_hours_glasscare.png",
+  "ui/title_arts/title_art_minto_07_balcony_mint.png",
   "ui/title_arts/title_art_naru_01_bakery_morning.png",
   "ui/title_arts/title_art_rin_01_night_tasting.png",
   "ui/title_arts/title_art_rin_03_late_coffee.png",
@@ -2500,9 +2512,7 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
-  "sprites/characters/pakki/chr_pakki_evil.png",
-  "sprites/characters/uranaishi/chr_uranaishi_smile.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
