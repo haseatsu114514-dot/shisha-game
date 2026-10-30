@@ -30,12 +30,12 @@ export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上�
 export const BOARD_TOTAL = BOARD_KEYS.reduce((n, b) => n + STAT_SQUARES[b]
   + BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length, 0) + SKILLS.reduce((n, s) => n + s.cost, 0);
 /** 盤の型の版。違う版の灯し方は、使った火種を返して最初から（習得した授業は残す） */
-export const BOARD_VERSION = 7; // 4: 授業の小道、5: 授業20・会った時に現れる、6: 1レベル1つの小さな盤、7: 3盤とも7割（2026-10-30）
+export const BOARD_VERSION = 8; // 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ（2026-10-30）
 /**
- * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「火種は1レベルアップで1つがいい」「1周目で7割を優先」（SBD58）:
- * どのレベルも1つ。盤を約125に縮め、1周目（中央 Lv.57）で約7割。全開放は2周目の途中（Lv.70前後）。
+ * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「いろんな盤をあけてく爽快感も欲しい」→「1レベル2つ・盤を細かく」（SBD60）:
+ * どのレベルも2つ。盤は198（3盤とも66）で、1周目（中央 Lv.57、約140）で3つの盤どれも7割。
  */
-export const HIDANE_PER_LEVEL = 1;
+export const HIDANE_PER_LEVEL = 2;
 export const hidaneForLevel = () => HIDANE_PER_LEVEL;
 export const COLORED_GIFT = 2;      // 節目・大会・♥5の色つきの火種（1.5）
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
