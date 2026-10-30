@@ -1,5 +1,21 @@
 // 経験値・レベル・火種の芯（SPEC 1.2〜1.5・1.9・6.1a、REPORT R1・R4・R7）。GROWTH_BOARD の裏で動く。
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+// #1690: 精算と前夜の内省は、就寝・夜明けの演出より前に済ませる。
+const calendarSource = readFileSync(new URL("../js/daily/calendar.js", import.meta.url), "utf8");
+const nightFlow = calendarSource.match(/^async function endDay\b[^\n]*\{[\s\S]*?^\}/m)?.[0];
+const advanceDayBody = calendarSource.match(/^async function advanceDay\b[^\n]*\{[\s\S]*?^\}/m)?.[0];
+assert.ok(nightFlow && advanceDayBody, "#1690: 夜の進行と翌日への遷移を検査できる");
+const settlementAt = nightFlow.search(/\bawait\s+presentNight\s*\(/);
+const advanceAt = nightFlow.search(/\bawait\s+advanceDay\s*\(/);
+assert.ok(settlementAt >= 0 && advanceAt > settlementAt, "#1690: 夜の精算を待ってから翌日へ進む");
+assert.match(nightFlow.slice(0, settlementAt), /\bconst\s+eve\s*=\s*state\.day\s*\+\s*1\s*>=\s*\(\s*chapterDef\.untilDay\s*\?\?\s*TOURNAMENT_DAY\s*\)\s*;/, "#1690: 章の大会日（未指定ならTOURNAMENT_DAY）から前夜を判定する");
+assert.match(nightFlow.slice(settlementAt, advanceAt), /\bawait\s+presentNight\s*\(\s*\{\s*evePlace\s*:\s*eve\s*\?[^;]*:\s*null\s*\}\s*\)/, "#1690: 大会前夜だけ内省場所evePlaceを精算へ渡す");
+assert.doesNotMatch(advanceDayBody, /\bpresentNight(?:Growth)?\s*\(/, "#1690: advanceDay内で精算せず、夜明けより前に済ませる");
+assert.match(advanceDayBody, /\bawait\s+dayTurn\s*\(/, "#1690: 精算後のadvanceDayで通常日の夜明けを演出する");
+assert.match(advanceDayBody, /\bawait\s+fadeBlack\s*\(/, "#1690: 精算後のadvanceDayで大会当日の暗転を行う");
+
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const storage = new Map();
