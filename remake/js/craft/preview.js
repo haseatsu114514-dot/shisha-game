@@ -29,6 +29,7 @@ export async function boot() {
   const query = new URLSearchParams(location.search);
   const step = ["holes", "heat", "water"].includes(query.get("step")) ? query.get("step") : "pack";
   const cs = newSession("tutorial");
+  cs.preview = true; // 試遊中のデモ既読は保存データへ書かない。
   cs.mix = { double_apple: 10, mint: 2 };
   if (step !== "pack") cs.pack = "normal";
   if (step === "heat") cs.equip.charcoal = query.get("charcoal") === "cube" ? "cube_charcoal" : "flat_charcoal";

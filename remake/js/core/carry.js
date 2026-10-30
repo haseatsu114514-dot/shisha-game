@@ -467,6 +467,7 @@ export const FLAG_EXACT_RULES = [
   ["pakki_app_installed", "unlock"],
   ["romance_ageha", "person"],
   ["romance_minto", "person"],
+  ["seenDemo", "ui"],
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],
   ["spot_kannon_adam_done", "person"],
