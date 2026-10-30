@@ -980,6 +980,10 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .chip-g { margin-left: 6px; font-size: 13px; color: var(--good); }
 .chip.gold { background: var(--gold); color: #1b1208; }
 .chip.dim { color: var(--text-dim); }
+.recipe-chip { border: 1px solid var(--gold); min-height: 36px; font: 700 14px var(--font); cursor: pointer; }
+.recipe-chip:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
+.recipe-detail h4 { margin: 0 0 12px; color: var(--gold); }
+.recipe-detail p { margin: 8px 0; overflow-wrap: anywhere; }
 /* 贈られた専用ハガル（売却不可）: 贈り主・染み付いた香りの札 */
 .chip.gift { border: 1px dashed var(--gold); }
 .gift-notes { display: grid; gap: 4px; margin-top: 8px; max-height: 128px; overflow-y: auto; padding-right: 6px; }

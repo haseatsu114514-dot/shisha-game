@@ -5,7 +5,7 @@ import { el, sleep, clamp, rand } from "../core/util.js";
 import { createCraftClock } from "./clock.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
+import { stepPanel, showStepDemo, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
 import { effectBadge, effectLine, effectVisible, senseBand, effectTier } from "./effect-visual.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
@@ -90,6 +90,7 @@ export async function runHoles(cs) {
   await waitBenchReady(cs, "holes");
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始してから、光が目印に重なった瞬間にタップ（Space）", { brief: "穴の配置を選んでから、穴あけを始める" });
+  await showStepDemo(cs, "holes");
   const template = await chooseTemplate(panel, cs);
   stepPanel("holes", "アルミ穴あけ", "光が目印に重なった瞬間にタップ（Space）。リングが完成したら「次のリングへ」。選んだ配置を開け終えて仕上げる");
   const rings = ringsForTemplate(template);

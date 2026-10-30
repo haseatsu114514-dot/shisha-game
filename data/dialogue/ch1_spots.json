@@ -974,6 +974,129 @@
       }
     },
     {
+      "dialogue_id": "cs_kemuri_sample",
+      "comment": "#1696 オーナー決定: 博士の危うい二面性をそれとなく匂わせる一度きりの回。C.STATIONの2回目以降の来店で、博士と面識があれば spot-encounters.js が一度だけ再生する。裏ボスの仕掛け人である事実・味覚の喪失・はじめの不調には触れない。大会前後どちらでも読める。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONのカウンターの端。白衣の背中の向かいに、スタッフが一人座っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士の前には、同じ形の小さな一台が二つ。ハガルの上の器具だけが、左右で違う。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "同じ葉、同じ炭。違うのは熱の上げ方だけだ。右から一口ずつ、感じたままを言って"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "えっと……右は、甘いです。普通においしい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフが左のホースを吸って、咳き込んだ。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……二口目で咳。喉に来るのは左だね。記録する"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "無理はしなくていい。水を飲んで。それから、左をもう一口だけ頼めるかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（やさしい声だ。……でも、やめていいとは言わなかった）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "notice_after",
+          "next_false": "notice_before"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの、咳……大丈夫なんですか"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "喉に残る熱は、誰かが一度は数えないといけない。数えておけば、次の誰かは咳をしない"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "そのための道具を作ってきた。ハガルの上のそれ、見覚えは？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭を載せる、金属のやつですよね。店で見たことあります"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "今のは、どこの店にもある型だ。でも元の型はね、……開発者、私だもん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "子どもみたいな顔だった。さっきまで咳を数えていた人と、同じ顔には見えなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフが、左のホースをもう一度取る。博士はもう画面に戻っていて、目の端だけでそれを見ていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（いい人、だと思う、……たぶん）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cs_kemuri_sample"
+        }
+      ],
+      "branches": {
+        "notice_before": [
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "おや、きみ。見ていたね。受付で見た顔だ、tonariの出場者くん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "は、はい。蒸野です"
+          }
+        ],
+        "notice_after": [
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "おや、はじめくん。見ていたね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ど、どうも……"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "kannon_cat",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_kannon_day.png"

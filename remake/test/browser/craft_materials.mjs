@@ -56,6 +56,7 @@ await suite("craft-materials", async check => {
         const raf = requestAnimationFrame.bind(window); window.requestAnimationFrame = callback => raf(() => callback(F.clock));
         F.running = F.holes.runHoles(F.cs);
       });
+      await click(page, '.bench-demo-skip', touch);
       await click(page, '[data-test="hole-template-outer12-middle12"]', touch);
       assert.equal(await page.locator('.ht-option').count(), 1);
       assert.equal(await page.locator(".ht-preview .foil-hole").count(), 0, "Template already has punched holes");
@@ -128,8 +129,10 @@ await suite("craft-materials", async check => {
       await page.locator('[data-test="pack-confirm"]').waitFor();
       await click(page, '[data-test="opt-fluffy"]', touch);
       await click(page, '[data-test="pack-confirm"]', touch);
+      await click(page, '.bench-demo-skip', touch);
       await page.locator('[data-test="hole-start"]').waitFor();
       await page.locator('[data-preview-step="holes"]').click();
+      await click(page, '.bench-demo-skip', touch);
       await page.locator('[data-test="hole-start"]').waitFor();
       assert.equal(await page.locator(".foil-cursor").count(), 0);
       await page.locator('[data-preview-step="pack"]').click();
