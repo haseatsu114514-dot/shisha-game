@@ -16,17 +16,17 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "smile",
           "text": "手紙だけでは、失礼かと思いまして"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "今日は挑戦者として来ました。君の大会記録は、すべて学習済みです"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "……勝った日の俺、ですね"
         },
         {
@@ -41,7 +41,7 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "smile",
           "text": "SHISHA-9000。誰でも失敗を怖がらずに作れる、そのための装置です"
         },
         {
@@ -51,7 +51,7 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "だから君と、比べてみたい。同じ葉で二本勝負です"
         },
         {
@@ -76,7 +76,7 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "smile",
           "text": "ええ。準備ができたら。私も、調整を続けます"
         },
         {
@@ -96,7 +96,7 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "smile",
           "text": "急ぎません。店を空けられる日にしましょう"
         },
         {
@@ -122,7 +122,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "sad",
           "text": "この大会より前に、一台も作れない日があったんです"
         },
         {
@@ -132,12 +132,12 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "休みです。ましろちゃんと、お茶を飲んでました"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "……それは大会の記録には入らない"
         },
         {
@@ -152,17 +152,17 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "失敗しなくて済む装置を、作っているつもりでした"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "作らない日にも、座っていられる椅子があるといいです"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "surprise",
           "text": "……その注文は、まだ聞いたことがなかった"
         },
         {
@@ -187,7 +187,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "surprise",
           "text": "……うまいです"
         },
         {
@@ -197,7 +197,7 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "smile",
           "text": "気温、湿度、吸う速さも見ています"
         },
         {
@@ -212,7 +212,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "（同じ順番を、俺より丁寧に作ってる）"
         },
         {
@@ -232,12 +232,12 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "はじめ。終わったら、店で一服するぞ"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "……はい"
         },
         {
@@ -250,7 +250,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "二台目は、立ち上がりの香りを……"
         },
         {
@@ -260,7 +260,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "いつもの、少し軽めにしますか"
         },
         {
@@ -292,7 +292,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "どうぞ。熱かったら、また離しますね"
         },
         {
@@ -312,12 +312,12 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "smile",
           "text": "二本の合計は、君です。……おめでとうございます"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "ありがとうございます。最初の一台、また吸わせてください"
         }
       ],
@@ -333,17 +333,17 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "記録は残しておきます。もう一度、試しますか"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "sad",
           "text": "はい。でも今日は、店へ帰って一服します"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "おう。飯も残してある"
         },
         {
@@ -364,7 +364,7 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "今日は時間がある。……そこは、尋ねないと分からなかった"
         },
         {
@@ -374,12 +374,12 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "smile",
           "text": "次は聞けるようにする。装置も、私も"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "同じ条件で作っても、票は席ごとに割れました。誤差だと思っていた"
         },
         {
@@ -420,16 +420,26 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
+          "text": "記録を符号に変えることを、エンコードと言います"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "符号の中身は、どれも人の仕事でした。……私は、その人たちに会ったこともない"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
           "text": "……私も昔は、店のカウンターで、お客さんに一台ずつ出していました"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "何を吸っても砂のように感じる時期があった。今も、戻ったとは言えない"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "君も、県大会の頃から……どうやって、また作れたんですか"
         },
         {
@@ -439,17 +449,17 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "博士。今日は一緒に、一台作りませんか"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "surprise",
           "text": "データを見ながらでも？"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "もちろん。俺には分からないところ、教えてください"
         },
         {
@@ -469,7 +479,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "おかえり。ずいぶん、いろんな匂いつけてきたな"
         },
         {
@@ -489,7 +499,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "少し軽いのを。今日の話、長くなるんで"
         },
         {
@@ -511,7 +521,7 @@
         },
         {
           "speaker": "salaryman",
-          "face": "normal",
+          "face": "smile",
           "text": "……動画、回ってきましたよ"
         },
         {
@@ -526,7 +536,7 @@
         },
         {
           "speaker": "salaryman",
-          "face": "normal",
+          "face": "smile",
           "text": "遅くていいんですよ。……いつもの置き方です",
           "comment": "※仮置き（優勝前提の一行）"
         },
@@ -552,7 +562,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "帰ってきてから、ずっと落ち着かねえ顔してんな"
         },
         {
@@ -562,7 +572,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "勝ったあとってのは、そういうもんだ。そのうち、次の注文が来る",
           "comment": "※仮置き（優勝前提の一行）"
         }
@@ -584,7 +594,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "また、それか"
         },
         {
@@ -594,7 +604,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "同じ匂いばっか嗅いでると、鼻が慣れる。慣れた鼻で作ると、客の鼻とずれるぞ"
         },
         {
@@ -604,7 +614,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "たまには、客が頼んだもんを吸え。練習は、そのあとだ"
         },
         {
@@ -630,7 +640,7 @@
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
+          "face": "smile",
           "text": "……こんにちは。今、忙しい？"
         },
         {
@@ -650,7 +660,7 @@
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
+          "face": "smile",
           "text": "これ、お茶。僕、最近これにはまってて"
         },
         {
@@ -665,17 +675,17 @@
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
+          "face": "serious",
           "text": "なんか、顔が硬いね"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "今度、ちょっと大きい勝負があって"
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
+          "face": "smile",
           "text": "そっか。じゃあ、それは勝負のない日に飲んで"
         },
         {
@@ -722,7 +732,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "じゃあ、あの日よりも少し軽くします。あれは大会用の作り方なんで"
         },
         {
@@ -742,6 +752,87 @@
         }
       ],
       "comment": "出典: NEW-TEXT.md §4。未接続。場面全体・背景tonari夕方・橋渡し後の日程決定前にtonariで1回という条件は※仮置き。選択肢か自動発生かは未定。世界大会の一言は素材上の優勝前提として①待ち（Q5・Q19）。素材の仮ID first_visitor は採用せず既存の汎用話者customerに合わせた。対決の酸っぱい顔の客とは別人で、対決客席へは接続しない（Q14）。決勝で使った葉の名は未確認のため出さない。日数・行動回数消費は①待ち（Q11）。"
+    },
+    {
+      "dialogue_id": "ch5_free_eden_adam",
+      "comment": "#1588 オーナー決定（2026-10-30）: 第5章の自由行動にEDENの任意場面を一つ足す。第2章 ch2_adam_distance の「また分かる日に吸え」と、第1章 ch1_adam_second の「昨日の置き方では、今日の葉は決まらん」の回収。対決当日にアダムは置かない（Q13/Q14）。能力値・日・体力は動かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENの扉を開けると、甘さとアニスの香りが押し寄せてきた。初めて来た日と、同じ匂いだ。"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "……来たか、同志よ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "博士と勝負することになりました。ダブルアップルだけで"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……座れ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは何も聞かず、ラベルの違うタッパーを二つ下ろして、一台ずつ作った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "順に吸う。アダムは黙って、こちらの顔を見ていた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "どうだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "左は、甘さが先に来ます。リコリスが厚くて、喉の奥に残ります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "右は、アニスが長いです。軽いけど、最後に少しだけ苦い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムはトングを置いた。しばらく、何も言わなかった。"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "……分かる日が来たな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "遅くなりました"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "遅くはない。林檎は、熟すまで待つものだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "だが忘れるな。昨日の置き方では、今日の葉は決まらん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次に差し出されたのは、水の入ったグラスだった。今日は、飲み干してから店を出た。"
+        }
+      ]
     },
     {
       "dialogue_id": "ch5_second_cup_result_afterglow",
@@ -789,7 +880,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "そうか"
         },
         {
@@ -891,7 +982,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "ここだ。店はやらねえ"
         },
         {
@@ -901,17 +992,17 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "俺も行くからな"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "surprise",
           "text": "え"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "見に行くに決まってんだろ。うちの店の名前でやるんだ"
         },
         {
@@ -1008,12 +1099,12 @@
           },
           {
             "speaker": "hajime",
-            "face": "normal",
+            "face": "serious",
             "text": "……よろしくお願いします"
           },
           {
             "speaker": "sumi",
-            "face": "normal",
+            "face": "serious",
             "text": "決まったか"
           },
           {
@@ -1023,7 +1114,7 @@
           },
           {
             "speaker": "sumi",
-            "face": "normal",
+            "face": "smile",
             "text": "なら今日はもう上がれ。片付けは俺がやる"
           }
         ],
@@ -1062,7 +1153,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "忘れもんは"
         },
         {
@@ -1082,7 +1173,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "たぶんで行くな"
         },
         {
@@ -1118,17 +1209,17 @@
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "smile",
           "text": "おはようございます。来てくださって、ありがとうございます"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "おはようございます。今日は、よろしくお願いします"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "始める前に、揃えましょう"
         },
         {
@@ -1189,17 +1280,17 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "（あれが、俺の煙をなぞってくる）"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "（なぞられるのは、記録の中の俺だ。……今ここで手が震えたら、そっちに負ける）"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "normal",
+          "face": "serious",
           "text": "では、一台目を"
         },
         {
@@ -1244,12 +1335,12 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "……柔らかいな。喉に来ない"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "ただ、最初の三口が薄い。待たされる客もいる"
         },
         {
@@ -1275,12 +1366,12 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "軽い。長く吸える"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "けど、炭を寄せたら一気に焦げるぞ。詰めが甘い分、熱の逃げ場がない"
         },
         {
@@ -1306,12 +1397,12 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "派手だな。大会なら、これで手が挙がる"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "でも、一時間吸う客には重い。三十分で、ホースを置く"
         },
         {
@@ -1332,7 +1423,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "これなら、待たせない"
         },
         {
@@ -1353,7 +1444,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "焦げねえな。それで、最後まで持つ"
         },
         {
@@ -1374,7 +1465,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "最初から、これを作れ"
         },
         {
@@ -1395,7 +1486,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "おう。直すとこは、分かってんだな"
         },
         {
@@ -1513,7 +1604,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "今日は時間のある客だったからな。次は、待たせんな"
         }
       ]
@@ -1555,7 +1646,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "寄せかけて、止めたろ。あれでいい"
         }
       ]
@@ -1576,7 +1667,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "……それでいい"
         }
       ]
@@ -1597,7 +1688,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "……そうか。直さずに帰った晩も、無駄じゃなかったな"
         }
       ]
