@@ -66,11 +66,12 @@ await suite("tonari-opening", async check => {
             await page.locator(".vn-log.show").waitFor();
             assert.ok((await page.locator(".vn-log .log-row").count()) > 0);
             await assertFits(page, ".log-head button");
+            // LOGを開くと「閉じる」にフォーカスが移るので、Enterはそのボタンを押してLOGを閉じる（本文は進めない）。
+            assert.equal(await page.evaluate(() => document.activeElement?.textContent), "閉じる");
             await page.keyboard.press("Enter");
+            await page.locator(".vn-log.show").waitFor({ state: "hidden" });
             assert.equal(await page.locator(".tonari-opening").getAttribute("data-shot"), cue);
             assert.equal(await page.evaluate(() => O531.lines.length), before.count);
-            await page.locator(".vn-log button").getByText("閉じる", { exact: true }).click();
-            await page.locator(".vn-log.show").waitFor({ state: "hidden" });
           }
           saved.add(cue);
         }
