@@ -24,6 +24,10 @@ import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
 /** tonari に入ったときのサブメニュー。戻るなら null */
+// ch2-story-data.js の strawberryTrialReady と同じ条件。日常の共通画面へ第2章の台本データを読み込ませない。
+const strawberryTrialOpen = () => state.chapter === 2 && !!state.flags._ch2_read_remake_ch2_ageha_tasting
+  && !state.flags._ch2_strawberry_trial && !!DB.dialogues.ch2_strawberry_trial_intro?.lines?.length;
+
 export function tonariMenu() {
   return new Promise((resolve) => {
     setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
@@ -41,6 +45,8 @@ export function tonariMenu() {
         opt("お客さんとして一服", !tsumugiAtTonari(state) ? "客席でゆっくり一服する"
           : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
         opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
+        // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
+        strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
         opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話せる", "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"

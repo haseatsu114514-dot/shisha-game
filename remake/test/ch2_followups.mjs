@@ -175,10 +175,10 @@ const loaderContext = vm.createContext({ console, AbortController, setTimeout, c
     return name === "ch2_preparation" ? fixture : JSON.parse(fs.readFileSync(new URL(`data/dialogue/${name}.json`, root)));
   } }) });
 const loader = new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/chapters/ch2-city-data.js", root), "utf8"), { context: loaderContext });
-await loader.link(async spec => spec.includes("affinity-stages") ? new vm.SourceTextModule(stagesSource, { context: loaderContext }) : new vm.SyntheticModule(spec.includes("city-locations") ? ["CITY_BACKGROUNDS"] : spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS", "AGEHA_VISITS", "AGEHA_BADDAY"], function () {
+await loader.link(async spec => spec.includes("affinity-stages") ? new vm.SourceTextModule(stagesSource, { context: loaderContext }) : new vm.SyntheticModule(spec.includes("city-locations") ? ["CITY_BACKGROUNDS"] : spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS", "AGEHA_VISITS", "AGEHA_BADDAY", "STRAWBERRY_TRIAL_IDS"], function () {
   if (spec.includes("city-locations")) this.setExport("CITY_BACKGROUNDS", { kumicho: "room" });
   else if (spec.includes("core/data")) this.setExport("DB", loaderDB);
-  else { this.setExport("CH2_NIGHTS", []); this.setExport("AGEHA_VISITS", []); this.setExport("AGEHA_BADDAY", null); }
+  else { this.setExport("CH2_NIGHTS", []); this.setExport("AGEHA_VISITS", []); this.setExport("AGEHA_BADDAY", null); this.setExport("STRAWBERRY_TRIAL_IDS", []); }
 }, { context: loaderContext }));
 await loader.evaluate();
 const validatedIds = [...ids.map(id => `remake_ch2_${id}_followup`), ...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`)];

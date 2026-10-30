@@ -568,6 +568,11 @@ async function performSpotAction(spot) {
       await play("remake_staff_practice", { bg: TONARI_BG });
       await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
       toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+    } else if (sub === "strawberry") {
+      const { runStrawberryTrial } = await import("../chapters/ch2-strawberry-trial.js");
+      addStamina(-16);
+      await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
+      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "baito") await doBaito();
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {

@@ -272,6 +272,7 @@
         "node --experimental-vm-modules remake/test/reel_hints.mjs",
         "node remake/test/cafe_ideas.mjs",
         "node remake/test/ch2_ageha_story.mjs",
+        "node --experimental-vm-modules remake/test/ch2_strawberry_trial.mjs",
         "node remake/test/ch1_adam_taste_carryover.mjs",
         "node --experimental-vm-modules remake/test/fortune_rumor.mjs",
         "node remake/test/lover_dates.mjs",
