@@ -599,13 +599,11 @@ body.game-ds .bench-appearance-button {
   left: auto; right: calc(100% - var(--ds-cx) - var(--ds-cw) + 8px); top: calc(var(--ds-cy) + 6px);
   min-height: 30px; padding: 4px 10px; font-size: 12px; letter-spacing: .04em;
 }
-body.game-ds .bench:not([data-step="mix"]):not([data-step="pack"]) .bench-right,
-body.game-ds .bench:not([data-step="mix"]):not([data-step="pack"])[data-step] .bench-right { padding-top: 42px; }
-body.game-ds .bench[data-step="mix"] .bench-head, body.game-ds .bench[data-step="pack"] .bench-head { padding-right: 112px; }
+body.game-ds .bench-right, body.game-ds .bench[data-step] .bench-right { padding-top: 42px; }
 
 /* 配合の下端：残量と決定ボタンを下画面の幅に収め、ボタンの文字を切らない。 */
 body.game-ds .bench[data-step="mix"] .mix-footer { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
-body.game-ds .bench[data-step="mix"] .mix-footer > .btn { min-width: 0; max-width: 46%; min-height: 48px; padding: 6px 10px; font-size: 14px; line-height: 1.2; white-space: normal; }
+body.game-ds .bench[data-step="mix"] .mix-footer > .btn { min-width: 0; max-width: 54%; min-height: 48px; padding: 6px 8px; font-size: 13px; line-height: 1.2; white-space: normal; }
 body.game-ds .bench[data-step="mix"] .mix-amount { min-width: 0; overflow: hidden; }
 
 /* 水入れ：760px盤面の縮小では説明が読めないので、縮めずに下画面の幅で組む（水位計はrem指定なのでそのまま収まる）。 */
@@ -614,9 +612,10 @@ body.game-ds .bench[data-step="setup"] .craft-water { width: 100%; padding: 4px 
 body.game-ds .bench[data-step="setup"] .craft-water-display { gap: 14px; align-items: center; }
 body.game-ds .bench[data-step="setup"] .craft-water-meter { flex: 0 0 72px; height: clamp(104px, calc(var(--ds-ch) * .3), 150px); }
 body.game-ds .bench[data-step="setup"] .craft-water-display p { font-size: 12px; line-height: 1.35; margin: 4px 0 0; }
-body.game-ds .bench[data-step="setup"] .craft-water > p { font-size: 12px; line-height: 1.35; margin: 6px 0 0; }
+body.game-ds .bench[data-step="setup"] .craft-water > p { font-size: 11px; line-height: 1.3; margin: 4px 0 0; color: var(--ds-dim); }
 body.game-ds .bench[data-step="setup"] .craft-water-status { font-size: 14px; }
-body.game-ds .bench[data-step="setup"] .craft-water-actions { gap: 6px; margin-top: 8px; }
+body.game-ds .bench[data-step="setup"] .craft-water-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+body.game-ds .bench[data-step="setup"] .craft-water-actions .btn:last-child { grid-column: 1 / -1; }
 body.game-ds .bench[data-step="setup"] .craft-water-actions .btn { min-height: 44px; font-size: 14px; padding: 6px 10px; }
 
 /* 上画面の師匠コメントは小さく、立ち絵を半分以上覆わない。 */

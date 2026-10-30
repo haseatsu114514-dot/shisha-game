@@ -211,7 +211,7 @@ try {
           const choices=[...document.querySelectorAll(".vn-choice")].map(n=>n.getBoundingClientRect());
           const clear=r=>!(ctl.right>r.left && ctl.left<r.right && ctl.bottom>r.top && ctl.top<r.bottom);
           return { inside:ctl.left>=panel.left && ctl.right<=panel.right && ctl.top>=panel.top && ctl.bottom<=panel.bottom+1,
-            offVisual:ctl.top>=visual.bottom, bottomBar:panel.bottom-ctl.bottom<12,
+            offVisual:clear(visual), bottomBar:panel.bottom-ctl.bottom<12,
             clearText:clear(text) && choices.every(clear),
             sizes:[...document.querySelectorAll(".vn-ctl")].map(n=>n.getBoundingClientRect().height) };
         });
