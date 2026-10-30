@@ -1,0 +1,59 @@
+{
+  "issue": 1788,
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-30",
+  "model": "not exposed by tool",
+  "references_attached": [],
+  "style_reference_inspected": "assets/backgrounds/bg_eden_shop.png (repository asset; inspected only, not submitted to generator)",
+  "third_party_downloads": false,
+  "images": [
+    {
+      "source": "asset_sources/reflection-1788/generated/bg_dubai_mosque_courtyard.png",
+      "source_sha256": "f493a98bcfffe3b35b534f7ca266be325a145f9e55458a82a8f54bc49e7fd02b",
+      "source_size": [
+        1672,
+        941
+      ],
+      "runtime": "assets/backgrounds/bg_dubai_mosque_courtyard.png",
+      "runtime_sha256": "19b929b62037547e70d33d72f90b72e9ad74b15e1e451d61c93224f8401be618",
+      "runtime_size": [
+        1280,
+        720
+      ],
+      "comparison_current": "remake/img/backgrounds/bg_dubai_map_dusk.webp",
+      "processing": "Pillow RGB conversion and Lanczos downsampling only; no retouching of generated source"
+    },
+    {
+      "source": "asset_sources/reflection-1788/generated/bg_dubai_waterside_dusk.png",
+      "source_sha256": "45da619f69c1c8026d44acbad72efa940e832eb9b005f050023751f9c4fc7e3a",
+      "source_size": [
+        1672,
+        940
+      ],
+      "runtime": "assets/backgrounds/bg_dubai_waterside_dusk.png",
+      "runtime_sha256": "c550a2bffc3ad101d37e413d69b21f6217357d0ba2213aa9c451744c7a8453fa",
+      "runtime_size": [
+        1280,
+        720
+      ],
+      "comparison_current": "remake/img/backgrounds/bg_dubai_map_dusk.webp",
+      "processing": "Pillow RGB conversion and Lanczos downsampling only; no retouching of generated source"
+    },
+    {
+      "source": "asset_sources/reflection-1788/generated/bg_tokyo_shrine_night.png",
+      "source_sha256": "9e062125a6e5d6e14bcc88eac866c7880bfd42cd2bd58ff863ffdd767b89f4c5",
+      "source_size": [
+        1672,
+        941
+      ],
+      "runtime": "assets/backgrounds/bg_tokyo_shrine_night.png",
+      "runtime_sha256": "34ccf65949f836234975d4543152cd929417ce41eeb86b0fccd40c2164829638",
+      "runtime_size": [
+        1280,
+        720
+      ],
+      "comparison_current": "assets/backgrounds/bg_street_night.png",
+      "processing": "Pillow RGB conversion and Lanczos downsampling only; no retouching of generated source"
+    }
+  ]
+}

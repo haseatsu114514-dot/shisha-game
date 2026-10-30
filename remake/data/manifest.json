@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-29 05:28 UTC",
+ "generated": "2026-10-30 08:35 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -383,6 +383,8 @@
   "bg_choizap_night.png",
   "bg_dubai_map.png",
   "bg_dubai_map_dusk.png",
+  "bg_dubai_mosque_courtyard.png",
+  "bg_dubai_waterside_dusk.png",
   "bg_eden_shop.png",
   "bg_fookah_showroom.png",
   "bg_hideaway.png",
@@ -416,6 +418,7 @@
   "bg_title.png",
   "bg_tokyo_map_day.png",
   "bg_tokyo_map_night.png",
+  "bg_tokyo_shrine_night.png",
   "bg_tonari_customer_hands.png",
   "bg_tonari_inside.png",
   "bg_tonari_inside_day.png",
@@ -2151,6 +2154,8 @@
   "backgrounds/bg_choizap_night.png",
   "backgrounds/bg_dubai_map.png",
   "backgrounds/bg_dubai_map_dusk.png",
+  "backgrounds/bg_dubai_mosque_courtyard.png",
+  "backgrounds/bg_dubai_waterside_dusk.png",
   "backgrounds/bg_eden_shop.png",
   "backgrounds/bg_fookah_showroom.png",
   "backgrounds/bg_hideaway.png",
@@ -2184,6 +2189,7 @@
   "backgrounds/bg_title.png",
   "backgrounds/bg_tokyo_map_day.png",
   "backgrounds/bg_tokyo_map_night.png",
+  "backgrounds/bg_tokyo_shrine_night.png",
   "backgrounds/bg_tonari_customer_hands.png",
   "backgrounds/bg_tonari_inside.png",
   "backgrounds/bg_tonari_inside_day.png",
