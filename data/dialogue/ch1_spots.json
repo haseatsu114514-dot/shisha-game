@@ -2082,9 +2082,25 @@
       "branches": {
         "see_before": [
           {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_met_maezono",
+            "next_true": "see_before_met",
+            "next_false": "see_before_poster"
+          }
+        ],
+        "see_before_poster": [
+          {
             "speaker": "",
             "face": "",
             "text": "C.STATIONの窓際に、大会ポスターで見た顔があった。審査員の上園文太郎さんだ。"
+          }
+        ],
+        "see_before_met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONの窓際に、カフェで会った顔があった。審査員の上園文太郎さんだ。"
           }
         ],
         "see_after": [

@@ -300,9 +300,11 @@
           "text": "客の顔を見て……"
         },
         {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "お前はそれが得意だろう。バイトで毎日やってることだ"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_op_praise_talent",
+          "next_true": "st_face_recall",
+          "next_false": "st_face_default"
         },
         {
           "speaker": "",
@@ -339,7 +341,23 @@
           "face": "",
           "text": "……【技術】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "st_face_recall": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "初日に言ったな。顔を見てから煙を作れって。……あれから、見てるか"
+          }
+        ],
+        "st_face_default": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "お前はそれが得意だろう。バイトで毎日やってることだ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_sumi_secret",
