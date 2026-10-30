@@ -93,9 +93,9 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch2_city_met_shop",
-          "next_true": "shops",
-          "next_false": "venue_only"
+          "flag": "_ch2_deliveries",
+          "next_true": "deliveries",
+          "next_false": "visits"
         },
         {
           "speaker": "hajime",
@@ -114,7 +114,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "明日、荷物の中も確認してみます"
+          "text": "明日、大会に持っていく道具も見直してみます"
         },
         {
           "speaker": "sumi",
@@ -127,6 +127,42 @@
         }
       ],
       "branches": {
+        "deliveries": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "三軒とも、荷物をお渡ししました。皆さん、スミさんによろしくって"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "おう。ご苦労さん。初めての道で、ちゃんと回れたな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "店の名前だけじゃなくて、どんな人がいるのかも分かりました"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "それなら、次は入りやすいだろ。配達も、そういう仕事だ"
+          },
+          {
+            "speaker": "",
+            "face": "normal",
+            "text": "メモの三つの店名に、受け渡し済みの印をつけた。鞄が少し軽くなっていた。"
+          }
+        ],
+        "visits": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_city_met_shop",
+            "next_true": "shops",
+            "next_false": "venue_only"
+          }
+        ],
         "shops": [
           {
             "speaker": "hajime",

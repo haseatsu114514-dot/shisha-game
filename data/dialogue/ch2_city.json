@@ -243,7 +243,7 @@
           {
             "speaker": "ageha",
             "face": "smile",
-            "text": "シーシャ屋さん！？ ガチで世間せまーい！ じゃ、ハジメっちね"
+            "text": "tonari！？ スミさんとこじゃん！ ガチで世間せまーい！ じゃ、ハジメっちね"
           },
           {
             "speaker": "hajime",
@@ -301,9 +301,8 @@
             "text": "ま、初日から難しい顔しなくていいって。まず、道覚えよ？"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "あげはは笑ってドアへ戻った。甘い残り香が、しばらく鼻先にあった。"
+            "type": "jump",
+            "next_id": "ch2_city_ageha_farewell"
           }
         ],
         "known": [
@@ -324,6 +323,16 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_city_ageha_farewell",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは笑ってドアへ戻った。甘い残り香が、しばらく鼻先にあった。"
+        }
+      ]
     },
     {
       "dialogue_id": "ch2_city_kumicho",
@@ -388,7 +397,7 @@
           {
             "speaker": "kumicho",
             "face": "serious",
-            "text": "ほう、県大会かい。俺も出る。いい目してるじゃねえか、あんちゃん"
+            "text": "ほう、スミんとこの。県大会かい、俺も出る。いい目してるじゃねえか、あんちゃん"
           },
           {
             "speaker": "",
@@ -431,14 +440,8 @@
             "text": "（大きな声なのに、手だけは、何も急かさない）"
           },
           {
-            "speaker": "kumicho",
-            "face": "normal",
-            "text": "まずは街を、よく見てきな"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "深く頭を下げると、神崎さんも小さく頷いた。暖簾が、また風に揺れた。"
+            "type": "jump",
+            "next_id": "ch2_city_kumicho_farewell"
           }
         ],
         "known": [
@@ -467,6 +470,21 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_city_kumicho_farewell",
+      "lines": [
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "まずは街を、よく見てきな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "深く頭を下げると、神崎さんも小さく頷いた。暖簾が、また風に揺れた。"
+        }
+      ]
     },
     {
       "dialogue_id": "ch2_city_rei",
@@ -528,7 +546,7 @@
           {
             "speaker": "rei",
             "face": "serious",
-            "text": "……tonari"
+            "text": "……tonari。スミさんの店か"
           },
           {
             "speaker": "",
@@ -581,19 +599,8 @@
             "text": "……いつか、吸ってから聞いてくれ"
           },
           {
-            "speaker": "hajime",
-            "face": "smile",
-            "text": "はい。今度、ちゃんと時間を取って来ます"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "REIさんは頷いた。入口の前から一歩ずれると、向こうも小さく会釈した。"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（派手な看板の前で、返事をひとつずつ選ぶ人なんだ）"
+            "type": "jump",
+            "next_id": "ch2_city_rei_farewell"
           }
         ],
         "known": [
@@ -614,6 +621,26 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_city_rei_farewell",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。今度、ちゃんと時間を取って来ます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIさんは頷いた。入口の前から一歩ずれると、向こうも小さく会釈した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（派手な看板の前で、返事をひとつずつ選ぶ人なんだ）"
+        }
+      ]
     },
     {
       "dialogue_id": "ch2_city_c_station",
@@ -912,7 +939,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "プリクラ機の横で手を振って、通りへ出た。店の明るさが、背中に少し残る。"
+          "text": "入口のプリクラ機の画面で、星のスタンプがちかちか回っていた。"
         }
       ]
     },
