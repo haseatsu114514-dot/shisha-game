@@ -3,10 +3,7 @@
     {
       "dialogue_id": "ch2_rei_first",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp",
-        "flavor_lesson": {
-          "rose": 1
-        }
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
       "lines": [
         {
@@ -601,7 +598,10 @@
     {
       "dialogue_id": "ch2_rei_fourth",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp",
+        "flavor_lesson": {
+          "rose": 1
+        }
       },
       "lines": [
         {
@@ -683,6 +683,11 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "怖くはないですよ。シーシャもちゃんと伝わってるし"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ローズも、棘が出ないところで止める。人に届く香りに、したいから"
         },
         {
           "speaker": "rei",

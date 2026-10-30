@@ -61,6 +61,48 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  assert.equal(fresh.flavorMastery.double_apple,12);assert.deepEqual(fresh.flavorLessons,['ch1_adam_fourth']);
  s=core.newGame();
 }
+{
+ // 第4回へ集約しても、既読の旧回で得た経験値を二重に受け取らず、未取得分は失わない。
+ const naru=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_naru.json',import.meta.url))).dialogues;
+ const first=naru.find(d=>d.dialogue_id==='ch1_naru_first');
+ const third=naru.find(d=>d.dialogue_id==='ch1_naru_third');
+ const fourth=naru.find(d=>d.dialogue_id==='ch1_naru_fourth');
+ assert.equal(first.metadata?.flavor_lesson,undefined);
+ assert.equal(third.metadata?.flavor_lesson,undefined);
+ assert.deepEqual(fourth.metadata.flavor_lesson,{vanilla:1});
+ let fresh=core.newGame();
+ learnFlavorStory(fresh,fourth,DB.flavorById);
+ assert.equal(fresh.flavorMastery.vanilla,24);
+ learnFlavorStory(fresh,fourth,DB.flavorById);
+ assert.equal(fresh.flavorMastery.vanilla,24);
+ const loadOld=(changes)=>{
+  const old={...core.newGame(),schema:22,...changes};
+  storage.set(core.SAVE_KEY,JSON.stringify(old));
+  return core.load();
+ };
+ let partial=loadOld({story:{naru:3},flavorLessons:['ch1_naru_first'],flavorMastery:{vanilla:12}});
+ assert.equal(partial.flavorMastery.vanilla,12);
+ learnFlavorStory(partial,fourth,DB.flavorById);
+ assert.equal(partial.flavorMastery.vanilla,24);
+ let read=loadOld({story:{naru:5},flavorLessons:['ch1_naru_first'],flavorMastery:{vanilla:12}});
+ assert.equal(read.flavorMastery.vanilla,24);
+ assert(read.flavorLessons.includes('ch1_naru_fourth'));
+ core.save();read=core.load();assert.equal(read.flavorMastery.vanilla,24);
+ let complete=loadOld({story:{naru:5},flavorLessons:['ch1_naru_first','ch1_naru_third'],flavorMastery:{vanilla:24}});
+ assert.equal(complete.flavorMastery.vanilla,24);
+ const kumicho=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_kumicho.json',import.meta.url))).dialogues;
+ const rei=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_rei.json',import.meta.url))).dialogues;
+ for(const [dialogues,id,flavor,legacy] of [[kumicho,'ch2_kumicho','dragonfruit','ch2_kumicho_second'],[rei,'ch2_rei','rose','ch2_rei_first']]){
+  const fourth=dialogues.find(d=>d.dialogue_id===id+'_fourth');
+  assert.deepEqual(fourth.metadata.flavor_lesson,{[flavor]:1});
+  let old=loadOld({flags:{['_ch2_read_'+id+'_fourth']:true},flavorLessons:[legacy],flavorMastery:{[flavor]:12}});
+  assert.equal(old.flavorMastery[flavor],12);
+  old=loadOld({flags:{['_ch2_read_'+id+'_fourth']:true},flavorLessons:[],flavorMastery:{}});
+  assert.equal(old.flavorMastery[flavor],12);
+  assert(old.flavorLessons.includes(id+'_fourth'));
+ }
+ s=core.newGame();
+}
 for(const file of fs.readdirSync(new URL('../../data/dialogue/',import.meta.url)).filter(f=>f.endsWith('.json'))){
  for(const dlg of JSON.parse(fs.readFileSync(new URL('../../data/dialogue/'+file,import.meta.url))).dialogues||[])
   for(const id of Object.keys(dlg.metadata?.flavor_lesson||{}))assert(DB.flavorById[id],`${file}/${dlg.dialogue_id}: unknown flavor ${id}`);
