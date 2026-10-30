@@ -1,5 +1,5 @@
 // 第3章以降の台本を接続するための純粋な選択関数。canReadOptionalStory と selectStoryEvening は第3章（ch3-story-wiring.js）
-// から接続済み。selectStoryEnding と selectPostEndingConflict、第4章以降は未接続。
+// から、selectStoryEvening は第4章の前夜（ch4-story-wiring.js）からも接続済み。selectStoryEnding と selectPostEndingConflict は未接続。
 // 正式名簿・場面IDは data/story_routes.json。所在と約束は章runnerが明示して渡す。
 // 既存セーブの lovers を使い、好感度や不明な所在から恋人・到着を推測しない。
 export function canReadOptionalStory(routes, state, sceneId, context = {}) {

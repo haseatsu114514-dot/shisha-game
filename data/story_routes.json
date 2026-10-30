@@ -1,7 +1,7 @@
 {
   "version": 2,
   "status": "partially_connected",
-  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_cigarman_traceとch3_emil_workshopは大会後の面が要り未接続。第4章以降は未接続台本。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。",
+  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_cigarman_traceとch3_emil_workshopは大会後の面が要り未接続。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章のヒロイン到着場面などは未接続台本。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。",
   "heroine_ids": [
     "tsumugi",
     "minto",
