@@ -5,12 +5,12 @@ import { play } from "../vn/engine.js";
 import { growthEnabled, ensureGrowth, openGrowthBoard } from "../core/growth.js";
 import { hasUsableHidane } from "../core/growth-board.js";
 
-/** 場所ごとの場面と背景。新設の神社・モスクの背景は #1788 の画像が届くまで近い背景で代える */
+/** 場所ごとの場面と背景。#1788 の背景候補を接続（Draftで比較中）。内省・盤の規則は変更しない */
 export const REFLECT_PLACES = {
   kannon: { scene: "reflect_kannon", bg: "res://assets/backgrounds/bg_kannon_night.png", label: "観音堂" },
-  tokyo_shrine: { scene: "reflect_tokyo_shrine", bg: "res://assets/backgrounds/bg_street_night.png", label: "路地裏の神社" },
-  dubai_mosque: { scene: "reflect_dubai_mosque", bg: "res://assets/backgrounds/bg_dubai_map_dusk.png", label: "見学できるモスク" },
-  dubai_waterside: { scene: "reflect_dubai_waterside", bg: "res://assets/backgrounds/bg_dubai_map_dusk.png", label: "モスクの見える水辺" },
+  tokyo_shrine: { scene: "reflect_tokyo_shrine", bg: "res://assets/backgrounds/bg_tokyo_shrine_night.png", label: "路地裏の神社" },
+  dubai_mosque: { scene: "reflect_dubai_mosque", bg: "res://assets/backgrounds/bg_dubai_mosque_courtyard.png", label: "ナジュラ・モスク" },
+  dubai_waterside: { scene: "reflect_dubai_waterside", bg: "res://assets/backgrounds/bg_dubai_waterside_dusk.png", label: "モスクの見える水辺" },
   inn_window: { scene: "reflect_inn_window", bg: "res://assets/backgrounds/bg_ch3_hotel_night.png", label: "宿の窓辺" },
 };
 
