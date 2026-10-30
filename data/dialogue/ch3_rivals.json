@@ -2,7 +2,11 @@
   "dialogues": [
     {
       "dialogue_id": "ch3_kuze_first",
-      "metadata": { "flavor_lesson": { "chocolate": 1 } },
+      "metadata": {
+        "flavor_lesson": {
+          "chocolate": 1
+        }
+      },
       "lines": [
         {
           "type": "condition",
@@ -396,7 +400,11 @@
     },
     {
       "dialogue_id": "ch3_kuze_advice",
-      "metadata": { "flavor_lesson": { "orange": 1 } },
+      "metadata": {
+        "flavor_lesson": {
+          "orange": 1
+        }
+      },
       "lines": [
         {
           "speaker": "",
@@ -577,6 +585,10 @@
           "speaker": "kuze",
           "face": "normal",
           "text": "……半分はね。おいしく帰ってほしいのも、本当"
+        },
+        {
+          "type": "remember",
+          "memory_id": "kuze_decide"
         }
       ]
     },
@@ -711,6 +723,10 @@
           "speaker": "steve",
           "face": "smile",
           "text": "次はタイマーと一緒に、二口目の前の顔も見る。その目、ちょっと借りるぞ"
+        },
+        {
+          "type": "remember",
+          "memory_id": "steve_wait"
         }
       ]
     },
