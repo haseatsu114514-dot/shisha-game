@@ -261,6 +261,36 @@
       }
     },
     {
+      "id": "lime_naru_day5",
+      "sender": "naru",
+      "chapter": 2,
+      "trigger_day": 5,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "言ってたノート、写真撮って送っとく。県の連中の癖、まとめたやつな"
+        },
+        {
+          "sender": "naru",
+          "text": "字は汚いけど読めるはず。大会前に目だけ通しとけ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ありがとうございます、読みます",
+          "response": "おう。使うかどうかはお前が決めろ。俺はただ渡しただけだ",
+          "affinity": 2
+        },
+        {
+          "text": "なるさんの字、楽しみです",
+          "response": "うるせえ。……まあ、笑っていいから読め",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_naru_day6",
       "sender": "naru",
       "trigger_day": 6,
