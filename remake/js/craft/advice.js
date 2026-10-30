@@ -34,13 +34,24 @@ export function improvementOf(cs) {
 /** 実際に完了した工程から一つだけ認める。未記録の成功は推測しない。 */
 export function goodPointOf(cs) {
   const bands = temperatureBands(cs);
-  const good = result => Number.isFinite(result?.temp) && !result.failed && isIdealTemperature(result.temp, bands);
+  const recorded = result => Number.isFinite(result?.score) && result.score > 0 && !result.failed && !result.skipped;
+  const good = result => Number.isFinite(result?.temp) && !result.failed && !result.skipped && isIdealTemperature(result.temp, bands);
   const care = cs.careHistory || [];
   if (good(cs.pull) && care.length >= 2 && care.slice(0, 2).every(good)) return "今回よかったこと：提供と2回の調整を、適温で仕上げた。";
   if (care.length >= 2 && good(care[1])) return "今回よかったこと：2回目の調整で適温に整えられた。";
   if (good(cs.pull)) return "今回よかったこと：適温に整えて提供できた。";
-  if (cs.heat?.score >= 85) return "今回よかったこと：炭をしっかり焼き、立ち上げの熱を作れた。";
-  if (cs.holes?.score >= 85) return "今回よかったこと：穴をそろえて空気の通り道を作れた。";
-  if (cs.steam?.score >= 85) return "今回よかったこと：蒸らしで集中を保てた。";
-  return "";
+  if (recorded(cs.heat) && cs.heat.score >= 85) return "今回よかったこと：炭をしっかり焼き、立ち上げの熱を作れた。";
+  if (recorded(cs.holes) && cs.holes.score >= 85) return "今回よかったこと：穴をそろえて空気の通り道を作れた。";
+  if (recorded(cs.steam) && cs.steam.score >= 85) return "今回よかったこと：蒸らしで集中を保てた。";
+  // parts は未実施でも初期値を持つため、完了時に保存される実測結果だけを使う。
+  // 同点なら工程順の先頭を選ぶ。低い点を「成功」「適温」と言い換えない。
+  const rounds = [
+    ["穴あけ", cs.holes], ["炭焼き", cs.heat], ["蒸らし", cs.steam],
+    ["提供", cs.pull], ["1回目の調整", care[0]], ["2回目の調整", care[1]],
+  ];
+  let best = null;
+  for (const entry of rounds) {
+    if (recorded(entry[1]) && (!best || entry[1].score > best[1].score)) best = entry;
+  }
+  return best ? `今回よかったこと：今回の工程では、${best[0]}の評価が比較的よかった。` : "";
 }
