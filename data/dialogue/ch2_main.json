@@ -233,7 +233,7 @@
         {
           "speaker": "salaryman",
           "face": "smile",
-          "text": "いやいや、気にしないで。このソファ、これでやっと『歴戦の風格』が出たよ。勲章だ勲章"
+          "text": "……気にしないで"
         },
         {
           "speaker": "",
@@ -436,6 +436,12 @@
           "type": "condition",
           "condition_type": "flag",
           "flag": "_ch2_scout_tasting",
+          "next_true": "ageha_scout_link"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_scout_tasting",
           "next_true": "scout_tasting",
           "next_false": "scout_plain"
         },
@@ -588,6 +594,13 @@
           {
             "type": "set_flag",
             "flag": "_ch2_audience_welcome"
+          }
+        ],
+        "ageha_scout_link": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "試煙会にもいたかも。吸わないで、みんなの顔ばっか見てた気がする"
           }
         ],
         "scout_tasting": [

@@ -348,6 +348,21 @@
           "text": "大会前夜。路地裏の店に、借りたトングを返しに来た。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "男の台から、甘く深い煙が流れてくる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……グレープですね"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "当たりだ。いい舌をしている"
+        },
+        {
           "speaker": "old_man",
           "face": "normal",
           "text": "明日が本番だな、ハジメ"
@@ -512,6 +527,11 @@
           "text": "最後に、白いカンドゥーラと白い頭布の男が入場した。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "歓声が、一瞬だけ止んだ。男は急ぐでもなく、自分の台の前に立つ。"
+        },
+        {
           "speaker": "pakki",
           "face": "normal",
           "text": "そして現王者、シェイク・アル=ガリヤーン！"
@@ -535,6 +555,21 @@
           "speaker": "sheikh",
           "face": "normal",
           "text": "ええ、先生。遠慮はしません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクの目が、こちらへ戻る。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "緊張しているな、ハジメ。いい。客を大事にしている顔だ"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "全部、出してくるといい。受け止めるのは、私の役目だ"
         },
         {
           "speaker": "naru",
@@ -582,6 +617,21 @@
           "text": "遠慮はいらない。重ければ、重いと言ってくれ"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "客の肩から、すっと力が抜けた。シェイクの煙は、夜の砂漠のように音もなく広がっていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席のざわめきが、その一角だけ消えていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……急いでいるところが、一つもない）"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（路地裏で俺が聞いたことを、あの人も聞いてる）"
@@ -609,7 +659,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヴォルクのノートと同じ欄に、開場後の温度を書く。数字を見てから、客の顔へ戻る。"
+          "text": "ノートの、吸っていた時間の欄の隣に、開場後の温度を書く。数字を見てから、客の顔へ戻る。"
         },
         {
           "speaker": "naru",
@@ -640,6 +690,11 @@
           "speaker": "",
           "face": "",
           "text": "急がせず、炭を一つ離した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふと視線を感じた。シェイクがこちらの炭を見て、楽しそうに目を細めていた。"
         },
         {
           "speaker": "",
@@ -696,11 +751,51 @@
           "speaker": "",
           "face": "",
           "text": "差し出された手を、強く握った。王煙楼とシェイクの台からも、まだ煙が立っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "拍手の中、シェイクがゆっくりと歩いてきた。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "おめでとう、ハジメ。いい一台だった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……近くにいるだけで、怖かったです"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "負けたのは、何年ぶりだろうな"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "王座にいると、本気で向かってくる者がいなくなる。今日は、楽しかった"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "次は、私が挑む番だ"
         }
       ]
     },
     {
       "dialogue_id": "ch4_ending",
+      "comment": "十五年前の一台はカルダモン（#1346）。第1章でスミのボウルを受け取った（締めくくりを読んだ）場合だけ、はじめが閉店後の一台と結びつける。",
+      "branches": {
+        "sumi_bowl": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（スミさんの、閉店後の一台と同じだ）"
+          }
+        ]
+      },
       "lines": [
         {
           "speaker": "",
@@ -751,6 +846,17 @@
           "speaker": "sheikh",
           "face": "normal",
           "text": "王族の注文ではなく、疲れた客の注文を聞いてくれた"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "カルダモンだけの、軽い一台だった"
+        },
+        {
+          "type": "condition",
+          "condition_type": "finale_seen",
+          "char_id": "sumi",
+          "next_true": "sumi_bowl"
         },
         {
           "speaker": "sheikh",

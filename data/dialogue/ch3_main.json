@@ -229,7 +229,27 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "俺もまだ勉強中。今度はお前が休む日の話からな"
+          "text": "俺もまだ勉強中だ。借りた台が毎回違う。甘さが一口で重くなるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それで、どうしたんですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "待った。合うまで、何度も。まだ途中だけどな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "相づちだけ打った。点の話は、一度もしなかった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……聞いてくれて、ありがとな。今度はお前が休む日の話からな"
         },
         {
           "speaker": "",
@@ -803,7 +823,7 @@
         {
           "speaker": "kuze",
           "face": "wild",
-          "text": "煙幕で話した甘さ、まだいる？　答えを出すの、早いよ！"
+          "text": "煙幕で言ったよね、最後の甘さは長いって。今なら直せるよ？"
         },
         {
           "speaker": "",
@@ -898,12 +918,31 @@
         {
           "speaker": "",
           "face": "",
+          "text": "拍手の中、審査席を立った南雲が、俺の前で一度だけ足を止めた。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "……今日は、顔が見えた"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "nagumo"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "久世はノートを胸元へ戻した。笑顔は店にいた時のものだが、閉じたノートを握る指に力が入っている。"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "君の炭は動かなかった。仕掛けたのは僕。ごめん"
+          "text": "君の炭は動かなかった。助言は、本当だよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "言う時を選んだのは僕。ごめん"
         },
         {
           "speaker": "hajime",
@@ -913,7 +952,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "ましろは味を合わせなかった。でも「好き」って隣にいてくれた"
+          "text": "……ましろ、客席で立ち上がりかけてたね"
         },
         {
           "speaker": "kuze",
@@ -989,6 +1028,11 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "僕も何て言えばいいか分からなかった。疎遠になったの、二人のことだよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "……そっか。二人とも、黙ってただけか"
         },
         {
           "speaker": "mashiro",
@@ -1266,6 +1310,232 @@
       "comment": "全国大会と同日の代表決定大会を勝ち抜いた二人が、翌日に結果を伝え合う。なるは東京会場の客席にはいない。"
     },
     {
+      "dialogue_id": "ch3_enmaku_cleanup",
+      "comment": "帰郷の日の朝。前夜の「店の片づけは手伝ってね」と大会後の電話の約束を回収する。半分ずつの絵を合わせ、「すぐ戻る」の嘘を本人が謝る。ましろは恋の返事をしない。どの恋愛状態でも読めるよう、久世の気持ちは言葉にしない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰郷の日の朝。約束どおり、はじめは煙幕の片づけに来た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "仕切りの布は外され、鏡には段ボールが映っている。借りた店が、元の顔へ戻っていく。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "おはよう。東京を裏で動かした組織、本日で解散です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "お疲れさまでした。どこから運びます？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "鏡から。僕の店、これがないと本当に普通の店だね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で鏡を下ろしていると、入口で声がした。ましろが、紙袋と茶缶を抱えていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "おはよう。お茶、持ってきたよぉ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "surprise",
+          "text": "……ましろ。手伝いは、はじめだけのはずだったけど"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "昔も、最後は一人で片づけてたでしょ。今日は三人"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湯が沸くまで、三人で空の客席に座った。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "朔。これ、覚えてる？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろが茶缶のふたを開ける。黄色いクレヨンの、半分のケーキ。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "surprise",
+          "text": "……持ってたの？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "僕も。ノートの表紙の裏"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世がノートを開くと、黄ばんだ紙がもう一枚。並べると、ケーキが一つになった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。ちゃんとケーキだ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "絵は、ケーキに見えるんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "絵はね。煙は、今でもお茶"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "知ってる。大会の日にも言われた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二枚、どうするんですか"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "半分ずつ、また持ってよう。半分だったから、なくさなかったんだと思う"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "……うん。合わせるのは、会った時でいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろがお茶をいれる。今日の湯気には、勝負の匂いがしなかった。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "ましろ。僕、福岡へ行く日に「すぐ戻る」って言ったよね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "言ったねぇ。五年かかった"
+        },
+        {
+          "speaker": "kuze",
+          "face": "serious",
+          "text": "あれ、嘘だった。戻る日なんて決めてなかった、……ごめん"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "知ってたよ。朔、嘘をつく時、先に笑うから"
+        },
+        {
+          "speaker": "kuze",
+          "face": "surprise",
+          "text": "え、そうなの？　じゃあ大会の時も……"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。笑ってた。だから、気をつけてって言ったの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（久世さんを一番読んでたのは、ましろちゃんだったのか）"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "今度は、すぐ戻るって言わない。次の電話の日を言う"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "日曜の夜、……どう？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "日曜は、mukaiが混むよぉ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "surprise",
+          "text": "外れた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "月曜の夜。お茶をいれて、待ってる"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "月曜。ノートに書いた。……今度は、外したくないな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世はそれ以上言わなかった。言いかけた続きを、お茶と一緒に飲みこんだように見えた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "それと、君の分の空欄。まだ書けてない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "優勝の時の、ですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん。世界の大会が終わったら書く。それまで空けておく"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "次は僕の一台で勝つからね。その時の答えも、同じページに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、久世さんの予想を外し続けます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方、久世は福岡行きの便へ、はじめは地元へ帰る新幹線へ向かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは駅の改札の前まで来て、二人に同じように手を振った。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_home_customer",
       "lines": [
         {
@@ -1302,6 +1572,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "はい。帰る時間が決まっていたら、教えてください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の、深い紅色のラベルの袋へ手を伸ばす。"
         },
         {
           "speaker": "",

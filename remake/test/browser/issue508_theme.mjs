@@ -199,7 +199,7 @@ await suite("issue508-theme", async checkAll => {
       if (touch) await skip.tap(); else await skip.click();
       await page.waitForFunction(() => window.finished, null, { timeout: 20000 });
       for (const [id, text, face] of [
-        ["ch2_sofa_burn", "いやいや、気にしないで。このソファ、これでやっと『歴戦の風格』が出たよ。勲章だ勲章", "smile"],
+        ["ch2_sofa_burn", "……気にしないで", "smile"],
         ["ch2_sumi_silence", "はじめくん、県大会に出るんでしょう。すごいことですよ", "normal"],
       ]) {
         await page.evaluate(id => { T.fresh(); T.core.state.chapter = 2; window.finished = false;
