@@ -1,7 +1,7 @@
 # 06. フレーバー・レシピ・機材データ一覧
 
 > **参照commit**：`origin/main` `54a6d87f`（2026-10-28 確認）  
-> **位置づけ**：[`data/flavors.json`](../../data/flavors.json)・[`data/recipes.json`](../../data/recipes.json)・[`data/secret_recipes.json`](../../data/secret_recipes.json)・[`data/ng_mixes.json`](../../data/ng_mixes.json)・[`data/equipment.json`](../../data/equipment.json) を正本とする二次資料。
+> **位置づけ**：[`data/flavors.json`](../../../data/flavors.json)・[`data/recipes.json`](../../../data/recipes.json)・[`data/secret_recipes.json`](../../../data/secret_recipes.json)・[`data/ng_mixes.json`](../../../data/ng_mixes.json)・[`data/equipment.json`](../../../data/equipment.json) を正本とする二次資料。
 
 ---
 
@@ -9,7 +9,7 @@
 
 ### 1. 6メーカーと全77銘柄の内訳（`data/flavors.json`）
 
-現行の [`data/flavors.json`](../../data/flavors.json) には、6メーカー合計 **77銘柄** が収録されています。
+現行の [`data/flavors.json`](../../../data/flavors.json) には、6メーカー合計 **77銘柄** が収録されています。
 
 | メーカーID | メーカー名 | 収録数 | 基本価格（50g） | 特性・ゲーム内補正 |
 |---|---|---:|---:|---|
@@ -47,7 +47,7 @@
 
 ## 定番レシピ 全13種（`data/recipes.json`・確定・main反映済み）
 
-[`data/recipes.json`](../../data/recipes.json) に定義されている定番レシピは、あげはとの共作『メルティ・サマー』を含む**全13種**です。
+[`data/recipes.json`](../../../data/recipes.json) に定義されている定番レシピは、あげはとの共作『メルティ・サマー』を含む**全13種**です。
 
 | # | レシピID | レシピ名 | 構成フレーバー | 黄金比（#627） | 主な入手・関連キャラ |
 |---:|---|---|---|---|---|

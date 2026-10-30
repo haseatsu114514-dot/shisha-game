@@ -1,7 +1,7 @@
 # 02. キャラクター設定・一覧
 
 > **参照commit**：`origin/main` `54a6d87f`（2026-10-28 確認）  
-> **位置づけ**：[`brand/character_profiles.md`](../../brand/character_profiles.md)・[`data/characters.json`](../../data/characters.json)・[`docs/master_spec.md`](../master_spec.md) を正本とする二次資料。
+> **位置づけ**：[`brand/character_profiles.md`](../../../brand/character_profiles.md)・[`data/characters.json`](../../../data/characters.json)・[`docs/master_spec.md`](../../master_spec.md) を正本とする二次資料。
 
 ---
 
@@ -59,7 +59,7 @@
 
 ## 公式ヒロイン 7名（確定・main反映済み）
 
-> [`data/story_routes.json`](../../data/story_routes.json) で定義された恋愛対象ヒロインは全7名です。全員共通で**交流の時系列ルール**（大会前／大会後に遅れてイベントを読む場合の台詞分岐）が適用されます。
+> [`data/story_routes.json`](../../../data/story_routes.json) で定義された恋愛対象ヒロインは全7名です。全員共通で**交流の時系列ルール**（大会前／大会後に遅れてイベントを読む場合の台詞分岐）が適用されます。
 
 ### 1. つむぎ — `tsumugi`
 - **年齢**：21歳

@@ -1,7 +1,7 @@
 # 05. 大会システム・審査ルール・各章レギュレーション
 
 > **参照commit**：`origin/main` `54a6d87f`（2026-10-28 確認）  
-> **位置づけ**：[`docs/master_spec.md`](../master_spec.md)・[`brand/story_and_structure.md`](../../brand/story_and_structure.md) を正本とする二次資料。
+> **位置づけ**：[`docs/master_spec.md`](../../master_spec.md)・[`brand/story_and_structure.md`](../../../brand/story_and_structure.md) を正本とする二次資料。
 
 ---
 

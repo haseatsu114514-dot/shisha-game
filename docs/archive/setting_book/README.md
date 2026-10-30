@@ -1,9 +1,11 @@
 # 『水煙前線 -EN:CODE-』共同制作向け・設定資料集
 
+> **2026-10-31 退避（#2008）**：この資料集は履歴として `docs/archive/` へ移した。根拠にしない。人物の現行正本は `data/characters.json`。
+
 - **参照commit**：`origin/main` `54a6d87f`（2026-10-28 確認）
 - **確認日**：2026-10-28（2026-10-30 に蒸らしタイマー・メーカー数・機材価格・タイトル表記を `data/` と実装に合わせて修正）
-- **位置づけ**：正本は [`docs/master_spec.md`](../master_spec.md)・[`docs/owner_requests.md`](../owner_requests.md)・[`brand/story_and_structure.md`](../../brand/story_and_structure.md)・[`brand/character_profiles.md`](../../brand/character_profiles.md)・[`data/characters.json`](../../data/characters.json) 等であり、**この資料集は二次資料**です。正本と食い違いがある場合は正本を優先します。
-- **照合範囲（2026-10-28 司令塔レビュー）**：フレーバー収録数・価格・リーフ種別（`data/flavors.json` を集計）、主要人物の氏名・読み・年齢（`data/characters.json`）、章タイトル・大会名・課題、魅力ボーナス額（`remake/js/daily/tonari.js`）は正本と照合済み。人物の一人称・呼称表、店舗・スポットの説明文、各章あらすじの細部は**全件照合が未了**のため、正本と食い違う場合は正本を優先してください（身長は資料集から外し、[`brand/character_profiles.md`](../../brand/character_profiles.md) を参照）。
+- **位置づけ**：正本は [`docs/master_spec.md`](../../master_spec.md)・[`docs/owner_requests.md`](../../owner_requests.md)・[`brand/story_and_structure.md`](../../../brand/story_and_structure.md)・[`brand/character_profiles.md`](../../../brand/character_profiles.md)・[`data/characters.json`](../../../data/characters.json) 等であり、**この資料集は二次資料**です。正本と食い違いがある場合は正本を優先します。
+- **照合範囲（2026-10-28 司令塔レビュー）**：フレーバー収録数・価格・リーフ種別（`data/flavors.json` を集計）、主要人物の氏名・読み・年齢（`data/characters.json`）、章タイトル・大会名・課題、魅力ボーナス額（`remake/js/daily/tonari.js`）は正本と照合済み。人物の一人称・呼称表、店舗・スポットの説明文、各章あらすじの細部は**全件照合が未了**のため、正本と食い違う場合は正本を優先してください（身長は資料集から外し、[`brand/character_profiles.md`](../../../brand/character_profiles.md) を参照）。
 - **ステータス区分**：
   - **確定（main反映済み）**：現行 `origin/main` の正本・データ・実装に反映されている仕様。本文にそのまま記載。
   - **採用済みだが未マージ**：オーナー裁定済み・正本（`master_spec.md` / `owner_requests.md`）記録済みだが、一部チャプターランナーや周辺実装が順次接続中の仕様。該当箇所に明記。
@@ -153,7 +155,7 @@
 
 ## 採用済みだが未マージ・順次接続中の項目
 
-以下はオーナー裁定・正本（[`docs/master_spec.md`](../master_spec.md) / [`docs/owner_requests.md`](../owner_requests.md)）で仕様確定済み、またはデータ定義済みで、ランナーや一部演出への接続が段階的に進められている項目です（今夜他の担当者が作業中のPR領域を含む）：
+以下はオーナー裁定・正本（[`docs/master_spec.md`](../../master_spec.md) / [`docs/owner_requests.md`](../../owner_requests.md)）で仕様確定済み、またはデータ定義済みで、ランナーや一部演出への接続が段階的に進められている項目です（今夜他の担当者が作業中のPR領域を含む）：
 
 1. **ダークサイド（ナイトサイド等ダークリーフ）のパッキング・アルミホイル工程・各章大会クラフト周辺（PR #1126 等で作業中）**
 2. **第1章つむぎの台詞・スケッチ描画トランジション演出のブラッシュアップ（PR #1133 等で作業中）**
@@ -180,22 +182,22 @@
 - **全体・メタ情報（`README.md` / `HANDOVER.md` / `tools/build_setting_reference.py`）**
   - 参照commit（`origin/main 54a6d87f`）、確認日（2026-10-28）、正本（`docs/master_spec.md` 等）に対する二次資料としての位置づけを明記。
   - 「確定（main反映済み）」「採用済みだが未マージ」「未確定・提案」の3区分を導入し、古い不採用案を本文から除外または「旧設定（不採用）」として整理。
-  - 実装状況を現行の `remake/` 基準（第1章〜第3章必須進行プレイ可能、旧 `web/`・Godot廃止）へ更新（根拠：[`CLAUDE.md`](../../CLAUDE.md), [`remake/README.md`](../../remake/README.md)）。
+  - 実装状況を現行の `remake/` 基準（第1章〜第3章必須進行プレイ可能、旧 `web/`・Godot廃止）へ更新（根拠：[`CLAUDE.md`](../../../CLAUDE.md), [`remake/README.md`](../../../remake/README.md)）。
 - **物語・章構成（`01_story.md`）**
-  - 主人公表記を旧資料の漢字表記（一人称「僕」）から **「蒸野 はじめ（俺）」** へ全面統一（根拠：[`data/characters.json`](../../data/characters.json), [`docs/master_spec.md`](../master_spec.md)）。
-  - 物語の中心テーマを「空・縁起・分人主義（混ざったままで、俺だった）」へ更新（根拠：[`brand/story_and_structure.md`](../../brand/story_and_structure.md), [`docs/master_spec.md`](../master_spec.md)）。
-  - 第1章タイトルを『煙がつなぐ街』、大会課題を「レモン2g以上」、優勝夜のスミの対応を「まず優勝を褒め、採点表を取り上げて否定しない」へ更新。つむぎの公募スケッチ応募〜第3章帰郷夜の入選報告を反映（根拠：[`data/dialogue/remake_ch1.json`](../../data/dialogue/remake_ch1.json), [`data/dialogue/ch1_tsumugi.json`](../../data/dialogue/ch1_tsumugi.json), [`data/dialogue/ch3_main.json`](../../data/dialogue/ch3_main.json)）。
-  - 第2章副題を *Hollow Crown*、課題を「ストロベリー（DAY9試煙会のアフサール苺支給＋持ち込み可）」、大会形式を4人同時1試合（はじめ・あげは・神崎・REI、ヴォルクは偵察者「？？？」）へ更新。DAY11のなるとの衝突、神崎の受付での自己申告、あげはが失踪せず「次はうちの店ね」と送り出す展開（#929）を反映（根拠：[`docs/master_spec.md`](../master_spec.md), [`data/dialogue/ch2_main.json`](../../data/dialogue/ch2_main.json)）。
-  - 第3章タイトルを『嘘つきたちの夜（SMOKE AND MIRRORS）』（#385）へ更新。旧ライバル「ナンディ・カルダモン」を廃止し **久世 朔（くぜ さく）** と間借り店「煙幕」へ差し替え。ましろがグレープをダブルアップルと偽って出す展開、生活の手順による味覚回復、**なるの「ラストチャンス予選」突破による日本第二代表獲得**を反映（根拠：[`data/dialogue/ch3_main.json`](../../data/dialogue/ch3_main.json), [`data/dialogue/ch3_rivals.json`](../../data/dialogue/ch3_rivals.json), [`data/dialogue/ch3_mashiro.json`](../../data/dialogue/ch3_mashiro.json)）。
-  - 第4章（スミと南雲の15年前の過去、シェイクの原点、王煙楼の位置づけ、はじめの「和の一台」とスミとの二台）および第5章（SHISHA-9000とのダブルアップル単体12g・二本勝負・観客挙手2回合計票）を反映（根拠：[`brand/story_and_structure.md`](../../brand/story_and_structure.md), [`docs/master_spec.md`](../master_spec.md)）。
+  - 主人公表記を旧資料の漢字表記（一人称「僕」）から **「蒸野 はじめ（俺）」** へ全面統一（根拠：[`data/characters.json`](../../../data/characters.json), [`docs/master_spec.md`](../../master_spec.md)）。
+  - 物語の中心テーマを「空・縁起・分人主義（混ざったままで、俺だった）」へ更新（根拠：[`brand/story_and_structure.md`](../../../brand/story_and_structure.md), [`docs/master_spec.md`](../../master_spec.md)）。
+  - 第1章タイトルを『煙がつなぐ街』、大会課題を「レモン2g以上」、優勝夜のスミの対応を「まず優勝を褒め、採点表を取り上げて否定しない」へ更新。つむぎの公募スケッチ応募〜第3章帰郷夜の入選報告を反映（根拠：[`data/dialogue/remake_ch1.json`](../../../data/dialogue/remake_ch1.json), [`data/dialogue/ch1_tsumugi.json`](../../../data/dialogue/ch1_tsumugi.json), [`data/dialogue/ch3_main.json`](../../../data/dialogue/ch3_main.json)）。
+  - 第2章副題を *Hollow Crown*、課題を「ストロベリー（DAY9試煙会のアフサール苺支給＋持ち込み可）」、大会形式を4人同時1試合（はじめ・あげは・神崎・REI、ヴォルクは偵察者「？？？」）へ更新。DAY11のなるとの衝突、神崎の受付での自己申告、あげはが失踪せず「次はうちの店ね」と送り出す展開（#929）を反映（根拠：[`docs/master_spec.md`](../../master_spec.md), [`data/dialogue/ch2_main.json`](../../../data/dialogue/ch2_main.json)）。
+  - 第3章タイトルを『嘘つきたちの夜（SMOKE AND MIRRORS）』（#385）へ更新。旧ライバル「ナンディ・カルダモン」を廃止し **久世 朔（くぜ さく）** と間借り店「煙幕」へ差し替え。ましろがグレープをダブルアップルと偽って出す展開、生活の手順による味覚回復、**なるの「ラストチャンス予選」突破による日本第二代表獲得**を反映（根拠：[`data/dialogue/ch3_main.json`](../../../data/dialogue/ch3_main.json), [`data/dialogue/ch3_rivals.json`](../../../data/dialogue/ch3_rivals.json), [`data/dialogue/ch3_mashiro.json`](../../../data/dialogue/ch3_mashiro.json)）。
+  - 第4章（スミと南雲の15年前の過去、シェイクの原点、王煙楼の位置づけ、はじめの「和の一台」とスミとの二台）および第5章（SHISHA-9000とのダブルアップル単体12g・二本勝負・観客挙手2回合計票）を反映（根拠：[`brand/story_and_structure.md`](../../../brand/story_and_structure.md), [`docs/master_spec.md`](../../master_spec.md)）。
 - **キャラクター・フレーバーうんちく（`02_characters.md`）**
-  - 公式ヒロインを7名体制（**サメちゃん / 波多野なぎさ**、**朝霧ひより** を追加）へ更新。街スポット店主（**斧崎マキ**、**六角サイ**、**路上占い師**）と常連（**常連のサラリーマン**）を追加（根拠：[`data/characters.json`](../../data/characters.json), [`data/story_routes.json`](../../data/story_routes.json)）。
-  - 人物設定の改定を反映：神崎竜二の年齢を **53歳**（旧39歳から修正）、チャコール博士の本名を **火浦 理一**（旧「炭場 創」から修正）、HOOKAH PRESS編集長を **上園 文太郎**（旧「前園 壮一郎」から修正）、零-REI-を純粋なV系好き青年店長（裏の顔やスミ由来のタトゥー設定を撤回）、ヴォルクを **NIGHTSIDE経営者**（凛のボス）、ダ・シルヴァ太陽へのチャド統合を反映（根拠：[`brand/character_profiles.md`](../../brand/character_profiles.md), [`data/characters.json`](../../data/characters.json)）。
-  - **#1108 フレーバーうんちく**を反映：なる（バニラの温度帯による味変化）、みんと（ミントの温度帯による味変化）、神崎竜二（ドラゴンフルーツと0分立ち上げ）、零-REI-（ローズの中温止めと棘）、アダム4回目（ダブルアップルの焦げる一歩手前の甘さと先人からの継承＋ナイフ投げ）、スミ（レモンの輪郭と熱）、久世朔（フローズンシトラス＋ブラックティーの熱順序によるお菓子の連想）、水瀬ましろ（重いダークリーフ `アルファーヘブン ダーク アールグレイ` 好みと第3章「これ、お水？」の理由）を追記（根拠：[`data/dialogue/ch1_naru.json`](../../data/dialogue/ch1_naru.json), [`data/dialogue/ch1_minto.json`](../../data/dialogue/ch1_minto.json), [`data/dialogue/ch1_adam.json`](../../data/dialogue/ch1_adam.json), [`data/dialogue/ch2_kumicho.json`](../../data/dialogue/ch2_kumicho.json), [`data/dialogue/ch2_rei.json`](../../data/dialogue/ch2_rei.json), [`data/dialogue/ch3_rivals.json`](../../data/dialogue/ch3_rivals.json), [`data/dialogue/ch3_mashiro.json`](../../data/dialogue/ch3_mashiro.json)）。
+  - 公式ヒロインを7名体制（**サメちゃん / 波多野なぎさ**、**朝霧ひより** を追加）へ更新。街スポット店主（**斧崎マキ**、**六角サイ**、**路上占い師**）と常連（**常連のサラリーマン**）を追加（根拠：[`data/characters.json`](../../../data/characters.json), [`data/story_routes.json`](../../../data/story_routes.json)）。
+  - 人物設定の改定を反映：神崎竜二の年齢を **53歳**（旧39歳から修正）、チャコール博士の本名を **火浦 理一**（旧「炭場 創」から修正）、HOOKAH PRESS編集長を **上園 文太郎**（旧「前園 壮一郎」から修正）、零-REI-を純粋なV系好き青年店長（裏の顔やスミ由来のタトゥー設定を撤回）、ヴォルクを **NIGHTSIDE経営者**（凛のボス）、ダ・シルヴァ太陽へのチャド統合を反映（根拠：[`brand/character_profiles.md`](../../../brand/character_profiles.md), [`data/characters.json`](../../../data/characters.json)）。
+  - **#1108 フレーバーうんちく**を反映：なる（バニラの温度帯による味変化）、みんと（ミントの温度帯による味変化）、神崎竜二（ドラゴンフルーツと0分立ち上げ）、零-REI-（ローズの中温止めと棘）、アダム4回目（ダブルアップルの焦げる一歩手前の甘さと先人からの継承＋ナイフ投げ）、スミ（レモンの輪郭と熱）、久世朔（フローズンシトラス＋ブラックティーの熱順序によるお菓子の連想）、水瀬ましろ（重いダークリーフ `アルファーヘブン ダーク アールグレイ` 好みと第3章「これ、お水？」の理由）を追記（根拠：[`data/dialogue/ch1_naru.json`](../../../data/dialogue/ch1_naru.json), [`data/dialogue/ch1_minto.json`](../../../data/dialogue/ch1_minto.json), [`data/dialogue/ch1_adam.json`](../../../data/dialogue/ch1_adam.json), [`data/dialogue/ch2_kumicho.json`](../../../data/dialogue/ch2_kumicho.json), [`data/dialogue/ch2_rei.json`](../../../data/dialogue/ch2_rei.json), [`data/dialogue/ch3_rivals.json`](../../../data/dialogue/ch3_rivals.json), [`data/dialogue/ch3_mashiro.json`](../../../data/dialogue/ch3_mashiro.json)）。
 - **店舗・街・機材・システム・レシピ（`03_world_shops.md` / `04_glossary.md` / `05_tournament.md` / `06_flavors_recipes.md`）**
-  - 第1章の街名を「橙須（とうす）」、第2章の街名を「柚ヶ谷（ゆずがや）」へ統一。あげはの店を「MELTY PUFF」、久世の間借り店「煙幕」、サメちゃんの「SHISHARK」、橙須・柚ヶ谷の各スポットを追加（根拠：[`docs/master_spec.md`](../master_spec.md), [`brand/story_and_structure.md`](../../brand/story_and_structure.md)）。
-  - **スミの水の説明（#1113 / #1128）**：「煙を冷やして吸いやすくする」だけとし、有害物質への影響は「諸説ある」（断定しない）へ統一。爆煙の理由は「グリセリンと熱の仕事」（K14）を明記（根拠：[`docs/master_spec.md`](../master_spec.md), [`data/glossary.json`](../../data/glossary.json)）。
-  - **水入れ開始水量0（#1081 E01）**、キッチンタイマー蒸らし（GP21〜26）、はじめの【魅力】の2効果（指名売上＋好感度倍率 GG3/GG4）を反映（根拠：[`docs/master_spec.md`](../master_spec.md)）。
-  - 6メーカー全77フレーバー（`アルファーヘブン` 37種・`ドバジ` 18種・`アフサール` 17種・`フォースフェクタ` 1種・`フワリ` 1種（ホワイトグミベア）・`ナイトサイド` 3種）、定番13レシピ（「メルティ・サマー」追加、氷レモネード黄金比7:3）、裏レシピ7種、専用素焼きハガル8種を含む最新機材データを反映（根拠：[`data/flavors.json`](../../data/flavors.json), [`data/recipes.json`](../../data/recipes.json), [`data/secret_recipes.json`](../../data/secret_recipes.json), [`data/equipment.json`](../../data/equipment.json)）。
+  - 第1章の街名を「橙須（とうす）」、第2章の街名を「柚ヶ谷（ゆずがや）」へ統一。あげはの店を「MELTY PUFF」、久世の間借り店「煙幕」、サメちゃんの「SHISHARK」、橙須・柚ヶ谷の各スポットを追加（根拠：[`docs/master_spec.md`](../../master_spec.md), [`brand/story_and_structure.md`](../../../brand/story_and_structure.md)）。
+  - **スミの水の説明（#1113 / #1128）**：「煙を冷やして吸いやすくする」だけとし、有害物質への影響は「諸説ある」（断定しない）へ統一。爆煙の理由は「グリセリンと熱の仕事」（K14）を明記（根拠：[`docs/master_spec.md`](../../master_spec.md), [`data/glossary.json`](../../../data/glossary.json)）。
+  - **水入れ開始水量0（#1081 E01）**、キッチンタイマー蒸らし（GP21〜26）、はじめの【魅力】の2効果（指名売上＋好感度倍率 GG3/GG4）を反映（根拠：[`docs/master_spec.md`](../../master_spec.md)）。
+  - 6メーカー全77フレーバー（`アルファーヘブン` 37種・`ドバジ` 18種・`アフサール` 17種・`フォースフェクタ` 1種・`フワリ` 1種（ホワイトグミベア）・`ナイトサイド` 3種）、定番13レシピ（「メルティ・サマー」追加、氷レモネード黄金比7:3）、裏レシピ7種、専用素焼きハガル8種を含む最新機材データを反映（根拠：[`data/flavors.json`](../../../data/flavors.json), [`data/recipes.json`](../../../data/recipes.json), [`data/secret_recipes.json`](../../../data/secret_recipes.json), [`data/equipment.json`](../../../data/equipment.json)）。
 - **HTML生成スクリプト（`tools/build_setting_reference.py`）**
-  - `assets/` 内に実在する最新立ち絵（`kumicho`, `rei`, `volk`, `kuze`, `steve`, `hiyori`, `samechan`, `maki`, `sai`, `salaryman`, `uranaishi` 等）および背景・CGパスへ更新し、存在しない旧キャラ（`nandi`）を除外。本文データを設定資料集と完全同期（根拠：[`remake/data/manifest.json`](../../remake/data/manifest.json)）。
+  - `assets/` 内に実在する最新立ち絵（`kumicho`, `rei`, `volk`, `kuze`, `steve`, `hiyori`, `samechan`, `maki`, `sai`, `salaryman`, `uranaishi` 等）および背景・CGパスへ更新し、存在しない旧キャラ（`nandi`）を除外。本文データを設定資料集と完全同期（根拠：[`remake/data/manifest.json`](../../../remake/data/manifest.json)）。

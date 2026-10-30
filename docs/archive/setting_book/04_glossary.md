@@ -1,7 +1,7 @@
 # 04. 用語集・機材・システム解説
 
 > **参照commit**：`origin/main` `54a6d87f`（2026-10-28 確認）  
-> **位置づけ**：[`data/glossary.json`](../../data/glossary.json)・[`data/equipment.json`](../../data/equipment.json)・[`docs/master_spec.md`](../master_spec.md) を正本とする二次資料。
+> **位置づけ**：[`data/glossary.json`](../../../data/glossary.json)・[`data/equipment.json`](../../../data/equipment.json)・[`docs/master_spec.md`](../../master_spec.md) を正本とする二次資料。
 
 ---
 
