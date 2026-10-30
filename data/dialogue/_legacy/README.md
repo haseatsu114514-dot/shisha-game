@@ -10,3 +10,5 @@ Issue #660 の監査対応で隔離した履歴。`data/dialogue/*.json` の直�
 - forced_events: 廃止された旧版の日割り表。現行第1・2章はremakeの章コード、第3章以降はdata/story_routes.jsonを参照。
 
 履歴中のIDは現行IDと重複してよい。現行ファイルから履歴へジャンプ・参照することは不可。検査は tools/check_story_canon.py。
+- ch3_spots（#1893）: 旧第3章スポット台本（ch3_tokyo_shisha / ch3_mukai_visit / ch3_tokyo_sightseeing / ch3_mukai_tetsuko / ch3_return）。どのローダ・FILES・テストからも読まれていなかった。報酬の地の文・「テツコ」表記・ましろのシガー直接提示が残る。
+- ch2_steve_cameo（#1893）: ch2_main.json から1場面だけ退避。参照ゼロ。第2章にスティーブが現れる旧設定と「ストップウォッチ」表記。
