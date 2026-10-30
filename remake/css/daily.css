@@ -182,6 +182,10 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 /* 右上: ステータスの五角形・LIME・MENU（体力は左上の1枚へ統合） */
 .hud-right { display: flex; align-items: center; gap: 8px; pointer-events: auto; }
 .hud-stamina { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; font-size: 13px; letter-spacing: 0.1em; color: var(--text-dim); }
+.hud-stamina .gauge-track { position: relative; }
+.hud-stamina .guts-extra { position: absolute; top: 0; bottom: 0; display: block; background: var(--stat-guts); box-shadow: 0 0 5px var(--stat-guts); }
+.hud-stamina .guts-badge { display: inline-grid; place-items: center; border: 1px solid var(--stat-guts); border-radius: 3px; color: var(--stat-guts); font-size: 10px; width: 15px; height: 15px; }
+.hud-stamina .guts-badge[hidden] { display: none; }
 .hud-bar { display: block; height: 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(199, 154, 60, 0.7); overflow: hidden; transition: width 0.4s; }
 .hud-bar b { display: block; height: 100%; background: linear-gradient(90deg, #6fcf8f, #c9f07a); transition: width 0.5s var(--ease-out); }
 .hud-stamina.recovering { animation: stamina-recover 1.4s ease-out; }
@@ -942,11 +946,19 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .st-badge { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; font-family: var(--font); font-weight: 800; font-size: 15px; color: #1a1018; background: linear-gradient(135deg, var(--sc), color-mix(in srgb, var(--sc) 55%, #201408)); box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.3); }
 .st-name { width: 56px; font-weight: 700; }
 .st-stars { font-size: 18px; color: var(--sc); letter-spacing: 0.08em; }
+.st-pips { display: inline-flex; gap: 2px; align-items: center; }
+.st-pips i { width: 7px; height: 7px; border: 1px solid var(--sc); border-radius: 50%; opacity: .45; }
+.st-pips i.on { background: var(--sc); opacity: 1; }
+.st-next { color: var(--sc); font-size: 11px; line-height: 1.2; }
+.st-next.capped { color: var(--text-dim); }
+.st-next-track { display: block; height: 2px; width: min(100%, 240px); background: #ffffff30; }
+.st-next-track b { display: block; height: 100%; background: var(--sc); }
+.st-next-track.capped b { background: #999; }
 .st-rank { color: var(--text-dim); font-size: 14px; }
 .st-row { cursor: pointer; }
 .st-row.sel { outline: 1px solid color-mix(in srgb, var(--sc) 70%, transparent); }
 .st-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.st-line { display: flex; align-items: center; gap: 12px; }
+.st-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
 .st-fx { font-size: 14px; color: color-mix(in srgb, var(--sc) 55%, #ddd); letter-spacing: 0.04em; }
 .st-fx::before { content: "▸ "; }
 .st-up { margin-left: auto; color: var(--good); font-weight: 800; }

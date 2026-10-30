@@ -5,6 +5,7 @@ import { DB } from "../core/data.js";
 import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { step, earnStat } from "../core/stats.js";
+import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible } from "./session.js";
@@ -403,7 +404,10 @@ export async function stepMix(cs) {
     el("div.mix-list", [el("div.mix-list-head", [
       el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }),
       compactTaste,
-      hint ? el("div.mix-hint", { dataset: { test: "mix-hint" }, text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }) : null,
+      hint ? el("div.mix-hint", { dataset: { test: "mix-hint" } }, [
+        insightful && effectVisible("insight") ? effectBadge("insight", "察") : null,
+        el("span", { text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }),
+      ]) : null,
     ]), ...rows.map((r) => r.row)]),
     temperaturePreview,
     el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), okBtn]),
@@ -451,7 +455,8 @@ export async function stepMix(cs) {
   if (cs.mixInfo.golden === "hit") toast(`✨ 黄金比！ ${r.name}は ${goldenLabel(r)}`, { kind: "good" });
   else if (cs.mixInfo.golden === "near") {
     const short = canSeeGoldenShort(step("insight")) && cs.mixInfo.goldenShort;
-    toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し");
+    toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し",
+      { kind: short && effectVisible("insight") ? "insight-hint" : "" });
   }
   await sleep(200);
 }

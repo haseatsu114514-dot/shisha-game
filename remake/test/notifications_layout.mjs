@@ -72,7 +72,7 @@ try {
       await page.waitForSelector(".gain-card.st-charm.show");
       assert.equal(await page.locator(".gc-earned").count(), 0);
       assert.equal(await page.locator(".gc-points").count(), 0, "レベル到達時に＋数値を表示しない");
-      assert.equal(await page.locator(".gc-evolution").textContent(), "3段に上がった", "能力値21・26はどちらも3段（10ごとに1段）");
+      assert.equal(await page.locator(".gc-main").textContent(), "魅力 3段に上がった", "能力値21・26はどちらも3段（10ごとに1段）。段到達は見出しの1行で出す（#1685 T3）");
       const after = await page.evaluate(() => JSON.stringify(QA.core.state));
       if (shots && amount === 1) { await page.waitForTimeout(500); await page.screenshot({ path: `${shots}/${label}-level.png` }); }
       await page.evaluate(() => QA.ui.bannersIdle());

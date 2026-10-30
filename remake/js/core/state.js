@@ -507,6 +507,7 @@ export const config = {
   // 一度見た演出（連絡先交換・シフト終了）を2回目以降だけ短くする。初回は必ずフルで見せる。
   // 既定オフ＝現状どおり。くじ・チェキ・MG(#1081 H05)は短縮しない。既読判定は state.flags を使う。
   shortSeen: false,
+  statEffectColors: true, // 作り画面の能力補正を色と漢字で示す
 };
 
 export function loadConfig() {

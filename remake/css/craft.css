@@ -227,6 +227,19 @@
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 13px; color: var(--gold-hi); }
 .mix-hint { font-size: 14px; color: #afc7d2; line-height: 1.5; padding: 6px 10px; border-left: 2px solid #afc7d266; background: #afc7d20d; }
+.effect-badge { display: inline-grid; place-items: center; flex: none; min-width: 18px; height: 18px; padding: 0 2px; border: 1px solid currentColor; border-radius: 3px; font-size: 12px; font-weight: 800; line-height: 1; color: var(--effect-color); background: #101018dd; }
+.effect-sense { --effect-color: var(--stat-sense); }
+.effect-technique { --effect-color: var(--stat-technique); }
+.effect-insight { --effect-color: var(--stat-insight); }
+.effect-guts { --effect-color: var(--stat-guts); }
+.effect-charm { --effect-color: var(--stat-charm); }
+.effect-line { display: inline-flex; align-items: center; gap: 5px; color: var(--effect-color); font-size: 12px; }
+.mix-hint:has(.effect-insight) { display: flex; align-items: center; gap: 5px; border-color: var(--stat-insight); color: var(--stat-insight); }
+.craft-sense-band { display: flex; align-items: center; gap: 0; max-width: 100%; padding: 4px; }
+.craft-sense-band .effect-badge { margin-right: 5px; }
+.craft-sense-band i { display: block; height: 7px; flex: none; }
+.craft-sense-base { background: #f8f1d0; }
+.craft-sense-extra { background: var(--stat-sense); box-shadow: 0 0 8px var(--stat-sense); }
 /* #1081 E02: フレーバーを決めるこの工程でも「フレーバーの持ち」を左の窓で先に見せる。 */
 .mix-life-preview { width: 100%; display: grid; justify-items: center; gap: 4px; padding: 6px 4px; border-top: 1px solid #d1b48622; }
 .mix-life-preview > b { font-size: 13px; letter-spacing: .04em; color: #d3c2a8; }
@@ -292,6 +305,7 @@
 .foil-hole.close::after, .foil-hole.miss::after { width: 27px; height: 2px; }
 @keyframes hole-pop { from { transform: scale(2); } }
 .foil-cursor { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 3px solid #c5fcff; outline: 2px solid #132f40; background: transparent; box-shadow: inset 0 0 0 1px #132f40, 0 0 12px #52d9ed99; pointer-events: none; }
+.foil-cursor.technique-visible { box-shadow: inset 0 0 0 1px #132f40, 0 0 12px #52d9ed99, -7px 0 10px var(--stat-technique); }
 .foil-cursor::after { content: ""; position: absolute; inset: -7px; border: 2px solid #132f40; clip-path: polygon(40% 0, 60% 0, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0 60%, 0 40%, 40% 40%); }
 .foil-legend { display: flex; justify-content: center; gap: 27px; margin-top: 26px; padding: 6px 8px; color: #e8dac7; font-size: 14px; }
 .foil-legend span { display: flex; align-items: center; gap: 12px; }
@@ -347,6 +361,10 @@
 .coal.pikan .c-core { opacity: 1; }
 .coal.pikan .c-hot { opacity: 1; filter: brightness(2.2) saturate(.75) drop-shadow(0 0 10px #ffe1a0); }
 .coal.soon .coal-corners { border-color: #e6a160; }
+.heat.insight-visible .coal.soon .coal-corners { border-color: var(--stat-insight); box-shadow: 0 0 12px var(--stat-insight); animation: insight-soon .5s ease-in-out infinite alternate; }
+.coal .effect-insight { display: none; position: absolute; right: -15px; top: -12px; }
+.coal.soon .effect-insight { display: inline-grid; }
+@keyframes insight-soon { to { opacity: .55; } }
 .coal:focus-visible { outline: 2px solid #fff0bf; outline-offset: 4px; border-radius: 5px; }
 .coal.picked { opacity: 0; pointer-events: none; }
 .heat-info { position: relative; margin-top: 0; padding: 12px 12px 8px; border: 1.5px solid #e5d598; border-radius: 18px; background: linear-gradient(145deg, #100b0eea, #1b100dec); box-shadow: 0 10px 25px #0005; font-variant-numeric: tabular-nums; }
@@ -427,6 +445,10 @@
 .dodge.warning[data-side="right"] { border-right-color: #ffd45c; box-shadow: inset -22px 0 26px -20px #ffd45c; }
 .dodge-heart { position: absolute; left: 0; top: 0; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: 26px; color: #ff3a6a; text-shadow: 0 0 12px rgba(255, 60, 100, 0.9); pointer-events: none; z-index: 3; }
 .dodge-core { position: absolute; left: 11px; top: 11px; width: 6px; height: 6px; border-radius: 50%; background: white; box-shadow: 0 0 5px white; }
+.dodge-heart.guts-visible .dodge-core { border: 2px solid var(--stat-guts); box-sizing: content-box; margin: -2px; }
+.dodge-heart .effect-guts { position: absolute; left: 24px; top: -13px; }
+.dodge-refresh-fx.guts-visible .dr-ring { border-color: var(--stat-guts); box-shadow: 0 0 22px var(--stat-guts), inset 0 0 22px var(--stat-guts); }
+.dodge-guts-recovery { position: absolute; left: 12px; top: 12px; z-index: 6; }
 .dodge-heart.shield::after { content: ""; position: absolute; inset: -7px; border: 2px solid #abf9ef; border-radius: 50%; box-shadow: 0 0 16px #85e9d8; }
 .dodge-heart.hit { animation: heart-hit 0.9s steps(6); }
 @keyframes heart-hit { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
@@ -899,6 +921,12 @@
 .dial-rim { fill: none; stroke: #ffe4b778; stroke-width: 1.5; }
 .dial-gloss { fill: #fff8e529; }
 .pg-just { fill: #fffcdfaa; stroke: #fff8e6; stroke-width: 1.5; filter: drop-shadow(0 0 6px #fff0bcb0); }
+.pg-sense-extra { fill: var(--stat-sense); stroke: var(--stat-sense); stroke-width: 1; filter: drop-shadow(0 0 5px var(--stat-sense)); }
+.pull-dial .effect-badge { position: absolute; bottom: 10px; }
+.pull-dial .effect-sense { right: 10px; }
+.pull-dial .effect-technique { left: 10px; }
+.needle-trail { fill: none; stroke: var(--stat-technique); stroke-width: 7; stroke-opacity: .5; filter: drop-shadow(0 0 4px var(--stat-technique)); }
+.pull-dial:not(:has(.effect-technique)) .needle-trail { display: none; }
 .dial-label { font-size: 17px; font-weight: 800; letter-spacing: .04em; text-anchor: middle; dominant-baseline: middle; paint-order: stroke; stroke: #0d0914; stroke-width: 4px; stroke-linejoin: round; }
 .dial-label.l-up { fill: #ffb27a; }
 .dial-label.l-keep { fill: #f4eee4; }

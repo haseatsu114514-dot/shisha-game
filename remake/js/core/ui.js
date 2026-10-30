@@ -5,6 +5,7 @@ import { SE, setRainAmbience } from "./audio.js";
 import { state, STAT_KEYS } from "./state.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
+import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
@@ -26,11 +27,11 @@ export function initLayers() {
     layers[id] = $(`#${id}`);
   }
   // 報酬カード（旧版の Persona 風カードを踏襲）。ステはステ色の漢字バッジ、好感度は顔＋ハート
-  on("stat-gain", ({ key, total, name, starUp, star }) => {
-    // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
-    const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
-    gainCard({ kind: "stat", stat: key, points: starUp ? 0 : total, badge: STAT_BADGE[key], top: starUp ? "STEP UP" : "STATUS UP", main: name,
-      evolution: starUp ? `${star}段に上がった` : "", fx });
+  on("stat-gain", ({ key, total, name, starUp: stepped, star: currentStep }) => {
+    const fx = stepped ? DB.statusTexts?.statTierFx?.[key]?.[currentStep - 1] : "";
+    const progress = nextStepProgress(key);
+    gainCard({ kind: "stat", stat: key, points: stepped ? 0 : total, badge: STAT_BADGE[key], top: stepped ? "STEP UP" : "STATUS UP",
+      main: stepped ? `${name} ${currentStep}段に上がった` : name, evolution: stepped, fx, progress });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;
@@ -297,7 +298,10 @@ export async function fadeBlack(mid, ms = 500) {
 // ---------------------------------------------------------------- トースト／通知
 
 export function toast(text, { ms = 2600, kind = "" } = {}) {
-  const t = el(`div.toast${kind ? "." + kind : ""}`, { text });
+  const effect = { "charm-bonus": ["魅", "魅力"], "insight-hint": ["察", "洞察"] }[kind];
+  const t = el(`div.toast${kind ? "." + kind : ""}`, effect
+    ? [el("span.toast-badge", { text: effect[0], "aria-label": `${effect[1]}の効果` }), el("span", { text })]
+    : { text });
   layers.toasts.append(t);
   requestAnimationFrame(() => t.classList.add("show"));
   setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 400); }, ms);
@@ -341,7 +345,11 @@ export function banner(title, sub = null) {
  * @param o.source "slot" の場合だけ当たりの枠の光と専用音。通知位置・報酬の適用は変えない。
  */
 export function gainCard(o) {
-  bannerQueue.push({ ...o, owner: state });
+  const statEvolution = o.kind === "stat" && typeof o.evolution === "string" && o.evolution;
+  bannerQueue.push({ ...o,
+    ...(statEvolution ? { main: `${o.main} ${statEvolution}`, evolution: true } : {}),
+    ...(o.kind === "stat" ? { progress: o.progress || nextStepProgress(o.stat) } : {}),
+    owner: state });
   pumpBanners();
 }
 
@@ -371,11 +379,14 @@ function pumpBanners() {
           o.points > 0 ? el("span.gc-points", { "aria-label": o.kind === "stat" ? `今回の増加 +${o.points}P` : null }, o.kind === "stat" ? [
             el("span.gc-count", { text: `+${o.points}` }), el("small.gc-unit", { text: "P" }),
           ] : [el("span", { text: `+${o.points}P` })]) : null]),
-        o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
+        typeof o.evolution === "string" && o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
         o.kind !== "stat" && o.sub ? el("span.gc-sub", { text: o.sub }) : null,
-        o.fx ? el("span.gc-fx", { text: o.fx }) : null,
+        o.fx && o.kind !== "stat" ? el("span.gc-fx", { text: o.fx }) : null,
         hearts,
       ]),
+      o.kind === "stat" && o.progress ? el(`div.gc-next${o.progress.capped ? ".capped" : ""}`, { title: `${o.progress.label}${o.fx ? `。${o.fx}` : ""}` }, [
+        el("span", { text: o.progress.label }), el("i", [el("b", { style: { width: `${o.progress.fill}%` } })]),
+      ]) : null,
     ]);
     layers.banners.append(b);
     const owner = state;

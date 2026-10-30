@@ -41,7 +41,7 @@ export function resultCard(panel, { title, lines = [], summary = [], advice = ""
       summary.length ? el("div.rc-summary", { dataset: { test: "step-summary" } }, summary.map((text) => el("p", { text }))) : null,
       !hasAudience ? el(`b.rc-evaluation.${evaluation.tone}`, { text: evaluation.mark, "aria-label": evaluation.label }) : null,
       el("div.rc-title", { text: title }),
-      el("details.rc-details", [el("summary", { text: "詳しく見る", dataset: { test: "step-details" } }), el("ul.rc-lines", lines.filter(Boolean).map((t) => el("li", { text: t })))]),
+      el("details.rc-details", [el("summary", { text: "詳しく見る", dataset: { test: "step-details" } }), el("ul.rc-lines", lines.filter(Boolean).map((t) => el("li", typeof t === "string" ? { text: t } : [t])))]),
       btn,
     ]);
     panel.append(card);

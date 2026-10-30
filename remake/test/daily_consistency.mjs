@@ -24,7 +24,7 @@ const values = {
   "data.js": { DB: db, sceneBg: () => ({}), loadCinemaDialogue: async () => db, bgUrl: () => "bg", displayName: id => id },
   "ui.js": { withScenePreparation: task => task, imageReady: async () => false, showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
   "transitions.js": { refreshPlaceCue() {} },
-  "state.js": { state, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
+  "state.js": { state, config: { statEffectColors: true }, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
   "stats.js": { AFFINITY_RANK_PTS: [0,9,20,33,48,66], setStoryAffinityCap() {}, affinityGateWaiting: () => false, addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, step: () => charmStep,
     currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, releaseAffinity() {}, ensureAffinityLevel() {}, earnStat() {}, affinityLevel: id => [9,20,33,48,66].filter(n => (state.affinity?.[id] || 0) >= n).length },
 

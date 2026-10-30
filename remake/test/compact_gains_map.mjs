@@ -65,7 +65,7 @@ try {
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
     await page.evaluate(async () => {
-      for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 10;
+      for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 12; // 10段では10の倍数を越えると段到達カードになるため、段の途中から始める
       T.core.state.statXp = {};
       await T.stats.paidAction(async () => { T.stats.earnStat("sense", 4); T.stats.addStamina(-8); });
     });
@@ -87,7 +87,7 @@ try {
         badgeInk:T.inkOffset(n.querySelector(".gc-badge")),
         sameSize:getComputedStyle(n.querySelector(".gc-count")).fontSize === getComputedStyle(n.querySelector(".gc-unit")).fontSize };
     });
-    assert.deepEqual([card.heading,card.name,card.points,card.word,card.actual], ["STATUS UP","センス","+1P","",11]);
+    assert.deepEqual([card.heading,card.name,card.points,card.word,card.actual], ["STATUS UP","センス","+1P","",13]);
     assert.equal(card.height,68); assert.equal(card.badge,44);
     assert.equal(card.earned,"今回");
     assert(card.frame.includes("reward-clean.webp") && card.mask.includes("reward-clean.webp") && card.badgeFrame.includes("panel.webp") && card.enabled);

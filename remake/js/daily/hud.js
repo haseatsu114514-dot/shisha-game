@@ -10,6 +10,7 @@ import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
+import { config } from "../core/state.js";
 import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal } from "../core/growth.js";
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
@@ -86,7 +87,7 @@ export function initHud(h) {
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
-    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
+    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b"), el("em.guts-extra")])]), el("span.guts-badge", { text: "根", "aria-label": "根性の体力上乗せ" })]),
     radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () => handlers.status?.() }),
@@ -183,6 +184,11 @@ export function updateHud() {
   dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
   dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
+  const gutsExtra = dom.stamina.querySelector(".guts-extra");
+  const showGuts = config.statEffectColors !== false && step("guts") > 1;
+  gutsExtra.style.left = `${100 / maxStamina() * 100}%`;
+  gutsExtra.style.width = `${showGuts ? Math.max(0, Math.min(state.stamina, maxStamina()) - 100) / maxStamina() * 100 : 0}%`;
+  dom.stamina.querySelector(".guts-badge").hidden = !showGuts;
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる

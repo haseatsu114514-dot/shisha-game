@@ -5,7 +5,7 @@ import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire, modal } from "../core/ui.js";
-import { state, timeOfDay } from "../core/state.js";
+import { state, timeOfDay, config } from "../core/state.js";
 import { addMoney, addStamina, applyStats, step, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
@@ -126,7 +126,7 @@ async function baitoShift({ called }) {
   await play("remake_baito_end", { bg: TONARI_BG });
   if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });
   addMoney(pay);
-  if (bonus) toast(`常連さんの指名が増えてきた。売上ボーナス +${bonus.toLocaleString()}円`, { kind: "good" });
+  if (bonus) toast(`指名ボーナス（魅力）＋${bonus.toLocaleString()}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
   if (condition.shiftBonus) toast(`仕上げは好調。売上ボーナス +${condition.shiftBonus.toLocaleString()}円`, { kind: "good" });

@@ -172,6 +172,12 @@
       "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
     },
     {
+      "id": "stat-ui-progress",
+      "title": "Ten-step UI boundaries and sense color width",
+      "kind": "quick",
+      "run": ["node remake/test/stat_ui_progress.mjs"]
+    },
+    {
       "id": "resume-loading-a01",
       "title": "Resume into a later chapter recovers from a failed module fetch (#1081 A01)",
       "kind": "browser",
