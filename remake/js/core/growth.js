@@ -66,6 +66,8 @@ const BOARD_IDS = Object.fromEntries(BOARD_KEYS.map((b) => [b, [
   ...SKILLS.filter((x) => x.board === b).map((x) => x.id),
 ]]));
 const VALID_IDS = new Set([...Object.values(BOARD_IDS).flat(), ...LESSONS.map((l) => l.id)]);
+/** 盤の火種で灯すマスが全部灯っているか（受け取りの上限とは別。#1801 引継ぎ B4） */
+const boardAllLit = (g) => Object.values(BOARD_IDS).every((ids) => ids.every((id) => g.nodes.includes(id)));
 /** その盤に、火種で灯せる未解放のマスが残っているか */
 const boardHasRoom = (g, board) => BOARD_IDS[board].some((id) => !g.nodes.includes(id));
 
@@ -449,7 +451,7 @@ export function settleGrowth() {
   const milestone = gains.limited.length > 0 || MILESTONE_LEVELS.some((l) => l > from && l <= to);
   const full = to > from && (!g.seen.fullLevelUp || milestone || to - from >= 2);
   if (full) g.seen.fullLevelUp = true;
-  return { from, to, xpFrom, xpTo: g.xp, gains, gifts, learned, milestone, full, boardFull: g.earned >= BOARD_TOTAL };
+  return { from, to, xpFrom, xpTo: g.xp, gains, gifts, learned, milestone, full, boardFull: boardAllLit(g) };
 }
 
 /**

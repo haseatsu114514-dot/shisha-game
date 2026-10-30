@@ -115,13 +115,18 @@ for (const k of board.BOARD_KEYS) {
 }
 
 // 払い方: その盤の色の火種を先に、足りない分を万能で（1.9）
-assert.deepEqual(board.paymentFor(N.K03, { any: 4, body: 1 }), { body: 1, any: 4 });
-assert.deepEqual(board.paymentFor(N.K03, { any: 9, body: 9 }), { body: 5 });
+assert.deepEqual(board.paymentFor(N.K03, { any: 4, body: 1 }), { any: 4, body: 1 }, "万能を先に、足りない分を色で");
+assert.deepEqual(board.paymentFor(N.K03, { any: 9, body: 9 }), { any: 5 }, "万能が足りれば色は使わない");
 assert.equal(board.paymentFor(N.K03, { any: 1, sense: 9 }), null, "ほかの色は使えない");
 assert.deepEqual(board.paymentFor(N["M-S1"], {}), {}, "授業は火種いらず");
+// 色の予約: まだ越えていない関門の数ぶんの色は、普通のマスに使わない（#1801 引継ぎ B）
+assert.equal(board.paymentFor(N.K03, { any: 3, body: 2 }, { reserve: 1 }), null, "色2のうち1は関門用に残すので、万能3＋色1では5に足りない");
+assert.deepEqual(board.paymentFor(N.K03, { any: 3, body: 2 }, { reserve: 0 }), { any: 3, body: 2 });
+assert.equal(board.paymentFor(N.B1, { any: 0, body: 1, sense: 1 }, { reserve: 2 }), null, "色は全部関門の予約");
 // 関門: 色つきの火種でだけ越える。その盤の色が先、無ければほかの色（SBD53）
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9, body: 1, sense: 1 }), { body: 1 });
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9, sense: 1 }), { sense: 1 }, "ほかの色でも越えられる");
+assert.deepEqual(board.paymentFor(N.BG1, { any: 9 }, { capped: true }), { any: 1 }, "もう色が来ない（受け取りの上限）なら万能でも越えられる");
 assert.equal(board.paymentFor(N.BG1, { any: 9 }), null, "万能の火種では越えられない");
 assert.equal(N.BG1.kind, "gate");
 assert.equal(board.nodeLabel(N.BG1), "才能の関門");
@@ -130,7 +135,7 @@ assert.equal(board.nodeLabel(N.BG1), "才能の関門");
 g.hidane = { any: 2, body: 1, sense: 0, wisdom: 0 };
 const committed = board.commitPending([B, B2]);
 assert.deepEqual(committed.map((n) => n.id), [B, B2]);
-assert.deepEqual(g.paid, { [B]: { body: 1 }, [B2]: { any: 1 } });
+assert.deepEqual(g.paid, { [B]: { any: 1 }, [B2]: { any: 1 } }, "万能を先に使う");
 assert.equal(growth.hidaneTotal(g), 1);
 assert.equal(g.litSince.body, 2);
 assert.equal(status(B), "unlocked");
@@ -175,6 +180,41 @@ assert.deepEqual(growth.readyLessons("sumi"), [], "習得した授業はもう�
 assert.equal(growth.lessonLearned("M-S1"), true);
 assert.equal(growth.learnLesson("M-W1"), false, "灯していない授業は習得できない");
 core.state.affinity.adam = 0;
+
+// 火種0でも、道が届いて章が開いた授業が受けられるなら「できることがある」（内省に入れる。#1801 引継ぎ A）
+{
+  const keep = { nodes: [...g.nodes], learned: [...g.learned], hidane: { ...g.hidane } };
+  g.nodes = six.filter((id) => id !== "M-S1"); g.learned = []; g.hidane = { any: 0, body: 0, sense: 0, wisdom: 0 };
+  assert.equal(status("M-S1"), "available");
+  assert.equal(board.hasUsableHidane(g), true, "火種0でも授業が受けられる");
+  g.nodes = []; 
+  assert.equal(board.hasUsableHidane(g), false, "道が届かず火種も無ければ、できることは無い");
+  Object.assign(g, keep);
+}
+
+// 色の火種で詰まらない: 合計272（関門22ぶんの色＋万能）を、どんな順で灯しても全部灯せる（#1801 引継ぎ B）
+{
+  const keep = { nodes: [...g.nodes], learned: [...g.learned], hidane: { ...g.hidane }, earned: g.earned };
+  core.state.chapter = 5;
+  const gates = board.NODES.filter((n) => n.kind === "gate").length;
+  const paid = board.NODES.filter((n) => n.cost > 0);
+  let seed = 7;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let trial = 0; trial < 30; trial++) {
+    const colors = [0, 0, 0]; for (let i = 0; i < gates + 6; i++) colors[Math.floor(rnd() * 3)]++; // 色は偏って届く（関門より少し多い）
+    g.nodes = []; g.learned = []; g.earned = board.BOARD_TOTAL_COST;
+    g.hidane = { any: board.BOARD_TOTAL_COST - gates - 6, body: colors[0], sense: colors[1], wisdom: colors[2] };
+    for (let guard = 0; guard < 400; guard++) {
+      const view = board.replay(g, []);
+      const open = paid.filter((n) => board.nodeStatus(n, g, view) === "available");
+      if (!open.length) break;
+      board.commitPending([open[Math.floor(rnd() * open.length)].id]);
+    }
+    assert.equal(paid.filter((n) => !g.nodes.includes(n.id)).length, 0, `試行${trial}: 全部灯せる`);
+  }
+  core.state.chapter = 1;
+  Object.assign(g, keep);
+}
 
 // 授業はマスとして数えない（2026-10-30 の選定で「能力が伸びるだけ」の授業は無くなった。仕組みは reward: "stat" で残す）
 assert.equal(board.LESSONS.filter((l) => l.reward === "stat").length, 0);

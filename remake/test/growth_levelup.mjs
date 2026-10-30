@@ -210,7 +210,7 @@ core.state.growth = { ...growth.newGrowth(), earned: growth.BOARD_TOTAL - 1 };
 growth.gainExp(growth.totalExpFor(12));
 const capped = growth.settleGrowth();
 assert.equal(core.state.growth.earned, growth.BOARD_TOTAL);
-assert.equal(capped.boardFull, true);
+assert.equal(capped.boardFull, false, "受け取りが上限でも、灯していなければ「盤は埋まった」と出さない");
 
 // 無効へ戻すと新しいゲームには growth が無い
 growth.setGrowthPreview(false);
