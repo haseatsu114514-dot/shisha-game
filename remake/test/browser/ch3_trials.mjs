@@ -17,6 +17,8 @@ async function seed(page, sceneId) {
     if (!p.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
     Object.assign(value.flags._ch3_intro, { titleSeen: true, prologueStep: 4 });
     for (;;) {
+      const free = p.chapterThreeFreeTime(value);
+      if (free) { p.completeChapterThreeFreeTime(value, free.id); continue; }
       const scene = p.chapterThreeScenes(value)[value.flags._ch3_intro.stage];
       if (scene.id === sceneId) break;
       if (!p.completeChapterThreeScene(value, scene.id)) throw new Error(`Blocked at ${scene.id}`);

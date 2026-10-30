@@ -11,7 +11,7 @@ export const FACILITY_ICONS = Object.freeze({
   home: Object.freeze({ badge: Object.freeze([1453, 281]), label: '自宅', rect: Object.freeze([842, 125, 663, 556]) }),
   kohaku: Object.freeze({ badge: Object.freeze([1994, 293]), label: '喫茶こはく', rect: Object.freeze([1552, 104, 568, 539]) }),
   axe_bar: Object.freeze({ badge: Object.freeze([688, 153]), label: '斧投げBar', extra: true, rect: Object.freeze([56, 14, 655, 495]) }),
-  choizap: Object.freeze({ badge: Object.freeze([1466, 178]), label: 'チョイザップ', extra: true, rect: Object.freeze([844, 49, 633, 459]) }),
+  choizap: Object.freeze({ badge: Object.freeze([1466, 178]), label: 'CHOI-ZAP', extra: true, rect: Object.freeze([844, 49, 633, 459]) }),
   fortune: Object.freeze({ badge: Object.freeze([659, 652]), label: '路上占い', extra: true, rect: Object.freeze([81, 513, 632, 496]) }),
   trpg_bar: Object.freeze({ badge: Object.freeze([1425, 650]), label: 'ボドゲカフェ', extra: true, rect: Object.freeze([821, 512, 664, 494]) }),
 });

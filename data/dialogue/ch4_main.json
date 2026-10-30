@@ -7,11 +7,6 @@
         {
           "speaker": "",
           "face": "",
-          "text": "【第四章　継承の煙】"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "全国大会から六週間後。世界大会のため、ドバイへ来た。"
         },
         {
@@ -314,6 +309,21 @@
         {
           "speaker": "traveler",
           "face": "normal",
+          "text": "……そう聞かれたのは、久しぶりだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "普段は、誰も聞かないんですか"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "家の者は、何を出しても「最高です」と言う。だから、どれが最高か分からなくなる"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
           "text": "もう一口、確かめさせてくれ"
         },
         {
@@ -562,6 +572,21 @@
           "text": "王煙楼は一口目の長さを測る。シェイクの金の台は、継ぎ目一つ揺らがない。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクが自分の客へ身をかがめた。客は困ったように笑い、言葉を探している。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "遠慮はいらない。重ければ、重いと言ってくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（路地裏で俺が聞いたことを、あの人も聞いてる）"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（俺は、こっちから）"
@@ -730,7 +755,7 @@
         {
           "speaker": "sheikh",
           "face": "normal",
-          "text": "作り始めてからは、煙楼先生に叩き直された。道具も、トプハーネの職人に何度もばらされたよ"
+          "text": "作り始めてからは、煙楼先生に叩き直された。道具も、トプハーネの職人に何度も直してもらった"
         },
         {
           "speaker": "",
@@ -741,6 +766,46 @@
           "speaker": "sheikh",
           "face": "normal",
           "text": "君の一台は、あの日とは違った。だから、次も吸いたい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葡萄の一台が、はじめの前に置かれた。継ぎ目の揺れない、静かな煙だった。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "正直に言ってくれ。この屋敷で、本当のことを言う者は少ない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……二口目が、少し重いです。炭を一つ、離してもいいですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "控えていた使用人が、息を呑んだ。シェイクは声を上げて笑った。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "それが聞きたかった。私の台に手を出したのは、先生以来だ"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "tonariの客は、普段どんな葉を吸っている？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "普通のブロンドです。安い袋も、よく出ますよ"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "では一袋、送ってくれ。葡萄の隣に置いてみよう"
         },
         {
           "speaker": "",

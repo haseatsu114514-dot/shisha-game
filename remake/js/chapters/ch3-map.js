@@ -4,7 +4,9 @@ import { chapterThreeMapModel } from "./ch3-map-model.js";
 
 let activeMap = null;
 
-/** 地図の閲覧と選択のみ。'gym'を返した後の消耗・読了・精算はcallerが担う。 */
+/**
+ * 地図の閲覧と選択のみ。'gym' か { action: id } を返した後の消耗・読了・精算はcallerが担う。
+ */
 export function openChapterThreeMap(value, scenes, options = {}) {
   const model = chapterThreeMapModel(value, scenes, options);
   if (!model || activeMap) return Promise.resolve(null);
@@ -52,8 +54,15 @@ export function openChapterThreeMap(value, scenes, options = {}) {
       const status = pin.gym
         ? model.member ? "いつもの会員証で全国の店舗を利用できます。追加の入会費はかかりません。"
           : "利用には会員登録が必要です。"
-        : pin.current ? "今の場面の場所" : "訪ねた場所";
-      details.replaceChildren(el("h3", { text: pin.label }), el("p", { text: status }),
+        : pin.actions?.length ? "行き先" : pin.current ? "今の場面の場所" : "訪ねた場所";
+      const actions = (pin.actions || []).map(action => el("div.ch3-map-action", [
+        el("p.ch3-map-reason", { text: action.reasonText || "" }),
+        action.ok ? el(`button.btn${action.consumes === false ? "" : ".primary"}`, {
+          type: "button", text: `${action.label}${action.consumes === false ? "（予定は進まない）" : "（1行動）"}`,
+          dataset: { test: `ch3-map-action-${action.id}` }, onclick: () => close({ action: action.id }),
+        }) : el("p", { text: action.why || "今は選べません。" }),
+      ]));
+      details.replaceChildren(el("h3", { text: pin.label }), el("p", { text: status }), ...actions,
         ...(pin.gym && model.canTrain ? [el("button.btn.primary.ch3-map-gym", {
           type: "button", text: "トレーニングする（1行動）", dataset: { test: "ch3-map-gym" }, onclick: () => close("gym"),
         })] : []),
@@ -102,7 +111,7 @@ export function openChapterThreeMap(value, scenes, options = {}) {
     document.body.append(dialog);
     dialog.showModal();
     select(model.canTrain ? model.pins.find(pin => pin.gym)
-      : model.pins.find(pin => pin.current) || model.pins[0]);
+      : model.pins.find(pin => pin.actions?.length) || model.pins.find(pin => pin.current) || model.pins[0]);
     closeButton.focus({ preventScroll: true });
   });
 }
