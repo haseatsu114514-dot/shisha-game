@@ -228,6 +228,7 @@ export const FLAG_EXACT_RULES = [
   ["_errand_shop_done", "progression"],
   ["_ev_ageha_cameo", "person"],
   ["_ev_baito_regular_02", "progression"],
+  ["_ev_day5", "progression"],
   ["_ev_first_practice", "progression"],
   ["_ev_last_night", "progression"],
   ["_ev_maezono_cameo", "person"],

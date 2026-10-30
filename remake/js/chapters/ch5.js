@@ -166,7 +166,7 @@ async function openChapter(advance) {
   hud();
   showScreen("ch5-loading", el("main.ch2-contest", [
     el("h1", { text: "第五章・機械仕掛けの神" }),
-    el("p", { role: "status", text: "大須の場面を準備しています…" }),
+    el("p", { role: "status", text: "橙須の場面を準備しています…" }),
   ]));
   window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); }, { once: true });
   await perform(owner, async () => {
