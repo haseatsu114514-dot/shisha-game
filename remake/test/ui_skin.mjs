@@ -117,13 +117,14 @@ try {
     const out = [];
     for (const guts of [10, 90]) {
       T.core.state.stats.guts = guts;
-      const maximum = guts === 10 ? 100 : 160;
+      const maximum = guts === 10 ? 100 : 154; // 根性90＝9段: 100＋54（10段表 GUTS_STAMINA_BONUS）
       for (const ratio of [1, 0.51, 0.5, 0.26, 0.25, 0.01, 0]) {
         T.core.state.stamina = Math.round(ratio * maximum);
         T.hud.updateHud();
         const holder = document.querySelector(".hud-stamina");
         const bar = holder.querySelector(".hud-bar"), label = holder.querySelector(":scope > span"), style = getComputedStyle(holder), barStyle = getComputedStyle(bar);
-        out.push({ ratio, maximum, health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
+        out.push({ ratio: T.core.state.stamina / maximum, maximum, // 丸めた実際の体力で境界を判定する（最大154は割り切れない）
+           health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
           width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth, barSpecifiedWidth: parseFloat(bar.style.width),
           extra: holder.clientWidth - label.offsetWidth - bar.offsetWidth - parseFloat(barStyle.marginLeft) - parseFloat(barStyle.marginRight) - parseFloat(style.gap) - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) });
       }
@@ -137,11 +138,11 @@ try {
     // バーは margin-right: -9px でカード端まで張り出す設計のため、余白計算はバーのマージンボックス込みで数える。
     assert(Math.abs(value.extra) <= 1, `Unused horizontal stamina space: ${value.extra}px`);
   }
-  for (const maximum of [100, 160]) {
+  for (const maximum of [100, 154]) {
     assert.equal(new Set(stamina.filter((value) => value.maximum === maximum).map((value) => value.windowWidth)).size, 1, "Losing stamina changed the capacity window");
   }
   assert.equal(stamina[0].barSpecifiedWidth, 92);
-  assert.equal(stamina[7].barSpecifiedWidth, 147);
+  assert.equal(stamina[7].barSpecifiedWidth, 142); // 92px × 154/100
   console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, expanded stamina capacity");
   const sessions = await page.evaluate(async () => {
     const { newSession } = await import("./js/craft/session.js"), { skill } = await import("./js/craft/common.js");
@@ -149,7 +150,7 @@ try {
     for (const guts of [10, 90]) {
       T.core.state.stats.guts = guts;
       for (const ratio of [.51, .5, .25]) {
-        T.core.state.stamina = Math.round(T.stats.maxStamina() * ratio);
+        T.core.state.stamina = Math.floor(T.stats.maxStamina() * ratio); // 最大154でも境界の内側に置く
         const cs = newSession("tournament"), tutorial = newSession("tutorial");
         T.core.state.stamina = T.stats.maxStamina(); // 始めた後の回復で同じ一台の判定は変えない
         out.push({ guts, ratio, health: cs.condition.health, now: T.stats.currentCondition().health,
