@@ -76,6 +76,11 @@ function buildNodes() {
     if (isHubSide(n.gx, n.gy)) n.links.push(HUB);
     Object.freeze(n.links);
   }
+  // 授業の小道: 授業のマスにつながる能力のマスは、その人に会うまで盤に出さない（2026-10-30 オーナー採用）
+  const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
+  for (const lesson of nodes.filter((n) => n.kind === "lesson")) {
+    for (const id of lesson.links) if (byId[id]?.kind === "stat") Object.assign(byId[id], { trail: lesson.id });
+  }
   return nodes.map(Object.freeze);
 }
 
@@ -129,6 +134,18 @@ export function hasMet(who, s = state) {
 }
 const heartOf = (who, s) => s === state ? affinityLevel(who) : 0;
 
+/**
+ * 授業とその小道が盤に出ているか。その人に会った時に現れる（シェイクは正体が明かされてから）。
+ * 一度灯したものは出たまま。
+ */
+export function lessonShown(node, g, s = state) {
+  const lesson = node.kind === "lesson" ? node : node.trail ? NODE_BY_ID[node.trail] : null;
+  if (!lesson) return true;
+  if (g?.nodes?.includes(node.id) || g?.nodes?.includes(lesson.id)) return true;
+  if (lesson.revealFlag && !s?.flags?.[lesson.revealFlag]) return false;
+  return hasMet(lesson.who, s);
+}
+
 /** 授業の錠。開いていれば null、閉じていれば足りないものの内訳 */
 export function lessonLock(node, unlocked, s = state) {
   if (node.kind !== "lesson") return null;
@@ -176,8 +193,8 @@ export function payContext(g, unlocked) {
 const spend = (hidane, pay) => { for (const [k, n] of Object.entries(pay)) hidane[k] -= n; };
 
 /** そのマスが今の積み方で取れるか（火種は見ない） */
-function reachable(node, unlocked, s) {
-  return node.ring <= ringsOpen(s) && !lessonLock(node, unlocked, s) && connected(node, unlocked);
+function reachable(node, unlocked, s, g) {
+  return node.ring <= ringsOpen(s) && lessonShown(node, g, s) && !lessonLock(node, unlocked, s) && connected(node, unlocked);
 }
 
 /**
@@ -194,7 +211,7 @@ export function replay(g, pendingIds, s = state) {
     progress = false;
     for (const id of rest) {
       const node = NODE_BY_ID[id];
-      if (!reachable(node, unlocked, s)) continue;
+      if (!reachable(node, unlocked, s, g)) continue;
       const pay = paymentFor(node, hidane, payContext(g, unlocked));
       if (!pay) continue;
       spend(hidane, pay);
@@ -210,10 +227,11 @@ export function replay(g, pendingIds, s = state) {
 
 /**
  * マスの状態（6.2）: unlocked | pending | available | short | far（まだつながっていない）
- * | locked（章で開く）| sealed（授業の錠）
+ * | locked（章で開く）| sealed（授業の錠）| hidden（まだ会っていない人の授業と小道。盤に出さない）
  */
 export function nodeStatus(node, g, view, s = state) {
   if (g.nodes.includes(node.id)) return "unlocked";
+  if (!lessonShown(node, g, s)) return "hidden";
   if (view.pending.includes(node.id)) return "pending";
   if (node.ring > ringsOpen(s)) return "locked";
   if (lessonLock(node, view.unlocked, s)) return "sealed";

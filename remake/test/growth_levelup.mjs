@@ -204,8 +204,8 @@ core.state.growth.learned.push("M-S1");
 growth.ensureGrowth();
 assert.equal(core.state.flags._sumi_attack_learned, true, "習得した授業のフラグは周回で消えても戻す");
 delete core.state.flags._coal_cube_learned; delete core.state.flags._sumi_attack_learned;
-// 上限: 盤の全部（v3 の授業の小道で268）を超えて渡さない
-assert.equal(growth.BOARD_TOTAL, 268);
+// 上限: 盤の全部（v3 の授業の小道で267）を超えて渡さない
+assert.equal(growth.BOARD_TOTAL, 267);
 core.state.growth = { ...growth.newGrowth(), earned: growth.BOARD_TOTAL - 1 };
 growth.gainExp(growth.totalExpFor(12));
 const capped = growth.settleGrowth();
