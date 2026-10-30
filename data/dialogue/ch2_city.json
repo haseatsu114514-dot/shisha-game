@@ -197,24 +197,11 @@
             "text": "「MELTY PUFF」。ピンクの入口から、軽いリズムが漏れている。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "ドアの前で足を止めた時、覚えのある甘い匂いがした。"
-          },
-          {
-            "speaker": "ageha",
-            "face": "surprise",
-            "text": "……あれ？ あーーっ！ 荷物の人！ 商店街で袋ぶちまけてた！"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "あっ、あの時の。荷物、ありがとうございました"
-          },
-          {
-            "speaker": "ageha",
-            "face": "smile",
-            "text": "いいって！ ケガなかったなら、それで優勝っしょ"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ev_ageha_cameo",
+            "next_true": "first_cameo",
+            "next_false": "first_new"
           },
           {
             "speaker": "hajime",
@@ -231,9 +218,11 @@
             "flag": "_met_ageha"
           },
           {
-            "speaker": "ageha",
-            "face": "smile",
-            "text": "で、荷物の人は、なんて呼べばいいの？"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ev_ageha_cameo",
+            "next_true": "first_name_cameo",
+            "next_false": "first_name_new"
           },
           {
             "speaker": "hajime",
@@ -246,9 +235,11 @@
             "text": "tonari！？ スミさんとこじゃん！ ガチで世間せまーい！ じゃ、ハジメっちね"
           },
           {
-            "speaker": "hajime",
-            "face": "smile",
-            "text": "その匂い、ホワイトグミベアだったんですね"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ev_ageha_cameo",
+            "next_true": "first_gummy_cameo",
+            "next_false": "first_gummy_new"
           },
           {
             "speaker": "ageha",
@@ -320,6 +311,78 @@
             "speaker": "ageha",
             "face": "normal",
             "text": "もちろん！ 今は準備中だけど、ちょい見てく？"
+          }
+        ],
+        "first_cameo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ドアの前で足を止めた時、覚えのある甘い匂いがした。"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……あれ？ あーーっ！ 荷物の人！ 商店街で袋ぶちまけてた！"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "あっ、あの時の。荷物、ありがとうございました"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "いいって！ ケガなかったなら、それで優勝っしょ"
+          }
+        ],
+        "first_new": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ドアの前で足を止めた時、中から甘い匂いがふわりと流れてきた。"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……ん？ お客さん？ まだ準備中だけど、のぞいてく？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、すみません。いい匂いがしたので"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "でしょ！ 匂いで足止める人、うち好き"
+          }
+        ],
+        "first_name_cameo": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "で、荷物の人は、なんて呼べばいいの？"
+          }
+        ],
+        "first_name_new": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "で、匂いの人は、なんて呼べばいいの？"
+          }
+        ],
+        "first_gummy_cameo": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "その匂い、ホワイトグミベアだったんですね"
+          }
+        ],
+        "first_gummy_new": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "その匂い、ホワイトグミベアですよね"
           }
         ]
       }
