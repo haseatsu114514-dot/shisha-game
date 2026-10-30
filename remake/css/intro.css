@@ -15,8 +15,8 @@
 .art-intro .ci-quote-area.has-flavor { top:516px; }
 .art-intro .ci-quote-rule { width:71px; height:4px; background:var(--accent); margin-bottom:16px; }
 .ci-flavor { box-sizing:border-box; display:flex; align-items:baseline; gap:12px; width:max-content; max-width:580px; min-height:37px; padding:3px 9px 4px 11px; border-left:3px solid var(--accent,var(--ci)); background:#101820ed; color:#f8f6ee; white-space:nowrap; font-family:"Intro Gothic",var(--font); }
-.ci-flavor-label { flex:none; font-size:15px; font-weight:700; }
-.ci-flavor-name { font-size:24px; font-weight:800; letter-spacing:-.035em; }
+.ci-flavor-label { flex:none; font-size:18px; font-weight:700; }
+.ci-flavor-name { font-size:26px; font-weight:800; letter-spacing:-.035em; }
 .ci-flavor-small { font-size:.6em; }
 .art-intro .ci-flavor { margin-bottom:12px; }
 .cutin.art-intro[data-char="hiyori"] .ci-flavor { color:#67495b; background:#fff8f3f0; }

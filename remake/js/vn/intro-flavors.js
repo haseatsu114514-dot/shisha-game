@@ -2,12 +2,11 @@
 // （サメちゃんのみ samechan.json の profile）。未設定や正体を伏せる場面は表示しない。
 const flavors = {
   sumi: "カルダモン", naru: "バニラ", adam: "ダブルアップル", minto: "ミント",
-  kuze: "アフサール アールグレイ", steve: "マウンテンミスト",
-  rei: "ローズ", master_hookah: "ライチ", tsumugi: "ラベンダー",
+  rei: "ローズ", tsumugi: "ラベンダー",
   rin: "ブルーベリー", ageha: "ホワイトグミベア／レッドグミベア",
   kumicho: "ドラゴンフルーツ", dr_kemuri: "コーラ", pakki: "ガムシナモン",
-  emil: "ピスタチオ", sheikh: "グレープ", da_silva: "アサイー",
-  mashiro: "ブラックティー", maezono: "ミント／ダブルアップル",
+  emil: "ピスタチオ", da_silva: "アサイー",
+  mashiro: "ブラックティー",
   samechan: "アフサール スプリングウォーター",
 };
 
