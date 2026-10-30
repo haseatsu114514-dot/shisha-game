@@ -1,7 +1,7 @@
 # Suno AI用 BGM発注プロンプト集（曲待ちプレースホルダ5曲・2026-07-04）
 
 `assets/audio/bgm/` の0バイトプレースホルダ5曲ぶん。**各ブロックをそのままSunoに貼れる**。
-すべて **Instrumental（歌なし）** 指定。ループ端のフェードはコード側（sfx.js）が
+すべて **Instrumental（歌なし）** 指定。ループ端のフェードはコード側（`remake/js/core/audio.js`）が
 処理するので、曲側にフェードアウトを入れないこと。
 
 受け取り後の組み込みは `.claude/skills/suno-bgm-prompt/SKILL.md` の Step 3（配置 → `python3 remake/tools/build_manifest.py` → 鳴らす場所の確認）に従う。

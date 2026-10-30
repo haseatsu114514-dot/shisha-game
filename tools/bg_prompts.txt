@@ -168,7 +168,7 @@ against the cool night. No crushed blacks.
 ==========================================================================
 画面1枚分の背景パネル×3（昼・夜）をつないだ通り＋小物シート＋前景の電柱。キャラ72ドットと同じドットの細かさで描く。
 プロンプト本文・サイズ・地面の位置の決まり・保存先・受け取り後の変換は
-docs/codex_handoff_street_set_images.md が正（ここには書き写さない）。
+docs/archive/codex_handoff_street_set_images.md が正（ここには書き写さない）。
 （旧: 高解像度2.5D版の遠景・電柱の依頼は取り下げてこちらに統合）
 
 --- CV32/2026-10-10: backdrop_stage.png（CONTINUE比較版・採用未決） ---

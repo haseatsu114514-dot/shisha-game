@@ -8,7 +8,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 - 旧 `web/` と Godot 版は廃止済み。`web/` は存在不要で、復元・テスト・確認要求の対象にしない。`project.godot` が残るcheckoutは古い。
 - 最新の明示的なユーザー指示を、古い仕様・Issueコメント・引き継ぎ・スキルの担当メモより優先する。依頼された仕様変更に再承認を求めない。
 - 仕様・要望は `docs/master_spec.md` / `docs/owner_requests.md`、物語・人物は `brand/story_and_structure.md` / `brand/character_profiles.md` / `data/characters.json`。
-- 詳細な参照先は [現行資料ガイド](docs/current_documentation_guide.md)。ゲーム・台詞は [開発資料](docs/gameplay_agent_reference.md)、レビュー範囲は [対象範囲](docs/review_scope.md)、画像・CG・外部素材は [素材規約](docs/asset_ai_guidance.md) を必要時に読む。素材の実物構造・ライセンス・QA確認は省略しない。
+- 詳細な参照先は [現行資料ガイド](docs/current_documentation_guide.md)。ゲーム・台詞は [開発資料](docs/gameplay_agent_reference.md)、レビュー範囲は [対象範囲](docs/review_scope.md)、画像・CG・外部素材は [素材規約](docs/asset_ai_guidance.md)、シーシャの工程・機材・用語の参照先は [シーシャ描写の参考資料](docs/shisha_reference.md) を必要時に読む。素材の実物構造・ライセンス・QA確認は省略しない。
 - 日付付きの引き継ぎや過去のテスト記録は履歴。永続ルールは既存の正本へまとめ、履歴MDや仕組みを依頼なく増やさない。
 
 ## Issue予約は撤廃（2026-10-23 オーナー指示）

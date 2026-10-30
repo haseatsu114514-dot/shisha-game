@@ -1,13 +1,21 @@
 # .claudeignore
 # Claude Code がインデックス・自動参照しないファイルを指定。
-# 目的: 旧設定の残骸・履歴・巨大資料を AI に拾わせず、矛盾の伝播とトークン浪費を防ぐ。
-# （正本は CLAUDE.md ＋ data/dialogue/ ＋ data/characters.json ＋ brand/story_and_structure.md。
-#  レビュー対象範囲は docs/review_scope.md を参照）
+# 目的: 旧設定の残骸・履歴・巨大資料・生成物を AI に拾わせず、矛盾の伝播とトークン浪費を防ぐ。
+# 正本と優先順位は docs/current_documentation_guide.md、レビュー対象範囲は docs/review_scope.md を参照。
 
 # アセット系（画像・音声は Claude が処理不要）
 assets/
 asset_sources/
 *.translation
+
+# 履歴・隔離済みの旧資料（必要なときだけ明示的に開く）
+docs/archive/
+docs/qa/
+data/dialogue/_legacy/
+
+# 生成物（正本は生成元）
+docs/setting_reference.html
+remake/data/manifest.json
 
 # スプレッドシート系（CSV は必要時のみ手動で参照）
 アセット差し替え進捗管理表.*

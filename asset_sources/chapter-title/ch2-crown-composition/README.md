@@ -40,4 +40,4 @@
 
 本編タイトルコール（1280×720）への接続として、案Cから1280×720の正式PNG（[`images/C-crown-background-1280x720.png`](images/C-crown-background-1280x720.png)）を生成し、配信アセット [`remake/img/ui/chapters/ch2-title.webp`](../../../remake/img/ui/chapters/ch2-title.webp) へロスレスWebP形式（method=6、寸法1280×720一致、全画素検証済み）で反映した。`remake/js/core/chapter-title-art.js` および `remake/js/chapters/ch2.js` の読み表示を `ホロウ・クラウン ── Hollow Crown` へ更新した。
 
-物語・台詞の大幅な改稿および共同制作向け資料（Issue #544）の改稿は今回混ぜず、今後の残作業として整理する（[`docs/plans/story_revision.md`](../../../docs/plans/story_revision.md) 参照）。
+物語・台詞の大幅な改稿および共同制作向け資料（Issue #544）の改稿は今回混ぜず、今後の残作業として整理する（[`docs/archive/plans_story_revision.md`](../../../docs/archive/plans_story_revision.md) 参照）。
