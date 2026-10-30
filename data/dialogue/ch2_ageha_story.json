@@ -106,6 +106,10 @@
           "speaker": "",
           "face": "",
           "text": "あげはは手を振って、甘い匂いを残して帰っていった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_today"
         }
       ],
       "branches": {
@@ -292,6 +296,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……ありがとうございます。大事にします"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_words"
         },
         {
           "type": "condition",
@@ -549,6 +557,10 @@
           "speaker": "ageha",
           "face": "normal",
           "text": "……ハジメっち。取材、ちょっと楽しみになったかも"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_roles"
         }
       ],
       "branches": {
@@ -1017,6 +1029,10 @@
           "flag": "_ch2_scout_seen"
         },
         {
+          "type": "set_flag",
+          "flag": "_ch2_scout_tasting"
+        },
+        {
           "type": "choice",
           "id": "ch2_tasting_turn",
           "choices": [
@@ -1342,19 +1358,20 @@
     },
     {
       "dialogue_id": "remake_ch2_ageha_slump",
+      "comment": "DAY10夜。ノートを受け取りに寄った閉店間際のtonari。このあと ch2_sumi_silence（駅まで送って店へ戻る）へ続く（#1733）",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "家に着いても、今日の煙のことが頭から離れなかった。"
+          "text": "夜。昼間預けた配合ノートを受け取りに、閉店間際のtonariへ寄った。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "眠れそうになくて、閉店間際のtonariへ引き返した。片づけ前に一台だけ組んでいると、ドアが開いた。"
+          "text": "スミさんに断って、片づけ前に一台だけ組んでいると、ドアが開いた。"
         },
         {
           "speaker": "ageha",

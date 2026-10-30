@@ -37,6 +37,10 @@
           "speaker": "",
           "face": "",
           "text": "ムカイさんは答えず、猫の耳が崩れる前に一口飲んだ。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "mukai_master_seat"
         }
       ]
     },

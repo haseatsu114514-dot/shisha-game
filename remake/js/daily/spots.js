@@ -74,7 +74,7 @@ export const SPOTS = [
     first: "ch1_kannon_visit", pool: ["kannon_cat", "kannon_sweep", "kannon_adam", "kannon_oldman"], bg: "bg_kannon_day",
     nightPool: ["venue_kannon_night", "venue_kannon_night_b"],
     desc: "街の小さなお堂。昼は猫や街の人と会い、夜は静かな境内で今日を振り返る。" },
-  { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
+  { id: "choizap", kind: "spot", label: "CHOI-ZAP", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", pool: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"], bg: "bg_choizap",
     nightPool: ["venue_choizap_night", "venue_choizap_night_b"],
     desc: "昼夜とも使える無人ジム。入会はアプリから。動画でフォームを確かめ、自分のペースで汗を流す。" },

@@ -47,7 +47,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "県大会、HAZE: OPEN CLOUD。本番まで、あと十三日。"
+          "text": "県大会、HAZE: OPEN CLOUD。会場は、この街のどこかにある。"
         },
         {
           "speaker": "hajime",
@@ -94,7 +94,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ピンクの入口。古い暖簾。薔薇のポスター。静かな工業地区への路地。"
+          "text": "ピンクの入口。古い暖簾。薔薇のポスター。駅ビルの青緑の看板。"
         },
         {
           "speaker": "hajime",
@@ -109,7 +109,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "駅前のガラスに、自分の姿が映る。服には、まだtonariの匂いが残っていた。"
+          "text": "駅前のガラスに、自分の姿が映る。肩に掛けた機材ケースの重さを、もう一度確かめた。"
         },
         {
           "speaker": "hajime",
@@ -243,7 +243,7 @@
           {
             "speaker": "ageha",
             "face": "smile",
-            "text": "シーシャ屋さん！？ ガチで世間せまーい！ じゃ、ハジメっちね"
+            "text": "tonari！？ スミさんとこじゃん！ ガチで世間せまーい！ じゃ、ハジメっちね"
           },
           {
             "speaker": "hajime",
@@ -258,7 +258,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "通りかかった二人組が手を振る。あげはも、ぱっと片手を上げた。"
+            "text": "通りかかった二人組が手を振る。あげはさんも、ぱっと片手を上げた。"
           },
           {
             "speaker": "ageha",
@@ -301,9 +301,8 @@
             "text": "ま、初日から難しい顔しなくていいって。まず、道覚えよ？"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "あげはは笑ってドアへ戻った。甘い残り香が、しばらく鼻先にあった。"
+            "type": "jump",
+            "next_id": "ch2_city_ageha_farewell"
           }
         ],
         "known": [
@@ -324,6 +323,16 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_city_ageha_farewell",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはさんは笑ってドアへ戻った。甘い残り香が、しばらく鼻先にあった。"
+        }
+      ]
     },
     {
       "dialogue_id": "ch2_city_kumicho",
@@ -388,7 +397,7 @@
           {
             "speaker": "kumicho",
             "face": "serious",
-            "text": "ほう、県大会かい。俺も出る。いい目してるじゃねえか、あんちゃん"
+            "text": "ほう、スミんとこの。県大会かい、俺も出る。いい目してるじゃねえか、あんちゃん"
           },
           {
             "speaker": "",
@@ -431,14 +440,8 @@
             "text": "（大きな声なのに、手だけは、何も急かさない）"
           },
           {
-            "speaker": "kumicho",
-            "face": "normal",
-            "text": "まずは街を、よく見てきな"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "深く頭を下げると、神崎さんも小さく頷いた。暖簾が、また風に揺れた。"
+            "type": "jump",
+            "next_id": "ch2_city_kumicho_farewell"
           }
         ],
         "known": [
@@ -453,7 +456,7 @@
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "おう、蒸野。ケース持った客が増えてきやしたな"
+            "text": "おう、あんちゃん。ケース持った客が増えてきやしたな"
           },
           {
             "speaker": "hajime",
@@ -467,6 +470,21 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_city_kumicho_farewell",
+      "lines": [
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "まずは街を、よく見てきな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "深く頭を下げると、神崎さんも小さく頷いた。暖簾が、また風に揺れた。"
+        }
+      ]
     },
     {
       "dialogue_id": "ch2_city_rei",
@@ -484,7 +502,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "「零-ZERO-」。壁のポスターは、黒と赤。薔薇の意匠に、細い銀の文字。"
+            "text": "「零-ZERO-」。壁のポスターは、黒と赤。薔薇の意匠に、細い銀の文字で「イエス」とある。"
           },
           {
             "speaker": "",
@@ -509,7 +527,7 @@
           {
             "speaker": "rei",
             "face": "normal",
-            "text": "……そうだ。店長の、零。REI"
+            "text": "そう。店長の零。REIでいい"
           },
           {
             "type": "set_flag",
@@ -518,7 +536,7 @@
           {
             "speaker": "rei",
             "face": "normal",
-            "text": "……今、開店の準備をしてる"
+            "text": "今、開店の準備をしてる"
           },
           {
             "speaker": "hajime",
@@ -528,7 +546,7 @@
           {
             "speaker": "rei",
             "face": "serious",
-            "text": "……tonari"
+            "text": "……tonari。スミさんの店か"
           },
           {
             "speaker": "",
@@ -558,7 +576,7 @@
           {
             "speaker": "rei",
             "face": "normal",
-            "text": "……ああ。ローズが、軸"
+            "text": "ああ。ローズが軸"
           },
           {
             "speaker": "hajime",
@@ -568,7 +586,7 @@
           {
             "speaker": "rei",
             "face": "normal",
-            "text": "……甘くするだけじゃない。残すところと、引くところがある"
+            "text": "甘くするだけじゃない。残すところと、引くところがある"
           },
           {
             "speaker": "",
@@ -578,29 +596,18 @@
           {
             "speaker": "rei",
             "face": "normal",
-            "text": "……いつか、吸ってから聞いてくれ"
+            "text": "いつか、吸ってから聞いてくれ"
           },
           {
-            "speaker": "hajime",
-            "face": "smile",
-            "text": "はい。今度、ちゃんと時間を取って来ます"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "REIさんは頷いた。入口の前から一歩ずれると、向こうも小さく会釈した。"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（派手な看板の前で、返事をひとつずつ選ぶ人なんだ）"
+            "type": "jump",
+            "next_id": "ch2_city_rei_farewell"
           }
         ],
         "known": [
           {
             "speaker": "rei",
             "face": "normal",
-            "text": "……tonariの。街を見てるのか"
+            "text": "tonariの。街を見てるのか"
           },
           {
             "speaker": "hajime",
@@ -614,6 +621,26 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch2_city_rei_farewell",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。今度、ちゃんと時間を取って来ます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIさんは頷いた。入口の前から一歩ずれると、向こうも小さく会釈した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（派手な看板の前で、返事をひとつずつ選ぶ人なんだ）"
+        }
+      ]
     },
     {
       "dialogue_id": "ch2_city_c_station",
@@ -857,7 +884,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "あげはに声をかけられて、ドアの内側へ。プリクラ機の隣を抜けると、豹柄のソファがあった。"
+          "text": "あげはさんに声をかけられて、ドアの内側へ。プリクラ機の隣を抜けると、豹柄のソファがあった。"
         },
         {
           "speaker": "ageha",
@@ -907,12 +934,12 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "よし！ 台は奥で準備してるから、今度ゆっくりね。道、迷わんように！"
+          "text": "よし！ ……てかハジメっち、肩ガチガチじゃん。初日はそれでいいけどね！"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "プリクラ機の横で手を振って、通りへ出た。店の明るさが、背中に少し残る。"
+          "text": "入口のプリクラ機の画面で、星のスタンプがちかちか回っていた。"
         }
       ]
     },
@@ -962,12 +989,17 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "今は奥で準備中でさ。吸う時は、時間を取って来なせえ"
+          "text": "台はまだでさ。茶だけでも飲んでいきな。初めての街は、喉が渇くもんでね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "低い卓に湯呑みが置かれた。湯気の向こうで、神崎さんが先に腰を下ろす。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "分かりました。……こんなに重そうな部屋なのに、強い匂いはしないんですね"
+          "text": "いただきます。……こんなに重そうな部屋なのに、強い匂いはしないんですね"
         },
         {
           "speaker": "kumicho",
@@ -982,7 +1014,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "また来ます。次は、座らせてもらいます"
+          "text": "ごちそうさまでした。次は、一服しに来ます"
         },
         {
           "speaker": "kumicho",
@@ -1002,7 +1034,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……少しなら。まだ、準備中だから"
+          "text": "少しなら。まだ準備中だから"
         },
         {
           "speaker": "hajime",
@@ -1012,7 +1044,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……持ってきたのは、一部。好きな盤は、見える所に置きたい"
+          "text": "持ってきたのは一部。好きな盤は、見える所に置きたい"
         },
         {
           "speaker": "",
@@ -1027,7 +1059,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……小さいイベントで、たまに。何もない日は、曲の話くらいはできる"
+          "text": "小さいイベントで、たまに。何もない日は、曲の話くらいはできる"
         },
         {
           "speaker": "hajime",
@@ -1052,7 +1084,12 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……手元が見えないと、客も困るだろ。台は奥で準備してるから、また来て"
+          "text": "手元が見えないと、客も困るだろ"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "次は、音を鳴らしてる時に来て。そのほうが、この店らしい"
         },
         {
           "speaker": "",

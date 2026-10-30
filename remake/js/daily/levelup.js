@@ -5,7 +5,7 @@ import { layers } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { state, STAT_JA } from "../core/state.js";
 import { DB, displayName } from "../core/data.js";
-import { settleGrowth, gaugeAt, totalExpFor } from "../core/growth.js";
+import { settleGrowth, gaugeAt, totalExpFor, openGrowthBoard } from "../core/growth.js";
 import { spotById } from "./spots.js";
 
 const STAT_HEAD = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" };
@@ -90,13 +90,14 @@ async function fullLevelUp(r) {
     el("p.lu-note", { text: "火種は「心得の盤」で能力やスキルを灯すのに使う。貯めておいてもいい" }),
   ]);
   const ok = el("button.btn.primary.lu-ok", { text: "OK", dataset: { test: "levelup-ok" } });
+  const toBoard = el("button.btn.lu-ok.lu-board", { text: "心得の盤を開く", dataset: { test: "levelup-board" } });
   const panel = el("div.levelup", { role: "dialog", "aria-label": `レベルアップ。Lv.${r.from}からLv.${r.to}へ。${hidaneLine(r)}`, dataset: { test: "levelup" } }, [
     head, lvText,
     el("div.lu-gauge", { role: "img", "aria-hidden": "true" }, [settled, fill]),
-    details, ok,
+    details, el("div.lu-actions", [toBoard, ok]),
   ]);
   const backdrop = el("div.levelup-backdrop", [panel]);
-  backdrop.addEventListener("pointerdown", (e) => { if (e.target !== ok) s.skip(); });
+  backdrop.addEventListener("pointerdown", (e) => { if (e.target !== ok && e.target !== toBoard) s.skip(); });
   layers.fx.append(backdrop);
   const setBar = (node, ratio, instant = false) => {
     if (instant) node.style.transition = "none";
@@ -130,13 +131,16 @@ async function fullLevelUp(r) {
   panel.classList.add("lu-settled-state");
   if (!s.skipped) await s.wait(300);
   ok.focus?.();
-  await new Promise((resolve) => {
-    ok.addEventListener("click", () => { SE.click?.(); resolve(); }, { once: true });
-    ok.addEventListener("keydown", (e) => { if (e.key === "Escape") resolve(); });
+  const choice = await new Promise((resolve) => {
+    ok.addEventListener("click", () => { SE.click?.(); resolve("ok"); }, { once: true });
+    toBoard.addEventListener("click", () => { SE.select?.(); resolve("board"); }, { once: true });
+    panel.addEventListener("keydown", (e) => { if (e.key === "Escape") resolve("ok"); });
   });
   backdrop.classList.remove("show");
   await sleep(220);
   backdrop.remove();
+  // 寝る前にそのまま盤で振れる（大会前夜も。SPEC 2.2）
+  if (choice === "board") await openGrowthBoard();
 }
 
 /** 火種の粒を HUD の五角形（盤への入り口）へ飛ばす。HUD が見えなければ飛ばさない。 */

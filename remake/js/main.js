@@ -19,7 +19,7 @@ import { prepareTitleArt } from "./scenes/title-art.js";
 import { isNormalTitleForced } from "./scenes/title-layout.js";
 import { initGameLayout } from "./scenes/game-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
-import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth } from "./core/growth.js";
+import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
 
 function fitStage() {
   const stage = $("#stage");
@@ -127,6 +127,9 @@ window.__remake = {
     },
     // 経験値を足す（寝ると精算される）。例: __remake.dev.addExp(400)
     addExp(n = 200) { return gainExp(n); },
+    // 心得の盤を開く（?growth=1 のときだけ）。火種が無ければ addHidane で足す
+    board() { return openGrowthBoard(); },
+    addHidane(n = 5, kind = "any") { const g = ensureGrowth(); g.hidane[kind] = (g.hidane[kind] || 0) + n; return { ...g.hidane }; },
     // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / noren / walkdoor。本編の既定は door）。URLの ?move=pin でも切り替わる
     async moveStyle(style) {
       const moves = await import("./core/transition-moves.js");
