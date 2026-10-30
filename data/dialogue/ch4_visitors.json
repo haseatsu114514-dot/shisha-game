@@ -5,6 +5,11 @@
       "dialogue_id": "ch4_samechan_dubai_girlfriend",
       "lines": [
         {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーへ下りると、サメちゃんが大きな鞄の横で待っていた。右手のコロちゃんが、先にこちらを向いた。"
+        },
+        {
           "speaker": "samechan",
           "face": "normal",
           "text": "休みの札も、留守の段取りも済ませてきたのじゃ"
@@ -29,6 +34,11 @@
     {
       "dialogue_id": "ch4_hiyori_dubai_girlfriend",
       "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーへ下りると、ひよりがスーツケースの持ち手に手を置いたまま、小さくあくびをしていた。"
+        },
         {
           "speaker": "hiyori",
           "face": "normal",
