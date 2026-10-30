@@ -232,6 +232,17 @@ assert.equal(chapterFiveMatchOutcome(value), "win");
 assert.deepEqual(chapterFiveVoteTally(value), { first: { hajime: 19, machine: 21 },
   second: { hajime: 26, machine: 14 }, total: { hajime: 45, machine: 35 } });
 roundTrip(value);
+assert.equal(value.flags._ch5.secondCup.review, undefined, "Old-style records without review lines stay valid");
+{
+  // #1909: 結果カードの2行は任意で、文字列2行までだけを保存する。
+  const reviewed = toBeforeSecond();
+  assert.equal(recordChapterFiveSecondCup(reviewed, { total: 90, category: "steady",
+    review: ["今回よかったこと：x", "", 3, "次に変える一つ：y", "z"] }), true);
+  assert.deepEqual(reviewed.flags._ch5.secondCup.review, ["今回よかったこと：x", "次に変える一つ：y"]);
+  roundTrip(reviewed);
+  reviewed.flags._ch5.secondCup.review = [1];
+  assert.throws(() => chapterFiveProgress(reviewed), "A malformed review must not pass save validation");
+}
 assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.win), true);
 rejects(value, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.loss));
 assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.afterglow), true);

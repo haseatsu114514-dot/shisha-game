@@ -347,7 +347,9 @@ function isValidSecondCup(cup) {
     && Number.isFinite(cup.total) && cup.total >= 0 && cup.total <= 100
     && SECOND_CUP_CATEGORIES.includes(cup.category)
     && count(cup.votes?.hajime) && count(cup.votes?.machine)
-    && cup.votes.hajime + cup.votes.machine === CH5_AUDIENCE;
+    && cup.votes.hajime + cup.votes.machine === CH5_AUDIENCE
+    && (cup.review === undefined || (Array.isArray(cup.review) && cup.review.length <= 2
+      && cup.review.every(text => typeof text === "string")));
 }
 
 const secondCupTally = cup => ({
@@ -371,7 +373,7 @@ export function chapterFiveVoteTally(value) {
  * 二本目を作り終えたときに runner が呼ぶ。二本目の前の場面を読み終え、まだ記録が無い試合だけ受け付ける。
  * total は finalize の総合、category は調整実績の区分（naruTastingCategory と同じ土台）か "failed"。
  */
-export function recordChapterFiveSecondCup(value, { total, category, failed = false }) {
+export function recordChapterFiveSecondCup(value, { total, category, failed = false, review = [] }) {
   const progress = chapterFiveProgress(value);
   if (progress.part !== "match" || progress.secondCup != null
     || progress.read[CH5_MATCH_SCENES.beforeSecond] !== true
@@ -381,6 +383,9 @@ export function recordChapterFiveSecondCup(value, { total, category, failed = fa
   if (!Number.isFinite(score) || !SECOND_CUP_CATEGORIES.includes(kind)) return false;
   const hajime = chapterFiveSecondCupVotes(score, failed);
   progress.secondCup = { total: score, category: kind, votes: { hajime, machine: CH5_AUDIENCE - hajime } };
+  // 結果カードの「今回よかったこと／次に変える一つ」。旧保存には無いので任意（#1909）。
+  const lines = Array.isArray(review) ? review.filter(text => typeof text === "string" && text).slice(0, 2) : [];
+  if (lines.length) progress.secondCup.review = lines;
   return true;
 }
 

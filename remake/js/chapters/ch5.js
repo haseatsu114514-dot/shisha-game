@@ -20,6 +20,8 @@ import { runPull, runCare } from "../craft/pull.js";
 import { finalize } from "../craft/score.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import { servedEvaluationLines } from "../craft/served-eval.js";
+import { craftReviewLines } from "../craft/advice.js";
+import { craftReviewBlock } from "../craft/tournament-graphics.js";
 import { naruTastingCategory } from "../craft/naru-tasting.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho,
@@ -105,7 +107,7 @@ function hud() {
   layers.hud.classList.remove("show");
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "") {
+function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
   hud();
   showScreen("ch5", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
     el("header.ch2-contest-header", [
@@ -114,6 +116,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     ]),
     el("p.ch2-contest-description", { text: description }),
     note ? el("p.ch2-contest-note", { text: note }) : null,
+    ...extra,
     el("div.ch2-contest-actions", actions),
   ]));
 }
@@ -411,7 +414,8 @@ async function renderMatch(owner) {
       }
       await renderStage(owner);
     }, true),
-  ], tally ? voteNote(tally) : "", first);
+  ], tally ? voteNote(tally) : "", first,
+  [craftReviewBlock(chapterFiveProgress(state).secondCup?.review, test("craft-review"))]);
 }
 
 // 挙手の数だけを並べる。審査員の採点表や恋愛の加点は出さない（第5章は観客投票）。
@@ -463,7 +467,7 @@ async function craftSecondCup(owner) {
   const failed = !!cs.failed;
   if (!failed) finalize(cs);
   const category = failed ? "failed" : naruTastingCategory(cs);
-  if (!recordChapterFiveSecondCup(state, { total: cs.total, category, failed })) throw new Error("二本目の記録を確定できません");
+  if (!recordChapterFiveSecondCup(state, { total: cs.total, category, failed, review: craftReviewLines(cs) })) throw new Error("二本目の記録を確定できません");
   save();
   const source = DB.dialogues[CH5_MATCH_SCENES.beforeSecond]?.lines.find(line => line.cue === ADJUST_CUE);
   const text = ADJUST_LINES[category] || source?.text;
