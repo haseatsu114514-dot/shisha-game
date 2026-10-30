@@ -239,25 +239,28 @@ async function renderScene(owner, scene, dayLabel) {
 }
 
 async function renderFree(owner) {
-  const model = chapterFourMapModel(state);
+  const model = chapterFourMapModel(state, { canReflect: canReflect() });
   await setBg(bgUrl(model.background), { instant: true });
   if (!current(owner)) return;
   card(owner, "free", `DAY ${model.day}・自由行動`, `ドバイの街を歩く。大会まであと${model.daysLeft}日。`,
     model.destinations.map(destination => el("div.ch4-destination", [
-      button(owner, destination.label, `go-${destination.id}`, () => visit(owner, destination.id), destination.kind === "end_day"),
+      destination.ok === false
+        ? el("button.btn", { type: "button", text: destination.label, disabled: true, dataset: { test: test(`go-${destination.id}`) } })
+        : button(owner, destination.label, `go-${destination.id}`, () => visit(owner, destination.id), destination.kind === "end_day"),
       el("p.ch4-destination-purpose", { text: `${destination.purpose}${destination.unreadCount > 0 ? "（未読あり）" : ""}` }),
-    ])).concat(canReflect() ? [el("div.ch4-destination", [
-      // 心得の盤: 見学できるモスクの回廊で振り返り、火種を灯す（時間を使わない。礼拝の所作はしない。SPEC 2.8・#1788）
-      button(owner, "モスクを見学して振り返る", "go-mosque", async () => { await reflectAt("dubai_mosque"); await renderStage(owner); }),
-      el("p.ch4-destination-purpose", { text: "見学の時間に回廊でここまでを振り返り、心得の盤に火種を灯す。日は進まない。" }),
-    ])] : []),
+    ])),
     [model.guide, model.hint, model.note].filter(Boolean).join(" "));
 }
 
 /** 行き先の場面を順に再生してマップへ戻る。日が進むのは「その日を終える」だけ。 */
 async function visit(owner, id) {
-  const destination = chapterFourMapModel(state)?.destinations.find(item => item.id === id);
-  if (!destination) return;
+  const destination = chapterFourMapModel(state, { canReflect: canReflect() })?.destinations.find(item => item.id === id);
+  if (!current(owner) || !destination || destination.ok === false) return;
+  if (destination.kind === "reflect") {
+    await reflectAt("dubai_mosque");
+    if (current(owner)) await renderStage(owner);
+    return;
+  }
   for (const sceneId of destination.scenes) {
     if (CH4_SPOT_SCENES.includes(sceneId)) {
       // スポット初回は「……【センス】が少し上がった。」の台詞報酬を実際に加算する（通常の自由行動と同じ最大2能力各1P）。

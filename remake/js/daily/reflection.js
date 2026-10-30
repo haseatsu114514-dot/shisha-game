@@ -4,12 +4,13 @@ import { state, save } from "../core/state.js";
 import { play } from "../vn/engine.js";
 import { growthEnabled, ensureGrowth, openGrowthBoard } from "../core/growth.js";
 import { hasUsableHidane } from "../core/growth-board.js";
+import { openingStatus, MOSQUE_VISITING_HOURS } from "./spot-hours.js";
 
 /** 場所ごとの場面と背景。新設の神社・モスクの背景は #1788 の画像が届くまで近い背景で代える */
 export const REFLECT_PLACES = {
   kannon: { scene: "reflect_kannon", bg: "res://assets/backgrounds/bg_kannon_night.png", label: "観音堂" },
   tokyo_shrine: { scene: "reflect_tokyo_shrine", bg: "res://assets/backgrounds/bg_street_night.png", label: "路地裏の神社" },
-  dubai_mosque: { scene: "reflect_dubai_mosque", bg: "res://assets/backgrounds/bg_dubai_map_dusk.png", label: "見学できるモスク" },
+  dubai_mosque: { scene: "reflect_dubai_mosque", bg: "res://assets/backgrounds/bg_dubai_map_dusk.png", label: "見学できるモスク", ...MOSQUE_VISITING_HOURS },
   dubai_waterside: { scene: "reflect_dubai_waterside", bg: "res://assets/backgrounds/bg_dubai_map_dusk.png", label: "モスクの見える水辺" },
   inn_window: { scene: "reflect_inn_window", bg: "res://assets/backgrounds/bg_ch3_hotel_night.png", label: "宿の窓辺" },
 };
@@ -20,12 +21,12 @@ export const canReflect = (s = state) => !!s && growthEnabled() && hasUsableHida
 /** 内省の場面 → 盤（灯せる）。戻り値=灯したマス（やめたら空） */
 export async function reflectAt(place, { eve = false } = {}) {
   const spot = REFLECT_PLACES[place];
-  if (!spot || !canReflect()) return [];
+  if (!spot || !canReflect() || !openingStatus(spot, state).ok) return [];
   const owner = state;
   if (eve) await play("reflect_eve", { bg: spot.bg });
   if (state !== owner) return [];
   await play(spot.scene, { bg: spot.bg });
-  if (state !== owner) return [];
+  if (state !== owner || !canReflect() || !openingStatus(spot, state).ok) return [];
   const lit = await openGrowthBoard({ place }) || [];
   if (state === owner) save();
   return lit;
