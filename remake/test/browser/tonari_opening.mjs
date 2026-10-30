@@ -72,6 +72,9 @@ await suite("tonari-opening", async check => {
             await page.locator(".vn-log.show").waitFor({ state: "hidden" });
             assert.equal(await page.locator(".tonari-opening").getAttribute("data-shot"), cue);
             assert.equal(await page.evaluate(() => O531.lines.length), before.count);
+            // 閉じた後はフォーカスがLOGボタンへ戻る。次のEnterで再びLOGを開かないよう外す。
+            assert.equal(await page.evaluate(() => document.activeElement?.dataset?.test), "vn-log");
+            await page.evaluate(() => document.activeElement?.blur());
           }
           saved.add(cue);
         }
