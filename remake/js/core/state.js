@@ -329,6 +329,8 @@ function migrate(s) {
     .filter(([id, xp]) => /^[a-z0-9_]+$/.test(id) && Number.isFinite(xp) && xp >= 0)
     .map(([id, xp]) => [id, Math.min(MASTERY_THRESHOLDS.at(-1), xp)]));
   s.flavorLessons = Array.isArray(s.flavorLessons) ? [...new Set(s.flavorLessons.filter(x => typeof x === "string"))] : [];
+  // アダムのダブルアップルの話は第3回から第4回へ移した（#1466）。第3回で受け取った旧セーブに第4回で二重付与しない。
+  if (s.flavorLessons.includes("ch1_adam_third") && !s.flavorLessons.includes("ch1_adam_fourth")) s.flavorLessons.push("ch1_adam_fourth");
   if (!s.staffPractice || typeof s.staffPractice.day !== "string") s.staffPractice = null;
   else s.staffPractice.used = Object.fromEntries(Object.entries(record(s.staffPractice.used))
     .filter(([, g]) => Number.isFinite(g) && g >= 0).map(([id, g]) => [id, Math.min(6, g)]));

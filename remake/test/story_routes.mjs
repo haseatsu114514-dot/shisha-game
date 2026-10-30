@@ -146,6 +146,17 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.deepEqual(wiring.availableOptionalScenes(routes, {...value, chapter: 4}), []);
 }
 {
+  // 久世とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に久世側。
+  const value = tokyo();
+  readUntil(value, 'ch3_kuze_first');
+  assert(!offered(value).some(id => id.startsWith('ch3_kuze_mashiro_')), 'no childhood scenes before meeting kuze');
+  readUntil(value, 'ch3_kuze_mukai_visit');
+  assert(offered(value).includes('ch3_kuze_mashiro_tea_tin'));
+  assert(!offered(value).includes('ch3_kuze_mashiro_soon_back'), 'kuze talks after visiting mukai');
+  readUntil(value, 'ch3_taste_return');
+  assert(offered(value).includes('ch3_kuze_mashiro_soon_back'));
+}
+{
   // 前夜: location_contract どおり、実際に滞在中の人物と会う約束だけが根拠。
   const window = value => clock.tokyoTime(value, clock.TOKYO_FREE_TIMES.find(time => time.id === wiring.EVENING_WINDOW));
   const eve = (visitors, {lovers = visitors, met = ['steve'], status = 'staying', contacts = lovers} = {}) => {

@@ -89,7 +89,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "そりゃな。湿度と気圧が店と違うから、蒸らしを10秒伸ばすか迷ってる"
+          "text": "そりゃな。課題のレモン、バニラの甘さとぶつけるか、引き立て役にするかで迷ってる"
         },
         {
           "speaker": "",
@@ -837,7 +837,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "おめでとう、はじめ。今日のお前の煙は、文句なしに美味かった"
+          "text": "おめでとう、はじめ。今日の優勝は、間違いなくお前のもんだ"
         },
         {
           "speaker": "hajime",
@@ -1054,6 +1054,12 @@
         {
           "type": "condition",
           "condition_type": "flag",
+          "flag": "interview_honest",
+          "next_true": "ta_interview_honest"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
           "flag": "_op_praise_talent",
           "next_true": "ta_growth_echo"
         },
@@ -1158,6 +1164,13 @@
         }
       ],
       "branches": {
+        "ta_interview_honest": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……誰からもらったか、言えたな"
+          }
+        ],
         "ta_growth_echo": [
           {
             "speaker": "hajime",

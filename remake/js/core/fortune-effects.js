@@ -71,13 +71,13 @@ export function registerFortuneReadings(db) {
     db.dialogues[id] = { ...base, dialogue_id: id, lines: [
       ...base.lines.slice(0, -1),
       { speaker: 'uranaishi', face: 'normal', text: '二つの言葉に迷ったら、あの人に届く方が赤く見える。今日を含めて三日間だよ' },
-      { speaker: 'uranaishi', face: 'smile', text: entry.teller },
+      { speaker: 'uranaishi', face: 'normal', text: entry.teller },
       { speaker: 'hajime', face: 'normal', text: entry.reaction },
     ] };
   }
   const offer = db.dialogues?.remake_fortune_offer;
   if (offer && offer.lines?.length) db.dialogues.remake_fortune_offer = { ...offer, lines: [offer.lines[0],
-    { speaker: 'uranaishi', face: 'smile', text: '次に会うときの縁をひと押し。それと三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
+    { speaker: 'uranaishi', face: 'normal', text: '次に会うときの縁をひと押し。それと三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
 }
 // Authored response hints, never a global preference for the first option.
 export function fortuneChoiceIndex(save, dialogueId, line, data) {

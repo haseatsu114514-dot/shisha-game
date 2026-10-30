@@ -76,4 +76,11 @@ for (const failure of ["cancel", "throw", "abort", "replace"]) {
   assert.equal(state.owned.length, 0); assert.equal(Object.keys(state.finales).length, 0); assert.equal(gifts, 0); assert.equal(saves, 0);
 }
 results.push("cancel/throw/abort/replaced LOAD owner cannot grant gift or save");
+// 第4章の結末: 十五年前の一台はカルダモン。スミの締めくくり（ボウル）を読んだ時だけ心の声を足す（#1346）。
+for (const d of JSON.parse(read("data/dialogue/ch4_main.json")).dialogues) if (d.dialogue_id === "ch4_ending") DB.dialogues.ch4_ending = d;
+const bowlVoice = /閉店後の一台と同じ/;
+reset(4); assert.match(text("ch4_ending"), /カルダモンだけの/); assert.doesNotMatch(text("ch4_ending"), bowlVoice);
+reset(4); state.finales.naru = { day: 10, chapter: 1, route: "friend" }; assert.doesNotMatch(text("ch4_ending"), bowlVoice);
+reset(4); state.finales.sumi = { day: 10, chapter: 1, route: "friend" }; assert.match(text("ch4_ending"), bowlVoice);
+results.push("ch4 ending adds the cardamom inner voice only after Sumi's bowl finale");
 console.log(JSON.stringify({ groups: results.length, results, scope: "actual module/VN condition handler with explicit controlled ports; no browser or real LOAD" }, null, 2));

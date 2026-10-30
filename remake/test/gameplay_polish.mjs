@@ -66,9 +66,9 @@ try {
   assert.equal(await page.locator('.hud-stamina.recovering').count(), 0);
   await page.evaluate(() => document.body.classList.remove('vn-open'));
   await page.waitForSelector('.hud-stamina.recovering');
-  assert.equal(await page.locator('.hud-bar b').evaluate(n => n.style.width), '50%');
+  assert.equal(await page.locator('.hud-stamina .hud-bar b').evaluate(n => n.style.width), '50%');
   await page.waitForTimeout(550);
-  const ratio = await page.locator('.hud-bar b').evaluate(n => n.getBoundingClientRect().width / n.parentElement.getBoundingClientRect().width);
+  const ratio = await page.locator('.hud-stamina .hud-bar b').evaluate(n => n.getBoundingClientRect().width / n.parentElement.getBoundingClientRect().width);
   assert(Math.abs(ratio - .5) < .02);
   console.log('[polish] PASS: recovery waits for the visible map HUD and fills the original gauge without a card');
   const temperatures = await page.evaluate(async () => {

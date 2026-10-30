@@ -578,11 +578,6 @@
             "flag": "_lime_contact_adam"
           }
         ]
-      },
-      "metadata": {
-        "flavor_lesson": {
-          "double_apple": 1
-        }
       }
     },
     {
@@ -722,7 +717,12 @@
           "face": "",
           "text": "……【技術】が少し上がった。"
         }
-      ]
+      ],
+      "metadata": {
+        "flavor_lesson": {
+          "double_apple": 1
+        }
+      }
     },
     {
       "dialogue_id": "ch1_adam_fifth",
@@ -1116,7 +1116,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "お前の煙は、最後の一口まで味が痩せなかった。……皮ごと齧ったリンゴの残り方だ"
+          "text": "お前の一台、最後の一口まで見ていた。……皮ごと齧った果実の、残り方をな"
         },
         {
           "speaker": "hajime",
@@ -1126,7 +1126,7 @@
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "だが届かなかった。帰って炭を1ミリ戻した。……お前の一台も、まだ熟す前の青いリンゴだ"
+          "text": "だが届かなかった。……お前の一台も、まだ熟す前の青い果実だ"
         },
         {
           "speaker": "",
