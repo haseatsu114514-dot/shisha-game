@@ -10,10 +10,16 @@
   ],
   "suites": [
     {
+      "id": "status-steps",
+      "title": "Status 10-step conversion and effect tables",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/stat_steps.mjs"]
+    },
+    {
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs"]
     },
     {
       "id": "vent-lid",
@@ -67,7 +73,10 @@
         "remake/js/core/growth.js",
         "remake/js/daily/levelup.js",
         "remake/js/core/growth-board.js",
+        "remake/js/core/growth-board-data.js",
         "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/reflection.js",
+        "data/dialogue/growth_reflection.json",
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
         "remake/test/browser/growth_levelup.mjs"
@@ -263,6 +272,7 @@
         "node --experimental-vm-modules remake/test/reel_hints.mjs",
         "node remake/test/cafe_ideas.mjs",
         "node remake/test/ch2_ageha_story.mjs",
+        "node --experimental-vm-modules remake/test/ch2_strawberry_trial.mjs",
         "node remake/test/ch1_adam_taste_carryover.mjs",
         "node --experimental-vm-modules remake/test/fortune_rumor.mjs",
         "node remake/test/lover_dates.mjs",

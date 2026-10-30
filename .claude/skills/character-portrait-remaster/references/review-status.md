@@ -68,7 +68,7 @@ PRT67：ユーザー「１個目の青インナーが濃いめなやつがいい
 
 # 2026-10-07 追記：サメちゃんのストリートシスター3案
 
-オーナー「3パターン作ってみて まずは一枚ずつ」で、服・髪・配色の変更を含む3案を通常表情の全身立ち絵で制作。[全身と原寸の顔](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/comparison.png)、[暗い背景](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/comparison-dark.png)、[保存先・実参照・プロンプト](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/README.md)、[引き継ぎ](../../../../docs/samechan_gothic_shark_handoff.md)。3回の生成元を無加工保存。確認用は896×1200 RGBA、全身の同じ高さと足元へ拡縮・配置した。画像の描き足しやアルファ閾値処理はしていない。
+オーナー「3パターン作ってみて まずは一枚ずつ」で、服・髪・配色の変更を含む3案を通常表情の全身立ち絵で制作。[全身と原寸の顔](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/comparison.png)、[暗い背景](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/comparison-dark.png)、[保存先・実参照・プロンプト](../../../../asset_sources/portraits/samechan-gothic-shark-concepts-v1/README.md)、[引き継ぎ](../../../../docs/archive/samechan_gothic_shark_handoff.md)。3回の生成元を無加工保存。確認用は896×1200 RGBA、全身の同じ高さと足元へ拡縮・配置した。画像の描き足しやアルファ閾値処理はしていない。
 
 本人の青い瞳・ギザ歯・王冠のコロちゃんは共通。①黒／アイボリー／青緑の深海シスター、②黒／アイボリー／ボルドーのサメ映画好き、③チャコール／アイボリー／くすんだ水色のスケーター風。画風の確定基準は採用済みのみんと・あげは。**3案は未採用でゲーム素材・設定は変更していない。** 3案を追加した時点の参照一覧は22グループ78画像。後にPR #204の4人分の保存素材と最新mainを取り込み、通常／腹話術の青版を追加した一覧は27グループ106画像。既存の画像・SHA-256は保持。
 

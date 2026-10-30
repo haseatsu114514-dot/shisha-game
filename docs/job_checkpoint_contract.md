@@ -1,3 +1,5 @@
+> **注意（2026-10-30）**: 本ツールは任意の試作で、必須手順ではない（`AGENTS.md`）。本文の claim／worker／予約・引き継ぎに関する記述は、2026-10-23に撤廃したIssue予約の時代の設計で、現在の運用には使わない。
+
 # Job checkpoint contract v1 — offline first stage (#594)
 
 `tools/job_checkpoint_schema.json` defines a closed public data envelope.

@@ -115,7 +115,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんがカウンター越しに、じっとはじめの顔を見た。"
+          "text": "スミさんがカウンター越しに、じっと俺の顔を見た。"
         },
         {
           "speaker": "sumi",
@@ -150,7 +150,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "片づけようとしても、手が止まる。休むという言葉を、今夜のはじめはうまく受け取れなかった。"
+          "text": "片づけようとしても、手が止まる。休むという言葉を、今夜の俺はうまく受け取れなかった。"
         },
         {
           "speaker": "",
@@ -183,7 +183,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "3卓の炭替え。手元に集中しようとするのに、視界の端がうまく定まらない。"
+          "text": "手元に集中しようとするのに、視界の端がうまく定まらない。"
         },
         {
           "speaker": "",
@@ -233,7 +233,7 @@
         {
           "speaker": "salaryman",
           "face": "smile",
-          "text": "いやいや、気にしないで。このソファ、これでやっと『歴戦の風格』が出たよ。勲章だ勲章"
+          "text": "……気にしないで"
         },
         {
           "speaker": "",
@@ -253,7 +253,7 @@
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "（……情けない。こんな基本的なミスをするなんて。何をやってるんだ、俺は）"
+          "text": "（……情けない。炭ひとつ、まともに運べないなんて。何をやってるんだ、俺は）"
         }
       ],
       "comment": "DAY4夜の固定場面。自由行動のバイトとは別に閉店前の手伝いを頼まれる。一度の事故からch2_abyss_baitoへ続く。"
@@ -315,7 +315,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "店の格が出るのは、落ちたあとでさ。客を先に守ったなら、それでいい"
+          "text": "店の格が出るのは、落ちたあとですわ。客を先に守ったなら、それでいい"
         },
         {
           "speaker": "kumicho",
@@ -431,6 +431,12 @@
           "speaker": "ageha",
           "face": "normal",
           "text": "何も頼まないで、メモだけ取って帰ったの。誰なんだろね"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_scout_tasting",
+          "next_true": "ageha_scout_link"
         },
         {
           "type": "condition",
@@ -590,6 +596,13 @@
             "flag": "_ch2_audience_welcome"
           }
         ],
+        "ageha_scout_link": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "試煙会にもいたかも。吸わないで、みんなの顔ばっか見てた気がする"
+          }
+        ],
         "scout_tasting": [
           {
             "speaker": "hajime",
@@ -650,7 +663,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（自分の待てないところまで、道具で工夫するんだ）"
+          "text": "（待てない自分のために、ストップウォッチを下げてるんだ）"
         }
       ]
     },
@@ -798,12 +811,243 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……誰の話だろう。でも今は、聞き返せる気がしない）"
+          "text": "（……誰の話だろう。でも今は、聞き返せない）"
         },
         {
           "speaker": "",
           "face": "",
           "text": "ノートは、取らずに帰った。あの明かりの輪の中に、入っていける気がしなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_strawberry_sample",
+      "comment": "#1650 DAY9試煙会の帰り際。アフサール新作の試供品を受け取り、神崎さんの所作を自分の一台で確かめる導線にする。確かめるのは熱の一点だけ。受け取りは ch2-story.js の sample 指定で在庫へ入る。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、出口で店員が銀色の小袋を配っていた。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "normal",
+          "text": "新作ストロベリーの試供品です。県大会に出られる方へ、お一つずつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手のひらに載るほどの袋。一台分には、ちょうど足りる量だ。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん。さっきのは俺の台でさ。今度は自分の台で吸ってみな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭を一つ抜いて、少し置く……ですよね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "言葉で覚えたつもりになっちゃいけねえ。手で確かめるもんでさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "それと、試すのは熱だけにしときな。いっぺんにいじると、何が効いたか分からなくなりやす"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（配合はいつもどおり。炭を急がない。それだけを確かめる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（……でも今の俺の舌じゃ、出来が分からない。誰かに一口、吸ってもらわないと）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（次にtonariでまかない練習をする時、この苺で一台作ってみよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_strawberry_trial_intro",
+      "comment": "#1650 tonariの「苺を試す」。まかない練習の前に、確かめる点を熱の一つに絞る。はじめの舌は不調なので、スミさんに一口だけ頼む。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "まかないの支度をしながら、鞄から銀色の小袋を出した。試煙会でもらった、アフサールの新作ストロベリーだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん。この苺で一台作ったら、一口だけ吸ってもらえますか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……何を確かめる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱だけです。炭は四つにしないで三角。吸い出しで、温度を上げすぎない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さんが、苺は熱に弱いって。炭を一つ抜いて、少し置いてから出してました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一つに絞ったなら、それでいい。配合はいじるな。苺はちゃんと入れとけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "確かめるのは、熱だけ。苺を入れて、炭を急がない。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_strawberry_trial_gentle",
+      "comment": "#1650 苺の試作・熱が収まった時。スミさんの感想で返す。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。自分で吸っても、甘さの輪郭はまだつかめない。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……苺だな。最初の香りが、最後までちゃんと残ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱、走ってませんか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "走ってねえ。待った分だけ、葉が仕事してる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（自分の舌では分からない。でも、炭を急がなかった手は、間違っていなかった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホのメモに「苺：炭は急がない」と打ち込んだ。それだけで、少し肩が軽くなった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_strawberry_trial_hot",
+      "comment": "#1650 苺の試作・熱が強すぎた（焦げを含む）時。試煙会の神崎さんの言葉につなげる。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。スミさんは一口吸って、すぐに煙を吐いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "香りが荒れてる。甘さの後ろに、青い味が残るな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……炭、急ぎすぎましたか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "葉のせいじゃねえ。熱が先に走った。次は、温度を上げる前に一度待て"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（神崎さんが言ってたのは、これか。苺は、待たないと出てこない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホのメモに「苺：熱を上げる前に待つ」と打ち込んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_strawberry_trial_thin",
+      "comment": "#1650 苺の試作・熱が足りなかった（冷え切りを含む）時。弱くするだけでは出ないことを返す。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。スミさんは二口吸って、首を少しかしげた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……薄い。香りが立つ前に、終わっちまってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "熱を怖がりすぎたかもしれません"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "抜けばいいってもんじゃねえ。待つのと、足りねえのは別だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（弱くすればいいわけじゃない。苺が立つところまでは、熱を届ける）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホのメモに「苺：待つ。でも、届かせる」と打ち込んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_strawberry_trial_no_berry",
+      "comment": "#1650 苺の試作で苺を入れなかった時。試作は終わらせず、次のまかないでもう一度試せる。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出来上がった一台の吸い口を、スミさんに渡した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……苺、入ってねえぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ……。いつもの配合のまま、組んでました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "袋はまだあるだろ。次のまかないで、もう一度やれ"
         }
       ]
     }

@@ -33,6 +33,8 @@ export const CH2_NIGHTS = [
   ] },
   { day: 9, pin: "ch2_c_station", label: "アフサール新作の試煙会", beat: "夜。C.STATIONの試煙会へ──", steps: [
     { id: "remake_ch2_ageha_tasting", file: "ch2_ageha_story", bg: C_STATION_TASTING_BG },
+    // #1650: 帰り際に試供品の苺を受け取り、tonariのまかないで熱だけを試す導線にする
+    { id: "ch2_strawberry_sample", file: "ch2_main", bg: C_STATION_TASTING_BG, sample: true },
   ] },
   { day: 10, pin: "tonari", label: "スミさんの沈黙", beat: "夜。配合ノートを受け取りに、tonariへ──", steps: [
     // #1733: ノートを受け取りに寄った閉店間際にあげはが来る→駅まで送って店へ戻り、半分灯りの落ちた店でスミさんの話を聞く
@@ -60,6 +62,14 @@ export const CH2_NIGHTS = [
     { id: "ch2_pre_tournament_realisation", file: "ch2_main", bg: CH2_SCENE_BACKGROUNDS.venueBench, flag: "_ch2_eve_done" },
   ] },
 ];
+
+// まかない練習で一度だけ読む苺の試作（#1650）。結果は熱の一点で gentle / hot / thin、苺なしはやり直し。
+export const STRAWBERRY_TRIAL_IDS = ["ch2_strawberry_trial_intro", ...["gentle", "hot", "thin", "no_berry"].map(r => `ch2_strawberry_trial_${r}`)];
+/** 試煙会のあと、まだ試作の感想を聞いていない第2章だけ。台本が読めない時は出さない。 */
+export function strawberryTrialReady(s, dialogues) {
+  return s.chapter === 2 && !!s.flags?._ch2_read_remake_ch2_ageha_tasting && !s.flags._ch2_strawberry_trial
+    && STRAWBERRY_TRIAL_IDS.every(id => dialogues?.[id]?.lines?.length);
+}
 
 // あげはの店に通う回（初回・続編のあと、この順に一度ずつ）。7日目以降は先に「ダメな日」を挟む。
 export const AGEHA_VISITS = AGEHA_AFFINITY_VISITS;

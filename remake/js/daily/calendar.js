@@ -37,7 +37,7 @@ import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocati
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
-import { presentNight, growthMenuItems, openGrowthBoard } from "../core/growth.js";
+import { presentNight, growthMenuItems, openGrowthBoard, reflectAtSpot } from "../core/growth.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -568,6 +568,11 @@ async function performSpotAction(spot) {
       await play("remake_staff_practice", { bg: TONARI_BG });
       await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
       toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+    } else if (sub === "strawberry") {
+      const { runStrawberryTrial } = await import("../chapters/ch2-strawberry-trial.js");
+      addStamina(-16);
+      await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
+      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "baito") await doBaito();
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
@@ -585,6 +590,8 @@ async function performSpotAction(spot) {
     else if (await staminaGuard(-14)) { used = await visitRin(); exerted = used; }
     else used = false;
   } else if (spot.kind === "spot") {
+    // 観音堂で内省（心得の盤 SPEC 2.8）: 火種を灯す。時間も体力も使わない。true=行動にしない
+    if (await reflectAtSpot(spot.id) === true) return { used: false, exerted: false };
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     if (await visitSpot(spot) === false) return { used: false, exerted: false };
     exerted = spot.stamina < 0;
@@ -824,7 +831,9 @@ async function endDay({ returnedToTonari = false } = {}) {
   if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
   delete state.flags._home_trial_plan; // 予約方式の旧セーブを読んだ場合も持ち越さない
   // 寝る直前（夜明けの幕の前）にその日の経験値を精算する。大会前夜もここで火種が届く（REPORT P2・R1）
-  await presentNight();
+  // 大会前夜は、火種が残っていれば精算のあとにひとりで内省しに行く（SPEC 2.8・#1690）。柚ヶ谷の夜は宿の窓辺
+  const eve = state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY);
+  await presentNight({ evePlace: eve ? (state.chapter === 2 && state.flags._ch2_region === "widehanga" ? "inn_window" : "kannon") : null });
   if (state !== homeOwner) return;
   await advanceDay();
 }

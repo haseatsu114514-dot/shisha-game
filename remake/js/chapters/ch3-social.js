@@ -26,6 +26,9 @@ export async function loadTokyoSocial() {
   } finally { clearTimeout(timer); }
 }
 
+// chat は日替わりの候補列（時間帯を名指さない文面）。旧定義の文字列もそのまま受ける。
+const dailyLine = text => Array.isArray(text) ? text[state.day % text.length] : text;
+
 function logMessage(id, key, mine, peer) {
   const messageId = `_tokyo_${id}_${key}`;
   if (state.inbox.some(item => item.id === messageId)) return;
@@ -87,7 +90,7 @@ export async function openTokyoLime({ signal = null } = {}) {
       const key = `${state.chapter}:${state.day}`;
       if (state.tokyoVisits.chats[id] !== key) {
         const local = characterRegion(state, definitions, id) === playerRegion(state);
-        logMessage(id, `chat_${key}`, "今、少し話せる？", playerRegion(state) === "home" ? character.homeChat : local ? character.localChat : character.chat);
+        logMessage(id, `chat_${key}`, "今、少し話せる？", playerRegion(state) === "home" ? character.homeChat : local ? character.localChat : dailyLine(character.chat));
         state.tokyoVisits.chats[id] = key;
       } else notes[id] = "今日のやり取りはトークに残っている。また落ち着いた時に話そう。";
     }

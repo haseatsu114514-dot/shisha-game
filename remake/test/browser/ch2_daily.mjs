@@ -196,7 +196,7 @@ await suite('ch2-daily',async check=>{
   }, { reducedMotion: 'reduce' });
   await check('next-day-region-switch-and-autosave',async page=>{
     await setup(page,{reel:true}); await begin(page);
-    let v=await value(page); assert.equal(v.day,16); assert.equal(v.slot,0); assert.equal(v.stamina,110);
+    let v=await value(page); assert.equal(v.day,16); assert.equal(v.slot,0); assert.equal(v.stamina,114); // 根性31＝4段（10段表 GUTS_STAMINA_BONUS）
     assert.match(await page.locator('.dc-day').textContent(),/^2\/14$/); assert.match(await page.locator('.dc-row').allTextContents().then(a=>a.join(' ')),/あと12日/);
     await capture(page,'day2-home.png'); await wide(page);
     await assertFits(page,'.spot-pin');
@@ -232,7 +232,7 @@ await suite('ch2-daily',async check=>{
   });
   await check('paid-city-talk-repeat-and-contact',async page=>{
     await setup(page);await begin(page);await wide(page);await act(page,'ch2_ageha');
-    let v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);assert.equal(v.stamina,95);
+    let v=await value(page);assert.equal(v.money,33000-stationFares(page));assert.equal(v.slot,1);assert.equal(v.stamina,99); // 根性31＝4段の体力から
     assert.equal(v.flags._ch2_talks.ageha,1);assert.equal(v.visits.ageha,1);assert(v.contacts.includes('ageha'));
     assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),157); // 2 normal points, not old 4-point amounts
     await settled(page);await page.locator(t('pin-ch2_ageha')).click();assert.match(await page.locator('.mi-no').textContent(),/今日はもう行った/);

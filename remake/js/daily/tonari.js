@@ -1,3 +1,4 @@
+import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
 // シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
@@ -5,7 +6,7 @@ import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire, modal } from "../core/ui.js";
 import { state, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, applyStats, star, currentCondition } from "../core/stats.js";
+import { addMoney, addStamina, applyStats, step, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
@@ -23,6 +24,10 @@ import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
 /** tonari に入ったときのサブメニュー。戻るなら null */
+// ch2-story-data.js の strawberryTrialReady と同じ条件。日常の共通画面へ第2章の台本データを読み込ませない。
+const strawberryTrialOpen = () => state.chapter === 2 && !!state.flags._ch2_read_remake_ch2_ageha_tasting
+  && !state.flags._ch2_strawberry_trial && !!DB.dialogues.ch2_strawberry_trial_intro?.lines?.length;
+
 export function tonariMenu() {
   return new Promise((resolve) => {
     setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
@@ -40,6 +45,8 @@ export function tonariMenu() {
         opt("お客さんとして一服", !tsumugiAtTonari(state) ? "客席でゆっくり一服する"
           : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
         opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
+        // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
+        strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
         opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話せる", "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
@@ -72,7 +79,7 @@ export async function tonariCustomer({ signal = null } = {}) {
 
 // ---------------------------------------------------------------- バイト
 
-const CHARM_BONUS = [0, 500, 1200, 2000, 3000]; // 魅力★で指名・リピートが増える
+// 魅力の段で指名・リピートが増える
 const CALLED_BONUS = 5000; // スミさんに急に呼ばれた日の上乗せ（店からの給料。チップではない）
 
 /** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ） */
@@ -108,7 +115,7 @@ async function baitoShift({ called }) {
     await customerEvent(condition);
   }
   await serveShiftOrder();
-  const bonus = Math.round(CHARM_BONUS[star("charm") - 1] * condition.bonusRate);
+  const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
   const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus;
@@ -285,7 +292,11 @@ async function serveShiftOrder() {
     options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
   if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
   // 注文と配合に対応した客の反応を返す（#1073）。給料・行動消費は従来どおり後続のcalendarで確定。
-  const result = await play(order.reactions[index], { bg: TONARI_BG });
+  // 同じ注文が前にもあったら、反応の前にはじめが前回の配合を思い出す（前回と同じか違うかで一行を変える・#1415）。
+  const prev = state.flags[`_shift_mix_${order.id}`];
+  const recall = Number.isInteger(prev) && order.mixes[prev] ? DB.dialogues[`shift_recall_${order.id}_${prev === index ? "same" : "diff"}`] : null;
+  const scene = DB.dialogues[order.reactions[index]];
+  const result = await play(recall && scene ? { ...scene, lines: [...recall.lines, ...scene.lines] } : order.reactions[index], { bg: TONARI_BG });
   if (state !== owner || result?.cancelled) return;
   // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。

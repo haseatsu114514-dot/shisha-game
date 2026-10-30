@@ -291,7 +291,7 @@ const slotBefore = state.slot;
 const statsBefore = structuredClone({stats:state.stats,xp:state.statXp});
 const r1 = home.applyHomeShisha({ lemon: 9, mint: 3 }, rig.homeRig());
 assert.deepEqual(state.flavorStock, { lemon: 11, mint: 17 });
-assert.equal(state.stamina, 58);
+assert.equal(state.stamina, 57);
 assert.equal(state.slot, slotBefore, "行動の枠は使わない");
 assert.equal(r1.taste, "great");
 assert.equal(r1.info.golden, "hit");

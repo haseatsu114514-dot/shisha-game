@@ -122,14 +122,11 @@
         ],
         "first": [
           {
-            "speaker": "ageha",
-            "face": "surprise",
-            "text": "あれ？ この匂い……ううん、この顔！ 前に荷物落としてた人じゃん"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "あ……あの時の！ グミベアの匂い、香水じゃなかったんだ"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ev_ageha_cameo",
+            "next_true": "first_cameo",
+            "next_false": "first_new"
           },
           {
             "speaker": "ageha",
@@ -178,6 +175,30 @@
             "speaker": "ageha",
             "face": "smile",
             "text": "それそれ！ ハジメっちが言うと、なんか正解っぽくなる"
+          }
+        ],
+        "first_cameo": [
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "あれ？ この匂い……ううん、この顔！ 前に荷物落としてた人じゃん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "あ……あの時の！ グミベアの匂い、香水じゃなかったんだ"
+          }
+        ],
+        "first_new": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "こんばんはー！ ここがtonari？ ……思ってたより、落ち着く匂い"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "いらっしゃいませ。……この甘い匂い、香水じゃなくて、フレーバーですか？"
           }
         ]
       }
@@ -1169,14 +1190,11 @@
         ],
         "ageha_first": [
           {
-            "speaker": "ageha",
-            "face": "surprise",
-            "text": "あれ？ 商店街で荷物ばらまいてた子じゃん"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "あの時の……。tonariの蒸野はじめです"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ev_ageha_cameo",
+            "next_true": "ageha_first_cameo",
+            "next_false": "ageha_first_new"
           },
           {
             "speaker": "ageha",
@@ -1348,6 +1366,30 @@
             "face": "normal",
             "text": "うちの「なんか」も、いつか言葉になるのかな"
           }
+        ],
+        "ageha_first_cameo": [
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "あれ？ 商店街で荷物ばらまいてた子じゃん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "あの時の……。tonariの蒸野はじめです"
+          }
+        ],
+        "ageha_first_new": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "あれ？ 見ない顔。地元の人たちと一緒の子？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariの蒸野はじめです。はじめまして"
+          }
         ]
       }
     },
@@ -1367,6 +1409,11 @@
           "speaker": "",
           "face": "",
           "text": "スミさんに断って、片づけ前に一台だけ組んでいると、ドアが開いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（確かめるのはやめるって、先生と決めたのに）"
         },
         {
           "speaker": "ageha",

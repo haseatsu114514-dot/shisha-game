@@ -13,7 +13,7 @@ const night = (day) => CH2_NIGHTS.find((n) => n.day === day);
 assert.deepEqual(night(3).steps.map((s) => s.id), ["ch2_naru_warm", "remake_ch2_ageha_scout"]);
 assert.equal(night(3).steps[1].contact, "ageha", "会っていなくても連絡先を交換する");
 assert(!night(2), "2日目は自由な夜");
-assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting"]);
+assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting", "ch2_strawberry_sample"]);
 // 9日目はMELTY PUFFではなくC.STATION柚ヶ谷店の客席（#929）。旧IDのまま読了フラグを引き継ぐ
 assert.equal(night(9).pin, "ch2_c_station");
 assert.equal(night(9).steps[0].room, undefined);

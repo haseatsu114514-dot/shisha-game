@@ -45,6 +45,20 @@
         "text": "なぜか部長にされてて……TRPGの部活、一緒にどう？"
       }
     ],
+    "invite_hiyori": [
+      {
+        "speaker": "hajime",
+        "face": "normal",
+        "text": "なぜか部長にされてて……TRPGの部活、一緒にどうですか？"
+      }
+    ],
+    "invite_adam": [
+      {
+        "speaker": "hajime",
+        "face": "normal",
+        "text": "なぜか部長にされてて……TRPGの部活、一緒にどうですか？"
+      }
+    ],
     "founded": [
       {
         "speaker": "",
@@ -84,21 +98,21 @@
     "samechan": [
       {
         "speaker": "samechan",
-        "text": "サメ映画みたいなTRPGもある？　なら入る！"
+        "text": "サメ映画みたいなTRPGもあるのか？　ならば入るのじゃ！"
       },
       {
         "speaker": "samechan",
-        "text": "仕事のない夜に呼んで。サメ役……じゃなくて、GMもやってみたい！"
+        "text": "仕事のない夜に呼ぶのじゃぞ。サメ役……ではなく、GMもやってみたいのう！"
       }
     ],
     "tsumugi": [
       {
         "speaker": "tsumugi",
-        "text": "……はじめがいるなら、やってみたい。"
+        "text": "……はじめさんがいるなら、やってみたいです。"
       },
       {
         "speaker": "tsumugi",
-        "text": "入る。制作の予定がない夜なら、呼んで。"
+        "text": "入ります。制作の予定がない夜なら、呼んでください。"
       }
     ],
     "adam": [

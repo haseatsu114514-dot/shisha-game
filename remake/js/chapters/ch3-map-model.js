@@ -12,6 +12,7 @@ export const TOKYO_MAP_PLACES = Object.freeze({
   volk: place("volk", "鉄の煙", 55.9, 40.4),
   gym: place("gym", "CHOI-ZAP", 34.9, 75.9),
   park: place("park", "公園", 69, 62),
+  shrine: place("shrine", "路地裏の神社", 54, 70), // 心得の盤の内省（SPEC 2.8・#1788）。火種がある時だけ出る
 });
 
 export const TOKYO_MAP_LANDMARKS = Object.freeze([

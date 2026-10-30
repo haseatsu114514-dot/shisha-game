@@ -47,7 +47,7 @@
 
 変更対象はこの資料だけ。`remake/`、本編台詞、manifest、採用画像、`ch2-city-data.js`は読取のみ。[PR #562](https://github.com/haseatsu114514-dot/shisha-game/pull/562) はマージ済みで、[#548](https://github.com/haseatsu114514-dot/shisha-game/issues/548) のDAY14競技・章末・再挑戦は作り直さない。[#564](https://github.com/haseatsu114514-dot/shisha-game/issues/564) の全体添削を代行しない。ヴォルクの第2章登場、離別理由の開示、味覚回復を追加しない。旧ヴォルク素材・旧セーブは保存対象。
 
-参照先の旧状態に注意: [ロードマップ](post_chapter1_roadmap.md) と [日常QA](../qa/ch2-daily/README.md) のDAY14未接続は当時の記録。現在の接続は [大会QA](../qa/ch2-tournament/README.md) と現行コードで確認する。素材READMEに残る4店・展示の記述も、冒頭のヴォルク訂正と現行3店を優先する。
+参照先の旧状態に注意: [ロードマップ](plans_post_chapter1_roadmap.md) と [日常QA](../qa/ch2-daily/README.md) のDAY14未接続は当時の記録。現在の接続は [大会QA](../qa/ch2-tournament/README.md) と現行コードで確認する。素材READMEに残る4店・展示の記述も、冒頭のヴォルク訂正と現行3店を優先する。
 
 ## 正本・現物の対応
 

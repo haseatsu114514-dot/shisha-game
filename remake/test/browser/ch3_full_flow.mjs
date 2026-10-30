@@ -232,7 +232,7 @@ await suite("ch3-full-flow", async check => {
     // 4. 帰郷・aftermath
     await page.locator(t("aftermath")).click();
     const aftermath = id => `[data-test="ch3-aftermath-scene"][data-scene="${id}"]`;
-    const after = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile",
+    const after = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup",
       "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"];
     for (const [index, id] of after.entries()) {
       await page.locator(aftermath(id)).waitFor();

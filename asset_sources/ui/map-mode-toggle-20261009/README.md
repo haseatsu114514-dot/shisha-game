@@ -2,7 +2,7 @@
 
 > 旧「街歩き」試作の配置資料。現行リメイクへの実装・採用はしていない。
 
-地図画面で「ファストトラベル」と「探索」を切り替えるボタン。押すたびにモードが入れ替わる1つの正方形ボタンにする。設計は [`docs/street_city_design.md`](../../../docs/street_city_design.md) の§9「切り替えボタン」、Codexへの発注は [`docs/codex_handoff_city_images.md`](../../../docs/codex_handoff_city_images.md) の発注E。
+地図画面で「ファストトラベル」と「探索」を切り替えるボタン。押すたびにモードが入れ替わる1つの正方形ボタンにする。設計は [`docs/archive/street_city_design.md`](../../../docs/archive/street_city_design.md) の§9「切り替えボタン」、Codexへの発注は [`docs/archive/codex_handoff_city_images.md`](../../../docs/archive/codex_handoff_city_images.md) の発注E。
 
 | ファストトラベルのとき | 探索のとき |
 |---|---|

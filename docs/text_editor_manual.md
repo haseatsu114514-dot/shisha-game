@@ -1,3 +1,5 @@
+# 台詞テキストエディタの使い方（`tools/text_editor_server.py`）
+
 ## 現行版の運用（2026-10-07）
 
 `python3 tools/text_editor_server.py` で起動する。編集画面は `tools/browser/text_editor.html`、組版は本編と共通の `remake/js/vn/layout.js`・`text.js`・`inner.js` を使い、同梱書体と本編CSSを読み込む。

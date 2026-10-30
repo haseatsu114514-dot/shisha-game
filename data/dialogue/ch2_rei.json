@@ -175,7 +175,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "零-ZERO-のカウンターに座ると、REIがこちらを向いた。"
+            "text": "零-ZERO-のカウンター前に立つと、REIがこちらを向いた。"
           },
           {
             "speaker": "hajime",
@@ -559,9 +559,11 @@
           "text": "……【洞察】が上がった。"
         },
         {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "でも、大会で出す一台は……ちゃんと伝わってほしい"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "cup_after",
+          "next_false": "cup_before"
         },
         {
           "speaker": "rei",
@@ -578,7 +580,23 @@
           "face": "normal",
           "text": "……健太でもREIでも、同じ手で作ってる。座ってくれ"
         }
-      ]
+      ],
+      "branches": {
+        "cup_before": [
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "でも、大会で出す一台は……ちゃんと伝わってほしい"
+          }
+        ],
+        "cup_after": [
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "でも、店で出す一台は……ちゃんと伝わってほしい"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_rei_fourth",
@@ -884,7 +902,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "大会前、最後の訪問。REIはカウンターで、ぼそっと言いながら仕込みをしていた。"
+            "text": "大会が近い。零-ZERO-を訪ねると、REIはカウンターで、ぼそっと言いながら仕込みをしていた。"
           }
         ],
         "arrival_after": [

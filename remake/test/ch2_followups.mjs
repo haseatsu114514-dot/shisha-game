@@ -6,7 +6,10 @@ import { scheduleChapterTwoTrpgNight } from "../js/chapters/ch2-progress.js";
 
 const root = new URL("../../", import.meta.url);
 const preparation = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_preparation.json", root)));
-const all = Object.fromEntries(preparation.dialogues.map(d => [d.dialogue_id, d]));
+const stories = ["ch2_kumicho", "ch2_rei"].flatMap(name => JSON.parse(fs.readFileSync(new URL(`data/dialogue/${name}.json`, root))).dialogues);
+const all = Object.fromEntries([...preparation.dialogues, ...stories].map(d => [d.dialogue_id, d]));
+const stagesSource = fs.readFileSync(new URL("remake/js/core/affinity-stages.js", root), "utf8");
+const { CH2_VISIT_STORIES, ch2VisitDone } = await import(new URL("remake/js/core/affinity-stages.js", root));
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
 let state, options, played, saves, mode, resolvePlay, heartLevel = 1;
 const ids = ["ageha", "kumicho", "rei"];
@@ -54,6 +57,7 @@ const mocks = {
 const module = new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/chapters/ch2-preparation.js", root), "utf8"), { context });
 await module.link(async specifier => {
   if (specifier === "../core/state.js") return states;
+  if (specifier === "../core/affinity-stages.js") return new vm.SourceTextModule(stagesSource, { context });
   const exports = mocks[specifier]; assert(exports, specifier);
   return new vm.SyntheticModule(Object.keys(exports), function () {
     for (const [key, value] of Object.entries(exports)) this.setExport(key, value);
@@ -88,13 +92,21 @@ for (const id of ids) {
     assert.equal(saves, 1, "Visit must not insert an early save before calendar settlement");
     if (first) { await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_followup`); }
     if (id !== "ageha") {
-      // #952: 続編のあと一度だけ、前の話を覚えて少し進む再訪。正常終了でだけ請求・既読。
-      const money = state.money; await visit(id);
-      assert.equal(played.at(-1), `remake_ch2_${id}_revisit`); assert.equal(state.flags._ch2_revisit_done[id], true);
-      assert.equal(state.money, money - 3000);
+      // #1648: 続編の後は訪問列の最古未読を一本ずつ。ハートが届くまではrepeatで、先の段階へ飛ばない。
+      state.money += 60000; // 列の全段階とrepeatを通す代金
+      for (const entry of CH2_VISIT_STORIES[id].slice(1)) {
+        heartLevel = entry.heart - 1; await visit(id);
+        assert.equal(played.at(-1), `remake_ch2_${id}_repeat`, `${entry.scene} waits for ♥${entry.heart}`);
+        assert.equal(ch2VisitDone(state.flags, id, entry), false);
+        heartLevel = entry.heart; const money = state.money; await visit(id);
+        assert.equal(played.at(-1), entry.scene); assert.equal(ch2VisitDone(state.flags, id, entry), true);
+        assert.equal(state.money, money - 3000);
+      }
+      assert.equal(state.flags._ch2_revisit_done[id], true);
+      heartLevel = 5;
     }
     await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_repeat`);
-    await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_repeat`, "The revisit is read only once");
+    await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_repeat`, "Every visit story is read only once");
   }
   for (const failure of ["cancel", "undefined", "throw", "bad-image", "bad-dialogue", "missing-dialogue", "guard"]) {
     await setup(); mode = failure;
@@ -106,7 +118,8 @@ for (const id of ids) {
     assert.deepEqual(state, before, `${id}: ${failure} must leave the entire action state unchanged`);
   }
   if (id !== "ageha") for (const failure of ["cancel", "undefined", "replace-state", "throw", "bad-image", "missing-dialogue", "bad-dialogue"]) {
-    await setup(); await visit(id); mode = failure;
+    await setup(); await visit(id); mode = failure; heartLevel = 2;
+    for (const entry of CH2_VISIT_STORIES[id].filter(entry => entry.file && entry.heart < 2)) state.flags[`_ch2_read_${entry.scene}`] = true;
     if (failure === "missing-dialogue") delete DB.dialogues[`remake_ch2_${id}_revisit`];
     if (failure === "bad-dialogue") DB.dialogues[`remake_ch2_${id}_revisit`] = { lines: [{ type: "apply", stats: { sense: 8 } }] };
     const old = state, before = structuredClone(state);
@@ -115,6 +128,18 @@ for (const id of ids) {
     // 続編の既読（VM内で作られたオブジェクト）を含むため、値だけをJSONで比べる。
     assert.equal(JSON.stringify(old), JSON.stringify(before), `${id}: ${failure} during the revisit leaves money/stamina/read state unchanged`);
     assert.equal(old.flags._ch2_revisit_done?.[id], undefined);
+    mode = "ok";
+  }
+  // 長い段階会話（味の学習を含む）も、途中終了・LOAD・失敗では請求も既読も残さない。
+  if (id !== "ageha") for (const failure of ["cancel", "undefined", "replace-state", "throw", "bad-image", "missing-dialogue"]) {
+    await setup(); await visit(id); mode = failure;
+    const scene = CH2_VISIT_STORIES[id][1].scene;
+    if (failure === "missing-dialogue") delete DB.dialogues[scene];
+    const old = state, before = structuredClone(state);
+    if (failure === "throw") await assert.rejects(visit(id), /injected/);
+    else assert.equal((await visit(id)).used, false);
+    assert.equal(JSON.stringify(old), JSON.stringify(before), `${id}: ${failure} during ${scene} leaves money/stamina/read state unchanged`);
+    assert.equal(old.flags[`_ch2_read_${scene}`], undefined);
     mode = "ok";
   }
   await setup(); mode = "pending";
@@ -145,12 +170,15 @@ for (const id of ids) {
 let fixture = preparation;
 const loaderDB = { dialogues: { preserved: true } };
 const loaderContext = vm.createContext({ console, AbortController, setTimeout, clearTimeout,
-  fetch: async url => ({ ok: true, json: async () => String(url).includes("ch2_deliveries") ? JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_deliveries.json", root))) : fixture }) });
+  fetch: async url => ({ ok: true, json: async () => {
+    const name = String(url).match(/(\w+)\.json/)[1];
+    return name === "ch2_preparation" ? fixture : JSON.parse(fs.readFileSync(new URL(`data/dialogue/${name}.json`, root)));
+  } }) });
 const loader = new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/chapters/ch2-city-data.js", root), "utf8"), { context: loaderContext });
-await loader.link(async spec => new vm.SyntheticModule(spec.includes("city-locations") ? ["CITY_BACKGROUNDS"] : spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS", "AGEHA_VISITS", "AGEHA_BADDAY"], function () {
+await loader.link(async spec => spec.includes("affinity-stages") ? new vm.SourceTextModule(stagesSource, { context: loaderContext }) : new vm.SyntheticModule(spec.includes("city-locations") ? ["CITY_BACKGROUNDS"] : spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS", "AGEHA_VISITS", "AGEHA_BADDAY", "STRAWBERRY_TRIAL_IDS"], function () {
   if (spec.includes("city-locations")) this.setExport("CITY_BACKGROUNDS", { kumicho: "room" });
   else if (spec.includes("core/data")) this.setExport("DB", loaderDB);
-  else { this.setExport("CH2_NIGHTS", []); this.setExport("AGEHA_VISITS", []); this.setExport("AGEHA_BADDAY", null); }
+  else { this.setExport("CH2_NIGHTS", []); this.setExport("AGEHA_VISITS", []); this.setExport("AGEHA_BADDAY", null); this.setExport("STRAWBERRY_TRIAL_IDS", []); }
 }, { context: loaderContext }));
 await loader.evaluate();
 const validatedIds = [...ids.map(id => `remake_ch2_${id}_followup`), ...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`)];
@@ -165,23 +193,28 @@ for (const id of validatedIds) {
   assert.deepEqual(loaderDB.dialogues, { preserved: true });
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
-assert.equal(Object.keys(loaderDB.dialogues).length, 31);
+assert.equal(Object.keys(loaderDB.dialogues).length, 31 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+for (const entry of Object.values(CH2_VISIT_STORIES).flat()) assert(loaderDB.dialogues[entry.scene], entry.scene);
+assert.deepEqual(loaderDB.dialogues.ch2_kumicho_second.metadata.flavor_lesson, { dragonfruit: 1 });
+assert.deepEqual(loaderDB.dialogues.ch2_rei_first.metadata.flavor_lesson, { rose: 1 });
 assert(loaderDB.dialogues.remake_ch2_rei_trpg);
 assert(loaderDB.dialogues.remake_ch2_ageha_aquarium);
 assert(loaderDB.dialogues.remake_ch2_kumicho_sento);
 // Use only the IDs published by the actual loader, not the full source JSON.
 for (const id of ["kumicho", "rei"]) {
-  await setup(); DB.dialogues = { ...loaderDB.dialogues };
+  await setup(); DB.dialogues = { ...loaderDB.dialogues }; heartLevel = 5;
+  state.money += 60000;
   const before = structuredClone(state);
-  for (const stage of ["followup", "revisit", "repeat", "repeat"]) {
+  const sequence = [...CH2_VISIT_STORIES[id].map(entry => entry.scene), `remake_ch2_${id}_repeat`, `remake_ch2_${id}_repeat`];
+  for (const scene of sequence) {
     const money = state.money, stamina = state.stamina;
     assert.equal((await visit(id)).used, true);
-    assert.equal(played.at(-1), `remake_ch2_${id}_${stage}`);
+    assert.equal(played.at(-1), scene);
     assert.equal(state.money, money - 3000); assert.equal(state.stamina, stamina - 16);
   }
   assert.equal(state.flags._ch2_revisit_done[id], true);
-  assert.equal(state.flags._ch2_talks[id], before.flags._ch2_talks[id] + 4);
-  assert.deepEqual(state.affinity, Array.from({ length: 4 }, () => [id, 5]));
+  assert.equal(state.flags._ch2_talks[id], before.flags._ch2_talks[id] + sequence.length);
+  assert.deepEqual(state.affinity, Array.from({ length: sequence.length }, () => [id, 5]));
   assert.deepEqual(state.relationshipMemories, before.relationshipMemories); assert.deepEqual(state.lovers, before.lovers);
 }
 console.log("PASS: actual preparation/loader, three owners, old saves, once-only followups, cancellation/LOAD, atomic preflight");

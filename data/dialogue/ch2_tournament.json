@@ -170,7 +170,7 @@
           {
             "speaker": "rei",
             "face": "smile",
-            "text": "また会ったな。今日は、煙で話そう"
+            "text": "また会ったな。今日の煙、聴かせてもらう"
           }
         ],
         "rei_first": [
@@ -357,7 +357,7 @@
         {
           "speaker": "maezono",
           "face": "serious",
-          "text": "一人につき一台。吸い出して提供したあとも、2回の調整まで見ます"
+          "text": "調整のたびに、全員の一台を吸わせてもらいます。楽しみだねえ"
         },
         {
           "speaker": "dr_kemuri",
@@ -595,12 +595,58 @@
           "text": "ありがとう、と打つ。送信するまで、ずいぶん時間がかかった。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_naru_listened",
+          "next_true": "naru_listened"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_naru_hurt",
+          "next_true": "naru_hurt"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホのカレンダーで、次の受診日を確かめた。東京へ発つ前の日だった。"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "スミさんから、新しいメッセージが届いた。"
         }
       ],
       "branches": {
+        "naru_listened": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "通知を下までたどった。なるさんの名前だけが、なかった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（終わったら連絡する。そう言ったのは、俺だ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「終わりました」とだけ打って、送った。"
+          }
+        ],
+        "naru_hurt": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "通知を下までたどった。なるさんの名前だけが、なかった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "謝ったままのトークを開いて、何も打てずに閉じた。"
+          }
+        ],
         "alone": [
           {
             "speaker": "",

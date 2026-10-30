@@ -60,7 +60,7 @@ const values = {
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
   "samechan.js": { syncSamechanKnowledge: noop, maybeSamechanEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitSamechan: async () => false, samechanSpot: () => null, samechanVisitDialogue: () => null },
 };
-const files = { "cinema.js": "daily", "cinema-discovery.js": "core", "affinity-stages.js": "core", "fortune-schedule.js": "daily", "travel-budget.js": "core", "city-locations.js": "core", "trpg-discovery.js": "core", "ryuji-visit.js": "core", "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "growth.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
+const files = { "stat-step-tables.js": "core", "cinema.js": "daily", "cinema-discovery.js": "core", "affinity-stages.js": "core", "fortune-schedule.js": "daily", "travel-budget.js": "core", "city-locations.js": "core", "trpg-discovery.js": "core", "ryuji-visit.js": "core", "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "growth.js": "core", "growth-board-data.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
 
 const modules = new Map(), pending = new Map();
 function load(name) {
@@ -98,8 +98,8 @@ assert(result.saves.some((s) => s.day === 13 && s.slot === 1), "初回は夜の�
 assert(!result.played.includes("remake_sick_tournament"), "休養で翌朝の風邪リスクを持ち越さない");
 result = await run({ stamina: 24, day: 12, roll: 0, sick: true }); assert(result.played.includes("remake_sick_full"));
 assert(!result.saves.some((s) => s.day === 13 && s.slot < 2), "再発は丸一日休む");
-result = await run({ stamina: 60, guts: 90, roll: 0 }); assert.equal(result.guards.length, 0); assert(!result.played.some((id) => id.includes("sick")));
-result = await run({ stamina: 58, guts: 90, roll: 0 }); assert.deepEqual(result.guards, [58]); assert(result.played.includes("remake_sick_tournament")); assert.equal(result.stamina, 40);
+result = await run({ stamina: 60, guts: 100, roll: 0 }); assert.equal(result.guards.length, 0); assert(!result.played.some((id) => id.includes("sick")));
+result = await run({ stamina: 58, guts: 100, roll: 0 }); assert.deepEqual(result.guards, [58]); assert(result.played.includes("remake_sick_tournament")); assert.equal(result.stamina, 40);
 result = await run({ stamina: 24, day: 12, roll: 0, paths: ["tonari", "tonari", "rest"] });
 assert(!result.played.includes("remake_sick_tournament"), "家で休むと、その晩の発病予約を解消する");
 console.log("[illness] PASS: increasing risk, lucky zero, canceled action, actual save, rest, half/full sick days, capacity/discount boundary, tournament without a softlock");
