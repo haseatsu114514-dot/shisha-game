@@ -48,6 +48,7 @@ async function fixture() {
     ["/remake/js/core/ui.js", { toast: message => notices.push(message) }],
     ["/remake/js/core/audio.js", { SE: { select() {} } }],
     ["/remake/js/craft/common.js", { autoSkill: () => auto }],
+    ["/remake/js/craft/flavor-guide.js", { equipmentUse: () => ({ use: "fixture" }), equipmentGuide: () => new Element("section") }],
     ["/remake/js/craft/session.js", { stepPanel: () => (panel = new Element("section")), waitBenchReady: async () => {}, refreshBench() {} }],
   ]);
   // Fail on unexpected dependency calls; unused gameplay/rendering is not simulated.
@@ -182,6 +183,37 @@ await check("catalog failure preserves state; manual and auto setup never reques
     assert.deepEqual(copy(f.core.state), before);
     assert.equal(f.notices.length, 0);
   }
+});
+
+await check("#1927 sold Lotos: incompatible bowls stay disabled and pending setup preserves saved equipment", async () => {
+  for (const auto of [false, true]) {
+    const f = await fixture(); f.core.newGame(); f.auto(auto);
+    f.core.state.owned = ["silicone_bowl", "suyaki_hagal", "tanukish_lid", "flat_charcoal"];
+    f.core.state.equip.hms = "tanukish_lid";
+    const before = copy(f.core.state), cs = { mode: "practice", equip: { ...before.equip } };
+    const pending = f.steps.stepSetup(cs); await flush();
+    assert.equal(f.control("opt-suyaki_hagal").attrs.disabled, "");
+    f.control("opt-suyaki_hagal").click(); await flush();
+    assert.deepEqual(copy(f.core.state), before, "blocked/pending input must not commit equipment");
+    if (!auto) f.control("opt-silicone_bowl").click();
+    await pending;
+    assert.equal(cs.equip.hms, "tanukish_lid");
+    for (const id of Object.values(cs.equip)) assert(f.core.state.owned.includes(id), id);
+    assert.deepEqual(copy(f.core.state.owned), before.owned);
+  }
+});
+
+await check("#1927 owned Lotos remains selectable; empty HMD inventory cannot generate equipment", async () => {
+  const f = await fixture(); f.core.newGame();
+  f.core.state.owned.push("suyaki_hagal");
+  const cs = { mode: "tutorial", equip: { ...f.core.state.equip } };
+  let pending = f.steps.stepSetup(cs); await flush();
+  f.control("opt-suyaki_hagal").click(); await pending;
+  assert.equal(cs.equip.bowl, "suyaki_hagal"); assert.equal(cs.equip.hms, "lotos_hagal");
+  f.core.state.owned = f.core.state.owned.filter(id => id !== "lotos_hagal");
+  const before = copy(f.core.state);
+  await assert.rejects(f.steps.stepSetup({ mode: "practice", equip: { ...before.equip } }), /対応する所持機材/);
+  assert.deepEqual(copy(f.core.state), before);
 });
 
 console.log(`appearance selection: ${cases.length} cases passed (DOM/Storage fixture; no renderer or physical-fit QA)`);
