@@ -21,7 +21,9 @@ function slotInfo(data) {
   const chapter = data.chapter || 1;
   const time = data.phase === "daily" ? (data.slot >= 1 ? "夜" : "昼") : "";
   const phase = data.phase === "cleared" ? `第${chapter}章クリア`
-    : chapter === 2 && chapterDay(data) === 1 && data.flags?._ch2_day1?.stage === "complete" ? "初日終了" : PHASE_LABEL[data.phase] || "";
+    : chapter === 2 && chapterDay(data) === 1
+      ? (data.flags?._ch2_day1?.stage === "complete" ? "初日終了" : "初日")
+      : PHASE_LABEL[data.phase] || "";
   const when = data.savedAt ? new Date(data.savedAt).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
   // 2周目以降だけ章札の前に周回数を付ける（1周目・cycle欠損の旧セーブは従来表示のまま。設計 §3.6・§8.3）
   const badge = cycleBadgeText(data);
