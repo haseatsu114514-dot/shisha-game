@@ -10,6 +10,7 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { radar } from "../daily/status.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
@@ -74,7 +75,7 @@ function menuButton(owner) {
     onclick: () => openMenu(owner) });
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "") {
+function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
   layers.hud.replaceChildren();
   layers.hud.classList.remove("show");
   showScreen("ch3-aftermath", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
@@ -84,6 +85,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     ]),
     el("p.ch2-contest-description", { text: description }),
     note ? el("p.ch2-contest-note", { text: note }) : null,
+    ...extra,
     el("div.ch2-contest-actions", [...actions, ...(name !== "error" ? [
       button(owner, "LIME・恋人との連絡", "lime", async () => {
         const social = await import("./ch3-social.js");
@@ -199,7 +201,13 @@ async function renderStage(owner) {
       replay,
       button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
       button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-    ], "第四章・ドバイ編へ進めます。");
+    ], "第四章・ドバイ編へ進めます。", "", [
+      // 第1・2章のクリア画面と同じ成長レーダー（#1658 ⑫）。淡い面が章のはじめ、明るい面がいま。
+      el("div.ch2-contest-growth", { dataset: { test: test("growth") } }, [
+        radar(state.stats, state.statsAtChapterStart || state.stats, 220),
+        el("p.ch2-contest-note", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
+      ]),
+    ]);
     if (!state.flags._ch3_preview_seen) void preview(true);
     return;
   }

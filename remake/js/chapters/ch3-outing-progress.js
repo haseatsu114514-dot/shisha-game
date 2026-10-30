@@ -5,7 +5,7 @@ import { chapterThreeActivityWindow } from "./ch3-activity-progress.js";
 import { tokyoWindowReserved, tokyoGymWindowAllowed } from "../core/tokyo-clock.js";
 
 /**
- * after=この必須場面を読んでから、before=この場面を読む前まで。repeat=自由時間ごとに選べる。
+ * after=この必須場面を読んでから、before=この場面を読む前まで。met=この人物と面識がある時だけ。repeat=自由時間ごとに選べる。
  * stamina は消耗（負）か回復（正）。stat は自分で選び体力を使った行動だけの成長候補。
  */
 export const TOKYO_OUTINGS = Object.freeze([
@@ -15,6 +15,9 @@ export const TOKYO_OUTINGS = Object.freeze([
     stamina: -10, stat: "insight", reason: "久世のノートに、何が書いてあるか聞きに行く" },
   { id: "enmaku_answer", place: "enmaku", after: "ch3_kuze_advice", label: "煙幕に顔を出す",
     stamina: -10, stat: "sense", reason: "どうしたいか、久世に答えを返しに行く" },
+  // スティーブがmukaiへ客として来る（#1696）。タイマー越しに香りの山を逃す癖と、全国へ来た理由。店を訪ねる前だけ。
+  { id: "mukai_steve", place: "mukai", before: "ch3_steve_low_heat", met: "steve", label: "mukaiで店番をする",
+    stamina: -8, money: 3000, stat: "insight", reason: "配達先のスティーブが、今日は客として来るらしい" },
   { id: "steve_timer", place: "steve", after: "ch3_steve_low_heat", label: "Smoke & Glory に寄る",
     stamina: -10, stat: "technique", reason: "タイマーを置く場所を、もう一度見せてもらう" },
   { id: "park_walk", place: "park", label: "公園を歩く", repeat: true, stamina: 20,
@@ -30,7 +33,7 @@ export function outingDialogueId(value, outing, window = null) {
   return `ch3_outing_${outing.id}`;
 }
 export const OUTING_DIALOGUE_IDS = Object.freeze(["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help",
-  "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer", "ch3_outing_steve_timer",
+  "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer", "ch3_outing_mukai_steve", "ch3_outing_steve_timer",
   "ch3_outing_park_walk_day", "ch3_outing_park_walk_night"]);
 
 const readScene = (value, id) => {
@@ -53,6 +56,7 @@ export function chapterThreeOutingCandidates(value) {
   const counts = outingCounts(value);
   return TOKYO_OUTINGS.filter(outing => (!outing.after || readScene(value, outing.after))
     && (!outing.before || !readScene(value, outing.before))
+    && (!outing.met || !!value.met?.[outing.met])
     && (outing.repeat || !counts[outing.id]));
 }
 

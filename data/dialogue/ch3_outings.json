@@ -87,6 +87,32 @@
       ]
     },
     {
+      "dialogue_id": "ch3_outing_mukai_steve",
+      "lines": [
+        { "speaker": "", "text": "mukaiの客席。ドアベルが鳴って、柄シャツの大きな体が入ってきた。" },
+        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。配達の礼に、今日は客で来た" },
+        { "speaker": "mashiro", "face": "smile", "text": "いらっしゃいませぇ。スティーブさん、レモン系でいい？" },
+        { "speaker": "steve", "face": "normal", "text": "イエス。タイマーは、俺のを置かせて" },
+        { "speaker": "", "text": "スティーブはテーブルにタイマーを置いた。ホースを持ったまま、目は数字から離れない。" },
+        { "speaker": "hajime", "face": "normal", "text": "人の店でも、時間を測るんですね" },
+        { "speaker": "steve", "face": "normal", "text": "癖なんだ。決めておかないと、俺は手が先に動く" },
+        { "speaker": "", "text": "炭がなじむと、レモンの香りが客席までふわりと広がった。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……今、一番香ってたねぇ" },
+        { "speaker": "", "text": "スティーブはまだ数字を見ている。タイマーが鳴ってから、ようやく一口吸った。" },
+        { "speaker": "steve", "face": "serious", "text": "……ノー、ノー。山はもう過ぎてた。また数字の後ろで見送った" },
+        { "speaker": "hajime", "face": "normal", "text": "鳴るまで、待たなくてもいいんじゃ……" },
+        { "speaker": "steve", "face": "normal", "text": "前に急いで、柑橘を飛ばした。それから、鳴るまで手を出せない" },
+        { "speaker": "steve", "face": "normal", "text": "俺の店の常連は優しい。山を逃しても「今日もうまい」と言ってくれる" },
+        { "speaker": "steve", "face": "serious", "text": "それに甘えたら、タイマーが俺の正解になる。だから知らない客ばかりの全国に来た" },
+        { "speaker": "hajime", "face": "normal", "text": "知らない人の一口で、確かめるために" },
+        { "speaker": "steve", "face": "smile", "text": "イエス。負けるのは怖いけどな。怖い日は、ピザで忘れる" },
+        { "speaker": "mashiro", "face": "smile", "text": "じゃあ次の一口は、僕が合図するねぇ" },
+        { "speaker": "", "text": "スティーブはレシピカードの余白に、ましろちゃんの一言を書き足した。" },
+        { "speaker": "hajime", "face": "normal", "text": "（数字と、目の前の煙。どっちも見ないといけないんだ）" },
+        { "speaker": "", "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。" }
+      ]
+    },
+    {
       "dialogue_id": "ch3_outing_park_walk_day",
       "lines": [
         { "speaker": "", "text": "高架の下を抜けて、公園まで歩いた。池の水面に、昼の光が揺れている。" },
