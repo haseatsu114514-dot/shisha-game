@@ -132,49 +132,6 @@
       }
     },
     {
-      "dialogue_id": "ch1_choizap_visit",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "CHOI-ZAPに来た。入口でアプリのQRコードをかざして中に入る。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ランニングマシンに乗って、イヤホンで音楽を聴きながら走る。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "窓の外を行き交う人たちをぼんやり眺めながら、汗を流す。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ダンベルで軽く筋トレ。鏡に映る自分の姿。少しずつだけど、変わっている気がする。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（みんとが「見た目も武器だよ」って言ってたな……）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "シャワーを浴びて帰る。身体がスッキリして、なんだか自信が湧いてくる。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
-        }
-      ],
-      "metadata": {
-        "bg": "res://assets/backgrounds/bg_choizap.png"
-      }
-    },
-    {
       "dialogue_id": "ch1_kannon_visit",
       "lines": [
         {
@@ -296,7 +253,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるが「ここのスパイスラテ飲むと、フレーバーの解像度上がるよ」と言っていたのを思い出す。"
+          "text": "なるが「焼き菓子もうまいんだ」と言っていたのを思い出す。次は焼き菓子も頼んでみよう。"
         },
         {
           "speaker": "",
@@ -540,41 +497,74 @@
           "text": "C.STATIONに入ると、スタッフが声をかけてきた。"
         },
         {
-          "speaker": "staff_choizap",
-          "face": "",
-          "text": "いらっしゃいませ。……あ、SMOKE CROWN CUPの出場者の方ですよね？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "え、わかるんですか？"
-        },
-        {
-          "speaker": "staff_choizap",
-          "face": "",
-          "text": "エントリーリスト見てますから。頑張ってくださいね"
-        },
-        {
-          "speaker": "staff_choizap",
-          "face": "",
-          "text": "あ、ちなみに今回のレギュ、レモン2g以上必須なの知ってます？"
-        },
-        {
-          "speaker": "staff_choizap",
-          "face": "",
-          "text": "課題のレモンと組む人が多いから、ミントの扱い方で差がつくって、常連さんが言ってました"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（レモンの輪郭を立てるミントの使い方、か。覚えておこう）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "greet_after",
+          "next_false": "greet_before"
         },
         {
           "speaker": "",
           "face": "",
           "text": "チェーン店のシーシャを一服。広い店内で、色んな煙が混ざり合っている。"
         }
-      ]
+      ],
+      "branches": {
+        "greet_before": [
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "いらっしゃいませ。……あ、SMOKE CROWN CUPの出場者の方ですよね？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、わかるんですか？"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "エントリーリスト見てますから。頑張ってくださいね"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "あ、ちなみに今回のレギュ、レモン2g以上必須なの知ってます？"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "課題のレモンと組む人が多いから、ミントの扱い方で差がつくって、常連さんが言ってました"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（レモンの輪郭を立てるミントの使い方、か。覚えておこう）"
+          }
+        ],
+        "greet_after": [
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "いらっしゃいませ。……あ、SMOKE CROWN CUPの優勝者さんですよね？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、覚えてるんですか？"
+          },
+          {
+            "speaker": "staff_choizap",
+            "face": "",
+            "text": "ステージの裏から見てましたから。今日はお客さんとして、ゆっくりしていってください"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "（大会の日の顔で覚えられてるのか。……ちょっと照れるな）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "cs_customer_rumor",
@@ -602,7 +592,7 @@
           {
             "speaker": "old_man",
             "face": "",
-            "text": "今回のSMOKE CROWN CUP、KEMURIKUSAのなるが本命って話だ"
+            "text": "今回のSMOKE CROWN CUP、本命は去年勝ったKEMURIKUSAのなるだ"
           },
           {
             "speaker": "old_man",
@@ -786,12 +776,12 @@
         {
           "speaker": "old_man",
           "face": "",
-          "text": "去年の優勝者はね、技術はそこそこだったんだよ。でも「もう一口吸いたい」って審査員に思わせた"
+          "text": "去年の優勝はKEMURIKUSAのなるだよ。県じゃ負けたけどな"
         },
         {
           "speaker": "old_man",
           "face": "",
-          "text": "その審査員、吸い終わってもホースをなかなか置かなくてさ。俺、客席から見てたんだ"
+          "text": "あいつの一台、審査員に「もう一口吸いたい」って思わせたんだ。吸い終わってもホースをなかなか置かなくてさ。俺、客席から見てたんだ"
         },
         {
           "speaker": "hajime",
@@ -850,16 +840,34 @@
           "text": "会長が煙を吐く。ゆっくりと天井に広がる。その煙を目で追いながら、少しだけ微笑んでいた。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（『もう一口吸いたい』あの人にそう思わせる煙って、どんな一台だ？）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "think_after",
+          "next_false": "think_before"
         },
         {
           "speaker": "",
           "face": "",
           "text": "声はかけなかった。会長は吸い終えると、伝票を自分でレジへ持っていった。"
         }
-      ]
+      ],
+      "branches": {
+        "think_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（『もう一口吸いたい』あの人にそう思わせる煙って、どんな一台だ？）"
+          }
+        ],
+        "think_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの日、俺に最後の10点を入れた人だ。……次も、あの人に『もう一口』と思わせられるだろうか）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "cs_kemuri_solo",
@@ -886,20 +894,10 @@
         },
         {
           "type": "condition",
-          "condition_type": "met",
-          "char_id": "dr_kemuri",
-          "next_true": "known_greeting",
-          "next_false": "new_greeting"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "は、はい。tonariの蒸野です"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "tonari。……スミさんのところか。あの人の炭は数値が美しい"
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "greet_after",
+          "next_false": "greet_before"
         },
         {
           "speaker": "dr_kemuri",
@@ -923,27 +921,47 @@
         }
       ],
       "branches": {
-        "context_before": [
+        "greet_before": [
+          {
+            "type": "condition",
+            "condition_type": "met",
+            "char_id": "dr_kemuri",
+            "next_true": "known_greeting",
+            "next_false": "new_greeting"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "は、はい。tonariの蒸野です"
+          },
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "おや、きみ。見ない顔だね。今度の大会の出場者かい？"
+            "text": "tonari。……スミさんのところか。あの人の炭は数値が美しい"
           }
         ],
-        "context_after": [
+        "greet_after": [
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "おや、きみ。今日は何を吸いに来たんだい？"
+            "text": "おや、蒸野くん。優勝の一台のデータ、なかなか興味深かったよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "あ……ありがとうございます。覚えててくださったんですね"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "記録した数値は忘れないよ。tonariの炭は、スミさんのところのだったね。あの人の炭は数値が美しい"
           }
         ],
         "new_greeting": [
           {
-            "type": "condition",
-            "condition_type": "tournament_finished",
-            "tournament_chapter": 1,
-            "next_true": "context_after",
-            "next_false": "context_before"
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "おや、きみ。見ない顔だね。今度の大会の出場者かい？"
           }
         ],
         "known_greeting": [
@@ -1899,9 +1917,11 @@
       "dialogue_id": "cs_maezono_taste",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "C.STATIONの窓際に、大会ポスターで見た顔があった。審査員の上園文太郎さんだ。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "see_after",
+          "next_false": "see_before"
         },
         {
           "speaker": "",
@@ -1924,16 +1944,48 @@
           "text": "手元のノートに何か書きつけている。コラムの取材だろうか。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（審査員に「もう一口」と思わせるって、ああいう顔にさせることか）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "think_after",
+          "next_false": "think_before"
         },
         {
           "speaker": "",
           "face": "",
           "text": "吸う人の顔まで含めて一台なんだと、なんとなく分かった気がした。"
         }
-      ]
+      ],
+      "branches": {
+        "see_before": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONの窓際に、大会ポスターで見た顔があった。審査員の上園文太郎さんだ。"
+          }
+        ],
+        "see_after": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONの窓際に、審査員席で見た顔があった。上園文太郎さんだ。"
+          }
+        ],
+        "think_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（審査員に「もう一口」と思わせるって、ああいう顔にさせることか）"
+          }
+        ],
+        "think_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（お客さんに「もう一口」と思わせるって、ああいう顔にさせることか）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "cs_pakki_rehearsal",

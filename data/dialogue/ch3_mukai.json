@@ -39,6 +39,21 @@
           "text": "ムカイさんは答えず、猫の耳が崩れる前に一口飲んだ。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは自分用の台に、黒っぽい葉を詰めた。炭は縁へ寄せて、四つ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕のは重いの。お客さんには、軽い方を出すよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……昨日の『お水』って、そういうことか）"
+        },
+        {
           "type": "remember",
           "memory_id": "mukai_master_seat"
         }
