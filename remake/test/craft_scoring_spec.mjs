@@ -77,7 +77,7 @@ const candidateMakers = {
   melon: "dobaj",
   banana: "dobaj",
   lychee: "afsahr",
-  peppermint_shake: "dobaj",
+  peppermint_shake: "forcefect",
   cinnamon: "af",
   clove: "afsahr",
   basil: "afsahr",
