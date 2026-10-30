@@ -398,6 +398,7 @@ async function deliver({ charId, scene, text }) {
     f[`_delivery_${charId}_told`] = true;
     save();
   }
+  await staminaGuard(DELIVERY_STAMINA, { mandatory: true });
   await chooseSpot({ guide: { pin: charId, text, free: "配達（代金なし）" } });
   f[`_delivery_${charId}`] = true;
   addStamina(DELIVERY_STAMINA);
@@ -417,18 +418,20 @@ async function deliver({ charId, scene, text }) {
   toast(`配達の手当 +${DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
   f[`_delivery_${charId}_done`] = true;
   state.slot++;
-  await afterAction();
+  await afterAction({ exerted: true });
 }
 
 // ---------------------------------------------------------------- 行動
 
-async function staminaGuard(cost) {
+async function staminaGuard(cost, { mandatory = false } = {}) {
   if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina())) return true;
   const go = await modal({
     title: "体が重い……",
-    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。<br>無事に済むこともあるけど、今は「家に帰る」で休める。"
+    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
+      + (mandatory ? "<br>この配達は続ける必要がある。" : "<br>無事に済むこともあるけど、今は「家に帰る」で休める。")
       + (fitActive(state) ? "<br>（チョコザップで体を整えたので、今は風邪をひきにくい）" : ""),
-    options: [{ label: "やめておく", value: false }, { label: "それでも行く", value: true, test: "stamina-go" }],
+    options: mandatory ? [{ label: "わかった", value: true, test: "stamina-go" }]
+      : [{ label: "やめておく", value: false }, { label: "それでも行く", value: true, test: "stamina-go" }],
   });
   return go;
 }
@@ -458,6 +461,7 @@ async function takeAction() {
       // ロードで別セッションに切り替わった／LIME内で予約が変わったら、次の行動で選び直す。
       if (state !== invOwner || state.pendingInvite !== inv) return;
     }
+    if (!(await guardInvitation(inv))) return;
     if (inv.event === "date_samechan") {
       const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
       if (result.done) { completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent }); }
@@ -656,6 +660,13 @@ function postponeUnaffordableInvitation(inv) {
   return true;
 }
 
+async function guardInvitation(inv) {
+  if (await staminaGuard(inv.event === "__sumi_baito__" ? -24 : -10)) return true;
+  rescheduleInvitation(inv, "体調を考え、約束を別の日に改めることにした");
+  save();
+  return false;
+}
+
 function invitationSourceMessage(inv) {
   return state.inbox?.find(item => item.id === inv.originId || item.originId === inv.originId)?.msg
     || DB.lime.find(message => message.id === inv.originId)
@@ -784,7 +795,7 @@ async function endDay({ returnedToTonari = false } = {}) {
   if (appointment && (appointment.day ?? state.day) === state.day
     && (appointment.afterClose && appointment.queuedAfterClose || rested && appointment.slot === 1
       || state.day === 1 && state.flags._day1_shift_ended && appointment.slot === 1)
-    && !postponeUnaffordableInvitation(appointment)) {
+    && !postponeUnaffordableInvitation(appointment) && await guardInvitation(appointment)) {
     // C04: 営業後・休養後の約束も、未読のLIMEを前提に場面を始めない。先に該当トークを読ませる。
     const apptOwner = state;
     const unreadAppt = invitationReadBeforeMeeting(appointment);
