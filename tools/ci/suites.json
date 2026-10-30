@@ -944,6 +944,15 @@
       ]
     },
     {
+      "id": "ch4-tournament",
+      "title": "Chapter 4 real craft, scoring, plans and checkpoint recovery",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/ch4_tournament.mjs",
+        "node --experimental-vm-modules remake/test/ch4_tournament_sequence.mjs"
+      ]
+    },
+    {
       "id": "ch4-full-flow",
       "title": "Chapter 4 full playthrough on one save",
       "kind": "browser",
