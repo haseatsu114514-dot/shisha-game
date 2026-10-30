@@ -22,7 +22,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "今日は、挑戦者として来ました。君の大会記録を、すべて学習させました"
+          "text": "今日は挑戦者として来ました。君の大会記録は、すべて学習済みです"
         },
         {
           "speaker": "hajime",
@@ -42,7 +42,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "SHISHA-9000。誰でも失敗を怖がらずに作れるようにしたい"
+          "text": "SHISHA-9000。誰でも失敗を怖がらずに作れる、そのための装置です"
         },
         {
           "speaker": "hajime",
@@ -158,7 +158,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "作らない日にも、置ける椅子があるといいです"
+          "text": "作らない日にも、座っていられる椅子があるといいです"
         },
         {
           "speaker": "dr_kemuri",
@@ -256,7 +256,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "言いかけて、口を閉じる。あの日、注文を急がず待った顔を思い出した。"
+          "text": "言いかけて、口を閉じる。帰郷した夜、注文が出るまで待った時間を思い出した。"
         },
         {
           "speaker": "hajime",
@@ -512,7 +512,7 @@
         {
           "speaker": "salaryman",
           "face": "normal",
-          "text": "……動画、回ってきた"
+          "text": "……動画、回ってきましたよ"
         },
         {
           "speaker": "",
@@ -527,7 +527,7 @@
         {
           "speaker": "salaryman",
           "face": "normal",
-          "text": "遅くていい。……いつもの置き方だ",
+          "text": "遅くていいんですよ。……いつもの置き方です",
           "comment": "※仮置き（優勝前提の一行）"
         },
         {
@@ -605,7 +605,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんは棚から別の缶を出して、はじめの前に置いた。今日、いちばん注文が多かったフレーバーだった。"
+          "text": "スミさんが棚から別の缶を出し、はじめの前に置いた。今日いちばん注文が多かった味だ。"
         },
         {
           "speaker": "hajime",
@@ -631,7 +631,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "こんにちは。……今、忙しい？"
+          "text": "……こんにちは。今、忙しい？"
         },
         {
           "speaker": "hajime",
@@ -661,7 +661,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ありがとう。……いい匂いだ"
+          "text": "ありがとう。袋の上からでも、いい匂いがする"
         },
         {
           "speaker": "mashiro",
@@ -723,7 +723,7 @@
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "え。えっと、一時間くらいです"
+          "text": "え、えっと、一時間くらいです"
         },
         {
           "speaker": "hajime",
@@ -877,7 +877,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "今、決めてる。……なんだ"
+          "text": "今、決めてるとこだ。なんだ"
         },
         {
           "speaker": "hajime",
@@ -1343,7 +1343,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……炭の数より、待つ場所の問題だったんですね"
+          "text": "……炭の数より、待つ時間の問題だったんですね"
         }
       ]
     },
