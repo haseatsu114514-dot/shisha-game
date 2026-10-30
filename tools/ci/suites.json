@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "reflection-routes",
+      "title": "Tokyo/Dubai reflection routes, visiting hours and save/load (#1788 #1801)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/reflection_routes.mjs"]
+    },
+    {
       "id": "status-steps",
       "title": "Status 10-step conversion and effect tables",
       "kind": "quick",
