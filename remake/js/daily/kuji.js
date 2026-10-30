@@ -88,31 +88,35 @@ export function kujiRows(rerender) {
     const empty = left <= 0;
     const top = box.prizes.filter((p) => p.rank === "S").map((p) => p.name).join("・");
     const drawn = box.drawn, order = box.order;
-    const button = el("button.btn.small", {
-      text: empty ? "売り切れ" : `${yen(g.price)}で引く`,
-      disabled: empty || spendableMoney(state) < g.price || null,
-      dataset: { test: `kuji-${g.id}` },
-      onclick: async () => {
-        if (!live(button) || boxes[g.id] !== box || box.order !== order || box.drawn !== drawn
-          || empty || spendableMoney(state) < g.price || layers.modal.classList.contains("show")) return;
-        if (purchaseLock?.session === session
-          && (purchaseLock.committing || purchaseLock.overlay?.isConnected)) return;
-        const lock = purchaseLock = { session, committing: true, overlay: null };
-        // Enterのrepeatも含め、演出中は背後の購入ボタンへ再入力させない。
-        buttons.forEach(b => { b.disabled = true; });
-        try {
-          const pending = draw(g, box);
-          lock.overlay = layers.modal.firstElementChild;
-          lock.committing = false;
-          await pending;
-        } finally {
-          if (purchaseLock === lock) purchaseLock = null;
-          if (live(button)) rerender();
-        }
-      },
+    const choices = [...new Set([1, Math.min(5, left), Math.min(10, left)])].filter(n => n > 0);
+    const purchaseButtons = choices.map(count => {
+      const button = el("button.btn.small", {
+        text: empty ? "売り切れ" : count === 1 ? `${yen(g.price)}で引く` : `${count}回まとめて引く（${yen(g.price * count)}）`,
+        disabled: empty || spendableMoney(state) < g.price * count || null,
+        dataset: { test: count === 1 ? `kuji-${g.id}` : `kuji-${g.id}-${count}` },
+        onclick: async () => {
+          if (!live(button) || boxes[g.id] !== box || box.order !== order || box.drawn !== drawn
+            || empty || spendableMoney(state) < g.price * count || layers.modal.classList.contains("show")) return;
+          if (purchaseLock?.session === session
+            && (purchaseLock.committing || purchaseLock.overlay?.isConnected)) return;
+          const lock = purchaseLock = { session, committing: true, overlay: null };
+          // Enterのrepeatも含め、演出中は背後の購入ボタンへ再入力させない。
+          buttons.forEach(b => { b.disabled = true; });
+          try {
+            const pending = count === 1 ? draw(g, box) : drawMany(g, box, count);
+            lock.overlay = layers.modal.firstElementChild;
+            lock.committing = false;
+            await pending;
+          } finally {
+            if (purchaseLock === lock) purchaseLock = null;
+            if (live(button)) rerender();
+          }
+        },
+      });
+      buttons.push(button);
+      return button;
     });
-    buttons.push(button);
-    rows.push(el("div.shop-row.kuji-row", [
+    rows.push(el("div.shop-row.kuji-row", { style: { flexWrap: "wrap" } }, [
       el("span.shop-cat.kuji-cat", { text: "くじ" }),
       el("div.shop-main", [
         el("b", { text: g.label }),
@@ -121,13 +125,13 @@ export function kujiRows(rerender) {
           : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? "（旧箱・次回は50枚）" : ""}` }),
         el("small", { text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" }),
       ]),
-      button,
+      el("div", { style: { display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "flex-end", marginLeft: "auto" } }, purchaseButtons),
     ]));
   }
   return rows;
 }
 
-async function draw(g, box) {
+function takeTicket(g, box) {
   if (box.drawn >= box.order.length || spendableMoney(state) < g.price) return;
   addMoney(-g.price);
   const prize = box.prizes[box.order[box.drawn]];
@@ -138,7 +142,48 @@ async function draw(g, box) {
   const extras = last && box.lastOne ? [box.lastOne] : [];
   extras.forEach(grant);
   save(); // 引いた直後に保存（結果を見てからのロードでは変わらない）
-  await reveal(prize, extras);
+  return { prize, extras };
+}
+
+async function draw(g, box) {
+  const result = takeTicket(g, box);
+  if (result) await reveal(result.prize, result.extras);
+}
+
+// 各券を単発と同じ順番・支払い・付与・保存で処理し、表示だけをまとめる。
+function drawMany(g, box, count) {
+  const results = [];
+  for (let i = 0; i < count; i++) {
+    const result = takeTicket(g, box);
+    if (!result) break;
+    results.push(result.prize, ...result.extras);
+  }
+  return new Promise(resolve => {
+    const close = el("button.btn", { text: "閉じる", dataset: { test: "kuji-results-close" }, onclick: () => {
+      if (layers.modal.firstElementChild !== ov) return;
+      layers.modal.classList.remove("show");
+      layers.modal.replaceChildren();
+      SE.click();
+      resolve();
+    } });
+    const ov = el("div.kuji-overlay", { dataset: { test: "kuji-results" } }, [
+      el("div.panel", { style: { maxHeight: "85vh", overflowY: "auto", width: "min(600px, 92vw)" } }, [
+        el("h2", { text: `${count}回のくじ結果` }),
+        ...results.map((p) => el("div.shop-row", { dataset: { rank: p.rank } }, [
+          el("div.shop-main", [
+            el("b", { text: `${p.rank === "LAST" ? "ラストワン賞" : `${p.rank}賞`}：${p.name}` }),
+            el("small", { text: p.desc || "" }),
+          ]),
+        ])),
+        close,
+      ]),
+    ]);
+    layers.modal.replaceChildren(ov);
+    layers.modal.classList.add("show");
+    SE.stamp();
+    if (results.some(p => p.rank === "S" || p.rank === "LAST")) SE.fanfare();
+    close.focus();
+  });
 }
 
 // 引き演出: ガラガラ（福引きの回転抽選器）を回し、賞の色の玉が出る → 賞のカードが開く。上位賞は係の人が鐘を鳴らす。

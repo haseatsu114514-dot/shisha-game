@@ -53,6 +53,8 @@ function prepare(options = {}) {
     order:DB.kuji.legacyGrades[grade].prizes.flatMap((p,i)=>Array(p.count).fill(i)), drawn:0, emptyDay:null,
   };
   const box = state.kuji[grade];
+  if (options.left != null) box.drawn = box.order.length - options.left;
+  if (options.reserve) Object.assign(state.flags, {_ch2_preparation_started:true, _ch2_region:"widehanga"});
   if (options.last) box.drawn = box.order.length - 1;
   if (options.empty) { box.drawn = box.order.length; box.emptyDay = state.day; }
   if (options.money != null) state.money = options.money;
@@ -72,7 +74,11 @@ async function finish() {
   layers.modal.firstElementChild?.click();
   await sleep(0);
 }
-window.K = {prepare, snapshot, finish, forceOld:()=>force(old),
+window.K = {prepare, snapshot, finish,
+  batch:(grade,count)=>root.querySelector('[data-test="kuji-'+grade+'-'+count+'"]').click(),
+  batchBurst:(grade,count)=>{const b=root.querySelector('[data-test="kuji-'+grade+'-'+count+'"]');for(let i=0;i<5;i++)force(b);},
+  results:()=>[...layers.modal.querySelectorAll('[data-rank]')].map(n=>({rank:n.dataset.rank,text:n.textContent})),
+  closeBatch:()=>document.querySelector('[data-test=kuji-results-close]')?.click(), forceOld:()=>force(old),
   click:()=>old.click(), repaint:paint,
   burst:()=>{for(let i=0;i<5;i++) force(old);},
   reenter:()=>{reentry=()=>force(root.querySelector('[data-test="kuji-g1000"]'));},
@@ -116,7 +122,7 @@ function rpc(method, params = {}, sessionId) {
     child.stdio[3].write(JSON.stringify({id,method,params,...(sessionId ? {sessionId} : {})}) + "\0");
   });
 }
-const watchdog = setTimeout(() => child.kill(), 30000);
+const watchdog = setTimeout(() => child.kill(), 60000);
 try {
   const {targetId} = await rpc("Target.createTarget", {url:"about:blank"});
   const {sessionId} = await rpc("Target.attachToTarget", {targetId,flatten:true});
@@ -204,6 +210,53 @@ try {
     assert.deepEqual((await run("K.load()")).state,after.state,'legacy box survives real load');
   }
   console.log("PASS legacy 20/12-ticket order and save-load");
+  for (const grade of ['g500','g1000']) {
+    for (const legacy of [false,true]) {
+      for (const left of [1,2,3,4,5,6,7,8,9,50]) {
+        if (legacy && left === 50) continue;
+        const count = Math.min(10,left), price = JSON.parse(data).grades[grade].price;
+        const before = await run(`K.prepare({grade:'${grade}',legacy:${legacy},left:${left},money:100000})`);
+        if (count === 1) { await run('K.click();K.finish()'); continue; }
+        await run(`K.batchBurst('${grade}',${count}); K.crossGrade(); K.forceOld()`);
+        const after = await run('K.snapshot()');
+        assert.equal(after.state.money,before.state.money-count*price);
+        assert.equal(after.saves,count,'each ticket saved once');
+        assert.equal(after.moneyEvents,count);
+        assert.equal(after.state.kuji[grade].drawn,before.state.kuji[grade].drawn+count);
+        assert.deepEqual(after.state.kuji[grade].order,before.state.kuji[grade].order);
+        const box=before.state.kuji[grade];
+        const expected=box.order.slice(box.drawn,box.drawn+count).map(i=>box.prizes[i]);
+        if (count === left) expected.push(box.lastOne);
+        const cards=await run('K.results()');
+        assert.deepEqual(cards.map(c=>c.rank),expected.map(p=>p.rank));
+        expected.forEach((p,i)=>assert(cards[i].text.includes(p.name),'ordered result name'));
+        assert.deepEqual((await run('K.load()')).state,after.state,'batch persists on departure/load');
+        await run('K.abandon();K.repaint()');
+        assert.deepEqual((await run('K.snapshot()')).state,after.state,'reopening does not redraw');
+        if (count === left) {
+          const refilled=await run('K.refill()');
+          assert.equal(refilled.state.kuji[grade].order.length,50);
+          assert.equal(refilled.state.kuji[grade].drawn,0);
+        } else {
+          await run(`K.batch('${grade}',5);K.closeBatch()`);
+          assert.equal((await run('K.snapshot()')).state.kuji[grade].drawn,after.state.kuji[grade].drawn+5);
+        }
+      }
+    }
+  }
+  console.log('PASS 5/10 batch / remaining 1–9 / legacy / ordered cards / last-one / save-load / refill');
+  for (const money of [2499,2500,2699,2700]) {
+    const before=await run(`K.prepare({money:${money},reserve:true})`);
+    await run("K.batchBurst('g500',5)");
+    const after=await run('K.snapshot()');
+    const count=money>=2700?5:0;
+    assert.equal(after.state.money,money-count*500);
+    assert.equal(after.state.kuji.g500.drawn,count);
+    assert.equal(after.saves,count);
+    assert(after.state.money>=200,'return fare retained');
+    await run('K.closeBatch()');
+  }
+  console.log('PASS insufficient batch funds / exact funds with reserved return fare');
   console.log("PASS kuji purchase guard (isolated real DOM; turbo reveal; actual state save/load)");
 } finally {
   clearTimeout(watchdog); child.kill(); await exited;
