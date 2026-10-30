@@ -129,7 +129,7 @@ function meTab() {
   ]);
 }
 
-const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha"];
+const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha", "kumicho", "rei", "mashiro"];
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);
@@ -155,7 +155,7 @@ function peopleTab() {
     ]);
   });
   return el("div.st-people", [
-    el("p.pp-guide", { text: "♥は親しさ。♥3で恋愛・友情のどちらで続けるかを選び、♥5で特別なイベントと贈り物（どちらを選んでも受け取れる）。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。友達・恋人になった後もLIMEで交流は続く。" }),
+    el("p.pp-guide", { text: "♥は親しさ。交流の進み方は相手によって異なる。恋愛・友情の分岐がある相手は♥3で方向を選ぶ。特別なイベントと贈り物がある相手は♥5でその節目へ（恋愛・友情のどちらでも受け取れる）。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。LIMEの連絡先があれば、友達・恋人になった後も交流は続く。" }),
     ...(rows.length ? rows : [el("p", { text: "まだ誰とも親しくなっていない。" })]),
   ]);
 }
