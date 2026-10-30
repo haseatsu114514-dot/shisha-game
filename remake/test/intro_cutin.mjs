@@ -22,12 +22,13 @@ try {
   });
   assert(ids.length >= 20, `カットインのデータが少ない（${ids.length}人）`);
   const flavorCases = await page.evaluate(() => Object.fromEntries(
-    ["hiyori", "kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "ageha", "unknown", "__proto__"].map((id) => [id, T.introFlavor(id)]),
+    ["hiyori", "kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "ageha", "unknown"].map((id) => [id, T.introFlavor(id)]),
   ));
   assert.deepEqual(flavorCases.hiyori, { main: "マンゴー", small: "ハバネロ" });
-  for (const id of ["kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "unknown", "__proto__"]) {
+  for (const id of ["kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "unknown"]) {
     assert.equal(flavorCases[id], null, `${id}: 未確定の好みを表示しない`);
   }
+  assert.equal(await page.evaluate(() => T.introFlavor("__proto__")), null, "未登録の特殊IDを表示しない");
   assert.deepEqual(flavorCases.ageha, { main: "ホワイトグミベア／レッドグミベア" });
   assert.equal(await page.evaluate(() => T.introFlavor("ageha", "unknown")), null, "正体不明版で好みを表示しない");
 
