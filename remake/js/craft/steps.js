@@ -33,8 +33,8 @@ export const REGULATION = {
   2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 4, label: "課題フレーバー「ストロベリー」を4g以上" },
   // オーナー決定 10/28：ドバジ・4g以上・大会支給。チョコは通常（chocolate）。
   3: { flavor: "chocolate", supply: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（大会支給）" },
-  // 第5章 SHISHA-9000 戦（docs/setting_book/05_tournament.md）。ミックスなし。単体は runner が葉を絞って守る。
-  5: { flavor: "double_apple", supply: "double_apple", min: 12, label: "課題「ダブルアップル単体12g」（主催支給）" },
+  // 第5章 SHISHA-9000 戦（docs/setting_book/05_tournament.md）。runner の候補制限に加え、単体12gを判定する。
+  5: { flavor: "double_apple", supply: "double_apple", min: 12, exact: 12, label: "課題「ダブルアップル単体12g」（主催支給）" },
 };
 // 第4章 GRAND SMOKE は自由課題（最高の一台）。課題の葉は無く、出発前にスミさんと決めた方針（ch4_strategy）の葉を
 // 「持ち込み申請した葉」として大会側が預かり、本番中は無制限に使える（他章の支給と同じ扱い・私物は減らさない）。
@@ -205,7 +205,9 @@ export function evaluateMix(cs) {
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
   const reg = regulationFor(cs);
   const competitionLegal = cs.mode !== "tournament" || ids.every(id => isTournamentFlavorLegal(id));
-  const regOk = competitionLegal && (!reg || flavorFamilyGrams(mix, reg.flavor) >= reg.min);
+  const regOk = competitionLegal && (!reg || (reg.exact != null
+    ? ids.length === 1 && total === reg.exact && flavorFamilyGrams(mix, reg.flavor) === reg.exact
+    : flavorFamilyGrams(mix, reg.flavor) >= reg.min));
   if (reg && ids.length > 1 && flavorFamilyGrams(mix, "mint") > 6) { score -= 6; notes.push("ミントが強すぎて、他の香りが隠れている"); }
   // 味の傾向（重さ平均）
   const prof = {};
@@ -277,7 +279,7 @@ export async function stepMix(cs) {
   if (state !== owner) throw new DOMException("Mix owner changed", "AbortError");
   const reg = regulationFor(cs);
   const cap = capacity(cs);
-  const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + (reg.free ? "。" : "が今日の課題。") : ""}合計12g以上で決める`));
+  const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + (reg.free ? "。" : "が今日の課題。") : ""}${reg?.exact != null ? `合計${reg.exact}gちょうどで決める` : "合計12g以上で決める"}`));
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   const supplied = (id) => !!reg && id === supplyId;
@@ -313,7 +315,7 @@ export async function stepMix(cs) {
   const redraw = () => {
     const total = totalOf();
     lcd.textContent = `${total.toFixed(1)} g / ${cap} g`;
-    lcd.classList.toggle("ok", total >= 12 && total <= cap);
+    lcd.classList.toggle("ok", total >= 12 && total <= cap && (reg?.exact == null || total === reg.exact));
     vessel.replaceChildren(mixBowlPreview(cs, total));
     vessel.dataset.filled = String(total > 0);
     const aroma = cs.mode === "tournament" && cs.chapter === 2
