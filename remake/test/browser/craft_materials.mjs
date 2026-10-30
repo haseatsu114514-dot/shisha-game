@@ -3,6 +3,11 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits, storageSnapshot, baseURL } from "./support.mjs";
 const shots = process.env.SHOTS;
+const ngMixes = JSON.parse(fs.readFileSync(new URL("../../../data/ng_mixes.json", import.meta.url), "utf8")).ng_mixes;
+const flavors = JSON.parse(fs.readFileSync(new URL("../../../data/flavors.json", import.meta.url), "utf8")).flavors;
+const ngCase = ng => Object.fromEntries(ng.flavors.map(family => [
+  flavors.find(flavor => flavor.family === family && flavor.id !== family)?.id || family, 6,
+]));
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 const click = (page, selector, touch) => touch ? page.locator(selector).tap() : page.locator(selector).click();
@@ -88,11 +93,13 @@ await suite("craft-materials", async check => {
     };
     const ngNotices = page => page.evaluate(() => NG.seen.filter(text => NG.reasons.includes(text)));
     await check(`${device}-ng-family-confirmation`, async page => {
+      assert.equal(ngMixes.length, 6, "Current NG catalog has six entries");
       for (const [mix, expected, golden] of [
         [{ mint: 6, vanilla: 6 }, 1, false],
         [{ dobaj_mint: 6, vanilla: 6 }, 1, false],
         [{ mint: 2, dobaj_mint: 2, absal_mint: 2, vanilla: 6, coconut: 6 }, 3, false],
         [{ dobaj_mint: 6, vanilla: 6 }, 1, true],
+        ...ngMixes.map(ng => [ngCase(ng), 1, false]),
       ]) {
         await ngSetup(page, Object.keys(mix), golden);
         for (const [id, g] of Object.entries(mix)) await changeGrams(page, id, g);

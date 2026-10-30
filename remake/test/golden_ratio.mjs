@@ -89,6 +89,8 @@ console.log("[golden ratio] PASS: data, 5pt boundary, near band, family sum, sco
 // #1906-2: NGは基本ID・別メーカー・同系統の複数銘柄で同じ境界を使う。
 // 系統未追加の葉も、将来の銘柄を模したfixtureで既存のfamily集計を検証する。
 const ngMixes = DB.ngMixes;
+assert.equal(ngMixes.length, 6, "Current NG catalog has six entries");
+assert.equal(new Set(ngMixes.map(ng => ng.id)).size, 6, "Every NG entry has a unique ID");
 const originalFlavors = DB.flavorById;
 try {
   DB.recipes = [];
@@ -119,6 +121,12 @@ try {
         assert.equal(result.notes.includes(ng.text), hit, "legacy notes retain NG reasons");
       }
     }
+    const actualVariantA = flavors.find(flavor => flavor.id !== a && flavor.family === a)?.id;
+    const actualVariantB = flavors.find(flavor => flavor.id !== b && flavor.family === b)?.id;
+    DB.ngMixes = [ng];
+    const result = mixOf({ [actualVariantA || `test_${a}`]: 6, [actualVariantB || `test_${b}`]: 6 });
+    assert.deepEqual(result.ngReasons, [ng.text], `${ng.id}: family variants retain the reason`);
+    assert(result.notes.includes(ng.text), `${ng.id}: the reason remains available to the confirmation UI`);
   }
   DB.ngMixes = ngMixes;
   assert.deepEqual(mixOf({ mint: 6, vanilla: 6 }).ngReasons, mixOf({ dobaj_mint: 6, vanilla: 6 }).ngReasons);

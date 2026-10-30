@@ -6,6 +6,10 @@ import { suite, assertFits, storageSnapshot } from "./support.mjs";
 const out = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 fs.mkdirSync(out, { recursive: true });
 const t = id => `[data-test="${id}"]`;
+const recipes = JSON.parse(fs.readFileSync(new URL("../../../data/recipes.json", import.meta.url), "utf8")).recipes;
+const flavors = JSON.parse(fs.readFileSync(new URL("../../../data/flavors.json", import.meta.url), "utf8")).flavors;
+const flavorById = Object.fromEntries(flavors.map(flavor => [flavor.id, flavor]));
+const leafName = id => String(flavorById[id]?.short_name || flavorById[id]?.name || id).split(" ").pop();
 const snapshot = page => page.evaluate(() => {
   const s = __remake.state;
   return structuredClone({ owned: s.owned, equip: s.equip, money: s.money, stats: s.stats,
@@ -21,6 +25,31 @@ async function offer(page) {
 }
 
 await suite("home-shisha", async check => {
+  await check("all-discovered-recipe-details", async page => {
+    assert.equal(recipes.length, 13, "Current regular recipe catalog has 13 entries");
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const { DB } = await import("./js/core/data.js");
+      const state = core.newGame();
+      state.recipes = Object.fromEntries(DB.recipes.map(recipe => [recipe.id, { day: 8 }]));
+      void (await import("./js/daily/status.js")).openStatus();
+    });
+    await page.locator('[data-tab="items"]').click();
+    assert.equal(await page.locator('[data-recipe]').count(), recipes.length);
+    for (const recipe of recipes) {
+      await page.locator(t(`recipe-${recipe.id}`)).click();
+      const detail = await page.locator(t("recipe-detail")).innerText();
+      assert(detail.includes(recipe.name), `${recipe.id}: name`);
+      assert(detail.includes(`材料：${recipe.flavors.map(leafName).join(" ／ ")}`), `${recipe.id}: ingredients`);
+      const ratio = recipe.golden
+        ? `${Object.entries(recipe.golden).map(([id, weight]) => `${leafName(id)} ${weight}`).join("：")}（割合）`
+        : "未設定";
+      assert(detail.includes(`黄金比：${ratio}`), `${recipe.id}: golden ratio`);
+      assert(detail.includes("発見日：DAY 8"), `${recipe.id}: discovery day`);
+      await page.locator(t("recipe-back")).click();
+    }
+    await page.locator(t("status-close")).click();
+  });
   // #1906: 家で発見した配合を、在庫や保存内容を変えずにレシピ帳で読み返す。
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
     ["portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]]) {
