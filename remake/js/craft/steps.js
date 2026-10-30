@@ -98,9 +98,14 @@ export async function stepSetup(cs) {
     if (type === "charcoal" && !trained) continue;
     const owned = state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
     const suyaki = type === "hms" && isSuyakiBowl(cs.equip.bowl);
-    const selectable = owned.filter((e) => !(suyaki && e.id === "tanukish_lid"));
+    const compatible = (e) => type === "bowl"
+      ? state.owned.some((id) => DB.equipById[id]?.type === "hms" && !(isSuyakiBowl(e.id) && id === "tanukish_lid"))
+      : !(suyaki && e.id === "tanukish_lid");
+    const selectable = owned.filter(compatible);
+    // 所持品だけでは制作できない旧セーブでも、未所持機材を補って確定しない。
+    if (!selectable.length) throw new Error(`${label}に対応する所持機材がありません`);
     if (owned.length <= 1) {
-      cs.equip[type] = selectable[0]?.id || (suyaki ? "lotos_hagal" : owned[0]?.id || cs.equip[type]);
+      cs.equip[type] = selectable[0].id;
       continue;
     }
     const currentId = state.equip[type];
@@ -112,12 +117,12 @@ export async function stepSetup(cs) {
       options: [{ label: "選択に戻る", primary: true, test: "setup-compare-close" }] }),
     }));
     cs.equip[type] = await choose(panel, owned.map((e) => {
-      const disabled = suyaki && e.id === "tanukish_lid";
+      const disabled = !compatible(e);
       const guide = equipmentUse(e);
       return {
         value: e.id, label: e.name,
         desc: `${guide.use}${guide.caution ? ` ／ 注意：${guide.caution}` : ""}`,
-        disabled, badge: disabled ? "素焼き非対応" : e.id === currentId ? "装備中" : null,
+        disabled, badge: disabled ? (type === "bowl" ? "対応するHMDを持っていません" : "素焼き非対応") : e.id === currentId ? "装備中" : null,
         auto: !disabled && e.id === currentId,
       };
     }));
