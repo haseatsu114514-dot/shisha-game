@@ -86,7 +86,7 @@ async function initialLegacyLoad(name, options, malformed) {
     assert.deepEqual(loaded.auto, { chapter: 1, day: fixture.day, slot: fixture.slot }, "LOAD must update auto, not leave DAY19 behind");
     assert.equal(loaded.rawSlot, fixture.rawSlot, "legacy manual slot must remain byte-identical");
     if (malformed) {
-      assert.deepEqual(loaded.progress, { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {} }, "malformed IDs must not invent collection records");
+      assert.deepEqual(loaded.progress, { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {}, completeAnnounced: false }, "malformed IDs must not invent collection records");
     } else {
       assert(loaded.rawProgress, "old-auto-only evidence must persist before gallery is ever opened");
       assert.deepEqual(loaded.progress.clearedChapters, [1]);

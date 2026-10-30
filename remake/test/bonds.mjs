@@ -287,7 +287,8 @@ try {
   assert.deepEqual(shared.problems, []);
   assert(shared.epiPrivate); assert(shared.epiFaces.every((f) => f.startsWith("ura_")), shared.epiFaces.join());
   assert(!shared.epiHeart, "epilogue still has the store tone or the doubled 彼女");
-  assert.deepEqual(shared.epiJump, { type: "jump", next_id: "ending_daily_smoke" });
+  // 後日談は場面の中でjumpしない。続く ending_daily_smoke へは第5章のフィナーレ進行（ch5-progress.js）がつなぐ（#1176）。
+  assert.notEqual(shared.epiJump?.type, "jump", JSON.stringify(shared.epiJump));
   assert(!shared.acceptOld); assert(!shared.rule.includes("恋人ルート確定後のデートシーンでのみ"));
   assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_fifth_done");
   log("HF02 data: ura faces <-> private scenes, epilogue private/calm, confession text, appearance rule, first outing before reveal");
@@ -341,7 +342,7 @@ try {
   assert.equal(friend.beforeSubmission, false);
   assert.equal(friend.noonBadge, false); assert.equal(friend.noon, false); assert.equal(friend.nightBadge, true);
   assert(friend.finaleText.includes("描き終わった絵、最初に見てほしくて"));
-  assert(friend.finaleText.includes("いつもの席で"), "friendship landing missing");
+  assert(friend.finaleText.includes("この子の続きも、ここで描きます"), "friendship landing missing"); // #1282 で個別化した友情の着地
   assert(!friend.finaleText.includes("今度は２人で"), "romance question shown after a friendly answer");
   assert.equal(friend.record.route, "friend"); assert(friend.owned); assert.equal(friend.lavender, 50);
   assert.equal(friend.confessed, false); assert.equal(friend.due, null);
@@ -448,7 +449,7 @@ try {
     return { badge, finaleBlocked, first, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
   });
   assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
-  assert(rin.first.includes("試香の口実もないのに")); assert(rin.first.includes("頼りにしてるよ、……仕事仲間として"));
+  assert(rin.first.includes("モニター料が出る仕事も、もうないよ")); assert(rin.first.includes("仕事仲間の時間だった")); // #1732 で書き直した質問と仕事寄りの答え
   assert(!rin.first.includes("ラベルも同意書もない"));
   assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);

@@ -255,7 +255,8 @@ body.game-ds .bench-top {
   left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: 40px; right: auto; padding: 4px 8px; gap: 6px;
   overflow: hidden; background: #000b; border-radius: 7px 7px 0 0; z-index: 6;
 }
-body.game-ds .bench-appearance-button { left: calc(var(--ds-cx) + var(--ds-cw) - 126px); right: auto; top: calc(var(--ds-cy) + 7px); }
+/* 右上の「？」（操作の説明）の左に置き、重ねない */
+body.game-ds .bench-appearance-button { left: calc(var(--ds-cx) + var(--ds-cw) - 176px); right: auto; top: calc(var(--ds-cy) + 7px); }
 body.game-ds .bench-appearance-dialog { left: calc(var(--ds-cx) + 8px); right: auto; top: calc(var(--ds-cy) + 8px); width: calc(var(--ds-cw) - 16px); height: calc(var(--ds-ch) - 16px); }
 body.game-ds .bench-top .bench-progress { padding-right: 0; }
 body.game-ds .bench-mode { width: 74px; font-size: 10px; }

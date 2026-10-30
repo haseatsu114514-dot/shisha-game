@@ -136,6 +136,7 @@ await suite("shop-practice-stock", async check => {
     assert.equal(await page.locator('.flavor-row[data-flavor="double_apple"] .fr-g').textContent(), "10g");
     for (let n = 0; n < 2; n++) await page.locator('[data-test="mix-plus-lemon"]').click();
     await page.locator('[data-test="mix-ok"]').click(); await page.waitForFunction(() => window.__mixDone);
-    assert.deepEqual(await page.evaluate(async () => (await import("./js/core/state.js")).state.flavorStock), { double_apple: 0, lemon: 1 });
+    // 第1章の課題レモンは大会の支給なので私物は減らない（#1052 オーナー決定 2026-10-28）。持ち込んだダブルアップルだけが減る。
+    assert.deepEqual(await page.evaluate(async () => (await import("./js/core/state.js")).state.flavorStock), { double_apple: 0, lemon: 3 });
   });
 });

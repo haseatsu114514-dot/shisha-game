@@ -1187,11 +1187,11 @@
 .bench-left .bench-audience { position: absolute; left: 11px; right: 11px; bottom: 11px; margin: 0; z-index: 2; background: linear-gradient(145deg, #1b1522ee, #100c18ed); }
 .bench-left .bench-audience .audience-note { max-height: 100%; overflow-y: auto; }
 /* 配合も吸い出しと同じ左位置・同じ縦管。操作欄のfooterには置かない。 */
-.mix-temperature-preview { position: absolute; left: -140px; top: -3px; width: 88px; height: 454px; padding: 34px 12px 70px; display: block; z-index: 3; }
+.mix-temperature-preview { position: absolute; left: -140px; top: -3px; width: 88px; height: 464px; padding: 34px 12px 70px; display: block; z-index: 3; }
 .mix-temperature-preview::before { content: ""; position: absolute; inset: 0; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); }
 .mix-temperature-preview > b { position: absolute; top: 10px; left: 12px; width: 64px; text-align: center; font-size: 11px; }
 .mix-temperature-preview > .thermo { height: 100%; }
-/* #23-B: 下部の凡例（最大2行）＋ヒント（12px太字で2行=34px）が収まるよう、thermo を10px短くし確保枠を実寸に合わせる。 */
+/* #23-B: 下部の凡例（最大2行）＋ヒント（12px太字で2行=34px）の分だけ枠を伸ばす。縦管は吸い出しと同じ360pxのまま（#703）。 */
 .mix-temperature-legend { position: absolute; top: calc(100% - 70px); left: 4px; right: 4px; justify-content: center; font-size: 12px; line-height: 1.2; gap: 2px 5px; }
 .mix-temperature-preview > small { position: absolute; top: calc(100% - 36px); left: 2px; width: 84px; text-align: center; font-weight: 700; font-size: 12px; }
 .mix-temperature[data-selected="false"] .thermo-scale { background: #55515d; }
