@@ -137,6 +137,9 @@ export async function runChapterTwoPreparation() {
     beforeNightEvent: event => allSpots().some(spot => spot.id === event.pin && (spot.region || "home") === "home")
       ? returnCityHome() : true,
     startNextDay: true, untilDay: startDay + 13, tournamentName: "HAZE: OPEN CLOUD",
+    // LIMEの会場が地元と分かる場合も、面会の前に既存の帰路を通す。
+    beforeInvitation: destination => destination && (destination.region || "home") === "home"
+      ? returnCityHome() : true,
     mapOptions: () => ({
       regionId: state.flags._ch2_region,
       regions: [

@@ -462,6 +462,7 @@ async function takeAction() {
       if (state !== invOwner || state.pendingInvite !== inv) return;
     }
     if (!(await guardInvitation(inv))) return;
+    await travelToInvitation(inv);
     if (inv.event === "date_samechan") {
       const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
       if (result.done) { completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent }); }
@@ -677,6 +678,17 @@ function invitationSourceMessage(inv) {
     || DB.lime.find(message => message.accept_event === inv.event && message.sender === inv.sender);
 }
 
+// 移動が終わるまで約束・面会費用・行動報酬は確定しない。
+async function travelToInvitation(inv) {
+  const owner = state, day = state.day, slot = state.slot;
+  const id = invitationVisitSpot(inv, invitationSourceMessage(inv));
+  const destination = chapterDef.spotById?.(id) || spotById(id);
+  if (await chapterDef.beforeInvitation?.(destination) === false
+    || state !== owner || state.day !== day || state.slot !== slot || state.pendingInvite !== inv) {
+    throw new Error("約束へ向かう移動が中断されました");
+  }
+}
+
 async function meetInvitation(inv) {
   if (postponeUnaffordableInvitation(inv)) return false;
   const owner = state;
@@ -807,6 +819,7 @@ async function endDay({ returnedToTonari = false } = {}) {
       await readLime(unreadAppt);
       if (state !== apptOwner) return;
     }
+    await travelToInvitation(appointment);
     if (appointment.event !== "date_samechan") state.pendingInvite = null;
     delete state.flags._home_tonight;
     await beat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。"
