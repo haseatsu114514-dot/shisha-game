@@ -24,7 +24,9 @@ async function seed(page) {
     // 第3章の後日談まで終えた保存（ch3-aftermath の完了状態）を直接組む。
     Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100,
       weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+    // 予告2の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして第4章本体に集中する。
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
+      _ch3_preview_seen: true,
       _ch3_tournament_won: true, _ch3_japan_first_representative: true,
       _ch3_intro: { startDay: 29, stage: 18, titleSeen: true, routeVersion: 2 },
       _ch3_tournament: { stage: "complete", attempts: 1, voted: 4, history: [{ rank: 1, total: 88 }],
@@ -56,6 +58,12 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.chapter, 3);
     assert.equal(state.flags._ch4, undefined);
     await page.locator(dt("ch3-aftermath-chapter-four")).click();
+
+    // 1b. 出発前の同行選択（恋人がいないので「同行なし」だけ。ましろは第3章クリアで別便応援）
+    await page.locator(dt("ch4-companion")).waitFor({ timeout: 60000 });
+    await page.locator(dt("ch4-companion-none")).click();
+    assert.deepEqual((await get(page)).flags._overseas_companion,
+      { decided: true, companion: null, supports: ["mashiro"] });
 
     // 2. プロローグ4場面（章タイトル→出発前2場面→到着→宿）
     const prologue = ["ch4_sumi_training", "ch4_strategy", "ch4_opening", "ch4_arrival_inn"];

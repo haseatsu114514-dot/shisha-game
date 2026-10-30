@@ -7,12 +7,37 @@ const PACKING = { fluffy: "ふんわり詰め", normal: "均等な詰め方", fi
 // 共通工程のうち、上園が話す行だけ第3章の審査員エミルへ切り替える。
 const NATIONAL_JUDGE_SCENES = new Set(["mix_single", "mix_blend", "crowd_2", "aroma_good", "aroma_work", "aroma_unknown"]);
 
-export function tournamentStoryDialogue(cs, event, random = Math.random) {
+/**
+ * 第2章・提供後の票（2回目の投票）を見たあとのあげはの区分（#1649）。
+ * 実際に投入された票（progress.lastVotes / votes）だけから決め、記録が無ければ票に触れない "unknown"。
+ */
+export function agehaServedVotes(progress) {
+  const last = progress?.lastVotes;
+  if (!last || progress.voted !== 2) return "unknown";
+  const rows = Object.values(last);
+  if (rows.some(row => row?.first === "ageha")) return "first";
+  if (rows.some(row => (row?.points?.ageha || 0) > 0)) return "second";
+  const total = Object.values(progress.votes || {}).reduce((sum, row) => sum + (row?.ageha || 0), 0);
+  return total > 0 ? "none" : "zero";
+}
+/** 第2章・提供の実績（吸い出しの温度と提供時の香り）から、はじめの独白の区分を返す。 */
+export function hajimeServedState(cs) {
+  const pull = cs?.pull, aroma = cs?.tournamentStory?.servedAroma;
+  if (!Number.isFinite(pull?.temp)) return "work";
+  const bands = temperatureBands(cs);
+  if (!isIdealTemperature(pull.temp, bands)) return pull.temp > bands.ideal[1] ? "hot" : "cold";
+  return Number.isFinite(aroma) && aroma >= 65 ? "good" : "work";
+}
+
+export function tournamentStoryDialogue(cs, event, random = Math.random, context = {}) {
   const chapter = [1, 2, 3].includes(cs.chapter) ? cs.chapter : 1;
   const ingredients = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0);
   const flavors = ingredients.map(([id, g]) => `${DB.flavorById[id]?.short_name || id} ${g}g`).join("、");
   const ids = [];
   if (event === "opening") ids.push(`opening_${chapter}`);
+  // 第2章の提供後の掛け合いは、画面の票と提供の実績に合わせて組み立てる（第1章の naruTastingLine と同じ考え方）。
+  else if (event === "interlude1" && chapter === 2) ids.push(`interlude1_2_ageha_${agehaServedVotes(context.progress)}`,
+    "interlude1_2_mid", `interlude1_2_hajime_${hajimeServedState(cs)}`);
   else if (event.startsWith("interlude")) ids.push(`${event}_${chapter}`);
   else if (event === "packed") ids.push("packed_intro", `pack_${PACKING[cs.pack] ? cs.pack : "normal"}`,
     ingredients.length > 1 ? "mix_blend" : "mix_single", "packed_end");

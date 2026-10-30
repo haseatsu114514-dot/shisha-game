@@ -65,6 +65,61 @@ for (let seed = 1; seed <= 128; seed++) {
   assert.equal(reel.core.STRIPS[0][stops[0]], "smoke", "ハズレの左は煙でリーチ目と区別できる");
 }
 
+// 左リールのBAR狙い（#1281 K01・見た目だけ）: ハズレの多くで左の窓にBARが見え、チェリーは見えない
+{
+  const left = reel.core.STRIPS[0], n = left.length;
+  let barShown = 0;
+  const seeds = 2000;
+  for (let seed = 1; seed <= seeds; seed++) {
+    const stops = reel.core.stopsFor("miss", reel.core.mulberry32(seed));
+    const window = [left[(stops[0] - 1 + n) % n], left[stops[0]], left[(stops[0] + 1) % n]];
+    assert.equal(window[1], "smoke", "BAR狙いでも中段は煙");
+    assert(!window.includes("cherry"), `ハズレの左の窓にチェリーを出さない: seed=${seed}`);
+    if (window.includes("bar")) {
+      assert.equal(window[2], "bar", "BARは下段（上段・中段だとチェリーが窓に入る）");
+      barShown++;
+    }
+  }
+  assert(barShown / seeds >= 0.65 && barShown / seeds <= 0.9, `ハズレの大半で左にBARが見える: ${barShown / seeds}`);
+  assert.equal(reel.core.LEFT_BAR_AIM, 0.7);
+}
+
+// 最近の不調の補い（#1281 オーナー決定）: 直近30回転の当たりが2回なら×1.25、1回以下なら×1.5。
+// 30回転そろうまでは無効。生涯の裏確変（×2.5）とは掛け合わせず大きい方だけ。
+{
+  const { slumpMult, effectiveTable, SLUMP, RESCUE } = reel.core;
+  eq(SLUMP, { window: 30, steps: [{ maxHits: 1, mult: 1.5 }, { maxHits: 2, mult: 1.25 }] });
+  const recentWith = (hits, length = 30) => Array.from({ length }, (_, i) => (i < hits ? 1 : 0));
+  assert.equal(slumpMult({ recent: undefined }), 1, "旧セーブ（記録なし）は補わない");
+  assert.equal(slumpMult({ recent: recentWith(0, 29) }), 1, "30回転そろうまでは補わない");
+  assert.equal(slumpMult({ recent: recentWith(0) }), 1.5);
+  assert.equal(slumpMult({ recent: recentWith(1) }), 1.5);
+  assert.equal(slumpMult({ recent: recentWith(2) }), 1.25);
+  assert.equal(slumpMult({ recent: recentWith(3) }), 1, "期待値どおりなら補わない");
+  assert.equal(slumpMult({ recent: [...recentWith(3), ...recentWith(0)] }), 1.5, "古い当たりは窓から外れる");
+  assert.equal(slumpMult({ recent: ["1", null, 2, ...recentWith(1)] }), 1.5, "壊れた値は数えない");
+  const weights = (st) => Object.fromEntries(effectiveTable(st).map((r) => [r.id, r.weight]));
+  const base = { count: 100, missRun: 0, bonusGap: 3, zoneLeft: 0, bonusCount: 12, freezeCount: 1, setting: 3 };
+  const plainW = weights(base);
+  const slumpW = weights({ ...base, recent: recentWith(1) });
+  assert.equal(slumpW.reg, Math.round(plainW.reg * 1.5));
+  assert.equal(slumpW.big, Math.round(plainW.big * 1.5));
+  assert.equal(slumpW.miss, plainW.miss - (slumpW.reg - plainW.reg) - (slumpW.big - plainW.big), "増えた分はハズレから移す");
+  assert.equal(Object.values(slumpW).reduce((a, b) => a + b, 0), Object.values(plainW).reduce((a, b) => a + b, 0), "合計は変えない");
+  // 生涯の裏確変中は ×2.5 のまま（×1.5 を掛け重ねない）
+  const rescueBase = { ...base, bonusCount: 2 };
+  eq(weights({ ...rescueBase, recent: recentWith(0) }), weights(rescueBase));
+  assert.equal(weights(rescueBase).reg, Math.round(plainW.reg * RESCUE.mult));
+  // 最初の30回転は旧仕様と同じ抽選（窓がそろわない）。回転ごとに記録が伸び、30で止まる。
+  const machine = { seed: 7, count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0, setting: 3 };
+  for (let action = 0; action < 60; action++) {
+    const before = machine.recent?.length || 0;
+    const rs = reel.core.spinSeries(machine, {});
+    assert.equal(machine.recent.length, Math.min(30, before + rs.length));
+    assert.equal(machine.recent.at(-1), reel.core.PEKA.includes(rs.at(-1).role) || rs.at(-1).overlap ? 1 : 0);
+  }
+}
+
 
 // 偶奇の台詞はオーナー承認の文言だけ。分類ごとの出やすさは従来どおり
 const kind = (id) => reel.SETTING_HINTS.find((h) => h.id === id);

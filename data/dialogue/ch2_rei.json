@@ -3,7 +3,7 @@
     {
       "dialogue_id": "ch2_rei_first",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png",
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp",
         "flavor_lesson": {
           "rose": 1
         }
@@ -247,7 +247,7 @@
     {
       "dialogue_id": "ch2_rei_second",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
       "lines": [
         {
@@ -445,7 +445,7 @@
     {
       "dialogue_id": "ch2_rei_third",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
       "lines": [
         {
@@ -561,7 +561,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "でも、大会で出す一杯は……ちゃんと伝わってほしい"
+          "text": "でも、大会で出す一台は……ちゃんと伝わってほしい"
         },
         {
           "speaker": "rei",
@@ -583,7 +583,7 @@
     {
       "dialogue_id": "ch2_rei_fourth",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
       "lines": [
         {
@@ -705,7 +705,7 @@
     {
       "dialogue_id": "ch2_rei_fifth",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
       "lines": [
         {
@@ -822,7 +822,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "別れる人に、また会えるってついてしまう、あの優しい嘘の感覚、それをシーシャで出したくて"
+          "text": "別れる人に、また会えるって嘘をついてしまう、あの優しい嘘の感覚、それをシーシャで出したくて"
         },
         {
           "speaker": "rei",
@@ -832,7 +832,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "でも途中からミントを入れて、ふっと冷えて静かになる感じにしたくて"
+          "text": "下の層にミントを詰めて、途中からふっと冷えて静かになる感じにしたくて"
         },
         {
           "speaker": "rei",
@@ -967,7 +967,7 @@
     {
       "dialogue_id": "ch2_rei_group_concert_prep",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
       "lines": [
         {
@@ -978,17 +978,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "V系ファン風の若者たちが数人、コーナー席でわいわいしながらシーシャを吸っている。"
+          "text": "V系ファン風の若者たちが数人、コーナー席でわいわいしながらシーシャを吸っている。テーブルには、同じバンドのチケットが並んでいた。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "「REIさん！ 今日の嘘、最高でした！ あのスモーク感、原曲のイントロと一緒だよ！」"
+          "speaker": "customer",
+          "face": "normal",
+          "text": "来週のセトリ、一曲目は絶対「嘘」でしょ！ あのイントロ、ライブで聴いたら泣く"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "「月光花と交互に吸うの、もはや儀式じゃん！！」「ライブ前は絶対ここ来るんだよね！」"
+          "speaker": "customer",
+          "face": "normal",
+          "text": "わかる。てかこのイエス、ライブ前に吸うと気持ちが仕上がるんだよね"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "月光花と交互に吸うの、もはや儀式じゃん！ ライブ前は絶対ここ来るって決めてる"
         },
         {
           "speaker": "rei",
@@ -996,44 +1001,44 @@
           "text": "……"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "（……REIさん、完全に固まってる）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "「あっ、REIさん今顔赤くなった！ 照れてる！！」「かわいい〜！ こんな顔すんだ！！」"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "「でもシーシャはガチでやばいよ、V系の魂こもってる」"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……ファンに一気に話しかけられてパニックになってる。これが素の反応か）"
+          "text": "（……REIさん、カウンターの奥で手が止まってる。会話に入りたいのかな）"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あ、店長さん！ 店長さんも来週行くんですよね？ 二曲目、何だと思います？"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……あ、その……ありがとう……"
+          "text": "……あ、その……たぶん……新曲……"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "声が、蚊の鳴くほど小さかった。ファンたちがまたわっと盛り上がった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "REIは顔を少し赤くしながら、黙々と次のシーシャの準備に戻った。"
+          "speaker": "customer",
+          "face": "normal",
+          "text": "え、同じ予想！ 店長さん分かってる〜"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……あの「月光花」を作る人が、ファンに「ありがとう」を言うだけでこんなに力がいるんだ）"
+          "text": "（……好きなバンドの話を振られただけで、こんなに固まるんだ。これが素の反応か）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "声は、蚊の鳴くほど小さかった。それでも客たちは嬉しそうに、またバンドの話に戻っていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIは耳を少し赤くしながら、黙々と次のシーシャの準備に戻った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……あの「月光花」を作る人が、同じバンドの話をひとこと返すだけで、こんなに力がいるんだ）"
         },
         {
           "speaker": "",
@@ -1043,7 +1048,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "しばらくして、ファンたちが帰っていった。店内が静かになると、REIがカウンター越しに口を開いた。"
+          "text": "しばらくして、客たちが帰っていった。店内が静かになると、REIがカウンター越しに口を開いた。"
         },
         {
           "speaker": "rei",
@@ -1089,6 +1094,10 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "行きます"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_rei_ticket"
         },
         {
           "speaker": "rei",

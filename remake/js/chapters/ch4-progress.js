@@ -8,6 +8,11 @@
 //   DAY5 大会当日 : tournament_start → 勝敗 →（勝ち）final → 後日談の本線 → 完了
 // マップ訪問では日は進まない。進むのは endChapterFourDay（宿でその日を終える）と前夜の終了だけ。
 
+import { MAX_MONEY } from "../core/rules.js";
+
+// 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
+export const CH4_PRIZE = 200000;
+
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // ドバイ専用の背景が無いので、全て既存 bg の流用。#1177 でドバイ素材に差し替える時はこの表だけ直す。
 export const CH4_PLACE_BG = Object.freeze({
@@ -48,6 +53,18 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_ending: "bg_hideaway",                      // 屋敷。仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_sumi_return: "bg_tonari_inside_night",      // 帰国後のtonari。仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_two_tables: "bg_tonari_inside_night",       // 仮置き bg（#1177 でドバイ素材に差し替え）
+});
+
+// ---- BGM の対応表（演出の山だけ切り替える。無い場面は tonari）-------------------------
+// ドバイ専用曲が無いので既存曲の流用。#1177 / 専用曲が入ったらこの表だけ直す。
+export const CH4_DEFAULT_BGM = "tonari";
+export const CH4_SCENE_BGM = Object.freeze({
+  ch4_tournament_start: "bgm_tournament_wait",
+  ch4_final: "bgm_tournament_craft",
+  ch4_defeat: "bgm_aftermath",
+  ch4_result: "bgm_judging",
+  ch4_nagumo_old_rival: "bgm_aftermath",
+  ch4_ending: "bgm_aftermath",
 });
 
 // ---- 日数・解放条件 -----------------------------------------------------------------
@@ -234,6 +251,11 @@ export function completeChapterFourScene(value, id) {
     if (id !== CH4_TOURNAMENT_SCENES.start && progress.read[CH4_TOURNAMENT_SCENES.start] !== true) return false;
     progress.read[id] = true;
     if (id === CH4_TOURNAMENT_SCENES.win) {
+      // 賞金は勝利の確定と同じ更新で一度だけ渡す（再読・LOADで二重に付けない）。
+      if (!progress.prizePaid) {
+        progress.prizePaid = true;
+        value.money = Math.min(MAX_MONEY, Math.max(0, Math.round((value.money || 0) + CH4_PRIZE)));
+      }
       progress.part = "resolution";
       progress.resolution = 0;
       value.phase = "aftermath";

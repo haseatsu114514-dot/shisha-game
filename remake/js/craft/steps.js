@@ -32,10 +32,23 @@ export const REGULATION = {
   2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 4, label: "課題フレーバー「ストロベリー」を4g以上" },
   // オーナー決定 10/28：ドバジ・4g以上・大会支給。チョコは通常（chocolate）。
   3: { flavor: "chocolate", supply: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（大会支給）" },
+  // 第5章 SHISHA-9000 戦（docs/setting_book/05_tournament.md）。ミックスなし。単体は runner が葉を絞って守る。
+  5: { flavor: "double_apple", supply: "double_apple", min: 12, label: "課題「ダブルアップル単体12g」（主催支給）" },
 };
+// 第4章 GRAND SMOKE は自由課題（最高の一台）。課題の葉は無く、出発前にスミさんと決めた方針（ch4_strategy）の葉を
+// 「持ち込み申請した葉」として大会側が預かり、本番中は無制限に使える（他章の支給と同じ扱い・私物は減らさない）。
+// 方針の葉を何g使うかは自由（min 0）。審査・講評への反映は #1659 の残件。
+export const CH4_PLAN_LEAVES = Object.freeze({ sakura: "sakura", peach: "peach", tea: "black_tea" });
+function chapterFourRegulation() {
+  const id = CH4_PLAN_LEAVES[state.flags?._ch4_strategy];
+  const name = DB.flavorById?.[id]?.short_name || DB.flavorById?.[id]?.name || id;
+  return id ? { flavor: id, supply: id, min: 0, free: true, label: `自由課題（最高の一台）。持ち込み申請した「${name}」は使い放題` }
+    : { flavor: null, supply: null, min: 0, free: true, label: "自由課題（最高の一台）" };
+}
 // DAY7の固定練習は仕入れた葉を試す。大会・前日リハーサルの課題は維持する。
 export const regulationFor = (cs) => cs.staffPractice || (cs.mode === "rehearsal" && cs.practiceKind === "midcheck") ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
   ? { flavor: "mint", supply: "mint", min: 2, label: "再開中の旧大会：ミント2g以上" }
+  : state.chapter === 4 && cs.mode === "tournament" ? chapterFourRegulation()
   : (cs.mode === "tournament" || cs.mode === "rehearsal" ? REGULATION[state.chapter] : null);
 
 // スミさんの手本（チュートリアル中だけ、工程の頭に出す）
@@ -258,7 +271,7 @@ export async function stepMix(cs) {
   if (state !== owner) throw new DOMException("Mix owner changed", "AbortError");
   const reg = regulationFor(cs);
   const cap = capacity(cs);
-  const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
+  const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + (reg.free ? "。" : "が今日の課題。") : ""}合計12g以上で決める`));
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   const supplied = (id) => !!reg && id === supplyId;
@@ -362,7 +375,7 @@ export async function stepMix(cs) {
           onclick: () => modal({ title: f?.short_name || f?.name || id, className: "flavor-guide-dialog", body: flavorFeatureCard(f, { description: f?.description }),
             options: [{ label: "配合に戻る", primary: true, test: "flavor-info-close" }] }),
         }, [el("b", { text: f?.short_name || f?.name || id })]),
-        supplied(id) ? el("small.fr-reg", { text: `課題（支給）${stockTag}` })
+        supplied(id) ? el("small.fr-reg", { text: `${reg.free ? "持ち込み申請" : "課題（支給）"}${stockTag}` })
           : consumes ? el("small.fr-stock", { text: `残り${flavorStock(id)}g${stockTag}` })
           : el("small", { text: tags }),
         el("small.fr-mastery", { text: masteryLabel(state, id, DB.flavorById) }),
@@ -414,6 +427,7 @@ export async function stepMix(cs) {
       }
       if (reg?.flavor === "lemon") cs.mix = { lemon: 3, double_apple: 9 };
       if (reg?.flavor === "chocolate") cs.mix = { chocolate: 4, double_apple: 8 };
+      if (reg?.free && reg.flavor) cs.mix = { [reg.flavor]: 12 }; // 第4章: 方針の葉だけの一台（持ち込み申請分で足りる）
       if (cs.staffPractice || consumes) cs.mix = fitMixToStock(cs.mix, ids, limit, cap, 12);
       if (cs.orderFlavorIds) cs.mix = fitMixToStock({ lemon: 9, mint: 3 }, ids, limit, cap, 12);
       redraw();
@@ -448,7 +462,7 @@ export async function stepPack(cs) {
   await waitBenchReady(cs, "pack");
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   const options = [
-    { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一杯を狙う時に。温めすぎに注意" },
+    { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一台を狙う時に。温めすぎに注意" },
     { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
     { value: "firm", label: "デンスパック", surface: "密に詰める・厚い味へ", desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
   ];

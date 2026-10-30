@@ -1,0 +1,165 @@
+{
+  "source_issue": 1558,
+  "request": "章末予告編（第2章末→第3章／第3章末→第4章／第4章末→第5章）の画像カット生成。設計は work/trailer-expansion/DESIGN.md、台本は PR #1560。",
+  "encoding": "原画は Codex 生成 PNG (1672x941)。構図全体を 1664x936 へ contain して WebP method6、品質は章合計 1.0MiB 以内に収まるよう個別調整。PNG 原画は asset_sources 側にそのまま残す。",
+  "frame_policy": "16:9 画面へ全構図を収める（第1章予告 ch2_preview の採用形式に倣う）。",
+  "runtime_bytes": 1033166,
+  "images": [
+    {
+      "id": "01-dubai-arrival",
+      "source": "asset_sources/ch4-preview/01-dubai-arrival.png",
+      "source_sha256": "bbe97d7d3c1bbff47817be1ee40baf20d293b228c2d73fa83a5ae1e8e4987126",
+      "source_bytes": 2364244,
+      "runtime": "assets/cgs/ch4_preview/01-dubai-arrival.webp",
+      "runtime_sha256": "f9076c71b2006d2ede58b853c29617648ff047aeb16dc9b69312a4380c6c7810",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 171620,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality78 method6; no crop or color filter"
+    },
+    {
+      "id": "02-world-venue",
+      "source": "asset_sources/ch4-preview/02-world-venue.png",
+      "source_sha256": "3c552523854e71d8032adc879f0e2d5ab089d0cad059600187d92feb2b06fb39",
+      "source_bytes": 2744634,
+      "runtime": "assets/cgs/ch4_preview/02-world-venue.webp",
+      "runtime_sha256": "a90d3a02bd29301651ea511de5edf2d0284af89f742bd74e74571ae69f1e03ee",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 173228,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality48 method6; no crop or color filter"
+    },
+    {
+      "id": "03-old-man-hands",
+      "source": "asset_sources/ch4-preview/03-old-man-hands.png",
+      "source_sha256": "7f587cb4c20e4aff15024215a1bbaed3dd0490c659c89ebf44bfbf86f5aa5be3",
+      "source_bytes": 2103442,
+      "runtime": "assets/cgs/ch4_preview/03-old-man-hands.webp",
+      "runtime_sha256": "636a5599cecb24533043855e3cc4b7924ec9feb1b1f0e158280e19e16d4732b8",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 173048,
+      "source_dimensions": [
+        1672,
+        940
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality87 method6; no crop or color filter"
+    },
+    {
+      "id": "04-sumi-profile",
+      "source": "asset_sources/ch4-preview/04-sumi-profile.png",
+      "source_sha256": "a33cfe6ac4b69d81da0dd8f0a0a788340559caea807b2e1e3bda45d5184dd8db",
+      "source_bytes": 1969055,
+      "runtime": "assets/cgs/ch4_preview/04-sumi-profile.webp",
+      "runtime_sha256": "33e6cd6795e819b150204ebb20a0232ddf75b36dbbc1c2a72e85a25f79699e07",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 169520,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality87 method6; no crop or color filter"
+    },
+    {
+      "id": "05-nagumo-back",
+      "source": "asset_sources/ch4-preview/05-nagumo-back.png",
+      "source_sha256": "d96e514d6dd5b45b28163e89a222cccc77be6581718cc7e35bde8648d0bed42b",
+      "source_bytes": 1970607,
+      "runtime": "assets/cgs/ch4_preview/05-nagumo-back.webp",
+      "runtime_sha256": "32c3b83ea003468a3cf311e7fbfd2c46ce026fd89078a7b848f0cb2cb1b0f874",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 164592,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality87 method6; no crop or color filter"
+    },
+    {
+      "id": "06-hajime-hose",
+      "source": "asset_sources/ch4-preview/06-hajime-hose.png",
+      "source_sha256": "dddd081092e0a7d77bc608fca02807252b96b46ee3496552abfdee92d19f2874",
+      "source_bytes": 1946864,
+      "runtime": "assets/cgs/ch4_preview/06-hajime-hose.webp",
+      "runtime_sha256": "b4c86ef0579ba0c3804e168ddab4ccf9038781ec65172c23b0d6f7faa0de0ff0",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 181158,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality90 method6; no crop or color filter"
+    }
+  ]
+}

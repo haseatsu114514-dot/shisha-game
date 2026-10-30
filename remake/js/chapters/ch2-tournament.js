@@ -2,7 +2,7 @@ import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES, loadTournamentCraftDialogue } from "../core/data.js";
-import { el } from "../core/util.js";
+import { el, yen } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, modal, imageReady, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -22,6 +22,8 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull, runCare } from "../craft/pull.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { evaluationOf, feedbackLine } from "../craft/feedback.js";
+import { craftRecognition } from "../craft/recognition.js";
+import { radar } from "../daily/status.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
 import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
@@ -31,7 +33,7 @@ import { readDialogues } from "./ch2-city-data.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
-  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
+  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH2_PRIZE } from "./ch2-tournament-state.js";
 
 const REQUIRED = ["lobby", "entrance", "stations", "rules", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
 // SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
@@ -119,7 +121,8 @@ function checkpoint(stage) { progress().stage = stage; save(); }
 async function commentary(owner, event) {
   hud(owner, true);
   const controller = new AbortController(); owner.controller = controller;
-  const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal });
+  // 掛け合いは保存済みの実際の票を読んで台詞を選ぶ（#1649）。
+  const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal, context: { progress: clone(progress()) } });
   if (owner.controller === controller) owner.controller = null;
   if (!live(owner) || !result) return false;
   progress().craft = clone(owner.cs); save();
@@ -262,7 +265,7 @@ function renderComplete(owner) {
   // 第2章の外側の perform() は終了時に画面内ボタンを再設定する。
   // その処理にも予告中の操作禁止を伝えるため、disabled と locked を一緒に更新する。
   const lock = (button, locked) => {
-    button.dataset.locked = String(locked);
+    if (button.dataset) button.dataset.locked = String(locked);
     button.disabled = locked;
   };
   const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
@@ -278,7 +281,16 @@ function renderComplete(owner) {
     replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-  ], [el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" })]);
+  ], [
+    // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる。
+    state.flags._ch2_tournament?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: `優勝賞金 ${yen(CH2_PRIZE)} を受け取った。` }) : null,
+    // 第1章のクリア画面と同じ成長レーダー。淡い面が章のはじめ、明るい面がいま。
+    el("div.ch2-contest-growth", { dataset: { test: id("growth") } }, [
+      radar(state.stats, state.statsAtChapterStart, 220),
+      el("p.ch2-contest-note", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
+    ]),
+    el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" }),
+  ]);
   // 第1章と同じ挙動: 未視聴なら完了カードで自動再生し、再生中は「次章へ」を押せない。
   // 完走/明示スキップのときだけ既読（_ch2_preview_seen）を保存する（DESIGN 7-4）。
   async function preview(first = false) {
@@ -411,7 +423,9 @@ async function drive(owner) {
       state.flags._ch2_taste_distant = true;
       checkpoint("tokyo");
     } else if (p.stage === "tokyo") {
-      if (!await message(owner, "tokyo", ["東京に行ったら、mukaiのムカイさんを頼れ", "──それと、飯はちゃんと食え"])) { if (live(owner)) card(owner, "tokyo", "東京への連絡", "スミさんからのLIMEを読んで、次の行き先を確かめよう。", [button(owner, "LIMEを開く", "tokyo-message", () => drive(owner), true)]); return; }
+      // 第1章と同じく、実際の制作から一つだけ認める（票・順位には触れない）。
+      const recognition = craftRecognition(p.craft)?.comment;
+      if (!await message(owner, "tokyo", [...(recognition ? [recognition] : []), "東京に行ったら、mukaiのムカイさんを頼れ", "──それと、飯はちゃんと食え"])) { if (live(owner)) card(owner, "tokyo", "東京への連絡", "スミさんからのLIMEを読んで、次の行き先を確かめよう。", [button(owner, "LIMEを開く", "tokyo-message", () => drive(owner), true)]); return; }
       state.flags._ch2_cleared = true; state.flags._ch2_tokyo_invitation = true;
       state.phase = "cleared"; checkpoint("complete");
     } else if (p.stage === "complete") {

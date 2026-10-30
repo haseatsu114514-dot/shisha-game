@@ -193,10 +193,14 @@ await suite("ui-themes-preview", async check => {
     let release, requested;
     const gate=new Promise(resolve=>{release=resolve;});
     const started=new Promise(resolve=>{requested=resolve;});
+    // 会話用の明朝は会話開始前に先読みされる（vn-fonts.js）。読み込みを止めた状態で開き直し、
+    // 先読みが届く前にテーマを切り替えても仮の書体で本文を出さないことを確かめる。
     await page.route('**/ZenOldMincho-Blue-Regular.woff2',async route=>{requested();await gate;await route.continue();});
     try {
+      await page.reload({waitUntil:"load"});
+      await page.locator('#preview-theme:enabled').waitFor();
+      await Promise.race([started,new Promise((_,reject)=>setTimeout(()=>reject(new Error("Reading font was not preloaded")),3000))]);
       await page.selectOption('#preview-theme','cut-paper');
-      await Promise.race([started,new Promise((_,reject)=>setTimeout(()=>reject(new Error("Selected reading font was not requested")),3000))]);
       assert.equal(await page.locator('.vn-text').textContent(),'','do not paginate or reveal dialogue in a temporary fallback font');
       assert.equal(await page.locator('.vn-next.show').count(),0,'a loading scene must not retain the old next indicator');
     } finally { release(); }

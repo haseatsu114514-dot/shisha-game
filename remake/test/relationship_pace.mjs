@@ -31,7 +31,7 @@ try {
   await press('[data-test="title-new"]'); await page.locator("#vn.active").waitFor();
   await page.evaluate(async ({ target, mode }) => {
     window.P = { core: await import("./js/core/state.js"), stats: await import("./js/core/stats.js"),
-      spots: await import("./js/daily/spots.js"), rules: await import("./js/core/rules.js"), vn: await import("./js/vn/engine.js"), events: [], choices: [], ranks: {}, held: false };
+      spots: await import("./js/daily/spots.js"), hours: await import("./js/daily/spot-hours.js"), vn: await import("./js/vn/engine.js"), events: [], choices: [], ranks: {}, held: false };
     const enter = P.vn.hooks.onEnter, choose = P.vn.hooks.onChoice;
     P.vn.hooks.onEnter = (id, dlg) => { enter?.(id, dlg); P.events.push({ id, day: P.core.state.day, slot: P.core.state.slot }); };
     P.vn.hooks.onChoice = (...args) => { choose?.(...args); P.choices.push({ scene: args[0], choice: args[1], branch: args[2], next: args[3], text: args[4]?.text, day: P.core.state.day }); };
@@ -60,7 +60,8 @@ try {
         day: s.day, slot: s.slot, phase: s.phase, money: s.money, stamina: s.stamina,
         stats: s.stats, points: s.affinity[target] || 0, level, story: s.story[target] || 0, finale: s.finales[target] || null,
         lover: s.lovers.includes(target), ranks: { ...P.ranks }, visited: s.visitedDay[target] === s.day,
-        rinAway: s.day % 7 === P.rules.RIN_AWAY_DAY,
+        // 2F (Rin) follows the game rule: night only, not on her away day, once per day.
+        rinClosed: !!P.hours.rinUnavailable(s),
         met: !!s.met[target], fortuneDay: s.fortuneDay ?? null,
         visitedTsumugi: s.visitedDay.tonari_customer === s.day, baito: s.visitedDay.tonari_baito === s.day,
         sub: document.querySelector(".sub-title")?.textContent || "",
@@ -85,7 +86,8 @@ try {
         await press(otherInvite ? '[data-test="reply-1"]' : '.lime-reply[data-test^="reply-"]:not([disabled])');
       } else {
         const own = page.locator(`[data-test="lime-chat-${target}"]`).first();
-        const ownUnread = await own.count() && await own.evaluate(n => n.classList.contains("unread") || !!n.querySelector(".lcr-tag"));
+        // The "雑談" tag only labels a chat thread; only unread rows and open "誘い" invitations need a visit.
+        const ownUnread = await own.count() && await own.evaluate(n => n.classList.contains("unread") || n.querySelector(".lcr-tag")?.textContent === "誘い");
         if (ownUnread) { currentThread = target; await press(`[data-test="lime-chat-${target}"]`); }
         else if (await page.locator(".lime-chat-row.unread").count()) {
           currentThread = (await page.locator(".lime-chat-row.unread").first().getAttribute("data-test")).replace("lime-chat-", "");
@@ -114,7 +116,7 @@ try {
       }
       const visited = target === "tsumugi" ? snap.visitedTsumugi : snap.visited;
       const pin = target === "rin" ? "shop" : target === "tsumugi" ? "tonari" : target;
-      const available = (target !== "rin" || !snap.rinAway) && !!await page.locator(`[data-test="pin-${pin}"]:not(.off)`).count();
+      const available = (target !== "rin" || !snap.rinClosed) && !!await page.locator(`[data-test="pin-${pin}"]:not(.off)`).count();
       let action = !visited && available && !snap.targetNight && (mode !== "usual" || snap.day % 2 === 0) ? target : "rest";
       if (snap.stamina < 30) action = "rest";
       if (action === "rest" && snap.stamina >= 38 && !snap.baito && snap.money < 7000) action = "baito";

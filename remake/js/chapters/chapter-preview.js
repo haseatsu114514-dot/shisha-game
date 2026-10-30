@@ -41,6 +41,32 @@ export const PREVIEWS = {
     },
     score: { kind: "cue", arrangement: { air: 47, bell: 79, titleChord: [59, 62, 66, 71], level: 1 } },
   },
+  // 予告2（第3章末→第4章『継承の煙』）。cue 駆動で、調を予告1より少し下げる。
+  ch4: {
+    scriptUrl: "../data/chapter_previews/ch4.json",
+    assetDir: "../assets/cgs/ch4_preview/",
+    seenFlag: "_ch3_preview_seen",
+    labels: {
+      aria: "第3章の終わりと第4章の次回予告",
+      counter: "次回予告",
+      prologueCounter: "約束の、そのあと。",
+      loading: "次回予告を準備しています……",
+    },
+    score: { kind: "cue", arrangement: { air: 43, bell: 74, titleChord: [55, 59, 62, 65], level: 1 } },
+  },
+  // 予告3（第4章末→第5章『機械仕掛けの神』）。cue 駆動。予告はここまでで、第5章の終わりには置かない。
+  ch5: {
+    scriptUrl: "../data/chapter_previews/ch5.json",
+    assetDir: "../assets/cgs/ch5_preview/",
+    seenFlag: "_ch4_preview_seen",
+    labels: {
+      aria: "第4章の終わりと第5章の次回予告",
+      counter: "次回予告",
+      prologueCounter: "帰郷の、そのあと。",
+      loading: "次回予告を準備しています……",
+    },
+    score: { kind: "cue", arrangement: { air: 45, bell: 83, titleChord: [57, 60, 64, 71], level: 1 } },
+  },
 };
 
 let active = null;

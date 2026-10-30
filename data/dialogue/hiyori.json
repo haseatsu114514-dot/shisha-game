@@ -114,6 +114,54 @@
         "slot": 1
       },
       {
+        "id": "tonari_afterwork",
+        "dialogue": "hiyori_tonari_afterwork",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_tonari_afterwork_done",
+        "requires": [
+          "_hiyori_tonari_followup_done"
+        ],
+        "met": true,
+        "minAffinity": 3,
+        "affinity": 5
+      },
+      {
+        "id": "tonari_return",
+        "dialogue": "hiyori_tonari_return",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_tonari_return_done",
+        "requires": [
+          "_hiyori_sumi_message_done",
+          "_hiyori_message_delivered",
+          "_hiyori_cracks_done"
+        ],
+        "met": true,
+        "minAffinity": 3,
+        "affinity": 10
+      },
+      {
+        "id": "tonari_followup",
+        "dialogue": "hiyori_tonari_followup",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_tonari_followup_done",
+        "requires": [
+          "_hiyori_tonari_return_done"
+        ],
+        "met": true,
+        "affinity": 5
+      }
+    ],
+    "unscriptedEvents": [
+      {
         "id": "tokyo_contact",
         "dialogue": "hiyori_tokyo_contact",
         "chapters": [
@@ -175,52 +223,6 @@
           "_hiyori_work_talk_done"
         ],
         "relationship": "lover"
-      },
-      {
-        "id": "tonari_afterwork",
-        "dialogue": "hiyori_tonari_afterwork",
-        "chapters": [
-          1,
-          2
-        ],
-        "flag": "_hiyori_tonari_afterwork_done",
-        "requires": [
-          "_hiyori_tonari_followup_done"
-        ],
-        "met": true,
-        "minAffinity": 3,
-        "affinity": 5
-      },
-      {
-        "id": "tonari_return",
-        "dialogue": "hiyori_tonari_return",
-        "chapters": [
-          1,
-          2
-        ],
-        "flag": "_hiyori_tonari_return_done",
-        "requires": [
-          "_hiyori_sumi_message_done",
-          "_hiyori_message_delivered",
-          "_hiyori_cracks_done"
-        ],
-        "met": true,
-        "minAffinity": 3,
-        "affinity": 10
-      },
-      {
-        "id": "tonari_followup",
-        "dialogue": "hiyori_tonari_followup",
-        "chapters": [
-          1,
-          2
-        ],
-        "flag": "_hiyori_tonari_followup_done",
-        "requires": [
-          "_hiyori_tonari_return_done"
-        ],
-        "met": true,
-        "affinity": 5
       }
     ]
   },
@@ -806,7 +808,7 @@
         },
         {
           "speaker": "hajime",
-          "text": "……ひよりさん？"
+          "text": "……ひよりさん。こんにちは"
         },
         {
           "speaker": "hiyori",
@@ -815,7 +817,11 @@
         },
         {
           "speaker": "hajime",
-          "text": "偶然ですね。今日は、こっちに来たんですか"
+          "text": "（スミさんに呼ばれたことは、黙っておこう）"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日は、こっちに寄ったんですね"
         },
         {
           "speaker": "",
@@ -1073,6 +1079,43 @@
       ]
     },
     {
+      "dialogue_id": "hiyori_shop_repeat_0_promised",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "約束した席で、ひよりが先に待っていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……来てくれたんだ。約束、煙みたいに消えてなかったね",
+          "face": "smile",
+          "inner": "既読がついた瞬間から、注文は決めてた"
+        },
+        {
+          "speaker": "hajime",
+          "text": "消えませんよ。ひよりさんが誘ってくれたんですから"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん。今日は、ちゃんと待ってた",
+          "face": "smile",
+          "inner": "待ち合わせって、こんなに落ち着かないものだっけ"
+        },
+        {
+          "speaker": "hajime",
+          "text": "席、いい感じですね。ここも、落ち着きます"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん。今夜は、ゆっくり吸おう",
+          "face": "smile"
+        }
+      ]
+    },
+    {
       "dialogue_id": "hiyori_shop_repeat_1",
       "metadata": {
         "private_scene": true
@@ -1156,6 +1199,13 @@
       },
       "lines": [
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_hiyori_real_self_known",
+          "next_true": "hiyori_shop_repeat_3_known",
+          "next_false": ""
+        },
+        {
           "speaker": "",
           "text": "ひよりは窓の外を眺めていた。"
         },
@@ -1180,13 +1230,9 @@
         },
         {
           "speaker": "hiyori",
-          "text": "だから儚いって言ってんじゃん！！ 今のは夜風！ 窓の外の夜風だから！！",
-          "face": "surprise"
-        },
-        {
-          "speaker": "hiyori",
-          "text": "換気扇のうなりと聞き分けられないくらい、か細い音だっただろうが！！",
-          "face": "surprise"
+          "text": "……今のは、夜風。窓の外の、か細い夜風だから……",
+          "face": "sad",
+          "inner": "腹の虫に儚さで負けた。本日の在庫切れです"
         },
         {
           "speaker": "hajime",
@@ -1202,6 +1248,56 @@
           "text": "……帰りに、あったかい味噌ラーメンとか、あるかな",
           "face": "smile",
           "inner": "完全にバレた。こうなったら味玉もつける"
+        },
+        {
+          "speaker": "hajime",
+          "text": "近くにありますよ。のんびり吸ってから、行きましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_shop_repeat_3_known",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ひよりは窓の外を眺めていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……私、普段は朝露と紅茶の香りくらいしか口にしないから",
+          "face": "sad"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "固形物の味なんて、もう忘れちゃったかも……",
+          "face": "sad",
+          "inner": "昼はサンドイッチひとつ。普通にもう限界"
+        },
+        {
+          "speaker": "",
+          "text": "静かな店内に、ぐうううっ、と力強い音が響いた。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……今、すごく元気な音が鳴りましたね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……もう、ごまかしても斧投げの時みたいにバレるよね。夜風じゃありません。腹の虫です",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "正直でよろしい、です。窓も閉まってますし"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……帰りに、あったかい味噌ラーメン、付き合って。味玉つきで",
+          "face": "smile",
+          "inner": "儚いごっこは、胃袋の前では休業"
         },
         {
           "speaker": "hajime",
@@ -1257,12 +1353,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "炭もずっと火を当て続けりゃいいってもんじゃない。しばらく置く時間もいる"
+          "text": "ボウルも、炭を載せっぱなしじゃ焦げる。たまに下ろして休ませる時間もいる"
         },
         {
           "speaker": "hiyori",
           "face": "smile",
-          "text": "……ふたりとも、煙に例えるの、ずるいな",
+          "text": "……ふたりとも、休めって言うの、ずるいな",
           "inner": "こういう時間があるから、また明日もちゃんとやれる"
         },
         {
@@ -1299,7 +1395,14 @@
         },
         {
           "speaker": "hajime",
-          "text": "前に話してた趣味、これだったんですね"
+          "text": "スミさんから聞きました。斧投げ、好きなんですね"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_axe_bar_sighting_done",
+          "next_true": "axe_seen",
+          "next_false": ""
         },
         {
           "speaker": "hiyori",
@@ -1308,7 +1411,7 @@
         },
         {
           "speaker": "hiyori",
-          "text": "私の手首だと、折れちゃいそうなんだけど……",
+          "text": "私の手首だと、持ち上げるだけでも震えちゃうんだけど……",
           "face": "axe_normal",
           "inner": "片手で余裕。なんなら回転数まで数えられる"
         },
@@ -1340,7 +1443,15 @@
           "speaker": "",
           "text": "ひよりが隣で見守ってくれる。まずは三投。狙う位置と投げる力を、自分のタイミングで決めよう。"
         }
-      ]
+      ],
+      "branches": {
+        "axe_seen": [
+          {
+            "speaker": "hajime",
+            "text": "（……あの夜、ど真ん中に刺してた人だ）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "hiyori_axe_reveal_close",
@@ -1631,7 +1742,22 @@
         },
         {
           "speaker": "",
-          "text": "箱の中身を、ひよりがそっと見せてくれた。"
+          "text": "箱の中は、素焼きのハガル。外側に、小さな斧と葉が彫られている。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……儚い私に似合う、静かな器を選んだの",
+          "face": "smile",
+          "inner": "斧の彫りを見た瞬間に即決した。儚さは後付け"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "それと、前に言った約束。はじめくんの一台、いつか吸わせてね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。その時までに、ちゃんと作れるようにしておきます"
         },
         {
           "speaker": "",

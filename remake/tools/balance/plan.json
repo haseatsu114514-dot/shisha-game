@@ -1,0 +1,27 @@
+{
+  "version": "ch1-normal-v1",
+  "source": "SPEC 8.2; operation labels from ngplus-measurement.js; normal errors replace the recovered U5 uniform ranges",
+  "operations": {
+    "poor": {
+      "coalBias": 0,
+      "coalSigma": 1.653,
+      "temperatureSigma": 0.228,
+      "nearMissMean": 3,
+      "nearMissSigma": 2.2
+    },
+    "mid": {
+      "coalBias": 0,
+      "coalSigma": 0.43575,
+      "temperatureSigma": 0.06474,
+      "nearMissMean": 5,
+      "nearMissSigma": 1.5
+    },
+    "perfect": {
+      "coalBias": 0,
+      "coalSigma": 0.035,
+      "temperatureSigma": 0.004,
+      "nearMissMean": 9,
+      "nearMissSigma": 1
+    }
+  }
+}
