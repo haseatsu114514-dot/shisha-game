@@ -215,6 +215,12 @@ test("club copy fits dialogue limits and the catalog explicitly marks interest",
   assert(club.branches.founded.some(l => l.speaker === "sai" && l.text.includes("部長")), "気づけば部長");
   assert(club.branches.founded.some(l => l.text.includes("部員集め")), "人集めまで任される");
   assert(club.branches.invite[0].text.includes("部長"));
+  // 年上のひより・アダムには、はじめは敬語で誘う（#1738）。
+  for (const id of ["hiyori", "adam"]) {
+    const invite = club.branches["invite_" + id];
+    assert(invite?.[0]?.speaker === "hajime" && invite[0].text.includes("部長") && invite[0].text.endsWith("どうですか？"), id + "には敬語で誘う");
+    lines.push(invite[0].text);
+  }
   for (const p of catalog.participants) {
     assert.equal(typeof p.interested, "boolean"); assert(Number.isInteger(p.maxAffinity));
     if (p.interested) { assert(club.branches[p.id].length >= 2); assert(club.branches[p.id].every(l => l.speaker === p.id)); lines.push(...club.branches[p.id].map(l => l.text)); }
