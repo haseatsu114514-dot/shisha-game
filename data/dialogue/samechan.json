@@ -84,7 +84,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "サメのフードを被った女の子が、入口の箱と通り道を見比べている。"
+          "text": "サメのフードを被った女性が、入口の箱と通り道を見比べている。"
         },
         {
           "speaker": "",
@@ -400,7 +400,23 @@
           {
             "speaker": "samechan",
             "face": "smile",
-            "text": "うむ！ コロちゃんも、待っておる。気に入ったら、また来るのじゃぞ"
+            "text": "うむ！ その前に、こっちも紹介させておくれ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "彼女が右手のサメのパペットを顔の前まで持ち上げ、低い声に変えた。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "余はコロンブレ。サメの王である",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "コロちゃんじゃ。この子も、お主を待っておったのじゃぞ。気に入ったら、また来るのじゃ"
           },
           {
             "speaker": "",
@@ -428,7 +444,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "店先のコロちゃんの指定席が、少し低い位置に変わっていた。"
+          "text": "店先に、コロちゃんの指定席が低く据えてあった。"
         },
         {
           "speaker": "samechan",
@@ -443,7 +459,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "よかろう。はじめの来訪を歓迎する",
+          "text": "よかろう。勇者はじめの来訪を歓迎する",
           "voice": "korochan"
         },
         {
@@ -455,6 +471,16 @@
           "speaker": "samechan",
           "face": "normal",
           "text": "今日はスプリングウォーターにしたのじゃ。わしの好きな葉なのじゃぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はトングで炭をつまみ、ボウルの縁へそっと寄せた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "スプリングウォーターは少し熱に弱い。炭は縁へ寄せて、香りを焦がさぬのじゃ"
         },
         {
           "speaker": "hajime",
@@ -506,12 +532,17 @@
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "スピルバーグのサメは、出ていない時もそこにおると思わせるじゃろう。あの……"
+          "text": "スピルバーグのサメは、出ていない時もそこにおると思わせるじゃろう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "低い二つの音が鳴るだけで、まだ見えんサメが泳ぎ出すのじゃ！ あの……"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "彼女は店先で話し込みかけて、扉へ目をやった。"
+          "text": "彼女は指で低い音の拍を刻みながら話し込みかけて、扉へ目をやった。"
         },
         {
           "speaker": "samechan",
@@ -830,7 +861,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "うむ。お主の席を、空けておくのじゃ"
+          "text": "うむ。次も、あの奥の席でな"
         }
       ],
       "branches": {
@@ -848,7 +879,7 @@
           {
             "speaker": "samechan",
             "face": "ventriloquism",
-            "text": "側近よ、今の返答を聞き逃すでない",
+            "text": "側近よ、今の返答を聞き逃すな",
             "voice": "korochan"
           },
           {
@@ -864,17 +895,12 @@
           {
             "speaker": "samechan",
             "face": "normal",
-            "text": "わしも、用事を探しておった。お主を誘う理由じゃ"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "理由がなくても、連絡してください"
+            "text": "店の休みは、まだ店のことで埋まってしまうのじゃ"
           },
           {
             "speaker": "samechan",
             "face": "smile",
-            "text": "……なら、今度の休みに。まだ店のことでいっぱいじゃが、その日だけは空けておくのじゃ"
+            "text": "……なら、閉店後に一台だけ。灯りを落として、店と関係ない映画の話をするのじゃ"
           }
         ],
         "friend": [
@@ -896,6 +922,143 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "samechan_shop_unwell",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "setting": "2回目以降の来店で、体力が少ない（STAMINA_LOW 未満）日に一度だけ。ほかの来店イベントがない日にだけ差し込む。",
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉を開けたところで、サメちゃんの手が止まった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者よ、今日は顔が青いぞ。海の底から上がってきたのであるか",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大丈夫です。ちょっと寝不足なだけで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんが、右手のコロちゃんを膝に伏せた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……今のは、わしの声で言う。顔色の悪い客を、立たせたまま帰すわけにはいかん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は奥の低いソファを指して、水のグラスを置いた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "今日は軽い葉にする。吸う時間より、座っておる時間を長くするのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……怒ってます？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "怒っておる。無理を、店の入口まで連れてきたことにじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして、膝の上のコロちゃんがもぞりと起き上がった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近の説教は終わりである。勇者よ、今日は余の隣で休め",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……うむ。帰ったら、ちゃんと寝るのじゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_shop_cinema_impression",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "setting": "路地裏シネマを一度でも観た後の次の来店で一度だけ。最初の上映は必ずサメ映画（cinema_first_screening）。",
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席に着くと、サメちゃんがコロちゃんごと身を乗り出してきた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "はじめ、路地裏シネマには行ったかの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "観ました。サメが港の上を飛ぶやつです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "おお、あれか！ どうじゃった？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "吊り糸まで見えてたのに、最後は肘掛けを握って応援してました"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "そうじゃろう！ 糸が見えても本気で応援させる映画は、作り物でも本物なのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余の眷属が、ついに空を制したのである",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん、あれは吊られておっただけじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次は、サメちゃんの好きな場面も教えてください"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。感想をもろうたからの。今度は、わしが観た回の話をするのじゃ"
+        }
+      ]
     },
     {
       "dialogue_id": "samechan_bond_finale",
@@ -1037,7 +1200,7 @@
           {
             "speaker": "samechan",
             "face": "normal",
-            "text": "手伝いの礼でも、店の相談でもなくてじゃ"
+            "text": "閉店の札を下げたあとも、お主には帰ってほしくないのじゃ"
           },
           {
             "speaker": "samechan",
@@ -1185,7 +1348,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "波多野なぎさじゃ、……一度しか言わんぞ"
+          "text": "波多野なぎさじゃ。……一度しか言わんぞ"
         },
         {
           "type": "set_flag",
@@ -1256,13 +1419,12 @@
       "sender": "naru",
       "trigger_condition": "flag",
       "trigger_flag": "_samechan_first_encounter",
-      "exclude_flag": "_samechan_nickname_known",
       "priority": 3,
       "type": "chat",
       "messages": [
         {
           "sender": "naru",
-          "text": "路地のSHISHARK、見かけた？ サメのフード被って右手にパペット着けてる店主、俺はサメちゃんって呼んでる。"
+          "text": "路地のSHISHARKの店主に会ったんだって？ 俺はサメちゃんって呼んでる。"
         },
         {
           "sender": "naru",
@@ -1284,7 +1446,8 @@
           "response": "王様にも気に入られたか。じゃあ、もう顔なじみだな。",
           "affinity": 0
         }
-      ]
+      ],
+      "chapter": 1
     },
     {
       "id": "lime_samechan_preparing_thanks",
@@ -1310,7 +1473,7 @@
         },
         {
           "text": "準備、無理しすぎないでくださいね",
-          "response": "ありがとうなのじゃ。……箱を持つ時は、はじめの言葉を思い出しておる。",
+          "response": "ありがとうなのじゃ。……うむ。次からは台車を借りるのじゃ。",
           "affinity": 1
         }
       ],

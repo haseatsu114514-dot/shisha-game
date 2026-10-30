@@ -108,7 +108,9 @@
         "ch3_mashiro_play_1",
         "ch3_mashiro_play_2",
         "ch3_mashiro_play_3",
-        "ch3_mashiro_practice"
+        "ch3_mashiro_practice",
+        "ch3_kuze_mashiro_tea_tin",
+        "ch3_kuze_mashiro_soon_back"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -120,6 +122,7 @@
         "ch3_abyss_hotel",
         "ch3_mashiro_recovery",
         "ch3_naru_reconcile",
+        "ch3_enmaku_cleanup",
         "ch3_home_customer",
         "ch3_tsumugi_result",
         "ch3_ageha_reunion"
@@ -224,6 +227,16 @@
     "ch3_mashiro_play_2": {
       "seen": [
         "ch3_mashiro_play_1"
+      ]
+    },
+    "ch3_kuze_mashiro_tea_tin": {
+      "seen": [
+        "ch3_kuze_first"
+      ]
+    },
+    "ch3_kuze_mashiro_soon_back": {
+      "seen": [
+        "ch3_kuze_mukai_visit"
       ]
     },
     "ch3_mashiro_play_3": {

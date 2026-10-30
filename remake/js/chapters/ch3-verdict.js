@@ -41,7 +41,7 @@ function adjustmentTable(care) {
     table.set("久世の鋭い苦みがまだ鼻に残る。はじめの煙が薄く思え、炭に手が伸びた。", [{ text: "久世の鋭い苦みがまだ鼻に残る。はじめの煙が薄く思え、炭に手が伸びかけた。" }]);
     table.set("その手を見た久世の震えが止まる。", [{ text: "その手の動きを見た久世の震えが止まる。" }]);
     table.set("あはっ、動いた！　僕の一口を基準にしちゃった？", [{ text: "あはっ、手が出た！　僕の一口を基準にしかけたでしょ？" }]);
-    table.set("煙幕で話した甘さ、まだいる？　答えを出すの、早いよ！", [{ text: "煙幕で話した甘さ、まだいる？　答えを出すの、まだ早いよ！" }]);
+    table.set("煙幕で言ったよね、最後の甘さは長いって。今なら直せるよ？", [{ text: "煙幕で言ったよね、最後の甘さは長いって。直すのは、まだ早いよ？" }]);
   }
   table.set("このくらいなら、もう少し吸ってたい", [{ text: customerLine(care) }]);
   return table;
@@ -56,7 +56,7 @@ export function resultLines(lines, craft, strategyKey) {
   const history = (craft?.careHistory || []).map(careOf).filter(Boolean);
   const table = new Map();
   if (history.some(care => care.moved)) {
-    table.set("君の炭は動かなかった。仕掛けたのは僕。ごめん", [{ text: "君は炭を替えた。僕の煙に釣られたんじゃなく、自分の目で決めて。仕掛けたのは僕。ごめん" }]);
+    table.set("君の炭は動かなかった。助言は、本当だよ", [{ text: "君は炭を替えた。僕の煙に釣られたんじゃなく、自分の目で決めて。助言は、本当だよ" }]);
     table.set("客の一口を待てました。どっちも急がず、俺の一台を選べた", [{ text: "客の様子を見て、必要な分だけ替えました。動かすのも待つのも、俺が選べた" }]);
   }
   const strategy = STRATEGY_LINES[strategyKey];

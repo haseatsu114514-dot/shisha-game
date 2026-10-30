@@ -38,7 +38,7 @@ const deps={
  '../core/ui.js':{withScenePreparation: task => task, imageReady:async()=>false,toast:()=>{},setBg:async()=>{}},
  '../core/travel-budget.js':{spendableMoney:s=>s.money||0},
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
- '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
+ '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>0,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{},STAMINA_LOW:25},
  '../vn/engine.js':{play:async id=>{played.push(id);return {id,visited:[]};},isPlaying:()=>false},
  './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
  './trpg.js':{maybeRecruitTrpgMember:async()=>false},
@@ -73,6 +73,14 @@ const contacts=state.contacts;state.contacts=[];delete state.flags._lime_contact
 await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_first');assert.equal(state.story.samechan,1);
 state.day++;
 await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_repeat_0');
+// 路地裏シネマを観た後の来店で、感想を一度だけ聞く（#1718）。
+state.day++;state.spotVisits={...(state.spotVisits||{}),rojiura_cinema:1};assert.equal(k.samechanVisitDialogue(),'samechan_shop_cinema_impression');
+await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_cinema_impression');assert.equal(state.flags._samechan_cinema_impression_done,true);
+assert.notEqual(k.samechanVisitDialogue(),'samechan_shop_cinema_impression','感想は一度だけ');
+// 体力が少ない日の来店で一度だけ、本人の声で叱る（#1718）。
+const staminaBefore=state.stamina;state.day++;state.stamina=10;assert.equal(k.samechanVisitDialogue(),'samechan_shop_unwell');
+await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_unwell');assert.equal(state.flags._samechan_unwell_done,true);
+state.stamina=10;assert.notEqual(k.samechanVisitDialogue(),'samechan_shop_unwell','不調の場面は一度だけ');state.stamina=staminaBefore;
 state.flags._samechan_name_known=true;assert.equal(data.displayName('samechan',state),'波多野なぎさ');
 // 表示名は台詞の正本を参照し、名乗る前に本名を漏らさない。
 const encounter=story.dialogues.find(d=>d.dialogue_id==='samechan_first_encounter');

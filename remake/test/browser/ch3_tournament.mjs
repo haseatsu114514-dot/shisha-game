@@ -193,7 +193,7 @@ await suite("ch3-tournament", async check => {
     assert.deepEqual(state.lovers, before.lovers);
     await page.locator(t("aftermath")).click();
     const aftermath = scene => `[data-test="ch3-aftermath-scene"][data-scene="${scene}"]`;
-    const scenes = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile",
+    const scenes = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup",
       "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"];
     for (const [index, scene] of scenes.entries()) {
       await page.locator(aftermath(scene)).waitFor();
