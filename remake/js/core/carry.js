@@ -481,6 +481,7 @@ export const FLAG_FAMILY_RULES = [
   ["_*_story_waiting_pts", "person"],
   ["_ch2_*", "progression"],
   ["_ch3_read_*", "progression"],
+  ["_eve_reflect_*", "progression"], // 大会前夜の内省（心得の盤 SPEC 2.8）。章ごとに1回
   ["_ch3_trial_*", "progression"],
   ["_cafe_recall_*", "progression"],
   ["_city_guest_seen_*", "progression"],

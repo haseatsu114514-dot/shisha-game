@@ -1,0 +1,139 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "reflect_kannon",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "境内は静かだ。手を合わせて、目を閉じる。願い事はしない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここまでに学んだこと、ひとつずつ思い出してみる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思い出したことが、胸の奥で小さな火になっていく。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "reflect_tokyo_shrine",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "路地を抜けた先の、小さな神社。鳥居をくぐると、街の音が遠のいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手を合わせて、目を閉じる。願い事はしない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここまでに学んだこと、ひとつずつ思い出してみる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思い出したことが、胸の奥で小さな火になっていく。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "reflect_dubai_mosque",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見学の時間に、白い回廊の中庭へ入る。水の音だけが響いている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柱の陰に腰をおろし、ここまでの旅を振り返る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここまでに学んだこと、ひとつずつ思い出してみる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思い出したことが、胸の奥で小さな火になっていく。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "reflect_dubai_waterside",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕暮れの水辺。対岸に、昼に見学したモスクの灯りが見える。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手すりにもたれて、ここまでの旅を振り返る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここまでに学んだこと、ひとつずつ思い出してみる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思い出したことが、胸の奥で小さな火になっていく。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "reflect_inn_window",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿の窓辺。遠くの灯りを眺めながら、ここまでの日々を振り返る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここまでに学んだこと、ひとつずつ思い出してみる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思い出したことが、胸の奥で小さな火になっていく。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "reflect_eve",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（明日は大会か……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（火種がまだ残ってる。勝ち負けより、ここまでの自分を確かめに行こう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは、ひとりで静かな場所へ向かった。"
+        }
+      ]
+    }
+  ]
+}

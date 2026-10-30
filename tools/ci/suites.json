@@ -73,7 +73,10 @@
         "remake/js/core/growth.js",
         "remake/js/daily/levelup.js",
         "remake/js/core/growth-board.js",
+        "remake/js/core/growth-board-data.js",
         "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/reflection.js",
+        "data/dialogue/growth_reflection.json",
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
         "remake/test/browser/growth_levelup.mjs"

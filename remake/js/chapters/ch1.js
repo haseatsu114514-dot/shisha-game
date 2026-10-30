@@ -704,10 +704,10 @@ async function victory(cs) {
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
   delete state.tournament.entryResources;
-  await play("ch1_tournament_after", { bg: STAGE });
-  await play("interval_day1_naru_lime");
-  gainStat("guts", 1);
-  // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
+  // スミさんの祝福LIMEは、閉店後のtonariで祝杯を交わす前に届く。tonariへ戻る背景切替の手前で場面を区切る。
+  const after = DB.dialogues.ch1_tournament_after;
+  const tonariAt = after.lines.findIndex(line => line.type === "bg" && line.bg?.includes("bg_tonari_inside"));
+  await play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE });
   await openPhone([
     {
       id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
@@ -717,6 +717,12 @@ async function victory(cs) {
         "今日は喜べ。帰ったら、一緒に一服しよう",
       ], close_label: "……はい。ありがとうございます、スミさん",
     },
+  ], { time: "PM 6:52", title: "表彰式のあと" });
+  await play({ ...after, lines: after.lines.slice(tonariAt) }); // 先頭の bg 行で tonari に切り替わる
+  await play("interval_day1_naru_lime");
+  gainStat("guts", 1);
+  // 優勝の夜。記録を続ける博士の伏線へ。
+  await openPhone([
     {
       id: "_sys_unknown_recorded", sender: "???", messages: [
         "本日のあなたの試合データは、すべて記録させていただきました。",
