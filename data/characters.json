@@ -21,7 +21,7 @@
       "young japanese male cafe worker, plain looking but empathetic eyes, dark hair, wearing a casual apron with a shisha mouthpiece hanging from his neck, warm and welcoming atmosphere"
     ],
     "intro_cutin": {
-      "title": "この物語の主人公",
+      "title": "tonariの見習い",
       "line": "いつか自分の店を持ちたい",
       "face": "normal",
       "color": "#eee0bd"
@@ -86,7 +86,7 @@
     ],
     "spriteScale": 1.02,
     "intro_cutin": {
-      "title": "甘い煙の好敵手",
+      "title": "甘党の熱血店主",
       "line": "うまくなりたいなら全部見てけ",
       "face": "smile",
       "color": "#f0d8a0"
@@ -488,7 +488,7 @@
     },
     "intro_cutin_unknown": {
       "display_name": "？？？",
-      "title": "甘い風のギャル",
+      "title": "通りすがりのギャル",
       "line": "大丈夫？ ケガしてない？",
       "face": "smile",
       "color": "#ff8fc8",
@@ -1032,7 +1032,7 @@
     ],
     "spriteScale": 1.035,
     "intro_cutin": {
-      "title": "斧投げBarの姉御",
+      "title": "斧投げBarの店主",
       "line": "斧に仕事をさせな",
       "face": "normal",
       "color": "#bd6547"
