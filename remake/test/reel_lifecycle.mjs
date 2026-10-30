@@ -25,7 +25,7 @@ async function waitForSpin(task, label) {
   }
 }
 
-async function checkInstallation(label, run, touch = false) {
+async function checkInstallation(label, run, touch = false, preview = false) {
   const context = await browser.newContext({
     viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 }, hasTouch: touch,
   });
@@ -35,38 +35,59 @@ async function checkInstallation(label, run, touch = false) {
     await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
     await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
     await page.locator("#boot").waitFor({ state: "detached" });
-    await page.evaluate(async resume => {
+    await page.evaluate(async ({ resume, preview }) => {
       const core = await import("./js/core/state.js"), reel = await import("./js/daily/reel.js");
+      const growth = await import("./js/core/growth.js");
       resume ? core.load() : core.newGame();
+      growth.setGrowthPreview(preview);
       core.state.phase = "daily";
       if (!resume) core.state.reel.seed = 1;
       core.config.bgmVolume = core.config.seVolume = 0;
       const ui = await import("./js/core/ui.js"), data = await import("./js/core/data.js");
       ui.showScreen("reel-install-test", document.createElement("div"));
       await ui.setBg(data.bgUrl("bg_c_station"), { fast: true });
-      window.installProbe = { core, reel };
+      window.installProbe = { core, reel, growth };
       window.startInstall = () => { window.installTask = reel.installReel(); };
       window.installSnapshot = () => ({
-        count: core.state.reel.count, stats: { ...core.state.stats },
+        count: core.state.reel.count, stats: { ...core.state.stats }, statXp: { ...core.state.statXp },
+        xp: core.state.growth?.xp || 0, hidane: core.state.growth?.hidane || null,
         pending: core.state.reel.pending.length, flags: { ...core.state.flags },
         day: core.state.day, slot: core.state.slot, stamina: core.state.stamina, money: core.state.money,
       });
-    }, resume);
+    }, { resume, preview });
   };
   const tap = async () => {
     const intro = page.locator('[data-test="reel-intro"]');
     touch ? await intro.tap() : await intro.click();
   };
+  const assertGuide = async (growthMode) => {
+    const guide = page.locator('[data-test="reel-guide-card"]');
+    const text = await guide.innerText();
+    if (growthMode) {
+      assert.match(text, /チェリー・ベル・ボーナスで経験値/);
+      assert.match(text, /ハズレ・リプレイはなし/);
+      assert.doesNotMatch(text, /能力は少し伸びる/);
+    } else assert.match(text, /能力は少し伸びる。天井で必ず当たる/);
+    const widths = await guide.locator('.rn-tile-body').evaluateAll(nodes => nodes.map(n => [n.scrollWidth, n.clientWidth]));
+    for (const [scroll, client] of widths) assert(scroll <= client + 1, "遊び方が横にはみ出した");
+  };
   const readIntro = async () => {
-    for (let i = 0; i < 5; i++) await tap();
+    for (let i = 0; i < 4; i++) await tap();
+    const text = await page.locator('[data-test="reel-intro"] .ri-text').innerText();
+    if (preview) {
+      assert.match(text, /図柄が揃うと経験値が入るよ/);
+      assert.doesNotMatch(text, /外れても|回したぶんだけ/);
+    } else assert.match(text, /外れても大丈夫。回したぶんだけ/);
+    await tap();
     await page.locator('[data-test="reel-guide-card"]').waitFor();
+    await assertGuide(preview);
     assert.equal(await page.evaluate(() => installProbe.core.state.reel.count), 0, "説明中に先に抽選した");
     await tap();
   };
   const finish = () => waitForSpin(page.evaluate(() => window.installTask), label);
   try {
     await boot();
-    await run({ page, boot, tap, readIntro, finish });
+    await run({ page, boot, tap, readIntro, finish, assertGuide });
     assert.deepEqual(errors, [], `${label}: browser errors`);
     console.log(`[reel install] PASS: ${label}`);
   } finally { await context.close(); }
@@ -199,15 +220,16 @@ try {
   assert.deepEqual(errors, [], "bonus failure spin: browser errors");
   console.log("[reel lifecycle] bonus presentation failure does not wedge the reel: PASS");
 
-  for (const touch of [false, true]) await checkInstallation(`first-spin-${touch ? "touch" : "pc"}`, async ({ page, readIntro, finish }) => {
+  for (const touch of [false, true]) for (const preview of [false, true]) await checkInstallation(`first-spin-${preview ? "exp" : "legacy"}-${touch ? "touch" : "pc"}`, async ({ page, readIntro, finish, assertGuide }) => {
     const expected = await page.evaluate(() => {
-      const { core, reel } = installProbe;
+      const { core, reel, growth } = installProbe;
       const before = installSnapshot();
       const copy = structuredClone(core.state.reel);
       const results = reel.core.spinSeries(copy, { chapterFirst: true, reset: true });
       startInstall();
       const sameTask = installTask === reel.installReel();
-      return { count: copy.count, exp: results.reduce((n, r) => n + r.exp, 0), before, sameTask };
+      return { count: copy.count, exp: results.reduce((n, r) => n + r.exp, 0),
+        xp: results.reduce((n, r) => n + (growth.SLOT_EXP[r.overlap || r.role] || 0), 0), before, sameTask };
     });
     assert(expected.sameTask, "二重導入が別の説明を作った");
     await readIntro();
@@ -218,14 +240,76 @@ try {
     await finish();
     const after = await page.evaluate(() => installSnapshot());
     assert.equal(after.count, expected.count, "通常抽選と回転数が違う");
-    assert.equal(Object.values(after.stats).reduce((a, b) => a + b, 0) - Object.values(expected.before.stats).reduce((a, b) => a + b, 0), expected.exp);
+    assert.equal(Object.values(after.stats).reduce((a, b) => a + b, 0) - Object.values(expected.before.stats).reduce((a, b) => a + b, 0), preview ? 0 : expected.exp);
+    assert.equal(after.xp - expected.before.xp, preview ? expected.xp : 0);
+    if (preview) assert.deepEqual(after.statXp, expected.before.statXp);
     for (const key of ["day", "slot", "stamina", "money"]) assert.equal(after[key], expected.before[key], key);
     assert.equal(after.pending, 0);
     assert(!after.flags._pakki_first_spin_pending);
     await page.evaluate(() => installProbe.reel.installReel());
     assert.deepEqual(await page.evaluate(() => installSnapshot()), after, "再訪で体験を繰り返した");
     assert.equal(await page.locator('.reel-night, .reel-intro').count(), 0);
-  }, touch);
+    // 同じノートをモード切替の前後で開き、開いた時点の遊び方を読む。
+    for (const mode of [preview, !preview]) {
+      await page.evaluate(mode => { installProbe.growth.setGrowthPreview(mode); installProbe.reel.openNote(); }, mode);
+      const note = page.locator('[data-test="reel-note"]');
+      await (touch ? note.tap() : note.click());
+      await assertGuide(mode);
+      await (touch ? note.tap() : note.click());
+      await (touch ? note.tap() : note.click());
+    }
+    assert.deepEqual(await page.evaluate(() => installSnapshot()), after, "ノート閲覧で報酬を増やさない");
+  }, touch, preview);
+
+  for (const preview of [false, true]) for (const capped of preview ? [false, true] : [false]) {
+    await checkInstallation(`saved-${preview ? "exp" : "legacy"}${capped ? "-capped" : ""}-switch-mode`, async ({ page, boot }) => {
+      const before = await page.evaluate(capped => {
+        const { core, reel, growth } = installProbe;
+        Object.assign(core.state.reel, { installed: true, introDone: true, settingGuideDone: true,
+          lock: { count: 0, role: "bell", overlap: null, cue: "green" } });
+        core.state.flags.pakki_app_installed = true;
+        if (capped) growth.gainExp(growth.totalExpFor(growth.MAX_LEVEL), { silent: true });
+        reel.onAction({ spent: 10 });
+        core.save();
+        return installSnapshot();
+      }, capped);
+      await boot(true);
+      assert.deepEqual(await page.evaluate(() => installSnapshot()), before, "LOADで確定済み報酬が変わった");
+      await page.evaluate(preview => {
+        const { reel, growth } = installProbe;
+        growth.setGrowthPreview(!preview);
+        window.rewardCards = [];
+        new MutationObserver(records => {
+          for (const record of records) for (const node of record.addedNodes) {
+            if (node.matches?.('.gain-card.slot-bonus')) rewardCards.push({ cls: node.className, text: node.textContent });
+          }
+        }).observe(document.getElementById('banners'), { childList: true });
+        window.savedSpin = reel.presentNow();
+      }, preview);
+      await page.waitForFunction(capped => {
+        const text = document.querySelector('.rw-bubble')?.textContent || "";
+        return capped ? text.includes('経験値はもう上限だよ') : /経験値が|【.+】が/.test(text);
+      }, capped);
+      const bubble = await page.locator('.rw-bubble').innerText();
+      if (preview) {
+        assert.match(bubble, /経験値/);
+        assert.doesNotMatch(bubble, /上がった|【/);
+      } else assert.match(bubble, /【.+】が.+上がった/);
+      await waitForSpin(page.evaluate(() => window.savedSpin), "saved result");
+      await page.evaluate(() => installProbe.reel.presentNow());
+      const after = await page.evaluate(() => installSnapshot());
+      for (const key of ['count', 'stats', 'statXp', 'xp', 'hidane', 'day', 'slot', 'money', 'stamina']) {
+        assert.deepEqual(after[key], before[key], `再表示で${key}を二重付与しない`);
+      }
+      assert.equal(after.pending, 0);
+      const cards = await page.evaluate(() => window.rewardCards);
+      assert.equal(cards.length, capped ? 0 : 1, "結果カードも一度だけ、上限で0なら通知しない");
+      if (!capped) {
+        assert.match(cards[0].cls, preview ? /\bexp\b/ : /\bstat\b/);
+        if (preview) assert.match(cards[0].text, /EXP \+15/);
+      }
+    }, false, preview);
+  }
 
   await checkInstallation("first-spin-keeps-normal-replay-chain", async ({ page, readIntro, finish }) => {
     const expected = await page.evaluate(() => {
