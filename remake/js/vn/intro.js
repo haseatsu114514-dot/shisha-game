@@ -6,7 +6,7 @@
 // 既読は flags._intro_<id>。明示的な未知版は _intro_<id>_<variant> へ分ける。
 import { el, sleep } from "../core/util.js";
 import { DB, displayName, portraitInfo, img } from "../core/data.js";
-import { state } from "../core/state.js";
+import { state, markMet } from "../core/state.js";
 import { layers, imageReady } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 
@@ -58,6 +58,7 @@ function framePortrait(img, p) {
 export async function playIntro(id, { onAppear = null, override = {}, variant = "" } = {}) {
   const intro = { ...introOf(id, variant), ...override };
   if (!introOf(id, variant)) return;
+  markMet(id);
   markIntroSeen(id, variant);
   const main = intro.display_name || introName(id).main;
   const p = portraitInfo(id, intro.face || "normal");

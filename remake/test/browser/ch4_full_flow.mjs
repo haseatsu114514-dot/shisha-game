@@ -102,6 +102,8 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.flags._ch4.firstDay, 1);
     assert.equal(state.flags._ch4.day, 1, "Visiting places must not advance the day");
     assert.equal(state.day, startDay);
+    assert.equal(state.met.da_silva, true);
+    assert.equal(state.met.sheikh, undefined, "変装中はシェイクの正体を明かさない");
 
     // リロード跨ぎ: 自由行動の途中に実セーブ→ロード。読了済みの場面は再演されず、日付も保たれる。
     await page.locator(dt("ch4-menu")).click();
@@ -155,6 +157,8 @@ await suite("ch4-full-flow", async check => {
     state = await get(page);
     assert.equal(state.flags._ch4.read.ch4_wang_reception_forced_in, true);
     assert.equal(state.flags._ch4.read.ch4_wang_reception, true);
+    assert.equal(state.met.master_hookah, true);
+    assert.equal(state.met.sheikh, undefined);
     await page.locator(dt("ch4-continue")).click();
     await page.locator(dt("ch4-tournament")).waitFor();
     state = await get(page);
@@ -182,6 +186,7 @@ await suite("ch4-full-flow", async check => {
     await page.locator(scene("ch4_result")).waitFor();
     state = await get(page);
     assert.equal(state.flags._ch4_sheikh_revealed, true);
+    assert.equal(state.met.sheikh, true);
     assert.equal(state.flags._ch4.read.ch4_tournament_start, true);
     assert.equal(state.flags._ch4.read.ch4_final, true);
     assert.equal(state.flags._ch4.part, "resolution");
