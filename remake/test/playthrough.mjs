@@ -4,7 +4,7 @@
 //   3) 「もう一度挑戦する」→「上手」で南雲の最後の一票による優勝 → 第1章クリアになること
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
-import { purchasePlannedFlavor } from "./playthrough-shopping.mjs";
+import { enterPlannedShop, purchasePlannedFlavor } from "./playthrough-shopping.mjs";
 import { PLAN, nextPlanAction } from "./playthrough-plan.mjs";
 import { createRequire } from "module";
 import { recordLoad } from "../tools/load-recorder.mjs";
@@ -24,7 +24,9 @@ const log = (...a) => console.log("[remake]", ...a);
 // （配達の2枠は計画を消費しない。DAY3 から下の計画へ進む）
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
-const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+// This full-chapter run checks progression, scoring and CG recording. Normal-speed
+// scene endings and navigation are covered by motion_endings/navigation_transitions.
+const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, reducedMotion: "reduce" });
 await installLoadingComicReader(page);
 const loadReport = process.env.LOAD_REPORT ? await recordLoad(page, BASE) : null;
 await page.addInitScript(() => {
@@ -235,6 +237,11 @@ for (;;) {
 
   if (snap.screen === "end") {
     if (/GAME OVER/.test(snap.endTitle)) {
+      // CONTINUE has its own caption/reaction controls, outside VN turbo.
+      // Read each cue, then complete the chosen reaction through the real UI.
+      if (await click('[data-test="continue-next"]:not([disabled])')) continue;
+      if (await click('[data-test="continue-proceed"]:not([hidden]):not([disabled])')) continue;
+      if (await page.$('.gameover[data-phase="reaction"]')) continue;
       log(`GAME OVER（1回目の挑戦・${snap.lastRank}位）→ 上手に切り替えて再挑戦`);
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/gameover.png` });
       if (snap.lastRank === 1) throw new Error("bad play should not win");
@@ -350,8 +357,8 @@ for (;;) {
       pendingShopBuy = kind === "shop" ? arg : "__upstairs";
       log("shopping-plan", JSON.stringify({ planIdx, pendingShopBuy, state: await shoppingSnapshot() }));
       await shoppingRequired('[data-test="pin-shop"]');
-      await shoppingRequired('[data-test="map-go"]');
-      await page.waitForSelector('.shop-entry:not(.done)', { timeout: 5000 });
+      await enterPlannedShop({ read: shoppingSnapshot, click,
+        ready: () => page.waitForSelector('.shop-entry:not(.done)', { timeout: 5000 }) });
     } else {
       const ok = await chooseDestination(kind);
       if (!ok) { log(`  (DAY ${snap.day}: ${kind} に行けないので休む)`); await click('[data-test="pin-rest"]'); await click('[data-test="map-go"]'); }
