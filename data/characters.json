@@ -888,6 +888,12 @@
     "description": "夢・回想に登場する老人NPC"
   },
   {
+    "id": "traveler",
+    "name": "旅装の男",
+    "role": "mob",
+    "description": "第4章ドバイの路地裏で出会う旅人。正体は52歳のシェイク。名乗るまでの表示名で、老人扱いはしない。"
+  },
+  {
     "id": "shop_clerk",
     "name": "店員",
     "role": "mob",
