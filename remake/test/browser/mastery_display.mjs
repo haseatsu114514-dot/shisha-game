@@ -36,7 +36,7 @@ await suite('mastery-display', async check => {
    (await import('./js/core/stats.js')).gainStat('charm',1);
   });
   await page.locator('.gain-card.stat').waitFor();
-  assert.match(await page.locator('.gain-card.stat').innerText(),/Lv.2/);
+  assert.match(await page.locator('.gain-card.stat').innerText(),/3段に上がった/); // 10段化（#1685 T2）: 内部値21は3段
   assert.equal(await page.locator('.gain-card.stat .gc-points').count(),0);
  },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true}:{});
  for (const touch of [false,true]) await check(`stars-without-experience-${touch?'touch':'pc'}`, async page => {
