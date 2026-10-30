@@ -29,7 +29,7 @@ for (const [a, b] of [["body", "sense"], ["sense", "wisdom"], ["body", "wisdom"]
   const A = keys(a), B = keys(b), diff = [...A].filter((k) => !B.has(k)).length + [...B].filter((k) => !A.has(k)).length;
   assert(diff >= 12, `${a} と ${b} の形が違う（違うマス ${diff}）`);
 }
-const expect = { body: [6, 6], sense: [6, 7], wisdom: [6, 7] }; // スキル各6・授業20（カルダモンは感覚盤へ。SBD60）
+const expect = { body: [8, 6], sense: [8, 7], wisdom: [8, 7] }; // スキル各8（中ほどの面白いスキル2つを足した。SBD66） // スキル各6・授業20（カルダモンは感覚盤へ。SBD60）
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
   assert.equal(nodes.filter((n) => n.kind === "stat").length, SHAPE_SIZE[k][0], `${k}: 能力のマス`);
@@ -84,7 +84,8 @@ for (const l of board.LESSONS) {
   assert(board.pathTo(l.id, others).cost <= board.pathTo(l.id, new Set()).cost, `${l.id}: 先に進んだ道で遠くならない`);
 }
 // 帯と強さ: 火種4のスキルは近く、6と8は関門の先。極みも関門の先。どの関門の先にもスキルがある
-for (const s of board.SKILLS) assert.equal(N[s.id].band, s.cost === 4 ? 1 : 3, `${s.id}（火種${s.cost}）の帯`);
+for (const s of board.SKILLS) assert.equal(N[s.id].band, s.cost === 4 ? 1 : s.cost === 2 ? 2 : 3, `${s.id}（火種${s.cost}）の帯: 4＝近く・2＝中ほど・5と7＝関門の先`);
+for (const k of board.BOARD_KEYS) assert.deepEqual(board.SKILLS.filter((s) => s.board === k).map((s) => s.cost).sort(), [2, 2, 4, 4, 5, 5, 7, 7], `${k}: スキルの火種`);
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
   // 極みは道につながらない。その盤の能力のマスを全部灯すと灯せる（SBD63）
@@ -130,7 +131,7 @@ assert.equal(N["M-W6"].board, "sense", "カルダモンは感覚盤（3つの盤
 assert.deepEqual([N["M-W2"].ring, N["M-W6"].ring], [2, 2], "スミさんの四つ置き・カルダモンは第2章から");
 // 各スキル・授業は、データの章（届けたい章）までに開く
 for (const item of [...board.SKILLS, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
-assert.equal(board.SKILLS.length, 18, "デンスパックを足して18");
+assert.equal(board.SKILLS.length, 24, "中ほどの面白いスキル6つを足して24（SBD66）");
 for (const k of board.BOARD_KEYS) {
   const sk = board.SKILLS.filter((x) => x.board === k);
   assert.equal(sk.reduce((n, x) => n + x.cost, 0), 36, `${k}: スキルの火種は各36`);
