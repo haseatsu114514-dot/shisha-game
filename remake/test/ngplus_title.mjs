@@ -124,6 +124,7 @@ function makeFixture(opts = {}) {
     },
     "../core/audio.js": { playBgm() {}, stopBgm() {}, SE: { select() {} }, applyVolumes() {} },
     "../core/ngplus-difficulty.js": { difficultyForRun },
+    "../core/ui-theme.js": { createUiThemeSelect: () => el("select") },
     "../chapters/ch1.js": { startNewGame: () => { calls.startNewGame++; }, resumeGame() {} },
     "./gallery.js": { openGallery: async () => {} },
     "./saves.js": { loadFlow: async () => null },

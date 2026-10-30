@@ -27,7 +27,15 @@ const known = { DB: db, MAX_MONEY: 999999, TOURNAMENT_DAY: 14, MASTERY_THRESHOLD
 for (const p of real) {
   let source = fs.readFileSync(new URL(p, root), 'utf8');
   if (p === 'vn/engine.js') source += `\n// Test port: drive rendered lines without layout, preserving all production control lines.\nintroThenShow = function(line) { if (!line) return finish(); if (!rendered(line)) next(); };\nexport const samplePort = { skip: () => setSkip(true), cancel: () => finish(true) };`;
-  modules.set(p, new vm.SourceTextModule(source, { context, identifier: p, initializeImportMeta(meta) { meta.url = new URL(p, root).href; } }));
+  modules.set(p, new vm.SourceTextModule(source, { context, identifier: p, initializeImportMeta(meta) { meta.url = new URL(p, root).href; },
+    importModuleDynamically: async specifier => {
+      assert.equal(specifier, '../scenes/title.js');
+      const title = new vm.SyntheticModule(['openConfig'], function() { this.setExport('openConfig', async () => {}); }, { context });
+      await title.link(() => { throw new Error('unexpected title import'); });
+      await title.evaluate();
+      return title;
+    },
+  }));
   for (const m of source.matchAll(/(?:import|export)\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)) {
     const target = path.posix.normalize(path.posix.join(path.posix.dirname(p),m[2]));
     if (real.includes(target)) continue;
