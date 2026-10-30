@@ -509,7 +509,7 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "世界の予選を抜けた、最後の四人だ！"
+          "text": "四つの枠から、世界の舞台へ。最後の四人だ！"
         },
         {
           "speaker": "pakki",
@@ -580,6 +580,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "うん。全員に、勝ちたい"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "審査席は南雲会長、トプハーネのエミル、FESTAの太陽！"
         },
         {
           "speaker": "pakki",
