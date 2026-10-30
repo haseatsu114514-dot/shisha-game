@@ -190,4 +190,42 @@ await suite("growth-levelup", async (check) => {
     await page.waitForFunction(() => window.eve === true);
     assert.equal(await page.evaluate(async () => (await import("./js/daily/reflection.js")).eveReflection("kannon")), false, "同じ章の前夜は一度だけ");
   }, { viewport: { width: 1331, height: 760 } });
+
+  // 章の範囲は章の数を出さず封で見せ、章が進んで初めて開くと「封が解けた」（SBD42）。ご褒美だけの夜は短い帯（SBD39・40）
+  await check("chapter-seal-and-gifts", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => { (await import("./js/core/growth.js")).ensureGrowth().hidane.any = 2; void (await import("./js/core/growth.js")).openGrowthBoard(); });
+    const board = page.locator(t("growth-board"));
+    await board.waitFor();
+    const text = await board.innerText();
+    assert.doesNotMatch(text, /[0-9０-９]章/, "盤に章の数を書かない");
+    assert.ok(await page.locator('[data-status="locked"]').count() > 0);
+    assert.equal(await page.locator(t("board-opened")).count(), 0, "第1章では演出なし");
+    await page.locator(t("board-close")).click();
+    await board.waitFor({ state: "detached" });
+    await page.evaluate(async () => { __remake.state.chapter = 2; void (await import("./js/core/growth.js")).openGrowthBoard(); });
+    await page.locator(t("board-opened")).waitFor();
+    assert.match(await page.locator(t("board-opened")).innerText(), /封が解けた/);
+    assert.ok(await page.locator(".gb-node.just-opened").count() > 0);
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: `${out}/growth-board-unseal.png` });
+    await page.locator(t("board-close")).click();
+    await board.waitFor({ state: "detached" });
+    await page.evaluate(async () => { void (await import("./js/core/growth.js")).openGrowthBoard(); });
+    await board.waitFor();
+    assert.equal(await page.locator(t("board-opened")).count(), 0, "演出は一度だけ");
+    await page.locator(t("board-close")).click();
+    await board.waitFor({ state: "detached" });
+    // くじを引き切った夜（レベルは上がっていない）
+    await page.evaluate(async () => {
+      __remake.state.kuji = { g500: { order: [0], drawn: 1, emptyDay: 3 } };
+      window.night = null;
+      void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.night = r; });
+    });
+    const band = page.locator(t("gift-band"));
+    await band.waitFor();
+    assert.match(await band.innerText(), /くじのラストワン賞[\s\S]*才の火種 ＋1/);
+    await assertFits(page, '[data-test="gift-band"]');
+    await page.waitForFunction(() => window.night?.gifts?.length === 1, null, { timeout: 8000 });
+  }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1` });

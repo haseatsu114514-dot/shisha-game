@@ -31,10 +31,18 @@ function hidaneLine(r) {
   return parts.join("　") || (r.boardFull ? "盤は埋まった" : "");
 }
 
-/** その日の分を精算し、上がっていれば見せる。上がらない夜は何も出さない。 */
+/** ご褒美の1行（「斧投げで Aランク：才の火種 ＋2」「みんとから：才の火種 ＋2」） */
+export function giftLine(gift) {
+  const parts = gift.parts.map(({ kind, n }) => `${colorName(kind)} ＋${n}`).join("　");
+  const from = gift.who ? `${displayName(gift.who, state)}から` : gift.label;
+  return `${from}：${parts}`;
+}
+
+/** その日の分を精算し、上がっていれば見せる。上がらない夜は、ご褒美があればそれだけ短く見せる。 */
 export async function presentNightGrowth() {
   const r = settleGrowth();
-  if (!r || r.to <= r.from) return r;
+  if (!r) return r;
+  if (r.to <= r.from) { if (r.gifts.length) await giftBand(r); return r; }
   if (r.full) await fullLevelUp(r);
   else await shortLevelUp(r);
   return r;
@@ -59,6 +67,7 @@ async function shortLevelUp(r) {
     el("span.lb-lv", { text: `Lv.${r.from} → ${r.to}` }),
     el("span.lb-hidane", { text: hidaneLine(r) }),
     learned ? el("small.lb-learned", { text: `今日学んだこと：${learned}` }) : null,
+    ...r.gifts.map((x) => el("small.lb-gift", { text: giftLine(x) })),
   ]);
   const s = skipper();
   band.addEventListener("pointerdown", s.skip);
@@ -67,6 +76,26 @@ async function shortLevelUp(r) {
   await sleep(30);
   band.classList.add("show");
   await s.wait(1800);
+  band.classList.remove("show");
+  await sleep(220);
+  band.remove();
+}
+
+// ---------------------------------------------------------------- ご褒美だけの夜（レベルは上がっていない）
+
+async function giftBand(r) {
+  const band = el("div.levelup-band.gift", { role: "status", dataset: { test: "gift-band" } }, [
+    el("b.lb-top", { text: "HIDANE" }),
+    ...r.gifts.map((x) => el("span.lb-hidane", { text: giftLine(x) })),
+    el("small.lb-learned", { text: "火種は観音堂などで内省すると灯せる" }),
+  ]);
+  const s = skipper();
+  band.addEventListener("pointerdown", s.skip);
+  layers.fx.append(band);
+  SE.select();
+  await sleep(30);
+  band.classList.add("show");
+  await s.wait(2200 + 600 * r.gifts.length);
   band.classList.remove("show");
   await sleep(220);
   band.remove();
@@ -89,6 +118,7 @@ async function fullLevelUp(r) {
         : `節目の Lv.${level}！ ${colorName(system)}が${n}つ（このところ灯してきた${BOARD_JA[system]}盤を後押し）`,
     })),
     learned ? el("p.lu-learned", { text: `今日学んだこと：${learned}` }) : null,
+    ...r.gifts.map((x) => el("p.lu-gift", { dataset: { test: "levelup-gift" }, text: `ご褒美　${giftLine(x)}` })),
     el("p.lu-note", { text: "火種は観音堂で静かに振り返ると、心得の盤に灯せる（時間は使わない）。貯めておいてもいい" }),
   ]);
   const ok = el("button.btn.primary.lu-ok", { text: "OK", dataset: { test: "levelup-ok" } });

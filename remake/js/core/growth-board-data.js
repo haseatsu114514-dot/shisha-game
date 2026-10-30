@@ -124,3 +124,22 @@ export const CHAR_TYPE = {
   rei: "body", ageha: "sense", kumicho: "wisdom",
   kuze: "body", steve: "sense", volk: "wisdom",
 };
+
+// ---------------------------------------------------------------- 遊びのご褒美（2026-10-30 オーナー指示 SBD39・SBD40）
+// 斧投げ・TRPG・DJ をやり込んで一定の水準に届いたら、色つきの火種がもらえる。寝る前の精算でまとめて渡す。
+// 色は遊びの性格で: 斧投げ＝才能（体）、DJ＝感覚（リズム）、TRPG＝理論（読み・組み立て）。最後の段は3色のセット。
+const SET = { body: 1, sense: 1, wisdom: 1 };
+export const PLAY_REWARDS = [
+  { id: "axe-b", game: "axe", rank: "B", label: "斧投げで Bランク", gift: { body: 2 } },
+  { id: "axe-a", game: "axe", rank: "A", label: "斧投げで Aランク", gift: { body: 2 } },
+  { id: "axe-s", game: "axe", rank: "S", label: "斧投げで Sランク", gift: SET },
+  { id: "trpg-1", game: "trpg", clears: 1, label: "TRPGの卓を最後まで遊んだ", gift: { wisdom: 2 } },
+  { id: "trpg-star3", game: "trpg", stars: 3, label: "TRPGで★3の卓", gift: { wisdom: 2 } },
+  { id: "trpg-2", game: "trpg", clears: 2, label: "TRPGのシナリオを2本遊んだ", gift: SET },
+  // DJ はまだ本編に入っていない（remake/previews/dj）。入ったら最高ランクを state に残し、ここを読む
+  { id: "dj-b", game: "dj", rank: "B", label: "DJで Bランク", gift: { sense: 2 } },
+  { id: "dj-a", game: "dj", rank: "A", label: "DJで Aランク", gift: { sense: 2 } },
+  { id: "dj-s", game: "dj", rank: "S", label: "DJで Sランク", gift: SET },
+];
+/** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに火種のセット */
+export const KUJI_LAST_ONE_GIFT = SET;

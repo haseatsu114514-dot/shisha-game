@@ -6,7 +6,7 @@
 import { state } from "./state.js";
 import { emit } from "./bus.js";
 import { setExpHooks, affinityLevel } from "./stats.js";
-import { BOARD_KEYS, BOARD_PREFIX, STAT_SQUARES, SKILLS, LESSONS, CHAR_TYPE } from "./growth-board-data.js";
+import { BOARD_KEYS, BOARD_PREFIX, STAT_SQUARES, SKILLS, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
 
 export const GROWTH_BOARD = false;
 const PREVIEW_KEY = "suien_growth_preview";
@@ -69,7 +69,7 @@ export function newGrowth() {
     milestones: [],        // 2つ目を渡した節目のレベル（重複防止）
     fresh: { chapter: 1, counts: {} }, // 新鮮さの鍵 -> その章の回数
     firsts: { people: [], places: [] }, // 周回内の「はじめて」
-    today: { xp: 0, learned: {} },     // 寝る時までの分。learned は鍵 -> 経験値（「今日学んだこと」）
+    today: { xp: 0, learned: {}, gifts: [] }, // 寝る時までの分。learned は鍵 -> 経験値（「今日学んだこと」）、gifts は♥5の贈り物
     seen: { fullLevelUp: false },      // フル演出を一度見たか（初回の判定）
     nodes: [],             // 盤で灯したマスID（確定済みだけ。紋は数えない。取った授業も入る）
     paid: {},              // マスID -> 払った火種 { any: n, body: n, … }（組み直しで同じ種類に戻す）
@@ -77,6 +77,8 @@ export function newGrowth() {
     gifted: {},            // ♥5で色つきの火種を受け取った人（周回で空に戻す）
     litSince: {},          // 前の節目から盤ごとに灯した火種（節目の色を決める。1.5）
     target: null,          // 目標のマス（2.4）
+    rewards: {},           // 受け取った遊びのご褒美（斧投げ・TRPG・DJ の水準、くじのラストワン賞）
+    seenRing: 1,           // 盤で「新しい道が開いた」を見せた章の範囲（章が進んで初めて開いた時の演出）
   };
 }
 
@@ -103,6 +105,7 @@ export function ensureGrowth(s = state) {
   if (!g.today || typeof g.today !== "object") g.today = fresh.today;
   g.today.xp = num(g.today.xp);
   if (!g.today.learned || typeof g.today.learned !== "object") g.today.learned = {};
+  if (!Array.isArray(g.today.gifts)) g.today.gifts = [];
   g.seen = { fullLevelUp: g.seen?.fullLevelUp === true };
   g.nodes = strings(g.nodes).filter((id) => VALID_IDS.has(id));
   if (!g.paid || typeof g.paid !== "object" || Array.isArray(g.paid)) g.paid = {};
@@ -110,6 +113,8 @@ export function ensureGrowth(s = state) {
   if (!g.gifted || typeof g.gifted !== "object" || Array.isArray(g.gifted)) g.gifted = {};
   g.litSince = Object.fromEntries(BOARD_KEYS.map((k) => [k, Math.floor(num(g.litSince?.[k]))]));
   if (!VALID_IDS.has(g.target)) g.target = null;
+  if (!g.rewards || typeof g.rewards !== "object" || Array.isArray(g.rewards)) g.rewards = {};
+  g.seenRing = Math.min(5, Math.max(1, Math.floor(num(g.seenRing, 1))));
   syncLessonFlags(g, s);
   return g;
 }
@@ -245,8 +250,64 @@ export function giftAtMaxHeart(id) {
   if (g.gifted[id]) return null;
   g.gifted[id] = true;
   const got = giveColored(g, color);
-  if (got.n > 0) { emit("hidane-gift", { who: id, ...got }); emit("hud"); }
+  // 寝る前のレベルアップでまとめて知らせる（会話の途中に割り込まない）
+  if (got.n > 0) { g.today.gifts.push({ who: id, parts: [got] }); emit("hud"); }
   return got;
+}
+
+/** 色つきの火種のセットを渡す。戻り値=実際に渡した内訳 */
+function giveSet(g, set) {
+  const parts = [];
+  for (const [kind, n] of Object.entries(set)) { const got = giveColored(g, kind, n); if (got.n > 0) parts.push(got); }
+  return parts;
+}
+
+const RANK_ORDER = ["D", "C", "B", "A", "S"];
+// 斧投げのランクの境目（minigames/axe-challenges.js の RANKS と同じ。依存を増やさないため写す。テストで照合）
+export const AXE_RANKS = [["S", 0.8], ["A", 0.62], ["B", 0.45], ["C", 0.25], ["D", 0]];
+const rankOf = (total, max) => AXE_RANKS.find(([, min]) => (max > 0 ? total / max : 0) >= min)[0];
+const atLeast = (rank, need) => RANK_ORDER.indexOf(rank) >= RANK_ORDER.indexOf(need);
+/** 斧投げの自己ベストのランク（どのルールでも一番良いもの） */
+function bestAxeRank(s) {
+  let best = null;
+  for (const record of Object.values(s.flags?._axe_bar_records || {})) {
+    const b = record?.best;
+    if (!b || !(b.maximum > 0)) continue;
+    const rank = rankOf(b.total, b.maximum);
+    if (!best || atLeast(rank, best)) best = rank;
+  }
+  return best;
+}
+function playRewardMet(reward, s) {
+  if (reward.game === "axe") { const rank = bestAxeRank(s); return !!rank && atLeast(rank, reward.rank); }
+  if (reward.game === "trpg") {
+    const cleared = Object.values(s.trpg?.cleared || {});
+    if (reward.stars) return cleared.some((c) => (c?.stars || 0) >= reward.stars);
+    return cleared.length >= reward.clears;
+  }
+  if (reward.game === "dj") { const rank = s.dj?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
+  return false;
+}
+
+/**
+ * 遊びのご褒美（SBD39）と、くじのラストワン賞の火種セット（SBD40）を受け取る。寝る前の精算から呼ぶ。
+ * 戻り値: [{ label, parts: [{ kind, n }] }]
+ */
+export function claimPlayRewards(g, s = state) {
+  const out = [];
+  for (const reward of PLAY_REWARDS) {
+    if (g.rewards[reward.id] || !playRewardMet(reward, s)) continue;
+    g.rewards[reward.id] = true;
+    out.push({ label: reward.label, parts: giveSet(g, reward.gift) });
+  }
+  for (const [grade, box] of Object.entries(s.kuji || {})) {
+    if (!box || !Array.isArray(box.order) || box.drawn < box.order.length || box.emptyDay == null) continue;
+    const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}`;
+    if (g.rewards[key]) continue;
+    g.rewards[key] = true;
+    out.push({ label: "くじのラストワン賞", parts: giveSet(g, KUJI_LAST_ONE_GIFT) });
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------- 寝る時の精算（6.3）
@@ -289,15 +350,16 @@ export function settleGrowth() {
       if (got.n > 0) gains.limited.push({ level, system: got.kind, n: got.n });
     }
   }
+  const gifts = [...g.today.gifts, ...claimPlayRewards(g)].filter((x) => x.parts.length);
   foldFullBoards(g);
   g.level = to;
   g.settledXp = g.xp;
-  g.today = { xp: 0, learned: {} };
-  if (to > from) emit("hud");
+  g.today = { xp: 0, learned: {}, gifts: [] };
+  if (to > from || gifts.length) emit("hud");
   const milestone = gains.limited.length > 0 || MILESTONE_LEVELS.some((l) => l > from && l <= to);
   const full = to > from && (!g.seen.fullLevelUp || milestone || to - from >= 2);
   if (full) g.seen.fullLevelUp = true;
-  return { from, to, xpFrom, xpTo: g.xp, gains, learned, milestone, full, boardFull: g.earned >= BOARD_TOTAL };
+  return { from, to, xpFrom, xpTo: g.xp, gains, gifts, learned, milestone, full, boardFull: g.earned >= BOARD_TOTAL };
 }
 
 /**
