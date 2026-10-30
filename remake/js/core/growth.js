@@ -300,11 +300,39 @@ export function settleGrowth() {
   return { from, to, xpFrom, xpTo: g.xp, gains, learned, milestone, full, boardFull: g.earned >= BOARD_TOTAL };
 }
 
-/** 寝る直前の精算と演出。無効のときは何もしない（演出の画面は使う時だけ読む）。 */
-export async function presentNight() {
+/**
+ * 寝る直前の精算と演出。無効のときは何もしない（演出の画面は使う時だけ読む）。
+ * evePlace（大会前夜）があれば、精算のあと火種が残っている時だけ内省の場面で盤を開く（2.8・#1690）。
+ */
+export async function presentNight({ evePlace = null } = {}) {
   if (!growthEnabled()) return null;
+  const owner = state;
   const { presentNightGrowth } = await import("../daily/levelup.js");
-  return presentNightGrowth();
+  const result = await presentNightGrowth();
+  if (evePlace && state === owner) {
+    const { eveReflection } = await import("../daily/reflection.js");
+    await eveReflection(evePlace);
+  }
+  return result;
+}
+
+/**
+ * 参拝の場所に着いた時の「静かに振り返る」（時間を使わない）。
+ * 火種が無ければ何もしない（false）。振り返った・戻った時は true（呼び出し側は行動にしない）。
+ */
+export async function reflectAtSpot(spotId) {
+  if (spotId !== "kannon" || !growthEnabled() || !state) return false;
+  const { canReflect, reflectAt } = await import("../daily/reflection.js");
+  if (!canReflect()) return false;
+  const { modal } = await import("./ui.js");
+  const how = await modal({ title: "観音堂", body: "火種がある。静かに振り返れば、心得の盤に灯せる。", options: [
+    { label: "静かに振り返る（時間は進まない）", value: "reflect", primary: true, test: "kannon-reflect" },
+    { label: "いつもどおり過ごす（1行動）", value: "visit", test: "kannon-visit" },
+    { label: "戻る", value: null },
+  ] });
+  if (how === "visit") return false;
+  if (how === "reflect") await reflectAt("kannon");
+  return true;
 }
 
 /** メニューの「心得の盤」。無効なら出さない。メニューからは見るだけ（灯すのは参拝の場所。2.8） */

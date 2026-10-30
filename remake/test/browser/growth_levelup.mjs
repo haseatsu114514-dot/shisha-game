@@ -172,4 +172,22 @@ await suite("growth-levelup", async (check) => {
       await page.locator(".gain-card", { hasText: "能力の火" }).waitFor();
     }, options);
   }
+
+  // 大会前夜の内省（SPEC 2.8・#1690）: 火種が残っていれば一度だけ、場面のあと灯せる盤が開く
+  await check("eve-reflection-once", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      (await import("./js/vn/engine.js")).vnTest.turbo = true;
+      (await import("./js/core/growth.js")).ensureGrowth().hidane.any = 3;
+      window.eve = null;
+      void (await import("./js/daily/reflection.js")).eveReflection("kannon").then((r) => { window.eve = r; });
+    });
+    const board = page.locator(t("growth-board"));
+    await board.waitFor({ timeout: 15000 });
+    assert.equal(await board.getAttribute("data-mode"), "light");
+    assert.match(await page.locator(t("board-place")).innerText(), /観音堂で内省/);
+    await page.locator(t("board-close")).click();
+    await page.waitForFunction(() => window.eve === true);
+    assert.equal(await page.evaluate(async () => (await import("./js/daily/reflection.js")).eveReflection("kannon")), false, "同じ章の前夜は一度だけ");
+  }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1` });
