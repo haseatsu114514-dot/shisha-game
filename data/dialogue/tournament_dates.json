@@ -100,7 +100,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "栞さん、店の話をしてる時も楽しそうです"
+          "text": "栞さん、店の話をしてる時も楽しそうだ"
         },
         {
           "speaker": "minto",
@@ -157,7 +157,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "会えて、うれしかったです"
+            "text": "会えて、うれしかった"
           },
           {
             "speaker": "",
@@ -399,7 +399,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "約束した時間に、二人で宿への道を戻った。"
+            "text": "約束した時間に、mukaiの裏口まで二人で戻った。"
           }
         ],
         "home": [
@@ -427,17 +427,17 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "店のみんなの分じゃ、……これは、お主の分"
+          "text": "常連の分じゃ、……これは、お主の分"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺にも？　同じ町に来てるのに"
+          "text": "俺にも、ですか？　同じ町に来てるのに"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "一緒に選んだ記念なら、それでよかろう"
+          "text": "お主の分は、わしが一人で選んだのじゃ、……黙って受け取れ"
         },
         {
           "speaker": "samechan",
@@ -490,7 +490,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "土産、大事にする。会えてよかった"
+            "text": "お土産、大事にします。会えてよかったです"
           },
           {
             "speaker": "",

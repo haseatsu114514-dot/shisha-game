@@ -227,16 +227,34 @@
           "text": "……そっか。……うん。聞いてくれただけで、うれしい……"
         },
         {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "じゃあ……これからも、『ライバルのお姉さん』でいさせてね。……負けない、から……"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "rival_after",
+          "next_false": "rival_before"
         },
         {
           "speaker": "",
           "face": "",
           "text": "無理に持ち上げた口角が、少しだけ痛ましかった。"
         }
-      ]
+      ],
+      "branches": {
+        "rival_before": [
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "じゃあ……これからも、『ライバルのお姉さん』でいさせてね。……負けない、から……"
+          }
+        ],
+        "rival_after": [
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "じゃあ……これからも、『お店のお姉さん』でいさせてね。……また、食べにきて"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "confession_tsumugi",
