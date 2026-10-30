@@ -237,6 +237,11 @@ for (;;) {
 
   if (snap.screen === "end") {
     if (/GAME OVER/.test(snap.endTitle)) {
+      // CONTINUE has its own caption/reaction controls, outside VN turbo.
+      // Read each cue, then complete the chosen reaction through the real UI.
+      if (await click('[data-test="continue-next"]:not([disabled])')) continue;
+      if (await click('[data-test="continue-proceed"]:not([hidden]):not([disabled])')) continue;
+      if (await page.$('.gameover[data-phase="reaction"]')) continue;
       log(`GAME OVER（1回目の挑戦・${snap.lastRank}位）→ 上手に切り替えて再挑戦`);
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/gameover.png` });
       if (snap.lastRank === 1) throw new Error("bad play should not win");
