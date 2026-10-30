@@ -194,10 +194,7 @@
     {
       "dialogue_id": "ch2_kumicho_second",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_ryuji_shop.png",
-        "flavor_lesson": {
-          "dragonfruit": 1
-        }
+        "bg": "res://assets/backgrounds/bg_ryuji_shop.png"
       },
       "lines": [
         {
@@ -564,7 +561,10 @@
     {
       "dialogue_id": "ch2_kumicho_fourth",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_ryuji_shop.png"
+        "bg": "res://assets/backgrounds/bg_ryuji_shop.png",
+        "flavor_lesson": {
+          "dragonfruit": 1
+        }
       },
       "lines": [
         {
@@ -591,6 +591,11 @@
           "speaker": "kumicho",
           "face": "normal",
           "text": "強さの中に、繊細さがありやす。俺には、これしか吸えねえ気がしてね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "火を入れりゃジューシーに立つ。だが越えりゃ焦げる。この葉の加減だけは、俺も毎度見てやるんですわ"
         },
         {
           "speaker": "",
