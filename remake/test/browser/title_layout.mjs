@@ -256,10 +256,13 @@ try {
     for (let i = 0; i < 3; i++) await p.keyboard.press("Tab");
     assert.equal(await button(p, "title-config").evaluate(n => n === document.activeElement), true);
     await p.keyboard.press("Enter"); await p.locator("#modal.show .cfg").waitFor();
-    await p.locator("#modal.show .modal-actions button").click(); await layout(p, "normal");
+    await p.locator("#modal.show .modal-actions button").click();
+    await p.screenshot({ path: path.join(dir, `ds-small-${name}.png`) });
+    await layout(p, "normal");
     assert.deepEqual(await snapshot(p), before, "small-screen inputs changed save data");
   });
   await check("ds-portrait-pinch-safe-area-and-rotation", sizes.phone, async p => {
+    await seed(p);
     await layout(p, "ds");
     const cdp = await p.context().newCDPSession(p);
     const geometry = () => p.evaluate(async () => (await import("./js/scenes/ds-geometry.js")).applyDsGeometry());
@@ -274,7 +277,7 @@ try {
     await p.locator("#modal.show .modal-actions button").focus(); await p.keyboard.press("Enter");
     await p.screenshot({ path: path.join(dir, "ds-pinch-2x.png") });
     await cdp.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
-    await cdp.send("Emulation.setSafeAreaInsets", { insets: { top: 24, bottom: 20, left: 0, right: 0 } });
+    await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { top: 24, bottom: 20, left: 0, right: 0 } });
     await p.setViewportSize({ width: 320, height: 480 });
     const safe = await geometry();
     assert.equal(safe.layout, "stacked"); assert.equal(safe.vy, 32);
