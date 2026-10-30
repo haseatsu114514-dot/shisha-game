@@ -126,7 +126,7 @@ try {
   }
   assert.equal(await page.evaluate(async () => JSON.stringify({ state: (await import("./js/core/state.js")).state, storage: { ...localStorage } })), saved);
   console.log("PASS: centered proceed >=44 CSS px at 1280/844/667/390 widths; 180ms feedback, 450ms guard, both branches, normal/reduced, save unchanged");
-  await page.setViewportSize({ width: 1280, height: 720 }); await mount();
+  await page.setViewportSize({ width: 1280, height: 720 }); await mount({ context: { lossOrdinal: 2 } });
   const initial = await reading(); assert.equal(initial.count, "20"); assert.equal(initial.echo, "20");
   await page.clock.runFor(5200);
   const fifteen = await reading(); assert.equal(fifteen.count, "15"); assert.equal(fifteen.echo, "15");
@@ -206,7 +206,8 @@ try {
     assert.equal((await reading()).count, "3");
     assert.deepEqual(await page.evaluate(() => __decisions), []);
     await page.clock.runFor(3000);
-    assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "gameover");
+    assert.equal(await page.locator(".gameover").getAttribute("data-phase"), lossOrdinal === 1 ? "speaking" : "gameover");
+    if (lossOrdinal === 1) assert.equal((await reading()).count, "∞");
   }
   // Measure every visible input after stage scaling, including the portrait-sized DS stage.
   for (const viewport of [{ width: 844, height: 390 }, { width: 667, height: 375 }, { width: 390, height: 844 }]) {

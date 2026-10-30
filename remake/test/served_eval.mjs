@@ -8,7 +8,7 @@ DB.flavorById = {
   lemon: { short_name: 'AF レモン', heat_tolerance: 1 },
   mint: { short_name: 'AF ミント', family: 'mint', heat_tolerance: 1 },
   cool_mint: { short_name: 'AF クールミント', family: 'mint', heat_tolerance: 1 },
-  vanilla: { short_name: 'ドバジ バニラ', heat_tolerance: 1 },
+  vanilla: { short_name: 'AF バニラ', heat_tolerance: 1 },
 };
 
 // --- 味の特徴：代表3配合が互いに違う言い方になり、どれも一律に個性を否定しない ---

@@ -8,6 +8,7 @@ import { trainRide } from "../core/scene-motions.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 import { state, save, timeOfDay } from "../core/state.js";
+import { growthEnabled, hidaneTotal } from "../core/growth.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
 import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from "./spots.js";
@@ -328,7 +329,9 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const people = locked ? [] : spotPeople(s, { visitBlock });
       const facility = !(s.id === "trpg_bar" && hasStoreLogo(s.id)) && !locked && !(!known && s.unknownLabel) ? createMapFacilityIcon(s.id) : null;
       const logo = !facility && !locked && !(!known && s.unknownLabel) && hasStoreLogo(s.id) ? storeLogo(s.id, { width: 82, height: 46 }) : null;
+      const hidane = s.id === "kannon" && growthEnabled() ? hidaneTotal() : 0;
       const badge = locked ? null
+        : hidane > 0 ? el("i.evt-badge.hidane-badge", { text: String(Math.min(99, hidane)), "aria-label": `火種 ${hidane}・内省で灯せる`, dataset: { test: "kannon-hidane" } })
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
         : null;
@@ -337,7 +340,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}${logo ? ".branded" : ""}${hasFacilityIcon(s.id) && !logo ? ".facility-location" : ""}${facility ? ".facility-pin" : ""}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
-        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
+        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${hidane > 0 ? `・火種 ${hidane}・内省で灯せる` : badge ? "・新しいイベント" : ""}${people.length ? `・在店：${people.map(p => p.name).join("、")}` : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.pin-visual", [
@@ -398,7 +401,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
               btn.querySelector(".shield").append(el("span.pin-reveal-ring", { "aria-hidden": "true" }),
                 el("span.pin-reveal-label", { text: "NEW", "aria-hidden": "true" }));
             }
-            revealNotice.textContent = freshPins.map(({ spot }) => spotRevealNotice(spot)).join("。 ");
+            revealNotice.textContent = freshPins.map(({ spot }) => spotRevealNotice(spot, state)).join("。 ");
           },
           settle: () => {
             clearReveal();

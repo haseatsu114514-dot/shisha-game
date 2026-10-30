@@ -28,8 +28,10 @@ async function load(url) {
 const reelModule = await load(new URL("daily/reel.js", root)); await reelModule.evaluate();
 const reel = reelModule.namespace;
 const ns = (p) => modules.get(new URL(p, root).href).namespace;
-const core = ns("core/state.js"), growth = ns("core/growth.js"), stats = ns("core/stats.js");
+const core = ns("core/state.js"), growth = ns("core/growth.js"), { on } = ns("core/bus.js");
 const plain = (v) => JSON.parse(JSON.stringify(v));
+const rawGains = [];
+on("stat-raw", (v) => rawGains.push(v));
 
 function fresh() {
   core.newGame();
@@ -75,6 +77,83 @@ assert.equal(core.state.growth.today.learned.pakki_slot, sum, "今日学んだ�
 assert.equal(growth.SLOT_EXP.miss, undefined);
 assert.equal(growth.SLOT_EXP.replay, undefined);
 
+// 説明は初期import時でなく、開いた時のモードを使う。旧説明の配列は書き換えない。
+const legacyGuide = plain(reel.GUIDE);
+for (const preview of [false, true, false]) {
+  growth.setGrowthPreview(preview);
+  const tiles = reel.guideTiles();
+  const help = tiles.map((g) => `${g.head} ${g.body}`).join("\n");
+  if (preview) {
+    assert.match(help, /チェリー・ベル・ボーナスで経験値/);
+    assert.match(help, /ハズレ・リプレイはなし/);
+    assert.doesNotMatch(help, /能力は少し伸びる/);
+  } else assert.deepEqual(plain(tiles), legacyGuide);
+  for (const g of tiles) assert([...g.body].length <= 40, `遊び方は短く: ${g.body}`);
+  assert.deepEqual(plain(reel.GUIDE), legacyGuide, "モード切替で旧説明を変更しない");
+}
+
+// 各役・チェリー重複・リプレイ連鎖を、既存の次ゲーム予告の保存形式で確定する。
+// 期待値は仕様の表から。旧ポイントと経験値の両方を渡さないことも調べる。
+const xpByRole = { miss: 0, replay: 0, cherry: 10, bell: 15, reg: 90, big: 130, rare: 130, freeze: 200 };
+const pointsByRole = { miss: 1, replay: 1, cherry: 2, bell: 3, reg: 16, big: 24, rare: 24, freeze: 36 };
+const cases = [...Object.keys(xpByRole).map((role) => [role, null]), ["cherry", "reg"], ["cherry", "big"]];
+const rewardSnapshot = () => plain({ stats: core.state.stats, statXp: core.state.statXp,
+  xp: core.state.growth?.xp || 0, hidane: core.state.growth?.hidane || null,
+  count: core.state.reel.count, pending: core.state.reel.pending, note: core.state.reel.note });
+for (const preview of [false, true]) for (const [role, overlap] of cases) {
+  growth.setGrowthPreview(preview); fresh(); rawGains.length = 0;
+  core.state.reel.lock = { count: 0, role, overlap, cue: "green" };
+  const statsBefore = plain(core.state.stats), statXpBefore = plain(core.state.statXp);
+  reel.onAction({ spent: 1 });
+  const results = core.state.reel.pending;
+  assert.equal(results[0].role, role); assert.equal(results[0].overlap, overlap);
+  if (role === "replay") assert(results.length > 1, "リプレイの再遊技は維持");
+  const expectedXp = results.reduce((n, r) => n + xpByRole[r.overlap || r.role], 0);
+  const expectedPoints = results.reduce((n, r) => n + pointsByRole[r.role] + (r.overlap ? pointsByRole[r.overlap] : 0), 0);
+  if (preview) {
+    assert.equal(core.state.growth?.xp || 0, expectedXp, `${role}/${overlap}: 経験値は一度だけ`);
+    assert.deepEqual(plain(core.state.stats), statsBefore, "旧能力の直接加算なし");
+    assert.deepEqual(plain(core.state.statXp), statXpBefore, "旧能力の端数も変えない");
+    assert.deepEqual(rawGains, [], "旧能力の通知も発火しない");
+    for (const r of results) {
+      assert.equal(r.xp, xpByRole[r.overlap || r.role]);
+      assert.equal(r.got, 0);
+      assert.equal(r.target, undefined);
+    }
+    assert.equal(core.state.growth?.earned || 0, 0, "火種は回転時に直接付与しない");
+  } else {
+    assert.equal(core.state.growth, undefined);
+    const gained = Object.values(core.state.stats).reduce((a, b) => a + b, 0)
+      - Object.values(statsBefore).reduce((a, b) => a + b, 0);
+    assert.equal(gained, expectedPoints, `${role}/${overlap}: 旧報酬は維持`);
+    for (const r of results) assert.equal(r.xp, undefined);
+  }
+  // 旧schemaのSAVE/LOAD、表示前のモード切替でも、確定済みの報酬と待ち列を保持。
+  const committed = rewardSnapshot();
+  assert(core.save());
+  const saved = JSON.parse(storage.get(core.SAVE_KEY)); saved.schema = 21;
+  storage.set(core.SAVE_KEY, JSON.stringify(saved));
+  core.load();
+  assert.deepEqual(rewardSnapshot(), committed, "保存・読込で再付与しない");
+  growth.setGrowthPreview(!preview);
+  reel.onAction({ spent: 0 });
+  assert.deepEqual(rewardSnapshot(), committed, "無料の再表示・モード切替で再抽選しない");
+}
+
+// 上限直前は残りだけ、上限到達後は0。能力Pへ戻さず、同じpendingを保持する。
+growth.setGrowthPreview(true); fresh();
+growth.gainExp(growth.totalExpFor(growth.MAX_LEVEL) - 5, { silent: true });
+const atCapStats = plain(core.state.stats), atCapStatXp = plain(core.state.statXp);
+for (const expected of [5, 0]) {
+  core.state.reel.lock = { count: core.state.reel.count, role: "bell", overlap: null, cue: "green" };
+  reel.onAction({ spent: 1 });
+  assert.equal(core.state.reel.pending.at(-1).xp, expected);
+  assert.equal(core.state.reel.pending.at(-1).got, 0);
+  assert.equal(core.state.growth.xp, growth.totalExpFor(growth.MAX_LEVEL));
+  assert.deepEqual(plain(core.state.stats), atCapStats);
+  assert.deepEqual(plain(core.state.statXp), atCapStatXp);
+}
+
 // 3) 章倍率は他の経験値と同じに掛かる
 core.newGame();
 Object.assign(core.state, { phase: "daily", chapter: 3, day: 3 });
@@ -92,4 +171,4 @@ for (let seed = 1; seed <= 200; seed++) {
 const avg = total / 200;
 assert.ok(avg > 400 && avg < 650, `1章30回転の平均 ${avg}`);
 
-console.log(`[slot exp] PASS: flag off keeps stat P, same rolls/note when on, no stat P when on, EXP per matched role, chapter mult, avg ${Math.round(avg)}/30 spins`);
+console.log(`[slot exp] PASS: mode-specific guide, all roles/overlaps/replay, legacy stat P only, preview EXP only, save/load and mode switch keep committed rewards, EXP cap, chapter mult, avg ${Math.round(avg)}/30 spins`);

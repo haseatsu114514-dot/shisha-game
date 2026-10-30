@@ -5,7 +5,7 @@ import { weakestPart } from "../js/craft/advice.js";
 import { normalizeContinueContext, prepareContinueScript, craftContinueContext, recordContinueContext, clearContinueHistory } from "../js/chapters/continue-context.js";
 import { PREMIUM_CONTINUE_SCRIPTS } from "../js/chapters/continue-premium.js";
 const sample = { duration: 20, cues: Array.from({ length: 7 }, (_, i) => ({ at: [0,1.8,4.2,7,10.3,13.6,16.5][i], text: `line${i}`, face: "normal" })) };
-for (const [reason, word, tip] of [["burnt","熱","下げ吸い"],["cold","冷え","炭"],["leaf","香り","葉"],["rank","届か","一つ"]]) {
+for (const [reason, word, tip] of [["burnt","熱","熱を逃がす吸い"],["cold","冷え","炭"],["leaf","香り","葉"],["rank","届か","一つ"]]) {
   const ctx = normalizeContinueContext({ reason });
   const first = prepareContinueScript(sample, ctx);
   assert.match(first.cues[0].text, new RegExp(word)); assert.match(first.cues[1].text, new RegExp(tip));

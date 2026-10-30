@@ -1,8 +1,21 @@
 // PR226の採用組版。文言・表情は正本から受け取り、配色と人物配置は目録から読む。
 import { el } from "../core/util.js";
+import { introFlavor } from "./intro-flavors.js";
+
+export function flavorTag(flavor) {
+  if (!flavor) return null;
+  return el("div.ci-flavor", { "aria-label": `好きなフレーバー ${flavor.main}${flavor.small || ""}` }, [
+    el("span.ci-flavor-label", { text: "好きなフレーバー" }),
+    el("span.ci-flavor-name", [
+      el("span", { text: flavor.main }),
+      ...(flavor.small ? [el("span.ci-flavor-small", { text: flavor.small })] : []),
+    ]),
+  ]);
+}
 
 export function illustratedIntro(id, variant, intro, main, portrait, art, background) {
   const frame = art.frames[portrait.face] || art.frames[intro.face] || art.frames.normal;
+  const flavor = introFlavor(id, variant);
   return el("div.cutin.art-intro", {
     dataset: { char: id, variant },
     style: `--accent:${art.color};--secondary:${art.secondary};--portrait-bg:${art.shadow};--ci:${art.color}`,
@@ -22,8 +35,8 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
       src: portrait.src, alt: "", draggable: "false",
       style: `width:${frame.width}px;left:${frame.left}px;top:${frame.top}px`,
     }),
-    el("div.ci-quote-area", [
-      el("div.ci-quote-rule", { "aria-hidden": "true" }),
+    el(`div.ci-quote-area${flavor ? ".has-flavor" : ""}`, [
+      flavorTag(flavor) || el("div.ci-quote-rule", { "aria-hidden": "true" }),
       el("div.ci-line", { text: `「${intro.line || ""}」` }),
     ]),
   ]);

@@ -174,7 +174,7 @@ export function buildWorkerScene(cs) {
       root.dataset.draw = kind;
       root.style.setProperty("--draw-duration", `${duration}ms`);
       applyFace();
-      caption.textContent = kind === "up" ? "上げ吸い…" : kind === "down" ? "下げ吸い…" : "温度を保ちながら吸う…";
+      caption.textContent = kind === "up" ? "熱を入れる吸い…" : kind === "down" ? "熱を逃がす吸い…" : "温度を保ちながら吸う…";
       stage.setAttribute("aria-label", `はじめの作業風景：${caption.textContent}。ベースの水が泡立っている`);
     } else {
       delete root.dataset.draw;

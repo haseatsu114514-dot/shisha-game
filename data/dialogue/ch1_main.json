@@ -841,7 +841,37 @@
         {
           "speaker": "",
           "face": "",
-          "text": "それ以上は語らなかった。ただ、静かな余韻だけが残っていた。"
+          "text": "教わった相手のことは、それ以上語らなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは煙を細く吐いて、ボウルの縁を見たまま続けた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……十五年前、世界大会で二位になった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……スミさんが、ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "点は取れた。けど採点表ばかり見て、客の顔が浮かばなくなった"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "だから降りた。負けたからじゃねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それきり、スミさんは黙った。静かな余韻だけが残っていた。"
         },
         {
           "type": "fx",
@@ -882,12 +912,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（あの人、ただのシーシャ好きな店長……だよな？）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……たぶん）"
+          "text": "（客の顔が浮かばない。……あのスミさんが）"
         },
         {
           "type": "apply",
@@ -1695,7 +1720,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "おう。俺もあんたの、楽しみにしてるからな"
+          "text": "おう。俺もお前の、楽しみにしてるからな"
         },
         {
           "speaker": "",

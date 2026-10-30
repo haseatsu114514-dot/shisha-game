@@ -1,0 +1,197 @@
+# 心得の盤「ネオンのラウンジ」本格デザインの指示（GB03・Codex 向け）
+
+2026-10-30 オーナー: 「これのデザインをコーデックスに作らせたい。本格的な見た目を作っていく」「クロードでモックアップを作って、それプラス生成プロンプトと組み方を伝える」。デザインの方向は決定済みの **ネオンのラウンジ**（SBD48）。この文書が盤の見た目の正本で、同じフォルダの `README.md` の画像の一覧（5能力・五角形の頃）は古い。
+
+**完成見本（Claude 作）が目標の見た目**: `neon/mockup.html`（ブラウザで開くと動く。v8 の実データ入り）と、その 1280×720 の画像 `neon/mockup_*.jpg`。この見本と同じ配置・同じ色の役割のまま、質感を素材で上げるのが今回の仕事。
+
+## 0. 前提（読む順）
+
+1. `AGENTS.md`（通信量・Git LFS・PR のきまり）
+2. `docs/stat-design/SPEC.md` の 2.2（盤の形）・2.5（スキル）・2.6（授業）・3.7（普通のマスの恩恵）・6.2（盤の画面）
+3. `remake/js/core/growth-board-data.js`（盤の形 `BOARD_SHAPES`・スキル・授業・恩恵 `SQUARE_PERKS`）
+4. `remake/js/daily/growth-board-screen.js`（画面の組み立て）と `remake/css/daily.css` の `.gboard` / `.gb-*`
+5. `docs/asset_gen_prompts.md` の「共通スタイル指針」と「分業の大原則」
+
+- 盤は `GROWTH_BOARD` の裏の試作。ブラウザで `remake/?growth=1` を開くと有効になる。プレビューは `python3 remake/tools/serve_preview.py --port 8123`。
+- **盤の規則・データ・配置（`growth-board.js`・`growth-board-data.js`）は変えない**。変えるのは見た目（CSS・画面の組み立て・画像）だけ。マスの座標・道・章・数値はコードが描くので、画像に焼き込まない。
+
+## 1. 今の盤（v8）の中身
+
+- 盤は3枚（才能・感覚・理論）。上の札で切り替える。**3枚とも同じ大きさ**: 能力のマス26・関門4・スキル6・授業6〜7・極み1。
+- 形は盤ごとに違う: 才能＝十字、感覚＝風車、理論＝木。13×9 の方眼で、道は上下左右だけ（斜めなし）。
+- 真ん中に大きな紋（才／感／理）。紋のまわりを **一周する道**（8マス）があり、その角に **授業**（金の札）が付く。授業はその人に会うまで盤に出ない。
+- 外側の腕に **関門**（ひし形。色つきの火種で越える）と **スキル**（六角形）、いちばん奥に **極み**。
+- 普通のマスには区画ごとの恩恵があり、マスに一文字（体・眠・人・華／火・吸・避・息／段・葉・舌・炭）がコードで出る。
+- まだ開いていない範囲は「封」（章の数は出さない）。
+- 盤の色: 才能 `#ef8a5e`（赤橙）・感覚 `#6cc6e8`（水色）・理論 `#65c9bb`（青緑）。金 `#f4d27a`、火種の琥珀 `#ffb43c`（芯 `#fff1b8`）。
+
+## 2. 見た目の方針（ネオンのラウンジ）
+
+- 黒いスモークガラスの盤面。道は細いネオン管で、灯った道はその盤の色のネオン、まだの道は消えた管がうっすら見える。
+- マスは小さなネオンの丸。灯ると管に火が入るように光る。関門は金のネオンのひし形、スキルは盤の色のネオンで縁取った六角の札、授業は金の二重のネオン枠、極みは白いネオンの大きな札。
+- 紋は丸いネオンサインのような光の輪（中に文字なし。漢字はコードが重ねる）。ガラスに煙がうっすら映り込む。
+- 夜の店らしい華やかさと、読みやすさを両立する。光は盤の色と金だけに絞り、目に痛い純色の発光や全面の発光はしない。
+- ゲームの他の画面（墨×金のUI）から浮かないこと。文字はゲームのフォント（コード）で出す。
+
+## 3. 完成見本（`neon/`）
+
+| ファイル | 中身 |
+|---|---|
+| `mockup.html` | 動く見本。上の切り替えで PC 1280×720／スマホ横 844×390、序盤（2章まで・封と曇りあり）／終盤（ほぼ全部灯った）、「素材の場所」（①〜⑥の札が重なる）。マスを押すと右のパネルが変わり、「灯す」で灯した瞬間が見られる |
+| `mockup_body.jpg`・`mockup_sense.jpg`・`mockup_wisdom.jpg` | 終盤の3枚の盤（灯ったネオン・金の授業と関門・白い極み） |
+| `mockup_body_early.jpg` | 序盤の才能盤（消えた管・今灯せるマス・封と曇り・スキルの火種の数） |
+| `mockup_assets.jpg` | 素材の場所。①〜⑥ が画像にする所、C がコードで描く所 |
+
+見本の中で画像の代わりに CSS／SVG で描いている所（ガラスの煙・紋の輪・札の枠・火種の粒・パネルの縁・背景のぼけ）を、5.2 の素材に置き換える。それ以外（道のネオン管・マスの丸・光・明滅・文字・数字・札・ゲージ）は見本の CSS をそのままゲームへ移す（7.2）。
+
+## 4. 進め方（小さなPRを2つ。オーナーの確認をはさむ）
+
+### 第1段: 素材を作る（Draft PR）
+
+1. `neon/mockup.html` をブラウザで開いて、見本の見た目と素材の場所（①〜⑥）を確かめる。
+2. 5章のプロンプトで素材6点を生成する。**参照画像として `neon/mockup_assets.jpg` と、その素材が写っている `mockup_*.jpg` を添付する**（形・大きさの比・色の役割を見本に合わせるため）。
+3. 原画を `asset_sources/ui/growth-board-20261030/neon/` に保存し、6章の手順で切り出し・WebP 化して `remake/img/ui/growth_board/` に置く。
+4. 6点を並べた確認用の画像（`neon/contact_sheet.png`。各素材を暗い地に並べ、横に見本の同じ部分を切り抜いて置く）を作り、Draft PR に貼る。**ここでオーナーの確認を待つ**（色・光の強さ・札の形）。
+
+### 第2段: 組み込み（オーナーの確認後）
+
+1. 7章の組み方で `remake/css/daily.css` の `.gboard` まわりと `growth-board-screen.js` を作り直す（8章のきまりを守る）。
+2. `python3 remake/tools/build_manifest.py` を実行し、テスト（9章）を通す。3枚の盤 × PC・スマホ横のスクリーンショットを、見本の画像と並べて PR に貼る。
+
+スキル18枚・授業20枚の一枚絵（右のパネルの絵）は量が多いので、この2段とは別の PR に分ける（5.3）。
+
+## 5. プロンプト
+
+すべて冒頭に `docs/asset_gen_prompts.md` の「共通スタイル指針」を貼る（要約しない）。そのうえで次の「盤の共通」を続ける。
+
+```
+盤の共通: 「ネオンのラウンジ」。黒いスモークガラスの盤面に、細いネオン管の道。光る色は盤の色（才能 #ef8a5e／感覚 #6cc6e8／理論 #65c9bb）と金（#f4d27a）と火種の琥珀（#ffb43c）と極みの白（#f6f2ff）だけ。ガラスに薄い煙が映り込む。夜のシーシャ店のネオンサインの質感（管の太さが均一で、芯が明るく外側にやわらかい光のにじみ）。2Dドット絵〜ピクセルペインター調で、細かいドット感を残す。
+参照: 添付の完成見本（mockup_*.jpg）と同じ形・同じ色の役割にする。見本は CSS で描いた仮の絵なので、質感（管のガラス、光のにじみ、ガラスの曇り、煙）だけを本物らしく上げる。
+NG: 文字・漢字・英字・数字・ロゴ・ゲージの焼き込み、watermark、人物の顔、シーシャ台。目に痛い純色の全面発光。見本にない飾りの追加（星・花・枠の模様の盛りすぎ）。
+```
+
+### 5.2 素材（第1段で作る6点）
+
+画像にするのは、形と質感に味があってコードで描くと安っぽくなるものだけ。道・マスの丸・線・灯った光・状態の明滅・数字・文字はコード（CSS/SVG）が描く。
+
+| # | 原画（`asset_sources/ui/growth-board-20261030/neon/`） | ゲーム用（`remake/img/ui/growth_board/`） | 大きさ・透過 | 使う所 |
+|---|---|---|---|---|
+| 1 | `board_glass.png` | `board_glass.webp` | 1520×976（盤の領域 760×488 の2倍）・透過なし | 盤の地（3枚共通。盤の色の光はCSSで重ねる） |
+| 2 | `screen_backdrop.png` | `screen_backdrop.webp` | 2560×1440・透過なし | 画面全体の背景（ラウンジの奥の闇とネオンのぼけ） |
+| 3 | `hub_body.png`・`hub_sense.png`・`hub_wisdom.png` | `hub_body.webp` ほか | 各 256×256・透過 | 紋（ネオンの輪。中は空ける。漢字はコード） |
+| 4 | `frames_sheet.png`（5×1） | `frame_skill.webp`・`frame_lesson.webp`・`frame_gate.webp`・`frame_peak.webp`・`frame_seal.webp` | 各 128×128・透過 | スキルの六角の札（白〜金のネオンの縁。盤の色はCSSで重ねる）・授業の金の二重枠・関門の金のひし形・極みの白い大きな札・封の曇った札（字はコード） |
+| 5 | `hidane_sheet.png`（4×1） | `hidane_any.webp`・`hidane_body.webp`・`hidane_sense.webp`・`hidane_wisdom.webp` | 各 96×96・透過 | 火種の粒（琥珀の万能＋3色）。HUD・レベルアップ・盤の下の帯 |
+| 6 | `panel_frame.png` | `panel_frame.webp` | 9スライスで使える枠・透過 | 右の説明パネルの縁（金の細いネオン） |
+
+```
+--- 1/6: board_glass.png ---
+[共通スタイル指針＋盤の共通]
+参照: mockup_assets.jpg の①（盤の領域）。見本の煙の映り込みと端の暗さを、本物のスモークガラスの質感にする。
+出力: PNG・1520×976・透過なし。盤の地だけ。黒いスモークガラスの板。端に向かって少し暗く、中央にうっすら煙の映り込み。道・マス・紋・札は描かない（コードが描く）。方眼の点も描かない。
+
+--- 2/6: screen_backdrop.png ---
+[共通スタイル指針＋盤の共通]
+参照: mockup_assets.jpg の②（画面全体。盤とパネルの裏）。見本の右上・右下のぼけた光の玉の位置を目安にする。
+出力: PNG・2560×1440・透過なし。夜のシーシャラウンジの奥。黒〜濃紫の闇に、遠くのネオンが大きくぼけた光の玉（琥珀と金が中心、ほかの色は少し）。中央から左は暗く落とす（盤が乗る）。人・家具・シーシャ台・文字は描かない。
+
+--- 3/6: hub_body.png / hub_sense.png / hub_wisdom.png（3枚を1回で、3×1 のシートで） ---
+[共通スタイル指針＋盤の共通]
+参照: mockup_body.jpg ほかの真ん中の紋（③）。見本は外の太い輪＋内の細い輪＋6つの短い渦＋中央の熾き。この構成のまま質感を上げる。ゲームでは 80×80 で表示する。
+出力: PNG・768×256（256×256 を横に3つ）・背景完全透過。丸いネオンサインの輪。左から赤橙・水色・青緑。二重の管の輪で、内側に炭火の熾きのような細い渦の飾り。中央の直径4割は空ける（漢字をコードで重ねる）。3つは色以外の形をそろえる。
+
+--- 4/6: frames_sheet.png ---
+[共通スタイル指針＋盤の共通]
+参照: mockup_body.jpg・mockup_body_early.jpg の六角・ひし形の札（④）。六角は左右がとがり上下が平らな横長（幅:高さ ＝ 40:34）。ゲームでは スキル・授業 46px、関門 34px、極み 50px で表示する。
+出力: PNG・640×128（128×128 を横に5つ）・背景完全透過。左から:
+1 スキルの札: 六角形（横長、角は少し丸め）。白〜淡い金のネオン管で縁取り、中は暗いガラス。中央は空ける（絵や字はコード）。
+2 授業の札: 1 と同じ大きさの六角形を、金のネオン管で二重に縁取る。外側の管は少し太く華やか。
+3 関門: 金のネオン管のひし形（正方形を45度）。中は暗いガラス。
+4 極み: 1 より一回り大きい六角形。白いネオン管で、外にもう一重の細い光。
+5 封: 1 と同じ形で、管の火が消えて曇ったガラスの札。中央に丸い封蝋のようなくぼみ（字はコード）。
+どれもマスの中心がタイルの中心に来るようにする。
+
+--- 5/6: hidane_sheet.png ---
+[共通スタイル指針＋盤の共通]
+参照: mockup_assets.jpg の⑤（下の帯の火種の粒）。ゲームでは 16×19px（帯）〜 40px（レベルアップ）で表示する。
+出力: PNG・384×96（96×96 を横に4つ）・背景完全透過。小さな炭火の粒（しずく形の炎をまとった熾き）。左から 琥珀（#ffb43c・芯 #fff1b8）／赤橙（#ef8a5e）／水色（#6cc6e8）／青緑（#65c9bb）。16px に縮めても形が読めるよう、輪郭をはっきり。
+
+--- 6/6: panel_frame.png ---
+[共通スタイル指針＋盤の共通]
+参照: mockup_assets.jpg の⑥（右の説明パネル）。見本は細い金の管1本と、左上・右下の角の飾り。
+出力: PNG・192×192・背景完全透過。四隅に小さな金のネオンの飾り、辺は細い金のネオン管1本。9スライス（角 48px）で伸ばして使える作り（辺の途中に模様を入れない）。中は透明。
+```
+
+### 5.3 スキル・授業の一枚絵（別の PR・後で）
+
+- スキル18枚: `growth-board-data.js` の `SKILLS`（名前・効く場面・効果）から、はじめがその技を使っている手元の一場面を1枚ずつ。シーシャ台・炭・ホースが写る絵は `asset_sources/shisha-hardware-reference/drawing-sheet/README.md` の「生成前に決める8行」をプロンプトに入れる。
+- 授業20枚: その人がはじめに話している一場面（`LESSONS` の名前・効果、人物は `brand/character_profiles.md` と立ち絵に合わせる）。
+- どちらも右のパネルの絵の枠（横長 16:9、@2x で 960×540）。見本どおりパネルでは横長の帯（約 470×168）に `object-fit: cover` で中央を切り抜いて出すので、主題は上下の中央 6 割に収める。影絵（まだ開いていない時）はコードで暗くするので、普通の絵だけでよい。
+- プロンプトは書いたら `docs/asset_gen_prompts.md` に登録してから生成する。
+
+## 6. 受け取り後（切り出し・変換）
+
+- シートは等間隔のマスで切り出す。透過は背景が完全に抜けていることを確かめる（端の色にじみ・白いフチが残らない）。
+- WebP に変換して `remake/img/ui/growth_board/` へ。新しい png/jpg/webp は Git LFS（`.gitattributes`）。`git lfs ls-files` で LFS 管理になったことを確かめる。原画は `asset_sources/ui/growth-board-20261030/neon/` に残す。
+- `python3 remake/tools/build_manifest.py` を実行する。
+
+## 7. 組み方（見本 → ゲーム）
+
+画像が全部読み込めた時だけ、`.gboard` に `has-art` を付けて画像の見た目に切り替える（`growth-board-screen.js` で6点を `new Image()` で先読みし、すべて `onload` したら付ける）。読み込めない時は今の図形のまま動く。画像のパスは `remake/index.html` から見て `img/ui/growth_board/〜.webp`（CSS からは `../img/ui/growth_board/〜.webp`）。
+
+### 7.1 素材の当てはめ
+
+| # | 素材 | ゲームの所 | 組み方 |
+|---|---|---|---|
+| ② | `screen_backdrop.webp` | `.gboard` | `.gboard.has-art { background: #07050b url(../img/ui/growth_board/screen_backdrop.webp) center / cover no-repeat; }` |
+| ① | `board_glass.webp` | `.gb-board`（760×488） | 画像の上に盤の色のたまりを重ねる: `background: radial-gradient(ellipse 34% 40% at 50% 50%, color-mix(in srgb, var(--c) 10%, transparent), transparent 70%), url(…/board_glass.webp) 0 0 / 760px 488px;` |
+| ③ | `hub_{body,sense,wisdom}.webp` | `growth-board-screen.js` の紋（`circle.gb-hub` の所） | `circle.gb-hub` の上に SVG の `<image href="img/ui/growth_board/hub_${board}.webp" x="${CX-40}" y="${CY-40}" width="80" height="80">` を足し、漢字の `text.gb-hub-text` はその上に残す。`has-art` の時は `circle.gb-hub` と熾きの円を隠す |
+| ④ | `frame_skill.webp` | `.gb-node.skill .gb-face` | `has-art` の時は今の `clip-path` と `::before` をやめ、`background: url(…/frame_skill.webp) center / 46px no-repeat;`。盤の色は `filter: drop-shadow(0 0 4px var(--c))`（灯した時）で重ねる |
+| ④ | `frame_lesson.webp` | `.gb-node.lesson .gb-face` | 同上（46px）。光は金のまま |
+| ④ | `frame_gate.webp` | `.gb-node.gate .gb-face` | `transform: rotate(45deg)` と角丸をやめ、34px の画像を置く（画像がひし形）。`.gb-glyph` の逆回転も外す |
+| ④ | `frame_peak.webp` | `.gb-node.peak .gb-face` | 50px |
+| ④ | `frame_seal.webp` | `.gb-node.s-sealed`（スキル・授業・極み） | 封の札。一文字は「封」をコードで重ねる |
+| ⑤ | `hidane_{any,body,sense,wisdom}.webp` | `.gb-hidane i`（下の帯）と、同じ `i` を使う HUD・レベルアップ | `background: url(…/hidane_any.webp) center / contain no-repeat; border-radius: 0; box-shadow: none;`。色は `.gb-hidane.k-body` ほかの class で画像を替える |
+| ⑥ | `panel_frame.webp` | `.gb-side` | `border: 24px solid transparent; border-image: url(…/panel_frame.webp) 48 / 24px stretch;`。見本の `::before`／`::after` の角の飾りは画像に入るので要らない |
+
+画像の状態の出し分け（灯っていない札）: `.gb-node.skill:not(.s-unlocked):not(.s-available):not(.s-pending) .gb-face { filter: grayscale(1) brightness(0.45); }`（授業・関門・極みも同じ）。今灯せる札は見本と同じく `drop-shadow` の明滅、`prefers-reduced-motion` で止める。
+
+### 7.2 コードが描く所（見本の CSS を移す）
+
+`neon/mockup.html` の `<style>` から次を移す（名前は左が見本、右がゲーム）。色はゲームの CSS 変数（`--stat-body` など）に置き換える。
+
+| 見本 | ゲーム | 中身 |
+|---|---|---|
+| `.tube-dead`＋`.tube-dead-hi` | `.gb-path` | 消えた管（太さ4の暗い管＋太さ1の薄いハイライト）。JS で線を2本描く |
+| `.tube-glow`（ぼかし）＋`.tube-core` | `.gb-path.lit` | 灯った管（盤の色の太いにじみ＋白寄りの芯）。にじみは SVG の `feGaussianBlur stdDeviation="3"` |
+| `.tube-aim` | `.gb-path.aim` | 選んだマスまでの点線 |
+| `.tube-sealed` | `.gb-path.sealed` | 封の先の点々 |
+| `.fog`（`feGaussianBlur 14`） | 新しく足す | 封のマスの下に置く曇り。まだ開いていない範囲が沈んで見える |
+| `.stat.s-*` の `.gb-face` | `.gb-node.s-*` の `.gb-face` | 消えた丸・今灯せる（盤の色の縁＋明滅）・灯した（中が盤の色・外に2重の光）・仮置き（白の点線）・足りない（点線）・封（小さく曇る） |
+| `.gb-tab*` | `.gb-tab*` | 札の上の盤の色の管と、漢字の四角のネオン |
+| `.selected::after` | `.gb-node.selected` | 選んだマスの白い点線の輪 |
+| `.cost` | `.gb-cost` | スキルの火種の数（粒＋数字） |
+| `.gb-art` の高さ 168px | `.gb-art` | 一枚絵の枠（5.3）の大きさ |
+
+## 8. 組み込みのきまり
+
+- 盤の規則とデータは変えない。テストが見ている `data-test` 属性（`growth-board`・`board-tab-*`・`board-node-*`・`board-light`・`board-decide`・`board-wallet`・`board-lime-consult`・`board-perk`・`board-opened` など）と、マスの `data-status` はそのまま残す。
+- マスの状態（灯した・仮置き・今灯せる・火種が足りない・道がまだ・授業の錠・まだ開いていない／封）は、色だけに頼らず形・線・文字でも分かるようにする（今の CSS の考え方を引き継ぐ）。灯せるマスの明滅は `prefers-reduced-motion` で止める。
+- タップできる所は 44px 以上。スマホ横 844×390 で盤・札・下の帯が重ならず、文字がはみ出さない（`assertFits`）。
+- 盤の色は今の CSS 変数（`--stat-body` など）で切り替える。枠の画像は白〜金で作り、盤の色の光は CSS（`drop-shadow` など）で重ねる。
+- 画像が読み込めない時も、今の図形の見た目で動くようにする（画像は飾り）。
+- 軽さ: 盤の画面で増える画像の合計は 1.5MB 以下を目安に。
+
+## 9. テストと確認
+
+- `node remake/test/growth_board.mjs`・`node remake/test/growth_levelup.mjs`
+- プレビューサーバーを起動して `node remake/test/browser/growth_levelup.mjs`（13件）
+- `node tools/ci/run.mjs --kind quick`
+- PR に貼るもの: 3枚の盤 × PC 1280×720・スマホ横 844×390 のスクリーンショット（いくつか灯した状態、授業・関門・封が写るように）、マスを1つ選んだ時の右のパネル、灯した瞬間。
+
+## 10. 検品の目安
+
+- 見本（`neon/mockup_*.jpg`）と並べて、配置・色の役割・光の強さが同じで、質感だけが上がっている。
+- 文字・数字・漢字が画像に焼き込まれていない。
+- 盤の色ごとに読み分けられ、灯ったマスと灯っていないマスの差がひと目で分かる。
+- 授業（金の二重枠）・関門（金のひし形）・スキル（六角）・極み（白い大きな札）・封の区別が、16〜44px の大きさでも付く。
+- ネオンの光が強すぎて文字やマスの一文字が読みにくくなっていない。

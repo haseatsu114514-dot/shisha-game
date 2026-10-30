@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { CH2_NIGHTS } from "../js/chapters/ch2-story-data.js";
+import { CITY_OUTINGS, CITY_CHAIN, outingDialogue, recordOutingVisit } from "../js/chapters/ch2-outings.js";
 
 const read = (name) => Object.fromEntries(JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url), "utf8"))
   .dialogues.map((d) => [d.dialogue_id, d]));
@@ -140,5 +141,18 @@ const knownScout = meet.branches[knownRecognition.next_true].find((l) => l.flag 
 assert(knownScout, "配達済みでも第2章の目撃で分ける");
 assert.match(meet.branches[knownScout.next_true].map((l) => l.text).join("\n"), /配達の時は気づかなかった[\s\S]*偵察[\s\S]*軍/);
 assert.doesNotMatch(meet.branches[knownScout.next_false].map((l) => l.text).join("\n"), /この辺の店を回って/, "配達で話していない情報を前提にしない");
+
+// #1653 ⑥: 水族館・銭湯・C.STATIONの再訪は、能力値を足さずに会話の変化を順に読む
+const deliveries = read("ch2_deliveries");
+for (const outing of [...CITY_OUTINGS.filter((o) => o.kind === "outing"), CITY_CHAIN]) {
+  const flags = {}, seen = [];
+  for (let i = 0; i < 5; i += 1) { seen.push(outingDialogue(outing, flags)); recordOutingVisit(flags, outing); }
+  assert.equal(seen[0], outing.first, `${outing.id}: 初回`);
+  assert.deepEqual(seen.slice(1, 4), outing.repeat, `${outing.id}: 再訪は順に変わる`);
+  assert.equal(seen[4], outing.repeat[0], `${outing.id}: 一巡したら最初へ`);
+  for (const id of seen) assert(deliveries[id]?.lines?.length, `${id} の台本がある`);
+  assert.equal(outingDialogue(outing, { [`_ch2_visited_${outing.id}`]: true }), outing.repeat[0], `${outing.id}: 旧セーブ`);
+}
+assert.equal(CITY_OUTINGS.find((o) => o.id === "ch2_aquarium").stat, undefined, "水族館に能力値を一律で足さない");
 
 console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights, Ageha\'s last inner voice, anonymous scout");

@@ -1,0 +1,600 @@
+<title>心得の盤 ネオン見本</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: 1280×720 のゲーム画面をそのまま縮小して載せ、下に素材の対応表。単一の夜テーマ（ネオンのラウンジ）。 */
+:root {
+  color-scheme: dark;
+  --ink: #07050b;          /* ラウンジの闇 */
+  --glass: #0d0a12;        /* スモークガラス */
+  --tube: #2c2534;         /* 消えたネオン管 */
+  --text: #f4ede0;
+  --text-dim: #b6aa96;
+  --gold: #e8c27a;
+  --gold-hi: #ffe2a6;
+  --neon-gold: #f4d27a;
+  --ember: #ffb43c;
+  --ember-core: #fff1b8;
+  --stat-body: #ef8a5e;
+  --stat-sense: #6cc6e8;
+  --stat-wisdom: #65c9bb;
+  --peak: #f6f2ff;
+  --seal: #8f86a0;
+  --page-line: rgba(244, 210, 122, 0.18);
+  --font: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+html, body { background: var(--ink); color: var(--text); }
+body { font-family: var(--font); font-size: 15px; line-height: 1.6; }
+.page { max-width: 1320px; margin: 0 auto; padding-block: 20px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+.page-head { display: grid; gap: 4px; }
+.eyebrow { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(22px, 3.2vw, 32px); font-weight: 900; letter-spacing: 0.06em; color: var(--gold-hi); text-wrap: balance; }
+.lede { margin: 0; max-width: 62ch; color: var(--text-dim); }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--page-line); border-radius: 999px; overflow: hidden; }
+.seg button { font: inherit; font-size: 14px; color: var(--text-dim); background: transparent; border: 0; padding: 8px 14px; min-height: 40px; cursor: pointer; }
+.seg button[aria-pressed="true"] { color: var(--ink); background: var(--gold-hi); font-weight: 700; }
+.seg button:focus-visible, .chip:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
+.chip { font: inherit; font-size: 14px; display: inline-flex; gap: 8px; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--page-line); color: var(--text); background: transparent; cursor: pointer; }
+.chip[aria-pressed="true"] { border-color: var(--ember); color: var(--ember-core); box-shadow: 0 0 10px color-mix(in srgb, var(--ember) 40%, transparent); }
+.chip.quiet { color: var(--text-dim); }
+
+/* ---- 画面の枠（PC / スマホ横） ---- */
+.viewport { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; border-radius: 10px; overflow: hidden; background: #000; border: 1px solid var(--page-line); }
+.viewport.phone { aspect-ratio: 844 / 390; max-width: 844px; margin-inline: auto; border-radius: 22px; border: 6px solid #1a1620; }
+.stage { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; font-family: var(--font); }
+
+/* ② 画面の背景（ラウンジの奥）: 本番は screen_backdrop.webp */
+.backdrop { position: absolute; inset: 0; background:
+  radial-gradient(circle at 88% 18%, rgba(255, 180, 60, 0.22), transparent 9%),
+  radial-gradient(circle at 96% 54%, rgba(244, 210, 122, 0.16), transparent 12%),
+  radial-gradient(circle at 74% 92%, rgba(255, 150, 90, 0.14), transparent 11%),
+  radial-gradient(circle at 63% 8%, rgba(160, 90, 200, 0.12), transparent 10%),
+  radial-gradient(ellipse 70% 90% at 30% 55%, #040208, transparent 70%),
+  linear-gradient(120deg, #050309 0%, #0c0714 55%, #160b1c 100%); }
+.backdrop::after { content: ""; position: absolute; inset: 0; background:
+  radial-gradient(circle at 82% 36%, rgba(255, 200, 120, 0.10), transparent 4%),
+  radial-gradient(circle at 91% 79%, rgba(108, 198, 232, 0.08), transparent 5%),
+  radial-gradient(circle at 70% 60%, rgba(255, 180, 60, 0.07), transparent 6%); filter: blur(2px); }
+
+.gboard { position: absolute; inset: 0; display: grid; grid-template-rows: 60px 548px 112px; color: var(--text); --c: var(--stat-body); }
+.gboard.b-sense { --c: var(--stat-sense); }
+.gboard.b-wisdom { --c: var(--stat-wisdom); }
+
+/* 上の帯 */
+.gb-header { display: flex; align-items: center; gap: 18px; padding: 0 18px; background: linear-gradient(180deg, rgba(8, 5, 12, 0.92), rgba(8, 5, 12, 0.6)); border-bottom: 1px solid rgba(244, 210, 122, 0.22); box-shadow: 0 1px 0 rgba(244, 210, 122, 0.08); }
+.gb-title { margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 0.16em; color: var(--gold-hi); text-shadow: 0 0 10px rgba(244, 210, 122, 0.45); white-space: nowrap; }
+.gb-level { display: flex; align-items: center; gap: 8px; font-size: 16px; color: var(--gold); white-space: nowrap; font-weight: 700; }
+.gb-gauge { position: relative; width: 140px; height: 6px; border-radius: 3px; background: #08050d; border: 1px solid rgba(244, 210, 122, 0.45); overflow: hidden; }
+.gb-gauge b { position: absolute; inset: 0 auto 0 0; width: 64%; background: linear-gradient(90deg, #b07a24, var(--neon-gold)); box-shadow: 0 0 8px var(--neon-gold); }
+.gb-level small { color: var(--text-dim); font-size: 13px; font-weight: 500; }
+.gb-place { flex: 1; margin: 0; text-align: right; font-size: 14px; color: #ffd08a; white-space: nowrap; }
+.gb-icon { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(244, 210, 122, 0.55); background: rgba(14, 9, 20, 0.9); color: var(--gold-hi); font: 700 19px var(--font); box-shadow: inset 0 0 8px rgba(244, 210, 122, 0.15); }
+
+.gb-main { display: grid; grid-template-columns: 760px 1fr; min-height: 0; }
+.gb-left { display: grid; grid-template-rows: 60px 488px; min-height: 0; }
+
+/* 札（盤の切り替え） */
+.gb-tabs { display: flex; gap: 8px; padding: 8px 12px 0; }
+.gb-tab { --t: var(--stat-body); position: relative; flex: 1; display: flex; gap: 9px; align-items: center; padding: 4px 10px; border: 1px solid rgba(255, 255, 255, 0.07); border-bottom: 0; border-radius: 10px 10px 0 0; background: rgba(10, 7, 14, 0.75); color: var(--text-dim); font: inherit; text-align: left; cursor: pointer; }
+.gb-tab.t-sense { --t: var(--stat-sense); } .gb-tab.t-wisdom { --t: var(--stat-wisdom); }
+.gb-tab.on { color: var(--text); background: linear-gradient(180deg, color-mix(in srgb, var(--t) 14%, #120c18), #0d0a12); border-color: color-mix(in srgb, var(--t) 70%, transparent); box-shadow: inset 0 2px 0 var(--t), 0 -2px 14px color-mix(in srgb, var(--t) 30%, transparent); }
+.gb-tab-head { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 7px; border: 2px solid color-mix(in srgb, var(--t) 45%, #2c2534); color: color-mix(in srgb, var(--t) 55%, #6c6274); font-weight: 900; font-size: 17px; }
+.gb-tab.on .gb-tab-head { border-color: color-mix(in srgb, var(--t) 55%, #fff); color: #fff; text-shadow: 0 0 8px var(--t); box-shadow: 0 0 8px var(--t), inset 0 0 8px color-mix(in srgb, var(--t) 60%, transparent); }
+.gb-tab-body { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; min-width: 0; font-size: 13px; }
+.gb-tab-body b { font-size: 15px; }
+.gb-tab-line { position: relative; flex-basis: 100%; height: 3px; margin-top: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.gb-tab-line b { position: absolute; inset: 0 auto 0 0; background: var(--t); box-shadow: 0 0 6px var(--t); }
+.gb-tab-ready { position: absolute; right: 6px; top: 5px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; display: grid; place-items: center; font-size: 12px; font-weight: 900; color: #2a1406; background: var(--ember); box-shadow: 0 0 8px var(--ember); }
+
+/* ① 盤の地（スモークガラス）: 本番は board_glass.webp */
+.gb-board { position: relative; width: 760px; height: 488px; border-radius: 0 0 14px 14px; overflow: hidden;
+  background: radial-gradient(ellipse 34% 40% at 50% 50%, color-mix(in srgb, var(--c) 10%, transparent), transparent 70%),
+    radial-gradient(ellipse 80% 90% at 50% 45%, #110d17, #060409 85%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 0 60px rgba(0, 0, 0, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); border-top: 0; }
+.gb-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.gb-dot { fill: rgba(244, 210, 122, 0.10); }
+.tube-dead { stroke: var(--tube); stroke-width: 4; stroke-linecap: round; }
+.tube-dead-hi { stroke: rgba(255, 255, 255, 0.06); stroke-width: 1; stroke-linecap: round; }
+.tube-glow { stroke: var(--c); stroke-width: 6; stroke-linecap: round; opacity: 0.55; }
+.tube-core { stroke: color-mix(in srgb, var(--c) 45%, #fff); stroke-width: 2; stroke-linecap: round; }
+.tube-aim { stroke: var(--gold-hi); stroke-width: 2; stroke-dasharray: 4 6; stroke-linecap: round; opacity: 0.8; }
+.tube-sealed { stroke: rgba(143, 134, 160, 0.16); stroke-width: 3; stroke-dasharray: 1 7; stroke-linecap: round; }
+.fog { fill: rgba(150, 140, 175, 0.16); }
+.hub-glow { fill: none; stroke: var(--c); stroke-width: 7; opacity: 0.45; }
+.hub-tube { fill: none; stroke: color-mix(in srgb, var(--c) 40%, #fff); stroke-width: 2.2; }
+.hub-tube2 { fill: none; stroke: color-mix(in srgb, var(--c) 70%, transparent); stroke-width: 1.2; }
+.hub-swirl { fill: none; stroke: color-mix(in srgb, var(--ember) 70%, var(--c)); stroke-width: 1.2; stroke-linecap: round; opacity: 0.75; }
+.hub-text { fill: #fff; font: 900 26px var(--font); text-anchor: middle; dominant-baseline: central; }
+
+/* マス */
+.gb-nodes { position: absolute; inset: 0; }
+.gb-node { position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; color: var(--text); font-family: var(--font); }
+.gb-node:focus-visible { outline: none; }
+.gb-node:focus-visible .gb-face, .gb-node:focus-visible svg { outline: 2px solid var(--gold-hi); outline-offset: 4px; }
+.gb-face { position: relative; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; box-sizing: border-box; border: 2px solid #3d3446; background: rgba(9, 6, 13, 0.92); color: #6d6378; font-size: 13px; font-weight: 900; line-height: 1; }
+.stat.s-available .gb-face { border-color: color-mix(in srgb, var(--c) 75%, transparent); color: var(--c); animation: breathe 1.9s ease-in-out infinite; }
+.stat.s-unlocked .gb-face { border-color: color-mix(in srgb, var(--c) 35%, #fff); background: color-mix(in srgb, var(--c) 26%, #0b0810); color: #fff; text-shadow: 0 0 6px var(--c);
+  box-shadow: 0 0 6px var(--c), 0 0 16px color-mix(in srgb, var(--c) 55%, transparent), inset 0 0 6px color-mix(in srgb, var(--c) 70%, transparent); }
+.stat.s-pending .gb-face { border: 2px dashed #fff; background: color-mix(in srgb, var(--c) 30%, #0b0810); color: #fff; box-shadow: 0 0 12px var(--c); }
+.stat.s-short .gb-face { border-style: dashed; border-color: color-mix(in srgb, var(--c) 45%, transparent); color: color-mix(in srgb, var(--c) 60%, #6d6378); }
+.s-far .gb-face, .s-far svg { opacity: 0.5; }
+.stat.s-sealed .gb-face { border: 1px solid rgba(200, 190, 220, 0.16); background: rgba(150, 140, 175, 0.08); color: transparent; width: 18px; height: 18px; }
+.stat.peak .gb-face { width: 34px; height: 34px; font-size: 16px; }
+.gb-node svg { position: absolute; overflow: visible; }
+.gb-node .glyph { position: relative; font-size: 15px; font-weight: 900; line-height: 1; }
+@keyframes breathe { 50% { box-shadow: 0 0 12px var(--c); transform: scale(1.1); } }
+@keyframes breathe-f { 50% { filter: drop-shadow(0 0 7px var(--c)); transform: scale(1.06); } }
+@keyframes lit-now { 0% { transform: scale(1.6); filter: brightness(2.2) drop-shadow(0 0 18px var(--ember)); } 100% { transform: none; filter: none; } }
+.lit-now .gb-face, .lit-now svg { animation: lit-now 0.55s ease-out; }
+
+/* ④ 枠（スキル・授業・関門・極み・封）: 本番は frame_*.webp。ここでは SVG で代わりに描く */
+.f-fill { fill: rgba(10, 7, 14, 0.94); }
+.f-dead { fill: none; stroke: #3d3446; stroke-width: 2; }
+.f-tube { fill: none; stroke: color-mix(in srgb, var(--fc) 40%, #fff); stroke-width: 2; }
+.f-glow { fill: none; stroke: var(--fc); stroke-width: 5; opacity: 0.5; }
+.f-thin { fill: none; stroke: var(--fc); stroke-width: 1.2; opacity: 0.85; }
+.skill { --fc: var(--c); } .lesson, .gate { --fc: var(--neon-gold); } .peak { --fc: var(--peak); }
+.skill .glyph { color: #6d6378; }
+.skill.s-unlocked .glyph, .lesson.s-unlocked .glyph, .peak.s-unlocked .glyph { color: #fff; text-shadow: 0 0 6px var(--fc); }
+.skill.s-available .glyph, .skill.s-short .glyph { color: var(--c); }
+.lesson .glyph { color: color-mix(in srgb, var(--neon-gold) 70%, #6d6378); }
+.lesson.s-available .glyph { color: var(--neon-gold); }
+.gate .glyph { font-size: 12px; color: color-mix(in srgb, var(--neon-gold) 70%, #6d6378); }
+.peak .glyph { color: #a39cb1; font-size: 17px; }
+.s-available svg { animation: breathe-f 1.9s ease-in-out infinite; }
+.s-unlocked.lit-fill .f-fill { fill: color-mix(in srgb, var(--fc) 24%, #0b0810); }
+.lesson.s-unlocked .f-fill { fill: color-mix(in srgb, var(--fc) 34%, #0b0810); }
+.gate.s-unlocked .f-fill { fill: color-mix(in srgb, var(--fc) 88%, #fff); }
+.gate.s-unlocked .glyph { color: #2a1406; text-shadow: none; }
+.sealed-frame .glyph { font-size: 11px; color: #cfc6dc; }
+.f-seal { fill: rgba(150, 140, 175, 0.12); stroke: rgba(200, 190, 220, 0.22); stroke-width: 1.2; }
+.f-wax { fill: rgba(70, 40, 40, 0.75); stroke: rgba(200, 150, 120, 0.35); stroke-width: 1; }
+.cost { position: absolute; right: -6px; bottom: -6px; display: inline-flex; align-items: center; gap: 2px; height: 16px; padding: 0 5px 0 3px; border-radius: 8px; background: #1a0f08; border: 1px solid color-mix(in srgb, var(--ember) 70%, transparent); color: var(--ember-core); font-size: 11px; font-weight: 900; }
+.cost i { width: 7px; height: 9px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: radial-gradient(circle at 50% 70%, var(--ember-core), var(--hc, var(--ember)) 60%); }
+.selected::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1.5px dashed #fff; opacity: 0.9; pointer-events: none; }
+
+/* ⑥ 右の説明パネル: 本番は panel_frame.webp（9スライス） */
+.gb-side { position: relative; margin: 10px 16px 8px 10px; padding: 16px 18px 14px; display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 15px; line-height: 1.5;
+  border: 1px solid color-mix(in srgb, var(--neon-gold) 55%, transparent); border-radius: 12px; background: linear-gradient(180deg, rgba(14, 10, 20, 0.92), rgba(8, 6, 12, 0.95));
+  box-shadow: 0 0 10px rgba(244, 210, 122, 0.18), inset 0 0 18px rgba(244, 210, 122, 0.05); }
+.gb-side::before, .gb-side::after { content: ""; position: absolute; width: 18px; height: 18px; border: 2px solid var(--neon-gold); filter: drop-shadow(0 0 4px var(--neon-gold)); pointer-events: none; }
+.gb-side::before { left: -2px; top: -2px; border-right: 0; border-bottom: 0; border-radius: 12px 0 0 0; }
+.gb-side::after { right: -2px; bottom: -2px; border-left: 0; border-top: 0; border-radius: 0 0 12px 0; }
+.gb-side p { margin: 0; }
+.gb-art { flex: none; position: relative; display: grid; place-items: center; height: 168px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(244, 210, 122, 0.22);
+  background: radial-gradient(ellipse 55% 70% at 50% 62%, color-mix(in srgb, var(--ac, var(--c)) 30%, transparent), rgba(8, 5, 12, 0.9)); }
+.gb-art span { font-size: 66px; font-weight: 900; color: color-mix(in srgb, var(--ac, var(--c)) 60%, #fff); text-shadow: 0 0 18px var(--ac, var(--c)); }
+.gb-art em { position: absolute; left: 10px; bottom: 8px; font-style: normal; font-family: var(--mono); font-size: 11px; color: rgba(244, 237, 224, 0.45); }
+.gb-kind { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-dim); margin-top: 4px !important; }
+.gb-kind b { font-size: 12px; padding: 1px 8px; border-radius: 4px; border: 1px solid currentColor; color: var(--kc, var(--c)); }
+.gb-p-title { font-size: 21px; font-weight: 900; color: var(--gold-hi); }
+.gb-p-text { color: var(--text); }
+.gb-p-perk { color: #ffe08a; }
+.gb-p-state { color: var(--text-dim); font-size: 14px; }
+.gb-p-state.s-available { color: #ffd08a; }
+.gb-side-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+.btn { font: 700 15px var(--font); min-height: 44px; min-width: 120px; padding: 0 16px; border-radius: 8px; cursor: pointer; color: var(--text); background: rgba(20, 14, 28, 0.9); border: 1px solid rgba(244, 210, 122, 0.45); }
+.btn.primary { color: #2a1406; background: linear-gradient(180deg, #ffd88a, #e2a43c); border-color: #ffe2a6; box-shadow: 0 0 12px rgba(255, 180, 60, 0.45); }
+.btn:disabled { opacity: 0.4; cursor: default; box-shadow: none; }
+.btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* 下の帯 */
+.gb-footer { display: flex; gap: 18px; align-items: center; padding: 10px 18px; border-top: 1px solid rgba(244, 210, 122, 0.22); background: linear-gradient(0deg, rgba(8, 5, 12, 0.95), rgba(8, 5, 12, 0.7)); }
+.gb-wallet { display: flex; gap: 14px; align-items: center; flex: none; padding: 6px 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 180, 60, 0.18); }
+.gb-hidane { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-dim); --hc: var(--ember); }
+.gb-hidane.h-body { --hc: var(--stat-body); } .gb-hidane.h-sense { --hc: var(--stat-sense); } .gb-hidane.h-wisdom { --hc: var(--stat-wisdom); }
+/* ⑤ 火種の粒: 本番は hidane_*.webp */
+.gb-hidane i { display: inline-block; width: 16px; height: 19px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(circle at 50% 70%, var(--ember-core), var(--hc) 52%, #3a1c08); box-shadow: 0 0 9px var(--hc); }
+.gb-hidane b { font-size: 21px; font-weight: 900; color: var(--hc); text-shadow: 0 0 8px color-mix(in srgb, var(--hc) 50%, transparent); }
+.gb-hidane.zero { opacity: 0.38; }
+.gb-legend { flex: 1; display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--text-dim); }
+.gb-legend li { display: inline-flex; gap: 6px; align-items: center; }
+.gb-legend i { width: 13px; height: 13px; border-radius: 50%; box-sizing: border-box; border: 2px solid #3d3446; }
+.gb-legend i.l-lit { border-color: color-mix(in srgb, var(--c) 35%, #fff); background: color-mix(in srgb, var(--c) 40%, #0b0810); box-shadow: 0 0 6px var(--c); }
+.gb-legend i.l-av { border-color: var(--c); }
+.gb-legend i.l-short { border: 2px dashed color-mix(in srgb, var(--c) 50%, transparent); }
+.gb-legend i.l-seal { border: 1px solid rgba(200, 190, 220, 0.3); background: rgba(150, 140, 175, 0.15); }
+.gb-actions { display: flex; gap: 10px; flex: none; }
+.gb-actions .btn { min-height: 48px; min-width: 120px; }
+
+/* 素材の場所（重ね表示） */
+.tags { position: absolute; inset: 0; pointer-events: none; display: none; }
+.show-assets .tags { display: block; }
+.tag-box { position: absolute; border: 2px dashed var(--ember); border-radius: 8px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); }
+.tag-box.round { border-radius: 50%; }
+.tag { position: absolute; display: inline-flex; gap: 6px; align-items: center; padding: 3px 9px 3px 4px; border-radius: 999px; background: #120a04; border: 1px solid var(--ember); color: var(--ember-core); font: 700 13px var(--font); white-space: nowrap; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); }
+.tag b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--ember); color: #2a1406; font-size: 13px; }
+.tag.code { border-color: #9fd8ff; color: #d8f0ff; background: #06121a; }
+.tag.code b { background: #9fd8ff; }
+
+/* 素材の対応表 */
+.sheet { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.asset { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; padding: 14px; border-radius: 10px; border: 1px solid var(--page-line); background: rgba(255, 255, 255, 0.02); min-width: 0; }
+.asset .no { grid-row: span 3; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ember); color: #2a1406; font-weight: 900; }
+.asset h3 { margin: 0; font-size: 16px; color: var(--gold-hi); }
+.asset code { font-family: var(--mono); font-size: 12px; color: #ffd08a; overflow-wrap: anywhere; }
+.asset p { margin: 0; font-size: 14px; color: var(--text-dim); }
+.asset.code-row .no { background: #9fd8ff; }
+.palette { display: flex; flex-wrap: wrap; gap: 10px; }
+.sw { display: inline-flex; gap: 8px; align-items: center; font-size: 13px; color: var(--text-dim); }
+.sw i { width: 22px; height: 22px; border-radius: 50%; background: var(--s); box-shadow: 0 0 10px var(--s); }
+.sw code { font-family: var(--mono); font-size: 12px; color: var(--text); }
+h2 { margin: 8px 0 0; font-size: 18px; color: var(--gold-hi); letter-spacing: 0.06em; }
+.note { margin: 0; color: var(--text-dim); font-size: 14px; max-width: 70ch; }
+
+@media (prefers-reduced-motion: reduce) { .gb-node .gb-face, .gb-node svg { animation: none !important; } }
+</style>
+
+<div class="page">
+  <header class="page-head">
+    <p class="eyebrow">GB03 ・ Codex に渡す完成見本</p>
+    <h1>心得の盤　ネオンのラウンジ</h1>
+    <p class="lede">v8 の盤（3枚×66マス）をそのまま使った見本です。マスを押すと右のパネルが変わり、「灯す」で灯した瞬間も見られます。「素材の場所」を入れると、画像にする6点とコードが描く所が重なって出ます。</p>
+  </header>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="画面の大きさ">
+      <button type="button" id="v-pc" aria-pressed="true">PC 1280×720</button>
+      <button type="button" id="v-phone" aria-pressed="false">スマホ横 844×390</button>
+    </div>
+    <div class="seg" role="group" aria-label="進み具合">
+      <button type="button" id="p-early" aria-pressed="true">序盤（2章）</button>
+      <button type="button" id="p-late" aria-pressed="false">終盤（ほぼ全部）</button>
+    </div>
+    <button type="button" class="chip" id="t-assets" aria-pressed="false">素材の場所</button>
+    <button type="button" class="chip quiet" id="t-reset">灯りを初めに戻す</button>
+  </div>
+
+  <div class="viewport" id="viewport">
+    <div class="stage" id="stage">
+      <div class="backdrop"></div>
+      <div class="gboard" id="gboard">
+        <header class="gb-header">
+          <h2 class="gb-title" style="margin:0">心得の盤</h2>
+          <div class="gb-level">Lv 14 <span class="gb-gauge"><b></b></span><small>次まで 220</small></div>
+          <p class="gb-place">観音のラウンジ ・ ここで灯せる</p>
+          <button class="gb-icon" type="button" aria-label="見方">?</button>
+          <button class="gb-icon" type="button" aria-label="閉じる">×</button>
+        </header>
+        <div class="gb-main">
+          <div class="gb-left">
+            <div class="gb-tabs" id="tabs" role="tablist"></div>
+            <div class="gb-board" id="board">
+              <svg class="gb-svg" id="svg" viewBox="0 0 760 488" aria-hidden="true"></svg>
+              <div class="gb-nodes" id="nodes"></div>
+            </div>
+          </div>
+          <aside class="gb-side" id="side"></aside>
+        </div>
+        <footer class="gb-footer">
+          <div class="gb-wallet" id="wallet"></div>
+          <ul class="gb-legend">
+            <li><i class="l-lit"></i>灯した</li>
+            <li><i class="l-av"></i>今灯せる</li>
+            <li><i class="l-short"></i>火種が足りない</li>
+            <li><i></i>道がまだ</li>
+            <li><i class="l-seal"></i>封</li>
+          </ul>
+          <div class="gb-actions">
+            <button class="btn" type="button">戻す</button>
+            <button class="btn primary" type="button">決める</button>
+          </div>
+        </footer>
+      </div>
+      <div class="tags" id="tags"></div>
+    </div>
+  </div>
+
+  <h2>画像にする6点</h2>
+  <p class="note">番号は「素材の場所」の札と同じです。番号のない物（道・マスの丸・光・文字・数字・ゲージ）はすべてコードが描きます。</p>
+  <div class="sheet" id="sheet"></div>
+
+  <h2>光る色</h2>
+  <div class="palette">
+    <span class="sw" style="--s:#ef8a5e"><i></i>才能 <code>#ef8a5e</code></span>
+    <span class="sw" style="--s:#6cc6e8"><i></i>感覚 <code>#6cc6e8</code></span>
+    <span class="sw" style="--s:#65c9bb"><i></i>理論 <code>#65c9bb</code></span>
+    <span class="sw" style="--s:#f4d27a"><i></i>金（授業・関門） <code>#f4d27a</code></span>
+    <span class="sw" style="--s:#ffb43c"><i></i>火種 <code>#ffb43c</code></span>
+    <span class="sw" style="--s:#f6f2ff"><i></i>極み <code>#f6f2ff</code></span>
+  </div>
+</div>
+
+<script>
+const DATA = {"boards":{"body":[{"id":"B1","kind":"stat","x":0,"y":-1,"ring":1,"cost":1,"links":["B5","B7","B6","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"最大体力 ＋1・寝た時の回復 ＋1%"},{"id":"B2","kind":"stat","x":1,"y":0,"ring":1,"cost":1,"links":["B9","B7","B8","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"最大体力 ＋1・寝た時の回復 ＋1%"},{"id":"B3","kind":"stat","x":0,"y":1,"ring":1,"cost":1,"links":["B9","B11","B10","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"最大体力 ＋1・寝た時の回復 ＋1%"},{"id":"B4","kind":"stat","x":-1,"y":0,"ring":1,"cost":1,"links":["B11","B5","B12","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"最大体力 ＋1・寝た時の回復 ＋1%"},{"id":"B5","kind":"stat","x":-1,"y":-1,"ring":1,"cost":1,"links":["B4","B1","M-B3"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"最大体力 ＋1・寝た時の回復 ＋1%"},{"id":"B6","kind":"stat","x":0,"y":-2,"ring":1,"cost":1,"links":["B1","B13"],"peak":false,"name":null,"glyph":"体","text":null,"scene":null,"who":null,"perk":"体力","perkText":"最大体力 ＋4"},{"id":"B7","kind":"stat","x":1,"y":-1,"ring":1,"cost":1,"links":["B1","B2","M-B4","M-B6"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"最大体力 ＋1・寝た時の回復 ＋1%"},{"id":"B8","kind":"stat","x":2,"y":0,"ring":1,"cost":1,"links":["B2","B14"],"peak":false,"name":null,"glyph":"体","text":null,"scene":null,"who":null,"perk":"体力","perkText":"最大体力 ＋4"},{"id":"B9","kind":"stat","x":1,"y":1,"ring":1,"cost":1,"links":["B2","B3","M-B1","M-B5"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"最大体力 ＋1・寝た時の回復 ＋1%"},{"id":"B10","kind":"stat","x":0,"y":2,"ring":1,"cost":1,"links":["B3","B15"],"peak":false,"name":null,"glyph":"体","text":null,"scene":null,"who":null,"perk":"体力","perkText":"最大体力 ＋4"},{"id":"B11","kind":"stat","x":-1,"y":1,"ring":1,"cost":1,"links":["B3","B4","M-B2"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"最大体力 ＋1・寝た時の回復 ＋1%"},{"id":"B12","kind":"stat","x":-2,"y":0,"ring":1,"cost":1,"links":["B4","B16"],"peak":false,"name":null,"glyph":"人","text":null,"scene":null,"who":null,"perk":"人柄","perkText":"好感度が少し上がりやすく（＋2%）"},{"id":"B13","kind":"stat","x":0,"y":-3,"ring":1,"cost":1,"links":["B6","BG2","BG1"],"peak":false,"name":null,"glyph":"体","text":null,"scene":null,"who":null,"perk":"体力","perkText":"最大体力 ＋4"},{"id":"B14","kind":"stat","x":3,"y":0,"ring":1,"cost":1,"links":["B8","K03"],"peak":false,"name":null,"glyph":"体","text":null,"scene":null,"who":null,"perk":"体力","perkText":"最大体力 ＋4"},{"id":"B15","kind":"stat","x":0,"y":3,"ring":1,"cost":1,"links":["B10","BG3","BG4"],"peak":false,"name":null,"glyph":"体","text":null,"scene":null,"who":null,"perk":"体力","perkText":"最大体力 ＋4"},{"id":"B16","kind":"stat","x":-3,"y":0,"ring":1,"cost":1,"links":["B12","K04"],"peak":false,"name":null,"glyph":"人","text":null,"scene":null,"who":null,"perk":"人柄","perkText":"好感度が少し上がりやすく（＋2%）"},{"id":"B17","kind":"stat","x":-2,"y":-3,"ring":2,"cost":1,"links":["BG1","B21"],"peak":false,"name":null,"glyph":"華","text":null,"scene":null,"who":null,"perk":"華","perkText":"大会の審査員の第一印象 ＋1"},{"id":"B18","kind":"stat","x":2,"y":-3,"ring":2,"cost":1,"links":["BG2","B22"],"peak":false,"name":null,"glyph":"眠","text":null,"scene":null,"who":null,"perk":"眠り","perkText":"寝た時の体力の回復 ＋3%"},{"id":"B19","kind":"stat","x":2,"y":3,"ring":2,"cost":1,"links":["BG3","B23"],"peak":false,"name":null,"glyph":"華","text":null,"scene":null,"who":null,"perk":"華","perkText":"大会の審査員の第一印象 ＋1"},{"id":"B20","kind":"stat","x":-2,"y":3,"ring":2,"cost":1,"links":["BG4","B24"],"peak":false,"name":null,"glyph":"眠","text":null,"scene":null,"who":null,"perk":"眠り","perkText":"寝た時の体力の回復 ＋3%"},{"id":"B21","kind":"stat","x":-3,"y":-3,"ring":2,"cost":1,"links":["B17","K08"],"peak":false,"name":null,"glyph":"華","text":null,"scene":null,"who":null,"perk":"華","perkText":"大会の審査員の第一印象 ＋1"},{"id":"B22","kind":"stat","x":3,"y":-3,"ring":2,"cost":1,"links":["B18","K07","B25"],"peak":false,"name":null,"glyph":"眠","text":null,"scene":null,"who":null,"perk":"眠り","perkText":"寝た時の体力の回復 ＋3%"},{"id":"B23","kind":"stat","x":3,"y":3,"ring":2,"cost":1,"links":["B19","K12"],"peak":false,"name":null,"glyph":"華","text":null,"scene":null,"who":null,"perk":"華","perkText":"大会の審査員の第一印象 ＋1"},{"id":"B24","kind":"stat","x":-3,"y":3,"ring":2,"cost":1,"links":["B20","K13"],"peak":false,"name":null,"glyph":"眠","text":null,"scene":null,"who":null,"perk":"眠り","perkText":"寝た時の体力の回復 ＋3%"},{"id":"B25","kind":"stat","x":3,"y":-4,"ring":3,"cost":1,"links":["B22","B26"],"peak":false,"name":null,"glyph":"眠","text":null,"scene":null,"who":null,"perk":"眠り","perkText":"寝た時の体力の回復 ＋3%"},{"id":"B26","kind":"stat","x":4,"y":-4,"ring":5,"cost":1,"links":["B25"],"peak":true,"name":null,"glyph":"極","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"最大体力 ＋1・寝た時の回復 ＋1%"},{"id":"BG1","kind":"gate","x":-1,"y":-3,"ring":1,"cost":1,"links":["B13","B17"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"BG2","kind":"gate","x":1,"y":-3,"ring":1,"cost":1,"links":["B13","B18"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"BG3","kind":"gate","x":1,"y":3,"ring":1,"cost":1,"links":["B15","B19"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"BG4","kind":"gate","x":-1,"y":3,"ring":2,"cost":1,"links":["B15","B20"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"K03","kind":"skill","x":4,"y":0,"ring":1,"cost":4,"links":["B14"],"peak":false,"name":"早寝早起き","glyph":"寝","text":"ふつうに眠ったときの体力の戻りが増える","scene":"日常","who":null,"perk":null,"perkText":null},{"id":"K04","kind":"skill","x":-4,"y":0,"ring":1,"cost":4,"links":["B16"],"peak":false,"name":"人見知りしない","glyph":"交","text":"はじめての相手・場所・場面の経験値が増える","scene":"日常","who":null,"perk":null,"perkText":null},{"id":"K07","kind":"skill","x":4,"y":-3,"ring":2,"cost":6,"links":["B22"],"peak":false,"name":"空気を読む","glyph":"読","text":"仲が深まる選択肢に小さな煙の印が出る（告白や大事な場面では出ない）","scene":"会話","who":null,"perk":null,"perkText":null},{"id":"K08","kind":"skill","x":-4,"y":-3,"ring":3,"cost":6,"links":["B21"],"peak":false,"name":"疲れ知らず","glyph":"結","text":"吸いすぎ・熱すぎの疲れがたまりにくい","scene":"熱管理・吸い出し","who":null,"perk":null,"perkText":null},{"id":"K12","kind":"skill","x":4,"y":3,"ring":4,"cost":8,"links":["B23"],"peak":false,"name":"大一番の胆力","glyph":"胆","text":"大会本番の一台だけ、体調を1段良く扱う","scene":"大会","who":null,"perk":null,"perkText":null},{"id":"K13","kind":"skill","x":-4,"y":3,"ring":4,"cost":8,"links":["B24"],"peak":false,"name":"声援","glyph":"援","text":"大会の蒸らしでリフレッシュを使うと、メンタルが1段回復する","scene":"大会の蒸らし","who":null,"perk":null,"perkText":null},{"id":"M-B1","kind":"lesson","x":2,"y":1,"ring":1,"cost":0,"links":["B9"],"peak":false,"name":"呼び込み上手","glyph":null,"text":"バイトの客足が増え、店からの売上ボーナスが増える","scene":"lesson_minto_calling","who":"minto","perk":null,"perkText":null},{"id":"M-B2","kind":"lesson","x":-1,"y":2,"ring":2,"cost":0,"links":["B11"],"peak":false,"name":"花を重ねる","glyph":null,"text":"花の葉を2種以上重ねると香りの層ができ、調整のたびに次の層が立つ","scene":null,"who":"rei","perk":null,"perkText":null},{"id":"M-B3","kind":"lesson","x":-2,"y":-1,"ring":3,"cost":0,"links":["B5"],"peak":false,"name":"白紙の味カード","glyph":null,"text":"提供の時に味の名前を伏せられる。審査員の受け止めの振れ幅が大きくなる","scene":null,"who":"kuze","perk":null,"perkText":null},{"id":"M-B4","kind":"lesson","x":1,"y":-2,"ring":1,"cost":0,"links":["B7"],"peak":false,"name":"ラーメンと斧で元気","glyph":null,"text":"最大体力が大きく増える","scene":null,"who":"hiyori","perk":null,"perkText":null},{"id":"M-B5","kind":"lesson","x":1,"y":2,"ring":3,"cost":0,"links":["B9"],"peak":false,"name":"ブラックティーを一割","glyph":null,"text":"配合にブラックティーを1〜2割入れると、ほかの葉の香りを消さずに奥行きが出て、配合の点が上がる","scene":null,"who":"mashiro","perk":null,"perkText":null},{"id":"M-B6","kind":"lesson","x":2,"y":-1,"ring":4,"cost":0,"links":["B7"],"peak":false,"name":"フェスタの煙","glyph":null,"text":"1台に1回、蒸らしのリフレッシュが画面全体に広がり、すべての雑念を消す","scene":null,"who":"da_silva","perk":null,"perkText":null}],"sense":[{"id":"S1","kind":"stat","x":0,"y":-1,"ring":1,"cost":1,"links":["S5","S7","S6","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"蒸らしの当たり判定 −1%・ジャスト帯 ＋0.5%"},{"id":"S2","kind":"stat","x":1,"y":0,"ring":1,"cost":1,"links":["S9","S7","S8","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"蒸らしの当たり判定 −1%・ジャスト帯 ＋0.5%"},{"id":"S3","kind":"stat","x":0,"y":1,"ring":1,"cost":1,"links":["S9","S11","S10","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"蒸らしの当たり判定 −1%・ジャスト帯 ＋0.5%"},{"id":"S4","kind":"stat","x":-1,"y":0,"ring":1,"cost":1,"links":["S11","S5","S12","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"蒸らしの当たり判定 −1%・ジャスト帯 ＋0.5%"},{"id":"S5","kind":"stat","x":-1,"y":-1,"ring":1,"cost":1,"links":["S4","S1","M-S6"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"蒸らしの当たり判定 −1%・ジャスト帯 ＋0.5%"},{"id":"S6","kind":"stat","x":0,"y":-2,"ring":1,"cost":1,"links":["S1","S13"],"peak":false,"name":null,"glyph":"火","text":null,"scene":null,"who":null,"perk":"火加減","perkText":"炭焼き・熱管理のジャスト帯 ＋1%"},{"id":"S7","kind":"stat","x":1,"y":-1,"ring":1,"cost":1,"links":["S1","S2","M-S2","M-S4"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"蒸らしの当たり判定 −1%・ジャスト帯 ＋0.5%"},{"id":"S8","kind":"stat","x":2,"y":0,"ring":1,"cost":1,"links":["S2","S14"],"peak":false,"name":null,"glyph":"火","text":null,"scene":null,"who":null,"perk":"火加減","perkText":"炭焼き・熱管理のジャスト帯 ＋1%"},{"id":"S9","kind":"stat","x":1,"y":1,"ring":1,"cost":1,"links":["S2","S3","M-S1","M-W6"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"蒸らしの当たり判定 −1%・ジャスト帯 ＋0.5%"},{"id":"S10","kind":"stat","x":0,"y":2,"ring":1,"cost":1,"links":["S3","S15"],"peak":false,"name":null,"glyph":"吸","text":null,"scene":null,"who":null,"perk":"吸い","perkText":"吸い出しのジャスト帯 ＋1%"},{"id":"S11","kind":"stat","x":-1,"y":1,"ring":1,"cost":1,"links":["S3","S4","M-S3","M-S5"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"蒸らしの当たり判定 −1%・ジャスト帯 ＋0.5%"},{"id":"S12","kind":"stat","x":-2,"y":0,"ring":1,"cost":1,"links":["S4","S16"],"peak":false,"name":null,"glyph":"吸","text":null,"scene":null,"who":null,"perk":"吸い","perkText":"吸い出しのジャスト帯 ＋1%"},{"id":"S13","kind":"stat","x":0,"y":-3,"ring":1,"cost":1,"links":["S6","SG1"],"peak":false,"name":null,"glyph":"火","text":null,"scene":null,"who":null,"perk":"火加減","perkText":"炭焼き・熱管理のジャスト帯 ＋1%"},{"id":"S14","kind":"stat","x":3,"y":0,"ring":1,"cost":1,"links":["S8","K15","SG3"],"peak":false,"name":null,"glyph":"火","text":null,"scene":null,"who":null,"perk":"火加減","perkText":"炭焼き・熱管理のジャスト帯 ＋1%"},{"id":"S15","kind":"stat","x":0,"y":3,"ring":1,"cost":1,"links":["S10","SG4"],"peak":false,"name":null,"glyph":"吸","text":null,"scene":null,"who":null,"perk":"吸い","perkText":"吸い出しのジャスト帯 ＋1%"},{"id":"S16","kind":"stat","x":-3,"y":0,"ring":1,"cost":1,"links":["S12","K06","SG2"],"peak":false,"name":null,"glyph":"吸","text":null,"scene":null,"who":null,"perk":"吸い","perkText":"吸い出しのジャスト帯 ＋1%"},{"id":"S17","kind":"stat","x":-3,"y":-2,"ring":2,"cost":1,"links":["SG2","S21"],"peak":false,"name":null,"glyph":"避","text":null,"scene":null,"who":null,"perk":"かわし","perkText":"蒸らしの当たり判定が小さく（−3%）"},{"id":"S18","kind":"stat","x":2,"y":-3,"ring":2,"cost":1,"links":["SG1","S22"],"peak":false,"name":null,"glyph":"避","text":null,"scene":null,"who":null,"perk":"かわし","perkText":"蒸らしの当たり判定が小さく（−3%）"},{"id":"S19","kind":"stat","x":3,"y":2,"ring":2,"cost":1,"links":["SG3","S23"],"peak":false,"name":null,"glyph":"息","text":null,"scene":null,"who":null,"perk":"呼吸","perkText":"リフレッシュの範囲が一回り広く（＋6）"},{"id":"S20","kind":"stat","x":-2,"y":3,"ring":2,"cost":1,"links":["SG4","S24"],"peak":false,"name":null,"glyph":"息","text":null,"scene":null,"who":null,"perk":"呼吸","perkText":"リフレッシュの範囲が一回り広く（＋6）"},{"id":"S21","kind":"stat","x":-4,"y":-2,"ring":2,"cost":1,"links":["S17","K14"],"peak":false,"name":null,"glyph":"避","text":null,"scene":null,"who":null,"perk":"かわし","perkText":"蒸らしの当たり判定が小さく（−3%）"},{"id":"S22","kind":"stat","x":3,"y":-3,"ring":2,"cost":1,"links":["S18","K10","S25"],"peak":false,"name":null,"glyph":"避","text":null,"scene":null,"who":null,"perk":"かわし","perkText":"蒸らしの当たり判定が小さく（−3%）"},{"id":"S23","kind":"stat","x":4,"y":2,"ring":2,"cost":1,"links":["S19","K11"],"peak":false,"name":null,"glyph":"息","text":null,"scene":null,"who":null,"perk":"呼吸","perkText":"リフレッシュの範囲が一回り広く（＋6）"},{"id":"S24","kind":"stat","x":-3,"y":3,"ring":2,"cost":1,"links":["S20","K16"],"peak":false,"name":null,"glyph":"息","text":null,"scene":null,"who":null,"perk":"呼吸","perkText":"リフレッシュの範囲が一回り広く（＋6）"},{"id":"S25","kind":"stat","x":3,"y":-4,"ring":2,"cost":1,"links":["S22","S26"],"peak":false,"name":null,"glyph":"避","text":null,"scene":null,"who":null,"perk":"かわし","perkText":"蒸らしの当たり判定が小さく（−3%）"},{"id":"S26","kind":"stat","x":4,"y":-4,"ring":5,"cost":1,"links":["S25"],"peak":true,"name":null,"glyph":"極","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"蒸らしの当たり判定 −1%・ジャスト帯 ＋0.5%"},{"id":"SG1","kind":"gate","x":1,"y":-3,"ring":1,"cost":1,"links":["S13","S18"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"SG2","kind":"gate","x":-3,"y":-1,"ring":2,"cost":1,"links":["S16","S17"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"SG3","kind":"gate","x":3,"y":1,"ring":2,"cost":1,"links":["S14","S19"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"SG4","kind":"gate","x":-1,"y":3,"ring":2,"cost":1,"links":["S15","S20"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"K15","kind":"skill","x":4,"y":0,"ring":1,"cost":4,"links":["S14"],"peak":false,"name":"会心の一服","glyph":"会","text":"ジャスト帯のど真ん中で取ると「会心」。その工程の点が少し上振れする","scene":"炭焼き・吸い出し","who":null,"perk":null,"perkText":null},{"id":"K06","kind":"skill","x":-4,"y":0,"ring":1,"cost":6,"links":["S16"],"peak":false,"name":"二枚目のリフレッシュ","glyph":"波","text":"蒸らしのリフレッシュを2回使える（2回目は範囲が半分）","scene":"蒸らし","who":null,"perk":null,"perkText":null},{"id":"K10","kind":"skill","x":4,"y":-3,"ring":3,"cost":4,"links":["S22"],"peak":false,"name":"審査員の目","glyph":"目","text":"大会の工程ごとに、審査員の受け止めが肌で分かる","scene":"大会","who":null,"perk":null,"perkText":null},{"id":"K16","kind":"skill","x":-4,"y":3,"ring":3,"cost":6,"links":["S24"],"peak":false,"name":"勝負勘","glyph":"勢","text":"大会で前の工程が会心・ジャストだと、次の工程の点が少し上振れする","scene":"大会","who":null,"perk":null,"perkText":null},{"id":"K11","kind":"skill","x":5,"y":2,"ring":4,"cost":8,"links":["S23"],"peak":false,"name":"火の番","glyph":"火","text":"熱管理で炭を替えるときのジャストの幅が広がる","scene":"熱管理","who":null,"perk":null,"perkText":null},{"id":"K14","kind":"skill","x":-5,"y":-2,"ring":4,"cost":8,"links":["S21"],"peak":false,"name":"炭の声","glyph":"炭","text":"蒸らし予測で読める揺らぎが増える","scene":"蒸らし","who":null,"perk":null,"perkText":null},{"id":"M-S1","kind":"lesson","x":2,"y":1,"ring":1,"cost":0,"links":["S9"],"peak":false,"name":"蒸らしアタック","glyph":null,"text":"蒸らしで雑念の言葉を斬れる","scene":"ch1_sumi_attack","who":"sumi","perk":null,"perkText":null},{"id":"M-S2","kind":"lesson","x":1,"y":-2,"ring":1,"cost":0,"links":["S7"],"peak":false,"name":"単体の美学","glyph":null,"text":"葉1種だけで作る「単体で勝負」を選べる。その葉の熟練度の高さが深みとして評価される","scene":"lesson_adam_single","who":"adam","perk":null,"perkText":null},{"id":"M-S3","kind":"lesson","x":-1,"y":2,"ring":1,"cost":0,"links":["S11"],"peak":false,"name":"安心できる色","glyph":null,"text":"夜、家シーシャにラベンダーを入れると、眠った時の体力の回復が増える","scene":"lesson_tsumugi_lavender","who":"tsumugi","perk":null,"perkText":null},{"id":"M-W6","kind":"lesson","x":1,"y":2,"ring":2,"cost":0,"links":["S9"],"peak":false,"name":"カルダモンの一つまみ","glyph":null,"text":"配合にカルダモンを一つまみ足すと、相性の悪い組み合わせのぶつかりがやわらぐ","scene":"lesson_sumi_cardamom","who":"sumi","perk":null,"perkText":null},{"id":"M-S4","kind":"lesson","x":2,"y":-1,"ring":2,"cost":0,"links":["S7"],"peak":false,"name":"ズボーって","glyph":null,"text":"吸い出しに「ズボー（一気に深く）」が加わる。温度を大きく上げて立て直せる","scene":null,"who":"ageha","perk":null,"perkText":null},{"id":"M-S5","kind":"lesson","x":-2,"y":1,"ring":3,"cost":0,"links":["S11"],"peak":false,"name":"ピザとシーシャの夜","glyph":null,"text":"仲間を誘って「ピザとシーシャの夜」を開ける。誘った人の好感度がまとめて上がる（同じ人は続けて呼べない）","scene":null,"who":"steve","perk":null,"perkText":null},{"id":"M-S6","kind":"lesson","x":-2,"y":-1,"ring":1,"cost":0,"links":["S5"],"peak":false,"name":"ブルーベリーに帰る","glyph":null,"text":"配合にブルーベリーを2割以上入れると、どんな葉と合わせても香りがまとまり、配合の点が上がる","scene":null,"who":"rin","perk":null,"perkText":null}],"wisdom":[{"id":"W1","kind":"stat","x":0,"y":-1,"ring":1,"cost":1,"links":["W5","W7","W6","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"ゲージ ＋0.5% ゆっくり・葉のダメージ −1%"},{"id":"W2","kind":"stat","x":1,"y":0,"ring":1,"cost":1,"links":["W9","W7","W8","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"ゲージ ＋0.5% ゆっくり・葉のダメージ −1%"},{"id":"W3","kind":"stat","x":0,"y":1,"ring":1,"cost":1,"links":["W9","W11","W10","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"ゲージ ＋0.5% ゆっくり・葉のダメージ −1%"},{"id":"W4","kind":"stat","x":-1,"y":0,"ring":1,"cost":1,"links":["W11","W5","W12","HUB"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"ゲージ ＋0.5% ゆっくり・葉のダメージ −1%"},{"id":"W5","kind":"stat","x":-1,"y":-1,"ring":1,"cost":1,"links":["W4","W1","M-W4"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"ゲージ ＋0.5% ゆっくり・葉のダメージ −1%"},{"id":"W6","kind":"stat","x":0,"y":-2,"ring":1,"cost":1,"links":["W1","W13"],"peak":false,"name":null,"glyph":"舌","text":null,"scene":null,"who":null,"perk":"舌","perkText":"フレーバーの熟練度の伸び ＋3%"},{"id":"W7","kind":"stat","x":1,"y":-1,"ring":1,"cost":1,"links":["W1","W2","M-W3","M-W5"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"ゲージ ＋0.5% ゆっくり・葉のダメージ −1%"},{"id":"W8","kind":"stat","x":2,"y":0,"ring":1,"cost":1,"links":["W2","W14"],"peak":false,"name":null,"glyph":"段","text":null,"scene":null,"who":null,"perk":"段取り","perkText":"作りのゲージが ＋1% ゆっくり"},{"id":"W9","kind":"stat","x":1,"y":1,"ring":1,"cost":1,"links":["W2","W3","M-W1","M-W7"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"ゲージ ＋0.5% ゆっくり・葉のダメージ −1%"},{"id":"W10","kind":"stat","x":0,"y":2,"ring":1,"cost":1,"links":["W3","W15"],"peak":false,"name":null,"glyph":"舌","text":null,"scene":null,"who":null,"perk":"舌","perkText":"フレーバーの熟練度の伸び ＋3%"},{"id":"W11","kind":"stat","x":-1,"y":1,"ring":1,"cost":1,"links":["W3","W4","M-W2","M-W8"],"peak":false,"name":null,"glyph":"基","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"ゲージ ＋0.5% ゆっくり・葉のダメージ −1%"},{"id":"W12","kind":"stat","x":-2,"y":0,"ring":1,"cost":1,"links":["W4","W16"],"peak":false,"name":null,"glyph":"葉","text":null,"scene":null,"who":null,"perk":"葉","perkText":"吸いすぎの葉のダメージ −3%"},{"id":"W13","kind":"stat","x":0,"y":-3,"ring":1,"cost":1,"links":["W6","W17"],"peak":false,"name":null,"glyph":"舌","text":null,"scene":null,"who":null,"perk":"舌","perkText":"フレーバーの熟練度の伸び ＋3%"},{"id":"W14","kind":"stat","x":3,"y":0,"ring":1,"cost":1,"links":["W8","K01"],"peak":false,"name":null,"glyph":"段","text":null,"scene":null,"who":null,"perk":"段取り","perkText":"作りのゲージが ＋1% ゆっくり"},{"id":"W15","kind":"stat","x":0,"y":3,"ring":1,"cost":1,"links":["W10","WG1","WG2"],"peak":false,"name":null,"glyph":"舌","text":null,"scene":null,"who":null,"perk":"舌","perkText":"フレーバーの熟練度の伸び ＋3%"},{"id":"W16","kind":"stat","x":-3,"y":0,"ring":1,"cost":1,"links":["W12","K18"],"peak":false,"name":null,"glyph":"葉","text":null,"scene":null,"who":null,"perk":"葉","perkText":"吸いすぎの葉のダメージ −3%"},{"id":"W17","kind":"stat","x":0,"y":-4,"ring":1,"cost":1,"links":["W13","WG4","WG3"],"peak":false,"name":null,"glyph":"舌","text":null,"scene":null,"who":null,"perk":"舌","perkText":"フレーバーの熟練度の伸び ＋3%"},{"id":"W18","kind":"stat","x":2,"y":3,"ring":2,"cost":1,"links":["WG1","W22"],"peak":false,"name":null,"glyph":"葉","text":null,"scene":null,"who":null,"perk":"葉","perkText":"吸いすぎの葉のダメージ −3%"},{"id":"W19","kind":"stat","x":-2,"y":3,"ring":2,"cost":1,"links":["WG2","K02"],"peak":false,"name":null,"glyph":"炭","text":null,"scene":null,"who":null,"perk":"炭の持ち","perkText":"炭の熱が下がりにくく（＋2%）"},{"id":"W20","kind":"stat","x":-2,"y":-4,"ring":2,"cost":1,"links":["WG3","W23"],"peak":false,"name":null,"glyph":"炭","text":null,"scene":null,"who":null,"perk":"炭の持ち","perkText":"炭の熱が下がりにくく（＋2%）"},{"id":"W21","kind":"stat","x":2,"y":-4,"ring":2,"cost":1,"links":["WG4","W24"],"peak":false,"name":null,"glyph":"舌","text":null,"scene":null,"who":null,"perk":"舌","perkText":"フレーバーの熟練度の伸び ＋3%"},{"id":"W22","kind":"stat","x":3,"y":3,"ring":2,"cost":1,"links":["W18","K05"],"peak":false,"name":null,"glyph":"葉","text":null,"scene":null,"who":null,"perk":"葉","perkText":"吸いすぎの葉のダメージ −3%"},{"id":"W23","kind":"stat","x":-3,"y":-4,"ring":3,"cost":1,"links":["W20","K09"],"peak":false,"name":null,"glyph":"炭","text":null,"scene":null,"who":null,"perk":"炭の持ち","perkText":"炭の熱が下がりにくく（＋2%）"},{"id":"W24","kind":"stat","x":3,"y":-4,"ring":3,"cost":1,"links":["W21","K17","W25"],"peak":false,"name":null,"glyph":"舌","text":null,"scene":null,"who":null,"perk":"舌","perkText":"フレーバーの熟練度の伸び ＋3%"},{"id":"W25","kind":"stat","x":3,"y":-3,"ring":5,"cost":1,"links":["W24","W26"],"peak":false,"name":null,"glyph":"舌","text":null,"scene":null,"who":null,"perk":"舌","perkText":"フレーバーの熟練度の伸び ＋3%"},{"id":"W26","kind":"stat","x":4,"y":-3,"ring":5,"cost":1,"links":["W25"],"peak":true,"name":null,"glyph":"極","text":null,"scene":null,"who":null,"perk":"基礎","perkText":"ゲージ ＋0.5% ゆっくり・葉のダメージ −1%"},{"id":"WG1","kind":"gate","x":1,"y":3,"ring":1,"cost":1,"links":["W15","W18"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"WG2","kind":"gate","x":-1,"y":3,"ring":1,"cost":1,"links":["W15","W19"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"WG3","kind":"gate","x":-1,"y":-4,"ring":2,"cost":1,"links":["W17","W20"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"WG4","kind":"gate","x":1,"y":-4,"ring":2,"cost":1,"links":["W17","W21"],"peak":false,"name":null,"glyph":null,"text":null,"scene":null,"who":null,"perk":null,"perkText":null},{"id":"K01","kind":"skill","x":4,"y":0,"ring":1,"cost":4,"links":["W14"],"peak":false,"name":"段取り八分","glyph":"段","text":"穴あけの制限時間が少し延びる","scene":"穴あけ","who":null,"perk":null,"perkText":null},{"id":"K02","kind":"skill","x":-3,"y":3,"ring":2,"cost":6,"links":["W19"],"peak":false,"name":"香りの記憶","glyph":"香","text":"前回の配合やレシピ帳の配合を1回で呼び出せる（黄金比の答えは出ない）","scene":"配合","who":null,"perk":null,"perkText":null},{"id":"K05","kind":"skill","x":4,"y":3,"ring":3,"cost":6,"links":["W22"],"peak":false,"name":"空模様","glyph":"空","text":"地図と朝の画面で明日の天気が分かる","scene":"日常","who":null,"perk":null,"perkText":null},{"id":"K17","kind":"skill","x":4,"y":-4,"ring":3,"cost":8,"links":["W24"],"peak":false,"name":"葉の持ち","glyph":"葉","text":"吸いすぎでの葉の傷みが減る（葉の体力が伸びる）","scene":"吸い出し・調整","who":null,"perk":null,"perkText":null},{"id":"K09","kind":"skill","x":-4,"y":-4,"ring":4,"cost":8,"links":["W23"],"peak":false,"name":"熟練の舌","glyph":"舌","text":"フレーバーの熟練度が早く育つ","scene":"制作全般","who":null,"perk":null,"perkText":null},{"id":"K18","kind":"skill","x":-4,"y":0,"ring":1,"cost":4,"links":["W16"],"peak":false,"name":"デンスパック","glyph":"密","text":"詰め方に「デンスパック」が加わる（密に詰めて厚い味へ。蒸らしは長めに）","scene":"パッキング","who":null,"perk":null,"perkText":null},{"id":"M-W1","kind":"lesson","x":2,"y":1,"ring":1,"cost":0,"links":["W9"],"peak":false,"name":"キューブ炭","glyph":null,"text":"キューブ炭を選べる","scene":"ch1_sumi_cube_coals","who":"sumi","perk":null,"perkText":null},{"id":"M-W2","kind":"lesson","x":-1,"y":2,"ring":2,"cost":0,"links":["W11"],"peak":false,"name":"四つ置き・混ぜ置き","glyph":null,"text":"炭の四つ置きと、フラット炭とキューブ炭の混ぜ置きを選べる","scene":"lesson_sumi_four","who":"sumi","perk":null,"perkText":null},{"id":"M-W3","kind":"lesson","x":1,"y":-2,"ring":1,"cost":0,"links":["W7"],"peak":false,"name":"全部見てけ","glyph":null,"text":"ライバル店で一服すると、その一台の配合がレシピ帳に残る","scene":"lesson_naru_watch","who":"naru","perk":null,"perkText":null},{"id":"M-W4","kind":"lesson","x":-2,"y":-1,"ring":2,"cost":0,"links":["W5"],"peak":false,"name":"0分蒸らし","glyph":null,"text":"蒸らしを 00:00 で始められる。低温から吸いながら熱を立ち上げる","scene":null,"who":"kumicho","perk":null,"perkText":null},{"id":"M-W5","kind":"lesson","x":2,"y":-1,"ring":3,"cost":0,"links":["W7"],"peak":false,"name":"Точность","glyph":null,"text":"雨・湿気・気温による温まり方の違いを読み切り、天気で熱が狂いにくくなる","scene":null,"who":"volk","perk":null,"perkText":null},{"id":"M-W7","kind":"lesson","x":1,"y":2,"ring":2,"cost":0,"links":["W9"],"peak":false,"name":"シャークアタック","glyph":null,"text":"蒸らしのアタックがサメの噛みつきになる。左右にも広がり、コンボ3ごとに大きく噛みついて周りの雑念をまとめて消す（蒸らしアタックが要る）","scene":null,"who":"samechan","perk":null,"perkText":null},{"id":"M-W8","kind":"lesson","x":-2,"y":1,"ring":4,"cost":0,"links":["W11"],"peak":false,"name":"グレープの王道","glyph":null,"text":"グレープを主役（いちばん多い葉）にした一台は、審査員の受け止めが一段良くなる","scene":null,"who":"sheikh","perk":null,"perkText":null}]},"steps":{"body":["体力はふつう","体力が少し増えた","好かれやすくなってきた","疲れにくくなった","審査員の第一印象が良く、少し加点される","体力が大きく増えた","人に好かれやすい","一日中動いてもへこたれない","体力ほぼ最大、加点されやすい","体力最大・誰とでもすぐ打ち解ける"],"sense":["ジャスト帯は狭め","ジャスト帯がほんの少し広く","事故の予兆（焦げ・熱すぎ・吸いすぎ）が見える","蒸らしで弾に当たりにくい","弾消しでメンタルも回復する","ジャスト帯がかなり広く","大会の一台で一度だけ、大失敗を防ぐ","リフレッシュの範囲がかなり広い","外す方が難しい","ジャスト帯が最も広く、画面全体の弾消し"],"wisdom":["ゲージは速く、配合は勘だのみ","ゲージがほんの少しゆっくり","配合の相性ヒントが出るように","熟練度が少し早く上がり、葉が傷みにくい","黄金比まで何を足すか分かる","炭の気配・蒸らしの揺らぎが早めに見える","ゲージがかなりゆっくり","熟練度がかなり早く上がる","炭も配合も、ほとんど読める","ゲージが最もゆっくり、読めるものは全部読める"]},"where":{"body":"普段の体力・好感度の上がりやすさ・大会の加点（第一印象）","sense":"ジャスト帯・事故の予兆と保険・蒸らし（当たり判定・リフレッシュ・メンタル回復）","wisdom":"作りのゲージ・葉の体力・熟練度の伸び・事前に見えるもの（配合・黄金比・炭の気配）"},"ranks":{"body":["影うすい","親しみやすい","華がある","目が離せない","カリスマ"],"sense":["ふつう","光るものがある","冴えてる","唯一無二","天才肌"],"wisdom":["見習い","様になってきた","一人前","職人肌","神業"]}};
+const W = 760, H = 488, CX = 380, CY = 244, CELL = 54;
+const at = (x, y) => ({ x: CX + x * CELL, y: CY + y * CELL });
+const BOARDS = ["body", "sense", "wisdom"];
+const JA = { body: "才能", sense: "感覚", wisdom: "理論" };
+const HEAD = { body: "才", sense: "感", wisdom: "理" };
+const WHO = { minto: "みんと", rei: "零", kuze: "久世", hiyori: "ひより", mashiro: "ましろ", da_silva: "ダ・シルヴァ", sumi: "スミさん", adam: "アダム", tsumugi: "つむぎ", ageha: "アゲハ", steve: "スティーブ", rin: "凛", naru: "なる", kumicho: "組長", volk: "ヴォルク", samechan: "サメちゃん", sheikh: "シェイク" };
+const EARLY_MET = ["minto", "rei", "hiyori", "sumi", "adam", "tsumugi", "ageha", "rin", "naru", "kumicho", "samechan"];
+let MET = new Set(EARLY_MET);
+let OPEN_RING = 2; // 序盤: 2章まで開いた所（3章より先は封）。終盤: 全部開く
+let late = false;
+const ASSETS = [
+  ["board_glass", "1520×976・透過なし", "盤の地。黒いスモークガラス（3枚共通）。盤の色の光はCSSで重ねる。"],
+  ["screen_backdrop", "2560×1440・透過なし", "画面全体の背景。ラウンジの奥の闇とネオンのぼけ。"],
+  ["hub_body / hub_sense / hub_wisdom", "各256×256・透過", "紋のネオンの輪。中は空ける（漢字はコード）。"],
+  ["frame_skill / lesson / gate / peak / seal", "各128×128・透過", "スキルの六角・授業の金の二重枠・関門のひし形・極み・封の札。"],
+  ["hidane_any / body / sense / wisdom", "各96×96・透過", "火種の粒。下の帯・HUD・レベルアップで使う。"],
+  ["panel_frame", "192×192・9スライス", "右の説明パネルの金のネオンの縁。"],
+];
+
+const stepFor = (n) => Math.min(10, 1 + Math.floor(9 * n / 26));
+const toNext = (n) => { const s = stepFor(n); if (s >= 10) return 0; let m = n; while (stepFor(m) === s) m++; return m - n; };
+
+let board = "body", sel = null, litNow = null;
+let lit, wallet;
+function initialLit() {
+  // 紋のまわりを中心に、各盤 10〜13 マスを灯した状態にする（実データの道に沿って BFS）
+  const out = {};
+  const plan = late ? { body: 50, sense: 46, wisdom: 52 } : { body: 12, sense: 10, wisdom: 13 };
+  for (const b of BOARDS) {
+    const nodes = DATA.boards[b], by = Object.fromEntries(nodes.map((n) => [n.id, n]));
+    const L = new Set(), q = nodes.filter((n) => n.links.includes("HUB")).map((n) => n.id);
+    while (q.length && L.size < plan[b]) {
+      const id = q.shift(), n = by[id];
+      if (L.has(id) || (!late && (n.kind !== "stat" || n.ring > 1)) || !shown(n) || n.peak) continue;
+      L.add(id); for (const l of n.links) if (l !== "HUB" && !L.has(l)) q.push(l);
+    }
+    const firstLesson = nodes.find((n) => n.kind === "lesson" && MET.has(n.who) && n.links.some((l) => L.has(l)));
+    if (firstLesson) L.add(firstLesson.id);
+    out[b] = L;
+  }
+  return out;
+}
+function reset() {
+  MET = new Set(late ? Object.keys(WHO) : EARLY_MET); OPEN_RING = late ? 5 : 2;
+  lit = initialLit(); wallet = late ? { any: 5, body: 2, sense: 3, wisdom: 1 } : { any: 3, body: 2, sense: 1, wisdom: 0 };
+  sel = late ? { body: "B26", sense: "K11", wisdom: "M-W8" } : { body: "M-B1", sense: "K15", wisdom: "WG1" }; litNow = null;
+}
+
+function shown(n) { return n.kind !== "lesson" || MET.has(n.who); }
+function status(n, b) {
+  const L = lit[b];
+  if (L.has(n.id)) return "unlocked";
+  if (n.ring > OPEN_RING) return "sealed";
+  const by = Object.fromEntries(DATA.boards[b].map((m) => [m.id, m]));
+  const near = n.links.some((l) => l === "HUB" || L.has(l));
+  if (!near) return "far";
+  const have = n.kind === "gate" ? wallet[b] : wallet.any + wallet[b];
+  return have >= n.cost ? "available" : "short";
+}
+
+const NS = "http://www.w3.org/2000/svg";
+const sv = (tag, attrs = {}) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+const hex = (w, h, cx = 0, cy = 0) => { const a = w / 2, b = h / 2, k = a * 0.5; return [[cx - a, cy], [cx - k, cy - b], [cx + k, cy - b], [cx + a, cy], [cx + k, cy + b], [cx - k, cy + b]].map((p) => p.join(",")).join(" "); };
+const diamond = (r) => `0,${-r} ${r},0 0,${r} ${-r},0`;
+
+function frameSvg(n, st) {
+  const big = n.peak, isGate = n.kind === "gate";
+  const size = big ? 50 : isGate ? 34 : 46;
+  const s = sv("svg", { width: size, height: size, viewBox: `${-size / 2} ${-size / 2} ${size} ${size}` });
+  const shape = (cls) => isGate ? sv("polygon", { points: diamond(14), class: cls }) : sv("polygon", { points: big ? hex(44, 38) : hex(40, 34), class: cls });
+  if (st === "sealed") {
+    s.append(shape("f-seal"));
+    if (!isGate) s.append(sv("circle", { r: 8, class: "f-wax" }));
+    return s;
+  }
+  const on = st === "unlocked", hot = on || st === "available" || st === "pending";
+  s.append(shape("f-fill"));
+  if (hot) { const g = shape("f-glow"); if (!on) g.setAttribute("opacity", "0.25"); s.append(g); }
+  s.append(shape(hot ? "f-tube" : "f-dead"));
+  if (n.kind === "lesson") s.append(sv("polygon", { points: hex(30, 25), class: hot ? "f-thin" : "f-dead", "stroke-width": 1 }));
+  if (big) s.append(sv("polygon", { points: hex(52, 45), class: hot ? "f-thin" : "f-dead", "stroke-width": 1, opacity: 0.6 }));
+  return s;
+}
+
+function render() {
+  const gb = document.getElementById("gboard");
+  gb.className = "gboard b-" + board;
+  renderTabs(); renderBoard(); renderSide(); renderWallet(); renderTags();
+}
+
+function renderTabs() {
+  const box = document.getElementById("tabs"); box.textContent = "";
+  for (const b of BOARDS) {
+    const L = lit[b], count = DATA.boards[b].filter((n) => n.kind === "stat" && L.has(n.id)).length;
+    const ready = DATA.boards[b].filter((n) => shown(n) && status(n, b) === "available").length;
+    const t = document.createElement("button");
+    t.type = "button"; t.role = "tab"; t.className = `gb-tab t-${b}${b === board ? " on" : ""}`; t.setAttribute("aria-selected", b === board);
+    t.innerHTML = `<span class="gb-tab-head">${HEAD[b]}</span><span class="gb-tab-body"><b>${JA[b]}盤</b><span>${stepFor(count)}段 ・ 次まで${toNext(count)}</span><span class="gb-tab-line"><b style="width:${(count / 26 * 100).toFixed(1)}%"></b></span></span>${ready ? `<span class="gb-tab-ready">${ready}</span>` : ""}`;
+    t.onclick = () => { board = b; litNow = null; render(); };
+    box.append(t);
+  }
+}
+
+function renderBoard() {
+  const svg = document.getElementById("svg"); svg.textContent = "";
+  const nodes = DATA.boards[board], by = Object.fromEntries(nodes.map((n) => [n.id, n])), L = lit[board];
+  const defs = sv("defs");
+  defs.innerHTML = `<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="fogf" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>
+    <filter id="smoke"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.012" numOctaves="3" seed="7"/><feColorMatrix values="0 0 0 0 0.75  0 0 0 0 0.7  0 0 0 0 0.85  0 0 0 0.9 -0.32"/></filter>
+    <radialGradient id="ember" cx="50%" cy="60%" r="55%"><stop offset="0" stop-color="#fff1b8" stop-opacity="0.9"/><stop offset="0.45" stop-color="#ffb43c" stop-opacity="0.45"/><stop offset="1" stop-color="#ffb43c" stop-opacity="0"/></radialGradient>`;
+  svg.append(defs);
+  svg.append(sv("rect", { x: 0, y: 0, width: W, height: H, filter: "url(#smoke)", opacity: 0.2 }));
+  for (let x = -6; x <= 6; x++) for (let y = -4; y <= 4; y++) { const p = at(x, y); svg.append(sv("circle", { cx: p.x, cy: p.y, r: 1.2, class: "gb-dot" })); }
+  // 封（曇り）
+  const fog = sv("g", { filter: "url(#fogf)" });
+  for (const n of nodes) if (n.ring > OPEN_RING) { const p = at(n.x, n.y); fog.append(sv("circle", { cx: p.x, cy: p.y, r: 30, class: "fog" })); }
+  svg.append(fog);
+  // 道
+  const seen = new Set(), glow = sv("g", { filter: "url(#glow)" }), cores = sv("g"), dead = sv("g");
+  const aim = selPath();
+  for (const n of nodes) {
+    if (!shown(n)) continue;
+    for (const id of n.links) {
+      const key = [n.id, id].sort().join("|"); if (seen.has(key)) continue; seen.add(key);
+      const m = id === "HUB" ? null : by[id]; if (m && !shown(m)) continue;
+      const a = at(n.x, n.y), b = m ? at(m.x, m.y) : { x: CX, y: CY };
+      const on = L.has(n.id) && (id === "HUB" || L.has(id));
+      const sealed = n.ring > OPEN_RING || (m && m.ring > OPEN_RING);
+      const line = (cls) => sv("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: cls });
+      if (on) { glow.append(line("tube-glow")); cores.append(line("tube-core")); }
+      else if (sealed) dead.append(line("tube-sealed"));
+      else { dead.append(line("tube-dead")); dead.append(line("tube-dead-hi")); if (aim.has(key)) dead.append(line("tube-aim")); }
+    }
+  }
+  svg.append(dead, glow, cores);
+  // 紋 ③
+  const hub = sv("g");
+  hub.append(sv("circle", { cx: CX, cy: CY, r: 34, class: "hub-glow", filter: "url(#glow)" }));
+  hub.append(sv("circle", { cx: CX, cy: CY, r: 34, class: "hub-tube" }));
+  hub.append(sv("circle", { cx: CX, cy: CY, r: 28, class: "hub-tube2" }));
+  for (let i = 0; i < 6; i++) { const a0 = i * Math.PI / 3, a1 = a0 + 0.7, r = 22; hub.append(sv("path", { d: `M ${CX + r * Math.cos(a0)} ${CY + r * Math.sin(a0)} A ${r} ${r} 0 0 1 ${CX + (r - 3) * Math.cos(a1)} ${CY + (r - 3) * Math.sin(a1)}`, class: "hub-swirl" })); }
+  hub.append(sv("circle", { cx: CX, cy: CY + 3, r: 17, fill: "url(#ember)" }));
+  const t = sv("text", { x: CX, y: CY + 1, class: "hub-text", filter: "" }); t.textContent = HEAD[board];
+  t.style.textShadow = "0 0 8px var(--c)";
+  hub.append(t);
+  svg.append(hub);
+
+  const box = document.getElementById("nodes"); box.textContent = "";
+  for (const n of nodes) {
+    if (!shown(n)) continue;
+    const st = status(n, board), p = at(n.x, n.y);
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = `gb-node ${n.peak ? "peak" : n.kind} s-${st}${sel_() === n.id ? " selected" : ""}${litNow === n.id ? " lit-now" : ""}`;
+    b.style.left = p.x + "px"; b.style.top = p.y + "px";
+    b.dataset.id = n.id;
+    const glyph = n.kind === "stat" ? (n.peak ? "極" : n.glyph) : n.kind === "gate" ? "関" : n.kind === "lesson" ? "授" : n.glyph;
+    const framed = n.kind !== "stat" || n.peak;
+    if (framed) {
+      b.classList.add("lit-fill");
+      if (st === "sealed") b.classList.add("sealed-frame");
+      b.append(frameSvg(n, st));
+      const g = document.createElement("span"); g.className = "glyph"; g.textContent = st === "sealed" ? "封" : glyph; b.append(g);
+    } else {
+      const f = document.createElement("span"); f.className = "gb-face"; f.textContent = st === "sealed" ? "" : glyph; b.append(f);
+    }
+    if (n.kind === "skill" && (st === "available" || st === "short" || st === "far")) {
+      const c = document.createElement("span"); c.className = "cost"; c.innerHTML = `<i></i>${n.cost}`; b.append(c);
+    }
+    b.setAttribute("aria-label", label(n, st));
+    b.onclick = () => { setSel(n.id); litNow = null; render(); };
+    box.append(b);
+  }
+}
+function sel_() { return sel[board]; }
+function setSel(id) { sel[board] = id; }
+function selPath() {
+  const out = new Set(), n = DATA.boards[board].find((m) => m.id === sel_());
+  if (!n || lit[board].has(n.id)) return out;
+  for (const l of n.links) if (l === "HUB" || lit[board].has(l)) out.add([n.id, l].sort().join("|"));
+  return out;
+}
+function label(n, st) {
+  const ja = { unlocked: "灯した", available: "今灯せる", short: "火種が足りない", far: "道がまだ", sealed: "封", pending: "仮置き" }[st];
+  const kind = n.kind === "stat" ? (n.peak ? "極み" : "能力のマス") : n.kind === "gate" ? "関門" : n.kind === "skill" ? "スキル" : "授業";
+  return `${kind}${n.name ? "「" + n.name + "」" : ""}、${ja}`;
+}
+
+function renderSide() {
+  const side = document.getElementById("side");
+  const n = DATA.boards[board].find((m) => m.id === sel_()) || DATA.boards[board][0];
+  const st = status(n, board);
+  const kind = n.kind === "stat" ? (n.peak ? "極み" : "能力のマス") : n.kind === "gate" ? "関門" : n.kind === "skill" ? "スキル" : "授業";
+  const big = n.kind === "stat" ? (n.peak ? "極" : n.glyph) : n.kind === "gate" ? "関" : n.kind === "lesson" ? "授" : n.glyph;
+  const L = lit[board], count = DATA.boards[board].filter((m) => m.kind === "stat" && L.has(m.id)).length;
+  let title, text, extra = "";
+  if (st === "sealed") { title = "まだ開いていない"; text = "物語が進むと、この先の道が開く。"; }
+  else if (n.kind === "stat") { title = n.peak ? `${JA[board]}を極める` : `${n.perk}のマス`; text = `このマスで：${n.perkText}`; const s = stepFor(count); extra = s >= 10 ? "10段（上限）" : `あと${toNext(count)}つで${s + 1}段：${DATA.steps[board][s]}`; }
+  else if (n.kind === "gate") { title = "関門"; text = `${JA[board]}の色の火種で越える。越えると奥の道が開く。`; }
+  else if (n.kind === "skill") { title = n.name; text = n.text; extra = `効く場面：${n.scene}`; }
+  else { title = n.name; text = n.text; extra = `${WHO[n.who] || n.who}に教わる`; }
+  const stateJa = { unlocked: "灯した", available: n.kind === "lesson" ? "今灯せる（火種はいらない）" : `今灯せる：火種 ${n.cost}`, short: `火種が足りない：あと ${n.cost - (wallet.any + wallet[board])}`, far: "道がまだつながっていない", sealed: "封", pending: "仮置き" }[st];
+  const ac = n.kind === "lesson" || n.kind === "gate" ? "var(--neon-gold)" : n.peak ? "var(--peak)" : "var(--c)";
+  side.innerHTML = `
+    <div class="gb-art" style="--ac:${ac}"><span>${st === "sealed" ? "封" : big}</span><em>${n.kind === "skill" || n.kind === "lesson" ? "一枚絵 960×540（別PR）" : ""}</em></div>
+    <p class="gb-kind" style="--kc:${ac}"><b>${kind}</b>${n.kind === "stat" && !n.peak ? DATA.where[board] : ""}</p>
+    <p class="gb-p-title">${title}</p>
+    <p class="gb-p-text">${text}</p>
+    ${extra ? `<p class="gb-p-perk">${extra}</p>` : ""}
+    <p class="gb-p-state s-${st}">${stateJa}</p>
+    <div class="gb-side-actions">
+      <button class="btn primary" type="button" id="light" ${st === "available" ? "" : "disabled"}>灯す</button>
+      ${n.kind === "lesson" ? `<button class="btn" type="button">LIME で聞く</button>` : ""}
+    </div>`;
+  side.querySelector("#light").onclick = () => {
+    const pay = n.kind === "gate" ? { [board]: n.cost } : (() => { const a = Math.min(wallet.any, n.cost); return { any: a, [board]: n.cost - a }; })();
+    for (const k in pay) wallet[k] -= pay[k];
+    lit[board].add(n.id); litNow = n.id;
+    const next = n.links.map((l) => DATA.boards[board].find((m) => m.id === l)).find((m) => m && shown(m) && status(m, board) === "available");
+    render(); if (next) { setSel(next.id); renderBoard(); renderSide(); }
+  };
+}
+
+function renderWallet() {
+  const w = document.getElementById("wallet");
+  const items = [["any", "万能", ""], ["body", "才", "h-body"], ["sense", "感", "h-sense"], ["wisdom", "理", "h-wisdom"]];
+  w.innerHTML = items.map(([k, ja, c]) => `<span class="gb-hidane ${c}${wallet[k] ? "" : " zero"}"><i></i>${ja}<b>${wallet[k]}</b></span>`).join("");
+}
+
+function renderTags() {
+  const box = document.getElementById("tags"); box.textContent = "";
+  const stage = document.getElementById("stage").getBoundingClientRect(), sc = stage.width / 1280;
+  const rel = (el) => { const r = el.getBoundingClientRect(); return { x: (r.left - stage.left) / sc, y: (r.top - stage.top) / sc, w: r.width / sc, h: r.height / sc }; };
+  const put = (r, no, text, opts = {}) => {
+    if (opts.box !== false) { const b = document.createElement("div"); b.className = "tag-box" + (opts.round ? " round" : ""); Object.assign(b.style, { left: r.x - 3 + "px", top: r.y - 3 + "px", width: r.w + 6 + "px", height: r.h + 6 + "px" }); if (opts.code) b.style.borderColor = "#9fd8ff"; box.append(b); }
+    const t = document.createElement("span"); t.className = "tag" + (opts.code ? " code" : ""); t.innerHTML = `<b>${no}</b>${text}`;
+    Object.assign(t.style, { left: (opts.tx ?? r.x) + "px", top: (opts.ty ?? r.y - 14) + "px" }); box.append(t);
+  };
+  const boardR = rel(document.getElementById("board"));
+  put({ x: 0, y: 0, w: 0, h: 0 }, 2, "screen_backdrop（画面全体の背景）", { box: false, tx: 1000, ty: 676 });
+  put(boardR, 1, "board_glass", { tx: boardR.x + 10, ty: boardR.y + 10 });
+  put({ x: CX - 40 + boardR.x, y: CY - 40 + boardR.y, w: 80, h: 80 }, 3, "hub", { round: true, tx: CX + boardR.x - 30, ty: CY + boardR.y + 44 });
+  const pick = (cls) => document.querySelector(`#nodes .gb-node.${cls}`);
+  const marks = [["skill:not(.s-sealed)", "4", "frame_skill"], ["lesson", "4", "frame_lesson"], ["gate:not(.s-sealed)", "4", "frame_gate"], ["peak", "4", "frame_peak"], ["sealed-frame", "4", "frame_seal"]];
+  const used = new Set();
+  for (const [cls, no, name] of marks) {
+    const el = [...document.querySelectorAll(`#nodes .gb-node.${cls}`)].find((e) => !used.has(e)); if (!el) continue; used.add(el);
+    const r = rel(el); put(r, no, name, { tx: r.x + r.w + 2, ty: r.y + 10 });
+  }
+  const st = [...document.querySelectorAll("#nodes .gb-node.stat:not(.peak)")].find((e) => e.classList.contains("s-unlocked"));
+  if (st) { const r = rel(st); put(r, "C", "マス・道・光はコード", { code: true, round: true, tx: 14, ty: boardR.y + boardR.h - 36 }); }
+  put(rel(document.getElementById("wallet")), 5, "hidane", { ty: rel(document.getElementById("wallet")).y - 16 });
+  const sideR = rel(document.getElementById("side")); put(sideR, 6, "panel_frame（9スライス）", { tx: sideR.x + 14, ty: sideR.y - 12 });
+  const tabR = rel(document.getElementById("tabs")); put(tabR, "C", "札・文字・ゲージはコード", { code: true, tx: tabR.x + 380, ty: 40 });
+}
+
+function fit() {
+  const vp = document.getElementById("viewport"), st = document.getElementById("stage");
+  const r = vp.getBoundingClientRect();
+  const s = Math.min(r.width / 1280, r.height / 720);
+  st.style.transform = `scale(${s}) translate(-50%, -50%)`;
+  st.style.transformOrigin = "0 0";
+  st.style.left = "50%"; st.style.top = "50%";
+  st.style.transform = `translate(-50%, -50%) scale(${s})`;
+  st.style.transformOrigin = "50% 50%";
+}
+
+const sheet = document.getElementById("sheet");
+sheet.innerHTML = ASSETS.map(([name, size, what], i) => `<div class="asset"><span class="no">${i + 1}</span><h3>${name}</h3><code>${size}</code><p>${what}</p></div>`).join("") +
+  `<div class="asset code-row"><span class="no">C</span><h3>コードが描く物</h3><code>CSS / SVG</code><p>道のネオン管・マスの丸・灯った光と明滅・一文字・数字・札・ゲージ・仮置きの点線。</p></div>`;
+
+document.getElementById("v-pc").onclick = () => setView(false);
+document.getElementById("v-phone").onclick = () => setView(true);
+function setView(phone) {
+  document.getElementById("viewport").classList.toggle("phone", phone);
+  document.getElementById("v-pc").setAttribute("aria-pressed", !phone);
+  document.getElementById("v-phone").setAttribute("aria-pressed", phone);
+  fit(); renderTags();
+}
+document.getElementById("t-assets").onclick = (e) => {
+  const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+  e.currentTarget.setAttribute("aria-pressed", on);
+  document.getElementById("stage").classList.toggle("show-assets", on);
+  renderTags();
+};
+document.getElementById("t-reset").onclick = () => { reset(); render(); };
+const setPhase = (v) => { late = v; document.getElementById("p-early").setAttribute("aria-pressed", !v); document.getElementById("p-late").setAttribute("aria-pressed", v); reset(); render(); };
+document.getElementById("p-early").onclick = () => setPhase(false);
+document.getElementById("p-late").onclick = () => setPhase(true);
+addEventListener("resize", () => { fit(); renderTags(); });
+reset(); fit(); render();
+</script>

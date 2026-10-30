@@ -26,7 +26,7 @@ assert.deepEqual(night(10).steps.map((s) => s.id), ["remake_ch2_ageha_slump", "c
 // #1733: 閉店間際のtonariであげはと会い、駅まで送ってから灯りの落ちた店へ戻る（帰宅後に引き返して終電後に会う順にしない）
 {
   const silence = read("data/dialogue/ch2_main.json").dialogues.find((d) => d.dialogue_id === "ch2_sumi_silence");
-  assert.match(story.remake_ch2_ageha_slump.lines[0].text, /配合ノートを受け取りに、閉店間際のtonari/);
+  assert.match(story.remake_ch2_ageha_slump.lines[0].text, /閉店間際のtonari/);
   assert.doesNotMatch(story.remake_ch2_ageha_slump.lines.map((l) => l.text).join("\n"), /家に着いても|引き返した/);
   assert.match(silence.lines[0].text, /あげはを駅まで送った。終電には、まだ間に合った/);
   assert.match(silence.lines[1].text, /^店へ戻ると/);

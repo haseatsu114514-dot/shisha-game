@@ -326,6 +326,7 @@ function sumiBaitoInvite({ tournamentDay = false } = {}) {
     time_slot: "noon",
     accept_event: "__sumi_baito__",
     accept_text: "入ります！",
+    accept_reply: { sender: "sumi", stamp: "st_sumi_ack" },
     hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
     messages: [
       "急で悪い。今日、昼のシフト入れるか？",
@@ -373,6 +374,27 @@ async function drawMessage(ui, line, mine = false, sender = null, animate = true
 }
 const mediaLines = (item) => [...(item.msg?.messages || []), ...(item.log || [])]
   .filter((line) => ["stamp", "image"].includes(messageContent(line)?.kind));
+
+/** 返事を確定する時点で、受信後に増えた履歴も含めて素材の間隔を判定する。 */
+function replyMedia(item, line) {
+  if (!line || !Object.hasOwn(line, "stamp") || Object.hasOwn(line, "image") || Object.hasOwn(line, "text")) return null;
+  const asset = messageContent(line)?.asset;
+  const sender = item.msg?.sender;
+  if (!asset || asset.owner !== sender || line.sender && line.sender !== sender
+    || ![1, 2, 3].includes(state.chapter)
+    || line.media_chapters && !line.media_chapters.includes(state.chapter)
+    || asset.allowed_accounts && !asset.allowed_accounts.includes(accountOf(item))
+    || mediaLines(item).length) return null;
+  const history = (state.inbox || []).filter((old) => old !== item && accountOwner(accountOf(old)) === sender);
+  if (history.some((old) => originId(old) === originId(item) && mediaLines(old).length)
+    || history.some((old) => mediaLines(old).length && (!Number.isFinite(old.day)
+      || !Number.isFinite(item.day) || Math.abs(item.day - old.day) < 3))) return null;
+  // 同じ相手の隣の話題に素材がある場合は、日数にかかわらず連投を避ける。
+  const siblings = (state.inbox || []).filter((old) => accountOwner(accountOf(old)) === sender);
+  const position = siblings.indexOf(item);
+  if (position >= 0 && [siblings[position - 1], siblings[position + 1]].some((old) => old && mediaLines(old).length)) return null;
+  return { sender, stamp: line.stamp, ...(line.media_chapters ? { media_chapters: [...line.media_chapters] } : {}) };
+}
 
 /** 受信時だけ素材を選別し、DBや過去の受信箱を変更しない。dayは章をまたぐ通算日。 */
 function receiveItem(m) {
@@ -820,6 +842,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     if (pick.go && !forced && inviteState(item, ui.inviteOptions) !== "open") return;
     state.flags[hintKey] = true;
     item.log.push({ me: true, text: pick.text });
+    const responseMedia = pick.go ? replyMedia(item, m.accept_reply) : null;
+    if (responseMedia) item.log.push({ me: false, ...responseMedia });
     state.flags[`_invited_${originId(item)}`] = true;
     item.done = true;
     item.replyState = "replied";
@@ -841,6 +865,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
         : night ? "今夜の約束ができた" : "このあと向かうことにした";
       item.log.push({ note: t });
       await ui.bubble(pick.text, true);
+      if (alive() && responseMedia) await drawMessage(ui, responseMedia, false, from);
       if (alive() && state === session) ui.note(t);
     } else {
       item.result = "declined";
@@ -862,6 +887,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     item.done = true;
     item.replyState = "replied";
     item.log.push({ me: true, text: r.text });
+    const responseMedia = replyMedia(item, r.response_media);
+    if (responseMedia) item.log.push({ me: false, ...responseMedia });
     if (r.response) item.log.push({ me: false, text: r.response });
     bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
     try {
@@ -877,6 +904,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     }
     // 以降は表示のみ。古い画面/セーブの待機処理を新しい画面へ持ち越さない。
     await ui.bubble(r.text, true);
+    if (!alive() || state !== session) return;
+    if (responseMedia) await drawMessage(ui, responseMedia, false, from);
     if (!alive() || state !== session) return;
     if (r.response) await ui.bubble(r.response, false, from);
     return;

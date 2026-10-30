@@ -9,6 +9,7 @@
 // マップ訪問では日は進まない。進むのは endChapterFourDay（宿でその日を終える）と前夜の終了だけ。
 
 import { MAX_MONEY } from "../core/rules.js";
+import { resetChapterFourCraft } from "./ch4-tournament-state.js";
 
 // 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
 export const CH4_PRIZE = 200000;
@@ -250,6 +251,8 @@ export function completeChapterFourScene(value, id) {
   if (part === "tournament") {
     if (![CH4_TOURNAMENT_SCENES.start, CH4_TOURNAMENT_SCENES.win, CH4_TOURNAMENT_SCENES.loss].includes(id)) return false;
     if (id !== CH4_TOURNAMENT_SCENES.start && progress.read[CH4_TOURNAMENT_SCENES.start] !== true) return false;
+    if (id === CH4_TOURNAMENT_SCENES.win && chapterFourTournamentOutcome(value) !== "win") return false;
+    if (id === CH4_TOURNAMENT_SCENES.loss && chapterFourTournamentOutcome(value) !== "loss") return false;
     progress.read[id] = true;
     if (id === CH4_TOURNAMENT_SCENES.win) {
       // 賞金は勝利の確定と同じ更新で一度だけ渡す（再読・LOADで二重に付けない）。
@@ -308,10 +311,10 @@ export function finishChapterFourEve(value) {
 }
 
 // ---- 大会 ---------------------------------------------------------------------------
-/** 大会の勝敗。骨格では台本どおり "win" 固定。実試合（制作・審査）の接続点はこの関数1つ。 */
+/** 未制作・中断は未確定。実制作の確定結果だけを読む。 */
 export function chapterFourTournamentOutcome(value) {
-  chapterFourProgress(value);
-  return "win";
+  const result = chapterFourProgress(value).match?.result;
+  return result ? result.win === true ? "win" : "loss" : null;
 }
 
 /**
@@ -324,13 +327,14 @@ export function chapterFourTournamentOutcome(value) {
 export function chapterFourAfterDefeat(value) {
   const progress = chapterFourProgress(value);
   if (progress.part !== "tournament" || progress.read[CH4_TOURNAMENT_SCENES.loss] !== true) return false;
+  if (!resetChapterFourCraft(value)) return false;
   for (const id of Object.values(CH4_TOURNAMENT_SCENES)) delete progress.read[id];
   progress.attempts += 1;
   return true;
 }
 
 // ---- 方針の選択 ---------------------------------------------------------------------
-/** ch4_strategy の選択（桜・桃・茶）。保存するだけで、後続の場面には影響させない。 */
+/** ch4_strategy の選択（桜・桃・茶）。制作の支給葉と実配合の講評に使う。 */
 export function recordChapterFourStrategy(value, branch) {
   chapterFourProgress(value);
   if (!STRATEGY_BRANCHES.includes(branch)) return false;

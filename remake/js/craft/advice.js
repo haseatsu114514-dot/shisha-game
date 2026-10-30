@@ -19,7 +19,7 @@ export function improvementOf(cs) {
   const failed = rounds.find(([, result]) => result?.failed);
   if (failed) return failed[1].failed === "cold"
     ? `次に変える一つ：${failed[0]}は冷え切る前に炭を交換しよう。`
-    : `次に変える一つ：${failed[0]}は熱が上がり切る前に下げ吸いを試そう。`;
+    : `次に変える一つ：${failed[0]}は熱が上がり切る前に熱を逃がす吸いを試そう。`;
   const missed = [...rounds].reverse().find(([, result]) => Number.isFinite(result?.temp) && !isIdealTemperature(result.temp, bands));
   if (missed) return `次に変える一つ：${missed[0]}は${missed[1].temp > bands.ideal[1] ? "少し下げて" : "少し熱を戻して"}から仕上げよう。`;
   return {

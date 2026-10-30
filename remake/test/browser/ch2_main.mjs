@@ -173,6 +173,10 @@ await suite('ch2-main', async check => {
     assert.match(await page.locator('.dc-meta').textContent(), /あと13日/);
     await page.locator(test('station')).click();
     assert.equal(await page.locator(test('go')).count(), 0, 'Return remains unavailable before deliveries and venue');
+    assert.match(await page.locator('.map-info .mi-desc').innerText(), /県大会ホールの入口と搬入場所も確認しよう。/);
+    assert.doesNotMatch(await page.locator('.ch2-route-note').innerText(), /県大会ホールの入口と搬入場所も確認しよう。/);
+    assert.equal(await page.locator('.map-info .mi-no').count(), 0, 'Station guidance appears once');
+    assert.doesNotMatch(await page.locator('.map-info').innerText(), /null|undefined/);
     await assertFits(page, '.spot-pin .sub-label, .ch2-route-note, .map-info, '+test('menu'));
     const overlap = await page.evaluate(() => {
       const panel = document.querySelector('.ch2-route-note').getBoundingClientRect();
@@ -199,7 +203,10 @@ await suite('ch2-main', async check => {
     }
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 1);
     await screenshot(page, 'city-discovered-spots.png');
-    await page.locator(test('station')).tap(); await page.locator(test('go')).tap();
+    await page.locator(test('station')).tap();
+    assert.match(await page.locator('.map-info .mi-desc').innerText(), /三軒への配達と会場の確認を終えた。/);
+    assert.doesNotMatch(await page.locator('.ch2-route-note').innerText(), /三軒への配達と会場の確認を終えた。/);
+    await page.locator(test('go')).tap();
     await page.locator('[data-test="ch2-morning-home"]').waitFor();
     assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee');
     const value = await page.evaluate(() => window.__remake.state);
@@ -238,7 +245,12 @@ await suite('ch2-main', async check => {
     await page.locator(test('menu')).click(); await page.locator(test('save')).click();
     await page.locator('[data-test="slot-1"]').click();
     await page.locator(test('map')).waitFor();
-    await visit(page, 'c_station'); await visit(page, 'ageha'); await visit(page, 'rei'); await page.locator(test('station')).click(); await page.locator(test('go')).click(); await page.locator('[data-test="ch2-morning-home"]').waitFor();
+    await visit(page, 'c_station');
+    await page.locator(test('station')).click();
+    assert.match(await page.locator('.map-info .mi-desc').innerText(), /残りの包みを届けてから、スミさんへ報告しよう。/);
+    assert.doesNotMatch(await page.locator('.ch2-route-note').innerText(), /残りの包みを届けてから、スミさんへ報告しよう。/);
+    assert.equal(await page.locator(test('go')).count(), 0);
+    await visit(page, 'ageha'); await visit(page, 'rei'); await page.locator(test('station')).click(); await page.locator(test('go')).click(); await page.locator('[data-test="ch2-morning-home"]').waitFor();
     await page.locator('[data-test="ch2-morning-home"]').click();
     await page.locator('[data-destination-selection]:not(.done)').waitFor();
     await page.locator('[data-test="hud-menu"]').click(); await page.locator('[data-test="menu-load"]').click();

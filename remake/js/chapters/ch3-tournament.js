@@ -2,7 +2,7 @@
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, loadTournamentCraftDialogue } from "../core/data.js";
-import { el } from "../core/util.js";
+import { el, yen } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, modal, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -32,7 +32,7 @@ import { readDialogues } from "./ch2-city-data.js";
 import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
-  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch3-tournament-state.js";
+  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH3_PRIZE } from "./ch3-tournament-state.js";
 
 const REQUIRED = ["tournament_day", "national_craft", "national_adjustment", "national_result", "national_defeat"]
   .map(id => `ch3_${id}`);
@@ -353,6 +353,9 @@ function renderComplete(owner) {
     }, true),
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
+  ], [
+    // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる（#1658 ⑦）。
+    p.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: `優勝賞金 ${yen(CH3_PRIZE)} を受け取った。` }) : null,
   ]);
 }
 

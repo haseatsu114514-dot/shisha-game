@@ -1,6 +1,7 @@
 // 第1章のスポット定義と「行く」の中身（訪問・施設・休む）。
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
 import { state, markMet } from "../core/state.js";
+import { growthEnabled, hidaneTotal } from "../core/growth.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
 import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, AFFINITY_RANK_PTS, setStoryAffinityCap, ensureAffinityLevel } from "../core/stats.js";
@@ -144,10 +145,16 @@ function storyOpenByHeart(id) {
 /** 店に通って親しくなってから、店内で正体がつながる一度だけの会話。 */
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
   && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
+/** 夜の2階で試作品を確かめる一度きりの回（#1696）。固有会話3本目の後、新しい話が無い来店で読む。 */
+const RIN_PROTOTYPE = "ch1_rin_prototype_night";
+const RIN_PROTOTYPE_SEEN = `_spot_seen_${RIN_PROTOTYPE}`;
+export const rinPrototypeDue = () => !state.flags[RIN_PROTOTYPE_SEEN]
+  && storyCount("rin") >= 3 && !!DB.dialogues[RIN_PROTOTYPE]?.lines?.length;
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
   if (questionVisitDue(charId)) return true;
+  if (charId === "rin" && rinPrototypeDue()) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -233,6 +240,8 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
+  // 初回受領後は使い切っても内省の場所を残す。紹介・訪問の記録は変更しない。
+  if (spot.id === "kannon" && growthEnabled() && (state.growth?.earned > 0 || hidaneTotal() > 0)) return true;
   if (spot.id === "rojiura_cinema") return cinemaDiscovered(state);
   if (spot.kind === "fortune") return [1, 2].includes(state.chapter) && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
@@ -320,6 +329,10 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     } else if (finaleAtVisit(charId)) {
       if (!await playFinale(charId, { bg, signal, deferSave: true }) || !live()) return false;
       gainAffinity(charId, 10);
+    } else if (charId === "rin" && rinPrototypeDue()) {
+      if (!await read(RIN_PROTOTYPE, {})) return false;
+      state.flags[RIN_PROTOTYPE_SEEN] = true;
+      gainAffinity(charId, 5);
     } else {
       const rainy = isRainy();
       const id = repeatVisitDialogue(charId);

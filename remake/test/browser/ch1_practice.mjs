@@ -226,7 +226,7 @@ await suite("ch1-practice", async run => {
     assert.deepEqual(result.normal, [{}, null, undefined]); assert.equal(result.records, undefined);
   });
   await check("mid-failure-is-not-success", async page => {
-    // 提供前の失敗を固定する。蒸らしの温度上限から実際の上げ吸いで焦がす。
+    // 提供前の失敗を固定する。蒸らしの温度上限から実際の熱を入れる吸いで焦がす。
     await page.route("**/js/craft/practice.js", async route => {
       const response = await route.fetch();
       const source = await response.text();

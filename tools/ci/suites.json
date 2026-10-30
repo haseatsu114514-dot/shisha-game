@@ -82,6 +82,9 @@
         "remake/js/core/growth-board-data.js",
         "remake/js/daily/growth-board-screen.js",
         "remake/js/daily/reflection.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/map.js",
+        "remake/js/daily/map-reveals.js",
         "data/dialogue/growth_reflection.json",
         "data/dialogue/growth_lessons.json",
         "remake/js/daily/tonari.js",
@@ -137,7 +140,7 @@
     },
     {
       "id": "ngplus-carry",
-      "title": "NG+ SCHEMA 22 migration, carry classification coverage and package extraction (#1228)",
+      "title": "NG+ save migration, carry classification coverage and package extraction (#1228)",
       "kind": "quick",
       "run": ["node remake/test/ngplus_carry.mjs"]
     },
@@ -276,6 +279,7 @@
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch4_rewards.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -965,6 +969,15 @@
       ],
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
+      ]
+    },
+    {
+      "id": "ch4-tournament",
+      "title": "Chapter 4 real craft, scoring, plans and checkpoint recovery",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/ch4_tournament.mjs",
+        "node --experimental-vm-modules remake/test/ch4_tournament_sequence.mjs"
       ]
     },
     {

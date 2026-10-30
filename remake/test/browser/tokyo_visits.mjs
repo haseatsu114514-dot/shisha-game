@@ -197,7 +197,7 @@ await suite("tokyo-visits", async check => {
     assert.equal(await page.locator(".lime-chat-row").count(), 0);
     const value = await get(page);
     assert.deepEqual(value.tokyoVisits.plans, []);
-    assert.equal(value.schema, 22);
+    assert.equal(value.schema, 24);
     await page.locator(t("phone-close")).click();
   });
 });

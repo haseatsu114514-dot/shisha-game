@@ -565,11 +565,6 @@
             "next_false": "name_before"
           }
         ]
-      },
-      "metadata": {
-        "flavor_lesson": {
-          "vanilla": 1
-        }
       }
     },
     {
@@ -879,11 +874,6 @@
             "text": "──はは。いいね。スミさんがお前に一台任せる理由、ちょっと分かったわ"
           }
         ]
-      },
-      "metadata": {
-        "flavor_lesson": {
-          "vanilla": 1
-        }
       }
     },
     {
@@ -958,6 +948,16 @@
           "speaker": "naru",
           "face": "normal",
           "text": "……畳んだのに、匂いだけ残ってんだよな"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "だから、バニラも花みたいな香りが残るところで止めたい"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "焼けた甘さだけじゃ、親父の店の匂いにはならねえんだ"
         },
         {
           "speaker": "naru",
@@ -1041,6 +1041,11 @@
           }
         ],
         "coal_note_unseen": []
+      },
+      "metadata": {
+        "flavor_lesson": {
+          "vanilla": 1
+        }
       }
     },
     {
