@@ -36,7 +36,7 @@ const values = {
   "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on: () => () => {} },
-  "growth.js": { growthEnabled: () => false, readyLessons: () => [], consultLessons: async () => [] },
+  "growth.js": { growthEnabled: () => false, hidaneTotal: () => 0, readyLessons: () => [], consultLessons: async () => [] },
   "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };

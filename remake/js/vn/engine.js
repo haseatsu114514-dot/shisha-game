@@ -57,6 +57,8 @@ function warnVn(kind, detail) {
 const log = [];
 let dom = null;
 let nameFit = null;
+let settingsReady = null;
+let openVnConfig = null;
 let running = null;     // 再生中の会話の状態
 let autoMode = false;
 let skipMode = false;
@@ -73,6 +75,9 @@ export async function dialogueSequence(run) {
 export const vnTest = { turbo: false, choose: null }; // テスト用: 瞬時表示＋自動送り・選択肢の方針
 
 function buildDom() {
+  // 設定のコードは会話の準備中に読み、タップ時は同じイベント内でモーダルを開く。
+  // クリック後の遅延importで、本文を送るタップの上にモーダルを遅れて重ねない。
+  settingsReady = import("../scenes/title.js").then(module => { openVnConfig = module.openConfig; });
   const host = layers.vn;
   dom = {
     effect: el("div.vn-effect"),
@@ -105,7 +110,11 @@ function buildDom() {
     if (!running || !layers.vn.classList.contains("active")) return;
     if (layers.modal.classList.contains("show")) return;
     if (dom.log.classList.contains("show")) return;
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); advance(); }
+    if (e.key === "Enter" || e.key === " ") {
+      // フォーカス中のボタン・入力欄はブラウザ本来のキー操作に任せる。
+      if (e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) return;
+      e.preventDefault(); advance();
+    }
     if (e.key === "Control") setSkip(true);
   });
   window.addEventListener("keyup", (e) => { if (e.key === "Control") setSkip(false); });
@@ -244,7 +253,7 @@ export function play(idOrDlg, opts = {}) {
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
     // 最初の行を出す前に名前欄と本文の明朝を待つ。失敗時は代替書体で続ける。
     const fontsReady = loadVnFonts().catch(() => []);
-    const assetsReady = Promise.all([fontsReady, bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
+    const assetsReady = Promise.all([settingsReady, fontsReady, bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
     waitSceneAssets(bgReady, me, assetsReady).then(() => {
       if (running !== me) return;
       me.ready = true;
@@ -933,8 +942,7 @@ async function openSettings() {
   }
   vnModalOpen++;
   try {
-    const { openConfig } = await import("../scenes/title.js");
-    await openConfig({
+    await openVnConfig({
       onChange(key) {
         if (key === "uiTheme") nameFit?.fit();
         if (key === "textSpeed" && running?.typing && config.textSpeed >= 4) completeTyping();

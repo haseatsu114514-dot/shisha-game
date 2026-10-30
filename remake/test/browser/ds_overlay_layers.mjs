@@ -100,10 +100,14 @@ await suite("ds-overlay-layers", async check => {
         assert(!hiddenHud.intercepted, "Hidden MENU covers the dialogue");
         await page.touchscreen.tap(hiddenHud.x, hiddenHud.y);
         assert.equal(await page.locator(".menu-modal").count(), 0);
-        // 会話中のタッチバーは会話の操作（AUTO/SKIP/LOG/用語）が使う。そこが開いたら閉じて続ける。
+        // 会話中のタッチバーは会話の操作（AUTO/SKIP/LOG/用語/設定）が使う。そこが開いたら閉じて続ける。
         if (await page.locator(".glossary-modal").count()) {
           await page.locator(".glossary-modal .modal-actions button").first().tap();
           await page.locator(".glossary-modal").waitFor({ state: "detached" });
+        }
+        if (await page.locator("#modal.show").count()) {
+          await page.locator("#modal.show").getByRole("button", { name: "閉じる", exact: true }).first().tap();
+          await page.locator("#modal.show").waitFor({ state: "detached" });
         }
         for (let i = 0; i < 8 && await page.locator("body.vn-open").count(); i++) {
           await page.locator("#vn.active .vn-box").tap({ force: true });

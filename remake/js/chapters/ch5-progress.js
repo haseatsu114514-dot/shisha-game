@@ -1,5 +1,5 @@
 // 第5章（機械仕掛けの神）の進行。読了した場面と日程・勝敗だけを確定する純粋関数（UIは ch5.js）。
-// 第4章からの帰郷後、大須・tonari で SHISHA-9000 との勝負に至る流れを場面単位で管理する。
+// 第4章からの帰郷後、橙須・tonari で SHISHA-9000 との勝負に至る流れを場面単位で管理する。
 //
 // 流れ（骨格）:
 //   prologue   : 橋渡し → 帰郷 → 自由行動へ
@@ -76,7 +76,7 @@ export const CH5_SCENE_BG = Object.freeze({
 // ch5_opening は data/story_routes.json の before_match[0] と一致させる。
 export const CH5_PROLOGUE = Object.freeze([
   { id: "ch5_bridge_after_return", label: "ドバイのあと", location: "tonari" },
-  { id: "ch5_opening", label: "帰郷", location: "大須" },
+  { id: "ch5_opening", label: "帰郷", location: "橙須" },
 ].map(scene => Object.freeze(scene)));
 
 // 自由行動で再生する場面。昼→夕→夜の順に1回ずつ（台本コメントの時間帯に合わせる）。

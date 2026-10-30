@@ -31,6 +31,83 @@ await suite("growth-levelup", async (check) => {
     assert.equal(await page.evaluate(() => __remake.state.growth), undefined);
   });
 
+  // #1807: the real map and HUD entry points, with Adam unvisited.
+  for (const [label, options] of [
+    ["pc", { viewport: { width: 1331, height: 760 } }],
+    ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ["portrait", { viewport: { width: 591, height: 1280 } }],
+  ]) {
+    await check(`${label}-reflection-entry`, async (page) => {
+      const tap = async (sel) => {
+        const node = page.locator(sel).first();
+        await node.scrollIntoViewIfNeeded();
+        if (options.hasTouch) await node.tap(); else await node.click();
+      };
+      await setupDaily(page);
+      await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        core.config.textSpeed = 4;
+        Object.assign(core.state, { day: 6, slot: 0 });
+        window.entryStatus = 0;
+        (await import("./js/daily/hud.js")).initHud({ status: () => { window.entryStatus++; } });
+        (await import("./js/daily/hud.js")).showHud(true);
+        window.entryMap = async () => {
+          const map = await import("./js/daily/map.js");
+          window.entryFlow = map.chooseSpot().then(async id => {
+            if (id === "kannon") await (await import("./js/core/growth.js")).reflectAtSpot(id);
+          });
+        };
+        await window.entryMap();
+      });
+      await page.locator(".map:not(.done)").waitFor();
+      assert.equal(await page.locator(t("pin-kannon")).count(), 0);
+      await page.evaluate(async () => {
+        const map = await import("./js/daily/map.js");
+        map.interruptMap(null); await window.entryFlow;
+        const growth = await import("./js/core/growth.js");
+        growth.gainExp(205); growth.settleGrowth();
+        window.entryBefore = { day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina };
+        await window.entryMap();
+      });
+      await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
+      await page.locator(t("kannon-hidane")).waitFor();
+      assert.equal(await page.evaluate(() => !!__remake.state.flags._spot_guide_adam || !!__remake.state.met.adam), false);
+      await assertFits(page, t("kannon-hidane"));
+      await tap(t("hud-status"));
+      await page.locator(`${t("growth-board")}[data-mode="view"]`).waitFor();
+      assert.equal(await page.locator(t("board-light")).count(), 0);
+      await tap('.gb-node[data-status="available"]');
+      assert.equal(await page.locator(t("board-light")).count(), 0);
+      await tap(t("board-close"));
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 2);
+      assert.equal(await page.evaluate(() => window.entryStatus), 0);
+      await tap(t("pin-kannon")); await tap(t("map-go"));
+      await tap(t("kannon-reflect"));
+      for (let i = 0; i < 30 && !(await page.locator(t("growth-board")).count()); i++) {
+        const next = page.locator(".vn-box");
+        if (await next.isVisible()) await tap(".vn-box");
+        await page.waitForTimeout(150);
+      }
+      await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+      for (let i = 0; i < 2; i++) {
+        await tap('.gb-node[data-status="available"]');
+        await tap(t("board-light"));
+      }
+      await tap(t("board-decide"));
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      await page.evaluate(async () => { await window.entryFlow; await window.entryMap(); });
+      await page.locator(".map:not(.done)").waitFor();
+      assert.equal(await page.locator(t("kannon-hidane")).count(), 0);
+      assert.equal(await page.locator(t("hud-hidane")).isVisible(), false);
+      assert.equal(await page.locator(t("pin-kannon")).count(), 1);
+      assert.deepEqual(await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina })),
+        await page.evaluate(() => window.entryBefore));
+      await tap(t("hud-status"));
+      assert.equal(await page.evaluate(() => window.entryStatus), 1);
+    }, options);
+  }
+
   for (const [label, options] of [
     ["pc", { viewport: { width: 1331, height: 760 } }],
     ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
@@ -75,7 +152,7 @@ await suite("growth-levelup", async (check) => {
       await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
       const text = await panel.innerText();
       assert.match(text, /Lv\.1 → Lv\.3/);
-      assert.match(text, /火種 ＋4/, "レベル1つで火種2つ");
+      assert.match(text, /火種 ＋6/, "Lv.50 まではレベル1つで火種3つ");
       assert.doesNotMatch(text, /？？？/, "名乗っていない相手の名前は出さない");
       await assertFits(page, '[data-test="levelup-ok"]');
       await page.waitForTimeout(400);
@@ -85,7 +162,7 @@ await suite("growth-levelup", async (check) => {
       await panel.waitFor({ state: "detached" });
       const badge = page.locator(t("hud-hidane"));
       await badge.waitFor();
-      assert.equal(await badge.innerText(), "4");
+      assert.equal(await badge.innerText(), "6");
       assert.match(await exp.innerText(), /Lv\.3/);
 
       // ふだんの1レベルは短い帯で、押さなくても消える
@@ -97,13 +174,13 @@ await suite("growth-levelup", async (check) => {
       });
       const band = page.locator(t("levelup-band"));
       await band.waitFor();
-      assert.match(await band.innerText(), /Lv\.3 → 4[\s\S]*火種 ＋2/);
+      assert.match(await band.innerText(), /Lv\.3 → 4[\s\S]*火種 ＋3/);
       await page.waitForFunction(() => document.querySelector('[data-test="levelup-band"]')?.classList.contains("show"));
       await page.waitForTimeout(250);
       await page.screenshot({ path: `${out}/growth-levelup-${label}-band.png` });
       await page.waitForFunction(() => window.night?.to === 4, null, { timeout: 5000 });
       await band.waitFor({ state: "detached" });
-      assert.equal(await badge.innerText(), "6");
+      assert.equal(await badge.innerText(), "9");
 
       // 保存・読込で残る
       await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.save(); core.load(); });
@@ -133,7 +210,7 @@ await suite("growth-levelup", async (check) => {
       // 寝る前・メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
       assert.equal(await board.getAttribute("data-mode"), "view");
       assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
-      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*4/, "Lv.1→3 で火種4");
+      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*6/, "Lv.1→3 で火種6");
       const ids = await page.evaluate(async () => {
         const b = await import("./js/core/growth-board.js");
         const first = b.boardNodes("body").find((n) => n.kind === "stat" && n.links.includes(b.HUB)).id;
@@ -158,7 +235,7 @@ await suite("growth-levelup", async (check) => {
       assert.match(await page.locator(t("board-preview")).innerText(), /早寝早起き/, "目標のマスが選ばれた状態で開く");
       await tap(t("board-towards"));
       const pend = await page.locator('[data-status="pending"]').count();
-      assert.ok(pend >= 1 && pend <= 4, `火種4の分だけ道を仮置き（${pend}）`);
+      assert.ok(pend >= 1 && pend <= 6, `火種6の分だけ道を仮置き（${pend}）`);
       await tap(t("board-tab-wisdom"));
       assert.equal(await page.locator(t("board-node-K01")).count(), 1, "札で理論盤へ");
       await assertFits(page, '[data-test="board-decide"], [data-test="board-close"], [data-test="board-tab-body"], [data-test="board-tab-wisdom"]');
@@ -168,7 +245,7 @@ await suite("growth-levelup", async (check) => {
       await board.waitFor({ state: "detached" });
       await page.waitForFunction(() => Array.isArray(window.lit));
       assert.equal(await page.evaluate(() => __remake.state.growth.nodes.length), pend);
-      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 4 - pend);
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 6 - pend);
       await page.locator(".gain-card", { hasText: "能力の火" }).waitFor();
     }, options);
   }

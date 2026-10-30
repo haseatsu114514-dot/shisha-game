@@ -88,6 +88,48 @@ for (const action of ["start", "stop", "replace", "repeat", "reject-resume"]) {
     a.stopBgm(0); await flush(); assert.equal(f.media[0].paused, true);
   }
 }
+// A track being faded out is still audible and must obey silence settings immediately.
+for (const setting of ["mute", "muted", "bgmVolume"]) {
+  for (const replace of [false, true]) {
+    const f = await audioFixture(), a = f.audio;
+    a.playBgm("title"); a.unlockAudio(); f.finishResume(); await flush(); f.frame();
+    const outgoing = f.media[0];
+    if (replace) a.playBgm("tonari");
+    else a.stopBgm(1);
+    f.frame(100);
+    assert.ok(outgoing.volume > 0, "outgoing track is still fading");
+    f.config[setting] = setting === "bgmVolume" ? 0 : true;
+    a.applyVolumes();
+    assert.equal(outgoing.volume, 0, `${setting}: silence outgoing track without waiting for a frame`);
+    assert.equal(outgoing.paused, true, "silent outgoing track releases playback immediately");
+    f.frame(100);
+    assert.equal(outgoing.volume, 0, "an old animation frame cannot restore sound");
+    f.config[setting] = setting === "bgmVolume" ? .5 : false;
+    a.applyVolumes(); f.frame(1500); await flush();
+    assert.equal(outgoing.paused, true, "restoring volume does not revive a stopped track");
+    if (replace) {
+      assert.equal(f.media[1].volume, .5, "replacement track keeps its fade and volume control");
+      assert.equal(f.media[1].paused, false);
+    }
+  }
+}
+{
+  const f = await audioFixture(), a = f.audio;
+  a.playBgm("title"); a.unlockAudio(); f.finishResume(); await flush(); f.frame();
+  a.playBgm("tonari"); f.frame(200);
+  a.playBgm("map"); f.frame(100);
+  assert.ok(f.media[0].volume > 0 && f.media[1].volume > 0, "rapid switches can leave two retiring tracks");
+  f.config.bgmVolume = 0; a.applyVolumes();
+  for (const old of f.media.slice(0, 2)) {
+    assert.equal(old.volume, 0); assert.equal(old.paused, true);
+  }
+  f.config.bgmVolume = .5; a.applyVolumes(); f.frame(); await flush();
+  a.stopBgm(1); f.frame(500);
+  assert.equal(f.media[2].volume, .25, "ordinary stop retains its requested fade duration");
+  f.frame(500); await flush();
+  assert.equal(f.media[2].volume, 0); assert.equal(f.media[2].paused, true);
+}
+console.log("PASS: outgoing BGM obeys mute/zero volume immediately, stale frames and rapid replacements stay silent, ordinary fades preserved");
 // Media autoplay rejection also remains pending until the next allowed gesture.
 {
   const f = await audioFixture(); f.rejectPlay(true);

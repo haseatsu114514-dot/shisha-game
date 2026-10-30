@@ -30,8 +30,13 @@ export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上�
 export const BOARD_TOTAL = BOARD_KEYS.reduce((n, b) => n + STAT_SQUARES[b]
   + BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length, 0) + SKILLS.reduce((n, s) => n + s.cost, 0);
 /** 盤の型の版。違う版の灯し方は、使った火種を返して最初から（習得した授業は残す） */
-export const BOARD_VERSION = 3;
-export const HIDANE_PER_LEVEL = 2;  // レベルアップ1回で万能の火種2つ（1.5）
+export const BOARD_VERSION = 4; // 4: 授業の小道（2026-10-30）
+/**
+ * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「1周目で7割開けたい」（SBD54）:
+ * Lv.50 までは3つ、Lv.51 からは1つ。1周目（中央 Lv.57）で盤の約7割、2周目の終わりの Lv.99＋やり込みで全開放。
+ */
+export const HIDANE_EARLY = 3, HIDANE_LATE = 1, HIDANE_EARLY_UNTIL = 50;
+export const hidaneForLevel = (level) => level <= HIDANE_EARLY_UNTIL ? HIDANE_EARLY : HIDANE_LATE;
 export const COLORED_GIFT = 2;      // 節目・大会・♥5の色つきの火種（1.5）
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
@@ -61,6 +66,8 @@ const BOARD_IDS = Object.fromEntries(BOARD_KEYS.map((b) => [b, [
   ...SKILLS.filter((x) => x.board === b).map((x) => x.id),
 ]]));
 const VALID_IDS = new Set([...Object.values(BOARD_IDS).flat(), ...LESSONS.map((l) => l.id)]);
+/** 盤の火種で灯すマスが全部灯っているか（受け取りの上限とは別。#1801 引継ぎ B4） */
+const boardAllLit = (g) => Object.values(BOARD_IDS).every((ids) => ids.every((id) => g.nodes.includes(id)));
 /** その盤に、火種で灯せる未解放のマスが残っているか */
 const boardHasRoom = (g, board) => BOARD_IDS[board].some((id) => !g.nodes.includes(id));
 
@@ -434,7 +441,7 @@ export function settleGrowth() {
   const learned = Object.entries(g.today.learned).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([key]) => key);
   const gains = { any: 0, limited: [] };
   for (let level = from + 1; level <= to; level++) {
-    const n = Math.min(HIDANE_PER_LEVEL, BOARD_TOTAL - g.earned);
+    const n = Math.min(hidaneForLevel(level), BOARD_TOTAL - g.earned);
     if (n > 0) { g.hidane.any += n; g.earned += n; gains.any += n; }
     if (MILESTONE_LEVELS.includes(level) && !g.milestones.includes(level)) {
       g.milestones.push(level);
@@ -453,7 +460,7 @@ export function settleGrowth() {
   const milestone = gains.limited.length > 0 || MILESTONE_LEVELS.some((l) => l > from && l <= to);
   const full = to > from && (!g.seen.fullLevelUp || milestone || to - from >= 2);
   if (full) g.seen.fullLevelUp = true;
-  return { from, to, xpFrom, xpTo: g.xp, gains, gifts, learned, milestone, full, boardFull: g.earned >= BOARD_TOTAL };
+  return { from, to, xpFrom, xpTo: g.xp, gains, gifts, learned, milestone, full, boardFull: boardAllLit(g) };
 }
 
 /**

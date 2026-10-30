@@ -92,14 +92,21 @@ const first = growth.settleGrowth();
 assert.equal(first.from, 1);
 assert.equal(first.to, growth.levelForExp(g.xp));
 assert.equal(first.full, true, "初めてのレベルアップはフル演出");
-assert.equal(g.hidane.any, 2 * (first.to - 1), "レベル1つで火種2つ（第2版 1.5）");
-assert.equal(g.earned, 2 * (first.to - 1));
+assert.equal(g.hidane.any, 3 * (first.to - 1), "Lv.50 まではレベル1つで火種3つ（SBD54）");
+assert.equal(g.earned, 3 * (first.to - 1));
+assert.deepEqual([growth.hidaneForLevel(2), growth.hidaneForLevel(50), growth.hidaneForLevel(51), growth.hidaneForLevel(99)], [3, 3, 1, 1]);
+// 1周目（中央 Lv.57）で盤の約7割、Lv.99 までのレベルの火種＋節目＋大会2周で全部に近い（SPEC 1.6a）
+const levelHidane = (to) => Array.from({ length: to - 1 }, (_, i) => growth.hidaneForLevel(i + 2)).reduce((a, b) => a + b, 0);
+const firstRun = levelHidane(57) + 5 * 2 + 5 * 2 + 8; // 節目5・大会5・♥5 数人
+assert(firstRun / growth.BOARD_TOTAL >= 0.65 && firstRun / growth.BOARD_TOTAL <= 0.72, `1周目 ${firstRun}/${growth.BOARD_TOTAL}`);
+const full = levelHidane(99) + 9 * 2 + 10 * 2;
+assert(full < growth.BOARD_TOTAL && full + 40 >= growth.BOARD_TOTAL, "Lv.99＋節目＋大会だけでは届かず、♥5・遊びのご褒美まで回収して全開放");
 assert.equal(g.settledXp, g.xp);
 assert.deepEqual(g.today, { xp: 0, learned: {}, gifts: [] });
 assert.ok(first.learned.length <= 3 && first.learned.includes("naru"), "今日学んだこと（最大3つ）");
 const again = growth.settleGrowth();
 assert.equal(again.to, again.from, "二度精算しても増えない");
-assert.equal(g.earned, 2 * (first.to - 1));
+assert.equal(g.earned, 3 * (first.to - 1));
 
 // 2回目以降の1レベルは短い帯、2つ以上はフル
 growth.gainExp(growth.totalExpFor(g.level + 1) - g.xp);
@@ -121,7 +128,7 @@ assert.equal(ms.to, 10);
 assert.equal(ms.full, true, "節目はフル");
 assert.deepEqual(ms.gains.limited, [{ level: 10, system: "sense", n: 2 }], "感覚盤に一番灯した");
 assert.equal(g.hidane.sense, 2);
-assert.equal(g.earned - earnedBefore, 2 * (ms.to - ms.from) + 2);
+assert.equal(g.earned - earnedBefore, 3 * (ms.to - ms.from) + 2);
 assert.deepEqual(g.milestones, [10]);
 assert.deepEqual(g.litSince, { body: 0, sense: 0, wisdom: 0 }, "節目で数え直す");
 assert.equal(growth.milestoneSystem(g), "body", "同数（0）なら段の低い盤、それも同じなら才能");
@@ -197,13 +204,13 @@ core.state.growth.learned.push("M-S1");
 growth.ensureGrowth();
 assert.equal(core.state.flags._sumi_attack_learned, true, "習得した授業のフラグは周回で消えても戻す");
 delete core.state.flags._coal_cube_learned; delete core.state.flags._sumi_attack_learned;
-// 上限: 盤の全部（v3 で272）を超えて渡さない
-assert.equal(growth.BOARD_TOTAL, 272);
+// 上限: 盤の全部（v3 の授業の小道で268）を超えて渡さない
+assert.equal(growth.BOARD_TOTAL, 268);
 core.state.growth = { ...growth.newGrowth(), earned: growth.BOARD_TOTAL - 1 };
 growth.gainExp(growth.totalExpFor(12));
 const capped = growth.settleGrowth();
 assert.equal(core.state.growth.earned, growth.BOARD_TOTAL);
-assert.equal(capped.boardFull, true);
+assert.equal(capped.boardFull, false, "受け取りが上限でも、灯していなければ「盤は埋まった」と出さない");
 
 // 無効へ戻すと新しいゲームには growth が無い
 growth.setGrowthPreview(false);
