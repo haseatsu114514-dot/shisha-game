@@ -40,9 +40,9 @@ for (const k of board.BOARD_KEYS) {
     const reach = new Set();
     for (let more = true; more;) {
       more = false;
-      for (const n of nodes) if (n.ring <= ring && !reach.has(n.id) && n.links.some((l) => l === board.HUB || reach.has(l))) { reach.add(n.id); more = true; }
+      for (const n of nodes) if (n.ring <= ring && !n.peak && !reach.has(n.id) && n.links.some((l) => l === board.HUB || reach.has(l))) { reach.add(n.id); more = true; }
     }
-    assert.deepEqual(nodes.filter((n) => n.ring <= ring && !reach.has(n.id)).map((n) => n.id), [], `${k} 第${ring}章`);
+    assert.deepEqual(nodes.filter((n) => n.ring <= ring && !n.peak && !reach.has(n.id)).map((n) => n.id), [], `${k} 第${ring}章`);
   }
   // 第1章のスキルと、第1章の物語のスミさんの授業（アタック・キューブ炭）は、関門を越えずに届く（色の火種は第1章の終わりまで来ない）
   for (const n of nodes.filter((x) => (x.kind === "skill" && x.ring === 1) || x.id === "M-S1" || x.id === "M-W1")) {
@@ -71,6 +71,8 @@ for (const l of board.LESSONS) {
     assert.equal(gates, 1, `${l.id}: 第2章からの人の授業は関門の先`);
     assert.equal(N[l.id].band, 3, `${l.id}: 関門の先の帯`);
   }
+  // 欲しい人の授業が遠くならない（SBD63）: どの授業も紋から火種5以内
+  assert(board.pathTo(l.id, new Set()).cost <= ((l.ring ?? 1) === 1 ? 3 : 5), `${l.id}: 紋から近い（火種${board.pathTo(l.id, new Set()).cost}）`);
   assert.equal(N[l.id].ring, l.ring ?? 1, `${l.id}: 授業の章はデータどおり`);
   const others = new Set(board.LESSONS.filter((x) => x.id !== l.id && x.board === l.board).flatMap((x) => board.pathTo(x.id, new Set()).path));
   assert(board.pathTo(l.id, others).cost <= board.pathTo(l.id, new Set()).cost, `${l.id}: 先に進んだ道で遠くならない`);
@@ -79,7 +81,13 @@ for (const l of board.LESSONS) {
 for (const s of board.SKILLS) assert.equal(N[s.id].band, s.cost === 4 ? 1 : 3, `${s.id}（火種${s.cost}）の帯`);
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
-  assert.equal(nodes.find((n) => n.peak).band, 3, `${k}: 極みは関門の先`);
+  // 極みは道につながらない。その盤の能力のマスを全部灯すと灯せる（SBD63）
+  const peak = nodes.find((n) => n.peak), stats = nodes.filter((n) => n.kind === "stat" && !n.peak).map((n) => n.id);
+  assert.deepEqual(peak.links, [], `${k}: 極みは道から外す`);
+  assert(nodes.every((n) => !n.links.includes(peak.id)), `${k}: 極みにつながる道は無い`);
+  assert.equal(board.connected(peak, new Set(stats.slice(1))), false, `${k}: 1つ残っていると灯せない`);
+  assert.equal(board.connected(peak, new Set(stats)), true, `${k}: 全部灯すと灯せる`);
+  assert.equal(board.pathTo(peak.id, new Set(stats)).cost, 1);
   for (const gate of nodes.filter((n) => n.kind === "gate")) {
     const beyond = new Set([gate.id]);
     for (let more = true; more;) {
@@ -90,6 +98,8 @@ for (const k of board.BOARD_KEYS) {
   }
   const bands = [1, 2, 3].map((b) => nodes.filter((n) => n.kind === "stat" && !n.peak && n.band === b).length);
   assert.deepEqual(bands, [9, 8, 8], `${k}: 能力のマスは 近く9・中ほど8・関門の先8`);
+  // 関門は紋のそば（マス3つ先）
+  for (const gate of nodes.filter((n) => n.kind === "gate")) assert(board.pathTo(gate.id, new Set()).cost <= 4, `${gate.id}: 紋のそば`);
 }
 // 恩恵は帯の倍率（近く×1・中ほど×2・関門の先×3）
 {
@@ -122,9 +132,10 @@ const received = [26, 52, 78, 104, 140]; // 中央の遊び方で章末までに
 cumulative.forEach((c, i) => assert(c > received[i], `第${i + 1}章: 開く範囲（${c}）が受け取る火種（${received[i]}）より多い`));
 for (let i = 1; i < 5; i++) assert(cumulative[i] > cumulative[i - 1], `第${i + 1}章で新しい範囲が開く`);
 assert(board.LESSONS.every((l) => N[l.id].cost === 0), "授業は火種いらず");
-for (const k of board.BOARD_KEYS) assert.equal(board.STEP_TEXT[k].length, 10);
-assert.equal(board.rankOfStep("wisdom", 1), "見習い");
-assert.equal(board.rankOfStep("wisdom", 10), "神業");
+// 段はなくした（SBD63）。段の「できること」は ✦のマスに移した
+for (const name of ["STEP_TEXT", "QUALITY_STEPS", "RANKS", "LESSON_MIN_STEP", "stepOf", "stepForCount", "squaresToNextStep", "rankOfStep"]) assert.equal(board[name], undefined, `${name} は無い`);
+assert.deepEqual(board.NODES.filter((n) => n.feature).map((n) => n.feature).sort(), Object.keys(board.FEATURES).sort(), "✦のマスは6つ（できること1つにつき1マス）");
+assert(board.NODES.filter((n) => n.feature).every((n) => n.kind === "stat" && n.band <= 2), "✦は関門なしで届くマス");
 
 // ---------------------------------------------------------------- 規則
 growth.setGrowthPreview(true);
@@ -155,21 +166,17 @@ assert.deepEqual(v.pending, [], "つながっていない仮置きは外れる")
 v = board.replay(g, [B, B2, S, W]);
 assert.equal(v.pending.length, 3, "火種3で3マスまで");
 
-// 段: 能力のマス約3つで1段（3.1。どの盤も26マスで10段）
-assert.equal(board.stepOf("body", new Set()), 1);
+// 盤の伸び（SBD63）: 灯した割合と、恩恵ごとの合計
 const five = new Set(["B1", "B2", "B3"]);
 assert.equal(board.statCount("body", five), 3);
-assert.equal(board.stepOf("body", five), 2, "3マスで2段");
-assert.equal(board.stepOf("body", new Set(["B1", "B2"])), 1, "2マスではまだ1段");
-assert.equal(board.squaresToNextStep("body", new Set(["B1", "B2"])), 1, "あと1つで2段");
-assert.equal(board.stepOf("body", new Set(board.boardNodes("body").filter((n) => n.kind === "stat").map((n) => n.id))), 10);
 assert.equal(board.statRatio("body", five), 3 / board.STAT_SQUARES.body);
-for (const k of board.BOARD_KEYS) {
-  const all = board.boardNodes(k).filter((n) => n.kind === "stat").map((n) => n.id);
-  for (let n = 0; n <= all.length; n++) {
-    const set = new Set(all.slice(0, n));
-    if (board.stepOf(k, set) < 10) assert.equal(board.stepOf(k, new Set(all.slice(0, n + board.squaresToNextStep(k, set)))), board.stepOf(k, set) + 1, `${k} ${n}: あとNマスで次の段`);
-  }
+{
+  const totals = Object.fromEntries(board.perkTotals("body", five).map((p) => [p.key, p]));
+  const expect = {};
+  for (const id of five) { const p = board.perkOf(N[id]); const key = N[id].perk; expect[key] = (expect[key] || 0) + Number(/[\d.]+/.exec(p.text)[0]); }
+  for (const [key, sum] of Object.entries(expect)) assert.equal(totals[key].sum, sum, `${key} の合計`);
+  const all = new Set(board.boardNodes("body").map((n) => n.id));
+  for (const p of board.perkTotals("body", all)) assert.equal(p.sum, p.max, `${p.key}: 全部灯すと最大`);
 }
 
 // 払い方: その盤の色の火種を先に、足りない分を万能で（1.9）
@@ -210,15 +217,13 @@ assert.deepEqual(towards, route.path, "目標まで灯す: 火種が足りれば
 g.hidane.any = 1;
 assert.equal(board.pendingTowards(g, [], "K03").length, 1, "火種1なら1マスだけ");
 
-// 授業の錠（2.6）: 盤3段（#1774 最新決定）＋スミさんは条件なし／ほかは♥5。まだ会っていない相手は伏せる
+// 授業の錠（2.6）: スミさんは条件なし／ほかは♥5（段の条件は SBD63 でなくした）。まだ会っていない相手は伏せる
 g.hidane.any = 50;
 const senseStats = board.boardNodes("sense").filter((n) => n.kind === "stat" && n.ring === 1).map((n) => n.id);
 const lessonPath = board.pathTo("M-S1", new Set()).path.filter((id) => id !== "M-S1");
-assert.equal(status("M-S1"), "sealed", "感覚盤1段では錠");
-const lock = board.lessonLock(N["M-S1"], new Set(lessonPath));
-assert.equal(lock?.step, true, "道は届いても3段に足りない");
-const lessonStats = [...new Set([...lessonPath, ...senseStats])].slice(0, Math.ceil(2 * board.STAT_SQUARES.sense / 9));
-assert.equal(board.lessonLock(N["M-S1"], new Set(lessonStats)), null, "3段でスミさんの授業は開く（好感度の条件なし）");
+assert.equal(status("M-S1"), "far", "道が届いていない");
+assert.equal(board.lessonLock(N["M-S1"], new Set()), null, "スミさんの授業は錠なし（好感度・段の条件なし）");
+const lessonStats = lessonPath;
 assert.equal(board.lessonLock(N["M-S2"], new Set(lessonStats))?.heart, true, "アダムの授業は♥5が要る");
 assert.equal(board.hasMet("adam"), false);
 assert.equal(board.hasMet("sumi"), true, "スミさんは最初から知っている");
@@ -359,18 +364,8 @@ for (const [id, enabled] of [["M-S1", hasAttackTraining], ["M-W1", hasCoalTraini
   const path = board.pathTo(id, new Set()).path.filter((x) => x !== id);
   const stats = board.boardNodes(node.board).filter((n) => n.kind === "stat" && n.ring === 1).map((n) => n.id);
   const enough = [...new Set([...path, ...stats])];
-  const minimum = Math.ceil(2 * board.STAT_SQUARES[node.board] / 9);
-  gr.nodes = enough.slice(0, minimum - 1);
-  assert.equal(board.stepOf(node.board, new Set(gr.nodes)), 2);
-  assert.equal(board.connected(node, new Set(gr.nodes)), true);
-  for (const hearts of [0, 999]) {
-    core.state.affinity.sumi = hearts;
-    assert.deepEqual(board.commitPending([id]), [], "3段未満では灯せない");
-  }
-  core.state.affinity.sumi = 0;
-  gr.nodes = board.boardNodes(node.board).filter((n) => n.kind === "stat" && !node.links.includes(n.id)).slice(0, minimum).map((n) => n.id);
-  assert.equal(board.stepOf(node.board, new Set(gr.nodes)), 3);
-  assert.deepEqual(board.commitPending([id]), [], "3段でも道が無ければ灯せない");
+  gr.nodes = board.boardNodes(node.board).filter((n) => n.kind === "stat" && !node.links.includes(n.id)).slice(0, 8).map((n) => n.id);
+  assert.deepEqual(board.commitPending([id]), [], "道が無ければ灯せない");
   gr.nodes = enough;
   const before = { wallet: { ...gr.hidane }, day: core.state.day, slot: core.state.slot, stamina: core.state.stamina };
   assert.deepEqual(board.commitPending([id]).map((n) => n.id), [id], "好感度0・火種0で授業を灯せる");
@@ -398,7 +393,7 @@ for (const [id, enabled] of [["M-S1", hasAttackTraining], ["M-W1", hasCoalTraini
   core.newGame(); core.state.flags[flag] = true;
   core.save(); core.load();
   const legacy = growth.ensureGrowth();
-  assert(legacy.nodes.includes(id) && legacy.learned.includes(id), "旧習得済みは3段・道なしでも保持");
+  assert(legacy.nodes.includes(id) && legacy.learned.includes(id), "旧習得済みは道なしでも保持");
   assert.equal(enabled(core.state.flags), true);
   assert.deepEqual(growth.readyLessons("sumi"), []);
   growth.ensureGrowth();
@@ -428,4 +423,4 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v9 shapes grow up from the bottom hub (fan/swirl/tree), 3 roads, bands near×1/mid×2/beyond-gate×3, ch1 lessons near and later lessons beyond gates, gates by colored hidane, 20 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, steps ~3 squares, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v10 shapes grow up from the bottom hub, gates next to the hub with lessons right behind (every lesson within 5), peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 20 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");

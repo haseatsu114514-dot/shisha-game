@@ -30,7 +30,7 @@ export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上�
 export const BOARD_TOTAL = BOARD_KEYS.reduce((n, b) => n + STAT_SQUARES[b]
   + BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length, 0) + SKILLS.reduce((n, s) => n + s.cost, 0);
 /** 盤の型の版。違う版の灯し方は、使った火種を返して最初から（習得した授業は残す） */
-export const BOARD_VERSION = 9; // 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ、9: 紋を下に・関門の先に授業（2026-10-30）
+export const BOARD_VERSION = 10; // 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ、9: 紋を下に・関門の先に授業、10: 関門を紋のそばに・極みは盤を埋めたご褒美（2026-10-30）
 /**
  * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「いろんな盤をあけてく爽快感も欲しい」→「1レベル2つ・盤を細かく」（SBD60）:
  * どのレベルも2つ。盤は198（3盤とも66）で、1周目（中央 Lv.57、約140）で3つの盤どれも7割。
@@ -408,7 +408,7 @@ export function claimPlayRewards(g, s = state) {
     const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}`;
     if (g.rewards[key]) continue;
     g.rewards[key] = true;
-    const low = BOARD_KEYS.reduce((best, k) => boardStep(g, k) < boardStep(g, best) ? k : best, BOARD_KEYS[0]);
+    const low = BOARD_KEYS.reduce((best, k) => boardFill(g, k) < boardFill(g, best) ? k : best, BOARD_KEYS[0]);
     out.push({ label: "くじのラストワン賞", parts: giveSet(g, { [low]: KUJI_LAST_ONE_GIFT }) });
   }
   return out;
@@ -416,19 +416,19 @@ export function claimPlayRewards(g, s = state) {
 
 // ---------------------------------------------------------------- 寝る時の精算（6.3）
 
-/** 盤の段（1＋9×能力のマス÷その盤の数）。規則の growth-board.js と同じ数え方を、循環させずに持つ */
-function boardStep(g, board) {
+/** 盤の伸び（灯した能力のマスの割合）。規則の growth-board.js と同じ数え方を、循環させずに持つ（段は SBD63 でなくした） */
+function boardFill(g, board) {
   const prefix = BOARD_PREFIX[board];
   let n = g.nodes.filter((id) => id.startsWith(prefix) && /^\D\d+$/.test(id)).length;
   for (const l of LESSONS) if (l.board === board && l.reward === "stat" && g.nodes.includes(l.id)) n += l.bonus || 0;
-  return Math.min(10, 1 + Math.floor((9 * Math.min(STAT_SQUARES[board], n)) / STAT_SQUARES[board]));
+  return Math.min(STAT_SQUARES[board], n) / STAT_SQUARES[board];
 }
 
-/** 節目の色: 前の節目から一番火種を灯した盤。同数なら段の低い盤（1.5） */
+/** 節目の色: 前の節目から一番火種を灯した盤。同数なら伸びの少ない盤（1.5） */
 export function milestoneSystem(g = ensureGrowth()) {
   return BOARD_KEYS.reduce((best, k) => {
     const a = g.litSince[k] || 0, b = g.litSince[best] || 0;
-    return a > b || (a === b && boardStep(g, k) < boardStep(g, best)) ? k : best;
+    return a > b || (a === b && boardFill(g, k) < boardFill(g, best)) ? k : best;
   }, BOARD_KEYS[0]);
 }
 

@@ -5,7 +5,7 @@ import { affinityLevel } from "./stats.js";
 import { ensureGrowth, HIDANE_KEYS, noteLit, BOARD_TOTAL } from "./growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_PREFIX, STAT_SQUARES, BOARD_SHAPES,
-  SKILLS, LESSONS, LESSON_MIN_STEP, RANKS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS,
+  SKILLS, LESSONS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS, FEATURES,
 } from "./growth-board-data.js";
 
 export * from "./growth-board-data.js";
@@ -21,9 +21,9 @@ const isHubSide = (x, y) => Math.abs(x) + Math.abs(y) === 1 && y <= 0;
 /** 盤ごとの型: マス（座標・種類・章・恩恵・紋からの道のり・帯）と線 */
 function buildLayout(board) {
   const shape = BOARD_SHAPES[board];
-  const cells = new Map(shape.cells.map(([key, kind, ring, perk]) => {
+  const cells = new Map(shape.cells.map(([key, kind, ring, perk, feature]) => {
     const [x, y] = key.split(",").map(Number);
-    return [key, { key, x, y, kind, ring, perk }];
+    return [key, { key, x, y, kind, ring, perk, feature }];
   }));
   const adj = {};
   for (const [a, b] of shape.edges) {
@@ -74,7 +74,9 @@ function buildNodes() {
   for (const n of nodes) {
     const c = LAYOUTS[n.board].cells.find((x) => x.key === n.cell);
     if (at[`${n.board}:${n.cell}`]) throw new Error(`${n.id} と ${at[`${n.board}:${n.cell}`]} が同じマス`);
-    Object.assign(n, { gx: c.x, gy: c.y, ring: c.ring, band: c.band, ...(n.kind === "stat" && c.perk ? { perk: c.perk } : {}) });
+    Object.assign(n, { gx: c.x, gy: c.y, ring: c.ring, band: c.band, ...(n.kind === "stat" && c.perk ? { perk: c.perk } : {}),
+      ...(n.kind === "stat" && c.feature ? { feature: c.feature } : {}) });
+    if (n.feature && FEATURES[n.feature]?.board !== n.board) throw new Error(`${n.id} の✦ ${n.feature} が盤に合わない`);
     at[`${n.board}:${n.cell}`] = n.id;
   }
   for (const n of nodes) {
@@ -112,7 +114,6 @@ export function perkOf(node) {
 export const nodeLabel = (node) => node.kind === "stat"
   ? `${BOARD_JA[node.board]}のマス${node.peak ? "（極み）" : ""}` : node.kind === "gate" ? `${BOARD_JA[node.board]}の関門`
   : node.kind === "lesson" ? `授業「${node.name}」` : `スキル「${node.name}」`;
-export const rankOfStep = (board, step) => RANKS[board][Math.min(4, Math.floor((step - 1) / 2))];
 
 // ---------------------------------------------------------------- 規則（2.3）
 
@@ -132,20 +133,34 @@ export function statCount(board, unlocked) {
   }
   return Math.min(STAT_SQUARES[board], n);
 }
-/** 段 s＝1＋（9×能力のマス÷その盤の能力のマスの数 の切り捨て）。全部で10段（3.1。v3 は1段が約5マス） */
-export const stepForCount = (board, n) => Math.min(10, 1 + Math.floor((9 * n) / STAT_SQUARES[board]));
-export const stepOf = (board, unlocked) => stepForCount(board, statCount(board, unlocked));
-/** 次の段まであと何マスか（10段なら0） */
-export function squaresToNextStep(board, unlocked) {
-  const n = statCount(board, unlocked), step = stepForCount(board, n);
-  if (step >= 10) return 0;
-  return Math.ceil((step * STAT_SQUARES[board]) / 9) - n;
-}
-/** 連続して効くものの割合 t（0〜1） */
+/** 盤の伸び（SBD63「段の概念は無くす。盤の伸びをステータスグラフに」）: 灯した能力のマスの割合 0〜1 */
 export const statRatio = (board, unlocked) => statCount(board, unlocked) / STAT_SQUARES[board];
 
+/** 恩恵ごとの合計（盤の右のパネルの横棒）。[{ key, glyph, name, text（合計を入れた文）, sum, max }] */
+export function perkTotals(board, unlocked) {
+  const def = SQUARE_PERKS[board], fmt = (v) => String(Math.round(v * 10) / 10);
+  return Object.entries(def.perks).map(([key, perk]) => {
+    const unit = Number(/\{([\d.]+)\}/.exec(perk.text)?.[1] || 0);
+    let sum = 0, max = 0;
+    for (const n of boardNodes(board)) {
+      if (n.kind !== "stat" || n.peak || n.perk !== key) continue;
+      const v = unit * (PERK_TIERS[n.band]?.mult || 1);
+      max += v;
+      if (unlocked.has(n.id)) sum += v;
+    }
+    return { key, glyph: perk.glyph, name: perk.name, text: perk.text.replace(/\{[\d.]+\}/, fmt(sum)), sum, max };
+  });
+}
+
+/** ✦のマスで開いた「できること」（その盤の分。灯したかどうかつき） */
+export const featuresOf = (board, unlocked) => boardNodes(board).filter((n) => n.feature)
+  .map((n) => ({ ...FEATURES[n.feature], key: n.feature, node: n.id, on: unlocked.has(n.id) }));
+
+/** その盤の能力のマス（極みを除く）が全部灯っているか。極みはその時だけ灯せる（SBD63） */
+export const statsFilled = (board, unlocked) => boardNodes(board).every((n) => n.kind !== "stat" || n.peak || unlocked.has(n.id));
+
 /** 線でつながった隣が灯っている（か、紋の隣） */
-export const connected = (node, unlocked) => node.links.some((id) => id === HUB || unlocked.has(id));
+export const connected = (node, unlocked) => node.peak ? statsFilled(node.board, unlocked) : node.links.some((id) => id === HUB || unlocked.has(id));
 
 /** 授業の相手に会っているか（スミさんは最初から） */
 export function hasMet(who, s = state) {
@@ -169,9 +184,9 @@ export function lessonShown(node, g, s = state) {
 /** 授業の錠。開いていれば null、閉じていれば足りないものの内訳 */
 export function lessonLock(node, unlocked, s = state) {
   if (node.kind !== "lesson") return null;
-  const step = stepOf(node.board, unlocked), heart = node.need ? heartOf(node.who, s) : 0;
-  const lack = { step: step < LESSON_MIN_STEP, heart: !!node.need && heart < node.need, met: hasMet(node.who, s) };
-  return lack.step || lack.heart ? { ...lack, stepNow: step, heartNow: heart } : null;
+  const heart = node.need ? heartOf(node.who, s) : 0;
+  const lack = { heart: !!node.need && heart < node.need, met: hasMet(node.who, s) };
+  return lack.heart ? { ...lack, heartNow: heart } : null;
 }
 
 /**
@@ -280,6 +295,18 @@ export function commitPending(pendingIds, s = state) {
 export function pathTo(id, unlocked) {
   const goal = NODE_BY_ID[id];
   if (!goal) return { cost: 0, path: [] };
+  // 極みは道でなく「その盤の能力のマスを全部」: 残りの能力のマスへの道を近い順につないで、最後に極み
+  if (goal.peak) {
+    const have = new Set(unlocked), path = [];
+    for (;;) {
+      const rest = boardNodes(goal.board).filter((n) => n.kind === "stat" && !n.peak && !have.has(n.id));
+      if (!rest.length) break;
+      const next = rest.map((n) => pathTo(n.id, have)).sort((a, b) => a.cost - b.cost)[0];
+      for (const step of next.path) { have.add(step); path.push(step); }
+    }
+    if (!unlocked.has(id)) path.push(id);
+    return { cost: path.reduce((n, step) => n + NODE_BY_ID[step].cost, 0), path };
+  }
   const nodes = boardNodes(goal.board);
   const dist = { [HUB]: 0 }, prev = {}, done = new Set(), queue = [HUB];
   const linksOf = (u) => u === HUB ? nodes.filter((n) => n.links.includes(HUB)).map((n) => n.id) : NODE_BY_ID[u].links;

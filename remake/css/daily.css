@@ -956,6 +956,11 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .st-next-track.capped b { background: #999; }
 .st-rank { color: var(--text-dim); font-size: 14px; }
 .st-row { cursor: pointer; }
+/* 心得の盤を使う時のステータス（SBD63。段なし） */
+.st-row.st-b-body { --sc: #ef8a5e; } .st-row.st-b-sense { --sc: var(--stat-sense); } .st-row.st-b-wisdom { --sc: #65c9bb; }
+.st-board-head { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 7px; background: var(--sc); color: #1b1020; font-weight: 800; font-size: 18px; }
+.st-count { font-variant-numeric: tabular-nums; color: var(--gold-hi); }
+.radar-label.rb-body { fill: #ef8a5e; } .radar-label.rb-sense { fill: var(--stat-sense); } .radar-label.rb-wisdom { fill: #65c9bb; }
 .st-row.sel { outline: 1px solid color-mix(in srgb, var(--sc) 70%, transparent); }
 .st-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .st-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
@@ -1313,6 +1318,17 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-p-state { color: var(--text-dim); font-size: 14px; }
 .gb-p-state.s-available { color: #ffd08a; }
 .gb-p-state.s-pending { color: #fff; }
+/* 盤の伸びのグラフ（SBD63。段の代わり）: 恩恵ごとの合計 */
+.gb-bars { display: grid; gap: 7px; margin: 4px 0; }
+.gb-bar { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; align-items: baseline; font-size: 14px; }
+.gb-bar .gb-bar-line { grid-column: 1 / -1; grid-row: 2; }
+.gb-bar-name { color: var(--text-dim); }
+.gb-bar-line { position: relative; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.gb-bar-line b { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: var(--c); box-shadow: 0 0 8px var(--c); }
+.gb-bar-sum { justify-self: end; text-align: right; color: var(--gold-hi); font-variant-numeric: tabular-nums; }
+.gb-tab-count { font-variant-numeric: tabular-nums; }
+/* 極みは道につながらない（盤を埋めたご褒美）。点線の輪で「ゴール」と分かるように */
+.gb-node.peak::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px dashed rgba(244, 210, 122, 0.55); pointer-events: none; }
 .gb-hint { margin-top: auto !important; color: var(--text-dim); font-size: 13px; }
 .gb-side-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .gb-side-actions .btn { min-height: 44px; min-width: 120px; }

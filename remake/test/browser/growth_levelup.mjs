@@ -379,6 +379,25 @@ await suite("growth-levelup", async (check) => {
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
   }, { viewport: { width: 1331, height: 760 } });
+  // 段はなくした（SBD63）: 盤の札は「n/26」、右のパネルは恩恵の横棒、ステータス画面は三角のグラフ
+  await check("no-steps-graph", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const g = (await import("./js/core/growth.js")).ensureGrowth();
+      g.nodes.push("B1", "B2");
+      void (await import("./js/core/growth.js")).openGrowthBoard();
+    });
+    await page.locator(t("board-tab-body")).waitFor();
+    assert.match(await page.locator(t("board-tab-body")).innerText(), /才能盤\s*2\/26/);
+    assert.equal(await page.locator(t("board-bars")).count(), 1, "恩恵の横棒");
+    assert.doesNotMatch(await page.locator(t("growth-board")).innerText(), /\d段/, "盤に段の文字は無い");
+    await page.locator(t("board-decide")).click();
+    await page.waitForSelector(t("growth-board"), { state: "detached" });
+    await page.evaluate(async () => { void (await import("./js/daily/status.js")).openStatus(); });
+    await page.locator(t("board-radar")).waitFor();
+    assert.match(await page.locator(t("st-board-body")).innerText(), /2\/26/);
+    assert.doesNotMatch(await page.locator(".st-me").innerText(), /\d段/, "ステータスに段の文字は無い");
+  }, { viewport: { width: 1331, height: 760 } });
   // 授業は会って相談した時だけ習う（SBD61）: 盤には LIME で聞く入口が無く、次に会った時と出る
   await check("lesson-in-person", async (page) => {
     await setupDaily(page);
