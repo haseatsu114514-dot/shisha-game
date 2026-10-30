@@ -18,6 +18,49 @@ async function setup(page) {
 await suite("craft-materials", async check => {
   for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
     { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, reducedMotion: "reduce" }]]) {
+    await check(`${device}-chapter-five-exact-12g`, async page => {
+      for (const bowl of ["silicone_bowl", "hagal_80beat", "suyaki_hagal"]) {
+        await page.evaluate(async bowl => {
+          const core = await import("./js/core/state.js"), session = await import("./js/craft/session.js");
+          const steps = await import("./js/craft/steps.js"), ui = await import("./js/core/ui.js");
+          const s = core.newGame(); s.chapter = 5;
+          s.owned.push("hagal_80beat", "suyaki_hagal");
+          ui.clearScreen(); session.craftTest.auto = null;
+          window.F = { core, steps, session, cs: session.newSession("tournament") };
+          F.cs.orderFlavorIds = ["double_apple"];
+          session.openBench(F.cs, { steps: [["setup", "機材"], ["mix", "配合"]] });
+          F.beforeStock = JSON.stringify(s.flavorStock);
+          F.running = (async () => { await steps.stepSetup(F.cs); await steps.stepMix(F.cs); })();
+        }, bowl);
+        await click(page, `[data-test="opt-${bowl}"]`, touch);
+        const plus = '[data-test="mix-plus-double_apple"]', minus = '[data-test="mix-minus-double_apple"]';
+        const ok = page.locator('[data-test="mix-ok"]');
+        await ok.waitFor();
+        assert.equal(await page.locator('.flavor-row').count(), 1, "Only the supplied double apple is offered");
+        for (let i = 0; i < 11; i++) await click(page, plus, touch);
+        assert(await ok.isDisabled(), "11g is short");
+        await click(page, plus, touch);
+        assert(!(await ok.isDisabled()), "12g is valid");
+        assert.match(await page.locator('.reg-line').innerText(), /^✓/);
+        const cap = await page.evaluate(async () => (await import("./js/core/data.js")).DB.equipById[F.cs.equip.bowl].capacity);
+        if (cap > 12) {
+          for (let grams = 13; grams <= cap; grams++) {
+            await click(page, plus, touch);
+            assert(await ok.isDisabled(), `${grams}g must not commit`);
+            assert.match(await page.locator('.reg-line').innerText(), /^✗/);
+          }
+          for (let grams = cap; grams > 12; grams--) await click(page, minus, touch);
+        }
+        assert(!(await ok.isDisabled()), "Returning to 12g restores confirmation");
+        await click(page, '[data-test="mix-ok"]', touch);
+        const result = await page.evaluate(async () => {
+          await F.running;
+          return { mix: F.cs.mix, regOk: F.cs.mixInfo.regOk, stock: JSON.stringify(F.core.state.flavorStock), beforeStock: F.beforeStock };
+        });
+        assert.deepEqual(result.mix, { double_apple: 12 }); assert.equal(result.regOk, true);
+        assert.equal(result.stock, result.beforeStock, "The supplied match leaf does not consume private stock");
+      }
+    }, { ...options, reducedMotion: "reduce" });
     await check(`${device}-packing`, async page => {
       await setup(page);
       for (const bowl of ["silicone_bowl", "hagal_80beat", "suyaki_tsumugi"]) {
