@@ -12,7 +12,7 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
-  canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
+  CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "./ch4-progress.js";
 
@@ -103,7 +103,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
-  const files = { ...CH4_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
+  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
