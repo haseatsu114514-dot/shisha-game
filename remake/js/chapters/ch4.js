@@ -12,7 +12,7 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
-  canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
+  CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "./ch4-progress.js";
 
@@ -22,6 +22,7 @@ import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
+import { craftReviewLines } from "../craft/advice.js";
 import { loadStoryRoutes } from "./ch3-story-wiring.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
   chapterFourEveningRecord } from "./ch4-story-wiring.js";
@@ -102,7 +103,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
-  const files = { ...CH4_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
+  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
@@ -362,7 +363,9 @@ async function runTournament(owner) {
     `${({ holes: "穴", heat: "炭", shisha: "完成品", care1: "調整1", care2: "調整2" })[key]} ${score.toFixed(1)}`).join(" ／ ");
   await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
     body: `${result.failure ? "完了した工程から振り返ろう。" : `総合 ${result.total.toFixed(1)} ／ ${parts}`}\n` +
-      result.rows.map(row => `${({ hajime: "はじめ", naru: "なる", wang: "王煙楼", sheikh: "シェイク" })[row.id]} ${row.points}票`).join(" ／ "),
+      result.rows.map(row => `${({ hajime: "はじめ", naru: "なる", wang: "王煙楼", sheikh: "シェイク" })[row.id]} ${row.points}票`).join(" ／ ") +
+      // 第1〜3章の結果と同じ2行（#1909）。記録の無い工程は推測しない。
+      craftReviewLines(chapterFourProgress(state).match?.craft).map(text => `\n${text}`).join(""),
     options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {

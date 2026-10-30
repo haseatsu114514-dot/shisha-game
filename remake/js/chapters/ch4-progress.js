@@ -131,6 +131,16 @@ export const CH4_SCENE_FILES = Object.freeze({
   ch4_spots: Object.freeze(["ch4_dubai_souq", "ch4_dubai_cafe"]),
 });
 
+// ヒロイン来訪の台本（読込登録だけ）。到着・約束の再生条件は #516 で決めるため、ここでは再生しない。
+export const CH4_VISITOR_SCENE_FILES = Object.freeze({
+  ch4_mashiro_dubai: Object.freeze(["ch4_mashiro_dubai_friend", "ch4_mashiro_dubai_girlfriend"]),
+  ch4_visitors: Object.freeze(["ch4_samechan_dubai_girlfriend", "ch4_hiyori_dubai_girlfriend"]),
+  ch4_tsumugi_dubai: Object.freeze(["ch4_tsumugi_dubai_girlfriend"]),
+  ch4_minto_dubai: Object.freeze(["ch4_minto_dubai_girlfriend"]),
+  ch4_rin_dubai: Object.freeze(["ch4_rin_dubai_girlfriend"]),
+  ch4_ageha_dubai: Object.freeze(["ch4_ageha_dubai_girlfriend"]),
+});
+
 const PARTS = Object.freeze(["prologue", "free", "eve", "tournament", "resolution", "cleared"]);
 const STRATEGY_BRANCHES = Object.freeze(["sakura", "peach", "tea"]);
 

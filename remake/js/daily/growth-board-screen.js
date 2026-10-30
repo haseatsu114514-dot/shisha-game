@@ -6,20 +6,23 @@ import { layers, modal, gainCard } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { emit } from "../core/bus.js";
 import { state } from "../core/state.js";
-import { displayName } from "../core/data.js";
+import { displayName, faceIconUrl } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
 import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned } from "../core/growth.js";
 import {
-  BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STEP_TEXT, PER_SQUARE, QUALITY_STEPS, REWARD_JA, LESSON_MIN_STEP,
-  HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, stepOf, statCount, replay, nodeStatus, commitPending,
-  pathTo, pendingTowards, lessonLock, hasMet, rankOfStep, availableCount, paymentFor,
-  STAT_SQUARES, GRID, stepForCount, squaresToNextStep, lessonShown, perkOf, HIDANE_NAME,
+  BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, REWARD_JA, FEATURES,
+  HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, statCount, replay, nodeStatus, commitPending,
+  pathTo, pendingTowards, lessonLock, hasMet, availableCount, paymentFor,
+  STAT_SQUARES, GRID, lessonKnown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio,
 } from "../core/growth-board.js";
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488。紋は下の端 380,452。横13×縦9 の方眼で上へ育つ。SBD62）
 
 const W = 760, H = 488, CX = 380, CY = 452, CELL = 52;
-const at = (gx, gy) => ({ x: CX + gx * CELL, y: CY + gy * CELL });
+// 紋の場所は盤ごとに違う（SBD65）。座標は紋からのずれなので、HUB_AT（方眼の座標）を足して描く
+let drawBoard = "body";
+const hubAt = (b = drawBoard) => HUB_AT[b].split(",").map(Number);
+const at = (gx, gy) => { const [hx, hy] = hubAt(); return { x: CX + (gx + hx) * CELL, y: CY + (gy + hy) * CELL }; };
 const SVG = "http://www.w3.org/2000/svg";
 const svg = (tag, attrs = {}, children = []) => {
   const n = document.createElementNS(SVG, tag);
@@ -46,12 +49,14 @@ export function openBoard({ place = null } = {}) {
   const header = el("div.gb-header");
   const tabs = el("div.gb-tabs", { role: "tablist" });
   const boardSvg = svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "gb-svg", "aria-hidden": "true" });
+  // 灯すほど盤の背景が明るくなり、奥の絵が見えてくる（SBD65。絵は reveal_<盤>.webp を後で置く。無い間は光だけ）
+  const reveal = el("div.gb-reveal", { "aria-hidden": "true" });
   const nodeLayer = el("div.gb-nodes");
   const side = el("div.gb-side", { dataset: { test: "board-preview" }, "aria-live": "polite" });
   const footer = el("div.gb-footer");
   const root = el(`div.gboard${canLight ? ".can-light" : ".view-only"}`, { role: "dialog", "aria-label": "心得の盤", dataset: { test: "growth-board", mode: canLight ? "light" : "view" } }, [
     header,
-    el("div.gb-main", [el("div.gb-left", [tabs, el("div.gb-board", [boardSvg, nodeLayer])]), side]),
+    el("div.gb-main", [el("div.gb-left", [tabs, el("div.gb-board", [reveal, boardSvg, nodeLayer])]), side]),
     footer,
   ]);
 
@@ -76,17 +81,16 @@ export function openBoard({ place = null } = {}) {
 
   function renderTabs(v) {
     tabs.replaceChildren(...BOARD_KEYS.map((k) => {
-      const count = statCount(k, v.unlocked), step = stepOf(k, v.unlocked);
+      const count = statCount(k, v.unlocked);
       const ready = canLight ? availableCount(k, g, v) : 0;
-      const into = count >= STAT_SQUARES[k] ? "極めた" : `次の段まで${squaresToNextStep(k, v.unlocked)}`;
       return el(`button.gb-tab.b-${k}${k === board ? ".on" : ""}`, {
         role: "tab", "aria-selected": String(k === board), dataset: { test: `board-tab-${k}` },
-        "aria-label": `${BOARD_JA[k]}盤 ${step}段${ready ? `、今取れるマス ${ready}` : ""}`,
+        "aria-label": `${BOARD_JA[k]}盤 ${count}/${STAT_SQUARES[k]}${ready ? `、今取れるマス ${ready}` : ""}`,
         onclick: () => { board = k; selected = null; SE.click?.(); render(); },
       }, [
         el("span.gb-tab-head", { text: BOARD_HEAD[k], "aria-hidden": "true" }),
         el("span.gb-tab-body", [
-          el("b", { text: `${BOARD_JA[k]}盤` }), el("span", { text: ` ${step}段 ${into}` }),
+          el("b", { text: `${BOARD_JA[k]}盤` }), el("span.gb-tab-count", { text: ` ${count}/${STAT_SQUARES[k]}` }),
           el("i.gb-tab-line", [el("b", { style: { width: `${Math.round(count / STAT_SQUARES[k] * 100)}%` } })]),
         ]),
         ready ? el("em.gb-tab-ready", { text: String(ready), "aria-hidden": "true" }) : null,
@@ -96,29 +100,52 @@ export function openBoard({ place = null } = {}) {
   }
 
   function renderBoard(v) {
-    // まだ会っていない人の授業と小道は盤に出さない（会った時に現れる）
-    const nodes = boardNodes(board).filter((n) => lessonShown(n, g));
+    // 授業はいつも盤に出す。まだ分からない授業（会っていない・その章まで来ていない）は「？」の札（SBD67）
+    const nodes = boardNodes(board);
     const open = ringsOpen();
     const lit = (id) => id === HUB || v.unlocked.has(id);
     const goal = g.target && NODE_BY_ID[g.target]?.board === board ? new Set(pathTo(g.target, v.unlocked).path) : new Set();
-    const parts = [svg("defs", {}, [svg("radialGradient", { id: "gb-ember", cx: "50%", cy: "62%", r: "60%" }, [
-      svg("stop", { offset: "0%", "stop-color": "#fff1b8" }), svg("stop", { offset: "45%", "stop-color": "#ffb43c" }),
-      svg("stop", { offset: "100%", "stop-color": "#e86a12", "stop-opacity": "0" }),
-    ])])];
-    // 方眼のうすい点（横13×縦9。紋の行から上）
-    for (let gx = -GRID.w; gx <= GRID.w; gx++) for (let gy = -GRID.h; gy <= 0; gy++) { const p = at(gx, gy); parts.push(svg("circle", { cx: p.x, cy: p.y, r: 1.5, class: "gb-dot" })); }
-    // 道（使うマスどうしだけ。紋の隣は紋とつなぐ）
+    // ネオンのラウンジ（GB03 の見本）: 光のにじみ・封の曇り・ガラスの煙はコードで描く（画像が来たら重ねる）
+    const parts = [svg("defs", {}, [
+      svg("radialGradient", { id: "gb-ember", cx: "50%", cy: "62%", r: "60%" }, [
+        svg("stop", { offset: "0%", "stop-color": "#fff1b8" }), svg("stop", { offset: "45%", "stop-color": "#ffb43c" }),
+        svg("stop", { offset: "100%", "stop-color": "#e86a12", "stop-opacity": "0" }),
+      ]),
+      svg("filter", { id: "gb-glow", x: "-50%", y: "-50%", width: "200%", height: "200%" }, [svg("feGaussianBlur", { stdDeviation: "3" })]),
+      svg("filter", { id: "gb-fog", x: "-50%", y: "-50%", width: "200%", height: "200%" }, [svg("feGaussianBlur", { stdDeviation: "14" })]),
+      svg("filter", { id: "gb-smoke" }, [
+        svg("feTurbulence", { type: "fractalNoise", baseFrequency: "0.006 0.012", numOctaves: "3", seed: "7" }),
+        svg("feColorMatrix", { values: "0 0 0 0 0.75  0 0 0 0 0.7  0 0 0 0 0.85  0 0 0 0.9 -0.32" }),
+      ]),
+    ]), svg("rect", { x: 0, y: 0, width: W, height: H, filter: "url(#gb-smoke)", class: "gb-smoke" })];
+    drawBoard = board;
+    const fill = statRatio(board, v.unlocked);
+    reveal.className = `gb-reveal r-${board}`;
+    reveal.style.setProperty("--fill", fill.toFixed(3));
+    reveal.dataset.test = "board-reveal";
+    reveal.dataset.fill = String(Math.round(fill * 100));
+    // 方眼のうすい点（横13×縦9）
+    const [hx, hy] = hubAt();
+    for (let gx = -GRID.w; gx <= GRID.w; gx++) for (let gy = -GRID.h; gy <= 0; gy++) { const p = at(gx - hx, gy - hy); parts.push(svg("circle", { cx: p.x, cy: p.y, r: 1.5, class: "gb-dot" })); }
+    // まだ開いていない範囲は、ガラスが曇って沈む
+    const fog = svg("g", { filter: "url(#gb-fog)", class: "gb-fog-layer" });
+    for (const n of nodes) if (n.ring > open) { const p = at(n.gx, n.gy); fog.append(svg("circle", { cx: p.x, cy: p.y, r: 30, class: "gb-fog" })); }
+    parts.push(fog);
+    // 道（使うマスどうしだけ。紋の隣は紋とつなぐ）。消えた管は暗い管と薄いハイライト、灯った管は盤の色のにじみと白い芯
+    const glow = svg("g", { filter: "url(#gb-glow)", class: "gb-glow-layer" }), cores = [];
     const drawn = new Set();
     for (const n of nodes) {
       for (const id of n.links) {
-        if (id !== HUB && !lessonShown(NODE_BY_ID[id], g)) continue;
         const key = [n.id, id].sort().join("|");
         if (drawn.has(key)) continue;
         drawn.add(key);
-        const a = at(n.gx, n.gy), b = id === HUB ? { x: CX, y: CY } : at(NODE_BY_ID[id].gx, NODE_BY_ID[id].gy);
+        const a = at(n.gx, n.gy), b = id === HUB ? at(0, 0) : at(NODE_BY_ID[id].gx, NODE_BY_ID[id].gy);
         const on = lit(n.id) && lit(id), aim = (goal.has(n.id) || lit(n.id)) && (id === HUB || goal.has(id) || lit(id)) && (goal.has(n.id) || goal.has(id));
         const closedA = n.ring > open, closedB = id !== HUB && NODE_BY_ID[id].ring > open;
-        parts.push(svg("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: `gb-path${on ? " lit" : ""}${aim && !on ? " aim" : ""}${closedA || closedB ? " sealed" : ""}` }));
+        const line = (cls) => svg("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: cls });
+        if (on) { glow.append(line("gb-tube-glow")); cores.push(line("gb-path lit")); }
+        else if (closedA || closedB) parts.push(line("gb-path sealed"));
+        else { parts.push(line("gb-path"), line("gb-path-hi")); if (aim) parts.push(line("gb-path aim")); }
         // 開いている所と、まだ開いていない所の境に封（章の数は出さない。SBD42）
         if (closedA !== closedB) {
           const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, horiz = a.y === b.y;
@@ -126,9 +153,18 @@ export function openBoard({ place = null } = {}) {
         }
       }
     }
-    parts.push(svg("circle", { cx: CX, cy: CY, r: 30, class: "gb-hub" }));
-    parts.push(svg("circle", { cx: CX, cy: CY + 2, r: 19, fill: "url(#gb-ember)" }));
-    const hubText = svg("text", { x: CX, y: CY + 8, class: "gb-hub-text" });
+    parts.push(glow, ...cores);
+    const hub = at(0, 0);
+    // 紋: ネオンの輪（外の太い管のにじみ＋管＋内の細い輪＋6つの短い渦）。画像 hub_<盤>.webp が来たら差し替える
+    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 34, class: "gb-hub-glow", filter: "url(#gb-glow)" }));
+    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub" }));
+    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 25, class: "gb-hub-inner" }));
+    for (let i = 0; i < 6; i++) {
+      const a0 = i * Math.PI / 3, a1 = a0 + 0.7, r = 20;
+      parts.push(svg("path", { d: `M ${hub.x + r * Math.cos(a0)} ${hub.y + r * Math.sin(a0)} A ${r} ${r} 0 0 1 ${hub.x + (r - 3) * Math.cos(a1)} ${hub.y + (r - 3) * Math.sin(a1)}`, class: "gb-hub-swirl" }));
+    }
+    parts.push(svg("circle", { cx: hub.x, cy: hub.y + 2, r: 19, fill: "url(#gb-ember)" }));
+    const hubText = svg("text", { x: hub.x, y: hub.y + 8, class: "gb-hub-text" });
     hubText.textContent = BOARD_HEAD[board];
     parts.push(hubText);
     boardSvg.replaceChildren(...parts);
@@ -136,15 +172,15 @@ export function openBoard({ place = null } = {}) {
     nodeLayer.replaceChildren(...nodes.map((node) => {
       const p = at(node.gx, node.gy), st = status(node, v);
       const shown = revealOf(node);
-      const glyph = st === "locked" && node.kind !== "stat" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (st === "sealed" && !hasMet(node.who) ? "？" : "授") : shown === "hidden" ? "？" : node.glyph;
-      const qStep = node.kind === "stat" && !node.peak ? qualityAt(node, v) : null;
+      const glyph = st === "locked" && node.kind !== "stat" && node.kind !== "lesson" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? whoName(node.who).slice(0, 1) : "？") : shown === "hidden" ? "？" : node.glyph;
+      const qStep = node.feature && !g.nodes.includes(node.id);
       return el(`button.gb-node.${node.kind}.s-${st}${fresh.has(node.id) ? ".just-opened" : ""}${node.peak ? ".peak" : ""}${node.sig ? ".sig" : ""}${selected === node.id ? ".selected" : ""}${g.target === node.id ? ".target" : ""}${goal.has(node.id) ? ".on-path" : ""}`, {
         style: { left: `${p.x}px`, top: `${p.y}px` },
         title: nodeTitle(node, shown), "aria-label": `${nodeTitle(node, shown)}（${statusWord(node, st)}）`,
         dataset: { test: `board-node-${node.id}`, status: st },
         onclick: () => select(node.id, true),
       }, [
-        el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph })]),
+        el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph }), lessonFace(node, st)]),
         qStep ? el("em.gb-quality", { text: "✦", "aria-hidden": "true" }) : null,
         node.kind === "skill" && ["available", "short", "far"].includes(st)
           ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
@@ -153,13 +189,17 @@ export function openBoard({ place = null } = {}) {
     }));
   }
 
-  /** そのマスを灯すと段が上がり、その段で「できることが増える」なら ✦（#1691） */
-  function qualityAt(node, v) {
-    if (v.unlocked.has(node.id) || g.nodes.includes(node.id)) return null;
-    if (node.kind !== "stat") return null;
-    const after = stepForCount(node.board, statCount(node.board, v.unlocked) + 1);
-    const now = stepOf(node.board, v.unlocked);
-    return after > now && QUALITY_STEPS[node.board]?.[after] ? after : null;
+  /**
+   * 授業はその人の顔アイコン（2026-10-30 オーナー「授業はキャラの顔アイコンに」SBD64）。顔の無い人・読み込めない時は名前の1文字。
+   * 会っていない人の授業は盤に出ないので、出ている授業はどれも顔を見せてよい。
+   */
+  function lessonFace(node, st) {
+    if (node.kind !== "lesson" || !lessonKnown(node, g)) return null;
+    const url = faceIconUrl(node.who, state);
+    if (!url) return null;
+    const img = el("img.gb-face-icon", { src: url, alt: "", draggable: "false", loading: "lazy" });
+    img.addEventListener("error", () => img.remove());
+    return img;
   }
 
   /** 章ごとの見せ方（2.5）: open=全部 / next=名前と効果（絵は影絵）/ hidden=？？？ */
@@ -171,10 +211,10 @@ export function openBoard({ place = null } = {}) {
   function nodeTitle(node, shown = revealOf(node)) {
     if (node.kind === "stat") return node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : `${BOARD_JA[node.board]}のマス・${perkOf(node)?.name || ""}`;
     if (node.kind === "gate") return `${BOARD_JA[node.board]}の関門`;
-    if (node.kind === "lesson") return hasMet(node.who) || g.nodes.includes(node.id) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
+    if (node.kind === "lesson") return lessonKnown(node, g) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
     return shown === "hidden" ? "？？？（物語が進むと盤に現れる）" : `スキル「${node.name}」`;
   }
-  const whoName = (who) => who === "sumi" ? "スミさん" : displayName(who, state);
+  function whoName(who) { return who === "sumi" ? "スミさん" : displayName(who, state); }
 
   function statusWord(node, st) {
     return {
@@ -189,18 +229,15 @@ export function openBoard({ place = null } = {}) {
     const st = status(node, v), shown = revealOf(node);
     const lines = [];
     const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}`, { "aria-hidden": "true" }, [
-      el("span", { text: node.kind === "stat" ? BOARD_HEAD[node.board] : node.kind === "gate" ? "関" : node.kind === "lesson" ? "授" : shown === "hidden" ? "？" : node.glyph }),
+      el("span", { text: node.kind === "stat" ? BOARD_HEAD[node.board] : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? "授" : "？") : shown === "hidden" ? "？" : node.glyph }),
+      node.kind === "lesson" ? lessonFace(node, st) : null,
     ]);
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
     if (node.kind === "stat") {
-      const step = stepOf(node.board, v.unlocked);
-      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perkOf(node)?.text || PER_SQUARE[node.board]}（${perkOf(node)?.tierName || "近く"}）` }));
-      if (!v.unlocked.has(node.id)) {
-        const left = squaresToNextStep(node.board, v.unlocked), next = Math.min(10, step + 1);
-        lines.push(el("p.gb-p-next", { text: step >= 10 ? "10段（上限）" : `あと${left}つで${next}段：${STEP_TEXT[node.board][next - 1]}` }));
-        const q = QUALITY_STEPS[node.board]?.[next];
-        if (q) lines.push(el("p.gb-p-quality", { text: `✦ ${next}段で「${q}」` }));
-      }
+      const perk = perkOf(node);
+      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perk.text}（${perk.tierName}）` }));
+      if (node.feature) lines.push(el("p.gb-p-quality", { dataset: { test: "board-feature" }, text: `✦ 灯すと「${FEATURES[node.feature].text}」` }));
+      if (node.peak) lines.push(el("p.gb-p-next", { text: statsFilled(node.board, v.unlocked) ? "盤の能力のマスを全部灯した。極みを灯せる" : "この盤の能力のマスを全部灯すと灯せる（盤を埋めたご褒美）" }));
       lines.push(el("p.gb-p-sub", { text: `効く場面：${BOARD_WHERE[node.board]}` }));
     } else if (node.kind === "gate") {
       lines.push(el("p", { text: "この先の道を開く関門。色の火（紅火・蒼火・翠火）1つで越える。先には強いスキルや授業がある" }));
@@ -210,17 +247,17 @@ export function openBoard({ place = null } = {}) {
       else lines.push(el("p", { text: node.text }), el("p.gb-p-sub", { text: `効く場面：${node.scene}・火種${node.cost}${shown === "next" ? "・まだ開いていない" : ""}` }));
     } else {
       const lock = lessonLock(node, v.unlocked);
-      const met = hasMet(node.who) || g.nodes.includes(node.id);
-      if (!met) lines.push(el("p", { text: "まだ会っていない誰かが、教えてくれるらしい" }));
+      const met = lessonKnown(node, g);
+      if (!met) lines.push(el("p", { dataset: { test: "board-lesson-mystery" }, text: "まだ出会っていない誰かが、ここで何かを教えてくれるらしい" }));
       else {
         lines.push(el("p.gb-p-reward", { text: `${REWARD_JA[node.reward]}：${node.text}` }));
         if (st === "sealed") lines.push(el("p.gb-p-sub", { text: node.hint }));
       }
-      if (lock) {
-        const conds = [`${BOARD_JA[node.board]}盤 ${Math.min(lock.stepNow, LESSON_MIN_STEP)}/${LESSON_MIN_STEP}段`];
+      if (lock && met) {
+        const conds = [];
         if (node.need) conds.push(met ? `${whoName(node.who)} ♥${Math.min(5, affinityLevel(node.who))}/${node.need}` : `？？？ ♥?/${node.need}`);
         lines.push(el("p.gb-p-lock", { dataset: { test: "board-lesson-lock" }, text: `錠：${conds.join("・")}` }));
-      } else if (st !== "unlocked") lines.push(el("p.gb-p-sub", { text: "火種いらず。道が届けば灯せる" }));
+      } else if (met && st !== "unlocked") lines.push(el("p.gb-p-sub", { text: "火種いらず。道が届けば灯せる" }));
     }
     lines.push(el(`p.gb-p-state.s-${st}`, { text: stateText(node, st, v) }));
     const actions = [];
@@ -233,16 +270,19 @@ export function openBoard({ place = null } = {}) {
     side.replaceChildren(...lines, el("div.gb-side-actions", actions));
   }
 
+  /** 何も選んでいない時（SBD63「段の概念は無くす。盤の伸びをグラフに」）: 恩恵ごとの合計の横棒と、✦のできること */
   function boardSummary(v) {
-    const step = stepOf(board, v.unlocked);
-    const next = Math.min(10, step + 1);
-    const q = Object.entries(QUALITY_STEPS[board] || {}).find(([s]) => Number(s) > step);
+    const count = statCount(board, v.unlocked);
+    const bars = perkTotals(board, v.unlocked).map((p) => el("div.gb-bar", { dataset: { test: `board-bar-${p.key}` } }, [
+      el("span.gb-bar-name", { text: p.name }),
+      el("i.gb-bar-line", { "aria-hidden": "true" }, [el("b", { style: { width: `${p.max ? Math.round((p.sum / p.max) * 100) : 0}%` } })]),
+      el("span.gb-bar-sum", { text: p.text }),
+    ]));
+    const feats = featuresOf(board, v.unlocked);
     const out = [
-      el("div.gb-art.k-board", { "aria-hidden": "true" }, [el("span", { text: BOARD_HEAD[board] })]),
-      el("h3.gb-p-title", { text: `${BOARD_JA[board]} ${step}段・${rankOfStep(board, step)}` }),
-      el("p", { text: STEP_TEXT[board][step - 1] }),
-      step < 10 ? el("p.gb-p-next", { text: `あと${squaresToNextStep(board, v.unlocked)}マスで${next}段：${STEP_TEXT[board][next - 1]}` }) : null,
-      q ? el("p.gb-p-quality", { text: `✦ ${q[0]}段で「${q[1]}」` }) : null,
+      el("h3.gb-p-title", { text: `${BOARD_JA[board]}盤 ${count}/${STAT_SQUARES[board]}` }),
+      el("div.gb-bars", { dataset: { test: "board-bars" } }, bars),
+      feats.length ? el("p.gb-p-quality", { text: feats.map((f) => `${f.on ? "✦" : "・"}${f.name}`).join("　") }) : null,
       el("p.gb-p-sub", { text: `効く場面：${BOARD_WHERE[board]}` }),
     ];
     if (g.target) {
@@ -263,6 +303,10 @@ export function openBoard({ place = null } = {}) {
     if (st === "pending") return "仮置き中。決定するまでは「やめる」で戻せる";
     if (st === "locked") return "まだ開いていない。物語が進むと封が解ける";
     if (st === "sealed") return "錠が開くと、道が届けば灯せる";
+    if (st === "far" && node.peak) {
+      const left = boardNodes(node.board).filter((n) => n.kind === "stat" && !n.peak && !v.unlocked.has(n.id)).length;
+      return `能力のマスを全部灯すと灯せる（あと${left}マス）`;
+    }
     if (st === "far") {
       const route = pathTo(node.id, v.unlocked);
       return `まだ道がつながっていない（ここまで 火種${route.cost}）`;
@@ -334,7 +378,7 @@ export function openBoard({ place = null } = {}) {
       title: "心得の盤の見方", className: "gboard-help",
       body: el("div", [
         el("p", { text: "盤は能力ごとに3枚（才能・感覚・理論）。下の紋から左・右・上へ道がのびていて、線でつながった隣のマスだけ灯せる。どの道から進んでもいい。" }),
-        el("p", { text: "丸いマスは能力（火種1）。灯すたびに少し伸び、3つほどで1段上がる。紋から遠いマスほど恩恵が大きい（近く×1・中ほど×2・関門の先×3）。六角形はスキル（火種4〜8）。" }),
+        el("p", { text: "丸いマスは能力（火種1）。灯すたびに少し伸びる。紋から遠いマスほど恩恵が大きい（近く×1・中ほど×2・関門の先×3）。✦のマスは灯すと、できることが1つ増える。六角形はスキル（火種4〜8）。いちばん上の極みは、その盤の能力のマスを全部灯すと灯せる。" }),
         el("p", { text: "ひし形は関門。色の火（紅火・蒼火・翠火）1つで越えると、その先の道が開く。関門の先には強いスキルと授業がある。白火では越えられない。" }),
         el("p", { text: "金の札は授業（火種いらず）。教えてくれる人に出会うと盤に現れる。灯したら、次にその人に会った時に相談して習う（LIME では習えない）。" }),
         el("p", { text: "白火はどのマスにも使える。色の火はその色の盤のマスと関門に使える。払うときは白火が先。" }),
@@ -356,7 +400,6 @@ export function openBoard({ place = null } = {}) {
   }
   async function finish(commit) {
     const owner = state;
-    const before = Object.fromEntries(BOARD_KEYS.map((k) => [k, stepOf(k, new Set(g.nodes))]));
     const committed = commit ? commitPending(pending) : [];
     document.removeEventListener("keydown", onKey, true);
     root.classList.remove("show");
@@ -365,15 +408,12 @@ export function openBoard({ place = null } = {}) {
     current = null;
     if (owner === state && committed.length) {
       emit("hud");
-      const after = new Set(g.nodes);
       const squares = committed.filter((n) => n.kind === "stat").length;
       if (squares) gainCard({ kind: "info", badge: "火", top: "LIGHT", main: `能力の火を${squares}つ灯した` });
       const gates = committed.filter((n) => n.kind === "gate").length;
       if (gates) gainCard({ kind: "info", badge: "関", top: "BREAK", main: `関門を${gates}つ越えた`, sub: "この先の道が開いた" });
-      for (const k of BOARD_KEYS) {
-        const step = stepOf(k, after);
-        if (step > before[k]) gainCard({ kind: "info", badge: BOARD_HEAD[k], top: "STEP UP", main: `${BOARD_JA[k]} ${step}段`, sub: STEP_TEXT[k][step - 1] });
-      }
+      for (const node of committed) if (node.feature) gainCard({ kind: "info", badge: "✦", top: "NEW", main: FEATURES[node.feature].name, sub: FEATURES[node.feature].text });
+      for (const node of committed) if (node.peak) gainCard({ kind: "info", badge: "極", top: "COMPLETE", main: `${BOARD_JA[node.board]}を極めた`, sub: "盤の能力のマスを全部灯した" });
       for (const node of committed) if (node.kind === "skill") gainCard({ kind: "info", badge: node.glyph, top: "SKILL", main: node.name, sub: node.text });
       // 授業: 今のゲームの場面がある授業はその場面を見せる（読み終えたら習得。場面が無い授業はカードで）
       for (const node of committed) if (node.kind === "lesson") await presentLesson(node);

@@ -363,6 +363,7 @@
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
         "node remake/test/ch2_delivery_identity.mjs",
         "node remake/test/ch2_tournament.mjs",
+        "node --experimental-vm-modules remake/test/ch2_lime.mjs",
         "node remake/test/tournament_story.mjs",
         "node remake/test/served_eval.mjs",
         "node remake/test/naru_tasting.mjs",

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { goodPointOf, improvementOf } from "../js/craft/advice.js";
+import { goodPointOf, improvementOf, craftReviewLines } from "../js/craft/advice.js";
 import { temperatureBands } from "../js/craft/temperature-model.js";
 
 const bands = temperatureBands();
@@ -42,3 +42,13 @@ console.log("PASS moderate/tied/invalid/incomplete/failed/skipped records and ex
 const sparseCare = [];
 sparseCare[1] = served;
 assert.equal(goodPointOf({ pull: served, careHistory: sparseCare }), "今回よかったこと：2回目の調整で適温に整えられた。", "A missing first adjustment must not count as two successful adjustments");
+
+// #1909: 第2章以降の結果カード共通の2行。全工程70〜84点でも「よかったこと」が空にならない。
+assert.deepEqual(craftReviewLines(null), []);
+assert.deepEqual(craftReviewLines({}), [], "No lines for an unfinished session");
+const moderateLines = craftReviewLines(moderate);
+assert.equal(moderateLines.length, 2);
+assert.match(moderateLines[0], /^今回よかったこと：/);
+assert.match(moderateLines[1], /^次に変える一つ：|^次の練習：/);
+assert.deepEqual(craftReviewLines(steady), [goodPointOf(steady), improvementOf(steady)].filter(Boolean));
+console.log("PASS shared result-card review lines for chapters 2-5");

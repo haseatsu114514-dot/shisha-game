@@ -261,6 +261,36 @@
       }
     },
     {
+      "id": "lime_naru_day5",
+      "sender": "naru",
+      "chapter": 2,
+      "trigger_day": 5,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "言ってたノート、写真撮って送っとく。県の連中の癖、まとめたやつな"
+        },
+        {
+          "sender": "naru",
+          "text": "字は汚いけど読めるはず。大会前に目だけ通しとけ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ありがとうございます、読みます",
+          "response": "おう。使うかどうかはお前が決めろ。俺はただ渡しただけだ",
+          "affinity": 2
+        },
+        {
+          "text": "なるさんの字、楽しみです",
+          "response": "うるせえ。……まあ、笑っていいから読め",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_naru_day6",
       "sender": "naru",
       "trigger_day": 6,
@@ -339,6 +369,7 @@
     {
       "id": "encourage_minto",
       "sender": "minto",
+      "chapter": 1,
       "trigger_condition": "tournament_day",
       "type": "chat",
       "messages": [
@@ -366,6 +397,7 @@
     {
       "id": "encourage_tsumugi",
       "sender": "tsumugi",
+      "chapter": 1,
       "trigger_condition": "tournament_day",
       "type": "chat",
       "messages": [
@@ -376,6 +408,152 @@
         {
           "sender": "tsumugi",
           "text": "会場にいます。……今日の空気、わたしには少し橙色です。緊張したら、深呼吸。……終わったら、感想を聞いてください"
+        }
+      ]
+    },
+    {
+      "id": "encourage_ch2_tsumugi_alone",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "tournament_day",
+      "trigger_flag": "_ch2_no_audience",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます。今日は、お店で待ってます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "スミさんと、お店の画面で見ています。声は届かないので、安心してください"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……終わったら、連絡を待ってます"
+        }
+      ]
+    },
+    {
+      "id": "encourage_ch2_tsumugi_welcome",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "tournament_day",
+      "trigger_flag": "_ch2_audience_welcome",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます。今日は、客席の中ほどにいます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "声は出しません。手だけ、上げます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……はじめさんの煙、ちゃんと見てます"
+        }
+      ]
+    },
+    {
+      "id": "ch2_congrats_tsumugi_alone",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "ch2_victory",
+      "trigger_flag": "_ch2_no_audience",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おめでとうございます。お店の画面で、見てました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "スミさん、結果が出たとき、一度だけ立ち上がりました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……帰ってきたら、少しだけ話を聞かせてください"
+        }
+      ],
+      "replies": [
+        {
+          "text": "……ありがとう",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "ch2_congrats_tsumugi_welcome",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "ch2_victory",
+      "trigger_flag": "_ch2_audience_welcome",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おめでとうございます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "出口では、手を振るだけにしました。……言葉は、こっちで送ります"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "お疲れさまでした。今日は、ゆっくり休んでください"
+        }
+      ],
+      "replies": [
+        {
+          "text": "……ありがとう",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "ch2_congrats_minto",
+      "sender": "minto",
+      "chapter": 2,
+      "trigger_condition": "ch2_victory",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめくん、優勝おめでとうっ！ 配信、お店の合間に見てたよ♪"
+        },
+        {
+          "sender": "minto",
+          "text": "……ちゃんと休んでね。次に来たら、お祝いの一台はわたしが作るから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "……ありがとうございます",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "ch2_congrats_adam",
+      "sender": "adam",
+      "chapter": 2,
+      "trigger_condition": "ch2_victory",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "見たぞ。勝ったな"
+        },
+        {
+          "sender": "adam",
+          "text": "祝いの果実は取っておく。落ち着いたら食いに来い"
+        }
+      ],
+      "replies": [
+        {
+          "text": "……ありがとうございます",
+          "affinity": 1
         }
       ]
     },
@@ -1463,6 +1641,134 @@
           "text": "顔、見に行くよ",
           "response": "……うん。待ってる",
           "affinity": 3
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_prep_mashiro",
+      "sender": "mashiro",
+      "chapter": 5,
+      "trigger_condition": "ch5_milestone",
+      "milestone": "prep",
+      "after_scene": "ch5_free_mashiro_visit",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "こんばんは。……お茶、まだ開けてないよね"
+        },
+        {
+          "sender": "mashiro",
+          "text": "勝負のない日用だから。終わるまで、棚の奥にしまっといて"
+        }
+      ],
+      "replies": [
+        {
+          "text": "まだ開けてない。終わったら飲む",
+          "response": "うん。……そのとき、どんな勝負だったか教えてねぇ",
+          "affinity": 0
+        },
+        {
+          "text": "勝負の日、決まったよ",
+          "response": "そっか。……じゃあ、その次の日がお茶の日だね",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_prep_adam",
+      "sender": "adam",
+      "chapter": 5,
+      "trigger_condition": "ch5_milestone",
+      "milestone": "prep",
+      "after_scene": "ch5_free_eden_adam",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。博士との勝負の日は、決まったか"
+        },
+        {
+          "sender": "adam",
+          "text": "前の晩は早く寝ろ。朝は、水を一杯飲んでから葉に触れろ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "決まりました。店の休業日です",
+          "response": "そうか。……その日は、EDENから林檎に祈っておこう",
+          "affinity": 0
+        },
+        {
+          "text": "水、ちゃんと飲みます",
+          "response": "それでいい。昨日の置き方ではなく、その日の葉を見ろ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_after_mashiro",
+      "sender": "mashiro",
+      "chapter": 5,
+      "trigger_condition": "ch5_milestone",
+      "milestone": "after_match",
+      "after_scene": "ch5_free_mashiro_visit",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "そろそろ、勝負終わったかなぁって"
+        },
+        {
+          "sender": "mashiro",
+          "text": "結果は聞かなくてもいいや。はじめくんが、ちゃんと帰れてたら"
+        },
+        {
+          "sender": "mashiro",
+          "text": "お茶、もう開けていいよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "終わった。明日、お茶を淹れる",
+          "response": "ふふ。……飲んだら、どんな味だったか教えてねぇ",
+          "affinity": 0
+        },
+        {
+          "text": "長い話になるけど、聞いてくれる？",
+          "response": "いいよぉ。……ゆっくりでいいから、聞かせて",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_after_adam",
+      "sender": "adam",
+      "chapter": 5,
+      "trigger_condition": "ch5_milestone",
+      "milestone": "after_match",
+      "after_scene": "ch5_free_eden_adam",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。そろそろ、博士との勝負は済んだ頃か"
+        },
+        {
+          "sender": "adam",
+          "text": "勝ち負けは問わん。……今日の葉は、どうだった"
+        }
+      ],
+      "replies": [
+        {
+          "text": "最後まで、客の顔を見てました",
+          "response": "……ならば熟したな。次はEDENで、一台作ってみせろ",
+          "affinity": 0
+        },
+        {
+          "text": "今度、話しに行きます",
+          "response": "いつでも来い。水を注いだグラスを、置いて待っている",
+          "affinity": 0
         }
       ]
     }

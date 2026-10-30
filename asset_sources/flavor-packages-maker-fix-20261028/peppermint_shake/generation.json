@@ -1,0 +1,15 @@
+{
+  "tool": "media.generate_image (Muse media pipeline)",
+  "generation_count": 1,
+  "reference": [
+    "twice_ice/candidate.png（フォースフェクタ意匠の参照）"
+  ],
+  "source": "peppermint_shake/candidate.png",
+  "source_size": [
+    1600,
+    1600
+  ],
+  "source_mode": "RGB",
+  "source_sha256": "5e0be15e55bd2a92f8c5a6e6c9c6cf31f0e65bfa7b77f05aa4d8dc4521acb827",
+  "note": "候補段階。remake/img への配信変換（512 WebP化・box実測）は未実施で、採用決定後に別途行う。"
+}

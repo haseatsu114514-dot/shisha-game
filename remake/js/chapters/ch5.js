@@ -20,6 +20,8 @@ import { runPull, runCare } from "../craft/pull.js";
 import { finalize } from "../craft/score.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import { servedEvaluationLines } from "../craft/served-eval.js";
+import { craftReviewLines } from "../craft/advice.js";
+import { craftReviewBlock } from "../craft/tournament-graphics.js";
 import { naruTastingCategory } from "../craft/naru-tasting.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho,
@@ -27,7 +29,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
-  beginChapterFiveFinale, completeChapterFiveScene } from "./ch5-progress.js";
+  beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue } from "./ch5-progress.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -105,7 +107,7 @@ function hud() {
   layers.hud.classList.remove("show");
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "") {
+function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
   hud();
   showScreen("ch5", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
     el("header.ch2-contest-header", [
@@ -114,6 +116,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     ]),
     el("p.ch2-contest-description", { text: description }),
     note ? el("p.ch2-contest-note", { text: note }) : null,
+    ...extra,
     el("div.ch2-contest-actions", actions),
   ]));
 }
@@ -236,6 +239,34 @@ async function readScene(owner, id) {
   }
 }
 
+// 節目の LIME の画面表記（#1668 2-8）。
+const LIME_SCREEN = {
+  [CH5_LIME_MILESTONES.prep]: { title: "日程が決まった夜", time: "夜" },
+  [CH5_LIME_MILESTONES.afterMatch]: { title: "勝負のあと", time: "夜" },
+};
+
+/**
+ * 節目の LIME を既存の受信箱（openPhone）で読む。第5章で会った相手からだけ届き、読み終えたら保存する。
+ * 読み終える前に離れた分は受信箱から外し、次にこのカードへ戻ったときに届け直す（第5章には LIME 一覧の入口が無い）。
+ */
+async function deliverLime(owner, milestone) {
+  const { hasContact } = await import("../daily/spots.js");
+  if (!current(owner)) return false;
+  const due = chapterFiveLimeDue(state, milestone, DB.lime, hasContact);
+  if (!due.length) return true;
+  const { openPhone } = await import("../daily/phone.js");
+  if (!current(owner)) return false;
+  const ids = new Set(due.map(m => m.id));
+  state.inbox = state.inbox.filter(item => !ids.has(item.originId || item.id));
+  showScreen("none", null);
+  hud();
+  await openPhone(due, LIME_SCREEN[milestone]);
+  if (!current(owner)) return false;
+  state.inbox = state.inbox.filter(item => item.done || !ids.has(item.originId || item.id));
+  save();
+  return true;
+}
+
 /** 読了 → 確定 → 保存。確定できなければ（別partの場面など）保存せず false。 */
 async function readAndCommit(owner, id) {
   if (!await readScene(owner, id)) return false;
@@ -254,7 +285,10 @@ async function renderStage(owner) {
   }
   if (progress.part === "scheduled") return renderScheduled(owner);
   if (progress.part === "match") return renderMatch(owner);
-  if (progress.part === "aftermath") return renderScene(owner, CH5_AFTERMATH[progress.aftermath], "");
+  if (progress.part === "aftermath") {
+    if (!await deliverLime(owner, CH5_LIME_MILESTONES.afterMatch)) return;
+    return renderScene(owner, CH5_AFTERMATH[progress.aftermath], "");
+  }
   if (progress.part === "finale") return renderFinale(owner);
   return renderComplete(owner);
 }
@@ -350,7 +384,7 @@ async function renderFree(owner) {
 
 async function renderScheduled(owner) {
   await setBg(bgUrl(CH5_SCENE_BG.ch5_schedule_contact), { instant: true });
-  if (!current(owner)) return;
+  if (!current(owner) || !await deliverLime(owner, CH5_LIME_MILESTONES.prep)) return;
   card(owner, "scheduled", "勝負の日程が決まった", "店の休業日。博士との勝負は、その日になった。", [
     button(owner, "会場へ行く", "go-venue", async () => {
       // Q15: 会場入りの確認。本文は台本コメントの指定どおり一字も変えない。
@@ -411,7 +445,8 @@ async function renderMatch(owner) {
       }
       await renderStage(owner);
     }, true),
-  ], tally ? voteNote(tally) : "", first);
+  ], tally ? voteNote(tally) : "", first,
+  [craftReviewBlock(chapterFiveProgress(state).secondCup?.review, test("craft-review"))]);
 }
 
 // 挙手の数だけを並べる。審査員の採点表や恋愛の加点は出さない（第5章は観客投票）。
@@ -463,7 +498,7 @@ async function craftSecondCup(owner) {
   const failed = !!cs.failed;
   if (!failed) finalize(cs);
   const category = failed ? "failed" : naruTastingCategory(cs);
-  if (!recordChapterFiveSecondCup(state, { total: cs.total, category, failed })) throw new Error("二本目の記録を確定できません");
+  if (!recordChapterFiveSecondCup(state, { total: cs.total, category, failed, review: craftReviewLines(cs) })) throw new Error("二本目の記録を確定できません");
   save();
   const source = DB.dialogues[CH5_MATCH_SCENES.beforeSecond]?.lines.find(line => line.cue === ADJUST_CUE);
   const text = ADJUST_LINES[category] || source?.text;

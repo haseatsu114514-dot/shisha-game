@@ -144,3 +144,114 @@ for (const stage of ['tonari', 'complete']) {
   assert.equal(fixture.money, 1000);
 }
 console.log('PASS: initial report and legacy complete checkpoint automatically enter shared calendar');
+
+// #1925: actual calendar invitation paths + actual commute/station/fare logic.
+// UI, meeting VN and reward presentation are controlled; LOAD is owner replacement.
+const invitations = new vm.SourceTextModule(read('remake/js/daily/invitations.js'), { context });
+await invitations.link(() => { throw Error('Unexpected invitation import'); });
+await invitations.evaluate();
+const invitationHook = prep.match(/beforeInvitation: ([\s\S]*?),\n    mapOptions:/);
+assert(invitationHook, 'Chapter 2 connects invitation travel');
+const beforeInvitation = vm.runInNewContext('(' + invitationHook[1] + ')', { returnCityHome: commute.namespace.returnCityHome });
+const takeSource = calendar.slice(calendar.indexOf('async function takeAction()'), calendar.indexOf('\nasync function performSpotAction('));
+const invitationSource = calendar.slice(calendar.indexOf('function postponeUnaffordableInvitation('), calendar.indexOf('\nfunction cancelSamechanAppointment('));
+const endSource = calendar.slice(calendar.indexOf('async function endDay('), calendar.indexOf('\nasync function advanceDay('));
+const appointmentStop = new Error('appointment finished');
+const rewardTrace = [];
+const homeSpots = [{ id: 'tonari' }, { id: 'naru' }, { id: 'adam' }, { id: 'minto' }];
+const citySpot = { id: 'ch2_ageha', charId: 'ageha', region: 'widehanga' };
+let restedForInvite = false;
+const invitationContext = vm.createContext({
+  chapterDef: { nightEvents: {}, beforeInvitation, spotById: id => id === citySpot.id ? citySpot : null },
+  ...Object.fromEntries(Object.keys(invitations.namespace).map(key => [key, invitations.namespace[key]])),
+  DB: { lime: [] }, spotById: id => homeSpots.find(spot => spot.id === id),
+  syncNightQueue() {}, expireInvitations() {}, fixedNight() {},
+  invitationReadBeforeMeeting: () => null, staminaGuard: async () => true,
+  spendableMoney: s => s.money - (s.flags._ch2_region === 'widehanga' ? 200 : 0),
+  CHAR_STAT: { hiyori: 'charm', ageha: 'sense' },
+  isFriendEvent: () => false, isFinaleEvent: () => false, afterStory: async () => {},
+  gainAffinity: (id, amount) => rewardTrace.push(`affinity:${id}:${amount}`),
+  play: async () => { log.push('meeting:' + state.flags._ch2_region); return { cancelled: false }; },
+  addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
+  playHiyoriHangout: async () => { log.push('meeting:' + state.flags._ch2_region); },
+  bgRef: id => id, VISIT_BG: { hiyori: 'shop' },
+  completeInvitation: inv => { state.pendingInvite = null; rewardTrace.push('complete:' + inv.sender); },
+  paidAction: async fn => { rewardTrace.push('paidAction'); const value = await fn(); if (value) rewardTrace.push('reward'); return { value, spent: 1 }; },
+  invitationExp: inv => ({ key: inv.sender, person: inv.sender }),
+  afterAction: async () => { rewardTrace.push('afterAction'); },
+  save: () => saves++, restingToday: () => restedForInvite,
+  runNightPlan: async () => 0, bannersIdle: async () => {}, beat: async () => log.push('beat'),
+  maybeConfession: async () => { throw appointmentStop; },
+});
+Object.defineProperty(invitationContext, 'state', { configurable: true, get: () => state });
+const invitationStats = fixed(['earnStat'], { earnStat: (key, amount) => rewardTrace.push(`stat:${key}:${amount}`) });
+await invitationStats.link(() => {}); await invitationStats.evaluate();
+vm.runInContext(takeSource + '\n' + invitationSource + '\n' + endSource, invitationContext, {
+  importModuleDynamically: async spec => { assert.equal(spec, '../core/stats.js'); return invitationStats; },
+});
+function resetInvite({ region = 'widehanga', spot = 'minto', late = false } = {}) {
+  reset(); rewardTrace.length = 0; restedForInvite = late === 'rest';
+  Object.assign(state, { day: 22, slot: late ? 2 : 1, money: 10000, stamina: 80, visitedDay: {}, inbox: [] });
+  state.flags._ch2_region = region;
+  state.pendingInvite = { event: '__hiyori_shop__', sender: 'hiyori', visitSpot: spot, day: 22, slot: 1,
+    ...(late === 'close' ? { afterClose: true, queuedAfterClose: true } : {}) };
+}
+async function runInvite(late = false) {
+  if (late) await assert.rejects(invitationContext.endDay(), error => error === appointmentStop);
+  else await invitationContext.takeAction();
+}
+for (const late of [false, 'close', 'rest']) {
+  resetInvite({ late });
+  await runInvite(late);
+  assert(log.indexOf('__ch2_return_train') < log.indexOf('meeting:home'));
+  assert.equal(state.money, 6800); assert.equal(state.stamina, 70); assert.equal(state.slot, 2);
+  assert.equal(state.visitedDay.minto, 22); assert.equal(state.pendingInvite, null);
+  assert.equal(state.flags._invitation_visit_minto, '2:22');
+  assert.deepEqual(rewardTrace, ['paidAction', 'stat:charm:1', 'complete:hiyori', 'reward', 'afterAction']);
+  await commute.namespace.returnCityHome();
+  assert.equal(state.money, 6800); assert.equal(log.filter(x => x === '__ch2_return_train').length, 1);
+}
+for (const [region, spot, expected] of [['home', 'minto', 'home']]) {
+  resetInvite({ region, spot }); await runInvite();
+  assert(!log.includes('__ch2_return_train')); assert(log.includes('meeting:' + expected));
+  assert.equal(state.money, 7000); assert.equal(state.slot, 2); assert.equal(state.stamina, 70);
+  assert.deepEqual(rewardTrace, ['paidAction', 'stat:charm:1', 'complete:hiyori', 'reward', 'afterAction']);
+}
+// The real after-close Ageha invitation has no store spot; do not infer a home venue.
+resetInvite({ late: 'close' });
+const agehaMessage = JSON.parse(read('data/lime_messages.json')).messages.find(m => m.id === 'lime_outing_ageha_1');
+assert(agehaMessage?.after_close);
+state.inbox.push({ id: agehaMessage.id, msg: agehaMessage });
+state.pendingInvite = { originId: agehaMessage.id, sender: 'ageha', event: agehaMessage.accept_event,
+  day: 22, slot: 1, afterClose: true, queuedAfterClose: true };
+await runInvite('close');
+assert(!log.includes('__ch2_return_train')); assert(log.includes('meeting:widehanga'));
+assert.equal(state.money, 7000); assert.equal(state.slot, 2); assert.equal(state.stamina, 70);
+assert.deepEqual(rewardTrace, ['paidAction', 'affinity:ageha:10', 'stat:sense:1', 'complete:ageha', 'reward', 'afterAction']);
+resetInvite({ spot: citySpot.id });
+await invitationContext.travelToInvitation(state.pendingInvite);
+assert.equal(state.flags._ch2_region, 'widehanga'); assert.equal(state.money, 10000);
+for (const late of [false, 'close', 'rest']) for (const failure of ['cancel', 'throw', 'replace']) {
+  resetInvite({ late }); const old = state, pending = state.pendingInvite, slot = state.slot;
+  mode = failure;
+  await assert.rejects(late ? invitationContext.endDay() : invitationContext.takeAction(),
+    error => /中断|controlled VN failure/.test(error.message));
+  assert(!log.some(x => x.startsWith('meeting:'))); assert(!log.includes('beat'));
+  assert.equal(old.slot, slot); assert.equal(old.stamina, 80); assert.equal(old.money, 9800);
+  assert.equal(old.pendingInvite, pending); assert.equal(Object.keys(old.visitedDay).length, 0);
+  assert(!old.flags._private_night_day); assert.deepEqual(rewardTrace, []);
+  assert.equal(state.money, 9800); assert.equal(state.slot, slot); assert.equal(state.pendingInvite, pending);
+  // Saved arrival keeps the promise pending; retry resumes without a second fare.
+  mode = 'ok'; await runInvite(late);
+  assert.equal(state.money, 6800); assert.equal(state.stamina, 70); assert.equal(state.pendingInvite, null);
+  assert.equal(log.filter(x => x === '__ch2_return_train').length, 1);
+  assert.deepEqual(rewardTrace, ['paidAction', 'stat:charm:1', 'complete:hiyori', 'reward', 'afterAction']);
+}
+resetInvite(); state.money = 100;
+await invitationContext.travelToInvitation(state.pendingInvite).then(() => assert.fail('insufficient fare'), error => assert.match(error.message, /切符代/));
+assert.equal(state.money, 100); assert.equal(state.slot, 1); assert.deepEqual(rewardTrace, []);
+resetInvite(); const unknown = { event: 'private_unknown', sender: 'hiyori', slot: 1 };
+state.pendingInvite = unknown;
+await invitationContext.travelToInvitation(unknown);
+assert.equal(state.flags._ch2_region, 'widehanga'); assert.equal(state.money, 10000);
+console.log('PASS: #1925 actual normal/after-close/rest invitation paths return before meeting; home/city/unknown venues; one fare, one action/reward; cancel/error/LOAD stops meeting and retry avoids duplicate fare');

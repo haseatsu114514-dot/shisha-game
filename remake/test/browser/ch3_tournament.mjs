@@ -199,7 +199,7 @@ await suite("ch3-tournament", async check => {
       await page.locator(aftermath(scene)).waitFor();
       if (index === 0) assert(await page.locator('#bg > .bg-img').last().evaluate(node =>
         node.style.backgroundImage.includes('bg_mukai_shop')),
-      'The victory night is spent at mukai, so it must use the mukai background');
+      'The victory night is spent in the mukai back room, not a hotel (#1485, #1899)');
       await page.locator('[data-test="ch3-aftermath-continue"]').click();
       if (index === 0) {
         await page.locator(aftermath(scenes[1])).waitFor();

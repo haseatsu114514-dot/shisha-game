@@ -8,7 +8,8 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
   completeChapterFiveScene, recordChapterFiveSecondCup, chapterFiveSecondCupVotes, chapterFiveVoteTally,
   CH5_AUDIENCE, CH5_FIRST_CUP_VOTES, CH5_PREP_TRIALS, chapterFivePrepScene, chapterFivePreparation,
   chapterFivePrepPending, chapterFivePrepEcho, recordChapterFivePrepTrial,
-  recordChapterFivePrepAdjustment } from "../js/chapters/ch5-progress.js";
+  recordChapterFivePrepAdjustment, CH5_LIME_CONDITION, CH5_LIME_MILESTONES,
+  chapterFiveLimeDue } from "../js/chapters/ch5-progress.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -232,6 +233,17 @@ assert.equal(chapterFiveMatchOutcome(value), "win");
 assert.deepEqual(chapterFiveVoteTally(value), { first: { hajime: 19, machine: 21 },
   second: { hajime: 26, machine: 14 }, total: { hajime: 45, machine: 35 } });
 roundTrip(value);
+assert.equal(value.flags._ch5.secondCup.review, undefined, "Old-style records without review lines stay valid");
+{
+  // #1909: 結果カードの2行は任意で、文字列2行までだけを保存する。
+  const reviewed = toBeforeSecond();
+  assert.equal(recordChapterFiveSecondCup(reviewed, { total: 90, category: "steady",
+    review: ["今回よかったこと：x", "", 3, "次に変える一つ：y", "z"] }), true);
+  assert.deepEqual(reviewed.flags._ch5.secondCup.review, ["今回よかったこと：x", "次に変える一つ：y"]);
+  roundTrip(reviewed);
+  reviewed.flags._ch5.secondCup.review = [1];
+  assert.throws(() => chapterFiveProgress(reviewed), "A malformed review must not pass save validation");
+}
 assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.win), true);
 rejects(value, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.loss));
 assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.afterglow), true);
@@ -425,6 +437,85 @@ for (const [base, change] of [
   assert.equal(beginChapterFiveFinale(shortFinale, FINALE), true);
   shortFinale.flags._ch5.finaleScenes = FINALE.slice(0, 2);
   assert.throws(() => chapterFiveProgress(shortFinale));
+}
+
+// 節目の LIME（#1668 2-8）: 本文は data/lime_messages.json。第5章で実際に会った相手だけ、節目ごとに1通。
+{
+  const lime = readData("lime_messages").messages;
+  const chapterFive = lime.filter(m => m.trigger_condition === CH5_LIME_CONDITION);
+  const milestones = Object.values(CH5_LIME_MILESTONES);
+  const width = text => [...text].reduce((sum, ch) => sum + (/[\x20-\x7e]/.test(ch) ? 0.5 : 1), 0);
+  assert(chapterFive.length > 0, "Chapter 5 milestone messages must exist");
+  for (const m of chapterFive) {
+    assert.equal(m.chapter, 5, `${m.id}: chapter`);
+    assert(milestones.includes(m.milestone), `${m.id}: milestone`);
+    assert.equal(m.type, "chat", `${m.id}: no invitations from the final chapter`);
+    // 送り主は、その場面で実際に話した相手（会っていない人物からの一斉の応援にしない）。
+    const scene = files.ch5_main.find(row => row.dialogue_id === m.after_scene);
+    assert(CH5_FREE_SCENES.some(entry => entry.id === m.after_scene) && scene, `${m.id}: after_scene`);
+    assert(scene.lines.some(line => line.speaker === m.sender), `${m.id}: ${m.sender} must appear in ${m.after_scene}`);
+    for (const line of m.messages) {
+      assert.equal(line.sender, m.sender);
+      assert(width(line.text) <= 48 && !line.text.includes("\n") && !line.text.endsWith("。"), `${m.id}: ${line.text}`);
+    }
+    assert(m.replies?.length >= 1, `${m.id}: the player can answer`);
+    for (const reply of m.replies) {
+      assert(width(reply.text) <= 19, `${m.id}: reply button too long: ${reply.text}`);
+      assert(width(reply.response) <= 48, `${m.id}: ${reply.response}`);
+      assert.equal(reply.affinity, 0, `${m.id}: the finale does not add affinity by LIME`);
+    }
+  }
+  assert.equal(new Set(chapterFive.map(m => `${m.sender}:${m.milestone}`)).size, chapterFive.length, "One message per sender per milestone");
+
+  const contacts = ids => id => ids.includes(id);
+  const all = contacts(["mashiro", "adam", "tsumugi", "minto", "rin"]);
+  const due = (save, milestone, has = all) => chapterFiveLimeDue(save, milestone, lime, has).map(m => m.id);
+  const meet = (save, ...ids) => { for (const id of ids) save.flags._ch5.read[id] = true; return save; };
+
+  // 節目の外では届かない。自由行動・試合中・フィナーレでは空。
+  for (const save of [meet(toFree(), "ch5_free_mashiro_visit", "ch5_free_eden_adam"),
+    meet(toBeforeSecond(), "ch5_free_mashiro_visit", "ch5_free_eden_adam"),
+    meet(toFinale(), "ch5_free_mashiro_visit", "ch5_free_eden_adam")]) {
+    for (const milestone of milestones) assert.deepEqual(due(save, milestone), []);
+  }
+  // 日程が決まった夜: 会った相手だけ。誰にも会っていなければ一通も届かない（連絡先があっても）。
+  assert.deepEqual(due(toScheduled(), CH5_LIME_MILESTONES.prep), []);
+  assert.deepEqual(due(meet(toScheduled(), "ch5_free_mashiro_visit"), CH5_LIME_MILESTONES.prep), ["lime_ch5_prep_mashiro"]);
+  assert.deepEqual(due(meet(toScheduled(), "ch5_free_eden_adam"), CH5_LIME_MILESTONES.prep), ["lime_ch5_prep_adam"]);
+  assert.deepEqual(due(meet(toScheduled(), "ch5_free_mashiro_visit", "ch5_free_eden_adam"), CH5_LIME_MILESTONES.afterMatch), []);
+  // 連絡先が無ければ、会っていても届かない。判定は渡された関数だけで、連絡先を追加しない。
+  {
+    const save = meet(toScheduled(), "ch5_free_mashiro_visit", "ch5_free_eden_adam");
+    const before = structuredClone(save);
+    assert.deepEqual(due(save, CH5_LIME_MILESTONES.prep, contacts(["adam"])), ["lime_ch5_prep_adam"]);
+    assert.deepEqual(due(save, CH5_LIME_MILESTONES.prep, contacts([])), []);
+    assert.deepEqual(save, before, "Selecting messages must not change the save");
+  }
+  // 読み終えた（done）ものは再送しない。読み終える前に離れたもの（done でない）は届け直す。
+  {
+    const save = meet(toScheduled(), "ch5_free_mashiro_visit");
+    save.inbox = [{ id: "lime_ch5_prep_mashiro", originId: "lime_ch5_prep_mashiro", msg: { sender: "mashiro" }, done: false }];
+    assert.deepEqual(due(save, CH5_LIME_MILESTONES.prep), ["lime_ch5_prep_mashiro"]);
+    save.inbox[0].done = true;
+    assert.deepEqual(due(save, CH5_LIME_MILESTONES.prep), []);
+  }
+  // 勝負のあと: 後日談の1場面目（博士）を読んでから、tonari へ戻る前だけ。勝ち・負けで同じ。
+  for (const save of [toAftermath(), (() => {
+    const lost = toBeforeSecond();
+    assert.equal(recordChapterFiveSecondCup(lost, { total: 55, category: "offband" }), true);
+    assert.equal(completeChapterFiveScene(lost, CH5_MATCH_SCENES.loss), true);
+    return lost;
+  })()]) {
+    meet(save, "ch5_free_mashiro_visit", "ch5_free_eden_adam");
+    assert.deepEqual(due(save, CH5_LIME_MILESTONES.afterMatch), [], "Not before the doctor's scene");
+    assert.equal(completeChapterFiveScene(save, CH5_AFTERMATH[0].id), true);
+    assert.deepEqual(due(save, CH5_LIME_MILESTONES.afterMatch), ["lime_ch5_after_mashiro", "lime_ch5_after_adam"]);
+    assert.deepEqual(due(save, CH5_LIME_MILESTONES.prep), []);
+    assert.equal(completeChapterFiveScene(save, CH5_AFTERMATH[1].id), true);
+    assert.deepEqual(due(save, CH5_LIME_MILESTONES.afterMatch), [], "Not after returning to tonari");
+  }
+  // 第5章の場面で会っていない相手（つむぎ・みんと・凛など）からは届かない。朝の配信条件にも乗らない。
+  assert(chapterFive.every(m => ["mashiro", "adam"].includes(m.sender)));
 }
 
 console.log("PASS: Chapter 5 runner state keeps the road to the SHISHA-9000 finale in order");

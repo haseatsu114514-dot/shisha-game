@@ -130,7 +130,7 @@
       "value": "pipe_middle",
       "deprecated": true,
       "not_for_sale": true,
-      "description": "少し値が張るが、気密性が高く味と煙が安定する。大会では専門評価に少し補正が入る。"
+      "description": "旧版で使われていたスチール製パイプ。現在は販売・使用を終了した廃止品。"
     },
     {
       "id": "pipe_high",
@@ -143,7 +143,7 @@
       "value": "pipe_high",
       "deprecated": true,
       "not_for_sale": true,
-      "description": "美しさと実用性を兼ね備えた名機。味の輪郭と見栄えに補正が入る。"
+      "description": "旧版で使われていたガラス・真鍮製パイプ。現在は販売・使用を終了した廃止品。"
     },
     {
       "id": "pipe_highest",
@@ -156,7 +156,7 @@
       "value": "pipe_highest",
       "deprecated": true,
       "not_for_sale": true,
-      "description": "限られた職人しか作れない特注品。味、煙、プレゼンすべてに高い補正が入る。"
+      "description": "旧版で使われていた特注パイプ。現在は販売・使用を終了した廃止品。"
     },
     {
       "id": "winkwink_hagal",
