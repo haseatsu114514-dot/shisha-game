@@ -31,6 +31,12 @@ export function improvementOf(cs) {
   }[weakestPart(cs.parts)] || "";
 }
 
+/** 結果カード共通の2行（今回よかったこと／次に変える一つ）。空の行は出さない（#1909）。 */
+export function craftReviewLines(cs) {
+  if (!cs) return [];
+  return [goodPointOf(cs), improvementOf(cs)].filter(text => typeof text === "string" && text);
+}
+
 /** 実際に完了した工程から一つだけ認める。未記録の成功は推測しない。 */
 export function goodPointOf(cs) {
   const bands = temperatureBands(cs);

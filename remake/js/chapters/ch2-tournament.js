@@ -26,7 +26,8 @@ import { craftRecognition } from "../craft/recognition.js";
 import { radar } from "../daily/status.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
-import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
+import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/tournament-graphics.js";
+import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "./ch2-city-data.js";
@@ -218,7 +219,10 @@ export function voteReason(p, cs, final = false) {
 function renderVotes(owner, final = false) {
   playBgm("bgm_judging");
   const p = progress(), rows = final ? p.result.rows : standings(p);
-  const reason = voteReason(p, owner.cs || (p.craft ? clone(p.craft) : null), final);
+  const craft = owner.cs || (p.craft ? clone(p.craft) : null);
+  const reason = voteReason(p, craft, final);
+  // 最終結果だけに、実際の記録から2行を添える（第1章の結果表と同じ判定）。
+  const review = final ? craftReviewBlock(craftReviewLines(craft), id("craft-review")) : null;
   const row = value => el(`li.ch2-contest-rival${value.id === "hajime" ? ".me" : ""}`, { dataset: { contestant: value.id, rank: String(value.rank) } }, [
     el("b.rank-medal", { text: String(value.rank) }), contestantAvatar(value.id),
     el("span", { text: displayName(value.id, state) }), voteStack(p.votes, value.id, "ch2-contest-stack", JUDGES),
@@ -232,7 +236,7 @@ function renderVotes(owner, final = false) {
         if (final && p.result.rank === 1) clearContinueHistory(state);
         checkpoint(final ? p.result.rank === 1 ? "farewell" : "defeat" : "craft"); await drive(owner);
       }, true),
-    ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, [el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text }))]) : null,
+    ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, [el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text }))]) : null, review,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]), judges,
       el("p.ch2-contest-note", { text: "投入された点は戻りません。同点の場合は一台の出来栄えで順位を決めます。" })]);
 }
