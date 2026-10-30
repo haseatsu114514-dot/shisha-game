@@ -10,7 +10,8 @@ export const TOKYO_MAP_PLACES = Object.freeze({
   enmaku: place("enmaku", "煙幕", 45.3, 49.7),
   steve: place("steve", "Smoke & Glory", 23.3, 36.1),
   volk: place("volk", "鉄の煙", 55.9, 40.4),
-  gym: place("gym", "チョイザップ", 34.9, 75.9),
+  gym: place("gym", "CHOI-ZAP", 34.9, 75.9),
+  park: place("park", "公園", 69, 62),
 });
 
 export const TOKYO_MAP_LANDMARKS = Object.freeze([
@@ -35,8 +36,12 @@ const scenePlace = scene => {
   return null;
 };
 
-/** callerの新旧行程をそのまま使う。stageより先の店・人物・台本名は返さない。 */
-export function chapterThreeMapModel(value, scenes, { sceneId, allowGym = false, freeTime = false } = {}) {
+/**
+ * callerの新旧行程をそのまま使う。stageより先の店・人物・台本名は返さない。
+ * actions は自由時間に地図から選べる行き先（#1655）。{ id, place, label, reasonText, ok, why, consumes }。
+ * 公園など行程に出ない場所も、行き先があればその間だけ地点として出す。
+ */
+export function chapterThreeMapModel(value, scenes, { sceneId, allowGym = false, freeTime = false, actions = [] } = {}) {
   const stage = value?.flags?._ch3_intro?.stage;
   if (value?.chapter !== 3 || !Array.isArray(scenes) || !Number.isInteger(stage)
     || stage < 0 || stage > scenes.length) return null;
@@ -51,14 +56,23 @@ export function chapterThreeMapModel(value, scenes, { sceneId, allowGym = false,
   if (currentPlace) reached.set(currentPlace, {
     ...TOKYO_MAP_PLACES[currentPlace], visited: reached.has(currentPlace), current: true,
   });
+  const choices = Array.isArray(actions) ? actions.filter(action => TOKYO_MAP_PLACES[action?.place]) : [];
+  for (const action of choices) {
+    if (!reached.has(action.place) && action.place !== "gym") {
+      reached.set(action.place, { ...TOKYO_MAP_PLACES[action.place], visited: false, current: false });
+    }
+  }
+  const actionsAt = id => choices.filter(action => action.place === id).map(action => ({ ...action }));
   const member = value.flags._gym_member === true;
   const mode = (value.slot === 1 || value.slot !== 0 && target?.slot === 1) ? "night" : "day";
   return {
     mode, background: `bg_tokyo_map_${mode}`,
-    pins: [...reached.values(), { ...TOKYO_MAP_PLACES.gym, visited: false, current: false, gym: true }],
-    landmarks: TOKYO_MAP_LANDMARKS.map(item => ({ ...item })),
+    pins: [...reached.values(), { ...TOKYO_MAP_PLACES.gym, visited: false, current: false, gym: true }]
+      .map(pin => ({ ...pin, actions: actionsAt(pin.id) })),
+    landmarks: TOKYO_MAP_LANDMARKS.filter(item => !reached.has(item.id)).map(item => ({ ...item })),
     member, canTrain: allowGym === true && member, freeTime: freeTime === true,
-    note: freeTime ? "自由時間です。これまでに訪ねた場所を地図で確かめられます。"
+    note: freeTime ? choices.length ? "自由時間です。行き先を選ぶと、その時間を使います。"
+      : "自由時間です。これまでに訪ねた場所を地図で確かめられます。"
       : target?.id === "ch3_naru_work"
       ? "別会場の場面です。地図では東京で訪ねた場所を確かめられます。"
       : "今の場面と、これまでに訪ねた場所を確かめられます。",

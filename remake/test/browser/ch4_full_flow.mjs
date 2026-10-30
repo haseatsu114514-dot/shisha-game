@@ -59,6 +59,12 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.flags._ch4, undefined);
     await page.locator(dt("ch3-aftermath-chapter-four")).click();
 
+    // 1b. 出発前の同行選択（恋人がいないので「同行なし」だけ。ましろは第3章クリアで別便応援）
+    await page.locator(dt("ch4-companion")).waitFor({ timeout: 60000 });
+    await page.locator(dt("ch4-companion-none")).click();
+    assert.deepEqual((await get(page)).flags._overseas_companion,
+      { decided: true, companion: null, supports: ["mashiro"] });
+
     // 2. プロローグ4場面（章タイトル→出発前2場面→到着→宿）
     const prologue = ["ch4_sumi_training", "ch4_strategy", "ch4_opening", "ch4_arrival_inn"];
     await page.locator(scene(prologue[0])).waitFor({ timeout: 60000 });

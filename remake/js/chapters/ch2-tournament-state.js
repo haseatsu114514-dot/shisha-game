@@ -7,7 +7,9 @@ export const CONTESTANTS = ["hajime", "ageha", "kumicho", "rei"];
 export const JUDGES = ["maezono", "dr_kemuri", "nagumo"];
 export const SPEND = [2, 3, 2, 3];
 // 初期調整値。章2の比較用の出来であり、キャラクターの能力値ではない。
-export const RIVAL_QUALITY = { ageha: 75, kumicho: 80, rei: 78 };
+// あげは77は上園の好み補正(+4)で81となり、神崎80・REI79を上回る（#1649）。はじめがどの出来でも
+// 上園の上位2人に入り、毎回の票に強さが出る。はじめの全審査員1位の境目（チャコール博士の83）は変えない。
+export const RIVAL_QUALITY = { ageha: 77, kumicho: 80, rei: 78 };
 
 // 審査員の品質比重・好み比重の正本定義（qualityWeight + prefWeight = 1.0）。
 // maxPrefDelta は設定パラメータではなく、BASE_PREF_SCALE * prefWeight から一意に導出する。

@@ -37,6 +37,8 @@ try {
   assert.equal(await page.locator(".gain-card").count(), 1);
   assert.equal(await page.locator(".gc-top").textContent(), "STATUS UP");
   assert.equal(await page.locator(".gc-sub").count(), 0);
+  // 仕様は通常272×68px（docs/master_spec.md PF25〜30）。#1354で見出し14pxにして一時71pxになったが、
+  // 95970943（#1592 クラスタ#22）が上下余白を12→10.5pxにして68pxへ戻した。compact_gains_map.mjs と同じ値
   assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.offsetHeight), 68);
   const regularPosition = await page.locator(".gain-card.stat").evaluate(e => ({
     parent: e.parentElement.id, left: e.offsetLeft, top: e.offsetTop, width: e.offsetWidth, height: e.offsetHeight,

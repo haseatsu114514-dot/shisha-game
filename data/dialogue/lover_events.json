@@ -1415,12 +1415,12 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "じわって熱を通すの。急ぐと焦げちゃう"
+          "text": "じわって熱を通すの。急ぐと、えぐみが出ちゃう"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "炭の距離を取って、蒸らし長めか"
+          "text": "最初の蒸らしを、長めに取る感じか"
         },
         {
           "speaker": "mashiro",
@@ -1516,7 +1516,7 @@
     {
       "dialogue_id": "lover_mashiro_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
         "private_scene": true
       },
       "lines": [
@@ -1528,52 +1528,47 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……僕ね。シガーリーフ、最初は逃げだった"
+          "text": "……僕ね。重いのが好きなのは、昔から"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "普通の煙じゃ、なにも感じなくなって"
+          "text": "理由はないんだぁ。好きなだけ"
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "味が濃い葉じゃないと、生きてる気がしなかった"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "でも今は違うよぉ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
+          "face": "smile",
           "text": "シガーリーフは、僕の言葉なの"
         },
         {
           "speaker": "mashiro",
-          "face": "smile",
-          "text": "それに気づけたの、はじめくんのおかげ"
+          "face": "normal",
+          "text": "でも最近、軽い人と吸う時は、間を空けるようになったよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "間？"
         },
         {
           "speaker": "mashiro",
-          "face": "smile",
-          "text": "はじめくんの煙を感じてからだから"
+          "face": "normal",
+          "text": "一口ごとに、お茶を挟むの。そうすると、相手の顔も見えるから"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "ましろちゃんの煙は、最初から本物だったよ"
+          "text": "その間、俺もけっこう好きだよ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "えへへ……ありがとぉ"
+          "text": "えへへ……知ってるよぉ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "もっと胸張って吸うねぇ"
+          "text": "じゃあ、今日も一口ずつねぇ"
         },
         {
           "speaker": "",
@@ -1590,7 +1585,7 @@
     {
       "dialogue_id": "lover_mashiro_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
         "private_scene": true
       },
       "lines": [

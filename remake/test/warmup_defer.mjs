@@ -28,7 +28,7 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   assert.equal(loadVnFonts(), first, "concurrent calls share one Promise");
   await first;
   assert.equal(loadVnFonts(), first, "completed load stays cached");
-  assert.deepEqual(calls.map(([font]) => font), ['700 20px "Suien Name"', '400 20px "Suien Reading Mincho"']);
+  assert.deepEqual(calls.map(([font]) => font), ['700 20px "Suien Name"', '400 20px "Suien Blue Mincho"']);
   assert(calls.every(([, sample]) => /[一-龯ぁ-ん]/.test(sample)));
 
   const retryContext = vm.createContext({ document: { fonts: { load: (font) => {

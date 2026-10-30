@@ -60,3 +60,7 @@
   .ch3-map-sidebar { max-height:32dvh; }
   .ch3-map-canvas { width:100%; }
 }
+/* 自由時間の行き先（#1655）。理由と一行動のボタンを地点ごとに並べる。 */
+.ch3-map-action { margin-top:8px; padding-top:8px; border-top:1px solid #3d4a60; }
+.ch3-map-action .btn { width:100%; margin-top:4px; padding:8px; min-height:44px; font-size:13px; white-space:normal; }
+.ch3-map-reason { color:#d8e2f2; }

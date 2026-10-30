@@ -17,6 +17,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
+import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
 
 let session = null;
@@ -189,12 +190,30 @@ async function readAndCommit(owner, id) {
 async function renderStage(owner) {
   if (!current(owner)) return;
   const progress = chapterFourProgress(state);
+  if (canChooseOverseasCompanion(state)) return renderCompanionChoice(owner);
   if (progress.part === "prologue") return renderScene(owner, CH4_PROLOGUE[progress.stage], `DAY ${progress.day}`);
   if (progress.part === "free") return renderFree(owner);
   if (progress.part === "eve") return renderEve(owner);
   if (progress.part === "tournament") return renderTournament(owner);
   if (progress.part === "resolution") return renderScene(owner, CH4_RESOLUTION[progress.resolution], "");
   return renderComplete(owner);
+}
+
+/** 出発前の同行選択。恋人1名か「同行なし」。選ぶと保存し、他の恋人は別便の応援として扱う（好感度は変えない）。 */
+async function renderCompanionChoice(owner) {
+  await setBg(bgUrl(CH4_SCENE_BG[CH4_PROLOGUE[0].id]), { instant: true });
+  if (!current(owner)) return;
+  const choose = id => async () => {
+    if (!chooseOverseasCompanion(state, id)) return;
+    save();
+    await renderStage(owner);
+  };
+  const lovers = overseasCompanionCandidates(state);
+  card(owner, "companion", "出発前・同行の選択",
+    lovers.length ? "ドバイへ一緒に行く恋人を、1人まで選べる。選ばなかった恋人も、別の便で応援に来られる。"
+      : "今回は、一緒に行く恋人はいない。",
+    [...lovers.map(id => button(owner, DB.characters[id]?.name || id, `companion-${id}`, choose(id))),
+      button(owner, "同行なし", "companion-none", choose(null), !lovers.length)]);
 }
 
 async function renderScene(owner, scene, dayLabel) {

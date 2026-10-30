@@ -16,6 +16,12 @@
       "run": ["node --experimental-vm-modules remake/test/stat_steps.mjs"]
     },
     {
+      "id": "growth-levelup",
+      "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
+      "kind": "quick",
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs"]
+    },
+    {
       "id": "vent-lid",
       "title": "Lotos lid vent heat and eligibility",
       "kind": "quick",
@@ -56,6 +62,25 @@
       "title": "Kuji goods sell handler identity and stale clicks",
       "kind": "quick",
       "run": ["node remake/test/kuji_sell_guard.mjs"]
+    },
+    {
+      "id": "growth-levelup-browser",
+      "title": "Growth HUD gauge, EXP chip, night level-up and hidane badge (?growth=1)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/growth.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/hud.js",
+        "remake/css/daily.css",
+        "remake/test/browser/growth_levelup.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/growth_levelup.mjs"
+      ]
     },
     {
       "id": "station-j01",
@@ -243,6 +268,7 @@
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
+        "node remake/test/ch3_outings.mjs",
         "node remake/test/golden_ratio.mjs",
         "node remake/test/home_shisha.mjs",
         "node remake/test/practice_shop_only_783.mjs",
@@ -254,7 +280,9 @@
         "node remake/test/lover_dates.mjs",
         "node --experimental-vm-modules remake/test/ch1_practice_resume_836.mjs",
         "node remake/test/tokyo_visits.mjs",
+        "node remake/test/overseas_companion.mjs",
         "node --experimental-vm-modules remake/test/ch2_night_commute.mjs",
+        "node --experimental-vm-modules remake/test/ch2_night_pacing.mjs",
         "node --experimental-vm-modules remake/test/tsumugi_schedule_782.mjs",
         "node remake/test/ch2_rain_j08.mjs",
         "node remake/test/ch3_aftermath.mjs"
@@ -998,6 +1026,23 @@
         "remake/test/browser/ch3_trials.mjs"
       ],
       "run": ["node remake/test/browser/ch3_trials.mjs"]
+    },
+    {
+      "id": "ch3-outings",
+      "title": "Chapter 3 Tokyo free-time destinations from the map (#1655)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch3-outing*.js",
+        "remake/js/chapters/ch3-activit*.js",
+        "remake/js/chapters/ch3-map*.js",
+        "remake/js/core/tokyo-clock.js",
+        "remake/css/ch3-wayfinding.css",
+        "data/dialogue/ch3_outings.json",
+        "remake/test/browser/ch3_outings.mjs"
+      ],
+      "run": ["node remake/test/browser/ch3_outings.mjs"]
     },
     {
       "id": "ch3-tournament",
@@ -3098,6 +3143,29 @@
       "sparse": [
         "/asset_sources/transitions/move-variants-20261010/"
       ]
+    },
+    {
+      "id": "relationship-pace",
+      "title": "Natural New Game relationship pace measurement (#1430)",
+      "kind": "browser",
+      "weight": 8,
+      "timeout": 16,
+      "paths": [
+        "remake/js/core/stats.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/spot-hours.js",
+        "remake/js/daily/shop.js",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/map.js",
+        "remake/js/daily/calendar.js",
+        "remake/test/relationship_pace.mjs"
+      ],
+      "run": [
+        "node remake/test/relationship_pace.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/relationship-pace"
+      }
     }
   ]
 }

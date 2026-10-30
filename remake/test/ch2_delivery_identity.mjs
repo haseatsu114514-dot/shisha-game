@@ -128,4 +128,24 @@ check('city greeting scripts still reveal names in-scene; delivery scripts commi
   }
 });
 
+// #1706: 配達で来た初対面は別れ際を読まずに受け渡しへ続く。別れ際は ch2_city_<id>_farewell へ切り出し、
+// 初対面分岐の末尾 jump だけを ch2.js が外す。配達の報告は夜の会話（day1_night）の中で読む。
+check('greeting farewell is a separate jump; delivery report lives inside the night talk', () => {
+  const city = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_city.json', import.meta.url), 'utf8')).dialogues;
+  const deliveries = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch2_deliveries.json', import.meta.url), 'utf8')).dialogues;
+  const night = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/remake_ch2.json', import.meta.url), 'utf8')).dialogues
+    .find(s => s.dialogue_id === 'remake_ch2_day1_night');
+  for (const id of DELIVERY_STOPS) {
+    const first = city.find(s => s.dialogue_id === `ch2_city_${id}`).branches.first;
+    assert.deepEqual(first.at(-1), { type: 'jump', next_id: `ch2_city_${id}_farewell` });
+    assert(first.filter(l => l.type === 'jump').length === 1, `ch2_city_${id} has one farewell jump`);
+    assert(city.find(s => s.dialogue_id === `ch2_city_${id}_farewell`)?.lines.length, `missing ch2_city_${id}_farewell`);
+    const handoff = deliveries.find(s => s.dialogue_id === `remake_ch2_delivery_${id}`).lines;
+    assert(!handoff[0].text.startsWith('それと'), `delivery for ${id} must not reopen a closed greeting`);
+  }
+  assert.equal(deliveries.some(s => s.dialogue_id === 'remake_ch2_delivery_report'), false);
+  assert(night.lines.some(l => l.type === 'condition' && l.flag === '_ch2_deliveries' && l.next_true === 'deliveries'));
+  assert(night.branches.deliveries.some(l => /荷物をお渡ししました/.test(l.text || '')));
+});
+
 console.log(`ch2 delivery identity: ${count} checks PASS; real AUTO/SKIP/LOAD not run`);
