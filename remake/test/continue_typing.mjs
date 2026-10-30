@@ -73,12 +73,12 @@ async function prepare(options) {
   await page.clock.pauseAt(new Date("2026-10-13T00:00:01Z"));
   return { context, page };
 }
-async function mount(page, variant = 0, reducedMotion = false) {
-  await page.evaluate(({ variant, reducedMotion }) => {
+async function mount(page, variant = 0, reducedMotion = false, context = null) {
+  await page.evaluate(({ variant, reducedMotion, context }) => {
     C.decisions = [];
-    C.ui.showScreen("end", C.go.buildGameOver({ variant, soundEffects: false, reducedMotion,
+    C.ui.showScreen("end", C.go.buildGameOver({ variant, context, soundEffects: false, reducedMotion,
       onRetry: () => C.decisions.push("retry"), onTitle: () => C.decisions.push("quit") }));
-  }, { variant, reducedMotion });
+  }, { variant, reducedMotion, context });
   await page.locator(".go-sumi-img").evaluate(image => image.decode());
 }
 const read = page => page.evaluate(() => C.read());
@@ -214,7 +214,7 @@ try {
     const reduced = await read(page); assert.equal(reduced.prefix, reduced.text); captionIsStatic(reduced);
     await tap('[data-test="retry"]');
     const reducedReaction = await read(page); assert.equal(reducedReaction.prefix, reducedReaction.text);
-    await mount(page, 0);
+    await mount(page, 0, false, { lossOrdinal: 2 });
     await page.clock.runFor(20000);
     const zero = await read(page); assert.equal(zero.count, "0"); assert.equal(zero.phase, "gameover");
     await page.clock.runFor(1900); assert.deepEqual((await read(page)).decisions, ["quit"]);
