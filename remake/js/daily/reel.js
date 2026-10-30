@@ -1,11 +1,12 @@
 // MOKUMOKUパッキー — 謎のマスコット「パッキー」のスロット（日常リール）。
 // 仕様の正典は docs/pakki_slot_spec.md。役・確率・天井・裏確変は旧版と同一。
-// リメイクの報酬は通常1Pの育成に合わせ、REG16/BIG24/フリーズ36P（2026-10-08 PF24）。
+// 旧成長の報酬は通常1Pの育成に合わせ、REG16/BIG24/フリーズ36P（2026-10-08 PF24）。
+// 新成長が有効なら、能力Pの代わりに当たり役の経験値（core/growth.js）を入れる。
 //
 // Aタイプ＋天井。「1行動=1回転」でマップ隅のミニ筐体が回り、パッキーの顔が光ったら大当たり（完全告知）。
 // ・抽選は決定論RNG（シード＋総回転数）— ロードしても結果が変わらない＝リセマラ不可
-// ・恩恵はステータスのみ:「直前の行動で伸びたステがさらに伸びる」アンコール抽選
-// ・ハズレでも対象ステ+1（サイレント）。天井（ゾーン/本天井・持ち越し）で最終的に全員救済
+// ・旧成長では「直前の行動で伸びたステがさらに伸びる」。ハズレでも対象ステ+1（サイレント）
+// ・新成長ではハズレ・リプレイに経験値なし。天井（ゾーン/本天井・持ち越し）は両モード共通
 // ・結果と報酬は行動した瞬間に確定・適用し、演出は次にマップを開いたときに後追いで見せる
 import { el, sleep } from "../core/util.js";
 import { layers, gainCard, toast } from "../core/ui.js";
@@ -128,7 +129,7 @@ function slumpMult(st) {
 const CEILING = { zoneRun: 8, mainRun: 15 };
 const JUG_REN = { games: 5, mult: 1.5 };
 const REPLAY_CHAIN_MAX = 4;
-// 恩恵はステータスのみ。exp は直前の行動で伸びたステへの上乗せP。quiet は通知なし
+// exp は旧成長で直前の行動で伸びたステへの上乗せP（新成長でも記録用に残す）。quiet は通知なし
 const EFFECTS = {
   miss: { exp: 1, quiet: true },
   replay: { exp: 1, quiet: true },
@@ -780,7 +781,11 @@ const CUE_MISS = ["あ、あれ……？", "ご、ごめん……！", "今の�
 
 // 役の恩恵をパッキー口調で（数値は出さず体感語で）
 function benefitLine(r) {
-  if (r.xp > 0) return r.xp >= 200 ? "経験値がどーんと入ったよ！" : r.xp >= 90 ? "経験値がぐーんと入ったよ！" : "経験値がちょっと入ったよ！";
+  // xp=0 の上限到達時も経験値の結果。表示時のモードで保存済みの報酬を読み替えない。
+  if (typeof r.xp === "number") {
+    if (!(r.xp > 0)) return "経験値はもう上限だよ！";
+    return r.xp >= 200 ? "経験値がどーんと入ったよ！" : r.xp >= 90 ? "経験値がぐーんと入ったよ！" : "経験値がちょっと入ったよ！";
+  }
   const amt = r.exp >= 6 ? "ぐーんと" : r.exp >= 4 ? "かなり" : r.exp >= 2 ? "ちょっと" : "少し";
   return r.target ? `【${STAT_JA[r.target]}】が${amt}上がったよ！` : `${amt}上がったよ！`;
 }
@@ -1157,18 +1162,24 @@ export function noteSummary(reel) {
 // 遊び方カード（#639 オーナー「店にあるスロットのラミネートくらい文字を減らして」）。
 // 短い見出し＋ひとこと＋絵。確率の数字は出さず、設定が変わる特定のスポットの名前も出さない（#634）。
 // art: "lamp"=光ったパッキー／図柄の配列=リールの図柄／"cue"=青緑赤の色見本
+const LEGACY_REWARD_GUIDE = { head: "ハズレでも", body: "能力は少し伸びる。天井で必ず当たる" };
+const EXP_REWARD_GUIDE = { head: "図柄が揃うと", body: "チェリー・ベル・ボーナスで経験値。ハズレ・リプレイはなし" };
 export const GUIDE = [
   { head: "光ったら当たり", body: "パッキーが光ればボーナス！", art: "lamp" },
   { head: "BIG", body: "7・7・7", art: ["seven", "seven", "seven"] },
   { head: "REG", body: "7・7・BAR", art: ["seven", "seven", "bar"] },
   { head: "次ゲーム予告", body: "色文字が出たら、次のゲームの当たりに期待！", art: "cue" },
-  { head: "ハズレでも", body: "能力は少し伸びる。天井で必ず当たる" },
+  LEGACY_REWARD_GUIDE,
   { head: "設定1〜6", body: "大きいほど当たりやすい（必ず当たるわけではない）" },
   { head: "設定が変わる", body: "前回の抽選から7日／章が変わると選び直し。同じ設定や低い設定もある" },
   { head: "ガックン", body: "リールがガクッ＝章の始まり・設定変更後・ロード後の合図" },
   { head: "水色の吹き出し", body: "設定のヒント（確定ではない）" },
   { head: "ひみつ", body: "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！" },
 ];
+/** 初回説明とノートで共有する、現在の成長モードの遊び方。旧モードの説明は残す。 */
+export function guideTiles() {
+  return growthEnabled() ? GUIDE.map((g) => g === LEGACY_REWARD_GUIDE ? EXP_REWARD_GUIDE : g) : GUIDE;
+}
 const DETAIL_GUIDE = [
   { head: "先ペカと後ペカ", body: "レバーと同時に光る先ペカ、止まってから光る後ペカがあるよ" },
   { head: "揃え直し", body: "光ったあとのもうひと回転は精算用。新しい抽選ではないよ" },
@@ -1178,7 +1189,7 @@ const DETAIL_GUIDE = [
 const CUE_JA = { blue: "青", green: "緑", red: "赤" };
 
 /** ラミネートの遊技説明のようなカード（ノートの遊び方と、初回の説明で使う） */
-function guideCard(tiles = GUIDE) {
+function guideCard(tiles = guideTiles()) {
   const art = (g) => {
     if (g.art === "lamp") return el("span.rn-art.lamp", [pakkiFace()]);
     if (g.art === "cue") return el("span.rn-art.cue", CUE_ORDER.map((c) => el(`i.cue-chip.cue-${c}`, { text: CUE_JA[c] })));
@@ -1299,7 +1310,9 @@ export function installReel() {
 
 function showIntro() {
   const owner = state;
-  const pages = [...INTRO_LINES.map((text) => ({ text })), { card: true }];
+  const lines = [...INTRO_LINES];
+  if (growthEnabled()) lines[lines.length - 1] = "図柄が揃うと経験値が入るよ！ ボクの顔をタップすると、記録ノートも見られるよ！";
+  const pages = [...lines.map((text) => ({ text })), { card: true }];
   return new Promise((resolve) => {
     let i = 0;
     const text = el("p.ri-text");

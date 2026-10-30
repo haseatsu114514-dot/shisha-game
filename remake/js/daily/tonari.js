@@ -5,7 +5,7 @@ import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire, modal } from "../core/ui.js";
-import { state, timeOfDay } from "../core/state.js";
+import { state, timeOfDay, config } from "../core/state.js";
 import { addMoney, addStamina, applyStats, step, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
@@ -18,12 +18,17 @@ import { meetHiyoriAtTonari } from "./hiyori.js";
 import { hiyoriAxeReady, hiyoriAxeAffordable, hiyoriAxePrereqsMet, axeThrowExposed } from "./hiyori-axe.js";
 import { spotFollowupDue } from "./spot-encounters.js";
 import { canStudyAttack, studyAttack } from "./attack-lesson.js";
+import { readyLessons, consultLessons } from "../core/growth.js";
 import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
 /** tonari に入ったときのサブメニュー。戻るなら null */
+// ch2-story-data.js の strawberryTrialReady と同じ条件。日常の共通画面へ第2章の台本データを読み込ませない。
+const strawberryTrialOpen = () => state.chapter === 2 && !!state.flags._ch2_read_remake_ch2_ageha_tasting
+  && !state.flags._ch2_strawberry_trial && !!DB.dialogues.ch2_strawberry_trial_intro?.lines?.length;
+
 export function tonariMenu() {
   return new Promise((resolve) => {
     setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
@@ -41,6 +46,8 @@ export function tonariMenu() {
         opt("お客さんとして一服", !tsumugiAtTonari(state) ? "客席でゆっくり一服する"
           : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
         opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
+        // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
+        strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
         opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話せる", "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
@@ -65,6 +72,8 @@ export async function tonariCustomer({ signal = null } = {}) {
     if (!live()) return false;
     if (tsumugiAtTonari(state)) {
       if (!await visitChar("tsumugi") || !live()) return false;
+      await consultLessons("tsumugi", { bg: TONARI_BG }); // 心得の盤で灯した授業があれば相談する（SBD50）
+      if (!live()) return false;
       if (!await hearFortuneRumor({ signal }) || !live()) return false;
     }
     return live();
@@ -117,7 +126,7 @@ async function baitoShift({ called }) {
   await play("remake_baito_end", { bg: TONARI_BG });
   if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });
   addMoney(pay);
-  if (bonus) toast(`常連さんの指名が増えてきた。売上ボーナス +${bonus.toLocaleString()}円`, { kind: "good" });
+  if (bonus) toast(`指名ボーナス（魅力）＋${bonus.toLocaleString()}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
   if (condition.shiftBonus) toast(`仕上げは好調。売上ボーナス +${condition.shiftBonus.toLocaleString()}円`, { kind: "good" });
@@ -219,6 +228,8 @@ function afterShiftMenu() {
       el("div.sub-choices", [
         canStudyAttack() ? opt("雑念を切る特訓を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
         canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
+        // 心得の盤で灯した授業: スミさんに相談して話を聞く（SBD50）
+        ...readyLessons("sumi").map((l) => opt(`スミさんに相談する（${l.name}）`, "授業。話を聞いて習得する", `lesson:${l.id}`, `after-lesson-${l.id}`)),
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
       ]),
     ]));
@@ -230,6 +241,7 @@ async function afterShift() {
   const pickAfter = await afterShiftMenu();
   if (pickAfter === "attack") await studyAttack();
   if (pickAfter === "cube_coals") await studyCubeCoals();
+  if (String(pickAfter).startsWith("lesson:")) await consultLessons("sumi", { only: pickAfter.slice(7), bg: TONARI_BG });
 }
 
 /**

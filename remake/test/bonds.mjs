@@ -437,7 +437,7 @@ try {
   assert.deepEqual(loverSave.asked, []);
   log("HF04/05 existing-lover save: relationship kept, lover landing once, gift, no confession reservation");
 
-  // 凛: 3つ目の固有会話の後の最初の訪問で質問 → その後にMAXの締めくくり（友情寄り）
+  // 凛: 3つ目の固有会話の後の最初の訪問で質問 → 4つ目の固有会話 → MAXの締めくくり（友情寄り）
   const rin = await page.evaluate(async () => {
     const { fresh, spots, bonds, vn, pick } = window.T;
     const state = fresh({ met: { rin: true }, story: { rin: 3 }, affinity: { rin: 90 }, slot: 0 });
@@ -449,13 +449,18 @@ try {
     const first = vn.backlog().map((l) => l.text).join("|");
     vn.backlog().length = 0;
     await spots.visitChar("rin");
+    const fourth = vn.backlog().map((l) => l.text).join("|");
+    vn.backlog().length = 0;
+    await spots.visitChar("rin");
     const second = vn.backlog().map((l) => l.text).join("|");
-    return { badge, finaleBlocked, first, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
+    return { badge, finaleBlocked, first, fourth, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
   });
   assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
   // 質問の場面と友情側の着地（d7a613c6 で台本を書き直し）
   assert(rin.first.includes("今日は試香紙がなかった")); assert(rin.first.includes("相談を遠慮しなくてよい、仕事仲間の時間だった"));
   assert(!rin.first.includes("ラベルも同意書もない"));
+  // 質問の次は4つ目の固有会話（#1696）。締めくくりはその後
+  assert(rin.fourth.includes("吸ってる人の顔だけ、知らない")); assert(!rin.fourth.includes("ラベルも同意書もない"));
   assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);
   log("HF04/05 rin: question visit before the MAX finale, friendship landing with a personal gift");

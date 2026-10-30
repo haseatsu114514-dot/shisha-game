@@ -126,7 +126,9 @@ try {
         out.push({ ratio: T.core.state.stamina / maximum, maximum, // 丸めた実際の体力で境界を判定する（最大154は割り切れない）
            health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
           width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth, barSpecifiedWidth: parseFloat(bar.style.width),
-          extra: holder.clientWidth - label.offsetWidth - bar.offsetWidth - parseFloat(barStyle.marginLeft) - parseFloat(barStyle.marginRight) - parseFloat(style.gap) - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) });
+          extra: holder.clientWidth - label.offsetWidth - bar.offsetWidth - parseFloat(barStyle.marginLeft) - parseFloat(barStyle.marginRight) - parseFloat(style.gap) - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+            // 根性の上乗せがある時だけ「根」バッジが並ぶ（#1685 T3）
+            - (holder.querySelector(".guts-badge:not([hidden])") ? holder.querySelector(".guts-badge").offsetWidth + parseFloat(style.gap) : 0) });
       }
     }
     return out;

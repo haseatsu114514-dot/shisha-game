@@ -39,7 +39,7 @@ try {
   assert.equal(await page.locator(".gc-sub").count(), 0);
   // 仕様は通常272×68px（docs/master_spec.md PF25〜30）。#1354で見出し14pxにして一時71pxになったが、
   // 95970943（#1592 クラスタ#22）が上下余白を12→10.5pxにして68pxへ戻した。compact_gains_map.mjs と同じ値
-  assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.clientHeight), 68);
+  assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.offsetHeight), 68);
   const regularPosition = await page.locator(".gain-card.stat").evaluate(e => ({
     parent: e.parentElement.id, left: e.offsetLeft, top: e.offsetTop, width: e.offsetWidth, height: e.offsetHeight,
   }));
@@ -83,7 +83,10 @@ try {
     }), "今回の表示と名前・増分が重なるか、カードからはみ出した");
     }
     assert.equal(await page.locator(".gc-top").textContent(), levelUp ? "STEP UP" : "STATUS UP");
-    assert.deepEqual(await page.locator(".gc-evolution").allTextContents(), levelUp ? [`${level}段に上がった`] : []);
+    assert.equal(await page.locator(".gc-main").textContent(), levelUp ? `技術 ${level}段に上がった` : "技術");
+    assert.equal(await page.locator(".gain-card.evolved").count(), levelUp ? 1 : 0);
+    assert.equal(await page.locator(".gc-evolution").count(), 0);
+    assert.equal(await page.locator(".gc-next").count(), 1);
     assert.deepEqual(await page.evaluate(() => T.events.map(({ total, starUp, star }) => ({ total, starUp, star }))),
       [{ total: expected, starUp: levelUp, star: level }]);
     await page.evaluate(() => T.ui.bannersIdle());

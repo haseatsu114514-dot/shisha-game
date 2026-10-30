@@ -365,10 +365,14 @@ await suite('ch2-tournament',async check=>{
     // #929: あげはは消えない。悔しさと祝福を両立し、店での次の一台を約束する
     assert.doesNotMatch(afterText,/理由は、聞かないで|扉の向こうへ消えた/);assert.match(afterText,/おめでと、ハジメっち/);assert.match(afterText,/次は、うちの店ね/);
     assert.match(afterText,/スジの通った一台/);assert.match(afterText,/味の輪郭は戻らない/);
+    // #1653: 優勝時だけ、結果カードの前に決着の間を置く
+    assert.match(afterText,/県代表の座は──/);assert(afterText.indexOf('県代表の座は──')<afterText.indexOf('スジの通った一台'));
     // #929: 章の最後に、はじめのいない店であげはの心の声。読了を記録し、再読込で繰り返さない
     assert.match(afterText,/こんなの、ズルいよ/);assert(s.flags._ch2_read_ch2_tournament_ageha_heart);
     assert(afterText.indexOf('こんなの、ズルいよ')>afterText.indexOf('味の輪郭は戻らない'));
     assert.match(afterText,/おめでとうの文字が届いていた/);
+    // #1653: 完了カードも閉店後のMELTY PUFFのまま（昼の大会ステージへ戻さない）
+    assert.match(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage),/bg_ch2_ageha_closed_night/,'complete card must keep the closed MELTY PUFF background');
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);
     assert.equal(s.flags._ch2_tournament.history.length,1);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
     assert(!/ズルいよ/.test(await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'))),'complete reload must not replay the ending');

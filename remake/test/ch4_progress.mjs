@@ -195,6 +195,13 @@ assert.equal(completeChapterFourScene(value, "ch4_alley_cafe_quiet"), false, "Qu
 assert.equal(completeChapterFourScene(value, "ch4_stranger_second"), true);
 assert.equal(chapterFourSecondAvailable(value), false);
 assert.deepEqual(chapterFourMapModel(value).destinations.find(item => item.id === "alley_cafe").scenes, ["ch4_alley_cafe_quiet"]);
+// 「使える」は既存の再訪行動の解放。未読の二度目とは別の場面で、保存を跨いでも残る。
+const revisitSave = JSON.parse(JSON.stringify(value));
+assert.match(chapterFourMapModel(revisitSave).destinations.find(item => item.id === "alley_cafe").purpose, /再訪できるようになった/);
+const beforeRevisit = structuredClone(revisitSave);
+assert.equal(completeChapterFourScene(revisitSave, "ch4_alley_cafe_quiet"), true);
+assert.deepEqual(revisitSave.stats, beforeRevisit.stats, "Revisit must not award fixed-event stat growth");
+assert.equal(revisitSave.money, beforeRevisit.money);
 assert.equal(completeChapterFourScene(value, "ch4_alley_cafe_quiet"), true);
 roundTrip();
 
@@ -241,14 +248,16 @@ assert.equal(finishChapterFourEve(value), false, "The eve closes once");
 roundTrip();
 assert.equal(chapterFourSheikhRevealed(value), false, "The sheikh stays hidden until the tournament starts");
 
-// 大会: start を読み始める時点で正体を明かす。勝ち固定。
-assert.equal(chapterFourTournamentOutcome(value), "win");
+// 大会: start で正体を明かすが、勝敗は実制作の結果が確定するまで未確定。
+assert.equal(chapterFourTournamentOutcome(value), null, "No result before crafting");
 for (const id of ["ch4_final", "ch4_defeat", "ch4_result"]) assert.equal(completeChapterFourScene(value, id), false, id);
-// defeat 経路は chapterFourAfterDefeat を通る（骨格では勝ち固定のため、敗北の保存を分岐して確認する）。
+// defeat 経路は実結果を保存してから chapterFourAfterDefeat を通る。
 const lost = structuredClone(value);
 assert.equal(chapterFourAfterDefeat(lost), false, "AfterDefeat needs a read defeat");
 revealChapterFourSheikh(lost);
 assert.equal(completeChapterFourScene(lost, "ch4_tournament_start"), true);
+assert.equal(completeChapterFourScene(lost, "ch4_defeat"), false, "No defeat scene before the result");
+lost.flags._ch4.match = { version: 1, step: 9, voted: 1, history: [], result: { win: false } };
 assert.equal(completeChapterFourScene(lost, "ch4_defeat"), true);
 assert.equal(lost.flags._ch4.part, "tournament", "A defeat does not leave the tournament");
 assert.equal(chapterFourAfterDefeat(lost), true);
@@ -263,6 +272,8 @@ assert.deepEqual(chapterFourProgress(JSON.parse(JSON.stringify(lost))), lost.fla
 revealChapterFourSheikh(value);
 assert.equal(chapterFourSheikhRevealed(value), true);
 assert.equal(completeChapterFourScene(value, "ch4_tournament_start"), true);
+assert.equal(completeChapterFourScene(value, "ch4_final"), false, "No victory or prize before actual judging");
+value.flags._ch4.match = { result: { win: true } };
 roundTrip();
 assert.equal(completeChapterFourScene(value, "ch4_final"), true);
 assert.equal(value.flags._ch4.part, "resolution");
@@ -360,8 +371,10 @@ for (const dialogue of files.ch4_spots.filter(row => ["ch4_dubai_souq", "ch4_dub
   prizeSave.money = 1000;
   assert.equal(completeChapterFourScene(prizeSave, "ch4_tournament_start"), true);
   assert.equal(prizeSave.money, 1000, "Reading the start scene pays nothing");
+  progress.match = { result: { win: false } };
   assert.equal(completeChapterFourScene(prizeSave, "ch4_defeat"), true);
   assert.equal(prizeSave.money, 1000, "Defeat pays nothing");
+  progress.match.result = { win: true };
   assert.equal(completeChapterFourScene(prizeSave, "ch4_final"), true);
   assert.equal(prizeSave.money, 1000 + CH4_PRIZE);
   progress.part = "tournament"; progress.resolution = 0; // 再読・LOAD相当

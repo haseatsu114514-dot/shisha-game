@@ -13,6 +13,7 @@ import { coalCount, coalTypes } from "./coals.js";
 import { createCraftClock } from "./clock.js";
 import { state } from "../core/state.js";
 import { coalJustSeconds } from "./heat_logic.js";
+import { effectVisible, effectBadge, senseBand, effectTier } from "./effect-visual.js";
 
 export async function runHeat(cs) {
   await waitBenchReady(cs, "heat");
@@ -59,11 +60,15 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   const tutorial = cs.mode === "tutorial";
   const types = coalTypes(cs, count);
   const justSec = coalJustSeconds(skill.window(cs), tutorial, state?.goods || []);
+  const baseJustSec = coalJustSeconds(skill.window(cs) / (1 + 0.45 * effectTier("sense")), tutorial, state?.goods || []);
+  const plainBase = coalJustSeconds(skill.window(cs) / (1 + 0.45 * effectTier("sense")), tutorial, []);
   const clarity = skill.clarity(cs);
 
   await waitBenchReady(cs, "heat", { count });
   const view = buildHeatView(types, { count, compact });
   const { info, feedback } = view;
+  if (effectVisible("sense")) info.prepend(senseBand(plainBase, 90, justSec - baseJustSec));
+  if (effectVisible("insight")) view.root.classList.add("insight-visible");
   const coals = view.coals.map(c => ({ ...c,
     tj: rand(4.2, 7.4) * (tutorial ? 1.25 : 1),
     picked: null, timing: null, p: 0,
@@ -124,6 +129,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
       n.dataset.phase = ph;
       // 洞察★: ジャスト直前にかすかな揺らぎ（読みやすさ）
       n.classList.toggle("soon", clarity > 0 && ph === "pre" && c.p > 1 - 0.1 * clarity);
+      if (effectVisible("insight") && n.classList.contains("soon") && !n.querySelector(".effect-badge")) n.append(effectBadge("insight", "察"));
       if (ph === "just" && !n.classList.contains("pikan")) { n.classList.add("pikan"); SE.tick(); }
       if (ph !== "just") n.classList.remove("pikan");
       if (c.p > 1.75) pick(c, t, true); // 放っておくと灰になって勝手に落ちる

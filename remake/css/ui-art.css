@@ -197,6 +197,8 @@
 .gain-card.stat {
   width: 272px;
   min-width: 272px;
+  height: 68px;
+  box-sizing: border-box;
   gap: 12px;
   padding: 10.5px 20px 10.5px 14px;
   filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.55));
@@ -209,7 +211,13 @@
 .gain-card.stat .gc-points { display: flex; align-items: baseline; gap: 1px; line-height: 1; }
 .gain-card.stat .gc-earned { font-size: 14px; white-space: nowrap; color: var(--text-dim); }
 .gain-card.stat :is(.gc-count, .gc-unit) { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
-.gain-card.stat.evolved { width: auto; min-width: 320px; max-width: 480px; }
+.gain-card.stat.evolved { width: 272px; min-width: 272px; max-width: 272px; }
+.gain-card.stat.evolved .gc-main { font-size: 15px; white-space: nowrap; letter-spacing: 0; }
+.gain-card.stat .gc-next { position: absolute; left: 6px; right: 6px; bottom: 3px; display: flex; align-items: center; gap: 6px; color: var(--gc); font-size: 9px; line-height: 1; }
+.gain-card.stat .gc-next.capped { color: #aaa; }
+.gain-card.stat .gc-next i { display: block; flex: 1; height: 2px; background: #ffffff33; }
+.gain-card.stat .gc-next b { display: block; height: 100%; background: var(--gc); }
+.gain-card.stat .gc-next.capped b { background: #999; }
 .gain-card.stat .gc-evolution { font-size: 18px; line-height: 1.4; }
 /* スロットの当たりだけ、元の金属枠を一度明るくする。サイズ・出現位置は共通。 */
 .gain-card.stat.slot-bonus.show::after { animation: slot-bonus-glow 0.85s ease-out 0.45s; }

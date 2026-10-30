@@ -37,7 +37,7 @@ import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocati
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
-import { presentNight, growthMenuItems, openGrowthBoard, reflectAtSpot } from "../core/growth.js";
+import { presentNight, growthMenuItems, openGrowthBoard, reflectAtSpot, consultLessons } from "../core/growth.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -568,6 +568,11 @@ async function performSpotAction(spot) {
       await play("remake_staff_practice", { bg: TONARI_BG });
       await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
       toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+    } else if (sub === "strawberry") {
+      const { runStrawberryTrial } = await import("../chapters/ch2-strawberry-trial.js");
+      addStamina(-16);
+      await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
+      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "baito") await doBaito();
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
@@ -577,6 +582,8 @@ async function performSpotAction(spot) {
   } else if (spot.kind === "rival") {
     if (isClosed(spot) || !(await staminaGuard(spot.stamina)) || isClosed(spot)) return { used: false, exerted };
     used = (await visitRival(spot)) !== false;
+    // 心得の盤で灯した授業があれば、そのまま相談して話を聞く（SBD50）
+    if (used) await consultLessons(spot.charId);
     exerted = used;
   } else if (spot.kind === "shop") {
     const r = await openShop();

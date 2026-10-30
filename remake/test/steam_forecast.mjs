@@ -243,7 +243,7 @@ try {
     assert(await page.locator('.dodge-refresh').isDisabled());
     await page.close();
     if (name === 'desktop') {
-      const skilled = await open(viewport, mobile, 81);
+      const skilled = await open(viewport, mobile, 91); // 洞察の最上段（10段は91以上。旧★5の81は10段では9段）
       await skilled.evaluate(() => { window.timerRun = T.steps.stepSteamTime(cs); });
       await skilled.waitForSelector('[data-test="kitchen-timer"]'); await ready(skilled);
       for (let i = 0; i < 6; i++) await skilled.locator('[data-test="timer-minute-up"]').click();

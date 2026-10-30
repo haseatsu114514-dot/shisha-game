@@ -7,16 +7,16 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ロビーへ下りると、みんとさんは髪を下ろしていた。いつものリボンは、手首に一本巻いてあるだけだった。"
+          "text": "ロビーへ下りると、栞さんは髪を下ろしていた。いつものリボンは、手首に一本巻いてあるだけだった。"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_smile",
           "text": "店のお休み、ちゃんと貼ってきたよ"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_smile",
           "text": "来たかったから、予定を空けました"
         },
         {
@@ -26,10 +26,13 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_smile",
           "text": "うん。……ご飯は、あとで一緒にどう？"
         }
-      ]
+      ],
+      "metadata": {
+        "private_scene": true
+      }
     }
   ]
 }

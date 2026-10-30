@@ -21,6 +21,7 @@ import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
 import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx, buildWordCutFx } from "./steam-slash.js";
 import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
+import { effectVisible, effectBadge, effectLine } from "./effect-visual.js";
 
 // 雑念ははじめ自身の内心。自主練でも、その場に他の人物がいる前提にしない。
 export const DODGE_WORDS = [
@@ -58,7 +59,7 @@ export async function runSteamDodge(cs) {
   const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
-  const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
+  const heart = el(`div.dodge-heart${effectVisible("guts") ? ".guts-visible" : ""}`, { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core"), effectBadge("guts", "根")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
   const knob = el("i.dodge-knob");
   const controlArt = name => el("img", { src: makingUrl(name), alt: "", draggable: false, "aria-hidden": "true" });
@@ -207,11 +208,16 @@ export async function runSteamDodge(cs) {
     if (effect.mentalRecovery) setPlayerMental(cs, mental.recoverStep(time, hits));
     reactAudience(cs, "good");
     const reach = Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H);
-    const fx = el("div.dodge-refresh-fx", { "aria-hidden": "true", style: { "--x": `${hx}px`, "--y": `${hy}px`, "--reach": `${reach}px` } }, [
+    const fx = el(`div.dodge-refresh-fx${effectVisible("guts") ? ".guts-visible" : ""}`, { "aria-hidden": "true", style: { "--x": `${hx}px`, "--y": `${hy}px`, "--reach": `${reach}px` } }, [
       el("i.dr-flash"), el("i.dr-ring"), el("i.dr-ring.second"),
       ...Array.from({ length: 8 }, (_, i) => el("i.dr-ray", { style: { "--angle": `${i * 45}deg` } })),
     ]);
     box.append(fx); transients.push({ node: fx, until: time + .95 });
+    if (effect.mentalRecovery && effectVisible("guts")) {
+      const recoveryLine = el("span.effect-line.effect-guts.dodge-guts-recovery", [effectBadge("guts", "根"), el("span", { text: "根性で持ち直した" })]);
+      box.append(recoveryLine);
+      setTimeout(() => recoveryLine.remove(), 1100);
+    }
     SE.whoosh(); SE.just(); refreshLabel();
   };
   listen(refreshBtn, "pointerdown", (e) => { e.preventDefault(); refresh(); });
@@ -396,6 +402,7 @@ export async function runSteamDodge(cs) {
       rainy ? "雨の日は熱の立ち上がりが少し遅い。吸い出しで温度を確かめよう" : "",
       `${steamTimeLabel(seconds)}蒸らした。${hits === 0 ? "最後まで一度も揺れなかった" : `雑念に${hits}回つかまった`}`,
       cs.steam.refreshesUsed ? `リフレッシュで${cs.steam.refreshesUsed}回、雑念を吹き払った` : "",
+      effectLine("insight", "察", "洞察で雑念が少し減っていた"),
       hits === 0 ? "呼吸が整った。吸い出しも落ち着いて取りかかれそう" : "気が少し急いている。吸い出しは手元をよく見よう",
       "蒸らしで入った熱を、吸い出しで適温へ整える",
       min >= 8 ? "じっくり待った分、熱が入り、吸い出しに余裕ができる" : min <= 3 ? "早めの立ち上げ。温度合わせは忙しくなる" : "香りの輪郭を残した。吸い出しでしっかり熱を入れよう",

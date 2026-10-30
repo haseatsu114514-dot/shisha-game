@@ -51,6 +51,7 @@ const DIALOGUE_FILES = [
   "venue_hours", // 店主の案内と街の昼夜差分
   "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
   "growth_reflection", // 心得の盤: 参拝の場所での内省と大会前夜の内省（SPEC 2.8）
+  "growth_lessons", // 心得の盤: 授業（はじめが相談して話を聞く場面。SPEC 2.6）
 ];
 // ひよりの参照先は DB.hiyori.route が無い間 disabled に倒れるため、タイトル後に読める。
 const DEFERRED_DIALOGUE_FILES = ["hiyori"];

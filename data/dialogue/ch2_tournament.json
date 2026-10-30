@@ -397,6 +397,41 @@
       }
     },
     {
+      "dialogue_id": "ch2_tournament_verdict",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "審査員3人の10点、すべて投入されました！ ……それでは、結果を出します！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場の音楽が、ふっと絞られた。四台のボウルから、細い煙だけがまだ上がっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の台のあげはは、トングを置いたまま動かない。神崎さんは腕を組み、REIは目を閉じていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（さっきまで吸っていたはずの一台が、口の中に何も残っていない）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "県代表の座は──"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一拍。客席の誰かが、息を呑む音まで聞こえた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_tournament_farewell",
       "lines": [
         {
@@ -670,23 +705,18 @@
         },
         {
           "speaker": "ageha",
-          "face": "sad",
-          "text": "（崩れたら、直し方が分かんない。うちは、ずっとそうだった）"
-        },
-        {
-          "speaker": "ageha",
           "face": "normal",
           "text": "（ハジメっちも、最近ずっと調子悪かった。煙に出てたもん）"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "（なのに、手順を一個ずつ確かめて、最後まで崩れなかった）"
+          "text": "（なのに、最後まで崩れなかった）"
         },
         {
           "speaker": "ageha",
           "face": "serious",
-          "text": "（崩れても、言葉で戻ってこられるんだ。……うちには、それがない）"
+          "text": "（うちには、戻ってくる道がない）"
         },
         {
           "speaker": "ageha",

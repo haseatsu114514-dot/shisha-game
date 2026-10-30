@@ -10,7 +10,8 @@ import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal } from "../core/growth.js";
+import { config } from "../core/state.js";
+import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
@@ -86,10 +87,11 @@ export function initHud(h) {
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
-    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
+    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b"), el("em.guts-extra")])]), el("span.guts-badge", { text: "根", "aria-label": "根性の体力上乗せ" })]),
     radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
-    status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () => handlers.status?.() }),
+    status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () =>
+      growthEnabled() && hidaneTotal() > 0 ? openGrowthBoard() : handlers.status?.() }),
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
     exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
       el("span.hx-lv"), el("i.hud-bar.hx-bar", [el("b.hx-settled"), el("b.hx-today")]), el("small.hx-left"),
@@ -138,7 +140,7 @@ function updateGrowth() {
   const total = on ? hidaneTotal(ensureGrowth()) : 0;
   dom.hidane.hidden = !(total > 0);
   dom.hidane.textContent = total > 99 ? "99" : String(total || "");
-  dom.status.title = total > 0 ? `ステータス（未使用の火種 ${total}）` : "ステータス";
+  dom.status.title = total > 0 ? `心得の盤を見る（未使用の火種 ${total}）` : "ステータス";
   dom.status.setAttribute("aria-label", dom.status.title);
   if (!on) return;
   const g = gaugeInfo();
@@ -149,7 +151,7 @@ function updateGrowth() {
   left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
   dom.exp.classList.toggle("ready", g.pending > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
-  dom.exp.title = g.max ? "Lv.80 MAX" : g.pending > 0
+  dom.exp.title = g.max ? `Lv.${g.level} MAX` : g.pending > 0
     ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
   dom.exp.setAttribute("aria-label", dom.exp.title);
 }
@@ -183,6 +185,11 @@ export function updateHud() {
   dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
   dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
+  const gutsExtra = dom.stamina.querySelector(".guts-extra");
+  const showGuts = config.statEffectColors !== false && step("guts") > 1;
+  gutsExtra.style.left = `${100 / maxStamina() * 100}%`;
+  gutsExtra.style.width = `${showGuts ? Math.max(0, Math.min(state.stamina, maxStamina()) - 100) / maxStamina() * 100 : 0}%`;
+  dom.stamina.querySelector(".guts-badge").hidden = !showGuts;
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる

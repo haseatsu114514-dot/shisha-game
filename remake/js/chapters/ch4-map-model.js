@@ -52,7 +52,7 @@ export function chapterFourMapModel(value) {
   // 路地裏は stranger_first を読み、second の解放条件を満たすまで行き先自体を出さない（DRAFT §4 の仮置き側）。
   if (read[SCENE.second] === true) {
     destinations.push(destination("alley_cafe", [SCENE.alleyQuiet], "路地の奥の小さなカフェ。", true,
-      { purpose: "静かな店で、もう一度ゆっくり話を聞く。" }));
+      { purpose: "再訪できるようになった。静かな店で、もう一度ゆっくり話を聞く。" }));
   } else if (chapterFourSecondAvailable(value)) {
     destinations.push(destination("alley_cafe", [SCENE.second], "路地の奥の小さなカフェ。", false,
       { purpose: "約束した店。初めて訪ねる。" }));

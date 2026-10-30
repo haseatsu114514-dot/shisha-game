@@ -98,7 +98,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "俺にも、ああいう顔をした時期があった。今は、飯も食えてるか"
+          "text": "ああいう顔の奴を、知ってる。……今は、飯も食えてるか"
         },
         {
           "speaker": "hajime",
@@ -128,7 +128,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "大会の間だけドバイに出した、FESTAの出張店。"
+          "text": "大会の間だけ、会場の一角に出した出張ブース。"
         },
         {
           "speaker": "da_silva",
@@ -264,7 +264,7 @@
         {
           "speaker": "traveler",
           "face": "normal",
-          "text": "また会ったな、ハジメ。一本、頼めるか"
+          "text": "また会ったな、ハジメ。一台、頼めるか"
         },
         {
           "speaker": "hajime",
@@ -509,7 +509,7 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "世界の予選を抜けた、最後の四人だ！"
+          "text": "四つの枠から、世界の舞台へ。最後の四人だ！"
         },
         {
           "speaker": "pakki",
@@ -580,6 +580,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "うん。全員に、勝ちたい"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "審査席は南雲会長、トプハーネのエミル、FESTAの太陽！"
         },
         {
           "speaker": "pakki",
@@ -781,6 +786,11 @@
           "speaker": "sheikh",
           "face": "normal",
           "text": "次は、私が挑む番だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう、はじめ。最後まで、客を見て作ったな。よくやった"
         }
       ]
     },
@@ -800,7 +810,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "大会のあと。シェイクの屋敷で、使い慣れた小さな台が出てきた。"
+          "text": "大会のあと。シェイクの屋敷では、煙より先に、小さな杯のコーヒーとナツメヤシが出た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "使い慣れた小さな台が出てきたのは、そのあとだった。"
         },
         {
           "speaker": "sheikh",
@@ -1597,11 +1612,6 @@
           "text": "（客が来る時間に合わせて、挽く……）"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（葉も、ケースを開ける時間まで考えた方がいいな）"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "店主はもう、次の客へ顔を向けていた。礼を言って、店を離れた。"
@@ -1656,11 +1666,6 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（スミさんにも、最初に吸える時間を聞いたな）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（値段が違っても、最初に聞くことは同じなんだ）"
         },
         {
           "speaker": "",

@@ -32,6 +32,7 @@ async function harness({ manual = false } = {}) {
   });
   const noop = () => {};
   const imports = {
+    './effect-visual.js': { effectVisible: () => false, effectBadge: () => null, effectLine: () => null },
     '../core/state.js': { state: owner },
     '../core/util.js': { el: () => new Node(), sleep: ms => { const d = deferred(); sleeps.push({ ms, ...d }); return d.promise; }, clamp: (x, a, b) => Math.max(a, Math.min(b, x)), rand: () => .5, pick: a => a[0] },
     '../core/ui.js': { countdown: () => { metrics.countdown++; return countdown.promise; }, shake: noop },
