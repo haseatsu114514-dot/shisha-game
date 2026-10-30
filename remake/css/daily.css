@@ -1266,6 +1266,12 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-node.lesson.sig .gb-face { width: 48px; height: 43px; box-shadow: none; outline: 2px solid #f4d27a; outline-offset: 2px; }
 .gb-node.skill .gb-glyph, .gb-node.lesson .gb-glyph { color: color-mix(in srgb, var(--c) 65%, #fff); }
 .gb-node.lesson .gb-glyph { color: #f4d27a; }
+/* 授業はその人の顔アイコン（SBD64）。顔が読み込めない時は下の一文字が見える */
+.gb-face-icon { position: absolute; inset: 3px; width: calc(100% - 6px); height: calc(100% - 6px); object-fit: cover; object-position: 50% 30%; clip-path: inherit; pointer-events: none; }
+.gb-node.lesson:not(.s-unlocked):not(.s-pending) .gb-face-icon { filter: saturate(0.55) brightness(0.8); }
+.gb-node.lesson.s-sealed .gb-face-icon { filter: grayscale(0.8) brightness(0.55); }
+.gb-art .gb-face-icon { inset: 10px auto 10px 50%; width: auto; height: calc(100% - 20px); aspect-ratio: 1; translate: -50% 0; clip-path: none; border-radius: 12px; border: 2px solid #f4d27a; box-shadow: 0 0 18px rgba(244, 210, 122, 0.4); }
+.gb-art.shadow .gb-face-icon { filter: grayscale(0.7) brightness(0.6); }
 /* 関門（v3）: 金のひし形。色つきの火種で越える */
 .gb-node.gate .gb-face { width: 24px; height: 24px; border-radius: 3px; transform: rotate(45deg); border-color: #ffd36b; background: #1d1426; font-size: 12px; }
 .gb-node.gate .gb-glyph { transform: rotate(-45deg); color: #ffd36b; }
@@ -1301,7 +1307,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 @media (prefers-reduced-motion: reduce) { .gb-node .gb-face { animation: none !important; } }
 .gb-side { display: flex; flex-direction: column; gap: 6px; padding: 14px 18px 10px 8px; min-width: 0; overflow: auto; font-size: 15px; line-height: 1.5; }
 .gb-side p { margin: 0; }
-.gb-art { flex: none; display: grid; place-items: center; height: 150px; border-radius: 10px; border: 1px solid rgba(244, 210, 122, 0.25);
+.gb-art { position: relative; flex: none; display: grid; place-items: center; height: 150px; border-radius: 10px; border: 1px solid rgba(244, 210, 122, 0.25);
   background: radial-gradient(ellipse 60% 70% at 50% 60%, color-mix(in srgb, var(--c, #ffb43c) 35%, transparent), rgba(10, 6, 16, 0.8)); }
 .gb-art span { font-size: 64px; font-weight: 800; color: color-mix(in srgb, var(--c, #ffb43c) 70%, #fff); text-shadow: 0 0 18px var(--c, #ffb43c); }
 .gb-art.k-lesson span { color: #f4d27a; }

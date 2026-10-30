@@ -6,7 +6,7 @@ import { layers, modal, gainCard } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { emit } from "../core/bus.js";
 import { state } from "../core/state.js";
-import { displayName } from "../core/data.js";
+import { displayName, faceIconUrl } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
 import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned } from "../core/growth.js";
 import {
@@ -135,7 +135,7 @@ export function openBoard({ place = null } = {}) {
     nodeLayer.replaceChildren(...nodes.map((node) => {
       const p = at(node.gx, node.gy), st = status(node, v);
       const shown = revealOf(node);
-      const glyph = st === "locked" && node.kind !== "stat" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (st === "sealed" && !hasMet(node.who) ? "？" : "授") : shown === "hidden" ? "？" : node.glyph;
+      const glyph = st === "locked" && node.kind !== "stat" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (hasMet(node.who) || g.nodes.includes(node.id) ? whoName(node.who).slice(0, 1) : "？") : shown === "hidden" ? "？" : node.glyph;
       const qStep = node.feature && !g.nodes.includes(node.id) && st !== "hidden";
       return el(`button.gb-node.${node.kind}.s-${st}${fresh.has(node.id) ? ".just-opened" : ""}${node.peak ? ".peak" : ""}${node.sig ? ".sig" : ""}${selected === node.id ? ".selected" : ""}${g.target === node.id ? ".target" : ""}${goal.has(node.id) ? ".on-path" : ""}`, {
         style: { left: `${p.x}px`, top: `${p.y}px` },
@@ -143,13 +143,26 @@ export function openBoard({ place = null } = {}) {
         dataset: { test: `board-node-${node.id}`, status: st },
         onclick: () => select(node.id, true),
       }, [
-        el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph })]),
+        el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph }), lessonFace(node, st)]),
         qStep ? el("em.gb-quality", { text: "✦", "aria-hidden": "true" }) : null,
         node.kind === "skill" && ["available", "short", "far"].includes(st)
           ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
         st === "locked" ? el("span.gb-lock", { text: "封", "aria-hidden": "true" }) : null,
       ]);
     }));
+  }
+
+  /**
+   * 授業はその人の顔アイコン（2026-10-30 オーナー「授業はキャラの顔アイコンに」SBD64）。顔の無い人・読み込めない時は名前の1文字。
+   * 会っていない人の授業は盤に出ないので、出ている授業はどれも顔を見せてよい。
+   */
+  function lessonFace(node, st) {
+    if (node.kind !== "lesson" || st === "hidden") return null;
+    const url = faceIconUrl(node.who, state);
+    if (!url) return null;
+    const img = el("img.gb-face-icon", { src: url, alt: "", draggable: "false", loading: "lazy" });
+    img.addEventListener("error", () => img.remove());
+    return img;
   }
 
   /** 章ごとの見せ方（2.5）: open=全部 / next=名前と効果（絵は影絵）/ hidden=？？？ */
@@ -164,7 +177,7 @@ export function openBoard({ place = null } = {}) {
     if (node.kind === "lesson") return hasMet(node.who) || g.nodes.includes(node.id) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
     return shown === "hidden" ? "？？？（物語が進むと盤に現れる）" : `スキル「${node.name}」`;
   }
-  const whoName = (who) => who === "sumi" ? "スミさん" : displayName(who, state);
+  function whoName(who) { return who === "sumi" ? "スミさん" : displayName(who, state); }
 
   function statusWord(node, st) {
     return {
@@ -180,6 +193,7 @@ export function openBoard({ place = null } = {}) {
     const lines = [];
     const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}`, { "aria-hidden": "true" }, [
       el("span", { text: node.kind === "stat" ? BOARD_HEAD[node.board] : node.kind === "gate" ? "関" : node.kind === "lesson" ? "授" : shown === "hidden" ? "？" : node.glyph }),
+      node.kind === "lesson" ? lessonFace(node, st) : null,
     ]);
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
     if (node.kind === "stat") {

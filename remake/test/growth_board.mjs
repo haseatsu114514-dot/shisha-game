@@ -22,6 +22,12 @@ for (const k of board.BOARD_KEYS) {
 }
 assert.notDeepEqual(board.LAYOUTS.body.edges, board.LAYOUTS.sense.edges, "盤によって形が違う");
 assert.notDeepEqual(board.LAYOUTS.sense.edges, board.LAYOUTS.wisdom.edges);
+// 3枚の形はそれぞれ違う（SBD64）: どの2枚を比べても、置き場所の違うマスが多い
+for (const [a, b] of [["body", "sense"], ["sense", "wisdom"], ["body", "wisdom"]]) {
+  const keys = (k) => new Set(board.LAYOUTS[k].cells.map((c) => c.key));
+  const A = keys(a), B = keys(b), diff = [...A].filter((k) => !B.has(k)).length + [...B].filter((k) => !A.has(k)).length;
+  assert(diff >= 12, `${a} と ${b} の形が違う（違うマス ${diff}）`);
+}
 const expect = { body: [6, 6], sense: [6, 7], wisdom: [6, 7] }; // スキル各6・授業20（カルダモンは感覚盤へ。SBD60）
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
@@ -423,4 +429,4 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v10 shapes grow up from the bottom hub, gates next to the hub with lessons right behind (every lesson within 5), peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 20 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v11 shapes differ per board (fan/swirl/tree) and grow up from the bottom hub, gates next to the hub with lessons right behind (every lesson within 5), peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 20 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
