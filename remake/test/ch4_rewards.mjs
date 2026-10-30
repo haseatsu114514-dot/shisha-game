@@ -75,6 +75,7 @@ progress.completeChapterFourScene(state, "ch4_wang_reception");
 progress.completeChapterFourScene(state, "ch4_stranger_third");
 progress.finishChapterFourEve(state);
 progress.completeChapterFourScene(state, "ch4_tournament_start");
+state.flags._ch4.match = { result: { win: true } }; // #1810: 勝敗は実制作の確定結果だけを読む
 progress.completeChapterFourScene(state, "ch4_final");
 const beforeResult = JSON.stringify(state.stats);
 assert.equal(await runner.readAndCommit(owner, "ch4_result"), true);
