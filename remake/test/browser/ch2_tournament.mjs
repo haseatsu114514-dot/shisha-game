@@ -149,6 +149,73 @@ async function seedChapterThreeMeeting(page,sceneId,known=[]) {
   await page.locator(`[data-test="ch3-intro-scene"][data-scene="${sceneId}"]`).waitFor();
 }
 await suite('ch2-tournament',async check=>{
+  // #1922: 本番CONTINUEのMENUからのLOAD失敗で、旧画面の寿命を失わない。
+  for (const outcome of ['retry', 'reload']) await check(`continue-load-failure-${outcome}`, async page => {
+    await page.clock.install();
+    await page.clock.pauseAt(new Date(Date.now() + 100));
+    await seed(page, { stage: 'defeat', auto: null,
+      progress: { attempts: 2, losses: 1, lastLossAttempt: 1, failure: 'cold' } });
+    await page.locator(t('defeat')).waitFor();
+    await page.clock.runFor(1500);
+    await page.evaluate(async () => {
+      const core = await import('./js/core/state.js');
+      window.loadQA = { core, owner: core.state, json: JSON.stringify(core.state),
+        auto: localStorage.getItem(core.SAVE_KEY), root: document.querySelector('.gameover'),
+        setItem: Storage.prototype.setItem };
+      const selected = structuredClone(core.state);
+      selected.money = 98765;
+      selected.flags._ch2_tournament.stage = 'ready';
+      localStorage.setItem(core.SAVE_SLOTS[1].key, JSON.stringify(selected));
+      loadQA.manual = localStorage.getItem(core.SAVE_SLOTS[1].key);
+      Storage.prototype.setItem = function(key, value) {
+        if (this === localStorage && key === core.SAVE_KEY) throw new DOMException('QA quota', 'QuotaExceededError');
+        return loadQA.setItem.call(this, key, value);
+      };
+    });
+    const uiLoad = async () => {
+      await page.locator(t('menu')).click();
+      await page.locator(t('load')).click();
+      await page.locator(dt('slot-1')).click();
+      await page.locator(dt('confirm-load')).click();
+      await page.locator('#modal.show').waitFor({ state: 'hidden' });
+    };
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await uiLoad();
+      assert.deepEqual(await page.evaluate(() => ({
+        owner: loadQA.core.state === loadQA.owner,
+        state: JSON.stringify(loadQA.core.state) === loadQA.json,
+        auto: localStorage.getItem(loadQA.core.SAVE_KEY) === loadQA.auto,
+        manual: localStorage.getItem(loadQA.core.SAVE_SLOTS[1].key) === loadQA.manual,
+        root: document.querySelector('.gameover') === loadQA.root,
+      })), { owner: true, state: true, auto: true, manual: true, root: true });
+    }
+    // 移行で拒否されるデータも旧ownerと保存を維持し、通知しない。
+    assert.equal(await page.evaluate(() => {
+      const { core } = loadQA;
+      localStorage.setItem(core.SAVE_SLOTS[2].key, JSON.stringify({ day: 1, schema: core.SCHEMA + 1 }));
+      return core.loadFromSlot(core.SAVE_SLOTS[2].key);
+    }), null);
+    const count = Number(await page.locator('.go-count').textContent());
+    await page.clock.runFor(2000);
+    assert(Number(await page.locator('.go-count').textContent()) < count, '失敗後も元のカウントが進む');
+    if (outcome === 'retry') {
+      await page.locator(t('retry')).click();
+      assert.equal(await page.locator(t('defeat')).getAttribute('data-phase'), 'reaction');
+      await page.clock.runFor(10000);
+      await page.locator(t('ready')).waitFor();
+      assert.equal((await get(page)).flags._ch2_tournament.attempts, 2);
+    } else {
+      const manual = await page.evaluate(() => loadQA.manual);
+      await page.evaluate(() => { Storage.prototype.setItem = loadQA.setItem; });
+      await page.clock.resume();
+      await Promise.all([page.waitForEvent('load'), uiLoad()]);
+      await page.locator(t('ready')).waitFor();
+      assert.equal((await get(page)).money, 98765);
+      assert.equal(await page.evaluate(() => localStorage.getItem('suien_remake_slot1')), manual);
+      assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('suien_remake_save')).money), 98765);
+    }
+  });
+
   await check('chapter-three-prologue-resumes-anonymous-research',async page=>{
     await page.evaluate(async()=>{
       const core=await import('./js/core/state.js'),s=core.newGame();

@@ -385,8 +385,8 @@ export function newGame() {
 
 let lastComplementedAutosaveRaw = null;
 
-function writeSave() {
-  if (!state) return { raw: null, saved: false };
+function writeSave(target = state) {
+  if (!target) return { raw: null, saved: false };
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try {
     const oldRaw = localStorage.getItem(SAVE_KEY);
@@ -396,11 +396,11 @@ function writeSave() {
       lastComplementedAutosaveRaw = oldRaw;
     }
   } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
-  recordGalleryProgress(state);
-  state.savedAt = Date.now();
+  recordGalleryProgress(target);
+  target.savedAt = Date.now();
   let raw = null;
   try {
-    raw = JSON.stringify(state);
+    raw = JSON.stringify(target);
     localStorage.setItem(SAVE_KEY, raw);
     lastComplementedAutosaveRaw = raw;
     return { raw, saved: true };
@@ -485,15 +485,11 @@ export function loadFromSlot(key) {
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
   if (!migrated) return null;
-  const previous = state;
-  setState(migrated);
-  const saved = save();
+  // 保存の成否が決まるまで候補を公開しない。hud購読者は旧画面を破棄しうる。
+  const { saved } = writeSave(migrated);
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
-  if (!saved && key !== SAVE_KEY) {
-    setState(previous);
-    return null;
-  }
-  return state;
+  if (!saved && key !== SAVE_KEY) return null;
+  return setState(migrated);
 }
 
 /** ゲーム中にロードしたとき: いったん読み直して、タイトルを飛ばしてそのまま再開する */
