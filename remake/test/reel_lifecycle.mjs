@@ -235,7 +235,10 @@ try {
     await readIntro();
     await page.locator('.reel-night .rw-strip.spinning').first().waitFor();
     assert.equal(await page.locator('.rn-label').innerText(), "はじめてのスロット");
-    await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.reel-night.show')).opacity) >= .99);
+    await page.waitForFunction(() => {
+      const night = document.querySelector('.reel-night.show');
+      return !!night && Number(getComputedStyle(night).opacity) >= .99;
+    });
     if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/first-spin-${touch ? "touch" : "pc"}.png` });
     await finish();
     const after = await page.evaluate(() => installSnapshot());
