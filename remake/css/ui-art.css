@@ -85,7 +85,7 @@
 .dc-day b, .dc-row b { font-variant-numeric: tabular-nums; }
 .dc-row b { text-align: right; white-space: nowrap; }
 .dc-row { font-size: 16px; }
-.dc-row span { font-size: 13px; letter-spacing: 0.03em; }
+.dc-row span { font-size: 13px; letter-spacing: .02em; }
 .dc-row.money b { font-size: 20px; line-height: 1.2; }
 .hud-stamina { width: max-content; flex: none; }
 .hud-stamina > span, .hud-stamina .hud-bar { flex: none; }
@@ -213,7 +213,7 @@
 .gain-card.stat :is(.gc-count, .gc-unit) { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
 .gain-card.stat.evolved { width: 272px; min-width: 272px; max-width: 272px; }
 .gain-card.stat.evolved .gc-main { font-size: 15px; white-space: nowrap; letter-spacing: 0; }
-.gain-card.stat .gc-next { position: absolute; left: 6px; right: 6px; bottom: 3px; display: flex; align-items: center; gap: 6px; color: var(--gc); font-size: 9px; line-height: 1; }
+.gain-card.stat .gc-next { position: absolute; left: 6px; right: 6px; bottom: 3px; display: flex; align-items: center; gap: 6px; color: var(--gc); font-size: 12px; font-weight: 700; line-height: 1; }
 .gain-card.stat .gc-next.capped { color: #aaa; }
 .gain-card.stat .gc-next i { display: block; flex: 1; height: 2px; background: #ffffff33; }
 .gain-card.stat .gc-next b { display: block; height: 100%; background: var(--gc); }

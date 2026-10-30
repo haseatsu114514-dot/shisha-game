@@ -10,7 +10,7 @@
 .tournament-face.loaded .face-fallback { visibility: hidden; }
 /* ===== 大会の中継グラフィック（中間投票・南雲の一括投入・結果発表）=====
    ゲーム内1280×720基準。色: 金=主役/はじめ、審査員は --c（上園=桃・博士=青緑・南雲=金）。 */
-.tournament-live { display: inline-block; margin-right: 10px; padding: 2px 8px 2px 18px; position: relative; border-radius: 3px; background: #d8304f; color: #fff; font-size: 11px; font-style: normal; letter-spacing: .16em; vertical-align: 2px; }
+.tournament-live { display: inline-block; margin-right: 10px; padding: 2px 8px 2px 18px; position: relative; border-radius: 3px; background: #d8304f; color: #fff; font-size: 12px; font-weight: 700; font-style: normal; letter-spacing: .02em; vertical-align: 2px; }
 .tournament-live::before { content: ""; position: absolute; left: 7px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: #fff; animation: live-blink 1.2s steps(2) infinite; }
 @keyframes live-blink { 50% { opacity: .2; } }
 
@@ -60,7 +60,7 @@
 .standings .sd-row.me .sd-name { color: #ffe2a6; }
 .standings .sd-bar { flex: none; height: 16px; }
 .sd-points { width: auto; text-align: right; font-size: 32px; font-weight: 900; font-style: italic; color: #fff; text-shadow: 0 2px 0 #0008; font-variant-numeric: tabular-nums; }
-.sd-points small { margin-left: 3px; font-size: 13px; font-style: normal; font-weight: 600; color: #b8afc2; }
+.sd-points small { margin-left: 3px; font-size: 13px; font-style: normal; font-weight: 700; color: #b8afc2; }
 .standings .sd-row.me .sd-points { color: #ffe2a6; }
 .sd-status { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding: 8px 14px; border-radius: 8px; background: #5fe2cf0d; border: 1px solid #5fe2cf26; font-size: 14px; color: #c4bfc9; }
 .sd-status > :last-child { margin-left: auto; color: #9fe7d9; }

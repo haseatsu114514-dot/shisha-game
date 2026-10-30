@@ -62,7 +62,7 @@
 .sample-quiet .preview-screen::after { background: none; box-shadow: none; }
 .sample-quiet .preview-art { left: 90px; top: 16px; width: 940px; height: 528.75px; animation: sample-quiet-art var(--duration) linear both; }
 .sample-quiet .preview-grain { opacity: .045; }
-.sample-quiet .preview-bug { font-size: 13px; top: 23px; right: 20px; letter-spacing: .13em; color: #b4ac97; }
+.sample-quiet .preview-bug { font-size: 13px; top: 23px; right: 20px; letter-spacing: .02em; color: #b4ac97; }
 .sample-quiet .preview-caption { text-align: left; left: 90px; right: 90px; bottom: 15px; }
 .sample-quiet .preview-caption small { background: none; padding: 0; margin-bottom: 4px; font-size: 17px; letter-spacing: .18em; color: #b8ab90; }
 .sample-quiet .preview-caption p { font-family: var(--font); font-size: 27px; line-height: 1.5; font-weight: 500; color: #eee9df; }
