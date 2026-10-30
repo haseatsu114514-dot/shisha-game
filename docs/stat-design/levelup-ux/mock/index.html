@@ -214,6 +214,7 @@ button{font:inherit;color:inherit;cursor:pointer}
       <div class="devrow">
         <button id="sleepBtn" class="primary">家に帰って寝る</button>
         <button id="feelBtn">炭焼きを試す（効果の実感）</button>
+        <button id="kannonLight">観音堂で火種を灯す（時間を使わない）</button>
       </div>
       <div class="devrow">
         <button data-dev="exp">+EXP 500</button>
@@ -514,6 +515,7 @@ function toast(t){chip(t);}
 let skipAnim=false;
 async function wait(ms){if(skipAnim)return;await new Promise(r=>setTimeout(r,ms));}
 async function sleepFlow(){
+  const eve=S.day===13; // 大会前夜（モックは第1章の14日目が大会）
   const ov=$("#sleepOv"),box=$("#sleepBox");ov.hidden=false;skipAnim=false;
   ov.onclick=()=>{skipAnim=true;};
   box.innerHTML=`<p>ぐっすり眠って、体力が回復した</p>`;await wait(900);
@@ -539,18 +541,25 @@ async function sleepFlow(){
     S.settled=S.exp;S.today={};
     log(`寝る: Lv.${from}→Lv.${S.lv}・火種＋${gained.any+(milestone?SCALE:0)}`);
     const first=!S.tutorial.board;
-    $("#btns").replaceChildren(h("button",{class:"primary",text:S.boardMode==="menu"?"盤を開く":"盤を見る",onclick:e=>{e.stopPropagation();ov.hidden=true;nextDay();openBoard({tutorial:first});}}),
-      h("button",{text:"あとで",onclick:e=>{e.stopPropagation();ov.hidden=true;nextDay();if(first)caption(S.boardMode==="menu"?"火種はたまったまま持ち越せる。盤は右上の「盤」かMENUから開ける。":"火種はたまったまま持ち越せる。火種を灯すのは観音堂で。盤はMENUから見られる。",[["わかった",()=>hideCap()]],"#radarBtn");}}));
+    $("#btns").replaceChildren(h("button",{class:"primary",text:S.boardMode==="menu"?"盤を開く":"盤を見る",onclick:e=>{e.stopPropagation();ov.hidden=true;afterNight(eve,()=>openBoard({tutorial:first}));}}),
+      h("button",{text:"あとで",onclick:e=>{e.stopPropagation();ov.hidden=true;afterNight(eve);if(first&&!eve)caption(S.boardMode==="menu"?"火種はたまったまま持ち越せる。盤は右上の「盤」かMENUから開ける。":"火種はたまったまま持ち越せる。火種を灯すのは観音堂で。盤はMENUから見られる。",[["わかった",()=>hideCap()]],"#radarBtn");}}));
   }else{
     S.settled=S.exp;S.today={};
     box.innerHTML=`<p>今夜はレベルは上がらなかった。</p><div class="bar big"><i class="done" style="width:${p.inLv/p.need*100}%"></i></div><div class="lv">Lv.${S.lv}　あと ${p.need-p.inLv}</div>`;
-    await wait(1100);ov.hidden=true;nextDay();log(`寝る: レベルは上がらず（あと${p.need-p.inLv}）`);
+    await wait(1100);ov.hidden=true;afterNight(eve);log(`寝る: レベルは上がらず（あと${p.need-p.inLv}）`);
   }
   render();
 }
 function milestoneColor(){const c=KEYS.map(k=>[k,S.spent10[k]||0]).sort((a,b)=>b[1]-a[1]||stepOf(a[0])-stepOf(b[0]));return c[0][1]?c[0][0]:KEYS.slice().sort((a,b)=>stepOf(a)-stepOf(b))[0];}
 function flyHidane(color){const r=$("#hud").getBoundingClientRect();const f=h("div",{class:"flyer"},[h("span",{class:"flame"+(color?" c-"+color:""),style:"width:16px;height:20px"})]);
   f.style.left="50%";f.style.top="50%";$("#app").append(f);requestAnimationFrame(()=>{f.style.left=(r.left+60)+"px";f.style.top=(r.bottom-18)+"px";f.style.opacity=".2";});setTimeout(()=>f.remove(),800);}
+/** 夜の終わり。大会前夜に火種が残っていれば、はじめは必ず勝利祈願に参拝する（2026-10-30 オーナー決定）。
+ *  モックでは寝た後に見せているが、本番は寝る前（前夜の夜）に置く。 */
+function afterNight(eve,then){
+  if(eve&&totalHidane()>0){nextDay();render();openBoard({place:"kannon"});
+    caption("大会前夜。火種が残っている。はじめは勝利祈願に観音堂へ向かった。手を合わせると、学んだことが火になる。",[["灯す",()=>hideCap()]]);log("大会前夜: 火種が残っていたので、勝利祈願に観音堂へ（強制）");return;}
+  nextDay();then?.();
+}
 function nextDay(){S.day++;S.slot=0;S.stamina=Math.min(100,S.stamina+14+30);if(S.day>14){S.day=14;}}
 
 // ======================= 盤（2.2・6.2） =======================
@@ -773,6 +782,7 @@ function dev(k){
 document.querySelectorAll("[data-dev]").forEach(b=>b.onclick=()=>dev(b.dataset.dev));
 $("#sleepBtn").onclick=()=>sleepFlow();
 $("#feelBtn").onclick=()=>openFeel();
+$("#kannonLight").onclick=()=>{openBoard({place:"kannon"});log("観音堂で火種を灯す（時間を使わない。行動の回数は減らない）");};
 $("#radarBtn").onclick=()=>openBoard();
 $("#menuBtn").onclick=()=>openBoard();
 
