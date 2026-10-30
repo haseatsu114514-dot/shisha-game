@@ -6,7 +6,7 @@
   --ds-shell: #140f1b; --ds-screen-edge: #050307; --ds-rim: #3a2c45;
   --ds-gold: #e8c27a; --ds-gold-hi: #ffe2a6; --ds-text: #f4ede0; --ds-dim: #b6aa96;
   --ds-panel: linear-gradient(#1a1324, #110c19);
-  --ds-dot: "Chapter Preview Dot", var(--font);
+  --ds-dot: var(--font-dot);
 }
 
 /* 表示の切替（「表示」を押すと開く）。CSSが無い時は game-layout.js の固定表示で上端に残る。 */
