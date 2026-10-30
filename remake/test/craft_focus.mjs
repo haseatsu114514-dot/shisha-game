@@ -29,6 +29,8 @@ const open = async (viewport, mobile = false) => {
     T.openBench = async (cs, options) => {
       const bench = session.openBench(cs, options);
       while (!bench.root.isConnected) await new Promise(requestAnimationFrame);
+      // 本番と同じく、ロード画面（漫画）が閉じてから次の作業台・工程へ進む。閉じる前に開くと二重のロード画面になる。
+      await bench.ready;
       return bench;
     };
     window.steps = [['mix','MIX'], ['heat','HEAT'], ['steam','STEAM'], ['pull','PULL']];
