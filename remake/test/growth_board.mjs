@@ -14,7 +14,8 @@ const { NODE_BY_ID: N } = board;
 const SHAPE_SIZE = { body: [26, 4], sense: [26, 4], wisdom: [26, 4] }; // 3つの盤は同じ大きさ（SBD60） // [能力のマス（極みを含む）, 関門]
 for (const k of board.BOARD_KEYS) {
   const layout = board.LAYOUTS[k];
-  for (const c of layout.cells) assert(Math.abs(c.x) <= board.GRID.w && c.y <= 0 && -c.y <= board.GRID.h, `${k}: 横13×縦9 に収まる（紋は下の端）`);
+  const [hx, hy] = board.HUB_AT[k].split(",").map(Number);
+  for (const c of layout.cells) assert(Math.abs(c.x + hx) <= board.GRID.w && c.y + hy <= 0 && -(c.y + hy) <= board.GRID.h, `${k}: 横13×縦9 に収まる`);
   for (const [a, b] of layout.edges) {
     const [ax, ay] = a.split(",").map(Number), [bx, by] = b.split(",").map(Number);
     assert.equal(Math.abs(ax - bx) + Math.abs(ay - by), 1, "線は上下左右の隣だけ（斜めなし）");
@@ -77,8 +78,7 @@ for (const l of board.LESSONS) {
     assert.equal(gates, 1, `${l.id}: 第2章からの人の授業は関門の先`);
     assert.equal(N[l.id].band, 3, `${l.id}: 関門の先の帯`);
   }
-  // 欲しい人の授業が遠くならない（SBD63）: どの授業も紋から火種5以内
-  assert(board.pathTo(l.id, new Set()).cost <= ((l.ring ?? 1) === 1 ? 3 : 5), `${l.id}: 紋から近い（火種${board.pathTo(l.id, new Set()).cost}）`);
+  assert(board.pathTo(l.id, new Set()).cost <= ((l.ring ?? 1) === 1 ? 3 : 10), `${l.id}: 紋から遠すぎない（火種${board.pathTo(l.id, new Set()).cost}）`);
   assert.equal(N[l.id].ring, l.ring ?? 1, `${l.id}: 授業の章はデータどおり`);
   const others = new Set(board.LESSONS.filter((x) => x.id !== l.id && x.board === l.board).flatMap((x) => board.pathTo(x.id, new Set()).path));
   assert(board.pathTo(l.id, others).cost <= board.pathTo(l.id, new Set()).cost, `${l.id}: 先に進んだ道で遠くならない`);
@@ -104,8 +104,16 @@ for (const k of board.BOARD_KEYS) {
   }
   const bands = [1, 2, 3].map((b) => nodes.filter((n) => n.kind === "stat" && !n.peak && n.band === b).length);
   assert.deepEqual(bands, [9, 8, 8], `${k}: 能力のマスは 近く9・中ほど8・関門の先8`);
-  // 関門は紋のそば（マス3つ先）
-  for (const gate of nodes.filter((n) => n.kind === "gate")) assert(board.pathTo(gate.id, new Set()).cost <= 4, `${gate.id}: 紋のそば`);
+  // 授業は会う章の順に紋から遠い（SBD65）: どの章の授業も、前の章の授業より近くない
+  const costOf = (ring) => board.LESSONS.filter((l) => l.board === k && (l.ring ?? 1) === ring).map((l) => board.pathTo(l.id, new Set()).cost);
+  for (let r = 1; r < 4; r++) for (let r2 = r + 1; r2 <= 4; r2++) {
+    const a = costOf(r), b = costOf(r2);
+    if (a.length && b.length) assert(Math.max(...a) <= Math.min(...b), `${k}: 第${r}章の授業（${a}）は第${r2}章の授業（${b}）より近い`);
+  }
+  // 第2章の関門は紋のそば
+  for (const gate of nodes.filter((n) => n.kind === "gate" && n.ring === 2)) assert(board.pathTo(gate.id, new Set()).cost <= 4, `${gate.id}: 紋のそば`);
+  // 紋の場所は盤ごとに違う（SBD65）
+  assert.equal(new Set(Object.values(board.HUB_AT)).size, 3, "紋の場所は3枚とも違う");
 }
 // 恩恵は帯の倍率（近く×1・中ほど×2・関門の先×3）
 {
@@ -429,4 +437,4 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v11 shapes differ per board (fan/swirl/tree) and grow up from the bottom hub, gates next to the hub with lessons right behind (every lesson within 5), peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 20 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v12 shapes and hub positions differ per board (fan/swirl/tree), lessons farther by chapter with lessons right behind gates, peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 20 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");

@@ -957,10 +957,10 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .st-rank { color: var(--text-dim); font-size: 14px; }
 .st-row { cursor: pointer; }
 /* 心得の盤を使う時のステータス（SBD63。段なし） */
-.st-row.st-b-body { --sc: #ef8a5e; } .st-row.st-b-sense { --sc: var(--stat-sense); } .st-row.st-b-wisdom { --sc: #65c9bb; }
+.st-row.st-b-body { --sc: #ef8a5e; } .st-row.st-b-sense { --sc: #58a6ff; } .st-row.st-b-wisdom { --sc: #7bd36d; }
 .st-board-head { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 7px; background: var(--sc); color: #1b1020; font-weight: 800; font-size: 18px; }
 .st-count { font-variant-numeric: tabular-nums; color: var(--gold-hi); }
-.radar-label.rb-body { fill: #ef8a5e; } .radar-label.rb-sense { fill: var(--stat-sense); } .radar-label.rb-wisdom { fill: #65c9bb; }
+.radar-label.rb-body { fill: #ef8a5e; } .radar-label.rb-sense { fill: #58a6ff; } .radar-label.rb-wisdom { fill: #7bd36d; }
 .st-row.sel { outline: 1px solid color-mix(in srgb, var(--sc) 70%, transparent); }
 .st-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .st-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
@@ -1202,7 +1202,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 @media (prefers-reduced-motion: reduce) { .lu-gauge b, .levelup-band, .levelup-backdrop { transition: none; } .levelup.burst .lu-head { animation: none; } }
 
 /* ---------------------------------------------------------------- 心得の盤（第2版の試作。図形だけ。画像は #1772 のデザインで後から差し替え） */
-.gboard { --stat-body: #ef8a5e; --stat-wisdom: #65c9bb; position: absolute; inset: 0; display: grid; grid-template-rows: 60px 548px 112px; pointer-events: auto; color: var(--text); font-family: var(--font);
+.gboard { --stat-body: #ef8a5e; --stat-sense: #58a6ff; --stat-wisdom: #7bd36d; --board-c: var(--stat-sense); --white-fire: #f3e8cf; position: absolute; inset: 0; display: grid; grid-template-rows: 60px 548px 112px; pointer-events: auto; color: var(--text); font-family: var(--font);
   background: radial-gradient(ellipse 45% 55% at 30% 55%, rgba(120, 66, 20, 0.35), transparent 70%), linear-gradient(160deg, #120a1c, #1b1128 55%, #0c0714);
   opacity: 0; transition: opacity .2s; }
 .gboard.show { opacity: 1; }
@@ -1234,10 +1234,17 @@ body[data-weather="outdoor"] .map-weather { display: none; }
   font-size: 12px; font-style: normal; font-weight: 800; color: #2a1406; background: radial-gradient(circle at 50% 65%, #fff1b8, #ffb43c 60%, #c4610f); }
 .gb-tab-target { position: absolute; right: 30px; top: 3px; font-style: normal; color: var(--gold-hi); font-size: 13px; }
 .gb-board { position: relative; width: 760px; height: 488px; }
+/* 灯すほど盤の背景が明るくなる（SBD65）。--fill は灯した能力のマスの割合（0〜1）。
+   奥の絵は後で用意する: 絵ができたら .gb-reveal.r-body::after などに background-image を足すだけで、灯すほど見えてくる */
+.gb-reveal { --fill: 0; position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.gb-reveal::before { content: ""; position: absolute; inset: 0; opacity: calc(0.12 + var(--fill) * 0.88);
+  background: radial-gradient(ellipse 75% 85% at 50% 92%, color-mix(in srgb, var(--board-c) 30%, transparent), transparent 70%),
+    radial-gradient(ellipse 90% 70% at 50% 45%, rgba(255, 240, 210, 0.10), transparent 70%); transition: opacity 0.8s; }
+.gb-reveal::after { content: ""; position: absolute; inset: 0; opacity: calc(var(--fill) * var(--fill)); background: center / cover no-repeat; transition: opacity 0.8s; }
 .gb-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .gb-dot { fill: rgba(244, 210, 122, 0.12); }
 .gb-path { stroke: rgba(244, 210, 122, 0.22); stroke-width: 4; stroke-linecap: round; }
-.gb-path.lit { stroke: #ffb43c; stroke-width: 5; filter: drop-shadow(0 0 4px #ffb43c); }
+.gb-path.lit { stroke: var(--white-fire); stroke-width: 4; filter: drop-shadow(0 0 4px var(--board-c)); }
 .gb-path.aim { stroke: var(--gold-hi); stroke-dasharray: 5 6; stroke-width: 3; }
 .gb-path.sealed { stroke: rgba(120, 100, 140, 0.18); stroke-dasharray: 2 6; }
 .gb-seal { stroke: #8a6a3a; stroke-width: 5; stroke-linecap: round; filter: drop-shadow(0 0 2px #000); }
@@ -1253,9 +1260,11 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-hub { fill: #160d1f; stroke: rgba(244, 210, 122, 0.8); stroke-width: 2; }
 .gb-hub-text { fill: #2a1406; font-size: 22px; font-weight: 800; text-anchor: middle; font-family: var(--font); }
 .gb-nodes { position: absolute; inset: 0; }
-.gb-node { --c: var(--stat-sense); position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; color: #fff; }
-.gboard:has(.gb-tab.b-body.on) .gb-node { --c: var(--stat-body); }
-.gboard:has(.gb-tab.b-wisdom.on) .gb-node { --c: var(--stat-wisdom); }
+/* マスの色（SBD65）: 白火で進めるマス（能力・スキル・極み）は白、色の火が要る関門は盤の色 */
+.gboard:has(.gb-tab.b-body.on) { --board-c: var(--stat-body); }
+.gboard:has(.gb-tab.b-wisdom.on) { --board-c: var(--stat-wisdom); }
+.gb-node { --c: var(--white-fire); position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; color: #fff; }
+.gb-node.gate { --c: var(--board-c); }
 .gb-node .gb-face { position: relative; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 14px; font-weight: 800; line-height: 1;
   background: #241a2e; border: 2px solid rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 0.6); transition: transform .15s, box-shadow .15s; }
 .gb-node.peak .gb-face { width: 34px; height: 34px; font-size: 16px; }
@@ -1272,16 +1281,16 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-node.lesson.s-sealed .gb-face-icon { filter: grayscale(0.8) brightness(0.55); }
 .gb-art .gb-face-icon { inset: 10px auto 10px 50%; width: auto; height: calc(100% - 20px); aspect-ratio: 1; translate: -50% 0; clip-path: none; border-radius: 12px; border: 2px solid #f4d27a; box-shadow: 0 0 18px rgba(244, 210, 122, 0.4); }
 .gb-art.shadow .gb-face-icon { filter: grayscale(0.7) brightness(0.6); }
-/* 関門（v3）: 金のひし形。色つきの火種で越える */
-.gb-node.gate .gb-face { width: 24px; height: 24px; border-radius: 3px; transform: rotate(45deg); border-color: #ffd36b; background: #1d1426; font-size: 12px; }
-.gb-node.gate .gb-glyph { transform: rotate(-45deg); color: #ffd36b; }
-.gb-node.gate.s-unlocked .gb-face { background: #ffd36b; box-shadow: 0 0 12px #ffd36b; }
+/* 関門: 盤の色のひし形。色の火（紅火・蒼火・翠火）1つで越える */
+.gb-node.gate .gb-face { width: 24px; height: 24px; border-radius: 3px; transform: rotate(45deg); border-color: var(--c); background: #1d1426; font-size: 12px; }
+.gb-node.gate .gb-glyph { transform: rotate(-45deg); color: var(--c); }
+.gb-node.gate.s-unlocked .gb-face { background: var(--c); box-shadow: 0 0 12px var(--c); }
 .gb-node.gate.s-unlocked .gb-glyph { color: #1b1020; }
-.gb-node.gate.s-available .gb-face { animation: none; box-shadow: 0 0 10px #ffd36b; }
+.gb-node.gate.s-available .gb-face { animation: none; box-shadow: 0 0 10px var(--c); }
 /* 状態（6.2）。色だけに頼らず形・線・文字でも分ける */
 .gb-node.s-unlocked .gb-face { background: var(--c); border-color: #fff8; color: #1b1020; box-shadow: 0 0 12px var(--c); }
 .gb-node.skill.s-unlocked .gb-face::before, .gb-node.lesson.s-unlocked .gb-face::before { background: color-mix(in srgb, var(--c) 70%, #1d1426); }
-.gb-node.s-unlocked .gb-glyph { color: #fff; }
+.gb-node.s-unlocked .gb-glyph { color: #1b1020; text-shadow: none; }
 .gb-node.s-pending .gb-face { background: color-mix(in srgb, var(--c) 45%, #241a2e); border: 2px dashed #fff; color: #fff; box-shadow: 0 0 14px var(--c); }
 .gb-node.skill.s-pending .gb-face::before, .gb-node.lesson.s-pending .gb-face::before { background: color-mix(in srgb, var(--c) 40%, #1d1426); }
 .gb-node.s-available .gb-face { border-color: var(--c); color: var(--c); animation: gb-breathe 1.8s ease-in-out infinite; }

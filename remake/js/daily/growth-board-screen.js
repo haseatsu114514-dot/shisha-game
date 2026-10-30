@@ -13,13 +13,16 @@ import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, REWARD_JA, FEATURES,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, statCount, replay, nodeStatus, commitPending,
   pathTo, pendingTowards, lessonLock, hasMet, availableCount, paymentFor,
-  STAT_SQUARES, GRID, lessonShown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled,
+  STAT_SQUARES, GRID, lessonShown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio,
 } from "../core/growth-board.js";
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488。紋は下の端 380,452。横13×縦9 の方眼で上へ育つ。SBD62）
 
 const W = 760, H = 488, CX = 380, CY = 452, CELL = 52;
-const at = (gx, gy) => ({ x: CX + gx * CELL, y: CY + gy * CELL });
+// 紋の場所は盤ごとに違う（SBD65）。座標は紋からのずれなので、HUB_AT（方眼の座標）を足して描く
+let drawBoard = "body";
+const hubAt = (b = drawBoard) => HUB_AT[b].split(",").map(Number);
+const at = (gx, gy) => { const [hx, hy] = hubAt(); return { x: CX + (gx + hx) * CELL, y: CY + (gy + hy) * CELL }; };
 const SVG = "http://www.w3.org/2000/svg";
 const svg = (tag, attrs = {}, children = []) => {
   const n = document.createElementNS(SVG, tag);
@@ -46,12 +49,14 @@ export function openBoard({ place = null } = {}) {
   const header = el("div.gb-header");
   const tabs = el("div.gb-tabs", { role: "tablist" });
   const boardSvg = svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "gb-svg", "aria-hidden": "true" });
+  // 灯すほど盤の背景が明るくなり、奥の絵が見えてくる（SBD65。絵は reveal_<盤>.webp を後で置く。無い間は光だけ）
+  const reveal = el("div.gb-reveal", { "aria-hidden": "true" });
   const nodeLayer = el("div.gb-nodes");
   const side = el("div.gb-side", { dataset: { test: "board-preview" }, "aria-live": "polite" });
   const footer = el("div.gb-footer");
   const root = el(`div.gboard${canLight ? ".can-light" : ".view-only"}`, { role: "dialog", "aria-label": "心得の盤", dataset: { test: "growth-board", mode: canLight ? "light" : "view" } }, [
     header,
-    el("div.gb-main", [el("div.gb-left", [tabs, el("div.gb-board", [boardSvg, nodeLayer])]), side]),
+    el("div.gb-main", [el("div.gb-left", [tabs, el("div.gb-board", [reveal, boardSvg, nodeLayer])]), side]),
     footer,
   ]);
 
@@ -104,8 +109,15 @@ export function openBoard({ place = null } = {}) {
       svg("stop", { offset: "0%", "stop-color": "#fff1b8" }), svg("stop", { offset: "45%", "stop-color": "#ffb43c" }),
       svg("stop", { offset: "100%", "stop-color": "#e86a12", "stop-opacity": "0" }),
     ])])];
-    // 方眼のうすい点（横13×縦9。紋の行から上）
-    for (let gx = -GRID.w; gx <= GRID.w; gx++) for (let gy = -GRID.h; gy <= 0; gy++) { const p = at(gx, gy); parts.push(svg("circle", { cx: p.x, cy: p.y, r: 1.5, class: "gb-dot" })); }
+    drawBoard = board;
+    const fill = statRatio(board, v.unlocked);
+    reveal.className = `gb-reveal r-${board}`;
+    reveal.style.setProperty("--fill", fill.toFixed(3));
+    reveal.dataset.test = "board-reveal";
+    reveal.dataset.fill = String(Math.round(fill * 100));
+    // 方眼のうすい点（横13×縦9）
+    const [hx, hy] = hubAt();
+    for (let gx = -GRID.w; gx <= GRID.w; gx++) for (let gy = -GRID.h; gy <= 0; gy++) { const p = at(gx - hx, gy - hy); parts.push(svg("circle", { cx: p.x, cy: p.y, r: 1.5, class: "gb-dot" })); }
     // 道（使うマスどうしだけ。紋の隣は紋とつなぐ）
     const drawn = new Set();
     for (const n of nodes) {
@@ -114,7 +126,7 @@ export function openBoard({ place = null } = {}) {
         const key = [n.id, id].sort().join("|");
         if (drawn.has(key)) continue;
         drawn.add(key);
-        const a = at(n.gx, n.gy), b = id === HUB ? { x: CX, y: CY } : at(NODE_BY_ID[id].gx, NODE_BY_ID[id].gy);
+        const a = at(n.gx, n.gy), b = id === HUB ? at(0, 0) : at(NODE_BY_ID[id].gx, NODE_BY_ID[id].gy);
         const on = lit(n.id) && lit(id), aim = (goal.has(n.id) || lit(n.id)) && (id === HUB || goal.has(id) || lit(id)) && (goal.has(n.id) || goal.has(id));
         const closedA = n.ring > open, closedB = id !== HUB && NODE_BY_ID[id].ring > open;
         parts.push(svg("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: `gb-path${on ? " lit" : ""}${aim && !on ? " aim" : ""}${closedA || closedB ? " sealed" : ""}` }));
@@ -125,9 +137,10 @@ export function openBoard({ place = null } = {}) {
         }
       }
     }
-    parts.push(svg("circle", { cx: CX, cy: CY, r: 30, class: "gb-hub" }));
-    parts.push(svg("circle", { cx: CX, cy: CY + 2, r: 19, fill: "url(#gb-ember)" }));
-    const hubText = svg("text", { x: CX, y: CY + 8, class: "gb-hub-text" });
+    const hub = at(0, 0);
+    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub" }));
+    parts.push(svg("circle", { cx: hub.x, cy: hub.y + 2, r: 19, fill: "url(#gb-ember)" }));
+    const hubText = svg("text", { x: hub.x, y: hub.y + 8, class: "gb-hub-text" });
     hubText.textContent = BOARD_HEAD[board];
     parts.push(hubText);
     boardSvg.replaceChildren(...parts);
