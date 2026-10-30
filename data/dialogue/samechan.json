@@ -836,6 +836,10 @@
           "speaker": "",
           "face": "",
           "text": "話が始まると、束ねたメモが鞄にしまわれた。俺の水が空くまで、彼女は席を立たなかった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "samechan_notes"
         }
       ]
     },
@@ -1176,6 +1180,10 @@
           "speaker": "",
           "face": "",
           "text": "包みを胸に抱えて、灯りの落ちた店を出た。あの席で過ごした時間が、手の中に残っている。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "samechan_hagal"
         }
       ],
       "branches": {

@@ -233,6 +233,42 @@
       "char_id": "tsumugi",
       "dialogue_id": "ch1_tsumugi_sketch",
       "echo": "（つむぎちゃんと確かめた「応募完了」。俺も、一台を出してくる）"
+    },
+    {
+      "id": "samechan_notes",
+      "char_id": "samechan",
+      "dialogue_id": "samechan_shop_closing_check",
+      "echo": "（サメちゃんは、閉店後も店の直すところを書いていた）"
+    },
+    {
+      "id": "samechan_hagal",
+      "char_id": "samechan",
+      "dialogue_id": "samechan_bond_finale",
+      "echo": "（サメちゃんにもらった素焼きのハガルを、俺の一台で育てている）"
+    },
+    {
+      "id": "hiyori_boundary",
+      "char_id": "hiyori",
+      "dialogue_id": "hiyori_work_talk",
+      "echo": "（ひよりさんと決めた「今日はここまで」が、俺の手も止めてくれる）"
+    },
+    {
+      "id": "hiyori_shout",
+      "char_id": "hiyori",
+      "dialogue_id": "hiyori_axe_reveal_close",
+      "echo": "（ひよりさんの斧の音と大きな声。静かな顔の裏も知っている）"
+    },
+    {
+      "id": "kuze_decide",
+      "char_id": "kuze",
+      "dialogue_id": "ch3_kuze_advice",
+      "echo": "（久世さんは「決めるのは君」と言った。炭を外すかは、俺が決める）"
+    },
+    {
+      "id": "steve_wait",
+      "char_id": "steve",
+      "dialogue_id": "ch3_steve_low_heat",
+      "echo": "（スティーブのタイマーと、二口目の前の客の顔。待ち方を借りている）"
     }
   ]
 }
