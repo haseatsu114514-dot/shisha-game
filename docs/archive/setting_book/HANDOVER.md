@@ -2,7 +2,7 @@
 
 - **参照commit**：`origin/main` `54a6d87f`（2026-10-28 確認）
 - **確認日**：2026-10-28
-- **位置づけ**：[`docs/master_spec.md`](../master_spec.md)・[`docs/owner_requests.md`](../owner_requests.md) の確定裁定を一覧化した二次資料。
+- **位置づけ**：[`docs/master_spec.md`](../../master_spec.md)・[`docs/owner_requests.md`](../../owner_requests.md) の確定裁定を一覧化した二次資料。
 
 ---
 
@@ -11,8 +11,8 @@
 > **旧版の引き継ぎからの変更点**：
 > - **唯一の実装対象は `remake/`**：旧 `web/` および Godot版は完全廃止済み。
 > - **Issue予約（claim / release / worker ID）は2026-10-23に撤廃**：予約コメントやロック待ちは不要。着手前に開いているPRで同じファイルを触っていないか確認するだけでよい。
-> - **正本の優先順位**：最新のオーナー指示 ＞ [`docs/master_spec.md`](../master_spec.md) / [`docs/owner_requests.md`](../owner_requests.md) ＞ [`brand/story_and_structure.md`](../../brand/story_and_structure.md) / [`brand/character_profiles.md`](../../brand/character_profiles.md) / [`data/characters.json`](../../data/characters.json) ＞ 本設定資料集（`docs/setting_book/`）。
-> - **ビジュアルHTMLの再生成**：`docs/setting_book/*.md` と [`tools/build_setting_reference.py`](../../tools/build_setting_reference.py) を更新した後は、`python3 tools/build_setting_reference.py` を実行して [`docs/setting_reference.html`](../setting_reference.html) を生成する（HTMLを直接手編集しない）。
+> - **正本の優先順位**：最新のオーナー指示 ＞ [`docs/master_spec.md`](../../master_spec.md) / [`docs/owner_requests.md`](../../owner_requests.md) ＞ [`brand/story_and_structure.md`](../../../brand/story_and_structure.md) / [`brand/character_profiles.md`](../../../brand/character_profiles.md) / [`data/characters.json`](../../../data/characters.json) ＞ 本設定資料集（`docs/setting_book/`）。
+> - **ビジュアルHTMLの再生成**：`docs/setting_book/*.md` と [`tools/build_setting_reference.py`](../../../tools/build_setting_reference.py) を更新した後は、`python3 tools/build_setting_reference.py` を実行して [`docs/setting_reference.html`](../setting_reference.html) を生成する（HTMLを直接手編集しない）。
 
 ---
 
@@ -57,7 +57,7 @@
 
 ## 3. 旧版の引き継ぎ（参考アーカイブ）
 
-> 以下は2026年10月上旬時点（`321a9e5c` 以前）に記録されていた旧引き継ぎメモのアーカイブです。**現在は上の「1. 現行の運用ルール」「2. オーナー確定裁定一覧」および [`docs/master_spec.md`](../master_spec.md) が優先されます。**
+> 以下は2026年10月上旬時点（`321a9e5c` 以前）に記録されていた旧引き継ぎメモのアーカイブです。**現在は上の「1. 現行の運用ルール」「2. オーナー確定裁定一覧」および [`docs/master_spec.md`](../../master_spec.md) が優先されます。**
 
 - 2026-09〜10月上旬にかけて、共同制作メンバー向けに散在していた設定MDを `docs/setting_book/`（01〜06）と1枚HTML（`docs/setting_reference.html`）へ集約した。
 - 10月9日のドキュメント整理（CL06 / commit `321a9e5c`）で一度削除されたが、10月20日のオーナー方針（Issue #544）により「最新mainの確定設定に追随する二次資料」として復元・更新された。

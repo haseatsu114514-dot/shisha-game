@@ -1,7 +1,7 @@
 # 01. ストーリー・章構成
 
 > **参照commit**：`origin/main` `54a6d87f`（2026-10-28 確認）  
-> **位置づけ**：[`docs/master_spec.md`](../master_spec.md)・[`brand/story_and_structure.md`](../../brand/story_and_structure.md) を正本とする二次資料。
+> **位置づけ**：[`docs/master_spec.md`](../../master_spec.md)・[`brand/story_and_structure.md`](../../../brand/story_and_structure.md) を正本とする二次資料。
 
 ---
 
@@ -171,7 +171,7 @@
 | **第2章『才能の壁』** | **確定（main実装済み）** | `remake/` で橙須・柚ヶ谷の往復、試煙会、大会まで通しプレイ可能 |
 | **第3章『嘘つきたちの夜』必須進行** | **確定（main実装済み）** | `remake/` で東京移動、mukai営業、久世・ましろ・なるの大会展開、帰郷夜（つむぎ入選・あげは再会）まで通しプレイ可能 |
 | **第3章 任意スポット・デート細部** | **採用済み（台詞データ先行）** | `data/dialogue/` にシナリオ格納済み、ランナー側の任意行動接続を順次拡大中 |
-| **第4章『継承の煙』・第5章『機械仕掛けの神』** | **採用済み（台詞データ先行）** | [`data/dialogue/ch4_main.json`](../../data/dialogue/ch4_main.json)・[`ch5_main.json`](../../data/dialogue/ch5_main.json)・[`data/story_routes.json`](../../data/story_routes.json) にシナリオ・構成定義済み |
+| **第4章『継承の煙』・第5章『機械仕掛けの神』** | **採用済み（台詞データ先行）** | [`data/dialogue/ch4_main.json`](../../../data/dialogue/ch4_main.json)・[`ch5_main.json`](../../../data/dialogue/ch5_main.json)・[`data/story_routes.json`](../../../data/story_routes.json) にシナリオ・構成定義済み |
 
 ---
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """設定資料集ジェネレータ: assets/ の画像と DotGothic16 サブセットを埋め込んだ
-docs/setting_reference.html（単一ファイル・共有可）を生成する。
+docs/archive/setting_reference.html（単一ファイル・共有可）を生成する。
 
 使い方:
     pip install Pillow fonttools brotli
@@ -264,7 +264,7 @@ CANON_ROWS = [
 ]
 
 CANON_NOTES = [
-    "<strong>参照commit</strong>：<code>origin/main 54a6d87f</code>（2026-10-28 確認）。この設定資料集（<code>docs/setting_book/</code>・<code>docs/setting_reference.html</code>）は二次資料であり、食い違いがある場合は上の正本を優先する。",
+    "<strong>参照commit</strong>：<code>origin/main 54a6d87f</code>（2026-10-28 確認）。この設定資料集（<code>docs/archive/setting_book/</code>・<code>docs/archive/setting_reference.html</code>）は二次資料であり、食い違いがある場合は上の正本を優先する。",
     "<strong>照合範囲</strong>：フレーバー収録数・価格、主要人物の氏名・読み・年齢、章タイトル・大会名・課題は正本と照合済み。一人称・呼称、店舗説明、あらすじの細部は全件照合が未了（正本優先）。",
     "<strong>現行唯一の実装は <code>remake/</code></strong>（旧 <code>web/</code> および Godot版は完全廃止）。第1章〜第3章必須進行がブラウザで通しプレイ可能、第4章・第5章は台詞データ先行。",
     "<strong>スミの水の説明（#1113 / #1128）</strong>：ボトルの水の役割は<strong>「煙を冷やして吸いやすくする」だけ</strong>。有害物質への影響は<strong>「諸説ある」</strong>とし、断定しない。爆煙の理由は水ではなく<strong>「グリセリンと熱の仕事」</strong>（K14）。",
@@ -646,7 +646,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 
 <section class="block" id="canon">
   <h2 class="sec disp">正本ガイド（共同制作のための道しるべ）</h2>
-  <p class="sec-note">このHTMLおよび <code>docs/setting_book/*.md</code> は<em>二次資料</em>です。仕様変更や食い違いの確認時は必ず下の正本を参照してください。</p>
+  <p class="sec-note">このHTMLおよび <code>docs/archive/setting_book/*.md</code> は<em>二次資料</em>です。仕様変更や食い違いの確認時は必ず下の正本を参照してください。</p>
   <div class="tbl-wrap"><table>
     <thead><tr><th>事実の種類</th><th>正本ファイル</th></tr></thead>
     <tbody>{canon_rows}</tbody>
@@ -663,6 +663,6 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 </div></footer>
 '''
 
-out = os.path.join(ROOT, "docs/setting_reference.html")
+out = os.path.join(ROOT, "docs/archive/setting_reference.html")
 open(out, "w").write(HTML)
 print("written:", out, len(HTML) // 1024, "KB")

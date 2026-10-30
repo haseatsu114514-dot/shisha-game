@@ -33,7 +33,7 @@ AI（Claude / GLM 等）や人間がこのリポジトリを「矛盾点・改�
 | 各種 minified / ベンダーJS | 外部ライブラリ |
 | `data/dialogue/_legacy/**` | 改稿前の台本の隔離先。正史の根拠にしない（混線は `tools/check_story_canon.py` が検出） |
 | `docs/archive/**` / `docs/qa/**` | 日付付きの引き継ぎ・計画・検証記録。当時の状態であり現在の仕様ではない |
-| `docs/setting_book/**` / `docs/setting_reference.html` | 二次資料と生成物。数値・設定が食い違えば `data/`・`brand/` が正 |
+| `docs/archive/setting_book/**` / `docs/archive/setting_reference.html` | 二次資料と生成物。数値・設定が食い違えば `data/`・`brand/` が正 |
 
 > 注: Godot版（`project.godot` 等）は 2026-06-15、旧設定残骸（`brand/brand`・`brand/chapter1（character）`・`docs/handoff/`）は 2026-06-16、旧ブラウザ版 `web/` は 2026-10-07 に削除済み。
 

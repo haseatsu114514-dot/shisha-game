@@ -14,7 +14,7 @@ docs/qa/
 data/dialogue/_legacy/
 
 # 生成物（正本は生成元）
-docs/setting_reference.html
+docs/archive/setting_reference.html
 remake/data/manifest.json
 
 # スプレッドシート系（CSV は必要時のみ手動で参照）
