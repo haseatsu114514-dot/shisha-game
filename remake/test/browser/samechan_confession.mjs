@@ -257,16 +257,19 @@ await suite("samechan-confession", async check => {
       await setup(page);
       await page.evaluate(() => {
         K.ready(); K.vn.vnTest.turbo = false;
-        K.running = K.samechan.visitSamechan(K.samechan.samechanSpot());
+        K.flowDone = false;
+        K.running = K.samechan.visitSamechan(K.samechan.samechanSpot()).finally(() => { K.flowDone = true; });
       });
       const press = selector => opts.hasTouch ? page.locator(selector).tap() : page.locator(selector).click();
+      // 会話が一瞬止まっても（CGの読み込みや次の場面への切り替え）、流れ全体が終わるまで進める。
+      // 告白の後には恋人イベントが続くため、isPlaying だけで終わりと見なすと続きを誰も進めず止まる。
       async function finishChoices(selected) {
         let choices = 0;
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 200; i++) {
           if (await page.locator(".vn-choice").count()) {
             await assertFits(page, ".vn-choice");
             await press(`.vn-choice:nth-child(${selected + 1})`); choices++;
-          } else if (await page.evaluate(() => !K.vn.isPlaying())) break;
+          } else if (await page.evaluate(() => !K.vn.isPlaying() && K.flowDone !== false)) break;
           else await press(".vn-box");
           await page.waitForTimeout(90);
         }
@@ -275,7 +278,8 @@ await suite("samechan-confession", async check => {
       await page.waitForFunction(() => K.vn.isPlaying());
       assert.equal(await finishChoices(0), 1);
       await page.evaluate(async () => { await K.running; K.core.save(); K.core.state.slot = 2;
-        K.confessing = K.romance.maybeConfession(async () => {}); });
+        K.flowDone = false;
+        K.confessing = K.romance.maybeConfession(async () => {}).finally(() => { K.flowDone = true; }); });
       await page.waitForFunction(() => K.vn.isPlaying());
       assert.equal(await finishChoices(0), 2); // intention gate, then accept/reject
       const r = await page.evaluate(async () => { await K.confessing; return K.snap(); });
