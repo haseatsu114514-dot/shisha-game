@@ -106,7 +106,9 @@ done
 | ![夜潮と水晶](preview-qa/distribution-pc-dark-1.png) | ![夜潮と水晶](preview-qa/distribution-pc-light-1.png) |
 | ![SHISHARKと星月](preview-qa/distribution-pc-dark-2.png) | ![SHISHARKと星月](preview-qa/distribution-pc-light-2.png) |
 
-[横タッチ](preview-qa/distribution-touch-dark-1.png)・[縦画面](preview-qa/distribution-portrait-light-1.png)・[本編作業台](preview-qa/distribution-bench-pc.png)。原画PNGを置かず（HTTP 404）、正本2JSONだけを配置した公開相当のディレクトリでも同じ54表示と本編作業台の配信用画像2点の復号を確認した。本編の任意選択→取消／確定→SAVE／再読込、PC練習・横タッチ大会の既存 `setup_continuation.mjs` も3件成功。下の2026-10-26記録は原画を表示していた時点の履歴。
+[横タッチ](preview-qa/distribution-touch-dark-1.png)・[縦画面](preview-qa/distribution-portrait-light-1.png)・[本編作業台](preview-qa/distribution-bench-pc.png)。原画PNGを置かず（HTTP 404）、正本2JSONだけを配置した公開相当のディレクトリでも同じ54表示と本編作業台の配信用画像2点の復号を確認した。本編の任意選択→取消／確定→SAVE／再読込、PC練習・横タッチ大会と外観遮蔽の回帰を含む `setup_continuation.mjs` も4件成功。作業台では外観層を右上に配置し、横幅を160px／作業領域の50%の小さい方に制限して、下部の台詞枠に隠れないようにした。通常表示のPC・横タッチと、DS表示のPC・横タッチ・縦画面で既定込み9組（45表示）を実際の選択UIから確定し、全画像の復号・作業領域内への収まり・台詞枠との非重複を確認。通常表示の縦回転は従来どおり回転案内が表示され、横へ戻すと選択が保持されることも確認した。台詞枠・人物絵・制作フローは変更していない。
+
+作業台の証跡: [通常横タッチ](preview-qa/distribution-bench-normal-touch.png)・[DS PC](preview-qa/distribution-bench-ds-pc.png)・[DS横タッチ](preview-qa/distribution-bench-ds-touch.png)・[DS縦画面](preview-qa/distribution-bench-ds-portrait.png)。#1866 は2026-10-30にマージ済みで、同PRのお手本表示は維持している。下の2026-10-26記録は原画を表示していた時点の履歴。
 
 ### 原画を組み合わせる実表示プレビュー（2026-10-26）
 
