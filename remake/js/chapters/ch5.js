@@ -35,8 +35,8 @@ const test = name => `ch5-${name}`;
 
 // 試合当日の場面カード文案（到着→一杯目→二杯目の前の順）。
 const MATCH_CARDS = {
-  arrival: { title: "試合当日", description: "会場に着いた。あとは、二本の煙だけ。" },
-  firstCup: { title: "一台目", description: "一本目は、9000が、はじめの待ち方を再現する。" },
+  arrival: { title: "試合当日", description: "会場に着いた。あとは、二台の煙だけ。" },
+  firstCup: { title: "一台目", description: "一台目は、9000が、はじめの待ち方を再現する。" },
   beforeSecond: { title: "二台目の前に", description: "ここまでの日々が、二台目を作る。" },
 };
 const MATCH_ORDER = ["arrival", "firstCup", "beforeSecond"];
@@ -391,7 +391,7 @@ async function renderMatch(owner) {
   await setBg(bgUrl(CH5_SCENE_BG[first]), { instant: true });
   if (!current(owner)) return;
   const tally = chapterFiveVoteTally(state);
-  card(owner, "match", "二本の挙手", "同じ観客が、二本とも吸った。合計で決まる。", [
+  card(owner, "match", "二台分の挙手", "同じ観客が、二台とも吸った。合計で決まる。", [
     button(owner, "結果を聞く", "continue", async () => {
       for (const id of sequence) {
         if (chapterFiveRead(state, id)) continue;
@@ -404,25 +404,25 @@ async function renderMatch(owner) {
 
 // 挙手の数だけを並べる。審査員の採点表や恋愛の加点は出さない（第5章は観客投票）。
 function voteNote(tally) {
-  return `一本目 はじめ ${tally.first.hajime}／9000 ${tally.first.machine}　`
-    + `二本目 はじめ ${tally.second.hajime}／9000 ${tally.second.machine}　`
+  return `一台目 はじめ ${tally.first.hajime}／9000 ${tally.first.machine}　`
+    + `二台目 はじめ ${tally.second.hajime}／9000 ${tally.second.machine}　`
     + `合計 はじめ ${tally.total.hajime}／9000 ${tally.total.machine}`;
 }
 
 async function renderSecondCupReady(owner) {
   await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]), { instant: true });
   if (!current(owner)) return;
-  const tally = `一本目の挙手は はじめ ${CH5_FIRST_CUP_VOTES.hajime}／9000 ${CH5_FIRST_CUP_VOTES.machine}。`;
-  card(owner, "second-cup", "二本目", "同じダブルアップル12g。今度は、目の前の客を待つ一台を作る。", [
-    button(owner, "二本目を作る", "second-cup-start", () => craftSecondCup(owner), true),
-  ], `${tally}二本目は提供のあと、同じ一台を二度調整する。`, CH5_MATCH_SCENES.beforeSecond);
+  const tally = `一台目の挙手は はじめ ${CH5_FIRST_CUP_VOTES.hajime}／9000 ${CH5_FIRST_CUP_VOTES.machine}。`;
+  card(owner, "second-cup", "二台目", "同じダブルアップル12g。今度は、目の前の客を待つ一台を作る。", [
+    button(owner, "二台目を作る", "second-cup-start", () => craftSecondCup(owner), true),
+  ], `${tally}二台目は提供のあと、同じ一台を二度調整する。`, CH5_MATCH_SCENES.beforeSecond);
 }
 
 /** 二本目の制作。作り終えるまで保存しない（途中で離れたら二本目の作り直しから）。 */
 async function craftSecondCup(owner) {
   const cs = newSession("tournament");
   cs.eventTitle = "EXHIBITION MATCH";
-  cs.eventNote = "SHISHA-9000 戦・二本目";
+  cs.eventNote = "SHISHA-9000 戦・二台目";
   cs.orderFlavorIds = ["double_apple"]; // 課題はダブルアップル単体。ほかの葉は混ぜない。
   hud();
   openBench(cs, { steps: CRAFT_STEPS });
