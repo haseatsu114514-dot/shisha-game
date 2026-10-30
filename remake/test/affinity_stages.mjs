@@ -241,7 +241,7 @@ await check('lover points wait for both connected scripts; private scale/carry a
   f.roundTrip();assert.equal(f.stats.releaseLoveAffinity('tsumugi'),0);assert.equal(f.core.state.lovePts.tsumugi,32);
 });
 await check('all romanceable casts: unread lover stage holds next level; normal completion releases to that next stage', async f => {
-  for (const id of new Set([...f.stats.ROMANCEABLE.filter(id=>id!=="hiyori"),"mashiro"])) for (let level=1;level<5;level++) {
+  for (const id of new Set([...f.stats.ROMANCEABLE,"mashiro"])) for (let level=1;level<5;level++) {
     const s=f.fresh();s.chapter=5;s.lovers=[id];s.loveLevel[id]=level;s.lovePts[id]=f.stats.AFFINITY_RANK_PTS[level];
     for(let n=1;n<level;n++) s.loverEventsSeen.push(`lover_${id}_lv${n}`,`lover_${id}_lv${n}_b`);
     f.stats.bond.private=true; f.stats.gainAffinity(id,100); f.stats.bond.private=false;
@@ -254,12 +254,15 @@ await check('all romanceable casts: unread lover stage holds next level; normal 
     assert.equal(f.stats.releaseLoveAffinity(id),0);
   }
 });
-await check('unconnected hiyori lover preview is not invented as a cap or completion requirement',async f=>{
+await check('hiyori lover Lv1-5 use the common ladder; the preview is not a stage',async f=>{
   const s=f.core.state;s.lovers=['hiyori'];s.loveLevel.hiyori=1;s.lovePts.hiyori=9;
-  assert.equal(f.stages.pendingLoveStage(s,'hiyori',f.db),null);
+  assert.equal(f.stages.pendingLoveStage(s,'hiyori',f.db),1);
+  assert.equal(f.romance.loverMilestoneDue('hiyori'),'lover_hiyori_lv1');
   f.stats.bond.private=true;f.stats.gainAffinity('hiyori',30);f.stats.bond.private=false;
-  assert.equal(s.lovePts.hiyori,24);assert.equal(s.loveLevel.hiyori,2);
-  assert.equal(s.loverEventsSeen.length,0);
+  assert.equal(s.loveLevel.hiyori,1,'unread Lv1 must hold the bond');
+  f.setPlay(async()=>done);assert.equal(await f.romance.playLoverMilestone('hiyori'),true);
+  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1');assert.equal(s.loveLevel.hiyori,2);
+  assert.ok(f.plays.every(([scene])=>!/preview/.test(typeof scene==='string'?scene:scene?.dialogue_id)));
 });
 await check('LOAD during old private scope cannot leak into new public gain or close new private scope',async f=>{
   const old=f.core.state;old.lovers=['tsumugi'];old.loveLevel.tsumugi=1;old.lovePts.tsumugi=9;

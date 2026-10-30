@@ -1407,6 +1407,408 @@
       ]
     },
     {
+      "dialogue_id": "lover_hiyori_lv1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_axe_lounge_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出たあと、ひよりさんに袖を引かれた。着いたのは、あの斧投げの店だった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "夜の木が……私たちを呼んでる気がして……",
+          "inner": "恋人になって最初の斧投げ。ここは譲れない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "呼ばれてるなら、行かないとですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レーンに立ったひよりさんは、青い小さな的を指さして宣言した。斧が、乾いた音で縁に刺さる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_laugh",
+          "text": "入った！ ……あ、今のは、木霊が喜んだだけ……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "隠さなくていいですよ。もう知ってますから"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_normal",
+          "text": "……そっか。前は、見られたら終わりだと思ってたのにな"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_normal",
+          "text": "今は、見ててほしいって思ってる。……投げるとこも、外すとこも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の一投は的を外れた。ひよりさんは悔しそうに笑って、斧をこちらに差し出した。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_laugh",
+          "text": "はい、交代。はじめくんが青に入れたら、帰りに何かおごる",
+          "inner": "入らなくてもおごる。理由はあとで作る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、本気で狙います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "斧は青の少し外に刺さった。それでもひよりさんは、自分のことみたいに手を叩いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_normal",
+          "text": "……惜しい。でも、今日いちばん好きな音だった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_hiyori_lv2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道、ひよりさんの足が、湯気の立つ暖簾の前で止まった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "お腹がね……少しだけ、透けてる気がして……",
+          "inner": "味噌。味玉。今日は迷わない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "味噌ですね。味玉つきで"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "なんで分かるの！？ ……あ、前に言ったか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに並んで座る。ひよりさんはポニーテールを結び直して、真剣な顔でレンゲを構えた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "最初の一口は、スープだけ。ここ大事だから"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……はあ、おいしい。今日の書類、全部溶けた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "儚い女の人、どこに行きました？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "湯気の向こうで待ってる。ラーメンの時は、出番ないの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "前はね、彼氏ができたらラーメンは隠そうって思ってた。儚くないから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "隠されてたら、この顔は見られなかったです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……そういうこと、麺すすってる時に言わないで",
+          "inner": "むせるかと思った。好き"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、ひよりさんは店のスタンプカードを二枚もらってきた。一枚を、俺の手に押しつける。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "十個たまったら、一緒に替え玉ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_hiyori_lv3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "駅までの道で、ひよりさんのスマホが震えた。画面を見た顔が、一瞬で仕事の顔になる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "……明日の朝イチの件。今ちょっと確認すれば、明日が楽になるんだけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "急ぎですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "急ぎ……ではない。でも、気になりだすと止まらないんだよね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指が返信の画面の上で止まる。少しして、ひよりさんは小さく息を吐いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "明日の私に回す。宛先も、ちゃんと明日の私"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホが、鞄の奥へしまわれた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……本日の総務、これにて閉店します"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "閉店のあいさつ、あるんですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "いま作った。こう言わないと、家でもう一回開店しちゃうから",
+          "inner": "本当は前から言いたかった。言う相手がいなかっただけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "閉店したら、あとは休むだけですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "うん。……閉店後の時間、はじめくんに使ってもいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どうぞ。延長も受け付けます"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "延長申請、通るんだ……。うちの窓口より優しい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "改札の手前で、ひよりさんはもう一度だけ振り返って手を振った。仕事の顔は、もう残っていなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_hiyori_lv4",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りのベンチで、ひよりさんが伏し目がちに夜空を見上げた。いつもの、儚いひよりさんだ。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "月が……少し欠けてるね。私みたい……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日の設定は、月ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……ねえ、真面目に聞くね。この儚いの、はじめくんは嫌じゃない？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "最初は、こうしたらモテるかもって始めたの。疲れてて、物語の中の人になりたかったのもある"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "もう付き合ってるんだし、やめた方がいいのかなって。最近ちょっと思ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "やめたいんですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……やめたくない。演じてる時の私、けっこう好きなんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、続けてください。俺は、どっちのひよりさんも見たいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消えそうな時は見つけに行くって、約束しましたし"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……覚えてたんだ",
+          "inner": "あの夜の台詞、録音しとけばよかった"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "じゃあ、続けるね。……でも、ひとつだけ設定を変える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どこをですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "儚い女は、ひとりで消えていくんじゃなくて、見つけてもらえるの、……君に"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんはまた伏し目になった。口元だけは、隠しきれずに笑っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_hiyori_lv5",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "仕事帰りに、ひよりさんを部屋へ招いた。ひよりさんは鞄を置くなり、ソファに深く沈んだ。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "本日の総務、閉店しました……。私、半透明になります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お茶、淹れますね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "ありがと……。ねえ、半透明の女はね、放っておくとそのまま消えちゃうの……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消えないようにするには、どうしたらいいですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……捕まえてて。肩、五分だけ貸して",
+          "inner": "五分で足りるわけない。延長前提"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "肩に、ひよりさんの頭の重みが乗った。ポニーテールの先が、首元をくすぐる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "前はね、閉店しても、明日の開店までずっと受付に座ってるみたいだった"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "今は、閉店したらここに来ればいいって分かってる。……それだけで、明日も行ける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつでも来てください。ご飯、用意して待ってます"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……うん。好きだよ、はじめくん。儚くないほうの声で、言っとく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、好きです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんの手を握ると、小さく笑い声がした。肩の上の重みは、五分を過ぎても離れなかった。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "lover_samechan_lv1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
