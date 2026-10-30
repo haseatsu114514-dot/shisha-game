@@ -27,6 +27,7 @@
 | 三人の物語へ | `hiyori_tonari_followup` | `_hiyori_tonari_followup_done` | 再会読了、次にtonariで会う |
 
 `route.enabled` はtrue。未制作イベントは `missing_script` により発火しない。読了フラグは最後まで読んだ後だけ記録し、同時呼び出し・再読による二重報酬を防ぐ。
+#1434 決定Bの先行2件: 遠隔連絡 `hiyori_tokyo_contact`（既読 `_ch3_read_hiyori_tokyo_contact`）は第3章の寄り道カードで、仕事の相談読了・面識・連絡先があり、ひよりが東京に来ていない時だけ。恋人成立後の `hiyori_feelings_spoken`（`_hiyori_feelings_spoken`）は第1〜3章、恋人・絆Lv2で、LIMEのデートの帰りに一度だけ。告白 `confession_hiyori_accept` とは別の場面。遠隔応援（第4章）と第5章の友人／恋人の場面は、各章を作る時に再評価する。
 初対面の店は `_hiyori_meeting_shop`、一日一度の制限は章と日を含む `_hiyori_encounter_day` で保存。
 
 好感度は再会 `_hiyori_tonari_return_done` の読了まで♥3（33点）で条件待ちする。
