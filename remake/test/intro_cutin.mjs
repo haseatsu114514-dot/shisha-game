@@ -16,7 +16,8 @@ try {
     const core = await import("./js/core/state.js"), { DB } = await import("./js/core/data.js");
     const intro = await import("./js/vn/intro.js"), vn = await import("./js/vn/engine.js");
     core.newGame();
-    window.T = { core, DB, intro, vn };
+    const { introFlavor } = await import("./js/vn/intro-flavors.js");
+    window.T = { core, DB, intro, introFlavor, vn };
     return Object.keys(DB.characters).filter((id) => DB.characters[id].intro_cutin);
   });
   assert(ids.length >= 20, `カットインのデータが少ない（${ids.length}人）`);
@@ -35,12 +36,20 @@ try {
         const b = n.getBoundingClientRect();
         return { text: n.textContent, left: (b.left - stage.left) / k, right: (b.right - stage.left) / k, top: (b.top - stage.top) / k, bottom: (b.bottom - stage.top) / k };
       };
-      return { title: r(".ci-title"), name: r(".ci-name"), line: r(".ci-line"), portrait: !!document.querySelector(".cutin img.ci-portrait") };
+      return { title: r(".ci-title"), name: r(".ci-name"), line: r(".ci-line"), flavor: r(".ci-flavor"), portrait: !!document.querySelector(".cutin img.ci-portrait") };
     });
     for (const key of ["title", "name", "line"]) {
       const b = box[key];
       assert(b && b.text.trim(), `${id}: ${key} が空`);
       assert(b.left >= 0 && b.right <= 1280 && b.top >= 0 && b.bottom <= 720, `${id}: ${key}「${b.text}」が画面からはみ出す ${JSON.stringify(b)}`);
+    }
+    const expectedFlavor = await page.evaluate((id) => T.introFlavor(id), id);
+    assert.equal(!!box.flavor, !!expectedFlavor, `${id}: フレーバー札の有無`);
+    if (box.flavor) {
+      assert.equal(box.flavor.text, `好きなフレーバー${expectedFlavor.main}${expectedFlavor.small || ""}`);
+      assert(box.flavor.left >= 0 && box.flavor.right <= 1280 && box.flavor.top >= 0 && box.flavor.bottom <= 720,
+        `${id}: フレーバー札が画面からはみ出す ${JSON.stringify(box.flavor)}`);
+      assert(box.flavor.bottom < box.line.top, `${id}: フレーバー札とセリフが重なる`);
     }
     assert(box.name.right <= 1280 - 40, `${id}: 名前「${box.name.text}」が右端に詰まりすぎ`);
     assert.equal(await page.locator('.cutin .ci-full').count(), 0, `${id}: 括弧付きの本名が表示されている`);
