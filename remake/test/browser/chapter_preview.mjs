@@ -170,6 +170,7 @@ await suite("chapter-preview", async check => {
         flavorStock: { double_apple: 40, mint: 12 }, lovers: ["minto"], contacts: ["sumi", "minto"] });
       s.flags._elapsed_calendar = true; s.flags._ageha_mastery = true;
       s.flags._ch2_cleared = true; s.flags._ch3_cleared = true;
+      s.flags._friend_ageha = true; // あげはの告白（#1930）は着地済み
       s.flags._ch3_tournament_won = true;
       s.flags._ch3_tournament = { startDay: 113, stage: "complete", result: { rank: 1, win: true } };
       s.flags._ch3_aftermath = { version: 2, winDay: 125, stage: 6 };

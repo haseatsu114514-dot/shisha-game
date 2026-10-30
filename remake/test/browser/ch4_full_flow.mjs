@@ -36,7 +36,7 @@ async function seed(page) {
       weatherSeed: 5, lovers: [], contacts: ["sumi"] });
     // 予告2の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして第4章本体に集中する。
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
-      _ch3_preview_seen: true,
+      _ch3_preview_seen: true, _friend_ageha: true, // あげはの告白（#1930）は友達のままで着地済み
       _ch3_tournament_won: true, _ch3_japan_first_representative: true,
       _ch3_intro: { startDay: 29, stage: 18, titleSeen: true, routeVersion: 2 },
       _ch3_tournament: { stage: "complete", attempts: 1, voted: 4, history: [{ rank: 1, total: 88 }],

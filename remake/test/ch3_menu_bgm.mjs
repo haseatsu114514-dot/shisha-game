@@ -74,6 +74,12 @@ async function harness(chapter, value) {
       await dep.link(async () => synthetic(new URL("../js/core/tokyo-visits.js", import.meta.url), ["syncTokyoVisits"]));
       return dep;
     }
+    if (specifier === "./ch3-romance-entry.js") {
+      // #1930: DOMを持たない告白の入口の条件は実物を使う（定数配列を関数の代用品にしない）。
+      const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
+      await dep.link(async () => { throw new Error("ch3-romance-entry.js must stay import-free"); });
+      return dep;
+    }
     return synthetic(depUrl, required.get(depUrl.href) || []);
   });
   await mod.evaluate();
