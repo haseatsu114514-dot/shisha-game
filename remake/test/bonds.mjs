@@ -287,7 +287,9 @@ try {
   assert.deepEqual(shared.problems, []);
   assert(shared.epiPrivate); assert(shared.epiFaces.every((f) => f.startsWith("ura_")), shared.epiFaces.join());
   assert(!shared.epiHeart, "epilogue still has the store tone or the doubled 彼女");
-  assert.deepEqual(shared.epiJump, { type: "jump", next_id: "ending_daily_smoke" });
+  // 後日談の締め（ending_daily_smoke）は台本の jump ではなく、ch5-progress.js のフィナーレ3場面の並びで再生する
+  assert.notEqual(shared.epiJump?.type, "jump", JSON.stringify(shared.epiJump));
+  assert.equal(shared.epiJump?.speaker, "minto", JSON.stringify(shared.epiJump));
   assert(!shared.acceptOld); assert(!shared.rule.includes("恋人ルート確定後のデートシーンでのみ"));
   assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_fifth_done");
   log("HF02 data: ura faces <-> private scenes, epilogue private/calm, confession text, appearance rule, first outing before reveal");
@@ -341,7 +343,7 @@ try {
   assert.equal(friend.beforeSubmission, false);
   assert.equal(friend.noonBadge, false); assert.equal(friend.noon, false); assert.equal(friend.nightBadge, true);
   assert(friend.finaleText.includes("描き終わった絵、最初に見てほしくて"));
-  assert(friend.finaleText.includes("いつもの席で"), "friendship landing missing");
+  assert(friend.finaleText.includes("この子の続きも、ここで描きます"), "friendship landing missing");
   assert(!friend.finaleText.includes("今度は２人で"), "romance question shown after a friendly answer");
   assert.equal(friend.record.route, "friend"); assert(friend.owned); assert.equal(friend.lavender, 50);
   assert.equal(friend.confessed, false); assert.equal(friend.due, null);
