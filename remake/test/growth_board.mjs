@@ -10,7 +10,7 @@ const board = await import("../js/core/growth-board.js");
 const { NODE_BY_ID: N } = board;
 
 // ---------------------------------------------------------------- データ検査（2.9・v3）
-const SHAPE_SIZE = { body: [45, 8], sense: [43, 6], wisdom: [43, 8] }; // [能力のマス（極みを含む）, 関門]
+const SHAPE_SIZE = { body: [39, 5], sense: [39, 5], wisdom: [55, 6] }; // [能力のマス（極みを含む）, 関門]
 for (const k of board.BOARD_KEYS) {
   const layout = board.LAYOUTS[k];
   for (const c of layout.cells) assert(Math.abs(c.x) <= board.GRID.w && Math.abs(c.y) <= board.GRID.h, `${k}: 13×9 に収まる`);
@@ -53,11 +53,27 @@ for (const k of board.BOARD_KEYS) {
     assert(reach.has(n.id), `${n.id} は関門なしで届く`);
   }
 }
+// 授業の小道（2026-10-30 オーナー選択）: どの授業も紋から能力のマス3つ（関門なし）で届き、小道はその人の章で開く。
+// 第1章で誰の授業へ進んだかで、ほかの人の授業までの火種が変わらない。
+const RING_ROAD = ["1,0", "1,1", "0,1", "-1,1", "-1,0", "-1,-1", "0,-1", "1,-1"];
+for (const k of board.BOARD_KEYS) for (const key of RING_ROAD) assert.equal(board.LAYOUTS[k].cells.find((c) => c.key === key)?.ring, 1, `${k} ${key}: 一周の道は最初から開く`);
+for (const l of board.LESSONS) {
+  const route = board.pathTo(l.id, new Set()).path.filter((id) => id !== l.id);
+  assert.equal(route.length, 3, `${l.id}: 紋から3マス`);
+  assert(route.every((id) => N[id].kind === "stat"), `${l.id}: 関門なし`);
+  assert.equal(N[l.id].ring, l.ring ?? 1, `${l.id}: その人の章で小道が開く`);
+  const own = route.at(-1);
+  assert.equal(N[own].ring, l.ring ?? 1, `${l.id}: 小道の最後のマスもその人の章`);
+  // ほかの授業を全部取った後でも、この授業までの残りは同じ（どの順に仲良くしても遠くならない）
+  const others = new Set(board.LESSONS.filter((x) => x.id !== l.id && x.board === l.board).flatMap((x) => board.pathTo(x.id, new Set()).path));
+  assert(board.pathTo(l.id, others).cost <= 3, `${l.id}: 先に進んだ道で遠くならない`);
+}
+
 // 各スキル・授業は、データの章（届けたい章）までに開く
 for (const item of [...board.SKILLS, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
 assert.equal(board.SKILLS.length, 17);
 assert.equal(board.SKILLS.reduce((n, s) => n + s.cost, 0), 119, "スキルの火種 119（5・7・10）");
-assert.equal(board.BOARD_TOTAL_COST, 272, "盤の全部で約270（SPEC 1.6a）");
+assert.equal(board.BOARD_TOTAL_COST, 268, "盤の全部で約270（SPEC 1.6a）");
 assert.equal(board.BOARD_TOTAL_COST, growth.BOARD_TOTAL, "盤の全部と火種の上限が同じ");
 const cumulative = [1, 2, 3, 4, 5].map((r) => board.NODES.filter((n) => n.ring <= r).reduce((a, n) => a + n.cost, 0));
 const received = [37, 76, 115, 154, 182]; // 中央の遊び方で章末までに受け取る火種（1.6。SBD54 で Lv.50 まで3つ）
@@ -97,7 +113,7 @@ assert.deepEqual(v.pending, [], "つながっていない仮置きは外れる")
 v = board.replay(g, [B, B2, S, W]);
 assert.equal(v.pending.length, 3, "火種3で3マスまで");
 
-// 段: 能力のマス約5つで1段（3.1。才能盤は45マスで10段）
+// 段: 能力のマス約5つで1段（3.1。才能盤は39マスで10段）
 assert.equal(board.stepOf("body", new Set()), 1);
 const five = new Set(["B1", "B2", "B3", "B4", "B5"]);
 assert.equal(board.statCount("body", five), 5);
@@ -105,7 +121,7 @@ assert.equal(board.stepOf("body", five), 2, "5マスで2段");
 assert.equal(board.stepOf("body", new Set(["B1", "B2", "B3", "B4"])), 1, "4マスではまだ1段");
 assert.equal(board.squaresToNextStep("body", new Set(["B1", "B2", "B3", "B4"])), 1);
 assert.equal(board.stepOf("body", new Set(board.boardNodes("body").filter((n) => n.kind === "stat").map((n) => n.id))), 10);
-assert.equal(board.statRatio("body", five), 5 / 45);
+assert.equal(board.statRatio("body", five), 5 / board.STAT_SQUARES.body);
 for (const k of board.BOARD_KEYS) {
   const all = board.boardNodes(k).filter((n) => n.kind === "stat").map((n) => n.id);
   for (let n = 0; n <= all.length; n++) {
@@ -272,4 +288,4 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v3 shapes per board (cross/pinwheel/tree), gates by colored hidane, 14 lessons (consult to learn), chapter reach + gate-free ch1 skills, 272 total, connect rules, replay, color-first payment, steps ~5 squares, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v3 shapes per board (cross/pinwheel/tree), gates by colored hidane, 14 lessons (consult to learn), lesson trails from the ring road (3 squares each, open in their chapter), chapter reach + gate-free ch1 skills, 268 total, connect rules, replay, color-first payment, steps ~5 squares, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");

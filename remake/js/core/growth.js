@@ -30,7 +30,7 @@ export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上�
 export const BOARD_TOTAL = BOARD_KEYS.reduce((n, b) => n + STAT_SQUARES[b]
   + BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length, 0) + SKILLS.reduce((n, s) => n + s.cost, 0);
 /** 盤の型の版。違う版の灯し方は、使った火種を返して最初から（習得した授業は残す） */
-export const BOARD_VERSION = 3;
+export const BOARD_VERSION = 4; // 4: 授業の小道（2026-10-30）
 /**
  * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「1周目で7割開けたい」（SBD54）:
  * Lv.50 までは3つ、Lv.51 からは1つ。1周目（中央 Lv.57）で盤の約7割、2周目の終わりの Lv.99＋やり込みで全開放。
