@@ -1,0 +1,27 @@
+{
+  "generator": "image_gen.imagegen",
+  "native_output": "exec-9b9cb9f8-1d35-495a-a0ef-23dc827eb6da.png",
+  "transparent_background": true,
+  "references": [
+    "remake/img/shop/heaven10/cinnamon.webp",
+    "remake/img/shop/heaven10/mint.webp"
+  ],
+  "processing": "Only 512px resize and WebP encoding; native source unchanged",
+  "review": "Visually inspected native and delivery, desktop and touch shop detail: black closed carton, white wings with detached oval halo, cream brush band, vanilla pods and orchid, no text or external objects",
+  "tests_passed": [
+    "python3 tools/build_af_vanilla_art.py --check",
+    "node remake/test/mix_temperature.mjs",
+    "node remake/test/served_eval.mjs",
+    "node --experimental-vm-modules remake/test/data_loading.mjs",
+    "node --experimental-vm-modules remake/test/corrupt_save_migrate.mjs",
+    "node remake/test/flavor_mastery.mjs",
+    "node remake/test/flavor_expression.mjs",
+    "node --experimental-vm-modules remake/test/shop_display_775.mjs",
+    "node remake/test/kuji_balance.mjs",
+    "node remake/test/kuji_sell_guard.mjs",
+    "python3 tools/check_active_json.py",
+    "browser/shop_ui.mjs: af-vanilla-stock-and-craft-art, pc-product-art-legacy-save, touch-product-art-legacy-save",
+    "browser/mix_temperature.mjs: all-bands-boundaries-and-session-isolation, recipe-and-width-comparison-desktop"
+  ],
+  "environment_notes": "Initial shop runs failed because existing unrelated LFS images were pointers. Retrieved only sheet-nine, sheet-three and three equipment-v2 images (about 0.7MB total); reruns passed. No production code/test assertions weakened for this environment issue."
+}

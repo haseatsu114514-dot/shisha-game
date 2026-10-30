@@ -454,11 +454,11 @@
     },
     {
       "id": "vanilla",
-      "name": "ドバジ バニラ",
-      "short_name": "ドバジ バニラ",
+      "name": "アルファーヘブン バニラ",
+      "short_name": "AF バニラ",
       "category": "sweet",
       "price": 1750,
-      "description": "ドバジのバニラ。甘みの厚みを乗せやすく、全体を丸くまとめる。",
+      "description": "アルファーヘブンのバニラ。甘みの厚みを乗せやすく、全体を丸くまとめる。",
       "heat_tolerance": 0.8,
       "mix_life": 0.9,
       "smoke_weight": 1.1,
@@ -479,7 +479,7 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "dobaj"
+      "maker": "af"
     },
     {
       "id": "pineapple",
