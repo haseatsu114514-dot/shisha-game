@@ -542,7 +542,8 @@ function handleCondition(line) {
     else ok = !!v;
   }
   const key = String((ok ? line.next_true : line.next_false) || "");
-  if (key && running.branches[key]) insertBranch(running, key);
+  // 単独で条件関数を使うデータ検証では currentId が無い。実再生時だけ既読キーを付ける。
+  if (key && running.branches[key]) running.queue.unshift(...(running.currentId ? queuedLines(running.currentId, running.branches[key], key) : running.branches[key]));
   else if (key && DB.dialogues[key]) return jumpTo(key);
   else if (key) warnVn("branch-unresolved", key);
 }
