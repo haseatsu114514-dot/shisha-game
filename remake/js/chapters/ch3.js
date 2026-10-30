@@ -18,6 +18,7 @@ import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { openShop } from "../daily/shop.js";
+import { canReflect, reflectAt } from "../daily/reflection.js";
 import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
 import { chapterThreeOutings, visitChapterThreeOuting } from "./ch3-outings.js";
 import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, loadStoryRoutes, availableOptionalScenes, commitOptionalRead,
@@ -547,6 +548,8 @@ function freeTimeChoices(value) {
   if (!window) return [];
   return [
     ...chapterThreeOutings(value, window.id),
+    // 心得の盤: 路地裏の神社で内省して火種を灯す（時間を使わない。SPEC 2.8・#1788）
+    ...(canReflect(value) ? [{ id: "reflect", place: "shrine", label: "路地裏の神社で振り返る", reasonText: "学んだことを火にして、心得の盤に灯す", ok: true, consumes: false, reflect: true }] : []),
     ...availableChapterThreeTrials(value).map(trial => ({ id: `trial-${trial.id}`, trialId: trial.id, place: "mukai",
       label: `作業台で${trial.label}`, reasonText: "聞いたことを、自分の一台で確かめる", ok: true, consumes: false })),
   ];
@@ -565,6 +568,7 @@ async function openTokyoMap(owner) {
   else {
     const action = actions.find(item => item.id === selection.action);
     if (action?.trialId) { await runTrial(owner, action.trialId); return; }
+    if (action?.reflect) { await reflectAt("tokyo_shrine"); if (current(owner)) await renderStage(owner); return; }
     if (action) await goOuting(owner, window.id, action.id);
   }
   if (current(owner)) await renderStage(owner);

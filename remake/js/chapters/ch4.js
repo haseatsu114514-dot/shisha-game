@@ -17,6 +17,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
+import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
 
@@ -235,7 +236,11 @@ async function renderFree(owner) {
     model.destinations.map(destination => el("div.ch4-destination", [
       button(owner, destination.label, `go-${destination.id}`, () => visit(owner, destination.id), destination.kind === "end_day"),
       el("p.ch4-destination-purpose", { text: `${destination.purpose}${destination.unreadCount > 0 ? "（未読あり）" : ""}` }),
-    ])),
+    ])).concat(canReflect() ? [el("div.ch4-destination", [
+      // 心得の盤: 見学できるモスクの回廊で振り返り、火種を灯す（時間を使わない。礼拝の所作はしない。SPEC 2.8・#1788）
+      button(owner, "モスクを見学して振り返る", "go-mosque", async () => { await reflectAt("dubai_mosque"); await renderStage(owner); }),
+      el("p.ch4-destination-purpose", { text: "見学の時間に回廊でここまでを振り返り、心得の盤に火種を灯す。日は進まない。" }),
+    ])] : []),
     [model.guide, model.hint, model.note].filter(Boolean).join(" "));
 }
 
@@ -261,6 +266,8 @@ async function visit(owner, id) {
 
 /** 前夜: 未読の必須場面を story_routes の順に強制消化する。繋ぎ場面があれば先に再生。 */
 async function renderEve(owner) {
+  // 前夜に火種が残っていれば、モスクの見える水辺でひとり内省する（SPEC 2.8・#1690）
+  if (await eveReflection("dubai_waterside")) { if (current(owner)) await renderStage(owner); return; }
   const [next] = chapterFourMandatory(state);
   if (!next) {
     if (!finishChapterFourEve(state)) throw new Error("前夜を終えられません");

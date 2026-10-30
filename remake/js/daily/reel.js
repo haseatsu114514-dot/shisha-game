@@ -11,7 +11,7 @@ import { el, sleep } from "../core/util.js";
 import { layers, gainCard, toast } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { gainStat, star } from "../core/stats.js";
+import { gainStat, step } from "../core/stats.js";
 import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
 
@@ -418,7 +418,7 @@ function commitSpinSeries() {
     const key = STAT_KEYS.find((k) => state.stats[k] > before[k]) || target;
     r.target = key;
     r.got = got;
-    if (star(key) > Math.max(1, Math.ceil(before[key] / 20))) r.starTo = star(key);
+    if (step(key) > Math.max(1, Math.ceil(before[key] / 10))) r.starTo = step(key);
     recordNote(reel, r);
     reel.pending.push(r);
   }
@@ -1094,7 +1094,7 @@ function announce(r) {
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({
     kind: "stat", source: "slot", stat: r.target, points: r.starTo ? 0 : r.got, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" }[r.target],
-    top: "SLOT BONUS", main: STAT_JA[r.target], evolution: r.starTo ? `Lv.${r.starTo}に到達` : "",
+    top: "SLOT BONUS", main: STAT_JA[r.target], evolution: r.starTo ? `${r.starTo}段に上がった` : "",
     fx,
   });
 }
