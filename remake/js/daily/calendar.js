@@ -60,11 +60,6 @@ export async function runDaily(def) {
   // 登録済みでも、説明中に保存された初回体験は配達・日付更新より先に完了する。
   // 導入済み旧保存から初回体験を推測せず、既存の確定・報酬処理を再利用する。
   if (owner.flags._pakki_first_spin_pending) {
-    if (owner.flags._c_station_registered && owner.visitedDay.c_station == null) {
-      owner.visitedDay.c_station = owner.day;
-      // 初回確定でpendingが消え、その演出中に再中断しても訪問日を失わない。
-      save(); // 会話・訪問回数・成長・行動は繰り返さない。
-    }
     await installReel();
     if (state !== owner) return;
   }
@@ -309,14 +304,13 @@ async function day1Errands() {
 async function registerTournament() {
   const venue = spotById("c_station");
   // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
-  if (!venue || !isUnlocked(venue) || isClosed(venue) || state.visitedDay.c_station === state.day) return;
+  if (!venue || !isUnlocked(venue) || isClosed(venue) || state.flags._c_station_registered) return;
   await chooseSpot({ guide: { pin: "c_station", text: "配達の前に、大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
   if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
     await (await import("../scenes/rule-sheet.js")).openRuleSheet();
     state.flags._ch1_rules_read = true;
   }
-  state.visitedDay.c_station = state.day;
   save(); // 無料の登録で行動枠・追加の抽選を使わない。
 }
 
