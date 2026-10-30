@@ -6,7 +6,7 @@
 import { state } from "./state.js";
 import { emit } from "./bus.js";
 import { setExpHooks, affinityLevel } from "./stats.js";
-import { BOARD_KEYS, BOARD_PREFIX, STAT_SQUARES, SKILLS, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
+import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
 
 export const GROWTH_BOARD = false;
 const PREVIEW_KEY = "suien_growth_preview";
@@ -25,11 +25,15 @@ export function setGrowthPreview(on) {
 
 // ---------------------------------------------------------------- 数値（SPEC 1.2〜1.5）
 
-export const MAX_LEVEL = 80;
-export const BOARD_TOTAL = 179; // 盤の全部（能力81＋スキル98）。これ以上の火種は渡さない（1.5「盤は埋まった」）
+export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上限（SBD51）
+/** 盤の全部（能力のマス＋関門＋スキル。v3 で約270）。これ以上の火種は渡さない（1.5「盤は埋まった」） */
+export const BOARD_TOTAL = BOARD_KEYS.reduce((n, b) => n + STAT_SQUARES[b]
+  + BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length, 0) + SKILLS.reduce((n, s) => n + s.cost, 0);
+/** 盤の型の版。違う版の灯し方は、使った火種を返して最初から（習得した授業は残す） */
+export const BOARD_VERSION = 3;
 export const HIDANE_PER_LEVEL = 2;  // レベルアップ1回で万能の火種2つ（1.5）
 export const COLORED_GIFT = 2;      // 節目・大会・♥5の色つきの火種（1.5）
-export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70];
+export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
 export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30 };
 /** その章で同じ鍵の 1・2回目 ×1.0、3回目 ×0.8、4回目 ×0.6、5回目以降 ×0.4（1.3） */
@@ -52,7 +56,8 @@ export const HIDANE_KEYS = ["any", ...BOARD_KEYS];
 
 // 盤のマスID（データから。規則の growth-board.js とは循環させない）
 const BOARD_IDS = Object.fromEntries(BOARD_KEYS.map((b) => [b, [
-  ...Array.from({ length: STAT_SQUARES }, (_, i) => `${BOARD_PREFIX[b]}${i + 1}`),
+  ...Array.from({ length: STAT_SQUARES[b] }, (_, i) => `${BOARD_PREFIX[b]}${i + 1}`),
+  ...Array.from({ length: BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length }, (_, i) => `${BOARD_PREFIX[b]}G${i + 1}`),
   ...SKILLS.filter((x) => x.board === b).map((x) => x.id),
 ]]));
 const VALID_IDS = new Set([...Object.values(BOARD_IDS).flat(), ...LESSONS.map((l) => l.id)]);
@@ -77,13 +82,35 @@ export function newGrowth() {
     gifted: {},            // ♥5で色つきの火種を受け取った人（周回で空に戻す）
     litSince: {},          // 前の節目から盤ごとに灯した火種（節目の色を決める。1.5）
     target: null,          // 目標のマス（2.4）
+    learned: [],           // 相談を終えて習得した授業（盤で灯した授業は「相談できる」。次に会った時に相談して習得）
     rewards: {},           // 受け取った遊びのご褒美（斧投げ・TRPG・DJ の水準、くじのラストワン賞）
     seenRing: 1,           // 盤で「新しい道が開いた」を見せた章の範囲（章が進んで初めて開いた時の演出）
+    boardVersion: BOARD_VERSION, // 盤の型の版（v2→v3 で灯し方を返す）
   };
 }
 
 const num = (v, min = 0) => Number.isFinite(v) && v >= min ? v : min;
 const strings = (list) => [...new Set((Array.isArray(list) ? list : []).filter((v) => typeof v === "string" && v))];
+
+/**
+ * 前の版の盤で灯したマスを外し、払った火種を同じ種類で返す（払いの記録が無い分は万能で1つ）。
+ * 習得した授業（と相談待ちの授業）は火種いらずなので残す。2026-10-30 v3 の盤（SBD53）。
+ */
+function refundOldBoard(g) {
+  const lessonIds = new Set(LESSONS.map((l) => l.id));
+  const kept = [];
+  for (const id of strings(g.nodes)) {
+    if (lessonIds.has(id)) { kept.push(id); continue; }
+    const pay = g.paid[id];
+    if (pay && typeof pay === "object") {
+      for (const [k, n] of Object.entries(pay)) if (HIDANE_KEYS.includes(k)) g.hidane[k] += Math.floor(num(n));
+    } else g.hidane.any += 1;
+    delete g.paid[id];
+  }
+  g.nodes = kept;
+  g.target = null;
+  g.boardVersion = BOARD_VERSION;
+}
 
 /** 有効なときだけ呼ぶ。壊れた値は既定値に戻し、累計と精算済みの順を保つ。 */
 export function ensureGrowth(s = state) {
@@ -107,13 +134,15 @@ export function ensureGrowth(s = state) {
   if (!g.today.learned || typeof g.today.learned !== "object") g.today.learned = {};
   if (!Array.isArray(g.today.gifts)) g.today.gifts = [];
   g.seen = { fullLevelUp: g.seen?.fullLevelUp === true };
-  g.nodes = strings(g.nodes).filter((id) => VALID_IDS.has(id));
   if (!g.paid || typeof g.paid !== "object" || Array.isArray(g.paid)) g.paid = {};
+  if (g.boardVersion !== BOARD_VERSION) refundOldBoard(g);
+  g.nodes = strings(g.nodes).filter((id) => VALID_IDS.has(id));
   g.ringsOpen = Math.min(5, Math.max(1, Math.floor(num(g.ringsOpen, 1))));
   if (!g.gifted || typeof g.gifted !== "object" || Array.isArray(g.gifted)) g.gifted = {};
   g.litSince = Object.fromEntries(BOARD_KEYS.map((k) => [k, Math.floor(num(g.litSince?.[k]))]));
   if (!VALID_IDS.has(g.target)) g.target = null;
   if (!g.rewards || typeof g.rewards !== "object" || Array.isArray(g.rewards)) g.rewards = {};
+  g.learned = strings(g.learned).filter((id) => g.nodes.includes(id));
   g.seenRing = Math.min(5, Math.max(1, Math.floor(num(g.seenRing, 1))));
   syncLessonFlags(g, s);
   return g;
@@ -127,9 +156,55 @@ function syncLessonFlags(g, s) {
   if (!s.flags || typeof s.flags !== "object") return;
   for (const lesson of LESSONS) {
     const unlocks = lesson.unlocks || [];
-    if (!g.nodes.includes(lesson.id) && unlocks.some((f) => s.flags[f] === true)) { g.nodes.push(lesson.id); g.paid[lesson.id] = {}; }
-    if (g.nodes.includes(lesson.id)) for (const f of unlocks) s.flags[f] = true;
+    // 旧セーブで習得済み（今のゲームのフラグがある）なら、灯して習得した状態にする
+    if (unlocks.some((f) => s.flags[f] === true)) {
+      if (!g.nodes.includes(lesson.id)) { g.nodes.push(lesson.id); g.paid[lesson.id] = {}; }
+      if (!g.learned.includes(lesson.id)) g.learned.push(lesson.id);
+    }
+    // 習得した授業はフラグを立てる（周回で消えても戻す）
+    if (g.learned.includes(lesson.id)) for (const f of unlocks) s.flags[f] = true;
   }
+}
+
+/** 灯して「相談できる」まま、まだ相談していない授業（その人の分）。場面のある授業だけ */
+export function readyLessons(who, s = state) {
+  if (!growthEnabled() || !s) return [];
+  const g = ensureGrowth(s);
+  return LESSONS.filter((l) => l.who === who && l.scene && g.nodes.includes(l.id) && !g.learned.includes(l.id));
+}
+export const lessonLearned = (id, s = state) => !!s?.growth?.learned?.includes(id);
+
+/** 相談を終えて習得する（今のゲームのフラグも立てる） */
+export function learnLesson(id, s = state) {
+  const lesson = LESSONS.find((l) => l.id === id);
+  if (!lesson || !s) return false;
+  const g = ensureGrowth(s);
+  if (!g.nodes.includes(id)) return false;
+  if (!g.learned.includes(id)) g.learned.push(id);
+  for (const f of lesson.unlocks || []) s.flags[f] = true;
+  return true;
+}
+
+/**
+ * その人に会った時の相談（2.6・SBD50）: 相談できる授業があれば、はじめが相談して話を聞く場面を見て習得する。
+ * 場面を最後まで読んだ時だけ習得（途中でやめたら、また次に会った時）。戻り値=習得した授業
+ */
+export async function consultLessons(who, { only = null, bg } = {}) {
+  const owner = state;
+  const lessons = readyLessons(who).filter((l) => !only || l.id === only);
+  if (!lessons.length) return [];
+  const { play } = await import("../vn/engine.js");
+  const { gainCard } = await import("./ui.js");
+  const done = [];
+  for (const lesson of lessons) {
+    const result = await play(lesson.scene, bg ? { bg } : {});
+    if (state !== owner || !result || result.cancelled) break;
+    learnLesson(lesson.id);
+    done.push(lesson);
+    gainCard({ kind: "info", badge: "授", top: "TRAINING", main: lesson.name, sub: lesson.text });
+  }
+  if (done.length) emit("hud");
+  return done;
 }
 
 /** 盤で灯した火種を数える（節目の色。growth-board.js の決定から呼ぶ） */
@@ -322,12 +397,12 @@ export function claimPlayRewards(g, s = state) {
 
 // ---------------------------------------------------------------- 寝る時の精算（6.3）
 
-/** 盤の段（能力のマス÷3＋1）。規則の growth-board.js と同じ数え方を、循環させずに持つ */
+/** 盤の段（1＋9×能力のマス÷その盤の数）。規則の growth-board.js と同じ数え方を、循環させずに持つ */
 function boardStep(g, board) {
   const prefix = BOARD_PREFIX[board];
   let n = g.nodes.filter((id) => id.startsWith(prefix) && /^\D\d+$/.test(id)).length;
   for (const l of LESSONS) if (l.board === board && l.reward === "stat" && g.nodes.includes(l.id)) n += l.bonus || 0;
-  return Math.min(10, 1 + Math.floor(Math.min(STAT_SQUARES, n) / 3));
+  return Math.min(10, 1 + Math.floor((9 * Math.min(STAT_SQUARES[board], n)) / STAT_SQUARES[board]));
 }
 
 /** 節目の色: 前の節目から一番火種を灯した盤。同数なら段の低い盤（1.5） */

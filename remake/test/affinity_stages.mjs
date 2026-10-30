@@ -241,7 +241,7 @@ await check('lover points wait for both connected scripts; private scale/carry a
   f.roundTrip();assert.equal(f.stats.releaseLoveAffinity('tsumugi'),0);assert.equal(f.core.state.lovePts.tsumugi,32);
 });
 await check('all romanceable casts: unread lover stage holds next level; normal completion releases to that next stage', async f => {
-  for (const id of [...f.stats.ROMANCEABLE.filter(id=>id!=="hiyori"),"mashiro"]) for (let level=1;level<5;level++) {
+  for (const id of new Set([...f.stats.ROMANCEABLE.filter(id=>id!=="hiyori"),"mashiro"])) for (let level=1;level<5;level++) {
     const s=f.fresh();s.chapter=5;s.lovers=[id];s.loveLevel[id]=level;s.lovePts[id]=f.stats.AFFINITY_RANK_PTS[level];
     for(let n=1;n<level;n++) s.loverEventsSeen.push(`lover_${id}_lv${n}`,`lover_${id}_lv${n}_b`);
     f.stats.bond.private=true; f.stats.gainAffinity(id,100); f.stats.bond.private=false;

@@ -18,6 +18,7 @@ import { meetHiyoriAtTonari } from "./hiyori.js";
 import { hiyoriAxeReady, hiyoriAxeAffordable, hiyoriAxePrereqsMet, axeThrowExposed } from "./hiyori-axe.js";
 import { spotFollowupDue } from "./spot-encounters.js";
 import { canStudyAttack, studyAttack } from "./attack-lesson.js";
+import { readyLessons, consultLessons } from "../core/growth.js";
 import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 
@@ -71,6 +72,8 @@ export async function tonariCustomer({ signal = null } = {}) {
     if (!live()) return false;
     if (tsumugiAtTonari(state)) {
       if (!await visitChar("tsumugi") || !live()) return false;
+      await consultLessons("tsumugi", { bg: TONARI_BG }); // 心得の盤で灯した授業があれば相談する（SBD50）
+      if (!live()) return false;
       if (!await hearFortuneRumor({ signal }) || !live()) return false;
     }
     return live();
@@ -225,6 +228,8 @@ function afterShiftMenu() {
       el("div.sub-choices", [
         canStudyAttack() ? opt("雑念を切る特訓を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
         canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
+        // 心得の盤で灯した授業: スミさんに相談して話を聞く（SBD50）
+        ...readyLessons("sumi").map((l) => opt(`スミさんに相談する（${l.name}）`, "授業。話を聞いて習得する", `lesson:${l.id}`, `after-lesson-${l.id}`)),
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
       ]),
     ]));
@@ -236,6 +241,7 @@ async function afterShift() {
   const pickAfter = await afterShiftMenu();
   if (pickAfter === "attack") await studyAttack();
   if (pickAfter === "cube_coals") await studyCubeCoals();
+  if (String(pickAfter).startsWith("lesson:")) await consultLessons("sumi", { only: pickAfter.slice(7), bg: TONARI_BG });
 }
 
 /**

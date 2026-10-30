@@ -3,7 +3,7 @@
 
 /**
  * 表示対象の母集合 = 好感度の仕組みがあるキャラ全員。ゲーム内の既存ロスターの union:
- * - core/stats.js の ROMANCEABLE: tsumugi, minto, rin, ageha, hiyori, samechan
+ * - core/stats.js の ROMANCEABLE: tsumugi, minto, rin, ageha, mashiro, hiyori, samechan
  * - daily/bonds.js の BOND_FINALES（好感度MAXの締めくくり）: sumi, naru, adam, tsumugi, minto, rin, samechan, hiyori
  * - data/story_routes.json の heroine_ids: tsumugi, minto, rin, ageha, mashiro, samechan, hiyori
  * 並びは manifest の titleArts のキャラ順に合わせる。
