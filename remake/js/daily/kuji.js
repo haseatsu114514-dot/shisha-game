@@ -167,7 +167,7 @@ function drawMany(g, box, count) {
       resolve();
     } });
     const ov = el("div.kuji-overlay", { dataset: { test: "kuji-results" } }, [
-      el("div.panel", { style: { maxHeight: "85vh", overflowY: "auto", width: "min(600px, 92vw)" } }, [
+      el("div.panel", { style: { maxHeight: "calc(100% - 16px)", overflowY: "auto", width: "calc(100% - 16px)", maxWidth: "600px", padding: "12px", boxSizing: "border-box" } }, [
         el("h2", { text: `${count}回のくじ結果` }),
         ...results.map((p) => el("div.shop-row", { dataset: { rank: p.rank } }, [
           el("div.shop-main", [
