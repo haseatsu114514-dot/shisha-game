@@ -105,10 +105,19 @@ export function openBoard({ place = null } = {}) {
     const open = ringsOpen();
     const lit = (id) => id === HUB || v.unlocked.has(id);
     const goal = g.target && NODE_BY_ID[g.target]?.board === board ? new Set(pathTo(g.target, v.unlocked).path) : new Set();
-    const parts = [svg("defs", {}, [svg("radialGradient", { id: "gb-ember", cx: "50%", cy: "62%", r: "60%" }, [
-      svg("stop", { offset: "0%", "stop-color": "#fff1b8" }), svg("stop", { offset: "45%", "stop-color": "#ffb43c" }),
-      svg("stop", { offset: "100%", "stop-color": "#e86a12", "stop-opacity": "0" }),
-    ])])];
+    // ネオンのラウンジ（GB03 の見本）: 光のにじみ・封の曇り・ガラスの煙はコードで描く（画像が来たら重ねる）
+    const parts = [svg("defs", {}, [
+      svg("radialGradient", { id: "gb-ember", cx: "50%", cy: "62%", r: "60%" }, [
+        svg("stop", { offset: "0%", "stop-color": "#fff1b8" }), svg("stop", { offset: "45%", "stop-color": "#ffb43c" }),
+        svg("stop", { offset: "100%", "stop-color": "#e86a12", "stop-opacity": "0" }),
+      ]),
+      svg("filter", { id: "gb-glow", x: "-50%", y: "-50%", width: "200%", height: "200%" }, [svg("feGaussianBlur", { stdDeviation: "3" })]),
+      svg("filter", { id: "gb-fog", x: "-50%", y: "-50%", width: "200%", height: "200%" }, [svg("feGaussianBlur", { stdDeviation: "14" })]),
+      svg("filter", { id: "gb-smoke" }, [
+        svg("feTurbulence", { type: "fractalNoise", baseFrequency: "0.006 0.012", numOctaves: "3", seed: "7" }),
+        svg("feColorMatrix", { values: "0 0 0 0 0.75  0 0 0 0 0.7  0 0 0 0 0.85  0 0 0 0.9 -0.32" }),
+      ]),
+    ]), svg("rect", { x: 0, y: 0, width: W, height: H, filter: "url(#gb-smoke)", class: "gb-smoke" })];
     drawBoard = board;
     const fill = statRatio(board, v.unlocked);
     reveal.className = `gb-reveal r-${board}`;
@@ -118,7 +127,12 @@ export function openBoard({ place = null } = {}) {
     // 方眼のうすい点（横13×縦9）
     const [hx, hy] = hubAt();
     for (let gx = -GRID.w; gx <= GRID.w; gx++) for (let gy = -GRID.h; gy <= 0; gy++) { const p = at(gx - hx, gy - hy); parts.push(svg("circle", { cx: p.x, cy: p.y, r: 1.5, class: "gb-dot" })); }
-    // 道（使うマスどうしだけ。紋の隣は紋とつなぐ）
+    // まだ開いていない範囲は、ガラスが曇って沈む
+    const fog = svg("g", { filter: "url(#gb-fog)", class: "gb-fog-layer" });
+    for (const n of nodes) if (n.ring > open) { const p = at(n.gx, n.gy); fog.append(svg("circle", { cx: p.x, cy: p.y, r: 30, class: "gb-fog" })); }
+    parts.push(fog);
+    // 道（使うマスどうしだけ。紋の隣は紋とつなぐ）。消えた管は暗い管と薄いハイライト、灯った管は盤の色のにじみと白い芯
+    const glow = svg("g", { filter: "url(#gb-glow)", class: "gb-glow-layer" }), cores = [];
     const drawn = new Set();
     for (const n of nodes) {
       for (const id of n.links) {
@@ -128,7 +142,10 @@ export function openBoard({ place = null } = {}) {
         const a = at(n.gx, n.gy), b = id === HUB ? at(0, 0) : at(NODE_BY_ID[id].gx, NODE_BY_ID[id].gy);
         const on = lit(n.id) && lit(id), aim = (goal.has(n.id) || lit(n.id)) && (id === HUB || goal.has(id) || lit(id)) && (goal.has(n.id) || goal.has(id));
         const closedA = n.ring > open, closedB = id !== HUB && NODE_BY_ID[id].ring > open;
-        parts.push(svg("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: `gb-path${on ? " lit" : ""}${aim && !on ? " aim" : ""}${closedA || closedB ? " sealed" : ""}` }));
+        const line = (cls) => svg("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: cls });
+        if (on) { glow.append(line("gb-tube-glow")); cores.push(line("gb-path lit")); }
+        else if (closedA || closedB) parts.push(line("gb-path sealed"));
+        else { parts.push(line("gb-path"), line("gb-path-hi")); if (aim) parts.push(line("gb-path aim")); }
         // 開いている所と、まだ開いていない所の境に封（章の数は出さない。SBD42）
         if (closedA !== closedB) {
           const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, horiz = a.y === b.y;
@@ -136,8 +153,16 @@ export function openBoard({ place = null } = {}) {
         }
       }
     }
+    parts.push(glow, ...cores);
     const hub = at(0, 0);
+    // 紋: ネオンの輪（外の太い管のにじみ＋管＋内の細い輪＋6つの短い渦）。画像 hub_<盤>.webp が来たら差し替える
+    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 34, class: "gb-hub-glow", filter: "url(#gb-glow)" }));
     parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub" }));
+    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 25, class: "gb-hub-inner" }));
+    for (let i = 0; i < 6; i++) {
+      const a0 = i * Math.PI / 3, a1 = a0 + 0.7, r = 20;
+      parts.push(svg("path", { d: `M ${hub.x + r * Math.cos(a0)} ${hub.y + r * Math.sin(a0)} A ${r} ${r} 0 0 1 ${hub.x + (r - 3) * Math.cos(a1)} ${hub.y + (r - 3) * Math.sin(a1)}`, class: "gb-hub-swirl" }));
+    }
     parts.push(svg("circle", { cx: hub.x, cy: hub.y + 2, r: 19, fill: "url(#gb-ember)" }));
     const hubText = svg("text", { x: hub.x, y: hub.y + 8, class: "gb-hub-text" });
     hubText.textContent = BOARD_HEAD[board];

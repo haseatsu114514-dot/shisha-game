@@ -1370,6 +1370,70 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-legend-item i.s-locked { opacity: 0.2; }
 .gb-actions { display: flex; gap: 10px; flex: none; }
 .gb-actions .btn { min-height: 48px; min-width: 130px; }
+/* ================= ネオンのラウンジ（GB03 の見本を移した。2026-10-30 オーナー「プロトタイプをゲームに実装してみて」SBD69） =================
+   コードで描く所だけ。生成画像（盤のガラス・紋・札の枠・火種の粒・パネルの縁・画面の背景）が来たら GB03 7.1 のとおり重ねる。 */
+.gboard { --ink: #07050b; --tube: #2c2534; --neon-gold: #f4d27a;
+  background: radial-gradient(circle at 88% 18%, rgba(255, 180, 60, 0.18), transparent 9%), radial-gradient(circle at 96% 54%, rgba(244, 210, 122, 0.12), transparent 12%),
+    radial-gradient(circle at 74% 92%, rgba(255, 150, 90, 0.10), transparent 11%), radial-gradient(circle at 63% 8%, rgba(160, 90, 200, 0.10), transparent 10%),
+    radial-gradient(ellipse 70% 90% at 30% 55%, #040208, transparent 70%), linear-gradient(120deg, #050309 0%, #0c0714 55%, #160b1c 100%); }
+.gb-header { background: linear-gradient(180deg, rgba(8, 5, 12, 0.92), rgba(8, 5, 12, 0.6)); border-bottom-color: rgba(244, 210, 122, 0.22); }
+.gb-title { font-weight: 900; letter-spacing: 0.16em; text-shadow: 0 0 10px rgba(244, 210, 122, 0.45); }
+.gb-gauge b { box-shadow: 0 0 8px var(--neon-gold); }
+.gb-icon { box-shadow: inset 0 0 8px rgba(244, 210, 122, 0.15); }
+/* 札: 選んだ盤は盤の色の管が灯る */
+.gb-tab { border-color: rgba(255, 255, 255, 0.07); border-radius: 10px 10px 0 0; background: rgba(10, 7, 14, 0.75); }
+.gb-tab.on { background: linear-gradient(180deg, color-mix(in srgb, var(--c) 14%, #120c18), #0d0a12); border-color: color-mix(in srgb, var(--c) 70%, transparent);
+  box-shadow: inset 0 2px 0 var(--c), 0 -2px 14px color-mix(in srgb, var(--c) 30%, transparent); }
+.gb-tab-head { background: transparent; border: 2px solid color-mix(in srgb, var(--c) 45%, #2c2534); color: color-mix(in srgb, var(--c) 55%, #6c6274); }
+.gb-tab.on .gb-tab-head { border-color: color-mix(in srgb, var(--c) 55%, #fff); color: #fff; text-shadow: 0 0 8px var(--c); box-shadow: 0 0 8px var(--c), inset 0 0 8px color-mix(in srgb, var(--c) 60%, transparent); }
+.gb-tab-line b { box-shadow: 0 0 6px var(--c); }
+/* 盤: 黒いスモークガラス（board_glass.webp が来たら下に敷く） */
+.gb-board { border-radius: 0 0 14px 14px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.05); border-top: 0;
+  background: radial-gradient(ellipse 34% 40% at 50% 80%, color-mix(in srgb, var(--board-c) 9%, transparent), transparent 70%), radial-gradient(ellipse 80% 90% at 50% 45%, #110d17, #060409 85%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 0 60px rgba(0, 0, 0, 0.8); }
+.gb-smoke { opacity: 0.18; }
+.gb-dot { fill: rgba(244, 210, 122, 0.10); }
+.gb-fog { fill: rgba(150, 140, 175, 0.08); }
+/* 道のネオン管 */
+.gb-path { stroke: var(--tube); stroke-width: 4; }
+.gb-path-hi { stroke: rgba(255, 255, 255, 0.06); stroke-width: 1; stroke-linecap: round; }
+.gb-tube-glow { stroke: var(--board-c); stroke-width: 6; stroke-linecap: round; opacity: 0.55; }
+.gb-path.lit { stroke: color-mix(in srgb, var(--board-c) 40%, #fff); stroke-width: 2; filter: none; }
+.gb-path.aim { stroke: var(--gold-hi); stroke-width: 2; stroke-dasharray: 4 6; opacity: 0.85; }
+.gb-path.sealed { stroke: rgba(143, 134, 160, 0.16); stroke-width: 3; stroke-dasharray: 1 7; }
+/* 紋のネオンの輪（漢字はコード） */
+.gb-hub-glow { fill: none; stroke: var(--board-c); stroke-width: 7; opacity: 0.45; }
+.gb-hub { fill: rgba(10, 7, 14, 0.92); stroke: color-mix(in srgb, var(--board-c) 40%, #fff); stroke-width: 2.2; }
+.gb-hub-inner { fill: none; stroke: color-mix(in srgb, var(--board-c) 70%, transparent); stroke-width: 1.2; }
+.gb-hub-swirl { fill: none; stroke: color-mix(in srgb, #ffb43c 70%, var(--board-c)); stroke-width: 1.2; stroke-linecap: round; opacity: 0.75; }
+.gb-hub-text { fill: #fff; font-size: 24px; font-weight: 900; filter: drop-shadow(0 0 6px var(--board-c)); }
+/* マス: 消えた管は暗く、今灯せるマスは白い管が明滅、灯したマスは盤の色の光がにじむ */
+.gb-node .gb-face { background: rgba(9, 6, 13, 0.92); border-color: #3d3446; color: #6d6378; }
+.gb-node.stat.s-available .gb-face { border-color: var(--c); color: var(--c); }
+.gb-node.stat.s-unlocked .gb-face, .gb-node.peak.s-unlocked .gb-face { border-color: color-mix(in srgb, var(--board-c) 35%, #fff); background: color-mix(in srgb, var(--board-c) 26%, #0b0810);
+  box-shadow: 0 0 6px var(--board-c), 0 0 16px color-mix(in srgb, var(--board-c) 55%, transparent), inset 0 0 6px color-mix(in srgb, var(--board-c) 70%, transparent); }
+.gb-node.s-unlocked .gb-glyph { color: #fff; text-shadow: 0 0 6px var(--board-c); }
+.gb-node.gate.s-unlocked .gb-glyph { color: #1b1020; text-shadow: none; }
+.gb-node.skill .gb-face { background: color-mix(in srgb, var(--c) 55%, #3d3446); }
+.gb-node.skill.s-available .gb-face, .gb-node.skill.s-pending .gb-face { background: var(--c); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--c) 70%, transparent)); }
+.gb-node.skill.s-unlocked .gb-face { background: color-mix(in srgb, var(--board-c) 45%, #fff); filter: drop-shadow(0 0 6px var(--board-c)); }
+.gb-node.skill.s-unlocked .gb-face::before { background: color-mix(in srgb, var(--board-c) 28%, #0b0810); }
+.gb-node.lesson.s-unlocked .gb-face { filter: drop-shadow(0 0 6px var(--neon-gold)); }
+.gb-node.gate.s-available .gb-face, .gb-node.gate.s-unlocked .gb-face { box-shadow: 0 0 12px var(--c), 0 0 4px var(--c); }
+.gb-node.peak .gb-face { border-color: rgba(246, 242, 255, 0.5); }
+.gb-node.s-locked .gb-face { background: rgba(150, 140, 175, 0.08); border: 1px solid rgba(200, 190, 220, 0.16); }
+/* 右のパネル: 金の細いネオンの縁と角の飾り（panel_frame.webp が来たら 9スライスに置き換える） */
+.gb-side { position: relative; margin: 10px 16px 8px 10px; padding: 16px 18px 14px; border: 1px solid color-mix(in srgb, var(--neon-gold) 55%, transparent); border-radius: 12px;
+  background: linear-gradient(180deg, rgba(14, 10, 20, 0.92), rgba(8, 6, 12, 0.95)); box-shadow: 0 0 10px rgba(244, 210, 122, 0.18), inset 0 0 18px rgba(244, 210, 122, 0.05); }
+.gb-side::before, .gb-side::after { content: ""; position: absolute; width: 18px; height: 18px; border: 2px solid var(--neon-gold); filter: drop-shadow(0 0 4px var(--neon-gold)); pointer-events: none; }
+.gb-side::before { left: -2px; top: -2px; border-right: 0; border-bottom: 0; border-radius: 12px 0 0 0; }
+.gb-side::after { right: -2px; bottom: -2px; border-left: 0; border-top: 0; border-radius: 0 0 12px 0; }
+.gb-art { border-color: rgba(244, 210, 122, 0.22); background: radial-gradient(ellipse 55% 70% at 50% 62%, color-mix(in srgb, var(--c, #ffb43c) 30%, transparent), rgba(8, 5, 12, 0.9)); }
+.gb-p-title { font-weight: 900; }
+/* 下の帯 */
+.gb-footer { background: linear-gradient(0deg, rgba(8, 5, 12, 0.95), rgba(8, 5, 12, 0.7)); border-top-color: rgba(244, 210, 122, 0.22); }
+.gb-wallet { padding: 6px 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 180, 60, 0.18); }
+@media (prefers-reduced-motion: reduce) { .gb-node .gb-face { animation: none !important; } }
 .gboard-help .modal-body p { margin: 0 0 10px; line-height: 1.6; }
 .lu-actions { display: flex; justify-content: center; gap: 12px; }
 .levelup .lu-board { min-width: 180px; }
