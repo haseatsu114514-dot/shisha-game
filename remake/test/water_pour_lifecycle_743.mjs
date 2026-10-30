@@ -27,7 +27,9 @@ async function fixture(options={}) {
  const abort=new Target();abort.aborted=!!options.preAborted;abort.abort=()=>{abort.aborted=true;abort.fire('abort')};
  const context=vm.createContext({console,document:doc,window:win,URL,DOMException,Float32Array,Math,Image:class{complete=false;naturalWidth=0},performance:{now:()=>now},devicePixelRatio:1,matchMedia:()=>({matches:false}),ResizeObserver:class{observe(){}disconnect(){}},requestAnimationFrame:fn=>{const id=++seq;rafs.set(id,fn);return id},cancelAnimationFrame:id=>rafs.delete(id),setTimeout:(fn,ms)=>{const id=++seq;timers.set(id,{fn,time:now+ms,ms});return id},clearTimeout:id=>timers.delete(id)});
  const root=path.resolve(tree+'/remake/js/craft');const cache=new Map();
- async function load(file){if(cache.has(file))return cache.get(file);const mod=new vm.SourceTextModule(fs.readFileSync(path.join(root,file),'utf8'),{context,identifier:file,initializeImportMeta(meta){meta.url=new URL('file://'+path.join(root,file)).href}});cache.set(file,mod);await mod.link(s=>load(path.posix.normalize(path.posix.join(path.posix.dirname(file),s))));return mod}
+ async function load(file){if(cache.has(file))return cache.get(file);const mod=file==='common.js'
+  ? new vm.SyntheticModule(['timingLabel'],function(){this.setExport('timingLabel',kind=>({perfect:'EXCELLENT',great:'GOOD',good:'GOOD',miss:'MISS'}[kind]||''))},{context,identifier:file})
+  : new vm.SourceTextModule(fs.readFileSync(path.join(root,file),'utf8'),{context,identifier:file,initializeImportMeta(meta){meta.url=new URL('file://'+path.join(root,file)).href}});cache.set(file,mod);await mod.link(s=>load(path.posix.normalize(path.posix.join(path.posix.dirname(file),s))));return mod}
  const mod=await load('water-pour-view.js');await mod.evaluate();
  const api=mod.namespace.mountWaterPour(panel,{random:()=>.5,endless:!!options.endless,signal:options.signal||options.preAborted?abort:undefined,sound:Object.fromEntries(['click','pour','perfect','miss','good','select'].map(k=>[k,()=>sounds.push(k)]))});
  const settled=[];api.result.then(v=>settled.push({kind:'resolve',value:JSON.parse(JSON.stringify(v))}),e=>settled.push({kind:'reject',name:e.name}));
