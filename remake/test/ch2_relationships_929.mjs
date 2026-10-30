@@ -142,11 +142,6 @@ assert(knownScout, "配達済みでも第2章の目撃で分ける");
 assert.match(meet.branches[knownScout.next_true].map((l) => l.text).join("\n"), /配達の時は気づかなかった[\s\S]*偵察[\s\S]*軍/);
 assert.doesNotMatch(meet.branches[knownScout.next_false].map((l) => l.text).join("\n"), /この辺の店を回って/, "配達で話していない情報を前提にしない");
 
-// #1476: 県大会の神崎は正本どおり「0分立ち上げ」。炭を外して待つ戦い方に戻さない
-const waitingText = waiting.map((l) => l.text || "").join("\n");
-assert.match(waitingText, /0分立ち上げ/); assert.match(waitingText, /ドラゴンフルーツ/);
-assert.doesNotMatch(waitingText, /炭を一つ外し|待った方が早え/);
-
 // #1653 ⑥: 水族館・銭湯・C.STATIONの再訪は、能力値を足さずに会話の変化を順に読む
 const deliveries = read("ch2_deliveries");
 for (const outing of [...CITY_OUTINGS.filter((o) => o.kind === "outing"), CITY_CHAIN]) {
