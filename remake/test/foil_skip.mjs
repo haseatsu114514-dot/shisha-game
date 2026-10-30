@@ -46,7 +46,7 @@ assert.equal(foiled.total, 80, "穴あけ100/炭80/完成60/調整70・90 → �
 const skipped = finalize({ ...base, holes: skippedFoilResult() });
 assert.equal(skipped.foilSkipped, true);
 assert.equal(skipped.total, 75, "穴あけを外し、炭80/完成60/調整70・90を各25%で割り直す = 75");
-assert.equal(skipped.parts.holes, 0, "穴あけの点は0のまま重みだけ外す");
+assert.equal(Object.hasOwn(skipped.parts, "holes"), false, "省略した穴あけは結果の工程一覧にも出さない");
 assert.equal(NAGUMO_BAR, 90.8);
 const tournament = { ...base, mode: "tournament", chapter: 1 };
 assert.equal(finalize({ ...tournament, holes: skippedFoilResult() }).total, 72,
