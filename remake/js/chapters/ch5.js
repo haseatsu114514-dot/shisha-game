@@ -21,7 +21,7 @@ import { finalize } from "../craft/score.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import { servedEvaluationLines } from "../craft/served-eval.js";
 import { naruTastingCategory } from "../craft/naru-tasting.js";
-import { CH5_SCENE_BG, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES, CH5_PREP_TRIALS,
+import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES, CH5_PREP_TRIALS,
   chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho,
   recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
@@ -180,7 +180,7 @@ async function openChapter(advance) {
     }
     if (!current(owner)) return;
     const progress = chapterFiveProgress(state);
-    playBgm("tonari"); // 仮置き: 第5章専用BGMが無いので既存曲を流用（#1177 で差し替え）
+    playBgm(CH5_DEFAULT_BGM); // 仮置き: 第5章専用BGMが無いので既存曲を流用（#1177 で差し替え）
     if (progress.part === "prologue" && !progress.titleSeen) {
       await setBg(bgUrl(CH5_SCENE_BG[CH5_PROLOGUE[0].id]), { instant: true });
       if (!current(owner)) return;
@@ -210,6 +210,8 @@ async function readScene(owner, id) {
   hud();
   await setBg(bgUrl(CH5_SCENE_BG[id]), { instant: true });
   if (!current(owner)) return false;
+  // 節目だけ既存曲へ切り替える（#1668 2-7）。表に無い場面は tonari。
+  playBgm(CH5_SCENE_BGM[id] || CH5_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。
   const controller = new AbortController();
   owner.controller = controller;
@@ -311,12 +313,22 @@ async function renderPrep(owner) {
 async function renderFree(owner) {
   await setBg(bgUrl(CH5_SCENE_BG.ch5_free), { instant: true });
   if (!current(owner)) return;
-  const remaining = chapterFiveFreeRemaining(state);
+  playBgm(CH5_DEFAULT_BGM);
+  const unread = chapterFiveFreeRemaining(state);
+  const remaining = unread.filter(scene => scene.location === "tonari");
   const actions = [];
   if (remaining.length) {
     actions.push(button(owner, `tonari で過ごす（${remaining[0].label}）`, "spend-tonari", async () => {
-      const [next] = chapterFiveFreeRemaining(state);
+      const [next] = chapterFiveFreeRemaining(state).filter(scene => scene.location === "tonari");
       if (!next || !await readAndCommit(owner, next.id)) return;
+      await renderStage(owner);
+    }));
+  }
+  // tonari の外の任意場面（#1588 EDEN）は、それぞれ別の入口から1回だけ。
+  for (const scene of unread.filter(entry => entry.location !== "tonari")) {
+    actions.push(button(owner, `${scene.location} に寄る（${scene.label}）`, `visit-${scene.location.toLowerCase()}`, async () => {
+      if (!chapterFiveFreeRemaining(state).some(entry => entry.id === scene.id)
+        || !await readAndCommit(owner, scene.id)) return;
       await renderStage(owner);
     }));
   }

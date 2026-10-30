@@ -30,6 +30,7 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_free_mashiro_visit: "bg_tonari_inside_day",    // 仮置き bg（台本コメント: tonari・昼）
   ch5_free_first_visitor: "bg_tonari_inside",        // 仮置き bg（台本コメント: tonari・夕）
   ch5_free_tonari_practice: "bg_tonari_inside_night", // 仮置き bg（台本コメント: tonari・夜）
+  ch5_free_eden_adam: "bg_eden_shop",                // #1588 EDENの任意場面（第1・2章のEDENと同じ背景）
   ch5_prep_trial_heat: "bg_tonari_inside_night",     // 仮置き bg（閉店後の試作。以下 ch5_prep_* も同じ）
   ch5_prep_trial_pack: "bg_tonari_inside_night",
   ch5_prep_trial_aroma: "bg_tonari_inside_night",
@@ -71,6 +72,19 @@ export const CH5_SCENE_BG = Object.freeze({
   ending_daily_smoke: "bg_tonari_inside",            // 台本メタデータの指定（bg_tonari_inside）に一致
 });
 
+// ---- BGM の対応表（節目だけ切り替える。無い場面は tonari）---------------------------
+// 第5章専用曲が無いので既存曲の流用（#1668 2-7）。専用曲が入ったらこの表だけ直す。
+export const CH5_DEFAULT_BGM = "tonari";
+export const CH5_SCENE_BGM = Object.freeze({
+  ch5_match_day_arrival: "bgm_tournament_wait",
+  ch5_copy_first_cup: "bgm_tournament_craft",
+  ch5_relationship_before_second_cup: "bgm_tournament_wait",
+  ch5_second_cup_result: "bgm_judging",
+  ch5_second_cup_result_afterglow: "bgm_aftermath",
+  ch5_second_cup_defeat: "bgm_aftermath",
+  ch5_doctor_after_match: "bgm_aftermath",
+});
+
 // ---- 場面表 -------------------------------------------------------------------------
 // プロローグ。橋渡しの位置は※仮置き（CH4-CONNECTION-DESIGN。ch4_two_tables の後という説もある）。
 // ch5_opening は data/story_routes.json の before_match[0] と一致させる。
@@ -79,11 +93,13 @@ export const CH5_PROLOGUE = Object.freeze([
   { id: "ch5_opening", label: "帰郷", location: "橙須" },
 ].map(scene => Object.freeze(scene)));
 
-// 自由行動で再生する場面。昼→夕→夜の順に1回ずつ（台本コメントの時間帯に合わせる）。
+// 自由行動で再生する場面。tonari の3件は昼→夕→夜の順に1回ずつ（台本コメントの時間帯に合わせる）。
+// EDEN の任意場面（#1588）は tonari の並びとは別の入口から、いつでも1回だけ読める。
 export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_free_mashiro_visit", label: "ましろの訪問", location: "tonari" },
   { id: "ch5_free_first_visitor", label: "初めての客", location: "tonari" },
   { id: "ch5_free_tonari_practice", label: "閉店後の練習", location: "tonari" },
+  { id: "ch5_free_eden_adam", label: "二つのダブルアップル", location: "EDEN" },
 ].map(scene => Object.freeze(scene)));
 
 // 閉店後の試作（#1666）。「閉店後の練習」を読んだあと、何を試すか→スミさんが吸って返す→
