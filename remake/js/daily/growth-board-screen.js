@@ -270,8 +270,8 @@ export function openBoard({ place = null } = {}) {
       const have = (v.hidane.any || 0) + (v.hidane[node.board] || 0);
       return `火種があと${node.cost - have}つ要る。火種は貯めておける`;
     }
-    if (!canLight) return `灯せる（${payText(paymentFor(node, v.hidane))}）。観音堂などで内省すると灯せる`;
-    return `${payText(paymentFor(node, v.hidane))}で払う`;
+    if (!canLight) return `灯せる（${payText(paymentFor(node, v.hidane, v.ctx))}）。観音堂などで内省すると灯せる`;
+    return `${payText(paymentFor(node, v.hidane, v.ctx))}で払う`;
   }
 
   function renderFooter(v) {

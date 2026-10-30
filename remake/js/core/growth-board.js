@@ -2,7 +2,7 @@
 // まだ GROWTH_BOARD の裏の試作: 盤の解放は state.stats に書き戻さない（能力の効き目の付け替えは C5）。
 import { state } from "./state.js";
 import { affinityLevel } from "./stats.js";
-import { ensureGrowth, HIDANE_KEYS, noteLit } from "./growth.js";
+import { ensureGrowth, HIDANE_KEYS, noteLit, BOARD_TOTAL } from "./growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_PREFIX, STAT_SQUARES, BOARD_SHAPES,
   SKILLS, LESSONS, LESSON_MIN_STEP, RANKS, PEAK_CELL,
@@ -138,22 +138,40 @@ export function lessonLock(node, unlocked, s = state) {
 }
 
 /**
- * 払い方。その盤の色の火種を先に使い、足りない分を万能で（1.9）。払えなければ null。
- * 関門は色つきの火種でだけ越えられる: その盤の色を先に、無ければほかの色でもよい（色が偏っても詰まらないように）。
+ * 払い方（1.9。2026-10-30 #1801 の引継ぎ B「色の火種で詰まらない」）。払えなければ null。
+ * - 能力のマス・スキルは **万能を先に** 使う。足りない分だけ、その盤の色を使う。ただし、まだ越えていない
+ *   関門の数（ctx.reserve）ぶんの色は残す（色を普通のマスに使い切って関門を越えられなくならないように）。
+ * - 関門は色つきの火種1つ。その盤の色を先に、無ければほかの色でもよい。受け取りが上限に届いて
+ *   もう色が来ない時（ctx.capped）だけ、万能1つでも越えられる（総量は増やさない）。
  */
-export function paymentFor(node, hidane) {
+export function paymentFor(node, hidane, ctx = {}) {
   if (!node.cost) return {};
   if (node.kind === "gate") {
     const color = [node.board, ...BOARD_KEYS.filter((b) => b !== node.board)].find((b) => (hidane[b] || 0) >= node.cost);
-    return color ? { [color]: node.cost } : null;
+    if (color) return { [color]: node.cost };
+    return ctx.capped && (hidane.any || 0) >= node.cost ? { any: node.cost } : null;
   }
   const pay = {};
   let left = node.cost;
-  const own = Math.min(left, hidane[node.board] || 0);
-  if (own) { pay[node.board] = own; left -= own; }
   const any = Math.min(left, hidane.any || 0);
   if (any) { pay.any = any; left -= any; }
+  const colored = BOARD_KEYS.reduce((n, b) => n + (hidane[b] || 0), 0);
+  const spare = Math.max(0, colored - (ctx.reserve || 0));
+  let free = spare;
+  const own = Math.min(left, hidane[node.board] || 0, free);
+  if (own) { pay[node.board] = own; left -= own; free -= own; }
+  // もう火種が来ない時だけ、ほかの盤の色でも払える（色の行き違いで最後のマスが取れなくならないように）
+  if (ctx.capped) for (const b of BOARD_KEYS) {
+    if (b === node.board || left <= 0) continue;
+    const n = Math.min(left, hidane[b] || 0, free);
+    if (n) { pay[b] = n; left -= n; free -= n; }
+  }
   return left > 0 ? null : pay;
+}
+/** 払い方の前提: まだ越えていない関門の数と、受け取りが上限に届いたか */
+export function payContext(g, unlocked) {
+  const reserve = NODES.filter((n) => n.kind === "gate" && !unlocked.has(n.id)).length;
+  return { reserve, capped: (g.earned || 0) >= BOARD_TOTAL };
 }
 const spend = (hidane, pay) => { for (const [k, n] of Object.entries(pay)) hidane[k] -= n; };
 
@@ -177,7 +195,7 @@ export function replay(g, pendingIds, s = state) {
     for (const id of rest) {
       const node = NODE_BY_ID[id];
       if (!reachable(node, unlocked, s)) continue;
-      const pay = paymentFor(node, hidane);
+      const pay = paymentFor(node, hidane, payContext(g, unlocked));
       if (!pay) continue;
       spend(hidane, pay);
       unlocked.add(id);
@@ -187,7 +205,7 @@ export function replay(g, pendingIds, s = state) {
     }
     rest = rest.filter((id) => !unlocked.has(id));
   }
-  return { pending: kept, unlocked, hidane, pays };
+  return { pending: kept, unlocked, hidane, pays, ctx: payContext(g, unlocked) };
 }
 
 /**
@@ -200,7 +218,7 @@ export function nodeStatus(node, g, view, s = state) {
   if (node.ring > ringsOpen(s)) return "locked";
   if (lessonLock(node, view.unlocked, s)) return "sealed";
   if (!connected(node, view.unlocked)) return "far";
-  return paymentFor(node, view.hidane) ? "available" : "short";
+  return paymentFor(node, view.hidane, view.ctx) ? "available" : "short";
 }
 
 /** 仮置きを確定する。払った種類を記録し（組み直しで同じ種類に戻すため）、確定したマスを返す */
@@ -264,10 +282,14 @@ export function ringFill(g, ring) {
   return { got, total };
 }
 
-/** 今の盤で使い道のある火種があるか（未使用の印を出す条件。REPORT R6） */
+/**
+ * 今の盤でできることがあるか（内省に入れる・未使用の印の条件。REPORT R6）。
+ * 火種で灯せるマスに加えて、火種いらずの授業が受けられる時も true（2026-10-30 オーナー
+ * 「火種が隣接してる授業は章的に開放されてたら無料で受けられる」。#1801 引継ぎ A）。
+ */
 export function hasUsableHidane(g, s = state) {
   const view = replay(g, [], s);
-  return NODES.some((node) => node.cost > 0 && nodeStatus(node, g, view, s) === "available");
+  return NODES.some((node) => nodeStatus(node, g, view, s) === "available");
 }
 
 /** その盤で今取れるマスの数（札の印） */
