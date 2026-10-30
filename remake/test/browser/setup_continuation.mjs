@@ -19,7 +19,7 @@ await suite("setup-continuation", async check => {
       await page.route(`**/skin-candidates-issue374/${file}`, route => route.fulfill({ contentType: "application/json", body: sourceFile(file) }));
     }
     const pixel = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jR4sAAAAASUVORK5CYII=", "base64");
-    await page.route("**/skin-candidates-issue374/*.png", route => route.fulfill({ contentType: "image/png", body: pixel }));
+    await page.route("**/remake/img/appearance/*.png", route => route.fulfill({ contentType: "image/png", body: pixel }));
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
       const session = await import("./js/craft/session.js");
@@ -33,6 +33,9 @@ await suite("setup-continuation", async check => {
     });
     await page.locator('[data-test="worker-appearance"] [data-id="handle-01-yoshio"]').waitFor();
     await page.locator('[data-test="worker-appearance"] [data-id="mouthpiece-01-crystal-drop"]').waitFor();
+    assert.deepEqual(await page.locator('[data-test="worker-appearance"] image').evaluateAll(nodes => nodes.map(node => new URL(node.getAttribute("href")).pathname)), [
+      "/remake/img/appearance/handle-01-yoshio.png", "/remake/img/appearance/mouthpiece-01-crystal-drop.png",
+    ]);
     await page.locator('[data-test="bench-appearance-open"]').click();
     await page.locator('[data-test="appearance-handle"]').selectOption("handle-02-shishark-blue");
     await page.locator('[data-test="appearance-cancel"]').click();

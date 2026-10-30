@@ -47,6 +47,8 @@ jobs:
             /tools/browser/flavor_stats_editor.html
             /tools/title-review/
             /tools/ci/lfs_images.sh
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json
+            /asset_sources/shisha-hardware-reference/skin-candidates-issue374/render-preview.json
       # 新しく追加した画像は Git LFS に入っている。全部取得しないと本番で
       # 131バイトのポインタが画像の代わりに配信される（告白CG・限定フレーバー等）。
       # LFSの実体はキャッシュし、新しい画像の分だけダウンロードする。
@@ -89,6 +91,10 @@ jobs:
           # 現行版は共有JSONを直接読む
           cp -r remake _site/remake
           cp -r data _site/data
+          # 外観の正本メタデータだけ公開。原画・写真・生成指示は配信しない。
+          appearance_source=asset_sources/shisha-hardware-reference/skin-candidates-issue374
+          mkdir -p "_site/$appearance_source"
+          cp "$appearance_source/"{candidates.json,render-preview.json} "_site/$appearance_source/"
           # 本編が使用する既存ハリボテ歩行のみを同じ相対パスで配信。
           mkdir -p _site/experiments/proto/street
           cp experiments/proto/street/{index.html,street.js,stage_hankagai.json,stage_hankagai_hd.json,stage_hankagai_set.json} _site/experiments/proto/street/
