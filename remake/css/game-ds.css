@@ -661,3 +661,4 @@ body.game-ds .pull-life-label { display: none; }
 body.game-ds .dodge-action .refresh-copy, body.game-ds .precision-copy .refresh-copy { display: none; }
 /* 配合の温度計: 「低め／高め」の細かい行は省く（緑の帯と「おいしい範囲」で足りる）。 */
 body.game-ds .mix-temperature-legend > :nth-child(2) { display: none; }
+body.game-ds .bench[data-step="mix"] .mix-footer > .btn { white-space: nowrap; }
