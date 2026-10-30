@@ -30,6 +30,103 @@ async function setup(page, restore = false) {
 }
 
 await suite("lover-milestones", async check => {
+  await check("milestone-exp-notice", async page => {
+    await setup(page);
+    await page.evaluate(async () => {
+      const growth = await import("./js/core/growth.js");
+      growth.setGrowthPreview(true); M.fresh("rin");
+      const hud = await import("./js/daily/hud.js"), ui = await import("./js/core/ui.js");
+      ui.showScreen("map", document.createElement("div"));
+      hud.initHud({}); hud.showHud(true);
+      await M.romance.playLoverMilestone("rin");
+    });
+    const chip = page.locator('[data-test="exp-chip"]');
+    await chip.waitFor();
+    assert.match(await chip.textContent(), /EXP\s*\+25/);
+    assert.equal(await page.locator(".gain-card.stat").count(), 0);
+    assert.doesNotMatch(await page.evaluate(() => M.vn.backlog().map(line => line.text).join(" ")), /【(?:技術|センス|根性|魅力|洞察)】.*上が/);
+  }, { reducedMotion: "reduce" });
+
+  await check("exp-only-all-milestones", async page => {
+    await setup(page);
+    const result = await page.evaluate(async () => {
+      const growth = await import("./js/core/growth.js"), bus = await import("./js/core/bus.js");
+      const records = [], gains = [];
+      bus.on("stat-gain", payload => gains.push(payload));
+      for (const enabled of [false, true]) {
+        growth.setGrowthPreview(enabled);
+        for (const id of ["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"]) {
+          let s = M.fresh(id); s.loveLevel[id] = 5; s.lovePts[id] = 72;
+          s.flags._intro_samechan = s.flags._samechan_nickname_known = true;
+          const before = { ...s.stats }, xp = { ...s.statXp };
+          for (let level = 1; level <= 5; level++) {
+            // 能力候補が精算される消耗ありの行動内でも、節目は経験値のみ。
+            await M.stats.paidAction(async () => {
+              await M.romance.playLoverMilestone(id); M.stats.addStamina(-1);
+            });
+            M.core.save(); M.core.load(); s = M.core.state;
+          }
+          const earned = s.growth?.xp || 0;
+          await M.vn.play(`lover_${id}_lv1`); // 開発口で直接再読しても付け直さない。
+          records.push({ enabled, id, before, after: { ...s.stats }, xp, afterXp: { ...s.statXp },
+            earned, repeated: s.growth?.xp || 0, seen: s.loverEventsSeen.length });
+        }
+        // ひよりはLv別台本を持たず、専用の恋人場面をデート後に読む。
+        const hiyori = await import("./js/daily/hiyori.js");
+        const s = M.fresh("hiyori"); s.loveLevel.hiyori = 2; s.flags._hiyori_work_talk_done = true;
+        const before = { ...s.stats }, xp = { ...s.statXp };
+        await hiyori.playHiyoriEvent("feelings_spoken");
+        const earned = s.growth?.xp || 0;
+        await M.vn.play("hiyori_feelings_spoken");
+        records.push({ enabled, id: "hiyori", before, after: { ...s.stats }, xp, afterXp: { ...s.statXp },
+          earned, repeated: s.growth?.xp || 0, seen: Number(!!s.flags._hiyori_feelings_spoken) });
+      }
+      return { records, gains };
+    });
+    assert.equal(result.records.length, 14);
+    for (const r of result.records) {
+      assert.deepEqual(r.after, r.before, `${r.id}: ability changed`);
+      assert.deepEqual(r.afterXp, r.xp, `${r.id}: ability progress changed`);
+      assert.equal(r.earned, r.enabled ? (r.id === "hiyori" ? 25 : 125) : 0, `${r.id}: chapter-2 initial reads`);
+      assert.equal(r.repeated, r.earned, `${r.id}: replay reward`);
+      assert.equal(r.seen, r.id === "hiyori" ? 1 : 5);
+    }
+    assert.deepEqual(result.gains, []);
+  }, { reducedMotion: "reduce" });
+
+  await check("exp-cancel-load-and-legacy", async page => {
+    await setup(page);
+    const result = await page.evaluate(async () => {
+      const growth = await import("./js/core/growth.js");
+      growth.setGrowthPreview(true);
+      let s = M.fresh("rin");
+      const abort = new AbortController();
+      M.vn.vnTest.turbo = false;
+      const pending = M.romance.playLoverMilestone("rin", { signal: abort.signal });
+      abort.abort(); await pending;
+      const cancelled = { xp: s.growth?.xp || 0, seen: [...s.loverEventsSeen], stats: { ...s.stats } };
+      M.vn.vnTest.turbo = true;
+      await M.romance.playLoverMilestone("rin");
+      const completed = s.growth.xp;
+      M.core.save(); M.core.load();
+      await M.vn.play("lover_rin_lv1");
+      const loaded = M.core.state.growth.xp;
+      s = M.fresh("rin"); s.loverEventsSeen = ["lover_rin_lv1"];
+      M.core.save(); M.core.load(); await M.vn.play("lover_rin_lv1");
+      const legacy = M.core.state.growth?.xp || 0;
+      s = M.fresh("rin"); M.vn.vnTest.turbo = false;
+      const old = M.vn.play("lover_rin_lv1");
+      M.fresh("rin"); M.vn.vnTest.turbo = true;
+      // 消滅したownerの会話を最後まで送っても新しいセーブへ付けない。
+      while (M.vn.isPlaying()) { document.querySelector('[data-test="vn-auto"]')?.click(); await new Promise(r => setTimeout(r, 20)); }
+      await old;
+      return { cancelled, completed, loaded, legacy, stale: M.core.state.growth?.xp || 0 };
+    });
+    assert.equal(result.cancelled.xp, 0); assert.deepEqual(result.cancelled.seen, []);
+    assert.equal(result.completed, 25); assert.equal(result.loaded, 25);
+    assert.equal(result.legacy, 0); assert.equal(result.stale, 0);
+  }, { reducedMotion: "reduce" });
+
   for (const [mode, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     const opts = { ...options, reducedMotion: "reduce" };
     const press = (page, selector) => options.hasTouch ? page.locator(selector).tap() : page.locator(selector).click();
