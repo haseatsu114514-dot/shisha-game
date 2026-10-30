@@ -32,6 +32,11 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // 台本が「東京のシーシャ店で感じた差」を受けている。違う店の手つきを見た後に置く。
   ch3_mashiro_practice: { file: "ch3_mashiro", label: "閉店後の練習", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_tokyo_shop_gap"] },
+  // 久世とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、久世側はmukaiへ客として来た後。
+  ch3_kuze_mashiro_tea_tin: { file: "ch3_kuze_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_kuze_first"] },
+  ch3_kuze_mashiro_soon_back: { file: "ch3_kuze_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_kuze_mukai_visit"] },
 });
 
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
@@ -40,6 +45,7 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace"],
   ch3_rivals: ["ch3_emil_workshop"],
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice"],
+  ch3_kuze_mashiro: ["ch3_kuze_mashiro_tea_tin", "ch3_kuze_mashiro_soon_back"],
   // 第3章で再生しうるのは date_min_chapter が3以下の恋人だけ（あげはは第4章から）。
   tournament_dates: ["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_rin",
     "tournament_date_mashiro", "tournament_date_samechan", "tournament_date_hiyori"],
