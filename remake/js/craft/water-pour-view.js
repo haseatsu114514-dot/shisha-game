@@ -5,6 +5,7 @@ import {
   POUR, interior, capacityArea, rotate, rotatedInterior, areaBelow, surfaceY, lip, holdable,
   toMl, levelErrorMm, gradePour, formatError, pickTarget,
 } from "./water-pour.js";
+import { timingLabel } from "./common.js";
 
 const DEG = Math.PI / 180;
 const VIEW = { x: 90, y: -200, w: 1270, h: 1330 }; // 原画座標で見せる範囲
@@ -410,7 +411,7 @@ export function mountWaterPour(panel, {
       spilledMl: Math.round(toMl(spilledArea)), pours,
     };
     status.textContent = "";
-    const stampText = { perfect: "EXCELLENT", great: "GREAT", good: "GOOD", miss: "MISS" }[grade.kind];
+    const stampText = timingLabel(grade.kind);
     result.replaceChildren(
       h(`b.wpour-stamp.${grade.kind}`, { text: stampText }),
       h("p.wpour-grade", { text: `${grade.label}　目安線から ${formatError(errorMm)}` }),

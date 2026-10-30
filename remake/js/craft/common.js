@@ -70,7 +70,7 @@ export function keys(map, { actionSpace = false } = {}) {
 /** 表示名だけを統一する。内部の判定種別・点数・成功幅はそのまま使う。 */
 export function timingLabel(kind, fallback = "") {
   if (kind === "perfect" || kind === "just") return "EXCELLENT";
-  if (kind === "good") return "GOOD";
+  if (kind === "great" || kind === "good") return "GOOD";
   if (kind === "bad" || kind === "miss") return "MISS";
   return fallback;
 }
