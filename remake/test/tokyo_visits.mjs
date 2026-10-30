@@ -40,11 +40,18 @@ for (const id of ["tsumugi", "minto", "rin", "samechan", "hiyori"]) {
   assert(!bookTokyoVisit(value, definitions, proposal), "Repeated acceptance double booked");
   const plan = value.tokyoVisits.plans[0];
   assert.equal(characterRegion(value, definitions, id), "home", "Booking teleported a guest");
+  // 予約のない空き時間（#1655 で会員でなくても開く）は休んで閉じ、訪問の枠だけを検査する。
+  const skipOpen = () => {
+    for (let window; (window = chapterThreeFreeTime(value)) && !dueTokyoVisit(value, window);) {
+      assert(completeChapterThreeFreeTime(value, window.id));
+    }
+  };
   for (let i = 0; i < CH3_INTRO_SCENES.length; i++) {
+    skipOpen();
     const free = chapterThreeFreeTime(value);
     if (free) throw new Error("An action was not closed before the next story scene");
     assert(completeChapterThreeScene(value, CH3_INTRO_SCENES[i].id));
-    for (let window; (window = chapterThreeFreeTime(value));) {
+    for (let window; (skipOpen(), window = chapterThreeFreeTime(value));) {
       assert.equal(value.day, window.day); assert.equal(value.slot, window.slot);
       assert.equal(characterRegion(value, definitions, id), "tokyo");
       assert(dueTokyoVisit(value, window));

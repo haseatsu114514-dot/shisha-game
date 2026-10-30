@@ -28,6 +28,7 @@ function wrapNote(note) {
 
 export function audienceFor(mode, chapter) {
   if (mode === "tournament") return chapter === 3 ? ["nagumo", "emil", "dr_kemuri"]
+    : chapter === 4 ? ["nagumo", "emil", "da_silva"]
     : [1, 2].includes(chapter) ? ["nagumo", "maezono", "dr_kemuri"] : [];
   if (mode === "drill") return ["hajime"];
   return mode === "tutorial" || mode === "rehearsal" ? ["sumi"] : [];
@@ -35,6 +36,8 @@ export function audienceFor(mode, chapter) {
 
 const STEP_JUDGE = { setup: "dr_kemuri", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri" };
 const STEP_JUDGE_CH3 = { ...STEP_JUDGE, mix: "emil", steam: "emil", pull: "emil", care: "nagumo" };
+// 第4章 GRAND SMOKE: 博士の席（手元の技術）をゲスト審査員ダ・シルヴァが見る。
+const STEP_JUDGE_CH4 = { ...STEP_JUDGE_CH3, setup: "da_silva", pack: "da_silva", holes: "da_silva", heat: "da_silva", place: "da_silva" };
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
 // 採用済みの顔アイコンと同じ頭部の切り取り（tools/make_face_icons.py の face_box）。
 // 通常絵の x / y / 辺を画像幅で正規化。胴体の中心へ寄せず、表情差分の原画をこの枠へ表示する。
@@ -102,7 +105,7 @@ export function buildAudience(cs) {
     root,
     setStep(hint, id) {
       step = id;
-      const judge = cs.chapter === 3 ? STEP_JUDGE_CH3[id] : STEP_JUDGE[id];
+      const judge = cs.chapter === 4 ? STEP_JUDGE_CH4[id] : cs.chapter === 3 ? STEP_JUDGE_CH3[id] : STEP_JUDGE[id];
       primary = ids.includes(judge) ? judge : ids[0];
       showPerson(primary, "watch");
       mark.hidden = true; caption.textContent = active === "hajime" ? "心の声" : ""; delete root.dataset.tone;

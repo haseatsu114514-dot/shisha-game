@@ -106,6 +106,10 @@
           "speaker": "",
           "face": "",
           "text": "あげはは手を振って、甘い匂いを残して帰っていった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_today"
         }
       ],
       "branches": {
@@ -292,6 +296,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……ありがとうございます。大事にします"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_words"
         },
         {
           "type": "condition",
@@ -549,6 +557,10 @@
           "speaker": "ageha",
           "face": "normal",
           "text": "……ハジメっち。取材、ちょっと楽しみになったかも"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_roles"
         }
       ],
       "branches": {
@@ -924,6 +936,26 @@
           "text": "甘さが消えたあと、一拍だけ残る。……曲と曲の間みたいに"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "同じ一台を回したのに、誰の苺も少しずつ違っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "え〜、わたしのはミルクっぽかったよ？ 同じ台なのに"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "吐くの早いんだよ。鼻に抜くと、奥に紅茶が残ってる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "誰の舌も外れちゃいねえ。同じ苺の、違う所を拾ってるだけでさ"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（菓子、宇宙、お客さん、顔、熱、音。みんな、自分の言葉で吸ってる）"
@@ -995,6 +1027,10 @@
         {
           "type": "set_flag",
           "flag": "_ch2_scout_seen"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_scout_tasting"
         },
         {
           "type": "choice",
@@ -1255,6 +1291,11 @@
             "text": "お客さんの顔を思い浮かべるかな。誰に出したいか、って"
           },
           {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……後味だけ、探す。最後に何が残るか"
+          },
+          {
             "speaker": "hajime",
             "face": "normal",
             "text": "（どれも、毎日の積み重ねで作った物差しだ。一晩で真似できるものじゃない）"
@@ -1317,19 +1358,20 @@
     },
     {
       "dialogue_id": "remake_ch2_ageha_slump",
+      "comment": "DAY10夜。ノートを受け取りに寄った閉店間際のtonari。このあと ch2_sumi_silence（駅まで送って店へ戻る）へ続く（#1733）",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "家に着いても、今日の煙のことが頭から離れなかった。"
+          "text": "夜。昼間預けた配合ノートを受け取りに、閉店間際のtonariへ寄った。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "眠れそうになくて、閉店間際のtonariへ引き返した。片づけ前に一台だけ組んでいると、ドアが開いた。"
+          "text": "スミさんに断って、片づけ前に一台だけ組んでいると、ドアが開いた。"
         },
         {
           "speaker": "ageha",

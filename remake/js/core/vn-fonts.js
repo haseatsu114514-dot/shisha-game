@@ -8,7 +8,7 @@ export function loadVnFonts() {
       const sample = "水煙前線 名前と会話 あいうえお";
       return Promise.all([
         document.fonts.load('700 20px "Suien Name"', sample),
-        document.fonts.load('400 20px "Suien Reading Mincho"', sample),
+        document.fonts.load('400 20px "Suien Blue Mincho"', sample),
       ]);
     }).catch((error) => {
       vnFontsPromise = null; // 先読み失敗後は会話開始時に再試行できる

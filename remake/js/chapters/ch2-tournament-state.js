@@ -1,9 +1,15 @@
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
+import { MAX_MONEY } from "../core/rules.js";
+
+// 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
+export const CH2_PRIZE = 50000;
 export const CONTESTANTS = ["hajime", "ageha", "kumicho", "rei"];
 export const JUDGES = ["maezono", "dr_kemuri", "nagumo"];
 export const SPEND = [2, 3, 2, 3];
 // 初期調整値。章2の比較用の出来であり、キャラクターの能力値ではない。
-export const RIVAL_QUALITY = { ageha: 75, kumicho: 80, rei: 78 };
+// あげは77は上園の好み補正(+4)で81となり、神崎80・REI79を上回る（#1649）。はじめがどの出来でも
+// 上園の上位2人に入り、毎回の票に強さが出る。はじめの全審査員1位の境目（チャコール博士の83）は変えない。
+export const RIVAL_QUALITY = { ageha: 77, kumicho: 80, rei: 78 };
 
 // 審査員の品質比重・好み比重の正本定義（qualityWeight + prefWeight = 1.0）。
 // maxPrefDelta は設定パラメータではなく、BASE_PREF_SCALE * prefWeight から一意に導出する。
@@ -43,7 +49,7 @@ export function tournamentProgress(value) {
   if (value.chapter !== 2) throw new Error("第2章の保存ではありません");
   const p = value.flags._ch2_tournament ||= {
     version: 1, stage: "entry", attempts: 0, step: 0, craft: null, rollback: null,
-    votes: {}, voted: 0, result: null, history: [], entry: null,
+    votes: {}, voted: 0, result: null, history: [], entry: null, prizePaid: false,
   };
   if (p.version !== 1 || !Number.isInteger(p.step) || p.step < 0 || p.step > 11
     || !Array.isArray(p.history)) throw new Error("県大会の保存地点を確認できません");
@@ -128,6 +134,11 @@ export function recordResult(value, total) {
   const rows = standings(p);
   p.result = { attempt: p.attempts, total, rank: rows.find(row => row.id === "hajime").rank,
     rows, votes: copy(p.votes), careHistory: copy(p.craft.careHistory) };
+  // 賞金は優勝の確定と同じ更新で一度だけ渡す（再挑戦・LOADで二重に付けない）。
+  if (p.result.rank === 1 && !p.prizePaid) {
+    p.prizePaid = true;
+    value.money = Math.min(MAX_MONEY, Math.max(0, Math.round((value.money || 0) + CH2_PRIZE)));
+  }
   p.history.push(copy(p.result));
   return p.result;
 }
