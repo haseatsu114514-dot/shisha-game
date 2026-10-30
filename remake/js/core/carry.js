@@ -391,6 +391,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_choizap_minto", "person"],
   ["_spot_seen_choizap_naru", "person"],
   ["_spot_seen_choizap_oldman", "progression"],
+  ["_spot_seen_cs_kemuri_sample", "person"],
   ["_spot_seen_kannon_adam", "person"],
   ["_spot_seen_kannon_adam_pakki", "person"],
   ["_spot_seen_kannon_oldman", "progression"],
