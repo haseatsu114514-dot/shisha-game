@@ -331,16 +331,16 @@ function renderMap() {
     for (const other of pins) { other.classList.toggle("sel", other === pin); other.setAttribute("aria-pressed", String(other === pin)); }
     const pending = deliveryPending(state, stop.id);
     const isStation = stop.id === "station";
-    info.replaceChildren(
+    const details = [
       el("h2.mi-banner", { text: stop.name }),
       el("p.mi-desc", { text: isStation ? returnNote : stop.outing || stop.shop ? stop.dayOneDesc || stop.desc
         : stop.id === "c_station" ? "C.STATIONと同じビルの県大会ホール。入口と搬入場所を確認する。"
         : pending ? "tonariから預かった包みを渡して、ご挨拶しよう。" : "顔を見て挨拶した店。中をのぞくこともできます。" }),
-      el("p.mi-foot", { text: stop.outing ? "今日は下見。配達の合間に立ち寄れます。" : "初日の配達・下見は代金と行動を使いません。" }),
-      isStation && !canReturn ? el("p.mi-no", { text: returnNote })
-        : el("button.mi-go", { type: "button", dataset: { test: test("go") }, disabled: session.busy,
-          text: isStation ? "tonariへ戻る" : pending ? "配達して挨拶する" : stop.shop ? "仕入れに行く" : stop.outing ? "立ち寄る" : "ここへ行く", onclick: () => go(stop) }),
-    );
+    ];
+    if (!isStation) details.push(el("p.mi-foot", { text: stop.outing ? "今日は下見。配達の合間に立ち寄れます。" : "初日の配達・下見は代金と行動を使いません。" }));
+    if (!isStation || canReturn) details.push(el("button.mi-go", { type: "button", dataset: { test: test("go") }, disabled: session.busy,
+      text: isStation ? "tonariへ戻る" : pending ? "配達して挨拶する" : stop.shop ? "仕入れに行く" : stop.outing ? "立ち寄る" : "ここへ行く", onclick: () => go(stop) }));
+    info.replaceChildren(...details);
   };
   for (const stop of stops) {
     const done = deliveries?.done?.[stop.id];
@@ -358,8 +358,7 @@ function renderMap() {
     pins.push(pin);
   }
   info.append(el("h2.mi-banner", { text: "配達しながら、街を知ろう" }),
-    el("p.mi-desc", { text: deliveries?.accepted ? "三つの包みと会場の下見。回る順番は自由です。行き先を選んでから、出発しよう。" : "会場の確認と、新しい店へのご挨拶。行き先を選ぼう。" }),
-    el("p.mi-foot", { dataset: { test: test("progress") }, text: progressText() }));
+    el("p.mi-desc", { text: deliveries?.accepted ? "三つの包みを届けて、会場を下見しよう。回る順番は自由です。行き先を選ぼう。" : "会場の確認と、新しい店へのご挨拶。行き先を選ぼう。" }));
   if (!deliveries) info.append(button("スミさんの配達メモ", "delivery-offer", async () => {
     if (!await scene("remake_ch2_delivery_offer", "スミさんからの配達", MAP.day)) return;
     acceptChapterTwoDeliveries(state); save();
@@ -367,8 +366,7 @@ function renderMap() {
   }));
   const root = el("main.map.ch2-shell.ch2-map.ch2-map-main", { class: session.mapAvailable ? "" : "is-map-missing", dataset: { test: test("map"), phase: session.mapAvailable ? "ready" : "unavailable" } }, [
     el("div.map-pins", { "aria-label": `${CH2_CITY_NAME}の行き先` }, pins), info,
-    el("aside.map-notice.ch2-route-note", [el("strong", { text: "配達と会場の下見" }), el("span", { text: progressText(), dataset: { test: test("route-progress") } }),
-      el("span", { text: canReturn ? "地図の駅から地元へ戻れます。" : returnNote })]),
+    el("aside.map-notice.ch2-route-note", [el("strong", { text: "進み具合" }), el("span", { text: progressText(), dataset: { test: test("route-progress") } })]),
   ]);
   if (!session.mapAvailable) root.append(el("div.map-notice.ch2-map-warning", { role: "status" }, [el("span", { text: "地図の絵を読み込めませんでした。行き先は選べます。" }), button("再読み込み", "retry-map", async () => { if (await mapBackground()) renderMap(); })]));
   showScreen("map", root);
