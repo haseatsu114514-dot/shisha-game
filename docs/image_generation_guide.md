@@ -1,6 +1,6 @@
 # 画像生成ガイド（コピペ用の指示例つき）
 
-> 2026-10-07: 旧 `web/` は削除済み（2026-10-09に取り込みコマンドを現行の `build_manifest.py` へ更新）。現行版の画像取り込み・制作手順は `CLAUDE.md`、`.claude/skills/` の該当スキル、`remake/README.md` を参照する。
+> 2026-10-07: 旧 `web/` は削除済み（2026-10-09に取り込みコマンドを現行の `build_manifest.py` へ更新）。現行版の画像取り込み・制作手順は `docs/asset_ai_guidance.md`、`.claude/skills/` の該当スキル、`remake/README.md` を参照する。
 
 ChatGPT等で画像を作る → `tools/pixelize.py` に通す → ゲームに入る、までの手順書。
 

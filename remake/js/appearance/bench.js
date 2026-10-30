@@ -61,5 +61,6 @@ export function attachBenchAppearance(bench, cs) {
       }
     },
   });
-  root.append(button);
+  // 上部バーの流れに置き、工程表示・大会MENU・？ガイドに重ねない。
+  (root.querySelector(".bench-top") || root).append(button);
 }

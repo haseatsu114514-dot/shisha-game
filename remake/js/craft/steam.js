@@ -6,7 +6,8 @@ import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { tier01, star } from "../core/stats.js";
+import { tier01, step } from "../core/stats.js";
+import { REFRESH_RADII, REFRESH_LABELS, refreshRestoresMental } from "../core/stat-step-tables.js";
 import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
@@ -33,15 +34,12 @@ const OBJECTS = ["coal", "orb", "orb", "smoke"];
 
 // SF63: 一度に1回分を持ち、使用後8秒でリチャージ。根性は範囲と回復に効く。
 export const REFRESH_RECHARGE_SECONDS = 8;
-// E11: dodge枠は784×414px。短辺414pxに対する半径はLv1〜4で
-// 約22%→36%→53%→75%。初期は旧180px（約43%）の半分にし、
-// +60/+70/+90pxで段階差を広げる。Lv5の全消去は維持する。
-const REFRESH_RADII = Object.freeze([90, 150, 220, 310, Infinity]);
+// dodge枠は784×414px。根性1段の半径90pxから10段の画面全体まで広がる。
 export function refreshStock() { return 1; }
 export function refreshEffect() {
-  const level = star("guts");
-  return { radius: REFRESH_RADII[level - 1], mentalRecovery: level >= 3,
-    label: ["小さな範囲", "少し広い範囲", "広い範囲", "かなり広い範囲", "画面全体"][level - 1] };
+  const level = step("guts");
+  return { radius: REFRESH_RADII[level - 1], mentalRecovery: refreshRestoresMental(level),
+    label: REFRESH_LABELS[level - 1] };
 }
 
 export async function runSteamDodge(cs) {

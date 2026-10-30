@@ -1,7 +1,7 @@
-# 『ケムリの向こう側』共同制作向け・設定資料集
+# 『水煙前線 -EN:CODE-』共同制作向け・設定資料集
 
 - **参照commit**：`origin/main` `54a6d87f`（2026-10-28 確認）
-- **確認日**：2026-10-28
+- **確認日**：2026-10-28（2026-10-30 に蒸らしタイマー・メーカー数・機材価格・タイトル表記を `data/` と実装に合わせて修正）
 - **位置づけ**：正本は [`docs/master_spec.md`](../master_spec.md)・[`docs/owner_requests.md`](../owner_requests.md)・[`brand/story_and_structure.md`](../../brand/story_and_structure.md)・[`brand/character_profiles.md`](../../brand/character_profiles.md)・[`data/characters.json`](../../data/characters.json) 等であり、**この資料集は二次資料**です。正本と食い違いがある場合は正本を優先します。
 - **照合範囲（2026-10-28 司令塔レビュー）**：フレーバー収録数・価格・リーフ種別（`data/flavors.json` を集計）、主要人物の氏名・読み・年齢（`data/characters.json`）、章タイトル・大会名・課題、魅力ボーナス額（`remake/js/daily/tonari.js`）は正本と照合済み。人物の一人称・呼称表、店舗・スポットの説明文、各章あらすじの細部は**全件照合が未了**のため、正本と食い違う場合は正本を優先してください（身長は資料集から外し、[`brand/character_profiles.md`](../../brand/character_profiles.md) を参照）。
 - **ステータス区分**：
@@ -15,7 +15,7 @@
 
 ブラウザで立ち絵・背景・イベントCG・配色込みで一覧できる1枚HTML版：
 - **ローカルで開く**: [`docs/setting_reference.html`](../setting_reference.html)
-- **再生成**: `python3 tools/build_setting_reference.py`
+- **再生成**: `python3 tools/build_setting_reference.py`（本文データはスクリプト内に持つため、MDを直した後にスクリプトも同じ内容へ直して再生成する。HTMLは生成物で、MDより古い場合がある）
 
 ---
 
@@ -28,18 +28,18 @@
 | **03** | [`03_world_shops.md`](03_world_shops.md) | 4つの舞台（橙須・柚ヶ谷・東京・ドバイ）・シーシャ店・街スポット・電車移動・日常パートと1日の流れ |
 | **04** | [`04_glossary.md`](04_glossary.md) | 作中用語・シーシャ機材＆工程（水入れ・炭・キッチンタイマー蒸らし等）・UI/LIME・小ネタ解説 |
 | **05** | [`05_tournament.md`](05_tournament.md) | 大会システム（全章4人同時1試合制）・大会採点（5工程各20%＋別枠の加点・投票）・各章課題と特別審査ルール・クラフト工程 |
-| **06** | [`06_flavors_recipes.md`](06_flavors_recipes.md) | 5メーカー全77フレーバー・温度帯表現・フレーバー熟練度Lv.1〜5・定番13レシピ・裏レシピ7種・機材一覧 |
+| **06** | [`06_flavors_recipes.md`](06_flavors_recipes.md) | 6メーカー全77フレーバー・温度帯表現・フレーバー熟練度Lv.1〜5・定番13レシピ・裏レシピ7種・機材一覧 |
 | **引き継ぎ** | [`HANDOVER.md`](HANDOVER.md) | 確定裁定一覧（`master_spec.md` 照合済み）・旧版の引き継ぎ（参考） |
 
 ---
 
-# 1枚でわかる『ケムリの向こう側』全体まとめ
+# 1枚でわかる『水煙前線 -EN:CODE-』全体まとめ
 
 ## 作品の基本情報（確定・main反映済み）
 
 | 項目 | 内容 |
 |---|---|
-| **タイトル** | **『ケムリの向こう側』**（英題: *Beyond the Smoke*） |
+| **タイトル** | **『水煙前線 -EN:CODE-』**（旧タイトル「煙の向こう側」「ケムリの向こう側」は不採用。正本は `docs/gameplay_agent_reference.md`） |
 | **ジャンル** | シーシャ屋育成 × 恋愛 × 少年漫画バトルADV |
 | **一言コンセプト** | **「煙の向こうに、きみがいた。」** — シーシャの煙を通じて人と繋がり、混ざり合った自分のままで世界一を目指す物語 |
 | **主人公** | **蒸野 はじめ（むしの はじめ）** 22歳 / 一人称：**俺** / シーシャ屋「tonari」見習いバイト（後に店長代理） |
@@ -116,9 +116,9 @@
    - **スミの水の説明（#1113 / #1128）**：ボトルの水の役割は**「煙を冷やして吸いやすくする」だけ**。ニコチンやタールなど有害物質への影響については**「諸説ある」とし、断定しない**。また、煙が濃く出る（爆煙）理由は水ではなく**「グリセリンと熱の仕事」**（K14）。
 3. **炭の選択・配置（チャコール）**
    - フラット炭（初期）またはキューブ炭（炭の使い分け講習後に解放）、個数（2〜4個）を選択。
-4. **蒸らし（キッチンタイマー実時間計測）**
-   - 数値入力ではなく、画面上の**キッチンタイマーをスタートして実時間で止めたい秒数でストップ**する方式（#541 / E17）。
-   - ゲーム内1秒＝1分換算（上限10分、通常5〜8分。神崎竜二のイベント後は「0分立ち上げ」の知見も登場）。
+4. **蒸らし（キッチンタイマーで10秒刻みに設定）**
+   - 画面上の**キッチンタイマーで「分」は1分、「秒」は10秒ずつ増やして設定し、スタート**する方式（GP21〜26）。
+   - 上限10分、通常5〜8分、00:00では開始できない（神崎竜二のイベント後は「0分立ち上げ」の知見も登場）。
 5. **吸い出し・温度帯の表現・途中調整（最大2回）**
    - 立ち上げ後、最大**2回**まで炭の個数やHMDの開閉で熱を調整できる。
    - 制作画面には**温度計（実温度・最適温・停止予測）を表示**し、**配合中は適温帯の合成横ゲージと文字の帯端点を常時表示**する。**ボウル周辺の陽炎・炭の赤熱・煙の立ち方・音・香りテキスト**などの感覚的な温度描写は、地の文・内心の演出として使う。
@@ -164,7 +164,7 @@
 
 ## 未確定・提案（検討中）
 
-- **ナイトサイド プレミアハガル（1,000円くじラストワン賞）の固有性能**：`data/equipment.json` 上で `status: "tbd"`（容量15g・説明文は実装済み、具体的な補正値は検討中）。
+- **ナイトサイド プレミアハガル（1,000円くじラストワン賞）の固有性能**：容量15g・説明文は `data/equipment.json` に実装済みで、固有の補正値は未設定（`status` 欄はない）。
 - **第4章・第5章のプレイアブル日常パート細部**：台詞データ先行のため、自由行動マップの細部バランスはランナー接続時に調整予定。
 
 ---
@@ -191,11 +191,11 @@
 - **キャラクター・フレーバーうんちく（`02_characters.md`）**
   - 公式ヒロインを7名体制（**サメちゃん / 波多野なぎさ**、**朝霧ひより** を追加）へ更新。街スポット店主（**斧崎マキ**、**六角サイ**、**路上占い師**）と常連（**常連のサラリーマン**）を追加（根拠：[`data/characters.json`](../../data/characters.json), [`data/story_routes.json`](../../data/story_routes.json)）。
   - 人物設定の改定を反映：神崎竜二の年齢を **53歳**（旧39歳から修正）、チャコール博士の本名を **火浦 理一**（旧「炭場 創」から修正）、HOOKAH PRESS編集長を **上園 文太郎**（旧「前園 壮一郎」から修正）、零-REI-を純粋なV系好き青年店長（裏の顔やスミ由来のタトゥー設定を撤回）、ヴォルクを **NIGHTSIDE経営者**（凛のボス）、ダ・シルヴァ太陽へのチャド統合を反映（根拠：[`brand/character_profiles.md`](../../brand/character_profiles.md), [`data/characters.json`](../../data/characters.json)）。
-  - **#1108 フレーバーうんちく**を反映：なる（バニラの温度帯による味変化）、みんと（ミントの温度帯による味変化）、神崎竜二（ドラゴンフルーツと0分立ち上げ）、零-REI-（ローズの中温止めと棘）、アダム4回目（ダブルアップルの焦げる一歩手前の甘さと先人からの継承＋ナイフ投げ）、スミ（レモンの輪郭と熱）、久世朔（フローズンシトラス＋ブラックティーの熱順序によるお菓子の連想）、水瀬ましろ（重いダークリーフ `アルファーヘブン ダーク アールグレイ` 好みと第2章「これ、お水？」の理由）を追記（根拠：[`data/dialogue/ch1_naru.json`](../../data/dialogue/ch1_naru.json), [`data/dialogue/ch1_minto.json`](../../data/dialogue/ch1_minto.json), [`data/dialogue/ch1_adam.json`](../../data/dialogue/ch1_adam.json), [`data/dialogue/ch2_kumicho.json`](../../data/dialogue/ch2_kumicho.json), [`data/dialogue/ch2_rei.json`](../../data/dialogue/ch2_rei.json), [`data/dialogue/ch3_rivals.json`](../../data/dialogue/ch3_rivals.json), [`data/dialogue/ch3_mashiro.json`](../../data/dialogue/ch3_mashiro.json)）。
+  - **#1108 フレーバーうんちく**を反映：なる（バニラの温度帯による味変化）、みんと（ミントの温度帯による味変化）、神崎竜二（ドラゴンフルーツと0分立ち上げ）、零-REI-（ローズの中温止めと棘）、アダム4回目（ダブルアップルの焦げる一歩手前の甘さと先人からの継承＋ナイフ投げ）、スミ（レモンの輪郭と熱）、久世朔（フローズンシトラス＋ブラックティーの熱順序によるお菓子の連想）、水瀬ましろ（重いダークリーフ `アルファーヘブン ダーク アールグレイ` 好みと第3章「これ、お水？」の理由）を追記（根拠：[`data/dialogue/ch1_naru.json`](../../data/dialogue/ch1_naru.json), [`data/dialogue/ch1_minto.json`](../../data/dialogue/ch1_minto.json), [`data/dialogue/ch1_adam.json`](../../data/dialogue/ch1_adam.json), [`data/dialogue/ch2_kumicho.json`](../../data/dialogue/ch2_kumicho.json), [`data/dialogue/ch2_rei.json`](../../data/dialogue/ch2_rei.json), [`data/dialogue/ch3_rivals.json`](../../data/dialogue/ch3_rivals.json), [`data/dialogue/ch3_mashiro.json`](../../data/dialogue/ch3_mashiro.json)）。
 - **店舗・街・機材・システム・レシピ（`03_world_shops.md` / `04_glossary.md` / `05_tournament.md` / `06_flavors_recipes.md`）**
   - 第1章の街名を「橙須（とうす）」、第2章の街名を「柚ヶ谷（ゆずがや）」へ統一。あげはの店を「MELTY PUFF」、久世の間借り店「煙幕」、サメちゃんの「SHISHARK」、橙須・柚ヶ谷の各スポットを追加（根拠：[`docs/master_spec.md`](../master_spec.md), [`brand/story_and_structure.md`](../../brand/story_and_structure.md)）。
   - **スミの水の説明（#1113 / #1128）**：「煙を冷やして吸いやすくする」だけとし、有害物質への影響は「諸説ある」（断定しない）へ統一。爆煙の理由は「グリセリンと熱の仕事」（K14）を明記（根拠：[`docs/master_spec.md`](../master_spec.md), [`data/glossary.json`](../../data/glossary.json)）。
-  - **水入れ開始水量0（#1081 E01）**、キッチンタイマー蒸らし（#541）、はじめの【魅力】の2効果（指名売上＋好感度倍率 GG3/GG4）を反映（根拠：[`docs/master_spec.md`](../master_spec.md)）。
-  - 5メーカー全77フレーバー（`アルファーヘブン` 38種・`ドバジ` 18種・`アフサール` 17種・`フォースフェクタ` 1種・`ナイトサイド` 3種）、定番13レシピ（「メルティ・サマー」追加、氷レモネード黄金比7:3）、裏レシピ7種、専用素焼きハガル8種を含む最新機材データを反映（根拠：[`data/flavors.json`](../../data/flavors.json), [`data/recipes.json`](../../data/recipes.json), [`data/secret_recipes.json`](../../data/secret_recipes.json), [`data/equipment.json`](../../data/equipment.json)）。
+  - **水入れ開始水量0（#1081 E01）**、キッチンタイマー蒸らし（GP21〜26）、はじめの【魅力】の2効果（指名売上＋好感度倍率 GG3/GG4）を反映（根拠：[`docs/master_spec.md`](../master_spec.md)）。
+  - 6メーカー全77フレーバー（`アルファーヘブン` 37種・`ドバジ` 18種・`アフサール` 17種・`フォースフェクタ` 1種・`フワリ` 1種（ホワイトグミベア）・`ナイトサイド` 3種）、定番13レシピ（「メルティ・サマー」追加、氷レモネード黄金比7:3）、裏レシピ7種、専用素焼きハガル8種を含む最新機材データを反映（根拠：[`data/flavors.json`](../../data/flavors.json), [`data/recipes.json`](../../data/recipes.json), [`data/secret_recipes.json`](../../data/secret_recipes.json), [`data/equipment.json`](../../data/equipment.json)）。
 - **HTML生成スクリプト（`tools/build_setting_reference.py`）**
   - `assets/` 内に実在する最新立ち絵（`kumicho`, `rei`, `volk`, `kuze`, `steve`, `hiyori`, `samechan`, `maki`, `sai`, `salaryman`, `uranaishi` 等）および背景・CGパスへ更新し、存在しない旧キャラ（`nandi`）を除外。本文データを設定資料集と完全同期（根拠：[`remake/data/manifest.json`](../../remake/data/manifest.json)）。

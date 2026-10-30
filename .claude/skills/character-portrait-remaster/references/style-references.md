@@ -85,4 +85,4 @@ images closely in rendering style. Preserve the target character's own design.
 
 > https://github.com/haseatsu114514-dot/shisha-game の character-portrait-remaster スキルを使って、
 > 対象Issue/PRで現在の担当・残作業と採用状態を確認し、現行runtimeの本人画像で画風と質感を揃えて。
-> 予約と必要な引き継ぎを確認して保存済み成果を継続し、過去の制作順・担当分担・確認待ちを現在の指示にしないで。
+> 保存済み成果（PRのDONE / TODO）を継続し、過去の制作順・担当分担・確認待ちを現在の指示にしないで。

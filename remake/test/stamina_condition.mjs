@@ -56,7 +56,7 @@ const mocks = {
   "core/ui.js": { countdown: async () => {}, flash() {}, shake() {} },
   "core/state.js": { state: { flags: {} } },
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
-  "core/stats.js": { tier01: () => 0, star: () => 1 },
+  "core/stats.js": { tier01: () => 0, step: () => 1 },
   "craft/session.js": { waitBenchReady: async () => {}, explainTutorialStep: async () => true, benchRoot: () => bench, scoreStep() {}, setBenchTemperature() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: id => (panel = el("div.panel", { dataset: { step: id } })), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
   "craft/art.js": { artImg: () => el("img"), artHeight: () => 80 },
   "craft/digital-clock.js": { buildDigitalClock: () => ({ root: el("output"), update() {} }) },

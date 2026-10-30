@@ -8,7 +8,7 @@
 
 #471では本番用の歩行を `remake/street/` の遠近アーケードへ進める。大須を参考にした昼夜の背景と正式なはじめの72dot歩行絵を使用し、3入口の親APIと既存日常処理を維持する。本ページ・素材・6条件の単体テストは比較用として残す。以下の仮接続・休止記録は各時点の履歴。
 
-設計メモ: `docs/codex_handoff_street_proto.md`（§4 実装仕様）／画像の発注書の型: `docs/codex_handoff_street_set_images.md`
+設計メモ: `docs/archive/codex_handoff_street_proto.md`（§4 実装仕様）／画像の発注書の型: `docs/archive/codex_handoff_street_set_images.md`
 
 ## 第1章での限定試験（2026-10-13・#456）
 
@@ -30,7 +30,7 @@ LIME/MENU/会話中は移動とタップ目標を止める。手動セーブ・L
 **再開するときの手順**
 
 1. 本番の背景は「ハリボテ背景版」と同じ形（画面1枚分のパネル×3枚・昼夜、小物シート、電柱）で発注する。
-   発注書の型は `docs/codex_handoff_street_set_images.md`。届いたら `python3 tools/proto_street_assets.py --profile set` で変換する。
+   発注書の型は `docs/archive/codex_handoff_street_set_images.md`。届いたら `python3 tools/proto_street_assets.py --profile set` で変換する。
    パネルを作り直したらドア・看板の矩形を測り直す（`stage_hankagai_set.json` の `note`）
 2. 主人公はじめのデザインが決まっていれば、マスター＋歩行シートを約72ドットで発注する（AA12）。
    変換は `python3 tools/proto_walk_sheet.py`（下の「画像の変換」）。つむぎは仮なので差し替える

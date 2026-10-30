@@ -255,10 +255,9 @@ body.game-ds .bench-top {
   left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: 40px; right: auto; padding: 4px 8px; gap: 6px;
   overflow: hidden; background: #000b; border-radius: 7px 7px 0 0; z-index: 6;
 }
-/* 右上の「？」（操作の説明）の左に置き、重ねない */
-body.game-ds .bench-appearance-button { left: calc(var(--ds-cx) + var(--ds-cw) - 176px); right: auto; top: calc(var(--ds-cy) + 7px); }
+/* DSでは上部バーが狭いので下画面の右上へ。右端の「？」ガイド（34px）を避けて、その左に置く。 */
+body.game-ds .bench-appearance-button { position: fixed; left: auto; right: calc(100% - var(--ds-cx) - var(--ds-cw) + 56px); top: calc(var(--ds-cy) + 7px); z-index: 8; }
 body.game-ds .bench-appearance-dialog { left: calc(var(--ds-cx) + 8px); right: auto; top: calc(var(--ds-cy) + 8px); width: calc(var(--ds-cw) - 16px); height: calc(var(--ds-ch) - 16px); }
-body.game-ds .bench-top .bench-progress { padding-right: 0; }
 body.game-ds .bench-mode { width: 74px; font-size: 10px; }
 body.game-ds .bench-progress { min-width: 0; overflow: auto; }
 body.game-ds .bench-progress-track { width: max-content; gap: 3px; }

@@ -139,6 +139,6 @@
     "format": "WEBP (lossless, method=6)",
     "lossless_pixel_match": true
   },
-  "story_revision_plan": "docs/plans/story_revision.md",
+  "story_revision_plan": "docs/archive/plans_story_revision.md",
   "setting_book_followup_issue": 544
 }

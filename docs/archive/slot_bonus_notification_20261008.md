@@ -16,4 +16,4 @@ PF31・32。スロットで増えた能力を「SLOT BONUS」で伝える。オ�
 - 実抽選からチェリー・ベル・REG・BIG・フリーズを表示。5色・3画面サイズで実増加と文字の収まりを確認し、報酬の再加算・ブラウザエラーがないことを確認。
 - `stamina_condition` PASS。台詞lint ERROR 0／既存WARN 207、台詞整形dry-run、変更JS構文・差分空白も確認。
 
-[当たり画面と実測結果](../asset_sources/ui/slot-bonus-20261008/README.md)。
+[当たり画面と実測結果](../../asset_sources/ui/slot-bonus-20261008/README.md)。

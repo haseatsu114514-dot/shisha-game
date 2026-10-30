@@ -47,8 +47,8 @@
 .worker-equipment { position: absolute; right: 92px; bottom: 7%; width: 120px; height: 260px; pointer-events: none; }
 .worker-appearance { position: absolute; right: 0; bottom: 8%; width: 160px; pointer-events: none; z-index: 2; }
 .worker-appearance svg { display: block; width: 100%; height: auto; overflow: visible; }
-.bench-appearance-button { position: absolute; top: 10px; right: 16px; z-index: 8; }
-.bench-top .bench-progress { padding-right: 132px; }
+/* 外観ボタンは .bench-top の右端に流し込む（大会MENU等と並べ、重ねない）。 */
+.bench-appearance-button { flex: none; white-space: nowrap; }
 .bench-appearance-dialog { position: absolute; z-index: 30; inset: 54px 12px 12px auto; width: min(430px, calc(100% - 24px)); overflow-y: auto; padding: 18px; background: #211b29; border: 1px solid #ab9071; border-radius: 8px; box-shadow: 0 10px 35px #000b; }
 .worker-equipment > * { position: absolute; left: 50%; transform: translateX(-50%); }
 .worker-vignette { position: absolute; inset: 0; background: linear-gradient(180deg, #05030b33, transparent 30%, transparent 65%, #08060ed9), linear-gradient(90deg, #100c1222, transparent 60%, #100c1255); pointer-events: none; }
@@ -1191,7 +1191,7 @@
 .mix-temperature-preview::before { content: ""; position: absolute; inset: 0; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); }
 .mix-temperature-preview > b { position: absolute; top: 10px; left: 12px; width: 64px; text-align: center; font-size: 11px; }
 .mix-temperature-preview > .thermo { height: 100%; }
-/* #23-B: 下部の凡例（最大2行）＋ヒント（12px太字で2行=34px）の分だけ枠を伸ばす。縦管は吸い出しと同じ360pxのまま（#703）。 */
+/* #23-B: 下部の凡例（最大2行）＋ヒント（12px太字で2行=34px）の確保枠は70px。#703 の「吸い出しと同じ縦管(360px)」を保つため、枠全体を10px伸ばす。 */
 .mix-temperature-legend { position: absolute; top: calc(100% - 70px); left: 4px; right: 4px; justify-content: center; font-size: 12px; line-height: 1.2; gap: 2px 5px; }
 .mix-temperature-preview > small { position: absolute; top: calc(100% - 36px); left: 2px; width: 84px; text-align: center; font-weight: 700; font-size: 12px; }
 .mix-temperature[data-selected="false"] .thermo-scale { background: #55515d; }

@@ -12,6 +12,10 @@ const heroineIds = JSON.parse(readFileSync(new URL("../../data/story_routes.json
 for (const [id, definition] of Object.entries(definitions.characters)) {
   assert(heroineIds.includes(id));
   assert.equal(definition.home, "home");
+  // 遠距離chatは時間帯の判定なしで選ばれるため、日替わり候補にし、退勤・閉店など時刻を決める文面を置かない（#1739）。
+  const chats = [definition.chat].flat();
+  assert(chats.length >= 2 && chats.every(text => typeof text === "string" && text), `${id}: chat needs daily variants`);
+  assert(chats.every(text => !/仕事終わ|退勤|店じまい|店、終わった/.test(text)), `${id}: chat must not fix the time of day`);
   if (definition.dateMinChapter > 3) continue;
   for (const kind of ["meetup", "date"]) {
     const scene = scenes.find(scene => scene.dialogue_id === `ch3_visit_${id}_${kind}`);

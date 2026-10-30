@@ -8,13 +8,13 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "うそ、6ゾロ！？ ……こほん。クリティカル、です"
+          "text": "うそ、20のゾロ目！？ ……こほん。クリティカル、です"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "6が二つ……！ 卓の空気が変わったな"
+          "text": "20が二つ……！ 卓の空気が変わったな"
         },
         {
           "speaker": "hiyori",
@@ -31,13 +31,13 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "うそ、6ゾロ！？ ……こほん。クリティカル、です"
+          "text": "うそ、20のゾロ目！？ ……こほん。クリティカル、です"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "6が二つ……！ 卓の空気が変わったな"
+          "text": "20が二つ……！ 卓の空気が変わったな"
         },
         {
           "speaker": "hiyori",
@@ -94,7 +94,7 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "excited",
-          "text": "6ゾロじゃと！？ クリティカルじゃ、クリティカル！"
+          "text": "20のゾロ目じゃと！？ クリティカルじゃ、クリティカル！"
         },
         {
           "speaker": "hajime",
@@ -117,7 +117,7 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "excited",
-          "text": "6ゾロじゃと！？ クリティカルじゃ、クリティカル！"
+          "text": "20のゾロ目じゃと！？ クリティカルじゃ、クリティカル！"
         },
         {
           "speaker": "hajime",

@@ -60,6 +60,8 @@ try {
       while (performance.now() < until) {
         const node = document.querySelector(selector);
         if (node) return node;
+        // 作業台の準備中に出るロード漫画は、読み終えたらタップで進む（0a8fad53）。プレイヤーと同じく一度タップする
+        document.querySelector(".loading-gate.is-ready")?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
         await new Promise((resolve) => setTimeout(resolve, 20));
       }
       throw Error(`Control did not appear: ${selector}`);
@@ -245,7 +247,8 @@ try {
   });
   // みんとのLIMEは店の『お仕事用』。本名を知った後も「みんと＠PEPPERMINT」・営業姿のアイコン（HF10）
   assert.equal(privateUi.listName, "みんと＠PEPPERMINT");
-  assert(privateUi.listFace.split("?")[0].endsWith("face_minto.webp"), privateUi.listFace);
+  // お仕事用は採用済みのLIMEカスタムアイコン（b08e30ec）。私服・私用のアイコンは使わない
+  assert(privateUi.listFace.split("?")[0].endsWith("ui/lime/minto-b.png"), privateUi.listFace);
   assert(privateUi.delivered >= 1 && privateUi.introAccount === "minto_private", JSON.stringify(privateUi));
   assert(privateUi.introText.includes("栞です"), privateUi.introText);
   const privateRow = privateUi.rows.find((r) => r.test === "lime-chat-minto_private");
@@ -287,8 +290,9 @@ try {
   assert.deepEqual(shared.problems, []);
   assert(shared.epiPrivate); assert(shared.epiFaces.every((f) => f.startsWith("ura_")), shared.epiFaces.join());
   assert(!shared.epiHeart, "epilogue still has the store tone or the doubled 彼女");
-  // 後日談は場面の中でjumpしない。続く ending_daily_smoke へは第5章のフィナーレ進行（ch5-progress.js）がつなぐ（#1176）。
+  // 後日談の締め（ending_daily_smoke）は台本の jump ではなく、ch5-progress.js のフィナーレ3場面の並びで再生する
   assert.notEqual(shared.epiJump?.type, "jump", JSON.stringify(shared.epiJump));
+  assert.equal(shared.epiJump?.speaker, "minto", JSON.stringify(shared.epiJump));
   assert(!shared.acceptOld); assert(!shared.rule.includes("恋人ルート確定後のデートシーンでのみ"));
   assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_fifth_done");
   log("HF02 data: ura faces <-> private scenes, epilogue private/calm, confession text, appearance rule, first outing before reveal");
@@ -342,7 +346,7 @@ try {
   assert.equal(friend.beforeSubmission, false);
   assert.equal(friend.noonBadge, false); assert.equal(friend.noon, false); assert.equal(friend.nightBadge, true);
   assert(friend.finaleText.includes("描き終わった絵、最初に見てほしくて"));
-  assert(friend.finaleText.includes("この子の続きも、ここで描きます"), "friendship landing missing"); // #1282 で個別化した友情の着地
+  assert(friend.finaleText.includes("この子の続きも、ここで描きます"), "friendship landing missing");
   assert(!friend.finaleText.includes("今度は２人で"), "romance question shown after a friendly answer");
   assert.equal(friend.record.route, "friend"); assert(friend.owned); assert.equal(friend.lavender, 50);
   assert.equal(friend.confessed, false); assert.equal(friend.due, null);
@@ -449,7 +453,8 @@ try {
     return { badge, finaleBlocked, first, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
   });
   assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
-  assert(rin.first.includes("モニター料が出る仕事も、もうないよ")); assert(rin.first.includes("仕事仲間の時間だった")); // #1732 で書き直した質問と仕事寄りの答え
+  // 質問の場面と友情側の着地（d7a613c6 で台本を書き直し）
+  assert(rin.first.includes("今日は試香紙がなかった")); assert(rin.first.includes("相談を遠慮しなくてよい、仕事仲間の時間だった"));
   assert(!rin.first.includes("ラベルも同意書もない"));
   assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);

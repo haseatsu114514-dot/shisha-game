@@ -18,7 +18,8 @@
       "epilogue": "epilogue_tsumugi",
       "date_min_chapter": 3,
       "arrival": "ch4_tsumugi_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_tsumugi"
+      "near_conflict": "ch3_shuraba_tsumugi",
+      "talk": "shuraba_talk_tsumugi"
     },
     "minto": {
       "date": "tournament_date_minto",
@@ -26,7 +27,8 @@
       "epilogue": "epilogue_minto",
       "date_min_chapter": 3,
       "arrival": "ch4_minto_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_minto"
+      "near_conflict": "ch3_shuraba_minto",
+      "talk": "shuraba_talk_minto"
     },
     "rin": {
       "date": "tournament_date_rin",
@@ -34,14 +36,16 @@
       "epilogue": "epilogue_rin",
       "date_min_chapter": 3,
       "arrival": "ch4_rin_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_rin"
+      "near_conflict": "ch3_shuraba_rin",
+      "talk": "shuraba_talk_rin"
     },
     "ageha": {
       "date": "tournament_date_ageha",
       "conflict": "shuraba_ageha",
       "epilogue": "epilogue_ageha",
       "date_min_chapter": 4,
-      "arrival": "ch4_ageha_dubai_girlfriend"
+      "arrival": "ch4_ageha_dubai_girlfriend",
+      "talk": "shuraba_talk_ageha"
     },
     "mashiro": {
       "date": "tournament_date_mashiro",
@@ -49,7 +53,8 @@
       "epilogue": "epilogue_mashiro",
       "date_min_chapter": 3,
       "arrival": "ch4_mashiro_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_mashiro"
+      "near_conflict": "ch3_shuraba_mashiro",
+      "talk": "shuraba_talk_mashiro"
     },
     "samechan": {
       "date": "tournament_date_samechan",
@@ -57,7 +62,8 @@
       "epilogue": "epilogue_samechan",
       "date_min_chapter": 3,
       "arrival": "ch4_samechan_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_samechan"
+      "near_conflict": "ch3_shuraba_samechan",
+      "talk": "shuraba_talk_samechan"
     },
     "hiyori": {
       "date": "tournament_date_hiyori",
@@ -65,7 +71,8 @@
       "epilogue": "epilogue_hiyori",
       "date_min_chapter": 3,
       "arrival": "ch4_hiyori_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_hiyori"
+      "near_conflict": "ch3_shuraba_hiyori",
+      "talk": "shuraba_talk_hiyori"
     }
   },
   "conflict": {

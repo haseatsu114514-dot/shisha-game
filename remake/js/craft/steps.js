@@ -4,7 +4,8 @@ import { el, sleep, clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
-import { star, earnStat } from "../core/stats.js";
+import { step, earnStat } from "../core/stats.js";
+import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible } from "./session.js";
 import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
@@ -388,8 +389,8 @@ export async function stepMix(cs) {
     return { id, g, ratio, row };
   });
 
-  // 洞察★: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）。喫茶こはくで思いついた配合は洞察に関係なく出す
-  const insightful = star("insight") >= 2;
+  // 洞察の段: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）。喫茶こはくで思いついた配合は洞察に関係なく出す
+  const insightful = canSeeMixHint(step("insight"));
   const hint = cs.mode !== "tutorial"
     ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && !state.recipes?.[r.id] && cafeNoted(state, r))
       || (insightful ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
@@ -449,7 +450,7 @@ export async function stepMix(cs) {
   // 黄金比（#627）: 配合中は出さず、確定したあとだけ知らせる（＋−を押すだけで答えが探せないように）
   if (cs.mixInfo.golden === "hit") toast(`✨ 黄金比！ ${r.name}は ${goldenLabel(r)}`, { kind: "good" });
   else if (cs.mixInfo.golden === "near") {
-    const short = star("insight") >= 3 && cs.mixInfo.goldenShort;
+    const short = canSeeGoldenShort(step("insight")) && cs.mixInfo.goldenShort;
     toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し");
   }
   await sleep(200);

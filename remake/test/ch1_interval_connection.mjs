@@ -44,9 +44,12 @@ const end = chapter.indexOf('\nasync function finishAfterTournament(', start);
 assert(start >= 0 && end > start, 'victory function boundaries exist');
 const victory = chapter.slice(start, end);
 const sequence = [
-  'await play("ch1_tournament_after", { bg: STAGE });',
+  'const after = DB.dialogues.ch1_tournament_after;',
+  'await play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE });',
+  'id: "_sys_sumi_scoresheet"', 'title: "表彰式のあと"',
+  'await play({ ...after, lines: after.lines.slice(tonariAt) });',
   'await play("interval_day1_naru_lime");', 'gainStat("guts", 1);',
-  'await openPhone(', 'title: "優勝の夜"',
+  'id: "_sys_unknown_recorded"', 'title: "優勝の夜"',
   'await play("interval_day1_morning_win");', 'await play("ch1_naru_promise");',
   'await play("interval_day2_adam_lime");', 'gainStat("insight", 1);',
   'await play("interval_day5_eve");', 'state.phase = "aftermath";',
@@ -60,6 +63,13 @@ for (const call of sequence) {
 }
 assert.equal((victory.match(/\bgainStat\(/g) || []).length, 2, 'Only the two announced rewards');
 assert.doesNotMatch(chapter, /play\("interval_day3_sumi_call"/);
+// 祝福LIME（「帰ったら、一緒に一服しよう」）は、tonariの祝杯より前に届く。区切りの背景切替が祝杯の手前にあること。
+const after = JSON.parse(read('data/dialogue/ch1_tournament.json')).dialogues
+  .find(scene => scene.dialogue_id === 'ch1_tournament_after');
+const tonariAt = after.lines.findIndex(line => line.type === 'bg' && line.bg?.includes('bg_tonari_inside'));
+const toastAt = after.lines.findIndex(line => line.text === 'おう。よくやった。今日は一杯、付き合え');
+assert(tonariAt > 0 && toastAt > tonariAt, 'the tonari toast follows the split point');
+assert.match(victory, /"今日は喜べ。帰ったら、一緒に一服しよう"/);
 assert.match(chapter, /import \{[^}]*\bgainStat\b[^}]*\} from "\.\.\/core\/stats\.js"/);
 
 assert.equal(scenes.find(scene => scene.dialogue_id === 'interval_day1_morning_win').lines[0].text,
