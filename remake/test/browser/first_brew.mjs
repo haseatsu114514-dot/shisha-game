@@ -65,6 +65,31 @@ async function assertFirstMixControlsReachable(page) {
 }
 
 await suite("first-brew", async check => {
+  await check("craft-focused-buttons", async page => {
+    await page.evaluate(async () => {
+      const { keys } = await import("./js/craft/common.js");
+      window.craftKeys = { pull: 0, serve: 0, next: 0, finish: 0 };
+      const area = document.createElement("div");
+      area.innerHTML = '<div class="pull-btns"><button id="key-pull">吸う</button><button id="key-serve">提供</button></div><div class="hr-row"><button id="key-next">次のリング</button><button id="key-finish">完了</button></div>';
+      document.body.append(area);
+      for (const [id, action] of [["key-pull", "pull"], ["key-serve", "serve"], ["key-next", "next"], ["key-finish", "finish"]]) {
+        document.getElementById(id).addEventListener("click", () => window.craftKeys[action]++);
+      }
+      window.removeCraftKeys = keys({ Enter: () => window.craftKeys.finish++, " ": () => window.craftKeys.pull++ });
+    });
+    await page.locator("#key-pull").focus();
+    await page.keyboard.press("Enter");
+    await page.locator("#key-next").focus();
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Space");
+    await page.locator("#key-serve").focus();
+    await page.keyboard.press("Enter");
+    assert.deepEqual(await page.evaluate(() => window.craftKeys), { pull: 1, serve: 1, next: 2, finish: 0 });
+    await page.locator("#key-serve").evaluate(button => button.blur());
+    await page.keyboard.press("Enter");
+    assert.equal(await page.evaluate(() => window.craftKeys.finish), 1, "Unfocused Enter still uses the game shortcut");
+    await page.evaluate(() => window.removeCraftKeys());
+  });
   for (const touch of [false, true]) await check(`heat-help-${touch ? "touch" : "pc"}`, async page => {
     await init(page);
     await page.evaluate(async () => { await T.open(); window.running = T.heat.runHeat(cs); });

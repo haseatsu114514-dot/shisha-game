@@ -60,6 +60,8 @@ export function keys(map, { actionSpace = false } = {}) {
     if ((e.key === " " || e.key === "Enter") && e.target?.closest?.(".bench-guide, .timer-button")) return;
     // 蒸らしはSpaceをリフレッシュに予約する。Enterはフォーカス中のボタンを操作する。
     if ((e.key === "Enter" || (e.key === " " && !actionSpace)) && e.target?.closest?.(".dodge-action")) return;
+    // 操作ボタンにフォーカスがある間は、ブラウザのボタン起動に任せる。
+    if ((e.key === "Enter" || e.key === " ") && e.target?.closest?.(".pull-btns button, .hr-row button")) return;
     const fn = map[e.key] || map[e.code];
     if (fn) { e.preventDefault(); fn(e); }
   };
