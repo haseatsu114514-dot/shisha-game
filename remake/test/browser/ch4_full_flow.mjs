@@ -15,6 +15,16 @@ const arm = page => page.evaluate(async () => {
 const committed = (page, id) => page.waitForFunction(sceneId => window.__remake.state.flags._ch4.read[sceneId] === true, id);
 // 日が進んだ直後は古い自由行動カードが残りうる。見出しの DAY で新しいカードの描画を待つ。
 const freeDay = (page, day) => page.locator(dt("ch4-free")).getByRole("heading", { name: new RegExp(`^DAY ${day}・`) }).waitFor();
+const observeTournament = page => page.evaluate(() => {
+  window.__ch4Observed = { text: new Set(), comments: new Set() };
+  window.__ch4Observer = new MutationObserver(() => {
+    const text = [...document.querySelectorAll(".vn-text, .audience-note")].map(node => node.dataset.raw || node.textContent).join("\n");
+    for (const phrase of ["出発前の方針：桜", "出発前の方針：茶", "出発前に選んだ桜の方針", "出発前に選んだ茶の方針", "出発前に選んだ桜は", "葉が焦げた"])
+      if (text.includes(phrase)) window.__ch4Observed.text.add(phrase);
+    document.querySelectorAll(".nico").forEach(node => window.__ch4Observed.comments.add(node.textContent));
+  });
+  window.__ch4Observer.observe(document.body, { subtree: true, childList: true, characterData: true });
+});
 
 async function seed(page) {
   page.setDefaultTimeout(30000);
@@ -87,7 +97,7 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.flags._ch4.part, "free");
     assert.equal(state.flags._ch4.day, 1);
     assert.equal(state.day, startDay, "The prologue must not advance the calendar");
-    assert(["sakura", "peach", "tea"].includes(state.flags._ch4_strategy), "The strategy choice must be saved");
+    assert.equal(state.flags._ch4_strategy, "sakura", "The chosen strategy must be saved from ch4_strategy");
     assert.equal(await page.locator(dt("ch4-go-alley_cafe")).count(), 0, "The alley hides before the second unlocks");
 
     // 3. 自由行動: スーク（初回は stranger_first まで続く）→ FESTA。訪問では日が進まない。
@@ -118,6 +128,7 @@ await suite("ch4-full-flow", async check => {
     assert.equal(resumed.flags._ch4.read.ch4_stranger_first, true);
     assert.equal(resumed.day, startDay);
     assert.equal(resumed.flags._ch4.stage, prologue.length, "Reload must not replay the prologue");
+    assert.equal(resumed.flags._ch4_strategy, "sakura", "The chosen strategy survives SAVE/LOAD");
 
     // 4. 宿で日を進める。DAY2の宿は道具の手入れを先に読む。stranger_second は first の2日後（DAY3）に解放。
     await page.locator(dt("ch4-go-inn")).click();
@@ -168,6 +179,7 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.flags._ch4_sheikh_revealed, false, "The sheikh stays hidden until the tournament starts");
 
     // 6. 大会: 正体公開 → 共通の実制作・提供・二度調整 → 実審査 → final → 後日談
+    await observeTournament(page);
     await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
     await page.locator(dt("ch4-start")).click();
     for (const round of [1, 2]) {
@@ -178,6 +190,7 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.flags._ch4.match.step, 11);
     assert.equal(state.flags._ch4.match.result.win, true);
     assert.equal(state.flags._ch4.match.craft.careHistory.length, 2);
+    assert.equal(state.flags._ch4.match.craft.mix.sakura, 12, "The saved plan supplies the Sakura leaf");
     assert.deepEqual(state.flags._ch4.match.craft.customerChecks, [true, true]);
     assert.equal(state.flags._ch4.read.ch4_final, undefined, "No victory scene before the verdict is acknowledged");
     for (const row of Object.values(state.flags._ch4.match.result.votes))
@@ -189,6 +202,14 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.met.sheikh, true);
     assert.equal(state.flags._ch4.read.ch4_tournament_start, true);
     assert.equal(state.flags._ch4.read.ch4_final, true);
+    const observed = await page.evaluate(async () => ({ text: [...window.__ch4Observed.text], comments: [...window.__ch4Observed.comments],
+      chapter4: structuredClone((await import("./js/core/data.js")).DB.broadcast.chapter4) }));
+    assert(observed.text.includes("出発前の方針：桜"), "ch4_craft_advice_1 must reflect the strategy");
+    assert(observed.text.includes("出発前に選んだ桜の方針"), "The live broadcast must reflect the strategy");
+    assert(observed.text.includes("出発前に選んだ桜は"), "ch4_final must review the actual blend");
+    const localComments = Object.values(observed.chapter4.completion).flatMap(step => Object.values(step).flat());
+    assert(observed.comments.some(comment => localComments.includes(comment)), "The broadcast must use chapter4 audience comments");
+    await page.evaluate(() => window.__ch4Observer.disconnect());
     assert.equal(state.flags._ch4.part, "resolution");
     assert.equal(state.flags._ch4_cleared, undefined);
     const resolution = ["ch4_result", "ch4_nagumo_old_rival", "ch4_ending", "ch4_sumi_return", "ch4_two_tables"];
@@ -197,6 +218,8 @@ await suite("ch4-full-flow", async check => {
       await page.locator(dt("ch4-continue")).click();
     }
     await page.locator(dt("ch4-complete")).waitFor();
+    assert.match(await page.locator(dt("ch4-complete")).innerText(), /出発前に選んだ桜は12g、配合の100%/,
+      "chapterFourRecap must show the chosen plan and actual blend");
 
     // 章開始時と現在の実能力を、第1章と同じ二面のレーダーで比較する。
     assert.equal(await page.locator(`${dt("ch4-growth")} .radar-base`).count(), 1);
@@ -216,8 +239,13 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.day, startDay + 4);
     for (const id of ["ch4_stranger_first", "ch4_stranger_second", "ch4_wang_reception", "ch4_stranger_third",
       ...prologue, ...resolution]) assert.equal(state.flags._ch4.read[id], true, `${id} must be read`);
-    // 完了後に再開しても、完了カードに戻り場面は再演されない。
-    await loadSlot(page, 0);
+    // 完了後に保存データを読み直しても、完了カードに戻り場面は再演されない。
+    assert.equal(await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      if (!core.loadFromSlot(core.SAVE_KEY)) return false;
+      await (await import("./js/chapters/ch4.js")).resumeChapterFour();
+      return true;
+    }), true);
     await page.locator(dt("ch4-complete")).waitFor({ timeout: 60000 });
     assert.equal((await get(page)).flags._ch4.resolution, resolution.length);
   }, { reducedMotion: "reduce" });
@@ -237,12 +265,15 @@ await suite("ch4-full-flow", async check => {
       await (await import("./js/chapters/ch4.js")).resumeChapterFour();
     });
     const before = await get(page);
+    await observeTournament(page);
     await page.locator(dt("ch4-start")).click();
     await page.locator(dt("ch4-verdict-continue")).waitFor({ timeout: 180000 });
     let value = await get(page);
     assert.equal(value.flags._ch4.match.result.win, false);
     assert(value.flags._ch4.match.result.failure);
     assert.equal(value.flags._ch4.read.ch4_final, undefined);
+    assert((await page.evaluate(() => [...window.__ch4Observed.text])).includes("出発前に選んだ茶の方針"),
+      "The retry route must keep the Tea broadcast plan");
     assert.equal(value.money, before.money);
     await page.locator(dt("ch4-verdict-continue")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch4.attempts === 1);
@@ -250,6 +281,8 @@ await suite("ch4-full-flow", async check => {
     value = await get(page);
     assert.equal(value.flags._ch4.match.result, null);
     assert.equal(value.flags._ch4.match.history.length, 1);
+    assert((await page.evaluate(() => [...window.__ch4Observed.text])).includes("葉が焦げた"),
+      "ch4_defeat must describe the failed craft before retry");
     assert.deepEqual(value.flavorStock, before.flavorStock);
     assert.equal(value.stamina, before.stamina);
     assert.equal(value.money, before.money);

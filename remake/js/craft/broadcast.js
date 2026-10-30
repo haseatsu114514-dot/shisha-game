@@ -5,6 +5,7 @@
 // 文面は remake/data/broadcast.json。
 import { el, pick } from "../core/util.js";
 import { DB } from "../core/data.js";
+import { state } from "../core/state.js";
 import { layers } from "../core/ui.js";
 import { tickerSay, benchRoot } from "./session.js";
 
@@ -107,7 +108,9 @@ export function block(cs, step) {
   if (!live(cs)) return;
   clearComments();
   const bc = DB.broadcast || {};
-  if (bc.mc?.[step]) tickerSay(`パッキー「${bc.mc[step]}」`);
+  const plan = cs.chapter === 4 && step === "mix" ? { sakura: "桜", peach: "桃", tea: "茶" }[state.flags?._ch4_strategy] : null;
+  if (plan) tickerSay(`パッキー「出発前に選んだ${plan}の方針で、配合に入ったァ！」`);
+  else if (bc.mc?.[step]) tickerSay(`パッキー「${bc.mc[step]}」`);
 }
 
 /** 結果を確認している間だけ、その工程の出来への反応を流す。 */
