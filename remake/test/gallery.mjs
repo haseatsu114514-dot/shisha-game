@@ -178,8 +178,8 @@ assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_minto_confession")
 assert.equal(galleryHint(actualEntries.find(e => e.id === "cg_hiyori_confession")), "");
 assert.equal(galleryHint({ requiredChapter: 3, char: "minto" }), "第3章クリアで解放");
 const actualStats = galleryStats(actualEntries);
-assert.equal(actualManifest.cgs.length, 29);
-assert.equal(actualEntries.filter(e => e.cg).length, 27, "two alternate strips are excluded");
+assert.equal(actualManifest.cgs.length, 30);
+assert.equal(actualEntries.filter(e => e.cg).length, 27, "two alternate strips and the DAY3 sketch-in-progress are excluded");
 assert.equal(actualStats.total, 27, "current catalog has no approved additions");
 assert.equal(actualStats.unlocked, 0);
 assert.equal(actualStats.rate, 0);

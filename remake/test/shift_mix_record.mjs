@@ -11,18 +11,19 @@ const functionEnd = tonari.indexOf("\n}\n", functionStart) + 2;
 assert(orderStart >= 0 && functionStart > orderStart && functionEnd > functionStart);
 const source = `${tonari.slice(orderStart, functionStart)}\n${tonari.slice(functionStart, functionEnd)}\nserveShiftOrder`;
 const orders = ["citrus", "fruit_mint_free", "sweet_round", "double_apple"];
+const dialogues = Object.fromEntries(JSON.parse(read("data/dialogue/remake_ch1.json")).dialogues.map(d => [d.dialogue_id, d]));
 
 async function run(seed, choice, { cancelled = false, switchAt = null, flags = {} } = {}) {
   const owner = { chapter: 1, day: 2, weatherSeed: seed, flags };
   const calls = [];
-  const context = { state: owner, TONARI_BG: "tonari",
+  const context = { state: owner, TONARI_BG: "tonari", DB: { dialogues },
     modal: async options => {
       calls.push({ type: "modal", options });
       if (switchAt === "modal") context.state = { ...owner, flags: {} };
       return choice;
     },
-    play: async id => {
-      calls.push({ type: "play", id });
+    play: async dlg => {
+      calls.push({ type: "play", id: typeof dlg === "string" ? dlg : dlg.dialogue_id, lines: typeof dlg === "string" ? dialogues[dlg].lines : dlg.lines });
       if (switchAt === "play") context.state = { ...owner, flags: {} };
       return { cancelled };
     } };
@@ -61,6 +62,27 @@ for (const opts of [{ cancelled: true }, { switchAt: "modal" }, { switchAt: "pla
   const flags = { _shift_mix_citrus: 1 };
   const { owner } = await run(0, 0, { cancelled: true, flags });
   assert.equal(owner.flags._shift_mix_citrus, 1, "cancellation must preserve previous mix");
+}
+
+// #1415: 同じ注文が前にもあったら、反応の前にはじめの心の声を一行足す。前回と同じか違うかで変える。
+{
+  const first = (await run(0, 0)).calls.find(c => c.type === "play");
+  const orderId = Object.keys((await run(0, 0)).owner.flags).find(k => k.startsWith("_shift_mix_")).slice("_shift_mix_".length);
+  assert.notEqual(first.lines[0].speaker, "hajime", "first visit has no recall line");
+  for (const [prev, choice, kind] of [[0, 0, "same"], [1, 1, "same"], [0, 1, "diff"], [1, 0, "diff"]]) {
+    const { owner, calls } = await run(0, choice, { flags: { [`_shift_mix_${orderId}`]: prev } });
+    const shown = calls.find(c => c.type === "play");
+    const recall = dialogues[`shift_recall_${orderId}_${kind}`];
+    assert(recall, `recall ${orderId}_${kind}`);
+    assert(shown.id.startsWith("shift_flavor_"), "reaction keeps its own dialogue id");
+    assert.deepEqual(shown.lines[0], recall.lines[0]);
+    assert.equal(shown.lines.length, recall.lines.length + dialogues[shown.id].lines.length);
+    assert.equal(owner.flags[`_shift_mix_${orderId}`], choice);
+  }
+}
+for (const id of orders) for (const kind of ["same", "diff"]) {
+  const recall = dialogues[`shift_recall_${id}_${kind}`];
+  assert(recall && recall.lines.length === 1 && recall.lines[0].speaker === "hajime" && /^（.+）$/.test(recall.lines[0].text), `${id}_${kind}`);
 }
 
 const remake = JSON.parse(read("data/dialogue/remake_ch1.json"));

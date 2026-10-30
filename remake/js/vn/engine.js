@@ -27,7 +27,7 @@ import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
 import { reducedMotion } from "../core/transition-kit.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
-const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
+const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
 // 立ち絵の枠（ステージ高さに対する本体の高さ・足元の沈み込み）
 const FRAMING = { target: 1.36, sink: 0.4, pakkiTarget: 0.94, pakkiSink: 0.08 };
 
@@ -434,7 +434,7 @@ function next() {
     }
     if (type === "hide_cg") {
       r.ready = false;
-      dom.cg.classList.remove("show", "cg-focus-window");
+      dom.cg.classList.remove("show", "cg-focus-window", "cg-focus-sketch-cat", "cg-focus-sketch-blank");
       visualSettled(dom.cg).then(() => { if (running === r) { r.ready = true; next(); } });
       return;
     }
@@ -539,6 +539,10 @@ function runFx(line) {
   // #1076: 完成CGの窓辺へ短く視線を寄せる／全景へ戻す。SKIP中・低減モーションではカメラを動かさない。
   else if (id === "cg_focus_window") { if (!skipMode && !reducedMotion()) dom.cg.classList.add("cg-focus-window"); }
   else if (id === "cg_focus_reset") dom.cg.classList.remove("cg-focus-window");
+  // #1076 DAY3: 下描きCGの回答部分（猫の顔／未着色の右側）へ一度だけ短く寄せる。SKIP中・低減モーションでは全景のまま。
+  else if (id === "cg_focus_sketch_cat") { if (!skipMode && !reducedMotion()) { dom.cg.classList.remove("cg-focus-sketch-blank"); dom.cg.classList.add("cg-focus-sketch-cat"); } }
+  else if (id === "cg_focus_sketch_blank") { if (!skipMode && !reducedMotion()) { dom.cg.classList.remove("cg-focus-sketch-cat"); dom.cg.classList.add("cg-focus-sketch-blank"); } }
+  else if (id === "cg_focus_sketch_reset") dom.cg.classList.remove("cg-focus-sketch-cat", "cg-focus-sketch-blank");
 }
 
 function scent(c1, c2) {

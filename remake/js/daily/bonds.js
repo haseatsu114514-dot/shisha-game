@@ -97,10 +97,11 @@ function romanceChosen(id) {
   return !!last && (state.romanceChoices?.[last]?.value || 0) > 0 && romanceOpen(id);
 }
 
-/** 会話の条件分岐（hooks.evalCondition）: lover / romance_open。知らない型は undefined */
+/** 会話の条件分岐（hooks.evalCondition）: lover / romance_open / finale_seen（締めくくりを読んだか）。知らない型は undefined */
 export function bondCondition(line) {
   if (line.condition_type === "lover") return isLover(line.char_id);
   if (line.condition_type === "romance_open") return romanceOpen(line.char_id);
+  if (line.condition_type === "finale_seen") return finaleSeen(line.char_id);
   return undefined;
 }
 

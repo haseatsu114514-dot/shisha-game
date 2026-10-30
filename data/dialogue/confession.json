@@ -15,7 +15,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "私服の彼女は、店の灯りから離れるほど、口数が減っていく。"
+          "text": "今日の彼女は、いつもより口数が少ない。何かを言い出す前の静けさだった。"
         },
         {
           "speaker": "minto",
@@ -227,16 +227,34 @@
           "text": "……そっか。……うん。聞いてくれただけで、うれしい……"
         },
         {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "じゃあ……これからも、『ライバルのお姉さん』でいさせてね。……負けない、から……"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "rival_after",
+          "next_false": "rival_before"
         },
         {
           "speaker": "",
           "face": "",
           "text": "無理に持ち上げた口角が、少しだけ痛ましかった。"
         }
-      ]
+      ],
+      "branches": {
+        "rival_before": [
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "じゃあ……これからも、『ライバルのお姉さん』でいさせてね。……負けない、から……"
+          }
+        ],
+        "rival_after": [
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "じゃあ……これからも、『お店のお姉さん』でいさせてね。……また、食べにきて"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "confession_tsumugi",
@@ -359,27 +377,27 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎは膝の上のタブレットを、片手で抱え直した。"
+          "text": "つむぎは膝の上のタブレットを、鞄にしまった。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……今日のこと、描いても、いいですか。……誰にも、見せないので"
+          "text": "……今日のことは、描かないで覚えておきます"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "見せてもいいよ。つむぎちゃんが描きたいなら"
+          "text": "いいの？"
         },
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……じゃあ、いちばん最初に、はじめさんに見せます"
+          "text": "……手が、ふさがってるので"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎが、小さく笑った。こんなふうに笑うのを、初めて見た気がした。"
+          "text": "つむぎが、小さく笑った。つないだ手は、そのままだった。"
         },
         {
           "speaker": "hajime",

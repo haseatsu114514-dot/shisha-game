@@ -75,7 +75,7 @@ await suite("growth-levelup", async (check) => {
       await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
       const text = await panel.innerText();
       assert.match(text, /Lv\.1 → Lv\.3/);
-      assert.match(text, /火種 ＋2/);
+      assert.match(text, /火種 ＋4/, "レベル1つで火種2つ");
       assert.doesNotMatch(text, /？？？/, "名乗っていない相手の名前は出さない");
       await assertFits(page, '[data-test="levelup-ok"]');
       await page.waitForTimeout(400);
@@ -85,7 +85,7 @@ await suite("growth-levelup", async (check) => {
       await panel.waitFor({ state: "detached" });
       const badge = page.locator(t("hud-hidane"));
       await badge.waitFor();
-      assert.equal(await badge.innerText(), "2");
+      assert.equal(await badge.innerText(), "4");
       assert.match(await exp.innerText(), /Lv\.3/);
 
       // ふだんの1レベルは短い帯で、押さなくても消える
@@ -97,13 +97,13 @@ await suite("growth-levelup", async (check) => {
       });
       const band = page.locator(t("levelup-band"));
       await band.waitFor();
-      assert.match(await band.innerText(), /Lv\.3 → 4[\s\S]*火種 ＋1/);
+      assert.match(await band.innerText(), /Lv\.3 → 4[\s\S]*火種 ＋2/);
       await page.waitForFunction(() => document.querySelector('[data-test="levelup-band"]')?.classList.contains("show"));
       await page.waitForTimeout(250);
       await page.screenshot({ path: `${out}/growth-levelup-${label}-band.png` });
       await page.waitForFunction(() => window.night?.to === 4, null, { timeout: 5000 });
       await band.waitFor({ state: "detached" });
-      assert.equal(await badge.innerText(), "3");
+      assert.equal(await badge.innerText(), "6");
 
       // 保存・読込で残る
       await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.save(); core.load(); });
@@ -130,36 +130,102 @@ await suite("growth-levelup", async (check) => {
       await tap(t("levelup-board"));
       const board = page.locator(t("growth-board"));
       await board.waitFor();
-      assert.match(await page.locator(t("board-wallet")).innerText(), /2/);
-      // 段の順待ち・輪の鍵・今灯せる
-      assert.equal(await page.locator(t("board-node-T2")).getAttribute("data-status"), "waiting");
-      assert.equal(await page.locator(t("board-node-T5")).getAttribute("data-status"), "locked");
-      assert.equal(await page.locator(t("board-node-T1")).getAttribute("data-status"), "available");
-      await tap(t("board-node-S1"));
-      assert.match(await page.locator(t("board-preview")).innerText(), /センス 1段 → 2段[\s\S]*万能の火種1で払う/);
-      await tap(t("board-light"));
-      assert.equal(await page.locator(t("board-node-S1")).getAttribute("data-status"), "pending");
-      assert.equal(await page.locator(t("board-node-S2")).getAttribute("data-status"), "available");
-      await tap(t("board-node-S2"));
-      await tap(t("board-light"));
-      await tap(t("board-node-S1"));
-      await tap(t("board-undo"));
-      assert.equal(await page.locator(t("board-node-S2")).getAttribute("data-status"), "waiting", "下の段をやめると上の段の仮置きも外れる");
-      await tap(t("board-node-K05"));
-      assert.match(await page.locator(t("board-preview")).innerText(), /スキル「空模様」/);
-      await tap(t("board-light"));
-      await assertFits(page, '[data-test="board-decide"], [data-test="board-close"]');
-      await page.waitForTimeout(300);
-      await page.screenshot({ path: `${out}/growth-board-${label}.png` });
-      // 閉じる → 確認 → 決定
+      // 寝る前・メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
+      assert.equal(await board.getAttribute("data-mode"), "view");
+      assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
+      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*4/, "Lv.1→3 で火種4");
+      const ids = await page.evaluate(async () => {
+        const b = await import("./js/core/growth-board.js");
+        const first = b.boardNodes("body").find((n) => n.kind === "stat" && n.links.includes(b.HUB)).id;
+        return { first, far: b.NODE_BY_ID[first].links.find((l) => l !== b.HUB) };
+      });
+      assert.equal(await page.locator(t(`board-node-${ids.first}`)).getAttribute("data-status"), "available");
+      assert.equal(await page.locator(t(`board-node-${ids.far}`)).getAttribute("data-status"), "far");
+      await tap(t("board-node-K03"));
+      assert.match(await page.locator(t("board-preview")).innerText(), /スキル「早寝早起き」[\s\S]*まだ道がつながっていない/);
+      assert.equal(await page.locator(t("board-light")).count(), 0, "見るだけの盤に「灯す」は無い");
+      await tap(t("board-target"));
+      assert.equal(await page.evaluate(() => __remake.state.growth.target), "K03", "目標は見るだけの盤でも決められる");
       await tap(t("board-close"));
-      await tap(t("board-confirm-yes"));
       await board.waitFor({ state: "detached" });
       await page.waitForFunction(() => window.night?.to === 3);
-      assert.deepEqual(await page.evaluate(() => __remake.state.growth.nodes), ["K05"]);
-      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 0);
-      await page.locator(".gain-card", { hasText: "空模様" }).waitFor();
-      assert.equal(await page.locator(t("hud-hidane")).isVisible(), false, "使い切ったら印は消える");
+
+      // 観音堂で内省 → 灯せる。目標まで灯す → 決定
+      await page.evaluate(() => { window.lit = null; void import("./js/core/growth.js").then((g) => g.openGrowthBoard({ place: "kannon" })).then((r) => { window.lit = r; }); });
+      await board.waitFor();
+      assert.equal(await board.getAttribute("data-mode"), "light");
+      assert.match(await page.locator(t("board-place")).innerText(), /観音堂で内省/);
+      assert.match(await page.locator(t("board-preview")).innerText(), /早寝早起き/, "目標のマスが選ばれた状態で開く");
+      await tap(t("board-towards"));
+      const pend = await page.locator('[data-status="pending"]').count();
+      assert.ok(pend >= 1 && pend <= 4, `火種4の分だけ道を仮置き（${pend}）`);
+      await tap(t("board-tab-wisdom"));
+      assert.equal(await page.locator(t("board-node-K01")).count(), 1, "札で理論盤へ");
+      await assertFits(page, '[data-test="board-decide"], [data-test="board-close"], [data-test="board-tab-body"], [data-test="board-tab-wisdom"]');
+      await page.waitForTimeout(300);
+      await page.screenshot({ path: `${out}/growth-board-${label}.png` });
+      await tap(t("board-decide"));
+      await board.waitFor({ state: "detached" });
+      await page.waitForFunction(() => Array.isArray(window.lit));
+      assert.equal(await page.evaluate(() => __remake.state.growth.nodes.length), pend);
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 4 - pend);
+      await page.locator(".gain-card", { hasText: "能力の火" }).waitFor();
     }, options);
   }
+
+  // 大会前夜の内省（SPEC 2.8・#1690）: 火種が残っていれば一度だけ、場面のあと灯せる盤が開く
+  await check("eve-reflection-once", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      (await import("./js/vn/engine.js")).vnTest.turbo = true;
+      (await import("./js/core/growth.js")).ensureGrowth().hidane.any = 3;
+      window.eve = null;
+      void (await import("./js/daily/reflection.js")).eveReflection("kannon").then((r) => { window.eve = r; });
+    });
+    const board = page.locator(t("growth-board"));
+    await board.waitFor({ timeout: 15000 });
+    assert.equal(await board.getAttribute("data-mode"), "light");
+    assert.match(await page.locator(t("board-place")).innerText(), /観音堂で内省/);
+    await page.locator(t("board-close")).click();
+    await page.waitForFunction(() => window.eve === true);
+    assert.equal(await page.evaluate(async () => (await import("./js/daily/reflection.js")).eveReflection("kannon")), false, "同じ章の前夜は一度だけ");
+  }, { viewport: { width: 1331, height: 760 } });
+
+  // 章の範囲は章の数を出さず封で見せ、章が進んで初めて開くと「封が解けた」（SBD42）。ご褒美だけの夜は短い帯（SBD39・40）
+  await check("chapter-seal-and-gifts", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => { (await import("./js/core/growth.js")).ensureGrowth().hidane.any = 2; void (await import("./js/core/growth.js")).openGrowthBoard(); });
+    const board = page.locator(t("growth-board"));
+    await board.waitFor();
+    const text = await board.innerText();
+    assert.doesNotMatch(text, /[0-9０-９]章/, "盤に章の数を書かない");
+    assert.ok(await page.locator('[data-status="locked"]').count() > 0);
+    assert.equal(await page.locator(t("board-opened")).count(), 0, "第1章では演出なし");
+    await page.locator(t("board-close")).click();
+    await board.waitFor({ state: "detached" });
+    await page.evaluate(async () => { __remake.state.chapter = 2; void (await import("./js/core/growth.js")).openGrowthBoard(); });
+    await page.locator(t("board-opened")).waitFor();
+    assert.match(await page.locator(t("board-opened")).innerText(), /封が解けた/);
+    assert.ok(await page.locator(".gb-node.just-opened").count() > 0);
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: `${out}/growth-board-unseal.png` });
+    await page.locator(t("board-close")).click();
+    await board.waitFor({ state: "detached" });
+    await page.evaluate(async () => { void (await import("./js/core/growth.js")).openGrowthBoard(); });
+    await board.waitFor();
+    assert.equal(await page.locator(t("board-opened")).count(), 0, "演出は一度だけ");
+    await page.locator(t("board-close")).click();
+    await board.waitFor({ state: "detached" });
+    // くじを引き切った夜（レベルは上がっていない）
+    await page.evaluate(async () => {
+      __remake.state.kuji = { g500: { order: [0], drawn: 1, emptyDay: 3 } };
+      window.night = null;
+      void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.night = r; });
+    });
+    const band = page.locator(t("gift-band"));
+    await band.waitFor();
+    assert.match(await band.innerText(), /くじのラストワン賞[\s\S]*才の火種 ＋1/);
+    await assertFits(page, '[data-test="gift-band"]');
+    await page.waitForFunction(() => window.night?.gifts?.length === 1, null, { timeout: 8000 });
+  }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1` });

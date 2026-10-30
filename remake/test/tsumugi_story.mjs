@@ -365,6 +365,82 @@ try {
   await consecutive.close();
   console.log("[tsumugi story] PASS: continuous DAY11→14, two actions/day, quiet DAY12, DAY13 rehearsal/eve exactly once");
 
+  // #1076 DAY3: つむぎの描きかけ下描き（cg_ch1_tsumugi_sketch_wip）を全景で見せ、回答した箇所へ
+  // 一度だけ寄せる。選んでいない側は寄せず、SKIP・低減モーションでは全景のまま。中断後は残さない。
+  const SKETCH = "cg_ch1_tsumugi_sketch_wip";
+  const FOCUS = ["cg-focus-sketch-cat", "cg-focus-sketch-blank"]; // 0=猫の顔 1=未着色の右側（選択肢の順と一致）
+  const draft = await open();
+  await draft.evaluate(() => { T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; });
+  const cgSnap = () => {
+    const node = document.querySelector(".vn-cg");
+    return { cg: node?.dataset.cg || "", show: !!node?.classList.contains("show"),
+      classes: node ? [...node.classList] : [] };
+  };
+  const startDraft = async () => {
+    await draft.evaluate(() => {
+      T.fresh(); T.vn.backlog().length = 0; window.finished = false;
+      T.vn.play("ch1_tsumugi_work_in_progress").then(() => { window.finished = true; });
+    });
+    await draft.waitForFunction(() => T.vn.backlog().length > 0);
+  };
+  // 全画面のCG（z-index）が台詞箱を覆うので、送りはキーボードのEnterで行う（箱クリックは
+  // 当たり判定で弾かれる）。選択だけはボタンを押す。各行の表示時点でCGの寄せ状態を記録する。
+  const playDraft = async (answer) => {
+    await startDraft();
+    const trace = [];
+    for (let i = 0; i < 200; i++) {
+      if (await draft.evaluate(() => window.finished)) break;
+      const choices = draft.locator(".vn-choices button");
+      if (await choices.count()) {
+        assert.deepEqual(await choices.allTextContents(), ["ほどけていく煙と猫", "まだ色のない右側"]);
+        await choices.nth(answer).click();
+        await draft.waitForFunction(() => window.finished || !document.querySelector(".vn-choices button"));
+        continue;
+      }
+      await draft.waitForFunction(() => window.finished || document.querySelector(".vn-next.show")
+        || document.querySelector(".vn-choices button"));
+      if (await draft.evaluate(() => window.finished)) break;
+      if (await choices.count()) continue;
+      trace.push(await draft.evaluate(cgSnap));
+      const before = await draft.evaluate(() => document.querySelector(".vn-text").textContent);
+      await draft.keyboard.press("Enter");
+      await draft.waitForFunction(b => window.finished
+        || document.querySelector(".vn-text").textContent !== b || document.querySelector(".vn-choices button"), before);
+    }
+    return trace;
+  };
+  for (const answer of [0, 1]) {
+    const trace = await playDraft(answer);
+    assert(trace.some(s => s.cg === SKETCH && s.show && !FOCUS.some(f => s.classes.includes(f))),
+      `DAY3 answer ${answer}: draft was not shown full-frame before the eye-guide`);
+    assert(trace.some(s => s.cg === SKETCH && s.classes.includes(FOCUS[answer])),
+      `DAY3 answer ${answer}: the chosen area was never focused`);
+    assert(!trace.some(s => s.classes.includes(FOCUS[1 - answer])),
+      `DAY3 answer ${answer}: focused the area the player did not choose`);
+    assert.equal(await draft.locator(".vn-cg.show").count(), 0, `DAY3 answer ${answer}: the sketch stayed open`);
+    assert.equal(await draft.evaluate(() => T.core.state.flags._tsumugi_contest_progress), true);
+  }
+  // 低減モーションでは全景のまま（カメラを動かさない）。
+  await draft.emulateMedia({ reducedMotion: "reduce" });
+  for (const answer of [0, 1]) {
+    const trace = await playDraft(answer);
+    assert(trace.some(s => s.cg === SKETCH && s.show), `DAY3 reduced ${answer}: draft not shown`);
+    assert(!trace.some(s => FOCUS.some(f => s.classes.includes(f))), `DAY3 reduced ${answer}: camera moved`);
+  }
+  await draft.emulateMedia({ reducedMotion: null });
+  // SKIPでも下描きは見せ、カメラは動かさない。答えは勝手に入れない。
+  await startDraft();
+  await draft.locator('[data-test="vn-skip"]').click();
+  await draft.locator(".vn-choices button").first().waitFor();
+  assert.equal(await draft.locator(".vn-cg.show").count(), 1, "DAY3 SKIP hid the draft before the choice");
+  const skipClasses = await draft.evaluate(() => [...(document.querySelector(".vn-cg")?.classList || [])]);
+  assert(!FOCUS.some(f => skipClasses.includes(f)), "DAY3 SKIP moved the camera");
+  assert.equal(await draft.evaluate(() => T.core.state.flags._tsumugi_contest_draft_window ?? null), null);
+  await draft.locator(".vn-choices button").nth(0).click();
+  await draft.waitForFunction(() => window.finished, null, { timeout: 20000 });
+  await draft.close();
+  console.log("[tsumugi story] PASS: DAY3 draft shown full, answer guides focus once, reduced-motion/SKIP keep the full view");
+
   assert.deepEqual(errors, []);
   console.log("[tsumugi story] PASS: first day and DAY3/11/13 calendar events, including the old completed-eve save");
 } finally { await browser.close(); }

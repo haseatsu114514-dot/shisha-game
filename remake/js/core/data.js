@@ -30,7 +30,6 @@ export const DB = {
   lime: [],
   recipes: [],
   ngMixes: [],
-  tips: [],
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
   friends: { friends: {} }, // 友人になった相手からの、たまのLIME・一服の場面（remake/data/friends.json）
@@ -51,6 +50,7 @@ const DIALOGUE_FILES = [
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
   "venue_hours", // 店主の案内と街の昼夜差分
   "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
+  "growth_reflection", // 心得の盤: 参拝の場所での内省と大会前夜の内省（SPEC 2.8）
 ];
 // ひよりの参照先は DB.hiyori.route が無い間 disabled に倒れるため、タイトル後に読める。
 const DEFERRED_DIALOGUE_FILES = ["hiyori"];
@@ -128,7 +128,6 @@ export async function loadAll(onProgress = () => {}) {
     ["lime", `${ROOT}data/lime_messages.json`],
     ["recipes", `${ROOT}data/recipes.json`],
     ["ngMixes", `${ROOT}data/ng_mixes.json`],
-    ["tips", `${ROOT}data/loading_tips.json`],
     ["kuji", `${ROOT}data/kuji.json`],
     ["lover", "data/lover.json"],
     ["friends", "data/friends.json"],
@@ -167,7 +166,6 @@ export async function loadAll(onProgress = () => {}) {
   DB.lime = [...raw.lime.messages, ...(DB.samechan.lime || [])];
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
-  DB.tips = raw.tips.tips;
   DB.kuji = raw.kuji;
   DB.lover = raw.lover;
   DB.friends = raw.friends;
@@ -192,7 +190,7 @@ export async function loadAll(onProgress = () => {}) {
 const ALWAYS_KNOWN = new Set([
   "hajime", "sumi", "tsumugi", "salaryman", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
-  "spice_merchant", "cafe_staff",
+  "spice_merchant", "cafe_staff", "traveler",
 ]);
 // 立ち絵フォルダ・別名（oneesan はみんとの私服＝ura_* 差分）
 export const SPEAKER_ALIAS = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };

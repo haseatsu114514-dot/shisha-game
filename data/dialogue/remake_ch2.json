@@ -241,14 +241,11 @@
         ],
         "first": [
           {
-            "speaker": "ageha",
-            "face": "smile",
-            "text": "……あ！ 商店街で、荷物ばらまいてた子じゃん"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "あの時の……。蒸野はじめです。tonariで働いてます"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ev_ageha_cameo",
+            "next_true": "first_cameo",
+            "next_false": "first_new"
           },
           {
             "speaker": "ageha",
@@ -263,6 +260,30 @@
             "speaker": "ageha",
             "face": "smile",
             "text": "じゃ、ハジメっちだ。明日はお互い、ちゃんと寝てこよ"
+          }
+        ],
+        "first_cameo": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……あ！ 商店街で、荷物ばらまいてた子じゃん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの時の……。蒸野はじめです。tonariで働いてます"
+          }
+        ],
+        "first_new": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……あ、下見の人？ うちも、うちも"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。蒸野はじめです。tonariで働いてます"
           }
         ]
       },
