@@ -264,8 +264,10 @@ await suite('ch2-tournament',async check=>{
     await press(next);await page.locator(scene('ch3_mukai_intro')).waitFor();await checkGuide();
     const after=await get(page);assert.equal(after.flags._ch3_intro.stage,2);
     assert.match(await page.locator(guide).innerText(),/新しい店の朝/);
-    for(const key of ['money','stamina','stats','flavorStock','lovers','keepsakes','relationshipMemories'])
+    for(const key of ['money','stamina','stats','flavorStock','lovers','keepsakes'])
       assert.deepEqual(after[key],before[key],`Guide changed ${key}`);
+    // #1740（e32120da）: ch3_mukai_arrival を読み終えると交流の記憶 mashiro_pace が残る（台詞側の remember）。案内は記憶を足さない。
+    assert.deepEqual(after.relationshipMemories,[...before.relationshipMemories,'mashiro_pace'],'Guide changed relationshipMemories');
     await press(menu);await page.getByRole('button',{name:'閉じる',exact:true})[touch?'tap':'click']();
     await checkGuide();assert.equal((await get(page)).flags._ch3_intro.stage,2);
   },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
