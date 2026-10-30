@@ -1,5 +1,4 @@
 // 交友の締めくくり（好感度MAXイベント）・途中の恋愛／友情の質問・専用ハガルの贈呈（HF04〜HF06）。
-import { TOURNAMENT_DAY } from "../core/rules.js";
 // 文面の正本: data/dialogue/ch1_bonds.json（質問・締めくくり）、贈り物の性能: data/equipment.json（gift）、
 // 私的な約束の誘い: data/lime_messages.json（delivery: "bond_finale"・ここで日付つきに複製して届ける）。
 //
@@ -326,15 +325,15 @@ const lastDay = (items) => Math.max(-99, ...items.map((i) => i.day ?? -99));
  * 何人と友人になっても重ならないよう、全員で間隔を分け合う（data: remake/data/friends.json）:
  * - 友人のLIMEは全員あわせて globalGapDays 日に1通まで。いちばん長く連絡のない相手から順（同じ相手は gapDays 日以上あける）
  * - お誘いは全員あわせて inviteGapDays 日に1回まで。その相手との雑談のあとだけ（最初の連絡は雑談・お誘いは続けない）。
- *   約束のある日は出さず同じ相手の雑談に（物語・恋人の誘いが届く朝と、時刻の合わない日の切り替えは phone.js。バイトの誘いとは重なってよい）。大会前日まで
+ *   約束のある日は出さず同じ相手の雑談に（物語・恋人の誘いが届く朝と、時刻の合わない日の切り替えは phone.js。バイトの誘いとは重なってよい）。各章の大会当日を除く
  */
 export function friendMessages({ tournamentDay = false } = {}) {
-  if (tournamentDay || state.phase !== "daily" || (state.chapter || 1) !== 1) return [];
+  if (tournamentDay || state.phase !== "daily" || ![1, 2].includes(state.chapter || 1)) return [];
   const cfg = DB.friends || {};
   const gap = cfg.gapDays || 4;
   const all = friendSent();
   if (state.day - lastDay(all) < (cfg.globalGapDays || 2)) return [];
-  const inviteOk = state.day < TOURNAMENT_DAY && !state.pendingInvite
+  const inviteOk = !state.pendingInvite
     && state.day - lastDay(all.filter((i) => i.msg?.type === "invitation")) >= (cfg.inviteGapDays || 6);
   const out = [];
   const due = Object.keys(BOND_FINALES)
@@ -355,7 +354,7 @@ export function friendMessages({ tournamentDay = false } = {}) {
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,
       messages: f.chats[pick].m.slice(), replies: f.chats[pick].r } : null;
-    const invite = f.invite && state.day < TOURNAMENT_DAY ? { id: `${FRIEND_PREFIX}inv_${id}_d${state.day}`, sender: id, type: "invitation", friend: true,
+    const invite = f.invite ? { id: `${FRIEND_PREFIX}inv_${id}_d${state.day}`, sender: id, type: "invitation", friend: true,
       private_schedule: "holiday_or_after_close", accept_event: `friend_${id}`, accept_text: f.invite.accept_text,
       messages: f.invite.messages.slice(), decline_response: { text: f.invite.decline } } : null;
     const inviteTurn = inviteOk && sent.at(-1)?.msg?.type === "chat"; // 雑談→お誘い→雑談…（見送った回は雑談のまま次へ）
