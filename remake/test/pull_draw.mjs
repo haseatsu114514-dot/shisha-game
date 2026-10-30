@@ -121,7 +121,7 @@ try {
   console.log(`Layout: ${JSON.stringify(layout)}`);
   await shot('01-pull-desktop');
 
-  // 上げ吸い: 直後には温度が飛ばず、針・提供・二重入力を止めて短い一口を吸う。
+  // 熱を入れる吸い: 直後には温度が飛ばず、針・提供・二重入力を止めて短い一口を吸う。
   const up = await at(80, 84);
   assert.equal(up.immediately, up.before);
   assert.equal(await page.locator('.bench-worker').getAttribute('data-draw'), 'up');
@@ -154,7 +154,7 @@ try {
   await settled(); await page.keyboard.up('Space');
   assert(!(await page.locator('[data-test="pull-serve"]').isDisabled()));
 
-  // 下げ吸いは長く強い一口。2秒経っても固定し、最後まで下がってから再開。
+  // 熱を逃がす吸いは長く強い一口。2秒経っても固定し、最後まで下がってから再開。
   const down = await at(16, 19);
   await page.waitForTimeout(1800);
   assert.equal(await page.locator('.bench-worker').getAttribute('data-draw'), 'down');

@@ -18,6 +18,7 @@ import { RIN_AWAY_DAY } from "../core/rules.js";
 import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
+import { AF_VANILLA_ART } from "./shop-art-af-vanilla.js";
 import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
 import { LIMITED_FLAVOR_ART } from "./shop-art-limited.js";
 import { CHARACTER_FLAVOR_ART } from "./shop-art-character-flavors.js";
@@ -99,7 +100,7 @@ export function flavorPackageArt(id, size = 54) {
   const fallback = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: id } }, [
     el("span.shop-type-mark", { style: { fontSize: "10px", letterSpacing: "0", whiteSpace: "nowrap" }, text: "フレーバー" }),
   ]);
-  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id];
+  const art = AF_VANILLA_ART[id] || SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id];
   return art ? windowArt(item, art.url, art.box, art.size, size, "generated", fallback) : fallback();
 }
 function productArt(item, flavor, size = 66) {
@@ -108,7 +109,7 @@ function productArt(item, flavor, size = 66) {
   ]);
   const botanical = () => FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)] ? windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
     [1774, 887], size, "botanical", textArt) : textArt();
-  const generated = flavor ? (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id] || LIMITED_FLAVOR_ART[item.id] || CHARACTER_FLAVOR_ART[item.id]) : SHOP_EQUIPMENT_ART[item.art || item.id];
+  const generated = flavor ? (AF_VANILLA_ART[item.id] || SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id] || LIMITED_FLAVOR_ART[item.id] || CHARACTER_FLAVOR_ART[item.id]) : SHOP_EQUIPMENT_ART[item.art || item.id];
   if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", flavor ? botanical : textArt);
   if (flavor) return botanical();
   const art = EQUIP_ART[item.art || item.id];

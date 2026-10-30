@@ -123,7 +123,7 @@ export function equipmentGuide(item, currentId) {
     const heat = id => coalWarmth({ equip: { charcoal: id }, place: "triangle" });
     const before = heat(current.id), after = heat(target.id);
     rows.push({ label: "3個の加熱", value: `×${before.power.toFixed(2)} → ×${after.power.toFixed(2)}` },
-      { label: "上げ吸いの反応", value: `×${before.pullResponse.toFixed(2)} → ×${after.pullResponse.toFixed(2)}。大きいほど1口で熱が入る` });
+      { label: "熱を入れる吸いの反応", value: `×${before.pullResponse.toFixed(2)} → ×${after.pullResponse.toFixed(2)}。大きいほど1口で熱が入る` });
   }
   return el("div.equipment-guide", [
     el("p", [el("b", { text: "得意 " }), guide.use]),

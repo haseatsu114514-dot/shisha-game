@@ -45,6 +45,22 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
   assert.deepEqual(chapterThreeOutingCandidates(value).filter(item => item.id === "enmaku_notes"), []);
 }
 
+// スティーブの来店（#1696）: 配達で面識があり、彼の店を訪ねる前だけ。一度きり。
+{
+  const early = at("d8-night");
+  assert(!ids(early.value, early.window).includes("mukai_steve"), "Steve visits before meeting him");
+  early.value.met.steve = true;
+  assert(ids(early.value, early.window).includes("mukai_steve"));
+  const outing = claimChapterThreeOuting(early.value, early.window.id, "mukai_steve");
+  assert.equal(outing.money, 3000);
+  assert.equal(outingDialogueId(early.value, outing, early.window), "ch3_outing_mukai_steve");
+  const next = nextWindow(early.value);
+  assert(!ids(early.value, next).includes("mukai_steve"), "Steve's visit repeated");
+  const late = at("d12-noon");
+  late.value.met.steve = true;
+  assert(!ids(late.value, late.window).includes("mukai_steve"), "Steve's first visit after his shop scene");
+}
+
 // 旧ルートの非会員は従来どおり空き時間を増やさない。
 {
   const value = departure({ legacy: true });

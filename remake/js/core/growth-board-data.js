@@ -140,19 +140,19 @@ export const SKILLS = [
   { id: "K18", cell: "-4,0", board: "wisdom", ring: 1, cost: 4, glyph: "密", name: "デンスパック", scene: "パッキング", text: "詰め方に「デンスパック」が加わる（密に詰めて厚い味へ。蒸らしは長めに）" },
 ];
 
-// ---------------------------------------------------------------- 授業14（2.6）。火種いらず・盤2段で開く
+// ---------------------------------------------------------------- 授業20（2.6）。火種いらず・盤3段で開く
 // 2026-10-30 オーナー: 授業はその人のタイプ（属性）の盤に入る。灯すと「相談できる」になり、次にその人に会った時に
 // はじめが相談して話を聞く場面（scene）を見て習得する。章（ring）はその人に会える章。
 
-// v3 で1段が約5マスに細かくなったので2段（v2 の3段＝6マスとほぼ同じ量）。
-export const LESSON_MIN_STEP = 2;
+// #1774 最新オーナー決定: 盤の細分化後も3段以上＋道の到達が必要。
+export const LESSON_MIN_STEP = 3;
 /** reward: skill（新しい操作）／special（その人らしい強い効き目）／stat（能力が伸びる。bonus はマスの数） */
 export const LESSONS = [
   { id: "M-B1", cell: "2,1", board: "body", who: "minto", need: 5, sig: true, reward: "skill", name: "呼び込み上手",
     hint: "みんとと仲良くなると、お客さんの呼び方を教えてもらえそう",
     text: "バイトの客足が増え、店からの売上ボーナスが増える", scene: "lesson_minto_calling" },
   { id: "M-S1", cell: "2,1", board: "sense", who: "sumi", need: 0, reward: "skill", name: "蒸らしアタック",
-    hint: "感覚盤を2段まで開けたら、スミさんが蒸らしの授業をしてくれる",
+    hint: "感覚盤を3段まで開けたら、スミさんが蒸らしの授業をしてくれる",
     text: "蒸らしで雑念の言葉を斬れる", scene: "ch1_sumi_attack", unlocks: ["_sumi_attack_learned"] },
   { id: "M-S2", cell: "1,-2", board: "sense", who: "adam", need: 5, sig: true, reward: "skill", name: "単体の美学",
     hint: "アダムと仲良くなると、一つの葉で勝負するやり方を教えてもらえそう",
@@ -161,16 +161,16 @@ export const LESSONS = [
     hint: "つむぎと仲良くなると、落ち着ける色を教えてもらえそう",
     text: "夜、家シーシャにラベンダーを入れると、眠った時の体力の回復が増える", scene: "lesson_tsumugi_lavender" },
   { id: "M-W1", cell: "2,1", board: "wisdom", who: "sumi", need: 0, reward: "skill", name: "キューブ炭",
-    hint: "理論盤を2段まで開けたら、スミさんが炭の授業をしてくれる",
+    hint: "理論盤を3段まで開けたら、スミさんが炭の授業をしてくれる",
     text: "キューブ炭を選べる", scene: "ch1_sumi_cube_coals", unlocks: ["_coal_cube_learned"] },
   { id: "M-W2", cell: "-1,2", board: "wisdom", who: "sumi", need: 0, ring: 2, reward: "skill", name: "四つ置き・混ぜ置き",
-    hint: "理論盤を2段まで開けたら、スミさんが炭の置き方の奥を教えてくれる",
+    hint: "理論盤を3段まで開けたら、スミさんが炭の置き方の奥を教えてくれる",
     text: "炭の四つ置きと、フラット炭とキューブ炭の混ぜ置きを選べる", unlocks: ["_coal_four_unlocked", "_coal_mix_unlocked"], scene: "lesson_sumi_four" },
   { id: "M-W3", cell: "1,-2", board: "wisdom", who: "naru", need: 5, sig: true, reward: "skill", name: "全部見てけ",
     hint: "なると仲良くなると、店の見方を教えてもらえそう",
     text: "ライバル店で一服すると、その一台の配合がレシピ帳に残る", scene: "lesson_naru_watch" },
   { id: "M-W6", cell: "1,2", board: "sense", who: "sumi", need: 0, ring: 2, reward: "special", name: "カルダモンの一つまみ",
-    hint: "理論盤を2段まで開けたら、スミさんが相性の悪い葉のつなぎ方を教えてくれる",
+    hint: "感覚盤を3段まで開けたら、スミさんが相性の悪い葉のつなぎ方を教えてくれる",
     text: "配合にカルダモンを一つまみ足すと、相性の悪い組み合わせのぶつかりがやわらぐ", scene: "lesson_sumi_cardamom" },
   { id: "M-B2", cell: "-1,2", board: "body", who: "rei", need: 5, ring: 2, sig: true, reward: "special", name: "花を重ねる",
     hint: "零と仲良くなると、香りの重ね方を教えてもらえそう",

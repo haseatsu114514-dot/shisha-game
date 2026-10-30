@@ -35,7 +35,7 @@ assert.equal(cycleBadgeText({ cycle: "2" }), null);
 assert.equal(cycleBadgeText({ cycle: 2, cycleId: "b" }), "2周目");
 assert.equal(cycleBadgeText({ cycle: 12, cycleId: "c" }), "12周目");
 
-// 実データ形（SCHEMA 22 の newState）でも判定できる
+// 現行の newState でも判定できる
 {
   const s = newState();
   assert.equal(cycleBadgeText(s), null); // 1周目

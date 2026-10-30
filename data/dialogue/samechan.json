@@ -357,6 +357,25 @@
             "speaker": "samechan",
             "face": "smile",
             "text": "うむ。さあ、入るのじゃ。どんな一台にするか、中で聞かせておくれ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は、すっとする香りをお願いします"
+          },
+          {
+            "speaker": "",
+            "text": "サメちゃんは席の高さを確かめてから、一台を運んできた。吸い込むと、涼しい香りがゆっくり広がる。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "どうじゃ。ここなら、落ち着いて吸えるかのう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。つい長居したくなります"
           }
         ],
         "new_guest": [
@@ -416,7 +435,26 @@
           {
             "speaker": "samechan",
             "face": "smile",
-            "text": "コロちゃんじゃ。この子も、お主を待っておったのじゃぞ。気に入ったら、また来るのじゃ"
+            "text": "コロちゃんじゃ。この子も、お主を待っておったのじゃぞ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "さて、どんな香りが好みじゃ？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は、すっとする香りをお願いします"
+          },
+          {
+            "speaker": "",
+            "text": "サメちゃんが一台を運んできた。ひと口吸うと、涼しい香りが広がり、海色の店内をゆっくり眺めた。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "気に入ったら、また来るのじゃ"
           },
           {
             "speaker": "",

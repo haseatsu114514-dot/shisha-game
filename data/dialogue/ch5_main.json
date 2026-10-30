@@ -186,6 +186,10 @@
           "text": "9000のアームが動く。大会で覚えた待ち方まで、よく似ている。"
         },
         {
+          "type": "sfx",
+          "id": "bubbling"
+        },
+        {
           "speaker": "hajime",
           "face": "surprise",
           "text": "……うまいです"
@@ -294,6 +298,10 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "どうぞ。熱かったら、また離しますね"
+        },
+        {
+          "type": "sfx",
+          "id": "bubbling"
         },
         {
           "speaker": "",
@@ -472,6 +480,10 @@
     {
       "dialogue_id": "ch5_return_to_tonari",
       "lines": [
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
         {
           "speaker": "",
           "face": "",
