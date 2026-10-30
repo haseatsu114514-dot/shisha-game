@@ -21,7 +21,11 @@
     "node remake/test/kuji_sell_guard.mjs",
     "python3 tools/check_active_json.py",
     "browser/shop_ui.mjs: af-vanilla-stock-and-craft-art, pc-product-art-legacy-save, touch-product-art-legacy-save",
-    "browser/mix_temperature.mjs: all-bands-boundaries-and-session-isolation, recipe-and-width-comparison-desktop"
+    "browser/mix_temperature.mjs: all-bands-boundaries-and-session-isolation, recipe-and-width-comparison-desktop",
+    "node remake/test/craft_scoring_spec.mjs",
+    "quick: 35 suites passed initially; game-logic passed after updating stale vanilla=dobaj fixtures; 36/36 suites now passed",
+    "python3 tools/check_agent_docs.py"
   ],
-  "environment_notes": "Initial shop runs failed because existing unrelated LFS images were pointers. Retrieved only sheet-nine, sheet-three and three equipment-v2 images (about 0.7MB total); reruns passed. No production code/test assertions weakened for this environment issue."
+  "environment_notes": "Initial shop runs failed because existing unrelated LFS images were pointers. Retrieved only sheet-nine, sheet-three and three equipment-v2 images (about 0.7MB total); reruns passed. No production code/test assertions weakened for this environment issue.",
+  "github_preview_verification": "Four Git LFS objects uploaded successfully (1.8MB). PR raw image URLs return GitHub redirect to media.githubusercontent.com. Following the redirect is denied by this cloud environment network policy (HTTP 403); final rendered GitHub preview could not be checked from this environment."
 }

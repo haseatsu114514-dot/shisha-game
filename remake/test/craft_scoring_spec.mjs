@@ -67,7 +67,7 @@ for (const f of flavors) {
 
 // 修正対象12商品の所属・温度帯幅・単社加算の回帰テスト
 const candidateMakers = {
-  vanilla: "dobaj",
+  vanilla: "af",
   coconut: "dobaj",
   mango: "dobaj",
   rose: "afsahr",
@@ -194,7 +194,7 @@ assert.equal(afBeginner.burnRisk - dobajBeginner.burnRisk, 11, `AF beginner burn
 const { temperatureBands, temperatureFitness } = await import("../js/craft/temperature-model.js");
 const { pullResult } = await import("../js/craft/conditions.js");
 for (const ratio of [.49, .5, .51]) {
-  const cs = { ...baseCraftState, mix: { double_apple: 12 * (1 - ratio), vanilla: 12 * ratio } };
+  const cs = { ...baseCraftState, mix: { double_apple: 12 * (1 - ratio), dobaj_double_apple: 12 * ratio } };
   const bands = temperatureBands(cs), profile = makerMixProfile(cs), safe = ratio < .5 ? 3 : 4;
   assert.equal(profile.safePullsBonus, safe - 3);
   assert.equal(pullResult(bands.center, 4, 0, bands, safe).score, ratio < .5 ? 92 : 100);
@@ -206,7 +206,7 @@ for (const ratio of [.49, .5, .51]) {
   assert.equal(profile.qualityCeilingDelta, Math.round(((1 - ratio) * 2.5 + ratio * .8) * .9 * 1000) / 1000);
 }
 // Saturated attributes and final integer rounding retain their original semantics; no Dobaj 85 cap.
-const strong = { ...baseCraftState, mix: { vanilla: 12 }, mixInfo: { score: 100, intensity: 10, total: 30 },
+const strong = { ...baseCraftState, mix: { dobaj_double_apple: 12 }, mixInfo: { score: 100, intensity: 10, total: 30 },
   holes: { total: 24, outerEven: 1, innerExcess: 0, inner: 0, minimumComplete: true },
   heat: { heatPower: 100, heatStability: 100, burnRisk: 0, aromaRetention: 100 },
   steam: { seconds: 540, hits: 0, score: 100 }, care: { score: 100 }, pack: "firm",
