@@ -133,6 +133,10 @@ await check('samechan and C.STATION repeat classification preserves pending intr
   s.spotVisits={c_station:1};s.reel.introDone=true;
   const id=cs.pool[0];assert(f.db.dialogues[id]?.lines?.length,'Use the actual C.STATION repeat script');
   assert.equal(f.spots.shortNormalVisit(cs),true);
+  // #1696: 博士と面識があれば2回目の来店は一度きりの回になるので、短い日常として扱わない。
+  s.met.dr_kemuri=true;assert.equal(f.spots.shortNormalVisit(cs),false,'doctor encounter due is not a quiet visit');
+  s.flags._spot_seen_cs_kemuri_sample=true;assert.equal(f.spots.shortNormalVisit(cs),true);
+  delete s.met.dr_kemuri;delete s.flags._spot_seen_cs_kemuri_sample;
   s.flags._pakki_first_spin_pending=true;assert.equal(f.spots.shortNormalVisit(cs),false);
 });
 await check('invitation tonari closure unmets slot and daily cap preserve original eligibility',async f=>{

@@ -16,6 +16,10 @@ const ENCOUNTERS = {
     { id: "choizap_naru", met: "naru" },
     { id: "choizap_oldman" },
   ],
+  c_station: [
+    // 博士の二面性をそれとなく見せる一度きりの回（#1696）。面識は登録時の顔合わせか大会でできる。
+    { id: "cs_kemuri_sample", met: "dr_kemuri" },
+  ],
 };
 
 const FOLLOWUPS = {
