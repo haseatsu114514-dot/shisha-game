@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-29 05:28 UTC",
+ "generated": "2026-10-30 09:35 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -163,6 +163,7 @@
   "pakki": {
    "faces": [
     "angry",
+    "evil",
     "normal",
     "smile",
     "smoke",
@@ -276,7 +277,8 @@
   },
   "uranaishi": {
    "faces": [
-    "normal"
+    "normal",
+    "smile"
    ],
    "h": 0.975,
    "b": 0.0167,
@@ -2498,7 +2500,9 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "sprites/characters/pakki/chr_pakki_evil.png",
+  "sprites/characters/uranaishi/chr_uranaishi_smile.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

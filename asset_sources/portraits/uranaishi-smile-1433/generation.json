@@ -1,0 +1,79 @@
+{
+  "character": "uranaishi",
+  "expression": "smile",
+  "tool": "image_gen.imagegen",
+  "attempts": 1,
+  "status": "仮決定（2026-10-30 17:39、オーナー訂正時は差し替え）",
+  "normalization": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "mode": "RGBA",
+    "source_size": [
+      1084,
+      1451
+    ],
+    "crop_alpha_threshold": 8,
+    "source_crop": [
+      278,
+      11,
+      859,
+      1429
+    ],
+    "scale": 0.8251057827926658,
+    "resize": "Lanczos (uniform)",
+    "paste_xy": [
+      225,
+      10
+    ],
+    "target_baseline_exclusive": 1180,
+    "target_height": 1170,
+    "target_foot_anchor_x": 492.9366036682739,
+    "operation": "crop/resize/translate only; original source retained; alpha preserved"
+  },
+  "reference_metrics": {
+    "bbox_alpha24": [
+      234,
+      10,
+      695,
+      1180
+    ],
+    "height_alpha24": 1170,
+    "foot_anchor_x": 492.9366036682739,
+    "bbox_alpha_nonzero": [
+      234,
+      10,
+      695,
+      1180
+    ],
+    "corners_alpha": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "final_metrics": {
+    "bbox_alpha24": [
+      225,
+      10,
+      704,
+      1179
+    ],
+    "height_alpha24": 1169,
+    "foot_anchor_x": 492.8915945986952,
+    "bbox_alpha_nonzero": [
+      225,
+      10,
+      704,
+      1180
+    ],
+    "corners_alpha": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}
