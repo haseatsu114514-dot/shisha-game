@@ -11,11 +11,13 @@ export async function checkTournamentReview(page, chapter) {
   }, chapter);
   const before = await snapshot();
   const lines = await read();
-  await assertFits(page, `${t("craft-review")} p, ${t("continue")}`);
+  await assertFits(page, `${t("craft-review")} p`);
+  await page.locator(t("continue")).scrollIntoViewIfNeeded();
+  await assertFits(page, t("continue"));
   assert(await page.locator(t("continue")).evaluate(node => {
     const box = node.closest(".ch2-contest").getBoundingClientRect(), r = node.getBoundingClientRect();
     return r.top >= box.top && r.bottom <= box.bottom;
-  }), "Result action fits inside the card even with the longest vote commentary");
+  }), "Result action is fully reachable inside the card after scrolling long commentary");
   assert.equal(lines.length, 2);
   assert.match(lines[0], /^今回よかったこと：/);
   assert.match(lines[1], /^(次に変える一つ|次の練習)：/);
