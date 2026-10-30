@@ -5,7 +5,7 @@ export const VISIT_SEQ = {
   naru: ["ch1_naru_first", "ch1_naru_second", "ch1_naru_third", "ch1_naru_group_regulars", "ch1_naru_fourth", "ch1_naru_fifth"],
   adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_group_soutoku", "ch1_adam_third", "ch1_adam_fourth", "ch1_adam_fifth"],
   minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_group_regulars", "ch1_minto_fourth", "ch1_minto_phantom_smell"],
-  rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third"],
+  rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third", "ch1_rin_fourth"],
 };
 
 export const AGEHA_AFFINITY_VISITS = ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcomer", "remake_ch2_ageha_magazine"];
