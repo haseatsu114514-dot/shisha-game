@@ -54,22 +54,25 @@ console.log("OK: all 35 lover milestones contain no ability rewards or cues");
 // ひよりの恋人Lv1〜5（#1498 オーナー決定: 斧投げ・ラーメン・総務の区切り・儚い女の演技 → epilogue_hiyori）。
 const { existsSync } = await import("node:fs");
 const { execFileSync } = await import("node:child_process");
+// quick CI は画像を sparse-checkout しないため、作業ツリーに無ければ git の索引で存在を確かめる。
+const assetExists = rel => {
+  if (existsSync(new URL(`../../${rel}`, import.meta.url))) return true;
+  try { execFileSync("git", ["ls-files", "--error-unmatch", rel], { cwd: new URL("../../", import.meta.url), stdio: "ignore" }); return true; } catch { return false; }
+};
 const hiyori = [1, 2, 3, 4, 5].map(level => milestones.find(scene => scene.dialogue_id === `lover_hiyori_lv${level}`));
 const sceneText = scene => scene.lines.map(line => `${line.text || ""}${line.inner || ""}`).join("\n");
 for (const scene of hiyori) {
   assert.equal(scene.metadata.private_scene, true, `${scene.dialogue_id}: private scene`);
   {
-    // quick CI は画像を sparse-checkout しないため、作業ツリーに無ければ git の索引で存在を確かめる。
     const rel = scene.metadata.bg.replace("res://", "");
-    const tracked = () => { try { execFileSync("git", ["ls-files", "--error-unmatch", rel], { cwd: new URL("../../", import.meta.url), stdio: "ignore" }); return true; } catch { return false; } };
-    assert.ok(existsSync(new URL(`../../${rel}`, import.meta.url)) || tracked(), `${scene.dialogue_id}: bg exists`);
+    assert.ok(assetExists(rel), `${scene.dialogue_id}: bg exists`);
   }
   assert.ok(!scene.metadata.preview_only && !scene.metadata.min_chapter, `${scene.dialogue_id}: playable in chapters 1-3`);
   assert.ok(!scene.branches, `${scene.dialogue_id}: no timeline branch needed`);
   for (const line of scene.lines) {
     assert.ok(["", "hiyori", "hajime"].includes(line.speaker), `${scene.dialogue_id}: speaker ${line.speaker}`);
     if (line.speaker === "hiyori") {
-      assert.ok(existsSync(new URL(`../../assets/sprites/characters/hiyori/chr_hiyori_${line.face}.png`, import.meta.url)), `${scene.dialogue_id}: face ${line.face}`);
+      assert.ok(assetExists(`assets/sprites/characters/hiyori/chr_hiyori_${line.face}.png`), `${scene.dialogue_id}: face ${line.face}`);
       assert.doesNotMatch(line.text, /はじめさん|ハジメ/, `${scene.dialogue_id}: Hiyori calls him はじめくん`);
     } else assert.ok(!line.inner, `${scene.dialogue_id}: only Hiyori has inner lines`);
     if (line.speaker === "hajime") assert.doesNotMatch(line.text, /ひより(?!さん)/, `${scene.dialogue_id}: Hajime says ひよりさん`);
