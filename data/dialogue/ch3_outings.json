@@ -80,9 +80,9 @@
         { "speaker": "steve", "face": "normal", "text": "オーケー。炭の横じゃない。客のホースが見える所に置く" },
         { "speaker": "steve", "face": "serious", "text": "時間だけ見てると、客の二口目を見落とす。だから両方が目に入る場所" },
         { "speaker": "hajime", "face": "normal", "text": "待つための道具なのに、見るのは客なんですね" },
-        { "speaker": "steve", "face": "smile", "text": "イエス。タイマーはミーを止めるだけ。決めるのは客の顔" },
+        { "speaker": "steve", "face": "smile", "text": "イエス。タイマーは俺を止めるだけ。決めるのは客の顔" },
         { "speaker": "", "text": "スティーブはキッチンタイマーを一つ、はじめの手に載せた。" },
-        { "speaker": "steve", "face": "smug", "text": "予備。大会で鳴らしたら、ミーのせいにしていい" },
+        { "speaker": "steve", "face": "smug", "text": "予備。大会で鳴らしたら、俺のせいにしていい" },
         { "speaker": "hajime", "face": "smile", "text": "……ありがとうございます。借ります" }
       ]
     },
