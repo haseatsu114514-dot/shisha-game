@@ -1244,6 +1244,12 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-node.lesson.sig .gb-face { width: 48px; height: 43px; box-shadow: none; outline: 2px solid #f4d27a; outline-offset: 2px; }
 .gb-node.skill .gb-glyph, .gb-node.lesson .gb-glyph { color: color-mix(in srgb, var(--c) 65%, #fff); }
 .gb-node.lesson .gb-glyph { color: #f4d27a; }
+/* 関門（v3）: 金のひし形。色つきの火種で越える */
+.gb-node.gate .gb-face { width: 24px; height: 24px; border-radius: 3px; transform: rotate(45deg); border-color: #ffd36b; background: #1d1426; font-size: 12px; }
+.gb-node.gate .gb-glyph { transform: rotate(-45deg); color: #ffd36b; }
+.gb-node.gate.s-unlocked .gb-face { background: #ffd36b; box-shadow: 0 0 12px #ffd36b; }
+.gb-node.gate.s-unlocked .gb-glyph { color: #1b1020; }
+.gb-node.gate.s-available .gb-face { animation: none; box-shadow: 0 0 10px #ffd36b; }
 /* 状態（6.2）。色だけに頼らず形・線・文字でも分ける */
 .gb-node.s-unlocked .gb-face { background: var(--c); border-color: #fff8; color: #1b1020; box-shadow: 0 0 12px var(--c); }
 .gb-node.skill.s-unlocked .gb-face::before, .gb-node.lesson.s-unlocked .gb-face::before { background: color-mix(in srgb, var(--c) 70%, #1d1426); }

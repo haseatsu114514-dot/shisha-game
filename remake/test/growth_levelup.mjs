@@ -197,11 +197,12 @@ core.state.growth.learned.push("M-S1");
 growth.ensureGrowth();
 assert.equal(core.state.flags._sumi_attack_learned, true, "習得した授業のフラグは周回で消えても戻す");
 delete core.state.flags._coal_cube_learned; delete core.state.flags._sumi_attack_learned;
-// 上限: 盤の179を超えて渡さない
-core.state.growth = { ...growth.newGrowth(), earned: 178 };
+// 上限: 盤の全部（v3 で272）を超えて渡さない
+assert.equal(growth.BOARD_TOTAL, 272);
+core.state.growth = { ...growth.newGrowth(), earned: growth.BOARD_TOTAL - 1 };
 growth.gainExp(growth.totalExpFor(12));
 const capped = growth.settleGrowth();
-assert.equal(core.state.growth.earned, 179);
+assert.equal(core.state.growth.earned, growth.BOARD_TOTAL);
 assert.equal(capped.boardFull, true);
 
 // 無効へ戻すと新しいゲームには growth が無い
