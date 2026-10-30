@@ -97,7 +97,13 @@ await suite('store-logo-layout', async check => {
         }
         await page.waitForFunction(() => L.finished);
         assert.equal(await page.locator('.spot-pin.branded').count(), 6); // choizap: facility icon takes precedence (map.js)
-        assert.deepEqual(await storageSnapshot(page), saved);
+        const after = await storageSnapshot(page);
+        const seenKey = 'suien_remake_seen_dialogue_lines';
+        assert(JSON.parse(after.local[seenKey] || '[]').some(key => key.includes(`logo_layout_${mode}`)));
+        // Reading dialogue intentionally persists its seen-line marker; map and save storage still stay unchanged.
+        delete saved.local[seenKey];
+        delete after.local[seenKey];
+        assert.deepEqual(after, saved);
       }
     }, { viewport, isMobile: touch, hasTouch: touch });
   }
