@@ -227,6 +227,7 @@ export async function playDate(id) {
     console.error(`[romance] Missing date scene for ${id}`);
     return;
   }
+  state.lastDate ??= {};
   const venue = dateVenue(id);
   state.lastDate[id] = state.day;
   bond.private = true;
@@ -288,7 +289,7 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     }
     // デートの誘い（数日おき。絆がMAXになっても頻度を落として続く）
     const maxed = (state.loveLevel[id] || 0) >= 5;
-    const last = state.lastDate[id] ?? -9;
+    const last = state.lastDate?.[id] ?? -9;
     const invId = `_date_inv_${id}${chapterKey}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
     const gap = id === "samechan" ? samechanDateGap() : state.day - last;

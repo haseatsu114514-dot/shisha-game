@@ -609,4 +609,66 @@ state.inbox.push(item(invitation("c04_private", "minto"), { account: "minto_priv
 assert.equal(phone.invitationReadBeforeMeeting({ originId: "c04_private", sender: "minto" }), "minto_private");
 reset();
 
+// #1720: 実デート → ゲームの朝が使う deliverMorning → 既存トーク描画まで。
+const postEvents = JSON.parse(await fs.readFile(new URL("data/lime_events.json", dataRoot), "utf8")).events;
+const routes = JSON.parse(await fs.readFile(new URL("data/story_routes.json", dataRoot), "utf8"));
+const realLover = JSON.parse(await fs.readFile(new URL("data/lover.json", root), "utf8"));
+assert.deepEqual(routes.heroine_ids.slice().sort(), Object.keys(routes.romance).sort());
+db.limeEvents = postEvents.map(event => ({ ...event, type: "chat", lover: true }));
+for (const id of routes.heroine_ids) {
+  const eventId = `lime_post_${id}`;
+  reset({ chapter: 2, day: 20, stamina: 100, lovers: [id], contacts: [id], loveLevel: { [id]: 1 },
+    flags: { _elapsed_calendar: true }, met: { [id]: true } });
+  db.lime = [];
+  db.lover = realLover;
+  const follow = () => phone.morningMessages().filter(m => m.id === eventId);
+  assert.equal(follow().length, 0, `${id}: before a date`);
+  // 章2のサメちゃん専用デートも実装を通し、選択肢Aを読了する。
+  playHook = async scene => {
+    const flag = scene?.branches?.a?.find(line => line.type === "set_flag")?.flag;
+    if (flag) state.flags[flag] = true;
+  };
+  await romance.playDate(id);
+  assert.equal(state.lastDate[id], 20, `${id}: actual date recorded`);
+  assert.equal(follow().length, 0, `${id}: same day`);
+  state.day++;
+  // 前の雑談が未読でも翌朝のお礼を失わない。同じ相手の通常恋人LIMEより優先する。
+  state.inbox.push(item({ id: `old_${id}`, sender: id, type: "chat", messages: ["前の雑談"] }));
+  for (const tournamentDay of [false, true]) {
+    const morning = phone.morningMessages({ tournamentDay });
+    assert.equal(morning.filter(m => m.sender === id).length, 1);
+    assert.equal(morning.find(m => m.sender === id)?.id, eventId);
+  }
+  phone.deliverMorning();
+  const received = state.inbox.find(i => i.id === eventId);
+  assert(received, `${id}: delivered into real inbox`);
+  assert.equal(received.msg.type, "chat");
+  assert.equal(follow().length, 0, `${id}: inbox prevents duplicate delivery`);
+  phone.deliverMorning();
+  assert.equal(state.inbox.filter(i => i.id === eventId).length, 1);
+  // 描画と既読処理も既存のopenLimeを通す。
+  state.inbox = [received];
+  const session = phone.openLime({ sender: received.account || id });
+  await settle();
+  await closeThread(session);
+  assert(state.limeRead.includes(eventId), `${id}: marked read by phone`);
+  state.inbox = [];
+  assert.equal(follow().length, 0, `${id}: read ID prevents redelivery without inbox`);
+  state.day++;
+  assert.equal(follow().length, 0, `${id}: only next morning`);
+  state.lastDate[id] = state.day - 1;
+  assert.equal(follow().length, 0, `${id}: later dates do not repeat the one-time event`);
+  state.limeRead = [];
+  state.lovers = [];
+  assert.equal(follow().length, 0, `${id}: not a lover`);
+  state.lovers = [id];
+  for (const legacy of [undefined, {}, { [id]: null }, { [id]: "21" }, { [id]: 0 }]) {
+    state.lastDate = legacy;
+    assert.equal(follow().length, 0, `${id}: no guessed date in legacy saves`);
+  }
+}
+db.limeEvents = [];
+reset();
+console.log("[#1720 post-date LIME] seven actual dates, next morning, priority, inbox/read deduplication, phone rendering, legacy saves: PASS");
+
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority + #1081 C04 unread guard: PASS");

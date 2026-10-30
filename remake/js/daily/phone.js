@@ -210,7 +210,7 @@ function eligible(m, { tournamentDay = false } = {}) {
 }
 
 /**
- * 今朝届くメッセージ（1人1話題・最大3通）。恋人からの LIME（記念日・デートの誘い・朝のひとこと）を優先する
+ * 今朝届くメッセージ（1人1話題・最大3通）。デート翌朝のフォロー、恋人からの LIME（記念日・デートの誘い・朝のひとこと）を優先する
  * @param opts.tournamentDay 大会当日の朝か / opts.fixedNight (day) => 夜の固定イベントがあるか
  */
 export function morningMessages(opts = {}) {
@@ -221,6 +221,17 @@ export function morningMessages(opts = {}) {
   const delivered = new Set(inbox.map((i) => i.id));
   // 未読が残っている相手からは重ねて届かない（読むまで溜まっていく一方にしない）
   const senders = new Set(opts.tournamentDay ? [] : inbox.filter((i) => !i.read && !canRetry(i)).map((i) => i.msg.sender));
+  // 昨日のデートへのお礼は翌朝だけ。未読の雑談があっても届け、定期LIMEより優先する。
+  // day は通算日。記録のない旧セーブから過去のデートを推測しない。
+  for (const m of DB.limeEvents || []) {
+    const last = state.lastDate?.[m.sender];
+    if (out.length >= 3 || !(state.lovers || []).includes(m.sender)
+      || !Number.isInteger(last) || last < 1 || state.day !== last + 1
+      || m.trigger_condition !== `romance_${m.sender}_date_after`
+      || state.limeRead.includes(m.id) || delivered.has(m.id)) continue;
+    out.push(m);
+    senders.add(m.sender);
+  }
   for (const m of loverMessages(opts)) {
     // 初めての私服の約束など、まだ見ていない大事な話題を同じ相手の定期LIMEで押し流さない。
     const storyInvite = DB.lime.some((candidate) => candidate.sender === m.sender && candidate.priority > 0

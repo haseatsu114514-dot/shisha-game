@@ -28,6 +28,7 @@ export const DB = {
   relationshipMemories: {}, // 実際に読んだ交流の記憶（id -> 記録）
   glossary: [],
   lime: [],
+  limeEvents: [],     // デート翌朝の一度きりのフォロー
   recipes: [],
   ngMixes: [],
   kuji: { meta: {}, grades: {} },
@@ -126,6 +127,7 @@ export async function loadAll(onProgress = () => {}) {
     ["baito", `${ROOT}data/baito_events.json`],
     ["glossary", `${ROOT}data/glossary.json`],
     ["lime", `${ROOT}data/lime_messages.json`],
+    ["limeEvents", `${ROOT}data/lime_events.json`],
     ["recipes", `${ROOT}data/recipes.json`],
     ["ngMixes", `${ROOT}data/ng_mixes.json`],
     ["kuji", `${ROOT}data/kuji.json`],
@@ -164,6 +166,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.baito = raw.baito.events.filter((e) => BAITO_CATEGORIES.has(e.category));
   DB.glossary = raw.glossary.groups;
   DB.lime = [...raw.lime.messages, ...(DB.samechan.lime || [])];
+  DB.limeEvents = raw.limeEvents.events.map((event) => ({ ...event, type: "chat", lover: true }));
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
   DB.kuji = raw.kuji;
