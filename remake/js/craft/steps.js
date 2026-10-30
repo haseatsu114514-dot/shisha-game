@@ -186,6 +186,7 @@ export function evaluateMix(cs) {
   const ids = Object.keys(mix);
   const total = ids.reduce((s, id) => s + mix[id], 0);
   const notes = [];
+  const ngReasons = [];
   // 単体でも香りの完成した一台になる。種類数だけで二種より低くしない。
   let score = [0, 84, 84, 80, 70][Math.min(4, ids.length)] - (ids.length > 4 ? 8 : 0);
   const key = [...new Set(ids.map(familyKeyOf))].sort().join("+");
@@ -193,13 +194,14 @@ export function evaluateMix(cs) {
   if (recipe) { score += 14; notes.push(`レシピ「${recipe.name}」の組み合わせ`); }
   for (const ng of DB.ngMixes) {
     const [a, b] = ng.flavors;
-    if (!(a in mix) || !(b in mix)) continue;
+    const aGrams = flavorFamilyGrams(mix, a), bGrams = flavorFamilyGrams(mix, b);
+    if (aGrams <= 0 || bGrams <= 0) continue;
     const hit =
-      (ng.condition === "both_over_5g" && mix[a] > 5 && mix[b] > 5) ||
-      (ng.condition === "both_over_4g" && mix[a] > 4 && mix[b] > 4) ||
-      (ng.condition === "combined_over_10g" && mix[a] + mix[b] > 10) ||
-      (ng.condition === "ratio_close" && Math.abs(mix[a] - mix[b]) <= 1);
-    if (hit) { score += ng.penalty * 3; notes.push(ng.text); }
+      (ng.condition === "both_over_5g" && aGrams > 5 && bGrams > 5) ||
+      (ng.condition === "both_over_4g" && aGrams > 4 && bGrams > 4) ||
+      (ng.condition === "combined_over_10g" && aGrams + bGrams > 10) ||
+      (ng.condition === "ratio_close" && Math.abs(aGrams - bGrams) <= 1);
+    if (hit) { score += ng.penalty * 3; notes.push(ng.text); ngReasons.push(ng.text); }
   }
   const main = Math.max(...ids.map((id) => mix[id]), 0) / (total || 1);
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
@@ -221,7 +223,7 @@ export function evaluateMix(cs) {
   if (golden?.level === "hit") notes.push(`黄金比（${goldenLabel(recipe)}）`);
   return {
     golden: golden?.level || null, goldenShort: golden?.short || null,
-    score: clamp(Math.round(score), 25, 100), total, recipe, notes, regOk, profile: prof,
+    score: clamp(Math.round(score), 25, 100), total, recipe, notes, ngReasons, regOk, profile: prof,
     count: ids.length, intensity: prof.assertiveness || 5, cooling: prof.cooling || 0, maker,
   };
 }
@@ -465,6 +467,8 @@ export async function stepMix(cs) {
     toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し",
       { kind: short && effectVisible("insight") ? "insight-hint" : "" });
   }
+  // 配合中の予告には出さず、確定したNG理由だけを1件知らせる。
+  if (cs.mixInfo.ngReasons.length) toast(cs.mixInfo.ngReasons[0]);
   await sleep(200);
 }
 

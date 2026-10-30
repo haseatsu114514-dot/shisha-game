@@ -61,6 +61,77 @@ await suite("craft-materials", async check => {
         assert.equal(result.stock, result.beforeStock, "The supplied match leaf does not consume private stock");
       }
     }, { ...options, reducedMotion: "reduce" });
+    // #1906-2: 評価は毎回更新するが、NG理由は確定後に1件だけ表示する。
+    const ngSetup = async (page, ids, golden = false) => {
+      await page.evaluate(async ({ ids, golden }) => {
+        const core = await import("./js/core/state.js"), session = await import("./js/craft/session.js");
+        const steps = await import("./js/craft/steps.js"), ui = await import("./js/core/ui.js");
+        const { DB } = await import("./js/core/data.js");
+        core.newGame();
+        if (golden) DB.recipes = [...DB.recipes, { id: "test_ng_golden", name: "NG併存fixture", flavors: ["mint", "vanilla"], golden: { mint: 1, vanilla: 1 } }];
+        const cs = session.newSession("drill");
+        cs.equip.bowl = "suyaki_tsumugi"; cs.orderFlavorIds = ids;
+        await session.openBench(cs).ready;
+        ui.layers.toasts.replaceChildren();
+        window.NG?.observer?.disconnect();
+        const seen = [];
+        const observer = new MutationObserver(records => {
+          for (const r of records) for (const n of r.addedNodes) if (n.matches?.(".toast")) seen.push(n.textContent);
+        });
+        observer.observe(ui.layers.toasts, { childList: true });
+        window.NG = { core, cs, seen, observer, reasons: DB.ngMixes.map(ng => ng.text), run: steps.stepMix(cs).then(() => "done", e => e.name) };
+      }, { ids, golden });
+      await page.locator(`[data-test="mix-plus-${ids[0]}"]`).waitFor();
+    };
+    const changeGrams = async (page, id, grams) => {
+      for (let i = 0; i < Math.abs(grams); i++) await click(page, `[data-test="mix-${grams > 0 ? "plus" : "minus"}-${id}"]`, touch);
+    };
+    const ngNotices = page => page.evaluate(() => NG.seen.filter(text => NG.reasons.includes(text)));
+    await check(`${device}-ng-family-confirmation`, async page => {
+      for (const [mix, expected, golden] of [
+        [{ mint: 6, vanilla: 6 }, 1, false],
+        [{ dobaj_mint: 6, vanilla: 6 }, 1, false],
+        [{ mint: 2, dobaj_mint: 2, absal_mint: 2, vanilla: 6, coconut: 6 }, 3, false],
+        [{ dobaj_mint: 6, vanilla: 6 }, 1, true],
+      ]) {
+        await ngSetup(page, Object.keys(mix), golden);
+        for (const [id, g] of Object.entries(mix)) await changeGrams(page, id, g);
+        assert.deepEqual(await ngNotices(page), [], "Changing grams must not reveal NG reasons");
+        assert.equal(await page.evaluate(() => NG.cs.mixInfo), null);
+        await click(page, '[data-test="mix-ok"]', touch);
+        assert.equal(await page.evaluate(() => NG.run), "done");
+        const info = await page.evaluate(() => NG.cs.mixInfo);
+        assert.equal(info.ngReasons.length, expected, "All matching NG penalties remain in the evaluation");
+        assert.deepEqual(await ngNotices(page), [info.ngReasons[0]], "Show only the first existing reason, not recipe/balance notes");
+        assert.equal(await page.locator("#toasts .toast").filter({ hasText: info.ngReasons[0] }).count(), 1);
+        if (golden) {
+          assert.equal(info.golden, "hit");
+          assert(await page.locator("#toasts .toast").filter({ hasText: "黄金比！" }).isVisible(), "Golden and NG notices coexist");
+        }
+      }
+    }, { ...options, reducedMotion: "reduce" });
+    await check(`${device}-ng-withdraw-and-cancel`, async page => {
+      await ngSetup(page, ["dobaj_mint", "vanilla", "lemon"]);
+      await changeGrams(page, "dobaj_mint", 6); await changeGrams(page, "vanilla", 6);
+      await changeGrams(page, "vanilla", -6); await changeGrams(page, "lemon", 6);
+      assert.deepEqual(await ngNotices(page), []);
+      await click(page, '[data-test="mix-ok"]', touch);
+      assert.equal(await page.evaluate(() => NG.run), "done");
+      assert.deepEqual(await page.evaluate(() => NG.cs.mixInfo.ngReasons), [], "A removed NG mix must not leave a stale reason");
+      assert.deepEqual(await ngNotices(page), []);
+
+      await ngSetup(page, ["dobaj_mint", "vanilla"]);
+      await changeGrams(page, "dobaj_mint", 6); await changeGrams(page, "vanilla", 6);
+      const before = await storageSnapshot(page);
+      await page.evaluate(() => { NG.core.newGame(); NG.afterLoad = JSON.stringify(NG.core.state); });
+      // Load/new game invalidates this pending step; a late confirmation cannot report its old NG.
+      await click(page, '[data-test="mix-ok"]', touch);
+      assert.equal(await page.evaluate(() => NG.run), "AbortError");
+      assert.deepEqual(await ngNotices(page), []);
+      assert.equal(await page.evaluate(() => JSON.stringify(NG.core.state)), await page.evaluate(() => NG.afterLoad));
+      assert.deepEqual(await storageSnapshot(page), before);
+      assert.equal(await page.evaluate(() => NG.cs.mixInfo), null);
+    }, { ...options, reducedMotion: "reduce" });
     await check(`${device}-packing`, async page => {
       await setup(page);
       for (const bowl of ["silicone_bowl", "hagal_80beat", "suyaki_tsumugi"]) {
