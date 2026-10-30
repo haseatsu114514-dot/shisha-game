@@ -10,11 +10,11 @@ const weatherIcon = (rainy) => rainy
   : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 1v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2"/></svg>';
 
 export function buildSteamWeather(cs) {
-  const { rainy, ambientC, humidityPercent } = steamClimate(cs.environment);
+  const { rainy, ambientC } = steamClimate(cs.environment);
   return el("div.steam-weather", { dataset: { test: "steam-weather" } }, [
     el("i", { html: weatherIcon(rainy), "aria-hidden": "true" }),
     el("span", { text: rainy ? "雨" : "晴れ" }),
-    el("span", { text: `気温 ${ambientC}℃` }), el("span", { text: `湿度 ${humidityPercent}%` }),
+    el("span", { text: `気温 ${ambientC}℃` }),
   ]);
 }
 
@@ -58,7 +58,7 @@ export function buildSteamForecast(cs, thermometer) {
     rangeText.textContent = low === high ? `${low}のあたり` : `${low}〜${high}`;
     root.dataset.low = String(bounds.low); root.dataset.high = String(bounds.high);
     note.textContent = steamClimate(cs.environment).rainy
-      ? "湿気で熱が入りにくい日。目安から前後する"
+      ? "雨で熱が入りにくい日。目安から前後する"
       : "気温や炭の状態で、目安から前後する";
   } };
 }
