@@ -4,7 +4,7 @@
 //   3) 「もう一度挑戦する」→「上手」で南雲の最後の一票による優勝 → 第1章クリアになること
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
-import { purchasePlannedFlavor } from "./playthrough-shopping.mjs";
+import { enterPlannedShop, purchasePlannedFlavor } from "./playthrough-shopping.mjs";
 import { PLAN, nextPlanAction } from "./playthrough-plan.mjs";
 import { createRequire } from "module";
 import { recordLoad } from "../tools/load-recorder.mjs";
@@ -352,8 +352,8 @@ for (;;) {
       pendingShopBuy = kind === "shop" ? arg : "__upstairs";
       log("shopping-plan", JSON.stringify({ planIdx, pendingShopBuy, state: await shoppingSnapshot() }));
       await shoppingRequired('[data-test="pin-shop"]');
-      await shoppingRequired('[data-test="map-go"]');
-      await page.waitForSelector('.shop-entry:not(.done)', { timeout: 5000 });
+      await enterPlannedShop({ read: shoppingSnapshot, click,
+        ready: () => page.waitForSelector('.shop-entry:not(.done)', { timeout: 5000 }) });
     } else {
       const ok = await chooseDestination(kind);
       if (!ok) { log(`  (DAY ${snap.day}: ${kind} に行けないので休む)`); await click('[data-test="pin-rest"]'); await click('[data-test="map-go"]'); }

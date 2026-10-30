@@ -1,6 +1,34 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { purchasePlannedFlavor } from './playthrough-shopping.mjs';
+import { enterPlannedShop, purchasePlannedFlavor } from './playthrough-shopping.mjs';
+
+for (const delivered of [true, false]) {
+  test(`confirms navigation after one click, response delivered=${delivered}`, async () => {
+    const state = { screen: 'map', day: 11, slot: 1, money: 5000, flavorStock: { lemon: 100 } };
+    let clicks = 0, waited = false;
+    await enterPlannedShop({ read: async () => structuredClone(state),
+      click: async () => { clicks++; state.screen = 'shop-entry'; return delivered; },
+      ready: async () => { waited = true; } });
+    assert.equal(clicks, 1); assert.equal(waited, true);
+  });
+}
+for (const failure of ['not-delivered', 'no-navigation', 'day', 'slot', 'money', 'stock']) {
+  test(`rejects unconfirmed or changed navigation: ${failure}`, async () => {
+    const state = { screen: 'map', day: 11, slot: 1, money: 5000, flavorStock: { lemon: 100 } };
+    let clicks = 0;
+    await assert.rejects(enterPlannedShop({ read: async () => structuredClone(state),
+      click: async () => {
+        clicks++;
+        if (failure === 'not-delivered') return false;
+        if (failure === 'no-navigation') return true;
+        state.screen = 'shop-entry';
+        if (failure === 'stock') state.flavorStock.lemon++;
+        else state[failure]++;
+        return true;
+      }, ready: async () => {} }), /Shop navigation incomplete/);
+    assert.equal(clicks, 1, 'never repeats an uncertain click');
+  });
+}
 
 function fixture(failure) {
   const state = { screen: 'shop', day: 10, slot: 1, quantity: 0, stock: 0, owned: false, money: 5000, price: 1200 };
