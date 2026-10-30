@@ -1,11 +1,11 @@
 // 吸い出し（CLAUDE.md: 最低2回・3回までは無傷・それ以上は葉が痩せる。やめ時は自分で選ぶ）
-// 左右に振れる針を止めた位置で、上げ吸い／キープ／下げ吸い。中央の細い帯が「ジャスト」。
+// 左右に振れる針を止めた位置で、熱を入れる吸い／キープ／熱を逃がす吸い。中央の細い帯が「ジャスト」。
 // 熱管理（大会のR3・調整）も同じ針のゲーム。「炭を交換しますか？」で個数を選び、交換した炭で温度が戻ってから、
 // 温度が動き続ける中で最低1回吸って整える。3回目の吸い出しからフレーバーが傷む（TH14・TH21・TH22・TH39）。
 // 温度計の一番上で焦げ、熱管理で冷え切り、赤い葉が0枚になると、その一台はダメになる（TH82）。一度に吸えるのは5回まで（TH94）。
 // 吸いすぎ・過熱での吸い出しは、はじめの体力も削って疲れ（針が速く、成功帯が狭い）が付く（TH29）。
 // 人によって狙いが違うので、EXCELLENT・GOOD の判定は出さない。吸うと温度計の横に上下の印だけが出る（TH36）。
-// 左の作業風景に温度計、右に半円ダイヤル。左の下げ吸い=寒色→キープ→右の上げ吸い=暖色。
+// 左の作業風景に温度計、右に半円ダイヤル。左の熱を逃がす吸い=寒色→キープ→右の熱を入れる吸い=暖色。
 // TH61: 真円の半円と中央から振れる細い針。止めたら一口を吸い終えるまで固定する。
 // 各帯には温度が上下することだけを添える。時間・強さは画面に書かない（TH60）。
 // 熱管理では、立ち上げから吸われて消耗した炭を交換する。交換する炭はもう一度炭焼きで焼き、焼け具合で戻る熱と持ちが変わる（TH39）。
@@ -40,11 +40,11 @@ const HOSE_ICON = `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" s
   <path d="m31.6 15.8 1.8-1.9" stroke="currentColor" stroke-width="7.4" stroke-linecap="butt"/>
   <path d="m38.8 7.8 3.4-3.6" stroke="currentColor" stroke-width="3.2"/>
 </svg>`;
-// 針の位置の帯（0〜1）。下げ吸い=左、キープ=中、上げ吸い=右。芯に止めると上げ下げが強い。
+// 針の位置の帯（0〜1）。熱を逃がす吸い=左、キープ=中、熱を入れる吸い=右。芯に止めると上げ下げが強い。
 export const ZONES = [
-  { id: "down", from: 0, to: 0.34, just: [0.14, 0.205], label: "下げ吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
+  { id: "down", from: 0, to: 0.34, just: [0.14, 0.205], label: "熱を逃がす吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
   { id: "keep", from: 0.34, to: 0.66, just: [0.468, 0.532], label: "キープ", mark: "＝", delta: 0, justDelta: 0 },
-  { id: "up", from: 0.66, to: 1, just: [0.795, 0.86], label: "上げ吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
+  { id: "up", from: 0.66, to: 1, just: [0.795, 0.86], label: "熱を入れる吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
 ];
 // 交換する炭の個数ごとの、戻ってくる熱と、その後の燃え進む速さ（0個は消耗した炭のままで早く冷える）。
 const COAL_HEAT = [0, 0.06, 0.11, 0.16, .21];
@@ -119,7 +119,7 @@ async function pullGame(cs, mode) {
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
   const harshTemp = visualTemperature(.76, bands);
   const panel = stepPanel(mode.store, mode.title, tutorial
-    ? "中央のキープで温度を保つ。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。吸い終わってから次の針を止める"
+    ? "中央のキープで温度を保つ。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。吸い終わってから次の針を止める"
     : mode.hint);
   const gameClock = createCraftClock(panel);
   const concentration = mode.focus(cs);
@@ -211,7 +211,7 @@ async function pullGame(cs, mode) {
     el("div.pull-life.pull-count-box", [el("span.pull-life-label", { text: mode.drift ? "吸った回数" : "吸い出し回数" }), counter]),
   ]);
   const play = el("div.pull-play", [dialRow, effectLine("technique", "技", "技術でゲージがゆっくり"), summary, el("div.pull-btns", [pullBtn, serveBtn])]);
-  play.setAttribute("aria-label", "左の下げ吸いで温度を下げ、中央でキープ、右の上げ吸いで温度を上げる");
+  play.setAttribute("aria-label", "左の熱を逃がす吸いで温度を下げ、中央でキープ、右の熱を入れる吸いで温度を上げる");
   const main = el("div.pull-main", [play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
   thermometer.root.append(readout);
@@ -463,7 +463,7 @@ async function pullGame(cs, mode) {
           const candidates = [.141, .3, keep, .75, .796];
           at = candidates.sort((a, b) => Math.abs(T + heatDelta(cs, actionAt(a).delta) - center) - Math.abs(T + heatDelta(cs, actionAt(b).delta) - center))[0];
         } else if (auto === "burn") {
-          at = .83; // テスト用: 右のジャスト上げ吸いを重ねて焦がす
+          at = .83; // テスト用: 右のジャスト熱を入れる吸いを重ねて焦がす
         } else {
           at = rand(0, 1) < 0.5 ? 0.7 : 0.75;
           // 雑な吸い方の自動操作でも、焦がす一手は打たない（大会の敗北テストを安定させる）。

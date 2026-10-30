@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 import { temperatureAfterSteam, steamTemperatureRange, pullFocusFromSteam, STEAM_LIMIT, OPTIMAL } from '../js/craft/conditions.js';
 import { steamEnvironment, steamForecastProfile } from '../js/craft/steam-climate.js';
 
-const dry = { rainy: false, ambientC: 23, humidityPercent: 52 };
-const wet = { rainy: true, ambientC: 23, humidityPercent: 80 };
+const dry = { rainy: false, ambientC: 23 };
+const wet = { rainy: true, ambientC: 23 };
 const base = { heat: { heatPower: 50 }, holes: { total: 24, minimumComplete: true }, place: 'three', pack: 'normal', steamSeconds: 480, environment: dry };
 const finish = (cs, variation = 0) => temperatureAfterSteam(cs, cs.steamSeconds, variation);
 const variations = [{ offset: -.065, transfer: .9 }, { offset: 0, transfer: 1 }, { offset: .065, transfer: 1.1 }];
@@ -13,18 +13,20 @@ const variations = [{ offset: -.065, transfer: .9 }, { offset: 0, transfer: 1 },
 assert.deepEqual(steamEnvironment(true, 3, 2026), steamEnvironment(true, 3, 2026));
 const day = steamEnvironment(false, 3, 2026), night = steamEnvironment(false, 3, 2026, 'night');
 assert.equal(day.ambientC - night.ambientC, 2);
-assert(steamEnvironment(true, 3, 2026).humidityPercent > day.humidityPercent);
-assert(finish({ ...base, environment: wet }) < finish(base), 'Rain/humidity did not slow warming');
+// #1129（2026-10-30 オーナー決定）: 湿度は気候から外し、表示にも計算にも使わない。
+assert(!('humidityPercent' in steamEnvironment(true, 3, 2026)) && !('humidityPercent' in day), 'Climate still carries humidity');
+assert(finish({ ...base, environment: wet }) < finish(base), 'Rain did not slow warming');
 assert(finish({ ...base, environment: { ...dry, ambientC: 10 } }) < finish({ ...base, environment: { ...dry, ambientC: 30 } }), 'Ambient temperature had no effect');
-assert(finish({ ...base, environment: { ...dry, humidityPercent: 90 } }) < finish(base), 'Humidity had no effect');
-console.log('[steam temperature] PASS: stable daily climate, cooler nights, slower warming in rain/high humidity and cold air');
+assert.equal(finish({ ...base, environment: { ...dry, humidityPercent: 90 } }), finish(base), 'Legacy humidity still changed warming');
+assert.equal(finish({ ...base, environment: { ...wet, humidityPercent: 20 } }), finish({ ...base, environment: wet }), 'Legacy humidity still changed rainy warming');
+console.log('[steam temperature] PASS: stable daily climate, cooler nights, slower warming in rain and cold air, humidity ignored');
 
 let cases = 0;
 for (const seconds of [10, 60, 180, 300, 390, 480, 600])
   for (const heatPower of [0, 50, 100])
     for (const place of ['three', 'four'])
       for (const pack of ['normal', 'fluffy', 'firm'])
-        for (const environment of [dry, wet, { rainy: false, ambientC: 38, humidityPercent: 20 }])
+        for (const environment of [dry, wet, { rainy: false, ambientC: 38 }])
           for (const total of [12, 24])
             for (const variation of variations) {
               const cs = { ...base, steamSeconds: seconds, heat: { heatPower }, place, pack, environment, holes: { total, minimumComplete: true } };

@@ -6,18 +6,17 @@ export function steamEnvironment(rainy, day = 1, seed = 0, time = "day") {
   return {
     rainy, day,
     ambientC: (rainy ? 19 : 22) + hash % 7 - (time === "night" ? 2 : 0),
-    humidityPercent: (rainy ? 72 : 42) + (hash >>> 8) % 17,
   };
 }
 
 export function steamClimate(environment = {}) {
   const rainy = !!environment.rainy;
   const ambientC = clamp(Number.isFinite(environment.ambientC) ? environment.ambientC : rainy ? 21 : 23, 5, 38);
-  const humidityPercent = clamp(Number.isFinite(environment.humidityPercent) ? environment.humidityPercent : rainy ? 80 : 52, 20, 95);
-  // 気温は初期の熱に、湿気は熱の入り方に効く。実機の物理温度ではなくゲームの温度帯への補正。
-  const offset = (ambientC - 23) * .0025 - Math.max(0, humidityPercent - 55) * .0006 - (rainy ? .01 : 0);
-  const transfer = clamp(1 + (ambientC - 23) * .012 - Math.max(0, humidityPercent - 50) * .0025 - (rainy ? .055 : 0), .72, 1.14);
-  return { rainy, ambientC, humidityPercent, offset, transfer };
+  // 気温は初期の熱と熱の入り方に、雨の日は熱の入り方に効く。実機の物理温度ではなくゲームの温度帯への補正で、
+  // 係数はゲーム用の調整値。湿度は計算に使わない（#1129 オーナー決定 2026-10-30）。
+  const offset = (ambientC - 23) * .0025 - (rainy ? .01 : 0);
+  const transfer = clamp(1 + (ambientC - 23) * .012 - (rainy ? .055 : 0), .72, 1.14);
+  return { rainy, ambientC, offset, transfer };
 }
 
 // 洞察で炭の状態を読み取る。最高でも6割までで、実際の揺らぎを全部は知れない。
