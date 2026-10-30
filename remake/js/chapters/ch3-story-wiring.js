@@ -17,6 +17,7 @@ export const optionalReadFlag = id => `_ch3_read_${id}`;
 
 // 任意場面の置き場。file=台詞ファイル、after=この必須/既読場面を読み終えてから、met=面識がある人物だけ。
 // afterとmetは story_routes.json の optional_requirements に足す、この章のカード上の置き方（台本は変えない）。
+// away=その人物が東京に来ている間は出さない（遠くからの連絡の場面）。
 export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_minto_small_lies: { file: "ch3_double_apple", label: "みんとからの夜の通話", location: "mukaiの裏口", bg: "bg_street_night" },
   // ましろの名乗りはむかい到着の場面。到着前に、彼女の出る噂話を置かない。
@@ -37,6 +38,9 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_kuze_first"] },
   ch3_kuze_mashiro_soon_back: { file: "ch3_kuze_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_kuze_mukai_visit"] },
+  // ひよりルートの tokyo_contact（#1434 決定B）。route.events と同じ条件に、mukai到着後・東京滞在中でないことを足す。
+  hiyori_tokyo_contact: { file: "hiyori", label: "ひよりからの夜の通話", location: "閉店後のmukaiの前", bg: "bg_street_night",
+    after: ["ch3_mukai_arrival"], met: ["hiyori"], away: ["hiyori"] },
 });
 
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
@@ -46,6 +50,7 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_rivals: ["ch3_emil_workshop"],
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice"],
   ch3_kuze_mashiro: ["ch3_kuze_mashiro_tea_tin", "ch3_kuze_mashiro_soon_back"],
+  hiyori: ["hiyori_tokyo_contact"],
   // 第3章で再生しうるのは date_min_chapter が3以下の恋人だけ（あげはは第4章から）。
   tournament_dates: ["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_rin",
     "tournament_date_mashiro", "tournament_date_samechan", "tournament_date_hiyori"],
@@ -76,6 +81,7 @@ export function loadStoryRoutes() {
  * - 必須場面: stage より前（章の進行が正本）。
  * - confession_minto: 返事の場面 accept が lovers へ、reject が _friend_minto へだけ書く（daily/romance.js）。
  * - ch3_national_result: 読了後に大会ランナーが立てる _ch3_tournament_won。
+ * - hiyori_work_talk: ひよりルートの読了フラグ _hiyori_work_talk_done（第1〜2章で読む仕事の相談）。
  */
 export function chapterThreeCompletedScenes(value) {
   const done = new Set(chapterThreeScenes(value).slice(0, chapterThreeProgress(value).stage).map(scene => scene.id));
@@ -83,6 +89,7 @@ export function chapterThreeCompletedScenes(value) {
   if (flags._ch3_registration_read) done.add("ch3_registration");
   if (flags._ch3_tournament_won) done.add("ch3_national_result");
   if ((value.lovers || []).includes("minto") || flags._friend_minto) done.add("confession_minto");
+  if (flags._hiyori_work_talk_done) done.add("hiyori_work_talk");
   for (const id of Object.keys(CH3_OPTIONAL_SCENES)) if (flags[optionalReadFlag(id)]) done.add(id);
   return [...done];
 }
@@ -96,7 +103,8 @@ export function availableOptionalScenes(routes, value) {
     return place && !value.flags[optionalReadFlag(id)]
       && canReadOptionalStory(routes, value, id, { completedScenes })
       && (place.after || []).every(scene => completedScenes.includes(scene))
-      && (place.met || []).every(who => value.met?.[who]);
+      && (place.met || []).every(who => value.met?.[who])
+      && (place.away || []).every(who => characterRegion(value, { characters: {} }, who) !== "tokyo");
   }).map(id => ({ id, ...CH3_OPTIONAL_SCENES[id] }));
 }
 

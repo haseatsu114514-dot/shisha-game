@@ -75,7 +75,8 @@ progress.completeChapterFourScene(state, "ch4_wang_reception");
 progress.completeChapterFourScene(state, "ch4_stranger_third");
 progress.finishChapterFourEve(state);
 progress.completeChapterFourScene(state, "ch4_tournament_start");
-state.flags._ch4.match = { result: { win: true } }; // #1810 以降、勝敗は実制作の結果が出てから決まる
+// #1659 以降、世界大会の勝ちは実制作の結果で決まる。勝った結果を記録してから決勝を確定する。
+state.flags._ch4.match = { result: { win: true } };
 assert.equal(progress.completeChapterFourScene(state, "ch4_final"), true);
 const beforeResult = JSON.stringify(state.stats);
 assert.equal(await runner.readAndCommit(owner, "ch4_result"), true);
