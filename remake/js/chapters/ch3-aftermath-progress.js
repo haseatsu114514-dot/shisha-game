@@ -4,6 +4,7 @@ export const CH3_AFTERMATH_SCENES = Object.freeze([
   { id: "ch3_abyss_hotel", dayAfterWin: 0, slot: 1, label: "優勝の夜", location: "東京のホテル", bg: "bg_ch3_hotel_night" },
   { id: "ch3_mashiro_recovery", dayAfterWin: 1, slot: 0, label: "いつもの席", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_naru_reconcile", dayAfterWin: 1, slot: 1, label: "自分からの報告", location: "東京", bg: "bg_mukai_shop" },
+  { id: "ch3_enmaku_cleanup", dayAfterWin: 2, slot: 0, label: "煙幕の片づけ", location: "煙幕", bg: "bg_yohaku_shop" },
   { id: "ch3_home_customer", dayAfterWin: 2, slot: 1, label: "帰郷した夜", location: "tonari", bg: "bg_tonari_inside_night" },
   { id: "ch3_tsumugi_result", dayAfterWin: 2, slot: 1, label: "つむぎの絵", location: "tonari", bg: "bg_tonari_inside_night" },
   { id: "ch3_ageha_reunion", dayAfterWin: 3, slot: 0, label: "続いていた約束", location: "MELTY PUFF", bg: "bg_ageha_shop" },
@@ -20,7 +21,7 @@ export function beginChapterThreeAftermath(value) {
   if (!canRunChapterThreeAftermath(value)) return false;
   if (value.flags._ch3_aftermath) return chapterThreeAftermathProgress(value);
   if (value.flags._ch3_cleared) throw new Error("第3章クリア記録に後日談の保存地点がありません");
-  const progress = value.flags._ch3_aftermath = { version: 2, winDay: value.day, stage: 0 };
+  const progress = value.flags._ch3_aftermath = { version: 3, winDay: value.day, stage: 0 };
   value.phase = "aftermath";
   value.slot = 1;
   return progress;
@@ -34,7 +35,12 @@ export function chapterThreeAftermathProgress(value) {
     if (progress.stage >= 4) progress.stage += 1;
     progress.version = 2;
   }
-  if (!progress || progress.version !== 2 || !Number.isInteger(progress.winDay) || progress.winDay < 1
+  // 煙幕の片づけ（帰郷の日の朝）を後から足した。まだ片づけ前の保存だけが読み、帰郷の夜以降は日時を戻さない。
+  if (progress?.version === 2 && Number.isInteger(progress.stage) && progress.stage >= 0 && progress.stage <= 6) {
+    if (progress.stage >= 3) progress.stage += 1;
+    progress.version = 3;
+  }
+  if (!progress || progress.version !== 3 || !Number.isInteger(progress.winDay) || progress.winDay < 1
     || !Number.isInteger(progress.stage) || progress.stage < 0 || progress.stage > CH3_AFTERMATH_SCENES.length
     || (value.flags._ch3_cleared === true) !== (progress.stage === CH3_AFTERMATH_SCENES.length)) {
     throw new Error("第3章後日談の保存地点を確認できません");
