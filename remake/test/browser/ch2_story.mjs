@@ -282,7 +282,9 @@ await suite('ch2-story', async check => {
     // 記録された配合の分だけ減り、それ以外の欠落・巻き戻しがないことを確かめる。
     const usedMix = after.flags._ch2_tournament.craft.mix || {};
     for (const [id, grams] of Object.entries(eve.flavorStock)) {
-      assert.equal(after.flavorStock[id], Math.round((grams - (usedMix[id] || 0)) * 10) / 10, `flavorStock ${id} は配合の消費分だけ減る`);
+      // 課題の支給葉（第2章は afsahr_strawberry、craft/steps.js の supply）は持ち込み在庫を減らさない。試煙会の試供品（#1650）もそのまま残る
+      const used = id === 'afsahr_strawberry' ? 0 : (usedMix[id] || 0);
+      assert.equal(after.flavorStock[id], Math.round((grams - used) * 10) / 10, `flavorStock ${id} は配合の消費分だけ減る`);
     }
     for (const [who, value] of Object.entries(eve.affinity)) assert(after.affinity[who] >= value, `affinity ${who}`);
     for (const who of Object.keys(eve.met)) assert(after.met[who], `met ${who}`);
