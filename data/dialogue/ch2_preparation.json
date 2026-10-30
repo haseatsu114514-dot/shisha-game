@@ -39,7 +39,7 @@
           "id": "ch2_ageha_first_chat",
           "choices": [
             {
-              "text": "自分も顔を見てみよう",
+              "text": "俺も顔を見てみよう",
               "next": "a"
             },
             {
