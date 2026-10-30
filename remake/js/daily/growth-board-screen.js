@@ -13,7 +13,7 @@ import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STEP_TEXT, PER_SQUARE, QUALITY_STEPS, REWARD_JA, LESSON_MIN_STEP,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, stepOf, statCount, replay, nodeStatus, commitPending,
   pathTo, pendingTowards, lessonLock, hasMet, rankOfStep, availableCount, paymentFor,
-  STAT_SQUARES, GRID, stepForCount, squaresToNextStep, lessonShown,
+  STAT_SQUARES, GRID, stepForCount, squaresToNextStep, lessonShown, perkOf,
 } from "../core/growth-board.js";
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488、紋 380,244。13×9 の方眼）
@@ -138,7 +138,7 @@ export function openBoard({ place = null } = {}) {
     nodeLayer.replaceChildren(...nodes.map((node) => {
       const p = at(node.gx, node.gy), st = status(node, v);
       const shown = revealOf(node);
-      const glyph = st === "locked" && node.kind !== "stat" ? "" : node.kind === "stat" ? (node.peak ? "極" : "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (st === "sealed" && !hasMet(node.who) ? "？" : "授") : shown === "hidden" ? "？" : node.glyph;
+      const glyph = st === "locked" && node.kind !== "stat" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (st === "sealed" && !hasMet(node.who) ? "？" : "授") : shown === "hidden" ? "？" : node.glyph;
       const qStep = node.kind === "stat" && !node.peak ? qualityAt(node, v) : null;
       return el(`button.gb-node.${node.kind}.s-${st}${fresh.has(node.id) ? ".just-opened" : ""}${node.peak ? ".peak" : ""}${node.sig ? ".sig" : ""}${selected === node.id ? ".selected" : ""}${g.target === node.id ? ".target" : ""}${goal.has(node.id) ? ".on-path" : ""}`, {
         style: { left: `${p.x}px`, top: `${p.y}px` },
@@ -171,7 +171,7 @@ export function openBoard({ place = null } = {}) {
     return node.ring <= open ? "open" : node.ring === open + 1 ? "next" : "hidden";
   }
   function nodeTitle(node, shown = revealOf(node)) {
-    if (node.kind === "stat") return `${BOARD_JA[node.board]}のマス${node.peak ? "（極み）" : ""}`;
+    if (node.kind === "stat") return node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : `${BOARD_JA[node.board]}のマス・${perkOf(node)?.name || ""}`;
     if (node.kind === "gate") return `${BOARD_JA[node.board]}の関門`;
     if (node.kind === "lesson") return hasMet(node.who) || g.nodes.includes(node.id) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
     return shown === "hidden" ? "？？？（物語が進むと盤に現れる）" : `スキル「${node.name}」`;
@@ -196,7 +196,7 @@ export function openBoard({ place = null } = {}) {
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
     if (node.kind === "stat") {
       const step = stepOf(node.board, v.unlocked);
-      lines.push(el("p", { text: `このマスで：${PER_SQUARE[node.board]}` }));
+      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perkOf(node)?.text || PER_SQUARE[node.board]}` }));
       if (!v.unlocked.has(node.id)) {
         const left = squaresToNextStep(node.board, v.unlocked), next = Math.min(10, step + 1);
         lines.push(el("p.gb-p-next", { text: step >= 10 ? "10段（上限）" : `あと${left}つで${next}段：${STEP_TEXT[node.board][next - 1]}` }));

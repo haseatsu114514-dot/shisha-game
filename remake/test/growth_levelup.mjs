@@ -98,7 +98,7 @@ assert.deepEqual([growth.hidaneForLevel(2), growth.hidaneForLevel(50), growth.hi
 // 1周目（中央 Lv.57）で盤の約7割、Lv.99 までのレベルの火種＋節目＋大会2周で全部に近い（SPEC 1.6a）
 const levelHidane = (to) => Array.from({ length: to - 1 }, (_, i) => growth.hidaneForLevel(i + 2)).reduce((a, b) => a + b, 0);
 const firstRun = levelHidane(57) + 5 * 2 + 5 * 2 + 8; // 節目5・大会5・♥5 数人
-assert(firstRun / growth.BOARD_TOTAL >= 0.62 && firstRun / growth.BOARD_TOTAL <= 0.75, `1周目 ${firstRun}/${growth.BOARD_TOTAL}（約7割）`);
+assert(firstRun / growth.BOARD_TOTAL >= 0.7 && firstRun / growth.BOARD_TOTAL <= 0.8, `1周目 ${firstRun}/${growth.BOARD_TOTAL}（3盤とも7割）`);
 const full = levelHidane(99) + 9 * 2 + 10 * 2;
 assert(full >= growth.BOARD_TOTAL, "2周目の途中で全部開く（SBD58: 1周目の7割を優先）");
 assert.equal(g.settledXp, g.xp);
@@ -204,8 +204,8 @@ core.state.growth.learned.push("M-S1");
 growth.ensureGrowth();
 assert.equal(core.state.flags._sumi_attack_learned, true, "習得した授業のフラグは周回で消えても戻す");
 delete core.state.flags._coal_cube_learned; delete core.state.flags._sumi_attack_learned;
-// 上限: 盤の全部（1レベル1つの盤で125）を超えて渡さない
-assert.equal(growth.BOARD_TOTAL, 125);
+// 上限: 盤の全部（1レベル1つの盤で119）を超えて渡さない
+assert.equal(growth.BOARD_TOTAL, 119);
 core.state.growth = { ...growth.newGrowth(), earned: growth.BOARD_TOTAL - 1 };
 growth.gainExp(growth.totalExpFor(12));
 const capped = growth.settleGrowth();

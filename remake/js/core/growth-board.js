@@ -5,7 +5,7 @@ import { affinityLevel } from "./stats.js";
 import { ensureGrowth, HIDANE_KEYS, noteLit, BOARD_TOTAL } from "./growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_PREFIX, STAT_SQUARES, BOARD_SHAPES,
-  SKILLS, LESSONS, LESSON_MIN_STEP, RANKS, PEAK_CELL,
+  SKILLS, LESSONS, LESSON_MIN_STEP, RANKS, PEAK_CELL, SQUARE_PERKS,
 } from "./growth-board-data.js";
 
 export * from "./growth-board-data.js";
@@ -92,6 +92,17 @@ export const NODES = Object.freeze(buildNodes());
 export const NODE_BY_ID = Object.freeze(Object.fromEntries(NODES.map((n) => [n.id, n])));
 export const BOARD_TOTAL_COST = NODES.reduce((n, node) => n + node.cost, 0);
 export const boardNodes = (board) => NODES.filter((n) => n.board === board);
+
+const RING_ROAD = new Set(["1,0", "1,1", "0,1", "-1,1", "-1,0", "-1,-1", "0,-1", "1,-1"]);
+/** 普通のマスの恩恵（SBD59）。能力のマスでなければ null。極みは基礎 */
+export function perkOf(node) {
+  if (node?.kind !== "stat") return null;
+  const def = SQUARE_PERKS[node.board];
+  if (node.peak || RING_ROAD.has(node.cell)) return def.base;
+  const { gx: x, gy: y } = node;
+  const region = y === 0 ? (x > 0 ? "E" : "W") : x === 0 ? (y < 0 ? "N" : "S") : `${y < 0 ? "N" : "S"}${x > 0 ? "E" : "W"}`;
+  return def.perks[def.regions[region]] || def.base;
+}
 
 export const nodeLabel = (node) => node.kind === "stat"
   ? `${BOARD_JA[node.board]}のマス${node.peak ? "（極み）" : ""}` : node.kind === "gate" ? `${BOARD_JA[node.board]}の関門`
