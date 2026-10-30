@@ -8,7 +8,7 @@ import { emit } from "../core/bus.js";
 import { state } from "../core/state.js";
 import { displayName } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
-import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned, canAskByLime, consultByLime } from "../core/growth.js";
+import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned } from "../core/growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STEP_TEXT, PER_SQUARE, QUALITY_STEPS, REWARD_JA, LESSON_MIN_STEP,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, stepOf, statCount, replay, nodeStatus, commitPending,
@@ -41,7 +41,6 @@ export function openBoard({ place = null } = {}) {
   let pending = [];
   let board = boardOfTarget() || BOARD_KEYS[0];
   let selected = null;
-  let limeAfter = null; // 閉じた後に LIME で相談する授業
   let resolveDone;
   const done = new Promise((r) => { resolveDone = r; });
 
@@ -227,9 +226,6 @@ export function openBoard({ place = null } = {}) {
     lines.push(el(`p.gb-p-state.s-${st}`, { text: stateText(node, st, v) }));
     const actions = [];
     if (canLight && st === "available") actions.push(el("button.btn.primary.gb-light", { text: node.kind === "gate" ? "越える（色の火種1）" : node.cost ? `灯す（火種${node.cost}）` : "教わる", dataset: { test: "board-light" }, onclick: () => light(node.id) }));
-    if (st === "unlocked" && node.kind === "lesson" && canAskByLime(node.id)) {
-      actions.push(el("button.btn.primary.gb-lime", { text: "LIME で聞く", dataset: { test: "board-lime-consult" }, onclick: () => { limeAfter = node.id; close(); } }));
-    }
     if (st === "pending") actions.push(el("button.btn.gb-undo", { text: "やめる", dataset: { test: "board-undo" }, onclick: () => unlight(node.id) }));
     if (!g.nodes.includes(node.id) && st !== "pending") {
       actions.push(el("button.btn.gb-aim", { text: g.target === node.id ? "目標をやめる" : "目標にする", dataset: { test: "board-target" }, onclick: () => toggleTarget(node.id) }));
@@ -263,7 +259,7 @@ export function openBoard({ place = null } = {}) {
       if (node.kind !== "lesson") return "灯してある";
       const who = node.who === "sumi" ? "スミさん" : displayName(node.who, state);
       if (lessonLearned(node.id)) return "習得済み";
-      return canAskByLime(node.id) ? `相談できる。${who}に LIME で聞ける` : `相談できる。次に${who}に会った時に話を聞こう`;
+      return `相談できる。次に${who}に会った時に話を聞こう`;
     }
     if (st === "pending") return "仮置き中。決定するまでは「やめる」で戻せる";
     if (st === "locked") return "まだ開いていない。物語が進むと封が解ける";
@@ -341,7 +337,7 @@ export function openBoard({ place = null } = {}) {
         el("p", { text: "盤は能力ごとに3枚（才能・感覚・理論）。真ん中の紋から道がのびていて、線でつながった隣のマスだけ灯せる。どの方向から進んでもいい。" }),
         el("p", { text: "丸いマスは能力（火種1）。灯すたびに少し伸び、5つほどで1段上がる。六角形はスキル（火種5〜10）。道の先の授業は、盤を2段まで開けて、教えてくれる人と仲良くなると錠が開く（火種いらず）。" }),
         el("p", { text: "ひし形は関門。色のついた火種1つで越えると、その先の道が開く。万能の火種では越えられない。" }),
-        el("p", { text: "紋のまわりを一周する道から、授業への小道が出る。小道は、その人に出会うと現れる。授業を灯したら、次に会った時に相談する。会えない人には LIME で聞ける。" }),
+        el("p", { text: "紋のまわりを一周する道から、授業への小道が出る。小道は、その人に出会うと現れる。授業を灯したら、次にその人に会った時に相談して習う（LIME では習えない）。" }),
         el("p", { text: "色のついた火種は、その色の盤のマスと関門に使える。払うときは先に使われる。盤は能力ごとに形が違う。" }),
         el("p", { text: "火種を灯せるのは、観音堂などの静かな場所で内省した時だけ（時間は進まない）。メニューからは見るだけで、欲しいマスを目標にしておける。" }),
       ]),
@@ -383,7 +379,6 @@ export function openBoard({ place = null } = {}) {
       // 授業: 今のゲームの場面がある授業はその場面を見せる（読み終えたら習得。場面が無い授業はカードで）
       for (const node of committed) if (node.kind === "lesson") await presentLesson(node);
     }
-    if (owner === state && limeAfter) await consultByLime(limeAfter);
     resolveDone(committed);
   }
   function onKey(e) {
@@ -420,7 +415,6 @@ export function openBoard({ place = null } = {}) {
 async function presentLesson(node) {
   if (!state) return;
   const who = node.who === "sumi" ? "スミさん" : displayName(node.who, state);
-  const how = canAskByLime(node.id) ? "盤の授業から LIME で聞ける" : `次に${who}に会った時に話を聞こう`;
-  gainCard({ kind: "info", badge: "授", top: "LESSON", main: `${who}に相談できる`, sub: `「${node.name}」。${how}` });
+  gainCard({ kind: "info", badge: "授", top: "LESSON", main: `${who}に相談できる`, sub: `「${node.name}」。次に${who}に会った時に話を聞こう` });
 }
 

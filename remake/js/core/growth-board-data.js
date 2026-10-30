@@ -190,7 +190,7 @@ export const LESSONS = [
   { id: "M-W5", cell: "2,-1", board: "wisdom", who: "volk", need: 5, ring: 3, sig: true, reward: "special", name: "Точность",
     hint: "ヴォルクと仲良くなると、どんな日も同じ熱にするやり方を教えてもらえそう",
     text: "雨・湿気・気温による温まり方の違いを読み切り、天気で熱が狂いにくくなる" },
-  // 追加の6人（2026-10-30 オーナーが推しの案を全部採用。SBD57）。相談の場面はまだ無いので LIME で聞く（lime_messages.json の lime_lesson_<id>）
+  // 追加の6人（2026-10-30 オーナーが推しの案を全部採用。SBD57）。会って相談する場面はまだ無い（SBD61: LIME では習えない。場面を作るまで習得できない）
   { id: "M-S6", cell: "-2,-1", board: "sense", who: "rin", need: 5, ring: 1, sig: true, reward: "special", name: "ブルーベリーに帰る",
     hint: "凛と仲良くなると、迷った時に帰る葉を教えてもらえそう",
     text: "配合にブルーベリーを2割以上入れると、どんな葉と合わせても香りがまとまり、配合の点が上がる" },

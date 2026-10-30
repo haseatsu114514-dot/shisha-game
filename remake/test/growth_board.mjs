@@ -1,5 +1,6 @@
 // 心得の盤のデータと規則（SPEC 第2版 2.2〜2.6・2.9・1.9・3.1）。
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const storage = new Map();
@@ -262,21 +263,17 @@ core.state.affinity.adam = 0;
   core.state.affinity.sheikh = 0; delete core.state.flags._ch4_sheikh_revealed;
 }
 
-// 会えない人には LIME で聞ける: 相談の場面がまだ無い人はいつでも、場面がある人は地元を離れている章（2〜4）だけ
+// 授業は会って相談した時だけ習う（SBD61: LIME では習えない）
 {
+  assert.equal(growth.canAskByLime, undefined, "LIME で聞く入口は無い");
+  assert.equal(growth.consultByLime, undefined);
+  const lime = JSON.parse(readFileSync(new URL("../../data/lime_messages.json", import.meta.url), "utf8")).messages;
+  assert.equal(lime.filter((m) => m.id.startsWith("lime_lesson_") || m.trigger_condition === "lesson_consult").length, 0, "授業の LIME は無い");
   const gg = growth.ensureGrowth();
   const keep = { nodes: [...gg.nodes], learned: [...gg.learned] };
   gg.nodes.push("M-B2", "M-S2");
-  assert.equal(growth.canAskByLime("M-B2"), true, "零（場面なし）は LIME で聞ける");
-  assert.equal(growth.canAskByLime("M-S2"), false, "第1章のアダムは店で会って相談");
-  core.state.chapter = 3;
-  assert.equal(growth.canAskByLime("M-S2"), true, "東京にいる間は LIME で");
-  core.state.chapter = 5;
-  assert.equal(growth.canAskByLime("M-S2"), false, "第5章はどこへでも行けるので会って相談");
-  assert.equal(growth.canAskByLime("M-B3"), false, "灯していない授業は聞けない");
-  gg.learned.push("M-B2");
-  assert.equal(growth.canAskByLime("M-B2"), false, "習得済みは聞かない");
-  core.state.chapter = 1;
+  assert.deepEqual(growth.readyLessons("rei"), [], "会って相談する場面が無い授業は、まだ習えない");
+  assert.deepEqual(growth.readyLessons("adam").map((l) => l.id), ["M-S2"], "場面がある授業は会った時に相談できる");
   Object.assign(gg, keep);
 }
 
@@ -397,4 +394,4 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v3 shapes per board (cross/pinwheel/tree), gates by colored hidane, 20 lessons (consult to learn, LIME when you can't meet), lessons next to the ring road (2 squares each, shown when you meet the person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, steps ~3 squares, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v3 shapes per board (cross/pinwheel/tree), gates by colored hidane, 20 lessons (learn only by meeting in person), lessons next to the ring road (2 squares each, shown when you meet the person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, steps ~3 squares, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");

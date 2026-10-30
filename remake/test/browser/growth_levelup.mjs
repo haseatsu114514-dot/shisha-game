@@ -379,8 +379,8 @@ await suite("growth-levelup", async (check) => {
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
   }, { viewport: { width: 1331, height: 760 } });
-  // 会えない人には LIME で相談（SBD57）: 盤の授業の欄から「LIME で聞く」→ 返事を読んで返信すると習得
-  await check("lesson-lime", async (page) => {
+  // 授業は会って相談した時だけ習う（SBD61）: 盤には LIME で聞く入口が無く、次に会った時と出る
+  await check("lesson-in-person", async (page) => {
     await setupDaily(page);
     await page.evaluate(async () => {
       const g = await import("./js/core/growth.js");
@@ -391,20 +391,7 @@ await suite("growth-levelup", async (check) => {
     });
     await page.locator(t("board-tab-body")).click();
     await page.locator(t("board-node-M-B2")).click();
-    const ask = page.locator(t("board-lime-consult"));
-    await ask.waitFor();
-    await ask.click();
-    await page.locator('[data-test="reply-0"]').waitFor();
-    await page.locator('[data-test="reply-0"]').click();
-    await page.locator('[data-test="phone-next"]').waitFor();
-    await page.locator('[data-test="phone-next"]').click();
-    await page.locator(".gain-card", { hasText: "花を重ねる" }).waitFor();
-    const r = await page.evaluate(async () => {
-      const g = await import("./js/core/growth.js");
-      return { learned: g.lessonLearned("M-B2"), again: g.canAskByLime("M-B2"), aff: __remake.state.affinity.rei };
-    });
-    assert.equal(r.learned, true, "LIME の相談で習得");
-    assert.equal(r.again, false, "習得したらもう聞かない");
-    assert.equal(r.aff, 1, "相談の LIME で好感度は増えない");
+    await page.locator(".gb-p-state", { hasText: "次に" }).waitFor();
+    assert.equal(await page.locator(t("board-lime-consult")).count(), 0, "LIME で聞くボタンは無い");
   }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1` });
