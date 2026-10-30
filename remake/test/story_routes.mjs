@@ -55,6 +55,16 @@ assert.equal(selectStoryEvening(routes, pair, {present: ['minto', 'rin', 'steve'
 const partial = selectPostEndingConflict(routes, {...pair, lovers: all}, {present: ['minto', 'rin', 'steve']});
 assert.deepEqual(partial.participants, ['minto', 'rin'], 'only present lovers confront him');
 assert(!partial.scenes.flatMap(id => sceneData.get(id).lines).some(row => row.speaker === 'steve'), 'no comic interruption after the ending');
+// #1716: 各人の反応ははじめの個別の返答で閉じる。話し直しは一人ずつで、許しや未解決の解除を決めない。
+for (const id of all) {
+  const reply = sceneData.get(routes.romance[id].conflict).lines.at(-1);
+  assert.equal(reply.speaker, 'hajime', id);
+  const talk = sceneData.get(routes.romance[id].talk)?.lines;
+  assert.ok(talk, `${id} talk`);
+  assert(talk.some(row => row.speaker === id) && talk.some(row => row.speaker === 'hajime'), id);
+  assert(!talk.some(row => row.type || row.flag || ['steve', ...all.filter(x => x !== id)].includes(row.speaker)), id);
+}
+assert(!sceneData.get(routes.romance.hiyori.conflict).lines.some(row => row.text?.includes('付き合おう')), 'hiyori quotes her real confession');
 assert.equal(selectPostEndingConflict(routes, {lovers: [], flags: {_story_shuraba_unresolved: true}}).kind, 'pending');
 assert.equal(selectPostEndingConflict(routes, {}, context).kind, 'none');
 assert.equal(selectStoryEvening(routes, {chapter: 4, lovers: ['rin', 'rin', 'unknown']}, {present: ['rin']}).kind, 'rest');
