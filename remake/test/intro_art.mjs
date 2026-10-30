@@ -53,7 +53,7 @@ try {
     };
   });
   assert.equal(unknown.name, "？？？");
-  assert.equal(unknown.title, "甘い風のギャル");
+  assert.equal(unknown.title, "通りすがりのギャル");
   assert.equal(unknown.line.replace(/\s/g, ""), "「大丈夫？ケガしてない？」");
   assert(unknown.face.split("?")[0].endsWith("chr_ageha_smile.webp"));
   assert(!unknown.text.includes("バイブス"));

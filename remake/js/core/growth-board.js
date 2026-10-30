@@ -2,10 +2,10 @@
 // まだ GROWTH_BOARD の裏の試作: 盤の解放は state.stats に書き戻さない（能力の効き目の付け替えは C5）。
 import { state } from "./state.js";
 import { affinityLevel } from "./stats.js";
-import { ensureGrowth, HIDANE_KEYS, noteLit } from "./growth.js";
+import { ensureGrowth, HIDANE_KEYS, noteLit, BOARD_TOTAL } from "./growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_PREFIX, STAT_SQUARES, BOARD_SHAPES,
-  SKILLS, LESSONS, LESSON_MIN_STEP, RANKS, PEAK_CELL,
+  SKILLS, LESSONS, LESSON_MIN_STEP, RANKS, PEAK_CELL, SQUARE_PERKS,
 } from "./growth-board-data.js";
 
 export * from "./growth-board-data.js";
@@ -76,6 +76,15 @@ function buildNodes() {
     if (isHubSide(n.gx, n.gy)) n.links.push(HUB);
     Object.freeze(n.links);
   }
+  // 授業の小道: 授業のマスにつながる能力のマスは、その人に会うまで盤に出さない（2026-10-30 オーナー採用）
+  const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
+  for (const lesson of nodes.filter((n) => n.kind === "lesson")) {
+    // 授業にしかつながらない能力のマスだけが小道（一周の道の角のように、ほかへも続くマスは小道にしない）
+    for (const id of lesson.links) {
+      const n = byId[id];
+      if (n?.kind === "stat" && n.links.filter((l) => l !== lesson.id).length <= 1 && !n.links.includes(HUB)) Object.assign(n, { trail: lesson.id });
+    }
+  }
   return nodes.map(Object.freeze);
 }
 
@@ -83,6 +92,17 @@ export const NODES = Object.freeze(buildNodes());
 export const NODE_BY_ID = Object.freeze(Object.fromEntries(NODES.map((n) => [n.id, n])));
 export const BOARD_TOTAL_COST = NODES.reduce((n, node) => n + node.cost, 0);
 export const boardNodes = (board) => NODES.filter((n) => n.board === board);
+
+const RING_ROAD = new Set(["1,0", "1,1", "0,1", "-1,1", "-1,0", "-1,-1", "0,-1", "1,-1"]);
+/** 普通のマスの恩恵（SBD59）。能力のマスでなければ null。極みは基礎 */
+export function perkOf(node) {
+  if (node?.kind !== "stat") return null;
+  const def = SQUARE_PERKS[node.board];
+  if (node.peak || RING_ROAD.has(node.cell)) return def.base;
+  const { gx: x, gy: y } = node;
+  const region = y === 0 ? (x > 0 ? "E" : "W") : x === 0 ? (y < 0 ? "N" : "S") : `${y < 0 ? "N" : "S"}${x > 0 ? "E" : "W"}`;
+  return def.perks[def.regions[region]] || def.base;
+}
 
 export const nodeLabel = (node) => node.kind === "stat"
   ? `${BOARD_JA[node.board]}のマス${node.peak ? "（極み）" : ""}` : node.kind === "gate" ? `${BOARD_JA[node.board]}の関門`
@@ -129,6 +149,18 @@ export function hasMet(who, s = state) {
 }
 const heartOf = (who, s) => s === state ? affinityLevel(who) : 0;
 
+/**
+ * 授業とその小道が盤に出ているか。その人に会った時に現れる（シェイクは正体が明かされてから）。
+ * 一度灯したものは出たまま。
+ */
+export function lessonShown(node, g, s = state) {
+  const lesson = node.kind === "lesson" ? node : node.trail ? NODE_BY_ID[node.trail] : null;
+  if (!lesson) return true;
+  if (g?.nodes?.includes(node.id) || g?.nodes?.includes(lesson.id)) return true;
+  if (lesson.revealFlag && !s?.flags?.[lesson.revealFlag]) return false;
+  return hasMet(lesson.who, s);
+}
+
 /** 授業の錠。開いていれば null、閉じていれば足りないものの内訳 */
 export function lessonLock(node, unlocked, s = state) {
   if (node.kind !== "lesson") return null;
@@ -138,28 +170,46 @@ export function lessonLock(node, unlocked, s = state) {
 }
 
 /**
- * 払い方。その盤の色の火種を先に使い、足りない分を万能で（1.9）。払えなければ null。
- * 関門は色つきの火種でだけ越えられる: その盤の色を先に、無ければほかの色でもよい（色が偏っても詰まらないように）。
+ * 払い方（1.9。2026-10-30 #1801 の引継ぎ B「色の火種で詰まらない」）。払えなければ null。
+ * - 能力のマス・スキルは **万能を先に** 使う。足りない分だけ、その盤の色を使う。ただし、まだ越えていない
+ *   関門の数（ctx.reserve）ぶんの色は残す（色を普通のマスに使い切って関門を越えられなくならないように）。
+ * - 関門は色つきの火種1つ。その盤の色を先に、無ければほかの色でもよい。受け取りが上限に届いて
+ *   もう色が来ない時（ctx.capped）だけ、万能1つでも越えられる（総量は増やさない）。
  */
-export function paymentFor(node, hidane) {
+export function paymentFor(node, hidane, ctx = {}) {
   if (!node.cost) return {};
   if (node.kind === "gate") {
     const color = [node.board, ...BOARD_KEYS.filter((b) => b !== node.board)].find((b) => (hidane[b] || 0) >= node.cost);
-    return color ? { [color]: node.cost } : null;
+    if (color) return { [color]: node.cost };
+    return ctx.capped && (hidane.any || 0) >= node.cost ? { any: node.cost } : null;
   }
   const pay = {};
   let left = node.cost;
-  const own = Math.min(left, hidane[node.board] || 0);
-  if (own) { pay[node.board] = own; left -= own; }
   const any = Math.min(left, hidane.any || 0);
   if (any) { pay.any = any; left -= any; }
+  const colored = BOARD_KEYS.reduce((n, b) => n + (hidane[b] || 0), 0);
+  const spare = Math.max(0, colored - (ctx.reserve || 0));
+  let free = spare;
+  const own = Math.min(left, hidane[node.board] || 0, free);
+  if (own) { pay[node.board] = own; left -= own; free -= own; }
+  // もう火種が来ない時だけ、ほかの盤の色でも払える（色の行き違いで最後のマスが取れなくならないように）
+  if (ctx.capped) for (const b of BOARD_KEYS) {
+    if (b === node.board || left <= 0) continue;
+    const n = Math.min(left, hidane[b] || 0, free);
+    if (n) { pay[b] = n; left -= n; free -= n; }
+  }
   return left > 0 ? null : pay;
+}
+/** 払い方の前提: まだ越えていない関門の数と、受け取りが上限に届いたか */
+export function payContext(g, unlocked) {
+  const reserve = NODES.filter((n) => n.kind === "gate" && !unlocked.has(n.id)).length;
+  return { reserve, capped: (g.earned || 0) >= BOARD_TOTAL };
 }
 const spend = (hidane, pay) => { for (const [k, n] of Object.entries(pay)) hidane[k] -= n; };
 
 /** そのマスが今の積み方で取れるか（火種は見ない） */
-function reachable(node, unlocked, s) {
-  return node.ring <= ringsOpen(s) && !lessonLock(node, unlocked, s) && connected(node, unlocked);
+function reachable(node, unlocked, s, g) {
+  return node.ring <= ringsOpen(s) && lessonShown(node, g, s) && !lessonLock(node, unlocked, s) && connected(node, unlocked);
 }
 
 /**
@@ -176,8 +226,8 @@ export function replay(g, pendingIds, s = state) {
     progress = false;
     for (const id of rest) {
       const node = NODE_BY_ID[id];
-      if (!reachable(node, unlocked, s)) continue;
-      const pay = paymentFor(node, hidane);
+      if (!reachable(node, unlocked, s, g)) continue;
+      const pay = paymentFor(node, hidane, payContext(g, unlocked));
       if (!pay) continue;
       spend(hidane, pay);
       unlocked.add(id);
@@ -187,20 +237,21 @@ export function replay(g, pendingIds, s = state) {
     }
     rest = rest.filter((id) => !unlocked.has(id));
   }
-  return { pending: kept, unlocked, hidane, pays };
+  return { pending: kept, unlocked, hidane, pays, ctx: payContext(g, unlocked) };
 }
 
 /**
  * マスの状態（6.2）: unlocked | pending | available | short | far（まだつながっていない）
- * | locked（章で開く）| sealed（授業の錠）
+ * | locked（章で開く）| sealed（授業の錠）| hidden（まだ会っていない人の授業と小道。盤に出さない）
  */
 export function nodeStatus(node, g, view, s = state) {
   if (g.nodes.includes(node.id)) return "unlocked";
+  if (!lessonShown(node, g, s)) return "hidden";
   if (view.pending.includes(node.id)) return "pending";
   if (node.ring > ringsOpen(s)) return "locked";
   if (lessonLock(node, view.unlocked, s)) return "sealed";
   if (!connected(node, view.unlocked)) return "far";
-  return paymentFor(node, view.hidane) ? "available" : "short";
+  return paymentFor(node, view.hidane, view.ctx) ? "available" : "short";
 }
 
 /** 仮置きを確定する。払った種類を記録し（組み直しで同じ種類に戻すため）、確定したマスを返す */
@@ -264,10 +315,14 @@ export function ringFill(g, ring) {
   return { got, total };
 }
 
-/** 今の盤で使い道のある火種があるか（未使用の印を出す条件。REPORT R6） */
+/**
+ * 今の盤でできることがあるか（内省に入れる・未使用の印の条件。REPORT R6）。
+ * 火種で灯せるマスに加えて、火種いらずの授業が受けられる時も true（2026-10-30 オーナー
+ * 「火種が隣接してる授業は章的に開放されてたら無料で受けられる」。#1801 引継ぎ A）。
+ */
 export function hasUsableHidane(g, s = state) {
   const view = replay(g, [], s);
-  return NODES.some((node) => node.cost > 0 && nodeStatus(node, g, view, s) === "available");
+  return NODES.some((node) => nodeStatus(node, g, view, s) === "available");
 }
 
 /** その盤で今取れるマスの数（札の印） */

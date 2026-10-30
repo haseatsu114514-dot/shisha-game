@@ -31,6 +31,83 @@ await suite("growth-levelup", async (check) => {
     assert.equal(await page.evaluate(() => __remake.state.growth), undefined);
   });
 
+  // #1807: the real map and HUD entry points, with Adam unvisited.
+  for (const [label, options] of [
+    ["pc", { viewport: { width: 1331, height: 760 } }],
+    ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ["portrait", { viewport: { width: 591, height: 1280 } }],
+  ]) {
+    await check(`${label}-reflection-entry`, async (page) => {
+      const tap = async (sel) => {
+        const node = page.locator(sel).first();
+        await node.scrollIntoViewIfNeeded();
+        if (options.hasTouch) await node.tap(); else await node.click();
+      };
+      await setupDaily(page);
+      await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        core.config.textSpeed = 4;
+        Object.assign(core.state, { day: 6, slot: 0 });
+        window.entryStatus = 0;
+        (await import("./js/daily/hud.js")).initHud({ status: () => { window.entryStatus++; } });
+        (await import("./js/daily/hud.js")).showHud(true);
+        window.entryMap = async () => {
+          const map = await import("./js/daily/map.js");
+          window.entryFlow = map.chooseSpot().then(async id => {
+            if (id === "kannon") await (await import("./js/core/growth.js")).reflectAtSpot(id);
+          });
+        };
+        await window.entryMap();
+      });
+      await page.locator(".map:not(.done)").waitFor();
+      assert.equal(await page.locator(t("pin-kannon")).count(), 0);
+      await page.evaluate(async () => {
+        const map = await import("./js/daily/map.js");
+        map.interruptMap(null); await window.entryFlow;
+        const growth = await import("./js/core/growth.js");
+        growth.gainExp(205); growth.settleGrowth();
+        window.entryBefore = { day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina };
+        await window.entryMap();
+      });
+      await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
+      await page.locator(t("kannon-hidane")).waitFor();
+      assert.equal(await page.evaluate(() => !!__remake.state.flags._spot_guide_adam || !!__remake.state.met.adam), false);
+      await assertFits(page, t("kannon-hidane"));
+      await tap(t("hud-status"));
+      await page.locator(`${t("growth-board")}[data-mode="view"]`).waitFor();
+      assert.equal(await page.locator(t("board-light")).count(), 0);
+      await tap('.gb-node[data-status="available"]');
+      assert.equal(await page.locator(t("board-light")).count(), 0);
+      await tap(t("board-close"));
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 2); // レベル1つで火種2つ（SBD60）
+      assert.equal(await page.evaluate(() => window.entryStatus), 0);
+      await tap(t("pin-kannon")); await tap(t("map-go"));
+      await tap(t("kannon-reflect"));
+      for (let i = 0; i < 30 && !(await page.locator(t("growth-board")).count()); i++) {
+        const next = page.locator(".vn-box");
+        if (await next.isVisible()) await tap(".vn-box");
+        await page.waitForTimeout(150);
+      }
+      await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+      for (let i = 0; i < 2; i++) { // 火種2つを使い切る
+        await tap('.gb-node[data-status="available"]');
+        await tap(t("board-light"));
+      }
+      await tap(t("board-decide"));
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      await page.evaluate(async () => { await window.entryFlow; await window.entryMap(); });
+      await page.locator(".map:not(.done)").waitFor();
+      assert.equal(await page.locator(t("kannon-hidane")).count(), 0);
+      assert.equal(await page.locator(t("hud-hidane")).isVisible(), false);
+      assert.equal(await page.locator(t("pin-kannon")).count(), 1);
+      assert.deepEqual(await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina })),
+        await page.evaluate(() => window.entryBefore));
+      await tap(t("hud-status"));
+      assert.equal(await page.evaluate(() => window.entryStatus), 1);
+    }, options);
+  }
+
   for (const [label, options] of [
     ["pc", { viewport: { width: 1331, height: 760 } }],
     ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
@@ -249,5 +326,33 @@ await suite("growth-levelup", async (check) => {
     assert.equal(r.mix, true, "混ぜ置きが開く");
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
+  }, { viewport: { width: 1331, height: 760 } });
+  // 会えない人には LIME で相談（SBD57）: 盤の授業の欄から「LIME で聞く」→ 返事を読んで返信すると習得
+  await check("lesson-lime", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const g = await import("./js/core/growth.js");
+      const gr = g.ensureGrowth();
+      __remake.state.affinity.rei = 1; // 会っている
+      gr.nodes.push("M-B2");
+      void g.openGrowthBoard();
+    });
+    await page.locator(t("board-tab-body")).click();
+    await page.locator(t("board-node-M-B2")).click();
+    const ask = page.locator(t("board-lime-consult"));
+    await ask.waitFor();
+    await ask.click();
+    await page.locator('[data-test="reply-0"]').waitFor();
+    await page.locator('[data-test="reply-0"]').click();
+    await page.locator('[data-test="phone-next"]').waitFor();
+    await page.locator('[data-test="phone-next"]').click();
+    await page.locator(".gain-card", { hasText: "花を重ねる" }).waitFor();
+    const r = await page.evaluate(async () => {
+      const g = await import("./js/core/growth.js");
+      return { learned: g.lessonLearned("M-B2"), again: g.canAskByLime("M-B2"), aff: __remake.state.affinity.rei };
+    });
+    assert.equal(r.learned, true, "LIME の相談で習得");
+    assert.equal(r.again, false, "習得したらもう聞かない");
+    assert.equal(r.aff, 1, "相談の LIME で好感度は増えない");
   }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1` });

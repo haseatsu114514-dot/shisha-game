@@ -47,7 +47,7 @@ const mocks = {
   "../daily/trpg.js": { trpgSpot: () => null },
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
-  "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false },
+  "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false, outingDialogue: () => null, recordOutingVisit: () => {} },
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight },
   "./ch2-story.js": { chapterTwoNights: () => ({}) },

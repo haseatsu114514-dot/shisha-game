@@ -115,4 +115,17 @@ assert.equal(state.affinity.hiyori, reward);
 assert(await meetHiyoriAtTonari()); assert(state.flags._hiyori_tonari_followup_done);
 assert.equal(hiyoriShopLocation(), null, "The next tonari meeting must not also appear at another shop");
 assert(!state.flags._hiyori_real_self_known);
+// #1434 決定B: feelings_spoken は第1〜3章・仕事の相談の読了後・恋人・絆Lv2の時だけ。デート後の入口（calendar.js）から一度だけ。
+reset(7, { _hiyori_work_talk_done: true });
+assert(!await playHiyoriEvent("feelings_spoken"), "not before becoming lovers");
+state.lovers = ["hiyori"]; state.loveLevel = { hiyori: 1 };
+assert(!await playHiyoriEvent("feelings_spoken"), "bond Lv2 is required");
+state.loveLevel.hiyori = 2; state.chapter = 4;
+assert(!await playHiyoriEvent("feelings_spoken"), "chapters 1-3 only");
+state.chapter = 2;
+const affinityBefore = JSON.stringify(state.affinity);
+assert(await playHiyoriEvent("feelings_spoken"));
+assert.deepEqual(played, ["hiyori_feelings_spoken"]); assert.equal(state.flags._hiyori_feelings_spoken, true);
+assert.equal(JSON.stringify(state.affinity), affinityBefore, "the scene itself grants no affinity");
+assert(!await playHiyoriEvent("feelings_spoken"), "read once");
 console.log("[hiyori schedule] PASS", JSON.stringify({ firstLocations: [...firstLocations], encounters, absent }));

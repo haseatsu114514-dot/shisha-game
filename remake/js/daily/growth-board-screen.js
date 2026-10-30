@@ -8,12 +8,12 @@ import { emit } from "../core/bus.js";
 import { state } from "../core/state.js";
 import { displayName } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
-import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned } from "../core/growth.js";
+import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned, canAskByLime, consultByLime } from "../core/growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STEP_TEXT, PER_SQUARE, QUALITY_STEPS, REWARD_JA, LESSON_MIN_STEP,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, stepOf, statCount, replay, nodeStatus, commitPending,
   pathTo, pendingTowards, lessonLock, hasMet, rankOfStep, availableCount, paymentFor,
-  STAT_SQUARES, GRID, stepForCount, squaresToNextStep,
+  STAT_SQUARES, GRID, stepForCount, squaresToNextStep, lessonShown, perkOf,
 } from "../core/growth-board.js";
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488、紋 380,244。13×9 の方眼）
@@ -41,6 +41,7 @@ export function openBoard({ place = null } = {}) {
   let pending = [];
   let board = boardOfTarget() || BOARD_KEYS[0];
   let selected = null;
+  let limeAfter = null; // 閉じた後に LIME で相談する授業
   let resolveDone;
   const done = new Promise((r) => { resolveDone = r; });
 
@@ -97,7 +98,8 @@ export function openBoard({ place = null } = {}) {
   }
 
   function renderBoard(v) {
-    const nodes = boardNodes(board);
+    // まだ会っていない人の授業と小道は盤に出さない（会った時に現れる）
+    const nodes = boardNodes(board).filter((n) => lessonShown(n, g));
     const open = ringsOpen();
     const lit = (id) => id === HUB || v.unlocked.has(id);
     const goal = g.target && NODE_BY_ID[g.target]?.board === board ? new Set(pathTo(g.target, v.unlocked).path) : new Set();
@@ -111,6 +113,7 @@ export function openBoard({ place = null } = {}) {
     const drawn = new Set();
     for (const n of nodes) {
       for (const id of n.links) {
+        if (id !== HUB && !lessonShown(NODE_BY_ID[id], g)) continue;
         const key = [n.id, id].sort().join("|");
         if (drawn.has(key)) continue;
         drawn.add(key);
@@ -135,7 +138,7 @@ export function openBoard({ place = null } = {}) {
     nodeLayer.replaceChildren(...nodes.map((node) => {
       const p = at(node.gx, node.gy), st = status(node, v);
       const shown = revealOf(node);
-      const glyph = st === "locked" && node.kind !== "stat" ? "" : node.kind === "stat" ? (node.peak ? "極" : "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (st === "sealed" && !hasMet(node.who) ? "？" : "授") : shown === "hidden" ? "？" : node.glyph;
+      const glyph = st === "locked" && node.kind !== "stat" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (st === "sealed" && !hasMet(node.who) ? "？" : "授") : shown === "hidden" ? "？" : node.glyph;
       const qStep = node.kind === "stat" && !node.peak ? qualityAt(node, v) : null;
       return el(`button.gb-node.${node.kind}.s-${st}${fresh.has(node.id) ? ".just-opened" : ""}${node.peak ? ".peak" : ""}${node.sig ? ".sig" : ""}${selected === node.id ? ".selected" : ""}${g.target === node.id ? ".target" : ""}${goal.has(node.id) ? ".on-path" : ""}`, {
         style: { left: `${p.x}px`, top: `${p.y}px` },
@@ -168,7 +171,7 @@ export function openBoard({ place = null } = {}) {
     return node.ring <= open ? "open" : node.ring === open + 1 ? "next" : "hidden";
   }
   function nodeTitle(node, shown = revealOf(node)) {
-    if (node.kind === "stat") return `${BOARD_JA[node.board]}のマス${node.peak ? "（極み）" : ""}`;
+    if (node.kind === "stat") return node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : `${BOARD_JA[node.board]}のマス・${perkOf(node)?.name || ""}`;
     if (node.kind === "gate") return `${BOARD_JA[node.board]}の関門`;
     if (node.kind === "lesson") return hasMet(node.who) || g.nodes.includes(node.id) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
     return shown === "hidden" ? "？？？（物語が進むと盤に現れる）" : `スキル「${node.name}」`;
@@ -193,7 +196,7 @@ export function openBoard({ place = null } = {}) {
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
     if (node.kind === "stat") {
       const step = stepOf(node.board, v.unlocked);
-      lines.push(el("p", { text: `このマスで：${PER_SQUARE[node.board]}` }));
+      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perkOf(node)?.text || PER_SQUARE[node.board]}` }));
       if (!v.unlocked.has(node.id)) {
         const left = squaresToNextStep(node.board, v.unlocked), next = Math.min(10, step + 1);
         lines.push(el("p.gb-p-next", { text: step >= 10 ? "10段（上限）" : `あと${left}つで${next}段：${STEP_TEXT[node.board][next - 1]}` }));
@@ -224,6 +227,9 @@ export function openBoard({ place = null } = {}) {
     lines.push(el(`p.gb-p-state.s-${st}`, { text: stateText(node, st, v) }));
     const actions = [];
     if (canLight && st === "available") actions.push(el("button.btn.primary.gb-light", { text: node.kind === "gate" ? "越える（色の火種1）" : node.cost ? `灯す（火種${node.cost}）` : "教わる", dataset: { test: "board-light" }, onclick: () => light(node.id) }));
+    if (st === "unlocked" && node.kind === "lesson" && canAskByLime(node.id)) {
+      actions.push(el("button.btn.primary.gb-lime", { text: "LIME で聞く", dataset: { test: "board-lime-consult" }, onclick: () => { limeAfter = node.id; close(); } }));
+    }
     if (st === "pending") actions.push(el("button.btn.gb-undo", { text: "やめる", dataset: { test: "board-undo" }, onclick: () => unlight(node.id) }));
     if (!g.nodes.includes(node.id) && st !== "pending") {
       actions.push(el("button.btn.gb-aim", { text: g.target === node.id ? "目標をやめる" : "目標にする", dataset: { test: "board-target" }, onclick: () => toggleTarget(node.id) }));
@@ -256,7 +262,8 @@ export function openBoard({ place = null } = {}) {
     if (st === "unlocked") {
       if (node.kind !== "lesson") return "灯してある";
       const who = node.who === "sumi" ? "スミさん" : displayName(node.who, state);
-      return lessonLearned(node.id) ? "習得済み" : `相談できる。次に${who}に会った時に話を聞こう`;
+      if (lessonLearned(node.id)) return "習得済み";
+      return canAskByLime(node.id) ? `相談できる。${who}に LIME で聞ける` : `相談できる。次に${who}に会った時に話を聞こう`;
     }
     if (st === "pending") return "仮置き中。決定するまでは「やめる」で戻せる";
     if (st === "locked") return "まだ開いていない。物語が進むと封が解ける";
@@ -270,8 +277,8 @@ export function openBoard({ place = null } = {}) {
       const have = (v.hidane.any || 0) + (v.hidane[node.board] || 0);
       return `火種があと${node.cost - have}つ要る。火種は貯めておける`;
     }
-    if (!canLight) return `灯せる（${payText(paymentFor(node, v.hidane))}）。観音堂などで内省すると灯せる`;
-    return `${payText(paymentFor(node, v.hidane))}で払う`;
+    if (!canLight) return `灯せる（${payText(paymentFor(node, v.hidane, v.ctx))}）。観音堂などで内省すると灯せる`;
+    return `${payText(paymentFor(node, v.hidane, v.ctx))}で払う`;
   }
 
   function renderFooter(v) {
@@ -334,6 +341,7 @@ export function openBoard({ place = null } = {}) {
         el("p", { text: "盤は能力ごとに3枚（才能・感覚・理論）。真ん中の紋から道がのびていて、線でつながった隣のマスだけ灯せる。どの方向から進んでもいい。" }),
         el("p", { text: "丸いマスは能力（火種1）。灯すたびに少し伸び、5つほどで1段上がる。六角形はスキル（火種5〜10）。道の先の授業は、盤を2段まで開けて、教えてくれる人と仲良くなると錠が開く（火種いらず）。" }),
         el("p", { text: "ひし形は関門。色のついた火種1つで越えると、その先の道が開く。万能の火種では越えられない。" }),
+        el("p", { text: "紋のまわりを一周する道から、授業への小道が出る。小道は、その人に出会うと現れる。授業を灯したら、次に会った時に相談する。会えない人には LIME で聞ける。" }),
         el("p", { text: "色のついた火種は、その色の盤のマスと関門に使える。払うときは先に使われる。盤は能力ごとに形が違う。" }),
         el("p", { text: "火種を灯せるのは、観音堂などの静かな場所で内省した時だけ（時間は進まない）。メニューからは見るだけで、欲しいマスを目標にしておける。" }),
       ]),
@@ -375,6 +383,7 @@ export function openBoard({ place = null } = {}) {
       // 授業: 今のゲームの場面がある授業はその場面を見せる（読み終えたら習得。場面が無い授業はカードで）
       for (const node of committed) if (node.kind === "lesson") await presentLesson(node);
     }
+    if (owner === state && limeAfter) await consultByLime(limeAfter);
     resolveDone(committed);
   }
   function onKey(e) {
@@ -411,6 +420,7 @@ export function openBoard({ place = null } = {}) {
 async function presentLesson(node) {
   if (!state) return;
   const who = node.who === "sumi" ? "スミさん" : displayName(node.who, state);
-  gainCard({ kind: "info", badge: "授", top: "LESSON", main: `${who}に相談できる`, sub: `「${node.name}」。次に${who}に会った時に話を聞こう` });
+  const how = canAskByLime(node.id) ? "盤の授業から LIME で聞ける" : `次に${who}に会った時に話を聞こう`;
+  gainCard({ kind: "info", badge: "授", top: "LESSON", main: `${who}に相談できる`, sub: `「${node.name}」。${how}` });
 }
 

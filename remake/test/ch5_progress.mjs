@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { newState } from "../js/core/state.js";
-import { CH5_SCENE_BG, CH5_PROLOGUE, CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTERMATH,
+import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTERMATH,
   CH5_ENDING_IDS, CH5_SCENE_FILES, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, beginChapterFiveFinale,
@@ -29,6 +29,13 @@ assert.equal(new Set(connected).size, connected.length, "A scene is listed twice
 for (const id of connected) assert(CH5_SCENE_BG[id], `bg missing for ${id}`);
 for (const bg of Object.values(CH5_SCENE_BG))
   assert(manifest.backgrounds.includes(`${bg}.png`), `unknown background ${bg}`);
+// BGM の切替表（#1668 2-7）は接続済みの場面だけを指し、実在の曲だけを使う。
+const hasBgm = key => manifest.bgm.some(file => file.replace(/\.[^.]+$/, "") === key);
+assert(hasBgm(CH5_DEFAULT_BGM), `unknown bgm ${CH5_DEFAULT_BGM}`);
+for (const [id, key] of Object.entries(CH5_SCENE_BGM)) {
+  assert(connected.includes(id), `bgm for unconnected scene ${id}`);
+  assert(hasBgm(key), `unknown bgm ${key}`);
+}
 
 // story_routes との整合: プロローグ後半は before_match[0]、後日談は after_match と同じ順。
 const routes = readData("story_routes");
@@ -148,6 +155,12 @@ rejects(value, v => recordChapterFiveScheduleDecision(v, "bogus"));
 assert.equal(value.flags._ch5.scheduleDecision, null);
 assert.equal(completeChapterFiveScene(value, "ch5_free_tonari_practice"), true, "Free scenes are order-free");
 rejects(value, v => completeChapterFiveScene(v, "ch5_free_tonari_practice"));
+assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
+  ["ch5_free_mashiro_visit", "ch5_free_first_visitor", "ch5_free_eden_adam"]);
+// #1588: EDEN の任意場面も自由行動の一つとして1回だけ読める（tonari の並びとは別の入口）。
+assert.equal(CH5_FREE_SCENES.find(scene => scene.id === "ch5_free_eden_adam")?.location, "EDEN");
+assert.equal(completeChapterFiveScene(value, "ch5_free_eden_adam"), true);
+rejects(value, v => completeChapterFiveScene(v, "ch5_free_eden_adam"));
 assert.deepEqual(chapterFiveFreeRemaining(value).map(scene => scene.id),
   ["ch5_free_mashiro_visit", "ch5_free_first_visitor"]);
 assert.equal(completeChapterFiveScene(value, "ch5_unrecorded_day"), true);

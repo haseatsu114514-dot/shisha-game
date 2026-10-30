@@ -425,9 +425,11 @@
           "text": "ん"
         },
         {
-          "speaker": "hajime",
-          "face": "sad",
-          "text": "スミさんは昔、大会とかに出たこと……あるんですか"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ev_day5",
+          "next_true": "ask_after_day5",
+          "next_false": "ask_before_day5"
         },
         {
           "speaker": "",
@@ -469,7 +471,23 @@
           "face": "",
           "text": "……【洞察】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "ask_before_day5": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "スミさんは昔、大会とかに出たこと……あるんですか"
+          }
+        ],
+        "ask_after_day5": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "十五年前の大会で……スミさんは、誰と競ってたんですか"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_sumi_closing",
@@ -857,6 +875,11 @@
           "speaker": "sumi",
           "face": "serious",
           "text": "ただ、体力のある日だけな。準備も片付けも疲れる。毎日やろうとしなくていい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "窓は少し開けとけ。閉め切った部屋で炭を焚くと、頭が痛くなる"
         },
         {
           "type": "condition",

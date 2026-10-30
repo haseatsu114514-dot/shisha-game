@@ -131,6 +131,14 @@ await suite("ch4-full-flow", async check => {
     await committed(page, "ch4_stranger_second");
     await freeDay(page, 3);
     assert.equal((await get(page)).flags._ch4.day, 3);
+    await page.getByText("路地裏のカフェに再訪できるようになった", { exact: true }).waitFor();
+    assert.match(await page.locator(dt("ch4-free")).innerText(), /再訪できるようになった。/);
+    const beforeRevisit = await get(page);
+    await page.locator(dt("ch4-go-alley_cafe")).click();
+    await committed(page, "ch4_alley_cafe_quiet");
+    await freeDay(page, 3);
+    assert.deepEqual((await get(page)).stats, beforeRevisit.stats, "Revisit must not add stat growth");
+    assert.equal((await get(page)).money, beforeRevisit.money);
 
     // 5. DAY4 の宿で前夜へ。前夜祭（繋ぎ→本編）→ stranger_third を強制消化して大会日へ。
     await page.locator(dt("ch4-go-inn")).click();
@@ -155,8 +163,22 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.day, startDay + 4);
     assert.equal(state.flags._ch4_sheikh_revealed, false, "The sheikh stays hidden until the tournament starts");
 
-    // 6. 大会: tournament_start（正体を明かす）→ final → 結果 → 南雲 → 屋敷 → 帰国 → 二つの席
+    // 6. 大会: 正体公開 → 共通の実制作・提供・二度調整 → 実審査 → final → 後日談
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
     await page.locator(dt("ch4-start")).click();
+    for (const round of [1, 2]) {
+      await page.locator(dt("ch4-customer-ask")).click({ timeout: 180000 });
+    }
+    await page.locator(dt("ch4-verdict-continue")).waitFor({ timeout: 180000 });
+    state = await get(page);
+    assert.equal(state.flags._ch4.match.step, 11);
+    assert.equal(state.flags._ch4.match.result.win, true);
+    assert.equal(state.flags._ch4.match.craft.careHistory.length, 2);
+    assert.deepEqual(state.flags._ch4.match.craft.customerChecks, [true, true]);
+    assert.equal(state.flags._ch4.read.ch4_final, undefined, "No victory scene before the verdict is acknowledged");
+    for (const row of Object.values(state.flags._ch4.match.result.votes))
+      assert.equal(Object.values(row).reduce((a, b) => a + b, 0), 10);
+    await page.locator(dt("ch4-verdict-continue")).click();
     await page.locator(scene("ch4_result")).waitFor();
     state = await get(page);
     assert.equal(state.flags._ch4_sheikh_revealed, true);
@@ -170,6 +192,13 @@ await suite("ch4-full-flow", async check => {
       await page.locator(dt("ch4-continue")).click();
     }
     await page.locator(dt("ch4-complete")).waitFor();
+
+    // 章開始時と現在の実能力を、第1章と同じ二面のレーダーで比較する。
+    assert.equal(await page.locator(`${dt("ch4-growth")} .radar-base`).count(), 1);
+    assert.equal(await page.locator(`${dt("ch4-growth")} .radar-now`).count(), 1);
+    assert.notEqual(await page.locator(`${dt("ch4-growth")} .radar-base`).getAttribute("points"),
+      await page.locator(`${dt("ch4-growth")} .radar-now`).getAttribute("points"));
+    assert.match(await page.locator(dt("ch4-growth")).innerText(), /章のはじめ/);
 
     // 7. 最終state
     state = await get(page);
@@ -186,5 +215,52 @@ await suite("ch4-full-flow", async check => {
     await loadSlot(page, 0);
     await page.locator(dt("ch4-complete")).waitFor({ timeout: 60000 });
     assert.equal((await get(page)).flags._ch4.resolution, resolution.length);
+  }, { reducedMotion: "reduce" });
+
+  await check("real-craft-burnt-defeat-restores-resources-and-retry-wins", async page => {
+    await seed(page);
+    await arm(page);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.state;
+      value.chapter = 4; value.phase = "tournament";
+      value.flags._ch4_strategy = "tea";
+      value.flags._overseas_companion = { decided: true, companion: null, supports: ["mashiro"] };
+      value.flags._ch4 = { startDay: 41, day: 5, stage: 4, part: "tournament", titleSeen: true,
+        read: { ch4_stranger_second: true, ch4_stranger_third: true }, firstDay: null, resolution: 0, attempts: 0 };
+      (await import("./js/craft/session.js")).craftTest.auto = "burn";
+      await (await import("./js/chapters/ch4.js")).resumeChapterFour();
+    });
+    const before = await get(page);
+    await page.locator(dt("ch4-start")).click();
+    await page.locator(dt("ch4-verdict-continue")).waitFor({ timeout: 180000 });
+    let value = await get(page);
+    assert.equal(value.flags._ch4.match.result.win, false);
+    assert(value.flags._ch4.match.result.failure);
+    assert.equal(value.flags._ch4.read.ch4_final, undefined);
+    assert.equal(value.money, before.money);
+    await page.locator(dt("ch4-verdict-continue")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch4.attempts === 1);
+    await page.locator(dt("ch4-tournament")).waitFor();
+    value = await get(page);
+    assert.equal(value.flags._ch4.match.result, null);
+    assert.equal(value.flags._ch4.match.history.length, 1);
+    assert.deepEqual(value.flavorStock, before.flavorStock);
+    assert.equal(value.stamina, before.stamina);
+    assert.equal(value.money, before.money);
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
+    await page.locator(dt("ch4-start")).click();
+    for (const round of [1, 2]) await page.locator(dt("ch4-customer-ask")).click({ timeout: 180000 });
+    await page.locator(dt("ch4-verdict-continue")).waitFor({ timeout: 180000 });
+    value = await get(page);
+    assert.equal(value.flags._ch4.match.result.win, true);
+    assert.equal(value.flags._ch4.match.history.length, 2);
+    assert.equal(value.flags._ch4.match.craft.mix.black_tea, 12);
+    await page.locator(dt("ch4-verdict-continue")).click();
+    await page.locator(scene("ch4_result")).waitFor();
+    assert.equal((await get(page)).money, before.money + 200000);
+    await loadSlot(page, 0);
+    await page.locator(scene("ch4_result")).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).money, before.money + 200000, "LOAD must not pay the prize twice");
   }, { reducedMotion: "reduce" });
 });

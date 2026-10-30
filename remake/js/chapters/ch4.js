@@ -6,6 +6,7 @@ import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
+import { radar } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
@@ -20,6 +21,7 @@ import { chapterFourMapModel } from "./ch4-map-model.js";
 import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
+import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -81,7 +83,7 @@ function hud() {
   layers.hud.classList.remove("show");
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "") {
+function card(owner, name, title, description, actions = [], note = "", sceneId = "", content = null) {
   hud();
   showScreen("ch4", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
     el("header.ch2-contest-header", [
@@ -90,6 +92,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     ]),
     el("p.ch2-contest-description", { text: description }),
     note ? el("p.ch2-contest-note", { text: note }) : null,
+    content,
     el("div.ch2-contest-actions", actions),
   ]));
 }
@@ -153,7 +156,10 @@ async function readScene(owner, id) {
   const source = DB.dialogues[id];
   if (!source) throw new Error(`台本がありません: ${id}`);
   // 台本の metadata.bg は持ち込まず、ch4-progress.js の対応表（仮置き）で背景を決める。
-  const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
+  const craft = chapterFourProgress(state).match?.craft;
+  const actual = id === "ch4_final" && craft ? chapterFourFinalDialogue(source, state, craft)
+    : id === "ch4_defeat" && craft ? chapterFourDefeatDialogue(source, state, craft) : source;
+  const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
   await setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true });
@@ -182,9 +188,13 @@ async function readScene(owner, id) {
 
 /** 読了 → 確定 → 保存。確定できなければ（別partの場面など）保存せず false。 */
 async function readAndCommit(owner, id) {
+  const progress = chapterFourProgress(state);
+  // AI仮判断（#1660）: 既存の再訪解放を行動の報酬として知らせる。前夜の強制読了後には自由行動がない。
+  const unlockRevisit = id === "ch4_stranger_second" && progress.part === "free" && !progress.read[id];
   if (!await readScene(owner, id)) return false;
   if (!completeChapterFourScene(state, id)) return false;
   save();
+  if (unlockRevisit) toast("路地裏のカフェに再訪できるようになった", { kind: "good" });
   return true;
 }
 
@@ -303,7 +313,19 @@ async function runTournament(owner) {
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;
   }
-  // 骨格では台本どおり勝ち固定。実試合を接続するときは chapterFourTournamentOutcome の中身を差し替える。
+  const { runChapterFourCraft } = await import("./ch4-tournament.js");
+  if (!current(owner)) return;
+  const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
+  if (!current(owner)) return;
+  if (!result) { await renderTournament(owner); return; }
+  // 順位・二度の調整・5工程の実成績を、勝敗の台本へ進む前に確認する。
+  const parts = Object.entries(result.parts).map(([key, score]) =>
+    `${({ holes: "穴", heat: "炭", shisha: "完成品", care1: "調整1", care2: "調整2" })[key]} ${score.toFixed(1)}`).join(" ／ ");
+  await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
+    body: `${result.failure ? "完了した工程から振り返ろう。" : `総合 ${result.total.toFixed(1)} ／ ${parts}`}\n` +
+      result.rows.map(row => `${({ hajime: "はじめ", naru: "なる", wang: "王煙楼", sheikh: "シェイク" })[row.id]} ${row.points}票`).join(" ／ "),
+    options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
+  if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
     if (!await readAndCommit(owner, win)) return;
     toast(`大会の賞金 ${CH4_PRIZE.toLocaleString("ja-JP")}円を受け取った`, { kind: "good" });
@@ -326,7 +348,8 @@ const RECAP_STRATEGY = Object.freeze({
 function chapterFourRecap(value) {
   const { read } = chapterFourProgress(value);
   const lines = ["世界大会を終え、日本へ戻った。"];
-  const strategy = RECAP_STRATEGY[value.flags._ch4_strategy];
+  const craft = chapterFourProgress(value).match?.craft;
+  const strategy = craft ? chapterFourPlanReview(value, craft) : RECAP_STRATEGY[value.flags._ch4_strategy];
   if (strategy) lines.push(strategy);
   const visited = [];
   if (read.ch4_dubai_souq) visited.push("スーク");
@@ -379,7 +402,12 @@ function renderComplete(owner) {
     replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-  ], "第五章・機械仕掛けの神へ進めます。");
+  ], "第五章・機械仕掛けの神へ進めます。", "",
+  // 第1章と同じ比較。固定の祝福では能力を足さず、実際に伸びた分だけを重ねる。
+  el("div.end-radar", { dataset: { test: test("growth") } }, [
+    radar(state.stats, state.statsAtChapterStart || state.stats, 300),
+    el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
+  ]));
   if (!state.flags._ch4_preview_seen) void preview(true);
 }
 

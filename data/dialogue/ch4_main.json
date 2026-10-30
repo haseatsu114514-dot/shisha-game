@@ -16,12 +16,12 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "……来たな、第二代表"
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "おう。今度は、最初から同じ会場だ"
         },
         {
@@ -36,7 +36,7 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "待ってたってさ。しばらく、あのノートを客に見せろって言われた"
         },
         {
@@ -46,7 +46,7 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "吸いながら話す。まずはお前に勝ってからな"
         },
         {
@@ -67,7 +67,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "今日は相手を変えて、同じ配合で作れ"
         },
         {
@@ -77,7 +77,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "一人ずつだ。葉より先に顔を見ろ"
         },
         {
@@ -87,17 +87,17 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "……県大会の頃、話しかけても手元しか見なかったな"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "sad",
           "text": "勝てば、全部戻ると思ってました"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "ああいう顔の奴を、知ってる。……今は、飯も食えてるか"
         },
         {
@@ -112,7 +112,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "じゃあ、その人の注文、聞いてこい"
         }
       ]
@@ -137,7 +137,7 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "surprise",
           "text": "派手な店だな。でも、ホースの置き場、広い"
         },
         {
@@ -172,12 +172,12 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "surprise",
           "text": "……それ、なるにも聞かれました"
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "一人で全部やるつもりなら、そこから相談な"
         },
         {
@@ -259,7 +259,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "数日後、路地裏のカフェ。同じ男が、古びた台のホースをほどいていた。"
+          "text": "路地裏のカフェ。市場で会った男が、古びた台のホースをほどいていた。"
         },
         {
           "speaker": "traveler",
@@ -403,6 +403,26 @@
           "text": "この店には、昔の借りがある"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "借り、ですか"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "十五年前、この台で一台、作ってもらった。私は名乗らなかった"
+        },
+        {
+          "speaker": "traveler",
+          "face": "normal",
+          "text": "吸い終えて、初めて、自分でも作ってみたくなった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "男は継ぎ目から手を離した。"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "男は店員に礼を言って去った。カップは、洗いやすいように重ねてあった。"
@@ -508,12 +528,12 @@
         },
         {
           "speaker": "pakki",
-          "face": "normal",
+          "face": "smile",
           "text": "四つの枠から、世界の舞台へ。最後の四人だ！"
         },
         {
           "speaker": "pakki",
-          "face": "normal",
+          "face": "smile",
           "text": "日本第一代表、蒸野はじめ！　第二代表、鳴切亮太！"
         },
         {
@@ -533,12 +553,12 @@
         },
         {
           "speaker": "pakki",
-          "face": "normal",
+          "face": "smile",
           "text": "そして現王者、シェイク・アル=ガリヤーン！"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "surprise",
           "text": "……路地裏の"
         },
         {
@@ -573,22 +593,22 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "serious",
           "text": "おい、はじめ。驚くのは終わってからな"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "うん。全員に、勝ちたい"
         },
         {
           "speaker": "pakki",
-          "face": "normal",
+          "face": "smile",
           "text": "審査席は南雲会長、トプハーネのエミル、FESTAの太陽！"
         },
         {
           "speaker": "pakki",
-          "face": "normal",
+          "face": "smile",
           "text": "四人同時の一試合！　途中の順位じゃ決まらないぞ。最後の調整まで見逃すな！"
         }
       ]
@@ -603,7 +623,7 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "serious",
           "text": "バニラの甘さで、最後まで吸わせる。今日は譲らないぞ"
         },
         {
@@ -668,12 +688,12 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "serious",
           "text": "最後の炭替えまで、手は緩めない"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "こっちもだ"
         },
         {
@@ -729,7 +749,7 @@
         },
         {
           "speaker": "pakki",
-          "face": "normal",
+          "face": "smile",
           "text": "勝者は……日本第一代表、蒸野はじめ！"
         },
         {
@@ -739,17 +759,17 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "sad",
           "text": "……くそ。これ、俺の最高だったんだけどな"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "うん。今日のなるの煙、俺は好きだ"
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "お前のも。……優勝おめでとう。次は、俺が取る"
         },
         {
@@ -786,6 +806,11 @@
           "speaker": "sheikh",
           "face": "normal",
           "text": "次は、私が挑む番だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "おう、はじめ。最後まで、客を見て作ったな。よくやった"
         }
       ]
     },
@@ -796,7 +821,7 @@
         "sumi_bowl": [
           {
             "speaker": "hajime",
-            "face": "normal",
+            "face": "surprise",
             "text": "（スミさんの、閉店後の一台と同じだ）"
           }
         ]
@@ -820,12 +845,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あの店にも、よく行くんですか"
+          "text": "昨日の、路地裏の店の借りって"
         },
         {
           "speaker": "sheikh",
           "face": "normal",
-          "text": "十五年前、そこで吸った一台が、私を作る側へ回らせた"
+          "text": "ああ。十五年前のあの一台が、私を作る側へ回らせた"
         },
         {
           "speaker": "sheikh",
@@ -844,7 +869,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "surprise",
           "text": "……あの店で、ですか"
         },
         {
@@ -895,7 +920,7 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "serious",
           "text": "……二口目が、少し重いです。炭を一つ、離してもいいですか"
         },
         {
@@ -926,7 +951,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "携帯には祝福が並んでいる。はじめは何度も画面を開き、一件ずつ読み返した。"
+          "text": "携帯には祝福が並んでいる。tonariの常連、配達先の店、東京で会った人たち。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは一件ずつ開いて、短い返事を打った。全部返すころには、空が白んでいた。"
         }
       ]
     },
@@ -945,12 +975,12 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "surprise",
           "text": "……あのお客さんが。作るようになったのか"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "……あの店、まだあったか"
         },
         {
@@ -960,12 +990,12 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "味は分かった。なのに、客の顔が一人も浮かばなくなった"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "次の点を取ることばかり考えてた。負けた晩、店に帰る用事まで忘れてた"
         },
         {
@@ -975,7 +1005,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "似てた。けど、お前の不調の理由まで俺が決めることじゃない"
         },
         {
@@ -985,17 +1015,17 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "surprise",
           "text": "……聞いてたのか"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "あれは、俺の話だ"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "そのあと、路地裏の店で、あのお客さんに一台作った。点のことは考えずに、顔だけ見てな"
         },
         {
@@ -1030,12 +1060,12 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "南雲にも、勝ち負けの話はしてないって言われた"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "負けたやつの説教だと思った。あいつの店の話を、聞かなかった"
         },
         {
@@ -1065,7 +1095,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "俺も、話しそびれたことがある"
         },
         {
@@ -1075,7 +1105,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "お前が片づけを手伝うならな"
         },
         {
@@ -1085,7 +1115,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "……来週、店に来るとさ"
         },
         {
@@ -1115,7 +1145,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "……そうか。あの店の葉か"
         },
         {
@@ -1130,7 +1160,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "……休みの日は、誰が開ける"
         },
         {
@@ -1155,12 +1185,12 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "sad",
           "text": "……最後まで吸いたくなる一台だった"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "sad",
           "text": "ありがとう、……悔しいな"
         },
         {
@@ -1190,7 +1220,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "日本って書いた札を外しても、吸いたくなるか"
         },
         {
@@ -1218,34 +1248,44 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "serious",
           "text": "向こうの暑さでも、同じになるか。試してこい"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "はい。道具と葉は、使ってきたもので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出発までの夜は、閉店後のtonariで同じ配合を作り続けた。冷房を切って試した夜もある。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ケースには、使い慣れたボウルとトング。一番上に、客の吸っていた時間を書きためたノートを載せた。"
         }
       ],
       "branches": {
         "sakura": [
           {
             "speaker": "sumi",
-            "face": "normal",
+            "face": "thinking",
             "text": "その香り、強すぎないところを探そう"
           }
         ],
         "peach": [
           {
             "speaker": "sumi",
-            "face": "normal",
+            "face": "thinking",
             "text": "甘いまま、重くならない火を考えよう"
           }
         ],
         "tea": [
           {
             "speaker": "sumi",
-            "face": "normal",
+            "face": "thinking",
             "text": "渋みも残る。吐いたあとまで確かめろ"
           }
         ]
@@ -1261,12 +1301,12 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "帰ったら、勝った方が作る。忘れんなよ"
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "smile",
           "text": "……懐かしい約束だ"
         },
         {
@@ -1276,7 +1316,7 @@
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "smile",
           "text": "ああ。あいつに何度も作らせた。悔しくて、感想だけは長くなった"
         },
         {
@@ -1286,12 +1326,12 @@
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "thinking",
           "text": "ある晩、店を増やす話をした。あいつは、次の大会の点を数えていた"
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "serious",
           "text": "勝ち負けの話はしてない。……そう言ったら、黙り込んだ"
         },
         {
@@ -1306,22 +1346,22 @@
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "thinking",
           "text": "会えば今の店の話はする。だが、あの晩の話はしていない"
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "thinking",
           "text": "次は向こうから言うだろうと、互いに待ちすぎた"
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "serious",
           "text": "……店を増やすのって、負けたからですか"
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "smile",
           "text": "勝ちたかったよ。それとは別に、帰れる店を増やしたかった"
         },
         {
@@ -1331,7 +1371,7 @@
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "smile",
           "text": "鳴切くん。今日は、届け先が見えた"
         },
         {
@@ -1352,12 +1392,12 @@
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "smile",
           "text": "まだそのトングか"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "お前も、まだそんな堅い襟してんのか"
         },
         {
@@ -1367,22 +1407,22 @@
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "serious",
           "text": "勝った方が作る約束、まだ有効か"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "thinking",
           "text": "……ずいぶん、溜まってるだろうな"
         },
         {
           "speaker": "nagumo",
-          "face": "normal",
+          "face": "serious",
           "text": "俺の店の話も、今日は最後まで聞け"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "おう。炭は俺が見る"
         },
         {
@@ -1392,7 +1432,7 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
+          "face": "smile",
           "text": "今日は、どっちが作るんだ"
         },
         {
@@ -1412,7 +1452,7 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "勝った方だけじゃ、俺の出番が来ないからな"
         },
         {
@@ -1422,7 +1462,7 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "甘いぞ。クリーム、増やしたから"
         },
         {
@@ -1432,7 +1472,7 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "好きだから、まだ変えたいんだよ"
         },
         {
@@ -1453,7 +1493,7 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "部屋、隣だってさ"
         },
         {
@@ -1481,6 +1521,21 @@
           "speaker": "",
           "face": "",
           "text": "FESTAをひと回りした。今日は、見知った顔はなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通路の椅子は、前に来たときと同じ向きに回してある。踊る人の足と、座る人の膝がぶつからない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口の閉店の札を裏返すと、手書きで当番の名前が並んでいた。大会の日の欄に、太陽の名前はなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その並びを、ノートの端に書き写した。"
         }
       ],
       "comment": "ドラフト追加（未接続）。出典: 第4章本文ドラフト §2-5。ch4_festa を2回目以降に選んだときの想定で仮置き（この訪問で日が進むかは Q11 判断待ち）。"
@@ -1507,6 +1562,11 @@
           "speaker": "",
           "face": "",
           "text": "あの男は、今日はいなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "古びた台のホースは、きれいに巻き直してあった。継ぎ目の革だけが、まだ新しい。"
         },
         {
           "speaker": "hajime",

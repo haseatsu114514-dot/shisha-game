@@ -1,6 +1,7 @@
 // 第1章のスポット定義と「行く」の中身（訪問・施設・休む）。
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
 import { state, markMet } from "../core/state.js";
+import { growthEnabled, hidaneTotal } from "../core/growth.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
 import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, AFFINITY_RANK_PTS, setStoryAffinityCap, ensureAffinityLevel } from "../core/stats.js";
@@ -233,6 +234,8 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
+  // 初回受領後は使い切っても内省の場所を残す。紹介・訪問の記録は変更しない。
+  if (spot.id === "kannon" && growthEnabled() && (state.growth?.earned > 0 || hidaneTotal() > 0)) return true;
   if (spot.id === "rojiura_cinema") return cinemaDiscovered(state);
   if (spot.kind === "fortune") return [1, 2].includes(state.chapter) && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;

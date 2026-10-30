@@ -16,7 +16,8 @@ await suite('attack-lesson', async check => {
         M.vn.vnTest.turbo=true; M.shift=M.tonari.doBaito();
       };
     });
-    for(const points of [32,33]) {
+    // ♥2（20）はシフト後のスミとの会話で好感度が上がっても♥3（33）に届かない値。♥3ちょうどで選択肢が出る。
+    for(const points of [20,33]) {
       await page.evaluate(points=>M.start(points),points);
       await page.locator('[data-test="shift-order-0"]').click();
       await page.locator('[data-test="after-none"]').waitFor();

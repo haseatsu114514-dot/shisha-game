@@ -11,7 +11,7 @@ import { runDaily } from "../daily/calendar.js";
 import { allSpots, VISIT_COST } from "../daily/spots.js";
 import { setHiyoriExtraShops } from "../daily/hiyori.js";
 import { trpgSpot } from "../daily/trpg.js";
-import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot } from "./ch2-outings.js";
+import { CITY_OUTINGS, CITY_SHOP, knownCityOutings, introduceCitySpot, outingDialogue, recordOutingVisit } from "./ch2-outings.js";
 import { offerAgehaPurikura } from "./ch2-purikura.js";
 import { openShop } from "../daily/shop.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
@@ -50,12 +50,12 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   const outing = knownCityOutings(state).find(item => item.id === spot.id && item.kind === "outing");
   if (outing) {
     if (spendableMoney(state) < outing.cost) return { used: false, exerted: false };
-    const dialogueId = state.flags[`_ch2_visited_${outing.id}`] ? outing.repeat : outing.first;
+    const dialogueId = outingDialogue(outing, state.flags);
     const result = await play(dialogueId, { bg: outing.previewUrl || MAP[timeOfDay()] });
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
     addMoney(-outing.cost); addStamina(outing.stamina);
     if (outing.stat) earnStat(outing.stat, 2);
-    state.flags[`_ch2_visited_${outing.id}`] = true;
+    recordOutingVisit(state.flags, outing);
     return { used: true, exerted: outing.stamina < 0 };
   }
   if (spot.kind === "trpg") return null;

@@ -156,6 +156,27 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.deepEqual(wiring.availableOptionalScenes(routes, {...value, chapter: 4}), []);
 }
 {
+  // ひよりの tokyo_contact（#1434 決定B）: 仕事の相談を読んだ面識・連絡先のある相手だけ。恋人は要らず、東京に来ている間は出さない。
+  const value = tokyo();
+  readUntil(value, 'ch3_mukai_intro');
+  value.met.hiyori = true; value.contacts.push('hiyori');
+  assert(!offered(value).includes('hiyori_tokyo_contact'), 'needs the work talk');
+  value.flags._hiyori_work_talk_done = true;
+  assert(wiring.chapterThreeCompletedScenes(value).includes('hiyori_work_talk'));
+  assert(offered(value).includes('hiyori_tokyo_contact'), 'a friend can call; no lover or meeting required');
+  assert(!offered({...value, contacts: ['sumi']}).includes('hiyori_tokyo_contact'), 'needs the contact');
+  assert(!offered({...value, met: {}}).includes('hiyori_tokyo_contact'), 'needs to have met');
+  const visiting = structuredClone(value);
+  visiting.tokyoVisits.plans.push({id: 'tokyo.hiyori.x', characterId: 'hiyori', status: 'staying', arrivalDay: value.day, returnDay: value.day + 2});
+  assert(!offered(visiting).includes('hiyori_tokyo_contact'), 'no remote call while she is in Tokyo');
+  wiring.commitOptionalRead(value, 'hiyori_tokyo_contact');
+  assert.equal(value.flags._ch3_read_hiyori_tokyo_contact, true);
+  assert(!offered(value).includes('hiyori_tokyo_contact'), 'read once only');
+  // route.events と寄り道の既読を一本化する: 同じフラグで「既読」になる。
+  const hiyoriRoute = JSON.parse(fs.readFileSync(new URL('data/dialogue/hiyori.json', root))).route;
+  assert.equal(hiyoriRoute.events.find(e => e.id === 'tokyo_contact').flag, wiring.optionalReadFlag('hiyori_tokyo_contact'));
+}
+{
   // 久世とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に久世側。
   const value = tokyo();
   readUntil(value, 'ch3_kuze_first');

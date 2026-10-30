@@ -105,6 +105,8 @@ await suite("affinity-gates", async check => {
           G.core.save(); G.core.load(); s = G.core.state;
           const saved = { points: s.affinity[id], again: G.stats.releaseAffinity(id) };
           const earlyFinale = G.bonds.finaleDue(id);
+          const earlyWhy = { story: s.story[id], level: G.stats.affinityLevel(id), question: G.bonds.questionVisitDue?.(id),
+            finale: s.finales?.[id] ?? null, chapter: s.chapter, day: s.day, slot: s.slot, answer: s.romanceChoices[G.stats.AFFINITY_GATE_CHOICES[id]] ?? null };
           s.story[id] = G.spots.VISIT_SEQ[id].length; // explicit completed-history fixture for the finale
           G.stats.releaseAffinity(id); // no numeric credit is held behind these read flags
           G.stats.gainAffinity(id, 22);
@@ -118,7 +120,7 @@ await suite("affinity-gates", async check => {
           const seen = JSON.stringify(s.finales[id]);
           const replay = await G.bonds.playFinale(id);
           out.push({ id, value, locked, opened, duplicate, saved, pts, romance, earlyFinale, ready, finale,
-            replay, stable: seen === JSON.stringify(s.finales[id]), held: s.flags[`_${id}_affinity_waiting_pts`] || 0 });
+            replay, stable: seen === JSON.stringify(s.finales[id]), held: s.flags[`_${id}_affinity_waiting_pts`] || 0, earlyWhy });
         }
         return out;
       });
@@ -131,7 +133,8 @@ await suite("affinity-gates", async check => {
         assert.equal(r.opened.answer.value, r.value); assert.equal(r.opened.due, null);
         assert.equal(r.duplicate.points, r.pts); assert.equal(r.duplicate.romance, r.romance);
         assert.equal(r.duplicate.release, 0); assert.equal(r.saved.points, r.pts); assert.equal(r.saved.again, 0);
-        assert.equal(r.earlyFinale, false); // 凛も質問の後は4本目「客の顔」を挟んでから締めくくり（#1752） assert(r.ready); assert.equal(r.finale.route, r.value ? "romance" : "friend");
+        // 質問の直後はどの相手も締めくくりにならない。凛も #1752 で4つ目の固有会話が質問の後に入った。
+        assert.equal(r.earlyFinale, false, JSON.stringify({ id: r.id, value: r.value, ...r.earlyWhy })); assert(r.ready); assert.equal(r.finale.route, r.value ? "romance" : "friend");
         assert.equal(r.finale.due, r.value ? r.id : null); assert.equal(r.finale.open, !!r.value);
         assert.equal(r.finale.giftCount, 1); assert(!r.replay && r.stable); assert.equal(r.held,0);
       }
