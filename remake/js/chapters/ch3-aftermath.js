@@ -10,6 +10,8 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { onDialogueEnter } from "../daily/romance.js";
+import { AGEHA_CONFESSION_SCENES, agehaConfessionDue, confessionAnswer } from "./ch3-romance-entry.js";
 import { radar } from "../daily/status.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
@@ -120,6 +122,12 @@ export async function runChapterThreeAftermath() {
       if (!live(owner)) return;
       Object.assign(DB.dialogues, Object.fromEntries(IDS.map(id => [id, dialogues[id]])));
     }
+    if (!state.flags._ch3_cleared || agehaConfessionDue(state)) {
+      // 再会の後の帰り際（#1930）。返事の場面まで揃えてから入口を出す。
+      const confession = await readDialogues("confession", AGEHA_CONFESSION_SCENES);
+      if (!live(owner)) return;
+      Object.assign(DB.dialogues, Object.fromEntries(AGEHA_CONFESSION_SCENES.map(id => [id, confession[id]])));
+    }
     if (!live(owner)) return;
     if (!state.flags._ch3_aftermath) {
       beginChapterThreeAftermath(state);
@@ -132,6 +140,11 @@ export async function runChapterThreeAftermath() {
 }
 
 async function readScene(owner, scene) {
+  const result = await playScene(owner, scene);
+  return live(owner) && !!result && !result.cancelled;
+}
+
+async function playScene(owner, scene) {
   const source = DB.dialogues[scene.id];
   if (!source) throw new Error(`台本がありません: ${scene.id}`);
   if (scene.id === "ch3_home_customer") {
@@ -150,7 +163,25 @@ async function readScene(owner, scene) {
   owner.controller = controller;
   const result = await play({ ...source, metadata: { ...source.metadata, bg: "" } }, { signal: controller.signal });
   if (owner.controller === controller) owner.controller = null;
-  return live(owner) && !!result && !result.cancelled;
+  return result;
+}
+
+/**
+ * あげはの告白（#1930 仮置き。条件は ch3-romance-entry.js）。再会を読み終えた帰り際に、あげはから言葉にする。
+ * 返事（付き合う／友達のまま）を読み終えた時だけ関係を確定し、中断したらこの場面からやり直す。着地するまで第4章へは進めない。
+ */
+function renderAgehaConfession(owner) {
+  card(owner, "ageha-confession", `DAY ${chapterDay(state)}・昼 ／ 帰り際`, "MELTY PUFFからの帰り際、あげはに呼び止められた。", [
+    button(owner, "続きを読む", "ageha-confession", async () => {
+      const result = await playScene(owner, { id: "confession_ageha", bg: "bg_street_day" });
+      if (!live(owner) || !result || result.cancelled) return;
+      const answer = confessionAnswer(result.visited, "ageha");
+      if (!answer) return;
+      onDialogueEnter(answer, DB.dialogues[answer]);
+      save();
+      await renderStage(owner);
+    }, true),
+  ], "帰郷してから", "confession_ageha");
 }
 
 async function renderStage(owner) {
@@ -160,6 +191,7 @@ async function renderStage(owner) {
   if (!scene) {
     await setBg(bgUrl("bg_ageha_shop"), { instant: true });
     if (!live(owner)) return;
+    if (agehaConfessionDue(state)) { renderAgehaConfession(owner); return; }
     // 第3章側の第4章への接続点はここ1か所（状態遷移は ch4-progress.js の advanceToChapterFour）。
     const next = button(owner, "第4章へ進む", "chapter-four", async () => {
       const mod = await withLoadingNotice(import("./ch4.js"), loadingNotice("第4章のドバイへ向かっています…"));

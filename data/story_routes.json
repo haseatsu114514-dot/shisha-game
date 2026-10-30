@@ -118,6 +118,7 @@
         "ch3_mashiro_practice",
         "ch3_kuze_mashiro_tea_tin",
         "ch3_kuze_mashiro_soon_back",
+        "confession_mashiro",
         "hiyori_tokyo_contact"
       ],
       "after_eve": [
@@ -260,6 +261,13 @@
         "hiyori_work_talk"
       ],
       "comment": "ひよりルートの tokyo_contact（#1434 決定B）。仕事の相談を読んだ相手からの遠隔の通話。恋人・会う約束は要らない。"
+    },
+    "confession_mashiro": {
+      "seen": [
+        "ch3_mashiro_play_3",
+        "ch3_mashiro_practice"
+      ],
+      "comment": "#1930 仮置き: 締めくくりの正式原稿が無い間、任意4場面を読んだ後の告白の返事を実回答にする。好感度や訪問回数からは開かない。"
     }
   },
   "near_conflict": {

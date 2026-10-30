@@ -156,6 +156,40 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.deepEqual(wiring.availableOptionalScenes(routes, {...value, chapter: 4}), []);
 }
 {
+  // #1930: ましろの告白の入口。任意4場面の読了だけが条件で、好感度・面識からは開かない。返事で着地したら出さない。
+  const entry = await import(new URL('remake/js/chapters/ch3-romance-entry.js', root));
+  const value = tokyo();
+  value.affinity = Object.fromEntries(all.map(id => [id, 100]));
+  value.met.mashiro = true;
+  readUntil(value, 'ch3_double_apple_incident');
+  assert(!offered(value).includes('confession_mashiro'), 'max affinity alone does not open the confession');
+  for (const id of ['ch3_mashiro_play_1', 'ch3_mashiro_play_2', 'ch3_mashiro_play_3']) wiring.commitOptionalRead(value, id);
+  assert(!offered(value).includes('confession_mashiro'), 'needs the practice scene too');
+  readUntil(value, 'ch3_rest_before_recovery');
+  wiring.commitOptionalRead(value, 'ch3_mashiro_practice');
+  assert(offered(value).includes('confession_mashiro'), 'four optional scenes open the confession');
+  const confession = sceneData.get('confession_mashiro');
+  const targets = confession.lines.find(row => row.type === 'choice').choices.map(choice => choice.next_id);
+  assert.deepEqual(targets, ['confession_mashiro_accept', 'confession_mashiro_reject']);
+  assert.equal(sceneData.get('confession_mashiro_accept').metadata.set_romance, 'mashiro');
+  for (const id of targets) assert(wiring.CH3_STORY_DIALOGUE_FILES.confession.includes(id), `${id} loaded with the confession`);
+  assert.equal(entry.confessionAnswer(['confession_mashiro', 'confession_mashiro_reject'], 'mashiro'), 'confession_mashiro_reject');
+  assert.equal(entry.confessionAnswer(['confession_mashiro'], 'mashiro'), null, 'no answer when the choice was not reached');
+  assert(!offered({...value, lovers: [...value.lovers, 'mashiro']}).includes('confession_mashiro'), 'lover already landed');
+  assert(!offered({...value, flags: {...value.flags, _friend_mashiro: true}}).includes('confession_mashiro'), 'friend already landed');
+  wiring.commitOptionalRead(value, 'confession_mashiro');
+  assert(!offered(value).includes('confession_mashiro'), 'read once only');
+  // あげは: 第3章の後日談を読み終えた保存だけ。着地済み・第4章では出さない。
+  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true}};
+  assert.equal(entry.agehaConfessionDue(cleared), true);
+  assert.equal(entry.agehaConfessionDue({...cleared, flags: {}}), false, 'not before the reunion');
+  assert.equal(entry.agehaConfessionDue({...cleared, lovers: ['ageha']}), false);
+  assert.equal(entry.agehaConfessionDue({...cleared, flags: {_ch3_cleared: true, _friend_ageha: true}}), false);
+  assert.equal(entry.agehaConfessionDue({...cleared, chapter: 4}), false);
+  assert.equal(sceneData.get('confession_ageha_accept').metadata.set_romance, 'ageha');
+  for (const id of entry.AGEHA_CONFESSION_SCENES) assert(sceneData.get(id)?.lines?.length, id);
+}
+{
   // ひよりの tokyo_contact（#1434 決定B）: 仕事の相談を読んだ面識・連絡先のある相手だけ。恋人は要らず、東京に来ている間は出さない。
   const value = tokyo();
   readUntil(value, 'ch3_mukai_intro');
