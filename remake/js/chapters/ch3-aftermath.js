@@ -172,7 +172,7 @@ async function playScene(owner, scene) {
  */
 function renderAgehaConfession(owner) {
   card(owner, "ageha-confession", `DAY ${chapterDay(state)}・昼 ／ 帰り際`, "MELTY PUFFからの帰り際、あげはに呼び止められた。", [
-    button(owner, "続きを読む", "ageha-confession", async () => {
+    button(owner, "続きを読む", "ageha-confession-continue", async () => {
       const result = await playScene(owner, { id: "confession_ageha", bg: "bg_street_day" });
       if (!live(owner) || !result || result.cancelled) return;
       const answer = confessionAnswer(result.visited, "ageha");
