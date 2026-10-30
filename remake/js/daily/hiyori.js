@@ -157,7 +157,9 @@ export async function playHiyoriHangout(options = {}) {
   const stamp = `${state.chapter}:${state.day}`;
   if (active || isPlaying() || state.flags._hiyori_encounter_day === stamp) return false;
   const n = Number(state.flags._hiyori_repeat_count || 0);
-  const id = `hiyori_shop_repeat_${n % 4}`;
+  // 約束して来た店では、偶然の相席ではなく約束の入りを読む（再会後の最初の一本）
+  const promised = state.flags._hiyori_tonari_return_done && n % 4 === 0;
+  const id = promised ? "hiyori_shop_repeat_0_promised" : `hiyori_shop_repeat_${n % 4}`;
   if (!DB.dialogues[id]?.lines?.length) return false;
   const owner = state;
   active = true;

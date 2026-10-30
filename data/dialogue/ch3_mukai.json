@@ -52,6 +52,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（……昨日の『お水』って、そういうことか）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "mukai_master_seat"
         }
       ]
     },

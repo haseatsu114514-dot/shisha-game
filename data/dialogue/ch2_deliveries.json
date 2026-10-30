@@ -7,7 +7,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "そうだ。隣町の三軒に、預かってる荷物を届けてくれ"
+          "text": "そうだ。隣町の三軒に、荷物を届けてくれ"
         },
         {
           "speaker": "",
@@ -18,6 +18,21 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "MELTY PUFF、神崎煙草店、零-ZERO-。まとめて持っていけ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "神崎には借りてたロータスを返す。あげはには頼まれてたパッキン、零には借りてたCDだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "器具と、CD……。隣町のお店とも、行き来があるんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "狭い業界だからな。向こうも、tonariの名前は知ってる"
         },
         {
           "speaker": "hajime",
@@ -52,27 +67,27 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "それと、スミさんからの荷物です。tonariから預かってきました"
+          "text": "そうだ、スミさんから荷物を預かってきました。あげはさん宛てです"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "あ、待ってたやつ！ ありがと、ハジメっち"
+          "text": "あ、待ってたやつ！ パッキンでしょ？ ホースの付け根、ちょうどへたってたんだよね"
         },
         {
           "speaker": "",
           "face": "normal",
-          "text": "あげはさんが包みの宛名を確かめて、カウンターへ置いた。"
+          "text": "あげはさんが包みの宛名を確かめて、胸の前でぎゅっと抱えた。"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "スミさんにも、助かったって伝えといて"
+          "text": "これで今夜も、ちゃんと回せる。スミさんにも、助かったって伝えといて"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "はい。また今度、ゆっくりお邪魔します"
+          "text": "はい、伝えます"
         }
       ]
     },
@@ -92,22 +107,17 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "おう、確かに。スミに礼を言っといてくんな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。配達で、街の道も少し分かってきました"
+          "text": "おう、ロータスか。律儀に返してくるところが、スミらしいや"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "用事がありゃ、知らねえ店にも入りやすいでしょう。また来なせえ"
+          "text": "礼を言っといてくんな。……用事がありゃ、知らねえ街でも足が向くでしょう"
         },
         {
           "speaker": "hajime",
-          "face": "smile",
-          "text": "ありがとうございます"
+          "face": "normal",
+          "text": "はい。配達のおかげで、道も少し分かってきました"
         }
       ]
     },
@@ -117,7 +127,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "スミさんからお預かりした荷物も、お届けに来ました"
+          "text": "スミさんから、お預かりした荷物です。お借りしていたCDだそうです"
         },
         {
           "speaker": "rei",
@@ -127,17 +137,17 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "零さんは包みを受け取ると、伝票を静かに揃えた。"
+          "text": "REIさんは包みを受け取ると、角をそっと指でなぞった。"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "スミさんに、確かに受け取ったと伝えてくれ"
+          "text": "返すのは、いつでもよかったのに。スミさんに、確かに受け取ったと伝えてくれ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "はい。店の場所も覚えたので、また来ます"
+          "text": "はい、伝えます"
         }
       ]
     },
@@ -147,7 +157,7 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "カウンターの隅に、小さな袋があった。中で多面体のサイコロが光る。"
+          "text": "入口脇の棚に、小さな袋が置いてあった。中で多面体のサイコロが光る。"
         },
         {
           "speaker": "hajime",
@@ -162,7 +172,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "零さんが？ 音楽以外にも、趣味があるんですね"
+          "text": "REIさんが？ 音楽以外にも、趣味があるんですね"
         },
         {
           "speaker": "rei",
@@ -202,37 +212,7 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "零さんが地図を開いて、店の場所を指した。新しい行き先を、スマホに残す。"
-        }
-      ]
-    },
-    {
-      "dialogue_id": "remake_ch2_delivery_report",
-      "lines": [
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "それと、三軒とも荷物をお渡ししました。皆さんから、お礼を"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "おう。ご苦労さん。初めての道で、ちゃんと回れたな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "店の名前だけじゃなくて、どんな人がいるのかも分かりました"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "それなら、次は入りやすいだろ。配達も、そういう仕事だ"
-        },
-        {
-          "speaker": "",
-          "face": "normal",
-          "text": "メモの三つの店名に、受け渡し済みの印をつけた。鞄が少し軽くなっていた。"
+          "text": "REIさんが地図を開いて、店の場所を指した。新しい行き先を、スマホに残す。"
         }
       ]
     },
@@ -327,7 +307,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "刺青が入ってても入れる。そういう店は、まだ限られるんでね"
+          "text": "刺青があっても、サウナまで入れる。そういう店は、まだ限られるんでね"
         },
         {
           "speaker": "kumicho",
@@ -442,7 +422,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（刺青があっても入れるって、神崎さん、ほっとした顔してたな）"
+          "text": "（刺青があってもサウナまで入れるって、神崎さん、ほっとした顔してたな）"
         },
         {
           "speaker": "",
@@ -730,7 +710,7 @@
         {
           "speaker": "",
           "face": "normal",
-          "text": "狭いブースの中で、神崎が背筋を伸ばした。"
+          "text": "狭いブースの中で、神崎さんが背筋を伸ばした。"
         },
         {
           "speaker": "kumicho",

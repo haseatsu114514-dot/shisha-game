@@ -35,8 +35,9 @@ export const CH2_NIGHTS = [
     { id: "remake_ch2_ageha_tasting", file: "ch2_ageha_story", bg: C_STATION_TASTING_BG },
   ] },
   { day: 10, pin: "tonari", label: "スミさんの沈黙", beat: "夜。配合ノートを受け取りに、tonariへ──", steps: [
-    { id: "ch2_sumi_silence", file: "ch2_main" },
+    // #1733: ノートを受け取りに寄った閉店間際にあげはが来る→駅まで送って店へ戻り、半分灯りの落ちた店でスミさんの話を聞く
     { id: "remake_ch2_ageha_slump", file: "ch2_ageha_story" },
+    { id: "ch2_sumi_silence", file: "ch2_main" },
   ] },
   { day: 11, pin: "naru", label: "なるの言葉", beat: "夜。試作の話をしに、KEMURIKUSAへ──", steps: [
     { id: "ch2_naru_confrontation", file: "ch2_isolation" },

@@ -548,6 +548,14 @@ await suite('ch2-tournament',async check=>{
     const ordered=await page.evaluate(async()=>
       (await import('./js/chapters/ch3-progress.js')).CH3_INTRO_SCENES.map(({id,day,slot})=>({id,day,slot})));
     for(const {id,day,slot} of ordered.slice(1)) {
+      // 東京の空き時間（#1655）は休んで次の場面へ。休養は体力だけを戻す。
+      await page.locator(`${scene(id)}, ${dt('ch3-intro-free')}`).first().waitFor();
+      while(await page.locator(dt('ch3-intro-free')).count()){
+        const card=await page.locator(dt('ch3-intro-free')).elementHandle();
+        await page.locator(dt('ch3-intro-visit-rest')).click();
+        await card.waitForElementState('hidden');
+        await page.locator(`${scene(id)}, ${dt('ch3-intro-free')}`).first().waitFor();
+      }
       await page.locator(scene(id)).waitFor();
       s=await get(page);
       assert.equal(s.day,28+day,`Wrong elapsed day before ${id}`);
@@ -653,6 +661,9 @@ await suite('ch2-tournament',async check=>{
     await page.locator(dt('ch3-intro-reload')).click();
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_first"]').waitFor();
     await page.locator(dt('ch3-intro-continue')).click();
+    // 初対面の夜は東京の空き時間（#1655）。休んで次の場面へ。
+    await page.locator(dt('ch3-intro-free')).waitFor();
+    await page.locator(dt('ch3-intro-visit-rest')).click();
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_mukai_visit"]').waitFor();
     s=await get(page);
     assert.equal(s.flags._ch3_intro.stage,12);
