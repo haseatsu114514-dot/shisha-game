@@ -14,7 +14,7 @@ import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { gainStat, star } from "../core/stats.js";
 import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
-import { growthEnabled, addBoost, boostLabel } from "../core/growth.js";
+import { growthEnabled, awardSlotExp } from "../core/growth.js";
 
 // ================================================================ 純粋コア（抽選は旧版と同一）
 
@@ -409,13 +409,12 @@ function commitSpinSeries() {
   reel.resetNext = false;
   sessionFirst = false;
   const target = pickTarget();
-  // 経験値のしくみ（心得の盤）が有効なら、報酬は能力Pではなく経験値の追い風（stat-design SPEC 1.8・4.3）。
+  // 経験値のしくみ（心得の盤）が有効なら、報酬は能力Pではなく図柄が揃った分の経験値（#1281）。
   // 役・確率・天井・記録は同じ。r.exp（役の旧ポイント）は記録として残し、能力には足さない
-  const tailwind = growthEnabled();
+  const expMode = growthEnabled();
   for (const r of spinSeries(reel, { chapterFirst, reset })) {
-    if (tailwind) {
-      const role = r.overlap || r.role;
-      r.boost = r.quiet ? null : addBoost(role);
+    if (expMode) {
+      r.xp = r.quiet ? 0 : awardSlotExp(r.overlap || r.role);
       r.got = 0;
       recordNote(reel, r);
       reel.pending.push(r);
@@ -781,7 +780,7 @@ const CUE_MISS = ["あ、あれ……？", "ご、ごめん……！", "今の�
 
 // 役の恩恵をパッキー口調で（数値は出さず体感語で）
 function benefitLine(r) {
-  if (r.boost) return r.boost.mult >= 2 ? "大追い風だよ！ 経験値がぐーんと伸びる！" : "追い風が吹いたよ！ 経験値アップ！";
+  if (r.xp > 0) return r.xp >= 200 ? "経験値がどーんと入ったよ！" : r.xp >= 90 ? "経験値がぐーんと入ったよ！" : "経験値がちょっと入ったよ！";
   const amt = r.exp >= 6 ? "ぐーんと" : r.exp >= 4 ? "かなり" : r.exp >= 2 ? "ちょっと" : "少し";
   return r.target ? `【${STAT_JA[r.target]}】が${amt}上がったよ！` : `${amt}上がったよ！`;
 }
@@ -1103,8 +1102,8 @@ async function presentFreeze(r) {
 
 // 報酬カード（報酬そのものは行動時に適用済み。ここは見せるだけ）
 function announce(r) {
-  if (r.boost && !r.quiet) {
-    gainCard({ kind: "boost", source: "slot", badge: "風", top: "SLOT BONUS", main: boostLabel(r.boost).split("・")[0], sub: `経験値アップ・あと${r.boost.left}回の行動` });
+  if (r.xp > 0 && !r.quiet) {
+    gainCard({ kind: "exp", source: "slot", badge: "経", top: "SLOT BONUS", main: `EXP +${r.xp}` });
     return;
   }
   if (!(r.got > 0) || r.quiet || !r.target) return;
