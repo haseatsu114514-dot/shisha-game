@@ -30,13 +30,13 @@ export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上�
 export const BOARD_TOTAL = BOARD_KEYS.reduce((n, b) => n + STAT_SQUARES[b]
   + BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length, 0) + SKILLS.reduce((n, s) => n + s.cost, 0);
 /** 盤の型の版。違う版の灯し方は、使った火種を返して最初から（習得した授業は残す） */
-export const BOARD_VERSION = 4; // 4: 授業の小道（2026-10-30）
+export const BOARD_VERSION = 8; // 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ（2026-10-30）
 /**
- * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「1周目で7割開けたい」（SBD54）:
- * Lv.50 までは3つ、Lv.51 からは1つ。1周目（中央 Lv.57）で盤の約7割、2周目の終わりの Lv.99＋やり込みで全開放。
+ * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「いろんな盤をあけてく爽快感も欲しい」→「1レベル2つ・盤を細かく」（SBD60）:
+ * どのレベルも2つ。盤は198（3盤とも66）で、1周目（中央 Lv.57、約140）で3つの盤どれも7割。
  */
-export const HIDANE_EARLY = 3, HIDANE_LATE = 1, HIDANE_EARLY_UNTIL = 50;
-export const hidaneForLevel = (level) => level <= HIDANE_EARLY_UNTIL ? HIDANE_EARLY : HIDANE_LATE;
+export const HIDANE_PER_LEVEL = 2;
+export const hidaneForLevel = () => HIDANE_PER_LEVEL;
 export const COLORED_GIFT = 2;      // 節目・大会・♥5の色つきの火種（1.5）
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
@@ -212,6 +212,42 @@ export async function consultLessons(who, { only = null, bg } = {}) {
   }
   if (done.length) emit("hud");
   return done;
+}
+
+/**
+ * 会えない人には LIME で相談する（2026-10-30 オーナー「会えない人は LIME でカバー。質問するみたいなイベント」）。
+ * 会って相談できるのは、相談の場面がある人を、その人の街にいる章（第1章と、どこへでも行ける第5章）だけ。
+ * それ以外（場面がまだ無い人、第2〜4章で地元を離れている時）は LIME で聞ける。
+ */
+const IN_PERSON_CHAPTERS = [1, 5];
+export function canAskByLime(id, s = state) {
+  const lesson = LESSONS.find((l) => l.id === id);
+  if (!lesson || !s || !growthEnabled()) return false;
+  const g = ensureGrowth(s);
+  if (!g.nodes.includes(id) || g.learned.includes(id)) return false;
+  return !lesson.scene || !IN_PERSON_CHAPTERS.includes(Number(s.chapter) || 1);
+}
+/** LIME で聞ける授業（相手ごと） */
+export const limeLessons = (s = state) => LESSONS.filter((l) => canAskByLime(l.id, s));
+
+/** LIME で相談する: はじめが送った質問への返事を読み、返信を選ぶと習得する。戻り値: 習得したか */
+export async function consultByLime(id) {
+  const owner = state;
+  if (!canAskByLime(id)) return false;
+  const lesson = LESSONS.find((l) => l.id === id);
+  const { DB } = await import("./data.js");
+  const msg = (DB.lime || []).find((m) => m.id === `lime_lesson_${id}`);
+  if (!msg) return false;
+  const { openPhone } = await import("../daily/phone.js");
+  const { gainCard } = await import("./ui.js");
+  await openPhone([msg], { title: "相談" });
+  if (state !== owner) return false;
+  const item = [...(state.inbox || [])].reverse().find((i) => i.msg?.id === msg.id);
+  if (item?.replyState !== "replied") return false;
+  learnLesson(id);
+  gainCard({ kind: "info", badge: "授", top: "TRAINING", main: lesson.name, sub: lesson.text });
+  emit("hud");
+  return true;
 }
 
 /** 盤で灯した火種を数える（節目の色。growth-board.js の決定から呼ぶ） */
