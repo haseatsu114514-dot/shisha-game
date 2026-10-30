@@ -294,6 +294,36 @@ export function chapterFivePrepEcho(value, id) {
   return [];
 }
 
+// ---- 節目の LIME（#1668 2-8）--------------------------------------------------------
+// 本文は data/lime_messages.json の chapter:5・trigger_condition:"ch5_milestone"（朝の配信では届かない）。
+// 第5章で実際に会った場面（after_scene）を読み、連絡先を交換済みの相手からだけ届く。一斉の応援にしない。
+export const CH5_LIME_CONDITION = "ch5_milestone";
+export const CH5_LIME_MILESTONES = Object.freeze({
+  prep: "prep",               // 日程が決まった夜（scheduled のカード）
+  afterMatch: "after_match",  // 勝負のあと、tonari へ戻る前（後日談の2場面目のカード）
+});
+
+function limeMilestoneOpen(progress, milestone) {
+  if (milestone === CH5_LIME_MILESTONES.prep) return progress.part === "scheduled";
+  if (milestone === CH5_LIME_MILESTONES.afterMatch) {
+    return progress.part === "aftermath" && CH5_AFTERMATH[progress.aftermath]?.id === "ch5_return_to_tonari";
+  }
+  return false;
+}
+
+/**
+ * 今の節目で届ける LIME（台本の順）。読み終えた（done）ものは再送しない。
+ * hasContact は連絡先の判定（daily/spots.js）。ここでは連絡先を追加しない。
+ */
+export function chapterFiveLimeDue(value, milestone, messages, hasContact) {
+  const progress = chapterFiveProgress(value);
+  if (!limeMilestoneOpen(progress, milestone) || !Array.isArray(messages)) return [];
+  const done = new Set((value.inbox || []).filter(item => item?.done).map(item => item.originId || item.id));
+  return messages.filter(m => m?.chapter === 5 && m.trigger_condition === CH5_LIME_CONDITION
+    && m.milestone === milestone && CH5_FREE_SCENES.some(scene => scene.id === m.after_scene)
+    && progress.read[m.after_scene] === true && !done.has(m.id) && hasContact(m.sender));
+}
+
 /** 連絡で先送りを選んだ直後の保存か（復帰時に ch5_timeout を先に消化するための判定）。 */
 export function chapterFiveTimeoutPending(value) {
   const progress = chapterFiveProgress(value);
