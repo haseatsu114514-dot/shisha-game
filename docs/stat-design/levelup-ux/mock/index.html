@@ -466,7 +466,7 @@ function doAction(sp){
   if(r<1/9.4){const big=Math.random()<.6;addBoost(big?1.5:1.5,big?5:3,big?"BIG":"REG");}
   else if(r<1/9.4+.12){addBoost(1.25,Math.random()<.5?1:2,"小役");}
   render();
-  if(sp.id==="kannon"&&S.boardMode==="kannon")setTimeout(()=>{openBoard({place:"kannon"});caption("観音堂で手を合わせると、学んだことが火になる。火種を灯そう。",[["わかった",()=>hideCap()]]);},900);
+  if(sp.id==="kannon"&&S.boardMode==="kannon")setTimeout(()=>{openBoard({place:"kannon"});caption("観音堂で目を閉じて今日を振り返ると、学んだことが火になる。火種を灯そう。",[["わかった",()=>hideCap()]]);},900);
 }
 function addBoost(mult,n,role){const before=S.boost.left;S.boost.mult=Math.max(S.boost.mult,mult);S.boost.left=Math.min(10,S.boost.left+n);
   setTimeout(()=>card({c:"var(--sense)",k:"P",top:"PAKKI SLOT",main:`追い風 ×${S.boost.mult}`,sub:before?`あと${before} → あと${S.boost.left}`:`あと${S.boost.left}回 経験値の入りが増える`}),900);
@@ -553,11 +553,11 @@ async function sleepFlow(){
 function milestoneColor(){const c=KEYS.map(k=>[k,S.spent10[k]||0]).sort((a,b)=>b[1]-a[1]||stepOf(a[0])-stepOf(b[0]));return c[0][1]?c[0][0]:KEYS.slice().sort((a,b)=>stepOf(a)-stepOf(b))[0];}
 function flyHidane(color){const r=$("#hud").getBoundingClientRect();const f=h("div",{class:"flyer"},[h("span",{class:"flame"+(color?" c-"+color:""),style:"width:16px;height:20px"})]);
   f.style.left="50%";f.style.top="50%";$("#app").append(f);requestAnimationFrame(()=>{f.style.left=(r.left+60)+"px";f.style.top=(r.bottom-18)+"px";f.style.opacity=".2";});setTimeout(()=>f.remove(),800);}
-/** 夜の終わり。大会前夜に火種が残っていれば、はじめは必ず勝利祈願に参拝する（2026-10-30 オーナー決定）。
+/** 夜の終わり。大会前夜に火種が残っていれば、はじめは必ず内省しに行く（2026-10-30 オーナー決定。勝利祈願から内省に変更）。
  *  モックでは寝た後に見せているが、本番は寝る前（前夜の夜）に置く。 */
 function afterNight(eve,then){
   if(eve&&totalHidane()>0){nextDay();render();openBoard({place:"kannon"});
-    caption("大会前夜。火種が残っている。はじめは勝利祈願に観音堂へ向かった。手を合わせると、学んだことが火になる。",[["灯す",()=>hideCap()]]);log("大会前夜: 火種が残っていたので、勝利祈願に観音堂へ（強制）");return;}
+    caption("大会前夜。火種が残っている。はじめはひとり観音堂へ向かった。勝ち負けより、ここまでの自分を確かめに。目を閉じて振り返ると、学んだことが火になる。",[["灯す",()=>hideCap()]]);log("大会前夜: 火種が残っていたので、観音堂で内省（強制）");return;}
   nextDay();then?.();
 }
 function nextDay(){S.day++;S.slot=0;S.stamina=Math.min(100,S.stamina+14+30);if(S.day>14){S.day=14;}}
