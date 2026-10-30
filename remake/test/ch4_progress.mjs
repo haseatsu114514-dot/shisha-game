@@ -195,6 +195,13 @@ assert.equal(completeChapterFourScene(value, "ch4_alley_cafe_quiet"), false, "Qu
 assert.equal(completeChapterFourScene(value, "ch4_stranger_second"), true);
 assert.equal(chapterFourSecondAvailable(value), false);
 assert.deepEqual(chapterFourMapModel(value).destinations.find(item => item.id === "alley_cafe").scenes, ["ch4_alley_cafe_quiet"]);
+// 「使える」は既存の再訪行動の解放。未読の二度目とは別の場面で、保存を跨いでも残る。
+const revisitSave = JSON.parse(JSON.stringify(value));
+assert.match(chapterFourMapModel(revisitSave).destinations.find(item => item.id === "alley_cafe").purpose, /再訪できるようになった/);
+const beforeRevisit = structuredClone(revisitSave);
+assert.equal(completeChapterFourScene(revisitSave, "ch4_alley_cafe_quiet"), true);
+assert.deepEqual(revisitSave.stats, beforeRevisit.stats, "Revisit must not award fixed-event stat growth");
+assert.equal(revisitSave.money, beforeRevisit.money);
 assert.equal(completeChapterFourScene(value, "ch4_alley_cafe_quiet"), true);
 roundTrip();
 

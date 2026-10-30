@@ -6,6 +6,7 @@ import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
+import { radar } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
@@ -81,7 +82,7 @@ function hud() {
   layers.hud.classList.remove("show");
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "") {
+function card(owner, name, title, description, actions = [], note = "", sceneId = "", content = null) {
   hud();
   showScreen("ch4", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
     el("header.ch2-contest-header", [
@@ -90,6 +91,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     ]),
     el("p.ch2-contest-description", { text: description }),
     note ? el("p.ch2-contest-note", { text: note }) : null,
+    content,
     el("div.ch2-contest-actions", actions),
   ]));
 }
@@ -182,9 +184,13 @@ async function readScene(owner, id) {
 
 /** 読了 → 確定 → 保存。確定できなければ（別partの場面など）保存せず false。 */
 async function readAndCommit(owner, id) {
+  const progress = chapterFourProgress(state);
+  // AI仮判断（#1660）: 既存の再訪解放を行動の報酬として知らせる。前夜の強制読了後には自由行動がない。
+  const unlockRevisit = id === "ch4_stranger_second" && progress.part === "free" && !progress.read[id];
   if (!await readScene(owner, id)) return false;
   if (!completeChapterFourScene(state, id)) return false;
   save();
+  if (unlockRevisit) toast("路地裏のカフェに再訪できるようになった", { kind: "good" });
   return true;
 }
 
@@ -379,7 +385,12 @@ function renderComplete(owner) {
     replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-  ], "第五章・機械仕掛けの神へ進めます。");
+  ], "第五章・機械仕掛けの神へ進めます。", "",
+  // 第1章と同じ比較。固定の祝福では能力を足さず、実際に伸びた分だけを重ねる。
+  el("div.end-radar", { dataset: { test: test("growth") } }, [
+    radar(state.stats, state.statsAtChapterStart || state.stats, 300),
+    el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
+  ]));
   if (!state.flags._ch4_preview_seen) void preview(true);
 }
 

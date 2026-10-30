@@ -131,6 +131,14 @@ await suite("ch4-full-flow", async check => {
     await committed(page, "ch4_stranger_second");
     await freeDay(page, 3);
     assert.equal((await get(page)).flags._ch4.day, 3);
+    await page.getByText("路地裏のカフェに再訪できるようになった", { exact: true }).waitFor();
+    assert.match(await page.locator(dt("ch4-free")).innerText(), /再訪できるようになった。/);
+    const beforeRevisit = await get(page);
+    await page.locator(dt("ch4-go-alley_cafe")).click();
+    await committed(page, "ch4_alley_cafe_quiet");
+    await freeDay(page, 3);
+    assert.deepEqual((await get(page)).stats, beforeRevisit.stats, "Revisit must not add stat growth");
+    assert.equal((await get(page)).money, beforeRevisit.money);
 
     // 5. DAY4 の宿で前夜へ。前夜祭（繋ぎ→本編）→ stranger_third を強制消化して大会日へ。
     await page.locator(dt("ch4-go-inn")).click();
@@ -170,6 +178,13 @@ await suite("ch4-full-flow", async check => {
       await page.locator(dt("ch4-continue")).click();
     }
     await page.locator(dt("ch4-complete")).waitFor();
+
+    // 章開始時と現在の実能力を、第1章と同じ二面のレーダーで比較する。
+    assert.equal(await page.locator(`${dt("ch4-growth")} .radar-base`).count(), 1);
+    assert.equal(await page.locator(`${dt("ch4-growth")} .radar-now`).count(), 1);
+    assert.notEqual(await page.locator(`${dt("ch4-growth")} .radar-base`).getAttribute("points"),
+      await page.locator(`${dt("ch4-growth")} .radar-now`).getAttribute("points"));
+    assert.match(await page.locator(dt("ch4-growth")).innerText(), /章のはじめ/);
 
     // 7. 最終state
     state = await get(page);
