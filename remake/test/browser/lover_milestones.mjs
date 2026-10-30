@@ -75,7 +75,7 @@ await suite("lover-milestones", async check => {
       bus.on("stat-gain", payload => gains.push(payload));
       for (const enabled of [false, true]) {
         growth.setGrowthPreview(enabled);
-        for (const id of ["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"]) {
+        for (const id of ["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan", "hiyori"]) {
           let s = M.fresh(id); s.loveLevel[id] = 5; s.lovePts[id] = 72;
           s.flags._intro_samechan = s.flags._samechan_nickname_known = true;
           const before = { ...s.stats }, xp = { ...s.statXp };
@@ -91,25 +91,25 @@ await suite("lover-milestones", async check => {
           records.push({ enabled, id, before, after: { ...s.stats }, xp, afterXp: { ...s.statXp },
             earned, repeated: s.growth?.xp || 0, seen: s.loverEventsSeen.length });
         }
-        // ひよりはLv別台本を持たず、専用の恋人場面をデート後に読む。
+        // ひよりはLv1〜5に加え、Lv2以降の専用場面もデート後に一度読む。
         const hiyori = await import("./js/daily/hiyori.js");
         const s = M.fresh("hiyori"); s.loveLevel.hiyori = 2; s.flags._hiyori_work_talk_done = true;
         const before = { ...s.stats }, xp = { ...s.statXp };
         await hiyori.playHiyoriEvent("feelings_spoken");
         const earned = s.growth?.xp || 0;
         await M.vn.play("hiyori_feelings_spoken");
-        records.push({ enabled, id: "hiyori", before, after: { ...s.stats }, xp, afterXp: { ...s.statXp },
+        records.push({ enabled, id: "hiyori_feelings_spoken", before, after: { ...s.stats }, xp, afterXp: { ...s.statXp },
           earned, repeated: s.growth?.xp || 0, seen: Number(!!s.flags._hiyori_feelings_spoken) });
       }
       return { records, gains };
     });
-    assert.equal(result.records.length, 14);
+    assert.equal(result.records.length, 16);
     for (const r of result.records) {
       assert.deepEqual(r.after, r.before, `${r.id}: ability changed`);
       assert.deepEqual(r.afterXp, r.xp, `${r.id}: ability progress changed`);
-      assert.equal(r.earned, r.id === "hiyori" ? 25 : 125, `${r.id}: chapter-2 initial reads (preview=${r.enabled})`);
+      assert.equal(r.earned, r.id === "hiyori_feelings_spoken" ? 25 : 125, `${r.id}: chapter-2 initial reads (preview=${r.enabled})`);
       assert.equal(r.repeated, r.earned, `${r.id}: replay reward`);
-      assert.equal(r.seen, r.id === "hiyori" ? 1 : 5);
+      assert.equal(r.seen, r.id === "hiyori_feelings_spoken" ? 1 : 5);
     }
     assert.deepEqual(result.gains, []);
   }, { reducedMotion: "reduce" });
