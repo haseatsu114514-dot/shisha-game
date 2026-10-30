@@ -273,6 +273,7 @@
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch4_rewards.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -962,6 +963,15 @@
       ],
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
+      ]
+    },
+    {
+      "id": "ch4-tournament",
+      "title": "Chapter 4 real craft, scoring, plans and checkpoint recovery",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/ch4_tournament.mjs",
+        "node --experimental-vm-modules remake/test/ch4_tournament_sequence.mjs"
       ]
     },
     {

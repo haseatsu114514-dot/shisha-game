@@ -110,7 +110,11 @@ function buildDom() {
     if (!running || !layers.vn.classList.contains("active")) return;
     if (layers.modal.classList.contains("show")) return;
     if (dom.log.classList.contains("show")) return;
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); advance(); }
+    if (e.key === "Enter" || e.key === " ") {
+      // フォーカス中のボタン・入力欄はブラウザ本来のキー操作に任せる。
+      if (e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) return;
+      e.preventDefault(); advance();
+    }
     if (e.key === "Control") setSkip(true);
   });
   window.addEventListener("keyup", (e) => { if (e.key === "Control") setSkip(false); });
