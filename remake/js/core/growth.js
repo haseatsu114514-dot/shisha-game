@@ -223,41 +223,6 @@ export async function consultLessons(who, { only = null, bg, signal } = {}) {
   return done;
 }
 
-/**
- * 会えない人には LIME で相談する（2026-10-30 オーナー「会えない人は LIME でカバー。質問するみたいなイベント」）。
- * 会って相談できるのは、相談の場面がある人を、その人の街にいる章（第1章と、どこへでも行ける第5章）だけ。
- * それ以外（場面がまだ無い人、第2〜4章で地元を離れている時）は LIME で聞ける。
- */
-const IN_PERSON_CHAPTERS = [1, 5];
-export function canAskByLime(id, s = state) {
-  const lesson = LESSONS.find((l) => l.id === id);
-  if (!lesson || !s || !growthEnabled()) return false;
-  const g = ensureGrowth(s);
-  if (!g.nodes.includes(id) || g.learned.includes(id)) return false;
-  return !lesson.scene || !IN_PERSON_CHAPTERS.includes(Number(s.chapter) || 1);
-}
-/** LIME で聞ける授業（相手ごと） */
-export const limeLessons = (s = state) => LESSONS.filter((l) => canAskByLime(l.id, s));
-
-/** LIME で相談する: はじめが送った質問への返事を読み、返信を選ぶと習得する。戻り値: 習得したか */
-export async function consultByLime(id) {
-  const owner = state;
-  if (!canAskByLime(id)) return false;
-  const lesson = LESSONS.find((l) => l.id === id);
-  const { DB } = await import("./data.js");
-  const msg = (DB.lime || []).find((m) => m.id === `lime_lesson_${id}`);
-  if (!msg) return false;
-  const { openPhone } = await import("../daily/phone.js");
-  const { gainCard } = await import("./ui.js");
-  await openPhone([msg], { title: "相談" });
-  if (state !== owner) return false;
-  const item = [...(state.inbox || [])].reverse().find((i) => i.msg?.id === msg.id);
-  if (item?.replyState !== "replied") return false;
-  learnLesson(id);
-  gainCard({ kind: "info", badge: "授", top: "TRAINING", main: lesson.name, sub: lesson.text });
-  emit("hud");
-  return true;
-}
 
 /** 盤で灯した火種を数える（節目の色。growth-board.js の決定から呼ぶ） */
 export function noteLit(g, board, cost) {
