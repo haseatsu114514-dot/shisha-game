@@ -24,7 +24,9 @@ const log = (...a) => console.log("[remake]", ...a);
 // （配達の2枠は計画を消費しない。DAY3 から下の計画へ進む）
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
-const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+// This full-chapter run checks progression, scoring and CG recording. Normal-speed
+// scene endings and navigation are covered by motion_endings/navigation_transitions.
+const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, reducedMotion: "reduce" });
 await installLoadingComicReader(page);
 const loadReport = process.env.LOAD_REPORT ? await recordLoad(page, BASE) : null;
 await page.addInitScript(() => {
