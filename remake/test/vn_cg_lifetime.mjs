@@ -64,7 +64,7 @@ async function publicCallerCase(kind) {
       classList: {add: (...xs) => xs.forEach(x=>classes.add(x)), remove: (...xs) => xs.forEach(x=>classes.delete(x)),
         contains: x=>classes.has(x), toggle: (x,on=!classes.has(x)) => {if(on) classes.add(x); else classes.delete(x); return on;}},
       append(...xs) {this.children.push(...xs);}, replaceChildren(...xs) {this.children=xs;},
-      setAttribute() {}, addEventListener() {}, querySelector() {return null;}, querySelectorAll() {return [];},
+      setAttribute() {}, addEventListener() {}, focus() {}, querySelector() {return null;}, querySelectorAll() {return [];},
       getAnimations() {return [];}, remove() {},
     };
   }

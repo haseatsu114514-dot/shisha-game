@@ -113,6 +113,7 @@ function buildDom() {
       if (e.key === "Escape") { e.preventDefault(); closeLog(); }
       return;
     }
+    if (e.key === "Control") { setSkip(true); return; }
     if (running.waitingChoice) {
       const choices = [...dom.choices.querySelectorAll(".vn-choice:not(:disabled)")];
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
