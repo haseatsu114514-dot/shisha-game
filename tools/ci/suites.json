@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "typography-css",
+      "title": "Readable CSS typography follows #1352",
+      "kind": "quick",
+      "run": ["node remake/test/typography_css.mjs"]
+    },
+    {
       "id": "status-steps",
       "title": "Status 10-step conversion and effect tables",
       "kind": "quick",

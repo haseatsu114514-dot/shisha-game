@@ -4,7 +4,7 @@
 .wpour-canvas { position: absolute; inset: 0; display: block; touch-action: none; }
 .wpour-info { display: flex; flex-direction: column; gap: 10px; padding: 12px 12px 10px; border: 1.5px solid #e5d598; border-radius: 18px; background: linear-gradient(145deg, #100b0eea, #1b100dec); box-shadow: 0 10px 25px #0005; color: #eee6d7; font-variant-numeric: tabular-nums; min-height: 0; overflow-y: auto; }
 .wpour-head h2 { margin: 0; font-family: "Craft Mincho", var(--font, serif); font-weight: 700; font-size: 27px; line-height: 1.2; }
-.wpour-head small { font-size: 12px; letter-spacing: .08em; }
+.wpour-head small { font-size: 12px; letter-spacing: .02em; }
 .wpour-goal { margin: 0; font-size: 14px; line-height: 1.5; color: #f3d68b; }
 .wpour-status { margin: 0; min-height: 1.5em; font-size: 13px; color: #cfc2ad; }
 .wpour-actions { display: grid; gap: 8px; }
@@ -20,8 +20,8 @@
 .wpour-stamp.good { color: #cce1be; }
 .wpour-stamp.miss { color: #eab6ab; }
 .wpour-grade { margin: 0; font-size: 14px; }
-.wpour-result small { font-size: 11px; color: #cfc2ad; }
+.wpour-result small { font-size: 12px; font-weight: 700; color: #cfc2ad; }
 .wpour-next[hidden] { display: none; }
 .wpour-next { width: 100%; min-width: 0; font-size: 15px; }
-.wpour-keys { margin: auto 0 0; font-size: 11px; color: #a99a88; }
+.wpour-keys { margin: auto 0 0; font-size: 12px; font-weight: 700; color: #a99a88; }
 @media (hover: none) { .wpour-keys { display: none; } }
