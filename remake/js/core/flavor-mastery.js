@@ -28,6 +28,10 @@ export const FOURTH_FLAVOR_LESSONS = {
     ["ch1_naru_first", { vanilla: 1 }],
     ["ch1_naru_third", { vanilla: 1 }],
   ],
+  ch1_rin_fourth: [
+    ["ch1_rin_second", { rose: 1, lychee: 1 }],
+    ["ch1_rin_repeat", { blueberry: 1 }],
+  ],
   ch2_kumicho_fourth: [["ch2_kumicho_second", { dragonfruit: 1 }]],
   ch2_rei_fourth: [["ch2_rei_first", { rose: 1 }]],
 };

@@ -103,6 +103,42 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  }
  s=core.newGame();
 }
+{
+ // 凛の3つの味は第4回で一度だけ受け取る。旧第2回・反復回の受領分は差し引く。
+ const rin=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_rin.json',import.meta.url))).dialogues;
+ const second=rin.find(d=>d.dialogue_id==='ch1_rin_second');
+ const repeat=rin.find(d=>d.dialogue_id==='ch1_rin_repeat');
+ const fourth=rin.find(d=>d.dialogue_id==='ch1_rin_fourth');
+ assert.equal(second.metadata?.flavor_lesson,undefined);
+ assert.equal(repeat.metadata?.flavor_lesson,undefined);
+ assert.deepEqual(fourth.metadata.flavor_lesson,{rose:1,lychee:1,blueberry:1});
+ const fresh=core.newGame();
+ learnFlavorStory(fresh,second,DB.flavorById);
+ learnFlavorStory(fresh,repeat,DB.flavorById);
+ assert.deepEqual(fresh.flavorMastery,{});
+ learnFlavorStory(fresh,fourth,DB.flavorById);
+ assert.deepEqual(fresh.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ learnFlavorStory(fresh,fourth,DB.flavorById);
+ assert.deepEqual(fresh.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ const loadOld=(changes)=>{
+  storage.set(core.SAVE_KEY,JSON.stringify({...core.newGame(),schema:23,...changes}));
+  return core.load();
+ };
+ let unread=loadOld({story:{rin:3},flavorLessons:['ch1_rin_second'],flavorMastery:{rose:6,lychee:6}});
+ assert.deepEqual(unread.flavorMastery,{rose:6,lychee:6});
+ learnFlavorStory(unread,fourth,DB.flavorById);
+ assert.deepEqual(unread.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ let read=loadOld({story:{rin:4},flavorLessons:['ch1_rin_second'],flavorMastery:{rose:6,lychee:6}});
+ assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ assert(read.flavorLessons.includes('ch1_rin_fourth'));
+ core.save();read=core.load();
+ assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ read=loadOld({story:{rin:4},flavorLessons:['ch1_rin_second','ch1_rin_repeat'],flavorMastery:{rose:6,lychee:6,blueberry:12}});
+ assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ read=loadOld({story:{rin:4},flavorLessons:[],flavorMastery:{}});
+ assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ s=core.newGame();
+}
 for(const file of fs.readdirSync(new URL('../../data/dialogue/',import.meta.url)).filter(f=>f.endsWith('.json'))){
  for(const dlg of JSON.parse(fs.readFileSync(new URL('../../data/dialogue/'+file,import.meta.url))).dialogues||[])
   for(const id of Object.keys(dlg.metadata?.flavor_lesson||{}))assert(DB.flavorById[id],`${file}/${dlg.dialogue_id}: unknown flavor ${id}`);

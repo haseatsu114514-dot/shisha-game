@@ -216,11 +216,7 @@
       "dialogue_id": "ch1_rin_second",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "試香モニター",
-        "flavor_lesson": {
-          "rose": 1,
-          "lychee": 1
-        }
+        "topic": "試香モニター"
       },
       "lines": [
         {
@@ -513,7 +509,12 @@
       "dialogue_id": "ch1_rin_fourth",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "客の顔"
+        "topic": "客の顔",
+        "flavor_lesson": {
+          "rose": 1,
+          "lychee": 1,
+          "blueberry": 1
+        }
       },
       "lines": [
         {
@@ -592,6 +593,16 @@
           "text": "じゃあ、また持って帰ってきます。どんな顔で吸ってたか"
         },
         {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "じゃあ報酬。ローズとライチの組み合わせ、君の手で続けて"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "ブルーベリーも試して、香りがどう変わるか聞かせてよ"
+        },
+        {
           "type": "condition",
           "condition_type": "lover",
           "char_id": "rin",
@@ -628,10 +639,7 @@
     {
       "dialogue_id": "ch1_rin_repeat",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "flavor_lesson": {
-          "blueberry": 1
-        }
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
       },
       "lines": [
         {
