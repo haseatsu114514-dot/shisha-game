@@ -784,6 +784,111 @@
           }
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_rin_prototype_night",
+      "comment": "#1696 オーナー決定: 夜の2階のデスクで試作品を試す一度きりの回。固有会話3本目の後、新しい話の無い来店で spots.js が一度だけ再生する。大会前後どちらでも読める内容にする。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の2階。ショールームの奥、凛さんのデスクだけにスタンドの明かりが点いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒縁の眼鏡をかけた凛さんが、書類の山の横で小さな一台を組んでいる。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……あ、モルモットくん。ごめん、今日は眼鏡のまま"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "眼鏡、かけるんですね"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "夜だけね。コンタクトだと、袋の小さい字が読めなくなるの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "デスクの上に、番号だけ手書きされた白い袋。NIGHTSIDEの印も、まだない。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "本国から来た試作品で、名前もまだない。先に私が吸うから、待って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは一口吸って、しばらく黙った。二口、三口。眉が、わずかに寄る。"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……三口目で、喉に引っかかる。熱が上がると、もっと出る"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "線は越えてない。でも、店に出すかは別の話、……はい、確かめて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡されたホースを吸う。最初は甘い。少し遅れて、喉の奥がざらついた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一口目は、すごくいいです。だから三口目で、がっかりする"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "そう、それ。一口目で売れて、三口目で嫌われる葉。いちばん、たちが悪い"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "店でずっと低い熱で吸ってもらえるとは限らない。だから、このロットは止める"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは報告書の欄に、短く「見送り」と書いた。それから眼鏡を外して、目をこする。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……昼の私より、地味でしょ。夜はだいたい、こんな仕事"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一口目で決めないで、三口目まで吸ってから決める人なんだ）"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ふふ。今の顔、レポートには書かないでおく"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
     }
   ]
 }
