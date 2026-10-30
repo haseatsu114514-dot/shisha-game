@@ -267,7 +267,7 @@
     "nationality": "Russia",
     "affiliation": "NIGHTSIDE（ナイトサイド）経営者／東京の店 Железный Дым（ジェレーズヌイ・ドゥイム／鉄の煙）",
     "play_style": "「完璧な熱管理と精度（Точность）」",
-    "description": "ナイトサイドを経営し、日本の窓口を任せる凛の上司でもある。来訪の主目的は、日本の店ごとの器具・環境・客の吸う間隔を確かめる市場調査。東京に最近開いた「鉄の煙」を拠点に、全国大会にも出場する。徹底した計測と温度管理でブレない提供を目指すが、客がホースを置くと数値の入力を止め、まず本人に熱さや休憩の意図を尋ねる。祖母の作るジャムを舐めながら紅茶を飲むのが好きで、その量だけは「測るな」と言われたまま測らない。",
+    "description": "ナイトサイドを経営し、日本の窓口を任せる凛の上司でもある。来訪の主目的は、日本の店ごとの器具・環境・客の吸う間隔を確かめる市場調査。東京に開いて日は浅いが、ナイトサイドを扱うハードコアな名店としてすでに知られる「鉄の煙」を拠点に、全国大会にも出場する。徹底した計測と温度管理でブレない提供を目指すが、客がホースを置くと数値の入力を止め、まず本人に熱さや休憩の意図を尋ねる。祖母の作るジャムを舐めながら紅茶を飲むのが好きで、その量だけは「測るな」と言われたまま測らない。",
     "background_secret": "極寒の地で客に温かい煙を途切れさせないため、軍で身につけた観察・記録を熱管理へ活かしてきた。メーカーの計測条件では揃った袋が、店の客には違って届くことを見落としたくない。計器が正常でも客が吸うのをやめると動揺するが、失敗と決めつけず、本人の言葉と休憩の間を記録へ加える。第2章では名乗らず試煙会・大会前夜・県大会を調べる。第3章でナイトサイドの経営と凛との関係、市場調査という目的を話す。精度を捨てて感情だけへ転向する人物にはしない。",
     "favorite_flavor": "発売されたばかりのナイトサイド ブラストミント",
     "specialty_flavor": "ナイトサイド ブラストミントを使った精密な熱管理",
@@ -335,7 +335,7 @@
       "Face icon of the same 25-year-old ZERO cafe owner, matching the approved chr_rei_normal.png and face_rei.png. Same slightly androgynous face and layered black hair with irregular deep burgundy mesh/streaks across both sides, not a half-black half-red division. Retain the approved black embroidered coat collar and visible neck tattoo details only as shown; do not intensify makeup or add tattoo coverage or accessories. Quiet, approachable normal expression, same rendering as the approved portrait, transparent background, no stage lighting, text or logos"
     ],
     "intro_cutin": {
-      "title": "煙のヴィジュアル系",
+      "title": "余韻に耳を澄ます店長",
       "line": "……一曲だけ、聴く？",
       "face": "normal",
       "color": "#b0102a",

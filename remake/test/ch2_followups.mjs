@@ -47,7 +47,7 @@ const mocks = {
   "../daily/trpg.js": { trpgSpot: () => null },
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
-  "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false },
+  "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false, outingDialogue: () => null, recordOutingVisit: () => {} },
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight },
   "./ch2-story.js": { chapterTwoNights: () => ({}) },
@@ -195,8 +195,10 @@ for (const id of validatedIds) {
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
 assert.equal(Object.keys(loaderDB.dialogues).length, 31 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 for (const entry of Object.values(CH2_VISIT_STORIES).flat()) assert(loaderDB.dialogues[entry.scene], entry.scene);
-assert.deepEqual(loaderDB.dialogues.ch2_kumicho_second.metadata.flavor_lesson, { dragonfruit: 1 });
-assert.deepEqual(loaderDB.dialogues.ch2_rei_first.metadata.flavor_lesson, { rose: 1 });
+assert.equal(loaderDB.dialogues.ch2_kumicho_second.metadata.flavor_lesson, undefined);
+assert.deepEqual(loaderDB.dialogues.ch2_kumicho_fourth.metadata.flavor_lesson, { dragonfruit: 1 });
+assert.equal(loaderDB.dialogues.ch2_rei_first.metadata.flavor_lesson, undefined);
+assert.deepEqual(loaderDB.dialogues.ch2_rei_fourth.metadata.flavor_lesson, { rose: 1 });
 assert(loaderDB.dialogues.remake_ch2_rei_trpg);
 assert(loaderDB.dialogues.remake_ch2_ageha_aquarium);
 assert(loaderDB.dialogues.remake_ch2_kumicho_sento);

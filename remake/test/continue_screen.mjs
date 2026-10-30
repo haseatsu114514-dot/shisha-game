@@ -161,8 +161,15 @@ try {
       console.log(`PASS: ${variant} / ${choice}, captions, canon portraits, single navigation`);
     }
   }
-  // 字幕送りは選択時間を縮めない。カウントは20→0、期限後はGAME OVERを見せてタイトルへ。
-  await mount(0);
+  // 初回はカウント後も選べる。再挑戦以降の20秒期限は維持する。
+  await mount(0, { context: { lossOrdinal: 1 } });
+  await page.clock.runFor(22000);
+  assert.equal(await page.locator(".go-count").textContent(), "∞");
+  assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "speaking");
+  assert(await page.locator('[data-test="retry"]').isEnabled());
+  await page.locator('[data-test="retry"]').click();
+  assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
+  await mount(0, { context: { lossOrdinal: 2 } });
   await page.evaluate(() => {
     for (let i = 0; i < 10; i++) document.querySelector('[data-test="continue-caption"]').click();
   });
@@ -217,7 +224,7 @@ try {
   await page.clock.runFor(5000);
   assert.deepEqual(await page.evaluate(() => window.__decisions), []);
   console.log("PASS: removed screen cancels timers and navigation");
-  await mount(0);
+  await mount(0, { context: { lossOrdinal: 2 } });
   await page.clock.runFor(20000);
   await page.evaluate(() => document.querySelector("#screen").replaceChildren());
   await page.clock.runFor(5000);
@@ -271,7 +278,7 @@ try {
       await page.clock.runFor(8000);
       assert.deepEqual(await page.evaluate(() => window.__decisions), [choice]);
     }
-    await mount(0, { layout, soundEffects: false });
+    await mount(0, { layout, soundEffects: false, context: { lossOrdinal: 2 } });
     await page.clock.runFor(20100);
     assert(await page.locator(".go-count").isHidden());
     assert(await page.locator('[data-test="retry"]').isHidden());
@@ -285,7 +292,7 @@ try {
   // 拡大は台詞送りから独立し、タブ休止・動き軽減を尊重する。
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await mount(0, { layout: "back-count", background: "stage", soundEffects: false });
+  await mount(0, { layout: "back-count", background: "stage", soundEffects: false, context: { lossOrdinal: 2 } });
   await page.evaluate(async () => {
     const url = getComputedStyle(document.querySelector(".gameover")).backgroundImage.match(/url\("?([^"\)]+)"?\)/)?.[1];
     if (!url?.includes("backdrop_stage")) throw new Error("Stage backdrop missing");
@@ -367,6 +374,7 @@ try {
   await preview.locator("#preview-quit").click();
   await preview.clock.runFor(8000);
   assert.match(await preview.locator("#preview-error").textContent(), /タイトル/);
+  await preview.locator("#loss").fill("2");
   await preview.locator("#preview-play").click();
   await preview.clock.runFor(22000);
   assert.match(await preview.locator("#preview-error").textContent(), /20秒でGAME OVER/);

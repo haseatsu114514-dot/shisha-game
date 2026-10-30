@@ -33,6 +33,44 @@ async function prepare(page) {
 }
 
 await suite("save-load", async check => {
+  await check("chapter-two-first-day-slot-labels-survive-reopen", async page => {
+    await prepare(page);
+    const oldRaw = await page.evaluate(async () => {
+      const { core } = QA;
+      const firstDay = { ...core.newGame(), chapter: 2, phase: "opening", day: 15, slot: 0,
+        flags: { _ch2_day1: { startDay: 15, stage: "arrival" } } };
+      const completed = { ...firstDay, phase: "daily", flags: { _ch2_day1: { startDay: 15, stage: "complete" } } };
+      const old = { ...firstDay, schema: 5 };
+      const secondDay = { ...completed, day: 16 };
+      for (const [slot, value] of core.SAVE_SLOTS.map((slot, i) => [slot, [firstDay, completed, old, secondDay][i]])) {
+        localStorage.setItem(slot.key, JSON.stringify(value));
+      }
+      (await import("./js/scenes/title.js")).showTitle();
+      return localStorage.getItem(core.SAVE_SLOTS[2].key);
+    });
+    const labels = async () => Promise.all([0, 1, 2, 3].map(async i =>
+      page.locator(`[data-test="slot-${i}"] .ss-info b`).textContent()));
+    const phases = async () => Promise.all([0, 1, 2, 3].map(async i =>
+      page.locator(`[data-test="slot-${i}"] .ss-phase`).textContent()));
+    await page.locator('[data-test="title-load"]').click();
+    const captions = await labels();
+    assert.deepEqual(await phases(), ["初日", "初日終了", "初日", "日常"]);
+    for (const caption of captions.slice(0, 3)) assert.match(caption, /第2章.*DAY 1/);
+    assert.match(captions[3], /第2章.*DAY 2/);
+    await page.reload();
+    await page.locator('[data-test="title-load"]').click();
+    assert.deepEqual(await labels(), captions);
+    assert.deepEqual(await phases(), ["初日", "初日終了", "初日", "日常"]);
+    const loaded = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.loadFromSlot(core.SAVE_SLOTS[2].key);
+      return { chapter: value.chapter, day: value.day, source: localStorage.getItem(core.SAVE_SLOTS[2].key) };
+    });
+    assert.equal(loaded.chapter, 2);
+    assert.equal(loaded.day, 15);
+    assert.equal(loaded.source, oldRaw);
+  });
+
   await check("all-slots-round-trip", async page => {
     await prepare(page);
     const result = await page.evaluate(() => {

@@ -285,10 +285,10 @@ try {
       const manual = manualState.flags._hiyori_real_self_known && manualState.lovePts.rin === 33 && manualState.lovePts.hiyori === 20;
       const original = JSON.parse(JSON.stringify(data.DB.hiyori));
       data.DB.hiyori.route.enabled = true;
-      // 第3〜5章の独立イベントは作らない（#1434 オーナー決定B）。章・連絡先・関係の条件判定だけを、テスト専用の仮イベントで確認する。
+      // #1434 決定B: tokyo_contact と feelings_spoken は本番の route.events を使う。未制作の第4〜5章は、
+      // 章・連絡先・関係の条件判定だけをテスト専用の仮イベントで確認する。
       const need = ["_hiyori_work_talk_done"];
       data.DB.hiyori.route.events = [...data.DB.hiyori.route.events,
-        { id: "tokyo_contact", dialogue: "hiyori_qa_tokyo_contact", chapters: [3], flag: "_hiyori_qa_tokyo_contact", requires: need, contact: true },
         { id: "dubai_support", dialogue: "hiyori_qa_dubai_support", chapters: [4], flag: "_hiyori_qa_dubai_support", requires: need, contact: true },
         { id: "chapter5_friend", dialogue: "hiyori_qa_ch5_friend", chapters: [5], flag: "_hiyori_qa_ch5_friend", requires: need, relationship: "friend" },
         { id: "chapter5_lover", dialogue: "hiyori_qa_ch5_lover", chapters: [5], flag: "_hiyori_qa_ch5_lover", requires: need, relationship: "lover" }];
@@ -297,7 +297,7 @@ try {
       const statuses = [];
       for (const chapter of [1, 2, 3, 4, 5]) {
         core.state.chapter = chapter;
-        statuses.push({ chapter, tokyo: route.hiyoriEventStatus("tokyo_contact"), dubai: route.hiyoriEventStatus("dubai_support"),
+        statuses.push({ chapter, tokyo: route.hiyoriEventStatus("tokyo_contact"), feelings: route.hiyoriEventStatus("feelings_spoken"), dubai: route.hiyoriEventStatus("dubai_support"),
           lover: route.hiyoriEventStatus("chapter5_lover"), friend: route.hiyoriEventStatus("chapter5_friend"), preserved: !!core.state.flags._hiyori_real_self_known });
       }
       for (const event of route.hiyoriRoute().events) {
@@ -316,6 +316,7 @@ try {
     assert(result.automatic && result.manual);
     assert(result.statuses.every((s) => s.preserved));
     assert.equal(result.statuses[2].tokyo, "ready"); assert.equal(result.statuses[0].tokyo, "chapter");
+    assert.deepEqual(result.statuses.map((s) => s.feelings), ["ready", "ready", "ready", "chapter", "chapter"]);
     assert.equal(result.statuses[3].dubai, "ready"); assert.equal(result.statuses[4].lover, "ready");
     assert.equal(result.statuses[4].friend, "relationship");
     assert.deepEqual(result.old, { money: 12345, rin: 42, hiyoriMet: false, hiyoriKnown: false, hiyoriRomance: 0, schema: result.schema });

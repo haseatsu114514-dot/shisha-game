@@ -134,7 +134,7 @@
     },
     {
       "id": "ngplus-carry",
-      "title": "NG+ SCHEMA 22 migration, carry classification coverage and package extraction (#1228)",
+      "title": "NG+ save migration, carry classification coverage and package extraction (#1228)",
       "kind": "quick",
       "run": ["node remake/test/ngplus_carry.mjs"]
     },

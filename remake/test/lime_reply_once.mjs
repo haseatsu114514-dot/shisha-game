@@ -45,7 +45,7 @@ async function fixture({ lover = false, reply = response, invitation = false } =
   };
   const context = vm.createContext({ console, setTimeout: (fn, ms) => { const id = {}; timers.set(id, { fn, ms }); return id; }, clearTimeout: id => timers.delete(id), requestAnimationFrame: noop, document: {}, Math, Date, Set, Promise });
   const modules = new Map();
-  const phone = new vm.SourceTextModule(source + '\nexport { runItem as testRunItem, receiveItem, scheduledInvitation, messageContent, phoneShell };', { context });
+  const phone = new vm.SourceTextModule(source + '\nexport { runItem as testRunItem, receiveItem, scheduledInvitation, messageContent, phoneShell, sumiBaitoInvite };', { context });
   await phone.link(async specifier => {
     const key = specifier.split('/').at(-1);
     if (!modules.has(key)) {
@@ -61,15 +61,16 @@ async function fixture({ lover = false, reply = response, invitation = false } =
     msg: { type: 'chat', sender: 'minto', replies: [reply] } };
   if (invitation) Object.assign(item, { day: 5, msg: { id: item.id, type: 'invitation', sender: 'minto', time_slot: 'noon', accept_event: 'outing_minto_1' } });
   original.inbox.push(item);
-  const picks = [], bubbles = [], held = [];
+  const picks = [], bubbles = [], media = [], held = [];
   const ui = { gen: 0, open: true, live(g) { return this.open && this.gen === g; },
     choose() { const pick = deferred(); picks.push(pick); return pick.promise; },
     bubble(text, mine, sender, animate = true) {
       bubbles.push({ text, mine, animate });
       if (!animate) return Promise.resolve();
       const hold = deferred(); held.push(hold); return hold.promise;
-    }, note: value => notes.push(value) };
-  return { nodes, timers, api: phone.namespace, original, bond, item, ui, picks, bubbles, held, reply, notes,
+    }, media(content, sender, animate) { media.push({ content, sender, animate }); return Promise.resolve(); },
+    note: value => notes.push(value) };
+  return { nodes, timers, api: phone.namespace, original, bond, item, ui, picks, bubbles, media, held, reply, notes,
     run: (target = item) => phone.namespace.testRunItem(target, ui, []),
     replaceState() {
       current = { inbox: [], limeRead: [], gains: [], lovers: [] };
@@ -226,6 +227,67 @@ test('media snapshots preserve templates and enforce chapter, account, owner, co
   assert.equal(privateFixture.api.receiveItem(minto).msg.messages.length, 1);
   assert.equal(f.api.receiveItem(minto).msg.messages.length, 2);
   assert.equal(f.api.messageContent({ image: 'missing' }).fallback, '［画像を表示できません］');
+});
+
+test('accepted invitation saves one existing acknowledgement after the player reply', async () => {
+  const f = await fixture({ invitation: true });
+  f.original.day = f.item.day = 3;
+  f.item.id = 'sumi-invite';
+  f.item.msg = f.api.sumiBaitoInvite();
+  assert.equal(f.item.msg.accept_reply.stamp, 'st_sumi_ack');
+  const run = f.run(); f.picks[0].resolve({ text: '入ります！', go: true });
+  await flush(); await f.finish(); await run;
+  assert.deepEqual(logs(f.item).slice(0, 2), [
+    { me: true, text: '入ります！' }, { me: false, sender: 'sumi', stamp: 'st_sumi_ack' },
+  ]);
+  assert.equal(f.media.length, 1);
+  assert.equal(f.media[0].content.asset.owner, 'sumi');
+  assert.equal(f.item.log.filter(line => line.stamp).length, 1);
+});
+
+test('reply acknowledgement obeys owner, account and recent-media spacing limits', async () => {
+  const f = await fixture({ invitation: true });
+  f.item.day = f.original.day;
+  const offer = { sender: 'minto', stamp: 'st_minto_welcome' };
+  f.item.msg.accept_reply = offer;
+  f.item.msg.messages = ['hello'];
+  f.original.inbox.push({ id: 'prior', day: 4, msg: { sender: 'minto', messages: ['hi'] }, log: [{ stamp: 'st_minto_cheer' }] });
+  let run = f.run(); f.picks[0].resolve({ text: '行く！', go: true }); await flush(); await f.finish(); await run;
+  assert.equal(f.item.log.some(line => line.stamp), false, 'recent owner media blocks the reply');
+  const g = await fixture({ invitation: true });
+  g.item.msg.accept_reply = { sender: 'adam', stamp: 'st_adam_bless' };
+  run = g.run(); g.picks[0].resolve({ text: '行く！', go: true }); await flush(); await g.finish(); await run;
+  assert.equal(g.item.log.some(line => line.stamp), false, 'wrong owner is rejected');
+  const h = await fixture({ invitation: true, lover: true });
+  h.item.account = 'minto_private';
+  h.item.msg.accept_reply = offer;
+  run = h.run(); h.picks[0].resolve({ text: '行く！', go: true }); await flush(); await h.finish(); await run;
+  assert.equal(h.item.log.some(line => line.stamp), false, 'private account is rejected');
+});
+
+test('reply acknowledgement is suppressed outside media chapters and when a thread already has media', async () => {
+  const f = await fixture({ invitation: true });
+  f.item.msg.accept_reply = { sender: 'minto', stamp: 'st_minto_cheer' };
+  f.original.chapter = 4;
+  let run = f.run(); f.picks[0].resolve({ text: '行く！', go: true }); await flush(); await f.finish(); await run;
+  assert.equal(f.item.log.some(line => line.stamp), false);
+  const g = await fixture({ invitation: true });
+  g.item.msg.accept_reply = { sender: 'minto', stamp: 'st_minto_cheer' };
+  g.item.msg.messages = [{ sender: 'minto', stamp: 'st_minto_welcome' }];
+  run = g.run(); g.picks[0].resolve({ text: '行く！', go: true }); await flush(); await g.finish(); await run;
+  assert.equal(g.item.log.some(line => line.stamp), false);
+});
+
+test('a chat choice can send its own media reply exactly once', async () => {
+  const f = await fixture({ reply: { text: '了解！', response: 'またね', response_media: { sender: 'minto', stamp: 'st_minto_cheer' } } });
+  const run = f.run(); f.picks[0].resolve(f.reply); await flush(); await f.finish(); await run;
+  assert.deepEqual(logs(f.item), [
+    { me: true, text: '了解！' }, { me: false, sender: 'minto', stamp: 'st_minto_cheer' },
+    { me: false, text: 'またね' },
+  ]);
+  assert.equal(f.media.length, 1);
+  await f.run();
+  assert.equal(f.item.log.filter(line => line.stamp).length, 1);
 });
 
 test('media received through log survives save-shaped history and spaces later media', async () => {

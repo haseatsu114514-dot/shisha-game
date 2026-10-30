@@ -1,6 +1,7 @@
 import { el } from "../core/util.js";
 import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
+import { SE } from "../core/audio.js";
 import { stepPanel, benchRoot, craftTest, setBenchWater } from "./session.js";
 import { STEP_BRIEFS } from "./bench-ui.js";
 import { waterQuantity, changeWater, waterComfort, STEM_TIP } from "./water.js";
@@ -15,7 +16,7 @@ function ensureStyle() {
 // 開始時は空（0）。途中再開はcs.waterの実量をそのまま渡すので保たれる。
 export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal } = {}) {
   let q = waterQuantity(quantity), direction = null, input = null, last = null;
-  let raf = 0, done = false, wave = 0, velocity = 0;
+  let raf = 0, done = false, wave = 0, velocity = 0, nextWaterSound = 0;
   let resolve, reject;
   const result = new Promise((yes, no) => { resolve = yes; reject = no; });
   const listeners = [];
@@ -67,6 +68,7 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   function start(flow, token) {
     if (!available() || input) return;
     direction = flow; input = token; last = performance.now();
+    if (q !== (flow === "pour" ? 1 : 0)) { SE.pour(); nextWaterSound = last + 260; }
     velocity += flow === "pour" ? 15 : -12;
     render();
   }
@@ -140,6 +142,9 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
     if (!root.isConnected || !isCurrent() || panel.closest('.done')) { cancel(); return; }
     if (!available()) stop();
     advance(now);
+    if (direction && q !== (direction === "pour" ? 1 : 0) && now >= nextWaterSound) {
+      SE.pour(); nextWaterSound = now + 260;
+    }
     const dt = Math.min(.05, Math.max(0, now - previous) / 1000); previous = now;
     // 波だけ安定化用にdtを制限する。実qには制限せず実経過秒を使う。
     velocity += (-wave * 24 - velocity * 7 + (direction === "pour" ? Math.sin(now / 90) * 12 : 0)) * dt;

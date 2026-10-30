@@ -24,6 +24,15 @@ const dataModule=new vm.SourceTextModule(await read('js/core/data.js'),{context}
 await dataModule.link(spec=>{assert.equal(spec,'./fortune-effects.js','unexpected data import');return new vm.SyntheticModule(['registerFortuneReadings'],function(){this.setExport('registerFortuneReadings',()=>{});},{context});});await dataModule.evaluate();
 const data=dataModule.namespace;await data.loadAll();
 assert.equal(data.DB.samechan.spot.label,'SHISHARK');assert.equal(data.DB.characters.samechan.id,'samechan');
+const firstShop = story.dialogues.find(d=>d.dialogue_id==='samechan_shop_first');
+for (const [name, lines] of Object.entries(firstShop.branches)) {
+  const texts = lines.map(line=>line.text || '');
+  const order = texts.findIndex(text=>text.includes('すっとする香りをお願いします'));
+  const serving = texts.findIndex(text=>text.includes('一台を運んできた'));
+  assert(order>=0 && serving>order,`${name}: 初回来店で注文の後に一台を飲む`);
+  const farewell = texts.findIndex(text=>text.includes('一服を終えて'));
+  if (farewell>=0) assert(farewell>serving,`${name}: 一服を終えた描写は提供後`);
+}
 assert.equal(data.DB.lime.length,3);assert(data.DB.dialogues.samechan_first_encounter);
 assert.equal(data.displayName('samechan',state),'？？？');
 for(const face of ['normal','smile','surprise','serious'])assert.equal(data.portraitInfo('samechan',face).src,`img/sprites/characters/samechan/chr_samechan_${face}.webp`);

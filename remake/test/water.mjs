@@ -83,6 +83,8 @@ async function moduleAt(filename) {
 }
 const load = async relative => { const mod = await moduleAt(path.join(root, relative)); await mod.evaluate(); return mod.namespace; };
 const notices = [];
+const waterSounds = [];
+stub("js/core/audio.js", { SE: { pour: () => waterSounds.push(now) } });
 stub("js/core/ui.js", { toast: text => notices.push(text), retireScreen: () => {} });
 const model = await load("js/craft/water.js"), view = await load("js/craft/water-view.js");
 const state = await load("js/core/state.js"), tournament = await load("js/chapters/ch2-tournament-state.js");
@@ -116,6 +118,22 @@ await check("four water bands render and confirm their messages", async () => {
     const cs = { water: q }; await view.stepWater(cs);
     assert.equal(cs.water, q); assert.equal(notices.at(-1), message);
     session.namespace.craftTest.auto = null;
+  }
+});
+await check("water sound follows hold and stops on release, cancel and bounds", async () => {
+  const m = mounted({ quantity: .5 });
+  down(m); assert.equal(waterSounds.length, 1);
+  tick(300); assert.equal(waterSounds.length, 2);
+  fire(window, "pointerup", { pointerId: 1 });
+  tick(1000); assert.equal(waterSounds.length, 2);
+  down(m, "drain"); assert.equal(waterSounds.length, 3);
+  m.cancel(); await assert.rejects(m.result, { name: "AbortError" });
+  tick(1000); assert.equal(waterSounds.length, 3);
+  for (const [quantity, flow] of [[1, "pour"], [0, "drain"]]) {
+    const boundary = mounted({ quantity });
+    down(boundary, flow); tick(1000);
+    assert.equal(waterSounds.length, 3);
+    boundary.cancel(); await assert.rejects(boundary.result, { name: "AbortError" });
   }
 });
 await check("rates use elapsed seconds, including partitioned frames and long hold", () => {

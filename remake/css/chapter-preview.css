@@ -1,6 +1,6 @@
 /* 既存セル画の構図を保つ。採用済みCは横長、比較A/Bは4:3のTV枠。 */
 @font-face { font-family: "Chapter Preview Dot"; src: url("../../assets/fonts/DotGothic16-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
-.chapter-preview { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; background: #040508; color: #f9f6ec; pointer-events: auto; font-family: "Suien Gothic", sans-serif; isolation: isolate; }
+.chapter-preview { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; background: #040508; color: #f9f6ec; pointer-events: auto; font-family: var(--font); isolation: isolate; }
 .preview-screen { position: absolute; left: 200px; top: 10px; width: 880px; height: 660px; overflow: hidden; background: #080c15; box-shadow: 0 0 0 1px #2a2930, 0 0 80px #181d36; }
 .preview-screen::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(transparent 53%, #04060d24 70%, #04060dc9 100%); box-shadow: inset 0 0 50px #0005; }
 .preview-art { position: absolute; width: 824px; height: 463.5px; left: 28px; top: 58px; object-fit: contain; transform-origin: center; animation-duration: var(--duration); animation-timing-function: linear; animation-fill-mode: both; }
@@ -13,7 +13,7 @@
 .preview-screen[data-tone="dark"] .preview-art { filter: saturate(.58) brightness(.58); }
 .preview-grain { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: .11; background-image: repeating-linear-gradient(0deg, #0204198c 0px, #0204198c 1px, transparent 1px, transparent 4px); mix-blend-mode: multiply; }
 .preview-kicker { position: absolute; z-index: 4; left: 38px; top: 32px; font-size: 23px; font-weight: 400; letter-spacing: .05em; text-shadow: 2px 2px 0 #151425, -1px -1px 0 #151425, 0 2px 8px #000; }
-.preview-caption { position: absolute; z-index: 4; left: 28px; right: 28px; bottom: 27px; text-align: center; font-family: "Chapter Preview Dot", "Suien Gothic", sans-serif; }
+.preview-caption { position: absolute; z-index: 4; left: 28px; right: 28px; bottom: 27px; text-align: center; font-family: "Chapter Preview Dot", var(--font); }
 .preview-caption small { display: inline-block; margin-bottom: 8px; padding: 2px 13px; color: #ddc38b; background: #151523b8; font-size: 21px; font-weight: 400; letter-spacing: .06em; }
 .preview-caption p { margin: 0; font-size: 30px; font-weight: 400; line-height: 1.5; white-space: pre-line; color: #fffcec; text-shadow: 1px 1px 0 #111326, -1px -1px 0 #111326, 0 2px 6px #000; }
 .preview-bug { position: absolute; z-index: 4; right: 25px; top: 28px; font-size: 16px; font-weight: 400; letter-spacing: .2em; color: #f0e8d2b0; text-shadow: 1px 1px 2px #000; }
@@ -22,11 +22,11 @@
 .preview-screen[data-kind="prologue"] .preview-caption { bottom: 240px; }
 .preview-screen[data-kind="prologue"] .preview-caption p { font-size: 29px; font-weight: 400; }
 .preview-screen[data-kind="slate"] { background: #101419; }
-.preview-slate { position: absolute; z-index: 4; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: "Chapter Preview Dot", "Suien Gothic", sans-serif; }
+.preview-slate { position: absolute; z-index: 4; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: "Chapter Preview Dot", var(--font); }
 .preview-slate small { font-size: 23px; font-weight: 400; letter-spacing: .14em; color: #f9d878; }
 .preview-slate strong { margin: 18px 0 14px; font-size: 83px; line-height: 1.3; font-weight: 400; letter-spacing: .1em; color: #fffde8; text-shadow: 2px 3px 0 #141724; }
-.preview-slate span { font: 900 21px "Suien Gothic", sans-serif; letter-spacing: .32em; }
-.preview-chapter-title { position: absolute; z-index: 4; inset: 0; background: linear-gradient(#101419, #090d17); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; font-family: "Chapter Preview Dot", "Suien Gothic", sans-serif; text-shadow: 2px 2px 0 #111226; }
+.preview-slate span { font: 900 21px var(--font); letter-spacing: .32em; }
+.preview-chapter-title { position: absolute; z-index: 4; inset: 0; background: linear-gradient(#101419, #090d17); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; font-family: "Chapter Preview Dot", var(--font); text-shadow: 2px 2px 0 #111226; }
 .preview-chapter-title small { font-size: 27px; letter-spacing: .45em; color: #f6d68d; }
 .preview-chapter-title strong { font-size: 80px; line-height: 1.4; font-weight: 400; letter-spacing: .08em; }
 .preview-chapter-title span { font-size: 22px; color: #eee7da; }
@@ -34,7 +34,7 @@
 .preview-screen[data-kind="echo"] .preview-caption { bottom: 225px; }
 .preview-screen[data-kind="echo"] .preview-caption p { font-size: 33px; }
 .preview-controls { position: absolute; bottom: 8px; left: 200px; right: 200px; height: 32px; display: flex; gap: 10px; align-items: center; z-index: 6; }
-.preview-control { height: 32px; padding: 2px 13px; border: 1px solid #b4afc477; border-radius: 2px; background: #14141f; color: #f1e8d6; font: 700 16px "Suien Gothic", sans-serif; cursor: pointer; white-space: nowrap; }
+.preview-control { height: 32px; padding: 2px 13px; border: 1px solid #b4afc477; border-radius: 2px; background: #14141f; color: #f1e8d6; font: 700 16px var(--font); cursor: pointer; white-space: nowrap; }
 .preview-control:hover { background: #303044; }
 .preview-control:focus-visible { outline: 2px solid #f4cb76; outline-offset: 3px; }
 .preview-control:disabled { opacity: .48; cursor: default; }
@@ -65,7 +65,7 @@
 .sample-quiet .preview-bug { font-size: 13px; top: 23px; right: 20px; letter-spacing: .13em; color: #b4ac97; }
 .sample-quiet .preview-caption { text-align: left; left: 90px; right: 90px; bottom: 15px; }
 .sample-quiet .preview-caption small { background: none; padding: 0; margin-bottom: 4px; font-size: 17px; letter-spacing: .18em; color: #b8ab90; }
-.sample-quiet .preview-caption p { font-family: "Suien Gothic", sans-serif; font-size: 27px; line-height: 1.5; font-weight: 500; color: #eee9df; }
+.sample-quiet .preview-caption p { font-family: var(--font); font-size: 27px; line-height: 1.5; font-weight: 500; color: #eee9df; }
 .sample-quiet .preview-screen[data-kind="prologue"] { background: #06070b; }
 .sample-quiet .preview-screen[data-kind="prologue"] .preview-kicker { top: 207px; font-size: 20px; }
 .sample-quiet .preview-screen[data-kind="prologue"] .preview-caption { bottom: 230px; text-align: center; }

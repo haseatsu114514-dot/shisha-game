@@ -3,7 +3,7 @@
    大会中（data-mode="tournament"）は黒×ネオンの「スタイリッシュ職人バトル」。
    それ以外（練習・リハーサル・レッスン）は閉店後のtonariの暖色。
    ============================================================ */
-@font-face { font-family: "Craft Mincho"; src: url("../fonts/ZenOldMincho-Craft.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Craft Mincho"; src: url("../fonts/ZenOldMincho-Craft.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 .bench {
   position: absolute;
   inset: 0;

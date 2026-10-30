@@ -21,11 +21,29 @@ export function gainFlavorExperience(s, mix, budget, flavors = {}) {
     return { id, before, level: masteryLevel(s, id, flavors) };
   });
 }
+// 旧版では同じ人の味の話が複数回に分かれていた。第4回へ移した後も、
+// 旧セーブで受け取った分だけを差し引いて、残りだけを受け取れるようにする。
+export const FOURTH_FLAVOR_LESSONS = {
+  ch1_naru_fourth: [
+    ["ch1_naru_first", { vanilla: 1 }],
+    ["ch1_naru_third", { vanilla: 1 }],
+  ],
+  ch2_kumicho_fourth: [["ch2_kumicho_second", { dragonfruit: 1 }]],
+  ch2_rei_fourth: [["ch2_rei_first", { rose: 1 }]],
+};
 // 会話の最後まで読んだ回だけ。好感度や過去の訪問回数から補完しない。
 export function learnFlavorStory(s, dialogue, flavors = {}) {
   const lesson = dialogue?.metadata?.flavor_lesson;
   const key = dialogue?.dialogue_id;
   if (!key || !lesson || s.flavorLessons?.includes(key)) return [];
+  const former = FOURTH_FLAVOR_LESSONS[key];
+  if (former) {
+    const received = s.flavorLessons || [];
+    const gains = former.filter(([id]) => !received.includes(id))
+      .flatMap(([, mix]) => gainFlavorExperience(s, mix, 12, flavors));
+    (s.flavorLessons ||= []).push(key);
+    return gains;
+  }
   (s.flavorLessons ||= []).push(key);
   return gainFlavorExperience(s, lesson, 12, flavors);
 }

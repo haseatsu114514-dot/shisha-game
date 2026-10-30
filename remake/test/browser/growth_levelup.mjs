@@ -80,7 +80,7 @@ await suite("growth-levelup", async (check) => {
       assert.equal(await page.locator(t("board-light")).count(), 0);
       await tap(t("board-close"));
       await page.locator(t("growth-board")).waitFor({ state: "detached" });
-      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 2);
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 2); // レベル1つで火種2つ（SBD60）
       assert.equal(await page.evaluate(() => window.entryStatus), 0);
       await tap(t("pin-kannon")); await tap(t("map-go"));
       await tap(t("kannon-reflect"));
@@ -90,7 +90,7 @@ await suite("growth-levelup", async (check) => {
         await page.waitForTimeout(150);
       }
       await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 2; i++) { // 火種2つを使い切る
         await tap('.gb-node[data-status="available"]');
         await tap(t("board-light"));
       }
@@ -152,7 +152,7 @@ await suite("growth-levelup", async (check) => {
       await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
       const text = await panel.innerText();
       assert.match(text, /Lv\.1 → Lv\.3/);
-      assert.match(text, /火種 ＋6/, "Lv.50 まではレベル1つで火種3つ");
+      assert.match(text, /火種 ＋4/, "レベル1つで火種2つ");
       assert.doesNotMatch(text, /？？？/, "名乗っていない相手の名前は出さない");
       await assertFits(page, '[data-test="levelup-ok"]');
       await page.waitForTimeout(400);
@@ -162,7 +162,7 @@ await suite("growth-levelup", async (check) => {
       await panel.waitFor({ state: "detached" });
       const badge = page.locator(t("hud-hidane"));
       await badge.waitFor();
-      assert.equal(await badge.innerText(), "6");
+      assert.equal(await badge.innerText(), "4");
       assert.match(await exp.innerText(), /Lv\.3/);
 
       // ふだんの1レベルは短い帯で、押さなくても消える
@@ -174,13 +174,13 @@ await suite("growth-levelup", async (check) => {
       });
       const band = page.locator(t("levelup-band"));
       await band.waitFor();
-      assert.match(await band.innerText(), /Lv\.3 → 4[\s\S]*火種 ＋3/);
+      assert.match(await band.innerText(), /Lv\.3 → 4[\s\S]*火種 ＋2/);
       await page.waitForFunction(() => document.querySelector('[data-test="levelup-band"]')?.classList.contains("show"));
       await page.waitForTimeout(250);
       await page.screenshot({ path: `${out}/growth-levelup-${label}-band.png` });
       await page.waitForFunction(() => window.night?.to === 4, null, { timeout: 5000 });
       await band.waitFor({ state: "detached" });
-      assert.equal(await badge.innerText(), "9");
+      assert.equal(await badge.innerText(), "6");
 
       // 保存・読込で残る
       await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.save(); core.load(); });
@@ -210,7 +210,7 @@ await suite("growth-levelup", async (check) => {
       // 寝る前・メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
       assert.equal(await board.getAttribute("data-mode"), "view");
       assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
-      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*6/, "Lv.1→3 で火種6");
+      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*4/, "Lv.1→3 で火種4");
       const ids = await page.evaluate(async () => {
         const b = await import("./js/core/growth-board.js");
         const first = b.boardNodes("body").find((n) => n.kind === "stat" && n.links.includes(b.HUB)).id;
@@ -235,7 +235,7 @@ await suite("growth-levelup", async (check) => {
       assert.match(await page.locator(t("board-preview")).innerText(), /早寝早起き/, "目標のマスが選ばれた状態で開く");
       await tap(t("board-towards"));
       const pend = await page.locator('[data-status="pending"]').count();
-      assert.ok(pend >= 1 && pend <= 6, `火種6の分だけ道を仮置き（${pend}）`);
+      assert.ok(pend >= 1 && pend <= 4, `火種4の分だけ道を仮置き（${pend}）`);
       await tap(t("board-tab-wisdom"));
       assert.equal(await page.locator(t("board-node-K01")).count(), 1, "札で理論盤へ");
       await assertFits(page, '[data-test="board-decide"], [data-test="board-close"], [data-test="board-tab-body"], [data-test="board-tab-wisdom"]');
@@ -245,7 +245,7 @@ await suite("growth-levelup", async (check) => {
       await board.waitFor({ state: "detached" });
       await page.waitForFunction(() => Array.isArray(window.lit));
       assert.equal(await page.evaluate(() => __remake.state.growth.nodes.length), pend);
-      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 6 - pend);
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 4 - pend);
       await page.locator(".gain-card", { hasText: "能力の火" }).waitFor();
     }, options);
   }
@@ -306,6 +306,58 @@ await suite("growth-levelup", async (check) => {
     await page.waitForFunction(() => window.night?.gifts?.length === 1, null, { timeout: 8000 });
   }, { viewport: { width: 1331, height: 760 } });
 
+  // 既存スミ授業を実際のVNで中断→途中保存→再相談。好感度0でも、盤から同じ機能が開く。
+  for (const id of ["M-S1", "M-W1"]) {
+    await check(`sumi-${id}-resume`, async (page) => {
+      await setupDaily(page);
+      await page.evaluate(async (id) => {
+        const g = await import("./js/core/growth.js");
+        const b = await import("./js/core/growth-board.js");
+        const node = b.NODE_BY_ID[id];
+        const gr = g.ensureGrowth();
+        __remake.state.affinity.sumi = 0;
+        __remake.state.flags._intro_sumi = true;
+        // 第1章の道と3段までの能力マスは既に灯した状態。
+        gr.nodes = b.boardNodes(node.board).filter((n) => n.kind === "stat" && n.ring === 1).map((n) => n.id);
+        if (!b.commitPending([id]).length) throw new Error("授業が灯せない");
+        window.lessonAbort = new AbortController();
+        window.lessonDone = null;
+        void g.consultLessons("sumi", { only: id, signal: window.lessonAbort.signal }).then((r) => { window.lessonDone = r; });
+      }, id);
+      await page.locator("#vn.active").waitFor();
+      const interrupted = await page.evaluate(async (id) => {
+        const core = await import("./js/core/state.js");
+        const g = await import("./js/core/growth.js");
+        const b = await import("./js/core/growth-board.js");
+        const flag = b.NODE_BY_ID[id].unlocks[0];
+        core.save();
+        window.lessonAbort.abort();
+        return !!core.state.flags[flag];
+      }, id);
+      assert.equal(interrupted, false);
+      await page.waitForFunction(() => window.lessonDone !== null);
+      assert.deepEqual(await page.evaluate(() => window.lessonDone), []);
+      const result = await page.evaluate(async (id) => {
+        const core = await import("./js/core/state.js");
+        core.load();
+        const g = await import("./js/core/growth.js");
+        const b = await import("./js/core/growth-board.js");
+        const flag = b.NODE_BY_ID[id].unlocks[0];
+        const before = [core.state.day, core.state.slot, core.state.stamina, g.hidaneTotal()];
+        (await import("./js/vn/engine.js")).vnTest.turbo = true;
+        const done = await g.consultLessons("sumi", { only: id });
+        core.load();
+        return { done: done.map((l) => l.id), learned: !!core.state.flags[flag],
+          repeat: await g.consultLessons("sumi", { only: id }), before,
+          after: [core.state.day, core.state.slot, core.state.stamina, g.hidaneTotal()] };
+      }, id);
+      assert.deepEqual(result.done, [id]);
+      assert.equal(result.learned, true);
+      assert.deepEqual(result.repeat, []);
+      assert.deepEqual(result.after, result.before);
+    });
+  }
+
   // 授業（SBD50）: 盤で灯すと「相談できる」。次に会った時に、はじめが相談して話を聞く場面を最後まで見て習得
   await check("lesson-consult", async (page) => {
     await setupDaily(page);
@@ -326,5 +378,33 @@ await suite("growth-levelup", async (check) => {
     assert.equal(r.mix, true, "混ぜ置きが開く");
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
+  }, { viewport: { width: 1331, height: 760 } });
+  // 会えない人には LIME で相談（SBD57）: 盤の授業の欄から「LIME で聞く」→ 返事を読んで返信すると習得
+  await check("lesson-lime", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const g = await import("./js/core/growth.js");
+      const gr = g.ensureGrowth();
+      __remake.state.affinity.rei = 1; // 会っている
+      gr.nodes.push("M-B2");
+      void g.openGrowthBoard();
+    });
+    await page.locator(t("board-tab-body")).click();
+    await page.locator(t("board-node-M-B2")).click();
+    const ask = page.locator(t("board-lime-consult"));
+    await ask.waitFor();
+    await ask.click();
+    await page.locator('[data-test="reply-0"]').waitFor();
+    await page.locator('[data-test="reply-0"]').click();
+    await page.locator('[data-test="phone-next"]').waitFor();
+    await page.locator('[data-test="phone-next"]').click();
+    await page.locator(".gain-card", { hasText: "花を重ねる" }).waitFor();
+    const r = await page.evaluate(async () => {
+      const g = await import("./js/core/growth.js");
+      return { learned: g.lessonLearned("M-B2"), again: g.canAskByLime("M-B2"), aff: __remake.state.affinity.rei };
+    });
+    assert.equal(r.learned, true, "LIME の相談で習得");
+    assert.equal(r.again, false, "習得したらもう聞かない");
+    assert.equal(r.aff, 1, "相談の LIME で好感度は増えない");
   }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1` });

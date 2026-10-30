@@ -6,14 +6,18 @@ fs.mkdirSync(shots, {recursive:true});
 await suite('attack-lesson', async check => {
   await check('shift-menu', async page => {
     await page.evaluate(async()=>{
-      window.M={core:await import('./js/core/state.js'),tonari:await import('./js/daily/tonari.js'),vn:await import('./js/vn/engine.js')};
+      window.M={core:await import('./js/core/state.js'),tonari:await import('./js/daily/tonari.js'),vn:await import('./js/vn/engine.js'),
+        stages:await import('./js/core/affinity-stages.js')};
       M.start=points=>{
         M.core.newGame(); M.core.state.affinity.sumi=points;
+        // #1081 B05: シフト上がりのスミ会話は必須。未読の段階会話が好感度を動かさないよう既読にし、♥境界だけを見る
+        M.core.state.story.sumi=M.stages.VISIT_SEQ.sumi.length;
         M.core.state.flags._hiyori_meeting_done=true;
         M.vn.vnTest.turbo=true; M.shift=M.tonari.doBaito();
       };
     });
-    for(const points of [32,33]) {
+    // ♥2（20）はシフト後のスミとの会話で好感度が上がっても♥3（33）に届かない値。♥3ちょうどで選択肢が出る。
+    for(const points of [20,33]) {
       await page.evaluate(points=>M.start(points),points);
       await page.locator('[data-test="shift-order-0"]').click();
       await page.locator('[data-test="after-none"]').waitFor();

@@ -13,7 +13,8 @@ import { SE } from "../core/audio.js";
 import { mountIntro } from "./intro-fit.js";
 
 import { motifs } from "./intro-motifs.js";
-import { illustratedIntro, layoutIntro, animateIntro } from "./intro-art.js";
+import { illustratedIntro, layoutIntro, animateIntro, flavorTag } from "./intro-art.js";
+import { introFlavor } from "./intro-flavors.js";
 
 export const introSeenKey = (id, variant = "") => `_intro_${id}${variant ? `_${variant}` : ""}`;
 const introOf = (id, variant = "") => DB.characters[id]?.[variant ? `intro_cutin_${variant}` : "intro_cutin"] || null;
@@ -99,6 +100,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     el("div.ci-band.b2"),
     el("div.ci-band.b3"),
     el("div.ci-tag", { text: "FIRST ENCOUNTER" }),
+    flavorTag(introFlavor(id, variant)),
     portrait,
     el("div.ci-meta", [
       el("div.ci-title", { text: intro.title || "" }),

@@ -1407,6 +1407,622 @@
           "affinity": 3
         }
       ]
+    },
+    {
+      "id": "lime_lesson_M-S1",
+      "sender": "sumi",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-S1",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "蒸らしの間に、余計なことばっかり浮かぶって話か"
+        },
+        {
+          "sender": "sumi",
+          "text": "全部追うな。目の前の一つだけ、切れ"
+        },
+        {
+          "sender": "sumi",
+          "text": "切ったら、炭に目を戻せ。また浮かんだら、また一つ切る。その繰り返しだ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "一つずつ、切ってみます",
+          "response": "焦って振り回すなよ。待つのも仕事のうちだ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-W1",
+      "sender": "sumi",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-W1",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "キューブのことか。いいとこに目をつけたな"
+        },
+        {
+          "sender": "sumi",
+          "text": "同じ三つでも、フラットより火が強く入る。芯が厚い分、熱も長く残る"
+        },
+        {
+          "sender": "sumi",
+          "text": "いつもの待ち方のままじゃ、熱くなるぞ。温度を見て、待ち方ごと変えろ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "まずは三つで試します",
+          "response": "それでいい。数を増やす話は、また別だ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-W2",
+      "sender": "sumi",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-W2",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "三つで火力が足りない、か。重い葉の日だな"
+        },
+        {
+          "sender": "sumi",
+          "text": "なら四つ置け。ただし四つは強い。置きっぱなしにしないで、早めに引け"
+        },
+        {
+          "sender": "sumi",
+          "text": "混ぜるのもありだ。キューブで芯の熱を作って、フラットで面を温める"
+        },
+        {
+          "sender": "sumi",
+          "text": "基本はトライアングルだ。そこから先は、自由にやれ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "重い葉の日に、試します",
+          "response": "おう。基本に忠実に、自由にな",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-W6",
+      "sender": "sumi",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-W6",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "好きな葉どうしがぶつかる、か。よくある話だ"
+        },
+        {
+          "sender": "sumi",
+          "text": "どっちも減らすな。カルダモンを一つまみ足してみろ。本当に、一つまみだ"
+        },
+        {
+          "sender": "sumi",
+          "text": "主役の顔は変えずに、間に橋を架ける。橋が目立ったら、それはもう別の一台だ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "一つまみ、覚えておきます",
+          "response": "……昔から、困った時はこいつに助けられてる。それだけだ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-B1",
+      "sender": "minto",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-B1",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめくん、相談ありがとう。お店が静かな夜って、あるよね"
+        },
+        {
+          "sender": "minto",
+          "text": "初めての人はね、ドアを開ける前にもう決めてるの。灯りが見えるか、中が楽しそうか"
+        },
+        {
+          "sender": "minto",
+          "text": "だから看板の灯りは早めに。窓から見える席には、いちばん笑ってるお客さんを案内してみて"
+        },
+        {
+          "sender": "minto",
+          "text": "帰りにはひとこと『またね』って。美味しい煙を、入口まで届けるの"
+        }
+      ],
+      "replies": [
+        {
+          "text": "看板、早めにつけます",
+          "response": "うん。繁盛したら、一台おごってね♪",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-S2",
+      "sender": "adam",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-S2",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。足すほど迷う、と言ったな"
+        },
+        {
+          "sender": "adam",
+          "text": "一つの葉と、とことん向き合え。炭の数ミリで、同じ葉が別の顔を見せる"
+        },
+        {
+          "sender": "adam",
+          "text": "足す前に、掘れ。知り尽くした一つがあれば、混ぜる時も迷わん。帰る場所があるからな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "一種類で、掘ってみます",
+          "response": "うむ。……俺の場合は、言うまでもなくダブルアップルだがな",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-W3",
+      "sender": "naru",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-W3",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "おう。どうやってうまくなったかって？ 全部見てきたんだよ"
+        },
+        {
+          "sender": "naru",
+          "text": "よその店で吸ったら、吸うだけで帰るな。詰め方、炭、何を混ぜてるか"
+        },
+        {
+          "sender": "naru",
+          "text": "分かんなきゃ、吸いながら当てる。覚えて帰って、自分の台で試せ。菓子と同じだ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ミックス、覚えて帰ります",
+          "response": "おう。覚えたら俺にも教えろよ。タダで見せてんだからな",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-S3",
+      "sender": "tsumugi",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-S3",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "……眠れない夜、ですか。わたしにも、あります"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "そういう日は、家でラベンダーを吸います。安心できる色……あ、いえ、匂い、なので"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "甘いのは混ぜすぎないで、少し入れるだけ。考えてたことが、ゆっくり遠くなります"
+        }
+      ],
+      "replies": [
+        {
+          "text": "今夜、家で試してみる",
+          "response": "……はい。おやすみの前に、どうぞ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-B2",
+      "sender": "rei",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-B2",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……花の重ね方、か。ローズの話なら、少し長くなる"
+        },
+        {
+          "sender": "rei",
+          "text": "花の葉を、二つ以上重ねろ。一つは前に、もう一つは奥に置く"
+        },
+        {
+          "sender": "rei",
+          "text": "一度に鳴らさない。調整するたびに、次の層が立つ。曲と曲の間みたいに"
+        },
+        {
+          "sender": "rei",
+          "text": "攻めすぎると、棘が出る。間を聴かせるつもりで、いい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "花を重ねて、試します",
+          "response": "……できたら、聴かせてくれ。いや、吸わせてくれ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-S4",
+      "sender": "ageha",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-S4",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、ズボーのこと聞いてる？笑 言葉にすんの、ムズいんだけど"
+        },
+        {
+          "sender": "ageha",
+          "text": "温度落ちたなーって思ったら、一回だけズボーって。一気に深く吸うの"
+        },
+        {
+          "sender": "ageha",
+          "text": "ちょびちょび吸っても戻んないじゃん？ 炭に『起きて！』って言う感じ"
+        },
+        {
+          "sender": "ageha",
+          "text": "あ、何回もやったら焦げるからね。ここぞの一回だけ！"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ここぞで、ズボーってやる",
+          "response": "それそれ！ なんか、うちより上手く言えてるし笑",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-W4",
+      "sender": "kumicho",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-W4",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "あんちゃん、蒸らさねえやり方を聞きてえって？"
+        },
+        {
+          "sender": "kumicho",
+          "text": "待つだけが蒸らしじゃねえんでさ。炭を載せたら、すぐ吸って、吸いながら熱を立ち上げる"
+        },
+        {
+          "sender": "kumicho",
+          "text": "ただし、半端な覚悟でやりゃ葉が焦げる。やると決めたら、最後まで吸い切りなせえ"
+        },
+        {
+          "sender": "kumicho",
+          "text": "火を入れても崩れねえ葉を選ぶこった。攻めすぎりゃ、トゲが立ちやすぜ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "腹を決めて、やってみます",
+          "response": "おう。……覚えときゃ、損はねえ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-B3",
+      "sender": "kuze",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-B3",
+      "messages": [
+        {
+          "sender": "kuze",
+          "text": "白紙のカードのこと？ はじめくん、いいとこ聞くね"
+        },
+        {
+          "sender": "kuze",
+          "text": "味の名前を伏せて出すんだ。名前がないと、吸う人は自分の記憶で味を探す"
+        },
+        {
+          "sender": "kuze",
+          "text": "刺されば、名前つきよりずっと深く残る。外れたら、何の味か分からないまま終わる"
+        },
+        {
+          "sender": "kuze",
+          "text": "振れ幅ごと賭ける技だよ。……使うかどうかは、君が決めて"
+        }
+      ],
+      "replies": [
+        {
+          "text": "使いどころ、考えます",
+          "response": "うん。外れた答えも、ノートに書いておいて。僕もそうしてる",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-S5",
+      "sender": "steve",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-S5",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ、ハジメ。ピザの夜の話か。いいぞ"
+        },
+        {
+          "sender": "steve",
+          "text": "ピザ一枚とシーシャ一台。それだけで、人は集まる。店じゃなくてもいい"
+        },
+        {
+          "sender": "steve",
+          "text": "コツは、焦らないこと。焼ける前に箱を開けない。炭も、話も、待つ"
+        },
+        {
+          "sender": "steve",
+          "text": "あと、毎回同じ顔ぶれにしない。順番に呼べ。話が新しくなる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "みんなを誘ってみます",
+          "response": "イエス。俺も呼んでくれ。ピザは、俺が持っていく",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-W5",
+      "sender": "volk",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-W5",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "はじめか。天気で熱が狂う、という件だな。Точность、精度の話だ"
+        },
+        {
+          "sender": "volk",
+          "text": "雨の日は湿度が上がって、炭の立ち上がりが遅れる。暑い日は逆だ"
+        },
+        {
+          "sender": "volk",
+          "text": "火を入れる前に、室温と湿度と外気を見ろ。そして毎日記録しろ"
+        },
+        {
+          "sender": "volk",
+          "text": "同じ葉でも、最適値は日によって変わる。記録しないことは、忘れることと同じだ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "今日から記録します",
+          "response": "よし。……ずれた日のデータも、捨てるな",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-S6",
+      "sender": "rin",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-S6",
+      "messages": [
+        {
+          "sender": "rin",
+          "text": "モルモットくん、迷った時に帰る葉？ ……それ、私に聞く？"
+        },
+        {
+          "sender": "rin",
+          "text": "ブルーベリー。仕事で世界中の限定品を吸っても、結局ここに帰ってくる"
+        },
+        {
+          "sender": "rin",
+          "text": "配合に2割くらい入れてごらん。何と合わせても、香りの輪郭がまとまる"
+        },
+        {
+          "sender": "rin",
+          "text": "主役にしなくていい。帰る場所が一つあると、ほかの葉が好きに遊べるんだよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "2割、入れてみます",
+          "response": "ん、結果は報告しなくていいよ。……したいなら、聞くけど",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-B4",
+      "sender": "hiyori",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-B4",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "……元気でいるコツ、か。私に聞くなんて、はじめくんは不思議な人ね……"
+        },
+        {
+          "sender": "hiyori",
+          "text": "風に聞いてみたけど……正直に言うね。ラーメンと、斧投げです"
+        },
+        {
+          "sender": "hiyori",
+          "text": "あったかいのを食べて、思いきり投げて、ぐっすり寝る。体が先に元気になるの"
+        },
+        {
+          "sender": "hiyori",
+          "text": "……儚さは、そのあとで整えればいいから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ラーメン、食べて寝ます",
+          "response": "うん。……斧は、今度一緒に投げようね",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-W7",
+      "sender": "samechan",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-W7",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "お主、アタックの話を聞きに来たのじゃな。よかろう"
+        },
+        {
+          "sender": "samechan",
+          "text": "雑念は、一つずつ切るだけでは追いつかぬ日がある。そういう時は、サメのように噛みつくのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "噛む時は、左右もまとめて。三つ続けて噛んだら、次は大きく、ガブリじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "コロちゃん「余の牙を貸す。勇者はじめよ、存分に噛みつけ」"
+        }
+      ],
+      "replies": [
+        {
+          "text": "サメの噛みつき、試します",
+          "response": "うむ！ ……噛みすぎて、炭を見るのを忘れるでないぞ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-B5",
+      "sender": "mashiro",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-B5",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "はじめくん、LIMEありがとぉ。ほかの葉を消さない足し方、かぁ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "僕はねぇ、ブラックティーを一割くらい入れるの。多くても、二割まで"
+        },
+        {
+          "sender": "mashiro",
+          "text": "紅茶は前に出ないで、下から支えてくれるんだぁ。ほかの葉が、そのまま奥まで続くの"
+        },
+        {
+          "sender": "mashiro",
+          "text": "……ふぁ。眠くなってきちゃった。試したら、また教えてねぇ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "一割から、試してみる",
+          "response": "うん。……入れすぎるとお茶の味になっちゃうから、気をつけてねぇ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-W8",
+      "sender": "sheikh",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-W8",
+      "messages": [
+        {
+          "sender": "sheikh",
+          "text": "ハジメ。便りを読んだ。王道の一台について、だな"
+        },
+        {
+          "sender": "sheikh",
+          "text": "葡萄は、古くから多くの客に吸われてきた味だ。誰もが、その顔を知っている"
+        },
+        {
+          "sender": "sheikh",
+          "text": "だから主役に据えれば、吸う者は迷わない。知っている味の、知らない深さに気づく"
+        },
+        {
+          "sender": "sheikh",
+          "text": "飾りを足すより、葡萄をいちばん多く詰め、熱を丁寧に通すといい。それが王道だ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "葡萄を主役に、作ります",
+          "response": "楽しみにしている。次に会う時は、私にも吸わせてくれ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_lesson_M-B6",
+      "sender": "da_silva",
+      "type": "chat",
+      "trigger_condition": "lesson_consult",
+      "lesson": "M-B6",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "ハジメ！ 連絡ありがとな！ 頭がごちゃごちゃする時の話か"
+        },
+        {
+          "sender": "da_silva",
+          "text": "シーシャはフェスタだ！ 楽しくなけりゃ意味がねぇ！"
+        },
+        {
+          "sender": "da_silva",
+          "text": "一台に一回だけ、全部吹き飛ばす煙を出せ。深く吸って、でっかく吐く。考え事ごと、空に流すんだ"
+        },
+        {
+          "sender": "da_silva",
+          "text": "作ってる自分が笑えたら、見てる人も笑う。美味いだけじゃ、誰も振り向かねえからな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "一回、でっかく吐きます",
+          "response": "いいね！ 次に会ったら、アサイーで乾杯だ！",
+          "affinity": 0
+        }
+      ]
     }
   ]
 }
