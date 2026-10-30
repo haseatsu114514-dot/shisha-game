@@ -261,7 +261,8 @@ await suite("play-spots", async runCheck => {
     await check(label + "-ch2-day8-shark-from-town-and-load", async page => {
       // 本編の日程と地図を使う。入部済み保存から再開し、夜予定の判定を迂回しない。
       await setup(page, { chapter: 2, day: 22, slot: 1, club: true, clubIds: ["hiyori", "samechan"] });
-      assert.deepEqual((await value(page)).trpg.shifts, [{ id: "samechan", chapter: 2, day: 22, slot: 1, busy: false }]);
+      // J07(7dafee75): 準備開始だけでは旧DAY8の空き予定を足さない。卓は通常シフト後に集まれる。
+      assert.deepEqual((await value(page)).trpg.shifts, []);
       await travel(page, "widehanga"); const before = await value(page);
       await page.locator(t("pin-trpg_bar")).waitFor();
       await capture(page, label + "-cafe-map"); await go(page, "trpg_bar");
