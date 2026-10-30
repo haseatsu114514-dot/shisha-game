@@ -60,7 +60,7 @@ assert.equal(board.SKILLS.reduce((n, s) => n + s.cost, 0), 119, "スキルの火
 assert.equal(board.BOARD_TOTAL_COST, 272, "盤の全部で約270（SPEC 1.6a）");
 assert.equal(board.BOARD_TOTAL_COST, growth.BOARD_TOTAL, "盤の全部と火種の上限が同じ");
 const cumulative = [1, 2, 3, 4, 5].map((r) => board.NODES.filter((n) => n.ring <= r).reduce((a, n) => a + n.cost, 0));
-const received = [26, 52, 78, 104, 136]; // 中央の遊び方で章末までに受け取る火種（1.6）
+const received = [37, 76, 115, 154, 182]; // 中央の遊び方で章末までに受け取る火種（1.6。SBD54 で Lv.50 まで3つ）
 cumulative.forEach((c, i) => assert(c > received[i], `第${i + 1}章: 開く範囲（${c}）が受け取る火種（${received[i]}）より多い`));
 for (let i = 1; i < 5; i++) assert(cumulative[i] > cumulative[i - 1], `第${i + 1}章で新しい範囲が開く`);
 assert(board.LESSONS.every((l) => N[l.id].cost === 0), "授業は火種いらず");
