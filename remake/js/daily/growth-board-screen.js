@@ -13,7 +13,7 @@ import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, REWARD_JA, FEATURES,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, statCount, replay, nodeStatus, commitPending,
   pathTo, pendingTowards, lessonLock, hasMet, availableCount, paymentFor,
-  STAT_SQUARES, GRID, lessonShown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio,
+  STAT_SQUARES, GRID, lessonKnown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio,
 } from "../core/growth-board.js";
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488。紋は下の端 380,452。横13×縦9 の方眼で上へ育つ。SBD62）
@@ -100,8 +100,8 @@ export function openBoard({ place = null } = {}) {
   }
 
   function renderBoard(v) {
-    // まだ会っていない人の授業と小道は盤に出さない（会った時に現れる）
-    const nodes = boardNodes(board).filter((n) => lessonShown(n, g));
+    // 授業はいつも盤に出す。まだ分からない授業（会っていない・その章まで来ていない）は「？」の札（SBD67）
+    const nodes = boardNodes(board);
     const open = ringsOpen();
     const lit = (id) => id === HUB || v.unlocked.has(id);
     const goal = g.target && NODE_BY_ID[g.target]?.board === board ? new Set(pathTo(g.target, v.unlocked).path) : new Set();
@@ -122,7 +122,6 @@ export function openBoard({ place = null } = {}) {
     const drawn = new Set();
     for (const n of nodes) {
       for (const id of n.links) {
-        if (id !== HUB && !lessonShown(NODE_BY_ID[id], g)) continue;
         const key = [n.id, id].sort().join("|");
         if (drawn.has(key)) continue;
         drawn.add(key);
@@ -148,8 +147,8 @@ export function openBoard({ place = null } = {}) {
     nodeLayer.replaceChildren(...nodes.map((node) => {
       const p = at(node.gx, node.gy), st = status(node, v);
       const shown = revealOf(node);
-      const glyph = st === "locked" && node.kind !== "stat" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (hasMet(node.who) || g.nodes.includes(node.id) ? whoName(node.who).slice(0, 1) : "？") : shown === "hidden" ? "？" : node.glyph;
-      const qStep = node.feature && !g.nodes.includes(node.id) && st !== "hidden";
+      const glyph = st === "locked" && node.kind !== "stat" && node.kind !== "lesson" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? whoName(node.who).slice(0, 1) : "？") : shown === "hidden" ? "？" : node.glyph;
+      const qStep = node.feature && !g.nodes.includes(node.id);
       return el(`button.gb-node.${node.kind}.s-${st}${fresh.has(node.id) ? ".just-opened" : ""}${node.peak ? ".peak" : ""}${node.sig ? ".sig" : ""}${selected === node.id ? ".selected" : ""}${g.target === node.id ? ".target" : ""}${goal.has(node.id) ? ".on-path" : ""}`, {
         style: { left: `${p.x}px`, top: `${p.y}px` },
         title: nodeTitle(node, shown), "aria-label": `${nodeTitle(node, shown)}（${statusWord(node, st)}）`,
@@ -170,7 +169,7 @@ export function openBoard({ place = null } = {}) {
    * 会っていない人の授業は盤に出ないので、出ている授業はどれも顔を見せてよい。
    */
   function lessonFace(node, st) {
-    if (node.kind !== "lesson" || st === "hidden") return null;
+    if (node.kind !== "lesson" || !lessonKnown(node, g)) return null;
     const url = faceIconUrl(node.who, state);
     if (!url) return null;
     const img = el("img.gb-face-icon", { src: url, alt: "", draggable: "false", loading: "lazy" });
@@ -187,7 +186,7 @@ export function openBoard({ place = null } = {}) {
   function nodeTitle(node, shown = revealOf(node)) {
     if (node.kind === "stat") return node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : `${BOARD_JA[node.board]}のマス・${perkOf(node)?.name || ""}`;
     if (node.kind === "gate") return `${BOARD_JA[node.board]}の関門`;
-    if (node.kind === "lesson") return hasMet(node.who) || g.nodes.includes(node.id) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
+    if (node.kind === "lesson") return lessonKnown(node, g) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
     return shown === "hidden" ? "？？？（物語が進むと盤に現れる）" : `スキル「${node.name}」`;
   }
   function whoName(who) { return who === "sumi" ? "スミさん" : displayName(who, state); }
@@ -205,7 +204,7 @@ export function openBoard({ place = null } = {}) {
     const st = status(node, v), shown = revealOf(node);
     const lines = [];
     const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}`, { "aria-hidden": "true" }, [
-      el("span", { text: node.kind === "stat" ? BOARD_HEAD[node.board] : node.kind === "gate" ? "関" : node.kind === "lesson" ? "授" : shown === "hidden" ? "？" : node.glyph }),
+      el("span", { text: node.kind === "stat" ? BOARD_HEAD[node.board] : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? "授" : "？") : shown === "hidden" ? "？" : node.glyph }),
       node.kind === "lesson" ? lessonFace(node, st) : null,
     ]);
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
@@ -223,17 +222,17 @@ export function openBoard({ place = null } = {}) {
       else lines.push(el("p", { text: node.text }), el("p.gb-p-sub", { text: `効く場面：${node.scene}・火種${node.cost}${shown === "next" ? "・まだ開いていない" : ""}` }));
     } else {
       const lock = lessonLock(node, v.unlocked);
-      const met = hasMet(node.who) || g.nodes.includes(node.id);
-      if (!met) lines.push(el("p", { text: "まだ会っていない誰かが、教えてくれるらしい" }));
+      const met = lessonKnown(node, g);
+      if (!met) lines.push(el("p", { dataset: { test: "board-lesson-mystery" }, text: "まだ出会っていない誰かが、ここで何かを教えてくれるらしい" }));
       else {
         lines.push(el("p.gb-p-reward", { text: `${REWARD_JA[node.reward]}：${node.text}` }));
         if (st === "sealed") lines.push(el("p.gb-p-sub", { text: node.hint }));
       }
-      if (lock) {
+      if (lock && met) {
         const conds = [];
         if (node.need) conds.push(met ? `${whoName(node.who)} ♥${Math.min(5, affinityLevel(node.who))}/${node.need}` : `？？？ ♥?/${node.need}`);
         lines.push(el("p.gb-p-lock", { dataset: { test: "board-lesson-lock" }, text: `錠：${conds.join("・")}` }));
-      } else if (st !== "unlocked") lines.push(el("p.gb-p-sub", { text: "火種いらず。道が届けば灯せる" }));
+      } else if (met && st !== "unlocked") lines.push(el("p.gb-p-sub", { text: "火種いらず。道が届けば灯せる" }));
     }
     lines.push(el(`p.gb-p-state.s-${st}`, { text: stateText(node, st, v) }));
     const actions = [];

@@ -241,7 +241,7 @@ h2 { margin: 8px 0 0; font-size: 18px; color: var(--gold-hi); letter-spacing: 0.
   <header class="page-head">
     <p class="eyebrow">GB03 ・ Codex に渡す完成見本</p>
     <h1>心得の盤　ネオンのラウンジ</h1>
-    <p class="lede">v12 の盤（紋の場所も盤ごと・授業は章の順に遠く・白火のマスは白、関門は盤の色・顔アイコン・段なし）をそのまま使った見本です。マスを押すと右のパネルが変わり、「灯す」で灯した瞬間も見られます。「素材の場所」を入れると、画像にする6点とコードが描く所が重なって出ます。</p>
+    <p class="lede">v12 の盤（まだ辿り着いていない章の人の授業は「？」・紋の場所も盤ごと・授業は章の順に遠く・白火のマスは白、関門は盤の色・顔アイコン・段なし）をそのまま使った見本です。マスを押すと右のパネルが変わり、「灯す」で灯した瞬間も見られます。「素材の場所」を入れると、画像にする6点とコードが描く所が重なって出ます。</p>
   </header>
 
   <div class="controls">
@@ -346,7 +346,7 @@ function initialLit() {
     const L = new Set(), q = nodes.filter((n) => n.links.includes("HUB")).map((n) => n.id);
     while (q.length && L.size < plan[b]) {
       const id = q.shift(), n = by[id];
-      if (L.has(id) || (!late && (n.kind !== "stat" || n.ring > 1)) || !shown(n) || n.peak) continue;
+      if (L.has(id) || (!late && (n.kind !== "stat" || n.ring > 1)) || (n.kind === "lesson" && !MET.has(n.who)) || n.peak) continue;
       L.add(id); for (const l of n.links) if (l !== "HUB" && !L.has(l)) q.push(l);
     }
     const firstLesson = nodes.find((n) => n.kind === "lesson" && MET.has(n.who) && n.links.some((l) => L.has(l)));
@@ -361,7 +361,8 @@ function reset() {
   sel = late ? { body: "B26", sense: "K11", wisdom: "M-W8" } : { body: "M-B1", sense: "K15", wisdom: "WG1" }; litNow = null;
 }
 
-function shown(n) { return n.kind !== "lesson" || MET.has(n.who); }
+function shown(n) { return true; }
+function known(n) { return n.kind !== "lesson" || lit[board]?.has(n.id) || (MET.has(n.who) && n.ring <= OPEN_RING); }
 function status(n, b) {
   const L = lit[b];
   if (L.has(n.id)) return "unlocked";
@@ -476,8 +477,8 @@ function renderBoard() {
       b.classList.add("lit-fill");
       if (st === "sealed") b.classList.add("sealed-frame");
       b.append(frameSvg(n, st));
-      const g = document.createElement("span"); g.className = "glyph"; g.textContent = st === "sealed" ? "封" : n.kind === "lesson" ? (WHO[n.who] || "授").slice(0, 1) : glyph; b.append(g);
-      if (n.kind === "lesson" && st !== "sealed" && DATA.faces[n.who]) { const f = document.createElement("img"); f.className = "face"; f.src = DATA.faces[n.who]; f.alt = ""; b.append(f); }
+      const g = document.createElement("span"); g.className = "glyph"; g.textContent = st === "sealed" && n.kind !== "lesson" ? "封" : n.kind === "lesson" ? (known(n) ? (WHO[n.who] || "授").slice(0, 1) : "？") : glyph; b.append(g);
+      if (n.kind === "lesson" && known(n) && DATA.faces[n.who]) { const f = document.createElement("img"); f.className = "face"; f.src = DATA.faces[n.who]; f.alt = ""; b.append(f); }
     } else {
       const f = document.createElement("span"); f.className = "gb-face"; f.textContent = st === "sealed" ? "" : glyph; b.append(f);
     }
@@ -516,11 +517,12 @@ function renderSide() {
   else if (n.kind === "stat") { title = n.peak ? `${JA[board]}を極める` : `${n.perk}のマス`; text = `このマスで：${n.perkText}（${n.tier}）`; extra = n.peak ? "この盤の能力のマスを全部灯すと灯せる（盤を埋めたご褒美）" : n.feature ? `✦ 灯すと「${n.featureText}」` : ""; }
   else if (n.kind === "gate") { title = "関門"; text = `色の火（紅火・蒼火・翠火）1つで越える。先には強いスキルや授業がある。`; }
   else if (n.kind === "skill") { title = n.name; text = n.text; extra = `効く場面：${n.scene}`; }
+  else if (!known(n)) { title = "？？？の授業"; text = "まだ出会っていない誰かが、ここで何かを教えてくれるらしい"; extra = ""; }
   else { title = n.name; text = n.text; extra = `${WHO[n.who] || n.who}に教わる`; }
   const stateJa = { unlocked: n.kind === "lesson" ? "灯した。次に会った時に相談して習う" : "灯した", available: n.kind === "lesson" ? "今灯せる（火種はいらない）" : `今灯せる：火種 ${n.cost}`, short: `火種が足りない：あと ${n.cost - (wallet.any + wallet[board])}`, far: "道がまだつながっていない", sealed: "封", pending: "仮置き" }[st];
   const ac = n.kind === "lesson" || n.kind === "gate" ? "var(--neon-gold)" : n.peak ? "var(--peak)" : "var(--c)";
   side.innerHTML = `
-    <div class="gb-art" style="--ac:${ac}"><span>${st === "sealed" ? "封" : big}</span>${n.kind === "lesson" && DATA.faces[n.who] ? `<img class="art-face" src="${DATA.faces[n.who]}" alt="">` : ""}<em>${n.kind === "skill" || n.kind === "lesson" ? "一枚絵 960×540（別PR）" : ""}</em></div>
+    <div class="gb-art" style="--ac:${ac}"><span>${st === "sealed" ? "封" : big}</span>${n.kind === "lesson" && known(n) && DATA.faces[n.who] ? `<img class="art-face" src="${DATA.faces[n.who]}" alt="">` : ""}<em>${n.kind === "skill" || n.kind === "lesson" ? "一枚絵 960×540（別PR）" : ""}</em></div>
     <p class="gb-kind" style="--kc:${ac}"><b>${kind}</b>${n.kind === "stat" && !n.peak ? DATA.where[board] : ""}</p>
     <p class="gb-p-title">${title}</p>
     <p class="gb-p-text">${text}</p>

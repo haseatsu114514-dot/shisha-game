@@ -300,21 +300,29 @@ core.state.affinity.adam = 0;
   Object.assign(g, keep);
 }
 
-// 授業はその人に会うまで盤に出ない（シェイクは正体が明かされてから）
+// 授業はいつも盤に出るが、その人に会っていて、その章まで来るまでは中身を伏せる（SBD67。シェイクは正体が明かされてから）
 {
   const gg = growth.ensureGrowth();
-  assert.equal(board.lessonShown(N["M-B2"], gg), false, "まだ会っていない零の授業は出ない");
-  assert.equal(board.nodeStatus(N["M-B2"], gg, board.replay(gg, [])), "hidden");
-  assert.equal(board.NODES.filter((n) => n.trail).length, 0, "授業は一周の道の角の隣（小道のマスは無い）");
-  assert.equal(board.lessonShown(N["M-S1"], gg), true, "スミさんは最初から");
+  const known = (id) => board.lessonKnown(N[id], gg);
+  assert.equal(board.lessonShown(N["M-B2"], gg), true, "授業のマスはいつも盤に出る");
+  assert.equal(known("M-B2"), false, "まだ会っていない零の授業は伏せる");
+  assert.equal(board.nodeStatus(N["M-B2"], gg, board.replay(gg, [])), "locked", "第1章では第2章の授業は封");
+  assert.equal(board.NODES.filter((n) => n.trail).length, 0, "授業だけにつながる小道のマスは無い");
+  assert.equal(known("M-S1"), true, "スミさんは最初から");
   core.state.affinity.rei = 1;
-  assert.equal(board.lessonShown(N["M-B2"], gg), true, "会うと現れる");
+  assert.equal(known("M-B2"), false, "会っていても、その章まで来るまでは伏せる");
+  core.state.chapter = 2;
+  assert.equal(known("M-B2"), true, "会っていて、その章まで来たら分かる");
   core.state.affinity.rei = 0;
+  assert.equal(known("M-B2"), false, "その章でも、会うまでは伏せる");
+  assert.equal(board.nodeStatus(N["M-B2"], gg, board.replay(gg, [])), "sealed", "伏せている授業は灯せない");
+  core.state.chapter = 5;
   core.state.affinity.sheikh = 1;
-  assert.equal(board.lessonShown(N["M-W8"], gg), false, "シェイクは正体が明かされるまで出ない");
+  assert.equal(known("M-W8"), false, "シェイクは正体が明かされるまで伏せる");
   core.state.flags._ch4_sheikh_revealed = true;
-  assert.equal(board.lessonShown(N["M-W8"], gg), true);
+  assert.equal(known("M-W8"), true);
   core.state.affinity.sheikh = 0; delete core.state.flags._ch4_sheikh_revealed;
+  core.state.chapter = 1;
 }
 
 // 授業は会って相談した時だけ習う（SBD61: LIME では習えない）

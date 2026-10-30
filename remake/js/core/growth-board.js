@@ -170,16 +170,20 @@ export function hasMet(who, s = state) {
 const heartOf = (who, s) => s === state ? affinityLevel(who) : 0;
 
 /**
- * 授業とその小道が盤に出ているか。その人に会った時に現れる（シェイクは正体が明かされてから）。
- * 一度灯したものは出たまま。
+ * 授業の中身（誰の・何の授業か）が分かっているか（2026-10-30 オーナー「まだ辿り着いてない章のキャラの授業は隠しておきたい。
+ * ただ先の内容も何があるかは見える。名前は？？？とか内容も伏せる」SBD67）。
+ * 授業のマスはいつも盤に出る。分かるのは、その人に会っていて、授業の章まで物語が進んだ時（シェイクは正体が明かされてから）。
+ * 一度灯したものは分かったまま。分からない間は「？」の札で、名前・顔・中身を伏せ、灯せない。
  */
-export function lessonShown(node, g, s = state) {
+export function lessonKnown(node, g, s = state) {
   const lesson = node.kind === "lesson" ? node : node.trail ? NODE_BY_ID[node.trail] : null;
   if (!lesson) return true;
   if (g?.nodes?.includes(node.id) || g?.nodes?.includes(lesson.id)) return true;
   if (lesson.revealFlag && !s?.flags?.[lesson.revealFlag]) return false;
-  return hasMet(lesson.who, s);
+  return hasMet(lesson.who, s) && lesson.ring <= ringsOpen(s);
 }
+/** 盤に出すか: 授業も含めて全部出す（中身を伏せるのは lessonKnown）。前の名前のまま残す */
+export const lessonShown = () => true;
 
 /** 授業の錠。開いていれば null、閉じていれば足りないものの内訳 */
 export function lessonLock(node, unlocked, s = state) {
@@ -229,7 +233,7 @@ const spend = (hidane, pay) => { for (const [k, n] of Object.entries(pay)) hidan
 
 /** そのマスが今の積み方で取れるか（火種は見ない） */
 function reachable(node, unlocked, s, g) {
-  return node.ring <= ringsOpen(s) && lessonShown(node, g, s) && !lessonLock(node, unlocked, s) && connected(node, unlocked);
+  return node.ring <= ringsOpen(s) && lessonKnown(node, g, s) && !lessonLock(node, unlocked, s) && connected(node, unlocked);
 }
 
 /**
@@ -262,14 +266,13 @@ export function replay(g, pendingIds, s = state) {
 
 /**
  * マスの状態（6.2）: unlocked | pending | available | short | far（まだつながっていない）
- * | locked（章で開く）| sealed（授業の錠）| hidden（まだ会っていない人の授業と小道。盤に出さない）
+ * | locked（章で開く）| sealed（授業の錠。会っていない・♥が足りない）
  */
 export function nodeStatus(node, g, view, s = state) {
   if (g.nodes.includes(node.id)) return "unlocked";
-  if (!lessonShown(node, g, s)) return "hidden";
   if (view.pending.includes(node.id)) return "pending";
   if (node.ring > ringsOpen(s)) return "locked";
-  if (lessonLock(node, view.unlocked, s)) return "sealed";
+  if (lessonLock(node, view.unlocked, s) || !lessonKnown(node, g, s)) return "sealed";
   if (!connected(node, view.unlocked)) return "far";
   return paymentFor(node, view.hidane, view.ctx) ? "available" : "short";
 }
