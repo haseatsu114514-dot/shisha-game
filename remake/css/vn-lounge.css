@@ -119,12 +119,13 @@ body.game-ds .vn-box .vn-name {
   left: 3%; top: -13px; width: 21%; height: 22px; line-height: 22px;
   font-size: clamp(10px, calc((var(--ds-cw) - 16px) * .18 / var(--vn-name-length, 4)), 16px);
 }
-/* 2画面表示も操作バーを背景側の右上へ。本文側の▼と交差させない。 */
+/* 2画面表示では操作バーを下画面のタッチバー（会話中は空いている帯）へ置き、上画面の立ち絵の顔を覆わない。
+   本文側の▼は本文枠の右下なので交差しない。 */
 body.game-ds .vn-controls {
-  width:min(400px,calc(var(--ds-vw) - 16px));
-  left:calc(var(--ds-vx) + var(--ds-vw) - min(400px,calc(var(--ds-vw) - 16px)) - 8px);
-  top:calc(var(--ds-vy) + 8px); bottom:auto;
-  gap:0; padding:3px 5px; height:50px;
+  width:calc(var(--ds-cw) - 16px);
+  left:calc(var(--ds-cx) + 8px); right:auto;
+  top:calc(var(--ds-cy) + var(--ds-ch) - var(--ds-touchbar) + 6px); bottom:auto;
+  gap:0; padding:3px 5px; height:calc(var(--ds-touchbar) - 12px);
 }
 body.game-ds :is(.vn-text,.vn-inner) { margin-right:24px; }
 body.game-ds .vn-controls .vn-ctl { font-size: 14px; padding: 0 5px; }

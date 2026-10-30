@@ -16,7 +16,7 @@ for (const [lv, total] of [[1, 0], [2, 205], [5, 850], [10, 2025], [20, 4750], [
 assert.equal(growth.expToNext(79), 595);
 assert.equal(growth.levelForExp(204), 1);
 assert.equal(growth.levelForExp(205), 2);
-assert.equal(growth.levelForExp(1e9), 80);
+assert.equal(growth.levelForExp(1e9), 99);
 assert.deepEqual([1, 2, 3, 4, 5, 9].map(growth.freshness), [1, 1, 0.8, 0.6, 0.4, 0.4]);
 
 // 無効のときは状態も通知も増やさない（旧しくみのまま）
@@ -167,7 +167,8 @@ assert.equal(gauge.pending, 0);
 const over = growth.gaugeAt(12, growth.totalExpFor(12), growth.totalExpFor(13) + 80);
 assert.deepEqual([over.now, over.pending, over.overflow, over.left], [1, 1, 80, 0]);
 assert.equal(growth.gaugeAt(9, 0, 0).nextMilestone, true);
-assert.equal(growth.gaugeAt(80, 0, 0).max, true);
+assert.equal(growth.gaugeAt(99, 0, 0).max, true);
+assert.equal(growth.gaugeAt(80, 0, 0).max, false);
 
 // 保存・読込・壊れた値
 core.save(); core.load();
@@ -190,13 +191,18 @@ core.state.flags._coal_cube_learned = true;
 core.state.growth.nodes.push("M-S1");
 growth.ensureGrowth();
 assert.ok(core.state.growth.nodes.includes("M-W1"), "キューブ炭の旧フラグ → 授業のマス");
-assert.equal(core.state.flags._sumi_attack_learned, true, "灯した授業のフラグが立つ");
+assert.ok(core.state.growth.learned.includes("M-W1"), "旧フラグの授業は習得済みとして灯る");
+assert.notEqual(core.state.flags._sumi_attack_learned, true, "灯しただけ（相談前）の授業はフラグを立てない（SBD50）");
+core.state.growth.learned.push("M-S1");
+growth.ensureGrowth();
+assert.equal(core.state.flags._sumi_attack_learned, true, "習得した授業のフラグは周回で消えても戻す");
 delete core.state.flags._coal_cube_learned; delete core.state.flags._sumi_attack_learned;
-// 上限: 盤の179を超えて渡さない
-core.state.growth = { ...growth.newGrowth(), earned: 178 };
+// 上限: 盤の全部（v3 で272）を超えて渡さない
+assert.equal(growth.BOARD_TOTAL, 272);
+core.state.growth = { ...growth.newGrowth(), earned: growth.BOARD_TOTAL - 1 };
 growth.gainExp(growth.totalExpFor(12));
 const capped = growth.settleGrowth();
-assert.equal(core.state.growth.earned, 179);
+assert.equal(core.state.growth.earned, growth.BOARD_TOTAL);
 assert.equal(capped.boardFull, true);
 
 // 無効へ戻すと新しいゲームには growth が無い

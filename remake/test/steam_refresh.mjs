@@ -44,11 +44,11 @@ async function checkRefresh(name, viewport, mobile) {
         remaining:enemies().length,shieldBefore,levelBefore:level,levelAfter:mental.dataset.level,missesUnchanged:misses===mental.dataset.hits,tempUnchanged:temp===thermo.getAttribute('aria-valuenow')};
     };
   });
-  const perks=await page.evaluate(()=>[10,21,41,61,81].map(guts=>{
+  const perks=await page.evaluate(()=>[10,20,30,40,50,60,70,80,90,100].map(guts=>{
     T.core.state.stats.guts=guts;const effect=T.steam.refreshEffect();
     return {radius:Number.isFinite(effect.radius)?effect.radius:'all',recovery:effect.mentalRecovery,stock:T.steam.refreshStock()};
   }));
-  assert.deepEqual(perks,[{radius:90,recovery:false,stock:1},{radius:150,recovery:false,stock:1},{radius:220,recovery:true,stock:1},{radius:310,recovery:true,stock:1},{radius:'all',recovery:true,stock:1}]);
+  assert.deepEqual(perks,[{radius:90,recovery:false,stock:1},{radius:120,recovery:false,stock:1},{radius:150,recovery:false,stock:1},{radius:185,recovery:false,stock:1},{radius:220,recovery:true,stock:1},{radius:265,recovery:true,stock:1},{radius:310,recovery:true,stock:1},{radius:360,recovery:true,stock:1},{radius:420,recovery:true,stock:1},{radius:'all',recovery:true,stock:1}]);
   const finish=async()=>{
     // The 20-second simulation caps RAF dt at 50ms; slow frames take longer in
     // wall time, then the result needs another 400ms and a presentation frame.
@@ -138,7 +138,7 @@ async function checkRefresh(name, viewport, mobile) {
   if(shots) await page.screenshot({path:`${shots}/${name}-refresh-grown-recovery.png`});
   await finish();
 
-  await page.evaluate(()=>startSteam(81));
+  await page.evaluate(()=>startSteam(100));
   await page.locator('[data-test="mental-trace"]').waitFor();
   await page.waitForFunction(()=>enemies().length>=3);
   const full=await page.evaluate(()=>consume('x'));

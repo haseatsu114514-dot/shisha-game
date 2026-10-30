@@ -1,26 +1,38 @@
-# 現行資料の参照ガイド（2026-10-11）
+# 現行資料の参照ガイド（2026-10-30）
 
 ## 正本と優先順位
 
-1. 実際に動く現行コード・データ: `remake/`, `data/`, `brand/`。最新の明示的なユーザー依頼と取得済み承認を優先し、依頼された仕様変更に再承認を求めない。結果を大きく変える曖昧さだけ確認する。
-2. 開発・Git安全ルール: `AGENTS.md` が唯一の正本。Claude Code は `CLAUDE.md` から読み込む。Git事故防止の制約は必ず維持。
-3. 現行の起動・テスト: `remake/README.md` と `README.md`。
-4. 仕様・オーナー要望: `docs/master_spec.md` と `docs/owner_requests.md`。履歴が混在するため、実装パス・採用状況は確認する。
-5. レビュー範囲: `docs/review_scope.md`。
-6. 成長（経験値・レベル・心得の盤・3能力）: 決定の正本は `docs/stat-design/ADDENDUM-BOARD-LAYOUT.md`、実装用の仕様は `docs/stat-design/SPEC.md`（第2版）。第1版の5能力・五角形の盤は古い。
+1. 最新の明示的なオーナー指示と取得済み承認。依頼された仕様変更に再承認を求めない。結果を大きく変える曖昧さだけ確認する。
+2. 開発・Git安全ルール: `AGENTS.md` が唯一の正本。Claude Code は `CLAUDE.md` から読み込む。
+3. 実際に動く現行コード・データ: `remake/`（起動・テストは [remake/README.md](../remake/README.md)）、`data/`（台詞・共有データ）、`assets/`（素材）。
+4. 仕様・オーナー要望: [master_spec.md](master_spec.md)（冒頭の「本書の読み方」から）と [owner_requests.md](owner_requests.md)（新しい順の台帳。冒頭の「読み方」から）。
+5. 物語・人物: [brand/](../brand/README.md)（`story_and_structure.md`・`character_profiles.md`）と `data/characters.json`・`data/story_routes.json`。
+6. ゲームの規則・台詞の書き方: [gameplay_agent_reference.md](gameplay_agent_reference.md)。画像・素材: [asset_ai_guidance.md](asset_ai_guidance.md)。シーシャの工程・機材・用語の参照先一覧: [shisha_reference.md](shisha_reference.md)。
+7. 成長（経験値・レベル・心得の盤）: 決定は [stat-design/ADDENDUM-BOARD-LAYOUT.md](stat-design/ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [stat-design/SPEC.md](stat-design/SPEC.md)（第2版）。第2版の3能力は `GROWTH_BOARD=false` の裏で未公開。プレイヤーに見える能力は従来の5種類（`gameplay_agent_reference.md`）。
+8. レビュー範囲: [review_scope.md](review_scope.md)。
 
-## 過去の情報の扱い
+## 二次資料・履歴の扱い
 
-- `docs/*handoff*.md` の日付付きメモは**その時点の記録**。ブランチ名・作業ディレクトリ・未完了項目・テスト結果を現在の状態として扱わない。関連作業でのみ読み、現行コード・GitHubのPR状態と照合する。
-- 旧 `web/`・Godot版は廃止済み。歴史的な記録や参考実装は現行の編集対象にしない。
-- 過去の資料にある有用なゲーム仕様・キャラクター設定は、旧技術への言及があっても一括削除しない。
-- 旧資料の整理・削除は、参照先と失われる情報を確認した別のPRで行う。
-- 詳細なAI作業用資料: `docs/gameplay_agent_reference.md`（ゲーム・物語）、`docs/asset_ai_guidance.md`（画像・素材）。必要時のみ読む。
+- [setting_book/](setting_book/README.md) は共同制作向けの**二次資料**。数値・価格・機材説明は `data/*.json` が正。`setting_reference.html` はそこからの生成物。
+- [archive/](archive/README.md) は日付付きの引き継ぎ・計画・記録の**履歴**。ブランチ名・SHA・CI結果・「未接続」「予約待ち」は当時の状態で、新しい台詞・設定・実装の根拠にしない。`docs/qa/` は検証記録（約0.7GB）。どちらも `.claudeignore` で自動参照から外してあり、必要なときだけ開く。
+- `docs/reports/` と `docs/design/` に残るのはオーナー未決定の提案・設計案。採用扱いにしない。決まったら正本へ反映し、ファイルは `archive/` へ移す。
+- 改稿前の台本は `data/dialogue/_legacy/`。旧 `web/`・Godot版は廃止済みで、`docs/master_spec.md` に残る `web/js/` 等のパスは履歴。
+- 旧資料の整理・削除は、参照先と失われる情報を確認したうえで行う。日付付きの新規MDは必要な場合だけ作り、`docs/` 直下に増やさず `archive/` か該当する正本へ。
+
+## 日常の作業で読むもの
+
+| 作業 | 最初に読む |
+|---|---|
+| 台詞・会話イベントの追加・編集 | `.claude/skills/dialogue-edit`、`text-style`、`gameplay_agent_reference.md`、必要なら `shisha_reference.md` |
+| 設定の矛盾点検・ストーリー改善 | `.claude/skills/canon-check`、`story-review`、`review_scope.md`、`brand/` |
+| 画像・CG・立ち絵 | `.claude/skills/codex-image-prompt`、`portrait-fix`、`character-portrait-remaster`、`asset_ai_guidance.md` |
+| BGM | `.claude/skills/suno-bgm-prompt`、`bgm_suno_prompts.md` |
+| オーナーの要望・バグ報告 | `.claude/skills/owner-request`、`owner_requests.md` |
+| テスト・CI | `.claude/skills/web-build-test`、`remake/README.md`、`tools/ci/suites.json` |
+| 開発者コンソールの補助 | `dev_inspector.md`、`dev_event_preview.md`、`dev_event_rehearsal.md`、`remake_browser_checks.md` |
 
 ## AI間の引き継ぎ
 
-- 進行中のIssue/PR・検証の境界・次担当の開始手順は [開発状況と再開手順](ai-handoff.md) を参照。確認日時付きのスナップショットであり、最新GitHubの状態と照合する。
-- 作業開始: 現在のブランチと関連する正本を確認。過去の引き継ぎを丸ごと読み込まない。
-- 現在の担当・採用/保留・再開先は対象Issue/PRを確認する。スキルは制作手順の正本であり、過去の担当分担を現在の担当として扱わない。保存済みPRは既存ブランチで継続する。Issue予約（claim / release / handoff）は2026-10-23に撤廃済みで、過去資料に残る予約手順は無効。
-- 作業終了: PR本文に変更内容・テスト・未完了事項・次の作業を記載。長期に残すべき確定仕様だけ該当する正本へ反映する。
-- 引き継ぎ用の新規MDは必要な場合のみ作る。新しい日付付きファイルを無制限に増やさない。
+- 進行中の作業は GitHub の Issue / PR を直接見る（スナップショット文書は作らない）。Issue予約（claim / release / handoff）は2026-10-23に撤廃済みで、過去資料に残る予約手順は無効。
+- 作業開始: 現在のブランチと関連する正本を確認。過去の引き継ぎを丸ごと読み込まない。保存済みPRは既存ブランチで継続する。
+- 作業終了: PR本文に変更内容・テスト・未完了事項・次の一手を記載。長期に残すべき確定仕様だけ該当する正本へ反映する。

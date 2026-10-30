@@ -2,7 +2,7 @@
 
 更新日: 2026-10-11
 状態: **参考画像に合わせた筆文字・円形HUD版を本編へ採用。現行仕様はCV35〜46。以下の古い節は当時の仕様／比較版の記録。**
-前提: `docs/continue_voice_music_premium_20261010.md`、`docs/sumi_continue_20261010.md`。
+前提（履歴）: `docs/archive/continue_voice_music_premium_20261010.md`、`docs/archive/sumi_continue_20261010.md`。現行仕様は本書のCV35〜46。
 既存実装: `remake/js/chapters/gameover.js`、`remake/js/chapters/continue-premium.js`、`remake/js/core/audio.js`、`remake/css/daily.css`、`remake/continue-preview.html`。
 
 ## CV35〜46（2026-10-11・現行の採用デザイン）

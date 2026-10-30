@@ -79,11 +79,13 @@ async function realModule(name, path) {
   return mod;
 }
 
+await realModule("stat-step-tables.js", "remake/js/core/stat-step-tables.js");
+
 synthetic("util.js", { el, pick: (list) => list[0] });
 synthetic("data.js", { DB: db, bgUrl: (id) => id });
-synthetic("state.js", { state, timeOfDay: () => "day" });
+synthetic("state.js", { state, config: { statEffectColors: true }, timeOfDay: () => "day" });
 synthetic("stats.js", {
-  addMoney() {}, addStamina() {}, applyStats() {}, star: () => "",
+  addMoney() {}, addStamina() {}, applyStats() {}, step: () => 1,
   currentCondition: () => ({}), affinityLevel,
 });
 synthetic("ui.js", {
@@ -116,6 +118,7 @@ synthetic("scene-motions.js", { shiftClose: async () => {} });
 synthetic("hiyori.js", { meetHiyoriAtTonari: async () => {} });
 synthetic("attack-lesson.js", { canStudyAttack: () => false, studyAttack: async () => {} });
 synthetic("coal-lesson.js", { canStudyCubeCoals: () => false, studyCubeCoals: async () => {} });
+synthetic("growth.js", { readyLessons: () => [], consultLessons: async () => [] });
 synthetic("tsumugi-schedule.js", { tsumugiAtTonari: () => false });
 synthetic("flavor-mastery.js", { staffFlavors: () => [], staffStock: () => 0 });
 synthetic("axe-bar-discovery.js", { hiyoriFirstMeetingReady: () => false });

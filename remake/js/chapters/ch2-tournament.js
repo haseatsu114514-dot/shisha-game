@@ -35,7 +35,7 @@ import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH2_PRIZE } from "./ch2-tournament-state.js";
 
-const REQUIRED = ["lobby", "entrance", "stations", "rules", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
+const REQUIRED = ["lobby", "entrance", "stations", "rules", "verdict", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
 // SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
 const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
@@ -409,6 +409,8 @@ async function drive(owner) {
       // 講評の前に、手を離した4人の待ち時間（第1章の interlude3 に対応）。
       if (!await commentary(owner, "interlude3")) return;
       if (!await commentary(owner, "tasting")) return;
+      // 優勝のときだけ、結果カードの前に決着の間を置く。歓声より先に、口の中の空白を見せる。
+      if (p.result?.rank === 1 && !await read(owner, "verdict")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") { playBgm("bgm_judging"); renderVotes(owner, true); return; }
@@ -430,13 +432,13 @@ async function drive(owner) {
       state.phase = "cleared"; checkpoint("complete");
     } else if (p.stage === "complete") {
       // 章の最後に、はじめのいない店であげはの心の声（#929）。読了時だけ記録し、クリア済みの旧セーブにも一度だけ出す。
+      // 完了カードも閉店後のMELTY PUFFのまま出す（昼の大会ステージへ戻さない）。
+      const closedRoom = bgUrl(CH2_SCENE_BACKGROUNDS.agehaClosed);
+      if (!await imageReady(closedRoom, 15000)) throw new Error("閉店後のMELTY PUFFを読み込めませんでした");
+      await setBg(closedRoom, { instant: true });
       if (!state.flags._ch2_read_ch2_tournament_ageha_heart) {
-        const closedRoom = bgUrl(CH2_SCENE_BACKGROUNDS.agehaClosed);
-        if (!await imageReady(closedRoom, 15000)) throw new Error("閉店後のMELTY PUFFを読み込めませんでした");
-        await setBg(closedRoom, { instant: true });
         if (!await read(owner, "ageha_heart")) return;
         state.flags._ch2_read_ch2_tournament_ageha_heart = true; save();
-        await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });
       }
       renderComplete(owner); return;
     }

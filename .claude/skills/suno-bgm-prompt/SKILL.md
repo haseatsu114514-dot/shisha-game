@@ -48,5 +48,5 @@ rg -n 'playBgm\("' remake/js   # どの場面でどのキーが鳴るか
 1. `assets/audio/bgm/<key>.mp3` に配置（キー名=ファイル名。プレースホルダなら上書き）。
 2. 画像・音声の目録に載るよう `python3 remake/tools/build_manifest.py` を実行。現行版はURLから音声を読み、単一HTMLへ埋め込まない。
 3. 新しい場面なら `playBgm("キー")` を使うか、会話の `metadata.bgm` にキーを指定する（`remake/js/core/audio.js`・`vn/engine.js`）。
-4. ブラウザで切替タイミング・ループ継ぎ目・音量を耳で確認。音量は `state.js` の設定と音声モジュールに従う。
+4. ブラウザで切替タイミング・ループ継ぎ目・音量を耳で確認。音量は `remake/js/core/state.js` の設定と `remake/js/core/audio.js` に従う。
    初回再生はユーザー操作までブロックされる仕様（自動再生制限）。

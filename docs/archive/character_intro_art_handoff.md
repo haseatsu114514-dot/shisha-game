@@ -4,7 +4,7 @@
 
 オーナーは、作り直したはじめ・アダム・なる・チャコール博士の紹介画像を依頼（CI05〜09）。続けて「妙に濃い作画」「立ち絵を重ねる感じ」「立ち絵は作ったやつ」「ダンガンロンパ風にシンプルでスタイリッシュに」と指定（CI10）。
 
-最終案は [4人の比較](../asset_sources/character-intros/remaster-v1/comparison.png)、[個別画像と編集元](../asset_sources/character-intros/remaster-v1/README.md)。4人の本人PNGは制作済み素材のバイト一致コピーで、画面では拡縮・配置だけを行う。人物の描き直し・画像フィルタはない。白黒の斜めの帯・大きな呼び名・小さな本名・二つ名・一言と、キャラの差し色1色に絞った。
+最終案は [4人の比較](../../asset_sources/character-intros/remaster-v1/comparison.png)、[個別画像と編集元](../../asset_sources/character-intros/remaster-v1/README.md)。4人の本人PNGは制作済み素材のバイト一致コピーで、画面では拡縮・配置だけを行う。人物の描き直し・画像フィルタはない。白黒の斜めの帯・大きな呼び名・小さな本名・二つ名・一言と、キャラの差し色1色に絞った。
 
 名前のルールと1書体統一は既存仕様を保持。3人の紹介文は正本の `intro_cutin` そのまま。はじめには既存データがないため、二つ名と一言は表示用の提案として `characters.json` にだけ保存している。
 

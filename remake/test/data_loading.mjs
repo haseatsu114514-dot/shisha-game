@@ -34,7 +34,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 起動時は40ファイルを読み、同時接続が4本を超えない。
+// 起動時は41ファイルを読み、同時接続が4本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -63,14 +63,14 @@ for (const id of ["minto", "ageha"]) {
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
 assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
-assert.equal(requests.length, 40);
-assert.equal(new Set(requests).size, 40);
+assert.equal(requests.length, 41);
+assert.equal(new Set(requests).size, 41);
 for (const file of ["hiyori", "cinema", "tournament_craft"]) {
   assert(!requests.includes(`../data/dialogue/${file}.json`));
 }
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 40);
+assert.equal(progress.length, 41);
 assert.equal(all.DB.dialogues.samechan_cinema_introduction, undefined);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(progress.at(-1), 1);
@@ -126,13 +126,13 @@ assert.deepEqual(flavorMakerProblems([
 const deferred = all.loadDeferredDialogues();
 assert.equal(all.loadDeferredDialogues(), deferred);
 await deferred;
-assert.equal(requests.length, 41);
+assert.equal(requests.length, 42);
 assert.equal(requests.at(-1), "../data/dialogue/hiyori.json");
 assert.equal(all.DB.hiyori.route.enabled, true);
 assert(all.DB.dialogues.hiyori_meeting);
 assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
 assert.equal(all.loadDeferredDialogues(), deferred);
-assert.equal(requests.length, 41);
+assert.equal(requests.length, 42);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(all.DB.dialogues.tournament_craft_packed_intro, undefined);
 
@@ -142,7 +142,7 @@ assert.equal(all.loadCinemaDialogue(), cinema);
 const tournament = all.loadTournamentCraftDialogue();
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
 await Promise.all([cinema, tournament]);
-assert.equal(requests.length, 43);
+assert.equal(requests.length, 44);
 assert(requests.includes("../data/dialogue/cinema.json"));
 assert(requests.includes("../data/dialogue/tournament_craft.json"));
 assert(all.DB.dialogues.samechan_cinema_introduction);
@@ -151,7 +151,7 @@ assert.equal(all.DB.dialogues.tournament_craft_packed_intro.lines[0].speaker, "p
 assert(all.DB.dialogues.tournament_craft_care_recovered.lines[0].text);
 assert.equal(all.loadCinemaDialogue(), cinema);
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
-assert.equal(requests.length, 43);
+assert.equal(requests.length, 44);
 
 for (const [file, method, dialogue] of [
   ["cinema", "loadCinemaDialogue", "cinema_first_screening"],
@@ -282,4 +282,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 40 boot JSON files, deferred hiyori/cinema/tournament_craft and retry, max 4 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 41 boot JSON files, deferred hiyori/cinema/tournament_craft and retry, max 4 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");

@@ -17,6 +17,7 @@ try {
     const reel = await import("./js/daily/reel.js"), { on } = await import("./js/core/bus.js");
     const { SE } = await import("./js/core/audio.js");
     core.newGame(); core.state.phase = "daily";
+    core.state.stats.technique = 11;
     ui.showScreen("map", document.createElement("div"));
     hud.initHud({}); hud.showHud();
     window.T = { core, stats, ui, hud, reel, events: [], flights: [], impacts: 0, bonusSounds: 0 };
@@ -38,7 +39,7 @@ try {
   assert.equal(await page.locator(".gc-sub").count(), 0);
   // 仕様は通常272×68px（docs/master_spec.md PF25〜30）。#1354で見出し14pxにして一時71pxになったが、
   // 95970943（#1592 クラスタ#22）が上下余白を12→10.5pxにして68pxへ戻した。compact_gains_map.mjs と同じ値
-  assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.clientHeight), 68);
+  assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.offsetHeight), 68);
   const regularPosition = await page.locator(".gain-card.stat").evaluate(e => ({
     parent: e.parentElement.id, left: e.offsetLeft, top: e.offsetTop, width: e.offsetWidth, height: e.offsetHeight,
   }));
@@ -46,13 +47,13 @@ try {
   assert.equal(await page.evaluate(() => T.bonusSounds), 0, "通常の能力アップでスロット専用音が鳴った");
   await page.waitForFunction(() => T.impacts > 0);
   assert.deepEqual(await page.evaluate(() => ({ points: T.core.state.stats.technique, total: T.events[0].total,
-    count: T.events.length, flown: [...new Set(T.flights)] })), { points: 13, total: 3, count: 1, flown: ["technique"] });
+    count: T.events.length, flown: [...new Set(T.flights)] })), { points: 14, total: 3, count: 1, flown: ["technique"] });
   await page.evaluate(() => T.ui.bannersIdle());
 
-  // 累計16を+16と表示しない。20刻みの境界前後と連続加算も、今回の実増分だけ。
+  // 累計16を+16と表示しない。10刻みの境界前後と連続加算も、今回の実増分だけ。
   for (const [before, gains, level, width, height] of [
-    [15, [1], 1, 1280, 720], [19, [1], 1, 844, 390],
-    [20, [1], 2, 591, 1280], [39, [1, 1], 3, 1280, 720],
+    [15, [1], 2, 1280, 720], [19, [1], 2, 844, 390],
+    [20, [1], 3, 591, 1280], [39, [1, 1], 5, 1280, 720],
   ]) {
     await page.setViewportSize({ width, height });
     const expected = gains.reduce((sum, gain) => sum + gain, 0);
@@ -64,7 +65,7 @@ try {
     assert.deepEqual(committed.returned, gains);
     assert.equal(committed.stats.technique, before + expected);
     await page.waitForSelector(".gain-card.st-technique.show");
-    const levelUp = level > Math.max(1, Math.ceil(before / 20));
+    const levelUp = level > Math.max(1, Math.ceil(before / 10));
     if (levelUp) {
       assert.equal(await page.locator(".gc-earned").count(), 0);
       assert.equal(await page.locator(".gc-points").count(), 0, "レベル到達時は増分数字を表示しない");
@@ -81,8 +82,11 @@ try {
         && card.scrollWidth <= card.clientWidth;
     }), "今回の表示と名前・増分が重なるか、カードからはみ出した");
     }
-    assert.equal(await page.locator(".gc-top").textContent(), levelUp ? "LEVEL UP" : "STATUS UP");
-    assert.deepEqual(await page.locator(".gc-evolution").allTextContents(), levelUp ? [`Lv.${level}に到達`] : []);
+    assert.equal(await page.locator(".gc-top").textContent(), levelUp ? "STEP UP" : "STATUS UP");
+    assert.equal(await page.locator(".gc-main").textContent(), levelUp ? `技術 ${level}段に上がった` : "技術");
+    assert.equal(await page.locator(".gain-card.evolved").count(), levelUp ? 1 : 0);
+    assert.equal(await page.locator(".gc-evolution").count(), 0);
+    assert.equal(await page.locator(".gc-next").count(), 1);
     assert.deepEqual(await page.evaluate(() => T.events.map(({ total, starUp, star }) => ({ total, starUp, star }))),
       [{ total: expected, starUp: levelUp, star: level }]);
     await page.evaluate(() => T.ui.bannersIdle());
@@ -157,7 +161,7 @@ try {
   await page.evaluate(() => {
     T.stats.gainStat("technique", 3);
     T.core.newGame(); T.core.state.phase = "daily"; T.events = []; T.flights = [];
-    T.stats.gainStat("insight", 3);
+    T.core.state.stats.insight = 11; T.stats.gainStat("insight", 3);
   });
   await page.waitForSelector(".gain-card.st-insight .gc-points");
   assert.equal(await page.locator(".gc-points").textContent(), "+3P");

@@ -115,6 +115,12 @@
       "echo": "（凛さんから受け取った袋に、まだ会ったことのない人の仕事もある）"
     },
     {
+      "id": "rin_face",
+      "char_id": "rin",
+      "dialogue_id": "ch1_rin_fourth",
+      "echo": "（凛さんに、吸っていた人の顔を持って帰る約束をした）"
+    },
+    {
       "id": "ageha_today",
       "char_id": "ageha",
       "dialogue_id": "remake_ch2_ageha_scout",

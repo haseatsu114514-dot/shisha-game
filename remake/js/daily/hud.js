@@ -5,11 +5,12 @@ import { el, yen, sleep } from "../core/util.js";
 import { layers } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, STAT_KEYS } from "../core/state.js";
-import { staminaRatio, currentCondition, maxStamina, star } from "../core/stats.js";
+import { staminaRatio, currentCondition, maxStamina, step } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
+import { config } from "../core/state.js";
 import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal } from "../core/growth.js";
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
@@ -86,7 +87,7 @@ export function initHud(h) {
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
-    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
+    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b"), el("em.guts-extra")])]), el("span.guts-badge", { text: "根", "aria-label": "根性の体力上乗せ" })]),
     radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () => handlers.status?.() }),
@@ -149,7 +150,7 @@ function updateGrowth() {
   left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
   dom.exp.classList.toggle("ready", g.pending > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
-  dom.exp.title = g.max ? "Lv.80 MAX" : g.pending > 0
+  dom.exp.title = g.max ? `Lv.${g.level} MAX` : g.pending > 0
     ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
   dom.exp.setAttribute("aria-label", dom.exp.title);
 }
@@ -183,11 +184,16 @@ export function updateHud() {
   dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
   dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
+  const gutsExtra = dom.stamina.querySelector(".guts-extra");
+  const showGuts = config.statEffectColors !== false && step("guts") > 1;
+  gutsExtra.style.left = `${100 / maxStamina() * 100}%`;
+  gutsExtra.style.width = `${showGuts ? Math.max(0, Math.min(state.stamina, maxStamina()) - 100) / maxStamina() * 100 : 0}%`;
+  dom.stamina.querySelector(".guts-badge").hidden = !showGuts;
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる
   dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(92 * (maxStamina() / 100))}px`;
-  dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 4 + 3.2 * star(k))).join(" "));
+  dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 7.2 + 12.8 * (step(k) - 1) / 9)).join(" "));
   updateGrowth();
 }
 

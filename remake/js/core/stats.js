@@ -1,5 +1,6 @@
-// ステータス・好感度・体力・所持金。成長量は通知にPで出し、現在の強さは★で表す。
+// ステータス・好感度・体力・所持金。成長量は通知にPで出し、現在の強さは段で表す。
 import { MAX_MONEY } from "./rules.js";
+import { GUTS_STAMINA_BONUS } from "./stat-step-tables.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { DB } from "./data.js";
 import { pendingLoveStage, questionComplete } from "./affinity-stages.js";
@@ -21,13 +22,17 @@ export function statCap(key) {
 export function star(key) {
   return clamp(Math.ceil((state.stats[key] || 0) / 20), 1, 5);
 }
-/** 0（★1）〜1（★5）。効果量は ★ 刻みで効く（連続値にしない） */
+/** 内部値から10段へ。旧セーブの端数も切り上げる。 */
+export function step(key) {
+  return clamp(Math.ceil((state.stats[key] || 0) / 10), 1, 10);
+}
+/** 1段の0から10段の1まで、効果量を9等分する。 */
 export function tier01(key) {
-  return (star(key) - 1) / 4;
+  return (step(key) - 1) / 9;
 }
 export function starText(key) {
-  const s = star(key);
-  return "★".repeat(s) + "☆".repeat(5 - s);
+  const s = step(key);
+  return "★".repeat(s) + "☆".repeat(10 - s);
 }
 
 export const RANK_LABELS = {
@@ -37,7 +42,7 @@ export const RANK_LABELS = {
   charm: ["影うすい", "親しみやすい", "華がある", "目が離せない", "カリスマ"],
   insight: ["鈍め", "気が利く", "よく見てる", "見抜く目", "千里眼"],
 };
-export const rankLabel = (key) => RANK_LABELS[key][star(key) - 1];
+export const rankLabel = (key) => RANK_LABELS[key][Math.floor((step(key) - 1) / 2)];
 
 // 同じステへの連続加算は1枚のバナーに合算する（CLAUDE.md: statGainBatch と同じ約束）
 const MERGE_MS = 700;
@@ -76,7 +81,7 @@ export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } 
   emit("stat-raw", { key, got }); // スロットの「直前の行動で伸びたステ」の記録用
   emit("hud");
   if (silent) return got;
-  const starUp = star(key) > clamp(Math.ceil(before / 20), 1, 5);
+  const starUp = step(key) > clamp(Math.ceil(before / 10), 1, 10);
   if (batch[key]?.owner !== state) batch[key] = { owner: state, total: 0, starUp: false };
   batch[key].total += got;
   batch[key].starUp ||= starUp;
@@ -90,7 +95,7 @@ function flushBatch() {
   batch = {};
   for (const [key, { owner, total, starUp }] of Object.entries(b)) {
     if (owner !== state) continue;
-    emit("stat-gain", { key, total, name: STAT_JA[key], word: gainWord(total), starUp, rank: rankLabel(key), star: star(key) });
+    emit("stat-gain", { key, total, name: STAT_JA[key], word: gainWord(total), starUp, rank: rankLabel(key), star: step(key) });
   }
 }
 
@@ -153,7 +158,7 @@ export function applyStats(obj = {}) {
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
 
 export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
-export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori", "samechan"];
+export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "mashiro", "hiyori", "samechan"];
 
 // 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
 export const AFFINITY_GATE_CHOICES = Object.freeze({
@@ -397,11 +402,10 @@ export function gainAffinity(id, pts, opts = {}) {
 
 // ---------------------------------------------------------------- 体力
 
-const GUTS_STAMINA_BONUS = [0, 10, 25, 40, 60];
 export const STAMINA_LOW = 25;
 
 export function maxStamina() {
-  return 100 + GUTS_STAMINA_BONUS[star("guts") - 1];
+  return 100 + GUTS_STAMINA_BONUS[step("guts") - 1];
 }
 
 export function addStamina(n) {

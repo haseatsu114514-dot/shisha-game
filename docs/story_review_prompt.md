@@ -16,7 +16,7 @@
 ━━━━━━━━━━━━━━━━━━━━
 
 ### 必読（設定の正本）
-- `CLAUDE.md` — キャラID・ステータス名・大会ルール・文化規範・ストーリー整合ルール。**最上位の正本**。矛盾したらCLAUDE.mdが正。
+- `docs/gameplay_agent_reference.md` — キャラID・ステータス名・大会ルール・文化規範・ストーリー整合ルール。**最上位の正本**。矛盾したらこの資料が正（旧 `CLAUDE.md` から移設済み）。
 - `brand/story_and_structure.md` — 章別プロット（正本）
 - `brand/character_profiles.md` — キャラクター設定（正本）
 - `data/characters.json` — キャラのID・年齢・ステータス・設定（正本）
@@ -35,10 +35,10 @@
 - `data/dialogue/ch1_rin.json` — 凛個別
 - `data/dialogue/ch1_ageha.json` — アゲハ（ch1カメオ）
 - `data/dialogue/ch2_main.json` — 第2章メイン
-- `data/dialogue/ch2_ageha.json` — アゲハ個別
+- `data/dialogue/ch2_ageha_story.json` — アゲハ個別
 - `data/dialogue/ch2_kumicho.json` — 神崎竜二個別
 - `data/dialogue/ch2_rei.json` — 零個別
-- `data/dialogue/ch2_volk.json` — ヴォルク個別
+- `data/dialogue/ch3_volk.json` — ヴォルク個別（第2章では名無しの偵察者「？？？」としてのみ登場）
 - `data/dialogue/ch2_isolation.json` — 第2章孤立パート
 - `data/dialogue/ch3_main.json` — 第3章メイン
 - `data/dialogue/ch3_spots.json` — 第3章スポット
@@ -172,12 +172,12 @@
 ## 注意事項
 ━━━━━━━━━━━━━━━━━━━━
 
-- 矛盾の判定基準は**CLAUDE.mdが最上位**。brand/docsと食い違ったらCLAUDE.mdが正
+- 矛盾の判定基準は**docs/gameplay_agent_reference.md が最上位**。brand/docsと食い違ったらこの資料が正
 - `brand/brand`、`brand/chapter1(character)` は旧設定の残骸。参照・引用しないこと
 - アダムの口調: 普通の日本語で詩的な言い回し。❌カタカナ混じり語尾は旧設定
 - はじめの一人称は「俺」
-- 「プレゼン工程」は廃止済み。大会にはFLAVOR TRIAL（審査）がある
-- 敗者復活戦は廃止。2位以下はGAME OVER
+- 「プレゼン工程」もFLAVOR TRIALも廃止済み（2026-10-11）。大会は穴・炭・完成品・調整1回目・調整2回目を各20%で審査する
+- 敗者復活戦はない。敗北はGAME OVER画面からのCONTINUE（スミさん／恋人の台詞つき）で同じ大会へ再挑戦する（`docs/continue_button_reactions_sfx_20261010.md`）
 - ステータスの今の強さ（0〜100）はプレイヤーに見せない（★1〜5で表示。能力アップ通知の増えた分 +Npt だけはゲームが表示する）
 - 1台詞は全角48文字以内が目安（autoWrapの制約）
 - 報酬を台詞の地の文に埋め込む場合は規定フレーズ厳守

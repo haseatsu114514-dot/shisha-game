@@ -228,4 +228,26 @@ await suite("growth-levelup", async (check) => {
     await assertFits(page, '[data-test="gift-band"]');
     await page.waitForFunction(() => window.night?.gifts?.length === 1, null, { timeout: 8000 });
   }, { viewport: { width: 1331, height: 760 } });
+
+  // 授業（SBD50）: 盤で灯すと「相談できる」。次に会った時に、はじめが相談して話を聞く場面を最後まで見て習得
+  await check("lesson-consult", async (page) => {
+    await setupDaily(page);
+    const r = await page.evaluate(async () => {
+      (await import("./js/vn/engine.js")).vnTest.turbo = true;
+      const g = await import("./js/core/growth.js");
+      const gr = g.ensureGrowth();
+      gr.nodes.push("M-W2");
+      const before = g.readyLessons("sumi").map((l) => l.id);
+      const done = await g.consultLessons("sumi");
+      return { before, done: done.map((l) => l.id), learned: g.lessonLearned("M-W2"),
+        four: __remake.state.flags._coal_four_unlocked, mix: __remake.state.flags._coal_mix_unlocked, after: g.readyLessons("sumi").length };
+    });
+    assert.deepEqual(r.before, ["M-W2"]);
+    assert.deepEqual(r.done, ["M-W2"]);
+    assert.equal(r.learned, true);
+    assert.equal(r.four, true, "四つ置きが開く");
+    assert.equal(r.mix, true, "混ぜ置きが開く");
+    assert.equal(r.after, 0);
+    await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
+  }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1` });

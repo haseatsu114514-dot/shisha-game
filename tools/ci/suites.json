@@ -10,10 +10,16 @@
   ],
   "suites": [
     {
+      "id": "status-steps",
+      "title": "Status 10-step conversion and effect tables",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/stat_steps.mjs"]
+    },
+    {
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs"]
     },
     {
       "id": "vent-lid",
@@ -71,6 +77,8 @@
         "remake/js/daily/growth-board-screen.js",
         "remake/js/daily/reflection.js",
         "data/dialogue/growth_reflection.json",
+        "data/dialogue/growth_lessons.json",
+        "remake/js/daily/tonari.js",
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
         "remake/test/browser/growth_levelup.mjs"
@@ -162,6 +170,12 @@
       "title": "Title warm-up defers store logos to idle and waits are split (core / store logos)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
+    },
+    {
+      "id": "stat-ui-progress",
+      "title": "Ten-step UI boundaries and sense color width",
+      "kind": "quick",
+      "run": ["node remake/test/stat_ui_progress.mjs"]
     },
     {
       "id": "resume-loading-a01",
@@ -266,6 +280,7 @@
         "node --experimental-vm-modules remake/test/reel_hints.mjs",
         "node remake/test/cafe_ideas.mjs",
         "node remake/test/ch2_ageha_story.mjs",
+        "node --experimental-vm-modules remake/test/ch2_strawberry_trial.mjs",
         "node remake/test/ch1_adam_taste_carryover.mjs",
         "node --experimental-vm-modules remake/test/fortune_rumor.mjs",
         "node remake/test/lover_dates.mjs",

@@ -4,7 +4,7 @@
 
 - [街全体の順路図](city_map.png)
 - 通りごとの `*_overview.png` と `*_p1.png` などの配置ガイド
-- [当時の舞台設計](../../../../docs/street_city_design.md)と[画像発注案](../../../../docs/codex_handoff_city_images.md)
+- [当時の舞台設計](../../../../docs/archive/street_city_design.md)と[画像発注案](../../../../docs/archive/codex_handoff_city_images.md)
 - [切り替えボタンの配置モック](../../../ui/map-mode-toggle-20261009/README.md)
 
 元ブランチの確認時HEAD: `f9ec0ba284873be63ae7ab0b9b653c48e16e7928`。試作コード・生成スクリプト・当時の台帳変更は移していない。

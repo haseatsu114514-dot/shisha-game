@@ -8,7 +8,7 @@ description: 立ち絵（キャラのスプライト）の表示バグ対応。�
 ## まず仕組みを理解する（位置はどこで決まるか）
 
 ```
-assets/sprites/characters/<id>/<face>.png   ← 原画（表情ごとに1枚）
+assets/sprites/characters/<id>/chr_<id>_<face>.png   ← 原画（表情ごとに1枚）
         ↓ python3 remake/tools/build_manifest.py（ビルド時に毎回計測）
 measure(): 透過余白＋足元アンカー ax を numpy/scipy で計測
         → 同一キャラ内で bottom と ax を共通化（表情差分の描かれ方の違いを吸収）
@@ -62,8 +62,9 @@ remake/js/vn/engine.js の frame() が描画位置・スケールを決定
 - キャラ同士の大小関係は実画面で比較する。`node remake/test/rin_portraits.mjs` は凛の5表情の頭部アンカーと見切れを検証する。
 
 ### E. 立ち絵の追加・差し替え
-1. ファイル名は `assets/sprites/characters/<id>/<face>.png`。face は9種のみ
-   （normal/smile/surprise/sad/serious/smug/wink/evil/excited）。
+1. ファイル名は `assets/sprites/characters/<id>/chr_<id>_<face>.png`。face は基本5種
+   （normal/smile/surprise/sad/serious）＋キャラごとの追加分（smug/wink/evil/excited/thinking/bow 等）。
+   台詞側の `face` 指定は実在するファイルに合わせる。
 2. 追加したら同キャラの既存表情と合わせて B の正規化を通す（新画像だけ座標系が違うのを防ぐ）。
 3. `python3 remake/tools/build_manifest.py` で trim を再計測。
 
@@ -79,6 +80,6 @@ node remake/test/rin_portraits.mjs        # 凛の5表情・中央配置をPC／
 ```
 
 - 仕上げに**該当キャラの表情が実際に切り替わる場面を目視**する（ズレは自動テストで
-  全ては拾えない）。`python3 -m http.server 8123` → ブラウザ/スクリーンショットで確認。
+  全ては拾えない）。`python3 remake/tools/serve_preview.py --port 8123` → ブラウザ/スクリーンショットで確認。
 - 「オーナーの手元でだけズレる」報告は、コードより先に **Pages 配信版の鮮度**
-  （CIのscipy有無・タイトル右下の `D.build` 刻印）を疑う（owner-request スキル Step 4）。
+  （`deploy-pages.yml` の最終実行とmainのHEADの照合）を疑う（owner-request スキル Step 4）。

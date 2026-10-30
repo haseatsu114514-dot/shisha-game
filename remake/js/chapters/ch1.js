@@ -293,7 +293,7 @@ const nightScene = (id, bg) => async (context) => {
   const opening = dialogue?.lines?.[0];
   const sameVisit = context?.returnedToTonari && id === "ch1_salaryman_regular" && typeof opening?.text === "string";
   const scene = sameVisit ? { ...dialogue, lines: [
-    { ...opening, text: opening.text.replace(/^夜のtonari。顔を出すと、/, "夜のtonari。") },
+    { ...opening, text: "夜のtonari。帰り際、スミさんに「悪い、カウンター頼めるか」と呼び止められた。" },
     ...dialogue.lines.slice(1),
   ] } : id;
   await play(scene, bg ? { bg } : {});
@@ -410,7 +410,7 @@ function earlyPractice() {
         progress.practiceDone = true;
         save();
       }
-      if (progress.failed) await read("remake_preparation_failed");
+      if (progress.failed) await read("remake_preparation_failed_day3");
       await read("remake_preparation_first_end");
       progress.feedbackRead = true;
       save();

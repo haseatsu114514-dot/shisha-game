@@ -65,4 +65,4 @@ node remake/test/title_arts.mjs
 
 `REVIEW_URL` で選別画面の検証先、`BASE_URL` で本編の検証先、`ARTIFACT_DIR` で結果・画像の保存先、`CHROME_EXECUTABLE_PATH` でChromeを指定できる。実行ごとに新しいブラウザcontextを作り、実際のプレイヤーの保存を開かない。
 
-専用CI `Title CG review` は目録・全画像の整合性、PC／390pxタッチ／320pxタッチ、2・3・4枚比較、全フィルター、メモと再開、JSON往復／キャンセル／不正入力の非破壊性、保存不能／破損保存／画像失敗、旧試作移行、本編23枚の抽選と保存不変を検証する。証跡は [QA記録](../../docs/qa/title-review/README.md)。
+CIの `title-review` スイート（`tools/ci/suites.json`。旧 `Title CG review` workflow は `ci.yml` へ統合）は目録・全画像の整合性、PC／390pxタッチ／320pxタッチ、2・3・4枚比較、全フィルター、メモと再開、JSON往復／キャンセル／不正入力の非破壊性、保存不能／破損保存／画像失敗、旧試作移行、本編23枚の抽選と保存不変を検証する。証跡は [QA記録](../../docs/qa/title-review/README.md)。
