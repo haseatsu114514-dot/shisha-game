@@ -19,6 +19,7 @@ import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
 import { chapterTwoNights } from "./ch2-story.js";
 import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone } from "../core/affinity-stages.js";
+import { consultLessons } from "../core/growth.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 const descriptions = {
@@ -119,6 +120,8 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     state.flags._lime_contact_ageha = true;
     if (!state.contacts.includes("ageha")) state.contacts.push("ageha");
   }
+  // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
+  if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
   return { used: true, exerted: true };
 }
 
