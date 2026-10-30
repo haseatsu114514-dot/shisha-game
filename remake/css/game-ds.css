@@ -331,13 +331,12 @@ body.game-ds .status-modal .st-radar { align-self: center; }
 body.game-ds .status-modal .radar { width: 200px; height: 200px; }
 body.game-ds .status-modal .st-side { display: flex; flex-direction: column; gap: 5px; }
 body.game-ds .status-modal .st-tabs { flex-wrap: wrap; }
-body.game-ds .status-modal .st-row { min-width: 0; }
-@media (max-width: 360px) {
-  body.game-ds .status-modal .st-row { gap: 6px; }
-  body.game-ds .status-modal .st-line { flex-wrap: wrap; gap: 4px 8px; }
-  body.game-ds .status-modal .st-name { flex: none; width: 48px; }
-  body.game-ds .status-modal .st-info { flex: 1; }
-}
+/* 端末幅ではなく下画面の幅に収める（390px縦持ちの本文幅は326px）。 */
+body.game-ds .status-modal .st-row { min-width: 0; gap: 6px; }
+body.game-ds .status-modal .st-line { flex-wrap: wrap; gap: 4px 8px; }
+body.game-ds .status-modal .st-name { flex: none; width: 48px; }
+body.game-ds .status-modal .st-info { flex: 1; }
+body.game-ds .status-modal .st-fx { overflow-wrap: anywhere; }
 /* 通知カード・トーストは上画面に出す */
 body.game-ds :is(#toasts, #banners) { left: var(--ds-vx); top: calc(var(--ds-vy) + 36px); width: var(--ds-vw); height: calc(var(--ds-vh) - 36px); right: auto; bottom: auto; }
 /* 上画面は端末の半分の高さなので、吸い出し以降の機材の絵は常に縮めて収める（旧配置の大画面向け例外を打ち消す）。 */
@@ -621,8 +620,9 @@ body.game-ds .bench[data-step="setup"] .craft-water-actions .btn:last-child { gr
 body.game-ds .bench[data-step="setup"] .craft-water-actions .btn { min-height: 44px; font-size: 14px; padding: 6px 10px; }
 
 /* 上画面の師匠コメントは小さく、立ち絵を半分以上覆わない。 */
-body.game-ds .bench-left .bench-audience { height: 64px; border-radius: 8px; }
-body.game-ds .bench-left .audience-single { gap: 6px; padding-right: 8px; }
+/* 通常表示の上下12px余白を詰め、長いコメントは内容に応じて高さを取る。 */
+body.game-ds .bench-left .bench-audience { height: auto; min-height: 64px; border-radius: 8px; }
+body.game-ds .bench-left .audience-single { gap: 6px; padding: 4px 8px; }
 body.game-ds .bench-left .audience-single .audience-people { width: 56px; padding: 2px; }
 body.game-ds .bench-left .audience-face { height: 48px; border-radius: 6px; }
 body.game-ds .bench-left .audience-face img.audience-icon { width: 40px !important; height: 40px; left: calc(50% - 20px) !important; }
@@ -646,7 +646,7 @@ body.game-ds .bench .bench-progress-track > .bench-phase:not(.now) .bench-phase-
 body.game-ds .bench .bench-progress-track > .bench-phase.now { flex: 0 0 auto; max-width: 44%; padding: 2px 8px; }
 body.game-ds .bench-phase-copy small { font-size: 10px; }
 /* 師匠の顔: 80px幅の切り取り（audience.js）を崩さず、箱ごと縮める。 */
-body.game-ds .bench-left .audience-single .audience-people { width: 84px; padding: 4px; zoom: .72; }
+body.game-ds .bench-left .audience-single .audience-people { width: 84px; height: auto; padding: 4px; zoom: .72; }
 body.game-ds .bench-left .audience-face { width: 100%; height: 56px; border-radius: 8px; }
 body.game-ds .bench-left .audience-face img.audience-icon { width: 48px !important; height: 48px; left: calc(50% - 24px) !important; }
 body.game-ds .bench-left .audience-person figcaption { display: none; }
