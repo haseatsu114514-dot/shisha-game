@@ -179,7 +179,7 @@ await suite("mix-temperature", async check => {
       });
       const rows = [];
       for (const [id, mix] of [["basic", { double_apple: 9, mint: 3 }], ["peaky", { nightside_earlgrey: 12 }],
-        ["peaky-dobaj", { nightside_earlgrey: 9, vanilla: 3 }]]) {
+        ["peaky-dobaj", { nightside_earlgrey: 9, dobaj_double_apple: 3 }]]) {
         await page.evaluate(async () => {
           QA.cs = QA.session.newSession("drill"); QA.cs.staffPractice = true;
           await QA.session.openBench(QA.cs).ready;
@@ -381,7 +381,7 @@ await suite("mix-temperature", async check => {
     assert.equal(results.modes[1].lowScore, 100); assert.equal(results.modes[1].highScore, 100);
     assert.equal(results.mintRisk, results.mintCenterRisk);
     assert.equal(results.afRisk - results.afCenterRisk, 12);
-    assert.equal(results.vanillaRisk - results.vanillaCenterRisk, 6);
+    assert.equal(results.vanillaRisk - results.vanillaCenterRisk, 12);
   });
 
   await check("legacy-save-care-start-and-auto-targets", async page => {

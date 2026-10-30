@@ -23,17 +23,17 @@ const checkModel = (cs, expected, catalog, width = 1.04) => {
 
 const widths = { af: 1, dobaj: 1.25, afsahr: .92, forcefect: .72, fuwari: .72, nightside: .75 };
 for (const flavor of flavors) checkModel({ mix: { [flavor.id]: 12 } }, flavor.heat_tolerance, undefined, 1.04 * widths[flavor.maker]);
-const vanilla = checkModel({ mix: { vanilla: 12 } }, .8, undefined, 1.3);
+const vanilla = checkModel({ mix: { vanilla: 12 } }, .8);
 const apple = checkModel({ mix: { double_apple: 12 } }, 1);
 const mint = checkModel({ mix: { mint: 12 } }, 1.2);
-near(vanilla.ideal[0], .276); near(vanilla.ideal[1], .588);
-near(vanilla.optimal[0], .367); near(vanilla.optimal[1], .497);
+near(vanilla.ideal[0], .3072); near(vanilla.ideal[1], .5568);
+near(vanilla.optimal[0], .38); near(vanilla.optimal[1], .484);
 near(mint.ideal[0], .5232); near(mint.ideal[1], .7728);
 near(mint.optimal[0], .596); near(mint.optimal[1], .7);
 console.log("[mix temperature] PASS: every real flavor, including vanilla / AF apple / AF mint examples");
 
-checkModel({ mix: { vanilla: 9, mint: 3 } }, .9, undefined, 1.235);
-checkModel({ mix: { vanilla: 3, mint: 9 } }, 1.1, undefined, 1.105);
+checkModel({ mix: { vanilla: 9, mint: 3 } }, .9);
+checkModel({ mix: { vanilla: 3, mint: 9 } }, 1.1);
 checkModel({ mix: { double_apple: 10, mint: 2 } }, 1 + .2 / 6); // supplied mint regulation
 const small = { mix: { vanilla: 9, mint: 3 }, steamSeconds: 480, pack: "normal" };
 const large = { ...small, mix: { vanilla: 18, mint: 6 } };
@@ -49,9 +49,9 @@ checkModel(legacy, 1 + .2 / 6);
 for (const invalid of [undefined, null, 0, -1, NaN, Infinity, "1.2", Number.MIN_VALUE]) {
   checkModel({ mix: { legacy: 12 } }, 1, { legacy: { heat_tolerance: invalid, stats: { heat_resistance: 99 } } });
 }
-checkModel({ mix: { vanilla: 6, legacy: 6 } }, .9, undefined, 1.17);
-checkModel({ mix: { vanilla: Number.MAX_VALUE, mint: Number.MAX_VALUE } }, 1, undefined, 1.17);
-checkModel({ mix: { vanilla: Number.MIN_VALUE, mint: Number.MIN_VALUE } }, 1, undefined, 1.17);
+checkModel({ mix: { vanilla: 6, legacy: 6 } }, .9);
+checkModel({ mix: { vanilla: Number.MAX_VALUE, mint: Number.MAX_VALUE } }, 1);
+checkModel({ mix: { vanilla: Number.MIN_VALUE, mint: Number.MIN_VALUE } }, 1);
 console.log("[mix temperature] PASS: empty/legacy saves, unknown or invalid heat_tolerance, ignored invalid g, extreme finite weights");
 
 let boundaryCases = 0;
@@ -122,10 +122,10 @@ let widthCases = 0;
 for (const recipe of recipes) for (const equip of equipment) {
   let previous = 0;
   const base = temperatureBands({ mix: recipe, equip });
-  const end = temperatureBands({ mix: { vanilla: 12 }, equip });
+  const end = temperatureBands({ mix: { dobaj_double_apple: 12 }, equip });
   for (const fraction of fractions) {
     const mix = Object.fromEntries(Object.entries(recipe).map(([id, w]) => [id, 12 * (1 - fraction) * w]));
-    mix.vanilla = 12 * fraction;
+    mix.dobaj_double_apple = 12 * fraction;
     const cs = { mix, equip }, bands = temperatureBands(cs), profile = makerMixProfile(cs);
     const width = bands.ideal[1] - bands.ideal[0];
     assert(width >= previous - 1e-12, `Dobaj width shrank at ${fraction}`);

@@ -35,6 +35,25 @@ const snapshot = page => page.evaluate(() => ({ money: S.core.state.money, stock
 await suite("shop-ui", async check => {
   const selected = process.env.TEST_CASES?.split(",");
   const run = (name, body, options = {}) => !selected || selected.includes(name) ? check(name, body, { reducedMotion: "reduce", ...options }) : Promise.resolve();
+  await run('af-vanilla-stock-and-craft-art', async page => {
+    await setup(page);
+    await page.evaluate(() => { S.core.save(); S.core.newGame(); S.core.load(); });
+    assert.equal((await snapshot(page)).stock.vanilla, 20, 'Saved vanilla stock keeps its ID and grams');
+    await open(page);
+    assert.match(await page.locator('[data-test="detail-vanilla"] b').innerText(), /アルファーヘブン バニラ/);
+    await tap(page, 'buy-vanilla'); await tap(page, 'shop-checkout');
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
+    assert.equal(saved.flavorStock.vanilla, 70);
+    assert.equal(saved.money, 11050);
+    const source = await page.evaluate(async () => {
+      const art = S.shop.flavorPackageArt('vanilla');
+      S.ui.showScreen(art);
+      const image = art.querySelector('img'); await image.decode();
+      return { url: image.src, width: image.naturalWidth, maker: S.data.DB.flavorById.vanilla.maker };
+    });
+    assert(source.url.endsWith('/af-vanilla/vanilla.webp'));
+    assert.equal(source.width, 512); assert.equal(source.maker, 'af');
+  });
   for (const [platform, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }], ["compact", { viewport: { width: 800, height: 600 } }]]) {
     await run(`${platform}-product-art-legacy-save`, async page => {
       await setup(page);
@@ -78,7 +97,7 @@ await suite("shop-ui", async check => {
       assert.deepEqual(flavors.filter(row => row.kind === 'botanical').map(row => row.id), []);
       assert.equal(new Set(flavors.filter(row => ADOPTED.includes(row.id)).map(row => row.url)).size, 18, 'Adopted flavor cartons remain distinct');
       for (const row of flavors.filter(row => ADOPTED.includes(row.id))) {
-        assert(row.url.includes(`/${REMAINING.includes(row.id) ? 'remaining8' : 'heaven10'}/${row.id}.webp`));
+        assert(row.url.includes(`/${row.id === 'vanilla' ? 'af-vanilla' : REMAINING.includes(row.id) ? 'remaining8' : 'heaven10'}/${row.id}.webp`));
       }
       for (const id of await page.evaluate(() => S.shop.SHOP_FLAVORS)) {
         const button = page.locator(`[data-test="detail-${id}"]`);

@@ -1,0 +1,51 @@
+{
+  "source": {
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "visible_bbox": [
+      258,
+      129,
+      999,
+      1120
+    ],
+    "box": [
+      256,
+      127,
+      745,
+      995
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "573d62c2cddbd8cade5f4250e5fe17c1b16d1a4c97e33a26013108cf6b34952f"
+  },
+  "delivery": {
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "visible_bbox": [
+      105,
+      53,
+      408,
+      458
+    ],
+    "box": [
+      103,
+      51,
+      307,
+      409
+    ],
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "aadc07578d3aabb59c0d8593ac8a2b43fe0aaa19399a888bf404df73d3be6ed2"
+  },
+  "bytes": 28904
+}
