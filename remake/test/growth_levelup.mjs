@@ -146,15 +146,16 @@ core.state.kuji = { g500: { order: [0, 0], drawn: 2, emptyDay: 5 } };
 const held = { ...g.hidane };
 const night = growth.settleGrowth();
 const labels = night.gifts.map((x) => x.label || x.who);
-assert.deepEqual(labels, ["minto", "斧投げで Bランク", "斧投げで Aランク", "TRPGの卓を最後まで遊んだ", "TRPGで★3の卓", "くじのラストワン賞"]);
-assert.equal(g.hidane.body - held.body, 2 + 2 + 1, "斧投げB・A で才2＋2、ラストワン賞のセットで才1");
-assert.equal(g.hidane.wisdom - held.wisdom, 2 + 2 + 1);
-assert.equal(g.hidane.sense - held.sense, 1);
+assert.deepEqual(labels, ["minto", "斧投げで Aランク", "TRPGで★3の卓", "くじのラストワン賞"]);
+assert.deepEqual(night.gifts[1].parts, [{ kind: "body", n: 1 }], "斧投げAで才1（小さめ。SBD39）");
+assert.deepEqual(night.gifts[2].parts, [{ kind: "wisdom", n: 1 }], "TRPG★3で理1");
+assert.deepEqual(night.gifts[3].parts, [{ kind: "body", n: 1 }], "ラストワン賞は1つ。段が同じなら才能盤の色");
+assert.equal(g.hidane.sense - held.sense + g.hidane.body - held.body + g.hidane.wisdom - held.wisdom, 3, "ラストワン賞は1つだけ（いちばん段の低い盤の色）");
 assert.deepEqual(growth.settleGrowth().gifts, [], "同じ水準・同じ箱では二度もらえない");
 core.state.kuji.g500.emptyDay = 9;
 assert.deepEqual(growth.settleGrowth().gifts.map((x) => x.label), ["くじのラストワン賞"], "次の箱を引き切ればまたもらえる");
 core.state.flags._axe_bar_records = { classic: { plays: 9, best: { total: 85, maximum: 100 } } };
-assert.deepEqual(growth.settleGrowth().gifts.map((x) => x.label), ["斧投げで Sランク"]);
+assert.deepEqual(growth.settleGrowth().gifts, [], "斧投げのご褒美は Aランクの1回だけ");
 delete core.state.flags._axe_bar_records; core.state.trpg.cleared = {}; core.state.kuji = {};
 
 // ゲージ（6.1a）
@@ -171,7 +172,7 @@ assert.equal(growth.gaugeAt(80, 0, 0).max, true);
 // 保存・読込・壊れた値
 core.save(); core.load();
 assert.equal(core.state.growth.level, 10);
-assert.equal(core.state.growth.hidane.sense, 5, "節目2＋セット3回");
+assert.equal(core.state.growth.hidane.sense, 2, "節目の2");
 assert.equal(core.state.growth.gifted.minto, true);
 core.state.growth = { level: 99, xp: -5, hidane: "x", milestones: [3, 10], firsts: null };
 const fixed = growth.ensureGrowth();

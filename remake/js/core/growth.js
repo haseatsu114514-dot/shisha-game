@@ -290,7 +290,7 @@ function playRewardMet(reward, s) {
 }
 
 /**
- * 遊びのご褒美（SBD39）と、くじのラストワン賞の火種セット（SBD40）を受け取る。寝る前の精算から呼ぶ。
+ * 遊びのご褒美（SBD39）と、くじのラストワン賞の火種（SBD40）を受け取る。寝る前の精算から呼ぶ。
  * 戻り値: [{ label, parts: [{ kind, n }] }]
  */
 export function claimPlayRewards(g, s = state) {
@@ -305,7 +305,8 @@ export function claimPlayRewards(g, s = state) {
     const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}`;
     if (g.rewards[key]) continue;
     g.rewards[key] = true;
-    out.push({ label: "くじのラストワン賞", parts: giveSet(g, KUJI_LAST_ONE_GIFT) });
+    const low = BOARD_KEYS.reduce((best, k) => boardStep(g, k) < boardStep(g, best) ? k : best, BOARD_KEYS[0]);
+    out.push({ label: "くじのラストワン賞", parts: giveSet(g, { [low]: KUJI_LAST_ONE_GIFT }) });
   }
   return out;
 }

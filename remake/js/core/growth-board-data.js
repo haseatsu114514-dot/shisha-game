@@ -126,20 +126,14 @@ export const CHAR_TYPE = {
 };
 
 // ---------------------------------------------------------------- 遊びのご褒美（2026-10-30 オーナー指示 SBD39・SBD40）
-// 斧投げ・TRPG・DJ をやり込んで一定の水準に届いたら、色つきの火種がもらえる。寝る前の精算でまとめて渡す。
-// 色は遊びの性格で: 斧投げ＝才能（体）、DJ＝感覚（リズム）、TRPG＝理論（読み・組み立て）。最後の段は3色のセット。
-const SET = { body: 1, sense: 1, wisdom: 1 };
+// 斧投げ・TRPG・DJ をやり込んで一定の水準に届いたら、色つきの火種を1つ。寝る前の精算で渡す。
+// 量は小さく（オーナー: 「あげすぎ。♥5まで上げてやっと色の火種がもらえるぐらい」「ミニゲームをやりたくない人もいる」）。
+// 遊ばなくても盤の進みはほとんど変わらない。色は遊びの性格で: 斧投げ＝才能、DJ＝感覚、TRPG＝理論。
 export const PLAY_REWARDS = [
-  { id: "axe-b", game: "axe", rank: "B", label: "斧投げで Bランク", gift: { body: 2 } },
-  { id: "axe-a", game: "axe", rank: "A", label: "斧投げで Aランク", gift: { body: 2 } },
-  { id: "axe-s", game: "axe", rank: "S", label: "斧投げで Sランク", gift: SET },
-  { id: "trpg-1", game: "trpg", clears: 1, label: "TRPGの卓を最後まで遊んだ", gift: { wisdom: 2 } },
-  { id: "trpg-star3", game: "trpg", stars: 3, label: "TRPGで★3の卓", gift: { wisdom: 2 } },
-  { id: "trpg-2", game: "trpg", clears: 2, label: "TRPGのシナリオを2本遊んだ", gift: SET },
+  { id: "axe-a", game: "axe", rank: "A", label: "斧投げで Aランク", gift: { body: 1 } },
+  { id: "trpg-star3", game: "trpg", stars: 3, label: "TRPGで★3の卓", gift: { wisdom: 1 } },
   // DJ はまだ本編に入っていない（remake/previews/dj）。入ったら最高ランクを state に残し、ここを読む
-  { id: "dj-b", game: "dj", rank: "B", label: "DJで Bランク", gift: { sense: 2 } },
-  { id: "dj-a", game: "dj", rank: "A", label: "DJで Aランク", gift: { sense: 2 } },
-  { id: "dj-s", game: "dj", rank: "S", label: "DJで Sランク", gift: SET },
+  { id: "dj-a", game: "dj", rank: "A", label: "DJで Aランク", gift: { sense: 1 } },
 ];
-/** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに火種のセット */
-export const KUJI_LAST_ONE_GIFT = SET;
+/** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん段の低い盤の色） */
+export const KUJI_LAST_ONE_GIFT = 1;
