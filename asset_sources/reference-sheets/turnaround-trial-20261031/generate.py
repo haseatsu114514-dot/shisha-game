@@ -11,12 +11,12 @@ def run(a):
   ch,k=a; o=f'{O}/{ch}_turnaround_trial_{k}.png'
   if os.path.exists(o): return o,'skip'
   refs=[f'{R}/assets/sprites/characters/{ch}/chr_{ch}_{f}.png' for f in C[ch]]
-  cmd=['curl','-s','-m','600','https://api.openai.com/v1/images/edits','-H','Authorization: Bearer '+os.environ['OPENAI_API_KEY'],'-F','model=gpt-image-2','-F','size=1536x1024','-F','quality=high','-F','prompt=<-']+sum([['-F','image[]=@'+r] for r in refs],[])
+  cmd=['curl','-s','-m','600','https://api.openai.com/v1/images/edits','-H','Authorization: Bearer '+os.environ['OPENAI_API_KEY'],'-F','model=gpt-image-2.5-sunburst','-F','size=1536x1024','-F','quality=high','-F','prompt=<-']+sum([['-F','image[]=@'+r] for r in refs],[])
   for t in range(3):
     r=subprocess.run(cmd,input=P.encode(),capture_output=True)
     try:
       d=json.loads(r.stdout); img=base64.b64decode(d['data'][0]['b64_json']); open(o,'wb').write(img)
-      open(os.path.join(O,'usage.jsonl'),'a').write(json.dumps({'file':o,'model':'gpt-image-2','usage':d.get('usage')})+'\n'); return o,'ok'
+      open('/workspace/imggen/log.jsonl','a').write(json.dumps({'file':o,'model':'gpt-image-2.5-sunburst','usage':d.get('usage')})+'\n'); return o,'ok'
     except Exception: e=r.stdout[:300]
   return o,'ERR '+e.decode(errors='replace')
 with cf.ThreadPoolExecutor(4) as ex:
