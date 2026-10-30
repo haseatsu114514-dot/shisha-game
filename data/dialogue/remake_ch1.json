@@ -621,6 +621,35 @@
       ]
     },
     {
+      "dialogue_id": "remake_repeat_adam_4",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "あのシーシャくじ、まだ引けるのか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ショップのくじですか。たぶん、まだあります"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "中身を見たら、ずいぶんお得だな。俺も寄ってみるか"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_repeat_minto_0",
       "metadata": {
         "bg": "res://assets/backgrounds/peppermint.png"
