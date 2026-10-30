@@ -80,7 +80,7 @@ await suite("growth-levelup", async (check) => {
       assert.equal(await page.locator(t("board-light")).count(), 0);
       await tap(t("board-close"));
       await page.locator(t("growth-board")).waitFor({ state: "detached" });
-      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 2);
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 3); // Lv.50 まではレベル1つで火種3つ（SBD54）
       assert.equal(await page.evaluate(() => window.entryStatus), 0);
       await tap(t("pin-kannon")); await tap(t("map-go"));
       await tap(t("kannon-reflect"));
@@ -90,7 +90,7 @@ await suite("growth-levelup", async (check) => {
         await page.waitForTimeout(150);
       }
       await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 3; i++) { // 火種3つを使い切る
         await tap('.gb-node[data-status="available"]');
         await tap(t("board-light"));
       }
