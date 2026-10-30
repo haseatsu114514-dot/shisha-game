@@ -57,7 +57,24 @@ export function openStatus() {
   const body = el("div.st-body");
   const show = (id) => {
     tabs.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.tab === id));
-    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : itemsTab());
+    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : itemsTab(showRecipe));
+  };
+  const showRecipe = (id) => {
+    // ヒントだけの配合や、旧セーブに残った未知のIDから詳細を開かない。
+    const recipe = DB.recipes.find((r) => r.id === id && state.recipes?.[r.id]);
+    if (!recipe) return;
+    const scroller = body.closest(".modal-body");
+    const scrollTop = scroller.scrollTop;
+    const back = el("button.btn", { text: "レシピ帳へ戻る", dataset: { test: "recipe-back" }, onclick: () => {
+      show("items");
+      body.querySelectorAll("[data-recipe]").forEach((button) => {
+        if (button.dataset.recipe === id) button.focus({ preventScroll: true });
+      });
+      scroller.scrollTop = scrollTop;
+    } });
+    body.replaceChildren(recipeDetails(recipe), back);
+    scroller.scrollTop = 0;
+    back.focus({ preventScroll: true });
   };
   for (const [id, label] of [["me", "ステータス"], ["people", "人間関係"], ["items", "持ち物"]]) {
     tabs.append(el("button.st-tab", { text: label, dataset: { tab: id }, onclick: () => show(id) }));
@@ -153,7 +170,22 @@ function giftNote(e) {
   ]);
 }
 
-function itemsTab() {
+function recipeDetails(recipe) {
+  const name = (id) => String(DB.flavorById[id]?.short_name || DB.flavorById[id]?.name || id).split(" ").pop();
+  const day = state.recipes[recipe.id]?.day;
+  return el("div.recipe-detail", { dataset: { test: "recipe-detail" } }, [
+    el("h4", { text: recipe.name }),
+    el("p", { text: `材料：${recipe.flavors.map(name).join(" ／ ")}` }),
+    el("p", { text: recipe.golden
+      ? `黄金比：${Object.entries(recipe.golden).map(([id, weight]) => `${name(id)} ${weight}`).join("：")}（割合）`
+      : "黄金比：未設定" }),
+    el("p.st-note", { text: "同じ系統の銘柄でも作れる。発見時のグラム数は記録していない。" }),
+    el("p", { text: `発見日：${Number.isInteger(day) && day > 0 ? `DAY ${day}` : "記録なし"}` }),
+    recipe.memo ? el("p", { text: recipe.memo }) : null,
+  ]);
+}
+
+function itemsTab(showRecipe) {
   const eq = state.owned.map((id) => DB.equipById[id]).filter(Boolean);
   const fl = [...new Set([...ownedFlavorIds(), ...Object.keys(state.flavorMastery || {})])].map(id => DB.flavorById[id]).filter(Boolean);
   const grams = (id) => `${flavorStock(id)}g · ${masteryLabel(state, id, DB.flavorById)}`;
@@ -176,8 +208,13 @@ function itemsTab() {
     el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "所持0" })]),
     el("p.st-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
     el("h4", { text: "レシピ帳" }),
-    el("div.chips", DB.recipes.filter((r) => state.recipes[r.id]).map((r) => el("span.chip.gold", { text: r.name })).concat(
-      Object.keys(state.recipes).length ? [] : [el("span.chip.dim", { text: "まだ白紙" })])),
+    el("p.st-note", { text: "名前をタップすると、材料・黄金比・発見日を確認できる。" }),
+    el("div.chips", (() => {
+      const found = DB.recipes.filter((r) => state.recipes?.[r.id]);
+      return found.length ? found.map((r) => el("button.chip.gold.recipe-chip", {
+        text: r.name, dataset: { recipe: r.id, test: `recipe-${r.id}` }, onclick: () => showRecipe(r.id),
+      })) : [el("span.chip.dim", { text: "まだ白紙" })];
+    })()),
     // 喫茶こはくで思いついた・ライバルから聞いた、まだ作っていない配合
     ...(() => {
       const later = triedLater(state, DB.recipes);
