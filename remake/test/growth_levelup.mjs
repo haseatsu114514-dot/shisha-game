@@ -92,14 +92,14 @@ const first = growth.settleGrowth();
 assert.equal(first.from, 1);
 assert.equal(first.to, growth.levelForExp(g.xp));
 assert.equal(first.full, true, "初めてのレベルアップはフル演出");
-assert.equal(g.hidane.any, first.to - 1);
-assert.equal(g.earned, first.to - 1);
+assert.equal(g.hidane.any, 2 * (first.to - 1), "レベル1つで火種2つ（第2版 1.5）");
+assert.equal(g.earned, 2 * (first.to - 1));
 assert.equal(g.settledXp, g.xp);
 assert.deepEqual(g.today, { xp: 0, learned: {} });
 assert.ok(first.learned.length <= 3 && first.learned.includes("naru"), "今日学んだこと（最大3つ）");
 const again = growth.settleGrowth();
 assert.equal(again.to, again.from, "二度精算しても増えない");
-assert.equal(g.earned, first.to - 1);
+assert.equal(g.earned, 2 * (first.to - 1));
 
 // 2回目以降の1レベルは短い帯、2つ以上はフル
 growth.gainExp(growth.totalExpFor(g.level + 1) - g.xp);
@@ -111,17 +111,29 @@ const two = growth.settleGrowth();
 assert.equal(two.to - two.from, 2);
 assert.equal(two.full, true, "1晩に2つ以上はフル");
 
-// 節目 Lv.10: 2つ目は系統限定（盤が無い間は一番段の低い系統）
-core.state.stats = { technique: 48, sense: 44, guts: 12, charm: 16, insight: 27 };
+// 節目 Lv.10: 色つきの火種2つ。前の節目から一番灯した盤の色（同数なら段の低い盤）
+growth.noteLit(g, "wisdom", 3);
+growth.noteLit(g, "sense", 5);
 growth.gainExp(growth.totalExpFor(10) - g.xp);
 const earnedBefore = g.earned;
 const ms = growth.settleGrowth();
 assert.equal(ms.to, 10);
 assert.equal(ms.full, true, "節目はフル");
-assert.deepEqual(ms.gains.limited, [{ level: 10, system: "guts" }], "根性12・魅力16 → 段2どうしは技→感→根→魅→察の順で根性");
-assert.equal(g.hidane.guts, 1);
-assert.equal(g.earned - earnedBefore, ms.to - ms.from + 1);
+assert.deepEqual(ms.gains.limited, [{ level: 10, system: "sense", n: 2 }], "感覚盤に一番灯した");
+assert.equal(g.hidane.sense, 2);
+assert.equal(g.earned - earnedBefore, 2 * (ms.to - ms.from) + 2);
 assert.deepEqual(g.milestones, [10]);
+assert.deepEqual(g.litSince, { body: 0, sense: 0, wisdom: 0 }, "節目で数え直す");
+assert.equal(growth.milestoneSystem(g), "body", "同数（0）なら段の低い盤、それも同じなら才能");
+
+// ♥5の人から、その人のタイプの色の火種2つ（周回ごとに1回）
+core.state.affinity.minto = 999;
+const gift = growth.giftAtMaxHeart("minto");
+assert.deepEqual(gift, { kind: "body", n: 2 });
+assert.equal(g.hidane.body, 2);
+assert.equal(growth.giftAtMaxHeart("minto"), null, "二度はもらえない");
+assert.equal(growth.giftAtMaxHeart("sumi"), null, "タイプの無い人はくれない");
+core.state.affinity.minto = 0;
 
 // ゲージ（6.1a）
 const gauge = growth.gaugeAt(12, growth.totalExpFor(12) + 130, growth.totalExpFor(12) + 200);
@@ -137,22 +149,35 @@ assert.equal(growth.gaugeAt(80, 0, 0).max, true);
 // 保存・読込・壊れた値
 core.save(); core.load();
 assert.equal(core.state.growth.level, 10);
-assert.equal(core.state.growth.hidane.guts, 1);
+assert.equal(core.state.growth.hidane.sense, 2);
+assert.equal(core.state.growth.gifted.minto, true);
 core.state.growth = { level: 99, xp: -5, hidane: "x", milestones: [3, 10], firsts: null };
 const fixed = growth.ensureGrowth();
 assert.equal(fixed.level, 1);
 assert.equal(fixed.xp, 0);
 assert.equal(growth.hidaneTotal(fixed), 0);
 assert.deepEqual(fixed.milestones, [10]);
-// 上限: 盤の86個を超えて渡さない
-core.state.growth = { ...growth.newGrowth(), earned: 85 };
+// 第1版の試作の色は万能に寄せる
+core.state.growth = { ...growth.newGrowth(), hidane: { any: 1, technique: 2, guts: 1, sense: 1 }, nodes: ["T1", "B1", "K03"] };
+const old = growth.ensureGrowth();
+assert.deepEqual(old.hidane, { any: 4, body: 0, sense: 1, wisdom: 0 });
+assert.deepEqual(old.nodes, ["B1", "K03"], "知らないマスIDは落とす");
+// 旧セーブの習得済みフラグ → 授業のマスが灯る。灯した授業はフラグを戻す（4.5・2.6）
+core.state.flags._coal_cube_learned = true;
+core.state.growth.nodes.push("M-S1");
+growth.ensureGrowth();
+assert.ok(core.state.growth.nodes.includes("M-W1"), "キューブ炭の旧フラグ → 授業のマス");
+assert.equal(core.state.flags._sumi_attack_learned, true, "灯した授業のフラグが立つ");
+delete core.state.flags._coal_cube_learned; delete core.state.flags._sumi_attack_learned;
+// 上限: 盤の179を超えて渡さない
+core.state.growth = { ...growth.newGrowth(), earned: 178 };
 growth.gainExp(growth.totalExpFor(12));
 const capped = growth.settleGrowth();
-assert.equal(core.state.growth.earned, 86);
+assert.equal(core.state.growth.earned, 179);
 assert.equal(capped.boardFull, true);
 
 // 無効へ戻すと新しいゲームには growth が無い
 growth.setGrowthPreview(false);
 core.newGame();
 assert.equal(core.state.growth, undefined);
-console.log("[growth levelup] PASS: curve, flag off, X1-X4 + freshness, one chip per action, chapter mult, night settlement, short/full, milestone hidane, gauge, save/load, cap");
+console.log("[growth levelup] PASS: curve, flag off, X1-X4 + freshness, one chip per action, chapter mult, night settlement, short/full, milestone hidane, ♥5 gift, gauge, save/load, legacy lessons, cap");
