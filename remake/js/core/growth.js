@@ -25,11 +25,11 @@ export function setGrowthPreview(on) {
 
 // ---------------------------------------------------------------- 数値（SPEC 1.2〜1.5）
 
-export const MAX_LEVEL = 80;
+export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上限（SBD51）
 export const BOARD_TOTAL = 179; // 盤の全部（能力81＋スキル98）。これ以上の火種は渡さない（1.5「盤は埋まった」）
 export const HIDANE_PER_LEVEL = 2;  // レベルアップ1回で万能の火種2つ（1.5）
 export const COLORED_GIFT = 2;      // 節目・大会・♥5の色つきの火種（1.5）
-export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70];
+export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
 export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30 };
 /** その章で同じ鍵の 1・2回目 ×1.0、3回目 ×0.8、4回目 ×0.6、5回目以降 ×0.4（1.3） */

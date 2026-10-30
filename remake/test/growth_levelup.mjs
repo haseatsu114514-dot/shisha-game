@@ -16,7 +16,7 @@ for (const [lv, total] of [[1, 0], [2, 205], [5, 850], [10, 2025], [20, 4750], [
 assert.equal(growth.expToNext(79), 595);
 assert.equal(growth.levelForExp(204), 1);
 assert.equal(growth.levelForExp(205), 2);
-assert.equal(growth.levelForExp(1e9), 80);
+assert.equal(growth.levelForExp(1e9), 99);
 assert.deepEqual([1, 2, 3, 4, 5, 9].map(growth.freshness), [1, 1, 0.8, 0.6, 0.4, 0.4]);
 
 // 無効のときは状態も通知も増やさない（旧しくみのまま）
@@ -167,7 +167,8 @@ assert.equal(gauge.pending, 0);
 const over = growth.gaugeAt(12, growth.totalExpFor(12), growth.totalExpFor(13) + 80);
 assert.deepEqual([over.now, over.pending, over.overflow, over.left], [1, 1, 80, 0]);
 assert.equal(growth.gaugeAt(9, 0, 0).nextMilestone, true);
-assert.equal(growth.gaugeAt(80, 0, 0).max, true);
+assert.equal(growth.gaugeAt(99, 0, 0).max, true);
+assert.equal(growth.gaugeAt(80, 0, 0).max, false);
 
 // 保存・読込・壊れた値
 core.save(); core.load();

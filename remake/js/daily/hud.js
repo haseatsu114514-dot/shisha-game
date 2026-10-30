@@ -149,7 +149,7 @@ function updateGrowth() {
   left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
   dom.exp.classList.toggle("ready", g.pending > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
-  dom.exp.title = g.max ? "Lv.80 MAX" : g.pending > 0
+  dom.exp.title = g.max ? `Lv.${g.level} MAX` : g.pending > 0
     ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
   dom.exp.setAttribute("aria-label", dom.exp.title);
 }
