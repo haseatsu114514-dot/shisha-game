@@ -268,7 +268,7 @@ CANON_NOTES = [
     "<strong>照合範囲</strong>：フレーバー収録数・価格、主要人物の氏名・読み・年齢、章タイトル・大会名・課題は正本と照合済み。一人称・呼称、店舗説明、あらすじの細部は全件照合が未了（正本優先）。",
     "<strong>現行唯一の実装は <code>remake/</code></strong>（旧 <code>web/</code> および Godot版は完全廃止）。第1章〜第3章必須進行がブラウザで通しプレイ可能、第4章・第5章は台詞データ先行。",
     "<strong>スミの水の説明（#1113 / #1128）</strong>：ボトルの水の役割は<strong>「煙を冷やして吸いやすくする」だけ</strong>。有害物質への影響は<strong>「諸説ある」</strong>とし、断定しない。爆煙の理由は水ではなく<strong>「グリセリンと熱の仕事」</strong>（K14）。",
-    "<strong>水入れ・蒸らし仕様</strong>：水入れ工程は<strong>開始水量 0（空）からスタート</strong>（#1081 E01）。蒸らしは<strong>キッチンタイマーの実時間計測方式</strong>（#541 / E17）。",
+    "<strong>水入れ・蒸らし仕様</strong>：水入れ工程は<strong>開始水量 0（空）からスタート</strong>（#1081 E01）。蒸らしは<strong>キッチンタイマーで分1分・秒10秒刻みに設定してスタート</strong>（GP21〜26、上限10分）。",
     "<strong>廃止・統合された旧設定</strong>：旧3章ライバル「ナンディ・カルダモン」は廃止（→<strong>久世 朔</strong>）。旧「チャド（SHOWTIME）」は<strong>ダ・シルヴァ太陽（FESTA）</strong>へ統合。旧「炭場 創」→<strong>火浦 理一</strong>、旧「前園 壮一郎」→<strong>上園 文太郎</strong>へ改名。",
 ]
 
@@ -342,7 +342,7 @@ chapters_html = "\n".join(chapter_block(ch, i) for i, ch in enumerate(CHAPTERS))
 def subset_font():
     display_text = set()
     for s in [
-        "『ケムリの向こう側』 設定資料集 第12345章 煙がつなぐ街 才能の壁 Hollow Crown 嘘つきたちの夜 SMOKE AND MIRRORS 継承の煙 Legacy Smoke 機械仕掛けの神 Deus Ex Machina このゲームについて キャラクター全図鑑 ストーリー（全5章） 世界観・クラフト・大会仕様 フレーバーうんちく 正本ガイド 公式ヒロイン7名 審査員・MC・街スポット 開発用・二次資料"
+        "『水煙前線 -EN:CODE-』 設定資料集 第12345章 煙がつなぐ街 才能の壁 Hollow Crown 嘘つきたちの夜 SMOKE AND MIRRORS 継承の煙 Legacy Smoke 機械仕掛けの神 Deus Ex Machina このゲームについて キャラクター全図鑑 ストーリー（全5章） 世界観・クラフト・大会仕様 フレーバーうんちく 正本ガイド 公式ヒロイン7名 審査員・MC・街スポット 開発用・二次資料"
     ]:
         display_text.update(s)
     for group in (CH1_MAIN, CH1_JUDGES, SUB_SPOT_CHARS, CH2_CHARS, CH3_CHARS, CH4_CHARS, CH5_CHARS, JUDGES_MISC):
@@ -369,7 +369,7 @@ def subset_font():
 FONT_URI = subset_font()
 
 # ---------------------------------------------------------------- template
-HTML = f'''<title>『ケムリの向こう側』設定資料集（origin/main 54a6d87f 準拠）</title>
+HTML = f'''<title>『水煙前線 -EN:CODE-』設定資料集（origin/main 54a6d87f 準拠）</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -548,7 +548,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 </style>
 
 <nav aria-label="目次"><div class="wrap">
-  <span class="brand disp">『ケムリの向こう側』</span>
+  <span class="brand disp">『水煙前線 -EN:CODE-』</span>
   <a href="#about">概要</a>
   <a href="#ch1cast">第1章・街キャラ</a>
   <a href="#allcast">全キャラ図鑑</a>
@@ -560,7 +560,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 
 <header class="hero">
   <p class="eyebrow disp">SETTING REFERENCE BOOK — 2026-10-28</p>
-  <h1 class="disp">『ケムリの向こう側』</h1>
+  <h1 class="disp">『水煙前線 -EN:CODE-』</h1>
   <p class="sub disp">共同制作向け・設定資料集（二次資料）</p>
   <p class="lead">シーシャ屋育成 × 恋愛 × 少年漫画バトルADV。地元・橙須の「tonari」で働く青年・蒸野はじめ（俺）が、出会った人々と混ざり合ったままの自分で世界一、そしてAIとの二本勝負へ挑む全5章。参照commit: <code>origin/main 54a6d87f</code>（2026-10-28 確認）。</p>
   <span class="warn">⚠ 開発用・全編ネタバレあり ／ 正本は docs/master_spec.md 等</span>
@@ -576,8 +576,8 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
     <div class="fact"><h4>大会形式（4人同時1試合）</h4><p>第1章〜第4章は<strong>4人同時1試合制</strong>（旧2章3ステージ制・FLAVOR TRIALは廃止）。第5章のみAIとの<strong>DA単体12g・二本勝負（観客挙手2回合計票）</strong>。</p></div>
     <div class="fact"><h4>審査5軸（20%×5）</h4><p><strong>煙量・持続・香り・再現度・提供演出</strong>の各20%＝100点満点。第1章の南雲は持ち点10を基準（84点以上）達成者1人に一括投入。</p></div>
     <div class="fact"><h4>水入れ・スミの水の説明</h4><p>水入れは<strong>開始水量0（空）からスタート</strong>（#1081 E01）。水の役割は<strong>「煙を冷やして吸いやすくする」だけ</strong>（有害物質への影響は「諸説ある」とし断定しない、#1113/#1128）。</p></div>
-    <div class="fact"><h4>蒸らし＆温度帯表現</h4><p>蒸らしは<strong>キッチンタイマーの実時間計測</strong>（#541）。温度計の数値表示はなく、陽炎・炭の赤熱・煙・音・香り描写で温度帯を読む。</p></div>
-    <div class="fact"><h4>フレーバー＆レシピ</h4><p><strong>5メーカー全77種</strong>（アルファーヘブン38・ドバジ18・アフサール17・フォースフェクタ1・ナイトサイド3）。定番<strong>13レシピ</strong>＋裏<strong>7レシピ</strong>。</p></div>
+    <div class="fact"><h4>蒸らし＆温度帯表現</h4><p>蒸らしは<strong>キッチンタイマーで10秒刻みに設定</strong>（GP21〜26、上限10分）。温度計の数値表示はなく、陽炎・炭の赤熱・煙・音・香り描写で温度帯を読む。</p></div>
+    <div class="fact"><h4>フレーバー＆レシピ</h4><p><strong>6メーカー全77種</strong>（アルファーヘブン37・ドバジ18・アフサール17・フォースフェクタ1・フワリ1・ナイトサイド3）。定番<strong>13レシピ</strong>＋裏<strong>7レシピ</strong>。</p></div>
   </div>
 </section>
 
@@ -639,7 +639,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
     <li><strong>ボトルの水の役割（#1113 / #1128）</strong> — スミの説明は<strong>「煙を冷やして吸いやすくする」だけ</strong>。ニコチンやタールなど有害物質への影響は<strong>「諸説ある」とし、断定しない</strong>。また爆煙の理由は水ではなく<strong>「グリセリンと熱の仕事」</strong>（K14）。</li>
     <li><strong>水入れ工程（#1081 E01）</strong> — <strong>開始水量 0（空の状態）からスタート</strong>し、ステム先端が水中に約2〜3cm浸かる適正ラインまで注ぐ。</li>
     <li><strong>パッキング＆混ぜ方</strong> — 1g刻み（ボウル容量12g / 15g / 20gの±1g以内でぴったりボーナス+15%）。2種以上は<strong>ミックス／レイヤー／セパレート</strong>を選択。</li>
-    <li><strong>蒸らし＆途中調整</strong> — 画面上の<strong>キッチンタイマーを実時間でスタート／ストップ</strong>（1秒＝1分換算）。神崎竜二との交流で<strong>「0分立ち上げ」</strong>も登場。提供中の温度調整は<strong>最大2回</strong>。</li>
+    <li><strong>蒸らし＆途中調整</strong> — 画面上の<strong>キッチンタイマーで分1分・秒10秒刻みに設定してスタート</strong>（上限10分）。神崎竜二との交流で<strong>「0分立ち上げ」</strong>も登場。提供中の温度調整は<strong>最大2回</strong>。</li>
     <li><strong>0行動（時間消費なし）スポット</strong> — <strong>Dr.fookah 1階ショップ</strong>（買い物・1,000円アルファーヘブンくじ、昼夜いつでも0行動 ※2階の凛デスクのみ夜1行動）、<strong>C.STATION</strong>、<strong>路上占い師</strong>（DAY3/6/10/13、3,000円）、<strong>家シーシャ</strong>（夜1日1回、行動消費なし・体力1消費、S賞『大会公式モデルの台』で熟練度経験値×1.25）。</li>
   </ul>
 </section>
@@ -658,7 +658,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 </main>
 
 <footer><div class="wrap">
-  <span>『ケムリの向こう側』設定資料集（開発用・二次資料）</span>
+  <span>『水煙前線 -EN:CODE-』設定資料集（開発用・二次資料）</span>
   <span>参照commit: origin/main 54a6d87f ／ 確認・更新日: 2026-10-28（Issue #544）</span>
 </div></footer>
 '''

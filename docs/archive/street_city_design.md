@@ -32,7 +32,7 @@
 
 ## 2. 通りの構成とつながり
 
-![通りの位置（既存の街マップに重ねた目安）](../asset_sources/images/proto_city/layout/city_map.png)
+![通りの位置（既存の街マップに重ねた目安）](../../asset_sources/images/proto_city/layout/city_map.png)
 
 | 通り（仮ID） | モデル | 入れる所（spot ID） | 主なつながり | 発注 |
 |---|---|---|---|---|
@@ -90,7 +90,7 @@
 
 ### 観音商店街（Phase 1・必須）
 
-![観音商店街の構図](../asset_sources/images/proto_city/layout/kannon_arcade_overview.png)
+![観音商店街の構図](../../asset_sources/images/proto_city/layout/kannon_arcade_overview.png)
 
 - **P1 観音堂の門前**: 左半分は空の開けた境内。奥に朱の本堂を大きく描き、手前に山門風の門と大提灯を置く。門の中が観音堂への入口になる。右半分からアーケードが始まる。入口のアーチの先に、和菓子屋と煎餅屋が並ぶ。
   - 本堂は入った先の背景 `bg_kannon_day` と同じ建物にする。朱の柱、二重の屋根、正面の石段、白いのぼりをそろえる。
@@ -109,7 +109,7 @@
 
 ### 東の商店街（Phase 2・必須）
 
-![東の商店街の構図](../asset_sources/images/proto_city/layout/higashi_shotengai_overview.png)
+![東の商店街の構図](../../asset_sources/images/proto_city/layout/higashi_shotengai_overview.png)
 
 - **P1 アーケードの東口の外**:
   - 左端は観音商店街P3の東口を外から見た姿で、アーケードの屋根がアーチで終わる。
@@ -128,7 +128,7 @@
 
 ### 繁華街（Phase 3）
 
-![繁華街の構図](../asset_sources/images/proto_city/layout/sakae_hankagai_overview.png)
+![繁華街の構図](../../asset_sources/images/proto_city/layout/sakae_hankagai_overview.png)
 
 - **P1 地下への口と喫茶**:
   - ビルの1階に、地下鉄・地下街へ下りる階段口がある（将来のつながり）。
@@ -144,7 +144,7 @@
 
 ### 公園大通り（Phase 3）
 
-![公園大通りの構図](../asset_sources/images/proto_city/layout/koen_odori_overview.png)
+![公園大通りの構図](../../asset_sources/images/proto_city/layout/koen_odori_overview.png)
 
 - **P1 C.STATION本店**:
   - 左半分はガラスのカーテンウォールの大きなビルで、上の階は切れてよい。2階に大きな無地の看板、1階に少し広い自動ドアを付ける。
@@ -293,7 +293,7 @@
 - **ガイドの線は `tools/proto_city_layout_guides.py` の `DEPTH` が正本**。
 - 発注書: `docs/codex_handoff_city_images.md` の発注D。
 
-![北のアーケードの構図](../asset_sources/images/proto_city/layout/kita_arcade_overview.png)
+![北のアーケードの構図](../../asset_sources/images/proto_city/layout/kita_arcade_overview.png)
 
 **全区画で共通の幾何**: 区画を切り替えても床・壁・屋根の線が動かないように、次の値を全区画でそろえる。
 
@@ -387,7 +387,7 @@
 
 ### 切り替えボタン（AA24〜AA26）
 
-![配置モック：ファストトラベルのとき](../asset_sources/ui/map-mode-toggle-20261009/placement_fast.png)
+![配置モック：ファストトラベルのとき](../../asset_sources/ui/map-mode-toggle-20261009/placement_fast.png)
 
 - **形**: 押すたびにモードが入れ替わる**1つの正方形ボタン**（オーナー指定・AA25「コンパクトに、アイコンで分かりやすく」、AA26「押すと切り替わるくらいがいい」）。
   - ボタンには**今のモード**のアイコンを出す。ファストトラベルは**速さの線を引いたマップピン**、探索は**足あと**。

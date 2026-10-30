@@ -6,7 +6,7 @@
 
 標準のGitHub Pages URLは10月10日と11日の確認で404。既存のmainの公開ワークフローも `actions/configure-pages` で失敗していたため、同じゲームをローカル配信して測った。**公開ホストの実測値ではなく、圧縮・キャッシュ・音声のRange配信により実際の通信量は変わる。**
 
-単位はMB＝1,000,000 bytes、MiB＝1,048,576 bytes。根拠は [計測結果JSON](reports/load-capacity-20261010.json)。各段階の通信は累計、再訪の「追加」は直前との差分。
+単位はMB＝1,000,000 bytes、MiB＝1,048,576 bytes。根拠は [計測結果JSON](../reports/load-capacity-20261010.json)。各段階の通信は累計、再訪の「追加」は直前との差分。
 
 ## 初回起動・開始・再訪
 

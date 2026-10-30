@@ -22,7 +22,7 @@ description: 「初見プレイヤーになりきってプレイした感想が�
 1. **プレイ順で体験する**。対象章の dialogue をイベント発生順に読み、日次ループ
    （バイト/訪問/練習/スロット/夜イベント）は `remake/js/chapters/ch1.js`・`remake/js/daily/calendar.js` のフローで進行を追う。
 2. 見た目・操作感・テンポが論点のときは、実際に動かす:
-   `python3 -m http.server 8123` → playwright で操作＋スクリーンショット
+   `python3 remake/tools/serve_preview.py --port 8123` → playwright で操作＋スクリーンショット
    （`remake/test/playthrough.mjs` の起動部が参考になる。テストを流用してもよい）。
 3. **感情メーターを記録しながら進む**。イベントごとに「ワクワク/ふつう/だれてる」を
    メモし、「だれてる」が2連続した区間を退屈候補としてマークする。

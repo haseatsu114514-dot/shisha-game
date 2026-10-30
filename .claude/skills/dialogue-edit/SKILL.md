@@ -17,8 +17,9 @@ description: 台詞・会話イベント・dialogue JSON（data/dialogue/*.json�
   - 章プロット: `brand/story_and_structure.md`（必要な章だけ Grep→部分読み）
   - 大会名・レギュレーション・ステータス名: docs/gameplay_agent_reference.md が正
 - `speaker` は characters.json の `id` と完全一致（モブは lint_dialogue.py の
-  `MOB_SPEAKERS` ホワイトリストのみ）。`face` は9種のみ:
-  normal / smile / surprise / sad / serious / smug / wink / evil / excited
+  `MOB_SPEAKERS` ホワイトリストのみ）。`face` はそのキャラに実在する表情だけ
+  （`ls assets/sprites/characters/<id>/` の `chr_<id>_<face>.png`。基本は normal / smile / surprise / sad / serious、
+  キャラにより smug / wink / evil / excited / thinking / bow などの追加分がある。無い表情を指定しない）
 - ⚠️ `brand/brand`・`brand/chapter1（character）` 等の旧残骸や生成物を
   設定の根拠として**読まない・引用しない**。
 - 既存イベントに文体を合わせる: 周囲の台詞と同じ短さ・同じテンションで書く。
@@ -40,7 +41,8 @@ description: 台詞・会話イベント・dialogue JSON（data/dialogue/*.json�
 4. **リメイク版の能力報酬は、自由に選び実際に体力を使った行動だけ**。強制イベント・チュートリアル・無料会話・休養には付けない（2026-10-08 UX12/13、docs/gameplay_agent_reference.md）。能力の増加文は画面に出さず通知の `+Npt` と進化・恩恵で伝える。既存キューは互換データとして読み、好感度の文は保持する。
 5. **日数・回数はハードコードしない**。残り日数は `{daysLeft}`（`interpolate()` 経由）。
 
-文化・世界観の落とし穴（詳細は docs/gameplay_agent_reference.md）:
+文化・世界観の落とし穴（詳細は docs/gameplay_agent_reference.md、シーシャの工程・機材・用語の参照先一覧は docs/shisha_reference.md）:
+水の役割は「煙を冷やす」だけ・有害物質は「諸説ある」で断定しない・爆煙はグリセリンと熱（K14）／HMD・タヌキッシュリッド・ハガルの表記／実在ブランド名を出さない／
 チップ描写禁止／はじめはブロンドリーフのみ／蒸らしはキッチンタイマーで10秒単位の自由設定（基本5〜8分。2026-10-08改定）／
 炭はトライアングル基本／「シガー」=シガーリーフシーシャ／
 ましろの呼称は「ましろちゃん」／ステの今の強さ（0〜100）をUIや台詞に出さない（★とレーダー。能力アップ通知の `+Npt` は通知カードが自動で出すので台詞には書かない）。

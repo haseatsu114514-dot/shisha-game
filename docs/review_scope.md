@@ -1,7 +1,7 @@
 # レビュー対象範囲（矛盾・改行・セリフ点検用）
 
 AI（Claude / GLM 等）や人間がこのリポジトリを「矛盾点・改行・ストーリー・セリフ」で
-見渡すときの**対象範囲と除外リスト**。Godot版は削除済み（AGENTS.md「Git Safety」を参照）。
+見渡すときの**対象範囲と除外リスト**（2026-10-30 更新）。旧 `web/`・Godot版は削除済み（AGENTS.md「Git Safety」を参照）。
 レビューは **`remake/` ＋ `data/` ＋ `brand/` が唯一の正史** という前提で行う。
 
 目的:
@@ -31,8 +31,11 @@ AI（Claude / GLM 等）や人間がこのリポジトリを「矛盾点・改�
 | `assets/**` / `asset_sources/**` | 画像・音声などバイナリ。テキストレビュー対象外（トークンも消費しない） |
 | `remake/data/manifest.json` | 画像から生成した目録。台詞・設定の正本ではない |
 | 各種 minified / ベンダーJS | 外部ライブラリ |
+| `data/dialogue/_legacy/**` | 改稿前の台本の隔離先。正史の根拠にしない（混線は `tools/check_story_canon.py` が検出） |
+| `docs/archive/**` / `docs/qa/**` | 日付付きの引き継ぎ・計画・検証記録。当時の状態であり現在の仕様ではない |
+| `docs/setting_book/**` / `docs/setting_reference.html` | 二次資料と生成物。数値・設定が食い違えば `data/`・`brand/` が正 |
 
-> 注: Godot版（`scripts/`・`scenes/`・`*.tscn`・`project.godot`）は 2026-06-15 に削除済み。旧設定残骸（`brand/brand`・`brand/chapter1（character）`・旧フィードバック・`docs/handoff/`）は 2026-06-16 に削除済み。
+> 注: Godot版（`project.godot` 等）は 2026-06-15、旧設定残骸（`brand/brand`・`brand/chapter1（character）`・`docs/handoff/`）は 2026-06-16、旧ブラウザ版 `web/` は 2026-10-07 に削除済み。
 
 ---
 
@@ -43,4 +46,4 @@ AI（Claude / GLM 等）や人間がこのリポジトリを「矛盾点・改�
 - ツールに範囲を渡すとき:
   - Claude Code は CLAUDE.md から AGENTS.md を読み、レビュー時には本ファイルを参照する。「`docs/review_scope.md` の範囲でレビューして」と指示すれば足りる。
   - 他エージェント（Cline / Cursor / GLM 等）には「レビュー対象は `data/dialogue/`・`brand/`・`data/*.json`・`remake/js/` のみ。`assets/`・`remake/data/manifest.json` は除外」と渡す。
-- トークン概算は 2026-06-14 時点の実測（コード≈4文字/token、日本語≈1〜1.8文字/token）。目安。
+- トークン概算は 2026-06-14 時点の実測（コード≈4文字/token、日本語≈1〜1.8文字/token）。その後台本が増えているので目安。
