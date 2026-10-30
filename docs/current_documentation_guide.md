@@ -11,6 +11,13 @@
 7. 成長（経験値・レベル・心得の盤）: 決定は [stat-design/ADDENDUM-BOARD-LAYOUT.md](stat-design/ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [stat-design/SPEC.md](stat-design/SPEC.md)（第2版）。第2版の3能力は `GROWTH_BOARD=false` の裏で未公開。プレイヤーに見える能力は従来の5種類（`gameplay_agent_reference.md`）。
 8. レビュー範囲: [review_scope.md](review_scope.md)。
 
+## UIの文字基準（#1352）
+
+- 本文・通常の操作表示・数字・通貨は `remake/css/base.css` の `--font` を使う。数字の整列は実際の字幅で確認し、`tabular-nums` の指定だけを等幅の証拠にしない。
+- ドット体は `--font-dot` を介して使う。登録された実体は400のみなので、ドット体の太さを上げて強調したことにしない。会話用の明朝と制作画面用の明朝は用途を分け、収録字・数字・記号を確認してから使う。
+- 12px未満の文字は読ませる情報に使わない。12〜13pxの文字はウェイト700以上・字間0.02em以下を目安とし、長文や重要な操作文は大きくする。実際の画面でPC・横向きスマホ・縦向きスマホの読みやすさを確認する。
+- Georgia は見出しや演出数字などの飾りに限る例外。通常UIや購買情報には使わない。装飾が情報を担う場合は、読みやすい本文書体の表示も確保する。
+
 ## 二次資料・履歴の扱い
 
 - [setting_book/](setting_book/README.md) は共同制作向けの**二次資料**。数値・価格・機材説明は `data/*.json` が正。`setting_reference.html` はそこからの生成物。
