@@ -18,6 +18,8 @@ const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},li
  dayTurn:async fn=>fn(),fadeBlack:async fn=>fn?.(),
  chapterDay:()=>state.day,daysLeft:()=>14-state.day,TOURNAMENT_DAY:14,
  maxStamina:()=>100,staminaRatio:()=>state.stamina/100,
+ staminaAfter:n=>Math.max(0,state.stamina+n),coldRisk:ratio=>ratio<=.25,fitActive:()=>false,
+ modal:async({options})=>options.at(-1).value,
  addMoney:n=>state.money+=n,addStamina:n=>state.stamina=Math.min(100,state.stamina+n),
  catchesCold:()=>false,conditionForRatio:()=>({health:'green'}),
  paidAction:async fn=>({value:await fn(),spent:0}),
