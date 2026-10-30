@@ -30,3 +30,23 @@ for (const field of ["optA", "optB"]) {
   assert.doesNotMatch(mashiro[field].text, /ましろ(?!ちゃん)/, `Mashiro date ${field}: no bare name in Hajime's speech`);
 }
 console.log("OK: all seven romance dates have complete data and Mashiro's voice is consistent");
+
+// 恋人の節目は台詞中のキューも能力の加算元になる。入れ子の分岐を含めて残さない。
+const milestones = JSON.parse(readFileSync(new URL("../../data/dialogue/lover_events.json", import.meta.url), "utf8")).dialogues;
+assert.equal(milestones.length, 30);
+for (const id of ["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"]) {
+  for (let level = 1; level <= 5; level++) {
+    const scene = milestones.find(scene => scene.dialogue_id === `lover_${id}_lv${level}`);
+    assert.ok(scene?.lines.length, `${id} Lv${level}: missing milestone`);
+  }
+}
+function checkMilestone(value, id) {
+  if (!value || typeof value !== "object") return;
+  for (const [key, child] of Object.entries(value)) {
+    assert.ok(!["stats", "add_stat", "growth_stats"].includes(key), `${id}: legacy ability reward ${key}`);
+    if (key === "text") assert.doesNotMatch(child, /【(?:技術|センス|根性|魅力|洞察)】.*上が/, `${id}: ability cue`);
+    checkMilestone(child, id);
+  }
+}
+for (const scene of milestones) checkMilestone(scene, scene.dialogue_id);
+console.log("OK: all 30 lover milestones contain no ability rewards or cues");
