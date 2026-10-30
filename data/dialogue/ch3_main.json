@@ -918,6 +918,20 @@
         {
           "speaker": "",
           "face": "",
+          "text": "拍手の中、審査席を立った南雲が、俺の前で一度だけ足を止めた。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "……今日は、顔が見えた"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "nagumo"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "久世はノートを胸元へ戻した。笑顔は店にいた時のものだが、閉じたノートを握る指に力が入っている。"
         },
         {
@@ -1558,6 +1572,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "はい。帰る時間が決まっていたら、教えてください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の、深い紅色のラベルの袋へ手を伸ばす。"
         },
         {
           "speaker": "",

@@ -348,6 +348,21 @@
           "text": "大会前夜。路地裏の店に、借りたトングを返しに来た。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "男の台から、甘く深い煙が流れてくる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……グレープですね"
+        },
+        {
+          "speaker": "old_man",
+          "face": "normal",
+          "text": "当たりだ。いい舌をしている"
+        },
+        {
           "speaker": "old_man",
           "face": "normal",
           "text": "明日が本番だな、ハジメ"
@@ -644,7 +659,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヴォルクのノートと同じ欄に、開場後の温度を書く。数字を見てから、客の顔へ戻る。"
+          "text": "ノートの、吸っていた時間の欄の隣に、開場後の温度を書く。数字を見てから、客の顔へ戻る。"
         },
         {
           "speaker": "naru",
@@ -771,6 +786,16 @@
     },
     {
       "dialogue_id": "ch4_ending",
+      "comment": "十五年前の一台はカルダモン（#1346）。第1章でスミのボウルを受け取った（締めくくりを読んだ）場合だけ、はじめが閉店後の一台と結びつける。",
+      "branches": {
+        "sumi_bowl": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（スミさんの、閉店後の一台と同じだ）"
+          }
+        ]
+      },
       "lines": [
         {
           "speaker": "",
@@ -821,6 +846,17 @@
           "speaker": "sheikh",
           "face": "normal",
           "text": "王族の注文ではなく、疲れた客の注文を聞いてくれた"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "カルダモンだけの、軽い一台だった"
+        },
+        {
+          "type": "condition",
+          "condition_type": "finale_seen",
+          "char_id": "sumi",
+          "next_true": "sumi_bowl"
         },
         {
           "speaker": "sheikh",
