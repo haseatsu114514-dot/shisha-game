@@ -3,7 +3,7 @@
 // 開発中は URL の ?growth=1（または __remake.dev.growth(true)）でこの端末だけ有効にできる。
 // 有効でも能力の伸び方（旧しくみ）は変えない。経験値・レベル・火種を横で数えるだけ。
 // 第2版（SPEC 2026-10-30）: 能力は3つ（才能・感覚・理論）、火種はレベル1つで2つ、色つきの火種は才・感・理。
-import { state } from "./state.js";
+import { state, save } from "./state.js";
 import { emit } from "./bus.js";
 import { setExpHooks, affinityLevel } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
@@ -179,9 +179,19 @@ export function learnLesson(id, s = state) {
   const lesson = LESSONS.find((l) => l.id === id);
   if (!lesson || !s) return false;
   const g = ensureGrowth(s);
-  if (!g.nodes.includes(id)) return false;
-  if (!g.learned.includes(id)) g.learned.push(id);
+  if (!g.nodes.includes(id) || g.learned.includes(id)) return false;
+  g.learned.push(id);
   for (const f of lesson.unlocks || []) s.flags[f] = true;
+  return true;
+}
+
+/** 同じセーブの授業を最後まで読んだ時だけ習得・保存する。中断やロード後の古い完了通知は捨てる。 */
+export function completeLesson(student, id, result) {
+  const lesson = LESSONS.find((l) => l.id === id);
+  if (student !== state || !lesson?.scene || !growthEnabled() || result?.cancelled
+    || result?.id !== lesson.scene || !result.visited?.includes(lesson.scene)
+    || !learnLesson(id)) return false;
+  save();
   return true;
 }
 
@@ -189,7 +199,7 @@ export function learnLesson(id, s = state) {
  * その人に会った時の相談（2.6・SBD50）: 相談できる授業があれば、はじめが相談して話を聞く場面を見て習得する。
  * 場面を最後まで読んだ時だけ習得（途中でやめたら、また次に会った時）。戻り値=習得した授業
  */
-export async function consultLessons(who, { only = null, bg } = {}) {
+export async function consultLessons(who, { only = null, bg, signal } = {}) {
   const owner = state;
   const lessons = readyLessons(who).filter((l) => !only || l.id === only);
   if (!lessons.length) return [];
@@ -197,9 +207,8 @@ export async function consultLessons(who, { only = null, bg } = {}) {
   const { gainCard } = await import("./ui.js");
   const done = [];
   for (const lesson of lessons) {
-    const result = await play(lesson.scene, bg ? { bg } : {});
-    if (state !== owner || !result || result.cancelled) break;
-    learnLesson(lesson.id);
+    const result = await play(lesson.scene, { ...(bg ? { bg } : {}), signal });
+    if (!completeLesson(owner, lesson.id, result)) break;
     done.push(lesson);
     gainCard({ kind: "info", badge: "授", top: "TRAINING", main: lesson.name, sub: lesson.text });
   }

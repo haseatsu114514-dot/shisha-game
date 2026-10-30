@@ -229,6 +229,58 @@ await suite("growth-levelup", async (check) => {
     await page.waitForFunction(() => window.night?.gifts?.length === 1, null, { timeout: 8000 });
   }, { viewport: { width: 1331, height: 760 } });
 
+  // 既存スミ授業を実際のVNで中断→途中保存→再相談。好感度0でも、盤から同じ機能が開く。
+  for (const id of ["M-S1", "M-W1"]) {
+    await check(`sumi-${id}-resume`, async (page) => {
+      await setupDaily(page);
+      await page.evaluate(async (id) => {
+        const g = await import("./js/core/growth.js");
+        const b = await import("./js/core/growth-board.js");
+        const node = b.NODE_BY_ID[id];
+        const gr = g.ensureGrowth();
+        __remake.state.affinity.sumi = 0;
+        __remake.state.flags._intro_sumi = true;
+        // 第1章の道と3段までの能力マスは既に灯した状態。
+        gr.nodes = b.boardNodes(node.board).filter((n) => n.kind === "stat" && n.ring === 1).map((n) => n.id);
+        if (!b.commitPending([id]).length) throw new Error("授業が灯せない");
+        window.lessonAbort = new AbortController();
+        window.lessonDone = null;
+        void g.consultLessons("sumi", { only: id, signal: window.lessonAbort.signal }).then((r) => { window.lessonDone = r; });
+      }, id);
+      await page.locator("#vn.active").waitFor();
+      const interrupted = await page.evaluate(async (id) => {
+        const core = await import("./js/core/state.js");
+        const g = await import("./js/core/growth.js");
+        const b = await import("./js/core/growth-board.js");
+        const flag = b.NODE_BY_ID[id].unlocks[0];
+        core.save();
+        window.lessonAbort.abort();
+        return !!core.state.flags[flag];
+      }, id);
+      assert.equal(interrupted, false);
+      await page.waitForFunction(() => window.lessonDone !== null);
+      assert.deepEqual(await page.evaluate(() => window.lessonDone), []);
+      const result = await page.evaluate(async (id) => {
+        const core = await import("./js/core/state.js");
+        core.load();
+        const g = await import("./js/core/growth.js");
+        const b = await import("./js/core/growth-board.js");
+        const flag = b.NODE_BY_ID[id].unlocks[0];
+        const before = [core.state.day, core.state.slot, core.state.stamina, g.hidaneTotal()];
+        (await import("./js/vn/engine.js")).vnTest.turbo = true;
+        const done = await g.consultLessons("sumi", { only: id });
+        core.load();
+        return { done: done.map((l) => l.id), learned: !!core.state.flags[flag],
+          repeat: await g.consultLessons("sumi", { only: id }), before,
+          after: [core.state.day, core.state.slot, core.state.stamina, g.hidaneTotal()] };
+      }, id);
+      assert.deepEqual(result.done, [id]);
+      assert.equal(result.learned, true);
+      assert.deepEqual(result.repeat, []);
+      assert.deepEqual(result.after, result.before);
+    });
+  }
+
   // 授業（SBD50）: 盤で灯すと「相談できる」。次に会った時に、はじめが相談して話を聞く場面を最後まで見て習得
   await check("lesson-consult", async (page) => {
     await setupDaily(page);

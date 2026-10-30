@@ -217,7 +217,7 @@ async function customerEvent(condition) {
   rememberBaito(ev.id, customerFamilies(ev));
 }
 
-/** シフト後: スミ会話（必須）のあと、任意の特訓・授業だけを選ぶ。練習は店の固定イベントで（#783） */
+/** シフト後: スミ会話（必須）のあと、任意の授業だけを選ぶ。練習は店の固定イベントで（#783） */
 function afterShiftMenu() {
   return new Promise((resolve) => {
     const opt = (title, desc, value, test) =>
@@ -226,7 +226,7 @@ function afterShiftMenu() {
       el("h2.sub-title", { text: "シフト上がり" }),
       el("p.sub-lead", { text: "スミさんと話し終えて、まだ少しだけ時間がある。" }),
       el("div.sub-choices", [
-        canStudyAttack() ? opt("雑念を切る特訓を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
+        canStudyAttack() ? opt("蒸らしアタックの授業を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
         canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
         // 心得の盤で灯した授業: スミさんに相談して話を聞く（SBD50）
         ...readyLessons("sumi").map((l) => opt(`スミさんに相談する（${l.name}）`, "授業。話を聞いて習得する", `lesson:${l.id}`, `after-lesson-${l.id}`)),

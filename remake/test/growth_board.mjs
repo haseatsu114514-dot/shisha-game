@@ -146,24 +146,24 @@ assert.deepEqual(towards, route.path, "目標まで灯す: 火種が足りれば
 g.hidane.any = 1;
 assert.equal(board.pendingTowards(g, [], "K03").length, 1, "火種1なら1マスだけ");
 
-// 授業の錠（2.6）: 盤2段（v3）＋スミさんは条件なし／ほかは♥5。まだ会っていない相手は伏せる
+// 授業の錠（2.6）: 盤3段（#1774 最新決定）＋スミさんは条件なし／ほかは♥5。まだ会っていない相手は伏せる
 g.hidane.any = 50;
 const senseStats = board.boardNodes("sense").filter((n) => n.kind === "stat" && n.ring === 1).map((n) => n.id);
 const lessonPath = board.pathTo("M-S1", new Set()).path.filter((id) => id !== "M-S1");
 assert.equal(status("M-S1"), "sealed", "感覚盤1段では錠");
 const lock = board.lessonLock(N["M-S1"], new Set(lessonPath));
-assert.equal(lock?.step, true, "道は届いても2段に足りない");
-const six = [...new Set([...lessonPath, ...senseStats])].slice(0, Math.max(5, lessonPath.length));
-assert.equal(board.lessonLock(N["M-S1"], new Set(six)), null, "2段でスミさんの授業は開く（好感度の条件なし）");
-assert.equal(board.lessonLock(N["M-S2"], new Set(six))?.heart, true, "アダムの授業は♥5が要る");
+assert.equal(lock?.step, true, "道は届いても3段に足りない");
+const lessonStats = [...new Set([...lessonPath, ...senseStats])].slice(0, Math.ceil(2 * board.STAT_SQUARES.sense / 9));
+assert.equal(board.lessonLock(N["M-S1"], new Set(lessonStats)), null, "3段でスミさんの授業は開く（好感度の条件なし）");
+assert.equal(board.lessonLock(N["M-S2"], new Set(lessonStats))?.heart, true, "アダムの授業は♥5が要る");
 assert.equal(board.hasMet("adam"), false);
 assert.equal(board.hasMet("sumi"), true, "スミさんは最初から知っている");
 core.state.affinity.adam = 999;
-assert.equal(board.lessonLock(N["M-S2"], new Set(six)), null, "♥5で開く");
+assert.equal(board.lessonLock(N["M-S2"], new Set(lessonStats)), null, "♥5で開く");
 assert.equal(board.hasMet("adam"), true);
 // 灯すと今のゲームのフラグが立つ（アタックを習得）
 g.nodes = []; g.paid = {};
-const lessonRun = board.pendingTowards(g, six, "M-S1");
+const lessonRun = board.pendingTowards(g, lessonStats, "M-S1");
 assert(lessonRun.includes("M-S1"), "錠が開けば道の先で教わる");
 board.commitPending(lessonRun);
 // 灯すと「相談できる」。習得（今のゲームのフラグ）は、次にスミさんに会って相談した時（SBD50）
@@ -209,6 +209,67 @@ const fixed = growth.ensureGrowth();
 assert.deepEqual(fixed.nodes.filter((id) => !id.startsWith("M-")), []);
 assert.deepEqual(Object.keys(fixed.paid).filter((id) => !id.startsWith("M-")), []);
 assert.equal(fixed.target, null);
+
+// #1774/#1801: 既存2授業の4状態と、実際の機能フラグの整合。
+const { hasAttackTraining } = await import("../js/craft/attack-training.js");
+const { hasCoalTraining } = await import("../js/craft/coals.js");
+for (const [id, enabled] of [["M-S1", hasAttackTraining], ["M-W1", hasCoalTraining]]) {
+  core.newGame();
+  const node = N[id], flag = node.unlocks[0], gr = growth.ensureGrowth();
+  core.state.affinity.sumi = 0;
+  const result = { id: node.scene, visited: [node.scene] };
+  assert.equal(enabled(core.state.flags), false);
+  assert.deepEqual(growth.readyLessons("sumi"), []);
+  assert.equal(growth.completeLesson(core.state, id, result), false, "未到達では台詞だけ読んでも習得しない");
+  const path = board.pathTo(id, new Set()).path.filter((x) => x !== id);
+  const stats = board.boardNodes(node.board).filter((n) => n.kind === "stat" && n.ring === 1).map((n) => n.id);
+  const enough = [...new Set([...path, ...stats])];
+  const minimum = Math.ceil(2 * board.STAT_SQUARES[node.board] / 9);
+  gr.nodes = enough.slice(0, minimum - 1);
+  assert.equal(board.stepOf(node.board, new Set(gr.nodes)), 2);
+  assert.equal(board.connected(node, new Set(gr.nodes)), true);
+  for (const hearts of [0, 999]) {
+    core.state.affinity.sumi = hearts;
+    assert.deepEqual(board.commitPending([id]), [], "3段未満では灯せない");
+  }
+  core.state.affinity.sumi = 0;
+  gr.nodes = board.boardNodes(node.board).filter((n) => n.kind === "stat" && !node.links.includes(n.id)).slice(0, minimum).map((n) => n.id);
+  assert.equal(board.stepOf(node.board, new Set(gr.nodes)), 3);
+  assert.deepEqual(board.commitPending([id]), [], "3段でも道が無ければ灯せない");
+  gr.nodes = enough;
+  const before = { wallet: { ...gr.hidane }, day: core.state.day, slot: core.state.slot, stamina: core.state.stamina };
+  assert.deepEqual(board.commitPending([id]).map((n) => n.id), [id], "好感度0・火種0で授業を灯せる");
+  assert.deepEqual(gr.hidane, before.wallet);
+  assert.equal(enabled(core.state.flags), false, "灯しただけでは機能を解放しない");
+  core.save(); core.load();
+  const student = core.state;
+  assert(growth.readyLessons("sumi").some((l) => l.id === id), "相談待ちはロード後も続く");
+  for (const bad of [undefined, {}, { ...result, cancelled: true }, { ...result, visited: [] }, { ...result, id: "ch1_sumi_training" }]) {
+    assert.equal(growth.completeLesson(student, id, bad), false);
+    assert.equal(enabled(core.state.flags), false);
+  }
+  core.save(); core.load();
+  assert.equal(growth.completeLesson(student, id, result), false, "ロード前の会話完了は無効");
+  assert.equal(growth.completeLesson(core.state, id, result), true);
+  assert.equal(enabled(core.state.flags), true);
+  assert.equal(growth.completeLesson(core.state, id, result), false, "同じ授業の二重習得なし");
+  assert.deepEqual(board.commitPending([id]), [], "二重灯しなし");
+  core.load();
+  assert.equal(enabled(core.state.flags), true, "相談完了時に保存される");
+  assert.equal(growth.lessonLearned(id), true);
+  assert.deepEqual(growth.readyLessons("sumi"), []);
+  assert.deepEqual(core.state.growth.hidane, before.wallet);
+  assert.deepEqual([core.state.day, core.state.slot, core.state.stamina], [before.day, before.slot, before.stamina], "授業で時間・体力を使わない");
+  core.newGame(); core.state.flags[flag] = true;
+  core.save(); core.load();
+  const legacy = growth.ensureGrowth();
+  assert(legacy.nodes.includes(id) && legacy.learned.includes(id), "旧習得済みは3段・道なしでも保持");
+  assert.equal(enabled(core.state.flags), true);
+  assert.deepEqual(growth.readyLessons("sumi"), []);
+  growth.ensureGrowth();
+  assert.equal(legacy.nodes.filter((x) => x === id).length, 1);
+  assert.equal(legacy.learned.filter((x) => x === id).length, 1);
+}
 
 // 盤は旧しくみの能力を書き換えない（試作の間）
 core.newGame();
