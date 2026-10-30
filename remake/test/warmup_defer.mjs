@@ -176,7 +176,7 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   const engine = await fs.readFile(new URL("../js/vn/engine.js", import.meta.url), "utf8");
   const entry = engine.slice(engine.indexOf("export function play("), engine.indexOf("function sceneBgm("));
   assert.match(entry, /const fontsReady = loadVnFonts\(\)\.catch\(\(\) => \[\]\)/);
-  assert.match(entry, /const assetsReady = Promise\.all\(\[fontsReady, bgReady/);
+  assert.match(entry, /const assetsReady = Promise\.all\(\[settingsReady, fontsReady, bgReady/);
   assert(entry.indexOf("const assetsReady") < entry.indexOf("next();"), "first line starts after the font gate");
 }
 

@@ -13,6 +13,7 @@ import { openGallery } from "./gallery.js";
 import { loadFlow } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { mountTitleLayout } from "./title-layout.js";
+import { createUiThemeSelect } from "../core/ui-theme.js";
 
 let titleRevision = 0;
 // 直近に表示したキャラアート。メニューを閉じて再描画するだけのときは同じ絵を使い回し、
@@ -272,7 +273,6 @@ export function showTitle(preparedArt = null) {
 }
 
 export async function openConfig(opts = {}) {
-  const { createUiThemeSelect } = await import("../core/ui-theme.js");
   const persist = () => {
     if (document.body?.dataset?.screen !== "preview") saveConfig();
   };
