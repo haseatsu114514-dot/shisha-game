@@ -190,7 +190,11 @@ core.state.flags._coal_cube_learned = true;
 core.state.growth.nodes.push("M-S1");
 growth.ensureGrowth();
 assert.ok(core.state.growth.nodes.includes("M-W1"), "キューブ炭の旧フラグ → 授業のマス");
-assert.equal(core.state.flags._sumi_attack_learned, true, "灯した授業のフラグが立つ");
+assert.ok(core.state.growth.learned.includes("M-W1"), "旧フラグの授業は習得済みとして灯る");
+assert.notEqual(core.state.flags._sumi_attack_learned, true, "灯しただけ（相談前）の授業はフラグを立てない（SBD50）");
+core.state.growth.learned.push("M-S1");
+growth.ensureGrowth();
+assert.equal(core.state.flags._sumi_attack_learned, true, "習得した授業のフラグは周回で消えても戻す");
 delete core.state.flags._coal_cube_learned; delete core.state.flags._sumi_attack_learned;
 // 上限: 盤の179を超えて渡さない
 core.state.growth = { ...growth.newGrowth(), earned: 178 };

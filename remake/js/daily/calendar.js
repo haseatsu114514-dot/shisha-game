@@ -37,7 +37,7 @@ import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocati
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
-import { presentNight, growthMenuItems, openGrowthBoard, reflectAtSpot } from "../core/growth.js";
+import { presentNight, growthMenuItems, openGrowthBoard, reflectAtSpot, consultLessons } from "../core/growth.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -577,6 +577,8 @@ async function performSpotAction(spot) {
   } else if (spot.kind === "rival") {
     if (isClosed(spot) || !(await staminaGuard(spot.stamina)) || isClosed(spot)) return { used: false, exerted };
     used = (await visitRival(spot)) !== false;
+    // 心得の盤で灯した授業があれば、そのまま相談して話を聞く（SBD50）
+    if (used) await consultLessons(spot.charId);
     exerted = used;
   } else if (spot.kind === "shop") {
     const r = await openShop();

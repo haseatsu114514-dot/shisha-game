@@ -77,6 +77,7 @@ export function newGrowth() {
     gifted: {},            // ♥5で色つきの火種を受け取った人（周回で空に戻す）
     litSince: {},          // 前の節目から盤ごとに灯した火種（節目の色を決める。1.5）
     target: null,          // 目標のマス（2.4）
+    learned: [],           // 相談を終えて習得した授業（盤で灯した授業は「相談できる」。次に会った時に相談して習得）
     rewards: {},           // 受け取った遊びのご褒美（斧投げ・TRPG・DJ の水準、くじのラストワン賞）
     seenRing: 1,           // 盤で「新しい道が開いた」を見せた章の範囲（章が進んで初めて開いた時の演出）
   };
@@ -114,6 +115,7 @@ export function ensureGrowth(s = state) {
   g.litSince = Object.fromEntries(BOARD_KEYS.map((k) => [k, Math.floor(num(g.litSince?.[k]))]));
   if (!VALID_IDS.has(g.target)) g.target = null;
   if (!g.rewards || typeof g.rewards !== "object" || Array.isArray(g.rewards)) g.rewards = {};
+  g.learned = strings(g.learned).filter((id) => g.nodes.includes(id));
   g.seenRing = Math.min(5, Math.max(1, Math.floor(num(g.seenRing, 1))));
   syncLessonFlags(g, s);
   return g;
@@ -127,9 +129,55 @@ function syncLessonFlags(g, s) {
   if (!s.flags || typeof s.flags !== "object") return;
   for (const lesson of LESSONS) {
     const unlocks = lesson.unlocks || [];
-    if (!g.nodes.includes(lesson.id) && unlocks.some((f) => s.flags[f] === true)) { g.nodes.push(lesson.id); g.paid[lesson.id] = {}; }
-    if (g.nodes.includes(lesson.id)) for (const f of unlocks) s.flags[f] = true;
+    // 旧セーブで習得済み（今のゲームのフラグがある）なら、灯して習得した状態にする
+    if (unlocks.some((f) => s.flags[f] === true)) {
+      if (!g.nodes.includes(lesson.id)) { g.nodes.push(lesson.id); g.paid[lesson.id] = {}; }
+      if (!g.learned.includes(lesson.id)) g.learned.push(lesson.id);
+    }
+    // 習得した授業はフラグを立てる（周回で消えても戻す）
+    if (g.learned.includes(lesson.id)) for (const f of unlocks) s.flags[f] = true;
   }
+}
+
+/** 灯して「相談できる」まま、まだ相談していない授業（その人の分）。場面のある授業だけ */
+export function readyLessons(who, s = state) {
+  if (!growthEnabled() || !s) return [];
+  const g = ensureGrowth(s);
+  return LESSONS.filter((l) => l.who === who && l.scene && g.nodes.includes(l.id) && !g.learned.includes(l.id));
+}
+export const lessonLearned = (id, s = state) => !!s?.growth?.learned?.includes(id);
+
+/** 相談を終えて習得する（今のゲームのフラグも立てる） */
+export function learnLesson(id, s = state) {
+  const lesson = LESSONS.find((l) => l.id === id);
+  if (!lesson || !s) return false;
+  const g = ensureGrowth(s);
+  if (!g.nodes.includes(id)) return false;
+  if (!g.learned.includes(id)) g.learned.push(id);
+  for (const f of lesson.unlocks || []) s.flags[f] = true;
+  return true;
+}
+
+/**
+ * その人に会った時の相談（2.6・SBD50）: 相談できる授業があれば、はじめが相談して話を聞く場面を見て習得する。
+ * 場面を最後まで読んだ時だけ習得（途中でやめたら、また次に会った時）。戻り値=習得した授業
+ */
+export async function consultLessons(who, { only = null, bg } = {}) {
+  const owner = state;
+  const lessons = readyLessons(who).filter((l) => !only || l.id === only);
+  if (!lessons.length) return [];
+  const { play } = await import("../vn/engine.js");
+  const { gainCard } = await import("./ui.js");
+  const done = [];
+  for (const lesson of lessons) {
+    const result = await play(lesson.scene, bg ? { bg } : {});
+    if (state !== owner || !result || result.cancelled) break;
+    learnLesson(lesson.id);
+    done.push(lesson);
+    gainCard({ kind: "info", badge: "授", top: "TRAINING", main: lesson.name, sub: lesson.text });
+  }
+  if (done.length) emit("hud");
+  return done;
 }
 
 /** 盤で灯した火種を数える（節目の色。growth-board.js の決定から呼ぶ） */

@@ -10,8 +10,8 @@ const board = await import("../js/core/growth-board.js");
 const { NODE_BY_ID: N } = board;
 
 // ---------------------------------------------------------------- データ検査（2.9）
-assert.equal(board.LAYOUT.cells.length, 36, "9×7 の方眼に36マス");
-assert.equal(board.LAYOUT.cells.filter((c) => c.special).length, 10, "要所10か所");
+assert.equal(board.LAYOUT.cells.length, 40, "9×7 の方眼に40マス");
+assert.equal(board.LAYOUT.cells.filter((c) => c.special).length, 14, "要所14か所（授業14のため）");
 for (const c of board.LAYOUT.cells) {
   assert(Math.abs(c.x) <= 4 && Math.abs(c.y) <= 3, "9×7 に収まる");
   assert(board.LAYOUT.cells.some((d) => d.x === -c.x && d.y === -c.y), "点対称");
@@ -20,7 +20,7 @@ for (const [a, b] of board.LAYOUT.edges) {
   const [ax, ay] = a.split(",").map(Number), [bx, by] = b.split(",").map(Number);
   assert.equal(Math.abs(ax - bx) + Math.abs(ay - by), 1, "線は上下左右の隣だけ（斜めなし）");
 }
-const expect = { body: [6, 1], sense: [6, 3], wisdom: [5, 3] };
+const expect = { body: [6, 3], sense: [6, 5], wisdom: [5, 6] };
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
   assert.equal(nodes.filter((n) => n.kind === "stat").length, 27, `${k}: 能力のマス27`);
@@ -133,7 +133,14 @@ g.nodes = []; g.paid = {};
 const lessonRun = board.pendingTowards(g, six, "M-S1");
 assert(lessonRun.includes("M-S1"), "錠が開けば道の先で教わる");
 board.commitPending(lessonRun);
-assert.equal(core.state.flags._sumi_attack_learned, true);
+// 灯すと「相談できる」。習得（今のゲームのフラグ）は、次にスミさんに会って相談した時（SBD50）
+assert.notEqual(core.state.flags._sumi_attack_learned, true, "灯しただけでは習得しない");
+assert.deepEqual(growth.readyLessons("sumi").map((l) => l.id), ["M-S1"], "灯した授業はスミさんに相談できる");
+assert.equal(growth.learnLesson("M-S1"), true);
+assert.equal(core.state.flags._sumi_attack_learned, true, "相談して習得するとフラグが立つ");
+assert.deepEqual(growth.readyLessons("sumi"), [], "習得した授業はもう相談に出ない");
+assert.equal(growth.lessonLearned("M-S1"), true);
+assert.equal(growth.learnLesson("M-W1"), false, "灯していない授業は習得できない");
 core.state.affinity.adam = 0;
 
 // 授業はマスとして数えない（2026-10-30 の選定で「能力が伸びるだけ」の授業は無くなった。仕組みは reward: "stat" で残す）
@@ -178,4 +185,4 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v2 layout 36 cells/10 spots, 3 boards 27+skills+lessons, chapter reach, 179 totals, connect rules, replay, color-first payment, steps by 3, target path, lesson locks + flags, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v2 layout 40 cells/14 spots, 14 lessons (consult to learn), 3 boards 27+skills+lessons, chapter reach, 179 totals, connect rules, replay, color-first payment, steps by 3, target path, lesson locks + flags, save/load, stats untouched, tonari lessons gated, menu gate");

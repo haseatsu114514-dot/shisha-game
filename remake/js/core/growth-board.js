@@ -213,7 +213,6 @@ export function commitPending(pendingIds, s = state) {
     g.paid[id] = view.pays[id];
     spend(g.hidane, view.pays[id]);
     noteLit(g, node.board, node.cost);
-    for (const key of node.unlocks || []) s.flags[key] = true; // 授業で開く今のゲームのしくみ（アタック・炭）
   }
   if (view.pending.includes(g.target)) g.target = null;
   return view.pending.map((id) => NODE_BY_ID[id]);

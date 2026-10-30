@@ -71,6 +71,8 @@
         "remake/js/daily/growth-board-screen.js",
         "remake/js/daily/reflection.js",
         "data/dialogue/growth_reflection.json",
+        "data/dialogue/growth_lessons.json",
+        "remake/js/daily/tonari.js",
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
         "remake/test/browser/growth_levelup.mjs"

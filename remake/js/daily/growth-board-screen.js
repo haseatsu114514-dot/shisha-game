@@ -8,7 +8,7 @@ import { emit } from "../core/bus.js";
 import { state } from "../core/state.js";
 import { displayName } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
-import { ensureGrowth, gaugeInfo, HIDANE_KEYS } from "../core/growth.js";
+import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned } from "../core/growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STEP_TEXT, PER_SQUARE, QUALITY_STEPS, REWARD_JA, LESSON_MIN_STEP,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, stepOf, statCount, replay, nodeStatus, commitPending,
@@ -247,7 +247,11 @@ export function openBoard({ place = null } = {}) {
   }
 
   function stateText(node, st, v) {
-    if (st === "unlocked") return "灯してある";
+    if (st === "unlocked") {
+      if (node.kind !== "lesson") return "灯してある";
+      const who = node.who === "sumi" ? "スミさん" : displayName(node.who, state);
+      return lessonLearned(node.id) ? "習得済み" : `相談できる。次に${who}に会った時に話を聞こう`;
+    }
     if (st === "pending") return "仮置き中。決定するまでは「やめる」で戻せる";
     if (st === "locked") return "まだ開いていない。物語が進むと封が解ける";
     if (st === "sealed") return "錠が開くと、道が届けば灯せる";
@@ -393,11 +397,10 @@ export function openBoard({ place = null } = {}) {
 }
 
 /** 授業を灯した時の場面（2.6）。場面のある授業（スミさんの今の特訓・授業）はそれを流す */
+/** 授業を灯した時（2.6・SBD50）: 「相談できる」になる。次にその人に会った時に、はじめが相談して話を聞いて習得する */
 async function presentLesson(node) {
-  if (node.scene) {
-    const { play } = await import("../vn/engine.js");
-    await play(node.scene, { bg: "res://assets/backgrounds/bg_tonari_inside.png" });
-  }
-  if (state) gainCard({ kind: "info", badge: "授", top: "TRAINING", main: node.name, sub: node.text });
+  if (!state) return;
+  const who = node.who === "sumi" ? "スミさん" : displayName(node.who, state);
+  gainCard({ kind: "info", badge: "授", top: "LESSON", main: `${who}に相談できる`, sub: `「${node.name}」。次に${who}に会った時に話を聞こう` });
 }
 
