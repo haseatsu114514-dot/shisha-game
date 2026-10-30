@@ -50,17 +50,17 @@ await suite("save-load", async check => {
     });
     const labels = async () => Promise.all([0, 1, 2, 3].map(async i =>
       page.locator(`[data-test="slot-${i}"] .ss-info b`).textContent()));
+    const phases = async () => Promise.all([0, 1, 2, 3].map(async i =>
+      page.locator(`[data-test="slot-${i}"] .ss-phase`).textContent()));
     await page.locator('[data-test="title-load"]').click();
     const captions = await labels();
-    assert.match(captions[0], /第2章.*DAY 1.*初日/);
-    assert(!captions[0].includes("プロローグ"));
-    assert.match(captions[1], /第2章.*DAY 1.*初日終了/);
-    assert.match(captions[2], /第2章.*DAY 1.*初日/);
-    assert(!captions[2].includes("プロローグ"));
-    assert.match(captions[3], /第2章.*DAY 2.*日常/);
+    assert.deepEqual(await phases(), ["初日", "初日終了", "初日", "日常"]);
+    for (const caption of captions.slice(0, 3)) assert.match(caption, /第2章.*DAY 1/);
+    assert.match(captions[3], /第2章.*DAY 2/);
     await page.reload();
     await page.locator('[data-test="title-load"]').click();
     assert.deepEqual(await labels(), captions);
+    assert.deepEqual(await phases(), ["初日", "初日終了", "初日", "日常"]);
     const loaded = await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
       const value = core.loadFromSlot(core.SAVE_SLOTS[2].key);
