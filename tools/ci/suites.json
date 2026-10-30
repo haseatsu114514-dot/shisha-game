@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "status-steps",
+      "title": "Status 10-step conversion and effect tables",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/stat_steps.mjs"]
+    },
+    {
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
