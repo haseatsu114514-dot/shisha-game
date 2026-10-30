@@ -60,6 +60,8 @@ try {
       while (performance.now() < until) {
         const node = document.querySelector(selector);
         if (node) return node;
+        // 作業台の準備中に出るロード漫画は、読み終えたらタップで進む（0a8fad53）。プレイヤーと同じく一度タップする
+        document.querySelector(".loading-gate.is-ready")?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
         await new Promise((resolve) => setTimeout(resolve, 20));
       }
       throw Error(`Control did not appear: ${selector}`);
@@ -245,7 +247,8 @@ try {
   });
   // みんとのLIMEは店の『お仕事用』。本名を知った後も「みんと＠PEPPERMINT」・営業姿のアイコン（HF10）
   assert.equal(privateUi.listName, "みんと＠PEPPERMINT");
-  assert(privateUi.listFace.split("?")[0].endsWith("face_minto.webp"), privateUi.listFace);
+  // お仕事用は採用済みのLIMEカスタムアイコン（b08e30ec）。私服・私用のアイコンは使わない
+  assert(privateUi.listFace.split("?")[0].endsWith("ui/lime/minto-b.png"), privateUi.listFace);
   assert(privateUi.delivered >= 1 && privateUi.introAccount === "minto_private", JSON.stringify(privateUi));
   assert(privateUi.introText.includes("栞です"), privateUi.introText);
   const privateRow = privateUi.rows.find((r) => r.test === "lime-chat-minto_private");
@@ -450,7 +453,8 @@ try {
     return { badge, finaleBlocked, first, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
   });
   assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
-  assert(rin.first.includes("試香の口実もないのに")); assert(rin.first.includes("頼りにしてるよ、……仕事仲間として"));
+  // 質問の場面と友情側の着地（d7a613c6 で台本を書き直し）
+  assert(rin.first.includes("今日は試香紙がなかった")); assert(rin.first.includes("相談を遠慮しなくてよい、仕事仲間の時間だった"));
   assert(!rin.first.includes("ラベルも同意書もない"));
   assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);
