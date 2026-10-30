@@ -78,7 +78,7 @@ await suite("samechan-entry", async check => {
         assert.equal(r.loaded.affinity.samechan, r.afterQuestion.affinity.samechan);
         assert.deepEqual(r.loaded.romanceChoices, r.afterQuestion.romanceChoices);
         assert(!r.afterQuestion.flags._samechan_name_known && !r.afterQuestion.flags._friend_samechan);
-        assert.equal(r.name, "サメちゃん"); assert(!/波多野|泳/.test(r.log));
+        assert.equal(r.name, "サメちゃん"); assert(!/波多野|泳ぐのは苦手|泳げ/.test(r.log)); // 本名と泳ぎが苦手な話は後の私的会話まで出さない（サメ映画の「サメが泳ぎ出す」は可）
         assert(!r.confession); assert.deepEqual(r.afterQuestion.lovers, []);
         assert(!r.afterQuestion.flags._confession_due);
       }, options);

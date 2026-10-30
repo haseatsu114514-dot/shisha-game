@@ -24,6 +24,9 @@
 .ch2-contest-judges small { font-size:15px; line-height:1.4; }
 .ch2-tournament-vn-menu { position:absolute; top:20px; right:26px; pointer-events:auto; }
 .ch2-tournament .bench-top>.ch2-tournament-menu { margin-left:8px; min-width:86px; min-height:44px; font-size:18px; }
+/* 右上の「外観を選ぶ」（絶対配置）とMENUが重ならないよう、帯の右側にボタン分の余白を取る */
+body:not(.game-ds) .bench-top:has(> .ch2-tournament-menu) { padding-right:154px; }
+body:not(.game-ds) .bench-top:has(> .ch2-tournament-menu) .bench-progress { padding-right:0; }
 
 /* 投票・結果の画面は第1章と同じ中継グラフィック（部品は tournament.css / tournament-graphics.js）。 */
 .ch2-contest:has(> .ch2-contest-board) { display: grid; grid-template-columns: minmax(0, 1fr) 290px; align-content: start; column-gap: 22px; row-gap: 10px; inset: 18px 40px; padding: 20px 28px 18px; overflow: hidden; border-color: #e8c27a66; background: linear-gradient(135deg, #1b1228f7, #0d0a15f8 60%); box-shadow: 0 24px 80px #000c, inset 0 1px 0 #ffe7b322; }

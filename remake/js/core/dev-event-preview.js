@@ -14,7 +14,7 @@ export function createEventPreview(getDialogues, documentRef) {
     Object.assign(overlay.style, {
       position: "fixed", inset: "5%", zIndex: "2147483647",
       overflow: "auto", background: "#16131e", color: "#fff",
-      padding: "20px", font: "16px/1.7 sans-serif", border: "2px solid #a89dc7",
+      padding: "20px", font: "16px/1.7 var(--font)", border: "2px solid #a89dc7",
     });
     const heading = doc.createElement("h2");
     heading.textContent = "台本プレビュー（状態変更なし）: " + id;

@@ -412,6 +412,36 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_aquarium_repeat_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "クラゲの水槽の前で足が止まった。ゆっくり開いて、閉じる。急かしても、速くはならない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（待つのは苦手なはずなのに、見ているのは嫌じゃない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_aquarium_repeat_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "小さな子が、ガラスに額をつけて笑っていた。母親は魚より、その横顔を見ている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの顔を見に来てるんだな。……俺も、最近は台ばかり見てた）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_sento_visit",
       "lines": [
         {
@@ -443,6 +473,41 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（ととのうって、こういう時間のことかもしれない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_repeat_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "番台のおばあさんが、顔を見るなり「また来たね」とタオルを出してくれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（もう顔を覚えてもらえてる。……なんか、うれしいな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_repeat_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "熱波師の風が来た。体感百五十度。神崎さんの話は、少しも大げさじゃなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "水風呂の隣で、常連のおじさんが「兄ちゃん、今日は下の段にしときな」と笑った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（体と相談する、か。今日は言われたとおりにしよう）"
         }
       ]
     },
@@ -853,6 +918,36 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "手軽さと、雑にしないこと。両方できてるか、俺も気をつけよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_repeat_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "今日はカウンター席にした。端の席から、スタッフが炭を替えていく順番が見える。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "混んでても、炭替えの順番は崩さないんだ。だから誰も待たされない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_repeat_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "常連らしい客が「いつもの」と言うと、スタッフは銘柄も聞かずに頷いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "チェーンでも、顔で覚えてるんだな。そこは、地元の店と同じだ"
         }
       ]
     }

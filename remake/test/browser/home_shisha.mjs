@@ -69,7 +69,8 @@ await suite("home-shisha", async check => {
       await page.evaluate(() => { __remake.vnTest.turbo = true; });
       await hit("home-mix-ok"); await page.waitForFunction(() => homeDone === true);
       const after = await snapshot(page);
-      assert.deepEqual(after, { ...before, flavorStock: { ...before.flavorStock, lemon: 11, mint: 17 }, stamina: 58, statXp: {} });
+      // 体力-24は根性で軽くなる。根性30＝10段の3段目（STATUS-P1）で -22.67 → 80から57。
+      assert.deepEqual(after, { ...before, flavorStock: { ...before.flavorStock, lemon: 11, mint: 17 }, stamina: 57, statXp: {} });
       await page.evaluate(async () => {
         const core = await import("./js/core/state.js"); core.load(); core.save(); core.load();
         window.repeatOffer = (await import("./js/daily/home-shisha.js")).homeShishaOffer();
@@ -84,7 +85,7 @@ await suite("home-shisha", async check => {
       await assertFits(page, ".home-shisha-dialog .modal-actions button");
       await page.evaluate(() => { __remake.vnTest.turbo = true; });
       await hit("home-recipe-ice_lemonade"); await page.waitForFunction(() => homeDone === true);
-      assert.deepEqual(await snapshot(page), { ...after, flavorStock: { ...after.flavorStock, lemon: 3, mint: 13 }, stamina: 36,
+      assert.deepEqual(await snapshot(page), { ...after, flavorStock: { ...after.flavorStock, lemon: 3, mint: 13 }, stamina: 34,
         stats: before.stats, statXp: {} });
     }, options);
   }
@@ -167,7 +168,7 @@ await suite("home-shisha", async check => {
         } else await page.waitForFunction(() => homeDone === true);
       }
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
-      const expected = timing === "before" ? before : { ...before, stamina: 58,
+      const expected = timing === "before" ? before : { ...before, stamina: 57,
         flavorStock: { lemon: 12, mint: 16 }, stats: before.stats, statXp: before.statXp };
       const savedResources = Object.fromEntries(Object.keys(before).map(key => [key, saved[key]]));
       const continueSave = async () => {
