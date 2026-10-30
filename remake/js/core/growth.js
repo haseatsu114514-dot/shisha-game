@@ -58,6 +58,8 @@ export function newGrowth() {
     firsts: { people: [], places: [] }, // 周回内の「はじめて」
     today: { xp: 0, learned: {} },     // 寝る時までの分。learned は鍵 -> 経験値（「今日学んだこと」）
     seen: { fullLevelUp: false },      // フル演出を一度見たか（初回の判定）
+    nodes: [],             // 盤で解放したノードID（確定済みだけ。HUB は数えない）
+    paid: {},              // ノードID -> 払った火種 { any: n, technique: n, … }（組み直しで同じ種類に戻す）
   };
 }
 
@@ -82,6 +84,8 @@ export function ensureGrowth(s = state) {
   g.today.xp = num(g.today.xp);
   if (!g.today.learned || typeof g.today.learned !== "object") g.today.learned = {};
   g.seen = { fullLevelUp: g.seen?.fullLevelUp === true };
+  g.nodes = strings(g.nodes);
+  if (!g.paid || typeof g.paid !== "object" || Array.isArray(g.paid)) g.paid = {};
   return g;
 }
 
@@ -214,6 +218,17 @@ export async function presentNight() {
   if (!growthEnabled()) return null;
   const { presentNightGrowth } = await import("../daily/levelup.js");
   return presentNightGrowth();
+}
+
+/** メニューの「心得の盤」。無効なら出さない。 */
+export const growthMenuItems = () => growthEnabled()
+  ? [{ label: hidaneTotal(ensureGrowth()) ? `心得の盤（火種 ${hidaneTotal(state.growth)}）` : "心得の盤", value: "board", test: "menu-board" }] : [];
+
+/** 盤の画面を開き、閉じるまで待つ。大会の当日は開かない（2.2）。 */
+export async function openGrowthBoard() {
+  if (!growthEnabled() || !state || state.phase === "tournament") return null;
+  const { openBoard } = await import("../daily/growth-board-screen.js");
+  return openBoard();
 }
 
 // ---------------------------------------------------------------- ゲージ（6.1a）

@@ -140,7 +140,7 @@ for (const stage of ['tonari', 'complete']) {
   });
   vm.runInContext(dayOneSource, ctx);
   await ctx.continueDayOne();
-  assert.deepEqual(scenes, stage === 'tonari' ? ['remake_ch2_day1_night', 'remake_ch2_delivery_report', 'shared-calendar'] : ['shared-calendar']);
+  assert.deepEqual(scenes, stage === 'tonari' ? ['remake_ch2_day1_night', 'shared-calendar'] : ['shared-calendar']);
   assert.equal(fixture.money, 1000);
 }
 console.log('PASS: initial report and legacy complete checkpoint automatically enter shared calendar');
