@@ -35,7 +35,7 @@ import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH2_PRIZE } from "./ch2-tournament-state.js";
 
-const REQUIRED = ["lobby", "entrance", "stations", "rules", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
+const REQUIRED = ["lobby", "entrance", "stations", "rules", "verdict", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
 // SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
 const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
