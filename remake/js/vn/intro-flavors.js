@@ -14,6 +14,6 @@ const flavors = {
 export function introFlavor(id, variant = "") {
   if (variant) return null;
   if (id === "hiyori") return { main: "マンゴー", small: "ハバネロ" };
-  const main = flavors[id];
+  const main = Object.hasOwn(flavors, id) ? flavors[id] : null;
   return main ? { main } : null;
 }
