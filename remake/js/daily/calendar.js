@@ -559,24 +559,27 @@ async function performSpotAction(spot) {
       // 料金・体力・読了と一緒に行動を保存済み。共通末尾で二重に進めない。
       return { used: completed, exerted: completed, slotsUsed: 0 };
     }
-    if (state.visitedDay[`tonari_${sub}`] === state.day) {
-      toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
+    const makanai = sub === "practice" || sub === "strawberry";
+    // 旧セーブの苺専用記録も、同じ日のまかないとして扱う。
+    if (state.visitedDay[`tonari_${sub}`] === state.day || makanai &&
+        (state.visitedDay.tonari_practice === state.day || state.visitedDay.tonari_strawberry === state.day)) {
+      toast(makanai ? "今日はもうまかないで練習した" : sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
     }
     if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
     exerted = true;
-    state.visitedDay[`tonari_${sub}`] = state.day;
+    state.visitedDay[makanai ? "tonari_practice" : `tonari_${sub}`] = state.day;
     if (sub === "practice") {
       const { runFullPractice } = await import("../craft/practice.js");
       addStamina(-16);
       await play("remake_staff_practice", { bg: TONARI_BG });
-      await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
-      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+      const cs = await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
+      if (cs.masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "strawberry") {
       const { runStrawberryTrial } = await import("../chapters/ch2-strawberry-trial.js");
       addStamina(-16);
-      await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
-      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+      const { masteryGained } = await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
+      if (masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "baito") await doBaito();
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
@@ -640,6 +643,7 @@ async function performSpotAction(spot) {
 const TONARI_EXP = {
   baito: { key: "tonari_shift", place: "tonari_shift" },
   practice: { key: "tonari_practice", place: "tonari_practice" },
+  strawberry: { key: "tonari_practice", place: "tonari_practice" },
   customer: { key: "tonari_seat", place: "tonari_seat" },
 };
 function spotExpTarget(spot) {
