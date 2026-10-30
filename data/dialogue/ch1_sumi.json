@@ -877,6 +877,11 @@
           "text": "ただ、体力のある日だけな。準備も片付けも疲れる。毎日やろうとしなくていい"
         },
         {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "窓は少し開けとけ。閉め切った部屋で炭を焚くと、頭が痛くなる"
+        },
+        {
           "type": "condition",
           "condition_type": "flag",
           "flag": "_sumi_double_apple_received",
