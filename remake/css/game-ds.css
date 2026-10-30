@@ -529,15 +529,16 @@ body.game-ds .hud-exp .hx-lv { min-width: 0; }
 }
 :root[data-ds-layout="stacked"] body.game-ds .game-layout-toolbar[open] { top: calc(var(--ds-cy) + 6px) !important; }
 
-/* 会話：3択が下画面の中に収まる高さ。短い画面でも本文が2行読める。 */
-body.game-ds .vn-choices, body.game-ds .vn-choices:has(> .vn-choice:nth-child(2):last-child) { gap: 8px; }
-body.game-ds .vn-choice { min-height: 48px; padding: 10px 14px; font-size: 17px; }
+/* 会話：3択が下画面の中に収まる高さ（PCの縦積み341pxでも3つ見える）。短い画面でも本文が2行読める。 */
+body.game-ds .vn-choices, body.game-ds .vn-choices:has(> .vn-choice:nth-child(2):last-child) { gap: 6px; }
+body.game-ds .vn-choice { min-height: 44px; padding: 8px 14px; font-size: 17px; }
 body.game-ds #vn:has(.vn-choices.show) .vn-box {
-  height: clamp(104px, calc((var(--ds-ch) - var(--ds-touchbar)) * .38), 200px);
+  top: calc(var(--ds-cy) + 18px);
+  height: clamp(96px, calc((var(--ds-ch) - var(--ds-touchbar)) * .34), 200px);
 }
 body.game-ds #vn:has(.vn-choices.show) .vn-choices {
-  top: calc(var(--ds-cy) + 26px + clamp(104px, calc((var(--ds-ch) - var(--ds-touchbar)) * .38), 200px) + 10px);
-  max-height: calc(var(--ds-ch) - var(--ds-touchbar) - clamp(104px, calc((var(--ds-ch) - var(--ds-touchbar)) * .38), 200px) - 44px);
+  top: calc(var(--ds-cy) + 18px + clamp(96px, calc((var(--ds-ch) - var(--ds-touchbar)) * .34), 200px) + 8px);
+  max-height: calc(var(--ds-ch) - var(--ds-touchbar) - clamp(96px, calc((var(--ds-ch) - var(--ds-touchbar)) * .34), 200px) - 32px);
 }
 body.game-ds #vn:has(.vn-choices.show) .vn-text { font-size: 18px; line-height: 1.5; min-height: 0; }
 @media (max-height: 640px) {
