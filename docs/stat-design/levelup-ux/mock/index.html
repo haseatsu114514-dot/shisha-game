@@ -221,7 +221,7 @@ button{font:inherit;color:inherit;cursor:pointer}
         <button data-dev="tourn">大会を終える（限定の火種）</button>
         <button data-dev="chapter">次の章へ（輪が開く）</button>
         <button data-dev="mid">中央の大会前（Lv.9・火種40）</button>
-        <button data-dev="bond">交流を深める（♥5・修行が開く）</button>
+        <button data-dev="bond">交流を深める（♥5・授業が開く）</button>
         <button data-dev="ng">2周目へ（盤と火種を引き継ぐ）</button>
         <button data-dev="reset">最初から</button>
       </div>
@@ -315,11 +315,11 @@ const LEARN={sumi:"スミさんの手元",tsumugi:"つむぎの色の話",naru:"
 function pol(a,r){const t=a*Math.PI/180;return [Math.cos(t)*r,Math.sin(t)*r];}
 const SCALE=2;                       // 火種の細かさ（SPEC 比）。2026-10-30「細かすぎる」でレベルアップ1回＝火種2に
 const PER_STEP=3;                    // 1段に要る能力のマス（3つで1段）
-const STAT_RING=[0,12,6,3,3,3];      // 盤ごとの能力のマス（輪ごと）＝SPEC の4・2・1・1・1段 ×3。盤1枚＝能力27＋スキル6＋修行1＝34マス（7×5の方眼ぴったり）
+const STAT_RING=[0,12,6,3,3,3];      // 盤ごとの能力のマス（輪ごと）＝SPEC の4・2・1・1・1段 ×3。盤1枚＝能力27＋スキル6＋授業1＝34マス（7×5の方眼ぴったり）
 const CELL=60, HUB=[320,224];
 // 盤の型（2026-10-30「如くシリーズ参考に」→「全部つながってるのが気になる、こんな感じで離していい」）:
 // 秘孔盤のように、方眼に並んでいても隣どうしを全部はつながない。真ん中の大きな紋から4本の道が出て、
-// 曲がり・枝分かれしながら行き止まりの要所（スキル・修行・極み）へ向かう。隣にあっても線のないマスは別の道。
+// 曲がり・枝分かれしながら行き止まりの要所（スキル・授業・極み）へ向かう。隣にあっても線のないマスは別の道。
 // 形は点対称（半分を設計して180度回す）。9×7 の方眼に36マス（要所10か所。使わない要所は盤に出さない）。
 const LAYOUT=(()=>{
   const half={paths:[
@@ -338,31 +338,36 @@ const LAYOUT=(()=>{
   }
   return {cells:[...cells.values()],edges};
 })();
-// 修行（仮）: 誰との交流で開くか・どんな場面の絵になるかだけを置く。名前・効果は第二弾の詳細設計で決める
-// 修行（仮）: 開く条件は「その相手の好感度が♥5」かつ「盤の道が修行のマスの手前まで届いている」（2026-10-30 オーナー指示）。
-// 周回で関係は毎周やり直すので、2周目以降は、取っていない修行はまた♥5まで仲良くならないと開かない（取った修行は引き継ぐ）。
+// 授業（仮）: 誰との交流で開くか・どんな場面の絵になるかだけを置く。名前・効果は第二弾の詳細設計で決める
+// 授業（仮）: 開く条件は「その相手の好感度が♥5」かつ「盤の道が授業のマスの手前まで届いている」（2026-10-30 オーナー指示）。
+// 周回で関係は毎周やり直すので、2周目以降は、取っていない授業はまた♥5まで仲良くならないと開かない（取った授業は引き継ぐ）。
 // まだ会っていない相手は名前もヒントも伏せて「？？？」。
-// 修行の一覧（2026-10-30「キャラの修行は特別感・そのキャラらしさ・強めに」「スミさんから教わるのも増やす」「今のアタック習得などを修行へ」）
-// スミさんの修行は、今のゲームの特訓（アタック♥3・キューブ炭♥2）を移したもの＋新しい四つ置き。キャラの修行は♥5で開く、その人らしい強い技。
+// 授業の一覧（2026-10-30「キャラの授業は特別感・そのキャラらしさ・強めに」「スミさんから教わるのも増やす」「今のアタック習得などを授業へ」）
+// スミさんの授業は、今のゲームの特訓（アタック♥3・キューブ炭♥2）を移したもの＋新しい四つ置き。キャラの授業は♥5で開く、その人らしい強い技。
 const TRAININGS=[
- {id:"M-B1",board:"body",who:"minto",whoJa:"みんと",need:5,cost:0,name:"看板の笑顔",sig:true,hint:"みんとと仲良くなると、人の惹きつけ方を教えてもらえそう",
+ {id:"M-B1",board:"body",who:"minto",whoJa:"みんと",need:5,cost:0,name:"看板の笑顔",sig:true,reward:"special",hint:"みんとと仲良くなると、人の惹きつけ方を教えてもらえそう",
   fx:"大会の「審査員の第一印象」の加点が2倍。提供後の調整で、審査員の受け止めが一段良くなる（魅せ方）",art:"みんとに鏡の前で笑顔の作り方を教わる"},
- {id:"M-S1",board:"sense",who:"tonari_shift",whoJa:"スミさん",need:3,cost:0,name:"蒸らしアタック",hint:"スミさんと仲良くなると、蒸らしの特訓をしてくれそう",
-  fx:"蒸らしで雑念の言葉を斬れる（今のゲームの「スミさん♥3の特訓」を移した）",art:"スミさんがカウンター越しに煙を斬ってみせる",legacy:"_sumi_attack_learned"},
- {id:"M-S2",board:"sense",who:"adam",whoJa:"アダム",need:5,cost:0,name:"一筋の手元",sig:true,hint:"アダムと仲良くなると、職人の勘を教えてもらえそう",
+ {id:"M-S1",board:"sense",who:"tonari_shift",whoJa:"スミさん",need:0,cost:0,name:"蒸らしアタック",reward:"skill",hint:"感覚盤を3段まで開けたら、スミさんが蒸らしの授業をしてくれる",
+  fx:"蒸らしで雑念の言葉を斬れる（今のゲームの「スミさん♥3の特訓」を移した。好感度の条件は外す）",art:"スミさんがカウンター越しに煙を斬ってみせる",legacy:"_sumi_attack_learned"},
+ {id:"M-S2",board:"sense",who:"adam",whoJa:"アダム",need:5,cost:0,name:"一筋の手元",sig:true,reward:"special",hint:"アダムと仲良くなると、職人の勘を教えてもらえそう",
   fx:"推しの葉を1つ決める。その葉が主役の配合では、ジャスト帯がさらに広く、会心が出やすい",art:"アダムがダブルアップルだけを並べて手元を見せる"},
- {id:"M-W1",board:"wisdom",who:"tonari_shift",whoJa:"スミさん",need:2,cost:0,name:"キューブ炭",hint:"スミさんと仲良くなると、炭の扱いを教えてくれそう",
-  fx:"キューブ炭を選べる（今のゲームの「スミさん♥2の授業」を移した）",art:"スミさんがキューブ炭を三角に置いてみせる",legacy:"_coal_cube_learned"},
- {id:"M-W2",board:"wisdom",who:"tonari_shift",whoJa:"スミさん",need:4,cost:0,name:"四つ置き・混ぜ置き",hint:"スミさんともっと仲良くなると、炭の置き方の奥を教えてくれそう",
+ {id:"M-W1",board:"wisdom",who:"tonari_shift",whoJa:"スミさん",need:0,cost:0,name:"キューブ炭",reward:"skill",hint:"理論盤を3段まで開けたら、スミさんが炭の授業をしてくれる",
+  fx:"キューブ炭を選べる（今のゲームの「スミさん♥2の授業」を移した。好感度の条件は外す）",art:"スミさんがキューブ炭を三角に置いてみせる",legacy:"_coal_cube_learned"},
+ {id:"M-W2",board:"wisdom",who:"tonari_shift",whoJa:"スミさん",need:0,cost:0,name:"四つ置き・混ぜ置き",reward:"skill",hint:"理論盤を3段まで開けたら、スミさんが炭の置き方の奥を教えてくれる",
   fx:"炭の四つ置きと、フラット炭とキューブ炭の混ぜ置きを選べる（今は授業が無いフラグを、ここで開く）",art:"スミさんが炭を四つ、迷いなく並べる"},
- {id:"M-W3",board:"wisdom",who:"naru",whoJa:"なる",need:5,cost:0,name:"甘さの組み立て",sig:true,hint:"なると仲良くなると、組み立て方を教えてもらえそう",
+ {id:"M-W3",board:"wisdom",who:"naru",whoJa:"なる",need:5,cost:0,name:"甘さの組み立て",sig:true,reward:"special",hint:"なると仲良くなると、組み立て方を教えてもらえそう",
   fx:"配合の相性ヒントが「あと何g」まで見える。甘い系（バニラ・チョコ・焼き菓子）の熟練度が2倍で伸びる",art:"なるがノートに菓子の味を分解して書いてみせる"}];
+ // 能力が伸びるだけの授業（強め）: つむぎ。灯すと感覚が1段上がる（能力のマス3つ分）
+TRAININGS.push({id:"M-S3",board:"sense",who:"tsumugi",whoJa:"つむぎ",need:5,cost:0,name:"色の見方",sig:true,reward:"stat",bonus:3,hint:"つむぎと仲良くなると、色の見方を教えてもらえそう",
+  fx:"感覚が1段上がる（能力のマス3つ分。10段の上限は変わらない）",art:"つむぎがスケッチブックの色を指さして、煙の色の違いを教える"});
+const REWARD_JA={skill:"スキル",special:"特殊な技",stat:"能力が伸びる"};
+const LESSON_MIN_STEP=3; // 授業はその盤を3段（能力のマス6つ）まで開けた先のご褒美
 const TRAINS={}; // 旧名（盤ごとの代表）。表示の互換のため
-// ライバル（キャラ）のタイプ＝その人がくれる色つきの火種の色。♥5で、その人の色の火種をくれる（ADDENDUM-0042）。その人の特別な修行も同じ色の盤にある
+// ライバル（キャラ）のタイプ＝その人がくれる色つきの火種の色。♥5で、その人の色の火種をくれる（ADDENDUM-0042）。その人の特別な授業も同じ色の盤にある
 const CHAR_TYPE={minto:"body",adam:"sense",naru:"wisdom",tsumugi:"sense"};
 const CHAR_JA={minto:"みんと",adam:"アダム",naru:"なる",tsumugi:"つむぎ"};
 function giftIfMax(who){if(!CHAR_TYPE[who]||S.gifted[who]||heartOf(who)<5)return;S.gifted[who]=true;const t=CHAR_TYPE[who];S.hidane[t]+=SCALE;
-  setTimeout(()=>card({c:`var(--${t})`,k:K1[t],top:"HIDANE",main:`${CHAR_JA[who]}から${K1[t]}の火種 ＋${SCALE}`,sub:`${CHAR_JA[who]}は${K1[t]}タイプ。${JA[t]}盤にその人の修行がある`}),1200);log(`${CHAR_JA[who]}が♥5: ${K1[t]}の火種＋${SCALE}`);}
+  setTimeout(()=>card({c:`var(--${t})`,k:K1[t],top:"HIDANE",main:`${CHAR_JA[who]}から${K1[t]}の火種 ＋${SCALE}`,sub:`${CHAR_JA[who]}は${K1[t]}タイプ。${JA[t]}盤にその人の授業がある`}),1200);log(`${CHAR_JA[who]}が♥5: ${K1[t]}の火種＋${SCALE}`);}
 const heartOf=who=>Math.min(5,Math.floor((S.affPts[who]||0)/2)); // モックでは2回会うごとに♥1
 const metOf=who=>who==="tonari_shift"||(S.affPts[who]||0)>0; // スミさんは最初から知っている
 function buildNodes(){
@@ -375,7 +380,7 @@ function buildNodes(){
 const NODES=buildNodes();
 const byId=Object.fromEntries(NODES.map(n=>[n.id,n]));
 const boardCache={};
-function boardOf(k){ // その盤のマスを LAYOUT に割り当てる（特別な8か所＝修行・スキル6・極み、ほかは能力のマス）
+function boardOf(k){ // その盤のマスを LAYOUT に割り当てる（特別な8か所＝授業・スキル6・極み、ほかは能力のマス）
   if(boardCache[k])return boardCache[k];
   const stats=NODES.filter(n=>n.kind==="stat"&&n.stat===k);
   const skills=NODES.filter(n=>n.kind==="skill"&&n.colors.includes(k)).sort((a,b)=>a.ring-b.ring);
@@ -390,8 +395,8 @@ function boardOf(k){ // その盤のマスを LAYOUT に割り当てる（特別
   const reg=LAYOUT.cells.filter(c=>!c.special).sort(order);
   const peak=stats[stats.length-1];peak.peak=true;
   const out=[];
-  // 要所は近い順に: 修行（♥の低い順）→スキル（章の順）→極み。極みはいちばん奥の要所。使わない要所は出さない
-  const specials=[...trains,...skills];specials.forEach((n,i)=>out.push({n,gx:sp[i].x,gy:sp[i].y}));const far=sp[sp.length-1];out.push({n:peak,gx:far.x,gy:far.y});
+  // 要所は近い順に: 授業（♥の低い順）→スキル（章の順）→極み。極みはいちばん奥の要所。使わない要所は出さない
+  const specials=[...skills.filter(n=>n.ring===1),...trains,...skills.filter(n=>n.ring>1)];specials.forEach((n,i)=>out.push({n,gx:sp[i].x,gy:sp[i].y}));const far=sp[sp.length-1];out.push({n:peak,gx:far.x,gy:far.y});
   stats.slice(0,-1).forEach((n,i)=>out.push({n,gx:reg[i].x,gy:reg[i].y}));
   const at=Object.fromEntries(out.map(b=>[b.gx+","+b.gy,b]));
   for(const b of out){b.x=HUB[0]+b.gx*CELL;b.y=HUB[1]+b.gy*CELL;
@@ -414,8 +419,8 @@ function cheapestPath(id,owned){
   return best||{k:null,cost:0,path:[]};
 }
 function pathTo(k,id){const own=B?new Set([...B.owned,...B.pend.map(q=>q.id)]):S.owned;const p=cheapestPath(id,own);return p.k===k?p.path:[];}
-function trainOpen(n){return heartOf(n.who)>=n.need;}
-function statCount(k,owned){return NODES.filter(n=>n.kind==="stat"&&n.stat===k&&owned.has(n.id)).length;}
+function trainOpen(n,owned=S.owned){return heartOf(n.who)>=n.need&&stepOf(n.board,owned)>=LESSON_MIN_STEP;} // スミさんは need 0
+function statCount(k,owned){return NODES.filter(n=>n.kind==="stat"&&n.stat===k&&owned.has(n.id)).length+NODES.filter(n=>n.kind==="train"&&n.board===k&&n.bonus&&owned.has(n.id)).reduce((a,n)=>a+n.bonus,0);}
 function progress(k,owned=S.owned){const ns=boardOf(k).map(b=>b.n);const tot=ns.reduce((a,n)=>a+n.cost,0);
   return ns.filter(n=>owned.has(n.id)).reduce((a,n)=>a+n.cost,0)/tot;}
 // 右のパネルの「発動イラスト」の中身（素材の依頼の下書きを兼ねる）
@@ -431,7 +436,7 @@ function fresh(){return {chapter:1,day:1,slot:0,stamina:100,exp:0,settled:0,lv:1
   hidane:{any:0,body:0,sense:0,wisdom:0},lastBoard:null,target:null,boardMode:"kannon",gifted:{},trainDone:{},owned:new Set(),paid:{},spent10:{},
   firsts:new Set(),freshCount:{},readCount:{},today:{},affPts:{},boost:{mult:1,left:0},
   draft:null,sel:null,tutorial:{board:false,step:0},respecOpen:false,lastNode:"HUB",log:[]};}
-function stepOf(k,owned=S.owned){return 1+Math.floor(statCount(k,owned)/PER_STEP);} // 段＝解放した能力ノード÷5＋1
+function stepOf(k,owned=S.owned){return Math.min(10,1+Math.floor(statCount(k,owned)/PER_STEP));} // 段＝解放した能力ノード÷5＋1
 function totalHidane(h=S.hidane){return Object.values(h).reduce((a,b)=>a+b,0);}
 function ringsOpen(){return Math.max(S.chapter,S.ringsCarry||1);} // 周回で引き継いだ輪は開いたまま（SPEC 5.4）
 function log(t){S.log.unshift(t);if(S.log.length>40)S.log.pop();$("#log").innerHTML=S.log.map(x=>"・"+x).join("<br>");}
@@ -566,7 +571,7 @@ function nextDay(){S.day++;S.slot=0;S.stamina=Math.min(100,S.stamina+14+30);if(S
 function nodeState(n,owned,hid){
   if(owned.has(n.id))return "own";
   if(n.ring>ringsOpen())return "ring";
-  if(n.kind==="train"&&!trainOpen(n))return "train";
+  if(n.kind==="train"&&!trainOpen(n,owned))return "train";
   if(!connected(n,owned))return "far";
   return payable(n,hid)?"can":"short";
 }
@@ -605,7 +610,7 @@ function commit(){
   const lit=ups.filter(n=>n.kind==="stat").length;let i=0;
   if(lit)setTimeout(()=>card({c:"var(--gold)",k:"火",top:"LIT",main:`能力の火を${lit}つ灯した`,sub:KEYS.filter(kk=>ups.some(u=>u.stat===kk&&u.kind==="stat")).map(kk=>`${K1[kk]}${statCount(kk,S.owned)%PER_STEP}/${PER_STEP}`).join("　")}),0),i++;
   for(const kk of KEYS){const now=stepOf(kk);if(now>before[kk]){const to=now;setTimeout(()=>card({c:`var(--${kk})`,k:K1[kk],top:"STEP UP",main:`${JA[kk]} ${to}段`,sub:TIER[kk][to-1]}),(i++)*400);ups.filter(u=>u.stat===kk).forEach(u=>u._to=to);}}
-  ups.filter(n=>n.kind!=="stat").forEach(n=>setTimeout(()=>card({c:`var(--${n.colors[0]})`,k:n.kind==="train"?"修":"技",top:n.kind==="train"?"TRAINING":"SKILL",main:n.name,sub:n.fx||"修行で身につけた"}),(i++)*400));
+  ups.filter(n=>n.kind!=="stat").forEach(n=>setTimeout(()=>card({c:`var(--${n.colors[0]})`,k:n.kind==="train"?"授":"技",top:n.kind==="train"?"LESSON":"SKILL",main:n.name,sub:n.fx||"授業で身につけた"}),(i++)*400));
   log(`盤で決定: 火種${ups.reduce((a,n)=>a+n.cost,0)}（${KEYS.map(kk=>`${K1[kk]}${stepOf(kk)}段`).join(" ")}）${ups.filter(n=>n.kind!=="stat").map(n=>"・"+n.name).join("")}`);
   if(wasTut&&ups.length){const n=ups.find(u=>u.kind==="stat")||ups[0];const c=n.kind==="stat"?statCount(n.stat,S.owned)%PER_STEP:0;
     setTimeout(()=>caption(n.kind==="stat"?(n._to?`${JA[n.stat]}が${n._to}段になった。${TIER[n.stat][n._to-1]}。作りの画面では、効いているところがこの色で光る。`:`${JA[n.stat]}の火を灯した。あと${PER_STEP-c}つで${stepOf(n.stat)+1}段。`):`${n.name}を覚えた。${n.fx}。`,
@@ -635,7 +640,7 @@ function drawBoard(){
     let fill="#140f19",stroke=col,sw=2,op=1,dash="",cls="";
     if(st==="own")fill=col;else if(st==="pend"){fill=col;op=.6;dash="3 2";}else if(st==="can"){cls="can";sw=3.5;}
     else if(st==="short"){sw=1.5;}else if(st==="far"){op=.55;}else if(st==="ring"){stroke="#5a4a2a";op=.45;}else if(st==="train"){stroke="#8a7a5a";dash="3 3";}
-    const rv=revealOf(n);const lab=n.kind==="stat"?(n.peak?"極":""):n.kind==="train"?"修":rv==="hidden"?"？":n.name.slice(0,2);
+    const rv=revealOf(n);const lab=n.kind==="stat"?(n.peak?"極":""):n.kind==="train"?"授":rv==="hidden"?"？":n.name.slice(0,2);
     g+=`<g class="node" data-id="${n.id}" transform="translate(${x},${y})" opacity="${op}">
       <circle r="30" fill="transparent"/>
       ${sel?`<circle r="${r+7}" fill="none" stroke="var(--gold-hi)" stroke-width="2.5"/>`:""}
@@ -643,7 +648,7 @@ function drawBoard(){
       ${col2?`<polygon points="${[0,1,2,3,4,5].map(i=>pol(i*60-90,r+4).join(",")).join(" ")}" fill="none" stroke="${col2}" stroke-width="2.5"/>`:""}${n.sig?`<polygon points="${[0,1,2,3,4,5].map(i=>pol(i*60-90,r+6).join(",")).join(" ")}" fill="none" stroke="var(--gold-hi)" stroke-width="2"/>`:""}
       ${shape} class="${cls}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" ${dash?`stroke-dasharray="${dash}"`:""}/>
       ${lab?`<text y="5" font-size="${n.peak?20:13}" font-weight="800" text-anchor="middle" fill="${st==="own"||st==="pend"?"#140f19":st==="train"?"#c9b27a":col}">${lab}</text>`:""}
-      ${n.kind!=="stat"?`<text y="${r+14}" font-size="11" text-anchor="middle" fill="var(--dim)">${n.kind==="train"?(st==="train"?"🔒"+(metOf(n.who)?n.whoJa+" ♥"+heartOf(n.who)+"/"+n.need:"？？？"):n.whoJa):"火種"+n.cost}</text>`:""}
+      ${n.kind!=="stat"?`<text y="${r+14}" font-size="11" text-anchor="middle" fill="var(--dim)">${n.kind==="train"?(st==="train"?"🔒"+(metOf(n.who)?n.whoJa+(n.need?" ♥"+heartOf(n.who)+"/"+n.need:""):"？？？"):n.whoJa):"火種"+n.cost}</text>`:""}
       ${st==="ring"&&big?`<text x="${r-6}" y="${-r+6}" font-size="11">🔒</text>`:""}
     </g>`;
   }
@@ -657,7 +662,7 @@ function drawBoard(){
     ${B.edit?"":`<span style="color:var(--amber)">見るだけ（火種を灯すのは観音堂で）</span>`}${B.place==="kannon"?`<span style="color:var(--sense)">観音堂</span>`:""}
     <span class="sp"></span>${S.respecOpen&&B.edit?`<button id="respec">組み直す</button>`:""}<button id="help">？</button><button id="bclose">閉じる</button>`;
   $("#bclose").onclick=()=>closeBoard();
-  $("#help").onclick=()=>alert("盤は能力ごとに5枚（技術盤〜洞察盤）。上の札で入れ替える。\n真ん中の「はじまり」から上下左右に広がる方眼。線は上下左右の隣だけ。\n取れるのは、上下左右の隣が灯っているマスだけ。どの方向から攻めてもよい。\n小さな丸＝能力の火（火種1）。3つ灯すと1段上がる。\n六角形＝スキル（火種10〜20）／修＝修行（交流で開く）／極＝いちばん奥\n明滅＝今取れる／薄い＝まだつながっていない／暗い＝章で開く\n🎯＝目標。一番安い道を金の点線で出す。「目標まで灯す」でまとめて仮置き");
+  $("#help").onclick=()=>alert("盤は能力ごとに5枚（技術盤〜洞察盤）。上の札で入れ替える。\n真ん中の「はじまり」から上下左右に広がる方眼。線は上下左右の隣だけ。\n取れるのは、上下左右の隣が灯っているマスだけ。どの方向から攻めてもよい。\n小さな丸＝能力の火（火種1）。3つ灯すと1段上がる。\n六角形＝スキル（火種10〜20）／授＝授業（交流で開く）／極＝いちばん奥\n明滅＝今取れる／薄い＝まだつながっていない／暗い＝章で開く\n🎯＝目標。一番安い道を金の点線で出す。「目標まで灯す」でまとめて仮置き");
   if($("#respec"))$("#respec").onclick=()=>{if(!confirm("全部の火種が戻ります。組み直しますか？"))return;
     for(const id of B.owned){const u=S.paid[id]||{any:byId[id].cost};for(const[kk,v]of Object.entries(u))B.hid[kk]+=v;}B.owned=new Set();B.pend=[];drawBoard();};
   $("#btabs").replaceChildren(...KEYS.map(kk=>{const pr=progress(kk,ownP);const can=B.edit&&boardOf(kk).some(b=>!pendIds.has(b.n.id)&&nodeState(b.n,ownP,hid)==="can");
@@ -668,7 +673,7 @@ function drawBoard(){
   const sel=(B.sel&&byId[B.sel])||items.find(b=>!pendIds.has(b.n.id)&&nodeState(b.n,ownP,hid)==="can")?.n||items[0].n;
   const st=pendIds.has(sel.id)?"pend":nodeState(sel,ownP,hid);
   const ecol=sel.kind==="skill"?sel.colors[0]:sel.stat;const locked=st==="train"||st==="ring";
-  const art=sel.kind==="train"?(st==="train"?"（影絵だけ見せる）":sel.art):sel.kind==="stat"?ILLUST[sel.stat]:sel.kind==="skill"?(revealOf(sel)==="full"?ILLUST[sel.id]:revealOf(sel)==="name"?"（影絵だけ見せる）":"（まだ見えない）"):`${sel.whoJa}に教わっている場面（中身は詳細設計で決める）`;
+  const art=sel.kind==="train"?(st==="train"?"（影絵だけ見せる）":sel.art):sel.kind==="stat"?ILLUST[sel.stat]:sel.kind==="skill"?(revealOf(sel)==="full"?ILLUST[sel.id]:revealOf(sel)==="name"?"（影絵だけ見せる）":"（まだ見えない）"):`${sel.whoJa}に教わっている場面`;
   const cnt=statCount(k,ownP),cur=stepOf(k,ownP),rem=PER_STEP-cnt%PER_STEP;
   const nt=Object.entries(NEWTHING[k]||{}).find(([x])=>+x>cur);
   let body;
@@ -676,10 +681,10 @@ function drawBoard(){
      (nt?`<br><small style="color:var(--gold-hi)">✦${nt[0]}段で「${nt[1]}」（あと火${(nt[0]-cur-1)*PER_STEP+rem}つ）</small>`:"");
   else if(sel.kind==="skill")body=revealOf(sel)==="hidden"?`<h4>？？？</h4><small>スキル・第${sel.ring}章で盤に現れる</small><br>どんな技かは、その章になってのお楽しみ`:revealOf(sel)==="name"?`<h4>${sel.name}</h4><small>スキル・次の章（第${sel.ring}章）で取れるようになる・火種${sel.cost}</small><br>${sel.fx}`:`<h4>${sel.name}</h4><small>スキル・${sel.colors.map(c=>JA[c]).join("×")}・第${sel.ring}輪・火種${sel.cost}</small><br>${sel.fx}<br><small>効く場面：${sel.scene}</small>`;
   else {const met=metOf(sel.who);const reach=connected(sel,ownP);
-    body=`<h4>${st==="train"?"？？？の修行":sel.name}</h4><small>${sel.sig?"特別な修行（その人だけの技）":"スミさんの修行"}・火種いらず</small><br>${st==="train"?(met?`<span style="color:var(--gold-hi)">ヒント：${sel.hint}</span><br><small>${sel.whoJa}との好感度 ♥${heartOf(sel.who)}/${sel.need}（♥${sel.need}で開く）</small>`:`<span style="color:var(--gold-hi)">ヒント：まだ会っていない誰かが、何か教えてくれるらしい</span><br><small>？？？との好感度 ♥?/5</small>`):`<b>${sel.fx}</b><br><small>${sel.whoJa}との好感度が♥${sel.need}になって開いた${sel.legacy?"（今のゲームで習得済みなら、移行時に灯った状態で始める）":""}</small>`}<br><small>盤の道：${reach?"修行のマスまで届いている":"まだ届いていない（手前のマスを灯す）"}</small>`;}
-  const tag={own:"灯した",pend:"仮置き中",ring:`第${sel.ring}章で開く`,far:`まだつながっていない（ここまで火種${remainTo(sel.id)}）`,short:`火種が${sel.cost}要る`,train:"修行がまだ"}[st];
+    body=`<h4>${st==="train"?"？？？の授業":sel.name}</h4><small>${sel.sig?"その人の授業":"スミさんの授業"}・${REWARD_JA[sel.reward]||""}・火種いらず</small><br>${st==="train"?(met?`<span style="color:var(--gold-hi)">ヒント：${sel.hint}</span><br><small>${sel.need?`${sel.whoJa}との好感度 ♥${heartOf(sel.who)}/${sel.need}（♥${sel.need}で開く）・`:""}${JA[sel.board]}盤 ${stepOf(sel.board,ownP)}/${LESSON_MIN_STEP}段（${LESSON_MIN_STEP}段で開く）</small>`:`<span style="color:var(--gold-hi)">ヒント：まだ会っていない誰かが、何か教えてくれるらしい</span><br><small>？？？との好感度 ♥?/5</small>`):`<b>${sel.fx}</b><br><small>${sel.need?`${sel.whoJa}との好感度♥${sel.need}と`:""}${JA[sel.board]}盤${LESSON_MIN_STEP}段で開いた${sel.legacy?"（今のゲームで習得済みなら、移行時に灯った状態で始める）":""}</small>`}<br><small>盤の道：${reach?"授業のマスまで届いている":"まだ届いていない（手前のマスを灯す）"}</small>`;}
+  const tag={own:"灯した",pend:"仮置き中",ring:`第${sel.ring}章で開く`,far:`まだつながっていない（ここまで火種${remainTo(sel.id)}）`,short:`火種が${sel.cost}要る`,train:"授業がまだ"}[st];
   let payLine="";if(st==="can"){const tmp={...hid};payLine=`<br><small>${payText(pay(sel,tmp,{forceAny:B.forceAny}))}で払う</small>`;}
-  $("#bdetail").innerHTML=`<div class="emb" style="--c:var(--${ecol})"><span class="ttl">${st==="train"||revealOf(sel)==="hidden"?"？？？":nodeName(sel)}</span><span class="big" style="${locked?"opacity:.25":""}">${sel.kind==="stat"?K1[sel.stat]:sel.kind==="train"?(st==="train"?"？":"修"):revealOf(sel)==="hidden"?"？":sel.name[0]}</span>
+  $("#bdetail").innerHTML=`<div class="emb" style="--c:var(--${ecol})"><span class="ttl">${st==="train"||revealOf(sel)==="hidden"?"？？？":nodeName(sel)}</span><span class="big" style="${locked?"opacity:.25":""}">${sel.kind==="stat"?K1[sel.stat]:sel.kind==="train"?(st==="train"?"？":"授"):revealOf(sel)==="hidden"?"？":sel.name[0]}</span>
       <span class="art" style="display:block;right:110px">発動イラスト：${st==="train"?"（シルエットだけ見せる）":art}</span></div>
     <div class="dtext">${body}${tag?`<br><small style="color:var(--amber)">${tag}</small>`:""}${payLine}</div>`;
   if(sel.kind!=="stat"||sel.peak){const tb=h("button",{text:S.target===sel.id?"目標を外す":"🎯 目標にする",onclick:()=>{S.target=S.target===sel.id?null:sel.id;drawBoard();render();}});$("#bdetail").append(tb);}
@@ -714,7 +719,7 @@ function fillToTarget(){
   const own=()=>new Set([...B.owned,...B.pend.map(q=>q.id)]);
   const path=cheapestPath(S.target,own()).path;let n=0;
   for(const id of path){const nd=byId[id];if(own().has(id))continue;if(nodeState(nd,own(),B.hid)!=="can")break;B.pend.push({id,used:pay(nd,B.hid,{forceAny:B.forceAny})});n++;}
-  log(n?`目標まで ${n}マス仮置き`:"目標へ進めない（火種・章・修行を確認）");B.sel=S.target;drawBoard();
+  log(n?`目標まで ${n}マス仮置き`:"目標へ進めない（火種・章・授業を確認）");B.sel=S.target;drawBoard();
 }
 function switchBoard(d){const i=KEYS.indexOf(B.k);B.k=KEYS[(i+d+5)%5];S.lastBoard=B.k;B.sel=null;drawBoard();}
 document.addEventListener("keydown",e=>{if(!B||$("#board").hidden)return;if(e.key==="q"||e.key==="ArrowLeft")switchBoard(-1);if(e.key==="e"||e.key==="ArrowRight")switchBoard(1);});
@@ -774,8 +779,8 @@ function dev(k){
   if(k==="mid"){const m=S.boardMode;S=fresh();S.boardMode=m;S.day=13;let acc=0;for(let L=1;L<9;L++)acc+=need(L);S.exp=S.settled=acc+120;S.lv=9;S.hidane.any=8*SCALE;S.tutorial.board=true;
     ["tsumugi","naru","adam","kannon"].forEach(x=>{S.firsts.add(x);S.freshCount[x]=3;});log("中央の遊び方・第1章大会前の状態（Lv.9・火種40・未使用）");}
   if(k==="ng"){const keep={owned:S.owned,paid:S.paid,hidane:S.hidane,lv:S.lv,exp:S.exp,settled:S.settled,boardMode:S.boardMode,ringsCarry:Math.max(S.chapter,S.ringsCarry||1),tutorial:S.tutorial};
-    S=Object.assign(fresh(),keep);S.chapter=1;card({c:"var(--gold)",k:"周",top:"NEW CYCLE",main:"2周目",sub:"盤は引き継いだ。取っていない修行は、また仲良くなると開く"});log("2周目へ: 盤・火種・レベルは引き継ぎ、好感度・面識は最初から。取っていない修行は錠に戻った");}
-  if(k==="bond"){TRAININGS.forEach(t=>{S.affPts[t.who]=10;giftIfMax(t.who);});card({c:"var(--body)",k:"修",top:"TRAINING OPEN",main:"修行が開いた",sub:"スミさん・みんと・アダム・なるが、何か教えてくれるらしい"});log("交流を深めた（開発用）: 各盤の修行が開いた");}
+    S=Object.assign(fresh(),keep);S.chapter=1;card({c:"var(--gold)",k:"周",top:"NEW CYCLE",main:"2周目",sub:"盤は引き継いだ。取っていない授業は、また仲良くなると開く"});log("2周目へ: 盤・火種・レベルは引き継ぎ、好感度・面識は最初から。取っていない授業は錠に戻った");}
+  if(k==="bond"){TRAININGS.forEach(t=>{S.affPts[t.who]=10;giftIfMax(t.who);});card({c:"var(--body)",k:"修",top:"TRAINING OPEN",main:"授業が開いた",sub:"みんと・アダム・なる・つむぎが、何か教えてくれるらしい"});log("交流を深めた（開発用）: 各盤の授業が開いた");}
   if(k==="reset"){const m=S.boardMode;S=fresh();S.boardMode=m;log("最初から");}
   render();
 }
