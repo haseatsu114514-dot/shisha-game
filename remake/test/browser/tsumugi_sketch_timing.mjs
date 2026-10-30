@@ -32,7 +32,13 @@ await suite("tsumugi-sketch-timing", async check => {
       await page.waitForFunction(() => document.querySelector(".vn-next.show"));
       assert.equal(await page.locator(".mo-sketch").count(), 0, "no drawing before the introduction");
       if (mode === "skip") await page.locator(".vn-controls button").filter({ hasText: "SKIP" }).click();
-      if (mode === "auto") await page.locator(".vn-controls button").filter({ hasText: "AUTO" }).click();
+      const auto = page.locator('[data-test="vn-auto"]');
+      if (mode === "auto") {
+        await auto.click();
+        assert.equal(await auto.getAttribute("aria-pressed"), "true");
+        // #1846: ボタンにフォーカスしたままEnterを押すとAUTOを操作する。
+        await auto.evaluate(button => button.blur());
+      }
       for (let i = 0; i < 180; i++) {
         if (await page.evaluate(() => T.done)) break;
         if (await page.locator(".mo-sketch").count()) {
@@ -45,7 +51,11 @@ await suite("tsumugi-sketch-timing", async check => {
             assert.equal(await page.evaluate(() => !!T.core.state.flags._tsumugi_contest_submitted), false);
           }
           await page.locator(".mo-sketch").waitFor({ state: "detached", timeout: 15000 });
-          if (mode === "auto") await page.locator(".vn-controls button").filter({ hasText: "AUTO" }).click();
+          if (mode === "auto") {
+            await auto.click();
+            assert.equal(await auto.getAttribute("aria-pressed"), "false");
+            await auto.evaluate(button => button.blur());
+          }
         } else if (!["skip", "auto"].includes(mode) || await page.evaluate(() => T.motionStarts.length > 0)) {
           await page.keyboard.press("Enter");
         }
