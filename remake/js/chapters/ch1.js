@@ -17,7 +17,6 @@ import { initHud, showHud, daysLeft } from "../daily/hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
-import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/shop.js";
 import { radar } from "../daily/status.js";
 import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
@@ -526,11 +525,7 @@ async function tournamentDay() {
     await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
     const cheers = morningMessages({ tournamentDay: true });
     if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
-    // 本番用フレーバーを仕入れていなければ、スミさんのお情け（強制購入はしない）
-    const stocked = flavorStock("lemon") >= 12;
-    await play(stocked ? "remake_flavor_brought" : "remake_flavor_rescue", { bg: TONARI });
-    if (!stocked) addFlavorStock("lemon", 12 - flavorStock("lemon")); // スミさんの「一回分」
-    captureEntryResources(state); // 救済支給後・初回制作前に一度だけ。在庫と体力を同じ境界で保存。
+    captureEntryResources(state); // 初回制作前に一度だけ。在庫と体力を同じ境界で保存。
     save();
     toast("大会直前のデータをセーブした");
   }
