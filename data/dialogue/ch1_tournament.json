@@ -285,7 +285,7 @@
           "condition_type": "flag",
           "flag": "_ev_maezono_cameo",
           "next_true": "maezono_recall",
-          "next_false": ""
+          "next_false": "maezono_chk_met"
         },
         {
           "speaker": "pakki",
@@ -339,6 +339,22 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "（『おいしいねえ』って、そういうことか。……知ってる顔がいると、少し落ち着く）"
+          }
+        ],
+        "maezono_chk_met": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_met_maezono",
+            "next_true": "maezono_met",
+            "next_false": ""
+          }
+        ],
+        "maezono_met": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（カフェでケーキを撮ってた上園さんだ。……知ってる顔がいると、少し落ち着く）"
           }
         ]
       }
@@ -469,7 +485,7 @@
         {
           "speaker": "minto",
           "face": "wink",
-          "text": "（このケインミントなら絶対にイケる……！ 笑顔、笑顔……！）"
+          "text": "（このブラストミントなら絶対にイケる……！ 笑顔、笑顔……！）"
         },
         {
           "speaker": "naru",
@@ -1279,11 +1295,6 @@
           {
             "type": "set_flag",
             "flag": "interview_sumi"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "数日後、tonariに「配信で見ました」という新規のお客さんが２人来た。"
           }
         ],
         "nat_ask": [

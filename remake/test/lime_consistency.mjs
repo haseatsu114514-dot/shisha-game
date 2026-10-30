@@ -67,7 +67,7 @@ const phone = phoneModule.namespace, romance = (await load("romance.js")).namesp
 const clone = (v) => JSON.parse(JSON.stringify(v));
 function reset(overrides = {}) {
   for (const key of Object.keys(state)) delete state[key];
-  Object.assign(state, { chapter: 1, phase: "daily", money: 30000, day: 6, slot: 0, flags: {}, limeRead: [], inbox: [], contacts: ["minto", "rin", "tsumugi", "naru", "adam", "sumi"], met: {}, story: {}, lastBaitoDay: 6, lovers: [], loveLevel: {}, loverSince: {}, lastDate: {}, lovePts: {}, loverEventsSeen: [] }, overrides);
+  Object.assign(state, { chapter: 1, phase: "daily", money: 30000, day: 6, slot: 0, flags: {}, limeRead: [], inbox: [], contacts: ["minto", "rin", "tsumugi", "naru", "adam", "sumi"], met: {}, story: {}, lastBaitoDay: overrides.day ?? 6, lovers: [], loveLevel: {}, loverSince: {}, lastDate: {}, lovePts: {}, loverEventsSeen: [] }, overrides);
   db.lime = allMessages; db.lover = {}; db.dialogues = {}; gains.length = 0; plays.length = 0; statGains.length = 0; nudges.length = 0; playHook = async () => {}; playResult = completedPlay;
   for (const layer of Object.values(layers)) layer.replaceChildren();
 }
@@ -608,5 +608,16 @@ reset({ day: 5, contacts: ["minto"], lovers: ["minto"], loveLevel: { minto: 1 },
 state.inbox.push(item(invitation("c04_private", "minto"), { account: "minto_private", read: false, done: true, result: "accepted" }));
 assert.equal(phone.invitationReadBeforeMeeting({ originId: "c04_private", sender: "minto" }), "minto_private");
 reset();
+
+// #1897: 大会当日の応援は、本文がある相手のうち連絡先を交換した人から届く（固定の送り主リストを持たない）。
+const cheers = (overrides) => { reset({ day: 14, ...overrides }); return [...phone.morningMessages({ tournamentDay: true }).map((m) => m.id)].sort(); };
+assert.deepEqual(cheers({ contacts: ["tsumugi", "minto", "rin"] }), ["encourage_minto", "encourage_rin", "encourage_tsumugi"]);
+assert.deepEqual(cheers({ contacts: ["ageha", "hiyori"] }), [], "第1章のあげは・儚い演技中のひよりからは届かない");
+assert.deepEqual(cheers({ contacts: ["hiyori"], flags: { _hiyori_tonari_return_done: true } }), ["encourage_hiyori"]);
+assert.deepEqual(cheers({ contacts: ["samechan"] }), ["encourage_samechan"]);
+assert.deepEqual(cheers({ chapter: 2, contacts: ["ageha", "samechan"] }), ["encourage_ageha"], "開店前の文面は第1章だけ");
+assert.equal(cheers({ contacts: ["tsumugi", "minto", "rin", "hiyori"], flags: { _hiyori_tonari_return_done: true } }).length, 3, "大会の朝も3通まで");
+reset();
+console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch1 ageha and hiyori gate");
 
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority + #1081 C04 unread guard: PASS");

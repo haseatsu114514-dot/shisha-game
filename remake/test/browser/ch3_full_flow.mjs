@@ -249,7 +249,12 @@ await suite("ch3-full-flow", async check => {
           "Reload must resume after the hotel scene without replaying the win");
       }
     }
+    // #1930: 再会の後、帰り際のあげはの告白。返事を読み終えるまで第3章完（第4章の入口）を出さない。
+    await page.locator(dt("ch3-aftermath-ageha-confession")).waitFor();
+    assert.equal(await page.locator(dt("ch3-aftermath-chapter-four")).count(), 0);
+    await page.locator(dt("ch3-aftermath-ageha-confession-continue")).click();
     await page.locator(dt("ch3-aftermath-complete")).waitFor();
+    assert((await get(page)).lovers.includes("ageha"), "The first answer (turbo) accepts ageha's confession");
 
     // 5. 最終state
     state = await get(page);

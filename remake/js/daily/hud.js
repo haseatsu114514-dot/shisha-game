@@ -2,7 +2,7 @@ import { CH2_CITY_EN, CH2_CITY_NAME, HOME_CITY_EN, HOME_CITY_NAME } from "../cor
 // 日常パートの常時表示（日付・時間帯・大会までの日数・所持金・体力・スマホ・ステータス）。
 // 見た目は旧版の墨×金を踏襲: 左上に DAY カード、右上に体力・ステータスの五角形・LIME・MENU。
 import { el, yen, sleep } from "../core/util.js";
-import { layers } from "../core/ui.js";
+import { layers, toast } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, STAT_KEYS } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina, step } from "../core/stats.js";
@@ -125,8 +125,12 @@ export function initHud(h) {
 }
 
 /** 1行動につき1枚の「EXP +N　はじめて・なじみ」（内訳の数字は出さない。REPORT R7） */
-function showExpChip({ total, tags = [] }) {
-  if (!dom || !growthEnabled() || !(total > 0)) return;
+function showExpChip({ total, tags = [], publicReward = false }) {
+  if (!dom || !(total > 0)) return;
+  if (!growthEnabled()) {
+    if (publicReward) toast(`EXP +${total}（累計 ${state.growth?.xp || 0}）`, { kind: "good" });
+    return;
+  }
   const chip = el("div.exp-chip", { role: "status", dataset: { test: "exp-chip" } }, [
     el("b", { text: `EXP +${total}` }), tags.length ? el("span", { text: tags.join("・") }) : null,
   ]);

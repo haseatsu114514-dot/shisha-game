@@ -214,7 +214,13 @@ await suite("ch3-tournament", async check => {
           "Reload must resume after the hotel scene without replaying the win");
       }
     }
+    // #1930: 再会の後、帰り際のあげはの告白。返事を読み終えてから第3章完へ。
+    await page.locator('[data-test="ch3-aftermath-ageha-confession"]').waitFor();
+    await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.choose = () => 1; });
+    await page.locator('[data-test="ch3-aftermath-ageha-confession-continue"]').click();
     await page.locator('[data-test="ch3-aftermath-complete"]').waitFor();
+    await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.choose = null; });
+    assert.equal((await get(page)).flags._friend_ageha, true, "Staying friends lands ageha's route too");
     state = await get(page);
     assert.equal(state.flags._ch3_cleared, true);
     assert.equal(state.phase, "cleared");

@@ -71,6 +71,7 @@ assert.deepEqual(calls.filter(x=>['shop','scout','register','visit'].includes(x.
 assert.equal(calls.find(x=>x.id==='remake_delivery_minto_handoff').day,2);
 assert(!calls.some(x=>x.type==='map'&&x.day===1&&!['shop','naru'].includes(x.pin)));
 assert.equal(actionEnds,3);assert.equal(state.money,11000);assert.equal(state.flags._c_station_registered,true);
+assert.equal(state.visitedDay.c_station,undefined,'Free registration must leave the same-day customer visit available');
 // Old DAY1-night checkpoints do not replay scouting or the existing registration.
 reset({day:1,slot:1});await c.runDaily({untilDay:3,nightEvents:{}});assert(!calls.some(x=>['scout','register','shop'].includes(x.type)));assert.equal(state.money,14000);assert.equal(actionEnds,2);
 // A full DAY2 rest defers both registration and ordered deliveries, without losing them.
@@ -195,9 +196,9 @@ for(const registered of [true,false]) for(const recordedDay of [undefined,1]) {
   assert.deepEqual(trace,['install','display']);
   assert.deepEqual(calls,[]);
   assert.equal(state.flags._pakki_first_spin_pending,undefined);
-  assert.equal(state.visitedDay.c_station,recordedDay??(registered?2:undefined));
+  assert.equal(state.visitedDay.c_station,recordedDay);
   for(const key of ['day','slot','stamina','money','stats','spotVisits'])assert.deepEqual(state[key],before[key],key);
-  if(registered&&recordedDay===undefined)assert.equal(saves.at(-1).visitedDay.c_station,2);
+  if(registered&&recordedDay===undefined)assert(!saves.some(s=>s.visitedDay.c_station!==undefined));
  });
 }
 await entryCheck('legacy without explicit flag displays existing results only',async()=>{
@@ -219,14 +220,14 @@ await entryCheck('resume precedes result display and delivery actions',async()=>
  assert.equal(calls.find(x=>x.type==='map').pin,'minto');
  assert.equal(state.money,14000);assert.equal(actionEnds,2);
 });
-await entryCheck('registration day survives reload during resumed first-spin presentation',async()=>{
+await entryCheck('free registration survives reload during resumed first-spin presentation',async()=>{
  reset({flags:{_pakki_first_spin_pending:true}});
  state.spotVisits={c_station:1};state.reel={count:0,pending:[]};state.stats={technique:10};
  let installs=0;
  installProbe=async()=>{
   installs++;
-  assert.equal(saves.at(-1)?.visitedDay.c_station,2,'Registration day must be saved before installer commitment');
-  assert.equal(saves.at(-1).flags._pakki_first_spin_pending,true);
+  assert.equal(state.visitedDay.c_station,undefined,'Pending first spin must not consume customer visit');
+  assert.equal(state.flags._pakki_first_spin_pending,true);
   // Model installReel's commit/save followed by document replacement during presentation.
   delete state.flags._pakki_first_spin_pending;
   state.reel.count=1;state.stats.technique++;
@@ -237,7 +238,7 @@ await entryCheck('registration day survives reload during resumed first-spin pre
  const committed=structuredClone(state);
  await c.runDaily({untilDay:2,nightEvents:{}});
  assert.equal(installs,1,'Committed first spin was installed again');
- assert.equal(state.visitedDay.c_station,2);
+ assert.equal(state.visitedDay.c_station,undefined);
  assert.deepEqual(state,committed,'Second LOAD changed payout/count/registration');
  assert.deepEqual(calls,[]);
 });
@@ -250,11 +251,10 @@ for(const wait of ['installer','display'])await entryCheck(`state replaced durin
  await c.runDaily({untilDay:3,nightEvents:{}});
  assert.equal(state,replacement);assert.equal(state.money,4321);
  assert.equal(state.day,2);assert.equal(state.slot,0);
- assert.equal(old.visitedDay.c_station,wait==='installer'?2:undefined);
+ assert.equal(old.visitedDay.c_station,undefined);
  assert.equal(state.visitedDay.c_station,undefined,'Old run mutated replacement state');
  assert.equal(displays,wait==='installer'?0:1);
  assert.deepEqual(calls,[]);
- assert.equal(saves.length,wait==='installer'?1:0);
- if(wait==='installer')assert.equal(saves[0].visitedDay.c_station,2);
+ assert.equal(saves.length,0);
 });
 assert.deepEqual(entryFailures,[],'calendar entry regressions');

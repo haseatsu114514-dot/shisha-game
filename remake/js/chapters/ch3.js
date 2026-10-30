@@ -10,6 +10,8 @@ import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { onDialogueEnter } from "../daily/romance.js";
+import { CH3_CONFESSION_IDS, confessionAnswer } from "./ch3-romance-entry.js";
 import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "./ch3-progress.js";
@@ -313,6 +315,11 @@ async function readScene(owner, scene) {
     const result = await play(dialogue, { signal: controller.signal });
     finished = current(owner) && !controller.signal.aborted && !!result && !result.cancelled;
     if (finished && strategyChoice) state.flags._ch3_strategy = strategyChoice;
+    // 告白の返事（#1930）。第3章から読み込んだ保存では hooks.onEnter が無いことがあるため、読了後に入った返事で確定する。
+    if (finished) for (const id of CH3_CONFESSION_IDS) {
+      const answer = confessionAnswer(result.visited, id);
+      if (answer) onDialogueEnter(answer, DB.dialogues[answer]);
+    }
     return finished;
   } finally {
     if (choiceHook && hooks.onChoice === choiceHook) hooks.onChoice = previousOnChoice;

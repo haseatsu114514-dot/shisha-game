@@ -73,7 +73,7 @@
 .trpg-cover-right > p { margin: 0 0 20px; color: #b9c0b3; font-size: 18px; line-height: 1.6; }
 .trpg-cast { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .trpg-cast-card { position: relative; border-top: 2px solid var(--person-color); background: #2b3635; padding: 12px 10px; text-align: center; overflow: hidden; }
-.trpg-cast-card small { color: var(--person-color); font-size: 13px; letter-spacing: .09em; }
+.trpg-cast-card small { color: var(--person-color); font-size: 13px; letter-spacing: .02em; }
 .trpg-cast-art { height: 162px; position: relative; overflow: hidden; margin: 5px -10px 10px; }
 .trpg-cast-art img { position: absolute; width: 305px; height: auto; left: 50%; transform: translateX(-50%); top: -12px; }
 .trpg-cast-card strong { display: block; font-size: 22px; }
@@ -149,7 +149,7 @@
 .trpg-content { top: 114px; }
 .trpg-table { top: 87px; }
 .trpg-heading { gap: 13px; }
-.trpg-heading > small { font-size: 12px; letter-spacing: .06em; max-width: 90px; line-height: 1.7; }
+.trpg-heading > small { font-size: 12px; letter-spacing: .02em; max-width: 90px; line-height: 1.7; }
 .trpg-heading > strong { font-size: 24px; }
 .trpg-tools { gap: 7px; }
 .trpg-tools .trpg-button { min-width: 63px; font-size: 15px; }
@@ -236,9 +236,9 @@
 
 /* The shelf is the entry point; each illustrated card is an actual playable story. */
 .trpg-library-header { position: absolute; top: 27px; left: 42px; right: 42px; display: flex; justify-content: space-between; align-items: flex-start; }
-.trpg-library-header .trpg-kicker { font-size: 13px; letter-spacing: .12em; }
+.trpg-library-header .trpg-kicker { font-size: 13px; letter-spacing: .02em; }
 .trpg-library-header h1 { font-size: 37px; font-weight: 700; margin: 8px 0 0; line-height: 1.3; }
-.trpg-library-meta { display: flex; align-items: center; gap: 20px; color: #acc5be; font-size: 13px; letter-spacing: .12em; padding-top: 5px; }
+.trpg-library-meta { display: flex; align-items: center; gap: 20px; color: #acc5be; font-size: 13px; letter-spacing: .02em; padding-top: 5px; }
 .trpg-library-intro { position: absolute; left: 43px; top: 109px; color: #b8cdc5; font-size: 18px; margin: 0; }
 .trpg-library-books { position: absolute; left: 42px; right: 42px; top: 159px; bottom: 57px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
 .trpg-library-book { display: flex; flex-direction: column; min-height: 0; overflow: hidden; border: 1px solid #94b3a567; border-radius: 10px; background: linear-gradient(130deg,#2b4444,#1b3236); box-shadow: 0 14px 28px #0003; }
@@ -250,7 +250,7 @@
 .trpg-library-number { position: absolute; left: 17px; top: 13px; color: #fff4dd; font-size: 34px; font-weight: 900; text-shadow: 0 1px 8px #000; }
 .trpg-library-genre { position: absolute; right: 16px; top: 18px; font-size: 14px; padding: 5px 12px; background: #142c34d9; color: #fbe6bb; border: 1px solid #ddd2b94d; border-radius: 20px; }
 .trpg-library-copy { padding: 16px 23px 18px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-.trpg-library-byline { color: #b7cabc; font-size: 12px; letter-spacing: .025em; }
+.trpg-library-byline { color: #b7cabc; font-size: 12px; letter-spacing: .02em; }
 .trpg-library-copy h2 { margin: 5px 0; font-size: 30px; line-height: 1.35; color: #fff2d6; font-weight: 700; }
 .trpg-library-copy > p { margin: 3px 0 0; font-size: 17px; color: #cbd7cb; }
 .trpg-library-details { display: flex; gap: 18px; font-size: 14px; color: #bed0c8; margin: 12px 0 10px; }
@@ -304,7 +304,7 @@ body[data-screen="trpg"] #hud { visibility: hidden; }
 .trpg-club-proposal p { font-size: 19px; line-height: 1.7; }
 .trpg-club-proposal button { margin-top: 14px; }
 .trpg-club-proposal p.trpg-club-line { font-size: 17px; line-height: 1.55; margin: 4px 0; }
-.trpg-club-line small { display: inline-block; min-width: 5.5em; margin-right: 8px; color: #cbbd9d; font-size: 13px; letter-spacing: .06em; }
+.trpg-club-line small { display: inline-block; min-width: 5.5em; margin-right: 8px; color: #cbbd9d; font-size: 13px; letter-spacing: .02em; }
 .trpg-club-line[data-speaker="hajime"] { color: #d8e3dc; }
 .trpg-club-proposal p.trpg-club-narration { color: #b9c4bb; font-style: italic; padding-left: calc(5.5em * 13 / 17 + 8px); }
 .trpg-club-founded { margin-bottom: 14px; padding: 18px 40px; }
@@ -330,12 +330,12 @@ body[data-screen="trpg"] #hud { visibility: hidden; }
 .trpg-journey { position: absolute; top: 87px; left: 28px; right: 470px; height: 22px; }
 .trpg-journey ol { list-style: none; display: flex; gap: 18px; padding: 0; margin: 0; height: 100%; }
 .trpg-journey li { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8da6a0; white-space: nowrap; }
-.trpg-journey li i { display: grid; place-items: center; width: 19px; height: 19px; border: 1px solid #77948a63; border-radius: 50%; font-size: 10px; font-style: normal; }
+.trpg-journey li i { display: grid; place-items: center; width: 19px; height: 19px; border: 1px solid #77948a63; border-radius: 50%; font-size: 12px; font-weight: 700; font-style: normal; }
 .trpg-journey li[aria-current="step"] { color: #ffe3ad; font-weight: 700; }
 .trpg-journey li[aria-current="step"] i { color: #1c3332; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px #f2d29e24; }
 .trpg-journey li.done i { color: #bcd4c4; background: #48675975; }
 .trpg-table { left: auto; max-width: 450px; gap: 6px; }
-.trpg-table-person { font-size: 11px; padding: 3px 6px; }
+.trpg-table-person { font-size: 12px; font-weight: 700; padding: 3px 6px; }
 .trpg-side { gap: 8px; }
 .trpg-side > p { font-size: 16px; }
 .trpg-side > .trpg-button { min-height: 49px; font-size: 18px; }
@@ -351,7 +351,7 @@ body[data-screen="trpg"] #hud { visibility: hidden; }
 .trpg-investigation[data-ready="true"] { border-color: #ddc69095; }
 .trpg-evidence { overflow: hidden; padding-top: 8px; gap: 7px; min-height: 72px; }
 .trpg-evidence-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-shrink: 0; }
-.trpg-evidence-head > strong { font-size: 13px; font-weight: 500; color: #bcd0c4; letter-spacing: .04em; }
+.trpg-evidence-head > strong { font-size: 13px; font-weight: 700; color: #bcd0c4; letter-spacing: .02em; }
 .trpg-evidence-head .trpg-button { min-height: 29px; padding: 4px 10px; font-size: 12px; }
 .trpg-evidence-list { display: flex; flex-direction: column; gap: 6px; min-height: 0; overflow-y: auto; padding: 2px 3px 3px 0; scrollbar-width: thin; scrollbar-color: #8b9e8e transparent; }
 .trpg-evidence-list > .trpg-clue { flex-shrink: 0; min-height: 35px; padding: 7px 10px; font-size: 15px; }
@@ -359,11 +359,11 @@ body[data-screen="trpg"] #hud { visibility: hidden; }
 .trpg-evidence-list .trpg-empty-note { font-size: 15px; line-height: 1.7; color: #9cb7ac; padding: 8px 3px; }
 .trpg-support { flex-shrink: 0; }
 .trpg-support .trpg-button { min-height: 41px; }
-.trpg-budget { font-size: 11px; color: #a9bfb4; flex-shrink: 0; }
+.trpg-budget { font-size: 12px; font-weight: 700; color: #a9bfb4; flex-shrink: 0; }
 .trpg-risk { flex-shrink: 0; font-size: 13px; }
 .trpg-hypothesis-note { font-size: 13px; padding: 6px 10px; }
 .trpg-plan-summary { display: flex; flex-direction: column; gap: 7px; padding: 10px 13px; border: 1px solid #7e9e8b50; border-radius: 7px; background: #304c432f; flex-shrink: 0; }
-.trpg-plan-summary > strong { color: var(--accent); font-size: 12px; font-weight: 500; letter-spacing: .08em; }
+.trpg-plan-summary > strong { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 .trpg-plan-summary > div { display: grid; grid-template-columns: 96px 1fr; align-items: baseline; gap: 7px; }
 .trpg-plan-summary small { font-size: 12px; color: #9fb6aa; line-height: 1.5; }
 .trpg-plan-summary span { font-size: 15px; color: #eee6cf; line-height: 1.4; }

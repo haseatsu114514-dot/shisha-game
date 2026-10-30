@@ -1,6 +1,6 @@
 // 第4章・ドバイ。プロローグ→自由行動→前夜→大会→勝ち側の本線までを、場面単位で保存する。
 // 状態遷移は ch4-progress.js、行き先の計算は ch4-map-model.js。ここは表示と再生だけを持つ。
-import { DB, bgUrl } from "../core/data.js";
+import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
@@ -22,6 +22,9 @@ import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
+import { loadStoryRoutes } from "./ch3-story-wiring.js";
+import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
+  chapterFourEveningRecord } from "./ch4-story-wiring.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -99,7 +102,8 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
-  const groups = await Promise.all(Object.entries(CH4_SCENE_FILES).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
+  const files = { ...CH4_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
+  const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
   }
@@ -162,7 +166,7 @@ async function readScene(owner, id) {
   const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
-  await setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true });
+  await setBg(bgUrl(CH4_SCENE_BG[id] || CH4_EVENING_BG), { instant: true });
   if (!current(owner)) return false;
   playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。
@@ -283,6 +287,8 @@ async function renderEve(owner) {
   if (await eveReflection("dubai_waterside")) { if (current(owner)) await renderStage(owner); return; }
   const [next] = chapterFourMandatory(state);
   if (!next) {
+    // 必須場面の後、大会日へ進む前に、前夜の過ごし方を一度だけ確定する（#1895）。
+    if (!state.flags._ch4_evening) { await renderEvening(owner); return; }
     if (!finishChapterFourEve(state)) throw new Error("前夜を終えられません");
     save();
     await renderStage(owner);
@@ -298,6 +304,36 @@ async function renderEve(owner) {
       await renderStage(owner);
     }, true),
   ], "", next.id);
+}
+
+/**
+ * 前夜の過ごし方。同じ場所の恋人が2人以上なら重なった予定を保留する場面を再生し、1人なら誘うか選ぶ。
+ * 恋人がいない・到着していない夜は、場面を出さずに「過ごさなかった」と記録する。
+ */
+async function renderEvening(owner) {
+  const routes = await loadStoryRoutes();
+  if (!current(owner)) return;
+  const settle = async result => {
+    for (const id of result.scenes) {
+      if (!await readScene(owner, id)) return;
+    }
+    // 再生を最後まで読んだ時だけ記録する。中断・LOAD後は同じ前夜からやり直す。
+    if (state.flags._ch4_evening || chapterFourMandatory(state).length) return;
+    state.flags._ch4_evening = chapterFourEveningRecord(result);
+    save();
+    await renderStage(owner);
+  };
+  const result = selectChapterFourEvening(routes, state);
+  const partner = chapterFourEveningPartner(routes, state);
+  if (result.kind !== "rest" || !partner) { await settle(result); return; }
+  const name = displayName(partner, state, { context: "private" });
+  await setBg(bgUrl(CH4_EVENING_BG), { instant: true });
+  if (!current(owner)) return;
+  card(owner, "evening", "DAY 4・前夜", `大会前夜。${name}と過ごす時間がある。`, [
+    button(owner, `${name}と過ごす`, "evening-date",
+      () => settle(selectChapterFourEvening(routes, state, partner)), true),
+    button(owner, "ひとりで休む", "evening-rest", () => settle(selectChapterFourEvening(routes, state))),
+  ], "どちらを選んでも、明日の大会には影響しません。");
 }
 
 async function renderTournament(owner) {

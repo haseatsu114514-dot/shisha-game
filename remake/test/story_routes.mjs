@@ -98,9 +98,12 @@ const fileScenes = file => new Set(JSON.parse(fs.readFileSync(new URL(`data/dial
   for (const id of eveningIds) assert(loaded.has(id), `${id} is not loaded by chapter 3`);
   assert(!loaded.has(routes.romance.ageha.date), 'ageha date is chapter 4');
   for (const [file, ids] of Object.entries(wiring.CH3_STORY_DIALOGUE_FILES)) for (const id of ids) assert(fileScenes(file).has(id), `${id} missing in ${file}`);
-  for (const id of all.filter(id => routes.romance[id].date_min_chapter <= 3)) {
+  // 前夜デートは報酬・フラグを持たない。分岐は選択と、東京前夜／ドバイ前夜の帰り道を分ける大会の終了判定だけ（#1895）。
+  for (const id of all) {
     const dateLines = [...sceneData.get(routes.romance[id].date).lines, ...Object.values(sceneData.get(routes.romance[id].date).branches || {}).flat()];
-    assert(dateLines.every(row => !row.type || row.type === 'choice'), 'eve date must not apply rewards or flags');
+    assert(dateLines.every(row => !row.type || row.type === 'choice'
+      || (row.type === 'condition' && row.condition_type === 'tournament_finished')), 'eve date must not apply rewards or flags');
+    assert(!dateLines.some(row => row.stats || row.money || row.affinity || row.flag), `${id} date must not apply rewards or flags`);
   }
 }
 const tokyo = () => {
@@ -154,6 +157,40 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   value.flags._ch3_read_ch3_cigarman_rumor = true;
   assert(offered(value).includes('ch3_cigarman_trace'));
   assert.deepEqual(wiring.availableOptionalScenes(routes, {...value, chapter: 4}), []);
+}
+{
+  // #1930: ましろの告白の入口。任意4場面の読了だけが条件で、好感度・面識からは開かない。返事で着地したら出さない。
+  const entry = await import(new URL('remake/js/chapters/ch3-romance-entry.js', root));
+  const value = tokyo();
+  value.affinity = Object.fromEntries(all.map(id => [id, 100]));
+  value.met.mashiro = true;
+  readUntil(value, 'ch3_double_apple_incident');
+  assert(!offered(value).includes('confession_mashiro'), 'max affinity alone does not open the confession');
+  for (const id of ['ch3_mashiro_play_1', 'ch3_mashiro_play_2', 'ch3_mashiro_play_3']) wiring.commitOptionalRead(value, id);
+  assert(!offered(value).includes('confession_mashiro'), 'needs the practice scene too');
+  readUntil(value, 'ch3_rest_before_recovery');
+  wiring.commitOptionalRead(value, 'ch3_mashiro_practice');
+  assert(offered(value).includes('confession_mashiro'), 'four optional scenes open the confession');
+  const confession = sceneData.get('confession_mashiro');
+  const targets = confession.lines.find(row => row.type === 'choice').choices.map(choice => choice.next_id);
+  assert.deepEqual(targets, ['confession_mashiro_accept', 'confession_mashiro_reject']);
+  assert.equal(sceneData.get('confession_mashiro_accept').metadata.set_romance, 'mashiro');
+  for (const id of targets) assert(wiring.CH3_STORY_DIALOGUE_FILES.confession.includes(id), `${id} loaded with the confession`);
+  assert.equal(entry.confessionAnswer(['confession_mashiro', 'confession_mashiro_reject'], 'mashiro'), 'confession_mashiro_reject');
+  assert.equal(entry.confessionAnswer(['confession_mashiro'], 'mashiro'), null, 'no answer when the choice was not reached');
+  assert(!offered({...value, lovers: [...value.lovers, 'mashiro']}).includes('confession_mashiro'), 'lover already landed');
+  assert(!offered({...value, flags: {...value.flags, _friend_mashiro: true}}).includes('confession_mashiro'), 'friend already landed');
+  wiring.commitOptionalRead(value, 'confession_mashiro');
+  assert(!offered(value).includes('confession_mashiro'), 'read once only');
+  // あげは: 第3章の後日談を読み終えた保存だけ。着地済み・第4章では出さない。
+  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true}};
+  assert.equal(entry.agehaConfessionDue(cleared), true);
+  assert.equal(entry.agehaConfessionDue({...cleared, flags: {}}), false, 'not before the reunion');
+  assert.equal(entry.agehaConfessionDue({...cleared, lovers: ['ageha']}), false);
+  assert.equal(entry.agehaConfessionDue({...cleared, flags: {_ch3_cleared: true, _friend_ageha: true}}), false);
+  assert.equal(entry.agehaConfessionDue({...cleared, chapter: 4}), false);
+  assert.equal(sceneData.get('confession_ageha_accept').metadata.set_romance, 'ageha');
+  for (const id of entry.AGEHA_CONFESSION_SCENES) assert(sceneData.get(id)?.lines?.length, id);
 }
 {
   // ひよりの tokyo_contact（#1434 決定B）: 仕事の相談を読んだ面識・連絡先のある相手だけ。恋人は要らず、東京に来ている間は出さない。
@@ -240,4 +277,86 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(pick(value).kind, 'rest');
 }
 
-console.log('OK: seven routes, 0–7 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring');
+// --- #1895: 第4章の前夜（ch4-story-wiring.js）と、前夜デートの帰り道。ブラウザ不要の純粋ロジック。
+{
+  const {tournamentFinished} = await import(new URL('remake/js/core/story-context.js', root));
+  const ch4 = await import(new URL('remake/js/chapters/ch4-story-wiring.js', root));
+  const ch4Progress = await import(new URL('remake/js/chapters/ch4-progress.js', root));
+  const companion = await import(new URL('remake/js/core/overseas-companion.js', root));
+  // 帰り道: 第3章の前夜（大会前）は mukai の裏口、第4章（第3章の大会後）は宿のロビー。あげはは第4章だけ。
+  const eveTokyo = {chapter: 3, phase: 'daily'};
+  const eveDubai = {chapter: 4, phase: 'daily'};
+  for (const id of all) {
+    const scene = sceneData.get(routes.romance[id].date);
+    const stayLines = state => {
+      const out = [];
+      for (const row of scene.branches.stay) {
+        if (row.type !== 'condition') { out.push(row.text); continue; }
+        assert.equal(row.tournament_chapter, 3, id);
+        out.push(...scene.branches[tournamentFinished(state, row.tournament_chapter) ? row.next_true : row.next_false].map(line => line.text));
+      }
+      return out.join('');
+    };
+    assert(!stayLines(eveDubai).includes('mukai'), `${id}: no mukai back door in Dubai`);
+    assert(stayLines(eveDubai).includes('宿のロビー'), `${id}: back to the inn in Dubai`);
+    if (routes.romance[id].date_min_chapter <= 3) assert(stayLines(eveTokyo).includes('mukaiの裏口'), `${id}: Tokyo eve keeps mukai`);
+    else assert(!scene.branches.stay.some(row => row.type), `${id} only plays in Dubai`);
+  }
+  // 台本のロード対象: 第4章の前夜で再生しうる全員のデートと、重なった予定の保留が実在のファイルにある。
+  const loaded = new Map(Object.entries(ch4.CH4_EVENING_DIALOGUE_FILES).flatMap(([file, ids]) => ids.map(id => [id, file])));
+  for (const id of [...all.map(id => routes.romance[id].date), routes.near_conflict.overlap]) assert(loaded.has(id), `${id} is not loaded by chapter 4`);
+  for (const [file, ids] of Object.entries(ch4.CH4_EVENING_DIALOGUE_FILES)) for (const id of ids) assert(fileScenes(file).has(id), `${id} missing in ${file}`);
+  // 第3章を終えた保存から第4章へ進め、同行を選び、前夜（必須場面を読了）まで進めた保存。
+  const dubaiEve = (lovers, pick, extra = {}) => {
+    const value = newState();
+    Object.assign(value, {chapter: 3, phase: 'cleared', day: 45, slot: 1, lovers});
+    value.flags = {_ch3_cleared: true, _ch3_aftermath: {version: 2, winDay: 42, stage: 6}, _ch3_tournament_won: true};
+    assert(ch4Progress.advanceToChapterFour(value));
+    assert(companion.chooseOverseasCompanion(value, pick));
+    const p = value.flags._ch4;
+    Object.assign(p, {part: 'eve', day: ch4Progress.CH4_EVE_DAY, stage: ch4Progress.CH4_PROLOGUE.length, firstDay: 1});
+    for (const entry of ch4Progress.CH4_MANDATORY) p.read[entry.id] = true;
+    for (const id of extra.arrived || []) p.read[routes.romance[id].arrival] = true;
+    return value;
+  };
+  // あげは（date_min_chapter 4）は同行すれば第4章の前夜デートになる。第3章の東京前夜には出ない（上で確認済み）。
+  let value = dubaiEve(['ageha'], 'ageha');
+  assert.equal(ch4.selectChapterFourEvening(routes, value).kind, 'rest', 'no date without an invitation');
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), 'ageha');
+  let result = ch4.selectChapterFourEvening(routes, value, 'ageha');
+  assert.deepEqual(result, {kind: 'date', participants: ['ageha'], scenes: ['tournament_date_ageha']});
+  assert.deepEqual(ch4.chapterFourEveningRecord(result), {kind: 'date', participants: ['ageha']});
+  for (const id of all) {
+    value = dubaiEve([id], id);
+    assert.equal(ch4.chapterFourEveningPartner(routes, value), id, `${id} can be invited in Dubai`);
+    assert.deepEqual(ch4.selectChapterFourEvening(routes, value, id).scenes, [routes.romance[id].date]);
+  }
+  // 同行なし: 別便の恋人も、到着の記録が無ければその場にいない。到着場面を読み終えた人だけ。
+  value = dubaiEve(['minto'], null);
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, []);
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), null, 'a separate-flight lover without an arrival record');
+  assert.equal(ch4.selectChapterFourEvening(routes, value, 'minto').kind, 'rest');
+  value = dubaiEve(['minto'], null, {arrived: ['minto']});
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), 'minto');
+  // 友人として来るましろは恋人ではないので誘えず、恋人の数にも入らない。
+  value = dubaiEve(['rin'], 'rin', {arrived: ['mashiro']});
+  assert(ch4.chapterFourEveningContext(routes, value).present.includes('mashiro'));
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), 'rin');
+  // 同じ場所の恋人が二人以上: 第4章ではスティーブの茶化しを出さず、重なった予定を保留する。誘いの選択は出さない。
+  value = dubaiEve(['tsumugi', 'ageha'], 'tsumugi', {arrived: ['ageha']});
+  value.met = {steve: true};
+  result = ch4.selectChapterFourEvening(routes, value);
+  assert.deepEqual(result, {kind: 'overlap', participants: ['tsumugi', 'ageha'], scenes: [routes.near_conflict.overlap]});
+  assert.equal(ch4.selectChapterFourEvening(routes, value, 'ageha').kind, 'overlap', 'choosing one does not hide the other');
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), null);
+  assert.equal(value.flags._story_shuraba_unresolved, undefined, 'the overlap does not settle the dispute');
+  // 到着前の別便の恋人は数えない: 同行者だけならデートになる。
+  value = dubaiEve(['tsumugi', 'ageha'], 'tsumugi');
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), 'tsumugi');
+  // エンディング後の未解決の修羅場がある保存では前夜デートにしない。
+  value = dubaiEve(['ageha'], 'ageha'); value.flags._story_shuraba_unresolved = true;
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), null);
+  assert.equal(ch4.selectChapterFourEvening(routes, value, 'ageha').kind, 'rest');
+}
+
+console.log('OK: seven routes, 0–7 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring');

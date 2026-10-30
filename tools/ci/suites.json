@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "typography-css",
+      "title": "Readable CSS typography follows #1352",
+      "kind": "quick",
+      "run": ["node remake/test/typography_css.mjs"]
+    },
+    {
       "id": "reflection-routes",
       "title": "Tokyo/Dubai reflection routes, visiting hours and save/load (#1788 #1801)",
       "kind": "quick",
@@ -240,7 +246,8 @@
         "python3 tools/check_dialogue_links.py",
         "python3 tools/test_story_canon.py",
         "node remake/test/story_routes.mjs",
-        "node remake/test/ch2_relationships_929.mjs"
+        "node remake/test/ch2_relationships_929.mjs",
+        "node remake/test/relationship_memory_coverage.mjs"
       ]
     },
     {

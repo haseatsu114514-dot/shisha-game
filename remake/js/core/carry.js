@@ -23,6 +23,7 @@ export const STATE_KEY_RULES = {
   stamina: { verdict: "reset", note: "現在値。最大値は根性から導く（§2.1）" },
   stats: { verdict: "carry", note: "5能力（§2.1）" },
   statXp: { verdict: "carry", note: "能力の端数（§2.1）" },
+  growth: { verdict: "conditional", note: "任意キー。経験値・成長済みの状態は保持、周回の遭遇・初回記録はリセット（stat-design/SPEC 5.3）" },
   statsAtChapterStart: { verdict: "reset", note: "作り直す（§2.1）" },
   flags: { verdict: "conditional", note: "flag ごとの分類に従う（§2.3）" },
   restDay: { verdict: "reset", note: "当日だけの状態" },
@@ -200,6 +201,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_steve", "progression"],
   ["_ch4", "progression"],
   ["_ch4_cleared", "progression"],
+  ["_ch4_evening", "progression"],
   ["_ch4_preview_seen", "progression"],
   ["_ch4_sheikh_revealed", "progression"],
   ["_overseas_companion", "progression"],
@@ -314,6 +316,7 @@ export const FLAG_EXACT_RULES = [
   ["_lotos_vent_hint", "ui"],
   ["_met_adam", "person"],
   ["_met_ageha", "person"],
+  ["_met_da_silva", "person"],
   ["_met_dr_kemuri", "person"],
   ["_met_emil", "person"],
   ["_met_hiyori", "person"],
@@ -321,6 +324,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_kuze", "person"],
   ["_met_maezono", "person"],
   ["_met_mashiro", "person"],
+  ["_met_master_hookah", "person"],
   ["_met_minto", "person"],
   ["_met_mukai_master", "person"],
   ["_met_nagumo", "person"],
@@ -328,6 +332,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_rei", "person"],
   ["_met_rin", "person"],
   ["_met_samechan", "person"],
+  ["_met_sheikh", "person"],
   ["_met_steve", "person"],
   ["_met_tsumugi", "person"],
   ["_met_volk", "person"],
@@ -546,6 +551,14 @@ export function buildCarryPackage(s) {
   const data = {};
   data.stats = Object.fromEntries(STAT_KEYS.map((k) => [k, Number.isFinite(s?.stats?.[k]) ? s.stats[k] : 0]));
   data.statXp = clone(s?.statXp ?? {});
+  if (s?.growth && typeof s.growth === "object" && !Array.isArray(s.growth)) {
+    // 恋人EXPの先行保存と既存previewは同じ台帳。切替や周回で精算済みXPを再精算しない。
+    const g = data.growth = clone(s.growth);
+    g.fresh = { chapter: 1, counts: {} };
+    g.firsts = { people: [], places: [] };
+    g.gifted = {};
+    g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [] };
+  }
   data.money = Math.min(MAX_MONEY, Math.max(0, Math.round(Number(s?.money) || 0)));
   data.flavors = clone(s?.flavors ?? []);
   data.flavorStock = clone(s?.flavorStock ?? {});

@@ -1,5 +1,6 @@
 import { notifyMastery } from "../core/mastery-notice.js";
 import { learnFlavorStory } from "../core/flavor-mastery.js";
+import { awardLoverSceneExp } from "../core/lover-rewards.js";
 import { tournamentFinished } from "../core/story-context.js";
 import { basicsExperienced } from "../craft/practice-history.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
@@ -109,7 +110,25 @@ function buildDom() {
   window.addEventListener("keydown", (e) => {
     if (!running || !layers.vn.classList.contains("active")) return;
     if (layers.modal.classList.contains("show")) return;
-    if (dom.log.classList.contains("show")) return;
+    if (dom.log.classList.contains("show")) {
+      if (e.key === "Escape") { e.preventDefault(); closeLog(); }
+      return;
+    }
+    if (e.key === "Control") { setSkip(true); return; }
+    if (running.waitingChoice) {
+      const choices = [...dom.choices.querySelectorAll(".vn-choice:not(:disabled)")];
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        const current = choices.indexOf(document.activeElement);
+        choices[(current + (e.key === "ArrowDown" ? 1 : choices.length - 1)) % choices.length]?.focus();
+      } else if (/^[1-3]$/.test(e.key) && !e.repeat && !e.target?.closest?.("input, select, textarea, [contenteditable]")) {
+        const choice = dom.choices.querySelectorAll(".vn-choice")[Number(e.key) - 1];
+        if (choice && !choice.disabled) { e.preventDefault(); choice.click(); }
+      } else if (e.key === "Enter" && !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) {
+        e.preventDefault(); (choices.includes(document.activeElement) ? document.activeElement : choices[0])?.click();
+      }
+      return;
+    }
     if (e.key === "Enter" || e.key === " ") {
       // フォーカス中のボタン・入力欄はブラウザ本来のキー操作に任せる。
       if (e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) return;
@@ -196,6 +215,7 @@ export function play(idOrDlg, opts = {}) {
   return new Promise((resolve) => {
     layers.fx.querySelector(".vn-loading")?.remove();
     running = {
+      owner: state,
       id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
@@ -340,6 +360,7 @@ function finish(cancelled = false) {
   if (!cancelled && meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   if (!cancelled && meta.flavor_lesson) notifyMastery(learnFlavorStory(state, r.dlg, DB.flavorById));
+  if (!cancelled) awardLoverSceneExp(r.id, r.owner);
   layers.vn.classList.remove("active");
   document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");
@@ -875,6 +896,7 @@ function showChoices(line) {
   }));
   dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
+  buttons.find((button) => !button.disabled)?.focus();
   // 選択肢は1行（GUI22）。文言は全角26字以内で書く。差し込みで長くなったときだけ字を縮める
   buttons.forEach((b) => fitOneLine(b, 18));
   kickAuto();
@@ -906,6 +928,12 @@ function pickChoice(line, c) {
 
 // ---------------------------------------------------------------- ログ・用語
 
+function closeLog() {
+  dom.log.classList.remove("show");
+  dom.controls.querySelector('[data-test="vn-log"]')?.focus();
+  kickAuto();
+}
+
 function openLog() {
   SE.select();
   clearTimeout(autoTimer);
@@ -915,10 +943,11 @@ function openLog() {
     l.inner ? el("div.log-inner", { text: l.inner, "aria-label": "ひよりの本心（はじめには聞こえない）" }) : null,
   ])));
   dom.log.replaceChildren(
-    el("div.log-head", [el("span", { text: "LOG" }), el("button.btn.small", { text: "閉じる", onclick: (e) => { e.stopPropagation(); dom.log.classList.remove("show"); kickAuto(); } })]),
+    el("div.log-head", [el("span", { text: "LOG" }), el("button.btn.small", { text: "閉じる", onclick: (e) => { e.stopPropagation(); closeLog(); } })]),
     list,
   );
   dom.log.classList.add("show");
+  dom.log.querySelector(".log-head button")?.focus();
   requestAnimationFrame(() => { list.scrollTop = list.scrollHeight; });
 }
 

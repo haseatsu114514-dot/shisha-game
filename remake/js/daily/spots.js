@@ -163,6 +163,7 @@ export function hasNewStory(charId) {
 /** 実来店と予定表示で、同じ既存repeat（訪問順・雨差分）を読む。状態は進めない。 */
 function repeatVisitDialogue(charId) {
   const pool = REPEAT_POOL[charId] || [0, 1, 2, 3].map(i => `remake_repeat_${charId}_${i}`);
+  if (charId === "adam" && (state.chapter || 1) >= 2) pool.push("remake_repeat_adam_4");
   const rain = `remake_repeat_${charId}_rain`;
   return isRainy() && affinityLevel(charId) >= 1 && DB.dialogues[rain]
     ? rain : pool[(state.visits[charId] || 0) % pool.length];

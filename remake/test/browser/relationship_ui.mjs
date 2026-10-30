@@ -44,6 +44,9 @@ async function choicesFit(page, expected) {
     .flatMap(n => n.getAnimations().map(a => a.finished.catch(() => {})))));
   await assertFits(page, ".vn-choices, .vn-choice");
   assert.deepEqual(await page.locator(".vn-choice").allTextContents(), expected, "Only the actual replies should be shown");
+  // 表示時に1つ目へキーボードフォーカスが付く（#1908）。フォーカス強調はルート情報ではないので外してから比べる
+  assert.equal(await page.evaluate(() => document.activeElement?.classList.contains("vn-choice")), true, "The first reply should take keyboard focus");
+  await page.evaluate(() => document.activeElement?.blur());
   const rows = await page.locator(".vn-choice").evaluateAll(buttons => buttons.map(b => ({
     label: b.getAttribute("aria-label"), route: b.dataset.route ?? null,
     className: b.className, color: getComputedStyle(b).color,

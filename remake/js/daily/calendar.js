@@ -60,11 +60,6 @@ export async function runDaily(def) {
   // 登録済みでも、説明中に保存された初回体験は配達・日付更新より先に完了する。
   // 導入済み旧保存から初回体験を推測せず、既存の確定・報酬処理を再利用する。
   if (owner.flags._pakki_first_spin_pending) {
-    if (owner.flags._c_station_registered && owner.visitedDay.c_station == null) {
-      owner.visitedDay.c_station = owner.day;
-      // 初回確定でpendingが消え、その演出中に再中断しても訪問日を失わない。
-      save(); // 会話・訪問回数・成長・行動は繰り返さない。
-    }
     await installReel();
     if (state !== owner) return;
   }
@@ -309,14 +304,13 @@ async function day1Errands() {
 async function registerTournament() {
   const venue = spotById("c_station");
   // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
-  if (!venue || !isUnlocked(venue) || isClosed(venue) || state.visitedDay.c_station === state.day) return;
+  if (!venue || !isUnlocked(venue) || isClosed(venue) || state.flags._c_station_registered) return;
   await chooseSpot({ guide: { pin: "c_station", text: "配達の前に、大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
   if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
     await (await import("../scenes/rule-sheet.js")).openRuleSheet();
     state.flags._ch1_rules_read = true;
   }
-  state.visitedDay.c_station = state.day;
   save(); // 無料の登録で行動枠・追加の抽選を使わない。
 }
 
@@ -559,24 +553,27 @@ async function performSpotAction(spot) {
       // 料金・体力・読了と一緒に行動を保存済み。共通末尾で二重に進めない。
       return { used: completed, exerted: completed, slotsUsed: 0 };
     }
-    if (state.visitedDay[`tonari_${sub}`] === state.day) {
-      toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
+    const makanai = sub === "practice" || sub === "strawberry";
+    // 旧セーブの苺専用記録も、同じ日のまかないとして扱う。
+    if (state.visitedDay[`tonari_${sub}`] === state.day || makanai &&
+        (state.visitedDay.tonari_practice === state.day || state.visitedDay.tonari_strawberry === state.day)) {
+      toast(makanai ? "今日はもうまかないで練習した" : sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
     }
     if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
     exerted = true;
-    state.visitedDay[`tonari_${sub}`] = state.day;
+    state.visitedDay[makanai ? "tonari_practice" : `tonari_${sub}`] = state.day;
     if (sub === "practice") {
       const { runFullPractice } = await import("../craft/practice.js");
       addStamina(-16);
       await play("remake_staff_practice", { bg: TONARI_BG });
-      await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
-      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+      const cs = await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
+      if (cs.masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "strawberry") {
       const { runStrawberryTrial } = await import("../chapters/ch2-strawberry-trial.js");
       addStamina(-16);
-      await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
-      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+      const { masteryGained } = await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
+      if (masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "baito") await doBaito();
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
@@ -640,6 +637,7 @@ async function performSpotAction(spot) {
 const TONARI_EXP = {
   baito: { key: "tonari_shift", place: "tonari_shift" },
   practice: { key: "tonari_practice", place: "tonari_practice" },
+  strawberry: { key: "tonari_practice", place: "tonari_practice" },
   customer: { key: "tonari_seat", place: "tonari_seat" },
 };
 function spotExpTarget(spot) {

@@ -28,7 +28,6 @@ import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitatio
 // C03: 初回受信から返信を待つ目安。再案内の日付では数え直さない。
 const LIME_REPLY_NUDGE_DAYS = 3;
 
-const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
 const POLITE = new Set(["sumi", "nagumo", "maezono"]);
 const originId = (item) => item.originId || item.msg?.origin_id || item.id;
@@ -191,7 +190,8 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.chapter && m.chapter !== state.chapter) return false;
   if (m.sender === "ageha" && state.chapter === 1) return false; // 第1章では連絡先を知らない
   const cond = m.trigger_condition;
-  if (cond === "tournament_day") return tournamentDay && HEROINES_ENCOURAGE.includes(m.sender) && hasContact(m.sender);
+  // 大会当日の応援は、本文がある相手のうち連絡先を交換した人から。trigger_flag は応援を言える関係になった印（ひより等）
+  if (cond === "tournament_day") return tournamentDay && hasContact(m.sender) && (!m.trigger_flag || !!state.flags[m.trigger_flag]);
   if (tournamentDay) return false;
   if (!hasContact(m.sender)) return false;
   if (m.type === "invitation" && state.flags[`_invited_${m.id}`]) return false;
@@ -249,6 +249,8 @@ export function morningMessages(opts = {}) {
   }
   // 大事な外出の誘いは、通常の雑談より先に届ける。同じ相手からは1朝1話題。
   const messages = [...DB.lime, ...tsumugiMessages(state, DB.friends)].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
+  // 大会の朝は3通までなので、応援は仲の深い相手から届く（同じ深さなら台本順）。
+  if (opts.tournamentDay) messages.sort((a, b) => affinityLevel(b.sender) - affinityLevel(a.sender));
   for (const template of messages) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || !eligible(template, opts)) continue;
@@ -304,13 +306,13 @@ function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) 
 
 /**
  * スミさんからの「急で悪い、昼のシフト入れるか？」。序盤の固定2回（DAY3/8）＋4日以上バイトに出ていない朝。
- * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。最終日の朝は来ない
+ * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。各章の大会当日は来ない
  */
 function sumiBaitoInvite({ tournamentDay = false } = {}) {
-  if (tournamentDay || state.chapter !== 1 || state.day >= TOURNAMENT_DAY) return null;
+  if (tournamentDay || ![1, 2].includes(state.chapter) || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
   const id = `_sumi_baito_inv_d${state.day}`;
   if (state.limeRead.includes(id)) return null;
-  const fixed = state.day === 3 || state.day === 8;
+  const fixed = state.chapter === 1 && (state.day === 3 || state.day === 8);
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
   // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）

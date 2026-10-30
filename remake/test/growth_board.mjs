@@ -1,5 +1,6 @@
 // 心得の盤のデータと規則（SPEC 第2版 2.2〜2.6・2.9・1.9・3.1）。
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const storage = new Map();
@@ -13,7 +14,7 @@ const { NODE_BY_ID: N } = board;
 const SHAPE_SIZE = { body: [26, 4], sense: [26, 4], wisdom: [26, 4] }; // 3つの盤は同じ大きさ（SBD60） // [能力のマス（極みを含む）, 関門]
 for (const k of board.BOARD_KEYS) {
   const layout = board.LAYOUTS[k];
-  for (const c of layout.cells) assert(Math.abs(c.x) <= board.GRID.w && Math.abs(c.y) <= board.GRID.h, `${k}: 13×9 に収まる`);
+  for (const c of layout.cells) assert(Math.abs(c.x) <= board.GRID.w && c.y <= 0 && -c.y <= board.GRID.h, `${k}: 横13×縦9 に収まる（紋は下の端）`);
   for (const [a, b] of layout.edges) {
     const [ax, ay] = a.split(",").map(Number), [bx, by] = b.split(",").map(Number);
     assert.equal(Math.abs(ax - bx) + Math.abs(ay - by), 1, "線は上下左右の隣だけ（斜めなし）");
@@ -53,19 +54,53 @@ for (const k of board.BOARD_KEYS) {
     assert(reach.has(n.id), `${n.id} は関門なしで届く`);
   }
 }
-// 授業の小道（2026-10-30 オーナー選択）: どの授業も紋から能力のマス3つ（関門なし）で届き、小道はその人の章で開く。
-// 第1章で誰の授業へ進んだかで、ほかの人の授業までの火種が変わらない。
-const RING_ROAD = ["1,0", "1,1", "0,1", "-1,1", "-1,0", "-1,-1", "0,-1", "1,-1"];
-for (const k of board.BOARD_KEYS) for (const key of RING_ROAD) assert.equal(board.LAYOUTS[k].cells.find((c) => c.key === key)?.ring, 1, `${k} ${key}: 一周の道は最初から開く`);
+// v9（SBD62）: 紋は下の端。紋のそばの授業は第1章の人だけ（関門なし）、第2章からの人の授業は関門の先。
+// どの関門の先にも強いスキルがある。誰の授業へ先に進んでも、ほかの授業が遠くならない。
+for (const k of board.BOARD_KEYS) {
+  const hubSides = board.boardNodes(k).filter((n) => n.links.includes(board.HUB)).map((n) => n.cell).sort();
+  assert.deepEqual(hubSides, ["-1,0", "0,-1", "1,0"], `${k}: 紋から出る道は左・右・上の3本`);
+}
 for (const l of board.LESSONS) {
   const route = board.pathTo(l.id, new Set()).path.filter((id) => id !== l.id);
-  assert.equal(route.length, 2, `${l.id}: 紋から2マス（一周の道）`);
-  assert(route.every((id) => N[id].kind === "stat"), `${l.id}: 関門なし`);
-  assert.equal(N[l.id].ring, l.ring ?? 1, `${l.id}: 授業の章はデータどおり（スミさんの四つ置き・カルダモンは第2章）`);
-  // ほかの授業を全部取った後でも、この授業までの残りは同じ（どの順に仲良くしても遠くならない）
+  const gates = route.filter((id) => N[id].kind === "gate").length;
+  if ((l.ring ?? 1) === 1) {
+    assert.equal(gates, 0, `${l.id}: 第1章の人の授業は関門なし`);
+    assert(route.length <= 3, `${l.id}: 紋のそば（${route.length}マス）`);
+    assert.equal(N[l.id].band, 1, `${l.id}: 近くの帯`);
+  } else {
+    assert.equal(gates, 1, `${l.id}: 第2章からの人の授業は関門の先`);
+    assert.equal(N[l.id].band, 3, `${l.id}: 関門の先の帯`);
+  }
+  assert.equal(N[l.id].ring, l.ring ?? 1, `${l.id}: 授業の章はデータどおり`);
   const others = new Set(board.LESSONS.filter((x) => x.id !== l.id && x.board === l.board).flatMap((x) => board.pathTo(x.id, new Set()).path));
-  assert(board.pathTo(l.id, others).cost <= 2, `${l.id}: 先に進んだ道で遠くならない`);
+  assert(board.pathTo(l.id, others).cost <= board.pathTo(l.id, new Set()).cost, `${l.id}: 先に進んだ道で遠くならない`);
 }
+// 帯と強さ: 火種4のスキルは近く、6と8は関門の先。極みも関門の先。どの関門の先にもスキルがある
+for (const s of board.SKILLS) assert.equal(N[s.id].band, s.cost === 4 ? 1 : 3, `${s.id}（火種${s.cost}）の帯`);
+for (const k of board.BOARD_KEYS) {
+  const nodes = board.boardNodes(k);
+  assert.equal(nodes.find((n) => n.peak).band, 3, `${k}: 極みは関門の先`);
+  for (const gate of nodes.filter((n) => n.kind === "gate")) {
+    const beyond = new Set([gate.id]);
+    for (let more = true; more;) {
+      more = false;
+      for (const n of nodes) if (!beyond.has(n.id) && n.kind !== "gate" && n.band === 3 && n.links.some((l) => beyond.has(l))) { beyond.add(n.id); more = true; }
+    }
+    assert(nodes.some((n) => beyond.has(n.id) && n.kind === "skill"), `${gate.id}: 関門の先に強いスキル`);
+  }
+  const bands = [1, 2, 3].map((b) => nodes.filter((n) => n.kind === "stat" && !n.peak && n.band === b).length);
+  assert.deepEqual(bands, [9, 8, 8], `${k}: 能力のマスは 近く9・中ほど8・関門の先8`);
+}
+// 恩恵は帯の倍率（近く×1・中ほど×2・関門の先×3）
+{
+  const stamina = board.boardNodes("body").filter((n) => n.perk === "stamina");
+  const text = (b) => board.perkOf(stamina.find((n) => n.band === b)).text;
+  assert.deepEqual([1, 2, 3].map(text), ["最大体力 ＋2", "最大体力 ＋4", "最大体力 ＋6"]);
+  assert.equal(board.perkOf(stamina.find((n) => n.band === 3)).tierName, "関門の先");
+  assert.equal(board.perkOf(board.boardNodes("body").find((n) => n.peak)).name, "基礎", "極みは基礎");
+  for (const n of board.NODES.filter((x) => x.kind === "stat" && !x.peak)) assert(board.SQUARE_PERKS[n.board].perks[n.perk], `${n.id}: 恩恵が決まっている`);
+}
+assert.deepEqual(board.HIDANE_NAME, { any: "白火", body: "紅火", sense: "蒼火", wisdom: "翠火" }, "火種の名前（SBD62）");
 
 assert.equal(N["M-W6"].board, "sense", "カルダモンは感覚盤（3つの盤の授業の数をならす。SBD60）");
 assert.deepEqual([N["M-W2"].ring, N["M-W6"].ring], [2, 2], "スミさんの四つ置き・カルダモンは第2章から");
@@ -77,7 +112,7 @@ for (const k of board.BOARD_KEYS) {
   assert.equal(sk.reduce((n, x) => n + x.cost, 0), 36, `${k}: スキルの火種は各36`);
   assert.equal(sk.filter((x) => x.ring === 1).length, 2, `${k}: 第1章のスキルは各2つ`);
   assert.equal(board.boardNodes(k).reduce((n, x) => n + x.cost, 0), 66, `${k}: 盤は各66`);
-  assert.equal(board.boardNodes(k).filter((x) => x.ring === 1).reduce((n, x) => n + x.cost, 0), 27, `${k}: 第1章で開く範囲は各27`);
+  assert.equal(board.boardNodes(k).filter((x) => x.ring === 1).reduce((n, x) => n + x.cost, 0), 17, `${k}: 第1章で開く範囲は各17（能力のマス9・スキル2つ。SBD62）`);
 }
 assert.equal(board.BOARD_TOTAL_COST, 198, "盤の全部で198（1レベル2つ。SPEC 1.6a）");
 assert(140 >= 0.7 * board.BOARD_TOTAL_COST, "中央の1周目の火種（約140）で、3つの盤をどれも7割まで開ける");
@@ -262,21 +297,17 @@ core.state.affinity.adam = 0;
   core.state.affinity.sheikh = 0; delete core.state.flags._ch4_sheikh_revealed;
 }
 
-// 会えない人には LIME で聞ける: 相談の場面がまだ無い人はいつでも、場面がある人は地元を離れている章（2〜4）だけ
+// 授業は会って相談した時だけ習う（SBD61: LIME では習えない）
 {
+  assert.equal(growth.canAskByLime, undefined, "LIME で聞く入口は無い");
+  assert.equal(growth.consultByLime, undefined);
+  const lime = JSON.parse(readFileSync(new URL("../../data/lime_messages.json", import.meta.url), "utf8")).messages;
+  assert.equal(lime.filter((m) => m.id.startsWith("lime_lesson_") || m.trigger_condition === "lesson_consult").length, 0, "授業の LIME は無い");
   const gg = growth.ensureGrowth();
   const keep = { nodes: [...gg.nodes], learned: [...gg.learned] };
   gg.nodes.push("M-B2", "M-S2");
-  assert.equal(growth.canAskByLime("M-B2"), true, "零（場面なし）は LIME で聞ける");
-  assert.equal(growth.canAskByLime("M-S2"), false, "第1章のアダムは店で会って相談");
-  core.state.chapter = 3;
-  assert.equal(growth.canAskByLime("M-S2"), true, "東京にいる間は LIME で");
-  core.state.chapter = 5;
-  assert.equal(growth.canAskByLime("M-S2"), false, "第5章はどこへでも行けるので会って相談");
-  assert.equal(growth.canAskByLime("M-B3"), false, "灯していない授業は聞けない");
-  gg.learned.push("M-B2");
-  assert.equal(growth.canAskByLime("M-B2"), false, "習得済みは聞かない");
-  core.state.chapter = 1;
+  assert.deepEqual(growth.readyLessons("rei"), [], "会って相談する場面が無い授業は、まだ習えない");
+  assert.deepEqual(growth.readyLessons("adam").map((l) => l.id), ["M-S2"], "場面がある授業は会った時に相談できる");
   Object.assign(gg, keep);
 }
 
@@ -397,4 +428,4 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v3 shapes per board (cross/pinwheel/tree), gates by colored hidane, 20 lessons (consult to learn, LIME when you can't meet), lessons next to the ring road (2 squares each, shown when you meet the person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, steps ~3 squares, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v9 shapes grow up from the bottom hub (fan/swirl/tree), 3 roads, bands near×1/mid×2/beyond-gate×3, ch1 lessons near and later lessons beyond gates, gates by colored hidane, 20 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, steps ~3 squares, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");

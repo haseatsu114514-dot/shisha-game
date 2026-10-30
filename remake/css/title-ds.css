@@ -124,7 +124,7 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .ga
   padding: 0; border-radius: 11px; background: #0b0812e6 !important; border-color: #e8c27a77;
 }
 :root[data-ds-layout="stacked"] body:has(.title[data-layout="ds"]) .title-layout-toolbar:not([open]) summary {
-  min-height: 22px !important; padding: 2px 8px !important; font-size: 11px; line-height: 16px;
+  min-height: 22px !important; padding: 2px 8px !important; font-size: 12px; font-weight: 700; line-height: 16px;
 }
 :root[data-ds-layout="stacked"] body:has(.title[data-layout="ds"]) .title-layout-toolbar[open] { top: calc(var(--ds-cy) + 6px) !important; }
 .title[data-layout="ds"] .title-layout-options { padding: 2px 4px 4px; }
@@ -136,5 +136,5 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .ga
   .title[data-layout="ds"] .title-item { min-height: 40px; padding: 4px 10px; }
   .title[data-layout="ds"] .ti-ja { font-size: 17px; }
   .title[data-layout="ds"] .title-ds-caption { margin: 8px 0 2px; font-size: 12px; }
-  .title[data-layout="ds"] .title-ds-chapter { font-size: 11px; }
+  .title[data-layout="ds"] .title-ds-chapter { font-size: 12px; font-weight: 700; }
 }
