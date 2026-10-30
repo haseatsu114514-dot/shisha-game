@@ -201,15 +201,21 @@ try {
       await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),touch);await dsGeometry(p);
       for(const theme of ["smoke","smoke-purple","cut-paper","amber","tissue","classic"]){
         await p.evaluate(async id=>(await import("./js/core/ui-theme.js")).applyUiTheme(id),theme);
+        // 2026-10-30: 縦持ちの見直しで、AUTO/SKIP/LOG/用語/設定 は下画面（触る画面）の下端のタッチバーへ移した。
+        // 上画面の立ち絵の顔を覆わず、本文・選択肢とも交差しない。
         const toolbar=await p.evaluate(()=>{
           const visual=document.querySelector(".game-ds-visual").getBoundingClientRect();
+          const panel=document.querySelector(".game-ds-controls").getBoundingClientRect();
           const ctl=document.querySelector(".vn-controls").getBoundingClientRect();
           const text=document.querySelector(".vn-text").getBoundingClientRect();
-          return { inside:ctl.left>=visual.left && ctl.right<=visual.right && ctl.top>=visual.top && ctl.bottom<visual.bottom,
-            clearText:!(ctl.right>text.left && ctl.left<text.right && ctl.bottom>text.top && ctl.top<text.bottom), upperRight:visual.right-ctl.right<12 && ctl.top-visual.top<12,
+          const choices=[...document.querySelectorAll(".vn-choice")].map(n=>n.getBoundingClientRect());
+          const clear=r=>!(ctl.right>r.left && ctl.left<r.right && ctl.bottom>r.top && ctl.top<r.bottom);
+          return { inside:ctl.left>=panel.left && ctl.right<=panel.right && ctl.top>=panel.top && ctl.bottom<=panel.bottom+1,
+            offVisual:ctl.top>=visual.bottom, bottomBar:panel.bottom-ctl.bottom<12,
+            clearText:clear(text) && choices.every(clear),
             sizes:[...document.querySelectorAll(".vn-ctl")].map(n=>n.getBoundingClientRect().height) };
         });
-        assert(toolbar.inside && toolbar.clearText && toolbar.upperRight,"DS toolbar remains in scene upper right for "+theme);
+        assert(toolbar.inside && toolbar.offVisual && toolbar.bottomBar && toolbar.clearText,"DS toolbar sits in the touch bar of the lower screen for "+theme);
         assert(toolbar.sizes.every(h=>h>=44),"DS controls keep 44px touch targets");
       }
       if(!touch){
