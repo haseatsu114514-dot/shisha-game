@@ -133,7 +133,7 @@ async function baitoShift({ called }) {
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
   if (condition.shiftBonus) toast(`仕上げは好調。売上ボーナス +${condition.shiftBonus.toLocaleString()}円`, { kind: "good" });
-  if (condition.health === "red") toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
+  if (condition.health === "red" && bonus > 0) toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
   // 基礎成長は訪問と同じ4。接客・片付けの両方を経験する。
   applyStats({ technique: 2, charm: 2 });
   await afterShiftErrand();
