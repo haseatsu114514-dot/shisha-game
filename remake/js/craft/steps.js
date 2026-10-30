@@ -38,7 +38,7 @@ export const REGULATION = {
 };
 // 第4章 GRAND SMOKE は自由課題（最高の一台）。課題の葉は無く、出発前にスミさんと決めた方針（ch4_strategy）の葉を
 // 「持ち込み申請した葉」として大会側が預かり、本番中は無制限に使える（他章の支給と同じ扱い・私物は減らさない）。
-// 方針の葉を何g使うかは自由（min 0）。審査・講評への反映は #1659 の残件。
+// 方針の葉を何g使うかは自由（min 0）。実採点は ch4-tournament.js、実g・調整の講評は ch4-verdict.js。
 export const CH4_PLAN_LEAVES = Object.freeze({ sakura: "sakura", peach: "peach", tea: "black_tea" });
 function chapterFourRegulation() {
   const id = CH4_PLAN_LEAVES[state.flags?._ch4_strategy];

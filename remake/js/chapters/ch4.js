@@ -21,6 +21,7 @@ import { chapterFourMapModel } from "./ch4-map-model.js";
 import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
+import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -155,7 +156,10 @@ async function readScene(owner, id) {
   const source = DB.dialogues[id];
   if (!source) throw new Error(`台本がありません: ${id}`);
   // 台本の metadata.bg は持ち込まず、ch4-progress.js の対応表（仮置き）で背景を決める。
-  const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
+  const craft = chapterFourProgress(state).match?.craft;
+  const actual = id === "ch4_final" && craft ? chapterFourFinalDialogue(source, state, craft)
+    : id === "ch4_defeat" && craft ? chapterFourDefeatDialogue(source, state, craft) : source;
+  const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
   await setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true });
@@ -309,7 +313,19 @@ async function runTournament(owner) {
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;
   }
-  // 骨格では台本どおり勝ち固定。実試合を接続するときは chapterFourTournamentOutcome の中身を差し替える。
+  const { runChapterFourCraft } = await import("./ch4-tournament.js");
+  if (!current(owner)) return;
+  const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
+  if (!current(owner)) return;
+  if (!result) { await renderTournament(owner); return; }
+  // 順位・二度の調整・5工程の実成績を、勝敗の台本へ進む前に確認する。
+  const parts = Object.entries(result.parts).map(([key, score]) =>
+    `${({ holes: "穴", heat: "炭", shisha: "完成品", care1: "調整1", care2: "調整2" })[key]} ${score.toFixed(1)}`).join(" ／ ");
+  await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
+    body: `${result.failure ? "完了した工程から振り返ろう。" : `総合 ${result.total.toFixed(1)} ／ ${parts}`}\n` +
+      result.rows.map(row => `${({ hajime: "はじめ", naru: "なる", wang: "王煙楼", sheikh: "シェイク" })[row.id]} ${row.points}票`).join(" ／ "),
+    options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
+  if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
     if (!await readAndCommit(owner, win)) return;
     toast(`大会の賞金 ${CH4_PRIZE.toLocaleString("ja-JP")}円を受け取った`, { kind: "good" });
@@ -332,7 +348,8 @@ const RECAP_STRATEGY = Object.freeze({
 function chapterFourRecap(value) {
   const { read } = chapterFourProgress(value);
   const lines = ["世界大会を終え、日本へ戻った。"];
-  const strategy = RECAP_STRATEGY[value.flags._ch4_strategy];
+  const craft = chapterFourProgress(value).match?.craft;
+  const strategy = craft ? chapterFourPlanReview(value, craft) : RECAP_STRATEGY[value.flags._ch4_strategy];
   if (strategy) lines.push(strategy);
   const visited = [];
   if (read.ch4_dubai_souq) visited.push("スーク");
