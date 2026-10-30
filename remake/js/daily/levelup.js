@@ -11,7 +11,7 @@ import { spotById } from "./spots.js";
 
 const colorName = (kind) => kind === "any" ? "万能の火種" : `${BOARD_HEAD[kind]}の火種`;
 const PLACE_LABEL = {
-  tonari_shift: "tonariのバイト", tonari_practice: "まかないで練習", tonari_seat: "tonariの客席", axe_bar: "斧投げBar",
+  tonari_shift: "tonariのバイト", tonari_practice: "まかないで練習", tonari_seat: "tonariの客席", axe_bar: "斧投げBar", pakki_slot: "パッキースロット",
 };
 
 /** 「今日学んだこと」の名前。相手は表示名、場所は行き先の名前。分からない鍵は出さない。 */

@@ -14,6 +14,7 @@ import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { gainStat, step } from "../core/stats.js";
 import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
+import { growthEnabled, awardSlotExp } from "../core/growth.js";
 
 // ================================================================ 純粋コア（抽選は旧版と同一）
 
@@ -67,7 +68,7 @@ function ensureSetting(reel) {
   reel.settingDraws ||= 0;
   return reel.setting;
 }
-// 設定の有効期間（オーナー指定 2026-10-16）: 観音堂で変えた設定も最初の設定も、7日たつと自動で変わる。
+// 設定の有効期間（オーナー指定 2026-10-16）: 観音堂で変えた設定も最初の設定も、7日たつか章が変わると自動で変わる（#1281 2026-10-30 で仕様書も同じに）。
 // 知っている人だけがずっと有利にならないよう、良い設定も長くは続かない。
 const SETTING_DAYS = 7;
 const today = () => ({ chapter: state?.chapter || 1, day: state?.day || 1 });
@@ -408,7 +409,17 @@ function commitSpinSeries() {
   reel.resetNext = false;
   sessionFirst = false;
   const target = pickTarget();
+  // 経験値のしくみ（心得の盤）が有効なら、報酬は能力Pではなく図柄が揃った分の経験値（#1281）。
+  // 役・確率・天井・記録は同じ。r.exp（役の旧ポイント）は記録として残し、能力には足さない
+  const expMode = growthEnabled();
   for (const r of spinSeries(reel, { chapterFirst, reset })) {
+    if (expMode) {
+      r.xp = r.quiet ? 0 : awardSlotExp(r.overlap || r.role);
+      r.got = 0;
+      recordNote(reel, r);
+      reel.pending.push(r);
+      continue;
+    }
     // 章の上限で調整した実増加を記録。通知は演出のときに出す（報酬はここで一度だけ）
     selfGain = true;
     const before = { ...state.stats };
@@ -769,6 +780,7 @@ const CUE_MISS = ["あ、あれ……？", "ご、ごめん……！", "今の�
 
 // 役の恩恵をパッキー口調で（数値は出さず体感語で）
 function benefitLine(r) {
+  if (r.xp > 0) return r.xp >= 200 ? "経験値がどーんと入ったよ！" : r.xp >= 90 ? "経験値がぐーんと入ったよ！" : "経験値がちょっと入ったよ！";
   const amt = r.exp >= 6 ? "ぐーんと" : r.exp >= 4 ? "かなり" : r.exp >= 2 ? "ちょっと" : "少し";
   return r.target ? `【${STAT_JA[r.target]}】が${amt}上がったよ！` : `${amt}上がったよ！`;
 }
@@ -1090,6 +1102,10 @@ async function presentFreeze(r) {
 
 // 報酬カード（報酬そのものは行動時に適用済み。ここは見せるだけ）
 function announce(r) {
+  if (r.xp > 0 && !r.quiet) {
+    gainCard({ kind: "exp", source: "slot", badge: "経", top: "SLOT BONUS", main: `EXP +${r.xp}` });
+    return;
+  }
   if (!(r.got > 0) || r.quiet || !r.target) return;
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({

@@ -198,7 +198,7 @@ export function holdExpChip() {
  * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計と「今日」に足す。
  * レベルはまだ上げない（寝る時に精算する。1.7）。戻り値=入った量。
  */
-export function gainExp(base, { key = null, tag = null } = {}) {
+export function gainExp(base, { key = null, tag = null, silent = false } = {}) {
   if (!growthEnabled() || !state || !(base > 0)) return 0;
   const g = ensureGrowth();
   const room = totalExpFor(MAX_LEVEL) - g.xp;
@@ -207,9 +207,18 @@ export function gainExp(base, { key = null, tag = null } = {}) {
   g.xp += amount;
   g.today.xp += amount;
   if (key) g.today.learned[key] = (g.today.learned[key] || 0) + amount;
-  addToChip(amount, tag);
+  if (!silent) addToChip(amount, tag); // silent: 呼び出し側が自分の通知で見せる（スロットの結果カード）
   emit("hud");
   return amount;
+}
+
+// パッキースロットで図柄が揃ったときの経験値（#1281 オーナー指示 2026-10-30「図柄が揃ったら経験値が入る」）。
+// ハズレ・リプレイは無し。1章30回転の平均は約510（SPEC 1.4 の「スロット分は章の約2割」）。チェリー重複は REG/BIG
+export const SLOT_EXP = { cherry: 10, bell: 15, reg: 90, big: 130, rare: 130, freeze: 200 };
+/** スロットの当たり1回ぶんの経験値を入れる。通知はスロットの演出で出す。戻り値=入った量 */
+export function awardSlotExp(role) {
+  const base = SLOT_EXP[role];
+  return base ? gainExp(base, { key: "pakki_slot", silent: true }) : 0;
 }
 
 /**
