@@ -296,7 +296,7 @@ export async function showStepDemo(cs, step) {
   const seenDemo = state.flags.seenDemo ||= {};
   if (seenDemo[step]) return;
   seenDemo[step] = true; // とばしても既読。再度見たいときは brief のリンクから開ける。
-  save();
+  if (!cs.preview) save();
   await openDemoSheet(b.root, step);
 }
 

@@ -21,6 +21,7 @@ const { STATE_KEY_RULES, FLAG_EXACT_RULES, FLAG_FAMILY_RULES, GIFT_EQUIPMENT_IDS
 
 assert.equal(carry.classifyFlag("_shift_mix_citrus"), "progression");
 assert.equal(carry.flagVerdict("_shift_mix_citrus"), "reset");
+assert.equal(carry.flagVerdict("seenDemo"), "carry");
 {
   const s = core.newState();
   s.flags._shift_mix_citrus = 0;
