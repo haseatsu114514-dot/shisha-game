@@ -208,7 +208,11 @@ try {
           const panel=document.querySelector(".game-ds-controls").getBoundingClientRect();
           const ctl=document.querySelector(".vn-controls").getBoundingClientRect();
           const text=document.querySelector(".vn-text").getBoundingClientRect();
-          const choices=[...document.querySelectorAll(".vn-choice")].map(n=>n.getBoundingClientRect());
+          // 選択肢はスクロール領域の中なので、見えている範囲（親の枠で切った矩形）だけを比べる。
+          const box=document.querySelector(".vn-choices").getBoundingClientRect();
+          const choices=[...document.querySelectorAll(".vn-choice")].map(n=>n.getBoundingClientRect())
+            .map(r=>({left:Math.max(r.left,box.left),right:Math.min(r.right,box.right),top:Math.max(r.top,box.top),bottom:Math.min(r.bottom,box.bottom)}))
+            .filter(r=>r.bottom>r.top && r.right>r.left);
           const clear=r=>!(ctl.right>r.left && ctl.left<r.right && ctl.bottom>r.top && ctl.top<r.bottom);
           return { inside:ctl.left>=panel.left && ctl.right<=panel.right && ctl.top>=panel.top && ctl.bottom<=panel.bottom+1,
             offVisual:clear(visual), bottomBar:panel.bottom-ctl.bottom<12,
