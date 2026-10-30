@@ -12,8 +12,9 @@ async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, s
   await page.evaluate(async opts => {
     const core = await import('./js/core/state.js');
     const s = core.newGame();
+    // 固定ストーリーの検証中は任意のシフト誘いを発生させない。
     Object.assign(s, { chapter: 2, phase: 'daily', day: 14 + opts.day, slot: opts.slot,
-      money: 36000, stamina: opts.sick ? 10 : 100, weatherSeed: 7 });
+      money: 36000, stamina: opts.sick ? 10 : 100, weatherSeed: 7, lastBaitoDay: 28 });
     s.flags = { _ch1_cleared: true, _elapsed_calendar: true,
       _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true }, _ch2_preparation_started: true,
       _ch2_naru_warm_done: true, _ch2_city_visit_c_station: true,

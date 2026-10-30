@@ -3,8 +3,20 @@ import { RIN_AWAY_DAY } from "../core/rules.js";
 
 const slotsFor = spot => spot.openSlots || (spot.kind === "fortune" ? [0] : null);
 
+// 昼/夜の二枠では礼拝の時刻を刻まない。昼の枠は礼拝時間外の案内付き見学を表す。
+// 曜日は day 1=月曜として扱い、金曜の昼枠は午前の見学がないため閉じる（安全側の仮置き）。
+export const MOSQUE_VISITING_HOURS = Object.freeze({
+  openSlots: Object.freeze([0]),
+  closedWeekSlots: Object.freeze({ 5: Object.freeze([0]) }),
+  closedWhy: "金曜午前は見学できません",
+});
+
 export function openingStatus(spot, save) {
   const slots = slotsFor(spot);
+  if (spot.closedWeekSlots?.[save.day % 7]?.includes(save.slot)) {
+    const why = spot.closedWhy || "この時間は見学できません";
+    return { ok: false, tag: why, why };
+  }
   if (!slots || slots.includes(save.slot)) return { ok: true };
   const tag = slots.includes(1) ? "夜から営業" : "昼のみ営業";
   return { ok: false, tag, why: tag };

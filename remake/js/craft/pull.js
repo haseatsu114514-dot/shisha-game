@@ -22,7 +22,7 @@ import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { ensureFlavorLife, applyLeafDamage, leafDamagePerPull, leafDamageRatio, leafStopDrift } from "./flavor-life.js";
 import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
-import { mixExpression } from "./flavor-profile.js";
+import { actualExpressionCard } from "./flavor-guide.js";
 import { createCraftClock } from "./clock.js";
 import { effectVisible, effectBadge, effectLine, senseExtra, effectTier } from "./effect-visual.js";
 import { waterComfort } from "./water.js";
@@ -499,8 +499,7 @@ async function pullGame(cs, mode) {
   }
 
   const { score, inZone, optimal } = pullResult(T, pulls, justs, bands, safeLimit);
-  const expression = mixExpression(cs, T);
-  const tasteLine = `今回：${expression.label} ／ 甘い印象 ${expression.values.sweetness.toFixed(1)}・清涼 ${expression.values.cooling.toFixed(1)}（強さ／10）`;
+  const tasteCard = actualExpressionCard(cs, T);
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0] };
   scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
   if (mode.store === "pull") {
@@ -512,7 +511,7 @@ async function pullGame(cs, mode) {
       summary: ["お客さんへシーシャを提供した。しばらく吸ってもらおう"],
       lines: [
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えて提供できた" : optimal ? "最適温に合わせて提供できた" : inZone ? "適温で提供できた" : T > ideal[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
-        tasteLine,
+        tasteCard,
         waterComfortLine(cs.water),
         `${pulls}回吸った`,
       ],
@@ -524,7 +523,7 @@ async function pullGame(cs, mode) {
     title: `${mode.title} 結果`,
     lines: [
       inZone ? "適温に整えて、審査員へ戻せた" : T > ideal[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
-      tasteLine,
+      tasteCard,
       waterComfortLine(cs.water),
       coals ? `消耗した炭を${coals}個交換した` : "炭は交換せずに整えた",
       `${pulls}回吸った`,

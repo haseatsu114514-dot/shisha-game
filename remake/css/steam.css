@@ -147,7 +147,7 @@
 @keyframes steam-slash { 0% { opacity: .8; } 25% { opacity: 1; } 100% { opacity: 0; } }
 .refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 18px; line-height: 1.2; white-space: nowrap; letter-spacing: .03em; padding: 2px 0; border: 0; background: none; text-shadow: 0 1px 3px #000; }
 .precision-copy { display: flex; align-items: center; gap: 8px; }
-.precision-state { display: grid; place-items: center; width: 44px; height: 20px; border: 1px solid #8b94884d; border-radius: 10px; font-family: var(--font); font-size: 12px; line-height: 1; font-weight: 700; letter-spacing: .06em; color: #b8bab1; background: #171a18; }
+.precision-state { display: grid; place-items: center; width: 44px; height: 20px; border: 1px solid #8b94884d; border-radius: 10px; font-family: var(--font); font-size: 12px; line-height: 1; font-weight: 700; letter-spacing: .02em; color: #b8bab1; background: #171a18; }
 .dodge-precision[aria-pressed="false"] .refresh-emblem { filter: brightness(.72) saturate(.75); }
 .bench[data-art-skin] .dodge-action:disabled { opacity: .4; filter: saturate(.5); }
 .bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"], .bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"]:hover:not(:disabled) { color: #edf4df; background: none; box-shadow: none; }

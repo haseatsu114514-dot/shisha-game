@@ -94,7 +94,9 @@ try {
     await page.locator(host).waitFor();
     assert(await page.evaluate(id => {
       const s = T.core.state;
-      return s.flags[T.intro.introSeenKey(id)] && JSON.stringify([s.money, s.stamina, s.slot, s.day]) === JSON.stringify(T.before);
+      return s.met[id] && s.flags[T.intro.introSeenKey(id)]
+        && T.data.displayName(id, s) !== "？？？"
+        && JSON.stringify([s.money, s.stamina, s.slot, s.day]) === JSON.stringify(T.before);
     }, id));
     const back = id === "maki" ? '[data-test="axe-bar-back"]' : '[data-test="trpg-campaign-close"]';
     await page.locator(back).click(); await page.evaluate(() => T.visit);

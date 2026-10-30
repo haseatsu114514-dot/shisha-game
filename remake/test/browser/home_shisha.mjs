@@ -1,7 +1,7 @@
 // 家の一服を実DOMで操作し、葉・体力・能力端数と保存復帰を検証する。
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { suite, assertFits } from "./support.mjs";
+import { suite, assertFits, storageSnapshot } from "./support.mjs";
 
 const out = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 fs.mkdirSync(out, { recursive: true });
@@ -21,6 +21,84 @@ async function offer(page) {
 }
 
 await suite("home-shisha", async check => {
+  // #1906: 家で発見した配合を、在庫や保存内容を変えずにレシピ帳で読み返す。
+  for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ["portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]]) {
+    await check(`${label}-discovered-recipe-details`, async page => {
+      const before = await page.evaluate(async portrait => {
+        if (portrait) {
+          const layout = await import("./js/scenes/title-layout.js");
+          localStorage.setItem(layout.TITLE_LAYOUT_KEY, "ds");
+          (await import("./js/core/ui.js")).showScreen("home", document.createElement("div"));
+          window.dispatchEvent(new Event("display-layout-change"));
+        }
+        const core = await import("./js/core/state.js"), s = core.newGame();
+        s.recipes = { ice_lemonade: { day: 3, home: true }, sumi_basic: true, secret_probe: { day: 1 } };
+        s.flavorStock = {}; // 閲覧には材料の在庫を要求しない。
+        core.save(); core.load();
+        window.recipeClosed = false;
+        void (await import("./js/daily/status.js")).openStatus().then(() => { recipeClosed = true; });
+        return JSON.stringify(core.state);
+      }, label === "portrait");
+      const storage = await storageSnapshot(page);
+      await page.locator('[data-tab="items"]').click();
+      assert.equal(await page.locator('[data-recipe]').count(), 2);
+      assert.equal(await page.locator(t("recipe-peach_sorbet")).count(), 0, "未発見は名前も操作も出さない");
+      assert.equal(await page.locator(t("recipe-secret_probe")).count(), 0, "未知・裏レシピの保存IDを露出しない");
+      await page.locator(t("recipe-ice_lemonade")).scrollIntoViewIfNeeded();
+      if (options.hasTouch) await page.locator(t("recipe-ice_lemonade")).tap();
+      else {
+        await page.locator(t("recipe-ice_lemonade")).focus();
+        await page.keyboard.press("Enter");
+      }
+      const detail = page.locator(t("recipe-detail"));
+      assert.match(await detail.innerText(), /材料：.*ミント.*レモン/);
+      assert.match(await detail.innerText(), /黄金比：.*レモン 7：.*ミント 3（割合）/);
+      assert.match(await detail.innerText(), /発見日：DAY 3/);
+      assert.match(await detail.innerText(), /発見時のグラム数は記録していない/);
+      assert.doesNotMatch(await detail.innerText(), /白桃ソルベ|secret_probe/);
+      await assertFits(page, '[data-test="recipe-detail"]');
+      await page.locator(t("recipe-back")).scrollIntoViewIfNeeded();
+      await assertFits(page, '[data-test="recipe-back"]');
+      await page.screenshot({ path: `${out}/recipe-details-${label}.png` });
+      assert.equal(await page.evaluate(() => recipeClosed), false, "詳細閲覧中もSTATUSの呼出元を再開しない");
+      await page.locator(t("recipe-back")).click();
+      assert.equal(await page.locator('[data-tab="items"].on').count(), 1);
+      assert(await page.locator(t("recipe-ice_lemonade")).evaluate(node => node === document.activeElement));
+      await page.locator(t("recipe-sumi_basic")).click();
+      assert.match(await detail.innerText(), /黄金比：未設定/);
+      assert.match(await detail.innerText(), /発見日：記録なし/);
+      assert.equal(await page.evaluate(() => JSON.stringify(__remake.state)), before);
+      assert.deepEqual(await storageSnapshot(page), storage, "閲覧と戻る操作は保存も消費も行わない");
+      await page.locator(t("status-close")).click();
+      await page.waitForFunction(() => recipeClosed);
+      // 旧セーブの未知IDだけでは、空の帳面に名前を作らない。
+      await page.evaluate(async () => {
+        __remake.state.recipes = { secret_probe: { day: 1 } };
+        void (await import("./js/daily/status.js")).openStatus();
+      });
+      await page.locator('[data-tab="items"]').click();
+      assert.equal(await page.locator('[data-recipe]').count(), 0);
+      assert.match(await page.locator('.st-items').innerText(), /まだ白紙/);
+      // 持ち物・発見数が増えても、詳細先頭と元のスクロール位置へ戻れる。
+      const lastId = await page.evaluate(async () => {
+        const { DB } = await import("./js/core/data.js");
+        __remake.state.flavorStock = Object.fromEntries(DB.flavors.map(f => [f.id, 50]));
+        __remake.state.recipes = Object.fromEntries(DB.recipes.map(r => [r.id, { day: 8 }]));
+        return DB.recipes.at(-1).id;
+      });
+      await page.locator('[data-tab="items"]').click();
+      const last = page.locator(t(`recipe-${lastId}`));
+      await last.scrollIntoViewIfNeeded();
+      const scrollTop = await page.locator('.status-modal .modal-body').evaluate(node => node.scrollTop);
+      assert(scrollTop > 0);
+      await last.click();
+      assert.equal(await page.locator('.status-modal .modal-body').evaluate(node => node.scrollTop), 0);
+      await page.locator(t("recipe-back")).click();
+      assert.equal(await page.locator('.status-modal .modal-body').evaluate(node => node.scrollTop), scrollTop);
+    }, options);
+  }
+
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`${label}-mix-recipe-and-reload`, async page => {
       const hit = async id => label === "touch" ? page.locator(t(id)).tap() : page.locator(t(id)).click();

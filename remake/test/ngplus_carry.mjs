@@ -21,6 +21,7 @@ const { STATE_KEY_RULES, FLAG_EXACT_RULES, FLAG_FAMILY_RULES, GIFT_EQUIPMENT_IDS
 
 assert.equal(carry.classifyFlag("_shift_mix_citrus"), "progression");
 assert.equal(carry.flagVerdict("_shift_mix_citrus"), "reset");
+assert.equal(carry.flagVerdict("seenDemo"), "carry");
 {
   const s = core.newState();
   s.flags._shift_mix_citrus = 0;
@@ -33,9 +34,9 @@ assert.equal(carry.flagVerdict("_shift_mix_citrus"), "reset");
 const root = new URL("../../", import.meta.url);
 const copy = (v) => JSON.parse(JSON.stringify(v));
 
-// ---------------------------------------------------------------- A. SCHEMA 23 と後方互換
+// ---------------------------------------------------------------- A. SCHEMA 24 と後方互換
 {
-  assert.equal(SCHEMA, 23);
+  assert.equal(SCHEMA, 24);
   const fresh = newState();
   assert.equal(fresh.cycle, 1);
   assert.equal(typeof fresh.cycleId, "string");
@@ -72,7 +73,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
     return s;
   };
   const checkMigrated = (s) => {
-    assert.equal(s.schema, 23);
+    assert.equal(s.schema, 24);
     assert.equal(s.cycle, 1);
     assert.ok(typeof s.cycleId === "string" && s.cycleId.length > 0);
     assert.deepEqual(s.cycleStartStats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
@@ -115,7 +116,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   prior.flavorMastery = { vanilla: 12 };
   localStorage.setItem(SAVE_KEY, JSON.stringify(prior));
   const upgraded = load();
-  assert.equal(upgraded.schema, 23);
+  assert.equal(upgraded.schema, 24);
   assert.equal(upgraded.cycle, 2);
   assert.equal(upgraded.cycleId, "kept-cycle-2");
   assert.equal(upgraded.cycleStartStats.technique, 19);
@@ -315,4 +316,4 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   assert.deepEqual(core.state, before, "手動枠の拒否で state の内容を変えない");
 }
 
-console.log("ngplus carry: PASS (schema 23 migration, state/flag classification coverage, package extraction, data cross-check, future schema refusal)");
+console.log("ngplus carry: PASS (schema 24 migration, state/flag classification coverage, package extraction, data cross-check, future schema refusal)");

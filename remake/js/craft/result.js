@@ -3,7 +3,7 @@ import { actualExpressionCard } from "./flavor-guide.js";
 // 大会の発表まわり: 中間発表／RESULT 10 COUNT（プチュン=1位確定・パリン=敗北）／
 // 南雲の持ち点一括投入カットイン／最終順位表。master_spec 第2部 §4〜5・story ch1【転】
 import { el, sleep, rand } from "../core/util.js";
-import { faceIconUrl, displayName, portraitInfo } from "../core/data.js";
+import { DB, faceIconUrl, displayName, portraitInfo } from "../core/data.js";
 import { layers, showScreen, flash, shake, retireScreen } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { SE, stopBgm } from "../core/audio.js";
@@ -150,9 +150,11 @@ export async function resultCountdown(cs, kind) {
   ])));
   const screen = el("div.count-screen", { dataset: { test: "result-count" } }, [header("SMOKE CROWN CUP / FINAL JUDGING", "結果発表", "最後の10点が、動く。"), cuts, ring, num, pray, el("div.rc-crt")]);
   showScreen("count", screen);
+  const mainLeaf = Object.entries(cs.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0).sort((a, b) => b[1] - a[1])[0]?.[0];
+  const leafName = DB.flavorById?.[mainLeaf]?.short_name || DB.flavorById?.[mainLeaf]?.name || "葉";
   const cutWords = [
     "アルミ穴あけ", cs.heat?.flash ? "全面が赤い炭" : "炭の赤熱", cs.heat?.just ? "ジャスト炭" : "炭の熱", "立ちのぼる煙",
-    "ミントの香り", "審査員の目元", "会場のざわめき", "スミさんの背中", "tonariのカウンター",
+    `${leafName}の香り`, "審査員の目元", "会場のざわめき", "スミさんの背中", "tonariのカウンター",
   ];
   SE.drumroll(fast ? 0.5 : 5.5);
   for (let n = 10; n >= 0; n--) {

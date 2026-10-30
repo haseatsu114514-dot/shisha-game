@@ -10,6 +10,18 @@
   ],
   "suites": [
     {
+      "id": "typography-css",
+      "title": "Readable CSS typography follows #1352",
+      "kind": "quick",
+      "run": ["node remake/test/typography_css.mjs"]
+    },
+    {
+      "id": "reflection-routes",
+      "title": "Tokyo/Dubai reflection routes, visiting hours and save/load (#1788 #1801)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/reflection_routes.mjs"]
+    },
+    {
       "id": "status-steps",
       "title": "Status 10-step conversion and effect tables",
       "kind": "quick",
@@ -324,6 +336,7 @@
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
+        "node remake/test/spot_encounter_doctor.mjs",
         "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",

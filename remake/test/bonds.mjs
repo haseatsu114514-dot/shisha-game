@@ -703,6 +703,15 @@ try {
       fresh({ met: { naru: true, adam: true }, contacts: ["naru", "adam"], day: 9, lastBaitoDay: 9,
         finales: { naru: { day: 2, chapter: 1, route: "friend" }, adam: { day: 1, chapter: 1, route: "friend" } } });
       const oneMorning = friendIds(phone.morningMessages({ fixedNight: () => false }));
+      // 第2章の地元日常でも、友人の雑談・お誘いと4日以上シフトを空けたスミさんの連絡が届く。
+      const ch2 = fresh({ chapter: 2, day: 19, slot: 0, lastBaitoDay: 14,
+        met: { naru: true }, contacts: ["naru"], flags: { _ch2_day1: { startDay: 15 } },
+        finales: { naru: { day: 11, chapter: 1, route: "friend" } } });
+      const ch2Chat = friendIds(phone.morningMessages({ fixedNight: () => false }));
+      ch2.inbox.push(friendNote(15, "naru"));
+      const ch2Invites = phone.morningMessages({ fixedNight: () => false }).map((m) => `${m.sender}:${m.type}`);
+      const ch2FixedNight = friendIds(phone.morningMessages({ fixedNight: () => true }));
+      const ch2Tournament = phone.morningMessages({ tournamentDay: true }).filter((m) => m.sender === "sumi" || String(m.id).startsWith("_friend_")).length;
       // 恋人・告白待ち・連絡先なし・大会当日には届かない。告白で「友達のまま」なら届く
       const quiet = {};
       let s = fresh({ met: { tsumugi: true }, contacts: ["tsumugi"], day: 9, lovers: ["tsumugi"], finales: { tsumugi: { day: 1, chapter: 1, route: "lover" } } });
@@ -728,7 +737,8 @@ try {
         T.stats.addStamina(-10); // 実際の誘いも、会話の後で体力を支払う
       });
       const second = vn.backlog().map((l) => l.text);
-      return { freeCharmUnchanged, timeline, inviteText, rotation, withBaito, withStory, calm, fixedNight, oneMorning, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
+      return { freeCharmUnchanged, timeline, inviteText, rotation, withBaito, withStory, calm, fixedNight, oneMorning,
+        ch2Chat, ch2Invites, ch2FixedNight, ch2Tournament, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
     } finally {
       DB.lime = original;
     }
@@ -748,6 +758,10 @@ try {
   assert.deepEqual(friendsLime.calm, ["naru:invitation:night"]);
   assert.deepEqual(friendsLime.fixedNight, ["naru:chat:-"]);
   assert.deepEqual(friendsLime.oneMorning, ["adam:chat:-"]);
+  assert.deepEqual(friendsLime.ch2Chat, ["naru:chat:-"]);
+  assert(friendsLime.ch2Invites.includes("naru:invitation") && friendsLime.ch2Invites.includes("sumi:invitation"), friendsLime.ch2Invites.join("|"));
+  assert.deepEqual(friendsLime.ch2FixedNight, ["naru:chat:-"]);
+  assert.equal(friendsLime.ch2Tournament, 0);
   assert.deepEqual(friendsLime.quiet, { lover: 0, romance: 0, rejected: ["tsumugi:chat:-"], noContact: 0, tournament: 0 });
   assert(friendsLime.first.some((l) => l.startsWith("栞:")), friendsLime.first.join("|"));
   assert(friendsLime.first.some((l) => l.includes("栞さんと一服した")), friendsLime.first.join("|"));

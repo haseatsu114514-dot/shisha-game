@@ -12,7 +12,7 @@
 .mo-lime-status {
   position: absolute; left: 0; right: 0; top: 0; height: 37px; padding: 16px 20px 0;
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #1d2433;
+  font-size: 13px; font-weight: 700; letter-spacing: .02em; color: #1d2433;
 }
 .mo-lime-status span:last-child { text-align: right; letter-spacing: 1px; }
 .mo-lime-pages { position: absolute; left: 0; right: 0; top: 37px; bottom: 0; overflow: hidden; background: #fff; }

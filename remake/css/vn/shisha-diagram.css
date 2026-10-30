@@ -49,7 +49,7 @@
 .sd-step.active { opacity: 1; color: #f3c06a; }
 .sd-step.active b { background: #f3c06a; color: #211a30; }
 
-.sd-note { margin: 7px 0 0; font-size: 11px; line-height: 1.35; color: #cbb6e0; text-align: center; }
+.sd-note { margin: 7px 0 0; font-size: 12px; font-weight: 700; line-height: 1.35; color: #cbb6e0; text-align: center; }
 
 /* 段階ごとの流れ：今の段階のものだけ見せる（過ぎた段階は残さず、注目を1つに） */
 .sd-flow { display: none; }

@@ -18,7 +18,7 @@
   --bench-bg: radial-gradient(ellipse at 30% 20%, rgba(56, 240, 255, 0.08), transparent 50%), radial-gradient(ellipse at 80% 90%, rgba(255, 63, 164, 0.08), transparent 50%), rgba(4, 4, 8, 0.9);
 }
 .bench-top { position: absolute; left: 0; right: 0; top: 0; height: 48px; display: flex; align-items: center; gap: 16px; padding: 0 22px; border-bottom: 1px solid #ffffff0d; }
-.bench-mode { width: 420px; font-family: var(--font); font-weight: 700; font-size: 12px; letter-spacing: 0.22em; color: var(--accent); flex: none; }
+.bench-mode { width: 420px; font-family: var(--font); font-weight: 700; font-size: 12px; letter-spacing: .02em; color: var(--accent); flex: none; }
 .bench-condition { position: relative; color: #e6c984; margin-left: auto; z-index: 7; }
 .bench-condition[data-health="green"] { color: #95dbae; }
 .bench-condition[data-health="red"] { color: #ef9e98; }
@@ -33,7 +33,7 @@
 .bench-condition-tip p, .bench-guide-tip p { margin: 6px 0 0; font-size: 15px; line-height: 1.65; color: #c9c2b9; }
 .bench-progress { display: flex; align-items: center; gap: 16px; min-width: 0; flex: 1; }
 .bench-progress[hidden] { display: none; }
-.bench-progress-count { font-size: 12px; font-weight: 500; color: #d3cec5; font-variant-numeric: tabular-nums; letter-spacing: 0.08em; white-space: nowrap; }
+.bench-progress-count { font-size: 12px; font-weight: 700; color: #d3cec5; font-variant-numeric: tabular-nums; letter-spacing: .02em; white-space: nowrap; }
 .bench-progress-track { display: flex; align-items: center; gap: 5px; flex: 1; }
 .bench-progress-track span { height: 3px; flex: 1; border-radius: 4px; background: #ffffff19; }
 .bench-progress-track span.seen { background: color-mix(in srgb, var(--accent) 45%, transparent); }
@@ -62,14 +62,14 @@
 .audience-face { position: relative; width: 100%; height: 56px; border-radius: 8px; overflow: hidden; background: radial-gradient(ellipse at 50% 85%, #d8bb8614, transparent 75%); }
 .audience-face img { position: absolute; max-width: none; height: auto; }
 .audience-face img.audience-icon { width: 48px !important; height: 48px; left: calc(50% - 24px) !important; top: 2px !important; object-fit: contain; }
-.audience-person figcaption { font-size: 10px; line-height: 16px; color: #bdb7ae; white-space: nowrap; }
+.audience-person figcaption { font-size: 12px; font-weight: 700; line-height: 16px; color: #bdb7ae; white-space: nowrap; }
 .audience-person[data-mood="nod"] img { animation: audience-nod 0.55s ease-in-out; }
 .audience-single { display: flex; align-items: center; gap: 8px; padding-right: 12px; }
 .audience-single .audience-people { grid-template-columns: 1fr; width: 84px; flex: none; padding: 4px; }
 .audience-speech { flex: 1; min-width: 0; }
 .audience-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
 .audience-rating { font-size: 20px; line-height: 1; font-weight: 700; color: #d3d9cb; }
-.audience-caption { font-size: 10px; color: #bdb7ac; letter-spacing: 0.08em; }
+.audience-caption { font-size: 12px; font-weight: 700; color: #bdb7ac; letter-spacing: .02em; }
 .audience-note { margin: 0; font-size: 13px; color: #d1c7b6; line-height: 1.45; overflow-wrap: anywhere; }
 .bench-audience[data-tone="bright"] .audience-rating { color: #efcf8a; }
 .bench-audience[data-tone="bright"] .audience-note { font-size: 15px; font-weight: 700; color: #ecd4a1; line-height: 1.45; }
@@ -89,6 +89,20 @@
 .bench-guide summary:hover { color: #f4eee4; border-color: var(--accent); }
 .bench-guide-tip { top: calc(100% + 12px); right: 0; width: 360px; }
 .bench-panel { position: relative; flex: 1; min-height: 0; }
+.bench-demo-link { border: 0; padding: 0; background: none; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
+.bench-demo-link:focus-visible, .bench-demo-sheet button:focus-visible { outline: 3px solid #ffe3a7; outline-offset: 3px; }
+.bench-demo-sheet { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; padding: 12px; background: #08060de8; }
+.bench-demo-card { width: min(900px, 100%); max-height: 100%; overflow: auto; padding: 14px; border: 1px solid var(--accent); border-radius: 14px; background: #201b25; box-shadow: 0 18px 48px #000b; }
+.bench-demo-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.bench-demo-head h2 { margin: 0; font-size: 20px; color: #f2dfb8; }
+.bench-demo-sheet button { min-height: 44px; padding: 8px 18px; border: 1px solid var(--accent); border-radius: 999px; background: #312b35; color: #fff4e0; font: inherit; cursor: pointer; }
+.bench-demo-stage { position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; }
+.bench-demo-stage video { display: block; width: 100%; height: 100%; object-fit: contain; }
+.bench-demo-arrow { position: absolute; font-size: clamp(34px, 5vw, 72px); line-height: 1; color: #ffd94d; text-shadow: 0 2px 8px #000; transform: translate(-50%, -50%); pointer-events: none; animation: bench-demo-bob .9s ease-in-out infinite alternate; }
+.bench-demo-arrow[hidden] { display: none; }
+@keyframes bench-demo-bob { from { margin-top: -5px; } to { margin-top: 5px; } }
+.bench-demo-caption { min-height: 3em; margin: 10px 0; color: #f2e9dc; font-size: 17px; line-height: 1.5; }
+.bench-demo-finish { display: block; margin-left: auto; }
 
 /* 制作中の操作ボタンは、道具・表情より目立ちすぎない面と一色の縁で統一。 */
 .bench .btn { border-image: none; border: 1px solid #ffffff29; border-radius: 10px; background: #28252d; color: #e7e1d8; box-shadow: none; font-size: 17px; }
@@ -242,7 +256,7 @@
 .craft-sense-extra { background: var(--stat-sense); box-shadow: 0 0 8px var(--stat-sense); }
 /* #1081 E02: フレーバーを決めるこの工程でも「フレーバーの持ち」を左の窓で先に見せる。 */
 .mix-life-preview { width: 100%; display: grid; justify-items: center; gap: 4px; padding: 6px 4px; border-top: 1px solid #d1b48622; }
-.mix-life-preview > b { font-size: 13px; letter-spacing: .04em; color: #d3c2a8; }
+.mix-life-preview > b { font-size: 13px; letter-spacing: .02em; color: #d3c2a8; }
 .mix-life-preview .leaf-icon { gap: 6px; }
 .mix-life-preview .flavor-leaf { width: 24px; height: 24px; }
 .mix-life-preview .leaf-skin { width: 24px; height: 24px; }
@@ -370,7 +384,7 @@
 .heat-info { position: relative; margin-top: 0; padding: 12px 12px 8px; border: 1.5px solid #e5d598; border-radius: 18px; background: linear-gradient(145deg, #100b0eea, #1b100dec); box-shadow: 0 10px 25px #0005; font-variant-numeric: tabular-nums; }
 .heat-carrier-head { display: flex; justify-content: space-between; align-items: start; padding-right: 26px; color: #eee6d7; }
 .heat-carrier-head h2 { margin: 0; font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 27px; line-height: 1.2; }
-.heat-carrier-head small { font-size: 12px; letter-spacing: .08em; }
+.heat-carrier-head small { font-size: 12px; letter-spacing: .02em; }
 .heat-collected-count { font-size: 23px; letter-spacing: .08em; white-space: nowrap; }
 .coal-carrier-view { position: relative; width: 195px; height: 232px; margin: 2px auto 0; pointer-events: none; }
 .coal-carrier-art { pointer-events: none; image-rendering: auto; }
@@ -384,8 +398,8 @@
 .heat-feedback .perfect { color: #ffdf7d; }
 .heat-feedback .good { color: #cce1be; }
 .heat-feedback .miss { color: #eab6ab; }
-.heat-error { font-size: 11px; padding-left: 7px; border-left: 1px solid #e4c77d66; }
-.heat-bonus { color: #e5cd95; font-size: 11px; letter-spacing: .03em; }
+.heat-error { font-size: 12px; font-weight: 700; padding-left: 7px; border-left: 1px solid #e4c77d66; }
+.heat-bonus { color: #e5cd95; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 .heat-picks { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .heat-compact { grid-template-columns: minmax(0, 1fr) 200px; gap: 12px; height: 355px; }
 .heat-compact .stove { margin-top: 56px; }
@@ -609,7 +623,7 @@
 .rt-row.me .rt-bar b { background: linear-gradient(90deg, var(--neon-pink), var(--neon-amber)); }
 .rt-pt { width: 60px; text-align: right; font-family: var(--font); font-size: 18px; }
 .rt-detail { width: 760px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 12px 18px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
-.rt-detail h4 { width: 100%; margin: 0; color: var(--text-dim); font-size: 13px; letter-spacing: 0.3em; }
+.rt-detail h4 { width: 100%; margin: 0; color: var(--text-dim); font-size: 13px; letter-spacing: .02em; }
 .rt-part { display: flex; align-items: baseline; gap: 8px; font-size: 15px; }
 .rt-part b { font-size: 26px; font-weight: 800; }
 .rt-part.total { margin-left: auto; }
@@ -623,7 +637,7 @@
 .ent-card.me .ent-cut { background: linear-gradient(135deg, var(--neon-amber), #5a2a00); }
 .ent-face { width: 150px; height: 150px; image-rendering: pixelated; }
 .ent-face.ph { display: grid; place-items: center; font-size: 42px; font-weight: 800; color: #000; }
-.ent-tag { position: absolute; bottom: -14px; left: 12px; padding: 2px 10px; background: #000; color: var(--neon-cyan); font-size: 13px; letter-spacing: 0.3em; }
+.ent-tag { position: absolute; bottom: -14px; left: 12px; padding: 2px 10px; background: #000; color: var(--neon-cyan); font-size: 13px; letter-spacing: .02em; }
 .ent-meta { transform: skewX(6deg); }
 .ent-ring { font-size: 18px; letter-spacing: 0.3em; color: var(--neon-cyan); }
 .ent-name { font-family: "Suien Name", serif; font-size: 54px; font-weight: 700; color: #fff; text-shadow: 0 0 20px rgba(255, 63, 164, 0.6); }
@@ -933,7 +947,7 @@
 .dial-label.l-down { fill: #9fc8ff; }
 .dial-label.l-down, .dial-desc.l-down { text-anchor: start; }
 .dial-label.l-up, .dial-desc.l-up { text-anchor: end; }
-.dial-desc { font-size: 11px; text-anchor: middle; fill: #d3c4ae; paint-order: stroke; stroke: #100b1c; stroke-width: 3px; }
+.dial-desc { font-size: 12px; font-weight: 700; text-anchor: middle; fill: #d3c4ae; paint-order: stroke; stroke: #100b1c; stroke-width: 3px; }
 .dial-desc.l-down { fill: #aecded; }
 .dial-desc.l-up { fill: #efb591; }
 .needle-body { fill: #ffe7a3; stroke: #9d7127; stroke-width: .8; filter: drop-shadow(0 0 4px #ffd65bb0); }
@@ -994,13 +1008,13 @@
 .pull { gap: 0; align-items: center; }
 /* 同じ温度計DOMを左の作業風景の右端へ重ねる。炭交換の準備中も見える。 */
 .pull > .thermo { position: absolute; left: -128px; top: -44px; height: 408px; z-index: 3; }
-.pull > .thermo .thermo-projected-label { left: -7px; bottom: -18px; padding: 3px 5px; font-size: 9px; }
+.pull > .thermo .thermo-projected-label { left: -7px; bottom: -18px; padding: 3px 5px; font-size: 12px; font-weight: 700; }
 .pull > .thermo .thermo-pop { left: -28px; }
 .pull > .thermo::before { content: "温度"; position: absolute; left: 0; right: 0; top: -19px; font-size: 14px; letter-spacing: .02em; text-align: center; color: #ead7b5; }
 .pull-summary { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; min-height: 40px; border: 1px solid #e7c98e30; border-radius: 6px; background: #08061070; }
 .pull-summary .pull-state { font-size: 18px; }
 .pull-summary .pull-read { min-height: 24px; }
-.pull-draw-status { min-height: 20px; text-align: center; font-size: 13px; color: #cab79e; letter-spacing: .08em; }
+.pull-draw-status { min-height: 20px; text-align: center; font-size: 13px; color: #cab79e; letter-spacing: .02em; }
 .bench[data-art-skin] .pull-btns .btn { flex-direction: row; gap: 12px; min-height: 72px; padding: 12px; border-radius: 9px; font-size: 22px; }
 .bench[data-art-skin] .pull-btns .btn.primary { position: relative; flex: 1.65; border-color: #e7ba67; background: radial-gradient(ellipse at 50% 0%, #97653338, transparent 75%), linear-gradient(135deg, #422b31, #211526 65%, #392231); box-shadow: inset 0 0 0 2px #f0d3911a, inset 0 0 22px #e5a64b15, 0 0 15px #eac27526; }
 .bench[data-art-skin] .pull-btns .btn.primary::before, .bench[data-art-skin] .pull-btns .btn.primary::after { position: absolute; top: 50%; transform: translateY(-50%); font-size: 18px; color: #efc58180; pointer-events: none; }
@@ -1038,7 +1052,7 @@
 }
 
 /* TH57: 拡大したモックアップの配置に合わせる。ダイヤル・情報欄・ボタンを下段の固定行に収める。 */
-.bench-top .bench-mode small { margin-left: 12px; padding-left: 12px; border-left: 1px solid #d2bb9260; font-size: 11px; letter-spacing: .12em; color: #c6b8ba; }
+.bench-top .bench-mode small { margin-left: 12px; padding-left: 12px; border-left: 1px solid #d2bb9260; font-size: 12px; font-weight: 700; letter-spacing: .02em; color: #c6b8ba; }
 .bench-left, .bench-right { top: 54px; bottom: 12px; border-color: #9b785876; box-shadow: inset 0 0 0 2px #f1c9910b, inset 0 0 18px #05030988, 0 8px 24px #0006; }
 .bench-left { left: 12px; width: 432px; gap: 3px; padding: 10px 5px 11px; }
 .bench-right { left: 450px; right: 12px; padding: 18px 22px 16px; }
@@ -1071,7 +1085,7 @@
 .audience-face-label[hidden] { display: none; }
 .audience-person figcaption { display: none; }
 .audience-single .audience-heading { display: flex; margin-bottom: 5px; }
-.audience-name { font-size: 12px; letter-spacing: .10em; font-weight: 700; color: #bfb0b6; }
+.audience-name { font-size: 12px; letter-spacing: .02em; font-weight: 700; color: #bfb0b6; }
 .audience-caption { color: #aa9baf; }
 .bench-audience[data-voice="inner"] .audience-caption { display: none; }
 .audience-note { font-size: 16px; line-height: 1.55; color: #e0d5cc; }
@@ -1095,7 +1109,7 @@
 .pull-zone-label.l-keep { top: 8px; left: calc(50% - 10px); transform: translateX(-50%); align-items: center; color: #efe7dd; font-size: 14px; }
 .pull-zone-label.l-keep > b { border: 0; padding: 0; margin: 0; font-size: 20px; }
 .pull-zone-label.l-keep > span { padding: 1px 24px; border: 1px solid #d6bf9b36; border-radius: 5px; background: #15101b70; }
-.pull-zone-label .pull-tag { font-size: 10px; }
+.pull-zone-label .pull-tag { font-size: 12px; font-weight: 700; }
 :is(.pull, .steam, .steam-timer) > .thermo { position: absolute; left: -128px; top: -48px; height: 360px; z-index: 3; }
 :is(.pull, .steam, .steam-timer) > .thermo::after { content: ""; position: absolute; inset: -34px -12px -60px; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); box-shadow: inset 0 0 0 1px #eec6890e, 0 2px 10px #0006; }
 .pull > .thermo .thermo-projected-label { display: none; }
@@ -1104,7 +1118,7 @@
 .pull > .thermo .pull-state { font-size: 14px; white-space: nowrap; letter-spacing: .02em; }
 .pull-summary { display: block; justify-self: start; width: max-content; max-width: 100%; padding: 0; border: 0; background: none; }
 .pull-life { position: relative; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: center; gap: 24px; padding: 8px 16px; border: 1px solid #a18a665c; border-radius: 9px; background: #100b18bb; box-shadow: inset 0 1px 2px #fff2; }
-.pull-life-label { font-size: 13px; color: #c8bcc0; white-space: nowrap; letter-spacing: .05em; }
+.pull-life-label { font-size: 13px; color: #c8bcc0; white-space: nowrap; letter-spacing: .02em; }
 .pull-life-leaves { display: flex; align-items: center; flex: none; }
 /* E08: 消耗する葉を右端に置き、残りの赤い葉を左に残す。 */
 .pull-life-leaves .leaf-icon { flex-direction: row-reverse; }
@@ -1130,7 +1144,7 @@
 .bench[data-art-skin] .pull-btns .btn:not(.primary):disabled { opacity: .42; }
 .pull-btns { display: grid; grid-template-columns: 1.75fr 1fr; gap: 14px; }
 .pull-zone-label { top: 112px; }
-.pull-life .pull-tag { font-size: 10px; padding: 1px 5px; }
+.pull-life .pull-tag { font-size: 12px; font-weight: 700; padding: 1px 5px; }
 .bench-audience[data-voice="inner"] .audience-note { font-size: 16px; max-width: 232px; word-break: normal; }
 
 /* TH83〜90（2026-10-10）: 温度計の現在地の矢印・白線・危険帯、状態の文字色、右ウインドウの煙。 */
@@ -1217,7 +1231,7 @@
 /* 配合も吸い出しと同じ左位置・同じ縦管。操作欄のfooterには置かない。 */
 .mix-temperature-preview { position: absolute; left: -140px; top: -3px; width: 88px; height: 464px; padding: 34px 12px 70px; display: block; z-index: 3; }
 .mix-temperature-preview::before { content: ""; position: absolute; inset: 0; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); }
-.mix-temperature-preview > b { position: absolute; top: 10px; left: 12px; width: 64px; text-align: center; font-size: 11px; }
+.mix-temperature-preview > b { position: absolute; top: 10px; left: 12px; width: 64px; text-align: center; font-size: 12px; font-weight: 700; }
 .mix-temperature-preview > .thermo { height: 100%; }
 /* #23-B: 下部の凡例（最大2行）＋ヒント（12px太字で2行=34px）の確保枠は70px。#703 の「吸い出しと同じ縦管(360px)」を保つため、枠全体を10px伸ばす。 */
 .mix-temperature-legend { position: absolute; top: calc(100% - 70px); left: 4px; right: 4px; justify-content: center; font-size: 12px; line-height: 1.2; gap: 2px 5px; }

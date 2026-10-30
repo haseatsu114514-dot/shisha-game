@@ -73,6 +73,7 @@
 .shop-paper .kuji-row { padding-top: 14px; padding-bottom: 14px; }
 .shop-paper .kuji-row .shop-main { gap: 6px; }
 .shop-paper .kuji-row .btn { flex: none; min-width: 170px; }
+.shop-paper .kuji-actions { display: flex; flex-direction: column; gap: 4px; }
 .shop-entry { position: absolute; left: 50%; top: 126px; transform: translateX(-50%); width: 960px; height: 552px; padding: 24px 30px; display: flex; flex-direction: column; }
 .shop-entry .shop-head { padding: 0 0 18px; height: 60px; }
 .shop-entry > h3 { font-size: 24px; font-weight: 500; letter-spacing: .08em; margin: 18px 0; }

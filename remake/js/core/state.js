@@ -9,7 +9,7 @@ import { recordGalleryProgress } from "./gallery-progress.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 23; // 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 24; // 24: 凛の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -342,6 +342,13 @@ function migrate(s) {
       if (read) learnFlavorStory(s, { dialogue_id, metadata: { flavor_lesson } });
     }
   }
+  // 第4回読了済みの旧セーブは再生できない。第2回・反復回で受け取った分を除き、未取得分だけ補う。
+  if (oldSchema < 24 && (s.story?.rin || 0) >= 4) {
+    learnFlavorStory(s, {
+      dialogue_id: "ch1_rin_fourth",
+      metadata: { flavor_lesson: { rose: 1, lychee: 1, blueberry: 1 } },
+    });
+  }
   if (!s.staffPractice || typeof s.staffPractice.day !== "string") s.staffPractice = null;
   else s.staffPractice.used = Object.fromEntries(Object.entries(record(s.staffPractice.used))
     .filter(([, g]) => Number.isFinite(g) && g >= 0).map(([id, g]) => [id, Math.min(6, g)]));
@@ -378,8 +385,8 @@ export function newGame() {
 
 let lastComplementedAutosaveRaw = null;
 
-function writeSave() {
-  if (!state) return { raw: null, saved: false };
+function writeSave(target = state) {
+  if (!target) return { raw: null, saved: false };
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try {
     const oldRaw = localStorage.getItem(SAVE_KEY);
@@ -389,11 +396,11 @@ function writeSave() {
       lastComplementedAutosaveRaw = oldRaw;
     }
   } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
-  recordGalleryProgress(state);
-  state.savedAt = Date.now();
+  recordGalleryProgress(target);
+  target.savedAt = Date.now();
   let raw = null;
   try {
-    raw = JSON.stringify(state);
+    raw = JSON.stringify(target);
     localStorage.setItem(SAVE_KEY, raw);
     lastComplementedAutosaveRaw = raw;
     return { raw, saved: true };
@@ -478,15 +485,11 @@ export function loadFromSlot(key) {
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
   if (!migrated) return null;
-  const previous = state;
-  setState(migrated);
-  const saved = save();
+  // 保存の成否が決まるまで候補を公開しない。hud購読者は旧画面を破棄しうる。
+  const { saved } = writeSave(migrated);
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
-  if (!saved && key !== SAVE_KEY) {
-    setState(previous);
-    return null;
-  }
-  return state;
+  if (!saved && key !== SAVE_KEY) return null;
+  return setState(migrated);
 }
 
 /** ゲーム中にロードしたとき: いったん読み直して、タイトルを飛ばしてそのまま再開する */

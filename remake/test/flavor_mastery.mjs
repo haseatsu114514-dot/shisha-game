@@ -103,6 +103,42 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  }
  s=core.newGame();
 }
+{
+ // 凛の3つの味は第4回で一度だけ受け取る。旧第2回・反復回の受領分は差し引く。
+ const rin=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_rin.json',import.meta.url))).dialogues;
+ const second=rin.find(d=>d.dialogue_id==='ch1_rin_second');
+ const repeat=rin.find(d=>d.dialogue_id==='ch1_rin_repeat');
+ const fourth=rin.find(d=>d.dialogue_id==='ch1_rin_fourth');
+ assert.equal(second.metadata?.flavor_lesson,undefined);
+ assert.equal(repeat.metadata?.flavor_lesson,undefined);
+ assert.deepEqual(fourth.metadata.flavor_lesson,{rose:1,lychee:1,blueberry:1});
+ const fresh=core.newGame();
+ learnFlavorStory(fresh,second,DB.flavorById);
+ learnFlavorStory(fresh,repeat,DB.flavorById);
+ assert.deepEqual(fresh.flavorMastery,{});
+ learnFlavorStory(fresh,fourth,DB.flavorById);
+ assert.deepEqual(fresh.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ learnFlavorStory(fresh,fourth,DB.flavorById);
+ assert.deepEqual(fresh.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ const loadOld=(changes)=>{
+  storage.set(core.SAVE_KEY,JSON.stringify({...core.newGame(),schema:23,...changes}));
+  return core.load();
+ };
+ let unread=loadOld({story:{rin:3},flavorLessons:['ch1_rin_second'],flavorMastery:{rose:6,lychee:6}});
+ assert.deepEqual(unread.flavorMastery,{rose:6,lychee:6});
+ learnFlavorStory(unread,fourth,DB.flavorById);
+ assert.deepEqual(unread.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ let read=loadOld({story:{rin:4},flavorLessons:['ch1_rin_second'],flavorMastery:{rose:6,lychee:6}});
+ assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ assert(read.flavorLessons.includes('ch1_rin_fourth'));
+ core.save();read=core.load();
+ assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ read=loadOld({story:{rin:4},flavorLessons:['ch1_rin_second','ch1_rin_repeat'],flavorMastery:{rose:6,lychee:6,blueberry:12}});
+ assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ read=loadOld({story:{rin:4},flavorLessons:[],flavorMastery:{}});
+ assert.deepEqual(read.flavorMastery,{rose:6,lychee:6,blueberry:12});
+ s=core.newGame();
+}
 for(const file of fs.readdirSync(new URL('../../data/dialogue/',import.meta.url)).filter(f=>f.endsWith('.json'))){
  for(const dlg of JSON.parse(fs.readFileSync(new URL('../../data/dialogue/'+file,import.meta.url))).dialogues||[])
   for(const id of Object.keys(dlg.metadata?.flavor_lesson||{}))assert(DB.flavorById[id],`${file}/${dlg.dialogue_id}: unknown flavor ${id}`);
@@ -213,3 +249,27 @@ for (const [chapter, reg] of Object.entries(REGULATION)) {
  if (reg.supply) assert.equal(isTournamentFlavorLegal(reg.supply,Number(chapter)),true,`データ矛盾: 第${chapter}章の課題支給葉が未発売`);
 }
 console.log('PASS #1279 tournament candidates and injected mixes reject trial and prerelease leaves, including NG+ carry; release in chapter 3; 課題支給葉のデータ矛盾なし');
+
+// #1924: Chapter 5 promises one leaf and exactly 12g, regardless of bowl capacity.
+const equipment = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json',import.meta.url))).equipment;
+DB.equipById = Object.fromEntries(equipment.map(e=>[e.id,e]));
+s=core.newGame();s.chapter=5;
+for (const bowl of equipment.filter(e=>e.type==='bowl')) {
+ for (const grams of [0,11,11.9,12,12.1,13,15,20]) {
+  const cup={mode:'tournament',equip:{bowl:bowl.id},mix:{double_apple:grams}};
+  assert.equal(evaluateMix(cup).regOk,grams===12,`${bowl.id}: ${grams}g`);
+ }
+}
+for (const mix of [{double_apple:11,mint:1},{double_apple:12,mint:1},{mint:12},{double_apple:6,absal_double_apple:6}]) {
+ assert.equal(evaluateMix({mode:'tournament',equip:{bowl:'suyaki_hagal'},mix}).regOk,false,'12g must be a single leaf');
+}
+assert.equal(evaluateMix({mode:'tournament',mix:{double_apple:12,mint:0}}).regOk,true);
+for (const [chapter,required,min] of [[1,'lemon',2],[2,'afsahr_strawberry',4],[3,'chocolate',4]]) {
+ s.chapter=chapter;
+ for(const grams of [min-1,min,12,13,20]) {
+  assert.equal(evaluateMix({mode:'tournament',mix:{[required]:grams}}).regOk,grams>=min,`Chapter ${chapter} minimum unchanged`);
+ }
+}
+s.chapter=5;
+assert.equal(evaluateMix({mode:'practice',mix:{double_apple:20}}).regOk,true,'Free practice is not the fixed match');
+console.log('PASS #1924: every bowl, exact 12g boundary, single leaf, zero entries, chapters 1–3 minimums and free practice');

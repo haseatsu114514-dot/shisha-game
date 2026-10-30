@@ -230,14 +230,66 @@ try {
     await openLayoutControls(p); await button(p, "title-layout-ds").click(); assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
     await openLayoutControls(p); await button(p, "title-layout-recover").click(); await ready(p);
   }, p => p.route("**/css/title-ds.css", r => r.fulfill({ status: 200, contentType: "text/css", body: "" })));
-  await check("small-phone-equal-panels-and-scroll", { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true }, async p => {
+  for (const [name, options] of Object.entries({
+    "320x480-touch": { viewport: { width: 320, height: 480 }, isMobile: true, hasTouch: true },
+    "320x568-touch": { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true },
+    // ページ拡大でCSS viewportが縮んだ場合の寸法。DPR変更とピンチは別に検査する。
+    "320x480-mouse-dpr2": { viewport: { width: 320, height: 480 }, deviceScaleFactor: 2 },
+  })) await check(`small-phone-equal-panels-and-scroll-${name}`, options, async p => {
     await seed(p);
     await layout(p, "ds");
-    const heights = await p.locator(".title-ds-panel").evaluateAll(ns => ns.map(n => n.getBoundingClientRect().height));
+    assert.equal(await p.locator(":root").getAttribute("data-ds-layout"), "stacked");
+    const panels = await p.locator(".title-ds-panel").evaluateAll(ns => ns.map(n => n.getBoundingClientRect().toJSON()));
+    const heights = panels.map(r => r.height);
     assert.equal(heights[0], heights[1]);
-    await button(p, "title-new").click(); await button(p, "cancel-new").click();
-    await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
-    await p.locator("#modal.show .modal-actions button").click(); await layout(p, "normal");
+    assert(panels.every(r => r.width >= 290 && r.left >= 0 && r.right <= options.viewport.width && r.bottom <= options.viewport.height));
+    const before = await snapshot(p);
+    const activate = async id => {
+      const target = button(p, id); await target.scrollIntoViewIfNeeded();
+      if (options.hasTouch) await target.tap(); else await target.click();
+    };
+    await activate("title-new"); await activate("cancel-new");
+    await activate("title-load"); await activate("slot-cancel");
+    await activate("title-gallery"); await activate("gallery-close");
+    // Tabでスクロール領域内の末尾項目にも到達してEnterで開ける。
+    await button(p, "title-new").focus();
+    for (let i = 0; i < 3; i++) await p.keyboard.press("Tab");
+    assert.equal(await button(p, "title-config").evaluate(n => n === document.activeElement), true);
+    await p.keyboard.press("Enter"); await p.locator("#modal.show .cfg").waitFor();
+    await p.locator("#modal.show .modal-actions button").click();
+    await p.screenshot({ path: path.join(dir, `ds-small-${name}.png`) });
+    await layout(p, "normal");
+    assert.deepEqual(await snapshot(p), before, "small-screen inputs changed save data");
+  });
+  await check("ds-portrait-pinch-safe-area-and-rotation", sizes.phone, async p => {
+    await seed(p);
+    await layout(p, "ds");
+    const cdp = await p.context().newCDPSession(p);
+    const geometry = () => p.evaluate(async () => (await import("./js/scenes/ds-geometry.js")).applyDsGeometry());
+    const before = await snapshot(p), original = await geometry();
+    await cdp.send("Emulation.setPageScaleFactor", { pageScaleFactor: 2 });
+    await p.waitForFunction(() => visualViewport.scale === 2);
+    const visible = await p.evaluate(() => ({ width: visualViewport.width, height: visualViewport.height }));
+    assert(visible.width < 200 && visible.height < 430, "pinch must actually shrink visual viewport");
+    assert.deepEqual(await geometry(), original, "pinch reflowed the DS screens instead of magnifying them");
+    await button(p, "title-config").focus(); await p.keyboard.press("Enter");
+    await p.locator("#modal.show .cfg").waitFor();
+    await p.locator("#modal.show .modal-actions button").focus(); await p.keyboard.press("Enter");
+    await p.screenshot({ path: path.join(dir, "ds-pinch-2x.png") });
+    await cdp.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
+    await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { top: 24, bottom: 20, left: 0, right: 0 } });
+    await p.setViewportSize({ width: 320, height: 480 });
+    const safe = await geometry();
+    assert.equal(safe.layout, "stacked"); assert.equal(safe.vy, 32);
+    assert.equal(safe.cy + safe.ch, 452, "bottom safe area was ignored");
+    await button(p, "title-new").tap(); await button(p, "cancel-new").tap();
+    await p.setViewportSize({ width: 844, height: 390 });
+    assert.equal((await geometry()).layout, "side");
+    await button(p, "title-config").tap(); await p.locator("#modal.show .cfg").waitFor();
+    await p.locator("#modal.show .modal-actions button").tap();
+    await p.setViewportSize({ width: 390, height: 844 });
+    assert.equal((await geometry()).layout, "stacked");
+    assert.deepEqual(await snapshot(p), before, "pinch/rotation changed save data");
   });
   await check("new-game-enters-game-layout", sizes.pc, async p => {
     await layout(p, "ds"); await button(p, "title-new").click();

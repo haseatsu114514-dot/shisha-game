@@ -11,6 +11,8 @@ const { state, newGame, setState } = await import("../js/core/state.js");
 const { MAKER_SPECS, makerOfFlavor, makerMixProfile, compareEquipment, flavorThermalGuide } = await import("../js/craft/temperature-model.js");
 const { coalWarmth } = await import("../js/craft/coals.js");
 const { flavorFamilyGrams, giftBowlEffect, computeShisha, bonusOf, finalize } = await import("../js/craft/score.js");
+const { skippedFoilResult } = await import("../js/craft/holes_logic.js");
+const { improvementOf } = await import("../js/craft/advice.js");
 const { advanceToChapterTwo } = await import("../js/chapters/ch2-progress.js");
 const { advanceToChapterThree } = await import("../js/chapters/ch3-progress.js");
 const { evaluateMix, isSuyakiBowl } = await import("../js/craft/steps.js");
@@ -370,4 +372,18 @@ for (const chapter of [1, 2, 3, 4, 5]) {
   assert.equal(bonusOf(cup).bonus, 9 + (chapter === 1 ? 5 : 0), "session chapter takes priority");
 }
 console.log("[craft scoring spec] PASS: chapter-scoped preparation, real transitions, legacy LOAD, and independent gift/mastery bonuses");
+
+// #1907: ロートスで穴あけを飛ばした一台は、採点・助言・結果の工程一覧から穴を除く。
+newGame();
+const lotosCup = finalize({
+  ...evenCup(4),
+  holes: skippedFoilResult(),
+  equip: { hms: "lotos_hagal" },
+  heat: { score: 40 },
+});
+assert.equal(lotosCup.foilSkipped, true);
+assert.equal(lotosCup.holes.score, null);
+assert.equal(Object.hasOwn(lotosCup.parts, "holes"), false);
+assert.equal(lotosCup.total, 62.5, "four completed parts share the score when foil is skipped");
+assert.equal(improvementOf(lotosCup), "次の練習：炭の全面が赤くなる頃合いを確かめよう。");
 

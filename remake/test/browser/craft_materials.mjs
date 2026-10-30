@@ -18,6 +18,120 @@ async function setup(page) {
 await suite("craft-materials", async check => {
   for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
     { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, reducedMotion: "reduce" }]]) {
+    await check(`${device}-chapter-five-exact-12g`, async page => {
+      for (const bowl of ["silicone_bowl", "hagal_80beat", "suyaki_hagal"]) {
+        await page.evaluate(async bowl => {
+          const core = await import("./js/core/state.js"), session = await import("./js/craft/session.js");
+          const steps = await import("./js/craft/steps.js"), ui = await import("./js/core/ui.js");
+          const s = core.newGame(); s.chapter = 5;
+          s.owned.push("hagal_80beat", "suyaki_hagal");
+          ui.clearScreen(); session.craftTest.auto = null;
+          window.F = { core, steps, session, cs: session.newSession("tournament") };
+          F.cs.orderFlavorIds = ["double_apple"];
+          session.openBench(F.cs, { steps: [["setup", "機材"], ["mix", "配合"]] });
+          F.beforeStock = JSON.stringify(s.flavorStock);
+          F.running = (async () => { await steps.stepSetup(F.cs); await steps.stepMix(F.cs); })();
+        }, bowl);
+        await click(page, `[data-test="opt-${bowl}"]`, touch);
+        const plus = '[data-test="mix-plus-double_apple"]', minus = '[data-test="mix-minus-double_apple"]';
+        const ok = page.locator('[data-test="mix-ok"]');
+        await ok.waitFor();
+        assert.equal(await page.locator('.flavor-row').count(), 1, "Only the supplied double apple is offered");
+        for (let i = 0; i < 11; i++) await click(page, plus, touch);
+        assert(await ok.isDisabled(), "11g is short");
+        await click(page, plus, touch);
+        assert(!(await ok.isDisabled()), "12g is valid");
+        assert.match(await page.locator('.reg-line').innerText(), /^✓/);
+        const cap = await page.evaluate(async () => (await import("./js/core/data.js")).DB.equipById[F.cs.equip.bowl].capacity);
+        if (cap > 12) {
+          for (let grams = 13; grams <= cap; grams++) {
+            await click(page, plus, touch);
+            assert(await ok.isDisabled(), `${grams}g must not commit`);
+            assert.match(await page.locator('.reg-line').innerText(), /^✗/);
+          }
+          for (let grams = cap; grams > 12; grams--) await click(page, minus, touch);
+        }
+        assert(!(await ok.isDisabled()), "Returning to 12g restores confirmation");
+        await click(page, '[data-test="mix-ok"]', touch);
+        const result = await page.evaluate(async () => {
+          await F.running;
+          return { mix: F.cs.mix, regOk: F.cs.mixInfo.regOk, stock: JSON.stringify(F.core.state.flavorStock), beforeStock: F.beforeStock };
+        });
+        assert.deepEqual(result.mix, { double_apple: 12 }); assert.equal(result.regOk, true);
+        assert.equal(result.stock, result.beforeStock, "The supplied match leaf does not consume private stock");
+      }
+    }, { ...options, reducedMotion: "reduce" });
+    // #1906-2: 評価は毎回更新するが、NG理由は確定後に1件だけ表示する。
+    const ngSetup = async (page, ids, golden = false) => {
+      await page.evaluate(async ({ ids, golden }) => {
+        const core = await import("./js/core/state.js"), session = await import("./js/craft/session.js");
+        const steps = await import("./js/craft/steps.js"), ui = await import("./js/core/ui.js");
+        const { DB } = await import("./js/core/data.js");
+        core.newGame();
+        if (golden) DB.recipes = [...DB.recipes, { id: "test_ng_golden", name: "NG併存fixture", flavors: ["mint", "vanilla"], golden: { mint: 1, vanilla: 1 } }];
+        const cs = session.newSession("drill");
+        cs.equip.bowl = "suyaki_tsumugi"; cs.orderFlavorIds = ids;
+        await session.openBench(cs).ready;
+        ui.layers.toasts.replaceChildren();
+        window.NG?.observer?.disconnect();
+        const seen = [];
+        const observer = new MutationObserver(records => {
+          for (const r of records) for (const n of r.addedNodes) if (n.matches?.(".toast")) seen.push(n.textContent);
+        });
+        observer.observe(ui.layers.toasts, { childList: true });
+        window.NG = { core, cs, seen, observer, reasons: DB.ngMixes.map(ng => ng.text), run: steps.stepMix(cs).then(() => "done", e => e.name) };
+      }, { ids, golden });
+      await page.locator(`[data-test="mix-plus-${ids[0]}"]`).waitFor();
+    };
+    const changeGrams = async (page, id, grams) => {
+      for (let i = 0; i < Math.abs(grams); i++) await click(page, `[data-test="mix-${grams > 0 ? "plus" : "minus"}-${id}"]`, touch);
+    };
+    const ngNotices = page => page.evaluate(() => NG.seen.filter(text => NG.reasons.includes(text)));
+    await check(`${device}-ng-family-confirmation`, async page => {
+      for (const [mix, expected, golden] of [
+        [{ mint: 6, vanilla: 6 }, 1, false],
+        [{ dobaj_mint: 6, vanilla: 6 }, 1, false],
+        [{ mint: 2, dobaj_mint: 2, absal_mint: 2, vanilla: 6, coconut: 6 }, 3, false],
+        [{ dobaj_mint: 6, vanilla: 6 }, 1, true],
+      ]) {
+        await ngSetup(page, Object.keys(mix), golden);
+        for (const [id, g] of Object.entries(mix)) await changeGrams(page, id, g);
+        assert.deepEqual(await ngNotices(page), [], "Changing grams must not reveal NG reasons");
+        assert.equal(await page.evaluate(() => NG.cs.mixInfo), null);
+        await click(page, '[data-test="mix-ok"]', touch);
+        assert.equal(await page.evaluate(() => NG.run), "done");
+        const info = await page.evaluate(() => NG.cs.mixInfo);
+        assert.equal(info.ngReasons.length, expected, "All matching NG penalties remain in the evaluation");
+        assert.deepEqual(await ngNotices(page), [info.ngReasons[0]], "Show only the first existing reason, not recipe/balance notes");
+        assert.equal(await page.locator("#toasts .toast").filter({ hasText: info.ngReasons[0] }).count(), 1);
+        if (golden) {
+          assert.equal(info.golden, "hit");
+          assert(await page.locator("#toasts .toast").filter({ hasText: "黄金比！" }).isVisible(), "Golden and NG notices coexist");
+        }
+      }
+    }, { ...options, reducedMotion: "reduce" });
+    await check(`${device}-ng-withdraw-and-cancel`, async page => {
+      await ngSetup(page, ["dobaj_mint", "vanilla", "lemon"]);
+      await changeGrams(page, "dobaj_mint", 6); await changeGrams(page, "vanilla", 6);
+      await changeGrams(page, "vanilla", -6); await changeGrams(page, "lemon", 6);
+      assert.deepEqual(await ngNotices(page), []);
+      await click(page, '[data-test="mix-ok"]', touch);
+      assert.equal(await page.evaluate(() => NG.run), "done");
+      assert.deepEqual(await page.evaluate(() => NG.cs.mixInfo.ngReasons), [], "A removed NG mix must not leave a stale reason");
+      assert.deepEqual(await ngNotices(page), []);
+
+      await ngSetup(page, ["dobaj_mint", "vanilla"]);
+      await changeGrams(page, "dobaj_mint", 6); await changeGrams(page, "vanilla", 6);
+      const before = await storageSnapshot(page);
+      await page.evaluate(() => { NG.core.newGame(); NG.afterLoad = JSON.stringify(NG.core.state); });
+      // Load/new game invalidates this pending step; a late confirmation cannot report its old NG.
+      await click(page, '[data-test="mix-ok"]', touch);
+      assert.equal(await page.evaluate(() => NG.run), "AbortError");
+      assert.deepEqual(await ngNotices(page), []);
+      assert.equal(await page.evaluate(() => JSON.stringify(NG.core.state)), await page.evaluate(() => NG.afterLoad));
+      assert.deepEqual(await storageSnapshot(page), before);
+      assert.equal(await page.evaluate(() => NG.cs.mixInfo), null);
+    }, { ...options, reducedMotion: "reduce" });
     await check(`${device}-packing`, async page => {
       await setup(page);
       for (const bowl of ["silicone_bowl", "hagal_80beat", "suyaki_tsumugi"]) {
@@ -56,6 +170,7 @@ await suite("craft-materials", async check => {
         const raf = requestAnimationFrame.bind(window); window.requestAnimationFrame = callback => raf(() => callback(F.clock));
         F.running = F.holes.runHoles(F.cs);
       });
+      await click(page, '.bench-demo-skip', touch);
       await click(page, '[data-test="hole-template-outer12-middle12"]', touch);
       assert.equal(await page.locator('.ht-option').count(), 1);
       assert.equal(await page.locator(".ht-preview .foil-hole").count(), 0, "Template already has punched holes");
@@ -128,8 +243,10 @@ await suite("craft-materials", async check => {
       await page.locator('[data-test="pack-confirm"]').waitFor();
       await click(page, '[data-test="opt-fluffy"]', touch);
       await click(page, '[data-test="pack-confirm"]', touch);
+      await click(page, '.bench-demo-skip', touch);
       await page.locator('[data-test="hole-start"]').waitFor();
       await page.locator('[data-preview-step="holes"]').click();
+      await click(page, '.bench-demo-skip', touch);
       await page.locator('[data-test="hole-start"]').waitFor();
       assert.equal(await page.locator(".foil-cursor").count(), 0);
       await page.locator('[data-preview-step="pack"]').click();

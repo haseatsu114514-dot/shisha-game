@@ -71,7 +71,7 @@ function defer(cs, fn, delay) {
   timers.add(timer);
 }
 
-/** 章別の文面節（broadcast.json の chapter1/2/3）。無い章は null */
+/** 章別の文面節（broadcast.json の chapter1〜5）。無い章は null */
 const chapterSection = (cs) => DB.broadcast?.[`chapter${cs?.chapter}`] || null;
 
 /** 反応プールは共通分へ章別の追加分をマージする（章の空気だけ少し変える） */
