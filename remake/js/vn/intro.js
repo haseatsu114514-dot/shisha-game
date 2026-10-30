@@ -58,7 +58,7 @@ function framePortrait(img, p) {
 export async function playIntro(id, { onAppear = null, override = {}, variant = "" } = {}) {
   const intro = { ...introOf(id, variant), ...override };
   if (!introOf(id, variant)) return;
-  markMet(id);
+  if (variant !== "unknown") markMet(id);
   markIntroSeen(id, variant);
   const main = intro.display_name || introName(id).main;
   const p = portraitInfo(id, intro.face || "normal");
