@@ -180,7 +180,7 @@ try {
     const geometry = [];
     for (const [width, height] of (touch ? [[844, 390], [667, 375]] : [[1280, 720], [1920, 1080]])) {
       await page.setViewportSize({ width, height });
-      await mount({ soundEffects: false }); await page.clock.runFor(700);
+      await mount({ context: { lossOrdinal: 2 }, soundEffects: false }); await page.clock.runFor(700);
       await page.locator(".gameover img").evaluateAll(imgs => Promise.all(imgs.map(i => i.decode())));
       const face = await page.evaluate(async () => {
         for (const el of __go.querySelectorAll(".go-left,.go-sumi-img"))

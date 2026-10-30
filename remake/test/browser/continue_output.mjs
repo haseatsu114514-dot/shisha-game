@@ -72,7 +72,7 @@ try {
       const modal = document.createElement("div"); modal.id = "modal"; modal.textContent = "MENU";
       document.querySelector("#stage").append(modal);
       const { buildGameOver } = await import("./js/chapters/gameover.js");
-      window.__go = buildGameOver({ variant: 0, onTitle: () => __calls.push("title") });
+      window.__go = buildGameOver({ variant: 0, context: { lossOrdinal: 2 }, onTitle: () => __calls.push("title") });
       document.querySelector("#screen").replaceChildren(__go);
       await Promise.race([recording, new Promise((_, reject) =>
         setTimeout(() => reject(new Error("Native MediaRecorder did not start within 5s")), 5000))]);

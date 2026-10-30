@@ -88,7 +88,7 @@ const DECISION_SECONDS = 20;
 
 let nextScript = 0;
 let previousContinueSpeaker = null;
-// 選択は20秒まで。字幕送りはカウントを早めず、期限後はGAME OVERからタイトルへ戻る。
+// 初回はカウント演出だけを見せ、選択期限を設けない。再挑戦以降は20秒で終了する。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
   soundEffects = true, reducedMotion = false, layout = "neon", background = "stage", context = null } = {}) {
   const standard = SUMI_CONTINUE_SCRIPTS[Number.isInteger(variant) && variant >= 0
@@ -100,6 +100,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   const detail = normalizeContinueContext(context || { reason, rank });
   const script = prepareContinueScript(baseScript, detail);
   const repeated = detail.lossOrdinal >= 2;
+  const timed = repeated;
   const speaker = script.speaker || "sumi";
   if (variant == null) previousContinueSpeaker = speaker;
   const audio = createContinueAudio({ enabled: soundEffects });
@@ -113,6 +114,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   root.continueVariant = speaker === "sumi" ? SUMI_CONTINUE_SCRIPTS.indexOf(baseScript) : `premium:${speaker}`;
   root.dataset.reason = detail.reason;
   root.dataset.lossOrdinal = String(detail.lossOrdinal);
+  root.dataset.timeLimit = timed ? "20" : "none";
   root.dataset.skipEntry = String(detail.lossOrdinal >= 3);
   const motion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
   let reduce = reducedMotion || !!motion?.matches;
@@ -213,19 +215,20 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     }
     revealCaption(elapsed);
     const remaining = Math.max(0, Math.ceil(DECISION_SECONDS - countAt));
-    view.setCount(remaining, countAt / DECISION_SECONDS);
-    root.classList.toggle("go-urgent", remaining > 0 && remaining <= 5);
-    root.classList.toggle("go-done", remaining === 0);
+    view.setCount(!timed && remaining === 0 ? "∞" : remaining, countAt / DECISION_SECONDS);
+    root.classList.toggle("go-urgent", timed && remaining > 0 && remaining <= 5);
+    root.classList.toggle("go-done", timed && remaining === 0);
     soundCount(remaining); // 字幕送りのsound=falseでも、期限時計の境界は同じ。
     view.next.disabled = view.dialogue.disabled = index === script.cues.length - 1 && view.isRevealed();
-    if (remaining === 0) expire();
+    if (timed && remaining === 0) expire();
   }
   function soundCount(remaining) {
     if (counted.has(remaining)) return;
     counted.add(remaining);
-    if (remaining === 5) view.announceTime("残り5秒です");
+    if (!timed && remaining === 0) view.announceTime("初回は時間制限がありません。いつでも選べます。");
+    else if (remaining === 5 && timed) view.announceTime("残り5秒です");
     if (remaining > 5) audio.tick();
-    else audio.count(remaining);
+    else if (timed) audio.count(remaining);
   }
   function armBoundary() {
     clearTimeout(boundary);
@@ -237,12 +240,12 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   function armDeadline() {
     clearTimeout(deadline);
     if (active && started && !choice && !pauseReasons.size) {
-      deadline = window.setTimeout(expire, Math.max(0, DECISION_SECONDS * 1000 - (performance.now() - start)));
+      if (timed) deadline = window.setTimeout(expire, Math.max(0, DECISION_SECONDS * 1000 - (performance.now() - start)));
       armBoundary();
     }
   }
   function expire() {
-    if (!available() || !started || choice) return;
+    if (!timed || !available() || !started || choice) return;
     if (performance.now() - start < DECISION_SECONDS * 1000) return armDeadline();
     choice = "timeout";
     clearTimeout(entry); clearTimeout(deadline); clearTimeout(boundary); clearInterval(ticker);
@@ -331,7 +334,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     if (!available() || choice) return;
     if (!started) begin();
     if (!started) return;
-    if (performance.now() - start >= DECISION_SECONDS * 1000) return expire();
+    if (timed && performance.now() - start >= DECISION_SECONDS * 1000) return expire();
     choice = value; // どちらのボタンも、この時点で分岐を確定して二重発火を止める。
     clearTimeout(entry); clearTimeout(deadline); clearTimeout(boundary); clearInterval(ticker);
     root.dataset.phase = "reaction";
@@ -360,7 +363,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     observer.disconnect();
     observer.observe(root.parentNode, { childList: true });
     audio.start();
-    view.announceTime("20秒以内に選択。時間切れでタイトルへ戻ります。");
+    view.announceTime(timed ? "20秒以内に選択。時間切れでタイトルへ戻ります。" : "初回は時間制限がありません。カウント後も選べます。");
     sync(0, false);
     entry = window.setTimeout(() => { if (available() && !choice) audio.title(); }, 400);
     ticker = window.setInterval(tick, 70);
@@ -396,7 +399,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     if (!available() || choice) return;
     if (!started) begin();
     if (!started) return;
-    if (performance.now() - start >= DECISION_SECONDS * 1000) return expire();
+    if (timed && performance.now() - start >= DECISION_SECONDS * 1000) return expire();
     if (!view.isRevealed()) { currentInstant = true; view.reveal(); return; }
     const elapsed = (performance.now() - speechStart) / 1000;
     const at = script.cues.find(c => c.at > elapsed + .05)?.at ?? script.duration;

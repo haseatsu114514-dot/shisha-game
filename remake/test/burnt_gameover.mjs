@@ -29,7 +29,7 @@ async function open() {
   return page;
 }
 try {
-  // 実画面も20秒でGAME OVERを表示し、location.reload後にタイトルへ戻る。
+  // 初回の実画面ではカウント後も選択可能で、諦めたらタイトルへ戻る。
   let page = await open();
   await page.clock.install();
   // 兄弟スイート（continue_keyboard 等）と同じく時計を止める。performance.now は
@@ -39,12 +39,12 @@ try {
   await page.clock.runFor(1000);
   assert.equal(await page.locator('.go-title').textContent(), 'コンティニューする？');
   await page.clock.runFor(19050);
-  assert.equal(await page.locator('.gameover').getAttribute('data-phase'), 'gameover');
-  assert.equal(await page.locator('.go-title').textContent(), 'GAME OVER');
-  assert.equal(await page.locator('.go-count').textContent(), '0');
-  await page.clock.runFor(1900);
+  assert.equal(await page.locator('.gameover').getAttribute('data-phase'), 'speaking');
+  assert.equal(await page.locator('.go-count').textContent(), '∞');
+  await page.locator('[data-test="game-over-title"]').click();
+  await page.clock.runFor(3000);
   await page.waitForSelector('[data-test="title-new"]');
-  console.log('PASS: real continue screen → 20 seconds → GAME OVER → title');
+  console.log('PASS: first continue screen → no timeout → voluntary quit → title');
   await page.close();
 
   // 大会: 焦がした時点で審査へ進まずGAME OVER。再挑戦で大会の頭に戻る。
