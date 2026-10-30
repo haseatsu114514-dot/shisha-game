@@ -17,7 +17,7 @@ for (const data of [bytes, copy]) {
 }
 assert.deepEqual(Object.entries(FACILITY_ICONS).map(([id, { label }]) => [id, label]),
   [['rojiura_cinema', '路地裏シネマ'], ['kannondo', '観音堂'], ['home', '自宅'], ['kohaku', '喫茶こはく'], ['axe_bar', '斧投げBar'],
-    ['choizap', 'チョイザップ'], ['fortune', '路上占い'], ['trpg_bar', 'ボドゲカフェ']]);
+    ['choizap', 'CHOI-ZAP'], ['fortune', '路上占い'], ['trpg_bar', 'ボドゲカフェ']]);
 for (const id of ['kannon', 'rest', 'cafe', 'rojiura_cinema', 'axe_bar', 'choizap', 'fortune', 'trpg_bar']) assert(hasFacilityIcon(id));
 for (const id of ['tonari', 'naru', 'adam', 'minto', 'shop', 'c_station', '__proto__']) assert(!hasFacilityIcon(id), 'Store logos must keep their own role');
 // Inspect source alpha independently of layout math; a mistaken equal-third crop fails here.

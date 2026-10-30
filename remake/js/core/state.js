@@ -79,6 +79,7 @@ export function newState() {
     reel: {
       seed: (Math.random() * 0x100000000) >>> 0,
       count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0,
+      recent: [],              // 直近30回転の当たり記録（1=ペカ）。最近の不調の補いに使う（#1281）。旧セーブは空から数える
       pending: [],             // 演出待ちの結果（報酬は確定・適用済み）
       installed: false,        // C.STATIONの初回来場・参加登録で導入
       introDone: false,

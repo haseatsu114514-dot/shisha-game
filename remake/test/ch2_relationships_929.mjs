@@ -134,5 +134,11 @@ assert.equal(scoutRecognition?.next_true, "seen_in_ch2");
 assert.equal(scoutRecognition?.next_false, "unseen");
 assert(meet.branches.unseen.length);
 assert.match(meet.branches.seen_in_ch2.map((l) => l.text).join("\n"), /偵察[\s\S]*軍/, "第3章で、軍で覚えた偵察だと分かる");
+// #1735: 新規ルートはDAY2の配達で必ず先に会う。配達済みでも、第2章で見た保存は偵察を回収する
+const knownRecognition = meet.lines.find((l) => l.flag === "_ch3_delivery_volk" && l.next_true === "delivery_known_recognition");
+const knownScout = meet.branches[knownRecognition.next_true].find((l) => l.flag === "_ch2_scout_seen");
+assert(knownScout, "配達済みでも第2章の目撃で分ける");
+assert.match(meet.branches[knownScout.next_true].map((l) => l.text).join("\n"), /配達の時は気づかなかった[\s\S]*偵察[\s\S]*軍/);
+assert.doesNotMatch(meet.branches[knownScout.next_false].map((l) => l.text).join("\n"), /この辺の店を回って/, "配達で話していない情報を前提にしない");
 
 console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights, Ageha\'s last inner voice, anonymous scout");
