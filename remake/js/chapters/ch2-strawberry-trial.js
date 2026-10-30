@@ -37,9 +37,9 @@ export async function runStrawberryTrial({ bg, isCurrent = null } = {}) {
   const cs = await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === owner && (!isCurrent || isCurrent()) });
   const result = strawberryTrialResult(cs);
   await play(`ch2_strawberry_trial_${result}`, { bg });
-  if (state !== owner) return result;
+  if (state !== owner) return { result, masteryGained: false };
   // 苺を入れ忘れた時は、次のまかないでもう一度試せる。
   if (result !== "no_berry") owner.flags._ch2_strawberry_trial = result;
   save();
-  return result;
+  return { result, masteryGained: cs.masteryGained };
 }
