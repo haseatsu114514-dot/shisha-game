@@ -2,6 +2,60 @@ import assert from "node:assert/strict";
 import { suite, baseURL, storageSnapshot } from "./support.mjs";
 
 await suite("conversation-ui", async check => {
+  await check("keyboard-controls", async page => {
+    await page.locator(".vn-next.show").waitFor();
+    const saved = await storageSnapshot(page);
+    const text = await page.locator(".vn-text").textContent();
+    for (const key of ["Enter", "Space"]) {
+      const log = page.locator('[data-test="vn-log"]');
+      await log.focus(); await page.keyboard.press(key);
+      await page.locator(".vn-log.show").waitFor();
+      assert.equal(await page.locator(".vn-text").textContent(), text, `${key} opens LOG without advancing dialogue`);
+      await page.locator(".vn-log button").press(key);
+      await page.locator(".vn-log.show").waitFor({ state: "hidden" });
+      for (const control of ["vn-glossary", "vn-config"]) {
+        await page.locator(`[data-test="${control}"]`).focus();
+        await page.keyboard.press(key);
+        await page.locator("#modal.show").waitFor();
+        assert.equal(await page.locator(".vn-text").textContent(), text, `${key} opens ${control} without advancing`);
+        await page.locator("#modal .modal-actions button").last().press(key);
+        await page.locator("#modal.show").waitFor({ state: "hidden" });
+      }
+      const auto = page.locator('[data-test="vn-auto"]');
+      await auto.focus(); await page.keyboard.press(key);
+      assert.equal(await auto.getAttribute("aria-pressed"), "true");
+      await page.keyboard.press(key);
+      assert.equal(await auto.getAttribute("aria-pressed"), "false");
+      assert.equal(await page.locator(".vn-text").textContent(), text, "AUTO activation does not consume a dialogue line");
+    }
+    // Native form controls also keep their own activation semantics during a conversation.
+    await page.locator("#preview-scene").focus();
+    await page.keyboard.press("Space"); await page.keyboard.press("Escape");
+    assert.equal(await page.locator(".vn-text").textContent(), text);
+    // Unfocused Enter/Space still advance normally.
+    await page.locator("#preview-scene").evaluate(el => el.blur());
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(old => document.querySelector(".vn-text").textContent !== old, text);
+    await page.locator(".vn-next.show").waitFor();
+    const second = await page.locator(".vn-text").textContent();
+    await page.keyboard.press("Space");
+    await page.waitForFunction(old => document.querySelector(".vn-text").textContent !== old, second);
+    for (const key of ["Enter", "Space"]) {
+      await page.selectOption("#preview-scene", "choices");
+      const skip = page.locator('[data-test="vn-skip"]');
+      await skip.focus(); await page.keyboard.press(key);
+      assert.equal(await skip.getAttribute("aria-pressed"), "true");
+      await page.locator('[data-test="choice-0"]').waitFor();
+      await skip.focus(); await page.keyboard.press(key);
+      assert.equal(await skip.getAttribute("aria-pressed"), "false");
+      await page.locator('[data-test="choice-0"]').press(key);
+      await page.locator('[data-test="choice-0"]').waitFor({ state: "hidden" });
+      await page.locator(".vn-next.show").waitFor();
+      await page.keyboard.press(key);
+      await page.waitForFunction(() => document.querySelector("#preview-status").textContent.includes("会話終了"));
+    }
+    assert.deepEqual(await storageSnapshot(page), saved, "Keyboard controls must not change saved games/config");
+  });
   for (const [label, viewport] of [["desktop", { width: 1280, height: 768 }], ["landscape", { width: 844, height: 438 }]]) {
     await check(label, async page => {
       await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "……また見つかっちゃった");
