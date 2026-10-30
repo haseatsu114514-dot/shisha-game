@@ -79,7 +79,11 @@ function buildNodes() {
   // 授業の小道: 授業のマスにつながる能力のマスは、その人に会うまで盤に出さない（2026-10-30 オーナー採用）
   const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
   for (const lesson of nodes.filter((n) => n.kind === "lesson")) {
-    for (const id of lesson.links) if (byId[id]?.kind === "stat") Object.assign(byId[id], { trail: lesson.id });
+    // 授業にしかつながらない能力のマスだけが小道（一周の道の角のように、ほかへも続くマスは小道にしない）
+    for (const id of lesson.links) {
+      const n = byId[id];
+      if (n?.kind === "stat" && n.links.filter((l) => l !== lesson.id).length <= 1 && !n.links.includes(HUB)) Object.assign(n, { trail: lesson.id });
+    }
   }
   return nodes.map(Object.freeze);
 }

@@ -10,7 +10,7 @@ const board = await import("../js/core/growth-board.js");
 const { NODE_BY_ID: N } = board;
 
 // ---------------------------------------------------------------- データ検査（2.9・v3）
-const SHAPE_SIZE = { body: [39, 5], sense: [39, 5], wisdom: [54, 6] }; // [能力のマス（極みを含む）, 関門]
+const SHAPE_SIZE = { body: [23, 4], sense: [22, 2], wisdom: [22, 3] }; // [能力のマス（極みを含む）, 関門]
 for (const k of board.BOARD_KEYS) {
   const layout = board.LAYOUTS[k];
   for (const c of layout.cells) assert(Math.abs(c.x) <= board.GRID.w && Math.abs(c.y) <= board.GRID.h, `${k}: 13×9 に収まる`);
@@ -59,24 +59,22 @@ const RING_ROAD = ["1,0", "1,1", "0,1", "-1,1", "-1,0", "-1,-1", "0,-1", "1,-1"]
 for (const k of board.BOARD_KEYS) for (const key of RING_ROAD) assert.equal(board.LAYOUTS[k].cells.find((c) => c.key === key)?.ring, 1, `${k} ${key}: 一周の道は最初から開く`);
 for (const l of board.LESSONS) {
   const route = board.pathTo(l.id, new Set()).path.filter((id) => id !== l.id);
-  assert.equal(route.length, 3, `${l.id}: 紋から3マス`);
+  assert.equal(route.length, 2, `${l.id}: 紋から2マス（一周の道）`);
   assert(route.every((id) => N[id].kind === "stat"), `${l.id}: 関門なし`);
   assert.equal(N[l.id].ring, 1, `${l.id}: 章では封じない（会った時に現れる）`);
-  const own = route.at(-1);
-  assert.equal(N[own].trail, l.id, `${l.id}: 小道のマス`);
   // ほかの授業を全部取った後でも、この授業までの残りは同じ（どの順に仲良くしても遠くならない）
   const others = new Set(board.LESSONS.filter((x) => x.id !== l.id && x.board === l.board).flatMap((x) => board.pathTo(x.id, new Set()).path));
-  assert(board.pathTo(l.id, others).cost <= 3, `${l.id}: 先に進んだ道で遠くならない`);
+  assert(board.pathTo(l.id, others).cost <= 2, `${l.id}: 先に進んだ道で遠くならない`);
 }
 
 // 各スキル・授業は、データの章（届けたい章）までに開く
 for (const item of [...board.SKILLS, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
 assert.equal(board.SKILLS.length, 17);
-assert.equal(board.SKILLS.reduce((n, s) => n + s.cost, 0), 119, "スキルの火種 119（5・7・10）");
-assert.equal(board.BOARD_TOTAL_COST, 267, "盤の全部で約270（SPEC 1.6a）");
+assert.equal(board.SKILLS.reduce((n, s) => n + s.cost, 0), 49, "スキルの火種 49（2・3・4）");
+assert.equal(board.BOARD_TOTAL_COST, 125, "盤の全部で約125（1レベル1つ・1周目で約7割。SPEC 1.6a）");
 assert.equal(board.BOARD_TOTAL_COST, growth.BOARD_TOTAL, "盤の全部と火種の上限が同じ");
 const cumulative = [1, 2, 3, 4, 5].map((r) => board.NODES.filter((n) => n.ring <= r).reduce((a, n) => a + n.cost, 0));
-const received = [37, 76, 115, 154, 182]; // 中央の遊び方で章末までに受け取る火種（1.6。SBD54 で Lv.50 まで3つ）
+const received = [15, 30, 45, 60, 84]; // 中央の遊び方で章末までに受け取る火種（1.6。1レベル1つ）
 cumulative.forEach((c, i) => assert(c > received[i], `第${i + 1}章: 開く範囲（${c}）が受け取る火種（${received[i]}）より多い`));
 for (let i = 1; i < 5; i++) assert(cumulative[i] > cumulative[i - 1], `第${i + 1}章で新しい範囲が開く`);
 assert(board.LESSONS.every((l) => N[l.id].cost === 0), "授業は火種いらず");
@@ -113,15 +111,15 @@ assert.deepEqual(v.pending, [], "つながっていない仮置きは外れる")
 v = board.replay(g, [B, B2, S, W]);
 assert.equal(v.pending.length, 3, "火種3で3マスまで");
 
-// 段: 能力のマス約5つで1段（3.1。才能盤は39マスで10段）
+// 段: 能力のマス約2〜3つで1段（3.1。才能盤は23マスで10段。1レベル1つの小さな盤）
 assert.equal(board.stepOf("body", new Set()), 1);
-const five = new Set(["B1", "B2", "B3", "B4", "B5"]);
-assert.equal(board.statCount("body", five), 5);
-assert.equal(board.stepOf("body", five), 2, "5マスで2段");
-assert.equal(board.stepOf("body", new Set(["B1", "B2", "B3", "B4"])), 1, "4マスではまだ1段");
-assert.equal(board.squaresToNextStep("body", new Set(["B1", "B2", "B3", "B4"])), 1);
+const five = new Set(["B1", "B2", "B3"]);
+assert.equal(board.statCount("body", five), 3);
+assert.equal(board.stepOf("body", five), 2, "3マスで2段");
+assert.equal(board.stepOf("body", new Set(["B1", "B2"])), 1, "2マスではまだ1段");
+assert.equal(board.squaresToNextStep("body", new Set(["B1", "B2"])), 1);
 assert.equal(board.stepOf("body", new Set(board.boardNodes("body").filter((n) => n.kind === "stat").map((n) => n.id))), 10);
-assert.equal(board.statRatio("body", five), 5 / board.STAT_SQUARES.body);
+assert.equal(board.statRatio("body", five), 3 / board.STAT_SQUARES.body);
 for (const k of board.BOARD_KEYS) {
   const all = board.boardNodes(k).filter((n) => n.kind === "stat").map((n) => n.id);
   for (let n = 0; n <= all.length; n++) {
@@ -131,13 +129,13 @@ for (const k of board.BOARD_KEYS) {
 }
 
 // 払い方: その盤の色の火種を先に、足りない分を万能で（1.9）
-assert.deepEqual(board.paymentFor(N.K03, { any: 4, body: 1 }), { any: 4, body: 1 }, "万能を先に、足りない分を色で");
-assert.deepEqual(board.paymentFor(N.K03, { any: 9, body: 9 }), { any: 5 }, "万能が足りれば色は使わない");
+assert.deepEqual(board.paymentFor(N.K03, { any: 1, body: 1 }), { any: 1, body: 1 }, "万能を先に、足りない分を色で");
+assert.deepEqual(board.paymentFor(N.K03, { any: 9, body: 9 }), { any: 2 }, "万能が足りれば色は使わない");
 assert.equal(board.paymentFor(N.K03, { any: 1, sense: 9 }), null, "ほかの色は使えない");
 assert.deepEqual(board.paymentFor(N["M-S1"], {}), {}, "授業は火種いらず");
 // 色の予約: まだ越えていない関門の数ぶんの色は、普通のマスに使わない（#1801 引継ぎ B）
-assert.equal(board.paymentFor(N.K03, { any: 3, body: 2 }, { reserve: 1 }), null, "色2のうち1は関門用に残すので、万能3＋色1では5に足りない");
-assert.deepEqual(board.paymentFor(N.K03, { any: 3, body: 2 }, { reserve: 0 }), { any: 3, body: 2 });
+assert.equal(board.paymentFor(N.K03, { any: 0, body: 2 }, { reserve: 1 }), null, "色2のうち1は関門用に残すので、色1では2に足りない");
+assert.deepEqual(board.paymentFor(N.K03, { any: 0, body: 2 }, { reserve: 0 }), { body: 2 });
 assert.equal(board.paymentFor(N.B1, { any: 0, body: 1, sense: 1 }, { reserve: 2 }), null, "色は全部関門の予約");
 // 関門: 色つきの火種でだけ越える。その盤の色が先、無ければほかの色（SBD53）
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9, body: 1, sense: 1 }), { body: 1 });
@@ -237,13 +235,12 @@ core.state.affinity.adam = 0;
   Object.assign(g, keep);
 }
 
-// 小道はその人に会うまで盤に出ない（シェイクは正体が明かされてから）
+// 授業はその人に会うまで盤に出ない（シェイクは正体が明かされてから）
 {
   const gg = growth.ensureGrowth();
-  const trailOf = (id) => board.NODES.find((n) => n.trail === id);
   assert.equal(board.lessonShown(N["M-B2"], gg), false, "まだ会っていない零の授業は出ない");
-  assert.equal(board.lessonShown(trailOf("M-B2"), gg), false, "小道のマスも出ない");
-  assert.equal(board.nodeStatus(trailOf("M-B2"), gg, board.replay(gg, [])), "hidden");
+  assert.equal(board.nodeStatus(N["M-B2"], gg, board.replay(gg, [])), "hidden");
+  assert.equal(board.NODES.filter((n) => n.trail).length, 0, "授業は一周の道の角の隣（小道のマスは無い）");
   assert.equal(board.lessonShown(N["M-S1"], gg), true, "スミさんは最初から");
   core.state.affinity.rei = 1;
   assert.equal(board.lessonShown(N["M-B2"], gg), true, "会うと現れる");
@@ -329,4 +326,4 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v3 shapes per board (cross/pinwheel/tree), gates by colored hidane, 20 lessons (consult to learn, LIME when you can't meet), lesson trails from the ring road (3 squares each, shown when you meet the person), chapter reach + gate-free ch1 skills, 267 total, connect rules, replay, color-first payment, steps ~5 squares, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v3 shapes per board (cross/pinwheel/tree), gates by colored hidane, 20 lessons (consult to learn, LIME when you can't meet), lessons next to the ring road (2 squares each, shown when you meet the person), chapter reach + gate-free ch1 skills, 125 total, connect rules, replay, color-first payment, steps ~2-3 squares, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");

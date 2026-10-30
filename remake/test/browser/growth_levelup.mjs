@@ -80,7 +80,7 @@ await suite("growth-levelup", async (check) => {
       assert.equal(await page.locator(t("board-light")).count(), 0);
       await tap(t("board-close"));
       await page.locator(t("growth-board")).waitFor({ state: "detached" });
-      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 3); // Lv.50 まではレベル1つで火種3つ（SBD54）
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 1); // レベル1つで火種1つ（SBD58）
       assert.equal(await page.evaluate(() => window.entryStatus), 0);
       await tap(t("pin-kannon")); await tap(t("map-go"));
       await tap(t("kannon-reflect"));
@@ -90,7 +90,7 @@ await suite("growth-levelup", async (check) => {
         await page.waitForTimeout(150);
       }
       await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
-      for (let i = 0; i < 3; i++) { // 火種3つを使い切る
+      for (let i = 0; i < 1; i++) { // 火種1つを使い切る
         await tap('.gb-node[data-status="available"]');
         await tap(t("board-light"));
       }
@@ -152,7 +152,7 @@ await suite("growth-levelup", async (check) => {
       await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
       const text = await panel.innerText();
       assert.match(text, /Lv\.1 → Lv\.3/);
-      assert.match(text, /火種 ＋6/, "Lv.50 まではレベル1つで火種3つ");
+      assert.match(text, /火種 ＋2/, "レベル1つで火種1つ");
       assert.doesNotMatch(text, /？？？/, "名乗っていない相手の名前は出さない");
       await assertFits(page, '[data-test="levelup-ok"]');
       await page.waitForTimeout(400);
@@ -162,7 +162,7 @@ await suite("growth-levelup", async (check) => {
       await panel.waitFor({ state: "detached" });
       const badge = page.locator(t("hud-hidane"));
       await badge.waitFor();
-      assert.equal(await badge.innerText(), "6");
+      assert.equal(await badge.innerText(), "2");
       assert.match(await exp.innerText(), /Lv\.3/);
 
       // ふだんの1レベルは短い帯で、押さなくても消える
@@ -174,13 +174,13 @@ await suite("growth-levelup", async (check) => {
       });
       const band = page.locator(t("levelup-band"));
       await band.waitFor();
-      assert.match(await band.innerText(), /Lv\.3 → 4[\s\S]*火種 ＋3/);
+      assert.match(await band.innerText(), /Lv\.3 → 4[\s\S]*火種 ＋1/);
       await page.waitForFunction(() => document.querySelector('[data-test="levelup-band"]')?.classList.contains("show"));
       await page.waitForTimeout(250);
       await page.screenshot({ path: `${out}/growth-levelup-${label}-band.png` });
       await page.waitForFunction(() => window.night?.to === 4, null, { timeout: 5000 });
       await band.waitFor({ state: "detached" });
-      assert.equal(await badge.innerText(), "9");
+      assert.equal(await badge.innerText(), "3");
 
       // 保存・読込で残る
       await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.save(); core.load(); });
@@ -210,7 +210,7 @@ await suite("growth-levelup", async (check) => {
       // 寝る前・メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
       assert.equal(await board.getAttribute("data-mode"), "view");
       assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
-      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*6/, "Lv.1→3 で火種6");
+      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*2/, "Lv.1→3 で火種2");
       const ids = await page.evaluate(async () => {
         const b = await import("./js/core/growth-board.js");
         const first = b.boardNodes("body").find((n) => n.kind === "stat" && n.links.includes(b.HUB)).id;
@@ -235,7 +235,7 @@ await suite("growth-levelup", async (check) => {
       assert.match(await page.locator(t("board-preview")).innerText(), /早寝早起き/, "目標のマスが選ばれた状態で開く");
       await tap(t("board-towards"));
       const pend = await page.locator('[data-status="pending"]').count();
-      assert.ok(pend >= 1 && pend <= 6, `火種6の分だけ道を仮置き（${pend}）`);
+      assert.ok(pend >= 1 && pend <= 2, `火種2の分だけ道を仮置き（${pend}）`);
       await tap(t("board-tab-wisdom"));
       assert.equal(await page.locator(t("board-node-K01")).count(), 1, "札で理論盤へ");
       await assertFits(page, '[data-test="board-decide"], [data-test="board-close"], [data-test="board-tab-body"], [data-test="board-tab-wisdom"]');
@@ -245,7 +245,7 @@ await suite("growth-levelup", async (check) => {
       await board.waitFor({ state: "detached" });
       await page.waitForFunction(() => Array.isArray(window.lit));
       assert.equal(await page.evaluate(() => __remake.state.growth.nodes.length), pend);
-      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 6 - pend);
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 2 - pend);
       await page.locator(".gain-card", { hasText: "能力の火" }).waitFor();
     }, options);
   }
