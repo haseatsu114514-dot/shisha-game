@@ -131,6 +131,10 @@
           "text": "大会の間だけ、会場の一角に出した出張ブース。"
         },
         {
+          "type": "set_flag",
+          "flag": "_met_da_silva"
+        },
+        {
           "speaker": "da_silva",
           "face": "normal",
           "text": "来たな、日本の二人！　まず座れ。暑かっただろ"
@@ -455,6 +459,10 @@
           "text": "はい。客席の息まで、待ってたんですね"
         },
         {
+          "type": "set_flag",
+          "flag": "_met_master_hookah"
+        },
+        {
           "speaker": "master_hookah",
           "face": "normal",
           "text": "観客が息を止めると、煙がよく見える"
@@ -555,6 +563,10 @@
           "speaker": "pakki",
           "face": "smile",
           "text": "そして現王者、シェイク・アル=ガリヤーン！"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_sheikh"
         },
         {
           "speaker": "hajime",
