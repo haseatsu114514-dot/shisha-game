@@ -9,8 +9,8 @@ const ID = "cs_kemuri_sample";
 const SEEN = `_spot_seen_${ID}`;
 const read = (url) => JSON.parse(fs.readFileSync(new URL(url, import.meta.url), "utf8"));
 const dialogues = Object.fromEntries(read("../../data/dialogue/ch1_spots.json").dialogues.map((d) => [d.dialogue_id, d]));
-const faces = new Set(fs.readdirSync(new URL("../../assets/sprites/characters/dr_kemuri/", import.meta.url))
-  .map((f) => /^chr_dr_kemuri_(\w+)\.png$/.exec(f)?.[1]).filter(Boolean));
+// 立ち絵はLFSでCIのquickには無いため、表情の一覧はmanifestを正とする。
+const faces = new Set(read("../data/manifest.json").portraits.dr_kemuri.faces);
 const save = (over = {}) => ({ slot: 0, chapter: 1, met: {}, flags: {}, ...over });
 
 let count = 0;
