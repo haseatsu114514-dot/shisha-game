@@ -380,6 +380,64 @@
       ]
     },
     {
+      "id": "encourage_rin",
+      "sender": "rin",
+      "trigger_condition": "tournament_day",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rin",
+          "text": "おはよ、モルモットくん。今日が本番でしょ"
+        },
+        {
+          "sender": "rin",
+          "text": "会場には行けない。こっちは朝から入荷の検品"
+        },
+        {
+          "sender": "rin",
+          "text": "……いつもの舌で吸って、いつもの手で作りなさい。結果は、あとで2階で聞く"
+        }
+      ]
+    },
+    {
+      "id": "encourage_hiyori",
+      "sender": "hiyori",
+      "trigger_condition": "tournament_day",
+      "trigger_flag": "_hiyori_tonari_return_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "おはよう、はじめくん。……今日、だよね"
+        },
+        {
+          "sender": "hiyori",
+          "text": "わたしは会社だけど、窓の外に向かって応援しておくね。スミさんに教わった手なんだもの、大丈夫"
+        },
+        {
+          "sender": "hiyori",
+          "text": "……終わったら、どんな一台だったか聞かせて"
+        }
+      ]
+    },
+    {
+      "id": "encourage_samechan",
+      "sender": "samechan",
+      "chapter": 1,
+      "trigger_condition": "tournament_day",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "おはようなのじゃ。今日は大会の日じゃな"
+        },
+        {
+          "sender": "samechan",
+          "text": "わしは開店の支度で行けぬが、コロちゃんと店から応援しておるぞ。落ち着いて、お主の一台を作ってくるのじゃ"
+        }
+      ]
+    },
+    {
       "id": "lime_ageha_day3",
       "sender": "ageha",
       "chapter": 2,
