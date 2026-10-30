@@ -129,7 +129,8 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
 
 // ---------------------------------------------------------------- B. state キー分類の網羅
 {
-  const keys = new Set([...Object.keys(newState()), "savedAt"]);
+  // growthは初めて経験値が入る時に作る任意キー。savedAtと同じく初期stateには無い。
+  const keys = new Set([...Object.keys(newState()), "savedAt", "growth"]);
   const ruleKeys = new Set(Object.keys(STATE_KEY_RULES));
   for (const k of keys) assert.ok(ruleKeys.has(k), `STATE_KEY_RULES に無いキー: ${k}`);
   for (const k of ruleKeys) assert.ok(keys.has(k), `STATE_KEY_RULES の余分なキー: ${k}`);

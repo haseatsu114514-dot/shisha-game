@@ -1,5 +1,5 @@
 // 経験値・レベル・火種（心得の盤 第二弾の芯。docs/stat-design/SPEC.md 1章・6.1a・6.3）。
-// 盤の画面ができるまでは GROWTH_BOARD=false の裏に置き、プレイヤーには旧しくみだけが見える。
+// 盤の画面ができるまでは GROWTH_BOARD=false の裏に置く。恋人EXPの保存・獲得表示だけは先行公開。
 // 開発中は URL の ?growth=1（または __remake.dev.growth(true)）でこの端末だけ有効にできる。
 // 有効でも能力の伸び方（旧しくみ）は変えない。経験値・レベル・火種を横で数えるだけ。
 // 第2版（SPEC 2026-10-30）: 能力は3つ（才能・感覚・理論）、火種はレベル1つで2つ、色つきの火種は才・感・理。
@@ -293,9 +293,10 @@ let chip = null;
 let chipTimer = null;
 let holdDepth = 0;
 
-function addToChip(amount, tag) {
+function addToChip(amount, tag, source) {
   if (chip?.owner !== state) chip = { owner: state, total: 0, tags: [] };
   chip.total += amount;
+  if (source === "lover") chip.publicReward = true;
   if (tag && !chip.tags.includes(tag)) chip.tags.push(tag);
   clearTimeout(chipTimer);
   if (!holdDepth) chipTimer = setTimeout(flushChip, MERGE_MS);
@@ -305,7 +306,7 @@ function flushChip() {
   const c = chip;
   chip = null;
   if (!c || c.owner !== state || !(c.total > 0)) return;
-  emit("exp-gain", { total: c.total, tags: c.tags });
+  emit("exp-gain", { total: c.total, tags: c.tags, ...(c.publicReward ? { publicReward: true } : {}) });
 }
 /** 自由行動の間は、行動中に入った分（好感度の段など）を行動の確定まで1枚にまとめる。 */
 export function holdExpChip() {
@@ -325,8 +326,9 @@ export function holdExpChip() {
  * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計と「今日」に足す。
  * レベルはまだ上げない（寝る時に精算する。1.7）。戻り値=入った量。
  */
-export function gainExp(base, { key = null, tag = null, silent = false } = {}) {
-  if (!growthEnabled() || !state || !(base > 0)) return 0;
+export function gainExp(base, { key = null, tag = null, silent = false, source = null } = {}) {
+  // 恋人イベントだけは通常プレイでも貯める。精算・火種・盤の公開条件は変えない。
+  if ((!growthEnabled() && source !== "lover") || !state || !(base > 0)) return 0;
   const g = ensureGrowth();
   const room = totalExpFor(MAX_LEVEL) - g.xp;
   const amount = Math.min(room, Math.round(base * (CHAPTER_MULT[state.chapter] || 1)));
@@ -334,7 +336,7 @@ export function gainExp(base, { key = null, tag = null, silent = false } = {}) {
   g.xp += amount;
   g.today.xp += amount;
   if (key) g.today.learned[key] = (g.today.learned[key] || 0) + amount;
-  if (!silent) addToChip(amount, tag); // silent: 呼び出し側が自分の通知で見せる（スロットの結果カード）
+  if (!silent) addToChip(amount, tag, source); // silent: 呼び出し側が自分の通知で見せる（スロットの結果カード）
   emit("hud");
   return amount;
 }

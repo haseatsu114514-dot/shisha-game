@@ -23,6 +23,7 @@ export const STATE_KEY_RULES = {
   stamina: { verdict: "reset", note: "現在値。最大値は根性から導く（§2.1）" },
   stats: { verdict: "carry", note: "5能力（§2.1）" },
   statXp: { verdict: "carry", note: "能力の端数（§2.1）" },
+  growth: { verdict: "conditional", note: "任意キー。経験値・成長済みの状態は保持、周回の遭遇・初回記録はリセット（stat-design/SPEC 5.3）" },
   statsAtChapterStart: { verdict: "reset", note: "作り直す（§2.1）" },
   flags: { verdict: "conditional", note: "flag ごとの分類に従う（§2.3）" },
   restDay: { verdict: "reset", note: "当日だけの状態" },
@@ -544,6 +545,14 @@ export function buildCarryPackage(s) {
   const data = {};
   data.stats = Object.fromEntries(STAT_KEYS.map((k) => [k, Number.isFinite(s?.stats?.[k]) ? s.stats[k] : 0]));
   data.statXp = clone(s?.statXp ?? {});
+  if (s?.growth && typeof s.growth === "object" && !Array.isArray(s.growth)) {
+    // 恋人EXPの先行保存と既存previewは同じ台帳。切替や周回で精算済みXPを再精算しない。
+    const g = data.growth = clone(s.growth);
+    g.fresh = { chapter: 1, counts: {} };
+    g.firsts = { people: [], places: [] };
+    g.gifted = {};
+    g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [] };
+  }
   data.money = Math.min(MAX_MONEY, Math.max(0, Math.round(Number(s?.money) || 0)));
   data.flavors = clone(s?.flavors ?? []);
   data.flavorStock = clone(s?.flavorStock ?? {});

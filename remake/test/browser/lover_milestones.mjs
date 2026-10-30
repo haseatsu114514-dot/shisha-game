@@ -30,6 +30,26 @@ async function setup(page, restore = false) {
 }
 
 await suite("lover-milestones", async check => {
+  await check("normal-play-exp-notice-without-board", async page => {
+    await setup(page);
+    const result = await page.evaluate(async () => {
+      const growth = await import("./js/core/growth.js"), hud = await import("./js/daily/hud.js"), ui = await import("./js/core/ui.js");
+      growth.setGrowthPreview(false); const s = M.fresh("rin"), before = { ...s.stats };
+      ui.showScreen("map", document.createElement("div")); hud.initHud({}); hud.showHud(true);
+      await M.romance.playLoverMilestone("rin");
+      return { before, after: s.stats, xp: s.growth.xp, level: s.growth.level, hidane: growth.hidaneTotal(),
+        menu: growth.growthMenuItems(), board: await growth.openGrowthBoard(), night: growth.settleGrowth() };
+    });
+    const notice = page.locator(".toast").filter({ hasText: "EXP +25（累計 25）" });
+    await notice.waitFor();
+    assert.deepEqual(result.after, result.before); assert.equal(result.xp, 25);
+    assert.equal(result.level, 1); assert.equal(result.hidane, 0);
+    assert.deepEqual(result.menu, []); assert.equal(result.board, null); assert.equal(result.night, null);
+    assert.equal(await page.locator('[data-test="hud-exp"]').isVisible(), false);
+    assert.equal(await page.locator('[data-test="hud-hidane"]').isVisible(), false);
+    assert.equal(await page.locator(".gain-card.stat").count(), 0);
+  }, { reducedMotion: "reduce" });
+
   await check("milestone-exp-notice", async page => {
     await setup(page);
     await page.evaluate(async () => {
@@ -87,18 +107,18 @@ await suite("lover-milestones", async check => {
     for (const r of result.records) {
       assert.deepEqual(r.after, r.before, `${r.id}: ability changed`);
       assert.deepEqual(r.afterXp, r.xp, `${r.id}: ability progress changed`);
-      assert.equal(r.earned, r.enabled ? (r.id === "hiyori" ? 25 : 125) : 0, `${r.id}: chapter-2 initial reads`);
+      assert.equal(r.earned, r.id === "hiyori" ? 25 : 125, `${r.id}: chapter-2 initial reads (preview=${r.enabled})`);
       assert.equal(r.repeated, r.earned, `${r.id}: replay reward`);
       assert.equal(r.seen, r.id === "hiyori" ? 1 : 5);
     }
     assert.deepEqual(result.gains, []);
   }, { reducedMotion: "reduce" });
 
-  await check("exp-cancel-load-and-legacy", async page => {
+  for (const enabled of [false, true]) await check(`exp-cancel-load-and-legacy-${enabled}`, async page => {
     await setup(page);
-    const result = await page.evaluate(async () => {
+    const result = await page.evaluate(async enabled => {
       const growth = await import("./js/core/growth.js");
-      growth.setGrowthPreview(true);
+      growth.setGrowthPreview(enabled);
       let s = M.fresh("rin");
       const abort = new AbortController();
       M.vn.vnTest.turbo = false;
@@ -121,7 +141,7 @@ await suite("lover-milestones", async check => {
       while (M.vn.isPlaying()) { document.querySelector('[data-test="vn-auto"]')?.click(); await new Promise(r => setTimeout(r, 20)); }
       await old;
       return { cancelled, completed, loaded, legacy, stale: M.core.state.growth?.xp || 0 };
-    });
+    }, enabled);
     assert.equal(result.cancelled.xp, 0); assert.deepEqual(result.cancelled.seen, []);
     assert.equal(result.completed, 25); assert.equal(result.loaded, 25);
     assert.equal(result.legacy, 0); assert.equal(result.stale, 0);
