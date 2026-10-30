@@ -136,9 +136,10 @@ board.commitPending(lessonRun);
 assert.equal(core.state.flags._sumi_attack_learned, true);
 core.state.affinity.adam = 0;
 
-// 能力が伸びる授業は段に「マス3つ分」（statCount）
-assert.equal(board.statCount("sense", new Set(["M-S3"])), 3);
-assert.equal(board.stepOf("sense", new Set(["M-S3"])), 2);
+// 授業はマスとして数えない（2026-10-30 の選定で「能力が伸びるだけ」の授業は無くなった。仕組みは reward: "stat" で残す）
+assert.equal(board.LESSONS.filter((l) => l.reward === "stat").length, 0);
+assert.equal(board.statCount("sense", new Set(["M-S3"])), 0);
+assert.equal(board.LESSONS.find((l) => l.id === "M-S3").name, "安心できる色");
 
 // 第2章で第2章の範囲が開く
 core.state.chapter = 2;
