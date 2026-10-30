@@ -522,6 +522,10 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 @keyframes flash { from { opacity: 0.9; } to { opacity: 0; } }
 
 #stage.shake { animation: shake 0.38s linear; }
+@media (prefers-reduced-motion: reduce) {
+  .flash, #stage.shake { animation: none !important; }
+  .flash { display: none; }
+}
 /* 拡縮の transform と独立した translate プロパティで揺らす */
 @keyframes shake {
   10%, 90% { translate: -2px 1px; }

@@ -291,6 +291,27 @@ export async function openConfig(opts = {}) {
     if (Number(v) === config.textSpeed) o.selected = true;
     return o;
   }));
+  const autoSpeed = el("select", {
+    dataset: { test: "cfg-auto-speed" },
+    onchange: (e) => { config.autoSpeed = Number(e.target.value); persist(); opts.onChange?.("autoSpeed", config.autoSpeed); },
+  }, [["1", "ゆっくり"], ["2", "ふつう"], ["3", "はやい"]].map(([v, t]) => {
+    const o = el("option", { value: v, text: t });
+    if (Number(v) === config.autoSpeed) o.selected = true;
+    return o;
+  }));
+  const skipMode = el("select", {
+    dataset: { test: "cfg-skip-mode" },
+    onchange: (e) => { config.skipSeenOnly = e.target.value === "seen"; persist(); opts.onChange?.("skipSeenOnly", config.skipSeenOnly); },
+  }, [["all", "全スキップ"], ["seen", "既読のみスキップ"]].map(([v, t]) => {
+    const o = el("option", { value: v, text: t });
+    if ((v === "seen") === !!config.skipSeenOnly) o.selected = true;
+    return o;
+  }));
+  const reduceShake = el("input", {
+    type: "checkbox", dataset: { test: "cfg-reduce-shake" },
+    onchange: (e) => { config.reduceShake = e.target.checked; persist(); opts.onChange?.("reduceShake", config.reduceShake); },
+  });
+  reduceShake.checked = !!config.reduceShake;
   const blip = el("input", {
     type: "checkbox",
     dataset: { test: "cfg-voice-blip" },
@@ -315,6 +336,9 @@ export async function openConfig(opts = {}) {
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05, "cfg-bgm-volume")),
       row("効果音 音量", range("seVolume", 0, 1, 0.05, "cfg-se-volume")),
       row("文字の速さ", speed),
+      row("AUTOの速さ", autoSpeed),
+      row("SKIPの範囲", skipMode),
+      row("揺れ・閃光を減らす", reduceShake),
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),
       row("能力の効き目を色で表示", effectColors),
