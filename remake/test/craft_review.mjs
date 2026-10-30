@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { goodPointOf, improvementOf } from "../js/craft/advice.js";
 import { temperatureBands } from "../js/craft/temperature-model.js";
+import { recordedReviewLines } from "../js/craft/recorded-review.js";
 
 const bands = temperatureBands();
 const served = { temp: bands.ideal[0] + .01, pulls: 2, score: 100 };
@@ -42,3 +43,20 @@ console.log("PASS moderate/tied/invalid/incomplete/failed/skipped records and ex
 const sparseCare = [];
 sparseCare[1] = served;
 assert.equal(goodPointOf({ pull: served, careHistory: sparseCare }), "今回よかったこと：2回目の調整で適温に整えられた。", "A missing first adjustment must not count as two successful adjustments");
+
+// 第2・3章の結果は保存された記録だけを使い、読み出しで一台や保存形式を更新しない。
+for (const craft of [null, undefined, {}, { parts: { holes: 0, heat: 0, shisha: 0, care1: 0, care2: 0 } }]) {
+  assert.deepEqual(recordedReviewLines(craft), [], "No review is invented from missing records or initial parts");
+}
+assert.deepEqual(recordedReviewLines({ pull: { temp: served.temp } }), [goodPointOf({ pull: { temp: served.temp } })], "Good point alone is retained");
+assert.deepEqual(recordedReviewLines({ pull: { failed: "cold", temp: .04 } }), ["次に変える一つ：提供は冷え切る前に炭を交換しよう。"], "Improvement alone is retained");
+const completed = { ...moderate, parts: { holes: 72, heat: 81, shisha: 70, care1: 74, care2: 75 } };
+const saved = JSON.stringify(completed);
+assert.deepEqual(recordedReviewLines(completed), [goodPointOf(completed), improvementOf(completed)]);
+assert.deepEqual(recordedReviewLines(JSON.parse(saved)), recordedReviewLines(completed));
+assert.equal(JSON.stringify(completed), saved, "Rendering never mutates saved craft");
+assert.deepEqual(recordedReviewLines({ holes: { skipped: true, score: 0 }, heat: { score: 75 }, parts: { holes: 0, heat: 75 } }), [
+  "今回よかったこと：今回の工程では、炭焼きの評価が比較的よかった。",
+  "次の練習：炭の全面が赤くなる頃合いを確かめよう。",
+], "Skipped/unfinished zero parts are excluded from the next practice");
+console.log("PASS recorded tournament review: missing records, single lines, JSON reload, skipped parts and no mutation");

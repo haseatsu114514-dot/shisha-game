@@ -7,6 +7,7 @@ const capture=async(page,name)=>{if(shots)await page.screenshot({path:`${shots}/
 import { suite, assertFits } from './support.mjs';
 import { confirmAppearanceSetup, prepareAppearanceCatalog } from './appearance_setup.mjs';
 import { confirmWaterSetup } from './water_setup.mjs';
+import { checkTournamentReview } from './tournament_review_checks.mjs';
 prepareAppearanceCatalog();
 const t = name => `[data-test="ch2-tournament-${name}"]`;
 const dt = name => `[data-test="${name}"]`;
@@ -45,6 +46,7 @@ async function playAttempt(page,touch=false,reloadCare=false) {
   await click(t('craft-start'));
   for(let round=1;round<=3;round++) {
     await page.locator(t('votes')).waitFor();
+    assert.equal(await page.locator(t('craft-review')).count(),0,'No production review during intermediate voting');
     const s=await get(page);assert.equal(s.flags._ch2_tournament.voted,round);
     assert.deepEqual(await page.locator('[data-contestant]').evaluateAll(ns=>ns.map(n=>n.dataset.contestant).sort()),['ageha','hajime','kumicho','rei']);
     for(const row of Object.values(s.flags._ch2_tournament.votes))assert(Object.values(row).reduce((a,b)=>a+b,0)<=10);
@@ -410,6 +412,7 @@ await suite('ch2-tournament',async check=>{
     assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のREI/);assert.match(texts,/昔は組を張ってやした/);
     const entryTrace=await page.evaluate(()=>window.__trace);
     const result=await playAttempt(page,false,true);assert.equal(result.flags._ch2_tournament.result.rank,1);
+    await checkTournamentReview(page,2);
     // 最終票を確定した直後、講評の途中で離脱した保存を再現する。
     await page.evaluate(async()=>{
       const core=await import('./js/core/state.js'),p=core.state.flags._ch2_tournament;

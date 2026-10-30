@@ -23,6 +23,7 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull, runCare } from "../craft/pull.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { evaluationOf, feedbackLine } from "../craft/feedback.js";
+import { recordedReview } from "../craft/recorded-review.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
 import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
@@ -312,6 +313,7 @@ function renderVotes(owner, final = false) {
       reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, [
         el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text })),
       ]) : null,
+      final ? recordedReview(p.craft, id("craft-review")) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]),
       judges,
       el("p.ch2-contest-note", { text: "一度入れた点は戻らない。同点なら一台の出来栄えで順位を決める。" }),

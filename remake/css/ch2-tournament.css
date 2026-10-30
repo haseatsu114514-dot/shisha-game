@@ -57,3 +57,8 @@ body:not(.game-ds) .bench-top:has(> .ch2-tournament-menu) .bench-progress { padd
 .ch2-contest-judges .judge-left { font-size: 13px; color: #c8c0d1; }
 .ch2-contest:has(> .ch2-contest-board) .ch2-contest-note { font-size: 14px; color: #a9a1b3; }
 .ch2-contest:has(> .ch2-contest-board) .ch2-contest-actions { justify-content: flex-end; }
+
+/* 最終結果の振り返り2行を収め、票解説が長い場合も操作を隠さない。 */
+.ch2-contest:has(> [data-test$="-craft-review"]) { row-gap: 6px; padding-top: 16px; padding-bottom: 14px; overflow-y: auto; }
+.ch2-contest:has(> [data-test$="-craft-review"]) .ch2-contest-ranking { gap: 6px; }
+.ch2-contest:has(> [data-test$="-craft-review"]) .ch2-contest-rival { min-height: 52px; }

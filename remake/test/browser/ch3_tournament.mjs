@@ -1,6 +1,7 @@
 // 全国大会の一台・四回投票・勝敗境界を本番UIで確認する。
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
+import { checkTournamentReview } from "./tournament_review_checks.mjs";
 
 const t = name => `[data-test="ch3-tournament-${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
@@ -128,6 +129,7 @@ await suite("ch3-tournament", async check => {
     await page.locator(t("craft-start")).click();
     for (let round = 1; round <= 3; round++) {
       await page.locator(t("votes")).waitFor();
+      assert.equal(await page.locator(t("craft-review")).count(), 0, "No production review during intermediate voting");
       state = await get(page);
       assert.equal(state.flags._ch3_tournament.voted, round);
       assert.equal(state.flags._ch3_tournament.history.length, 0);
@@ -176,6 +178,7 @@ await suite("ch3-tournament", async check => {
       "Winning result cannot clear the match before reading its result scene");
     const voteSum = Object.values(result.votes).map(row => Object.values(row).reduce((sum, points) => sum + points, 0));
     assert.deepEqual(voteSum, [10, 10, 10], "Each judge must spend exactly ten points");
+    await checkTournamentReview(page, 3);
     const ch2 = structuredClone(state.flags._ch2_tournament);
     await page.locator(t("continue")).click();
     await page.locator(t("complete")).waitFor();
