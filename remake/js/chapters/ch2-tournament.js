@@ -31,6 +31,7 @@ import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { chapterTwoCheers, chapterTwoCongratulations, recordSentLime } from "./ch2-lime.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
@@ -106,13 +107,18 @@ async function read(owner, name) {
   if (owner.controller === controller) owner.controller = null;
   return live(owner) && !!result && !result.cancelled;
 }
-async function message(owner, suffix, lines) {
+// others: スミさんの連絡より先に読む、ほかの相手のLIME。届け直しで重ねないよう開く直前に集める。
+async function message(owner, suffix, lines, others = () => []) {
   hud(owner);
   const key = `ch2_tournament_sumi_${suffix}`;
   const old = state.inbox.find(item => item.id === key);
   if (old?.done) return true;
   if (old) await openLime({ sender: "sumi" });
-  else await openPhone([{ id: key, sender: "sumi", type: "message", messages: lines, afterClose: [] }], { title: "スミさん", time: suffix === "morning" ? "大会当日の朝" : "大会の夜" });
+  else {
+    const before = others();
+    await openPhone([...before, { id: key, sender: "sumi", type: "message", messages: lines, afterClose: [] }],
+      { title: before.length ? null : "スミさん", time: suffix === "morning" ? "大会当日の朝" : "大会の夜" });
+  }
   if (!live(owner)) return false;
   save();
   return !!state.inbox.find(item => item.id === key)?.done;
@@ -346,7 +352,7 @@ async function drive(owner) {
       if (!await message(owner, "morning", [
         state.flags._ch2_no_audience ? "今日は来ないでくれ、って話は聞いた。店で見てる" : "応援は届いてる。返事は終わってからでいい",
         "手順を確かめろ。無理なら止めていい。帰ったら飯にするぞ",
-      ])) { if (live(owner)) renderEntry(owner); return; }
+      ], chapterTwoCheers)) { if (live(owner)) renderEntry(owner); return; }
       checkpoint("lobby");
     } else if (p.stage === "lobby") {
       playBgm("bgm_tournament_wait");
@@ -427,11 +433,12 @@ async function drive(owner) {
     } else if (p.stage === "tasteless") {
       if (!await read(owner, "tasteless")) return;
       state.flags._ch2_taste_distant = true;
+      recordSentLime(state, "tasteless");
       checkpoint("tokyo");
     } else if (p.stage === "tokyo") {
       // 第1章と同じく、実際の制作から一つだけ認める（票・順位には触れない）。
       const recognition = craftRecognition(p.craft)?.comment;
-      if (!await message(owner, "tokyo", [...(recognition ? [recognition] : []), "東京に行ったら、mukaiのムカイさんを頼れ", "──それと、飯はちゃんと食え"])) { if (live(owner)) card(owner, "tokyo", "東京への連絡", "スミさんからのLIMEを読んで、次の行き先を確かめよう。", [button(owner, "LIMEを開く", "tokyo-message", () => drive(owner), true)]); return; }
+      if (!await message(owner, "tokyo", [...(recognition ? [recognition] : []), "東京に行ったら、mukaiのムカイさんを頼れ", "──それと、飯はちゃんと食え"], chapterTwoCongratulations)) { if (live(owner)) card(owner, "tokyo", "東京への連絡", "スミさんからのLIMEを読んで、次の行き先を確かめよう。", [button(owner, "LIMEを開く", "tokyo-message", () => drive(owner), true)]); return; }
       state.flags._ch2_cleared = true; state.flags._ch2_tokyo_invitation = true;
       state.phase = "cleared"; checkpoint("complete");
     } else if (p.stage === "complete") {

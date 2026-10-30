@@ -25,6 +25,7 @@ const ports = new Map([
   ['remake/js/vn/engine.js', fixed({ play: async id => { played.push(id); return {}; } })],
   ['remake/js/chapters/ch2-city-data.js', fixed({ MAP: { night: 'night' }, ROOMS: {} })],
   ['remake/js/chapters/ch2-strawberry-trial.js', fixed({ grantStrawberrySample: () => {} })],
+  ['remake/js/chapters/ch2-lime.js', fixed({ recordSentLime: () => false })],
   ['remake/js/core/affinity-stages.js', fixed({ AGEHA_AFFINITY_VISITS: [] })],
   ['remake/js/core/city-locations.js', fixed({ CITY_BACKGROUNDS: { c_station_night: 'c' }, CH2_SCENE_BACKGROUNDS: {} })],
   ['remake/js/core/rules.js', fixed({ TOURNAMENT_DAY: 14 })],

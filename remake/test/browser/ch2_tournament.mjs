@@ -36,9 +36,17 @@ async function seed(page, { known = false, stage = '', auto = 'good', progress =
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
   }, {known,stage,auto,progress});
 }
+// 応援・祝福のトークが先に並ぶ場合も、返信を選びながら最後の「スマホを閉じる」まで読む（#1653 ⑦）。
 async function phone(page,touch=false) {
-  await page.locator(dt('phone-next')).waitFor();
-  if(touch)await page.locator(dt('phone-next')).tap();else await page.locator(dt('phone-next')).click();
+  const press=sel=>touch?page.locator(sel).first().tap():page.locator(sel).first().click();
+  for(;;){
+    await page.locator(`${dt('phone-next')}, ${dt('reply-0')}`).first().waitFor();
+    if(await page.locator(dt('reply-0')).count()){await press(dt('reply-0'));await page.locator(dt('phone-next')).waitFor();continue;}
+    const last=(await page.locator(dt('phone-next')).first().innerText()).includes('閉じる');
+    await press(dt('phone-next'));
+    if(last)return;
+    await page.locator(dt('phone-next')).first().waitFor({state:'detached'});
+  }
 }
 async function playAttempt(page,touch=false,reloadCare=false) {
   const click=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
@@ -438,6 +446,11 @@ await suite('ch2-tournament',async check=>{
     assert.match(afterText,/こんなの、ズルいよ/);assert(s.flags._ch2_read_ch2_tournament_ageha_heart);
     assert(afterText.indexOf('こんなの、ズルいよ')>afterText.indexOf('味の輪郭は戻らない'));
     assert.match(afterText,/おめでとうの文字が届いていた/);
+    // #1653 ⑦: 祝福は実際のLIMEで届き、ありがとうは選んだ返信として履歴に残る。第1章の応援文は第2章で届かない
+    const congrats=s.inbox.find(i=>i.id==='ch2_congrats_minto');
+    assert(congrats?.read&&congrats.done);assert.deepEqual(congrats.log.filter(l=>l.me).map(l=>l.text),['……ありがとうございます']);
+    assert(!s.inbox.some(i=>i.id==='encourage_minto'),'chapter-one cheer must not arrive in chapter two');
+    assert(s.inbox.findIndex(i=>i.id==='ch2_congrats_minto')<s.inbox.findIndex(i=>i.id==='ch2_tournament_sumi_tokyo'));
     // #1653: 完了カードも閉店後のMELTY PUFFのまま（昼の大会ステージへ戻さない）
     assert.match(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage),/bg_ch2_ageha_closed_night/,'complete card must keep the closed MELTY PUFF background');
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);

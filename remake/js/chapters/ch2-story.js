@@ -5,6 +5,7 @@ import { play } from "../vn/engine.js";
 import { MAP, ROOMS } from "./ch2-city-data.js";
 import { CH2_NIGHTS, CH2_FREE_NIGHTS, syncAgehaVibes } from "./ch2-story-data.js";
 import { grantStrawberrySample } from "./ch2-strawberry-trial.js";
+import { recordSentLime } from "./ch2-lime.js";
 
 // 会話途中では完了にしない。連続する場面は一つずつ保存し、LOAD時に読了分を飛ばす。
 async function readStep(step) {
@@ -28,6 +29,7 @@ async function readStep(step) {
   if (step.flag) owner.flags[step.flag] = true;
   if (step.contact) addContact(owner, step.contact);
   if (step.sample) grantStrawberrySample(owner);
+  recordSentLime(owner);
   syncAgehaVibes(owner.flags);
   save();
 }
