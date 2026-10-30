@@ -5,7 +5,7 @@ import { newState } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { advanceToChapterTwo } from "../js/chapters/ch2-progress.js";
 import { CH3_INTRO_SCENES, chapterThreeScenes, advanceToChapterThree, chapterThreeProgress,
-  completeChapterThreeScene } from "../js/chapters/ch3-progress.js";
+  completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "../js/chapters/ch3-progress.js";
 
 const value = newState();
 Object.assign(value, { phase: "cleared", day: 14, slot: 2, money: 67890, stamina: 41 });
@@ -112,6 +112,8 @@ assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_advice").day,
   "Kuze must have several days between first meeting and return visit");
 for (let i = 0; i < ids.length; i++) {
   const scene = CH3_INTRO_SCENES[i];
+  // 東京の空き時間（#1655）は休んで閉じる。場面の日付はその後に確かめる。
+  for (let window; (window = chapterThreeFreeTime(tokyo));) assert(completeChapterThreeFreeTime(tokyo, window.id));
   assert.equal(chapterThreeProgress(tokyo).stage, i);
   assert.equal(chapterDay(tokyo), scene.day, `Wrong local day before ${scene.id}`);
   const prior = structuredClone(tokyo);

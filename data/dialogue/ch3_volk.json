@@ -203,7 +203,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "数値が合っているはずで、客を帰したくはない。袋を売った先でも同じだ"
+          "text": "数値が合っていても、客を帰したくはない。袋を売った先でも同じだ"
         },
         {
           "speaker": "hajime",
@@ -214,6 +214,36 @@
           "speaker": "volk",
           "face": "normal",
           "text": "やってみろ。次の一台で違えば、また書き直す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、ヴォルクが小さなガラス皿と紅茶を置いた。皿には、赤いジャムが少しだけ。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "ジャムは紅茶に入れない。舐めながら飲め"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "甘い……！　これも、何グラムって決まってるんですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "決めていない。祖母に、これだけは測るなと言われた"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……一杯で足りない日もある。それでいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（計器だらけの店で、ここだけは測らないんだ）"
         }
       ],
       "branches": {
@@ -333,9 +363,11 @@
         ],
         "delivery_known_recognition": [
           {
-            "speaker": "volk",
-            "face": "normal",
-            "text": "この辺の店を回っているんだったな。今日は、ゆっくりしていけ"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_scout_seen",
+            "next_true": "delivery_seen_in_ch2",
+            "next_false": "delivery_known_unseen"
           }
         ],
         "delivery_new_question": [
@@ -350,6 +382,40 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "普段のお仕事も、聞いていいですか"
+          }
+        ],
+        "delivery_known_unseen": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "配達の礼だ。今日は、ゆっくりしていけ"
+          }
+        ],
+        "delivery_seen_in_ch2": [
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "（向き直り、淡々と）配達の礼だ。……今日は、顔をよく見せろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（配達の時は気づかなかった。……試煙会の奥の席にいた人だ。前の夜の搬入口にも、客席の後ろにも）"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "気づいたか。偵察だ。軍にいた頃に叩き込まれた。県大会の優勝者は、見ておく"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "怪しまれるのには慣れている。調べるのが癖なだけだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（偵察の理由は聞けた。配達先の店主が、あの大きな人だったのか）"
           }
         ]
       },
@@ -434,7 +500,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "ロシアは寒い。-30度の外から来た客に、ぬるいシーシャは出せない。精度を上げたのは、そのためだ"
+          "text": "ロシアの冬は、炭がすぐ冷える。寒い夜にも、同じ煙を出すために測る。精度を上げたのは、そのためだ"
         },
         {
           "speaker": "hajime",
@@ -444,7 +510,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "Точность（精度）は、愛情だ。客が寒くない時間を、一秒も切らせない。それが俺の仕事だ"
+          "text": "Точность（精度）は、愛情だ。寒い夜でも同じ煙を、一秒も切らせない。それが俺の仕事だ"
         },
         {
           "speaker": "hajime",
