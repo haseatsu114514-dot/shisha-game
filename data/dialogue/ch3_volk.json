@@ -93,6 +93,26 @@
           "text": "同じ袋でも、器具と客の吸う間隔が違う。卸した先も確かめて、次のロットを決める"
         },
         {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……凛は、日本の店を一人で回っている"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "報告は毎週、正確に届く。だが、あいつが何時に寝たかは書いていない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（上司として、気にかけてるんだ。聞き方は、測るみたいだけど）"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "今のは、本人には言うな。睡眠時間まで報告に書いてくる"
+        },
+        {
           "type": "set_flag",
           "flag": "_met_volk"
         },
@@ -119,7 +139,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヴォルクは計器に視線を走らせ、数字を打ち込むと、熾った炭を迷いなくボウルへ積んだ。"
+          "text": "ヴォルクは計器に視線を走らせ、数字を打ち込むと、熾った炭を迷いなく三つ、ボウルの縁へ並べた。"
         },
         {
           "speaker": "volk",
@@ -214,6 +234,58 @@
           "speaker": "volk",
           "face": "normal",
           "text": "やってみろ。次の一台で違えば、また書き直す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚に黒い袋が並んでいた。ブラストミントの隣に、日本語のラベルを貼ったアールグレイ。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "今月から、日本でも正式に売る。東京の店にも、もう並んでいる"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_rin_sample_received",
+          "next_true": "nightside_sample_owned",
+          "next_false": "nightside_sample_none"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは小さなボウルに正式品のアールグレイを詰め、ホースをこちらへ向けた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "試せ。一口目より、三口目の紅茶を見ろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶の香りが、吸うたびに細く残る。ベルガモットが最後まで消えない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ブラストミントの重さとは逆だ。軽いのに、ずっと残る）"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "大会に持ち込むなら、袋の封とラベルを確かめろ。正式品なら持ち込める"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "使うなら、東京の店でも買える。……売れ行きを気にして言っているのではない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（気にしてるんだ。日本で、ちゃんと届くかどうか）"
         },
         {
           "speaker": "",
@@ -335,7 +407,12 @@
           {
             "speaker": "",
             "face": "",
-            "text": "無骨な鉄とコンクリートの店。ナイトサイドを扱うハードコアな名店として知られている。"
+            "text": "無骨な鉄とコンクリートの店だ。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "開いて日は浅いのに、ナイトサイドを扱うハードコアな名店として知られている。"
           }
         ],
         "delivery_known_name": [
@@ -416,6 +493,40 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "（偵察の理由は聞けた。配達先の店主が、あの大きな人だったのか）"
+          }
+        ],
+        "nightside_sample_owned": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "このアールグレイ……前に凛さんから、黒い袋の試作をもらいました"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "知っている。あれは試供品だ。練習にはいいが、大会と接客には出せない"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "モニターの感想で、ベルガモットの残り方を直した。これが正式品だ"
+          }
+        ],
+        "nightside_sample_none": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ナイトサイドって、前から日本で売っていたんですか"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "これまでは、凛が試作を店で試してもらう段階だった。試供品は練習用だ"
+          },
+          {
+            "speaker": "volk",
+            "face": "normal",
+            "text": "大会と接客に出せるのは、今月からの正式品だけだ"
           }
         ]
       },
