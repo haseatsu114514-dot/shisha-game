@@ -60,7 +60,7 @@ await suite("craft-materials", async check => {
         assert.deepEqual(result.mix, { double_apple: 12 }); assert.equal(result.regOk, true);
         assert.equal(result.stock, result.beforeStock, "The supplied match leaf does not consume private stock");
       }
-    }, options);
+    }, { ...options, reducedMotion: "reduce" });
     await check(`${device}-packing`, async page => {
       await setup(page);
       for (const bowl of ["silicone_bowl", "hagal_80beat", "suyaki_tsumugi"]) {
