@@ -210,7 +210,7 @@ await suite("growth-levelup", async (check) => {
       // 寝る前・メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
       assert.equal(await board.getAttribute("data-mode"), "view");
       assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
-      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*4/, "Lv.1→3 で火種4");
+      assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*4/, "Lv.1→3 で白火4");
       const ids = await page.evaluate(async () => {
         const b = await import("./js/core/growth-board.js");
         const first = b.boardNodes("body").find((n) => n.kind === "stat" && n.links.includes(b.HUB)).id;
@@ -301,7 +301,7 @@ await suite("growth-levelup", async (check) => {
     });
     const band = page.locator(t("gift-band"));
     await band.waitFor();
-    assert.match(await band.innerText(), /くじのラストワン賞[\s\S]*才の火種 ＋1/);
+    assert.match(await band.innerText(), /くじのラストワン賞[\s\S]*紅火 ＋1/);
     await assertFits(page, '[data-test="gift-band"]');
     await page.waitForFunction(() => window.night?.gifts?.length === 1, null, { timeout: 8000 });
   }, { viewport: { width: 1331, height: 760 } });

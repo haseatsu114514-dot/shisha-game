@@ -1162,7 +1162,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .levelup-band.show { opacity: 1; transform: none; }
 .levelup-band .lb-top { color: #ffd35e; font-size: 20px; letter-spacing: 0.08em; }
 .levelup-band .lb-lv { font-size: 22px; font-weight: 700; }
-.levelup-band .lb-hidane { color: #ffb347; font-size: 18px; font-weight: 700; }
+.levelup-band .lb-hidane { color: #fff1d0; font-size: 18px; font-weight: 700; }
 .levelup-band .lb-learned { grid-column: 1 / -1; color: var(--text-dim); font-size: 15px; }
 .levelup-band .lb-gift { grid-column: 1 / -1; color: #ffd08a; font-size: 15px; }
 .levelup-band.gift { grid-template-columns: auto; justify-items: center; text-align: center; }
@@ -1184,8 +1184,9 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .levelup.lu-settled-state .lu-details { opacity: 1; }
 .lu-details p { margin: 6px 0; font-size: 18px; line-height: 1.5; }
 .lu-change { font-size: 22px !important; font-weight: 700; }
-.lu-hidane { display: flex; justify-content: center; align-items: center; gap: 8px; color: #ffb347; font-weight: 700; }
-.lu-hidane-icon, .hidane-flight { display: inline-block; width: 16px; height: 18px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: radial-gradient(circle at 50% 70%, #fff1b8, #ffb43c 55%, #e86a12); box-shadow: 0 0 10px rgba(255, 150, 40, 0.9); }
+.lu-hidane { display: flex; justify-content: center; align-items: center; gap: 8px; color: #fff1d0; font-weight: 700; }
+/* 白火（レベルアップでもらう火）: 白金の丸い熾き（SBD62） */
+.lu-hidane-icon, .hidane-flight { display: inline-block; width: 17px; height: 17px; border-radius: 50%; background: radial-gradient(circle at 50% 45%, #ffffff, #fff1d0 45%, #d9b46a 80%, #7a5a2a); box-shadow: 0 0 10px rgba(255, 238, 200, 0.9); }
 .hidane-flight { position: absolute; left: 0; top: 0; margin: -9px 0 0 -8px; pointer-events: none; z-index: 5; }
 .lu-milestone { color: #ffe08a; }
 .lu-learned { color: var(--text); }
@@ -1317,10 +1318,16 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-side-actions .btn { min-height: 44px; min-width: 120px; }
 .gb-footer { display: flex; gap: 16px; align-items: center; padding: 10px 18px; border-top: 1px solid rgba(244, 210, 122, 0.35); background: rgba(10, 6, 16, 0.75); }
 .gb-wallet { display: flex; gap: 12px; align-items: center; flex: none; }
-.gb-hidane { display: inline-flex; align-items: center; gap: 5px; font-size: 15px; color: #ffd08a; --hc: #ffb43c; }
+/* 火種は色と形で見分ける（SBD62）: 白火＝白金の丸、紅火＝炎、蒼火＝しずく、翠火＝角（キューブ炭） */
+.gb-hidane { display: inline-flex; align-items: center; gap: 5px; font-size: 15px; color: var(--text); --hc: #fff1d0; }
 .gb-hidane.k-body { --hc: var(--stat-body); } .gb-hidane.k-sense { --hc: var(--stat-sense); } .gb-hidane.k-wisdom { --hc: var(--stat-wisdom); }
-.gb-hidane i { display: inline-block; width: 14px; height: 16px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: radial-gradient(circle at 50% 70%, #fff1b8, var(--hc) 55%, #4a2a10); box-shadow: 0 0 8px var(--hc); }
+.gb-hidane i { flex: none; display: inline-block; width: 16px; height: 16px; border-radius: 50%; filter: drop-shadow(0 0 4px var(--hc));
+  background: radial-gradient(circle at 50% 45%, #fff, var(--hc) 50%, color-mix(in srgb, var(--hc) 45%, #2a1406)); }
+.gb-hidane.k-body i { width: 15px; height: 19px; border-radius: 0; background: linear-gradient(0deg, color-mix(in srgb, var(--hc) 60%, #4a1406), var(--hc) 45%, #fff1b8);
+  clip-path: polygon(50% 0, 66% 26%, 80% 16%, 96% 56%, 84% 88%, 50% 100%, 16% 88%, 4% 56%, 22% 30%, 36% 40%); }
+.gb-hidane.k-sense i { width: 13px; height: 13px; margin: 4px 2px 0; border-radius: 0 50% 50% 50%; transform: rotate(45deg);
+  background: radial-gradient(circle at 60% 60%, #fff, var(--hc) 45%, color-mix(in srgb, var(--hc) 50%, #06202a)); }
+.gb-hidane.k-wisdom i { width: 14px; height: 14px; border-radius: 3px; background: linear-gradient(135deg, #fff 0 18%, var(--hc) 40%, color-mix(in srgb, var(--hc) 45%, #062420)); }
 .gb-hidane b { font-size: 20px; color: var(--hc); }
 .gb-hidane.zero { opacity: 0.4; }
 .gb-legend { flex: 1; display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; font-size: 13px; color: var(--text-dim); }

@@ -13,12 +13,12 @@ import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STEP_TEXT, PER_SQUARE, QUALITY_STEPS, REWARD_JA, LESSON_MIN_STEP,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, stepOf, statCount, replay, nodeStatus, commitPending,
   pathTo, pendingTowards, lessonLock, hasMet, rankOfStep, availableCount, paymentFor,
-  STAT_SQUARES, GRID, stepForCount, squaresToNextStep, lessonShown, perkOf,
+  STAT_SQUARES, GRID, stepForCount, squaresToNextStep, lessonShown, perkOf, HIDANE_NAME,
 } from "../core/growth-board.js";
 
-// ---------------------------------------------------------------- 配置（盤の領域 760×488、紋 380,244。13×9 の方眼）
+// ---------------------------------------------------------------- 配置（盤の領域 760×488。紋は下の端 380,452。横13×縦9 の方眼で上へ育つ。SBD62）
 
-const W = 760, H = 488, CX = 380, CY = 244, CELL = 54;
+const W = 760, H = 488, CX = 380, CY = 452, CELL = 52;
 const at = (gx, gy) => ({ x: CX + gx * CELL, y: CY + gy * CELL });
 const SVG = "http://www.w3.org/2000/svg";
 const svg = (tag, attrs = {}, children = []) => {
@@ -27,8 +27,7 @@ const svg = (tag, attrs = {}, children = []) => {
   for (const c of children) n.append(c);
   return n;
 };
-const kindName = (k) => k === "any" ? "万能" : BOARD_HEAD[k];
-const payText = (pay) => Object.entries(pay).map(([k, n]) => `${kindName(k)}の火種${n}`).join("＋") || "火種いらず";
+const payText = (pay) => Object.entries(pay).map(([k, n]) => `${HIDANE_NAME[k]}${n}`).join("＋") || "火種いらず";
 export const PLACE_JA = { kannon: "観音堂", tokyo_shrine: "路地裏の神社", dubai_mosque: "モスクの回廊", inn_window: "宿の窓辺" };
 
 let current = null;
@@ -106,8 +105,8 @@ export function openBoard({ place = null } = {}) {
       svg("stop", { offset: "0%", "stop-color": "#fff1b8" }), svg("stop", { offset: "45%", "stop-color": "#ffb43c" }),
       svg("stop", { offset: "100%", "stop-color": "#e86a12", "stop-opacity": "0" }),
     ])])];
-    // 方眼のうすい点（13×9）
-    for (let gx = -GRID.w; gx <= GRID.w; gx++) for (let gy = -GRID.h; gy <= GRID.h; gy++) { const p = at(gx, gy); parts.push(svg("circle", { cx: p.x, cy: p.y, r: 1.5, class: "gb-dot" })); }
+    // 方眼のうすい点（横13×縦9。紋の行から上）
+    for (let gx = -GRID.w; gx <= GRID.w; gx++) for (let gy = -GRID.h; gy <= 0; gy++) { const p = at(gx, gy); parts.push(svg("circle", { cx: p.x, cy: p.y, r: 1.5, class: "gb-dot" })); }
     // 道（使うマスどうしだけ。紋の隣は紋とつなぐ）
     const drawn = new Set();
     for (const n of nodes) {
@@ -195,7 +194,7 @@ export function openBoard({ place = null } = {}) {
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
     if (node.kind === "stat") {
       const step = stepOf(node.board, v.unlocked);
-      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perkOf(node)?.text || PER_SQUARE[node.board]}` }));
+      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perkOf(node)?.text || PER_SQUARE[node.board]}（${perkOf(node)?.tierName || "近く"}）` }));
       if (!v.unlocked.has(node.id)) {
         const left = squaresToNextStep(node.board, v.unlocked), next = Math.min(10, step + 1);
         lines.push(el("p.gb-p-next", { text: step >= 10 ? "10段（上限）" : `あと${left}つで${next}段：${STEP_TEXT[node.board][next - 1]}` }));
@@ -204,8 +203,8 @@ export function openBoard({ place = null } = {}) {
       }
       lines.push(el("p.gb-p-sub", { text: `効く場面：${BOARD_WHERE[node.board]}` }));
     } else if (node.kind === "gate") {
-      lines.push(el("p", { text: "この先の道を開く関門。色つきの火種1つで越える" }));
-      lines.push(el("p.gb-p-sub", { text: `${BOARD_HEAD[node.board]}の火種を先に使う。無ければほかの色の火種でも越えられる。万能の火種では越えられない` }));
+      lines.push(el("p", { text: "この先の道を開く関門。色の火（紅火・蒼火・翠火）1つで越える。先には強いスキルや授業がある" }));
+      lines.push(el("p.gb-p-sub", { text: `${HIDANE_NAME[node.board]}を先に使う。無ければほかの色の火でも越えられる。白火では越えられない` }));
     } else if (node.kind === "skill") {
       if (shown === "hidden") lines.push(el("p", { text: "物語が進むと盤に現れる" }));
       else lines.push(el("p", { text: node.text }), el("p.gb-p-sub", { text: `効く場面：${node.scene}・火種${node.cost}${shown === "next" ? "・まだ開いていない" : ""}` }));
@@ -268,7 +267,7 @@ export function openBoard({ place = null } = {}) {
       const route = pathTo(node.id, v.unlocked);
       return `まだ道がつながっていない（ここまで 火種${route.cost}）`;
     }
-    if (st === "short" && node.kind === "gate") return "色つきの火種が要る。節目のレベル・大会・♥5の人・遊びのご褒美でもらえる";
+    if (st === "short" && node.kind === "gate") return "色の火（紅火・蒼火・翠火）が要る。節目のレベル・大会・♥5の人・遊びのご褒美でもらえる";
     if (st === "short") {
       const have = (v.hidane.any || 0) + (v.hidane[node.board] || 0);
       return `火種があと${node.cost - have}つ要る。火種は貯めておける`;
@@ -279,15 +278,15 @@ export function openBoard({ place = null } = {}) {
 
   function renderFooter(v) {
     const wallet = el("div.gb-wallet", { dataset: { test: "board-wallet" } }, HIDANE_KEYS.map((k) => el(`span.gb-hidane.k-${k}${v.hidane[k] ? "" : ".zero"}`, {
-      title: k === "any" ? "万能の火種（関門のほか、どのマスにも）" : `${BOARD_HEAD[k]}の火種（${BOARD_JA[k]}盤のマスと、関門）`,
-    }, [el("i", { "aria-hidden": "true" }), el("span", { text: k === "any" ? "万能" : BOARD_HEAD[k] }), el("b", { text: String(v.hidane[k] || 0) })])));
+      title: k === "any" ? "白火（関門のほか、どのマスにも）" : `${HIDANE_NAME[k]}（${BOARD_JA[k]}盤のマスと、関門）`,
+    }, [el("i", { "aria-hidden": "true" }), el("span", { text: HIDANE_NAME[k] }), el("b", { text: String(v.hidane[k] || 0) })])));
     const actions = [];
     if (canLight && pending.length) actions.push(el("button.btn.gb-reset", { text: "取り消す", dataset: { test: "board-reset" }, onclick: () => { pending = []; SE.cancel?.(); render(); } }));
     actions.push(el("button.btn.primary.gb-decide", {
       text: pending.length ? `決定（${pending.length}）` : "閉じる", dataset: { test: "board-decide" }, onclick: () => (pending.length ? finish(true) : close()),
     }));
     footer.replaceChildren(wallet, el("p.gb-legend", [
-      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 関門（色の火種）" }), legend("sealed", "授業の錠"), legend("locked", "まだ開いていない"), el("span", { text: "✦ できることが増える" }),
+      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 関門（色の火）" }), legend("sealed", "授業の錠"), legend("locked", "まだ開いていない"), el("span", { text: "✦ できることが増える" }),
     ]), el("div.gb-actions", actions));
   }
   function legend(st, text) { return el("span.gb-legend-item", [el(`i.s-${st}`), el("span", { text })]); }
@@ -334,11 +333,11 @@ export function openBoard({ place = null } = {}) {
     await modal({
       title: "心得の盤の見方", className: "gboard-help",
       body: el("div", [
-        el("p", { text: "盤は能力ごとに3枚（才能・感覚・理論）。真ん中の紋から道がのびていて、線でつながった隣のマスだけ灯せる。どの方向から進んでもいい。" }),
-        el("p", { text: "丸いマスは能力（火種1）。灯すたびに少し伸び、5つほどで1段上がる。六角形はスキル（火種5〜10）。道の先の授業は、盤を2段まで開けて、教えてくれる人と仲良くなると錠が開く（火種いらず）。" }),
-        el("p", { text: "ひし形は関門。色のついた火種1つで越えると、その先の道が開く。万能の火種では越えられない。" }),
-        el("p", { text: "紋のまわりを一周する道から、授業への小道が出る。小道は、その人に出会うと現れる。授業を灯したら、次にその人に会った時に相談して習う（LIME では習えない）。" }),
-        el("p", { text: "色のついた火種は、その色の盤のマスと関門に使える。払うときは先に使われる。盤は能力ごとに形が違う。" }),
+        el("p", { text: "盤は能力ごとに3枚（才能・感覚・理論）。下の紋から左・右・上へ道がのびていて、線でつながった隣のマスだけ灯せる。どの道から進んでもいい。" }),
+        el("p", { text: "丸いマスは能力（火種1）。灯すたびに少し伸び、3つほどで1段上がる。紋から遠いマスほど恩恵が大きい（近く×1・中ほど×2・関門の先×3）。六角形はスキル（火種4〜8）。" }),
+        el("p", { text: "ひし形は関門。色の火（紅火・蒼火・翠火）1つで越えると、その先の道が開く。関門の先には強いスキルと授業がある。白火では越えられない。" }),
+        el("p", { text: "金の札は授業（火種いらず）。教えてくれる人に出会うと盤に現れる。灯したら、次にその人に会った時に相談して習う（LIME では習えない）。" }),
+        el("p", { text: "白火はどのマスにも使える。色の火はその色の盤のマスと関門に使える。払うときは白火が先。" }),
         el("p", { text: "火種を灯せるのは、観音堂などの静かな場所で内省した時だけ（時間は進まない）。メニューからは見るだけで、欲しいマスを目標にしておける。" }),
       ]),
       options: [{ label: "閉じる", value: true, primary: true }],

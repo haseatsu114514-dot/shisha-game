@@ -6,10 +6,10 @@ import { SE } from "../core/audio.js";
 import { state } from "../core/state.js";
 import { DB, displayName } from "../core/data.js";
 import { settleGrowth, gaugeAt, totalExpFor, openGrowthBoard } from "../core/growth.js";
-import { BOARD_HEAD, BOARD_JA } from "../core/growth-board-data.js";
+import { BOARD_HEAD, BOARD_JA, HIDANE_NAME } from "../core/growth-board-data.js";
 import { spotById } from "./spots.js";
 
-const colorName = (kind) => kind === "any" ? "万能の火種" : `${BOARD_HEAD[kind]}の火種`;
+const colorName = (kind) => HIDANE_NAME[kind] || "火種";
 const PLACE_LABEL = {
   tonari_shift: "tonariのバイト", tonari_practice: "まかないで練習", tonari_seat: "tonariの客席", axe_bar: "斧投げBar", pakki_slot: "パッキースロット",
 };
