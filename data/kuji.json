@@ -30,7 +30,7 @@
         },
         {
           "rank": "A",
-          "name": "AF バニラ（25g）",
+          "name": "ドバジ バニラ（25g）",
           "type": "flavor",
           "flavorId": "vanilla",
           "grams": 25,
@@ -240,7 +240,7 @@
         },
         {
           "rank": "C",
-          "name": "AF ローズ（フレーバー1袋）",
+          "name": "アフサール ローズ（フレーバー1袋）",
           "type": "flavor",
           "flavorId": "rose",
           "sell": 0,
