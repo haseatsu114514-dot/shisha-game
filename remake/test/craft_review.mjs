@@ -38,3 +38,7 @@ assert.match(goodPointOf({ heat: { score: 85 }, holes: { score: 95 } }), /炭を
 assert.match(goodPointOf({ holes: { score: 85 } }), /穴をそろえて/);
 assert.match(goodPointOf({ steam: { score: 85 } }), /集中を保てた/);
 console.log("PASS moderate/tied/invalid/incomplete/failed/skipped records and existing success priority");
+
+const sparseCare = [];
+sparseCare[1] = served;
+assert.equal(goodPointOf({ pull: served, careHistory: sparseCare }), "今回よかったこと：2回目の調整で適温に整えられた。", "A missing first adjustment must not count as two successful adjustments");

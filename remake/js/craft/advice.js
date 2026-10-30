@@ -37,7 +37,7 @@ export function goodPointOf(cs) {
   const recorded = result => Number.isFinite(result?.score) && result.score > 0 && !result.failed && !result.skipped;
   const good = result => Number.isFinite(result?.temp) && !result.failed && !result.skipped && isIdealTemperature(result.temp, bands);
   const care = cs.careHistory || [];
-  if (good(cs.pull) && care.length >= 2 && care.slice(0, 2).every(good)) return "今回よかったこと：提供と2回の調整を、適温で仕上げた。";
+  if (good(cs.pull) && good(care[0]) && good(care[1])) return "今回よかったこと：提供と2回の調整を、適温で仕上げた。";
   if (care.length >= 2 && good(care[1])) return "今回よかったこと：2回目の調整で適温に整えられた。";
   if (good(cs.pull)) return "今回よかったこと：適温に整えて提供できた。";
   if (recorded(cs.heat) && cs.heat.score >= 85) return "今回よかったこと：炭をしっかり焼き、立ち上げの熱を作れた。";
