@@ -11,7 +11,7 @@ import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
 import { config } from "../core/state.js";
-import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal } from "../core/growth.js";
+import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
@@ -90,7 +90,8 @@ export function initHud(h) {
     stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b"), el("em.guts-extra")])]), el("span.guts-badge", { text: "根", "aria-label": "根性の体力上乗せ" })]),
     radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
-    status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () => handlers.status?.() }),
+    status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () =>
+      growthEnabled() && hidaneTotal() > 0 ? openGrowthBoard() : handlers.status?.() }),
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
     exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
       el("span.hx-lv"), el("i.hud-bar.hx-bar", [el("b.hx-settled"), el("b.hx-today")]), el("small.hx-left"),
@@ -139,7 +140,7 @@ function updateGrowth() {
   const total = on ? hidaneTotal(ensureGrowth()) : 0;
   dom.hidane.hidden = !(total > 0);
   dom.hidane.textContent = total > 99 ? "99" : String(total || "");
-  dom.status.title = total > 0 ? `ステータス（未使用の火種 ${total}）` : "ステータス";
+  dom.status.title = total > 0 ? `心得の盤を見る（未使用の火種 ${total}）` : "ステータス";
   dom.status.setAttribute("aria-label", dom.status.title);
   if (!on) return;
   const g = gaugeInfo();
