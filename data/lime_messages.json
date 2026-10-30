@@ -369,6 +369,7 @@
     {
       "id": "encourage_minto",
       "sender": "minto",
+      "chapter": 1,
       "trigger_condition": "tournament_day",
       "type": "chat",
       "messages": [
@@ -396,6 +397,7 @@
     {
       "id": "encourage_tsumugi",
       "sender": "tsumugi",
+      "chapter": 1,
       "trigger_condition": "tournament_day",
       "type": "chat",
       "messages": [
@@ -406,6 +408,152 @@
         {
           "sender": "tsumugi",
           "text": "会場にいます。……今日の空気、わたしには少し橙色です。緊張したら、深呼吸。……終わったら、感想を聞いてください"
+        }
+      ]
+    },
+    {
+      "id": "encourage_ch2_tsumugi_alone",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "tournament_day",
+      "trigger_flag": "_ch2_no_audience",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます。今日は、お店で待ってます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "スミさんと、お店の画面で見ています。声は届かないので、安心してください"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……終わったら、連絡を待ってます"
+        }
+      ]
+    },
+    {
+      "id": "encourage_ch2_tsumugi_welcome",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "tournament_day",
+      "trigger_flag": "_ch2_audience_welcome",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます。今日は、客席の中ほどにいます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "声は出しません。手だけ、上げます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……はじめさんの煙、ちゃんと見てます"
+        }
+      ]
+    },
+    {
+      "id": "ch2_congrats_tsumugi_alone",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "ch2_victory",
+      "trigger_flag": "_ch2_no_audience",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おめでとうございます。お店の画面で、見てました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "スミさん、結果が出たとき、一度だけ立ち上がりました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……帰ってきたら、少しだけ話を聞かせてください"
+        }
+      ],
+      "replies": [
+        {
+          "text": "……ありがとう",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "ch2_congrats_tsumugi_welcome",
+      "sender": "tsumugi",
+      "chapter": 2,
+      "trigger_condition": "ch2_victory",
+      "trigger_flag": "_ch2_audience_welcome",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おめでとうございます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "出口では、手を振るだけにしました。……言葉は、こっちで送ります"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "お疲れさまでした。今日は、ゆっくり休んでください"
+        }
+      ],
+      "replies": [
+        {
+          "text": "……ありがとう",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "ch2_congrats_minto",
+      "sender": "minto",
+      "chapter": 2,
+      "trigger_condition": "ch2_victory",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめくん、優勝おめでとうっ！ 配信、お店の合間に見てたよ♪"
+        },
+        {
+          "sender": "minto",
+          "text": "……ちゃんと休んでね。次に来たら、お祝いの一台はわたしが作るから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "……ありがとうございます",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "ch2_congrats_adam",
+      "sender": "adam",
+      "chapter": 2,
+      "trigger_condition": "ch2_victory",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "見たぞ。勝ったな"
+        },
+        {
+          "sender": "adam",
+          "text": "祝いの果実は取っておく。落ち着いたら食いに来い"
+        }
+      ],
+      "replies": [
+        {
+          "text": "……ありがとうございます",
+          "affinity": 1
         }
       ]
     },
