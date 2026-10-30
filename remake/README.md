@@ -1,5 +1,13 @@
 # 水煙前線 -EN:CODE- リメイク版（remake/）
 
+## 2026-10-30 経験値・レベル・火種（心得の盤 第二弾の芯・未公開）
+
+- `core/growth.js` の `GROWTH_BOARD` は `false`。盤の画面ができるまでプレイヤーには見えず、能力の伸び方（旧しくみ）も変えない。開発中は URL に `?growth=1`（戻すときは `?growth=0`）を付けるか `__remake.dev.growth(true)` で、その端末だけ有効にできる。`__remake.dev.addExp(400)` で経験値を足せる。
+- 有効時: 体力を使った自由行動で経験値（30×新鮮さ、はじめての相手・場所＋40、行動中の好感度の段＋30、章倍率）。チップは1行動1枚。HUD の情報カードに Lv と次のレベルまでのゲージ（濃い金＝精算済み、薄い金＝今日の分、満タンで「今夜 Lv UP」）。寝る直前（夜明けの幕の前）に精算し、初回・節目・2つ以上上がった夜はフル演出、それ以外は短い帯。火種は1レベル1つ、節目は2つ目が系統限定。未使用の火種は五角形ボタンに琥珀色の個数で出す。
+- 仕様の正本は `docs/stat-design/SPEC.md`（案A、ブランチ `muse/stat-design-docs-1030`）とレベルアップ使用感評価 `docs/stat-design/levelup-ux/REPORT.md`（ブランチ `claude/levelup-ux-evaluation-fo4d7g`）の推奨 R1・R4〜R7。盤の画面・セーブ schema 23 への移行・スロットの追い風・X5以降の経験値源は後続。
+- 心得の盤の画面（試作・画像なし）: MENU の「心得の盤」、フルのレベルアップの「心得の盤を開く」、`__remake.dev.board()` で開く（`__remake.dev.addHidane(5)` で火種を足せる）。盤の形と規則は `core/growth-board.js`（能力45＋スキル14＝火種86、輪は章で開く、払いは限定の火種が先）、画面は `daily/growth-board-screen.js`。輪・扇・線は SVG、ノードは HTML ボタン。仮置き→決定で確定し、STEP UP／SKILL のカードを出す。**試作の間は盤の解放を能力（state.stats）に書き戻さず、スキルの効果も未実装**。組み直し・チュートリアル・スマホでの拡大は後続。
+- 検証: `node remake/test/growth_levelup.mjs`、`node remake/test/growth_board.mjs`、`node remake/test/browser/growth_levelup.mjs`。
+
 ## 2026-10-26 フレーバー熟練度・レモン課題・日々の体力収支
 
 この節が旧HS1/HS3/HS8/HS9・#783の練習在庫と家シーシャ報酬、および第1章ミント課題の記述を更新する。
@@ -109,7 +117,7 @@ GAME OVER／CONTINUE（#590）:
 ## 採用済みの章タイトルコール（#385）
 
 第1章「煙がつなぐ街」、第2章「才能の壁」は採用画像を章開始に表示する。
-第4章「継承の煙」・第5章「機械仕掛けの神」も共通表示へ登録済み。後半章の本編進行は未接続。
+第4章「継承の煙」・第5章「機械仕掛けの神」も共通表示へ登録済み（章ランナーは `chapters/ch4.js`・`ch5.js`）。
 第3章はオーナー決定により『嘘つきたちの夜 / SMOKE AND MIRRORS』を採用。画像差し替えは保留し、呼び出し元の文字表示を保つ。
 第2章は王冠構図案C（背景の王冠輪郭）を採用し、英題をHollow Crownへ更新・接続済み（Issue #549 / PR #550）。
 
@@ -119,7 +127,7 @@ GAME OVER／CONTINUE（#590）:
 
 原画と採用の正本は `asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/adoption.json`。
 `python3 tools/build_chapter_titles.py` は対象4枚だけをSHA256照合して無劣化WebPへ変換し、全画素一致を検証する。
-採用記録の `runtime_integrated:false` は5章全体が未接続であることを引き続き示す。実際の部分導入は `js/core/chapter-title-art.js` と [検証記録](../docs/qa/chapter-titles/README.md) を参照。
+採用記録の `runtime_integrated:false` は、採用画像4枚の本編表示が当時は部分導入だったことを示す記録。実際の導入は `js/core/chapter-title-art.js` と [検証記録](../docs/qa/chapter-titles/README.md) を参照。
 
 検証: `node remake/test/browser/chapter_titles.mjs`。PC・タッチ・縦DS、実際のNEW GAME/第2章入口、保存不変、画像の遅延/失敗と第3章保留を確認する。
 
@@ -140,7 +148,7 @@ GAME OVER／CONTINUE（#590）:
 
 チョイザップは地元の会員資格を東京でも使えます。会員には本筋と重ならない空き時間が現れ、地図からトレーニングか休養を選べます。追加料金なし・一日一回・一行動。正常読了後だけ基準体力8と施設の基本魅力2P、利用日のfitを確定し、恋人との約束を優先します。休養は体力55回復（最大まで）。中断・LOAD・同じ枠の再操作で繰り返し付与しません。
 
-動物園と池は景観ランドマークです。ジム以外の東京の任意スポット・専用の大会前夜デート台本、第4章以降の本編は未接続。[東京地図の制作・検証](../asset_sources/ch3-tokyo-map/README.md)。確認は `node remake/test/browser/ch3_map_activities.mjs`。
+動物園と池は景観ランドマークです。ジム以外の東京の任意スポット・専用の大会前夜デート台本は未接続（第4章以降の本編は `chapters/ch4.js`・`ch5.js` で接続済み）。[東京地図の制作・検証](../asset_sources/ch3-tokyo-map/README.md)。確認は `node remake/test/browser/ch3_map_activities.mjs`。
 
 第2章の最初の試遊は `http://127.0.0.1:8123/remake/chapter2-preview.html`。
 同じ県内の隣町・柚ヶ谷（ゆずがや）で、到着の会話、新しい昼夜マップ、4地点の入口での出会い、3地点の準備中の店内見学、帰路を遊べる。
@@ -149,7 +157,7 @@ GAME OVER／CONTINUE（#590）:
 あげはの店に通う回のうちギャル友の回（`remake_ch2_ageha_gyaru`）の最後に、入口のプリクラ機で二人で撮る演出がある（#939・`js/motions/purikura.js`・`css/motions/purikura.css`）。3連写→盛り→落書き→印刷→ハサミで半分こ。落書きではあげはのペンの線だけがよれて途中で止まり、スタンプに持ち替える（手の震え。演出の中では誰も触れず、締めの心の声は `_ch2_ageha_secret` で出し分ける）。最後に出てくるシールは #921 で作った4コマのCG `cg_ageha_first_purikura`（[CG制作プラン](../docs/cg_production_plan.md) #15）で、真ん中で左右に切る。撮影から落書きまでは立ち絵で写し、CGが無い環境では立ち絵の2×2で代用する。a は撮影、b は落書きとシールが主役（採用待ち・既定は a・`?movar=b`）。`__remake.dev.motion("purikura")`・`"purikura-scene"` で再生。SKIP中と動きを減らす設定では省く。
 試遊の進行はページ内だけに保持し、再読み込みで最初へ戻る。
 本編の保存枠・関係値・所持品へは引き継がない。本編の準備期間はDAY13まで接続済み。第14日の県大会は次の制作範囲。
-街の要件と制作順は [第2章ロードマップ](../docs/plans/post_chapter1_roadmap.md)、
+街の要件と制作順は [第2章ロードマップ（2026-10-13の計画・履歴）](../docs/archive/plans_post_chapter1_roadmap.md)、
 原画・素材の見直しは [街マップ](../asset_sources/ch2-city/README.md)・[人物](../asset_sources/ch2-characters/README.md)・[内装](../asset_sources/ch2-interiors/README.md) の制作記録。
 検証は `CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/ch2_preview.mjs`。
 
@@ -193,7 +201,7 @@ python3 remake/tools/serve_preview.py --port 8123
 更新後のファイルに混ざらないようにする。データは4件ずつ読み、各通信は15秒で中断する。
 起動に失敗した場合は読み込み画面に再試行ボタンを表示する。
 
-## 作り直しの方針（旧版との違い）
+## 作り直しの方針（旧版との違い・2026-10-07に旧 `web/` 削除済みの履歴）
 
 | 観点 | 旧版 `web/` | リメイク版 `remake/` |
 |---|---|---|
@@ -237,7 +245,7 @@ python3 remake/tools/serve_preview.py --port 8123
 スロットの `onAction({ spent })` には実際の消耗を渡す。回復や強制案内では回さない。
 スロットはハズレ／リプレイ1P、チェリー2P、ベル3P、REG16P、BIG／プレミア24P、フリーズ36P。確率・天井・再遊技・救済はそのまま。
 成長通知は **STATUS UP** の下に能力名と実増加の **+NP** を置く。Pも数字と同じ19pxの大文字にし、21pxの能力名のすぐ右へ寄せる。漢字は黒い枠の中央へ揃える。煙なしの元の金属枠・漢字銘板・5色を維持し、通常272×68px。進化時だけ **LEVEL UP**・進化・短い恩恵を添え、スロットは **SLOT BONUS**。スロットの通知は同じ位置で枠が一度明るくなり、短い控えめな専用音を添える。ランク名はステータス画面で確認する。
-全能力MAXは第5章で育成を重ねて狙う。第3章の必須ルートは帰郷まで接続済み。第4・5章は未接続のため、5章の調整結果は成長モデルの検証。[表示・バランスと検証記録](../docs/compact_gains_and_growth_20261008.md)。
+全能力MAXは第5章で育成を重ねて狙う。第3章の必須ルートは帰郷まで接続済み。第4・5章の数値は成長モデルの検証値で、後続の心得の盤（`docs/stat-design/`）で見直す。[表示・バランスと検証記録](../docs/compact_gains_and_growth_20261008.md)。
 
 マップでは店名＋「へ行く」を顔の下に、施設名を大きな記号の下に置く。顔は52px、新しいイベントだけ字面を中央に揃えた丸い「！」を表示する。既読・凛の不在日・定休日・臨時休業は印の対象外。SHISHARKは第2章になるまで地図へ出さない。
 
@@ -253,7 +261,7 @@ remake/
     vn/           会話エンジン（dialogue JSON 互換・autoWrap・立ち絵）
     daily/        日常パート（マップ・スポット・バイト・ショップ・くじ・スロット・恋人・ステータス・LIME）
     craft/        シーシャ作り（工程ミニゲーム・調整2回・採点・結果発表）
-    chapters/     章の台本（ch1.js）
+    chapters/     章の台本（ch1.js〜ch5.js と章ごとの進行・地図・予告モジュール）
     scenes/       タイトル・ギャラリー（見たCGは端末単位で記録＝はじめからやり直しても消えない）
   data/
     manifest.json    立ち絵の余白計測・アセット一覧（tools/build_manifest.py で生成）
@@ -377,7 +385,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    - 生放送レイヤー（`craft/broadcast.js`・旧版 #24/#20/#26）: 工程の頭でパッキーが前振り＋ライバルの進行実況、
      出来に応じてニコ動風のコメントが流れる。点数は作業台右上の SCORE（全モード共通・工程ごとに加算・結果表にも載る）に一本化（TH42）。文面は `remake/data/broadcast.json`
    - 審査 → RESULT 10 COUNT（プチュン＝1位確定／パリン＝敗北）→ 南雲の持ち点10一括投入
-   - 優勝: 表彰 → `ch1_tournament_after` → スミさんの祝福LIME → `ch1_naru_promise` → 採点表を気にし始める章末 → 90年代風の次回予告 → 第1章クリア
+   - 優勝: 表彰 → `ch1_tournament_after`（会場まで） → スミさんの祝福LIME → `ch1_tournament_after`（閉店後のtonariの祝杯・採点表の走り書き） → なるのLIME・「???」の記録LIME → `ch1_naru_promise` → 採点表を気にし始める章末 → 90年代風の次回予告 → 第1章クリア
    - 敗北: `ch1_tournament_defeat` → GAME OVER（大会の頭から再挑戦／タイトルへ）
 
 ## Dr.fookah のショップUI（#505）
@@ -465,7 +473,7 @@ node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信
 
 ## まだ無いもの（次の作業候補）
 
-- 第3章の任意スポット・恋人との大会前夜デート、第4章以降の本編接続（台本の再生順は `data/story_routes.json`）
+- 第3章の任意スポット・恋人との大会前夜デート（台本の再生順は `data/story_routes.json`）。第4章・第5章は接続済みで、細部の調整は `docs/stat-design/` と `docs/owner_requests.md` の最新節を見る
 - 恋人になってからの章をまたぐ要素（ch4 ドバイに来る／来ない・エンディングの修羅場）は第2章以降と一緒に
 - 占い師（旧版の路上占い）・家シーシャ・レシピ帳の画面
 - BGMの細かい出し分け（現状は場面ごとの基本曲のみ）
@@ -477,7 +485,7 @@ node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信
 実際に読んだ交流を記憶し、折り返しと大会前夜に最大3人分を振り返る。人数・恋愛・勝利の加点には使わない。
 スキーマ4以前のセーブも継続でき、新しい会話の記憶は空から始まる。訪問や好感度から未読の記憶を補わない。
 リメイク固有の折り返し・みんとの反復会話・恋人LIME・デートも主題に合わせ、敗北後の帰店は一度だけ描く。
-第2章以降の改稿も正本に保存しているが、遊べる進行は現在第2章の東京への出発まで。
+第2章以降の改稿も正本に保存した（当時遊べる進行は第2章の東京への出発まで。現在は第1〜5章が接続済み）。
 
 PCはマウス・クリック・Enterで操作できる。細いウィンドウや縦向きモニターではゲームが縮小され、
 横向き案内はタッチ端末の縦画面だけに出る。タイトルの6項目とセーブ情報も720px内に収まる。
@@ -504,7 +512,7 @@ node remake/test/playthrough.mjs
 
 恋人プレミアは**20%**、同一恋人の連続出演は避ける。第1章のみんとは大会の敵なので除外。サメちゃんはプレミア台本を持つが、現時点では恋愛ルート自体が本編に未接続で、恋人成立後にのみ抽選対象となる。
 
-演出の終端・帰宅の会話待機の確認は [演出の修正と検証](../docs/motion_endings_20261011.md)、起動時・第1章でプレイヤーが読む容量は [ロード容量の実測](../docs/player_load_capacity_20261010.md)。
+演出の終端・帰宅の会話待機の確認は [演出の修正と検証](../docs/archive/motion_endings_20261011.md)、起動時・第1章でプレイヤーが読む容量は [ロード容量の実測](../docs/archive/player_load_capacity_20261010.md)。
 
 ### 恋人デートのデータ検査
 

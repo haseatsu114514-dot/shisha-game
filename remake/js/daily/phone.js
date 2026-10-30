@@ -68,9 +68,9 @@ function scheduledInvitation(m, opts = {}) {
   if (schedule.closed_on == null) delete resolved.closed_on;
   resolved.messages = (m.messages || []).map((line) => typeof line === "string" ? render(line) : typeof line?.text === "string" ? { ...line, text: render(line.text) } : { ...line });
   if (schedule.temporary_closed && !JSON.stringify(m.messages).includes("{privateContext}")) {
-    const text = { naru: "今日は店を臨時で休みにした。午後、付き合ってくれないか？",
+    const text = { naru: "今日は店を臨時で閉めたから、午後ちょっと付き合えよ",
       adam: "今日は店を臨時で休む。午後、共に出かけよう",
-      minto: "今日は臨時でお店を休みにしたの。午後、会えたらうれしいな" }[m.sender]
+      minto: "今日は臨時でお店を休みにしたの。午後、会えたら嬉しいな" }[m.sender]
       || "今日は臨時のお休み。午後、会えたらうれしいな";
     resolved.messages.unshift({ sender: m.sender, text });
   }
@@ -298,7 +298,7 @@ function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) 
   const spot = open[Math.floor(state.day / 4) % open.length];
   return { id: `_hiyori_shop_c${state.chapter}_d${state.day}`, sender: "hiyori", type: "invitation",
     time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: spot.id,
-    messages: [`……今夜、${spot.label}で一緒に一服しない？ 私が煙になっちゃう前に`], accept_text: "今夜、行くね",
+    messages: [`……今夜、${spot.label}で一緒に一服しない？ 私が煙になっちゃう前に`], accept_text: "今夜、行きます",
     decline_response: { text: "……うん。また都合のいい日に" } };
 }
 
@@ -313,6 +313,12 @@ function sumiBaitoInvite({ tournamentDay = false } = {}) {
   const fixed = state.day === 3 || state.day === 8;
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
+  // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）
+  const reasons = [
+    "常連の団体が入ってな。人手が足りん",
+    "仕入れの業者と昼が重なってな。手が回らん",
+    "昼に貸切の予約が入った。炭番が一人足りん",
+  ];
   return {
     id,
     sender: "sumi",
@@ -323,10 +329,10 @@ function sumiBaitoInvite({ tournamentDay = false } = {}) {
     hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
     messages: [
       "急で悪い。今日、昼のシフト入れるか？",
-      "常連の団体が入ってな。人手が足りん",
+      reasons[state.day % reasons.length],
       "……代わりと言っちゃなんだが、給料は弾むぞ",
     ],
-    decline_response: { text: "おう、わかった。無理はするな" },
+    decline_response: { text: "……そうか。なら、こっちで回す" },
   };
 }
 

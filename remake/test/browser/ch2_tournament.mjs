@@ -18,7 +18,8 @@ async function seed(page, { known = false, stage = '', auto = 'good', progress =
     Object.assign(s,{ chapter:2,day:28,slot:0,phase:'daily',money:23456,stamina:100,
       flavorStock:{double_apple:40,mint:12},lovers:['minto'],loverSince:{minto:10},lastDate:{minto:25},contacts:['sumi','minto'],
       keepsakes:['qa_memory'],relationshipMemories:['tsumugi_creature'] });
-    s.flags = { _elapsed_calendar:true,_ch1_cleared:true,_ch2_day1:{startDay:15,stage:'complete'},_ch2_eve_done:true,_ch2_taste_distant:true };
+    // 予告1の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして大会本体に集中する。
+    s.flags = { _elapsed_calendar:true,_ch1_cleared:true,_ch2_day1:{startDay:15,stage:'complete'},_ch2_eve_done:true,_ch2_taste_distant:true,_ch2_preview_seen:true };
     s.stats={technique:42,sense:42,guts:42,charm:42,insight:42};
     s.inbox=[{id:'qa_old',originId:'qa_old',day:20,read:true,done:true,replyState:'none',log:[{text:'大切な約束'}],msg:{sender:'minto',type:'message',messages:['また会おうね']}}];
     s.tournament.lastRank=1; s.tournament.lastTotal=88;
@@ -72,7 +73,7 @@ async function playAttempt(page,touch=false,reloadCare=false) {
   assert.equal(p.craft.careHistory.length,2);assert.equal(p.result.careHistory.length,2);assert.equal(p.history.length,1);
   for(const row of Object.values(p.votes))assert.equal(Object.values(row).reduce((a,b)=>a+b,0),10);
   assert.equal(p.craft.chapter,2);
-  assert.deepEqual(p.craft.tournamentStory.seen,['opening','packed','waiting','interlude1','interlude2','tasting']);
+  assert.deepEqual(p.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','interlude1','interlude2','interlude3','tasting']);
   assert(Number.isFinite(p.craft.tournamentStory.servedAroma));
   assert(await page.locator('.ch2-contest-rival img').evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));return imgs.every(i=>i.naturalWidth>0);}));assert.deepEqual(p.craft.audienceIds.slice().sort(),['dr_kemuri','maezono','nagumo']);
   // 同じ配分で計算された総合値がそのまま章2の記録に残る。
@@ -263,8 +264,10 @@ await suite('ch2-tournament',async check=>{
     await press(next);await page.locator(scene('ch3_mukai_intro')).waitFor();await checkGuide();
     const after=await get(page);assert.equal(after.flags._ch3_intro.stage,2);
     assert.match(await page.locator(guide).innerText(),/新しい店の朝/);
-    for(const key of ['money','stamina','stats','flavorStock','lovers','keepsakes','relationshipMemories'])
+    for(const key of ['money','stamina','stats','flavorStock','lovers','keepsakes'])
       assert.deepEqual(after[key],before[key],`Guide changed ${key}`);
+    // #1740（e32120da）: ch3_mukai_arrival を読み終えると交流の記憶 mashiro_pace が残る（台詞側の remember）。案内は記憶を足さない。
+    assert.deepEqual(after.relationshipMemories,[...before.relationshipMemories,'mashiro_pace'],'Guide changed relationshipMemories');
     await press(menu);await page.getByRole('button',{name:'閉じる',exact:true})[touch?'tap':'click']();
     await checkGuide();assert.equal((await get(page)).flags._ch3_intro.stage,2);
   },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
@@ -294,7 +297,9 @@ await suite('ch2-tournament',async check=>{
     assert.equal(after.day,before.day);
     assert.equal(after.slot,before.slot);
     assert.deepEqual(p.votes,before.flags._ch2_tournament.votes);
-    assert.deepEqual(p.craft,before.flags._ch2_tournament.craft);
+    // 吸い出しの前に読んだ提供前の掛け合いだけは既読として残る（読み直させない）。工程・在庫・票は戻る。
+    const expectedCraft=structuredClone(before.flags._ch2_tournament.craft);expectedCraft.tournamentStory.seen.push('interlude_pull');
+    assert.deepEqual(p.craft,expectedCraft);
     assert.equal(p.rollback,null);
     assert.equal(after.stamina,before.stamina);
     assert.deepEqual(after.flavorStock,before.flavorStock);
@@ -335,7 +340,7 @@ await suite('ch2-tournament',async check=>{
     await assertFits(page,'.ch2-contest .btn');await page.locator(t('start')).click();await phone(page);
     await page.locator(t('ready')).waitFor();
     const texts=await page.evaluate(()=>window.__texts.join('\n'));
-    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のREI/);assert.match(texts,/俺はヤクザだ/);
+    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のREI/);assert.match(texts,/昔は組を張ってやした/);
     const entryTrace=await page.evaluate(()=>window.__trace);
     const result=await playAttempt(page,false,true);assert.equal(result.flags._ch2_tournament.result.rank,1);
     // 最終票を確定した直後、講評の途中で離脱した保存を再現する。
@@ -348,21 +353,26 @@ await suite('ch2-tournament',async check=>{
     assert.equal(resumed.flags._ch2_tournament.history.length,1);
     assert.deepEqual(resumed.flags._ch2_tournament.votes,result.flags._ch2_tournament.votes);
     assert.equal(resumed.flags._ch2_tournament.result.total,result.flags._ch2_tournament.result.total);
-    assert.deepEqual(resumed.flags._ch2_tournament.craft.tournamentStory.seen,['opening','packed','waiting','interlude1','interlude2','tasting']);
+    assert.deepEqual(resumed.flags._ch2_tournament.craft.tournamentStory.seen,['opening','packed','waiting','interlude_pull','interlude1','interlude2','interlude3','tasting']);
     await page.locator(t('continue')).click();await phone(page);await page.locator(t('complete')).waitFor();
     let s=await get(page);assert(s.flags._ch2_tokyo_invitation);assert(s.flags._ch2_taste_distant);assert(!s.flags.ch2_taste_recovered);assert.equal(s.phase,'cleared');assert.equal(s.day,28);assert.equal(s.slot,1);
-    for(const key of ['tournament','lovers','loverSince','lastDate','contacts','keepsakes','relationshipMemories','money','stats'])assert.deepEqual(s[key],before[key],key);
+    // 初期所持金23,456円 + 第2章優勝賞金50,000円。
+    for(const key of ['tournament','lovers','loverSince','lastDate','contacts','keepsakes','relationshipMemories','money','stats'])assert.deepEqual(s[key],key==='money'?before.money+50000:before[key],key);
     assert.deepEqual(s.inbox[0],before.inbox[0]);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
     assert.equal(await page.getByRole('button',{name:'第三章・東京へ'}).count(),1);
-    assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_rules']);
+    assert.deepEqual(entryTrace,['ch2_tournament_lobby','ch2_tournament_entrance','ch2_tournament_stations','ch2_tournament_rules']);
     const afterText=await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'));
     // #929: あげはは消えない。悔しさと祝福を両立し、店での次の一台を約束する
     assert.doesNotMatch(afterText,/理由は、聞かないで|扉の向こうへ消えた/);assert.match(afterText,/おめでと、ハジメっち/);assert.match(afterText,/次は、うちの店ね/);
     assert.match(afterText,/スジの通った一台/);assert.match(afterText,/味の輪郭は戻らない/);
+    // #1653: 優勝時だけ、結果カードの前に決着の間を置く
+    assert.match(afterText,/県代表の座は──/);assert(afterText.indexOf('県代表の座は──')<afterText.indexOf('スジの通った一台'));
     // #929: 章の最後に、はじめのいない店であげはの心の声。読了を記録し、再読込で繰り返さない
     assert.match(afterText,/こんなの、ズルいよ/);assert(s.flags._ch2_read_ch2_tournament_ageha_heart);
     assert(afterText.indexOf('こんなの、ズルいよ')>afterText.indexOf('味の輪郭は戻らない'));
     assert.match(afterText,/おめでとうの文字が届いていた/);
+    // #1653: 完了カードも閉店後のMELTY PUFFのまま（昼の大会ステージへ戻さない）
+    assert.match(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage),/bg_ch2_ageha_closed_night/,'complete card must keep the closed MELTY PUFF background');
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);
     assert.equal(s.flags._ch2_tournament.history.length,1);assert.equal(s.inbox.filter(i=>i.id.startsWith('ch2_tournament_sumi_')).length,2);
     assert(!/ズルいよ/.test(await page.evaluate(async()=>(await import('./js/vn/engine.js')).backlog().map(l=>l.text).join('\n'))),'complete reload must not replay the ending');
@@ -544,6 +554,14 @@ await suite('ch2-tournament',async check=>{
     const ordered=await page.evaluate(async()=>
       (await import('./js/chapters/ch3-progress.js')).CH3_INTRO_SCENES.map(({id,day,slot})=>({id,day,slot})));
     for(const {id,day,slot} of ordered.slice(1)) {
+      // 東京の空き時間（#1655）は休んで次の場面へ。休養は体力だけを戻す。
+      await page.locator(`${scene(id)}, ${dt('ch3-intro-free')}`).first().waitFor();
+      while(await page.locator(dt('ch3-intro-free')).count()){
+        const card=await page.locator(dt('ch3-intro-free')).elementHandle();
+        await page.locator(dt('ch3-intro-visit-rest')).click();
+        await card.waitForElementState('hidden');
+        await page.locator(`${scene(id)}, ${dt('ch3-intro-free')}`).first().waitFor();
+      }
       await page.locator(scene(id)).waitFor();
       s=await get(page);
       assert.equal(s.day,28+day,`Wrong elapsed day before ${id}`);
@@ -649,6 +667,9 @@ await suite('ch2-tournament',async check=>{
     await page.locator(dt('ch3-intro-reload')).click();
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_first"]').waitFor();
     await page.locator(dt('ch3-intro-continue')).click();
+    // 初対面の夜は東京の空き時間（#1655）。休んで次の場面へ。
+    await page.locator(dt('ch3-intro-free')).waitFor();
+    await page.locator(dt('ch3-intro-visit-rest')).click();
     await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_kuze_mukai_visit"]').waitFor();
     s=await get(page);
     assert.equal(s.flags._ch3_intro.stage,12);

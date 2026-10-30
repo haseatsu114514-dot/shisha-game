@@ -12,20 +12,20 @@ const events = baitoData.events.filter((e) => categories.has(e.category));
 const scenes = JSON.parse(await fs.readFile(new URL("data/dialogue/remake_ch1.json", dataRoot), "utf8")).dialogues;
 const sumi = JSON.parse(await fs.readFile(new URL("data/dialogue/ch1_sumi.json", dataRoot), "utf8")).dialogues;
 const state = {}, db = { baito: events, dialogues: {} }, plays = [], money = [], menus = [];
-let rainy = false, selectedPools = [], charmStar = 1, hiyoriDue = false;
+let rainy = false, selectedPools = [], charmStep = 1, hiyoriDue = false;
 class Element { constructor(spec) { this.spec = spec; this.children = []; this.dataset = {}; } append(...nodes) { this.children.push(...nodes.flat().filter(Boolean)); } }
 function el(spec, attrs = {}, children = []) { if (Array.isArray(attrs)) { children = attrs; attrs = {}; } const node = new Element(spec); Object.assign(node, attrs); node.append(children); return node; }
 function find(node, id) { if (node.dataset?.test === id) return node; return node.children?.map((child) => find(child, id)).find(Boolean); }
 const values = {
   "practice.js": { runFullPractice: async () => {} },
   "hiyori.js": { meetHiyoriAtTonari: async () => false, hiyoriShopEncounterDue: () => hiyoriDue, hiyoriAtTonari: () => false },
-  "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false },
+  "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false, hiyoriAxePrereqsMet: () => false, axeThrowExposed: () => false },
   "util.js": { el, seeded, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
-  "data.js": { DB: db, sceneBg: () => ({}), bgUrl: () => "bg", displayName: id => id },
+  "data.js": { DB: db, sceneBg: () => ({}), loadCinemaDialogue: async () => db, bgUrl: () => "bg", displayName: id => id },
   "ui.js": { withScenePreparation: task => task, imageReady: async () => false, showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
   "transitions.js": { refreshPlaceCue() {} },
-  "state.js": { state, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
-  "stats.js": { AFFINITY_RANK_PTS: [0,9,20,33,48,66], setStoryAffinityCap() {}, affinityGateWaiting: () => false, addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, star: () => charmStar,
+  "state.js": { state, config: { statEffectColors: true }, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
+  "stats.js": { AFFINITY_RANK_PTS: [0,9,20,33,48,66], setStoryAffinityCap() {}, affinityGateWaiting: () => false, addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, step: () => charmStep,
     currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, releaseAffinity() {}, ensureAffinityLevel() {}, earnStat() {}, affinityLevel: id => [9,20,33,48,66].filter(n => (state.affinity?.[id] || 0) >= n).length },
 
   "audio.js": { SE: { select() {}, cancel() {} }, playBgm() {} },
@@ -36,22 +36,23 @@ const values = {
   "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on: () => () => {} },
+  "growth.js": { growthEnabled: () => false, readyLessons: () => [], consultLessons: async () => [] },
   "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };
 const context = vm.createContext({ Math, Set, Promise, console, AbortController }); const mods = new Map();
 async function load(name) { if (mods.has(name)) return mods.get(name); const mod = values[name]
   ? new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name })
-  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
+  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["stat-step-tables.js", "flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
-function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {} }, overrides);
+function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {}, visits: {}, contacts: [], visitedDay: {}, lovers: [], loveLevel: {}, finales: {}, spotVisits: {} }, overrides);
   // 既読段階を注入する在店fixtureでは、その段階を読める♥も明示する（加算の検証は別suite）。
   if (!overrides.affinity) state.affinity = Object.fromEntries(Object.entries(state.story).map(([id,n]) => [id,[0,9,20,33,48,66][Math.min(5,n)] || 0]));
   // DAY8の接客fixtureは、それまでの必須場面を読了した通常営業。
   Object.assign(state.flags, { _tsumugi_contest_research: true, _tsumugi_contest_progress: true });
-  db.baito = events; rainy = false; charmStar = 1; plays.length = 0; money.length = 0; menus.length = 0; selectedPools = []; }
+  db.baito = events; rainy = false; charmStep = 1; plays.length = 0; money.length = 0; menus.length = 0; selectedPools = []; }
 function selected() { return plays.find((scene) => typeof scene === "object" && scene.dialogue_id?.startsWith("baito_"))?.dialogue_id; }
 const custom = (id, fields = {}) => ({ id, category: "regular", text: "注文を受けた", choices: [], customers: [id], ...fields });
 // #1178 C1-01: 読み込んだ常連回は面識・在店予定を守り、別IDの同じ客も連日出さない。
@@ -111,7 +112,7 @@ reset({ chapter: 2, baitoCount: 1, flags: {} }); db.baito = [byid.baito_regular_
 reset(); db.baito = [byid.baito_regular_01]; await tonari.doBaito({ called: true }); assert.equal(money[0], 13000); assert(!JSON.stringify(menus).includes("閉店"));
 // 体力の消耗後の色で制作の売上上乗せを決める。基本給・急なシフト・雨の手当は維持。
 for (const [stamina, expectedPay, expectedChoice] of [[75, 15075, 2300], [74, 14000, 2000], [49, 13750, 1000], [24, 13750, 1000]]) {
-  reset({ stamina }); charmStar = 2; rainy = true;
+  reset({ stamina }); charmStep = 3; rainy = true;
   db.baito = [custom("condition", { choices: [{ text: "作る", result: "一台を仕上げた", stats: { technique: 3 }, money_bonus: 2000 }] })];
   await tonari.doBaito({ called: true });
   assert.equal(money[0], expectedPay, `Shift condition at stamina=${stamina}`);
@@ -120,9 +121,19 @@ for (const [stamina, expectedPay, expectedChoice] of [[75, 15075, 2300], [74, 14
   assert.equal(reward.stats.technique, 3);
 }
 reset({ stamina: 24 }); db.baito = []; await tonari.doBaito(); assert.equal(money[0], 8000, "Exhaustion cut the guaranteed base wage");
-// 統合spots.jsの夜限定gateをそのまま使い、昼のシフト上がりで夜限定固有会話を案内しない。
-reset({ story: { sumi: 2 }, affinity: {sumi:20} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("落ち着いた一台")); assert(!JSON.stringify(menus).includes("今日は何か教えて"));
-reset({ slot: 1, story: { sumi: 2 }, affinity: {sumi:20} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("今日は何か教えて"));
+// #1081 B05: シフト上がりのスミ会話は必須で、メニューに選択肢は無い。
+// 統合spots.jsの夜限定gateをそのまま使い、昼は夜限定の固有会話（ch1_sumi_training）を
+// 流さず定型の一言にし、夜は固有会話を流して既読（story）を進める。
+db.dialogues = Object.fromEntries([...scenes, ...sumi].map((s) => [s.dialogue_id, s]));
+reset({ story: { sumi: 2 }, affinity: { sumi: 20 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito();
+assert(plays.includes("remake_sumi_after_shift"), "昼のシフト上がりは定型の一言");
+assert(!plays.includes("ch1_sumi_training"), "昼は夜限定の固有会話を流さない");
+assert.equal(state.story.sumi, 2, "定型の一言では既読を進めない");
+assert(!JSON.stringify(menus).includes("スミさんと話す"), "シフト上がりメニューにスミ会話の選択肢は無い");
+reset({ slot: 1, story: { sumi: 2 }, affinity: { sumi: 20 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito();
+assert(plays.includes("ch1_sumi_training"), "夜のシフト上がりは固有会話を流す");
+assert(!plays.includes("remake_sumi_after_shift"), "固有会話がある日は定型の一言にしない");
+assert.equal(state.story.sumi, 3, "固有会話の既読が進む");
 
 const handoff = scenes.find((s) => s.dialogue_id === "remake_delivery_minto_handoff");
 assert(handoff && /peppermint/.test(handoff.metadata.bg) && /この後よかったら/.test(JSON.stringify(handoff)));

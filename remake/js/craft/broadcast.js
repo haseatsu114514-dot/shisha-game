@@ -117,13 +117,16 @@ export function completed(cs, step, score) {
   const kind = judgeOf(score);
   const genericKind = kind === "great" ? "perfect" : kind;
   const cls = genericKind;
-  const specific = DB.broadcast?.completion?.[step]?.[kind] || [];
+  const shared = DB.broadcast?.completion?.[step]?.[kind] || [];
+  const local = chapterSection(cs)?.completion?.[step]?.[kind] || [];
   const generic = nicoPool(cs, genericKind);
   // 工程に触れた視聴者コメント2本を先頭に、短い歓声3本を続けて数を増やす。
+  // 章別の一言があれば1本はそこから選び、章ごとの客席の空気を出す。
   // 以前の「【炭焼き】…」のような機械的な工程ラベルは付けない（コメント自体が工程に触れている）。
-  const lines = specific.length
-    ? [...pickFresh(cs, specific, 2), ...pickFresh(cs, generic, 3)]
-    : pickFresh(cs, generic, 3);
+  const specific = local.length && shared.length
+    ? [...pickFresh(cs, local, 1), ...pickFresh(cs, shared, 1)]
+    : pickFresh(cs, [...shared, ...local], 2);
+  const lines = specific.length ? [...specific, ...pickFresh(cs, generic, 3)] : pickFresh(cs, generic, 3);
   lines.forEach((text, i) => {
     if (i === 0) comment(cs, text, { cls });
     else defer(cs, () => comment(cs, text, { cls }), i * 600);

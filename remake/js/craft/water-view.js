@@ -1,8 +1,9 @@
 import { el } from "../core/util.js";
+import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { stepPanel, benchRoot, craftTest, setBenchWater } from "./session.js";
 import { STEP_BRIEFS } from "./bench-ui.js";
-import { waterQuantity, changeWater, waterBand } from "./water.js";
+import { waterQuantity, changeWater, waterComfort, STEM_TIP } from "./water.js";
 
 function ensureStyle() {
   if (document.querySelector('link[data-craft-water]')) return;
@@ -24,16 +25,17 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
     listeners.push(() => target.removeEventListener(type, fn, settings));
   };
   const fill = el("div.craft-water-fill");
-  const meter = el("div.craft-water-meter", { role: "meter", "aria-label": "水量", "aria-valuemin": 0, "aria-valuemax": 100 }, [
-    fill, el("div.craft-water-band", { "aria-hidden": "true" }),
+  const tip = el("div.craft-water-tip", { text: "ステムの先", dataset: { test: "water-tip" } });
+  tip.style.bottom = `${STEM_TIP * 100}%`;
+  const meter = el("div.craft-water-meter", { role: "meter", "aria-label": "水量", "aria-valuemin": 0, "aria-valuemax": 100, dataset: { test: "water-meter" } }, [
+    fill, el("div.craft-water-band", { "aria-hidden": "true" }), tip,
   ]);
-  const amount = el("output.craft-water-amount", { dataset: { test: "water-quantity" } });
-  const status = el("span.craft-water-status");
+  const status = el("span.craft-water-status", { dataset: { test: "water-status" } });
   const pour = el("button.btn", { type: "button", text: "注ぐ（長押し）", dataset: { test: "water-pour" } });
   const drain = el("button.btn", { type: "button", text: "少しこぼす（長押し）", dataset: { test: "water-drain" } });
   const confirm = el("button.btn.primary", { type: "button", text: "この水量で進む", dataset: { test: "water-confirm" } });
   const root = el("section.craft-water", { dataset: { test: "water-step" } }, [
-    el("div.craft-water-display", [meter, el("div", [amount, status, el("p", { text: "目安 45〜55% ／ 満水 100%" })])]),
+    el("div.craft-water-display", [meter, el("div", [status, el("p", { text: "目安：ステムが少し浸かるまで（二本の線のあいだ）" })])]),
     el("p.craft-water-help", { text: "押している間だけ水量が変わります。離すと止まり、何度でも調整できます。キーボードはボタンに合わせてSpace / Enterを長押し。" }),
     el("div.craft-water-actions", [pour, drain, confirm]),
   ]);
@@ -43,9 +45,11 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   function render() {
     fill.style.height = `${q * 100}%`;
     fill.style.setProperty("--water-wave", `${wave}px`);
-    amount.textContent = `${(q * 100).toFixed(1)}%`;
     meter.setAttribute("aria-valuenow", String(q * 100));
-    status.textContent = { low: "目安より少なめ", ideal: "目安の範囲", high: "目安より多め" }[waterBand(q)];
+    const band = waterComfort(q).band;
+    status.textContent = { none: "ステムに届いていない", shallow: "浸かりが浅い", ideal: "ちょうどよく浸かっている", deep: "深い" }[band];
+    status.dataset.band = band;
+    meter.setAttribute("aria-valuetext", status.textContent);
     root.dataset.flow = direction || "stopped";
   }
   function advance(now) {
@@ -161,5 +165,11 @@ export async function stepWater(cs) {
   cs.water = await view.result;
   // 確定した水位を左の作業風景のボトル内部へ描く（本編・練習共通）。
   setBenchWater(cs);
+  toast({
+    ideal: "ステムがほどよく浸かった。すっきりした吸い心地になりそう",
+    shallow: "浅め。煙が冷えきらず、喉に当たるかも",
+    deep: "深め。吸い心地が重くなりそう",
+    none: "ステムが水に届いていない。煙が冷えないぞ",
+  }[waterComfort(cs.water).band]);
   return cs.water;
 }

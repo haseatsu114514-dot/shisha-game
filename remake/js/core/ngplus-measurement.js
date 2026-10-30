@@ -32,14 +32,12 @@ export function validateScenario(scenario) {
 
 /**
  * シナリオの持ち込み指数 P。
- * 確認点（U3 統合時の課題）: 現行 difficultyForRun は cycleStartStats ではなく
- * statsAtChapterStart を参照する。開始スナップショットの参照先が U3 で確定するまでは、
- * シナリオの cycleStartStats を現行の入力名へ写して渡す。playStats は P に影響しない。
+ * 周回開始時の cycleStartStats をそのまま難易度へ渡す。playStats は P に影響しない。
  */
 export function carryPForScenario(scenario) {
   const s = validateScenario(scenario);
   return difficultyForRun(
-    { statsAtChapterStart: s.cycleStartStats },
+    { cycleStartStats: s.cycleStartStats },
     { cycle: s.cycle, carryStats: s.carryStats === true },
   );
 }

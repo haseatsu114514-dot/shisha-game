@@ -5,5 +5,7 @@ button{border:1px solid #e4c581;border-radius:7px;color:#fff2d0;background:#2017
 button:focus-visible{outline:3px solid #fff;outline-offset:3px}button:active,button[aria-pressed=true]{background:#775622}button:disabled{opacity:.5;cursor:default}
 #pad{position:absolute;right:20px;top:190px;display:flex;gap:12px}
 #travel{position:absolute;right:20px;top:260px;width:300px;padding:16px;border:1px solid #e4c581;border-radius:8px;background:#201728ed;font-size:22px;z-index:2}
-#travel-list{display:grid;gap:10px;margin-top:14px}#msg{position:absolute;left:50%;top:195px;transform:translateX(-50%);max-width:650px;border:1px solid #e4c581;border-radius:7px;background:#201728f5;padding:16px 22px;font-size:25px;z-index:3}
+#travel-list{display:grid;gap:10px;margin-top:14px}#msg{position:absolute;left:50%;top:195px;transform:translateX(-50%);max-width:650px;border:1px solid #e4c581;border-radius:7px;background:#201728f5;padding:16px 22px;font-size:25px;z-index:4}
+#street-loading{position:absolute;left:50%;top:195px;transform:translateX(-50%);max-width:760px;border:1px solid #e4c581;border-radius:7px;background:#201728f5;padding:16px 22px;font-size:25px;z-index:3;text-align:center;pointer-events:none}
+#street-loading[hidden]{display:none}
 #help{position:absolute;left:30px;bottom:12px;font-size:18px;text-shadow:0 2px 4px #000,0 0 7px #000;pointer-events:none}#standalone{position:absolute;inset:0;display:grid;place-content:center;background:#15101bdc;font-size:26px;gap:20px;text-align:center}#standalone[hidden]{display:none}a{color:#ffd681}

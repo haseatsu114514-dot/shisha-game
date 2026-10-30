@@ -5,7 +5,8 @@ import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { cycleBadgeText } from "../core/cycle-display.js";
-import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
+import { step, RANK_LABELS, affinityLevel, currentCondition } from "../core/stats.js";
+import { nextStepProgress, stepOfValue } from "../core/stat-progress.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
@@ -45,7 +46,7 @@ export function radar(stats, baseline, size = 340) {
     t.textContent = STAT_JA[k];
     svg.append(t);
     const s = svgEl("text", { x, y: y + 11, class: `radar-star rs-${k}`, "text-anchor": "middle", "dominant-baseline": "middle" });
-    s.textContent = "★".repeat(star(k));
+    s.textContent = `${stepOfValue(stats[k])}段`;
     svg.append(s);
   });
   return svg;
@@ -68,14 +69,16 @@ export function openStatus() {
 }
 
 
-/** 今の★で効いていること（★が上がるたびに変わる一言） */
+/** 今の段で効いていること。文は W2 の10段表を読む。 */
 export function tierFx(k) {
-  return DB.statusTexts?.statTierFx?.[k]?.[star(k) - 1] || "";
+  return DB.statusTexts?.statTierFx?.[k]?.[step(k) - 1] || "";
 }
 
 function meTab() {
   const note = el("p.st-note", { text: "項目をタップすると、何に効くかが分かる。淡い面は章のはじめ、明るい面が今の自分。" });
-  const rows = STAT_KEYS.map((k) => el(`div.st-row.st-${k}`, {
+  const rows = STAT_KEYS.map((k) => {
+    const progress = nextStepProgress(k);
+    return el(`div.st-row.st-${k}`, {
     dataset: { test: `st-${k}` },
     onclick: (e) => {
       e.currentTarget.parentNode.querySelectorAll(".st-row").forEach((r) => r.classList.toggle("sel", r === e.currentTarget));
@@ -86,13 +89,15 @@ function meTab() {
     el("div.st-info", [
       el("div.st-line", [
         el("span.st-name", { text: STAT_JA[k] }),
-        el("span.st-stars", { text: starText(k) }),
-        el("span.st-rank", { text: `「${rankLabel(k)}」` }),
+        el("span.st-pips", { role: "img", "aria-label": `${step(k)}段` }, Array.from({ length: 10 }, (_, i) => el(`i${i < step(k) ? ".on" : ""}`, { "aria-hidden": "true" }))),
+        el("span.st-rank", { text: `${step(k)}段・${RANK_LABELS[k][Math.floor((step(k) - 1) / 2)]}` }),
         state.stats[k] > (state.statsAtChapterStart[k] || 0) ? el("span.st-up", { text: "↑" }) : null,
       ]),
       el("span.st-fx", { text: tierFx(k) }),
+      el(`div.st-next${progress.capped ? ".capped" : ""}`, { text: progress.label }),
+      el(`i.st-next-track${progress.capped ? ".capped" : ""}`, { "aria-hidden": "true" }, [el("b", { style: { width: `${progress.fill}%` } })]),
     ]),
-  ]));
+  ]); });
   const condition = currentCondition();
   return el("div.st-me", [
     el("div.st-radar", [radar(state.stats, state.statsAtChapterStart)]),
@@ -169,7 +174,7 @@ function itemsTab() {
     gifts.length ? el("div.gift-notes", gifts.map(giftNote)) : null,
     el("h4", { text: "フレーバー" }),
     el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "所持0" })]),
-    el("p.st-note", { text: "1箱50g。大会・自宅の試作・店への私物持ち込みで消費。熟練度はLv.5まで。第2章の課題苺のみ主催者支給。" }),
+    el("p.st-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
     el("h4", { text: "レシピ帳" }),
     el("div.chips", DB.recipes.filter((r) => state.recipes[r.id]).map((r) => el("span.chip.gold", { text: r.name })).concat(
       Object.keys(state.recipes).length ? [] : [el("span.chip.dim", { text: "まだ白紙" })])),

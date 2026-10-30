@@ -5,8 +5,8 @@ import path from 'node:path';
 import { suite } from './support.mjs';
 
 const id = 'lime_minto_day5';
-const replyText = '頑張ります';
-const responseText = 'うん、お互いにね';
+const replyText = 'お店では余裕なんですね';
+const responseText = '……あれは、お店の顔だから。はじめくんにだけ、内緒ね';
 const out = path.resolve(process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser');
 fs.mkdirSync(out, { recursive: true });
 const measurements = [];

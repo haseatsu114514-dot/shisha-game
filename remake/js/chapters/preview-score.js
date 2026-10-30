@@ -102,14 +102,14 @@ function sampleScore(timeline, originalTimeline, quiet) {
   return notes.sort((a, b) => a.at - b.at);
 }
 
-/** seek(0)で開始。比較案のみカットに合わせて曲を組み替える。 */
-export function createPreviewScore({ timeline = null, originalTimeline = null, quiet = false } = {}) {
+/** seek(0)で開始。比較案のみカットに合わせて曲を組み替える。events を渡すと、その音符列をそのまま使う（cue 駆動スコア用）。 */
+export function createPreviewScore({ timeline = null, originalTimeline = null, quiet = false, events: providedEvents = null } = {}) {
   const AC = window.AudioContext || window.webkitAudioContext;
   let ctx = null, music = null, limiter = null, noise = null;
   let timer = null, stopped = false, paused = false, started = false, localMute = false;
   let offset = 0, epoch = 0, cursor = 0;
   const length = timeline ? timeline.reduce((total, cut) => total + cut.duration / 1000, 0) : LENGTH;
-  const events = timeline ? sampleScore(timeline, originalTimeline, quiet) : compose();
+  const events = providedEvents ?? (timeline ? sampleScore(timeline, originalTimeline, quiet) : compose());
   const voices = new Set();
 
   function ensureContext() {

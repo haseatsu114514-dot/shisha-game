@@ -234,7 +234,7 @@ await suite("ch1-tournament", async check => {
     await page.evaluate(async () => {
       T.session.craftTest.auto = "good";
       await T.heat.runHeat(cs);
-      cs.mix = { blueberry: 9, mint: 3 }; cs.mixInfo = T.steps.evaluateMix(cs); cs.pack = "normal";
+      cs.mix = { blueberry: 9, mint: 3 }; cs.mixInfo = T.steps.evaluateMix(cs); cs.pack = "normal"; cs.water = 0.5;
       cs.holes = { score: 95, outerEven: .95, innerExcess: 0, outer: 24, middle: 0, inner: 0 };
       cs.steam = { score: 100, seconds: 480, temp: .54 }; cs.steamSeconds = 480;
       await T.pull.runPull(cs);

@@ -13,7 +13,7 @@ const night = (day) => CH2_NIGHTS.find((n) => n.day === day);
 assert.deepEqual(night(3).steps.map((s) => s.id), ["ch2_naru_warm", "remake_ch2_ageha_scout"]);
 assert.equal(night(3).steps[1].contact, "ageha", "会っていなくても連絡先を交換する");
 assert(!night(2), "2日目は自由な夜");
-assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting"]);
+assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting", "ch2_strawberry_sample"]);
 // 9日目はMELTY PUFFではなくC.STATION柚ヶ谷店の客席（#929）。旧IDのまま読了フラグを引き継ぐ
 assert.equal(night(9).pin, "ch2_c_station");
 assert.equal(night(9).steps[0].room, undefined);
@@ -22,7 +22,15 @@ assert.equal(C_STATION_TASTING_BG, CITY_BACKGROUNDS.c_station_night, "柚ヶ谷�
 assert.match(C_STATION_TASTING_BG, /bg_yuzugaya_c_station_night\.webp$/, "地元店や県大会ホールの背景と区別する");
 assert.notEqual(C_STATION_TASTING_BG, CITY_BACKGROUNDS.c_station, "昼の通常訪問用背景を変えない");
 assert.doesNotMatch(night(9).label, /試飲|店長同士/);
-assert.deepEqual(night(10).steps.map((s) => s.id), ["ch2_sumi_silence", "remake_ch2_ageha_slump"]);
+assert.deepEqual(night(10).steps.map((s) => s.id), ["remake_ch2_ageha_slump", "ch2_sumi_silence"]);
+// #1733: 閉店間際のtonariであげはと会い、駅まで送ってから灯りの落ちた店へ戻る（帰宅後に引き返して終電後に会う順にしない）
+{
+  const silence = read("data/dialogue/ch2_main.json").dialogues.find((d) => d.dialogue_id === "ch2_sumi_silence");
+  assert.match(story.remake_ch2_ageha_slump.lines[0].text, /配合ノートを受け取りに、閉店間際のtonari/);
+  assert.doesNotMatch(story.remake_ch2_ageha_slump.lines.map((l) => l.text).join("\n"), /家に着いても|引き返した/);
+  assert.match(silence.lines[0].text, /あげはを駅まで送った。終電には、まだ間に合った/);
+  assert.match(silence.lines[1].text, /^店へ戻ると/);
+}
 assert(!night(8), "8日目はサメのTRPG参加日");
 for (const step of CH2_NIGHTS.flatMap((n) => n.steps).filter((s) => s.file === "ch2_ageha_story")) assert(story[step.id], step.id);
 

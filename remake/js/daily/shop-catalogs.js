@@ -8,6 +8,6 @@ export const WIDEHANGA_FLAVORS = [
 export const WIDEHANGA_SHOP_NAME = `Dr.fookah ${CH2_CITY_NAME}店`;
 
 // 東京編で久世・スティーブ・ヴォルクの葉を自分でも試せる売り場。
-// chocolate: 全国大会の課題「ドバジ チョコレート」を私物持ち込みで仕入れる場（#1052 §1）。
+// chocolate: 全国大会の課題「ドバジ チョコレート」。本番は大会が支給するが、事前に買って練習しておける場（#1052）。
 export const TOKYO_FLAVORS = ["spring_water", "black_tea", "nightside_blast_mint", "nightside_earlgrey_release", "mountain_mist", "pistachio", "frozen_citrus", "lemon", "cool_mint", "double_apple", "grape", "chocolate"];
 export const TOKYO_SHOP_NAME = "Dr.fookah 東京店";

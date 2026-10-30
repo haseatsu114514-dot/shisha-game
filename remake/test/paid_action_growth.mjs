@@ -71,20 +71,18 @@ try {
         cases.push({ name: `repeat:${name}`, spent: repeat.spent, earned: repeatEarned, perStat, spins: core.state.reel.count - count });
       }
     }
-    // 給料・物語を維持し、無料のシフト後会話はシフトと同じ成長枠。
-    for (const after of ["none", "sumi"]) {
-      reset();
-      const timer = setInterval(() => {
-        document.querySelector('[data-test="shift-order-0"]')?.click();
-        document.querySelector(`[data-test="after-${after}"]`)?.click();
-      }, 20);
-      try {
-        const before = core.state.money;
-        const { spent } = await stats.paidAction(() => tonari.doBaito());
-        const earned = xp(); reel.onAction({ spent });
-        cases.push({ name: `baito:${after}`, spent, earned, pay: core.state.money - before, spins: core.state.reel.count });
-      } finally { clearInterval(timer); }
-    }
+    // B05: 必須のスミ会話を読んでから退勤する。給料・物語と成長枠を確認。
+    reset();
+    const timer = setInterval(() => {
+      document.querySelector('[data-test="shift-order-0"]')?.click();
+      document.querySelector('[data-test="after-none"]')?.click();
+    }, 20);
+    try {
+      const before = core.state.money;
+      const { spent } = await stats.paidAction(() => tonari.doBaito());
+      const earned = xp(); reel.onAction({ spent });
+      cases.push({ name: "baito:mandatory-sumi", spent, earned, pay: core.state.money - before, spins: core.state.reel.count });
+    } finally { clearInterval(timer); }
     // 誘いは会話の後払いでも成長する。低体力で実消耗ゼロなら経験値も付かない。
     reset();
     const invitation = await stats.paidAction(async () => {

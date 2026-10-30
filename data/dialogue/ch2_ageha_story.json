@@ -27,7 +27,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "そ、偵察返し！ ……って、正直に言っちゃった"
+          "text": "そ、偵察！ ……って、正直に言っちゃった"
         },
         {
           "speaker": "",
@@ -37,7 +37,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "奥の席で、スーツの女性がメニューを閉じた。「おまかせで、お願いします」"
+          "text": "奥の席で、スーツの女性が上着を着たまま水を一気に飲み干した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メニューを閉じて、言う。「おまかせで、お願いします」"
         },
         {
           "speaker": "ageha",
@@ -101,6 +106,10 @@
           "speaker": "",
           "face": "",
           "text": "あげはは手を振って、甘い匂いを残して帰っていった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_today"
         }
       ],
       "branches": {
@@ -113,14 +122,11 @@
         ],
         "first": [
           {
-            "speaker": "ageha",
-            "face": "surprise",
-            "text": "あれ？ この匂い……ううん、この顔！ 前に荷物落としてた人じゃん"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "あ……あの時の！ グミベアの匂い、香水じゃなかったんだ"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ev_ageha_cameo",
+            "next_true": "first_cameo",
+            "next_false": "first_new"
           },
           {
             "speaker": "ageha",
@@ -170,6 +176,30 @@
             "face": "smile",
             "text": "それそれ！ ハジメっちが言うと、なんか正解っぽくなる"
           }
+        ],
+        "first_cameo": [
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "あれ？ この匂い……ううん、この顔！ 前に荷物落としてた人じゃん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "あ……あの時の！ グミベアの匂い、香水じゃなかったんだ"
+          }
+        ],
+        "first_new": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "こんばんはー！ ここがtonari？ ……思ってたより、落ち着く匂い"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "いらっしゃいませ。……この甘い匂い、香水じゃなくて、フレーバーですか？"
+          }
         ]
       }
     },
@@ -190,6 +220,11 @@
           "speaker": "ageha",
           "face": "smile",
           "text": "でしょ！ ハジメっち来た、ちょうどいい。感想聞かせて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一人は、スマホの通知が光るたびに、ちらちらと画面を見ている。"
         },
         {
           "speaker": "",
@@ -257,7 +292,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "え、俺もですか？ プリクラなんて、撮ったことないです"
+          "text": "え、また撮るんですか？ ……一回撮ったくらいじゃ、まだ慣れないです"
         },
         {
           "speaker": "ageha",
@@ -282,6 +317,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……ありがとうございます。大事にします"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_words"
         },
         {
           "type": "condition",
@@ -539,6 +578,10 @@
           "speaker": "ageha",
           "face": "normal",
           "text": "……ハジメっち。取材、ちょっと楽しみになったかも"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_roles"
         }
       ],
       "branches": {
@@ -630,27 +673,27 @@
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "……見た？ 今日、ダメな日なんだよね"
+          "text": "……ん？ なに、どしたの。うち、なんか変だった？"
         },
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "うち、もともと体強くなくて。手が震えたり、感覚が鈍ったりする日があんの"
+          "text": "ちょっと寝不足なだけ。ほら、炭の準備、地味に指使うじゃん？"
         },
         {
           "speaker": "ageha",
           "face": "serious",
-          "text": "朝起きたら、まず指動かして確かめるの。「今日、感覚あるかな」って"
+          "text": "……だいじょぶだいじょぶ。こういう日、たまにあんの"
         },
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "……毎朝、ですか"
+          "text": "（寝不足だけには、見えなかった。……でも、それ以上は聞けなかった）"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "毎朝。……誰にも言ってない。ギャル友にも、お客さんにも"
+          "text": "……そんな顔しないでよ。ね、お客さん来る前に、これだけ詰めちゃいたいの"
         },
         {
           "type": "choice",
@@ -674,12 +717,12 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "病院の帰りにね、ママがよく買ってくれたの。この匂いで、ちょっと安心すんの"
+          "text": "これ食べると、ちょっと落ち着くんだよね。……理由は、また今度"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "……ハジメっちだけだからね。知ってんの"
+          "text": "……今日のうち、見なかったことにしといて。ハジメっちだから言ってんの"
         },
         {
           "type": "set_flag",
@@ -720,7 +763,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜。C.STATION柚ヶ谷店の客席に、小さな台が四つ並べてあった。"
+          "text": "夜。C.STATION柚ヶ谷店の客席に、小さな台が四台並べてあった。"
         },
         {
           "speaker": "",
@@ -826,7 +869,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "待ちな。苺は熱に弱え。炭は一つ抜いて、少し置いてからだ"
+          "text": "待ちな。苺は熱に弱え。炭は一つ抜いて、少し置いてからでさ"
         },
         {
           "speaker": "",
@@ -836,7 +879,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "主役は葉だ。俺じゃねえ。ほら、吸いな"
+          "text": "主役は葉でさ。俺じゃねえ。ほら、吸いな"
         },
         {
           "speaker": "",
@@ -914,9 +957,24 @@
           "text": "甘さが消えたあと、一拍だけ残る。……曲と曲の間みたいに"
         },
         {
-          "speaker": "hajime",
+          "speaker": "",
+          "face": "",
+          "text": "同じ一台を回したのに、誰の苺も少しずつ違っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "え〜、わたしのはミルクっぽかったよ？ 同じ台なのに"
+        },
+        {
+          "speaker": "naru",
           "face": "normal",
-          "text": "（菓子、宇宙、お客さん、顔、熱、音。みんな、自分の言葉で吸ってる）"
+          "text": "吐くの早いんだよ。鼻に抜くと、奥に紅茶が残ってる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "誰の舌も外れちゃいねえ。同じ苺の、違う所を拾ってるだけでさ"
         },
         {
           "speaker": "hajime",
@@ -941,17 +999,17 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "葉は悪くねえ。熱が先に走っただけだ。炭を外へ寄せな"
+          "text": "葉は悪くねえ。熱が先に走っただけでさ。炭を外へ寄せな"
         },
         {
           "speaker": "kumicho",
           "face": "smile",
-          "text": "お前の台だ。自分の手で直せ。そう、それでいい"
+          "text": "あんちゃんの台でさ。自分の手で直しな。そう、それでいい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "煙が落ち着くと、店員は深く頭を下げた。神崎さんは「いい手だ」とだけ言って席へ戻った。"
+          "text": "煙が落ち着くと、店員は深く頭を下げた。神崎さんは「いい手だ」とだけ言って席へ戻ろうとした。"
         },
         {
           "speaker": "",
@@ -971,7 +1029,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……ありゃ、人を見る訓練を受けた目だ"
+          "text": "……ありゃ、人を見る訓練を受けた目でさ"
         },
         {
           "speaker": "",
@@ -985,6 +1043,10 @@
         {
           "type": "set_flag",
           "flag": "_ch2_scout_seen"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ch2_scout_tasting"
         },
         {
           "type": "choice",
@@ -1013,7 +1075,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "いや、店の話。常連の娘さんが苺好きでさ。もうすぐ誕生日なんだよ"
+          "text": "いや、店の話。常連の娘さんに頼まれてさ。タバコ好きのお母さんの誕生日に、苺の一台を出してほしいって"
         },
         {
           "speaker": "hajime",
@@ -1023,7 +1085,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "言葉が続かなかった。誰かの誕生日の一台を、点数の外で考えたことがなかった。"
+          "text": "言葉が続かなかった。母親の誕生日を祝いたいという気持ちに、どんな一台で応えればいいのか。いつからか、点数の外で考えなくなっていた。"
         },
         {
           "speaker": "naru",
@@ -1096,12 +1158,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "会が終わると、四つの台の灰を、みんなで少しずつ片づけた。"
+          "text": "会が終わると、四台の灰を、みんなで少しずつ片づけた。"
         },
         {
           "speaker": "kumicho",
           "face": "smile",
-          "text": "違う煙を出す奴らが、同じ卓を囲む。悪くねえ夜だ"
+          "text": "違う煙を出す奴らが、同じ卓を囲む。悪くねえ夜ですわ"
         },
         {
           "speaker": "rei",
@@ -1128,14 +1190,11 @@
         ],
         "ageha_first": [
           {
-            "speaker": "ageha",
-            "face": "surprise",
-            "text": "あれ？ 商店街で荷物ばらまいてた子じゃん"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "あの時の……。tonariの蒸野はじめです"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ev_ageha_cameo",
+            "next_true": "ageha_first_cameo",
+            "next_false": "ageha_first_new"
           },
           {
             "speaker": "ageha",
@@ -1156,7 +1215,7 @@
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "おう、小僧。今日は客として来たか"
+            "text": "おう、あんちゃん。今日は客として来なすったか"
           },
           {
             "speaker": "hajime",
@@ -1166,7 +1225,7 @@
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "新しい葉は、一度は自分の手で確かめる。それだけだ"
+            "text": "新しい葉は、一度は自分の手で確かめる。それだけでさ"
           }
         ],
         "kumicho_first": [
@@ -1178,7 +1237,7 @@
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "神崎煙草店の神崎だ。県大会で、お前の隣に並ぶ"
+            "text": "神崎煙草店の神崎でさ。県大会で、あんちゃんの隣に並ぶ"
           },
           {
             "type": "set_flag",
@@ -1187,7 +1246,7 @@
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "今日は客だ。新しい葉は、一度は自分の手で確かめる"
+            "text": "今日は客でさ。新しい葉は、一度は自分の手で確かめる"
           },
           {
             "speaker": "hajime",
@@ -1243,6 +1302,11 @@
             "speaker": "minto",
             "face": "smile",
             "text": "お客さんの顔を思い浮かべるかな。誰に出したいか、って"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……後味だけ、探す。最後に何が残るか"
           },
           {
             "speaker": "hajime",
@@ -1302,24 +1366,54 @@
             "face": "normal",
             "text": "うちの「なんか」も、いつか言葉になるのかな"
           }
+        ],
+        "ageha_first_cameo": [
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "あれ？ 商店街で荷物ばらまいてた子じゃん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "あの時の……。tonariの蒸野はじめです"
+          }
+        ],
+        "ageha_first_new": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "あれ？ 見ない顔。地元の人たちと一緒の子？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariの蒸野はじめです。はじめまして"
+          }
         ]
       }
     },
     {
       "dialogue_id": "remake_ch2_ageha_slump",
+      "comment": "DAY10夜。ノートを受け取りに寄った閉店間際のtonari。このあと ch2_sumi_silence（駅まで送って店へ戻る）へ続く（#1733）",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "家に着いても、置いてきたノートのことが頭から離れなかった。"
+          "text": "夜。昼間預けた配合ノートを受け取りに、閉店間際のtonariへ寄った。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "閉店間際のtonariへ引き返し、片づけ前に一台だけ組んでいると、ドアが開いた。"
+          "text": "スミさんに断って、片づけ前に一台だけ組んでいると、ドアが開いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（確かめるのはやめるって、先生と決めたのに）"
         },
         {
           "speaker": "ageha",
@@ -1395,12 +1489,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "天才だと思っていた人も、怖がっていた。比べる気持ちが、少しだけ薄れた。"
+          "text": "あげはの吐いた煙が、灯りの下でゆっくりほどけていく。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "けれど、舌の奥の遠さは、消えなかった。"
+          "text": "舌の奥の遠さは、まだ消えなかった。"
         }
       ],
       "branches": {

@@ -1,6 +1,6 @@
 /* 本文の上辺へ名前札と操作札を載せる。読む面の高さを見出しで使わない。 */
 @font-face {
-  font-family:"Suien Reading Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2") format("woff2");
+  font-family:"Suien Blue Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2") format("woff2");
   font-style:normal; font-weight:400; font-display:block;
 }
 html:root[data-ui-theme] {
@@ -50,7 +50,7 @@ html:root[data-ui-theme] body:not(.game-ds) .vn-text {
   font-size:28px; font-weight:500; line-height:44px; min-height:88px; letter-spacing:.035em;
 }
 html:root:is([data-ui-theme="cut-paper"],[data-ui-theme="amber"],[data-ui-theme="classic"]) body:not(.game-ds) .vn-text {
-  font-family:"Suien Reading Mincho",serif; font-weight:400; letter-spacing:.04em;
+  font-family:"Suien Blue Mincho",serif; font-weight:400; letter-spacing:.04em;
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { min-height:44px; }
 html:root[data-ui-theme] body:not(.game-ds) .vn-inner { font-size:22px; line-height:31px; margin-top:10px; }

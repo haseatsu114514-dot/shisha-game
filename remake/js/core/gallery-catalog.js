@@ -17,6 +17,20 @@ const cgChars = Object.fromEntries(Object.entries({
   mashiro: ["cg_ch3_childhood_offered_hand", "cg_kuze_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession"],
 }).flatMap(([char, ids]) => ids.map(id => [id, char])));
 const charTag = char => Object.hasOwn(CHAR_LABELS, char) ? char : "other";
+// IDに章がないCGは、実際の表示先の台本で章を確認できたものだけ記載する。
+const cgChapters = {
+  cg_ageha_first_purikura: 2, cg_ryuji_purikura: 2,
+  cg_kuze_mashiro_childhood: 3, cg_mashiro_double_apple: 3,
+  cg_minto_casual: 1, cg_minto_cheki: 1, cg_minto_first_cheki: 1,
+  cg_naru_after_hours: 2, cg_naru_last_chance: 3, cg_naru_next_entry: 3,
+  cg_oneesan_first_smoke: 1, cg_tsumugi_smoke_color: 1,
+};
+export function galleryHint(entry) {
+  if (entry.requiredChapter) return `第${entry.requiredChapter}章クリアで解放`;
+  const chapter = entry.chapter ? `第${entry.chapter}章` : "";
+  const char = entry.char && entry.char !== "other" ? CHAR_LABELS[entry.char] || "" : "";
+  return [chapter, char].filter(Boolean).join("・");
+}
 
 /** 撮影ごとに増えるプリクラ記録は収集率に含めず、件数だけを返す。 */
 export function galleryStats(entries) {
@@ -57,8 +71,12 @@ export function galleryEntries(manifest, catalog, progress, seen) {
   const got = new Set(seen);
   progress.keepsakes.forEach(id => got.add(PHOTO_KEEPSAKES[id]));
   const entries = [...new Set((manifest.cgs || []).map(file => file.replace(/\.png$/, "")))]
-    .filter(id => !/^cg_ch2_ageha_purikura_strip_(?:soft|gal)$/.test(id)).sort().map((id, i) => ({
-    id, cg: id, char: cgChars[id] || "other", kind: id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still",
+    // 制作途中の下描き（#1076 DAY3 で見せる素材）は収集スチルではないので一覧に出さない。
+    .filter(id => !/^cg_ch2_ageha_purikura_strip_(?:soft|gal)$/.test(id) && id !== "cg_ch1_tsumugi_sketch_wip").sort().map((id, i) => ({
+    id, cg: id, char: cgChars[id] || "other",
+    ...(id.match(/cg_ch([1-5])_/) ? { chapter: Number(id.match(/cg_ch([1-5])_/)[1]) }
+      : Object.hasOwn(cgChapters, id) ? { chapter: cgChapters[id] } : {}),
+    kind: id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still",
     title: labels[id] || "物語のスチル " + (i + 1), unlocked: got.has(id),
   }));
   progress.purikura.forEach(p => entries.push({

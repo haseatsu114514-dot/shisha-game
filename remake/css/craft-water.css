@@ -5,8 +5,10 @@
 .craft-water-fill::before, .craft-water-fill::after { content: ""; position: absolute; left: -20%; top: -4px; width: 140%; height: 9px; border-radius: 50%; background: #b8f3fa; transform: translateY(var(--water-wave, 0px)) rotate(-3deg); }
 .craft-water-fill::after { opacity: .45; transform: translateY(calc(var(--water-wave, 0px) * -.6)) rotate(4deg); }
 .craft-water-band { position: absolute; bottom: 45%; height: 10%; width: 100%; border-top: 2px dashed #fff3b0; border-bottom: 2px dashed #fff3b0; background: #fff3b026; pointer-events: none; }
-.craft-water-amount { display: block; font-size: 2rem; font-variant-numeric: tabular-nums; }
+.craft-water-tip { position: absolute; left: 0; width: 100%; padding-left: 1.8rem; font-size: .58rem; line-height: 1; color: #fff; transform: translateY(50%); pointer-events: none; }
+.craft-water-tip::before { content: ""; position: absolute; left: .15rem; top: 50%; width: 1.3rem; border-top: 2px dashed #fff; }
 .craft-water-status { display: block; color: #fff3b0; }
+.craft-water-status[data-band="none"] { color: #ff8f8f; }
 .craft-water-help, .craft-water-display p { font-size: .82rem; line-height: 1.5; }
 .craft-water-actions { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; }
 .craft-water-actions button { min-height: 44px; touch-action: none; user-select: none; }

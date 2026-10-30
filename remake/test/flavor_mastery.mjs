@@ -49,6 +49,18 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
 s.flavorMastery={lemon:12};for(let i=0;i<6;i++)gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);
 assert.equal(masteryLevel(s,'lemon'),4);
 gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s,'lemon'),5);
+{
+ // #1466: アダムの味の話の熟練度は第4回（熱の攻め方）に付く。第3回で受け取った旧セーブには第4回で二重付与しない。
+ const adam=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_adam.json',import.meta.url))).dialogues;
+ const third=adam.find(d=>d.dialogue_id==='ch1_adam_third'),fourth=adam.find(d=>d.dialogue_id==='ch1_adam_fourth');
+ assert.equal(third.metadata?.flavor_lesson,undefined);
+ assert.deepEqual(fourth.metadata.flavor_lesson,{double_apple:1});
+ let legacy=core.newGame();legacy.flavorLessons=['ch1_adam_third'];legacy.flavorMastery={double_apple:12};core.save();legacy=core.load();
+ assert.deepEqual(learnFlavorStory(legacy,fourth,DB.flavorById),[]);assert.equal(legacy.flavorMastery.double_apple,12);
+ let fresh=core.newGame();core.save();fresh=core.load();learnFlavorStory(fresh,fourth,DB.flavorById);
+ assert.equal(fresh.flavorMastery.double_apple,12);assert.deepEqual(fresh.flavorLessons,['ch1_adam_fourth']);
+ s=core.newGame();
+}
 for(const file of fs.readdirSync(new URL('../../data/dialogue/',import.meta.url)).filter(f=>f.endsWith('.json'))){
  for(const dlg of JSON.parse(fs.readFileSync(new URL('../../data/dialogue/'+file,import.meta.url))).dialogues||[])
   for(const id of Object.keys(dlg.metadata?.flavor_lesson||{}))assert(DB.flavorById[id],`${file}/${dlg.dialogue_id}: unknown flavor ${id}`);
@@ -61,7 +73,7 @@ const snapshot=structuredClone(s);assert.equal(spendPracticeMix(s,{[a]:100}),nul
 core.save();s=core.load();assert.equal(staffStock(s,a),0);assert.deepEqual(s.flavorMastery,snapshot.flavorMastery);learnFlavorStory(s,d);assert.equal(s.flavorMastery.orange,12);
 s.day++;assert.equal(staffStock(s,staffFlavors(s)[0]),6);
 s=core.newGame();s.schema=20;s.flavorStock={mint:37};s.flavorMastery={lemon:Infinity,mint:-4};core.save();s=core.load();assert.deepEqual(s.flavorStock,{mint:37});assert.deepEqual(s.flavorMastery,{});
-assert.equal(regulationFor({mode:'tournament'}).flavor,'lemon');assert.equal(regulationFor({mode:'tournament'}).supply,undefined);
+assert.equal(regulationFor({mode:'tournament'}).flavor,'lemon');assert.equal(regulationFor({mode:'tournament'}).supply,'lemon');
 s.schema=20;s.phase='tournament';core.save();s=core.load();assert.equal(regulationFor({mode:'tournament'}).flavor,'mint');
 // Spring Water is a purchasable blond flavor with its own persistent mastery family.
 const spring=DB.flavorById.spring_water;

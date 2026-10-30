@@ -60,6 +60,8 @@ try {
       while (performance.now() < until) {
         const node = document.querySelector(selector);
         if (node) return node;
+        // 作業台の準備中に出るロード漫画は、読み終えたらタップで進む（0a8fad53）。プレイヤーと同じく一度タップする
+        document.querySelector(".loading-gate.is-ready")?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
         await new Promise((resolve) => setTimeout(resolve, 20));
       }
       throw Error(`Control did not appear: ${selector}`);
@@ -245,7 +247,8 @@ try {
   });
   // みんとのLIMEは店の『お仕事用』。本名を知った後も「みんと＠PEPPERMINT」・営業姿のアイコン（HF10）
   assert.equal(privateUi.listName, "みんと＠PEPPERMINT");
-  assert(privateUi.listFace.split("?")[0].endsWith("face_minto.webp"), privateUi.listFace);
+  // お仕事用は採用済みのLIMEカスタムアイコン（b08e30ec）。私服・私用のアイコンは使わない
+  assert(privateUi.listFace.split("?")[0].endsWith("ui/lime/minto-b.png"), privateUi.listFace);
   assert(privateUi.delivered >= 1 && privateUi.introAccount === "minto_private", JSON.stringify(privateUi));
   assert(privateUi.introText.includes("栞です"), privateUi.introText);
   const privateRow = privateUi.rows.find((r) => r.test === "lime-chat-minto_private");
@@ -287,7 +290,9 @@ try {
   assert.deepEqual(shared.problems, []);
   assert(shared.epiPrivate); assert(shared.epiFaces.every((f) => f.startsWith("ura_")), shared.epiFaces.join());
   assert(!shared.epiHeart, "epilogue still has the store tone or the doubled 彼女");
-  assert.deepEqual(shared.epiJump, { type: "jump", next_id: "ending_daily_smoke" });
+  // 後日談の締め（ending_daily_smoke）は台本の jump ではなく、ch5-progress.js のフィナーレ3場面の並びで再生する
+  assert.notEqual(shared.epiJump?.type, "jump", JSON.stringify(shared.epiJump));
+  assert.equal(shared.epiJump?.speaker, "minto", JSON.stringify(shared.epiJump));
   assert(!shared.acceptOld); assert(!shared.rule.includes("恋人ルート確定後のデートシーンでのみ"));
   assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_fifth_done");
   log("HF02 data: ura faces <-> private scenes, epilogue private/calm, confession text, appearance rule, first outing before reveal");
@@ -341,7 +346,7 @@ try {
   assert.equal(friend.beforeSubmission, false);
   assert.equal(friend.noonBadge, false); assert.equal(friend.noon, false); assert.equal(friend.nightBadge, true);
   assert(friend.finaleText.includes("描き終わった絵、最初に見てほしくて"));
-  assert(friend.finaleText.includes("いつもの席で"), "friendship landing missing");
+  assert(friend.finaleText.includes("この子の続きも、ここで描きます"), "friendship landing missing");
   assert(!friend.finaleText.includes("今度は２人で"), "romance question shown after a friendly answer");
   assert.equal(friend.record.route, "friend"); assert(friend.owned); assert.equal(friend.lavender, 50);
   assert.equal(friend.confessed, false); assert.equal(friend.due, null);
@@ -432,7 +437,7 @@ try {
   assert.deepEqual(loverSave.asked, []);
   log("HF04/05 existing-lover save: relationship kept, lover landing once, gift, no confession reservation");
 
-  // 凛: 3つ目の固有会話の後の最初の訪問で質問 → その後にMAXの締めくくり（友情寄り）
+  // 凛: 3つ目の固有会話の後の最初の訪問で質問 → 4つ目の固有会話 → MAXの締めくくり（友情寄り）
   const rin = await page.evaluate(async () => {
     const { fresh, spots, bonds, vn, pick } = window.T;
     const state = fresh({ met: { rin: true }, story: { rin: 3 }, affinity: { rin: 90 }, slot: 0 });
@@ -444,12 +449,18 @@ try {
     const first = vn.backlog().map((l) => l.text).join("|");
     vn.backlog().length = 0;
     await spots.visitChar("rin");
+    const fourth = vn.backlog().map((l) => l.text).join("|");
+    vn.backlog().length = 0;
+    await spots.visitChar("rin");
     const second = vn.backlog().map((l) => l.text).join("|");
-    return { badge, finaleBlocked, first, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
+    return { badge, finaleBlocked, first, fourth, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
   });
   assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
-  assert(rin.first.includes("試香の口実もないのに")); assert(rin.first.includes("頼りにしてるよ、……仕事仲間として"));
+  // 質問の場面と友情側の着地（d7a613c6 で台本を書き直し）
+  assert(rin.first.includes("今日は試香紙がなかった")); assert(rin.first.includes("相談を遠慮しなくてよい、仕事仲間の時間だった"));
   assert(!rin.first.includes("ラベルも同意書もない"));
+  // 質問の次は4つ目の固有会話（#1696）。締めくくりはその後
+  assert(rin.fourth.includes("吸ってる人の顔だけ、知らない")); assert(!rin.fourth.includes("ラベルも同意書もない"));
   assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);
   log("HF04/05 rin: question visit before the MAX finale, friendship landing with a personal gift");
@@ -557,7 +568,7 @@ try {
     document.querySelector('[data-test="shop-leave"]').click();
     await opening;
     // 効き: 装備・所持・対象フレーバー3g以上のときだけ
-    const cs = (bowl, mix) => ({ mode: "tournament", equip: { bowl, hms: "lotos_hagal", charcoal: "flat_charcoal" }, mix,
+    const cs = (bowl, mix) => ({ mode: "tournament", water: 0.5, equip: { bowl, hms: "lotos_hagal", charcoal: "flat_charcoal" }, mix,
       mixInfo: { score: 70, intensity: 5, total: 12 }, holes: { total: 22, outerEven: 0.8, innerExcess: 0, score: 80, minimumComplete: true },
       heat: { heatPower: 60, heatStability: 70, burnRisk: 20, aromaRetention: 60, score: 80 }, pull: { score: 75, pulls: 3 }, steam: { min: 5, score: 75 },
       care: { score: 70 }, pack: "normal", place: "triangle", trial: { score: 70 } });

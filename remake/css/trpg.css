@@ -311,7 +311,7 @@ body[data-screen="trpg"] #hud { visibility: hidden; }
 .trpg-club-demo-visits { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .trpg-club-demo-visits small { color: #cbbd9d; }
 .trpg-club-demo-visits .trpg-button { padding: 7px 14px; font-size: 14px; }
-.trpg-club-dialog { position: absolute; inset: 0; z-index: 100; display: grid; place-items: center; background: #071214db; color: #efe7d6; font-family: sans-serif; }
+.trpg-club-dialog { position: absolute; inset: 0; z-index: 100; display: grid; place-items: center; background: #071214db; color: #efe7d6; font-family: var(--font); }
 .trpg-club-dialog-card { width: 760px; padding: 30px 36px; border: 1px solid #b9a579; border-radius: 12px; background: #203331; box-shadow: 0 24px 90px #0008; }
 .trpg-club-dialog h2 { font-size: 29px; margin: 14px 0; }
 .trpg-club-conversation { display: flex; align-items: center; gap: 28px; min-height: 195px; }

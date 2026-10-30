@@ -18,14 +18,14 @@ for (let n = 10; n <= 100; n++) {
   assert(p > previous); checks++; previous = p;
 }
 for (const cycle of [1, 2, 10]) for (const carryStats of [false, true]) {
-  equal(difficultyForRun({ statsAtChapterStart: stats(100) }, { cycle, carryStats }), cycle > 1 && carryStats ? 1 : 0);
+  equal(difficultyForRun({ cycleStartStats: stats(100) }, { cycle, carryStats }), cycle > 1 && carryStats ? 1 : 0);
 }
-equal(difficultyForRun({ statsAtChapterStart: stats(100) }), 0);
-equal(KB, 0);
-for (const rival of [-Infinity, -100, -0, 0, .1, 82.333333333, 100, Infinity, NaN]) {
-  for (const p of [0, .5, 1, NaN]) for (const chapter of [1, 2, 3, 4, 5]) {
-    equal(liftRivalScore(rival, p, chapter), rival);
-  }
+equal(difficultyForRun({ cycleStartStats: stats(100) }), 0);
+equal(KB, .40);
+equal(difficultyForRun({ statsAtChapterStart: stats(100), cycleStartStats: stats(10) }, { cycle: 2, carryStats: true }), 0);
+for (const rival of [-100, 0, .1, 82.333333333, 100]) {
+  equal(liftRivalScore(rival, 0, 3), rival);
+  for (const p of [.5, 1]) equal(liftRivalScore(rival, p, 3), rival + (99 - rival) * KB * p);
 }
 
 // 変更前のcastVotes/standingsで取得したゴールデン値。全4投票と全順位を比較する。
@@ -39,17 +39,19 @@ for (const seed of [1, 7, 42, 7317, 0xffffffff]) {
       const progress = tournament.startAttempt(value, { careHistory: [] });
       for (let round = 0; round < 4; round++) {
         tournament.castVotes(progress, round, performance, { emil: -1, dr_kemuri: .5, nagumo: 1 }, p);
-        digest.update(JSON.stringify([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
+        if (p === 0) digest.update(JSON.stringify([progress.votes, progress.lastVotes, progress.quality, tournament.standings(progress)]));
       }
     }
   }
 }
-equal(digest.digest("hex"), "512315512f6c3f6a6c1ed0aeaa39e483d3a3fad42b94560bae8347c79609657e");
+equal(digest.digest("hex"), "b5fdefd76cc2c1a186d9fc3076902843cf3c401ab66a6f55031ef01fd2cde7c7");
 equal(events.length, 5 * 11 * 3 * 4 * 3);
-assert(events.every(e => Object.isFrozen(e) && Object.is(e.rival, e.lifted) && e.chapter === 3)); checks++;
+assert(events.every(e => Object.isFrozen(e) && e.lifted === liftRivalScore(e.rival, e.p, e.chapter) && e.chapter === 3)); checks++;
+assert(events.some(e => e.p > 0 && e.lifted !== e.rival)); checks++;
+assert(events.filter(e => e.p === 0).every(e => Object.is(e.rival, e.lifted))); checks++;
 equal([...new Set(events.map(e => e.p))], [0, .5, 1]);
 setRivalScoreObserver(() => { throw new Error("observer failed"); });
 const value = { chapter: 3, flags: {} };
 assert(tournament.castVotes(tournament.startAttempt(value, {}), 0, 80)); checks++;
 setRivalScoreObserver();
-console.log(`PASS: ${checks} U4 assertions; 660 legacy-equivalent voting rounds (P=0/.5/1), observer isolation`);
+console.log(`PASS: ${checks} U4 assertions; 220 legacy-equivalent voting rounds (P=0), 440 lifted rounds, observer isolation`);

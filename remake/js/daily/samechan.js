@@ -1,9 +1,9 @@
 // シーシャークの出会い・第2章からの店。競技のライバル枠とは分ける。
-import { DB, sceneBg } from "../core/data.js";
+import { DB, sceneBg, loadCinemaDialogue } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
 import { setBg } from "../core/ui.js";
 import { sharkSwim } from "../core/scene-motions.js";
-import { gainAffinity, affinityLevel, releaseAffinity, ensureAffinityLevel, earnStat, addMoney, addStamina } from "../core/stats.js";
+import { gainAffinity, affinityLevel, releaseAffinity, ensureAffinityLevel, earnStat, addMoney, addStamina, STAMINA_LOW } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { finaleAtVisit, playFinale } from "./bonds.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
@@ -19,6 +19,12 @@ const entryEvents = [
   { dialogue: "samechan_shop_quiet_seat", flag: "_samechan_quiet_seat_done" },
   { dialogue: "samechan_shop_closing_check", flag: "_samechan_closing_check_done", night: true },
 ];
+// 路地裏シネマの最初の上映は必ずサメ映画。一度でも観た後の来店で、感想を一度だけ聞く。
+const cinemaImpression = { dialogue: "samechan_shop_cinema_impression", flag: "_samechan_cinema_impression_done" };
+const cinemaImpressionDue = () => (state.spotVisits?.rojiura_cinema || 0) >= 1 && !state.flags[cinemaImpression.flag];
+// 体力が少ない日の来店で一度だけ、腹話術をしまって本人の声で叱る。ほかの来店イベントは押しのけない。
+const unwellVisit = { dialogue: "samechan_shop_unwell", flag: "_samechan_unwell_done" };
+const unwellVisitDue = () => state.stamina < STAMINA_LOW && !state.flags[unwellVisit.flag];
 
 /** 旧訪問回数は既存会話にだけ使う。新しい交流と問いかけの既読を推測しない。 */
 export function samechanVisitDialogue() {
@@ -39,6 +45,8 @@ export function samechanVisitDialogue() {
     }
   }
   if (finaleAtVisit("samechan")) return "samechan_bond_finale";
+  if (count >= 1 && cinemaImpressionDue()) return cinemaImpression.dialogue;
+  if (count >= 1 && unwellVisitDue()) return unwellVisit.dialogue;
   return `samechan_shop_repeat_${(count - 1) % 2}`;
 }
 
@@ -125,6 +133,12 @@ export async function visitSamechan(spot, { signal = null } = {}) {
   // 静かな席を読む当日には先取りせず、成立後の次の自主訪問に添える。
   const introduceCinema = pending && typeof receipt.cinemaIntroduction === "boolean"
     ? receipt.cinemaIntroduction : cinemaIntroductionDue(state);
+  if (introduceCinema) {
+    const beforeLoad = state;
+    await loadCinemaDialogue();
+    if (state !== beforeLoad || visiting || isPlaying() || signal?.aborted
+      || `${state.chapter}:${state.day}:${state.slot}` !== stamp) return false;
+  }
   if (introduceCinema && !DB.dialogues[CINEMA_INTRO]?.lines?.length) return false;
   const owner = state;
   const current = () => state === owner && `${state.chapter}:${state.day}:${state.slot}` === stamp && !signal?.aborted;
@@ -148,7 +162,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     // 読了時に一度だけ確定。中断のセーブは未払いなので、残金が訪問料だけでも再開できる。
     addMoney(-(spot.cost || 0));
     addStamina(spot.stamina || 0);
-    const event = entryEvents.find(e => e.dialogue === dialogue);
+    const event = [...entryEvents, cinemaImpression, unwellVisit].find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
     if (dialogue === "samechan_shop_bond_question") {
       state.flags._samechan_bond_question_done = true;

@@ -59,16 +59,18 @@ await suite('flavor-mastery',async check=>{
   assert.deepEqual(result.xp,{},'customer orders never grant flavor experience');
   assert.deepEqual(result.stock,{lemon:50});assert(result.money>=43000);
  });
- await check('lemon-tournament-consumes' ,async page=>{
+ await check('lemon-tournament-is-supplied-not-consumed' ,async page=>{
+  // 課題のレモンは大会が無制限に支給する。本番で何g使っても私物在庫は減らない（#1052）。
   await page.evaluate(async()=>{
    const core=await import('./js/core/state.js');core.newGame();core.state.flavorStock={lemon:50};
    window.S={core,steps:await import('./js/craft/steps.js'),session:await import('./js/craft/session.js')};
    window.cs=S.session.newSession('tournament');S.session.openBench(cs);window.done=false;void S.steps.stepMix(cs).then(()=>done=true);
   });
   await page.locator('[data-test="mix-ok"]').waitFor();assert.equal(await page.locator('[data-flavor="mint"]').count(),0);
+  assert.match(await page.locator('.flavor-row[data-flavor="lemon"]').textContent(),/課題（支給）/);
   for(let i=0;i<12;i++)await page.locator('[data-test="mix-plus-lemon"]').click();
   await page.locator('[data-test="mix-ok"]').click();await page.waitForFunction(()=>done);
-  assert.equal(await page.evaluate(()=>S.core.state.flavorStock.lemon),38);
+  assert.equal(await page.evaluate(()=>S.core.state.flavorStock.lemon),50);
  });
  await check('day2-old-rig-gift-once',async page=>{
   const result=await page.evaluate(async()=>{

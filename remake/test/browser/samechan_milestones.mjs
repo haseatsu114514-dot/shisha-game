@@ -61,7 +61,7 @@ await suite("samechan-milestones", async check => {
         if (level < 3) assert(!/泳|波多野|なぎさ/.test(x.log));
         if (level === 3) assert(x.log.includes("泳ぐのは") && !/波多野|なぎさ/.test(x.log));
         if (level === 4) assert(x.log.includes("波多野なぎさ") && x.log.includes("サメちゃんで十分"));
-        if (level === 5) assert(x.log.includes("声を借りず") && x.log.includes("好きじゃ"));
+        if (level === 5) assert(x.log.includes("声を借りず") && x.log.includes("はじめさんが、好きです"));
       }
       assert.deepEqual(r.events.filter(id => /^lover_samechan_lv/.test(id)), [1, 2, 3, 4, 5].map(n => `lover_samechan_lv${n}`));
       assert(!r.again && !r.privateAfter); assert.deepEqual(r.after, r.before);

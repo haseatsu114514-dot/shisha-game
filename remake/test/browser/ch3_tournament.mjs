@@ -76,21 +76,24 @@ await suite("ch3-tournament", async check => {
     assert.equal(retried.flags._ch3_tournament.attempts, before.flags._ch3_tournament.attempts);
     assert.deepEqual(retried.flavorStock, before.flavorStock);
   }, { reducedMotion: "reduce" });
-  await check("arriving-with-no-chocolate-still-lets-the-craft-begin", async page => {
-    // 課題のチョコレートを一度も買わずに来ても、本番前に最低量（4g）が手元へ補われ、
-    // ミックス工程で課題を満たせず詰む、ということがない（#1052）。
+  await check("arriving-with-no-chocolate-is-supplied-during-the-tournament", async page => {
+    // 課題のチョコレートを一度も買わずに来ても、大会が本番中だけ無制限に支給するので、
+    // ミックスで課題（4g以上）を満たして一台を仕上げられる（#1052）。支給分は在庫に足さず持ち越さない。
     await seed(page, "good", { flavorStock: { double_apple: 100, mint: 100 } });
     await page.locator(t("entry")).waitFor();
-    const topped = await get(page);
-    assert.equal(topped.flavorStock.chocolate, 4,
-      "Arriving with no chocolate tops up to the 4g minimum before the craft");
+    const arrived = await get(page);
+    assert.equal(arrived.flavorStock.chocolate ?? 0, 0,
+      "Supply does not top up or add to the private stock before the craft");
     await page.locator(t("start")).click();
     await page.locator(t("ready")).waitFor();
     await page.locator(t("craft-start")).click();
-    // 0gなら配合の決定ボタンが押せず votes まで到達できない。補填により一台を仕上げられる。
+    // 0gでも支給で課題量を満たし votes まで到達できる（決定ボタンが押せないまま詰まない）。
     await page.locator(t("votes")).waitFor();
-    assert.equal((await get(page)).flags._ch3_tournament.voted, 1,
+    const after = await get(page);
+    assert.equal(after.flags._ch3_tournament.voted, 1,
       "The craft reaches the first vote instead of dead-ending at the mix step");
+    assert.equal(after.flavorStock.chocolate ?? 0, 0,
+      "The supplied challenge leaf never lands in the private stock (no carry-over)");
   }, { reducedMotion: "reduce" });
   await check("burned-pull-still-counts-as-a-loss", async page => {
     await seed(page, "burn");
@@ -186,11 +189,11 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.tournament.lastRank, before.tournament.lastRank);
     assert.equal(state.tournament.lastTotal, before.tournament.lastTotal);
     assert.equal(state.flags._ch3_cleared, undefined, "Post-win Tokyo scenes still remain");
-    assert.equal(state.money, before.money);
+    assert.equal(state.money, before.money + 100000, "Chapter 3 prize is paid once on the win");
     assert.deepEqual(state.lovers, before.lovers);
     await page.locator(t("aftermath")).click();
     const aftermath = scene => `[data-test="ch3-aftermath-scene"][data-scene="${scene}"]`;
-    const scenes = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile",
+    const scenes = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup",
       "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"];
     for (const [index, scene] of scenes.entries()) {
       await page.locator(aftermath(scene)).waitFor();

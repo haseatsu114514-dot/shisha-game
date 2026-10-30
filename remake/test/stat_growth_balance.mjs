@@ -62,6 +62,20 @@ await stats.paidAction(async () => { stats.applyStats({ technique: 9, guts: 8 })
 assert.equal(s.stats.sense, 89, "Two capped candidates gave the remaining ability 2P in one normal action");
 assert.equal(stats.gainStat("sense", 24, { silent: true }), 1, "Bonus must report the actual remaining capacity");
 assert.equal(stats.gainStat("sense"), 0, "All abilities already reached the chapter cap");
+assert.equal(stats.CYCLE_START_CAP_MARGIN, 10);
+s = fresh(1);
+for (const key of core.STAT_KEYS) assert.equal(stats.statCap(key), 48, "1周目は章キャップと一致");
+delete s.cycleStartStats;
+assert.equal(stats.statCap("technique"), 48, "旧セーブの欠損値は初期値として扱う");
+s.cycleStartStats = Object.fromEntries(core.STAT_KEYS.map(key => [key, 10]));
+s.cycleStartStats.technique = 80;
+s.stats.technique = 80;
+s.stats.sense = 48;
+assert.equal(stats.statCap("technique"), 90);
+assert.equal(stats.statCap("sense"), 48);
+assert.equal(stats.gainStat("technique", 20, { silent: true }), 10);
+assert.equal(stats.gainStat("sense", 1, { silent: true }), 1, "能力ごとの上限を使って振替先を探す");
+assert.equal(s.stats.sense, 48);
 
 // ★帯の重い旧経験値は、ロード後も「次の1Pへの進捗」として保持する。
 const old = core.newState(); old.schema = 8; old.chapter = 4; old.money = 12345;

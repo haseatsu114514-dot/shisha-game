@@ -1,8 +1,4 @@
 /* R2は比較プレビュー専用。本編CONFIGや既定テーマには登録しない。 */
-@font-face {
-  font-family:"Suien Blue Mincho"; src:url("../fonts/ZenOldMincho-Blue-Regular.woff2") format("woff2");
-  font-style:normal; font-weight:400; font-display:block;
-}
 html[data-ui-theme="heisei-blue"] {
   --gold:#b6dbff; --gold-hi:#eef7ff; --vn-lounge-name:#fff;
   --ink:#030c23; --ink-2:#071b43; --panel:#061638fa; --panel-edge:#b4ceef;

@@ -39,6 +39,30 @@
       "thumbnail": "media/ac0e8efbc3e6faeb4b3041a67d089acfff8e51c485c7235bc64dad5b3bd36150-thumb.webp"
     },
     {
+      "id": "97105d476974e301751fcd143201982d249325e8996dce874ec23d23f8a81f8f",
+      "sha256": "97105d476974e301751fcd143201982d249325e8996dce874ec23d23f8a81f8f",
+      "character": "adam",
+      "label": "title_art_adam_02_twin_apple_throne",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_adam_02_twin_apple_throne.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/97105d476974e301751fcd143201982d249325e8996dce874ec23d23f8a81f8f.webp",
+      "thumbnail": "media/97105d476974e301751fcd143201982d249325e8996dce874ec23d23f8a81f8f-thumb.webp"
+    },
+    {
       "id": "1cfd2e3e5e1b43430f2ba1aa87cd8a4a03642fa3a36be2d837770ed9b9d35278",
       "sha256": "1cfd2e3e5e1b43430f2ba1aa87cd8a4a03642fa3a36be2d837770ed9b9d35278",
       "character": "ageha",
@@ -463,6 +487,30 @@
       "thumbnail": "media/34607f649caa13a6c0aee89acb0e6ad942e5afe7d02aa8230268a1e443d96b77-thumb.webp"
     },
     {
+      "id": "b7aacbe1a029e21bc99da46dee4e730db0606df716c6148593c6c3ac7bffb2ff",
+      "sha256": "b7aacbe1a029e21bc99da46dee4e730db0606df716c6148593c6c3ac7bffb2ff",
+      "character": "minto",
+      "label": "title_art_minto_06_after_hours_glasscare",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_minto_06_after_hours_glasscare.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/b7aacbe1a029e21bc99da46dee4e730db0606df716c6148593c6c3ac7bffb2ff.webp",
+      "thumbnail": "media/b7aacbe1a029e21bc99da46dee4e730db0606df716c6148593c6c3ac7bffb2ff-thumb.webp"
+    },
+    {
       "id": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
       "sha256": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
       "character": "minto",
@@ -633,6 +681,30 @@
       "related": [],
       "image": "media/308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18.webp",
       "thumbnail": "media/308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18-thumb.webp"
+    },
+    {
+      "id": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
+      "sha256": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
+      "character": "rin",
+      "label": "title_art_rin_05_blend_library_command",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_rin_05_blend_library_command.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f.webp",
+      "thumbnail": "media/952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f-thumb.webp"
     },
     {
       "id": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
@@ -863,6 +935,30 @@
       "related": [],
       "image": "media/a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab.webp",
       "thumbnail": "media/a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab-thumb.webp"
+    },
+    {
+      "id": "cd594310240e50f7fe4d909c62eacc092953f33c05d8572aeefcf3b66ce87402",
+      "sha256": "cd594310240e50f7fe4d909c62eacc092953f33c05d8572aeefcf3b66ce87402",
+      "character": "tsumugi",
+      "label": "title_art_tsumugi_05_pencil_and_hose",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/cd594310240e50f7fe4d909c62eacc092953f33c05d8572aeefcf3b66ce87402.webp",
+      "thumbnail": "media/cd594310240e50f7fe4d909c62eacc092953f33c05d8572aeefcf3b66ce87402-thumb.webp"
     },
     {
       "id": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
@@ -2972,10 +3068,10 @@
     ]
   },
   "summary": {
-    "originalPaths": 126,
-    "uniqueArt": 104,
+    "originalPaths": 130,
+    "uniqueArt": 108,
     "duplicatePaths": 22,
-    "current": 33,
+    "current": 37,
     "missingHistoricalSlots": [
       {
         "slot": "ageha01",

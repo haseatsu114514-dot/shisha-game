@@ -13,7 +13,7 @@ const { DB } = await import("../js/core/data.js");
 const equipment = JSON.parse(fs.readFileSync(new URL("../../data/equipment.json", import.meta.url))).equipment;
 DB.equipById = Object.fromEntries(equipment.map((e) => [e.id, e]));
 DB.flavorById = {};
-const { finalize } = await import("../js/craft/score.js");
+const { finalize, NAGUMO_BAR } = await import("../js/craft/score.js");
 const { state, newGame } = await import("../js/core/state.js");
 newGame();
 
@@ -47,5 +47,11 @@ const skipped = finalize({ ...base, holes: skippedFoilResult() });
 assert.equal(skipped.foilSkipped, true);
 assert.equal(skipped.total, 75, "穴あけを外し、炭80/完成60/調整70・90を各25%で割り直す = 75");
 assert.equal(skipped.parts.holes, 0, "穴あけの点は0のまま重みだけ外す");
+assert.equal(NAGUMO_BAR, 90.8);
+const tournament = { ...base, mode: "tournament", chapter: 1 };
+assert.equal(finalize({ ...tournament, holes: skippedFoilResult() }).total, 72,
+  "第1章大会・省略時だけ炭20/完成40/調整各20");
+assert.equal(finalize({ ...tournament, chapter: 2, holes: skippedFoilResult() }).total, 75);
+assert.equal(finalize({ ...tournament, holes: { score: 100 } }).total, 80);
 
 console.log("foil_skip: OK");

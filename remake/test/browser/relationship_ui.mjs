@@ -161,7 +161,7 @@ await suite("relationship-ui", async check => {
         ["held-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", wait: true }, "告白を選べる", /後日の夜/],
       ]) {
         await page.evaluate(f => {
-          const s = R.fresh(); s.met.rin = true; s.affinity.rin = f.points; s.story.rin = 3;
+          const s = R.fresh(); s.met.rin = true; s.affinity.rin = f.points; s.story.rin = 4; // 固有会話4本を読了（#1696で4本目を追加）
           if (f.points === 66 && f.answer !== undefined && f.finalAnswer === undefined && !f.finale) s.flags._rin_affinity_question_done = true;
           if (f.answer !== undefined) s.romanceChoices.bond_q1_rin = { char: "rin", value: f.answer, day: 7 };
           if (f.finalAnswer !== undefined) s.romanceChoices.bond_q2_rin = { char: "rin", value: f.finalAnswer, day: 8 };

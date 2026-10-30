@@ -12,6 +12,10 @@ const heroineIds = JSON.parse(readFileSync(new URL("../../data/story_routes.json
 for (const [id, definition] of Object.entries(definitions.characters)) {
   assert(heroineIds.includes(id));
   assert.equal(definition.home, "home");
+  // 遠距離chatは時間帯の判定なしで選ばれるため、日替わり候補にし、退勤・閉店など時刻を決める文面を置かない（#1739）。
+  const chats = [definition.chat].flat();
+  assert(chats.length >= 2 && chats.every(text => typeof text === "string" && text), `${id}: chat needs daily variants`);
+  assert(chats.every(text => !/仕事終わ|退勤|店じまい|店、終わった/.test(text)), `${id}: chat must not fix the time of day`);
   if (definition.dateMinChapter > 3) continue;
   for (const kind of ["meetup", "date"]) {
     const scene = scenes.find(scene => scene.dialogue_id === `ch3_visit_${id}_${kind}`);
@@ -40,11 +44,18 @@ for (const id of ["tsumugi", "minto", "rin", "samechan", "hiyori"]) {
   assert(!bookTokyoVisit(value, definitions, proposal), "Repeated acceptance double booked");
   const plan = value.tokyoVisits.plans[0];
   assert.equal(characterRegion(value, definitions, id), "home", "Booking teleported a guest");
+  // 予約のない空き時間（#1655 で会員でなくても開く）は休んで閉じ、訪問の枠だけを検査する。
+  const skipOpen = () => {
+    for (let window; (window = chapterThreeFreeTime(value)) && !dueTokyoVisit(value, window);) {
+      assert(completeChapterThreeFreeTime(value, window.id));
+    }
+  };
   for (let i = 0; i < CH3_INTRO_SCENES.length; i++) {
+    skipOpen();
     const free = chapterThreeFreeTime(value);
     if (free) throw new Error("An action was not closed before the next story scene");
     assert(completeChapterThreeScene(value, CH3_INTRO_SCENES[i].id));
-    for (let window; (window = chapterThreeFreeTime(value));) {
+    for (let window; (skipOpen(), window = chapterThreeFreeTime(value));) {
       assert.equal(value.day, window.day); assert.equal(value.slot, window.slot);
       assert.equal(characterRegion(value, definitions, id), "tokyo");
       assert(dueTokyoVisit(value, window));

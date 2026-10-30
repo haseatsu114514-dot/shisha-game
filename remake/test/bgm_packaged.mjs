@@ -81,15 +81,15 @@ assert.equal(elements.length, count, "Repeated city requests must not add a seco
 audio.stopBgm(0); await flush();
 
 const adopted = [
-  ["bgm_purikura_b", 1, "d348ce8a91d7cad1da14c71b51870ea2c20f44c379f5277213d80f0eac6e805e"],
-  ["bgm_purikura_d", 1, "4848a6ffbccf9f3bc4911ef1043cd3143fbaf73a6f789d5181137477dcb899dc"],
-  ["bgm_purikura", 1, "6c92ac5296b732dffb2d197e7301c987fd30426fc3955f04628fef5071232c40"],
-  ["bgm_tournament_edm", .51, "3ed10a23e30bada9814d9401371ac9643cce6825d66cb626997f4b14398920d1"],
-  ["bgm_tournament_craft", .67, "fd9856eb18725aff6c91d25f90522d0e9be82ed3f9e09ea5c026e00fe577b050"],
+  ["bgm_purikura_b", 1, "261ef59e56d13ecb0838435f251970b7fcc605dd961ad72fd2767a4df48624ef"],
+  ["bgm_purikura_d", 1, "f9723ed4ecc2218c93220bc27115115cd1a4b1ffb006040476056b28c1eb7a95"],
+  ["bgm_purikura", 1, "f6324843cb2fb655f15b8fa56e0563ad0bf429f77390bb918610467aa09ca76b"],
+  ["bgm_tournament_edm", .51, "20792d529ccbca2619cd7b08b53ef2ef6a234a35ad7be64a3e99ccc32a8ea179"],
+  ["bgm_tournament_craft", .67, "35330cb7cc63d846183d46e304a13ff177ab604a379120fab3a1c7b79ef5389b"],
   // #788 ユーザー採用曲（TRPG: Shared Discovery）。倍率は既定1.0。
-  ["bgm_trpg", 1, "ebb517047cb706879953610bba7005c944e60274ba9b0e1b228fba022418b4fa"],
+  ["bgm_trpg", 1, "802704c66066d7fa02d6f3ccdbb140ed07d05267c97692835765bb5c8853786f"],
   // #788 斧投げ（Aiming groove）。tonari と同程度の音量にそろえる倍率0.79。
-  ["bgm_axe", .79, "e1ad7a541a099dc363baab666c04109fd0e974190b4a3d901857a9713cbccbac"],
+  ["bgm_axe", .79, "39dbd283e0a5711a62e382d3e347e6b08612e8d60c10cda9cc12963f559f9b53"],
 ];
 for (const [key, gain, expectedHash] of adopted) {
   assert(await audio.preloadBgm(key));

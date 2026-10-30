@@ -1,0 +1,332 @@
+{
+  "comment": "第3章の任意場面。久世とましろの幼少期と、久世が福岡へ発った日の嘘。二人が直接話す場面はDAY11の煙幕以降の本編に任せ、ここではそれぞれがはじめにだけ話す。後日談の ch3_enmaku_cleanup で二枚の絵と嘘を回収する。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_kuze_mashiro_tea_tin",
+      "comment": "ましろ側。煙幕の初訪問（レモンケーキの客）を聞いた後。読む日付を問わない内容にする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。ましろは棚の奥から、古い茶缶を下ろしていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、売り物ですか？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ううん。僕の。家から持ってきて、ずっと棚に置いてたの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙幕で、隣の客がレモンケーキみたいって言ってました。材料にはないのに"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……レモンケーキ？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "そっか。朔、まだあのケーキを作ってるんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろが缶のふたを開ける。中には、折り目で切れた画用紙が一枚。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クレヨンの黄色いケーキが、ちょうど真ん中で途切れている。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "小さい頃、朔が描いたの。半分、僕にくれた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "久世さん、昔からああいう感じですか？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ううん。もっと静かだったよぉ。よく熱を出して、保育園も休んでた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "治ると、公園で予想するの。「ましろは次、絶対ブランコ」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "当たるんですか？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ぜんぜん。僕、すべり台に行くから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "――小学校の帰り道。自販機の前で、少年が指を立てた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少年「ましろは、りんごジュース。賭けてもいい」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少女はしばらく迷ってから、温かいお茶のボタンを押した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少年「……また外れた」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少女「だって、寒いもん」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少年は悔しそうに笑い、外れた予想をノートに書いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "外れると、朔はうれしそうだった。書いて、次もまた外すの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ノート、その頃からつけてたんですね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。僕の答えのページが、たぶん一番多い"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "serious",
+          "text": "……だから、心配なんだよねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "serious",
+          "text": "外れて笑ってた子が、勝負になると、当てないと気がすまない顔をするの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんには、ケーキの味はしたんですか"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "しなかった。今も、朔の煙は僕にはお茶"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "でも、絵は好き。だから捨てられなかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは缶を閉めず、ふたを横に置いたまま棚へ戻した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（開けたままにしておくんだ）"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "閉めたら、また何年も開けない気がして"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_kuze_mashiro_soon_back",
+      "comment": "久世側。mukaiの客として来た後。福岡へ発った日の「すぐ戻る」と、連絡しなかった理由。大会の対策は明かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際の煙幕。久世は客席のカードを一枚ずつ揃えていた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "いらっしゃい。今夜の組織の議題は、カードの角をそろえること"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手伝います"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "助かる。じゃあ、角の監査役に任命するね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "束の中に、一枚だけ古い紙があった。黄色いクレヨンの、半分のケーキ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ……"
+        },
+        {
+          "speaker": "kuze",
+          "face": "surprise",
+          "text": "あ、見つかった。ノートの表紙の裏に挟んでたのに"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "子どもの頃の絵。半分しかないのは、もう半分をあげたから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんに？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "……君、何でも知ってるね。煙幕の情報部に欲しいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "入りません"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "福岡へ行ったのは、十八の春。知り合いの店に住み込みで働いた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一人で、ですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん。熱ばっかり出す子のままじゃ、隣に立てない気がして"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "……今の、聞かなかったことにして"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "聞きました"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "正直だなぁ。じゃあ、ついでに一つ。僕は出発の日、嘘をついた"
+        },
+        {
+          "speaker": "kuze",
+          "face": "serious",
+          "text": "ましろに「すぐ戻る」って言ったんだ。戻る日なんて、決めてなかったのに"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "種を明かさないまま、五年。僕の嘘で、一番長いやつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうして、連絡しなかったんですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "sad",
+          "text": "店の一台を「客の思い込み」って言われた夜があってさ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "胸を張れる一台ができたら電話しよう。そう決めたら、いつまでも決まらなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今度の大会は……"
+        },
+        {
+          "speaker": "kuze",
+          "face": "serious",
+          "text": "胸を張る場所。それと、僕の夢。思い込みじゃないって、世界まで言わせたい"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "ましろに見せたいのと、僕が勝ちたいのは別の話。混ぜたら、どっちも嘘になる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（勝ち負けを、ましろちゃんへの言い訳にしないんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世は絵をノートの表紙の裏へ戻し、角の折れを指で一度だけ伸ばした。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "内緒ね。ましろには、自分で言う、……いつか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その「いつか」、「すぐ戻る」と同じじゃないですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "surprise",
+          "text": "……痛いとこ突くなぁ。じゃあ、大会が終わったら。これでどう？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "覚えておきます"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "監査役、厳しい"
+        }
+      ]
+    }
+  ]
+}

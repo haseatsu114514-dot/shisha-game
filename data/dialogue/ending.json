@@ -52,6 +52,21 @@
         {
           "speaker": "",
           "face": "",
+          "text": "裏返して、店の名前を書きかけたところで、ペンを止めた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "明日から、店はお前が回せ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "店を出る前に、明日のシフトを確かめる。"
         }
       ]
@@ -83,11 +98,11 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後、栞さんの部屋で遅い夕飯を作った。"
+          "text": "別の日の閉店後、栞さんの部屋で遅い夕飯を作った。"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_smile",
           "text": "店のみんとは、きょうも頑張りました"
         },
         {
@@ -97,7 +112,7 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_smile",
           "text": "お腹ぺこぺこ。……あと、ちょっと甘やかしてほしい"
         },
         {
@@ -106,23 +121,13 @@
           "text": "味見用の皿を受け取ると、栞さんが俺の肩に額を預けた。"
         },
         {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "歳のことは、ごめんね。あれは、嘘だった"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "でも、みんとで笑ってる時も、私だから"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "うん。どっちの話も聞きたいです"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_smile",
           "text": "じゃあ、まず今日のお客さんの話からね"
         }
       ],
@@ -189,7 +194,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "あげはさんの部屋で、二人ともソファから動かなかった。"
+          "text": "また別の日。あげはの部屋で、二人ともソファから動かなかった。"
         },
         {
           "speaker": "ageha",
@@ -199,7 +204,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "了解。飲み物、何がいいですか"
+          "text": "了解。飲み物、何がいい？"
         },
         {
           "speaker": "ageha",
@@ -209,17 +214,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "好きです、……急に照れるな"
+          "text": "好きだよ。……急に照れるな"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "へへ。そこは当てるんじゃなく、聞きたいの"
+          "text": "へへ。察してもらうより、ちゃんと聞きたかったの"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "水を置くと、あげはさんが俺の袖を引いた。"
+          "text": "水を置くと、あげはが俺の袖を引いた。"
         },
         {
           "speaker": "ageha",
@@ -247,7 +252,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "休みの日。ましろちゃんは、道具箱を開けずに座っていた。"
+          "text": "mukaiの定休日。ましろちゃんは、道具箱を開けずに座っていた。"
         },
         {
           "speaker": "mashiro",
@@ -363,7 +368,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "休むのも仕事、と店の子に叱られたのじゃ"
+          "text": "休むのも王命、とコロちゃんに叱られたのじゃ"
         },
         {
           "speaker": "hajime",
@@ -393,7 +398,7 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "王は見ておらぬぞ",
+          "text": "余は何も見ていない",
           "voice": "korochan"
         },
         {
@@ -412,7 +417,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ひよりさんが鞄を置き、ソファに深く沈んだ。"
+          "text": "さらに別の日。ひよりさんが鞄を置き、ソファに深く沈んだ。"
         },
         {
           "speaker": "hiyori",
@@ -478,17 +483,27 @@
         {
           "speaker": "",
           "face": "",
-          "text": "数日後のtonari。ドアベルが鳴り、いつもの客がカウンターに腰を下ろした。"
+          "text": "数日後のtonari。ドアベルが鳴り、見覚えのある客が友達を連れて入ってきた。"
         },
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "あ、世界大会の人だ。今日はいるかなって、思ってたんだよ"
+          "text": "また来ました。今日は、こいつの分もお願いします"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "いらっしゃいませ。いますよ。今日は、どんな感じがいいですか？"
+          "text": "いらっしゃいませ。お好きな席へどうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥のカウンターには、いつもの客がもう座っていた。帰郷した夜、酸っぱい顔で座っていた人だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、どんな感じがいいですか？"
         },
         {
           "speaker": "customer",
@@ -508,7 +523,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "特別な新しいレシピはない。いつもの袋と、使い慣れた道具で、今日の注文に応えた一台だった。"
+          "text": "いつもの袋と、使い慣れた道具で作った一台だった。"
         },
         {
           "speaker": "customer",
@@ -528,17 +543,52 @@
         {
           "speaker": "",
           "face": "",
-          "text": "優勝の写真は、カウンターの端に飾ってある。あの日のことも、うれしいままだった。"
+          "text": "ドアベルがもう一度鳴った。白衣ではない上着の博士が、空いた席に座る。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "少し軽めで。……時間は、一時間あります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。じゃあ、炭は遠めに置きますね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "9000は、どうしてますか"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "ラボにいます。近ごろは最初に『本日は、どれくらいお時間がありますか』と尋ねるようになりました"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "私も、白衣はラボに置いてきました。来週から、知り合いの店のカウンターに立ちます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、今日は偵察ですね"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "いえ。今日は、客です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "優勝の写真は、カウンターの端に飾ってある。"
         },
         {
           "speaker": "customer",
           "face": "normal",
           "text": "はじめくん、あとで友達が来るんだけど、もう一台お願いしてもいい？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "「世界大会の人」と呼ばれることが増えた。今、向かいの人が呼んだのは「はじめくん」だった。"
         },
         {
           "speaker": "hajime",
@@ -548,7 +598,38 @@
         {
           "speaker": "",
           "face": "",
-          "text": "返事を聞きながら、もう一つボウルを出す。手には、ここまで覚えてきたものが残っていた。"
+          "text": "返事を聞きながら、もう一つボウルを出す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の少し前。奥まった席に、いつものサラリーマンが座った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップルにミント少し、ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "やがて、ホースの持ち手をそっとテーブルに置く。会計を済ませ、帰り際にポツリと。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……今日の、良かったよ",
+          "portrait": false
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。……また明日"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"
         }
       ]
     }

@@ -10,7 +10,7 @@ async function init(page, steps = null) {
       pull: await import("./js/craft/pull.js"), practice: await import("./js/craft/practice.js"),
       score: await import("./js/craft/score.js") };
     window.cs = T.session.newSession("tournament");
-    Object.assign(cs, { place: "triangle", heat: { score: 100, heatPower: 70, heatStability: 80, burnRisk: 10, aromaRetention: 80 },
+    Object.assign(cs, { water: 0.5, place: "triangle", heat: { score: 100, heatPower: 70, heatStability: 80, burnRisk: 10, aromaRetention: 80 },
       steam: { temp: .54, score: 100, seconds: 480 }, steamSeconds: 480,
       holes: { score: 95, total: 24, outerEven: .95, innerExcess: 0, outer: 24, middle: 0, inner: 0 },
       mix: { blueberry: 9, mint: 3 }, mixInfo: { score: 90, total: 12, intensity: 5 }, pack: "normal" });

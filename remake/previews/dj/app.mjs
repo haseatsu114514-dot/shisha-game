@@ -1,13 +1,28 @@
 import { DJAudio } from './audio.mjs';
-import { beatAt, updateMix, phaseError, phraseError, mod, dancerPose } from './model.mjs';
-import { peakAt } from './synth.mjs';
-const $=id=>document.getElementById(id),audio=new DJAudio();
+import { beatAt, updateMix, phaseError, phraseError, mod, dancerPose, scoreMix } from './model.mjs';
+import { peakAt } from './tracks.mjs';
+import { TRACKS, STAGES } from './tracks.mjs';
+const $=id=>document.getElementById(id);
+let stage=0,score=null,audio=new DJAudio();
+function bindInterruption(){audio.onInterrupted=()=>status('音声が中断されました。PLAYで再開してください。');}
+function stageDisplay(){[STAGES[stage].a,STAGES[stage].b].forEach((key,id)=>$('track-'+(id?'b':'a')).textContent=TRACKS[key].title);}
+stageDisplay();
+document.querySelectorAll('.stage-btn').forEach((b,index)=>b.addEventListener('click',async()=>{
+ document.querySelectorAll('.stage-btn').forEach(b=>b.disabled=true);
+ try{await audio.dispose();stage=index;score=null;audio=new DJAudio(undefined,{stageIndex:stage});bindInterruption();stageDisplay();$('score-result').textContent='';$('play-feedback').textContent='';await audio.play(0);}
+ catch(e){status(e.message);}finally{document.querySelectorAll('.stage-btn').forEach(b=>b.disabled=false);}
+}));
+function judge(){if(!audio.mix.decks.every(d=>d.playing))return;score=scoreMix(audio.mix,audio.now);if(!score)return;
+ $('score-result').innerHTML=`<strong class="rank">${score.rank}</strong><table><tr><th>ピッチ誤差</th><td>${score.pitchErrPct.toFixed(3)}%</td></tr><tr><th>PLAYずれ</th><td>${score.playMs.toFixed(1)} ms</td></tr><tr><th>位相ドリフト</th><td>${score.driftMs.toFixed(1)} ms</td></tr><tr><th>合計</th><td>${score.total}点</td></tr></table><p>${{S:'完璧なミックス！',A:'いいつなぎ！',B:'あと少し、位相を合わせよう',C:'ピッチとPLAYをもう一度練習しよう'}[score.rank]}</p>`;
+}
+$('judge').addEventListener('click',judge);
+document.querySelectorAll('[data-nudge-ms]').forEach(b=>b.addEventListener('click',()=>audio.nudgeMs(1,Number(b.dataset.nudgeMs))));
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 let disposed=false,frame=0,frameView={mode:'idle'},message='';
 const status=text=>{$('status').textContent=text;};
 export function snapshot(){
  const now=audio.now;
- return {clock:now,state:audio.context?.state||'not-started',running:audio.mix.running,
+ return {stage,lastPlay:audio.mix.lastPlay||null,score,clock:now,state:audio.context?.state||'not-started',running:audio.mix.running,
   bpms:audio.mix.decks.map(d=>d.bpm),beats:audio.mix.decks.map(d=>beatAt(d,now)),playing:audio.mix.decks.map(d=>d.playing),
   phase:phaseError(...audio.mix.decks,now),phraseOffset:phraseError(...audio.mix.decks,now),mix:audio.mix.mix,
   master:audio.mix.master,visualMaster:audio.mix.visualMaster,mode:frameView.mode,
@@ -17,13 +32,12 @@ export function snapshot(){
 audio.onInterrupted=()=>status('音声が中断されました。全体再開または各PLAYで再開できます。自動再開はしません。');
 async function pause(){try{await audio.pause();status('全体停止。全体再開は直前に鳴っていたデッキだけを戻します。');}catch(e){status(`停止処理: ${e.message}。音声nodeは切断済みです。`);}}
 $('start').addEventListener('click',async()=>{
- try{if(await audio.start()){if(document.hidden){await pause();return;}status(audio.mix.running?'停止前のデッキを再開しました。':'音声準備完了。PITCHまたはBPM SYNCでBPMを合わせ、まずPLAY Aを押してください。');}}
+ try{if(await audio.start()){if(document.hidden){await pause();return;}status(audio.mix.running?'停止前のデッキを再開しました。':'音声準備完了。手動PITCHでBPMを合わせ、まずPLAY Aを押してください。');}}
  catch(e){status(`${e.message}。音声準備またはPLAYから再試行できます。`);}
 });
 $('pause').addEventListener('click',pause);
 for(const id of [0,1]){
  const key=id?'b':'a';
- $('sync-'+key).addEventListener('click',()=>{audio.syncBpm(id);status(`${key.toUpperCase()}のBPMを${id?'A':'B'}の${audio.mix.decks[id].bpm.toFixed(2)}に合わせました。ピッチは引き続き手動で調整できます。`);});
  $('tempo-'+key).addEventListener('input',e=>audio.tempo(id,Number(e.target.value)));
  $('play-'+key).addEventListener('click',async()=>{
   try{if(audio.mix.decks[id].playing){audio.pauseDeck(id);status(`${key.toUpperCase()} PAUSE。位置を保ちます。`);}
@@ -50,7 +64,7 @@ function wave(canvas, id, now) {
   c.fillStyle = id ? '#edb775' : '#ed7e88';
   for (let x = 0; x < w; x += 2) {
     const beat = b + ((x - x0) / scale) * d.bpm / 60;
-    const peak = peakAt(t, mod(beat, 32) * 60 / t.nativeBpm);
+    const peak = peakAt(t, t.firstBeat + mod(b, t.beats)*60/t.nativeBpm + (beat-b)*60/t.nativeBpm);
     const size = peak * (h - 8); c.globalAlpha = .75; c.fillRect(x, h / 2 - size / 2, 2, Math.max(1, size));
   }
   c.globalAlpha = 1;
@@ -87,7 +101,14 @@ function drawVJ(beat,energy){
  $('visual-label').textContent=reduced.matches?'低減表示・静止VJ':dancing?'4拍の仮ドット・自動演出':character?'華やかな仮シルエット（案）':'背景VJのみ・操作不要';
 }
 function render(){
- if(disposed)return;const now=audio.now;frameView=updateMix(audio.mix,now);
+ if(disposed)return;const now=audio.now;
+ const oldGuide=audio.mix.guide;
+ const completed=oldGuide && audio.mix.decks.every(d=>d.playing) && beatAt(audio.mix.decks[oldGuide.from],now)>=oldGuide.end;
+ frameView=updateMix(audio.mix,now);
+ if(!score && (completed || frameView.progress>=1))judge();
+ $('judge').disabled=!audio.mix.decks.every(d=>d.playing)||!audio.mix.lastPlay;
+ if(audio.mix.lastPlay){const p=audio.mix.lastPlay;$('play-feedback').textContent=`PLAY: ${p.grade}!（拍から ${p.errorMs>=0?'+':''}${p.errorMs.toFixed(0)}ms）`;$('play-feedback').dataset.grade=p.grade;}
+ document.querySelectorAll('[data-nudge-ms]').forEach(b=>b.disabled=!audio.mix.decks[1].playing);
  const both=audio.mix.decks.every(d=>d.playing),guide=audio.mix.guide;
  for(const id of [0,1]){
   const key=id?'b':'a',d=audio.mix.decks[id],beat=mod(beatAt(d,now),32),play=$('play-'+key);
@@ -104,14 +125,14 @@ function render(){
  $('offset').disabled=!audio.mix.decks[1].playing;$('start').disabled=audio.busy;$('pause').disabled=!audio.mix.running;
  $('start').textContent=audio.mix.resumeDecks.length?'全体を再開':audio.context?'音声準備済み':'音声を準備';
  $('mix-value').textContent=`A ${Math.round((1-audio.mix.mix)*100)} / B ${Math.round(audio.mix.mix*100)}%`;
- $('phase').textContent=`共通7秒 / BPM差 ${(audio.mix.decks[1].bpm-audio.mix.decks[0].bpm).toFixed(2)} / ${both?`B−A拍位相 ${phaseError(...audio.mix.decks,now).toFixed(3)}・フレーズ差 ${phraseError(...audio.mix.decks,now).toFixed(2)}拍`:'各PLAYを押すまで、そのデッキの波形は停止'}`;
+ $('phase').textContent=`共通7秒 / BPM差 ${(audio.mix.decks[1].bpm-audio.mix.decks[0].bpm).toFixed(2)} / ${both?`B−A拍位相 ${phaseError(...audio.mix.decks,now).toFixed(3)} / ${(phaseError(...audio.mix.decks,now)*60000/audio.mix.decks[0].bpm).toFixed(1)} ms・フレーズ差 ${phraseError(...audio.mix.decks,now).toFixed(2)}拍`:'各PLAYを押すまで、そのデッキの波形は停止'}`;
  $('master').textContent=`VJ基準 ${audio.mix.visualMaster?'B':'A'}（音声時計）`;
  $('phrase').value=frameView.mode==='mix'?frameView.progress:0;
  const target=guide?.to?'B':'A';let text;
- if(frameView.mode==='idle')text='PITCHまたはBPM SYNCでBPMを合わせ、まずPLAY A。音声準備だけでは鳴りません。';
+ if(frameView.mode==='idle')text='手動PITCHでBPMを合わせ、まずPLAY A。音声準備だけでは鳴りません。';
  else if(frameView.mode==='entry')text=frameView.remaining<=4?`${target}の入りまで ${Math.ceil(frameView.remaining)} 拍。合図で自分でPLAY。`:`次のフレーズ頭まで ${Math.ceil(frameView.remaining/4)}小節。${target}のBPMを合わせてPLAYを準備。`;
  else if(frameView.mode==='waiting-play')text=frameView.elapsed<1?`PLAY ${target}：今がフレーズ頭。押した瞬間に再生します。`:`${target}は停止中。次の頭まで ${Math.ceil(frameView.remaining)}拍。自動で再生しません。`;
- else text=`8小節MIX ${Math.floor(frameView.progress*8)+1}/8：位相を確かめ、横フェーダーを動かそう。採点なし。`;
+ else text=`8小節MIX ${Math.floor(frameView.progress*8)+1}/8：位相を確かめ、横フェーダーを動かそう。ピッチ・PLAY・位相を採点します。`;
  if(text!==message){$('coaching').textContent=text;message=text;}
  drawVJ(beatAt(audio.mix.decks[audio.mix.visualMaster],now),audio.level());frame=requestAnimationFrame(render);
 }

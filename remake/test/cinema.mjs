@@ -18,7 +18,7 @@ const stateModule = new vm.SyntheticModule(["state"], function () { this.setExpo
 function replace(value) { state = value; stateModule.setExport("state", value); }
 const ports = {
   "../core/state.js": stateModule,
-  "../core/data.js": { DB, sceneBg: () => ({ url: "cinema.webp" }) },
+  "../core/data.js": { DB, sceneBg: () => ({ url: "cinema.webp" }), loadCinemaDialogue: async () => DB },
   "../core/ui.js": { withScenePreparation: task => task, imageReady: async () => ready, toast: text => notices.push(text) },
   "../core/stats.js": {
     addMoney: n => state.money += n, addStamina: n => state.stamina += n,

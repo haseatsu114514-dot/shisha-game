@@ -3,6 +3,7 @@ import { el } from "../core/util.js";
 import { temperatureBands, isIdealTemperature, isOptimalTemperature, DANGER_TEMP, temperatureAfterSteam, steamTemperatureRange } from "./conditions.js";
 import { steamClimate } from "./steam-climate.js";
 import { buildThermometer } from "./thermometer.js";
+import { effectBadge } from "./effect-visual.js";
 
 const weatherIcon = (rainy) => rainy
   ? '<svg viewBox="0 0 24 24"><path d="M6 15a4 4 0 0 1 0-8 6 6 0 0 1 11-1 4.5 4.5 0 0 1 1 9H6M7 18l-1 3m7-3-1 3m7-3-1 3"/></svg>'
@@ -39,7 +40,7 @@ export function buildSteamForecast(cs, thermometer) {
   const rangeText = el("b.steam-forecast-value", { dataset: { test: "steam-forecast-text" } });
   const note = el("span.steam-forecast-note");
   const root = el("div.steam-forecast", { dataset: { test: "steam-forecast" } }, [
-    el("div.steam-forecast-heading", [el("span", { text: "蒸らし後の温度の目安" }), rangeText]),
+    el("div.steam-forecast-heading", [effectBadge("insight", "察"), el("span", { text: "蒸らし後の温度の目安" }), rangeText]),
     buildSteamWeather(cs), note,
   ]);
   return { root, update(seconds) {

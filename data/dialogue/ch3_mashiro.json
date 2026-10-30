@@ -14,6 +14,26 @@
           "text": "自分用のダークと、はじめ用のブロンドを分けて置いた。"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんのは、ダークなんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。ニコチン8。僕、普段これだから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "来た日の、はじめくんのブロンド。軽くて、お水みたいだったの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……やっぱり、そういう意味だったんだ"
+        },
+        {
           "speaker": "mashiro",
           "face": "normal",
           "text": "同じボウルでも、葉が違うと、待つ時間が違うねぇ"
@@ -154,7 +174,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "彼女のシーシャには「勝つため」の気負いが一切ない。ただ目の前の一台に集中している。"
+          "text": "ましろはトングの先を布で拭き、タイマーを手元に置いた。急ぐ様子はない。"
         },
         {
           "speaker": "mashiro",
@@ -177,29 +197,9 @@
           "text": "それは、tonariでバイトしていた頃の自分と同じだった。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "mukaiでの練習が、少しずつ何かを修復していく。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "俺の作り方、誰かに教わったことばっかりですね"
-        },
-        {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "僕もだよぉ。教わったことと、失敗したことばっかり"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……ましろちゃんも？"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "うん。今日も、はじめくんと吸った分が増えたねぇ"
+          "text": "今日も、はじめくんと吸った分が増えたねぇ"
         },
         {
           "type": "remember",

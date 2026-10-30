@@ -13,4 +13,4 @@
 
 [実測結果](verification.json)：実増加量、通知の位置・サイズ・文字サイズ、文字が枠内に収まること、煙なしの枠、光、報酬の重複なしを確認。文字の収まりは表示領域で検査する。横切る光の疑似要素は一時的にscrollWidthを広げるため、文字のクリッピング判定から除く。
 
-BIG／REGの先告知・後告知・右リールの減速・再マウントは既存の `/remake/test/reel_visuals.html` でも確認。[仕様と検証の記録](../../../docs/slot_bonus_notification_20261008.md)。
+BIG／REGの先告知・後告知・右リールの減速・再マウントは既存の `/remake/test/reel_visuals.html` でも確認。[仕様と検証の記録](../../../docs/archive/slot_bonus_notification_20261008.md)。

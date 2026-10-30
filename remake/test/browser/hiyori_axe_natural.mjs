@@ -70,7 +70,8 @@ try {
         const { fixedNightVisitBlock } = await import('./js/daily/night-events.js');
         const { NIGHT_EVENTS } = await import('./js/chapters/ch1.js');
         const spotAvailability = spot => baseAvailability(spot, { visitBlock: item => fixedNightVisitBlock(NIGHT_EVENTS, item) });
-        window.Q = { core, vn, spots, hiyori, spotAvailability, events: [], current: null };
+        const axe = await import('./js/daily/hiyori-axe.js');
+        window.Q = { core, vn, spots, hiyori, axe, spotAvailability, events: [], current: null };
         core.config.textSpeed = 4;
         vn.vnTest.turbo = true;
         vn.vnTest.choose = id => id === 'remake_tutorial_offer' ? 1 : 0;
@@ -159,7 +160,7 @@ try {
               seen.add(shot);
             }
             if (!await click('.vn-choices.show button')) {
-              if (await page.locator('.vn-next.show').isVisible()) { await page.waitForTimeout(330); await click('.vn-box'); }
+              if (await page.locator('.vn-next.show').isVisible()) { await page.waitForTimeout(40); await click('.vn-box'); }
             }
           }
           continue;
@@ -180,18 +181,20 @@ try {
           // DAY3's optional review can now open the same tonari drill menu.
           if (await click('[data-test="drill-heat"]')) continue;
           if (await click('[data-test="tonari-hiyori-axe"]:not([disabled])')) continue;
-          // Return -> followup -> afterwork has no night restriction. A real shift and
-          // its existing after-sumi choice can read those two talks in one action.
+          // Return -> followup -> afterwork has no night restriction. A real shift reads
+          // those talks in its mandatory after-shift Sumi conversation (#1081 B05).
           // Do this before axe/work, so later free-talk money invariants stay intact.
           const catchUp = await page.evaluate(() => {
             const s = Q.core.state, f = s.flags;
-            return f._hiyori_tonari_return_done && !f._hiyori_tonari_afterwork_done
-              && s.visitedDay.tonari_baito !== s.day;
+            return s.visitedDay.tonari_baito !== s.day && (
+              f._hiyori_tonari_return_done && !f._hiyori_tonari_afterwork_done
+              || Q.axe.hiyoriAxePrereqsMet() && !Q.axe.axeThrowExposed());
           });
           const earn = catchUp || snap.money < 6000 && !snap.flags._hiyori_real_self_known;
           if (earn && await click('[data-test="tonari-baito"]')) continue;
           if (await click('[data-test="tonari-customer"]')) continue;
-          if (!await click('[data-test="after-sumi"]')) await click('[data-test="after-none"]');
+          // The Sumi talk already ran (mandatory, #1081 B05); just leave the shift.
+          await click('[data-test="after-none"]');
         } else if (snap.map) {
           const mapKey = `${snap.day}:${snap.slot}`;
           if (lastMapKey !== mapKey) {
@@ -235,8 +238,13 @@ try {
             // Earn through the actual shift UI before either a paid visit or axe event.
             // A disabled axe button must never send us back into a used customer seat.
             if (s.money < 6000 && s.visitedDay.tonari_baito !== s.day && ok('tonari')) return 'tonari';
+            // If prerequisites became ready after today's shift, wait for tomorrow's Sumi talk.
+            if (Q.axe.hiyoriAxePrereqsMet() && !Q.axe.axeThrowExposed()
+              && s.visitedDay.tonari_baito === s.day) return 'rest';
             const needsTonari = f._hiyori_meeting_done && !f._hiyori_sumi_message_done
-              || f._hiyori_tonari_return_done && !f._hiyori_tonari_afterwork_done;
+              || f._hiyori_tonari_return_done && !f._hiyori_tonari_afterwork_done
+              || Q.axe.hiyoriAxePrereqsMet() && !Q.axe.axeThrowExposed()
+                && s.visitedDay.tonari_baito !== s.day;
             if (needsTonari && !sp.isClosed(tonari) && s.visitedDay.tonari_customer !== s.day && ok('tonari')) return 'tonari';
             if (f._hiyori_tonari_afterwork_done && s.slot === 1 && !sp.isClosed(tonari)
               && (!workGoal || !f._hiyori_bond_question_done || giftGoal && !f._hiyori_bond_finale_done) && ok('tonari')) return 'tonari';

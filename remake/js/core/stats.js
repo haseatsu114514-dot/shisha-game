@@ -1,5 +1,6 @@
-// ステータス・好感度・体力・所持金。成長量は通知にPで出し、現在の強さは★で表す。
+// ステータス・好感度・体力・所持金。成長量は通知にPで出し、現在の強さは段で表す。
 import { MAX_MONEY } from "./rules.js";
+import { GUTS_STAMINA_BONUS } from "./stat-step-tables.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { DB } from "./data.js";
 import { pendingLoveStage, questionComplete } from "./affinity-stages.js";
@@ -9,22 +10,29 @@ import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
-/** 章ごとのソフトキャップ（ch1で上限に張り付かない・ch5で全100を狙える） */
-export function statCap() {
-  return { 1: 48, 2: 66, 3: 82, 4: 90, 5: 100 }[state?.chapter || 1] || 100;
+/** 章キャップと周回開始値から能力ごとに決めるソフトキャップ。 */
+export const CYCLE_START_CAP_MARGIN = 10;
+export function statCap(key) {
+  const chapterCap = { 1: 48, 2: 66, 3: 82, 4: 90, 5: 100 }[state?.chapter || 1] || 100;
+  const start = state?.cycleStartStats?.[key];
+  return Math.max(chapterCap, (Number.isFinite(start) ? start : 10) + CYCLE_START_CAP_MARGIN);
 }
 
 /** ★1〜5（内部値 0〜100 を 20 刻み） */
 export function star(key) {
   return clamp(Math.ceil((state.stats[key] || 0) / 20), 1, 5);
 }
-/** 0（★1）〜1（★5）。効果量は ★ 刻みで効く（連続値にしない） */
+/** 内部値から10段へ。旧セーブの端数も切り上げる。 */
+export function step(key) {
+  return clamp(Math.ceil((state.stats[key] || 0) / 10), 1, 10);
+}
+/** 1段の0から10段の1まで、効果量を9等分する。 */
 export function tier01(key) {
-  return (star(key) - 1) / 4;
+  return (step(key) - 1) / 9;
 }
 export function starText(key) {
-  const s = star(key);
-  return "★".repeat(s) + "☆".repeat(5 - s);
+  const s = step(key);
+  return "★".repeat(s) + "☆".repeat(10 - s);
 }
 
 export const RANK_LABELS = {
@@ -34,7 +42,7 @@ export const RANK_LABELS = {
   charm: ["影うすい", "親しみやすい", "華がある", "目が離せない", "カリスマ"],
   insight: ["鈍め", "気が利く", "よく見てる", "見抜く目", "千里眼"],
 };
-export const rankLabel = (key) => RANK_LABELS[key][star(key) - 1];
+export const rankLabel = (key) => RANK_LABELS[key][Math.floor((step(key) - 1) / 2)];
 
 // 同じステへの連続加算は1枚のバナーに合算する（CLAUDE.md: statGainBatch と同じ約束）
 const MERGE_MS = 700;
@@ -54,12 +62,13 @@ export function gainWord(total) {
  */
 export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } = {}) {
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
-  const cap = statCap();
+  let cap = statCap(key);
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
   if (state.stats[key] >= cap || excludedKeys.includes(key)) {
-    const open = STAT_KEYS.filter((k) => state.stats[k] < cap && !excludedKeys.includes(k));
+    const open = STAT_KEYS.filter((k) => state.stats[k] < statCap(k) && !excludedKeys.includes(k));
     if (!open.length) return 0;
     key = open[Math.floor(Math.random() * open.length)];
+    cap = statCap(key);
   }
   const before = state.stats[key];
   let xp = (state.statXp[key] || 0) + amount;
@@ -72,7 +81,7 @@ export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } 
   emit("stat-raw", { key, got }); // スロットの「直前の行動で伸びたステ」の記録用
   emit("hud");
   if (silent) return got;
-  const starUp = star(key) > clamp(Math.ceil(before / 20), 1, 5);
+  const starUp = step(key) > clamp(Math.ceil(before / 10), 1, 10);
   if (batch[key]?.owner !== state) batch[key] = { owner: state, total: 0, starUp: false };
   batch[key].total += got;
   batch[key].starUp ||= starUp;
@@ -86,7 +95,7 @@ function flushBatch() {
   batch = {};
   for (const [key, { owner, total, starUp }] of Object.entries(b)) {
     if (owner !== state) continue;
-    emit("stat-gain", { key, total, name: STAT_JA[key], word: gainWord(total), starUp, rank: rankLabel(key), star: star(key) });
+    emit("stat-gain", { key, total, name: STAT_JA[key], word: gainWord(total), starUp, rank: rankLabel(key), star: step(key) });
   }
 }
 
@@ -95,6 +104,11 @@ function flushBatch() {
 export const ACTION_GROWTH_BUDGET = 2;
 let earningAction = null;
 
+// 経験値（core/growth.js）は自分をここへ登録する。stats.js からは読みに行かない（未公開の機能に依存させない）。
+let expHooks = null;
+export function setExpHooks(hooks) { expHooks = hooks || null; }
+const noop = () => {};
+
 /** 台本・訪問・制作の成長候補。確定済み報酬用の gainStat と分ける。 */
 export function earnStat(key, amount = 1) {
   if (!earningAction || earningAction.owner !== state || !STAT_KEYS.includes(key) || !(amount > 0)) return;
@@ -102,14 +116,24 @@ export function earnStat(key, amount = 1) {
   earningAction.gains[key] = Math.max(earningAction.gains[key] || 0, amount);
 }
 
-/** 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。 */
-export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false } = {}) {
+/**
+ * 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。
+ * @param opts.exp 経験値の対象 {key, person, place}。関数なら行動の結果から決める（core/growth.js）
+ */
+export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false, exp = null } = {}) {
   const parent = earningAction;
   const action = { owner: state, gains: {}, spent: 0 };
   earningAction = action;
+  const releaseChip = expHooks?.hold?.() || noop;
   let value;
   try { value = await run(); }
+  catch (error) { releaseChip(); throw error; }
   finally { earningAction = parent; }
+  try { return settleAction(action, parent, value, { budget, points, primary, consumed, exp }); }
+  finally { releaseChip(); }
+}
+
+function settleAction(action, parent, value, { budget, points, primary, consumed, exp }) {
   if (action.owner !== state) return { value, spent: 0 };
   if (parent?.owner === state) parent.spent += action.spent;
   if (action.spent > 0 || consumed(value)) {
@@ -121,6 +145,7 @@ export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 
       gainStat(key, points, { excludedKeys: rewarded });
       for (const k of STAT_KEYS) if (state.stats[k] > before[k]) rewarded.push(k);
     }
+    if (expHooks?.enabled()) expHooks.action(typeof exp === "function" ? exp(value) : exp);
   }
   return { value, spent: action.spent };
 }
@@ -133,7 +158,7 @@ export function applyStats(obj = {}) {
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
 
 export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
-export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori", "samechan"];
+export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "mashiro", "hiyori", "samechan"];
 
 // 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
 export const AFFINITY_GATE_CHOICES = Object.freeze({
@@ -275,6 +300,8 @@ const affinityBatch = new Map();
 let affinityBatchTimer = null;
 
 function queueAffinityGain(payload) {
+  // 自由行動の中で段が上がった分だけ経験値にする（LIME・強制イベントでは入らない。SPEC 1.1・X4）
+  if (earningAction?.owner === state && expHooks?.enabled()) expHooks.affinity(payload.id, rankOf(payload.pts) - rankOf(payload.prevPts));
   const key = `${payload.id}:${!!payload.bond}`;
   const pending = affinityBatch.get(key);
   const previous = pending?.owner === state ? pending.payload : null;
@@ -375,11 +402,10 @@ export function gainAffinity(id, pts, opts = {}) {
 
 // ---------------------------------------------------------------- 体力
 
-const GUTS_STAMINA_BONUS = [0, 10, 25, 40, 60];
 export const STAMINA_LOW = 25;
 
 export function maxStamina() {
-  return 100 + GUTS_STAMINA_BONUS[star("guts") - 1];
+  return 100 + GUTS_STAMINA_BONUS[step("guts") - 1];
 }
 
 export function addStamina(n) {

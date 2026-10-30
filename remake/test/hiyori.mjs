@@ -285,6 +285,13 @@ try {
       const manual = manualState.flags._hiyori_real_self_known && manualState.lovePts.rin === 33 && manualState.lovePts.hiyori === 20;
       const original = JSON.parse(JSON.stringify(data.DB.hiyori));
       data.DB.hiyori.route.enabled = true;
+      // 第3〜5章の独立イベントは作らない（#1434 オーナー決定B）。章・連絡先・関係の条件判定だけを、テスト専用の仮イベントで確認する。
+      const need = ["_hiyori_work_talk_done"];
+      data.DB.hiyori.route.events = [...data.DB.hiyori.route.events,
+        { id: "tokyo_contact", dialogue: "hiyori_qa_tokyo_contact", chapters: [3], flag: "_hiyori_qa_tokyo_contact", requires: need, contact: true },
+        { id: "dubai_support", dialogue: "hiyori_qa_dubai_support", chapters: [4], flag: "_hiyori_qa_dubai_support", requires: need, contact: true },
+        { id: "chapter5_friend", dialogue: "hiyori_qa_ch5_friend", chapters: [5], flag: "_hiyori_qa_ch5_friend", requires: need, relationship: "friend" },
+        { id: "chapter5_lover", dialogue: "hiyori_qa_ch5_lover", chapters: [5], flag: "_hiyori_qa_ch5_lover", requires: need, relationship: "lover" }];
       const originals = { ...data.DB.dialogues };
       for (const event of route.hiyoriRoute().events) data.DB.dialogues[event.dialogue] = { lines: [{ speaker: "hiyori", text: "条件確認" }] };
       const statuses = [];

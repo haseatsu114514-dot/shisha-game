@@ -10,8 +10,6 @@
 <link rel="preload" href="fonts/ZenKakuGothicNew-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/ZenKakuGothicNew-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/ZenKakuGothicNew-Black.woff2" as="font" type="font/woff2" crossorigin>
-<!-- 名前表示の見出し明朝（Zen Old Mincho Bold。"Suien Name" として vn-lounge.css で登録・名前札へ適用）も先読みする -->
-<link rel="preload" href="fonts/ZenOldMincho-Name-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/axe-throw.css">
 <link rel="stylesheet" href="css/trpg.css">
@@ -58,6 +56,13 @@
 <link rel="stylesheet" href="css/vn-composition.css">
 <link rel="stylesheet" href="css/craft-landscape.css">
 <link rel="stylesheet" href="css/flavor-guide.css">
+<style>
+/* 起動直後（モジュール読込前）の #boot も、共通ロード画面と同じ背景イラスト（案B「霞と奥行き」）で見せる。
+   素材は css/loading.css の --loading-backdrop-art と同じもの。暗幕はロゴと文言の可読性のため。
+   ゲージの色も共通ロード画面の --loading-bar-gradient に合わせる。 */
+#boot { background: linear-gradient(rgba(7, 5, 12, 0.62), rgba(7, 5, 12, 0.62)), url("img/ui/loading/loading_bg.webp") center / cover no-repeat, #07050c; }
+.boot-bar i { background: linear-gradient(90deg, #ff5fa8 0%, #b45cf0 50%, #3fd0e8 100%); }
+</style>
 </head>
 <body data-screen="boot">
 <div id="viewport">

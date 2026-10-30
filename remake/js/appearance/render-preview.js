@@ -1,5 +1,5 @@
-// #437: isolated review renderer. Original designs and catalog approval stay unchanged.
-// This module is deliberately not imported by the game or the GAME OVER rig.
+// #437: design-only comparison renderer shared by the review page and crafting bench.
+// Original designs, catalog approval and the GAME OVER rig stay unchanged.
 import { normalizeAppearance } from "./model.js";
 
 const NS = "http://www.w3.org/2000/svg";

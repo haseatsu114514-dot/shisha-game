@@ -1,5 +1,5 @@
 // 旧ハリボテ試作の8方向・反転・タップ/ダッシュを本編用の遠近通り/4コマへ。
-// 親のinfo/enter/visited/back/pausedだけを使用し、保存・訪問・報酬を変更しない。
+// 親のinfo/enter/visited/back/paused/onReady/onLoadErrorだけを使用し、保存・訪問・報酬を変更しない。
 import { VIEW, FLOOR, SPAWN, DOORS, CHARACTER_HEIGHT, STRIDE_LENGTH, camera, moveOnFloor, groundDistance, walkingPoint, toScreen, fromScreen, project, unproject, constrain, direction, inRect } from './model.js';
 import { drawWalker, walkerFrame } from './gait.js';
 const $ = (s) => document.querySelector(s), canvas = $('#view'), ctx = canvas.getContext('2d');
@@ -17,12 +17,64 @@ const focus = () => canvas.focus({ preventScroll: true });
 function fit() { $('#stage').style.setProperty('--k', Math.min(innerWidth / VIEW.w, innerHeight / VIEW.h)); }
 fit(); addEventListener('resize', fit);
 $('#standalone').hidden = window.parent !== window;
-function image(src) { return new Promise(resolve => { const i = new Image(); i.onload = () => resolve(i); i.onerror = () => resolve(null); i.src = src; }); }
+const LOAD_TIMEOUT_MS = 8000;
+const LOAD_FAIL_TEXT = '準備に時間がかかっています／読み込みに失敗しました。ピンマップへ戻れます';
+let timedOut = false, loadFailed = false, readyNotified = false;
+function image(src) {
+  return new Promise(resolve => {
+    let settled = false;
+    const i = new Image();
+    const timer = setTimeout(() => settle(null, true), LOAD_TIMEOUT_MS);
+    function settle(value, timeout) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      i.onload = i.onerror = null;
+      if (timeout) timedOut = true;
+      resolve(value);
+    }
+    i.onload = () => settle(i, false);
+    i.onerror = () => settle(null, false);
+    i.src = src;
+  });
+}
+function loadMeta() {
+  const url = '../../assets/street_walk/hajime_walk_cycle_144.json';
+  const read = (r) => { if (!r.ok) throw Error('sprite metadata'); return r.json(); };
+  if (typeof AbortController !== 'function') {
+    let timer;
+    const timeout = new Promise(resolve => { timer = setTimeout(() => { timedOut = true; resolve(null); }, LOAD_TIMEOUT_MS); });
+    return Promise.race([fetch(url).then(read).catch(() => null), timeout]).finally(() => clearTimeout(timer));
+  }
+  const controller = new AbortController();
+  let settled = false;
+  const timer = setTimeout(() => { if (!settled) timedOut = true; controller.abort(); }, LOAD_TIMEOUT_MS);
+  return fetch(url, { signal: controller.signal }).then(read).catch(() => null).finally(() => { settled = true; clearTimeout(timer); });
+}
 const bgPromise = image(`../img/street/arcade-${night ? 'night' : 'day'}.webp`);
 const spritePromise = image('../../assets/street_walk/hajime_walk_cycle_144.png');
-const metaPromise = fetch('../../assets/street_walk/hajime_walk_cycle_144.json').then(r => { if (!r.ok) throw Error('sprite metadata'); return r.json(); }).catch(() => null);
+const metaPromise = loadMeta();
 let bg, sprite, meta;
-Promise.all([bgPromise, spritePromise, metaPromise]).then(values => { [bg, sprite, meta] = values; ready = true; });
+function showLoadNote() {
+  const loading = $('#street-loading');
+  if (!loading) return;
+  if (loadFailed) { loading.hidden = false; loading.textContent = LOAD_FAIL_TEXT; return; }
+  loading.hidden = ready;
+}
+// 完了通知は1回だけ。connectが先でも後でも届く。失敗しても代替描画のまま歩ける。
+function notifyReady() {
+  if (readyNotified || !ready || !host) return;
+  readyNotified = true;
+  if (loadFailed) host.onLoadError?.();
+  host.onReady?.();
+}
+Promise.all([bgPromise, spritePromise, metaPromise]).then(values => {
+  [bg, sprite, meta] = values;
+  loadFailed = timedOut || (!bg && !sprite);
+  ready = true;
+  showLoadNote();
+  notifyReady();
+});
 function say(text) { stop(); message = text; $('#msg').textContent = text; $('#msg').hidden = false; }
 function dismiss() { stop(); message = ''; $('#msg').hidden = true; focus(); }
 const foot = () => project(player);
@@ -120,9 +172,9 @@ function draw() {
 }
 // 通常のフレーム落ちは分割して全時間分進める。非表示/確認中の入力は破棄する。
 function tick(now){let dt=Math.min(.25,(now-last)/1000);last=now;do{const step=Math.min(dt,1/120);update(step);dt-=step;}while(dt>1e-6);draw();requestAnimationFrame(tick);}requestAnimationFrame(tick);
-window.streetScene={connect(adapter){host=adapter;stop();wasPaused=true;focus();}};
+window.streetScene={connect(adapter){host=adapter;stop();wasPaused=true;focus();notifyReady();}};
 window.__street={
-  state:()=>({ready,paused:paused(),night,alwaysRun,...toScreen(foot().x,foot().y,cam),z:player.z,
+  state:()=>({ready,loading:!ready,timedOut,loadFailed,paused:paused(),night,alwaysRun,...toScreen(foot().x,foot().y,cam),z:player.z,
     worldX:foot().x,worldY:foot().y,worldScale:foot().scale,cameraZoom:cam.zoom,
     renderHeight:CHARACTER_HEIGHT*foot().scale*cam.zoom,camX:cam.tx,vanishing:toScreen(FLOOR.cx,FLOOR.horizon,cam),dir:player.dir,gaitFrame:gaitFrame(),gaitPhase:gaitPhase(),strideDistance,walked,moving,frames:4,msg:message,busy:false,
     travel:DOORS.map(d=>({id:d.id,off:!host?.visited(d.id)})),character:'hajime'}),

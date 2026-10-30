@@ -5,11 +5,13 @@ import { el, yen, sleep } from "../core/util.js";
 import { layers } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, STAT_KEYS } from "../core/state.js";
-import { staminaRatio, currentCondition, maxStamina, star } from "../core/stats.js";
+import { staminaRatio, currentCondition, maxStamina, step } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
+import { config } from "../core/state.js";
+import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal } from "../core/growth.js";
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
@@ -85,18 +87,24 @@ export function initHud(h) {
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
-    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
+    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b"), el("em.guts-extra")])]), el("span.guts-badge", { text: "根", "aria-label": "根性の体力上乗せ" })]),
     radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () => handlers.status?.() }),
+    // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
+    exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
+      el("span.hx-lv"), el("i.hud-bar.hx-bar", [el("b.hx-settled"), el("b.hx-today")]), el("small.hx-left"),
+    ]),
+    // 未使用の火種の印。火の色・個数入りで、LIME の未読の赤丸と区別する（REPORT P5・R6）
+    hidane: el("em.hidane-badge", { hidden: true, dataset: { test: "hud-hidane" } }),
     menu: el("button.hud-menu", { dataset: { test: "hud-menu" }, onclick: () => handlers.menu?.() }, [el("i"), el("span", { text: "MENU" })]),
   };
-  dom.status.append(dom.radar);
+  dom.status.append(dom.radar, dom.hidane);
   const moneyRow = el("div.dc-row.money", [el("span", { text: "所持金" }), dom.money]);
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left]), dom.stamina]),
+      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left]), dom.stamina, dom.exp]),
     ]),
     el("div.hud-right", [dom.status, dom.phone, dom.menu]),
   ]);
@@ -112,6 +120,39 @@ export function initHud(h) {
     dom.moneyRow.append(pop);
     setTimeout(() => pop.remove(), 1400);
   });
+  on("exp-gain", showExpChip);
+}
+
+/** 1行動につき1枚の「EXP +N　はじめて・なじみ」（内訳の数字は出さない。REPORT R7） */
+function showExpChip({ total, tags = [] }) {
+  if (!dom || !growthEnabled() || !(total > 0)) return;
+  const chip = el("div.exp-chip", { role: "status", dataset: { test: "exp-chip" } }, [
+    el("b", { text: `EXP +${total}` }), tags.length ? el("span", { text: tags.join("・") }) : null,
+  ]);
+  dom.exp.append(chip);
+  setTimeout(() => chip.remove(), 2200);
+}
+
+function updateGrowth() {
+  const on = growthEnabled();
+  dom.exp.hidden = !on;
+  const total = on ? hidaneTotal(ensureGrowth()) : 0;
+  dom.hidane.hidden = !(total > 0);
+  dom.hidane.textContent = total > 99 ? "99" : String(total || "");
+  dom.status.title = total > 0 ? `ステータス（未使用の火種 ${total}）` : "ステータス";
+  dom.status.setAttribute("aria-label", dom.status.title);
+  if (!on) return;
+  const g = gaugeInfo();
+  dom.exp.querySelector(".hx-lv").textContent = `Lv.${g.level}`;
+  dom.exp.querySelector(".hx-settled").style.width = `${Math.round(g.settled * 100)}%`;
+  dom.exp.querySelector(".hx-today").style.width = `${Math.round(g.now * 100)}%`;
+  const left = dom.exp.querySelector(".hx-left");
+  left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
+  dom.exp.classList.toggle("ready", g.pending > 0);
+  dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
+  dom.exp.title = g.max ? `Lv.${g.level} MAX` : g.pending > 0
+    ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
+  dom.exp.setAttribute("aria-label", dom.exp.title);
 }
 
 export function showHud(v = true) {
@@ -143,11 +184,17 @@ export function updateHud() {
   dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
   dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
+  const gutsExtra = dom.stamina.querySelector(".guts-extra");
+  const showGuts = config.statEffectColors !== false && step("guts") > 1;
+  gutsExtra.style.left = `${100 / maxStamina() * 100}%`;
+  gutsExtra.style.width = `${showGuts ? Math.max(0, Math.min(state.stamina, maxStamina()) - 100) / maxStamina() * 100 : 0}%`;
+  dom.stamina.querySelector(".guts-badge").hidden = !showGuts;
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる
   dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(92 * (maxStamina() / 100))}px`;
-  dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 4 + 3.2 * star(k))).join(" "));
+  dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 7.2 + 12.8 * (step(k) - 1) / 9)).join(" "));
+  updateGrowth();
 }
 
 let recoveryObserver = null;

@@ -113,7 +113,7 @@ await suite("mix-temperature", async check => {
 
       // The real timer, forecast and steam path retain exactly the selected preview.
       await page.evaluate(() => {
-        Object.assign(QA.cs, { steamSeconds: 600, steamVariation: { offset: 0, transfer: 1 },
+        Object.assign(QA.cs, { water: 0.5, steamSeconds: 600, steamVariation: { offset: 0, transfer: 1 },
           environment: { rainy: false, ambientC: 23, humidityPercent: 52 }, place: "four", pack: "normal",
           equip: { ...QA.cs.equip, charcoal: "cube_charcoal" },
           heat: { heatPower: 100, heatStability: 100, burnRisk: 0, aromaRetention: 100, score: 100 },
@@ -198,7 +198,7 @@ await suite("mix-temperature", async check => {
         await page.locator('[data-test="mix-ok"]').click(); await page.evaluate(() => QA.run);
         // Same initial heat, weather, equipment, packing and two keep inputs; only the recipe changes.
         await page.evaluate(() => {
-          Object.assign(QA.cs, { steamSeconds: 300, steam: { temp: .64, score: 100, seconds: 300 }, pack: "normal", place: "triangle",
+          Object.assign(QA.cs, { water: 0.5, steamSeconds: 300, steam: { temp: .64, score: 100, seconds: 300 }, pack: "normal", place: "triangle",
             environment: { rainy: false, ambientC: 23, humidityPercent: 52 },
             heat: { heatPower: 50, heatStability: 50, burnRisk: 30, aromaRetention: 55, score: 60 },
             holes: { total: 24, minimumComplete: true, outerEven: 1, evenness: 1, innerExcess: 0, inner: 2, score: 80 } });

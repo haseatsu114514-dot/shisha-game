@@ -59,7 +59,7 @@ export function newState() {
     flavorMastery: {}, // 味の系統 -> 経験値（Lv.1〜5）
     flavorLessons: [], // 熟練度を受け取った会話
     staffPractice: null, // その日のまかない使用量
-    flavorStock: {}, // フレーバーの在庫（g）。1箱50g。大会・家の試作・店の私物持ち込みで消費
+    flavorStock: {}, // フレーバーの在庫（g）。1箱50g。家の試作・店の持ち込み・大会の課題以外の葉で消費（課題は大会が支給＝減らない）
     weatherSeed: Math.floor(Math.random() * 100000), // 雨の日の抽選種（セーブごとに違う）
     baitoCount: 0,
     lastBaitoDay: 0,           // 最後にシフトに入った日（スミさんのバイト誘いの判定）
@@ -79,6 +79,7 @@ export function newState() {
     reel: {
       seed: (Math.random() * 0x100000000) >>> 0,
       count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0,
+      recent: [],              // 直近30回転の当たり記録（1=ペカ）。最近の不調の補いに使う（#1281）。旧セーブは空から数える
       pending: [],             // 演出待ちの結果（報酬は確定・適用済み）
       installed: false,        // C.STATIONの初回来場・参加登録で導入
       introDone: false,
@@ -328,6 +329,8 @@ function migrate(s) {
     .filter(([id, xp]) => /^[a-z0-9_]+$/.test(id) && Number.isFinite(xp) && xp >= 0)
     .map(([id, xp]) => [id, Math.min(MASTERY_THRESHOLDS.at(-1), xp)]));
   s.flavorLessons = Array.isArray(s.flavorLessons) ? [...new Set(s.flavorLessons.filter(x => typeof x === "string"))] : [];
+  // アダムのダブルアップルの話は第3回から第4回へ移した（#1466）。第3回で受け取った旧セーブに第4回で二重付与しない。
+  if (s.flavorLessons.includes("ch1_adam_third") && !s.flavorLessons.includes("ch1_adam_fourth")) s.flavorLessons.push("ch1_adam_fourth");
   if (!s.staffPractice || typeof s.staffPractice.day !== "string") s.staffPractice = null;
   else s.staffPractice.used = Object.fromEntries(Object.entries(record(s.staffPractice.used))
     .filter(([, g]) => Number.isFinite(g) && g >= 0).map(([id, g]) => [id, Math.min(6, g)]));
@@ -504,6 +507,7 @@ export const config = {
   // 一度見た演出（連絡先交換・シフト終了）を2回目以降だけ短くする。初回は必ずフルで見せる。
   // 既定オフ＝現状どおり。くじ・チェキ・MG(#1081 H05)は短縮しない。既読判定は state.flags を使う。
   shortSeen: false,
+  statEffectColors: true, // 作り画面の能力補正を色と漢字で示す
 };
 
 export function loadConfig() {

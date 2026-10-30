@@ -8,22 +8,111 @@
   "presentation": "quiet",
   "visual_source": "既存4枚: asset_sources/trailer-90s-anime-concept/images/（#415・セル画版v2）。紬と入口の影: asset_sources/retro-ova-study-519/images/（#519・OVA風）",
   "frames": [
-    { "id": "afterglow", "kind": "prologue", "duration": 2800, "kicker": "なるさんとの約束、そのあとで。", "text": "『もう一口』の言葉より、\n採点表が、気になっていた。" },
-    { "id": "scoresheet", "kind": "prologue", "duration": 2800, "speaker": "はじめ", "text": "（……次は、ここでも勝ちたい）", "kicker": "技術点。個性点。あの、一票。" },
-    { "id": "next", "kind": "slate", "duration": 2000, "text": "次回予告", "kicker": "勝つほど、遠くなる。" },
-    { "id": "sumi-silence", "kind": "image", "duration": 5500, "art": "01-sumi-silence", "speaker": "スミ", "text": "あの顔は、知ってる。", "move": "push", "source": "data/dialogue/ch2_main.json#ch2_sumi_silence" },
-    { "id": "naru-confrontation", "kind": "image", "duration": 5000, "art": "02-naru-confrontation", "speaker": "なる", "text": "……今の話、点になるのか？", "move": "still", "source": "data/dialogue/ch2_isolation.json#ch2_naru_confrontation" },
-    { "id": "minto-warning", "kind": "image", "duration": 4500, "art": "03-minto-warning", "speaker": "みんと", "text": "何があっても、わたしはここにいるから。", "move": "push", "source": "data/dialogue/ch2_isolation.json#ch2_minto_warning" },
-    { "id": "tsumugi-water", "kind": "image", "duration": 5500, "art": "04-tsumugi-water", "speaker": "つむぎ", "text": "……少し、お水を飲みませんか", "move": "still", "source": "data/dialogue/ch2_isolation.json#ch2_tsumugi_color" },
-    { "id": "ageha-promise", "kind": "image", "duration": 4500, "art": "05-ageha-departure", "text": "じゃ、明日は同じ舞台でね。", "move": "push", "source": "data/dialogue/ch2_main.json#ch2_pre_tournament_realisation" },
-    { "id": "empty-victory", "kind": "image", "duration": 6000, "art": "06-empty-victory", "speaker": "はじめ（心の声）", "text": "……おめでとうが、届いてるのに。", "move": "pull", "source": "data/dialogue/ch2_tournament.json#ch2_tournament_tasteless" },
-    { "id": "chapter-title", "kind": "title", "duration": 5200, "text": "才能の壁", "kicker": "第二章" },
-    { "id": "last-question", "kind": "echo", "duration": 4000, "text": "誰のために、煙を作る。" }
+    {
+      "id": "afterglow",
+      "kind": "prologue",
+      "duration": 2800,
+      "kicker": "なるさんとの約束、そのあとで。",
+      "text": "『もう一口』の言葉より、\n採点表が、気になっていた。"
+    },
+    {
+      "id": "scoresheet",
+      "kind": "prologue",
+      "duration": 2800,
+      "speaker": "はじめ",
+      "text": "（……次は、ここでも勝ちたい）",
+      "kicker": "数字の欄。南雲さんの、あの一票。"
+    },
+    {
+      "id": "next",
+      "kind": "slate",
+      "duration": 2000,
+      "text": "次回予告",
+      "kicker": "勝つほど、遠くなる。"
+    },
+    {
+      "id": "tsumugi-water",
+      "kind": "image",
+      "duration": 5500,
+      "art": "04-tsumugi-water",
+      "speaker": "つむぎ",
+      "text": "……少し、お水を飲みませんか",
+      "move": "push",
+      "source": "data/dialogue/ch2_isolation.json#ch2_tsumugi_color"
+    },
+    {
+      "id": "minto-warning",
+      "kind": "image",
+      "duration": 5000,
+      "art": "03-minto-warning",
+      "speaker": "みんと",
+      "text": "何があっても、わたしはここにいるから。",
+      "move": "still",
+      "source": "data/dialogue/ch2_isolation.json#ch2_minto_warning"
+    },
+    {
+      "id": "ageha-promise",
+      "kind": "image",
+      "duration": 4500,
+      "art": "05-ageha-departure",
+      "text": "じゃ、明日は同じ舞台でね。",
+      "move": "push",
+      "source": "data/dialogue/ch2_main.json#ch2_pre_tournament_realisation"
+    },
+    {
+      "id": "sumi-silence",
+      "kind": "image",
+      "duration": 5500,
+      "art": "01-sumi-silence",
+      "speaker": "スミ",
+      "text": "あの顔は、知ってる。周りの声が全部、ガラスの向こうから聞こえてるって顔だ",
+      "move": "still",
+      "source": "data/dialogue/ch2_main.json#ch2_sumi_silence"
+    },
+    {
+      "id": "naru-confrontation",
+      "kind": "image",
+      "duration": 4500,
+      "art": "02-naru-confrontation",
+      "speaker": "なる",
+      "text": "……今の話、点になるのか？",
+      "move": "push",
+      "source": "data/dialogue/ch2_isolation.json#ch2_naru_confrontation"
+    },
+    {
+      "id": "empty-victory",
+      "kind": "image",
+      "duration": 6000,
+      "art": "06-empty-victory",
+      "speaker": "はじめ",
+      "text": "（なのに、受け取る場所だけが、どこにも見つからない）",
+      "move": "pull",
+      "source": "data/dialogue/ch2_tournament.json#ch2_tournament_tasteless"
+    },
+    {
+      "id": "chapter-title",
+      "kind": "title",
+      "duration": 5200,
+      "text": "才能の壁",
+      "kicker": "第二章"
+    },
+    {
+      "id": "last-question",
+      "kind": "echo",
+      "duration": 4000,
+      "text": "誰のために、煙を作る。"
+    }
   ],
   "source_notes": {
     "continuity": "第1章の表彰・なるとの約束から続く、次章の断片。後日談と予告の文面は本演出用。第2章本編の読了・交流・報酬は進めない。",
-    "canon": ["brand/story_and_structure.md 第1章・第2章", "data/dialogue/ch1_naru.json ch1_naru_promise", "data/dialogue/ch2_main.json", "data/dialogue/ch2_isolation.json", "data/dialogue/ch2_tournament.json"],
+    "canon": [
+      "brand/story_and_structure.md 第1章・第2章",
+      "data/dialogue/ch1_naru.json ch1_naru_promise",
+      "data/dialogue/ch2_main.json",
+      "data/dialogue/ch2_isolation.json",
+      "data/dialogue/ch2_tournament.json"
+    ],
     "sample": "既存サンプルの6場面・抜粋台詞を採用。#519で紬を可愛いOVA風へ、アゲハの場面を文字なし・顔を隠した入口の影へ更新。PNG原画は保持し、1664×936へ全構図を収めて形式変換する。正式採用C（presentation: quiet）は横長画面・全12カット47.5秒。章タイトル後にみんとの言葉を反復する。基礎台本のA/Bも比較ページから再生できる。",
-    "spoilers": "既存サンプルで採用済みの控え室の断片まで。大会名や順位・審査結果の説明は足さず、未知の送信者の正体は見せない。#929でなるの言葉をDAY11の「今の話、点になるのか？」へ、入口の影を大会前夜のあげはの約束へ、控え室を「おめでとうが、届いてるのに。」へ改めた（あげはは去らない）。入口の影では顔と話者名を隠し、髪飾りの小さな色だけを章頭の人物登場へつながる手がかりにする。章頭の巨大な人物画は予告へ流用しない。"
+    "spoilers": "既存サンプルで採用済みの控え室の断片まで。大会名や順位・審査結果の説明は足さず、未知の送信者の正体は見せない。#929でなるの言葉をDAY11の「今の話、点になるのか？」へ、入口の影を大会前夜のあげはの約束へ改めた（あげはは去らない）。カット見せ化で控え室の台詞を原文の「（なのに、受け取る場所だけが、どこにも見つからない）」へ差し替え、勝敗や祝福の語は載せない。入口の影では顔と話者名を隠し、髪飾りの小さな色だけを章頭の人物登場へつながる手がかりにする。章頭の巨大な人物画は予告へ流用しない。"
   }
 }

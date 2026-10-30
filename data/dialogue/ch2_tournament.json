@@ -50,7 +50,7 @@
           {
             "speaker": "ageha",
             "face": "normal",
-            "text": "MELTY PUFFのあげは。……ハジメっち、だよね"
+            "text": "MELTY PUFFのあげは。……tonariの人、だよね"
           },
           {
             "speaker": "hajime",
@@ -62,12 +62,12 @@
           {
             "speaker": "hajime",
             "face": "serious",
-            "text": "（朝、指を確かめる話を思い出す。……今日は、ダメな日なのかもしれない）"
+            "text": "（MELTY PUFFで、あげはさんが手を隠した日を思い出す。……今日も、何かあるのかもしれない）"
           },
           {
             "speaker": "ageha",
             "face": "sad",
-            "text": "……見なかったことにして。今日は、ちゃんと勝負したいの"
+            "text": "……そういう顔、今日はナシね。うち、ちゃんと勝負したいの"
           },
           {
             "speaker": "hajime",
@@ -100,12 +100,17 @@
         {
           "speaker": "kumicho",
           "face": "serious",
-          "text": "おう、そのとおり。俺はヤクザだ"
+          "text": "へい。昔は組を張ってやした。今は煙草屋の親父でさ"
         },
         {
           "speaker": "kumicho",
           "face": "smile",
-          "text": "だが今日は、いち職人として来た。文句なら、俺の煙に言いな"
+          "text": "足は洗った。今日は、いち職人として来やした。文句なら、俺の煙に言いな"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "続いて零-ZERO-、REI選手！"
         },
         {
           "type": "condition",
@@ -165,7 +170,7 @@
           {
             "speaker": "rei",
             "face": "smile",
-            "text": "また会ったな。今日は、煙で話そう"
+            "text": "また会ったな。今日の煙、聴かせてもらう"
           }
         ],
         "rei_first": [
@@ -192,6 +197,151 @@
       }
     },
     {
+      "dialogue_id": "ch2_tournament_stations",
+      "comment": "DAY14・入場の後、規則の前（2026-10-28オーナー指示: 大会当日のドラマ性）。4台の前で開始を待つ短い掛け合い。神崎→あげは『葉子の姉貴』。応援席は前夜の選択に従う。手の震えは秘密を知る保存だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "4台の前に、それぞれが立った。配信カメラの赤いランプが、一つずつ灯っていく。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "規則の前に、選手の皆さんへひと言ずつッ！ まずは神崎選手から！"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "言うこたぁありやせん。煙で話すと決めてきたんでさ"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "お隣、MELTY PUFFのあげは選手！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ネイル、苺色にしてきた！ 今日の一台と、おそろいなの"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "気合いの入れ方が粋ですわ。さすがは葉子の姉貴だ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "ちょ、本名で呼ぶなって！ 配信乗ってんだけど！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席がどっと沸いた。あげはは赤い顔のまま、台の縁を指で軽く叩いた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……いい音だ。今日は、隣の台の音も聴いてる"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "でも一番は、終わったあとの三秒。今日の煙も、そこまで聴いて"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "そして、tonariの蒸野選手！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……よろしくお願いします。最後まで、手順通りに作ります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言い終えてから、少し硬かったと思った。それでも拍手は温かかった。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_no_audience",
+          "next_true": "alone",
+          "next_false": "other"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん。トングは根元ですぜ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（点を落とさない順番は、全部頭に入ってる。あとは、間違えないだけだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "読み返した手順だけが、くっきりしている。苺の味の輪郭は、まだ遠かった。"
+        }
+      ],
+      "branches": {
+        "secret": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "台の陰で、あげはが左の指先を右手で包んでいた。すぐに離して、何もない顔をする。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……約束した。今日は、そういう顔をしない）"
+          }
+        ],
+        "alone": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "応援席の端に、空いた椅子が並んでいた。それでいい、と思おうとした。"
+          }
+        ],
+        "other": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_audience_welcome",
+            "next_true": "welcome"
+          }
+        ],
+        "welcome": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客席の中ほどで、つむぎが小さく手を上げた。約束どおり、声は出さずに。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……来てくれたんだ）"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch2_tournament_rules",
       "lines": [
         {
@@ -207,7 +357,7 @@
         {
           "speaker": "maezono",
           "face": "serious",
-          "text": "一人につき一台。吸い出して提供したあとも、2回の調整まで見ます"
+          "text": "調整のたびに、全員の一台を吸わせてもらいます。楽しみだねえ"
         },
         {
           "speaker": "dr_kemuri",
@@ -222,7 +372,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（香りの輪郭が、まだつかめない。でも、手順は忘れていない）"
+          "text": "（味の輪郭が、まだつかめない。でも、手順は忘れていない）"
         },
         {
           "type": "condition",
@@ -247,6 +397,41 @@
       }
     },
     {
+      "dialogue_id": "ch2_tournament_verdict",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "審査員3人の10点、すべて投入されました！ ……それでは、結果を出します！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場の音楽が、ふっと絞られた。四台のボウルから、細い煙だけがまだ上がっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の台のあげはは、トングを置いたまま動かない。神崎さんは腕を組み、REIは目を閉じていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（さっきまで吸っていたはずの一台が、口の中に何も残っていない）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "県代表の座は──"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一拍。客席の誰かが、息を呑む音まで聞こえた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_tournament_farewell",
       "lines": [
         {
@@ -262,12 +447,27 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "スジの通った一台だった。東京でも、その手を雑に扱うなよ"
+          "text": "スジの通った一台でしたわ。東京でも、その手を雑に扱いなさんなよ"
         },
         {
           "speaker": "rei",
           "face": "smile",
           "text": "……おめでとう。最後の調整、音が揃ったみたいだった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "壇上を降りかけたところで、審査員席を離れた南雲が、俺の前で足を止めた。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "serious",
+          "text": "見事な正解だが、その煙に君自身の顔は見えたか？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "答えるより先に、南雲はもう背を向けていた。"
         },
         {
           "type": "hide_portrait",
@@ -276,6 +476,10 @@
         {
           "type": "hide_portrait",
           "char_id": "rei"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "nagumo"
         },
         {
           "speaker": "",
@@ -306,7 +510,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "今日はちょっと疲れたから、帰って休む。落ち着いたら、また一台作ろ"
+          "text": "今日は店に戻って、閉めたら休む。落ち着いたら、また一台作ろ"
         },
         {
           "speaker": "ageha",
@@ -326,6 +530,16 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "（握った指先が、まだ少し震えていた。それでも、最後まで作りきったんだ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "控室で約束した水のボトルを、あげはの手に握らせた。"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……覚えてたんだ。ありがと、ハジメっち"
           }
         ]
       }
@@ -337,6 +551,16 @@
           "speaker": "",
           "face": "",
           "text": "片づけの済んだ台で、自分の一台を確かめた。煙は出る。味の輪郭は戻らない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "撤収前のモニターに、持ち点の表がまだ映っていた。いちばん高く積まれているのは、自分の欄だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査席を片づける博士が、一度だけこちらを見た。"
         },
         {
           "speaker": "hajime",
@@ -371,12 +595,58 @@
           "text": "ありがとう、と打つ。送信するまで、ずいぶん時間がかかった。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_naru_listened",
+          "next_true": "naru_listened"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_naru_hurt",
+          "next_true": "naru_hurt"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホのカレンダーで、次の受診日を確かめた。東京へ発つ前の日だった。"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "スミさんから、新しいメッセージが届いた。"
         }
       ],
       "branches": {
+        "naru_listened": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "通知を下までたどった。なるさんの名前だけが、なかった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（終わったら連絡する。そう言ったのは、俺だ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「終わりました」とだけ打って、送った。"
+          }
+        ],
+        "naru_hurt": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "通知を下までたどった。なるさんの名前だけが、なかった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "謝ったままのトークを開いて、何も打てずに閉じた。"
+          }
+        ],
         "alone": [
           {
             "speaker": "",
@@ -435,23 +705,18 @@
         },
         {
           "speaker": "ageha",
-          "face": "sad",
-          "text": "（崩れたら、直し方が分かんない。うちは、ずっとそうだった）"
-        },
-        {
-          "speaker": "ageha",
           "face": "normal",
           "text": "（ハジメっちも、最近ずっと調子悪かった。煙に出てたもん）"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "（なのに、手順を一個ずつ確かめて、最後まで崩れなかった）"
+          "text": "（なのに、最後まで崩れなかった）"
         },
         {
           "speaker": "ageha",
           "face": "serious",
-          "text": "（崩れても、言葉で戻ってこられるんだ。……うちには、それがない）"
+          "text": "（うちには、戻ってくる道がない）"
         },
         {
           "speaker": "ageha",

@@ -696,7 +696,7 @@ td.action-cell { min-width: 120px; }
       <dt>スパイス感</dt><dd>スパイス・ハーブ系の刺激</dd>
       <dt>華やかさ</dt><dd>フローラル系の香り。9=華やか</dd>
       <dt>ニコチンの強さ</dt><dd>葉のニコチン感。9=ガツンとくる</dd>
-      <dt>NGフレーバー</dt><dd>一緒に混ぜると大幅減点の組み合わせ</dd>
+      <dt>NGフレーバー</dt><dd>組み合わせの資料・メモ用設定。ゲームの採点には反映されません</dd>
     </dl>
   </div>
 </div>
@@ -734,6 +734,7 @@ td.action-cell { min-width: 120px; }
   </div>
 </div>
 
+<p>NGフレーバーの設定は資料・メモ専用で、ゲームの採点には反映されません。採点に使う NG 組み合わせの正本は <code>data/ng_mixes.json</code> です。採点を変更する場合はそちらを編集してください。</p>
 <div class="table-wrap">
   <table id="flavor-table">
     <thead>
@@ -1057,7 +1058,7 @@ function buildTable() {
     hr.appendChild(th);
   }
   const thNg = document.createElement("th");
-  thNg.innerHTML = 'NGフレーバー<span class="th-desc">大幅減点の組合せ</span>';
+  thNg.innerHTML = 'NGフレーバー<span class="th-desc">資料・メモ用</span>';
   hr.appendChild(thNg);
 
   const thAction = document.createElement("th");

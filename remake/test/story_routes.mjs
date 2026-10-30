@@ -55,6 +55,16 @@ assert.equal(selectStoryEvening(routes, pair, {present: ['minto', 'rin', 'steve'
 const partial = selectPostEndingConflict(routes, {...pair, lovers: all}, {present: ['minto', 'rin', 'steve']});
 assert.deepEqual(partial.participants, ['minto', 'rin'], 'only present lovers confront him');
 assert(!partial.scenes.flatMap(id => sceneData.get(id).lines).some(row => row.speaker === 'steve'), 'no comic interruption after the ending');
+// #1716: 各人の反応ははじめの個別の返答で閉じる。話し直しは一人ずつで、許しや未解決の解除を決めない。
+for (const id of all) {
+  const reply = sceneData.get(routes.romance[id].conflict).lines.at(-1);
+  assert.equal(reply.speaker, 'hajime', id);
+  const talk = sceneData.get(routes.romance[id].talk)?.lines;
+  assert.ok(talk, `${id} talk`);
+  assert(talk.some(row => row.speaker === id) && talk.some(row => row.speaker === 'hajime'), id);
+  assert(!talk.some(row => row.type || row.flag || ['steve', ...all.filter(x => x !== id)].includes(row.speaker)), id);
+}
+assert(!sceneData.get(routes.romance.hiyori.conflict).lines.some(row => row.text?.includes('付き合おう')), 'hiyori quotes her real confession');
 assert.equal(selectPostEndingConflict(routes, {lovers: [], flags: {_story_shuraba_unresolved: true}}).kind, 'pending');
 assert.equal(selectPostEndingConflict(routes, {}, context).kind, 'none');
 assert.equal(selectStoryEvening(routes, {chapter: 4, lovers: ['rin', 'rin', 'unknown']}, {present: ['rin']}).kind, 'rest');
@@ -144,6 +154,17 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   value.flags._ch3_read_ch3_cigarman_rumor = true;
   assert(offered(value).includes('ch3_cigarman_trace'));
   assert.deepEqual(wiring.availableOptionalScenes(routes, {...value, chapter: 4}), []);
+}
+{
+  // 久世とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に久世側。
+  const value = tokyo();
+  readUntil(value, 'ch3_kuze_first');
+  assert(!offered(value).some(id => id.startsWith('ch3_kuze_mashiro_')), 'no childhood scenes before meeting kuze');
+  readUntil(value, 'ch3_kuze_mukai_visit');
+  assert(offered(value).includes('ch3_kuze_mashiro_tea_tin'));
+  assert(!offered(value).includes('ch3_kuze_mashiro_soon_back'), 'kuze talks after visiting mukai');
+  readUntil(value, 'ch3_taste_return');
+  assert(offered(value).includes('ch3_kuze_mashiro_soon_back'));
 }
 {
   // 前夜: location_contract どおり、実際に滞在中の人物と会う約束だけが根拠。

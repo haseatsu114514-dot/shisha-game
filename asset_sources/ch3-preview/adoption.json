@@ -1,0 +1,165 @@
+{
+  "source_issue": 1558,
+  "request": "章末予告編（第2章末→第3章／第3章末→第4章／第4章末→第5章）の画像カット生成。設計は work/trailer-expansion/DESIGN.md、台本は PR #1560。",
+  "encoding": "原画は Codex 生成 PNG (1672x941)。構図全体を 1664x936 へ contain して WebP method6、品質は 1枚 200KiB 以下になるよう個別調整。PNG 原画は asset_sources 側にそのまま残す。",
+  "frame_policy": "16:9 画面へ全構図を収める（第1章予告 ch2_preview の採用形式に倣う）。",
+  "runtime_bytes": 1003176,
+  "images": [
+    {
+      "id": "01-tokyo-arrival",
+      "source": "asset_sources/ch3-preview/01-tokyo-arrival.png",
+      "source_sha256": "45dd298a0eda25c3c335377dc63723008dceb1d0c27aa7c61e3137dee5dd70b2",
+      "source_bytes": 2291417,
+      "runtime": "assets/cgs/ch3_preview/01-tokyo-arrival.webp",
+      "runtime_sha256": "dbeaa51508a9672044245210e40b8c4f39bec0a11f62eb63c75cae555e327b70",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 185086,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality81 method6; no crop or color filter"
+    },
+    {
+      "id": "02-mashiro-tea",
+      "source": "asset_sources/ch3-preview/02-mashiro-tea.png",
+      "source_sha256": "994885a8b88fe213d8ad462b66774ea50368aa102faa5456d22722c1d7e88ae1",
+      "source_bytes": 2306277,
+      "runtime": "assets/cgs/ch3_preview/02-mashiro-tea.webp",
+      "runtime_sha256": "a7863f6b0eab61cf00bb170663da7fa04082eec49b93a39880fe36c362900cec",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 199136,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality84 method6; no crop or color filter"
+    },
+    {
+      "id": "03-kuze-gaze",
+      "source": "asset_sources/ch3-preview/03-kuze-gaze.png",
+      "source_sha256": "0b9b32274d351b6e34e793290fd8283cc33c65b47508fa8fbb54455cc23776e5",
+      "source_bytes": 2198604,
+      "runtime": "assets/cgs/ch3_preview/03-kuze-gaze.webp",
+      "runtime_sha256": "9dc803698868fa25af4502fac9ad1f30c9abcb153c389a1f20114011d35c96ca",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 191064,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality84 method6; no crop or color filter"
+    },
+    {
+      "id": "04-venue-judges",
+      "source": "asset_sources/ch3-preview/04-venue-judges.png",
+      "source_sha256": "fea20ce092187d562816584178be501dc73e2f57ad824b9c90159b8f22d7d591",
+      "source_bytes": 2254582,
+      "runtime": "assets/cgs/ch3_preview/04-venue-judges.webp",
+      "runtime_sha256": "52d3e6523d85d76ae4814ce0c2d6f026473118505271246c24e8033b975f8cee",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 184900,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality84 method6; no crop or color filter"
+    },
+    {
+      "id": "05-naru-back",
+      "source": "asset_sources/ch3-preview/05-naru-back.png",
+      "source_sha256": "05248298e95b04185fefc5b5a37ffe990257d9d0a15eb4a3b5a55736370fa78a",
+      "source_bytes": 2250493,
+      "runtime": "assets/cgs/ch3_preview/05-naru-back.webp",
+      "runtime_sha256": "f2eb69f197fafc7073ad953e6cee81eb10d2e31a1b034c7385846b41e2c3edb6",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 176228,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality81 method6; no crop or color filter"
+    },
+    {
+      "id": "06-cigar-smoke",
+      "source": "asset_sources/ch3-preview/06-cigar-smoke.png",
+      "source_sha256": "39467faacb58ace5ee82b5ccae549f3af358f6cc373981362fdde2baf99af157",
+      "source_bytes": 1676812,
+      "runtime": "assets/cgs/ch3_preview/06-cigar-smoke.webp",
+      "runtime_sha256": "1e423aaeea048920e25de441c70843db15391fd79779dd6b7d221f1d7a78480f",
+      "dimensions": [
+        1664,
+        936
+      ],
+      "bytes": 66762,
+      "source_dimensions": [
+        1672,
+        941
+      ],
+      "resampled_dimensions": [
+        1663,
+        936
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "encoding": "contain whole frame at 1664x936; LANCZOS; black padding; WebP quality93 method6; no crop or color filter"
+    }
+  ]
+}

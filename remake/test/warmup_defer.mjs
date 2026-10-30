@@ -9,6 +9,47 @@ import vm from "node:vm";
 const STORE_URLS = ["assets/ui/store_logos/tonari.png", "assets/ui/store_logos/kemurikusa.png"];
 const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
 
+// 会話用フォントは起動時の preload から外し、同時呼び出しと失敗後の再試行を検証する。
+{
+  const html = await fs.readFile(new URL("../index.html", import.meta.url), "utf8");
+  assert.doesNotMatch(html, /<link[^>]+rel="preload"[^>]+ZenOldMincho-Name-Bold\.woff2/);
+  const source = await fs.readFile(new URL("../js/core/vn-fonts.js", import.meta.url), "utf8");
+  const calls = [];
+  let fail = false;
+  const context = vm.createContext({ document: { fonts: { load: (font, sample) => {
+    calls.push([font, sample]);
+    return fail ? Promise.reject(new Error("font unavailable")) : Promise.resolve([]);
+  } } } });
+  const module = new vm.SourceTextModule(source, { context });
+  await module.link(() => { throw new Error("unexpected font loader import"); });
+  await module.evaluate();
+  const { loadVnFonts } = module.namespace;
+  const first = loadVnFonts();
+  assert.equal(loadVnFonts(), first, "concurrent calls share one Promise");
+  await first;
+  assert.equal(loadVnFonts(), first, "completed load stays cached");
+  assert.deepEqual(calls.map(([font]) => font), ['700 20px "Suien Name"', '400 20px "Suien Blue Mincho"']);
+  assert(calls.every(([, sample]) => /[一-龯ぁ-ん]/.test(sample)));
+
+  const retryContext = vm.createContext({ document: { fonts: { load: (font) => {
+    calls.push([font]);
+    return fail ? Promise.reject(new Error("font unavailable")) : Promise.resolve([]);
+  } } } });
+  const retryModule = new vm.SourceTextModule(source, { context: retryContext });
+  await retryModule.link(() => { throw new Error("unexpected font loader import"); });
+  await retryModule.evaluate();
+  fail = true;
+  await assert.rejects(retryModule.namespace.loadVnFonts(), /font unavailable/);
+  fail = false;
+  await retryModule.namespace.loadVnFonts();
+  assert.equal(calls.length, 6, "both faces retry after a failed attempt");
+
+  const noFonts = new vm.SourceTextModule(source, { context: vm.createContext({}) });
+  await noFonts.link(() => { throw new Error("unexpected font loader import"); });
+  await noFonts.evaluate();
+  await noFonts.namespace.loadVnFonts();
+}
+
 async function loadUi() {
   const requested = [], idle = [];
   class Image {
@@ -29,7 +70,8 @@ async function loadUi() {
     "audio.js": { SE: {}, setRainAmbience: () => {} },
     "state.js": { state: {}, STAT_KEYS: [] },
     "data.js": { DB: {}, displayName: () => "", faceIconUrl: () => "", allFaceIconUrls: () => FACE_URLS, assetUrl: (u) => u },
-    "stats.js": { AFFINITY_RANK_PTS: [] },
+    "stats.js": { AFFINITY_RANK_PTS: [], step: () => 1 },
+    "stat-progress.js": { nextStepProgress: () => ({}), stepOfValue: () => 1 },
     "scene-art.js": { renderSceneArt: () => {}, sceneArtUrls: () => [] },
     "weather.js": { rainScene: () => {}, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
     "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null },
@@ -113,6 +155,29 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   assert(bgsLine && !bgsLine[1].includes("bg_tournament_stage"), "stage bg left the sequential warm list");
   assert.match(main, /requestIdleCallback\(warmStage, \{ timeout: 8000 \}\)/);
   assert.match(main, /imageReady\(bgUrl\("bg_tournament_stage"\), 8000\)/);
+  const warmUpSource = main.slice(main.indexOf("async function warmUp()"), main.indexOf("// テスト・デバッグ用フック"));
+  assert(warmUpSource.includes("loadVnFonts().catch(() => {})"));
+  let started = 0;
+  const warmUp = vm.runInNewContext(`${warmUpSource}\nwarmUp`, {
+    loadDeferredDialogues: () => Promise.resolve(),
+    loadCinemaDialogue: () => Promise.resolve(),
+    loadTournamentCraftDialogue: () => Promise.resolve(),
+    loadVnFonts: () => { started++; return new Promise(() => {}); },
+    warmUiArt: () => Promise.resolve(),
+    imageReady: () => Promise.resolve(),
+    bgUrl: (name) => name,
+    portraitInfo: () => null,
+    makingUrl: (name) => name,
+    requestIdleCallback: () => {},
+  });
+  await warmUp();
+  assert.equal(started, 1, "warmUp starts the fonts without waiting for them");
+
+  const engine = await fs.readFile(new URL("../js/vn/engine.js", import.meta.url), "utf8");
+  const entry = engine.slice(engine.indexOf("export function play("), engine.indexOf("function sceneBgm("));
+  assert.match(entry, /const fontsReady = loadVnFonts\(\)\.catch\(\(\) => \[\]\)/);
+  assert.match(entry, /const assetsReady = Promise\.all\(\[fontsReady, bgReady/);
+  assert(entry.indexOf("const assetsReady") < entry.indexOf("next();"), "first line starts after the font gate");
 }
 
 console.log("[warmup defer] PASS: store logos defer to idle only on the title path; stage bg deferred in main.js");

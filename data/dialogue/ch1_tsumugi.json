@@ -16,12 +16,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "タブレットの画面に、大きな傷が走っているのが目に入った。画面を斜めに横切る、深い亀裂。"
+          "text": "見慣れたひびの入った画面に、今日も窓辺の猫がいた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "亀裂をよけるように、スタイラスペンを走らせている。"
+          "text": "ひびのところだけ、線を少し太くして描いている。"
         },
         {
           "speaker": "",
@@ -93,7 +93,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "この子、猫なの？ 煙なの？"
+          "text": "取材の日にもいた子だ。……この子、猫なの？ 煙なの？"
         },
         {
           "speaker": "tsumugi",
@@ -537,7 +537,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "自分の投稿画面を開く。葉の耳の猫、苔の羽の鳥、角に森のある鹿。"
+          "text": "つむぎが自分の投稿画面を開く。葉の耳の猫、苔の羽の鳥、角に森のある鹿。"
         },
         {
           "speaker": "",
@@ -557,7 +557,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "さっきみたいに、寝てる顔の話をしてほしいです"
+          "text": "この前みたいに、寝てる顔の話をしてほしいです"
         },
         {
           "speaker": "hajime",
@@ -670,6 +670,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "「フレーバー選び：客の顔を見てから棚へ。スミさんと同じ順番」"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "フレーバーの配合比率。炭の温度管理パターン。客の反応。"
         },
         {
@@ -695,7 +700,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……最初に来た日から"
+          "text": "……はじめさんが来た、最初の日から"
         },
         {
           "speaker": "hajime",
@@ -734,17 +739,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "はじめさんがフレーバーを選ぶ時、お客さんの顔を見てから棚に向かうでしょう"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "あれ、他のスタッフはやらないんです"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "炭を替える時も、音を立てないようにそっと置く。お客さんの時間を邪魔しないように"
+          "text": "炭を替える時は、音を立てないようにそっと置く。お客さんの時間を邪魔しないように"
         },
         {
           "speaker": "tsumugi",
@@ -755,11 +750,6 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "絵を描いてても……はじめさんの手つきを、思い出すようになって"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "はじめさんの動きも、私の描くものに混ざってきました"
         },
         {
           "speaker": "",
@@ -804,12 +794,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎが慌ててタブレットを胸に抱えた。いつもの防御姿勢。"
+          "text": "つむぎが慌ててタブレットを胸に抱えた。いつもの抱え方。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "でも、その目が、ほんの少しだけ潤んでいた。"
+          "text": "でも、顔は、こちらを向いたままだった。"
         },
         {
           "speaker": "",
@@ -958,16 +948,6 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "はじめさんが、お客さんの顔を見てから、フレーバーを選ぶでしょう"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "あの手つきが、ここの煙を描く時に混ざるんです"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
           "text": "……窓のそばには、あの猫もいます"
         },
         {
@@ -995,7 +975,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……だって、この傷の上に、もっと描きたいから"
+          "text": "……この傷も、もう描き慣れた場所なので"
         },
         {
           "speaker": "",
@@ -1005,7 +985,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "うつむかずに笑うつむぎと、少しだけ目が合った。"
+          "text": "笑ったつむぎと、少しだけ目が合った。"
         },
         {
           "type": "hide_cg"
@@ -1146,12 +1126,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "でも、不思議なことに、その傷が絵の一部になっていた。"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "まるで、煙が傷に沿って流れているように見える。"
+            "text": "煙が、傷に沿って流れている。"
           },
           {
             "type": "choice",
@@ -1180,37 +1155,22 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
-            "text": "……傷を避けないで描いたのは、この絵が初めてです"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "……ずっと避けてました。傷のある場所には描けない、って思ってた"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "でも……はじめさんのシーシャの煙を描いてたら、気づいたら傷の上まで線を引いてて"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "傷があるのに、いや、傷があるからこそ、煙が自然に流れてるように見えた"
+            "text": "……傷のところは、煙の通り道にしました"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "つむぎの声が、少しだけ震えていた。"
+            "text": "傷に沿って流れる煙の線を、目で追った。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは、画面から目を上げずに続けた。"
           },
           {
             "speaker": "tsumugi",
             "face": "sad",
             "text": "……ここに来る前に見ていたものも、入ってます"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "いつも見てるものも、前に見てたものも、自然に混ざって"
           },
           {
             "speaker": "tsumugi",
@@ -1604,7 +1564,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……私、この店を愛してるので"
+          "text": "……ここが、好きなので"
         },
         {
           "speaker": "hajime",
@@ -1765,49 +1725,53 @@
           "text": "……下描き、少し進みました"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch1_tsumugi_sketch_wip"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "窓の光。空いた席。トングを持つ、はじめの手。"
+          "text": "開いたのは、水彩のスケッチブック。ラベンダーの煙が、葉の耳の猫にほどけていく。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あ、俺だ。……俺の手って、こんなふうに動いてるんだ"
+          "text": "あ、この猫。……耳が葉っぱで、尻尾が煙になってる"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "渡す前に、一度お客さんの方を見るので"
+          "text": "この子から、始めることにしました"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "その時の手が、描きたくて"
+          "text": "煙の色が、見えた気がして"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "煙を描くって聞いてたから、手も見てるとは思わなかった"
+          "text": "煙に色……そっか。言われてみると、ラベンダーっぽいな"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……煙だけだと、ここの絵にならなかったんです"
+          "text": "……まだ、どこに置くかは決めてないんです"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺の手なんて、なくても同じだと思うけどな"
+          "text": "これだけでも、きれいだけどな"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……同じじゃないです"
+          "text": "……これだけだと、どこの絵でもないので"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……はじめさんがいないと、私の知ってるtonariじゃないです"
+          "text": "……はじめさんのいるtonariに、したいです"
         },
         {
           "speaker": "hajime",
@@ -1822,7 +1786,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "画面には、まだ色を置いていない場所がいくつもある。"
+          "text": "紙の右半分は、まだ鉛筆の線と、小さな色見本だけ。"
         },
         {
           "speaker": "tsumugi",
@@ -1834,14 +1798,17 @@
           "id": "tsumugi_contest_draft",
           "choices": [
             {
-              "text": "窓辺の煙と猫",
+              "text": "ほどけていく煙と猫",
               "next": "draft_window"
             },
             {
-              "text": "カウンターの手元",
+              "text": "まだ色のない右側",
               "next": "draft_hands"
             }
           ]
+        },
+        {
+          "type": "hide_cg"
         },
         {
           "speaker": "hajime",
@@ -1932,7 +1899,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "窓辺の、この煙。猫が寝やすそうで"
+            "text": "この煙と猫のゆらぎ。……ずっと見ていられる"
           },
           {
             "speaker": "tsumugi",
@@ -1942,24 +1909,26 @@
           {
             "speaker": "",
             "face": "",
-            "text": "つむぎは窓辺を拡大して、猫の背中に線を１本足した。"
+            "fx": "cg_focus_sketch_cat",
+            "text": "つむぎは猫の顔を拡大して、瞳に小さな光を入れた。"
           }
         ],
         "draft_hands": [
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "ここの手、好きだな。顔がなくても、仕事してるのがわかる"
+            "text": "この、まだ何もない右側。これから何でも入りそうで、好きだな"
           },
           {
             "speaker": "tsumugi",
             "face": "smile",
-            "text": "……よかった。手だけ、何回も描き直したので"
+            "text": "……よかった。ここに、tonariを描き込むつもりで"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "つむぎは手元を拡大して、トングの先に線を１本足した。"
+            "fx": "cg_focus_sketch_blank",
+            "text": "つむぎは右側の余白を拡大して、細い線を一本、引き足した。"
           }
         ]
       }

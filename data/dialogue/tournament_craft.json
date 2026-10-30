@@ -166,7 +166,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "苺は熱に弱え。急かすより、待った方が早え"
+          "text": "苺は熱に弱え。急かすより、待った方が早えんでさ"
         },
         {
           "speaker": "maezono",
@@ -236,7 +236,7 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "二度の調整まで終了！ 先ほど注目していた配合と詰め方、煙ではどう届きましたか？"
+          "text": "まずは審査員の講評から！ 注目した配合と詰め方、二度の調整を経て、煙ではどう届きましたか？"
         }
       ]
     },
@@ -411,7 +411,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（先に自分の温度を見よう。隣の速さは、俺の答えじゃない）"
+          "text": "（隣じゃない。審査員の、次の一口を待とう）"
         }
       ]
     },
@@ -570,27 +570,172 @@
       ]
     },
     {
-      "dialogue_id": "tournament_craft_interlude1_2",
+      "dialogue_id": "tournament_craft_interlude1_2_ageha_first",
+      "comment": "第2章・提供後の票（2回目の投票）の後。この回、少なくとも1人の審査員があげはを一番に推したとき。",
       "lines": [
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "票、入ってる……！ でもまだ一回目だもんね。浮かれない、浮かれない"
+          "text": "一番に入れてくれた審査員さん、いる……！ 提供してからの票だもん。でも浮かれない、浮かれない"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "嬢ちゃん、それでいい。一回目の票なんざ、顔見せみてえなもんでさ"
+          "text": "葉子の姉貴、それでいい。提供の票は入口でさ。調整で崩しゃ、すぐ逃げていきやす"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2_ageha_second",
+      "comment": "第2章・提供後の票の後。この回、あげはが二番手としてだけ票を得たとき。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "票、入ってる……！ 二番手だけど、提供してからの票だもん。浮かれない、浮かれない"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "葉子の姉貴、それでいい。提供の票は入口でさ。調整で崩しゃ、すぐ逃げていきやす"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2_ageha_none",
+      "comment": "第2章・提供後の票の後。この回あげはに票が入らず、前の回までには票があるとき。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……今の票、うちに入ってない。提供したのに。浮かれてる場合じゃないや"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "葉子の姉貴、下向くこたぁねえ。持ち点はまだ半分残ってまさ。調整で取り返しゃいい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2_ageha_zero",
+      "comment": "第2章・提供後の票の後。あげはの累計がまだ0点のとき。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……まだ、うちに一点も入ってない。提供したのに"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "葉子の姉貴、下向くこたぁねえ。持ち点はまだ半分残ってまさ。調整で取り返しゃいい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2_ageha_unknown",
+      "comment": "第2章・提供後。票の記録を読めない旧保存・単体呼び出し用。票の有無には触れない。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "提供、終わった……！ 票は見ない。浮かれない、浮かれない"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "葉子の姉貴、それでいい。提供の票は入口でさ。勝負は調整で決まりやす"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2_mid",
+      "comment": "第2章・提供後の票の後。票の結果に関わらない共通部分。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ちょっ、本名はやめてってば……！"
         },
         {
           "speaker": "rei",
           "face": "normal",
           "text": "……数字は、見てない。苺が、まだ眠ってるから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2_hajime_good",
+      "comment": "第2章・提供が適温帯で、提供時の香りが立っていたとき。",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（眠ってる、か。俺の苺は起きてる。……起きてるうちに、温度を外さない）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、顔に出てますぜ。守るもんを見つけた顔だ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "はい。次の調整は、足さずに守ります"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2_hajime_work",
+      "comment": "第2章・提供は適温帯だが香りが立ちきっていない／記録不足のとき（PR #1617 の元の台詞）。",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "（眠ってる、か。俺の苺も、香りが立ちきってない気がする）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、顔に出てますぜ。直すとこを見つけた顔だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。次の調整で、苺を起こしにいきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2_hajime_hot",
+      "comment": "第2章・提供が適温帯より熱かったとき。",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（眠ってる、か。俺のは逆だ。熱が先に走って、苺が焦りかけてる）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、顔に出てますぜ。直すとこを見つけた顔だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。次の調整で、熱を一段引きます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_2_hajime_cold",
+      "comment": "第2章・提供が適温帯より低かったとき。",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（眠ってる、か。俺の苺も、熱が足りなくて起ききってない）"
         },
         {
           "speaker": "kumicho",
@@ -614,7 +759,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "審査員さん、私の台の前でちょっと長く止まるの。いい意味かな、悪い意味かな……"
+          "text": "審査員さん、うちの台の前でちょっと長く止まるの。いい意味かな、悪い意味かな……"
         },
         {
           "speaker": "rei",
@@ -639,6 +784,79 @@
       ]
     },
     {
+      "dialogue_id": "tournament_craft_interlude_pull_2",
+      "comment": "第2章・1回目の票の後、吸い出しの直前。4人の心の声（第1章の提供前の独白に対応）。",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "蒸らし、全台完了ッ！ ここから吸い出し、そして審査員への提供ですッ！"
+        },
+        {
+          "speaker": "",
+          "text": "四台のホースが、ほとんど同時に持ち上がった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "（ドラゴンフルーツは崩れねえ。あとは客の口に入るまで、筋を通すだけでさ）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "（ここからがサビだ。……薔薇は、走らせない）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "（苺とグミベア、ちゃんと笑ってる。大丈夫、うちの一台はかわいい）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（温度は帯の中。点を拾える順番で吸い出す。……間違えなければ、落ちない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude3_2",
+      "comment": "第2章・二度目の調整の後、講評の直前。結果は言わない。あげはの『今日いちばん頑張った』は送別の悔しさへつながる。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "最後の調整が終わった。四台が並び、審査員が順に吸い比べていく。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……やりきった。うち、今日いちばん頑張ったかも"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "待つのも仕事のうちでさ。……あんちゃん、息しなせえ"
+        },
+        {
+          "speaker": "",
+          "text": "言われて、ずっと息を止めていたことに気づいた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……四台とも、ちゃんと鳴ってた。誰が勝っても、いい夜だ"
+        },
+        {
+          "speaker": "",
+          "text": "客席の一番後ろで、背の高い男が手帳を閉じた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（自分の煙の味が、うまく分からない。答えは、審査員の顔にしかない）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "tournament_craft_interlude1_3",
       "lines": [
         {
@@ -654,7 +872,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "順番も数字も、大事。でも私は、煙の色を待つ。白が細くなるまで"
+          "text": "順番も数字も、大事。でも俺は、煙の色を待つ。白が細くなるまで"
         },
         {
           "speaker": "hajime",

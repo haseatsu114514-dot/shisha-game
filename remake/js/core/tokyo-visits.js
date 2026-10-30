@@ -6,7 +6,10 @@ export const tokyoVisitState = value => value.tokyoVisits ||= emptyTokyoVisits()
 
 export function playerRegion(value) {
   if (value.chapter !== 3) return value.chapter < 3 ? "home" : "unknown";
-  return value.flags?._ch3_cleared || (value.flags?._ch3_aftermath?.stage ?? -1) >= 3 ? "home" : "tokyo";
+  // 後日談の帰郷の夜（版3は煙幕の片づけの次、版1・2は三場面目）からは地元。
+  const aftermath = value.flags?._ch3_aftermath;
+  const homeStage = aftermath?.version >= 3 ? 4 : 3;
+  return value.flags?._ch3_cleared || (aftermath?.stage ?? -1) >= homeStage ? "home" : "tokyo";
 }
 
 export function visitContacts(value, definitions) {

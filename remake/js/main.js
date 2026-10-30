@@ -1,12 +1,14 @@
 // 起動: ステージの拡縮 → データ読込 → タイトル。
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
-import { loadAll, loadDeferredDialogues, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
+import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
+import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
 import { imgFileUrl } from "./core/img-file.js";
+import { withLoading } from "./core/loading.js";
 import { vnTest } from "./vn/engine.js";
 import { createDevInspector } from "./core/dev-inspector.js";
 import { createEventPreview } from "./core/dev-event-preview.js";
@@ -17,6 +19,7 @@ import { prepareTitleArt } from "./scenes/title-art.js";
 import { isNormalTitleForced } from "./scenes/title-layout.js";
 import { initGameLayout } from "./scenes/game-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
+import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
 
 function fitStage() {
   const stage = $("#stage");
@@ -38,23 +41,32 @@ export async function boot() {
   initLayers();
   initGameLayout();
   applyUiTheme(loadConfig().uiTheme);
+  const growthParam = new URLSearchParams(location.search).get("growth");
+  if (growthParam === "1" || growthParam === "0") setGrowthPreview(growthParam === "1");
   // 自動再生制限: 最初の操作で音を解禁（以後も操作のたびに保険で呼ぶ・軽い）
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);
 
-  const bar = $("#boot .boot-bar i");
-  // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
-  const fonts = Promise.race([
-    Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
-    new Promise((r) => setTimeout(r, 4000)),
-  ]).catch(() => {});
-  await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
-  $("#boot .boot-msg").textContent = "タイトル画像を準備しています…";
-  // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
-  const [titleArt] = await Promise.all([prepareTitleArt(), Promise.all([
-    imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
-    ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
-  ])]);
+  // 起動の待ち時間も、ゲーム内と同じ共通ロード画面（背景イラスト案B・ロゴ・発光ゲージ）で見せる。
+  // 静的な #boot はモジュール読込前と起動失敗時の受け皿として残し、ゲートが閉じた後に役目を終える。
+  // 漫画は boot 文脈の登録がないため表示されず、読了待ちも入らない（起動に追加の待ちを足さない）。
+  let titleArt;
+  await withLoading(async ({ report }) => {
+    // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
+    const fonts = Promise.race([
+      Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
+      new Promise((r) => setTimeout(r, 4000)),
+    ]).catch(() => {});
+    await Promise.all([loadAll((p) => {
+      // ゲージはデータ読込の実績（済んだ割合）にだけ追従させる。表示の進捗で起動を止めない。
+      try { report(Math.round(p * 100), 100); } catch { /* 表示だけの進捗で起動を止めない */ }
+    }), fonts]);
+    // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
+    [titleArt] = await Promise.all([prepareTitleArt(), Promise.all([
+      imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
+      ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
+    ])]);
+  }, { label: "ゲームを準備しています…", context: "boot", chapter: 1 });
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
   // 復旧URLは通常タイトルを開く。セーブの読込・書換えは行わない。
@@ -68,8 +80,12 @@ export async function boot() {
 
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
 async function warmUp() {
-  // ひより台詞はタイトル後に先読みする。失敗しても起動を妨げず、次の呼び出しで再試行できる。
+  // 後段台詞はタイトル後に先読みする。失敗しても起動を妨げず、各入口で再試行する。
   loadDeferredDialogues().catch(() => {});
+  loadCinemaDialogue().catch(() => {});
+  loadTournamentCraftDialogue().catch(() => {});
+  // 会話用の明朝2書体はタイトル後に先読みし、失敗時は会話開始時に再試行する。
+  loadVnFonts().catch(() => {});
   // 先に小さなUIの絵（枠・看板・顔アイコン・スロットの図柄）を並行で。背景・立ち絵はそのあと1枚ずつ
   // 店ロゴはマップまで要らないので、タイトル直後の帯域を空けるためアイドル時に回す（ui.js 側）。
   await Promise.all([warmUiArt({ deferStores: true }), ...["bg_osu_map_day", "bg_osu_map_night"].map((bg) => imageReady(bgUrl(bg), 8000, { keep: true }))]);
@@ -104,6 +120,16 @@ window.__remake = {
   },
   // 開発用ジャンプ（コンソールから: __remake.dev.tournament() など）。※今のセーブを上書きする
   dev: {
+    // 経験値・レベル・火種（心得の盤 第二弾・未公開）をこの端末だけ有効にする。URLの ?growth=1 / ?growth=0 でも切り替わる
+    growth(on) {
+      if (on !== undefined) setGrowthPreview(!!on);
+      return growthEnabled() && state ? { ...ensureGrowth() } : growthEnabled();
+    },
+    // 経験値を足す（寝ると精算される）。例: __remake.dev.addExp(400)
+    addExp(n = 200) { return gainExp(n); },
+    // 心得の盤を開く（?growth=1 のときだけ）。火種が無ければ addHidane で足す
+    board() { return openGrowthBoard(); },
+    addHidane(n = 5, kind = "any") { const g = ensureGrowth(); g.hidane[kind] = (g.hidane[kind] || 0) + n; return { ...g.hidane }; },
     // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / noren / walkdoor。本編の既定は door）。URLの ?move=pin でも切り替わる
     async moveStyle(style) {
       const moves = await import("./core/transition-moves.js");

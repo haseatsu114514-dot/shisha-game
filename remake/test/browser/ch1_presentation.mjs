@@ -95,7 +95,7 @@ await suite("ch1-presentation", async check => {
       await assertFits(page, ".mix-temperature-preview, .mix-temperature, .mix-temperature-legend");
       await select(page, '[data-test="mix-ok"]', touch); await page.evaluate(() => V.running);
       assert.equal(await page.evaluate(() => V.core.state.flavorStock.grape), 20);
-      assert.equal(await page.evaluate(() => V.core.state.flavorStock.lemon), 28); // 課題のレモンも私物から消費。
+      assert.equal(await page.evaluate(() => V.core.state.flavorStock.lemon), 30); // 課題のレモンは大会支給（オーナー決定 2026-10-28）で私物在庫は減らない。
     }, options);
     await check(`${device}-gift-bowl-leaf-plane`, async page => {
       await setup(page);
@@ -122,8 +122,8 @@ await suite("ch1-presentation", async check => {
       });
       await page.locator('[data-test="standings-recognition"]').waitFor();
       await assertFits(page, ".sd-recognition");
-      assert.match(await page.locator('[data-test="standings-recognition"]').textContent(), /焼き炭/);
-      assert.equal(await page.locator('.sd-row[data-id="hajime"] .sd-points').textContent(), "0pt");
+      assert.match(await page.locator('[data-test="standings-recognition"]').textContent(), /コンロの上で、炭は角まで赤く焼けていた/);
+      assert.equal(await page.locator('.sd-row[data-id="hajime"] .sd-points').textContent(), "1pt");
       await page.waitForTimeout(100); await page.screenshot({ path: `${shots}/${device}-recognition.png` });
       await page.evaluate(() => V.running);
       assert(await page.evaluate(() => V.table === JSON.stringify(V.result.pointTable(1))));

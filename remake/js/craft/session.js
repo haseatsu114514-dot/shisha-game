@@ -15,7 +15,6 @@ import { evaluationOf } from "./feedback.js";
 import { clearComments, completed } from "./broadcast.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
-import { usesFoil } from "./holes_logic.js";
 import { availableHoleTemplates } from "./holes_templates.js";
 import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
@@ -32,6 +31,7 @@ import { buildCraftProgress } from "./progress.js";
 import { warmCraftAssets } from "./readiness.js";
 import { prepareBenchEntry } from "./loading.js";
 import { applyCoalTraining } from "./coals.js";
+import { attachBenchAppearance } from "../appearance/bench.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -62,6 +62,7 @@ export function newSession(mode) {
     steamPrediction: steamForecastProfile(tier01("insight"), steamVariation),
     masteryAtStart: { ...state.flavorMastery }, // 練習後の成長で、作り終えた一台の評価を変えない
     equip: { ...state.equip },
+    appearance: { ...state.appearance },
     mix: {},
     mixInfo: null,
     pack: null,
@@ -121,8 +122,6 @@ function waitForBenchAssets(b, task, assets = task, notice = true) {
  */
 export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   applyCoalTraining(cs, state.flags);
-  // ロートスでアルミを使わない一台は、工程バーからも穴あけを外す（runHoles 側も飛ばす）。
-  if (!usesFoil(cs)) steps = steps.filter(([step]) => step !== "holes");
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   // 制作中は大会用の台だけを見せる。家背景に所持品の台を重ねない（#873）。
   const bg = () => setBg(bgUrl(benchBgRef(cs), timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls(), homeRigs: false });
@@ -157,6 +156,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   showScreen("bench", root);
   bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
+  attachBenchAppearance(bench, cs);
   const background = bg();
   // A missing entryAssets is an already completed fourth step in the loading count.
   const preparationSteps = [background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets];

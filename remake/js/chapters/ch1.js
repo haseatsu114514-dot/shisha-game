@@ -2,7 +2,7 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
+import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
@@ -293,7 +293,7 @@ const nightScene = (id, bg) => async (context) => {
   const opening = dialogue?.lines?.[0];
   const sameVisit = context?.returnedToTonari && id === "ch1_salaryman_regular" && typeof opening?.text === "string";
   const scene = sameVisit ? { ...dialogue, lines: [
-    { ...opening, text: opening.text.replace(/^夜のtonari。顔を出すと、/, "夜のtonari。") },
+    { ...opening, text: "夜のtonari。帰り際、スミさんに「悪い、カウンター頼めるか」と呼び止められた。" },
     ...dialogue.lines.slice(1),
   ] } : id;
   await play(scene, bg ? { bg } : {});
@@ -410,7 +410,7 @@ function earlyPractice() {
         progress.practiceDone = true;
         save();
       }
-      if (progress.failed) await read("remake_preparation_failed");
+      if (progress.failed) await read("remake_preparation_failed_day3");
       await read("remake_preparation_first_end");
       progress.feedbackRead = true;
       save();
@@ -501,6 +501,7 @@ const STEPS_ALL = CRAFT_STEPS;
 const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
 
 async function tournamentDay() {
+  await loadTournamentCraftDialogue();
   // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
   syncNightQueue(NIGHT_EVENTS, { resting: false });
   await runNightPlan(NIGHT_EVENTS, async () => {
@@ -703,10 +704,10 @@ async function victory(cs) {
   addMoney(PRIZE);
   delete state.tournament.stockSnap;
   delete state.tournament.entryResources;
-  await play("ch1_tournament_after", { bg: STAGE });
-  await play("interval_day1_naru_lime");
-  gainStat("guts", 1);
-  // 優勝の夜。勝利を喜び、記録を続ける博士の伏線へ。
+  // スミさんの祝福LIMEは、閉店後のtonariで祝杯を交わす前に届く。tonariへ戻る背景切替の手前で場面を区切る。
+  const after = DB.dialogues.ch1_tournament_after;
+  const tonariAt = after.lines.findIndex(line => line.type === "bg" && line.bg?.includes("bg_tonari_inside"));
+  await play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE });
   await openPhone([
     {
       id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
@@ -716,6 +717,12 @@ async function victory(cs) {
         "今日は喜べ。帰ったら、一緒に一服しよう",
       ], close_label: "……はい。ありがとうございます、スミさん",
     },
+  ], { time: "PM 6:52", title: "表彰式のあと" });
+  await play({ ...after, lines: after.lines.slice(tonariAt) }); // 先頭の bg 行で tonari に切り替わる
+  await play("interval_day1_naru_lime");
+  gainStat("guts", 1);
+  // 優勝の夜。記録を続ける博士の伏線へ。
+  await openPhone([
     {
       id: "_sys_unknown_recorded", sender: "???", messages: [
         "本日のあなたの試合データは、すべて記録させていただきました。",

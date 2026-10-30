@@ -11,9 +11,10 @@ import { el, sleep } from "../core/util.js";
 import { layers, gainCard, toast } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { gainStat, star } from "../core/stats.js";
+import { gainStat, step } from "../core/stats.js";
 import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
+import { growthEnabled, awardSlotExp } from "../core/growth.js";
 
 // ================================================================ 純粋コア（抽選は旧版と同一）
 
@@ -67,7 +68,7 @@ function ensureSetting(reel) {
   reel.settingDraws ||= 0;
   return reel.setting;
 }
-// 設定の有効期間（オーナー指定 2026-10-16）: 観音堂で変えた設定も最初の設定も、7日たつと自動で変わる。
+// 設定の有効期間（オーナー指定 2026-10-16）: 観音堂で変えた設定も最初の設定も、7日たつか章が変わると自動で変わる（#1281 2026-10-30 で仕様書も同じに）。
 // 知っている人だけがずっと有利にならないよう、良い設定も長くは続かない。
 const SETTING_DAYS = 7;
 const today = () => ({ chapter: state?.chapter || 1, day: state?.day || 1 });
@@ -110,6 +111,20 @@ function cueFor(seed, count, peka) {
 // オーナー「あまりにも収束しない人には出来レースでもいい」）。1章30回転で当たり1回以下の人は約12%→約2%
 const RESCUE = { minSpins: 8, ratio: 0.7, mult: 2.5, expectedRate: 0.106 };
 const rescueActive = (st) => st.count >= RESCUE.minSpins && (st.bonusCount || 0) < st.count * RESCUE.expectedRate * RESCUE.ratio;
+// 最近の不調の補い（#1281 オーナー決定 2026-10-30）。直近30回転の当たりが少ない人だけ REG/BIG を少しだけ上げる。
+// 30回転そろうまでは何もしない。期待値（30×10.6%≒3.2回）に対し、当たり2回なら×1.25、1回以下なら×1.5。
+// 生涯の裏確変（×2.5）とは掛け合わせず、大きい方だけを使う。ジャグ連（×1.5）は従来どおり別に効く。
+const SLUMP = { window: 30, steps: [{ maxHits: 1, mult: 1.5 }, { maxHits: 2, mult: 1.25 }] };
+/** 直近の当たり記録（1=ペカ, 0=それ以外）を窓の長さにそろえる。旧セーブ・壊れた値は空から数え直す */
+function recentWindow(recent) {
+  return Array.isArray(recent) ? recent.filter((v) => v === 0 || v === 1).slice(-SLUMP.window) : [];
+}
+function slumpMult(st) {
+  const recent = recentWindow(st.recent);
+  if (recent.length < SLUMP.window) return 1;
+  const hits = recent.reduce((s, v) => s + v, 0);
+  return SLUMP.steps.find((x) => hits <= x.maxHits)?.mult || 1;
+}
 const CEILING = { zoneRun: 8, mainRun: 15 };
 const JUG_REN = { games: 5, mult: 1.5 };
 const REPLAY_CHAIN_MAX = 4;
@@ -150,10 +165,12 @@ function effectiveTable(st) {
   get("big").weight += FREEZE_CONTROL.baseWeight - Math.min(fz, FREEZE_CONTROL.baseWeight);
   get("miss").weight -= Math.max(0, fz - FREEZE_CONTROL.baseWeight);
   get("freeze").weight = fz;
-  if (rescueActive(st)) {
+  // 生涯の裏確変と最近の不調の補いは、大きい方の倍率だけを使う（掛け合わせない）
+  const helpMult = Math.max(rescueActive(st) ? RESCUE.mult : 1, slumpMult(st));
+  if (helpMult > 1) {
     let added = 0;
     for (const id of ["reg", "big"]) {
-      const inc = Math.round(get(id).weight * (RESCUE.mult - 1));
+      const inc = Math.round(get(id).weight * (helpMult - 1));
       get(id).weight += inc; added += inc;
     }
     get("miss").weight = Math.max(1, get("miss").weight - added);
@@ -221,11 +238,26 @@ function safeSmoke(strip, rng) {
   });
   return cands[Math.floor(rng() * cands.length)] || 0;
 }
+// 左リールのBAR狙い（#1281 K01 オーナー決定 2026-10-30・見た目だけ）。実機のジャグラーで左にBARを狙ったときの
+// ハズレ目のように、ハズレ目の多くで左リールの窓にBARが見えるようにする。この配列はBARの真下がチェリーなので、
+// BARが上段・中段だとチェリー（中段チェリー＝プレミア／角チェリー）に見えてしまう。ハズレではBARを下段に置く
+// （中段は煙・上段はリプレイ）。役・確率・報酬・出目以外の乱数の使い方は変えない（stopsFor は各回転の乱数の最後の利用）。
+const LEFT_BAR_AIM = 0.7;
+function barAimSmoke(strip, rng) {
+  const n = strip.length, cands = [];
+  strip.forEach((s, i) => {
+    if (s !== "smoke" || strip[(i + 1) % n] !== "bar") return;
+    if (strip[(i - 1 + n) % n] === "cherry") return;
+    cands.push(i);
+  });
+  return cands.length ? cands[Math.floor(rng() * cands.length)] : safeSmoke(strip, rng);
+}
 function stopsFor(role, rng) {
   const missStops = () => {
     const midSym = rng() < 0.5 ? "smoke" : "cherry";
     const rightSym = midSym === "smoke" ? "replay" : (rng() < 0.5 ? "smoke" : "replay");
-    return [safeSmoke(STRIPS[0], rng), stripIdx(STRIPS[1], midSym, rng), stripIdx(STRIPS[2], rightSym, rng)];
+    const left = rng() < LEFT_BAR_AIM ? barAimSmoke(STRIPS[0], rng) : safeSmoke(STRIPS[0], rng);
+    return [left, stripIdx(STRIPS[1], midSym, rng), stripIdx(STRIPS[2], rightSym, rng)];
   };
   switch (role) {
     case "replay": return STRIPS.map((s) => stripIdx(s, "replay", rng));
@@ -249,6 +281,7 @@ function rollAt(reel) {
   const st = {
     count: reel.count, missRun: reel.missRun, bonusGap: reel.bonusGap,
     zoneLeft: reel.zoneLeft, bonusCount: reel.bonusCount || 0, freezeCount: reel.freezeCount || 0,
+    recent: recentWindow(reel.recent),
     setting: ensureSetting(reel),
   };
   const role = rollRole(rng, st);
@@ -296,6 +329,7 @@ function spinSeries(reel, ctx) {
     reel.bonusGap = isPeka ? 0 : reel.bonusGap + 1;
     result.ceilingRemain = isPeka ? CEILING.mainRun : Math.max(0, CEILING.mainRun - reel.bonusGap);
     reel.bonusCount = (reel.bonusCount || 0) + (isPeka ? 1 : 0);
+    reel.recent = [...recentWindow(reel.recent), isPeka ? 1 : 0].slice(-SLUMP.window);
     if (role === "freeze") reel.freezeCount = (reel.freezeCount || 0) + 1;
     if (result.zone) reel.zoneLeft = JUG_REN.games;
     else if (reel.zoneLeft > 0) reel.zoneLeft -= 1;
@@ -318,7 +352,7 @@ function spinSeries(reel, ctx) {
 
 /** 分布の確認用（コンソール: __remake.reel.simulate(100000)） */
 export function simulate(n, seed = 1, setting = null) {
-  const reel = { seed: seed >>> 0, count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0, setting };
+  const reel = { seed: seed >>> 0, count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0, recent: [], setting };
   const dist = {};
   const cues = {};
   let spins = 0, exp = 0, pekas = 0, maxGap = 0, gap = 0;
@@ -334,7 +368,7 @@ export function simulate(n, seed = 1, setting = null) {
   return { spins, exp, pekaRate: spins / pekas, maxGap, dist, cues, setting: reel.setting };
 }
 
-export const core = { mulberry32, rngFor, ROLES, EFFECTS, PEKA, CEILING, STRIPS, SETTINGS, FREEZE_CONTROL, CUE_ORDER, spinSeries, stopsFor, effectiveTable, simulate, settingDraw, cueFor };
+export const core = { mulberry32, rngFor, ROLES, EFFECTS, PEKA, CEILING, STRIPS, SETTINGS, FREEZE_CONTROL, CUE_ORDER, RESCUE, SLUMP, LEFT_BAR_AIM, spinSeries, stopsFor, effectiveTable, slumpMult, simulate, settingDraw, cueFor };
 
 // ================================================================ 行動時のコミット
 
@@ -375,7 +409,17 @@ function commitSpinSeries() {
   reel.resetNext = false;
   sessionFirst = false;
   const target = pickTarget();
+  // 経験値のしくみ（心得の盤）が有効なら、報酬は能力Pではなく図柄が揃った分の経験値（#1281）。
+  // 役・確率・天井・記録は同じ。r.exp（役の旧ポイント）は記録として残し、能力には足さない
+  const expMode = growthEnabled();
   for (const r of spinSeries(reel, { chapterFirst, reset })) {
+    if (expMode) {
+      r.xp = r.quiet ? 0 : awardSlotExp(r.overlap || r.role);
+      r.got = 0;
+      recordNote(reel, r);
+      reel.pending.push(r);
+      continue;
+    }
     // 章の上限で調整した実増加を記録。通知は演出のときに出す（報酬はここで一度だけ）
     selfGain = true;
     const before = { ...state.stats };
@@ -385,7 +429,7 @@ function commitSpinSeries() {
     const key = STAT_KEYS.find((k) => state.stats[k] > before[k]) || target;
     r.target = key;
     r.got = got;
-    if (star(key) > Math.max(1, Math.ceil(before[key] / 20))) r.starTo = star(key);
+    if (step(key) > Math.max(1, Math.ceil(before[key] / 10))) r.starTo = step(key);
     recordNote(reel, r);
     reel.pending.push(r);
   }
@@ -589,7 +633,7 @@ export function mountReel(host, { delay = 500 } = {}) {
   }
   widget = buildWidget();
   host.append(widget);
-  setStops(state.reel.shown || [1, 1, 2]); // 前回見せた出目のまま（未消化の結果は出目に出さない）
+  setStops(state.reel.shown || [4, 1, 2]); // 前回見せた出目のまま（未消化の結果は出目に出さない）。初回は左の下段にBAR
   // 初回説明を読み終えた旧セーブには、設定の説明が増えたことを一度だけ知らせる（画面は止めない）
   if (state.reel.introDone && !state.reel.settingGuideDone) {
     state.reel.settingGuideDone = true;
@@ -736,6 +780,7 @@ const CUE_MISS = ["あ、あれ……？", "ご、ごめん……！", "今の�
 
 // 役の恩恵をパッキー口調で（数値は出さず体感語で）
 function benefitLine(r) {
+  if (r.xp > 0) return r.xp >= 200 ? "経験値がどーんと入ったよ！" : r.xp >= 90 ? "経験値がぐーんと入ったよ！" : "経験値がちょっと入ったよ！";
   const amt = r.exp >= 6 ? "ぐーんと" : r.exp >= 4 ? "かなり" : r.exp >= 2 ? "ちょっと" : "少し";
   return r.target ? `【${STAT_JA[r.target]}】が${amt}上がったよ！` : `${amt}上がったよ！`;
 }
@@ -1057,11 +1102,15 @@ async function presentFreeze(r) {
 
 // 報酬カード（報酬そのものは行動時に適用済み。ここは見せるだけ）
 function announce(r) {
+  if (r.xp > 0 && !r.quiet) {
+    gainCard({ kind: "exp", source: "slot", badge: "経", top: "SLOT BONUS", main: `EXP +${r.xp}` });
+    return;
+  }
   if (!(r.got > 0) || r.quiet || !r.target) return;
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({
     kind: "stat", source: "slot", stat: r.target, points: r.starTo ? 0 : r.got, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" }[r.target],
-    top: "SLOT BONUS", main: STAT_JA[r.target], evolution: r.starTo ? `Lv.${r.starTo}に到達` : "",
+    top: "SLOT BONUS", main: STAT_JA[r.target], evolution: r.starTo ? `${r.starTo}段に上がった` : "",
     fx,
   });
 }

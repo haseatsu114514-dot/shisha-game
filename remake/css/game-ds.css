@@ -6,9 +6,8 @@
   --ds-shell: #140f1b; --ds-screen-edge: #050307; --ds-rim: #3a2c45;
   --ds-gold: #e8c27a; --ds-gold-hi: #ffe2a6; --ds-text: #f4ede0; --ds-dim: #b6aa96;
   --ds-panel: linear-gradient(#1a1324, #110c19);
-  --ds-dot: "DS Dot", var(--font);
+  --ds-dot: "Chapter Preview Dot", var(--font);
 }
-@font-face { font-family: "DS Dot"; src: url("../../assets/fonts/DotGothic16-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
 
 /* 表示の切替（「表示」を押すと開く）。CSSが無い時は game-layout.js の固定表示で上端に残る。 */
 .game-layout-toolbar[hidden], .game-ds-panel[hidden] { display: none; }
@@ -256,6 +255,9 @@ body.game-ds .bench-top {
   left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: 40px; right: auto; padding: 4px 8px; gap: 6px;
   overflow: hidden; background: #000b; border-radius: 7px 7px 0 0; z-index: 6;
 }
+/* DSでは上部バーが狭いので下画面の右上へ。右端の「？」ガイド（34px）を避けて、その左に置く。 */
+body.game-ds .bench-appearance-button { position: fixed; left: auto; right: calc(100% - var(--ds-cx) - var(--ds-cw) + 56px); top: calc(var(--ds-cy) + 7px); z-index: 8; }
+body.game-ds .bench-appearance-dialog { left: calc(var(--ds-cx) + 8px); right: auto; top: calc(var(--ds-cy) + 8px); width: calc(var(--ds-cw) - 16px); height: calc(var(--ds-ch) - 16px); }
 body.game-ds .bench-mode { width: 74px; font-size: 10px; }
 body.game-ds .bench-progress { min-width: 0; overflow: auto; }
 body.game-ds .bench-progress-track { width: max-content; gap: 3px; }
@@ -508,3 +510,8 @@ body.game-ds .result-table .rt-ranking { overflow: auto; overscroll-behavior: co
   body.game-ds .result-table .rt-pt { font-size: 15px; }
   body.game-ds .result-table .rt-rows { gap: 3px; }
 }
+/* 経験値の行（GROWTH_BOARD の裏）: 上画面の帯では Lv とゲージだけ */
+body.game-ds .hud-exp { order: 2; height: auto; padding: 0; gap: 4px; font-family: var(--ds-dot); font-size: 13px; }
+body.game-ds .hud-exp .hx-bar { width: 46px; flex: none; }
+body.game-ds .hud-exp .hx-left { display: none; }
+body.game-ds .hud-exp .hx-lv { min-width: 0; }

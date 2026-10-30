@@ -21,47 +21,15 @@
           "text": "壁のメニューには果物の名前が並ぶ。棚のタッパーは、違うラベルなのにダブルアップルばかりだ。"
         },
         {
-          "type": "set_flag",
-          "flag": "_met_adam"
-        },
-        {
-          "speaker": "adam",
-          "face": "serious",
-          "text": "……おお、よく来た。迷える子羊よ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "えっ？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "カウンターの奥にいたのは、緑と赤のグラデーションカラーが鮮やかな青年だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "演劇がかった口調で、こちらを真っ直ぐ見つめている。"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "ようこそ、迷える旅人。俺はアダム。エデンの園の主にして、禁断の果実（ダブルアップル）の守護者だ"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "……お前も、甘き誘惑に囚われに来たか？"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_adam",
+          "next_true": "known_greet",
+          "next_false": "new_greet"
         },
         {
           "type": "set_flag",
           "flag": "known_name_adam"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（自称アダム……？ どう接すればいいんだこれ）"
         },
         {
           "type": "condition",
@@ -69,6 +37,10 @@
           "flag": "_delivery_adam",
           "next_true": "dl_can",
           "next_false": "self_study"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_adam"
         },
         {
           "speaker": "hajime",
@@ -163,9 +135,19 @@
           "next_false": ""
         },
         {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……迷ったときは観音堂へ行け。石段の上までは、雑念も煙も届かぬ。俺も、たまに手を合わせに行く"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（店の匂いも、この人の声も、一服と一緒に覚えてしまった）"
+          "text": "（観音堂、か。今度行ってみよう）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この店の空気も、この人の声も、一服と一緒に覚えてしまった）"
         },
         {
           "type": "remember",
@@ -196,9 +178,11 @@
         ],
         "self_study": [
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "あ、俺、tonariの蒸野と言います。勉強のために……"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_met_adam",
+            "next_true": "study_known",
+            "next_false": "study_new"
           },
           {
             "speaker": "adam",
@@ -208,9 +192,11 @@
         ],
         "dl_can": [
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "あ、俺、tonariの蒸野です。スミさんから、届け物を……"
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_met_adam",
+            "next_true": "dl_can_known",
+            "next_false": "dl_can_new"
           },
           {
             "speaker": "",
@@ -280,6 +266,98 @@
             "type": "set_flag",
             "flag": "_lime_contact_adam"
           }
+        ],
+        "new_greet": [
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "……おお、よく来た。迷える子羊よ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "えっ？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターの奥にいたのは、左右で緑と赤に分かれた髪の青年だった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "演劇がかった口調で、こちらを真っ直ぐ見つめている。"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "ようこそ、迷える旅人。俺はアダム。エデンの園の主にして、禁断の果実（ダブルアップル）の守護者だ"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……お前も、甘き誘惑に囚われに来たか？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（自称アダム……？ どう接すればいいんだこれ）"
+          }
+        ],
+        "known_greet": [
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "……おお、来たか。迷える子羊よ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……説明会の時と、声の張りがまるで違う）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "説明会の控室では、短く名乗ったきり黙っていた人だ。今はカウンターの奥で、片手を大きく広げている。"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "ここはエデン。禁断の果実（ダブルアップル）の園だ。……お前も、甘き誘惑に囚われに来たか？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（同じ人、だよな……？ どう接すればいいんだこれ）"
+          }
+        ],
+        "study_new": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、俺、tonariの蒸野と言います。勉強のために……"
+          }
+        ],
+        "study_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "説明会ではろくに話せなかったので、今日は勉強させてもらいに……"
+          }
+        ],
+        "dl_can_new": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、俺、tonariの蒸野です。スミさんから、届け物を……"
+          }
+        ],
+        "dl_can_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は届け物です。スミさんから、これを……"
+          }
         ]
       }
     },
@@ -344,7 +422,7 @@
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "初めてだからこそ、だ"
+          "text": "初めてだろうと、だ。好き嫌いが分かれるからこそ、最初に確かめさせる"
         },
         {
           "speaker": "",
@@ -385,7 +463,7 @@
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "林檎が“パイ”になる。俺はやらぬが……悪くはない"
+          "text": "林檎が“パイ”になる。客には出さぬ。……俺だけの一服にはなる"
         },
         {
           "type": "note",
@@ -418,7 +496,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……ふむ。今日のリンゴは少々不安定だ。炭の置き方を1ミリ変えよう"
+          "text": "……ふむ。今日のリンゴは少々不安定だ"
         },
         {
           "speaker": "hajime",
@@ -510,11 +588,6 @@
             "flag": "_lime_contact_adam"
           }
         ]
-      },
-      "metadata": {
-        "flavor_lesson": {
-          "double_apple": 1
-        }
       }
     },
     {
@@ -573,7 +646,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "次の一台で、甘さが出る手前を探してみます"
+          "text": "次の一台で、焦げる手前の甘いところを探してみます"
         },
         {
           "speaker": "hajime",
@@ -654,7 +727,12 @@
           "face": "",
           "text": "……【技術】が少し上がった。"
         }
-      ]
+      ],
+      "metadata": {
+        "flavor_lesson": {
+          "double_apple": 1
+        }
+      }
     },
     {
       "dialogue_id": "ch1_adam_fifth",
@@ -721,29 +799,11 @@
           "text": "（俺まで一緒に悩んでる。そろそろ帰るつもりだったのに）"
         },
         {
-          "speaker": "adam",
-          "face": "smile",
-          "text": "俺のエデンを揺るがすような、至高の煙を世界に見せつけてやるがいい……！"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "はい！ アダムさんの極上ダブルアップルにも負けないようなものを作ってきます！"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "ふっ……では、いいものを見せてもらおう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "アダムさんは、これからもダブルアップル一筋ですか？"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "無論だ。リンゴの栄光は永遠なり……！ 健闘を祈る、同志よ！"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "farewell_after",
+          "next_false": "farewell_before"
         },
         {
           "speaker": "hajime",
@@ -798,6 +858,55 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "はい。俺でよければ、ぜひ"
+          }
+        ],
+        "farewell_before": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "アダムはトングを置いて、こちらに向き直った。"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "……この一台は、本番までに決めておく。同じ卓で会おう。リンゴは手加減せぬ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい！ 俺も、アダムさんのダブルアップルに負けない一台を作ります！"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "ふっ……では、卓の上で見せてもらおう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "アダムさんは、本番もダブルアップル一筋ですか？"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "無論だ。リンゴの栄光は永遠なり……！"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "そう言うと、アダムはまたトングを手に取った。"
+          }
+        ],
+        "farewell_after": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "アダムさんは、これからもダブルアップル一筋ですか？"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "無論だ。リンゴの栄光は永遠なり……！"
           }
         ]
       }
@@ -1027,7 +1136,7 @@
         {
           "speaker": "adam",
           "face": "serious",
-          "text": "だが届かなかった。帰って炭を1ミリ戻した。……お前の一台も、まだ熟す前の青いリンゴだ"
+          "text": "だが届かなかった。……お前の一台も、まだ熟す前の青い果実だ"
         },
         {
           "speaker": "",

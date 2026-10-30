@@ -12,7 +12,7 @@ async function runCase(kind) {
   const cg = {dataset: {}, style: {}, classList: {add: x => {writes.push(x); classes.add(x);}, contains: x => classes.has(x)}, getAnimations: () => [{finished:animation.promise}]};
   const context = vm.createContext({console, setTimeout, clearTimeout, setInterval, clearInterval, performance});
   const modules = new Map();
-  const overrides = {cgUrl: id => '/'+id+'.png', imageReady: () => image.promise,
+  const overrides = {cgUrl: id => '/'+id+'.png', imageReady: () => image.promise, loadVnFonts: async () => [],
     nextFrame: () => Promise.resolve(), chekiShot: (_url, callback) => { shutter=callback; return shot.promise; }};
   const mod = new vm.SourceTextModule(source + '\nexport const lifetimePort = {set: (r,d) => {running=r; dom=d;}, showCg, hooks};', {context});
   await mod.link(async (specifier) => {
@@ -71,7 +71,7 @@ async function publicCallerCase(kind) {
   const context=vm.createContext({console,setTimeout,clearTimeout,setInterval,clearInterval,performance,
     document:{body:node()},window:{addEventListener(){}}});
   const overrides={el, layers, createNameFit:()=>({fit(){}}), state:{flags:{},contacts:[]}, config:{textSpeed:4},
-    DB:{dialogues:{}}, currentBgm:()=>null, cgUrl:id=>'/'+id+'.png',
+    DB:{dialogues:{}}, currentBgm:()=>null, cgUrl:id=>'/'+id+'.png', loadVnFonts:async()=>[],
     imageReady:url=>url==='/old.png' && kind==='image-abort' ? image.promise : Promise.resolve(true),
     nextFrame:()=>Promise.resolve(), chekiShot:(_url,cb)=>{shutter=cb;return shot.promise;},
     fortuneChoiceIndex:()=>-1,formatHtml:s=>s,stripTags:s=>s,SE:{select(){}}};

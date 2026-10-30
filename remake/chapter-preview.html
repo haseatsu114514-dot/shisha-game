@@ -26,7 +26,38 @@ import { el } from "./js/core/util.js";
 import { initLayers } from "./js/core/ui.js";
 import { loadConfig } from "./js/core/state.js";
 import { unlockAudio } from "./js/core/audio.js";
-import { playChapterPreview } from "./js/chapters/ch1-preview.js";
+import { playChapterPreview, PREVIEWS } from "./js/chapters/chapter-preview.js";
+// ?ch= で予告を切り替える（キーは登録表 PREVIEWS のキー＝次章の番号。既定は第1章末の ch2）。
+const INTROS = {
+  ch2: {
+    title: "第1章の終わりと次回予告 — 水煙前線 -EN:CODE-",
+    heading: "勝ちは、始まりだった。",
+    note: "第1章の余韻から、第二章『才能の壁』へ。\n約48秒・音楽と字幕で再生します。",
+    finished: "第1章 完。あなたの煙は、誰に届いている？",
+  },
+  ch3: {
+    title: "第2章の終わりと次回予告 — 水煙前線 -EN:CODE-",
+    heading: "トロフィーは、重かった。",
+    note: "第2章の余韻から、第三章『嘘つきたちの夜』へ。\n約48秒・音楽と字幕で再生します。",
+    finished: "第2章 完。味のしない舌は、そのままだった。",
+  },
+  ch4: {
+    title: "第3章の終わりと次回予告 — 水煙前線 -EN:CODE-",
+    heading: "帰る場所に、約束がひとつ増えた。",
+    note: "第3章の余韻から、第四章『継承の煙』へ。\n約48秒・音楽と字幕で再生します。",
+    finished: "第3章 完。全国大会を終え、帰る場所にも新しい約束ができた。",
+  },
+  ch5: {
+    title: "第4章の終わりと次回予告 — 水煙前線 -EN:CODE-",
+    heading: "世界大会を終え、日本へ戻った。",
+    note: "第4章の余韻から、第五章『機械仕掛けの神』へ。\n約48秒・音楽と字幕で再生します。",
+    finished: "第4章 完。世界大会を終え、日本へ戻った。",
+  },
+};
+const requested = new URLSearchParams(location.search).get("ch");
+const key = PREVIEWS[requested] && INTROS[requested] ? requested : "ch2";
+const introText = INTROS[key];
+document.title = introText.title;
 const stage = document.getElementById("stage");
 function fit() {
   const width = visualViewport?.width || innerWidth, height = visualViewport?.height || innerHeight;
@@ -34,16 +65,16 @@ function fit() {
 }
 fit(); addEventListener("resize", fit); visualViewport?.addEventListener("resize", fit); initLayers(); loadConfig();
 const button = el("button.btn.primary", { type:"button", text:"章末と次回予告を再生", dataset:{test:"preview-start"} });
-const note = el("p", { text:"第1章の余韻から、第二章『才能の壁』へ。\n約48秒・音楽と字幕で再生します。" });
-const intro = el("div.preview-intro", [el("small",{text:"水煙前線 -EN:CODE-"}),el("h1",{text:"勝ちは、始まりだった。"}),note,button]);
+const note = el("p", { text: introText.note });
+const intro = el("div.preview-intro", [el("small",{text:"水煙前線 -EN:CODE-"}),el("h1",{text:introText.heading}),note,button]);
 document.getElementById("screen").append(intro);
 button.addEventListener("click", async () => {
   if (button.disabled) return;
   unlockAudio(); button.disabled = true;
-  const result = await playChapterPreview();
+  const result = await playChapterPreview(key);
   button.disabled = false; button.textContent = "次回予告をもう一度";
   note.className = "preview-finished";
-  note.textContent = result === "aborted" ? "予告を中断しました。" : "第1章 完。あなたの煙は、誰に届いている？";
+  note.textContent = result === "aborted" ? "予告を中断しました。" : introText.finished;
   intro.dataset.test = "preview-ended";
   button.focus({preventScroll:true});
 });

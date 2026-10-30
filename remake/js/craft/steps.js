@@ -4,7 +4,9 @@ import { el, sleep, clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
-import { star, earnStat } from "../core/stats.js";
+import { step, earnStat } from "../core/stats.js";
+import { effectVisible, effectBadge } from "./effect-visual.js";
+import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible } from "./session.js";
 import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
@@ -22,17 +24,32 @@ import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { flavorFeatureCard, flavorTags, mixForecastCard, equipmentUse, equipmentGuide } from "./flavor-guide.js";
 
-// 章ごとの課題。第1章は自分のレモン、第2章の新作苺のみ主催者支給、第3章は自分のドバジ チョコレート。
+// 章ごとの課題。第1章レモン・第2章の新作苺・第3章ドバジ チョコレート。
+// オーナー決定（2026-10-28 13:29）：課題フレーバーは大会が当日 supply で用意し、本番中は無制限に使える。
+// 私物在庫は減らさず持ち越しもしない。熟練度は事前の練習でのみ上がるので、買って練習した方が有利。
 export const REGULATION = {
-  1: { flavor: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（私物持ち込み）" },
-  // 判定は同系統（AFの持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
+  1: { flavor: "lemon", supply: "lemon", min: 2, label: "課題フレーバー「レモン」を2g以上（大会支給）" },
+  // 判定は同系統（同じ苺系統の持ち込みも可）。支給する葉は第2章DAY9の試煙会で試したアフサールの新作。
   2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 4, label: "課題フレーバー「ストロベリー」を4g以上" },
-  // オーナー決定 10/28：ドバジ・4g以上・持ち込み。チョコは通常（chocolate）。
-  3: { flavor: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（私物持ち込み）" },
+  // オーナー決定 10/28：ドバジ・4g以上・大会支給。チョコは通常（chocolate）。
+  3: { flavor: "chocolate", supply: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（大会支給）" },
+  // 第5章 SHISHA-9000 戦（docs/setting_book/05_tournament.md）。ミックスなし。単体は runner が葉を絞って守る。
+  5: { flavor: "double_apple", supply: "double_apple", min: 12, label: "課題「ダブルアップル単体12g」（主催支給）" },
 };
+// 第4章 GRAND SMOKE は自由課題（最高の一台）。課題の葉は無く、出発前にスミさんと決めた方針（ch4_strategy）の葉を
+// 「持ち込み申請した葉」として大会側が預かり、本番中は無制限に使える（他章の支給と同じ扱い・私物は減らさない）。
+// 方針の葉を何g使うかは自由（min 0）。審査・講評への反映は #1659 の残件。
+export const CH4_PLAN_LEAVES = Object.freeze({ sakura: "sakura", peach: "peach", tea: "black_tea" });
+function chapterFourRegulation() {
+  const id = CH4_PLAN_LEAVES[state.flags?._ch4_strategy];
+  const name = DB.flavorById?.[id]?.short_name || DB.flavorById?.[id]?.name || id;
+  return id ? { flavor: id, supply: id, min: 0, free: true, label: `自由課題（最高の一台）。持ち込み申請した「${name}」は使い放題` }
+    : { flavor: null, supply: null, min: 0, free: true, label: "自由課題（最高の一台）" };
+}
 // DAY7の固定練習は仕入れた葉を試す。大会・前日リハーサルの課題は維持する。
 export const regulationFor = (cs) => cs.staffPractice || (cs.mode === "rehearsal" && cs.practiceKind === "midcheck") ? null : state.chapter === 1 && cs.mode === "tournament" && state.flags._legacy_mint_tournament
   ? { flavor: "mint", supply: "mint", min: 2, label: "再開中の旧大会：ミント2g以上" }
+  : state.chapter === 4 && cs.mode === "tournament" ? chapterFourRegulation()
   : (cs.mode === "tournament" || cs.mode === "rehearsal" ? REGULATION[state.chapter] : null);
 
 // スミさんの手本（チュートリアル中だけ、工程の頭に出す）
@@ -234,7 +251,8 @@ export function isTournamentFlavorLegal(id, chapter = state.chapter) {
 
 export function mixFlavorIds(cs) {
   const reg = regulationFor(cs);
-  // 大会は持ち込み＋課題支給葉。店の練習は店頭の葉も使え、私物を減らさない（#783）。
+  // 大会は課題フレーバーを無制限に支給（私物在庫は減らさない・持ち越さない）。課題以外の葉だけ在庫から持ち込む。
+  // 店の練習は店頭の葉も使え、私物を減らさない（#783）。
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
@@ -254,7 +272,7 @@ export async function stepMix(cs) {
   if (state !== owner) throw new DOMException("Mix owner changed", "AbortError");
   const reg = regulationFor(cs);
   const cap = capacity(cs);
-  const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
+  const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + (reg.free ? "。" : "が今日の課題。") : ""}合計12g以上で決める`));
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   const supplied = (id) => !!reg && id === supplyId;
@@ -358,7 +376,7 @@ export async function stepMix(cs) {
           onclick: () => modal({ title: f?.short_name || f?.name || id, className: "flavor-guide-dialog", body: flavorFeatureCard(f, { description: f?.description }),
             options: [{ label: "配合に戻る", primary: true, test: "flavor-info-close" }] }),
         }, [el("b", { text: f?.short_name || f?.name || id })]),
-        supplied(id) ? el("small.fr-reg", { text: `課題（支給）${stockTag}` })
+        supplied(id) ? el("small.fr-reg", { text: `${reg.free ? "持ち込み申請" : "課題（支給）"}${stockTag}` })
           : consumes ? el("small.fr-stock", { text: `残り${flavorStock(id)}g${stockTag}` })
           : el("small", { text: tags }),
         el("small.fr-mastery", { text: masteryLabel(state, id, DB.flavorById) }),
@@ -372,8 +390,8 @@ export async function stepMix(cs) {
     return { id, g, ratio, row };
   });
 
-  // 洞察★: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）。喫茶こはくで思いついた配合は洞察に関係なく出す
-  const insightful = star("insight") >= 2;
+  // 洞察の段: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）。喫茶こはくで思いついた配合は洞察に関係なく出す
+  const insightful = canSeeMixHint(step("insight"));
   const hint = cs.mode !== "tutorial"
     ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && !state.recipes?.[r.id] && cafeNoted(state, r))
       || (insightful ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
@@ -386,7 +404,10 @@ export async function stepMix(cs) {
     el("div.mix-list", [el("div.mix-list-head", [
       el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }),
       compactTaste,
-      hint ? el("div.mix-hint", { dataset: { test: "mix-hint" }, text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }) : null,
+      hint ? el("div.mix-hint", { dataset: { test: "mix-hint" } }, [
+        insightful && effectVisible("insight") ? effectBadge("insight", "察") : null,
+        el("span", { text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }),
+      ]) : null,
     ]), ...rows.map((r) => r.row)]),
     temperaturePreview,
     el("div.mix-footer", [el("div.mix-amount", [lcd, regLine]), okBtn]),
@@ -410,6 +431,7 @@ export async function stepMix(cs) {
       }
       if (reg?.flavor === "lemon") cs.mix = { lemon: 3, double_apple: 9 };
       if (reg?.flavor === "chocolate") cs.mix = { chocolate: 4, double_apple: 8 };
+      if (reg?.free && reg.flavor) cs.mix = { [reg.flavor]: 12 }; // 第4章: 方針の葉だけの一台（持ち込み申請分で足りる）
       if (cs.staffPractice || consumes) cs.mix = fitMixToStock(cs.mix, ids, limit, cap, 12);
       if (cs.orderFlavorIds) cs.mix = fitMixToStock({ lemon: 9, mint: 3 }, ids, limit, cap, 12);
       redraw();
@@ -432,8 +454,9 @@ export async function stepMix(cs) {
   // 黄金比（#627）: 配合中は出さず、確定したあとだけ知らせる（＋−を押すだけで答えが探せないように）
   if (cs.mixInfo.golden === "hit") toast(`✨ 黄金比！ ${r.name}は ${goldenLabel(r)}`, { kind: "good" });
   else if (cs.mixInfo.golden === "near") {
-    const short = star("insight") >= 3 && cs.mixInfo.goldenShort;
-    toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し");
+    const short = canSeeGoldenShort(step("insight")) && cs.mixInfo.goldenShort;
+    toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し",
+      { kind: short && effectVisible("insight") ? "insight-hint" : "" });
   }
   await sleep(200);
 }
@@ -444,7 +467,7 @@ export async function stepPack(cs) {
   await waitBenchReady(cs, "pack");
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   const options = [
-    { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一杯を狙う時に。温めすぎに注意" },
+    { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一台を狙う時に。温めすぎに注意" },
     { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
     { value: "firm", label: "デンスパック", surface: "密に詰める・厚い味へ", desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
   ];
@@ -481,6 +504,18 @@ export async function stepPack(cs) {
   });
   SE.stamp();
   refreshBench();
+}
+
+export async function stepVent(cs) {
+  await waitBenchReady(cs, "holes");
+  const first = ["rehearsal", "practice", "tournament"].includes(cs.mode) && !state.flags._lotos_vent_hint;
+  const hint = first ? "スミ「迷ったら通気は開けとけ。閉じれば熱がこもって、待ちも一口も強くなる」" : "";
+  const panel = stepPanel("holes", "蓋の通気", hint, { brief: "蓋の通気を選ぶ" });
+  if (first) state.flags._lotos_vent_hint = true;
+  cs.vent = await choose(panel, [
+    { value: "open", label: "通気を開ける（標準）", auto: true },
+    { value: "closed", label: "通気を閉じる（熱がこもる）" },
+  ]);
 }
 
 export async function stepPlace(cs) {

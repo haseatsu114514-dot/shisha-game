@@ -24,6 +24,9 @@ import { coalCount } from "./coals.js";
 import { makerMixProfile } from "./temperature-model.js";
 import { mixExpression } from "./flavor-profile.js";
 import { createCraftClock } from "./clock.js";
+import { effectVisible, effectBadge, effectLine, senseExtra, effectTier } from "./effect-visual.js";
+import { waterComfort } from "./water.js";
+import { waterComfortLine } from "./pull-water.js";
 
 export { IDEAL } from "./conditions.js";
 const HOSE_PATH = "M25.5 21.5C18 25 9 26 7.5 33s8 9.5 15 7 9-1 9.5 2.5";
@@ -38,7 +41,7 @@ const HOSE_ICON = `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" s
   <path d="m38.8 7.8 3.4-3.6" stroke="currentColor" stroke-width="3.2"/>
 </svg>`;
 // 針の位置の帯（0〜1）。下げ吸い=左、キープ=中、上げ吸い=右。芯に止めると上げ下げが強い。
-const ZONES = [
+export const ZONES = [
   { id: "down", from: 0, to: 0.34, just: [0.14, 0.205], label: "下げ吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
   { id: "keep", from: 0.34, to: 0.66, just: [0.468, 0.532], label: "キープ", mark: "＝", delta: 0, justDelta: 0 },
   { id: "up", from: 0.66, to: 1, just: [0.795, 0.86], label: "上げ吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
@@ -63,7 +66,7 @@ export { LEAF_MAX } from "./flavor-life.js";
 export const MAX_PULLS = 5;
 
 const FAIL_TEXT = {
-  burnt: { title: "シーシャが焦げてしまった", line: "温度計の一番上まで熱が上がり、葉が焦げた", ticker: "パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」" },
+  burnt: { title: "シーシャが焦げてしまった", line: "熱が上がりきって葉が焦げた", ticker: "パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」" },
   cold: { title: "シーシャが冷え切ってしまった", line: "炭の熱が尽きて、煙が立たなくなった", ticker: "パッキー「あ、あれ〜？ 煙が……止まってしまったーッ！」" },
   leaf: { title: "フレーバーがダメになってしまった", line: "吸いすぎて、葉の香りが抜け切った", ticker: "パッキー「吸いすぎだーッ！ フレーバーが限界を迎えたーッ！」" },
 };
@@ -153,9 +156,10 @@ async function pullGame(cs, mode) {
     <path class="dial-ring" d="${dialSector(0, 1)}" fill="url(#dial-grad-${id})"/>
     <path class="dial-shade" d="${dialSector(0, 1)}" fill="url(#dial-shade-${id})"/>
     <path class="dial-gloss" d="${dialSector(0, 1, DIAL.r1 - 18, DIAL.r1)}"/>
-    ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-just"/></g>`).join("")}
+    ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-sense-extra"/><path class="pg-just"/></g>`).join("")}
     <path class="dial-rim" d="${dialSector(0, 1)}"/>
     <g class="pg-needle" data-test="pull-needle">
+      <path class="needle-trail" d="M${DIAL.cx} ${DIAL.cy - 9}V${DIAL.cy - DIAL.r1 + 7}"/>
       <path class="needle-body" d="M${DIAL.cx - 3} ${DIAL.cy}L${DIAL.cx - 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 3} ${DIAL.cy}Z"/>
       <path class="needle-light" d="M${DIAL.cx} ${DIAL.cy - 9}V${DIAL.cy - DIAL.r1 + 7}"/>
       <path class="needle-cap" d="M${DIAL.cx} ${DIAL.cy - DIAL.r1 - 8}l-5 11h10Z"/>
@@ -167,12 +171,19 @@ async function pullGame(cs, mode) {
     el("b", { text: z.id === "keep" ? z.label : `${z.mark} ${z.label}` }),
     el("span", { text: z.id === "keep" ? "この温度を維持" : z.id === "down" ? "温度を下げる" : "温度を上げる" }),
   ].filter(Boolean))));
+  if (effectVisible("sense")) dial.append(effectBadge("sense", "感"));
+  if (effectVisible("technique")) dial.append(effectBadge("technique", "技"));
   const dialRow = el("div.pull-dial-row", [dial, labels]);
   const needle = dial.querySelector(".pg-needle");
   const justs$ = [...dial.querySelectorAll(".pg-just")];
+  const senseExtras = [...dial.querySelectorAll(".pg-sense-extra")];
   const placeJusts = () => ZONES.forEach((z, i) => {
     const span = (z.just[1] - z.just[0]) * widen;
-    justs$[i].setAttribute("d", dialSector(z.just[0], z.just[0] + span));
+    const base = effectVisible("sense") ? span / (1 + 0.45 * effectTier("sense")) : span;
+    const extra = senseExtra(base);
+    justs$[i].setAttribute("d", dialSector(z.just[0], z.just[0] + base));
+    senseExtras[i].setAttribute("d", extra > 0 ? dialSector(z.just[0] + base, z.just[0] + span) : "");
+    senseExtras[i].dataset.span = extra.toFixed(4);
     justs$[i].dataset.span = span.toFixed(4); // 芯（成功帯）の実際の幅（ダイヤル一周＝1）
   });
   placeJusts();
@@ -199,7 +210,7 @@ async function pullGame(cs, mode) {
     el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves, tags, drawStatus]),
     el("div.pull-life.pull-count-box", [el("span.pull-life-label", { text: mode.drift ? "吸った回数" : "吸い出し回数" }), counter]),
   ]);
-  const play = el("div.pull-play", [dialRow, summary, el("div.pull-btns", [pullBtn, serveBtn])]);
+  const play = el("div.pull-play", [dialRow, effectLine("technique", "技", "技術でゲージがゆっくり"), summary, el("div.pull-btns", [pullBtn, serveBtn])]);
   play.setAttribute("aria-label", "左の下げ吸いで温度を下げ、中央でキープ、右の上げ吸いで温度を上げる");
   const main = el("div.pull-main", [play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
@@ -224,6 +235,7 @@ async function pullGame(cs, mode) {
     tags.replaceChildren(...[
       coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `消耗した炭を${coals}個交換した` : "炭は交換していない" }),
       conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
+      cs.vent === "closed" && el("span.pull-tag", { text: "蓋：閉" }),
       conditions.rainy && el("span.pull-tag", { text: "雨", title: "熱が入りづらい" }),
     ].filter(Boolean));
     pips.forEach((pip, i) => pip.classList.toggle("on", i < pulls));
@@ -308,7 +320,9 @@ async function pullGame(cs, mode) {
     pullLabel.textContent = "吸っている…";
     drawStatus.textContent = `${z.label}で吸っている…`;
     setBenchDraw(cs, z.id, duration);
-    stopBubbles = startBubbling({ strength: z.id === "keep" ? .65 : 1 });
+    const strength = (z.id === "keep" ? .65 : 1) * waterComfort(cs.water).bubble;
+    // startBubbling は strength=0 を1に置き換えるため、水に届かない台では開始しない。
+    stopBubbles = strength > 0 ? startBubbling({ strength }) : () => {};
     render();
     try {
       const complete = await animateDraw({ duration,
@@ -480,7 +494,7 @@ async function pullGame(cs, mode) {
     if (failed === "burnt") cs.burnt = true;
     if (mode.store === "pull") { cs.pullDone = true; refreshBench(); }
     tickerSay(text.ticker);
-    await resultCard(panel, { title: text.title, lines: [text.line, `${pulls}回吸った`] });
+    await resultCard(panel, { title: text.title, lines: [text.line, waterComfortLine(cs.water), `${pulls}回吸った`] });
     return true;
   }
 
@@ -499,6 +513,7 @@ async function pullGame(cs, mode) {
       lines: [
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えて提供できた" : optimal ? "最適温に合わせて提供できた" : inZone ? "適温で提供できた" : T > ideal[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
         tasteLine,
+        waterComfortLine(cs.water),
         `${pulls}回吸った`,
       ],
     });
@@ -510,6 +525,7 @@ async function pullGame(cs, mode) {
     lines: [
       inZone ? "適温に整えて、審査員へ戻せた" : T > ideal[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
       tasteLine,
+      waterComfortLine(cs.water),
       coals ? `消耗した炭を${coals}個交換した` : "炭は交換せずに整えた",
       `${pulls}回吸った`,
     ],

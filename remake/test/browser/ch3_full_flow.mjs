@@ -87,6 +87,14 @@ await suite("ch3-full-flow", async check => {
     assert.equal((await get(page)).flags._ch3_intro.stage, 1, "Reload must resume at the Mukai arrival");
 
     for (const { id, day, slot } of scenes.slice(1)) {
+      // 東京の空き時間（#1655）は会員でなくても開く。この通しでは休んで次の場面へ進む。
+      await page.locator(`${intro(id)}, ${dt("ch3-intro-free")}`).first().waitFor();
+      while (await page.locator(dt("ch3-intro-free")).count() && !await page.locator(dt("ch3-intro-visit")).count()) {
+        const card = await page.locator(dt("ch3-intro-free")).elementHandle();
+        await page.locator(dt("ch3-intro-visit-rest")).click();
+        await card.waitForElementState("hidden");
+        await page.locator(`${intro(id)}, ${dt("ch3-intro-free")}`).first().waitFor();
+      }
       await page.locator(intro(id)).waitFor();
       state = await get(page);
       assert.equal(state.day, startDay + day - 1, `Wrong elapsed day before ${id}`);
@@ -224,7 +232,7 @@ await suite("ch3-full-flow", async check => {
     // 4. 帰郷・aftermath
     await page.locator(t("aftermath")).click();
     const aftermath = id => `[data-test="ch3-aftermath-scene"][data-scene="${id}"]`;
-    const after = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile",
+    const after = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup",
       "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"];
     for (const [index, id] of after.entries()) {
       await page.locator(aftermath(id)).waitFor();
@@ -275,6 +283,8 @@ await suite("ch3-full-flow", async check => {
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
       value.met.steve = true;
       while (progress.chapterThreeScenes(value)[value.flags._ch3_intro.stage]?.id !== "ch3_tournament_eve") {
+        const free = progress.chapterThreeFreeTime(value);
+        if (free) { if (!progress.completeChapterThreeFreeTime(value, free.id)) throw new Error("Free time stuck"); continue; }
         const scene = progress.chapterThreeScenes(value)[value.flags._ch3_intro.stage];
         if (!scene || !progress.completeChapterThreeScene(value, scene.id)) throw new Error("Cannot reach the eve");
       }

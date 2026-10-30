@@ -93,6 +93,16 @@ assert(!all(window).some((l) => l.speaker === "naru" && /明後日|来たよ/.te
 assert.match(window.branches.hurt.map((l) => l.text).join("\n"), /既読[\s\S]*電話に出なかった/);
 assert.match(window.branches.listened.map((l) => l.text).join("\n"), /もう一回[\s\S]*返事が来ない/);
 
+// DAY14の入場後: 4台の前の掛け合い。神崎はあげはを『葉子の姉貴』と呼び、応援席は前夜の選択に従う。震えは秘密を知る保存だけ
+const stations = tournament.ch2_tournament_stations;
+assert.match(text(stations), /葉子の姉貴[\s\S]*本名で呼ぶな/);
+assert.doesNotMatch(stations.lines.map((l) => l.text || "").join("\n"), /指先|震え/, "秘密の描写は分岐の中だけ");
+assert(stations.lines.some((l) => l.flag === "_ch2_ageha_secret" && l.next_true === "secret"));
+assert(stations.lines.some((l) => l.flag === "_ch2_no_audience" && l.next_true === "alone" && l.next_false === "other"));
+assert.equal(stations.branches.other[0].flag, "_ch2_audience_welcome");
+assert.match(stations.branches.welcome.map((l) => l.text).join("\n"), /つむぎ/);
+assert(!all(stations).some((l) => ["apply", "note", "set_flag"].includes(l.type) || l.affinity || l.stats), "報酬・保存フラグを足さない");
+
 // 章の最後: はじめのいない場面で、あげはの心の声だけ。才能の壁は両側にあった（本人には言わない嫉妬）
 const heart = tournament.ch2_tournament_ageha_heart;
 assert(!all(heart).some((l) => l.speaker === "hajime"), "はじめはこの場にいない");
@@ -124,5 +134,11 @@ assert.equal(scoutRecognition?.next_true, "seen_in_ch2");
 assert.equal(scoutRecognition?.next_false, "unseen");
 assert(meet.branches.unseen.length);
 assert.match(meet.branches.seen_in_ch2.map((l) => l.text).join("\n"), /偵察[\s\S]*軍/, "第3章で、軍で覚えた偵察だと分かる");
+// #1735: 新規ルートはDAY2の配達で必ず先に会う。配達済みでも、第2章で見た保存は偵察を回収する
+const knownRecognition = meet.lines.find((l) => l.flag === "_ch3_delivery_volk" && l.next_true === "delivery_known_recognition");
+const knownScout = meet.branches[knownRecognition.next_true].find((l) => l.flag === "_ch2_scout_seen");
+assert(knownScout, "配達済みでも第2章の目撃で分ける");
+assert.match(meet.branches[knownScout.next_true].map((l) => l.text).join("\n"), /配達の時は気づかなかった[\s\S]*偵察[\s\S]*軍/);
+assert.doesNotMatch(meet.branches[knownScout.next_false].map((l) => l.text).join("\n"), /この辺の店を回って/, "配達で話していない情報を前提にしない");
 
 console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/REI moments, ch3 bridge, new forced nights, Ageha\'s last inner voice, anonymous scout");

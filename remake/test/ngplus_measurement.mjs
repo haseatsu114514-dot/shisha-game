@@ -21,7 +21,7 @@ validateScenario(rawScenario);
 equal(rawScenario.cycle, undefined);
 
 // P は開始スナップショット（cycleStartStats）だけから決まり、playStats では変わらない。
-// 現行 difficultyForRun の入力名（statsAtChapterStart）への写像は carryPForScenario の確認点。
+// difficultyForRun は周回開始値 cycleStartStats を直接参照する。
 equal(carryPForScenario({ id: "a", chapter: 3, cycle: 1, carryStats: true, cycleStartStats: stats(100) }), 0);
 equal(carryPForScenario({ id: "a", chapter: 3, cycle: 2, carryStats: false, cycleStartStats: stats(100) }), 0);
 equal(carryPForScenario({ id: "a", chapter: 3, cycle: 2, carryStats: true, cycleStartStats: stats(100) }), 1);
@@ -34,11 +34,15 @@ const base = { chapter: 3, cycle: 1, carryStats: false, cycleStartStats: stats(1
 const constant = performance => createCh3TournamentEvaluate({ performanceOf: () => performance });
 const seeds = [1, 7, 42];
 const strong = runMeasurement({ scenarios: [{ ...base, id: "strong", operation: "perfect" }], seeds, evaluate: constant(100) });
+const lifted = runMeasurement({ scenarios: [{ ...base, id: "lifted", cycle: 2, carryStats: true,
+  cycleStartStats: stats(100), operation: "perfect" }], seeds: [1], evaluate: constant(100) });
+equal(lifted[0].p, 1);
+ok(lifted[0].rivalSamples.some(s => s.lifted > s.rival), "持ち込みありでは相手点が上がる");
 for (const row of strong) {
   equal(row.rank, 1);
   equal(row.p, 0);
   equal(row.rivalSamples.length, 12); // 相手3人×4ラウンド
-  ok(row.rivalSamples.every(s => s.rival === s.lifted && s.chapter === 3)); // KB=0 の間は無変化
+  ok(row.rivalSamples.every(s => s.rival === s.lifted && s.chapter === 3)); // P=0 なら無変化
   equal(Object.values(row.votes).reduce((sum, v) => sum + v, 0), 30); // SPEND合計10×審査員3人
 }
 const direct = { chapter: 3, day: 42, weatherSeed: 7, flags: {} };

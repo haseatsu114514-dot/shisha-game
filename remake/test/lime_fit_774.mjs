@@ -62,7 +62,7 @@ async function contactCase({old=false,skip=false,reduce=false}={}) {
   const motion=new vm.SyntheticModule(['exchange'],function(){this.setExport('exchange',async(_id,_context,options)=>{shown++;still=options?.still;});},{context});
   await motion.link(()=>{});await motion.evaluate();
   const wrapper=new vm.SourceTextModule(sceneSource,{context,importModuleDynamically:async()=>motion});
-  const imports={'state.js':{state,config:{shortSeen:false}},'data.js':{DB:{}},'transition-kit.js':{reducedMotion:()=>reduce},'mg-kit.js':{motionVariant:()=> 'a'}};
+  const imports={'state.js':{state,config:{shortSeen:false}},'data.js':{DB:{}},'transition-kit.js':{reducedMotion:()=>reduce},'mg-kit.js':{motionVariant:()=> 'a'},'ui.js':{loadingNotice:()=>({})},'module-loading.js':{withLoadingNotice:async(task,_opts)=>await task}};
   await wrapper.link(async path=>{const values=imports[path.split('/').at(-1)];return new vm.SyntheticModule(Object.keys(values),function(){for(const[k,v]of Object.entries(values))this.setExport(k,v);},{context});});await wrapper.evaluate();
   const r={queue:[],ready:true};
   Object.assign(context,{state,running:r,vnTest:{turbo:false},limeExchange:wrapper.namespace.limeExchange,next:()=>{continued++;}});

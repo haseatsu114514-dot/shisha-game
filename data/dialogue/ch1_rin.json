@@ -25,17 +25,17 @@
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "ちょっと、そこの君。……うん、君。いい肺してそうだね"
+          "text": "ちょっと、そこの君。……うん、君。吸い慣れてる顔だね"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "え？ 肺……ですか？"
+          "text": "え？ 顔……ですか？"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "階段の上から、白いシャツの袖をまくった女性がこちらを見下ろしている。"
+          "text": "階段の上から、白いシャツの袖をまくり、黒いスラックスをはいた女性がこちらを見下ろしている。"
         },
         {
           "speaker": "",
@@ -45,7 +45,7 @@
         {
           "speaker": "rin",
           "face": "serious",
-          "text": "毎日シーシャを吸ってる肺。それも、仕事で"
+          "text": "毎日シーシャを吸ってる顔。それも、仕事で"
         },
         {
           "speaker": "rin",
@@ -216,7 +216,11 @@
       "dialogue_id": "ch1_rin_second",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "試香モニター"
+        "topic": "試香モニター",
+        "flavor_lesson": {
+          "rose": 1,
+          "lychee": 1
+        }
       },
       "lines": [
         {
@@ -336,7 +340,7 @@
           {
             "speaker": "rin",
             "face": "surprise",
-            "text": "へえ。それ、ベルガモットの裏のメンソールバインダー。気づく？ 普通"
+            "text": "へえ。それ、ベルガモットの裏にメンソールを薄く足してるやつ。気づく？ 普通"
           },
           {
             "speaker": "rin",
@@ -364,11 +368,7 @@
       "dialogue_id": "ch1_rin_third",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "夜の側のサンプル",
-        "flavor_lesson": {
-          "rose": 1,
-          "lychee": 1
-        }
+        "topic": "夜の側のサンプル"
       },
       "lines": [
         {
@@ -456,7 +456,7 @@
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "店の匂いが染みるまで働いた人間の匂い。私はそれを信用することにしてる"
+          "text": "長いこと立ち続けた人間の匂い。私はそれを信用することにしてる"
         },
         {
           "speaker": "rin",
@@ -510,6 +510,122 @@
       }
     },
     {
+      "dialogue_id": "ch1_rin_fourth",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "客の顔"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "階段を上がる途中、1階の試飲席から話し声が聞こえた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「二階の魔女、また読めない袋を仕入れたってさ」「でも、あの人の選ぶのは外れないんだよな」"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "聞こえた？　魔女だって。鼻で選んでるだけなのにね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "魔女って呼ばれて、嫌じゃないんですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "便利だよ。怪しく見える人には、怪しい話が先に集まるから"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "で、今日は何。サンプル便はないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この前のローズとライチ、tonariで常連さんに出したんです"
+        },
+        {
+          "speaker": "rin",
+          "face": "surprise",
+          "text": "……え。出したの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "仕事帰りの人で。最初は「香水みたい」って笑って、最後まで吸ってました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリップボードの上で、凛さんのペンが止まった。"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……どんな顔で"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "帰る前に、ホースを置いて、少しだけ目を閉じてました"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "ふうん。……私さ、それ見たことないんだよね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "入った数も、売れた数も、本国の評価も知ってる。吸ってる人の顔だけ、知らない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、また持って帰ってきます。どんな顔で吸ってたか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rin",
+          "next_true": "face_lover",
+          "next_false": "face_plain"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは今の話を、クリップボードの一番上に書いた。数字の欄ではなく、余白に。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "rin_face"
+        }
+      ],
+      "branches": {
+        "face_plain": [
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "……モルモットくんの次は、運び屋くんか。報酬、上げなきゃね"
+          }
+        ],
+        "face_lover": [
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "……恋人に運ばせるの、悪くないね。報酬は、あとで考えとく"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch1_rin_repeat",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
@@ -541,7 +657,7 @@
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "……推しは推せるうちに推せ、って言うでしょ"
+          "text": "……なんでか、これが一番落ち着くの"
         },
         {
           "speaker": "",

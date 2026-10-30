@@ -146,12 +146,19 @@ def listing(sub: str, pattern: str = "*.png"):
 
 def title_arts():
     """採用済みPNGだけをキャラ別に登録。修正待ちの候補はassetsへコピーしない。"""
+    # titleArtDisplayCharacters uses this character order when picking a title art.
+    # Keep manifest groups aligned so callers indexing its unique characters agree.
+    character_order = (
+        "ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi",
+        "sumi", "naru", "adam",
+    )
+    rank = {character: index for index, character in enumerate(character_order)}
     out = []
     for name in listing("ui/title_arts"):
         match = re.fullmatch(r"title_art_([a-z]+)_\d{2}_.+\.png", name)
         if match:
             out.append({"character": match[1], "file": name})
-    return out
+    return sorted(out, key=lambda art: (rank.get(art["character"], len(rank)), art["file"]))
 
 
 def continue_portraits():

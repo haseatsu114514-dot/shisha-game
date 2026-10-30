@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import { installLoadingComicReader } from './browser/loading_reader.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const browser = await chromium.launch({ headless: true,
   ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
@@ -14,6 +15,7 @@ const errors = [];
 const open = async (viewport, mobile = false) => {
   const context = await browser.newContext({ viewport, isMobile: mobile, hasTouch: mobile });
   const page = await context.newPage(); page.on('pageerror', e => errors.push(e.message));
+  await installLoadingComicReader(page);
   await page.goto(base); await page.waitForSelector('[data-test="title-new"]');
   await page.evaluate(async () => {
     const core = await import('./js/core/state.js'); core.newGame();
@@ -68,7 +70,7 @@ try {
   await page.evaluate(() => { __remake.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(cs); });
   await page.waitForSelector('.bench[data-step="heat"] .heat');
   assert(!(await page.locator('[data-test="craft-rating"]').isVisible()),'Rating appeared during active charcoal work');
-  assert.match(await page.locator('[data-test="craft-feedback"]').textContent(), /光.*(?:押|タップ)/,'Tutorial Sumi did not explain the game controls');
+  assert.match(await page.locator('[data-test="craft-feedback"]').textContent(), /全面.*タップ/,'Tutorial Sumi did not explain the game controls');
   await page.waitForFunction(() => cs.heat?.score > 0);
   await page.evaluate(() => { __remake.craftTest.auto = null; });
   await page.waitForSelector('.result-card.show');

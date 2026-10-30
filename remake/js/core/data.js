@@ -30,7 +30,6 @@ export const DB = {
   lime: [],
   recipes: [],
   ngMixes: [],
-  tips: [],
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
   friends: { friends: {} }, // 友人になった相手からの、たまのLIME・一服の場面（remake/data/friends.json）
@@ -48,14 +47,17 @@ const DIALOGUE_FILES = [
   "ch1_interval",
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "samechan", // 帰り道の出会いと、章2からのシーシャーク
-  "cinema", // サメちゃんの自主訪問紹介と、地元の小さな名画座
   "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
-  "tournament_craft", // 制作中の注目点と、試喫でその工程を振り返る掛け合い
   "venue_hours", // 店主の案内と街の昼夜差分
   "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
+  "growth_reflection", // 心得の盤: 参拝の場所での内省と大会前夜の内省（SPEC 2.8）
+  "growth_lessons", // 心得の盤: 授業（はじめが相談して話を聞く場面。SPEC 2.6）
 ];
 // ひよりの参照先は DB.hiyori.route が無い間 disabled に倒れるため、タイトル後に読める。
 const DEFERRED_DIALOGUE_FILES = ["hiyori"];
+// 映画館と大会制作会話はタイトル後に先読みし、各入口でも完了を待つ。
+const CINEMA_DIALOGUE_FILE = "cinema";
+const TOURNAMENT_CRAFT_DIALOGUE_FILE = "tournament_craft";
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
 const JSON_CONCURRENCY = 4;
@@ -96,6 +98,25 @@ export function loadDeferredDialogues() {
   return deferredDialoguesPromise;
 }
 
+function dialogueLoader(file) {
+  let promise;
+  return () => {
+    if (!promise) {
+      promise = getJSON(`${ROOT}data/dialogue/${file}.json`).then((data) => {
+        for (const d of data.dialogues || []) DB.dialogues[d.dialogue_id] = d;
+        return DB;
+      }).catch((error) => {
+        promise = null; // 先読み失敗後は入口から再試行できる
+        throw error;
+      });
+    }
+    return promise;
+  };
+}
+
+export const loadCinemaDialogue = dialogueLoader(CINEMA_DIALOGUE_FILE);
+export const loadTournamentCraftDialogue = dialogueLoader(TOURNAMENT_CRAFT_DIALOGUE_FILE);
+
 export async function loadAll(onProgress = () => {}) {
   globalThis.performance?.setResourceTimingBufferSize?.(1000);
   const jobs = [
@@ -108,7 +129,6 @@ export async function loadAll(onProgress = () => {}) {
     ["lime", `${ROOT}data/lime_messages.json`],
     ["recipes", `${ROOT}data/recipes.json`],
     ["ngMixes", `${ROOT}data/ng_mixes.json`],
-    ["tips", `${ROOT}data/loading_tips.json`],
     ["kuji", `${ROOT}data/kuji.json`],
     ["lover", "data/lover.json"],
     ["friends", "data/friends.json"],
@@ -147,7 +167,6 @@ export async function loadAll(onProgress = () => {}) {
   DB.lime = [...raw.lime.messages, ...(DB.samechan.lime || [])];
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
-  DB.tips = raw.tips.tips;
   DB.kuji = raw.kuji;
   DB.lover = raw.lover;
   DB.friends = raw.friends;
@@ -172,7 +191,7 @@ export async function loadAll(onProgress = () => {}) {
 const ALWAYS_KNOWN = new Set([
   "hajime", "sumi", "tsumugi", "salaryman", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
-  "spice_merchant", "cafe_staff",
+  "spice_merchant", "cafe_staff", "traveler",
 ]);
 // 立ち絵フォルダ・別名（oneesan はみんとの私服＝ura_* 差分）
 export const SPEAKER_ALIAS = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };

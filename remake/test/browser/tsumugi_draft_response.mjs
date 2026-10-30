@@ -1,15 +1,18 @@
 // #452 B: actual draft answers, neutral legacy saves, and production VN inputs.
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { isDeepStrictEqual } from "node:util";
 import { suite, assertFits } from "./support.mjs";
 
 const baseline = JSON.parse(fs.readFileSync(new URL("../../../docs/qa/issue452-tsumugi/baseline-scenes.json", import.meta.url)));
 const WIP = "ch1_tsumugi_work_in_progress", ART = "ch1_tsumugi_sketch";
 const KEYS = ["_tsumugi_contest_draft_window", "_tsumugi_contest_draft_hands"];
 const RESPONSES = [
-  "……窓辺の煙と猫、残しました。好きって言ってくれたので",
-  "……カウンターの手元、描き込みました。好きって言ってくれたので",
+  "……ほどけていく煙と猫、残しました。好きって言ってくれたので",
+  "……色のなかった右側、描き込みました。好きって言ってくれたので",
 ];
+// DAY3の選択肢。baseline は v2（店内の下描き）当時の台本、current は v3（抽象スケッチ）。
+const DRAFT_LABELS = { baseline: ["窓辺の煙と猫", "カウンターの手元"], current: ["ほどけていく煙と猫", "まだ色のない右側"] };
 const NEUTRAL = "つむぎの指が、窓辺の猫のそばで止まった。";
 const artifacts = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 
@@ -46,6 +49,23 @@ function assertResponse(lines, answer) {
   assert.equal(lines.filter(text => text === "「応募完了」。短い文字を、２人で確かめた。").length, 1);
 }
 
+function stateDifferences(expected, actual, path = "") {
+  if (isDeepStrictEqual(expected, actual)) return [];
+  if (expected && actual && typeof expected === "object" && typeof actual === "object"
+    && Array.isArray(expected) === Array.isArray(actual)) {
+    const keys = new Set([...Object.keys(expected), ...Object.keys(actual)]);
+    const differences = [...keys].flatMap(key => {
+      const childPath = path ? `${path}.${key}` : key;
+      if (!Object.hasOwn(expected, key) || !Object.hasOwn(actual, key)) {
+        return [{ key: childPath, expected: expected[key], actual: actual[key] }];
+      }
+      return stateDifferences(expected[key], actual[key], childPath);
+    });
+    return differences.length ? differences : [{ key: path || "<root>", expected, actual }];
+  }
+  return [{ key: path || "<root>", expected, actual }];
+}
+
 async function input(locator, touch) { if (touch) await locator.tap(); else await locator.click(); }
 
 // Instant text is a player setting. Keep production transitions and input guards.
@@ -58,13 +78,13 @@ async function start(page, scene) {
   await page.waitForTimeout(350);
 }
 
-async function finishByInput(page, { touch, answer = 0, snapshot = false } = {}) {
+async function finishByInput(page, { touch, answer = 0, snapshot = false, labels = DRAFT_LABELS.current } = {}) {
   let clicks = 0, choices = 0;
   for (let i = 0; i < 150; i++) {
     if (await page.evaluate(() => window.finished)) return { clicks, choices, lines: await page.evaluate(() => T.lines()) };
     const buttons = page.locator(".vn-choices button");
     if (await buttons.count()) {
-      assert.deepEqual(await buttons.allTextContents(), ["窓辺の煙と猫", "カウンターの手元"]);
+      assert.deepEqual(await buttons.allTextContents(), labels);
       await assertFits(page, ".vn-choices button");
       await input(buttons.nth(answer), touch); choices++;
       continue;
@@ -131,8 +151,12 @@ await suite("tsumugi-draft-response", async check => {
         }
       return out;
     }, { baseline, WIP, ART, KEYS });
+    const differences = [];
     for (const r of rows) {
-      assert.deepEqual(r.current, r.before, `State effect changed: ${r.answer}/${r.route}/${r.known}`);
+      const row = `${r.answer}/${r.route}/${r.known}`;
+      for (const difference of stateDifferences(r.before, r.current)) {
+        differences.push(`${row} ${difference.key}: expected ${JSON.stringify(difference.expected)}, actual ${JSON.stringify(difference.actual)}`);
+      }
       assert.deepEqual(r.repeated, r.current, "Repeat story duplicated an effect");
       assert.deepEqual(r.reread, []);
       assert.deepEqual(r.keys, r.answer === null ? [null, null] : [r.answer === 0, r.answer === 1]);
@@ -141,6 +165,7 @@ await suite("tsumugi-draft-response", async check => {
       assert(r.current.flags._tsumugi_contest_submitted && r.current.flags._tsumugi_contest_art_seen);
       assert.equal(r.current.relationshipMemories.filter(m => m === "tsumugi_submission").length, 1);
     }
+    assert.equal(differences.length, 0, `State effect changed:\n${differences.join("\n")}`);
     console.log(`Compared ${rows.length} paths: full game state, CG, routes, submission and rewards unchanged`);
   });
 
@@ -157,7 +182,7 @@ await suite("tsumugi-draft-response", async check => {
         let draft = { clicks: 0, choices: 0 };
         if (answer !== null) {
           await start(page, version === "baseline" ? baseline.scenes[WIP] : WIP);
-          draft = await finishByInput(page, { touch, answer });
+          draft = await finishByInput(page, { touch, answer, labels: DRAFT_LABELS[version] });
         } else await page.evaluate(() => {
           T.core.state.flags._tsumugi_contest_progress = true;
           T.core.state.story.tsumugi = 5; T.core.state.affinity.tsumugi = 66;
@@ -174,7 +199,7 @@ await suite("tsumugi-draft-response", async check => {
             answer === null ? [null, null] : [answer === 0, answer === 1]);
         }
         await start(page, version === "baseline" ? baseline.scenes[ART] : ART);
-        const art = await finishByInput(page, { touch, answer, snapshot: version === "current" });
+        const art = await finishByInput(page, { touch, answer, snapshot: version === "current", labels: DRAFT_LABELS[version] });
         assert.equal(art.choices, 0, "A new choice was added to the completed-art scene");
         if (version === "current") assertResponse(art.lines, answer);
         counts[version] = { draftClicks: draft.clicks, choices: draft.choices, artClicks: art.clicks };

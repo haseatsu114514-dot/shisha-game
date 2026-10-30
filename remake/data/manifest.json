@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-29 04:40 UTC",
+ "generated": "2026-10-29 05:28 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -446,6 +446,7 @@
   "cg_ch1_sumi_training.png",
   "cg_ch1_tournament_battle.png",
   "cg_ch1_tsumugi_heart_art.png",
+  "cg_ch1_tsumugi_sketch_wip.png",
   "cg_ch2_ageha_purikura_strip.png",
   "cg_ch2_ageha_purikura_strip_gal.png",
   "cg_ch2_ageha_purikura_strip_soft.png",
@@ -1655,6 +1656,10 @@
    "file": "title_art_minto_05_mint_cloud.png"
   },
   {
+   "character": "minto",
+   "file": "title_art_minto_06_after_hours_glasscare.png"
+  },
+  {
    "character": "rin",
    "file": "title_art_rin_01_night_tasting.png"
   },
@@ -1665,6 +1670,10 @@
   {
    "character": "rin",
    "file": "title_art_rin_04_rainy_neon_umbrella.png"
+  },
+  {
+   "character": "rin",
+   "file": "title_art_rin_05_blend_library_command.png"
   },
   {
    "character": "tsumugi",
@@ -1683,6 +1692,10 @@
    "file": "title_art_tsumugi_04_painting_studio.png"
   },
   {
+   "character": "tsumugi",
+   "file": "title_art_tsumugi_05_pencil_and_hose.png"
+  },
+  {
    "character": "sumi",
    "file": "title_art_sumi_01_own_clay_bowl.png"
   },
@@ -1693,6 +1706,10 @@
   {
    "character": "adam",
    "file": "title_art_adam_01_sunset_proclamation.png"
+  },
+  {
+   "character": "adam",
+   "file": "title_art_adam_02_twin_apple_throne.png"
   }
  ],
  "makingBox": {
@@ -2182,6 +2199,7 @@
   "backgrounds/peppermint.png",
   "backgrounds/trpg_ordinary_room.png",
   "backgrounds/trpg_shark_room.png",
+  "cgs/cg_ageha_confession.png",
   "cgs/cg_ageha_first_purikura.png",
   "cgs/cg_ch1_dr_kemuri_hook.png",
   "cgs/cg_ch1_minto_casual_reveal.png",
@@ -2189,11 +2207,14 @@
   "cgs/cg_ch1_sumi_training.png",
   "cgs/cg_ch1_tournament_battle.png",
   "cgs/cg_ch1_tsumugi_heart_art.png",
+  "cgs/cg_ch1_tsumugi_sketch_wip.png",
   "cgs/cg_ch2_ageha_purikura_strip.png",
   "cgs/cg_ch2_ageha_purikura_strip_gal.png",
   "cgs/cg_ch2_ageha_purikura_strip_soft.png",
   "cgs/cg_ch3_childhood_offered_hand.png",
+  "cgs/cg_hiyori_confession.png",
   "cgs/cg_kuze_mashiro_childhood.png",
+  "cgs/cg_mashiro_confession.png",
   "cgs/cg_mashiro_double_apple.png",
   "cgs/cg_minto_casual.png",
   "cgs/cg_minto_cheki.png",
@@ -2205,6 +2226,7 @@
   "cgs/cg_oneesan_first_smoke.png",
   "cgs/cg_rin_confession.png",
   "cgs/cg_ryuji_purikura.png",
+  "cgs/cg_samechan_confession.png",
   "cgs/cg_tsumugi_confession.png",
   "cgs/cg_tsumugi_smoke_color.png",
   "sprites/characters/adam/chr_adam_intense.png",
@@ -2217,11 +2239,13 @@
   "sprites/characters/ageha/chr_ageha_serious.png",
   "sprites/characters/ageha/chr_ageha_smile.png",
   "sprites/characters/ageha/chr_ageha_surprise.png",
+  "sprites/characters/da_silva/chr_da_silva_normal.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_serious.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_smile.png",
   "sprites/characters/dr_kemuri/chr_dr_kemuri_surprise.png",
+  "sprites/characters/emil/chr_emil_normal.png",
   "sprites/characters/hajime/chr_hajime_normal.png",
   "sprites/characters/hajime/chr_hajime_sad.png",
   "sprites/characters/hajime/chr_hajime_serious.png",
@@ -2261,6 +2285,7 @@
   "sprites/characters/mashiro/chr_mashiro_sleep.png",
   "sprites/characters/mashiro/chr_mashiro_smile.png",
   "sprites/characters/mashiro/chr_mashiro_surprise.png",
+  "sprites/characters/master_hookah/chr_master_hookah_normal.png",
   "sprites/characters/minto/chr_minto_normal.png",
   "sprites/characters/minto/chr_minto_sad.png",
   "sprites/characters/minto/chr_minto_smile.png",
@@ -2271,6 +2296,11 @@
   "sprites/characters/minto/chr_minto_ura_smug.png",
   "sprites/characters/minto/chr_minto_ura_surprise.png",
   "sprites/characters/minto/chr_minto_wink.png",
+  "sprites/characters/mukai_master/chr_mukai_master_normal.png",
+  "sprites/characters/mukai_master/chr_mukai_master_sad.png",
+  "sprites/characters/mukai_master/chr_mukai_master_serious.png",
+  "sprites/characters/mukai_master/chr_mukai_master_smile.png",
+  "sprites/characters/mukai_master/chr_mukai_master_surprise.png",
   "sprites/characters/nagumo/chr_nagumo_normal.png",
   "sprites/characters/nagumo/chr_nagumo_serious.png",
   "sprites/characters/nagumo/chr_nagumo_smile.png",
@@ -2301,6 +2331,8 @@
   "sprites/characters/samechan/chr_samechan_smile.png",
   "sprites/characters/samechan/chr_samechan_surprise.png",
   "sprites/characters/samechan/chr_samechan_ventriloquism.png",
+  "sprites/characters/sheikh/chr_sheikh_normal.png",
+  "sprites/characters/shisha_9000/chr_shisha_9000_normal.png",
   "sprites/characters/steve/chr_steve_normal.png",
   "sprites/characters/sumi/chr_sumi_normal.png",
   "sprites/characters/sumi/chr_sumi_serious.png",
@@ -2429,54 +2461,44 @@
   "ui/making/ui_temperature_frame.png",
   "ui/scene_props/shisha_home_pro.png",
   "ui/scene_props/shisha_home_tabletop.png",
+  "ui/title_arts/title_art_adam_01_sunset_proclamation.png",
+  "ui/title_arts/title_art_adam_02_twin_apple_throne.png",
   "ui/title_arts/title_art_ageha_01_professional_taste.png",
   "ui/title_arts/title_art_ageha_02_grocery_smile.png",
   "ui/title_arts/title_art_ageha_03_model_moment.png",
+  "ui/title_arts/title_art_ageha_04_gummy_light.png",
   "ui/title_arts/title_art_hiyori_01_twilight_walk.png",
   "ui/title_arts/title_art_hiyori_02_window_pause.png",
   "ui/title_arts/title_art_hiyori_03_after_rain.png",
   "ui/title_arts/title_art_hiyori_04_daylight_bookshop.png",
   "ui/title_arts/title_art_hiyori_05_ramen_break.png",
+  "ui/title_arts/title_art_hiyori_06_riverside_hoodie.png",
   "ui/title_arts/title_art_keyvisual_01.png",
   "ui/title_arts/title_art_mashiro_01_heavy_smoke.png",
   "ui/title_arts/title_art_mashiro_02_tea_break.png",
   "ui/title_arts/title_art_mashiro_03_after_rain.png",
+  "ui/title_arts/title_art_mashiro_04_cherry_petals.png",
   "ui/title_arts/title_art_minto_01_cafe_welcome.png",
   "ui/title_arts/title_art_minto_02_instant_photo.png",
   "ui/title_arts/title_art_minto_03_private_window.png",
   "ui/title_arts/title_art_minto_04_after_hours.png",
+  "ui/title_arts/title_art_minto_05_mint_cloud.png",
+  "ui/title_arts/title_art_minto_06_after_hours_glasscare.png",
+  "ui/title_arts/title_art_naru_01_bakery_morning.png",
   "ui/title_arts/title_art_rin_01_night_tasting.png",
   "ui/title_arts/title_art_rin_03_late_coffee.png",
+  "ui/title_arts/title_art_rin_04_rainy_neon_umbrella.png",
+  "ui/title_arts/title_art_rin_05_blend_library_command.png",
   "ui/title_arts/title_art_samechan_01_shishark_test_run.png",
   "ui/title_arts/title_art_samechan_02_shark_movie.png",
   "ui/title_arts/title_art_samechan_03_aquarium.png",
+  "ui/title_arts/title_art_samechan_04_throne_pose.png",
+  "ui/title_arts/title_art_sumi_01_own_clay_bowl.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
-  "ui/title_arts/title_art_adam_01_sunset_proclamation.png",
-  "ui/title_arts/title_art_ageha_04_gummy_light.png",
-  "ui/title_arts/title_art_hiyori_06_riverside_hoodie.png",
-  "ui/title_arts/title_art_mashiro_04_cherry_petals.png",
-  "ui/title_arts/title_art_minto_05_mint_cloud.png",
-  "ui/title_arts/title_art_naru_01_bakery_morning.png",
-  "ui/title_arts/title_art_rin_04_rainy_neon_umbrella.png",
-  "ui/title_arts/title_art_samechan_04_throne_pose.png",
-  "ui/title_arts/title_art_sumi_01_own_clay_bowl.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "cgs/cg_ageha_confession.png",
-  "cgs/cg_hiyori_confession.png",
-  "cgs/cg_mashiro_confession.png",
-  "cgs/cg_samechan_confession.png",
-  "sprites/characters/da_silva/chr_da_silva_normal.png",
-  "sprites/characters/emil/chr_emil_normal.png",
-  "sprites/characters/master_hookah/chr_master_hookah_normal.png",
-  "sprites/characters/mukai_master/chr_mukai_master_normal.png",
-  "sprites/characters/mukai_master/chr_mukai_master_sad.png",
-  "sprites/characters/mukai_master/chr_mukai_master_serious.png",
-  "sprites/characters/mukai_master/chr_mukai_master_smile.png",
-  "sprites/characters/mukai_master/chr_mukai_master_surprise.png",
-  "sprites/characters/sheikh/chr_sheikh_normal.png",
-  "sprites/characters/shisha_9000/chr_shisha_9000_normal.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
@@ -2485,8 +2507,8 @@
    "src": "img/ui/lime/stamps/st_adam_bless.png",
    "width": 320,
    "height": 320,
-   "alt": "赤と緑の林檎。林檎の祝福を",
-   "preview": "［スタンプ］林檎の祝福を",
+   "alt": "赤と緑の林檎。リンゴの祝福を",
+   "preview": "［スタンプ］リンゴの祝福を",
    "allowed_accounts": null
   },
   "st_minto_welcome": {

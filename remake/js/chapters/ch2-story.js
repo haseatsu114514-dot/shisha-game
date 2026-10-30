@@ -3,7 +3,8 @@ import { state, save, markMet } from "../core/state.js";
 import { imageReady, setBg } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { MAP, ROOMS } from "./ch2-city-data.js";
-import { CH2_NIGHTS, syncAgehaVibes } from "./ch2-story-data.js";
+import { CH2_NIGHTS, CH2_FREE_NIGHTS, syncAgehaVibes } from "./ch2-story-data.js";
+import { grantStrawberrySample } from "./ch2-strawberry-trial.js";
 
 // 会話途中では完了にしない。連続する場面は一つずつ保存し、LOAD時に読了分を飛ばす。
 async function readStep(step) {
@@ -26,6 +27,7 @@ async function readStep(step) {
   owner.flags[flag] = true;
   if (step.flag) owner.flags[step.flag] = true;
   if (step.contact) addContact(owner, step.contact);
+  if (step.sample) grantStrawberrySample(owner);
   syncAgehaVibes(owner.flags);
   save();
 }
@@ -40,11 +42,16 @@ function addContact(owner, id) {
 }
 
 export function chapterTwoNights(startDay) {
+  const absolute = (day) => startDay + day - 1;
   return Object.fromEntries(CH2_NIGHTS.map(night => {
     const flag = night.doneFlag || `_ch2_night_${night.day}_done`;
-    return [startDay + night.day - 1, {
+    // 後送りできる夜だけ共通の延期キューへ載せる。期限と自由な夜は通算日に直す。
+    const deferrable = night.schedule === "preparation" ? {
+      deadline: absolute(night.deadline), doneKeys: [flag], freeNights: CH2_FREE_NIGHTS.map(absolute),
+    } : {};
+    return [absolute(night.day), {
       id: `remake_ch2_night_${night.day}`, pin: night.pin, label: night.label, beat: night.beat,
-      schedule: "fixed", prerequisites: night.prerequisites,
+      schedule: night.schedule || "fixed", prerequisites: night.prerequisites, ...deferrable,
       done: () => !!state.flags[flag],
       run: async () => {
         for (const step of night.steps) await readStep(step);

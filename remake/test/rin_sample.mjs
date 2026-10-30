@@ -21,6 +21,7 @@ const known = { DB: db, MAX_MONEY: 999999, TOURNAMENT_DAY: 14, MASTERY_THRESHOLD
   VISIT_SEQ: { rin: ['ch1_rin_first','ch1_rin_second','ch1_rin_third'] }, AFFINITY_RANK_PTS: [0,9,18,27],
   RAIN_SPOT_TEXTS: {}, AXE_BAR: {}, el: node, layers: { vn: node(), fx: node() },
   createNameFit: () => ({ fit() {} }), sceneBg: () => ({}), imageReady: async () => true,
+  loadVnFonts: async () => [],
   setBg: () => Promise.resolve(), portraitInfo: () => null, tournamentFinished: () => finished,
   toast: text => notices.push(text), currentBgm: () => null };
 for (const p of real) {

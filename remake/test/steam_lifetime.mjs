@@ -32,11 +32,13 @@ async function harness({ manual = false } = {}) {
   });
   const noop = () => {};
   const imports = {
+    './effect-visual.js': { effectVisible: () => false, effectBadge: () => null, effectLine: () => null },
     '../core/state.js': { state: owner },
     '../core/util.js': { el: () => new Node(), sleep: ms => { const d = deferred(); sleeps.push({ ms, ...d }); return d.promise; }, clamp: (x, a, b) => Math.max(a, Math.min(b, x)), rand: () => .5, pick: a => a[0] },
     '../core/ui.js': { countdown: () => { metrics.countdown++; return countdown.promise; }, shake: noop },
     '../core/audio.js': { SE: new Proxy({}, { get: () => noop }) },
-    '../core/stats.js': { tier01: () => 0, star: () => 1 },
+    '../core/stats.js': { tier01: () => 0, step: () => 1 },
+    '../core/stat-step-tables.js': { REFRESH_RADII: [90], REFRESH_LABELS: ['小さな範囲'], refreshRestoresMental: () => false },
     './session.js': { benchRoot: () => activeRoot, stepPanel: () => panel, waitBenchReady: () => ready.promise,
       explainTutorialStep: () => help.promise, refreshBench: noop, reactAudience: noop, setPlayerMental: noop,
       setBenchTemperature: noop, scoreStep: () => metrics.score++ },

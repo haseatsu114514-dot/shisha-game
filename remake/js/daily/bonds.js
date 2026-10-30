@@ -97,10 +97,11 @@ function romanceChosen(id) {
   return !!last && (state.romanceChoices?.[last]?.value || 0) > 0 && romanceOpen(id);
 }
 
-/** 会話の条件分岐（hooks.evalCondition）: lover / romance_open。知らない型は undefined */
+/** 会話の条件分岐（hooks.evalCondition）: lover / romance_open / finale_seen（締めくくりを読んだか）。知らない型は undefined */
 export function bondCondition(line) {
   if (line.condition_type === "lover") return isLover(line.char_id);
   if (line.condition_type === "romance_open") return romanceOpen(line.char_id);
+  if (line.condition_type === "finale_seen") return finaleSeen(line.char_id);
   return undefined;
 }
 
@@ -347,8 +348,13 @@ export function friendMessages({ tournamentDay = false } = {}) {
   for (const { id, sent } of due) {
     const f = friendData(id);
     const chats = sent.filter((i) => i.msg.type === "chat").length;
+    // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
+    let pick = f.chats?.length ? chats % f.chats.length : 0;
+    if ((pick === 2 && ["minto", "tsumugi", "rin"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+      || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
+      || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,
-      messages: f.chats[chats % f.chats.length].m.slice(), replies: f.chats[chats % f.chats.length].r } : null;
+      messages: f.chats[pick].m.slice(), replies: f.chats[pick].r } : null;
     const invite = f.invite && state.day < TOURNAMENT_DAY ? { id: `${FRIEND_PREFIX}inv_${id}_d${state.day}`, sender: id, type: "invitation", friend: true,
       private_schedule: "holiday_or_after_close", accept_event: `friend_${id}`, accept_text: f.invite.accept_text,
       messages: f.invite.messages.slice(), decline_response: { text: f.invite.decline } } : null;

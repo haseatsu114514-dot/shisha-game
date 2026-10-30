@@ -10,7 +10,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "初めて訪ねるmukai。機材ケースを持ち上げ、狭い階段を三階まで上がった。"
+          "text": "初めて訪ねるmukai。高架下の商店街を抜け、機材ケースを抱えたまま店の戸をくぐった。"
         },
         {
           "speaker": "mukai_master",
@@ -59,6 +59,40 @@
           "speaker": "",
           "face": "",
           "text": "持つ場所を空けてもらう。肩から、少し重さが抜けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "荷を解いたあと、ムカイさんに言われて、いつものブロンドで一台組んだ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕も、一口いい？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろはホースを受け取り、ゆっくり吸って、首をかしげた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……これ、お水？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろはそれ以上何も言わず、ホースをこちらへ返した。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "mashiro_pace"
         }
       ]
     },
@@ -118,12 +152,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ダブルアップル。シーシャを覚えた人間が、最初に覚える味。"
+          "text": "ダブルアップル。シーシャの王道で、店で一番よく出る味。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "果物の林檎そのままではない。二つの林檎の甘さに、アニスとリコリスの癖が重なる独特の味。"
+          "text": "果物の林檎そのままではない。アニスとリコリス、二つのスパイスで林檎を描いた味。"
         },
         {
           "speaker": "",
@@ -138,7 +172,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんが最初の特訓で持たせてくれたのも、この深紅のパッケージだった。"
+          "text": "毎日、店で詰めてきたのも、この深紅のパッケージだった。"
         },
         {
           "speaker": "",
@@ -193,7 +227,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。ダブルアップル、ですね。懐かしい味"
+          "text": "……うん。ダブルアップル、だね。懐かしい味"
         },
         {
           "speaker": "hajime",
@@ -233,16 +267,6 @@
         {
           "speaker": "",
           "face": "",
-          "text": "答えられなかった。「いつもより薄くて、何の味か自信がない」と言えば、全部終わる気がした。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "優勝した男の、最後のプライドだった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "ましろはしばらく、はじめの顔を見ていた。それから、ホースを置いて、ぽつりと言った。"
         },
         {
@@ -269,16 +293,6 @@
           "speaker": "",
           "face": "",
           "text": "謝らせる声でも、答え合わせを迫る声でもなかった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "今夜は、答えを急がずにいてくれた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "問わずに、明日の席を約束した。"
         },
         {
           "speaker": "",
@@ -316,39 +330,11 @@
           "text": "……なんとか。ご飯は食べました"
         },
         {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "よし。じゃ、聞いて。自称二十歳、何年目ですかって、またいじられた"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……あはは"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "歳ってさ、一度盛ると、次の誕生日にも辻褄を合わせるでしょ"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "嘘は育つの。年齢の話だけのはずが、戻り方まで分かんなくなる"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "グレープの煙を思い出した。返事を探している間も、通話は切れなかった。"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "でも、店のみんとまで嘘だったことにはしたくないんだよね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……はい。あの店、好きです"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_identity_revealed",
+          "next_true": "identity_known",
+          "next_false": "identity_new"
         },
         {
           "speaker": "minto",
@@ -360,7 +346,68 @@
           "face": "",
           "text": "通話を切って、明日言いたいことを一つだけメモした。"
         }
-      ]
+      ],
+      "branches": {
+        "identity_known": [
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "よし。じゃ、聞いて。自称二十歳、何年目ですかって、またいじられた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……あはは"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "歳ってさ、一度サバ読むと、次の誕生日にも辻褄を合わせるでしょ"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "嘘は育つの。年齢の話だけのはずが、戻り方まで分かんなくなる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "グレープの煙を思い出した。返事を探している間も、通話は切れなかった。"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "でも、店のみんとまで嘘だったことにはしたくないんだよね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……はい。あの店、好きです"
+          }
+        ],
+        "identity_new": [
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "よし。じゃ、聞いて。小さい嘘ってさ、一度つくと、次の場面でも辻褄を合わせたくなるでしょ"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "嘘は育つの。戻り方まで分かんなくなる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "グレープの煙を思い出した。返事を探している間も、通話は切れなかった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……分かる気がします"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_daily_cup_1",
@@ -371,7 +418,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "吸える日は一台。吸わない日はお茶。ましろは、毎日席を空けてくれた。"
+          "text": "吸える日は一台。吸わない日はお茶。ましろは、席を空けて待っていてくれた。"
         },
         {
           "speaker": "mashiro",
@@ -439,7 +486,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "いつものように、ましろの一杯を吸う。ふいに、舌の奥で、何かが灯った。"
+          "text": "いつものように、ましろの一台を吸う。ふいに、舌の奥で、何かが灯った。"
         },
         {
           "speaker": "hajime",
@@ -474,7 +521,7 @@
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "……ただいま、です"
+          "text": "……ただいま"
         },
         {
           "speaker": "",
@@ -507,7 +554,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "それでも、ここにいていいんですか"
+          "text": "それでも、ここにいていいの？"
         },
         {
           "speaker": "mashiro",

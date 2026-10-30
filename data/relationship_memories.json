@@ -115,22 +115,28 @@
       "echo": "（凛さんから受け取った袋に、まだ会ったことのない人の仕事もある）"
     },
     {
+      "id": "rin_face",
+      "char_id": "rin",
+      "dialogue_id": "ch1_rin_fourth",
+      "echo": "（凛さんに、吸っていた人の顔を持って帰る約束をした）"
+    },
+    {
       "id": "ageha_today",
       "char_id": "ageha",
       "dialogue_id": "remake_ch2_ageha_scout",
-      "echo": "（アゲハの「今日の感じ」に、俺が来たことも入っていた）"
+      "echo": "（あげはの「今日の感じ」に、俺が来たことも入っていた）"
     },
     {
       "id": "ageha_words",
       "char_id": "ageha",
       "dialogue_id": "remake_ch2_ageha_gyaru",
-      "echo": "（アゲハと話していると、感じていたことに言葉が追いつく）"
+      "echo": "（あげはと話していると、感じていたことに言葉が追いつく）"
     },
     {
       "id": "ageha_roles",
       "char_id": "ageha",
       "dialogue_id": "remake_ch2_ageha_magazine",
-      "echo": "（撮影のアゲハも、客の顔を見るアゲハも、同じ彼女だった）"
+      "echo": "（撮影のあげはも、客の顔を見るあげはも、同じ彼女だった）"
     },
     {
       "id": "kumicho_hands",

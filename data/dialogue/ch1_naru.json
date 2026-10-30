@@ -11,7 +11,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "喫茶こはく、覚えておくよ"
+          "text": "喫茶こはく、覚えておきます"
         }
       ]
     },
@@ -26,7 +26,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「シーシャバー KEMURIKUSA」。tonariから自転車で15分"
+          "text": "「シーシャバー KEMURIKUSA」。tonariから歩いて15分"
         },
         {
           "speaker": "",
@@ -44,9 +44,11 @@
           "text": "tonariとは違う香りだ。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "カウンターの中で、同い年くらいの店員がカップル客に何か説明している。"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_naru",
+          "next_true": "staff_known",
+          "next_false": "staff_new"
         },
         {
           "speaker": "naru",
@@ -64,28 +66,15 @@
           "text": "客のカップルがうなずく。説明は的確で、押しつけがましさがない。……正直、うまい接客だ。"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "ん？ ……あれ、お前。tonariの新人だろ。前に物販で見た顔だ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "え、分かるんですか"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "あの店の前掛けしてる奴は覚えるよ。スミさんの店だからな。──で、今日は客？ 偵察？"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_naru",
+          "next_true": "greet_known",
+          "next_false": "greet_new"
         },
         {
           "type": "set_flag",
           "flag": "met_naru"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "あ、蒸野はじめです。tonariでバイトしてて……"
         },
         {
           "type": "choice",
@@ -103,10 +92,10 @@
         },
         {
           "type": "condition",
-          "condition_type": "tournament_finished",
-          "tournament_chapter": 1,
-          "next_true": "name_after",
-          "next_false": "name_before"
+          "condition_type": "flag",
+          "flag": "_met_naru",
+          "next_true": "",
+          "next_false": "name_intro"
         },
         {
           "type": "set_flag",
@@ -155,7 +144,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "ああ、それ。料理の専門学校に通っててさ。菓子も焼くんだよ"
+          "text": "ああ、それ。料理の専門学校に通ってたんだ。菓子も焼くんだよ"
         },
         {
           "speaker": "naru",
@@ -190,7 +179,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "バニラってな、熱が低いと生っぽいんだ。甘くなる前の、ちょい生臭い匂いが先に立つ"
+          "text": "バニラってな、熱が低いと青臭いんだ。甘くなる前の、ちょい青い匂いが先に立つ"
         },
         {
           "speaker": "naru",
@@ -497,6 +486,84 @@
             "face": "normal",
             "text": "あー、そうだ。LIME交換しとこうぜ。煙のことで困ったら投げろ"
           }
+        ],
+        "staff_new": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターの中で、同い年くらいの店員がカップル客に何か説明している。"
+          }
+        ],
+        "staff_known": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターの中で、説明会で会ったなるさんがカップル客に何か説明している。"
+          }
+        ],
+        "greet_new": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "ん？ ……あれ、お前。tonariの新人だろ。前に物販で見た顔だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、分かるんですか"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "あの店の前掛けしてる奴は覚えるよ。スミさんの店だからな。──で、今日は客？ 偵察？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、蒸野はじめです。tonariでバイトしてて……"
+          }
+        ],
+        "greet_known": [
+          {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 1,
+            "next_true": "greet_known_after",
+            "next_false": "greet_known_before"
+          }
+        ],
+        "greet_known_before": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "ん？ ……よう、はじめ。説明会ぶりだな"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "──で、今日は客？ 偵察？"
+          }
+        ],
+        "greet_known_after": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "ん？ ……おう、チャンピオン。客か、偵察か？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……その呼び方、まだ慣れないです"
+          }
+        ],
+        "name_intro": [
+          {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 1,
+            "next_true": "name_after",
+            "next_false": "name_before"
+          }
         ]
       },
       "metadata": {
@@ -528,7 +595,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "お、いいとこ見てんな。あれはフレーバーの水分が多い日の置き方"
+          "text": "お、いいとこ見てんな。あれはお菓子系の葉の置き方。甘い葉は、真ん中から攻めると先に焦げるんだ"
         },
         {
           "speaker": "naru",
@@ -563,7 +630,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "だろ？ シーシャは『何を入れるか』より『どう熱を入れるか』。ここテストに出るぞ"
+          "text": "だろ？ 菓子と同じだよ。同じ生地でも、焼き方で別モンになる。ここテストに出るぞ"
         },
         {
           "speaker": "hajime",
@@ -722,11 +789,6 @@
         },
         {
           "speaker": "naru",
-          "face": "smile",
-          "text": "バニラの甘さは、熱を上げてやって初めて起きてくる。低いまんまじゃ生っぽいだけだ"
-        },
-        {
-          "speaker": "naru",
           "face": "normal",
           "text": "ただ、甘いバニラと焦げたバニラは紙一重でな。攻めすぎると焼けた甘さに化けて、花の香りが飛ぶ"
         },
@@ -870,7 +932,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "……うちの実家さ、喫茶店だったんだよ。商店街の小さいやつ。俺が中2のとき、潰れた"
+          "text": "……うちの実家さ、洋菓子屋だったんだよ。商店街の小さいやつ。俺が中2のとき、潰れた"
         },
         {
           "speaker": "hajime",
@@ -880,27 +942,22 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "親父の珈琲、うまかったぜ。常連もいた。それでも潰れるんだ、店ってのは"
+          "text": "親父のシュークリーム、うまかったぜ。常連もいた。それでも潰れるんだ、店ってのは"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "──だから俺は『潰れない店の作り方』を探しにここで働いてる"
+          "text": "──だから俺は『潰れない店の作り方』を探しながら、この店をやってる"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "今でもさ、あの建物の前を通ると、珈琲の匂いがする気がするんだ"
+          "text": "今でもさ、あの建物の前を通ると、焼き菓子の匂いがする気がするんだ"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "店ってのは、匂いが染みつくんだよ"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "──畳んだあとも、消えねえくらい"
+          "text": "……畳んだのに、匂いだけ残ってんだよな"
         },
         {
           "speaker": "naru",
@@ -1303,7 +1360,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるが作ったシーシャを吸いながら、難しそうな顔でスマホを触っている。"
+          "text": "客の一人が、難しそうな顔でスマホを触っている。"
         },
         {
           "speaker": "",
@@ -1323,17 +1380,17 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "どれ。……ちょっと吸わせてもらうぞ"
+          "text": "どれ。……家の一台、写真か手順のメモはあるか？見せてみろ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "客のシーシャを一口吸うと、なるは顔をしかめた。"
+          "text": "客がスマホを差し出す。画面を覗き込んだなるは、顔をしかめた。"
         },
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "蒸らしが全然足りてねえ。このボウルなら最低5分は待て。あと炭、トライアングルで置いてるか？"
+          "text": "蒸らしが全然足りてねえ。メモの手順だと、このボウルなら最低5分は待て。写真の炭、トライアングルで置いてるか？"
         },
         {
           "speaker": "naru",
@@ -1396,12 +1453,12 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "……なんだ、来たのか"
+          "text": "おう、約束の一台か"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "帰ってきたって聞いたから"
+          "text": "それはまた今度。帰ってきたって聞いたから"
         },
         {
           "speaker": "naru",
@@ -1446,7 +1503,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "ドバイまで来るんだろ。また舞台で会うかもな。そん時は本気でやる"
+          "text": "ドバイで会おう。そん時は本気でやる"
         },
         {
           "speaker": "",

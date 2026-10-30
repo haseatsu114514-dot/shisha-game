@@ -5,6 +5,8 @@ import { travelToCity } from './station_helpers.mjs';
 const t = id => `[data-test="${id}"]`;
 const map = '[data-destination-selection]:not(.done)';
 const end = t('ch2-tournament-entry');
+// DAY9 試煙会で一度だけ渡す苺の試供品（ch2-strawberry-trial.js の STRAWBERRY_SAMPLE、#1650）。まかないで試さなければ残る
+const withStrawberrySample = stock => ({ ...stock, afsahr_strawberry: (stock.afsahr_strawberry || 0) + 12 });
 async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, sick = false } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async opts => {
@@ -93,7 +95,8 @@ await suite('ch2-story', async check => {
     await reload(page); await atMap(page, 10, 0);
     const after = await state(page);
     assert(after.flags._ch2_read_remake_ch2_ageha_tasting && after.flags._ch2_night_9_done);
-    for (const key of ['money', 'flavorStock', 'owned']) assert.deepEqual(after[key], before[key], key);
+    for (const key of ['money', 'owned']) assert.deepEqual(after[key], before[key], key);
+    assert.deepEqual(after.flavorStock, withStrawberrySample(before.flavorStock), 'flavorStock'); // 試煙会の試供品だけ増える（#1650）
     await reload(page); await atMap(page, 10, 0);
     assert(!await page.evaluate(() => __storyTrace.includes('remake_ch2_ageha_tasting')), '既読の試煙会を再生しない');
   }, { viewport: touch ? { width: 844, height: 390 } : { width: 1280, height: 720 }, isMobile: touch, hasTouch: touch, reducedMotion: 'reduce' });
@@ -124,7 +127,8 @@ await suite('ch2-story', async check => {
     await page.locator(end).waitFor(); const s = await state(page);
     assert.equal(s.day, 28); assert.equal(s.slot, 0); assert.equal(s.chapter, 2);
     assert.equal(s.money, before.money); assert.deepEqual(s.stats, before.stats); assert.equal(s.reel.count, before.reel.count);
-    for (const key of ['lovers','loverSince','lastDate','affinity','flavorStock','keepsakes','relationshipMemories']) assert.deepEqual(s[key], before[key], key);
+    for (const key of ['lovers','loverSince','lastDate','affinity','keepsakes','relationshipMemories']) assert.deepEqual(s[key], before[key], key);
+    assert.deepEqual(s.flavorStock, withStrawberrySample(before.flavorStock), 'flavorStock');
     assert(s.flags._ch2_taste_distant); assert(s.flags._ch2_eve_done); assert(!s.flags.ch2_taste_recovered);
     assert(s.met.ageha); assert(!s.contacts.includes('ageha')); assert(!s.visits.ageha); assert(!s.met.volk);
     const trace = await page.evaluate(() => window.__storyTrace);
@@ -246,7 +250,8 @@ await suite('ch2-story', async check => {
     const eve = await state(page);
     assert.equal(eve.day, 28); assert.equal(eve.slot, 0); assert.equal(eve.chapter, 2);
     assert(eve.flags._ch2_eve_done && eve.flags._ch2_taste_distant && eve.met.ageha && eve.met.kumicho && eve.met.rei);
-    for (const key of ['money', 'stats', 'statXp', 'flavorStock', 'lovers', 'loverSince']) assert.deepEqual(eve[key], start[key], key);
+    for (const key of ['money', 'stats', 'statXp', 'lovers', 'loverSince']) assert.deepEqual(eve[key], start[key], key);
+    assert.deepEqual(eve.flavorStock, withStrawberrySample(start.flavorStock), 'flavorStock');
     for (const [who, value] of Object.entries(start.affinity)) assert(eve.affinity[who] >= value, `affinity ${who}`);
     for (const who of Object.keys(start.met)) assert(eve.met[who], `met ${who}`);
     for (const who of start.contacts) assert(eve.contacts.includes(who), `contact ${who}`);
@@ -270,12 +275,16 @@ await suite('ch2-story', async check => {
     assert.equal(after.phase, 'cleared'); assert.equal(after.chapter, 2); assert(after.flags._ch2_tokyo_invitation);
     assert.equal(after.flags._ch2_tournament.history.length, 1);
     // 大会の正規の効果以外で、蓄積した記録が欠落・巻き戻りしない。
-    for (const key of ['money', 'stats', 'statXp', 'lovers', 'loverSince']) assert.deepEqual(after[key], eve[key], key);
+    for (const key of ['stats', 'statXp', 'lovers', 'loverSince']) assert.deepEqual(after[key], eve[key], key);
+    // 大会の正規の効果として、優勝賞金50,000円が一度だけ入る。
+    assert.equal(after.money, eve.money + 50000, 'money は優勝賞金50,000円だけ増える');
     // 大会の制作は持ち込み在庫を消費するのが正規の効果（craft/steps.js の consumes）。
     // 記録された配合の分だけ減り、それ以外の欠落・巻き戻しがないことを確かめる。
     const usedMix = after.flags._ch2_tournament.craft.mix || {};
     for (const [id, grams] of Object.entries(eve.flavorStock)) {
-      assert.equal(after.flavorStock[id], Math.round((grams - (usedMix[id] || 0)) * 10) / 10, `flavorStock ${id} は配合の消費分だけ減る`);
+      // 課題の支給葉（第2章は afsahr_strawberry、craft/steps.js の supply）は持ち込み在庫を減らさない。試煙会の試供品（#1650）もそのまま残る
+      const used = id === 'afsahr_strawberry' ? 0 : (usedMix[id] || 0);
+      assert.equal(after.flavorStock[id], Math.round((grams - used) * 10) / 10, `flavorStock ${id} は配合の消費分だけ減る`);
     }
     for (const [who, value] of Object.entries(eve.affinity)) assert(after.affinity[who] >= value, `affinity ${who}`);
     for (const who of Object.keys(eve.met)) assert(after.met[who], `met ${who}`);

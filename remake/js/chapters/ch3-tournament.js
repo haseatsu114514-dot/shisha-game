@@ -1,9 +1,11 @@
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
-import { DB, bgUrl, displayName, faceIconUrl, portraitInfo } from "../core/data.js";
+import { difficultyEvidence } from "../core/cycle-start.js";
+import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, loadTournamentCraftDialogue } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, modal, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
@@ -13,8 +15,7 @@ import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { newSession, openBench, waitBenchReady, benchRoot } from "../craft/session.js";
-import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, regulationFor } from "../craft/steps.js";
-import { flavorStock, addFlavorStock } from "../daily/shop.js";
+import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { stepWater } from "../craft/water-view.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
@@ -28,6 +29,7 @@ import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "./ch2-city-data.js";
+import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
   startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch3-tournament-state.js";
@@ -122,12 +124,16 @@ function card(owner, name, title, description, actions = [], extra = []) {
 function matchDialogue(name) {
   const source = DB.dialogues[`ch3_${name}`];
   if (!source) throw new Error(`台本がありません: ch3_${name}`);
+  const craft = progress().craft;
+  if (name === "national_result") return { ...source, lines: resultLines(source.lines, craft, state.flags._ch3_strategy) };
+  if (name === "national_defeat") return { ...source, lines: defeatLines(source.lines, craft) };
   if (name !== "national_adjustment") return source;
-  return { ...source, lines: source.lines.map((line, index) => {
+  const lines = source.lines.map((line, index) => {
     if (index === 0) return { ...line, text: "一度目の調整を終えた。まだ、全員に持ち点が残っている。" };
     if (index === source.lines.length - 1) return { ...line, text: "二度目の調整へ。残りの葉と温度を確かめる。" };
     return line;
-  }) };
+  });
+  return { ...source, lines: adjustmentLines(lines, craft) };
 }
 
 async function read(owner, name) {
@@ -169,17 +175,9 @@ async function commentary(owner, event) {
   return true;
 }
 
-// 課題フレーバーを私物で持ち込む章（第3章＝ドバジ チョコレート）は、0gのまま会場へ来ると
-// ミックス工程で課題（4g以上）を満たせず、決定ボタンが押せないまま詰む。第1章レモンと同じ考え方で、
-// 本番前に最低量だけは確実に手元へ置き、詰みだけを防ぐ。開始資源を捕まえるstartAttemptより前に行う。
-// TODO(#1052): 無償の補填のままにするか、東京の店での購入へ促す/強制するか、費用をどう扱うかはオーナー判断。
-//              いまは詰み回避の最小量（規定の下限）だけを補う。
-function ensureTournamentChallengeFlavor() {
-  const reg = regulationFor({ mode: "tournament" });
-  if (!reg || reg.supply) return; // 支給葉は在庫を消費しないので0gでも詰まない
-  const short = (reg.min || 0) - flavorStock(reg.flavor);
-  if (short > 0) addFlavorStock(reg.flavor, short);
-}
+// 課題フレーバー（第3章＝ドバジ チョコレート）は大会が supply で無制限に支給するので、
+// 私物を1gも持たずに来てもミックスで課題量を満たせる。0g到着の詰みは steps.js の supply 扱いで解消済み。
+// 支給分は在庫を増やさず持ち越さないので、ここで在庫を補填しない（オーナー決定 2026-10-28 13:29）。
 
 export async function runChapterThreeTournament() {
   if (state?.chapter !== 3 || (!state.flags._ch3_tournament &&
@@ -190,11 +188,11 @@ export async function runChapterThreeTournament() {
   document.body.classList.add("ch2-tournament", "ch3-tournament");
   window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); }, { once: true });
   await perform(owner, async () => {
+    await loadTournamentCraftDialogue();
     // 必要な場面が揃うまで、保存・日付・大会の試行回数を変更しない。
     const dialogues = await readDialogues("ch3_main", REQUIRED);
     if (!live(owner)) return;
     Object.assign(DB.dialogues, Object.fromEntries(REQUIRED.map(key => [key, dialogues[key]])));
-    ensureTournamentChallengeFlavor();
     recoverStep(state);
     save();
     await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });
@@ -350,7 +348,8 @@ function renderComplete(owner) {
   playBgm("bgm_aftermath");
   card(owner, "complete", "全国大会・優勝／日本第一代表", "四人の一試合で、はじめが日本の第一代表になった。東京で伝えることが、まだ残っている。", [
     button(owner, "第三章の続きへ", "aftermath", async () => {
-      await (await import("./ch3-aftermath.js")).runChapterThreeAftermath();
+      const mod = await withLoadingNotice(import("./ch3-aftermath.js"), loadingNotice("第三章の続きを準備しています…"));
+      await mod.runChapterThreeAftermath();
     }, true),
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
@@ -413,7 +412,7 @@ async function drive(owner) {
         else if (p.step === 10) p.stage = "national_adjustment";
         else {
           const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
-          if (!castVotes(p, round, quality, null, difficultyForRun(state))) throw new Error("全国大会の投票地点を確認できません");
+          if (!castVotes(p, round, quality, null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の投票地点を確認できません");
           p.stage = p.step === STEPS.length ? "tasting" : "votes";
           if (p.stage === "tasting") recordResult(state, cs.total);
         }
@@ -421,11 +420,11 @@ async function drive(owner) {
       save();
     } else if (p.stage === "national_craft") {
       if (!await read(owner, "national_craft")) return;
-      if (!castVotes(p, 1, partialQuality(p.craft, 1), null, difficultyForRun(state))) throw new Error("全国大会の提供後の投票地点を確認できません");
+      if (!castVotes(p, 1, partialQuality(p.craft, 1), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の提供後の投票地点を確認できません");
       checkpoint("votes");
     } else if (p.stage === "national_adjustment") {
       if (!await read(owner, "national_adjustment")) return;
-      if (!castVotes(p, 2, partialQuality(p.craft, 2), null, difficultyForRun(state))) throw new Error("全国大会の調整後の投票地点を確認できません");
+      if (!castVotes(p, 2, partialQuality(p.craft, 2), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の調整後の投票地点を確認できません");
       checkpoint("votes");
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);

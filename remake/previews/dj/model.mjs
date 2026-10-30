@@ -1,3 +1,4 @@
+import { TRACKS } from './tracks.mjs';
 export const PHRASE = 32;
 export const mod = (v, n) => ((v % n) + n) % n;
 export const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -20,6 +21,12 @@ export function guideNext(m, now) {
 export function playDeck(m, id, now) {
   const d = m.decks[id];
   if (d.playing) return false;
+  if (m.guide?.to === id && m.decks[m.guide.from].playing) {
+    const beat=beatAt(m.decks[m.guide.from],now);
+    const errorMs=(beat-Math.round(beat))*60/m.decks[m.guide.from].bpm*1000;
+    const v=Math.abs(errorMs);
+    m.lastPlay={id,errorMs,grade:v<=30?'PERFECT':v<=60?'GOOD':v<=120?'OK':errorMs<0?'EARLY':'LATE'};
+  }
   const wasRunning = m.running;
   anchor(d, now); d.playing = true; m.running = true;
   m.resumeDecks = m.resumeDecks.filter(n => n !== id);
@@ -76,4 +83,16 @@ export function dancerPose(beat, reduced = false) {
   return { hip: Math.sin(phase) * (reduced ? 0 : 3), bob: reduced ? 0 : (1 - Math.cos(phase * 2)) * 1.5,
     left: reduced ? 0 : Math.max(0, Math.sin(phase)) * 4, right: reduced ? 0 : Math.max(0, -Math.sin(phase)) * 4,
     arm: reduced ? 0 : Math.sin(phase) * 3 };
+}
+
+export function createStageMix(stage, detuneFactor=1) {
+ const m=createMix();m.decks=[stage.a,stage.b].map((key,id)=>{const nativeBpm=TRACKS[key].bpm;return {nativeBpm,bpm:Math.round(nativeBpm*(id?detuneFactor:1)*100)/100,beat:0,at:0,playing:false};});return m;
+}
+export const scoreFromErr=(v,s,a,b)=>v<=s+1e-10?100:v<=a+1e-10?85:v<=b+1e-10?60:30;
+export const rankFromScore=total=>total>=90?'S':total>=75?'A':total>=55?'B':'C';
+export function scoreMix(m,now) {
+ if(!m.lastPlay)return null;
+ const [a,b]=m.decks,pitchErrPct=Math.abs(b.bpm-a.bpm)/a.bpm*100,playMs=Math.abs(m.lastPlay.errorMs),driftMs=Math.abs(phaseError(a,b,now))*60/a.bpm*1000;
+ const parts=[scoreFromErr(pitchErrPct,.10,.25,.50),scoreFromErr(playMs,30,60,120),scoreFromErr(driftMs,25,50,100)],total=Math.round(parts.reduce((a,b)=>a+b,0)/3);
+ return {pitchErrPct,playMs,driftMs,parts,total,rank:rankFromScore(total)};
 }

@@ -5,7 +5,8 @@ import { el, yen } from "../core/util.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, imageReady, chapterTitle, modal, withScenePreparation } from "../core/ui.js";
+import { layers, showScreen, setBg, imageReady, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { showHud } from "../daily/hud.js";
 import { openStatus } from "../daily/status.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -107,7 +108,7 @@ async function checkpoint(stage) {
   save();
 }
 
-async function scene(id, label, background) {
+async function scene(id, label, background, dialogue = id) {
   const owner = session;
   showHud(false);
   if (!DB.dialogues[id]) throw new Error(`台本がありません: ${id}`);
@@ -121,7 +122,7 @@ async function scene(id, label, background) {
   layers.hud.replaceChildren(el("div.ch2-vn-label", { text: `第2章・DAY ${chapterDay(state)} ／ ${label}` }));
   const controller = new AbortController();
   owner.controller = controller;
-  const result = await play(id, { signal: controller.signal });
+  const result = await play(dialogue, { signal: controller.signal });
   if (owner.controller === controller) owner.controller = null;
   if (!current(owner)) return false;
   layers.hud.replaceChildren();
@@ -178,9 +179,9 @@ async function continueDayOne() {
       state.slot = 1;
       await checkpoint("tonari");
     } else if (stage === "tonari") {
+      // 配達の報告は夜の会話の中で読む（#1706）。締めの後に「それと」で報告を継ぎ足さない。
       if (!await scene("remake_ch2_day1_night", "tonariへ戻る", bgUrl("bg_tonari_inside", "night"))) return;
       if (state.flags._ch2_deliveries?.accepted && !state.flags._ch2_deliveries.reported) {
-        if (!await scene("remake_ch2_delivery_report", "配達の報告", bgUrl("bg_tonari_inside", "night"))) return;
         state.flags._ch2_deliveries.reported = true; save();
       }
       state.slot = 2;
@@ -191,6 +192,16 @@ async function continueDayOne() {
       return;
     } else throw new Error(`初日の保存地点を確認してください: ${stage}`);
   }
+}
+
+// 配達で来た初対面は、挨拶の別れ際（ch2_city_<id>_farewell）を読まずに受け渡しへ続ける（#1706）。
+// 店内の場面が締めを持つので、別れてから「それと」で呼び止める順にしない。
+function greetingWithoutFarewell(id) {
+  const dialogue = DB.dialogues[id];
+  const first = dialogue?.branches?.first;
+  if (!first) return id;
+  const farewell = `${id}_farewell`;
+  return { ...dialogue, branches: { ...dialogue.branches, first: first.filter(line => !(line.type === "jump" && line.next_id === farewell)) } };
 }
 
 async function introduceStop(id, background) {
@@ -209,7 +220,8 @@ async function visit(stop) {
   // 顔合わせ挨拶。初対面なら台詞中で名乗り（set_flag _met_）、面識済みなら短い再会。
   // 完読まで面識を確定しない（SKIP/LOAD/中断で面識だけ先に付くのを防ぐ）。
   const restore = tracked ? snapshotDeliveryIdentity(state, stop.id) : null;
-  if (!await scene(`ch2_city_${stop.id}`, stop.sceneLabel || stop.name)) { restore?.(); return; }
+  const greeting = `ch2_city_${stop.id}`;
+  if (!await scene(greeting, stop.sceneLabel || stop.name, undefined, delivering ? greetingWithoutFarewell(greeting) : greeting)) { restore?.(); return; }
   // 完読したので面識と名前表示を確定する（台詞の set_flag が失われても整合させる保険・idempotent）。
   if (tracked) confirmDeliveryIdentity(state, stop.id);
   recordCityVisit(state, stop.id); save();
@@ -218,12 +230,12 @@ async function visit(stop) {
     if (!current(owner)) return;
     state.flags._ch2_rules_read = true; save();
   }
+  // 配達と街の紹介は挨拶と同じ店頭（背景を替えない）で読む。室内の絵は店内の場面で初めて出す（#1706）。
   if (delivering) {
-    if (!await scene(`remake_ch2_delivery_${stop.id}`, "配達とご挨拶", ROOMS[stop.id])) return;
+    if (!await scene(`remake_ch2_delivery_${stop.id}`, "配達とご挨拶")) return;
     finishChapterTwoDelivery(state, stop.id); save();
   }
-  if (!await introduceStop(stop.id, ROOMS[stop.id])) return;
-  if (stop.id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha)) return;
+  if (!await introduceStop(stop.id)) return;
   // J05: 配達で来たら、そのまま店内へ入って店主と話す（「店内をのぞく」は出さない）。
   // 室内の絵が間に合わないときだけ、通常訪問と同じ店頭カード（再読み込みできる）に落とす。
   if (delivering && ROOMS[stop.id]) {
@@ -232,11 +244,14 @@ async function visit(stop) {
     if (ready) {
       if (!await scene(`ch2_city_${stop.id}_inside`, stop.sceneLabel || stop.name, ROOMS[stop.id])) return;
       state.flags[`_ch2_city_inside_${stop.id}`] = true; save();
+      // あげはのプリクラは入口の機械なので、店内に入ってから撮る。
+      if (stop.id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha)) return;
       if (!await mapBackground()) return;
       renderMap(); focus(`pin-${stop.id}`);
       return;
     }
   }
+  if (stop.id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha)) return;
   if (ROOMS[stop.id]) renderStop(stop);
   else { await mapBackground(); renderMap(); focus("return"); }
 }
@@ -413,7 +428,8 @@ async function continuePreparation() {
 async function tournament() {
   session.scene = "tournament";
   showHud(false);
-  await (await import("./ch2-tournament.js")).runChapterTwoTournament();
+  const mod = await withLoadingNotice(import("./ch2-tournament.js"), loadingNotice("第2章の大会を準備しています…"));
+  await mod.runChapterTwoTournament();
 }
 
 function renderError(retry) {

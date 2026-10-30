@@ -2,6 +2,7 @@
   "dialogues": [
     {
       "dialogue_id": "ch3_kuze_first",
+      "metadata": { "flavor_lesson": { "chocolate": 1 } },
       "lines": [
         {
           "type": "condition",
@@ -45,9 +46,11 @@
           "flag": "_met_kuze"
         },
         {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "いらっしゃい。東京の煙を裏から動かす男、って聞いたことある？"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch3_delivery_kuze",
+          "next_true": "delivery_known_greet",
+          "next_false": "delivery_new_greet"
         },
         {
           "speaker": "hajime",
@@ -152,12 +155,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "一口。香ばしい茶の余韻が鼻へ抜け、舌には焙じた葉の甘さが残った。"
+          "text": "一口。香ばしい茶の匂いが鼻へ抜けた。舌の上は、まだぼんやりしている。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……ほうじ茶だ。まだ味に自信はないのに、これははっきり分かる"
+          "text": "……ほうじ茶の匂いがします。味は自信ないけど、鼻はそう言ってる"
         },
         {
           "speaker": "hajime",
@@ -182,7 +185,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "実物でいつでも同じに出せる、とは言わないけどね。今日の君の舌と、この一台の話"
+          "text": "実物でいつでも同じに出せる、とは言わないけどね。今日の君と、この一台の話"
         },
         {
           "speaker": "hajime",
@@ -212,17 +215,7 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "そうなんだ。あの子とは保育園から一緒でさ。昔、絵を半分に折って渡したことがある"
-        },
-        {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "ましろは僕の言う味に合わせなかった。でも、隣にはいてくれた。……覚えてるかな、あの絵"
-        },
-        {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "僕、昔はすぐ体調を崩してさ。あの子には、ずいぶん助けられた。……あ、重い話じゃないよ"
+          "text": "ましろとは昔なじみなんだ、……続きは、また今度"
         },
         {
           "speaker": "kuze",
@@ -299,6 +292,25 @@
             "face": "",
             "text": "mukaiの休憩中。はじめが出場者一覧の「久世朔」の名を読み上げると、ましろの手が止まった。"
           }
+        ],
+        "delivery_known_greet": [
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "いらっしゃい。ほんとに用事なしで来てくれたんだ"
+          },
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "じゃあ改めて。東京の煙を裏から動かす男、って聞いたことある？"
+          }
+        ],
+        "delivery_new_greet": [
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "いらっしゃい。東京の煙を裏から動かす男、って聞いたことある？"
+          }
         ]
       }
     },
@@ -312,17 +324,27 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "今日は客で来たよ。君がここで作る一台、飲んでみたくて"
+          "text": "今日は客で来たよ。県大会の動画は見たけど、君がここで作る一台を吸ってみたくて"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "県大会の動画だけじゃ足りませんでした？"
+          "text": "動画、見たんですか。……何か分かりました？"
         },
         {
           "speaker": "kuze",
           "face": "normal",
           "text": "見直したけど、映像じゃ最後の一口まで分からないから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "朔、……いらっしゃい"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "ましろ、ここで働いてるって聞いてたから。今日は一台だけ、よろしくね"
         },
         {
           "speaker": "",
@@ -374,11 +396,12 @@
     },
     {
       "dialogue_id": "ch3_kuze_advice",
+      "metadata": { "flavor_lesson": { "orange": 1 } },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "数日後の煙幕。ましろは客席にいた。久しぶりに会う幼なじみとの間には、少しだけ距離がある。"
+          "text": "数日後の煙幕。ましろは客席にいた。mukaiで顔を合わせた幼なじみと、ちゃんと話すのは初めてだ。"
         },
         {
           "speaker": "kuze",
@@ -388,7 +411,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "久しぶり、朔。店を借りてまで出るって聞いたから、気になって"
+          "text": "今日はちゃんと話せるね、朔。店を借りてまで出るって聞いたから、気になって"
         },
         {
           "speaker": "kuze",
@@ -448,12 +471,12 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "僕には、ちゃんとお茶、……好きだよ"
+          "text": "僕には、ちゃんとお茶"
         },
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "また外した。ましろの「でも好き」、昔から難しいな"
+          "text": "また外した"
         },
         {
           "speaker": "hajime",
@@ -508,7 +531,17 @@
         {
           "speaker": "kuze",
           "face": "normal",
-          "text": "ほら、答えも分かれた。君はどうしたい？"
+          "text": "ほら、答えも分かれた。……でも、正直に言うとね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "最後の甘さは、少し長い。二度目の調整で炭を一つ外すと締まるよ"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "決めるのは君。どうしたい？"
         },
         {
           "speaker": "hajime",
@@ -567,7 +600,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "マウンテンミスト。レモンとライム、最初と二口目で違うだろ"
+          "text": "ヘイ、ハジメ。マウンテンミストだ。レモンとライム、最初と二口目で違うだろ"
         },
         {
           "speaker": "hajime",
@@ -612,7 +645,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "……あと少し。俺の都合で、早めない"
+          "text": "ノー、ノー。……あと少し。俺の都合で、早めない"
         },
         {
           "speaker": "",
@@ -638,6 +671,46 @@
           "speaker": "",
           "face": "",
           "text": "差し出された皿を受け取り、タイマーが鳴るまで、二人で待った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タイマーが鳴った。スティーブは隣の常連の台へ、ホースを渡した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あれ、今日はレモンが先に抜けちゃったね。ライムはおいしいけど"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "……オーケー。カードどおりの秒数なんだけどな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "鳴る少し前、隣の台から柑橘が一番強く香ってました"
+        },
+        {
+          "speaker": "steve",
+          "face": "surprise",
+          "text": "……見てたのか。俺は、タイマーを見てた"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "急いで飛ばすのが怖くて、今度は待ちすぎる。数字は、客の顔をしてないからな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブはレシピカードの余白に、常連の一言を書き足した。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "次はタイマーと一緒に、二口目の前の顔も見る。その目、ちょっと借りるぞ"
         }
       ]
     },

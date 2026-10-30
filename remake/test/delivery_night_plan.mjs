@@ -119,7 +119,7 @@ function assertSalaryOpening(sameVisit) {
   assert(actual, 'Production customer dialogue was not passed to playback');
   const expected = structuredClone(originalSalary);
   if (sameVisit) {
-    expected.lines[0].text = expected.lines[0].text.replace(/^夜のtonari。顔を出すと、/, '夜のtonari。');
+    expected.lines[0].text = '夜のtonari。帰り際、スミさんに「悪い、カウンター頼めるか」と呼び止められた。';
     assert.notEqual(expected.lines[0].text, originalSalary.lines[0].text,
       'The production arrival changed; review the same-visit adaptation');
     assert.match(actual.lines[0].text, /カウンター頼めるか/, 'Counter request must remain');

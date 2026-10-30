@@ -56,7 +56,7 @@ try {
         gym: document.querySelector('[data-test="pin-choizap"] .facility-icon img').src,
         leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
-    assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","喫茶こはく","観音堂","チョイザップ","C.STATION","家"]);
+    assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","喫茶こはく","観音堂","CHOI-ZAP","C.STATION","家"]);
     assert(map.faces.every(f => f.width === (f.owner ? 32 : 52) && f.loaded), JSON.stringify(map.faces));
     assert(map.icons.every(i => (i.vector || i.logo || i.facility) && i.below && !i.oldGlyph));
     assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
@@ -65,7 +65,7 @@ try {
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
     await page.evaluate(async () => {
-      for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 10;
+      for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 12; // 10段では10の倍数を越えると段到達カードになるため、段の途中から始める
       T.core.state.statXp = {};
       await T.stats.paidAction(async () => { T.stats.earnStat("sense", 4); T.stats.addStamina(-8); });
     });
@@ -87,7 +87,7 @@ try {
         badgeInk:T.inkOffset(n.querySelector(".gc-badge")),
         sameSize:getComputedStyle(n.querySelector(".gc-count")).fontSize === getComputedStyle(n.querySelector(".gc-unit")).fontSize };
     });
-    assert.deepEqual([card.heading,card.name,card.points,card.word,card.actual], ["STATUS UP","センス","+1P","",11]);
+    assert.deepEqual([card.heading,card.name,card.points,card.word,card.actual], ["STATUS UP","センス","+1P","",13]);
     assert.equal(card.height,68); assert.equal(card.badge,44);
     assert.equal(card.earned,"今回");
     assert(card.frame.includes("reward-clean.webp") && card.mask.includes("reward-clean.webp") && card.badgeFrame.includes("panel.webp") && card.enabled);

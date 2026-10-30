@@ -17,7 +17,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "アゲハさんも、PEPPERMINTに？"
+          "text": "あげはさんも、PEPPERMINTに？"
         },
         {
           "speaker": "ageha",
@@ -82,7 +82,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "おう。お前も一服か"
+          "text": "おう。あんちゃんも一服かい"
         },
         {
           "speaker": "hajime",
@@ -92,7 +92,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "休みぐらい、他人の作った煙でのんびりしてえだろ"
+          "text": "休みぐらい、他人の作った煙でのんびりしてえでしょうが"
         },
         {
           "speaker": "adam",
@@ -102,7 +102,7 @@
         {
           "speaker": "kumicho",
           "face": "smile",
-          "text": "大きく出たな、……うめえじゃねえか"
+          "text": "大きく出なすったな、……うめえじゃねえか"
         },
         {
           "speaker": "hajime",
@@ -112,7 +112,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "おう。今日は炭を触らねえと決めてきた。座れよ"
+          "text": "おう。今日は炭を触らねえと決めてきた。座んなせえ"
         }
       ]
     },
@@ -127,7 +127,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "来たか。水、飲むか"
+          "text": "来なすったか。水、飲むかい"
         },
         {
           "speaker": "hajime",
@@ -137,7 +137,7 @@
         {
           "speaker": "kumicho",
           "face": "smile",
-          "text": "おう。次の電車まで、もう少しここにいるつもりだ"
+          "text": "おう。次の電車まで、もう少しここにいるつもりでさ"
         }
       ]
     },
@@ -147,17 +147,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターの端で、零さんがスマホの選曲画面を伏せた。"
+          "text": "カウンターの端で、REIさんがスマホの選曲画面を伏せた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "零さん？ こっちで会うと、ちょっと新鮮ですね"
+          "text": "REIさん？ こっちで会うと、ちょっと新鮮ですね"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……お邪魔してます。電車、一本早いのに乗れたんで"
+          "text": "……邪魔してる。電車、一本早いのに乗れた"
         },
         {
           "speaker": "sumi",
@@ -167,7 +167,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "お任せで。自分で選ばない日も、たまにはいいかなって"
+          "text": "お任せで。自分で選ばない日も、たまにはいい"
         },
         {
           "speaker": "hajime",
@@ -177,7 +177,7 @@
         {
           "speaker": "rei",
           "face": "smile",
-          "text": "……どうぞ。今、ちょうど誰かと話したかった"
+          "text": "……ああ。今、ちょうど誰かと話したかった"
         }
       ]
     },
@@ -187,12 +187,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "零さんがヘッドホンを首に下ろし、軽く手を上げた。"
+          "text": "REIさんがヘッドホンを首に下ろし、軽く手を上げた。"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……また会いましたね。ここの席、落ち着くんで"
+          "text": "……また会ったな。ここ、落ち着く"
         },
         {
           "speaker": "hajime",
@@ -202,7 +202,7 @@
         {
           "speaker": "rei",
           "face": "smile",
-          "text": "ちょっと古い曲です。気になります？"
+          "text": "……古い曲。聴く？"
         }
       ]
     }

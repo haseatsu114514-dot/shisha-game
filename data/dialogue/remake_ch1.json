@@ -10,7 +10,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ、あのお姉さんの注文で、手順をおさらいするぞ"
+          "text": "……いや、仕込みは後でいい。はじめ、あのお姉さんの注文で、手順をおさらいするぞ"
         },
         {
           "speaker": "sumi",
@@ -843,7 +843,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "それで一台だ。いまの全部、お前の手でやったんだぞ"
+          "text": "それで一台だ。毎日やってる手順でも、通して見ると癖が出る"
         },
         {
           "speaker": "sumi",
@@ -853,7 +853,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "（見てすぐやると、手が覚えてる……思ってたより、やることが多いんだな）"
+          "text": "（通してやると、手が勝手に動くところと、止まるところがはっきり分かれるな……）"
         },
         {
           "speaker": "sumi",
@@ -1091,7 +1091,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "熱は上げるより、止めるほうが難しい。明日は温度計から目を離すな"
+          "text": "熱は上げるより、止めるほうが難しい。明日は煙の色と舌のピリつきから目を離すな"
         },
         {
           "speaker": "sumi",
@@ -1109,12 +1109,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "会場へ向かう前に、仕入れておいた本番用のフレーバーをケースに並べていく。"
+          "text": "会場へ向かう前に、練習で手に馴染ませたレモンの残りをケースに並べていく。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……準備は、できてる）"
+          "text": "（……課題のレモンは会場で支給だ。あとは、練習した手を信じるだけだ）"
         },
         {
           "type": "apply",
@@ -1133,17 +1133,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "会場へ向かおうとして、気づく。……本番用に残すはずのレモンを、練習で使い切っていた。"
+          "text": "会場へ向かおうとして、気づく。……練習でレモンを使い切って、ケースが空に近い。"
         },
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "（やってしまった……手持ちが、ほとんどない）"
+          "text": "（使いすぎたか……手持ちが、ほとんどない）"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……持ってきてねえのか。しょうがねえ奴だな"
+          "text": "……空っぽか。しょうがねえ奴だな"
         },
         {
           "speaker": "",
@@ -1153,7 +1153,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……残しとけって言っただろ。レモン、１回分だ。足りる範囲でやりくりしろ"
+          "text": "……使い切るほど触ったなら上等だ。レモン、１回分だ。足りる範囲でやりくりして、行ってこい"
         },
         {
           "speaker": "hajime",
@@ -1177,7 +1177,7 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "2回の調整、終了ッ！ 最後まで味を守った4台を、審査していただきます！"
+          "text": "それでは審査に入りますッ！ 最後まで味を守った4台、審査員の皆さん、お願いします！"
         },
         {
           "speaker": "hajime",
@@ -1390,12 +1390,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ。大会用の葉、まだ仕入れてないだろ"
+          "text": "はじめ。練習用のレモン、まだ仕入れてないだろ"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "Dr.fookahに行って、レモンを仕入れてこい。大会の課題フレーバーだ"
+          "text": "Dr.fookahに行って、レモンを仕入れてこい。大会の課題フレーバーだ。本番は会場で支給されるが、手に馴染ませる分は自前で要る"
         },
         {
           "speaker": "hajime",
@@ -1668,6 +1668,37 @@
       ]
     },
     {
+      "dialogue_id": "remake_sumi_after_shift",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お疲れさん。あとは任せて、もう上がれ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_sumi_axe_hint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そういや、ひよりが言ってたぞ。お前と斧投げに行きたいってな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "斧投げ、ですか。……分かりました、今度誘ってみます"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_rain_opener",
       "metadata": {},
       "lines": [
@@ -1910,6 +1941,110 @@
       ]
     },
     {
+      "dialogue_id": "shift_recall_citrus_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（柑橘でさっぱり、か。前にも聞いた注文だ。あのときと同じ配合でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_citrus_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（柑橘でさっぱり、か。前にも聞いた注文だ。今日は、あのときと違う方で出してみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_fruit_mint_free_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（果物の甘さで、ミント抜き。前にもあったな。あのときと同じ配合にしよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_fruit_mint_free_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（果物の甘さで、ミント抜き。前にもあったな。今日は別の甘さを試してみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_sweet_round_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘くて丸い味。この注文、覚えてる。前と同じ配合で応えよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_sweet_round_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘くて丸い味。この注文、覚えてる。今日は前と違う丸さで出してみよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_double_apple_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ダブルアップルに、清涼感を少し。前にも作った。今日も同じでいく）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_double_apple_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ダブルアップルに、清涼感を少し。前にも作った。今日は前と変えてみる）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_fortune_first",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_day.png"
@@ -1937,7 +2072,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "smile",
+          "face": "normal",
           "text": "アタシは出たり出なかったりさ。縁があれば、また会える"
         },
         {
@@ -1956,7 +2091,7 @@
       "lines": [
         {
           "speaker": "uranaishi",
-          "face": "smile",
+          "face": "normal",
           "text": "……また来たね。今日は誰との縁が気になるんだい？"
         }
       ]
@@ -2016,7 +2151,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "smile",
+          "face": "normal",
           "text": "縁は逃げやしない。稼いでから、また来な"
         }
       ]
@@ -2069,7 +2204,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "smile",
+          "face": "normal",
           "text": "……ヒヒ、いい札だ。{fortuneName}との縁は、いま撚りどきに入ってる"
         },
         {
@@ -2722,6 +2857,29 @@
       ]
     },
     {
+      "dialogue_id": "remake_preparation_failed_day3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "焦げた葉をボウルから掻き出した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "焦げた葉は捨てて詰め直せ。炭は一つ減らす。今度は俺も横で見る"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "失敗した台にも直し方はある。それを覚えるのが今日だ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_first_brew_order",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"
@@ -2730,7 +2888,7 @@
         {
           "speaker": "oneesan",
           "face": "ura_smile",
-          "text": "じゃあ……今日は、サッパリした一台をお願いしても、いい？"
+          "text": "じゃあ……お任せで、サッパリした一台を、お願いしても、いい？"
         },
         {
           "speaker": "oneesan",
@@ -2914,17 +3072,17 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "大会の葉は私物持ち込みだからな。最初の一箱はプレゼントだ"
+          "text": "本番は課題の葉が会場で支給される。好きなだけ使えるさ"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "試作でも使っていい。本番の分は残しとけよ"
+          "text": "だが、練習で触らないと手に馴染まん。この一箱は稽古用だ"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "足りなくなったら自分で買い足すんだ"
+          "text": "試作でどんどん使え。足りなくなったら自分で買い足すんだ"
         },
         {
           "speaker": "hajime",

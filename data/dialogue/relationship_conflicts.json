@@ -1,5 +1,5 @@
 {
-  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*（エンディング後）は未接続。",
+  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*（エンディング後）は未接続。shuraba_talk_*（個別の話し直し）も未接続で、再生時期・解決条件はまだ決めていない。",
   "dialogues": [
     {
       "dialogue_id": "ch3_shuraba_open",
@@ -31,7 +31,7 @@
       "lines": [
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "……ずいぶん、親しそうに呼ぶんだね"
         }
       ]
@@ -87,7 +87,7 @@
         {
           "speaker": "steve",
           "face": "smile",
-          "text": "お、はじめ！　ガール達にモテモテだな！"
+          "text": "お、ハジメ！　ガール達にモテモテだな！"
         },
         {
           "speaker": "hajime",
@@ -147,12 +147,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "後日のtonari。閉店後、俺を呼ぶ声に、先に来ていた彼女が振り向いた。"
+          "text": "後日のtonari。閉店後の店に、彼女たちがそれぞれ来ていた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "関係を尋ねる声に、俺は頷いた。誰にも伝えていなかったことが、ここで伝わった。"
+          "text": "俺を呼ぶ声が重なり、誰からともなく、俺との関係を尋ねた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……付き合ってます。一人だけじゃ、ありません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "黙ってたのは、俺です"
         },
         {
           "speaker": "",
@@ -200,23 +210,28 @@
       "lines": [
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "私たち、付き合ってるよね"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_sad",
           "text": "それを、この人には言ってなかったんだ"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "店で笑うのも、ここで怒るのも私だよ"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "笑って済ませてあげると思わないで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "栞さんなら笑って済ませてくれるって、甘えてた。ごめん"
         }
       ]
     },
@@ -242,6 +257,11 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "少し、離れます。今は描きたくないです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "描いてる時間に、隠してた。ごめん"
         }
       ]
     },
@@ -267,6 +287,11 @@
           "speaker": "rin",
           "face": "normal",
           "text": "試す相手を取り替えるようには、扱わないで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "取り替えるつもりは……いや。そう扱いました"
         }
       ]
     },
@@ -292,6 +317,11 @@
           "speaker": "ageha",
           "face": "normal",
           "text": "今、いつもみたいに笑うのは無理"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "察してほしいって、黙ってました"
         }
       ]
     },
@@ -317,6 +347,11 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "……今日は、ひとりで帰るね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "座っていいって言葉を、許してもらえたことにしてた"
         }
       ]
     },
@@ -326,13 +361,13 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者よ、ほかにも誓いを立てておったのか",
+          "text": "勇者よ、ほかにも誓いを立てていたのか",
           "voice": "korochan"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "サメちゃんはコロちゃんを鞄にしまった。"
+          "text": "サメちゃんは右手からコロちゃんを外し、膝に置いた。"
         },
         {
           "speaker": "samechan",
@@ -348,6 +383,11 @@
           "speaker": "samechan",
           "face": "normal",
           "text": "冗談にして終わらせることは、できぬ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誓いを隠したまま、隣にいました"
         }
       ]
     },
@@ -357,7 +397,7 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "私にも、付き合おうって言ってくれたよね"
+          "text": "私にも、好きって言ってくれたよね"
         },
         {
           "speaker": "hiyori",
@@ -374,8 +414,477 @@
           "speaker": "hiyori",
           "face": "normal",
           "text": "私が納得したことに、しないでね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "平気な顔、させようとしてました"
         }
       ]
+    },
+    {
+      "dialogue_id": "shuraba_talk_minto",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんからのLIMEは、お仕事用じゃない方から届いた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "来てくれたんだ。座って"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "先に言っとくね。今日の私は、みんとじゃないよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "お店なら、笑って流すのも仕事だから、できちゃうの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "だから、はじめくんも、そうしてくれると思った？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……思ってた。栞さんが笑ってくれる方に、甘えてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "言いにくいことを、ずっと後回しにしてた。ごめん"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "『はじめくんだけ』って言ったの、覚えてる？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "あれ、私の方だけだったんだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（言い返せることは、何もなかった）"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "今日は、許すとは言わない。笑ってあげるとも言わない"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "次に会う時は、私が笑わなくても、帰らないでいて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは、最後まで袖をつままなかった。続きを決めるのは、彼女だった。"
+        }
+      ],
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+    },
+    {
+      "dialogue_id": "shuraba_talk_tsumugi",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席に、つむぎが座っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スケッチブックは、閉じたまま膝の上にあった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……来てくれて、ありがとうございます"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "あれからも、描いてはいました。描かないと、落ち着かないので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "でも、はじめさんが出てくる絵は、描けませんでした"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "隣で見ててくれますかって、私、言いましたよね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "見ててくれた時間にも、言わないことがあったんですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……うん。描いてる時間に、隠してた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "つむぎちゃんは見せてくれたのに、俺は見せなかった。ごめん"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……謝ってくれたことは、覚えておきます。描かないで"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "隣に座ってもらうかは、まだ決められません"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "描くのは、続けます。それは、はじめさんのためじゃないので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、スケッチブックを開かずに立ち上がった。俺は、隣の席に座らなかった。"
+        }
+      ],
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+    },
+    {
+      "dialogue_id": "shuraba_talk_rin",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんが指定したのは、Dr.fookahの2階だった。試香の時間は、もう終わっていた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "座って。今日は、モニターの話じゃない"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "説明して、って言ったよね。聞く準備はしてきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一人を選ぶ話を、先に延ばしてました。誰にも言わないまま"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛さんにも、同意を聞いていません"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "香りなら、並べて比べるのが私の仕事"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "でも、比べられる側に黙って並べるのは、仕事でもしない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……取り替えがきくみたいに、扱いました。ごめんなさい"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "言い訳しなかったのは、聞いた。それで帳消しにはならない"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "次に何か決める時は、決める前に、私に聞いて"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……今日は、君って呼ぶね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "試香紙は、最後まで鞄から出てこなかった。返事を決めるのは、凛さんだった。"
+        }
+      ],
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+    },
+    {
+      "dialogue_id": "shuraba_talk_ageha",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはと会ったのは、閉店後の自販機の前だった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "来た。……今日は、うちから言うね。練習の続き"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "黙ってたら、うちが察すると思った？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "当てっこ、得意なふりしてただけ。ほんとは、言葉で欲しかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……思ってました。言わなくても、あげはさんなら分かるって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あげはさんは言葉にする練習をしてたのに、俺は黙ってました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ごめんなさい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……うん。それは、ちゃんと聞いた"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "じゃあ、してほしいこと言う。隠してることは、聞かれる前に言って"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "返事は、うちも言葉で返す。……でも、今日じゃない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手をつなぐかどうかは、聞かれなかった。俺からも、聞かなかった。"
+        }
+      ],
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+    },
+    {
+      "dialogue_id": "shuraba_talk_mashiro",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の日。ましろちゃんは先に来て、温かいお茶を二つ頼んでいた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……来たねぇ。お茶、冷める前にどうぞ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "作れない日も座ってていいって、僕、言ったでしょ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あれは、今も取り消さないよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "でも、はじめくんは、それを全部いいよって意味にしてたのかなぁって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……してた。座っていいって言葉を、許してもらえたことにしてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんの優しさに、甘えてた。ごめん"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……うん。ちゃんと言えたね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "優しくするのは、やめない。それは僕のことだから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "serious",
+          "text": "でも、隣に座る約束の方は、もう一回ちゃんと話してから決める"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今日はここまで。……眠くなる前に、帰るね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは、自分の分のお茶を最後まで飲んでから席を立った。"
+        }
+      ],
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+    },
+    {
+      "dialogue_id": "shuraba_talk_samechan",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんと会ったのは、閉めた後の店先だった。右手には、コロちゃんがいた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者よ、よくぞ参った",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけ言って、サメちゃんはコロちゃんを外し、膝に置いた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……ここからは、わしの声で話すのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "毎朝、おはようは届いておった。わしも、毎朝返しておった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "その間も、ほかの誓いのことは黙っておったのじゃな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。誓いを隠したまま、隣にいました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "冗談にできる話じゃないのに、言わずに済ませてました。ごめんなさい"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "勇者ごっこなら、何度でも付き合う。じゃが、本当の約束は別じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "許すかどうかは、まだ言わぬ。わしが、自分で決める"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……明日も、おはようは送ってよい。返すかは、その朝に決める"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コロちゃんは、最後まで膝の上にいた。"
+        }
+      ],
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+    },
+    {
+      "dialogue_id": "shuraba_talk_hiyori",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりと会ったのは、仕事帰りの時間だった。儚い微笑みは、していなかった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "お疲れさま。……今日は、儚くしないで来たよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "好きって言ってくれた日、儚く待ってるねって言ったでしょ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "待つって、こういうことじゃなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ひよりさんなら平気な顔で受け止めてくれるって、当てにしてました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大丈夫って言わせる方へ、黙って任せてました。ごめんなさい"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……うん。言ってくれて、よかった",
+          "inner": "よかった、で終わらせたら、また同じになる"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "私、今日は大丈夫って言わない。怒ってるのも、ちゃんと見てて"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "消えそうな時は見つけに行くって、言ってくれたよね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "今は消えないよ。ここで、ちゃんと怒ってるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりは、一度も儚い顔をしないまま帰っていった。"
+        }
+      ],
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
     }
   ]
 }

@@ -9,6 +9,8 @@ const cdp = new EventEmitter(); cdp.send = async () => ({});
 const page = { context: () => ({ newCDPSession: async () => cdp }) };
 const load = await recordLoad(page, "http://localhost/shisha-game/remake/");
 const source = fs.statSync(fileURLToPath(new URL("../index.html", import.meta.url))).size;
+const musicBytes = fs.statSync(fileURLToPath(new URL("../../assets/audio/bgm/title.mp3", import.meta.url))).size;
+const scriptBytes = fs.statSync(fileURLToPath(new URL("../js/main.js", import.meta.url))).size;
 const request = (id, url, extra = {}) => cdp.emit("Network.requestWillBeSent", { requestId: id,
   request: { url: `http://localhost/shisha-game/${url}`, headers: extra.headers || {} }, ...extra });
 const response = (id, extra = {}) => cdp.emit("Network.responseReceived", { requestId: id,
@@ -30,7 +32,7 @@ assert.equal(p.networkBodyBytes, source); assert.equal(p.cachedRequests, 2);
 assert.equal(p.uniqueSourceBytes, source, "Cached copies must not duplicate the resource footprint");
 
 request("audio", "assets/audio/bgm/title.mp3", { headers: { Range: "bytes=0-" } });
-response("audio", { status: 206, headers: { "Content-Range": "bytes 0-6757555/6757556" } });
+response("audio", { status: 206, headers: { "Content-Range": `bytes 0-${musicBytes - 1}/${musicBytes}` } });
 cdp.emit("Network.dataReceived", { requestId: "audio", dataLength: 16384, encodedDataLength: 0 });
 request("gzip", "remake/js/main.js"); response("gzip", { headers: { "Content-Encoding": "gzip" } });
 cdp.emit("Network.dataReceived", { requestId: "gzip", dataLength: 1000, encodedDataLength: 200 });
@@ -39,8 +41,9 @@ assert.equal(p.resources.find((r) => r.category === "audio").networkBodyBytes, 1
 assert.equal(p.resources.find((r) => r.url.endsWith("main.js")).networkBodyBytes, 200);
 assert.equal(p.unfinishedRequests, 2);
 assert.equal(p.resources.find((r) => r.category === "audio").range, "bytes=0-");
-assert.equal(p.resources.find((r) => r.category === "audio").contentRange, "bytes 0-6757555/6757556");
-assert.ok(p.uniqueSourceBytes > source + 6000000, "A partial music buffer must still report the full referenced asset separately");
+assert.equal(p.resources.find((r) => r.category === "audio").contentRange, `bytes 0-${musicBytes - 1}/${musicBytes}`);
+assert.equal(p.resources.find((r) => r.category === "audio").sourceBytes, musicBytes, "A partial music buffer must still report the full referenced asset separately");
+assert.equal(p.uniqueSourceBytes, source + musicBytes + scriptBytes);
 
 request("redirect", "redirect"); response("redirect", { status: 302 });
 request("redirect", "remake/", { timestamp: 123, redirectResponse: { encodedDataLength: 100 } });
