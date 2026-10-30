@@ -623,46 +623,6 @@
       }
     },
     {
-      "dialogue_id": "ch2_steve_cameo",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "Dr.fookahの棚の前。ピザの箱を抱えた大柄な客が、缶の注意書きを読んでいた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "首から下げたストップウォッチが、箱の上で揺れている。"
-        },
-        {
-          "speaker": "customer",
-          "face": "normal",
-          "text": "これ、火は弱めからでいいかな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "そうですね。温度を上げすぎないほうが"
-        },
-        {
-          "speaker": "customer",
-          "face": "normal",
-          "text": "待つのが難しいんだよな。ピザだって、焼ける前に開けたくなる"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "客は笑って缶を戻し、凛さんに配送の相談を始めた。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（待てない自分のために、ストップウォッチを下げてるんだ）"
-        }
-      ]
-    },
-    {
       "dialogue_id": "ch2_lingering_smell",
       "comment": "全編モチーフ「店の匂い」のch2配置（各章一度だけ・説明しない）。DAY4の炭落とし事故の匂いが店に残る。ch1のなる「店の匂いは畳んでも消えない」の反転——はじめが初めて“悪い匂い”を店に刻む",
       "metadata": {
