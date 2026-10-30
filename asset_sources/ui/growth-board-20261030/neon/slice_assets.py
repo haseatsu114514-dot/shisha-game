@@ -6,7 +6,7 @@ def cover(im,w,h):
   r=max(w/im.width,h/im.height); im=im.resize((round(im.width*r),round(im.height*r)),Image.LANCZOS)
   l=(im.width-w)//2; t=(im.height-h)//2; return im.crop((l,t,l+w,t+h))
 def pieces(im,n):
-  a=im.getchannel('A'); W,H=im.size; cols=[any(a.getpixel((x,y))>16 for y in range(0,H,2)) for x in range(W)]
+  a=im.getchannel('A'); W,H=im.size; cols=[any(a.getpixel((x,y))>90 for y in range(0,H,2)) for x in range(W)]
   runs=[];s=None
   for x,c in enumerate(cols+[False]):
     if c and s is None: s=x
