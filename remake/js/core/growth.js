@@ -79,6 +79,7 @@ export function newGrowth() {
     target: null,          // 目標のマス（2.4）
     rewards: {},           // 受け取った遊びのご褒美（斧投げ・TRPG・DJ の水準、くじのラストワン賞）
     seenRing: 1,           // 盤で「新しい道が開いた」を見せた章の範囲（章が進んで初めて開いた時の演出）
+    boost: { mult: 1, left: 0 }, // スロットの追い風（1.8）。残り left 回の自由行動の経験値に mult を掛ける
   };
 }
 
@@ -115,8 +116,46 @@ export function ensureGrowth(s = state) {
   if (!VALID_IDS.has(g.target)) g.target = null;
   if (!g.rewards || typeof g.rewards !== "object" || Array.isArray(g.rewards)) g.rewards = {};
   g.seenRing = Math.min(5, Math.max(1, Math.floor(num(g.seenRing, 1))));
+  g.boost = cleanBoost(g.boost);
   syncLessonFlags(g, s);
   return g;
+}
+
+// ---------------------------------------------------------------- 追い風（パッキースロット 1.8・4.3）
+
+// 役 -> 倍率と続く回数。ハズレ・リプレイは無し。チェリー重複のボーナスは REG/BIG として渡す（呼び出し側）
+export const BOOST_TABLE = {
+  cherry: { mult: 1.25, left: 1 },
+  bell: { mult: 1.25, left: 2 },
+  reg: { mult: 1.5, left: 3 },
+  big: { mult: 1.5, left: 5 },
+  rare: { mult: 1.5, left: 5 },
+  freeze: { mult: 2, left: 5 },
+};
+export const BOOST_CAP = { mult: 2, left: 10 };
+function cleanBoost(b) {
+  const left = Math.min(BOOST_CAP.left, Math.floor(num(b?.left)));
+  const mult = Math.min(BOOST_CAP.mult, Math.max(1, Number.isFinite(b?.mult) ? b.mult : 1));
+  return left > 0 && mult > 1 ? { mult, left } : { mult: 1, left: 0 };
+}
+/** 追い風を足す。倍率は高い方、回数は足して上限10回。戻り値=足したあとの追い風（役が対象外なら null） */
+export function addBoost(role) {
+  const add = BOOST_TABLE[role];
+  if (!add || !growthEnabled() || !state) return null;
+  const g = ensureGrowth();
+  const cur = g.boost.left > 0 ? g.boost : { mult: 1, left: 0 };
+  g.boost = cleanBoost({ mult: Math.max(cur.mult, add.mult), left: cur.left + add.left });
+  emit("hud");
+  return { ...g.boost };
+}
+/** 今の追い風（無ければ null） */
+export function currentBoost(g = state?.growth) {
+  return g?.boost?.left > 0 && g.boost.mult > 1 ? { ...g.boost } : null;
+}
+/** 追い風の見せ方。「追い風 ×1.5・あと5回」、×2 は「大追い風」 */
+export function boostLabel(b) {
+  if (!b) return "";
+  return `${b.mult >= 2 ? "大追い風" : "追い風"} ×${b.mult}・あと${b.left}回`;
 }
 
 /**
@@ -165,6 +204,8 @@ const MERGE_MS = 700;
 let chip = null;
 let chipTimer = null;
 let holdDepth = 0;
+// 行動の始めに持っていた追い風（その行動の中で入る経験値に掛ける）。行動中に回ったスロットの分は次の行動から
+let actionBoost = null;
 
 function addToChip(amount, tag) {
   if (chip?.owner !== state) chip = { owner: state, total: 0, tags: [] };
@@ -182,14 +223,24 @@ function flushChip() {
 }
 /** 自由行動の間は、行動中に入った分（好感度の段など）を行動の確定まで1枚にまとめる。 */
 export function holdExpChip() {
+  if (!holdDepth) actionBoost = growthEnabled() && state ? { owner: state, boost: currentBoost(ensureGrowth()), used: false } : null;
   holdDepth++;
   let released = false;
   return () => {
     if (released) return;
     released = true;
     holdDepth = Math.max(0, holdDepth - 1);
+    if (!holdDepth) actionBoost = null;
     if (!holdDepth && chip) flushChip();
   };
+}
+/** 自由行動の中で入る経験値（X1〜X7）の倍率。X8〜X11（大会・章クリア・広さ）は行動の外なので掛からない */
+const boostMult = () => holdDepth > 0 && actionBoost?.owner === state && actionBoost.boost ? actionBoost.boost.mult : 1;
+/** 体力を使った自由行動1回ぶん、追い風の残りを1減らす（1行動で1回だけ） */
+function spendBoost(g) {
+  if (!actionBoost || actionBoost.owner !== state || !actionBoost.boost || actionBoost.used) return;
+  actionBoost.used = true;
+  g.boost = cleanBoost({ mult: g.boost.mult, left: g.boost.left - 1 });
 }
 
 // ---------------------------------------------------------------- 経験値の入口
@@ -202,12 +253,14 @@ export function gainExp(base, { key = null, tag = null } = {}) {
   if (!growthEnabled() || !state || !(base > 0)) return 0;
   const g = ensureGrowth();
   const room = totalExpFor(MAX_LEVEL) - g.xp;
-  const amount = Math.min(room, Math.round(base * (CHAPTER_MULT[state.chapter] || 1)));
+  const mult = boostMult();
+  const amount = Math.min(room, Math.round(base * (CHAPTER_MULT[state.chapter] || 1) * mult));
   if (!(amount > 0)) return 0;
   g.xp += amount;
   g.today.xp += amount;
   if (key) g.today.learned[key] = (g.today.learned[key] || 0) + amount;
   addToChip(amount, tag);
+  if (mult > 1) addToChip(0, mult >= 2 ? "大追い風" : "追い風");
   emit("hud");
   return amount;
 }
@@ -221,6 +274,7 @@ export function awardActionExp(target) {
   if (!growthEnabled() || !state || !target?.key) return 0;
   const g = ensureGrowth();
   if (g.fresh.chapter !== state.chapter) g.fresh = { chapter: state.chapter, counts: {} };
+  spendBoost(g);
   const count = (g.fresh.counts[target.key] = (Number(g.fresh.counts[target.key]) || 0) + 1);
   let got = gainExp(EXP.action * freshness(count), { key: target.key, tag: count >= 3 ? "なじみ" : null });
   if (target.person && !g.firsts.people.includes(target.person)) {

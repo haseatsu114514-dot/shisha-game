@@ -1126,6 +1126,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .hud-exp .hx-left { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
 .hud-exp[data-milestone="true"] .hx-bar::after { content: ""; position: absolute; right: 1px; top: 1px; width: 8px; height: 2px; border-radius: 1px; background: radial-gradient(circle, #ffb347 40%, transparent 45%) 0 0 / 4px 2px repeat-x; }
 .hud-exp.ready .hx-left { color: #ffd88a; font-weight: 700; }
+.hud-exp .hx-boost { font-size: 11px; color: #9fe6ff; font-weight: 700; white-space: nowrap; }
 .hud-exp.ready .hx-bar { box-shadow: 0 0 8px rgba(255, 196, 92, 0.85); animation: exp-ready 1.6s ease-in-out infinite; }
 @keyframes exp-ready { 50% { box-shadow: 0 0 2px rgba(255, 196, 92, 0.4); } }
 @media (prefers-reduced-motion: reduce) { .hud-exp.ready .hx-bar { animation: none; } }

@@ -10,7 +10,7 @@ import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal } from "../core/growth.js";
+import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, currentBoost } from "../core/growth.js";
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
@@ -92,7 +92,7 @@ export function initHud(h) {
     status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () => handlers.status?.() }),
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
     exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
-      el("span.hx-lv"), el("i.hud-bar.hx-bar", [el("b.hx-settled"), el("b.hx-today")]), el("small.hx-left"),
+      el("span.hx-lv"), el("i.hud-bar.hx-bar", [el("b.hx-settled"), el("b.hx-today")]), el("small.hx-left"), el("small.hx-boost", { hidden: true, dataset: { test: "hud-boost" } }),
     ]),
     // 未使用の火種の印。火の色・個数入りで、LIME の未読の赤丸と区別する（REPORT P5・R6）
     hidane: el("em.hidane-badge", { hidden: true, dataset: { test: "hud-hidane" } }),
@@ -148,6 +148,11 @@ function updateGrowth() {
   const left = dom.exp.querySelector(".hx-left");
   left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : `あと${g.left}`;
   dom.exp.classList.toggle("ready", g.pending > 0);
+  // スロットの追い風（stat-design SPEC 1.8）。「追い風 ×1.5 あと3」
+  const b = currentBoost();
+  const boostEl = dom.exp.querySelector(".hx-boost");
+  boostEl.hidden = !b;
+  boostEl.textContent = b ? `${b.mult >= 2 ? "大追い風" : "追い風"} ×${b.mult} あと${b.left}` : "";
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
   dom.exp.title = g.max ? "Lv.80 MAX" : g.pending > 0
     ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
