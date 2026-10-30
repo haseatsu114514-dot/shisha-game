@@ -30,7 +30,6 @@ export const DB = {
   lime: [],
   recipes: [],
   ngMixes: [],
-  tips: [],
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
   friends: { friends: {} }, // 友人になった相手からの、たまのLIME・一服の場面（remake/data/friends.json）
@@ -128,7 +127,6 @@ export async function loadAll(onProgress = () => {}) {
     ["lime", `${ROOT}data/lime_messages.json`],
     ["recipes", `${ROOT}data/recipes.json`],
     ["ngMixes", `${ROOT}data/ng_mixes.json`],
-    ["tips", `${ROOT}data/loading_tips.json`],
     ["kuji", `${ROOT}data/kuji.json`],
     ["lover", "data/lover.json"],
     ["friends", "data/friends.json"],
@@ -167,7 +165,6 @@ export async function loadAll(onProgress = () => {}) {
   DB.lime = [...raw.lime.messages, ...(DB.samechan.lime || [])];
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
-  DB.tips = raw.tips.tips;
   DB.kuji = raw.kuji;
   DB.lover = raw.lover;
   DB.friends = raw.friends;

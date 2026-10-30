@@ -1091,7 +1091,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "熱は上げるより、止めるほうが難しい。明日は温度計から目を離すな"
+          "text": "熱は上げるより、止めるほうが難しい。明日は煙の色と舌のピリつきから目を離すな"
         },
         {
           "speaker": "sumi",
@@ -1937,6 +1937,110 @@
           "speaker": "",
           "face": "",
           "text": "客は目を細めて、ゆっくり煙を吐いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_citrus_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（柑橘でさっぱり、か。前にも聞いた注文だ。あのときと同じ配合でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_citrus_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（柑橘でさっぱり、か。前にも聞いた注文だ。今日は、あのときと違う方で出してみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_fruit_mint_free_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（果物の甘さで、ミント抜き。前にもあったな。あのときと同じ配合にしよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_fruit_mint_free_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（果物の甘さで、ミント抜き。前にもあったな。今日は別の甘さを試してみる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_sweet_round_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘くて丸い味。この注文、覚えてる。前と同じ配合で応えよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_sweet_round_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘くて丸い味。この注文、覚えてる。今日は前と違う丸さで出してみよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_double_apple_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ダブルアップルに、清涼感を少し。前にも作った。今日も同じでいく）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_double_apple_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ダブルアップルに、清涼感を少し。前にも作った。今日は前と変えてみる）"
         }
       ]
     },

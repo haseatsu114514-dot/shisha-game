@@ -285,7 +285,11 @@ async function serveShiftOrder() {
     options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
   if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
   // 注文と配合に対応した客の反応を返す（#1073）。給料・行動消費は従来どおり後続のcalendarで確定。
-  const result = await play(order.reactions[index], { bg: TONARI_BG });
+  // 同じ注文が前にもあったら、反応の前にはじめが前回の配合を思い出す（前回と同じか違うかで一行を変える・#1415）。
+  const prev = state.flags[`_shift_mix_${order.id}`];
+  const recall = Number.isInteger(prev) && order.mixes[prev] ? DB.dialogues[`shift_recall_${order.id}_${prev === index ? "same" : "diff"}`] : null;
+  const scene = DB.dialogues[order.reactions[index]];
+  const result = await play(recall && scene ? { ...scene, lines: [...recall.lines, ...scene.lines] } : order.reactions[index], { bg: TONARI_BG });
   if (state !== owner || result?.cancelled) return;
   // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
