@@ -1,7 +1,7 @@
 import { syncTokyoVisits } from "../core/tokyo-visits.js";
 // 全国大会の勝利後だけ進む第3章の後日談。大会の順位・報酬はここでは変更しない。
 export const CH3_AFTERMATH_SCENES = Object.freeze([
-  { id: "ch3_abyss_hotel", dayAfterWin: 0, slot: 1, label: "優勝の夜", location: "mukaiの屋根裏部屋", bg: "bg_ch3_hotel_night" },
+  { id: "ch3_abyss_hotel", dayAfterWin: 0, slot: 1, label: "優勝の夜", location: "mukaiの奥の部屋", bg: "bg_mukai_shop" },
   { id: "ch3_mashiro_recovery", dayAfterWin: 1, slot: 0, label: "いつもの席", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_naru_reconcile", dayAfterWin: 1, slot: 1, label: "自分からの報告", location: "東京", bg: "bg_mukai_shop" },
   { id: "ch3_enmaku_cleanup", dayAfterWin: 2, slot: 0, label: "煙幕の片づけ", location: "煙幕", bg: "bg_yohaku_shop" },
