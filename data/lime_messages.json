@@ -1495,6 +1495,134 @@
           "affinity": 3
         }
       ]
+    },
+    {
+      "id": "lime_ch5_prep_mashiro",
+      "sender": "mashiro",
+      "chapter": 5,
+      "trigger_condition": "ch5_milestone",
+      "milestone": "prep",
+      "after_scene": "ch5_free_mashiro_visit",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "こんばんは。……お茶、まだ開けてないよね"
+        },
+        {
+          "sender": "mashiro",
+          "text": "勝負のない日用だから。終わるまで、棚の奥にしまっといて"
+        }
+      ],
+      "replies": [
+        {
+          "text": "まだ開けてない。終わったら飲む",
+          "response": "うん。……そのとき、どんな勝負だったか教えてねぇ",
+          "affinity": 0
+        },
+        {
+          "text": "勝負の日、決まったよ",
+          "response": "そっか。……じゃあ、その次の日がお茶の日だね",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_prep_adam",
+      "sender": "adam",
+      "chapter": 5,
+      "trigger_condition": "ch5_milestone",
+      "milestone": "prep",
+      "after_scene": "ch5_free_eden_adam",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。博士との勝負の日は、決まったか"
+        },
+        {
+          "sender": "adam",
+          "text": "前の晩は早く寝ろ。朝は、水を一杯飲んでから葉に触れろ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "決まりました。店の休業日です",
+          "response": "そうか。……その日は、EDENから林檎に祈っておこう",
+          "affinity": 0
+        },
+        {
+          "text": "水、ちゃんと飲みます",
+          "response": "それでいい。昨日の置き方ではなく、その日の葉を見ろ",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_after_mashiro",
+      "sender": "mashiro",
+      "chapter": 5,
+      "trigger_condition": "ch5_milestone",
+      "milestone": "after_match",
+      "after_scene": "ch5_free_mashiro_visit",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "そろそろ、勝負終わったかなぁって"
+        },
+        {
+          "sender": "mashiro",
+          "text": "結果は聞かなくてもいいや。はじめくんが、ちゃんと帰れてたら"
+        },
+        {
+          "sender": "mashiro",
+          "text": "お茶、もう開けていいよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "終わった。明日、お茶を淹れる",
+          "response": "ふふ。……飲んだら、どんな味だったか教えてねぇ",
+          "affinity": 0
+        },
+        {
+          "text": "長い話になるけど、聞いてくれる？",
+          "response": "いいよぉ。……ゆっくりでいいから、聞かせて",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_after_adam",
+      "sender": "adam",
+      "chapter": 5,
+      "trigger_condition": "ch5_milestone",
+      "milestone": "after_match",
+      "after_scene": "ch5_free_eden_adam",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。そろそろ、博士との勝負は済んだ頃か"
+        },
+        {
+          "sender": "adam",
+          "text": "勝ち負けは問わん。……今日の葉は、どうだった"
+        }
+      ],
+      "replies": [
+        {
+          "text": "最後まで、客の顔を見てました",
+          "response": "……ならば熟したな。次はEDENで、一台作ってみせろ",
+          "affinity": 0
+        },
+        {
+          "text": "今度、話しに行きます",
+          "response": "いつでも来い。水を注いだグラスを、置いて待っている",
+          "affinity": 0
+        }
+      ]
     }
   ]
 }

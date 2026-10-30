@@ -620,4 +620,32 @@ assert.equal(cheers({ contacts: ["tsumugi", "minto", "rin", "hiyori"], flags: { 
 reset();
 console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch1 ageha and hiyori gate");
 
+// #1668 2-8: 第5章の節目のLIMEは朝の配信に乗らない。openPhone で読むと返信つきで一度だけ履歴に残り、好感度は動かない。
+{
+  const chapterFive = allMessages.filter((m) => m.trigger_condition === "ch5_milestone");
+  for (const day of [6, 14]) for (const tournamentDay of [false, true]) {
+    reset({ chapter: 5, day, contacts: ["mashiro", "adam", "minto", "tsumugi", "rin"], met: { mashiro: true, adam: true } });
+    const ids = phone.morningMessages({ tournamentDay }).map((m) => m.id);
+    assert(!ids.some((id) => chapterFive.some((m) => m.id === id)), "Chapter 5 milestone LIME is not a morning message");
+  }
+  for (const milestone of ["prep", "after_match"]) {
+    reset({ chapter: 5, phase: "aftermath", day: 70, contacts: ["mashiro", "adam"], met: { mashiro: true, adam: true } });
+    const due = chapterFive.filter((m) => m.milestone === milestone);
+    assert.equal(due.length, 2);
+    const session = phone.openPhone(due, { title: "勝負のあと", time: "夜" });
+    for (let index = 0; index < due.length; index += 1) { await click(`reply-${index % 2}`); await click("phone-next"); }
+    await session;
+    assert.deepEqual(state.inbox.map((i) => i.id), due.map((m) => m.id));
+    for (const [index, entry] of state.inbox.entries()) {
+      const reply = due[index].replies[index % 2];
+      assert(entry.read && entry.done && entry.replyState === "replied", entry.id);
+      assert.deepEqual(clone(entry.log), [{ me: true, text: reply.text }, { me: false, text: reply.response }]);
+    }
+    assert(gains.every((gain) => gain.pts === 0), "No affinity from the finale's LIME");
+    assert.deepEqual(statGains, []);
+  }
+  reset();
+  console.log("[1668] PASS chapter 5 milestone LIME stays out of morning delivery and reads once with a reply");
+}
+
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority + #1081 C04 unread guard: PASS");
