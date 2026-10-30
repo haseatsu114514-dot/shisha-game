@@ -463,6 +463,7 @@ export async function bannersIdle() {
 /** 選択肢つきのモーダル。options: [{label, value, primary, test}] */
 export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
   return new Promise((resolve) => {
+    const previousFocus = document.activeElement;
     const box = el(`div.modal-box${className ? "." + className : ""}`, [
       title ? el("h3", { text: title }) : null,
       typeof body === "string" ? el("div.modal-body", { html: body }) : el("div.modal-body", [body]),
@@ -474,9 +475,26 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
         })
       )),
     ]);
-    const close = () => { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); };
+    const close = () => {
+      window.removeEventListener("keydown", onKeyDown);
+      layers.modal.classList.remove("show");
+      layers.modal.replaceChildren();
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
+    const buttons = [...box.querySelectorAll(".modal-actions button")];
+    const primary = buttons.find((button) => button.classList.contains("primary")) || buttons[0];
+    const dismiss = [...buttons].reverse().find((button) => !button.classList.contains("primary")) || primary;
+    const onKeyDown = (e) => {
+      if (!layers.modal.classList.contains("show") || e.repeat) return;
+      if (e.key === "Escape") { e.preventDefault(); dismiss?.click(); }
+      if (e.key === "Enter" && !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) {
+        e.preventDefault(); primary?.click();
+      }
+    };
     layers.modal.replaceChildren(el("div.modal-backdrop"), box);
     layers.modal.classList.add("show");
+    window.addEventListener("keydown", onKeyDown);
+    primary?.focus();
   });
 }
 
