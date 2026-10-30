@@ -5,7 +5,7 @@ import { el, yen, sleep } from "../core/util.js";
 import { layers } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, STAT_KEYS } from "../core/state.js";
-import { staminaRatio, currentCondition, maxStamina, star } from "../core/stats.js";
+import { staminaRatio, currentCondition, maxStamina, step } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
@@ -187,7 +187,7 @@ export function updateHud() {
   dom.stamina.classList.toggle("low", health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる
   dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(92 * (maxStamina() / 100))}px`;
-  dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 4 + 3.2 * star(k))).join(" "));
+  dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 7.2 + 12.8 * (step(k) - 1) / 9)).join(" "));
   updateGrowth();
 }
 

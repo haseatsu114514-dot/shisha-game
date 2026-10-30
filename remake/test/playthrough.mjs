@@ -493,11 +493,16 @@ if (!s.flags._fortune_met || !s.fortuneDay) throw new Error("fortune teller not 
 // 実況と観客の反応、結果表の印と審査員コメントで手応えを伝える
 log(`broadcast: feel=${feelSeen} nico=${nicoSeen} resultFeel=${rtFeelSeen}`);
 if (!feelSeen || !nicoSeen || !rtFeelSeen) throw new Error("tournament broadcast layer missing");
-// グラム在庫: 大会では課題のレモンも私物から減る（再挑戦は会場入り前に戻す）。
+// グラム在庫（再挑戦は会場入り前に戻す）。課題のレモンは大会支給で私物から減らない
+// （オーナー決定 2026-10-28・9e99f279, Refs #1052）。卓上台にダブルアップル50gは付かない（#1081 D02・3bfcac5a）ので、
+// 自動の「上手」配合 {lemon:3, double_apple:9} は持ち込みのダブルアップル在庫までに切り詰められ、残りは支給レモンで埋まる。
 log(`stock: before=${JSON.stringify(stock0)} after=${JSON.stringify(s.flavorStock)}`);
-if (!stock0 || s.flavorStock.double_apple !== stock0.double_apple - 9) throw new Error("flavor stock not consumed as expected");
-if (s.flavorStock.lemon !== stock0.lemon - 3) throw new Error("private lemon should be consumed");
-if ((s.flavorStock.mint || 0) !== (stock0.mint || 0)) throw new Error("unused mint should not be consumed");
+if (!stock0) throw new Error("flavor stock before the tournament was not recorded");
+const apple0 = stock0.double_apple || 0;
+if ((s.flavorStock.double_apple || 0) !== apple0 - Math.min(9, apple0)) throw new Error("flavor stock not consumed as expected");
+if (s.flavorStock.lemon !== stock0.lemon) throw new Error("supplied lemon should not consume private stock");
+for (const id of new Set([...Object.keys(stock0), ...Object.keys(s.flavorStock)]))
+  if (!["double_apple", "lemon"].includes(id) && (s.flavorStock[id] || 0) !== (stock0[id] || 0)) throw new Error(`unused ${id} should not be consumed`);
 // くじ: 1枚引いて箱が減っている
 if (!firstKujiBlocked) throw new Error("First lemon errand kuji refusal not verified");
 if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
