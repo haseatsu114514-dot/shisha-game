@@ -216,17 +216,24 @@ export function previewReveal(rank = "S") {
 }
 
 /** 売れる小物（くじの景品など）の買い取り行 */
-export function goodsSellRows(rerender) {
-  return (state.goods || []).map((g) => el("div.shop-row", [
-    el("span.shop-cat", { text: "小物" }),
-    el("div.shop-main", [el("b", { text: g.name }), el("small", { text: "くじの景品・中古買い取り" })]),
-    el("button.btn.small", {
+export function goodsSellRows(rerender, confirmSale) {
+  const session = state, goods = state.goods;
+  return (goods || []).map((g) => {
+    const button = el("button.btn.small", {
       text: `${yen(g.sell)}で売る`,
-      onclick: () => {
-        const idx = (state.goods || []).indexOf(g);
+      onclick: async () => {
+        if (state !== session || state.goods !== goods || !button.isConnected || !goods.includes(g)) return;
+        if (!await confirmSale(g.name, g.sell)) return;
+        if (state !== session || state.goods !== goods || !button.isConnected) return;
+        const idx = goods.indexOf(g);
         if (idx < 0) return;
-        state.goods.splice(idx, 1); addMoney(g.sell); SE.money(); rerender();
+        goods.splice(idx, 1); addMoney(g.sell); SE.money(); rerender();
       },
-    }),
-  ]));
+    });
+    return el("div.shop-row", [
+      el("span.shop-cat", { text: "小物" }),
+      el("div.shop-main", [el("b", { text: g.name }), el("small", { text: "くじの景品・中古買い取り" })]),
+      button,
+    ]);
+  });
 }
