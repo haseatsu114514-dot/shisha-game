@@ -366,6 +366,16 @@ async function renderFree(owner) {
       await renderStage(owner);
     }));
   }
+  // 恋人からのLIME（#2024）。第1・2章と同じ処理（lover-entry.js → daily/romance.js）。
+  // 第5章は恋人と過ごす場面（節目）を描かないので、LIMEだけ。
+  const lover = await import("./lover-entry.js");
+  if (!current(owner)) return;
+  if (lover.pendingLoverLime().length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await lover.readLoverLime();
+    if (current(owner)) await renderStage(owner);
+  }));
   actions.push(button(owner, "博士に連絡する", "contact", async () => {
     // Q12: 「記録に残らない一日」が未読なら、先にそちらを読んでから連絡の場面へ。
     if (!chapterFiveRead(state, "ch5_unrecorded_day")
