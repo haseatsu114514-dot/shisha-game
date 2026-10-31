@@ -984,6 +984,15 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .chip.dim { color: var(--text-dim); }
 .recipe-chip { border: 1px solid var(--gold); min-height: 36px; font: 700 14px var(--font); cursor: pointer; }
 .recipe-chip:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
+/* レシピ詳細だけ本文をスクロールし、狭い下画面でも戻る操作を残す。 */
+.status-modal .modal-body:has(.recipe-detail) { display: flex; flex-direction: column; }
+.status-modal .status:has(.recipe-detail) { display: flex; flex-direction: column; min-height: 0; }
+.status-modal .modal-body:has(.recipe-detail) .st-tabs { display: none; }
+.status-modal .st-body:has(> .recipe-detail) { display: flex; flex-direction: column; min-height: 0; }
+.status-modal .recipe-detail { display: flex; flex-direction: column; min-height: 0; }
+.status-modal .recipe-detail h4 { flex: none; }
+.status-modal .recipe-detail-text { min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.status-modal .recipe-detail + .btn { flex: none; align-self: flex-start; }
 .recipe-detail h4 { margin: 0 0 12px; color: var(--gold); }
 .recipe-detail p { margin: 8px 0; overflow-wrap: anywhere; }
 /* 贈られた専用ハガル（売却不可）: 贈り主・染み付いた香りの札 */

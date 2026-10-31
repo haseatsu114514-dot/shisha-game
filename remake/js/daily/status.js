@@ -233,13 +233,15 @@ function recipeDetails(recipe) {
   const day = state.recipes[recipe.id]?.day;
   return el("div.recipe-detail", { dataset: { test: "recipe-detail" } }, [
     el("h4", { text: recipe.name }),
-    el("p", { text: `材料：${recipe.flavors.map(name).join(" ／ ")}` }),
-    el("p", { text: recipe.golden
-      ? `黄金比：${Object.entries(recipe.golden).map(([id, weight]) => `${name(id)} ${weight}`).join("：")}（割合）`
-      : "黄金比：未設定" }),
-    el("p.st-note", { text: "同じ系統の銘柄でも作れる。発見時のグラム数は記録していない。" }),
-    el("p", { text: `発見日：${Number.isInteger(day) && day > 0 ? `DAY ${day}` : "記録なし"}` }),
-    recipe.memo ? el("p", { text: recipe.memo }) : null,
+    el("div.recipe-detail-text", [
+      el("p", { text: `材料：${recipe.flavors.map(name).join(" ／ ")}` }),
+      el("p", { text: recipe.golden
+        ? `黄金比：${Object.entries(recipe.golden).map(([id, weight]) => `${name(id)} ${weight}`).join("：")}（割合）`
+        : "黄金比：未設定" }),
+      el("p.st-note", { text: "同じ系統の銘柄でも作れる。発見時のグラム数は記録していない。" }),
+      el("p", { text: `発見日：${Number.isInteger(day) && day > 0 ? `DAY ${day}` : "記録なし"}` }),
+      recipe.memo ? el("p", { text: recipe.memo }) : null,
+    ]),
   ]);
 }
 
