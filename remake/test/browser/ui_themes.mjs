@@ -88,6 +88,7 @@ await suite("ui-themes-preview", async check => {
             nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale && name.bottom<=text.top-12*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
             headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top-3*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2,
+            headerInside:controls.top>=box.top-1*scale && controls.bottom<=text.top+1*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-32*scale,
             rightGap:(controls.right-box.right)/scale,
             sceneOpen:box.height/scale<=192 && (box.top-document.querySelector("#stage").getBoundingClientRect().top)/scale>=500,
             headerOffset:((name.top+name.height/2)-(controls.top+controls.height/2))/scale,
@@ -103,12 +104,11 @@ await suite("ui-themes-preview", async check => {
         assert(!twoLines.overlap,"controls do not cover either text line");
         assert(twoLines.clear,"name, next indicator, toolbar and actual text glyphs remain separate");
         assert(twoLines.footerClear,"next indicator leaves a clear margin above the visible paper/footer edge, including its 2px bob");
-        assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
-        // 紙とラベンダーは、操作札を名前札と同じ高さに置き、右端を紙の窓（本文の箱より8px外）の端から12px内へ寄せる（DUI18）。
+        // 紙とラベンダーは、操作札を窓の中（外枠と本文の上の罫線のあいだの帯）の右側に置く（DUI18）。
         if(id==="paper"){
-          assert(Math.abs(twoLines.headerOffset)<=.5,"paper controls sit level with the name tab");
-          assert(Math.abs(twoLines.rightGap+4)<=.5,`paper controls end 12px inside the window edge: ${twoLines.rightGap}`);
+          assert(twoLines.headerInside,"paper controls sit inside the window header strip, right of center, above the body text");
         }else{
+          assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
           assert(Math.abs(twoLines.headerOffset-(id.startsWith("smoke")?8:16))<=.5,"controls leave the intended space above the main window");
           assert(twoLines.rightGap<=-32,"toolbar stays inside the frame header");
         }
