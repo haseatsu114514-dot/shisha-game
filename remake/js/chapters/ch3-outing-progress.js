@@ -7,6 +7,7 @@ import { tokyoWindowReserved, tokyoGymWindowAllowed } from "../core/tokyo-clock.
 /**
  * after=この必須場面を読んでから、before=この場面を読む前まで。met=この人物と面識がある時だけ。repeat=自由時間ごとに選べる。
  * stamina は消耗（負）か回復（正）。stat は自分で選び体力を使った行動だけの成長候補。
+ * affinity は任意の外出だけで付ける好感度（人物ID→pt）。台本には報酬行を置かず、確定時に付ける。
  * bg は場所の既定と違う背景（裏口＝街の道）。toast は読了後の一言（省略時は結果から決める）。
  */
 export const TOKYO_OUTINGS = Object.freeze([
@@ -19,8 +20,9 @@ export const TOKYO_OUTINGS = Object.freeze([
   // スティーブがmukaiへ客として来る（#1696）。タイマー越しに香りの山を逃す癖と、全国へ来た理由。店を訪ねる前だけ。
   { id: "mukai_steve", place: "mukai", before: "ch3_steve_low_heat", met: "steve", label: "mukaiで店番をする",
     stamina: -8, money: 3000, stat: "insight", reason: "配達先のスティーブが、今日は客として来るらしい" },
+  // 味の会話（#2028）。マウンテンミストを低い熱で待つ一台。
   { id: "steve_timer", place: "steve", after: "ch3_steve_low_heat", label: "Smoke & Glory に寄る",
-    stamina: -10, stat: "technique", reason: "タイマーを置く場所を、もう一度見せてもらう" },
+    stamina: -10, stat: "technique", affinity: { steve: 10 }, reason: "タイマーを置く場所を、もう一度見せてもらう" },
   { id: "park_walk", place: "park", label: "公園を歩く", repeat: true, stamina: 20,
     reason: "何も決めずに歩いて、少し体を休める" },
   // mukaiの看板猫てつこ（#1993）。撫でるか餌をあげるかを選び、体力だけ少し戻す。能力・好感度は増やさない。

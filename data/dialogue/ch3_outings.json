@@ -73,6 +73,12 @@
     },
     {
       "dialogue_id": "ch3_outing_steve_timer",
+      "comment": "味の会話（#2028）。スティーブの好み＝フォースフェクタ マウンテンミスト（characters.json：レモンとライムを低温で順に立たせる）。店を訪ねた後の任意の外出で、味覚が戻った後に限られる。好感度は台本に置かず、任意の外出の確定時に付ける（ch3-outing-progress.js の affinity）。",
+      "metadata": {
+        "flavor_lesson": {
+          "mountain_mist": 1
+        }
+      },
       "lines": [
         { "speaker": "", "text": "Smoke & Glory。昼の店に、ピザの箱が積んである。" },
         { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。今日は客？　それとも偵察？" },
@@ -81,6 +87,13 @@
         { "speaker": "steve", "face": "serious", "text": "時間だけ見てると、客の二口目を見落とす。だから両方が目に入る場所" },
         { "speaker": "hajime", "face": "normal", "text": "待つための道具なのに、見るのは客なんですね" },
         { "speaker": "steve", "face": "smile", "text": "イエス。タイマーは俺を止めるだけ。決めるのは客の顔" },
+        { "speaker": "steve", "face": "smile", "text": "せっかくだ、一口どうぞ。俺の推し、マウンテンミスト" },
+        { "speaker": "", "text": "レモンとライムが重なった葉だという。炭は遠く、ボウルの縁がまだ温まりきっていない。" },
+        { "speaker": "steve", "face": "serious", "text": "柑橘は熱に弱い。急ぐと、二口目でライムが飛ぶ" },
+        { "speaker": "", "text": "一口目はレモンが軽く抜けた。二口目、炭がなじんだ頃に、ライムの苦みが追ってくる。" },
+        { "speaker": "hajime", "face": "surprise", "text": "……順番に来る。レモンの後から、ライムが" },
+        { "speaker": "steve", "face": "smile", "text": "イエス。低い熱で待つと、二つが一列に並ぶ。それが俺の一台" },
+        { "speaker": "hajime", "face": "normal", "text": "（待った分だけ、柑橘が残るんだ）" },
         { "speaker": "", "text": "スティーブはキッチンタイマーを一つ、はじめの手に載せた。" },
         { "speaker": "steve", "face": "smile", "text": "予備。大会で鳴らしたら、俺のせいにしていい" },
         { "speaker": "hajime", "face": "smile", "text": "……ありがとうございます。借ります" }

@@ -554,8 +554,12 @@
     },
     {
       "dialogue_id": "ch3_volk_second",
+      "comment": "味の会話（#2028）。ヴォルクの好み＝発売直後のナイトサイド ブラストミント。訪問は未接続（ch3.js は ch3_volk_first だけ読む）。接続時は味覚が戻った後の任意場面に置き、好感度の付け方と既存の能力文は接続方針に合わせる。",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_volk_shop.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png",
+        "flavor_lesson": {
+          "nightside_blast_mint": 1
+        }
       },
       "lines": [
         {
@@ -587,6 +591,31 @@
           "speaker": "volk",
           "face": "normal",
           "text": "前回は、前回の条件だった。同じにする理由がない"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "今日の葉はブラストミント。熱に強い"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "強い葉は、雑な火でも冷たく感じる。だから熱の揺れに気づかない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口目から、重く冷たい煙が胸に沈む。口を重ねても、冷たさの角が変わらない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（強い葉ほど、火の揺れを隠してしまうんだ）"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "揃えるのは冷たさの角だ。強さではない"
         },
         {
           "speaker": "",
