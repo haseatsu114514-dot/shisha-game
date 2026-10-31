@@ -472,7 +472,7 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 }
 .map-info::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
 .map-info::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
-.map-info { right: 16px; bottom: 16px; z-index: 7; width: 270px; padding: 9px 12px 11px; transition: opacity 0.2s, transform 0.2s; }
+.map-info { right: 16px; bottom: 16px; z-index: 7; width: 270px; padding: 5px 10px 7px; transition: opacity 0.2s, transform 0.2s; }
 /* 行き先パネルは見た目だけ前面に置き、裏に隠れる行き先ピン（右下の「家に帰る」等）の操作を奪わない。
    クリックはパネル内のボタン（ここへ行く・乗車確認など）だけが受け取り、余白は背後のピンへ素通りさせる。 */
 .map-info { pointer-events: none; }
@@ -480,6 +480,7 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .map-info.leaving { opacity: 0; transform: translateY(8px); }
 .mi-banner {
   display: inline-block;
+  white-space: nowrap;
   margin-bottom: 7px;
   padding: 3px 14px;
   font-size: 14px;
@@ -494,8 +495,8 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
   position: relative;
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 16 / 5;
-  margin: 2px 0 8px;
+  aspect-ratio: 16 / 3;
+  margin: 2px 0 6px;
   background: center 40% / cover no-repeat;
   border: 2px solid rgba(212, 182, 106, 0.75);
   border-radius: 6px;
@@ -503,16 +504,17 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 }
 .mi-preview[data-tint="night"] { filter: brightness(0.7) saturate(0.7); }
 .mi-area { font-size: 13px; letter-spacing: .02em; color: var(--gold); }
-.mi-desc { margin: 4px 0 8px; font-size: 14px; line-height: 1.6; color: var(--text-dim); }
-.mi-foot { font-size: 14px; letter-spacing: 0.06em; color: var(--text-dim); opacity: 0.8; }
-.mi-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.mi-desc { margin: 2px 0 4px; font-size: 13px; line-height: 1.5; color: var(--text-dim); word-break: normal; line-break: strict; }
+.mi-line { display: block; white-space: nowrap; }
+.mi-foot { font-size: 13px; letter-spacing: 0.02em; color: var(--text-dim); opacity: 0.8; white-space: nowrap; }
+.mi-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
 .tag { padding: 2px 9px; font-size: 13px; border-radius: 999px; border: 1px solid rgba(244, 210, 122, 0.4); color: var(--gold-hi); }
 .tag.free { border-color: rgba(142, 230, 168, 0.5); color: var(--good); }
 .tag.warn { border-color: var(--danger); color: #ffb3b3; }
 .tag.new { border-color: #9fd8e8; color: #cdeef7; }
 .mi-go {
   width: 100%;
-  padding: 9px 0;
+  padding: 7px 0;
   font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -1651,3 +1653,12 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard.has-art .gb-node.gate.s-locked .gb-face { opacity: 0.85; }
 @media (prefers-reduced-motion: reduce) { .gboard.has-art .gb-node.gate .gb-face::after, .gboard.has-art .gb-node.gate .gb-gate-gem { animation: none !important; } }
 .gboard.has-art .gb-node.gate.selected .gb-face, .gboard.has-art .gb-node.gate.target .gb-face { outline: none; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--board-c)) !important; }
+
+/* 店の中（tonari・ショップ）では左上の日付カードを隠し、店の絵と案内を優先する。 */
+body:not(.game-ds)[data-screen="tonari"] .hud-card,
+body:not(.game-ds)[data-screen="shop"] .hud-card,
+body:not(.game-ds)[data-screen="shop-entry"] .hud-card { display: none; }
+/* 左上の日付カードを隠しても、LIME と MENU は右上に残す。 */
+body:not(.game-ds)[data-screen="tonari"] .hud-right,
+body:not(.game-ds)[data-screen="shop"] .hud-right,
+body:not(.game-ds)[data-screen="shop-entry"] .hud-right { margin-left: auto; }

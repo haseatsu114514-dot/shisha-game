@@ -106,3 +106,6 @@ html:root[data-ui-theme="paper"] .st-next-track { background: var(--paper-line);
 html:root[data-ui-theme="paper"] :is(.radar-grid, .radar-axis) { stroke: #c9b8d2; }
 html:root[data-ui-theme="paper"] .radar-base { fill: #69497e14; stroke: #9676a8; }
 html:root[data-ui-theme="paper"] .radar-now { fill: #d8963f55; stroke: var(--amber-ink); }
+
+/* 地図の案内パネルは枠を細くして、家など後ろのピンを隠しにくくする。 */
+html:root[data-ui-theme="paper"] .map-info { border-width: 14px; border-image-width: 14px; }

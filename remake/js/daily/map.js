@@ -160,7 +160,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       }
       info.replaceChildren(
         el("div.mi-banner", { text: "今日はどうする？" }),
-        el("p.mi-desc", [el("span", { text: "気になる場所をタップしよう。" }), el("br"), el("span", { text: "行動・所持金・体力に気をつけて。" })]),
+        el("p.mi-desc", [el("span.mi-line", { text: "気になる場所をタップしよう。" }), el("span.mi-line", { text: "行動・所持金・体力に気をつけて。" })]),
         el("div.mi-foot", { text: movesLeft() }),
       );
     };
