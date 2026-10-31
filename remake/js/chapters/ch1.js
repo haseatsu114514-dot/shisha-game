@@ -638,7 +638,7 @@ async function tournamentDay() {
   save();
 
   if (out.rank === 1) {
-    // 南雲の二口 →「もうだめだ」→ 10カウント → プチュン → 南雲の持ち点10一括投入 → 優勝
+    // 南雲の二口 →「もうだめだ」→ 10カウント → プチュン → 南雲の持ち点10が先頭のはじめへ入り、優勝を締める（逆転ではない・#1282）
     // 審査待ちのなるの一言は、実際の調整実績（安定／立て直し／終盤帯外／記録不足）に合わせて差し替える。
     const judging = DB.dialogues.ch1_tournament_judging;
     const judgingLines = judging.lines.map(line =>
