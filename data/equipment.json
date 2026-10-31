@@ -424,6 +424,54 @@
         "aroma": 4,
         "bonus": 1
       }
+    },
+    {
+      "id": "suyaki_kumicho",
+      "type": "bowl",
+      "name": "神崎が育てたドラゴンフルーツ専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_kumicho",
+      "description": "神崎が閉店後の一服に使い込んだ素焼き。ドラゴンフルーツの甘みが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "kumicho",
+        "reason": "兄弟の盃の代わり",
+        "flavor": "dragonfruit",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_rei",
+      "type": "bowl",
+      "name": "REIが育てたローズ専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_rei",
+      "description": "REIが店を始めた頃からローズだけを詰めてきた素焼き。薔薇の香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "rei",
+        "reason": "友達のしるし",
+        "flavor": "rose",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
     }
   ]
 }

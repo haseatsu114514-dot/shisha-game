@@ -15,7 +15,7 @@
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { affinityLevel, AFFINITY_GATE_CHOICES, releaseAffinity } from "../core/stats.js";
-import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, mashiroScenesRead } from "../core/affinity-stages.js";
+import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead } from "../core/affinity-stages.js";
 import { emit } from "../core/bus.js";
 import { play } from "../vn/engine.js";
 import { giftOpen } from "../core/scene-motions.js";
@@ -34,6 +34,9 @@ export const BOND_FINALES = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_finale", gift: "suyaki_tsumugi", night: true, question: "bond_q2_tsumugi" },
   minto: { dialogue: "ch1_minto_bond_finale", gift: "suyaki_minto", invite: "lime_minto_bond_finale", question: "bond_q2_minto" },
   rin: { dialogue: "ch1_rin_bond_finale", gift: "suyaki_rin", question: "bond_q2_rin" },
+  // 第2章の店（柚ヶ谷）で会う。訪問列（CH2_VISIT_STORIES）を読み終えた♥5の次の来店で一度だけ（#2027）
+  kumicho: { dialogue: "ch2_kumicho_bond_finale", gift: "suyaki_kumicho" },
+  rei: { dialogue: "ch2_rei_bond_finale", gift: "suyaki_rei" },
   samechan: { dialogue: "samechan_bond_finale", gift: "suyaki_samechan", night: true, question: "bond_q2_samechan" },
   // あげは（#2023）: 第2章のMELTY PUFFで。方向は♥3の答え（bond_q1_ageha）だけで決まり、最後の質問は置かない。
   // 告白は日常の予約ではなく、第3章の帰郷後に ch3-romance-entry.js が出す（laterConfession）。
@@ -219,6 +222,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
     && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
       && state.romanceChoices?.bond_q1_samechan?.char === id)
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)
+  : CH2_VISIT_STORIES[id] ? ch2VisitStoriesDone(state.flags, id)
   : storyCount(id) >= (VISIT_SEQ[id] || []).length
     && (!AFFINITY_GATE_CHOICES[id] || questionComplete(state, id));
 
@@ -369,7 +373,7 @@ export function friendMessages({ tournamentDay = false } = {}) {
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
     let pick = f.chats?.length ? chats % f.chats.length : 0;
-    if ((pick === 2 && ["minto", "tsumugi", "rin", "mashiro"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+    if ((pick === 2 && ["minto", "tsumugi", "rin", "kumicho", "rei", "mashiro"].includes(id) && !state.owned.includes(`suyaki_${id}`))
       || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,

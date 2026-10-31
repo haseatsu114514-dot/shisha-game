@@ -221,6 +221,28 @@ await check('chapter2 actual flags: chat/followup/ageha three visits are indepen
     }
   }
 });
+await check('chapter2 kumicho/rei finale (#2027): after every visit story and ♥5 only, once, with the gift', async f => {
+  for (const id of ['kumicho','rei']) {
+    const s=f.core.state;s.chapter=2;s.met[id]=true;s.affinity[id]=66;
+    f.db.dialogues[`ch2_${id}_bond_finale`]={dialogue_id:`ch2_${id}_bond_finale`,lines:[{speaker:'',face:'',text:'x'}]};
+    f.db.equipById[`suyaki_${id}`]={id:`suyaki_${id}`,name:id,gift:{from:id}};
+    assert.equal(f.bonds.finaleDue(id),false,'no visit story has been read');
+    const entries=f.stages.CH2_VISIT_STORIES[id];
+    const read=e=>{ if(e.done)(s.flags[e.done]||={})[id]=true; else s.flags[`_ch2_read_${e.scene}`]=true; };
+    entries.slice(0,-1).forEach(read);
+    assert.equal(f.bonds.finaleDue(id),false,'the ♥5 visit story is still unread');
+    read(entries.at(-1));
+    assert.equal(f.bonds.finaleDue(id),true);
+    s.affinity[id]=65;assert.equal(f.bonds.finaleDue(id),false,'needs ♥5');s.affinity[id]=66;
+    assert.equal(f.bonds.finaleAtVisit(id),true,'met at the shop, day or night');
+    assert.equal(await f.bonds.playFinale(id),true);
+    assert.equal(s.owned.filter(x=>x===`suyaki_${id}`).length,1);
+    assert.equal(s.finales[id].route,'friend','no romance question: friendship landing');
+    assert.equal(f.bonds.finaleDue(id),false);
+    assert.equal(await f.bonds.playFinale(id),false,'once');
+    assert.equal(s.owned.filter(x=>x===`suyaki_${id}`).length,1);
+  }
+});
 await check('ageha ♥3 question (#1988): after the newcomer visit, once, recorded only by the actual answer', async f => {
   const s=f.core.state;s.chapter=2;s.met.ageha=true;s.affinity.ageha=33;
   f.db.dialogues.ch2_ageha_bond_question={dialogue_id:'ch2_ageha_bond_question',lines:[{type:'choice',id:'bond_q1_ageha',romance_char:'ageha',choices:[{text:'a',next:'r',romance:1},{text:'b',next:'f',romance:0}]}],branches:{r:[],f:[]}};
