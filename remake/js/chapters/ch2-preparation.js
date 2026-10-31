@@ -36,14 +36,14 @@ function repeatScene(id) {
   return pool.length ? pool[(state.flags._ch2_talks?.[id] || 0) % pool.length] : `remake_ch2_${id}_repeat`;
 }
 const descriptions = {
-  ageha: "平成ギャルのMELTY PUFF。あげはと客席づくりや香りの話をする。",
-  kumicho: "黒革の応接室で神崎の丁寧な仕事について話す。",
-  rei: "CDとギターのある零-ZERO-。REIの好きな曲や客への気遣いを聞く。",
+  ageha: "平成ギャルの店。あげはと香りの話を。",
+  kumicho: "黒革の応接室で、神崎と仕事の話をする。",
+  rei: "CDとギターの店。REIと曲の話をする。",
 };
 const unknownDescriptions = {
-  ageha: "白・ピンクのクマと平成ギャルの小物が並ぶシーシャ店。店主に話を聞いてみよう。",
-  kumicho: "木壁と黒革ソファの重厚な店内。看板は煙草店だが、事務所のようにも見える。",
-  rei: "CDとギター、薔薇の格子が並ぶV系コンセプトの店。",
+  ageha: "クマとギャル小物が並ぶシーシャ店。",
+  kumicho: "看板は煙草店。事務所のようにも見える。",
+  rei: "CDとギターと薔薇の、V系コンセプト店。",
 };
 export const PREPARATION_SPOTS = STOPS.filter(stop => ROOMS[stop.id]).map(stop => ({
   ...stop, id: `ch2_${stop.id}`, charId: stop.id, kind: "rival", region: "widehanga",

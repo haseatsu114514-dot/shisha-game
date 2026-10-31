@@ -126,9 +126,8 @@ try {
         out.push({ ratio: T.core.state.stamina / maximum, maximum, // 丸めた実際の体力で境界を判定する（最大154は割り切れない）
            health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
           width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth, barSpecifiedWidth: parseFloat(bar.style.width),
-          extra: holder.clientWidth - label.offsetWidth - bar.offsetWidth - parseFloat(barStyle.marginLeft) - parseFloat(barStyle.marginRight) - parseFloat(style.gap) - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
-            // 根性の上乗せがある時だけ「根」バッジが並ぶ（#1685 T3）
-            - (holder.querySelector(".guts-badge:not([hidden])") ? holder.querySelector(".guts-badge").offsetWidth + parseFloat(style.gap) : 0) });
+          // 育成で最大体力が伸びるとバーが長くなる。右の余白は伸びる先（DUI13）で、最大でも行からはみ出さない。
+          inside: bar.getBoundingClientRect().right <= holder.getBoundingClientRect().right + .5 });
       }
     }
     return out;
@@ -137,8 +136,7 @@ try {
     const expected = value.ratio > .5 ? ["green", "rgb(142, 230, 168)"] : value.ratio > .25 ? ["yellow", "rgb(255, 212, 92)"] : ["red", "rgb(255, 105, 105)"];
     assert.deepEqual([value.health, value.color], expected);
     assert.equal(value.width, `${Math.round(value.ratio * 100)}%`);
-    // バーは margin-right: -9px でカード端まで張り出す設計のため、余白計算はバーのマージンボックス込みで数える。
-    assert(Math.abs(value.extra) <= 1, `Unused horizontal stamina space: ${value.extra}px`);
+    assert(value.inside, `Stamina bar overflows its row: ${value.maximum}`);
   }
   for (const maximum of [100, 154]) {
     assert.equal(new Set(stamina.filter((value) => value.maximum === maximum).map((value) => value.windowWidth)).size, 1, "Losing stamina changed the capacity window");
@@ -170,7 +168,9 @@ try {
     assert.deepEqual([red.tutorialSlow, red.tutorialWindow], [yellow.slow, yellow.window]);
   }
   console.log("[ui skin] PASS: real session captures HUD condition at both capacities, recovery cannot change the current craft, lessons remain neutral");
+  // 煙なしの金枠の原画は「これまでのゴージャス」（classic）の素材。既定の紙テーマ（#2136）ではテーマの色で描くため、ここだけ classic で確かめる。
   const colors = await page.evaluate(() => {
+    document.documentElement.dataset.uiTheme = "classic";
     const stats = [["technique", "技", "技術"], ["sense", "感", "センス"], ["guts", "根", "根性"], ["charm", "魅", "魅力"], ["insight", "察", "洞察"]];
     T.ui.gainCard({ kind: "stat", stat: "technique", points: 1, badge: "技", top: "STATUS UP", main: "技術" });
     const template = document.querySelector(".gain-card.st-technique");
