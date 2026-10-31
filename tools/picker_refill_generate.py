@@ -4,7 +4,9 @@
 asset_sources/picker-refill-20261030/PROMPTS.md の各ブロックを読み、
 共通部分＋1枚分の差分を1回の呼び出しに組み立てて、1枚ずつ生成する。
 
-- キーは環境変数 OPENAI_API_KEY から読む（ファイル・リポジトリには書かない）。
+- キーはこのコードでは扱わない。クラウド環境の「ネットワークシークレット」（ヘッダー注入型・
+  api.openai.com・Authorization: Bearer）が、プロキシで Authorization ヘッダーを付ける。
+  手元で使う場合だけ、環境変数 OPENAI_API_KEY があればそれを付ける（ファイル・リポジトリには書かない）。
 - 添付指定のうちリポジトリに実在する画像と、refs/<対象ID>/ の参照画像を
   参照画像として images/edits に渡す。参照画像が無いときは generations。
 - 出力: asset_sources/picker-refill-20261030/out/<対象ID>/refill1030-<対象ID>-NN.png
@@ -12,7 +14,7 @@ asset_sources/picker-refill-20261030/PROMPTS.md の各ブロックを読み、
 
 使い方:
   python3 tools/picker_refill_generate.py --dry-run            # キー不要。組み立てと添付の確認だけ
-  python3 tools/picker_refill_generate.py --check              # キーとモデルの疎通だけ確認
+  python3 tools/picker_refill_generate.py --check              # 疎通だけ確認（モデル一覧を1回取得）
   python3 tools/picker_refill_generate.py --only t-city-ch5    # 1対象だけ生成
   python3 tools/picker_refill_generate.py                      # 全28対象×5枚
 """
@@ -89,9 +91,10 @@ def attachments(block: dict) -> list[Path]:
     return found[:16]
 
 
-def api_request(path: str, key: str, data: bytes | None = None, ctype: str | None = None, timeout: int = 300) -> dict:
+def api_request(path: str, key: str | None, data: bytes | None = None, ctype: str | None = None, timeout: int = 300) -> dict:
     req = urllib.request.Request(API + path, data=data, method="POST" if data else "GET")
-    req.add_header("Authorization", f"Bearer {key}")
+    if key:  # クラウド環境ではプロキシが付けるので、自分では付けない
+        req.add_header("Authorization", f"Bearer {key}")
     if ctype:
         req.add_header("Content-Type", ctype)
     with urllib.request.urlopen(req, timeout=timeout) as r:
@@ -139,7 +142,7 @@ def fit_size(png: bytes, size: str) -> bytes:
     return buf.getvalue()
 
 
-def generate_one(key: str, model: str, prompt: str, size: str, refs: list[Path], quality: str) -> bytes:
+def generate_one(key: str | None, model: str, prompt: str, size: str, refs: list[Path], quality: str) -> bytes:
     req_size = api_size(size)
     if refs:
         body, ctype = multipart({"model": model, "prompt": prompt, "size": req_size, "quality": quality, "n": "1"}, refs)
@@ -182,12 +185,16 @@ def main() -> int:
         print(f"合計 {len(blocks)}対象 / {sum(len(b['variations']) for b in blocks)}枚")
         return 0
 
-    key = os.environ.get("OPENAI_API_KEY")
-    if not key:
-        print("OPENAI_API_KEY が設定されていません（環境設定の Network secrets に追加し、新しいセッションで実行）", file=sys.stderr)
-        return 2
+    key = os.environ.get("OPENAI_API_KEY") or None
     if args.check:
-        res = api_request("/models", key)
+        try:
+            res = api_request("/models", key)
+        except urllib.error.HTTPError as e:
+            if e.code == 401:
+                print("401: 認証されていない。ネットワークシークレット（api.openai.com・Authorization: Bearer）の登録後、"
+                      "新しいセッションで実行する", file=sys.stderr)
+                return 2
+            raise
         ids = sorted(m["id"] for m in res.get("data", []))
         img = [i for i in ids if "image" in i or "dall" in i]
         print(f"疎通OK: モデル{len(ids)}件。画像系: {', '.join(img) or '（なし）'}")
@@ -220,6 +227,9 @@ def main() -> int:
                     break
                 except urllib.error.HTTPError as e:
                     msg = e.read().decode(errors="replace")[:300]
+                    if e.code == 401:
+                        print("401: 認証されていないので中止。ネットワークシークレットの登録と新しいセッションを確認する", file=sys.stderr)
+                        return 2
                     if e.code in (429, 500, 502, 503) and attempt < 2:
                         time.sleep(20 * (attempt + 1))
                         continue
