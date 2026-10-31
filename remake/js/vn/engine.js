@@ -985,3 +985,5 @@ async function openSettings() {
 
 export const isPlaying = () => !!running;
 export const backlog = () => log;
+/** タイトルからの「はじめから」「LOAD」で前の周の会話LOGを消す（#1912）。 */
+export function clearLog() { log.length = 0; }
