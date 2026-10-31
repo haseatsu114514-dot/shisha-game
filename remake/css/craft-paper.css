@@ -70,7 +70,8 @@ html .bench[data-mode] .bench-left, html .bench[data-mode] .bench-right {
   background: var(--paper); border: 14px solid transparent; border-radius: 0;
   border-image: var(--cp-board) 40 fill / 14px / 0 stretch; box-shadow: 0 8px 18px #2a1a3a2b;
 }
-html .bench[data-mode] .bench-left { border-width: 12px; border-image-width: 12px; padding: 0; gap: 0; }
+/* 左の窓は中身の幅を従来（縁1px＋余白7px）と同じに保ち、板の絵だけ外側へ4px出す（観客の欄の折り返しを変えない）。 */
+html .bench[data-mode] .bench-left { border-width: 8px; border-image-width: 12px; border-image-outset: 4px; padding: 0; gap: 0; }
 html .bench[data-mode] .bench-right { padding: 4px 8px 2px; }
 html .bench[data-mode] .audience-single { gap: 14px; padding: 10px; }
 html .bench[data-mode][data-step] .bench-right { padding-top: 2px; }
