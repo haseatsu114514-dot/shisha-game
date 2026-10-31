@@ -107,6 +107,9 @@ html:root[data-ui-theme="paper"] body.game-ds .vn-controls .vn-ctl { color: var(
 html:root[data-ui-theme="paper"] .hud-card { border-width: 10px; border-image-width: 10px; }
 html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .hud-card .hud-bar { background: #e6dcea; border: 1px solid #b9a5c6; }
 html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-area { color: var(--lavender); }
+/* 左上の札の文字色をそろえる: 項目名（所持金・次の大会まで・体力）は灰紫、日付の数字は他の見出しと同じ紫（DUI13） */
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-day b { color: var(--lavender); }
 html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-row:not(.money) b { color: var(--amber-ink); }
 html:root[data-ui-theme="paper"] :is(.cfg-row select, .ui-theme-select) {
   background: var(--paper-card); color: var(--paper-ink); border: 1px solid var(--lavender-line);
