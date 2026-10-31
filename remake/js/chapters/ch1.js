@@ -783,7 +783,7 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" }), el("span", { text: "隣町での県大会、第3章の東京での交流と全国大会、帰郷後の再会まで遊べます。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" })]),
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
