@@ -20,6 +20,14 @@ async function loadTitle(page, touch) {
   await tap(page, '[data-test="slot-0"]', touch);
 }
 async function advanceDialogue(page, touch) {
+  // The receipt includes first-meeting cut-ins and portrait entrances. Wait for
+  // the real dialogue's next marker instead of spending the polling budget on
+  // inputs ignored during those transitions or the typewriter animation.
+  if (await page.locator('#vn.active').isVisible()) {
+    await page.waitForFunction(() => !document.querySelector('#vn.active')
+      || document.querySelector('#vn.active .vn-next.show')
+      || [...document.querySelectorAll('.vn-choice')].some(node => node.getClientRects().length));
+  }
   const choices = page.locator('.vn-choice:visible');
   if (await choices.count()) {
     const register = choices.filter({ hasText: /登録|参加|お願い/ });

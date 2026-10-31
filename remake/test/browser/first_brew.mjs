@@ -123,6 +123,8 @@ await suite("first-brew", async check => {
   await check("holes-and-steam-help", async page => {
     await init(page);
     await page.evaluate(async () => { await T.open(); window.running = T.holes.runHoles(cs); });
+    await page.locator('.bench-demo-skip').click();
+    await page.locator('.bench-demo-sheet').waitFor({ state: 'detached' });
     await page.locator('[data-test="hole-start"]').click();
     await page.waitForTimeout(3500); await guide(page).click(); await page.waitForTimeout(100);
     const hole = await page.locator(".foil-target-plane > .foil-cursor").getAttribute("style");
