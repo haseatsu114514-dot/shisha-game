@@ -2,7 +2,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import { suite, assertFits, storageSnapshot } from "./support.mjs";
+import { suite, assertFits, storageSnapshot as rawStorageSnapshot } from "./support.mjs";
+// #1950: 既読SKIP用の既読記録は端末設定として意図して保存される。セーブ・スロット・セッションの不変だけを確かめる。
+const SEEN_LINES_KEY = "suien_remake_seen_dialogue_lines";
+async function storageSnapshot(page) { const snap = await rawStorageSnapshot(page); delete snap.local[SEEN_LINES_KEY]; return snap; }
 
 const captures = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser");
 fs.mkdirSync(captures, { recursive: true });
