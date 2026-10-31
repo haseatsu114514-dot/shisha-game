@@ -40,7 +40,7 @@ const ART_DIR = "img/ui/growth_board/";
 const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk ? `perk_${node.perk}` : null)
   : node.kind === "skill" ? `skill_${node.id}` : node.kind === "gate" ? "gate" : null;
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
-  "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame"];
+  "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown"];
 let artReady = null;
 export function loadBoardArt() {
   if (artReady) return artReady;
@@ -126,6 +126,7 @@ export function openBoard({ place = null } = {}) {
     const open = ringsOpen();
     const lit = (id) => id === HUB || v.unlocked.has(id);
     const goal = g.target && NODE_BY_ID[g.target]?.board === board ? new Set(pathTo(g.target, v.unlocked).path) : new Set();
+    const walls = [];
     // ネオンのラウンジ（GB03 の見本）: 光のにじみ・封の曇り・ガラスの煙はコードで描く（画像が来たら重ねる）
     const parts = [svg("defs", {}, [
       svg("radialGradient", { id: "gb-ember", cx: "50%", cy: "62%", r: "60%" }, [
@@ -167,14 +168,18 @@ export function openBoard({ place = null } = {}) {
         if (on) { glow.append(line("gb-tube-glow")); cores.push(line("gb-path lit")); }
         else if (closedA || closedB) parts.push(line("gb-path sealed"));
         else { parts.push(line("gb-path"), line("gb-path-hi")); if (aim) parts.push(line("gb-path aim")); }
-        // 開いている所と、まだ開いていない所の境に封（章の数は出さない。SBD42）
+        // 開いている所と、まだ開いていない所の境に結界（章の数は出さない。SBD42。文字の「封」はやめ、鎖の壁で「この先はまだ」を見せる。SBD74）
         if (closedA !== closedB) {
           const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, horiz = a.y === b.y;
-          parts.push(svg("line", { x1: horiz ? mx : mx - 11, y1: horiz ? my - 11 : my, x2: horiz ? mx : mx + 11, y2: horiz ? my + 11 : my, class: "gb-seal" }));
+          const wall = svg("g", { class: "gb-wall", transform: `translate(${mx} ${my}) rotate(${horiz ? 90 : 0})`, "data-test": "board-wall" });
+          if (root.classList.contains("has-art")) wall.append(svg("image", { href: `${ART_DIR}wall_seal.webp`, x: -27, y: -9, width: 54, height: 18, class: "gb-wall-art" }));
+          else wall.append(svg("line", { x1: -14, y1: -4, x2: 14, y2: -4, class: "gb-seal" }), svg("line", { x1: -14, y1: 4, x2: 14, y2: 4, class: "gb-seal" }), svg("circle", { cx: 0, cy: 0, r: 4, class: "gb-seal-lock" }));
+          const tip = svg("title"); tip.textContent = "この先は物語が進むと開く"; wall.prepend(tip);
+          walls.push(wall);
         }
       }
     }
-    parts.push(glow, ...cores);
+    parts.push(glow, ...cores, ...walls);
     const hub = at(0, 0);
     if (root.classList.contains("has-art")) {
       // 紋: 生成した輪の画像（hub_<盤>.webp）。漢字はコードで重ねる
@@ -199,7 +204,7 @@ export function openBoard({ place = null } = {}) {
     nodeLayer.replaceChildren(...nodes.map((node) => {
       const p = at(node.gx, node.gy), st = status(node, v);
       const shown = revealOf(node);
-      const glyph = st === "locked" && node.kind !== "stat" && node.kind !== "lesson" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? whoName(node.who).slice(0, 1) : "？") : shown === "hidden" ? "？" : node.glyph;
+      const glyph = st === "locked" && node.kind !== "stat" && node.kind !== "lesson" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? whoName(node.who).slice(0, 1) : "") : shown === "hidden" ? "？" : node.glyph;
       const qStep = node.feature && !g.nodes.includes(node.id);
       const sizeCls = node.kind === "skill" ? (node.cost <= 2 ? ".sz-s" : node.cost >= 7 ? ".sz-l" : ".sz-m") : "";
       const icon = iconOf(node);
@@ -214,7 +219,7 @@ export function openBoard({ place = null } = {}) {
         qStep ? el("em.gb-quality", { text: "✦", "aria-hidden": "true" }) : null,
         node.kind === "skill" && ["available", "short", "far"].includes(st)
           ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
-        st === "locked" ? el("span.gb-lock", { text: "封", "aria-hidden": "true" }) : null,
+        node.kind === "lesson" && !lessonKnown(node, g) ? el("span.gb-mystery", { text: "?", "aria-hidden": "true" }) : null,
       ]);
     }));
   }
@@ -224,10 +229,14 @@ export function openBoard({ place = null } = {}) {
    * 会っていない人の授業は盤に出ないので、出ている授業はどれも顔を見せてよい。
    */
   function lessonFace(node, st) {
-    if (node.kind !== "lesson" || !lessonKnown(node, g)) return null;
-    const url = faceIconUrl(node.who, state);
+    if (node.kind !== "lesson") return null;
+    const known = lessonKnown(node, g);
+    // まだ分からない授業はその人の影絵（2026-10-31 オーナー「まだ先のキャラもシルエットだけ出したい」SBD75）。
+    // 正体を伏せる授業（revealFlag）と顔の無い人は、誰でもない影絵（画像がある時だけ）
+    const secret = !known && (node.revealFlag || !faceIconUrl(node.who, state));
+    const url = secret ? (root.classList.contains("has-art") ? `${ART_DIR}silhouette_unknown.webp` : null) : faceIconUrl(node.who, state);
     if (!url) return null;
-    const img = el("img.gb-face-icon", { src: url, alt: "", draggable: "false", loading: "lazy" });
+    const img = el(`img.gb-face-icon${known ? "" : ".silhouette"}`, { src: url, alt: "", draggable: "false", loading: "lazy" });
     img.addEventListener("error", () => img.remove());
     return img;
   }
@@ -332,7 +341,7 @@ export function openBoard({ place = null } = {}) {
       return `相談できる。次に${who}に会った時に話を聞こう`;
     }
     if (st === "pending") return "仮置き中。決定するまでは「やめる」で戻せる";
-    if (st === "locked") return "まだ開いていない。物語が進むと封が解ける";
+    if (st === "locked") return "結界の先。物語が進むと結界が解けて道が開く";
     if (st === "sealed") return "錠が開くと、道が届けば灯せる";
     if (st === "far" && node.peak) {
       const left = boardNodes(node.board).filter((n) => n.kind === "stat" && !n.peak && !v.unlocked.has(n.id)).length;
@@ -361,7 +370,7 @@ export function openBoard({ place = null } = {}) {
       text: pending.length ? `決定（${pending.length}）` : "閉じる", dataset: { test: "board-decide" }, onclick: () => (pending.length ? finish(true) : close()),
     }));
     footer.replaceChildren(wallet, el("p.gb-legend", [
-      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 関門（色の火）" }), legend("sealed", "授業の錠"), legend("locked", "まだ開いていない"), el("span", { text: "✦ できることが増える" }),
+      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 関門（色の火）" }), legend("sealed", "授業の錠"), legend("locked", "結界の先（物語が進むと開く）"), el("span", { text: "✦ できることが増える" }),
     ]), el("div.gb-actions", actions));
   }
   function legend(st, text) { return el("span.gb-legend-item", [el(`i.s-${st}`), el("span", { text })]); }
@@ -465,7 +474,7 @@ export function openBoard({ place = null } = {}) {
     if (firstFresh) board = firstFresh.board;
     g.seenRing = ringsOpen();
     const banner = el("div.gb-opened", { role: "status", dataset: { test: "board-opened" } }, [
-      el("b", { text: "封が解けた" }), el("span", { text: "心得の盤に、新しい道が開いた" }),
+      el("b", { text: "結界が解けた" }), el("span", { text: "心得の盤に、新しい道が開いた" }),
     ]);
     root.append(banner);
     setTimeout(() => banner.remove(), 3200);

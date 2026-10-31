@@ -1312,7 +1312,6 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-quality { position: absolute; right: 2px; top: 0; font-size: 13px; font-style: normal; color: #ffe08a; text-shadow: 0 0 4px #000; pointer-events: none; }
 .gb-cost { position: absolute; bottom: -8px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 800;
   color: #2a1406; background: #ffb43c; pointer-events: none; }
-.gb-lock { position: absolute; bottom: -10px; font-size: 12px; font-weight: 700; color: rgba(232, 220, 255, 0.7); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .gb-node .gb-face { animation: none !important; } }
 .gb-side { display: flex; flex-direction: column; gap: 6px; padding: 14px 18px 10px 8px; min-width: 0; overflow: auto; font-size: 15px; line-height: 1.5; }
 .gb-side p { margin: 0; }
@@ -1497,3 +1496,35 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard-help .modal-body p { margin: 0 0 10px; line-height: 1.6; }
 .lu-actions { display: flex; justify-content: center; gap: 12px; }
 .levelup .lu-board { min-width: 180px; }
+/* 結界・影絵・授業の札の特別感（2026-10-31 オーナー SBD74〜76）
+   - 「封」の文字はやめ、開いている所とまだの所の境に鎖の結界（画像 wall_seal。無ければ二重線と錠）
+   - まだ分からない授業はその人の影絵（黒いシルエット）＋小さな ?
+   - 授業の札は大きく、金の後光つき。灯っていなくても色は落とさない */
+.gb-wall-art { pointer-events: none; filter: drop-shadow(0 0 5px rgba(244, 210, 122, 0.55)); animation: gb-wall-breathe 2.6s ease-in-out infinite; }
+.gb-seal { stroke: #c9a24a; stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 3px rgba(244, 210, 122, 0.6)); }
+.gb-seal-lock { fill: #1d1426; stroke: #f4d27a; stroke-width: 2; }
+@keyframes gb-wall-breathe { 50% { filter: drop-shadow(0 0 9px rgba(244, 210, 122, 0.9)); } }
+.gb-node.s-locked .gb-face { opacity: 0.3; }
+.gb-node.s-locked.lesson .gb-face { opacity: 0.7; }
+.gb-face-icon.silhouette { filter: brightness(0) drop-shadow(0 0 1.5px rgba(244, 210, 122, 0.95)) drop-shadow(0 0 4px rgba(244, 210, 122, 0.35)); }
+.gb-node.lesson.s-sealed .gb-face-icon.silhouette, .gb-node.lesson.s-locked .gb-face-icon.silhouette { filter: brightness(0) drop-shadow(0 0 1.5px rgba(244, 210, 122, 0.95)) drop-shadow(0 0 4px rgba(244, 210, 122, 0.35)); }
+.gb-art .gb-face-icon.silhouette { filter: brightness(0) opacity(0.9); border-color: rgba(244, 210, 122, 0.5); box-shadow: none; }
+.gb-mystery { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; font-size: 11px; font-weight: 900; line-height: 1;
+  color: #1b1020; background: #f4d27a; box-shadow: 0 0 6px rgba(244, 210, 122, 0.8); pointer-events: none; }
+/* 授業の札: 後光 */
+.gb-node.lesson .gb-face { width: 48px; height: 43px; }
+.gb-node.lesson .gb-face::after { content: ""; position: absolute; inset: -9px; z-index: -2; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(244, 210, 122, 0.42), rgba(244, 210, 122, 0.12) 55%, transparent 72%); animation: gb-aura 3s ease-in-out infinite; }
+.gb-node.lesson.s-locked .gb-face::after { background: radial-gradient(circle, rgba(200, 190, 220, 0.16), transparent 70%); animation: none; }
+@keyframes gb-aura { 50% { transform: scale(1.12); opacity: 0.75; } }
+.gb-node.lesson .gb-face-icon { inset: 4px; width: calc(100% - 8px); height: calc(100% - 8px); }
+.gb-node.lesson:not(.s-unlocked):not(.s-pending) .gb-face-icon:not(.silhouette) { filter: none; }
+.gb-node.lesson.s-sealed .gb-face-icon:not(.silhouette) { filter: saturate(0.7) brightness(0.8); }
+.gboard.has-art .gb-node.lesson .gb-face { width: 56px; height: 56px; }
+.gboard.has-art .gb-node.lesson.sig .gb-face { width: 60px; height: 60px; }
+.gboard.has-art .gb-node.lesson .gb-face-icon { inset: 11px; width: calc(100% - 22px); height: calc(100% - 22px); clip-path: polygon(24% 3%, 76% 3%, 98% 50%, 76% 97%, 24% 97%, 2% 50%); }
+.gboard.has-art .gb-node.lesson:not(.s-unlocked):not(.s-available):not(.s-pending):not(.s-locked) .gb-face { filter: none; }
+.gboard.has-art .gb-node.lesson.s-available .gb-face { filter: drop-shadow(0 0 9px var(--neon-gold)) brightness(1.08); }
+.gboard.has-art .gb-node.lesson.s-locked .gb-face { background-image: url(../img/ui/growth_board/frame_lesson.webp); opacity: 0.72; filter: saturate(0.35); }
+.gboard.has-art .gb-node.lesson.s-locked .gb-face::after { display: none; }
+@media (prefers-reduced-motion: reduce) { .gb-wall-art, .gb-node.lesson .gb-face::after { animation: none !important; } }

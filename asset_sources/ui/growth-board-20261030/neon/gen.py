@@ -60,11 +60,6 @@ ASSETS = {
         "about 85% of the frame. Outline is one neon tube in warm white-gold #fff1d0 with bright core and soft bloom; the inside is dark smoked "
         "glass, empty. Isolated on a fully transparent background.",
         "1024x1024", "transparent"),
-    "frame_lesson": (
-        "A single flat hexagon badge with pointed left and right corners (wider than tall, width to height about 40:34), centered, filling "
-        "about 85% of the frame. Outline is a DOUBLE neon tube in gold #f4d27a, outer tube slightly thicker, both with bright core and soft bloom. "
-        "The inside is fully transparent and empty (a portrait will be placed behind it by code). Isolated on a fully transparent background.",
-        "1024x1024", "transparent"),
     "frame_gate": (
         "A single flat diamond (a square rotated 45 degrees), centered, filling about 80% of the frame. Outline is one neon tube in warm "
         "white-gold #fff1d0 with bright core and soft bloom; the inside is dark smoked glass with a tiny keyhole-like dark notch at the center. "
@@ -74,6 +69,22 @@ ASSETS = {
         "A single flat hexagon badge with pointed left and right corners (wider than tall), centered, filling about 90% of the frame. Outline is a "
         "pale white neon tube #f6f2ff with a second, thinner halo ring of light just outside it, both with soft bloom; the inside is dark smoked glass "
         "with a faint radial shimmer. Isolated on a fully transparent background.",
+        "1024x1024", "transparent"),
+    "frame_lesson": (
+        "A single flat ornate hexagon portrait frame with pointed left and right corners (wider than tall, width to height about 40:34), centered, "
+        "filling about 88% of the frame. The frame is a DOUBLE neon tube in rich gold #f4d27a with bright cores and soft bloom, decorated with fine "
+        "art-deco filigree between the tubes, a small glowing gem at the top corner and a tiny laurel ornament at the bottom corner, luxurious like a "
+        "master's portrait medallion in a premium game UI. The inside is fully transparent and empty (a portrait will be placed behind it by code). "
+        "No text. Isolated on a fully transparent background.",
+        "1024x1024", "transparent"),
+    "wall_seal": (
+        "A single horizontal glowing barrier segment for a dark game board, wide and short (width to height about 3:1), centered, filling about 90% of the "
+        "width. Two thin parallel neon tubes in warm gold #f4d27a with bright cores and soft bloom, laced by a fine golden chain woven between them, with "
+        "a small golden padlock hanging at the center. Flat, crisp, readable at 60 pixels wide. No text. Isolated on a fully transparent background.",
+        "1536x1024", "transparent"),
+    "silhouette_unknown": (
+        "A single flat solid black silhouette of an unknown person's head and shoulders bust, facing front, soft rounded shapes, slightly mysterious, "
+        "centered, filling about 75% of the frame, crisp edge, no features, no outline, no glow. Isolated on a fully transparent background.",
         "1024x1024", "transparent"),
     "frame_seal": (
         "A single flat hexagon badge with pointed left and right corners (wider than tall), centered, filling about 85% of the frame, but the neon tube "

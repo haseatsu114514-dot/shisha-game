@@ -282,7 +282,7 @@ await suite("growth-levelup", async (check) => {
     await board.waitFor({ state: "detached" });
     await page.evaluate(async () => { __remake.state.chapter = 2; void (await import("./js/core/growth.js")).openGrowthBoard(); });
     await page.locator(t("board-opened")).waitFor();
-    assert.match(await page.locator(t("board-opened")).innerText(), /封が解けた/);
+    assert.match(await page.locator(t("board-opened")).innerText(), /結界が解けた/);
     assert.ok(await page.locator(".gb-node.just-opened").count() > 0);
     await page.waitForTimeout(500);
     await page.screenshot({ path: `${out}/growth-board-unseal.png` });

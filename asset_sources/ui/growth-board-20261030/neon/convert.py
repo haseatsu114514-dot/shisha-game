@@ -19,6 +19,7 @@ TARGETS = {
     "hub_body": (256, 256, True, True), "hub_sense": (256, 256, True, True), "hub_wisdom": (256, 256, True, True),
     "frame_skill": (192, 192, True, True), "frame_lesson": (192, 192, True, True), "frame_gate": (160, 160, True, True),
     "frame_peak": (208, 208, True, True), "frame_seal": (192, 192, True, True),
+    "wall_seal": (192, 64, True, True), "silhouette_unknown": (160, 160, True, True),
     "hidane_any": (96, 96, True, True), "hidane_body": (96, 96, True, True), "hidane_sense": (96, 96, True, True), "hidane_wisdom": (96, 96, True, True),
     "panel_frame": (192, 192, True, False),
 }
