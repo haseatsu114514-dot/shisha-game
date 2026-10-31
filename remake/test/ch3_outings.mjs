@@ -169,6 +169,10 @@ function nextWindow(value) {
     assert(!lines.some(line => line.type === "set_flag" || line.type === "apply"));
   }
   assert.deepEqual(Object.keys(byId.ch3_outing_enmaku_answer.branches).sort(), ["tried", "untried"]);
+  // スティーブの味の会話（#2028）。熟練度は台本の metadata、好感度は任意の外出の確定時だけ。
+  assert.deepEqual(byId.ch3_outing_steve_timer.metadata.flavor_lesson, { mountain_mist: 1 });
+  assert.deepEqual(TOKYO_OUTINGS.find(item => item.id === "steve_timer").affinity, { steve: 10 });
+  assert(TOKYO_OUTINGS.filter(item => item.affinity).every(item => !item.repeat), "Affinity outings are read once");
   // てつこの世話は撫でる／餌の2択。どちらの枝も次の行へ戻り、報酬行を持たない。
   const care = byId.ch3_outing_tetsuko.lines.find(line => line.type === "choice");
   assert.deepEqual(care.choices.map(choice => choice.next).sort(), ["feed", "pet"]);

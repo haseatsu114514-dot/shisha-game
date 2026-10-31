@@ -80,7 +80,7 @@ export const STATE_KEY_RULES = {
 // data/equipment.json の gift フィールドが付いた装備 = キャラから贈られた専用ハガル。
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
-  "suyaki_adam", "suyaki_hiyori", "suyaki_kumicho", "suyaki_mashiro", "suyaki_minto", "suyaki_naru",
+  "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_mashiro", "suyaki_minto", "suyaki_naru",
   "suyaki_rei", "suyaki_rin", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
 ];
 
@@ -359,6 +359,7 @@ export const FLAG_EXACT_RULES = [
   ["_op_praise_report", "progression"],
   ["_op_praise_talent", "progression"],
   ["_outing_done_adam", "person"],
+  ["_outing_done_ageha", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
   ["_outing_done_tsumugi", "person"],

@@ -99,7 +99,7 @@ assert(all.faceIconUrl("hiyori"));
 assert.equal(all.DB.relationshipMemories.tsumugi_creature.char_id, "tsumugi");
 assert(all.DB.dialogues.ch1_tsumugi_third);
 assert(all.DB.dialogues.remake_midcheck);
-assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 56);
+assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 62);
 assert(all.DB.dialogues.remake_fortune_trivia_naru_1, "fortune results were not registered after loading");
 assert(all.DB.dialogues.remake_fortune_trivia_sumi_13, "added fortune readings were not registered after loading");
 assert(!all.DB.dialogues.remake_fortune_trivia_adam_1, "excluded fortune readings must not be registered");
