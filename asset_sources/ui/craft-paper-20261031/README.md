@@ -1,4 +1,4 @@
-# 制作（シーシャ作り）の紙×ラベンダーUIの生成原画（2026-10-31・CUI01〜04）
+# 制作（シーシャ作り）の紙×ラベンダーUIの生成原画（2026-10-31・CUI01〜05）
 
 シーシャ作りパート（作業台 `remake/js/craft/`）を、最近の地図・メニュー・Dr.fookah と同じ紙×ラベンダー＋琥珀へ一新するための生成素材（台帳 `docs/owner_requests.md` CUI01〜04、先行する日常UIは `asset_sources/ui/paper-20261031/`）。
 
@@ -36,3 +36,12 @@
 - `python3 remake/tools/build_ui_skin.py` が `remake/img/ui/craft-paper/` を作る（板 768px・壁紙 1280px・温度計の枠 160px・ボタン 512px 幅のWebP。切り出し範囲は原画の寸法と組で固定）。
 - 使う場所: `remake/css/craft-paper.css`（`.bench` の全モード）。板は左右のウインドウと結果カードの `border-image`（切り分け 40/768px）、壁紙は作業台の背景、温度計の枠は `.thermo-skin` の差し替え、ボタン3種は通常／主（ラベンダー）／特別な一手（琥珀＝吸う・穴をあける・詰め方の決定）の `border-image`。
 - 旧素材（`remake/img/ui/making/ui_craft_*.webp`・`ui_temperature_frame.webp`・`ui_mockup_inhale_button.webp`・`ui_refresh_button.webp`）は削除していない。`skin.js` は従来どおり読み込むが、CSS が面を上書きする。
+
+## 工程ごとの舞台（CUI05）
+
+共通の `prompts/style-scene.txt`（明るい絵画調・人物と文字なし）を先頭に付けて生成した。中央を空けた天板で、左右の端だけに小道具がある。採用はそのまま（色合わせ・切り出しなし）、`build_ui_skin.py` で 1280px 幅のWebPにする。
+
+| 原画・採用 | サイズ | SHA-256 | 指示 | 使う工程 |
+|---|---|---|---|---|
+| `raw/stage-kitchen.png`・`assets/ui/craft-paper/stage-kitchen.png` | 1536×1024 | `0daf09401a665cf76e5fb095c0978ee2e09126d70910074a13a9e1c996e1f205` | `prompts/stage-kitchen.txt` | 炭焼き・調整 |
+| `raw/stage-workbench.png`・`assets/ui/craft-paper/stage-workbench.png` | 1536×1024 | `1b1344da5214cd4e3b2099a5a1777004e4173332f494ad0152ab22940f603b5f` | `prompts/stage-workbench.txt` | 穴あけ・蒸らし時間・配合と詰め方のボウルの窓 |
