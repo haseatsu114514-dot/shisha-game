@@ -234,3 +234,6 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .platter.tick{--rim:color-mix(in srgb,var(--deck),transparent 35%)}
 .platter:after{inset:calc(384px * .17)}
 .deck-display{width:140px;height:140px}
+/* Issue #2116: platters a little higher, shorter PITCH faders, ▶ raised right under them. */
+.deck.a,.deck.b{grid-template-rows:14px 290px 58px minmax(0,1fr)}
+.deck.a .platter,.deck.b .platter{grid-row:2/5;align-self:start;margin-top:-6px}
