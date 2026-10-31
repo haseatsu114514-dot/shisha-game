@@ -32,7 +32,8 @@
       "line": "お主、サメは好きか？",
       "face": "smile",
       "color": "#5aa8e6",
-      "name": "alias"
+      "name": "alias",
+      "motion": "bounce"
     }
   },
   "nickname_message_id": "lime_naru_samechan_nickname",

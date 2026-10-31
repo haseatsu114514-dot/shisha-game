@@ -27,7 +27,7 @@ try {
       T.done = T.intro.playIntro(id);
     }, id);
     await page.locator(`.cutin.art-intro.in[data-char="${id}"]`).waitFor();
-    await page.waitForTimeout(1400);
+    await page.waitForTimeout(1900);
     const result = await page.evaluate(id => {
       const host = document.querySelector(".cutin"), outer = host.getBoundingClientRect();
       const c = T.data.DB.characters[id];
@@ -36,18 +36,22 @@ try {
         expectedName: T.data.realName(id),
         title: host.querySelector(".ci-title").textContent,
         quote: host.querySelector(".ci-line").textContent,
-        expectedTitle: c.intro_cutin.title, expectedQuote: `「${c.intro_cutin.line}」`,
+        expectedTitle: c.intro_cutin.title, expectedQuote: `「${c.intro_cutin.line.replaceAll("／", "")}」`,
         images: [...host.querySelectorAll("img")].every(im => im.complete && im.naturalWidth > 0),
         fits: [".ci-name", ".ci-title", ".ci-line"].every(selector => {
           const box = host.querySelector(selector).getBoundingClientRect();
           return box.left >= outer.left && box.right <= outer.right - 35 && box.top >= outer.top && box.bottom <= outer.bottom;
+        }),
+        boxes: [".ci-name", ".ci-title", ".ci-line"].map(selector => {
+          const box = host.querySelector(selector).getBoundingClientRect();
+          return `${selector} ${[box.left - outer.left, outer.right - box.right, box.top - outer.top, outer.bottom - box.bottom].map(Math.round)}`;
         }),
       };
     }, id);
     assert.equal(result.name, result.expectedName);
     assert.equal(result.title, result.expectedTitle);
     assert.equal(result.quote, result.expectedQuote);
-    assert(result.images && result.fits, `${id}: 画像未読込または文字のはみ出し`);
+    assert(result.images && result.fits, `${id}: 画像未読込または文字のはみ出し ${result.images} ${result.boxes.join(" / ")}`);
     assert(!/シガーマン|幼なじみ|偵察/.test(result.title + result.quote), "秘密を先に開示した");
     await page.locator(".cutin").screenshot({ path: `${shots}/${id}.png` });
     await page.locator(".cutin").click(); await page.keyboard.press("Enter");
