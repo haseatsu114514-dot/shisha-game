@@ -1565,3 +1565,22 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard.has-art .gb-node.peak .gb-face { width: 60px; height: 60px; }
 .gb-cost { min-width: 18px; height: 18px; border-radius: 9px; font-size: 12px; }
 .gb-mystery { width: 19px; height: 19px; font-size: 13px; }
+/* 札の中心を道の上に（SBD80「授業のアイコンが線に対して位置ズレ」）: 押せる箱は 44px のまま、絵（.gb-face）は箱の真ん中に置く。
+   大きい札（授業 64〜70・スキル 52〜62・極み 60）が右下へはみ出してずれていた */
+.gb-node > .gb-face { position: absolute; left: 50%; top: 50%; translate: -50% -50%; }
+.gb-node.lesson .gb-mystery { right: 2px; bottom: 2px; }
+.gb-node.skill .gb-cost, .gb-node.lesson .gb-cost { right: -12px; bottom: -14px; }
+/* 授業の札の顔（SBD81）: 立ち絵から目の高さと顔の大きさをそろえて切り出した正方形 */
+.gb-node.lesson .gb-face-icon { object-fit: cover; object-position: 50% 45%; }
+/* 右のパネルの立ち絵（SBD82）: 授業は教える人、スキルははじめ。顔の幅と目の高さをそろえ、胸から上だけ見せる */
+.gb-art.has-portrait { overflow: hidden; }
+.gb-art.has-portrait > span { display: none; }
+.gb-portrait { position: absolute; left: 50%; max-width: none; height: auto; pointer-events: none; user-select: none;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.6)); -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 98%); mask-image: linear-gradient(180deg, #000 70%, transparent 98%); }
+.gb-art.has-portrait::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(ellipse 60% 90% at 50% 40%, transparent 55%, rgba(6, 4, 10, 0.55)); }
+.gb-portrait.silhouette { filter: brightness(0) drop-shadow(0 0 1.5px rgba(244, 210, 122, 0.95)) drop-shadow(0 0 8px rgba(244, 210, 122, 0.35)); }
+.gb-portrait.silhouette.unknown { width: 130px !important; margin-left: -65px !important; top: 10px !important; filter: brightness(0) drop-shadow(0 0 1.5px rgba(244, 210, 122, 0.95)); }
+.gb-art.shadow .gb-portrait:not(.silhouette) { filter: grayscale(0.35) brightness(0.8); }
+.gb-art-mystery { position: absolute; left: calc(50% + 34px); top: 70px; z-index: 1; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  font-size: 20px; font-weight: 900; color: #1b1020; background: #f4d27a; box-shadow: 0 0 10px rgba(244, 210, 122, 0.8); }

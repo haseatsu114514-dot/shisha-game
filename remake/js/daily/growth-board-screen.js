@@ -6,7 +6,7 @@ import { layers, modal, gainCard } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { emit } from "../core/bus.js";
 import { state } from "../core/state.js";
-import { displayName, faceIconUrl } from "../core/data.js";
+import { displayName, faceIconUrl, portraitInfo } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
 import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned } from "../core/growth.js";
 import {
@@ -43,6 +43,27 @@ const ART_DIR = "img/ui/growth_board/";
 /** マスのアイコン（SBD73「漢字が多いのでアイコンを」）: 恩恵・スキル・極み・関門。has-art の時だけ出し、漢字は下に残す */
 const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk ? `perk_${node.perk}` : null)
   : node.kind === "skill" ? `skill_${node.id}` : node.kind === "gate" ? "gate" : null;
+/**
+ * 立ち絵（896×1200）の上での [目の真ん中 x, 目の高さ y, 頬から頬の幅]。札の顔の切り出し（asset_sources/ui/growth-board-20261030/faces/make_faces.py の EYES と同じ値）と、
+ * 右のパネルで顔の大きさと高さをそろえて立ち絵を置くのに使う（SBD81・SBD82）
+ */
+const PORTRAIT_EYES = {
+  sumi: [442, 198, 99], minto: [492, 375, 99], adam: [436, 218, 90], tsumugi: [423, 433, 95], naru: [454, 239, 90], rei: [440, 97, 99],
+  ageha: [472, 341, 99], kumicho: [479, 136, 112], kuze: [409, 145, 95], steve: [481, 100, 110], volk: [459, 109, 88], rin: [397, 290, 99],
+  hiyori: [426, 299, 104], samechan: [448, 397, 104], mashiro: [439, 404, 104], sheikh: [447, 89, 88], da_silva: [453, 80, 99], hajime: [528, 263, 90],
+};
+const BOARD_FACES = new Set(Object.keys(PORTRAIT_EYES));
+/** 右のパネルの立ち絵: 顔の幅をこの px に、目をパネルの上からこの px に */
+const PANEL_FACE_W = 66, PANEL_EYE_Y = 58;
+/** 右のパネルの立ち絵の表情（SBD82）。授業は教える人、スキルははじめ。無い表情は portraitInfo が近いものに */
+const PANEL_FACE = {
+  "M-B1": "smile", "M-S1": "serious", "M-S2": "intense", "M-S3": "smile", "M-W1": "normal", "M-W2": "thinking", "M-W3": "excited",
+  "M-W6": "smile", "M-B2": "smile", "M-S4": "smile", "M-W4": "smug", "M-B3": "smug", "M-S5": "smile", "M-W5": "serious",
+  "M-S6": "smile", "M-B4": "axe_throw", "M-W7": "excited", "M-B5": "smile", "M-W8": "smug", "M-B6": "excited",
+  K03: "smile", K04: "smile", K07: "serious", K08: "excited", K12: "serious", K13: "excited", K15: "smug", K06: "serious",
+  K10: "serious", K16: "smug", K11: "serious", K14: "surprise", K01: "serious", K02: "smile", K05: "surprise", K17: "normal",
+  K09: "smile", K18: "serious", K19: "smile", K20: "smile", K21: "smug", K22: "normal", K23: "smug", K24: "serious",
+};
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
   "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown"];
 let artReady = null;
@@ -248,10 +269,10 @@ export function openBoard({ place = null } = {}) {
         // 開いている所と、まだ開いていない所の境に結界（章の数は出さない。SBD42。文字の「封」はやめ、鎖の壁で「この先はまだ」を見せる。SBD74）
         if (closedA !== closedB) {
           const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, horiz = a.y === b.y;
-          const wall = svg("g", { class: "gb-wall", transform: `translate(${mx} ${my}) rotate(${horiz ? 90 : 0})`, "data-test": "board-wall" });
-          // 結界は道を横切る大きさ（SBD78「鍵の進めないとこが小さくて見づらい」）。下に暗い帯を敷いて、どの背景でも浮かせる
-          wall.append(svg("rect", { x: -40, y: -15, width: 80, height: 30, rx: 15, class: "gb-wall-back" }));
-          if (root.classList.contains("has-art")) wall.append(svg("image", { href: `${ART_DIR}wall_seal.webp`, x: -42, y: -14, width: 84, height: 28, class: "gb-wall-art" }));
+          const wall = svg("g", { class: "gb-wall", transform: `translate(${mx} ${my})${root.classList.contains("has-art") ? "" : ` rotate(${horiz ? 90 : 0})`}`, "data-test": "board-wall" });
+          // 結界は鎖を X に組んだ大きな錠（SBD79「鎖や鍵感をもっと出したい」）。道の上に置き、下に暗い丸を敷いてどの背景でも浮かせる
+          wall.append(svg("circle", { cx: 0, cy: 0, r: 25, class: "gb-wall-back" }));
+          if (root.classList.contains("has-art")) wall.append(svg("image", { href: `${ART_DIR}wall_seal.webp`, x: -27, y: -27, width: 54, height: 54, class: "gb-wall-art" }));
           else wall.append(svg("line", { x1: -30, y1: -6, x2: 30, y2: -6, class: "gb-seal" }), svg("line", { x1: -30, y1: 6, x2: 30, y2: 6, class: "gb-seal" }), svg("circle", { cx: 0, cy: 0, r: 7, class: "gb-seal-lock" }));
           const tip = svg("title"); tip.textContent = "この先は物語が進むと開く"; wall.prepend(tip);
           walls.push(wall);
@@ -294,11 +315,11 @@ export function openBoard({ place = null } = {}) {
         onclick: () => select(node.id, true),
       }, [
         el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph }), lessonFace(node, st),
-          icon && st !== "locked" ? el("img.gb-icon-img", { src: `${ART_DIR}icons/${icon}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null]),
+          icon && st !== "locked" ? el("img.gb-icon-img", { src: `${ART_DIR}icons/${icon}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null,
+          node.kind === "lesson" && !lessonKnown(node, g) ? el("span.gb-mystery", { text: "?", "aria-hidden": "true" }) : null]),
         qStep ? el("em.gb-quality", { text: "✦", "aria-hidden": "true" }) : null,
         node.kind === "skill" && ["available", "short", "far"].includes(st)
           ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
-        node.kind === "lesson" && !lessonKnown(node, g) ? el("span.gb-mystery", { text: "?", "aria-hidden": "true" }) : null,
       ]);
     }));
   }
@@ -312,11 +333,42 @@ export function openBoard({ place = null } = {}) {
     const known = lessonKnown(node, g);
     // まだ分からない授業はその人の影絵（2026-10-31 オーナー「まだ先のキャラもシルエットだけ出したい」SBD75）。
     // 正体を伏せる授業（revealFlag）と顔の無い人は、誰でもない影絵（画像がある時だけ）
-    const secret = !known && (node.revealFlag || !faceIconUrl(node.who, state));
-    const url = secret ? (root.classList.contains("has-art") ? `${ART_DIR}silhouette_unknown.webp` : null) : faceIconUrl(node.who, state);
+    // 札の顔は立ち絵から目の高さと顔の大きさをそろえて切り出したもの（SBD81。faces/<人>.webp）。無い人は顔アイコン
+    const face = BOARD_FACES.has(node.who) ? `${ART_DIR}faces/${node.who}.webp` : faceIconUrl(node.who, state);
+    const secret = !known && (node.revealFlag || !face);
+    const url = secret ? (root.classList.contains("has-art") ? `${ART_DIR}silhouette_unknown.webp` : null) : face;
     if (!url) return null;
     const img = el(`img.gb-face-icon${known ? "" : ".silhouette"}`, { src: url, alt: "", draggable: "false", loading: "lazy" });
     img.addEventListener("error", () => img.remove());
+    return img;
+  }
+
+  /**
+   * 右のパネルの絵（2026-10-31 オーナー「授業の説明とかの画像を入れる欄に、それぞれスキル名や内容に合ったキャラの画像を」SBD82）。
+   * 授業は教えてくれる人の立ち絵、スキルははじめの立ち絵を、中身に合う表情で胸から上だけ見せる。
+   * まだ分からない授業は立ち絵の影絵（正体を伏せる授業は誰でもない影絵）、まだ現れていないスキルは今までどおり「？」
+   */
+  function panelPortrait(node, shown) {
+    if (node.kind === "lesson") {
+      if (!lessonKnown(node, g)) {
+        if (node.revealFlag) return root.classList.contains("has-art") ? el("img.gb-portrait.silhouette.unknown", { src: `${ART_DIR}silhouette_unknown.webp`, alt: "" }) : null;
+        const p = portraitInfo(node.who, "normal");
+        return p ? placed(el("img.gb-portrait.silhouette", { src: p.src, alt: "", dataset: { who: node.who } }), node.who) : null;
+      }
+      const p = portraitInfo(node.who, PANEL_FACE[node.id] || "smile");
+      return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: node.who, face: p.face, test: "board-portrait" } }), node.who) : null;
+    }
+    if (node.kind === "skill" && shown !== "hidden") {
+      const p = portraitInfo("hajime", PANEL_FACE[node.id] || "normal");
+      return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: "hajime", face: p.face, test: "board-portrait" } }), "hajime") : null;
+    }
+    return null;
+  }
+  /** 顔の幅と目の高さがそろうように立ち絵を置く（PORTRAIT_EYES。無い人は胸から上を真ん中に） */
+  function placed(img, who) {
+    const [ex, ey, fw] = PORTRAIT_EYES[who] || [448, 260, 100];
+    const k = PANEL_FACE_W / fw;
+    Object.assign(img.style, { width: `${Math.round(896 * k)}px`, marginLeft: `${Math.round(-ex * k)}px`, top: `${Math.round(PANEL_EYE_Y - ey * k)}px` });
     return img;
   }
 
@@ -346,9 +398,12 @@ export function openBoard({ place = null } = {}) {
     if (!node || node.board !== board) { side.replaceChildren(...boardSummary(v)); return; }
     const st = status(node, v), shown = revealOf(node);
     const lines = [];
-    const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}`, { "aria-hidden": "true" }, [
+    const portrait = panelPortrait(node, shown);
+    if (portrait) portrait.addEventListener("error", () => { portrait.remove(); art.classList.remove("has-portrait"); });
+    const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}${portrait ? ".has-portrait" : ""}`, { "aria-hidden": "true" }, [
       el("span", { text: node.kind === "stat" ? BOARD_HEAD[node.board] : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? "授" : "？") : shown === "hidden" ? "？" : node.glyph }),
-      node.kind === "lesson" ? lessonFace(node, st) : null,
+      portrait || (node.kind === "lesson" ? lessonFace(node, st) : null),
+      portrait && node.kind === "lesson" && !lessonKnown(node, g) ? el("b.gb-art-mystery", { text: "?" }) : null,
     ]);
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
     if (node.kind === "stat") {
