@@ -214,14 +214,13 @@ await suite("ch3-tournament", async check => {
           "Reload must resume after the hotel scene without replaying the win");
       }
     }
-    // #1930: 再会の後、帰り際のあげはの告白。返事を読み終えてから第3章完へ。
-    await page.locator('[data-test="ch3-aftermath-ageha-confession"]').waitFor();
-    await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.choose = () => 1; });
-    await page.locator('[data-test="ch3-aftermath-ageha-confession-continue"]').click();
+    // #1988: ♥3の分岐で恋愛寄りに答えていない保存には告白は起きず、再会のまま第3章完へ。
     await page.locator('[data-test="ch3-aftermath-complete"]').waitFor();
-    await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.choose = null; });
-    assert.equal((await get(page)).flags._friend_ageha, true, "Staying friends lands ageha's route too");
+    assert.equal(await page.locator('[data-test="ch3-aftermath-ageha-confession"]').count(), 0,
+      "Without the ♥3 romance answer the confession must not appear");
     state = await get(page);
+    assert.equal(state.flags._friend_ageha, undefined, "Skipping the confession records no relationship");
+    assert(!state.lovers.includes("ageha"));
     assert.equal(state.flags._ch3_cleared, true);
     assert.equal(state.phase, "cleared");
     assert.equal(state.flags._ch3_tournament.history.length, 1);
