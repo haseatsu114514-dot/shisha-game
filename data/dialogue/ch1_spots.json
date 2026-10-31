@@ -1552,32 +1552,44 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "ところが、渋い日にここで手を合わせると、しばらくよく回る気がする"
+          "text": "……ここでまで画面をにらんでいては、休まらんな"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "お参りで、スロットの調子が変わるんですか？"
+          "text": "ここに来ると、今まで教わったことを思い出せますね"
         },
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "知らん。だが運も原点に返れば、巡り直す。それだけだ"
+          "text": "原点に返れば、次にやることも見えてくる。それだけだ"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "もっとも、一週間もすれば元の木阿弥だがな"
+          "text": "俺も、次の一服を考えるとするか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "アダムは画面を消すと、賽銭箱に深く頭を下げた。"
+          "text": "アダムはスマホをしまい、木々の向こうへ目を向けた。"
         },
         {
           "type": "set_flag",
           "flag": "_spot_seen_kannon_adam_pakki"
         }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_growth_intro",
+      "lines": [
+        { "speaker": "", "face": "", "text": "境内に入ると、街のざわめきが遠のいた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（ここまで、いろんなことを教わったな）" },
+        { "speaker": "hajime", "face": "normal", "text": "（うまくいったことも、失敗したことも。次の一服につなげたい）" },
+        { "speaker": "", "face": "", "text": "積み重ねた経験は、眠る前にレベルと火種になる。" },
+        { "speaker": "", "face": "", "text": "火種は、才能・感覚・理論の三つの盤へ灯せる。" },
+        { "speaker": "", "face": "", "text": "ここで振り返り、盤に灯すだけなら、時間も体力も使わない。" },
+        { "speaker": "hajime", "face": "normal", "text": "（今日は、どの道を伸ばしてみようか）" }
       ]
     },
     {

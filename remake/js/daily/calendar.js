@@ -26,7 +26,7 @@ import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
 import { openStatus } from "./status.js";
-import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting, installReel } from "./reel.js";
+import { onAction as spinReel, presentNow as showReelNow, installReel } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
 import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
@@ -506,10 +506,6 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
-  // 施設のおまけ（#621）。説明はキャラではなくシステムの通知で短く
-  // 観音堂: パッキースロットの設定が変わる（次に筐体が出たときに光って知らせる）
-  // 場所は明かさない（遊び方は「特定のスポット」とだけ書く・#634）
-  if (spot.id === "kannon" && changeReelSetting()) toast("……ふと、パッキースロットの設定が変わった気がする", { kind: "good" });
   // チョコザップ: その日から数日、風邪をひきにくい
   if (spot.id === "choizap" && state.flags._gym_member) {
     state.flags._fit_since = { chapter: state.chapter, day: state.day };

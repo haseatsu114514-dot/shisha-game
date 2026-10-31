@@ -31,6 +31,33 @@ await suite("growth-levelup", async (check) => {
     assert.equal(await page.evaluate(() => __remake.state.growth), undefined);
   });
 
+  await check("ordinary-kannon-visit-keeps-slot-setting", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), s = core.state;
+      (await import("./js/core/growth.js")).setGrowthPreview(false);
+      Object.assign(s, { day: 5, slot: 0 }); s.met.adam = true;
+      Object.assign(s.flags, { _morning_5: true, _errand_scout_done: true, _delivery_adam_done: true,
+        _delivery_minto_done: true, _lime_tut: true, _lime_opened: true,
+        _tsumugi_contest_research: true, _tsumugi_contest_progress: true,
+        _spot_seen_kannon_adam_pakki: true, _spot_guide_adam: true, pakki_app_installed: true });
+      Object.assign(s.reel, { installed: true, introDone: true, settingGuideDone: true,
+        setting: 6, settingDraws: 4, settingSince: { chapter: 1, day: 5 }, lastChapter: 1 });
+      core.config.textSpeed = 4;
+      (await import("./js/vn/engine.js")).vnTest.turbo = true;
+      (await import("./js/chapters/ch1.js")).setupHooks();
+      window.ordinaryVisit = (await import("./js/daily/calendar.js")).runDaily({ nightEvents: {} });
+    });
+    await page.locator('.map:not(.done)').waitFor();
+    await page.locator(t("pin-kannon")).click();
+    await page.locator(t("map-go")).click();
+    await page.waitForFunction(() => __remake.state.slot === 1, null, { timeout: 30000 });
+    const after = await page.evaluate(() => ({ setting: __remake.state.reel.setting,
+      draws: __remake.state.reel.settingDraws, since: __remake.state.reel.settingSince,
+      visit: __remake.state.visitedDay.kannon, seen: __remake.state.flags._spot_seen_kannon_adam_pakki }));
+    assert.deepEqual(after, { setting: 6, draws: 4, since: { chapter: 1, day: 5 }, visit: 5, seen: true });
+  });
+
   // #1807: the real map and HUD entry points, with Adam unvisited.
   for (const [label, options] of [
     ["pc", { viewport: { width: 1331, height: 760 } }],
@@ -67,6 +94,9 @@ await suite("growth-levelup", async (check) => {
         const growth = await import("./js/core/growth.js");
         growth.gainExp(205); growth.settleGrowth();
         window.entryBefore = { day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina };
+        Object.assign(__remake.state.reel, { installed: true, introDone: true, settingGuideDone: true,
+          setting: 6, settingDraws: 4, settingSince: { chapter: 1, day: 3 }, settingNotice: false, resetNext: true });
+        window.entryReel = JSON.stringify(__remake.state.reel);
         await window.entryMap();
       });
       await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
@@ -84,12 +114,14 @@ await suite("growth-levelup", async (check) => {
       assert.equal(await page.evaluate(() => window.entryStatus), 0);
       await tap(t("pin-kannon")); await tap(t("map-go"));
       await tap(t("kannon-reflect"));
-      for (let i = 0; i < 30 && !(await page.locator(t("growth-board")).count()); i++) {
+      for (let i = 0; i < 60 && !(await page.locator(t("growth-board")).count()); i++) {
         const next = page.locator(".vn-box");
         if (await next.isVisible()) await tap(".vn-box");
         await page.waitForTimeout(150);
       }
       await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+      assert.equal(await page.evaluate(() => __remake.state.flags._kannon_growth_intro_done), true);
+      assert.match(await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(x => x.text).join(" ")), /三つの盤/);
       for (let i = 0; i < 2; i++) { // 火種2つを使い切る
         await tap('.gb-node[data-status="available"]');
         await tap(t("board-light"));
@@ -103,6 +135,17 @@ await suite("growth-levelup", async (check) => {
       assert.equal(await page.locator(t("pin-kannon")).count(), 1);
       assert.deepEqual(await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina })),
         await page.evaluate(() => window.entryBefore));
+      assert.equal(await page.evaluate(() => JSON.stringify(__remake.state.reel)), await page.evaluate(() => window.entryReel));
+      const saved = await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        const before = JSON.stringify(core.state.growth);
+        core.load();
+        return { before, after: JSON.stringify(core.state.growth), intro: core.state.flags._kannon_growth_intro_done,
+          reel: JSON.stringify(core.state.reel) };
+      });
+      assert.equal(saved.before, saved.after);
+      assert.equal(saved.intro, true);
+      assert.equal(saved.reel, await page.evaluate(() => window.entryReel));
       await tap(t("hud-status"));
       assert.equal(await page.evaluate(() => window.entryStatus), 1);
     }, options);

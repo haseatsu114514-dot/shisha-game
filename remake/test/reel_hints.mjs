@@ -143,19 +143,37 @@ eq(reel.core.SETTINGS, {
 // 説明（遊び方カード・#639）: 場所を明かさない・固定曜日と書かない・確定ではないことを伝える・文字は短く
 const help = reel.GUIDE.map((g) => `${g.head} ${g.body}`).join("\n");
 assert(!/観音|お参り|曜日|毎週|週替わり|金|虹/.test(help), "場所・固定曜日・金/虹の予告を書かない");
-for (const must of ["1〜6", "必ず当たるわけではない", "7日", "章が変わる", "同じ設定", "低い設定", "特定のスポットでも設定が変わることがあるよ。街を歩いて見つけてみてね！", "確定ではない", "次のゲーム"]) {
+assert(!/特定のスポット|街を歩いて見つけ/.test(help), "廃止したスポット設定変更を案内しない");
+for (const must of ["1〜6", "必ず当たるわけではない", "7日", "章が変わる", "同じ設定", "低い設定", "確定ではない", "次のゲーム"]) {
   assert(help.includes(must), must);
 }
 for (const g of reel.GUIDE) assert([...g.body].length <= 40, `ラミネートのように短く: ${g.body}`);
 eq(reel.core.CUE_ORDER, ["blue", "green", "red"]);
 
-// 示唆の履歴: 設定変更ごとに分け、同じ日の変更でも前の示唆を今の設定の証拠にしない
+// 観音堂の設定変更口は廃止。示唆の履歴は週替わり・章替わりの変更ごとに分ける。
+assert.equal(reel.changeSetting, undefined);
+// 過去の観音堂訪問で確定した抽選・通知・予告・報酬・既読はそのままロードする。
+{
+  const old = core.newGame();
+  old.reel.installed = true;
+  Object.assign(old.reel, { setting: 6, settingDraws: 4, settingSince: { chapter: 1, day: 2 },
+    settingNotice: "kannon", resetNext: true, lock: { role: "big", cue: "red" },
+    pending: [{ id: "old-result", role: "bell", got: 1 }],
+    note: { hints: [{ text: "旧示唆", period: 4 }], settingChanges: 4 } });
+  old.flags._spot_seen_kannon_adam_pakki = true;
+  const snapshot = plain(old.reel);
+  core.save(); core.load();
+  eq(core.state.reel, snapshot, "既存の設定と確定結果を変更・再抽選しない");
+  assert.equal(core.state.flags._spot_seen_kannon_adam_pakki, true);
+}
 const s = core.newGame();
 Object.assign(s, { phase: "daily", chapter: 1, day: 3 });
 s.reel.installed = true;
 reel.rememberHint("前の示唆");
 eq(reel.splitHints(s.reel).current.map((h) => h.text), ["前の示唆"]);
-reel.changeSetting(); // 同じ日に設定が変わる
+s.reel.settingSince = { chapter: 1, day: 3 };
+s.day = 10;
+reel.onAction({ spent: 10 }); // 7日経過による自動変更
 reel.rememberHint("今の示唆");
 let split = reel.splitHints(s.reel);
 eq(split.current.map((h) => h.text), ["今の示唆"]);
@@ -167,6 +185,7 @@ eq([split.current.map((h) => h.text), split.past.map((h) => h.text)], [["今の�
 s.reel.settingSince = { chapter: 1, day: 3 };
 Object.assign(s, { chapter: 2, day: 15 });
 const before = s.reel.settingDraws;
+const weeklyResults = plain(s.reel.pending);
 reel.onAction({ spent: 10 });
 assert.equal(s.reel.settingDraws, before + 1);
 assert.equal(reel.splitHints(s.reel).current.length, 0);
@@ -210,8 +229,8 @@ for (const settingDraws of [undefined, null, "12", 1.5, NaN]) {
     current: { period: 0, spins: 1, big: 0, reg: 0, bell: 0 }, past: [],
   });
 }
-// 実際の行動で新しい期間にだけ記録される（上の章更新で初めて回した結果）。
-const recorded = s.reel.pending;
+// 週替わりと章替わりの結果が、それぞれの期間にだけ記録される。
+const recorded = s.reel.pending.slice(weeklyResults.length);
 eq(summary.periodStats, {
   current: {
     period: s.reel.settingDraws, spins: recorded.length,
@@ -219,9 +238,14 @@ eq(summary.periodStats, {
     reg: recorded.filter((r) => r.role === "reg" || r.overlap === "reg").length,
     bell: recorded.filter((r) => r.role === "bell").length,
   },
-  past: [],
+  past: [{
+    period: before, spins: weeklyResults.length,
+    big: weeklyResults.filter((r) => r.role === "big" || r.role === "rare" || r.overlap === "big").length,
+    reg: weeklyResults.filter((r) => r.role === "reg" || r.overlap === "reg").length,
+    bell: weeklyResults.filter((r) => r.role === "bell").length,
+  }],
 });
-eq(summary.history.map((h) => h.ren), recorded.filter((r) => reel.core.PEKA.includes(r.role) || !!r.overlap).reverse().map((r) => r.ren));
+eq(summary.history.map((h) => h.ren), s.reel.pending.filter((r) => reel.core.PEKA.includes(r.role) || !!r.overlap).reverse().map((r) => r.ren));
 
 // 固定シード群から連チャンの実例を探す。リプレイも1回転として前回当選との差を数える。
 let renSeed = null, sawLongGap = false, sawFive = false, sawSix = false, sawEarlyFirst = false;
