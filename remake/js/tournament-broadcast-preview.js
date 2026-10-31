@@ -57,9 +57,9 @@ const bandOf = (t) => t < .30 ? 0 : t < .42 ? 1 : t <= .66 ? 2 : t < .80 ? 3 : 4
 const smokeOf = (t) => t < .30 ? "thin" : t <= .66 ? "white" : t < .80 ? "thick" : "grey";
 // ライバルの事件は制作の言葉で。台に見えるのは温度帯の色・炭の状態・煙だけ。
 const RIVAL_EVENTS = [
-  { id: "adam", text: "炭を早取り。黒い面が残ったまま載せた", read: "炭3・1個ムラ／熱が強い／煙が灰色", nico: ["アダムの炭ムラあった", "煙が灰色…", "焦げる？"], smoke: "grey", band: 3, step: "蒸らし", coals: ["red", "black", "red"] },
-  { id: "naru", text: "蒸らし短め。もう吸い出しに入った", read: "炭3・取り頃／熱が入っていく／煙が細い", nico: ["なる速い", "さすが常連", "煙まだ細くない？"], smoke: "thin", band: 1, step: "吸い出し", coals: ["red", "red", "red"] },
-  { id: "minto", text: "アルミを一度はがして張り直し", read: "炭なし／火はまだ", nico: ["みんと慎重", "やり直した", "丁寧だなあ"], smoke: "none", band: -1, step: "穴あけ", coals: [] },
+  { id: "adam", now: "炭を早取りして載せた", text: "黒い面が残ったまま。煙が灰色がかっている", nico: ["アダムの炭ムラあった", "煙が灰色…", "焦げる？"], smoke: "grey", band: 3 },
+  { id: "naru", now: "もう吸い出しに入った", text: "蒸らし短め。煙はまだ細い", nico: ["なる速い", "さすが常連", "煙まだ細くない？"], smoke: "thin", band: 1 },
+  { id: "minto", now: "アルミを張り直している", text: "一度はがしてやり直し。火はまだ", nico: ["みんと慎重", "やり直した", "丁寧だなあ"], smoke: "none", band: -1 },
 ];
 
 const stage = $("#tb-stage");
@@ -80,19 +80,18 @@ window.addEventListener("resize", fit);
 function buildLive() {
   const root = el("div.tb-scene.live", { dataset: { stage: "1" } });
   const lights = el("div.lights");
-  const chips = el("div.chips", Object.entries(PEOPLE).map(([id, p], i) => el(`div.chip${id === "hajime" ? ".me" : ""}`, { style: { "--c": p.c, "--p": ["46%", "58%", "40%", "33%"][i] }, dataset: { id } }, [
+  const chips = el("div.chips", ["naru", "adam", "minto"].map((id, i) => el("div.chip", { style: { "--c": PEOPLE[id].c }, dataset: { id, band: ["1", "-1", "-1"][i], smoke: ["thin", "none", "none"][i] } }, [
     el("div.pf", [img(face(id))]),
-    el("div", [el("div.nm", { text: p.name }), el("div.tb-st", { text: ["穴あけ 7/12", "炭焼き", "詰め", "穴あけ"][i] })]),
-    el("div.bar", [el("i")]),
+    el("div", [el("div.nm", { text: PEOPLE[id].name }), el("div.tb-st", { text: ["炭を載せた", "詰めている", "配合中"][i] })]),
+    el("div.bubble"),
   ])));
   const judges = el("div.judges", JUDGES.map((j) => el(`div.jchip${j.held ? ".held" : ""}`, { style: { "--c": j.c }, dataset: { id: j.id } }, [
     el("div.pf", [img(face(j.id))]),
     el("div", [el("div.nm", { text: j.held ? "南雲 10点保留" : `${j.short || j.name} 投入${j.used}／残り${10 - j.used}` }), el("div.pips", Array.from({ length: 10 }, (_, i) => el(`b${i < j.used ? ".on" : ""}`)))]),
   ])));
-  const clock = el("div.clock", { html: '<small>MATCH TIME</small>23:18' });
   const top = el("div.top", [
-    el("div.brand", [el("i.tournament-live", { text: "LIVE" }), el("b", { text: "SMOKE CROWN CUP" }), el("small", { text: "｜ 大会" }), el("span.round", { text: "ROUND 1 — A 仕込み" })]),
-    chips, clock, judges,
+    el("div.brand", [el("i.tournament-live", { text: "LIVE" }), el("b", { text: "SMOKE CROWN CUP" }), el("small", { text: "｜ 大会" }), el("span.round", { text: "ROUND 1 準備" })]),
+    chips, judges,
   ]);
   const say = el("div.say", [el("div.pf", [img(face("dr_kemuri"))]), el("div", [el("div.who", { text: "チャコール博士　穴あけ" }), el("div.txt", { text: "外周は熱の広がり。等間隔で、ゆっくりで良いです" })])]);
   const left = el("div.tb-left", [el("div.scene-img"), el("div.tag", { text: "SMOKE CROWN CUP" }), say]);
@@ -113,16 +112,10 @@ function buildLive() {
   ])));
   const heat = el("div.heat", [heatSvg([], { w: 330, h: 46 }), el("div.stg", { text: "火はまだ" }), el("div.lab", { text: "一台の熱 HEAT LINE" })]);
   const lane = el("div.lane");
-  const bottom = el("div.bottom", [heat, lane]);
+  const bottom = el("div.bottom", [lane]);
   const fx = el("div.fx");
-  root.append(lights, top, left, center, seats, bottom, fx);
-  const l = { root, chips, judges, clock, say, foil, info, seats, heat, lane, fx, heatStage: 0, hits: 7, excellent: 5, seconds: 23 * 60 + 18, timers: new Set() };
-  // 試合時計: 工程時計が動いている間だけ進む（見本では常に進む）
-  const tick = setInterval(() => {
-    if (!root.isConnected) return clearInterval(tick);
-    l.seconds++;
-    clock.innerHTML = `<small>MATCH TIME</small>${String(Math.floor(l.seconds / 60)).padStart(2, "0")}:${String(l.seconds % 60).padStart(2, "0")}`;
-  }, 1000);
+  root.append(lights, top, left, center, bottom, fx);
+  const l = { root, chips, judges, say, foil, info, seats, heat, lane, fx, heatStage: 0, hits: 7, excellent: 5, seconds: 23 * 60 + 18, timers: new Set() };
   // 流れるコメント: 客席から見える煙（一台の実温度から）で密度と話題が変わる
   const spawn = () => {
     if (!root.isConnected) return;
@@ -224,27 +217,22 @@ async function plate(l, big = "ROUND 1 — B", small = "火入れ　配置・炭
   p.classList.remove("show"); await sleep(300); p.remove();
 }
 async function rivalEvent(l, ev = pick(RIVAL_EVENTS)) {
-  const seat = l.seats.querySelector(`[data-id="${ev.id}"]`);
-  $(".bubble", seat).textContent = ev.text;
-  $(".step", seat).textContent = ev.step;
-  seat.dataset.smoke = ev.smoke; seat.dataset.band = String(ev.band);
-  $(".read", seat).textContent = ev.read;
-  $(".coals", seat).replaceChildren(...ev.coals.map((c) => el(`i.coal.${c}`)));
-  seat.classList.add("event");
-  const chip = l.chips.querySelector(`[data-id="${ev.id}"]`); if (chip) { $(".tb-st", chip).textContent = ev.step; chip.dataset.band = String(ev.band); }
+  const chip = l.chips.querySelector(`[data-id="${ev.id}"]`);
+  $(".tb-st", chip).textContent = ev.now;
+  $(".bubble", chip).textContent = ev.text;
+  chip.dataset.band = String(ev.band); chip.dataset.smoke = ev.smoke;
+  chip.classList.add("event");
   ev.nico.forEach((t, i) => setTimeout(() => comment(l, t, ev.smoke === "grey" ? "cool" : ""), i * 260));
   await sleep(reduce() ? 1000 : 3200);
-  seat.classList.remove("event");
+  chip.classList.remove("event");
 }
 async function playLive(l) {
-  await plate(l, "ROUND 1 — A", "仕込み　機材・水・配合・詰め・穴あけ");
   for (let i = 0; i < 3; i++) { hit(l); await sleep(reduce() ? 100 : 520); }
-  await rivalEvent(l, RIVAL_EVENTS[0]);
+  await rivalEvent(l, RIVAL_EVENTS[1]);
   await verdict(l, "great");
   await sleep(300);
   await quad(l);
-  await plate(l, "ROUND 1 — B", "火入れ　配置・炭焼き・蒸らし");
-  for (let i = 1; i < HEAT_STAGES.length; i++) { setHeat(l, i); await sleep(reduce() ? 150 : 1100); }
+  await rivalEvent(l, RIVAL_EVENTS[0]);
 }
 
 // ---------------------------------------------------------------- ② 中間投票
@@ -269,7 +257,7 @@ function buildVotes() {
     el("h1", { text: "中間投票" }),
     el("p.sub", { text: "審査員3人の持ち点（各10点）。実際に投入された票だけが並ぶ。南雲審査員長は、まだ1点も入れていない。" }),
     el("div.vmain", [rows, judges]),
-    el("div.vstatus", [el("span", { text: "ここまでの制作" }), el("b", { text: "◎" }), el("span", { text: "穴あけ◎・炭焼き○・蒸らし6分で適温の低め → 上園が2点、博士が2点を入れる（実績連動 §3.4 C）" }), el("div.heat.vote-heat", [heatSvg(HEAT_STAGES[2].pts, { w: 330, h: 40 })])]),
+    el("div.vstatus", [el("span", { text: "ここまでの制作" }), el("b", { text: "◎" }), el("span", { text: "票の中身は現行の固定表のまま。札が飛んで数字が増える演出だけを足す（読み終わるまで表示・タップで送る）" })]),
     el("div.vfeed", [el("div.tag", { text: "速報" }), el("div.lines", { html: "上園、はじめに2点追加投入！<br>チャコール博士、ここで初めて動く——はじめに2点" })]),
   ]));
   return { root, rows, judges, pts };
@@ -384,7 +372,7 @@ async function playResult(r) {
         el("div.hlc", { style: { backgroundImage: "url(img/ui/making/foil_interactive_top.webp)" } }, [el("i", { text: "R1" }), el("span", { text: "外周12穴が揃った（EXCELLENT 10）" })]),
         el("div.hlc", { style: { backgroundImage: "url(img/ui/making/hajime_craft_pull.webp)", backgroundPosition: "center 30%" } }, [el("i", { text: "R4" }), el("span", { text: "調整2回目、炭1個交換で帯の中央へ戻した" })]),
       ]),
-      el("h3", { text: "一台の熱の記録", style: { marginTop: "12px" } }),
+      el("h3", { text: "一台の熱の振り返り（任意・数字なし）", style: { marginTop: "12px" } }),
       el("div.heat.award-heat", [heatSvg(HEAT_STAGES.at(-1).pts, { w: 520, h: 64, labels: true })]),
     ]),
     el("div.tb-panel", [
@@ -421,7 +409,7 @@ document.querySelectorAll("[data-act]").forEach((b) => b.addEventListener("click
   else if (act === "plate") plate(live);
   else if (act === "rival") rivalEvent(live);
 }));
-$("#heatstage").addEventListener("change", (e) => setHeat(live, Number(e.target.value)));
+$("#heatstage")?.addEventListener("change", (e) => setHeat(live, Number(e.target.value)));
 $("#phone").addEventListener("change", (e) => { viewport.classList.toggle("phone", e.target.checked); show(scene); });
 $("#reduce").addEventListener("change", (e) => stage.classList.toggle("reduce", e.target.checked));
 show("live");

@@ -31,8 +31,8 @@ code { font-size: .92em; color: #ffd9a3; }
 .reduce *, .reduce *::before, .reduce *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; }
 
 /* ===== ① 生中継の作業台 ===== */
-.live { background: url("../img/backgrounds/bg_tournament_stage.webp") center / cover no-repeat; }
-.live::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #0b0812e6, #0b0812cc 40%, #0b0812f0); }
+.live { background: url("../img/ui/tournament-preview/stage.webp") center 30% / cover no-repeat; }
+.live::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #0b0812d9, #0b0812b3 45%, #0b0812cc); }
 .live .lights { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; opacity: 0; transition: opacity .8s; background: linear-gradient(100deg, transparent 20%, #ff3fa433 45%, transparent 55%, #38f0ff2e 75%, transparent 90%); }
 .live[data-stage="2"] .lights { opacity: .55; animation: light-sweep 5s linear infinite; }
 .live[data-stage="3"] .lights { opacity: .9; animation: light-sweep 2.2s linear infinite; }
@@ -40,17 +40,21 @@ code { font-size: .92em; color: #ffd9a3; }
 .live .lights, .live .top, .live .tb-left, .live .center, .live .seats, .live .bottom, .live .fx { position: absolute; }
 
 /* 上バー */
-.top { left: 0; top: 0; width: 1280px; height: 60px; display: grid; grid-template-columns: 300px 1fr 100px 290px; align-items: center; padding: 0 22px 0 18px; box-sizing: border-box; background: url("../img/ui/tournament-preview/topbar.webp") center / 100% 100% no-repeat; }
+.top { left: 0; top: 0; width: 1280px; height: 56px; display: grid; grid-template-columns: 300px 1fr 300px; align-items: center; padding: 0 22px 0 18px; box-sizing: border-box; background: url("../img/ui/tournament-preview/topbar.webp") center / 100% 100% no-repeat; }
 .top .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .top .brand b { font-size: 14px; letter-spacing: .14em; color: #f4e9cf; white-space: nowrap; }
 .top .brand small { display: none; }
 .top .round { color: #ffd9a3; font-weight: 900; font-size: 12px; letter-spacing: .02em; margin-left: 4px; white-space: nowrap; }
 .chips { display: flex; gap: 8px; justify-content: center; }
-.chip { position: relative; width: 128px; height: 40px; display: grid; grid-template-columns: 30px 1fr; align-items: center; column-gap: 6px; padding: 0 12px 4px 5px; box-sizing: border-box; background: url("../img/ui/tournament-preview/chip.webp") left center / 100% 100% no-repeat; color: #f1e9f8; }
+.chip { position: relative; width: 196px; height: 40px; display: grid; grid-template-columns: 30px 1fr; align-items: center; column-gap: 6px; padding: 0 16px 0 5px; box-sizing: border-box; background: url("../img/ui/tournament-preview/chip.webp") left center / 100% 100% no-repeat; color: #f1e9f8; }
 .chip > div { display: grid; row-gap: 2px; min-width: 0; }
 .chip .pf { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; background: #2a2233; }
 .chip .nm { font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap; }
-.chip .tb-st { font-size: 12px; color: #bfb3cc; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip .tb-st { font-size: 12px; color: #ffd9a3; color: #bfb3cc; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip .bubble { position: absolute; left: 36px; right: 0; top: 44px; padding: 6px 8px; border-radius: 6px; background: #fff; color: #1a1325; font-size: 12px; font-weight: 700; line-height: 1.3; opacity: 0; transform: translateY(-4px); transition: .3s; pointer-events: none; z-index: 3; }
+.chip .bubble::before { content: ""; position: absolute; left: 14px; top: -5px; border: 5px solid transparent; border-top: 0; border-bottom-color: #fff; }
+.chip.event .bubble { opacity: 1; transform: none; }
+.chip.event { filter: drop-shadow(0 0 8px var(--c)); }
 .chip .bar { position: absolute; left: 40px; right: 22px; bottom: 5px; height: 3px; background: #ffffff18; border-radius: 2px; overflow: hidden; }
 .chip .bar i { display: block; height: 100%; width: var(--p, 20%); background: var(--c, #ffd27a); box-shadow: 0 0 6px var(--c, #ffd27a); transition: width .8s; }
 .chip.me { filter: drop-shadow(0 0 6px #ffd27a66); }
@@ -80,18 +84,18 @@ code { font-size: .92em; color: #ffd9a3; }
 .tb-left .say .txt.bright { color: #ffe2a6; }
 
 /* 中央: 工程パネル（現行の穴あけを模した静止表示） */
-.center { left: 448px; top: 68px; width: 652px; height: 556px; border-radius: 12px; border: 1px solid #a9977655; background: linear-gradient(180deg, #171022, #0f0a18); overflow: hidden; }
+.center { left: 448px; top: 68px; width: 816px; height: 556px; border-radius: 12px; border: 1px solid #a9977655; background: linear-gradient(180deg, #171022, #0f0a18); overflow: hidden; }
 .foil { position: absolute; left: 44px; top: 70px; width: 400px; height: 400px; border-radius: 50%; background: url("../img/ui/making/foil_interactive_top.webp") center / cover no-repeat; box-shadow: 0 0 0 2px #e8c27a55, 0 18px 50px #000a; }
 .foil .mk { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px; border-radius: 50%; border: 2px solid #e8c27a; background: #0b0812aa; transform: rotate(var(--a)) translate(172px) rotate(calc(-1 * var(--a))); }
 .foil .mk.open { background: #0b0812; border-color: #0b0812; box-shadow: inset 0 0 0 2px #0b0812, 0 0 0 1px #ffffff44; }
 .foil .mk.is-target { border-color: #ff3fa4; box-shadow: 0 0 10px #ff3fa4; }
 .foil .cur { position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; margin: -9px; border-radius: 50%; background: radial-gradient(circle, #fff, #38f0ff 55%, transparent 70%); animation: spin 2.6s linear infinite; transform-origin: center; }
 @keyframes spin { from { transform: rotate(0) translate(172px); } to { transform: rotate(360deg) translate(172px); } }
-.center .info { position: absolute; left: 470px; top: 90px; width: 160px; color: #f1e9f8; }
+.center .info { position: absolute; left: 490px; top: 90px; width: 280px; color: #f1e9f8; }
 .center .info small { display: block; color: #bfb3cc; font-size: 12px; }
 .center .info b { display: block; font-size: 26px; color: #ffe2a6; margin: 2px 0 8px; }
 .center .info .cnt { font-size: 12px; letter-spacing: .02em; color: #dcd2e8; }
-.center .tb-btn { position: absolute; left: 470px; top: 340px; width: 160px; height: 44px; display: grid; place-items: center; border-radius: 8px; border: 1px solid #e8c27a; background: linear-gradient(180deg, #3a2a4a, #1d1428); color: #ffe2a6; font-weight: 900; font-size: 15px; }
+.center .tb-btn { position: absolute; left: 490px; top: 340px; width: 220px; height: 44px; display: grid; place-items: center; border-radius: 8px; border: 1px solid #e8c27a; background: linear-gradient(180deg, #3a2a4a, #1d1428); color: #ffe2a6; font-weight: 900; font-size: 15px; }
 .center .mini { position: absolute; left: 44px; top: 490px; width: 400px; text-align: center; font-size: 13px; color: #bfb3cc; }
 .tb-pop { position: absolute; left: 50%; top: 40%; padding: 4px 12px; border-radius: 6px; font-weight: 900; font-size: 20px; color: #fff; text-shadow: 0 0 8px #38f0ff; animation: pop .9s ease-out forwards; pointer-events: none; }
 @keyframes pop { 0% { transform: translate(-50%, 0) scale(.6); opacity: 0; } 20% { opacity: 1; transform: translate(-50%, -10px) scale(1.1); } 100% { transform: translate(-50%, -50px) scale(1); opacity: 0; } }
@@ -112,8 +116,8 @@ code { font-size: .92em; color: #ffd9a3; }
 .seat.event .bubble { opacity: 1; transform: none; }
 .seat.event { box-shadow: 0 0 0 1px var(--c), 0 0 18px color-mix(in srgb, var(--c) 60%, transparent); }
 
-/* 下帯: ヒートライン（一台の熱の記録）＋流れるコメント */
-.bottom { left: 0; top: 632px; width: 1280px; height: 88px; display: grid; grid-template-columns: 430px 1fr; align-items: center; padding: 0 16px; box-sizing: border-box; }
+/* 下帯: 流れるコメント（現行の帯のまま。密度だけ煙と結果で変わる） */
+.bottom { left: 0; top: 632px; width: 1280px; height: 88px; display: grid; grid-template-columns: 1fr; align-items: center; padding: 0 16px; box-sizing: border-box; }
 .heat { position: relative; width: 410px; height: 74px; background: url("../img/ui/tournament-preview/gauge.webp") center / 100% 100% no-repeat; }
 .heat .heat-svg { position: absolute; left: 54px; right: 54px; top: 14px; height: 46px; border-radius: 6px; overflow: hidden; background: #0b0812; }
 .heat .heat-svg svg { display: block; width: 100%; height: 100%; }
@@ -292,10 +296,10 @@ code { font-size: .92em; color: #ffd9a3; }
 .tb-next { position: absolute; right: 40px; bottom: 26px; padding: 12px 34px; border-radius: 8px; border: 1px solid #e8c27a; background: linear-gradient(180deg, #7a5a2a, #3a2a14); color: #fff; font-weight: 900; font-size: 16px; }
 
 /* ===== スマホ横 844×390（上バーに畳む） ===== */
-.phone .top { width: 844px; height: 44px; grid-template-columns: 70px 1fr 100px 110px; padding: 0 10px; }
+.phone .top { width: 844px; height: 44px; grid-template-columns: 70px 1fr 110px; padding: 0 10px; }
 .phone .top .brand b { display: none; }
 .phone .top .brand b { font-size: 12px; } .phone .top .brand small, .phone .top .round { display: none; }
-.phone .chip { width: 100px; height: 32px; grid-template-columns: 26px 1fr; } .phone .chip .pf { width: 24px; height: 24px; } .phone .chip .tb-st { display: none; } .phone .chip .bar { bottom: 5px; }
+.phone .chip { width: 128px; height: 32px; grid-template-columns: 26px 1fr; } .phone .chip .pf { width: 24px; height: 24px; } .phone .chip .tb-st { display: none; } .phone .chip .bar { bottom: 5px; }
 .phone .clock { font-size: 16px; } .phone .clock small { display: none; }
 .phone .judges .jchip:not(.held) { display: none; } .phone .jchip { width: 98px; height: 32px; }
 .phone .tb-left { left: 8px; top: 50px; width: 250px; height: 300px; } .phone .tb-left .say { min-height: 60px; grid-template-columns: 40px 1fr; } .phone .tb-left .say .pf { width: 40px; height: 40px; } .phone .tb-left .say .txt { font-size: 12px; }
@@ -304,7 +308,7 @@ code { font-size: .92em; color: #ffd9a3; }
 @keyframes spin-s { from { transform: rotate(0) translate(112px); } to { transform: rotate(360deg) translate(112px); } }
 .phone .center .info { left: 320px; top: 30px; } .phone .center .tb-btn { left: 320px; top: 190px; } .phone .center .mini { display: none; }
 .phone .seats { display: none; }
-.phone .bottom { top: 354px; width: 844px; height: 36px; grid-template-columns: 300px 1fr; padding: 0 8px; }
+.phone .bottom { top: 354px; width: 844px; height: 36px; grid-template-columns: 1fr; padding: 0 8px; }
 .phone .heat { width: 290px; height: 34px; } .phone .heat .heat-svg { left: 38px; right: 38px; top: 7px; height: 20px; } .phone .heat .lab, .phone .heat .stg { display: none; }
 .phone .lane { height: 36px; } .phone .nico { font-size: 12px; }
 .phone .verdict { left: 60px; top: 90px; width: 720px; height: 210px; grid-template-columns: 170px 1fr; } .phone .verdict .ring { width: 160px; height: 160px; } .phone .verdict .ring b { font-size: 80px; } .phone .verdict .line { font-size: 18px; } .phone .verdict.great .line { font-size: 20px; }

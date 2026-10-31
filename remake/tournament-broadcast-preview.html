@@ -13,7 +13,7 @@
 <main>
   <p class="kicker">TOURNAMENT BROADCAST — DESIGN PREVIEW</p>
   <h1>大会のシーシャ作り「生中継」フレームの見本</h1>
-  <p class="intro">設計書 <code>docs/design/tournament-craft-redesign-20261031.md</code> の見た目を、本番と同じ 1280×720 で動かして確かめるページです。
+  <p class="intro">設計書 v3 <code>docs/design/tournament-craft-redesign-20261031.md</code>「作業台はそのまま、周りを会場にする」の見た目を、本番と同じ 1280×720 で動かして確かめるページです。工程・採点・票の仕組みには触れません。
     生成素材（<code>asset_sources/ui/tournament-broadcast-20261031/</code>）と既存の顔アイコン・立ち絵を使い、採点・保存データには触れません。操作は見本用で、ミニゲームは動きません。</p>
 
   <div class="controls" role="toolbar" aria-label="場面">
@@ -31,9 +31,7 @@
     <button data-act="verdict-good">決めカード ○</button>
     <button data-act="verdict-bad">決めカード △</button>
     <button data-act="quad">審査員4分割カットイン</button>
-    <button data-act="plate">ラウンドプレート</button>
     <button data-act="rival">ライバルの台に事件</button>
-    <label class="toggle">ヒートライン <select id="heatstage"><option value="0">仕込み中（火はまだ）</option><option value="1">炭を置いた</option><option value="2">蒸らし 6分</option><option value="3">提供（適温・低め）</option><option value="4">調整1（落ちて→交換で戻す）</option><option value="5">調整2（中央で維持）</option></select></label>
   </div>
 
   <div class="viewport"><div class="stage" id="tb-stage"></div></div>
@@ -41,12 +39,13 @@
   <section class="notes">
     <h2>この見本で確かめたいこと</h2>
     <ul>
-      <li><b>上バー</b>: LIVE・ラウンド・試合時計・4人の進行チップ・審査員の持ち点ボード。作業台の工程パネル（中央）は現行のまま。</li>
-      <li><b>対戦席</b>（右）: ライバル3人の台を読める。温度帯の色・炭の数と状態（赤／黒い面／灰）・煙の量と色。事件が起きると吹き出しと流れるコメントが同時に出る。</li>
-      <li><b>ヒートライン</b>（下）: その一台の熱の記録。縦は温度計と同じ帯（まだぬるい→適温→過熱）、横は炭→蒸らし→提供→調整1→調整2。数字は出さず帯の呼び名だけ。点数には影響しない。観客のコメントは客席から見える煙で変わる。</li>
-      <li><b>決めカード</b>: 工程が終わった瞬間の 1.1 秒。◎○△のスタンプ・担当審査員の顔・一言・その工程の実記録1行。</li>
-      <li><b>中間投票</b>: 上園・博士の札が実際に飛んで数字が増える。南雲は錠前のまま。</li>
-      <li><b>結果発表</b>: 10カウント → 南雲の10点 → 4位から呼び上げ → スポットライト → CHAMPION → 表彰（ヒートライン・ハイライト3枚・審査員の一言・称号）。</li>
+      <li><b>上の帯</b>: LIVE・大会名・ラウンド、ライバル3人の「いま何をしているか」1行と状態の点（温度帯の色）、審査員3人の顔と持ち点の粒（南雲は錠前）。時計は出さない。</li>
+      <li><b>作業台</b>: 左の作業風景・審査員の一言・右の工程パネルは現行の位置と大きさのまま（中央は見本の静止表示）。</li>
+      <li><b>周り</b>: 背景が会場（客席のシルエットとスマホの光）。◎で照明が流れ歓声が鳴る。流れるコメントは現行の帯のままで、密度だけ煙と結果で変わる。</li>
+      <li><b>決めカード</b>: 工程が終わった瞬間の 0.9 秒。◎○△のスタンプ・担当審査員の顔・一言・その工程の実記録1行。</li>
+      <li><b>4分割カットイン</b>: 実際の山場（外周が揃った・ジャスト炭・提供が適温・帯の外から戻した）だけ。</li>
+      <li><b>中間投票</b>: 盤と票の中身は現行のまま。札が飛んで数字が増える演出だけ。</li>
+      <li><b>結果発表</b>: 10カウント → 南雲の10点 → 4位から呼び上げ → スポットライト → CHAMPION → 表彰（ハイライト3枚・審査員の一言・称号。一台の熱の振り返りは任意）。</li>
     </ul>
   </section>
 </main>
