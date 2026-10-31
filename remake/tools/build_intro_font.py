@@ -31,6 +31,9 @@ def main():
 
     for path in (ROOT / "data/dialogue").glob("*.json"):
         text += intro_overrides(json.loads(path.read_text()))
+    # 好きなフレーバーの札（表示名は intro-flavors.js、出典は favorite_flavor）
+    text += "好きなフレーバー" + "".join(c.get("favorite_flavor") or "" for c in characters)
+    text += (ROOT / "remake/js/vn/intro-flavors.js").read_text()
     with TemporaryDirectory() as tmp:
         path = Path(tmp) / "NotoSansJP.ttf"
         urlretrieve(SOURCE + "NotoSansJP%5Bwght%5D.ttf", path)
