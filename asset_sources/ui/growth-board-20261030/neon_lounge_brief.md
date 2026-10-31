@@ -57,6 +57,8 @@
 
 ### 第1段: 素材を作る（Draft PR）
 
+**済み（2026-10-31・SBD72）**: 15点を OpenAI 画像 API で生成し、`neon/` に原画と記録、`remake/img/ui/growth_board/` に WebP、`contact_sheet.png` に一覧を置いた。盤の画面への組み込み（第2段）も `has-art` で済み。作り直す時は `neon/README.md` のとおり。
+
 1. `neon/mockup.html` をブラウザで開いて、見本の見た目と素材の場所（①〜⑥）を確かめる。
 2. 5章のプロンプトで素材6点を生成する。**参照画像として `neon/mockup_assets.jpg` と、その素材が写っている `mockup_*.jpg` を添付する**（形・大きさの比・色の役割を見本に合わせるため）。
 3. 原画を `asset_sources/ui/growth-board-20261030/neon/` に保存し、6章の手順で切り出し・WebP 化して `remake/img/ui/growth_board/` に置く。

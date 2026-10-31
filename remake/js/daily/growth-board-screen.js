@@ -31,6 +31,24 @@ const svg = (tag, attrs = {}, children = []) => {
   return n;
 };
 const payText = (pay) => Object.entries(pay).map(([k, n]) => `${HIDANE_NAME[k]}${n}`).join("＋") || "火種いらず";
+/**
+ * 生成画像（GB03 5.2。remake/img/ui/growth_board/*.webp）。全部読めた時だけ盤に `has-art` を付けて画像の見た目にする。
+ * 読めない時は今の図形（CSS/SVG）のまま動く。画像は飾りで、規則・データは変えない（SBD72）。
+ */
+const ART_DIR = "img/ui/growth_board/";
+const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
+  "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame"];
+let artReady = null;
+export function loadBoardArt() {
+  if (artReady) return artReady;
+  artReady = Promise.all(ART_FILES.map((name) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = `${ART_DIR}${name}.webp`;
+  }))).then((ok) => ok.every(Boolean)).catch(() => false);
+  return artReady;
+}
 export const PLACE_JA = { kannon: "観音堂", tokyo_shrine: "路地裏の神社", dubai_mosque: "モスクの回廊", inn_window: "宿の窓辺" };
 
 let current = null;
@@ -155,13 +173,19 @@ export function openBoard({ place = null } = {}) {
     }
     parts.push(glow, ...cores);
     const hub = at(0, 0);
-    // 紋: ネオンの輪（外の太い管のにじみ＋管＋内の細い輪＋6つの短い渦）。画像 hub_<盤>.webp が来たら差し替える
-    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 34, class: "gb-hub-glow", filter: "url(#gb-glow)" }));
-    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub" }));
-    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 25, class: "gb-hub-inner" }));
-    for (let i = 0; i < 6; i++) {
-      const a0 = i * Math.PI / 3, a1 = a0 + 0.7, r = 20;
-      parts.push(svg("path", { d: `M ${hub.x + r * Math.cos(a0)} ${hub.y + r * Math.sin(a0)} A ${r} ${r} 0 0 1 ${hub.x + (r - 3) * Math.cos(a1)} ${hub.y + (r - 3) * Math.sin(a1)}`, class: "gb-hub-swirl" }));
+    if (root.classList.contains("has-art")) {
+      // 紋: 生成した輪の画像（hub_<盤>.webp）。漢字はコードで重ねる
+      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub gb-hub-art-base" }));
+      parts.push(svg("image", { href: `${ART_DIR}hub_${board}.webp`, x: hub.x - 44, y: hub.y - 44, width: 88, height: 88, class: "gb-hub-art" }));
+    } else {
+      // 紋: ネオンの輪（外の太い管のにじみ＋管＋内の細い輪＋6つの短い渦）
+      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 34, class: "gb-hub-glow", filter: "url(#gb-glow)" }));
+      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub" }));
+      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 25, class: "gb-hub-inner" }));
+      for (let i = 0; i < 6; i++) {
+        const a0 = i * Math.PI / 3, a1 = a0 + 0.7, r = 20;
+        parts.push(svg("path", { d: `M ${hub.x + r * Math.cos(a0)} ${hub.y + r * Math.sin(a0)} A ${r} ${r} 0 0 1 ${hub.x + (r - 3) * Math.cos(a1)} ${hub.y + (r - 3) * Math.sin(a1)}`, class: "gb-hub-swirl" }));
+      }
     }
     parts.push(svg("circle", { cx: hub.x, cy: hub.y + 2, r: 19, fill: "url(#gb-ember)" }));
     const hubText = svg("text", { x: hub.x, y: hub.y + 8, class: "gb-hub-text" });
@@ -446,6 +470,7 @@ export function openBoard({ place = null } = {}) {
   if (g.target) selected = g.target;
   render();
   requestAnimationFrame(() => root.classList.add("show"));
+  loadBoardArt().then((ok) => { if (ok && root.isConnected) { root.classList.add("has-art"); render(); } });
   return done;
 }
 

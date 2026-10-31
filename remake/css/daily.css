@@ -1434,6 +1434,45 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-footer { background: linear-gradient(0deg, rgba(8, 5, 12, 0.95), rgba(8, 5, 12, 0.7)); border-top-color: rgba(244, 210, 122, 0.22); }
 .gb-wallet { padding: 6px 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 180, 60, 0.18); }
 @media (prefers-reduced-motion: reduce) { .gb-node .gb-face { animation: none !important; } }
+/* ================= 生成画像を重ねる（GB03 7.1・SBD72）。画像が全部読めた時だけ .has-art が付く。下の図形はそのまま残す ================= */
+.gboard.has-art { background: #07050b url(../img/ui/growth_board/screen_backdrop.webp) center / cover no-repeat; }
+.gboard.has-art .gb-board { background: radial-gradient(ellipse 34% 40% at 50% 80%, color-mix(in srgb, var(--board-c) 9%, transparent), transparent 70%),
+  url(../img/ui/growth_board/board_glass.webp) center / 100% 100% no-repeat; }
+.gboard.has-art .gb-smoke { opacity: 0.08; }
+.gboard.has-art .gb-hub-art-base { fill: rgba(10, 7, 14, 0.92); stroke: none; }
+.gboard.has-art .gb-hub-art { filter: drop-shadow(0 0 6px var(--board-c)); pointer-events: none; }
+/* 札の枠: 画像を敷き、盤の色の光は drop-shadow で重ねる。灯っていない札は暗く */
+.gboard.has-art .gb-node.skill .gb-face, .gboard.has-art .gb-node.lesson .gb-face, .gboard.has-art .gb-node.peak .gb-face, .gboard.has-art .gb-node.gate .gb-face {
+  clip-path: none; border: 0; border-radius: 0; background: center / contain no-repeat; box-shadow: none; }
+.gboard.has-art .gb-node.skill .gb-face::before, .gboard.has-art .gb-node.lesson .gb-face::before { display: none; }
+.gboard.has-art .gb-node.skill .gb-face { width: 46px; height: 46px; background-image: url(../img/ui/growth_board/frame_skill.webp); }
+.gboard.has-art .gb-node.lesson .gb-face { width: 46px; height: 46px; background-image: url(../img/ui/growth_board/frame_lesson.webp); }
+.gboard.has-art .gb-node.lesson.sig .gb-face { width: 50px; height: 50px; outline: none; }
+.gboard.has-art .gb-node.gate .gb-face { width: 34px; height: 34px; transform: none; background-image: url(../img/ui/growth_board/frame_gate.webp); }
+.gboard.has-art .gb-node.gate .gb-glyph { transform: none; }
+.gboard.has-art .gb-node.peak .gb-face { width: 52px; height: 52px; background-image: url(../img/ui/growth_board/frame_peak.webp); }
+.gboard.has-art .gb-node.peak::after { display: none; }
+.gboard.has-art .gb-node.s-locked.skill .gb-face, .gboard.has-art .gb-node.s-locked.lesson .gb-face, .gboard.has-art .gb-node.s-locked.peak .gb-face { background-image: url(../img/ui/growth_board/frame_seal.webp); opacity: 0.9; filter: none; }
+.gboard.has-art .gb-node.s-locked .gb-glyph { color: #cfc6dc; }
+.gboard.has-art .gb-node.lesson .gb-face-icon { inset: 7px; width: calc(100% - 14px); height: calc(100% - 14px); clip-path: polygon(25% 2%, 75% 2%, 99% 50%, 75% 98%, 25% 98%, 1% 50%); filter: none; }
+.gboard.has-art .gb-node.lesson.s-sealed .gb-face-icon { filter: grayscale(0.6) brightness(0.7); }
+.gboard.has-art .gb-node .gb-glyph { text-shadow: 0 0 4px #000, 0 0 2px #000; }
+.gboard.has-art .gb-node:is(.skill, .peak, .gate):not(.s-unlocked):not(.s-available):not(.s-pending):not(.s-locked) .gb-face { filter: saturate(0.6) brightness(0.8); }
+.gboard.has-art .gb-node.lesson:not(.s-unlocked):not(.s-available):not(.s-pending):not(.s-locked) .gb-face { filter: saturate(0.8) brightness(0.9); }
+.gboard.has-art .gb-node.skill.s-available .gb-face, .gboard.has-art .gb-node.skill.s-pending .gb-face { filter: drop-shadow(0 0 6px var(--c)); }
+.gboard.has-art .gb-node.skill.s-unlocked .gb-face, .gboard.has-art .gb-node.peak.s-unlocked .gb-face { filter: drop-shadow(0 0 7px var(--board-c)) brightness(1.1); }
+.gboard.has-art .gb-node.lesson.s-unlocked .gb-face, .gboard.has-art .gb-node.lesson.s-available .gb-face { filter: drop-shadow(0 0 7px var(--neon-gold)); }
+.gboard.has-art .gb-node.gate .gb-glyph { color: var(--c); font-weight: 900; text-shadow: 0 0 6px #000; }
+.gboard.has-art .gb-node.gate.s-unlocked .gb-face, .gboard.has-art .gb-node.gate.s-available .gb-face { filter: drop-shadow(0 0 8px var(--c)); }
+.gboard.has-art .gb-node.gate.s-unlocked .gb-glyph { color: #fff; text-shadow: 0 0 6px var(--c); }
+/* 火種の粒 */
+.gboard.has-art .gb-hidane i { width: 18px; height: 18px; border-radius: 0; clip-path: none; transform: none; margin: 0; filter: none; background: center / contain no-repeat url(../img/ui/growth_board/hidane_any.webp); }
+.gboard.has-art .gb-hidane.k-body i { background-image: url(../img/ui/growth_board/hidane_body.webp); }
+.gboard.has-art .gb-hidane.k-sense i { background-image: url(../img/ui/growth_board/hidane_sense.webp); }
+.gboard.has-art .gb-hidane.k-wisdom i { background-image: url(../img/ui/growth_board/hidane_wisdom.webp); }
+/* 右のパネルの縁（9スライス） */
+.gboard.has-art .gb-side { border: 22px solid transparent; border-image: url(../img/ui/growth_board/panel_frame.webp) 48 / 22px stretch; border-radius: 0; box-shadow: none; padding: 6px 8px 4px; }
+.gboard.has-art .gb-side::before, .gboard.has-art .gb-side::after { display: none; }
 .gboard-help .modal-body p { margin: 0 0 10px; line-height: 1.6; }
 .lu-actions { display: flex; justify-content: center; gap: 12px; }
 .levelup .lu-board { min-width: 180px; }
