@@ -6,6 +6,12 @@ import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 const dt = name => `[data-test="${name}"]`;
+// #2031: 票が動いた後の途中順位（制作後・提供後・調整1回目の後）と、調整前の問いを順に送る。
+async function craftThroughStandings(page) {
+  for (const target of ["ch4-standings-continue", "ch4-standings-continue", "ch4-customer-ask", "ch4-standings-continue", "ch4-customer-ask"]) {
+    await page.locator(`[data-test="${target}"]`).click({ timeout: 180000 });
+  }
+}
 const scene = id => `[data-test="ch4-scene"][data-scene="${id}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 const arm = page => page.evaluate(async () => {
@@ -182,9 +188,7 @@ await suite("ch4-full-flow", async check => {
     await observeTournament(page);
     await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
     await page.locator(dt("ch4-start")).click();
-    for (const round of [1, 2]) {
-      await page.locator(dt("ch4-customer-ask")).click({ timeout: 180000 });
-    }
+    await craftThroughStandings(page);
     await page.locator(dt("ch4-verdict-continue")).waitFor({ timeout: 180000 });
     state = await get(page);
     assert.equal(state.flags._ch4.match.step, 11);
@@ -267,6 +271,13 @@ await suite("ch4-full-flow", async check => {
     const before = await get(page);
     await observeTournament(page);
     await page.locator(dt("ch4-start")).click();
+    // 焦げる工程より前に票が動いた場合だけ、途中順位を送る（#2031）。
+    const verdictOrStandings = page.locator(`${dt("ch4-verdict-continue")}, ${dt("ch4-standings-continue")}`);
+    for (let i = 0; i < 4; i++) {
+      await verdictOrStandings.first().waitFor({ timeout: 180000 });
+      if (!await page.locator(dt("ch4-standings-continue")).count()) break;
+      await page.locator(dt("ch4-standings-continue")).click();
+    }
     await page.locator(dt("ch4-verdict-continue")).waitFor({ timeout: 180000 });
     let value = await get(page);
     assert.equal(value.flags._ch4.match.result.win, false);
@@ -288,7 +299,7 @@ await suite("ch4-full-flow", async check => {
     assert.equal(value.money, before.money);
     await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
     await page.locator(dt("ch4-start")).click();
-    for (const round of [1, 2]) await page.locator(dt("ch4-customer-ask")).click({ timeout: 180000 });
+    await craftThroughStandings(page);
     await page.locator(dt("ch4-verdict-continue")).waitFor({ timeout: 180000 });
     value = await get(page);
     assert.equal(value.flags._ch4.match.result.win, true);
