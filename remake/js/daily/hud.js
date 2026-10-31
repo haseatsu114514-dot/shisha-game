@@ -12,6 +12,11 @@ import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
 import { config } from "../core/state.js";
 import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
+import { GUTS_STAMINA_BONUS } from "../core/stat-step-tables.js";
+
+// 体力バーの長さ（最大体力100のとき）。根性で最大体力が伸びるとバーも同じ割合で伸びる（GUI26）。
+const STAMINA_BAR_BASE = 150;
+const STAMINA_CEILING = 100 + GUTS_STAMINA_BONUS[GUTS_STAMINA_BONUS.length - 1];
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
@@ -197,7 +202,9 @@ export function updateHud() {
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる
-  dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(92 * (maxStamina() / 100))}px`;
+  dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(STAMINA_BAR_BASE * (maxStamina() / 100))}px`;
+  // まだ伸びていない分（最大まで）は、バーの右に薄い点線で見せる（DUI13）。
+  dom.stamina.style.setProperty("--stamina-room", `${Math.round(STAMINA_BAR_BASE * Math.max(0, STAMINA_CEILING - maxStamina()) / 100)}px`);
   dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 7.2 + 12.8 * (step(k) - 1) / 9)).join(" "));
   updateGrowth();
 }

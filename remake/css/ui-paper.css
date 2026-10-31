@@ -54,9 +54,11 @@ html:root[data-ui-theme="paper"] .spot-pin .sub-label { border-width: 1px; backg
 html:root[data-ui-theme="paper"] .sub-title { color: var(--paper-ink); }
 
 /* 会話: 生成した紙の窓（表示と同じ縦横比に組んだ原画）＋ラベンダーの名前札 */
+/* 窓の絵が読めない（未取得・配信のずれ）時も、紙の面を必ず敷いて本文を読めるようにする（DUI12）。 */
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box::before,
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box:is(.narration, .thought)::before {
-  inset: -8px -8px -8px; background: var(--vn-lounge-frame) center / 100% 100% no-repeat;
+  inset: -8px -8px -8px; background: var(--vn-lounge-frame) center / 100% 100% no-repeat, var(--paper);
+  border-radius: 8px; box-shadow: inset 0 0 0 1px #69497e40;
   filter: drop-shadow(0 8px 18px #110a2240);
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box .vn-name {
@@ -92,7 +94,10 @@ html:root[data-ui-theme="paper"] body.game-ds .vn-controls { background: var(--p
 html:root[data-ui-theme="paper"] body.game-ds .vn-controls .vn-ctl { color: var(--lavender); }
 
 /* 紙の上で読めるよう、暗い面向けに明るく作られた色を濃くする。 */
-html:root[data-ui-theme="paper"] .hud-card { border-width: 12px; border-image-width: 12px; }
+html:root[data-ui-theme="paper"] .hud-card { border-width: 10px; border-image-width: 10px; }
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .hud-card .hud-bar { background: #e6dcea; border: 1px solid #b9a5c6; }
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-area { color: var(--lavender); }
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-row:not(.money) b { color: var(--amber-ink); }
 html:root[data-ui-theme="paper"] :is(.cfg-row select, .ui-theme-select) {
   background: var(--paper-card); color: var(--paper-ink); border: 1px solid var(--lavender-line);
 }
@@ -106,3 +111,9 @@ html:root[data-ui-theme="paper"] .st-next-track { background: var(--paper-line);
 html:root[data-ui-theme="paper"] :is(.radar-grid, .radar-axis) { stroke: #c9b8d2; }
 html:root[data-ui-theme="paper"] .radar-base { fill: #69497e14; stroke: #9676a8; }
 html:root[data-ui-theme="paper"] .radar-now { fill: #d8963f55; stroke: var(--amber-ink); }
+
+/* 地図の案内パネルは紙の縁を細くして、後ろの看板にかからない高さにする（DUI14）。 */
+html:root[data-ui-theme="paper"] .map-info { border-width: 10px; border-image-width: 10px; }
+
+/* 店のロゴは明るい台紙の上に描かれているので、どのUIテーマでも看板の台紙は元の生成り（store-logos.css）に戻す。 */
+html[data-ui-theme] .spot-pin.branded .shield::before { background: #fffaf0; border: 1px solid #d9c7a5; border-radius: 8px; box-shadow: none; }

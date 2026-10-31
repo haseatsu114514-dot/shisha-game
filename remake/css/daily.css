@@ -1651,3 +1651,60 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard.has-art .gb-node.gate.s-locked .gb-face { opacity: 0.85; }
 @media (prefers-reduced-motion: reduce) { .gboard.has-art .gb-node.gate .gb-face::after, .gboard.has-art .gb-node.gate .gb-gate-gem { animation: none !important; } }
 .gboard.has-art .gb-node.gate.selected .gb-face, .gboard.has-art .gb-node.gate.target .gb-face { outline: none; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--board-c)) !important; }
+
+/* 左上の日付カード（2026-10-31 DUI13）: 2段に詰め、行ごとの枠をやめて1枚の板にまとめる。
+   幅は固定（所持金の桁・日数・時間帯・最大体力で板が動かない）。2画面表示は game-ds.css のまま。 */
+body:not(.game-ds) #hud .hud-card {
+  display: grid; grid-template-columns: 104px 304px; align-items: center; column-gap: 14px;
+  width: auto; height: auto; padding: 7px 14px 8px; box-sizing: content-box;
+}
+body:not(.game-ds) #hud .dc-main {
+  display: grid; grid-template-columns: max-content max-content; grid-template-areas: "area area" "day slot";
+  align-items: baseline; column-gap: 6px; row-gap: 1px; width: auto; min-width: 0; flex: none;
+}
+body:not(.game-ds) #hud .dc-area { grid-area: area; margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .02em; line-height: 1.1; }
+body:not(.game-ds) #hud .dc-day { grid-area: day; line-height: 1; }
+body:not(.game-ds) #hud .dc-day b { font-size: 30px; font-weight: 900; line-height: .95; }
+body:not(.game-ds) #hud .dc-day small { font-size: 13px; font-weight: 700; }
+body:not(.game-ds) #hud .dc-slot { grid-area: slot; margin: 0; font-size: 14px; font-weight: 700; line-height: 1; }
+body:not(.game-ds) #hud .dc-meta {
+  display: grid; grid-template-columns: 140px 150px; column-gap: 14px; row-gap: 5px;
+  align-items: baseline; margin: 0; min-width: 0;
+}
+body:not(.game-ds) #hud .dc-row {
+  display: flex; align-items: baseline; justify-content: flex-start; gap: 6px; width: auto; min-width: 0;
+  padding: 0; background: none; border: 0; border-image: none; border-radius: 0; box-shadow: none; white-space: nowrap;
+}
+body:not(.game-ds) #hud .dc-row span { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+body:not(.game-ds) #hud .dc-row.money b { font-size: 20px; line-height: 1.1; }
+body:not(.game-ds) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1.1; }
+body:not(.game-ds) #hud .hud-card .hud-stamina {
+  grid-column: 1 / -1; width: max-content; height: 16px; padding: 0; gap: 8px;
+  background: none; border: 0; border-image: none; box-shadow: none;
+}
+body:not(.game-ds) #hud .hud-card .hud-stamina > span { font-size: 12px; font-weight: 700; }
+body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar { flex: none; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
+/* 根性で伸びる前の残り（最大体力160まで）を点線の器で見せる。 */
+body:not(.game-ds) #hud .hud-card .hud-stamina::after {
+  content: ""; position: absolute; left: calc(100% + 4px); top: 50%; width: var(--stamina-room, 0px); height: 10px;
+  box-sizing: border-box; transform: translateY(-50%); border: 1px dashed currentColor; border-radius: 5px; opacity: .4; pointer-events: none;
+}
+body:not(.game-ds) #hud .hud-card .hud-exp { grid-column: 1 / -1; }
+
+/* 地図の案内パネル（2026-10-31 DUI14）: 右下の家・喫茶の看板に届かない高さに収め、改行で縦に伸びないようにする。
+   幅を広げてラベルと説明を少ない行に収め、写真は横長の帯にする（左端は路上占いの看板 x≦866 に届かない）。 */
+body:not(.game-ds) .map .map-info { width: 380px; padding: 6px 12px 7px; }
+body:not(.game-ds) .map .mi-banner { margin-bottom: 4px; white-space: nowrap; }
+body:not(.game-ds) .map .mi-preview { aspect-ratio: auto; height: 40px; margin: 0 0 4px; background-position: center 45%; }
+body:not(.game-ds) .map .mi-area { line-height: 1.3; }
+body:not(.game-ds) .map .mi-desc { margin: 2px 0 5px; font-size: 14px; line-height: 1.4; word-break: auto-phrase; line-break: strict; }
+body:not(.game-ds) .map .mi-foot { white-space: nowrap; }
+body:not(.game-ds) .map .mi-tags { gap: 3px; margin-bottom: 5px; }
+body:not(.game-ds) .map .mi-tags .tag { padding: 2px 6px; font-size: 12px; font-weight: 700; letter-spacing: 0; white-space: nowrap; }
+/* 見出しの右に人の名前を並べ、1行を節約する。他の要素は全幅で上から順に並ぶ。 */
+body:not(.game-ds) .map .map-info { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 8px; align-items: center; }
+body:not(.game-ds) .map .map-info > * { grid-column: 1 / -1; }
+body:not(.game-ds) .map .map-info > .mi-banner { grid-column: 1; grid-row: 1; justify-self: start; }
+body:not(.game-ds) .map .map-info > .mi-area { grid-column: 2; grid-row: 1; margin-bottom: 5px; font-size: 14px; font-weight: 700; }
+body:not(.game-ds) .map .mi-go { padding: 5px 0; }
+body:not(.game-ds) .map .mi-no { padding: 5px; }
