@@ -152,6 +152,8 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   markMet(id); recordCityVisit(state, id);
   // 台本で交換した連絡先は、訪問を終えた時点で連絡先一覧にも記録する（daily/spots.js の hasContact と同じ）
   if (state.flags[`_lime_contact_${id}`] && !state.contacts.includes(id)) state.contacts.push(id);
+  // あげはの交換後LIME（lime_ch2_ageha_after_visit）と旧セーブ互換の到達フラグ
+  if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
   // 神崎・REIの長い段階会話と締めくくりは、第1章の固有会話と同じ+10（#2027）。
   gainAffinity(id, first || finale || stages && stage?.file ? 10 : 5); earnStat(stat[id], 4);
   return { used: true, exerted: true };
