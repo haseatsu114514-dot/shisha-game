@@ -325,6 +325,16 @@ core.state.affinity.adam = 0;
   core.state.chapter = 1;
 }
 
+// 20の授業すべてに、会って相談する場面がある（SBD70）。場面の台詞は growth_lessons.json か今のゲームの場面
+{
+  const files = ["growth_lessons", "ch1_sumi"].map((f) => JSON.parse(readFileSync(new URL(`../../data/dialogue/${f}.json`, import.meta.url), "utf8")).dialogues);
+  const ids = new Set(files.flat().map((d) => d.dialogue_id));
+  for (const l of board.LESSONS) {
+    assert(l.scene, `${l.id}: 相談の場面がある`);
+    assert(ids.has(l.scene), `${l.id}: 場面 ${l.scene} の台詞がある`);
+  }
+}
+
 // 授業は会って相談した時だけ習う（SBD61: LIME では習えない）
 {
   assert.equal(growth.canAskByLime, undefined, "LIME で聞く入口は無い");
@@ -334,7 +344,7 @@ core.state.affinity.adam = 0;
   const gg = growth.ensureGrowth();
   const keep = { nodes: [...gg.nodes], learned: [...gg.learned] };
   gg.nodes.push("M-B2", "M-S2");
-  assert.deepEqual(growth.readyLessons("rei"), [], "会って相談する場面が無い授業は、まだ習えない");
+  assert.deepEqual(growth.readyLessons("rei").map((l) => l.id), ["M-B2"], "零の授業も会った時に相談できる（SBD70）");
   assert.deepEqual(growth.readyLessons("adam").map((l) => l.id), ["M-S2"], "場面がある授業は会った時に相談できる");
   Object.assign(gg, keep);
 }

@@ -53,6 +53,8 @@ const mocks = {
   "./ch2-story.js": { chapterTwoNights: () => ({}) },
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
   "./ch2-story-data.js": { agehaStoryScene: () => null, syncAgehaVibes: () => 0 },
+  // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
+  "../core/growth.js": { consultLessons: async () => [] },
 };
 const module = new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/chapters/ch2-preparation.js", root), "utf8"), { context });
 await module.link(async specifier => {
