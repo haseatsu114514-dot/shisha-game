@@ -52,10 +52,10 @@ try{
   const art=await page.request.get(artwork);assert(art.ok(),'Generated background must be served');assert((await art.body()).length>10000,'Background must not be an LFS pointer');
   for(const key of ['a','b']){
    assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');
-   {const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=280&&j.height/stageScale>=280,'Large jog wheels');}
+   {const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=330&&j.height/stageScale>=330,'Large jog wheels');}
   }
   assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No continuous sync/CUE/tap input workload');
-  if(kind==='pc')await page.locator('#start').click();else await page.locator('#start').tap();
+  assert.equal(await page.locator('#start,#pause,#mute').count(),0,'No prepare/mute/pause controls; first ▶ prepares audio');
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.equal(ready.bpms[0],120);const delta=Math.abs(ready.bpms[1]/120-1);assert(delta>=.0119&&delta<=.0281);assert.notEqual(ready.bpms[1],120);
   for(const deck of [0,1]){
    const jog=page.locator('#platter-'+(deck?'b':'a'));
@@ -93,10 +93,10 @@ try{
    for(let n=0;n<8;n++)await page.locator('[data-nudge="1,-0.0625"]').tap();const corrected=await snap(page);near(corrected.beats[1]-offset.beats[1]-(corrected.clock-offset.clock)*manual/60,-.5);
    const input=page.locator('#crossfader');await input.scrollIntoViewIfNeeded();const r=await input.boundingBox();await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2);near((await snap(page)).mix,.5,.1);near((await snap(page)).bpms[1],manual,.001);
   }
-  assert(await page.evaluate(()=>{const v=document.querySelector('.visual-slot').getBoundingClientRect(),box=document.querySelector('.console').getBoundingClientRect();return v.width<=180&&v.height<=160&&v.top>=box.bottom;}),'VJ small window stays below controls');
+  assert(await page.evaluate(()=>{const v=document.querySelector('.visual-slot'),w=document.querySelector('.waves');return w.contains(v)&&Number(getComputedStyle(v).opacity)<=.4&&getComputedStyle(v).pointerEvents==='none';}),'Dot-art VJ sits faintly behind the waveform');
   if(kind==='reduced')assert((await page.locator('#visual-label').textContent()).includes('静止'));
-  await page.locator('#pause').click();const stopped=await snap(page);assert.deepEqual(stopped.playing,[false,false]);assert.equal(stopped.voices,0);await page.waitForTimeout(100);assert.deepEqual((await snap(page)).beats,stopped.beats);
-  await page.locator('#start').click();await wait(page,'audio',errors);const resumed=await snap(page);assert.deepEqual(resumed.playing,[true,true]);near(resumed.bpms[1],stopped.bpms[1],.001);assert.equal(resumed.voices,2);assert.deepEqual(errors,[]);
+  await page.locator('#play-a').click();await page.locator('#play-b').click();const stopped=await snap(page);assert.deepEqual(stopped.playing,[false,false]);assert.equal(stopped.voices,0);await page.waitForTimeout(100);assert.deepEqual((await snap(page)).beats,stopped.beats);
+  await page.locator('#play-a').click();await page.locator('#play-b').click();await wait(page,'audio',errors);const resumed=await snap(page);assert.deepEqual(resumed.playing,[true,true]);near(resumed.bpms[1],stopped.bpms[1],.001);assert.equal(resumed.voices,2);assert.deepEqual(errors,[]);
   await page.screenshot({path:path.join(out,`visual-${kind}.png`),fullPage:true});
   results.push({kind,ready,pitched,entered,stopped,resumed,passed:true,limits:'Real WebAudio/UI only; physical listening/capture excluded'});await context.close();
  }
