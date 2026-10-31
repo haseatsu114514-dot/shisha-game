@@ -22,6 +22,7 @@ import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
 import { tsumugiMessages } from "./tsumugi-schedule.js";
+import { casualMessages } from "./casual-lime.js";
 
 import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitationNote } from "./invitations.js";
 
@@ -278,12 +279,26 @@ export function morningMessages(opts = {}) {
     out.push(hiyori);
     senders.add("hiyori");
   }
+  // 返事の要る連絡（物語の返信・誘い）が今朝すでに届くなら、返事の要る雑談は重ねない（LM04）。
+  // スミさんのバイトの誘いは仕事の連絡なので数えない（オーナー「すみさんのバイト入れるか？みたいなやつはいい」）
+  const needsReply = (m) => m.accept_event !== "__sumi_baito__" && (m.type === "invitation" || !!m.replies?.length);
+  let casualSlot = true;
   for (const template of friendMessages(opts)) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || delivered.has(template.id)) continue;
     if (template.type === "invitation" && (otherInvite || out.some(meetInvite))) continue;
+    if (template.replies?.length && out.some(needsReply)) continue;
     const m = scheduledInvitation(template, opts); // お誘いは休日の午後か仕事後。合わない日は同じ相手の雑談へ
     if (!m || !invitationAvailable(m, opts)) continue;
+    out.push(m);
+    senders.add(m.sender);
+    casualSlot = false;
+    break;
+  }
+  // 友人のLIMEが届かない朝だけ、♥3〜4の知り合いから読むだけの雑談を1通（LM05）
+  for (const m of casualSlot ? casualMessages(opts) : []) {
+    if (out.length >= 3) break;
+    if (senders.has(m.sender) || delivered.has(m.id)) continue;
     out.push(m);
     senders.add(m.sender);
     break;
@@ -751,7 +766,16 @@ function phoneShell({ time, title }) {
 /** 読み終えたときの報酬（返信の無いメッセージ）。噂は洞察、ふつうの連絡は少しだけ好感度 */
 function readReward(m) {
   if (m.type === "rumor") applyStats({ insight: 2 });
-  else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") gainAffinity(m.sender, 2);
+  else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") {
+    // 恋人の読むだけの連絡（朝のひとこと）は、私的なやりとりとして絆に積もる（LM01: 返事1点ぶん）
+    const lover = isLover(m.sender);
+    bond.private = lover;
+    try {
+      gainAffinity(m.sender, lover ? 3 : 2);
+    } finally {
+      bond.private = false;
+    }
+  }
 }
 
 /** 一方の約束を承諾したら、その日に競合する誘いには先の約束を理由に返事を残す */

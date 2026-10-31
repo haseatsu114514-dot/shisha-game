@@ -30,7 +30,7 @@ async function fixture({ lover = false, reply = response, invitation = false } =
     'util.js': { el: element, sleep: async () => {}, fitOneLine: noop, yen: String },
     'data.js': { DB: { lime: [], manifest: { limeMedia: mediaCatalog } }, displayName: String, faceIconUrl: noop },
     'lime-icons.js': { customLimeIconUrl: () => null },
-    'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
+    'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'casual-lime.js': { casualMessages: () => [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
     'travel-budget.js': { spendableMoney: () => 30000 },
     'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private }); if (pts > 0) opts?.onGain?.(.2125); },
