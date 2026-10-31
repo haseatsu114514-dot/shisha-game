@@ -30,6 +30,7 @@
 
 | 作業 | 最初に読む |
 |---|---|
+| 第2〜5章・キャラの作り込み（第1章に揃える） | [chapter_parity_audit.md](chapter_parity_audit.md)（第1章の基準チェックリストと章・キャラごとの不足） |
 | 台詞・会話イベントの追加・編集 | `.claude/skills/dialogue-edit`、`text-style`、`gameplay_agent_reference.md`、必要なら `shisha_reference.md` |
 | 設定の矛盾点検・ストーリー改善 | `.claude/skills/canon-check`、`story-review`、`review_scope.md`、`brand/` |
 | 画像・CG・立ち絵 | `.claude/skills/codex-image-prompt`、`portrait-fix`、`character-portrait-remaster`、`asset_ai_guidance.md` |
