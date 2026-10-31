@@ -99,6 +99,9 @@ CRAFT_PARTS = {
     "button-lavender": {"source_size": (1471, 601), "width": 512, "alpha": True},
     # 琥珀の面は外側に柔らかな光彩を含む（切り出しに 40px の余白）。
     "button-amber": {"source_size": (1513, 588), "width": 512, "alpha": True},
+    # 工程ごとの舞台（小道具を置く天板）。台所の石の天板＝炭焼き・調整、リネンのマット＝配合・詰め方・穴あけ・蒸らし時間。
+    "stage-kitchen": {"source_size": (1536, 1024), "width": 1280, "alpha": False, "quality": 82},
+    "stage-workbench": {"source_size": (1536, 1024), "width": 1280, "alpha": False, "quality": 82},
 }
 
 
