@@ -325,7 +325,9 @@ function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) 
  * スミさんからの「急で悪い、昼のシフト入れるか？」。序盤の固定2回（DAY3/8）＋4日以上バイトに出ていない朝。
  * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。各章の大会当日は来ない
  */
-function sumiBaitoInvite({ tournamentDay = false } = {}) {
+function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
+  // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、朝の誘いも出さない
+  if (fixedNight?.(state.day)) return null;
   if (tournamentDay || ![1, 2].includes(state.chapter) || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
   const id = `_sumi_baito_inv_d${state.day}`;
   if (state.limeRead.includes(id)) return null;
