@@ -6,6 +6,7 @@
 - `portraits/` 生成した原画（切り抜き用のマゼンタ背景、ひよりのみ緑）。モデル gpt-image-2.5-sunburst。
   - 指示文: `portrait_prompt.txt`（BGCOLOR を背景色に置換）＋ `characters.tsv` の人物欄。画風見本はサメちゃん・あげは(v1)・凛の原画、人物見本は現行の normal 立ち絵。
   - 年齢・体型を厳守させる文、目元を「黒い帯」にしない文を入れる。お姉さんはみんとと別のポーズ・配色にする（正体を伏せる）。
-- `backgrounds/` 背景の描き直し（steve / mashiro / nagumo / maki）。指示文 `background_prompt.txt`。画風見本はサメちゃん・あげは・アダムの現行背景。残り（kuze, sai, sumi, uranaishi, dr_kemuri, hajime, oneesan, volk, maezono）は未作成。
+- `backgrounds/` 背景の描き直し（mashiro / nagumo ほか初期の試作）。指示文 `background_prompt.txt`。
+- `chatgpt-20261031/` オーナーが ChatGPT で作った作り直し分（人物10・背景22、#2144）。採用した案は `picks.json`。これで全24人の人物と背景がそろった。
 - 切り抜き: `python3 key_background.py <原画> <出力.png> m|g`（m=マゼンタ, g=緑）。黒背景の原画は外周からつながる黒だけを抜く。
 - 採用素材: `remake/img/ui/character_intros/graphic/<id>.webp`（1024×1024・透過）、`bg_<id>.webp`（1672×941）。一覧は `remake/js/vn/intro-graphic.js`。

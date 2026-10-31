@@ -99,7 +99,7 @@ try {
   assert.match(graphicMaki.background, /character_intros\/graphic\/bg_maki\.webp$/, "描き直した背景を使う");
   const graphicRin = await artFor("rin", "graphic");
   assert.match(graphicRin.portrait, /graphic\/rin\.webp$/);
-  assert.doesNotMatch(graphicRin.background, /graphic\//, "描き直していない背景は旧のまま");
+  assert.match(graphicRin.background, /graphic\/bg_rin\.webp$/, "全員の背景を新しい絵柄に描き直した（2026-10-31）");
   const classicMaki = await artFor("maki", "classic");
   assert.match(classicMaki.portrait, /sprites\/characters\/maki\//, "classic で旧の立ち絵に戻る");
   assert.doesNotMatch(classicMaki.background, /graphic\//, "classic で旧の背景に戻る");

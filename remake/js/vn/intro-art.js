@@ -16,6 +16,9 @@ export function flavorTag(flavor) {
 /** 一言の改行位置の指定「／」を除いた本文 */
 export const plainLine = (text = "") => String(text).replace(/([！？♪])／/g, "$1 ").replaceAll("／", "");
 
+/** グラフィック絵柄で名前の欄を右へ寄せる量（px）。intro.css の [data-art="graphic"] と合わせる */
+export const GRAPHIC_META_SHIFT = 56;
+
 /** 動きの型（データの motion）。未指定は従来の滑り込み */
 export const MOTIONS = {
   sharp: { hold: 3600, out: 240 },  // 刃: ライバル。帯が突入し、名前を判のように押す
@@ -73,11 +76,13 @@ function fitWidth(node, max, high, low, limit) {
 
 /** 一言は1行に収まれば42px（無理なら38px）、収まらなければ「／」で2行・36px。2行なら true */
 export function layoutIntro(host, id, variant, intro) {
+  // グラフィック絵柄は人物が大きいので、名前の欄を右へ寄せたぶん幅を詰める（intro.css と同じ値）
+  const shift = host.dataset.art === "graphic" ? GRAPHIC_META_SHIFT : 0;
   const name = host.querySelector(".ci-name");
-  fitWidth(name, .86, 150, 60, 596);
+  fitWidth(name, .86, 150, 60, 596 - shift);
   const title = host.querySelector(".ci-title");
   title.style.fontSize = "28px";
-  if (title.scrollWidth > 580) fitWidth(title, 1, 27, 20, 580);
+  if (title.scrollWidth > 580 - shift) fitWidth(title, 1, 27, 20, 580 - shift);
   const quote = host.querySelector(".ci-line"), raw = intro.line || "", text = plainLine(raw);
   const oneLine = () => quote.offsetHeight <= parseFloat(getComputedStyle(quote).lineHeight) + 1;
   for (const size of [42, 38]) {
@@ -124,7 +129,8 @@ export function animateIntro(host, id, motion = "sharp", { sound = () => {} } = 
   if (motion === "still") {
     animate(".ci-art-background", [{ opacity: 0 }, { opacity: 1 }], { duration: 900, easing: "ease-out" });
     for (const [selector, delay] of [[".ci-ribbon", 200], [".ci-accent-line", 260]]) {
-      animate(selector, [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }], { duration: 500, delay, easing: "cubic-bezier(.7,0,.3,1)" });
+      // 上下は広げておく: 帯の上にはみ出した二つ名を切り取らない
+      animate(selector, [{ clipPath: "inset(-120px 100% -120px 0)" }, { clipPath: "inset(-120px 0 -120px 0)" }], { duration: 500, delay, easing: "cubic-bezier(.7,0,.3,1)" });
     }
     animate(".ci-portrait", [{ opacity: 0 }, { opacity: 1 }], { duration: 800, delay: 200, easing: "ease-out" });
     animate(".ci-name-line", [{ opacity: 0 }, { opacity: 1 }], { duration: 1, delay: 600 });
