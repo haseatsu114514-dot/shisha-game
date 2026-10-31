@@ -31,6 +31,8 @@ export const CH2_VISIT_STORIES = {
     ch2Story("ch2_rei", "ch2_rei_second", 1),
     { scene: "remake_ch2_rei_revisit", heart: 2, done: "_ch2_revisit_done" },
     ch2Story("ch2_rei", "ch2_rei_third", 2),
+    // 常連の集まりとライブの余りチケット（#2026）。「仲間だ」の後、前夜の場面の _ch2_rei_ticket 分岐より前に読める位置。
+    ch2Story("ch2_rei", "ch2_rei_group_concert_prep", 2),
     ch2Story("ch2_rei", "ch2_rei_fourth", 3),
     ch2Story("ch2_rei", "ch2_rei_fifth", 4),
     ch2Story("ch2_rei", "ch2_rei_sixth", 5),
