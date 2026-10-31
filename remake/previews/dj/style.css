@@ -178,3 +178,24 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .pitch-col:before{content:"";position:absolute;top:18px;bottom:18px;left:50%;width:10px;transform:translateX(-50%);border-radius:5px;background:#000;box-shadow:0 0 0 1px #9d86d6,inset 0 0 6px #000}
 .pitch-col:after{content:"";position:absolute;left:8px;right:8px;top:50%;height:2px;background:#fff;opacity:.7}
 .pitch-col input{position:relative;z-index:1}
+/* Issue #2107: ▶ smaller and next to the faders/mixer, BPM moved outside the platter, deck B in light blue. */
+.deck-controls{justify-content:space-between;align-items:center;gap:10px}
+.deck.b .deck-controls{flex-direction:row-reverse}
+.deck-play{width:112px;min-height:60px;font-size:24px}
+.deck-controls .bpm{display:flex;align-items:baseline;gap:4px;padding:6px 14px;border-radius:8px;background:#07050ccc;border:1px solid color-mix(in srgb,var(--deck),#2b2440 60%);box-shadow:inset 0 0 12px #000,0 0 12px color-mix(in srgb,var(--deck),transparent 80%)}
+.deck-controls .bpm output{font-size:30px}
+.deck-controls .bpm:after{content:"BPM";font-size:9px;letter-spacing:.12em;color:color-mix(in srgb,var(--deck),#a99fbf 50%)}
+.console{background:url('../../img/ui/dj/controller-body-duo.webp') center/100% 100% no-repeat,linear-gradient(90deg,#2a2240,#14202a)}
+.deck.b{--deck:#7fe3ff}
+.deck.b .platter:before{background-image:url('../../img/ui/dj/jog-wheel-cyan.webp')}
+.deck.b .platter{box-shadow:0 0 0 3px #050b10,0 0 0 4px #2f6d80,0 10px 22px #000c}
+.deck.b[data-playing=true] .platter{box-shadow:0 0 0 3px #050b10,0 0 0 4px var(--deck),0 0 34px #4fd8ff80}
+.deck.b .deck-display{border-color:#4fb8d099}
+.deck.b,.ch.b{--b:#7fe3ff}
+.deck.b .vfader::-webkit-slider-thumb{background-image:url('../../img/ui/dj/fader-cap-h-cyan.webp')}
+.deck.b .vfader::-moz-range-thumb{background-image:url('../../img/ui/dj/fader-cap-h-cyan.webp')}
+.deck.b .pitch-col:before{box-shadow:0 0 0 1px #6fc9e0,inset 0 0 6px #000}
+.deck.b .pitch-col,.deck.b .deck-play{border-color:#2f6d80}
+.deck.b .deck-play{background:radial-gradient(120% 90% at 50% 20%,#3a5a6c,#1f3442 55%,#13202a);box-shadow:0 0 0 3px #1c3340,0 0 0 4px #3f7d90,inset 0 2px 1px #ffffff26,inset 0 -6px 10px #0008,0 7px 0 #04080c,0 10px 14px #000a}
+.deck.b .deck-play[aria-pressed=true]{background:radial-gradient(120% 90% at 50% 20%,#4aa8c8,#1c4050 70%);box-shadow:0 0 0 3px #1c3340,0 0 0 4px var(--deck),0 0 26px #4fd8ffa0,inset 0 3px 8px #0007,0 3px 0 #04080c}
+.ch.b .meter i{background:linear-gradient(0deg,#3fd0e8,#7fe3ff 65%,#e6fbff)}
