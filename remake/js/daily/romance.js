@@ -283,7 +283,8 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
     if (id === "samechan" && (state.chapter || 1) < 2) continue;
     const chapterKey = id === "samechan" ? `_c${state.chapter || 1}` : "";
     if (tournamentDay) {
-      const pool = (L().gameday || {})[id];
+      // #2089: 第1章のみんとは対戦相手なので、送り出す側の文面にしない
+      const pool = ((state.chapter || 1) === 1 && (L().gameday_rival || {})[id]) || (L().gameday || {})[id];
       const msgId = `_lover_gameday_${id}_c${state.chapter}`;
       if (pool?.length && !read(msgId)) out.push(chat(id, msgId, pool[(state.day + (phase[id] || 0)) % pool.length]));
       continue;
