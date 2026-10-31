@@ -417,7 +417,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "夜回り？　東京の煙を裏から動かす会議なら、もう閉会したよ"
         },
         {
@@ -514,7 +514,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "……そっか。僕は聞いたことを忘れない。勝ちたいから、遠慮もしないよ"
         },
         {
@@ -667,7 +667,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "nervous",
           "text": "お、おはよう。今朝、配合を変えた？　……ごめん、答えなくていい。緊張して変なこと聞いた"
         },
         {
@@ -697,7 +697,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "smile",
           "text": "ヘイ、ハジメ！　今日はいい勝負になりそうだ。俺は焦らない、タイマーが待ってくれる"
         },
         {
@@ -707,7 +707,7 @@
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "炭は迷わない。熱は落とさない"
         },
         {
@@ -946,7 +946,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "言う時を選んだのは僕。ごめん"
         },
         {
@@ -961,7 +961,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "sad",
           "text": "あーあ、負けた。予想が外れて嬉しいはずなのに、ちゃんと悔しい"
         },
         {
@@ -971,7 +971,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "次は僕の一台で勝つよ。そこだけは、冗談にしない"
         },
         {
@@ -1061,12 +1061,12 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "smile",
           "text": "さっきの調整、カードに書いた。俺の二口目にも使ってみる。貸し借りだな"
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "次の勝負までに、更新する。お前も止まるな"
         },
         {
@@ -1475,7 +1475,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "今度は、すぐ戻るって言わない。次の電話の日を言う"
         },
         {

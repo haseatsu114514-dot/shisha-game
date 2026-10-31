@@ -141,12 +141,12 @@
         },
         {
           "speaker": "da_silva",
-          "face": "normal",
+          "face": "excited",
           "text": "来たな、日本の二人！　まず座れ。暑かっただろ"
         },
         {
           "speaker": "da_silva",
-          "face": "normal",
+          "face": "excited",
           "text": "まずはこれだ。俺の自慢、アサイーの一台！　甘酸っぱいだろ？　氷の効いたドリンクと合わせたら最高なんだ"
         },
         {
@@ -166,7 +166,7 @@
         },
         {
           "speaker": "da_silva",
-          "face": "normal",
+          "face": "smile",
           "text": "固い顔だな。シーシャはフェスタだ。楽しくなけりゃ意味がねぇ"
         },
         {
@@ -196,7 +196,7 @@
         },
         {
           "speaker": "da_silva",
-          "face": "normal",
+          "face": "smile",
           "text": "いいな。じゃ、休みの日は誰が開ける？"
         },
         {
@@ -615,7 +615,7 @@
         },
         {
           "speaker": "sheikh",
-          "face": "normal",
+          "face": "smug",
           "text": "全部、出してくるといい。受け止めるのは、私の役目だ"
         },
         {
@@ -760,7 +760,7 @@
         },
         {
           "speaker": "da_silva",
-          "face": "normal",
+          "face": "smile",
           "text": "……静かでも、いいフェスタだ"
         },
         {
@@ -846,7 +846,7 @@
         },
         {
           "speaker": "sheikh",
-          "face": "normal",
+          "face": "smile",
           "text": "王座にいると、本気で向かってくる者がいなくなる。今日は、楽しかった"
         },
         {
@@ -962,7 +962,7 @@
         },
         {
           "speaker": "sheikh",
-          "face": "normal",
+          "face": "serious",
           "text": "正直に言ってくれ。この屋敷で、本当のことを言う者は少ない"
         },
         {

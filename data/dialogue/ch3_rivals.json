@@ -63,7 +63,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "僕。噂を流したのも僕だけどね。がっかりした？"
         },
         {
@@ -73,7 +73,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "ひどいなぁ。普通の椅子に座ってよ。吸う？　休む？"
         },
         {
@@ -253,7 +253,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "東京を裏で動かす組織、片付け係が僕しかいないんだ"
         },
         {
@@ -305,14 +305,14 @@
           },
           {
             "speaker": "kuze",
-            "face": "normal",
+            "face": "smug",
             "text": "じゃあ改めて。東京の煙を裏から動かす男、って聞いたことある？"
           }
         ],
         "delivery_new_greet": [
           {
             "speaker": "kuze",
-            "face": "normal",
+            "face": "smug",
             "text": "いらっしゃい。東京の煙を裏から動かす男、って聞いたことある？"
           }
         ]
@@ -360,7 +360,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "surprise",
           "text": "最初は静かだね。……あ、二口目で変わった。君が待った理由、少し分かった気がする"
         },
         {
@@ -423,7 +423,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "sad",
           "text": "心配して来た？　そうだよね。僕なんか、まだ頼りなく見えるか"
         },
         {
@@ -433,7 +433,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "surprise",
           "text": "え、覚えてるの？　……じゃあ僕の大きな組織、初日で解散だね"
         },
         {
@@ -498,7 +498,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "それを「客の思い込み」って片づけられると、腹が立つ"
         },
         {
@@ -508,7 +508,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "撤回。僕はいつも素直。……やっぱり無理があるね"
         },
         {
@@ -611,7 +611,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "smile",
           "text": "ヘイ、ハジメ。マウンテンミストだ。レモンとライム、最初と二口目で違うだろ"
         },
         {
@@ -646,7 +646,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "serious",
           "text": "自分の店で待てるだけじゃ、まだ悔しいんだ。ここでも、最後まで吸ってもらえる一台で勝ちたい"
         },
         {
@@ -656,7 +656,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "serious",
           "text": "ノー、ノー。……あと少し。俺の都合で、早めない"
         },
         {
@@ -676,7 +676,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "smile",
           "text": "なら成功。ピザ、食べる？"
         },
         {
@@ -711,7 +711,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "serious",
           "text": "急いで飛ばすのが怖くて、今度は待ちすぎる。数字は、客の顔をしてないからな"
         },
         {
