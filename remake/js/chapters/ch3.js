@@ -9,7 +9,6 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { shinkansenRide } from "../core/scene-motions.js";
-import { readDialogues } from "./ch2-city-data.js";
 import { onDialogueEnter } from "../daily/romance.js";
 import { pendingFriendLime, readFriendLime } from "./friend-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale, recordRomanceChoice, bondCondition } from "../daily/bonds.js";
@@ -26,7 +25,8 @@ import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
 import { chapterThreeOutings, visitChapterThreeOuting } from "./ch3-outings.js";
-import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, loadStoryRoutes, availableOptionalScenes, commitOptionalRead,
+import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
+import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, availableOptionalScenes, commitOptionalRead,
   selectChapterThreeEvening, eveningRecord } from "./ch3-story-wiring.js";
 
 const FILES = {

@@ -4,7 +4,7 @@ import { state, save } from "../core/state.js";
 import { addStamina, addMoney, earnStat, gainAffinity, paidAction } from "../core/stats.js";
 import { layers, showScreen, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { OUTING_DIALOGUE_IDS, chapterThreeOutings, claimChapterThreeOuting, outingDialogueId } from "./ch3-outing-progress.js";
 import { consultLessons } from "../core/growth.js";
 
