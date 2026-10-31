@@ -64,7 +64,7 @@ test("chapter 3 changes do not start unrelated chapter and feature suites", () =
   const selected = new Set(selectSuites(manifest, changed).map((s) => s.id));
   for (const id of ["ch2-tournament", "ch3-tournament", "game-layout"])
     assert.ok(selected.has(id), `${id} must run`);
-  for (const id of ["relationships", "minto-progression", "ch1-practice", "playthrough-street"])
+  for (const id of ["relationships", "minto-progression", "ch1-practice", "playthrough-direct"])
     assert.ok(!selected.has(id), `${id} is unrelated`);
   assert.ok(selected.size < 25, `chapter 3 selected ${selected.size} browser suites`);
 });

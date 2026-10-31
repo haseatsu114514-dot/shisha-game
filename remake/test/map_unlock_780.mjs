@@ -37,7 +37,7 @@ const overrides = {
  'engine.js': { play:async id=>{played.push(id);return {cancelled:cancelled && id==='ch1_naru_cafe_intro'};} },
  'bonds.js': { questionVisitDue:()=>false, finaleAtVisit:()=>false }, 'weather.js':{isRainy:()=>false},
  'samechan.js':{samechanSpot:()=>null}, 'trpg.js':{trpgSpot:()=>null}, 'spot-encounters.js':{spotFollowupDue:()=>null},
- 'home-rig.js':{homeRig:()=>null}, 'street.js':{canWalkStreet:()=>true}, 'spot-people.js':{spotPeople:()=>[]},
+ 'home-rig.js':{homeRig:()=>null}, 'spot-people.js':{spotPeople:()=>[]},
  'store-logos.js':{hasStoreLogo:()=>false}, 'facility-icons.js':{createMapFacilityIcon:()=>null,hasFacilityIcon:()=>false,FACILITY_SHEET:'facility-sheet'},
  'fortune.js':{fortuneToday:()=>[3,6].includes(state.day % 7)}, 'scene-art.js':{sceneArtUrls:()=>[]}, 'audio.js':{SE:{click:noop,select:noop}},
 };

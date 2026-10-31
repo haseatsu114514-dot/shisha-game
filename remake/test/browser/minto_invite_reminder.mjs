@@ -3,11 +3,9 @@ import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 await suite("venue-invite-reminder", async (check) => {
-  for (const [label, options, read, walking] of [
+  for (const [label, options, read] of [
     ["pc-unread", {}, false],
     ["touch-waiting", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
-    ["street-pc-unread", {}, false, true],
-    ["street-touch-waiting", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true, true],
   ]) await check(label, async (page) => {
     const activate = (locator) => options.hasTouch ? locator.tap() : locator.click();
     page.setDefaultTimeout(30000);
@@ -46,28 +44,8 @@ await suite("venue-invite-reminder", async (check) => {
     await page.locator('[data-test="pin-minto"]').waitFor();
     assert.equal(await page.locator(".hud-lime .badge").textContent(), read ? "" : "1");
     assert.equal(await page.evaluate(() => QA.lime.venueInviteNeedingReply("minto")?.msg?.sender), "minto");
-    let enter;
-    if (walking) {
-      await activate(page.locator('[data-test="map-walk"]'));
-      await page.locator('[data-test="street-frame"]').waitFor();
-      await page.frameLocator('[data-test="street-frame"]').locator('#view').waitFor();
-      const frame = page.frames().find((f) => f.url().includes('embed=1'));
-      await frame.waitForFunction(() => window.__street?.state().ready && !__street.state().paused);
-      assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0, "Browsing the street must not remind");
-      enter = async () => {
-        await frame.evaluate(() => __street.warp("peppermint"));
-        if (options.hasTouch) {
-          // 来店前の返信確認を実タッチで開く。試作の640x360座標には依存しない。
-          await frame.locator('#btn-act').tap();
-        } else {
-          await frame.locator('#view').focus();
-          await page.keyboard.press('KeyZ');
-        }
-      };
-    } else {
-      await activate(page.locator('[data-test="pin-minto"]'));
-      enter = () => activate(page.locator('[data-test="map-go"]'));
-    }
+    await activate(page.locator('[data-test="pin-minto"]'));
+    const enter = () => activate(page.locator('[data-test="map-go"]'));
     await enter();
     await page.locator('[data-test="venue-invite-check"]').waitFor();
     const before = await page.evaluate(() => ({
