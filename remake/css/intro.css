@@ -14,6 +14,10 @@
 /* 一言とフレーバーは下端を基準に積む。1行／2行・フレーバー有無で上へ伸びる（2026-10-31） */
 .art-intro .ci-quote-area { position:absolute; left:634px; bottom:80px; width:580px; z-index:5; display:flex; flex-direction:column; align-items:flex-start; }
 .art-intro .ci-quote-area.has-flavor { bottom:34px; }
+/* グラフィック絵柄（人物が大きい一枚絵）: 名前の欄と一言・好きなフレーバーを右へ寄せ、人物に重ねない。名前の幅は intro-art.js の GRAPHIC_META_SHIFT と合わせる */
+.art-intro[data-art="graphic"] .ci-art-meta { left:800px; width:550px; }
+.art-intro[data-art="graphic"] .ci-name-line { width:550px; }
+.art-intro[data-art="graphic"] .ci-quote-area { left:690px; width:580px; }
 .art-intro .ci-quote-rule { width:71px; height:4px; background:var(--accent); margin-bottom:16px; transform-origin:left center; }
 .ci-flavor { box-sizing:border-box; display:flex; align-items:baseline; gap:12px; width:max-content; max-width:580px; min-height:37px; padding:3px 0 4px; color:#f8f6ee; white-space:nowrap; font-family:"Intro Gothic",var(--font); text-shadow:0 1px 6px #0b1016cc; }
 .ci-flavor-label { flex:none; font-size:17px; font-weight:700; color:color-mix(in srgb,var(--accent,var(--ci)) 70%,#fff); }
