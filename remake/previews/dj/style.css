@@ -119,3 +119,62 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 #score-result .rank{font-size:56px;line-height:1;color:#d7b8ff;text-shadow:0 0 20px #b45cf0}
 #score-result table{font-size:11px;border-collapse:collapse}#score-result td,#score-result th{padding:3px 8px;text-align:left}
 @media (prefers-reduced-motion:reduce){.platter:before,.platter:after{transform:none}button,.knob{transition:none}}
+/* Issue #2101: no header, bigger waveforms, minimal text, artwork in the jog centre, hardware ▶, level meter instead of VOL fader, high-visibility faders. */
+#dj-stage{gap:8px}
+.waves{padding:10px 12px}
+.waves canvas[id^=wave]{height:96px}
+.waves>div+div{margin-top:6px}
+.waves .phrase{position:absolute;z-index:2;left:44px;right:12px;bottom:4px;width:auto;height:3px;accent-color:var(--glow);opacity:.8}
+.cue{position:absolute;z-index:3;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font:800 96px/1 ui-monospace,Consolas,monospace;color:#fff;text-shadow:0 0 24px var(--glow),0 0 4px #fff;pointer-events:none}
+.cue:empty{display:none}
+#play-feedback{position:absolute;z-index:3;right:20px;top:10px;margin:0;font-size:22px;font-weight:800;letter-spacing:.08em;pointer-events:none}
+.waves>.credits{position:absolute;z-index:4;right:8px;bottom:8px;display:block;margin:0}
+.credits summary{min-height:32px;min-width:32px;padding:6px 10px;font-size:13px;opacity:.7}
+.credits details[open] .pop{top:auto;bottom:40px;right:0}
+.deck{grid-template-rows:14px minmax(0,1fr) 76px}
+.deck-indicator{font-size:0;gap:0}.deck-indicator:before{width:9px;height:9px}
+.deck-head small{font-size:12px}
+.platter{width:360px;height:360px}
+.deck-display{width:150px;height:150px;overflow:hidden;background:#08060e}
+.deck-display:before{content:"";position:absolute;inset:0;border-radius:50%;background:var(--art,none) center/cover no-repeat;opacity:.38;filter:saturate(.9)}
+.deck-display>*{position:relative}
+.track-name{font-size:12px;font-weight:650;max-width:130px;color:#f2ecfa;text-shadow:0 1px 3px #000}
+.bpm output{font-size:30px;text-shadow:0 0 14px color-mix(in srgb,var(--deck),transparent 50%),0 2px 4px #000}
+.deck-controls{justify-content:center}.deck.b .deck-controls{flex-direction:row}
+/* hardware-style ▶: rubber cap in a bezel, backlit edge, real press travel */
+.deck-play{width:150px;min-height:72px;border-radius:12px;border:2px solid #0a0812;font-size:30px;color:var(--deck);
+ background:radial-gradient(120% 90% at 50% 20%,#4a3f63,#2a2240 55%,#1a1428);
+ box-shadow:0 0 0 3px #2b2440,0 0 0 4px #4d4268,inset 0 2px 1px #ffffff26,inset 0 -6px 10px #0008,0 7px 0 #07050c,0 10px 14px #000a;text-shadow:0 0 10px color-mix(in srgb,var(--deck),transparent 40%)}
+.deck-play:hover{border-color:#0a0812}
+.deck-play:active,.deck-play.hit{transform:translateY(5px);box-shadow:0 0 0 3px #2b2440,0 0 0 4px #4d4268,inset 0 3px 8px #000a,0 2px 0 #07050c,0 3px 5px #000a}
+.deck-play[aria-pressed=true]{transform:translateY(4px);color:#fff;background:radial-gradient(120% 90% at 50% 20%,color-mix(in srgb,var(--deck),#2a2240 45%),#241c38 70%);
+ box-shadow:0 0 0 3px color-mix(in srgb,var(--deck),#2b2440 40%),0 0 0 4px var(--deck),0 0 26px color-mix(in srgb,var(--deck),transparent 40%),inset 0 3px 8px #0007,0 3px 0 #07050c}
+/* EQ labels larger */
+.eq small{font-size:12px;letter-spacing:.06em;color:#d8cdea}.knob{width:44px;height:44px}
+/* master level meter replaces the VOL fader (decorative) */
+.vol{flex-direction:row;justify-content:center;gap:6px;padding:8px 6px}
+.meter.master{width:14px;height:100%}
+.meter{background:#050409;border:1px solid #3a2f52}
+/* high-visibility faders */
+.vfader{width:48px;background:
+  linear-gradient(90deg,transparent 18px,#9d86d6 18px 19px,#000 19px 29px,#9d86d6 29px 30px,transparent 30px),
+  linear-gradient(0deg,var(--deck) calc(var(--v,.5)*100%),transparent 0) 22px 0/4px 100% no-repeat,
+  linear-gradient(0deg,transparent calc(50% - 1px),#fff calc(50% - 1px) calc(50% + 1px),transparent 0) 6px 0/36px 100% no-repeat,
+  repeating-linear-gradient(0deg,#ffffff55 0 1px,transparent 1px 10%) 4px 0/10px 100% no-repeat}
+.vfader::-webkit-slider-thumb{width:48px;height:30px;box-shadow:0 0 0 2px var(--deck),0 0 14px var(--deck),0 4px 6px #000b}
+.vfader::-moz-range-thumb{width:48px;height:30px;box-shadow:0 0 0 2px var(--deck),0 0 14px var(--deck),0 4px 6px #000b}
+.pitch-col{background:#0009;border:1px solid #3a2f52}
+.xfade{margin-top:auto;padding:6px 8px;border-radius:10px;background:#0009;border:1px solid #3a2f52}
+.mix-label{font-size:14px;font-weight:700}
+#crossfader{height:70px;background:
+  linear-gradient(transparent 29px,#9d86d6 29px 30px,#000 30px 40px,#9d86d6 40px 41px,transparent 41px),
+  linear-gradient(90deg,var(--a) 0 calc(var(--v,0)*100%),transparent 0) 0 33px/100% 4px no-repeat,
+  linear-gradient(90deg,transparent calc(50% - 1px),#fff calc(50% - 1px) calc(50% + 1px),transparent 0) 0 18px/100% 34px no-repeat,
+  repeating-linear-gradient(90deg,#ffffff55 0 1px,transparent 1px 10%) 0 56px/100% 10px no-repeat}
+#crossfader::-webkit-slider-thumb{width:46px;height:64px;box-shadow:0 0 0 2px #e9dcff,0 0 16px var(--glow),0 5px 8px #000c}
+#crossfader::-moz-range-thumb{width:46px;height:64px;box-shadow:0 0 0 2px #e9dcff,0 0 16px var(--glow),0 5px 8px #000c}
+.waves>.sr{position:absolute}
+.pitch-col{position:relative}
+.pitch-col:before{content:"";position:absolute;top:18px;bottom:18px;left:50%;width:10px;transform:translateX(-50%);border-radius:5px;background:#000;box-shadow:0 0 0 1px #9d86d6,inset 0 0 6px #000}
+.pitch-col:after{content:"";position:absolute;left:8px;right:8px;top:50%;height:2px;background:#fff;opacity:.7}
+.pitch-col input{position:relative;z-index:1}

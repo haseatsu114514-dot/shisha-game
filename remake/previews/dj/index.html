@@ -4,41 +4,37 @@
 <meta name="color-scheme" content="dark"><meta name="description" content="波形を合わせて曲をつなぐDJミニゲーム。"><title>DJ</title>
 <link rel="stylesheet" href="./style.css">
 <div id="dj-viewport"><main id="dj-stage">
-  <header><section class="stages" aria-label="ステージ選択"><button class="stage-btn">Stage 1</button><button class="stage-btn">Stage 2</button><button class="stage-btn">Stage 3</button></section>
-    <section class="entry" aria-label="入りどころの案内"><p id="coaching">まず▶（A）。次のフレーズ頭を案内します。</p><progress id="phrase" max="1" value="0" aria-label="8小節mixの案内"></progress></section>
-    <div class="side"><details><summary>?</summary><div class="pop"><ol><li>BPM差を見て手動PITCHで合わせます。スライダーで大きく調整し、ジョグ（皿）の外周を回して0.01 BPMずつ細かく合わせます（右回りで上げる。キーボードは矢印キー）。CUEはありません。EQつまみは飾りで、低音（LOW）は横フェーダーの位置に合わせて自動でカットします。</li><li>まず▶（A）。次の8小節頭までの残小節・直前4拍を表示します。合図でPLAY Bを自分で押します。押した瞬間に再生し、前倒し予約や自動位置合わせはしません。</li><li>拍位相は±1/16拍で微調整。拍が合っても小節差が残る場合はフレーズ差も確認します。8小節mixに音ゲーの別操作はありません。</li></ol><p>実曲5曲・3ステージでピッチ、PLAYずれ、位相を採点します。コード仮ドット/仮キャラ案です。音源と小窓のキャラクターは試作です。背景にはオリジナル生成素材を使用しています。テンポ変更は音程にも反映します。タブを隠すと停止し、自動再開しません。本編SAVE・お金・時間には触れません。</p></div></details><details><summary>実曲クレジット</summary><div class="pop"><p>Dance Monster / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100272</p><p>Digital Lemonade / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1700010</p><p>Raving Energy / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900013</p><p>Cut and Dry / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100852</p><p>Rising Tide (faster) / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900011</p></div></details></div></header>
   <section class="waves" aria-label="上段A下段Bの実PCM横波形。共通の秒スケール">
     <aside class="visual-slot" aria-label="波形の背後の自動VJ（ドット絵）"><canvas id="vj" width="160" height="112"></canvas><p id="visual-label" class="sr">自動演出</p></aside>
     <div><b class="a">A</b><canvas id="wave-a" width="1200" height="120" aria-label="Aの実PCM波形"></canvas></div>
     <div><b class="b">B</b><canvas id="wave-b" width="1200" height="120" aria-label="Bの実PCM波形"></canvas></div>
-    <p id="phase">BPMを合わせて各デッキの▶を押します。</p>
+    <p id="phase" class="sr"></p><p id="coaching" class="sr"></p><progress id="phrase" class="phrase" max="1" value="0" aria-label="8小節mixの進み"></progress><div id="cue" class="cue" aria-hidden="true"></div><p id="play-feedback" aria-live="polite"></p><div class="credits"><details><summary aria-label="実曲クレジット（CC BY 4.0）">♪</summary><div class="pop"><p>Dance Monster / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100272</p><p>Digital Lemonade / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1700010</p><p>Raving Energy / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900013</p><p>Cut and Dry / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100852</p><p>Rising Tide (faster) / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900011</p></div></details></div>
   </section>
   <section class="console" aria-label="左右デッキ・中央ミキサー">
     <article class="deck a" id="deck-a" data-playing="false">
       <div class="deck-head"><small>A</small><span class="deck-indicator" id="indicator-a">STANDBY</span></div>
       <div class="platter" id="platter-a" role="slider" tabindex="0" aria-label="Aのジョグ。外周を回してBPM微調整（右回りで上げる・1目盛り0.01 BPM）" aria-valuemin="110" aria-valuemax="140" aria-valuenow="128.00">
-        <div class="deck-display"><div class="track-name" id="track-a">Dance Monster</div><div class="bpm"><output id="bpm-a" aria-live="off">128.00</output></div><p id="beat-a">停止中・先頭</p></div></div>
-      <div class="pitch-col"><label for="tempo-a">PITCH</label><input id="tempo-a" class="vfader" orient="vertical" type="range" min="110" max="140" step=".01" value="128"></div>
+        <div class="deck-display"><div class="track-name" id="track-a">Dance Monster</div><div class="bpm"><output id="bpm-a" aria-live="off">128.00</output></div><p id="beat-a" class="sr">停止中</p></div></div>
+      <div class="pitch-col"><label for="tempo-a" class="sr">a PITCH</label><input id="tempo-a" class="vfader" orient="vertical" type="range" min="110" max="140" step=".01" value="128"></div>
       <div class="deck-controls"><button id="play-a" class="deck-play" aria-pressed="false" aria-label="Aを再生">▶</button>
-        <div class="nudge"><button data-nudge="0,-0.0625" aria-label="Aを16分の1拍遅らせる">−1/16</button><button data-nudge="0,0.0625" aria-label="Aを16分の1拍進める">＋1/16</button></div></div>
+        </div>
     </article>
     <article class="mixer">
       <div class="channels">
         <div class="ch a" aria-hidden="true"><div class="eqs"><div class="eq"><i class="knob"></i><small>HI</small></div><div class="eq"><i class="knob"></i><small>MID</small></div><div class="eq low"><i class="knob" id="eq-low-a"></i><small>LOW</small></div></div><div class="meter" id="meter-a"><i></i></div></div>
-        <div class="vol"><label for="volume">VOL</label><input id="volume" class="vfader" orient="vertical" type="range" min="0" max=".5" step=".01" value=".18"></div>
+        <div class="vol" aria-hidden="true"><div class="meter master" id="meter-m"><i></i></div><div class="meter master" id="meter-m2"><i></i></div></div>
         <div class="ch b" aria-hidden="true"><div class="eqs"><div class="eq"><i class="knob"></i><small>HI</small></div><div class="eq"><i class="knob"></i><small>MID</small></div><div class="eq low"><i class="knob" id="eq-low-b"></i><small>LOW</small></div></div><div class="meter" id="meter-b"><i></i></div></div>
       </div>
-      <p class="auto-note" id="auto-low">AUTO LOW</p>
-      <div class="result"><button id="judge" disabled>判定</button><p id="play-feedback" aria-live="polite"></p><button id="offset" disabled aria-label="Bを半拍ずらす（検証用）">B½</button></div>
-      <div class="xfade"><div class="mix-label"><b class="a">A</b><output id="mix-value" aria-live="off">A 100 / B 0%</output><b class="b">B</b></div><label class="sr" for="crossfader">横クロスフェーダー、左A・右B</label><input id="crossfader" type="range" min="0" max="1" step=".001" value="0"></div>
+      <p class="auto-note sr" id="auto-low"></p>
+      <div class="xfade"><div class="mix-label"><b class="a">A</b><output id="mix-value" class="sr" aria-live="off"></output><b class="b">B</b></div><label class="sr" for="crossfader">横クロスフェーダー、左A・右B</label><input id="crossfader" type="range" min="0" max="1" step=".001" value="0"></div>
     </article>
     <article class="deck b" id="deck-b" data-playing="false">
       <div class="deck-head"><small>B</small><span class="deck-indicator" id="indicator-b">STANDBY</span></div>
       <div class="platter" id="platter-b" role="slider" tabindex="0" aria-label="Bのジョグ。外周を回してBPM微調整（右回りで上げる・1目盛り0.01 BPM）" aria-valuemin="110" aria-valuemax="140" aria-valuenow="126.00">
-        <div class="deck-display"><div class="track-name" id="track-b">Digital Lemonade</div><div class="bpm"><output id="bpm-b" aria-live="off">126.00</output></div><p id="beat-b">停止中・先頭</p></div></div>
-      <div class="pitch-col"><label for="tempo-b">PITCH</label><input id="tempo-b" class="vfader" orient="vertical" type="range" min="110" max="140" step=".01" value="126"></div>
+        <div class="deck-display"><div class="track-name" id="track-b">Digital Lemonade</div><div class="bpm"><output id="bpm-b" aria-live="off">126.00</output></div><p id="beat-b" class="sr">停止中</p></div></div>
+      <div class="pitch-col"><label for="tempo-b" class="sr">b PITCH</label><input id="tempo-b" class="vfader" orient="vertical" type="range" min="110" max="140" step=".01" value="126"></div>
       <div class="deck-controls"><button id="play-b" class="deck-play" aria-pressed="false" aria-label="Bを再生">▶</button>
-        <div class="nudge"><button data-nudge="1,-0.0625" aria-label="Bを16分の1拍遅らせる">−1/16</button><button data-nudge="1,0.0625" aria-label="Bを16分の1拍進める">＋1/16</button><button data-nudge-ms="-10" aria-label="Bを10ms遅らせる">−10ms</button><button data-nudge-ms="10" aria-label="Bを10ms進める">＋10ms</button></div></div>
+        </div>
     </article>
   </section>
   <section id="score-result" aria-live="polite"></section>
