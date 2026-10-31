@@ -186,7 +186,7 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .hud-stamina .guts-extra { position: absolute; top: 0; bottom: 0; display: block; background: var(--stat-guts); box-shadow: 0 0 5px var(--stat-guts); }
 .hud-stamina .guts-badge { display: inline-grid; place-items: center; border: 1px solid var(--stat-guts); border-radius: 3px; color: var(--stat-guts); font-size: 12px; font-weight: 700; width: 15px; height: 15px; }
 .hud-stamina .guts-badge[hidden] { display: none; }
-.hud-bar { display: block; height: 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(199, 154, 60, 0.7); overflow: hidden; transition: width 0.4s; }
+.hud-bar { display: block; height: 12px; border-radius: 4px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(199, 154, 60, 0.7); overflow: hidden; transition: width 0.4s; }
 .hud-bar b { display: block; height: 100%; background: linear-gradient(90deg, #6fcf8f, #c9f07a); transition: width 0.5s var(--ease-out); }
 .hud-stamina.recovering { animation: stamina-recover 1.4s ease-out; }
 @keyframes stamina-recover { 25% { border-color: var(--stamina-fill); box-shadow: 0 0 20px var(--stamina-fill); color: var(--stamina-fill); } }
@@ -472,7 +472,7 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
 }
 .map-info::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
 .map-info::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
-.map-info { right: 16px; bottom: 16px; z-index: 7; width: 270px; padding: 5px 10px 7px; transition: opacity 0.2s, transform 0.2s; }
+.map-info { left: 16px; right: auto; bottom: 16px; z-index: 7; width: 150px; padding: 6px 6px 7px; transition: opacity 0.2s, transform 0.2s; }
 /* 行き先パネルは見た目だけ前面に置き、裏に隠れる行き先ピン（右下の「家に帰る」等）の操作を奪わない。
    クリックはパネル内のボタン（ここへ行く・乗車確認など）だけが受け取り、余白は背後のピンへ素通りさせる。 */
 .map-info { pointer-events: none; }
@@ -495,8 +495,8 @@ body.game-ds .pin-station .pin-symbol { color: #29485d; }
   position: relative;
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 16 / 3;
-  margin: 2px 0 6px;
+  aspect-ratio: 4 / 5;
+  margin: 0 0 6px;
   background: center 40% / cover no-repeat;
   border: 2px solid rgba(212, 182, 106, 0.75);
   border-radius: 6px;
@@ -1658,7 +1658,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 body:not(.game-ds)[data-screen="tonari"] .hud-card,
 body:not(.game-ds)[data-screen="shop"] .hud-card,
 body:not(.game-ds)[data-screen="shop-entry"] .hud-card { display: none; }
-/* 左上の日付カードを隠しても、LIME と MENU は右上に残す。 */
+/* 店の中では LIME と MENU も出さない（スペースを店の絵に使う）。 */
 body:not(.game-ds)[data-screen="tonari"] .hud-right,
 body:not(.game-ds)[data-screen="shop"] .hud-right,
-body:not(.game-ds)[data-screen="shop-entry"] .hud-right { margin-left: auto; }
+body:not(.game-ds)[data-screen="shop-entry"] .hud-right { display: none; }

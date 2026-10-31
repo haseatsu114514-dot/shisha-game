@@ -18,7 +18,7 @@ import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
 import { spotVisible, spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotTimeNote } from "./spot-hours.js";
-import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
+import { openStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
 import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { newlyRevealedSpots, startSpotReveal, spotRevealNotice } from "./map-reveals.js";
@@ -203,8 +203,8 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
         el("div.mi-banner", { text: known ? spotDetailLabel(s) : s.unknownLabel || s.label }),
         preview,
         charName ? el("div.mi-area", { text: charName }) : null,
-        el("p.mi-desc", { text: av.desc || (known ? s.desc : s.unknownDesc || s.desc) }),
         el("div.mi-tags", [
+          known && s.area ? el("span.tag", { text: s.area, dataset: { test: "spot-area" } }) : null,
           spotTimeNote(s, state) ? el("span.tag", { text: spotTimeNote(s, state), dataset: { test: "spot-hours" } }) : null,
           s.id === "choizap" && !state.flags?._gym_member ? el("span.tag", { text: `初回は入会費 ${yen(4000)}`, dataset: { test: "spot-fee" } }) : s.playCost ? el("span.tag", { text: `プレイ ${yen(s.playCost)}` }) : s.cost && !freeGuide(s) ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: freeGuide(s) ? guide.free : s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : s.kind === "trpg" ? "入店・部活設立は無料" : "無料" }),
           staminaNote ? el(`span.tag${warn ? ".warn" : ""}`, { text: warn ? "体力が心配" : staminaNote }) : null,
@@ -425,10 +425,6 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       markers,
       pins,
-      canWalkStreet({ guide }) ? el("button.map-walk", { text: "商店街を歩く", dataset: { test: "map-walk" }, onclick: () => {
-        if (moving || revealing || root.classList.contains("done")) return;
-        SE.select(); stopReveal(); interrupt = null; retire(root); resolve(WALK_STREET);
-      } }) : null,
       notice ? el("div.map-notice", { text: notice }) : null,
       revealNotice,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,

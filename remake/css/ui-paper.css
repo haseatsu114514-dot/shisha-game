@@ -32,7 +32,7 @@ html:root[data-ui-theme="paper"] .modal-backdrop { background: #1e14298c; }
 html:root[data-ui-theme="paper"] .modal-box h3 { color: var(--paper-ink); font-weight: 900; letter-spacing: .02em; }
 
 /* 紙の上の小さな面（入れ子の豪華な枠を作らない。GUI31） */
-html:root[data-ui-theme="paper"] :is(.st-row, .shop-item, .dc-row, .hud-level, .hud-menu, .hud-stamina) {
+html:root[data-ui-theme="paper"] :is(.st-row, .shop-item, .hud-level, .hud-menu) {
   --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
   color: var(--paper-ink); background: var(--paper-card); border: 1px solid var(--paper-line);
   border-image: none; border-radius: 4px; box-shadow: none; filter: none;
@@ -108,4 +108,14 @@ html:root[data-ui-theme="paper"] .radar-base { fill: #69497e14; stroke: #9676a8;
 html:root[data-ui-theme="paper"] .radar-now { fill: #d8963f55; stroke: var(--amber-ink); }
 
 /* 地図の案内パネルは枠を細くして、家など後ろのピンを隠しにくくする。 */
-html:root[data-ui-theme="paper"] .map-info { border-width: 14px; border-image-width: 14px; }
+html:root[data-ui-theme="paper"] .map-info { border-width: 8px; border-image-width: 8px; }
+
+/* HUD の中の行と体力バーは枠を付けず、紙の板の中に直接置く（枠の中に枠を作らない）。 */
+html:root[data-ui-theme="paper"] .hud-card .dc-row,
+html:root[data-ui-theme="paper"] .hud-card .hud-stamina {
+  background: none; border: 0; border-image: none; box-shadow: none; border-radius: 0; color: var(--paper-ink);
+}
+html:root[data-ui-theme="paper"] .hud-card .hud-bar { border: 1px solid var(--lavender-line); background: var(--paper-line); }
+html:root[data-ui-theme="paper"] .hud-card .hud-bar b { background: linear-gradient(90deg, #5fbf85, #9edc6c); }
+html:root[data-ui-theme="paper"] .hud-card .hud-stamina { height: 22px; }
+html:root[data-ui-theme="paper"] .hud-card .hud-stamina .hud-bar { min-width: 140px; }
