@@ -128,7 +128,8 @@ try{
   await page.locator('.vn-choice.fortune-hint').waitFor();
   assert.equal(await page.locator('.vn-choice.fortune-hint').getAttribute('data-test'),'choice-1');
   await page.waitForTimeout(500);await page.waitForFunction(()=>!document.querySelector('.toast'));
-  const ink=await page.locator('.vn-choice.fortune-hint').evaluate(n=>getComputedStyle(n).color);assert.equal(ink,'rgb(255, 119, 127)');
+  // 当たりの選択肢は赤で示す。色の濃さはUIテーマ（紙では読める濃い赤）に合わせる。
+  const ink=await page.locator('.vn-choice.fortune-hint').evaluate(n=>getComputedStyle(n).color.match(/\d+/g).map(Number));assert(ink[0]>=150&&ink[0]-ink[1]>=100&&ink[0]-ink[2]>=90,`fortune hint is not red: ${ink}`);
   await page.screenshot({path:`${out}/hint-${name}.jpg`,type:'jpeg',quality:80});
   await page.locator('[data-test="choice-1"]').click();await page.evaluate(()=>{Q.vn.vnTest.turbo=true;});await page.keyboard.press('Enter');await page.evaluate(()=>window.preview);
   await page.evaluate(()=>{Q.vn.vnTest.turbo=false;window.portrait=Q.vn.play('remake_fortune_again',{bg:'bg_street'});});
