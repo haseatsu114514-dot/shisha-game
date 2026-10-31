@@ -80,6 +80,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
       document.fonts.load('700 38px "Intro Gothic"', `${intro.title}${intro.line}`).catch(() => []),
     ]);
     const host = illustratedIntro(id, variant, intro, main, p, art, background);
+    host.dataset.art = graphic ? "graphic" : "classic"; // ひより専用の明るい配色は旧絵柄（白い背景）だけ
     const unmount = mountIntro(host, layers.fx);
     const animations = [];
     const motion = motionOf(intro);

@@ -1,4 +1,6 @@
-# 作り直し待ち（2026-10-31 オーナー指摘・APIの残高切れで未実行）
+# 作り直し待ち（2026-10-31 オーナー指摘）
+
+**完了（#2144）**: オーナーが ChatGPT で作成した案を採用し組み込み済み（`chatgpt-20261031/`）。以下は当時の指示の記録。
 
 実行: `bash asset_sources/character-intros/graphic-20261031/regen.sh <作業フォルダ>`（OpenAI画像API・gpt-image-2.5-sunburst）
 

@@ -6,8 +6,8 @@ const PORTRAITS = new Set([
   "adam", "ageha", "dr_kemuri", "hajime", "hiyori", "kumicho", "kuze", "maezono", "maki", "mashiro", "minto", "nagumo",
   "naru", "oneesan", "pakki", "rei", "rin", "sai", "samechan", "steve", "sumi", "tsumugi", "uranaishi", "volk",
 ]);
-// 背景を描き直した人物。それ以外は旧背景をそのまま使う
-const BACKGROUNDS = new Set(["steve", "mashiro", "nagumo", "maki"]);
+// 背景も新しい絵柄に合わせて描き直した（2026-10-31 全24人）。無い人物は旧背景を使う
+const BACKGROUNDS = new Set([...PORTRAITS]);
 // 正方形の原画を左半分に置く。原画の上端を画面の上端にそろえ、上に隙間を作らない
 export const GRAPHIC_FRAME = { width: 720, left: -88, top: 0 };
 

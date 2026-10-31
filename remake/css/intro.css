@@ -24,19 +24,19 @@
 /* 名前未知の初遭遇（？？？）は帯を灰色に落とし、二つ名を細く */
 .art-intro[data-variant="unknown"] .ci-ribbon { background:#b4b2aa; }
 .cutin.art-intro[data-variant="unknown"] .ci-title { font-weight:500; }
-.cutin.art-intro[data-char="hiyori"] .ci-flavor { color:#553e50; text-shadow:0 1px 8px #fffaf6; }
-.cutin.art-intro[data-char="hiyori"] .ci-flavor-label { color:#9b6a80; }
+.cutin.art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-flavor { color:#553e50; text-shadow:0 1px 8px #fffaf6; }
+.cutin.art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-flavor-label { color:#9b6a80; }
 .cutin.art-intro .ci-line { all:unset; display:block; white-space:normal; font-size:42px; font-weight:700; letter-spacing:-.02em; line-height:1.36; line-break:strict; overflow-wrap:anywhere; color:#f8f6ee; }
 .cutin.art-intro .ci-line::before { display:none; }
 .art-intro .ci-line span { display:block; }
 /* ひよりは淡い線香花火。名前の帯と火玉を覆わず、白いブラウスも背景から分ける。 */
-.cutin.art-intro[data-char="hiyori"] { background:#fbf5f1; }
-.art-intro[data-char="hiyori"] .ci-art-veil { background:linear-gradient(90deg,#e9dde3b3 0%,#f5eaeb66 32%,transparent 52%); }
-.art-intro[data-char="hiyori"] .ci-ribbon { background:#f4dbe3f5; }
-.cutin.art-intro[data-char="hiyori"] .ci-name { color:#533d4d; }
-.cutin.art-intro[data-char="hiyori"] .ci-title { color:#67495b; background:#fff8f3f0; }
-.cutin.art-intro[data-char="hiyori"] .ci-line { color:#553e50; text-shadow:0 1px 8px #fffaf6; }
-.art-intro[data-char="hiyori"] .ci-ember-glow { position:absolute; left:77.35%; top:25.15%; width:32px; height:32px; translate:-50% -50%; background:radial-gradient(circle,#fff3cd90 0%,#ffcf6940 35%,transparent 70%); pointer-events:none; }
+.cutin.art-intro[data-char="hiyori"]:not([data-art="graphic"]) { background:#fbf5f1; }
+.art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-art-veil { background:linear-gradient(90deg,#e9dde3b3 0%,#f5eaeb66 32%,transparent 52%); }
+.art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-ribbon { background:#f4dbe3f5; }
+.cutin.art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-name { color:#533d4d; }
+.cutin.art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-title { color:#67495b; background:#fff8f3f0; }
+.cutin.art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-line { color:#553e50; text-shadow:0 1px 8px #fffaf6; }
+.art-intro[data-char="hiyori"]:not([data-art="graphic"]) .ci-ember-glow { position:absolute; left:77.35%; top:25.15%; width:32px; height:32px; translate:-50% -50%; background:radial-gradient(circle,#fff3cd90 0%,#ffcf6940 35%,transparent 70%); pointer-events:none; }
 @media(prefers-reduced-motion:reduce) {
  .cutin.art-intro .ci-name { transform:skewX(-10deg) scaleX(.86)!important; }
 }
