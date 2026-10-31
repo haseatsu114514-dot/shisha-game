@@ -18,7 +18,6 @@ import { isRainy } from "./weather.js";
 import { fortuneToday } from "./fortune.js";
 import { spotVisible, spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotTimeNote } from "./spot-hours.js";
-import { openStreet, canWalkStreet, WALK_STREET, BACK_TO_MAP } from "./street.js";
 import { spotPeople } from "./spot-people.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 import { newlyRevealedSpots, startSpotReveal, spotRevealNotice } from "./map-reveals.js";
@@ -90,13 +89,7 @@ export async function chooseSpot(opts = {}) {
   try {
     await Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
   } finally { clearTimeout(timer); notice?.remove(); }
-  let walking = false;
-  for (;;) {
-    const value = walking ? await openStreet(opts, (handler) => { interrupt = handler; }) : await openMap(opts);
-    if (value === WALK_STREET) { walking = true; continue; }
-    if (value === BACK_TO_MAP) { walking = false; continue; }
-    return value;
-  }
+  return await openMap(opts);
 }
 
 /** 行き先の場面を「移動」の幕で開く。押したピンの位置と、看板に出ている行き先の名前を渡す（core/transition-moves.js） */
@@ -425,10 +418,6 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null, o
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       markers,
       pins,
-      canWalkStreet({ guide }) ? el("button.map-walk", { text: "商店街を歩く", dataset: { test: "map-walk" }, onclick: () => {
-        if (moving || revealing || root.classList.contains("done")) return;
-        SE.select(); stopReveal(); interrupt = null; retire(root); resolve(WALK_STREET);
-      } }) : null,
       notice ? el("div.map-notice", { text: notice }) : null,
       revealNotice,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,

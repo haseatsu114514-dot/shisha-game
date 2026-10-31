@@ -15,7 +15,6 @@ const { chromium } = (() => {
 })();
 
 const BASE = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
-const STREET_MODE = process.env.STREET_MODE === "1";
 const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
@@ -124,22 +123,7 @@ async function shoppingRequired(sel) {
   if (!await click(sel)) throw new Error(`Shopping input failed: ${sel}; planIdx=${planIdx} pendingShopBuy=${pendingShopBuy}`);
 }
 
-// 任意の街歩き経由でも、同じ行動計画と大会の検証を実行する。
 async function chooseDestination(id) {
-  const doors = { cafe: "cafe", minto: "peppermint", naru: "kemurikusa" };
-  if (STREET_MODE && doors[id]) {
-    if (!(await page.$(`[data-test="pin-${id}"]:not(.off)`))) return false;
-    const navigating = page.waitForEvent('framenavigated', f => f.url().includes('embed=1'));
-    await click('[data-test="map-walk"]');
-    const frame = await navigating;
-    await frame.waitForFunction(() => window.__street?.state().ready && !window.__street.state().paused);
-    // 通し確認では入口へ配置し、実キーで決定。実移動・タップは street_selection.mjs で検証。
-    await frame.evaluate((door) => window.__street.warp(door), doors[id]);
-    await frame.locator("#view").focus();
-    await page.keyboard.press("KeyZ");
-    await page.waitForSelector('[data-test="street-frame"]', { state: "detached" });
-    return true;
-  }
   return (await click(`[data-test="pin-${id}"]`)) && (await click('[data-test="map-go"]'));
 }
 let checkedDeliveryBoundary = false;

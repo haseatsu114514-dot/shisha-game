@@ -24,6 +24,7 @@
 | DUI09 | ✅ 紙テーマ組み込み（全画面MENUは次） | 「ウインドウやメニューは画像生成で見た目を良くしたい。今はシンプルすぎる」「画像は生成してから組み込み」: 板・会話窓・ラベンダーの面・MENU背景を生成してから紙テーマとして組み込む → 4枚を生成・色合わせして `assets/ui/paper/`、UIテーマ `paper`（既定）で会話窓・モーダル・HUD・ボタン等に適用（`remake/css/ui-paper.css`）。全画面4タブのMENUとHUDの作り直しは次の段階 |
 | DUI10 | 保留 | 大会パートは別途リメイク中のため、今回の紙テーマの対象外 |
 | DUI11 | ✅ 本PR #2130 | 不具合: 店のロゴ画像が読めない時の代替の店名が看板の窓で切れる（`KEMURIKUS` 等）。`store-logos.css` で代替表示を折り返して窓に収める |
+| DUI15 | ✅ 本PR | オーナー「商店街を歩くは完全になくしたい」: 第1章ピンマップの「商店街を歩く」（商店街を歩いてカフェ/PEPPERMINT/KEMURIKUSAの入口を選ぶ機能、#456・#471）を完全に廃止。ボタンと `remake/js/daily/street.js`・商店街の場面 `remake/street/`・専用素材 `assets/street_walk/`・`remake/img/street/`・関連CSS・専用テスト（`street_selection`・`street_projection`・通しの街歩き経路）とCIのスイートを削除。行き先はピンと「ここへ行く」だけ。`experiments/proto/` の旧試作は本編外なので残す |
 
 ## 2026-10-31 LIMEの連絡の塩梅（通知が多すぎない・たまに雑談）
 
