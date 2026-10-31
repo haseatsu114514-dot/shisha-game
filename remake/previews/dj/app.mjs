@@ -45,10 +45,19 @@ for(const id of [0,1]){
   catch(e){status(`${e.message}。PLAYから再試行できます。`);}
  });
 }
-document.querySelectorAll('[data-pitch]').forEach(button=>button.addEventListener('click',()=>{
- const[id,delta]=button.dataset.pitch.split(',').map(Number);
- audio.tempo(id,Math.round((audio.mix.decks[id].bpm+delta)*100)/100);
-}));
+// Jog outer rim = fine pitch (replaces the ±0.01 BPM buttons). Same audio.tempo call the buttons used; 12° of rim travel = 0.01 BPM.
+const JOG_STEP_DEG=12,JOG_INNER=.58;
+function finePitch(id,steps){const bpm=audio.mix.decks[id].bpm,next=Math.max(110,Math.min(140,Math.round((bpm+steps*.01)*100)/100));if(next!==bpm)audio.tempo(id,next);return next!==bpm;}
+for(const id of [0,1]){
+ const jog=$('platter-'+(id?'b':'a'));let drag=null,spin=0;
+ const angle=(e,r)=>Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI;
+ jog.addEventListener('pointerdown',e=>{const r=jog.getBoundingClientRect(),dist=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2))/(r.width/2);
+  if(dist<JOG_INNER||dist>1.05)return;e.preventDefault();jog.setPointerCapture(e.pointerId);drag={last:angle(e,r),acc:0};jog.classList.add('touching');});
+ jog.addEventListener('pointermove',e=>{if(!drag)return;const r=jog.getBoundingClientRect(),a=angle(e,r);let d=a-drag.last;if(d>180)d-=360;if(d<-180)d+=360;drag.last=a;drag.acc+=d;spin+=d;
+  jog.style.setProperty('--spin',`${spin}deg`);const steps=Math.trunc(drag.acc/JOG_STEP_DEG);if(steps){drag.acc-=steps*JOG_STEP_DEG;if(finePitch(id,steps)){jog.classList.add('tick');setTimeout(()=>jog.classList.remove('tick'),90);if(matchMedia('(pointer: coarse)').matches)navigator.vibrate?.(3);}}});
+ const end=()=>{drag=null;jog.classList.remove('touching');};jog.addEventListener('pointerup',end);jog.addEventListener('pointercancel',end);
+ jog.addEventListener('keydown',e=>{const k={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1}[e.key];if(!k)return;e.preventDefault();if(finePitch(id,k)){spin+=k*JOG_STEP_DEG;jog.style.setProperty('--spin',`${spin}deg`);}});
+}
 $('mute').addEventListener('click',()=>{audio.muted=!audio.muted;audio.setVolume(audio.volume);$('mute').textContent=`ミュート ${audio.muted?'ON':'OFF'}`;$('mute').setAttribute('aria-pressed',String(audio.muted));});
 $('volume').addEventListener('input',e=>audio.setVolume(e.target.value));
 $('crossfader').addEventListener('input',e=>audio.setMix(e.target.value));
@@ -121,7 +130,7 @@ function render(){
   wave($('wave-'+key),id,now);
  }
  document.querySelectorAll('[data-nudge]').forEach(b=>{b.disabled=!audio.mix.decks[Number(b.dataset.nudge.split(',')[0])].playing;});
- document.querySelectorAll('[data-pitch]').forEach(b=>{const[id,delta]=b.dataset.pitch.split(',').map(Number),bpm=audio.mix.decks[id].bpm;b.disabled=delta<0?bpm<=110:bpm>=140;});
+ for(const key of ['a','b'])$('platter-'+key).setAttribute('aria-valuenow',$('bpm-'+key).value);
  $('offset').disabled=!audio.mix.decks[1].playing;$('start').disabled=audio.busy;$('pause').disabled=!audio.mix.running;
  $('start').textContent=audio.mix.resumeDecks.length?'全体を再開':audio.context?'音声準備済み':'音声を準備';
  $('mix-value').textContent=`A ${Math.round((1-audio.mix.mix)*100)} / B ${Math.round(audio.mix.mix*100)}%`;
