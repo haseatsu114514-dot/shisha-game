@@ -199,6 +199,9 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.flags._ch4.read.ch4_final, undefined, "No victory scene before the verdict is acknowledged");
     for (const row of Object.values(state.flags._ch4.match.result.votes))
       assert.equal(Object.values(row).reduce((a, b) => a + b, 0), 10);
+    // #2031: 最終結果は文字だけでなく持ち点の盤（4人の順位）で出る。
+    assert.equal(await page.locator(`${dt("ch4-result")} li[data-contestant]`).count(), 4);
+    assert.equal(await page.locator(`${dt("ch4-result")} li[data-contestant="hajime"]`).getAttribute("data-rank"), "1");
     await page.locator(dt("ch4-verdict-continue")).click();
     await page.locator(scene("ch4_result")).waitFor();
     state = await get(page);
