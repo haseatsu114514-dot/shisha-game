@@ -34,7 +34,7 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
     assert(completeChapterThreeScene(value, scene.id));
   }
   assert.deepEqual(Object.keys(seen), ["d5-noon", "d6-night", "d8-night", "d9-night", "d10-noon", "d12-noon"]);
-  for (const list of Object.values(seen)) assert(list.includes("mukai_help") && list.includes("park_walk"));
+  for (const list of Object.values(seen)) assert(list.includes("mukai_help") && list.includes("park_walk") && list.includes("tetsuko"));
   // 久世は初対面の後、助言の前後で別の理由。スティーブは店を訪ねた後だけ。
   assert(!seen["d6-night"].includes("enmaku_notes"), "Kuze's shop before meeting him");
   assert(seen["d8-night"].includes("enmaku_notes"));
@@ -122,7 +122,24 @@ function nextWindow(value) {
   assert.equal(list.find(item => item.id === "mukai_help").ok, false);
   assert.match(list.find(item => item.id === "mukai_help").why, /体力/);
   assert.equal(list.find(item => item.id === "park_walk").ok, true);
+  assert.equal(list.find(item => item.id === "tetsuko").ok, true, "The cat rests you, so tiredness must not lock her");
   assert.equal(claimChapterThreeOuting(value, window.id, "mukai_help"), null);
+}
+
+// てつこ（#1993）: mukaiの裏口で毎回選べる。体力だけ少し戻し、能力・お金は付かない。背景は裏口（街の道）。
+{
+  const { value, window } = at("d5-noon");
+  const cat = TOKYO_OUTINGS.find(item => item.id === "tetsuko");
+  assert.equal(cat.place, "mukai");
+  assert(cat.repeat && cat.stamina > 0 && cat.stamina < 20, "A small rest, less than the park walk");
+  assert(!cat.stat && !cat.money);
+  assert.equal(cat.bg, "bg_street");
+  assert.equal(outingDialogueId(value, cat, window), "ch3_outing_tetsuko");
+  assert(claimChapterThreeOuting(value, window.id, "tetsuko"));
+  const next = nextWindow(value);
+  assert(ids(value, next).includes("tetsuko"), "The cat should be there every free time");
+  assert(claimChapterThreeOuting(value, next.id, "tetsuko"));
+  assert.equal(value.flags[OUTINGS_FLAG].tetsuko, 2);
 }
 
 // 恋人の訪問など予約済みの枠には行き先を出さない。
@@ -147,10 +164,16 @@ function nextWindow(value) {
   assert.deepEqual(Object.keys(byId).sort(), [...OUTING_DIALOGUE_IDS].sort());
   for (const dialogue of data.dialogues) {
     const lines = [...dialogue.lines, ...Object.values(dialogue.branches || {}).flat()];
-    assert(lines.every(line => line.type === "condition" || !line.type), `${dialogue.dialogue_id}: no reward/meeting control lines`);
+    assert(lines.every(line => line.type === "condition" || line.type === "choice" || !line.type),
+      `${dialogue.dialogue_id}: no reward/meeting control lines`);
     assert(!lines.some(line => line.type === "set_flag" || line.type === "apply"));
   }
   assert.deepEqual(Object.keys(byId.ch3_outing_enmaku_answer.branches).sort(), ["tried", "untried"]);
+  // てつこの世話は撫でる／餌の2択。どちらの枝も次の行へ戻り、報酬行を持たない。
+  const care = byId.ch3_outing_tetsuko.lines.find(line => line.type === "choice");
+  assert.deepEqual(care.choices.map(choice => choice.next).sort(), ["feed", "pet"]);
+  assert.deepEqual(Object.keys(byId.ch3_outing_tetsuko.branches).sort(), ["feed", "pet"]);
+  assert(!JSON.stringify(byId.ch3_outing_tetsuko).includes("テツコ"), "The cat is てつこ, not テツコ");
 }
 
 // 地図: 行き先の場所に理由と行動を載せ、公園は行き先がある時だけ地点になる。
@@ -161,6 +184,7 @@ function nextWindow(value) {
   const pin = id => model.pins.find(item => item.id === id);
   assert.deepEqual(pin("enmaku").actions.map(item => item.id), ["enmaku_notes"]);
   assert.deepEqual(pin("park").actions.map(item => item.id), ["park_walk"]);
+  assert(pin("mukai").actions.some(item => item.id === "tetsuko"), "The cat is reached from the mukai pin");
   assert(!model.landmarks.some(item => item.id === "park"), "The park is both a landmark and a pin");
   assert.match(model.note, /行き先/);
   const plain = chapterThreeMapModel(value, chapterThreeScenes(value), { freeTime: true });

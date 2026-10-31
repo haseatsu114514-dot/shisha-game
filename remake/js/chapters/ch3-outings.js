@@ -19,7 +19,7 @@ export function loadChapterThreeOutings() {
   return outingTask;
 }
 
-// 地図の行き先ごとの背景。公園は専用の絵ができるまで街の道で代用する（仮）。
+// 地図の行き先ごとの背景。公園とmukaiの裏口（てつこ）は専用の絵ができるまで街の道で代用する（仮）。
 const OUTING_BG = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", park: "bg_street" };
 
 /** 地図で選んだ行き先（#1655）。消費・成長・記録は正常完読後だけ。中断は同じ自由時間へ戻る。 */
@@ -38,7 +38,7 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
     const outing = chapterThreeOutings(state, windowId).find(item => item.id === id);
     if (!outing?.ok) return false;
     const night = !!outing.window.slot;
-    const bg = OUTING_BG[outing.place];
+    const bg = outing.bg || OUTING_BG[outing.place];
     await setBg(bg === "bg_street" ? bgUrl(night ? "bg_street_night" : "bg_street_day") : bgUrl(bg, night ? "night" : "day"),
       { instant: true });
     if (!current()) return false;
@@ -56,8 +56,8 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
     }, { consumed: used => used && !!outing.stat });
     if (!settled.value || !current()) return false;
     save();
-    toast(outing.money ? `日当 +${outing.money.toLocaleString()}円` : outing.stamina > 0 ? "少し体が休まった" : "訪ねてよかった",
-      { kind: "good" });
+    toast(outing.toast || (outing.money ? `日当 +${outing.money.toLocaleString()}円`
+      : outing.stamina > 0 ? "少し体が休まった" : "訪ねてよかった"), { kind: "good" });
     return true;
   } finally {
     signal?.removeEventListener("abort", cancel);
