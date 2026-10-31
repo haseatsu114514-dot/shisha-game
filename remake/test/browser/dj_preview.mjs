@@ -52,16 +52,23 @@ try{
   const art=await page.request.get(artwork);assert(art.ok(),'Generated background must be served');assert((await art.body()).length>10000,'Background must not be an LFS pointer');
   for(const key of ['a','b']){
    assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');
-   for(const control of [`[data-pitch="${key==='a'?0:1},0.01"]`]){const b=await page.locator(control).boundingBox();assert(b.width/stageScale>=43.5&&b.height/stageScale>=43.5,'Touch controls remain at least 44 stage px');}
+   {const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=280&&j.height/stageScale>=280,'Large jog wheels');}
   }
   assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No continuous sync/CUE/tap input workload');
   if(kind==='pc')await page.locator('#start').click();else await page.locator('#start').tap();
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.equal(ready.bpms[0],120);const delta=Math.abs(ready.bpms[1]/120-1);assert(delta>=.0119&&delta<=.0281);assert.notEqual(ready.bpms[1],120);
   for(const deck of [0,1]){
-   const plus=page.locator(`[data-pitch="${deck},0.01"]`),minus=page.locator(`[data-pitch="${deck},-0.01"]`);
-   const before=await snap(page);if(kind==='pc')await plus.click();else await plus.tap();
+   const jog=page.locator('#platter-'+(deck?'b':'a'));
+   const before=await snap(page);await jog.focus();await jog.press('ArrowRight');
    const after=await snap(page);near(after.bpms[deck],before.bpms[deck]+.01,.000001);assert.deepEqual(after.playing,[false,false]);assert.equal(after.bpms[1-deck],before.bpms[1-deck]);
-   if(kind==='pc')await minus.click();else await minus.tap();near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+   await jog.press('ArrowLeft');near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+   if(kind==='pc'){ // Real mouse drag on the outer rim: clockwise raises BPM, centre does nothing.
+    const r=await jog.boundingBox(),cx=r.x+r.width/2,cy=r.y+r.height/2,R=r.width/2*.85;
+    await page.mouse.move(cx,cy);await page.mouse.down();await page.mouse.move(cx+20,cy+5);await page.mouse.up();near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+    await page.mouse.move(cx,cy-R);await page.mouse.down();for(let t=1;t<=13;t++){const a=t*5*Math.PI/180;await page.mouse.move(cx+R*Math.sin(a),cy-R*Math.cos(a));}await page.mouse.up();
+    const turned=await snap(page);near(turned.bpms[deck],before.bpms[deck]+.05,.000001);
+    await jog.focus();for(let n=0;n<5;n++)await jog.press('ArrowLeft');near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+   }
   }
   // Genuine native input, not setter/evaluate/forceclick.
   await page.locator('#tempo-b').focus();

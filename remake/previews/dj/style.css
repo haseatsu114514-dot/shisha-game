@@ -142,3 +142,39 @@ details[open] .pop{position:absolute;right:0;bottom:52px;width:560px;max-height:
 .pop p,.pop ol{margin:0 0 6px}
 #status{flex:none;margin:0;font-size:10px;color:#cabac7;border-left:2px solid #a95b68;padding:1px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (prefers-reduced-motion:reduce){.platter:before,.platter:after{transform:none}button,.knob{transition:none}}
+/* Issue #2080: big jogs (outer rim = fine pitch), bigger waveforms, less text. Overrides the rules above. */
+#dj-stage{padding:8px 14px;gap:6px}
+header{height:44px;gap:12px}
+header .stages{margin:0;flex:none}
+header .entry{flex:1;grid-template-columns:1fr 220px;padding:4px 12px;margin:0}
+.waves{padding:6px 10px}
+.waves canvas{height:78px}
+.waves>div+div{margin-top:4px}
+.console{height:356px;grid-template-columns:minmax(0,1fr) 232px minmax(0,1fr);padding:10px 14px}
+.deck{grid-template-columns:288px minmax(0,1fr) 44px;grid-template-rows:16px auto minmax(0,1fr) 64px;gap:4px 10px;padding:6px 10px 8px}
+.deck.b{grid-template-columns:44px minmax(0,1fr) 288px}
+.deck-head{border:0}
+.jog-col{display:contents}
+.platter{grid-column:1;grid-row:2/5;align-self:center;justify-self:center;width:288px;height:288px;pointer-events:auto;touch-action:none;cursor:grab;outline-offset:4px}
+.deck.b .platter{grid-column:3}
+.platter:before{transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)))}
+.platter:after{inset:3px;border-width:3px;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)))}
+/* rim ring: highlighted while touched, flashes on each 0.01 BPM step */
+.platter span{width:76px;height:76px;font-size:20px}
+.platter{--rim:transparent}
+.platter.touching{cursor:grabbing;--rim:color-mix(in srgb,var(--deck),transparent 55%)}
+.platter.tick{--rim:var(--deck)}
+.platter{background:radial-gradient(circle,transparent 57%,var(--rim) 58%,var(--rim) 100%),repeating-radial-gradient(circle,#131217 0 2px,#26232c 3px,#15131b 4px)}
+.platter.touching,.platter:focus-visible{box-shadow:0 0 0 3px #0a090d,0 0 0 5px var(--deck),0 0 34px color-mix(in srgb,var(--deck),transparent 50%)}
+.deck-display{grid-column:2;grid-row:2;text-align:center}
+.track-name{max-width:none;font-size:9px}
+.bpm output{font-size:26px}
+.deck-controls{grid-column:2;grid-row:3;justify-content:center}
+.nudge button{padding:4px}
+.deck-play{grid-column:2;grid-row:4;font-size:15px;padding:4px}
+.pitch-col{grid-row:2/5}
+.channels{height:150px}
+.below{flex:1;align-items:center}
+.visual-slot{width:118px}.visual-slot canvas{width:108px;height:75px}
+#status{flex:1;white-space:normal;align-self:center;font-size:10px;max-height:40px;overflow:hidden;border:0;padding:0}
+.result #play-feedback{min-width:120px}
