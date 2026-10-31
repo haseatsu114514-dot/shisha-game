@@ -54,6 +54,20 @@
           "text": "（……昨日の『お水』って、そういうことか）"
         },
         {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あ、はじめくん。LIME、交換しとこ。シフト変わる日、送るねぇ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_mashiro"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。俺も、遅れそうな日は送るよ"
+        },
+        {
           "type": "remember",
           "memory_id": "mukai_master_seat"
         }

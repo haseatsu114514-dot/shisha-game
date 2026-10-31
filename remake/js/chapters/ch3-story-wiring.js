@@ -35,6 +35,8 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // 台本が「東京のシーシャ店で感じた差」を受けている。違う店の手つきを見た後に置く。
   ch3_mashiro_practice: { file: "ch3_mashiro", label: "閉店後の練習", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_tokyo_shop_gap"] },
+  // 味の会話（#2022）。味を確かめる場面なので、味覚が戻った後（routes の seen）。
+  ch3_mashiro_black_tea: { file: "ch3_mashiro", label: "ブラックティーを一割", location: "mukai", bg: "bg_mukai_shop" },
   // 久世とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、久世側はmukaiへ客として来た後。
   ch3_kuze_mashiro_tea_tin: { file: "ch3_kuze_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_kuze_first"] },
@@ -53,7 +55,9 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace"],
   ch3_rivals: ["ch3_emil_workshop"],
-  ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice"],
+  // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
+  ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
+    "ch3_mashiro_black_tea", "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale"],
   ch3_kuze_mashiro: ["ch3_kuze_mashiro_tea_tin", "ch3_kuze_mashiro_soon_back"],
   hiyori: ["hiyori_tokyo_contact"],
   // 返事の場面は告白の選択肢の next_id で入る（ch3_read_confession_mashiro は返事まで読んだ時だけ立つ）。

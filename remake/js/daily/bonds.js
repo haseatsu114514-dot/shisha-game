@@ -15,7 +15,7 @@
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { affinityLevel, AFFINITY_GATE_CHOICES, releaseAffinity } from "../core/stats.js";
-import { questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone } from "../core/affinity-stages.js";
+import { questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead } from "../core/affinity-stages.js";
 import { emit } from "../core/bus.js";
 import { play } from "../vn/engine.js";
 import { giftOpen } from "../core/scene-motions.js";
@@ -38,6 +38,8 @@ export const BOND_FINALES = {
   kumicho: { dialogue: "ch2_kumicho_bond_finale", gift: "suyaki_kumicho" },
   rei: { dialogue: "ch2_rei_bond_finale", gift: "suyaki_rei" },
   samechan: { dialogue: "samechan_bond_finale", gift: "suyaki_samechan", night: true, question: "bond_q2_samechan" },
+  // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は仮置きの寄り道 confession_mashiro（#1930）が担うので予約しない。
+  mashiro: { dialogue: "ch3_mashiro_bond_finale", gift: "suyaki_mashiro", question: "bond_q2_mashiro", ownConfession: true },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -57,6 +59,8 @@ export const BOND_QUESTIONS = {
   rin: { dialogue: "ch1_rin_bond_question", choice: AFFINITY_GATE_CHOICES.rin, host: "ch1_rin_third", when: "visit" },
   // あげは（#1988）: 第2章の店に通う回「初めての客」（♥3）を読んだ直後。第3章の帰郷後の告白はこの答えが恋愛寄りで♥5のときだけ。
   ageha: { dialogue: "ch2_ageha_bond_question", choice: AFFINITY_GATE_CHOICES.ageha, host: "remake_ch2_ageha_newcomer", when: "after" },
+  // ましろ（#2022）: 第3章の寄り道「閉店後の練習」を読んだ後、♥3で場面カードから。
+  mashiro: { dialogue: "ch3_mashiro_bond_question", choice: AFFINITY_GATE_CHOICES.mashiro, host: "ch3_mashiro_practice", when: "visit" },
   hiyori: {
     get dialogue() { return hiyoriRoute().question?.dialogue || ""; },
     get choice() { return hiyoriRoute().question?.choice || ""; },
@@ -159,6 +163,7 @@ export async function playHiyoriQuestion({ bg = null, signal = null, deferSave =
 
 const questionOpen = (id) => {
   if (id === "hiyori" && !hiyoriRoute().enabled) return false;
+  if (id === "mashiro" && state.chapter !== 3) return false;
   if (AFFINITY_GATE_CHOICES[id] && affinityLevel(id) < 3) return false;
   const q = BOND_QUESTIONS[id];
   const answer = state.romanceChoices?.[q?.choice];
@@ -168,6 +173,7 @@ const questionOpen = (id) => {
 const hostSeen = (id) => {
   if (id === "minto") return !!(state.flags._minto_private_done || state.flags._minto_fifth_done);
   if (id === "ageha") return !!state.flags[`_ch2_read_${BOND_QUESTIONS.ageha.host}`];
+  if (id === "mashiro") return !!state.flags[`_ch3_read_${BOND_QUESTIONS.mashiro.host}`];
   const q = BOND_QUESTIONS[id];
   const at = (VISIT_SEQ[id] || []).indexOf(q?.host);
   return at >= 0 && storyCount(id) > at;
@@ -203,7 +209,9 @@ export async function playQuestionVisit(id, { bg = null, signal = null, deferSav
 // ---------------------------------------------------------------- 締めくくり（好感度MAXイベント）
 
 export const finaleSeen = (id) => !!state.finales?.[id];
-const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone() : id === "samechan"
+const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
+  : id === "mashiro" ? mashiroScenesRead(state.flags) && questionComplete(state, id)
+  : id === "samechan"
   ? storyCount(id) >= 3 && !!state.flags._samechan_quiet_seat_done && !!state.flags._samechan_closing_check_done
     && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
       && state.romanceChoices?.bond_q1_samechan?.char === id)
@@ -218,6 +226,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone() : id === "same
 export function finaleDue(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
   if (id === "samechan" && (state.chapter || 1) < 2) return false;
+  if (id === "mashiro" && state.chapter !== 3) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < 5 || questionVisitDue(id)) return false;
@@ -234,7 +243,7 @@ export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
-  if (["hiyori", "samechan"].includes(id) && !finaleDue(id)) return false;
+  if (["hiyori", "samechan", "mashiro"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue]) return false;
   const owner = state;
@@ -261,7 +270,7 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   if (def.flag) state.flags[def.flag] = true;
   grantGift(def.gift);
   // 恋愛ルート: 告白を予約（一日の終わりに、再生前にもう一度ルートを確かめる）
-  if (route === "romance" && romanceRouteOpen(id) && !state.flags._confession_due) state.flags._confession_due = id;
+  if (route === "romance" && !def.ownConfession && romanceRouteOpen(id) && !state.flags._confession_due) state.flags._confession_due = id;
   if (!deferSave) save(); // 有料訪問はcalendarの支払い/行動確定と同時に保存する。
   return true;
 }
@@ -356,7 +365,7 @@ export function friendMessages({ tournamentDay = false } = {}) {
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
     let pick = f.chats?.length ? chats % f.chats.length : 0;
-    if ((pick === 2 && ["minto", "tsumugi", "rin", "kumicho", "rei"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+    if ((pick === 2 && ["minto", "tsumugi", "rin", "kumicho", "rei", "mashiro"].includes(id) && !state.owned.includes(`suyaki_${id}`))
       || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,

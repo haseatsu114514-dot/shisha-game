@@ -38,6 +38,10 @@ export const CH2_VISIT_STORIES = {
 /** 第2章の訪問列をすべて読んだか（締めくくりの前提）。 */
 export const ch2VisitStoriesDone = (flags, id) => !!CH2_VISIT_STORIES[id]?.every(entry => ch2VisitDone(flags, id, entry));
 export const ch2VisitDone = (flags, id, entry) => entry.done ? !!flags?.[entry.done]?.[id] : !!flags?.[`_ch2_read_${entry.scene}`];
+// 第3章のましろ（#2022）。mukaiの寄り道（任意場面）を選んで読んだ分だけ段階にする。
+// 既読は ch3-story-wiring.js の optionalReadFlag（`_ch3_read_<scene>`）。♥3の質問は練習の後、締めくくりは全段階の後。
+export const MASHIRO_AFFINITY_SCENES = ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_practice", "ch3_mashiro_play_3", "ch3_mashiro_black_tea"];
+export const mashiroScenesRead = flags => MASHIRO_AFFINITY_SCENES.every(scene => !!flags?.[`_ch3_read_${scene}`]);
 export const questionDoneKey = id => `_${id}_affinity_question_done`;
 const settled = (s, id) => !!s.finales?.[id] || !!s.flags?.[`_friend_${id}`] || (s.lovers || []).includes(id);
 export function questionComplete(s, id) {
@@ -74,6 +78,10 @@ export function pendingAffinityStage(s, id, db = {}) {
     (route.storyEvents || []).forEach(id => include(events.find(e => e.id === id)));
     for (const e of required) stages.push({ level: levelOf(e), scene: e.dialogue, done: !!flags[e.flag] });
     if (route.question?.flag) stages.push({ level: Math.max(3, levelOf(events.find(e => e.dialogue === route.question.host))), scene: route.question.dialogue, done: settled(s, id) || !!flags[route.question.flag] });
+  }
+  if (id === "mashiro") {
+    MASHIRO_AFFINITY_SCENES.forEach((scene, level) => stages.push({ level, scene, done: !!flags[`_ch3_read_${scene}`] }));
+    stages.push({ level: 3, scene: "ch3_mashiro_bond_question", done: questionComplete(s, id) });
   }
   if (["ageha", "kumicho", "rei"].includes(id)) {
     stages.push({ level: 0, done: !!flags._ch2_talks?.[id] });

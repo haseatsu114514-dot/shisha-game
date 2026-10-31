@@ -233,6 +233,23 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(hiyoriRoute.events.find(e => e.id === 'tokyo_contact').flag, wiring.optionalReadFlag('hiyori_tokyo_contact'));
 }
 {
+  // #2022: ましろとはmukai二日目の本編でLIMEを交換する（第5章のLIMEは連絡先が前提）。
+  assert(sceneData.get('ch3_mukai_intro').lines.some(row => row.type === 'set_flag' && row.flag === '_lime_contact_mashiro'));
+  // 味の会話は休みの日の配合メモの後、味覚が戻ってから。読むと好感度と熟練度が上がる。
+  const value = tokyo();
+  readUntil(value, 'ch3_rest_before_recovery');
+  wiring.commitOptionalRead(value, 'ch3_mashiro_play_1');
+  assert(!offered(value).includes('ch3_mashiro_black_tea'), 'not while the taste is gone');
+  readUntil(value, 'ch3_abyss_recovery');
+  assert(offered(value).includes('ch3_mashiro_black_tea'));
+  assert(!offered({...value, flags: {...value.flags, _ch3_read_ch3_mashiro_play_1: false}}).includes('ch3_mashiro_black_tea'));
+  const lesson = sceneData.get('ch3_mashiro_black_tea');
+  assert.deepEqual(lesson.metadata.flavor_lesson, {black_tea: 1});
+  for (const id of ['ch3_mashiro_play_1', 'ch3_mashiro_play_2', 'ch3_mashiro_play_3', 'ch3_mashiro_practice', 'ch3_mashiro_black_tea']) {
+    assert(sceneData.get(id).lines.some(row => row.type === 'apply' && row.affinity?.mashiro > 0), `${id} raises Mashiro's affinity`);
+  }
+}
+{
   // 久世とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に久世側。
   const value = tokyo();
   readUntil(value, 'ch3_kuze_first');

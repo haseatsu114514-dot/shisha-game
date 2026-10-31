@@ -11,6 +11,7 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { onDialogueEnter } from "../daily/romance.js";
+import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale, recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { CH3_CONFESSION_IDS, confessionAnswer } from "./ch3-romance-entry.js";
 import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
@@ -396,6 +397,7 @@ async function renderStage(owner) {
       await renderStage(owner);
     }, true),
     ...trialActions(owner),
+    ...bondActions(owner),
     ...await optionalActions(owner),
   ], scene.id === "ch3_kuze_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
 }
@@ -417,6 +419,42 @@ async function optionalActions(owner) {
 function trialActions(owner) {
   const trials = availableChapterThreeTrials(state);
   return trials.length ? [button(owner, `mukaiで試作する（${trials.length}）`, "trial-open", () => renderTrials(owner))] : [];
+}
+
+/**
+ * ましろの♥3の質問と締めくくり（#2022）。条件は第1章と同じ daily/bonds.js（質問は練習の後・♥3、締めくくりは
+ * 寄り道の全段階と質問の後・♥5）。寄り道と同じく本筋の予定は進めず、既読・回答・贈り物は bonds.js が保存する。
+ */
+function bondActions(owner) {
+  const kind = questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
+  return kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
+    `bond-${kind}`, () => readBond(owner, kind))] : [];
+}
+
+async function readBond(owner, kind) {
+  if (!current(owner)) return;
+  const background = bgUrl("bg_mukai_shop");
+  showScreen("none", null);
+  hud(owner);
+  await withScenePreparation(setBg(background, { instant: true }));
+  if (!current(owner)) return;
+  const controller = owner.controller = new AbortController();
+  // 第3章から読み込んだ保存でも、恋愛／友情の実回答と lover・romance_open の分岐を読めるようにする。
+  const previousChoice = hooks.onChoice, previousCondition = hooks.evalCondition;
+  const choiceHook = (...args) => { previousChoice ? previousChoice(...args) : recordRomanceChoice(args[5], args[4]); };
+  const conditionHook = line => previousCondition?.(line) ?? bondCondition(line);
+  hooks.onChoice = choiceHook;
+  hooks.evalCondition = conditionHook;
+  try {
+    const options = { bg: background, signal: controller.signal };
+    if (kind === "question") await playQuestionVisit("mashiro", options);
+    else if (finaleAtVisit("mashiro")) await playFinale("mashiro", options);
+  } finally {
+    if (hooks.onChoice === choiceHook) hooks.onChoice = previousChoice;
+    if (hooks.evalCondition === conditionHook) hooks.evalCondition = previousCondition;
+    if (owner.controller === controller) owner.controller = null;
+  }
+  if (current(owner)) await renderStage(owner);
 }
 
 async function renderTrials(owner) {

@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-30 21:58 UTC",
+ "generated": "2026-10-31 00:52 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -240,7 +240,10 @@
   },
   "volk": {
    "faces": [
-    "normal"
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
    ],
    "h": 0.9692,
    "b": 0.0167,
@@ -289,7 +292,11 @@
    "faces": [
     "nervous",
     "normal",
+    "sad",
+    "serious",
+    "smile",
     "smug",
+    "surprise",
     "wild"
    ],
    "h": 0.9875,
@@ -299,7 +306,10 @@
   },
   "steve": {
    "faces": [
-    "normal"
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
    ],
    "h": 0.9925,
    "b": 0.0033,
@@ -308,10 +318,13 @@
   },
   "da_silva": {
    "faces": [
-    "normal"
+    "excited",
+    "normal",
+    "smile",
+    "surprise"
    ],
-   "h": 0.97,
-   "b": 0.0175,
+   "h": 0.9742,
+   "b": 0.0133,
    "ax": 0.4794,
    "aspect": 0.7467
   },
@@ -348,10 +361,13 @@
   },
   "sheikh": {
    "faces": [
-    "normal"
+    "normal",
+    "serious",
+    "smile",
+    "smug"
    ],
-   "h": 0.9692,
-   "b": 0.0167,
+   "h": 0.9725,
+   "b": 0.0133,
    "ax": 0.5368,
    "aspect": 0.7467
   },
@@ -2512,7 +2528,23 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "sprites/characters/da_silva/chr_da_silva_excited.png",
+  "sprites/characters/da_silva/chr_da_silva_smile.png",
+  "sprites/characters/da_silva/chr_da_silva_surprise.png",
+  "sprites/characters/kuze/chr_kuze_serious.png",
+  "sprites/characters/kuze/chr_kuze_smile.png",
+  "sprites/characters/sheikh/chr_sheikh_serious.png",
+  "sprites/characters/sheikh/chr_sheikh_smile.png",
+  "sprites/characters/sheikh/chr_sheikh_smug.png",
+  "sprites/characters/steve/chr_steve_serious.png",
+  "sprites/characters/steve/chr_steve_smile.png",
+  "sprites/characters/steve/chr_steve_surprise.png",
+  "sprites/characters/volk/chr_volk_serious.png",
+  "sprites/characters/volk/chr_volk_smile.png",
+  "sprites/characters/volk/chr_volk_surprise.png",
+  "sprites/characters/kuze/chr_kuze_sad.png",
+  "sprites/characters/kuze/chr_kuze_surprise.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
