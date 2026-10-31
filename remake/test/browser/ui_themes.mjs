@@ -37,7 +37,7 @@ async function paintedAttachment(page) {
   });
 }
 
-const themes = ["smoke", "smoke-purple", "cut-paper", "amber", "tissue", "classic"];
+const themes = ["smoke", "smoke-purple", "cut-paper", "amber", "tissue", "classic", "paper"];
 await suite("ui-themes-preview", async check => {
   for (const viewport of [{ width:1280, height:768 }, { width:844, height:438 }]) {
     await check(`${viewport.width}`, async page => {
@@ -143,8 +143,8 @@ await suite("ui-themes-preview", async check => {
         assert(innerFits,"main and inner voice glyphs stay inside the frame and clear of controls/next");
         fixedCommands(await commandGeometry(page),fixedHeader,id+" inner voice");
       }
-      assert.equal(new Set(colors).size,6,"every theme must actually repaint common panels");
-      assert.equal(new Set(frames).size,6,"each selected frame/colorway loads its corresponding artwork");
+      assert.equal(new Set(colors).size,themes.length,"every theme must actually repaint common panels");
+      assert.equal(new Set(frames).size,themes.length,"each selected frame/colorway loads its corresponding artwork");
       for(let i=0;i<layouts.length;i++) assert.deepEqual(layouts[i].slice(4,8),layouts[i<2?0:2].slice(4,8),"smoke variants share the wider body; optical text offsets do not change the body geometry");
       assert.deepEqual(await storageSnapshot(page),saved,"preview never persists preferences or games");
       await page.selectOption("#preview-theme","smoke");
@@ -237,7 +237,7 @@ await suite("ui-themes-config",async check=>{
     await page.evaluate(()=>localStorage.setItem("suien_remake_config",JSON.stringify({uiTheme:"unknown-old-skin"})));
     await page.reload();
     await page.locator('[data-test="title-config"]').waitFor();
-    assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"classic","unknown skin safely uses the default");
+    assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"paper","unknown skin safely uses the default");
   });
   for (const [label, options, touch] of [
     ["ingame-config-pc", { viewport: { width: 1280, height: 720 } }, false],
