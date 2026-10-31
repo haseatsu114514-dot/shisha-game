@@ -195,10 +195,11 @@ export const LESSONS = [
     hint: "ヴォルクと仲良くなると、どんな日も同じ熱にするやり方を教えてもらえそう",
     text: "雨・湿気・気温による温まり方の違いを読み切り、天気で熱が狂いにくくなる", scene: "lesson_volk_precision" },
   // 追加の6人（2026-10-30 オーナーが推しの案を全部採用。SBD57）。会って相談する場面は growth_lessons.json（SBD70）
+  // ひよりの授業は斧投げを明かした後（_hiyori_real_self_known）だけ分かる（2026-10-31 オーナー「斧投げ明かした後で」SBD71）
   { id: "M-S6", cell: "3,-1", board: "sense", who: "rin", need: 5, ring: 1, sig: true, reward: "special", name: "ブルーベリーに帰る",
     hint: "凛と仲良くなると、迷った時に帰る葉を教えてもらえそう",
     text: "配合にブルーベリーを2割以上入れると、どんな葉と合わせても香りがまとまり、配合の点が上がる", scene: "lesson_rin_blueberry" },
-  { id: "M-B4", cell: "1,-2", board: "body", who: "hiyori", need: 5, ring: 1, sig: true, reward: "special", name: "ラーメンと斧で元気",
+  { id: "M-B4", cell: "1,-2", board: "body", who: "hiyori", need: 5, ring: 1, sig: true, revealFlag: "_hiyori_real_self_known", reward: "special", name: "ラーメンと斧で元気",
     hint: "ひよりと仲良くなると、元気でいるコツを教えてもらえそう",
     text: "最大体力が大きく増える", scene: "lesson_hiyori_genki" },
   { id: "M-W7", cell: "3,-1", board: "wisdom", who: "samechan", need: 5, ring: 2, sig: true, reward: "skill", name: "シャークアタック",

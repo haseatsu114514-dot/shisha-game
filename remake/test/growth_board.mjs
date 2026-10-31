@@ -322,6 +322,11 @@ core.state.affinity.adam = 0;
   core.state.flags._ch4_sheikh_revealed = true;
   assert.equal(known("M-W8"), true);
   core.state.affinity.sheikh = 0; delete core.state.flags._ch4_sheikh_revealed;
+  core.state.affinity.hiyori = 1;
+  assert.equal(known("M-B4"), false, "ひよりの授業は斧投げを明かすまで伏せる（SBD71）");
+  core.state.flags._hiyori_real_self_known = true;
+  assert.equal(known("M-B4"), true);
+  core.state.affinity.hiyori = 0; delete core.state.flags._hiyori_real_self_known;
   core.state.chapter = 1;
 }
 
