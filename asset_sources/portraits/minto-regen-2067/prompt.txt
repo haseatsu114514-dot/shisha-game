@@ -1,0 +1,5 @@
+model: gpt-image-2.5-sunburst
+endpoint: /v1/images/edits (reference = current sprite)
+size: 1024x1536, background transparent, quality high
+
+Redraw this exact same anime character sprite as a clean, high-quality full-body visual novel standing sprite. Keep the SAME person: identical face shape, eyes (green), hairstyle (long straight black hair with bangs), expression, pose, hand positions, outfit, accessories, colors and proportions. Do not redesign anything. Same framing: full body head to shoes, same size and position in the canvas. Fix only quality problems: remove JPEG-like crunchy noise, blurry smudges, jagged or broken line art, melted details on hands, fingers, frills, buttons, bag and shoes, and the heavy dark black outline along the jaw/face line (make the face contour a thin soft line matching the rest of the line art). Crisp clean cel-shaded anime line art, smooth shading. Transparent background, no shadow on the floor, no text.
