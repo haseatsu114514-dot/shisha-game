@@ -3,6 +3,8 @@
 import { normalizeAppearance } from "./model.js";
 
 const NS = "http://www.w3.org/2000/svg";
+// Distribution copies keep the originals' canvas and anchors; never load source artwork here.
+const ARTWORK = new URL("../../img/appearance/", import.meta.url);
 const svg = (tag, attrs = {}) => {
   const node = document.createElementNS(NS, tag);
   for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
@@ -28,7 +30,7 @@ export function appearancePreview(current, options, source, geometry) {
     const id = selected[category], item = source.items.find(item => item.id === id && item.approved === true && item.category === category);
     const anchors = item && geometry.items[id];
     if (!anchors) return false;
-    const node = svg("image", { href: new URL(`../../../${item.original_path}`, import.meta.url).href, width: item.size[0], height: item.size[1],
+    const node = svg("image", { href: new URL(`${encodeURIComponent(item.id)}.png`, ARTWORK).href, width: item.size[0], height: item.size[1],
       transform: axisTransform(anchors.connection, anchors.end, start, length), "data-part": category, "data-id": id });
     root.append(node);
     return true;

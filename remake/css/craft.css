@@ -45,7 +45,8 @@
 .worker-actor { position: absolute; height: calc(100% + 250px); width: auto; max-width: none; left: -110px; bottom: -205px; pointer-events: none; }
 .worker-counter { position: absolute; inset: 64% 0 0; background-size: cover; background-position: center 70%; box-shadow: 0 -8px 18px #0004; }
 .worker-equipment { position: absolute; right: 92px; bottom: 7%; width: 120px; height: 260px; pointer-events: none; }
-.worker-appearance { position: absolute; right: 0; bottom: 8%; width: 160px; pointer-events: none; z-index: 2; }
+/* Keep the optional appearance preview above the dialogue at the bottom of the worker window. */
+.worker-appearance { position: absolute; right: 8px; top: 8px; width: min(160px, 50%); pointer-events: none; z-index: 2; }
 .worker-appearance svg { display: block; width: 100%; height: auto; overflow: visible; }
 /* 外観ボタンは .bench-top の右端に流し込む（大会MENU等と並べ、重ねない）。 */
 .bench-appearance-button { flex: none; white-space: nowrap; }
