@@ -174,7 +174,7 @@
     "nationality": "Japan",
     "affiliation": "SMOKE LAB（チャコール博士の研究室）",
     "play_style": "「最適化されたアルゴリズム」",
-    "description": "チャコール博士が過去の配合・大会記録と環境センサーをもとに開発したAIシーシャマシン。はじめの記録済みの作り方を再現し、当日の気温・湿度・吸う人の咳や吸引にも対応できる。技術も適応も本物で、一本目ははじめを上回る。最終戦は双方ダブルアップル12g固定の二本勝負。二本目では仲間の存在で落ち着いたはじめの観察と待ち方が変わり、その日の客により好まれる一台ができる。このシステムが持つ記録とセンサーだけでは、はじめの今の関係性が手の判断へ及ぼす過程まで再現できなかった。AIも人々の仕事や環境からできている存在であり、借り物だから空虚とは扱わない。人間の恒久的優位を証明する勝利ではない。採点UIは出さず、もう一回吸いたい方への挙手で決着する。",
+    "description": "チャコール博士が過去の配合・大会記録と環境センサーをもとに開発した人型AIロボット。はじめの記録済みの作り方を再現し、当日の気温・湿度・吸う人の咳や吸引にも対応できる。技術も適応も本物で、一本目ははじめを上回る。最終戦は双方ダブルアップル12g固定の二本勝負。二本目では仲間の存在で落ち着いたはじめの観察と待ち方が変わり、その日の客により好まれる一台ができる。このシステムが持つ記録とセンサーだけでは、はじめの今の関係性が手の判断へ及ぼす過程まで再現できなかった。AIも人々の仕事や環境からできている存在であり、借り物だから空虚とは扱わない。人間の恒久的優位を証明する勝利ではない。採点UIは出さず、もう一回吸いたい方への挙手で決着する。",
     "background_secret": "博士や過去の職人の仕事が積み重なって動いている。試合後も破壊されず、名職人の手順や新しい観察を比較し、学ぶ道具としてSMOKE LABで稼働を続ける。対戦で異なった調整も記録に残す。終幕は学習の続きを示し、宛先も意味もない存在と断定しない。",
     "favorite_flavor": "ランダム（何でもいける）",
     "specialty_flavor": "観測した環境・吸引に応じた熱管理と、記録された手順の精密な再現",
@@ -184,11 +184,11 @@
       "notes": "対戦後、いつの間にか記録に新しい待ち方が加わっている。何を観測し、誰と試し、どこまで更新するかで次の煙も変わる。"
     },
     "visual_concepts": [
-      "futuristic AI shisha machine terminal, sleek white and metallic silver exterior, glowing blue LED sensors, robotic arms precisely handling glowing charcoal, clean cyber-tech environment",
-      "sci-fi high-tech cafe interior, central glowing AI server core shaped like a modern shisha, holographic interface displaying heat levels and flavor combinations, cybernetic and sterile mood"
+      "bipedal humanoid AI robot, sleek white and metallic silver armor plating with gold joints, glowing blue and violet sensor eyes, articulated humanoid hands precisely handling glowing charcoal, clean cyber-tech lab",
+      "humanoid robot standing at a shisha table in a sci-fi lab, holographic interface displaying heat levels and flavor combinations, cybernetic and sterile mood"
     ],
     "intro_cutin": {
-      "title": "AIシーシャマシン",
+      "title": "人型AIロボット",
       "line": "環境データ、取得完了",
       "face": "normal",
       "color": "#9aa4b8"
