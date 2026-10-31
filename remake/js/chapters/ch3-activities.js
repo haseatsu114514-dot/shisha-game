@@ -5,7 +5,7 @@ import { addStamina, earnStat, paidAction } from "../core/stats.js";
 import { layers, showScreen, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { facilityGrowth } from "../daily/spots.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { TOKYO_GYM, TOKYO_REST_STAMINA, chapterThreeGymAvailability,
   claimChapterThreeGym, claimChapterThreeRest } from "./ch3-activity-progress.js";
 

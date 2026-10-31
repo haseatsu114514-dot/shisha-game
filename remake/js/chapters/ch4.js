@@ -10,7 +10,6 @@ import { radar } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
-import { readDialogues } from "./ch2-city-data.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
   CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
@@ -23,7 +22,8 @@ import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionC
 import { playChapterPreview } from "./chapter-preview.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
-import { loadStoryRoutes, TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
+import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
+import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
   chapterFourEveningRecord } from "./ch4-story-wiring.js";
 

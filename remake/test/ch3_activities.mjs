@@ -204,7 +204,7 @@ const deps = {
     assert.equal(spot.id, "choizap"); assert.equal(spot.stat, "charm");
     return { budget: 1, points: 2, primary: spot.stat };
   } }),
-  "./ch2-city-data.js": synthetic(["readDialogues"], { readDialogues: async () =>
+  "../core/chapter-data.js": synthetic(["readDialogues"], { readDialogues: async () =>
     Object.fromEntries(data.dialogues.map(scene => [scene.dialogue_id, scene])) }),
   "./ch3-activity-progress.js": synthetic(Object.keys(activity), activity),
 };
