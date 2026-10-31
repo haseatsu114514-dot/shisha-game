@@ -58,3 +58,17 @@ for (const stage of [-1, .5, CH3_INTRO_SCENES.length + 1, undefined]) {
 assert.equal(chapterThreeMapModel({ chapter: 2, flags: {} }, CH3_INTRO_SCENES), null);
 assert.equal(chapterThreeMapModel({ chapter: 3, flags: {} }, CH3_INTRO_SCENES), null);
 console.log("ch3-map: current/visited places, spoilers, public landmarks, membership, old/new saves and immutability PASS");
+
+// #2034: 東京の4店のロゴが地点 id と対応し、実ファイルがある。
+{
+  const { STORE_LOGOS, hasStoreLogo } = await import("../js/core/store-logos.js");
+  const { TOKYO_MAP_PLACES: CH3_MAP_PLACES } = await import("../js/chapters/ch3-map-model.js");
+  const fsx = await import("node:fs");
+  for (const id of ["enmaku", "steve", "volk", "mukai"]) {
+    if (CH3_MAP_PLACES) assert.ok(CH3_MAP_PLACES[id], `地点 ${id} が無い`);
+    assert.ok(hasStoreLogo(`ch3_${id}`));
+    const file = new URL(`../../assets/ui/store_logos/${STORE_LOGOS[`ch3_${id}`].file}.webp`, import.meta.url);
+    assert.ok(fsx.statSync(file).size > 1000);
+  }
+  console.log("ch3 store logos: ok");
+}

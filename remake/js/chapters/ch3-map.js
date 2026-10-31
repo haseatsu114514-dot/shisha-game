@@ -1,6 +1,7 @@
 import { el } from "../core/util.js";
 import { bgUrl } from "../core/data.js";
 import { chapterThreeMapModel } from "./ch3-map-model.js";
+import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
 
 let activeMap = null;
 
@@ -62,7 +63,9 @@ export function openChapterThreeMap(value, scenes, options = {}) {
           dataset: { test: `ch3-map-action-${action.id}` }, onclick: () => close({ action: action.id }),
         }) : el("p", { text: action.why || "今は選べません。" }),
       ]));
-      details.replaceChildren(el("h3", { text: pin.label }), el("p", { text: status }), ...actions,
+      details.replaceChildren(
+        ...(hasStoreLogo(`ch3_${pin.id}`) ? [storeLogo(`ch3_${pin.id}`, { width: 180, height: 104 })] : []),
+        el("h3", { text: pin.label }), el("p", { text: status }), ...actions,
         ...(pin.gym && model.canTrain ? [el("button.btn.primary.ch3-map-gym", {
           type: "button", text: "トレーニングする（1行動）", dataset: { test: "ch3-map-gym" }, onclick: () => close("gym"),
         })] : []),
