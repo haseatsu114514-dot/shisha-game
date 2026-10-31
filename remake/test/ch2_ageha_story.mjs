@@ -54,6 +54,25 @@ for (const [index,id] of AGEHA_VISITS.entries()) {
 }
 assert.equal(agehaStoryScene({flags:{},affinity:{ageha:66}},3,{[AGEHA_VISITS[1]]:story[AGEHA_VISITS[1]]}),null,"欠落した前段を飛ばさない");
 
+// ♥3の分岐（#1988）: 「初めての客」の直後に恋愛／友情の二択。選択肢は返答の台詞だけで、関係名の札を付けない
+{
+  const q = story.ch2_ageha_bond_question;
+  assert(q?.lines?.length, "ch2_ageha_bond_question exists");
+  const ids = read("data/dialogue/ch2_ageha_story.json").dialogues.map((d) => d.dialogue_id);
+  assert.equal(ids.indexOf("ch2_ageha_bond_question"), ids.indexOf("remake_ch2_ageha_newcomer") + 1);
+  const choice = q.lines.find((l) => l.type === "choice");
+  assert.equal(choice.id, "bond_q1_ageha"); assert.equal(choice.romance_char, "ageha");
+  assert.deepEqual(choice.choices.map((c) => c.romance), [1, 0]);
+  for (const c of choice.choices) {
+    assert(q.branches[c.next]?.length, c.next);
+    assert.doesNotMatch(c.text, /恋愛|友情|友達として/, "no relationship labels on the choice");
+    assert([...c.text].reduce((n, ch) => n + (ch.charCodeAt(0) < 128 ? .5 : 1), 0) <= 26, c.text);
+  }
+  const all = [...q.lines, ...Object.values(q.branches).flat()];
+  assert(!all.some((l) => l.type === "apply" || l.type === "set_flag"), "the answer is the only record");
+  assert.doesNotMatch(all.map((l) => l.text || "").join("\n"), /大会|本番|いよいよ/, "no tournament-bound wording");
+}
+
 // 答え合わせ: 2回当てたら試煙会で不安を話す
 const flags = { _ch2_vibes_hit_scout: true };
 assert.equal(syncAgehaVibes(flags), 1); assert(!flags._ch2_vibes_understood);

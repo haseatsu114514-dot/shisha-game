@@ -11,10 +11,11 @@ import { playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { onDialogueEnter } from "../daily/romance.js";
-import { AGEHA_CONFESSION_SCENES, agehaConfessionDue, confessionAnswer } from "./ch3-romance-entry.js";
+import { AGEHA_CONFESSION_SCENES, agehaConfessionDue, beginAgehaConfessionDay, confessionAnswer } from "./ch3-romance-entry.js";
 import { radar } from "../daily/status.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
+import { syncTokyoVisits } from "../core/tokyo-visits.js";
 import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene } from "./ch3-aftermath-progress.js";
 
@@ -89,7 +90,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     note ? el("p.ch2-contest-note", { text: note }) : null,
     ...extra,
     el("div.ch2-contest-actions", [...actions, ...(name !== "error" ? [
-      button(owner, "LIME・恋人との連絡", "lime", async () => {
+      button(owner, "LIME・地元との連絡", "lime", async () => {
         const social = await import("./ch3-social.js");
         if (!live(owner)) return;
         const controller = owner.controller = new AbortController();
@@ -167,11 +168,13 @@ async function playScene(owner, scene) {
 }
 
 /**
- * あげはの告白（#1930 仮置き。条件は ch3-romance-entry.js）。再会を読み終えた帰り際に、あげはから言葉にする。
+ * あげはの告白（#1930 仮置き・#1988。条件は ch3-romance-entry.js: ♥3の分岐で恋愛寄り・♥5の保存だけ）。
+ * 再会の翌日、もう一度店を訪ねた帰り際に、あげはから言葉にする（台本の「練習の続き」が再会の「言う練習中」を受ける）。
  * 返事（付き合う／友達のまま）を読み終えた時だけ関係を確定し、中断したらこの場面からやり直す。着地するまで第4章へは進めない。
  */
 function renderAgehaConfession(owner) {
-  card(owner, "ageha-confession", `DAY ${chapterDay(state)}・昼 ／ 帰り際`, "MELTY PUFFからの帰り際、あげはに呼び止められた。", [
+  if (beginAgehaConfessionDay(state)) { syncTokyoVisits(state); save(); }
+  card(owner, "ageha-confession", `DAY ${chapterDay(state)}・昼 ／ 帰り際`, "翌日、もう一度MELTY PUFFに寄った。帰り際、あげはに呼び止められた。", [
     button(owner, "続きを読む", "ageha-confession-continue", async () => {
       const result = await playScene(owner, { id: "confession_ageha", bg: "bg_street_day" });
       if (!live(owner) || !result || result.cancelled) return;
@@ -191,6 +194,7 @@ async function renderStage(owner) {
   if (!scene) {
     await setBg(bgUrl("bg_ageha_shop"), { instant: true });
     if (!live(owner)) return;
+    // 恋愛ルート（♥3で恋愛寄り・♥5）だけ、再会の翌日に告白へ。それ以外は再会のまま第3章完（#1988）。
     if (agehaConfessionDue(state)) { renderAgehaConfession(owner); return; }
     // 第3章側の第4章への接続点はここ1か所（状態遷移は ch4-progress.js の advanceToChapterFour）。
     const next = button(owner, "第4章へ進む", "chapter-four", async () => {

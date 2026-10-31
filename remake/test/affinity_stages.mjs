@@ -221,6 +221,39 @@ await check('chapter2 actual flags: chat/followup/ageha three visits are indepen
     }
   }
 });
+await check('ageha ♥3 question (#1988): after the newcomer visit, once, recorded only by the actual answer', async f => {
+  const s=f.core.state;s.chapter=2;s.met.ageha=true;s.affinity.ageha=33;
+  f.db.dialogues.ch2_ageha_bond_question={dialogue_id:'ch2_ageha_bond_question',lines:[{type:'choice',id:'bond_q1_ageha',romance_char:'ageha',choices:[{text:'a',next:'r',romance:1},{text:'b',next:'f',romance:0}]}],branches:{r:[],f:[]}};
+  assert.equal(f.stats.AFFINITY_GATE_CHOICES.ageha,'bond_q1_ageha');
+  assert.equal(f.bonds.questionVisitDue('ageha'),false,'the newcomer visit has not been read');
+  s.flags._ch2_talks={ageha:1};s.flags._ch2_followup_done={ageha:true};
+  assert.equal(f.stages.pendingAffinityStage(s,'ageha').scene,'remake_ch2_ageha_gyaru');
+  s.flags._ch2_read_remake_ch2_ageha_gyaru=true;s.flags._ch2_read_remake_ch2_ageha_newcomer=true;
+  { const stage=f.stages.pendingAffinityStage(s,'ageha'); assert.equal(stage.level,3); assert.equal(stage.scene,'ch2_ageha_bond_question'); assert.equal(stage.done,false); }
+  assert.equal(f.bonds.questionVisitDue('ageha'),true);
+  s.affinity.ageha=32;assert.equal(f.bonds.questionVisitDue('ageha'),false,'needs ♥3');s.affinity.ageha=33;
+  assert.equal(await f.bonds.playQuestionVisit('ageha'),false,'reading without the answer records nothing');
+  assert(!s.flags._ageha_affinity_question_done);assert.equal(f.bonds.questionVisitDue('ageha'),true);
+  f.setPlay(async()=>{f.bonds.recordRomanceChoice({id:'bond_q1_ageha',romance_char:'ageha'},{romance:1});return done;});
+  assert.equal(await f.bonds.playQuestionVisit('ageha'),true);
+  assert(s.flags._ageha_affinity_question_done);
+  assert.equal(JSON.stringify(s.romanceChoices.bond_q1_ageha),JSON.stringify({char:'ageha',value:1,day:s.day}));
+  assert.equal(f.bonds.questionVisitDue('ageha'),false);
+  assert.equal(f.stages.pendingAffinityStage(s,'ageha').scene,'remake_ch2_ageha_magazine');
+  assert.equal(await f.bonds.playQuestionVisit('ageha'),false,'asked once');
+  assert.equal(f.bonds.recordRomanceChoice({id:'bond_q1_ageha',romance_char:'ageha'},{romance:0}),false,'re-reading cannot flip the answer');
+  assert.equal(s.romanceChoices.bond_q1_ageha.value,1);
+  // あげはに締めくくりは無い: 日常の告白予約（romanceRouteOpen）は開かず、第3章の入口（ch3-romance-entry.js）だけが読む。
+  s.affinity.ageha=66;assert.equal(f.bonds.romanceOpen('ageha'),false);assert.equal(f.romance.romanceRouteOpen('ageha'),false);
+  assert.equal(f.bonds.finaleDue('ageha'),false);
+  // 友情寄りの答えも一度で確定し、以後の質問は出ない。
+  const t=f.fresh();t.chapter=2;t.affinity.ageha=33;t.flags._ch2_talks={ageha:1};t.flags._ch2_followup_done={ageha:true};
+  t.flags._ch2_read_remake_ch2_ageha_gyaru=true;t.flags._ch2_read_remake_ch2_ageha_newcomer=true;
+  f.setPlay(async()=>{f.bonds.recordRomanceChoice({id:'bond_q1_ageha',romance_char:'ageha'},{romance:0});return done;});
+  assert.equal(await f.bonds.playQuestionVisit('ageha'),true);
+  assert.equal(t.romanceChoices.bond_q1_ageha.value,0);assert.equal(f.bonds.questionVisitDue('ageha'),false);
+  assert.equal(f.stages.pendingAffinityStage(t,'ageha').scene,'remake_ch2_ageha_magazine');
+});
 for(const id of ['tsumugi','samechan']) for(const outcome of ['cancel','missing','load','abort','throw']) await check(`${id} lover public milestone ${outcome} stays unread/unrewarded`,async f=>{
   const s=f.core.state;s.chapter=2;s.lovers=[id];s.loveLevel[id]=1;s.lovePts[id]=9;const controller=new AbortController();
   f.setPlay(async()=>{if(outcome==='throw')throw Error('expected');if(outcome==='load')f.core.newGame();if(outcome==='abort')controller.abort();return outcome==='missing'?undefined:outcome==='cancel'?{cancelled:true}:done;});

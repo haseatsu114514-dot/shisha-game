@@ -182,13 +182,32 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert(!offered({...value, flags: {...value.flags, _friend_mashiro: true}}).includes('confession_mashiro'), 'friend already landed');
   wiring.commitOptionalRead(value, 'confession_mashiro');
   assert(!offered(value).includes('confession_mashiro'), 'read once only');
-  // あげは: 第3章の後日談を読み終えた保存だけ。着地済み・第4章では出さない。
-  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true}};
+  // あげは（#1988）: 第3章の後日談を読み終え、♥3の分岐で恋愛寄り・♥5の保存だけ。未回答・友情・♥4・着地済み・第4章では出さない。
+  const romance = {bond_q1_ageha: {char: 'ageha', value: 1, day: 20}};
+  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true, _ch3_aftermath: {version: 3, winDay: 42, stage: 7}},
+    romanceChoices: romance, affinity: {ageha: 66}, day: 45, slot: 0};
   assert.equal(entry.agehaConfessionDue(cleared), true);
   assert.equal(entry.agehaConfessionDue({...cleared, flags: {}}), false, 'not before the reunion');
+  assert.equal(entry.agehaConfessionDue({...cleared, romanceChoices: {}}), false, 'no ♥3 answer: no confession');
+  assert.equal(entry.agehaConfessionDue({...cleared, romanceChoices: {bond_q1_ageha: {char: 'ageha', value: 0, day: 20}}}), false, 'friendship answer');
+  assert.equal(entry.agehaConfessionDue({...cleared, romanceChoices: {bond_q1_ageha: {char: 'minto', value: 1, day: 20}}}), false, 'another character\'s answer');
+  assert.equal(entry.agehaConfessionDue({...cleared, affinity: {ageha: 65}}), false, '♥4 is not enough');
+  assert.equal(entry.agehaConfessionDue({...cleared, affinity: {}}), false, 'max affinity is required even on the romance route');
   assert.equal(entry.agehaConfessionDue({...cleared, lovers: ['ageha']}), false);
-  assert.equal(entry.agehaConfessionDue({...cleared, flags: {_ch3_cleared: true, _friend_ageha: true}}), false);
+  assert.equal(entry.agehaConfessionDue({...cleared, flags: {...cleared.flags, _friend_ageha: true}}), false);
   assert.equal(entry.agehaConfessionDue({...cleared, chapter: 4}), false);
+  assert.equal(entry.AGEHA_ROUTE_CHOICE, 'bond_q1_ageha');
+  // 告白は再会（優勝3日後）の翌日。進んだ時計は戻さず、条件を満たさない保存の時計には触れない。
+  const timed = structuredClone(cleared);
+  assert.equal(entry.beginAgehaConfessionDay(timed), true);
+  assert.deepEqual([timed.day, timed.slot], [46, 0]);
+  assert.equal(entry.beginAgehaConfessionDay(timed), false, 'idempotent');
+  const late = {...structuredClone(cleared), day: 47, slot: 1};
+  assert.equal(entry.beginAgehaConfessionDay(late), false);
+  assert.deepEqual([late.day, late.slot], [47, 1], 'never rewinds');
+  const friend = {...structuredClone(cleared), romanceChoices: {}};
+  assert.equal(entry.beginAgehaConfessionDay(friend), false);
+  assert.equal(friend.day, 45);
   assert.equal(sceneData.get('confession_ageha_accept').metadata.set_romance, 'ageha');
   for (const id of entry.AGEHA_CONFESSION_SCENES) assert(sceneData.get(id)?.lines?.length, id);
 }

@@ -122,7 +122,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
         await openShop({ branch: "tokyo" });
         if (current(owner)) await renderStage(owner);
       }),
-      button(owner, "LIME・恋人との連絡", "lime", async () => {
+      button(owner, "LIME・地元との連絡", "lime", async () => {
         const social = await withLoadingNotice(import("./ch3-social.js"), loadingNotice("LIMEを準備しています…"));
         if (!current(owner)) return;
         const controller = owner.controller = new AbortController();

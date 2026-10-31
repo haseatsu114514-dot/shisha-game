@@ -52,6 +52,8 @@ export const BOND_QUESTIONS = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_question", choice: AFFINITY_GATE_CHOICES.tsumugi, host: "ch1_tsumugi_fourth", when: "after" },
   minto: { dialogue: "ch1_minto_bond_question", choice: AFFINITY_GATE_CHOICES.minto, host: "ch1_minto_private_1", alsoAfter: ["ch1_minto_fifth"], when: "after" },
   rin: { dialogue: "ch1_rin_bond_question", choice: AFFINITY_GATE_CHOICES.rin, host: "ch1_rin_third", when: "visit" },
+  // あげは（#1988）: 第2章の店に通う回「初めての客」（♥3）を読んだ直後。第3章の帰郷後の告白はこの答えが恋愛寄りで♥5のときだけ。
+  ageha: { dialogue: "ch2_ageha_bond_question", choice: AFFINITY_GATE_CHOICES.ageha, host: "remake_ch2_ageha_newcomer", when: "after" },
   hiyori: {
     get dialogue() { return hiyoriRoute().question?.dialogue || ""; },
     get choice() { return hiyoriRoute().question?.choice || ""; },
@@ -162,6 +164,7 @@ const questionOpen = (id) => {
 };
 const hostSeen = (id) => {
   if (id === "minto") return !!(state.flags._minto_private_done || state.flags._minto_fifth_done);
+  if (id === "ageha") return !!state.flags[`_ch2_read_${BOND_QUESTIONS.ageha.host}`];
   const q = BOND_QUESTIONS[id];
   const at = (VISIT_SEQ[id] || []).indexOf(q?.host);
   return at >= 0 && storyCount(id) > at;

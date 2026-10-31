@@ -489,6 +489,113 @@
       }
     },
     {
+      "dialogue_id": "ch2_ageha_bond_question",
+      "comment": "♥3の節目（#1988）。初めての客の回を読んだ直後、同じ訪問の中で一度だけ。選択肢 bond_q1_ageha が実回答（romance 1=恋愛寄り／0=友情）。関係名の札は付けず、あげはの反応で違いを伝える。第3章の帰郷後の告白はこの回答が恋愛寄りで♥5のときだけ起きる。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "初めての客が帰ったあと、カウンターには二人だけが残った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ねえ、ハジメっち。答え合わせ係、って言ったじゃん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あれさ、うちが勝手に決めたやつ。……ほんとは、どっちなのか聞きたくて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "ハジメっちが店に来るの、うちの「なんか」の答え合わせのため？ それとも……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "店じゃないとこで会っても、うちとなら、アリ？"
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_ageha",
+          "romance_char": "ageha",
+          "choices": [
+            {
+              "text": "あげはさんと二人なら、どこでも",
+              "next": "romance",
+              "romance": 1
+            },
+            {
+              "text": "答え合わせ係として、また店に来ます",
+              "next": "friend",
+              "romance": 0
+            }
+          ]
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "はい、この話おしまい！ 次のお客さん来る前に、炭足しとこ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは棚のグミを一つ口に入れて、いつもの顔に戻った。"
+        }
+      ],
+      "branches": {
+        "romance": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あげはさんと二人なら、どこでも行きます"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……は？ 待って、今のうち、なんも盛ってないよ。素で聞いたんだけど"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……そ。覚えとく。今度、店じゃないとこで、うちの話、聞いて"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "答え合わせ、なしね。うちがしゃべって、ハジメっちが聞くだけ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "答え合わせ係として、また店に来ます。……それじゃ、だめですか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "だめじゃない！ 係、クビにしないから安心して"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……うん。ハジメっちが来ると、うちの「なんか」が言葉になるんだもん"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "店に来て。それだけで、じゅうぶん助かってる"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "remake_ch2_ageha_magazine",
       "lines": [
         {
