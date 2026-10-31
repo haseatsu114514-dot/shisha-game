@@ -134,12 +134,12 @@ html .bench[data-mode] .btn, html .bench[data-mode][data-art-skin] .btn, html .b
 }
 html .bench[data-mode] .btn .btn-desc, html .bench[data-mode][data-art-skin] .btn .btn-desc { color: var(--paper-muted); }
 html .bench[data-mode] .btn:hover:not(:disabled), html .bench[data-mode][data-art-skin] .btn:hover:not(:disabled) {
-  border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch; color: #fff; box-shadow: none; filter: none;
+  border: 12px solid transparent; border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch; color: #fff; box-shadow: none; filter: none;
 }
 html .bench[data-mode] .btn:hover:not(:disabled) .btn-desc { color: #e9dfef; }
 html .bench[data-mode] .btn.primary, html .bench[data-mode] .btn.primary:hover:not(:disabled),
 html .bench[data-mode][data-art-skin] .btn.primary, html .bench[data-mode][data-art-skin] .btn.primary:hover:not(:disabled) {
-  color: #fff; border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch; background: var(--lavender); box-shadow: none; filter: none;
+  color: #fff; border: 12px solid transparent; border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch; background: var(--lavender); box-shadow: none; filter: none;
 }
 html .bench[data-mode] .btn.primary .btn-desc { color: #e9dfef; }
 html .bench[data-mode] .btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
@@ -170,7 +170,7 @@ html .bench[data-mode] .opt small { color: var(--paper-muted); }
 html .bench[data-mode] .opt:hover:not(:disabled), html .bench[data-mode][data-art-skin] .opt:hover:not(:disabled) { border-color: var(--lavender-line); background: var(--paper-card); box-shadow: 0 6px 14px #2a1a3a24; }
 html .bench[data-mode] .opt.on, html .bench[data-mode][data-art-skin] .opt.on { border-color: var(--lavender); background: var(--lavender-soft); box-shadow: inset 4px 0 var(--lavender); }
 html .bench[data-mode] .opt-badge { color: var(--amber-ink); }
-html .bench[data-mode] .ht-option[aria-pressed="true"], html .bench[data-mode][data-art-skin] .ht-option[aria-pressed="true"] { color: #fff; border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch; background: var(--lavender); }
+html .bench[data-mode] .ht-option[aria-pressed="true"], html .bench[data-mode][data-art-skin] .ht-option[aria-pressed="true"] { color: #fff; border: 12px solid transparent; border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch; background: var(--lavender); }
 
 /* ---------------------------------------------------------------- 配合 */
 html .bench[data-mode] .mix-vessel { background: none; }
