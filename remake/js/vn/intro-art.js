@@ -1,6 +1,7 @@
 // PR226の採用組版。文言・表情は正本から受け取り、配色と人物配置は目録から読む。
 import { el } from "../core/util.js";
 import { introFlavor } from "./intro-flavors.js";
+import { DB } from "../core/data.js";
 
 export function flavorTag(flavor) {
   if (!flavor) return null;
@@ -11,6 +12,15 @@ export function flavorTag(flavor) {
       ...(flavor.small ? [el("span.ci-flavor-small", { text: flavor.small })] : []),
     ]),
   ]);
+}
+
+/** 苗字と名前の区切り。正本の名前（例「久世 朔（くぜ さく）」）に、表示名を空白で分けた形があれば [苗字, 名前] */
+export function nameParts(id, main) {
+  const full = String(DB.characters?.[id]?.name || "");
+  for (const m of full.matchAll(/([^\s/（）()・]+)[ 　]([^\s/（）()・]+)/g)) {
+    if (m[1] + m[2] === main) return [m[1], m[2]];
+  }
+  return null;
 }
 
 /** 一言の改行位置の指定「／」を除いた本文 */
@@ -43,7 +53,9 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
     el("div.ci-ribbon", [
       el("div.ci-art-meta", [
         el("div.ci-title", { text: intro.title || "" }),
-        el("div.ci-name-line", [el("span.ci-name", { text: main })]),
+        el("div.ci-name-line", [nameParts(id, main)
+          ? el("span.ci-name", { "aria-label": main }, nameParts(id, main).flatMap((part, i) => [...(i ? [el("span.ci-name-gap", { "aria-hidden": "true" })] : []), el("span", { text: part })]))
+          : el("span.ci-name", { text: main })]),
       ]),
     ]),
     el("img.ci-portrait", {
