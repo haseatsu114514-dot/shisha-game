@@ -151,11 +151,11 @@ header .entry{flex:1;grid-template-columns:1fr 220px;padding:4px 12px;margin:0}
 .waves canvas{height:78px}
 .waves>div+div{margin-top:4px}
 .console{height:356px;grid-template-columns:minmax(0,1fr) 232px minmax(0,1fr);padding:10px 14px}
-.deck{grid-template-columns:296px minmax(0,1fr) 50px;grid-template-rows:16px auto minmax(0,1fr) 64px;gap:4px 10px;padding:6px 10px 8px}
-.deck.b{grid-template-columns:50px minmax(0,1fr) 296px}
+.deck{grid-template-columns:288px minmax(0,1fr) 44px;grid-template-rows:16px auto minmax(0,1fr) 64px;gap:4px 10px;padding:6px 10px 8px}
+.deck.b{grid-template-columns:44px minmax(0,1fr) 288px}
 .deck-head{border:0}
 .jog-col{display:contents}
-.platter{grid-column:1;grid-row:2/5;align-self:center;justify-self:center;width:296px;height:296px;pointer-events:auto;touch-action:none;cursor:grab;outline-offset:4px}
+.platter{grid-column:1;grid-row:2/5;align-self:center;justify-self:center;width:288px;height:288px;pointer-events:auto;touch-action:none;cursor:grab;outline-offset:4px}
 .deck.b .platter{grid-column:3}
 .platter:before{transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)))}
 .platter:after{inset:3px;border-width:3px;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)))}
