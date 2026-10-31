@@ -1,7 +1,7 @@
 // 東京の自由時間に地図から選んだ行き先を再生し、読了後に一枠だけ確定する（#1655）。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save } from "../core/state.js";
-import { addStamina, addMoney, earnStat, paidAction } from "../core/stats.js";
+import { addStamina, addMoney, earnStat, gainAffinity, paidAction } from "../core/stats.js";
 import { layers, showScreen, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
@@ -52,6 +52,7 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
       addStamina(outing.stamina);
       if (outing.money) addMoney(outing.money);
       if (outing.stat) earnStat(outing.stat, 4);
+      for (const [who, pts] of Object.entries(outing.affinity || {})) gainAffinity(who, pts);
       return true;
     }, { consumed: used => used && !!outing.stat });
     if (!settled.value || !current()) return false;
