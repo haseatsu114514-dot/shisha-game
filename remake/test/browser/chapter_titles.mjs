@@ -6,6 +6,15 @@ import { suite, storageSnapshot } from "./support.mjs";
 
 const out = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/chapter-titles");
 fs.mkdirSync(out, { recursive: true });
+const SEEN_LINES_KEY = 'suien_remake_seen_dialogue_lines';
+const existingSeenLine = JSON.stringify(['qa-existing', 'main', 0]);
+
+// 本編の通常送り/AUTOは読了行を保存する。既存の記録と他の全storageは厳密に保全する。
+function withReadDialogue(snapshot, ids) {
+  return { ...snapshot, local: { ...snapshot.local,
+    [SEEN_LINES_KEY]: JSON.stringify([existingSeenLine, ...ids.map(id => JSON.stringify([id, 'main', 0]))]),
+  } };
+}
 
 async function entries(page) {
   return page.evaluate(async () => (await import('./js/core/chapter-title-art.js')).CHAPTER_TITLE_ART);
@@ -223,6 +232,10 @@ await suite('chapter-titles', async check => {
         await observeFade(page);
         const point = await page.evaluate(async () => {
           const core = await import('./js/core/state.js'); core.newGame(); core.save();
+          localStorage.setItem('suien_remake_seen_dialogue_lines', JSON.stringify([JSON.stringify(['qa-existing', 'main', 0])]));
+          localStorage.setItem('suien_remake_slot1', 'preserve-manual');
+          localStorage.setItem('unrelated', 'preserve');
+          sessionStorage.setItem('unrelated', 'preserve-session');
           const ui = await import('./js/core/ui.js'), data = await import('./js/core/data.js');
           const vn = await import('./js/vn/engine.js');
           await ui.setBg(data.bgUrl('bg_tonari_inside', 'day'), { instant: true });
@@ -244,11 +257,14 @@ await suite('chapter-titles', async check => {
           return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
         });
         const before = await storageSnapshot(page);
+        const stateBefore = await page.evaluate(() => JSON.stringify(__remake.state));
         await page.locator('#vn.active .vn-box').waitFor();
         if (mode === 'normal') await advanceManually(page, () => window.sequencePhase === 'title', label === 'touch');
         else if (label === 'touch') await page.locator(`[data-test="vn-${mode}"]`).tap();
         else await page.locator(`[data-test="vn-${mode}"]`).click();
         await seen;
+        const duringTitle = mode === 'skip' ? before : withReadDialogue(before, ['qa-before']);
+        assert.deepEqual(await storageSnapshot(page), duringTitle);
         assert.equal(await page.locator('.chapter-card').count(), 0, 'Unready image covered the previous scene');
         assert.equal(await page.locator('.chapter-title-shield').count(), 1, 'Loading left the previous controls live');
         await sendAt(page, point, label === 'touch');
@@ -261,6 +277,7 @@ await suite('chapter-titles', async check => {
         assert.equal(await page.locator('.cc-copy').isVisible(), false);
         assert.equal(await page.evaluate(() => window.underClicks), 0, 'Input escaped during title');
         await page.waitForFunction(() => document.querySelector('.chapter-card.out'));
+        assert.deepEqual(await storageSnapshot(page), duringTitle, 'Chapter title changed storage');
         await sendAt(page, point, label === 'touch');
         assert.equal(await page.evaluate(() => window.sequencePhase), 'title', 'Next scene began before fade-out completed');
         await page.locator('.chapter-title-shield').waitFor({ state: 'detached' });
@@ -273,7 +290,8 @@ await suite('chapter-titles', async check => {
         assert.equal(await page.evaluate(() => document.body.classList.contains('vn-skip')), false);
         assert.equal(await page.evaluate(() => window.underClicks), 0);
         await assertFade(page, `${label}-${mode}`);
-        assert.deepEqual(await storageSnapshot(page), before);
+        assert.deepEqual(await storageSnapshot(page), mode === 'skip' ? before : withReadDialogue(before, ['qa-before', 'qa-after']));
+        assert.equal(await page.evaluate(() => JSON.stringify(__remake.state)), stateBefore);
         // ガード撤去後は通常のポインタ操作とフォーカス済みボタンのキー操作が再び使える。
         await sendAt(page, point, label === 'touch');
         assert.equal(await page.evaluate(() => window.underClicks), 3);
@@ -354,7 +372,13 @@ await suite('chapter-titles', async check => {
   });
 
   await check('preview-four-chapters-without-saving', async page => {
-    await page.evaluate(() => localStorage.setItem('suien_remake_save', 'preserve-original'));
+    await page.evaluate(() => {
+      localStorage.setItem('suien_remake_save', 'preserve-original');
+      localStorage.setItem('suien_remake_slot1', 'preserve-manual');
+      localStorage.setItem('suien_remake_seen_dialogue_lines', JSON.stringify([JSON.stringify(['qa-existing', 'main', 0])]));
+      localStorage.setItem('unrelated', 'preserve');
+      sessionStorage.setItem('unrelated', 'preserve-session');
+    });
     const before = await storageSnapshot(page);
     await page.goto(new URL('chapter-titles-preview.html', page.url()).href);
     assert.deepEqual(await page.locator('#chapter option').evaluateAll(nodes => nodes.map(n => n.value)), ['1', '2', '4', '5']);
