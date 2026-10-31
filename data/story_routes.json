@@ -120,7 +120,11 @@
         "ch3_kuze_mashiro_tea_tin",
         "ch3_kuze_mashiro_soon_back",
         "confession_mashiro",
-        "hiyori_tokyo_contact"
+        "hiyori_tokyo_contact",
+        "ch3_tsumugi_slump",
+        "ch3_volk_second",
+        "ch3_volk_third",
+        "ch3_volk_fourth"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -276,6 +280,34 @@
         "ch3_mashiro_practice"
       ],
       "comment": "#1930 仮置き: 締めくくりの正式原稿が無い間、任意4場面を読んだ後の告白の返事を実回答にする。好感度や訪問回数からは開かない。"
+    },
+    "ch3_tsumugi_slump": {
+      "contacts": [
+        "tsumugi"
+      ],
+      "seen": [
+        "ch2_tsumugi_color",
+        "ch3_taste_return"
+      ],
+      "comment": "#2026: 第2章の煙の線・水（ch2_tsumugi_color）の続き。味が戻って試作を重ねる夜のビデオ通話。見ていない保存では出さない。"
+    },
+    "ch3_volk_second": {
+      "seen": [
+        "ch3_volk_first"
+      ],
+      "comment": "#2026: 「前回」の室温・四口目の休みは初来店（DAY12夜）の記録を受ける。"
+    },
+    "ch3_volk_third": {
+      "seen": [
+        "ch3_volk_second"
+      ],
+      "comment": "#2026: 「2回分ある」記録。二度目の来店の後。"
+    },
+    "ch3_volk_fourth": {
+      "seen": [
+        "ch3_volk_third"
+      ],
+      "comment": "#2026: 「三回分、同じだった」。三度目の来店の後。"
     }
   },
   "near_conflict": {
