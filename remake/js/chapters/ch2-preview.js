@@ -6,7 +6,7 @@ import { storeLogo } from "../core/store-logos.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
 import { initLayers, layers, setBg, imageReady } from "../core/ui.js";
 import { unlockAudio } from "../core/audio.js";
-import { play, vnTest } from "../vn/engine.js";
+import { play, vnTest, keepSeenLinesInMemory } from "../vn/engine.js";
 
 import { MAP, STATION, STOPS, ROOMS, loadCityDialogues } from "./ch2-city-data.js";
 const visited = new Set();
@@ -37,6 +37,7 @@ function resetPreview() {
     scratch.flags[`_intro_${id}`] = true;
   }
   setState(scratch); // メモリ参照の差替えだけ。既存save/config/手動枠には触れない。
+  keepSeenLinesInMemory(); // 会話の既読も本編の端末保存へ書かない
   visited.clear();
   arrivalRead = false;
   time = "day";
