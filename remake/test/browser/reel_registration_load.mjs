@@ -16,6 +16,8 @@ async function tap(page, selector, touch) {
 async function loadTitle(page, touch) {
   await page.reload({ waitUntil: 'load' });
   await page.locator('#boot').waitFor({ state: 'detached' });
+  // Use the player's instant-text preference; keep real cut-ins and UI input.
+  await page.evaluate(async () => { (await import('./js/core/state.js')).config.textSpeed = 4; });
   await tap(page, '[data-test="title-load"]:not([disabled])', touch);
   await tap(page, '[data-test="slot-0"]', touch);
 }
