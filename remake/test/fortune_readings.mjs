@@ -35,6 +35,7 @@ const expectedIds = {
   rin: ['rin_1', 'rin_2', 'rin_3', 'rin_5', 'rin_6', 'rin_11', 'rin_14'],
   hiyori: ['hiyori_1', 'hiyori_2', 'hiyori_3', 'hiyori_6', 'hiyori_8'],
   samechan: ['samechan_1', 'samechan_2', 'samechan_3', 'samechan_5', 'samechan_6', 'samechan_9'],
+  ageha: ['ageha_1', 'ageha_2', 'ageha_3', 'ageha_4', 'ageha_5', 'ageha_6'],
 };
 const excludedIds = [
   'sumi_8', 'sumi_10', 'sumi_12', 'sumi_14', 'sumi_15',
@@ -48,10 +49,10 @@ const excludedIds = [
 ];
 
 assert.equal(trivia.draft, true);
-assert.equal(Object.keys(trivia.characters).length, 8);
+assert.equal(Object.keys(trivia.characters).length, 9);
 const all = Object.values(trivia.characters).flat();
-assert.equal(all.length, 56);
-assert.equal(new Set(all.map(x => x.id)).size, 56);
+assert.equal(all.length, 62);
+assert.equal(new Set(all.map(x => x.id)).size, 62);
 for (const ex of excludedIds) {
   assert(!all.some(x => x.id === ex), `excluded id ${ex} must not be present`);
   assert(!draftMd.includes(`\`${ex}\`:`), `excluded id ${ex} must not appear in trivia-draft.md`);
@@ -233,7 +234,7 @@ w=Image.open(root/'remake/img/sprites/characters/uranaishi/chr_uranaishi_normal.
 m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits']['uranaishi']['faces']==['normal','smile']
 `, new URL('../../', import.meta.url).pathname], { encoding: 'utf8' });
 assert.equal(art.status, 0, art.stderr);
-console.log('PASS fortune: 56 approved readings, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
+console.log('PASS fortune: 62 approved readings, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
 
 // #780: 噂を読むまで出ない。出店日が雨なら休み、晴れる日へ繰り越す（連続雨も保持、二重出店なし）。
 {
