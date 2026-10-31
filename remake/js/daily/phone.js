@@ -206,6 +206,8 @@ function eligible(m, { tournamentDay = false } = {}) {
   }
   if (cond === "affinity_level") return affinityLevel(m.sender) >= (m.trigger_value || 3) && !state.flags[`_invited_${m.id}`];
   if (cond === "flag") return !!state.flags[m.trigger_flag];
+  // 章の開始後に届く噂（rumor_kumicho_cigarman など）。章は上で一致を確認済みなので、章内の日数が trigger_day に達したら届く
+  if (/^ch\d+_started$/.test(cond || "")) return state.chapter >= Number(cond.slice(2, -8)) && chapterDay(state) >= (m.trigger_day || 1);
   return false;
 }
 
