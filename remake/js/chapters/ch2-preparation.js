@@ -82,10 +82,12 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   const pendingFollowup = !first && !stages && !state.flags._ch2_followup_done?.[id];
   const followup = pendingFollowup && affinityLevel(id) >= 1;
   // 訪問列を読み終えた♥5の次の来店で、締めくくりを一度だけ（#2027）。
-  const finale = !first && stages && !pendingStage && finaleAtVisit(id);
+  let finale = !first && stages && !pendingStage && finaleAtVisit(id);
   // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
   const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
   const story = id === "ageha" && !first && !pendingFollowup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
+  // あげは: 店に通う回と♥3の質問を読み終えた♥5の次の来店は、いつもの会話の代わりに締めくくり（#2023・一度だけ）。
+  if (!finale && id === "ageha" && !first && !pendingFollowup && !story) finale = finaleAtVisit("ageha");
   const repeat = !first && !followup && !story && !stage && !finale;
   const scene = story || stage?.scene || (finale ? BOND_FINALES[id].dialogue
     : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : repeatScene(id));
@@ -148,13 +150,12 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   talks[id] = (talks[id] || 0) + 1;
   state.visits[id] = (state.visits[id] || 0) + 1;
   markMet(id); recordCityVisit(state, id);
+  // 台本で交換した連絡先は、訪問を終えた時点で連絡先一覧にも記録する（daily/spots.js の hasContact と同じ）
+  if (state.flags[`_lime_contact_${id}`] && !state.contacts.includes(id)) state.contacts.push(id);
+  // あげはの交換後LIME（lime_ch2_ageha_after_visit）と旧セーブ互換の到達フラグ
+  if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
   // 神崎・REIの長い段階会話と締めくくりは、第1章の固有会話と同じ+10（#2027）。
   gainAffinity(id, first || finale || stages && stage?.file ? 10 : 5); earnStat(stat[id], 4);
-  if (id === "ageha" && first) {
-    state.flags._ch2_ageha_contact = true;
-    state.flags._lime_contact_ageha = true;
-    if (!state.contacts.includes("ageha")) state.contacts.push("ageha");
-  }
   return { used: true, exerted: true };
 }
 

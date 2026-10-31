@@ -49,19 +49,11 @@
           ]
         },
         {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "あ、LIME交換しよ！ 道分かんなくなったら聞いて。うちのおすすめも送るし"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ありがとうございます。……また、話を聞きに来ます"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "連絡先を交換した。名前の横のクマの絵が、この店によく似合っていた。"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_ageha",
+          "next_true": "lime_known",
+          "next_false": "lime_new"
         }
       ],
       "branches": {
@@ -99,6 +91,39 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "……なるほど。言葉になる前にも、変わってるんですね"
+          }
+        ],
+        "lime_new": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "あ、LIME交換しよ！ 道分かんなくなったら聞いて。うちのおすすめも送るし"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_ageha"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "連絡先を交換した。名前の横のクマの絵が、この店によく似合っていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ありがとうございます。……また、話を聞きに来ます"
+          }
+        ],
+        "lime_known": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "LIME、ちゃんと届いてる？ 道分かんなくなったら聞いてね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ありがとうございます。……また、話を聞きに来ます"
           }
         ]
       }
