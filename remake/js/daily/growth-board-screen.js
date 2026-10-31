@@ -425,7 +425,7 @@ export function openBoard({ place = null } = {}) {
     } else if (node.kind === "gate") {
       // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る
       const perk = perkOf(node);
-      lines.push(el("p", { text: "色の火（紅火・蒼火・翠火）を1つはめる台座。はめると先へ進めて、この台座の能力が手に入る。先には強いスキルや授業がある" }));
+      lines.push(el("p", { text: `${HIDANE_NAME[node.board]}をはめる台座（台座の光の色）。はめると先へ進めて、この台座の能力が手に入る。先には強いスキルや授業がある` }));
       if (perk) lines.push(el("p.gb-p-quality", { dataset: { test: "board-gate-perk" }, text: `はめると：${perk.text}（色の台座）` }));
       lines.push(el("p.gb-p-sub", { text: `${HIDANE_NAME[node.board]}を先に使う。無ければほかの色の火でもはまる。白火でははまらない` }));
     } else if (node.kind === "skill") {
@@ -516,7 +516,7 @@ export function openBoard({ place = null } = {}) {
       text: pending.length ? `決定（${pending.length}）` : "閉じる", dataset: { test: "board-decide" }, onclick: () => (pending.length ? finish(true) : close()),
     }));
     footer.replaceChildren(wallet, el("p.gb-legend", [
-      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 色の台座（色の火をはめる）" }), legend("sealed", "授業の錠"), legend("locked", "結界の先（物語が進むと開く）"), el("span", { text: "✦ できることが増える" }),
+      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 色の台座（光っている色の火をはめる）" }), legend("sealed", "授業の錠"), legend("locked", "結界の先（物語が進むと開く）"), el("span", { text: "✦ できることが増える" }),
     ]), el("div.gb-actions", actions));
   }
   function legend(st, text) { return el("span.gb-legend-item", [el(`i.s-${st}`), el("span", { text })]); }
