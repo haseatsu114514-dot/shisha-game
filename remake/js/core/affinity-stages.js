@@ -73,7 +73,11 @@ export function pendingAffinityStage(s, id, db = {}) {
     stages.push({ level: 0, done: !!flags._ch2_talks?.[id] });
     if (CH2_VISIT_STORIES[id]) CH2_VISIT_STORIES[id].forEach(entry => stages.push({ level: entry.heart, scene: entry.scene, done: ch2VisitDone(flags, id, entry) }));
     else stages.push({ level: 1, done: !!flags._ch2_followup_done?.[id] });
-    if (id === "ageha") AGEHA_AFFINITY_VISITS.forEach((scene, i) => stages.push({ level: i + 2, scene, done: !!flags[`_ch2_read_${scene}`] }));
+    if (id === "ageha") {
+      AGEHA_AFFINITY_VISITS.forEach((scene, i) => stages.push({ level: i + 2, scene, done: !!flags[`_ch2_read_${scene}`] }));
+      // ♥3の恋愛／友情の質問（#1988）は「初めての客」の直後。回答か着地済みの関係だけを完了とする。
+      stages.push({ level: 3, scene: "ch2_ageha_bond_question", done: questionComplete(s, id) });
+    }
   }
   return stages.filter(e => !e.done).sort((a,b) => a.level - b.level)[0] || null;
 }

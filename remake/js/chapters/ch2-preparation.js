@@ -19,6 +19,7 @@ import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
 import { chapterTwoNights } from "./ch2-story.js";
 import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone } from "../core/affinity-stages.js";
+import { BOND_QUESTIONS, playQuestionVisit, questionVisitDue } from "../daily/bonds.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 const descriptions = {
@@ -102,6 +103,13 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
     const introduction = await play(discovered.introduction);
     if (state !== owner || !introduction || introduction.cancelled) return { used: false, exerted: false };
     introduceCitySpot(state, id);
+  }
+  // あげはの♥3の節目（#1988）: 「初めての客」を読んだ直後に恋愛／友情の質問を続ける。
+  // 先に読み終えて未回答の保存（旧版）は次の訪問で受け取る。中断したら訪問ごと未確定にし、既読・請求を残さない。
+  if (id === "ageha" && (story === BOND_QUESTIONS.ageha.host && DB.dialogues[BOND_QUESTIONS.ageha.dialogue]?.lines?.length
+    || questionVisitDue("ageha"))) {
+    if (!await playQuestionVisit("ageha", { bg: ROOMS.ageha, deferSave: true })) return { used: false, exerted: false };
+    if (state !== owner) return { used: false, exerted: false };
   }
   if (id === "ageha" && !await offerAgehaPurikura(ROOMS.ageha, spot)) return { used: false, exerted: false };
   addMoney(-spot.cost); addStamina(spot.stamina);

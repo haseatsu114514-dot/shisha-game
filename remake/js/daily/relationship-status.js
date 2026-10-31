@@ -8,7 +8,7 @@ import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
-  rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK",
+  rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
@@ -63,6 +63,9 @@ export function relationshipStatus(id) {
     const hint = state.finales?.[id] ? "相手との大切な交流を見届けた。"
       : id === "hiyori" && !BOND_FINALES[id]?.gift ? "ひよりとの交流を続けよう。関係の続きは、これからの物語で。"
       : id === "hiyori" && !hiyoriFinaleReady() ? "まだ聞いていないひよりの話を進めよう。斧投げや仕事の話を見届けてから、次の節目へ。"
+      // あげは（#1988）: 締めくくりと贈り物は無い。恋愛ルートで♥5なら、帰郷後の再会の翌日に本人から言葉がある。
+      : id === "ageha" ? (romance && lv >= 5 ? (state.chapter >= 3 ? "帰郷してMELTY PUFFを訪ねた翌日に、本人の言葉を聞ける。"
+        : "県大会のあとも、店に通う約束は続く。本人の言葉は、そのあとで。") : "")
       : lv >= 5 ? finaleHint(id)
       : ""; // ♥5までの道のりと贈り物の説明は全体ガイドにまとめ、各人の行では直近の思い出を前に出す
     return summary(romance ? "romance" : "friend", romance ? "恋愛ルート" : "友人ルート", hint);
