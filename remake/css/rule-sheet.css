@@ -1,4 +1,4 @@
-.rule-sheet-modal .modal-box { width: min(560px, 94%); max-height: min(94%, 700px); padding: 18px 24px; }
+.modal-box.rule-sheet-modal { width: min(560px, 94%); max-height: min(96%, 700px); padding: 12px 24px; }
 .rule-sheet-modal .modal-body { display: flex; justify-content: center; }
 .rule-sheet {
   box-sizing: border-box;
