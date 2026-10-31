@@ -6,7 +6,7 @@ import { layers, modal, gainCard } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { emit } from "../core/bus.js";
 import { state } from "../core/state.js";
-import { displayName, faceIconUrl } from "../core/data.js";
+import { displayName, faceIconUrl, portraitInfo } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
 import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned } from "../core/growth.js";
 import {
@@ -40,9 +40,30 @@ const payText = (pay) => Object.entries(pay).map(([k, n]) => `${HIDANE_NAME[k]}$
  * 読めない時は今の図形（CSS/SVG）のまま動く。画像は飾りで、規則・データは変えない（SBD72）。
  */
 const ART_DIR = "img/ui/growth_board/";
-/** マスのアイコン（SBD73「漢字が多いのでアイコンを」）: 恩恵・スキル・極み・関門。has-art の時だけ出し、漢字は下に残す */
+/** マスのアイコン（SBD73「漢字が多いのでアイコンを」）: 恩恵・スキル・極み・色の台座。has-art の時だけ出し、漢字は下に残す */
 const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk ? `perk_${node.perk}` : null)
   : node.kind === "skill" ? `skill_${node.id}` : node.kind === "gate" ? "gate" : null;
+/**
+ * 立ち絵（896×1200）の上での [目の真ん中 x, 目の高さ y, 頬から頬の幅]。札の顔の切り出し（asset_sources/ui/growth-board-20261030/faces/make_faces.py の EYES と同じ値）と、
+ * 右のパネルで顔の大きさと高さをそろえて立ち絵を置くのに使う（SBD81・SBD82）
+ */
+const PORTRAIT_EYES = {
+  sumi: [442, 198, 99], minto: [492, 375, 99], adam: [436, 218, 102], tsumugi: [423, 433, 95], naru: [454, 239, 90], rei: [440, 97, 99],
+  ageha: [472, 341, 99], kumicho: [479, 136, 122], kuze: [409, 145, 95], steve: [481, 100, 122], volk: [459, 109, 88], rin: [397, 290, 99],
+  hiyori: [426, 299, 104], samechan: [448, 397, 104], mashiro: [439, 404, 104], sheikh: [447, 89, 98], da_silva: [453, 80, 99], hajime: [528, 263, 90],
+};
+const BOARD_FACES = new Set(Object.keys(PORTRAIT_EYES));
+/** 右のパネルの立ち絵: 顔の幅をこの px に、目をパネルの上からこの px に */
+const PANEL_FACE_W = 82, PANEL_EYE_Y = 64;
+/** 右のパネルの立ち絵の表情（SBD82）。授業は教える人、スキルははじめ。無い表情は portraitInfo が近いものに */
+const PANEL_FACE = {
+  "M-B1": "smile", "M-S1": "serious", "M-S2": "intense", "M-S3": "smile", "M-W1": "normal", "M-W2": "thinking", "M-W3": "excited",
+  "M-W6": "smile", "M-B2": "smile", "M-S4": "smile", "M-W4": "smug", "M-B3": "smug", "M-S5": "smile", "M-W5": "serious",
+  "M-S6": "smile", "M-B4": "axe_throw", "M-W7": "excited", "M-B5": "smile", "M-W8": "smug", "M-B6": "excited",
+  K03: "smile", K04: "smile", K07: "serious", K08: "excited", K12: "serious", K13: "excited", K15: "smug", K06: "serious",
+  K10: "serious", K16: "smug", K11: "serious", K14: "surprise", K01: "serious", K02: "smile", K05: "surprise", K17: "normal",
+  K09: "smile", K18: "serious", K19: "smile", K20: "smile", K21: "smug", K22: "normal", K23: "smug", K24: "serious",
+};
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
   "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown"];
 let artReady = null;
@@ -248,10 +269,10 @@ export function openBoard({ place = null } = {}) {
         // 開いている所と、まだ開いていない所の境に結界（章の数は出さない。SBD42。文字の「封」はやめ、鎖の壁で「この先はまだ」を見せる。SBD74）
         if (closedA !== closedB) {
           const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, horiz = a.y === b.y;
-          const wall = svg("g", { class: "gb-wall", transform: `translate(${mx} ${my}) rotate(${horiz ? 90 : 0})`, "data-test": "board-wall" });
-          // 結界は道を横切る大きさ（SBD78「鍵の進めないとこが小さくて見づらい」）。下に暗い帯を敷いて、どの背景でも浮かせる
-          wall.append(svg("rect", { x: -40, y: -15, width: 80, height: 30, rx: 15, class: "gb-wall-back" }));
-          if (root.classList.contains("has-art")) wall.append(svg("image", { href: `${ART_DIR}wall_seal.webp`, x: -42, y: -14, width: 84, height: 28, class: "gb-wall-art" }));
+          const wall = svg("g", { class: "gb-wall", transform: `translate(${mx} ${my})${root.classList.contains("has-art") ? "" : ` rotate(${horiz ? 90 : 0})`}`, "data-test": "board-wall" });
+          // 結界は鎖を X に組んだ大きな錠（SBD79「鎖や鍵感をもっと出したい」）。道の上に置き、下に暗い丸を敷いてどの背景でも浮かせる
+          wall.append(svg("circle", { cx: 0, cy: 0, r: 25, class: "gb-wall-back" }));
+          if (root.classList.contains("has-art")) wall.append(svg("image", { href: `${ART_DIR}wall_seal.webp`, x: -27, y: -27, width: 54, height: 54, class: "gb-wall-art" }));
           else wall.append(svg("line", { x1: -30, y1: -6, x2: 30, y2: -6, class: "gb-seal" }), svg("line", { x1: -30, y1: 6, x2: 30, y2: 6, class: "gb-seal" }), svg("circle", { cx: 0, cy: 0, r: 7, class: "gb-seal-lock" }));
           const tip = svg("title"); tip.textContent = "この先は物語が進むと開く"; wall.prepend(tip);
           walls.push(wall);
@@ -294,11 +315,16 @@ export function openBoard({ place = null } = {}) {
         onclick: () => select(node.id, true),
       }, [
         el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph }), lessonFace(node, st),
-          icon && st !== "locked" ? el("img.gb-icon-img", { src: `${ART_DIR}icons/${icon}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null]),
-        qStep ? el("em.gb-quality", { text: "✦", "aria-hidden": "true" }) : null,
-        node.kind === "skill" && ["available", "short", "far"].includes(st)
-          ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
+          // 漢字の代わりにアイコン（SBD73・SBD85「まだ華とか漢字のアイコンがある」）。結界の先の能力・関門・極みもアイコンを薄く出す。結界の先のスキルは中身を伏せる
+          // 色の台座には、その盤の色の火（紅火・蒼火・翠火）がはまる（SBD89）。はめる前は暗いくぼみ、はめると光る
+          node.kind === "gate" ? el("img.gb-gate-gem", { src: `${ART_DIR}hidane_${node.board}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null,
+          icon && node.kind !== "gate" && (st !== "locked" || node.kind !== "skill") ? el("img.gb-icon-img", { src: `${ART_DIR}icons/${icon}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null,
+        ]),
+        // ? と火種の数は、札の下の辺の真ん中に重ねる（SBD86「？丸マークも位置がちぐはぐ」。押せる箱の角に付けていたので札から離れて見えた）。
+        // 札の暗さ（filter）を受けないよう札の外に置き、札の高さ（--fh）から位置を決める
         node.kind === "lesson" && !lessonKnown(node, g) ? el("span.gb-mystery", { text: "?", "aria-hidden": "true" }) : null,
+        node.kind === "skill" && ["available", "short", "far"].includes(st) ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
+        qStep ? el("em.gb-quality", { text: "✦", "aria-hidden": "true" }) : null,
       ]);
     }));
   }
@@ -312,11 +338,42 @@ export function openBoard({ place = null } = {}) {
     const known = lessonKnown(node, g);
     // まだ分からない授業はその人の影絵（2026-10-31 オーナー「まだ先のキャラもシルエットだけ出したい」SBD75）。
     // 正体を伏せる授業（revealFlag）と顔の無い人は、誰でもない影絵（画像がある時だけ）
-    const secret = !known && (node.revealFlag || !faceIconUrl(node.who, state));
-    const url = secret ? (root.classList.contains("has-art") ? `${ART_DIR}silhouette_unknown.webp` : null) : faceIconUrl(node.who, state);
+    // 札の顔は立ち絵から目の高さと顔の大きさをそろえて切り出したもの（SBD81。faces/<人>.webp）。無い人は顔アイコン
+    const face = BOARD_FACES.has(node.who) ? `${ART_DIR}faces/${node.who}.webp` : faceIconUrl(node.who, state);
+    const secret = !known && (node.revealFlag || !face);
+    const url = secret ? (root.classList.contains("has-art") ? `${ART_DIR}silhouette_unknown.webp` : null) : face;
     if (!url) return null;
     const img = el(`img.gb-face-icon${known ? "" : ".silhouette"}`, { src: url, alt: "", draggable: "false", loading: "lazy" });
     img.addEventListener("error", () => img.remove());
+    return img;
+  }
+
+  /**
+   * 右のパネルの絵（2026-10-31 オーナー「授業の説明とかの画像を入れる欄に、それぞれスキル名や内容に合ったキャラの画像を」SBD82）。
+   * 授業は教えてくれる人の立ち絵、スキルははじめの立ち絵を、中身に合う表情で胸から上だけ見せる。
+   * まだ分からない授業は立ち絵の影絵（正体を伏せる授業は誰でもない影絵）、まだ現れていないスキルは今までどおり「？」
+   */
+  function panelPortrait(node, shown) {
+    if (node.kind === "lesson") {
+      if (!lessonKnown(node, g)) {
+        if (node.revealFlag) return root.classList.contains("has-art") ? el("img.gb-portrait.silhouette.unknown", { src: `${ART_DIR}silhouette_unknown.webp`, alt: "" }) : null;
+        const p = portraitInfo(node.who, "normal");
+        return p ? placed(el("img.gb-portrait.silhouette", { src: p.src, alt: "", dataset: { who: node.who } }), node.who) : null;
+      }
+      const p = portraitInfo(node.who, PANEL_FACE[node.id] || "smile");
+      return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: node.who, face: p.face, test: "board-portrait" } }), node.who) : null;
+    }
+    if (node.kind === "skill" && shown !== "hidden") {
+      const p = portraitInfo("hajime", PANEL_FACE[node.id] || "normal");
+      return p ? placed(el("img.gb-portrait", { src: p.src, alt: "", dataset: { who: "hajime", face: p.face, test: "board-portrait" } }), "hajime") : null;
+    }
+    return null;
+  }
+  /** 顔の幅と目の高さがそろうように立ち絵を置く（PORTRAIT_EYES。無い人は胸から上を真ん中に） */
+  function placed(img, who) {
+    const [ex, ey, fw] = PORTRAIT_EYES[who] || [448, 260, 100];
+    const k = PANEL_FACE_W / fw;
+    Object.assign(img.style, { width: `${Math.round(896 * k)}px`, marginLeft: `${Math.round(-ex * k)}px`, top: `${Math.round(PANEL_EYE_Y - ey * k)}px` });
     return img;
   }
 
@@ -328,7 +385,7 @@ export function openBoard({ place = null } = {}) {
   }
   function nodeTitle(node, shown = revealOf(node)) {
     if (node.kind === "stat") return node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : node.notable ? `要のマス「${perkOf(node)?.notable?.name}」・${perkOf(node)?.name || ""}` : `${BOARD_JA[node.board]}のマス・${perkOf(node)?.name || ""}`;
-    if (node.kind === "gate") return `${BOARD_JA[node.board]}の関門`;
+    if (node.kind === "gate") return `${BOARD_JA[node.board]}の色の台座「${perkOf(node)?.name || ""}」`;
     if (node.kind === "lesson") return lessonKnown(node, g) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
     return shown === "hidden" ? "？？？（物語が進むと盤に現れる）" : `スキル「${node.name}」`;
   }
@@ -346,9 +403,16 @@ export function openBoard({ place = null } = {}) {
     if (!node || node.board !== board) { side.replaceChildren(...boardSummary(v)); return; }
     const st = status(node, v), shown = revealOf(node);
     const lines = [];
-    const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}`, { "aria-hidden": "true" }, [
+    const portrait = panelPortrait(node, shown);
+    if (portrait) portrait.addEventListener("error", () => { portrait.remove(); art.classList.remove("has-portrait"); });
+    // 立ち絵の無い能力・関門・極みは、右のパネルにも漢字でなくアイコンを大きく（SBD85）
+    const artIcon = !portrait && root.classList.contains("has-art") && iconOf(node) && (node.kind !== "skill" || shown !== "hidden")
+      ? el("img.gb-art-icon", { src: node.kind === "gate" ? `${ART_DIR}hidane_${node.board}.webp` : `${ART_DIR}icons/${iconOf(node)}.webp`, alt: "" }) : null;
+    const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}${portrait ? ".has-portrait" : ""}${artIcon ? ".has-icon" : ""}`, { "aria-hidden": "true" }, [
+      artIcon,
       el("span", { text: node.kind === "stat" ? BOARD_HEAD[node.board] : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? "授" : "？") : shown === "hidden" ? "？" : node.glyph }),
-      node.kind === "lesson" ? lessonFace(node, st) : null,
+      portrait || (node.kind === "lesson" ? lessonFace(node, st) : null),
+      portrait && node.kind === "lesson" && !lessonKnown(node, g) ? el("b.gb-art-mystery", { text: "?" }) : null,
     ]);
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
     if (node.kind === "stat") {
@@ -359,8 +423,11 @@ export function openBoard({ place = null } = {}) {
       if (node.peak) lines.push(el("p.gb-p-next", { text: statsFilled(node.board, v.unlocked) ? "盤の能力のマスを全部灯した。極みを灯せる" : "この盤の能力のマスを全部灯すと灯せる（盤を埋めたご褒美）" }));
       lines.push(el("p.gb-p-sub", { text: `効く場面：${BOARD_WHERE[node.board]}` }));
     } else if (node.kind === "gate") {
-      lines.push(el("p", { text: "この先の道を開く関門。色の火（紅火・蒼火・翠火）1つで越える。先には強いスキルや授業がある" }));
-      lines.push(el("p.gb-p-sub", { text: `${HIDANE_NAME[node.board]}を先に使う。無ければほかの色の火でも越えられる。白火では越えられない` }));
+      // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る
+      const perk = perkOf(node);
+      lines.push(el("p", { text: `${HIDANE_NAME[node.board]}をはめる台座（台座の光の色）。はめると先へ進めて、この台座の能力が手に入る。先には強いスキルや授業がある` }));
+      if (perk) lines.push(el("p.gb-p-quality", { dataset: { test: "board-gate-perk" }, text: `はめると：${perk.text}（色の台座）` }));
+      lines.push(el("p.gb-p-sub", { text: `${HIDANE_NAME[node.board]}を先に使う。無ければほかの色の火でもはまる。白火でははまらない` }));
     } else if (node.kind === "skill") {
       if (shown === "hidden") lines.push(el("p", { text: "物語が進むと盤に現れる" }));
       else lines.push(el("p", { text: node.text }), el("p.gb-p-sub", { text: `効く場面：${node.scene}・火種${node.cost}${shown === "next" ? "・まだ開いていない" : ""}` }));
@@ -380,7 +447,7 @@ export function openBoard({ place = null } = {}) {
     }
     lines.push(el(`p.gb-p-state.s-${st}`, { text: stateText(node, st, v) }));
     const actions = [];
-    if (canLight && st === "available") actions.push(el("button.btn.primary.gb-light", { text: node.kind === "gate" ? "越える（色の火種1）" : node.cost ? `灯す（火種${node.cost}）` : "教わる", dataset: { test: "board-light" }, onclick: () => light(node.id) }));
+    if (canLight && st === "available") actions.push(el("button.btn.primary.gb-light", { text: node.kind === "gate" ? "はめる（色の火種1）" : node.cost ? `灯す（火種${node.cost}）` : "教わる", dataset: { test: "board-light" }, onclick: () => light(node.id) }));
     if (st === "pending") actions.push(el("button.btn.gb-undo", { text: "やめる", dataset: { test: "board-undo" }, onclick: () => unlight(node.id) }));
     if (!g.nodes.includes(node.id) && st !== "pending") {
       actions.push(el("button.btn.gb-aim", { text: g.target === node.id ? "目標をやめる" : "目標にする", dataset: { test: "board-target" }, onclick: () => toggleTarget(node.id) }));
@@ -441,7 +508,7 @@ export function openBoard({ place = null } = {}) {
 
   function renderFooter(v) {
     const wallet = el("div.gb-wallet", { dataset: { test: "board-wallet" } }, HIDANE_KEYS.map((k) => el(`span.gb-hidane.k-${k}${v.hidane[k] ? "" : ".zero"}`, {
-      title: k === "any" ? "白火（関門のほか、どのマスにも）" : `${HIDANE_NAME[k]}（${BOARD_JA[k]}盤のマスと、関門）`,
+      title: k === "any" ? "白火（色の台座のほか、どのマスにも）" : `${HIDANE_NAME[k]}（${BOARD_JA[k]}盤のマスと、色の台座）`,
     }, [el("i", { "aria-hidden": "true" }), el("span", { text: HIDANE_NAME[k] }), el("b", { text: String(v.hidane[k] || 0) })])));
     const actions = [];
     if (canLight && pending.length) actions.push(el("button.btn.gb-reset", { text: "取り消す", dataset: { test: "board-reset" }, onclick: () => { pending = []; SE.cancel?.(); render(); } }));
@@ -449,7 +516,7 @@ export function openBoard({ place = null } = {}) {
       text: pending.length ? `決定（${pending.length}）` : "閉じる", dataset: { test: "board-decide" }, onclick: () => (pending.length ? finish(true) : close()),
     }));
     footer.replaceChildren(wallet, el("p.gb-legend", [
-      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 関門（色の火）" }), legend("sealed", "授業の錠"), legend("locked", "結界の先（物語が進むと開く）"), el("span", { text: "✦ できることが増える" }),
+      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 色の台座（光っている色の火をはめる）" }), legend("sealed", "授業の錠"), legend("locked", "結界の先（物語が進むと開く）"), el("span", { text: "✦ できることが増える" }),
     ]), el("div.gb-actions", actions));
   }
   function legend(st, text) { return el("span.gb-legend-item", [el(`i.s-${st}`), el("span", { text })]); }
@@ -497,10 +564,10 @@ export function openBoard({ place = null } = {}) {
       title: "心得の盤の見方", className: "gboard-help",
       body: el("div", [
         el("p", { text: "盤は能力ごとに3枚（才能・感覚・理論）。下の紋から左・右・上へ道がのびていて、線でつながった隣のマスだけ灯せる。どの道から進んでもいい。" }),
-        el("p", { text: "丸いマスは能力（火種1）。灯すたびに少し伸びる。紋から遠いマスほど恩恵が大きい（近く×1・中ほど×2・関門の先×3）。✦のマスは灯すと、できることが1つ増える。六角形はスキル（火種4〜8）。いちばん上の極みは、その盤の能力のマスを全部灯すと灯せる。" }),
-        el("p", { text: "ひし形は関門。色の火（紅火・蒼火・翠火）1つで越えると、その先の道が開く。関門の先には強いスキルと授業がある。白火では越えられない。" }),
+        el("p", { text: "丸いマスは能力（火種1）。灯すたびに少し伸びる。紋から遠いマスほど恩恵が大きい（近く×1・中ほど×2・台座の先×3）。✦のマスは灯すと、できることが1つ増える。六角形はスキル（火種4〜8）。いちばん上の極みは、その盤の能力のマスを全部灯すと灯せる。" }),
+        el("p", { text: "ひし形は色の台座。色の火（紅火・蒼火・翠火）を1つはめると、その先の道が開き、台座の能力（台座の先のマスより大きい）も手に入る。台座の先には強いスキルと授業がある。白火でははまらない。" }),
         el("p", { text: "金の札は授業（火種いらず）。教えてくれる人に出会うと盤に現れる。灯したら、次にその人に会った時に相談して習う（LIME では習えない）。" }),
-        el("p", { text: "白火はどのマスにも使える。色の火はその色の盤のマスと関門に使える。払うときは白火が先。" }),
+        el("p", { text: "白火は色の台座のほか、どのマスにも使える。色の火はその色の盤のマスと色の台座に使える。払うときは白火が先。" }),
         el("p", { text: "火種を灯せるのは、観音堂などの静かな場所で内省した時だけ（時間は進まない）。メニューからは見るだけで、欲しいマスを目標にしておける。" }),
       ]),
       options: [{ label: "閉じる", value: true, primary: true }],
@@ -530,7 +597,7 @@ export function openBoard({ place = null } = {}) {
       const squares = committed.filter((n) => n.kind === "stat").length;
       if (squares) gainCard({ kind: "info", badge: "火", top: "LIGHT", main: `能力の火を${squares}つ灯した` });
       const gates = committed.filter((n) => n.kind === "gate").length;
-      if (gates) gainCard({ kind: "info", badge: "関", top: "BREAK", main: `関門を${gates}つ越えた`, sub: "この先の道が開いた" });
+      if (gates) gainCard({ kind: "info", badge: "関", top: "BREAK", main: `色の台座に${gates}つはめた`, sub: "この先の道が開き、台座の能力が手に入った" });
       for (const node of committed) if (node.feature) gainCard({ kind: "info", badge: "✦", top: "NEW", main: FEATURES[node.feature].name, sub: FEATURES[node.feature].text });
       for (const node of committed) if (node.peak) gainCard({ kind: "info", badge: "極", top: "COMPLETE", main: `${BOARD_JA[node.board]}を極めた`, sub: "盤の能力のマスを全部灯した" });
       for (const node of committed) if (node.kind === "skill") gainCard({ kind: "info", badge: node.glyph, top: "SKILL", main: node.name, sub: node.text });

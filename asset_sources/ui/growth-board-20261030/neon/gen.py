@@ -78,10 +78,10 @@ ASSETS = {
         "No text. Isolated on a fully transparent background.",
         "1024x1024", "transparent"),
     "wall_seal": (
-        "A single horizontal glowing barrier segment for a dark game board, wide and short (width to height about 3:1), centered, filling about 90% of the "
-        "width. Two thin parallel neon tubes in warm gold #f4d27a with bright cores and soft bloom, laced by a fine golden chain woven between them, with "
-        "a small golden padlock hanging at the center. Flat, crisp, readable at 60 pixels wide. No text. Isolated on a fully transparent background.",
-        "1536x1024", "transparent"),
+        "A game icon of a large golden padlock with two thick golden chains crossed behind it in an X shape. Chunky chain links, the padlock has "
+        "a rounded shackle and a dark keyhole. Shiny gold metal with dark outlines and a soft warm glow. Centered, bold and simple, readable at "
+        "small size. No text. Transparent background.",
+        "1024x1024", "transparent"),
     "silhouette_unknown": (
         "A single flat solid black silhouette of an unknown person's head and shoulders bust, facing front, soft rounded shapes, slightly mysterious, "
         "centered, filling about 75% of the frame, crisp edge, no features, no outline, no glow. Isolated on a fully transparent background.",
@@ -116,7 +116,7 @@ ASSETS = {
 
 
 def request(name, prompt, size, background):
-    body = {"model": MODEL, "prompt": prompt + " " + STYLE, "size": size, "n": 1, "quality": "high",
+    body = {"model": MODEL, "prompt": prompt + " " + STYLE, "size": size, "n": 1, "quality": os.environ.get("IMAGE_QUALITY", "high"),
             "background": background, "output_format": "png"}
     headers = {"Content-Type": "application/json"}
     key = os.environ.get("OPENAI_API_KEY")

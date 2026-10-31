@@ -5,7 +5,7 @@ import { affinityLevel } from "./stats.js";
 import { ensureGrowth, HIDANE_KEYS, noteLit, BOARD_TOTAL } from "./growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_PREFIX, STAT_SQUARES, BOARD_SHAPES,
-  SKILLS, LESSONS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS, FEATURES, NOTABLES,
+  SKILLS, LESSONS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS, GATE_TIER, FEATURES, NOTABLES,
 } from "./growth-board-data.js";
 
 export * from "./growth-board-data.js";
@@ -74,7 +74,7 @@ function buildNodes() {
   for (const n of nodes) {
     const c = LAYOUTS[n.board].cells.find((x) => x.key === n.cell);
     if (at[`${n.board}:${n.cell}`]) throw new Error(`${n.id} と ${at[`${n.board}:${n.cell}`]} が同じマス`);
-    Object.assign(n, { gx: c.x, gy: c.y, ring: c.ring, band: c.band, ...(n.kind === "stat" && c.perk ? { perk: c.perk } : {}),
+    Object.assign(n, { gx: c.x, gy: c.y, ring: c.ring, band: c.band, ...((n.kind === "stat" || n.kind === "gate") && c.perk ? { perk: c.perk } : {}),
       ...(n.kind === "stat" && c.feature ? { feature: c.feature } : {}), ...(n.kind === "stat" && c.notable ? { notable: c.notable } : {}) });
     if (n.feature && FEATURES[n.feature]?.board !== n.board) throw new Error(`${n.id} の✦ ${n.feature} が盤に合わない`);
     if (n.notable && NOTABLES[n.notable]?.board !== n.board) throw new Error(`${n.id} の要 ${n.notable} が盤に合わない`);
@@ -105,17 +105,18 @@ export const boardNodes = (board) => NODES.filter((n) => n.board === board);
 const fmtNum = (v) => String(Math.round(v * 10) / 10);
 /** 普通のマスの恩恵（SBD59・SBD62）。能力のマスでなければ null。極みは基礎。強さは帯の倍率（近く×1・中ほど×2・関門の先×3） */
 export function perkOf(node) {
-  if (node?.kind !== "stat") return null;
+  if (node?.kind !== "stat" && !(node?.kind === "gate" && node.perk)) return null;
   const def = SQUARE_PERKS[node.board];
   const perk = (!node.peak && def.perks[node.perk]) || def.base;
-  const tier = PERK_TIERS[node.band] || PERK_TIERS[1];
+  // 色の台座は台座の能力（SBD89）
+  const tier = node.kind === "gate" ? GATE_TIER : PERK_TIERS[node.band] || PERK_TIERS[1];
   const notable = node.notable ? NOTABLES[node.notable] : null;
   const mult = tier.mult * (notable?.bonus || 1);
-  return { ...perk, tier: node.band, tierName: tier.name, notable, text: perk.text.replace(/\{([\d.]+)\}/g, (_, v) => fmtNum(Number(v) * mult)) };
+  return { ...perk, tier: node.kind === "gate" ? "gate" : node.band, tierName: tier.name, notable, text: perk.text.replace(/\{([\d.]+)\}/g, (_, v) => fmtNum(Number(v) * mult)) };
 }
 
 export const nodeLabel = (node) => node.kind === "stat"
-  ? `${BOARD_JA[node.board]}のマス${node.peak ? "（極み）" : ""}` : node.kind === "gate" ? `${BOARD_JA[node.board]}の関門`
+  ? `${BOARD_JA[node.board]}のマス${node.peak ? "（極み）" : ""}` : node.kind === "gate" ? `${BOARD_JA[node.board]}の色の台座`
   : node.kind === "lesson" ? `授業「${node.name}」` : `スキル「${node.name}」`;
 
 // ---------------------------------------------------------------- 規則（2.3）
@@ -146,8 +147,8 @@ export function perkTotals(board, unlocked) {
     const unit = Number(/\{([\d.]+)\}/.exec(perk.text)?.[1] || 0);
     let sum = 0, max = 0;
     for (const n of boardNodes(board)) {
-      if (n.kind !== "stat" || n.peak || n.perk !== key) continue;
-      const v = unit * (PERK_TIERS[n.band]?.mult || 1) * (n.notable ? NOTABLES[n.notable]?.bonus || 1 : 1);
+      if (n.perk !== key || n.peak || (n.kind !== "stat" && n.kind !== "gate")) continue;
+      const v = unit * (n.kind === "gate" ? GATE_TIER.mult : PERK_TIERS[n.band]?.mult || 1) * (n.notable ? NOTABLES[n.notable]?.bonus || 1 : 1);
       max += v;
       if (unlocked.has(n.id)) sum += v;
     }

@@ -151,7 +151,21 @@ for (const k of board.BOARD_KEYS) {
   assert(sample, "3つの帯にまたがる恩恵がある");
   const unit = Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === 1)).text)[0]);
   for (const b of [1, 2, 3]) assert.equal(Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === b)).text)[0]), unit * b, `帯${b}は×${b}`);
-  assert.equal(board.perkOf(plain.find((m) => m.band === 3)).tierName, "関門の先");
+  assert.equal(board.perkOf(plain.find((m) => m.band === 3)).tierName, "台座の先");
+  // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る。各盤の4つの台座に、その盤の4つの能力を1つずつ。台座1つ＝台座の先のマス×4/3
+  for (const k of board.BOARD_KEYS) {
+    const gates = board.boardNodes(k).filter((n) => n.kind === "gate");
+    assert.deepEqual(gates.map((g) => g.perk).sort(), Object.keys(board.SQUARE_PERKS[k].perks).sort(), `${k}: 台座の能力は盤の4つの能力を1つずつ`);
+    for (const g of gates) {
+      const p = board.perkOf(g), u = Number(/[\d.]+/.exec(board.SQUARE_PERKS[k].perks[g.perk].text)[0]);
+      assert.equal(p.tierName, "色の台座");
+      assert.equal(Number(/[\d.]+/.exec(p.text)[0]), u * board.GATE_TIER.mult, `${g.id}: 台座は×${board.GATE_TIER.mult}`);
+    }
+    const g0 = gates[0], unit = Number(/[\d.]+/.exec(board.SQUARE_PERKS[k].perks[g0.perk].text)[0]);
+    const before = board.perkTotals(k, new Set()).find((p) => p.key === g0.perk).sum;
+    const after = board.perkTotals(k, new Set([g0.id])).find((p) => p.key === g0.perk).sum;
+    assert.equal(after - before, unit * board.GATE_TIER.mult, `${k}: はめた台座の能力が合計に入る`);
+  }
   assert.equal(board.perkOf(board.boardNodes("body").find((n) => n.peak)).name, "基礎", "極みは基礎");
   const notable = board.boardNodes("body").find((n) => n.notable === "ironsleep");
   assert.equal(board.perkOf(notable).notable.name, "不眠の体");
@@ -243,7 +257,7 @@ assert.deepEqual(board.paymentFor(N.BG1, { any: 9, sense: 1 }), { sense: 1 }, "�
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9 }, { capped: true }), { any: 1 }, "もう色が来ない（受け取りの上限）なら万能でも越えられる");
 assert.equal(board.paymentFor(N.BG1, { any: 9 }), null, "万能の火種では越えられない");
 assert.equal(N.BG1.kind, "gate");
-assert.equal(board.nodeLabel(N.BG1), "才能の関門");
+assert.equal(board.nodeLabel(N.BG1), "才能の色の台座");
 
 // 確定: 払った種類を記録し、火種を減らす。節目の色のために灯した数を数える
 g.hidane = { any: 2, body: 1, sense: 0, wisdom: 0 };
