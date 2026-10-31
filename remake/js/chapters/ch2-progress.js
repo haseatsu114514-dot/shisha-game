@@ -8,6 +8,9 @@ export function advanceToChapterTwo(value) {
   value.slot = 0;
   value.phase = "opening";
   value.statsAtChapterStart = { ...value.stats };
+  // 第1章で実際に通った店主。章明けの再訪（daily/spots.js の AFTER_CHAPTER_VISITS）は、この記録がある人だけ。
+  value.flags._ch1_regulars = Object.fromEntries(["adam", "minto"]
+    .filter(id => (value.story?.[id] || 0) > 0).map(id => [id, true]));
   value.flags._ch2_day1 = { startDay: value.day, stage: "departure", titleSeen: false };
   return true;
 }

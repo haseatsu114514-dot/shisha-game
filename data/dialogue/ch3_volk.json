@@ -554,7 +554,7 @@
     },
     {
       "dialogue_id": "ch3_volk_second",
-      "comment": "味の会話（#2028）。ヴォルクの好み＝発売直後のナイトサイド ブラストミント。訪問は未接続（ch3.js は ch3_volk_first だけ読む）。接続時は味覚が戻った後の任意場面に置き、好感度の付け方と既存の能力文は接続方針に合わせる。",
+      "comment": "味の会話（#2028）。ヴォルクの好み＝発売直後のナイトサイド ブラストミント。第3章の寄り道（ch3-story-wiring.js）から、初来店の後に second→third→fourth の順で一度ずつ読む（#2026）。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_volk_shop.png",
         "flavor_lesson": {
@@ -670,6 +670,16 @@
           "speaker": "",
           "face": "",
           "text": "……【技術】と【センス】が少し上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2,
+            "sense": 2
+          },
+          "affinity": {
+            "volk": 2
+          }
         }
       ]
     },
@@ -768,6 +778,15 @@
           "speaker": "",
           "face": "",
           "text": "……【センス】が上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 3
+          },
+          "affinity": {
+            "volk": 2
+          }
         }
       ]
     },
@@ -865,6 +884,15 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 3
+          },
+          "affinity": {
+            "volk": 2
+          }
         }
       ]
     },

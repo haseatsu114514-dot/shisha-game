@@ -233,6 +233,49 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(hiyoriRoute.events.find(e => e.id === 'tokyo_contact').flag, wiring.optionalReadFlag('hiyori_tokyo_contact'));
 }
 {
+  // #2026: ヴォルクの再訪は初来店の後に second→third→fourth の順。思い出・能力・好感度は台本の行で付く。
+  const value = tokyo();
+  readUntil(value, 'ch3_volk_first');
+  value.met.volk = true;
+  assert(!offered(value).some(id => id.startsWith('ch3_volk_')), 'no revisit before the first visit');
+  readUntil(value, 'ch3_strategy');
+  assert(offered(value).includes('ch3_volk_second'));
+  assert(!offered(value).includes('ch3_volk_third') && !offered(value).includes('ch3_volk_fourth'));
+  assert(!offered({...value, met: {}}).includes('ch3_volk_second'), 'needs to have met volk');
+  wiring.commitOptionalRead(value, 'ch3_volk_second');
+  assert.deepEqual(offered(value).filter(id => id.startsWith('ch3_volk_')), ['ch3_volk_third']);
+  wiring.commitOptionalRead(value, 'ch3_volk_third');
+  assert.deepEqual(offered(value).filter(id => id.startsWith('ch3_volk_')), ['ch3_volk_fourth']);
+  wiring.commitOptionalRead(value, 'ch3_volk_fourth');
+  assert(!offered(value).some(id => id.startsWith('ch3_volk_')), 'each revisit is read once');
+  const lines = id => sceneData.get(id).lines;
+  assert(lines('ch3_volk_second').some(row => row.type === 'remember' && row.memory_id === 'volk_conditions'));
+  assert(lines('ch3_volk_fourth').some(row => row.type === 'remember' && row.memory_id === 'volk_update'));
+  for (const id of ['ch3_volk_second', 'ch3_volk_third', 'ch3_volk_fourth']) {
+    assert(lines(id).some(row => row.type === 'apply' && row.affinity?.volk > 0 && Object.keys(row.stats || {}).length), id);
+  }
+}
+{
+  // #2026: つむぎの不調の通話。第2章の煙の線・水を読み、味が戻った後、つむぎが東京に来ていない間だけ。
+  const value = tokyo();
+  value.met.tsumugi = true; value.contacts.push('tsumugi');
+  readUntil(value, 'ch3_abyss_recovery');
+  assert(!offered(value).includes('ch3_tsumugi_slump'), 'needs the chapter-2 smoke-line scene');
+  value.flags._ch2_read_ch2_tsumugi_color = true;
+  assert(wiring.chapterThreeCompletedScenes(value).includes('ch2_tsumugi_color'));
+  assert(offered(value).includes('ch3_tsumugi_slump'));
+  assert(!offered({...value, contacts: ['sumi']}).includes('ch3_tsumugi_slump'), 'needs the contact');
+  const early = tokyo();
+  early.met.tsumugi = true; early.contacts.push('tsumugi'); early.flags._ch2_read_ch2_tsumugi_color = true;
+  readUntil(early, 'ch3_rest_before_recovery');
+  assert(!offered(early).includes('ch3_tsumugi_slump'), 'not while the taste is gone');
+  const visiting = structuredClone(value);
+  visiting.tokyoVisits.plans.push({id: 'tokyo.tsumugi.x', characterId: 'tsumugi', status: 'staying', arrivalDay: value.day, returnDay: value.day + 2});
+  assert(!offered(visiting).includes('ch3_tsumugi_slump'), 'no video call while she is in Tokyo');
+  wiring.commitOptionalRead(value, 'ch3_tsumugi_slump');
+  assert(!offered(value).includes('ch3_tsumugi_slump'), 'read once only');
+}
+{
   // #2022: ましろとはmukai二日目の本編でLIMEを交換する（第5章のLIMEは連絡先が前提）。
   assert(sceneData.get('ch3_mukai_intro').lines.some(row => row.type === 'set_flag' && row.flag === '_lime_contact_mashiro'));
   // 味の会話は休みの日の配合メモの後、味覚が戻ってから。読むと好感度と熟練度が上がる。

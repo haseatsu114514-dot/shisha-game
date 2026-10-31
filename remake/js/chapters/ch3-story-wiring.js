@@ -48,6 +48,13 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_mashiro_play_3", "ch3_mashiro_practice"], unsettled: ["mashiro"] },
   hiyori_tokyo_contact: { file: "hiyori", label: "ひよりからの夜の通話", location: "閉店後のmukaiの前", bg: "bg_street_night",
     after: ["ch3_mukai_arrival"], met: ["hiyori"], away: ["hiyori"] },
+  // 第2章の煙の線・水の続き（#2026）。友人は東京へ来られないので、東京に来ていない間のビデオ通話。
+  ch3_tsumugi_slump: { file: "ch3_tsumugi", label: "つむぎからのビデオ通話", location: "mukai", bg: "bg_mukai_shop",
+    met: ["tsumugi"], away: ["tsumugi"] },
+  // ヴォルクの再訪（#2026）。初来店（DAY12夜）の後は自由時間の枠が無いので、寄り道として一度ずつ順に読む。
+  ch3_volk_second: { file: "ch3_volk", label: "鉄の煙の二度目", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+  ch3_volk_third: { file: "ch3_volk", label: "七年分の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+  ch3_volk_fourth: { file: "ch3_volk", label: "頷く順番", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
 });
 
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
@@ -60,6 +67,8 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
     "ch3_mashiro_black_tea", "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale"],
   ch3_kuze_mashiro: ["ch3_kuze_mashiro_tea_tin", "ch3_kuze_mashiro_soon_back"],
   hiyori: ["hiyori_tokyo_contact"],
+  ch3_tsumugi: ["ch3_tsumugi_slump"],
+  ch3_volk: ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"],
   // 返事の場面は告白の選択肢の next_id で入る（ch3_read_confession_mashiro は返事まで読んだ時だけ立つ）。
   confession: ["confession_mashiro", "confession_mashiro_accept", "confession_mashiro_reject"],
   // 第3章で再生しうるのは date_min_chapter が3以下の恋人だけ（あげはは第4章から）。
@@ -93,6 +102,7 @@ export function loadStoryRoutes() {
  * - confession_minto: 返事の場面 accept が lovers へ、reject が _friend_minto へだけ書く（daily/romance.js）。
  * - ch3_national_result: 読了後に大会ランナーが立てる _ch3_tournament_won。
  * - hiyori_work_talk: ひよりルートの読了フラグ _hiyori_work_talk_done（第1〜2章で読む仕事の相談）。
+ * - ch2_tsumugi_color: 第2章の夜の場面の既読 _ch2_read_ch2_tsumugi_color（ch2-story-data.js）。
  */
 export function chapterThreeCompletedScenes(value) {
   const done = new Set(chapterThreeScenes(value).slice(0, chapterThreeProgress(value).stage).map(scene => scene.id));
@@ -101,6 +111,7 @@ export function chapterThreeCompletedScenes(value) {
   if (flags._ch3_tournament_won) done.add("ch3_national_result");
   if ((value.lovers || []).includes("minto") || flags._friend_minto) done.add("confession_minto");
   if (flags._hiyori_work_talk_done) done.add("hiyori_work_talk");
+  if (flags._ch2_read_ch2_tsumugi_color) done.add("ch2_tsumugi_color");
   for (const id of Object.keys(CH3_OPTIONAL_SCENES)) if (flags[optionalReadFlag(id)]) done.add(id);
   return [...done];
 }
