@@ -1220,6 +1220,19 @@
           "text": "SHISHA-9000。博士がそう呼んでいた装置だ。"
         },
         {
+          "speaker": "shisha_9000",
+          "face": "normal",
+          "text": "環境データ、取得完了"
+        },
+        {
+          "type": "intro",
+          "char_id": "shisha_9000",
+          "intro": {
+            "title": "AIシーシャマシン",
+            "line": "環境データ、取得完了"
+          }
+        },
+        {
           "speaker": "dr_kemuri",
           "face": "smile",
           "text": "おはようございます。来てくださって、ありがとうございます"
