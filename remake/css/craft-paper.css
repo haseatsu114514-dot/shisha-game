@@ -299,8 +299,10 @@ html .bench[data-mode][data-art-skin] .btn.dodge-action[data-cooling="true"]:dis
 html .bench[data-mode] .thermo-housing .thermo-skin {
   background: var(--cp-thermo) center / 100% 100% no-repeat !important; filter: drop-shadow(0 3px 6px #2a1a3a2e);
 }
-/* 枠の透明な窓（幅 33.4〜66.3%・高さ 5.1〜92.6%）に管を合わせる。 */
-html .bench[data-mode] .thermo-housing .thermo-tube { left: 34%; right: 34%; top: 5.4%; bottom: 7.8%; border-radius: 6px; background: linear-gradient(90deg, #ddd3e2, #efe7f2, #d9cde0); }
+/* 枠の透明な窓（幅 33.4〜66.3%・高さ 5.1〜92.6%）に管を合わせる。矢印・目印・吹き出しは thermometer.js が
+   --thermo-inset（上下同じ余白）で置くので、管も同じ変数で上下対称に置く（ずらすと矢印が判定とずれる）。 */
+html .bench[data-mode] .thermo:has(.thermo-housing) { --thermo-inset: 6.4% !important; }
+html .bench[data-mode] .thermo-housing .thermo-tube { left: 34%; right: 34%; top: var(--thermo-inset); bottom: var(--thermo-inset); border-radius: 6px; background: linear-gradient(90deg, #ddd3e2, #efe7f2, #d9cde0); }
 html .bench[data-mode] .thermo-tube { border-color: var(--lavender-line); background: var(--lavender-soft); }
 html .bench[data-mode] .thermo-zone { background: #2f8a5a2e; border-color: var(--good-ink); }
 html .bench[data-mode] .thermo-projected { border-color: var(--lavender); background: #69497e22; }
