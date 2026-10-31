@@ -22,6 +22,9 @@ import { giftOpen } from "../core/scene-motions.js";
 import { isLover, romanceRouteOpen } from "./romance.js";
 import { VISIT_SEQ, storyCount, hasContact } from "./spots.js";
 import { hiyoriRoute, hiyoriStoriesDone, hiyoriFinaleReady } from "../core/hiyori-route.js";
+// #2090: 第2章の対峙（決裂・休業）以降か。spots.js / core/fortune-effects.js の naruRiftActive と同じ条件（試験の依存を増やさないため写し）
+const naruRiftActive = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._ch2_read_ch2_naru_confrontation
+  || save?.flags?._ch2_night_11_done || save?.flags?._ch2_naru_listened || save?.flags?._ch2_naru_hurt);
 
 /**
  * 締めくくり（好感度MAXイベント）。gift=受け取る専用ハガル（equipment.json）、question=最後の質問の選択肢 id。
@@ -364,7 +367,7 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
     && state.day - lastDay(all.filter((i) => i.msg?.type === "invitation")) >= (cfg.inviteGapDays || 6);
   const out = [];
   const due = Object.keys(BOND_FINALES)
-    .filter((id) => settledFriend(id) && hasContact(id))
+    .filter((id) => settledFriend(id) && hasContact(id) && !(id === "naru" && naruRiftActive(state))) // #2090
     .map((id) => {
       const sent = friendSent(id);
       return { id, sent, last: Math.max(state.finales[id].day || 0, lastDay(sent)) };
