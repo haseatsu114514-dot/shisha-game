@@ -17,7 +17,7 @@ import { mountIntro } from "./intro-fit.js";
 import { motifs } from "./intro-motifs.js";
 import { illustratedIntro, layoutIntro, animateIntro, exitIntro, flavorTag, plainLine, motionOf, MOTIONS } from "./intro-art.js";
 import { introFlavor } from "./intro-flavors.js";
-import { graphicIntro, GRAPHIC_FRAME } from "./intro-graphic.js";
+import { graphicIntro } from "./intro-graphic.js";
 
 export const introSeenKey = (id, variant = "") => `_intro_${id}${variant ? `_${variant}` : ""}`;
 const introOf = (id, variant = "") => DB.characters[id]?.[variant ? `intro_cutin_${variant}` : "intro_cutin"] || null;
@@ -70,7 +70,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   if (graphic) {
     // 新しい絵柄: 人物は専用の一枚絵、配置は共通。背景は描き直した分だけ差し替える
     p = { ...p, src: graphic.portrait, face: "graphic" };
-    art = { ...art, frames: { graphic: GRAPHIC_FRAME } };
+    art = { ...art, frames: { graphic: graphic.frame } };
   }
   if (art && p) {
     const background = graphic?.background || img(art.background);
