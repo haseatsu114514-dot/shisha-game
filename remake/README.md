@@ -193,6 +193,8 @@ python3 remake/tools/serve_preview.py --port 8123
 
 大会のコンティニューだけを確認する場合は `http://127.0.0.1:8123/remake/continue-preview.html`。
 
+大会の「生中継」フレーム（設計 TC01〜・2026-10-31）の動く見本は `http://127.0.0.1:8123/remake/tournament-broadcast-preview.html`。生中継の作業台・中間投票・結果発表2.0をPC／スマホ横で切り替えられる。設計書は [docs/design/tournament-craft-redesign-20261031.md](../docs/design/tournament-craft-redesign-20261031.md)、素材は [asset_sources/ui/tournament-broadcast-20261031](../asset_sources/ui/tournament-broadcast-20261031/README.md)。本編未接続・保存データは変更しない。
+
 大会前夜から当日への日付切り替えは `http://127.0.0.1:8123/remake/tournament-day-transition-preview.html` で比較できる。案1（カウントダウン反転）、案2（煙の先に会場）、案3（開幕のスポットライト）と通常の日替わりを、同じ自宅の前夜・朝で切り替え、リプレイできる。音のON/OFFも選べる。保存データは変更しない。
 スミさん3パターンと恋人6人の20秒演出・戻る／諦めるの反応を、本編と同じ立ち絵・描画で確認できる。
 2026-10-11の参考画像を本編へ採用。暗いスモークステージとスポット光、斜めの筆文字「コンティニューする？」、右上の円形HUDを配置。人物を中央から画面下端まで映し、背後の薄い巨大数字が750→1800pxへ迫る。下部の1行テロップに細いライン、金／紫の鋭角ボタンを合わせる。数字とボタン文字は動的な実テキスト。

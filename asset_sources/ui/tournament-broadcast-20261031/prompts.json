@@ -1,0 +1,89 @@
+[
+  {
+    "id": "stage_backdrop",
+    "size": "1536x1024",
+    "quality": "high",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark. Scene: a wide empty tournament stage inside a dark event hall seen from the audience. Four identical brass-trimmed crafting counters in a row on a low stage, each with a tall glass shisha pipe silhouette, soft rim light. Behind them a huge dark LED wall glowing faintly magenta and cyan in diagonal beams, light haze, thin smoke drifting. Bottom edge: dark silhouettes of audience heads and a few raised phone lights. Cinematic, moody, lots of empty dark space in the center-top for overlay UI. No people on stage, no faces, no text."
+  },
+  {
+    "id": "result_backdrop",
+    "size": "1536x1024",
+    "quality": "high",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark. Scene: the same dark event-hall stage at the final reveal moment. A single warm white spotlight cone from above lands on an empty round brass pedestal at center stage; one tall elegant glass shisha pipe stands on it with a thin column of white smoke rising straight up and blooming into a soft cloud. Golden sparks and tiny confetti drift in the light beam. The rest of the hall is deep dark plum with faint magenta and cyan rim lights on the far LED wall and audience silhouettes with phone lights at the bottom. Large empty dark areas left and right for overlay UI. No people, no faces, no text."
+  },
+  {
+    "id": "topbar_plate",
+    "size": "1536x1024",
+    "quality": "medium",
+    "background": "transparent",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark.Isolated on a fully transparent background, nothing else in the frame, generous empty margin around the object.  Object: one long horizontal game HUD bar spanning the full width, about one sixth of the canvas height, centered vertically. Black smoked-glass face with a thin brushed-brass frame, slightly angled cut corners, a hairline cyan neon edge light along the bottom edge, faint internal reflections. Completely empty surface (UI text will be added by code). Front view, flat, no perspective."
+  },
+  {
+    "id": "heat_gauge",
+    "size": "1536x1024",
+    "quality": "medium",
+    "background": "transparent",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark.Isolated on a fully transparent background, nothing else in the frame, generous empty margin around the object.  Object: a horizontal 'crowd heat' gauge frame spanning the full width, about one fifth of the canvas height, centered. A brass-framed glass tube with fine graduation ticks along the top, transparent empty interior (the glowing fill will be drawn by code), rounded brass end caps, a small stylized flame emblem embossed on the right end cap and a small smoke-swirl emblem on the left end cap. Front view, flat, no perspective, no fill, no text."
+  },
+  {
+    "id": "round_plate",
+    "size": "1536x1024",
+    "quality": "medium",
+    "background": "transparent",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark.Isolated on a fully transparent background, nothing else in the frame, generous empty margin around the object.  Object: a wide rectangular title plate for round announcements, about 70% of the canvas width and 35% height, centered. Black lacquer face with a double gold edge line, angular notched corners, very subtle white smoke curling in from the lower corners and fading, faint magenta glow at the left edge and cyan at the right edge. Empty center for a title to be drawn by code. Flat front view."
+  },
+  {
+    "id": "judge_cutin_frame",
+    "size": "1536x1024",
+    "quality": "medium",
+    "background": "transparent",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark.Isolated on a fully transparent background, nothing else in the frame, generous empty margin around the object.  Object: a slanted parallelogram picture frame for a dramatic judge close-up cut-in, tilted about 12 degrees, spanning most of the canvas. Thick brushed-brass border with a thin inner magenta neon line, small speed-line spikes bursting from the top-left and bottom-right corners, a soft gold flare at one corner. The inside is fully transparent and empty (a character portrait goes there). Flat, no text."
+  },
+  {
+    "id": "crown_emblem",
+    "size": "1024x1024",
+    "quality": "medium",
+    "background": "transparent",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark.Isolated on a fully transparent background, nothing else in the frame, generous empty margin around the object.  Object: a tournament emblem: a regal crown whose five points are formed from swirling white shisha smoke, floating inside a circular brass laurel ring with small gem-like cyan and magenta dots. Slight golden glow, symmetrical, centered. No text."
+  },
+  {
+    "id": "contestant_chip",
+    "size": "1536x1024",
+    "quality": "medium",
+    "background": "transparent",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark.Isolated on a fully transparent background, nothing else in the frame, generous empty margin around the object.  Object: a compact horizontal contestant name-plate chip, about 85% of the canvas width and 30% height, centered. Left end: a circular brass portrait slot (empty, transparent inside). Body: black smoked glass with a thin brass border and angled right end. Along the bottom edge a thin recessed groove for a progress bar (empty). A tiny brass dot at the far right. Flat front view, empty surface, no text."
+  },
+  {
+    "id": "vote_token",
+    "size": "1024x1024",
+    "quality": "medium",
+    "background": "transparent",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark.Isolated on a fully transparent background, nothing else in the frame, generous empty margin around the object.  Object: a single round judge's voting token, like a thick brass casino chip seen straight from above, centered and large. Embossed smoke-swirl mark in the center, a thin ring of small notches around the rim, soft warm glow underneath. Neutral brass color so it can be tinted by code. No text."
+  },
+  {
+    "id": "hype_burst",
+    "size": "1024x1024",
+    "quality": "medium",
+    "background": "transparent",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark.Isolated on a fully transparent background, nothing else in the frame, generous empty margin around the object.  Object: a radial burst effect for a highlight moment: a bright thin golden shockwave ring with soft outer glow, short radiating light spikes in magenta and cyan, a few sparks, fading to transparent at the edges. Centered, symmetrical. No text."
+  },
+  {
+    "id": "stamp_ring",
+    "size": "1024x1024",
+    "quality": "medium",
+    "background": "transparent",
+    "prompt": "Game UI asset for a polished Japanese console-quality visual-novel/crafting game about shisha (hookah) tournaments. Art direction: near-black and deep plum background tones, brushed brass and dark gold edges, black smoked glass surfaces, restrained neon accents in magenta and cyan, thin drifting white smoke wisps. Clean vector-like finish with subtle bevels and glow, no grunge, no photo. Absolutely no text, no letters, no numbers, no logos, no watermark.Isolated on a fully transparent background, nothing else in the frame, generous empty margin around the object.  Object: a large decorative stamp frame for a verdict mark: a double concentric brass ring with a thin inner glowing white line, slight ink-stamp texture, tiny smoke curls at four points outside the ring. Empty transparent center (the mark glyph is drawn by code). Centered. No text."
+  },
+  {
+    "id": "concept_bench_live",
+    "size": "1536x1024",
+    "quality": "medium",
+    "prompt": "Concept mockup of a 16:9 game screen for a Japanese console-quality shisha (hookah) tournament crafting game, broadcast style. Layout: a slim top bar across the full width showing a red live dot, a round indicator, a central large digital match clock, and four small contestant chips with circular portrait placeholders and thin progress bars. Left third: a tall panel with an anime-style young man in a black cap and hoodie concentrating over a clay bowl, under stage lights, with a small speech card under him showing a judge portrait placeholder. Center: a large round aluminum foil disc minigame with evenly spaced glowing hole markers and a rotating cursor light. Right edge: a vertical strip of three rival seats, each a small card with a portrait placeholder, a tiny shisha pipe silhouette with smoke, and a step icon. Bottom: a wide brass-framed glass 'crowd heat' gauge glowing orange, and semi-transparent audience comments drifting leftward as blurred bars. Color: near-black and deep plum, brushed brass frames, black smoked glass, neon magenta and cyan accents, white smoke wisps. All text must be rendered as unreadable abstract glyph bars, no real letters or numbers. Ultra clean, premium UI design."
+  },
+  {
+    "id": "concept_result_reveal",
+    "size": "1536x1024",
+    "quality": "medium",
+    "prompt": "Concept mockup of a 16:9 game screen for a Japanese console-quality shisha (hookah) tournament game: the final ranking reveal. A dark event-hall stage with a single spotlight on a brass pedestal holding a glass shisha pipe with a rising smoke column; left side a vertical ranking board of four rows sliding in, the top row highlighted in gold with a circular portrait placeholder, three segmented vote bars in pink, teal and gold; right side a tall golden slanted cut-in panel with the silhouette of a stern judge in a suit; top-left a big elegant italic title placeholder rendered as an abstract golden glyph bar; golden confetti and sparks in the spotlight. Color: near-black and deep plum, brushed brass, black smoked glass, neon magenta and cyan, white smoke. All text as unreadable abstract glyph bars, no real letters or numbers. Ultra clean, premium UI design."
+  }
+]

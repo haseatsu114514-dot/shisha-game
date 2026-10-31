@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0812">
+<title>大会「生中継」フレームの見本｜水煙前線 -EN:CODE-</title>
+<link rel="icon" href="../icon.svg">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/tournament.css">
+<link rel="stylesheet" href="css/tournament-broadcast-preview.css">
+</head>
+<body>
+<main>
+  <p class="kicker">TOURNAMENT BROADCAST — DESIGN PREVIEW</p>
+  <h1>大会のシーシャ作り「生中継」フレームの見本</h1>
+  <p class="intro">設計書 <code>docs/design/tournament-craft-redesign-20261031.md</code> の見た目を、本番と同じ 1280×720 で動かして確かめるページです。
+    生成素材（<code>asset_sources/ui/tournament-broadcast-20261031/</code>）と既存の顔アイコン・立ち絵を使い、採点・保存データには触れません。操作は見本用で、ミニゲームは動きません。</p>
+
+  <div class="controls" role="toolbar" aria-label="場面">
+    <button data-scene="live" aria-pressed="true">① 生中継の作業台</button>
+    <button data-scene="votes">② 中間投票（票が飛ぶ）</button>
+    <button data-scene="result">③ 結果発表 2.0</button>
+    <span class="sep"></span>
+    <button id="replay">▶ この場面を再生</button>
+    <label class="toggle"><input type="checkbox" id="phone"> スマホ横 844×390</label>
+    <label class="toggle"><input type="checkbox" id="reduce"> 動きを減らす</label>
+  </div>
+  <div class="controls scene-actions" data-for="live">
+    <button data-act="hit">穴を開ける（小さい決め）</button>
+    <button data-act="verdict-great">決めカード ◎</button>
+    <button data-act="verdict-good">決めカード ○</button>
+    <button data-act="verdict-bad">決めカード △</button>
+    <button data-act="quad">審査員4分割カットイン</button>
+    <button data-act="plate">ラウンドプレート</button>
+    <button data-act="rival">ライバルの事件</button>
+    <label class="toggle">会場の熱 <input type="range" id="hype" min="0" max="100" value="46"> <b id="hype-val">46</b></label>
+  </div>
+
+  <div class="viewport"><div class="stage" id="tb-stage"></div></div>
+
+  <section class="notes">
+    <h2>この見本で確かめたいこと</h2>
+    <ul>
+      <li><b>上バー</b>: LIVE・ラウンド・試合時計・4人の進行チップ・審査員の持ち点ボード。作業台の工程パネル（中央）は現行のまま。</li>
+      <li><b>対戦席</b>（右）: ライバル3人の現在工程と台の煙。事件が起きると吹き出しと流れるコメントが同時に出る。</li>
+      <li><b>会場の熱</b>（下）: 工程の◎○△で増減。40 でざわめき、70 で沸騰（4分割カットイン）、95 で MAX HEAT。点数には影響しない。</li>
+      <li><b>決めカード</b>: 工程が終わった瞬間の 1.1 秒。◎○△のスタンプ・担当審査員の顔・一言・熱の増減。</li>
+      <li><b>中間投票</b>: 上園・博士の札が実際に飛んで数字が増える。南雲は錠前のまま。</li>
+      <li><b>結果発表</b>: 10カウント → 南雲の10点 → 4位から呼び上げ → スポットライト → CHAMPION → 表彰（ハイライト3枚・審査員の一言・称号）。</li>
+    </ul>
+  </section>
+</main>
+<script type="module" src="js/tournament-broadcast-preview.js"></script>
+</body>
+</html>
