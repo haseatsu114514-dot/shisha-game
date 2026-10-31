@@ -417,7 +417,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "夜回り？　東京の煙を裏から動かす会議なら、もう閉会したよ"
         },
         {
@@ -514,7 +514,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "……そっか。僕は聞いたことを忘れない。勝ちたいから、遠慮もしないよ"
         },
         {
@@ -667,7 +667,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "nervous",
           "text": "お、おはよう。今朝、配合を変えた？　……ごめん、答えなくていい。緊張して変なこと聞いた"
         },
         {
@@ -697,7 +697,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "smile",
           "text": "ヘイ、ハジメ！　今日はいい勝負になりそうだ。俺は焦らない、タイマーが待ってくれる"
         },
         {
@@ -707,8 +707,8 @@
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "炭は積む。熱は落とさない"
+          "face": "serious",
+          "text": "炭は迷わない。熱は落とさない"
         },
         {
           "speaker": "",
@@ -946,7 +946,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "言う時を選んだのは僕。ごめん"
         },
         {
@@ -961,7 +961,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "sad",
           "text": "あーあ、負けた。予想が外れて嬉しいはずなのに、ちゃんと悔しい"
         },
         {
@@ -971,7 +971,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "次は僕の一台で勝つよ。そこだけは、冗談にしない"
         },
         {
@@ -1061,12 +1061,12 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "smile",
           "text": "さっきの調整、カードに書いた。俺の二口目にも使ってみる。貸し借りだな"
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "次の勝負までに、更新する。お前も止まるな"
         },
         {
@@ -1189,6 +1189,11 @@
           "speaker": "",
           "face": "",
           "text": "スマホを伏せかけて、もう一度持ち上げた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariで待っているスミさんへ、短く打つ。"
         },
         {
           "speaker": "hajime",
@@ -1470,7 +1475,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "今度は、すぐ戻るって言わない。次の電話の日を言う"
         },
         {
@@ -1529,6 +1534,12 @@
           "text": "俺も、久世さんの予想を外し続けます"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_kuze",
+          "next_true": "lime"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "夕方、久世は福岡行きの便へ、はじめは地元へ帰る新幹線へ向かった。"
@@ -1538,7 +1549,26 @@
           "face": "",
           "text": "ましろは駅の改札の前まで来て、二人に同じように手を振った。"
         }
-      ]
+      ],
+      "branches": {
+        "lime": [
+          {
+            "speaker": "kuze",
+            "face": "smile",
+            "text": "外したら、LIMEで報告して。福岡からでも、ノートに書くから"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "久世さんも、外れた予想を送ってください"
+          },
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "うん。……返事の欄、やっと埋まりそう"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_home_customer",

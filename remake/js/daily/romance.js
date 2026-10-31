@@ -30,6 +30,8 @@ const privateCall = (id) => callName(id, state, { context: "private" });
  * まだ恋人でも「友達のまま」でもない。予約（締めくくりの直後）と再生（夜の帰り道）の両方でこれを確かめる
  */
 export function romanceRouteOpen(id) {
+  // あげはの告白は日常の帰り道ではなく、第3章の帰郷後（chapters/ch3-romance-entry.js）だけ。
+  if (id === "ageha") return false;
   if (id === "hiyori") {
     const route = hiyoriRoute();
     if (!hiyoriFinaleReady() || !state.flags[route.finale?.flag]
@@ -227,7 +229,6 @@ export async function playDate(id) {
     console.error(`[romance] Missing date scene for ${id}`);
     return;
   }
-  state.lastDate ??= {};
   const venue = dateVenue(id);
   state.lastDate[id] = state.day;
   bond.private = true;
@@ -243,31 +244,47 @@ export async function playDate(id) {
 
 const chat = (id, msgId, v) => ({
   id: msgId, sender: id, type: "chat", lover: true,
-  messages: v.m.map((t) => String(t)), replies: v.r,
+  // 文字はそのまま、スタンプ・画像は { sender, stamp | image } の行として渡す（phone.js の receiveItem が選別する）
+  messages: v.m.map((t) => typeof t === "string" ? t : t && typeof t === "object" ? { sender: id, ...t } : String(t)), replies: v.r,
 });
 
 /** 通常のデートは定休日の午後か仕事後。大事な物語は夜の予定と重なる日に臨時休暇を取れる。 */
 export function dateSchedule(id, { day = state.day, fixedNight = () => false, allowTemporaryClosure = false } = {}) {
-  const closedOn = { minto: 6, naru: 3, adam: 5 }[id];
+  // 神崎・REIは第2章の店の定休日（chapters/ch2-preparation.js の CH2_CLOSED_ON と同じ曜日）。
+  const closedOn = { minto: 6, naru: 3, adam: 5, kumicho: 0, rei: 1 }[id];
   if (closedOn != null && day % 7 === closedOn) return { time_slot: "noon", closed_on: closedOn };
   if (fixedNight(day)) return allowTemporaryClosure ? { time_slot: "noon", temporary_closed: true } : null;
   return { time_slot: "night", after_close: true };
 }
 
+// 恋人の連絡の塩梅（2026-10-31 オーナー「恋人とかはたまに連絡きて欲しい」「ストレスになるレベルで連絡きてる」LM01〜03）
+// - 朝のひとことは3日おき・返事なし（読むだけ）。恋人が何人いても朝に1通まで（長く届いていない恋人から）
+// - デートの誘いは恋人全員あわせて LOVER_INVITE_GAP 日に1回まで（長く会っていない恋人から）
+// - 朝のひとことの2回に1回は、短い一言とスタンプ（lover.json の morningStamp）
+export const LOVER_MORNING_GAP = 3;
+export const LOVER_INVITE_GAP = 4;
+const lastInboxDay = (match) => Math.max(-99, ...(state.inbox || []).filter(match).map((i) => i.day ?? -99));
+
 /**
  * 今朝届く恋人からの LIME（記念日・デートの誘い・朝のひとこと・試合の朝）。
  * @param opts.tournamentDay 大会当日の朝か
  * @param opts.fixedNight (day) => その夜に固定イベントがあるか（夜の約束を重ねない）
+ * @param opts.invitations デートの誘いを出すか（約束の仕組みが無い場面カード式の章は false）
  */
-export function loverMessages({ tournamentDay = false, fixedNight = () => false } = {}) {
+export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true } = {}) {
   const out = [];
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
+  const invites = [];
+  const mornings = [];
+  // 恋人全員で分け合う誘いの間隔。届いた日で数えるので、断っても見送っても連日には来ない
+  const inviteOpen = invitations && state.day - lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation") >= LOVER_INVITE_GAP;
   for (const id of state.lovers || []) {
     if (id === "samechan" && (state.chapter || 1) < 2) continue;
     const chapterKey = id === "samechan" ? `_c${state.chapter || 1}` : "";
     if (tournamentDay) {
-      const pool = (L().gameday || {})[id];
+      // #2089: 第1章のみんとは対戦相手なので、送り出す側の文面にしない
+      const pool = ((state.chapter || 1) === 1 && (L().gameday_rival || {})[id]) || (L().gameday || {})[id];
       const msgId = `_lover_gameday_${id}_c${state.chapter}`;
       if (pool?.length && !read(msgId)) out.push(chat(id, msgId, pool[(state.day + (phase[id] || 0)) % pool.length]));
       continue;
@@ -283,19 +300,20 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     const n = dayTotal() - (state.loverSince[id] ?? dayTotal());
     const anniv = (L().anniversary || {})[id];
     if (n > 0 && n % 10 === 0 && anniv && !read(`_lover_anniv_${id}_n${n}`)) {
-      const v = { m: anniv.m.map((t) => t.replace("{n}", n)), r: anniv.r };
+      const v = { m: anniv.m.map((t) => typeof t === "string" ? t.replace("{n}", n) : { sender: id, ...t }), r: anniv.r };
       out.push(chat(id, `_lover_anniv_${id}_n${n}`, v));
       continue;
     }
-    // デートの誘い（数日おき。絆がMAXになっても頻度を落として続く）
+    // デートの誘い（数日おき。絆がMAXになっても頻度を落として続く）。恋人全員で1回分の枠を分け合う
     const maxed = (state.loveLevel[id] || 0) >= 5;
-    const last = state.lastDate?.[id] ?? -9;
+    const last = state.lastDate[id] ?? -9;
     const invId = `_date_inv_${id}${chapterKey}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
     const gap = id === "samechan" ? samechanDateGap() : state.day - last;
-    if (schedule && gap >= (maxed ? 5 : 3) && chapterDay(state) < 14 && !read(invId)
+    if (inviteOpen && schedule && gap >= (maxed ? 5 : 3) && chapterDay(state) < 14 && !read(invId)
       && (id !== "samechan" || samechanDateReady() && state.pendingInvite?.event !== "date_samechan")) {
-      out.push({
+      const lastInvite = lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation" && i.msg.sender === id);
+      invites.push({ gap, lastInvite, msg: {
         id: invId, sender: id, type: "invitation", lover: true,
         ...schedule,
         accept_event: `date_${id}`,
@@ -303,16 +321,25 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
           || (schedule.time_slot === "noon" ? "今日はお休み。午後に会えたらうれしいな。" : "今日は仕事を終えてから、少し会える？"),
           ...((maxed && (L().inviteLinesMax || {})[id]) || (L().inviteLines || {})[id] || []).slice()],
         decline_response: { text: (L().declineLines || {})[id] || "また今度ね" },
-      });
-      continue;
+      } });
     }
-    // 朝のひとこと（2日おき・キャラごとに位相をずらす）
+    // 朝のひとこと（3日おき・キャラごとに位相をずらす・返事なし）。誘いの枠を取れなかった恋人もこちらへ
+    const turn = state.day + (phase[id] || 0);
     const pool = (L().morning || {})[id];
     const msgId = `_lover_morning_${id}${chapterKey}_d${state.day}`;
-    if (pool?.length && (state.day + (phase[id] || 0)) % 2 === 0 && !read(msgId)) {
-      out.push(chat(id, msgId, pool[Math.floor((state.day + (phase[id] || 0)) / 2) % pool.length]));
+    if (pool?.length && turn % LOVER_MORNING_GAP === 0 && !read(msgId)) {
+      const k = Math.floor(turn / LOVER_MORNING_GAP);
+      const stamp = (L().morningStamp || {})[id];
+      const v = stamp && k % 2 === 1 ? { m: [stamp.text, { sender: id, stamp: stamp.stamp }] } : { m: pool[Math.floor(k / (stamp ? 2 : 1)) % pool.length].m };
+      const lastMorning = lastInboxDay((i) => String(i.id).startsWith(`_lover_morning_${id}`));
+      mornings.push({ id, last: lastMorning, msg: chat(id, msgId, v) }); // v に r が無いので返事なし
     }
   }
+  // 誘いは1通だけ（いちばん長く会っていない恋人。同じなら誘いが届いたのが古い恋人）。枠を取れなかった恋人は朝のひとことへ回る
+  const invite = invites.sort((a, b) => b.gap - a.gap || a.lastInvite - b.lastInvite)[0]?.msg;
+  if (invite) out.push(invite);
+  const morning = mornings.filter((c) => !out.some((m) => m.sender === c.id)).sort((a, b) => a.last - b.last)[0]?.msg;
+  if (morning) out.push(morning);
   return out;
 }
 

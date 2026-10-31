@@ -5,20 +5,30 @@ import { chapterThreeActivityWindow } from "./ch3-activity-progress.js";
 import { tokyoWindowReserved, tokyoGymWindowAllowed } from "../core/tokyo-clock.js";
 
 /**
- * after=この必須場面を読んでから、before=この場面を読む前まで。repeat=自由時間ごとに選べる。
+ * after=この必須場面を読んでから、before=この場面を読む前まで。met=この人物と面識がある時だけ。repeat=自由時間ごとに選べる。
  * stamina は消耗（負）か回復（正）。stat は自分で選び体力を使った行動だけの成長候補。
+ * affinity は任意の外出だけで付ける好感度（人物ID→pt）。台本には報酬行を置かず、確定時に付ける。
+ * bg は場所の既定と違う背景（裏口＝街の道）。toast は読了後の一言（省略時は結果から決める）。
  */
 export const TOKYO_OUTINGS = Object.freeze([
   { id: "mukai_help", place: "mukai", label: "mukaiを手伝う", repeat: true, stamina: -14, money: 6000, stat: "charm",
     reason: { lost: "味が戻るまでは、煙の量と客の顔で手伝える", back: "戻った舌で、客席の調整を任せてもらう" } },
+  // 久世の好感度は煙幕への再訪だけで付く（#2028）。♥1でLIME交換の任意場面が開く（ch3-story-wiring.js）。
   { id: "enmaku_notes", place: "enmaku", after: "ch3_kuze_first", before: "ch3_kuze_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "insight", reason: "久世のノートに、何が書いてあるか聞きに行く" },
+    stamina: -10, stat: "insight", affinity: { kuze: 10 }, reason: "久世のノートに、何が書いてあるか聞きに行く" },
   { id: "enmaku_answer", place: "enmaku", after: "ch3_kuze_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "sense", reason: "どうしたいか、久世に答えを返しに行く" },
+    stamina: -10, stat: "sense", affinity: { kuze: 10 }, reason: "どうしたいか、久世に答えを返しに行く" },
+  // スティーブがmukaiへ客として来る（#1696）。タイマー越しに香りの山を逃す癖と、全国へ来た理由。店を訪ねる前だけ。
+  { id: "mukai_steve", place: "mukai", before: "ch3_steve_low_heat", met: "steve", label: "mukaiで店番をする",
+    stamina: -8, money: 3000, stat: "insight", reason: "配達先のスティーブが、今日は客として来るらしい" },
+  // 味の会話（#2028）。マウンテンミストを低い熱で待つ一台。
   { id: "steve_timer", place: "steve", after: "ch3_steve_low_heat", label: "Smoke & Glory に寄る",
-    stamina: -10, stat: "technique", reason: "タイマーを置く場所を、もう一度見せてもらう" },
+    stamina: -10, stat: "technique", affinity: { steve: 10 }, reason: "タイマーを置く場所を、もう一度見せてもらう" },
   { id: "park_walk", place: "park", label: "公園を歩く", repeat: true, stamina: 20,
     reason: "何も決めずに歩いて、少し体を休める" },
+  // mukaiの看板猫てつこ（#1993）。撫でるか餌をあげるかを選び、体力だけ少し戻す。能力・好感度は増やさない。
+  { id: "tetsuko", place: "mukai", label: "裏口のてつこに会う", repeat: true, stamina: 12, bg: "bg_street",
+    toast: "てつこに、少し元気をもらった", reason: "裏口のベンチで、看板猫のてつこを構う" },
 ]);
 export const OUTINGS_FLAG = "_ch3_outings";
 const RECOVERY_SCENE = "ch3_taste_return";
@@ -30,8 +40,8 @@ export function outingDialogueId(value, outing, window = null) {
   return `ch3_outing_${outing.id}`;
 }
 export const OUTING_DIALOGUE_IDS = Object.freeze(["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help",
-  "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer", "ch3_outing_steve_timer",
-  "ch3_outing_park_walk_day", "ch3_outing_park_walk_night"]);
+  "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer", "ch3_outing_mukai_steve", "ch3_outing_steve_timer",
+  "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko"]);
 
 const readScene = (value, id) => {
   const index = chapterThreeScenes(value).findIndex(scene => scene.id === id);
@@ -53,6 +63,7 @@ export function chapterThreeOutingCandidates(value) {
   const counts = outingCounts(value);
   return TOKYO_OUTINGS.filter(outing => (!outing.after || readScene(value, outing.after))
     && (!outing.before || !readScene(value, outing.before))
+    && (!outing.met || !!value.met?.[outing.met])
     && (outing.repeat || !counts[outing.id]));
 }
 

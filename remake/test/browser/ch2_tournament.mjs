@@ -36,9 +36,17 @@ async function seed(page, { known = false, stage = '', auto = 'good', progress =
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
   }, {known,stage,auto,progress});
 }
+// 応援・祝福のトークが先に並ぶ場合も、返信を選びながら最後の「スマホを閉じる」まで読む（#1653 ⑦）。
 async function phone(page,touch=false) {
-  await page.locator(dt('phone-next')).waitFor();
-  if(touch)await page.locator(dt('phone-next')).tap();else await page.locator(dt('phone-next')).click();
+  const press=sel=>touch?page.locator(sel).first().tap():page.locator(sel).first().click();
+  for(;;){
+    await page.locator(`${dt('phone-next')}, ${dt('reply-0')}`).first().waitFor();
+    if(await page.locator(dt('reply-0')).count()){await press(dt('reply-0'));await page.locator(dt('phone-next')).waitFor();continue;}
+    const last=(await page.locator(dt('phone-next')).first().innerText()).includes('閉じる');
+    await press(dt('phone-next'));
+    if(last)return;
+    await page.locator(dt('phone-next')).first().waitFor({state:'detached'});
+  }
 }
 async function playAttempt(page,touch=false,reloadCare=false) {
   const click=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
@@ -149,6 +157,73 @@ async function seedChapterThreeMeeting(page,sceneId,known=[]) {
   await page.locator(`[data-test="ch3-intro-scene"][data-scene="${sceneId}"]`).waitFor();
 }
 await suite('ch2-tournament',async check=>{
+  // #1922: 本番CONTINUEのMENUからのLOAD失敗で、旧画面の寿命を失わない。
+  for (const outcome of ['retry', 'reload']) await check(`continue-load-failure-${outcome}`, async page => {
+    await page.clock.install();
+    await page.clock.pauseAt(new Date(Date.now() + 100));
+    await seed(page, { stage: 'defeat', auto: null,
+      progress: { attempts: 2, losses: 1, lastLossAttempt: 1, failure: 'cold' } });
+    await page.locator(t('defeat')).waitFor();
+    await page.clock.runFor(1500);
+    await page.evaluate(async () => {
+      const core = await import('./js/core/state.js');
+      window.loadQA = { core, owner: core.state, json: JSON.stringify(core.state),
+        auto: localStorage.getItem(core.SAVE_KEY), root: document.querySelector('.gameover'),
+        setItem: Storage.prototype.setItem };
+      const selected = structuredClone(core.state);
+      selected.money = 98765;
+      selected.flags._ch2_tournament.stage = 'ready';
+      localStorage.setItem(core.SAVE_SLOTS[1].key, JSON.stringify(selected));
+      loadQA.manual = localStorage.getItem(core.SAVE_SLOTS[1].key);
+      Storage.prototype.setItem = function(key, value) {
+        if (this === localStorage && key === core.SAVE_KEY) throw new DOMException('QA quota', 'QuotaExceededError');
+        return loadQA.setItem.call(this, key, value);
+      };
+    });
+    const uiLoad = async () => {
+      await page.locator(t('menu')).click();
+      await page.locator(t('load')).click();
+      await page.locator(dt('slot-1')).click();
+      await page.locator(dt('confirm-load')).click();
+      await page.locator('#modal.show').waitFor({ state: 'hidden' });
+    };
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await uiLoad();
+      assert.deepEqual(await page.evaluate(() => ({
+        owner: loadQA.core.state === loadQA.owner,
+        state: JSON.stringify(loadQA.core.state) === loadQA.json,
+        auto: localStorage.getItem(loadQA.core.SAVE_KEY) === loadQA.auto,
+        manual: localStorage.getItem(loadQA.core.SAVE_SLOTS[1].key) === loadQA.manual,
+        root: document.querySelector('.gameover') === loadQA.root,
+      })), { owner: true, state: true, auto: true, manual: true, root: true });
+    }
+    // 移行で拒否されるデータも旧ownerと保存を維持し、通知しない。
+    assert.equal(await page.evaluate(() => {
+      const { core } = loadQA;
+      localStorage.setItem(core.SAVE_SLOTS[2].key, JSON.stringify({ day: 1, schema: core.SCHEMA + 1 }));
+      return core.loadFromSlot(core.SAVE_SLOTS[2].key);
+    }), null);
+    const count = Number(await page.locator('.go-count').textContent());
+    await page.clock.runFor(2000);
+    assert(Number(await page.locator('.go-count').textContent()) < count, '失敗後も元のカウントが進む');
+    if (outcome === 'retry') {
+      await page.locator(t('retry')).click();
+      assert.equal(await page.locator(t('defeat')).getAttribute('data-phase'), 'reaction');
+      await page.clock.runFor(10000);
+      await page.locator(t('ready')).waitFor();
+      assert.equal((await get(page)).flags._ch2_tournament.attempts, 2);
+    } else {
+      const manual = await page.evaluate(() => loadQA.manual);
+      await page.evaluate(() => { Storage.prototype.setItem = loadQA.setItem; });
+      await page.clock.resume();
+      await Promise.all([page.waitForEvent('load'), uiLoad()]);
+      await page.locator(t('ready')).waitFor();
+      assert.equal((await get(page)).money, 98765);
+      assert.equal(await page.evaluate(() => localStorage.getItem('suien_remake_slot1')), manual);
+      assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('suien_remake_save')).money), 98765);
+    }
+  });
+
   await check('chapter-three-prologue-resumes-anonymous-research',async page=>{
     await page.evaluate(async()=>{
       const core=await import('./js/core/state.js'),s=core.newGame();
@@ -371,6 +446,11 @@ await suite('ch2-tournament',async check=>{
     assert.match(afterText,/こんなの、ズルいよ/);assert(s.flags._ch2_read_ch2_tournament_ageha_heart);
     assert(afterText.indexOf('こんなの、ズルいよ')>afterText.indexOf('味の輪郭は戻らない'));
     assert.match(afterText,/おめでとうの文字が届いていた/);
+    // #1653 ⑦: 祝福は実際のLIMEで届き、ありがとうは選んだ返信として履歴に残る。第1章の応援文は第2章で届かない
+    const congrats=s.inbox.find(i=>i.id==='ch2_congrats_minto');
+    assert(congrats?.read&&congrats.done);assert.deepEqual(congrats.log.filter(l=>l.me).map(l=>l.text),['……ありがとうございます']);
+    assert(!s.inbox.some(i=>i.id==='encourage_minto'),'chapter-one cheer must not arrive in chapter two');
+    assert(s.inbox.findIndex(i=>i.id==='ch2_congrats_minto')<s.inbox.findIndex(i=>i.id==='ch2_tournament_sumi_tokyo'));
     // #1653: 完了カードも閉店後のMELTY PUFFのまま（昼の大会ステージへ戻さない）
     assert.match(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage),/bg_ch2_ageha_closed_night/,'complete card must keep the closed MELTY PUFF background');
     await reload(page);await page.locator(t('complete')).waitFor();s=await get(page);

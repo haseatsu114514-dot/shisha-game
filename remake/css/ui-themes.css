@@ -129,7 +129,7 @@ html[data-ui-theme="amber"] .vn-box .vn-name { background: #2c190ef2; border: 1p
 .ui-sample-panel .gain-card { position:relative; transform:none; opacity:1; margin-top:24px; display:flex; min-width:0; width:100%; }
 .ui-sample-panel .gc-meta { display:flex; flex-direction:column; }
 .ui-sample-panel .gc-meta b { font-size:20px; }
-.ui-sample-panel .gc-meta small { font-size:11px; }
+.ui-sample-panel .gc-meta small { font-size:12px; font-weight: 700; }
 @media(max-width:700px) { .preview-tools { gap: 5px; } .preview-tools b { display: none; } .preview-tools .ui-theme-select { max-width: 42vw; min-height:36px; padding:5px; font-size:12px; } }
 @media(max-width:700px) {
   .preview-tools { display:grid; grid-template-columns:1fr 1fr; height:auto; min-height:88px; }

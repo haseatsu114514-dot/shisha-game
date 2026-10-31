@@ -21,7 +21,7 @@ const open = async (viewport, mobile, insight = 10) => {
     const steam = await import('./js/craft/steam.js'), pull = await import('./js/craft/pull.js');
     window.T = { core, session, steps, steam, pull };
     window.cs = session.newSession('drill');
-    cs.environment = { rainy: true, ambientC: 23, humidityPercent: 80 };
+    cs.environment = { rainy: true, ambientC: 23 };
     cs.heat = { heatPower: 70 }; cs.holes = { total: 24, minimumComplete: true };
     const bench = session.openBench(cs);
     while (!bench.root.isConnected) await new Promise(requestAnimationFrame);
@@ -117,7 +117,9 @@ try {
     assert.deepEqual(await geometry(page), position, `${name}: thermometer was moved during timer setup`);
     assert(await page.locator('.thermo').isVisible());
     assert(await page.locator('[data-test="steam-forecast-range"]').isHidden());
-    assert.match(await page.locator('[data-test="steam-weather"]').textContent(), /雨.*23℃.*80%/);
+    const weather = await page.locator('[data-test="steam-weather"]').textContent();
+    assert.match(weather, /雨.*23℃/);
+    assert.doesNotMatch(weather, /湿度|%/, 'Humidity is still shown');
     assert.match(await page.locator('.worker-actor').getAttribute('src'), /hajime_steam_wait/);
     assert(!/呼吸|パッド|ボタン|キー/.test(await page.locator('[data-test="craft-feedback"]').textContent()));
     const selectSix = async () => { for (let i = 0; i < 6; i++) await page.locator('[data-test="timer-minute-up"]').click(); };
@@ -243,7 +245,7 @@ try {
     assert(await page.locator('.dodge-refresh').isDisabled());
     await page.close();
     if (name === 'desktop') {
-      const skilled = await open(viewport, mobile, 81);
+      const skilled = await open(viewport, mobile, 91); // 洞察の最上段（10段は91以上。旧★5の81は10段では9段）
       await skilled.evaluate(() => { window.timerRun = T.steps.stepSteamTime(cs); });
       await skilled.waitForSelector('[data-test="kitchen-timer"]'); await ready(skilled);
       for (let i = 0; i < 6; i++) await skilled.locator('[data-test="timer-minute-up"]').click();

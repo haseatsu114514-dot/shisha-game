@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { newState, setState } from "../js/core/state.js";
 import { paidAction, applyStats } from "../js/core/stats.js";
-import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_PROLOGUE, CH4_RESOLUTION, CH4_MANDATORY,
+import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_VISITOR_SCENE_FILES, CH4_PROLOGUE, CH4_RESOLUTION, CH4_MANDATORY,
   CH4_TOURNAMENT_DAY, CH4_EVE_DAY, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress,
   completeChapterFourScene, endChapterFourDay, finishChapterFourEve, chapterFourMandatory,
   chapterFourSecondAvailable, chapterFourSheikhRevealed, revealChapterFourSheikh,
@@ -26,6 +26,21 @@ for (const id of [...CH4_PROLOGUE, ...CH4_RESOLUTION].map(scene => scene.id)
 for (const id of ["ch4_return", "ch4_samechan_dubai_evening", "ch4_hiyori_dubai_evening"])
   assert(!connected.includes(id), `${id} must stay unconnected`);
 assert.equal(new Set(connected).size, connected.length, "A scene is listed twice");
+// ヒロイン来訪の台本は全ファイル（ch4_visitors と *_dubai）を読込登録し、本文があり、接続場面とは重ならない。
+const visitorFiles = readdirSync(new URL("../../data/dialogue/", import.meta.url))
+  .map(name => name.replace(/\.json$/, "")).filter(name => /^ch4_(visitors|\w+_dubai)$/.test(name)).sort();
+assert.deepEqual(Object.keys(CH4_VISITOR_SCENE_FILES).sort(), visitorFiles);
+for (const [file, ids] of Object.entries(CH4_VISITOR_SCENE_FILES)) {
+  const rows = readData(`dialogue/${file}`).dialogues;
+  assert.deepEqual([...ids].sort(), rows.map(row => row.dialogue_id).sort(), `${file}: all scenes registered`);
+  for (const id of ids) {
+    assert(rows.some(row => row.dialogue_id === id && row.lines?.length), `${file}:${id}`);
+    assert(!connected.includes(id), `${id} is load-only`);
+  }
+}
+assert(readData("dialogue/ch4_rin_dubai").dialogues[0].lines
+  .some(line => line.speaker === "rin" && line.text.includes("最重要サンプルの品質管理") && line.text.includes("業務は午後で終わり")),
+"rin's visit pretext");
 // 背景の対応表は全場面・全行き先を覆い、実在の bg だけを使う。
 for (const id of connected) assert(CH4_SCENE_BG[id], `bg missing for ${id}`);
 for (const bg of [...Object.values(CH4_SCENE_BG), ...Object.values(CH4_PLACE_BG)])
@@ -195,6 +210,13 @@ assert.equal(completeChapterFourScene(value, "ch4_alley_cafe_quiet"), false, "Qu
 assert.equal(completeChapterFourScene(value, "ch4_stranger_second"), true);
 assert.equal(chapterFourSecondAvailable(value), false);
 assert.deepEqual(chapterFourMapModel(value).destinations.find(item => item.id === "alley_cafe").scenes, ["ch4_alley_cafe_quiet"]);
+// 「使える」は既存の再訪行動の解放。未読の二度目とは別の場面で、保存を跨いでも残る。
+const revisitSave = JSON.parse(JSON.stringify(value));
+assert.match(chapterFourMapModel(revisitSave).destinations.find(item => item.id === "alley_cafe").purpose, /再訪できるようになった/);
+const beforeRevisit = structuredClone(revisitSave);
+assert.equal(completeChapterFourScene(revisitSave, "ch4_alley_cafe_quiet"), true);
+assert.deepEqual(revisitSave.stats, beforeRevisit.stats, "Revisit must not award fixed-event stat growth");
+assert.equal(revisitSave.money, beforeRevisit.money);
 assert.equal(completeChapterFourScene(value, "ch4_alley_cafe_quiet"), true);
 roundTrip();
 
@@ -241,14 +263,16 @@ assert.equal(finishChapterFourEve(value), false, "The eve closes once");
 roundTrip();
 assert.equal(chapterFourSheikhRevealed(value), false, "The sheikh stays hidden until the tournament starts");
 
-// 大会: start を読み始める時点で正体を明かす。勝ち固定。
-assert.equal(chapterFourTournamentOutcome(value), "win");
+// 大会: start で正体を明かすが、勝敗は実制作の結果が確定するまで未確定。
+assert.equal(chapterFourTournamentOutcome(value), null, "No result before crafting");
 for (const id of ["ch4_final", "ch4_defeat", "ch4_result"]) assert.equal(completeChapterFourScene(value, id), false, id);
-// defeat 経路は chapterFourAfterDefeat を通る（骨格では勝ち固定のため、敗北の保存を分岐して確認する）。
+// defeat 経路は実結果を保存してから chapterFourAfterDefeat を通る。
 const lost = structuredClone(value);
 assert.equal(chapterFourAfterDefeat(lost), false, "AfterDefeat needs a read defeat");
 revealChapterFourSheikh(lost);
 assert.equal(completeChapterFourScene(lost, "ch4_tournament_start"), true);
+assert.equal(completeChapterFourScene(lost, "ch4_defeat"), false, "No defeat scene before the result");
+lost.flags._ch4.match = { version: 1, step: 9, voted: 1, history: [], result: { win: false } };
 assert.equal(completeChapterFourScene(lost, "ch4_defeat"), true);
 assert.equal(lost.flags._ch4.part, "tournament", "A defeat does not leave the tournament");
 assert.equal(chapterFourAfterDefeat(lost), true);
@@ -263,6 +287,8 @@ assert.deepEqual(chapterFourProgress(JSON.parse(JSON.stringify(lost))), lost.fla
 revealChapterFourSheikh(value);
 assert.equal(chapterFourSheikhRevealed(value), true);
 assert.equal(completeChapterFourScene(value, "ch4_tournament_start"), true);
+assert.equal(completeChapterFourScene(value, "ch4_final"), false, "No victory or prize before actual judging");
+value.flags._ch4.match = { result: { win: true } };
 roundTrip();
 assert.equal(completeChapterFourScene(value, "ch4_final"), true);
 assert.equal(value.flags._ch4.part, "resolution");
@@ -360,8 +386,10 @@ for (const dialogue of files.ch4_spots.filter(row => ["ch4_dubai_souq", "ch4_dub
   prizeSave.money = 1000;
   assert.equal(completeChapterFourScene(prizeSave, "ch4_tournament_start"), true);
   assert.equal(prizeSave.money, 1000, "Reading the start scene pays nothing");
+  progress.match = { result: { win: false } };
   assert.equal(completeChapterFourScene(prizeSave, "ch4_defeat"), true);
   assert.equal(prizeSave.money, 1000, "Defeat pays nothing");
+  progress.match.result = { win: true };
   assert.equal(completeChapterFourScene(prizeSave, "ch4_final"), true);
   assert.equal(prizeSave.money, 1000 + CH4_PRIZE);
   progress.part = "tournament"; progress.resolution = 0; // 再読・LOAD相当

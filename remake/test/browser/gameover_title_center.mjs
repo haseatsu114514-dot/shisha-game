@@ -32,7 +32,7 @@ try {
         const { buildGameOver } = await import('./js/chapters/gameover.js');
         const { showScreen } = await import('./js/core/ui.js');
         window.__decisions = [];
-        showScreen('end', buildGameOver({ variant: 0, soundEffects: false,
+        showScreen('end', buildGameOver({ variant: 0, context: { lossOrdinal: 2 }, soundEffects: false,
           onTitle: () => window.__decisions.push('title'), onRetry: () => window.__decisions.push('retry') }));
       });
       await page.clock.runFor(700);

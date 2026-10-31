@@ -11,6 +11,8 @@ const { state, newGame, setState } = await import("../js/core/state.js");
 const { MAKER_SPECS, makerOfFlavor, makerMixProfile, compareEquipment, flavorThermalGuide } = await import("../js/craft/temperature-model.js");
 const { coalWarmth } = await import("../js/craft/coals.js");
 const { flavorFamilyGrams, giftBowlEffect, computeShisha, bonusOf, finalize } = await import("../js/craft/score.js");
+const { skippedFoilResult } = await import("../js/craft/holes_logic.js");
+const { improvementOf } = await import("../js/craft/advice.js");
 const { advanceToChapterTwo } = await import("../js/chapters/ch2-progress.js");
 const { advanceToChapterThree } = await import("../js/chapters/ch3-progress.js");
 const { evaluateMix, isSuyakiBowl } = await import("../js/craft/steps.js");
@@ -67,7 +69,7 @@ for (const f of flavors) {
 
 // 修正対象12商品の所属・温度帯幅・単社加算の回帰テスト
 const candidateMakers = {
-  vanilla: "dobaj",
+  vanilla: "af",
   coconut: "dobaj",
   mango: "dobaj",
   rose: "afsahr",
@@ -75,7 +77,7 @@ const candidateMakers = {
   melon: "dobaj",
   banana: "dobaj",
   lychee: "afsahr",
-  peppermint_shake: "dobaj",
+  peppermint_shake: "forcefect",
   cinnamon: "af",
   clove: "afsahr",
   basil: "afsahr",
@@ -194,7 +196,7 @@ assert.equal(afBeginner.burnRisk - dobajBeginner.burnRisk, 11, `AF beginner burn
 const { temperatureBands, temperatureFitness } = await import("../js/craft/temperature-model.js");
 const { pullResult } = await import("../js/craft/conditions.js");
 for (const ratio of [.49, .5, .51]) {
-  const cs = { ...baseCraftState, mix: { double_apple: 12 * (1 - ratio), vanilla: 12 * ratio } };
+  const cs = { ...baseCraftState, mix: { double_apple: 12 * (1 - ratio), dobaj_double_apple: 12 * ratio } };
   const bands = temperatureBands(cs), profile = makerMixProfile(cs), safe = ratio < .5 ? 3 : 4;
   assert.equal(profile.safePullsBonus, safe - 3);
   assert.equal(pullResult(bands.center, 4, 0, bands, safe).score, ratio < .5 ? 92 : 100);
@@ -206,7 +208,7 @@ for (const ratio of [.49, .5, .51]) {
   assert.equal(profile.qualityCeilingDelta, Math.round(((1 - ratio) * 2.5 + ratio * .8) * .9 * 1000) / 1000);
 }
 // Saturated attributes and final integer rounding retain their original semantics; no Dobaj 85 cap.
-const strong = { ...baseCraftState, mix: { vanilla: 12 }, mixInfo: { score: 100, intensity: 10, total: 30 },
+const strong = { ...baseCraftState, mix: { dobaj_double_apple: 12 }, mixInfo: { score: 100, intensity: 10, total: 30 },
   holes: { total: 24, outerEven: 1, innerExcess: 0, inner: 0, minimumComplete: true },
   heat: { heatPower: 100, heatStability: 100, burnRisk: 0, aromaRetention: 100 },
   steam: { seconds: 540, hits: 0, score: 100 }, care: { score: 100 }, pack: "firm",
@@ -370,4 +372,18 @@ for (const chapter of [1, 2, 3, 4, 5]) {
   assert.equal(bonusOf(cup).bonus, 9 + (chapter === 1 ? 5 : 0), "session chapter takes priority");
 }
 console.log("[craft scoring spec] PASS: chapter-scoped preparation, real transitions, legacy LOAD, and independent gift/mastery bonuses");
+
+// #1907: ロートスで穴あけを飛ばした一台は、採点・助言・結果の工程一覧から穴を除く。
+newGame();
+const lotosCup = finalize({
+  ...evenCup(4),
+  holes: skippedFoilResult(),
+  equip: { hms: "lotos_hagal" },
+  heat: { score: 40 },
+});
+assert.equal(lotosCup.foilSkipped, true);
+assert.equal(lotosCup.holes.score, null);
+assert.equal(Object.hasOwn(lotosCup.parts, "holes"), false);
+assert.equal(lotosCup.total, 62.5, "four completed parts share the score when foil is skipped");
+assert.equal(improvementOf(lotosCup), "次の練習：炭の全面が赤くなる頃合いを確かめよう。");
 

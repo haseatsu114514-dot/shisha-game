@@ -5,7 +5,7 @@ import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire, modal } from "../core/ui.js";
-import { state, timeOfDay } from "../core/state.js";
+import { state, timeOfDay, config } from "../core/state.js";
 import { addMoney, addStamina, applyStats, step, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
@@ -18,6 +18,7 @@ import { meetHiyoriAtTonari } from "./hiyori.js";
 import { hiyoriAxeReady, hiyoriAxeAffordable, hiyoriAxePrereqsMet, axeThrowExposed } from "./hiyori-axe.js";
 import { spotFollowupDue } from "./spot-encounters.js";
 import { canStudyAttack, studyAttack } from "./attack-lesson.js";
+import { readyLessons, consultLessons } from "../core/growth.js";
 import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 
@@ -33,6 +34,9 @@ export function tonariMenu() {
     setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
     playBgm("tonari");
     const tsumugiKnown = !!(state.met.tsumugi || state.flags._met_tsumugi || (state.story.tsumugi || 0) > 0);
+    const tsumugiPresent = tsumugiAtTonari(state);
+    const customerStory = state.visitedDay.tonari_customer !== state.day && tsumugiPresent && hasNewStory("tsumugi");
+    const shiftStory = state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi");
     const pickIt = (value) => { retire(root); resolve(value); };
     const opt = (title, desc, value, test) =>
       el("button.big-choice", { dataset: { test }, disabled: value === "hiyori_axe" && !hiyoriAxeAffordable(), onclick: () => { SE.select(); pickIt(value); } }, [
@@ -42,12 +46,12 @@ export function tonariMenu() {
       el("h2.sub-title", { text: "tonari" }),
       el("p.sub-lead", { text: state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
       el("div.sub-choices", [
-        opt("お客さんとして一服", !tsumugiAtTonari(state) ? "客席でゆっくり一服する"
-          : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
+        opt("お客さんとして一服", `${customerStory ? "【新しい話】" : ""}${!tsumugiPresent ? "客席でゆっくり一服する"
+          : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}`, "customer", "tonari-customer"),
         opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
-        opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話せる", "baito", "tonari-baito"),
+        opt("シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}接客で稼ぐ。上がったあとはスミさんと話せる`, "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -71,6 +75,8 @@ export async function tonariCustomer({ signal = null } = {}) {
     if (!live()) return false;
     if (tsumugiAtTonari(state)) {
       if (!await visitChar("tsumugi") || !live()) return false;
+      await consultLessons("tsumugi", { bg: TONARI_BG }); // 心得の盤で灯した授業があれば相談する（SBD50）
+      if (!live()) return false;
       if (!await hearFortuneRumor({ signal }) || !live()) return false;
     }
     return live();
@@ -123,11 +129,11 @@ async function baitoShift({ called }) {
   await play("remake_baito_end", { bg: TONARI_BG });
   if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });
   addMoney(pay);
-  if (bonus) toast(`常連さんの指名が増えてきた。売上ボーナス +${bonus.toLocaleString()}円`, { kind: "good" });
+  if (bonus) toast(`指名ボーナス（魅力）＋${bonus.toLocaleString()}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
   if (condition.shiftBonus) toast(`仕上げは好調。売上ボーナス +${condition.shiftBonus.toLocaleString()}円`, { kind: "good" });
-  if (condition.health === "red") toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
+  if (condition.health === "red" && bonus > 0) toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
   // 基礎成長は訪問と同じ4。接客・片付けの両方を経験する。
   applyStats({ technique: 2, charm: 2 });
   await afterShiftErrand();
@@ -214,7 +220,7 @@ async function customerEvent(condition) {
   rememberBaito(ev.id, customerFamilies(ev));
 }
 
-/** シフト後: スミ会話（必須）のあと、任意の特訓・授業だけを選ぶ。練習は店の固定イベントで（#783） */
+/** シフト後: スミ会話（必須）のあと、任意の授業だけを選ぶ。練習は店の固定イベントで（#783） */
 function afterShiftMenu() {
   return new Promise((resolve) => {
     const opt = (title, desc, value, test) =>
@@ -223,8 +229,10 @@ function afterShiftMenu() {
       el("h2.sub-title", { text: "シフト上がり" }),
       el("p.sub-lead", { text: "スミさんと話し終えて、まだ少しだけ時間がある。" }),
       el("div.sub-choices", [
-        canStudyAttack() ? opt("雑念を切る特訓を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
+        canStudyAttack() ? opt("蒸らしアタックの授業を受ける", "スミさん♥3・アタックを習得する", "attack", "after-attack") : null,
         canStudyCubeCoals() ? opt("キューブ炭の授業を受ける", "スミさんと火の違いを確かめる", "cube_coals", "after-cube-coals") : null,
+        // 心得の盤で灯した授業: スミさんに相談して話を聞く（SBD50）
+        ...readyLessons("sumi").map((l) => opt(`スミさんに相談する（${l.name}）`, "授業。話を聞いて習得する", `lesson:${l.id}`, `after-lesson-${l.id}`)),
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
       ]),
     ]));
@@ -236,6 +244,7 @@ async function afterShift() {
   const pickAfter = await afterShiftMenu();
   if (pickAfter === "attack") await studyAttack();
   if (pickAfter === "cube_coals") await studyCubeCoals();
+  if (String(pickAfter).startsWith("lesson:")) await consultLessons("sumi", { only: pickAfter.slice(7), bg: TONARI_BG });
 }
 
 /**

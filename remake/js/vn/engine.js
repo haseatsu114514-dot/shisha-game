@@ -1,5 +1,6 @@
 import { notifyMastery } from "../core/mastery-notice.js";
 import { learnFlavorStory } from "../core/flavor-mastery.js";
+import { awardLoverSceneExp } from "../core/lover-rewards.js";
 import { tournamentFinished } from "../core/story-context.js";
 import { basicsExperienced } from "../craft/practice-history.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
@@ -57,11 +58,33 @@ function warnVn(kind, detail) {
 const log = [];
 let dom = null;
 let nameFit = null;
+let settingsReady = null;
+let openVnConfig = null;
 let running = null;     // 再生中の会話の状態
 let autoMode = false;
 let skipMode = false;
 let autoFxGap = 0;
 let sequenceDepth = 0;
+const SEEN_LINES_KEY = "suien_remake_seen_dialogue_lines";
+let seenLines;
+function readSeenLines() {
+  if (seenLines) return seenLines;
+  try { seenLines = new Set(JSON.parse(localStorage.getItem(SEEN_LINES_KEY) || "[]")); }
+  catch { seenLines = new Set(); }
+  return seenLines;
+}
+function markSeenLine(key) {
+  if (!key || readSeenLines().has(key)) return;
+  seenLines.add(key);
+  try { localStorage.setItem(SEEN_LINES_KEY, JSON.stringify([...seenLines].slice(-20000))); }
+  catch { /* 端末の容量制限時も会話は続ける */ }
+}
+function queuedLines(id, lines, branch = "main") {
+  return (lines || []).map((line, index) => ({ ...line, _seenKey: id ? JSON.stringify([id, branch, index]) : null }));
+}
+function insertBranch(r, key) {
+  r.queue.unshift(...queuedLines(r.currentId, r.branches[key], key));
+}
 
 /** 一続きの会話（バイト開始→接客→終了）の間だけSKIPを維持。選択肢は自分で選び、行動の終わりに解除する。 */
 export async function dialogueSequence(run) {
@@ -73,6 +96,9 @@ export async function dialogueSequence(run) {
 export const vnTest = { turbo: false, choose: null }; // テスト用: 瞬時表示＋自動送り・選択肢の方針
 
 function buildDom() {
+  // 設定のコードは会話の準備中に読み、タップ時は同じイベント内でモーダルを開く。
+  // クリック後の遅延importで、本文を送るタップの上にモーダルを遅れて重ねない。
+  settingsReady = import("../scenes/title.js").then(module => { openVnConfig = module.openConfig; });
   const host = layers.vn;
   dom = {
     effect: el("div.vn-effect"),
@@ -104,8 +130,30 @@ function buildDom() {
   window.addEventListener("keydown", (e) => {
     if (!running || !layers.vn.classList.contains("active")) return;
     if (layers.modal.classList.contains("show")) return;
-    if (dom.log.classList.contains("show")) return;
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); advance(); }
+    if (dom.log.classList.contains("show")) {
+      if (e.key === "Escape") { e.preventDefault(); closeLog(); }
+      return;
+    }
+    if (e.key === "Control") { setSkip(true); return; }
+    if (running.waitingChoice) {
+      const choices = [...dom.choices.querySelectorAll(".vn-choice:not(:disabled)")];
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        const current = choices.indexOf(document.activeElement);
+        choices[(current + (e.key === "ArrowDown" ? 1 : choices.length - 1)) % choices.length]?.focus();
+      } else if (/^[1-3]$/.test(e.key) && !e.repeat && !e.target?.closest?.("input, select, textarea, [contenteditable]")) {
+        const choice = dom.choices.querySelectorAll(".vn-choice")[Number(e.key) - 1];
+        if (choice && !choice.disabled) { e.preventDefault(); choice.click(); }
+      } else if (e.key === "Enter" && !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) {
+        e.preventDefault(); (choices.includes(document.activeElement) ? document.activeElement : choices[0])?.click();
+      }
+      return;
+    }
+    if (e.key === "Enter" || e.key === " ") {
+      // フォーカス中のボタン・入力欄はブラウザ本来のキー操作に任せる。
+      if (e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) return;
+      e.preventDefault(); advance();
+    }
     if (e.key === "Control") setSkip(true);
   });
   window.addEventListener("keyup", (e) => { if (e.key === "Control") setSkip(false); });
@@ -121,6 +169,7 @@ function setAuto(v) {
 }
 function setSkip(v) {
   if (v && running?.cancelOnSkip) return finish(true);
+  if (v && config.skipSeenOnly && running?.activeSeenKey && !readSeenLines().has(running.activeSeenKey)) return;
   if (v) setAuto(false);
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
@@ -144,7 +193,8 @@ function kickAuto() {
     if (vnTest.turbo) autoTimer = setTimeout(() => autoChoose(), 10);
     return;
   }
-  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45;
+  const autoFactor = ({ 1: 1.5, 2: 1, 3: 0.6 })[config.autoSpeed] || 1;
+  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : (1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45) * autoFactor;
   autoTimer = setTimeout(() => {
     if (!running || dom.log.classList.contains("show") || vnModalOpen) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();
@@ -187,10 +237,11 @@ export function play(idOrDlg, opts = {}) {
   return new Promise((resolve) => {
     layers.fx.querySelector(".vn-loading")?.remove();
     running = {
+      owner: state,
       id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
-      queue: (dlg.lines || []).slice(),
+      queue: queuedLines(dlg.dialogue_id, dlg.lines),
       branches: dlg.branches || {},
       resolve,
       cancelOnSkip: !!opts.cancelOnSkip,
@@ -244,7 +295,7 @@ export function play(idOrDlg, opts = {}) {
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
     // 最初の行を出す前に名前欄と本文の明朝を待つ。失敗時は代替書体で続ける。
     const fontsReady = loadVnFonts().catch(() => []);
-    const assetsReady = Promise.all([fontsReady, bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
+    const assetsReady = Promise.all([settingsReady, fontsReady, bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
     waitSceneAssets(bgReady, me, assetsReady).then(() => {
       if (running !== me) return;
       me.ready = true;
@@ -331,6 +382,7 @@ function finish(cancelled = false) {
   if (!cancelled && meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   if (!cancelled && meta.flavor_lesson) notifyMastery(learnFlavorStory(state, r.dlg, DB.flavorById));
+  if (!cancelled) awardLoverSceneExp(r.id, r.owner);
   layers.vn.classList.remove("active");
   document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");
@@ -357,6 +409,8 @@ function advance() {
 function next() {
   const r = running;
   if (!r) return;
+  if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
+  r.activeSeenKey = null;
   // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
   dom.next.classList.remove("show");
   r.pages = null;
@@ -429,7 +483,7 @@ function next() {
     }
     if (type === "buy_keepsake") {
       const branch = buyKeepsake(line.item_id) ? line.next_success : line.next_failure;
-      if (branch && r.branches[branch]) r.queue.unshift(...r.branches[branch]);
+      if (branch && r.branches[branch]) insertBranch(r, branch);
       continue;
     }
     if (type === "hide_cg") {
@@ -463,7 +517,7 @@ function jumpTo(id) {
   if (!target) { warnVn("jump-target-missing", id); return; }
   // 表示中の台本として currentId を引き継ぐ。id / dlg は開始台本のまま（finish() の仕様・#1362）
   running.currentId = id;
-  running.queue = (target.lines || []).slice();
+  running.queue = queuedLines(id, target.lines);
   running.branches = target.branches || {};
   running.context = sceneContext(target);
   if (target.metadata?.clear_portraits) {
@@ -509,7 +563,8 @@ function handleCondition(line) {
     else ok = !!v;
   }
   const key = String((ok ? line.next_true : line.next_false) || "");
-  if (key && running.branches[key]) running.queue.unshift(...running.branches[key]);
+  // 単独で条件関数を使うデータ検証では currentId が無い。実再生時だけ既読キーを付ける。
+  if (key && running.branches[key]) running.queue.unshift(...(running.currentId ? queuedLines(running.currentId, running.branches[key], key) : running.branches[key]));
   else if (key && DB.dialogues[key]) return jumpTo(key);
   else if (key) warnVn("branch-unresolved", key);
 }
@@ -672,6 +727,9 @@ async function showLine(line) {
     text = clauses.length ? `……${clauses.join("。")}。` : "";
     if (!text) return next();
   }
+  // 未読に到達した時点でSKIPを止める。最後まで送った行だけを既読にする。
+  r.activeSeenKey = line._seenKey;
+  if (skipMode && config.skipSeenOnly && !readSeenLines().has(r.activeSeenKey)) setSkip(false);
   let inner = playerInner(line);
   if (inner && hooks.interpolate) inner = hooks.interpolate(inner);
   log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });
@@ -866,6 +924,7 @@ function showChoices(line) {
   }));
   dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
+  buttons.find((button) => !button.disabled)?.focus();
   // 選択肢は1行（GUI22）。文言は全角26字以内で書く。差し込みで長くなったときだけ字を縮める
   buttons.forEach((b) => fitOneLine(b, 18));
   kickAuto();
@@ -887,7 +946,7 @@ function pickChoice(line, c) {
   dom.choices.replaceChildren();
   const key = String(c.next || "");
   let waitForScene = false;
-  if (key && r.branches[key]) r.queue.unshift(...r.branches[key]);
+  if (key && r.branches[key]) insertBranch(r, key);
   else if (c.next_id) waitForScene = jumpTo(String(c.next_id));
   else if (key) warnVn("branch-unresolved", key);
   log.push({ name: "▶", text: stripTags(c.text || "") });
@@ -896,6 +955,12 @@ function pickChoice(line, c) {
 }
 
 // ---------------------------------------------------------------- ログ・用語
+
+function closeLog() {
+  dom.log.classList.remove("show");
+  dom.controls.querySelector('[data-test="vn-log"]')?.focus();
+  kickAuto();
+}
 
 function openLog() {
   SE.select();
@@ -906,10 +971,11 @@ function openLog() {
     l.inner ? el("div.log-inner", { text: l.inner, "aria-label": "ひよりの本心（はじめには聞こえない）" }) : null,
   ])));
   dom.log.replaceChildren(
-    el("div.log-head", [el("span", { text: "LOG" }), el("button.btn.small", { text: "閉じる", onclick: (e) => { e.stopPropagation(); dom.log.classList.remove("show"); kickAuto(); } })]),
+    el("div.log-head", [el("span", { text: "LOG" }), el("button.btn.small", { text: "閉じる", onclick: (e) => { e.stopPropagation(); closeLog(); } })]),
     list,
   );
   dom.log.classList.add("show");
+  dom.log.querySelector(".log-head button")?.focus();
   requestAnimationFrame(() => { list.scrollTop = list.scrollHeight; });
 }
 
@@ -933,8 +999,7 @@ async function openSettings() {
   }
   vnModalOpen++;
   try {
-    const { openConfig } = await import("../scenes/title.js");
-    await openConfig({
+    await openVnConfig({
       onChange(key) {
         if (key === "uiTheme") nameFit?.fit();
         if (key === "textSpeed" && running?.typing && config.textSpeed >= 4) completeTyping();
@@ -948,3 +1013,5 @@ async function openSettings() {
 
 export const isPlaying = () => !!running;
 export const backlog = () => log;
+/** タイトルからの「はじめから」「LOAD」で前の周の会話LOGを消す（#1912）。 */
+export function clearLog() { log.length = 0; }

@@ -1,0 +1,23 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "prompt": "A single flat hexagon badge with pointed left and right corners (wider than tall), centered, filling about 90% of the frame. Outline is a pale white neon tube #f6f2ff with a second, thinner halo ring of light just outside it, both with soft bloom; the inside is dark smoked glass with a faint radial shimmer. Isolated on a fully transparent background. Game UI asset for a visual novel set in a dim after-hours shisha lounge. Art direction 'neon lounge': black smoked glass, thin neon tubes with a bright core and soft outer bloom, faint drifting hookah smoke reflected in the glass. Allowed light colors only: board colors red-orange #ef8a5e, blue #58a6ff, green #7bd36d; gold #f4d27a; warm white-gold #fff1d0; pale white #f6f2ff. 2D pixel-painter style with fine dot texture in shading, not photoreal, not glossy 3D. Even tube thickness, calm luxurious night-club feel, legible, nothing eye-searing, no full-frame glow. Strictly no text, no letters, no kanji, no numbers, no logos, no UI widgets, no watermark, no people, no hookah pipes.",
+ "size": "1024x1024",
+ "n": 1,
+ "quality": "high",
+ "background": "transparent",
+ "output_format": "png",
+ "created": 1793422693,
+ "usage": {
+  "input_tokens": 275,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 275
+  },
+  "output_tokens": 1756,
+  "output_tokens_details": {
+   "image_tokens": 1756,
+   "text_tokens": 0
+  },
+  "total_tokens": 2031
+ }
+}

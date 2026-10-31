@@ -34,7 +34,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 起動時は41ファイルを読み、同時接続が4本を超えない。
+// 起動時は42ファイル（casual_lime.json を含む）を読み、同時接続が4本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -52,6 +52,14 @@ const progress = [];
 // manifest読込前のPNG経路でも、旧版の顔画像キャッシュを使わない。
 assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=face-restore-20261028");
 await all.loadAll((p) => progress.push(p));
+// The restored catalog keeps the saved vanilla ID and the lottery reward aligned.
+const vanilla = all.DB.flavorById.vanilla;
+assert.equal(vanilla.maker, "af");
+assert.equal(vanilla.name, "アルファーヘブン バニラ");
+assert.equal(vanilla.short_name, "AF バニラ");
+assert.equal(vanilla.price, 1750);
+const vanillaReward = realJSON("../data/kuji.json").grades.g500.prizes.find(item => item.flavorId === "vanilla");
+assert(vanillaReward.name.startsWith(vanilla.short_name));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
     const version = id === "ageha" || face === "normal" ? "?v=face-restore-20261028" : "";
@@ -63,29 +71,18 @@ for (const id of ["minto", "ageha"]) {
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
 assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
-assert.equal(requests.length, 41);
-assert.equal(new Set(requests).size, 41);
+assert.equal(requests.length, 42);
+assert.equal(new Set(requests).size, 42);
 for (const file of ["hiyori", "cinema", "tournament_craft"]) {
   assert(!requests.includes(`../data/dialogue/${file}.json`));
 }
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 41);
+assert.equal(progress.length, 42);
 assert.equal(all.DB.dialogues.samechan_cinema_introduction, undefined);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
-const routes = realJSON("../data/story_routes.json");
-assert.deepEqual([...routes.heroine_ids].sort(), Object.keys(routes.romance).sort());
-assert.deepEqual(Array.from(all.DB.limeEvents, m => m.sender).sort(), routes.heroine_ids.slice().sort());
-assert.equal(new Set(all.DB.limeEvents.map(m => m.id)).size, 7);
-for (const event of all.DB.limeEvents) {
-  assert.equal(event.id, `lime_post_${event.sender}`);
-  assert.equal(event.trigger_condition, `romance_${event.sender}_date_after`);
-  assert.equal(event.type, "chat");
-  assert(event.messages.length >= 3 && event.messages.every(text => typeof text === "string"));
-}
-assert(!requests.includes("../data/dialogue/shop_event.json"));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
 assert(all.DB.baito.some(event => event.id === "baito_tsumugi_art"), "つむぎの常連接客が起動時に除外された");
 for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romance"]) {
@@ -102,7 +99,7 @@ assert(all.faceIconUrl("hiyori"));
 assert.equal(all.DB.relationshipMemories.tsumugi_creature.char_id, "tsumugi");
 assert(all.DB.dialogues.ch1_tsumugi_third);
 assert(all.DB.dialogues.remake_midcheck);
-assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 56);
+assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 62);
 assert(all.DB.dialogues.remake_fortune_trivia_naru_1, "fortune results were not registered after loading");
 assert(all.DB.dialogues.remake_fortune_trivia_sumi_13, "added fortune readings were not registered after loading");
 assert(!all.DB.dialogues.remake_fortune_trivia_adam_1, "excluded fortune readings must not be registered");
@@ -137,13 +134,13 @@ assert.deepEqual(flavorMakerProblems([
 const deferred = all.loadDeferredDialogues();
 assert.equal(all.loadDeferredDialogues(), deferred);
 await deferred;
-assert.equal(requests.length, 42);
+assert.equal(requests.length, 43);
 assert.equal(requests.at(-1), "../data/dialogue/hiyori.json");
 assert.equal(all.DB.hiyori.route.enabled, true);
 assert(all.DB.dialogues.hiyori_meeting);
 assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
 assert.equal(all.loadDeferredDialogues(), deferred);
-assert.equal(requests.length, 42);
+assert.equal(requests.length, 43);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(all.DB.dialogues.tournament_craft_packed_intro, undefined);
 
@@ -153,7 +150,7 @@ assert.equal(all.loadCinemaDialogue(), cinema);
 const tournament = all.loadTournamentCraftDialogue();
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
 await Promise.all([cinema, tournament]);
-assert.equal(requests.length, 44);
+assert.equal(requests.length, 45);
 assert(requests.includes("../data/dialogue/cinema.json"));
 assert(requests.includes("../data/dialogue/tournament_craft.json"));
 assert(all.DB.dialogues.samechan_cinema_introduction);
@@ -162,7 +159,7 @@ assert.equal(all.DB.dialogues.tournament_craft_packed_intro.lines[0].speaker, "p
 assert(all.DB.dialogues.tournament_craft_care_recovered.lines[0].text);
 assert.equal(all.loadCinemaDialogue(), cinema);
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
-assert.equal(requests.length, 44);
+assert.equal(requests.length, 45);
 
 for (const [file, method, dialogue] of [
   ["cinema", "loadCinemaDialogue", "cinema_first_screening"],
@@ -293,4 +290,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 41 boot JSON files, deferred hiyori/cinema/tournament_craft and retry, max 4 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 42 boot JSON files, deferred hiyori/cinema/tournament_craft and retry, max 4 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");

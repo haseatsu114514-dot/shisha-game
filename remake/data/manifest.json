@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-29 05:28 UTC",
+ "generated": "2026-10-31 05:19 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -43,14 +43,16 @@
   },
   "hajime": {
    "faces": [
+    "excited",
     "normal",
     "sad",
     "serious",
     "smile",
+    "smug",
     "surprise"
    ],
-   "h": 0.8508,
-   "b": 0.0208,
+   "h": 0.8567,
+   "b": 0.015,
    "ax": 0.5537,
    "aspect": 0.7467
   },
@@ -109,7 +111,8 @@
     "serious",
     "sleep",
     "smile",
-    "surprise"
+    "surprise",
+    "yawn"
    ],
    "h": 0.7325,
    "b": 0.02,
@@ -131,7 +134,7 @@
    ],
    "h": 0.7867,
    "b": 0.02,
-   "ax": 0.5762,
+   "ax": 0.5771,
    "aspect": 0.7467
   },
   "nagumo": {
@@ -149,20 +152,23 @@
   },
   "naru": {
    "faces": [
+    "excited",
     "normal",
     "sad",
     "serious",
     "smile",
     "surprise"
    ],
-   "h": 0.8642,
-   "b": 0.0233,
+   "h": 0.8808,
+   "b": 0.0158,
    "ax": 0.5441,
    "aspect": 0.7467
   },
   "pakki": {
    "faces": [
     "angry",
+    "evil",
+    "excited",
     "normal",
     "smile",
     "smoke",
@@ -178,11 +184,13 @@
     "normal",
     "sad",
     "serious",
+    "shock",
     "smile",
+    "smug",
     "surprise"
    ],
-   "h": 0.8383,
-   "b": 0.0225,
+   "h": 0.84,
+   "b": 0.0208,
    "ax": 0.4657,
    "aspect": 0.7467,
    "anchor": "head"
@@ -221,6 +229,7 @@
     "sad",
     "serious",
     "smile",
+    "smug",
     "surprise"
    ],
    "h": 0.9508,
@@ -230,7 +239,10 @@
   },
   "rei": {
    "faces": [
-    "normal"
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
    ],
    "h": 0.985,
    "b": 0.01,
@@ -239,7 +251,10 @@
   },
   "volk": {
    "faces": [
-    "normal"
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
    ],
    "h": 0.9692,
    "b": 0.0167,
@@ -276,7 +291,8 @@
   },
   "uranaishi": {
    "faces": [
-    "normal"
+    "normal",
+    "smile"
    ],
    "h": 0.975,
    "b": 0.0167,
@@ -287,7 +303,11 @@
    "faces": [
     "nervous",
     "normal",
+    "sad",
+    "serious",
+    "smile",
     "smug",
+    "surprise",
     "wild"
    ],
    "h": 0.9875,
@@ -297,7 +317,10 @@
   },
   "steve": {
    "faces": [
-    "normal"
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
    ],
    "h": 0.9925,
    "b": 0.0033,
@@ -306,10 +329,13 @@
   },
   "da_silva": {
    "faces": [
-    "normal"
+    "excited",
+    "normal",
+    "smile",
+    "surprise"
    ],
-   "h": 0.97,
-   "b": 0.0175,
+   "h": 0.9742,
+   "b": 0.0133,
    "ax": 0.4794,
    "aspect": 0.7467
   },
@@ -324,11 +350,17 @@
   },
   "master_hookah": {
    "faces": [
-    "normal"
+    "angry",
+    "laugh",
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
    ],
-   "h": 0.95,
-   "b": 0.0183,
-   "ax": 0.4996,
+   "h": 0.9675,
+   "b": 0.0133,
+   "ax": 0.5231,
    "aspect": 0.7467
   },
   "mukai_master": {
@@ -346,10 +378,13 @@
   },
   "sheikh": {
    "faces": [
-    "normal"
+    "normal",
+    "serious",
+    "smile",
+    "smug"
    ],
-   "h": 0.9692,
-   "b": 0.0167,
+   "h": 0.9725,
+   "b": 0.0133,
    "ax": 0.5368,
    "aspect": 0.7467
   },
@@ -639,54 +674,54 @@
   },
   "minto": {
    "normal": {
-    "cx": 0.55246,
-    "top": 0.2,
-    "size": 0.16667
+    "cx": 0.5519,
+    "top": 0.2025,
+    "size": 0.16583
    },
    "sad": {
-    "cx": 0.54688,
-    "top": 0.2025,
-    "size": 0.16667
+    "cx": 0.5452,
+    "top": 0.20417,
+    "size": 0.16583
    },
    "smile": {
-    "cx": 0.55022,
-    "top": 0.20167,
-    "size": 0.16667
+    "cx": 0.54855,
+    "top": 0.20333,
+    "size": 0.16583
    },
    "surprise": {
-    "cx": 0.54464,
-    "top": 0.20167,
-    "size": 0.16667
+    "cx": 0.54408,
+    "top": 0.20333,
+    "size": 0.16583
    },
    "ura_normal": {
-    "cx": 0.55971,
-    "top": 0.195,
+    "cx": 0.55859,
+    "top": 0.19667,
     "size": 0.1675
    },
    "ura_sad": {
-    "cx": 0.54967,
-    "top": 0.195,
+    "cx": 0.55078,
+    "top": 0.19667,
     "size": 0.1675
    },
    "ura_smile": {
-    "cx": 0.5452,
-    "top": 0.195,
-    "size": 0.1675
+    "cx": 0.54353,
+    "top": 0.19667,
+    "size": 0.16667
    },
    "ura_smug": {
-    "cx": 0.54185,
-    "top": 0.195,
+    "cx": 0.54074,
+    "top": 0.19667,
     "size": 0.1675
    },
    "ura_surprise": {
     "cx": 0.56417,
-    "top": 0.195,
+    "top": 0.19667,
     "size": 0.1675
    },
    "wink": {
-    "cx": 0.55134,
-    "top": 0.20167,
-    "size": 0.16667
+    "cx": 0.55078,
+    "top": 0.20333,
+    "size": 0.16583
    }
   },
   "rin": {
@@ -1025,53 +1060,53 @@
    "frames": {
     "ura_normal": {
      "width": 1082.034,
-     "left": -307.293,
-     "top": -242.169
-    },
-    "ura_surprise": {
-     "width": 1082.034,
-     "left": -309.914,
+     "left": -306.629,
      "top": -242.169
     },
     "sad": {
-     "width": 1091.282,
-     "left": -298.511,
-     "top": -255.526
+     "width": 1092.449,
+     "left": -297.348,
+     "top": -255.84
     },
-    "surprise": {
-     "width": 1090.117,
-     "left": -295.012,
-     "top": -253.996
-    },
-    "ura_smile": {
+    "ura_surprise": {
      "width": 1082.034,
-     "left": -292.501,
+     "left": -310.158,
      "top": -242.169
-    },
-    "ura_smug": {
-     "width": 1082.034,
-     "left": -289.569,
-     "top": -242.169
-    },
-    "smile": {
-     "width": 1090.117,
-     "left": -301.076,
-     "top": -252.779
     },
     "ura_sad": {
      "width": 1082.034,
-     "left": -297.164,
+     "left": -297.57,
      "top": -242.169
     },
     "normal": {
-     "width": 1088.955,
-     "left": -302.77,
-     "top": -251.254
+     "width": 1090.117,
+     "left": -302.932,
+     "top": -252.779
     },
     "wink": {
+     "width": 1092.449,
+     "left": -303.333,
+     "top": -254.62
+    },
+    "smile": {
      "width": 1091.282,
-     "left": -306.801,
+     "left": -300.936,
      "top": -254.308
+    },
+    "ura_smug": {
+     "width": 1082.034,
+     "left": -288.223,
+     "top": -242.169
+    },
+    "surprise": {
+     "width": 1091.282,
+     "left": -294.88,
+     "top": -254.308
+    },
+    "ura_smile": {
+     "width": 1083.181,
+     "left": -290.949,
+     "top": -242.467
     }
    }
   },
@@ -1620,6 +1655,10 @@
    "file": "title_art_samechan_04_throne_pose.png"
   },
   {
+   "character": "samechan",
+   "file": "title_art_samechan_05_rainy_splash.png"
+  },
+  {
    "character": "mashiro",
    "file": "title_art_mashiro_01_heavy_smoke.png"
   },
@@ -1634,6 +1673,10 @@
   {
    "character": "mashiro",
    "file": "title_art_mashiro_04_cherry_petals.png"
+  },
+  {
+   "character": "mashiro",
+   "file": "title_art_mashiro_05_rooftop_dusk_yawn.png"
   },
   {
    "character": "minto",
@@ -1658,6 +1701,10 @@
   {
    "character": "minto",
    "file": "title_art_minto_06_after_hours_glasscare.png"
+  },
+  {
+   "character": "minto",
+   "file": "title_art_minto_07_balcony_mint.png"
   },
   {
    "character": "rin",
@@ -1698,6 +1745,10 @@
   {
    "character": "sumi",
    "file": "title_art_sumi_01_own_clay_bowl.png"
+  },
+  {
+   "character": "sumi",
+   "file": "title_art_sumi_02_coal_tending.png"
   },
   {
    "character": "naru",
@@ -1791,58 +1842,58 @@
    1.5
   ],
   "coal_cold.png": [
-   0.0813,
+   0.1062,
    0.0875,
-   0.925,
+   0.8906,
    0.9313,
    1.0
   ],
   "coal_flat_cold.png": [
-   0.0813,
+   0.0938,
    0.0875,
-   0.925,
+   0.9062,
    0.7438,
    1.0
   ],
   "coal_flat_just.png": [
-   0.0813,
+   0.0906,
    0.0875,
-   0.925,
+   0.9062,
    0.7438,
    1.0
   ],
   "coal_flat_red.png": [
-   0.0813,
+   0.0938,
    0.0875,
-   0.925,
+   0.9062,
    0.7438,
    1.0
   ],
   "coal_flat_white.png": [
-   0.0813,
+   0.0969,
    0.0875,
-   0.925,
+   0.9,
    0.7438,
    1.0
   ],
   "coal_just.png": [
-   0.0813,
+   0.1094,
    0.0875,
-   0.925,
+   0.8906,
    0.9313,
    1.0
   ],
   "coal_red.png": [
-   0.0813,
+   0.1094,
    0.0875,
-   0.925,
+   0.8906,
    0.9313,
    1.0
   ],
   "coal_white.png": [
-   0.0813,
+   0.1094,
    0.0875,
-   0.925,
+   0.8875,
    0.9313,
    1.0
   ],
@@ -2280,7 +2331,6 @@
   "sprites/characters/maezono/chr_maezono_surprise.png",
   "sprites/characters/maki/chr_maki_normal.png",
   "sprites/characters/mashiro/chr_mashiro_normal.png",
-  "sprites/characters/mashiro/chr_mashiro_sad.png",
   "sprites/characters/mashiro/chr_mashiro_serious.png",
   "sprites/characters/mashiro/chr_mashiro_sleep.png",
   "sprites/characters/mashiro/chr_mashiro_smile.png",
@@ -2312,6 +2362,7 @@
   "sprites/characters/naru/chr_naru_smile.png",
   "sprites/characters/naru/chr_naru_surprise.png",
   "sprites/characters/pakki/chr_pakki_angry.png",
+  "sprites/characters/pakki/chr_pakki_evil.png",
   "sprites/characters/pakki/chr_pakki_normal.png",
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
@@ -2319,7 +2370,6 @@
   "sprites/characters/rei/chr_rei_normal.png",
   "sprites/characters/rin/chr_rin_normal.png",
   "sprites/characters/rin/chr_rin_sad.png",
-  "sprites/characters/rin/chr_rin_serious.png",
   "sprites/characters/rin/chr_rin_smile.png",
   "sprites/characters/rin/chr_rin_surprise.png",
   "sprites/characters/sai/chr_sai_normal.png",
@@ -2347,6 +2397,7 @@
   "sprites/characters/tsumugi/chr_tsumugi_smile.png",
   "sprites/characters/tsumugi/chr_tsumugi_surprise.png",
   "sprites/characters/uranaishi/chr_uranaishi_normal.png",
+  "sprites/characters/uranaishi/chr_uranaishi_smile.png",
   "sprites/characters/volk/chr_volk_normal.png",
   "ui/chapters/ch1_keyart.png",
   "ui/character_intros/adam.png",
@@ -2478,12 +2529,14 @@
   "ui/title_arts/title_art_mashiro_02_tea_break.png",
   "ui/title_arts/title_art_mashiro_03_after_rain.png",
   "ui/title_arts/title_art_mashiro_04_cherry_petals.png",
+  "ui/title_arts/title_art_mashiro_05_rooftop_dusk_yawn.png",
   "ui/title_arts/title_art_minto_01_cafe_welcome.png",
   "ui/title_arts/title_art_minto_02_instant_photo.png",
   "ui/title_arts/title_art_minto_03_private_window.png",
   "ui/title_arts/title_art_minto_04_after_hours.png",
   "ui/title_arts/title_art_minto_05_mint_cloud.png",
   "ui/title_arts/title_art_minto_06_after_hours_glasscare.png",
+  "ui/title_arts/title_art_minto_07_balcony_mint.png",
   "ui/title_arts/title_art_naru_01_bakery_morning.png",
   "ui/title_arts/title_art_rin_01_night_tasting.png",
   "ui/title_arts/title_art_rin_03_late_coffee.png",
@@ -2493,12 +2546,49 @@
   "ui/title_arts/title_art_samechan_02_shark_movie.png",
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_samechan_04_throne_pose.png",
+  "ui/title_arts/title_art_samechan_05_rainy_splash.png",
   "ui/title_arts/title_art_sumi_01_own_clay_bowl.png",
+  "ui/title_arts/title_art_sumi_02_coal_tending.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "sprites/characters/da_silva/chr_da_silva_excited.png",
+  "sprites/characters/da_silva/chr_da_silva_smile.png",
+  "sprites/characters/da_silva/chr_da_silva_surprise.png",
+  "sprites/characters/kuze/chr_kuze_serious.png",
+  "sprites/characters/kuze/chr_kuze_smile.png",
+  "sprites/characters/sheikh/chr_sheikh_serious.png",
+  "sprites/characters/sheikh/chr_sheikh_smile.png",
+  "sprites/characters/sheikh/chr_sheikh_smug.png",
+  "sprites/characters/steve/chr_steve_serious.png",
+  "sprites/characters/steve/chr_steve_smile.png",
+  "sprites/characters/steve/chr_steve_surprise.png",
+  "sprites/characters/volk/chr_volk_serious.png",
+  "sprites/characters/volk/chr_volk_smile.png",
+  "sprites/characters/volk/chr_volk_surprise.png",
+  "sprites/characters/kuze/chr_kuze_sad.png",
+  "sprites/characters/kuze/chr_kuze_surprise.png",
+  "sprites/characters/hajime/chr_hajime_excited.png",
+  "sprites/characters/hajime/chr_hajime_smug.png",
+  "sprites/characters/kumicho/chr_kumicho_smug.png",
+  "sprites/characters/mashiro/chr_mashiro_sad.png",
+  "sprites/characters/mashiro/chr_mashiro_yawn.png",
+  "sprites/characters/naru/chr_naru_excited.png",
+  "sprites/characters/pakki/chr_pakki_excited.png",
+  "sprites/characters/rei/chr_rei_serious.png",
+  "sprites/characters/rei/chr_rei_smile.png",
+  "sprites/characters/rei/chr_rei_surprise.png",
+  "sprites/characters/rin/chr_rin_serious.png",
+  "sprites/characters/rin/chr_rin_shock.png",
+  "sprites/characters/rin/chr_rin_smug.png",
+  "sprites/characters/master_hookah/chr_master_hookah_angry.png",
+  "sprites/characters/master_hookah/chr_master_hookah_laugh.png",
+  "sprites/characters/master_hookah/chr_master_hookah_sad.png",
+  "sprites/characters/master_hookah/chr_master_hookah_serious.png",
+  "sprites/characters/master_hookah/chr_master_hookah_smile.png",
+  "sprites/characters/master_hookah/chr_master_hookah_surprise.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

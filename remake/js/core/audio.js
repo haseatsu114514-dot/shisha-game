@@ -152,6 +152,17 @@ export function applyVolumes() {
   bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
   if (bgmBus) bgmBus.gain.value = muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
   if (currentEl) currentEl.volume = bgmLevel(currentKey);
+  // 曲の切替後もフェード中の旧曲は鳴っている。無音設定を即座に反映し、
+  // 予約済みのフレームが音量を戻さないようフェードごと終了する。
+  if (muted || !(Number(config.bgmVolume) > 0)) {
+    for (const a of retiringBgm) {
+      elFades.get(a)?.(false);
+      a.volume = 0;
+      a.pause();
+      releasePacked(a.src);
+      retiringBgm.delete(a);
+    }
+  }
   syncPulls();
   if (muted || !(Number(config.seVolume) > 0)) stopRecordedVoices();
   syncRain();
@@ -516,6 +527,7 @@ export function createContinueAudio({ enabled = true } = {}) {
 
 let currentKey = null;
 let currentEl = null;
+const retiringBgm = new Set();
 let synthStop = null;
 let pendingBgm = null;
 
@@ -704,7 +716,11 @@ export function stopBgm(fadeSec = 0.8) {
   if (currentEl) {
     const a = currentEl;
     currentEl = null;
-    fadeEl(a, 0, fadeSec * 1000).then((finished) => { if (finished) { a.pause(); releasePacked(a.src); } });
+    retiringBgm.add(a);
+    fadeEl(a, 0, fadeSec * 1000).then((finished) => {
+      if (finished) { a.pause(); releasePacked(a.src); }
+      retiringBgm.delete(a);
+    });
   }
   if (synthStop) { synthStop(fadeSec); synthStop = null; }
   bgmDuck = 1;

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """設定資料集ジェネレータ: assets/ の画像と DotGothic16 サブセットを埋め込んだ
-docs/setting_reference.html（単一ファイル・共有可）を生成する。
+docs/archive/setting_reference.html（単一ファイル・共有可）を生成する。
 
 使い方:
     pip install Pillow fonttools brotli
@@ -108,7 +108,7 @@ CH1_MAIN = [
     dict(id="sumi", img="p_sumi", name="墨田 丈一郎", kana="スミ（一人称：俺）", tags=["師匠", "46歳", "tonariオーナー"],
          blurb="「tonari」オーナーであり、15年前の世界大会ファイナリスト。DAY1に私物の「アルファーヘブン レモン（50g）」をはじめに贈り、レモンの輪郭と熱管理を教える。ボトルの水の役割は<strong>「煙を冷やして吸いやすくする」だけ</strong>と説き、有害物質への影響は「諸説ある」として断定しない（爆煙の理由は「グリセリンと熱の仕事」）。第1章優勝の夜には、採点表を取り上げて否定するようなことはせず、<strong>まず「よくやった」と優勝を褒めて</strong>はじめ自身の気づきを見守る。"),
     dict(id="naru", img="p_naru", name="鳴切 亮太", kana="なる（一人称：俺）", tags=["ライバル ch1・ch4", "23歳", "KEMURIKUSA"],
-         blurb="橙須の「KEMURIKUSA」店主。バニラやキャラメルなどお菓子系を愛する熱血漢。バニラの温度変化（<em>「熱を上げて初めて甘さが起きるが、攻めすぎると焼けた甘さに化けて花の香りが飛ぶ」</em>）や定番レシピ<strong>『氷レモネード（黄金比 レモン7：ミント3）』</strong>を伝授する。第1章敗退後、第2章DAY11にはじめと衝突したのち長期修行へ旅立ち、第3章と同日の独立予選<strong>「ラストチャンス予選」代表決定大会を制して日本第二代表</strong>を獲得。第4章ドバイ世界大会で再びはじめと激突する。"),
+         blurb="橙須の「KEMURIKUSA」店主。バニラやキャラメルなどお菓子系を愛する熱血漢。バニラの温度変化（<em>「熱を上げて初めて甘さが起きるが、攻めすぎると焼けた甘さに化けて花の香りが飛ぶ」</em>）や定番レシピ<strong>『氷レモネード（黄金比 レモン7：ミント3）』</strong>を伝授する。第1章敗退後、第2章DAY11にはじめと衝突したのちKEMURIKUSAを休業して長期修行へ旅立ち、第3章と同日の独立予選<strong>「ラストチャンス予選」代表決定大会を制して日本第二代表</strong>を獲得。第4章ドバイ世界大会で再びはじめと激突する。"),
     dict(id="adam", img="p_adam", name="吾妻 大夢", kana="アダム（一人称：俺／私）", tags=["ライバル ch1", "28歳", "EDEN"],
          blurb="橙須の専門店「EDEN」オーナー。髪色は<strong>本人左（画面右）が緑・本人右（画面左）が赤</strong>。店には約10メーカーのダブルアップルとミント・シナモン等の相棒フレーバーのみを置く求道者。4回目イベント（<code>ch1_adam_fourth</code>）では趣味のナイフ投げ（的のリンゴは後で食べる）とともに、<em>「焦げる一歩手前まで熱を攻める。そこが甘い。先人に教わった味に俺の失敗を山ほど足して渡す」</em>と林檎の継承を語る。"),
     dict(id="minto", img="p_minto", name="緑川 栞", kana="みんと（一人称：みんと／私）", tags=["ヒロイン", "ライバル ch1", "自称20歳（実29歳）", "ぺぱーみんと"],
@@ -158,7 +158,7 @@ CH2_CHARS = [
 
 CH3_CHARS = [
     dict(id="mashiro", img="p_mashiro", name="水瀬 ましろ", kana="一人称：僕 ／ 呼称：はじめくん", tags=["ヒロイン ch3〜", "22歳", "mukai同僚", "シガーマン"],
-         blurb="東京の姉妹店「mukai」スタッフであり、覆面レビュアー「シガーマン」（本人は影響力に無自覚）。久世朔の1歳下の幼なじみ。普段から<strong>『アルファーヘブン ダーク アールグレイ』</strong>（ニコチン8の重いダークリーフ）を常用しているため、第3章序盤ではじめの軽いブロンドを吸った際に「これ、お水？」と感じた（休日練習でも自分用のダークとはじめ用のブロンドを分けて置く）。第3章では味覚を失ったはじめを試すため<strong>グレープを「ダブルアップル」と偽って出し</strong>、大会前夜に嘘を謝罪。休養・食事・病院・皿洗い・お茶の日常で回復を支える。"),
+         blurb="東京の姉妹店「mukai」スタッフであり、常連の噂で恐れられる「シガーマン」の正体（本人は最後まで自分だと気づかない）。久世朔の1歳下の幼なじみ。普段から<strong>『アルファーヘブン ダーク アールグレイ』</strong>（ニコチン8の重いダークリーフ）を常用しているため、第3章序盤ではじめの軽いブロンドを吸った際に「これ、お水？」と感じた（休日練習でも自分用のダークとはじめ用のブロンドを分けて置く）。第3章では味覚を失ったはじめを試すため<strong>グレープを「ダブルアップル」と偽って出し</strong>、大会前夜に嘘を謝罪。休養・食事・病院・皿洗い・お茶の日常で回復を支える。"),
     dict(id="kuze", img="p_kuze", name="久世 朔", kana="くぜ さく（一人称：僕）", tags=["メインライバル ch3", "23歳", "間借り店「煙幕」"],
          blurb="東京出身・福岡拠点、東京の間借り店<strong>「煙幕」</strong>で営業する第3章メインライバル（旧「ナンディ・カルダモン」は完全廃止）。ましろの1歳上の幼なじみ。幼少期に公園でましろがお菓子、自分がお茶の絵を描いた記憶を胸に、<strong>『アルファーヘブン フローズンシトラス』＋『アフサール ブラックティー』</strong>の熱の順序を操り、入っていないはずの「お菓子の味」を連想させる。全国大会後、ましろから温かいお茶とともに「僕にはお茶。でも好き」と伝えられる。"),
     dict(id="steve", img="p_steve", name="スティーブ・デイビス", kana="Smoke & Glory 店主（USA）", tags=["ライバル ch3", "30歳", "低温シトラス研究家"],
@@ -206,7 +206,7 @@ CHAPTERS = [
          points=["課題フレーバー: レモン 2g以上（私物持ち込み・DAY1にスミから1箱50g支給）",
                  "審査員: 南雲修二 ／ チャコール博士（火浦理一・1章から登場） ／ 上園文太郎",
                  "つむぎのスケッチ縦軸: DAY1取材 → DAY3下描き（炭をずらす） → DAY11応募 → 3章帰郷夜に入選報告"]),
-    dict(no="第2章", title="才能の壁（Hollow Crown）", cup="HAZE: OPEN CLOUD（柚ヶ谷エリア大会）", reg="ストロベリー（DAY9試煙会のアフサール苺支給＋持ち込み苺系も可）",
+    dict(no="第2章", title="才能の壁（Hollow Crown）", cup="HAZE: OPEN CLOUD（県大会・柚ヶ谷）", reg="ストロベリー（DAY9試煙会のアフサール苺支給＋持ち込み苺系も可）",
          theme="数字への執着、仲間との摩擦、才能の壁", img="bg_stage",
          imgcap="背景: 大会ステージ（bg_tournament_stage）",
          body="""電車で隣町・<strong>柚ヶ谷（ゆずがや）</strong>と橙須を往復する第2章（橙須にはサメちゃんの「SHISHARK」が開店）。柚ヶ谷ではギャル店長<strong>あげは</strong>の「MELTY PUFF」、<strong>神崎竜二（53歳）</strong>の「神崎煙草店」、V系青年店長<strong>零-REI-</strong>の「零-ZERO-」と出会う。DAY5の炭落下事故では神崎から安全なトング捌きとドラゴンフルーツの<strong>「0分立ち上げ」</strong>を学び、REIからはローズの中温止めを学ぶ。<br><br>DAY9試煙会で課題<strong>「ストロベリー（新作アフサール苺）」</strong>が発表され、会場には名無しの偵察者<strong>「？？？」（ヴォルク）</strong>が姿を見せる。DAY11、常連の娘の誕生日の苺シーシャを相談に来たなるに対し、はじめは採点表を見ながらグラム数で話を遮ってしまい衝突。大会当日、神崎は受付で自ら組の素性を明かして出場する。優勝後、<strong>あげはは失踪せず「次はうちの店ね！」と送り出す（#929）</strong>が、閉店後の独白でのみ震える手を見つめ「こんなの、ズルいよ」と才能の壁を吐露する。章末、はじめの味覚が鈍り東京の姉妹店「mukai」へ。""",
@@ -223,7 +223,7 @@ CHAPTERS = [
     dict(no="第4章", title="継承の煙（Legacy Smoke）", cup="HAZE: GRAND SMOKE（ドバイ世界大会）", reg="自由課題（最高の一台・はじめは「和の一台」でDAは混ぜない）",
          theme="15年前の因縁の決着、縁起の結晶としての世界一", img="cg_naru_last_chance",
          imgcap="CG: ラストチャンス予選を勝ち抜いたなる（cg_naru_last_chance）",
-         body="""世界大会の舞台はUAE・ドバイ。出場者は日本第一代表の<strong>はじめ</strong>、日本第二代表の<strong>なる</strong>、中国「龍龍水煙所」の老大家<strong>王 煙楼（煙楼先生）</strong>、そして現世界王者でありUAE王族の<strong>シェイク・アル=ガリヤーン</strong>。審査員は南雲修二、ブラジル「FESTA」店主<strong>ダ・シルヴァ太陽</strong>（旧チャド統合）、トルコの<strong>エミル・ユルマズ</strong>。<br><br>路地裏カフェで変装したシェイクと3度語り合う中で、15年前の世界大会でのスミと南雲のすれ違いと、当時スミが作った一台がシェイクの原点になったこと（その後シェイクは技術を王煙楼に学んだ）が明かされる。本番ではじめはスミの模倣（ダブルアップル）ではなく、出会ったすべての人との縁を繋いだ<strong>「和の一台」（DAは混ぜない）</strong>で世界一に輝き、大会後にスミと二台を並べて煙を交わす。""",
+         body="""世界大会の舞台はUAE・ドバイ。出場者は日本第一代表の<strong>はじめ</strong>、日本第二代表の<strong>なる</strong>、中国「龍龍水煙所」の老大家<strong>王 煙楼（煙楼先生）</strong>、そして現世界王者でありUAE王族の<strong>シェイク・アル=ガリヤーン</strong>。審査員は南雲修二、ブラジル「FESTA」店主<strong>ダ・シルヴァ太陽</strong>（旧チャド統合）、トルコの<strong>エミル・ユルマズ</strong>。<br><br>路地裏カフェで変装したシェイクと3度語り合う中で、15年前の世界大会でのスミと南雲のすれ違いと、当時スミが作った一台がシェイクの原点になったこと（その後シェイクは技術を王煙楼に学んだ）が明かされる。本番ではじめはスミの模倣（ダブルアップル）ではなく、出会ったすべての人との縁を繋いだ<strong>「和の一台」（DAは混ぜない）</strong>で世界一に輝く。帰国後の二台は「スミと南雲」「はじめとなる」の二つの店に分かれ、はじめとスミが並ぶ姿は第5章の帰郷が受け持つ。""",
          points=["王煙楼＝シェイクに技術を教えた師匠（スミの師匠設定は撤回）",
                  "エミル＝南雲の職人交流の知己（スミ捜索設定は撤回）",
                  "ダ・シルヴァ太陽に旧チャド（SHOWTIME）を完全統合"]),
@@ -264,7 +264,7 @@ CANON_ROWS = [
 ]
 
 CANON_NOTES = [
-    "<strong>参照commit</strong>：<code>origin/main 54a6d87f</code>（2026-10-28 確認）。この設定資料集（<code>docs/setting_book/</code>・<code>docs/setting_reference.html</code>）は二次資料であり、食い違いがある場合は上の正本を優先する。",
+    "<strong>参照commit</strong>：<code>origin/main 54a6d87f</code>（2026-10-28 確認）。この設定資料集（<code>docs/archive/setting_book/</code>・<code>docs/archive/setting_reference.html</code>）は二次資料であり、食い違いがある場合は上の正本を優先する。",
     "<strong>照合範囲</strong>：フレーバー収録数・価格、主要人物の氏名・読み・年齢、章タイトル・大会名・課題は正本と照合済み。一人称・呼称、店舗説明、あらすじの細部は全件照合が未了（正本優先）。",
     "<strong>現行唯一の実装は <code>remake/</code></strong>（旧 <code>web/</code> および Godot版は完全廃止）。第1章〜第3章必須進行がブラウザで通しプレイ可能、第4章・第5章は台詞データ先行。",
     "<strong>スミの水の説明（#1113 / #1128）</strong>：ボトルの水の役割は<strong>「煙を冷やして吸いやすくする」だけ</strong>。有害物質への影響は<strong>「諸説ある」</strong>とし、断定しない。爆煙の理由は水ではなく<strong>「グリセリンと熱の仕事」</strong>（K14）。",
@@ -618,7 +618,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 
 <section class="block" id="story">
   <h2 class="sec disp">ストーリー（全5章）</h2>
-  <p class="sec-note">橙須地方大会 → 柚ヶ谷エリア大会 → 東京全国大会（＋ラストチャンス予選） → ドバイ世界大会 → SMOKE LAB AI二本勝負。</p>
+  <p class="sec-note">橙須地方大会 → 柚ヶ谷県大会 → 東京全国大会（＋ラストチャンス予選） → ドバイ世界大会 → SMOKE LAB AI二本勝負。</p>
   {chapters_html}
   <h3 class="grp disp">各章のテーマとメッセージ</h3>
   <div class="tbl-wrap"><table>
@@ -646,7 +646,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 
 <section class="block" id="canon">
   <h2 class="sec disp">正本ガイド（共同制作のための道しるべ）</h2>
-  <p class="sec-note">このHTMLおよび <code>docs/setting_book/*.md</code> は<em>二次資料</em>です。仕様変更や食い違いの確認時は必ず下の正本を参照してください。</p>
+  <p class="sec-note">このHTMLおよび <code>docs/archive/setting_book/*.md</code> は<em>二次資料</em>です。仕様変更や食い違いの確認時は必ず下の正本を参照してください。</p>
   <div class="tbl-wrap"><table>
     <thead><tr><th>事実の種類</th><th>正本ファイル</th></tr></thead>
     <tbody>{canon_rows}</tbody>
@@ -663,6 +663,6 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 </div></footer>
 '''
 
-out = os.path.join(ROOT, "docs/setting_reference.html")
+out = os.path.join(ROOT, "docs/archive/setting_reference.html")
 open(out, "w").write(HTML)
 print("written:", out, len(HTML) // 1024, "KB")

@@ -198,8 +198,8 @@ await suite("ch3-tournament", async check => {
     for (const [index, scene] of scenes.entries()) {
       await page.locator(aftermath(scene)).waitFor();
       if (index === 0) assert(await page.locator('#bg > .bg-img').last().evaluate(node =>
-        node.style.backgroundImage.includes('bg_ch3_hotel_night')),
-      'The victory-night hotel must have its own room background');
+        node.style.backgroundImage.includes('bg_mukai_shop')),
+      'The victory night is spent in the mukai back room, not a hotel (#1485, #1899)');
       await page.locator('[data-test="ch3-aftermath-continue"]').click();
       if (index === 0) {
         await page.locator(aftermath(scenes[1])).waitFor();
@@ -214,8 +214,13 @@ await suite("ch3-tournament", async check => {
           "Reload must resume after the hotel scene without replaying the win");
       }
     }
+    // #1988: ♥3の分岐で恋愛寄りに答えていない保存には告白は起きず、再会のまま第3章完へ。
     await page.locator('[data-test="ch3-aftermath-complete"]').waitFor();
+    assert.equal(await page.locator('[data-test="ch3-aftermath-ageha-confession"]').count(), 0,
+      "Without the ♥3 romance answer the confession must not appear");
     state = await get(page);
+    assert.equal(state.flags._friend_ageha, undefined, "Skipping the confession records no relationship");
+    assert(!state.lovers.includes("ageha"));
     assert.equal(state.flags._ch3_cleared, true);
     assert.equal(state.phase, "cleared");
     assert.equal(state.flags._ch3_tournament.history.length, 1);

@@ -18,6 +18,7 @@ import { RIN_AWAY_DAY } from "../core/rules.js";
 import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
+import { AF_VANILLA_ART } from "./shop-art-af-vanilla.js";
 import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
 import { LIMITED_FLAVOR_ART } from "./shop-art-limited.js";
 import { CHARACTER_FLAVOR_ART } from "./shop-art-character-flavors.js";
@@ -99,7 +100,7 @@ export function flavorPackageArt(id, size = 54) {
   const fallback = () => el("span.shop-product-art", { "aria-hidden": "true", dataset: { productArt: id } }, [
     el("span.shop-type-mark", { style: { fontSize: "10px", letterSpacing: "0", whiteSpace: "nowrap" }, text: "フレーバー" }),
   ]);
-  const art = SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id];
+  const art = AF_VANILLA_ART[id] || SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id];
   return art ? windowArt(item, art.url, art.box, art.size, size, "generated", fallback) : fallback();
 }
 function productArt(item, flavor, size = 66) {
@@ -108,7 +109,7 @@ function productArt(item, flavor, size = 66) {
   ]);
   const botanical = () => FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)] ? windowArt(item, FLAVOR_ART, FLAVOR_BOXES[SHOP_FLAVORS.indexOf(item.id)],
     [1774, 887], size, "botanical", textArt) : textArt();
-  const generated = flavor ? (SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id] || LIMITED_FLAVOR_ART[item.id] || CHARACTER_FLAVOR_ART[item.id]) : SHOP_EQUIPMENT_ART[item.art || item.id];
+  const generated = flavor ? (AF_VANILLA_ART[item.id] || SHOP_ART[item.id] || REMAINING_SHOP_ART[item.id] || LIMITED_FLAVOR_ART[item.id] || CHARACTER_FLAVOR_ART[item.id]) : SHOP_EQUIPMENT_ART[item.art || item.id];
   if (generated) return windowArt(item, generated.url, generated.box, generated.size, size, "generated", flavor ? botanical : textArt);
   if (flavor) return botanical();
   const art = EQUIP_ART[item.art || item.id];
@@ -260,26 +261,32 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         owned ? el("span.shop-owned", { text: Object.values(state.equip).includes(item.id) ? "装備中" : "所持済み" }) : quantityPicker(item, flavor),
       ]);
     };
+    const confirmSale = async (name, price) => {
+      if (!live() || confirming) return false;
+      confirming = true;
+      try {
+        const ok = await modal({ title: "売却", className: "shop-dialog", body: `${name}を${yen(price)}で売りますか？`, options: [
+          { label: "やめる", value: false }, { label: "売る", value: true, primary: true, test: "shop-sell-confirm" },
+        ] });
+        return live() && ok;
+      } finally {
+        confirming = false;
+      }
+    };
     const sellRows = () => {
       const rows = state.owned.map((id) => DB.equipById[id]).filter((e) => e && !Object.values(state.equip).includes(e.id)).map((e) =>
         el("div.shop-row", [productArt(e, false),
           el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.unsellable ? "贈り物なので売れない" : "中古買い取り" })]),
           e.unsellable ? el("span.shop-owned", { text: "売却不可", dataset: { test: `sell-locked-${e.id}` } }) : el("button.btn.small", {
             text: `${yen(e.sell_price)}で売る`, dataset: { test: `sell-${e.id}` }, onclick: async () => {
-              if (!live() || confirming) return;
-              confirming = true;
-              const ok = await modal({ title: "売却", className: "shop-dialog", body: `${e.name}を${yen(e.sell_price)}で売りますか？`, options: [
-                { label: "やめる", value: false }, { label: "売る", value: true, primary: true, test: "shop-sell-confirm" },
-              ] });
-              confirming = false;
-              if (!live() || !ok) return;
+              if (!await confirmSale(e.name, e.sell_price)) return;
               if (sellEquipment(e.id)) { save(); SE.money(); }
               else { SE.error(); toast("これは売れない", { kind: "warn" }); }
               render();
             },
           }),
         ]));
-      rows.push(...goodsSellRows(() => { if (live()) { save(); render(); } }));
+      rows.push(...goodsSellRows(() => { if (live()) { save(); render(); } }, confirmSale));
       return rows.length ? rows : [el("p.shop-empty", { text: "売れる物がありません（装備中の機材は売れません）" })];
     };
     function render(focusTest = null) {

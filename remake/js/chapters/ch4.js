@@ -1,25 +1,31 @@
 // 第4章・ドバイ。プロローグ→自由行動→前夜→大会→勝ち側の本線までを、場面単位で保存する。
 // 状態遷移は ch4-progress.js、行き先の計算は ch4-map-model.js。ここは表示と再生だけを持つ。
-import { DB, bgUrl } from "../core/data.js";
+import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
+import { radar } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
-import { readDialogues } from "./ch2-city-data.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
-  canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
+  CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
 import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
-import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates } from "../core/overseas-companion.js";
+import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates, overseasCompanion } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
+import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
+import { craftReviewLines } from "../craft/advice.js";
+import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
+import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
+import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
+  chapterFourEveningRecord } from "./ch4-story-wiring.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -81,7 +87,7 @@ function hud() {
   layers.hud.classList.remove("show");
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "") {
+function card(owner, name, title, description, actions = [], note = "", sceneId = "", content = null) {
   hud();
   showScreen("ch4", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
     el("header.ch2-contest-header", [
@@ -90,13 +96,15 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
     ]),
     el("p.ch2-contest-description", { text: description }),
     note ? el("p.ch2-contest-note", { text: note }) : null,
+    content,
     el("div.ch2-contest-actions", actions),
   ]));
 }
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
-  const groups = await Promise.all(Object.entries(CH4_SCENE_FILES).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
+  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
+  const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
   }
@@ -153,10 +161,13 @@ async function readScene(owner, id) {
   const source = DB.dialogues[id];
   if (!source) throw new Error(`台本がありません: ${id}`);
   // 台本の metadata.bg は持ち込まず、ch4-progress.js の対応表（仮置き）で背景を決める。
-  const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
+  const craft = chapterFourProgress(state).match?.craft;
+  const actual = id === "ch4_final" && craft ? chapterFourFinalDialogue(source, state, craft)
+    : id === "ch4_defeat" && craft ? chapterFourDefeatDialogue(source, state, craft) : source;
+  const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
-  await setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true });
+  await setBg(bgUrl(CH4_SCENE_BG[id] || CH4_EVENING_BG), { instant: true });
   if (!current(owner)) return false;
   playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。
@@ -182,9 +193,13 @@ async function readScene(owner, id) {
 
 /** 読了 → 確定 → 保存。確定できなければ（別partの場面など）保存せず false。 */
 async function readAndCommit(owner, id) {
+  const progress = chapterFourProgress(state);
+  // AI仮判断（#1660）: 既存の再訪解放を行動の報酬として知らせる。前夜の強制読了後には自由行動がない。
+  const unlockRevisit = id === "ch4_stranger_second" && progress.part === "free" && !progress.read[id];
   if (!await readScene(owner, id)) return false;
   if (!completeChapterFourScene(state, id)) return false;
   save();
+  if (unlockRevisit) toast("路地裏のカフェに再訪できるようになった", { kind: "good" });
   return true;
 }
 
@@ -219,35 +234,77 @@ async function renderCompanionChoice(owner) {
 
 async function renderScene(owner, scene, dayLabel) {
   await setBg(bgUrl(CH4_SCENE_BG[scene.id]), { instant: true });
+  const lover = scene.location === "tonari" ? await loverActions(owner, { home: true }) : [];
   if (!current(owner)) return;
   card(owner, "scene", `${dayLabel ? `${dayLabel}・` : ""}${scene.label}`, `${scene.location}で、次の話を読む。`, [
     button(owner, "続きを読む", "continue", async () => {
       if (!await readAndCommit(owner, scene.id)) return;
       await renderStage(owner);
     }, true),
+    ...lover,
   ], "", scene.id);
 }
 
+/**
+ * 恋人の入口（#2024）。第1・2章と同じ処理（lover-entry.js → daily/romance.js）を使う。
+ * 日本にいる間（出発前・帰国後のtonari）は恋人LIMEと節目。ドバイ滞在中は遠くの恋人からのLIMEだけで、
+ * 恋人と過ごす場面（節目・dubai_evening 系）はつながない（ch4-progress.js の FREE_SCENES の方針）。
+ * 同行した恋人は一緒にいるのでLIMEを送ってこない。東京在住のましろとは地元では会えない。
+ */
+async function loverActions(owner, { home = false } = {}) {
+  const lover = await import("./lover-entry.js");
+  const exclude = home ? [] : [overseasCompanion(state).companion].filter(Boolean);
+  const actions = [];
+  if (lover.pendingLoverLime({ exclude }).length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await lover.readLoverLime({ exclude });
+    if (current(owner)) await renderStage(owner);
+  }));
+  // 友人からのたまのLIME（#2022）。同行者は一緒にいるので送ってこない。
+  const friend = await import("./friend-entry.js");
+  if (friend.pendingFriendLime({ exclude }).length) actions.push(button(owner, "友人・知り合いのLIMEを読む", "friend-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await friend.readFriendLime({ exclude });
+    if (current(owner)) await renderStage(owner);
+  }));
+  const [id] = home ? lover.loverMilestonesDue((state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who))) : [];
+  if (id) actions.push(button(owner, `${displayName(id, state, { context: "private" })}と過ごす`, "lover-milestone", async () => {
+    showScreen("none", null);
+    hud();
+    const controller = owner.controller = new AbortController();
+    try { await lover.readLoverMilestone(id, { signal: controller.signal }); }
+    finally { if (owner.controller === controller) owner.controller = null; }
+    if (current(owner)) await renderStage(owner);
+  }));
+  return actions;
+}
+
 async function renderFree(owner) {
-  const model = chapterFourMapModel(state);
+  const model = chapterFourMapModel(state, { canReflect: canReflect() });
   await setBg(bgUrl(model.background), { instant: true });
+  const lover = await loverActions(owner);
   if (!current(owner)) return;
   card(owner, "free", `DAY ${model.day}・自由行動`, `ドバイの街を歩く。大会まであと${model.daysLeft}日。`,
-    model.destinations.map(destination => el("div.ch4-destination", [
-      button(owner, destination.label, `go-${destination.id}`, () => visit(owner, destination.id), destination.kind === "end_day"),
+    [...model.destinations.map(destination => el("div.ch4-destination", [
+      destination.ok === false
+        ? el("button.btn", { type: "button", text: destination.label, disabled: true, dataset: { test: test(`go-${destination.id}`) } })
+        : button(owner, destination.label, `go-${destination.id}`, () => visit(owner, destination.id), destination.kind === "end_day"),
       el("p.ch4-destination-purpose", { text: `${destination.purpose}${destination.unreadCount > 0 ? "（未読あり）" : ""}` }),
-    ])).concat(canReflect() ? [el("div.ch4-destination", [
-      // 心得の盤: 見学できるモスクの回廊で振り返り、火種を灯す（時間を使わない。礼拝の所作はしない。SPEC 2.8・#1788）
-      button(owner, "モスクを見学して振り返る", "go-mosque", async () => { await reflectAt("dubai_mosque"); await renderStage(owner); }),
-      el("p.ch4-destination-purpose", { text: "見学の時間に回廊でここまでを振り返り、心得の盤に火種を灯す。日は進まない。" }),
-    ])] : []),
+    ])), ...lover],
     [model.guide, model.hint, model.note].filter(Boolean).join(" "));
 }
 
 /** 行き先の場面を順に再生してマップへ戻る。日が進むのは「その日を終える」だけ。 */
 async function visit(owner, id) {
-  const destination = chapterFourMapModel(state)?.destinations.find(item => item.id === id);
-  if (!destination) return;
+  const destination = chapterFourMapModel(state, { canReflect: canReflect() })?.destinations.find(item => item.id === id);
+  if (!current(owner) || !destination || destination.ok === false) return;
+  if (destination.kind === "reflect") {
+    await reflectAt("dubai_mosque");
+    if (current(owner)) await renderStage(owner);
+    return;
+  }
   for (const sceneId of destination.scenes) {
     if (CH4_SPOT_SCENES.includes(sceneId)) {
       // スポット初回は「……【センス】が少し上がった。」の台詞報酬を実際に加算する（通常の自由行動と同じ最大2能力各1P）。
@@ -270,6 +327,8 @@ async function renderEve(owner) {
   if (await eveReflection("dubai_waterside")) { if (current(owner)) await renderStage(owner); return; }
   const [next] = chapterFourMandatory(state);
   if (!next) {
+    // 必須場面の後、大会日へ進む前に、前夜の過ごし方を一度だけ確定する（#1895）。
+    if (!state.flags._ch4_evening) { await renderEvening(owner); return; }
     if (!finishChapterFourEve(state)) throw new Error("前夜を終えられません");
     save();
     await renderStage(owner);
@@ -285,6 +344,36 @@ async function renderEve(owner) {
       await renderStage(owner);
     }, true),
   ], "", next.id);
+}
+
+/**
+ * 前夜の過ごし方。同じ場所の恋人が2人以上なら重なった予定を保留する場面を再生し、1人なら誘うか選ぶ。
+ * 恋人がいない・到着していない夜は、場面を出さずに「過ごさなかった」と記録する。
+ */
+async function renderEvening(owner) {
+  const routes = await loadStoryRoutes();
+  if (!current(owner)) return;
+  const settle = async result => {
+    for (const id of result.scenes) {
+      if (!await readScene(owner, id)) return;
+    }
+    // 再生を最後まで読んだ時だけ記録する。中断・LOAD後は同じ前夜からやり直す。
+    if (state.flags._ch4_evening || chapterFourMandatory(state).length) return;
+    state.flags._ch4_evening = chapterFourEveningRecord(result);
+    save();
+    await renderStage(owner);
+  };
+  const result = selectChapterFourEvening(routes, state);
+  const partner = chapterFourEveningPartner(routes, state);
+  if (result.kind !== "rest" || !partner) { await settle(result); return; }
+  const name = displayName(partner, state, { context: "private" });
+  await setBg(bgUrl(CH4_EVENING_BG), { instant: true });
+  if (!current(owner)) return;
+  card(owner, "evening", "DAY 4・前夜", `大会前夜。${name}と過ごす時間がある。`, [
+    button(owner, `${name}と過ごす`, "evening-date",
+      () => settle(selectChapterFourEvening(routes, state, partner)), true),
+    button(owner, "ひとりで休む", "evening-rest", () => settle(selectChapterFourEvening(routes, state))),
+  ], "どちらを選んでも、明日の大会には影響しません。");
 }
 
 async function renderTournament(owner) {
@@ -303,7 +392,28 @@ async function runTournament(owner) {
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;
   }
-  // 骨格では台本どおり勝ち固定。実試合を接続するときは chapterFourTournamentOutcome の中身を差し替える。
+  const [{ runChapterFourCraft }, { playEntrance }] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js")]);
+  if (!current(owner)) return;
+  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。
+  if (!chapterFourProgress(state).match?.craft) { await playEntrance(4); if (!current(owner)) return; }
+  const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
+  if (!current(owner)) return;
+  if (!result) { await renderTournament(owner); return; }
+  // 順位・二度の調整・5工程の実成績を、勝敗の台本へ進む前に確認する。
+  const parts = Object.entries(result.parts).map(([key, score]) =>
+    `${({ holes: "穴", heat: "炭", shisha: "完成品", care1: "調整1", care2: "調整2" })[key]} ${score.toFixed(1)}`).join(" ／ ");
+  // 最終結果も第2・3章と同じ持ち点の盤で見せる（#2031）。票は確定済みの result.rows を使う。
+  const match = chapterFourProgress(state).match;
+  const notes = [result.failure ? "完了した工程から振り返ろう。" : `はじめは${result.rank}位。審査員三人、それぞれの10点が出揃った。`,
+    ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
+    // 第1〜3章の結果と同じ2行（#1909）。記録の無い工程は推測しない。
+    ...craftReviewLines(match?.craft)];
+  const { chapterFourStandingsView } = await import("./ch4-standings.js");
+  await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
+    body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result" })
+      : notes.join("\n"),
+    options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
+  if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
     if (!await readAndCommit(owner, win)) return;
     toast(`大会の賞金 ${CH4_PRIZE.toLocaleString("ja-JP")}円を受け取った`, { kind: "good" });
@@ -326,7 +436,8 @@ const RECAP_STRATEGY = Object.freeze({
 function chapterFourRecap(value) {
   const { read } = chapterFourProgress(value);
   const lines = ["世界大会を終え、日本へ戻った。"];
-  const strategy = RECAP_STRATEGY[value.flags._ch4_strategy];
+  const craft = chapterFourProgress(value).match?.craft;
+  const strategy = craft ? chapterFourPlanReview(value, craft) : RECAP_STRATEGY[value.flags._ch4_strategy];
   if (strategy) lines.push(strategy);
   const visited = [];
   if (read.ch4_dubai_souq) visited.push("スーク");
@@ -379,7 +490,12 @@ function renderComplete(owner) {
     replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
-  ], "第五章・機械仕掛けの神へ進めます。");
+  ], "第五章・機械仕掛けの神へ進めます。", "",
+  // 第1章と同じ比較。固定の祝福では能力を足さず、実際に伸びた分だけを重ねる。
+  el("div.end-radar", { dataset: { test: test("growth") } }, [
+    radar(state.stats, state.statsAtChapterStart || state.stats, 300),
+    el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
+  ]));
   if (!state.flags._ch4_preview_seen) void preview(true);
 }
 

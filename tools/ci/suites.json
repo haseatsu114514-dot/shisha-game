@@ -10,6 +10,18 @@
   ],
   "suites": [
     {
+      "id": "typography-css",
+      "title": "Readable CSS typography follows #1352",
+      "kind": "quick",
+      "run": ["node remake/test/typography_css.mjs"]
+    },
+    {
+      "id": "reflection-routes",
+      "title": "Tokyo/Dubai reflection routes, visiting hours and save/load (#1788 #1801)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/reflection_routes.mjs"]
+    },
+    {
       "id": "status-steps",
       "title": "Status 10-step conversion and effect tables",
       "kind": "quick",
@@ -76,7 +88,12 @@
         "remake/js/core/growth-board-data.js",
         "remake/js/daily/growth-board-screen.js",
         "remake/js/daily/reflection.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/map.js",
+        "remake/js/daily/map-reveals.js",
         "data/dialogue/growth_reflection.json",
+        "data/dialogue/growth_lessons.json",
+        "remake/js/daily/tonari.js",
         "remake/js/daily/hud.js",
         "remake/css/daily.css",
         "remake/test/browser/growth_levelup.mjs"
@@ -129,7 +146,7 @@
     },
     {
       "id": "ngplus-carry",
-      "title": "NG+ SCHEMA 22 migration, carry classification coverage and package extraction (#1228)",
+      "title": "NG+ save migration, carry classification coverage and package extraction (#1228)",
       "kind": "quick",
       "run": ["node remake/test/ngplus_carry.mjs"]
     },
@@ -168,6 +185,12 @@
       "title": "Title warm-up defers store logos to idle and waits are split (core / store logos)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
+    },
+    {
+      "id": "stat-ui-progress",
+      "title": "Ten-step UI boundaries and sense color width",
+      "kind": "quick",
+      "run": ["node remake/test/stat_ui_progress.mjs"]
     },
     {
       "id": "resume-loading-a01",
@@ -223,7 +246,8 @@
         "python3 tools/check_dialogue_links.py",
         "python3 tools/test_story_canon.py",
         "node remake/test/story_routes.mjs",
-        "node remake/test/ch2_relationships_929.mjs"
+        "node remake/test/ch2_relationships_929.mjs",
+        "node remake/test/relationship_memory_coverage.mjs"
       ]
     },
     {
@@ -262,6 +286,7 @@
         "node --experimental-vm-modules remake/test/ch3_wayfinding.mjs",
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
+        "node --experimental-vm-modules remake/test/ch4_rewards.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -287,6 +312,12 @@
       ]
     },
     {
+      "id": "ch3-lover-entry",
+      "title": "Lover LIME and lover_events milestones after chapter 3 (#2024)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch3_lover_entry.mjs"]
+    },
+    {
       "id": "affinity-stages",
       "title": "Completed conversations and affinity stage boundaries",
       "kind": "quick",
@@ -305,13 +336,17 @@
         "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/tournament_resources.mjs",
+        "node remake/test/friend_lime_scene_chapters.mjs",
+        "node remake/test/tournament_entrance.mjs",
         "node --experimental-vm-modules remake/test/rin_sample.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
+        "node --experimental-vm-modules remake/test/lime_balance.mjs",
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
+        "node remake/test/spot_encounter_doctor.mjs",
         "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
@@ -337,6 +372,7 @@
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
         "node remake/test/ch2_delivery_identity.mjs",
         "node remake/test/ch2_tournament.mjs",
+        "node --experimental-vm-modules remake/test/ch2_lime.mjs",
         "node remake/test/tournament_story.mjs",
         "node remake/test/served_eval.mjs",
         "node remake/test/naru_tasting.mjs",
@@ -407,6 +443,7 @@
       "kind": "quick",
       "run": [
         "node --test tools/ci/test_ci.mjs",
+        "python3 tools/check_face_icons_fresh.py",
         "node --test tools/sequential_merge/test.mjs",
         "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
         "node remake/test/dev_inspector.mjs"
@@ -951,6 +988,15 @@
       ],
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
+      ]
+    },
+    {
+      "id": "ch4-tournament",
+      "title": "Chapter 4 real craft, scoring, plans and checkpoint recovery",
+      "kind": "quick",
+      "run": [
+        "node --experimental-vm-modules remake/test/ch4_tournament.mjs",
+        "node --experimental-vm-modules remake/test/ch4_tournament_sequence.mjs"
       ]
     },
     {
@@ -1533,30 +1579,6 @@
       "run": [
         "GOAL_HIYORI_GIFT=1 ONLY_DEVICE=mobile ARTIFACT_DIR=.codex/artifacts/remake-browser/hiyori-gift-natural-mobile node remake/test/browser/hiyori_axe_natural.mjs"
       ]
-    },
-    {
-      "id": "hiyori-title-five",
-      "title": "Hiyori five title illustrations",
-      "kind": "browser",
-      "weight": 0.3,
-      "timeout": 15,
-      "paths": [
-        "assets/ui/title_arts/**",
-        "remake/img/ui/title_arts/**",
-        "remake/data/manifest.json",
-        "remake/js/scenes/title*.js",
-        "remake/test/title_arts.mjs",
-        "remake/test/browser/hiyori_title_five.mjs",
-        "asset_sources/hiyori-title-five-issue486/**"
-      ],
-      "run": [
-        "python3 asset_sources/hiyori-title-five-issue486/validate.py",
-        "COMPARISON_DIR=.codex/artifacts/remake-browser/hiyori-title-poses node remake/test/browser/hiyori_title_five.mjs"
-      ],
-      "sparse": [
-        "/asset_sources/hiyori-title-five-issue486/"
-      ],
-      "pillow": true
     },
     {
       "id": "home-rig-backgrounds",
@@ -2329,6 +2351,24 @@
       ]
     },
     {
+      "id": "vn-accessibility-1914",
+      "title": "VN seen-only skip, AUTO speed, and reduced motion settings",
+      "kind": "browser",
+      "weight": 0.2,
+      "timeout": 5,
+      "paths": [
+        "remake/js/vn/engine.js",
+        "remake/js/core/ui.js",
+        "remake/js/core/state.js",
+        "remake/js/scenes/title.js",
+        "remake/css/base.css",
+        "remake/test/vn_accessibility_1914.mjs"
+      ],
+      "run": [
+        "node remake/test/vn_accessibility_1914.mjs"
+      ]
+    },
+    {
       "id": "maps-and-shop",
       "title": "Store logos, map facilities and shop UI",
       "kind": "browser",
@@ -2801,6 +2841,8 @@
       "timeout": 5,
       "paths": [
         "remake/css/ui-themes.css",
+        "remake/css/ui-paper.css",
+        "remake/img/ui/paper/**",
         "remake/css/vn-composition.css",
         "remake/img/ui/vn-polish/**",
         "remake/img/ui/vn-calm/**",

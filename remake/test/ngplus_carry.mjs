@@ -1,5 +1,5 @@
 // node remake/test/ngplus_carry.mjs
-// NG+（Issue #1228）: SCHEMA 22 への移行、state/flag の引き継ぎ分類の網羅、引き継ぎパッケージの抽出。
+// NG+（Issue #1228）: 旧セーブの移行、state/flag の引き継ぎ分類の網羅、引き継ぎパッケージの抽出。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
@@ -21,6 +21,7 @@ const { STATE_KEY_RULES, FLAG_EXACT_RULES, FLAG_FAMILY_RULES, GIFT_EQUIPMENT_IDS
 
 assert.equal(carry.classifyFlag("_shift_mix_citrus"), "progression");
 assert.equal(carry.flagVerdict("_shift_mix_citrus"), "reset");
+assert.equal(carry.flagVerdict("seenDemo"), "carry");
 {
   const s = core.newState();
   s.flags._shift_mix_citrus = 0;
@@ -33,9 +34,9 @@ assert.equal(carry.flagVerdict("_shift_mix_citrus"), "reset");
 const root = new URL("../../", import.meta.url);
 const copy = (v) => JSON.parse(JSON.stringify(v));
 
-// ---------------------------------------------------------------- A. SCHEMA 22 と後方互換
+// ---------------------------------------------------------------- A. SCHEMA 24 と後方互換
 {
-  assert.equal(SCHEMA, 22);
+  assert.equal(SCHEMA, 24);
   const fresh = newState();
   assert.equal(fresh.cycle, 1);
   assert.equal(typeof fresh.cycleId, "string");
@@ -72,7 +73,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
     return s;
   };
   const checkMigrated = (s) => {
-    assert.equal(s.schema, 22);
+    assert.equal(s.schema, 24);
     assert.equal(s.cycle, 1);
     assert.ok(typeof s.cycleId === "string" && s.cycleId.length > 0);
     assert.deepEqual(s.cycleStartStats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
@@ -103,11 +104,34 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   const slotKey = SAVE_SLOTS[1].key;
   localStorage.setItem(slotKey, JSON.stringify(legacy()));
   checkMigrated(loadFromSlot(slotKey));
+
+  // スキーマ22の周回データは維持し、第4回既読なら味の話の未取得分だけ補う。
+  const prior = copy(newState());
+  prior.schema = 22;
+  prior.cycle = 2;
+  prior.cycleId = "kept-cycle-2";
+  prior.cycleStartStats.technique = 19;
+  prior.story = { naru: 5 };
+  prior.flavorLessons = ["ch1_naru_first"];
+  prior.flavorMastery = { vanilla: 12 };
+  localStorage.setItem(SAVE_KEY, JSON.stringify(prior));
+  const upgraded = load();
+  assert.equal(upgraded.schema, 24);
+  assert.equal(upgraded.cycle, 2);
+  assert.equal(upgraded.cycleId, "kept-cycle-2");
+  assert.equal(upgraded.cycleStartStats.technique, 19);
+  assert.equal(upgraded.flavorMastery.vanilla, 24);
+  assert(upgraded.flavorLessons.includes("ch1_naru_fourth"));
+  save();
+  const repeated = load();
+  assert.equal(repeated.flavorMastery.vanilla, 24);
+  assert.equal(repeated.cycleId, "kept-cycle-2");
 }
 
 // ---------------------------------------------------------------- B. state キー分類の網羅
 {
-  const keys = new Set([...Object.keys(newState()), "savedAt"]);
+  // growthは初めて経験値が入る時に作る任意キー。savedAtと同じく初期stateには無い。
+  const keys = new Set([...Object.keys(newState()), "savedAt", "growth"]);
   const ruleKeys = new Set(Object.keys(STATE_KEY_RULES));
   for (const k of keys) assert.ok(ruleKeys.has(k), `STATE_KEY_RULES に無いキー: ${k}`);
   for (const k of ruleKeys) assert.ok(keys.has(k), `STATE_KEY_RULES の余分なキー: ${k}`);
@@ -292,4 +316,4 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   assert.deepEqual(core.state, before, "手動枠の拒否で state の内容を変えない");
 }
 
-console.log("ngplus carry: PASS (schema 22 migration, state/flag classification coverage, package extraction, data cross-check, future schema refusal)");
+console.log("ngplus carry: PASS (schema 24 migration, state/flag classification coverage, package extraction, data cross-check, future schema refusal)");

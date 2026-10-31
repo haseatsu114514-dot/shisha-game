@@ -37,7 +37,7 @@ import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocati
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
-import { presentNight, growthMenuItems, openGrowthBoard, reflectAtSpot } from "../core/growth.js";
+import { presentNight, growthMenuItems, openGrowthBoard, reflectAtSpot, consultLessons } from "../core/growth.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -60,11 +60,6 @@ export async function runDaily(def) {
   // 登録済みでも、説明中に保存された初回体験は配達・日付更新より先に完了する。
   // 導入済み旧保存から初回体験を推測せず、既存の確定・報酬処理を再利用する。
   if (owner.flags._pakki_first_spin_pending) {
-    if (owner.flags._c_station_registered && owner.visitedDay.c_station == null) {
-      owner.visitedDay.c_station = owner.day;
-      // 初回確定でpendingが消え、その演出中に再中断しても訪問日を失わない。
-      save(); // 会話・訪問回数・成長・行動は繰り返さない。
-    }
     await installReel();
     if (state !== owner) return;
   }
@@ -309,14 +304,13 @@ async function day1Errands() {
 async function registerTournament() {
   const venue = spotById("c_station");
   // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
-  if (!venue || !isUnlocked(venue) || isClosed(venue) || state.visitedDay.c_station === state.day) return;
+  if (!venue || !isUnlocked(venue) || isClosed(venue) || state.flags._c_station_registered) return;
   await chooseSpot({ guide: { pin: "c_station", text: "配達の前に、大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
   if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
     await (await import("../scenes/rule-sheet.js")).openRuleSheet();
     state.flags._ch1_rules_read = true;
   }
-  state.visitedDay.c_station = state.day;
   save(); // 無料の登録で行動枠・追加の抽選を使わない。
 }
 
@@ -398,6 +392,7 @@ async function deliver({ charId, scene, text }) {
     f[`_delivery_${charId}_told`] = true;
     save();
   }
+  await staminaGuard(DELIVERY_STAMINA, { mandatory: true });
   await chooseSpot({ guide: { pin: charId, text, free: "配達（代金なし）" } });
   f[`_delivery_${charId}`] = true;
   addStamina(DELIVERY_STAMINA);
@@ -417,18 +412,20 @@ async function deliver({ charId, scene, text }) {
   toast(`配達の手当 +${DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
   f[`_delivery_${charId}_done`] = true;
   state.slot++;
-  await afterAction();
+  await afterAction({ exerted: true });
 }
 
 // ---------------------------------------------------------------- 行動
 
-async function staminaGuard(cost) {
+async function staminaGuard(cost, { mandatory = false } = {}) {
   if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina())) return true;
   const go = await modal({
     title: "体が重い……",
-    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。<br>無事に済むこともあるけど、今は「家に帰る」で休める。"
+    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
+      + (mandatory ? "<br>この配達は続ける必要がある。" : "<br>無事に済むこともあるけど、今は「家に帰る」で休める。")
       + (fitActive(state) ? "<br>（チョコザップで体を整えたので、今は風邪をひきにくい）" : ""),
-    options: [{ label: "やめておく", value: false }, { label: "それでも行く", value: true, test: "stamina-go" }],
+    options: mandatory ? [{ label: "わかった", value: true, test: "stamina-go" }]
+      : [{ label: "やめておく", value: false }, { label: "それでも行く", value: true, test: "stamina-go" }],
   });
   return go;
 }
@@ -458,6 +455,8 @@ async function takeAction() {
       // ロードで別セッションに切り替わった／LIME内で予約が変わったら、次の行動で選び直す。
       if (state !== invOwner || state.pendingInvite !== inv) return;
     }
+    if (!(await guardInvitation(inv))) return;
+    await travelToInvitation(inv);
     if (inv.event === "date_samechan") {
       const result = await playSamechanDate({ invite: inv, cost: invitationCost(inv.event), advanceSlot: true });
       if (result.done) { completeInvitation(inv); await afterAction({ exerted: true, spent: result.spent }); }
@@ -555,39 +554,45 @@ async function performSpotAction(spot) {
       // 料金・体力・読了と一緒に行動を保存済み。共通末尾で二重に進めない。
       return { used: completed, exerted: completed, slotsUsed: 0 };
     }
-    if (state.visitedDay[`tonari_${sub}`] === state.day) {
-      toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
+    const makanai = sub === "practice" || sub === "strawberry";
+    // 旧セーブの苺専用記録も、同じ日のまかないとして扱う。
+    if (state.visitedDay[`tonari_${sub}`] === state.day || makanai &&
+        (state.visitedDay.tonari_practice === state.day || state.visitedDay.tonari_strawberry === state.day)) {
+      toast(makanai ? "今日はもうまかないで練習した" : sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
     }
     if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
     exerted = true;
-    state.visitedDay[`tonari_${sub}`] = state.day;
+    state.visitedDay[makanai ? "tonari_practice" : `tonari_${sub}`] = state.day;
     if (sub === "practice") {
       const { runFullPractice } = await import("../craft/practice.js");
       addStamina(-16);
       await play("remake_staff_practice", { bg: TONARI_BG });
-      await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
-      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+      const cs = await runFullPractice({ kind: "self", staffPractice: true, isCurrent: () => state === actionOwner });
+      if (cs.masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "strawberry") {
       const { runStrawberryTrial } = await import("../chapters/ch2-strawberry-trial.js");
       addStamina(-16);
-      await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
-      toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
+      const { masteryGained } = await runStrawberryTrial({ bg: TONARI_BG, isCurrent: () => state === actionOwner });
+      if (masteryGained) toast("使ったフレーバーの熟練度が育った。持ち物で確認できる", { kind: "good" });
     } else if (sub === "baito") await doBaito();
     else if (await tonariCustomer() === false) return { used: false, exerted: false };
   } else if (spot.kind === "samechan") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     used = await visitSamechan(spot);
     exerted = spot.stamina < 0;
+    if (used) await consultLessons("samechan"); // 心得の盤で灯した授業があれば相談する（SBD61: 会った時だけ）
   } else if (spot.kind === "rival") {
     if (isClosed(spot) || !(await staminaGuard(spot.stamina)) || isClosed(spot)) return { used: false, exerted };
     used = (await visitRival(spot)) !== false;
+    // 心得の盤で灯した授業があれば、そのまま相談して話を聞く（SBD50）
+    if (used) await consultLessons(spot.charId);
     exerted = used;
   } else if (spot.kind === "shop") {
     const r = await openShop();
     if (r !== "rin") used = false;
     else if (!(await confirmLimeReminder(spot))) used = false;
-    else if (await staminaGuard(-14)) { used = await visitRin(); exerted = used; }
+    else if (await staminaGuard(-14)) { used = await visitRin(); exerted = used; if (used) await consultLessons("rin"); }
     else used = false;
   } else if (spot.kind === "spot") {
     // 観音堂で内省（心得の盤 SPEC 2.8）: 火種を灯す。時間も体力も使わない。true=行動にしない
@@ -625,7 +630,10 @@ async function performSpotAction(spot) {
     save();
     return { used: false, exerted };
   }
-  if (used) await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside")) });
+  if (used) {
+    const guestBg = bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside"));
+    if (await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: guestBg })) await consultLessons("hiyori", { bg: guestBg });
+  }
   if (used) await visitCityGuestAtShop(spot, { scheduledVisit: scheduledCityVisit });
   return { used, exerted, slotsUsed, exp };
 }
@@ -634,6 +642,7 @@ async function performSpotAction(spot) {
 const TONARI_EXP = {
   baito: { key: "tonari_shift", place: "tonari_shift" },
   practice: { key: "tonari_practice", place: "tonari_practice" },
+  strawberry: { key: "tonari_practice", place: "tonari_practice" },
   customer: { key: "tonari_seat", place: "tonari_seat" },
 };
 function spotExpTarget(spot) {
@@ -654,10 +663,28 @@ function postponeUnaffordableInvitation(inv) {
   return true;
 }
 
+async function guardInvitation(inv) {
+  if (await staminaGuard(inv.event === "__sumi_baito__" ? -24 : -10)) return true;
+  rescheduleInvitation(inv, "体調を考え、約束を別の日に改めることにした");
+  save();
+  return false;
+}
+
 function invitationSourceMessage(inv) {
   return state.inbox?.find(item => item.id === inv.originId || item.originId === inv.originId)?.msg
     || DB.lime.find(message => message.id === inv.originId)
     || DB.lime.find(message => message.accept_event === inv.event && message.sender === inv.sender);
+}
+
+// 移動が終わるまで約束・面会費用・行動報酬は確定しない。
+async function travelToInvitation(inv) {
+  const owner = state, day = state.day, slot = state.slot;
+  const id = invitationVisitSpot(inv, invitationSourceMessage(inv));
+  const destination = chapterDef.spotById?.(id) || spotById(id);
+  if (await chapterDef.beforeInvitation?.(destination) === false
+    || state !== owner || state.day !== day || state.slot !== slot || state.pendingInvite !== inv) {
+    throw new Error("約束へ向かう移動が中断されました");
+  }
 }
 
 async function meetInvitation(inv) {
@@ -679,10 +706,13 @@ async function meetInvitation(inv) {
   } else if (inv.event === "__hiyori_shop__") {
     const spot = spotById(inv.visitSpot);
     await playHiyoriHangout({ bg: bgRef(spot.bg || VISIT_BG[spot.charId]) });
+    await consultLessons("hiyori", { bg: bgRef(spot.bg || VISIT_BG[spot.charId]) });
     state.visitedDay[spot.id] = state.day;
     addStamina(-10);
   } else if (/^date_/.test(inv.event)) {
     await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
+    // ひよりの feelings_spoken（#1434 決定B）。恋人・絆Lv2以降のデートの帰りに一度だけ。条件は route.events。
+    if (inv.sender === "hiyori") await playHiyoriEvent("feelings_spoken");
   } else if (isFriendEvent(inv.event)) {
     // 友人からのシーシャのお誘い（HF09）。ステは場面側の apply
     await playFriendHangout(inv.sender);
@@ -780,7 +810,7 @@ async function endDay({ returnedToTonari = false } = {}) {
   if (appointment && (appointment.day ?? state.day) === state.day
     && (appointment.afterClose && appointment.queuedAfterClose || rested && appointment.slot === 1
       || state.day === 1 && state.flags._day1_shift_ended && appointment.slot === 1)
-    && !postponeUnaffordableInvitation(appointment)) {
+    && !postponeUnaffordableInvitation(appointment) && await guardInvitation(appointment)) {
     // C04: 営業後・休養後の約束も、未読のLIMEを前提に場面を始めない。先に該当トークを読ませる。
     const apptOwner = state;
     const unreadAppt = invitationReadBeforeMeeting(appointment);
@@ -788,6 +818,7 @@ async function endDay({ returnedToTonari = false } = {}) {
       await readLime(unreadAppt);
       if (state !== apptOwner) return;
     }
+    await travelToInvitation(appointment);
     if (appointment.event !== "date_samechan") state.pendingInvite = null;
     delete state.flags._home_tonight;
     await beat(appointment.afterClose ? "——店の営業が終わってから、約束の場所へ。"
@@ -812,7 +843,7 @@ async function endDay({ returnedToTonari = false } = {}) {
     }
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
-  const confessed = await maybeConfession(beat, { busyNight: metTonight || rested, companion });
+  const confessed = await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
   await chapterDef.beforeHomecoming?.();
   const athome = !!state.flags._home_tonight;

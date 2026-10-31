@@ -32,8 +32,11 @@ async function seed(page) {
     const value = core.newGame();
     Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 35000, stamina: 100,
       flavorStock: { double_apple: 100, mint: 100, chocolate: 100 }, weatherSeed: 5,
-      lovers: ["minto"], contacts: ["sumi", "minto"] });
-    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true,
+      lovers: ["minto"], contacts: ["sumi", "minto", "ageha"] });
+    // #1988: あげはは第2章の♥3の分岐で恋愛寄りに答え、♥5に達した保存だけ帰郷後に告白へ。
+    value.romanceChoices = { bond_q1_ageha: { char: "ageha", value: 1, day: 20 } };
+    value.affinity.ageha = 66;
+    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ageha_affinity_question_done: true,
       _ch2_read_ch2_tournament_ageha_heart: true,
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
@@ -249,7 +252,15 @@ await suite("ch3-full-flow", async check => {
           "Reload must resume after the hotel scene without replaying the win");
       }
     }
+    // #1930/#1988: 恋愛ルート（♥3で恋愛寄り・♥5）だけ、再会の翌日の帰り際にあげはの告白。返事を読み終えるまで第3章完（第4章の入口）を出さない。
+    const reunionDay = (await get(page)).day;
+    await page.locator(dt("ch3-aftermath-ageha-confession")).waitFor();
+    assert.equal(await page.locator(dt("ch3-aftermath-chapter-four")).count(), 0);
+    assert.equal((await get(page)).day, reunionDay + 1, "The confession happens the day after the reunion");
+    assert.equal((await get(page)).flags._ch3_cleared, true, "The reunion already closed the aftermath");
+    await page.locator(dt("ch3-aftermath-ageha-confession-continue")).click();
     await page.locator(dt("ch3-aftermath-complete")).waitFor();
+    assert((await get(page)).lovers.includes("ageha"), "The first answer (turbo) accepts ageha's confession");
 
     // 5. 最終state
     state = await get(page);

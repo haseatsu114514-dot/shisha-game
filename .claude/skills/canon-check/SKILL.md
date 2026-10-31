@@ -14,7 +14,7 @@ description: ストーリー矛盾・設定齟齬・旧名/旧設定の残存・
 - **読まない**: `remake/data/manifest.json`（生成物）・外部ライブラリ・`assets/**`
 - ⚠️ 正本に見えて**旧設定の残骸**であるファイルは根拠にしない。brand/docs 内に
   旧タイトル「煙の向こう側」「ケムリの向こう側」等が残存することがある。**矛盾したら docs/gameplay_agent_reference.md が正**。
-  `docs/setting_book/` は二次資料（数値・価格は `data/*.json` が正）、`docs/archive/` は履歴で根拠にしない。
+  `docs/archive/setting_book/` は退避済みの旧二次資料（数値・価格は `data/*.json` が正）、`docs/archive/` は履歴で根拠にしない。
 
 ## 自動チェックを先に走らせる
 

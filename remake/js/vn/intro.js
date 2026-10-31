@@ -1,19 +1,22 @@
 // 初登場カットイン: キャラが名乗って名前が出たあと、最初に一度だけ「名前・二つ名・一言」を全画面で出す。
 // 文言の正本は data/characters.json の intro_cutin（なぎさは samechan.json の profile）。
-//   { title: 二つ名, line: 一言, face: 立ち絵の表情, color: 差し色, name: "alias"=フルネームを伏せる（ネタバレになる相手） }
+//   { title: 二つ名, line: 一言（「／」は2行にする時の改行位置）, face: 立ち絵の表情, color: 差し色,
+//     motion: 動きの型 sharp/soft/still/bounce, name: "alias"=フルネームを伏せる（ネタバレになる相手） }
+// 載せる言葉は呼び名・二つ名・一言＋小さく好きなフレーバー。初対面の顔だけを書く（2026-10-31）
 // 名前の出し方（オーナー指定・2026-10-08）: 会話の名前欄と同じ呼び名だけを表示する。
 // 括弧付きの本名は全員で廃止。本名はストーリーの名乗りで扱う
 // 既読は flags._intro_<id>。明示的な未知版は _intro_<id>_<variant> へ分ける。
 import { el, sleep } from "../core/util.js";
 import { DB, displayName, portraitInfo, img } from "../core/data.js";
-import { state } from "../core/state.js";
+import { state, markMet } from "../core/state.js";
 import { layers, imageReady } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 
 import { mountIntro } from "./intro-fit.js";
 
 import { motifs } from "./intro-motifs.js";
-import { illustratedIntro, layoutIntro, animateIntro } from "./intro-art.js";
+import { illustratedIntro, layoutIntro, animateIntro, exitIntro, flavorTag, plainLine, motionOf, MOTIONS } from "./intro-art.js";
+import { introFlavor } from "./intro-flavors.js";
 
 export const introSeenKey = (id, variant = "") => `_intro_${id}${variant ? `_${variant}` : ""}`;
 const introOf = (id, variant = "") => DB.characters[id]?.[variant ? `intro_cutin_${variant}` : "intro_cutin"] || null;
@@ -57,6 +60,7 @@ function framePortrait(img, p) {
 export async function playIntro(id, { onAppear = null, override = {}, variant = "" } = {}) {
   const intro = { ...introOf(id, variant), ...override };
   if (!introOf(id, variant)) return;
+  if (variant !== "unknown") markMet(id);
   markIntroSeen(id, variant);
   const main = intro.display_name || introName(id).main;
   const p = portraitInfo(id, intro.face || "normal");
@@ -71,12 +75,13 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     const host = illustratedIntro(id, variant, intro, main, p, art, background);
     const unmount = mountIntro(host, layers.fx);
     const animations = [];
+    const motion = motionOf(intro);
     try {
-      layoutIntro(host, id, variant, intro);
-      animations.push(...animateIntro(host, id));
+      const twoLines = layoutIntro(host, id, variant, intro);
+      animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue) }));
       onAppear?.();
-      SE.select();
-      await holdIntro(host);
+      introSound(motion, "appear");
+      await holdIntro(host, { motion, twoLines });
     } finally {
       animations.forEach((animation) => animation.cancel());
       unmount();
@@ -98,25 +103,37 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     el("div.ci-band"),
     el("div.ci-band.b2"),
     el("div.ci-band.b3"),
-    el("div.ci-tag", { text: "FIRST ENCOUNTER" }),
+    flavorTag(introFlavor(id, variant)),
     portrait,
     el("div.ci-meta", [
       el("div.ci-title", { text: intro.title || "" }),
       el("div.ci-name", { text: main, style: `font-size: ${fitSize(main, 570, 116)}px` }),
     ].filter(Boolean)),
-    intro.line ? el("div.ci-line", { text: `「${intro.line}」`, style: `font-size: ${fitSize(`「${intro.line}」`, 575, 30)}px` }) : null,
+    intro.line ? el("div.ci-line", { text: `「${plainLine(intro.line)}」`, style: `font-size: ${fitSize(`「${plainLine(intro.line)}」`, 575, 30)}px` }) : null,
   ].filter(Boolean));
   const unmount = mountIntro(host, layers.fx);
   try {
     onAppear?.();
     SE.select();
-    await holdIntro(host);
+    await holdIntro(host, { motion: motionOf(intro), legacy: true });
   } finally {
     unmount();
   }
 }
 
-async function holdIntro(host) {
+/** 型ごとの音。余韻は場面のBGMだけにする */
+function introSound(motion, cue) {
+  if (cue === "reduced") return SE.select();
+  if (motion === "bounce" && cue === "appear") { SE.select(); setTimeout(() => SE.select(), 120); }
+  if (cue !== "name") return;
+  if (motion === "sharp") SE.stamp();
+  else if (motion === "still") SE.hit();
+}
+
+/** 一言が2行の時は400ms長く見せる */
+export const introHoldMs = (motion, twoLines = false) => (MOTIONS[motion] || MOTIONS.sharp).hold + (twoLines ? 400 : 0);
+
+async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = false } = {}) {
   await sleep(30);
   host.classList.add("in");
   const onTap = (e) => { e.preventDefault(); e.stopPropagation(); };
@@ -127,9 +144,9 @@ async function holdIntro(host) {
   host.addEventListener("pointerup", onTap);
   window.addEventListener("keydown", onKey, true);
   try {
-    await sleep(3600);
-    host.classList.add("out");
-    await sleep(280);
+    await sleep(introHoldMs(motion, twoLines));
+    if (legacy) { host.classList.add("out"); await sleep(280); }
+    else await sleep(exitIntro(host, motion));
   } finally {
     window.removeEventListener("keydown", onKey, true);
     host.remove();

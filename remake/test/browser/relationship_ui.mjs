@@ -44,6 +44,9 @@ async function choicesFit(page, expected) {
     .flatMap(n => n.getAnimations().map(a => a.finished.catch(() => {})))));
   await assertFits(page, ".vn-choices, .vn-choice");
   assert.deepEqual(await page.locator(".vn-choice").allTextContents(), expected, "Only the actual replies should be shown");
+  // 表示時に1つ目へキーボードフォーカスが付く（#1908）。フォーカス強調はルート情報ではないので外してから比べる
+  assert.equal(await page.evaluate(() => document.activeElement?.classList.contains("vn-choice")), true, "The first reply should take keyboard focus");
+  await page.evaluate(() => document.activeElement?.blur());
   const rows = await page.locator(".vn-choice").evaluateAll(buttons => buttons.map(b => ({
     label: b.getAttribute("aria-label"), route: b.dataset.route ?? null,
     className: b.className, color: getComputedStyle(b).color,
@@ -59,7 +62,7 @@ async function choicesFit(page, expected) {
 const questions = {
   tsumugi: ["絵がなくても、つむぎちゃんに会いたいよ", "描けない日も、ここでゆっくりしていって"],
   rin: ["用事がなくても、凛さんに会いに来ます", "次の試香も、俺に手伝わせてください"],
-  minto: ["栞さんと２人だと、ちょっと緊張します", "また話しましょう。愚痴でも聞きますよ"],
+  minto: ["栞さんと２人だと、ちょっと緊張する", "また話そう。愚痴でも聞くよ"], // #1730 で栞へはタメ口に統一
 };
 const reactions = {
   tsumugi: [/絵じゃなくて、私に/, /この席は、描かなくても/],
@@ -70,6 +73,66 @@ const reactions = {
 await suite("relationship-ui", async check => {
   for (const [device, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     const press = async (page, selector) => device === "touch" ? page.locator(selector).tap() : page.locator(selector).click();
+
+    await check(`${device}-later-people-visibility`, async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        const city = await import("./js/chapters/ch2-city-data.js");
+        await city.loadCityDialogues();
+        await city.loadPreparationDialogues();
+        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_double_apple", ["ch3_mukai_arrival"]));
+      });
+      // 好感度・連絡先・思い出だけでは、未対面の人物を明かさない。
+      await page.evaluate(() => {
+        const s = R.fresh(); s.chapter = 5;
+        for (const id of ["kumicho", "rei", "mashiro"]) {
+          s.affinity[id] = 66; s.contacts.push(id);
+        }
+        s.relationshipMemories = ["kumicho_hands", "rei_listen", "mashiro_pace"];
+      });
+      await status(page);
+      assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi"]);
+      await closeStatus(page);
+
+      // 本編の名乗り・記憶記録を通す。ましろは好感度0でも面識と記憶を表示する。
+      for (const [id, chapter, introduction, memoryScene, memoryId] of [
+        ["kumicho", 2, "ch2_city_kumicho", "ch2_kumicho_first", "kumicho_hands"],
+        ["rei", 2, "ch2_city_rei", "ch2_rei_first", "rei_listen"],
+        ["mashiro", 3, "ch3_mukai_arrival", null, "mashiro_pace"],
+      ]) {
+        const introduced = await page.evaluate(async ({ id, chapter, introduction, memoryScene, memoryId }) => {
+          const s = R.fresh(); s.chapter = chapter;
+          R.vn.vnTest.turbo = true;
+          await R.vn.play(introduction);
+          if (memoryScene) await R.vn.play(memoryScene);
+          R.core.save(); R.core.load();
+          return { met: R.core.state.met[id], remembered: R.core.state.relationshipMemories.includes(memoryId) };
+        }, { id, chapter, introduction, memoryScene, memoryId });
+        assert(introduced.met && introduced.remembered, `${id}: actual introduction and memory must survive reload`);
+        // 大会前後・後続章でも表示から既読や関係を作らず、保存済みの親しさをそのまま読む。
+        for (const [points, phase, laterChapter] of [[0, "daily", chapter], [20, "daily", chapter], [33, "aftermath", chapter], [66, "daily", 5]]) {
+          await page.evaluate(({ id, points, phase, laterChapter }) => {
+            Object.assign(R.core.state, { chapter: laterChapter, phase });
+            R.core.state.affinity[id] = points;
+            R.core.save(); R.core.load();
+          }, { id, points, phase, laterChapter });
+          await status(page);
+          assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi", id]);
+          const row = page.locator(`[data-person="${id}"]`);
+          assert.equal(await row.locator(".pp-name").textContent(), await page.evaluate(id => R.data.displayName(id, R.core.state), id));
+          assert.equal(await row.locator(".pp-memory").textContent(), await page.evaluate(memoryId => R.data.DB.relationshipMemories[memoryId].echo, memoryId));
+          assert.equal(await row.locator(".pp-relation").textContent(), "交流中");
+          assert(!/恋愛|告白|贈り物/.test(await row.textContent()), `${id}: do not advertise an unconnected route`);
+          const expectedHearts = await page.evaluate(id => R.stats.affinityLevel(id), id);
+          assert.deepEqual(await row.locator(".ui-heart").evaluateAll(hearts => hearts.map(h => h.style.getPropertyValue("--fill"))),
+            Array.from({ length: 5 }, (_, i) => i < expectedHearts ? "100%" : "0%"));
+          assert.match(await page.locator(".pp-guide").textContent(), /交流の進み方は相手によって異なる/);
+          await row.scrollIntoViewIfNeeded();
+          await assertFits(page, `[data-person="${id}"], [data-person="${id}"] .pp-memory`);
+          await closeStatus(page);
+        }
+      }
+    }, { ...options, reducedMotion: "reduce" });
 
     await check(`${device}-actual-questions-and-status`, async page => {
       await setup(page);
@@ -161,7 +224,7 @@ await suite("relationship-ui", async check => {
         ["held-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", wait: true }, "告白を選べる", /後日の夜/],
       ]) {
         await page.evaluate(f => {
-          const s = R.fresh(); s.met.rin = true; s.affinity.rin = f.points; s.story.rin = 3;
+          const s = R.fresh(); s.met.rin = true; s.affinity.rin = f.points; s.story.rin = 4; // 固有会話4本を読了（#1696で4本目を追加）
           if (f.points === 66 && f.answer !== undefined && f.finalAnswer === undefined && !f.finale) s.flags._rin_affinity_question_done = true;
           if (f.answer !== undefined) s.romanceChoices.bond_q1_rin = { char: "rin", value: f.answer, day: 7 };
           if (f.finalAnswer !== undefined) s.romanceChoices.bond_q2_rin = { char: "rin", value: f.finalAnswer, day: 8 };

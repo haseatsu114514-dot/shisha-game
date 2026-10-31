@@ -11,7 +11,8 @@ export const PLAN = [
   "baito:pull", "rest",
   "naru", "choizap",
   "rin", "baito:sumi",
-  "adam", "rest",
+  // 休養では回らないため、後半にも消耗する外出を残して20回以上の実回転を検証する。
+  "adam", "kannon",
   "baito:steam", "customer",
   "minto", "customer", "rest", "rest",
 ];

@@ -5,6 +5,13 @@ import assert from 'node:assert/strict';
 const sourcePath = process.argv.slice(2).find(arg=>!arg.startsWith('--')) || new URL('../js/vn/engine.js', import.meta.url);
 const source = readFileSync(sourcePath, 'utf8');
 const deferred = () => { let resolve; const promise = new Promise(r => resolve = r); return {promise, resolve}; };
+async function mockTitleImport(specifier, context) {
+  assert.equal(specifier, '../scenes/title.js');
+  const title = new vm.SyntheticModule(['openConfig'], function() { this.setExport('openConfig', async () => {}); }, { context });
+  await title.link(() => { throw new Error('unexpected title import'); });
+  await title.evaluate();
+  return title;
+}
 async function runCase(kind) {
   const writes = [], hooks = [], image = deferred(), animation = deferred(), shot = deferred();
   let shutter;
@@ -57,7 +64,7 @@ async function publicCallerCase(kind) {
       classList: {add: (...xs) => xs.forEach(x=>classes.add(x)), remove: (...xs) => xs.forEach(x=>classes.delete(x)),
         contains: x=>classes.has(x), toggle: (x,on=!classes.has(x)) => {if(on) classes.add(x); else classes.delete(x); return on;}},
       append(...xs) {this.children.push(...xs);}, replaceChildren(...xs) {this.children=xs;},
-      setAttribute() {}, addEventListener() {}, querySelector() {return null;}, querySelectorAll() {return [];},
+      setAttribute() {}, addEventListener() {}, focus() {}, querySelector() {return null;}, querySelectorAll() {return [];},
       getAnimations() {return [];}, remove() {},
     };
   }
@@ -75,7 +82,7 @@ async function publicCallerCase(kind) {
     imageReady:url=>url==='/old.png' && kind==='image-abort' ? image.promise : Promise.resolve(true),
     nextFrame:()=>Promise.resolve(), chekiShot:(_url,cb)=>{shutter=cb;return shot.promise;},
     fortuneChoiceIndex:()=>-1,formatHtml:s=>s,stripTags:s=>s,SE:{select(){}}};
-  const mod=new vm.SourceTextModule(source,{context});
+  const mod=new vm.SourceTextModule(source,{context,importModuleDynamically:specifier=>mockTitleImport(specifier,context)});
   await mod.link(async specifier=>{
     const names=[...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
       .filter(m=>m[2]===specifier).flatMap(m=>m[1].split(',').map(n=>n.trim()));

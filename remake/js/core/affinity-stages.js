@@ -5,10 +5,11 @@ export const VISIT_SEQ = {
   naru: ["ch1_naru_first", "ch1_naru_second", "ch1_naru_third", "ch1_naru_group_regulars", "ch1_naru_fourth", "ch1_naru_fifth"],
   adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_group_soutoku", "ch1_adam_third", "ch1_adam_fourth", "ch1_adam_fifth"],
   minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_group_regulars", "ch1_minto_fourth", "ch1_minto_phantom_smell"],
-  rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third"],
+  rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third", "ch1_rin_fourth"],
 };
 
-export const AGEHA_AFFINITY_VISITS = ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcomer", "remake_ch2_ageha_magazine"];
+// ♥2〜♥5。最後の白・赤のグミベアの試作（#2023）は味の会話を兼ねる。
+export const AGEHA_AFFINITY_VISITS = ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcomer", "remake_ch2_ageha_magazine", "remake_ch2_ageha_gummy"];
 // 第2章の神崎・REIの通常訪問列（#1648）。初回chatの後、必要ハートに届いた最古の未読を一訪問一本読む。
 // 短い続編・再訪は既存の保存フラグ、長い段階会話は `_ch2_read_<scene>` で既読を持つ。
 const ch2Story = (file, scene, heart) => ({ file, scene, heart });
@@ -20,18 +21,30 @@ export const CH2_VISIT_STORIES = {
     { scene: "remake_ch2_kumicho_revisit", heart: 2, done: "_ch2_revisit_done" },
     ch2Story("ch2_kumicho", "ch2_kumicho_third", 2),
     ch2Story("ch2_kumicho", "ch2_kumicho_fourth", 3),
+    ch2Story("ch2_kumicho", "ch2_kumicho_fifth", 4),
+    ch2Story("ch2_kumicho", "ch2_kumicho_sixth", 5),
   ],
+  // 準備期間（DAY2〜13）に締めくくりまで届くよう、REIの「嘘」の相談を♥4に置く（#2027）。
   rei: [
     { scene: "remake_ch2_rei_followup", heart: 1, done: "_ch2_followup_done" },
     ch2Story("ch2_rei", "ch2_rei_first", 1),
     ch2Story("ch2_rei", "ch2_rei_second", 1),
     { scene: "remake_ch2_rei_revisit", heart: 2, done: "_ch2_revisit_done" },
     ch2Story("ch2_rei", "ch2_rei_third", 2),
+    // 常連の集まりとライブの余りチケット（#2026）。「仲間だ」の後、前夜の場面の _ch2_rei_ticket 分岐より前に読める位置。
+    ch2Story("ch2_rei", "ch2_rei_group_concert_prep", 2),
     ch2Story("ch2_rei", "ch2_rei_fourth", 3),
-    ch2Story("ch2_rei", "ch2_rei_fifth", 3),
+    ch2Story("ch2_rei", "ch2_rei_fifth", 4),
+    ch2Story("ch2_rei", "ch2_rei_sixth", 5),
   ],
 };
+/** 第2章の訪問列をすべて読んだか（締めくくりの前提）。 */
+export const ch2VisitStoriesDone = (flags, id) => !!CH2_VISIT_STORIES[id]?.every(entry => ch2VisitDone(flags, id, entry));
 export const ch2VisitDone = (flags, id, entry) => entry.done ? !!flags?.[entry.done]?.[id] : !!flags?.[`_ch2_read_${entry.scene}`];
+// 第3章のましろ（#2022）。mukaiの寄り道（任意場面）を選んで読んだ分だけ段階にする。
+// 既読は ch3-story-wiring.js の optionalReadFlag（`_ch3_read_<scene>`）。♥3の質問は練習の後、締めくくりは全段階の後。
+export const MASHIRO_AFFINITY_SCENES = ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_practice", "ch3_mashiro_play_3", "ch3_mashiro_black_tea"];
+export const mashiroScenesRead = flags => MASHIRO_AFFINITY_SCENES.every(scene => !!flags?.[`_ch3_read_${scene}`]);
 export const questionDoneKey = id => `_${id}_affinity_question_done`;
 const settled = (s, id) => !!s.finales?.[id] || !!s.flags?.[`_friend_${id}`] || (s.lovers || []).includes(id);
 export function questionComplete(s, id) {
@@ -69,11 +82,19 @@ export function pendingAffinityStage(s, id, db = {}) {
     for (const e of required) stages.push({ level: levelOf(e), scene: e.dialogue, done: !!flags[e.flag] });
     if (route.question?.flag) stages.push({ level: Math.max(3, levelOf(events.find(e => e.dialogue === route.question.host))), scene: route.question.dialogue, done: settled(s, id) || !!flags[route.question.flag] });
   }
+  if (id === "mashiro") {
+    MASHIRO_AFFINITY_SCENES.forEach((scene, level) => stages.push({ level, scene, done: !!flags[`_ch3_read_${scene}`] }));
+    stages.push({ level: 3, scene: "ch3_mashiro_bond_question", done: questionComplete(s, id) });
+  }
   if (["ageha", "kumicho", "rei"].includes(id)) {
     stages.push({ level: 0, done: !!flags._ch2_talks?.[id] });
     if (CH2_VISIT_STORIES[id]) CH2_VISIT_STORIES[id].forEach(entry => stages.push({ level: entry.heart, scene: entry.scene, done: ch2VisitDone(flags, id, entry) }));
     else stages.push({ level: 1, done: !!flags._ch2_followup_done?.[id] });
-    if (id === "ageha") AGEHA_AFFINITY_VISITS.forEach((scene, i) => stages.push({ level: i + 2, scene, done: !!flags[`_ch2_read_${scene}`] }));
+    if (id === "ageha") {
+      AGEHA_AFFINITY_VISITS.forEach((scene, i) => stages.push({ level: i + 2, scene, done: !!flags[`_ch2_read_${scene}`] }));
+      // ♥3の恋愛／友情の質問（#1988）は「初めての客」の直後。回答か着地済みの関係だけを完了とする。
+      stages.push({ level: 3, scene: "ch2_ageha_bond_question", done: questionComplete(s, id) });
+    }
   }
   return stages.filter(e => !e.done).sort((a,b) => a.level - b.level)[0] || null;
 }

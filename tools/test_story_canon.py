@@ -8,7 +8,7 @@ class CanonRegressionTests(unittest.TestCase):
             self.assertTrue(text_errors({'speaker': 'hajime', 'text': text}), text)
 
     def test_voice_rules_are_speaker_specific(self):
-        for who, text in [('hajime', '僕の煙だ'), ('dr_kemuri', '俺が作った'), ('tsumugi', 'はじめくん')]:
+        for who, text in [('hajime', '僕の煙だ'), ('dr_kemuri', '僕が作った'), ('tsumugi', 'はじめくん')]:
             self.assertTrue(text_errors({'speaker': who, 'text': text}))
         for who, text in [('mashiro', '僕、お茶にする'), ('samechan', 'わしも行くのじゃ'),
                           ('hajime', '（今日は休もう）'), ('hajime', '「いつもの」ですね')]:

@@ -15,8 +15,9 @@ export function dsGeometry(width, height, safe = { top: 0, bottom: 0 }) {
   const w = Math.max(0, width), h = Math.max(0, height);
   const top = PAD + (safe.top || 0), bottom = PAD + (safe.bottom || 0);
   const each = Math.floor(Math.max(0, h - top - bottom - HINGE) / 2);
-  const columnWidth = Math.floor(Math.min(w - PAD * 2, each * MAX_WIDE));
-  if (columnWidth >= 300 && each >= 200) {
+  const columnWidth = Math.floor(Math.max(0, Math.min(w - PAD * 2, each * MAX_WIDE)));
+  // 小さい縦画面も上下を維持する。高さ不足で左右へ落とすとメニューの幅まで半減する。
+  if (w <= h || (columnWidth >= 300 && each >= 200)) {
     const vw = columnWidth, vh = each;
     const vx = Math.round((w - vw) / 2), vy = top;
     const cy = vy + vh + HINGE;
@@ -54,7 +55,12 @@ export function installDsGeometry() {
 }
 
 export function applyDsGeometry() {
-  const width = window.visualViewport?.width || innerWidth, height = window.visualViewport?.height || innerHeight;
+  const viewport = window.visualViewport;
+  // ピンチ拡大で小さくなる可視領域に再配置せず、拡大前のCSS寸法を維持する（main.jsと同じ補正）。
+  // ブラウザUI・キーボードによる高さの変化は引き続き反映する。
+  const zoom = viewport?.scale || 1;
+  const width = viewport ? viewport.width * zoom : innerWidth;
+  const height = viewport ? viewport.height * zoom : innerHeight;
   const g = dsGeometry(width, height, safeInsets());
   const root = document.documentElement;
   for (const key of ["vx", "vy", "vw", "vh", "cx", "cy", "cw", "ch", "hinge"]) root.style.setProperty(`--ds-${key}`, `${g[key]}px`);

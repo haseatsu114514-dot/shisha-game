@@ -2,7 +2,11 @@
   "dialogues": [
     {
       "dialogue_id": "ch3_kuze_first",
-      "metadata": { "flavor_lesson": { "chocolate": 1 } },
+      "metadata": {
+        "flavor_lesson": {
+          "chocolate": 1
+        }
+      },
       "lines": [
         {
           "type": "condition",
@@ -59,7 +63,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "僕。噂を流したのも僕だけどね。がっかりした？"
         },
         {
@@ -69,7 +73,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "ひどいなぁ。普通の椅子に座ってよ。吸う？　休む？"
         },
         {
@@ -249,7 +253,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "東京を裏で動かす組織、片付け係が僕しかいないんだ"
         },
         {
@@ -301,14 +305,14 @@
           },
           {
             "speaker": "kuze",
-            "face": "normal",
+            "face": "smug",
             "text": "じゃあ改めて。東京の煙を裏から動かす男、って聞いたことある？"
           }
         ],
         "delivery_new_greet": [
           {
             "speaker": "kuze",
-            "face": "normal",
+            "face": "smug",
             "text": "いらっしゃい。東京の煙を裏から動かす男、って聞いたことある？"
           }
         ]
@@ -356,7 +360,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "surprise",
           "text": "最初は静かだね。……あ、二口目で変わった。君が待った理由、少し分かった気がする"
         },
         {
@@ -396,7 +400,11 @@
     },
     {
       "dialogue_id": "ch3_kuze_advice",
-      "metadata": { "flavor_lesson": { "orange": 1 } },
+      "metadata": {
+        "flavor_lesson": {
+          "orange": 1
+        }
+      },
       "lines": [
         {
           "speaker": "",
@@ -415,7 +423,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "sad",
           "text": "心配して来た？　そうだよね。僕なんか、まだ頼りなく見えるか"
         },
         {
@@ -425,7 +433,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "surprise",
           "text": "え、覚えてるの？　……じゃあ僕の大きな組織、初日で解散だね"
         },
         {
@@ -490,7 +498,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "serious",
           "text": "それを「客の思い込み」って片づけられると、腹が立つ"
         },
         {
@@ -500,7 +508,7 @@
         },
         {
           "speaker": "kuze",
-          "face": "normal",
+          "face": "smile",
           "text": "撤回。僕はいつも素直。……やっぱり無理があるね"
         },
         {
@@ -577,6 +585,10 @@
           "speaker": "kuze",
           "face": "normal",
           "text": "……半分はね。おいしく帰ってほしいのも、本当"
+        },
+        {
+          "type": "remember",
+          "memory_id": "kuze_decide"
         }
       ]
     },
@@ -599,7 +611,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "smile",
           "text": "ヘイ、ハジメ。マウンテンミストだ。レモンとライム、最初と二口目で違うだろ"
         },
         {
@@ -634,7 +646,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "serious",
           "text": "自分の店で待てるだけじゃ、まだ悔しいんだ。ここでも、最後まで吸ってもらえる一台で勝ちたい"
         },
         {
@@ -644,7 +656,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "serious",
           "text": "ノー、ノー。……あと少し。俺の都合で、早めない"
         },
         {
@@ -664,7 +676,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "smile",
           "text": "なら成功。ピザ、食べる？"
         },
         {
@@ -699,7 +711,7 @@
         },
         {
           "speaker": "steve",
-          "face": "normal",
+          "face": "serious",
           "text": "急いで飛ばすのが怖くて、今度は待ちすぎる。数字は、客の顔をしてないからな"
         },
         {
@@ -711,6 +723,10 @@
           "speaker": "steve",
           "face": "smile",
           "text": "次はタイマーと一緒に、二口目の前の顔も見る。その目、ちょっと借りるぞ"
+        },
+        {
+          "type": "remember",
+          "memory_id": "steve_wait"
         }
       ]
     },
@@ -746,6 +762,105 @@
           "speaker": "",
           "face": "",
           "text": "はじめは部品の名前と、作った人の名前を同じページに書いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_kuze_lime",
+      "comment": "第3章の任意場面（#2028）。助言の後、煙幕への再訪で久世が♥1になってから。好感度は任意場面だけで付ける。後日談の ch3_enmaku_cleanup で、交換した時だけ「返事の欄」を回収する。大会の前後を前提にしない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "閉店後の煙幕。久世は客席で、ノートの最後のページを開いていた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "いらっしゃい。今夜の組織の議題は、君の連絡先"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……議題、俺なんですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん。僕のノート、客の答えはたくさんあるのに、返事の欄がないんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "返事の欄？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "帰ってから「やっぱり違った」って思う人もいるでしょ。それも聞きたくて"
+        },
+        {
+          "speaker": "kuze",
+          "face": "nervous",
+          "text": "でも、煙幕は数週間だけの間借り。閉めたら、東京の客の続きは聞けない"
+        },
+        {
+          "speaker": "kuze",
+          "face": "nervous",
+          "text": "……かといって、お客さんに連絡先を聞くのも違う気がして"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "君は客で、作業台の常連で、ライバル。どれでもいいから、聞いていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どれでもいいなら、交換します"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_kuze"
+        },
+        {
+          "speaker": "",
+          "text": "久世は画面を確かめてから、ノートの最後のページに一行書き足した。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smug",
+          "text": "書記の勧誘は、LIMEでも続けるからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "入りません"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "知ってる。……外れた予想も、送っていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "当たった時だけじゃなくて？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "外れた方が、続きを聞きたくなるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ノートの外にも、答えを返す場所ができたんだ）"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "kuze": 2
+          }
         }
       ]
     }

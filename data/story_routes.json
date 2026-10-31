@@ -1,7 +1,7 @@
 {
   "version": 2,
   "status": "partially_connected",
-  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_cigarman_traceとch3_emil_workshopは大会後の面が要り未接続。第4章以降は未接続台本。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。",
+  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_cigarman_traceとch3_emil_workshopは大会後の面が要り未接続。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章のヒロイン到着場面などは未接続台本。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。",
   "heroine_ids": [
     "tsumugi",
     "minto",
@@ -116,8 +116,16 @@
         "ch3_mashiro_play_2",
         "ch3_mashiro_play_3",
         "ch3_mashiro_practice",
+        "ch3_mashiro_black_tea",
         "ch3_kuze_mashiro_tea_tin",
-        "ch3_kuze_mashiro_soon_back"
+        "ch3_kuze_mashiro_soon_back",
+        "ch3_kuze_lime",
+        "confession_mashiro",
+        "hiyori_tokyo_contact",
+        "ch3_tsumugi_slump",
+        "ch3_volk_second",
+        "ch3_volk_third",
+        "ch3_volk_fourth"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -236,6 +244,13 @@
         "ch3_mashiro_play_1"
       ]
     },
+    "ch3_mashiro_black_tea": {
+      "seen": [
+        "ch3_mashiro_play_1",
+        "ch3_taste_return"
+      ],
+      "comment": "味の会話（#2022）。味覚が戻った後、休みの日の配合メモの続きとして。"
+    },
     "ch3_kuze_mashiro_tea_tin": {
       "seen": [
         "ch3_kuze_first"
@@ -246,10 +261,60 @@
         "ch3_kuze_mukai_visit"
       ]
     },
+    "ch3_kuze_lime": {
+      "seen": [
+        "ch3_kuze_advice"
+      ],
+      "comment": "#2028: 久世とLIMEを交換する。助言の後。♥1（煙幕への再訪で付く好感度）の条件は場面カードの置き方（ch3-story-wiring.js の heart）。"
+    },
     "ch3_mashiro_play_3": {
       "seen": [
         "ch3_mashiro_play_2"
       ]
+    },
+    "hiyori_tokyo_contact": {
+      "contacts": [
+        "hiyori"
+      ],
+      "seen": [
+        "hiyori_work_talk"
+      ],
+      "comment": "ひよりルートの tokyo_contact（#1434 決定B）。仕事の相談を読んだ相手からの遠隔の通話。恋人・会う約束は要らない。"
+    },
+    "confession_mashiro": {
+      "seen": [
+        "ch3_mashiro_play_3",
+        "ch3_mashiro_practice"
+      ],
+      "comment": "#1930 仮置き: 締めくくりの正式原稿が無い間、任意4場面を読んだ後の告白の返事を実回答にする。好感度や訪問回数からは開かない。"
+    },
+    "ch3_tsumugi_slump": {
+      "contacts": [
+        "tsumugi"
+      ],
+      "seen": [
+        "ch2_tsumugi_color",
+        "ch3_taste_return"
+      ],
+      "comment": "#2026: 第2章の煙の線・水（ch2_tsumugi_color）の続き。味が戻って試作を重ねる夜のビデオ通話。見ていない保存では出さない。"
+    },
+    "ch3_volk_second": {
+      "seen": [
+        "ch3_volk_first"
+      ],
+      "comment": "#2026: 「前回」の室温・四口目の休みは初来店（DAY12夜）の記録を受ける。"
+    },
+    "ch3_volk_third": {
+      "seen": [
+        "ch3_volk_second"
+      ],
+      "comment": "#2026: 「2回分ある」記録。二度目の来店の後。"
+    },
+    "ch3_volk_fourth": {
+      "seen": [
+        "ch3_volk_third"
+      ],
+      "comment": "#2026: 「三回分、同じだった」。三度目の来店の後。"
     }
   },
   "near_conflict": {

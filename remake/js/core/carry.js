@@ -23,6 +23,7 @@ export const STATE_KEY_RULES = {
   stamina: { verdict: "reset", note: "現在値。最大値は根性から導く（§2.1）" },
   stats: { verdict: "carry", note: "5能力（§2.1）" },
   statXp: { verdict: "carry", note: "能力の端数（§2.1）" },
+  growth: { verdict: "conditional", note: "任意キー。経験値・成長済みの状態は保持、周回の遭遇・初回記録はリセット（stat-design/SPEC 5.3）" },
   statsAtChapterStart: { verdict: "reset", note: "作り直す（§2.1）" },
   flags: { verdict: "conditional", note: "flag ごとの分類に従う（§2.3）" },
   restDay: { verdict: "reset", note: "当日だけの状態" },
@@ -79,8 +80,8 @@ export const STATE_KEY_RULES = {
 // data/equipment.json の gift フィールドが付いた装備 = キャラから贈られた専用ハガル。
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
-  "suyaki_adam", "suyaki_hiyori", "suyaki_minto", "suyaki_naru",
-  "suyaki_rin", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
+  "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_mashiro", "suyaki_minto", "suyaki_naru",
+  "suyaki_rei", "suyaki_rin", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -125,6 +126,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch1_mid", "progression"],
   ["_ch1_opening", "progression"],
   ["_ch1_preview_seen", "progression"],
+  ["_ch1_regulars", "person"],
   ["_ch1_rules_read", "progression"],
   ["_ch2_afsahr_tasting", "progression"],
   ["_ch2_ageha_contact", "person"],
@@ -150,7 +152,13 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_no_audience", "progression"],
   ["_ch2_preparation_started", "progression"],
   ["_ch2_preview_seen", "progression"],
+  ["_ch2_read_ch2_kumicho_fifth", "person"],
+  ["_ch2_read_ch2_kumicho_sixth", "person"],
+  ["_ch2_read_ch2_kumicho_third", "person"],
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
+  ["_ch2_read_ch2_rei_fifth", "person"],
+  ["_ch2_read_ch2_rei_fourth", "person"],
+  ["_ch2_read_ch2_rei_sixth", "person"],
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
   ["_ch2_read_ch2_tournament_ageha_heart", "person"],
@@ -189,6 +197,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_outings", "progression"],
   ["_ch3_preview_seen", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
+  ["_ch3_read_hiyori_tokyo_contact", "progression"],
   ["_ch3_registration_read", "progression"],
   ["_ch3_rules_read", "progression"],
   ["_ch3_shuraba_deferred", "pending"],
@@ -199,6 +208,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_steve", "progression"],
   ["_ch4", "progression"],
   ["_ch4_cleared", "progression"],
+  ["_ch4_evening", "progression"],
   ["_ch4_preview_seen", "progression"],
   ["_ch4_sheikh_revealed", "progression"],
   ["_overseas_companion", "progression"],
@@ -228,6 +238,7 @@ export const FLAG_EXACT_RULES = [
   ["_errand_shop_done", "progression"],
   ["_ev_ageha_cameo", "person"],
   ["_ev_baito_regular_02", "progression"],
+  ["_ev_day5", "progression"],
   ["_ev_first_practice", "progression"],
   ["_ev_last_night", "progression"],
   ["_ev_maezono_cameo", "person"],
@@ -238,6 +249,7 @@ export const FLAG_EXACT_RULES = [
   ["_ev_rin_monitor", "person"],
   ["_ev_salaryman", "progression"],
   ["_ev_tsumugi_sketch", "person"],
+  ["_eve_slept", "progression"], // #2088 前夜の早寝（その夜の告白を後回し）
   ["_fit_since", "progression"],
   ["_flavor_anise", "unlock"],
   ["_flavor_basil", "unlock"],
@@ -275,6 +287,7 @@ export const FLAG_EXACT_RULES = [
   ["_hiyori_bond_question_done", "person"],
   ["_hiyori_cracks_done", "person"],
   ["_hiyori_encounter_day", "person"],
+  ["_hiyori_feelings_spoken", "person"],
   ["_hiyori_meeting_done", "person"],
   ["_hiyori_meeting_shop", "person"],
   ["_hiyori_message_delivered", "person"],
@@ -301,8 +314,12 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_adam", "person"],
   ["_lime_contact_ageha", "person"],
   ["_lime_contact_hiyori", "person"],
+  ["_lime_contact_kumicho", "person"],
+  ["_lime_contact_kuze", "person"],
+  ["_lime_contact_mashiro", "person"],
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
+  ["_lime_contact_rei", "person"],
   ["_lime_contact_rin", "person"],
   ["_lime_contact_samechan", "person"],
   ["_lime_contact_tsumugi", "person"],
@@ -311,6 +328,7 @@ export const FLAG_EXACT_RULES = [
   ["_lotos_vent_hint", "ui"],
   ["_met_adam", "person"],
   ["_met_ageha", "person"],
+  ["_met_da_silva", "person"],
   ["_met_dr_kemuri", "person"],
   ["_met_emil", "person"],
   ["_met_hiyori", "person"],
@@ -318,6 +336,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_kuze", "person"],
   ["_met_maezono", "person"],
   ["_met_mashiro", "person"],
+  ["_met_master_hookah", "person"],
   ["_met_minto", "person"],
   ["_met_mukai_master", "person"],
   ["_met_nagumo", "person"],
@@ -325,6 +344,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_rei", "person"],
   ["_met_rin", "person"],
   ["_met_samechan", "person"],
+  ["_met_sheikh", "person"],
   ["_met_steve", "person"],
   ["_met_tsumugi", "person"],
   ["_met_volk", "person"],
@@ -342,6 +362,7 @@ export const FLAG_EXACT_RULES = [
   ["_op_praise_report", "progression"],
   ["_op_praise_talent", "progression"],
   ["_outing_done_adam", "person"],
+  ["_outing_done_ageha", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
   ["_outing_done_tsumugi", "person"],
@@ -388,6 +409,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_choizap_minto", "person"],
   ["_spot_seen_choizap_naru", "person"],
   ["_spot_seen_choizap_oldman", "progression"],
+  ["_spot_seen_cs_kemuri_sample", "person"],
   ["_spot_seen_kannon_adam", "person"],
   ["_spot_seen_kannon_adam_pakki", "person"],
   ["_spot_seen_kannon_oldman", "progression"],
@@ -464,6 +486,7 @@ export const FLAG_EXACT_RULES = [
   ["pakki_app_installed", "unlock"],
   ["romance_ageha", "person"],
   ["romance_minto", "person"],
+  ["seenDemo", "ui"],
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],
   ["spot_kannon_adam_done", "person"],
@@ -541,6 +564,14 @@ export function buildCarryPackage(s) {
   const data = {};
   data.stats = Object.fromEntries(STAT_KEYS.map((k) => [k, Number.isFinite(s?.stats?.[k]) ? s.stats[k] : 0]));
   data.statXp = clone(s?.statXp ?? {});
+  if (s?.growth && typeof s.growth === "object" && !Array.isArray(s.growth)) {
+    // 恋人EXPの先行保存と既存previewは同じ台帳。切替や周回で精算済みXPを再精算しない。
+    const g = data.growth = clone(s.growth);
+    g.fresh = { chapter: 1, counts: {} };
+    g.firsts = { people: [], places: [] };
+    g.gifted = {};
+    g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [] };
+  }
   data.money = Math.min(MAX_MONEY, Math.max(0, Math.round(Number(s?.money) || 0)));
   data.flavors = clone(s?.flavors ?? []);
   data.flavorStock = clone(s?.flavorStock ?? {});

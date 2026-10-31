@@ -437,7 +437,7 @@ try {
   assert.deepEqual(loverSave.asked, []);
   log("HF04/05 existing-lover save: relationship kept, lover landing once, gift, no confession reservation");
 
-  // 凛: 3つ目の固有会話の後の最初の訪問で質問 → その後にMAXの締めくくり（友情寄り）
+  // 凛: 3つ目の固有会話の後の最初の訪問で質問 → 4つ目の固有会話 → MAXの締めくくり（友情寄り）
   const rin = await page.evaluate(async () => {
     const { fresh, spots, bonds, vn, pick } = window.T;
     const state = fresh({ met: { rin: true }, story: { rin: 3 }, affinity: { rin: 90 }, slot: 0 });
@@ -449,13 +449,18 @@ try {
     const first = vn.backlog().map((l) => l.text).join("|");
     vn.backlog().length = 0;
     await spots.visitChar("rin");
+    const fourth = vn.backlog().map((l) => l.text).join("|");
+    vn.backlog().length = 0;
+    await spots.visitChar("rin");
     const second = vn.backlog().map((l) => l.text).join("|");
-    return { badge, finaleBlocked, first, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
+    return { badge, finaleBlocked, first, fourth, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
   });
   assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
   // 質問の場面と友情側の着地（d7a613c6 で台本を書き直し）
   assert(rin.first.includes("今日は試香紙がなかった")); assert(rin.first.includes("相談を遠慮しなくてよい、仕事仲間の時間だった"));
   assert(!rin.first.includes("ラベルも同意書もない"));
+  // 質問の次は4つ目の固有会話（#1696）。締めくくりはその後
+  assert(rin.fourth.includes("吸ってる人の顔だけ、知らない")); assert(!rin.fourth.includes("ラベルも同意書もない"));
   assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);
   log("HF04/05 rin: question visit before the MAX finale, friendship landing with a personal gift");
@@ -698,6 +703,25 @@ try {
       fresh({ met: { naru: true, adam: true }, contacts: ["naru", "adam"], day: 9, lastBaitoDay: 9,
         finales: { naru: { day: 2, chapter: 1, route: "friend" }, adam: { day: 1, chapter: 1, route: "friend" } } });
       const oneMorning = friendIds(phone.morningMessages({ fixedNight: () => false }));
+      // 第2章の地元日常でも、友人の雑談・お誘いと4日以上シフトを空けたスミさんの連絡が届く。
+      const ch2 = fresh({ chapter: 2, day: 19, slot: 0, lastBaitoDay: 14,
+        met: { naru: true }, contacts: ["naru"], flags: { _ch2_day1: { startDay: 15 } },
+        finales: { naru: { day: 11, chapter: 1, route: "friend" } } });
+      const ch2Chat = friendIds(phone.morningMessages({ fixedNight: () => false }));
+      ch2.inbox.push(friendNote(15, "naru"));
+      const ch2Invites = phone.morningMessages({ fixedNight: () => false }).map((m) => `${m.sender}:${m.type}`);
+      const ch2FixedNight = friendIds(phone.morningMessages({ fixedNight: () => true }));
+      const ch2Tournament = phone.morningMessages({ tournamentDay: true }).filter((m) => m.sender === "sumi" || String(m.id).startsWith("_friend_")).length;
+      // #2090: 第2章の対峙（決裂・休業）のあとは、なるの友人LIMEも♥3外出の誘いも届かず、受付済みの約束も流れる
+      const rift = fresh({ chapter: 2, day: 27, slot: 0, lastBaitoDay: 27, met: { naru: true }, contacts: ["naru"], affinity: { naru: 80 },
+        flags: { _ch2_day1: { startDay: 15 }, _ch2_night_11_done: true }, finales: { naru: { day: 11, chapter: 1, route: "friend" } } });
+      DB.lime = original;
+      const riftNaru = phone.morningMessages({ fixedNight: () => false }).filter((m) => m.sender === "naru").map((m) => m.id);
+      rift.pendingInvite = { originId: "lime_outing_naru_1", event: "outing_naru_1", sender: "naru", day: 28, slot: 0 };
+      rift.inbox.push({ id: "lime_outing_naru_1", day: 27, read: true, done: false, log: [], msg: original.find((m) => m.id === "lime_outing_naru_1") });
+      phone.expireInvitations({ fixedNight: () => false });
+      const riftExpired = { pending: rift.pendingInvite, result: rift.inbox.at(-1).result };
+      DB.lime = original.filter((m) => !["sumi", "naru", "adam", "tsumugi", "minto"].includes(m.sender));
       // 恋人・告白待ち・連絡先なし・大会当日には届かない。告白で「友達のまま」なら届く
       const quiet = {};
       let s = fresh({ met: { tsumugi: true }, contacts: ["tsumugi"], day: 9, lovers: ["tsumugi"], finales: { tsumugi: { day: 1, chapter: 1, route: "lover" } } });
@@ -723,7 +747,8 @@ try {
         T.stats.addStamina(-10); // 実際の誘いも、会話の後で体力を支払う
       });
       const second = vn.backlog().map((l) => l.text);
-      return { freeCharmUnchanged, timeline, inviteText, rotation, withBaito, withStory, calm, fixedNight, oneMorning, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
+      return { freeCharmUnchanged, timeline, inviteText, rotation, withBaito, withStory, calm, fixedNight, oneMorning,
+        ch2Chat, ch2Invites, ch2FixedNight, ch2Tournament, riftNaru, riftExpired, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
     } finally {
       DB.lime = original;
     }
@@ -738,11 +763,18 @@ try {
   // バイトの誘いとは重なってよい／人と会う物語の誘いとは重ねない（雑談に切り替える）
   assert(friendsLime.withBaito.includes("sumi:invitation") && friendsLime.withBaito.includes("naru:invitation")
     && !friendsLime.withBaito.includes("naru:chat"), friendsLime.withBaito.join("|"));
-  assert(friendsLime.withStory.includes("tsumugi:invitation") && friendsLime.withStory.includes("naru:chat")
-    && !friendsLime.withStory.includes("naru:invitation"), friendsLime.withStory.join("|"));
+  // LM04（15f9a8df・オーナー要望）: 返事の要る物語の誘いが届く朝は、返事の要る友人の雑談も重ねない
+  assert(friendsLime.withStory.includes("tsumugi:invitation") && !friendsLime.withStory.some((m) => m.startsWith("naru:")),
+    friendsLime.withStory.join("|"));
   assert.deepEqual(friendsLime.calm, ["naru:invitation:night"]);
   assert.deepEqual(friendsLime.fixedNight, ["naru:chat:-"]);
   assert.deepEqual(friendsLime.oneMorning, ["adam:chat:-"]);
+  assert.deepEqual(friendsLime.riftNaru, [], "#2090 決裂後のなるからLIMEが届いた");
+  assert.deepEqual(friendsLime.riftExpired, { pending: null, result: "expired" }, JSON.stringify(friendsLime.riftExpired));
+  assert.deepEqual(friendsLime.ch2Chat, ["naru:chat:-"]);
+  assert(friendsLime.ch2Invites.includes("naru:invitation") && friendsLime.ch2Invites.includes("sumi:invitation"), friendsLime.ch2Invites.join("|"));
+  assert.deepEqual(friendsLime.ch2FixedNight, ["naru:chat:-"]);
+  assert.equal(friendsLime.ch2Tournament, 0);
   assert.deepEqual(friendsLime.quiet, { lover: 0, romance: 0, rejected: ["tsumugi:chat:-"], noContact: 0, tournament: 0 });
   assert(friendsLime.first.some((l) => l.startsWith("栞:")), friendsLime.first.join("|"));
   assert(friendsLime.first.some((l) => l.includes("栞さんと一服した")), friendsLime.first.join("|"));

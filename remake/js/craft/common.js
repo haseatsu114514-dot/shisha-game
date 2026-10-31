@@ -41,7 +41,7 @@ export function resultCard(panel, { title, lines = [], summary = [], advice = ""
       summary.length ? el("div.rc-summary", { dataset: { test: "step-summary" } }, summary.map((text) => el("p", { text }))) : null,
       !hasAudience ? el(`b.rc-evaluation.${evaluation.tone}`, { text: evaluation.mark, "aria-label": evaluation.label }) : null,
       el("div.rc-title", { text: title }),
-      el("details.rc-details", [el("summary", { text: "詳しく見る", dataset: { test: "step-details" } }), el("ul.rc-lines", lines.filter(Boolean).map((t) => el("li", { text: t })))]),
+      el("details.rc-details", [el("summary", { text: "詳しく見る", dataset: { test: "step-details" } }), el("ul.rc-lines", lines.filter(Boolean).map((t) => el("li", typeof t === "string" ? { text: t } : [t])))]),
       btn,
     ]);
     panel.append(card);
@@ -60,6 +60,8 @@ export function keys(map, { actionSpace = false } = {}) {
     if ((e.key === " " || e.key === "Enter") && e.target?.closest?.(".bench-guide, .timer-button")) return;
     // 蒸らしはSpaceをリフレッシュに予約する。Enterはフォーカス中のボタンを操作する。
     if ((e.key === "Enter" || (e.key === " " && !actionSpace)) && e.target?.closest?.(".dodge-action")) return;
+    // 操作ボタンにフォーカスがある間は、ブラウザのボタン起動に任せる。
+    if ((e.key === "Enter" || e.key === " ") && e.target?.closest?.(".pull-btns button, .hr-row button")) return;
     const fn = map[e.key] || map[e.code];
     if (fn) { e.preventDefault(); fn(e); }
   };
@@ -70,7 +72,7 @@ export function keys(map, { actionSpace = false } = {}) {
 /** 表示名だけを統一する。内部の判定種別・点数・成功幅はそのまま使う。 */
 export function timingLabel(kind, fallback = "") {
   if (kind === "perfect" || kind === "just") return "EXCELLENT";
-  if (kind === "good") return "GOOD";
+  if (kind === "great" || kind === "good") return "GOOD";
   if (kind === "bad" || kind === "miss") return "MISS";
   return fallback;
 }

@@ -1,6 +1,7 @@
 // ドバイの自由行動の行き先は保存済みの進行を読むだけ。読了・所在・日付をここで更新しない。
 import { CH4_PLACE_BG, CH4_TOURNAMENT_DAY, CH4_EVE_DAY, chapterFourProgress,
   chapterFourSecondAvailable, chapterFourSheikhRevealed } from "./ch4-progress.js";
+import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
 
 const place = (id, label, x, y) => Object.freeze({ id, label, x, y });
 
@@ -11,6 +12,7 @@ export const DUBAI_MAP_PLACES = Object.freeze({
   center_cafe: place("center_cafe", "中心地のカフェ", 70, 52),
   alley_cafe: place("alley_cafe", "路地裏のカフェ", 30, 78),
   inn: place("inn", "宿", 12, 24),
+  mosque: place("mosque", "風の回廊モスク", 58, 70),
   venue: place("venue", "大会会場", 86, 20),
 });
 
@@ -26,7 +28,7 @@ const SCENE = Object.freeze({
  * 第4章の自由行動でないとき（プロローグ・前夜・大会以降・別章）は null。
  * 秘匿中（_ch4_sheikh_revealed が false）は、ラベル・説明に固有名を出さない。
  */
-export function chapterFourMapModel(value) {
+export function chapterFourMapModel(value, { canReflect = false } = {}) {
   if (value?.chapter !== 4) return null;
   const progress = chapterFourProgress(value);
   if (progress.part !== "free") return null;
@@ -52,10 +54,19 @@ export function chapterFourMapModel(value) {
   // 路地裏は stranger_first を読み、second の解放条件を満たすまで行き先自体を出さない（DRAFT §4 の仮置き側）。
   if (read[SCENE.second] === true) {
     destinations.push(destination("alley_cafe", [SCENE.alleyQuiet], "路地の奥の小さなカフェ。", true,
-      { purpose: "静かな店で、もう一度ゆっくり話を聞く。" }));
+      { purpose: "再訪できるようになった。静かな店で、もう一度ゆっくり話を聞く。" }));
   } else if (chapterFourSecondAvailable(value)) {
     destinations.push(destination("alley_cafe", [SCENE.second], "路地の奥の小さなカフェ。", false,
       { purpose: "約束した店。初めて訪ねる。" }));
+  }
+  if (canReflect) {
+    const hours = openingStatus(MOSQUE_VISITING_HOURS, value);
+    destinations.push(destination("mosque", [], "案内付きで見学できるモスク。", false, {
+      kind: "reflect", consumes: false, ok: hours.ok, why: hours.why || "",
+      label: "モスクを見学して振り返る",
+      purpose: hours.ok ? "礼拝時間外の昼の見学枠。見学の後、中庭の回廊で振り返り、火種を灯す。時間・体力は使わない。"
+        : `${hours.why}。昼の案内付き見学枠（礼拝時間外・金曜午前を除く）に訪ねよう。`,
+    }));
   }
   // 宿は「その日を終える」唯一の行動。DAY2以降で未読なら道具の手入れを先に再生する。
   destinations.push(destination("inn", day >= 2 ? unread([SCENE.toolCare]) : [],

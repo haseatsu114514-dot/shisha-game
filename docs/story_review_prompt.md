@@ -41,7 +41,6 @@
 - `data/dialogue/ch3_volk.json` — ヴォルク個別（第2章では名無しの偵察者「？？？」としてのみ登場）
 - `data/dialogue/ch2_isolation.json` — 第2章孤立パート
 - `data/dialogue/ch3_main.json` — 第3章メイン
-- `data/dialogue/ch3_spots.json` — 第3章スポット
 - `data/dialogue/ch3_double_apple.json` — ダブルアップル事件
 - `data/dialogue/ch3_tsumugi.json` — つむぎ（ch3）
 - `data/dialogue/ch3_mukai.json` — ムカイ
@@ -57,7 +56,6 @@
 - `data/dialogue/ending.json` — エンディング
 - `data/dialogue/shop_event.json` — 店イベント
 - `data/lime_messages.json` — LIMEメッセージ（LINE風チャット）
-- `data/lime_events.json` — LIMEイベント
 
 ### 補助（仕様確認用）
 - `docs/master_spec.md` — 大会仕様・ゲーム仕様

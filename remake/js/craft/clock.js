@@ -2,7 +2,7 @@
 export function createCraftClock(panel, doc = globalThis.document) {
   const guide = panel.closest?.(".bench")?.querySelector(".bench-guide");
   let last = performance.now(), elapsed = 0;
-  const isPaused = () => !!guide?.open || !!doc?.hidden;
+  const isPaused = () => !!guide?.open || panel.closest?.(".bench")?.dataset.demoPaused === "true" || !!doc?.hidden;
   let wasPaused = isPaused();
   const now = () => {
     const current = performance.now(), paused = isPaused();

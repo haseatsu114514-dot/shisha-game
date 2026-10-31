@@ -29,7 +29,7 @@ body.game-ds .map .spot-pin.facility-pin .evt-badge {
 }
 
 /* Standalone comparison using the same artwork as the map. */
-.facility-preview { margin: 0; padding: 20px; background: #302a35; color: #fff4dd; font: 16px/1.5 system-ui, sans-serif; }
+.facility-preview { margin: 0; padding: 20px; background: #302a35; color: #fff4dd; font: 16px/1.5 var(--font, sans-serif); }
 .facility-preview main { max-width: 1000px; margin: auto; }
 .facility-preview h1 { font-size: 24px; }
 .facility-preview .samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }

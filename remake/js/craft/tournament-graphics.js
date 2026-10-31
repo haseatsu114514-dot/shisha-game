@@ -58,3 +58,11 @@ export function countUp(node, from, to, ms, format = String) {
   };
   requestAnimationFrame(step);
 }
+
+/** 結果カード共通の「今回よかったこと／次に変える一つ」（第2章以降、#1909）。行が無ければ出さない。 */
+export function craftReviewBlock(lines, test = "craft-review") {
+  if (!lines?.length) return null;
+  return el("div.ch2-contest-reason.craft-review", { dataset: { test } }, [
+    el("b.ch2-contest-reason-tag", { text: "振り返り" }), ...lines.map(text => el("p", { text })),
+  ]);
+}

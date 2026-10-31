@@ -40,15 +40,19 @@ async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = c
   }, { chapter, day, slot, money, club, clubIds, run });
   if (run) await page.locator(map).waitFor();
 }
+// 店の案内役（マキ・サイ）は初回の登場カットインで面識が付く（8100c4f6・recent_intros.mjs で検証）。
+// ここでは店の精算・取消が状態を変えないことだけを比べるため、その面識は比較から外す。
+const HOST_INTROS = ["maki", "sai"];
+const withoutHostIntros = met => Object.fromEntries(Object.entries(met || {}).filter(([id]) => !HOST_INTROS.includes(id)));
 async function value(page) {
-  return page.evaluate(() => {
+  return page.evaluate(hosts => {
     const s = spotCore.state;
     return structuredClone({ money: s.money, stamina: s.stamina, day: s.day, slot: s.slot, stats: s.stats, affinity: s.affinity,
-      story: s.story, met: s.met, reel: s.reel, records: s.flags._axe_bar_records || null,
+      story: s.story, met: Object.fromEntries(Object.entries(s.met).filter(([id]) => !hosts.includes(id))), reel: s.reel, records: s.flags._axe_bar_records || null,
       axeVisited: s.visitedDay.axe_bar || null, trpg: s.trpg,
       hiyoriFlags: Object.fromEntries(Object.entries(s.flags).filter(([key]) => key.includes("hiyori"))),
       lovers: s.lovers, relationshipMemories: s.relationshipMemories });
-  });
+  }, HOST_INTROS);
 }
 async function go(page, id) {
   await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]')); // #796: 新ピンの解錠演出中は選択を受け付けない
@@ -163,7 +167,7 @@ await suite("play-spots", async runCheck => {
     await setup(page);
     const before = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
     await go(page, "axe_bar");
-    const introduced = JSON.parse(before); introduced.flags._intro_maki = true;
+    const introduced = JSON.parse(before); introduced.flags._intro_maki = true; introduced.met.maki = true; // 登場カットインで面識も付く（8100c4f6）
     assert.equal(await page.evaluate(() => spotCore.state.flags._intro_maki), true, "Completed introduction is read in the live state");
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), before, "The introduction itself does not settle the venue action");
     await hit(page, "axe-bar-practice");
@@ -261,7 +265,8 @@ await suite("play-spots", async runCheck => {
     await check(label + "-ch2-day8-shark-from-town-and-load", async page => {
       // 本編の日程と地図を使う。入部済み保存から再開し、夜予定の判定を迂回しない。
       await setup(page, { chapter: 2, day: 22, slot: 1, club: true, clubIds: ["hiyori", "samechan"] });
-      assert.deepEqual((await value(page)).trpg.shifts, [{ id: "samechan", chapter: 2, day: 22, slot: 1, busy: false }]);
+      // 卓は営業後に集まる。旧保存互換の空き枠が登録されても、参加を塞ぐ予定はない。
+      assert((await value(page)).trpg.shifts.every(s => s.id !== "samechan" || !s.busy));
       await travel(page, "widehanga"); const before = await value(page);
       await page.locator(t("pin-trpg_bar")).waitFor();
       await capture(page, label + "-cafe-map"); await go(page, "trpg_bar");
@@ -288,7 +293,8 @@ await suite("play-spots", async runCheck => {
       assert.equal(saved.trpg.cleared["shark-last-order"].gm, "samechan");
       assert.deepEqual([...saved.trpg.cleared["shark-last-order"].participants].sort(), ["hajime", "hiyori", "samechan"]);
       assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
-      for (const key of ["met", "affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(saved[key], before[key]);
+      assert.deepEqual(withoutHostIntros(saved.met), before.met);
+      for (const key of ["affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(saved[key], before[key]);
       await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-good");
       await hit(page, "trpg-campaign-close"); await hit(page, "ch2-morning-home"); await page.locator(map).waitFor();
       assert.equal(await page.locator(map).getAttribute("data-region"), "home");

@@ -31,6 +31,83 @@ await suite("growth-levelup", async (check) => {
     assert.equal(await page.evaluate(() => __remake.state.growth), undefined);
   });
 
+  // #1807: the real map and HUD entry points, with Adam unvisited.
+  for (const [label, options] of [
+    ["pc", { viewport: { width: 1331, height: 760 } }],
+    ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ["portrait", { viewport: { width: 591, height: 1280 } }],
+  ]) {
+    await check(`${label}-reflection-entry`, async (page) => {
+      const tap = async (sel) => {
+        const node = page.locator(sel).first();
+        await node.scrollIntoViewIfNeeded();
+        if (options.hasTouch) await node.tap(); else await node.click();
+      };
+      await setupDaily(page);
+      await page.evaluate(async () => {
+        const core = await import("./js/core/state.js");
+        core.config.textSpeed = 4;
+        Object.assign(core.state, { day: 6, slot: 0 });
+        window.entryStatus = 0;
+        (await import("./js/daily/hud.js")).initHud({ status: () => { window.entryStatus++; } });
+        (await import("./js/daily/hud.js")).showHud(true);
+        window.entryMap = async () => {
+          const map = await import("./js/daily/map.js");
+          window.entryFlow = map.chooseSpot().then(async id => {
+            if (id === "kannon") await (await import("./js/core/growth.js")).reflectAtSpot(id);
+          });
+        };
+        await window.entryMap();
+      });
+      await page.locator(".map:not(.done)").waitFor();
+      assert.equal(await page.locator(t("pin-kannon")).count(), 0);
+      await page.evaluate(async () => {
+        const map = await import("./js/daily/map.js");
+        map.interruptMap(null); await window.entryFlow;
+        const growth = await import("./js/core/growth.js");
+        growth.gainExp(205); growth.settleGrowth();
+        window.entryBefore = { day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina };
+        await window.entryMap();
+      });
+      await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
+      await page.locator(t("kannon-hidane")).waitFor();
+      assert.equal(await page.evaluate(() => !!__remake.state.flags._spot_guide_adam || !!__remake.state.met.adam), false);
+      await assertFits(page, t("kannon-hidane"));
+      await tap(t("hud-status"));
+      await page.locator(`${t("growth-board")}[data-mode="view"]`).waitFor();
+      assert.equal(await page.locator(t("board-light")).count(), 0);
+      await tap('.gb-node[data-status="available"]');
+      assert.equal(await page.locator(t("board-light")).count(), 0);
+      await tap(t("board-close"));
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 2); // レベル1つで火種2つ（SBD60）
+      assert.equal(await page.evaluate(() => window.entryStatus), 0);
+      await tap(t("pin-kannon")); await tap(t("map-go"));
+      await tap(t("kannon-reflect"));
+      for (let i = 0; i < 30 && !(await page.locator(t("growth-board")).count()); i++) {
+        const next = page.locator(".vn-box");
+        if (await next.isVisible()) await tap(".vn-box");
+        await page.waitForTimeout(150);
+      }
+      await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+      for (let i = 0; i < 2; i++) { // 火種2つを使い切る
+        await tap('.gb-node[data-status="available"]');
+        await tap(t("board-light"));
+      }
+      await tap(t("board-decide"));
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      await page.evaluate(async () => { await window.entryFlow; await window.entryMap(); });
+      await page.locator(".map:not(.done)").waitFor();
+      assert.equal(await page.locator(t("kannon-hidane")).count(), 0);
+      assert.equal(await page.locator(t("hud-hidane")).isVisible(), false);
+      assert.equal(await page.locator(t("pin-kannon")).count(), 1);
+      assert.deepEqual(await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina })),
+        await page.evaluate(() => window.entryBefore));
+      await tap(t("hud-status"));
+      assert.equal(await page.evaluate(() => window.entryStatus), 1);
+    }, options);
+  }
+
   for (const [label, options] of [
     ["pc", { viewport: { width: 1331, height: 760 } }],
     ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
@@ -133,7 +210,7 @@ await suite("growth-levelup", async (check) => {
       // 寝る前・メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
       assert.equal(await board.getAttribute("data-mode"), "view");
       assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
-      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*4/, "Lv.1→3 で火種4");
+      assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*4/, "Lv.1→3 で白火4");
       const ids = await page.evaluate(async () => {
         const b = await import("./js/core/growth-board.js");
         const first = b.boardNodes("body").find((n) => n.kind === "stat" && n.links.includes(b.HUB)).id;
@@ -205,7 +282,7 @@ await suite("growth-levelup", async (check) => {
     await board.waitFor({ state: "detached" });
     await page.evaluate(async () => { __remake.state.chapter = 2; void (await import("./js/core/growth.js")).openGrowthBoard(); });
     await page.locator(t("board-opened")).waitFor();
-    assert.match(await page.locator(t("board-opened")).innerText(), /封が解けた/);
+    assert.match(await page.locator(t("board-opened")).innerText(), /結界が解けた/);
     assert.ok(await page.locator(".gb-node.just-opened").count() > 0);
     await page.waitForTimeout(500);
     await page.screenshot({ path: `${out}/growth-board-unseal.png` });
@@ -224,8 +301,116 @@ await suite("growth-levelup", async (check) => {
     });
     const band = page.locator(t("gift-band"));
     await band.waitFor();
-    assert.match(await band.innerText(), /くじのラストワン賞[\s\S]*才の火種 ＋1/);
+    assert.match(await band.innerText(), /くじのラストワン賞[\s\S]*紅火 ＋1/);
     await assertFits(page, '[data-test="gift-band"]');
     await page.waitForFunction(() => window.night?.gifts?.length === 1, null, { timeout: 8000 });
+  }, { viewport: { width: 1331, height: 760 } });
+
+  // 既存スミ授業を実際のVNで中断→途中保存→再相談。好感度0でも、盤から同じ機能が開く。
+  for (const id of ["M-S1", "M-W1"]) {
+    await check(`sumi-${id}-resume`, async (page) => {
+      await setupDaily(page);
+      await page.evaluate(async (id) => {
+        const g = await import("./js/core/growth.js");
+        const b = await import("./js/core/growth-board.js");
+        const node = b.NODE_BY_ID[id];
+        const gr = g.ensureGrowth();
+        __remake.state.affinity.sumi = 0;
+        __remake.state.flags._intro_sumi = true;
+        // 第1章の道と3段までの能力マスは既に灯した状態。
+        gr.nodes = b.boardNodes(node.board).filter((n) => n.kind === "stat" && n.ring === 1).map((n) => n.id);
+        if (!b.commitPending([id]).length) throw new Error("授業が灯せない");
+        window.lessonAbort = new AbortController();
+        window.lessonDone = null;
+        void g.consultLessons("sumi", { only: id, signal: window.lessonAbort.signal }).then((r) => { window.lessonDone = r; });
+      }, id);
+      await page.locator("#vn.active").waitFor();
+      const interrupted = await page.evaluate(async (id) => {
+        const core = await import("./js/core/state.js");
+        const g = await import("./js/core/growth.js");
+        const b = await import("./js/core/growth-board.js");
+        const flag = b.NODE_BY_ID[id].unlocks[0];
+        core.save();
+        window.lessonAbort.abort();
+        return !!core.state.flags[flag];
+      }, id);
+      assert.equal(interrupted, false);
+      await page.waitForFunction(() => window.lessonDone !== null);
+      assert.deepEqual(await page.evaluate(() => window.lessonDone), []);
+      const result = await page.evaluate(async (id) => {
+        const core = await import("./js/core/state.js");
+        core.load();
+        const g = await import("./js/core/growth.js");
+        const b = await import("./js/core/growth-board.js");
+        const flag = b.NODE_BY_ID[id].unlocks[0];
+        const before = [core.state.day, core.state.slot, core.state.stamina, g.hidaneTotal()];
+        (await import("./js/vn/engine.js")).vnTest.turbo = true;
+        const done = await g.consultLessons("sumi", { only: id });
+        core.load();
+        return { done: done.map((l) => l.id), learned: !!core.state.flags[flag],
+          repeat: await g.consultLessons("sumi", { only: id }), before,
+          after: [core.state.day, core.state.slot, core.state.stamina, g.hidaneTotal()] };
+      }, id);
+      assert.deepEqual(result.done, [id]);
+      assert.equal(result.learned, true);
+      assert.deepEqual(result.repeat, []);
+      assert.deepEqual(result.after, result.before);
+    });
+  }
+
+  // 授業（SBD50）: 盤で灯すと「相談できる」。次に会った時に、はじめが相談して話を聞く場面を最後まで見て習得
+  await check("lesson-consult", async (page) => {
+    await setupDaily(page);
+    const r = await page.evaluate(async () => {
+      (await import("./js/vn/engine.js")).vnTest.turbo = true;
+      const g = await import("./js/core/growth.js");
+      const gr = g.ensureGrowth();
+      gr.nodes.push("M-W2");
+      const before = g.readyLessons("sumi").map((l) => l.id);
+      const done = await g.consultLessons("sumi");
+      return { before, done: done.map((l) => l.id), learned: g.lessonLearned("M-W2"),
+        four: __remake.state.flags._coal_four_unlocked, mix: __remake.state.flags._coal_mix_unlocked, after: g.readyLessons("sumi").length };
+    });
+    assert.deepEqual(r.before, ["M-W2"]);
+    assert.deepEqual(r.done, ["M-W2"]);
+    assert.equal(r.learned, true);
+    assert.equal(r.four, true, "四つ置きが開く");
+    assert.equal(r.mix, true, "混ぜ置きが開く");
+    assert.equal(r.after, 0);
+    await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
+  }, { viewport: { width: 1331, height: 760 } });
+  // 段はなくした（SBD63）: 盤の札は「n/26」、右のパネルは恩恵の横棒、ステータス画面は三角のグラフ
+  await check("no-steps-graph", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const g = (await import("./js/core/growth.js")).ensureGrowth();
+      g.nodes.push("B1", "B2");
+      void (await import("./js/core/growth.js")).openGrowthBoard();
+    });
+    await page.locator(t("board-tab-body")).waitFor();
+    assert.match(await page.locator(t("board-tab-body")).innerText(), /才能盤\s*2\/26/);
+    assert.equal(await page.locator(t("board-bars")).count(), 1, "恩恵の横棒");
+    assert.doesNotMatch(await page.locator(t("growth-board")).innerText(), /\d段/, "盤に段の文字は無い");
+    await page.locator(t("board-decide")).click();
+    await page.waitForSelector(t("growth-board"), { state: "detached" });
+    await page.evaluate(async () => { void (await import("./js/daily/status.js")).openStatus(); });
+    await page.locator(t("board-radar")).waitFor();
+    assert.match(await page.locator(t("st-board-body")).innerText(), /2\/26/);
+    assert.doesNotMatch(await page.locator(".st-me").innerText(), /\d段/, "ステータスに段の文字は無い");
+  }, { viewport: { width: 1331, height: 760 } });
+  // 授業は会って相談した時だけ習う（SBD61）: 盤には LIME で聞く入口が無く、次に会った時と出る
+  await check("lesson-in-person", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const g = await import("./js/core/growth.js");
+      const gr = g.ensureGrowth();
+      __remake.state.affinity.rei = 1; // 会っている
+      gr.nodes.push("M-B2");
+      void g.openGrowthBoard();
+    });
+    await page.locator(t("board-tab-body")).click();
+    await page.locator(t("board-node-M-B2")).click();
+    await page.locator(".gb-p-state", { hasText: "次に" }).waitFor();
+    assert.equal(await page.locator(t("board-lime-consult")).count(), 0, "LIME で聞くボタンは無い");
   }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1` });

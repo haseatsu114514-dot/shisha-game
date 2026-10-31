@@ -1,6 +1,7 @@
 // 第1章のスポット定義と「行く」の中身（訪問・施設・休む）。
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
 import { state, markMet } from "../core/state.js";
+import { growthEnabled, hidaneTotal } from "../core/growth.js";
 import { refreshPlaceCue } from "../core/transitions.js";
 import { DB } from "../core/data.js";
 import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel, releaseAffinity, AFFINITY_RANK_PTS, setStoryAffinityCap, ensureAffinityLevel } from "../core/stats.js";
@@ -144,10 +145,30 @@ function storyOpenByHeart(id) {
 /** 店に通って親しくなってから、店内で正体がつながる一度だけの会話。 */
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
   && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
+/** 夜の2階で試作品を確かめる一度きりの回（#1696）。固有会話3本目の後、新しい話が無い来店で読む。 */
+const RIN_PROTOTYPE = "ch1_rin_prototype_night";
+const RIN_PROTOTYPE_SEEN = `_spot_seen_${RIN_PROTOTYPE}`;
+export const rinPrototypeDue = () => !state.flags[RIN_PROTOTYPE_SEEN]
+  && storyCount("rin") >= 3 && !!DB.dialogues[RIN_PROTOTYPE]?.lines?.length;
+/**
+ * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
+ * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
+ */
+export const AFTER_CHAPTER_VISITS = Object.freeze({
+  adam: { chapter: 2, regulars: "_ch1_regulars", scene: "ch1_adam_after_ch1", done: "ch1_adam_after_ch1_done" },
+  minto: { chapter: 2, regulars: "_ch1_regulars", scene: "ch1_minto_after_ch1", done: "ch1_minto_after_ch1_done" },
+});
+export function afterChapterVisitDue(charId, s = state) {
+  const entry = AFTER_CHAPTER_VISITS[charId];
+  return entry && (s.chapter || 1) === entry.chapter && !s.flags?.[entry.done] && !!s.flags?.[entry.regulars]?.[charId]
+    && DB.dialogues[entry.scene]?.lines?.length ? entry.scene : null;
+}
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
+  if (afterChapterVisitDue(charId)) return true;
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
   if (questionVisitDue(charId)) return true;
+  if (charId === "rin" && rinPrototypeDue()) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -156,6 +177,7 @@ export function hasNewStory(charId) {
 /** 実来店と予定表示で、同じ既存repeat（訪問順・雨差分）を読む。状態は進めない。 */
 function repeatVisitDialogue(charId) {
   const pool = REPEAT_POOL[charId] || [0, 1, 2, 3].map(i => `remake_repeat_${charId}_${i}`);
+  if (charId === "adam" && (state.chapter || 1) >= 2) pool.push("remake_repeat_adam_4");
   const rain = `remake_repeat_${charId}_rain`;
   return isRainy() && affinityLevel(charId) >= 1 && DB.dialogues[rain]
     ? rain : pool[(state.visits[charId] || 0) % pool.length];
@@ -182,7 +204,8 @@ export function shortNormalVisit(spot) {
   if (spot?.id === "c_station") {
     const n = (state.spotVisits?.[spot.id] || 0) + 1;
     if (n < 2 || !state.reel?.introDone || state.flags._pakki_first_spin_pending
-      || state.flags._ev_reviewer_cameo && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) return false;
+      || state.flags._ev_reviewer_cameo && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff
+      || spotEncounterDue(spot.id, n, state, DB.dialogues)) return false;
     const pool = quietSpotPool(spot, state.slot);
     const rain = RAIN_SPOT_TEXTS[spot.id];
     const id = rain && isRainy() && DB.dialogues[rain] ? rain : pool[Math.max(0, n - 2) % pool.length];
@@ -233,6 +256,8 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
+  // 初回受領後は使い切っても内省の場所を残す。紹介・訪問の記録は変更しない。
+  if (spot.id === "kannon" && growthEnabled() && (state.growth?.earned > 0 || hidaneTotal() > 0)) return true;
   if (spot.id === "rojiura_cinema") return cinemaDiscovered(state);
   if (spot.kind === "fortune") return [1, 2].includes(state.chapter) && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
@@ -295,11 +320,16 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
     const followup = spotFollowupDue(charId, state, DB.dialogues);
     if (followup && !await read(followup, { bg })) return false;
-    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。
-    if (welcome && state === owner && idx > 0 && DB.dialogues[welcome]) {
+    const afterChapter = afterChapterVisitDue(charId);
+    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪は自前の来店描写があるので挨拶を挟まない。
+    if (welcome && state === owner && idx > 0 && !afterChapter && DB.dialogues[welcome]) {
       if (!await read(welcome, { bg })) return false;
     }
-    if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
+    if (afterChapter) {
+      // 既読フラグは台本末尾の set_flag。中断では立たず、次の来店で読み直せる。
+      if (!await read(afterChapter, DB.dialogues[afterChapter].metadata?.bg ? {} : { bg })) return false;
+      gainAffinity(charId, 5);
+    } else if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
       // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
       if (!await read("ch1_minto_identity_reveal")) return false;
       gainAffinity(charId, 10);
@@ -320,6 +350,10 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     } else if (finaleAtVisit(charId)) {
       if (!await playFinale(charId, { bg, signal, deferSave: true }) || !live()) return false;
       gainAffinity(charId, 10);
+    } else if (charId === "rin" && rinPrototypeDue()) {
+      if (!await read(RIN_PROTOTYPE, {})) return false;
+      state.flags[RIN_PROTOTYPE_SEEN] = true;
+      gainAffinity(charId, 5);
     } else {
       const rainy = isRainy();
       const id = repeatVisitDialogue(charId);

@@ -2,9 +2,11 @@
 import { $, el, sleep, nextFrame } from "./util.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
-import { state, STAT_KEYS } from "./state.js";
+import { state, STAT_KEYS, config } from "./state.js";
+import { reducedMotion } from "./transition-kit.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
+import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
@@ -26,11 +28,11 @@ export function initLayers() {
     layers[id] = $(`#${id}`);
   }
   // 報酬カード（旧版の Persona 風カードを踏襲）。ステはステ色の漢字バッジ、好感度は顔＋ハート
-  on("stat-gain", ({ key, total, name, starUp, star }) => {
-    // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
-    const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
-    gainCard({ kind: "stat", stat: key, points: starUp ? 0 : total, badge: STAT_BADGE[key], top: starUp ? "STEP UP" : "STATUS UP", main: name,
-      evolution: starUp ? `${star}段に上がった` : "", fx });
+  on("stat-gain", ({ key, total, name, starUp: stepped, star: currentStep }) => {
+    const fx = stepped ? DB.statusTexts?.statTierFx?.[key]?.[currentStep - 1] : "";
+    const progress = nextStepProgress(key);
+    gainCard({ kind: "stat", stat: key, points: stepped ? 0 : total, badge: STAT_BADGE[key], top: stepped ? "STEP UP" : "STATUS UP",
+      main: stepped ? `${name} ${currentStep}段に上がった` : name, evolution: stepped, fx, progress });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;
@@ -101,6 +103,8 @@ export function imageReady(url, ms = 1500, { keep = false } = {}) {
 // スロットのランプ・通知）も同じ（GUI20・21）。起動時に並行して読み、手放さずに置いておく。
 const LOUNGE_ART = ["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map((n) => `img/ui/lounge/${n}.webp`);
 const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakki-slot/${n}.webp`);
+// 紙とラベンダー（既定のUI・DUI08）の板と札。会話枠は uiThemeFrame で別に読む。
+const PAPER_ART = ["panel", "lavender"].map((n) => `img/ui/paper/${n}.webp`);
 /** 設定・ギャラリーの窓と最初の会話の枠・ボタン（タイトルの絵と一緒に、幕を開ける前に待つ） */
 export const FRAME_ART = LOUNGE_ART.slice(0, 2);
 let uiArt = null;
@@ -135,7 +139,7 @@ function deferStoreLogos() {
 /** UIの絵・顔アイコンと選択中の会話枠を読む（店ロゴは含まない。一度だけ） */
 function warmCoreArt() {
   if (!uiArt) {
-    const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
+    const urls = [...LOUNGE_ART, ...PAPER_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
     uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
   // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
@@ -297,7 +301,10 @@ export async function fadeBlack(mid, ms = 500) {
 // ---------------------------------------------------------------- トースト／通知
 
 export function toast(text, { ms = 2600, kind = "" } = {}) {
-  const t = el(`div.toast${kind ? "." + kind : ""}`, { text });
+  const effect = { "charm-bonus": ["魅", "魅力"], "insight-hint": ["察", "洞察"] }[kind];
+  const t = el(`div.toast${kind ? "." + kind : ""}`, effect
+    ? [el("span.toast-badge", { text: effect[0], "aria-label": `${effect[1]}の効果` }), el("span", { text })]
+    : { text });
   layers.toasts.append(t);
   requestAnimationFrame(() => t.classList.add("show"));
   setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 400); }, ms);
@@ -341,7 +348,11 @@ export function banner(title, sub = null) {
  * @param o.source "slot" の場合だけ当たりの枠の光と専用音。通知位置・報酬の適用は変えない。
  */
 export function gainCard(o) {
-  bannerQueue.push({ ...o, owner: state });
+  const statEvolution = o.kind === "stat" && typeof o.evolution === "string" && o.evolution;
+  bannerQueue.push({ ...o,
+    ...(statEvolution ? { main: `${o.main} ${statEvolution}`, evolution: true } : {}),
+    ...(o.kind === "stat" ? { progress: o.progress || nextStepProgress(o.stat) } : {}),
+    owner: state });
   pumpBanners();
 }
 
@@ -371,11 +382,14 @@ function pumpBanners() {
           o.points > 0 ? el("span.gc-points", { "aria-label": o.kind === "stat" ? `今回の増加 +${o.points}P` : null }, o.kind === "stat" ? [
             el("span.gc-count", { text: `+${o.points}` }), el("small.gc-unit", { text: "P" }),
           ] : [el("span", { text: `+${o.points}P` })]) : null]),
-        o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
+        typeof o.evolution === "string" && o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
         o.kind !== "stat" && o.sub ? el("span.gc-sub", { text: o.sub }) : null,
-        o.fx ? el("span.gc-fx", { text: o.fx }) : null,
+        o.fx && o.kind !== "stat" ? el("span.gc-fx", { text: o.fx }) : null,
         hearts,
       ]),
+      o.kind === "stat" && o.progress ? el(`div.gc-next${o.progress.capped ? ".capped" : ""}`, { title: `${o.progress.label}${o.fx ? `。${o.fx}` : ""}` }, [
+        el("span", { text: o.progress.label }), el("i", [el("b", { style: { width: `${o.progress.fill}%` } })]),
+      ]) : null,
     ]);
     layers.banners.append(b);
     const owner = state;
@@ -452,6 +466,7 @@ export async function bannersIdle() {
 /** 選択肢つきのモーダル。options: [{label, value, primary, test}] */
 export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
   return new Promise((resolve) => {
+    const previousFocus = document.activeElement;
     const box = el(`div.modal-box${className ? "." + className : ""}`, [
       title ? el("h3", { text: title }) : null,
       typeof body === "string" ? el("div.modal-body", { html: body }) : el("div.modal-body", [body]),
@@ -463,9 +478,26 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
         })
       )),
     ]);
-    const close = () => { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); };
+    const close = () => {
+      window.removeEventListener("keydown", onKeyDown);
+      layers.modal.classList.remove("show");
+      layers.modal.replaceChildren();
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
+    const buttons = [...box.querySelectorAll(".modal-actions button")];
+    const primary = buttons.find((button) => button.classList.contains("primary")) || buttons[0];
+    const dismiss = [...buttons].reverse().find((button) => !button.classList.contains("primary")) || primary;
+    const onKeyDown = (e) => {
+      if (!layers.modal.classList.contains("show") || e.repeat) return;
+      if (e.key === "Escape") { e.preventDefault(); dismiss?.click(); }
+      if (e.key === "Enter" && !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) {
+        e.preventDefault(); primary?.click();
+      }
+    };
     layers.modal.replaceChildren(el("div.modal-backdrop"), box);
     layers.modal.classList.add("show");
+    window.addEventListener("keydown", onKeyDown);
+    primary?.focus();
   });
 }
 
@@ -500,12 +532,14 @@ export function stamp(text, { host = layers.fx, kind = "", x = "50%", y = "42%" 
 }
 
 export function flash(kind = "white", ms = 260) {
+  if (reducedMotion() || config.reduceShake) return;
   const f = el(`div.flash.${kind}`);
   layers.fx.append(f);
   setTimeout(() => f.remove(), ms + 60);
 }
 
 export function shake(target = document.getElementById("stage"), ms = 380) {
+  if (reducedMotion() || config.reduceShake) return;
   target.classList.remove("shake");
   void target.offsetWidth;
   target.classList.add("shake");

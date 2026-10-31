@@ -89,7 +89,15 @@ await suite("issue508-theme", async checkAll => {
         T.core.setState(structuredClone(initial)); T.vn.backlog().length = 0;
         await T.vn.play(opts.id);
         const current = structuredClone(T.core.state), lines = T.lines();
-        return { before, current, lines };
+        let afterReplay = null;
+        if (opts.id === "ch1_naru_fourth") {
+          await T.vn.play(opts.id);
+          afterReplay = {
+            flavorMastery: structuredClone(T.core.state.flavorMastery),
+            flavorLessons: structuredClone(T.core.state.flavorLessons),
+          };
+        }
+        return { before, current, lines, afterReplay };
       }, { opts, previous: baseline.scenes[opts.id] });
       if (opts.id === "ch1_salaryman_regular") {
         // #452 adds only the actual service answer and its immediate save.
@@ -107,6 +115,15 @@ await suite("issue508-theme", async checkAll => {
         const { savedAt: beforeAt, ...beforeGame } = result.before;
         const { savedAt: currentAt, ...currentGame } = result.current;
         assert(Number.isFinite(beforeAt) && currentAt >= beforeAt);
+        assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
+      } else if (opts.id === "ch1_naru_fourth") {
+        // #1108: the fourth visit now teaches vanilla. Every other game effect stays identical.
+        const { flavorMastery: beforeMastery, flavorLessons: beforeLessons, ...beforeGame } = result.before;
+        const { flavorMastery: currentMastery, flavorLessons: currentLessons, ...currentGame } = result.current;
+        assert.deepEqual(beforeLessons, []);
+        assert.deepEqual(currentMastery, { ...beforeMastery, vanilla: 24 });
+        assert.deepEqual(currentLessons, ["ch1_naru_fourth"]);
+        assert.deepEqual(result.afterReplay, { flavorMastery: currentMastery, flavorLessons: currentLessons });
         assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
       } else assert.deepEqual(result.current, result.before, `Changed state effect: ${JSON.stringify(opts)}`);
       const ls = result.lines;
@@ -131,7 +148,7 @@ await suite("issue508-theme", async checkAll => {
       if (opts.id === "ch1_tsumugi_sketch") assert(ls.includes("……はい。葉っぱを描かない日もあるけど、いつも、この子です"));
       if (opts.id === "ch1_salaryman_change") assert(ls.includes("え、まだ決まってないの。……じゃあ、着いてから一緒に選ぼう"));
     }
-    console.log(`Compared ${scenarios.length} current/baseline scene paths: full state equal`);
+    console.log(`Compared ${scenarios.length} current/baseline scene paths: unchanged state except intentional vanilla lesson`);
   });
   for (const [label, options, touch] of [
     ["pc", { viewport: { width: 1280, height: 720 } }, false],
@@ -188,7 +205,7 @@ await suite("issue508-theme", async checkAll => {
       await advanceTo(page, "夜のtonari。いつもの時間に、いつものサラリーマンが来た。……でも、今日は少し違う。", touch);
       const normal = await snapshotPortrait(page, "normal");
       await page.screenshot({ path: `${shotDir}/${label}-salaryman-change-normal.png` });
-      await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。", touch);
+      await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。肩がほんの少しだけ下がっていた。", touch);
       const smile = await snapshotPortrait(page, "smile");
       assert.deepEqual(smile, normal, "Portrait frame moved on expression change");
       await assertFits(page, ".vn-box");
@@ -220,7 +237,7 @@ await suite("issue508-theme", async checkAll => {
       T.night.syncNightQueue(T.ch1.NIGHT_EVENTS);
       T.night.runNightPlan(T.ch1.NIGHT_EVENTS).then(() => { window.finished = true; });
     });
-    await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。", false);
+    await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。肩がほんの少しだけ下がっていた。", false);
     const saved = await page.evaluate(() => { T.core.saveToSlot("suien_remake_slot1"); return structuredClone(T.core.state); });
     assert.equal(!!saved.flags._ev_salaryman_change, false);
     await page.reload(); await page.locator(process.env.READY_SELECTOR || '[data-test="title-new"]').waitFor(); await prepare(page);
@@ -244,6 +261,6 @@ await suite("issue508-theme", async checkAll => {
     assert.deepEqual(loadedGame, onceGame, "Manual LOAD changed game state");
     assert.deepEqual(result.twice, result.reloaded, "Repeated night duplicated rewards");
     assert.deepEqual(result.reread, []);
-    assert.equal(result.lines.filter(t => t === "小さく笑って電話を切り、スマホをしまった。").length, 1);
+    assert.equal(result.lines.filter(t => t === "小さく笑って電話を切り、スマホをしまった。肩がほんの少しだけ下がっていた。").length, 1);
   });
 });

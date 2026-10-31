@@ -1,7 +1,7 @@
 // New manual pitch/PLAY contracts. Actual modules + controlled WebAudio; no real browser/listening claim.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {createMix,playDeck,pauseDeck,resumeMix,pauseMix,beatAt,setTempo,nudgeDeck,phaseError,phraseError,gains,guideNext,updateMix,dancerPose,createStageMix,scoreMix,scoreFromErr,rankFromScore} from '../previews/dj/model.mjs';
+import {createMix,playDeck,pauseDeck,resumeMix,pauseMix,beatAt,setTempo,nudgeDeck,phaseError,phraseError,gains,guideNext,updateMix,dancerPose,createStageMix,scoreMix,scoreFromErr,rankFromScore,lowCutDb,LOW_CUT_DB} from '../previews/dj/model.mjs';
 import {renderTrack,peakAt} from '../previews/dj/synth.mjs';
 import {DJAudio} from '../previews/dj/audio.mjs';
 import {TRACKS,STAGES,buildTrackData,peakAt as fullPeakAt} from '../previews/dj/tracks.mjs';
@@ -153,5 +153,10 @@ await check('stage audio loader preserves first beat, whole-song loop and trim',
 await check('pause while track loading prevents late PLAY',async()=>{
  let finish;const a=new DJAudio(Context,{stageIndex:0,detuneFactor:1,loadTracks:c=>new Promise(r=>finish=()=>r([0,1].map(id=>({...renderTrack(id,c.sampleRate),firstBeat:0,beats:32}))))});
  const pending=a.play(0);await a.pause();finish();assert.equal(await pending,false);assert.equal(a.context.sources.length,0);await a.dispose();
+});
+await check('automatic low cut follows crossfader only (no player EQ input)',async()=>{
+ assert.deepEqual(lowCutDb(0),[0,LOW_CUT_DB]);assert.deepEqual(lowCutDb(.5),[0,0]);assert.deepEqual(lowCutDb(1),[LOW_CUT_DB,0]);
+ const [a,b]=lowCutDb(.375);assert.equal(a,0);assert(Math.abs(b-LOW_CUT_DB/2)<1e-9);
+ const s=fs.readFileSync(new URL('../previews/dj/index.html',import.meta.url),'utf8');assert(!/id="eq-[^"]*"[^>]*type=|<input[^>]*eq/i.test(s),'EQ knobs are decorative, not inputs');
 });
 console.log(`DJ revision: ${groups} current controlled groups PASS; real browser/listening/capture NOT RUN.`);

@@ -86,7 +86,7 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .ga
 .title[data-layout="ds"] .title-ds-controls::before {
   content: "MAIN MENU"; display: flex; align-items: center; align-self: stretch; height: 34px; margin: 0 -22px 18px; padding: 0 14px;
   border-bottom: 1px solid #e8c27a33; background: linear-gradient(#2a1f36, #1a1324); color: #ffe2a6;
-  font-family: "Chapter Preview Dot", var(--font); font-size: 14px; letter-spacing: .08em;
+  font-family: var(--font-dot); font-size: 14px; letter-spacing: .08em;
 }
 .title[data-layout="ds"] .title-ds-visual::after {
   content: ""; position: absolute; left: 50%; top: calc(100% + 7px); width: 64px; height: 8px; transform: translateX(-50%);
@@ -103,4 +103,38 @@ body[data-screen="title"]:not(.vn-open):has(.title[data-layout="ds"]) #modal .ga
   .title[data-layout="ds"] .title-ds-caption { margin-top: 16px; font-size: 14px; }
   .title-layout-toolbar { font-size: 12px; }
   .title-layout-toolbar button, .title-layout-toolbar a { min-height: 44px; padding: 10px; }
+}
+
+/* ================================================================ 2026-10-30 縦持ちの見直し
+   タイトル原画は縦長（2:3）なので、上画面いっぱいに置いて（顔側を残して上下を少し切る）、
+   ロゴは左上の暗い帯に重ね、同じ絵のぼかしを後ろに敷かない。設定の入口はヒンジ（本編の「表示」と同じ場所）。 */
+.title[data-layout="ds"] .title-ds-visual { background: #100b19; }
+.title[data-layout="ds"] .title-art {
+  inset: 0; width: 100%; height: 100%; background-size: cover; background-position: center 28%;
+}
+.title[data-layout="ds"] .title-ds-visual::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 46%; z-index: 1; pointer-events: none; border-radius: 7px 7px 0 0;
+  background: linear-gradient(#0c0812e8, #0c081299 55%, transparent);
+}
+.title[data-layout="ds"] .title-brand { z-index: 2; inset: 8px auto auto 12px; width: min(56%, 230px); }
+.title[data-layout="ds"] .title-logo-fallback { font-size: clamp(20px, 6vw, 32px); }
+:root[data-ds-layout="stacked"] .title[data-layout="ds"] ~ .title-layout-toolbar,
+:root[data-ds-layout="stacked"] body:has(.title[data-layout="ds"]) .title-layout-toolbar {
+  top: calc(var(--ds-cy) - var(--ds-hinge) / 2 - 11px) !important; right: 10px !important;
+  padding: 0; border-radius: 11px; background: #0b0812e6 !important; border-color: #e8c27a77;
+}
+:root[data-ds-layout="stacked"] body:has(.title[data-layout="ds"]) .title-layout-toolbar:not([open]) summary {
+  min-height: 22px !important; padding: 2px 8px !important; font-size: 12px; font-weight: 700; line-height: 16px;
+}
+:root[data-ds-layout="stacked"] body:has(.title[data-layout="ds"]) .title-layout-toolbar[open] { top: calc(var(--ds-cy) + 6px) !important; }
+.title[data-layout="ds"] .title-layout-options { padding: 2px 4px 4px; }
+/* 下画面が低い端末（320×568 など）では章名の行を詰め、4項目が切れない。 */
+@media (max-height: 640px) {
+  .title[data-layout="ds"] .title-ds-controls::before { height: 26px; margin-bottom: 10px; font-size: 12px; }
+  .title[data-layout="ds"] .title-ds-controls { padding: 0 16px 8px; }
+  .title[data-layout="ds"] .title-menu { gap: 6px; }
+  .title[data-layout="ds"] .title-item { min-height: 40px; padding: 4px 10px; }
+  .title[data-layout="ds"] .ti-ja { font-size: 17px; }
+  .title[data-layout="ds"] .title-ds-caption { margin: 8px 0 2px; font-size: 12px; }
+  .title[data-layout="ds"] .title-ds-chapter { font-size: 12px; font-weight: 700; }
 }

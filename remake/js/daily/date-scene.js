@@ -9,7 +9,7 @@ export function dateVenue(id, savedId = null) {
   const exclude = { minto: "pepermint", rin: "drfookah", samechan: "shishark" }[id];
   const venues = (DB.lover?.venues || []).filter(v => v.id !== exclude);
   return venues.find(v => v.id === savedId)
-    || venues[((state.loveLevel[id] || 1) + (state.lastDate?.[id] || 0)) % venues.length];
+    || venues[((state.loveLevel[id] || 1) + (state.lastDate[id] || 0)) % venues.length];
 }
 
 export function dateScene(id, venue, { choice = null, choiceFlags = null, growth = true } = {}) {

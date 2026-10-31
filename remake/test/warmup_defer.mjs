@@ -68,9 +68,11 @@ async function loadUi() {
     "util.js": { $: () => null, el: () => ({}), sleep: (ms) => new Promise((r) => setTimeout(r, ms)), nextFrame: () => Promise.resolve() },
     "bus.js": { on: () => {} },
     "audio.js": { SE: {}, setRainAmbience: () => {} },
-    "state.js": { state: {}, STAT_KEYS: [] },
+    "state.js": { state: {}, STAT_KEYS: [], config: {} },
+    "transition-kit.js": { reducedMotion: () => false },
     "data.js": { DB: {}, displayName: () => "", faceIconUrl: () => "", allFaceIconUrls: () => FACE_URLS, assetUrl: (u) => u },
-    "stats.js": { AFFINITY_RANK_PTS: [] },
+    "stats.js": { AFFINITY_RANK_PTS: [], step: () => 1 },
+    "stat-progress.js": { nextStepProgress: () => ({}), stepOfValue: () => 1 },
     "scene-art.js": { renderSceneArt: () => {}, sceneArtUrls: () => [] },
     "weather.js": { rainScene: () => {}, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
     "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null },
@@ -175,7 +177,7 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   const engine = await fs.readFile(new URL("../js/vn/engine.js", import.meta.url), "utf8");
   const entry = engine.slice(engine.indexOf("export function play("), engine.indexOf("function sceneBgm("));
   assert.match(entry, /const fontsReady = loadVnFonts\(\)\.catch\(\(\) => \[\]\)/);
-  assert.match(entry, /const assetsReady = Promise\.all\(\[fontsReady, bgReady/);
+  assert.match(entry, /const assetsReady = Promise\.all\(\[settingsReady, fontsReady, bgReady/);
   assert(entry.indexOf("const assetsReady") < entry.indexOf("next();"), "first line starts after the font gate");
 }
 

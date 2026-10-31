@@ -209,7 +209,7 @@ await suite('reel-registration-load', async check => {
           const core = await import('./js/core/state.js');
           return JSON.parse(localStorage.getItem(core.SAVE_KEY));
         });
-        assert.equal(committed.visitedDay.c_station, 2, 'Visit day was not saved before first-spin commitment');
+        assert.equal(committed.visitedDay.c_station, undefined, 'First-spin commitment must leave the customer visit available');
         assert(!committed.flags._pakki_first_spin_pending);
         assert.equal(committed.reel.count, expected.count);
         assert.equal(Object.values(committed.stats).reduce((a, b) => a + b, 0)
@@ -217,7 +217,7 @@ await suite('reel-registration-load', async check => {
         await loadTitle(page, touch);
         await mintoNext(page, touch);
         const resumed = await snapshot(page);
-        assert.equal(resumed.visitedDay, 2);
+        assert.equal(resumed.visitedDay, null);
         assert.equal(resumed.count, committed.reel.count, 'Second interruption redrew first spin');
         assert.deepEqual(resumed.stats, committed.stats, 'Second interruption changed payout');
         assert.deepEqual(resumed.xp, committed.statXp);
@@ -233,8 +233,13 @@ await suite('reel-registration-load', async check => {
       assert.equal(after.pending, 0);
       assert.equal(after.mintoDone, false); assert.equal(after.adamDone, false);
       assert.equal(after.seed, 1);
-      assert.equal(after.visitedDay, beforeLoad.visitedDay.c_station ??
-        (beforeLoad.flags._pakki_first_spin_pending ? 2 : null));
+      assert.equal(after.visitedDay, beforeLoad.visitedDay.c_station ?? null);
+      const customerAccess = await page.evaluate(async () => {
+        const { spotAvailability } = await import('./js/daily/spot-access.js');
+        const { spotById } = await import('./js/daily/spots.js');
+        return spotAvailability(spotById('c_station'));
+      });
+      assert.equal(customerAccess.ok, true, `Registration blocked a same-day customer visit: ${customerAccess.why}`);
       if (boundary === 'legacy-no-explicit-flag') {
         assert.equal(after.count, 0, 'Inferred a first spin for a legacy installed save');
         assert.deepEqual(after.stats, receipt.stats);

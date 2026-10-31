@@ -11,9 +11,16 @@
 7. 成長（経験値・レベル・心得の盤）: 決定は [stat-design/ADDENDUM-BOARD-LAYOUT.md](stat-design/ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [stat-design/SPEC.md](stat-design/SPEC.md)（第2版）。第2版の3能力は `GROWTH_BOARD=false` の裏で未公開。プレイヤーに見える能力は従来の5種類（`gameplay_agent_reference.md`）。
 8. レビュー範囲: [review_scope.md](review_scope.md)。
 
+## UIの文字基準（#1352）
+
+- 本文・通常の操作表示・数字・通貨は `remake/css/base.css` の `--font` を使う。数字の整列は実際の字幅で確認し、`tabular-nums` の指定だけを等幅の証拠にしない。
+- ドット体は `--font-dot` を介して使う。登録された実体は400のみなので、ドット体の太さを上げて強調したことにしない。会話用の明朝と制作画面用の明朝は用途を分け、収録字・数字・記号を確認してから使う。
+- 12px未満の文字は読ませる情報に使わない。12〜13pxの文字はウェイト700以上・字間0.02em以下を目安とし、長文や重要な操作文は大きくする。実際の画面でPC・横向きスマホ・縦向きスマホの読みやすさを確認する。
+- Georgia は見出しや演出数字などの飾りに限る例外。通常UIや購買情報には使わない。装飾が情報を担う場合は、読みやすい本文書体の表示も確保する。
+
 ## 二次資料・履歴の扱い
 
-- [setting_book/](setting_book/README.md) は共同制作向けの**二次資料**。数値・価格・機材説明は `data/*.json` が正。`setting_reference.html` はそこからの生成物。
+- [archive/setting_book/](archive/setting_book/README.md) は2026-10-31に退避した旧**二次資料**（根拠にしない）。数値・価格・機材説明は `data/*.json` が正。`archive/setting_reference.html` はそこからの生成物。
 - [archive/](archive/README.md) は日付付きの引き継ぎ・計画・記録の**履歴**。ブランチ名・SHA・CI結果・「未接続」「予約待ち」は当時の状態で、新しい台詞・設定・実装の根拠にしない。`docs/qa/` は検証記録（約0.7GB）。どちらも `.claudeignore` で自動参照から外してあり、必要なときだけ開く。
 - `docs/reports/` と `docs/design/` に残るのはオーナー未決定の提案・設計案。採用扱いにしない。決まったら正本へ反映し、ファイルは `archive/` へ移す。
 - 改稿前の台本は `data/dialogue/_legacy/`。旧 `web/`・Godot版は廃止済みで、`docs/master_spec.md` に残る `web/js/` 等のパスは履歴。
@@ -23,6 +30,7 @@
 
 | 作業 | 最初に読む |
 |---|---|
+| 第2〜5章・キャラの作り込み（第1章に揃える） | [chapter_parity_audit.md](chapter_parity_audit.md)（第1章の基準チェックリストと章・キャラごとの不足） |
 | 台詞・会話イベントの追加・編集 | `.claude/skills/dialogue-edit`、`text-style`、`gameplay_agent_reference.md`、必要なら `shisha_reference.md` |
 | 設定の矛盾点検・ストーリー改善 | `.claude/skills/canon-check`、`story-review`、`review_scope.md`、`brand/` |
 | 画像・CG・立ち絵 | `.claude/skills/codex-image-prompt`、`portrait-fix`、`character-portrait-remaster`、`asset_ai_guidance.md` |

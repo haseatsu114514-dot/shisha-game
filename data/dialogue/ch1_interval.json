@@ -16,7 +16,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スマホを見ると、スミさんから「おめでとう。でも浮かれるのは今日までだ」と届いていた。"
+          "text": "スマホを見ると、スミさんから「昼から来い。今日はゆっくりでいい」と届いていた。"
         },
         {
           "speaker": "",
@@ -31,7 +31,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（アダムの静かな拍手。みんとの……笑顔）"
+          "text": "（アダムの立てた親指。みんとの……笑顔）"
         },
         {
           "speaker": "hajime",
@@ -51,7 +51,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "お疲れ。昨日の一台、いい煙だった"
+          "text": "お疲れ。今日の一台、いい煙だった"
         },
         {
           "speaker": "naru",
@@ -116,7 +116,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "県大会……？"
+          "text": "県大会……もう決まってるんですか"
         },
         {
           "speaker": "adam",
@@ -264,6 +264,13 @@
           "text": "県大会へ向かう前の、最後の夜。tonariの閉店後、一人でカウンターに座っている。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "interview_sumi",
+          "next_true": "eve_iv_sumi",
+          "next_false": ""
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（明日からまた、県大会に向けて動き出す……）"
@@ -288,7 +295,16 @@
           "face": "",
           "text": "店の電気を消して、夜の街に出た。駅の方から、遅い電車の音がぼんやりと聞こえた気がした。"
         }
-      ]
+      ],
+      "branches": {
+        "eve_iv_sumi": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "この数日で、tonariに「配信で見ました」という新規のお客さんが２人来た。"
+          }
+        ]
+      }
     }
   ]
 }

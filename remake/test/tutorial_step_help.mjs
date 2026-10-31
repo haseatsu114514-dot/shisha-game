@@ -10,6 +10,8 @@ const clockSource = await readFile(new URL("../js/craft/clock.js", import.meta.u
 
 async function harness(mode = "tutorial", override = null) {
   const observers = new Set(), sleepers = [];
+  const demos = [];
+  let saved = 0;
   let now = 0;
   class Observer {
     constructor(callback) { this.callback = callback; }
@@ -29,7 +31,7 @@ async function harness(mode = "tutorial", override = null) {
     return mod;
   };
   const help = await makeModule(helpSource, () => ({ el: () => {} }));
-  const statePort = { state: {} };
+  const statePort = { state: { flags: {} } };
   let stateModule;
   const mod = new vm.SourceTextModule(source + "\nexport function setTestBench(value) { bench = value; }", { context });
   await mod.link(spec => {
@@ -37,7 +39,8 @@ async function harness(mode = "tutorial", override = null) {
     assert(declaration, `Unexpected import ${spec}`);
     const values = Object.fromEntries(declaration[1].split(",").map(x => [x.trim(), () => {}]));
     if (spec === "./bench-ui.js") Object.assign(values, help.namespace);
-    if (spec === "../core/state.js") values.state = statePort.state;
+    if (spec === "../core/state.js") { values.state = statePort.state; values.save = () => { saved++; }; }
+    if (spec === "./demo.js") { values.demoFor = step => step === "holes" ? {} : null; values.openDemoSheet = async (_, step) => { demos.push(step); }; }
     if (spec === "../core/util.js") values.sleep = () => new Promise(resolve => sleepers.push(resolve));
     const dep = new vm.SyntheticModule(Object.keys(values), function () {
       for (const [key, value] of Object.entries(values)) this.setExport(key, value);
@@ -61,7 +64,7 @@ async function harness(mode = "tutorial", override = null) {
   mod.namespace.setTestBench(b);
   const notify = () => { for (const observer of [...observers]) observer.callback(); };
   const close = () => { guide.open = false; guide.dispatchEvent(new Event("toggle")); };
-  return { b, cs, guide, panel, root, observers, sleepers, notify, close, mod,
+  return { b, cs, guide, panel, root, observers, sleepers, notify, close, mod, demos, statePort, get saved() { return saved; },
     explain: () => mod.namespace.explainTutorialStep(cs, "steam"),
     replaceState: () => stateModule.setExport("state", {}),
     newBench: () => { const next = { ...b, explainedLessons: undefined }; mod.namespace.setTestBench(next); return next; },
@@ -69,6 +72,30 @@ async function harness(mode = "tutorial", override = null) {
     tick: ms => { now += ms; },
   };
 }
+
+test("hole demo appears once in lesson, including when skipped, and is saved", async () => {
+  const h = await harness();
+  await h.mod.namespace.showStepDemo(h.cs, "holes");
+  await h.mod.namespace.showStepDemo(h.cs, "holes");
+  assert.deepEqual(h.demos, ["holes"]);
+  assert.equal(h.statePort.state.flags.seenDemo.holes, true);
+  assert.equal(h.saved, 1);
+  const drill = await harness("drill");
+  await drill.mod.namespace.showStepDemo(drill.cs, "holes");
+  assert.equal(drill.demos.length, 0);
+});
+
+test("demo sheet pauses the craft clock during replay", async () => {
+  const h = await harness();
+  const clock = h.clock();
+  h.tick(100); assert.equal(clock.now(), 100);
+  h.root.dataset.demoPaused = "true";
+  h.tick(300); assert.equal(clock.now(), 100);
+  delete h.root.dataset.demoPaused;
+  h.tick(200); assert.equal(clock.now(), 100);
+  h.tick(50); assert.equal(clock.now(), 150);
+  clock.dispose();
+});
 
 test("steam startup explains before dismissal and restores manual help", async () => {
   const h = await harness();

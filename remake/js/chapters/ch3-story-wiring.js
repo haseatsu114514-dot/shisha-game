@@ -3,6 +3,8 @@
 import { canReadOptionalStory, selectStoryEvening } from "../core/story-routes.js";
 import { characterRegion, dueTokyoVisit, visitContacts } from "../core/tokyo-visits.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
+import { confessionLanded } from "./ch3-romance-entry.js";
+import { AFFINITY_RANK_PTS } from "../core/stats.js";
 
 /**
  * 仮置き（Q未決）: 渡航予定を持たず、第3章のあいだ東京にいる人物。面識（state.met）があれば前夜の present に加える。
@@ -17,6 +19,9 @@ export const optionalReadFlag = id => `_ch3_read_${id}`;
 
 // 任意場面の置き場。file=台詞ファイル、after=この必須/既読場面を読み終えてから、met=面識がある人物だけ。
 // afterとmetは story_routes.json の optional_requirements に足す、この章のカード上の置き方（台本は変えない）。
+// away=その人物が東京に来ている間は出さない（遠くからの連絡の場面）。
+// unsettled=その人物との関係が告白の返事でまだ着地していない間だけ出す（恋人・友達のままなら出さない）。
+// heart=その人物の通常好感度がこの段階（♥）以上の時だけ出す。恋人の絆は数えない。
 export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_minto_small_lies: { file: "ch3_double_apple", label: "みんとからの夜の通話", location: "mukaiの裏口", bg: "bg_street_night" },
   // ましろの名乗りはむかい到着の場面。到着前に、彼女の出る噂話を置かない。
@@ -32,20 +37,45 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // 台本が「東京のシーシャ店で感じた差」を受けている。違う店の手つきを見た後に置く。
   ch3_mashiro_practice: { file: "ch3_mashiro", label: "閉店後の練習", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_tokyo_shop_gap"] },
+  // 味の会話（#2022）。味を確かめる場面なので、味覚が戻った後（routes の seen）。
+  ch3_mashiro_black_tea: { file: "ch3_mashiro", label: "ブラックティーを一割", location: "mukai", bg: "bg_mukai_shop" },
   // 久世とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、久世側はmukaiへ客として来た後。
   ch3_kuze_mashiro_tea_tin: { file: "ch3_kuze_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_kuze_first"] },
   ch3_kuze_mashiro_soon_back: { file: "ch3_kuze_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_kuze_mukai_visit"] },
+  // 久世とLIMEを交換する（#2028）。助言の後、煙幕への再訪で♥1になってから。後日談の片づけで返事の欄を回収する。
+  ch3_kuze_lime: { file: "ch3_rivals", label: "返事の欄", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_kuze_advice"], heart: { kuze: 1 } },
+  // ひよりルートの tokyo_contact（#1434 決定B）。route.events と同じ条件に、mukai到着後・東京滞在中でないことを足す。
+  // ましろの告白（#1930 仮置き）。任意4場面を読み終えた後の休日に、彼女の部屋で。返事が交際／友人の着地になる。
+  confession_mashiro: { file: "confession", label: "ましろちゃんの部屋でお茶", location: "ましろの部屋", bg: "bg_home_day",
+    after: ["ch3_mashiro_play_3", "ch3_mashiro_practice"], unsettled: ["mashiro"] },
+  hiyori_tokyo_contact: { file: "hiyori", label: "ひよりからの夜の通話", location: "閉店後のmukaiの前", bg: "bg_street_night",
+    after: ["ch3_mukai_arrival"], met: ["hiyori"], away: ["hiyori"] },
+  // 第2章の煙の線・水の続き（#2026）。友人は東京へ来られないので、東京に来ていない間のビデオ通話。
+  ch3_tsumugi_slump: { file: "ch3_tsumugi", label: "つむぎからのビデオ通話", location: "mukai", bg: "bg_mukai_shop",
+    met: ["tsumugi"], away: ["tsumugi"] },
+  // ヴォルクの再訪（#2026）。初来店（DAY12夜）の後は自由時間の枠が無いので、寄り道として一度ずつ順に読む。
+  ch3_volk_second: { file: "ch3_volk", label: "鉄の煙の二度目", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+  ch3_volk_third: { file: "ch3_volk", label: "七年分の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+  ch3_volk_fourth: { file: "ch3_volk", label: "頷く順番", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
 });
 
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
 export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace"],
-  ch3_rivals: ["ch3_emil_workshop"],
-  ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice"],
+  ch3_rivals: ["ch3_emil_workshop", "ch3_kuze_lime"],
+  // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
+  ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
+    "ch3_mashiro_black_tea", "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale"],
   ch3_kuze_mashiro: ["ch3_kuze_mashiro_tea_tin", "ch3_kuze_mashiro_soon_back"],
+  hiyori: ["hiyori_tokyo_contact"],
+  ch3_tsumugi: ["ch3_tsumugi_slump"],
+  ch3_volk: ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"],
+  // 返事の場面は告白の選択肢の next_id で入る（ch3_read_confession_mashiro は返事まで読んだ時だけ立つ）。
+  confession: ["confession_mashiro", "confession_mashiro_accept", "confession_mashiro_reject"],
   // 第3章で再生しうるのは date_min_chapter が3以下の恋人だけ（あげはは第4章から）。
   tournament_dates: ["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_rin",
     "tournament_date_mashiro", "tournament_date_samechan", "tournament_date_hiyori"],
@@ -53,29 +83,17 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
     "ch3_shuraba_mashiro", "ch3_shuraba_samechan", "ch3_shuraba_hiyori", "ch3_shuraba_steve", "tournament_evening_overlap"],
 });
 
-let routesTask = null;
 /** 正本 data/story_routes.json。読み込みに失敗したら次回また取りに行く。 */
-export function loadStoryRoutes() {
-  routesTask ||= (async () => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 15000);
-    try {
-      const response = await fetch("../data/story_routes.json", { cache: "no-cache", signal: controller.signal });
-      if (!response.ok) throw new Error(`story_routes: HTTP ${response.status}`);
-      const routes = await response.json();
-      if (!Array.isArray(routes.heroine_ids) || !Array.isArray(routes.chapters?.["3"]?.optional)
-        || !routes.romance || !routes.near_conflict) throw new Error("story_routes: 形式を確認してください");
-      return routes;
-    } finally { clearTimeout(timer); }
-  })().catch(error => { routesTask = null; throw error; });
-  return routesTask;
-}
+// story_routes.json の読み込みは core/chapter-data.js（#2035）。既存の呼び出し元のために再エクスポートする。
+export { loadStoryRoutes } from "../core/chapter-data.js";
 
 /**
  * canReadOptionalStory に渡す「読み終えた場面」。実際の記録だけから組み立て、好感度や所在からは作らない。
  * - 必須場面: stage より前（章の進行が正本）。
  * - confession_minto: 返事の場面 accept が lovers へ、reject が _friend_minto へだけ書く（daily/romance.js）。
  * - ch3_national_result: 読了後に大会ランナーが立てる _ch3_tournament_won。
+ * - hiyori_work_talk: ひよりルートの読了フラグ _hiyori_work_talk_done（第1〜2章で読む仕事の相談）。
+ * - ch2_tsumugi_color: 第2章の夜の場面の既読 _ch2_read_ch2_tsumugi_color（ch2-story-data.js）。
  */
 export function chapterThreeCompletedScenes(value) {
   const done = new Set(chapterThreeScenes(value).slice(0, chapterThreeProgress(value).stage).map(scene => scene.id));
@@ -83,6 +101,8 @@ export function chapterThreeCompletedScenes(value) {
   if (flags._ch3_registration_read) done.add("ch3_registration");
   if (flags._ch3_tournament_won) done.add("ch3_national_result");
   if ((value.lovers || []).includes("minto") || flags._friend_minto) done.add("confession_minto");
+  if (flags._hiyori_work_talk_done) done.add("hiyori_work_talk");
+  if (flags._ch2_read_ch2_tsumugi_color) done.add("ch2_tsumugi_color");
   for (const id of Object.keys(CH3_OPTIONAL_SCENES)) if (flags[optionalReadFlag(id)]) done.add(id);
   return [...done];
 }
@@ -96,7 +116,10 @@ export function availableOptionalScenes(routes, value) {
     return place && !value.flags[optionalReadFlag(id)]
       && canReadOptionalStory(routes, value, id, { completedScenes })
       && (place.after || []).every(scene => completedScenes.includes(scene))
-      && (place.met || []).every(who => value.met?.[who]);
+      && (place.met || []).every(who => value.met?.[who])
+      && (place.away || []).every(who => characterRegion(value, { characters: {} }, who) !== "tokyo")
+      && (place.unsettled || []).every(who => !confessionLanded(value, who))
+      && Object.entries(place.heart || {}).every(([who, level]) => (value.affinity?.[who] || 0) >= AFFINITY_RANK_PTS[level]);
   }).map(id => ({ id, ...CH3_OPTIONAL_SCENES[id] }));
 }
 

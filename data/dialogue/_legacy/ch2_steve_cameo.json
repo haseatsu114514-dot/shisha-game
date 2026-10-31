@@ -1,0 +1,45 @@
+{
+  "comment": "#1893: data/dialogue/ch2_main.json から退避。remake/js・tests・tools から参照ゼロ。スティーブの第2章登場と『首から下げたストップウォッチ』が現行設定と不一致。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch2_steve_cameo",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookahの棚の前。ピザの箱を抱えた大柄な客が、缶の注意書きを読んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "首から下げたストップウォッチが、箱の上で揺れている。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "これ、火は弱めからでいいかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そうですね。温度を上げすぎないほうが"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "待つのが難しいんだよな。ピザだって、焼ける前に開けたくなる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は笑って缶を戻し、凛さんに配送の相談を始めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（待てない自分のために、ストップウォッチを下げてるんだ）"
+        }
+      ]
+    }
+  ]
+}

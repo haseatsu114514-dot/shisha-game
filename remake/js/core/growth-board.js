@@ -2,10 +2,10 @@
 // まだ GROWTH_BOARD の裏の試作: 盤の解放は state.stats に書き戻さない（能力の効き目の付け替えは C5）。
 import { state } from "./state.js";
 import { affinityLevel } from "./stats.js";
-import { ensureGrowth, HIDANE_KEYS, noteLit } from "./growth.js";
+import { ensureGrowth, HIDANE_KEYS, noteLit, BOARD_TOTAL } from "./growth.js";
 import {
-  BOARD_KEYS, BOARD_JA, BOARD_PREFIX, SQUARES_PER_STEP, STAT_SQUARES, STAT_RING_COUNTS, HALF_LAYOUT,
-  SKILLS, LESSONS, LESSON_MIN_STEP, RANKS, PEAK_CELL,
+  BOARD_KEYS, BOARD_JA, BOARD_PREFIX, STAT_SQUARES, BOARD_SHAPES,
+  SKILLS, LESSONS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS, GATE_TIER, FEATURES, NOTABLES,
 } from "./growth-board-data.js";
 
 export * from "./growth-board-data.js";
@@ -13,83 +13,86 @@ export * from "./growth-board-data.js";
 const cellKey = (x, y) => `${x},${y}`;
 export const HUB = "HUB";
 
-// ---------------------------------------------------------------- 盤の型（2.2）
+// ---------------------------------------------------------------- 盤の型（2.2・v9）
 
-/** 半分の道を180度回して、36マス・線・要所を作る */
-function buildLayout() {
-  const cells = new Map(), edges = [];
-  for (const rot of [1, -1]) {
-    for (const path of HALF_LAYOUT.paths) {
-      const pts = path.map(([x, y]) => [x * rot, y * rot]);
-      for (const [x, y] of pts) if (!cells.has(cellKey(x, y))) cells.set(cellKey(x, y), { x, y, special: false });
-      for (let i = 1; i < pts.length; i++) edges.push([cellKey(...pts[i - 1]), cellKey(...pts[i])]);
-    }
-    for (const [x, y] of HALF_LAYOUT.special) cells.get(cellKey(x * rot, y * rot)).special = true;
-  }
+/** 紋（0,0。盤の下の端）の隣: 左・右・上の3つ */
+const isHubSide = (x, y) => Math.abs(x) + Math.abs(y) === 1 && y <= 0;
+
+/** 盤ごとの型: マス（座標・種類・章・恩恵・紋からの道のり・帯）と線 */
+function buildLayout(board) {
+  const shape = BOARD_SHAPES[board];
+  const cells = new Map(shape.cells.map(([key, kind, ring, perk, feature, notable]) => {
+    const [x, y] = key.split(",").map(Number);
+    return [key, { key, x, y, kind, ring, perk, feature, notable }];
+  }));
   const adj = {};
-  for (const [a, b] of edges) { (adj[a] ??= []).push(b); (adj[b] ??= []).push(a); }
-  // 紋からの近さ（道を歩いた数）。紋の上下左右の隣が1
-  const dist = {}, queue = [];
-  for (const c of cells.values()) if (Math.abs(c.x) + Math.abs(c.y) === 1) { dist[cellKey(c.x, c.y)] = 1; queue.push(cellKey(c.x, c.y)); }
-  while (queue.length) {
-    const u = queue.shift();
-    for (const v of adj[u] || []) if (dist[v] == null) { dist[v] = dist[u] + 1; queue.push(v); }
+  for (const [a, b] of shape.edges) {
+    if (!cells.has(a) || !cells.has(b)) throw new Error(`${board} の線 ${a}-${b} が盤に無いマスを指す`);
+    (adj[a] ??= []).push(b); (adj[b] ??= []).push(a);
   }
-  for (const c of cells.values()) c.dist = dist[cellKey(c.x, c.y)];
-  return { cells: [...cells.values()], edges, adj };
+  const dist = {}, queue = [];
+  for (const c of cells.values()) if (isHubSide(c.x, c.y)) { dist[c.key] = 1; queue.push(c.key); }
+  while (queue.length) { const u = queue.shift(); for (const v of adj[u] || []) if (dist[v] == null) { dist[v] = dist[u] + 1; queue.push(v); } }
+  for (const c of cells.values()) c.dist = dist[c.key];
+  // 帯（SBD62）: 関門を通らずに届くか。届く中で第1章なら「近く」、それ以外は「中ほど」、関門を通るなら「関門の先」
+  const free = new Set(), q2 = [];
+  for (const c of cells.values()) if (isHubSide(c.x, c.y) && c.kind !== "gate") { free.add(c.key); q2.push(c.key); }
+  while (q2.length) { const u = q2.shift(); for (const v of adj[u] || []) if (!free.has(v) && cells.get(v).kind !== "gate") { free.add(v); q2.push(v); } }
+  for (const c of cells.values()) c.band = c.kind === "gate" ? 2 : !free.has(c.key) ? 3 : c.ring === 1 ? 1 : 2;
+  return { cells: [...cells.values()], edges: shape.edges, adj };
 }
-export const LAYOUT = Object.freeze(buildLayout());
-
-const ringOfStatIndex = (i) => { // i は 0 始まり
-  let left = i;
-  for (let r = 0; r < STAT_RING_COUNTS.length; r++) { if (left < STAT_RING_COUNTS[r]) return r + 1; left -= STAT_RING_COUNTS[r]; }
-  return STAT_RING_COUNTS.length;
-};
+export const LAYOUTS = Object.freeze(Object.fromEntries(BOARD_KEYS.map((b) => [b, Object.freeze(buildLayout(b))])));
 
 /**
- * 盤ごとのマス。スキル・授業・極みはデータの要所（cell）に置き、使わない要所は盤に出さない。
- * 能力のマスは、その章の要所へ届く道のマスほど早い章に入れ、残りは紋に近い順（章の数は 12・6・3・3・3）。
+ * 盤ごとのマス。能力のマス（B1…）は章の早い順・紋に近い順に番号を振る。関門は BG1…。
+ * スキル・授業・極みはデータの要所（cell）に置き、使わない要所は盤に出さない。
  */
 function buildNodes() {
-  // 紋から各マスへの道（木なので一通り）
-  const prev = {}, queue = [];
-  for (const c of LAYOUT.cells) if (Math.abs(c.x) + Math.abs(c.y) === 1) { prev[cellKey(c.x, c.y)] = null; queue.push(cellKey(c.x, c.y)); }
-  while (queue.length) { const u = queue.shift(); for (const v of LAYOUT.adj[u] || []) if (!(v in prev)) { prev[v] = u; queue.push(v); } }
-  const route = (cell) => { const out = []; for (let c = prev[cell]; c; c = prev[c]) out.push(c); return out; };
-  const byCell = Object.fromEntries(LAYOUT.cells.map((c) => [cellKey(c.x, c.y), c]));
   const nodes = [];
   for (const board of BOARD_KEYS) {
+    const layout = LAYOUTS[board], byKey = Object.fromEntries(layout.cells.map((c) => [c.key, c]));
+    const order = (a, b) => a.ring - b.ring || a.dist - b.dist || Math.atan2(a.y, a.x) - Math.atan2(b.y, b.x);
+    const statCells = layout.cells.filter((c) => c.kind === "stat").sort(order);
+    const stats = statCells.map((c, i) => ({ id: `${BOARD_PREFIX[board]}${i + 1}`, kind: "stat", board, cost: 1, index: i + 1, cell: c.key }));
+    const peak = byKey[PEAK_CELL[board]];
+    stats.push({ id: `${BOARD_PREFIX[board]}${stats.length + 1}`, kind: "stat", board, cost: 1, index: stats.length + 1, cell: peak.key, peak: true });
+    if (stats.length !== STAT_SQUARES[board]) throw new Error(`${board} の能力のマスの数が合わない`);
+    const gates = layout.cells.filter((c) => c.kind === "gate").sort(order)
+      .map((c, i) => ({ id: `${BOARD_PREFIX[board]}G${i + 1}`, kind: "gate", board, cost: 1, cell: c.key }));
     const spots = [
       ...SKILLS.filter((s) => s.board === board).map((s) => ({ ...s, kind: "skill" })),
       ...LESSONS.filter((l) => l.board === board).map((l) => ({ ring: 1, ...l, kind: "lesson", cost: 0 })),
     ];
-    const peakCell = PEAK_CELL[board];
-    // 道のマスが要る章（一番早い章）
-    const need = {};
-    for (const spot of [...spots, { cell: peakCell, ring: 5 }]) {
-      for (const c of route(spot.cell)) need[c] = Math.min(need[c] ?? 9, spot.ring);
+    for (const spot of spots) {
+      const c = byKey[spot.cell];
+      if (!c || c.kind !== "spot") throw new Error(`${spot.id} のマス ${spot.cell} が要所でない`);
+      if (c.ring > spot.ring) throw new Error(`${spot.id} は第${spot.ring}章に届けたいが、要所が第${c.ring}章`);
     }
-    const regular = LAYOUT.cells.filter((c) => !c.special).map((c) => cellKey(c.x, c.y))
-      .sort((a, b) => (need[a] ?? 9) - (need[b] ?? 9) || byCell[a].dist - byCell[b].dist
-        || Math.abs(byCell[a].y) - Math.abs(byCell[b].y) || Math.atan2(byCell[a].y, byCell[a].x) - Math.atan2(byCell[b].y, byCell[b].x));
-    const stats = Array.from({ length: STAT_SQUARES }, (_, i) => ({
-      id: `${BOARD_PREFIX[board]}${i + 1}`, kind: "stat", board, ring: ringOfStatIndex(i), cost: 1, index: i + 1,
-      cell: i === STAT_SQUARES - 1 ? peakCell : regular[i], peak: i === STAT_SQUARES - 1 || undefined,
-    }));
-    nodes.push(...stats, ...spots);
+    nodes.push(...stats, ...gates, ...spots);
   }
   const at = {};
   for (const n of nodes) {
-    const c = byCell[n.cell];
-    if (!c) throw new Error(`${n.id} のマス ${n.cell} が盤に無い`);
+    const c = LAYOUTS[n.board].cells.find((x) => x.key === n.cell);
     if (at[`${n.board}:${n.cell}`]) throw new Error(`${n.id} と ${at[`${n.board}:${n.cell}`]} が同じマス`);
-    Object.assign(n, { gx: c.x, gy: c.y });
+    Object.assign(n, { gx: c.x, gy: c.y, ring: c.ring, band: c.band, ...((n.kind === "stat" || n.kind === "gate") && c.perk ? { perk: c.perk } : {}),
+      ...(n.kind === "stat" && c.feature ? { feature: c.feature } : {}), ...(n.kind === "stat" && c.notable ? { notable: c.notable } : {}) });
+    if (n.feature && FEATURES[n.feature]?.board !== n.board) throw new Error(`${n.id} の✦ ${n.feature} が盤に合わない`);
+    if (n.notable && NOTABLES[n.notable]?.board !== n.board) throw new Error(`${n.id} の要 ${n.notable} が盤に合わない`);
     at[`${n.board}:${n.cell}`] = n.id;
   }
   for (const n of nodes) {
-    n.links = (LAYOUT.adj[n.cell] || []).map((k) => at[`${n.board}:${k}`]).filter(Boolean);
-    if (Math.abs(n.gx) + Math.abs(n.gy) === 1) n.links.push(HUB);
+    n.links = (LAYOUTS[n.board].adj[n.cell] || []).map((k) => at[`${n.board}:${k}`]).filter(Boolean);
+    if (isHubSide(n.gx, n.gy)) n.links.push(HUB);
     Object.freeze(n.links);
+  }
+  // 授業の小道: 授業のマスにつながる能力のマスは、その人に会うまで盤に出さない（2026-10-30 オーナー採用）
+  const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
+  for (const lesson of nodes.filter((n) => n.kind === "lesson")) {
+    // 授業にしかつながらない能力のマスだけが小道（一周の道の角のように、ほかへも続くマスは小道にしない）
+    for (const id of lesson.links) {
+      const n = byId[id];
+      if (n?.kind === "stat" && n.links.filter((l) => l !== lesson.id).length <= 1 && !n.links.includes(HUB)) Object.assign(n, { trail: lesson.id });
+    }
   }
   return nodes.map(Object.freeze);
 }
@@ -99,9 +102,22 @@ export const NODE_BY_ID = Object.freeze(Object.fromEntries(NODES.map((n) => [n.i
 export const BOARD_TOTAL_COST = NODES.reduce((n, node) => n + node.cost, 0);
 export const boardNodes = (board) => NODES.filter((n) => n.board === board);
 
+const fmtNum = (v) => String(Math.round(v * 10) / 10);
+/** 普通のマスの恩恵（SBD59・SBD62）。能力のマスでなければ null。極みは基礎。強さは帯の倍率（近く×1・中ほど×2・関門の先×3） */
+export function perkOf(node) {
+  if (node?.kind !== "stat" && !(node?.kind === "gate" && node.perk)) return null;
+  const def = SQUARE_PERKS[node.board];
+  const perk = (!node.peak && def.perks[node.perk]) || def.base;
+  // 色の台座は台座の能力（SBD89）
+  const tier = node.kind === "gate" ? GATE_TIER : PERK_TIERS[node.band] || PERK_TIERS[1];
+  const notable = node.notable ? NOTABLES[node.notable] : null;
+  const mult = tier.mult * (notable?.bonus || 1);
+  return { ...perk, tier: node.kind === "gate" ? "gate" : node.band, tierName: tier.name, notable, text: perk.text.replace(/\{([\d.]+)\}/g, (_, v) => fmtNum(Number(v) * mult)) };
+}
+
 export const nodeLabel = (node) => node.kind === "stat"
-  ? `${BOARD_JA[node.board]}のマス${node.peak ? "（極み）" : ""}` : node.kind === "lesson" ? `授業「${node.name}」` : `スキル「${node.name}」`;
-export const rankOfStep = (board, step) => RANKS[board][Math.min(4, Math.floor((step - 1) / 2))];
+  ? `${BOARD_JA[node.board]}のマス${node.peak ? "（極み）" : ""}` : node.kind === "gate" ? `${BOARD_JA[node.board]}の色の台座`
+  : node.kind === "lesson" ? `授業「${node.name}」` : `スキル「${node.name}」`;
 
 // ---------------------------------------------------------------- 規則（2.3）
 
@@ -119,15 +135,36 @@ export function statCount(board, unlocked) {
     if (node.kind === "stat") n++;
     else if (node.kind === "lesson" && node.reward === "stat") n += node.bonus || 0;
   }
-  return Math.min(STAT_SQUARES, n);
+  return Math.min(STAT_SQUARES[board], n);
 }
-/** 段 s＝1＋（能力のマス÷3 の切り捨て）。10段まで（3.1） */
-export const stepOf = (board, unlocked) => Math.min(10, 1 + Math.floor(statCount(board, unlocked) / SQUARES_PER_STEP));
-/** 連続して効くものの割合 t（0〜1） */
-export const statRatio = (board, unlocked) => statCount(board, unlocked) / STAT_SQUARES;
+/** 盤の伸び（SBD63「段の概念は無くす。盤の伸びをステータスグラフに」）: 灯した能力のマスの割合 0〜1 */
+export const statRatio = (board, unlocked) => statCount(board, unlocked) / STAT_SQUARES[board];
+
+/** 恩恵ごとの合計（盤の右のパネルの横棒）。[{ key, glyph, name, text（合計を入れた文）, sum, max }] */
+export function perkTotals(board, unlocked) {
+  const def = SQUARE_PERKS[board], fmt = (v) => String(Math.round(v * 10) / 10);
+  return Object.entries(def.perks).map(([key, perk]) => {
+    const unit = Number(/\{([\d.]+)\}/.exec(perk.text)?.[1] || 0);
+    let sum = 0, max = 0;
+    for (const n of boardNodes(board)) {
+      if (n.perk !== key || n.peak || (n.kind !== "stat" && n.kind !== "gate")) continue;
+      const v = unit * (n.kind === "gate" ? GATE_TIER.mult : PERK_TIERS[n.band]?.mult || 1) * (n.notable ? NOTABLES[n.notable]?.bonus || 1 : 1);
+      max += v;
+      if (unlocked.has(n.id)) sum += v;
+    }
+    return { key, glyph: perk.glyph, name: perk.name, text: perk.text.replace(/\{[\d.]+\}/, fmt(sum)), sum, max };
+  });
+}
+
+/** ✦のマスで開いた「できること」（その盤の分。灯したかどうかつき） */
+export const featuresOf = (board, unlocked) => boardNodes(board).filter((n) => n.feature)
+  .map((n) => ({ ...FEATURES[n.feature], key: n.feature, node: n.id, on: unlocked.has(n.id) }));
+
+/** その盤の能力のマス（極みを除く）が全部灯っているか。極みはその時だけ灯せる（SBD63） */
+export const statsFilled = (board, unlocked) => boardNodes(board).every((n) => n.kind !== "stat" || n.peak || unlocked.has(n.id));
 
 /** 線でつながった隣が灯っている（か、紋の隣） */
-export const connected = (node, unlocked) => node.links.some((id) => id === HUB || unlocked.has(id));
+export const connected = (node, unlocked) => node.peak ? statsFilled(node.board, unlocked) : node.links.some((id) => id === HUB || unlocked.has(id));
 
 /** 授業の相手に会っているか（スミさんは最初から） */
 export function hasMet(who, s = state) {
@@ -136,30 +173,71 @@ export function hasMet(who, s = state) {
 }
 const heartOf = (who, s) => s === state ? affinityLevel(who) : 0;
 
+/**
+ * 授業の中身（誰の・何の授業か）が分かっているか（2026-10-30 オーナー「まだ辿り着いてない章のキャラの授業は隠しておきたい。
+ * ただ先の内容も何があるかは見える。名前は？？？とか内容も伏せる」SBD67）。
+ * 授業のマスはいつも盤に出る。分かるのは、その人に会っていて、授業の章まで物語が進んだ時（シェイクは正体が明かされてから）。
+ * 一度灯したものは分かったまま。分からない間は「？」の札で、名前・顔・中身を伏せ、灯せない。
+ */
+export function lessonKnown(node, g, s = state) {
+  const lesson = node.kind === "lesson" ? node : node.trail ? NODE_BY_ID[node.trail] : null;
+  if (!lesson) return true;
+  if (g?.nodes?.includes(node.id) || g?.nodes?.includes(lesson.id)) return true;
+  if (lesson.revealFlag && !s?.flags?.[lesson.revealFlag]) return false;
+  return hasMet(lesson.who, s) && lesson.ring <= ringsOpen(s);
+}
+/** 盤に出すか: 授業も含めて全部出す（中身を伏せるのは lessonKnown）。前の名前のまま残す */
+export const lessonShown = () => true;
+
 /** 授業の錠。開いていれば null、閉じていれば足りないものの内訳 */
 export function lessonLock(node, unlocked, s = state) {
   if (node.kind !== "lesson") return null;
-  const step = stepOf(node.board, unlocked), heart = node.need ? heartOf(node.who, s) : 0;
-  const lack = { step: step < LESSON_MIN_STEP, heart: !!node.need && heart < node.need, met: hasMet(node.who, s) };
-  return lack.step || lack.heart ? { ...lack, stepNow: step, heartNow: heart } : null;
+  const heart = node.need ? heartOf(node.who, s) : 0;
+  const lack = { heart: !!node.need && heart < node.need, met: hasMet(node.who, s) };
+  return lack.heart ? { ...lack, heartNow: heart } : null;
 }
 
-/** 払い方。その盤の色の火種を先に使い、足りない分を万能で（1.9）。払えなければ null */
-export function paymentFor(node, hidane) {
+/**
+ * 払い方（1.9。2026-10-30 #1801 の引継ぎ B「色の火種で詰まらない」）。払えなければ null。
+ * - 能力のマス・スキルは **万能を先に** 使う。足りない分だけ、その盤の色を使う。ただし、まだ越えていない
+ *   関門の数（ctx.reserve）ぶんの色は残す（色を普通のマスに使い切って関門を越えられなくならないように）。
+ * - 関門は色つきの火種1つ。その盤の色を先に、無ければほかの色でもよい。受け取りが上限に届いて
+ *   もう色が来ない時（ctx.capped）だけ、万能1つでも越えられる（総量は増やさない）。
+ */
+export function paymentFor(node, hidane, ctx = {}) {
   if (!node.cost) return {};
+  if (node.kind === "gate") {
+    const color = [node.board, ...BOARD_KEYS.filter((b) => b !== node.board)].find((b) => (hidane[b] || 0) >= node.cost);
+    if (color) return { [color]: node.cost };
+    return ctx.capped && (hidane.any || 0) >= node.cost ? { any: node.cost } : null;
+  }
   const pay = {};
   let left = node.cost;
-  const own = Math.min(left, hidane[node.board] || 0);
-  if (own) { pay[node.board] = own; left -= own; }
   const any = Math.min(left, hidane.any || 0);
   if (any) { pay.any = any; left -= any; }
+  const colored = BOARD_KEYS.reduce((n, b) => n + (hidane[b] || 0), 0);
+  const spare = Math.max(0, colored - (ctx.reserve || 0));
+  let free = spare;
+  const own = Math.min(left, hidane[node.board] || 0, free);
+  if (own) { pay[node.board] = own; left -= own; free -= own; }
+  // もう火種が来ない時だけ、ほかの盤の色でも払える（色の行き違いで最後のマスが取れなくならないように）
+  if (ctx.capped) for (const b of BOARD_KEYS) {
+    if (b === node.board || left <= 0) continue;
+    const n = Math.min(left, hidane[b] || 0, free);
+    if (n) { pay[b] = n; left -= n; free -= n; }
+  }
   return left > 0 ? null : pay;
+}
+/** 払い方の前提: まだ越えていない関門の数と、受け取りが上限に届いたか */
+export function payContext(g, unlocked) {
+  const reserve = NODES.filter((n) => n.kind === "gate" && !unlocked.has(n.id)).length;
+  return { reserve, capped: (g.earned || 0) >= BOARD_TOTAL };
 }
 const spend = (hidane, pay) => { for (const [k, n] of Object.entries(pay)) hidane[k] -= n; };
 
 /** そのマスが今の積み方で取れるか（火種は見ない） */
-function reachable(node, unlocked, s) {
-  return node.ring <= ringsOpen(s) && !lessonLock(node, unlocked, s) && connected(node, unlocked);
+function reachable(node, unlocked, s, g) {
+  return node.ring <= ringsOpen(s) && lessonKnown(node, g, s) && !lessonLock(node, unlocked, s) && connected(node, unlocked);
 }
 
 /**
@@ -176,8 +254,8 @@ export function replay(g, pendingIds, s = state) {
     progress = false;
     for (const id of rest) {
       const node = NODE_BY_ID[id];
-      if (!reachable(node, unlocked, s)) continue;
-      const pay = paymentFor(node, hidane);
+      if (!reachable(node, unlocked, s, g)) continue;
+      const pay = paymentFor(node, hidane, payContext(g, unlocked));
       if (!pay) continue;
       spend(hidane, pay);
       unlocked.add(id);
@@ -187,20 +265,20 @@ export function replay(g, pendingIds, s = state) {
     }
     rest = rest.filter((id) => !unlocked.has(id));
   }
-  return { pending: kept, unlocked, hidane, pays };
+  return { pending: kept, unlocked, hidane, pays, ctx: payContext(g, unlocked) };
 }
 
 /**
  * マスの状態（6.2）: unlocked | pending | available | short | far（まだつながっていない）
- * | locked（章で開く）| sealed（授業の錠）
+ * | locked（章で開く）| sealed（授業の錠。会っていない・♥が足りない）
  */
 export function nodeStatus(node, g, view, s = state) {
   if (g.nodes.includes(node.id)) return "unlocked";
   if (view.pending.includes(node.id)) return "pending";
   if (node.ring > ringsOpen(s)) return "locked";
-  if (lessonLock(node, view.unlocked, s)) return "sealed";
+  if (lessonLock(node, view.unlocked, s) || !lessonKnown(node, g, s)) return "sealed";
   if (!connected(node, view.unlocked)) return "far";
-  return paymentFor(node, view.hidane) ? "available" : "short";
+  return paymentFor(node, view.hidane, view.ctx) ? "available" : "short";
 }
 
 /** 仮置きを確定する。払った種類を記録し（組み直しで同じ種類に戻すため）、確定したマスを返す */
@@ -213,7 +291,6 @@ export function commitPending(pendingIds, s = state) {
     g.paid[id] = view.pays[id];
     spend(g.hidane, view.pays[id]);
     noteLit(g, node.board, node.cost);
-    for (const key of node.unlocks || []) s.flags[key] = true; // 授業で開く今のゲームのしくみ（アタック・炭）
   }
   if (view.pending.includes(g.target)) g.target = null;
   return view.pending.map((id) => NODE_BY_ID[id]);
@@ -225,6 +302,18 @@ export function commitPending(pendingIds, s = state) {
 export function pathTo(id, unlocked) {
   const goal = NODE_BY_ID[id];
   if (!goal) return { cost: 0, path: [] };
+  // 極みは道でなく「その盤の能力のマスを全部」: 残りの能力のマスへの道を近い順につないで、最後に極み
+  if (goal.peak) {
+    const have = new Set(unlocked), path = [];
+    for (;;) {
+      const rest = boardNodes(goal.board).filter((n) => n.kind === "stat" && !n.peak && !have.has(n.id));
+      if (!rest.length) break;
+      const next = rest.map((n) => pathTo(n.id, have)).sort((a, b) => a.cost - b.cost)[0];
+      for (const step of next.path) { have.add(step); path.push(step); }
+    }
+    if (!unlocked.has(id)) path.push(id);
+    return { cost: path.reduce((n, step) => n + NODE_BY_ID[step].cost, 0), path };
+  }
   const nodes = boardNodes(goal.board);
   const dist = { [HUB]: 0 }, prev = {}, done = new Set(), queue = [HUB];
   const linksOf = (u) => u === HUB ? nodes.filter((n) => n.links.includes(HUB)).map((n) => n.id) : NODE_BY_ID[u].links;
@@ -265,10 +354,14 @@ export function ringFill(g, ring) {
   return { got, total };
 }
 
-/** 今の盤で使い道のある火種があるか（未使用の印を出す条件。REPORT R6） */
+/**
+ * 今の盤でできることがあるか（内省に入れる・未使用の印の条件。REPORT R6）。
+ * 火種で灯せるマスに加えて、火種いらずの授業が受けられる時も true（2026-10-30 オーナー
+ * 「火種が隣接してる授業は章的に開放されてたら無料で受けられる」。#1801 引継ぎ A）。
+ */
 export function hasUsableHidane(g, s = state) {
   const view = replay(g, [], s);
-  return NODES.some((node) => node.cost > 0 && nodeStatus(node, g, view, s) === "available");
+  return NODES.some((node) => nodeStatus(node, g, view, s) === "available");
 }
 
 /** その盤で今取れるマスの数（札の印） */

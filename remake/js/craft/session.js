@@ -6,7 +6,7 @@ import { el, sleep, rand } from "../core/util.js";
 import { showScreen, setBg, retire, layers, flash, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
-import { state, timeOfDay } from "../core/state.js";
+import { state, timeOfDay, save } from "../core/state.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
 import { buildWorkerScene, WORKER_STEPS, benchBgRef } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
@@ -32,6 +32,7 @@ import { warmCraftAssets } from "./readiness.js";
 import { prepareBenchEntry } from "./loading.js";
 import { applyCoalTraining } from "./coals.js";
 import { attachBenchAppearance } from "../appearance/bench.js";
+import { demoFor, openDemoSheet } from "./demo.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -254,6 +255,13 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   const lesson = b.cs.mode === "tutorial" ? b.cs.lessonHelp?.[lessonStep] || TUTORIAL_STEP_HELP[lessonStep] : null;
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
+  if (demoFor(lessonStep)) {
+    const link = el("button.bench-demo-link", { type: "button", text: "お手本を見る" });
+    link.addEventListener("click", () => {
+      if (bench === b && b.panel.dataset.step === id && !b.root.dataset.demoPaused) openDemoSheet(b.root, lessonStep);
+    });
+    b.hint.append(" ", link);
+  }
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText && !lesson;
   b.guide.note.textContent = lesson
@@ -279,6 +287,17 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   if (id === "steam") b.thermal.update(temperatureAfterSteam(b.cs, 0));
   if (["pull", "care"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
   return b.panel;
+}
+
+/** 初回レッスンの工程だけ、操作開始前にお手本を一度見せる。 */
+export async function showStepDemo(cs, step) {
+  const b = bench;
+  if (cs.mode !== "tutorial" || craftTest.auto || !demoFor(step) || !b || b.cs !== cs || !b.root.isConnected) return;
+  const seenDemo = state.flags.seenDemo ||= {};
+  if (seenDemo[step]) return;
+  seenDemo[step] = true; // とばしても既読。再度見たいときは brief のリンクから開ける。
+  if (!cs.preview) save();
+  await openDemoSheet(b.root, step);
 }
 
 /** 同じ一台の実温度を、蒸らし以降の背景と煙の絵へ返す。 */

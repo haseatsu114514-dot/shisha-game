@@ -35,6 +35,25 @@ const snapshot = page => page.evaluate(() => ({ money: S.core.state.money, stock
 await suite("shop-ui", async check => {
   const selected = process.env.TEST_CASES?.split(",");
   const run = (name, body, options = {}) => !selected || selected.includes(name) ? check(name, body, { reducedMotion: "reduce", ...options }) : Promise.resolve();
+  await run('af-vanilla-stock-and-craft-art', async page => {
+    await setup(page);
+    await page.evaluate(() => { S.core.save(); S.core.newGame(); S.core.load(); });
+    assert.equal((await snapshot(page)).stock.vanilla, 20, 'Saved vanilla stock keeps its ID and grams');
+    await open(page);
+    assert.match(await page.locator('[data-test="detail-vanilla"] b').innerText(), /アルファーヘブン バニラ/);
+    await tap(page, 'buy-vanilla'); await tap(page, 'shop-checkout');
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(S.core.SAVE_KEY)));
+    assert.equal(saved.flavorStock.vanilla, 70);
+    assert.equal(saved.money, 11050);
+    const source = await page.evaluate(async () => {
+      const art = S.shop.flavorPackageArt('vanilla');
+      S.ui.showScreen(art);
+      const image = art.querySelector('img'); await image.decode();
+      return { url: image.src, width: image.naturalWidth, maker: S.data.DB.flavorById.vanilla.maker };
+    });
+    assert(source.url.endsWith('/af-vanilla/vanilla.webp'));
+    assert.equal(source.width, 512); assert.equal(source.maker, 'af');
+  });
   for (const [platform, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }], ["compact", { viewport: { width: 800, height: 600 } }]]) {
     await run(`${platform}-product-art-legacy-save`, async page => {
       await setup(page);
@@ -78,7 +97,7 @@ await suite("shop-ui", async check => {
       assert.deepEqual(flavors.filter(row => row.kind === 'botanical').map(row => row.id), []);
       assert.equal(new Set(flavors.filter(row => ADOPTED.includes(row.id)).map(row => row.url)).size, 18, 'Adopted flavor cartons remain distinct');
       for (const row of flavors.filter(row => ADOPTED.includes(row.id))) {
-        assert(row.url.includes(`/${REMAINING.includes(row.id) ? 'remaining8' : 'heaven10'}/${row.id}.webp`));
+        assert(row.url.includes(`/${row.id === 'vanilla' ? 'af-vanilla' : REMAINING.includes(row.id) ? 'remaining8' : 'heaven10'}/${row.id}.webp`));
       }
       for (const id of await page.evaluate(() => S.shop.SHOP_FLAVORS)) {
         const button = page.locator(`[data-test="detail-${id}"]`);
@@ -364,6 +383,45 @@ await suite("shop-ui", async check => {
     await tap(page, 'buy-blueberry'); await tap(page, 'shop-checkout'); await tap(page, 'shop-leave');
     assert.equal((await snapshot(page)).stock.blueberry, 51); assert.equal((await snapshot(page)).money, 0);
   });
+  for (const [platform, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await run(`${platform}-goods-sell-confirm`, async page => {
+      await setup(page);
+      await page.evaluate(() => {
+        S.core.state.owned.push('hagal_80beat');
+        S.core.state.goods = [{ name: '限定コラボ・ガラスハガル', sell: 6000 }, { name: '小物B', sell: 20 }];
+        S.core.save();
+      });
+      await open(page); await page.locator('[data-tab="sell"]').click();
+      const goodsState = () => page.evaluate(() => ({ money: S.core.state.money, goods: S.core.state.goods,
+        saved: localStorage.getItem(S.core.SAVE_KEY) }));
+      const before = await goodsState();
+      const sell = page.locator('.shop-row').filter({ hasText: '限定コラボ・ガラスハガル' }).getByRole('button');
+      await sell.click();
+      assert.match(await page.locator('.shop-dialog').innerText(), /限定コラボ・ガラスハガルを6,000円で売りますか？/);
+      assert.deepEqual(await goodsState(), before);
+      // 背後の別の行を強制クリックしても確認を差し替えない。
+      await page.locator('.shop-row').filter({ hasText: '小物B' }).getByRole('button').evaluate(b => b.click());
+      await page.locator('[data-test="sell-hagal_80beat"]').evaluate(b => b.click());
+      assert.match(await page.locator('.shop-dialog').innerText(), /ガラスハガル/);
+      await page.getByRole('button', { name: 'やめる', exact: true }).click();
+      assert.deepEqual(await goodsState(), before);
+      await sell.click(); await tap(page, 'shop-sell-confirm');
+      const after = await goodsState();
+      assert.equal(after.money, before.money + 6000);
+      assert.deepEqual(after.goods, [{ name: '小物B', sell: 20 }]);
+      assert.deepEqual(JSON.parse(after.saved).goods, after.goods);
+      assert.equal(JSON.parse(after.saved).money, after.money);
+      await page.evaluate(() => S.core.load());
+      assert.deepEqual(await goodsState(), after, 'sale survives load');
+      await page.evaluate(() => S.ui.clearScreen());
+      await open(page); await page.locator('[data-tab="sell"]').click();
+      await page.locator('.shop-row').filter({ hasText: '小物B' }).getByRole('button').click();
+      await page.evaluate(() => S.core.newGame());
+      const fresh = await goodsState();
+      await tap(page, 'shop-sell-confirm');
+      assert.deepEqual(await goodsState(), fresh, 'confirmation after new game must be inert');
+    }, options);
+  }
   await run('equipment-sell-kuji', async page => {
     await setup(page); await page.evaluate(() => { S.core.state.owned.push('suyaki_minto'); }); await open(page);
     await page.locator('[data-tab="equip"]').click();

@@ -1,0 +1,7 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "endpoint": "edits",
+ "input": "chr_master_hookah_normal.png (#2077) padded to 1024x1536 at (64,168)",
+ "prompt": "Edit this character sprite: change ONLY his facial expression to a quiet melancholic expression, eyes lowered, brows slanted sadly, mouth closed, wistful. Keep exactly the same person, same face shape, white braid, eyebrows, mustache and beard, same crimson robe, cape, sash with shisha hose, same arms-folded pose, same body position and size, same art style and colors. No smoke anywhere, no hand smoke. Full body, fully transparent background.",
+ "time": "2026-10-31T14:18:31.183793"
+}

@@ -9,6 +9,7 @@
 // マップ訪問では日は進まない。進むのは endChapterFourDay（宿でその日を終える）と前夜の終了だけ。
 
 import { MAX_MONEY } from "../core/rules.js";
+import { resetChapterFourCraft } from "./ch4-tournament-state.js";
 
 // 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
 export const CH4_PRIZE = 200000;
@@ -16,6 +17,7 @@ export const CH4_PRIZE = 200000;
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // ドバイ専用の背景が無いので、全て既存 bg の流用。#1177 でドバイ素材に差し替える時はこの表だけ直す。
 export const CH4_PLACE_BG = Object.freeze({
+  mosque: "bg_dubai_map_dusk", // 内省の現行代替背景を維持（#1788 の画像選別は別作業）
   map: "bg_dubai_map",            // #1177 選定マップ（ch4_dubai_10・真昼）
   mapDusk: "bg_dubai_map_dusk",   // #1177 候補4（ch4_dubai_04・夕景）。前夜日（DAY4）の自由行動マップに使う
   souq: "bg_street_day",          // 仮置き bg（#1177 でドバイ素材に差し替え）
@@ -127,6 +129,16 @@ export const CH4_SCENE_FILES = Object.freeze({
     ...CH4_RESOLUTION.map(scene => scene.id),
   ].filter((id, index, all) => all.indexOf(id) === index)),
   ch4_spots: Object.freeze(["ch4_dubai_souq", "ch4_dubai_cafe"]),
+});
+
+// ヒロイン来訪の台本（読込登録だけ）。到着・約束の再生条件は #516 で決めるため、ここでは再生しない。
+export const CH4_VISITOR_SCENE_FILES = Object.freeze({
+  ch4_mashiro_dubai: Object.freeze(["ch4_mashiro_dubai_friend", "ch4_mashiro_dubai_girlfriend"]),
+  ch4_visitors: Object.freeze(["ch4_samechan_dubai_girlfriend", "ch4_hiyori_dubai_girlfriend"]),
+  ch4_tsumugi_dubai: Object.freeze(["ch4_tsumugi_dubai_girlfriend"]),
+  ch4_minto_dubai: Object.freeze(["ch4_minto_dubai_girlfriend"]),
+  ch4_rin_dubai: Object.freeze(["ch4_rin_dubai_girlfriend"]),
+  ch4_ageha_dubai: Object.freeze(["ch4_ageha_dubai_girlfriend"]),
 });
 
 const PARTS = Object.freeze(["prologue", "free", "eve", "tournament", "resolution", "cleared"]);
@@ -249,6 +261,8 @@ export function completeChapterFourScene(value, id) {
   if (part === "tournament") {
     if (![CH4_TOURNAMENT_SCENES.start, CH4_TOURNAMENT_SCENES.win, CH4_TOURNAMENT_SCENES.loss].includes(id)) return false;
     if (id !== CH4_TOURNAMENT_SCENES.start && progress.read[CH4_TOURNAMENT_SCENES.start] !== true) return false;
+    if (id === CH4_TOURNAMENT_SCENES.win && chapterFourTournamentOutcome(value) !== "win") return false;
+    if (id === CH4_TOURNAMENT_SCENES.loss && chapterFourTournamentOutcome(value) !== "loss") return false;
     progress.read[id] = true;
     if (id === CH4_TOURNAMENT_SCENES.win) {
       // 賞金は勝利の確定と同じ更新で一度だけ渡す（再読・LOADで二重に付けない）。
@@ -307,10 +321,10 @@ export function finishChapterFourEve(value) {
 }
 
 // ---- 大会 ---------------------------------------------------------------------------
-/** 大会の勝敗。骨格では台本どおり "win" 固定。実試合（制作・審査）の接続点はこの関数1つ。 */
+/** 未制作・中断は未確定。実制作の確定結果だけを読む。 */
 export function chapterFourTournamentOutcome(value) {
-  chapterFourProgress(value);
-  return "win";
+  const result = chapterFourProgress(value).match?.result;
+  return result ? result.win === true ? "win" : "loss" : null;
 }
 
 /**
@@ -323,13 +337,14 @@ export function chapterFourTournamentOutcome(value) {
 export function chapterFourAfterDefeat(value) {
   const progress = chapterFourProgress(value);
   if (progress.part !== "tournament" || progress.read[CH4_TOURNAMENT_SCENES.loss] !== true) return false;
+  if (!resetChapterFourCraft(value)) return false;
   for (const id of Object.values(CH4_TOURNAMENT_SCENES)) delete progress.read[id];
   progress.attempts += 1;
   return true;
 }
 
 // ---- 方針の選択 ---------------------------------------------------------------------
-/** ch4_strategy の選択（桜・桃・茶）。保存するだけで、後続の場面には影響させない。 */
+/** ch4_strategy の選択（桜・桃・茶）。制作の支給葉と実配合の講評に使う。 */
 export function recordChapterFourStrategy(value, branch) {
   chapterFourProgress(value);
   if (!STRATEGY_BRANCHES.includes(branch)) return false;

@@ -31,8 +31,8 @@
     },
     {
       "id": "red_gummy_bear",
-      "name": "アルファーヘブン レッドグミベア",
-      "short_name": "AF レッドグミベア",
+      "name": "フワリ レッドグミベア",
+      "short_name": "フワリ レッドグミベア",
       "category": "sweet",
       "price": 1650,
       "description": "赤いグミベアのベリー系の甘酸っぱさ。あげはの白いグミとの対比にも使える。",
@@ -56,7 +56,7 @@
         "nicotine": 3
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "fuwari"
     },
     {
       "id": "cola",
@@ -454,11 +454,11 @@
     },
     {
       "id": "vanilla",
-      "name": "ドバジ バニラ",
-      "short_name": "ドバジ バニラ",
+      "name": "アルファーヘブン バニラ",
+      "short_name": "AF バニラ",
       "category": "sweet",
       "price": 1750,
-      "description": "ドバジのバニラ。甘みの厚みを乗せやすく、全体を丸くまとめる。",
+      "description": "アルファーヘブンのバニラ。甘みの厚みを乗せやすく、全体を丸くまとめる。",
       "heat_tolerance": 0.8,
       "mix_life": 0.9,
       "smoke_weight": 1.1,
@@ -479,7 +479,7 @@
         "nicotine": 4
       },
       "ng_flavors": [],
-      "maker": "dobaj"
+      "maker": "af"
     },
     {
       "id": "pineapple",
@@ -1021,8 +1021,8 @@
     },
     {
       "id": "peppermint_shake",
-      "name": "ドバジ ペパーミントシェイク",
-      "short_name": "ドバジ ペパーミントシェイク",
+      "name": "フォースフェクタ ペパーミントシェイク",
+      "short_name": "フォースフェクタ ペパーミントシェイク",
       "category": "cooling",
       "price": 1750,
       "description": "Dr.fookah入荷のデザート冷涼枠。ミントの冷たさにミルクのような甘さが重なる変わり種。",
@@ -1048,7 +1048,7 @@
         "nicotine": 3
       },
       "ng_flavors": [],
-      "maker": "dobaj"
+      "maker": "forcefect"
     },
     {
       "id": "ice_grape",
@@ -1114,8 +1114,8 @@
     },
     {
       "id": "death_by_ice",
-      "name": "アルファーヘブン デスバイアイス",
-      "short_name": "AF デスバイアイス",
+      "name": "フォースフェクタ デスバイアイス",
+      "short_name": "フォースフェクタ デスバイアイス",
       "category": "cooling",
       "price": 1550,
       "description": "Dr.fookah入荷の最強冷涼枠。限界を超えた冷涼感で口腔を凍てつかせる——扱いを誤るとミックスごと壊す劇薬。",
@@ -1142,7 +1142,7 @@
         "nicotine": 5
       },
       "ng_flavors": [],
-      "maker": "af"
+      "maker": "forcefect"
     },
     {
       "id": "blueberry_mint",

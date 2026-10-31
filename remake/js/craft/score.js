@@ -110,7 +110,7 @@ export function finalize(cs) {
   cs.stats = cs.stats || computeShisha(cs);
   const { bonus, notes } = bonusOf(cs);
   const parts = {
-    holes: cs.holes?.score ?? 0,
+    ...(cs.holes?.skipped ? {} : { holes: cs.holes?.score ?? 0 }),
     heat: cs.heat?.score ?? 0,
     shisha: cs.stats.craftQuality,
     care1: cs.careHistory?.[0]?.score ?? 0,

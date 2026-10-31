@@ -24,7 +24,7 @@ const values = {
   "data.js": { DB: db, sceneBg: () => ({}), loadCinemaDialogue: async () => db, bgUrl: () => "bg", displayName: id => id },
   "ui.js": { withScenePreparation: task => task, imageReady: async () => false, showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
   "transitions.js": { refreshPlaceCue() {} },
-  "state.js": { state, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
+  "state.js": { state, config: { statEffectColors: true }, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
   "stats.js": { AFFINITY_RANK_PTS: [0,9,20,33,48,66], setStoryAffinityCap() {}, affinityGateWaiting: () => false, addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, step: () => charmStep,
     currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, releaseAffinity() {}, ensureAffinityLevel() {}, earnStat() {}, affinityLevel: id => [9,20,33,48,66].filter(n => (state.affinity?.[id] || 0) >= n).length },
 
@@ -36,7 +36,7 @@ const values = {
   "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on: () => () => {} },
-  "growth.js": { growthEnabled: () => false },
+  "growth.js": { growthEnabled: () => false, hidaneTotal: () => 0, readyLessons: () => [], consultLessons: async () => [] },
   "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };
@@ -77,6 +77,15 @@ reset(); db.baito = [byid.baito_tsumugi_closing]; await tonari.doBaito(); assert
 reset({ day: 6, slot: 1, met: { tsumugi: true } }); db.baito = [byid.baito_tsumugi_closing]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_tsumugi_closing");
 // chapter、正/否定flag、set_flag、既読旧記録をすべて尊重。
 reset({ chapter: 2 }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
+// #2032: 第2章固有の接客はロード対象で、第1章には出ず第2章で出る。章指定の無い回は第2章にも混ざる。
+const ch2Events = events.filter((e) => e.chapter === 2);
+assert(ch2Events.length >= 4, "第2章固有の接客がロード対象に4件以上ない");
+for (const ev of ch2Events) {
+  const slot = ev.time_slot === "night" ? 1 : 0;
+  reset({ slot }); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), undefined, `${ev.id} が第1章に出た`);
+  reset({ chapter: 2, slot }); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), `baito_${ev.id}`, `${ev.id} が第2章に出ない`);
+}
+reset({ chapter: 2 }); db.baito = [byid.baito_mysterious_customer, byid.baito_regular_03]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_03");
 reset(); db.baito = [custom("locked", { trigger_flag: "needs_contact" })]; await tonari.doBaito(); assert.equal(selected(), undefined);
 state.flags.needs_contact = true; await tonari.doBaito(); assert.equal(selected(), "baito_locked");
 reset(); db.baito = [byid.baito_mob_flavor_police]; await tonari.doBaito(); assert(state.flags.ch1_flavor_police_event); plays.length = 0; state.day++;

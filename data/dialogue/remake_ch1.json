@@ -621,6 +621,35 @@
       ]
     },
     {
+      "dialogue_id": "remake_repeat_adam_4",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "あのシーシャくじ、まだ引けるのか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ショップのくじですか。たぶん、まだあります"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "中身を見たら、ずいぶんお得だな。俺も寄ってみるか"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_repeat_minto_0",
       "metadata": {
         "bg": "res://assets/backgrounds/peppermint.png"
@@ -2072,7 +2101,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "normal",
+          "face": "smile",
           "text": "アタシは出たり出なかったりさ。縁があれば、また会える"
         },
         {
@@ -2091,7 +2120,7 @@
       "lines": [
         {
           "speaker": "uranaishi",
-          "face": "normal",
+          "face": "smile",
           "text": "……また来たね。今日は誰との縁が気になるんだい？"
         }
       ]
@@ -2151,7 +2180,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "normal",
+          "face": "smile",
           "text": "縁は逃げやしない。稼いでから、また来な"
         }
       ]
@@ -2204,7 +2233,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "normal",
+          "face": "smile",
           "text": "……ヒヒ、いい札だ。{fortuneName}との縁は、いま撚りどきに入ってる"
         },
         {
@@ -2343,6 +2372,11 @@
           "text": "おはよう、モルモットくん。最重要サンプルの品質管理に来たよ"
         },
         {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……予定、ずらしてきた"
+        },
+        {
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……はじめさん、……応援、来ました"
@@ -2365,7 +2399,7 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "……サンプル。……わたしは、はじめさんの、その……"
+          "text": "……サンプル。……私は、はじめさんの、その……"
         },
         {
           "speaker": "hajime",
@@ -2434,7 +2468,7 @@
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "おはよう、モルモットくん。……今日は品質管理の立ち会いだよ"
+          "text": "おはよう、モルモットくん。……予定をずらして、今日は品質管理の立ち会いだよ"
         },
         {
           "speaker": "minto",
@@ -2524,6 +2558,11 @@
           "speaker": "rin",
           "face": "normal",
           "text": "おはよう、モルモットくん。……ずいぶん賑やかな応援団ね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……予定、ずらしてきた。見ないわけにいかないでしょ"
         },
         {
           "speaker": "",
@@ -3013,7 +3052,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "吸いすぎたな。回数を重ねるほど葉は消耗する。温度が合ったら、提供していいんだ"
+          "text": "吸いすぎたな。目安は2〜3口。煙と味が乗ったら、提供していいんだ"
         },
         {
           "speaker": "sumi",

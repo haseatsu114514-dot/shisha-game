@@ -158,6 +158,35 @@
         ],
         "met": true,
         "affinity": 5
+      },
+      {
+        "id": "tokyo_contact",
+        "dialogue": "hiyori_tokyo_contact",
+        "chapters": [
+          3
+        ],
+        "flag": "_ch3_read_hiyori_tokyo_contact",
+        "requires": [
+          "_hiyori_work_talk_done"
+        ],
+        "met": true,
+        "contact": true
+      },
+      {
+        "id": "feelings_spoken",
+        "dialogue": "hiyori_feelings_spoken",
+        "chapters": [
+          1,
+          2,
+          3
+        ],
+        "flag": "_hiyori_feelings_spoken",
+        "requires": [
+          "_hiyori_work_talk_done"
+        ],
+        "met": true,
+        "relationship": "lover",
+        "minLoveLevel": 2
       }
     ]
   },
@@ -1481,6 +1510,10 @@
         {
           "speaker": "",
           "text": "さっきの笑い声を知っていると、その表情も少し近くに見えた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "hiyori_shout"
         }
       ]
     },
@@ -1569,6 +1602,10 @@
         {
           "speaker": "",
           "text": "ひよりは手帳を鞄へしまった。仕事を片づけるためではなく、今ここで過ごすために。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "hiyori_boundary"
         }
       ]
     },
@@ -1770,6 +1807,229 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "hiyori_tokyo_contact",
+      "comment": "第3章・寄り道カード（ch3-story-wiring.js）。東京にいるはじめへの遠隔の通話だけ。会う約束・恋人を前提にしない。恋人なら一言だけ表に出る。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "夜。閉店後のmukaiの前で、スマホが震えた。画面には、ひよりさんの名前。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "もしもし……。東京の夜に、私の声、ちゃんと届いてる……？",
+          "face": "normal",
+          "inner": "通話ボタン押すまで五分かかった。押したら一秒"
+        },
+        {
+          "speaker": "hajime",
+          "text": "届いてます。どうしたんですか、こんな時間に"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "今日ね、仕事を定時で切り上げられたの。急ぎじゃない分は、明日の私に預けてきた",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "前に話してた、区切りですね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "そう。できたら、報告したくなっちゃって。……それだけなんだけど",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "そっちはどう？　東京の煙は、こっちより濃い？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "濃いというか……知らない味ばかりです。毎日、追いつくので精一杯で"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……そっか。追いかけてる時って、自分だけ止まってるみたいに感じるよね",
+          "face": "serious"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "でも、知らない味に毎日ちゃんと向き合ってるなら、止まってないよ。……総務三年目の見立てです",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……ありがとうございます。少し、楽になりました"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "tonariは今日も平和だったよ。スミさん、君がいつも立ってるあたりを、たまに見てる",
+          "face": "smile",
+          "inner": "本人に言ったら絶対怒られる。これはオフレコ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "hiyori",
+          "next_true": "lover",
+          "next_false": "other"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "じゃあ、そろそろ切るね。……電波に乗って、私ごと消えちゃう前に",
+          "face": "normal",
+          "inner": "声聞けたから、今日はもう満点。寝よ"
+        },
+        {
+          "speaker": "hajime",
+          "text": "おやすみなさい。……消えないでくださいね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "ふふ……善処します。おやすみ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "通話が切れた。暗くなっていく画面を、少しだけ見ていた。"
+        }
+      ],
+      "branches": {
+        "lover": [
+          {
+            "speaker": "hiyori",
+            "text": "……ほんとはね、報告は口実。声が聞きたかっただけ",
+            "face": "love_blush"
+          },
+          {
+            "speaker": "hajime",
+            "text": "俺も、聞けてうれしかったです"
+          }
+        ],
+        "other": [
+          {
+            "speaker": "hiyori",
+            "text": "あ……用事がないと通話しちゃだめ、ってことはないよね……？",
+            "face": "surprise",
+            "inner": "あるって言われたら、明日は斧を投げに行く"
+          },
+          {
+            "speaker": "hajime",
+            "text": "ないです。いつでもどうぞ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "hiyori_feelings_spoken",
+      "comment": "恋人成立後（絆Lv2）のデートの帰り。告白（confession_hiyori_accept）の焼き直しにせず、本心でしか言っていなかったことを表に出す回。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "デートの帰り道。駅へ向かう途中で、ひよりが足を止めた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……ねえ、はじめくん。ちょっとだけ、変なこと言ってもいい？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "どうぞ"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "私ね、頭の中ではずっと喋ってるの。うれしいとか、楽しいとか。……でも口から出るのは、だいたい儚い台詞のほう",
+          "face": "serious"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "好きって言えた日から、少しは変わると思ってた。……なのに今日も、言いそびれたのが三つある",
+          "face": "sad",
+          "inner": "三つで済んでるのは、今日はかなり健闘したほう"
+        },
+        {
+          "speaker": "hajime",
+          "text": "三つ、ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うん。だから今、まとめて言うね。……逃げないでよ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "一つめ。今日、待ち合わせの三十分前に着いてた。……楽しみすぎて",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……全然、気づきませんでした"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "二つめ。仕事で今日はもう無理って日に、最初に浮かぶのが君の顔。……前は、ラーメンだったのに",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ラーメンに勝ったんですね、俺"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "僅差でね",
+          "face": "smile",
+          "inner": "嘘。大差"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "三つめ。……次の約束、今ここで決めたい。帰ってからLIMEで聞くんじゃなくて",
+          "face": "love_blush"
+        },
+        {
+          "speaker": "hajime",
+          "text": "じゃあ、今決めましょう。次の休み、いつですか"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "え、即答……。ちょ、ちょっと待って、手帳……",
+          "face": "surprise"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりは鞄から手帳を出して、ページをめくった。仕事の予定の隣に、小さな丸がひとつ増えた。"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……ふう。三つとも、言い切った",
+          "face": "smile",
+          "inner": "頭の中と口が、同じこと言ってる。変な感じ。……悪くない"
+        },
+        {
+          "speaker": "hajime",
+          "text": "また言いそびれたら、まとめてでいいので聞かせてください"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "まとめて言うと、恥ずかしさもまとめて来るんだよね……。次は、こまめに言う",
+          "face": "smile",
+          "inner": "こまめに言える自信はない。でも、言う"
+        },
+        {
+          "speaker": "",
+          "text": "駅までの道を、少しだけ遠回りした。手帳の丸の日まで、指を折って数えながら。"
+        }
+      ]
     }
   ]
 }

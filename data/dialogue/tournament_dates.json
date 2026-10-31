@@ -1,5 +1,5 @@
 {
-  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.jsの前夜に接続済み（会う約束が成立した恋人だけ）。第4章は未接続。能力・大会加点なし。",
+  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.js、第4章はch4.jsの前夜に接続済み（実際に同じ場所にいる恋人だけ）。stayの帰り道は第3章の大会が終わったか（tournament_finished 3）で、東京前夜のmukaiの裏口と、ドバイ前夜の宿のロビーに分ける。あげはは第4章だけなので宿のロビー。能力・大会加点なし。",
   "dialogues": [
     {
       "dialogue_id": "tournament_date_tsumugi",
@@ -65,9 +65,11 @@
             "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "約束した時間に、二人で宿への道を戻った。"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "stay_dubai",
+            "next_false": "stay_tokyo"
           }
         ],
         "home": [
@@ -80,6 +82,20 @@
             "speaker": "",
             "face": "",
             "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ],
+        "stay_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、mukaiの裏口まで二人で歩いた。"
+          }
+        ],
+        "stay_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で歩いた。"
           }
         ]
       }
@@ -148,9 +164,11 @@
             "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "約束した時間に、二人で宿への道を戻った。"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "stay_dubai",
+            "next_false": "stay_tokyo"
           }
         ],
         "home": [
@@ -163,6 +181,20 @@
             "speaker": "",
             "face": "",
             "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ],
+        "stay_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、mukaiの裏口まで二人で歩いた。"
+          }
+        ],
+        "stay_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で歩いた。"
           }
         ]
       }
@@ -231,9 +263,11 @@
             "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "約束した時間に、二人で宿への道を戻った。"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "stay_dubai",
+            "next_false": "stay_tokyo"
           }
         ],
         "home": [
@@ -246,6 +280,20 @@
             "speaker": "",
             "face": "",
             "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ],
+        "stay_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、mukaiの裏口まで二人で歩いた。"
+          }
+        ],
+        "stay_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で歩いた。"
           }
         ]
       }
@@ -316,7 +364,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "約束した時間に、二人で宿への道を戻った。"
+            "text": "約束した時間に、宿のロビーまで二人で歩いた。"
           }
         ],
         "home": [
@@ -397,9 +445,11 @@
             "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "約束した時間に、mukaiの裏口まで二人で戻った。"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "stay_dubai",
+            "next_false": "stay_tokyo"
           }
         ],
         "home": [
@@ -412,6 +462,20 @@
             "speaker": "",
             "face": "",
             "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ],
+        "stay_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、mukaiの裏口まで二人で戻った。"
+          }
+        ],
+        "stay_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で戻った。"
           }
         ]
       }
@@ -481,9 +545,11 @@
             "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "約束した時間に、二人で宿への道を戻った。"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "stay_dubai",
+            "next_false": "stay_tokyo"
           }
         ],
         "home": [
@@ -496,6 +562,20 @@
             "speaker": "",
             "face": "",
             "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ],
+        "stay_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、mukaiの裏口まで二人で歩いた。"
+          }
+        ],
+        "stay_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で歩いた。"
           }
         ]
       }
@@ -565,9 +645,11 @@
             "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "約束した時間に、二人で宿への道を戻った。"
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "stay_dubai",
+            "next_false": "stay_tokyo"
           }
         ],
         "home": [
@@ -580,6 +662,20 @@
             "speaker": "",
             "face": "",
             "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+          }
+        ],
+        "stay_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、mukaiの裏口まで二人で歩いた。"
+          }
+        ],
+        "stay_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で歩いた。"
           }
         ]
       }

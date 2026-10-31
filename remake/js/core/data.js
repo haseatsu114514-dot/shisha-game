@@ -28,12 +28,12 @@ export const DB = {
   relationshipMemories: {}, // 実際に読んだ交流の記憶（id -> 記録）
   glossary: [],
   lime: [],
-  limeEvents: [],     // デート翌朝の一度きりのフォロー
   recipes: [],
   ngMixes: [],
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
   friends: { friends: {} }, // 友人になった相手からの、たまのLIME・一服の場面（remake/data/friends.json）
+  casualLime: { people: {} }, // ♥3〜4の知り合いからの、たまの読むだけの雑談（remake/data/casual_lime.json）
   statusTexts: { statPurpose: {}, statTierFx: {} }, // ステの説明・★効果
   broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
@@ -52,6 +52,7 @@ const DIALOGUE_FILES = [
   "venue_hours", // 店主の案内と街の昼夜差分
   "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
   "growth_reflection", // 心得の盤: 参拝の場所での内省と大会前夜の内省（SPEC 2.8）
+  "growth_lessons", // 心得の盤: 授業（はじめが相談して話を聞く場面。SPEC 2.6）
 ];
 // ひよりの参照先は DB.hiyori.route が無い間 disabled に倒れるため、タイトル後に読める。
 const DEFERRED_DIALOGUE_FILES = ["hiyori"];
@@ -127,12 +128,12 @@ export async function loadAll(onProgress = () => {}) {
     ["baito", `${ROOT}data/baito_events.json`],
     ["glossary", `${ROOT}data/glossary.json`],
     ["lime", `${ROOT}data/lime_messages.json`],
-    ["limeEvents", `${ROOT}data/lime_events.json`],
     ["recipes", `${ROOT}data/recipes.json`],
     ["ngMixes", `${ROOT}data/ng_mixes.json`],
     ["kuji", `${ROOT}data/kuji.json`],
     ["lover", "data/lover.json"],
     ["friends", "data/friends.json"],
+    ["casualLime", "data/casual_lime.json"],
     ["statusTexts", "data/status_texts.json"],
     ["broadcast", "data/broadcast.json"],
     ["manifest", "data/manifest.json"],
@@ -166,12 +167,12 @@ export async function loadAll(onProgress = () => {}) {
   DB.baito = raw.baito.events.filter((e) => BAITO_CATEGORIES.has(e.category));
   DB.glossary = raw.glossary.groups;
   DB.lime = [...raw.lime.messages, ...(DB.samechan.lime || [])];
-  DB.limeEvents = raw.limeEvents.events.map((event) => ({ ...event, type: "chat", lover: true }));
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
   DB.kuji = raw.kuji;
   DB.lover = raw.lover;
   DB.friends = raw.friends;
+  DB.casualLime = raw.casualLime;
   DB.statusTexts = raw.statusTexts;
   DB.broadcast = raw.broadcast;
   DB.fortuneTrivia = raw.fortuneTrivia;

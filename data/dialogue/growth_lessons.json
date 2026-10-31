@@ -1,0 +1,1479 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "lesson_minto_calling",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客の波が引いたPEPPERMINTのカウンターで、みんとがグラスを拭いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "みんとさん、ちょっと相談してもいいですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "なになに？ はじめくんの相談なら、みんと特別に聞いちゃう♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonari、静かな夜があるんです。煙はちゃんと出してるのに、席が空いてて"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "ふーん……。ねえ、お店の前、外から見たことある？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、外からですか？ 中にいる時間のほうが、ずっと長いです"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "でしょ？ 初めての人はね、ドアを開ける前に、もう決めちゃってるの"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "灯りが見えるか。中で誰かが楽しそうか。入って怒られなさそうか"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "みんとはね、窓から見える席に、いちばん笑ってるお客さんを案内するの♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……そこまで計算してたんですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "もちろん♪ あと、来てくれた人には、帰りにひとこと。またねって"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "煙の美味しさは、吸った人にしか届かないでしょ？ だから入口まで届けるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（tonariの良さを、ドアの外まで連れていく……か）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "看板の灯り、明日から少し早めにつけてみます"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "うんうん♡ 繁盛したら、みんとにも一台おごってね？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_adam_single",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENのカウンターで、アダムがタッパーの蓋を一つずつ確かめている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アダムさん、聞いてもいいですか。最近、ミックスで迷ってばかりで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "足せば足すほど、何を作りたかったのか分からなくなるんです"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "ふっ……迷える子羊よ。世の中のシーシャは、ダブルアップルか、それ以外かだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "えっと……全部ダブルアップルにしろ、ってことですか？"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "違う。一つの葉と、とことん向き合ってみろということだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは同じ葉を二つのボウルに詰め、炭の位置だけをわずかに変えた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "吸い比べてみろ。違いは、炭の数ミリだけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……片方は甘さが先に来て、もう片方はアニスが長く残ります"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "そうだ。一つの味にも、まだ奥がある。足す前に、それを掘れ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "知り尽くした一つがあれば、混ぜるときも迷わん。帰る場所があるからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（足して深くするんじゃなくて、知って深くするのか）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "まずは一種類で、自分の好きなところを探してみます"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "うむ。……ところで同志よ、俺の鍵を見なかったか。ポケットに入れたはずだが"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……アダムさん、それ、首から下げてますよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_naru_watch",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "KEMURIKUSAの客が引けた頃、なるがボウルを洗いながらこちらを見た。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "なんだ、今日は顔に『聞きたいことがある』って書いてあるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……なるさんって、どうやってそんなにうまくなったんですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "どうやってって……決まってんだろ。全部見てきたんだよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "よその店に行ったら、吸うだけで帰るな。詰め方、炭、客への声のかけ方"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "それと、何を混ぜてるか。分からなきゃ、吸いながら当ててみる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "聞いてもいいものなんですか？ 店の秘密じゃ……"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "聞けば教えてくれる奴は、案外多いぜ。俺だって聞かれりゃ答える"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "教えてくれなくても、覚えて帰って、自分の台で試せばいい"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "菓子と同じだ。よそのうまいもん食って、何が入ってるか考える。その繰り返しだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（吸って終わりにしないで、持ち帰って確かめる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次にどこかの店に行ったら、ミックスを覚えて帰ります"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "おう。で、覚えたら俺にも教えろよ。タダで見せてんだからな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_tsumugi_lavender",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店が近いtonari。つむぎのラベンダーの炭を替えに行くと、彼女が顔を上げた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん、少し眠そうです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はは、ばれた？ 最近、夜になっても頭が止まらなくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "布団に入っても、今日の一台のことばっかり考えてるんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……私も、そういう夜があります"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "そういう日は、家でラベンダーを吸います"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ラベンダーかあ。いつもここで頼んでるやつだね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。ラベンダーは、安心できる色……あ、いえ。安心できる匂い、なので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは少しだけ言い直して、ホースを握り直した。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "甘いのを混ぜすぎないで、少し入れるだけでいいんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "吸ってると、考えてたことが、ゆっくり遠くなっていきます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（練習の一台じゃなくて、休むための一台か）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今夜、家で試してみるよ。ありがとう、つむぎちゃん"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。おやすみの前に、どうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_sumi_four",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。片付けを終えて、スミさんに声をかけた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん、炭のことで相談があります。三つで火力が足りない時って……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "足りない時は、どうしてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "待つ時間を延ばしてます。でも、葉が重いと、待っても立ち上がらなくて"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "なら、四つ置いてみろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがボウルの縁に、炭を四つ、角をそろえて並べた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "四つは強い。その分、早く引くことを覚えろ。置きっぱなしにするな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "強く入れて、早めに引く……三つとは、待ち方が逆なんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そうだ。それと、混ぜるのもありだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今度は、フラットとキューブを一つずつ組み合わせて置いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "キューブで芯の熱を作って、フラットで面を温める。形が違えば、仕事も違う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "炭の形も、混ぜていいんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "基本はトライアングルだ。そこから先は自由にやれ。基本に忠実に、自由にな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（三つが基本。その上で、葉に合わせて数も形も選ぶ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "はい。重い葉の日に、四つと混ぜ置き、試してみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_sumi_cardamom",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。試作の一台を、スミさんに吸ってもらった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ぶつかってるな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "やっぱりですか。どっちも好きな味なのに、合わせると喧嘩するんです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "どっちかを減らそうとしたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。でも減らすと、今度はその味がいなくなっちゃって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは棚の奥から、カルダモンの缶を取り出した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一つまみだけ入れてみろ。本当に、一つまみだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われた通りに詰め直して、火を入れる。吸ってみると、角が取れていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……あれ。カルダモンの味はほとんどしないのに、二つがつながってます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "主役の顔は変えずに、間に橋を架ける。カルダモンはそれが得意だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "入れすぎるな。橋が目立ったら、それはもう別の一台だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん、カルダモン好きですもんね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……昔から、困った時に助けられてる。それだけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ぶつかる二つを、どっちも残したまま、そっとつなぐ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "一つまみ、ちゃんと覚えておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_rei_layers",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "零-ZERO-のカウンター。低いギターの音の中で、REIが花の葉の缶を並べている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "REIさん、相談してもいいですか。花の葉の使い方で"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ん。座って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ローズとジャスミンを合わせると、最初はいいのに、途中で平らになるんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どっちの香りなのか分からないまま、最後まで同じ顔になっちゃって"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……混ぜたからだ。花は、混ぜるより重ねる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIはボウルの底にジャスミンを詰め、その上にローズを薄くかぶせた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "炭に近い上の層から立つ。熱が下りていくと、下の花が出てくる"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "一曲目が終わって、間があって、二曲目が始まる。その順番を、詰める時に決める"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "じゃあ、調整で熱を足すたびに、次の層が……"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……そう。調整は、次の曲へ送る合図"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "上には先に聴かせたい花。下には、最後まで残したい花"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一つに溶かすんじゃなくて、順番に咲かせるのか）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ローズとラベンダーで、重ねる順番を変えて吸い比べてみます"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……できたら、聴かせて、……いや、吸わせて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_ageha_zuboo",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客足の途切れたMELTY PUFF。あげはさんが豹柄のソファで、クマの並びを直している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あげはさん、ちょっと相談いいですか。吸い出しのことで"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "お、ハジメっちから相談とか、テンション上がるんだけど。なになに？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭が冷えかける時があるんです。上げ吸いだと、なかなか追いつかなくて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あー、あるある。そういう時はね、ズボーって吸うの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ズボー……ですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ！ 固いシェイクをストローで吸うみたいに、ズボーって。一気に深く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはさんが頬をへこませて、長く吸い込んだ。HMDの中で、炭がぐっと赤くなる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……一口で、ここまで熱が戻るんですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "でもね、毎回はダメ。葉がバテちゃうから。ここぞって時だけ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "冷えそうって思ったら一回だけ。で、すぐいつもの吸い方に戻すの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "冷えかけた時だけ、深く一回。戻ったら普段どおり……ってことですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……それ。うちが言いたかったの、それ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "やば、うち今ちゃんと教えられたじゃん。ハジメっち、忘れたら泣くからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（「ズボー」の中に、ちゃんと手順が入ってた）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次に冷えかけたら、ズボーっていってみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_kumicho_zero",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎煙草店の奥。黒革のソファの前で、神崎さんが炭の焼け具合を見ている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さん、教えてほしいことがあります。蒸らしのことで"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。改まって、どうしやした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "タイマーを待ってる間に、余計なことを考えて崩れる日があるんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "待たずに立ち上げるやり方って、ありますか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "……あるにはありやす。0分でさ。炭を載せたら、そのまま吸い始める"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "待つ代わりに、吸って火を呼ぶんですわ。低いところから、一口ずつな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは炭を載せると、間を置かずにホースへ口をつけ、ゆっくり深く吸った。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "最初の何口かは煙が薄い。そこで焦って強く吸うと、葉が焦げやす"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "吸う回数は増える。一口ごとの加減をしくじりゃ、葉が持たねえ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "その代わり、蒸らしで崩れる心配がねえ。葉の声が、まっすぐ立つんでさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "待つ時間を、自分の吸い方で作るんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そういうこった。やると決めたら、腹ぁ決めて最後まで吸い切りな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（待つのとは逆だ。熱を、自分の口で迎えに行く）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "タイマーを00:00にして、まずは軽い葉で試してみます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "いい返事だ。しくじったら、また顔ぁ見せな。一服つけてやりまさ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_samechan_shark",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHARKの奥の席。サメちゃんが、コロちゃんの王冠を指で直している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "サメちゃん、ちょっと相談してもいいですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ、なんじゃ。申してみよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "蒸らしを待ってる間、雑念が次々浮かぶんです。スミさんに切り方は習ったんですけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "一つ切っても、すぐ隣から次が来て。追いつかないんです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "ふむ。お主、一匹ずつ追っておるな"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "サメはの、群れを一匹ずつは追わん。口を大きく開けて、がぶりじゃ！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "前だけ見て振るでない。首ごと左右へ振って、隣のもまとめて噛むのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近よ、肝心な話が抜けている。三つ噛んだ後だ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "そ、そうじゃった。三つ続けて噛めたら、顎があったまっておる"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "そこで思い切り、大きく噛みつく。周りの雑念ごと、まとめて海の底じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "切るんじゃなくて、噛む……三つ続いたら、大きく"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "ただし、口を開けっぱなしにするでないぞ。噛んだら、一度閉じるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一つずつ追わずに、まとめて噛む。噛むリズムを作るのか）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次の蒸らしで、左右も見て噛んでみます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "よかろう。勇者はじめに、余の牙を貸してやる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_rin_blueberry",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookahの2階。黒いフィルム越しの薄明かりの中、凛がクリップボードをめくっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛さん、今日はモニターじゃなくて、相談があって来ました"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "へえ、モルモットくんから相談。珍しいね。いいよ、聞かせて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここで知らない葉を吸うたびに、混ぜてみたくなるんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "でも、足すほど香りが散らばって、何の一台か分からなくなって"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ふふ。君だけじゃないよ。この棚の前に立つ人は、みんな一度そうなる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛は棚の端から、見慣れたブルーベリーの袋を取り出した。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "私は世界中の限定品が吸えるのに、結局ここに帰ってくるの"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "ブルーベリーは、甘さも酸味も真ん中にある。花にもお茶にも寄っていける"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "迷ったら、全体の2割以上入れてみて。1割だと、隠し味で終わるから"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "2割あれば、散らばった香りが、ちゃんと同じ場所に集まる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "12グラムのボウルなら、3グラム近く……思ったより多いですね"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "主役を食うほどじゃない。でも、帰る場所にはなる量だよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（新しい葉を足しても、戻ってこられる場所を先に置いておく）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次の試作、ブルーベリーを軸にして組んでみます"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "うん。……どんな顔で吸われたか、ちゃんと持って帰ってきてね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_hiyori_genki",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariのいつものカウンター。ひよりが紅茶の煙を、ゆっくり吐いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ひよりさん、ちょっと相談してもいいですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……私に？　消えかけの私でよければ、聞くよ……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最近、夕方になると体が重くて。最後の一台で、手が遅くなるんです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……そっか。ずっと立ちっぱなしで、炭も運ぶもんね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "私は元気の出し方なんて、もう忘れちゃった。朝露と紅茶の香りだけで……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "朝露……ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……いや、ごめん、嘘。ラーメン。仕事終わりにラーメン、ちゃんと食べてる"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "温かいスープを飲むとね、体の奥から、よし明日もやるかって気になるの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "それと、斧投げ。時間ができたら、木の的に投げに行くんだ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "狙って、投げて、刺さる音を聞くとね、頭の中の通知が全部消えるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ラーメンと斧投げ……組み合わせ、すごいですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "食べて、体を動かして、ちゃんと寝る。体力って、それで戻ってくるんだよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……って、儚い女が言うことじゃないね。今のは、聞かなかったことに……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（疲れを煙だけでごまかさないで、食べて、動いて、取り戻す）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次の休み、ちゃんとラーメン食べて、体も動かしてみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_mashiro_blacktea",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。ましろがカウンターで、ブラックティーの葉をほぐしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃん、ちょっと相談していい？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……うん。いいよぉ。座って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一台に奥行きを出したくて重い葉を足すと、果物の香りが消えちゃうんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "そっかぁ。足したほうが、前に出てきちゃうんだねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "じゃあ、ブラックティー。はじめくんのブロンドでも、ちゃんと効くよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "紅茶って、主役になっちゃいそうな気がするけど"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "入れすぎるとね。だから、一割。多くても二割まで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは小さなスプーンで、ほんの少しの茶葉を果物の葉に混ぜ込んだ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "そうすると、前には出てこないの。ほかの葉の、後ろに立つ感じ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "吸い終わりに、ちょっとだけ渋みが残って……それが奥行きになるんだぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消すんじゃなくて、後ろから支えるのか"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。僕、ほかの葉の香り、消したくないから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（主役はそのまま。一割の紅茶で、後ろにもう一枚、壁を立てる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次の一台、ブラックティーを一割から試してみるよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……できたら、僕にも吸わせてねぇ。お茶、いれて待ってる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_kuze_blank",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "路地の「煙幕」。鏡に映る客席の手前で、久世が白紙のカードをそろえている。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "あ、来たね。今日は吸う？　休む？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "相談しに来ました。一台を出す時の、出し方のことで"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smug",
+          "text": "出し方？　いいね、僕の得意分野だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "味の名前を先に言うと、相手がその味を探しながら吸う気がするんです"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん、するね。名前って、最初の一口の地図になるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "久世は胸ポケットから、何も書いていないカードを一枚抜いた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "だから、これ。名前を書かないで、白紙のまま添えるの"
+        },
+        {
+          "speaker": "kuze",
+          "face": "wild",
+          "text": "地図がないと、吸った人は自分の記憶で道を探す。当たれば、すごく遠くまで届くよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……外れたら、どうなるんですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "何の味か分からないまま終わる。振れ幅が大きいんだ。だから勝負どころで使う"
+        },
+        {
+          "speaker": "kuze",
+          "face": "serious",
+          "text": "それと、嘘はつかないこと。中身を聞かれたら、ちゃんと答える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "伏せるのは隠すためじゃなくて、名前を相手に書いてもらうため……ですね"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smug",
+          "text": "そういうこと。……今の、僕よりいい説明かも。ノートに書いとこ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（名前を渡すか、白紙を渡すか。それも一台のうちなんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "白紙のカード、使いどころを考えてみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_steve_pizza",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Smoke & Gloryの奥のテーブルで、スティーブがピザの箱を積み直している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スティーブさん、相談してもいいですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。座って。ピザ、食べる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いただきます。……最近、世話になった人たちとゆっくり話せてなくて"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "オーケー。なら、まとめて呼べばいい。ピザとシーシャの夜だ"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "呼ぶのは二人か三人。それ以上だと、ホストが誰とも話せない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブはレシピカードを裏返し、テーブルの真ん中に台を一つ描いた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "台は真ん中に一つ。低温で、軽い柑橘。ピザの合間でも重くならない"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "話が長くなる夜だ。熱を急ぐと、盛り上がる前に煙が終わる"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ホストはホースを回して、一人ずつ好きな味を聞く。黙ってる人に先に渡す"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "それと、ノー、ノー。同じ顔ばかり呼ばない。次は前に呼ばなかった人だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……毎回、来てほしい人もいますけど"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。だから一回待つ。待ってた人が来ると、その夜はもっと良くなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（タイマーと同じだ。急がないほうが、ちゃんと届くんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "まずは、誰を誘うか書き出してみます"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "グッド。場所はここを使っていい。ピザも俺が頼んでおく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_volk_precision",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄の煙のカウンターで、ヴォルクが壁の計器の数字をメモに写している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "相談があります。同じ手順なのに、日によって熱が合わないんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "雨の日は温まるのが遅くて、暑い日は早く焦げる気がして"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "気がする、では足りない。何を書いた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……時間と、炭の数だけです"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "天気を書け。室温、湿度、外が雨か晴れか。来る前の空もだ"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "湿った日は、葉も空気の水を吸う。温まるまでに、熱を余分に食う"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "暑い日は逆だ。台も部屋も、最初から温まっている"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、湿気の多い日は蒸らしを長く……？"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "タイマーで一分足す。暑い日は、炭を縁へずらして熱を逃がす"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "条件が変われば、手順を変える。同じ一口を出すためにだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクはメモの端を指で叩いた。温度の列の隣に、客が吸った時刻が並んでいる。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "それでも外れたら、客に聞け。数字の隣に、答えを書き足す"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "Точность（トーチナスチ）。天気に、手を狂わされないことだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ手順を守るんじゃない。同じ一口を守るんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "今日から、ノートの最初の行に天気を書きます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_sheikh_grape",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日陰のテラスで、シェイクが小さな杯のコーヒーをはじめの前に置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "相談してもいいですか。初めての人に出す一台、何を真ん中にするか迷うんです"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "迷うなら、葡萄を真ん中に置くといい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "グレープ、ですか。どこの店にもある味ですよね"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "そうだ。誰もが一度は吸った。だから、吸った者は記憶と比べる"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smug",
+          "text": "知っている味が、知っている以上に美味い。人はそこで身を乗り出す"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "客も、審査をする者も同じだ。驚きは一口で終わるが、葡萄は最後まで付き合う"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シェイクは小皿に葉を分けた。葡萄が大きな山で、隣の葉はひとつまみだけ。"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "葡萄をいちばん多く。隣に置くものは、葡萄の影に入る量でいい"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "normal",
+          "text": "葡萄の甘さは、熱を急ぐと焦げて渋くなる。炭は少し遠くから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "主役を一つ決めて、ほかは引き立て役にする……"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "serious",
+          "text": "王道は、退屈という意味ではない。皆が通った道を、最後まで丁寧に歩くことだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（誰もが知ってる味だから、ごまかしがきかないんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次の一台、グレープをいちばん多く詰めてみます"
+        },
+        {
+          "speaker": "sheikh",
+          "face": "smile",
+          "text": "できたら吸わせてくれ、ハジメ。正直に言う"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lesson_da_silva_festa",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通りの外れのテラス席で、ダ・シルヴァ太陽がアサイーの一台に炭を置いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "相談してもいいですか。蒸らしの間、頭の中がうるさくなるんです"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "うるさい？　何がだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱すぎないかとか、客がどう思うかとか。タイマーが鳴るまで、ずっと"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "わかるぜ。待つ時間は、心配が勝手に踊り出すからな"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "で、一個ずつ追い払ってんだろ。それじゃ朝まで終わらねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……全部、見抜かれてる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽はキッチンタイマーを回すと、ぱん、と大きく一度だけ手を叩いた。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "ほら。今、頭ん中が空っぽになったろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……なりました。手の音しか残ってないです"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "フェスタってのはそういうもんだ。一発でかく鳴らして、全部吹っ飛ばす"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "手を叩いても、深く吐いてもいい。顔を上げて、笑ってるやつを探すのもいい"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "serious",
+          "text": "ただし一台に一回だけな。何度もやったら、ただの騒音だ"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "シーシャはフェスタ！　楽しくなけりゃ意味がねぇ。作るほうもな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（心配を一つずつ消すんじゃない。まとめて、祭りの音で流すんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次の蒸らしで、一回だけ、でかくやってみます"
+        }
+      ]
+    }
+  ]
+}

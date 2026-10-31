@@ -96,7 +96,9 @@ function show() {
  unlockAudio();
  root?.cleanupContinue?.();
  const val = selector.value;
- msg.textContent = "声なし・20秒でGAME OVER。BGM：BGMer「EMGコール」";
+ msg.textContent = Number(document.getElementById("loss").value) === 1
+   ? "声なし・初回は時間制限なし。BGM：BGMer「EMGコール」"
+   : "声なし・20秒でGAME OVER。BGM：BGMer「EMGコール」";
  retry.disabled = quit.disabled = false;
  root = buildGameOver({
    context: { chapter: Number(document.getElementById("chapter").value), reason: document.getElementById("reason").value,

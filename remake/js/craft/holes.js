@@ -5,7 +5,8 @@ import { el, sleep, clamp, rand } from "../core/util.js";
 import { createCraftClock } from "./clock.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
+import { stepPanel, showStepDemo, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction } from "./session.js";
+import { effectBadge, effectLine, effectVisible, senseBand, effectTier } from "./effect-visual.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 import { artImg } from "./art.js";
@@ -89,11 +90,13 @@ export async function runHoles(cs) {
   await waitBenchReady(cs, "holes");
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始してから、光が目印に重なった瞬間にタップ（Space）", { brief: "穴の配置を選んでから、穴あけを始める" });
+  await showStepDemo(cs, "holes");
   const template = await chooseTemplate(panel, cs);
   stepPanel("holes", "アルミ穴あけ", "光が目印に重なった瞬間にタップ（Space）。リングが完成したら「次のリングへ」。選んだ配置を開け終えて仕上げる");
   const rings = ringsForTemplate(template);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
   const perfWin = 4.2 * skill.window(cs) * (tutorial ? 1.5 : 1);
+  const basePerfWin = perfWin / (1 + 0.45 * effectTier("sense"));
   const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (cs.retryAssist ? 1.35 : 1);
   const limit = tutorial ? 48 : TIME_LIMIT;
 
@@ -103,7 +106,7 @@ export async function runHoles(cs) {
   const ringEls = rings.map((rg) => el("div.foil-ring", { style: { width: `${rg.r * 100}%`, height: `${rg.r * 100}%` }, dataset: { ring: rg.id } }));
   const markers = el("div.foil-markers");
   const holesLayer = el("div.foil-holes");
-  const cursor = el("div.foil-cursor");
+  const cursor = el(`div.foil-cursor${effectVisible("technique") ? ".technique-visible" : ""}`);
   disc.append(foilSurface(), el("div.foil-target-plane", [...ringEls, markers, holesLayer, cursor]));
   const ringLabel = el("div.hr-ring");
   const timeBar = el("i.hr-time-bar", [el("b")]);
@@ -126,7 +129,10 @@ export async function runHoles(cs) {
       el("span", [el("i.foil-cursor", { "aria-hidden": "true" }), "動く光"]),
       el("span", [el("i.foil-hole", { "aria-hidden": "true" }), "開いた穴"]),
     ])]),
-    el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel, role, el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), scoreEl, comboEl, feedback, plan, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
+    el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel, role,
+      effectVisible("technique") ? effectBadge("technique", "技") : null,
+      senseBand(basePerfWin, 12), effectLine("technique", "技", "技術でゲージがゆっくり"),
+      el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), scoreEl, comboEl, feedback, plan, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
   ]));
 
   // ---- 状態

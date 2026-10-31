@@ -7,13 +7,25 @@ const map = '[data-destination-selection]:not(.done)';
 const end = t('ch2-tournament-entry');
 // DAY9 試煙会で一度だけ渡す苺の試供品（ch2-strawberry-trial.js の STRAWBERRY_SAMPLE、#1650）。まかないで試さなければ残る
 const withStrawberrySample = stock => ({ ...stock, afsahr_strawberry: (stock.afsahr_strawberry || 0) + 12 });
+// 大会の朝・夜のスマホは複数のトークが並ぶ。返信を選びながら「スマホを閉じる」まで読む（#1653 ⑦）。
+async function readPhone(page) {
+  for (;;) {
+    await page.locator(`${t('phone-next')}, ${t('reply-0')}`).first().waitFor();
+    if (await page.locator(t('reply-0')).count()) { await page.locator(t('reply-0')).first().click(); await page.locator(t('phone-next')).waitFor(); continue; }
+    const last = (await page.locator(t('phone-next')).first().innerText()).includes('閉じる');
+    await page.locator(t('phone-next')).first().click();
+    if (last) return;
+    await page.locator(t('phone-next')).first().waitFor({ state: 'detached' });
+  }
+}
 async function seed(page, { day = 4, slot = 0, pause = '', legacyVolk = false, sick = false } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async opts => {
     const core = await import('./js/core/state.js');
     const s = core.newGame();
+    // 固定ストーリーの検証中は任意のシフト誘いを発生させない。
     Object.assign(s, { chapter: 2, phase: 'daily', day: 14 + opts.day, slot: opts.slot,
-      money: 36000, stamina: opts.sick ? 10 : 100, weatherSeed: 7 });
+      money: 36000, stamina: opts.sick ? 10 : 100, weatherSeed: 7, lastBaitoDay: 28 });
     s.flags = { _ch1_cleared: true, _elapsed_calendar: true,
       _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true }, _ch2_preparation_started: true,
       _ch2_naru_warm_done: true, _ch2_city_visit_c_station: true,
@@ -257,7 +269,7 @@ await suite('ch2-story', async check => {
     for (const who of start.contacts) assert(eve.contacts.includes(who), `contact ${who}`);
     // 大会: 入口fixtureから先は実フロー。craftTest.auto はch2_tournamentの実演手法と同じ。
     await page.evaluate(async () => { (await import('./js/craft/session.js')).craftTest.auto = 'good'; });
-    await page.locator(ct('start')).click(); await page.locator(dt('phone-next')).click();
+    await page.locator(ct('start')).click(); await readPhone(page);
     await page.locator(ct('ready')).waitFor();
     await page.locator(ct('craft-start')).click();
     for (let round = 1; round <= 3; round++) {
@@ -269,9 +281,17 @@ await suite('ch2-story', async check => {
     const judged = await state(page), record = judged.flags._ch2_tournament;
     assert.equal(record.history.length, 1); assert.equal(record.result.rank, 1);
     assert.equal(record.result.total, record.craft.total);
-    await page.locator(ct('continue')).click(); await page.locator(dt('phone-next')).click();
+    await page.locator(ct('continue')).click(); await readPhone(page);
     await page.locator(ct('complete')).waitFor();
     const after = await state(page);
+    // #1653 ⑦: 前夜の返事・なるへの連絡・大会の朝の応援・優勝後の祝福と返信が、実際のLIME履歴に順に残る
+    const order = ['ch2_eve_tsumugi_alone', 'encourage_ch2_tsumugi_alone', 'ch2_tournament_sumi_morning', 'ch2_sent_naru_finished', 'ch2_congrats_tsumugi_alone', 'ch2_tournament_sumi_tokyo'];
+    const at = order.map(id => after.inbox.findIndex(i => i.id === id));
+    assert(at.every(i => i >= 0), `LIME history: ${order.filter((_, n) => at[n] < 0)}`);
+    assert.deepEqual([...at].sort((a, b) => a - b), at, 'LIME history keeps the story order');
+    assert(after.inbox.some(i => i.id === 'ch2_sent_naru_where') && !after.inbox.some(i => i.id === 'ch2_sent_naru_apology'));
+    assert.deepEqual(after.inbox.find(i => i.id === 'ch2_congrats_tsumugi_alone').log.filter(l => l.me).map(l => l.text), ['……ありがとう']);
+    assert(!after.inbox.some(i => ['encourage_tsumugi', 'encourage_minto', 'encourage_ch2_tsumugi_welcome'].includes(i.id)));
     assert.equal(after.phase, 'cleared'); assert.equal(after.chapter, 2); assert(after.flags._ch2_tokyo_invitation);
     assert.equal(after.flags._ch2_tournament.history.length, 1);
     // 大会の正規の効果以外で、蓄積した記録が欠落・巻き戻りしない。

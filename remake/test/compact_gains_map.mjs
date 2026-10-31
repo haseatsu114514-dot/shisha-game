@@ -22,7 +22,13 @@ try {
     for (const s of spots.SPOTS) if (s.requiresMet) core.state.flags[`_spot_guide_${s.requiresMet}`] = true;
     core.state.flags._cafe_introduced = true;
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
-    T.openMap = async () => { map.interruptMap(null); ui.dropRetired(); T.mapPromise = map.chooseSpot(); };
+    T.openMap = async () => {
+      map.interruptMap(null); ui.dropRetired();
+      await new Promise((resolve, reject) => {
+        T.mapPromise = map.chooseSpot({ onShown: resolve });
+        T.mapPromise.catch(reject);
+      });
+    };
     T.inkOffset = n => {
       const style=getComputedStyle(n), box=n.getBoundingClientRect(), range=document.createRange();
       range.selectNodeContents(n); const r=range.getBoundingClientRect(), scale=box.width/n.offsetWidth;
@@ -65,7 +71,7 @@ try {
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
     await page.evaluate(async () => {
-      for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 10;
+      for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 12; // 10段では10の倍数を越えると段到達カードになるため、段の途中から始める
       T.core.state.statXp = {};
       await T.stats.paidAction(async () => { T.stats.earnStat("sense", 4); T.stats.addStamina(-8); });
     });
@@ -87,7 +93,7 @@ try {
         badgeInk:T.inkOffset(n.querySelector(".gc-badge")),
         sameSize:getComputedStyle(n.querySelector(".gc-count")).fontSize === getComputedStyle(n.querySelector(".gc-unit")).fontSize };
     });
-    assert.deepEqual([card.heading,card.name,card.points,card.word,card.actual], ["STATUS UP","センス","+1P","",11]);
+    assert.deepEqual([card.heading,card.name,card.points,card.word,card.actual], ["STATUS UP","センス","+1P","",13]);
     assert.equal(card.height,68); assert.equal(card.badge,44);
     assert.equal(card.earned,"今回");
     assert(card.frame.includes("reward-clean.webp") && card.mask.includes("reward-clean.webp") && card.badgeFrame.includes("panel.webp") && card.enabled);
@@ -113,11 +119,21 @@ try {
   });
   await page.waitForSelector('[data-test="pin-naru"]');
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').textContent(), "!");
-  // 質問・締めくくりも読了している場合は印を残さない。
+  // 質問・締めくくりの読了後も、凛の試作品イベントが未読なら印を残す。
   await page.evaluate(async () => {
     T.core.state.finales=Object.fromEntries(Object.keys(T.spots.VISIT_SEQ).map(id => [id,{day:3,chapter:1,route:"friend"}]));
     await T.openMap();
   });
+  await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
+  assert.equal(await page.evaluate(() => T.spots.rinPrototypeDue()), true);
+  assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
+  // 試作品も読了した状態では、全店舗の新規印が消える。
+  await page.evaluate(async () => {
+    T.core.state.flags._spot_seen_ch1_rin_prototype_night=true;
+    await T.openMap();
+  });
+  await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
+  assert.equal(await page.evaluate(() => T.spots.rinPrototypeDue()), false);
   assert.equal(await page.locator(".evt-badge.story").count(),0);
 
   // 店名は閉店日も残す。臨時休暇は別の札で伝え、訪問できない理由も一致する。

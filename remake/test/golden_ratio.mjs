@@ -85,3 +85,63 @@ assert(!texts.includes("ミントにレモン"), "old mint-first wording is gone
 assert(lemonade.hint_text.includes("7対3") && lemonade.recall[1].includes("7対3") && lemonade.memo.includes("7対ミント3"));
 
 console.log("[golden ratio] PASS: data, 5pt boundary, near band, family sum, score unchanged, separate from mint penalty, wording");
+
+// #1906-2: NGは基本ID・別メーカー・同系統の複数銘柄で同じ境界を使う。
+// 系統未追加の葉も、将来の銘柄を模したfixtureで既存のfamily集計を検証する。
+const ngMixes = DB.ngMixes;
+assert.equal(ngMixes.length, 6, "Current NG catalog has six entries");
+assert.equal(new Set(ngMixes.map(ng => ng.id)).size, 6, "Every NG entry has a unique ID");
+const originalFlavors = DB.flavorById;
+try {
+  DB.recipes = [];
+  DB.flavorById = { ...originalFlavors };
+  for (const family of new Set(ngMixes.flatMap(ng => ng.flavors))) {
+    DB.flavorById[`test_${family}`] = { ...originalFlavors[family], id: `test_${family}`, family };
+  }
+  const boundaries = {
+    both_over_5g: [[5, 6, false], [6, 5, false], [5.1, 5.1, true], [6, 6, true]],
+    both_over_4g: [[4, 5, false], [5, 4, false], [4.1, 4.1, true], [5, 5, true]],
+    combined_over_10g: [[4, 6, false], [4, 6.1, true], [6, 4.1, true]],
+    ratio_close: [[5, 6, true], [6, 5, true], [5, 6.1, false], [6.1, 5, false]],
+  };
+  for (const ng of ngMixes) {
+    const [a, b] = ng.flavors;
+    for (const [ga, gb, hit] of [...boundaries[ng.condition], [0, 12, false], [12, 0, false], [0, 0, false]]) {
+      for (const mix of [
+        { [a]: ga, [b]: gb },
+        { [`test_${a}`]: ga, [`test_${b}`]: gb },
+        { [a]: ga / 2, [`test_${a}`]: ga / 2, [b]: gb / 2, [`test_${b}`]: gb / 2 },
+      ]) {
+        DB.ngMixes = [];
+        const plain = mixOf(mix);
+        DB.ngMixes = [ng];
+        const result = mixOf(mix);
+        assert.deepEqual(result.ngReasons, hit ? [ng.text] : [], `${ng.id}: ${JSON.stringify(mix)}`);
+        assert.equal(result.score, Math.round(plain.score + (hit ? ng.penalty * 3 : 0)), "existing penalty and rounding stay unchanged");
+        assert.equal(result.notes.includes(ng.text), hit, "legacy notes retain NG reasons");
+      }
+    }
+    const actualVariantA = flavors.find(flavor => flavor.id !== a && flavor.family === a)?.id;
+    const actualVariantB = flavors.find(flavor => flavor.id !== b && flavor.family === b)?.id;
+    DB.ngMixes = [ng];
+    const result = mixOf({ [actualVariantA || `test_${a}`]: 6, [actualVariantB || `test_${b}`]: 6 });
+    assert.deepEqual(result.ngReasons, [ng.text], `${ng.id}: family variants retain the reason`);
+    assert(result.notes.includes(ng.text), `${ng.id}: the reason remains available to the confirmation UI`);
+  }
+  DB.ngMixes = ngMixes;
+  assert.deepEqual(mixOf({ mint: 6, vanilla: 6 }).ngReasons, mixOf({ dobaj_mint: 6, vanilla: 6 }).ngReasons);
+  assert.deepEqual(mixOf({ mint: 2, dobaj_mint: 2, absal_mint: 2, vanilla: 6 }).ngReasons, [ngMixes[0].text]);
+  const multiple = mixOf({ dobaj_mint: 6, vanilla: 6, coconut: 6 });
+  assert.deepEqual(multiple.ngReasons, [ngMixes[0].text, ngMixes[2].text, ngMixes[3].text], "all penalties remain, in data order");
+
+  // 現行データには黄金比とNGの重複がないので、黄金比だけfixtureに追加して独立性を検証。
+  DB.recipes = [{ id: "test_ng_golden", name: "NG併存fixture", flavors: ["mint", "vanilla"], golden: { mint: 1, vanilla: 1 } }];
+  const coexist = mixOf({ dobaj_mint: 6, vanilla: 6 });
+  assert.equal(coexist.golden, "hit");
+  assert.deepEqual(coexist.ngReasons, [ngMixes[0].text]);
+  DB.recipes = DB.recipes.map(({ golden, ...r }) => r);
+  assert.equal(mixOf({ dobaj_mint: 6, vanilla: 6 }).score, coexist.score, "golden neither erases nor changes NG penalty");
+} finally {
+  DB.ngMixes = ngMixes; DB.flavorById = originalFlavors; DB.recipes = recipes;
+}
+console.log("[NG mix] PASS: all rules, family sums, strict 4g/5g/10g boundaries, ratio ±1g, zero, penalties, golden coexistence");

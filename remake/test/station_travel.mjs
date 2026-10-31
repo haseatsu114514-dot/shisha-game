@@ -42,6 +42,7 @@ const context = vm.createContext({ console, document, setTimeout, clearTimeout, 
   removeItem: () => { throw Error("existing saves must not be deleted"); },
 } });
 const mocks = {
+  "core/growth.js": { growthEnabled: () => false, hidaneTotal: () => 0 },
   "core/scene-motions.js": { trainRide: async (mid, opts) => { rides++; lastRide = opts; await mid(); } },
   "core/util.js": { el: (...a) => new Element(...a), yen: n => `${n}円` },
   "core/data.js": { bgUrl: x => x, sceneBg: () => ({}), faceIconUrl: noop, displayName: noop },
@@ -72,7 +73,7 @@ async function moduleAt(id) {
 }
 async function load(id) { const m = await moduleAt(id); if (m.status !== "evaluated") await m.evaluate(); return m.namespace; }
 const core = await load("core/state.js"), travel = await load("daily/station-travel.js"), map = await load("daily/map.js");
-const regions = [{ id: "home", label: "地元・大須／栄", spots: [] }, { id: "widehanga", label: "隣町・ワイドハンガ", spots: [] }];
+const regions = [{ id: "home", label: "地元・大須／栄", spots: [] }, { id: "widehanga", label: "隣町・柚ヶ谷", spots: [] }];
 const fresh = (money = 1000) => {
   const s = core.newState(); Object.assign(s, { chapter: 2, day: 17, slot: 0, money });
   Object.assign(s.flags, { _ch2_region: "home", _ch2_preparation_started: true }); core.setState(s); return s;

@@ -32,7 +32,8 @@
       "line": "お主、サメは好きか？",
       "face": "smile",
       "color": "#5aa8e6",
-      "name": "alias"
+      "name": "alias",
+      "motion": "bounce"
     }
   },
   "nickname_message_id": "lime_naru_samechan_nickname",
@@ -357,6 +358,25 @@
             "speaker": "samechan",
             "face": "smile",
             "text": "うむ。さあ、入るのじゃ。どんな一台にするか、中で聞かせておくれ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は、すっとする香りをお願いします"
+          },
+          {
+            "speaker": "",
+            "text": "サメちゃんは席の高さを確かめてから、一台を運んできた。吸い込むと、涼しい香りがゆっくり広がる。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "どうじゃ。ここなら、落ち着いて吸えるかのう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。つい長居したくなります"
           }
         ],
         "new_guest": [
@@ -416,7 +436,26 @@
           {
             "speaker": "samechan",
             "face": "smile",
-            "text": "コロちゃんじゃ。この子も、お主を待っておったのじゃぞ。気に入ったら、また来るのじゃ"
+            "text": "コロちゃんじゃ。この子も、お主を待っておったのじゃぞ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "さて、どんな香りが好みじゃ？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は、すっとする香りをお願いします"
+          },
+          {
+            "speaker": "",
+            "text": "サメちゃんが一台を運んできた。ひと口吸うと、涼しい香りが広がり、海色の店内をゆっくり眺めた。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "気に入ったら、また来るのじゃ"
           },
           {
             "speaker": "",
@@ -798,6 +837,10 @@
           "speaker": "",
           "face": "",
           "text": "話が始まると、束ねたメモが鞄にしまわれた。俺の水が空くまで、彼女は席を立たなかった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "samechan_notes"
         }
       ]
     },
@@ -1138,6 +1181,10 @@
           "speaker": "",
           "face": "",
           "text": "包みを胸に抱えて、灯りの落ちた店を出た。あの席で過ごした時間が、手の中に残っている。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "samechan_hagal"
         }
       ],
       "branches": {

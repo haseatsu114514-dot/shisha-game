@@ -17,7 +17,7 @@ export function samechanDateReady() {
 
 /** 実デートで記録した章を使う。章情報のない旧日は最新の可能な過去日として扱い、永久停止を防ぐ。 */
 export function samechanDateGap() {
-  const day = state.lastDate?.samechan;
+  const day = state.lastDate.samechan;
   if (!Number.isInteger(day) || day < 1) return Infinity;
   const chapter = Number.isInteger(state.flags._samechan_last_date_chapter)
     ? state.flags._samechan_last_date_chapter : Math.max(1, (state.chapter || 1) - (day > state.day ? 1 : 0));
@@ -53,7 +53,6 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     const before = state.stamina; addStamina(-10); const spent = before - state.stamina;
     if (spent > 0) gainStat(DB.lover.dates.samechan[selected].stat, 2);
     gainAffinity("samechan", 10);
-    state.lastDate ??= {};
     state.lastDate.samechan = state.day;
     state.flags._samechan_last_date_chapter = state.chapter;
     if (advanceSlot) state.slot = Math.min(2, state.slot + 1);
