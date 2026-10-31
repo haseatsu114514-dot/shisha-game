@@ -1336,54 +1336,6 @@
       ]
     },
     {
-      "id": "rumor_nagumo_cigarman",
-      "sender": "nagumo",
-      "trigger_condition": "ch3_started",
-      "type": "rumor",
-      "rumor_about": "mashiro",
-      "messages": [
-        {
-          "sender": "nagumo",
-          "text": "蒸野くん。mukaiという店のことで、少し耳に入れておきたい話がある"
-        },
-        {
-          "sender": "nagumo",
-          "text": "……妙な噂がある。シガーリーフで、常識外れの煙を出す人間がいると"
-        },
-        {
-          "sender": "nagumo",
-          "text": "業界では「シガーマン」と呼ばれているらしい。ムカイさんがそうだと言う者もいるが、確かめた者はおらん"
-        },
-        {
-          "sender": "nagumo",
-          "text": "正体はまだ分からん。だが、あの煙を見た者は皆、声を失うらしい"
-        },
-        {
-          "sender": "nagumo",
-          "text": "……正直に言えば、怖い。それだけのことだがね"
-        }
-      ],
-      "trigger_day": 4,
-      "chapter": 3,
-      "replies": [
-        {
-          "text": "会長も、怖いと感じるんですね",
-          "response": "未知のものを怖いと感じるのは、悪いことではないよ。目を閉じないことだ",
-          "affinity": 1
-        },
-        {
-          "text": "まず、自分の一台を仕上げます",
-          "response": "うむ。噂に気を取られて手元を疎かにせんことだ。君の煙を楽しみにしている",
-          "affinity": 2
-        },
-        {
-          "text": "教えてくださってありがとうございます",
-          "response": "ああ。また確かなことが分かれば、君にも伝えよう",
-          "affinity": 0
-        }
-      ]
-    },
-    {
       "id": "rumor_kemuri_experiments",
       "sender": "naru",
       "trigger_condition": "lime_exchanged",
