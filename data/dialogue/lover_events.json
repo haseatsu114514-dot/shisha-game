@@ -1,5 +1,5 @@
 {
-  "_comment": "恋人マイルストーンイベント（master_spec #24）。恋人Lvが上がった節目に1本再生される。id 規則: lover_{charId}_lv{N}（2本目は _b）。背景は店外・プライベート。はじめの立ち絵は出さない（一人称）。",
+  "_comment": "恋人の節目イベント（master_spec #24）。♥3の分岐→♥5の告白で交際が成立し state.lovers に入った相手だけが対象。交際後の絆Lv（state.loveLevel）が上がった節目に1本再生される。id 規則: lover_{charId}_lv{N}（2本目は _b）。背景は店外・プライベート。はじめの立ち絵は出さない（一人称）。",
   "dialogues": [
     {
       "dialogue_id": "lover_tsumugi_lv1",
@@ -1130,7 +1130,7 @@
         },
         {
           "speaker": "mashiro",
-          "face": "sad",
+          "face": "yawn",
           "text": "……充電中……"
         },
         {

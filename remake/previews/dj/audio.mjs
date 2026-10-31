@@ -1,4 +1,4 @@
-import { createMix, createStageMix, resumeMix, playDeck, pauseDeck, pauseMix, beatAt, gains, mod, setTempo, nudgeDeck } from './model.mjs';
+import { createMix, createStageMix, resumeMix, playDeck, pauseDeck, pauseMix, beatAt, gains, lowCutDb, mod, setTempo, nudgeDeck } from './model.mjs';
 import { TRACKS, STAGES, buildTrackData } from './tracks.mjs';
 export class DJAudio {
   constructor(Context = globalThis.AudioContext, options = {}) {
@@ -68,9 +68,13 @@ export class DJAudio {
     const source = context.createBufferSource(), gain = context.createGain();
     source.buffer = this.buffers[id]; source.loop = true;
     source.playbackRate.value = this.mix.decks[id].bpm / this.tracks[id].nativeBpm;
-    source.connect(gain); gain.connect(this.output);
-    const voice = { source, gain, stopped: false };
-    source.onended = () => { source.disconnect(); gain.disconnect(); this.retiring.delete(voice); };
+    // Automatic low cut (bass swap) tied to the crossfader; skipped when the context has no filters.
+    const filter = context.createBiquadFilter ? context.createBiquadFilter() : null;
+    if (filter) { filter.type = 'lowshelf'; filter.frequency.value = 220; filter.gain.value = lowCutDb(this.mix.mix)[id]; source.connect(filter); filter.connect(gain); }
+    else source.connect(gain);
+    gain.connect(this.output);
+    const voice = { source, gain, filter, stopped: false };
+    source.onended = () => { source.disconnect(); filter?.disconnect(); gain.disconnect(); this.retiring.delete(voice); };
     gain.gain.setValueAtTime(0, now);
     gain.gain.linearRampToValueAtTime(gains(this.mix.mix)[id] * 10 ** ((this.tracks[id].trimDb || 0)/20), now + .008);
     const track=this.tracks[id];
@@ -89,7 +93,7 @@ export class DJAudio {
   }
   clearVoices() {
     for (const voice of [...this.voices, ...this.retiring]) if (voice) {
-      this.stopVoice(voice); voice.source.disconnect(); voice.gain.disconnect();
+      this.stopVoice(voice); voice.source.disconnect(); voice.filter?.disconnect(); voice.gain.disconnect();
     }
     this.voices = [null, null]; this.retiring.clear();
   }
@@ -107,6 +111,8 @@ export class DJAudio {
     gains(this.mix.mix).forEach((g, id) => {
       const p = this.voices[id]?.gain.gain;
       if (p) { p.cancelScheduledValues(this.now); p.setValueAtTime(p.value, this.now); p.linearRampToValueAtTime(g * 10 ** ((this.tracks[id].trimDb || 0)/20), this.now + .012); }
+      const f = this.voices[id]?.filter?.gain;
+      if (f) f.setTargetAtTime(lowCutDb(this.mix.mix)[id], this.now, .03);
     });
   }
   setVolume(value) {
@@ -122,7 +128,7 @@ export class DJAudio {
   pauseDeck(id) {
     pauseDeck(this.mix, id, this.now);
     const voice = this.voices[id];
-    if (voice) { this.stopVoice(voice); voice.source.disconnect(); voice.gain.disconnect(); this.voices[id] = null; }
+    if (voice) { this.stopVoice(voice); voice.source.disconnect(); voice.filter?.disconnect(); voice.gain.disconnect(); this.voices[id] = null; }
     this.setVolume(this.volume);
   }
   nudge(id, beats) {

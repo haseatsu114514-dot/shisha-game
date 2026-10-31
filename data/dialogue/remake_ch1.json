@@ -2101,7 +2101,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "normal",
+          "face": "smile",
           "text": "アタシは出たり出なかったりさ。縁があれば、また会える"
         },
         {
@@ -2120,7 +2120,7 @@
       "lines": [
         {
           "speaker": "uranaishi",
-          "face": "normal",
+          "face": "smile",
           "text": "……また来たね。今日は誰との縁が気になるんだい？"
         }
       ]
@@ -2180,7 +2180,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "normal",
+          "face": "smile",
           "text": "縁は逃げやしない。稼いでから、また来な"
         }
       ]
@@ -2233,7 +2233,7 @@
         },
         {
           "speaker": "uranaishi",
-          "face": "normal",
+          "face": "smile",
           "text": "……ヒヒ、いい札だ。{fortuneName}との縁は、いま撚りどきに入ってる"
         },
         {
@@ -3052,7 +3052,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "吸いすぎたな。回数を重ねるほど葉は消耗する。温度が合ったら、提供していいんだ"
+          "text": "吸いすぎたな。目安は2〜3口。煙と味が乗ったら、提供していいんだ"
         },
         {
           "speaker": "sumi",

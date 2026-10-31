@@ -2,7 +2,8 @@
 import { $, el, sleep, nextFrame } from "./util.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
-import { state, STAT_KEYS } from "./state.js";
+import { state, STAT_KEYS, config } from "./state.js";
+import { reducedMotion } from "./transition-kit.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { nextStepProgress } from "./stat-progress.js";
@@ -102,6 +103,8 @@ export function imageReady(url, ms = 1500, { keep = false } = {}) {
 // スロットのランプ・通知）も同じ（GUI20・21）。起動時に並行して読み、手放さずに置いておく。
 const LOUNGE_ART = ["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map((n) => `img/ui/lounge/${n}.webp`);
 const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakki-slot/${n}.webp`);
+// 紙とラベンダー（既定のUI・DUI08）の板と札。会話枠は uiThemeFrame で別に読む。
+const PAPER_ART = ["panel", "lavender"].map((n) => `img/ui/paper/${n}.webp`);
 /** 設定・ギャラリーの窓と最初の会話の枠・ボタン（タイトルの絵と一緒に、幕を開ける前に待つ） */
 export const FRAME_ART = LOUNGE_ART.slice(0, 2);
 let uiArt = null;
@@ -136,7 +139,7 @@ function deferStoreLogos() {
 /** UIの絵・顔アイコンと選択中の会話枠を読む（店ロゴは含まない。一度だけ） */
 function warmCoreArt() {
   if (!uiArt) {
-    const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
+    const urls = [...LOUNGE_ART, ...PAPER_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
     uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
   // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
@@ -529,12 +532,14 @@ export function stamp(text, { host = layers.fx, kind = "", x = "50%", y = "42%" 
 }
 
 export function flash(kind = "white", ms = 260) {
+  if (reducedMotion() || config.reduceShake) return;
   const f = el(`div.flash.${kind}`);
   layers.fx.append(f);
   setTimeout(() => f.remove(), ms + 60);
 }
 
 export function shake(target = document.getElementById("stage"), ms = 380) {
+  if (reducedMotion() || config.reduceShake) return;
   target.classList.remove("shake");
   void target.offsetWidth;
   target.classList.add("shake");

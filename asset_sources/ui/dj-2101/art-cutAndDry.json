@@ -1,0 +1,23 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "prompt": "Sharp geometric shards and clean diagonal cuts of light over dark marble, minimal and crisp. Square original album cover artwork for a fictional club track, abstract painterly illustration, game theme palette deep purple-black (#0b0812, #151024) with violet (#b45cf0), neon pink (#ff5fa8) and cyan (#3fd0e8) light, subtle hookah smoke wisps, moody shisha-bar club atmosphere, no text, no letters, no logos, no people faces, no watermark.",
+ "size": "1024x1024",
+ "n": 1,
+ "quality": "high",
+ "background": "opaque",
+ "output_format": "png",
+ "created": 1793425206,
+ "usage": {
+  "input_tokens": 113,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 113
+  },
+  "output_tokens": 1756,
+  "output_tokens_details": {
+   "image_tokens": 1756,
+   "text_tokens": 0
+  },
+  "total_tokens": 1869
+ }
+}

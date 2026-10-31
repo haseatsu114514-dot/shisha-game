@@ -4,7 +4,7 @@ import { DB, bgUrl } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { setBg, showScreen, layers } from "../core/ui.js";
 import { play } from "../vn/engine.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { CH3_TRIALS, CH3_TRIAL_DIALOGUE_IDS, availableChapterThreeTrials, trialRecord, trialResult,
   recordTrialPractice, finishTrialFeedback, trialFeedbackDialogue } from "./ch3-trial-progress.js";
 

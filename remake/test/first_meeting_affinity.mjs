@@ -144,6 +144,27 @@ for (const route of ['ordinary','hiyori']) await check(`${route} pending recruit
  const job=route==='ordinary'?f.spots.visitChar(id):f.hiyori.playHiyoriEvent('meeting');
  await waiting;const before=s.affinity[id];assert(before>=40);release(false);assert.equal(await job,true);assert.equal(s.affinity[id],before);
 });
+// #2026: 第1章の後日談は、第1章で通った店主（章の切り替え時の記録）の第2章最初の来店で一度だけ。
+await check('after-chapter revisit plays once on the first chapter-2 visit of a chapter-1 regular',async f=>{
+ const s=f.fresh();s.chapter=2;s.story.adam=3;s.affinity.adam=20;
+ f.db.dialogues.venue_adam_day={dialogue_id:'venue_adam_day',lines:[{speaker:'',text:'いらっしゃい'}]};
+ assert.equal(f.spots.afterChapterVisitDue('adam'),null,'first talked in chapter 2: no chapter-1 aftermath');
+ s.flags._ch1_regulars={adam:true};
+ assert.equal(f.spots.afterChapterVisitDue('adam'),'ch1_adam_after_ch1');
+ assert.equal(f.spots.hasNewStory('adam'),true);
+ f.setPlay(async scene=>{const id=typeof scene==='string'?scene:scene.dialogue_id;if(id==='ch1_adam_after_ch1')s.flags.ch1_adam_after_ch1_done=true;return {id,visited:[]};});
+ const ids=from=>f.plays.slice(from).map(args=>typeof args[0]==='string'?args[0]:args[0].dialogue_id);
+ let mark=f.plays.length;
+ assert.equal(await f.spots.visitChar('adam',{welcome:'venue_adam_day'}),true);
+ assert.deepEqual(ids(mark),['ch1_adam_after_ch1'],'no shop greeting or story stage on the aftermath visit');
+ assert.equal(s.story.adam,3);
+ mark=f.plays.length;
+ assert.equal(await f.spots.visitChar('adam',{welcome:'venue_adam_day'}),true);
+ assert(!ids(mark).includes('ch1_adam_after_ch1'),'read once only');
+ assert.equal(f.spots.afterChapterVisitDue('minto'),null,'only the recorded regulars');
+ const later=f.fresh();later.chapter=3;later.flags._ch1_regulars={adam:true};
+ assert.equal(f.spots.afterChapterVisitDue('adam'),null,'only in chapter 2');
+});
 console.log(JSON.stringify({groups,failures,scope:'actual modules with controlled VN/UI and isolated Map storage; not real browser/menu LOAD'}));
 if(failures)process.exitCode=1;
 

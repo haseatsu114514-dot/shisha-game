@@ -35,7 +35,7 @@ function response(lines, answer, seen = true) {
   assert.equal(lines.includes(NEUTRAL), expected === null);
   RESPONSES.forEach((text, i) => assert.equal(lines.includes(text), expected === i));
   assert(lines.some(t => t.includes("今日は、ミント多めで")), "Original order was lost");
-  assert(lines.includes("小さく笑って電話を切り、スマホをしまった。"));
+  assert(lines.includes("小さく笑って電話を切り、スマホをしまった。肩がほんの少しだけ下がっていた。"));
   assert(lines.includes("顔は描かないけど。座ってた時の手は、残したいです"));
 }
 async function input(locator, touch) { if (touch) await locator.tap(); else await locator.click(); }
@@ -162,7 +162,7 @@ await suite("regular-service-response", async check => {
       assert.deepEqual(await page.evaluate(keys => keys.map(k => T.core.state.flags[k]), KEYS), [answer === 0, answer === 1]);
       await page.evaluate(() => { T.core.state.day = 10; });
       await start(page, LATER);
-      await advanceUntil(page, "スマホの画面を伏せて置いて、煙を長く、深く吐く。肩の力は、最後まで抜けなかった。", touch);
+      await advanceUntil(page, "スマホの画面を伏せて置いて、煙を長く、深く吐く。吸っている間、肩の力は抜けなかった。", touch);
       await input(page.locator('[data-test="vn-auto"]'), touch);
       await page.waitForFunction(text => T.lines().includes(text), RESPONSES[answer], { timeout: 20000 });
       await assertFits(page, ".vn-box, .vn-text");

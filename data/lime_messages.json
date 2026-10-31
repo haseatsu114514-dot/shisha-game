@@ -78,7 +78,7 @@
         },
         {
           "sender": "naru",
-          "text": "お前も来る？ ヒートマネジメントの新型、実物見とくと大会で差が出るぞ"
+          "text": "お前も来る？ ヒートマネジメントの新型、実物見とくと次の一台で差が出るぞ"
         }
       ],
       "accept_event": "outing_naru_1",
@@ -1357,54 +1357,6 @@
       ]
     },
     {
-      "id": "rumor_nagumo_cigarman",
-      "sender": "nagumo",
-      "trigger_condition": "ch3_started",
-      "type": "rumor",
-      "rumor_about": "mashiro",
-      "messages": [
-        {
-          "sender": "nagumo",
-          "text": "蒸野くん。mukaiという店のことで、少し耳に入れておきたい話がある"
-        },
-        {
-          "sender": "nagumo",
-          "text": "……妙な噂がある。シガーリーフで、常識外れの煙を出す人間がいると"
-        },
-        {
-          "sender": "nagumo",
-          "text": "業界では「シガーマン」と呼ばれているらしい。ムカイさんがそうだと言う者もいるが、確かめた者はおらん"
-        },
-        {
-          "sender": "nagumo",
-          "text": "正体はまだ分からん。だが、あの煙を見た者は皆、声を失うらしい"
-        },
-        {
-          "sender": "nagumo",
-          "text": "……正直に言えば、怖い。それだけのことだがね"
-        }
-      ],
-      "trigger_day": 4,
-      "chapter": 3,
-      "replies": [
-        {
-          "text": "会長も、怖いと感じるんですね",
-          "response": "未知のものを怖いと感じるのは、悪いことではないよ。目を閉じないことだ",
-          "affinity": 1
-        },
-        {
-          "text": "まず、自分の一台を仕上げます",
-          "response": "うむ。噂に気を取られて手元を疎かにせんことだ。君の煙を楽しみにしている",
-          "affinity": 2
-        },
-        {
-          "text": "教えてくださってありがとうございます",
-          "response": "ああ。また確かなことが分かれば、君にも伝えよう",
-          "affinity": 0
-        }
-      ]
-    },
-    {
       "id": "rumor_kemuri_experiments",
       "sender": "naru",
       "trigger_condition": "lime_exchanged",
@@ -1697,13 +1649,6 @@
         },
         {
           "sender": "tsumugi",
-          "stamp": "st_tsumugi_nod",
-          "media_chapters": [
-            1
-          ]
-        },
-        {
-          "sender": "tsumugi",
           "text": "煙の絵の取材で、いろんなお店の煙を見たいんです。でも、一人だと入りにくいお店があって"
         },
         {
@@ -1712,6 +1657,13 @@
         }
       ],
       "accept_event": "outing_tsumugi_1",
+      "accept_reply": {
+        "sender": "tsumugi",
+        "stamp": "st_tsumugi_nod",
+        "media_chapters": [
+          1
+        ]
+      },
       "decline_response": {
         "sender": "tsumugi",
         "text": "……わかりました。お仕事、がんばってください。（また、誘います）"

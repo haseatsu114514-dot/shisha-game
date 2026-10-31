@@ -1,0 +1,23 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "prompt": "Top-down orthographic view of one DJ controller jog wheel, perfectly circular and centered filling the frame: outer ring of knurled brushed aluminum with grip dimples, inner glossy black touch platter with a subtle vinyl groove sheen, a small round center display bezel left plain dark, a thin coral LED ring between metal ring and platter. Isolated on fully transparent background. Game UI asset for a dark after-hours shisha bar club DJ minigame called RED ROOM. Palette: deep plum-black (#0b0b0e, #19181e, #302c33), neon coral red (#ff6575) for deck A accents, warm amber (#f5bb67) accents, brushed dark metal, subtle hookah smoke motifs. Semi-realistic painted, clean, high detail, no text, no letters, no logos, no watermark.",
+ "size": "1024x1024",
+ "n": 1,
+ "quality": "high",
+ "background": "transparent",
+ "output_format": "png",
+ "created": 1793420655,
+ "usage": {
+  "input_tokens": 177,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 177
+  },
+  "output_tokens": 1756,
+  "output_tokens_details": {
+   "image_tokens": 1756,
+   "text_tokens": 0
+  },
+  "total_tokens": 1933
+ }
+}

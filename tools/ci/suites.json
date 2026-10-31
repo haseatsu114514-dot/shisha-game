@@ -312,6 +312,12 @@
       ]
     },
     {
+      "id": "ch3-lover-entry",
+      "title": "Lover LIME and lover_events milestones after chapter 3 (#2024)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch3_lover_entry.mjs"]
+    },
+    {
       "id": "affinity-stages",
       "title": "Completed conversations and affinity stage boundaries",
       "kind": "quick",
@@ -330,10 +336,13 @@
         "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/tournament_resources.mjs",
+        "node remake/test/friend_lime_scene_chapters.mjs",
+        "node remake/test/tournament_entrance.mjs",
         "node --experimental-vm-modules remake/test/rin_sample.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
+        "node --experimental-vm-modules remake/test/lime_balance.mjs",
         "node --experimental-vm-modules remake/test/samechan_migration.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
@@ -434,6 +443,7 @@
       "kind": "quick",
       "run": [
         "node --test tools/ci/test_ci.mjs",
+        "python3 tools/check_face_icons_fresh.py",
         "node --test tools/sequential_merge/test.mjs",
         "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
         "node remake/test/dev_inspector.mjs"
@@ -1571,30 +1581,6 @@
       ]
     },
     {
-      "id": "hiyori-title-five",
-      "title": "Hiyori five title illustrations",
-      "kind": "browser",
-      "weight": 0.3,
-      "timeout": 15,
-      "paths": [
-        "assets/ui/title_arts/**",
-        "remake/img/ui/title_arts/**",
-        "remake/data/manifest.json",
-        "remake/js/scenes/title*.js",
-        "remake/test/title_arts.mjs",
-        "remake/test/browser/hiyori_title_five.mjs",
-        "asset_sources/hiyori-title-five-issue486/**"
-      ],
-      "run": [
-        "python3 asset_sources/hiyori-title-five-issue486/validate.py",
-        "COMPARISON_DIR=.codex/artifacts/remake-browser/hiyori-title-poses node remake/test/browser/hiyori_title_five.mjs"
-      ],
-      "sparse": [
-        "/asset_sources/hiyori-title-five-issue486/"
-      ],
-      "pillow": true
-    },
-    {
       "id": "home-rig-backgrounds",
       "title": "Home rig ownership backgrounds",
       "kind": "browser",
@@ -2365,6 +2351,24 @@
       ]
     },
     {
+      "id": "vn-accessibility-1914",
+      "title": "VN seen-only skip, AUTO speed, and reduced motion settings",
+      "kind": "browser",
+      "weight": 0.2,
+      "timeout": 5,
+      "paths": [
+        "remake/js/vn/engine.js",
+        "remake/js/core/ui.js",
+        "remake/js/core/state.js",
+        "remake/js/scenes/title.js",
+        "remake/css/base.css",
+        "remake/test/vn_accessibility_1914.mjs"
+      ],
+      "run": [
+        "node remake/test/vn_accessibility_1914.mjs"
+      ]
+    },
+    {
       "id": "maps-and-shop",
       "title": "Store logos, map facilities and shop UI",
       "kind": "browser",
@@ -2837,6 +2841,8 @@
       "timeout": 5,
       "paths": [
         "remake/css/ui-themes.css",
+        "remake/css/ui-paper.css",
+        "remake/img/ui/paper/**",
         "remake/css/vn-composition.css",
         "remake/img/ui/vn-polish/**",
         "remake/img/ui/vn-calm/**",

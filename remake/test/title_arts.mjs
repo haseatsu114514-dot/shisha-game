@@ -1,4 +1,4 @@
-// 実際の起動・再表示、採用した10人39枚、PC/スマホのメニューとセーブ不変を確認。
+// 実際の起動・再表示、採用した10人41枚、PC/スマホのメニューとセーブ不変を確認。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -65,18 +65,34 @@ await suite("title-arts", async (check) => {
     assert.deepEqual(await storageSnapshot(page), before, "Title selection changed saved progress");
   });
 
+  // 2026-10-31 オーナー指示「タイトルアートは1キャラ1枚」: どのキャラでも専用キービジュアルだけが出る。
+  await check("one-art-per-character", async page => {
+    const picks = await page.evaluate(async () => {
+      const loader = await import("./js/scenes/title-art.js");
+      const unlock = await import("./js/core/title-art-unlock.js");
+      const out = [];
+      for (let i = 0; i < 60; i++) {
+        const art = loader.pickTitleArt();
+        out.push([art.character, art.file, unlock.TITLE_KEY_VISUALS[art.character]]);
+      }
+      return out;
+    });
+    for (const [character, file, key] of picks) assert.equal(file, key, `${character} showed a non-key title art`);
+    assert.ok(new Set(picks.map(([c]) => c)).size > 1, "The picker should still rotate characters");
+  });
+
   for (const [label, viewport] of [["pc", { width: 1280, height: 720 }], ["mobile", { width: 844, height: 390 }]]) {
     await check(label, async page => {
       const arts = await page.evaluate(() => __remake.DB.manifest.titleArts);
-      assert.equal(arts.length, 39);
+      assert.equal(arts.length, 41);
       const sharkOwner = arts.find(art => art.file.endsWith("_01_shishark_test_run.png")).character;
       assert.deepEqual([...new Set(arts.map(art => art.character))].sort(), ["ageha", "hiyori", sharkOwner, "mashiro", "minto", "rin", "tsumugi", "sumi", "naru", "adam"].sort());
       assert.deepEqual(arts.filter(art => art.character === "hiyori").map(art => art.file).sort(), [
         "title_art_hiyori_01_twilight_walk.png", "title_art_hiyori_02_window_pause.png", "title_art_hiyori_03_after_rain.png",
         "title_art_hiyori_04_daylight_bookshop.png", "title_art_hiyori_05_ramen_break.png", "title_art_hiyori_06_riverside_hoodie.png",
       ]);
-      // #1243 のオーナー選定で初めて採用された3人のうち、スミ・なるは選定アートが唯一のタイトル絵。
-      assert.deepEqual(arts.filter(art => art.character === "sumi").map(art => art.file), ["title_art_sumi_01_own_clay_bowl.png"]);
+      // #1243 のオーナー選定で初めて採用された3人のうち、なるは選定アートが唯一のタイトル絵。スミは画像選別（PR #2105）で1枚追加。
+      assert.deepEqual(arts.filter(art => art.character === "sumi").map(art => art.file), ["title_art_sumi_01_own_clay_bowl.png", "title_art_sumi_02_coal_tending.png"]);
       assert.deepEqual(arts.filter(art => art.character === "naru").map(art => art.file), ["title_art_naru_01_bakery_morning.png"]);
       // アダムは選定アートに加え、拡充候補（Draft PR #1387）から追加採用された1枚を持つ。
       assert.deepEqual(arts.filter(art => art.character === "adam").map(art => art.file), ["title_art_adam_01_sunset_proclamation.png", "title_art_adam_02_twin_apple_throne.png"]);

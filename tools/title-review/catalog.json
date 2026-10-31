@@ -368,6 +368,30 @@
       "thumbnail": "media/3d1be37becf76aaeda73578ff5e8c17bc8092cc0ff7b5f654e4eb169cb7b623b-thumb.webp"
     },
     {
+      "id": "dffd1904ccfc0223e0e153bc955eff27e9e03f2da147e70d106fb86e9d36981f",
+      "sha256": "dffd1904ccfc0223e0e153bc955eff27e9e03f2da147e70d106fb86e9d36981f",
+      "character": "mashiro",
+      "label": "title_art_mashiro_05_rooftop_dusk_yawn",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_mashiro_05_rooftop_dusk_yawn.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/dffd1904ccfc0223e0e153bc955eff27e9e03f2da147e70d106fb86e9d36981f.webp",
+      "thumbnail": "media/dffd1904ccfc0223e0e153bc955eff27e9e03f2da147e70d106fb86e9d36981f-thumb.webp"
+    },
+    {
       "id": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
       "sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
       "character": "mashiro",
@@ -509,6 +533,30 @@
       "related": [],
       "image": "media/b7aacbe1a029e21bc99da46dee4e730db0606df716c6148593c6c3ac7bffb2ff.webp",
       "thumbnail": "media/b7aacbe1a029e21bc99da46dee4e730db0606df716c6148593c6c3ac7bffb2ff-thumb.webp"
+    },
+    {
+      "id": "aa20723f929794f63668eb0cf44db584b256c1f64644535fb4c1e222639cd8f6",
+      "sha256": "aa20723f929794f63668eb0cf44db584b256c1f64644535fb4c1e222639cd8f6",
+      "character": "minto",
+      "label": "title_art_minto_07_balcony_mint",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_minto_07_balcony_mint.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/aa20723f929794f63668eb0cf44db584b256c1f64644535fb4c1e222639cd8f6.webp",
+      "thumbnail": "media/aa20723f929794f63668eb0cf44db584b256c1f64644535fb4c1e222639cd8f6-thumb.webp"
     },
     {
       "id": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
@@ -3068,10 +3116,10 @@
     ]
   },
   "summary": {
-    "originalPaths": 130,
-    "uniqueArt": 108,
+    "originalPaths": 132,
+    "uniqueArt": 110,
     "duplicatePaths": 22,
-    "current": 37,
+    "current": 39,
     "missingHistoricalSlots": [
       {
         "slot": "ageha01",

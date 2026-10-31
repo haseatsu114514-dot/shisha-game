@@ -38,7 +38,8 @@ PROMPTS = BASE / "PROMPTS.md"
 OUT = BASE / "out"
 REFS = BASE / "refs"
 API = "https://api.openai.com/v1"
-DEFAULT_MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-1")
+# このorganizationでは gpt-image-1 が400になる。オーナー決定で sunburst を使う（2026-10-31）
+DEFAULT_MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-2.5-sunburst")
 IMG_EXT = (".png", ".jpg", ".jpeg", ".webp")
 
 
@@ -81,13 +82,14 @@ def is_lfs_pointer(fp: Path) -> bool:
 def attachments(block: dict) -> list[Path]:
     """添付指定のうちリポジトリに実在する画像と、refs/<対象ID>/ の画像。"""
     found: list[Path] = []
+    # 修正版の元画像（refs/<対象ID>/）を先頭に置く。後ろに置くと背景の参考画像のほうが優先され、元の構図が失われた（1030の第4章02）
+    rdir = REFS / block["targetId"]
+    if rdir.is_dir():
+        found += sorted(f for f in rdir.iterdir() if f.suffix.lower() in IMG_EXT)
     for p in attachment_paths(block):
         fp = ROOT / p
         if not is_lfs_pointer(fp) and fp not in found:  # LFSの実体が未取得のものは除く（--fetch-lfs で取得）
             found.append(fp)
-    rdir = REFS / block["targetId"]
-    if rdir.is_dir():
-        found += sorted(f for f in rdir.iterdir() if f.suffix.lower() in IMG_EXT)
     return found[:16]
 
 
@@ -159,10 +161,15 @@ def main() -> int:
     ap.add_argument("--check", action="store_true", help="キーとモデルの疎通だけ確認（モデル一覧を1回取得）")
     ap.add_argument("--only", nargs="*", help="対象IDを限定")
     ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--quality", default="high")
+    # high はクラウド環境のプロキシ経由だと 502 になる（約30秒で切れる）ため medium を既定にする
+    ap.add_argument("--quality", default="medium")
     ap.add_argument("--per-target", type=int, default=5)
+    ap.add_argument("--set", default="20261030", help="asset_sources/picker-refill-<set>/ のプロンプト・参照・出力を使う")
     ap.add_argument("--fetch-lfs", action="store_true", help="添付に必要なLFS画像の実体だけを git lfs pull で取得する")
     args = ap.parse_args()
+    global BASE, PROMPTS, OUT, REFS
+    BASE = ROOT / "asset_sources" / f"picker-refill-{args.set}"
+    PROMPTS, OUT, REFS = BASE / "PROMPTS.md", BASE / "out", BASE / "refs"
 
     blocks = parse_blocks(PROMPTS.read_text(encoding="utf-8"))
     if args.only:

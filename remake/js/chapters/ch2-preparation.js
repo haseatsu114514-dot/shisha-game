@@ -20,6 +20,7 @@ import { chapterTwoNights } from "./ch2-story.js";
 import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone } from "../core/affinity-stages.js";
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
+import { consultLessons } from "../core/growth.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 // day % 7（1=月曜）。第2章の準備期間（通算16〜27日）では各店とも1日だけ休む（#2027）。
@@ -156,6 +157,8 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
   // 神崎・REIの長い段階会話と締めくくりは、第1章の固有会話と同じ+10（#2027）。
   gainAffinity(id, first || finale || stages && stage?.file ? 10 : 5); earnStat(stat[id], 4);
+  // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
+  if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
   return { used: true, exerted: true };
 }
 

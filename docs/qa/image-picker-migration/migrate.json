@@ -1502,7 +1502,7 @@
    "key": "targets/t-lvup-ch2-day",
    "value": {
     "groupId": "g15-map-lvup",
-    "name": "第2章 ワイドハンガー・昼",
+    "name": "第2章 柚ヶ谷・昼",
     "order": 3,
     "status": "decided",
     "decidedId": "t-lvup-ch2-day--70f497780decb44e8488bd92",
@@ -1515,7 +1515,7 @@
    "key": "targets/t-lvup-ch2-night",
    "value": {
     "groupId": "g15-map-lvup",
-    "name": "第2章 ワイドハンガー・夜",
+    "name": "第2章 柚ヶ谷・夜",
     "order": 4,
     "status": "decided",
     "decidedId": "t-lvup-ch2-night--b2f95945428d0b93d1ab5b14",

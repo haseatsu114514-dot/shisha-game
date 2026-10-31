@@ -513,10 +513,14 @@ export function wipeSave() {
 
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
-  uiTheme: "classic",  // 会話枠と共通UI。ゲームの進行とは別の端末設定。
+  uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
+  mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時
+  autoSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい
+  skipSeenOnly: false, // 旧来の全スキップを維持し、設定で既読のみへ切替
+  reduceShake: false,
   voiceBlip: true,   // 文字送りの声（キャラ別の音程）
   // 一度見た演出（連絡先交換・シフト終了）を2回目以降だけ短くする。初回は必ずフルで見せる。
   // 既定オフ＝現状どおり。くじ・チェキ・MG(#1081 H05)は短縮しない。既読判定は state.flags を使う。
@@ -528,6 +532,7 @@ export function loadConfig() {
   try {
     Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}"));
   } catch { /* noop */ }
+  if ("muted" in config) { config.mute = !!(config.mute || config.muted); delete config.muted; }
   return config;
 }
 

@@ -2,6 +2,7 @@ import { imgFileUrl } from "./img-file.js";
 
 // 配色・素材だけの設定。進行や報酬・判定・セーブデータには触れない。
 export const UI_THEMES = Object.freeze([
+  { id: "paper", label: "紙とラベンダー", note: "生成りの紙と、ラベンダーの札（DUI08）" },
   { id: "smoke", label: "11 煙だけの輪郭", note: "透ける墨色と、淡い煙の線" },
   { id: "smoke-purple", label: "11 煙だけの輪郭・紫", note: "墨紫とラベンダーの光" },
   { id: "cut-paper", label: "16 紫・ペーパーラウンジ", note: "温かな墨紫と、柔らかく重なる紙" },
@@ -9,8 +10,9 @@ export const UI_THEMES = Object.freeze([
   { id: "tissue", label: "28 重なる薄紙", note: "生成りの薄紙と、静かな金の線" },
   { id: "classic", label: "これまでのゴージャス", note: "墨紫・真鍮の装飾枠" },
 ]);
-export const DEFAULT_UI_THEME = "classic";
+export const DEFAULT_UI_THEME = "paper";
 const FRAME_ART = Object.freeze({
+  paper: imgFileUrl("ui/paper/dialogue.webp"),
   smoke: imgFileUrl("ui/vn-faithful/smoke.webp"), "smoke-purple": imgFileUrl("ui/vn-faithful/smoke-purple.webp"),
   "cut-paper": imgFileUrl("ui/vn-calm/paper.webp"), amber: imgFileUrl("ui/vn-lounge/amber.svg"),
   tissue: imgFileUrl("ui/vn-faithful/tissue.webp"), classic: imgFileUrl("ui/vn-lounge/narration.svg"),

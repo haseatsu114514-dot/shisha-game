@@ -24,7 +24,8 @@
       "title": "tonariの見習い",
       "line": "いつか自分の店を持ちたい",
       "face": "normal",
-      "color": "#eee0bd"
+      "color": "#eee0bd",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "俺"
@@ -54,9 +55,10 @@
     "spriteScale": 1.05,
     "intro_cutin": {
       "title": "はじめの師匠",
-      "line": "客が満足したなら、それでいい",
+      "line": "客が満足したなら、／それでいい",
       "face": "normal",
-      "color": "#e0843e"
+      "color": "#e0843e",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "俺",
@@ -81,15 +83,16 @@
       "notes": "前年に県大会で敗退。今季は地元大会ではじめに敗れ、通常の県・全国には出場しない。第2章の対峙後は店を長期休業して修行へ。通常ルートと並行する独立シリーズ、ラストチャンス予選に挑み、第3章DAY7の地域大会を通過。はじめの全国大会と同日の代表決定大会で優勝し、日本第二代表になる。各大会は一試合。"
     },
     "visual_concepts": [
-      "23s japanese male, confident and slightly cocky expression, short dyed silver hair, wearing a stylish streetwear jacket and multiple silver rings, holding a digital thermometer, cyberpunk-lite cafe vibe",
-      "young japanese competitive shisha player, sharp eyes, silver-ash hair, wearing an oversized graphic tee and dark necklace, working precisely with scales and foil, neon lit modern cafe setting"
+      "23 year old slim japanese man, warm golden amber eyes, short tousled silver-ash hair with an asymmetric long fringe, small silver ear piercing, open black stand-collar bomber jacket with white shoulder and sleeve panels, plain black t-shirt, two fine silver chains, black cargo trousers with hip chain, chunky white sneakers, quiet earned confidence and a warm honest smile",
+      "sincere and helpful rival shisha craftsman, former pastry-school cook, building a sweet vanilla and baked-goods mix like a dessert recipe, generous and ready to teach, warm cafe counter with pastry and cream motifs"
     ],
     "spriteScale": 1.02,
     "intro_cutin": {
-      "title": "甘党の熱血店主",
-      "line": "うまくなりたいなら全部見てけ",
+      "title": "お菓子系の理論派店主",
+      "line": "うまくなりたいなら／全部見てけ",
       "face": "smile",
-      "color": "#f0d8a0"
+      "color": "#f0d8a0",
+      "motion": "sharp"
     }
   },
   {
@@ -116,9 +119,10 @@
     "spriteScale": 1.03,
     "intro_cutin": {
       "title": "ダブルアップルの伝道師",
-      "line": "煙は二種類。ダブルアップルと、それ以外だ",
+      "line": "煙は二種類。／ダブルアップルと、それ以外だ",
       "face": "intense",
-      "color": "#c9463a"
+      "color": "#c9463a",
+      "motion": "sharp"
     }
   },
   {
@@ -160,10 +164,11 @@
     "spriteScale": 0.91,
     "intro_cutin": {
       "title": "PEPPERMINT人気No.1キャスト",
-      "line": "みんとでーす♪ 全員まとめてライバルね？",
+      "line": "みんとでーす♪／全員まとめてライバルね？",
       "face": "wink",
       "color": "#7fe0c2",
-      "name": "alias"
+      "name": "alias",
+      "motion": "bounce"
     }
   },
   {
@@ -174,7 +179,7 @@
     "nationality": "Japan",
     "affiliation": "SMOKE LAB（チャコール博士の研究室）",
     "play_style": "「最適化されたアルゴリズム」",
-    "description": "チャコール博士が過去の配合・大会記録と環境センサーをもとに開発したAIシーシャマシン。はじめの記録済みの作り方を再現し、当日の気温・湿度・吸う人の咳や吸引にも対応できる。技術も適応も本物で、一本目ははじめを上回る。最終戦は双方ダブルアップル12g固定の二本勝負。二本目では仲間の存在で落ち着いたはじめの観察と待ち方が変わり、その日の客により好まれる一台ができる。このシステムが持つ記録とセンサーだけでは、はじめの今の関係性が手の判断へ及ぼす過程まで再現できなかった。AIも人々の仕事や環境からできている存在であり、借り物だから空虚とは扱わない。人間の恒久的優位を証明する勝利ではない。採点UIは出さず、もう一回吸いたい方への挙手で決着する。",
+    "description": "チャコール博士が過去の配合・大会記録と環境センサーをもとに開発した人型AIロボット。はじめの記録済みの作り方を再現し、当日の気温・湿度・吸う人の咳や吸引にも対応できる。技術も適応も本物で、一本目ははじめを上回る。最終戦は双方ダブルアップル12g固定の二本勝負。二本目では仲間の存在で落ち着いたはじめの観察と待ち方が変わり、その日の客により好まれる一台ができる。このシステムが持つ記録とセンサーだけでは、はじめの今の関係性が手の判断へ及ぼす過程まで再現できなかった。AIも人々の仕事や環境からできている存在であり、借り物だから空虚とは扱わない。人間の恒久的優位を証明する勝利ではない。採点UIは出さず、もう一回吸いたい方への挙手で決着する。",
     "background_secret": "博士や過去の職人の仕事が積み重なって動いている。試合後も破壊されず、名職人の手順や新しい観察を比較し、学ぶ道具としてSMOKE LABで稼働を続ける。対戦で異なった調整も記録に残す。終幕は学習の続きを示し、宛先も意味もない存在と断定しない。",
     "favorite_flavor": "ランダム（何でもいける）",
     "specialty_flavor": "観測した環境・吸引に応じた熱管理と、記録された手順の精密な再現",
@@ -184,14 +189,15 @@
       "notes": "対戦後、いつの間にか記録に新しい待ち方が加わっている。何を観測し、誰と試し、どこまで更新するかで次の煙も変わる。"
     },
     "visual_concepts": [
-      "futuristic AI shisha machine terminal, sleek white and metallic silver exterior, glowing blue LED sensors, robotic arms precisely handling glowing charcoal, clean cyber-tech environment",
-      "sci-fi high-tech cafe interior, central glowing AI server core shaped like a modern shisha, holographic interface displaying heat levels and flavor combinations, cybernetic and sterile mood"
+      "bipedal humanoid AI robot, sleek white and metallic silver armor plating with gold joints, glowing blue and violet sensor eyes, articulated humanoid hands precisely handling glowing charcoal, clean cyber-tech lab",
+      "humanoid robot standing at a shisha table in a sci-fi lab, holographic interface displaying heat levels and flavor combinations, cybernetic and sterile mood"
     ],
     "intro_cutin": {
-      "title": "AIシーシャマシン",
+      "title": "人型AIロボット",
       "line": "環境データ、取得完了",
       "face": "normal",
-      "color": "#9aa4b8"
+      "color": "#9aa4b8",
+      "motion": "still"
     }
   },
   {
@@ -217,10 +223,11 @@
     ],
     "spriteScale": 0.99,
     "intro_cutin": {
-      "title": "煙幕の勝負師",
-      "line": "一口目の話を、二口目で裏切る",
+      "title": "噂を自分で流す店主",
+      "line": "噂を流したのも僕だけどね。／がっかりした？",
       "face": "normal",
-      "color": "#8c7564"
+      "color": "#8c7564",
+      "motion": "sharp"
     },
     "voice": {
       "first_person": "僕"
@@ -254,9 +261,10 @@
     },
     "intro_cutin": {
       "title": "柑橘の研究家",
-      "line": "二口目まで、軽く爽やかに",
+      "line": "熱を急ぐと、／後のライムが消える",
       "face": "normal",
-      "color": "#f07a3a"
+      "color": "#f07a3a",
+      "motion": "sharp"
     }
   },
   {
@@ -284,7 +292,8 @@
       "title": "誤差ゼロの職人",
       "line": "ブレは、許さない",
       "face": "normal",
-      "color": "#8fb4d8"
+      "color": "#8fb4d8",
+      "motion": "still"
     }
   },
   {
@@ -339,7 +348,8 @@
       "line": "……一曲だけ、聴く？",
       "face": "normal",
       "color": "#b0102a",
-      "name": "alias"
+      "name": "alias",
+      "motion": "soft"
     }
   },
   {
@@ -360,15 +370,16 @@
       "notes": "完成された己の精神論で完結していたが、はじめの『全く異なる思想をそのまま享受する』若い柔軟さに触れ、いつの間にか自分の古いレシピにも新しい機材を取り入れる無邪気さを取り戻していた。"
     },
     "visual_concepts": [
-      "58s asian elderly man, wise hermit appearance, long white beard tied at the end, wearing traditional linen martial arts style clothing, holding a very old brass and wood engraved hookah pipe",
-      "ancient asian shisha master, serene expression and closed eyes, long white hair, wearing a simple earthy-toned robe, mystical smoke forming Yin-Yang patterns around him, temple-like background"
+      "58 year old chinese master craftsman with the dignity of an old martial artist, short (165cm) but proud upright stance, long white hair in a single long braid down the back, long white beard tied at the end, thick sharp white eyebrows, deep wrinkles, tanned skin, sharp yet calm eyes, large knotted craftsman hands",
+      "veteran shisha grandmaster in a deep crimson high-collared martial arts long jacket with black frog-knot buttons and dark-gold smoke-swirl and shisha-bowl hem embroidery, short crimson half-cape with charcoal lining and ember-orange stitching, wide black sash wrapped by a coiled braided shisha hose with the brass mouthpiece hanging at the hip, loose black trousers and cloth shoes, arms folded, fiercely sizing up his opponent (2026-10-31 owner redesign #2068); wears the same crimson outfit at the eve-of-tournament party; no hermit staff, no talismans, no glowing aura, no yin-yang magic smoke"
     ],
     "spriteScale": 0.96,
     "intro_cutin": {
-      "title": "龍を吐く仙人",
-      "line": "君の煙には、命がある",
+      "title": "龍を吐く水煙の職人",
+      "line": "観客が息を止めると、／煙がよく見える",
       "face": "normal",
-      "color": "#3fbf7f"
+      "color": "#3fbf7f",
+      "motion": "still"
     },
     "voice": {
       "first_person": "私"
@@ -392,8 +403,8 @@
       "notes": "日々見た煙や、誰かの小さな手つきが、いつの間にかいつもの生き物の線に混ざっている。絵も本人も出会いの集合として受け入れたまま、話せる相手が増えるにつれ、色のことや今日見た景色を言葉にもできるようになる。"
     },
     "visual_concepts": [
-      "20s japanese girl, introverted and quiet, bob cut black hair slightly covering her eyes, wearing oversized comfy sweater and headphones, staring intently at a cracked タブレット screen with an stylus pen",
-      "melancholy young female artist, pale complexion, dark hair, wearing a loose cardigan over a simple dress, sitting alone in a dim cafe corner, accompanied by purple lavender-scented smoke"
+      "21 year old petite japanese art student, brown bob cut with straight bangs, reddish-brown eyes, small earrings, oversized purple zip hoodie with floral embroidery on the sleeves, black pleated skirt, black knee socks and dark loafers, hugging a cracked tablet to her chest, quiet calm expression",
+      "reticent young illustrator at a window seat of a small shisha cafe, drawing a cat with leaf ears and a smoke tail on a cracked tablet, calm and self-accepting rather than lonely, soft lavender smoke"
     ],
     "spriteScale": 0.88,
     "art_sns": {
@@ -410,7 +421,8 @@
       "title": "窓際席の絵描き",
       "line": "……煙って、形がないから",
       "face": "normal",
-      "color": "#b9a4e8"
+      "color": "#b9a4e8",
+      "motion": "soft"
     },
     "art_contest": {
       "kind": "若手作家の公募イラストコンテスト",
@@ -454,7 +466,8 @@
       "title": "問屋街の魔女",
       "line": "ようこそ、夜の側へ",
       "face": "smile",
-      "color": "#9b6cf2"
+      "color": "#9b6cf2",
+      "motion": "soft"
     }
   },
   {
@@ -484,15 +497,17 @@
       "title": "バイブスの天才",
       "line": "うち超感覚派なんだよね〜",
       "face": "normal",
-      "color": "#ff8fc8"
+      "color": "#ff8fc8",
+      "motion": "sharp"
     },
     "intro_cutin_unknown": {
       "display_name": "？？？",
       "title": "通りすがりのギャル",
-      "line": "大丈夫？ ケガしてない？",
+      "line": "大丈夫？／ケガしてない？",
       "face": "smile",
       "color": "#ff8fc8",
-      "name": "alias"
+      "name": "alias",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "うち",
@@ -530,8 +545,8 @@
     "nationality": "Japan",
     "affiliation": "神崎煙草店（表向き）",
     "play_style": "「スジを通す煙」",
-    "description": "口調も気性もヤクザ丸出しにアツい老舗シーシャ屋の店主。だが炭とフレーバーを扱う手つきは誰より丁寧で、出てくる煙はどこまでも穏やか。シーシャを共にすることを盃事に例える癖があり、気に入った相手は回し飲みで「兄弟の盃」を交わしたことにする（はじめは「五厘の兄弟」認定）。任侠の例えを口走っては「映画の話だ」とごまかす。その正体はヤクザの組長だが、現在はシノギで店を営んでいることを隠している。",
-    "background_secret": "かつて抗争で若衆を失った後悔から、穏やかな時間を提供する店を大切にしている。普段は過去を詳しく話さないが、県大会の入場時に肩書きを問われ、自分で明かす。「今日は、いち職人として来た。文句なら、俺の煙に言いな」。迫力ある顔も丁寧に接客する顔も本人。どちらかを本性と断定しない。",
+    "description": "口調も気性も任侠映画から抜け出たようにアツいシーシャ屋の店主。だが炭とフレーバーを扱う手つきは誰より丁寧で、出てくる煙はどこまでも穏やか。シーシャを共にすることを盃事に例える癖があり、気に入った相手は回し飲みで「兄弟の盃」を交わしたことにする（はじめは「五厘の兄弟」認定）。任侠の例えを口走っては「映画の話だ」とごまかす。周囲からは「本物の組長では」と噂され、本人も否定しきらないが、実際のところは誰にも分からない。",
+    "background_secret": "かつて抗争で若衆を失った後悔から、穏やかな時間を提供する店を大切にしている。普段は過去を詳しく話さないが、県大会の入場時に肩書きを問われると、正体には触れずにこう返す。「今日は、いち職人として来た。文句なら、俺の煙に言いな」。迫力ある顔も丁寧に接客する顔も本人。どちらかを本性と断定しない。",
     "favorite_flavor": "ドラゴンフルーツ",
     "specialty_flavor": "ドラゴンフルーツ",
     "growth_stats": {
@@ -545,9 +560,10 @@
     "spriteScale": 1.06,
     "intro_cutin": {
       "title": "水煙の龍",
-      "line": "火の前じゃ、礼儀が先ですわ",
+      "line": "火の前じゃ、／礼儀が先ですわ",
       "face": "normal",
-      "color": "#b6a4cf"
+      "color": "#b6a4cf",
+      "motion": "still"
     },
     "voice": {
       "first_person": "俺",
@@ -580,12 +596,14 @@
     "spriteScale": 1.02,
     "intro_cutin": {
       "title": "データの鬼",
-      "line": "データは嘘をつきません",
+      "line": "それ作ったの、俺だもん",
       "face": "smile",
-      "color": "#38f0ff"
+      "color": "#38f0ff",
+      "motion": "still"
     },
     "voice": {
       "first_person": "私",
+      "first_person_notes": "大会・審査・研究発表など公的な場や初対面では「私」。はじめや年下と砕けて話す時（機材自慢で素が出た時など）は「俺」（例「そいつの開発者俺だもん」）。2026-10-31オーナー裁定",
       "hajime_address": "蒸野くん"
     }
   },
@@ -612,9 +630,10 @@
     ],
     "intro_cutin": {
       "title": "大会名物MC兼マスコット",
-      "line": "ぷぷぷっ！ 会場は満席御礼ッ！",
+      "line": "ぷぷぷっ！／会場は満席御礼ッ！",
       "face": "smile",
-      "color": "#ff3fa4"
+      "color": "#ff3fa4",
+      "motion": "bounce"
     }
   },
   {
@@ -625,7 +644,7 @@
     "nationality": "Japan",
     "affiliation": "大会審査員長 / 大手シーシャチェーンC.STATION会長",
     "play_style": "N/A",
-    "description": "大手シーシャチェーンC.STATION（誰でも入りやすい大衆向け店舗）の会長であり大会審査員長。C.STATIONを一代で築き、大会運営を支える。SMOKE CROWN CUPは、自社店舗と同じビルのイベントホールを借りて大規模に開催している。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては味や技術の正確さではなく「作り手の生き様が煙ににじみ出ているか」──つまりその人間がどんな人生を歩み、何を背負い、誰のために煙を作っているのかを最重要基準にするという恐ろしいほどの二面性を持つ。\n自社の煙はあくまで入り口であり、若者たちが自社チェーンを踏み台にして本物の煙へ至ることを望んでいる。だからこそ、プロの大会では容赦のない採点を行う。\nスミさんとは旧知の仲で、「真逆の道を選んだ」ライバルでもある。酒の席でだけ、若い頃の話をする。",
+    "description": "大手シーシャチェーンC.STATION（誰でも入りやすい大衆向け店舗）の会長であり大会審査員長。C.STATIONを一代で築き、大会運営を支える。SMOKE CROWN CUPは、自社店舗と同じビルのイベントホールを借りて大規模に開催している。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては単なる技術だけでなく「店の哲学が煙に出ているか」──つまりその作り手がどんな店で、誰のために、どんな時間を出そうとしているのかを最重要基準にするという恐ろしいほどの二面性を持つ。\n自社の煙はあくまで入り口であり、若者たちが自社チェーンを踏み台にして本物の煙へ至ることを望んでいる。だからこそ、プロの大会では容赦のない採点を行う。\nスミさんとは旧知の仲で、「真逆の道を選んだ」ライバルでもある。酒の席でだけ、若い頃の話をする。",
     "background_secret": "かつてスミさんと同じ大会を戦った元選手（勝てないまま選手を退き、経営の道へ・2026-07-19確定）。根底にあるのは『かつて自分が救われたあの小さな古びたシーシャ屋のような空間を、全国どこでも味わえるようにしたい』という泥臭く熱い理念。スミさんとは旧知の仲で、真逆の道を歩んだライバル関係でもある。お忍びで自社チェーンの若手の煙を吸いに行きひっそり評価する「不器用だが泥臭い親父」の側面を持つ。 スミと「勝った方が作る」と約束したが、店を増やす話をした晩、次の大会の点ばかり数えられた。「勝ち負けの話はしてない」と言った先を互いに待ちすぎ、今もその晩の話だけ避けてきた。第4章の競技後、はじめとなるの同じ約束を聞いて過去を話す。経営は競技で勝てなかった代わりではなく、自分で選んだ仕事。友情を審査の便宜にはしない。",
     "favorite_flavor": "シガー（葉巻系）",
     "specialty_flavor": "N/A（審査のため作らない）",
@@ -643,7 +662,8 @@
       "title": "C.STATION会長・審査員長",
       "line": "吸えば分かる",
       "face": "serious",
-      "color": "#cfd6e6"
+      "color": "#cfd6e6",
+      "motion": "still"
     }
   },
   {
@@ -669,9 +689,10 @@
     ],
     "intro_cutin": {
       "title": "トプハーネの元職人",
-      "line": "新しいだけでは、本物ではない",
+      "line": "新しいだけでは、／本物ではない",
       "face": "normal",
-      "color": "#4a8be0"
+      "color": "#4a8be0",
+      "motion": "still"
     }
   },
   {
@@ -700,7 +721,8 @@
       "title": "砂漠の現王者",
       "line": "全部、受け止めよう",
       "face": "normal",
-      "color": "#f5c542"
+      "color": "#f5c542",
+      "motion": "still"
     }
   },
   {
@@ -726,9 +748,10 @@
     ],
     "intro_cutin": {
       "title": "祭りの審査員",
-      "line": "シーシャはフェスタ！ 楽しくなけりゃ意味がねぇ！",
+      "line": "楽しくなけりゃ、／意味がねぇ！",
       "face": "normal",
-      "color": "#2fd27a"
+      "color": "#2fd27a",
+      "motion": "bounce"
     }
   },
   {
@@ -755,9 +778,10 @@
     "spriteScale": 0.9,
     "intro_cutin": {
       "title": "mukaiの眠たげな店員",
-      "line": "……今日は、お茶でもいいよぉ",
+      "line": "僕も、ここで働いてるの。／よろしくねぇ",
       "face": "normal",
-      "color": "#e8eef6"
+      "color": "#e8eef6",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "僕",
@@ -786,9 +810,10 @@
     ],
     "intro_cutin": {
       "title": "路地裏の縁を読む老婆",
-      "line": "縁があれば、また会える",
+      "line": "縁があれば、／また会える",
       "face": "normal",
-      "color": "#aa83c7"
+      "color": "#aa83c7",
+      "motion": "soft"
     }
   },
   {
@@ -801,7 +826,7 @@
     "affiliation": "mukai（裏口の主）",
     "play_style": "N/A",
     "description": "東京の溜まり場「mukai」の裏口で飼われている茶色のハチワレ猫（スコティッシュフォールド）。",
-    "background_secret": "常連客からは「裏口の番猫」の愛称で呼ばれている。店内には入らず、基本は裏で大人しく「スコ座り」をしている。猫らしくマイペースで気まぐれだが、なぜかましろにだけはよく懐いている。飼い主はムカイさんだが、ムカイさんには普通の距離感で、撫でられても目を閉じて流す程度。呼び名は「てつこ」で、旧あだ名「ヤニネコ」は使わない。メインストーリーには関わらないが、東京編の憩いのマスコット役として主人公やましろ、常連客たちとささやかな交流を行う。",
+    "background_secret": "店内には入らず、基本は裏で大人しく「スコ座り」をしている。猫らしくマイペースで気まぐれだが、なぜかましろにだけはよく懐いている。飼い主はムカイさんだが、ムカイさんには普通の距離感で、撫でられても目を閉じて流す程度。呼び名は「てつこ」で、旧あだ名「ヤニネコ」は使わない。メインストーリーには関わらないが、東京編の憩いのマスコット役として主人公やましろ、常連客たちとささやかな交流を行う。",
     "favorite_flavor": "N/A",
     "specialty_flavor": "N/A",
     "growth_stats": {
@@ -836,9 +861,10 @@
     ],
     "intro_cutin": {
       "title": "mukaiの店長",
-      "line": "まあ、コーヒーでも飲んでいけ",
+      "line": "まあ、／コーヒーでも飲んでいけ",
       "face": "normal",
-      "color": "#b08a5e"
+      "color": "#b08a5e",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "俺",
@@ -871,7 +897,8 @@
       "title": "HOOKAH PRESS編集長",
       "line": "シーシャはおいしいねえ",
       "face": "excited",
-      "color": "#ffb84a"
+      "color": "#ffb84a",
+      "motion": "bounce"
     }
   },
   {
@@ -884,7 +911,8 @@
       "line": "……お任せで、一台",
       "face": "ura_normal",
       "color": "#c4b69d",
-      "name": "alias"
+      "name": "alias",
+      "motion": "soft"
     }
   },
   {
@@ -1006,9 +1034,10 @@
     "spriteScale": 0.94,
     "intro_cutin": {
       "title": "儚げな元スタッフ",
-      "line": "……煙みたいに、もう遠い昔だけどね",
+      "line": "……煙みたいに、／もう遠い昔だけどね",
       "face": "normal",
-      "color": "#cc8fa7"
+      "color": "#cc8fa7",
+      "motion": "soft"
     }
   },
   {
@@ -1035,7 +1064,8 @@
       "title": "斧投げBarの店主",
       "line": "斧に仕事をさせな",
       "face": "normal",
-      "color": "#bd6547"
+      "color": "#bd6547",
+      "motion": "sharp"
     }
   },
   {
@@ -1045,7 +1075,7 @@
     "role": "venue_host",
     "age": 28,
     "nationality": "Japan",
-    "affiliation": "ワイドハンガのボドゲカフェ",
+    "affiliation": "柚ヶ谷のボドゲカフェ",
     "play_style": "何が起きても同じ笑顔",
     "description": "ボドゲカフェの男性店長。黒髪、細身、深緑のベストと長いエプロン。糸目でいつも自然に微笑み、丁寧に接客する。その笑顔と言葉の間が逆に少し怖いが、本人は普通に親切。わざと威圧したり悪役を演じたりしない。ただ、なぜか誰も彼の提案を断れず、気づけば体が頷いている（本人は無自覚）。「では、その選択で」「続きも気になりますね」と静かに遊びを見守る。相手が困ればルールを言い直す。TRPGの部活設立と本の入荷を支え、ひより・サメちゃんのGM役を奪わない。",
     "visual_concepts": [
@@ -1056,7 +1086,8 @@
       "title": "笑顔のボドゲカフェ店長",
       "line": "では、その選択で",
       "face": "normal",
-      "color": "#589579"
+      "color": "#589579",
+      "motion": "soft"
     }
   }
 ]

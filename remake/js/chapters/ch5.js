@@ -9,7 +9,7 @@ import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { newSession, openBench, waitBenchReady } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { stepWater } from "../craft/water-view.js";
@@ -366,6 +366,25 @@ async function renderFree(owner) {
       await renderStage(owner);
     }));
   }
+  // 恋人からのLIME（#2024）。第1・2章と同じ処理（lover-entry.js → daily/romance.js）。
+  // 第5章は恋人と過ごす場面（節目）を描かないので、LIMEだけ。
+  const lover = await import("./lover-entry.js");
+  if (!current(owner)) return;
+  if (lover.pendingLoverLime().length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await lover.readLoverLime();
+    if (current(owner)) await renderStage(owner);
+  }));
+  // 友人からのたまのLIME（#2022）。
+  const friend = await import("./friend-entry.js");
+  if (!current(owner)) return;
+  if (friend.pendingFriendLime().length) actions.push(button(owner, "友人・知り合いのLIMEを読む", "friend-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await friend.readFriendLime();
+    if (current(owner)) await renderStage(owner);
+  }));
   actions.push(button(owner, "博士に連絡する", "contact", async () => {
     // Q12: 「記録に残らない一日」が未読なら、先にそちらを読んでから連絡の場面へ。
     if (!chapterFiveRead(state, "ch5_unrecorded_day")

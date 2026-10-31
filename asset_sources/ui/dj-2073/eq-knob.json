@@ -1,0 +1,23 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "prompt": "A single DJ mixer rotary EQ knob viewed straight from above, round, matte black rubberized cap with fine knurled edge, a single bright white indicator line pointing straight up, thin brass collar, centered, isolated on fully transparent background. Game UI asset for a dark after-hours shisha bar club DJ minigame called RED ROOM. Palette: deep plum-black (#0b0b0e, #19181e, #302c33), neon coral red (#ff6575) for deck A accents, warm amber (#f5bb67) accents, brushed dark metal, subtle hookah smoke motifs. Semi-realistic painted, clean, high detail, no text, no letters, no logos, no watermark.",
+ "size": "1024x1024",
+ "n": 1,
+ "quality": "high",
+ "background": "transparent",
+ "output_format": "png",
+ "created": 1793420652,
+ "usage": {
+  "input_tokens": 152,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 152
+  },
+  "output_tokens": 1756,
+  "output_tokens_details": {
+   "image_tokens": 1756,
+   "text_tokens": 0
+  },
+  "total_tokens": 1908
+ }
+}

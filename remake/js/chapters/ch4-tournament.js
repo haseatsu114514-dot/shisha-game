@@ -13,6 +13,7 @@ import { runSteamDodge } from "../craft/steam.js";
 import { runPull, runCare } from "../craft/pull.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { block, clearComments } from "../craft/broadcast.js";
+import { showChapterFourStandings } from "./ch4-standings.js";
 import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep,
   beginChapterFourStep, finishChapterFourStep } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
@@ -79,8 +80,11 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
     if (completed === false) { recoverChapterFourStep(state); save(); return false; }
     if (p.step === 8 && !cs.failed) cs.servedQuality = computeShisha(cs).craftQuality;
     if (p.step === 10 && !cs.failed) { cs.stats = computeShisha(cs); finalize(cs); }
+    const votedBefore = p.voted;
     finishChapterFourStep(state, cs);
     save();
+    // 投票が動いた工程の後は、第2・3章と同じく途中順位を見せる（最後の票は結果画面が見せる）。
+    if (p.voted > votedBefore && !p.result) { await showChapterFourStandings(p); requireCurrent(); }
   }
   requireCurrent();
   clearComments();

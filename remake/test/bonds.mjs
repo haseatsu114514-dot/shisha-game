@@ -712,6 +712,16 @@ try {
       const ch2Invites = phone.morningMessages({ fixedNight: () => false }).map((m) => `${m.sender}:${m.type}`);
       const ch2FixedNight = friendIds(phone.morningMessages({ fixedNight: () => true }));
       const ch2Tournament = phone.morningMessages({ tournamentDay: true }).filter((m) => m.sender === "sumi" || String(m.id).startsWith("_friend_")).length;
+      // #2090: 第2章の対峙（決裂・休業）のあとは、なるの友人LIMEも♥3外出の誘いも届かず、受付済みの約束も流れる
+      const rift = fresh({ chapter: 2, day: 27, slot: 0, lastBaitoDay: 27, met: { naru: true }, contacts: ["naru"], affinity: { naru: 80 },
+        flags: { _ch2_day1: { startDay: 15 }, _ch2_night_11_done: true }, finales: { naru: { day: 11, chapter: 1, route: "friend" } } });
+      DB.lime = original;
+      const riftNaru = phone.morningMessages({ fixedNight: () => false }).filter((m) => m.sender === "naru").map((m) => m.id);
+      rift.pendingInvite = { originId: "lime_outing_naru_1", event: "outing_naru_1", sender: "naru", day: 28, slot: 0 };
+      rift.inbox.push({ id: "lime_outing_naru_1", day: 27, read: true, done: false, log: [], msg: original.find((m) => m.id === "lime_outing_naru_1") });
+      phone.expireInvitations({ fixedNight: () => false });
+      const riftExpired = { pending: rift.pendingInvite, result: rift.inbox.at(-1).result };
+      DB.lime = original.filter((m) => !["sumi", "naru", "adam", "tsumugi", "minto"].includes(m.sender));
       // 恋人・告白待ち・連絡先なし・大会当日には届かない。告白で「友達のまま」なら届く
       const quiet = {};
       let s = fresh({ met: { tsumugi: true }, contacts: ["tsumugi"], day: 9, lovers: ["tsumugi"], finales: { tsumugi: { day: 1, chapter: 1, route: "lover" } } });
@@ -738,7 +748,7 @@ try {
       });
       const second = vn.backlog().map((l) => l.text);
       return { freeCharmUnchanged, timeline, inviteText, rotation, withBaito, withStory, calm, fixedNight, oneMorning,
-        ch2Chat, ch2Invites, ch2FixedNight, ch2Tournament, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
+        ch2Chat, ch2Invites, ch2FixedNight, ch2Tournament, riftNaru, riftExpired, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
     } finally {
       DB.lime = original;
     }
@@ -753,11 +763,14 @@ try {
   // バイトの誘いとは重なってよい／人と会う物語の誘いとは重ねない（雑談に切り替える）
   assert(friendsLime.withBaito.includes("sumi:invitation") && friendsLime.withBaito.includes("naru:invitation")
     && !friendsLime.withBaito.includes("naru:chat"), friendsLime.withBaito.join("|"));
-  assert(friendsLime.withStory.includes("tsumugi:invitation") && friendsLime.withStory.includes("naru:chat")
-    && !friendsLime.withStory.includes("naru:invitation"), friendsLime.withStory.join("|"));
+  // LM04（15f9a8df・オーナー要望）: 返事の要る物語の誘いが届く朝は、返事の要る友人の雑談も重ねない
+  assert(friendsLime.withStory.includes("tsumugi:invitation") && !friendsLime.withStory.some((m) => m.startsWith("naru:")),
+    friendsLime.withStory.join("|"));
   assert.deepEqual(friendsLime.calm, ["naru:invitation:night"]);
   assert.deepEqual(friendsLime.fixedNight, ["naru:chat:-"]);
   assert.deepEqual(friendsLime.oneMorning, ["adam:chat:-"]);
+  assert.deepEqual(friendsLime.riftNaru, [], "#2090 決裂後のなるからLIMEが届いた");
+  assert.deepEqual(friendsLime.riftExpired, { pending: null, result: "expired" }, JSON.stringify(friendsLime.riftExpired));
   assert.deepEqual(friendsLime.ch2Chat, ["naru:chat:-"]);
   assert(friendsLime.ch2Invites.includes("naru:invitation") && friendsLime.ch2Invites.includes("sumi:invitation"), friendsLime.ch2Invites.join("|"));
   assert.deepEqual(friendsLime.ch2FixedNight, ["naru:chat:-"]);

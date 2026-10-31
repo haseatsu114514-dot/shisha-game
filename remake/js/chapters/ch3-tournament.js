@@ -1,3 +1,4 @@
+import { playEntrance } from "./tournament-entrance.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
@@ -31,7 +32,7 @@ import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/t
 import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
@@ -394,6 +395,8 @@ async function drive(owner) {
     if (p.stage === "entry") { renderEntry(owner); return; }
     if (p.stage === "opening") {
       if (!await read(owner, "tournament_day")) return;
+      await playEntrance(3);
+      if (!live(owner)) return;
       checkpoint("ready");
     } else if (p.stage === "ready") { renderReady(owner); return; }
     else if (p.stage === "craft") {

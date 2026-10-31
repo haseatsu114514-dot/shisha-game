@@ -1,5 +1,15 @@
 # 水煙前線 -EN:CODE- リメイク版（remake/）
 
+## 2026-10-31 紙とラベンダーのUI（既定のUIテーマ）
+
+日常パートのUIを Dr.fookah の紙×ラベンダー＋琥珀へ統一する方針（`docs/owner_requests.md` DUI01〜11、[設計](../docs/design/daily-ui-menu-design.md)）の第一段。
+
+- 生成した紙の板・会話窓・ラベンダーの面を UIテーマ `paper` として追加し、既定にした（`core/ui-theme.js`・`core/state.js`）。既存の6テーマは設定から選べる。端末に保存済みの選択はそのまま。
+- `css/ui-paper.css`: 紙の面（モーダル・HUD・地図の案内・tonariの選択・ログ・トースト）の中だけ文字色の変数を墨へ切り替える。場面の上に直接書く文字の色は変えない。会話窓は共通の組版（名前札・操作札・本文2行・左右96px）を保ち、絵だけを差し替える。2画面表示は窓の大きさが違うので、原画を引き伸ばさず紙の面と線で描く。
+- 素材: 原画 `asset_sources/ui/paper-20261031/`、採用 `assets/ui/paper/`、実行時 `img/ui/paper/`（`python3 remake/tools/build_ui_skin.py`）。
+- 次の段階: 全画面4タブのMENU、HUDの板（行動回数なし・五角形ボタン廃止）、地図の看板A、STATUS UP の通知を使わない成長表示。大会パートは別途リメイク中のため対象外。
+- 検証: `node remake/test/browser/ui_themes.mjs`（paper を含む7テーマ）、`conversation_ui.mjs`、`game_layout.mjs`、`hud_fortune.mjs`、`ds_overlay_layers.mjs`、`node remake/test/typography_css.mjs`。
+
 ## 2026-10-30 DS風（縦持ち・上下2画面）の見直し
 
 スマホ縦 390×844・320×568 の実画面で見つかった切れ・重なり・極小文字を、DS専用CSS（`css/game-ds.css`・`css/title-ds.css`・`css/vn-lounge.css` のDS節）だけで直した。通常版・ゲーム進行・保存は変えていない。
@@ -539,7 +549,6 @@ node remake/test/playthrough.mjs
 
 第2章の隣町・柚ヶ谷でREIからTRPGバーを教わり、昼はボドゲカフェの同店で部活を設立し、好感度MAXの興味がある仲間を対面で勧誘します。入部した仲間を、仕事や先約のない夜に招集して本棚の物語を遊べます。
 本編は第2章のDAY3まで。初日の街見学後、日常の隣町マップから入店できます。`/remake/trpg-campaign-preview.html` で、設立・勧誘・シフト・購入・少人数・一度きりの結末を本編セーブに触れず試せます。
-タイトルの **BOOKSHELF / 物語の本棚** は保存された所持本と卓の記録を見る専用です。
 「世界一普通の一台」はGMひより、「サメは閉店を待たない」はGMサメちゃん。はじめと、空いているアダム・ひより・つむぎが参加します。
 スミさん・なるは不参加。物語内の店・人物は作品固有の架空設定です。
 独立した開発プレビュー `/remake/trpg-preview.html` は配役・探索・2d20・各4結末の確認に使えます。

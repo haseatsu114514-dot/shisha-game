@@ -90,3 +90,37 @@ For this specific asset, the owner's latest art direction OVERRIDES the painterl
 
 Strict equal 3-column x 2-row layout on transparent PNG 1536x1024. Each cell512x512; each icon fits central 300x300 area. Five icons only, bottom-right cell COMPLETELY EMPTY. Top-left: minimal two-arm charcoal tongs silhouette, one clean rounded hinge, two slightly bent arms, no screw or serrations. Top-middle: three short separated S-curves representing aroma/smoke, OPEN STROKES, not a filled plume. Top-right: simple flame outline plus ONE inner curved stroke. Bottom-left: simple four-point sparkle outline, NO jewel, NO facets, NO additional sparkle. Bottom-middle: minimal almond eye outline and ONE simple iris circle, NO anatomical realism or extra detail. Every icon same optical size and line weight. Only the black stroke is opaque; ALL interiors and surroundings remain fully transparent. Holes must be transparent, not white. Flat calm stylish Japanese boutique lounge graphic design, readable at 32px, maximum 3 geometric parts per icon. NO background plate, frame, UI layout, text, kanji, labels, digits, logo or watermark. The game will invert these pure black line icons into ivory at runtime. Do not bake any brightness or halo into the PNG. Source assets/ui/lounge/stat-icons.png; separate runtime stat-technique.webp etc.
 ```
+
+---
+
+# 紙×ラベンダーUI生成プロンプト（2026-10-31 日常UI設計案・未生成）
+
+**2026-10-31 生成・組み込み済み**: 実際に送った指示文・原画・SHA・色の合わせ込みは [asset_sources/ui/paper-20261031/](../asset_sources/ui/paper-20261031/README.md)。透過背景が使えなかったため、下の「透過」の指定を「紙が画像の端まで埋まる不透明の絵」に改め、角の丸めと九分割はコードで行った（以下は最初の案として保存）。
+
+設計案 [docs/design/daily-ui-menu-design.md](design/daily-ui-menu-design.md) §6 のための Codex 用プロンプト。Dr.fookah の店内画面（`remake/css/shop.css` の生成り `#f7f3ed`・ラベンダー `#69497e`）を日常パート全体の基調にし、HUD・MENU・会話ウインドウ・ボタンの面を画像生成で作る。**まだ生成していない**。原本は `assets/ui/paper/`、実行時の切り出し・WebP化は `remake/tools/build_ui_skin.py` に `paper` 系を足して行う。文字・数値・ゲージはコードが重ねる。
+
+共通のスタイル指針（各プロンプトの冒頭にそのまま貼る）:
+
+```text
+スタイル: 明るい昼のシーシャ屋の「紙もの」。ゲーム内のショップ画面と同じ生成りの紙（#f7f3ed）に、ラベンダー（#69497e）の線と塗り、差し色の琥珀（#d8963f）を少しだけ。手描き風の細かな紙の繊維・わずかな印刷のかすれ・角の軽い丸みを残し、写真調・3D調・強いグラデーション・ネオンは避ける。装飾は細い線と小さな煙の渦だけで、中世風・歯車・宝石・レース・リボンは入れない。
+出力: PNG・@2x（実寸の2倍）・透過指定のものは背景完全透過。
+NG: 文字/ロゴ/数字/ゲージ/ハート/アイコン/watermark の焼き込み（数値・文言はゲーム側で重ねる）。
+```
+
+```text
+--- 1/4: assets/ui/paper/panel.png ---
+（上の共通指針）
+Create ONE production-ready UI skin sprite for a bright Japanese shisha-shop visual novel: a front-facing square CREAM PAPER panel (#f7f3ed) with a single thin LAVENDER (#69497e) hairline border about 2px inside the edge, and a second fainter lavender line 6px further in. Very fine hand-drawn paper fiber and a faint diagonal print grain, slightly warmer toward the edges. Corners gently rounded (radius about 3% of width), no corner plates, no stitches. The central 85% must be nearly uniform cream so Japanese text stays readable; corners and edges occupy no more than 8% of the width so the image can be nine-sliced into HUD plates, menu panels, dialogs and the map guide panel. All four edges straight and thin. Target PNG 1024x1024, panel fills the canvas with only 8px transparent outer padding, interior fully opaque, outside fully transparent. No text, logo, digits, icons, gauges, hearts, watermark. Destination assets/ui/paper/panel.png; runtime copy remake/img/ui/paper/panel.webp.
+
+--- 2/4: assets/ui/paper/dialogue.png ---
+（上の共通指針）
+Create ONE wide dialogue-window skin, aspect exactly 1216:186, target PNG 2432x372 (@2x). A cream paper sheet (#f7f3ed) with softly rounded corners (about 16px at @2x), a thin lavender (#69497e) border, and a very faint lavender smoke curl engraved in the LOWER RIGHT corner only (opacity under 12%, within the right 14% of the width) so two lines of 30px Japanese text across the whole width stay perfectly readable. Along the top edge, 20px below it, a single faint lavender rule that fades out toward both ends. Fine paper fiber texture everywhere, slightly brighter in the middle. The window interior is fully opaque; everything outside the rounded sheet is transparent. No name tag, no buttons, no arrow, no text, no watermark. Destination assets/ui/paper/dialogue.png; runtime remake/img/ui/paper/dialogue.webp. The lavender name tab is a separate sprite (3/4).
+
+--- 3/4: assets/ui/paper/tabs-buttons.png ---
+（上の共通指針）
+Create a production-ready FOUR-SPRITE sheet on a transparent background, target PNG 1536x1024, sprites aligned on a 2x2 grid with generous transparent gaps and no overlap. TOP-LEFT (768x512 cell): a LAVENDER (#69497e) NAME TAB, aspect 3:1, flat matte fill with a slightly darker 2px bottom edge, top corners rounded, bottom corners square so it sits on the top edge of a paper window; faint paper fiber on the fill. TOP-RIGHT: the same tab shape in CREAM (#fffcf8) with a 2px lavender border, for unselected tabs. BOTTOM-LEFT: a horizontal BUTTON plate, aspect 4:1, cream (#fffcf8) with a 2px lavender border, corners rounded about 4px (@1x), front view, no bevel. BOTTOM-RIGHT: the same button filled solid lavender with a 1px slightly lighter inner line, for the primary button. Every sprite is opaque inside its silhouette and transparent outside, with straight edges and tiny end caps so each can be nine-sliced. No text, icons, arrows, digits, watermark. Destination assets/ui/paper/tabs-buttons.png; runtime separate name-tab.webp, name-tab-off.webp, button.webp, button-primary.webp.
+
+--- 4/4: assets/ui/paper/menu-bg.png ---
+（上の共通指針）
+Create ONE full-screen MENU BACKGROUND, target PNG 2464x1344 (1232x672 @2x), a large cream paper sheet (#f7f3ed) filling the canvas with only 8px transparent padding and rounded corners of about 8px (@2x). A thin lavender (#69497e) double-line frame runs 24px inside the edge. In the LOWER LEFT corner only, a soft hand-drawn lavender smoke swirl rising from a tiny shisha-bowl silhouette (a small bowl with a metal post on top, NOT a cup shape), all under 10% opacity and within the left 18% and bottom 30% of the sheet, so lists and cards placed over the rest stay readable. Fine paper fiber across the whole sheet, a little warmer near the frame. A 220px-wide (@1x) vertical band on the left, inside the frame, is tinted a very pale lavender (#efe9f0) with a 1px lavender line on its right edge, for the tab column. No text, headings, icons, buttons, digits, watermark. Destination assets/ui/paper/menu-bg.png; runtime remake/img/ui/paper/menu-bg.webp.
+```

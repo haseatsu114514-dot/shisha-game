@@ -318,8 +318,8 @@ for (const pts of [0, 1, 2]) {
 reset({ lovers: ["minto"] }); state.inbox.push(item({ id: "loverchat", sender: "minto", type: "chat", messages: ["おはよう"], replies: [{ text: "おはよう", affinity: 1 }] }));
 session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session); assert.equal(gains[0].pts, 3);
 
-// 六つの噂も返信可能。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
-const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 6);
+// 五つの噂も返信可能（南雲は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
+const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 5);
 for (const rumor of rumors) {
   assert(rumor.replies.length >= 2); assert(rumor.replies.some((r) => r.affinity === 0));
   for (let index = 0; index < rumor.replies.length; index++) {

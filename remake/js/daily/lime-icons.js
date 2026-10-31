@@ -3,6 +3,7 @@
 // 読込に失敗した場合は呼び出し側が顔アイコン／頭文字へ段階的に戻す。
 // 素材: asset_sources/lime-icons-1081-i01（PR #1175 の候補から採用: アダム=B案／みんと=B案／つむぎ=A案）
 //       asset_sources/lime-icons-picker-20261030（Issue #1768 の選別で決定した15人分。1人1枚）
+//       asset_sources/picker-refill-20261030（ヴォルク。補充分から採用、256pxに縮小）
 import { img } from "../core/data.js";
 
 const CUSTOM_LIME_ICONS = {
@@ -23,6 +24,7 @@ const CUSTOM_LIME_ICONS = {
   samechan: "samechan-koro.png",
   sumi: "sumi-b.png",
   uranaishi: "uranaishi-b.png",
+  volk: "volk-a.png", // 2026-10-31 補充分から採用（ロシアンティー）
   hajime: "hajime-b.png", // 主人公。今は自分のアイコンを出す画面が無いので表示されない
 };
 
