@@ -36,6 +36,9 @@ const payText = (pay) => Object.entries(pay).map(([k, n]) => `${HIDANE_NAME[k]}$
  * 読めない時は今の図形（CSS/SVG）のまま動く。画像は飾りで、規則・データは変えない（SBD72）。
  */
 const ART_DIR = "img/ui/growth_board/";
+/** マスのアイコン（SBD73「漢字が多いのでアイコンを」）: 恩恵・スキル・極み・関門。has-art の時だけ出し、漢字は下に残す */
+const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk ? `perk_${node.perk}` : null)
+  : node.kind === "skill" ? `skill_${node.id}` : node.kind === "gate" ? "gate" : null;
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
   "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame"];
 let artReady = null;
@@ -198,13 +201,16 @@ export function openBoard({ place = null } = {}) {
       const shown = revealOf(node);
       const glyph = st === "locked" && node.kind !== "stat" && node.kind !== "lesson" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? whoName(node.who).slice(0, 1) : "？") : shown === "hidden" ? "？" : node.glyph;
       const qStep = node.feature && !g.nodes.includes(node.id);
-      return el(`button.gb-node.${node.kind}.s-${st}${fresh.has(node.id) ? ".just-opened" : ""}${node.peak ? ".peak" : ""}${node.sig ? ".sig" : ""}${selected === node.id ? ".selected" : ""}${g.target === node.id ? ".target" : ""}${goal.has(node.id) ? ".on-path" : ""}`, {
+      const sizeCls = node.kind === "skill" ? (node.cost <= 2 ? ".sz-s" : node.cost >= 7 ? ".sz-l" : ".sz-m") : "";
+      const icon = iconOf(node);
+      return el(`button.gb-node.${node.kind}.s-${st}${sizeCls}${node.notable ? ".notable" : ""}${fresh.has(node.id) ? ".just-opened" : ""}${node.peak ? ".peak" : ""}${node.sig ? ".sig" : ""}${selected === node.id ? ".selected" : ""}${g.target === node.id ? ".target" : ""}${goal.has(node.id) ? ".on-path" : ""}`, {
         style: { left: `${p.x}px`, top: `${p.y}px` },
         title: nodeTitle(node, shown), "aria-label": `${nodeTitle(node, shown)}（${statusWord(node, st)}）`,
         dataset: { test: `board-node-${node.id}`, status: st },
         onclick: () => select(node.id, true),
       }, [
-        el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph }), lessonFace(node, st)]),
+        el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph }), lessonFace(node, st),
+          icon && st !== "locked" ? el("img.gb-icon-img", { src: `${ART_DIR}icons/${icon}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null]),
         qStep ? el("em.gb-quality", { text: "✦", "aria-hidden": "true" }) : null,
         node.kind === "skill" && ["available", "short", "far"].includes(st)
           ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
@@ -233,7 +239,7 @@ export function openBoard({ place = null } = {}) {
     return node.ring <= open ? "open" : node.ring === open + 1 ? "next" : "hidden";
   }
   function nodeTitle(node, shown = revealOf(node)) {
-    if (node.kind === "stat") return node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : `${BOARD_JA[node.board]}のマス・${perkOf(node)?.name || ""}`;
+    if (node.kind === "stat") return node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : node.notable ? `要のマス「${perkOf(node)?.notable?.name}」・${perkOf(node)?.name || ""}` : `${BOARD_JA[node.board]}のマス・${perkOf(node)?.name || ""}`;
     if (node.kind === "gate") return `${BOARD_JA[node.board]}の関門`;
     if (node.kind === "lesson") return lessonKnown(node, g) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
     return shown === "hidden" ? "？？？（物語が進むと盤に現れる）" : `スキル「${node.name}」`;
@@ -259,7 +265,8 @@ export function openBoard({ place = null } = {}) {
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
     if (node.kind === "stat") {
       const perk = perkOf(node);
-      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perk.text}（${perk.tierName}）` }));
+      if (perk.notable) lines.push(el("p.gb-p-quality", { dataset: { test: "board-notable" }, text: `要のマス「${perk.notable.name}」：${perk.notable.text}` }));
+      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perk.text}（${perk.tierName}${perk.notable ? "・要" : ""}）` }));
       if (node.feature) lines.push(el("p.gb-p-quality", { dataset: { test: "board-feature" }, text: `✦ 灯すと「${FEATURES[node.feature].text}」` }));
       if (node.peak) lines.push(el("p.gb-p-next", { text: statsFilled(node.board, v.unlocked) ? "盤の能力のマスを全部灯した。極みを灯せる" : "この盤の能力のマスを全部灯すと灯せる（盤を埋めたご褒美）" }));
       lines.push(el("p.gb-p-sub", { text: `効く場面：${BOARD_WHERE[node.board]}` }));

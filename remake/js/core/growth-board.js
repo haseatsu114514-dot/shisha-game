@@ -5,7 +5,7 @@ import { affinityLevel } from "./stats.js";
 import { ensureGrowth, HIDANE_KEYS, noteLit, BOARD_TOTAL } from "./growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_PREFIX, STAT_SQUARES, BOARD_SHAPES,
-  SKILLS, LESSONS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS, FEATURES,
+  SKILLS, LESSONS, PEAK_CELL, SQUARE_PERKS, PERK_TIERS, FEATURES, NOTABLES,
 } from "./growth-board-data.js";
 
 export * from "./growth-board-data.js";
@@ -21,9 +21,9 @@ const isHubSide = (x, y) => Math.abs(x) + Math.abs(y) === 1 && y <= 0;
 /** 盤ごとの型: マス（座標・種類・章・恩恵・紋からの道のり・帯）と線 */
 function buildLayout(board) {
   const shape = BOARD_SHAPES[board];
-  const cells = new Map(shape.cells.map(([key, kind, ring, perk, feature]) => {
+  const cells = new Map(shape.cells.map(([key, kind, ring, perk, feature, notable]) => {
     const [x, y] = key.split(",").map(Number);
-    return [key, { key, x, y, kind, ring, perk, feature }];
+    return [key, { key, x, y, kind, ring, perk, feature, notable }];
   }));
   const adj = {};
   for (const [a, b] of shape.edges) {
@@ -75,8 +75,9 @@ function buildNodes() {
     const c = LAYOUTS[n.board].cells.find((x) => x.key === n.cell);
     if (at[`${n.board}:${n.cell}`]) throw new Error(`${n.id} と ${at[`${n.board}:${n.cell}`]} が同じマス`);
     Object.assign(n, { gx: c.x, gy: c.y, ring: c.ring, band: c.band, ...(n.kind === "stat" && c.perk ? { perk: c.perk } : {}),
-      ...(n.kind === "stat" && c.feature ? { feature: c.feature } : {}) });
+      ...(n.kind === "stat" && c.feature ? { feature: c.feature } : {}), ...(n.kind === "stat" && c.notable ? { notable: c.notable } : {}) });
     if (n.feature && FEATURES[n.feature]?.board !== n.board) throw new Error(`${n.id} の✦ ${n.feature} が盤に合わない`);
+    if (n.notable && NOTABLES[n.notable]?.board !== n.board) throw new Error(`${n.id} の要 ${n.notable} が盤に合わない`);
     at[`${n.board}:${n.cell}`] = n.id;
   }
   for (const n of nodes) {
@@ -108,7 +109,9 @@ export function perkOf(node) {
   const def = SQUARE_PERKS[node.board];
   const perk = (!node.peak && def.perks[node.perk]) || def.base;
   const tier = PERK_TIERS[node.band] || PERK_TIERS[1];
-  return { ...perk, tier: node.band, tierName: tier.name, text: perk.text.replace(/\{([\d.]+)\}/g, (_, v) => fmtNum(Number(v) * tier.mult)) };
+  const notable = node.notable ? NOTABLES[node.notable] : null;
+  const mult = tier.mult * (notable?.bonus || 1);
+  return { ...perk, tier: node.band, tierName: tier.name, notable, text: perk.text.replace(/\{([\d.]+)\}/g, (_, v) => fmtNum(Number(v) * mult)) };
 }
 
 export const nodeLabel = (node) => node.kind === "stat"
@@ -144,7 +147,7 @@ export function perkTotals(board, unlocked) {
     let sum = 0, max = 0;
     for (const n of boardNodes(board)) {
       if (n.kind !== "stat" || n.peak || n.perk !== key) continue;
-      const v = unit * (PERK_TIERS[n.band]?.mult || 1);
+      const v = unit * (PERK_TIERS[n.band]?.mult || 1) * (n.notable ? NOTABLES[n.notable]?.bonus || 1 : 1);
       max += v;
       if (unlocked.has(n.id)) sum += v;
     }

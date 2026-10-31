@@ -1473,6 +1473,27 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 /* 右のパネルの縁（9スライス） */
 .gboard.has-art .gb-side { border: 22px solid transparent; border-image: url(../img/ui/growth_board/panel_frame.webp) 48 / 22px stretch; border-radius: 0; box-shadow: none; padding: 6px 8px 4px; }
 .gboard.has-art .gb-side::before, .gboard.has-art .gb-side::after { display: none; }
+/* ================= v13（SBD73）: 要のマス・値段で大きさ・マスのアイコン ================= */
+.gb-node.notable .gb-face { width: 32px; height: 32px; font-size: 15px; border-width: 2.5px; border-color: #f4d27a; box-shadow: 0 0 0 2px rgba(244, 210, 122, 0.25); }
+.gb-node.notable.s-unlocked .gb-face { border-color: #ffe2a6; box-shadow: 0 0 8px #f4d27a, 0 0 18px color-mix(in srgb, var(--board-c) 55%, transparent); }
+.gb-node.notable::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid rgba(244, 210, 122, 0.35); pointer-events: none; }
+.gb-node.skill.sz-s .gb-face { width: 34px; height: 31px; font-size: 14px; }
+.gb-node.skill.sz-l .gb-face { width: 50px; height: 45px; font-size: 19px; }
+.gboard.has-art .gb-node.skill.sz-s .gb-face { width: 38px; height: 38px; }
+.gboard.has-art .gb-node.skill.sz-l .gb-face { width: 54px; height: 54px; }
+.gboard.has-art .gb-node.notable .gb-face { width: 36px; height: 36px; }
+/* アイコン: 画像がある時だけ出し、漢字は下に隠す。盤の色は drop-shadow で */
+.gb-icon-img { display: none; position: absolute; inset: 15%; width: 70%; height: 70%; object-fit: contain; pointer-events: none; }
+.gboard.has-art .gb-icon-img { display: block; }
+.gboard.has-art .gb-node:has(.gb-icon-img) .gb-glyph { opacity: 0; }
+.gboard.has-art .gb-node.stat .gb-icon-img { inset: 14%; width: 72%; height: 72%; filter: drop-shadow(0 0 2px #000) brightness(1.15); }
+.gboard.has-art .gb-node.stat:not(.s-unlocked):not(.s-available) .gb-face { background: rgba(14, 10, 20, 0.96); border-color: #4a4054; }
+.gboard.has-art .gb-node.stat.s-unlocked .gb-icon-img, .gboard.has-art .gb-node.stat.s-available .gb-icon-img { filter: drop-shadow(0 0 3px var(--board-c)) opacity(1); }
+.gboard.has-art .gb-node.skill .gb-icon-img { inset: 24%; width: 52%; height: 52%; filter: drop-shadow(0 0 2px #000) opacity(0.8); }
+.gboard.has-art .gb-node.skill.s-unlocked .gb-icon-img { filter: drop-shadow(0 0 4px var(--board-c)) opacity(1); }
+.gboard.has-art .gb-node.gate .gb-icon-img { inset: 26%; width: 48%; height: 48%; filter: drop-shadow(0 0 3px var(--c)); }
+.gboard.has-art .gb-node.peak .gb-icon-img { inset: 26%; width: 48%; height: 48%; filter: drop-shadow(0 0 4px #f6f2ff); }
+.gboard.has-art .gb-node.s-far .gb-icon-img, .gboard.has-art .gb-node.s-sealed .gb-icon-img { filter: drop-shadow(0 0 2px #000) opacity(0.7); }
 .gboard-help .modal-body p { margin: 0 0 10px; line-height: 1.6; }
 .lu-actions { display: flex; justify-content: center; gap: 12px; }
 .levelup .lu-board { min-width: 180px; }
