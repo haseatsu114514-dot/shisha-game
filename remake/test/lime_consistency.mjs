@@ -615,7 +615,7 @@ assert.deepEqual(cheers({ contacts: ["tsumugi", "minto", "rin"] }), ["encourage_
 assert.deepEqual(cheers({ contacts: ["ageha", "hiyori"] }), [], "第1章のあげは・儚い演技中のひよりからは届かない");
 assert.deepEqual(cheers({ contacts: ["hiyori"], flags: { _hiyori_tonari_return_done: true } }), ["encourage_hiyori"]);
 assert.deepEqual(cheers({ contacts: ["samechan"] }), ["encourage_samechan"]);
-assert.deepEqual(cheers({ chapter: 2, contacts: ["ageha", "samechan"] }), ["encourage_ageha"], "開店前の文面は第1章だけ");
+assert.deepEqual(cheers({ chapter: 2, contacts: ["ageha", "samechan"] }), ["encourage_ageha", "encourage_ch2_samechan"], "開店前の文面は第1章だけ・第2章は店からの応援");
 assert.equal(cheers({ contacts: ["tsumugi", "minto", "rin", "hiyori"], flags: { _hiyori_tonari_return_done: true } }).length, 3, "大会の朝も3通まで");
 reset();
 console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch1 ageha and hiyori gate");
