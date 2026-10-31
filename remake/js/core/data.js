@@ -33,6 +33,7 @@ export const DB = {
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
   friends: { friends: {} }, // 友人になった相手からの、たまのLIME・一服の場面（remake/data/friends.json）
+  casualLime: { people: {} }, // ♥3〜4の知り合いからの、たまの読むだけの雑談（remake/data/casual_lime.json）
   statusTexts: { statPurpose: {}, statTierFx: {} }, // ステの説明・★効果
   broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
@@ -132,6 +133,7 @@ export async function loadAll(onProgress = () => {}) {
     ["kuji", `${ROOT}data/kuji.json`],
     ["lover", "data/lover.json"],
     ["friends", "data/friends.json"],
+    ["casualLime", "data/casual_lime.json"],
     ["statusTexts", "data/status_texts.json"],
     ["broadcast", "data/broadcast.json"],
     ["manifest", "data/manifest.json"],
@@ -170,6 +172,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.kuji = raw.kuji;
   DB.lover = raw.lover;
   DB.friends = raw.friends;
+  DB.casualLime = raw.casualLime;
   DB.statusTexts = raw.statusTexts;
   DB.broadcast = raw.broadcast;
   DB.fortuneTrivia = raw.fortuneTrivia;

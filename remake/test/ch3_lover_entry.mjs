@@ -106,10 +106,11 @@ await check('chapter 3 lover milestones advance lv1 -> lv2 through the shared ro
 });
 
 await check('ageha lover content reaches chapter 4 at home, and a companion abroad sends no LIME', async f => {
-  const s = f.chapterThree(['ageha'], 31);
+  // 朝のひとことは3日おき（LM01）。あげは（位相1）は 32+1 が3の倍数の日に届く
+  const s = f.chapterThree(['ageha'], 32);
   Object.assign(s, { chapter: 4 });
   const due = f.entry.pendingLoverLime();
-  same(due.map(m => m.id), ['_lover_morning_ageha_d31']);
+  same(due.map(m => m.id), ['_lover_morning_ageha_d32']);
   same(f.entry.pendingLoverLime({ exclude: ['ageha'] }), []);
   same(f.entry.loverMilestonesDue(), ['ageha']);
   assert.equal(await f.entry.readLoverMilestone('ageha'), true);

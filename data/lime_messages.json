@@ -1628,13 +1628,6 @@
         },
         {
           "sender": "tsumugi",
-          "stamp": "st_tsumugi_nod",
-          "media_chapters": [
-            1
-          ]
-        },
-        {
-          "sender": "tsumugi",
           "text": "煙の絵の取材で、いろんなお店の煙を見たいんです。でも、一人だと入りにくいお店があって"
         },
         {
@@ -1643,6 +1636,13 @@
         }
       ],
       "accept_event": "outing_tsumugi_1",
+      "accept_reply": {
+        "sender": "tsumugi",
+        "stamp": "st_tsumugi_nod",
+        "media_chapters": [
+          1
+        ]
+      },
       "decline_response": {
         "sender": "tsumugi",
         "text": "……わかりました。お仕事、がんばってください。（また、誘います）"
