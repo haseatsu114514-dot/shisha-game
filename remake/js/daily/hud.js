@@ -10,8 +10,10 @@ import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { config } from "../core/state.js";
 import { growthEnabled, ensureGrowth, gaugeInfo, hidaneTotal, openGrowthBoard } from "../core/growth.js";
+
+// 体力バーの長さ（最大体力100のとき）。根性で最大体力が伸びるとバーも同じ割合で伸びる（GUI26）。
+const STAMINA_BAR_BASE = 92;
 
 /** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
@@ -87,7 +89,7 @@ export function initHud(h) {
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
-    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b"), el("em.guts-extra")])]), el("span.guts-badge", { text: "根", "aria-label": "根性の体力上乗せ" })]),
+    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
     radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () =>
@@ -189,15 +191,10 @@ export function updateHud() {
   dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
   dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
-  const gutsExtra = dom.stamina.querySelector(".guts-extra");
-  const showGuts = config.statEffectColors !== false && step("guts") > 1;
-  gutsExtra.style.left = `${100 / maxStamina() * 100}%`;
-  gutsExtra.style.width = `${showGuts ? Math.max(0, Math.min(state.stamina, maxStamina()) - 100) / maxStamina() * 100 : 0}%`;
-  dom.stamina.querySelector(".guts-badge").hidden = !showGuts;
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
-  // 根性★で体力の器が増えると、バー自体が伸びる
-  dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(92 * (maxStamina() / 100))}px`;
+  // 育成（根性）で最大体力が増えると、バー自体が伸びる。上乗せ分の色分け・印・点線の枠は出さない（DUI13・2026-10-31 オーナー指示）。
+  dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(STAMINA_BAR_BASE * (maxStamina() / 100))}px`;
   dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 7.2 + 12.8 * (step(k) - 1) / 9)).join(" "));
   updateGrowth();
 }

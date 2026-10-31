@@ -73,9 +73,13 @@ function readSeenLines() {
   catch { seenLines = new Set(); }
   return seenLines;
 }
+// 既読の記録を端末へ書くのは本編（index.html → main.js）だけ。会話UI・第2章などの試遊ページは本編の保存を変えない。
+let seenLinePersistence = false;
+export function enableSeenLinePersistence() { seenLinePersistence = true; }
 function markSeenLine(key) {
   if (!key || readSeenLines().has(key)) return;
   seenLines.add(key);
+  if (!seenLinePersistence) return;
   try { localStorage.setItem(SEEN_LINES_KEY, JSON.stringify([...seenLines].slice(-20000))); }
   catch { /* 端末の容量制限時も会話は続ける */ }
 }

@@ -187,7 +187,8 @@ await suite("home-rig-backgrounds", async check => {
           const scene = HQ.data.DB.dialogues[HQ.rig.RIG_SCENE];
           const last = scene.lines.at(-1);
           HQ.vn.hooks.onLine = (id, line) => {
-            if (id === HQ.rig.RIG_SCENE && line === last) HQ.vn.vnTest.turbo = false;
+            // 再生中の行は既読管理のための写しなので、同じ行かは中身で見る（#1950 以降）。
+            if (id === HQ.rig.RIG_SCENE && line.text === last.text && line.speaker === last.speaker) HQ.vn.vnTest.turbo = false;
           };
           HQ.giftTask = HQ.rig.giveSumiRig({ bg: "res://assets/backgrounds/bg_tonari_inside.png" })
             .then(result => { HQ.giftDone = true; return result; });
