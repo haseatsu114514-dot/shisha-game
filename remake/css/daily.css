@@ -1528,3 +1528,14 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard.has-art .gb-node.lesson.s-locked .gb-face { background-image: url(../img/ui/growth_board/frame_lesson.webp); opacity: 0.72; filter: saturate(0.35); }
 .gboard.has-art .gb-node.lesson.s-locked .gb-face::after { display: none; }
 @media (prefers-reduced-motion: reduce) { .gb-wall-art, .gb-node.lesson .gb-face::after { animation: none !important; } }
+/* 盤の拡大と移動（SBD77）: .gb-board がのぞき窓（スクロール）、.gb-world が拡大後の大きさ、.gb-stage が元の 760×488 を scale */
+.gb-board-wrap { position: relative; width: 760px; height: 488px; }
+.gb-board { overflow: auto; scrollbar-width: none; overscroll-behavior: contain; touch-action: pan-x pan-y; cursor: grab; }
+.gb-board::-webkit-scrollbar { display: none; }
+.gb-board.dragging { cursor: grabbing; user-select: none; }
+.gb-board.dragging .gb-node { pointer-events: none; }
+.gb-world { position: relative; width: 760px; height: 488px; }
+.gb-stage { position: absolute; left: 0; top: 0; width: 760px; height: 488px; transform-origin: 0 0; }
+.gb-zoom { position: absolute; right: 10px; top: 10px; display: flex; gap: 6px; z-index: 2; }
+.gb-zoom .gb-icon { width: auto; min-width: 30px; height: 30px; padding: 0 9px; border-radius: 15px; font-size: 14px; line-height: 1; background: rgba(10, 6, 16, 0.8); }
+.gb-zoom .gb-icon:disabled { opacity: 0.35; cursor: default; }

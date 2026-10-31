@@ -73,15 +73,87 @@ export function openBoard({ place = null } = {}) {
   // 灯すほど盤の背景が明るくなり、奥の絵が見えてくる（SBD65。絵は reveal_<盤>.webp を後で置く。無い間は光だけ）
   const reveal = el("div.gb-reveal", { "aria-hidden": "true" });
   const nodeLayer = el("div.gb-nodes");
+  // 盤は拡大して始め、ドラッグ・スクロールで動かし、Ctrl＋ホイール・つまむ・＋−で倍率を変える（2026-10-31 オーナー「もう少し拡大したところから始めたい。
+  // 移動は好きにできるしスクロールで先のも見れる」SBD77）。stage は W×H のまま scale し、world がその大きさを持つので、中身の座標はそのまま
+  const stage = el("div.gb-stage", [reveal, boardSvg, nodeLayer]);
+  const world = el("div.gb-world", [stage]);
+  const viewport = el("div.gb-board", { dataset: { test: "board-viewport" } }, [world]);
+  const zoomBar = el("div.gb-zoom", { "aria-label": "盤の倍率" });
+  const boardWrap = el("div.gb-board-wrap", [viewport, zoomBar]);
+  const ZOOM_START = 1.55, ZOOM_MIN = 1, ZOOM_MAX = 2.4;
+  let zoom = ZOOM_START;
   const side = el("div.gb-side", { dataset: { test: "board-preview" }, "aria-live": "polite" });
   const footer = el("div.gb-footer");
   const root = el(`div.gboard${canLight ? ".can-light" : ".view-only"}`, { role: "dialog", "aria-label": "心得の盤", dataset: { test: "growth-board", mode: canLight ? "light" : "view" } }, [
     header,
-    el("div.gb-main", [el("div.gb-left", [tabs, el("div.gb-board", [reveal, boardSvg, nodeLayer])]), side]),
+    el("div.gb-main", [el("div.gb-left", [tabs, boardWrap]), side]),
     footer,
   ]);
 
   function boardOfTarget() { return g.target ? NODE_BY_ID[g.target]?.board : null; }
+
+  /** ゲーム全体の拡縮（1280×720 を画面に合わせる transform）を割り戻す係数 */
+  const gameScale = () => { const r = viewport.getBoundingClientRect(); return r.width && viewport.clientWidth ? r.width / viewport.clientWidth : 1; };
+  /** 倍率を変える。anchor は盤の中で動かさない点（盤の座標。省略で見えている所の真ん中） */
+  function setZoom(z, anchor = null) {
+    const next = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z));
+    const vw = viewport.clientWidth || W, vh = viewport.clientHeight || H;
+    const a = anchor || { x: (viewport.scrollLeft + vw / 2) / zoom, y: (viewport.scrollTop + vh / 2) / zoom };
+    zoom = next;
+    world.style.width = `${Math.round(W * zoom)}px`; world.style.height = `${Math.round(H * zoom)}px`;
+    stage.style.transform = `scale(${zoom})`;
+    viewport.dataset.zoom = zoom.toFixed(2);
+    viewport.scrollLeft = anchor ? a.x * zoom - (anchor.vx ?? vw / 2) : a.x * zoom - vw / 2;
+    viewport.scrollTop = anchor ? a.y * zoom - (anchor.vy ?? vh / 2) : a.y * zoom - vh / 2;
+    renderZoomBar();
+  }
+  /** 紋が見える所へ（開いた時・盤を切り替えた時） */
+  function centerOnHub() {
+    const hub = at(0, 0), vw = viewport.clientWidth || W, vh = viewport.clientHeight || H;
+    viewport.scrollLeft = hub.x * zoom - vw / 2;
+    viewport.scrollTop = hub.y * zoom - vh * 0.72;
+  }
+  function renderZoomBar() {
+    zoomBar.replaceChildren(
+      el("button.gb-icon.gb-zoom-btn", { text: "−", title: "縮小", "aria-label": "縮小", dataset: { test: "board-zoom-out" }, disabled: zoom <= ZOOM_MIN + 0.01, onclick: () => setZoom(zoom - 0.3) }),
+      el("button.gb-icon.gb-zoom-btn", { text: "全体", title: "盤の全体を見る", "aria-label": "全体", dataset: { test: "board-zoom-fit" }, disabled: zoom <= ZOOM_MIN + 0.01, onclick: () => setZoom(ZOOM_MIN) }),
+      el("button.gb-icon.gb-zoom-btn", { text: "＋", title: "拡大", "aria-label": "拡大", dataset: { test: "board-zoom-in" }, disabled: zoom >= ZOOM_MAX - 0.01, onclick: () => setZoom(zoom + 0.3) }),
+    );
+  }
+  // ドラッグで動かす（マウス・ペン）。少し動いたらクリックにしない。指はブラウザのスクロールに任せ、2本指はつまんで倍率
+  {
+    let drag = null, pinch = null;
+    viewport.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "touch" || e.button !== 0) return;
+      drag = { x: e.clientX, y: e.clientY, sx: viewport.scrollLeft, sy: viewport.scrollTop, moved: false };
+    });
+    viewport.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (!drag.moved && Math.hypot(dx, dy) < 5) return;
+      if (!drag.moved) { drag.moved = true; viewport.classList.add("dragging"); viewport.setPointerCapture?.(e.pointerId); }
+      const k = 1 / (gameScale() || 1);
+      viewport.scrollLeft = drag.sx - dx * k; viewport.scrollTop = drag.sy - dy * k;
+    });
+    const endDrag = () => { if (drag?.moved) setTimeout(() => viewport.classList.remove("dragging"), 0); drag = null; };
+    viewport.addEventListener("pointerup", endDrag); viewport.addEventListener("pointercancel", endDrag);
+    viewport.addEventListener("click", (e) => { if (viewport.classList.contains("dragging")) { e.stopPropagation(); e.preventDefault(); } }, true);
+    viewport.addEventListener("wheel", (e) => {
+      if (!e.ctrlKey && !e.metaKey) return; // ただのホイールはスクロールで先を見る
+      e.preventDefault();
+      const r = viewport.getBoundingClientRect(), k = 1 / (gameScale() || 1);
+      const vx = (e.clientX - r.left) * k, vy = (e.clientY - r.top) * k;
+      setZoom(zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), { x: (viewport.scrollLeft + vx) / zoom, y: (viewport.scrollTop + vy) / zoom, vx, vy });
+    }, { passive: false });
+    viewport.addEventListener("touchstart", (e) => { if (e.touches.length === 2) pinch = { d: dist(e.touches), z: zoom }; }, { passive: true });
+    viewport.addEventListener("touchmove", (e) => {
+      if (!pinch || e.touches.length !== 2) return;
+      e.preventDefault();
+      setZoom(pinch.z * dist(e.touches) / pinch.d);
+    }, { passive: false });
+    viewport.addEventListener("touchend", () => { pinch = null; });
+    const dist = (ts) => Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY);
+  }
   const view = () => replay(g, pending);
   const status = (node, v) => nodeStatus(node, g, v);
 
@@ -107,7 +179,7 @@ export function openBoard({ place = null } = {}) {
       return el(`button.gb-tab.b-${k}${k === board ? ".on" : ""}`, {
         role: "tab", "aria-selected": String(k === board), dataset: { test: `board-tab-${k}` },
         "aria-label": `${BOARD_JA[k]}盤 ${count}/${STAT_SQUARES[k]}${ready ? `、今取れるマス ${ready}` : ""}`,
-        onclick: () => { board = k; selected = null; SE.click?.(); render(); },
+        onclick: () => { board = k; selected = null; SE.click?.(); render(); centerOnHub(); },
       }, [
         el("span.gb-tab-head", { text: BOARD_HEAD[k], "aria-hidden": "true" }),
         el("span.gb-tab-body", [
@@ -485,6 +557,7 @@ export function openBoard({ place = null } = {}) {
   document.addEventListener("keydown", onKey, true);
   if (g.target) selected = g.target;
   render();
+  setZoom(ZOOM_START); centerOnHub();
   requestAnimationFrame(() => root.classList.add("show"));
   loadBoardArt().then((ok) => { if (ok && root.isConnected) { root.classList.add("has-art"); render(); } });
   return done;
