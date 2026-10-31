@@ -17,6 +17,8 @@ html:root[data-ui-theme="paper"] {
   --vn-tab-face: var(--lavender-art) center / 256px repeat, #69497e;
   --vn-tab-edge: #69497e; --vn-tab-inner: #c3a9d566; --vn-tab-text: #fff;
   --vn-tab-radius: 8px 8px 3px 3px; --vn-tab-shadow: 0 3px 8px #2a1a3a40;
+  /* AUTO・SKIP などの札は名前札と同じ高さで窓の上辺にまたがせ、左右対称の位置に置く（DUI18）。 */
+  --vn-command-rise: 0px; --vn-command-width: 340px;
 }
 
 /* 紙の面: 生成画像の板を九分割。中は墨の文字。 */
@@ -65,7 +67,7 @@ html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box .vn-name {
   font-family: var(--font); font-weight: 900; color: #fff; text-shadow: none;
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls {
-  background: var(--paper); border: 1px solid var(--paper-line); box-shadow: 0 3px 8px #2a1a3a33;
+  background: var(--paper); border: 1px solid var(--lavender-line); box-shadow: 0 3px 8px #2a1a3a33;
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls::before { border-color: transparent; }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl { color: var(--lavender); font-weight: 700; }
@@ -117,3 +119,61 @@ html:root[data-ui-theme="paper"] .map-info { border-width: 10px; border-image-wi
 
 /* 店のロゴは明るい台紙の上に描かれているので、どのUIテーマでも看板の台紙は元の生成り（store-logos.css）に戻す。 */
 html[data-ui-theme] .spot-pin.branded .shield::before { background: #fffaf0; border: 1px solid #d9c7a5; border-radius: 8px; box-shadow: none; }
+
+/* 心得の盤（経験値の盤・DUI17）: 見出し・タブ・右の説明・下の凡例を紙とラベンダーに。
+   光る管とマスで描く盤の面だけは、暗い面に嵌め込んだまま（明るい紙の上では光が見えなくなるため）。 */
+html:root[data-ui-theme="paper"] .gboard {
+  --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
+  color: var(--paper-ink); text-shadow: none;
+  background: radial-gradient(ellipse 60% 70% at 85% 10%, #e9dfef, transparent 70%), var(--paper);
+}
+html:root[data-ui-theme="paper"] .gboard .gb-board { --gold: #e8c27a; --gold-hi: #ffe2a6; --text: #f4ede0; --text-dim: #c9bdcc; color: var(--text);
+  border: 1px solid #2a1f33; border-top: 0; box-shadow: 0 6px 16px #2a1a3a33; }
+html:root[data-ui-theme="paper"] .gb-header { background: none; border-bottom: 1px solid var(--paper-line); }
+html:root[data-ui-theme="paper"] .gb-title { color: var(--lavender); text-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-level { color: var(--paper-ink); font-weight: 700; }
+html:root[data-ui-theme="paper"] .gb-gauge { background: #e6dcea; border-color: #b9a5c6; }
+html:root[data-ui-theme="paper"] .gb-gauge b { background: linear-gradient(90deg, #c98a3a, var(--amber)); box-shadow: none; }
+html:root[data-ui-theme="paper"] .gboard.can-light .gb-place { color: var(--amber-ink); font-weight: 700; }
+html:root[data-ui-theme="paper"] .gb-icon { color: var(--lavender); background: var(--paper-card); border: 2px solid var(--lavender-line); box-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-icon:is(:hover, :focus-visible) { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+/* タブ: 選んでいる盤だけ、下の暗い盤とつながる色にする。 */
+html:root[data-ui-theme="paper"] .gb-tab { color: var(--paper-muted); background: var(--paper-card); border: 1px solid var(--paper-line); border-bottom: 0; box-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-tab-head { color: color-mix(in srgb, var(--c) 70%, var(--paper-ink)); border-color: color-mix(in srgb, var(--c) 60%, var(--paper-line)); text-shadow: none; box-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-tab-line { background: var(--paper-line); }
+html:root[data-ui-theme="paper"] .gb-tab-line b { box-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-tab.on { color: #f4ede0; background: #16111d; border-color: #2a1f33; box-shadow: inset 0 3px 0 var(--c); }
+html:root[data-ui-theme="paper"] .gb-tab.on .gb-tab-head { color: #fff; border-color: var(--c); }
+html:root[data-ui-theme="paper"] .gb-tab.on .gb-tab-line { background: #ffffff1f; }
+html:root[data-ui-theme="paper"] .gb-tab-target { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .gb-tab.on .gb-tab-target { color: #ffe2a6; }
+/* 右の説明: 紙の板（生成した紙の縁）にする。 */
+html:root[data-ui-theme="paper"] .gb-side,
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-side {
+  color: var(--paper-ink); background: var(--paper); border: 22px solid transparent; border-radius: 0;
+  border-image: var(--paper-art) 72 fill / 22px / 0 stretch; box-shadow: none; filter: drop-shadow(0 6px 14px #110a2233); padding: 4px 8px 4px;
+}
+html:root[data-ui-theme="paper"] .gb-side::before, html:root[data-ui-theme="paper"] .gb-side::after { display: none; }
+html:root[data-ui-theme="paper"] .gb-p-title { color: var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.gb-p-sub, .gb-p-state, .gb-hint) { color: var(--paper-muted); font-weight: 700; letter-spacing: .02em; }
+html:root[data-ui-theme="paper"] .gb-p-next { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] :is(.gb-p-quality, .gb-p-reward, .gb-p-state.s-available, .gb-p-target, .gb-bar-sum) { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .gb-p-lock { color: #7a4d9a; }
+html:root[data-ui-theme="paper"] .gb-p-state.s-pending { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gb-bar-name { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .gb-bar-line { background: #e6dcea; }
+html:root[data-ui-theme="paper"] .gb-bar-line b { background: color-mix(in srgb, var(--c) 80%, var(--paper-ink)); box-shadow: none; }
+/* 下の帯: 火種の数と凡例 */
+html:root[data-ui-theme="paper"] .gb-footer { background: var(--paper-card); border-top: 1px solid var(--paper-line); }
+html:root[data-ui-theme="paper"] .gb-hidane { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .gb-hidane b { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .gb-hidane i { filter: drop-shadow(0 0 1px #38283f99); }
+html:root[data-ui-theme="paper"] .gb-legend { color: var(--paper-muted); font-weight: 700; letter-spacing: .02em; }
+html:root[data-ui-theme="paper"] .gb-legend-item i { border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gb-legend-item i.s-available { box-shadow: 0 0 0 2px #e9dfef, 0 0 6px var(--amber); border-color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .gb-legend-item i.s-sealed { border-color: #9676a8; }
+/* 地図の左上に出る EXP の札とレベルアップの帯 */
+html:root[data-ui-theme="paper"] .exp-chip { color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border: 1px solid var(--lavender); box-shadow: 0 3px 8px #2a1a3a40; }
+html:root[data-ui-theme="paper"] .exp-chip :is(b, span) { color: #fff; }
+html:root[data-ui-theme="paper"] .gb-wallet { background: var(--paper); border: 1px solid var(--paper-line); }
+html:root[data-ui-theme="paper"] .gb-hidane.zero { opacity: .55; }

@@ -143,8 +143,8 @@ try {
   for (const maximum of [100, 154]) {
     assert.equal(new Set(stamina.filter((value) => value.maximum === maximum).map((value) => value.windowWidth)).size, 1, "Losing stamina changed the capacity window");
   }
-  assert.equal(stamina[0].barSpecifiedWidth, 150);
-  assert.equal(stamina[7].barSpecifiedWidth, 231); // 150px × 154/100（DUI13 でバーを長くした）
+  assert.equal(stamina[0].barSpecifiedWidth, 92);
+  assert.equal(stamina[7].barSpecifiedWidth, 142); // 92px × 154/100
   console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, expanded stamina capacity");
   const sessions = await page.evaluate(async () => {
     const { newSession } = await import("./js/craft/session.js"), { skill } = await import("./js/craft/common.js");

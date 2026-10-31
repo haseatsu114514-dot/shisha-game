@@ -140,7 +140,7 @@ await suite('ch2-daily',async check=>{
       }, spot.previewUrl));
     }
     assert.equal(await page.locator('.map-info .mi-desc').innerText(), spot.desc);
-    assert.match(await page.locator('.map-info .mi-tags').innerText(), /入店・部活設立は無料/);
+    assert.match(await page.locator('.map-info [data-test="spot-note"]').innerText(), /入店・部活設立は無料/);
     assert.equal(await page.evaluate(() => JSON.stringify(window.__remake.state)), await page.evaluate(() => __b02.before));
     const enter = page.locator(t('map-go'));
     assert(await enter.isVisible() && await enter.isEnabled());
