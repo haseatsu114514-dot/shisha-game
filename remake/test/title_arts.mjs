@@ -65,6 +65,22 @@ await suite("title-arts", async (check) => {
     assert.deepEqual(await storageSnapshot(page), before, "Title selection changed saved progress");
   });
 
+  // 2026-10-31 オーナー指示「タイトルアートは1キャラ1枚」: どのキャラでも専用キービジュアルだけが出る。
+  await check("one-art-per-character", async page => {
+    const picks = await page.evaluate(async () => {
+      const loader = await import("./js/scenes/title-art.js");
+      const unlock = await import("./js/core/title-art-unlock.js");
+      const out = [];
+      for (let i = 0; i < 60; i++) {
+        const art = loader.pickTitleArt();
+        out.push([art.character, art.file, unlock.TITLE_KEY_VISUALS[art.character]]);
+      }
+      return out;
+    });
+    for (const [character, file, key] of picks) assert.equal(file, key, `${character} showed a non-key title art`);
+    assert.ok(new Set(picks.map(([c]) => c)).size > 1, "The picker should still rotate characters");
+  });
+
   for (const [label, viewport] of [["pc", { width: 1280, height: 720 }], ["mobile", { width: 844, height: 390 }]]) {
     await check(label, async page => {
       const arts = await page.evaluate(() => __remake.DB.manifest.titleArts);
