@@ -202,9 +202,12 @@ export function updateHud() {
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる
-  dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(STAMINA_BAR_BASE * (maxStamina() / 100))}px`;
-  // 伸びきったときの長さを薄い点線の器で見せる（DUI13）。バーはその器の左から伸びる。
+  const barWidth = Math.round(STAMINA_BAR_BASE * (maxStamina() / 100));
+  dom.stamina.querySelector(".hud-bar").style.width = `${barWidth}px`;
+  // まだ伸びていない分（最大体力160まで）は、バーの右に点線の枠で見せる（DUI13）。伸びきったら出さない。
+  dom.stamina.style.setProperty("--stamina-bar", `${barWidth}px`);
   dom.stamina.style.setProperty("--stamina-full", `${Math.round(STAMINA_BAR_BASE * STAMINA_CEILING / 100)}px`);
+  dom.stamina.dataset.capped = String(maxStamina() >= STAMINA_CEILING);
   dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 7.2 + 12.8 * (step(k) - 1) / 9)).join(" "));
   updateGrowth();
 }

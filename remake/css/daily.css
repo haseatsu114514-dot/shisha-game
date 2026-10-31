@@ -1672,20 +1672,27 @@ body:not(.game-ds) #hud .dc-meta > :last-child:not([hidden]),
 body:not(.game-ds) #hud .dc-meta > .hud-stamina:has(+ [hidden]) { border-bottom: 0; }
 body:not(.game-ds) #hud .dc-row span,
 body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
-body:not(.game-ds) #hud .dc-row.money b { font-size: 19px; line-height: 1; }
+body:not(.game-ds) #hud .dc-row.money b { font-size: 20px; line-height: 1; }
 body:not(.game-ds) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1; }
-/* 体力: 伸びきったときの長さ（最大体力160）を点線の器で敷き、今のバーをその左から重ねる。 */
+/* 体力: 今のバーの右に、最大体力160まで伸びる分を点線の枠で並べる（重ねると丸い端から点線がのぞくため離す）。 */
 body:not(.game-ds) #hud .hud-card .hud-stamina { position: relative; }
 body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { width: 28px; }
 body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar { position: relative; z-index: 1; flex: none; box-sizing: border-box; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
-/* 中身は枠の内側に上下左右とも2pxで収める（絵の枠用の inset: 3px 4px を引き継がない）。 */
-body:not(.game-ds) #hud .hud-card .hud-stamina .gauge-track { inset: 2px; border-radius: 4px; }
+/* 中身は枠の内側に上下左右とも1pxで収める（古い position: relative と絵の枠用の inset: 3px 4px を引き継がない）。 */
+body:not(.game-ds) #hud .hud-card .hud-stamina .gauge-track { position: absolute; inset: 1px; display: block; overflow: hidden; border-radius: 4px; }
 body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar b { border-radius: 4px; }
 body:not(.game-ds) #hud .hud-card .hud-stamina::after {
-  content: ""; position: absolute; left: 36px; top: 50%; width: var(--stamina-full, 147px); height: 12px; box-sizing: border-box;
+  content: ""; position: absolute; top: 50%; left: calc(36px + var(--stamina-bar, 92px) + 3px);
+  width: calc(var(--stamina-full, 147px) - var(--stamina-bar, 92px) - 3px); height: 12px; box-sizing: border-box;
   transform: translateY(-50%); border: 1px dashed #9676a8; border-radius: 6px; opacity: .7; pointer-events: none;
 }
-body:not(.game-ds) #hud .hud-card .hud-stamina .guts-badge { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+body:not(.game-ds) #hud .hud-card .hud-stamina[data-capped="true"]::after { display: none; }
+body:not(.game-ds) #hud .hud-card .hud-stamina .guts-badge {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%); box-sizing: border-box; width: 16px; height: 16px;
+  font-size: 11px; font-weight: 700; line-height: 1; letter-spacing: 0;
+}
+/* 根性で上乗せした分: 枠の中に収め、にじみを付けない */
+body:not(.game-ds) #hud .hud-card .hud-stamina .guts-extra { box-shadow: none; border-radius: 0 4px 4px 0; }
 body:not(.game-ds) #hud .hud-card .hud-exp { height: 25px; padding: 0; }
 
 /* 地図の案内パネル（2026-10-31 DUI14・DUI16）: 右下の家・喫茶の看板に届かない高さ（約255px）に収める。
