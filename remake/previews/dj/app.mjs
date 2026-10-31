@@ -1,5 +1,5 @@
 import { DJAudio } from './audio.mjs';
-import { beatAt, updateMix, phaseError, phraseError, mod, dancerPose, scoreMix } from './model.mjs';
+import { beatAt, lowCutDb, LOW_CUT_DB, updateMix, phaseError, phraseError, mod, dancerPose, scoreMix } from './model.mjs';
 import { peakAt } from './tracks.mjs';
 import { TRACKS, STAGES } from './tracks.mjs';
 const $=id=>document.getElementById(id);
@@ -134,6 +134,19 @@ function render(){
  else if(frameView.mode==='waiting-play')text=frameView.elapsed<1?`PLAY ${target}：今がフレーズ頭。押した瞬間に再生します。`:`${target}は停止中。次の頭まで ${Math.ceil(frameView.remaining)}拍。自動で再生しません。`;
  else text=`8小節MIX ${Math.floor(frameView.progress*8)+1}/8：位相を確かめ、横フェーダーを動かそう。ピッチ・PLAY・位相を採点します。`;
  if(text!==message){$('coaching').textContent=text;message=text;}
+ controllerLeds();
  drawVJ(beatAt(audio.mix.decks[audio.mix.visualMaster],now),audio.level());frame=requestAnimationFrame(render);
 }
 render();
+
+// Controller LEDs only (no input/scoring effect): channel meters and the decorative LOW knobs that show the automatic bass cut.
+function controllerLeds(){
+ const level=Math.min(1,audio.level()*6),g=[Math.cos(audio.mix.mix*Math.PI/2),Math.sin(audio.mix.mix*Math.PI/2)],cut=lowCutDb(audio.mix.mix);
+ for(const id of [0,1]){
+  const key=id?'b':'a',on=audio.mix.decks[id].playing&&audio.mix.running,c=cut[id]/LOW_CUT_DB;
+  $('meter-'+key).style.setProperty('--lvl',on?(level*g[id]).toFixed(3):'0');
+  const knob=$('eq-low-'+key);knob.style.setProperty('--k',`${-135*c}deg`);knob.parentElement.style.setProperty('--cut',c.toFixed(2));
+ }
+ const cutting=cut.findIndex(v=>v<-1);
+ $('auto-low').textContent=cutting<0?'LOWは横フェーダーに合わせて自動でカット':`AUTO LOW CUT：${cutting?'B':'A'} ${Math.round(cut[cutting])}dB`;
+}
