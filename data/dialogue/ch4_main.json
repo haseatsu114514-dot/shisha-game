@@ -450,6 +450,11 @@
     },
     {
       "dialogue_id": "ch4_wang_reception",
+      "metadata": {
+        "flavor_lesson": {
+          "lychee": 1
+        }
+      },
       "lines": [
         {
           "speaker": "",
@@ -486,6 +491,36 @@
           "speaker": "master_hookah",
           "face": "normal",
           "text": "もっとも、待ちすぎて炭を三度冷ましたことがある。助手の目が怖かった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼の台から、花のような甘い香りが流れてきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ライチですか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "そう。ライチは香りが細い。熱を上げると、花が先に散ってしまう"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "炭は少し遠く。甘さが前へ出てくるまで、こちらが待つ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口もらう。軽い甘さの後ろに、花の香りが静かに残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（強くしないから、最後まで香りが残るんだ）"
         },
         {
           "speaker": "",
@@ -539,7 +574,7 @@
           }
         ]
       },
-      "comment": "王煙楼はシェイクの師。推薦選手として正面から登場する。老人語は使わない。"
+      "comment": "王煙楼はシェイクの師。推薦選手として正面から登場する。老人語は使わない。味の会話（#2028）: 王煙楼の好み＝ライチ。必須場面なので熟練度だけで、好感度は付けない（王煙楼に好感度はない）。"
     },
     {
       "dialogue_id": "ch4_tournament_start",
@@ -657,6 +692,11 @@
           "speaker": "",
           "face": "",
           "text": "王煙楼は一口目の長さを測る。シェイクの金の台は、継ぎ目一つ揺らがない。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "ゆっくりでいい。次の息までは、私が待とう"
         },
         {
           "speaker": "",
@@ -853,6 +893,21 @@
           "speaker": "sheikh",
           "face": "normal",
           "text": "次は、私が挑む番だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼が、自分の台の炭を静かに下ろした。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "おめでとう。君の客は、最後まで一度も急かされなかった"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "弟子に先を言われたな。私も、古いレシピを一つ書き直そう"
         },
         {
           "speaker": "",
@@ -1589,6 +1644,11 @@
     },
     {
       "dialogue_id": "ch4_alley_cafe_quiet",
+      "metadata": {
+        "flavor_lesson": {
+          "grape": 1
+        }
+      },
       "lines": [
         {
           "speaker": "",
@@ -1613,6 +1673,41 @@
         {
           "speaker": "",
           "face": "",
+          "text": "店員が棚から紫のラベルの缶を下ろした。あの男が、ここでいつも頼む葉だという。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "グレープです。あの方は、ほかの葉を混ぜません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "甘い葉ですよね。熱を上げたら、もっと香りが立ちそうですけど"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "上げすぎると、煮詰めたジャムの匂いになります。あの方は、それを嫌います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口だけ吸わせてもらった。炭は控えめで、甘さの奥に、皮の渋みが薄く残る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘いだけじゃない。熱を抑えると、ぶどうの皮まで戻ってくる）"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "炭を足すより、待つ方だそうです。この台では、昔からそうでした"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "古びた台のホースは、きれいに巻き直してあった。継ぎ目の革だけが、まだ新しい。"
         },
         {
@@ -1621,7 +1716,7 @@
           "text": "（……前夜にでも、返しに来るか）"
         }
       ],
-      "comment": "ドラフト追加（未接続）。出典: 第4章本文ドラフト §4-3。ch4_stranger_second を読んだ後、前夜祭の前に置く想定の訪問場面。全行仮置き。"
+      "comment": "ドラフト追加（未接続）。出典: 第4章本文ドラフト §4-3。ch4_stranger_second を読んだ後、前夜祭の前に置く想定の訪問場面。全行仮置き。味の会話（#2028）: シェイクの好み＝グレープ（単一フレーバー）。正体を伏せる期間なので本人は出さず、路地裏の店員（shop_clerk）が「あの方」の葉として話す。ch4_stranger_third の「……グレープですね」の前振り。シェイクに好感度はないので付けない。"
     },
     {
       "dialogue_id": "ch4_stranger_first_forced_in",

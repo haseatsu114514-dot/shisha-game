@@ -27,20 +27,15 @@ async function readStep(step) {
   if (state !== owner || !result || result.cancelled) throw new Error(`未読の場面: ${step.id}`);
   owner.flags[flag] = true;
   if (step.flag) owner.flags[step.flag] = true;
-  if (step.contact) addContact(owner, step.contact);
+  if (step.met) {
+    markMet(step.met);
+    // 台本で交換した連絡先は、読み終えた時点で連絡先一覧にも記録する（daily/spots.js の hasContact と同じ）
+    if (owner.flags[`_lime_contact_${step.met}`] && !owner.contacts.includes(step.met)) owner.contacts.push(step.met);
+  }
   if (step.sample) grantStrawberrySample(owner);
   recordSentLime(owner);
   syncAgehaVibes(owner.flags);
   save();
-}
-
-// 店で連絡先を交換していなくても、その夜に会ったらLIMEが届くようにする
-function addContact(owner, id) {
-  markMet(id);
-  owner.flags[`_ch2_${id}_contact`] = true;
-  owner.flags[`_lime_contact_${id}`] = true;
-  owner.contacts ||= [];
-  if (!owner.contacts.includes(id)) owner.contacts.push(id);
 }
 
 export function chapterTwoNights(startDay) {

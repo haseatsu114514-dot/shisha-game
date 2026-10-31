@@ -51,7 +51,7 @@ const mocks = {
   // あげはの♥3の質問（#1988）は affinity_stages.mjs で確認する。ここでは質問が無い通常訪問だけを見る
   // 締めくくりの記録・贈り物は bonds.mjs / affinity_stages.mjs が確認する。ここでは訪問の分岐と精算だけを見る（#2027）
   "../daily/bonds.js": { BOND_QUESTIONS: { ageha: { host: "remake_ch2_ageha_newcomer", dialogue: "ch2_ageha_bond_question" } },
-    BOND_FINALES: { kumicho: { dialogue: "ch2_kumicho_bond_finale" }, rei: { dialogue: "ch2_rei_bond_finale" } },
+    BOND_FINALES: { ageha: { dialogue: "ch2_ageha_bond_finale" }, kumicho: { dialogue: "ch2_kumicho_bond_finale" }, rei: { dialogue: "ch2_rei_bond_finale" } },
     playQuestionVisit: async () => true, questionVisitDue: () => false, finaleAtVisit: id => finaleOpen.has(id),
     playFinale: async (id, opts) => {
       finaleCalls.push([id, opts]); played.push(`${id}:finale`);
@@ -204,13 +204,14 @@ for (const id of validatedIds) {
   assert.deepEqual(loaderDB.dialogues, { preserved: true });
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
-// 31 本 + あげはの♥3の質問 ch2_ageha_bond_question（#1988）+ 神崎・REIの小会話6本と締めくくり2本（#2027）
-assert.equal(Object.keys(loaderDB.dialogues).length, 40 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・REIの小会話6本と締めくくり2本（#2027）
+assert.equal(Object.keys(loaderDB.dialogues).length, 41 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 for (const id of ["kumicho", "rei"]) {
   assert(loaderDB.dialogues[`ch2_${id}_bond_finale`], `${id} finale is published`);
   for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_${id}_repeat_${suffix}`]);
 }
 assert(loaderDB.dialogues.ch2_ageha_bond_question, "the ♥3 question is published with the ageha visits");
+assert(loaderDB.dialogues.ch2_ageha_bond_finale, "the ♥5 finale is published with the ageha visits");
 for (const entry of Object.values(CH2_VISIT_STORIES).flat()) assert(loaderDB.dialogues[entry.scene], entry.scene);
 assert.equal(loaderDB.dialogues.ch2_kumicho_second.metadata.flavor_lesson, undefined);
 assert.deepEqual(loaderDB.dialogues.ch2_kumicho_fourth.metadata.flavor_lesson, { dragonfruit: 1 });
