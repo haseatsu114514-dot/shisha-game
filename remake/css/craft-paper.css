@@ -66,21 +66,17 @@ html .bench[data-mode] :is(.bench-condition, .bench-guide) summary:focus-visible
 
 /* ---------------------------------------------------------------- 左右の板（九分割の紙）
    板に filter を付けると、DSで position: fixed にしている温度計の台座・外観ボタンが板の中に閉じ込められる。影は box-shadow だけ。 */
+/* 縁は従来どおり1pxで、中身の寸法・余白は craft.css などの値のまま。板の絵は余白の上と外側へ描く。 */
 html .bench[data-mode] .bench-left, html .bench[data-mode] .bench-right {
-  background: var(--paper); border: 14px solid transparent; border-radius: 0;
-  border-image: var(--cp-board) 40 fill / 14px / 0 stretch; box-shadow: 0 8px 18px #2a1a3a2b;
+  background: var(--paper); border: 1px solid transparent; border-radius: 0;
+  border-image: var(--cp-board) 40 fill / 14px / 6px stretch; box-shadow: 0 8px 18px #2a1a3a2b;
 }
-/* 左の窓は中身の幅を従来（縁1px＋余白7px）と同じに保ち、板の絵だけ外側へ4px出す（観客の欄の折り返しを変えない）。 */
-html .bench[data-mode] .bench-left { border-width: 8px; border-image-width: 12px; border-image-outset: 4px; padding: 0; gap: 0; }
-html .bench[data-mode] .bench-right { padding: 4px 8px 2px; }
 html .bench[data-mode] .audience-single { gap: 14px; padding: 10px; }
-html .bench[data-mode][data-step] .bench-right { padding-top: 2px; }
 html .bench[data-mode]:is([data-step="heat"], [data-step="steam"], [data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-right,
 html .bench[data-mode].thermal-active .bench-right, html .bench[data-mode].thermal-active:is([data-thermal-band="fire"], [data-thermal-band="inferno"]) .bench-right {
-  background: var(--paper); border-image: var(--cp-board) 40 fill / 14px / 0 stretch; border-color: transparent; box-shadow: 0 8px 18px #2a1a3a2b;
+  background: var(--paper); border-image: var(--cp-board) 40 fill / 14px / 6px stretch; border-color: transparent; box-shadow: 0 8px 18px #2a1a3a2b;
 }
 html .bench[data-mode]:is([data-step="pull"], [data-step="serve"], [data-step="care"]) :is(.bench-left, .bench-right) { border-color: transparent; box-shadow: 0 8px 18px #2a1a3a2b; }
-html .bench[data-mode]:is([data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-right { padding-bottom: 2px; }
 html .bench[data-mode] .bench-head { border-bottom: 1px solid var(--paper-line); }
 html .bench[data-mode][data-art-skin] .bench-head { border-bottom-color: var(--paper-line); }
 html .bench[data-mode] .bench-title, html .bench[data-mode][data-art-skin] .bench-title { color: var(--paper-ink); text-shadow: none; }
@@ -222,7 +218,7 @@ html .bench[data-mode] .pack-choice[aria-pressed="true"]::before { color: #fff; 
 html .bench[data-mode] .pack-choice:focus-visible { outline-color: var(--amber); }
 html .bench[data-mode] .pack-footer small { color: var(--paper-muted); }
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
-  html body:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [data-step="pack"], [data-step="place"]) .pack-footer { background: var(--paper); }
+  html body:not(.game-ds) .bench[data-mode]:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .pack-footer { background: var(--paper); }
 }
 
 /* ---------------------------------------------------------------- 穴あけ */
@@ -497,3 +493,7 @@ html body:not(.game-ds) .bench[data-mode] .pack-vessel::before { background: #2a
 html body:not(.game-ds) .bench[data-mode] .bench-panel > * { animation: cp-panel-in .22s ease-out both; }
 @keyframes cp-panel-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { html body:not(.game-ds) .bench[data-mode] .bench-panel > * { animation: none; } }
+/* スマホ横は器の窓が小さく、縮めた器の絵が窓からはみ出すので天板の窓を使わない。 */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  html body:not(.game-ds) .bench[data-mode] :is(.mix-vessel, .pack-vessel) { background: none; box-shadow: none; }
+}
