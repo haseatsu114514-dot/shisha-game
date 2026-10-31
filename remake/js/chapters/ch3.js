@@ -421,7 +421,7 @@ async function optionalActions(owner) {
  */
 function friendActions(owner) {
   if (!pendingFriendLime({ exclude: ["mashiro"] }).length) return [];
-  return [button(owner, "友人からのLIMEを読む", "friend-lime", async () => {
+  return [button(owner, "友人・知り合いのLIMEを読む", "friend-lime", async () => {
     showScreen("none", null);
     hud(owner);
     await readFriendLime({ exclude: ["mashiro"] });

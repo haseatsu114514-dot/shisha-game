@@ -379,7 +379,7 @@ async function renderFree(owner) {
   // 友人からのたまのLIME（#2022）。
   const friend = await import("./friend-entry.js");
   if (!current(owner)) return;
-  if (friend.pendingFriendLime().length) actions.push(button(owner, "友人からのLIMEを読む", "friend-lime", async () => {
+  if (friend.pendingFriendLime().length) actions.push(button(owner, "友人・知り合いのLIMEを読む", "friend-lime", async () => {
     showScreen("none", null);
     hud();
     await friend.readFriendLime();
