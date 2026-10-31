@@ -104,10 +104,10 @@ await suite("ui-themes-preview", async check => {
         assert(twoLines.clear,"name, next indicator, toolbar and actual text glyphs remain separate");
         assert(twoLines.footerClear,"next indicator leaves a clear margin above the visible paper/footer edge, including its 2px bob");
         assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
-        // 紙とラベンダーは、操作札を名前札と同じ高さに置き、右端を紙の窓（本文の箱より8px外）の端にそろえる（DUI18）。
+        // 紙とラベンダーは、操作札を名前札と同じ高さに置き、右端を紙の窓（本文の箱より8px外）の端から12px内へ寄せる（DUI18）。
         if(id==="paper"){
           assert(Math.abs(twoLines.headerOffset)<=.5,"paper controls sit level with the name tab");
-          assert(Math.abs(twoLines.rightGap-8)<=.5,`paper controls end at the window edge: ${twoLines.rightGap}`);
+          assert(Math.abs(twoLines.rightGap+4)<=.5,`paper controls end 12px inside the window edge: ${twoLines.rightGap}`);
         }else{
           assert(Math.abs(twoLines.headerOffset-(id.startsWith("smoke")?8:16))<=.5,"controls leave the intended space above the main window");
           assert(twoLines.rightGap<=-32,"toolbar stays inside the frame header");
