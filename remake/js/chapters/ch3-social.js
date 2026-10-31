@@ -1,6 +1,8 @@
 // 東京の既存章カードから呼ぶ、遠距離LIME・旅程・行動枠のアダプタ。
+// 恋人の訪問相談に加え、連絡先のあるあげは（恋人でなくても）と東京滞在中に数通やり取りできる（#1988）。
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
+import { gainAffinity } from "../core/stats.js";
 import { visitContacts, tokyoVisitState, playerRegion, characterRegion, syncTokyoVisits,
   proposeTokyoVisit, bookTokyoVisit } from "../core/tokyo-visits.js";
 import { openContactLime } from "../daily/phone.js";
@@ -34,7 +36,7 @@ function logMessage(id, key, mine, peer) {
   if (state.inbox.some(item => item.id === messageId)) return;
   const log = [...(mine ? [{ me: true, text: mine }] : []), { me: false, text: peer }];
   state.inbox.push({ id: messageId, day: state.day, account: id === "minto" ? "minto_private" : id,
-    read: true, done: true, log, msg: { id: messageId, sender: id, type: "chat", lover: true, tokyoVisit: true, messages: [] } });
+    read: true, done: true, log, msg: { id: messageId, sender: id, type: "chat", lover: (state.lovers || []).includes(id), tokyoVisit: true, messages: [] } });
   if (!state.limeRead.includes(messageId)) state.limeRead.push(messageId);
 }
 
@@ -50,6 +52,21 @@ export function syncTokyoSocial() {
   }
 }
 
+/** 恋人ではない地元の連絡先（あげは）。第3章で連絡先を交換していれば、恋人の一覧の後に並べる。 */
+export function tokyoLimeContacts(value, definitions) {
+  const lovers = visitContacts(value, definitions);
+  const extra = ["ageha"].filter(id => definitions.characters[id] && !lovers.includes(id)
+    && value.chapter === 3 && (value.contacts || []).includes(id));
+  return [...lovers, ...extra];
+}
+
+/** 東京滞在中に順に届く、その人からの数通（tokyo_visits.json の tokyoStory）。既読は inbox の記録だけで判定する。 */
+export function pendingTokyoStory(value, id, character) {
+  if (playerRegion(value) !== "tokyo") return null;
+  const logged = key => (value.inbox || []).some(item => item.id === `_tokyo_${id}_${key}`);
+  return (character?.tokyoStory || []).find(entry => !logged(`story_${entry.key}`)) || null;
+}
+
 const dayLabel = day => `DAY ${day - state.flags._ch3_intro.startDay + 1}`;
 const timeLabel = time => `${dayLabel(time.day)} ${time.slot ? "夜" : "昼"}`;
 const latestPlan = id => [...tokyoVisitState(state).plans].reverse().find(plan => plan.characterId === id);
@@ -60,10 +77,12 @@ export async function openTokyoLime({ signal = null } = {}) {
   if (signal?.aborted) return;
   syncTokyoSocial();
   save();
-  const contacts = () => visitContacts(state, definitions);
+  const contacts = () => tokyoLimeContacts(state, definitions);
   const notes = {};
   const summary = id => {
     if (notes[id]) return notes[id];
+    const character = definitions.characters[id];
+    if (!(state.lovers || []).includes(id)) return playerRegion(state) === "home" ? character.homeSummary || "地元へ戻った。" : character.summary || "地元からの連絡。";
     const offer = state.tokyoVisits.offers[id];
     if (offer) return `${offer.held ? "保留中の訪問" : "訪問の相談"}：${tripLabel(offer)}`;
     const plan = latestPlan(id);
@@ -82,15 +101,23 @@ export async function openTokyoLime({ signal = null } = {}) {
       && state.chapter >= definitions.characters[id].dateMinChapter) options.push({ id: "offer", label: state.tokyoVisits.offers[id]?.held ? "保留中の訪問を相談" : "デートに誘う" });
     return options;
   };
-  await openContactLime({ contacts, summary, actions, signal, onAction: (id, action) => {
+  await openContactLime({ contacts, summary, actions, signal, title: "地元との連絡",
+    empty: "連絡先を交換した恋人や地元の友人がいると、ここから連絡できます。", onAction: (id, action) => {
     syncTokyoSocial();
     delete notes[id];
     const character = definitions.characters[id];
     if (action === "chat") {
       const key = `${state.chapter}:${state.day}`;
       if (state.tokyoVisits.chats[id] !== key) {
-        const local = characterRegion(state, definitions, id) === playerRegion(state);
-        logMessage(id, `chat_${key}`, "今、少し話せる？", playerRegion(state) === "home" ? character.homeChat : local ? character.localChat : dailyLine(character.chat));
+        const story = pendingTokyoStory(state, id, character);
+        if (story) {
+          // 東京滞在中の数通（#1988）。一通ずつ一度だけで、雑談のLIMEと同じく少し仲良くなる。
+          logMessage(id, `story_${story.key}`, story.me, story.text);
+          gainAffinity(id, 1, { source: "lime" });
+        } else {
+          const local = characterRegion(state, definitions, id) === playerRegion(state);
+          logMessage(id, `chat_${key}`, "今、少し話せる？", playerRegion(state) === "home" ? character.homeChat : local ? character.localChat : dailyLine(character.chat));
+        }
         state.tokyoVisits.chats[id] = key;
       } else notes[id] = "今日のやり取りはトークに残っている。また落ち着いた時に話そう。";
     }
