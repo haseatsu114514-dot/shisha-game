@@ -174,6 +174,7 @@ const invitationContext = vm.createContext({
   play: async () => { log.push('meeting:' + state.flags._ch2_region); return { cancelled: false }; },
   addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
   playHiyoriHangout: async () => { log.push('meeting:' + state.flags._ch2_region); },
+  consultLessons: async () => [], // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
   bgRef: id => id, VISIT_BG: { hiyori: 'shop' },
   completeInvitation: inv => { state.pendingInvite = null; rewardTrace.push('complete:' + inv.sender); },
   paidAction: async fn => { rewardTrace.push('paidAction'); const value = await fn(); if (value) rewardTrace.push('reward'); return { value, spent: 1 }; },

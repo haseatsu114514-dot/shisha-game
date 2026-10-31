@@ -6,6 +6,7 @@ import { layers, showScreen, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { OUTING_DIALOGUE_IDS, chapterThreeOutings, claimChapterThreeOuting, outingDialogueId } from "./ch3-outing-progress.js";
+import { consultLessons } from "../core/growth.js";
 
 export { chapterThreeOutings } from "./ch3-outing-progress.js";
 let outingTask = null;
@@ -21,6 +22,8 @@ export function loadChapterThreeOutings() {
 
 // 地図の行き先ごとの背景。公園とmukaiの裏口（てつこ）は専用の絵ができるまで街の道で代用する（仮）。
 const OUTING_BG = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", park: "bg_street" };
+/** その店で会える授業の先生（心得の盤 SBD70: 授業は会って相談した時だけ習う） */
+const OUTING_TEACHER = { mukai: "mashiro", enmaku: "kuze", steve: "steve" };
 
 /** 地図で選んだ行き先（#1655）。消費・成長・記録は正常完読後だけ。中断は同じ自由時間へ戻る。 */
 export async function visitChapterThreeOuting(windowId, id, { signal = null, isCurrent = () => true } = {}) {
@@ -39,8 +42,8 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
     if (!outing?.ok) return false;
     const night = !!outing.window.slot;
     const bg = outing.bg || OUTING_BG[outing.place];
-    await setBg(bg === "bg_street" ? bgUrl(night ? "bg_street_night" : "bg_street_day") : bgUrl(bg, night ? "night" : "day"),
-      { instant: true });
+    const bgRef = bg === "bg_street" ? bgUrl(night ? "bg_street_night" : "bg_street_day") : bgUrl(bg, night ? "night" : "day");
+    await setBg(bgRef, { instant: true });
     if (!current()) return false;
     showScreen("none", null);
     layers.hud.replaceChildren();
@@ -57,6 +60,9 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
     }, { consumed: used => used && !!outing.stat });
     if (!settled.value || !current()) return false;
     save();
+    // 心得の盤で灯した授業があれば、その店で相談して習う（盤が無効な時は何もしない）
+    if (OUTING_TEACHER[outing.place] && current()) await consultLessons(OUTING_TEACHER[outing.place], { bg: bgRef, signal: owner.controller.signal });
+    if (!current()) return true;
     toast(outing.toast || (outing.money ? `日当 +${outing.money.toLocaleString()}円`
       : outing.stamina > 0 ? "少し体が休まった" : "訪ねてよかった"), { kind: "good" });
     return true;

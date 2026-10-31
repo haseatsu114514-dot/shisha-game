@@ -38,7 +38,8 @@ PROMPTS = BASE / "PROMPTS.md"
 OUT = BASE / "out"
 REFS = BASE / "refs"
 API = "https://api.openai.com/v1"
-DEFAULT_MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-1")
+# このorganizationでは gpt-image-1 が400になる。オーナー決定で sunburst を使う（2026-10-31）
+DEFAULT_MODEL = os.environ.get("OPENAI_IMAGE_MODEL", "gpt-image-2.5-sunburst")
 IMG_EXT = (".png", ".jpg", ".jpeg", ".webp")
 
 
@@ -159,7 +160,8 @@ def main() -> int:
     ap.add_argument("--check", action="store_true", help="キーとモデルの疎通だけ確認（モデル一覧を1回取得）")
     ap.add_argument("--only", nargs="*", help="対象IDを限定")
     ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--quality", default="high")
+    # high はクラウド環境のプロキシ経由だと 502 になる（約30秒で切れる）ため medium を既定にする
+    ap.add_argument("--quality", default="medium")
     ap.add_argument("--per-target", type=int, default=5)
     ap.add_argument("--fetch-lfs", action="store_true", help="添付に必要なLFS画像の実体だけを git lfs pull で取得する")
     args = ap.parse_args()
