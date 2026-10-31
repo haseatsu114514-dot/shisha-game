@@ -67,6 +67,12 @@ let autoFxGap = 0;
 let sequenceDepth = 0;
 const SEEN_LINES_KEY = "suien_remake_seen_dialogue_lines";
 let seenLines;
+let persistSeenLines = true;
+/** プレビュー用: 既読はメモリだけに記録し、本編の端末保存（localStorage）に書かない */
+export function keepSeenLinesInMemory() {
+  persistSeenLines = false;
+  seenLines = new Set();
+}
 function readSeenLines() {
   if (seenLines) return seenLines;
   try { seenLines = new Set(JSON.parse(localStorage.getItem(SEEN_LINES_KEY) || "[]")); }
@@ -76,6 +82,7 @@ function readSeenLines() {
 function markSeenLine(key) {
   if (!key || readSeenLines().has(key)) return;
   seenLines.add(key);
+  if (!persistSeenLines) return;
   try { localStorage.setItem(SEEN_LINES_KEY, JSON.stringify([...seenLines].slice(-20000))); }
   catch { /* 端末の容量制限時も会話は続ける */ }
 }
