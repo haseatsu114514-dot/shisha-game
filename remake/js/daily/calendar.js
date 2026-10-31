@@ -843,7 +843,7 @@ async function endDay({ returnedToTonari = false } = {}) {
     }
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
-  const confessed = await maybeConfession(beat, { busyNight: metTonight || rested, companion });
+  const confessed = await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
   await chapterDef.beforeHomecoming?.();
   const athome = !!state.flags._home_tonight;

@@ -45,14 +45,14 @@ assert(start >= 0 && end > start, 'victory function boundaries exist');
 const victory = chapter.slice(start, end);
 const sequence = [
   'const after = DB.dialogues.ch1_tournament_after;',
-  'await play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE });',
+  '() => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE }),',
   'id: "_sys_sumi_scoresheet"', 'title: "表彰式のあと"',
-  'await play({ ...after, lines: after.lines.slice(tonariAt) });',
-  'await play("interval_day1_naru_lime");', 'gainStat("guts", 1);',
+  '() => play({ ...after, lines: after.lines.slice(tonariAt) }),',
+  '() => play("interval_day1_naru_lime"),', '() => gainStat("guts", 1),',
   'id: "_sys_unknown_recorded"', 'title: "優勝の夜"',
-  'await play("interval_day1_morning_win");', 'await play("ch1_naru_promise");',
-  'await play("interval_day2_adam_lime");', 'gainStat("insight", 1);',
-  'await play("interval_day5_eve");', 'state.phase = "aftermath";',
+  '() => play("interval_day1_morning_win"),', '() => play("ch1_naru_promise"),',
+  '() => play("interval_day2_adam_lime"),', '() => gainStat("insight", 1),',
+  '() => play("interval_day5_eve"),', 'state.phase = "aftermath";',
 ];
 let previous = -1;
 for (const call of sequence) {
@@ -63,6 +63,18 @@ for (const call of sequence) {
 }
 assert.equal((victory.match(/\bgainStat\(/g) || []).length, 2, 'Only the two announced rewards');
 assert.doesNotMatch(chapter, /play\("interval_day3_sumi_call"/);
+// #2088: 優勝確定から余韻の各段ごとに保存し、再開は大会を作り直さず続きから。賞金は一度だけ。
+assert.match(chapter, /state\.phase === "tournament" && state\.tournament\?\.victory\) return resumeVictory\(\);\n  if \(state\.phase === "tournament"\) return tournamentDay\(\);/);
+assert.match(victory, /if \(!v\.paid\) \{[\s\S]*?addMoney\(PRIZE\);[\s\S]*?v\.paid = true;\n    save\(\);/);
+assert.match(victory, /while \(v\.step < steps\.length\) \{\n    await steps\[v\.step\]\(\);\n    v\.step \+= 1;\n    save\(\);/);
+assert.equal((victory.match(/addMoney\(/g) || []).length, 1, 'prize paid once');
+const tday = chapter.slice(chapter.indexOf('if (out.rank === 1) {'), chapter.indexOf('await victory(cs);'));
+assert(tday.indexOf('state.tournament.victory = { step: 0, revealed: false };') < tday.indexOf('ch1_tournament_judging'), 'victory marked before the long judging scene');
+// 前夜の早寝は休養扱い（発熱予約を消し、その夜の告白を後回し）
+const eve = chapter.slice(chapter.indexOf('if (progress.choice === "sleep_early") {'), chapter.indexOf('setFlag("_ev_last_night");\n  save();'));
+assert(eve.includes('delete state.flags._cold_pending;') && eve.includes('state.flags._eve_slept = state.day;'));
+assert.match(read('remake/js/daily/calendar.js'), /busyNight: metTonight \|\| rested \|\| state\.flags\._eve_slept === state\.day/);
+assert.match(read('remake/js/daily/phone.js'), /function sumiBaitoInvite\(\{ tournamentDay = false, fixedNight = null \} = \{\}\) \{[\s\S]*?if \(!fixed && fixedNight\?\.\(state\.day\)\) return null;/);
 // 祝福LIME（「帰ったら、一緒に一服しよう」）は、tonariの祝杯より前に届く。区切りの背景切替が祝杯の手前にあること。
 const after = JSON.parse(read('data/dialogue/ch1_tournament.json')).dialogues
   .find(scene => scene.dialogue_id === 'ch1_tournament_after');

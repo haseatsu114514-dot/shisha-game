@@ -202,6 +202,7 @@ export async function resumeGame() {
   if (state.chapter === 5) return resumeChapterModule(() => import("./ch5.js"), m => m.resumeChapterFive(), "第5章へ戻っています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
+  if (state.phase === "tournament" && state.tournament?.victory) return resumeVictory();
   if (state.phase === "tournament") return tournamentDay();
   if (state.phase === "opening" && await openingPart() === false) return;
   await dailyPart();
@@ -353,6 +354,10 @@ async function lastNight() {
   if (progress.choice === "sleep_early") {
     addStamina(maxStamina() - state.stamina);
     state.flags._home_tonight = true;
+    // #2088: 早寝は休養と同じく、溜めた発熱予約を消し、今夜の告白も後回しにする
+    delete state.flags._cold_pending;
+    delete state.flags._overwork;
+    state.flags._eve_slept = state.day;
   }
   setFlag("_ev_last_night");
   save();
@@ -638,6 +643,8 @@ async function tournamentDay() {
   save();
 
   if (out.rank === 1) {
+    state.tournament.victory = { step: 0, revealed: false };
+    save();
     // 南雲の二口 →「もうだめだ」→ 10カウント → プチュン → 南雲の持ち点10が先頭のはじめへ入り、優勝を締める（逆転ではない・#1282）
     // 審査待ちのなるの一言は、実際の調整実績（安定／立て直し／終盤帯外／記録不足）に合わせて差し替える。
     const judging = DB.dialogues.ch1_tournament_judging;
@@ -650,6 +657,8 @@ async function tournamentDay() {
     await nagumoCutin(1);
     await play("ch1_tournament_reveal", { bg: STAGE });
     await resultTable(cs, 1);
+    state.tournament.victory.revealed = true;
+    save();
     await victory(cs);
   } else {
     await resultCountdown(cs, out.kind);
@@ -668,45 +677,73 @@ const entrance = () => playEntrance(1);
 // ---------------------------------------------------------------- 優勝のあと
 
 async function victory(cs) {
-  clearContinueHistory(state);
-  state.tournament.retryAssist = false;
-  const recognition = craftRecognition(cs);
-  addMoney(PRIZE);
-  delete state.tournament.stockSnap;
-  delete state.tournament.entryResources;
+  // #2088: 優勝後の余韻は長いので、段ごとに保存して途中から再開できるようにする（賞金・能力加算は一度だけ）。
+  const v = state.tournament.victory ||= { step: 0, revealed: true };
+  if (!v.paid) {
+    clearContinueHistory(state);
+    state.tournament.retryAssist = false;
+    v.comment = (cs ? craftRecognition(cs) : null)?.comment || null;
+    addMoney(PRIZE);
+    delete state.tournament.stockSnap;
+    delete state.tournament.entryResources;
+    v.paid = true;
+    save();
+  }
   // スミさんの祝福LIMEは、閉店後のtonariで祝杯を交わす前に届く。tonariへ戻る背景切替の手前で場面を区切る。
   const after = DB.dialogues.ch1_tournament_after;
   const tonariAt = after.lines.findIndex(line => line.type === "bg" && line.bg?.includes("bg_tonari_inside"));
-  await play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE });
-  await openPhone([
-    {
-      id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
-        "おう。優勝、見事だった",
-        ...(recognition?.comment ? [recognition.comment] : []),
-        "最後の調整まで、よく作りきったな",
-        "今日は喜べ。帰ったら、一緒に一服しよう",
-      ], close_label: "……はい。ありがとうございます、スミさん",
-    },
-  ], { time: "PM 6:52", title: "表彰式のあと" });
-  await play({ ...after, lines: after.lines.slice(tonariAt) }); // 先頭の bg 行で tonari に切り替わる
-  await play("interval_day1_naru_lime");
-  gainStat("guts", 1);
-  // 優勝の夜。記録を続ける博士の伏線へ。
-  await openPhone([
-    {
-      id: "_sys_unknown_recorded", sender: "???", messages: [
-        "本日のあなたの試合データは、すべて記録させていただきました。",
-      ], close_label: "……誰？",
-    },
-  ], { time: "PM 11:47", title: "優勝の夜" });
-  await play("interval_day1_morning_win");
-  await play("ch1_naru_promise");
-  await play("interval_day2_adam_lime");
-  gainStat("insight", 1);
-  await play("interval_day5_eve");
+  const steps = [
+    () => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE }),
+    () => openPhone([
+      {
+        id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
+          "おう。優勝、見事だった",
+          ...(v.comment ? [v.comment] : []),
+          "最後の調整まで、よく作りきったな",
+          "今日は喜べ。帰ったら、一緒に一服しよう",
+        ], close_label: "……はい。ありがとうございます、スミさん",
+      },
+    ], { time: "PM 6:52", title: "表彰式のあと" }),
+    () => play({ ...after, lines: after.lines.slice(tonariAt) }), // 先頭の bg 行で tonari に切り替わる
+    () => play("interval_day1_naru_lime"),
+    () => gainStat("guts", 1),
+    // 優勝の夜。記録を続ける博士の伏線へ。
+    () => openPhone([
+      {
+        id: "_sys_unknown_recorded", sender: "???", messages: [
+          "本日のあなたの試合データは、すべて記録させていただきました。",
+        ], close_label: "……誰？",
+      },
+    ], { time: "PM 11:47", title: "優勝の夜" }),
+    () => play("interval_day1_morning_win"),
+    () => play("ch1_naru_promise"),
+    () => play("interval_day2_adam_lime"),
+    () => gainStat("insight", 1),
+    () => play("interval_day5_eve"),
+  ];
+  while (v.step < steps.length) {
+    await steps[v.step]();
+    v.step += 1;
+    save();
+  }
+  delete state.tournament.victory;
   state.phase = "aftermath";
   save();
   await finishAfterTournament();
+}
+
+/** #2088: 優勝確定後に閉じたセーブは、大会を作り直さず余韻の続きから */
+async function resumeVictory() {
+  showHud(false);
+  playBgm("bgm_aftermath");
+  const v = state.tournament.victory;
+  if (!v.revealed) {
+    await nagumoCutin(1);
+    await play("ch1_tournament_reveal", { bg: STAGE });
+    v.revealed = true;
+    save();
+  }
+  await victory(null);
 }
 
 async function finishAfterTournament() {

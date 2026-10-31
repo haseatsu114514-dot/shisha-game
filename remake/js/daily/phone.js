@@ -339,13 +339,16 @@ function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) 
  * スミさんからの「急で悪い、昼のシフト入れるか？」。序盤の固定2回（DAY3/8）＋4日以上バイトに出ていない朝。
  * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。各章の大会当日は来ない
  */
-function sumiBaitoInvite({ tournamentDay = false } = {}) {
+function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
   if (tournamentDay || ![1, 2].includes(state.chapter) || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
   const id = `_sumi_baito_inv_d${state.day}`;
   if (state.limeRead.includes(id)) return null;
   const fixed = state.chapter === 1 && (state.day === 3 || state.day === 8);
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
+  // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
+  // DAY3・DAY8 の固定の誘いは台本の一部なので残す
+  if (!fixed && fixedNight?.(state.day)) return null;
   // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）
   const reasons = [
     "常連の団体が入ってな。人手が足りん",

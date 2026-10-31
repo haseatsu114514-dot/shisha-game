@@ -249,6 +249,7 @@ export const FLAG_EXACT_RULES = [
   ["_ev_rin_monitor", "person"],
   ["_ev_salaryman", "progression"],
   ["_ev_tsumugi_sketch", "person"],
+  ["_eve_slept", "progression"], // #2088 前夜の早寝（その夜の告白を後回し）
   ["_fit_since", "progression"],
   ["_flavor_anise", "unlock"],
   ["_flavor_basil", "unlock"],
