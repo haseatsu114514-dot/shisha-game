@@ -393,6 +393,109 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_kumicho_repeat_b",
+      "comment": "#2027 通い訪問の小会話。初回相談と続編だけを前提にする。",
+      "lines": [
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。今日は外が騒がしいでしょう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "駅前で工事してましたね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "店の中ぐらいは静かにしときてえんでさ。うるせえと、客の吸い方が浅くなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "吸い方が、ですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "落ち着かねえと、人は急いで吸う。急いで吸や、煙も荒れるんでさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは、入口の暖簾を少しだけ下ろした。外の音が、ひとつ遠くなった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_repeat_c",
+      "comment": "#2027 通い訪問の小会話。初回相談と続編だけを前提にする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒革のソファに座ると、神崎さんが黙って湯呑みを置いた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "番茶でさ。吸う前に、口ん中を一度まっさらにしときな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お茶を出してくれるのは、そのためだったんですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "甘い葉の前に甘い飲み物じゃ、舌が先にくたびれちまう"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "……まあ、俺が飲みてえだけって日もありやすがね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_repeat_d",
+      "comment": "#2027 通い訪問の小会話。初回相談と続編だけを前提にする。",
+      "lines": [
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、炭の箱を開けっぱなしにしてねえかい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、どうしてですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "湿気を吸った炭は、火のつきが遅え。ついても、ぱちぱち跳ねやがる"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "炭は使う分だけ出して、残りはすぐ閉めな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "帰ったら、店の炭箱を見てみます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。そういう地味なとこで、煙の機嫌が決まるんでさ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_rei_repeat",
       "lines": [
         {
@@ -424,6 +527,124 @@
           "speaker": "rei",
           "face": "smile",
           "text": "……好きな曲が増えたら、教えて。俺も、次の一枚を選んでおく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_repeat_b",
+      "comment": "#2027 通い訪問の小会話。初回相談と続編だけを前提にする。",
+      "lines": [
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……今日の曲、分かる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ギターの音が、前に聴かせてもらったのと似てる気がします"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……同じ人たち。昔の曲"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "昔の方が、音が粗い。……でも、その粗いところが好きで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙も、整いすぎてない方がいい時ってありますか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ある。少しざらっとしてる方が、残る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_repeat_c",
+      "comment": "#2027 通い訪問の小会話。初回相談と続編だけを前提にする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端に、小さなメモ帳が開いたまま置いてあった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……あ。それは、客の好み"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "全部書いてるんですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……話すのが苦手だから。前に何を頼んだか、書いておく"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "次に来た時、聞かなくても出せる。……聞くの、苦手だから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それって、すごい気遣いだと思います"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIはメモ帳をそっと閉じた。ページの端が、何度もめくられて丸くなっていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_repeat_d",
+      "comment": "#2027 通い訪問の小会話。初回相談と続編だけを前提にする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、REIがろうそくの照明を一つずつ確かめていた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……明るすぎると、煙が見えない。暗すぎると、怖がられる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ちょうどいい暗さって、難しそうですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……難しい。だから毎日、少しずつ直してる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日の明るさ、落ち着きます"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……なら、今日はこれで"
         }
       ]
     },

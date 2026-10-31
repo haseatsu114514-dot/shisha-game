@@ -20,7 +20,10 @@ export const CH2_VISIT_STORIES = {
     { scene: "remake_ch2_kumicho_revisit", heart: 2, done: "_ch2_revisit_done" },
     ch2Story("ch2_kumicho", "ch2_kumicho_third", 2),
     ch2Story("ch2_kumicho", "ch2_kumicho_fourth", 3),
+    ch2Story("ch2_kumicho", "ch2_kumicho_fifth", 4),
+    ch2Story("ch2_kumicho", "ch2_kumicho_sixth", 5),
   ],
+  // 準備期間（DAY2〜13）に締めくくりまで届くよう、REIの「嘘」の相談を♥4に置く（#2027）。
   rei: [
     { scene: "remake_ch2_rei_followup", heart: 1, done: "_ch2_followup_done" },
     ch2Story("ch2_rei", "ch2_rei_first", 1),
@@ -28,9 +31,12 @@ export const CH2_VISIT_STORIES = {
     { scene: "remake_ch2_rei_revisit", heart: 2, done: "_ch2_revisit_done" },
     ch2Story("ch2_rei", "ch2_rei_third", 2),
     ch2Story("ch2_rei", "ch2_rei_fourth", 3),
-    ch2Story("ch2_rei", "ch2_rei_fifth", 3),
+    ch2Story("ch2_rei", "ch2_rei_fifth", 4),
+    ch2Story("ch2_rei", "ch2_rei_sixth", 5),
   ],
 };
+/** 第2章の訪問列をすべて読んだか（締めくくりの前提）。 */
+export const ch2VisitStoriesDone = (flags, id) => !!CH2_VISIT_STORIES[id]?.every(entry => ch2VisitDone(flags, id, entry));
 export const ch2VisitDone = (flags, id, entry) => entry.done ? !!flags?.[entry.done]?.[id] : !!flags?.[`_ch2_read_${entry.scene}`];
 // 第3章のましろ（#2022）。mukaiの寄り道（任意場面）を選んで読んだ分だけ段階にする。
 // 既読は ch3-story-wiring.js の optionalReadFlag（`_ch3_read_<scene>`）。♥3の質問は練習の後、締めくくりは全段階の後。
