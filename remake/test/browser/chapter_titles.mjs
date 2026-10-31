@@ -273,7 +273,13 @@ await suite('chapter-titles', async check => {
         assert.equal(await page.evaluate(() => document.body.classList.contains('vn-skip')), false);
         assert.equal(await page.evaluate(() => window.underClicks), 0);
         await assertFade(page, `${label}-${mode}`);
-        assert.deepEqual(await storageSnapshot(page), before);
+        const after = await storageSnapshot(page);
+        // #1950 records played dialogue lines for the seen-line SKIP setting.
+        assert.deepEqual(JSON.parse(after.local.suien_remake_seen_dialogue_lines || '[]'), [
+          '["qa-before","main",0]', '["qa-after","main",0]',
+        ]);
+        delete after.local.suien_remake_seen_dialogue_lines;
+        assert.deepEqual(after, before);
         // ガード撤去後は通常のポインタ操作とフォーカス済みボタンのキー操作が再び使える。
         await sendAt(page, point, label === 'touch');
         assert.equal(await page.evaluate(() => window.underClicks), 3);
