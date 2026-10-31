@@ -1,7 +1,8 @@
 /* 採用PNGの表示窓。画像を変形せず、採用部分の縦横比で表示する。 */
 .store-logo { position: relative; display: block; flex: none; overflow: hidden; }
 .store-logo > img { position: absolute; display: block; max-width: none; max-height: none; pointer-events: none; }
-.store-logo.missing { display: grid; place-items: center; color: #28251f; font-size: 15px; font-weight: 700; text-align: center; }
+/* 画像が読めなかった時の店名。看板の窓（82×46）に収まるよう小さく折り返し、途中で切らない。 */
+.store-logo.missing { display: grid; place-items: center; padding: 0 2px; color: #28251f; font-size: 12px; line-height: 1.15; font-weight: 700; letter-spacing: 0; text-align: center; white-space: normal; overflow-wrap: anywhere; }
 
 .spot-pin.branded .shield { width: 90px; min-width: 90px; padding: 8px 5px 4px; background: #fffaf0; border-color: #d9c7a5; }
 .spot-pin.branded .shield::after { background: #fffaf0; border-color: #d9c7a5; }
