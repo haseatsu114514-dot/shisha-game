@@ -14,9 +14,9 @@
     <article class="deck a" id="deck-a" data-playing="false">
       <div class="deck-head"><small>A</small><span class="deck-indicator" id="indicator-a">STANDBY</span></div>
       <div class="platter" id="platter-a" role="slider" tabindex="0" aria-label="Aのジョグ。外周を回してBPM微調整（右回りで上げる・1目盛り0.01 BPM）" aria-valuemin="110" aria-valuemax="140" aria-valuenow="128.00">
-        <div class="deck-display"><div class="track-name" id="track-a">Dance Monster</div><p id="beat-a" class="sr">停止中</p></div></div>
+        <div class="deck-display"><div class="track-name" id="track-a">Dance Monster</div><div class="bpm"><output id="bpm-a" aria-live="off">128.00</output></div><p id="beat-a" class="sr">停止中</p></div></div>
       <div class="pitch-col"><label for="tempo-a" class="sr">a PITCH</label><input id="tempo-a" class="vfader" orient="vertical" type="range" min="110" max="140" step=".01" value="128"></div>
-      <div class="deck-controls"><div class="bpm" aria-label="BPM"><output id="bpm-a" aria-live="off">128.00</output></div><button id="play-a" class="deck-play" aria-pressed="false" aria-label="Aを再生">▶</button>
+      <div class="deck-controls"><button id="play-a" class="deck-play" aria-pressed="false" aria-label="Aを再生">▶</button>
         </div>
     </article>
     <article class="mixer">
@@ -31,9 +31,9 @@
     <article class="deck b" id="deck-b" data-playing="false">
       <div class="deck-head"><small>B</small><span class="deck-indicator" id="indicator-b">STANDBY</span></div>
       <div class="platter" id="platter-b" role="slider" tabindex="0" aria-label="Bのジョグ。外周を回してBPM微調整（右回りで上げる・1目盛り0.01 BPM）" aria-valuemin="110" aria-valuemax="140" aria-valuenow="126.00">
-        <div class="deck-display"><div class="track-name" id="track-b">Digital Lemonade</div><p id="beat-b" class="sr">停止中</p></div></div>
+        <div class="deck-display"><div class="track-name" id="track-b">Digital Lemonade</div><div class="bpm"><output id="bpm-b" aria-live="off">126.00</output></div><p id="beat-b" class="sr">停止中</p></div></div>
       <div class="pitch-col"><label for="tempo-b" class="sr">b PITCH</label><input id="tempo-b" class="vfader" orient="vertical" type="range" min="110" max="140" step=".01" value="126"></div>
-      <div class="deck-controls"><div class="bpm" aria-label="BPM"><output id="bpm-b" aria-live="off">126.00</output></div><button id="play-b" class="deck-play" aria-pressed="false" aria-label="Bを再生">▶</button>
+      <div class="deck-controls"><button id="play-b" class="deck-play" aria-pressed="false" aria-label="Bを再生">▶</button>
         </div>
     </article>
   </section>

@@ -199,3 +199,22 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .deck.b .deck-play{background:radial-gradient(120% 90% at 50% 20%,#3a5a6c,#1f3442 55%,#13202a);box-shadow:0 0 0 3px #1c3340,0 0 0 4px #3f7d90,inset 0 2px 1px #ffffff26,inset 0 -6px 10px #0008,0 7px 0 #04080c,0 10px 14px #000a}
 .deck.b .deck-play[aria-pressed=true]{background:radial-gradient(120% 90% at 50% 20%,#4aa8c8,#1c4050 70%);box-shadow:0 0 0 3px #1c3340,0 0 0 4px var(--deck),0 0 26px #4fd8ffa0,inset 0 3px 8px #0007,0 3px 0 #04080c}
 .ch.b .meter i{background:linear-gradient(0deg,#3fd0e8,#7fe3ff 65%,#e6fbff)}
+/* Issue #2110: BPM back on the artwork, PITCH faders on each deck's outer edge, ▶ stays by the mixer, neutral crossfader. */
+.deck.a{grid-template-columns:52px minmax(0,1fr)}
+.deck.b{grid-template-columns:minmax(0,1fr) 52px}
+.deck.a .pitch-col{grid-column:1}.deck.a .platter,.deck.a .deck-controls{grid-column:2}
+.deck.b .pitch-col{grid-column:2}.deck.b .platter,.deck.b .deck-controls{grid-column:1}
+.deck.a .deck-controls{justify-content:flex-end;flex-direction:row}
+.deck.b .deck-controls{justify-content:flex-start;flex-direction:row}
+.deck-display .bpm{display:block;padding:0;border:0;background:none;box-shadow:none}
+.deck-display .bpm output{font-size:30px}
+.xfade{--deck:#ece6dc}
+#crossfader{--deck:#ece6dc;background:
+  linear-gradient(transparent 29px,#cfc8bd 29px 30px,#000 30px 40px,#cfc8bd 40px 41px,transparent 41px),
+  linear-gradient(90deg,#ece6dc 0 calc(var(--v,0)*100%),transparent 0) 0 33px/100% 4px no-repeat,
+  linear-gradient(90deg,transparent calc(50% - 1px),#fff calc(50% - 1px) calc(50% + 1px),transparent 0) 0 18px/100% 34px no-repeat,
+  repeating-linear-gradient(90deg,#ffffff55 0 1px,transparent 1px 10%) 0 56px/100% 10px no-repeat}
+#crossfader::-webkit-slider-thumb{background-image:url('../../img/ui/dj/fader-cap-silver.webp');box-shadow:0 0 0 2px #f4efe6,0 0 16px #fff8ea99,0 5px 8px #000c}
+#crossfader::-moz-range-thumb{background-image:url('../../img/ui/dj/fader-cap-silver.webp');box-shadow:0 0 0 2px #f4efe6,0 0 16px #fff8ea99,0 5px 8px #000c}
+#crossfader.dragging::-webkit-slider-thumb,#crossfader:active::-webkit-slider-thumb{filter:brightness(1.25) drop-shadow(0 0 7px #fff8ea)}
+.xfade{border-color:#5a554e}

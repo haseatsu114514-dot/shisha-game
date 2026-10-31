@@ -31,3 +31,7 @@ Entry: `remake/previews/dj/index.html`. Kevin MacLeodの実曲5曲（CC BY 4.0�
 ## ▶の位置・右デッキの水色・BPMを外へ（Issue #2107）
 
 ▶（112×60px）はミキサー側（PITCHフェーダーの隣）へ、BPMは皿の外の外側下に移した。皿の中央は曲名とアートワークだけ。デッキBは水色基調（ジョグ・つまみ・枠・▶・メーター・本体の右側LED）。画像はPillowで既存素材の色相を回したもの（`jog-wheel-cyan.webp`、`fader-cap-h-cyan.webp`、本体の左右で色を変えた `controller-body-duo.webp`）。
+
+## BPMを皿の中央へ・PITCHを外側へ・中立色の横フェーダー（Issue #2110）
+
+BPMは皿の中央（アートワークの上）に戻した。PITCHフェーダーは各デッキの外側の端、▶はミキサー側のまま。横フェーダーはA（紫）・B（水色）どちらでもない銀白色（つまみは元画像をグレースケール化した `fader-cap-silver.webp`）。
