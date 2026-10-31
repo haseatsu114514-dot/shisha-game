@@ -32,6 +32,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     openBench: cs => trace.push(`bench:${match.chapterFourMatch(value).step}`),
     waitBenchReady: async () => trace.push("ready"),
     benchRoot: () => ({ querySelector: () => ({ append: () => trace.push("menu") }) }),
+    showChapterFourStandings: async p => trace.push(`standings:${p.voted}`),
     retireScreen: () => trace.push("retire"), playBgm() {}, clearComments() {}, block() {},
     play: async dialogue => { trace.push(dialogue.dialogue_id); return {}; },
     modal: async options => { trace.push(options.title); return ask; },
@@ -79,6 +80,9 @@ assert.equal(success.value.flags._ch4.match.step, 11);
 assert.deepEqual(success.trace.filter(item => ["setup", "water", "mix", "pack", "holes", "place", "heat", "steam-time", "steam", "pull", "care1", "care2"].includes(item)),
   ["setup", "water", "mix", "pack", "holes", "place", "heat", "steam-time", "steam", "pull", "care1", "care2"]);
 assert(success.trace.indexOf("pull") < success.trace.indexOf("ch4_customer_1"));
+// #2031: 投票が動いた3回（提供・調整1・調整2の前）だけ途中順位を見せ、最後の票は結果画面に任せる。
+assert.deepEqual(success.trace.filter(item => String(item).startsWith("standings:")), ["standings:1", "standings:2", "standings:3"]);
+assert(success.trace.indexOf("standings:1") < success.trace.indexOf("ch4_customer_1"));
 assert(success.trace.indexOf("ch4_customer_1") < success.trace.indexOf("care1"));
 assert(success.trace.indexOf("ch4_customer_2") < success.trace.indexOf("care2"));
 assert.deepEqual(success.value.flags._ch4.match.craft.customerChecks, [true, true]);
