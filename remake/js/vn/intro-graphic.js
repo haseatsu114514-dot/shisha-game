@@ -8,8 +8,8 @@ const PORTRAITS = new Set([
 ]);
 // 背景を描き直した人物。それ以外は旧背景をそのまま使う
 const BACKGROUNDS = new Set(["steve", "mashiro", "nagumo", "maki"]);
-// 正方形の原画を左半分に、胸から上が大きく入るように置く
-export const GRAPHIC_FRAME = { width: 640, left: -24, top: 80 };
+// 正方形の原画を左半分に置く。原画の上端を画面の上端にそろえ、上に隙間を作らない
+export const GRAPHIC_FRAME = { width: 720, left: -88, top: 0 };
 
 /** 新しい絵柄で出す素材。旧絵柄の設定か、素材の無い人物は null */
 export function graphicIntro(id, style) {
