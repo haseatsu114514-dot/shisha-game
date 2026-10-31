@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-31 04:33 UTC",
+ "generated": "2026-10-31 05:19 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -350,9 +350,15 @@
   },
   "master_hookah": {
    "faces": [
-    "normal"
+    "angry",
+    "laugh",
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
    ],
-   "h": 0.9667,
+   "h": 0.9675,
    "b": 0.0133,
    "ax": 0.5231,
    "aspect": 0.7467
@@ -2566,7 +2572,13 @@
   "sprites/characters/rei/chr_rei_surprise.png",
   "sprites/characters/rin/chr_rin_serious.png",
   "sprites/characters/rin/chr_rin_shock.png",
-  "sprites/characters/rin/chr_rin_smug.png"
+  "sprites/characters/rin/chr_rin_smug.png",
+  "sprites/characters/master_hookah/chr_master_hookah_angry.png",
+  "sprites/characters/master_hookah/chr_master_hookah_laugh.png",
+  "sprites/characters/master_hookah/chr_master_hookah_sad.png",
+  "sprites/characters/master_hookah/chr_master_hookah_serious.png",
+  "sprites/characters/master_hookah/chr_master_hookah_smile.png",
+  "sprites/characters/master_hookah/chr_master_hookah_surprise.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

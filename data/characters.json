@@ -24,7 +24,8 @@
       "title": "tonariの見習い",
       "line": "いつか自分の店を持ちたい",
       "face": "normal",
-      "color": "#eee0bd"
+      "color": "#eee0bd",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "俺"
@@ -54,9 +55,10 @@
     "spriteScale": 1.05,
     "intro_cutin": {
       "title": "はじめの師匠",
-      "line": "客が満足したなら、それでいい",
+      "line": "客が満足したなら、／それでいい",
       "face": "normal",
-      "color": "#e0843e"
+      "color": "#e0843e",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "俺",
@@ -86,10 +88,11 @@
     ],
     "spriteScale": 1.02,
     "intro_cutin": {
-      "title": "甘党の熱血店主",
-      "line": "うまくなりたいなら全部見てけ",
+      "title": "お菓子系の理論派店主",
+      "line": "うまくなりたいなら／全部見てけ",
       "face": "smile",
-      "color": "#f0d8a0"
+      "color": "#f0d8a0",
+      "motion": "sharp"
     }
   },
   {
@@ -116,9 +119,10 @@
     "spriteScale": 1.03,
     "intro_cutin": {
       "title": "ダブルアップルの伝道師",
-      "line": "煙は二種類。ダブルアップルと、それ以外だ",
+      "line": "煙は二種類。／ダブルアップルと、それ以外だ",
       "face": "intense",
-      "color": "#c9463a"
+      "color": "#c9463a",
+      "motion": "sharp"
     }
   },
   {
@@ -160,10 +164,11 @@
     "spriteScale": 0.91,
     "intro_cutin": {
       "title": "PEPPERMINT人気No.1キャスト",
-      "line": "みんとでーす♪ 全員まとめてライバルね？",
+      "line": "みんとでーす♪／全員まとめてライバルね？",
       "face": "wink",
       "color": "#7fe0c2",
-      "name": "alias"
+      "name": "alias",
+      "motion": "bounce"
     }
   },
   {
@@ -191,7 +196,8 @@
       "title": "人型AIロボット",
       "line": "環境データ、取得完了",
       "face": "normal",
-      "color": "#9aa4b8"
+      "color": "#9aa4b8",
+      "motion": "still"
     }
   },
   {
@@ -217,10 +223,11 @@
     ],
     "spriteScale": 0.99,
     "intro_cutin": {
-      "title": "煙幕の勝負師",
-      "line": "一口目の話を、二口目で裏切る",
+      "title": "噂を自分で流す店主",
+      "line": "噂を流したのも僕だけどね。／がっかりした？",
       "face": "normal",
-      "color": "#8c7564"
+      "color": "#8c7564",
+      "motion": "sharp"
     },
     "voice": {
       "first_person": "僕"
@@ -254,9 +261,10 @@
     },
     "intro_cutin": {
       "title": "柑橘の研究家",
-      "line": "二口目まで、軽く爽やかに",
+      "line": "熱を急ぐと、／後のライムが消える",
       "face": "normal",
-      "color": "#f07a3a"
+      "color": "#f07a3a",
+      "motion": "sharp"
     }
   },
   {
@@ -284,7 +292,8 @@
       "title": "誤差ゼロの職人",
       "line": "ブレは、許さない",
       "face": "normal",
-      "color": "#8fb4d8"
+      "color": "#8fb4d8",
+      "motion": "still"
     }
   },
   {
@@ -339,7 +348,8 @@
       "line": "……一曲だけ、聴く？",
       "face": "normal",
       "color": "#b0102a",
-      "name": "alias"
+      "name": "alias",
+      "motion": "soft"
     }
   },
   {
@@ -361,14 +371,15 @@
     },
     "visual_concepts": [
       "58 year old chinese master craftsman with the dignity of an old martial artist, short (165cm) but proud upright stance, long white hair in a single long braid down the back, long white beard tied at the end, thick sharp white eyebrows, deep wrinkles, tanned skin, sharp yet calm eyes, large knotted craftsman hands",
-      "veteran shisha grandmaster in a deep crimson high-collared martial arts long jacket with black frog-knot buttons and dark-gold smoke-swirl and shisha-bowl hem embroidery, short crimson half-cape with charcoal lining and ember-orange stitching, wide black sash wrapped by a coiled braided shisha hose with the brass mouthpiece hanging at the hip, loose black trousers and cloth shoes, arms folded, fiercely sizing up his opponent (2026-10-31 owner redesign #2068); deep gold formal robe for the eve-of-tournament party; no hermit staff, no talismans, no glowing aura, no yin-yang magic smoke"
+      "veteran shisha grandmaster in a deep crimson high-collared martial arts long jacket with black frog-knot buttons and dark-gold smoke-swirl and shisha-bowl hem embroidery, short crimson half-cape with charcoal lining and ember-orange stitching, wide black sash wrapped by a coiled braided shisha hose with the brass mouthpiece hanging at the hip, loose black trousers and cloth shoes, arms folded, fiercely sizing up his opponent (2026-10-31 owner redesign #2068); wears the same crimson outfit at the eve-of-tournament party; no hermit staff, no talismans, no glowing aura, no yin-yang magic smoke"
     ],
     "spriteScale": 0.96,
     "intro_cutin": {
-      "title": "龍を吐く老職人",
-      "line": "君の煙には、命がある",
+      "title": "龍を吐く水煙の職人",
+      "line": "観客が息を止めると、／煙がよく見える",
       "face": "normal",
-      "color": "#3fbf7f"
+      "color": "#3fbf7f",
+      "motion": "still"
     },
     "voice": {
       "first_person": "私"
@@ -410,7 +421,8 @@
       "title": "窓際席の絵描き",
       "line": "……煙って、形がないから",
       "face": "normal",
-      "color": "#b9a4e8"
+      "color": "#b9a4e8",
+      "motion": "soft"
     },
     "art_contest": {
       "kind": "若手作家の公募イラストコンテスト",
@@ -454,7 +466,8 @@
       "title": "問屋街の魔女",
       "line": "ようこそ、夜の側へ",
       "face": "smile",
-      "color": "#9b6cf2"
+      "color": "#9b6cf2",
+      "motion": "soft"
     }
   },
   {
@@ -484,15 +497,17 @@
       "title": "バイブスの天才",
       "line": "うち超感覚派なんだよね〜",
       "face": "normal",
-      "color": "#ff8fc8"
+      "color": "#ff8fc8",
+      "motion": "sharp"
     },
     "intro_cutin_unknown": {
       "display_name": "？？？",
       "title": "通りすがりのギャル",
-      "line": "大丈夫？ ケガしてない？",
+      "line": "大丈夫？／ケガしてない？",
       "face": "smile",
       "color": "#ff8fc8",
-      "name": "alias"
+      "name": "alias",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "うち",
@@ -545,9 +560,10 @@
     "spriteScale": 1.06,
     "intro_cutin": {
       "title": "水煙の龍",
-      "line": "火の前じゃ、礼儀が先ですわ",
+      "line": "火の前じゃ、／礼儀が先ですわ",
       "face": "normal",
-      "color": "#b6a4cf"
+      "color": "#b6a4cf",
+      "motion": "still"
     },
     "voice": {
       "first_person": "俺",
@@ -580,9 +596,10 @@
     "spriteScale": 1.02,
     "intro_cutin": {
       "title": "データの鬼",
-      "line": "データは嘘をつきません",
+      "line": "それ作ったの、俺だもん",
       "face": "smile",
-      "color": "#38f0ff"
+      "color": "#38f0ff",
+      "motion": "still"
     },
     "voice": {
       "first_person": "私",
@@ -613,9 +630,10 @@
     ],
     "intro_cutin": {
       "title": "大会名物MC兼マスコット",
-      "line": "ぷぷぷっ！ 会場は満席御礼ッ！",
+      "line": "ぷぷぷっ！／会場は満席御礼ッ！",
       "face": "smile",
-      "color": "#ff3fa4"
+      "color": "#ff3fa4",
+      "motion": "bounce"
     }
   },
   {
@@ -644,7 +662,8 @@
       "title": "C.STATION会長・審査員長",
       "line": "吸えば分かる",
       "face": "serious",
-      "color": "#cfd6e6"
+      "color": "#cfd6e6",
+      "motion": "still"
     }
   },
   {
@@ -670,9 +689,10 @@
     ],
     "intro_cutin": {
       "title": "トプハーネの元職人",
-      "line": "新しいだけでは、本物ではない",
+      "line": "新しいだけでは、／本物ではない",
       "face": "normal",
-      "color": "#4a8be0"
+      "color": "#4a8be0",
+      "motion": "still"
     }
   },
   {
@@ -701,7 +721,8 @@
       "title": "砂漠の現王者",
       "line": "全部、受け止めよう",
       "face": "normal",
-      "color": "#f5c542"
+      "color": "#f5c542",
+      "motion": "still"
     }
   },
   {
@@ -727,9 +748,10 @@
     ],
     "intro_cutin": {
       "title": "祭りの審査員",
-      "line": "シーシャはフェスタ！ 楽しくなけりゃ意味がねぇ！",
+      "line": "楽しくなけりゃ、／意味がねぇ！",
       "face": "normal",
-      "color": "#2fd27a"
+      "color": "#2fd27a",
+      "motion": "bounce"
     }
   },
   {
@@ -756,9 +778,10 @@
     "spriteScale": 0.9,
     "intro_cutin": {
       "title": "mukaiの眠たげな店員",
-      "line": "……今日は、お茶でもいいよぉ",
+      "line": "僕も、ここで働いてるの。／よろしくねぇ",
       "face": "normal",
-      "color": "#e8eef6"
+      "color": "#e8eef6",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "僕",
@@ -787,9 +810,10 @@
     ],
     "intro_cutin": {
       "title": "路地裏の縁を読む老婆",
-      "line": "縁があれば、また会える",
+      "line": "縁があれば、／また会える",
       "face": "normal",
-      "color": "#aa83c7"
+      "color": "#aa83c7",
+      "motion": "soft"
     }
   },
   {
@@ -837,9 +861,10 @@
     ],
     "intro_cutin": {
       "title": "mukaiの店長",
-      "line": "まあ、コーヒーでも飲んでいけ",
+      "line": "まあ、／コーヒーでも飲んでいけ",
       "face": "normal",
-      "color": "#b08a5e"
+      "color": "#b08a5e",
+      "motion": "soft"
     },
     "voice": {
       "first_person": "俺",
@@ -872,7 +897,8 @@
       "title": "HOOKAH PRESS編集長",
       "line": "シーシャはおいしいねえ",
       "face": "excited",
-      "color": "#ffb84a"
+      "color": "#ffb84a",
+      "motion": "bounce"
     }
   },
   {
@@ -885,7 +911,8 @@
       "line": "……お任せで、一台",
       "face": "ura_normal",
       "color": "#c4b69d",
-      "name": "alias"
+      "name": "alias",
+      "motion": "soft"
     }
   },
   {
@@ -1007,9 +1034,10 @@
     "spriteScale": 0.94,
     "intro_cutin": {
       "title": "儚げな元スタッフ",
-      "line": "……煙みたいに、もう遠い昔だけどね",
+      "line": "……煙みたいに、／もう遠い昔だけどね",
       "face": "normal",
-      "color": "#cc8fa7"
+      "color": "#cc8fa7",
+      "motion": "soft"
     }
   },
   {
@@ -1036,7 +1064,8 @@
       "title": "斧投げBarの店主",
       "line": "斧に仕事をさせな",
       "face": "normal",
-      "color": "#bd6547"
+      "color": "#bd6547",
+      "motion": "sharp"
     }
   },
   {
@@ -1057,7 +1086,8 @@
       "title": "笑顔のボドゲカフェ店長",
       "line": "では、その選択で",
       "face": "normal",
-      "color": "#589579"
+      "color": "#589579",
+      "motion": "soft"
     }
   }
 ]

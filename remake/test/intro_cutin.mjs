@@ -25,9 +25,12 @@ try {
     ["hiyori", "kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "ageha", "unknown"].map((id) => [id, T.introFlavor(id)]),
   ));
   assert.deepEqual(flavorCases.hiyori, { main: "マンゴー", small: "ハバネロ" });
-  for (const id of ["kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "unknown"]) {
-    assert.equal(flavorCases[id], null, `${id}: 未確定の好みを表示しない`);
+  for (const id of ["oneesan", "unknown"]) {
+    assert.equal(flavorCases[id], null, `${id}: 未確定・正体を伏せる好みを表示しない`);
   }
+  assert.deepEqual([flavorCases.kuze, flavorCases.steve, flavorCases.master_hookah, flavorCases.sheikh, flavorCases.maezono],
+    [{ main: "アフサール アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "ミント／ダブルアップル" }],
+    "正本で決まっている好みを表示する");
   assert.equal(await page.evaluate(() => T.introFlavor("__proto__")), null, "未登録の特殊IDを表示しない");
   assert.deepEqual(flavorCases.ageha, { main: "ホワイトグミベア／レッドグミベア" });
   assert.equal(await page.evaluate(() => T.introFlavor("ageha", "unknown")), null, "正体不明版で好みを表示しない");
@@ -36,7 +39,7 @@ try {
   for (const id of ids) {
     await page.evaluate((id) => { T.core.state.met[id] = true; T.done = T.intro.playIntro(id); }, id);
     await page.waitForSelector(`.cutin.in[data-char="${id}"]`);
-    await page.waitForTimeout(1300); // 一言が出そろうまで
+    await page.waitForTimeout(1900); // 一言とフレーバーが出そろうまで（静の型が最も遅い）
     const box = await page.evaluate(() => {
       const stage = document.querySelector("#stage").getBoundingClientRect();
       const k = stage.width / 1280;
@@ -59,7 +62,7 @@ try {
       assert.equal(box.flavor.text, `好きなフレーバー${expectedFlavor.main}${expectedFlavor.small || ""}`);
       assert(box.flavor.left >= 0 && box.flavor.right <= 1280 && box.flavor.top >= 0 && box.flavor.bottom <= 720,
         `${id}: フレーバー札が画面からはみ出す ${JSON.stringify(box.flavor)}`);
-      assert(box.flavor.bottom < box.line.top, `${id}: フレーバー札とセリフが重なる`);
+      assert(box.line.bottom < box.flavor.top, `${id}: フレーバーは一言の下に重ならず置く`);
     }
     assert(box.name.right <= 1280 - 40, `${id}: 名前「${box.name.text}」が右端に詰まりすぎ`);
     assert.equal(await page.locator('.cutin .ci-full').count(), 0, `${id}: 括弧付きの本名が表示されている`);

@@ -1,5 +1,8 @@
 // 本編の初日と独立試遊が使う同じ街・同じ台本。セーブ操作を含めない。
 import { DB } from "../core/data.js";
+// 台本の読み込みは core/chapter-data.js（#2035）。既存の呼び出し元のために再エクスポートする。
+import { readDialogues } from "../core/chapter-data.js";
+export { readDialogues };
 import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, STRAWBERRY_TRIAL_IDS } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES } from "../core/affinity-stages.js";
 
@@ -22,22 +25,6 @@ const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ry
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
 const OUTING_IDS = ["aquarium", "sento", "chain"].flatMap(id => ["look", "visit", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
 const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).flatMap((id) => [`${id}_inside`, `${id}_farewell`]), "return"].map((id) => `ch2_city_${id}`);
-
-export async function readDialogues(name, required) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15000);
-  try {
-    const response = await fetch(`../data/dialogue/${name}.json`, { cache: "no-cache", signal: controller.signal });
-    if (!response.ok) throw new Error(`${name}: HTTP ${response.status}`);
-    const data = await response.json();
-    if (!Array.isArray(data.dialogues)) throw new Error(`${name}: 台本の形式を確認してください`);
-    const dialogues = Object.fromEntries(data.dialogues.map((dialogue) => [dialogue.dialogue_id, dialogue]));
-    for (const id of required) {
-      if (!dialogues[id]?.lines?.length) throw new Error(`${name}: 台本が不足しています ${id}`);
-    }
-    return dialogues;
-  } finally { clearTimeout(timer); }
-}
 
 export async function loadCityDialogues() {
   const dialogues = await readDialogues("ch2_city", CITY_IDS);

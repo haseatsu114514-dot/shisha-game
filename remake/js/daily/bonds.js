@@ -351,8 +351,11 @@ const lastDay = (items) => Math.max(-99, ...items.map((i) => i.day ?? -99));
  * - お誘いは全員あわせて inviteGapDays 日に1回まで。その相手との雑談のあとだけ（最初の連絡は雑談・お誘いは続けない）。
  *   約束のある日は出さず同じ相手の雑談に（物語・恋人の誘いが届く朝と、時刻の合わない日の切り替えは phone.js。バイトの誘いとは重なってよい）。各章の大会当日を除く
  */
-export function friendMessages({ tournamentDay = false } = {}) {
-  if (tournamentDay || state.phase !== "daily" || ![1, 2].includes(state.chapter || 1)) return [];
+export function friendMessages({ tournamentDay = false, sceneChapter = false } = {}) {
+  // sceneChapter: 場面カード式の第3〜5章（chapters/friend-entry.js）から。日常の朝の端末は無いので phase は見ない。
+  // お誘いの約束は第1・2章の calendar.js 専用なので、第3章以降は雑談だけ（#2022）。
+  if (tournamentDay) return [];
+  if (sceneChapter ? ![3, 4, 5].includes(state.chapter) : (state.phase !== "daily" || ![1, 2].includes(state.chapter || 1))) return [];
   const cfg = DB.friends || {};
   const gap = cfg.gapDays || 4;
   const all = friendSent();
@@ -381,7 +384,7 @@ export function friendMessages({ tournamentDay = false } = {}) {
     const invite = f.invite ? { id: `${FRIEND_PREFIX}inv_${id}_d${state.day}`, sender: id, type: "invitation", friend: true,
       private_schedule: "holiday_or_after_close", accept_event: `friend_${id}`, accept_text: f.invite.accept_text,
       messages: f.invite.messages.slice(), decline_response: { text: f.invite.decline } } : null;
-    const inviteTurn = inviteOk && sent.at(-1)?.msg?.type === "chat"; // 雑談→お誘い→雑談…（見送った回は雑談のまま次へ）
+    const inviteTurn = !sceneChapter && inviteOk && sent.at(-1)?.msg?.type === "chat"; // 雑談→お誘い→雑談…（見送った回は雑談のまま次へ）
     for (const m of inviteTurn ? [invite, chat] : [chat]) if (m && !state.limeRead.includes(m.id)) out.push(m);
   }
   return out;

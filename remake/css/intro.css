@@ -11,16 +11,22 @@
 .art-intro .ci-name-line { position:absolute; top:18px; left:0; width:606px; height:148px; display:flex; align-items:center; }
 .cutin.art-intro .ci-name { all:unset; display:inline-block; flex-shrink:0; white-space:nowrap; font-weight:900; line-height:1.03; letter-spacing:-.055em; color:#090e15; transform:skewX(-10deg) scaleX(.86); transform-origin:left center; }
 .cutin.art-intro .ci-portrait { height:auto; translate:none; transform:none; opacity:1; transition:none; z-index:4; pointer-events:none; }
-.art-intro .ci-quote-area { position:absolute; left:634px; top:536px; width:580px; z-index:5; }
-.art-intro .ci-quote-area.has-flavor { top:516px; }
-.art-intro .ci-quote-rule { width:71px; height:4px; background:var(--accent); margin-bottom:16px; }
-.ci-flavor { box-sizing:border-box; display:flex; align-items:baseline; gap:12px; width:max-content; max-width:580px; min-height:37px; padding:3px 9px 4px 11px; border-left:3px solid var(--accent,var(--ci)); background:#101820ed; color:#f8f6ee; white-space:nowrap; font-family:"Intro Gothic",var(--font); }
-.ci-flavor-label { flex:none; font-size:18px; font-weight:700; }
+/* 一言とフレーバーは下端を基準に積む。1行／2行・フレーバー有無で上へ伸びる（2026-10-31） */
+.art-intro .ci-quote-area { position:absolute; left:634px; bottom:80px; width:580px; z-index:5; display:flex; flex-direction:column; align-items:flex-start; }
+.art-intro .ci-quote-area.has-flavor { bottom:34px; }
+.art-intro .ci-quote-rule { width:71px; height:4px; background:var(--accent); margin-bottom:16px; transform-origin:left center; }
+.ci-flavor { box-sizing:border-box; display:flex; align-items:baseline; gap:12px; width:max-content; max-width:580px; min-height:37px; padding:3px 0 4px; color:#f8f6ee; white-space:nowrap; font-family:"Intro Gothic",var(--font); text-shadow:0 1px 6px #0b1016cc; }
+.ci-flavor-label { flex:none; font-size:17px; font-weight:700; color:color-mix(in srgb,var(--accent,var(--ci)) 70%,#fff); }
 .ci-flavor-name { font-size:26px; font-weight:800; letter-spacing:-.035em; }
 .ci-flavor-small { font-size:.6em; }
-.art-intro .ci-flavor { margin-bottom:12px; }
-.cutin.art-intro[data-char="hiyori"] .ci-flavor { color:#67495b; background:#fff8f3f0; }
-.cutin.art-intro .ci-line { all:unset; display:block; white-space:normal; font-size:38px; font-weight:700; letter-spacing:-.02em; line-height:1.36; line-break:strict; overflow-wrap:anywhere; color:#f8f6ee; }
+.art-intro .ci-flavor { margin-top:12px; }
+.art-intro .ci-flash { position:absolute; inset:0; background:#fff; opacity:0; z-index:9; pointer-events:none; }
+/* 名前未知の初遭遇（？？？）は帯を灰色に落とし、二つ名を細く */
+.art-intro[data-variant="unknown"] .ci-ribbon { background:#b4b2aa; }
+.cutin.art-intro[data-variant="unknown"] .ci-title { font-weight:500; }
+.cutin.art-intro[data-char="hiyori"] .ci-flavor { color:#553e50; text-shadow:0 1px 8px #fffaf6; }
+.cutin.art-intro[data-char="hiyori"] .ci-flavor-label { color:#9b6a80; }
+.cutin.art-intro .ci-line { all:unset; display:block; white-space:normal; font-size:42px; font-weight:700; letter-spacing:-.02em; line-height:1.36; line-break:strict; overflow-wrap:anywhere; color:#f8f6ee; }
 .cutin.art-intro .ci-line::before { display:none; }
 .art-intro .ci-line span { display:block; }
 /* ひよりは淡い線香花火。名前の帯と火玉を覆わず、白いブラウスも背景から分ける。 */

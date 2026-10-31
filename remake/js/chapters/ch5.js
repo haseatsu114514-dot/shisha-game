@@ -9,7 +9,7 @@ import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { newSession, openBench, waitBenchReady } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { stepWater } from "../craft/water-view.js";
@@ -374,6 +374,15 @@ async function renderFree(owner) {
     showScreen("none", null);
     hud();
     await lover.readLoverLime();
+    if (current(owner)) await renderStage(owner);
+  }));
+  // 友人からのたまのLIME（#2022）。
+  const friend = await import("./friend-entry.js");
+  if (!current(owner)) return;
+  if (friend.pendingFriendLime().length) actions.push(button(owner, "友人からのLIMEを読む", "friend-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await friend.readFriendLime();
     if (current(owner)) await renderStage(owner);
   }));
   actions.push(button(owner, "博士に連絡する", "contact", async () => {

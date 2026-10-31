@@ -7,7 +7,7 @@ import { gainAffinity } from "../core/stats.js";
 import { visitContacts, tokyoVisitState, playerRegion, characterRegion, syncTokyoVisits,
   proposeTokyoVisit, bookTokyoVisit } from "../core/tokyo-visits.js";
 import { openContactLime } from "../daily/phone.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { pendingLoverLime, readLoverLime } from "./lover-entry.js";
 
 let definitions = null;

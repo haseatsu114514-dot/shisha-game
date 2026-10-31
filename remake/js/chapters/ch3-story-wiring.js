@@ -83,23 +83,9 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
     "ch3_shuraba_mashiro", "ch3_shuraba_samechan", "ch3_shuraba_hiyori", "ch3_shuraba_steve", "tournament_evening_overlap"],
 });
 
-let routesTask = null;
 /** 正本 data/story_routes.json。読み込みに失敗したら次回また取りに行く。 */
-export function loadStoryRoutes() {
-  routesTask ||= (async () => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 15000);
-    try {
-      const response = await fetch("../data/story_routes.json", { cache: "no-cache", signal: controller.signal });
-      if (!response.ok) throw new Error(`story_routes: HTTP ${response.status}`);
-      const routes = await response.json();
-      if (!Array.isArray(routes.heroine_ids) || !Array.isArray(routes.chapters?.["3"]?.optional)
-        || !routes.romance || !routes.near_conflict) throw new Error("story_routes: 形式を確認してください");
-      return routes;
-    } finally { clearTimeout(timer); }
-  })().catch(error => { routesTask = null; throw error; });
-  return routesTask;
-}
+// story_routes.json の読み込みは core/chapter-data.js（#2035）。既存の呼び出し元のために再エクスポートする。
+export { loadStoryRoutes } from "../core/chapter-data.js";
 
 /**
  * canReadOptionalStory に渡す「読み終えた場面」。実際の記録だけから組み立て、好感度や所在からは作らない。

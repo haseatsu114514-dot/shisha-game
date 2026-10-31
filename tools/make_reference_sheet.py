@@ -359,7 +359,7 @@ def make_cfg(cid, chars, light=False):
     entry = chars[cid]
     cut = entry.get("intro_cutin") or {}
     accent = hex_rgb(cut.get("color", "#9bb0d0"))
-    tagline = (cut.get("title"), cut.get("line"))
+    tagline = (cut.get("title"), (cut.get("line") or "").replace("／", "") or None)
     if cid == "minto":
         cfg = dict(MINTO)
     else:

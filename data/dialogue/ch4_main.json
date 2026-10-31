@@ -459,7 +459,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "前夜祭。金色の装束の王煙楼が、客席のざわめきが静まるのを待っていた。"
+          "text": "前夜祭。深紅の装束の王煙楼が、客席のざわめきが静まるのを待っていた。"
         },
         {
           "speaker": "",
@@ -489,7 +489,7 @@
         },
         {
           "speaker": "master_hookah",
-          "face": "normal",
+          "face": "laugh",
           "text": "もっとも、待ちすぎて炭を三度冷ましたことがある。助手の目が怖かった"
         },
         {
@@ -539,7 +539,7 @@
         },
         {
           "speaker": "master_hookah",
-          "face": "normal",
+          "face": "smile",
           "text": "楽しみにしている。私も、君の前で作る"
         }
       ],
@@ -557,7 +557,7 @@
           },
           {
             "speaker": "master_hookah",
-            "face": "normal",
+            "face": "smile",
             "text": "映像より、音が静かだろう"
           }
         ],
@@ -630,7 +630,7 @@
         },
         {
           "speaker": "master_hookah",
-          "face": "normal",
+          "face": "serious",
           "text": "散歩は済んだか。今度は、私も相手だ"
         },
         {
@@ -901,12 +901,12 @@
         },
         {
           "speaker": "master_hookah",
-          "face": "normal",
+          "face": "smile",
           "text": "おめでとう。君の客は、最後まで一度も急かされなかった"
         },
         {
           "speaker": "master_hookah",
-          "face": "normal",
+          "face": "laugh",
           "text": "弟子に先を言われたな。私も、古いレシピを一つ書き直そう"
         },
         {

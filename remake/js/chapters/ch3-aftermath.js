@@ -9,7 +9,7 @@ import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { onDialogueEnter } from "../daily/romance.js";
 import { AGEHA_CONFESSION_SCENES, agehaConfessionDue, beginAgehaConfessionDay, confessionAnswer } from "./ch3-romance-entry.js";
 import { radar } from "../daily/status.js";

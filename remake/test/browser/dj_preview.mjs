@@ -41,9 +41,9 @@ try{
   });
   await page.goto(url);
   assert.equal(await page.locator('#sync-a,#sync-b,.bpm-sync').count(),0);
-  assert.equal(await page.locator('.stage-btn').count(),3);
+  assert.equal(await page.locator('.stage-btn,header').count(),0,'No stage header; stage comes from ?stage=');
   assert.equal(await page.locator('#track-a').textContent(),'Dance Monster');assert.equal(await page.locator('#track-b').textContent(),'Digital Lemonade');
-  assert((await page.locator('main').textContent()).includes('CC BY 4.0'));assert(await page.locator('#judge').isDisabled());
+  assert((await page.locator('main').textContent()).includes('CC BY 4.0'));assert.equal(await page.locator('#judge,#offset,[data-nudge],[data-nudge-ms],[data-pitch],#volume').count(),0,'No small buttons or VOL fader; judging is automatic after 8 bars');
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   // The DJ screen is a fixed 1280×720 stage scaled like the main game; sizes are checked in stage units.
   const stageScale=await page.evaluate(()=>Number(getComputedStyle(document.getElementById('dj-stage')).getPropertyValue('--s'))||1);
@@ -52,16 +52,23 @@ try{
   const art=await page.request.get(artwork);assert(art.ok(),'Generated background must be served');assert((await art.body()).length>10000,'Background must not be an LFS pointer');
   for(const key of ['a','b']){
    assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');
-   for(const control of [`[data-pitch="${key==='a'?0:1},0.01"]`]){const b=await page.locator(control).boundingBox();assert(b.width/stageScale>=43.5&&b.height/stageScale>=43.5,'Touch controls remain at least 44 stage px');}
+   {const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=350&&j.height/stageScale>=350,'Large jog wheels');}
   }
   assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No continuous sync/CUE/tap input workload');
-  if(kind==='pc')await page.locator('#start').click();else await page.locator('#start').tap();
+  assert.equal(await page.locator('#start,#pause,#mute').count(),0,'No prepare/mute/pause controls; first ▶ prepares audio');
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.equal(ready.bpms[0],120);const delta=Math.abs(ready.bpms[1]/120-1);assert(delta>=.0119&&delta<=.0281);assert.notEqual(ready.bpms[1],120);
   for(const deck of [0,1]){
-   const plus=page.locator(`[data-pitch="${deck},0.01"]`),minus=page.locator(`[data-pitch="${deck},-0.01"]`);
-   const before=await snap(page);if(kind==='pc')await plus.click();else await plus.tap();
+   const jog=page.locator('#platter-'+(deck?'b':'a'));
+   const before=await snap(page);await jog.focus();await jog.press('ArrowRight');
    const after=await snap(page);near(after.bpms[deck],before.bpms[deck]+.01,.000001);assert.deepEqual(after.playing,[false,false]);assert.equal(after.bpms[1-deck],before.bpms[1-deck]);
-   if(kind==='pc')await minus.click();else await minus.tap();near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+   await jog.press('ArrowLeft');near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+   if(kind==='pc'){ // Real mouse drag on the outer rim: clockwise raises BPM, centre does nothing.
+    const r=await jog.boundingBox(),cx=r.x+r.width/2,cy=r.y+r.height/2,R=r.width/2*.85;
+    await page.mouse.move(cx,cy);await page.mouse.down();await page.mouse.move(cx+20,cy+5);await page.mouse.up();near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+    await page.mouse.move(cx,cy-R);await page.mouse.down();for(let t=1;t<=13;t++){const a=t*5*Math.PI/180;await page.mouse.move(cx+R*Math.sin(a),cy-R*Math.cos(a));}await page.mouse.up();
+    const turned=await snap(page);near(turned.bpms[deck],before.bpms[deck]+.05,.000001);
+    await jog.focus();for(let n=0;n<5;n++)await jog.press('ArrowLeft');near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
+   }
   }
   // Genuine native input, not setter/evaluate/forceclick.
   await page.locator('#tempo-b').focus();
@@ -82,14 +89,14 @@ try{
    await page.locator('#crossfader').focus();await page.locator('#crossfader').press('End');await wait(page,'transfer',errors,19000);
    const mixed=await snap(page);near(mixed.bpms[1],manual,.001);assert.equal(mixed.master,1);assert.equal(mixed.mix,1);assert(!('last'in mixed));
   }else{
-   const before=await snap(page);await page.locator('#offset').tap();const offset=await snap(page);near(offset.beats[1]-before.beats[1]-(offset.clock-before.clock)*manual/60,.5);
-   for(let n=0;n<8;n++)await page.locator('[data-nudge="1,-0.0625"]').tap();const corrected=await snap(page);near(corrected.beats[1]-offset.beats[1]-(corrected.clock-offset.clock)*manual/60,-.5);
+   const jogB=page.locator('#platter-b');await jogB.focus();const before=await snap(page);for(let n=0;n<8;n++)await jogB.press('Shift+ArrowRight');const offset=await snap(page);near(offset.beats[1]-before.beats[1]-(offset.clock-before.clock)*manual/60,.5);
+   for(let n=0;n<8;n++)await jogB.press('Shift+ArrowLeft');const corrected=await snap(page);near(corrected.beats[1]-offset.beats[1]-(corrected.clock-offset.clock)*manual/60,-.5);
    const input=page.locator('#crossfader');await input.scrollIntoViewIfNeeded();const r=await input.boundingBox();await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2);near((await snap(page)).mix,.5,.1);near((await snap(page)).bpms[1],manual,.001);
   }
-  assert(await page.evaluate(()=>{const v=document.querySelector('.visual-slot').getBoundingClientRect(),box=document.querySelector('.console').getBoundingClientRect();return v.width<=180&&v.height<=160&&v.top>=box.bottom;}),'VJ small window stays below controls');
+  assert(await page.evaluate(()=>{const v=document.querySelector('.visual-slot'),w=document.querySelector('.waves');return w.contains(v)&&Number(getComputedStyle(v).opacity)<=.4&&getComputedStyle(v).pointerEvents==='none';}),'Dot-art VJ sits faintly behind the waveform');
   if(kind==='reduced')assert((await page.locator('#visual-label').textContent()).includes('静止'));
-  await page.locator('#pause').click();const stopped=await snap(page);assert.deepEqual(stopped.playing,[false,false]);assert.equal(stopped.voices,0);await page.waitForTimeout(100);assert.deepEqual((await snap(page)).beats,stopped.beats);
-  await page.locator('#start').click();await wait(page,'audio',errors);const resumed=await snap(page);assert.deepEqual(resumed.playing,[true,true]);near(resumed.bpms[1],stopped.bpms[1],.001);assert.equal(resumed.voices,2);assert.deepEqual(errors,[]);
+  await page.locator('#play-a').click();await page.locator('#play-b').click();const stopped=await snap(page);assert.deepEqual(stopped.playing,[false,false]);assert.equal(stopped.voices,0);await page.waitForTimeout(100);assert.deepEqual((await snap(page)).beats,stopped.beats);
+  await page.locator('#play-a').click();await page.locator('#play-b').click();await wait(page,'audio',errors);const resumed=await snap(page);assert.deepEqual(resumed.playing,[true,true]);near(resumed.bpms[1],stopped.bpms[1],.001);assert.equal(resumed.voices,2);assert.deepEqual(errors,[]);
   await page.screenshot({path:path.join(out,`visual-${kind}.png`),fullPage:true});
   results.push({kind,ready,pitched,entered,stopped,resumed,passed:true,limits:'Real WebAudio/UI only; physical listening/capture excluded'});await context.close();
  }

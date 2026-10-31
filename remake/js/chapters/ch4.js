@@ -10,7 +10,6 @@ import { radar } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
-import { readDialogues } from "./ch2-city-data.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
   CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
@@ -23,7 +22,8 @@ import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionC
 import { playChapterPreview } from "./chapter-preview.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
-import { loadStoryRoutes, TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
+import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
+import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
   chapterFourEveningRecord } from "./ch4-story-wiring.js";
 
@@ -261,6 +261,14 @@ async function loverActions(owner, { home = false } = {}) {
     await lover.readLoverLime({ exclude });
     if (current(owner)) await renderStage(owner);
   }));
+  // 友人からのたまのLIME（#2022）。同行者は一緒にいるので送ってこない。
+  const friend = await import("./friend-entry.js");
+  if (friend.pendingFriendLime({ exclude }).length) actions.push(button(owner, "友人からのLIMEを読む", "friend-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await friend.readFriendLime({ exclude });
+    if (current(owner)) await renderStage(owner);
+  }));
   const [id] = home ? lover.loverMilestonesDue((state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who))) : [];
   if (id) actions.push(button(owner, `${displayName(id, state, { context: "private" })}と過ごす`, "lover-milestone", async () => {
     showScreen("none", null);
@@ -384,8 +392,10 @@ async function runTournament(owner) {
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;
   }
-  const { runChapterFourCraft } = await import("./ch4-tournament.js");
+  const [{ runChapterFourCraft }, { playEntrance }] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js")]);
   if (!current(owner)) return;
+  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。
+  if (!chapterFourProgress(state).match?.craft) { await playEntrance(4); if (!current(owner)) return; }
   const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
   if (!current(owner)) return;
   if (!result) { await renderTournament(owner); return; }
