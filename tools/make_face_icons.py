@@ -12,6 +12,8 @@ assets/sprites/characters/{id}/chr_{id}_normal.png の頭部を切り出し、
     python3 tools/make_face_icons.py rin samechan # 指定キャラだけ生成（立ち絵を差し替えたキャラだけ更新する）
 """
 
+import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -34,7 +36,9 @@ COLORS = 256       # パレット色数（32色では瞳の色・肌の階調が
 # 背景込み一枚絵のキャラは abs 指定（画像全体に対する顔中心 cx/cy と辺 side の比）。
 DEFAULT = {"f": 0.20, "dx": 0.0, "dy": 0.0}
 TUNE = {
-    "hiyori": {"abs": True, "cx": 0.46, "cy": 0.23, "side": 0.18},  # 採用立ち絵の顔を中央に合わせ、髪の余白を保つ。
+    "hiyori": {"abs": True, "cx": 0.46, "cy": 0.23, "side": 0.18},
+    # 2026-10-31 上げた腕で頭部の重心がずれ、顔が端に寄っていた（SBD83）。立ち絵の顔（目 x453・y80、頬幅99px）に合わせる
+    "da_silva": {"abs": True, "cx": 0.506, "cy": 0.08, "side": 0.165},  # 採用立ち絵の顔を中央に合わせ、髪の余白を保つ。
     # マスコット。2026-10-09 に目・口・蝶ネクタイまで寄せたが、頭の巻き毛が切れたため（#575）、巻き毛の先から蝶ネクタイまで収める
     "pakki":   {"f": 0.70, "dx": -0.03, "dy": 0.12},
     # 2026-10-04 顔の大きさを全キャラで揃える（オーナー「顔のサイズ近くなるように」）。
@@ -120,9 +124,22 @@ def make_icon(char_id: str, src: Path) -> Image.Image | None:
     return out
 
 
+SOURCES = OUT_DIR / "sources.json"
+
+
+def sprite_blob(src: Path) -> str:
+    """立ち絵の git 上の版（ls-files の blob SHA）。未登録なら中身の hash-object"""
+    rel = str(src.relative_to(REPO_ROOT))
+    out = subprocess.run(["git", "ls-files", "-s", "--", rel], cwd=REPO_ROOT, capture_output=True, text=True).stdout.split()
+    if len(out) >= 2:
+        return out[1]
+    return subprocess.run(["git", "hash-object", rel], cwd=REPO_ROOT, capture_output=True, text=True).stdout.strip()
+
+
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     icons = {}
+    sources = json.loads(SOURCES.read_text(encoding="utf-8")) if SOURCES.exists() else {}
     only = {a for a in sys.argv[1:] if not a.startswith("--")}
     jobs = []
     for char_dir in sorted(CHARS_DIR.iterdir()):
@@ -148,7 +165,11 @@ def main() -> None:
         dest = OUT_DIR / f"face_{cid}.png"
         icon.save(dest, optimize=True)
         icons[cid] = icon
+        sources[f"face_{cid}.png"] = {"sprite": str(src.relative_to(REPO_ROOT)), "blob": sprite_blob(src)}
         print(f"wrote {dest} ({dest.stat().st_size:,} bytes)")
+    # どの立ち絵（の版）から作ったかを残す（SBD83「旧デザインを根絶」）。立ち絵を描き直したのにアイコンを作り直し忘れると
+    # remake/test/face_icons_fresh.mjs が落ちる。blob は git の登録内容（LFS ならポインタ）の SHA で、手元と CI で同じ値になる
+    SOURCES.write_text(json.dumps(dict(sorted(sources.items())), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
     if "--sheet" in sys.argv[1:]:
         scale = 4
