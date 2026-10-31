@@ -1539,3 +1539,29 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-zoom { position: absolute; right: 10px; top: 10px; display: flex; gap: 6px; z-index: 2; }
 .gb-zoom .gb-icon { width: auto; min-width: 30px; height: 30px; padding: 0 9px; border-radius: 15px; font-size: 14px; line-height: 1; background: rgba(10, 6, 16, 0.8); }
 .gb-zoom .gb-icon:disabled { opacity: 0.35; cursor: default; }
+/* 盤の間隔を広げた（SBD78）: 世界の大きさは JS が決める。結界は道を横切る大きさで、暗い帯の上に置く */
+.gb-wall-back { fill: rgba(6, 4, 10, 0.82); stroke: rgba(244, 210, 122, 0.35); stroke-width: 1; }
+.gb-seal { stroke-width: 3.5; }
+.gb-seal-lock { stroke-width: 2.5; }
+.gb-path.sealed { stroke-width: 3; }
+/* 札を一段大きく（SBD78）: 間隔 84px に合わせる。能力 30・要 40・スキル 44/52/62・授業 64（要の授業 70）・関門 40・極み 60 */
+.gb-node .gb-face { width: 30px; height: 30px; font-size: 16px; }
+.gb-node.notable .gb-face { width: 38px; height: 38px; font-size: 17px; }
+.gb-node.skill .gb-face { width: 50px; height: 45px; font-size: 17px; }
+.gb-node.skill.sz-s .gb-face { width: 42px; height: 38px; font-size: 15px; }
+.gb-node.skill.sz-l .gb-face { width: 58px; height: 52px; font-size: 20px; }
+.gb-node.lesson .gb-face { width: 58px; height: 52px; }
+.gb-node.lesson.sig .gb-face { width: 64px; height: 57px; }
+.gb-node.gate .gb-face { width: 30px; height: 30px; font-size: 14px; }
+.gb-node.peak .gb-face { width: 42px; height: 42px; font-size: 18px; }
+.gboard.has-art .gb-node.notable .gb-face { width: 42px; height: 42px; }
+.gboard.has-art .gb-node.skill .gb-face { width: 52px; height: 52px; }
+.gboard.has-art .gb-node.skill.sz-s .gb-face { width: 44px; height: 44px; }
+.gboard.has-art .gb-node.skill.sz-l .gb-face { width: 62px; height: 62px; }
+.gboard.has-art .gb-node.lesson .gb-face { width: 64px; height: 64px; }
+.gboard.has-art .gb-node.lesson.sig .gb-face { width: 70px; height: 70px; }
+.gboard.has-art .gb-node.lesson .gb-face-icon { inset: 12px; width: calc(100% - 24px); height: calc(100% - 24px); }
+.gboard.has-art .gb-node.gate .gb-face { width: 40px; height: 40px; }
+.gboard.has-art .gb-node.peak .gb-face { width: 60px; height: 60px; }
+.gb-cost { min-width: 18px; height: 18px; border-radius: 9px; font-size: 12px; }
+.gb-mystery { width: 19px; height: 19px; font-size: 13px; }

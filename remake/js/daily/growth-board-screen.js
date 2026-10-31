@@ -18,7 +18,11 @@ import {
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488。紋は下の端 380,452。横13×縦9 の方眼で上へ育つ。SBD62）
 
-const W = 760, H = 488, CX = 380, CY = 452, CELL = 52;
+// 盤の世界の大きさ（SBD78）: マスの間隔 CELL を広げ、札の大きさはそのまま。のぞき窓（760×488）より大きいので、スクロールで動かす。
+// 横は −GRID.w〜GRID.w、縦は −GRID.h〜0（紋の段）。まわりに余白 PAD
+const CELL = 84, PAD = 64;
+const W = GRID.w * 2 * CELL + PAD * 2, H = GRID.h * CELL + PAD * 2, CX = W / 2, CY = H - PAD;
+const VIEW_W = 760, VIEW_H = 488;
 // 紋の場所は盤ごとに違う（SBD65）。座標は紋からのずれなので、HUB_AT（方眼の座標）を足して描く
 let drawBoard = "body";
 const hubAt = (b = drawBoard) => HUB_AT[b].split(",").map(Number);
@@ -74,13 +78,14 @@ export function openBoard({ place = null } = {}) {
   const reveal = el("div.gb-reveal", { "aria-hidden": "true" });
   const nodeLayer = el("div.gb-nodes");
   // 盤は拡大して始め、ドラッグ・スクロールで動かし、Ctrl＋ホイール・つまむ・＋−で倍率を変える（2026-10-31 オーナー「もう少し拡大したところから始めたい。
-  // 移動は好きにできるしスクロールで先のも見れる」SBD77）。stage は W×H のまま scale し、world がその大きさを持つので、中身の座標はそのまま
-  const stage = el("div.gb-stage", [reveal, boardSvg, nodeLayer]);
+  // 移動は好きにできるしスクロールで先のも見れる」SBD77）。拡大すると札が重なってずれて見えたので（SBD78）、マスの間隔を広げた世界（W×H）を
+  // 等倍で始め、縮める方向だけ scale する。「全体」は盤がのぞき窓に収まる倍率
+  const stage = el("div.gb-stage", { style: { width: `${W}px`, height: `${H}px` } }, [reveal, boardSvg, nodeLayer]);
   const world = el("div.gb-world", [stage]);
   const viewport = el("div.gb-board", { dataset: { test: "board-viewport" } }, [world]);
   const zoomBar = el("div.gb-zoom", { "aria-label": "盤の倍率" });
   const boardWrap = el("div.gb-board-wrap", [viewport, zoomBar]);
-  const ZOOM_START = 1.55, ZOOM_MIN = 1, ZOOM_MAX = 2.4;
+  const ZOOM_MIN = Math.min(VIEW_W / W, VIEW_H / H), ZOOM_START = 1, ZOOM_MAX = 1.5;
   let zoom = ZOOM_START;
   const side = el("div.gb-side", { dataset: { test: "board-preview" }, "aria-live": "polite" });
   const footer = el("div.gb-footer");
@@ -97,7 +102,7 @@ export function openBoard({ place = null } = {}) {
   /** 倍率を変える。anchor は盤の中で動かさない点（盤の座標。省略で見えている所の真ん中） */
   function setZoom(z, anchor = null) {
     const next = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z));
-    const vw = viewport.clientWidth || W, vh = viewport.clientHeight || H;
+    const vw = viewport.clientWidth || VIEW_W, vh = viewport.clientHeight || VIEW_H;
     const a = anchor || { x: (viewport.scrollLeft + vw / 2) / zoom, y: (viewport.scrollTop + vh / 2) / zoom };
     zoom = next;
     world.style.width = `${Math.round(W * zoom)}px`; world.style.height = `${Math.round(H * zoom)}px`;
@@ -109,15 +114,15 @@ export function openBoard({ place = null } = {}) {
   }
   /** 紋が見える所へ（開いた時・盤を切り替えた時） */
   function centerOnHub() {
-    const hub = at(0, 0), vw = viewport.clientWidth || W, vh = viewport.clientHeight || H;
+    const hub = at(0, 0), vw = viewport.clientWidth || VIEW_W, vh = viewport.clientHeight || VIEW_H;
     viewport.scrollLeft = hub.x * zoom - vw / 2;
     viewport.scrollTop = hub.y * zoom - vh * 0.72;
   }
   function renderZoomBar() {
     zoomBar.replaceChildren(
-      el("button.gb-icon.gb-zoom-btn", { text: "−", title: "縮小", "aria-label": "縮小", dataset: { test: "board-zoom-out" }, disabled: zoom <= ZOOM_MIN + 0.01, onclick: () => setZoom(zoom - 0.3) }),
+      el("button.gb-icon.gb-zoom-btn", { text: "−", title: "縮小", "aria-label": "縮小", dataset: { test: "board-zoom-out" }, disabled: zoom <= ZOOM_MIN + 0.01, onclick: () => setZoom(zoom - 0.2) }),
       el("button.gb-icon.gb-zoom-btn", { text: "全体", title: "盤の全体を見る", "aria-label": "全体", dataset: { test: "board-zoom-fit" }, disabled: zoom <= ZOOM_MIN + 0.01, onclick: () => setZoom(ZOOM_MIN) }),
-      el("button.gb-icon.gb-zoom-btn", { text: "＋", title: "拡大", "aria-label": "拡大", dataset: { test: "board-zoom-in" }, disabled: zoom >= ZOOM_MAX - 0.01, onclick: () => setZoom(zoom + 0.3) }),
+      el("button.gb-icon.gb-zoom-btn", { text: "＋", title: "拡大", "aria-label": "拡大", dataset: { test: "board-zoom-in" }, disabled: zoom >= ZOOM_MAX - 0.01, onclick: () => setZoom(zoom + 0.2) }),
     );
   }
   // ドラッグで動かす（マウス・ペン）。少し動いたらクリックにしない。指はブラウザのスクロールに任せ、2本指はつまんで倍率
@@ -244,8 +249,10 @@ export function openBoard({ place = null } = {}) {
         if (closedA !== closedB) {
           const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, horiz = a.y === b.y;
           const wall = svg("g", { class: "gb-wall", transform: `translate(${mx} ${my}) rotate(${horiz ? 90 : 0})`, "data-test": "board-wall" });
-          if (root.classList.contains("has-art")) wall.append(svg("image", { href: `${ART_DIR}wall_seal.webp`, x: -27, y: -9, width: 54, height: 18, class: "gb-wall-art" }));
-          else wall.append(svg("line", { x1: -14, y1: -4, x2: 14, y2: -4, class: "gb-seal" }), svg("line", { x1: -14, y1: 4, x2: 14, y2: 4, class: "gb-seal" }), svg("circle", { cx: 0, cy: 0, r: 4, class: "gb-seal-lock" }));
+          // 結界は道を横切る大きさ（SBD78「鍵の進めないとこが小さくて見づらい」）。下に暗い帯を敷いて、どの背景でも浮かせる
+          wall.append(svg("rect", { x: -40, y: -15, width: 80, height: 30, rx: 15, class: "gb-wall-back" }));
+          if (root.classList.contains("has-art")) wall.append(svg("image", { href: `${ART_DIR}wall_seal.webp`, x: -42, y: -14, width: 84, height: 28, class: "gb-wall-art" }));
+          else wall.append(svg("line", { x1: -30, y1: -6, x2: 30, y2: -6, class: "gb-seal" }), svg("line", { x1: -30, y1: 6, x2: 30, y2: 6, class: "gb-seal" }), svg("circle", { cx: 0, cy: 0, r: 7, class: "gb-seal-lock" }));
           const tip = svg("title"); tip.textContent = "この先は物語が進むと開く"; wall.prepend(tip);
           walls.push(wall);
         }

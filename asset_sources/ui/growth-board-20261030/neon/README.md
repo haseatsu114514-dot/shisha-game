@@ -16,7 +16,7 @@
 | frame_skill / frame_lesson（2026-10-31 に飾り枠へ作り直し。前の版は `frame_lesson_v1.png`） / frame_gate / frame_peak / frame_seal.webp | 192² / 160² / 208² 透過 | スキル・授業・関門・極み・封の札（`.gb-face` の背景。文字・顔はコード） |
 | hidane_any / body / sense / wisdom.webp | 96² 透過 | 火種の粒（下の帯 `.gb-hidane i`） |
 | panel_frame.webp | 192² 透過 | 右のパネルの縁（9スライス `border-image`） |
-| wall_seal.webp | 192×64 透過 | 開いた所とまだの所の境の結界（SVG の `<image>`。縦の道は90°回す） |
+| wall_seal.webp | 288×96 透過 | 開いた所とまだの所の境の結界（SVG の `<image>`。縦の道は90°回す） |
 | silhouette_unknown.webp | 160² 透過 | 正体を伏せる授業・顔の無い人の影絵 |
 
 画面の組み立て: `growth-board-screen.js` の `loadBoardArt()` が17枚を先読みし、**全部読めた時だけ** `.gboard` に `has-art` を付ける。読めない時は今までの図形（CSS/SVG）のまま動く。規則・データ・`data-test` は変えていない。
