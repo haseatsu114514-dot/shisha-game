@@ -17,10 +17,11 @@ ROOT = HERE.parents[3]
 SRC = ROOT / "remake" / "img" / "sprites" / "characters"
 OUT = ROOT / "remake" / "img" / "ui" / "growth_board" / "faces"
 SIZE = 160
-SIDE_PER_FACE = 2.6   # 切り出す正方形の一辺 ÷ 顔の幅
-EYE_AT = 0.5          # 切り出した正方形の上から目の高さまでの割合（ふつう）
-HEAD_ROOM = 0.04      # 頭のてっぺん（髪・角・帽子）の上に残す余白（一辺に対する比）
-# 2026-10-31 オーナー「アイコンが上の頭切れてる（みんとの角など）」SBD84: 頭のてっぺんが入らない人だけ、目を下げて頭を入れる
+SIDE_PER_FACE = 1.75  # 切り出す正方形の一辺 ÷ 顔の幅（2026-10-31 オーナー「もっと顔拡大したい」SBD87 で 2.6→1.75。札では枠が上に重なる）
+EYE_AT = 0.44         # 切り出した正方形の上から目の高さまでの割合（ふつう）
+EYE_AT_MAX = 0.5      # 頭を入れるために目を下げてよい上限
+HEAD_ROOM = 0.02      # 頭のてっぺん（髪・角・帽子）の上に残す余白（一辺に対する比）
+# 札では金の枠が顔の上に重なるので（SBD87）、髪の先が枠の下に隠れるのは切れて見えない。目は下げすぎない（SBD84 の頭切れは EYE_AT_MAX までで受ける）
 
 EYES = {
     "sumi": (442, 198, 99), "minto": (492, 375, 99), "adam": (436, 218, 90), "tsumugi": (423, 433, 95),
@@ -46,7 +47,7 @@ def crop(who):
     im = Image.open(SRC / who / f"chr_{who}_normal.webp").convert("RGBA")
     side = round(fw * SIDE_PER_FACE)
     top = head_top(im, ex, ey, fw)
-    eye_at = max(EYE_AT, (ey - top) / side + HEAD_ROOM)
+    eye_at = min(EYE_AT_MAX, max(EYE_AT, (ey - top) / side + HEAD_ROOM))
     x0, y0 = round(ex - side / 2), round(ey - side * eye_at)
     canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
     canvas.paste(im.crop((max(0, x0), max(0, y0), x0 + side, y0 + side)), (max(0, -x0), max(0, -y0)))

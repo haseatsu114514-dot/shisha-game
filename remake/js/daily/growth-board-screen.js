@@ -54,7 +54,7 @@ const PORTRAIT_EYES = {
 };
 const BOARD_FACES = new Set(Object.keys(PORTRAIT_EYES));
 /** 右のパネルの立ち絵: 顔の幅をこの px に、目をパネルの上からこの px に */
-const PANEL_FACE_W = 66, PANEL_EYE_Y = 58;
+const PANEL_FACE_W = 82, PANEL_EYE_Y = 64;
 /** 右のパネルの立ち絵の表情（SBD82）。授業は教える人、スキルははじめ。無い表情は portraitInfo が近いものに */
 const PANEL_FACE = {
   "M-B1": "smile", "M-S1": "serious", "M-S2": "intense", "M-S3": "smile", "M-W1": "normal", "M-W2": "thinking", "M-W3": "excited",
