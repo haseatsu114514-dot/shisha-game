@@ -25,9 +25,12 @@ try {
     ["hiyori", "kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "ageha", "unknown"].map((id) => [id, T.introFlavor(id)]),
   ));
   assert.deepEqual(flavorCases.hiyori, { main: "マンゴー", small: "ハバネロ" });
-  for (const id of ["kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "unknown"]) {
-    assert.equal(flavorCases[id], null, `${id}: 未確定の好みを表示しない`);
+  for (const id of ["oneesan", "unknown"]) {
+    assert.equal(flavorCases[id], null, `${id}: 未確定・正体を伏せる好みを表示しない`);
   }
+  assert.deepEqual([flavorCases.kuze, flavorCases.steve, flavorCases.master_hookah, flavorCases.sheikh, flavorCases.maezono],
+    [{ main: "アフサール アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "ミント／ダブルアップル" }],
+    "正本で決まっている好みを表示する");
   assert.equal(await page.evaluate(() => T.introFlavor("__proto__")), null, "未登録の特殊IDを表示しない");
   assert.deepEqual(flavorCases.ageha, { main: "ホワイトグミベア／レッドグミベア" });
   assert.equal(await page.evaluate(() => T.introFlavor("ageha", "unknown")), null, "正体不明版で好みを表示しない");

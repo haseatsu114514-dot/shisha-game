@@ -596,7 +596,7 @@
     "spriteScale": 1.02,
     "intro_cutin": {
       "title": "データの鬼",
-      "line": "データは嘘をつきません",
+      "line": "それ作ったの、俺だもん",
       "face": "smile",
       "color": "#38f0ff",
       "motion": "still"

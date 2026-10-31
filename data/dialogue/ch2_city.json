@@ -154,16 +154,41 @@
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "蒸野くん。地元大会以来だね"
+            "text": "その機材ケース。中身は、HMDかな"
           },
           {
             "speaker": "hajime",
-            "face": "normal",
-            "text": "チャコール博士。審査のあとも、ずっと記録してましたよね"
+            "face": "surprise",
+            "text": "え？ はい。炭を直に載せなくていいし、熱も均一で"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "これ便利ですよね。店でも、ずっと助けられてます"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "でしょ？ それ作ったの、俺だもん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……チャコール博士！ 地元大会で審査してた"
           },
           {
             "type": "set_flag",
             "flag": "_met_dr_kemuri"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "失礼。蒸野くん、地元大会以来だね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "審査のあとも、ずっと記録してましたよね"
           },
           {
             "speaker": "dr_kemuri",
