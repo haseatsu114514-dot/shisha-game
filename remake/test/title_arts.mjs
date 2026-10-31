@@ -1,4 +1,4 @@
-// 実際の起動・再表示、採用した10人39枚、PC/スマホのメニューとセーブ不変を確認。
+// 実際の起動・再表示、採用した10人41枚、PC/スマホのメニューとセーブ不変を確認。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -68,7 +68,7 @@ await suite("title-arts", async (check) => {
   for (const [label, viewport] of [["pc", { width: 1280, height: 720 }], ["mobile", { width: 844, height: 390 }]]) {
     await check(label, async page => {
       const arts = await page.evaluate(() => __remake.DB.manifest.titleArts);
-      assert.equal(arts.length, 39);
+      assert.equal(arts.length, 41);
       const sharkOwner = arts.find(art => art.file.endsWith("_01_shishark_test_run.png")).character;
       assert.deepEqual([...new Set(arts.map(art => art.character))].sort(), ["ageha", "hiyori", sharkOwner, "mashiro", "minto", "rin", "tsumugi", "sumi", "naru", "adam"].sort());
       assert.deepEqual(arts.filter(art => art.character === "hiyori").map(art => art.file).sort(), [
