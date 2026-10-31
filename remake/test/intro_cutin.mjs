@@ -22,15 +22,22 @@ try {
   });
   assert(ids.length >= 20, `カットインのデータが少ない（${ids.length}人）`);
   const flavorCases = await page.evaluate(() => Object.fromEntries(
-    ["hiyori", "kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "ageha", "unknown"].map((id) => [id, T.introFlavor(id)]),
+    ["hiyori", "samechan", "kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "ageha", "unknown"].map((id) => [id, T.introFlavor(id)]),
   ));
   assert.deepEqual(flavorCases.hiyori, { main: "マンゴー", small: "ハバネロ" });
   for (const id of ["oneesan", "unknown"]) {
     assert.equal(flavorCases[id], null, `${id}: 未確定・正体を伏せる好みを表示しない`);
   }
   assert.deepEqual([flavorCases.kuze, flavorCases.steve, flavorCases.master_hookah, flavorCases.sheikh, flavorCases.maezono],
-    [{ main: "アフサール アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "ミント／ダブルアップル" }],
+    [{ main: "アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "ミント／ダブルアップル" }],
     "正本で決まっている好みを表示する");
+  assert.deepEqual(flavorCases.samechan, { main: "スプリングウォーター" });
+  const brandNames = await page.evaluate((ids) => ids.flatMap((id) => {
+    const f = T.introFlavor(id);
+    const text = f ? `${f.main}${f.small || ""}` : "";
+    return /アフサール|ドバジ|ナイトサイド|\bAF\b|\bNS\b/.test(text) ? [`${id}: ${text}`] : [];
+  }), ids);
+  assert.deepEqual(brandNames, [], "カットインの好きなフレーバーにメーカー名を付けない");
   assert.equal(await page.evaluate(() => T.introFlavor("__proto__")), null, "未登録の特殊IDを表示しない");
   assert.deepEqual(flavorCases.ageha, { main: "ホワイトグミベア／レッドグミベア" });
   assert.equal(await page.evaluate(() => T.introFlavor("ageha", "unknown")), null, "正体不明版で好みを表示しない");
