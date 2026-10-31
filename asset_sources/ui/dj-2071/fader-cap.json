@@ -1,0 +1,23 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "prompt": "A single DJ crossfader knob cap viewed straight from above, rectangular with rounded corners, matte black rubber with a glowing coral-red center line and brass side trim, centered, isolated on fully transparent background. Game UI asset for a dark after-hours shisha bar club DJ minigame called RED ROOM. Palette: deep plum-black (#0b0b0e, #19181e, #302c33), neon coral red (#ff6575) for deck A accents, warm amber (#f5bb67) accents, brushed dark metal, subtle hookah smoke motifs. Semi-realistic painted, clean, high detail, no text, no letters, no logos, no watermark.",
+ "size": "1024x1024",
+ "n": 1,
+ "quality": "high",
+ "background": "transparent",
+ "output_format": "png",
+ "created": 1793420052,
+ "usage": {
+  "input_tokens": 145,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 145
+  },
+  "output_tokens": 1756,
+  "output_tokens_details": {
+   "image_tokens": 1756,
+   "text_tokens": 0
+  },
+  "total_tokens": 1901
+ }
+}

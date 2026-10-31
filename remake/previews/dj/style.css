@@ -5,3 +5,12 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
 
 .stages{display:flex;gap:8px;flex-wrap:wrap}.stage-btn,[data-nudge-ms],#judge{min-height:44px}#score-result .rank{font-size:64px}#score-result td{padding:8px}#play-feedback[data-grade="PERFECT"]{color:#aee7d5}#play-feedback[data-grade="GOOD"]{color:#edb775}#play-feedback[data-grade="EARLY"],#play-feedback[data-grade="LATE"]{color:#ed7e88}
+/* Issue #2071: generated DJ art (OpenAI image API). Each image sits above the original CSS look, which remains as fallback. */
+.deck{background:linear-gradient(#0000,#0000),url('../../img/ui/dj/deck-panel.webp') center/cover no-repeat,repeating-linear-gradient(0deg,#ffffff02 0 1px,transparent 1px 3px),linear-gradient(145deg,#302c33,#19181e 65%)}
+.mixer{background:url('../../img/ui/dj/mixer-panel.webp') center/cover no-repeat,linear-gradient(90deg,#141319,#26232b 50%,#141319)}
+.platter{border-color:transparent;background:url('../../img/ui/dj/platter.webp') center/100% 100% no-repeat,repeating-radial-gradient(circle,#131217 0 2px,#26232c 3px,#15131b 4px)}
+.platter:after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#ffffff1c 0 6deg,transparent 14deg 180deg,#ffffff10 186deg,transparent 196deg);transform:rotate(var(--rotation,0deg))}
+.platter span{background:#0c0c10a8;border-color:#6c5c6b99;backdrop-filter:blur(1px);position:relative;z-index:1}
+#crossfader{-webkit-appearance:none;appearance:none;height:44px;background:linear-gradient(#0000 19px,#07070a 19px 25px,#0000 25px),linear-gradient(90deg,#0000 calc(50% - 1px),#f5bb6766 calc(50% - 1px) calc(50% + 1px),#0000 calc(50% + 1px))}
+#crossfader::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:34px;border:0;border-radius:4px;background:url('../../img/ui/dj/fader-cap.webp') center/contain no-repeat,#1b1a1f;box-shadow:0 3px 6px #000a}
+#crossfader::-moz-range-thumb{width:30px;height:34px;border:0;border-radius:4px;background:url('../../img/ui/dj/fader-cap.webp') center/contain no-repeat,#1b1a1f;box-shadow:0 3px 6px #000a}

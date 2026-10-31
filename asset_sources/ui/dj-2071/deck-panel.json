@@ -1,0 +1,23 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "prompt": "Seamless flat front panel texture for a DJ deck unit, matte dark plum-black brushed metal with faint scanline texture, subtle screw heads at the four corners, a very faint embossed hookah silhouette pattern, soft coral and amber rim light at the top edge. Flat straight-on, no knobs, no objects, mostly empty dark surface for overlaying controls. Game UI asset for a dark after-hours shisha bar club DJ minigame called RED ROOM. Palette: deep plum-black (#0b0b0e, #19181e, #302c33), neon coral red (#ff6575) for deck A accents, warm amber (#f5bb67) accents, brushed dark metal, subtle hookah smoke motifs. Semi-realistic painted, clean, high detail, no text, no letters, no logos, no watermark.",
+ "size": "1024x1536",
+ "n": 1,
+ "quality": "high",
+ "background": "opaque",
+ "output_format": "png",
+ "created": 1793420049,
+ "usage": {
+  "input_tokens": 176,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 176
+  },
+  "output_tokens": 1372,
+  "output_tokens_details": {
+   "image_tokens": 1372,
+   "text_tokens": 0
+  },
+  "total_tokens": 1548
+ }
+}
