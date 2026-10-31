@@ -1,0 +1,23 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "prompt": "Narrow vertical DJ mixer faceplate texture, straight-on flat, dark brushed gunmetal with plum tint, engraved thin channel lines, tiny screw heads in corners, a small engraved hookah ornament near the bottom, faint warm amber glow. Mostly empty surface, no knobs, no sliders, no text. Game UI asset for a dark after-hours shisha bar club DJ minigame called RED ROOM. Palette: deep plum-black (#0b0b0e, #19181e, #302c33), neon coral red (#ff6575) for deck A accents, warm amber (#f5bb67) accents, brushed dark metal, subtle hookah smoke motifs. Semi-realistic painted, clean, high detail, no text, no letters, no logos, no watermark.",
+ "size": "1024x1536",
+ "n": 1,
+ "quality": "high",
+ "background": "opaque",
+ "output_format": "png",
+ "created": 1793420050,
+ "usage": {
+  "input_tokens": 164,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 164
+  },
+  "output_tokens": 1372,
+  "output_tokens_details": {
+   "image_tokens": 1372,
+   "text_tokens": 0
+  },
+  "total_tokens": 1536
+ }
+}
