@@ -175,6 +175,24 @@
       "echo": "（REIさんの話を待つうちに、俺も自分の感想を急がなくなった）"
     },
     {
+      "id": "kumicho_taste_first",
+      "char_id": "kumicho",
+      "dialogue_id": "ch2_kumicho_fifth",
+      "echo": "（神崎さんは、怒鳴る前に若い人の煙を一緒に吸った）"
+    },
+    {
+      "id": "kumicho_cup",
+      "char_id": "kumicho",
+      "dialogue_id": "ch2_kumicho_sixth",
+      "echo": "（神崎煙草店の棚には、俺の湯呑みもある）"
+    },
+    {
+      "id": "rei_reach",
+      "char_id": "rei",
+      "dialogue_id": "ch2_rei_sixth",
+      "echo": "（REIさんの「嘘」を、最初に吸ったのは俺だった）"
+    },
+    {
       "id": "volk_measure",
       "char_id": "volk",
       "dialogue_id": "ch3_volk_first",

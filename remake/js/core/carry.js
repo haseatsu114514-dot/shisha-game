@@ -80,8 +80,8 @@ export const STATE_KEY_RULES = {
 // data/equipment.json の gift フィールドが付いた装備 = キャラから贈られた専用ハガル。
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
-  "suyaki_adam", "suyaki_hiyori", "suyaki_minto", "suyaki_naru",
-  "suyaki_rin", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
+  "suyaki_adam", "suyaki_hiyori", "suyaki_kumicho", "suyaki_minto", "suyaki_naru",
+  "suyaki_rei", "suyaki_rin", "suyaki_samechan", "suyaki_sumi", "suyaki_tsumugi",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -151,7 +151,13 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_no_audience", "progression"],
   ["_ch2_preparation_started", "progression"],
   ["_ch2_preview_seen", "progression"],
+  ["_ch2_read_ch2_kumicho_fifth", "person"],
+  ["_ch2_read_ch2_kumicho_sixth", "person"],
+  ["_ch2_read_ch2_kumicho_third", "person"],
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
+  ["_ch2_read_ch2_rei_fifth", "person"],
+  ["_ch2_read_ch2_rei_fourth", "person"],
+  ["_ch2_read_ch2_rei_sixth", "person"],
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
   ["_ch2_read_ch2_tournament_ageha_heart", "person"],
@@ -306,8 +312,10 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_adam", "person"],
   ["_lime_contact_ageha", "person"],
   ["_lime_contact_hiyori", "person"],
+  ["_lime_contact_kumicho", "person"],
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
+  ["_lime_contact_rei", "person"],
   ["_lime_contact_rin", "person"],
   ["_lime_contact_samechan", "person"],
   ["_lime_contact_tsumugi", "person"],

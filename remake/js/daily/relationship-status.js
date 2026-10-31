@@ -9,6 +9,7 @@ import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
   rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
+  kumicho: "神崎煙草店", rei: "零-ZERO-",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
