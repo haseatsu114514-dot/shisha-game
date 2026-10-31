@@ -74,7 +74,7 @@ assert(tday.indexOf('state.tournament.victory = { step: 0, revealed: false };') 
 const eve = chapter.slice(chapter.indexOf('if (progress.choice === "sleep_early") {'), chapter.indexOf('setFlag("_ev_last_night");\n  save();'));
 assert(eve.includes('delete state.flags._cold_pending;') && eve.includes('state.flags._eve_slept = state.day;'));
 assert.match(read('remake/js/daily/calendar.js'), /busyNight: metTonight \|\| rested \|\| state\.flags\._eve_slept === state\.day/);
-assert.match(read('remake/js/daily/phone.js'), /function sumiBaitoInvite\(\{ tournamentDay = false, fixedNight = null \} = \{\}\) \{\n[^\n]*\n  if \(fixedNight\?\.\(state\.day\)\) return null;/);
+assert.match(read('remake/js/daily/phone.js'), /function sumiBaitoInvite\(\{ tournamentDay = false, fixedNight = null \} = \{\}\) \{[\s\S]*?if \(!fixed && fixedNight\?\.\(state\.day\)\) return null;/);
 // 祝福LIME（「帰ったら、一緒に一服しよう」）は、tonariの祝杯より前に届く。区切りの背景切替が祝杯の手前にあること。
 const after = JSON.parse(read('data/dialogue/ch1_tournament.json')).dialogues
   .find(scene => scene.dialogue_id === 'ch1_tournament_after');
