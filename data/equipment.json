@@ -378,6 +378,29 @@
         "from": "samechan",
         "reason": "一緒に店の居心地を確かめたお礼"
       }
+    },
+    {
+      "id": "suyaki_mashiro",
+      "type": "bowl",
+      "name": "ましろが育てたブラックティー専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_mashiro",
+      "description": "ましろが、ほかの葉を消さない量を探して使い込んだ素焼き。ブラックティーの渋い香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "mashiro",
+        "reason": "ほかの葉を消さない一割を、次は自分の手で",
+        "flavor": "black_tea",
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
     }
   ]
 }
