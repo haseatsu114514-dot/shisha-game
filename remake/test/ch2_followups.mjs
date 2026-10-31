@@ -48,7 +48,9 @@ const mocks = {
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
   // あげはの♥3の質問（#1988）は affinity_stages.mjs で確認する。ここでは質問が無い通常訪問だけを見る
+  // ♥5の締めくくり（#2023）も affinity_stages.mjs で確認する。ここでは締めくくりの無い訪問だけを見る
   "../daily/bonds.js": { BOND_QUESTIONS: { ageha: { host: "remake_ch2_ageha_newcomer", dialogue: "ch2_ageha_bond_question" } },
+    BOND_FINALES: { ageha: { dialogue: "ch2_ageha_bond_finale" } }, finaleAtVisit: () => false, playFinale: async () => false,
     playQuestionVisit: async () => true, questionVisitDue: () => false },
   "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false, outingDialogue: () => null, recordOutingVisit: () => {} },
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
@@ -196,9 +198,10 @@ for (const id of validatedIds) {
   assert.deepEqual(loaderDB.dialogues, { preserved: true });
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
-// 31 本 + あげはの♥3の質問 ch2_ageha_bond_question（#1988）
-assert.equal(Object.keys(loaderDB.dialogues).length, 32 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// 31 本 + あげはの♥3の質問 ch2_ageha_bond_question（#1988）＋♥5の締めくくり ch2_ageha_bond_finale（#2023）
+assert.equal(Object.keys(loaderDB.dialogues).length, 33 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 assert(loaderDB.dialogues.ch2_ageha_bond_question, "the ♥3 question is published with the ageha visits");
+assert(loaderDB.dialogues.ch2_ageha_bond_finale, "the ♥5 finale is published with the ageha visits");
 for (const entry of Object.values(CH2_VISIT_STORIES).flat()) assert(loaderDB.dialogues[entry.scene], entry.scene);
 assert.equal(loaderDB.dialogues.ch2_kumicho_second.metadata.flavor_lesson, undefined);
 assert.deepEqual(loaderDB.dialogues.ch2_kumicho_fourth.metadata.flavor_lesson, { dragonfruit: 1 });

@@ -1158,6 +1158,49 @@
       ]
     },
     {
+      "id": "lime_after_outing_ageha",
+      "sender": "ageha",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_ageha",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、この前はおつかれ〜！ 来てくれてありがとね"
+        },
+        {
+          "sender": "ageha",
+          "stamp": "st_ageha_thanks"
+        },
+        {
+          "sender": "ageha",
+          "text": "ギャル友、みんな「また連れてきて」だって笑　ハジメっち、ちゃんと輪に入れてたじゃん"
+        },
+        {
+          "sender": "ageha",
+          "text": "てか、うちも店のこと忘れて笑ってたかも。そういう夜、久しぶりだった"
+        }
+      ],
+      "replies": [
+        {
+          "text": "楽しかった、ありがとう",
+          "response": "でしょ〜！ また仕事終わりに集まろ。次はハジメっちの吸いたいやつからね",
+          "affinity": 2
+        },
+        {
+          "text": "店のこと忘れられたなら良かった",
+          "response": "……うん。たまには、ただのあげはでいる日もいいね。ありがと",
+          "affinity": 2
+        },
+        {
+          "text": "みんな優しかった",
+          "response": "でしょ！ うちの自慢の友達。ハジメっちのことも、もう友達認定されてるよ笑",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_outing_tsumugi_1",
       "important": true,
       "sender": "tsumugi",

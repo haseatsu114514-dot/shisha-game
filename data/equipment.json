@@ -378,6 +378,29 @@
         "from": "samechan",
         "reason": "一緒に店の居心地を確かめたお礼"
       }
+    },
+    {
+      "id": "suyaki_ageha",
+      "type": "bowl",
+      "name": "あげはが育てたホワイトグミベア専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_ageha",
+      "description": "あげはがMELTY PUFFを開けた頃から使い込んだ素焼き。ホワイトグミベアの甘い香りが土まで染み付いている。縁にクマのシールつき。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "ageha",
+        "reason": "答え合わせ係の道具",
+        "flavor": "white_gummy_bear",
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
     }
   ]
 }

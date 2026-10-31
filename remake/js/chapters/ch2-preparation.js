@@ -19,7 +19,7 @@ import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
 import { chapterTwoNights } from "./ch2-story.js";
 import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone } from "../core/affinity-stages.js";
-import { BOND_QUESTIONS, playQuestionVisit, questionVisitDue } from "../daily/bonds.js";
+import { BOND_FINALES, BOND_QUESTIONS, finaleAtVisit, playFinale, playQuestionVisit, questionVisitDue } from "../daily/bonds.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 const descriptions = {
@@ -72,7 +72,10 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
   const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
   const story = id === "ageha" && !first && !pendingFollowup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
-  const scene = story || stage?.scene || `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`;
+  // 店に通う回と♥3の質問を読み終えた♥5の次の来店は、いつもの会話の代わりに締めくくり（#2023・一度だけ）。
+  const finale = id === "ageha" && !first && !pendingFollowup && !story && finaleAtVisit("ageha");
+  const scene = finale ? BOND_FINALES.ageha.dialogue
+    : story || stage?.scene || `remake_ch2_${id}_${first ? "chat" : followup ? "followup" : "repeat"}`;
   const dialogue = DB.dialogues[scene];
   if (!dialogue?.lines?.length || (followup || stage?.done) && !dialogue.lines.every(line => line && !line.type
     && typeof line.text === "string" && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
@@ -95,9 +98,14 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   // cancelled/途中LOAD/例外で、追加の街紹介の前に費用だけが残らない。
   await withScenePreparation(setBg(ROOMS[id], { instant: true }));
   if (state !== owner) return { used: false, exerted: false };
-  // 長い段階会話の旧背景指定（metadata.bg）より、いま居る店の室内を優先する。
-  const result = await play(scene, stage && !stage.done ? { bg: ROOMS[id] } : undefined);
-  if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+  if (finale) {
+    // 受け取りと記録は playFinale が一度だけ行う。中断したら請求・既読を残さない。
+    if (!await playFinale("ageha", { bg: ROOMS.ageha, deferSave: true }) || state !== owner) return { used: false, exerted: false };
+  } else {
+    // 長い段階会話の旧背景指定（metadata.bg）より、いま居る店の室内を優先する。
+    const result = await play(scene, stage && !stage.done ? { bg: ROOMS[id] } : undefined);
+    if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+  }
   const discovered = CITY_OUTINGS.find(item => item.introducedBy === id);
   if (discovered && !state.flags[discovered.flag]) {
     const introduction = await play(discovered.introduction);
@@ -121,12 +129,9 @@ async function visitPreparationSpot(spot, { staminaGuard }) {
   talks[id] = (talks[id] || 0) + 1;
   state.visits[id] = (state.visits[id] || 0) + 1;
   markMet(id); recordCityVisit(state, id);
-  gainAffinity(id, first ? 10 : 5); earnStat(stat[id], 4);
-  if (id === "ageha" && first) {
-    state.flags._ch2_ageha_contact = true;
-    state.flags._lime_contact_ageha = true;
-    if (!state.contacts.includes("ageha")) state.contacts.push("ageha");
-  }
+  // 台本で交換した連絡先は、訪問を終えた時点で連絡先一覧にも記録する（daily/spots.js の hasContact と同じ）
+  if (state.flags[`_lime_contact_${id}`] && !state.contacts.includes(id)) state.contacts.push(id);
+  gainAffinity(id, first || finale ? 10 : 5); earnStat(stat[id], 4);
   return { used: true, exerted: true };
 }
 

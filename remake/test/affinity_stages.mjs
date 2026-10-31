@@ -243,8 +243,9 @@ await check('ageha ♥3 question (#1988): after the newcomer visit, once, record
   assert.equal(await f.bonds.playQuestionVisit('ageha'),false,'asked once');
   assert.equal(f.bonds.recordRomanceChoice({id:'bond_q1_ageha',romance_char:'ageha'},{romance:0}),false,'re-reading cannot flip the answer');
   assert.equal(s.romanceChoices.bond_q1_ageha.value,1);
-  // あげはに締めくくりは無い: 日常の告白予約（romanceRouteOpen）は開かず、第3章の入口（ch3-romance-entry.js）だけが読む。
-  s.affinity.ageha=66;assert.equal(f.bonds.romanceOpen('ageha'),false);assert.equal(f.romance.romanceRouteOpen('ageha'),false);
+  // 恋愛寄りの答えで恋愛の方向は開くが、日常の告白予約（romanceRouteOpen）は開かず、第3章の入口（ch3-romance-entry.js）だけが読む。
+  // 締めくくり（#2023）は♥5の会話まで読むまで出ない。
+  s.affinity.ageha=66;assert.equal(f.bonds.romanceOpen('ageha'),true);assert.equal(f.romance.romanceRouteOpen('ageha'),false);
   assert.equal(f.bonds.finaleDue('ageha'),false);
   // 友情寄りの答えも一度で確定し、以後の質問は出ない。
   const t=f.fresh();t.chapter=2;t.affinity.ageha=33;t.flags._ch2_talks={ageha:1};t.flags._ch2_followup_done={ageha:true};
@@ -253,6 +254,35 @@ await check('ageha ♥3 question (#1988): after the newcomer visit, once, record
   assert.equal(await f.bonds.playQuestionVisit('ageha'),true);
   assert.equal(t.romanceChoices.bond_q1_ageha.value,0);assert.equal(f.bonds.questionVisitDue('ageha'),false);
   assert.equal(f.stages.pendingAffinityStage(t,'ageha').scene,'remake_ch2_ageha_magazine');
+});
+await check('ageha ♥5 gummy stage and MELTY PUFF finale (#2023): once, gift, route from the ♥3 answer, no chapter-2 confession', async f => {
+  f.db.dialogues.ch2_ageha_bond_finale={dialogue_id:'ch2_ageha_bond_finale',lines:[{speaker:'ageha',face:'smile',text:'x'}]};
+  f.db.equipById.suyaki_ageha={id:'suyaki_ageha',name:'g',gift:{from:'ageha',flavor:'white_gummy_bear'}};
+  f.db.friends=JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  const ready=(romance)=>{
+    const s=f.fresh();s.chapter=2;s.met.ageha=true;s.affinity.ageha=48;s.flags._ch2_talks={ageha:1};s.flags._ch2_followup_done={ageha:true};
+    for(const k of ['gyaru','newcomer','magazine'])s.flags[`_ch2_read_remake_ch2_ageha_${k}`]=true;
+    s.romanceChoices.bond_q1_ageha={char:'ageha',value:romance,day:3};if(romance>0)s.romance.ageha=1;s.flags._ageha_affinity_question_done=true;
+    return s;
+  };
+  for(const romance of [1,0]){
+    const s=ready(romance);
+    { const stage=f.stages.pendingAffinityStage(s,'ageha'); assert.equal(stage.level,5); assert.equal(stage.scene,'remake_ch2_ageha_gummy'); }
+    s.affinity.ageha=66;assert.equal(f.bonds.finaleDue('ageha'),false,'the ♥5 talk is unread');
+    s.flags._ch2_read_remake_ch2_ageha_gummy=true;assert.equal(f.stages.pendingAffinityStage(s,'ageha'),null);
+    s.affinity.ageha=65;assert.equal(f.bonds.finaleDue('ageha'),false,'needs ♥5');s.affinity.ageha=66;
+    assert.equal(f.bonds.finaleDue('ageha'),true);assert.equal(f.bonds.finaleAtVisit('ageha'),true);
+    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');s.chapter=2;
+    f.setPlay(async()=>({cancelled:true}));
+    assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),false);assert(!s.finales.ageha);assert(!s.owned.includes('suyaki_ageha'));
+    f.setPlay(async()=>done);
+    assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),true);
+    assert.equal(s.finales.ageha.route,romance?'romance':'friend');assert(s.owned.includes('suyaki_ageha'));
+    assert(!s.flags._confession_due,'the confession stays in chapter 3');assert.equal(f.romance.romanceRouteOpen('ageha'),false);
+    assert.equal(f.bonds.settledFriend('ageha'),!romance,'only the friend route gets friend LIME');
+    assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),false,'once');
+    assert.equal(s.owned.filter(id=>id==='suyaki_ageha').length,1);
+  }
 });
 for(const id of ['tsumugi','samechan']) for(const outcome of ['cancel','missing','load','abort','throw']) await check(`${id} lover public milestone ${outcome} stays unread/unrewarded`,async f=>{
   const s=f.core.state;s.chapter=2;s.lovers=[id];s.loveLevel[id]=1;s.lovePts[id]=9;const controller=new AbortController();

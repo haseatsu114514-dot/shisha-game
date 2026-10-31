@@ -8,13 +8,14 @@ import { CITY_BACKGROUNDS, CH2_SCENE_BACKGROUNDS } from "../core/city-locations.
 // 訪問・会話なので preparation にし、休養や夜の約束で後送りできる。deadline（章内日）までに必ず読み、大会後へ持ち越さない。
 // 後送りした夜は CH2_FREE_NIGHTS（DAY2・8）に入れない（期限の救済を除く）。
 export const CH2_FREE_NIGHTS = [2, 8];
-// room は会話の前に出す店内（.webp の店内画は metadata.bg で指定できないため）。bg は店内以外の場所の背景。contact はその夜に連絡先も交換する。
+// room は会話の前に出す店内（.webp の店内画は metadata.bg で指定できないため）。bg は店内以外の場所の背景。met は読み終えたら面識にする相手。
+// 連絡先の交換は台本の set_flag _lime_contact_<id> に置く（交換の演出が出る・#2023）。
 // #921の柚ヶ谷店の客席を夜景にした背景。県大会ホールや地元店と区別する。
 export const C_STATION_TASTING_BG = CITY_BACKGROUNDS.c_station_night;
 export const CH2_NIGHTS = [
   { day: 3, pin: "naru", label: "なるの祝福", beat: "夜。なるの話を聞きに、KEMURIKUSAへ──", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
-    { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", contact: "ageha" },
+    { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", met: "ageha" },
   ] },
   { day: 4, pin: "tonari", label: "焦げたソファ", beat: "夜。預けていたノートを取りに、閉店前のtonariへ──", steps: [
     { id: "ch2_sofa_burn", file: "ch2_main" },
