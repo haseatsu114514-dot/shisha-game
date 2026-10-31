@@ -7,10 +7,9 @@ import { modal } from "../core/ui.js";
 import { voteStack, judgePanel, judgeLegend } from "../craft/tournament-graphics.js";
 import { CH4_JUDGES, chapterFourStandings } from "./ch4-tournament-state.js";
 
-// 内部名 wang の表示と顔は master_hookah（王煙楼）。
-const FACE = { wang: "master_hookah" };
-const NAME = { wang: "王 煙楼" };
-const nameOf = id => NAME[id] || displayName(FACE[id] || id, state);
+// 王煙楼（master_hookah）は世界大会では「王 煙楼」と表記する。
+const NAME = { master_hookah: "王 煙楼" };
+const nameOf = id => NAME[id] || displayName(id, state);
 const NOTES = [
   "制作が終わり、次は吸い出しと提供。",
   "提供を終えた一台。次は客席での調整。",
@@ -18,7 +17,7 @@ const NOTES = [
 ];
 
 function avatar(id) {
-  const who = FACE[id] || id;
+  const who = id;
   const src = faceIconUrl(who) || portraitInfo(who, "normal")?.src;
   return src ? el("span.ch2-contest-avatar", [el("img", { src, alt: "" })])
     : el("span.ch2-contest-avatar", { "aria-hidden": "true", text: nameOf(id).slice(0, 2) });

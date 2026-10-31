@@ -28,13 +28,13 @@ export const ENTRANCE_CARDS = Object.freeze({
   ],
   4: [
     { id: "naru", ring: "孤高の探求者", note: "なる……ここまで来たか。あいつの基礎は世界でも通じる" },
-    { id: "wang", face: "master_hookah", ring: "龍龍水煙所の宗師", note: "王さんは派手な煙の裏で、相手の呼吸を見ている" },
+    { id: "master_hookah", ring: "龍龍水煙所の宗師", note: "王さんは派手な煙の裏で、相手の呼吸を見ている" },
     { id: "sheikh", ring: "世界王者", note: "王者は急がない。全部受け止めるつもりで来るぞ" },
     { id: "hajime", ring: "日本の挑戦者", note: "──行ってこい。目の前の一人に届けてこい" },
   ],
 });
 
-const NAME = { wang: "王 煙楼" };
+const NAME = { master_hookah: "王 煙楼" };
 
 function faceOf(card) {
   if (card.id === "hajime") return el("span.ent-face.ph", { text: "YOU" });

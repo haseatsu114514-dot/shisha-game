@@ -186,7 +186,7 @@
 - ~~ましろと久世の好み~~ → 2026-10-31 決定：最新の採用（SBD57・台本）に合わせ、**ましろ＝アフサール ブラックティー（ダーク・シガーリーフ好みは保持）、久世＝柑橘とアフサール アールグレイ**。`story_and_structure.md` の古い表を修正済み。
 - **第4章の審査員**：人物設定は「南雲と博士は全大会の固定審査員」、`CH4_JUDGES` は南雲・エミル・太陽で博士がいない。
 - **SHISHA-9000の姿**：人物設定は「人型AIロボット」、第5章の台本は「アーム」。
-- 第4章の内部名 `wang` と `master_hookah` の食い違い（`ch4-tournament-state.js`、`ch4.js`）。
+- ~~第4章の内部名 `wang` と `master_hookah` の食い違い~~ → `master_hookah` に統一（#2031）。旧保存の `wang` は `ch4-tournament-state.js` で読み替える。場面ID `ch4_wang_reception*` は保存互換のため据え置き。
 - 久世の店の背景 `bg_yohaku_shop` は旧名と思われる。
 - `docs/gameplay_agent_reference.md` の REI・博士の記述が今の正本と合わない。
 - `remake/README.md`「まだ無いもの」の第3章任意場面・前夜デートは実装済み（#1176）。
