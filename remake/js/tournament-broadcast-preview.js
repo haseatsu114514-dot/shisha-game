@@ -34,15 +34,32 @@ const JUDGES = [
   { id: "dr_kemuri", name: "チャコール博士", short: "博士", c: "#5fe2cf", used: 0 },
   { id: "nagumo", name: "南雲", c: "#f6c95e", used: 0, held: true },
 ];
+// 観客は客席から見えるもの（煙の量と色・炭の火・手元・審査員の顔）にだけ反応する。
 const NICO = {
-  calm: ["穴の間隔きれい", "はじめ君がんばれ", "なる速いな", "アダムの炭もう赤い", "静かな会場", "初出場って本当？", "外周から丁寧"],
-  hot: ["うおおお", "揃ってる揃ってる", "これは◎来るぞ", "南雲さんまだ動かない", "はじめ！はじめ！", "アルミの音が気持ちいい", "キター", "鳥肌"],
-  max: ["MAX HEAT!!", "会場やばい", "全員立ってる", "伝説になる", "南雲さん目を開けた", "ここで決める！", "！！！！"],
+  none: ["穴の間隔きれい", "はじめ君がんばれ", "なる速いな", "アダムの炭もう赤い", "初出場って本当？", "外周から丁寧", "針の音が気持ちいい"],
+  thin: ["煙まだ細い", "蒸らし足りた？", "炭もう1個いる？", "慌てるな", "ここ我慢"],
+  white: ["煙きれい", "白い", "いい立ち上がり", "香り届いた", "うまそう", "南雲さんまだ動かない"],
+  thick: ["うおおお", "厚い！", "これは◎来るぞ", "煙やば", "はじめ！はじめ！", "キター", "鳥肌"],
+  grey: ["煙が灰色…", "熱い熱い", "焦げる？", "炭外せ！", "いがらっぽそう", "南雲さん目を細めた"],
 };
+// 温度計と同じ帯。0=まだぬるい 1=熱が入っていく 2=適温 3=熱が強い 4=過熱（数字は出さず、呼び名だけ）
+const BANDS = ["まだぬるい", "熱が入っていく", "適温", "熱が強い", "過熱"];
+// ヒートラインの見本（実装では cs.heatLog の実温度を読む）。t は帯の相対位置（.42〜.66 が適温）。
+const HEAT_STAGES = [
+  { label: "仕込み中（火はまだ）", pts: [] },
+  { label: "炭を置いた", pts: [[0, .05, "炭3・取り頃"]] },
+  { label: "蒸らし 6分", pts: [[0, .05, "炭3・取り頃"], [22, .50, "蒸らし6分"]] },
+  { label: "提供（適温・低め）", pts: [[0, .05, "炭3・取り頃"], [22, .50, "蒸らし6分"], [30, .56, "熱を入れる吸い"], [36, .47, "提供"]] },
+  { label: "調整1（落ちて→交換で戻す）", pts: [[0, .05, "炭3・取り頃"], [22, .50, "蒸らし6分"], [30, .56, "熱を入れる吸い"], [36, .47, "提供"], [52, .30, "炭が燃え進む"], [58, .58, "炭2個交換"], [64, .54, "キープ"]] },
+  { label: "調整2（中央で維持）", pts: [[0, .05, "炭3・取り頃"], [22, .50, "蒸らし6分"], [30, .56, "熱を入れる吸い"], [36, .47, "提供"], [52, .30, "炭が燃え進む"], [58, .58, "炭2個交換"], [64, .54, "キープ"], [80, .44, "炭が燃え進む"], [86, .55, "炭1個交換"], [100, .54, "整え終える"]] },
+];
+const bandOf = (t) => t < .30 ? 0 : t < .42 ? 1 : t <= .66 ? 2 : t < .80 ? 3 : 4;
+const smokeOf = (t) => t < .30 ? "thin" : t <= .66 ? "white" : t < .80 ? "thick" : "grey";
+// ライバルの事件は制作の言葉で。台に見えるのは温度帯の色・炭の状態・煙だけ。
 const RIVAL_EVENTS = [
-  { id: "adam", text: "炭を取りすぎ！ 白煙が上がる", nico: ["アダムの台すごい煙", "それ焼きすぎじゃ", "豪快すぎる"], heavy: true, step: "炭焼き" },
-  { id: "naru", text: "もう蒸らしに入った。速い", nico: ["なる速い", "さすが常連", "もう蒸らし？"], step: "蒸らし" },
-  { id: "minto", text: "アルミを一度はがしてやり直し", nico: ["みんと慎重", "やり直した", "丁寧だなあ"], step: "穴あけ" },
+  { id: "adam", text: "炭を早取り。黒い面が残ったまま載せた", read: "炭3・1個ムラ／熱が強い／煙が灰色", nico: ["アダムの炭ムラあった", "煙が灰色…", "焦げる？"], smoke: "grey", band: 3, step: "蒸らし", coals: ["red", "black", "red"] },
+  { id: "naru", text: "蒸らし短め。もう吸い出しに入った", read: "炭3・取り頃／熱が入っていく／煙が細い", nico: ["なる速い", "さすが常連", "煙まだ細くない？"], smoke: "thin", band: 1, step: "吸い出し", coals: ["red", "red", "red"] },
+  { id: "minto", text: "アルミを一度はがして張り直し", read: "炭なし／火はまだ", nico: ["みんと慎重", "やり直した", "丁寧だなあ"], smoke: "none", band: -1, step: "穴あけ", coals: [] },
 ];
 
 const stage = $("#tb-stage");
@@ -85,35 +102,37 @@ function buildLive() {
   ]);
   const info = el("div.info", { html: '<small>外周12穴＋中周12穴</small><b>外周（7/12）</b><small>熱の広がり・安定感</small><div class="cnt">EXCELLENT 5 · GOOD 2 · MISS 0</div>' });
   const center = el("div.center", [foil, info, el("div.tb-btn", { text: "穴を開ける" }), el("div.mini", { text: "◇ 次の目標　○ 動く光　● 開いた穴（現行の工程パネルはそのまま）" })]);
-  const seats = el("div.seats", ["naru", "adam", "minto"].map((id, i) => el(`div.seat${i < 2 ? ".smoking" : ""}`, { style: { "--c": PEOPLE[id].c }, dataset: { id } }, [
+  const seats = el("div.seats", ["naru", "adam", "minto"].map((id, i) => el("div.seat", { style: { "--c": PEOPLE[id].c }, dataset: { id, smoke: ["thin", "none", "none"][i], band: ["1", "-1", "-1"][i] } }, [
     el("div.head", [el("div.pf", [img(face(id))]), el("div.nm", { text: PEOPLE[id].name })]),
     el("span.step", { text: ["炭焼き", "詰め", "穴あけ"][i] }),
+    el("div.coals", (i === 0 ? ["red", "red", "red"] : []).map((c) => el(`i.coal.${c}`))),
+    el("div.read", { text: ["炭3・取り頃／熱が入っていく／煙が細い", "炭なし／火はまだ", "炭なし／火はまだ"][i] }),
     el("div.bubble"),
     el("div.tb-smoke"),
     el("div.rig", { html: `<svg viewBox="0 0 60 92" fill="none" stroke="${PEOPLE[id].c}" stroke-width="2"><path d="M30 6v10M22 16h16M26 16v28M34 16v28" opacity=".9"/><ellipse cx="30" cy="10" rx="7" ry="4" fill="${PEOPLE[id].c}" fill-opacity=".35"/><path d="M26 44c-10 6-14 16-14 26 0 10 8 18 18 18s18-8 18-18c0-10-4-20-14-26" fill="${PEOPLE[id].c}" fill-opacity=".18"/><path d="M38 60c10 0 14 8 10 20" opacity=".6"/></svg>` }),
   ])));
-  const heat = el("div.heat", { dataset: { stage: "1" } }, [el("div.fill"), el("div.stg", { text: "ざわめき" }), el("div.lab", { text: "会場の熱 CROWD HEAT" }), el("div.val", { text: "46" })]);
+  const heat = el("div.heat", [heatSvg([], { w: 330, h: 46 }), el("div.stg", { text: "火はまだ" }), el("div.lab", { text: "一台の熱 HEAT LINE" })]);
   const lane = el("div.lane");
   const bottom = el("div.bottom", [heat, lane]);
   const fx = el("div.fx");
   root.append(lights, top, left, center, seats, bottom, fx);
-  const l = { root, chips, judges, clock, say, foil, info, seats, heat, lane, fx, hype: 46, hits: 7, excellent: 5, seconds: 23 * 60 + 18, timers: new Set() };
+  const l = { root, chips, judges, clock, say, foil, info, seats, heat, lane, fx, heatStage: 0, hits: 7, excellent: 5, seconds: 23 * 60 + 18, timers: new Set() };
   // 試合時計: 工程時計が動いている間だけ進む（見本では常に進む）
   const tick = setInterval(() => {
     if (!root.isConnected) return clearInterval(tick);
     l.seconds++;
     clock.innerHTML = `<small>MATCH TIME</small>${String(Math.floor(l.seconds / 60)).padStart(2, "0")}:${String(l.seconds % 60).padStart(2, "0")}`;
   }, 1000);
-  // 流れるコメント: 熱の段階で密度が変わる
+  // 流れるコメント: 客席から見える煙（一台の実温度から）で密度と話題が変わる
   const spawn = () => {
     if (!root.isConnected) return;
-    const stageN = Number(root.dataset.stage);
-    const pool = stageN >= 3 ? NICO.max : stageN >= 2 ? NICO.hot : NICO.calm;
-    comment(l, pick(pool), stageN >= 3 ? "hot" : stageN >= 2 && Math.random() < .5 ? "good" : "");
-    setTimeout(spawn, (stageN >= 3 ? 420 : stageN >= 2 ? 800 : stageN >= 1 ? 1500 : 2600) * (0.7 + Math.random() * 0.6));
+    const smoke = l.smoke || "none";
+    const pool = NICO[smoke] || NICO.none;
+    comment(l, pick(pool), smoke === "thick" ? "hot" : smoke === "grey" ? "cool" : smoke === "white" && Math.random() < .5 ? "good" : "");
+    setTimeout(spawn, ({ none: 2600, thin: 2000, white: 1300, thick: 600, grey: 900 }[smoke]) * (0.7 + Math.random() * 0.6));
   };
   setTimeout(spawn, 400);
-  setHype(l, 46);
+  setHeat(l, 0);
   return l;
 }
 function comment(l, text, cls = "") {
@@ -123,17 +142,31 @@ function comment(l, text, cls = "") {
   l.lane.append(node);
   setTimeout(() => node.remove(), 9500);
 }
-function setHype(l, v) {
-  l.hype = Math.max(0, Math.min(100, Math.round(v)));
-  const stageN = l.hype >= 95 ? 3 : l.hype >= 70 ? 2 : l.hype >= 40 ? 1 : 0;
-  const prev = Number(l.root.dataset.stage);
-  l.root.dataset.stage = String(stageN);
-  l.heat.dataset.stage = String(stageN);
-  l.heat.style.setProperty("--h", String(l.hype / 100));
-  $(".val", l.heat).textContent = String(l.hype);
-  $(".stg", l.heat).textContent = ["静か", "ざわめき", "沸騰", "MAX HEAT"][stageN];
-  $("#hype").value = String(l.hype); $("#hype-val").textContent = String(l.hype);
-  if (stageN > prev && stageN >= 2) comment(l, stageN === 3 ? "MAX HEAT!!" : "会場が沸いてきた", "hot");
+/** ヒートラインの SVG。帯の色は温度計と同じ順（下=まだぬるい → 適温 → 上=過熱）。数字は描かない。 */
+function heatSvg(pts, { w = 330, h = 46, labels = false } = {}) {
+  const x = (p) => 6 + p * (w - 12) / 100, y = (t) => 4 + (1 - t) * (h - 8);
+  const line = pts.map(([p, t], i) => `${i ? "L" : "M"}${x(p).toFixed(1)} ${y(t).toFixed(1)}`).join(" ");
+  const marks = pts.map(([p, t, ev]) => `<circle cx="${x(p).toFixed(1)}" cy="${y(t).toFixed(1)}" r="${ev === "提供" || ev.includes("交換") ? 3.2 : 2}" fill="${ev === "提供" ? "#ffe2a6" : ev.includes("交換") ? "#ff8db4" : "#fff"}" stroke="#0b0812" stroke-width=".8"/>`
+    + (labels ? `<text x="${x(p).toFixed(1)}" y="${h - 1}" font-size="7" fill="#d8cbe8" text-anchor="middle">${ev}</text>` : "")).join("");
+  const phases = [[0, "炭"], [22, "蒸らし"], [36, "提供"], [52, "調整1"], [80, "調整2"]].map(([p, n]) => `<line x1="${x(p)}" y1="2" x2="${x(p)}" y2="${h - 2}" stroke="#ffffff22"/>` + (labels ? `<text x="${x(p) + 2}" y="9" font-size="7" fill="#c9b78e">${n}</text>` : "")).join("");
+  return el("div.heat-svg", { html: `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+    <defs><linearGradient id="hl-bands" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f3ecd8"/><stop offset=".30" stop-color="#f5d87a"/><stop offset=".42" stop-color="#7fe0c2"/><stop offset=".66" stop-color="#7fe0c2"/><stop offset=".80" stop-color="#ff9a3c"/><stop offset="1" stop-color="#e0352c"/></linearGradient></defs>
+    <rect x="0" y="0" width="${w}" height="${h}" fill="url(#hl-bands)" opacity=".28"/>
+    <rect x="0" y="${y(.66)}" width="${w}" height="${y(.42) - y(.66)}" fill="#7fe0c2" opacity=".22"/>
+    ${phases}${line ? `<path d="${line}" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" style="filter:drop-shadow(0 0 3px #ffe2a6)"/>` : ""}${marks}
+  </svg>` });
+}
+function setHeat(l, stageIdx) {
+  l.heatStage = Math.max(0, Math.min(HEAT_STAGES.length - 1, stageIdx));
+  const st = HEAT_STAGES[l.heatStage];
+  l.heat.querySelector(".heat-svg").replaceWith(heatSvg(st.pts, { w: 330, h: 46 }));
+  const last = st.pts.at(-1);
+  const band = last ? bandOf(last[1]) : -1;
+  l.smoke = last ? smokeOf(last[1]) : "none";
+  l.root.dataset.smoke = l.smoke;
+  $(".stg", l.heat).textContent = band < 0 ? "火はまだ" : `${BANDS[band]}（${last[2]}）`;
+  const me = l.chips.querySelector('[data-id="hajime"]'); if (me) me.dataset.band = String(band);
+  const sel = $("#heatstage"); if (sel) sel.value = String(l.heatStage);
 }
 function hit(l) {
   if (l.hits >= 12) { l.hits = 0; l.excellent = 0; l.foil.querySelectorAll(".mk").forEach((m) => m.classList.remove("open", "is-target")); }
@@ -146,15 +179,14 @@ function hit(l) {
   $("b", l.info).textContent = `外周（${l.hits}/12）`;
   $(".cnt", l.info).textContent = `EXCELLENT ${l.excellent} · GOOD 2 · MISS 0`;
   $(".chip.me .bar i", l.root).style.width = `${30 + l.hits * 3}%`;
-  setHype(l, l.hype + 1);
   if (l.excellent % 3 === 0) comment(l, pick(["揃ってる！", "外周きれい", "リズムいい"]), "good");
   setTimeout(() => l.foil.querySelector(".tb-pop")?.remove(), 900);
 }
 async function verdict(l, kind) {
   const spec = {
-    great: { mark: "◎", who: "チャコール博士　穴あけ", line: "いいぞ。空気の通り道が揃ってる", delta: "会場の熱 ＋12", face: "smile", c: "#5fe2cf", d: 12 },
-    good: { mark: "○", who: "チャコール博士　穴あけ", line: "穴は開いたな。間隔を揃えるともっといい", delta: "会場の熱 ＋6", face: "normal", c: "#5fe2cf", d: 6 },
-    bad: { mark: "△", who: "チャコール博士　穴あけ", line: "少し偏ったな。次は外周を丁寧に", delta: "会場の熱 −8", face: "serious", c: "#5fe2cf", d: -8 },
+    great: { mark: "◎", who: "チャコール博士　穴あけ", line: "いいぞ。空気の通り道が揃ってる", delta: "記録　外周12・中周8　均等に開いた", face: "smile", c: "#5fe2cf" },
+    good: { mark: "○", who: "チャコール博士　穴あけ", line: "穴は開いたな。間隔を揃えるともっといい", delta: "記録　外周12・中周8　間隔が少しばらついた", face: "normal", c: "#5fe2cf" },
+    bad: { mark: "△", who: "チャコール博士　穴あけ", line: "少し偏ったな。次は外周を丁寧に", delta: "記録　外周に偏り・内周を開けすぎ", face: "serious", c: "#5fe2cf" },
   }[kind];
   const card = el(`div.verdict.${kind}`, { style: { "--c": spec.c } }, [
     el("div.ring", [el("div.burst"), el("b", { text: spec.mark })]),
@@ -163,7 +195,6 @@ async function verdict(l, kind) {
   l.fx.append(card);
   await sleep(30); card.classList.add("show");
   if (kind === "great") for (let i = 0; i < 3; i++) setTimeout(() => comment(l, pick(["◎キター", "揃ってる揃ってる", "これは強い", "うおおお"]), "good"), i * 220);
-  setHype(l, l.hype + spec.d);
   $(".txt", l.say).textContent = spec.line; $(".txt", l.say).classList.toggle("bright", kind === "great");
   await sleep(reduce() ? 600 : 1500);
   card.classList.remove("show");
@@ -171,9 +202,9 @@ async function verdict(l, kind) {
 }
 async function quad(l) {
   const panels = [
-    { id: "maezono", f: "excited", small: "上園", word: "キワドい！" },
+    { id: "maezono", f: "excited", small: "上園", word: "早い！" },
     { id: "dr_kemuri", f: "surprise", small: "チャコール博士", word: "でも、" },
-    { id: "pakki", f: "excited", small: "パッキー", word: "香っている！" },
+    { id: "pakki", f: "excited", small: "パッキー", word: "雑じゃない！" },
     { id: "nagumo", f: "thinking", small: "南雲", word: "……", silent: true },
   ];
   const q = el("div.quad", panels.map((p) => el(`div.qp${p.silent ? ".silent" : ""}`, [
@@ -182,7 +213,7 @@ async function quad(l) {
   ])).concat(el("div.sync", { text: "FLAVOR SYNC!!" })));
   l.fx.append(q);
   await sleep(30); q.classList.add("show");
-  for (let i = 0; i < 6; i++) setTimeout(() => comment(l, pick(NICO.hot), "hot"), i * 180);
+  for (let i = 0; i < 6; i++) setTimeout(() => comment(l, pick(NICO.thick), "hot"), i * 180);
   await sleep(reduce() ? 1200 : 3400);
   q.classList.remove("show"); await sleep(250); q.remove();
 }
@@ -196,22 +227,24 @@ async function rivalEvent(l, ev = pick(RIVAL_EVENTS)) {
   const seat = l.seats.querySelector(`[data-id="${ev.id}"]`);
   $(".bubble", seat).textContent = ev.text;
   $(".step", seat).textContent = ev.step;
-  seat.classList.add("event", "smoking"); if (ev.heavy) seat.classList.add("heavy");
-  const chip = l.chips.querySelector(`[data-id="${ev.id}"] .tb-st`); if (chip) chip.textContent = ev.step;
-  ev.nico.forEach((t, i) => setTimeout(() => comment(l, t, "cool"), i * 260));
-  setHype(l, l.hype + 3);
+  seat.dataset.smoke = ev.smoke; seat.dataset.band = String(ev.band);
+  $(".read", seat).textContent = ev.read;
+  $(".coals", seat).replaceChildren(...ev.coals.map((c) => el(`i.coal.${c}`)));
+  seat.classList.add("event");
+  const chip = l.chips.querySelector(`[data-id="${ev.id}"]`); if (chip) { $(".tb-st", chip).textContent = ev.step; chip.dataset.band = String(ev.band); }
+  ev.nico.forEach((t, i) => setTimeout(() => comment(l, t, ev.smoke === "grey" ? "cool" : ""), i * 260));
   await sleep(reduce() ? 1000 : 3200);
-  seat.classList.remove("event", "heavy");
+  seat.classList.remove("event");
 }
 async function playLive(l) {
   await plate(l, "ROUND 1 — A", "仕込み　機材・水・配合・詰め・穴あけ");
   for (let i = 0; i < 3; i++) { hit(l); await sleep(reduce() ? 100 : 520); }
   await rivalEvent(l, RIVAL_EVENTS[0]);
   await verdict(l, "great");
-  if (l.hype < 70) setHype(l, 72);
   await sleep(300);
   await quad(l);
   await plate(l, "ROUND 1 — B", "火入れ　配置・炭焼き・蒸らし");
+  for (let i = 1; i < HEAT_STAGES.length; i++) { setHeat(l, i); await sleep(reduce() ? 150 : 1100); }
 }
 
 // ---------------------------------------------------------------- ② 中間投票
@@ -236,7 +269,7 @@ function buildVotes() {
     el("h1", { text: "中間投票" }),
     el("p.sub", { text: "審査員3人の持ち点（各10点）。実際に投入された票だけが並ぶ。南雲審査員長は、まだ1点も入れていない。" }),
     el("div.vmain", [rows, judges]),
-    el("div.vstatus", [el("span", { text: "ここまでの制作" }), el("b", { text: "◎" }), el("span", { text: "穴あけ◎・炭焼き○ → 上園が2点、博士が2点を入れる（実績連動 §3.4 B）" })]),
+    el("div.vstatus", [el("span", { text: "ここまでの制作" }), el("b", { text: "◎" }), el("span", { text: "穴あけ◎・炭焼き○・蒸らし6分で適温の低め → 上園が2点、博士が2点を入れる（実績連動 §3.4 C）" }), el("div.heat.vote-heat", [heatSvg(HEAT_STAGES[2].pts, { w: 330, h: 40 })])]),
     el("div.vfeed", [el("div.tag", { text: "速報" }), el("div.lines", { html: "上園、はじめに2点追加投入！<br>チャコール博士、ここで初めて動く——はじめに2点" })]),
   ]));
   return { root, rows, judges, pts };
@@ -349,8 +382,10 @@ async function playResult(r) {
       el("div.hl", [
         el("div.hlc", { style: { backgroundImage: "url(img/ui/making/coal_just.webp)" } }, [el("i", { text: "R1" }), el("span", { text: "ジャスト炭。全面が赤くなった瞬間に取った" })]),
         el("div.hlc", { style: { backgroundImage: "url(img/ui/making/foil_interactive_top.webp)" } }, [el("i", { text: "R1" }), el("span", { text: "外周12穴が揃った（EXCELLENT 10）" })]),
-        el("div.hlc", { style: { backgroundImage: "url(img/ui/making/hajime_craft_pull.webp)", backgroundPosition: "center 30%" } }, [el("i", { text: "R4" }), el("span", { text: "最高の熱 97。調整2回目で帯の中央へ" })]),
+        el("div.hlc", { style: { backgroundImage: "url(img/ui/making/hajime_craft_pull.webp)", backgroundPosition: "center 30%" } }, [el("i", { text: "R4" }), el("span", { text: "調整2回目、炭1個交換で帯の中央へ戻した" })]),
       ]),
+      el("h3", { text: "一台の熱の記録", style: { marginTop: "12px" } }),
+      el("div.heat.award-heat", [heatSvg(HEAT_STAGES.at(-1).pts, { w: 520, h: 64, labels: true })]),
     ]),
     el("div.tb-panel", [
       el("h3", { text: "審査員の一言" }),
@@ -386,7 +421,7 @@ document.querySelectorAll("[data-act]").forEach((b) => b.addEventListener("click
   else if (act === "plate") plate(live);
   else if (act === "rival") rivalEvent(live);
 }));
-$("#hype").addEventListener("input", (e) => setHype(live, Number(e.target.value)));
+$("#heatstage").addEventListener("change", (e) => setHeat(live, Number(e.target.value)));
 $("#phone").addEventListener("change", (e) => { viewport.classList.toggle("phone", e.target.checked); show(scene); });
 $("#reduce").addEventListener("change", (e) => stage.classList.toggle("reduce", e.target.checked));
 show("live");

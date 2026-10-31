@@ -32,8 +32,8 @@
     <button data-act="verdict-bad">決めカード △</button>
     <button data-act="quad">審査員4分割カットイン</button>
     <button data-act="plate">ラウンドプレート</button>
-    <button data-act="rival">ライバルの事件</button>
-    <label class="toggle">会場の熱 <input type="range" id="hype" min="0" max="100" value="46"> <b id="hype-val">46</b></label>
+    <button data-act="rival">ライバルの台に事件</button>
+    <label class="toggle">ヒートライン <select id="heatstage"><option value="0">仕込み中（火はまだ）</option><option value="1">炭を置いた</option><option value="2">蒸らし 6分</option><option value="3">提供（適温・低め）</option><option value="4">調整1（落ちて→交換で戻す）</option><option value="5">調整2（中央で維持）</option></select></label>
   </div>
 
   <div class="viewport"><div class="stage" id="tb-stage"></div></div>
@@ -42,11 +42,11 @@
     <h2>この見本で確かめたいこと</h2>
     <ul>
       <li><b>上バー</b>: LIVE・ラウンド・試合時計・4人の進行チップ・審査員の持ち点ボード。作業台の工程パネル（中央）は現行のまま。</li>
-      <li><b>対戦席</b>（右）: ライバル3人の現在工程と台の煙。事件が起きると吹き出しと流れるコメントが同時に出る。</li>
-      <li><b>会場の熱</b>（下）: 工程の◎○△で増減。40 でざわめき、70 で沸騰（4分割カットイン）、95 で MAX HEAT。点数には影響しない。</li>
-      <li><b>決めカード</b>: 工程が終わった瞬間の 1.1 秒。◎○△のスタンプ・担当審査員の顔・一言・熱の増減。</li>
+      <li><b>対戦席</b>（右）: ライバル3人の台を読める。温度帯の色・炭の数と状態（赤／黒い面／灰）・煙の量と色。事件が起きると吹き出しと流れるコメントが同時に出る。</li>
+      <li><b>ヒートライン</b>（下）: その一台の熱の記録。縦は温度計と同じ帯（まだぬるい→適温→過熱）、横は炭→蒸らし→提供→調整1→調整2。数字は出さず帯の呼び名だけ。点数には影響しない。観客のコメントは客席から見える煙で変わる。</li>
+      <li><b>決めカード</b>: 工程が終わった瞬間の 1.1 秒。◎○△のスタンプ・担当審査員の顔・一言・その工程の実記録1行。</li>
       <li><b>中間投票</b>: 上園・博士の札が実際に飛んで数字が増える。南雲は錠前のまま。</li>
-      <li><b>結果発表</b>: 10カウント → 南雲の10点 → 4位から呼び上げ → スポットライト → CHAMPION → 表彰（ハイライト3枚・審査員の一言・称号）。</li>
+      <li><b>結果発表</b>: 10カウント → 南雲の10点 → 4位から呼び上げ → スポットライト → CHAMPION → 表彰（ヒートライン・ハイライト3枚・審査員の一言・称号）。</li>
     </ul>
   </section>
 </main>
