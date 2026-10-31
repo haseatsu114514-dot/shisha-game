@@ -119,7 +119,7 @@ export function kujiRows(rerender) {
     for (const target of [5, 10]) {
       const count = Math.min(target, left);
       if (count < 2 || (target === 10 && count <= 5)) continue;
-      actions.push(buyButton(count, `${count}回まとめて引く（${yen(g.price * count)}）`, `kuji-${g.id}-${target}`));
+      actions.push(buyButton(count, `${count === 10 ? "10連" : `${count}回まとめて`}で引く（${yen(g.price * count)}）`, `kuji-${g.id}-${target}`));
     }
     rows.push(el("div.shop-row.kuji-row", [
       el("span.shop-cat.kuji-cat", { text: "くじ" }),
@@ -172,7 +172,9 @@ function revealMany(results, count) {
       layers.modal.replaceChildren();
       resolve();
     } });
-    const cards = results.map(prize => el(`div.kuji-card.kuji-short.rank-${prize.rank}`, [
+    // 10連ガチャ風: 裏向きのカードを1枚ずつめくる。「すべてめくる」かSKIP中・テスト高速送りでは即座に全部出す（#1905 オーナー要望）。
+    const instant = vnTest.turbo || document.body.classList.contains("vn-skip");
+    const cards = results.map(prize => el(`div.kuji-card.kuji-short.rank-${prize.rank}${instant ? "" : ".kuji-facedown"}`, [
       el("div.kuji-rank", { text: prize.rank === "LAST" ? "ラストワン賞" : `${prize.rank}賞` }),
       el("div.kuji-name", { text: prize.rank === "LAST" ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
     ]));
@@ -184,6 +186,19 @@ function revealMany(results, count) {
       ]),
     ]));
     layers.modal.classList.add("show");
+    if (instant) return;
+    let index = 0, timer = 0;
+    const flipAll = () => { clearTimeout(timer); cards.forEach(c => c.classList.remove("kuji-facedown")); flipBtn.remove(); };
+    const flipBtn = el("button.btn.small.kuji-flip-all", { text: "すべてめくる", dataset: { test: "kuji-flip-all" }, onclick: flipAll });
+    close.before(flipBtn);
+    const step = () => {
+      if (!cards[index]?.isConnected) return;
+      cards[index].classList.remove("kuji-facedown");
+      index += 1;
+      if (index < cards.length) timer = setTimeout(step, results[index - 1].rank === "S" || results[index - 1].rank === "LAST" ? 650 : 220);
+      else flipBtn.remove();
+    };
+    timer = setTimeout(step, 300);
   });
 }
 

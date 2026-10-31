@@ -506,6 +506,42 @@ await check('Minto later-chapter finale grants gift and romance reservation once
     assert.equal(s.owned.filter(id => id === 'suyaki_minto').length, 1);
   }
 });
+await check('Mashiro (#2022): chapter 3 optional reads are the ladder, ♥3 question after practice, ♥5 finale gives the hagal without reserving a confession', async f => {
+  const mashiro = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_mashiro.json', import.meta.url))).dialogues;
+  for (const d of mashiro) f.db.dialogues[d.dialogue_id] = d;
+  f.db.equipById.suyaki_mashiro = { name: 'gift' };
+  const s = f.core.state; s.chapter = 3; s.met.mashiro = true;
+  const read = id => { s.flags[`_ch3_read_${id}`] = true; };
+  assert.equal(f.stats.AFFINITY_GATE_CHOICES.mashiro, 'bond_q1_mashiro');
+  assert.deepEqual(clone(f.stages.pendingAffinityStage(s, 'mashiro')), { level: 0, scene: 'ch3_mashiro_play_1', done: false });
+  s.affinity.mashiro = 66;
+  assert.equal(f.bonds.questionVisitDue('mashiro'), false, 'max affinity alone does not open the question');
+  assert.equal(f.bonds.finaleDue('mashiro'), false, 'nor the finale');
+  ['ch3_mashiro_play_1', 'ch3_mashiro_play_2'].forEach(read);
+  assert.equal(f.stages.pendingAffinityStage(s, 'mashiro').scene, 'ch3_mashiro_practice');
+  read('ch3_mashiro_practice');
+  s.affinity.mashiro = 32; assert.equal(f.bonds.questionVisitDue('mashiro'), false, 'needs ♥3');
+  s.affinity.mashiro = 33; assert.equal(f.bonds.questionVisitDue('mashiro'), true);
+  s.chapter = 4; assert.equal(f.bonds.questionVisitDue('mashiro'), false, 'only on the chapter 3 cards'); s.chapter = 3;
+  assert.equal(await f.bonds.playQuestionVisit('mashiro'), false, 'reading without the answer records nothing');
+  f.setPlay(async () => { f.bonds.recordRomanceChoice({ id: 'bond_q1_mashiro', romance_char: 'mashiro' }, { romance: 1 }); return done; });
+  assert.equal(await f.bonds.playQuestionVisit('mashiro'), true);
+  assert.equal(await f.bonds.playQuestionVisit('mashiro'), false, 'once');
+  assert(f.stages.questionComplete(s, 'mashiro'));
+  s.affinity.mashiro = 66;
+  assert.equal(f.bonds.finaleDue('mashiro'), false, 'the remaining optional scenes come first');
+  ['ch3_mashiro_play_3', 'ch3_mashiro_black_tea'].forEach(read);
+  assert.equal(f.stages.pendingAffinityStage(s, 'mashiro'), null);
+  s.affinity.mashiro = 65; assert.equal(f.bonds.finaleDue('mashiro'), false, 'needs ♥5'); s.affinity.mashiro = 66;
+  assert.equal(f.bonds.finaleAtVisit('mashiro'), true);
+  f.setPlay(async () => { f.bonds.recordRomanceChoice({ id: 'bond_q2_mashiro', romance_char: 'mashiro' }, { romance: 1 }); return done; });
+  assert.equal(await f.bonds.playFinale('mashiro'), true);
+  const after = f.roundTrip();
+  assert.equal(after.finales.mashiro.route, 'romance');
+  assert.equal(after.flags._confession_due, undefined, 'the chapter 3 detour owns the confession');
+  assert.equal(after.owned.filter(id => id === 'suyaki_mashiro').length, 1);
+  assert.equal(await f.bonds.playFinale('mashiro'), false);
+});
 
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);
 

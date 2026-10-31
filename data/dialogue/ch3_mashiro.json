@@ -52,6 +52,12 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "競争じゃないと、待つのも楽しいねぇ"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
         }
       ]
     },
@@ -82,6 +88,12 @@
           "speaker": "",
           "face": "",
           "text": "お揃いにしようとしていた手を戻し、それぞれ好きな方を包んでもらった。"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
         }
       ]
     },
@@ -112,6 +124,12 @@
           "speaker": "",
           "face": "",
           "text": "次に会う日の話をした。大会の日付を見ずに、予定を決めた。"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
         }
       ]
     },
@@ -202,6 +220,12 @@
           "text": "今日も、はじめくんと吸った分が増えたねぇ"
         },
         {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 3
+          }
+        },
+        {
           "type": "remember",
           "memory_id": "mashiro_practice"
         },
@@ -214,6 +238,396 @@
       "growth_stats": {
         "technique": 2,
         "sense": 2
+      }
+    },
+    {
+      "dialogue_id": "ch3_mashiro_black_tea",
+      "comment": "味の会話（#2022）。ましろの好み＝アフサール ブラックティー（2026-10-31決定・SBD57「ブラックティーを一割」）。ダーク・シガーリーフ好みは保持し、得意なのはブラックティーという区別を本人に言わせる。味覚が戻った後（ch3_taste_return）に置く。大会に触れない。",
+      "metadata": {
+        "flavor_lesson": {
+          "black_tea": 1
+        }
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。ましろが、紅茶の葉の缶と、はじめのいつものブロンドを並べていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、味、戻ってきたでしょ。今日は、足し算の練習しよっか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "足し算？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ブラックティーを、ほんの少しだけ足すの。一割くらい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは小皿に葉を分けた。ブロンドの山の横に、黒っぽい紅茶の葉がひとつまみ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "多いとね、紅茶が全部しゃべっちゃう。ほかの葉が黙っちゃうの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "一割だと、後ろで支えるだけ。前の葉の声が、ちゃんと残るよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われた量で一台組む。一口目は、いつものブロンドの味がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二口目の終わりに、渋みが薄く残る。甘さの輪郭が、少しだけはっきりした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……あれ。いつもの味なのに、奥がある"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "でしょ。消さないで、足すの。僕、それが一番好き"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃん、自分のはダークなのに、ブロンドの足し方も詳しいんだね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "好きなのは、重いの。得意なのは、ブラックティー。……別の話だよぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんの煙に足すなら、僕はこれくらいがいいなぁ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは配合メモの端に「一割」とだけ書き足して、こちらへ渡した。"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 4
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_bond_question",
+      "comment": "♥3の節目（#2022）。閉店後の練習（ch3_mashiro_practice）を読んだ後、♥3で第3章の場面カードから一度だけ。選択肢 bond_q1_mashiro が実回答（romance 1=恋愛寄り／0=友情）。関係名の札は付けず、ましろの反応で違いを伝える。大会に触れない。",
+      "metadata": {
+        "bond_question": "mashiro"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。洗い終えたグラスを、ましろと二人で拭いていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ねぇ、はじめくん。ちょっと、聞いてもいい？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "練習のあと、僕、はじめくんの分のお茶もいれてるでしょ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あれ、同僚の分って思ってる？　それとも……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろはグラスを置いた。布巾を指に巻いたまま、こちらの返事を待っている。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 1
+          }
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_mashiro",
+          "romance_char": "mashiro",
+          "choices": [
+            {
+              "text": "「ましろちゃんと飲むお茶だと思ってる」",
+              "next": "personal",
+              "romance": 1
+            },
+            {
+              "text": "「mukaiの仲間として、ありがたいよ」",
+              "next": "work",
+              "romance": 0
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "personal": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "同僚の分じゃなくて、ましろちゃんと飲むお茶だと思ってた"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "surprise",
+            "text": "……そっかぁ"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "じゃあ、次からカップも分けとくね。はじめくんのと、僕のと"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろは棚の奥から、いつもと違うカップをひとつ出して、自分のカップの隣に並べた。"
+          }
+        ],
+        "work": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "mukaiの仲間として、いつも助かってるよ。ありがとう"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "うん。仲間の分、ちゃんといれるねぇ"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "練習した日は、お茶。それ、mukaiの決まりにしよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろはムカイさんのカップも並べて、三つ分のお湯を沸かした。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_mashiro_bond_finale",
+      "comment": "交友の締めくくり（♥5・#2022）。任意の交流（ch3_mashiro_play_1〜3・practice・black_tea）と♥3の質問を読んだ後、第3章の場面カードから一度だけ。終わりに専用ハガル suyaki_mashiro。恋人／恋愛の答えを重ねた相手／友人で分岐する。告白は仮置きの寄り道 confession_mashiro（#1930）のまま。大会に触れない。",
+      "metadata": {
+        "bond_finale": "mashiro"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。ましろが、棚の奥から布に包んだものを持ってきた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん。これ、あげる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ほどくと、使い込まれた素焼きのハガルだった。縁に、紅茶の渋い香りが染みている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、ましろちゃんがブラックティーを詰めてたやつじゃ……"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。僕のは重いのばっかりだけど、これだけは、足す方の練習用"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ほかの葉を消さない量、これでずっと探してたの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんの煙、力抜いた時がいちばん良いから。その時に使ってほしいなぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいの？　大事なものでしょ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "大事だから。はじめくんの手で、また違う一割を探してほしいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……分かった。見つけたら、最初にましろちゃんに吸ってもらう"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。待ってるねぇ。……急がなくていいから"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "mashiro",
+          "next_true": "lover",
+          "next_false": "check"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みを抱えて店を出る。高架の下でも、紅茶の香りがかすかに残っていた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2
+          }
+        }
+      ],
+      "branches": {
+        "check": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "mashiro",
+            "next_true": "ask",
+            "next_false": "friend"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "恋人にあげるの、なんだか照れるねぇ。使う時、僕のこと思い出して"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "思い出すよ。毎回"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……毎回は、ちょっと多いかも。ふふ"
+          }
+        ],
+        "ask": [
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……ねぇ。次のお休み、それで一台作って、僕の部屋で吸わない？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（ましろちゃんの部屋。仕事の続きじゃない時間に、俺はどう答えたいんだろう）"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q2_mashiro",
+            "romance_char": "mashiro",
+            "choices": [
+              {
+                "text": "「行くよ。二人で吸いたい」",
+                "next": "close",
+                "romance": 1
+              },
+              {
+                "text": "「mukaiでみんなに吸ってもらおう」",
+                "next": "ask_friend",
+                "romance": 0
+              }
+            ]
+          }
+        ],
+        "close": [
+          {
+            "speaker": "mashiro",
+            "face": "surprise",
+            "text": "……二人で、って言った"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "じゃあ、お茶も用意しとく。いちばん好きなやつ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "楽しみにしてる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろは手帳を開いて、次の休みの日付に小さな丸をつけた。"
+          }
+        ],
+        "ask_friend": [
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "みんなに、かぁ。……うん、はじめくんらしいねぇ"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "じゃあ、ムカイさんにも一口あげよ。きっと驚くよぉ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろは配合メモに、mukaiの常連の名前を三つ書き足した。"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとう。大事に使うよ"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "うん。同僚から、……ううん、友だちからのプレゼント"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろは眠たげに笑って、カウンターの明かりを一つ落とした。"
+          }
+        ]
       }
     }
   ]

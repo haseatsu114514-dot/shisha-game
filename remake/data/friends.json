@@ -88,7 +88,13 @@
           "m": [
             "ちゃんと食ってるか",
             "体が資本だ。シフト前に何か入れとけ",
-            { "sender": "sumi", "stamp": "st_sumi_rest", "media_chapters": [1] }
+            {
+              "sender": "sumi",
+              "stamp": "st_sumi_rest",
+              "media_chapters": [
+                1
+              ]
+            }
           ],
           "r": [
             {
@@ -622,7 +628,13 @@
           "m": [
             "昨日の経費精算、全部片づけた！",
             "儚い余韻に浸る前にラーメン食べます",
-            { "sender": "hiyori", "image": "im_hiyori_ramen", "media_chapters": [1] }
+            {
+              "sender": "hiyori",
+              "image": "im_hiyori_ramen",
+              "media_chapters": [
+                1
+              ]
+            }
           ],
           "r": [
             {
@@ -689,6 +701,106 @@
             "face": "excited",
             "text": "楽しかった！ 次の一服も、仕事の話は半分までね"
           }
+        }
+      ]
+    },
+    "mashiro": {
+      "stat": "technique",
+      "call": "ましろちゃん",
+      "place": "閉店後のmukai",
+      "bg": "bg_mukai_shop.png",
+      "invite": {
+        "messages": [
+          "はじめくん。{privateContext}、mukaiでお茶しよ",
+          "葉っぱも持ってきてねぇ。一割、足してあげる"
+        ],
+        "accept_text": "行くよ",
+        "decline": "ん。じゃあ、また今度ねぇ"
+      },
+      "hangouts": [
+        {
+          "arrive": {
+            "face": "normal",
+            "text": "来たねぇ。お湯、ちょうど沸いたとこ"
+          },
+          "mid": {
+            "face": "normal",
+            "text": "はじめくんの煙、今日もちゃんと力抜けてる"
+          },
+          "close": {
+            "face": "smile",
+            "text": "今日も、はじめくんと吸った分が増えたねぇ"
+          }
+        },
+        {
+          "arrive": {
+            "face": "normal",
+            "text": "今日は僕が作る番。……重いのじゃないよぉ"
+          },
+          "mid": {
+            "face": "smile",
+            "text": "ブロンドに、紅茶をひとつまみ。ね、消えてないでしょ"
+          },
+          "close": {
+            "face": "normal",
+            "text": "……眠くなってきた。続きは、また今度ねぇ"
+          }
+        }
+      ],
+      "chats": [
+        {
+          "m": [
+            "おはよぉ、はじめくん",
+            "てつこちゃん、今朝もムカイさんじゃなくて僕のとこに来たよ"
+          ],
+          "r": [
+            {
+              "text": "ムカイさん、また落ち込んでそう",
+              "response": "うん。ラテの猫、撮ってなぐさめてた",
+              "affinity": 1
+            },
+            {
+              "text": "てつこ、ましろちゃんが好きなんだね",
+              "response": "ふふ。僕も、てつこちゃん好きだよぉ",
+              "affinity": 2
+            }
+          ]
+        },
+        {
+          "m": [
+            "新しいブラックティーの缶、開けたの",
+            "香りがちょっと強いから、今日は一割より少なめにしてる"
+          ],
+          "r": [
+            {
+              "text": "缶によって違うんだね",
+              "response": "うん。毎回、最初の一口で決めるの",
+              "affinity": 1
+            },
+            {
+              "text": "今度、その缶で一台作ってみたい",
+              "response": "いいよぉ。取っとくね、はじめくんの分",
+              "affinity": 2
+            }
+          ]
+        },
+        {
+          "m": [
+            "あの素焼き、ちゃんと使ってる？",
+            "しまったままだと、紅茶の匂いが寂しがるから"
+          ],
+          "r": [
+            {
+              "text": "ちゃんと使ってるよ",
+              "response": "よかったぁ。……匂い、まだ残ってる？",
+              "affinity": 2
+            },
+            {
+              "text": "今度の休みに使うよ",
+              "response": "うん。急がなくていいよぉ",
+              "affinity": 1
+            }
+          ]
         }
       ]
     },

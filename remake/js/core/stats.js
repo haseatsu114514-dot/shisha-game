@@ -163,7 +163,7 @@ export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "mashiro", "hiyo
 // 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
 export const AFFINITY_GATE_CHOICES = Object.freeze({
   tsumugi: "bond_q1_tsumugi", minto: "bond_q1_minto", rin: "bond_q1_rin",
-  samechan: "bond_q1_samechan", ageha: "bond_q1_ageha",
+  samechan: "bond_q1_samechan", ageha: "bond_q1_ageha", mashiro: "bond_q1_mashiro",
 });
 const hasAffinityGate = (id) => id === "hiyori" || !!AFFINITY_GATE_CHOICES[id];
 const waitingKey = (id) => `_${id}_affinity_waiting_pts`;

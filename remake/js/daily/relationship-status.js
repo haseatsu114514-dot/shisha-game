@@ -9,6 +9,7 @@ import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
   rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
+  mashiro: "mukai",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
@@ -50,6 +51,7 @@ export function relationshipStatus(id) {
       : "友人としての大きな節目を迎えた。");
   }
   if (romanceRouteOpen(id)) {
+    if (id === "mashiro") return summary("romance", "告白を選べる", "寄り道から、休日にましろの部屋でお茶をする日へ。");
     return summary("romance", "告白を選べる", (state.flags._confession_wait || 0) > state.day
       ? "今は想いを胸にしまっている。後日の夜、もう一度伝えられる。"
       : "予定の合う夜の帰り道で、想いを伝えるか選べる。");
