@@ -232,9 +232,12 @@ function nextWindow(value) {
   const cleanup = scene("ch3_enmaku_cleanup");
   const gate = cleanup.lines.find(line => line.type === "condition" && line.flag === "_lime_contact_kuze");
   assert(gate && !gate.next_false && cleanup.branches[gate.next_true].some(line => line.speaker === "kuze"));
-  const faces = new Set(fs.readdirSync(new URL("../img/sprites/characters/kuze/", import.meta.url))
-    .map(name => name.replace(/^chr_kuze_|\.webp$/g, "")));
-  for (const line of [...lime, ...cleanup.branches[gate.next_true]]) if (line.speaker === "kuze") assert(faces.has(line.face), line.face);
+  // CI の quick は立ち絵を取得しないため、画像がある環境だけ表情を照合する（表情の登録は lint_dialogue でも検査）。
+  const spriteDir = new URL("../img/sprites/characters/kuze/", import.meta.url);
+  if (fs.existsSync(spriteDir)) {
+    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_kuze_|\.webp$/g, "")));
+    for (const line of [...lime, ...cleanup.branches[gate.next_true]]) if (line.speaker === "kuze") assert(faces.has(line.face), line.face);
+  }
 }
 
 assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
