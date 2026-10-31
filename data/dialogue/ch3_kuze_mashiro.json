@@ -159,6 +159,12 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "閉めたら、また何年も開けない気がして"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 1
+          }
         }
       ]
     },
