@@ -126,6 +126,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch1_mid", "progression"],
   ["_ch1_opening", "progression"],
   ["_ch1_preview_seen", "progression"],
+  ["_ch1_regulars", "person"],
   ["_ch1_rules_read", "progression"],
   ["_ch2_afsahr_tasting", "progression"],
   ["_ch2_ageha_contact", "person"],

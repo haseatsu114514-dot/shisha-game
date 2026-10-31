@@ -150,8 +150,22 @@ const RIN_PROTOTYPE = "ch1_rin_prototype_night";
 const RIN_PROTOTYPE_SEEN = `_spot_seen_${RIN_PROTOTYPE}`;
 export const rinPrototypeDue = () => !state.flags[RIN_PROTOTYPE_SEEN]
   && storyCount("rin") >= 3 && !!DB.dialogues[RIN_PROTOTYPE]?.lines?.length;
+/**
+ * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
+ * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
+ */
+export const AFTER_CHAPTER_VISITS = Object.freeze({
+  adam: { chapter: 2, regulars: "_ch1_regulars", scene: "ch1_adam_after_ch1", done: "ch1_adam_after_ch1_done" },
+  minto: { chapter: 2, regulars: "_ch1_regulars", scene: "ch1_minto_after_ch1", done: "ch1_minto_after_ch1_done" },
+});
+export function afterChapterVisitDue(charId, s = state) {
+  const entry = AFTER_CHAPTER_VISITS[charId];
+  return entry && (s.chapter || 1) === entry.chapter && !s.flags?.[entry.done] && !!s.flags?.[entry.regulars]?.[charId]
+    && DB.dialogues[entry.scene]?.lines?.length ? entry.scene : null;
+}
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
+  if (afterChapterVisitDue(charId)) return true;
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
   if (questionVisitDue(charId)) return true;
   if (charId === "rin" && rinPrototypeDue()) return true;
@@ -306,11 +320,16 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
     const followup = spotFollowupDue(charId, state, DB.dialogues);
     if (followup && !await read(followup, { bg })) return false;
-    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。
-    if (welcome && state === owner && idx > 0 && DB.dialogues[welcome]) {
+    const afterChapter = afterChapterVisitDue(charId);
+    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪は自前の来店描写があるので挨拶を挟まない。
+    if (welcome && state === owner && idx > 0 && !afterChapter && DB.dialogues[welcome]) {
       if (!await read(welcome, { bg })) return false;
     }
-    if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
+    if (afterChapter) {
+      // 既読フラグは台本末尾の set_flag。中断では立たず、次の来店で読み直せる。
+      if (!await read(afterChapter, DB.dialogues[afterChapter].metadata?.bg ? {} : { bg })) return false;
+      gainAffinity(charId, 5);
+    } else if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
       // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
       if (!await read("ch1_minto_identity_reveal")) return false;
       gainAffinity(charId, 10);
