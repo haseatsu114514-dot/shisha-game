@@ -1655,6 +1655,10 @@
    "file": "title_art_samechan_04_throne_pose.png"
   },
   {
+   "character": "samechan",
+   "file": "title_art_samechan_05_rainy_splash.png"
+  },
+  {
    "character": "mashiro",
    "file": "title_art_mashiro_01_heavy_smoke.png"
   },
@@ -1741,6 +1745,10 @@
   {
    "character": "sumi",
    "file": "title_art_sumi_01_own_clay_bowl.png"
+  },
+  {
+   "character": "sumi",
+   "file": "title_art_sumi_02_coal_tending.png"
   },
   {
    "character": "naru",
@@ -2538,7 +2546,9 @@
   "ui/title_arts/title_art_samechan_02_shark_movie.png",
   "ui/title_arts/title_art_samechan_03_aquarium.png",
   "ui/title_arts/title_art_samechan_04_throne_pose.png",
+  "ui/title_arts/title_art_samechan_05_rainy_splash.png",
   "ui/title_arts/title_art_sumi_01_own_clay_bowl.png",
+  "ui/title_arts/title_art_sumi_02_coal_tending.png",
   "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
