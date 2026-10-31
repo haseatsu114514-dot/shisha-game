@@ -50,7 +50,8 @@ html:root[data-ui-theme="paper"] :is(.btn, .vn-choice, .mi-go, .st-tab, .shop-ta
 }
 html:root[data-ui-theme="paper"] :is(.btn, .vn-choice, .big-choice):focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
 html:root[data-ui-theme="paper"] .big-choice small { color: inherit; opacity: .8; }
-html:root[data-ui-theme="paper"] .spot-pin .sub-label { border-width: 1px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 3px 8px #0000004d; }
+/* 紙の札は1pxの縁が付く分、左右の余白を1px詰めて元の幅に保つ（隣の看板に重ならない） */
+html:root[data-ui-theme="paper"] .spot-pin .sub-label { border-width: 1px; padding-left: 9px; padding-right: 9px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 3px 8px #0000004d; }
 html:root[data-ui-theme="paper"] .sub-title { color: var(--paper-ink); }
 
 /* 会話: 生成した紙の窓（表示と同じ縦横比に組んだ原画）＋ラベンダーの名前札 */
@@ -184,3 +185,7 @@ html:root[data-ui-theme="paper"] .exp-chip { color: #fff; background: var(--lave
 html:root[data-ui-theme="paper"] .exp-chip :is(b, span) { color: #fff; }
 html:root[data-ui-theme="paper"] .gb-wallet { background: var(--paper); border: 1px solid var(--paper-line); }
 html:root[data-ui-theme="paper"] .gb-hidane.zero { opacity: .55; }
+
+/* 占いの「当たり」の選択肢は赤で示す。紙の札の上では淡い赤が読みにくいので、濃い赤にする（影なし）。 */
+html:root[data-ui-theme="paper"] .vn-choice.fortune-hint { color: #c2334a; text-shadow: none; }
+html:root[data-ui-theme="paper"] .vn-choice.fortune-hint:is(:hover, :focus-visible) { color: #fff; background: #c2334a; border-color: #c2334a; }

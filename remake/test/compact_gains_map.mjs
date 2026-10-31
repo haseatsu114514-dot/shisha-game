@@ -70,12 +70,16 @@ try {
     assert.match(map.gym, /ui\/map-facilities-extra-579\.webp/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
+    // 煙なしの金枠の札（原画）は「これまでのゴージャス」（classic）の素材。既定の紙テーマ（#2136）ではテーマの色で描くため、札の確認だけ classic で行う。
     await page.evaluate(async () => {
+      T.theme = document.documentElement.dataset.uiTheme; document.documentElement.dataset.uiTheme = "classic";
       for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 12; // 10段では10の倍数を越えると段到達カードになるため、段の途中から始める
       T.core.state.statXp = {};
       await T.stats.paidAction(async () => { T.stats.earnStat("sense", 4); T.stats.addStamina(-8); });
     });
     await page.waitForSelector(".gain-card.st-sense.show"); await page.waitForTimeout(500);
+    // 光が横切る演出（::before）が動いている間は札の外へはみ出して見えるため、演出が終わってから測る。
+    await page.waitForFunction(() => document.querySelector(".gain-card.st-sense")?.getAnimations({ subtree: true }).every(a => a.playState !== "running"));
     const card = await page.locator(".gain-card.st-sense").evaluate(n => {
       const r=n.getBoundingClientRect(), stage=document.querySelector("#stage").getBoundingClientRect();
       const after=getComputedStyle(n,"::after"), points=n.querySelector(".gc-points"), name=n.querySelector(".gc-main");
@@ -100,7 +104,7 @@ try {
     assert(card.inside && card.noOverflow && card.noSub && card.sameSize && card.smaller && card.pointGap < 8,JSON.stringify(card));
     assert(Math.abs(card.badgeInk.x)<.75 && Math.abs(card.badgeInk.y)<.75,JSON.stringify(card));
     if (shots) await page.screenshot({ path: `${shots}/gain-${size.width}.png` });
-    await page.evaluate(() => T.ui.bannersIdle());
+    await page.evaluate(() => { T.ui.bannersIdle(); document.documentElement.dataset.uiTheme = T.theme; });
   }
   await page.setViewportSize(sizes[0]);
 
