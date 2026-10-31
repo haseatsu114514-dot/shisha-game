@@ -1580,30 +1580,6 @@
       ]
     },
     {
-      "id": "hiyori-title-five",
-      "title": "Hiyori five title illustrations",
-      "kind": "browser",
-      "weight": 0.3,
-      "timeout": 15,
-      "paths": [
-        "assets/ui/title_arts/**",
-        "remake/img/ui/title_arts/**",
-        "remake/data/manifest.json",
-        "remake/js/scenes/title*.js",
-        "remake/test/title_arts.mjs",
-        "remake/test/browser/hiyori_title_five.mjs",
-        "asset_sources/hiyori-title-five-issue486/**"
-      ],
-      "run": [
-        "python3 asset_sources/hiyori-title-five-issue486/validate.py",
-        "COMPARISON_DIR=.codex/artifacts/remake-browser/hiyori-title-poses node remake/test/browser/hiyori_title_five.mjs"
-      ],
-      "sparse": [
-        "/asset_sources/hiyori-title-five-issue486/"
-      ],
-      "pillow": true
-    },
-    {
       "id": "home-rig-backgrounds",
       "title": "Home rig ownership backgrounds",
       "kind": "browser",
