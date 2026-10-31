@@ -218,3 +218,19 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 #crossfader::-moz-range-thumb{background-image:url('../../img/ui/dj/fader-cap-silver.webp');box-shadow:0 0 0 2px #f4efe6,0 0 16px #fff8ea99,0 5px 8px #000c}
 #crossfader.dragging::-webkit-slider-thumb,#crossfader:active::-webkit-slider-thumb{filter:brightness(1.25) drop-shadow(0 0 7px #fff8ea)}
 .xfade{border-color:#5a554e}
+/* Issue #2114: PITCH back on the mixer side (shorter) with ▶ under it, bigger platter, slimmer black centre / wider grip ring (remapped art). */
+.console{grid-template-columns:minmax(0,1fr) 224px minmax(0,1fr);gap:8px;padding:8px 12px}
+.deck.a,.deck.b{grid-template-rows:14px minmax(0,1fr) 58px;gap:6px 8px}
+.deck.a{grid-template-columns:minmax(0,1fr) 92px}
+.deck.b{grid-template-columns:92px minmax(0,1fr)}
+.deck.a .platter{grid-column:1;grid-row:2/4}.deck.b .platter{grid-column:2;grid-row:2/4}
+.deck.a .pitch-col{grid-column:2;grid-row:2}.deck.b .pitch-col{grid-column:1;grid-row:2}
+.deck.a .deck-controls{grid-column:2;grid-row:3}.deck.b .deck-controls{grid-column:1;grid-row:3}
+.deck .deck-controls{justify-content:center}
+.pitch-col{width:60px;justify-self:center}
+.deck-play{width:92px;min-height:54px;font-size:22px;border-radius:10px}
+.platter{width:384px;height:384px;--rim:transparent;background:radial-gradient(circle,transparent 61%,var(--rim) 62%,var(--rim) 100%),repeating-radial-gradient(circle,#120e1c 0 2px,#241d34 3px,#130f1d 4px)}
+.platter.touching{--rim:color-mix(in srgb,var(--deck),transparent 65%)}
+.platter.tick{--rim:color-mix(in srgb,var(--deck),transparent 35%)}
+.platter:after{inset:calc(384px * .17)}
+.deck-display{width:140px;height:140px}
