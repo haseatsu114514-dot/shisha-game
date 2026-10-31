@@ -376,6 +376,15 @@ async function renderFree(owner) {
     await lover.readLoverLime();
     if (current(owner)) await renderStage(owner);
   }));
+  // 友人からのたまのLIME（#2022）。
+  const friend = await import("./friend-entry.js");
+  if (!current(owner)) return;
+  if (friend.pendingFriendLime().length) actions.push(button(owner, "友人からのLIMEを読む", "friend-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await friend.readFriendLime();
+    if (current(owner)) await renderStage(owner);
+  }));
   actions.push(button(owner, "博士に連絡する", "contact", async () => {
     // Q12: 「記録に残らない一日」が未読なら、先にそちらを読んでから連絡の場面へ。
     if (!chapterFiveRead(state, "ch5_unrecorded_day")

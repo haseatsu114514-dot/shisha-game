@@ -336,6 +336,7 @@
         "node remake/test/dj_preview.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/tournament_resources.mjs",
+        "node remake/test/friend_lime_scene_chapters.mjs",
         "node --experimental-vm-modules remake/test/rin_sample.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",

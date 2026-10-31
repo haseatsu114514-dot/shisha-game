@@ -11,6 +11,7 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { onDialogueEnter } from "../daily/romance.js";
+import { pendingFriendLime, readFriendLime } from "./friend-entry.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale, recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { CH3_CONFESSION_IDS, confessionAnswer } from "./ch3-romance-entry.js";
 import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
@@ -399,6 +400,7 @@ async function renderStage(owner) {
     }, true),
     ...trialActions(owner),
     ...bondActions(owner),
+    ...friendActions(owner),
     ...await optionalActions(owner),
   ], scene.id === "ch3_kuze_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
 }
@@ -411,6 +413,20 @@ async function renderStage(owner) {
 async function optionalActions(owner) {
   const scenes = availableOptionalScenes(await loadStoryRoutes(), state);
   return scenes.length ? [button(owner, `寄り道をする（${scenes.length}）`, "optional-open", () => renderOptional(owner))] : [];
+}
+
+/**
+ * 友人になった相手からのたまのLIME（#2022）。文面と間隔は daily/bonds.js（第1・2章と同じ）。
+ * 東京で一緒に働くましろは、会えているので送ってこない。本筋の予定は進めない。
+ */
+function friendActions(owner) {
+  if (!pendingFriendLime({ exclude: ["mashiro"] }).length) return [];
+  return [button(owner, "友人からのLIMEを読む", "friend-lime", async () => {
+    showScreen("none", null);
+    hud(owner);
+    await readFriendLime({ exclude: ["mashiro"] });
+    if (current(owner)) await renderStage(owner);
+  })];
 }
 
 /**
