@@ -2,7 +2,8 @@
 import { $, el, sleep, nextFrame } from "./util.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
-import { state, STAT_KEYS } from "./state.js";
+import { state, STAT_KEYS, config } from "./state.js";
+import { reducedMotion } from "./transition-kit.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { nextStepProgress } from "./stat-progress.js";
@@ -529,12 +530,14 @@ export function stamp(text, { host = layers.fx, kind = "", x = "50%", y = "42%" 
 }
 
 export function flash(kind = "white", ms = 260) {
+  if (reducedMotion() || config.reduceShake) return;
   const f = el(`div.flash.${kind}`);
   layers.fx.append(f);
   setTimeout(() => f.remove(), ms + 60);
 }
 
 export function shake(target = document.getElementById("stage"), ms = 380) {
+  if (reducedMotion() || config.reduceShake) return;
   target.classList.remove("shake");
   void target.offsetWidth;
   target.classList.add("shake");

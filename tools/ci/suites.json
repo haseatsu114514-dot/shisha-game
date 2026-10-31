@@ -2350,6 +2350,24 @@
       ]
     },
     {
+      "id": "vn-accessibility-1914",
+      "title": "VN seen-only skip, AUTO speed, and reduced motion settings",
+      "kind": "browser",
+      "weight": 0.2,
+      "timeout": 5,
+      "paths": [
+        "remake/js/vn/engine.js",
+        "remake/js/core/ui.js",
+        "remake/js/core/state.js",
+        "remake/js/scenes/title.js",
+        "remake/css/base.css",
+        "remake/test/vn_accessibility_1914.mjs"
+      ],
+      "run": [
+        "node remake/test/vn_accessibility_1914.mjs"
+      ]
+    },
+    {
       "id": "maps-and-shop",
       "title": "Store logos, map facilities and shop UI",
       "kind": "browser",

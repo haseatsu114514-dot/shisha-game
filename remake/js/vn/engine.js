@@ -65,6 +65,26 @@ let autoMode = false;
 let skipMode = false;
 let autoFxGap = 0;
 let sequenceDepth = 0;
+const SEEN_LINES_KEY = "suien_remake_seen_dialogue_lines";
+let seenLines;
+function readSeenLines() {
+  if (seenLines) return seenLines;
+  try { seenLines = new Set(JSON.parse(localStorage.getItem(SEEN_LINES_KEY) || "[]")); }
+  catch { seenLines = new Set(); }
+  return seenLines;
+}
+function markSeenLine(key) {
+  if (!key || readSeenLines().has(key)) return;
+  seenLines.add(key);
+  try { localStorage.setItem(SEEN_LINES_KEY, JSON.stringify([...seenLines].slice(-20000))); }
+  catch { /* 端末の容量制限時も会話は続ける */ }
+}
+function queuedLines(id, lines, branch = "main") {
+  return (lines || []).map((line, index) => ({ ...line, _seenKey: id ? JSON.stringify([id, branch, index]) : null }));
+}
+function insertBranch(r, key) {
+  r.queue.unshift(...queuedLines(r.currentId, r.branches[key], key));
+}
 
 /** 一続きの会話（バイト開始→接客→終了）の間だけSKIPを維持。選択肢は自分で選び、行動の終わりに解除する。 */
 export async function dialogueSequence(run) {
@@ -149,6 +169,7 @@ function setAuto(v) {
 }
 function setSkip(v) {
   if (v && running?.cancelOnSkip) return finish(true);
+  if (v && config.skipSeenOnly && running?.activeSeenKey && !readSeenLines().has(running.activeSeenKey)) return;
   if (v) setAuto(false);
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
@@ -172,7 +193,8 @@ function kickAuto() {
     if (vnTest.turbo) autoTimer = setTimeout(() => autoChoose(), 10);
     return;
   }
-  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45;
+  const autoFactor = ({ 1: 1.5, 2: 1, 3: 0.6 })[config.autoSpeed] || 1;
+  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : (1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45) * autoFactor;
   autoTimer = setTimeout(() => {
     if (!running || dom.log.classList.contains("show") || vnModalOpen) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();
@@ -219,7 +241,7 @@ export function play(idOrDlg, opts = {}) {
       id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
-      queue: (dlg.lines || []).slice(),
+      queue: queuedLines(dlg.dialogue_id, dlg.lines),
       branches: dlg.branches || {},
       resolve,
       cancelOnSkip: !!opts.cancelOnSkip,
@@ -387,6 +409,8 @@ function advance() {
 function next() {
   const r = running;
   if (!r) return;
+  if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
+  r.activeSeenKey = null;
   // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
   dom.next.classList.remove("show");
   r.pages = null;
@@ -459,7 +483,7 @@ function next() {
     }
     if (type === "buy_keepsake") {
       const branch = buyKeepsake(line.item_id) ? line.next_success : line.next_failure;
-      if (branch && r.branches[branch]) r.queue.unshift(...r.branches[branch]);
+      if (branch && r.branches[branch]) insertBranch(r, branch);
       continue;
     }
     if (type === "hide_cg") {
@@ -493,7 +517,7 @@ function jumpTo(id) {
   if (!target) { warnVn("jump-target-missing", id); return; }
   // 表示中の台本として currentId を引き継ぐ。id / dlg は開始台本のまま（finish() の仕様・#1362）
   running.currentId = id;
-  running.queue = (target.lines || []).slice();
+  running.queue = queuedLines(id, target.lines);
   running.branches = target.branches || {};
   running.context = sceneContext(target);
   if (target.metadata?.clear_portraits) {
@@ -539,7 +563,8 @@ function handleCondition(line) {
     else ok = !!v;
   }
   const key = String((ok ? line.next_true : line.next_false) || "");
-  if (key && running.branches[key]) running.queue.unshift(...running.branches[key]);
+  // 単独で条件関数を使うデータ検証では currentId が無い。実再生時だけ既読キーを付ける。
+  if (key && running.branches[key]) running.queue.unshift(...(running.currentId ? queuedLines(running.currentId, running.branches[key], key) : running.branches[key]));
   else if (key && DB.dialogues[key]) return jumpTo(key);
   else if (key) warnVn("branch-unresolved", key);
 }
@@ -702,6 +727,9 @@ async function showLine(line) {
     text = clauses.length ? `……${clauses.join("。")}。` : "";
     if (!text) return next();
   }
+  // 未読に到達した時点でSKIPを止める。最後まで送った行だけを既読にする。
+  r.activeSeenKey = line._seenKey;
+  if (skipMode && config.skipSeenOnly && !readSeenLines().has(r.activeSeenKey)) setSkip(false);
   let inner = playerInner(line);
   if (inner && hooks.interpolate) inner = hooks.interpolate(inner);
   log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });
@@ -918,7 +946,7 @@ function pickChoice(line, c) {
   dom.choices.replaceChildren();
   const key = String(c.next || "");
   let waitForScene = false;
-  if (key && r.branches[key]) r.queue.unshift(...r.branches[key]);
+  if (key && r.branches[key]) insertBranch(r, key);
   else if (c.next_id) waitForScene = jumpTo(String(c.next_id));
   else if (key) warnVn("branch-unresolved", key);
   log.push({ name: "▶", text: stripTags(c.text || "") });
