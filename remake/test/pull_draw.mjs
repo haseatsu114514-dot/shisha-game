@@ -94,7 +94,7 @@ try {
     const white = getComputedStyle(document.querySelector('.thermo-optimal'), '::before');
     const body = document.querySelector('.needle-body').getBBox();
     const note = document.querySelector('.audience-note');
-    return { left:box('.bench-left'), right:box('.bench-right'), worker:box('.bench-worker-stage'), thermo:box('.thermo'), button:box('[data-test="pull-stop"]'), buttonArt:getComputedStyle(document.querySelector('[data-test="pull-stop"]')).backgroundImage, summary:box('.pull-summary'), ring:box('.dial-ring'), optimal:box('.thermo-optimal'), ideal:box('.thermo-zone'), note:{bounds:box('.audience-note'), font:getComputedStyle(note).fontSize, white:getComputedStyle(note).whiteSpace}, white:white.backgroundColor, line:white.height, needle:body.height };
+    return { left:box('.bench-left'), right:box('.bench-right'), worker:box('.bench-worker-stage'), thermo:box('.thermo'), button:box('[data-test="pull-stop"]'), buttonArt:getComputedStyle(document.querySelector('[data-test="pull-stop"]')).borderImageSource, summary:box('.pull-summary'), ring:box('.dial-ring'), optimal:box('.thermo-optimal'), ideal:box('.thermo-zone'), note:{bounds:box('.audience-note'), font:getComputedStyle(note).fontSize, white:getComputedStyle(note).whiteSpace}, white:white.backgroundColor, line:white.height, needle:body.height };
   });
   assert(Math.abs(layout.left.top - layout.right.top) < 1 && Math.abs(layout.left.bottom - layout.right.bottom) < 1, JSON.stringify(layout));
   assert(layout.left.width / layout.right.width > .50 && layout.left.width / layout.right.width < .56, 'window ratio differs from mockup');
@@ -105,9 +105,10 @@ try {
   assert(layout.optimal.bottom-layout.optimal.top > 14, 'rainbow target must be wider and conspicuous');
   assert.equal(await page.locator('.bench-condition').count(), 0, 'face badge is absent from the mockup');
   assert(!await page.locator('.pull-dial-labels').innerText().then(t=>/長く|強く|短く/.test(t)), 'side descriptions must only explain temperature');
-  assert(layout.buttonArt.includes('ui_mockup_inhale_button'), 'generated button art is not connected');
+  // CUI01: 吸うボタンは生成した琥珀の面（九分割の border-image）。
+  assert(layout.buttonArt.includes('craft-paper/button-amber'), 'generated button art is not connected');
   await page.evaluate(async () => {
-    const art = getComputedStyle(document.querySelector('[data-test="pull-stop"]')).backgroundImage;
+    const art = getComputedStyle(document.querySelector('[data-test="pull-stop"]')).borderImageSource;
     const image = new Image(); image.src = /url\(["']?([^"')]+)/.exec(art)[1];
     await image.decode();
     if (!image.naturalWidth) throw new Error('button skin did not load');

@@ -82,8 +82,50 @@ def build_paper():
         print(f"{path.relative_to(ROOT)}: {path.stat().st_size:,} bytes")
 
 
+# 制作（シーシャ作り）の紙×ラベンダー＋琥珀（CUI01〜）。原画は assets/ui/craft-paper/（生成記録は asset_sources/ui/craft-paper-20261031/）。
+# 透過の部品は原画を実体の範囲に切り出した採用画像をそのまま縮小する。切り出し範囲は原画の寸法と組で固定し、
+# 別サイズの再生成画像へ古い切り出しを黙って適用しない。
+CRAFT_SOURCES = ROOT / "assets/ui/craft-paper"
+CRAFT_OUT = ROOT / "remake/img/ui/craft-paper"
+CRAFT_PARTS = {
+    # 板は CSS の border-image で九分割（切り分けは 40/768px）。
+    "board": {"source_size": (1536, 1024), "width": 768, "alpha": False, "quality": 86},
+    # 作業台の後ろの壁紙。画面全体を覆うので 1280px 幅まで落とす。
+    "backdrop": {"source_size": (1536, 1024), "width": 1280, "alpha": False, "quality": 80},
+    # 温度計の枠。中央の縦長の窓は透明で、管（CSS）が透けて見える。窓は幅 33.4〜66.3%・高さ 5.1〜92.6%（craft-paper.css の .thermo-tube と対）。
+    "thermo-frame": {"source_size": (401, 1445), "width": 160, "alpha": True},
+    # ボタンの面。CSS の border-image で九分割（切り分けは 28px、角の丸みを含む）。
+    "button-paper": {"source_size": (1465, 684), "width": 512, "alpha": True},
+    "button-lavender": {"source_size": (1471, 601), "width": 512, "alpha": True},
+    # 琥珀の面は外側に柔らかな光彩を含む（切り出しに 40px の余白）。
+    "button-amber": {"source_size": (1513, 588), "width": 512, "alpha": True},
+    # 工程ごとの舞台（小道具を置く天板）。台所の石の天板＝炭焼き・調整、リネンのマット＝配合・詰め方・穴あけ・蒸らし時間。
+    "stage-kitchen": {"source_size": (1536, 1024), "width": 1280, "alpha": False, "quality": 82},
+    "stage-workbench": {"source_size": (1536, 1024), "width": 1280, "alpha": False, "quality": 82},
+}
+
+
+def build_craft_paper():
+    CRAFT_OUT.mkdir(parents=True, exist_ok=True)
+    for name, spec in CRAFT_PARTS.items():
+        with Image.open(CRAFT_SOURCES / f"{name}.png") as source:
+            if source.size != spec["source_size"]:
+                raise ValueError(f"craft-paper {name}: update CRAFT_PARTS for new source size {source.size}")
+            width = spec["width"]
+            size = (width, round(width * source.height / source.width))
+            path = CRAFT_OUT / f"{name}.webp"
+            if spec["alpha"]:
+                sprite = source.convert("RGBA").resize(size, Image.Resampling.LANCZOS)
+                sprite.save(path, "WEBP", quality=92, alpha_quality=100, method=6, exact=True)
+            else:
+                sprite = source.convert("RGB").resize(size, Image.Resampling.LANCZOS)
+                sprite.save(path, "WEBP", quality=spec["quality"], method=6)
+            print(f"{path.relative_to(ROOT)}: {sprite.width}×{sprite.height}, {path.stat().st_size:,} bytes")
+
+
 def main():
     build_paper()
+    build_craft_paper()
     OUT.mkdir(parents=True, exist_ok=True)
     for name, spec in SPRITES.items():
         with Image.open(SOURCES / f"{spec.get('source', name)}.png") as source:
