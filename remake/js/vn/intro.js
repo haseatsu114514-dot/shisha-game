@@ -8,7 +8,7 @@
 // 既読は flags._intro_<id>。明示的な未知版は _intro_<id>_<variant> へ分ける。
 import { el, sleep } from "../core/util.js";
 import { DB, displayName, portraitInfo, img } from "../core/data.js";
-import { state, markMet } from "../core/state.js";
+import { state, markMet, config } from "../core/state.js";
 import { layers, imageReady } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 
@@ -17,6 +17,7 @@ import { mountIntro } from "./intro-fit.js";
 import { motifs } from "./intro-motifs.js";
 import { illustratedIntro, layoutIntro, animateIntro, exitIntro, flavorTag, plainLine, motionOf, MOTIONS } from "./intro-art.js";
 import { introFlavor } from "./intro-flavors.js";
+import { graphicIntro, GRAPHIC_FRAME } from "./intro-graphic.js";
 
 export const introSeenKey = (id, variant = "") => `_intro_${id}${variant ? `_${variant}` : ""}`;
 const introOf = (id, variant = "") => DB.characters[id]?.[variant ? `intro_cutin_${variant}` : "intro_cutin"] || null;
@@ -63,10 +64,16 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   if (variant !== "unknown") markMet(id);
   markIntroSeen(id, variant);
   const main = intro.display_name || introName(id).main;
-  const p = portraitInfo(id, intro.face || "normal");
-  const art = DB.manifest.introArt?.[id];
+  let p = portraitInfo(id, intro.face || "normal");
+  let art = DB.manifest.introArt?.[id];
+  const graphic = art && p ? graphicIntro(id, config.introArtStyle) : null;
+  if (graphic) {
+    // 新しい絵柄: 人物は専用の一枚絵、配置は共通。背景は描き直した分だけ差し替える
+    p = { ...p, src: graphic.portrait, face: "graphic" };
+    art = { ...art, frames: { graphic: GRAPHIC_FRAME } };
+  }
   if (art && p) {
-    const background = img(art.background);
+    const background = graphic?.background || img(art.background);
     await Promise.all([
       imageReady(p.src, 15000), imageReady(background, 15000),
       document.fonts.load('900 150px "Intro Gothic"', main).catch(() => []),
