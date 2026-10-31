@@ -1584,3 +1584,27 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-art.shadow .gb-portrait:not(.silhouette) { filter: grayscale(0.35) brightness(0.8); }
 .gb-art-mystery { position: absolute; left: calc(50% + 34px); top: 70px; z-index: 1; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
   font-size: 20px; font-weight: 900; color: #1b1020; background: #f4d27a; box-shadow: 0 0 10px rgba(244, 210, 122, 0.8); }
+/* 漢字をアイコンに（SBD85）: 結界の先のマスもアイコンを薄く。右のパネルは大きなアイコン */
+.gboard.has-art .gb-node.s-locked .gb-icon-img { filter: brightness(0.9) opacity(0.55); }
+.gboard.has-art .gb-node.s-locked .gb-glyph { opacity: 0; }
+.gb-art.has-icon > span { display: none; }
+.gb-art-icon { width: 96px; height: 96px; object-fit: contain; filter: drop-shadow(0 0 10px var(--c, #ffb43c)); }
+.gb-art.shadow .gb-art-icon { filter: drop-shadow(0 0 4px #000) opacity(0.55); }
+/* 札の印の位置をそろえる（SBD86）: ? と火種の数は、どの札でも枠の下の辺の真ん中に重ねる */
+.gb-face > .gb-mystery, .gb-face > .gb-cost { position: absolute; left: 50%; right: auto; top: auto; bottom: -7px; translate: -50% 0; z-index: 2; }
+.gb-face > .gb-cost { min-width: 20px; height: 20px; border-radius: 10px; font-size: 12px; box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9); }
+.gb-face > .gb-mystery { width: 20px; height: 20px; font-size: 13px; box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9), 0 0 6px rgba(244, 210, 122, 0.7); }
+.gboard.has-art .gb-node.lesson .gb-face > .gb-mystery { bottom: 2px; }
+.gboard.has-art .gb-node.skill .gb-face > .gb-cost { bottom: 0; }
+.gb-node.s-locked .gb-face > .gb-mystery { opacity: 1; }
+/* 札の印（SBD86）: 押せる箱の真ん中から、札の高さ（--fh）の 4割下＝枠の下の辺に、真ん中をそろえて重ねる */
+.gb-node { --fh: 30px; }
+.gb-node.skill { --fh: 45px; } .gb-node.skill.sz-s { --fh: 38px; } .gb-node.skill.sz-l { --fh: 52px; }
+.gb-node.lesson { --fh: 52px; } .gb-node.lesson.sig { --fh: 57px; }
+.gboard.has-art .gb-node.skill { --fh: 52px; } .gboard.has-art .gb-node.skill.sz-s { --fh: 44px; } .gboard.has-art .gb-node.skill.sz-l { --fh: 62px; }
+.gboard.has-art .gb-node.lesson { --fh: 64px; } .gboard.has-art .gb-node.lesson.sig { --fh: 70px; }
+.gboard .gb-nodes .gb-node > .gb-mystery, .gboard .gb-nodes .gb-node > .gb-cost {
+  position: absolute; left: 50%; right: auto; bottom: auto; top: calc(50% + var(--fh) * 0.4 - 10px); translate: -50% 0; z-index: 2;
+  display: grid; place-items: center; min-width: 20px; width: auto; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px;
+  font-size: 12px; font-weight: 900; line-height: 1; box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9); }
+.gboard .gb-nodes .gb-node > .gb-mystery { width: 20px; padding: 0; font-size: 13px; color: #1b1020; background: #f4d27a; box-shadow: 0 0 0 2px rgba(10, 6, 16, 0.9), 0 0 6px rgba(244, 210, 122, 0.7); }

@@ -68,6 +68,10 @@ EXTRA = {"minto_private": ("minto", "ura_normal")}
 HEAD_SLICE = 0.14
 # 円形アイコンで頭が切れないよう、上に持たせる余白（辺に対する比）
 HEADROOM = 0.08
+# 頭のてっぺんの上に必ず残す余白（辺に対する比。SBD84）
+HEAD_ROOM = 0.03
+# 頭を入れるために下へずらしてよい量（辺に対する比）。これより多く要る時は少し引いて顔を小さくする
+MAX_SHIFT = 0.10
 
 
 def face_box(char_id: str, im: Image.Image) -> tuple[int, int, int] | None:
@@ -103,6 +107,21 @@ def face_box(char_id: str, im: Image.Image) -> tuple[int, int, int] | None:
         cx = left + hx + side * p["dx"]
         x0 = int(cx - side / 2)
         y0 = int(top - side * (HEADROOM - p["dy"]))
+    # 頭のてっぺん（髪・角・帽子・フード）を切らない（2026-10-31 オーナー「アイコンが上の頭切れてる」SBD84）。
+    # 枠の左右の範囲で、いちばん上に絵がある行より HEAD_ROOM だけ上から始める。顔の大きさ（side）は変えず、下へずらすだけ
+    alpha = im.getchannel("A")
+    span = alpha.crop((max(0, x0 + side // 6), 0, min(im.width, x0 + side * 5 // 6), max(1, y0 + side // 2)))
+    rows = [y for y in range(span.height) if sum(1 for v in span.crop((0, y, span.width, y + 1)).get_flattened_data() if v > 60) >= 3]
+    if rows and not p.get("allow_cut"):
+        head = rows[0]
+        need = y0 - (head - side * HEAD_ROOM)          # 頭を入れるのに上へ広げたい量
+        if need > 0:
+            shift = min(need, side * MAX_SHIFT)        # まずは少しだけ下へずらす
+            y0 -= int(shift)
+            if need > shift:                           # それでも入らない時は、顔の真ん中を軸に少し引く
+                cx, cy = x0 + side / 2, y0 + side / 2
+                side = int((cy - head) / (0.5 - HEAD_ROOM)) + 1
+                x0, y0 = int(cx - side / 2), int(cy - side / 2)
     return x0, y0, side
 
 

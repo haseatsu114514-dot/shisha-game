@@ -205,6 +205,7 @@ node remake/test/rin_portraits.mjs
 - **通常（`normal`）と私服（みんとの `ura_normal`）を描き直したら、丸アイコンの作り直しは省略しない**（2026-10-31 オーナー「旧デザインは使わないで。根絶して」SBD83。みんとの描き直しで作り直し忘れ、旧デザインの顔が LIME・地図に残っていた）。作り直したら WebP も `remake/tools/build_images.py` で更新する。忘れると quick の `tools/check_face_icons_fresh.py` が落ちる。
 - 心得の盤の授業の札の顔と右パネルの立ち絵の位置は、立ち絵の目の位置の表（`asset_sources/ui/growth-board-20261030/faces/make_faces.py` の `EYES` と `growth-board-screen.js` の `PORTRAIT_EYES`）で決まる。顔の位置が変わる描き直しなら測り直して `make_faces.py` を走らせる。
 - 丸アイコンは `tools/make_face_icons.py` の `TUNE` で切り抜きを調整し、他キャラと並べて顔の大きさ・目線の高さを揃える。
+  頭のてっぺん（髪・角・帽子・フード）は切らない（SBD84）。`make_face_icons.py` が自動で余白を残す（少し下へずらし、足りなければ顔を軸に少し引く）。
   別衣装の顔は `EXTRA`（例: みんと私服＝`face_minto_private`）。
   アイコンは全員160px・256色・輪郭は滑らかな透明度（2026-10-04 オーナー指定。元絵の顔の切り抜きが約180〜240pxのため160pxが上限の目安）。拡大表示とスマートフォンの高密度表示で目が読めるか確認する。キャラ別に変える場合は `TUNE` の `size`。
 - 表情の意味や仕草が旧画像と変わったら、そのキャラの全台詞の `face` 指定を場面に合わせて見直す

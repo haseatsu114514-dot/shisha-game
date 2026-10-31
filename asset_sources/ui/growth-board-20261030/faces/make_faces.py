@@ -17,8 +17,10 @@ ROOT = HERE.parents[3]
 SRC = ROOT / "remake" / "img" / "sprites" / "characters"
 OUT = ROOT / "remake" / "img" / "ui" / "growth_board" / "faces"
 SIZE = 160
-SIDE_PER_FACE = 2.2   # 切り出す正方形の一辺 ÷ 顔の幅
-EYE_AT = 0.42         # 切り出した正方形の上から目の高さまでの割合
+SIDE_PER_FACE = 2.6   # 切り出す正方形の一辺 ÷ 顔の幅
+EYE_AT = 0.5          # 切り出した正方形の上から目の高さまでの割合（ふつう）
+HEAD_ROOM = 0.04      # 頭のてっぺん（髪・角・帽子）の上に残す余白（一辺に対する比）
+# 2026-10-31 オーナー「アイコンが上の頭切れてる（みんとの角など）」SBD84: 頭のてっぺんが入らない人だけ、目を下げて頭を入れる
 
 EYES = {
     "sumi": (442, 198, 99), "minto": (492, 375, 99), "adam": (436, 218, 90), "tsumugi": (423, 433, 95),
@@ -29,11 +31,23 @@ EYES = {
 }
 
 
+def head_top(im, ex, ey, fw):
+    """顔の上（目の横 ±顔の幅）で、いちばん上に絵がある行。髪・角・帽子・フードを含む"""
+    a = im.getchannel("A")
+    x0, x1 = max(0, int(ex - fw)), min(im.width, int(ex + fw))
+    for y in range(0, int(ey)):
+        if sum(1 for v in a.crop((x0, y, x1, y + 1)).get_flattened_data() if v > 60) >= 3:
+            return y
+    return 0
+
+
 def crop(who):
     ex, ey, fw = EYES[who]
     im = Image.open(SRC / who / f"chr_{who}_normal.webp").convert("RGBA")
     side = round(fw * SIDE_PER_FACE)
-    x0, y0 = round(ex - side / 2), round(ey - side * EYE_AT)
+    top = head_top(im, ex, ey, fw)
+    eye_at = max(EYE_AT, (ey - top) / side + HEAD_ROOM)
+    x0, y0 = round(ex - side / 2), round(ey - side * eye_at)
     canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
     canvas.paste(im.crop((max(0, x0), max(0, y0), x0 + side, y0 + side)), (max(0, -x0), max(0, -y0)))
     return canvas.resize((SIZE, SIZE), Image.LANCZOS)
@@ -54,7 +68,6 @@ def main():
         for i, (who, im) in enumerate(done):
             x, y = (i % cols) * cell, (i // cols) * (cell + 14)
             sheet.paste(im, (x, y), im)
-            d.line([(x, y + SIZE * EYE_AT), (x + SIZE, y + SIZE * EYE_AT)], fill=(255, 90, 90))
             d.text((x + 2, y + SIZE + 1), who, fill=(244, 210, 122))
         sheet.save(HERE / "contact_sheet.png")
         print("contact_sheet.png written")

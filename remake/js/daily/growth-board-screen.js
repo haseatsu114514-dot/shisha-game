@@ -315,11 +315,14 @@ export function openBoard({ place = null } = {}) {
         onclick: () => select(node.id, true),
       }, [
         el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph }), lessonFace(node, st),
-          icon && st !== "locked" ? el("img.gb-icon-img", { src: `${ART_DIR}icons/${icon}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null,
-          node.kind === "lesson" && !lessonKnown(node, g) ? el("span.gb-mystery", { text: "?", "aria-hidden": "true" }) : null]),
+          // 漢字の代わりにアイコン（SBD73・SBD85「まだ華とか漢字のアイコンがある」）。結界の先の能力・関門・極みもアイコンを薄く出す。結界の先のスキルは中身を伏せる
+          icon && (st !== "locked" || node.kind !== "skill") ? el("img.gb-icon-img", { src: `${ART_DIR}icons/${icon}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null,
+        ]),
+        // ? と火種の数は、札の下の辺の真ん中に重ねる（SBD86「？丸マークも位置がちぐはぐ」。押せる箱の角に付けていたので札から離れて見えた）。
+        // 札の暗さ（filter）を受けないよう札の外に置き、札の高さ（--fh）から位置を決める
+        node.kind === "lesson" && !lessonKnown(node, g) ? el("span.gb-mystery", { text: "?", "aria-hidden": "true" }) : null,
+        node.kind === "skill" && ["available", "short", "far"].includes(st) ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
         qStep ? el("em.gb-quality", { text: "✦", "aria-hidden": "true" }) : null,
-        node.kind === "skill" && ["available", "short", "far"].includes(st)
-          ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
       ]);
     }));
   }
@@ -400,7 +403,11 @@ export function openBoard({ place = null } = {}) {
     const lines = [];
     const portrait = panelPortrait(node, shown);
     if (portrait) portrait.addEventListener("error", () => { portrait.remove(); art.classList.remove("has-portrait"); });
-    const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}${portrait ? ".has-portrait" : ""}`, { "aria-hidden": "true" }, [
+    // 立ち絵の無い能力・関門・極みは、右のパネルにも漢字でなくアイコンを大きく（SBD85）
+    const artIcon = !portrait && root.classList.contains("has-art") && iconOf(node) && (node.kind !== "skill" || shown !== "hidden")
+      ? el("img.gb-art-icon", { src: `${ART_DIR}icons/${iconOf(node)}.webp`, alt: "" }) : null;
+    const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}${portrait ? ".has-portrait" : ""}${artIcon ? ".has-icon" : ""}`, { "aria-hidden": "true" }, [
+      artIcon,
       el("span", { text: node.kind === "stat" ? BOARD_HEAD[node.board] : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? "授" : "？") : shown === "hidden" ? "？" : node.glyph }),
       portrait || (node.kind === "lesson" ? lessonFace(node, st) : null),
       portrait && node.kind === "lesson" && !lessonKnown(node, g) ? el("b.gb-art-mystery", { text: "?" }) : null,
