@@ -513,7 +513,7 @@ export function wipeSave() {
 
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
-  uiTheme: "classic",  // 会話枠と共通UI。ゲームの進行とは別の端末設定。
+  uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
   mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
   seVolume: 0.7,

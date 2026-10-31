@@ -95,6 +95,8 @@ Strict equal 3-column x 2-row layout on transparent PNG 1536x1024. Each cell512x
 
 # 紙×ラベンダーUI生成プロンプト（2026-10-31 日常UI設計案・未生成）
 
+**2026-10-31 生成・組み込み済み**: 実際に送った指示文・原画・SHA・色の合わせ込みは [asset_sources/ui/paper-20261031/](../asset_sources/ui/paper-20261031/README.md)。透過背景が使えなかったため、下の「透過」の指定を「紙が画像の端まで埋まる不透明の絵」に改め、角の丸めと九分割はコードで行った（以下は最初の案として保存）。
+
 設計案 [docs/design/daily-ui-menu-design.md](design/daily-ui-menu-design.md) §6 のための Codex 用プロンプト。Dr.fookah の店内画面（`remake/css/shop.css` の生成り `#f7f3ed`・ラベンダー `#69497e`）を日常パート全体の基調にし、HUD・MENU・会話ウインドウ・ボタンの面を画像生成で作る。**まだ生成していない**。原本は `assets/ui/paper/`、実行時の切り出し・WebP化は `remake/tools/build_ui_skin.py` に `paper` 系を足して行う。文字・数値・ゲージはコードが重ねる。
 
 共通のスタイル指針（各プロンプトの冒頭にそのまま貼る）:
