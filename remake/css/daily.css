@@ -1614,7 +1614,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard.has-art .gb-node.lesson .gb-face::before { display: block; content: ""; position: absolute; inset: 0; z-index: 2; clip-path: none; pointer-events: none;
   background: url(../img/ui/growth_board/frame_lesson.webp) center / contain no-repeat; }
 .gboard.has-art .gb-node.lesson .gb-face-icon { inset: auto; left: 14%; top: 20%; width: 72%; height: 60%; z-index: 1; object-fit: cover; object-position: 50% 30%;
-  clip-path: polygon(22% 0%, 78% 0%, 100% 50%, 78% 100%, 22% 100%, 0% 50%); }
+  clip-path: polygon(21% 6%, 79% 6%, 96% 50%, 79% 95%, 21% 95%, 4% 50%); } /* 枠の窓の形にぴったり（SBD88「髪の毛とか上にはみ出てる」。前は窓より上まで描いて枠の外へ出ていた） */
 .gboard.has-art .gb-node.lesson.s-locked .gb-face { background-image: none; }
 .gboard.has-art .gb-node.lesson.s-locked .gb-face::before { opacity: 0.75; filter: saturate(0.35); }
 .gboard.has-art .gb-node.lesson .gb-face { width: 72px; height: 72px; }
