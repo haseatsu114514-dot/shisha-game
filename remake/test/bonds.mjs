@@ -763,8 +763,9 @@ try {
   // バイトの誘いとは重なってよい／人と会う物語の誘いとは重ねない（雑談に切り替える）
   assert(friendsLime.withBaito.includes("sumi:invitation") && friendsLime.withBaito.includes("naru:invitation")
     && !friendsLime.withBaito.includes("naru:chat"), friendsLime.withBaito.join("|"));
-  assert(friendsLime.withStory.includes("tsumugi:invitation") && friendsLime.withStory.includes("naru:chat")
-    && !friendsLime.withStory.includes("naru:invitation"), friendsLime.withStory.join("|"));
+  // LM04（15f9a8df・オーナー要望）: 返事の要る物語の誘いが届く朝は、返事の要る友人の雑談も重ねない
+  assert(friendsLime.withStory.includes("tsumugi:invitation") && !friendsLime.withStory.some((m) => m.startsWith("naru:")),
+    friendsLime.withStory.join("|"));
   assert.deepEqual(friendsLime.calm, ["naru:invitation:night"]);
   assert.deepEqual(friendsLime.fixedNight, ["naru:chat:-"]);
   assert.deepEqual(friendsLime.oneMorning, ["adam:chat:-"]);
