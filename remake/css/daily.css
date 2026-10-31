@@ -1677,10 +1677,13 @@ body:not(.game-ds) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1;
 /* 体力: 伸びきったときの長さ（最大体力160）を点線の器で敷き、今のバーをその左から重ねる。 */
 body:not(.game-ds) #hud .hud-card .hud-stamina { position: relative; }
 body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { width: 28px; }
-body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar { position: relative; z-index: 1; flex: none; height: 10px; min-width: 0; max-width: none; margin: 0; border-radius: 5px; }
+body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar { position: relative; z-index: 1; flex: none; box-sizing: border-box; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
+/* 中身は枠の内側に上下左右とも2pxで収める（絵の枠用の inset: 3px 4px を引き継がない）。 */
+body:not(.game-ds) #hud .hud-card .hud-stamina .gauge-track { inset: 2px; border-radius: 4px; }
+body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar b { border-radius: 4px; }
 body:not(.game-ds) #hud .hud-card .hud-stamina::after {
-  content: ""; position: absolute; left: 36px; top: 50%; width: var(--stamina-full, 147px); height: 10px; box-sizing: border-box;
-  transform: translateY(-50%); border: 1px dashed currentColor; border-radius: 5px; opacity: .35; pointer-events: none;
+  content: ""; position: absolute; left: 36px; top: 50%; width: var(--stamina-full, 147px); height: 12px; box-sizing: border-box;
+  transform: translateY(-50%); border: 1px dashed #9676a8; border-radius: 6px; opacity: .7; pointer-events: none;
 }
 body:not(.game-ds) #hud .hud-card .hud-stamina .guts-badge { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
 body:not(.game-ds) #hud .hud-card .hud-exp { height: 25px; padding: 0; }
