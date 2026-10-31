@@ -1,3 +1,4 @@
+import { playEntrance } from "./tournament-entrance.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
@@ -361,6 +362,8 @@ async function drive(owner) {
     } else if (p.stage === "entrance") {
       playBgm("bgm_tournament_edm");
       if (!await read(owner, "entrance")) return;
+      await playEntrance(2);
+      if (!live(owner)) return;
       for (const who of ["kumicho", "rei", ...JUDGES]) markMet(who);
       state.flags._ch2_kumicho_public_reveal = true;
       checkpoint("stations");

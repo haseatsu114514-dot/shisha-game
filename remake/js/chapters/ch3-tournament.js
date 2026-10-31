@@ -1,3 +1,4 @@
+import { playEntrance } from "./tournament-entrance.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
@@ -394,6 +395,8 @@ async function drive(owner) {
     if (p.stage === "entry") { renderEntry(owner); return; }
     if (p.stage === "opening") {
       if (!await read(owner, "tournament_day")) return;
+      await playEntrance(3);
+      if (!live(owner)) return;
       checkpoint("ready");
     } else if (p.stage === "ready") { renderReady(owner); return; }
     else if (p.stage === "craft") {

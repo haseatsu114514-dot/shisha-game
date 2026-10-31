@@ -2,6 +2,7 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
+import { playEntrance } from "./tournament-entrance.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
@@ -661,34 +662,8 @@ async function tournamentDay() {
   }
 }
 
-/** 入場（ライバル → 主人公）。スミさんの一言つき。自動で送られる */
-async function entrance() {
-  const cards = [
-    { id: "naru", ring: "孤高の探求者", note: "なる……人格者だが、煙は別人だ。基礎が異常に堅い" },
-    { id: "adam", ring: "ダブルアップルの匠", note: "アダムは一点突破。正面から殴り合うな" },
-    { id: "minto", ring: "甘い嵐", note: "みんとは緩急で揺さぶってくる。乗せられるな" },
-    { id: "hajime", ring: "tonari の新星", note: "──行ってこい。目の前の一人に届けてこい" },
-  ];
-  const host = el("div.entrance");
-  layers.fx.append(host);
-  for (const c of cards) {
-    const face = c.id === "hajime" ? el("span.ent-face.ph", { text: "YOU" }) : el("img.ent-face", { src: faceIconUrl(c.id), alt: "" });
-    const card = el(`div.ent-card${c.id === "hajime" ? ".me" : ""}`, [
-      el("div.ent-cut", [face, el("span.ent-tag", { text: c.id === "hajime" ? "CHALLENGER" : "RIVAL" })]),
-      el("div.ent-meta", [
-        el("div.ent-ring", { text: c.ring }),
-        el("div.ent-name", { text: c.id === "hajime" ? "はじめ" : realName(c.id) }),
-        el("div.ent-note", { text: `スミ「${c.note}」` }),
-      ]),
-    ]);
-    host.replaceChildren(card);
-    await sleep(30);
-    card.classList.add("in");
-    c.id === "hajime" ? SE.fanfare() : SE.select();
-    await sleep(window.__remake?.craftTest?.auto ? 80 : 2100);
-  }
-  host.remove();
-}
+/** 入場（ライバル → 主人公）。スミさんの一言つき。共有部品 tournament-entrance.js（#2031） */
+const entrance = () => playEntrance(1);
 
 // ---------------------------------------------------------------- 優勝のあと
 
