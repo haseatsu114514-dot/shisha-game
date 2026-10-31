@@ -392,8 +392,10 @@ async function runTournament(owner) {
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;
   }
-  const { runChapterFourCraft } = await import("./ch4-tournament.js");
+  const [{ runChapterFourCraft }, { playEntrance }] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js")]);
   if (!current(owner)) return;
+  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。
+  if (!chapterFourProgress(state).match?.craft) { await playEntrance(4); if (!current(owner)) return; }
   const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
   if (!current(owner)) return;
   if (!result) { await renderTournament(owner); return; }
