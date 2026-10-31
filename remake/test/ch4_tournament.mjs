@@ -67,6 +67,19 @@ function drive(value, cs, { failAt = -1, failureKind = "burnt" } = {}) {
   assert.equal(chapterFourAfterDefeat(value), false);
   assert.deepEqual(chapterFourMatch(JSON.parse(JSON.stringify(value))).result, p.result);
 }
+// #2031: 旧保存の内部名 wang は master_hookah として読み込み、結果・票・順位は変わらない。
+{
+  const value = entry();
+  const p = drive(value, craft());
+  const legacy = JSON.parse(JSON.stringify(value).replaceAll('"master_hookah"', '"wang"'));
+  assert.ok(JSON.stringify(legacy.flags._ch4.match).includes('"wang"'));
+  const migrated = chapterFourMatch(legacy);
+  assert.ok(!JSON.stringify(migrated).includes('"wang"'), "No legacy id remains after loading");
+  assert.deepEqual(migrated.votes, p.votes);
+  assert.deepEqual(migrated.result, p.result);
+  assert.deepEqual(migrated.quality, p.quality);
+  assert.equal(chapterFourTournamentOutcome(legacy), "win");
+}
 // Poor complete craft loses; burnt/cold/leaf failure cannot be promoted to a completed victory.
 for (const [failAt, failureKind] of [[-1, null], [8, "burnt"], [9, "cold"], [10, "leaf"]]) {
   const value = entry(), money = value.money, stock = structuredClone(value.flavorStock);
