@@ -1689,7 +1689,7 @@ body:not(.game-ds) #hud .hud-card .hud-stamina::after {
 body:not(.game-ds) #hud .hud-card .hud-stamina[data-capped="true"]::after { display: none; }
 body:not(.game-ds) #hud .hud-card .hud-stamina .guts-badge {
   position: absolute; right: 0; top: 50%; transform: translateY(-50%); box-sizing: border-box; width: 16px; height: 16px;
-  font-size: 11px; font-weight: 700; line-height: 1; letter-spacing: 0;
+  font-size: 12px; font-weight: 700; line-height: 1; letter-spacing: 0;
 }
 /* 根性で上乗せした分: 枠の中に収め、にじみを付けない */
 body:not(.game-ds) #hud .hud-card .hud-stamina .guts-extra { box-shadow: none; border-radius: 0 4px 4px 0; }
