@@ -67,10 +67,10 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     },
     cues: [
     { at: 0, face: "surprise", text: "今の、めっちゃ悔しいじゃん！" },
-    { at: 1.8, face: "serious", text: "ハジメっち、アタシも悔しい！" },
+    { at: 1.8, face: "serious", text: "ハジメっち、うちも悔しい！" },
     { at: 4.2, face: "excited", text: "なら次、一個だけ変えてこ！" },
     { at: 7, face: "excited", text: "応援の声、まだ残ってるし！" },
-    { at: 10.3, face: "smile", text: "ハジメっちの次、アタシ見たい！" },
+    { at: 10.3, face: "smile", text: "ハジメっちの次、うち見たい！" },
     { at: 13.6, face: "smile", text: "帰る時は、一緒に帰ろ！" },
     { at: 16.5, face: "excited", text: "もっかい、行っちゃう？" },
     ],
