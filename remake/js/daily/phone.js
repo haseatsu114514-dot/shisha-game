@@ -25,6 +25,9 @@ import { tsumugiMessages } from "./tsumugi-schedule.js";
 import { casualMessages } from "./casual-lime.js";
 
 import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitationNote } from "./invitations.js";
+// #2090: 第2章の対峙（決裂・休業）以降か。spots.js / core/fortune-effects.js の naruRiftActive と同じ条件（試験の依存を増やさないため写し）
+const naruRiftActive = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._ch2_read_ch2_naru_confrontation
+  || save?.flags?._ch2_night_11_done || save?.flags?._ch2_naru_listened || save?.flags?._ch2_naru_hurt);
 
 // C03: 初回受信から返信を待つ目安。再案内の日付では数え直さない。
 const LIME_REPLY_NUDGE_DAYS = 3;
@@ -144,6 +147,16 @@ function repairLostStoryInvitations() {
 }
 
 export function expireInvitations(opts = {}) {
+  // #2090: 対峙のあとは、受付済み・未返信のなるの誘いも約束ごと流れる（休業中の店で一服は再生しない）
+  if (naruRiftActive(state)) {
+    if (state.pendingInvite?.sender === "naru") state.pendingInvite = null;
+    for (const item of state.inbox || []) {
+      if (item.done || item.msg?.sender !== "naru" || item.msg?.type !== "invitation") continue;
+      item.done = true;
+      item.result = "expired";
+      item.replyState = "expired";
+    }
+  }
   const pending = state.pendingInvite;
   if (pending) {
     const booked = bookedInvitation(pending);
@@ -190,6 +203,7 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (state.limeRead.includes(m.id) && !importantInvite(m) && !needsResend(m.id)) return false;
   if (m.chapter && m.chapter !== state.chapter) return false;
   if (m.sender === "ageha" && state.chapter === 1) return false; // 第1章では連絡先を知らない
+  if (m.sender === "naru" && naruRiftActive(state)) return false; // #2090 決裂・休業中のなるからは何も届かない
   const cond = m.trigger_condition;
   // 大会当日の応援は、本文がある相手のうち連絡先を交換した人から。trigger_flag は応援を言える関係になった印（ひより等）
   if (cond === "tournament_day") return tournamentDay && hasContact(m.sender) && (!m.trigger_flag || !!state.flags[m.trigger_flag]);
