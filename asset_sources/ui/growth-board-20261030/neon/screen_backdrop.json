@@ -1,0 +1,23 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "prompt": "Deep background of a night shisha lounge far behind the viewer, heavily out of focus: black and deep plum darkness with large soft bokeh orbs of distant neon, mostly amber and gold with a few blue and violet orbs on the right side. The left two thirds are almost black so a board can sit on top. No furniture, no people, no objects in focus. Game UI asset for a visual novel set in a dim after-hours shisha lounge. Art direction 'neon lounge': black smoked glass, thin neon tubes with a bright core and soft outer bloom, faint drifting hookah smoke reflected in the glass. Allowed light colors only: board colors red-orange #ef8a5e, blue #58a6ff, green #7bd36d; gold #f4d27a; warm white-gold #fff1d0; pale white #f6f2ff. 2D pixel-painter style with fine dot texture in shading, not photoreal, not glossy 3D. Even tube thickness, calm luxurious night-club feel, legible, nothing eye-searing, no full-frame glow. Strictly no text, no letters, no kanji, no numbers, no logos, no UI widgets, no watermark, no people, no hookah pipes.",
+ "size": "1536x1024",
+ "n": 1,
+ "quality": "high",
+ "background": "opaque",
+ "output_format": "png",
+ "created": 1793422430,
+ "usage": {
+  "input_tokens": 272,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 272
+  },
+  "output_tokens": 1372,
+  "output_tokens_details": {
+   "image_tokens": 1372,
+   "text_tokens": 0
+  },
+  "total_tokens": 1644
+ }
+}

@@ -1312,7 +1312,6 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-quality { position: absolute; right: 2px; top: 0; font-size: 13px; font-style: normal; color: #ffe08a; text-shadow: 0 0 4px #000; pointer-events: none; }
 .gb-cost { position: absolute; bottom: -8px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 800;
   color: #2a1406; background: #ffb43c; pointer-events: none; }
-.gb-lock { position: absolute; bottom: -10px; font-size: 12px; font-weight: 700; color: rgba(232, 220, 255, 0.7); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .gb-node .gb-face { animation: none !important; } }
 .gb-side { display: flex; flex-direction: column; gap: 6px; padding: 14px 18px 10px 8px; min-width: 0; overflow: auto; font-size: 15px; line-height: 1.5; }
 .gb-side p { margin: 0; }
@@ -1434,6 +1433,135 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gb-footer { background: linear-gradient(0deg, rgba(8, 5, 12, 0.95), rgba(8, 5, 12, 0.7)); border-top-color: rgba(244, 210, 122, 0.22); }
 .gb-wallet { padding: 6px 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 180, 60, 0.18); }
 @media (prefers-reduced-motion: reduce) { .gb-node .gb-face { animation: none !important; } }
+/* ================= 生成画像を重ねる（GB03 7.1・SBD72）。画像が全部読めた時だけ .has-art が付く。下の図形はそのまま残す ================= */
+.gboard.has-art { background: #07050b url(../img/ui/growth_board/screen_backdrop.webp) center / cover no-repeat; }
+.gboard.has-art .gb-board { background: radial-gradient(ellipse 34% 40% at 50% 80%, color-mix(in srgb, var(--board-c) 9%, transparent), transparent 70%),
+  url(../img/ui/growth_board/board_glass.webp) center / 100% 100% no-repeat; }
+.gboard.has-art .gb-smoke { opacity: 0.08; }
+.gboard.has-art .gb-hub-art-base { fill: rgba(10, 7, 14, 0.92); stroke: none; }
+.gboard.has-art .gb-hub-art { filter: drop-shadow(0 0 6px var(--board-c)); pointer-events: none; }
+/* 札の枠: 画像を敷き、盤の色の光は drop-shadow で重ねる。灯っていない札は暗く */
+.gboard.has-art .gb-node.skill .gb-face, .gboard.has-art .gb-node.lesson .gb-face, .gboard.has-art .gb-node.peak .gb-face, .gboard.has-art .gb-node.gate .gb-face {
+  clip-path: none; border: 0; border-radius: 0; background: center / contain no-repeat; box-shadow: none; }
+.gboard.has-art .gb-node.skill .gb-face::before, .gboard.has-art .gb-node.lesson .gb-face::before { display: none; }
+.gboard.has-art .gb-node.skill .gb-face { width: 46px; height: 46px; background-image: url(../img/ui/growth_board/frame_skill.webp); }
+.gboard.has-art .gb-node.lesson .gb-face { width: 46px; height: 46px; background-image: url(../img/ui/growth_board/frame_lesson.webp); }
+.gboard.has-art .gb-node.lesson.sig .gb-face { width: 50px; height: 50px; outline: none; }
+.gboard.has-art .gb-node.gate .gb-face { width: 34px; height: 34px; transform: none; background-image: url(../img/ui/growth_board/frame_gate.webp); }
+.gboard.has-art .gb-node.gate .gb-glyph { transform: none; }
+.gboard.has-art .gb-node.peak .gb-face { width: 52px; height: 52px; background-image: url(../img/ui/growth_board/frame_peak.webp); }
+.gboard.has-art .gb-node.peak::after { display: none; }
+.gboard.has-art .gb-node.s-locked.skill .gb-face, .gboard.has-art .gb-node.s-locked.lesson .gb-face, .gboard.has-art .gb-node.s-locked.peak .gb-face { background-image: url(../img/ui/growth_board/frame_seal.webp); opacity: 0.9; filter: none; }
+.gboard.has-art .gb-node.s-locked .gb-glyph { color: #cfc6dc; }
+.gboard.has-art .gb-node.lesson .gb-face-icon { inset: 7px; width: calc(100% - 14px); height: calc(100% - 14px); clip-path: polygon(25% 2%, 75% 2%, 99% 50%, 75% 98%, 25% 98%, 1% 50%); filter: none; }
+.gboard.has-art .gb-node.lesson.s-sealed .gb-face-icon { filter: grayscale(0.6) brightness(0.7); }
+.gboard.has-art .gb-node .gb-glyph { text-shadow: 0 0 4px #000, 0 0 2px #000; }
+.gboard.has-art .gb-node:is(.skill, .peak, .gate):not(.s-unlocked):not(.s-available):not(.s-pending):not(.s-locked) .gb-face { filter: saturate(0.6) brightness(0.8); }
+.gboard.has-art .gb-node.lesson:not(.s-unlocked):not(.s-available):not(.s-pending):not(.s-locked) .gb-face { filter: saturate(0.8) brightness(0.9); }
+.gboard.has-art .gb-node.skill.s-available .gb-face, .gboard.has-art .gb-node.skill.s-pending .gb-face { filter: drop-shadow(0 0 6px var(--c)); }
+.gboard.has-art .gb-node.skill.s-unlocked .gb-face, .gboard.has-art .gb-node.peak.s-unlocked .gb-face { filter: drop-shadow(0 0 7px var(--board-c)) brightness(1.1); }
+.gboard.has-art .gb-node.lesson.s-unlocked .gb-face, .gboard.has-art .gb-node.lesson.s-available .gb-face { filter: drop-shadow(0 0 7px var(--neon-gold)); }
+.gboard.has-art .gb-node.gate .gb-glyph { color: var(--c); font-weight: 900; text-shadow: 0 0 6px #000; }
+.gboard.has-art .gb-node.gate.s-unlocked .gb-face, .gboard.has-art .gb-node.gate.s-available .gb-face { filter: drop-shadow(0 0 8px var(--c)); }
+.gboard.has-art .gb-node.gate.s-unlocked .gb-glyph { color: #fff; text-shadow: 0 0 6px var(--c); }
+/* 火種の粒 */
+.gboard.has-art .gb-hidane i { width: 18px; height: 18px; border-radius: 0; clip-path: none; transform: none; margin: 0; filter: none; background: center / contain no-repeat url(../img/ui/growth_board/hidane_any.webp); }
+.gboard.has-art .gb-hidane.k-body i { background-image: url(../img/ui/growth_board/hidane_body.webp); }
+.gboard.has-art .gb-hidane.k-sense i { background-image: url(../img/ui/growth_board/hidane_sense.webp); }
+.gboard.has-art .gb-hidane.k-wisdom i { background-image: url(../img/ui/growth_board/hidane_wisdom.webp); }
+/* 右のパネルの縁（9スライス） */
+.gboard.has-art .gb-side { border: 22px solid transparent; border-image: url(../img/ui/growth_board/panel_frame.webp) 48 / 22px stretch; border-radius: 0; box-shadow: none; padding: 6px 8px 4px; }
+.gboard.has-art .gb-side::before, .gboard.has-art .gb-side::after { display: none; }
+/* ================= v13（SBD73）: 要のマス・値段で大きさ・マスのアイコン ================= */
+.gb-node.notable .gb-face { width: 32px; height: 32px; font-size: 15px; border-width: 2.5px; border-color: #f4d27a; box-shadow: 0 0 0 2px rgba(244, 210, 122, 0.25); }
+.gb-node.notable.s-unlocked .gb-face { border-color: #ffe2a6; box-shadow: 0 0 8px #f4d27a, 0 0 18px color-mix(in srgb, var(--board-c) 55%, transparent); }
+.gb-node.notable::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid rgba(244, 210, 122, 0.35); pointer-events: none; }
+.gb-node.skill.sz-s .gb-face { width: 34px; height: 31px; font-size: 14px; }
+.gb-node.skill.sz-l .gb-face { width: 50px; height: 45px; font-size: 19px; }
+.gboard.has-art .gb-node.skill.sz-s .gb-face { width: 38px; height: 38px; }
+.gboard.has-art .gb-node.skill.sz-l .gb-face { width: 54px; height: 54px; }
+.gboard.has-art .gb-node.notable .gb-face { width: 36px; height: 36px; }
+/* アイコン: 画像がある時だけ出し、漢字は下に隠す。盤の色は drop-shadow で */
+.gb-icon-img { display: none; position: absolute; inset: 15%; width: 70%; height: 70%; object-fit: contain; pointer-events: none; }
+.gboard.has-art .gb-icon-img { display: block; }
+.gboard.has-art .gb-node:has(.gb-icon-img) .gb-glyph { opacity: 0; }
+.gboard.has-art .gb-node.stat .gb-icon-img { inset: 14%; width: 72%; height: 72%; filter: drop-shadow(0 0 2px #000) brightness(1.15); }
+.gboard.has-art .gb-node.stat:not(.s-unlocked):not(.s-available) .gb-face { background: rgba(14, 10, 20, 0.96); border-color: #4a4054; }
+.gboard.has-art .gb-node.stat.s-unlocked .gb-icon-img, .gboard.has-art .gb-node.stat.s-available .gb-icon-img { filter: drop-shadow(0 0 3px var(--board-c)) opacity(1); }
+.gboard.has-art .gb-node.skill .gb-icon-img { inset: 24%; width: 52%; height: 52%; filter: drop-shadow(0 0 2px #000) opacity(0.8); }
+.gboard.has-art .gb-node.skill.s-unlocked .gb-icon-img { filter: drop-shadow(0 0 4px var(--board-c)) opacity(1); }
+.gboard.has-art .gb-node.gate .gb-icon-img { inset: 26%; width: 48%; height: 48%; filter: drop-shadow(0 0 3px var(--c)); }
+.gboard.has-art .gb-node.peak .gb-icon-img { inset: 26%; width: 48%; height: 48%; filter: drop-shadow(0 0 4px #f6f2ff); }
+.gboard.has-art .gb-node.s-far .gb-icon-img, .gboard.has-art .gb-node.s-sealed .gb-icon-img { filter: drop-shadow(0 0 2px #000) opacity(0.7); }
 .gboard-help .modal-body p { margin: 0 0 10px; line-height: 1.6; }
 .lu-actions { display: flex; justify-content: center; gap: 12px; }
 .levelup .lu-board { min-width: 180px; }
+/* 結界・影絵・授業の札の特別感（2026-10-31 オーナー SBD74〜76）
+   - 「封」の文字はやめ、開いている所とまだの所の境に鎖の結界（画像 wall_seal。無ければ二重線と錠）
+   - まだ分からない授業はその人の影絵（黒いシルエット）＋小さな ?
+   - 授業の札は大きく、金の後光つき。灯っていなくても色は落とさない */
+.gb-wall-art { pointer-events: none; filter: drop-shadow(0 0 5px rgba(244, 210, 122, 0.55)); animation: gb-wall-breathe 2.6s ease-in-out infinite; }
+.gb-seal { stroke: #c9a24a; stroke-width: 2.5; stroke-linecap: round; filter: drop-shadow(0 0 3px rgba(244, 210, 122, 0.6)); }
+.gb-seal-lock { fill: #1d1426; stroke: #f4d27a; stroke-width: 2; }
+@keyframes gb-wall-breathe { 50% { filter: drop-shadow(0 0 9px rgba(244, 210, 122, 0.9)); } }
+.gb-node.s-locked .gb-face { opacity: 0.3; }
+.gb-node.s-locked.lesson .gb-face { opacity: 0.7; }
+.gb-face-icon.silhouette { filter: brightness(0) drop-shadow(0 0 1.5px rgba(244, 210, 122, 0.95)) drop-shadow(0 0 4px rgba(244, 210, 122, 0.35)); }
+.gb-node.lesson.s-sealed .gb-face-icon.silhouette, .gb-node.lesson.s-locked .gb-face-icon.silhouette { filter: brightness(0) drop-shadow(0 0 1.5px rgba(244, 210, 122, 0.95)) drop-shadow(0 0 4px rgba(244, 210, 122, 0.35)); }
+.gb-art .gb-face-icon.silhouette { filter: brightness(0) opacity(0.9); border-color: rgba(244, 210, 122, 0.5); box-shadow: none; }
+.gb-mystery { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; font-size: 12px; font-weight: 900; line-height: 1;
+  color: #1b1020; background: #f4d27a; box-shadow: 0 0 6px rgba(244, 210, 122, 0.8); pointer-events: none; }
+/* 授業の札: 後光 */
+.gb-node.lesson .gb-face { width: 48px; height: 43px; }
+.gb-node.lesson .gb-face::after { content: ""; position: absolute; inset: -9px; z-index: -2; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(244, 210, 122, 0.42), rgba(244, 210, 122, 0.12) 55%, transparent 72%); animation: gb-aura 3s ease-in-out infinite; }
+.gb-node.lesson.s-locked .gb-face::after { background: radial-gradient(circle, rgba(200, 190, 220, 0.16), transparent 70%); animation: none; }
+@keyframes gb-aura { 50% { transform: scale(1.12); opacity: 0.75; } }
+.gb-node.lesson .gb-face-icon { inset: 4px; width: calc(100% - 8px); height: calc(100% - 8px); }
+.gb-node.lesson:not(.s-unlocked):not(.s-pending) .gb-face-icon:not(.silhouette) { filter: none; }
+.gb-node.lesson.s-sealed .gb-face-icon:not(.silhouette) { filter: saturate(0.7) brightness(0.8); }
+.gboard.has-art .gb-node.lesson .gb-face { width: 56px; height: 56px; }
+.gboard.has-art .gb-node.lesson.sig .gb-face { width: 60px; height: 60px; }
+.gboard.has-art .gb-node.lesson .gb-face-icon { inset: 11px; width: calc(100% - 22px); height: calc(100% - 22px); clip-path: polygon(24% 3%, 76% 3%, 98% 50%, 76% 97%, 24% 97%, 2% 50%); }
+.gboard.has-art .gb-node.lesson:not(.s-unlocked):not(.s-available):not(.s-pending):not(.s-locked) .gb-face { filter: none; }
+.gboard.has-art .gb-node.lesson.s-available .gb-face { filter: drop-shadow(0 0 9px var(--neon-gold)) brightness(1.08); }
+.gboard.has-art .gb-node.lesson.s-locked .gb-face { background-image: url(../img/ui/growth_board/frame_lesson.webp); opacity: 0.72; filter: saturate(0.35); }
+.gboard.has-art .gb-node.lesson.s-locked .gb-face::after { display: none; }
+@media (prefers-reduced-motion: reduce) { .gb-wall-art, .gb-node.lesson .gb-face::after { animation: none !important; } }
+/* 盤の拡大と移動（SBD77）: .gb-board がのぞき窓（スクロール）、.gb-world が拡大後の大きさ、.gb-stage が元の 760×488 を scale */
+.gb-board-wrap { position: relative; width: 760px; height: 488px; }
+.gb-board { overflow: auto; scrollbar-width: none; overscroll-behavior: contain; touch-action: pan-x pan-y; cursor: grab; }
+.gb-board::-webkit-scrollbar { display: none; }
+.gb-board.dragging { cursor: grabbing; user-select: none; }
+.gb-board.dragging .gb-node { pointer-events: none; }
+.gb-world { position: relative; width: 760px; height: 488px; }
+.gb-stage { position: absolute; left: 0; top: 0; width: 760px; height: 488px; transform-origin: 0 0; }
+.gb-zoom { position: absolute; right: 10px; top: 10px; display: flex; gap: 6px; z-index: 2; }
+.gb-zoom .gb-icon { width: auto; min-width: 30px; height: 30px; padding: 0 9px; border-radius: 15px; font-size: 14px; line-height: 1; background: rgba(10, 6, 16, 0.8); }
+.gb-zoom .gb-icon:disabled { opacity: 0.35; cursor: default; }
+/* 盤の間隔を広げた（SBD78）: 世界の大きさは JS が決める。結界は道を横切る大きさで、暗い帯の上に置く */
+.gb-wall-back { fill: rgba(6, 4, 10, 0.82); stroke: rgba(244, 210, 122, 0.35); stroke-width: 1; }
+.gb-seal { stroke-width: 3.5; }
+.gb-seal-lock { stroke-width: 2.5; }
+.gb-path.sealed { stroke-width: 3; }
+/* 札を一段大きく（SBD78）: 間隔 84px に合わせる。能力 30・要 40・スキル 44/52/62・授業 64（要の授業 70）・関門 40・極み 60 */
+.gb-node .gb-face { width: 30px; height: 30px; font-size: 16px; }
+.gb-node.notable .gb-face { width: 38px; height: 38px; font-size: 17px; }
+.gb-node.skill .gb-face { width: 50px; height: 45px; font-size: 17px; }
+.gb-node.skill.sz-s .gb-face { width: 42px; height: 38px; font-size: 15px; }
+.gb-node.skill.sz-l .gb-face { width: 58px; height: 52px; font-size: 20px; }
+.gb-node.lesson .gb-face { width: 58px; height: 52px; }
+.gb-node.lesson.sig .gb-face { width: 64px; height: 57px; }
+.gb-node.gate .gb-face { width: 30px; height: 30px; font-size: 14px; }
+.gb-node.peak .gb-face { width: 42px; height: 42px; font-size: 18px; }
+.gboard.has-art .gb-node.notable .gb-face { width: 42px; height: 42px; }
+.gboard.has-art .gb-node.skill .gb-face { width: 52px; height: 52px; }
+.gboard.has-art .gb-node.skill.sz-s .gb-face { width: 44px; height: 44px; }
+.gboard.has-art .gb-node.skill.sz-l .gb-face { width: 62px; height: 62px; }
+.gboard.has-art .gb-node.lesson .gb-face { width: 64px; height: 64px; }
+.gboard.has-art .gb-node.lesson.sig .gb-face { width: 70px; height: 70px; }
+.gboard.has-art .gb-node.lesson .gb-face-icon { inset: 12px; width: calc(100% - 24px); height: calc(100% - 24px); }
+.gboard.has-art .gb-node.gate .gb-face { width: 40px; height: 40px; }
+.gboard.has-art .gb-node.peak .gb-face { width: 60px; height: 60px; }
+.gb-cost { min-width: 18px; height: 18px; border-radius: 9px; font-size: 12px; }
+.gb-mystery { width: 19px; height: 19px; font-size: 13px; }

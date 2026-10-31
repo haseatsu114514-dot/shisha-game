@@ -18,7 +18,11 @@ import {
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488。紋は下の端 380,452。横13×縦9 の方眼で上へ育つ。SBD62）
 
-const W = 760, H = 488, CX = 380, CY = 452, CELL = 52;
+// 盤の世界の大きさ（SBD78）: マスの間隔 CELL を広げ、札の大きさはそのまま。のぞき窓（760×488）より大きいので、スクロールで動かす。
+// 横は −GRID.w〜GRID.w、縦は −GRID.h〜0（紋の段）。まわりに余白 PAD
+const CELL = 84, PAD = 64;
+const W = GRID.w * 2 * CELL + PAD * 2, H = GRID.h * CELL + PAD * 2, CX = W / 2, CY = H - PAD;
+const VIEW_W = 760, VIEW_H = 488;
 // 紋の場所は盤ごとに違う（SBD65）。座標は紋からのずれなので、HUB_AT（方眼の座標）を足して描く
 let drawBoard = "body";
 const hubAt = (b = drawBoard) => HUB_AT[b].split(",").map(Number);
@@ -31,6 +35,27 @@ const svg = (tag, attrs = {}, children = []) => {
   return n;
 };
 const payText = (pay) => Object.entries(pay).map(([k, n]) => `${HIDANE_NAME[k]}${n}`).join("＋") || "火種いらず";
+/**
+ * 生成画像（GB03 5.2。remake/img/ui/growth_board/*.webp）。全部読めた時だけ盤に `has-art` を付けて画像の見た目にする。
+ * 読めない時は今の図形（CSS/SVG）のまま動く。画像は飾りで、規則・データは変えない（SBD72）。
+ */
+const ART_DIR = "img/ui/growth_board/";
+/** マスのアイコン（SBD73「漢字が多いのでアイコンを」）: 恩恵・スキル・極み・関門。has-art の時だけ出し、漢字は下に残す */
+const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk ? `perk_${node.perk}` : null)
+  : node.kind === "skill" ? `skill_${node.id}` : node.kind === "gate" ? "gate" : null;
+const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
+  "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown"];
+let artReady = null;
+export function loadBoardArt() {
+  if (artReady) return artReady;
+  artReady = Promise.all(ART_FILES.map((name) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = `${ART_DIR}${name}.webp`;
+  }))).then((ok) => ok.every(Boolean)).catch(() => false);
+  return artReady;
+}
 export const PLACE_JA = { kannon: "観音堂", tokyo_shrine: "路地裏の神社", dubai_mosque: "モスクの回廊", inn_window: "宿の窓辺" };
 
 let current = null;
@@ -52,15 +77,88 @@ export function openBoard({ place = null } = {}) {
   // 灯すほど盤の背景が明るくなり、奥の絵が見えてくる（SBD65。絵は reveal_<盤>.webp を後で置く。無い間は光だけ）
   const reveal = el("div.gb-reveal", { "aria-hidden": "true" });
   const nodeLayer = el("div.gb-nodes");
+  // 盤は拡大して始め、ドラッグ・スクロールで動かし、Ctrl＋ホイール・つまむ・＋−で倍率を変える（2026-10-31 オーナー「もう少し拡大したところから始めたい。
+  // 移動は好きにできるしスクロールで先のも見れる」SBD77）。拡大すると札が重なってずれて見えたので（SBD78）、マスの間隔を広げた世界（W×H）を
+  // 等倍で始め、縮める方向だけ scale する。「全体」は盤がのぞき窓に収まる倍率
+  const stage = el("div.gb-stage", { style: { width: `${W}px`, height: `${H}px` } }, [reveal, boardSvg, nodeLayer]);
+  const world = el("div.gb-world", [stage]);
+  const viewport = el("div.gb-board", { dataset: { test: "board-viewport" } }, [world]);
+  const zoomBar = el("div.gb-zoom", { "aria-label": "盤の倍率" });
+  const boardWrap = el("div.gb-board-wrap", [viewport, zoomBar]);
+  const ZOOM_MIN = Math.min(VIEW_W / W, VIEW_H / H), ZOOM_START = 1, ZOOM_MAX = 1.5;
+  let zoom = ZOOM_START;
   const side = el("div.gb-side", { dataset: { test: "board-preview" }, "aria-live": "polite" });
   const footer = el("div.gb-footer");
   const root = el(`div.gboard${canLight ? ".can-light" : ".view-only"}`, { role: "dialog", "aria-label": "心得の盤", dataset: { test: "growth-board", mode: canLight ? "light" : "view" } }, [
     header,
-    el("div.gb-main", [el("div.gb-left", [tabs, el("div.gb-board", [reveal, boardSvg, nodeLayer])]), side]),
+    el("div.gb-main", [el("div.gb-left", [tabs, boardWrap]), side]),
     footer,
   ]);
 
   function boardOfTarget() { return g.target ? NODE_BY_ID[g.target]?.board : null; }
+
+  /** ゲーム全体の拡縮（1280×720 を画面に合わせる transform）を割り戻す係数 */
+  const gameScale = () => { const r = viewport.getBoundingClientRect(); return r.width && viewport.clientWidth ? r.width / viewport.clientWidth : 1; };
+  /** 倍率を変える。anchor は盤の中で動かさない点（盤の座標。省略で見えている所の真ん中） */
+  function setZoom(z, anchor = null) {
+    const next = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z));
+    const vw = viewport.clientWidth || VIEW_W, vh = viewport.clientHeight || VIEW_H;
+    const a = anchor || { x: (viewport.scrollLeft + vw / 2) / zoom, y: (viewport.scrollTop + vh / 2) / zoom };
+    zoom = next;
+    world.style.width = `${Math.round(W * zoom)}px`; world.style.height = `${Math.round(H * zoom)}px`;
+    stage.style.transform = `scale(${zoom})`;
+    viewport.dataset.zoom = zoom.toFixed(2);
+    viewport.scrollLeft = anchor ? a.x * zoom - (anchor.vx ?? vw / 2) : a.x * zoom - vw / 2;
+    viewport.scrollTop = anchor ? a.y * zoom - (anchor.vy ?? vh / 2) : a.y * zoom - vh / 2;
+    renderZoomBar();
+  }
+  /** 紋が見える所へ（開いた時・盤を切り替えた時） */
+  function centerOnHub() {
+    const hub = at(0, 0), vw = viewport.clientWidth || VIEW_W, vh = viewport.clientHeight || VIEW_H;
+    viewport.scrollLeft = hub.x * zoom - vw / 2;
+    viewport.scrollTop = hub.y * zoom - vh * 0.72;
+  }
+  function renderZoomBar() {
+    zoomBar.replaceChildren(
+      el("button.gb-icon.gb-zoom-btn", { text: "−", title: "縮小", "aria-label": "縮小", dataset: { test: "board-zoom-out" }, disabled: zoom <= ZOOM_MIN + 0.01, onclick: () => setZoom(zoom - 0.2) }),
+      el("button.gb-icon.gb-zoom-btn", { text: "全体", title: "盤の全体を見る", "aria-label": "全体", dataset: { test: "board-zoom-fit" }, disabled: zoom <= ZOOM_MIN + 0.01, onclick: () => setZoom(ZOOM_MIN) }),
+      el("button.gb-icon.gb-zoom-btn", { text: "＋", title: "拡大", "aria-label": "拡大", dataset: { test: "board-zoom-in" }, disabled: zoom >= ZOOM_MAX - 0.01, onclick: () => setZoom(zoom + 0.2) }),
+    );
+  }
+  // ドラッグで動かす（マウス・ペン）。少し動いたらクリックにしない。指はブラウザのスクロールに任せ、2本指はつまんで倍率
+  {
+    let drag = null, pinch = null;
+    viewport.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "touch" || e.button !== 0) return;
+      drag = { x: e.clientX, y: e.clientY, sx: viewport.scrollLeft, sy: viewport.scrollTop, moved: false };
+    });
+    viewport.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (!drag.moved && Math.hypot(dx, dy) < 5) return;
+      if (!drag.moved) { drag.moved = true; viewport.classList.add("dragging"); viewport.setPointerCapture?.(e.pointerId); }
+      const k = 1 / (gameScale() || 1);
+      viewport.scrollLeft = drag.sx - dx * k; viewport.scrollTop = drag.sy - dy * k;
+    });
+    const endDrag = () => { if (drag?.moved) setTimeout(() => viewport.classList.remove("dragging"), 0); drag = null; };
+    viewport.addEventListener("pointerup", endDrag); viewport.addEventListener("pointercancel", endDrag);
+    viewport.addEventListener("click", (e) => { if (viewport.classList.contains("dragging")) { e.stopPropagation(); e.preventDefault(); } }, true);
+    viewport.addEventListener("wheel", (e) => {
+      if (!e.ctrlKey && !e.metaKey) return; // ただのホイールはスクロールで先を見る
+      e.preventDefault();
+      const r = viewport.getBoundingClientRect(), k = 1 / (gameScale() || 1);
+      const vx = (e.clientX - r.left) * k, vy = (e.clientY - r.top) * k;
+      setZoom(zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), { x: (viewport.scrollLeft + vx) / zoom, y: (viewport.scrollTop + vy) / zoom, vx, vy });
+    }, { passive: false });
+    viewport.addEventListener("touchstart", (e) => { if (e.touches.length === 2) pinch = { d: dist(e.touches), z: zoom }; }, { passive: true });
+    viewport.addEventListener("touchmove", (e) => {
+      if (!pinch || e.touches.length !== 2) return;
+      e.preventDefault();
+      setZoom(pinch.z * dist(e.touches) / pinch.d);
+    }, { passive: false });
+    viewport.addEventListener("touchend", () => { pinch = null; });
+    const dist = (ts) => Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY);
+  }
   const view = () => replay(g, pending);
   const status = (node, v) => nodeStatus(node, g, v);
 
@@ -86,7 +184,7 @@ export function openBoard({ place = null } = {}) {
       return el(`button.gb-tab.b-${k}${k === board ? ".on" : ""}`, {
         role: "tab", "aria-selected": String(k === board), dataset: { test: `board-tab-${k}` },
         "aria-label": `${BOARD_JA[k]}盤 ${count}/${STAT_SQUARES[k]}${ready ? `、今取れるマス ${ready}` : ""}`,
-        onclick: () => { board = k; selected = null; SE.click?.(); render(); },
+        onclick: () => { board = k; selected = null; SE.click?.(); render(); centerOnHub(); },
       }, [
         el("span.gb-tab-head", { text: BOARD_HEAD[k], "aria-hidden": "true" }),
         el("span.gb-tab-body", [
@@ -105,6 +203,7 @@ export function openBoard({ place = null } = {}) {
     const open = ringsOpen();
     const lit = (id) => id === HUB || v.unlocked.has(id);
     const goal = g.target && NODE_BY_ID[g.target]?.board === board ? new Set(pathTo(g.target, v.unlocked).path) : new Set();
+    const walls = [];
     // ネオンのラウンジ（GB03 の見本）: 光のにじみ・封の曇り・ガラスの煙はコードで描く（画像が来たら重ねる）
     const parts = [svg("defs", {}, [
       svg("radialGradient", { id: "gb-ember", cx: "50%", cy: "62%", r: "60%" }, [
@@ -146,22 +245,34 @@ export function openBoard({ place = null } = {}) {
         if (on) { glow.append(line("gb-tube-glow")); cores.push(line("gb-path lit")); }
         else if (closedA || closedB) parts.push(line("gb-path sealed"));
         else { parts.push(line("gb-path"), line("gb-path-hi")); if (aim) parts.push(line("gb-path aim")); }
-        // 開いている所と、まだ開いていない所の境に封（章の数は出さない。SBD42）
+        // 開いている所と、まだ開いていない所の境に結界（章の数は出さない。SBD42。文字の「封」はやめ、鎖の壁で「この先はまだ」を見せる。SBD74）
         if (closedA !== closedB) {
           const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, horiz = a.y === b.y;
-          parts.push(svg("line", { x1: horiz ? mx : mx - 11, y1: horiz ? my - 11 : my, x2: horiz ? mx : mx + 11, y2: horiz ? my + 11 : my, class: "gb-seal" }));
+          const wall = svg("g", { class: "gb-wall", transform: `translate(${mx} ${my}) rotate(${horiz ? 90 : 0})`, "data-test": "board-wall" });
+          // 結界は道を横切る大きさ（SBD78「鍵の進めないとこが小さくて見づらい」）。下に暗い帯を敷いて、どの背景でも浮かせる
+          wall.append(svg("rect", { x: -40, y: -15, width: 80, height: 30, rx: 15, class: "gb-wall-back" }));
+          if (root.classList.contains("has-art")) wall.append(svg("image", { href: `${ART_DIR}wall_seal.webp`, x: -42, y: -14, width: 84, height: 28, class: "gb-wall-art" }));
+          else wall.append(svg("line", { x1: -30, y1: -6, x2: 30, y2: -6, class: "gb-seal" }), svg("line", { x1: -30, y1: 6, x2: 30, y2: 6, class: "gb-seal" }), svg("circle", { cx: 0, cy: 0, r: 7, class: "gb-seal-lock" }));
+          const tip = svg("title"); tip.textContent = "この先は物語が進むと開く"; wall.prepend(tip);
+          walls.push(wall);
         }
       }
     }
-    parts.push(glow, ...cores);
+    parts.push(glow, ...cores, ...walls);
     const hub = at(0, 0);
-    // 紋: ネオンの輪（外の太い管のにじみ＋管＋内の細い輪＋6つの短い渦）。画像 hub_<盤>.webp が来たら差し替える
-    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 34, class: "gb-hub-glow", filter: "url(#gb-glow)" }));
-    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub" }));
-    parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 25, class: "gb-hub-inner" }));
-    for (let i = 0; i < 6; i++) {
-      const a0 = i * Math.PI / 3, a1 = a0 + 0.7, r = 20;
-      parts.push(svg("path", { d: `M ${hub.x + r * Math.cos(a0)} ${hub.y + r * Math.sin(a0)} A ${r} ${r} 0 0 1 ${hub.x + (r - 3) * Math.cos(a1)} ${hub.y + (r - 3) * Math.sin(a1)}`, class: "gb-hub-swirl" }));
+    if (root.classList.contains("has-art")) {
+      // 紋: 生成した輪の画像（hub_<盤>.webp）。漢字はコードで重ねる
+      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub gb-hub-art-base" }));
+      parts.push(svg("image", { href: `${ART_DIR}hub_${board}.webp`, x: hub.x - 44, y: hub.y - 44, width: 88, height: 88, class: "gb-hub-art" }));
+    } else {
+      // 紋: ネオンの輪（外の太い管のにじみ＋管＋内の細い輪＋6つの短い渦）
+      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 34, class: "gb-hub-glow", filter: "url(#gb-glow)" }));
+      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 30, class: "gb-hub" }));
+      parts.push(svg("circle", { cx: hub.x, cy: hub.y, r: 25, class: "gb-hub-inner" }));
+      for (let i = 0; i < 6; i++) {
+        const a0 = i * Math.PI / 3, a1 = a0 + 0.7, r = 20;
+        parts.push(svg("path", { d: `M ${hub.x + r * Math.cos(a0)} ${hub.y + r * Math.sin(a0)} A ${r} ${r} 0 0 1 ${hub.x + (r - 3) * Math.cos(a1)} ${hub.y + (r - 3) * Math.sin(a1)}`, class: "gb-hub-swirl" }));
+      }
     }
     parts.push(svg("circle", { cx: hub.x, cy: hub.y + 2, r: 19, fill: "url(#gb-ember)" }));
     const hubText = svg("text", { x: hub.x, y: hub.y + 8, class: "gb-hub-text" });
@@ -172,19 +283,22 @@ export function openBoard({ place = null } = {}) {
     nodeLayer.replaceChildren(...nodes.map((node) => {
       const p = at(node.gx, node.gy), st = status(node, v);
       const shown = revealOf(node);
-      const glyph = st === "locked" && node.kind !== "stat" && node.kind !== "lesson" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? whoName(node.who).slice(0, 1) : "？") : shown === "hidden" ? "？" : node.glyph;
+      const glyph = st === "locked" && node.kind !== "stat" && node.kind !== "lesson" ? "" : node.kind === "stat" ? (node.peak ? "極" : perkOf(node)?.glyph || "") : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? whoName(node.who).slice(0, 1) : "") : shown === "hidden" ? "？" : node.glyph;
       const qStep = node.feature && !g.nodes.includes(node.id);
-      return el(`button.gb-node.${node.kind}.s-${st}${fresh.has(node.id) ? ".just-opened" : ""}${node.peak ? ".peak" : ""}${node.sig ? ".sig" : ""}${selected === node.id ? ".selected" : ""}${g.target === node.id ? ".target" : ""}${goal.has(node.id) ? ".on-path" : ""}`, {
+      const sizeCls = node.kind === "skill" ? (node.cost <= 2 ? ".sz-s" : node.cost >= 7 ? ".sz-l" : ".sz-m") : "";
+      const icon = iconOf(node);
+      return el(`button.gb-node.${node.kind}.s-${st}${sizeCls}${node.notable ? ".notable" : ""}${fresh.has(node.id) ? ".just-opened" : ""}${node.peak ? ".peak" : ""}${node.sig ? ".sig" : ""}${selected === node.id ? ".selected" : ""}${g.target === node.id ? ".target" : ""}${goal.has(node.id) ? ".on-path" : ""}`, {
         style: { left: `${p.x}px`, top: `${p.y}px` },
         title: nodeTitle(node, shown), "aria-label": `${nodeTitle(node, shown)}（${statusWord(node, st)}）`,
         dataset: { test: `board-node-${node.id}`, status: st },
         onclick: () => select(node.id, true),
       }, [
-        el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph }), lessonFace(node, st)]),
+        el("span.gb-face", { "aria-hidden": "true" }, [el("span.gb-glyph", { text: glyph }), lessonFace(node, st),
+          icon && st !== "locked" ? el("img.gb-icon-img", { src: `${ART_DIR}icons/${icon}.webp`, alt: "", draggable: "false", loading: "lazy" }) : null]),
         qStep ? el("em.gb-quality", { text: "✦", "aria-hidden": "true" }) : null,
         node.kind === "skill" && ["available", "short", "far"].includes(st)
           ? el("span.gb-cost", { "aria-hidden": "true", text: String(node.cost) }) : null,
-        st === "locked" ? el("span.gb-lock", { text: "封", "aria-hidden": "true" }) : null,
+        node.kind === "lesson" && !lessonKnown(node, g) ? el("span.gb-mystery", { text: "?", "aria-hidden": "true" }) : null,
       ]);
     }));
   }
@@ -194,10 +308,14 @@ export function openBoard({ place = null } = {}) {
    * 会っていない人の授業は盤に出ないので、出ている授業はどれも顔を見せてよい。
    */
   function lessonFace(node, st) {
-    if (node.kind !== "lesson" || !lessonKnown(node, g)) return null;
-    const url = faceIconUrl(node.who, state);
+    if (node.kind !== "lesson") return null;
+    const known = lessonKnown(node, g);
+    // まだ分からない授業はその人の影絵（2026-10-31 オーナー「まだ先のキャラもシルエットだけ出したい」SBD75）。
+    // 正体を伏せる授業（revealFlag）と顔の無い人は、誰でもない影絵（画像がある時だけ）
+    const secret = !known && (node.revealFlag || !faceIconUrl(node.who, state));
+    const url = secret ? (root.classList.contains("has-art") ? `${ART_DIR}silhouette_unknown.webp` : null) : faceIconUrl(node.who, state);
     if (!url) return null;
-    const img = el("img.gb-face-icon", { src: url, alt: "", draggable: "false", loading: "lazy" });
+    const img = el(`img.gb-face-icon${known ? "" : ".silhouette"}`, { src: url, alt: "", draggable: "false", loading: "lazy" });
     img.addEventListener("error", () => img.remove());
     return img;
   }
@@ -209,7 +327,7 @@ export function openBoard({ place = null } = {}) {
     return node.ring <= open ? "open" : node.ring === open + 1 ? "next" : "hidden";
   }
   function nodeTitle(node, shown = revealOf(node)) {
-    if (node.kind === "stat") return node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : `${BOARD_JA[node.board]}のマス・${perkOf(node)?.name || ""}`;
+    if (node.kind === "stat") return node.peak ? `${BOARD_JA[node.board]}のマス（極み）` : node.notable ? `要のマス「${perkOf(node)?.notable?.name}」・${perkOf(node)?.name || ""}` : `${BOARD_JA[node.board]}のマス・${perkOf(node)?.name || ""}`;
     if (node.kind === "gate") return `${BOARD_JA[node.board]}の関門`;
     if (node.kind === "lesson") return lessonKnown(node, g) ? `${whoName(node.who)}の授業「${node.name}」` : "？？？の授業";
     return shown === "hidden" ? "？？？（物語が進むと盤に現れる）" : `スキル「${node.name}」`;
@@ -235,7 +353,8 @@ export function openBoard({ place = null } = {}) {
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
     if (node.kind === "stat") {
       const perk = perkOf(node);
-      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perk.text}（${perk.tierName}）` }));
+      if (perk.notable) lines.push(el("p.gb-p-quality", { dataset: { test: "board-notable" }, text: `要のマス「${perk.notable.name}」：${perk.notable.text}` }));
+      lines.push(el("p", { dataset: { test: "board-perk" }, text: `このマスで：${perk.text}（${perk.tierName}${perk.notable ? "・要" : ""}）` }));
       if (node.feature) lines.push(el("p.gb-p-quality", { dataset: { test: "board-feature" }, text: `✦ 灯すと「${FEATURES[node.feature].text}」` }));
       if (node.peak) lines.push(el("p.gb-p-next", { text: statsFilled(node.board, v.unlocked) ? "盤の能力のマスを全部灯した。極みを灯せる" : "この盤の能力のマスを全部灯すと灯せる（盤を埋めたご褒美）" }));
       lines.push(el("p.gb-p-sub", { text: `効く場面：${BOARD_WHERE[node.board]}` }));
@@ -301,7 +420,7 @@ export function openBoard({ place = null } = {}) {
       return `相談できる。次に${who}に会った時に話を聞こう`;
     }
     if (st === "pending") return "仮置き中。決定するまでは「やめる」で戻せる";
-    if (st === "locked") return "まだ開いていない。物語が進むと封が解ける";
+    if (st === "locked") return "結界の先。物語が進むと結界が解けて道が開く";
     if (st === "sealed") return "錠が開くと、道が届けば灯せる";
     if (st === "far" && node.peak) {
       const left = boardNodes(node.board).filter((n) => n.kind === "stat" && !n.peak && !v.unlocked.has(n.id)).length;
@@ -330,7 +449,7 @@ export function openBoard({ place = null } = {}) {
       text: pending.length ? `決定（${pending.length}）` : "閉じる", dataset: { test: "board-decide" }, onclick: () => (pending.length ? finish(true) : close()),
     }));
     footer.replaceChildren(wallet, el("p.gb-legend", [
-      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 関門（色の火）" }), legend("sealed", "授業の錠"), legend("locked", "まだ開いていない"), el("span", { text: "✦ できることが増える" }),
+      legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 関門（色の火）" }), legend("sealed", "授業の錠"), legend("locked", "結界の先（物語が進むと開く）"), el("span", { text: "✦ できることが増える" }),
     ]), el("div.gb-actions", actions));
   }
   function legend(st, text) { return el("span.gb-legend-item", [el(`i.s-${st}`), el("span", { text })]); }
@@ -434,7 +553,7 @@ export function openBoard({ place = null } = {}) {
     if (firstFresh) board = firstFresh.board;
     g.seenRing = ringsOpen();
     const banner = el("div.gb-opened", { role: "status", dataset: { test: "board-opened" } }, [
-      el("b", { text: "封が解けた" }), el("span", { text: "心得の盤に、新しい道が開いた" }),
+      el("b", { text: "結界が解けた" }), el("span", { text: "心得の盤に、新しい道が開いた" }),
     ]);
     root.append(banner);
     setTimeout(() => banner.remove(), 3200);
@@ -445,7 +564,9 @@ export function openBoard({ place = null } = {}) {
   document.addEventListener("keydown", onKey, true);
   if (g.target) selected = g.target;
   render();
+  setZoom(ZOOM_START); centerOnHub();
   requestAnimationFrame(() => root.classList.add("show"));
+  loadBoardArt().then((ok) => { if (ok && root.isConnected) { root.classList.add("has-art"); render(); } });
   return done;
 }
 

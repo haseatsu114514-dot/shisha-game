@@ -1,0 +1,23 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "prompt": "a nose with a curling scent line (scent memory). A single flat game UI icon for a skill board in a dim shisha lounge visual novel. Drawn as a clean monoline pictogram, one continuous stroke weight, warm white #fff1d0 lines with a faint soft glow, on a FULLY TRANSPARENT background. Centered, filling about 70% of the frame, simple silhouette readable at 24 pixels, no shading gradients inside shapes, no frame, no circle around it, no background plate. Strictly no text, no letters, no kanji, no numbers, no logos, no watermark.",
+ "size": "1024x1024",
+ "n": 1,
+ "quality": "medium",
+ "background": "transparent",
+ "output_format": "png",
+ "created": 1793424426,
+ "usage": {
+  "input_tokens": 133,
+  "input_tokens_details": {
+   "image_tokens": 0,
+   "text_tokens": 133
+  },
+  "output_tokens": 439,
+  "output_tokens_details": {
+   "image_tokens": 439,
+   "text_tokens": 0
+  },
+  "total_tokens": 572
+ }
+}
