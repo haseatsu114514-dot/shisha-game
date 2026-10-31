@@ -205,7 +205,7 @@ await suite("issue508-theme", async checkAll => {
       await advanceTo(page, "夜のtonari。いつもの時間に、いつものサラリーマンが来た。……でも、今日は少し違う。", touch);
       const normal = await snapshotPortrait(page, "normal");
       await page.screenshot({ path: `${shotDir}/${label}-salaryman-change-normal.png` });
-      await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。", touch);
+      await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。肩がほんの少しだけ下がっていた。", touch);
       const smile = await snapshotPortrait(page, "smile");
       assert.deepEqual(smile, normal, "Portrait frame moved on expression change");
       await assertFits(page, ".vn-box");
@@ -237,7 +237,7 @@ await suite("issue508-theme", async checkAll => {
       T.night.syncNightQueue(T.ch1.NIGHT_EVENTS);
       T.night.runNightPlan(T.ch1.NIGHT_EVENTS).then(() => { window.finished = true; });
     });
-    await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。", false);
+    await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。肩がほんの少しだけ下がっていた。", false);
     const saved = await page.evaluate(() => { T.core.saveToSlot("suien_remake_slot1"); return structuredClone(T.core.state); });
     assert.equal(!!saved.flags._ev_salaryman_change, false);
     await page.reload(); await page.locator(process.env.READY_SELECTOR || '[data-test="title-new"]').waitFor(); await prepare(page);
@@ -261,6 +261,6 @@ await suite("issue508-theme", async checkAll => {
     assert.deepEqual(loadedGame, onceGame, "Manual LOAD changed game state");
     assert.deepEqual(result.twice, result.reloaded, "Repeated night duplicated rewards");
     assert.deepEqual(result.reread, []);
-    assert.equal(result.lines.filter(t => t === "小さく笑って電話を切り、スマホをしまった。").length, 1);
+    assert.equal(result.lines.filter(t => t === "小さく笑って電話を切り、スマホをしまった。肩がほんの少しだけ下がっていた。").length, 1);
   });
 });
