@@ -87,7 +87,8 @@ await suite("ui-themes-preview", async check => {
             nameCentered:Math.abs((nameGlyph.left+nameGlyph.right)/2-(name.left+name.right)/2)<=2*scale,
             nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale && name.bottom<=text.top-12*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
-            headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top-3*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-32*scale,
+            headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top-3*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2,
+            rightGap:(controls.right-box.right)/scale,
             sceneOpen:box.height/scale<=192 && (box.top-document.querySelector("#stage").getBoundingClientRect().top)/scale>=500,
             headerOffset:((name.top+name.height/2)-(controls.top+controls.height/2))/scale,
             typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
@@ -103,7 +104,14 @@ await suite("ui-themes-preview", async check => {
         assert(twoLines.clear,"name, next indicator, toolbar and actual text glyphs remain separate");
         assert(twoLines.footerClear,"next indicator leaves a clear margin above the visible paper/footer edge, including its 2px bob");
         assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
-        assert(Math.abs(twoLines.headerOffset-(id.startsWith("smoke")?8:16))<=.5,"controls leave the intended space above the main window");
+        // 紙とラベンダーは、操作札を名前札と同じ高さに置き、右端を紙の窓（本文の箱より8px外）の端にそろえる（DUI18）。
+        if(id==="paper"){
+          assert(Math.abs(twoLines.headerOffset)<=.5,"paper controls sit level with the name tab");
+          assert(Math.abs(twoLines.rightGap-8)<=.5,`paper controls end at the window edge: ${twoLines.rightGap}`);
+        }else{
+          assert(Math.abs(twoLines.headerOffset-(id.startsWith("smoke")?8:16))<=.5,"controls leave the intended space above the main window");
+          assert(twoLines.rightGap<=-32,"toolbar stays inside the frame header");
+        }
         assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
         assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.65,"command text is a quieter third level");
         assert(twoLines.margins[0]>=95.9 && twoLines.margins[1]>=95.9,"reserve space for visible folds and smoke, beyond glyph bounds");

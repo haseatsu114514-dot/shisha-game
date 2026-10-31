@@ -17,8 +17,9 @@ html:root[data-ui-theme="paper"] {
   --vn-tab-face: var(--lavender-art) center / 256px repeat, #69497e;
   --vn-tab-edge: #69497e; --vn-tab-inner: #c3a9d566; --vn-tab-text: #fff;
   --vn-tab-radius: 8px 8px 3px 3px; --vn-tab-shadow: 0 3px 8px #2a1a3a40;
-  /* AUTO・SKIP などの札は名前札と同じ高さで窓の上辺にまたがせ、左右対称の位置に置く（DUI18）。 */
-  --vn-command-rise: 0px; --vn-command-width: 340px;
+  /* AUTO・SKIP などの札は名前札と同じ高さで窓の上辺にまたがせ、右端を紙の窓の端にそろえる（DUI18）。
+     紙の窓は本文の箱より8px外へ広がる（.vn-box::before の inset: -8px）。 */
+  --vn-command-rise: 0px; --vn-command-width: 340px; --vn-command-inset: -8px;
 }
 
 /* 紙の面: 生成画像の板を九分割。中は墨の文字。 */
