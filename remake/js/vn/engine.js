@@ -67,22 +67,19 @@ let autoFxGap = 0;
 let sequenceDepth = 0;
 const SEEN_LINES_KEY = "suien_remake_seen_dialogue_lines";
 let seenLines;
-let persistSeenLines = true;
-/** プレビュー用: 既読はメモリだけに記録し、本編の端末保存（localStorage）に書かない */
-export function keepSeenLinesInMemory() {
-  persistSeenLines = false;
-  seenLines = new Set();
-}
 function readSeenLines() {
   if (seenLines) return seenLines;
   try { seenLines = new Set(JSON.parse(localStorage.getItem(SEEN_LINES_KEY) || "[]")); }
   catch { seenLines = new Set(); }
   return seenLines;
 }
+// 既読の記録を端末へ書くのは本編（index.html → main.js）だけ。会話UI・第2章などの試遊ページは本編の保存を変えない。
+let seenLinePersistence = false;
+export function enableSeenLinePersistence() { seenLinePersistence = true; }
 function markSeenLine(key) {
   if (!key || readSeenLines().has(key)) return;
   seenLines.add(key);
-  if (!persistSeenLines) return;
+  if (!seenLinePersistence) return;
   try { localStorage.setItem(SEEN_LINES_KEY, JSON.stringify([...seenLines].slice(-20000))); }
   catch { /* 端末の容量制限時も会話は続ける */ }
 }
