@@ -13,10 +13,11 @@ import { tokyoWindowReserved, tokyoGymWindowAllowed } from "../core/tokyo-clock.
 export const TOKYO_OUTINGS = Object.freeze([
   { id: "mukai_help", place: "mukai", label: "mukaiを手伝う", repeat: true, stamina: -14, money: 6000, stat: "charm",
     reason: { lost: "味が戻るまでは、煙の量と客の顔で手伝える", back: "戻った舌で、客席の調整を任せてもらう" } },
+  // 久世の好感度は煙幕への再訪だけで付く（#2028）。♥1でLIME交換の任意場面が開く（ch3-story-wiring.js）。
   { id: "enmaku_notes", place: "enmaku", after: "ch3_kuze_first", before: "ch3_kuze_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "insight", reason: "久世のノートに、何が書いてあるか聞きに行く" },
+    stamina: -10, stat: "insight", affinity: { kuze: 10 }, reason: "久世のノートに、何が書いてあるか聞きに行く" },
   { id: "enmaku_answer", place: "enmaku", after: "ch3_kuze_advice", label: "煙幕に顔を出す",
-    stamina: -10, stat: "sense", reason: "どうしたいか、久世に答えを返しに行く" },
+    stamina: -10, stat: "sense", affinity: { kuze: 10 }, reason: "どうしたいか、久世に答えを返しに行く" },
   // スティーブがmukaiへ客として来る（#1696）。タイマー越しに香りの山を逃す癖と、全国へ来た理由。店を訪ねる前だけ。
   { id: "mukai_steve", place: "mukai", before: "ch3_steve_low_heat", met: "steve", label: "mukaiで店番をする",
     stamina: -8, money: 3000, stat: "insight", reason: "配達先のスティーブが、今日は客として来るらしい" },

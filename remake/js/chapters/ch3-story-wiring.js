@@ -4,6 +4,7 @@ import { canReadOptionalStory, selectStoryEvening } from "../core/story-routes.j
 import { characterRegion, dueTokyoVisit, visitContacts } from "../core/tokyo-visits.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 import { confessionLanded } from "./ch3-romance-entry.js";
+import { AFFINITY_RANK_PTS } from "../core/stats.js";
 
 /**
  * 仮置き（Q未決）: 渡航予定を持たず、第3章のあいだ東京にいる人物。面識（state.met）があれば前夜の present に加える。
@@ -20,6 +21,7 @@ export const optionalReadFlag = id => `_ch3_read_${id}`;
 // afterとmetは story_routes.json の optional_requirements に足す、この章のカード上の置き方（台本は変えない）。
 // away=その人物が東京に来ている間は出さない（遠くからの連絡の場面）。
 // unsettled=その人物との関係が告白の返事でまだ着地していない間だけ出す（恋人・友達のままなら出さない）。
+// heart=その人物の通常好感度がこの段階（♥）以上の時だけ出す。恋人の絆は数えない。
 export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_minto_small_lies: { file: "ch3_double_apple", label: "みんとからの夜の通話", location: "mukaiの裏口", bg: "bg_street_night" },
   // ましろの名乗りはむかい到着の場面。到着前に、彼女の出る噂話を置かない。
@@ -42,6 +44,9 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_kuze_first"] },
   ch3_kuze_mashiro_soon_back: { file: "ch3_kuze_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_kuze_mukai_visit"] },
+  // 久世とLIMEを交換する（#2028）。助言の後、煙幕への再訪で♥1になってから。後日談の片づけで返事の欄を回収する。
+  ch3_kuze_lime: { file: "ch3_rivals", label: "返事の欄", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_kuze_advice"], heart: { kuze: 1 } },
   // ひよりルートの tokyo_contact（#1434 決定B）。route.events と同じ条件に、mukai到着後・東京滞在中でないことを足す。
   // ましろの告白（#1930 仮置き）。任意4場面を読み終えた後の休日に、彼女の部屋で。返事が交際／友人の着地になる。
   confession_mashiro: { file: "confession", label: "ましろちゃんの部屋でお茶", location: "ましろの部屋", bg: "bg_home_day",
@@ -61,7 +66,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
 export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace"],
-  ch3_rivals: ["ch3_emil_workshop"],
+  ch3_rivals: ["ch3_emil_workshop", "ch3_kuze_lime"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale"],
@@ -127,7 +132,8 @@ export function availableOptionalScenes(routes, value) {
       && (place.after || []).every(scene => completedScenes.includes(scene))
       && (place.met || []).every(who => value.met?.[who])
       && (place.away || []).every(who => characterRegion(value, { characters: {} }, who) !== "tokyo")
-      && (place.unsettled || []).every(who => !confessionLanded(value, who));
+      && (place.unsettled || []).every(who => !confessionLanded(value, who))
+      && Object.entries(place.heart || {}).every(([who, level]) => (value.affinity?.[who] || 0) >= AFFINITY_RANK_PTS[level]);
   }).map(id => ({ id, ...CH3_OPTIONAL_SCENES[id] }));
 }
 

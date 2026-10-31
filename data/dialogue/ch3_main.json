@@ -1534,6 +1534,12 @@
           "text": "俺も、久世さんの予想を外し続けます"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_kuze",
+          "next_true": "lime"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "夕方、久世は福岡行きの便へ、はじめは地元へ帰る新幹線へ向かった。"
@@ -1543,7 +1549,26 @@
           "face": "",
           "text": "ましろは駅の改札の前まで来て、二人に同じように手を振った。"
         }
-      ]
+      ],
+      "branches": {
+        "lime": [
+          {
+            "speaker": "kuze",
+            "face": "smile",
+            "text": "外したら、LIMEで報告して。福岡からでも、ノートに書くから"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "久世さんも、外れた予想を送ってください"
+          },
+          {
+            "speaker": "kuze",
+            "face": "normal",
+            "text": "うん。……返事の欄、やっと埋まりそう"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_home_customer",

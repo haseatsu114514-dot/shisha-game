@@ -119,6 +119,7 @@
         "ch3_mashiro_black_tea",
         "ch3_kuze_mashiro_tea_tin",
         "ch3_kuze_mashiro_soon_back",
+        "ch3_kuze_lime",
         "confession_mashiro",
         "hiyori_tokyo_contact",
         "ch3_tsumugi_slump",
@@ -259,6 +260,12 @@
       "seen": [
         "ch3_kuze_mukai_visit"
       ]
+    },
+    "ch3_kuze_lime": {
+      "seen": [
+        "ch3_kuze_advice"
+      ],
+      "comment": "#2028: 久世とLIMEを交換する。助言の後。♥1（煙幕への再訪で付く好感度）の条件は場面カードの置き方（ch3-story-wiring.js の heart）。"
     },
     "ch3_mashiro_play_3": {
       "seen": [

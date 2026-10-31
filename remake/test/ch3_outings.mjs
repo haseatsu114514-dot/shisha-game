@@ -8,6 +8,8 @@ import { TOKYO_OUTINGS, OUTING_DIALOGUE_IDS, OUTINGS_FLAG, chapterThreeOutings, 
   claimChapterThreeOuting, outingDialogueId, tasteRecovered } from "../js/chapters/ch3-outing-progress.js";
 import { chapterThreeMapModel } from "../js/chapters/ch3-map-model.js";
 import { classifyFlag } from "../js/core/carry.js";
+import { AFFINITY_RANK_PTS } from "../js/core/stats.js";
+import { availableOptionalScenes, commitOptionalRead } from "../js/chapters/ch3-story-wiring.js";
 
 function departure({ member = false, legacy = false } = {}) {
   const value = newState();
@@ -173,6 +175,11 @@ function nextWindow(value) {
   assert.deepEqual(byId.ch3_outing_steve_timer.metadata.flavor_lesson, { mountain_mist: 1 });
   assert.deepEqual(TOKYO_OUTINGS.find(item => item.id === "steve_timer").affinity, { steve: 10 });
   assert(TOKYO_OUTINGS.filter(item => item.affinity).every(item => !item.repeat), "Affinity outings are read once");
+  // 久世（#2028）: 好感度は煙幕への再訪（任意の外出）だけ。台本には報酬行を置かない。
+  for (const id of ["enmaku_notes", "enmaku_answer"]) {
+    assert.deepEqual(TOKYO_OUTINGS.find(item => item.id === id).affinity, { kuze: 10 });
+    assert(!JSON.stringify(byId[`ch3_outing_${id}`]).includes("affinity"));
+  }
   // てつこの世話は撫でる／餌の2択。どちらの枝も次の行へ戻り、報酬行を持たない。
   const care = byId.ch3_outing_tetsuko.lines.find(line => line.type === "choice");
   assert.deepEqual(care.choices.map(choice => choice.next).sort(), ["feed", "pet"]);
@@ -193,6 +200,41 @@ function nextWindow(value) {
   assert.match(model.note, /行き先/);
   const plain = chapterThreeMapModel(value, chapterThreeScenes(value), { freeTime: true });
   assert(!plain.pins.some(item => item.id === "park"));
+}
+
+// 久世のLIME交換と締めくくり（#2028）: 助言の後、煙幕への再訪で♥1になった時だけ場面カードに出る。
+// 好感度は任意の場面だけで付き、必須場面（本編・後日談の片づけ）では付かない。
+{
+  const routes = JSON.parse(fs.readFileSync(new URL("../../data/story_routes.json", import.meta.url)));
+  const read = name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))).dialogues;
+  const scene = id => [...read("ch3_rivals"), ...read("ch3_main")].find(dialogue => dialogue.dialogue_id === id);
+  const offered = value => availableOptionalScenes(routes, value).map(item => item.id);
+  const early = at("d8-night");
+  early.value.affinity.kuze = AFFINITY_RANK_PTS[5];
+  assert(!offered(early.value).includes("ch3_kuze_lime"), "Kuze's LIME before his advice");
+  const { value } = at("d12-noon");
+  assert(!offered(value).includes("ch3_kuze_lime"), "Kuze's LIME without affinity");
+  value.affinity.kuze = AFFINITY_RANK_PTS[1] - 1;
+  assert(!offered(value).includes("ch3_kuze_lime"), "Kuze's LIME below ♥1");
+  value.affinity.kuze = AFFINITY_RANK_PTS[1];
+  assert(offered(value).includes("ch3_kuze_lime"));
+  commitOptionalRead(value, "ch3_kuze_lime");
+  assert(!offered(value).includes("ch3_kuze_lime"), "Kuze's LIME read twice");
+  const lime = scene("ch3_kuze_lime").lines;
+  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_kuze"));
+  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ kuze: 2 }]);
+  assert.equal(classifyFlag("_lime_contact_kuze"), "person");
+  for (const id of ["ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_kuze_advice", "ch3_enmaku_cleanup"]) {
+    const dialogue = scene(id);
+    const lines = [...dialogue.lines, ...Object.values(dialogue.branches || {}).flat()];
+    assert(!dialogue.metadata?.add_affinity && !lines.some(line => line.affinity?.kuze), `${id}: mandatory scenes give no affinity`);
+  }
+  const cleanup = scene("ch3_enmaku_cleanup");
+  const gate = cleanup.lines.find(line => line.type === "condition" && line.flag === "_lime_contact_kuze");
+  assert(gate && !gate.next_false && cleanup.branches[gate.next_true].some(line => line.speaker === "kuze"));
+  const faces = new Set(fs.readdirSync(new URL("../img/sprites/characters/kuze/", import.meta.url))
+    .map(name => name.replace(/^chr_kuze_|\.webp$/g, "")));
+  for (const line of [...lime, ...cleanup.branches[gate.next_true]]) if (line.speaker === "kuze") assert(faces.has(line.face), line.face);
 }
 
 assert.equal(classifyFlag(OUTINGS_FLAG), "progression");

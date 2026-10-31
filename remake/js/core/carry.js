@@ -314,6 +314,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_ageha", "person"],
   ["_lime_contact_hiyori", "person"],
   ["_lime_contact_kumicho", "person"],
+  ["_lime_contact_kuze", "person"],
   ["_lime_contact_mashiro", "person"],
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],

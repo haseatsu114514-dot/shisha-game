@@ -764,6 +764,105 @@
           "text": "はじめは部品の名前と、作った人の名前を同じページに書いた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_kuze_lime",
+      "comment": "第3章の任意場面（#2028）。助言の後、煙幕への再訪で久世が♥1になってから。好感度は任意場面だけで付ける。後日談の ch3_enmaku_cleanup で、交換した時だけ「返事の欄」を回収する。大会の前後を前提にしない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "閉店後の煙幕。久世は客席で、ノートの最後のページを開いていた。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "いらっしゃい。今夜の組織の議題は、君の連絡先"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……議題、俺なんですか"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "うん。僕のノート、客の答えはたくさんあるのに、返事の欄がないんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "返事の欄？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "帰ってから「やっぱり違った」って思う人もいるでしょ。それも聞きたくて"
+        },
+        {
+          "speaker": "kuze",
+          "face": "nervous",
+          "text": "でも、煙幕は数週間だけの間借り。閉めたら、東京の客の続きは聞けない"
+        },
+        {
+          "speaker": "kuze",
+          "face": "nervous",
+          "text": "……かといって、お客さんに連絡先を聞くのも違う気がして"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "君は客で、作業台の常連で、ライバル。どれでもいいから、聞いていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どれでもいいなら、交換します"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_kuze"
+        },
+        {
+          "speaker": "",
+          "text": "久世は画面を確かめてから、ノートの最後のページに一行書き足した。"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smug",
+          "text": "書記の勧誘は、LIMEでも続けるからね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "入りません"
+        },
+        {
+          "speaker": "kuze",
+          "face": "smile",
+          "text": "知ってる。……外れた予想も、送っていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "当たった時だけじゃなくて？"
+        },
+        {
+          "speaker": "kuze",
+          "face": "normal",
+          "text": "外れた方が、続きを聞きたくなるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ノートの外にも、答えを返す場所ができたんだ）"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "kuze": 2
+          }
+        }
+      ]
     }
   ]
 }
