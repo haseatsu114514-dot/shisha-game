@@ -402,11 +402,16 @@ async function runTournament(owner) {
   // 順位・二度の調整・5工程の実成績を、勝敗の台本へ進む前に確認する。
   const parts = Object.entries(result.parts).map(([key, score]) =>
     `${({ holes: "穴", heat: "炭", shisha: "完成品", care1: "調整1", care2: "調整2" })[key]} ${score.toFixed(1)}`).join(" ／ ");
+  // 最終結果も第2・3章と同じ持ち点の盤で見せる（#2031）。票は確定済みの result.rows を使う。
+  const match = chapterFourProgress(state).match;
+  const notes = [result.failure ? "完了した工程から振り返ろう。" : `はじめは${result.rank}位。審査員三人、それぞれの10点が出揃った。`,
+    ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
+    // 第1〜3章の結果と同じ2行（#1909）。記録の無い工程は推測しない。
+    ...craftReviewLines(match?.craft)];
+  const { chapterFourStandingsView } = await import("./ch4-standings.js");
   await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
-    body: `${result.failure ? "完了した工程から振り返ろう。" : `総合 ${result.total.toFixed(1)} ／ ${parts}`}\n` +
-      result.rows.map(row => `${({ hajime: "はじめ", naru: "なる", wang: "王煙楼", sheikh: "シェイク" })[row.id]} ${row.points}票`).join(" ／ ") +
-      // 第1〜3章の結果と同じ2行（#1909）。記録の無い工程は推測しない。
-      craftReviewLines(chapterFourProgress(state).match?.craft).map(text => `\n${text}`).join(""),
+    body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result" })
+      : notes.join("\n"),
     options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
