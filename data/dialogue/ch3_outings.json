@@ -128,6 +128,46 @@
         { "speaker": "hajime", "face": "normal", "text": "（明日のことは、明日の自分に任せよう）" },
         { "speaker": "", "text": "ベンチで温かい飲み物を一本空けて、ゆっくり歩いて帰った。" }
       ]
+    },
+    {
+      "dialogue_id": "ch3_outing_tetsuko",
+      "comment": "mukaiの看板猫てつこ（#1993）。飼い主のムカイさんには普通で、懐くのはましろちゃんだけ。撫でる・餌の選択はどちらも同じ回復で、能力・好感度は増やさない。",
+      "lines": [
+        { "speaker": "", "text": "mukaiの裏口。ベンチの上で、てつこが壁にもたれて座っていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "よう、てつこ。今日も店番か" },
+        { "speaker": "", "text": "てつこはこちらを一度だけ見て、また目を閉じた。ましろちゃんの時とは、ずいぶん違う。" },
+        {
+          "type": "choice",
+          "id": "ch3_tetsuko_care",
+          "choices": [
+            { "text": "そっと撫でる", "next": "pet" },
+            { "text": "まかないの残りを分ける", "next": "feed" }
+          ]
+        },
+        { "speaker": "", "text": "てつこを構っているうちに、肩の力が少し抜けていた。" }
+      ],
+      "branches": {
+        "pet": [
+          { "speaker": "", "text": "指の背で、喉元をゆっくり撫でる。てつこは逃げなかったが、喜んでいるかは分からない。" },
+          { "speaker": "hajime", "face": "normal", "text": "（……嫌われてはいない、と思いたい）" },
+          { "speaker": "", "text": "裏口の戸が開いて、ましろちゃんが顔を出した。てつこがすぐに立ち上がる。" },
+          { "speaker": "mashiro", "face": "smile", "text": "あ、はじめくんも来てたんだぁ。てつこちゃん、おいで" },
+          { "speaker": "", "text": "てつこはましろちゃんの足にすり寄って、低く喉を鳴らした。" },
+          { "speaker": "hajime", "face": "normal", "text": "さっきまで、石みたいだったのに" },
+          { "speaker": "mashiro", "face": "normal", "text": "ムカイさんにもそうだよぉ。飼い主なのに、ちょっとかわいそう" }
+        ],
+        "feed": [
+          { "speaker": "", "text": "まかないで残ったささみを、小皿に少しだけ置く。" },
+          { "speaker": "", "text": "てつこはゆっくり近づいて、匂いを確かめてから食べ始めた。" },
+          { "speaker": "hajime", "face": "normal", "text": "ゆっくりでいいぞ。誰も取らないから" },
+          { "speaker": "", "text": "食べ終わると、てつこは一度だけこちらを見て、元のベンチへ戻った。" },
+          { "speaker": "", "text": "裏口の戸が開いて、ましろちゃんが顔を出した。" },
+          { "speaker": "mashiro", "face": "smile", "text": "てつこちゃん、ちゃんと食べた？　えらいねぇ" },
+          { "speaker": "", "text": "てつこはましろちゃんの足にすり寄って、低く喉を鳴らした。" },
+          { "speaker": "", "text": "店の中から、ムカイさんの低い声がした。" },
+          { "speaker": "mukai_master", "face": "normal", "text": "……買ってきたのは俺なんだけどな" }
+        ]
+      }
     }
   ]
 }

@@ -94,4 +94,25 @@ await suite("ch3-outings", async check => {
     assert.deepEqual(after.stats, rested.stats);
     assert.equal(after.flags._ch3_outings.park_walk, 1);
   });
+
+  // てつこ（#1993）: mukaiのピンから裏口へ。選択肢を一つ選んで読み切ると体力だけ12戻り、能力は増えない。
+  await check("tetsuko-care-rests-a-little", async page => {
+    await seed(page, "d5-noon");
+    const before = await get(page);
+    await choose(page, "mukai", "tetsuko");
+    await page.locator(t("ch3-intro-free")).waitFor({ state: "detached" });
+    // 選択肢（餌をあげる）が出るまで読み進め、選んでから残りを読み切る。
+    for (let i = 0; i < 300 && !await page.locator(t("choice-1")).count(); i++) {
+      if (await page.locator("#vn.active").count()) await page.keyboard.press("Enter");
+      await page.waitForTimeout(80);
+    }
+    await page.locator(t("choice-1")).click();
+    await readUntilCard(page);
+    const after = await get(page);
+    assert.equal(after.stamina, Math.min(100, before.stamina + 12));
+    assert.deepEqual(after.stats, before.stats);
+    assert.equal(after.money, before.money);
+    assert.deepEqual(after.flags._ch3_outings, { tetsuko: 1 });
+    assert(after.tokyoVisits.closedSlots.includes("d5-noon"));
+  });
 });
