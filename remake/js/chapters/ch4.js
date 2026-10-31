@@ -263,7 +263,7 @@ async function loverActions(owner, { home = false } = {}) {
   }));
   // 友人からのたまのLIME（#2022）。同行者は一緒にいるので送ってこない。
   const friend = await import("./friend-entry.js");
-  if (friend.pendingFriendLime({ exclude }).length) actions.push(button(owner, "友人からのLIMEを読む", "friend-lime", async () => {
+  if (friend.pendingFriendLime({ exclude }).length) actions.push(button(owner, "友人・知り合いのLIMEを読む", "friend-lime", async () => {
     showScreen("none", null);
     hud();
     await friend.readFriendLime({ exclude });
