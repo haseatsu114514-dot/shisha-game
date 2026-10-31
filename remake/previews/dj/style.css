@@ -237,3 +237,11 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 /* Issue #2116: platters a little higher, shorter PITCH faders, ▶ raised right under them. */
 .deck.a,.deck.b{grid-template-rows:14px 290px 58px minmax(0,1fr)}
 .deck.a .platter,.deck.b .platter{grid-row:2/5;align-self:start;margin-top:-6px}
+/* Issue #2118: ▶ a little further below the PITCH fader, no side LED strips, no arc line / black disc on the platter. */
+.deck .deck-controls{align-items:flex-end}
+.console{background:url('../../img/ui/dj/controller-body-plain.webp') center/100% 100% no-repeat,linear-gradient(90deg,#221c30,#16202a)}
+.platter:after{display:none}
+.deck-display,.deck.b .deck-display{background:none;border:0;box-shadow:none}
+.deck-display:before{opacity:.32}
+.track-name,.bpm output{text-shadow:0 0 6px #000,0 2px 4px #000}
+.deck.a,.deck.b{grid-template-rows:14px 290px 72px minmax(0,1fr)}
