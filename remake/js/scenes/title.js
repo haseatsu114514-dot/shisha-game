@@ -310,6 +310,14 @@ export async function openConfig(opts = {}) {
     if ((v === "seen") === !!config.skipSeenOnly) o.selected = true;
     return o;
   }));
+  const introArt = el("select", {
+    dataset: { test: "cfg-intro-art" },
+    onchange: (e) => { config.introArtStyle = e.target.value; persist(); opts.onChange?.("introArtStyle", config.introArtStyle); },
+  }, [["graphic", "グラフィック（新）"], ["classic", "立ち絵（旧）"]].map(([v, t]) => {
+    const o = el("option", { value: v, text: t });
+    if (v === (config.introArtStyle === "classic" ? "classic" : "graphic")) o.selected = true;
+    return o;
+  }));
   const reduceShake = el("input", {
     type: "checkbox", dataset: { test: "cfg-reduce-shake" },
     onchange: (e) => { config.reduceShake = e.target.checked; persist(); opts.onChange?.("reduceShake", config.reduceShake); },
@@ -347,6 +355,7 @@ export async function openConfig(opts = {}) {
       row("文字の速さ", speed),
       row("AUTOの速さ", autoSpeed),
       row("SKIPの範囲", skipMode),
+      row("登場カットインの絵柄", introArt),
       row("揺れ・閃光を減らす", reduceShake),
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),

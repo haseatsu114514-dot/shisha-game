@@ -81,6 +81,30 @@ try {
     assert.equal(await page.locator(".cutin").count(), 0, `${id}: 自動で閉じない`);
   }
 
+  // 1b) 絵柄の切り替え: 既定は新しいグラフィック絵柄、設定 classic で旧の立ち絵へ戻る（2026-10-31）
+  const artFor = async (id, style) => {
+    const src = await page.evaluate(([id, style]) => {
+      T.core.config.introArtStyle = style;
+      T.core.state.flags[`_intro_${id}`] = false;
+      T.done = T.intro.playIntro(id);
+    }, [id, style]).then(() => page.waitForSelector(`.cutin.in[data-char="${id}"] img.ci-portrait`))
+      .then(() => page.evaluate(() => ({ portrait: document.querySelector(".cutin img.ci-portrait").getAttribute("src"),
+        background: document.querySelector(".cutin img.ci-art-background").getAttribute("src") })));
+    await page.waitForTimeout(400);
+    await page.evaluate(() => T.done);
+    return src;
+  };
+  const graphicMaki = await artFor("maki", "graphic");
+  assert.match(graphicMaki.portrait, /character_intros\/graphic\/maki\.webp$/, "既定は新しい絵柄の人物");
+  assert.match(graphicMaki.background, /character_intros\/graphic\/bg_maki\.webp$/, "描き直した背景を使う");
+  const graphicRin = await artFor("rin", "graphic");
+  assert.match(graphicRin.portrait, /graphic\/rin\.webp$/);
+  assert.doesNotMatch(graphicRin.background, /graphic\//, "描き直していない背景は旧のまま");
+  const classicMaki = await artFor("maki", "classic");
+  assert.match(classicMaki.portrait, /sprites\/characters\/maki\//, "classic で旧の立ち絵に戻る");
+  assert.doesNotMatch(classicMaki.background, /graphic\//, "classic で旧の背景に戻る");
+  await page.evaluate(() => { T.core.config.introArtStyle = "graphic"; });
+
   // 2) 名前の出し方: 全員で呼び名のみ、本名の括弧を廃止。物語の名乗りは残す
   const rule = await page.evaluate(() => Object.fromEntries(["naru", "sumi", "tsumugi", "nagumo", "minto"].map((id) => [id, T.intro.introName(id)])));
   assert.deepEqual(rule.naru, { main: "なる", full: "" });
