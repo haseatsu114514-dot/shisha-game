@@ -20,6 +20,8 @@ try {
     const intro = await import("./js/vn/intro.js"), vn = await import("./js/vn/engine.js");
     const map = await import("./js/daily/map.js"), worker = await import("./js/craft/worker.js");
     core.newGame();
+    // この試験は旧絵柄（立ち絵）の表情別の配置を見る。新しいグラフィック絵柄は intro_cutin.mjs で検査する
+    core.config.introArtStyle = "classic";
     window.T = { core, DB, intro, vn, map, worker, seen: [] };
     new MutationObserver((rs) => rs.forEach((r) => r.addedNodes.forEach((n) => {
       if (n.classList?.contains("cutin")) T.seen.push(`${n.dataset.char}:${n.dataset.variant || ""}`);
