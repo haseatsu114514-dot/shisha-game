@@ -260,8 +260,9 @@ export function dateSchedule(id, { day = state.day, fixedNight = () => false, al
  * 今朝届く恋人からの LIME（記念日・デートの誘い・朝のひとこと・試合の朝）。
  * @param opts.tournamentDay 大会当日の朝か
  * @param opts.fixedNight (day) => その夜に固定イベントがあるか（夜の約束を重ねない）
+ * @param opts.invitations デートの誘いを出すか（約束の仕組みが無い場面カード式の章は false）
  */
-export function loverMessages({ tournamentDay = false, fixedNight = () => false } = {}) {
+export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true } = {}) {
   const out = [];
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
@@ -295,7 +296,7 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     const invId = `_date_inv_${id}${chapterKey}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
     const gap = id === "samechan" ? samechanDateGap() : state.day - last;
-    if (schedule && gap >= (maxed ? 5 : 3) && chapterDay(state) < 14 && !read(invId)
+    if (invitations && schedule && gap >= (maxed ? 5 : 3) && chapterDay(state) < 14 && !read(invId)
       && (id !== "samechan" || samechanDateReady() && state.pendingInvite?.event !== "date_samechan")) {
       out.push({
         id: invId, sender: id, type: "invitation", lover: true,

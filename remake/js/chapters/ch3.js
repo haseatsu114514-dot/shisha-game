@@ -13,6 +13,7 @@ import { readDialogues } from "./ch2-city-data.js";
 import { onDialogueEnter } from "../daily/romance.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale, recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { CH3_CONFESSION_IDS, confessionAnswer } from "./ch3-romance-entry.js";
+import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "./ch3-progress.js";
@@ -426,6 +427,11 @@ function trialActions(owner) {
  * 寄り道の全段階と質問の後・♥5）。寄り道と同じく本筋の予定は進めず、既読・回答・贈り物は bonds.js が保存する。
  */
 function bondActions(owner) {
+  // 恋人になった後は、同じ入口で恋人の節目（#2024）。ましろは東京在住なので、会いに行ける。
+  if (loverMilestonesDue(["mashiro"]).length) return [button(owner, "ましろちゃんと過ごす（恋人）", "bond-lover", async () => {
+    await readLoverMilestoneAt(owner, "mashiro");
+    if (current(owner)) await renderStage(owner);
+  })];
   const kind = questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
   return kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
     `bond-${kind}`, () => readBond(owner, kind))] : [];
@@ -510,7 +516,21 @@ async function playEvening(owner, result, { plan = null, window = null, definiti
   if (window && !completeChapterThreeFreeTime(state, window.id)) return false;
   state.flags._ch3_evening = eveningRecord(result);
   save();
+  if (result.kind === "date") for (const id of result.participants) await readLoverMilestoneAt(owner, id);
   return true;
+}
+
+/**
+ * 恋人と会えた後の節目（lover_events.json）。第1・2章のデートの後と同じく、未読を一つだけ読む（#2024）。
+ * 絆は足さない（東京の訪問デートは絆・能力を動かさない）。中断しても未読のまま次に会えた時へ回る。
+ */
+async function readLoverMilestoneAt(owner, id) {
+  if (!current(owner) || !loverMilestonesDue([id]).length) return;
+  showScreen("none", null);
+  hud(owner);
+  const controller = owner.controller = new AbortController();
+  try { await readLoverMilestone(id, { signal: controller.signal }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 async function settleEveningAtReady(owner) {
@@ -560,6 +580,7 @@ async function renderFreeTime(owner, window) {
       if (!completeTokyoVisitAction(state, definitions, plan.id, window)) return;
       completeChapterThreeFreeTime(state, window.id);
       save();
+      if (kind === "date") await readLoverMilestoneAt(owner, id);
       await renderStage(owner);
     }, true)] : []),
     ...(gym.ok ? [button(owner, "CHOI-ZAPで体を動かす", "gym", async () => {
