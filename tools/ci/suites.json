@@ -2841,6 +2841,8 @@
       "timeout": 5,
       "paths": [
         "remake/css/ui-themes.css",
+        "remake/css/ui-paper.css",
+        "remake/img/ui/paper/**",
         "remake/css/vn-composition.css",
         "remake/img/ui/vn-polish/**",
         "remake/img/ui/vn-calm/**",

@@ -1,5 +1,15 @@
 # 水煙前線 -EN:CODE- リメイク版（remake/）
 
+## 2026-10-31 紙とラベンダーのUI（既定のUIテーマ）
+
+日常パートのUIを Dr.fookah の紙×ラベンダー＋琥珀へ統一する方針（`docs/owner_requests.md` DUI01〜11、[設計](../docs/design/daily-ui-menu-design.md)）の第一段。
+
+- 生成した紙の板・会話窓・ラベンダーの面を UIテーマ `paper` として追加し、既定にした（`core/ui-theme.js`・`core/state.js`）。既存の6テーマは設定から選べる。端末に保存済みの選択はそのまま。
+- `css/ui-paper.css`: 紙の面（モーダル・HUD・地図の案内・tonariの選択・ログ・トースト）の中だけ文字色の変数を墨へ切り替える。場面の上に直接書く文字の色は変えない。会話窓は共通の組版（名前札・操作札・本文2行・左右96px）を保ち、絵だけを差し替える。2画面表示は窓の大きさが違うので、原画を引き伸ばさず紙の面と線で描く。
+- 素材: 原画 `asset_sources/ui/paper-20261031/`、採用 `assets/ui/paper/`、実行時 `img/ui/paper/`（`python3 remake/tools/build_ui_skin.py`）。
+- 次の段階: 全画面4タブのMENU、HUDの板（行動回数なし・五角形ボタン廃止）、地図の看板A、STATUS UP の通知を使わない成長表示。大会パートは別途リメイク中のため対象外。
+- 検証: `node remake/test/browser/ui_themes.mjs`（paper を含む7テーマ）、`conversation_ui.mjs`、`game_layout.mjs`、`hud_fortune.mjs`、`ds_overlay_layers.mjs`、`node remake/test/typography_css.mjs`。
+
 ## 2026-10-30 DS風（縦持ち・上下2画面）の見直し
 
 スマホ縦 390×844・320×568 の実画面で見つかった切れ・重なり・極小文字を、DS専用CSS（`css/game-ds.css`・`css/title-ds.css`・`css/vn-lounge.css` のDS節）だけで直した。通常版・ゲーム進行・保存は変えていない。

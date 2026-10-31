@@ -103,6 +103,8 @@ export function imageReady(url, ms = 1500, { keep = false } = {}) {
 // スロットのランプ・通知）も同じ（GUI20・21）。起動時に並行して読み、手放さずに置いておく。
 const LOUNGE_ART = ["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map((n) => `img/ui/lounge/${n}.webp`);
 const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakki-slot/${n}.webp`);
+// 紙とラベンダー（既定のUI・DUI08）の板と札。会話枠は uiThemeFrame で別に読む。
+const PAPER_ART = ["panel", "lavender"].map((n) => `img/ui/paper/${n}.webp`);
 /** 設定・ギャラリーの窓と最初の会話の枠・ボタン（タイトルの絵と一緒に、幕を開ける前に待つ） */
 export const FRAME_ART = LOUNGE_ART.slice(0, 2);
 let uiArt = null;
@@ -137,7 +139,7 @@ function deferStoreLogos() {
 /** UIの絵・顔アイコンと選択中の会話枠を読む（店ロゴは含まない。一度だけ） */
 function warmCoreArt() {
   if (!uiArt) {
-    const urls = [...LOUNGE_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
+    const urls = [...LOUNGE_ART, ...PAPER_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
     uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
   // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
