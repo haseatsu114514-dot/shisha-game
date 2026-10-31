@@ -1,0 +1,14 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "endpoint": "edits (mask)",
+ "prompt": "Remove the wisp of white smoke rising from the old man's hand completely. Keep the character, his crimson robe shoulder and cape edge, his hand and the art style exactly identical; the area where the smoke was becomes fully transparent background, with the robe shoulder outline continuing naturally. No smoke anywhere.",
+ "input": "merged chr_master_hookah_normal.png (#2069) padded to 1024x1536 at (64,168)",
+ "mask_box_in_sprite": [
+  225,
+  90,
+  355,
+  280
+ ],
+ "note": "only masked box pasted back",
+ "time": "2026-10-31T13:33:28.640829"
+}

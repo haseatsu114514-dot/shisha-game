@@ -581,6 +581,7 @@ async function performSpotAction(spot) {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     used = await visitSamechan(spot);
     exerted = spot.stamina < 0;
+    if (used) await consultLessons("samechan"); // 心得の盤で灯した授業があれば相談する（SBD61: 会った時だけ）
   } else if (spot.kind === "rival") {
     if (isClosed(spot) || !(await staminaGuard(spot.stamina)) || isClosed(spot)) return { used: false, exerted };
     used = (await visitRival(spot)) !== false;
@@ -591,7 +592,7 @@ async function performSpotAction(spot) {
     const r = await openShop();
     if (r !== "rin") used = false;
     else if (!(await confirmLimeReminder(spot))) used = false;
-    else if (await staminaGuard(-14)) { used = await visitRin(); exerted = used; }
+    else if (await staminaGuard(-14)) { used = await visitRin(); exerted = used; if (used) await consultLessons("rin"); }
     else used = false;
   } else if (spot.kind === "spot") {
     // 観音堂で内省（心得の盤 SPEC 2.8）: 火種を灯す。時間も体力も使わない。true=行動にしない
@@ -629,7 +630,10 @@ async function performSpotAction(spot) {
     save();
     return { used: false, exerted };
   }
-  if (used) await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside")) });
+  if (used) {
+    const guestBg = bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside"));
+    if (await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: guestBg })) await consultLessons("hiyori", { bg: guestBg });
+  }
   if (used) await visitCityGuestAtShop(spot, { scheduledVisit: scheduledCityVisit });
   return { used, exerted, slotsUsed, exp };
 }
@@ -702,6 +706,7 @@ async function meetInvitation(inv) {
   } else if (inv.event === "__hiyori_shop__") {
     const spot = spotById(inv.visitSpot);
     await playHiyoriHangout({ bg: bgRef(spot.bg || VISIT_BG[spot.charId]) });
+    await consultLessons("hiyori", { bg: bgRef(spot.bg || VISIT_BG[spot.charId]) });
     state.visitedDay[spot.id] = state.day;
     addStamina(-10);
   } else if (/^date_/.test(inv.event)) {

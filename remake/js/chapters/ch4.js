@@ -261,6 +261,14 @@ async function loverActions(owner, { home = false } = {}) {
     await lover.readLoverLime({ exclude });
     if (current(owner)) await renderStage(owner);
   }));
+  // 友人からのたまのLIME（#2022）。同行者は一緒にいるので送ってこない。
+  const friend = await import("./friend-entry.js");
+  if (friend.pendingFriendLime({ exclude }).length) actions.push(button(owner, "友人からのLIMEを読む", "friend-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await friend.readFriendLime({ exclude });
+    if (current(owner)) await renderStage(owner);
+  }));
   const [id] = home ? lover.loverMilestonesDue((state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who))) : [];
   if (id) actions.push(button(owner, `${displayName(id, state, { context: "private" })}と過ごす`, "lover-milestone", async () => {
     showScreen("none", null);
@@ -384,8 +392,10 @@ async function runTournament(owner) {
     revealChapterFourSheikh(state);
     if (!await readAndCommit(owner, start)) return;
   }
-  const { runChapterFourCraft } = await import("./ch4-tournament.js");
+  const [{ runChapterFourCraft }, { playEntrance }] = await Promise.all([import("./ch4-tournament.js"), import("./tournament-entrance.js")]);
   if (!current(owner)) return;
+  // 入場カットインは一度だけ（制作の途中から再開したときは出さない）。
+  if (!chapterFourProgress(state).match?.craft) { await playEntrance(4); if (!current(owner)) return; }
   const result = await runChapterFourCraft({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
   if (!current(owner)) return;
   if (!result) { await renderTournament(owner); return; }
