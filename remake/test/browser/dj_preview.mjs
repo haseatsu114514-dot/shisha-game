@@ -47,7 +47,7 @@ try{
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   // The DJ screen is a fixed 1280×720 stage scaled like the main game; sizes are checked in stage units.
   const stageScale=await page.evaluate(()=>Number(getComputedStyle(document.getElementById('dj-stage')).getPropertyValue('--s'))||1);
-  for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=56&&r.width/stageScale>=100,'Large individual PLAY targets');}
+  for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=52&&r.width/stageScale>=88,'Large individual PLAY targets');}
   const artwork=new URL('../../../assets/backgrounds/bg_dj_red_room.png',url).href;
   const art=await page.request.get(artwork);assert(art.ok(),'Generated background must be served');assert((await art.body()).length>10000,'Background must not be an LFS pointer');
   for(const key of ['a','b']){

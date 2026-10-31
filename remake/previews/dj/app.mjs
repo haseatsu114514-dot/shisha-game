@@ -42,7 +42,7 @@ for(const id of [0,1]){
  });
 }
 // Jog outer rim = fine pitch (replaces the ±0.01 BPM buttons). Same audio.tempo call the buttons used; 12° of rim travel = 0.01 BPM.
-const JOG_STEP_DEG=12,JOG_INNER=.42;
+const JOG_STEP_DEG=12,JOG_INNER=.62;
 function finePitch(id,steps){const bpm=audio.mix.decks[id].bpm,next=Math.max(110,Math.min(140,Math.round((bpm+steps*.01)*100)/100));if(next!==bpm)audio.tempo(id,next);return next!==bpm;}
 for(const id of [0,1]){
  const jog=$('platter-'+(id?'b':'a'));let drag=null,spin=0;
