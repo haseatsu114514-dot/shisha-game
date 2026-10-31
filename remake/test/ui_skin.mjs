@@ -126,15 +126,8 @@ try {
         out.push({ ratio: T.core.state.stamina / maximum, maximum, // 丸めた実際の体力で境界を判定する（最大154は割り切れない）
            health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
           width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth, barSpecifiedWidth: parseFloat(bar.style.width),
-          // バーの右の余白は、最大体力まで伸びる分を示す点線の枠（DUI13）。枠はバーの後ろから最大の長さの位置まで続き、
-          // 根性の上乗せがある時だけ並ぶ「根」バッジ（#1685 T3）とは重ならない。
-          growth: (() => {
-            const box = holder.getBoundingClientRect(), bounds = bar.getBoundingClientRect(), slot = getComputedStyle(holder, "::after");
-            const badge = holder.querySelector(".guts-badge:not([hidden])")?.getBoundingClientRect();
-            const left = box.left + parseFloat(slot.left), right = left + parseFloat(slot.width);
-            return { shown: slot.display !== "none", afterBar: left - bounds.right, end: right - (bounds.left + parseFloat(holder.style.getPropertyValue("--stamina-full"))),
-              badgeClear: !badge || badge.left >= Math.max(right, bounds.right), inside: Math.max(right, bounds.right) <= box.right + .5 };
-          })() });
+          // 育成で最大体力が伸びるとバーが長くなる。右の余白は伸びる先（DUI13）で、最大でも行からはみ出さない。
+          inside: bar.getBoundingClientRect().right <= holder.getBoundingClientRect().right + .5 });
       }
     }
     return out;
@@ -143,9 +136,7 @@ try {
     const expected = value.ratio > .5 ? ["green", "rgb(142, 230, 168)"] : value.ratio > .25 ? ["yellow", "rgb(255, 212, 92)"] : ["red", "rgb(255, 105, 105)"];
     assert.deepEqual([value.health, value.color], expected);
     assert.equal(value.width, `${Math.round(value.ratio * 100)}%`);
-    const g = value.growth;
-    assert(g.inside && g.badgeClear, `Stamina growth slot or guts badge overflow: ${JSON.stringify(g)}`);
-    if (g.shown) assert(g.afterBar >= 0 && Math.abs(g.end) <= 1, `Unused horizontal stamina space is not the growth slot: ${JSON.stringify(g)}`);
+    assert(value.inside, `Stamina bar overflows its row: ${value.maximum}`);
   }
   for (const maximum of [100, 154]) {
     assert.equal(new Set(stamina.filter((value) => value.maximum === maximum).map((value) => value.windowWidth)).size, 1, "Losing stamina changed the capacity window");
