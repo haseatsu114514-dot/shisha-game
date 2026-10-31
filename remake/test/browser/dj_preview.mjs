@@ -41,9 +41,9 @@ try{
   });
   await page.goto(url);
   assert.equal(await page.locator('#sync-a,#sync-b,.bpm-sync').count(),0);
-  assert.equal(await page.locator('.stage-btn').count(),3);
+  assert.equal(await page.locator('.stage-btn,header').count(),0,'No stage header; stage comes from ?stage=');
   assert.equal(await page.locator('#track-a').textContent(),'Dance Monster');assert.equal(await page.locator('#track-b').textContent(),'Digital Lemonade');
-  assert((await page.locator('main').textContent()).includes('CC BY 4.0'));assert(await page.locator('#judge').isDisabled());
+  assert((await page.locator('main').textContent()).includes('CC BY 4.0'));assert.equal(await page.locator('#judge,#offset,[data-nudge],[data-nudge-ms],[data-pitch],#volume').count(),0,'No small buttons or VOL fader; judging is automatic after 8 bars');
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   // The DJ screen is a fixed 1280×720 stage scaled like the main game; sizes are checked in stage units.
   const stageScale=await page.evaluate(()=>Number(getComputedStyle(document.getElementById('dj-stage')).getPropertyValue('--s'))||1);
@@ -52,7 +52,7 @@ try{
   const art=await page.request.get(artwork);assert(art.ok(),'Generated background must be served');assert((await art.body()).length>10000,'Background must not be an LFS pointer');
   for(const key of ['a','b']){
    assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');
-   {const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=330&&j.height/stageScale>=330,'Large jog wheels');}
+   {const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=350&&j.height/stageScale>=350,'Large jog wheels');}
   }
   assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No continuous sync/CUE/tap input workload');
   assert.equal(await page.locator('#start,#pause,#mute').count(),0,'No prepare/mute/pause controls; first ▶ prepares audio');
@@ -89,8 +89,8 @@ try{
    await page.locator('#crossfader').focus();await page.locator('#crossfader').press('End');await wait(page,'transfer',errors,19000);
    const mixed=await snap(page);near(mixed.bpms[1],manual,.001);assert.equal(mixed.master,1);assert.equal(mixed.mix,1);assert(!('last'in mixed));
   }else{
-   const before=await snap(page);await page.locator('#offset').tap();const offset=await snap(page);near(offset.beats[1]-before.beats[1]-(offset.clock-before.clock)*manual/60,.5);
-   for(let n=0;n<8;n++)await page.locator('[data-nudge="1,-0.0625"]').tap();const corrected=await snap(page);near(corrected.beats[1]-offset.beats[1]-(corrected.clock-offset.clock)*manual/60,-.5);
+   const jogB=page.locator('#platter-b');await jogB.focus();const before=await snap(page);for(let n=0;n<8;n++)await jogB.press('Shift+ArrowRight');const offset=await snap(page);near(offset.beats[1]-before.beats[1]-(offset.clock-before.clock)*manual/60,.5);
+   for(let n=0;n<8;n++)await jogB.press('Shift+ArrowLeft');const corrected=await snap(page);near(corrected.beats[1]-offset.beats[1]-(corrected.clock-offset.clock)*manual/60,-.5);
    const input=page.locator('#crossfader');await input.scrollIntoViewIfNeeded();const r=await input.boundingBox();await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2);near((await snap(page)).mix,.5,.1);near((await snap(page)).bpms[1],manual,.001);
   }
   assert(await page.evaluate(()=>{const v=document.querySelector('.visual-slot'),w=document.querySelector('.waves');return w.contains(v)&&Number(getComputedStyle(v).opacity)<=.4&&getComputedStyle(v).pointerEvents==='none';}),'Dot-art VJ sits faintly behind the waveform');

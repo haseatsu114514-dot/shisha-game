@@ -3,9 +3,11 @@ import { beatAt, lowCutDb, LOW_CUT_DB, updateMix, phaseError, phraseError, mod, 
 import { peakAt } from './tracks.mjs';
 import { TRACKS, STAGES } from './tracks.mjs';
 const $=id=>document.getElementById(id);
-let stage=0,score=null,audio=new DJAudio();
+// Stage comes from the host (main game) via ?stage=1..3; default Stage 1.
+const stageParam=Number(new URLSearchParams(location.search).get('stage'))-1;
+let stage=STAGES[stageParam]?stageParam:0,score=null,audio=new DJAudio(undefined,{stageIndex:stage});
 function bindInterruption(){audio.onInterrupted=()=>status('音声が中断されました。PLAYで再開してください。');}
-function stageDisplay(){[STAGES[stage].a,STAGES[stage].b].forEach((key,id)=>$('track-'+(id?'b':'a')).textContent=TRACKS[key].title);}
+function stageDisplay(){[STAGES[stage].a,STAGES[stage].b].forEach((key,id)=>{const k=id?'b':'a';$('track-'+k).textContent=TRACKS[key].title;$('platter-'+k).style.setProperty('--art',`url('../../img/ui/dj/art-${key}.webp')`);});}
 stageDisplay();
 document.querySelectorAll('.stage-btn').forEach((b,index)=>b.addEventListener('click',async()=>{
  document.querySelectorAll('.stage-btn').forEach(b=>b.disabled=true);
@@ -15,7 +17,6 @@ document.querySelectorAll('.stage-btn').forEach((b,index)=>b.addEventListener('c
 function judge(){if(!audio.mix.decks.every(d=>d.playing))return;score=scoreMix(audio.mix,audio.now);if(!score)return;
  $('score-result').innerHTML=`<strong class="rank">${score.rank}</strong><table><tr><th>ピッチ誤差</th><td>${score.pitchErrPct.toFixed(3)}%</td></tr><tr><th>PLAYずれ</th><td>${score.playMs.toFixed(1)} ms</td></tr><tr><th>位相ドリフト</th><td>${score.driftMs.toFixed(1)} ms</td></tr><tr><th>合計</th><td>${score.total}点</td></tr></table><p>${{S:'完璧なミックス！',A:'いいつなぎ！',B:'あと少し、位相を合わせよう',C:'ピッチとPLAYをもう一度練習しよう'}[score.rank]}</p>`;
 }
-$('judge').addEventListener('click',judge);
 document.querySelectorAll('[data-nudge-ms]').forEach(b=>b.addEventListener('click',()=>audio.nudgeMs(1,Number(b.dataset.nudgeMs))));
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 let disposed=false,frame=0,frameView={mode:'idle'},message='';
@@ -47,16 +48,14 @@ for(const id of [0,1]){
  const jog=$('platter-'+(id?'b':'a'));let drag=null,spin=0;
  const angle=(e,r)=>Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI;
  jog.addEventListener('pointerdown',e=>{const r=jog.getBoundingClientRect(),dist=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2))/(r.width/2);
-  if(dist<JOG_INNER||dist>1.05)return;e.preventDefault();jog.setPointerCapture(e.pointerId);drag={last:angle(e,r),acc:0};jog.classList.add('touching');});
+  if(dist>1.05)return;e.preventDefault();jog.setPointerCapture(e.pointerId);drag={last:angle(e,r),acc:0,inner:dist<JOG_INNER};jog.classList.add('touching');});
  jog.addEventListener('pointermove',e=>{if(!drag)return;const r=jog.getBoundingClientRect(),a=angle(e,r);let d=a-drag.last;if(d>180)d-=360;if(d<-180)d+=360;drag.last=a;drag.acc+=d;spin+=d;
-  jog.style.setProperty('--spin',`${spin}deg`);const steps=Math.trunc(drag.acc/JOG_STEP_DEG);if(steps){drag.acc-=steps*JOG_STEP_DEG;if(finePitch(id,steps)){jog.classList.add('tick');setTimeout(()=>jog.classList.remove('tick'),90);if(matchMedia('(pointer: coarse)').matches)navigator.vibrate?.(3);}}});
+  jog.style.setProperty('--spin',`${spin}deg`);const steps=Math.trunc(drag.acc/JOG_STEP_DEG);if(steps){drag.acc-=steps*JOG_STEP_DEG;if(drag.inner?audio.nudge(id,steps/16):finePitch(id,steps)){jog.classList.add('tick');setTimeout(()=>jog.classList.remove('tick'),90);if(matchMedia('(pointer: coarse)').matches)navigator.vibrate?.(3);}}});
  const end=()=>{drag=null;jog.classList.remove('touching');};jog.addEventListener('pointerup',end);jog.addEventListener('pointercancel',end);
- jog.addEventListener('keydown',e=>{const k={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1}[e.key];if(!k)return;e.preventDefault();if(finePitch(id,k)){spin+=k*JOG_STEP_DEG;jog.style.setProperty('--spin',`${spin}deg`);}});
+ jog.addEventListener('keydown',e=>{const k={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1}[e.key];if(!k)return;e.preventDefault();if(e.shiftKey?audio.nudge(id,k/16):finePitch(id,k)){spin+=k*JOG_STEP_DEG;jog.style.setProperty('--spin',`${spin}deg`);}});
 }
-$('volume').addEventListener('input',e=>audio.setVolume(e.target.value));
 $('crossfader').addEventListener('input',e=>audio.setMix(e.target.value));
 document.querySelectorAll('[data-nudge]').forEach(button=>button.addEventListener('click',()=>{const[id,beats]=button.dataset.nudge.split(',').map(Number);audio.nudge(id,beats);}));
-$('offset').addEventListener('click',()=>{if(audio.nudge(1,.5))status('再生中のBを実際に半拍進めました。微調整で戻せます。');});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 window.addEventListener('pagehide',event=>{if(event.persisted){pause();return;}disposed=true;cancelAnimationFrame(frame);audio.dispose().catch(()=>{});});
 
@@ -109,8 +108,7 @@ function render(){
  const completed=oldGuide && audio.mix.decks.every(d=>d.playing) && beatAt(audio.mix.decks[oldGuide.from],now)>=oldGuide.end;
  frameView=updateMix(audio.mix,now);
  if(!score && (completed || frameView.progress>=1))judge();
- $('judge').disabled=!audio.mix.decks.every(d=>d.playing)||!audio.mix.lastPlay;
- if(audio.mix.lastPlay){const p=audio.mix.lastPlay;$('play-feedback').textContent=`PLAY: ${p.grade}!（拍から ${p.errorMs>=0?'+':''}${p.errorMs.toFixed(0)}ms）`;$('play-feedback').dataset.grade=p.grade;}
+ if(audio.mix.lastPlay){const p=audio.mix.lastPlay;$('play-feedback').textContent=p.grade;$('play-feedback').dataset.grade=p.grade;}
  document.querySelectorAll('[data-nudge-ms]').forEach(b=>b.disabled=!audio.mix.decks[1].playing);
  const both=audio.mix.decks.every(d=>d.playing),guide=audio.mix.guide;
  for(const id of [0,1]){
@@ -125,7 +123,7 @@ function render(){
  }
  document.querySelectorAll('[data-nudge]').forEach(b=>{b.disabled=!audio.mix.decks[Number(b.dataset.nudge.split(',')[0])].playing;});
  for(const key of ['a','b'])$('platter-'+key).setAttribute('aria-valuenow',$('bpm-'+key).value);
- $('offset').disabled=!audio.mix.decks[1].playing;
+
  $('mix-value').textContent=`A ${Math.round((1-audio.mix.mix)*100)} / B ${Math.round(audio.mix.mix*100)}%`;
  $('phase').textContent=`共通7秒 / BPM差 ${(audio.mix.decks[1].bpm-audio.mix.decks[0].bpm).toFixed(2)} / ${both?`B−A拍位相 ${phaseError(...audio.mix.decks,now).toFixed(3)} / ${(phaseError(...audio.mix.decks,now)*60000/audio.mix.decks[0].bpm).toFixed(1)} ms・フレーズ差 ${phraseError(...audio.mix.decks,now).toFixed(2)}拍`:'各PLAYを押すまで、そのデッキの波形は停止'}`;
  $('master').textContent=`VJ基準 ${audio.mix.visualMaster?'B':'A'}（音声時計）`;
@@ -136,6 +134,7 @@ function render(){
  else if(frameView.mode==='waiting-play')text=frameView.elapsed<1?`PLAY ${target}：今がフレーズ頭。押した瞬間に再生します。`:`${target}は停止中。次の頭まで ${Math.ceil(frameView.remaining)}拍。自動で再生しません。`;
  else text=`8小節MIX ${Math.floor(frameView.progress*8)+1}/8：位相を確かめ、横フェーダーを動かそう。ピッチ・PLAY・位相を採点します。`;
  if(text!==message){$('coaching').textContent=text;message=text;}
+ const cue=frameView.mode==='entry'&&frameView.remaining<=4?String(Math.ceil(frameView.remaining)):frameView.mode==='waiting-play'&&frameView.elapsed<1?'▶':'';if($('cue').textContent!==cue)$('cue').textContent=cue;
  controllerLeds();
  drawVJ(beatAt(audio.mix.decks[audio.mix.visualMaster],now),audio.level());frame=requestAnimationFrame(render);
 }
@@ -144,6 +143,7 @@ render();
 // Controller LEDs only (no input/scoring effect): channel meters and the decorative LOW knobs that show the automatic bass cut.
 function controllerLeds(){
  const level=Math.min(1,audio.level()*6),g=[Math.cos(audio.mix.mix*Math.PI/2),Math.sin(audio.mix.mix*Math.PI/2)],cut=lowCutDb(audio.mix.mix);
+  for(const m of ['meter-m','meter-m2'])$(m).style.setProperty('--lvl',audio.mix.running?Math.min(1,level*(m==='meter-m'?1:.92)).toFixed(3):'0');
  for(const id of [0,1]){
   const key=id?'b':'a',on=audio.mix.decks[id].playing&&audio.mix.running,c=cut[id]/LOW_CUT_DB;
   $('meter-'+key).style.setProperty('--lvl',on?(level*g[id]).toFixed(3):'0');
