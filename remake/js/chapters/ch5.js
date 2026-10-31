@@ -29,7 +29,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
-  beginChapterFiveFinale, completeChapterFiveScene } from "./ch5-progress.js";
+  beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue } from "./ch5-progress.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -239,6 +239,34 @@ async function readScene(owner, id) {
   }
 }
 
+// 節目の LIME の画面表記（#1668 2-8）。
+const LIME_SCREEN = {
+  [CH5_LIME_MILESTONES.prep]: { title: "日程が決まった夜", time: "夜" },
+  [CH5_LIME_MILESTONES.afterMatch]: { title: "勝負のあと", time: "夜" },
+};
+
+/**
+ * 節目の LIME を既存の受信箱（openPhone）で読む。第5章で会った相手からだけ届き、読み終えたら保存する。
+ * 読み終える前に離れた分は受信箱から外し、次にこのカードへ戻ったときに届け直す（第5章には LIME 一覧の入口が無い）。
+ */
+async function deliverLime(owner, milestone) {
+  const { hasContact } = await import("../daily/spots.js");
+  if (!current(owner)) return false;
+  const due = chapterFiveLimeDue(state, milestone, DB.lime, hasContact);
+  if (!due.length) return true;
+  const { openPhone } = await import("../daily/phone.js");
+  if (!current(owner)) return false;
+  const ids = new Set(due.map(m => m.id));
+  state.inbox = state.inbox.filter(item => !ids.has(item.originId || item.id));
+  showScreen("none", null);
+  hud();
+  await openPhone(due, LIME_SCREEN[milestone]);
+  if (!current(owner)) return false;
+  state.inbox = state.inbox.filter(item => item.done || !ids.has(item.originId || item.id));
+  save();
+  return true;
+}
+
 /** 読了 → 確定 → 保存。確定できなければ（別partの場面など）保存せず false。 */
 async function readAndCommit(owner, id) {
   if (!await readScene(owner, id)) return false;
@@ -257,7 +285,10 @@ async function renderStage(owner) {
   }
   if (progress.part === "scheduled") return renderScheduled(owner);
   if (progress.part === "match") return renderMatch(owner);
-  if (progress.part === "aftermath") return renderScene(owner, CH5_AFTERMATH[progress.aftermath], "");
+  if (progress.part === "aftermath") {
+    if (!await deliverLime(owner, CH5_LIME_MILESTONES.afterMatch)) return;
+    return renderScene(owner, CH5_AFTERMATH[progress.aftermath], "");
+  }
   if (progress.part === "finale") return renderFinale(owner);
   return renderComplete(owner);
 }
@@ -335,6 +366,16 @@ async function renderFree(owner) {
       await renderStage(owner);
     }));
   }
+  // 恋人からのLIME（#2024）。第1・2章と同じ処理（lover-entry.js → daily/romance.js）。
+  // 第5章は恋人と過ごす場面（節目）を描かないので、LIMEだけ。
+  const lover = await import("./lover-entry.js");
+  if (!current(owner)) return;
+  if (lover.pendingLoverLime().length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await lover.readLoverLime();
+    if (current(owner)) await renderStage(owner);
+  }));
   actions.push(button(owner, "博士に連絡する", "contact", async () => {
     // Q12: 「記録に残らない一日」が未読なら、先にそちらを読んでから連絡の場面へ。
     if (!chapterFiveRead(state, "ch5_unrecorded_day")
@@ -353,7 +394,7 @@ async function renderFree(owner) {
 
 async function renderScheduled(owner) {
   await setBg(bgUrl(CH5_SCENE_BG.ch5_schedule_contact), { instant: true });
-  if (!current(owner)) return;
+  if (!current(owner) || !await deliverLime(owner, CH5_LIME_MILESTONES.prep)) return;
   card(owner, "scheduled", "勝負の日程が決まった", "店の休業日。博士との勝負は、その日になった。", [
     button(owner, "会場へ行く", "go-venue", async () => {
       // Q15: 会場入りの確認。本文は台本コメントの指定どおり一字も変えない。

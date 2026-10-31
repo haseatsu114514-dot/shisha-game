@@ -103,6 +103,12 @@
           "text": "今度、うちの店でも答え合わせしよ。また来てよね"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_ageha",
+          "next_false": "lime"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "あげはは手を振って、甘い匂いを残して帰っていった。"
@@ -199,6 +205,22 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "いらっしゃいませ。……この甘い匂い、香水じゃなくて、フレーバーですか？"
+          }
+        ],
+        "lime": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "あ、その前にLIME交換しよ！ 店の場所、送っとくから"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_ageha"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "連絡先を交換した。名前の横に、白いクマの絵がついていた。"
           }
         ]
       }
@@ -489,6 +511,113 @@
       }
     },
     {
+      "dialogue_id": "ch2_ageha_bond_question",
+      "comment": "♥3の節目（#1988）。初めての客の回を読んだ直後、同じ訪問の中で一度だけ。選択肢 bond_q1_ageha が実回答（romance 1=恋愛寄り／0=友情）。関係名の札は付けず、あげはの反応で違いを伝える。第3章の帰郷後の告白はこの回答が恋愛寄りで♥5のときだけ起きる。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "初めての客が帰ったあと、カウンターには二人だけが残った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ねえ、ハジメっち。答え合わせ係、って言ったじゃん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あれさ、うちが勝手に決めたやつ。……ほんとは、どっちなのか聞きたくて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "ハジメっちが店に来るの、うちの「なんか」の答え合わせのため？ それとも……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "店じゃないとこで会っても、うちとなら、アリ？"
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_ageha",
+          "romance_char": "ageha",
+          "choices": [
+            {
+              "text": "あげはさんと二人なら、どこでも",
+              "next": "romance",
+              "romance": 1
+            },
+            {
+              "text": "答え合わせ係として、また店に来ます",
+              "next": "friend",
+              "romance": 0
+            }
+          ]
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "はい、この話おしまい！ 次のお客さん来る前に、炭足しとこ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは棚のグミを一つ口に入れて、いつもの顔に戻った。"
+        }
+      ],
+      "branches": {
+        "romance": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あげはさんと二人なら、どこでも行きます"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……は？ 待って、今のうち、なんも盛ってないよ。素で聞いたんだけど"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……そ。覚えとく。今度、店じゃないとこで、うちの話、聞いて"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "答え合わせ、なしね。うちがしゃべって、ハジメっちが聞くだけ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "答え合わせ係として、また店に来ます。……それじゃ、だめですか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "だめじゃない！ 係、クビにしないから安心して"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……うん。ハジメっちが来ると、うちの「なんか」が言葉になるんだもん"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "店に来て。それだけで、じゅうぶん助かってる"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "remake_ch2_ageha_magazine",
       "lines": [
         {
@@ -648,6 +777,348 @@
             "speaker": "ageha",
             "face": "sad",
             "text": "……だめ、まだ言葉になんない。でも、ちゃんと見てはいるんだよ、うち"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_gummy",
+      "comment": "♥5の段階会話（#2023）兼あげはの味の会話。白・赤のグミベアの試作。雑誌取材の回のあと、♥5で一度だけ。大会の前後どちらで読んでも成立する文面にする。",
+      "metadata": {
+        "flavor_lesson": {
+          "white_gummy_bear": 1,
+          "red_gummy_bear": 1
+        }
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに、白と赤のグミの袋が並んでいた。あげはが、二つの葉を小皿に分けている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、ちょうどいいとこ！ 新しい一台、試作してたの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "白と赤……グミベアの葉ですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ！ 白はうちの最推し。赤は、白の相棒"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは白い葉を多めに、赤を少しだけ、ボウルに詰めた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "白だけだとね、なんか寂しそうなの。赤がちょっといると、元気出る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（寂しそう……。白はやわらかい甘さだから、輪郭がぼやけやすいのかもしれない）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "赤の酸っぱさで、白の甘さに輪郭をつけてる、ってことですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……それ！ うちが言いたかったの、たぶんそれ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あとね、白は熱いの苦手。炭を真ん中に置くと、すぐ甘いのが焦げた匂いになる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "だから炭を端に寄せて、ゆっくり温めるんですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そそ。白はびっくりさせないのが大事。赤は、もうちょい強気でも平気"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口吸うと、パイナップルみたいな丸い甘さの奥で、赤いベリーが小さく弾けた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……おいしいです。甘いのに、最後まで重くならない"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でしょ〜！ ……白いの吸うとさ、なんか安心すんの。なんでか分かんないけど"
+        },
+        {
+          "type": "choice",
+          "id": "ch2_ageha_gummy_why",
+          "choices": [
+            {
+              "text": "安心する理由、聞いてもいいですか",
+              "next": "ask"
+            },
+            {
+              "text": "理由が分からなくても、いいと思います",
+              "next": "wait"
+            }
+          ]
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "今日の白と赤、メニューに載せよっかな。名前は……ハジメっち、考えといて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（名前をつけるのは、また俺の係らしい）"
+        }
+      ],
+      "branches": {
+        "ask": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "その安心する理由、聞いてもいいですか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "んー……ちっちゃい頃、帰り道にママがよく買ってくれたグミが、白いクマだったの"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "どこの帰りだったっけ。……ま、いっか！ かわいいし、甘いし"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（ごまかした、というより、本当に覚えていないみたいだった）"
+          }
+        ],
+        "wait": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "理由が分からなくても、いいと思います。安心するなら、それで"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……え。「なんで？」って聞かないの、ハジメっちっぽくない"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……でも、ちょっと助かった。いつか分かったら、うちから言うね"
+          }
+        ],
+        "secret": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "（あの日、震える指で口に入れていたのも、このクマだった）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あげはさんが自分から話すまで、待っていよう）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_ageha_bond_finale",
+      "comment": "♥5の締めくくり（#2023）。MELTY PUFFで一度だけ、専用ハガル suyaki_ageha を受け取る。恋愛／友情の方向は♥3の bond_q1_ageha で決まっていて、ここに最後の質問は置かない。告白は第3章の帰郷後（ch3-romance-entry.js）。",
+      "metadata": {
+        "bond_finale": "ageha"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは「ちょい待ってて」とバックヤードへ消え、両手で何かを包んで戻ってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白い素焼きのハガルだった。縁に、小さなクマのシールが一枚だけ貼ってある。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "じゃーん。うちのホワイトグミベア専用ハガル。店開けたときから使ってたやつ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "白ばっか詰めてたら、土までグミの匂いになっちゃった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……そんな大事なもの、俺に？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "新しいの、もう育て始めてるし。……それに、これはハジメっちに持っててほしいの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うちの「なんか」、ハジメっちがちょっとずつ言葉にしてくれたじゃん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "だから、お礼。……っていうか、答え合わせ係の、正式な道具？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "係の道具、ですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ。これで作った一台、いつかうちに吸わせて。答え合わせ、今度はうちがするから"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "secret"
+        },
+        {
+          "type": "condition",
+          "condition_type": "romance_open",
+          "char_id": "ageha",
+          "next_true": "romance",
+          "next_false": "friend"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "ハジメっち！ 県大会の前で忙しいのに、来てくれたじゃん"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "ハジメっち！ また来てくれたじゃん"
+          }
+        ],
+        "secret": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……手が言うこと聞かない日もさ、これに白詰めたら、なんとかなったんだよね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "（あの日のことを、あげはさんは冗談にしないで話していた）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "大事に使います。……あげはさんが、なんとかしてきた分も"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……もー。ハジメっち、そういうとこ"
+          }
+        ],
+        "romance": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……ねえ。店じゃないとこで、うちの話聞くって言ったの、覚えてる？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "覚えてます"
+          },
+          {
+            "speaker": "ageha",
+            "face": "serious",
+            "text": "言いたいこと、まだうまく言葉になんないの。ノリでごまかしたら、たぶん違うやつになる"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "だから、練習しとく。……ちゃんと言えるようになったら、聞いて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……はい。待ってます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "あげはは照れたように、グミの袋をひとつ放ってよこした。"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "これからも係、よろしくね。クビにはしないって言ったし"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。また答え合わせに来ます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "あげはは笑って、グミの袋をひとつ放ってよこした。白いクマが、手のひらで転がった。"
           }
         ]
       }
@@ -835,7 +1306,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "エデンの主、アダムだ。禁断の果実の守護者でもある"
+          "text": "EDENの主、アダムだ。禁断の果実の守護者でもある"
         },
         {
           "speaker": "ageha",
@@ -1317,11 +1788,6 @@
             "speaker": "rei",
             "face": "normal",
             "text": "……後味だけ、探す。最後に何が残るか"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（どれも、毎日の積み重ねで作った物差しだ。一晩で真似できるものじゃない）"
           }
         ],
         "note": [

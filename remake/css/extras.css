@@ -137,3 +137,8 @@
 @media (max-width: 600px) {
   .gal-viewer-tools strong { flex-basis: 100%; }
 }
+.kuji-card.kuji-short { transition: transform .22s ease, filter .22s ease; }
+.kuji-card.kuji-facedown { transform: rotateY(180deg); filter: brightness(.35); }
+.kuji-card.kuji-facedown > * { visibility: hidden; }
+.kuji-flip-all { margin-right: 8px; }
+@media (prefers-reduced-motion: reduce) { .kuji-card.kuji-short { transition: none; } }

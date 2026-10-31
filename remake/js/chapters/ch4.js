@@ -12,18 +12,18 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { readDialogues } from "./ch2-city-data.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
-  canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
+  CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
 import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
-import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates } from "../core/overseas-companion.js";
+import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates, overseasCompanion } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
-import { loadStoryRoutes } from "./ch3-story-wiring.js";
+import { loadStoryRoutes, TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
   chapterFourEveningRecord } from "./ch4-story-wiring.js";
 
@@ -103,7 +103,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
-  const files = { ...CH4_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
+  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
@@ -234,26 +234,57 @@ async function renderCompanionChoice(owner) {
 
 async function renderScene(owner, scene, dayLabel) {
   await setBg(bgUrl(CH4_SCENE_BG[scene.id]), { instant: true });
+  const lover = scene.location === "tonari" ? await loverActions(owner, { home: true }) : [];
   if (!current(owner)) return;
   card(owner, "scene", `${dayLabel ? `${dayLabel}・` : ""}${scene.label}`, `${scene.location}で、次の話を読む。`, [
     button(owner, "続きを読む", "continue", async () => {
       if (!await readAndCommit(owner, scene.id)) return;
       await renderStage(owner);
     }, true),
+    ...lover,
   ], "", scene.id);
+}
+
+/**
+ * 恋人の入口（#2024）。第1・2章と同じ処理（lover-entry.js → daily/romance.js）を使う。
+ * 日本にいる間（出発前・帰国後のtonari）は恋人LIMEと節目。ドバイ滞在中は遠くの恋人からのLIMEだけで、
+ * 恋人と過ごす場面（節目・dubai_evening 系）はつながない（ch4-progress.js の FREE_SCENES の方針）。
+ * 同行した恋人は一緒にいるのでLIMEを送ってこない。東京在住のましろとは地元では会えない。
+ */
+async function loverActions(owner, { home = false } = {}) {
+  const lover = await import("./lover-entry.js");
+  const exclude = home ? [] : [overseasCompanion(state).companion].filter(Boolean);
+  const actions = [];
+  if (lover.pendingLoverLime({ exclude }).length) actions.push(button(owner, "恋人からのLIMEを読む", "lover-lime", async () => {
+    showScreen("none", null);
+    hud();
+    await lover.readLoverLime({ exclude });
+    if (current(owner)) await renderStage(owner);
+  }));
+  const [id] = home ? lover.loverMilestonesDue((state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who))) : [];
+  if (id) actions.push(button(owner, `${displayName(id, state, { context: "private" })}と過ごす`, "lover-milestone", async () => {
+    showScreen("none", null);
+    hud();
+    const controller = owner.controller = new AbortController();
+    try { await lover.readLoverMilestone(id, { signal: controller.signal }); }
+    finally { if (owner.controller === controller) owner.controller = null; }
+    if (current(owner)) await renderStage(owner);
+  }));
+  return actions;
 }
 
 async function renderFree(owner) {
   const model = chapterFourMapModel(state, { canReflect: canReflect() });
   await setBg(bgUrl(model.background), { instant: true });
+  const lover = await loverActions(owner);
   if (!current(owner)) return;
   card(owner, "free", `DAY ${model.day}・自由行動`, `ドバイの街を歩く。大会まであと${model.daysLeft}日。`,
-    model.destinations.map(destination => el("div.ch4-destination", [
+    [...model.destinations.map(destination => el("div.ch4-destination", [
       destination.ok === false
         ? el("button.btn", { type: "button", text: destination.label, disabled: true, dataset: { test: test(`go-${destination.id}`) } })
         : button(owner, destination.label, `go-${destination.id}`, () => visit(owner, destination.id), destination.kind === "end_day"),
       el("p.ch4-destination-purpose", { text: `${destination.purpose}${destination.unreadCount > 0 ? "（未読あり）" : ""}` }),
-    ])),
+    ])), ...lover],
     [model.guide, model.hint, model.note].filter(Boolean).join(" "));
 }
 

@@ -30,6 +30,8 @@ const privateCall = (id) => callName(id, state, { context: "private" });
  * まだ恋人でも「友達のまま」でもない。予約（締めくくりの直後）と再生（夜の帰り道）の両方でこれを確かめる
  */
 export function romanceRouteOpen(id) {
+  // あげはの告白は日常の帰り道ではなく、第3章の帰郷後（chapters/ch3-romance-entry.js）だけ。
+  if (id === "ageha") return false;
   if (id === "hiyori") {
     const route = hiyoriRoute();
     if (!hiyoriFinaleReady() || !state.flags[route.finale?.flag]
@@ -247,7 +249,8 @@ const chat = (id, msgId, v) => ({
 
 /** 通常のデートは定休日の午後か仕事後。大事な物語は夜の予定と重なる日に臨時休暇を取れる。 */
 export function dateSchedule(id, { day = state.day, fixedNight = () => false, allowTemporaryClosure = false } = {}) {
-  const closedOn = { minto: 6, naru: 3, adam: 5 }[id];
+  // 神崎・REIは第2章の店の定休日（chapters/ch2-preparation.js の CH2_CLOSED_ON と同じ曜日）。
+  const closedOn = { minto: 6, naru: 3, adam: 5, kumicho: 0, rei: 1 }[id];
   if (closedOn != null && day % 7 === closedOn) return { time_slot: "noon", closed_on: closedOn };
   if (fixedNight(day)) return allowTemporaryClosure ? { time_slot: "noon", temporary_closed: true } : null;
   return { time_slot: "night", after_close: true };
@@ -257,8 +260,9 @@ export function dateSchedule(id, { day = state.day, fixedNight = () => false, al
  * 今朝届く恋人からの LIME（記念日・デートの誘い・朝のひとこと・試合の朝）。
  * @param opts.tournamentDay 大会当日の朝か
  * @param opts.fixedNight (day) => その夜に固定イベントがあるか（夜の約束を重ねない）
+ * @param opts.invitations デートの誘いを出すか（約束の仕組みが無い場面カード式の章は false）
  */
-export function loverMessages({ tournamentDay = false, fixedNight = () => false } = {}) {
+export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true } = {}) {
   const out = [];
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
@@ -292,7 +296,7 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     const invId = `_date_inv_${id}${chapterKey}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
     const gap = id === "samechan" ? samechanDateGap() : state.day - last;
-    if (schedule && gap >= (maxed ? 5 : 3) && chapterDay(state) < 14 && !read(invId)
+    if (invitations && schedule && gap >= (maxed ? 5 : 3) && chapterDay(state) < 14 && !read(invId)
       && (id !== "samechan" || samechanDateReady() && state.pendingInvite?.event !== "date_samechan")) {
       out.push({
         id: invId, sender: id, type: "invitation", lover: true,

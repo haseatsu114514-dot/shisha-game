@@ -6,12 +6,13 @@ import { scheduleChapterTwoTrpgNight } from "../js/chapters/ch2-progress.js";
 
 const root = new URL("../../", import.meta.url);
 const preparation = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_preparation.json", root)));
-const stories = ["ch2_kumicho", "ch2_rei"].flatMap(name => JSON.parse(fs.readFileSync(new URL(`data/dialogue/${name}.json`, root))).dialogues);
+const stories = ["ch2_kumicho", "ch2_rei", "venue_hours"].flatMap(name => JSON.parse(fs.readFileSync(new URL(`data/dialogue/${name}.json`, root))).dialogues);
 const all = Object.fromEntries([...preparation.dialogues, ...stories].map(d => [d.dialogue_id, d]));
 const stagesSource = fs.readFileSync(new URL("remake/js/core/affinity-stages.js", root), "utf8");
 const { CH2_VISIT_STORIES, ch2VisitDone } = await import(new URL("remake/js/core/affinity-stages.js", root));
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
-let state, options, played, saves, mode, resolvePlay, heartLevel = 1;
+let state, options, played, saves, mode, resolvePlay, heartLevel = 1, finaleOpen = new Set(), finaleCalls = [];
+const isRepeat = (id, scene) => id === "ageha" ? scene === "remake_ch2_ageha_repeat" : /^remake_ch2_(kumicho|rei)_repeat(_[bcd])?$/.test(scene) && scene.includes(id);
 const ids = ["ageha", "kumicho", "rei"];
 const DB = { dialogues: { ...all } };
 const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"], function () {
@@ -42,11 +43,21 @@ const mocks = {
     return { id, visited: [id] };
   } },
   "../daily/calendar.js": { runDaily: async def => { options = def; } },
-  "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000 },
+  "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn },
   "../daily/hiyori.js": { setHiyoriExtraShops: () => {} },
   "../daily/trpg.js": { trpgSpot: () => null },
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
+  // あげはの♥3の質問（#1988）は affinity_stages.mjs で確認する。ここでは質問が無い通常訪問だけを見る
+  // 締めくくりの記録・贈り物は bonds.mjs / affinity_stages.mjs が確認する。ここでは訪問の分岐と精算だけを見る（#2027）
+  "../daily/bonds.js": { BOND_QUESTIONS: { ageha: { host: "remake_ch2_ageha_newcomer", dialogue: "ch2_ageha_bond_question" } },
+    BOND_FINALES: { ageha: { dialogue: "ch2_ageha_bond_finale" }, kumicho: { dialogue: "ch2_kumicho_bond_finale" }, rei: { dialogue: "ch2_rei_bond_finale" } },
+    playQuestionVisit: async () => true, questionVisitDue: () => false, finaleAtVisit: id => finaleOpen.has(id),
+    playFinale: async (id, opts) => {
+      finaleCalls.push([id, opts]); played.push(`${id}:finale`);
+      if (mode === "cancel") return false;
+      (state.finales ||= {})[id] = { route: "friend" }; return true;
+    } },
   "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false, outingDialogue: () => null, recordOutingVisit: () => {} },
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight },
@@ -73,7 +84,7 @@ function fresh(count) {
 }
 async function setup(count) {
   if (!arguments.length) count = 1;
-  heartLevel = 1;
+  heartLevel = 1; finaleOpen = new Set(); finaleCalls = [];
   state = fresh(count); states.setExport("state", state); played = []; saves = 0; mode = "ok";
   DB.dialogues = { ...all }; resolvePlay = null;
   await module.namespace.runChapterTwoPreparation();
@@ -98,7 +109,7 @@ for (const id of ids) {
       state.money += 60000; // 列の全段階とrepeatを通す代金
       for (const entry of CH2_VISIT_STORIES[id].slice(1)) {
         heartLevel = entry.heart - 1; await visit(id);
-        assert.equal(played.at(-1), `remake_ch2_${id}_repeat`, `${entry.scene} waits for ♥${entry.heart}`);
+        assert(isRepeat(id, played.at(-1)), `${entry.scene} waits for ♥${entry.heart}`);
         assert.equal(ch2VisitDone(state.flags, id, entry), false);
         heartLevel = entry.heart; const money = state.money; await visit(id);
         assert.equal(played.at(-1), entry.scene); assert.equal(ch2VisitDone(state.flags, id, entry), true);
@@ -107,8 +118,8 @@ for (const id of ids) {
       assert.equal(state.flags._ch2_revisit_done[id], true);
       heartLevel = 5;
     }
-    await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_repeat`);
-    await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_repeat`, "Every visit story is read only once");
+    await visit(id); assert(isRepeat(id, played.at(-1)));
+    await visit(id); assert(isRepeat(id, played.at(-1)), "Every visit story is read only once");
   }
   for (const failure of ["cancel", "undefined", "throw", "bad-image", "bad-dialogue", "missing-dialogue", "guard"]) {
     await setup(); mode = failure;
@@ -160,7 +171,7 @@ for (const id of ids) {
 for (const id of ids) {
   await setup(1); heartLevel = 0;
   assert.equal((await visit(id)).used, true);
-  assert.equal(played.at(-1), `remake_ch2_${id}_repeat`);
+  assert(isRepeat(id, played.at(-1)));
   assert.equal(state.flags._ch2_followup_done?.[id], undefined);
   assert.deepEqual(state.affinity, [[id,5]]);
   heartLevel = 1; await visit(id);
@@ -195,7 +206,14 @@ for (const id of validatedIds) {
   assert.deepEqual(loaderDB.dialogues, { preserved: true });
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
-assert.equal(Object.keys(loaderDB.dialogues).length, 31 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・REIの小会話6本と締めくくり2本（#2027）
+assert.equal(Object.keys(loaderDB.dialogues).length, 41 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+for (const id of ["kumicho", "rei"]) {
+  assert(loaderDB.dialogues[`ch2_${id}_bond_finale`], `${id} finale is published`);
+  for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_${id}_repeat_${suffix}`]);
+}
+assert(loaderDB.dialogues.ch2_ageha_bond_question, "the ♥3 question is published with the ageha visits");
+assert(loaderDB.dialogues.ch2_ageha_bond_finale, "the ♥5 finale is published with the ageha visits");
 for (const entry of Object.values(CH2_VISIT_STORIES).flat()) assert(loaderDB.dialogues[entry.scene], entry.scene);
 assert.equal(loaderDB.dialogues.ch2_kumicho_second.metadata.flavor_lesson, undefined);
 assert.deepEqual(loaderDB.dialogues.ch2_kumicho_fourth.metadata.flavor_lesson, { dragonfruit: 1 });
@@ -209,19 +227,67 @@ for (const id of ["kumicho", "rei"]) {
   await setup(); DB.dialogues = { ...loaderDB.dialogues }; heartLevel = 5;
   state.money += 60000;
   const before = structuredClone(state);
-  const sequence = [...CH2_VISIT_STORIES[id].map(entry => entry.scene), `remake_ch2_${id}_repeat`, `remake_ch2_${id}_repeat`];
+  const sequence = [...CH2_VISIT_STORIES[id].map(entry => entry.scene), "repeat", "repeat"];
   for (const scene of sequence) {
     const money = state.money, stamina = state.stamina;
     assert.equal((await visit(id)).used, true);
-    assert.equal(played.at(-1), scene);
+    if (scene === "repeat") assert(isRepeat(id, played.at(-1)), played.at(-1)); else assert.equal(played.at(-1), scene);
     assert.equal(state.money, money - 3000); assert.equal(state.stamina, stamina - 16);
   }
   assert.equal(state.flags._ch2_revisit_done[id], true);
   assert.equal(state.flags._ch2_talks[id], before.flags._ch2_talks[id] + sequence.length);
-  assert.deepEqual(state.affinity, Array.from({ length: sequence.length }, () => [id, 5]));
+  // 長い段階会話は第1章の固有会話と同じ+10、続編・再訪・小会話は+5（#2027）
+  const gained = [...CH2_VISIT_STORIES[id].map(entry => [id, entry.file ? 10 : 5]), [id, 5], [id, 5]];
+  assert.deepEqual(state.affinity, gained);
   assert.deepEqual(state.relationshipMemories, before.relationshipMemories); assert.deepEqual(state.lovers, before.lovers);
 }
 console.log("PASS: actual preparation/loader, three owners, old saves, once-only followups, cancellation/LOAD, atomic preflight");
+
+// #2027: 神崎・REIの小会話は4種を巡回し、その前だけ昼夜の店のあいさつ。訪問列を読み終えた♥5で締めくくり、定休日は入れない。
+const allStoriesRead = id => { for (const entry of CH2_VISIT_STORIES[id]) {
+  if (entry.done) (state.flags[entry.done] ||= {})[id] = true; else state.flags[`_ch2_read_${entry.scene}`] = true;
+} };
+for (const id of ["kumicho", "rei"]) {
+  await setup(); allStoriesRead(id); heartLevel = 5; state.money += 60000;
+  const repeats = [];
+  for (let n = 0; n < 4; n++) {
+    const before = played.length;
+    assert.equal((await visit(id)).used, true);
+    const scenes = played.slice(before);
+    assert.deepEqual(scenes, [`venue_${id}_day`, scenes[1]], "greeting first, then one small talk");
+    assert(isRepeat(id, scenes[1])); repeats.push(scenes[1]);
+  }
+  assert.equal(new Set(repeats).size, 4, `${id}: four distinct small talks rotate`);
+  // 締めくくり: 室内の背景で再生し、完読で+10。中断では請求・交流回数・好感度を残さない。
+  finaleOpen.add(id); mode = "cancel";
+  const before = structuredClone(state);
+  assert.equal((await visit(id)).used, false);
+  assert.equal(JSON.stringify(state), JSON.stringify(before), `${id}: cancelled finale leaves the visit unsettled`);
+  mode = "ok"; finaleCalls = [];
+  const money = state.money;
+  assert.equal((await visit(id)).used, true);
+  assert.equal(played.at(-1), `${id}:finale`, "no greeting before the finale");
+  assert.deepEqual(finaleCalls.map(([who, opts]) => [who, opts.bg, opts.deferSave]), [[id, id, true]]);
+  assert.equal(state.money, money - 3000); assert.deepEqual(state.affinity.at(-1), [id, 10]);
+  // 訪問列が残っていれば、♥5でも締めくくりより段階会話が先
+  await setup(); heartLevel = 5; finaleOpen.add(id);
+  state.flags._ch2_followup_done = { [id]: true };
+  await visit(id); assert.equal(played.at(-1), CH2_VISIT_STORIES[id][1].scene);
+  // 定休日（day % 7）は支払い・会話・記録なしで断る。翌日は入れる。
+  const spot = module.namespace.PREPARATION_SPOTS.find(s => s.charId === id);
+  assert(Number.isInteger(spot.closedOn), `${id} has a weekly closing day`);
+  await setup(); state.day = 14 + spot.closedOn; played = [];
+  const closed = structuredClone(state);
+  assert.equal((await visit(id)).used, false); assert.deepEqual(played, []);
+  assert.equal(JSON.stringify(state), JSON.stringify(closed));
+  state.day += 1; assert.equal((await visit(id)).used, true);
+}
+assert.equal(module.namespace.PREPARATION_SPOTS.find(s => s.charId === "ageha").closedOn, undefined, "ageha keeps her current hours");
+// 準備期間（通算16〜27日・ch2開始15日）に、各店の定休日はちょうど1日だけ。
+for (const [id, closedOn] of Object.entries(module.namespace.CH2_CLOSED_ON)) {
+  assert.equal(Array.from({ length: 12 }, (_, i) => 16 + i).filter(day => day % 7 === closedOn).length, 1, id);
+}
+console.log("PASS: kumicho/rei small-talk rotation with greetings, ♥5 finale after the visit list, weekly closing day");
 
 // Entering preparation after the initial deliveries must not create TRPG appointments
 // or change any participant/relationship state. Keep the real legacy scheduler above

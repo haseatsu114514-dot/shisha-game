@@ -7,7 +7,7 @@ export const LOVER_SCENE_EXP = 20;
 /** 完読した開始台本だけを数える。jump先・中断・別セーブ・既読の旧セーブへは再付与しない。 */
 export function awardLoverSceneExp(id, owner) {
   if (!owner || state !== owner) return 0;
-  const match = /^lover_(tsumugi|minto|rin|ageha|mashiro|samechan)_lv[1-5](?:_b)?$/.exec(id || "");
+  const match = /^lover_(tsumugi|minto|rin|ageha|mashiro|samechan|hiyori)_lv[1-5](?:_b)?$/.exec(id || "");
   const character = match?.[1] || (id === "hiyori_feelings_spoken" ? "hiyori" : null);
   if (!character || !state.lovers?.includes(character)) return 0;
   const key = `_lover_exp_${id}`;

@@ -20,7 +20,7 @@
 
 ## 二次資料・履歴の扱い
 
-- [setting_book/](setting_book/README.md) は共同制作向けの**二次資料**。数値・価格・機材説明は `data/*.json` が正。`setting_reference.html` はそこからの生成物。
+- [archive/setting_book/](archive/setting_book/README.md) は2026-10-31に退避した旧**二次資料**（根拠にしない）。数値・価格・機材説明は `data/*.json` が正。`archive/setting_reference.html` はそこからの生成物。
 - [archive/](archive/README.md) は日付付きの引き継ぎ・計画・記録の**履歴**。ブランチ名・SHA・CI結果・「未接続」「予約待ち」は当時の状態で、新しい台詞・設定・実装の根拠にしない。`docs/qa/` は検証記録（約0.7GB）。どちらも `.claudeignore` で自動参照から外してあり、必要なときだけ開く。
 - `docs/reports/` と `docs/design/` に残るのはオーナー未決定の提案・設計案。採用扱いにしない。決まったら正本へ反映し、ファイルは `archive/` へ移す。
 - 改稿前の台本は `data/dialogue/_legacy/`。旧 `web/`・Godot版は廃止済みで、`docs/master_spec.md` に残る `web/js/` 等のパスは履歴。
@@ -30,6 +30,7 @@
 
 | 作業 | 最初に読む |
 |---|---|
+| 第2〜5章・キャラの作り込み（第1章に揃える） | [chapter_parity_audit.md](chapter_parity_audit.md)（第1章の基準チェックリストと章・キャラごとの不足） |
 | 台詞・会話イベントの追加・編集 | `.claude/skills/dialogue-edit`、`text-style`、`gameplay_agent_reference.md`、必要なら `shisha_reference.md` |
 | 設定の矛盾点検・ストーリー改善 | `.claude/skills/canon-check`、`story-review`、`review_scope.md`、`brand/` |
 | 画像・CG・立ち絵 | `.claude/skills/codex-image-prompt`、`portrait-fix`、`character-portrait-remaster`、`asset_ai_guidance.md` |

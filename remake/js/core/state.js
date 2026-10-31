@@ -514,6 +514,7 @@ export function wipeSave() {
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
   uiTheme: "classic",  // 会話枠と共通UI。ゲームの進行とは別の端末設定。
+  mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時
@@ -528,6 +529,7 @@ export function loadConfig() {
   try {
     Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}"));
   } catch { /* noop */ }
+  if ("muted" in config) { config.mute = !!(config.mute || config.muted); delete config.muted; }
   return config;
 }
 

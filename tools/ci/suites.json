@@ -312,6 +312,12 @@
       ]
     },
     {
+      "id": "ch3-lover-entry",
+      "title": "Lover LIME and lover_events milestones after chapter 3 (#2024)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch3_lover_entry.mjs"]
+    },
+    {
       "id": "affinity-stages",
       "title": "Completed conversations and affinity stage boundaries",
       "kind": "quick",
@@ -363,6 +369,7 @@
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
         "node remake/test/ch2_delivery_identity.mjs",
         "node remake/test/ch2_tournament.mjs",
+        "node --experimental-vm-modules remake/test/ch2_lime.mjs",
         "node remake/test/tournament_story.mjs",
         "node remake/test/served_eval.mjs",
         "node remake/test/naru_tasting.mjs",

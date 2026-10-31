@@ -318,8 +318,8 @@ for (const pts of [0, 1, 2]) {
 reset({ lovers: ["minto"] }); state.inbox.push(item({ id: "loverchat", sender: "minto", type: "chat", messages: ["おはよう"], replies: [{ text: "おはよう", affinity: 1 }] }));
 session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session); assert.equal(gains[0].pts, 3);
 
-// 六つの噂も返信可能。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
-const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 6);
+// 五つの噂も返信可能（南雲は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
+const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 5);
 for (const rumor of rumors) {
   assert(rumor.replies.length >= 2); assert(rumor.replies.some((r) => r.affinity === 0));
   for (let index = 0; index < rumor.replies.length; index++) {
@@ -408,7 +408,7 @@ reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: tr
 assert.equal(await romance.maybeConfession(async () => {}), true); assert.equal(plays.length, 1); assert(!state.flags._minto_name_known); assert.equal(state.flags._confession_due, "minto");
 
 // 外出後の話は後日読んでも時間が食い違わない。私的LIMEに店の呼び込み口調を持ち込まない。
-const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 4);
+const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 5);
 for (const message of afterOutings) { const text = JSON.stringify(message); assert(!/昨日|昨夜/.test(text)); assert(text.includes("この前")); }
 const privateMinto = allMessages.filter((m) => m.sender === "minto" && m.id !== "lime_minto_day4");
 for (const message of privateMinto) assert(!/♡|生きてる〜|おはよっ|チェキ/.test(JSON.stringify(message)), message.id);
@@ -619,5 +619,33 @@ assert.deepEqual(cheers({ chapter: 2, contacts: ["ageha", "samechan"] }), ["enco
 assert.equal(cheers({ contacts: ["tsumugi", "minto", "rin", "hiyori"], flags: { _hiyori_tonari_return_done: true } }).length, 3, "大会の朝も3通まで");
 reset();
 console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch1 ageha and hiyori gate");
+
+// #1668 2-8: 第5章の節目のLIMEは朝の配信に乗らない。openPhone で読むと返信つきで一度だけ履歴に残り、好感度は動かない。
+{
+  const chapterFive = allMessages.filter((m) => m.trigger_condition === "ch5_milestone");
+  for (const day of [6, 14]) for (const tournamentDay of [false, true]) {
+    reset({ chapter: 5, day, contacts: ["mashiro", "adam", "minto", "tsumugi", "rin"], met: { mashiro: true, adam: true } });
+    const ids = phone.morningMessages({ tournamentDay }).map((m) => m.id);
+    assert(!ids.some((id) => chapterFive.some((m) => m.id === id)), "Chapter 5 milestone LIME is not a morning message");
+  }
+  for (const milestone of ["prep", "after_match"]) {
+    reset({ chapter: 5, phase: "aftermath", day: 70, contacts: ["mashiro", "adam"], met: { mashiro: true, adam: true } });
+    const due = chapterFive.filter((m) => m.milestone === milestone);
+    assert.equal(due.length, 2);
+    const session = phone.openPhone(due, { title: "勝負のあと", time: "夜" });
+    for (let index = 0; index < due.length; index += 1) { await click(`reply-${index % 2}`); await click("phone-next"); }
+    await session;
+    assert.deepEqual(state.inbox.map((i) => i.id), due.map((m) => m.id));
+    for (const [index, entry] of state.inbox.entries()) {
+      const reply = due[index].replies[index % 2];
+      assert(entry.read && entry.done && entry.replyState === "replied", entry.id);
+      assert.deepEqual(clone(entry.log), [{ me: true, text: reply.text }, { me: false, text: reply.response }]);
+    }
+    assert(gains.every((gain) => gain.pts === 0), "No affinity from the finale's LIME");
+    assert.deepEqual(statGains, []);
+  }
+  reset();
+  console.log("[1668] PASS chapter 5 milestone LIME stays out of morning delivery and reads once with a reply");
+}
 
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority + #1081 C04 unread guard: PASS");

@@ -23,6 +23,20 @@ for (const [id, definition] of Object.entries(definitions.characters)) {
     assert(scene.lines.every(line => !line.type), "Unconditional date dialogue must not apply rewards or flags");
   }
 }
+// 東京滞在中にあげはから届く数通（#1988）。恋人でなくても連絡先があれば読める。一通ずつ短く、時刻を決めない。
+{
+  const story = definitions.characters.ageha.tokyoStory;
+  assert(Array.isArray(story) && story.length >= 2 && story.length <= 3);
+  assert.deepEqual([...new Set(story.map(entry => entry.key))].length, story.length, "keys are unique");
+  for (const entry of story) {
+    assert(entry.me && entry.text);
+    assert(!/仕事終わ|退勤|店じまい|店、終わった/.test(entry.text), entry.key);
+    assert(!/あげはの|あげは、/.test(entry.me), "the player says あげはさん before dating");
+  }
+  assert(story.some(entry => /練習/.test(entry.text)), "one message previews the reunion's 言う練習");
+  assert(definitions.characters.ageha.summary && definitions.characters.ageha.homeSummary);
+  assert.equal(definitions.characters.ageha.dateMinChapter, 4, "no Tokyo date before homecoming");
+}
 const memory = new Map();
 globalThis.localStorage = { getItem: key => memory.get(key) ?? null, setItem: (key, value) => memory.set(key, String(value)) };
 function departure() {

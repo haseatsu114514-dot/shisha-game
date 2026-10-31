@@ -206,6 +206,8 @@ function eligible(m, { tournamentDay = false } = {}) {
   }
   if (cond === "affinity_level") return affinityLevel(m.sender) >= (m.trigger_value || 3) && !state.flags[`_invited_${m.id}`];
   if (cond === "flag") return !!state.flags[m.trigger_flag];
+  // 章の開始後に届く噂（rumor_kumicho_cigarman など）。章は上で一致を確認済みなので、章内の日数が trigger_day に達したら届く
+  if (/^ch\d+_started$/.test(cond || "")) return state.chapter >= Number(cond.slice(2, -8)) && chapterDay(state) >= (m.trigger_day || 1);
   return false;
 }
 
@@ -1124,7 +1126,8 @@ export function limeCoach(onOpen) {
 }
 
 /** 章の旅程相談。既存端末とアカウントを使い、当日招待の失効・報酬処理へ流さない。 */
-export async function openContactLime({ contacts, summary, actions, onAction, signal = null }) {
+export async function openContactLime({ contacts, summary, actions, onAction, signal = null,
+  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。" }) {
   const owner = state;
   const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
   let resolveClose;
@@ -1136,7 +1139,7 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
   function showList() {
     if (!alive()) return;
     ui.gen++;
-    ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: "恋人との連絡" }));
+    ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: title }));
     ui.chat.classList.add("list");
     ui.chat.replaceChildren();
     for (const id of contacts()) {
@@ -1146,7 +1149,7 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
         el("div.lcr-main", [el("div.lcr-name", { text: limeName(account) }), el("div.lcr-preview", { text: summary(id) })]),
       ]));
     }
-    if (!contacts().length) ui.chat.append(el("p.lime-empty", { text: "連絡先を交換した恋人ができると、ここから連絡できます。" }));
+    if (!contacts().length) ui.chat.append(el("p.lime-empty", { text: empty }));
     ui.actions.replaceChildren(el("button.lime-reply.ghost", { text: "スマホを閉じる", dataset: { test: "phone-close" }, onclick: close }));
   }
   function showThread(id) {

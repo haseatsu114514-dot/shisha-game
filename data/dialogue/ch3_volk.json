@@ -133,7 +133,7 @@
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "それが俺のやり方だ"
         },
         {
@@ -168,7 +168,7 @@
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "Точность（トーチナスチ）。精度。それが全て"
         },
         {
@@ -202,7 +202,7 @@
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "……熱すぎたか"
         },
         {
@@ -387,7 +387,7 @@
           },
           {
             "speaker": "volk",
-            "face": "normal",
+            "face": "serious",
             "text": "偵察だ。軍にいた頃に叩き込まれた。相手を知らずに、勝負の場には立たない"
           },
           {
@@ -501,7 +501,7 @@
           },
           {
             "speaker": "volk",
-            "face": "normal",
+            "face": "serious",
             "text": "気づいたか。偵察だ。軍にいた頃に叩き込まれた。県大会の優勝者は、見ておく"
           },
           {
@@ -554,8 +554,12 @@
     },
     {
       "dialogue_id": "ch3_volk_second",
+      "comment": "味の会話（#2028）。ヴォルクの好み＝発売直後のナイトサイド ブラストミント。第3章の寄り道（ch3-story-wiring.js）から、初来店の後に second→third→fourth の順で一度ずつ読む（#2026）。",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_volk_shop.png"
+        "bg": "res://assets/backgrounds/bg_volk_shop.png",
+        "flavor_lesson": {
+          "nightside_blast_mint": 1
+        }
       },
       "lines": [
         {
@@ -587,6 +591,31 @@
           "speaker": "volk",
           "face": "normal",
           "text": "前回は、前回の条件だった。同じにする理由がない"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "今日の葉はブラストミント。熱に強い"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "強い葉は、雑な火でも冷たく感じる。だから熱の揺れに気づかない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口目から、重く冷たい煙が胸に沈む。口を重ねても、冷たさの角が変わらない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（強い葉ほど、火の揺れを隠してしまうんだ）"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "揃えるのは冷たさの角だ。強さではない"
         },
         {
           "speaker": "",
@@ -625,7 +654,7 @@
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "寒い夜に、客の時間を切らせない。精度を上げたのは、そのためだ"
         },
         {
@@ -641,6 +670,16 @@
           "speaker": "",
           "face": "",
           "text": "……【技術】と【センス】が少し上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2,
+            "sense": 2
+          },
+          "affinity": {
+            "volk": 2
+          }
         }
       ]
     },
@@ -677,7 +716,7 @@
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "軍で教わった。記録しないことは、忘れることと同じだと"
         },
         {
@@ -739,6 +778,15 @@
           "speaker": "",
           "face": "",
           "text": "……【センス】が上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 3
+          },
+          "affinity": {
+            "volk": 2
+          }
         }
       ]
     },
@@ -805,7 +853,7 @@
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "向こうの店で一度、計器だけ見て「問題ない」と言った夜がある。客は二口でホースを置いて帰った"
         },
         {
@@ -836,6 +884,15 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 3
+          },
+          "affinity": {
+            "volk": 2
+          }
         }
       ]
     },
@@ -867,7 +924,7 @@
         },
         {
           "speaker": "volk",
-          "face": "normal",
+          "face": "serious",
           "text": "だが、四人同時の卓で、俺は計器ばかり見ていた。審査員が吸う間は、店ほど書けていない"
         },
         {

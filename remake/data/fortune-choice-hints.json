@@ -141,6 +141,46 @@
       ],
       "preferred": "romance",
       "reason": "サメちゃん個人に会いたいと伝える"
+    },
+    "remake_ch2_ageha_chat:ch2_ageha_first_chat": {
+      "target": "ageha",
+      "kind": "conversation",
+      "options": [
+        "a",
+        "b"
+      ],
+      "preferred": "b",
+      "reason": "あげはが客の顔のどこを見ているのかに興味を示す"
+    },
+    "remake_ch2_ageha_badday:ch2_ageha_badday": {
+      "target": "ageha",
+      "kind": "conversation",
+      "options": [
+        "help",
+        "rest"
+      ],
+      "preferred": "help",
+      "reason": "店を開けたい気持ちを止めず、手だけ貸す"
+    },
+    "remake_ch2_ageha_gummy:ch2_ageha_gummy_why": {
+      "target": "ageha",
+      "kind": "conversation",
+      "options": [
+        "ask",
+        "wait"
+      ],
+      "preferred": "wait",
+      "reason": "「なんで」と急がせず、本人が言葉にするのを待つ"
+    },
+    "ch2_ageha_bond_question:bond_q1_ageha": {
+      "target": "ageha",
+      "kind": "romance",
+      "options": [
+        "romance",
+        "friend"
+      ],
+      "preferred": "romance",
+      "reason": "店の外でもあげはと会いたいと伝える"
     }
   }
 }

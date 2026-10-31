@@ -33,7 +33,7 @@ export const REGULATION = {
   2: { flavor: "strawberry", supply: "afsahr_strawberry", min: 4, label: "課題フレーバー「ストロベリー」を4g以上" },
   // オーナー決定 10/28：ドバジ・4g以上・大会支給。チョコは通常（chocolate）。
   3: { flavor: "chocolate", supply: "chocolate", min: 4, label: "課題フレーバー「ドバジ チョコレート」を4g以上（大会支給）" },
-  // 第5章 SHISHA-9000 戦（docs/setting_book/05_tournament.md）。runner の候補制限に加え、単体12gを判定する。
+  // 第5章 SHISHA-9000 戦（docs/archive/setting_book/05_tournament.md）。runner の候補制限に加え、単体12gを判定する。
   5: { flavor: "double_apple", supply: "double_apple", min: 12, exact: 12, label: "課題「ダブルアップル単体12g」（主催支給）" },
 };
 // 第4章 GRAND SMOKE は自由課題（最高の一台）。課題の葉は無く、出発前にスミさんと決めた方針（ch4_strategy）の葉を

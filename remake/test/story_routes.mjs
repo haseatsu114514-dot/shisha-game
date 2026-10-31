@@ -182,13 +182,32 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert(!offered({...value, flags: {...value.flags, _friend_mashiro: true}}).includes('confession_mashiro'), 'friend already landed');
   wiring.commitOptionalRead(value, 'confession_mashiro');
   assert(!offered(value).includes('confession_mashiro'), 'read once only');
-  // あげは: 第3章の後日談を読み終えた保存だけ。着地済み・第4章では出さない。
-  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true}};
+  // あげは（#1988）: 第3章の後日談を読み終え、♥3の分岐で恋愛寄り・♥5の保存だけ。未回答・友情・♥4・着地済み・第4章では出さない。
+  const romance = {bond_q1_ageha: {char: 'ageha', value: 1, day: 20}};
+  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true, _ch3_aftermath: {version: 3, winDay: 42, stage: 7}},
+    romanceChoices: romance, affinity: {ageha: 66}, day: 45, slot: 0};
   assert.equal(entry.agehaConfessionDue(cleared), true);
   assert.equal(entry.agehaConfessionDue({...cleared, flags: {}}), false, 'not before the reunion');
+  assert.equal(entry.agehaConfessionDue({...cleared, romanceChoices: {}}), false, 'no ♥3 answer: no confession');
+  assert.equal(entry.agehaConfessionDue({...cleared, romanceChoices: {bond_q1_ageha: {char: 'ageha', value: 0, day: 20}}}), false, 'friendship answer');
+  assert.equal(entry.agehaConfessionDue({...cleared, romanceChoices: {bond_q1_ageha: {char: 'minto', value: 1, day: 20}}}), false, 'another character\'s answer');
+  assert.equal(entry.agehaConfessionDue({...cleared, affinity: {ageha: 65}}), false, '♥4 is not enough');
+  assert.equal(entry.agehaConfessionDue({...cleared, affinity: {}}), false, 'max affinity is required even on the romance route');
   assert.equal(entry.agehaConfessionDue({...cleared, lovers: ['ageha']}), false);
-  assert.equal(entry.agehaConfessionDue({...cleared, flags: {_ch3_cleared: true, _friend_ageha: true}}), false);
+  assert.equal(entry.agehaConfessionDue({...cleared, flags: {...cleared.flags, _friend_ageha: true}}), false);
   assert.equal(entry.agehaConfessionDue({...cleared, chapter: 4}), false);
+  assert.equal(entry.AGEHA_ROUTE_CHOICE, 'bond_q1_ageha');
+  // 告白は再会（優勝3日後）の翌日。進んだ時計は戻さず、条件を満たさない保存の時計には触れない。
+  const timed = structuredClone(cleared);
+  assert.equal(entry.beginAgehaConfessionDay(timed), true);
+  assert.deepEqual([timed.day, timed.slot], [46, 0]);
+  assert.equal(entry.beginAgehaConfessionDay(timed), false, 'idempotent');
+  const late = {...structuredClone(cleared), day: 47, slot: 1};
+  assert.equal(entry.beginAgehaConfessionDay(late), false);
+  assert.deepEqual([late.day, late.slot], [47, 1], 'never rewinds');
+  const friend = {...structuredClone(cleared), romanceChoices: {}};
+  assert.equal(entry.beginAgehaConfessionDay(friend), false);
+  assert.equal(friend.day, 45);
   assert.equal(sceneData.get('confession_ageha_accept').metadata.set_romance, 'ageha');
   for (const id of entry.AGEHA_CONFESSION_SCENES) assert(sceneData.get(id)?.lines?.length, id);
 }
@@ -212,6 +231,66 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   // route.events と寄り道の既読を一本化する: 同じフラグで「既読」になる。
   const hiyoriRoute = JSON.parse(fs.readFileSync(new URL('data/dialogue/hiyori.json', root))).route;
   assert.equal(hiyoriRoute.events.find(e => e.id === 'tokyo_contact').flag, wiring.optionalReadFlag('hiyori_tokyo_contact'));
+}
+{
+  // #2026: ヴォルクの再訪は初来店の後に second→third→fourth の順。思い出・能力・好感度は台本の行で付く。
+  const value = tokyo();
+  readUntil(value, 'ch3_volk_first');
+  value.met.volk = true;
+  assert(!offered(value).some(id => id.startsWith('ch3_volk_')), 'no revisit before the first visit');
+  readUntil(value, 'ch3_strategy');
+  assert(offered(value).includes('ch3_volk_second'));
+  assert(!offered(value).includes('ch3_volk_third') && !offered(value).includes('ch3_volk_fourth'));
+  assert(!offered({...value, met: {}}).includes('ch3_volk_second'), 'needs to have met volk');
+  wiring.commitOptionalRead(value, 'ch3_volk_second');
+  assert.deepEqual(offered(value).filter(id => id.startsWith('ch3_volk_')), ['ch3_volk_third']);
+  wiring.commitOptionalRead(value, 'ch3_volk_third');
+  assert.deepEqual(offered(value).filter(id => id.startsWith('ch3_volk_')), ['ch3_volk_fourth']);
+  wiring.commitOptionalRead(value, 'ch3_volk_fourth');
+  assert(!offered(value).some(id => id.startsWith('ch3_volk_')), 'each revisit is read once');
+  const lines = id => sceneData.get(id).lines;
+  assert(lines('ch3_volk_second').some(row => row.type === 'remember' && row.memory_id === 'volk_conditions'));
+  assert(lines('ch3_volk_fourth').some(row => row.type === 'remember' && row.memory_id === 'volk_update'));
+  for (const id of ['ch3_volk_second', 'ch3_volk_third', 'ch3_volk_fourth']) {
+    assert(lines(id).some(row => row.type === 'apply' && row.affinity?.volk > 0 && Object.keys(row.stats || {}).length), id);
+  }
+}
+{
+  // #2026: つむぎの不調の通話。第2章の煙の線・水を読み、味が戻った後、つむぎが東京に来ていない間だけ。
+  const value = tokyo();
+  value.met.tsumugi = true; value.contacts.push('tsumugi');
+  readUntil(value, 'ch3_abyss_recovery');
+  assert(!offered(value).includes('ch3_tsumugi_slump'), 'needs the chapter-2 smoke-line scene');
+  value.flags._ch2_read_ch2_tsumugi_color = true;
+  assert(wiring.chapterThreeCompletedScenes(value).includes('ch2_tsumugi_color'));
+  assert(offered(value).includes('ch3_tsumugi_slump'));
+  assert(!offered({...value, contacts: ['sumi']}).includes('ch3_tsumugi_slump'), 'needs the contact');
+  const early = tokyo();
+  early.met.tsumugi = true; early.contacts.push('tsumugi'); early.flags._ch2_read_ch2_tsumugi_color = true;
+  readUntil(early, 'ch3_rest_before_recovery');
+  assert(!offered(early).includes('ch3_tsumugi_slump'), 'not while the taste is gone');
+  const visiting = structuredClone(value);
+  visiting.tokyoVisits.plans.push({id: 'tokyo.tsumugi.x', characterId: 'tsumugi', status: 'staying', arrivalDay: value.day, returnDay: value.day + 2});
+  assert(!offered(visiting).includes('ch3_tsumugi_slump'), 'no video call while she is in Tokyo');
+  wiring.commitOptionalRead(value, 'ch3_tsumugi_slump');
+  assert(!offered(value).includes('ch3_tsumugi_slump'), 'read once only');
+}
+{
+  // #2022: ましろとはmukai二日目の本編でLIMEを交換する（第5章のLIMEは連絡先が前提）。
+  assert(sceneData.get('ch3_mukai_intro').lines.some(row => row.type === 'set_flag' && row.flag === '_lime_contact_mashiro'));
+  // 味の会話は休みの日の配合メモの後、味覚が戻ってから。読むと好感度と熟練度が上がる。
+  const value = tokyo();
+  readUntil(value, 'ch3_rest_before_recovery');
+  wiring.commitOptionalRead(value, 'ch3_mashiro_play_1');
+  assert(!offered(value).includes('ch3_mashiro_black_tea'), 'not while the taste is gone');
+  readUntil(value, 'ch3_abyss_recovery');
+  assert(offered(value).includes('ch3_mashiro_black_tea'));
+  assert(!offered({...value, flags: {...value.flags, _ch3_read_ch3_mashiro_play_1: false}}).includes('ch3_mashiro_black_tea'));
+  const lesson = sceneData.get('ch3_mashiro_black_tea');
+  assert.deepEqual(lesson.metadata.flavor_lesson, {black_tea: 1});
+  for (const id of ['ch3_mashiro_play_1', 'ch3_mashiro_play_2', 'ch3_mashiro_play_3', 'ch3_mashiro_practice', 'ch3_mashiro_black_tea']) {
+    assert(sceneData.get(id).lines.some(row => row.type === 'apply' && row.affinity?.mashiro > 0), `${id} raises Mashiro's affinity`);
+  }
 }
 {
   // 久世とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に久世側。

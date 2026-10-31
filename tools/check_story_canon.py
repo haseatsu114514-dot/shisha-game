@@ -31,8 +31,8 @@ def text_errors(row):
         errors.append('括弧が一行の中で閉じていない')
     if speaker == 'hajime' and re.search(r'僕|あたし', text):
         errors.append('はじめの一人称は俺')
-    if speaker == 'dr_kemuri' and re.search(r'僕|俺', text):
-        errors.append('博士の一人称は私')
+    if speaker == 'dr_kemuri' and '僕' in text:
+        errors.append('博士の一人称は私（公的）／俺（はじめ・年下とフランクに）')
     if speaker == 'ageha' and re.search(r'あたし|アタシ|ウチ|はじめくん', text):
         errors.append('あげははうち／ハジメっち')
     if speaker == 'tsumugi' and 'はじめくん' in text:

@@ -8,7 +8,8 @@ import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
-  rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK",
+  rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
+  kumicho: "神崎煙草店", rei: "零-ZERO-", mashiro: "mukai",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
@@ -50,6 +51,7 @@ export function relationshipStatus(id) {
       : "友人としての大きな節目を迎えた。");
   }
   if (romanceRouteOpen(id)) {
+    if (id === "mashiro") return summary("romance", "告白を選べる", "寄り道から、休日にましろの部屋でお茶をする日へ。");
     return summary("romance", "告白を選べる", (state.flags._confession_wait || 0) > state.day
       ? "今は想いを胸にしまっている。後日の夜、もう一度伝えられる。"
       : "予定の合う夜の帰り道で、想いを伝えるか選べる。");
@@ -60,9 +62,15 @@ export function relationshipStatus(id) {
   const friend = !!state.flags[`_friend_${id}`] || answers.some(a => a.value === 0);
   const romance = !friend && answers.some(a => a.value > 0);
   if (friend || romance) {
-    const hint = state.finales?.[id] ? "相手との大切な交流を見届けた。"
+    // あげは（#1988・#2023）: 恋愛ルートで♥5なら、締めくくりの有無にかかわらず帰郷後の再会の翌日に本人から言葉がある。
+    const agehaWords = id === "ageha" && romance && lv >= 5 && (state.chapter >= 3 || !!state.finales?.[id]);
+    const hint = agehaWords ? (state.chapter >= 3 ? "帰郷してMELTY PUFFを訪ねた翌日に、本人の言葉を聞ける。"
+        : "県大会のあとも、店に通う約束は続く。本人の言葉は、そのあとで。")
+      : state.finales?.[id] ? "相手との大切な交流を見届けた。"
       : id === "hiyori" && !BOND_FINALES[id]?.gift ? "ひよりとの交流を続けよう。関係の続きは、これからの物語で。"
       : id === "hiyori" && !hiyoriFinaleReady() ? "まだ聞いていないひよりの話を進めよう。斧投げや仕事の話を見届けてから、次の節目へ。"
+      // 締めくくりはMELTY PUFFに通える第2章だけ。
+      : id === "ageha" ? (lv >= 5 && state.chapter === 2 ? finaleHint(id) : "")
       : lv >= 5 ? finaleHint(id)
       : ""; // ♥5までの道のりと贈り物の説明は全体ガイドにまとめ、各人の行では直近の思い出を前に出す
     return summary(romance ? "romance" : "friend", romance ? "恋愛ルート" : "友人ルート", hint);

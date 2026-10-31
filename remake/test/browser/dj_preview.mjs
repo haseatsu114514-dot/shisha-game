@@ -45,12 +45,14 @@ try{
   assert.equal(await page.locator('#track-a').textContent(),'Dance Monster');assert.equal(await page.locator('#track-b').textContent(),'Digital Lemonade');
   assert((await page.locator('main').textContent()).includes('CC BY 4.0'));assert(await page.locator('#judge').isDisabled());
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
-  for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height>=64&&r.width>=100,'Large individual PLAY targets');}
+  // The DJ screen is a fixed 1280×720 stage scaled like the main game; sizes are checked in stage units.
+  const stageScale=await page.evaluate(()=>Number(getComputedStyle(document.getElementById('dj-stage')).getPropertyValue('--s'))||1);
+  for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=63.5&&r.width/stageScale>=100,'Large individual PLAY targets');}
   const artwork=new URL('../../../assets/backgrounds/bg_dj_red_room.png',url).href;
   const art=await page.request.get(artwork);assert(art.ok(),'Generated background must be served');assert((await art.body()).length>10000,'Background must not be an LFS pointer');
   for(const key of ['a','b']){
    assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');
-   for(const control of [`[data-pitch="${key==='a'?0:1},0.01"]`]){const b=await page.locator(control).boundingBox();assert(b.width>=44&&b.height>=44,'Touch controls remain at least 44px');}
+   for(const control of [`[data-pitch="${key==='a'?0:1},0.01"]`]){const b=await page.locator(control).boundingBox();assert(b.width/stageScale>=43.5&&b.height/stageScale>=43.5,'Touch controls remain at least 44 stage px');}
   }
   assert.equal(await page.locator('[data-sync],#assist,#tap').count(),0,'No continuous sync/CUE/tap input workload');
   if(kind==='pc')await page.locator('#start').click();else await page.locator('#start').tap();

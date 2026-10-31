@@ -1,7 +1,7 @@
 // 東京の自由時間に地図から選んだ行き先を再生し、読了後に一枠だけ確定する（#1655）。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save } from "../core/state.js";
-import { addStamina, addMoney, earnStat, paidAction } from "../core/stats.js";
+import { addStamina, addMoney, earnStat, gainAffinity, paidAction } from "../core/stats.js";
 import { layers, showScreen, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "./ch2-city-data.js";
@@ -20,7 +20,7 @@ export function loadChapterThreeOutings() {
   return outingTask;
 }
 
-// 地図の行き先ごとの背景。公園は専用の絵ができるまで街の道で代用する（仮）。
+// 地図の行き先ごとの背景。公園とmukaiの裏口（てつこ）は専用の絵ができるまで街の道で代用する（仮）。
 const OUTING_BG = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", park: "bg_street" };
 /** その店で会える授業の先生（心得の盤 SBD70: 授業は会って相談した時だけ習う） */
 const OUTING_TEACHER = { mukai: "mashiro", enmaku: "kuze", steve: "steve" };
@@ -41,7 +41,7 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
     const outing = chapterThreeOutings(state, windowId).find(item => item.id === id);
     if (!outing?.ok) return false;
     const night = !!outing.window.slot;
-    const bg = OUTING_BG[outing.place];
+    const bg = outing.bg || OUTING_BG[outing.place];
     const bgRef = bg === "bg_street" ? bgUrl(night ? "bg_street_night" : "bg_street_day") : bgUrl(bg, night ? "night" : "day");
     await setBg(bgRef, { instant: true });
     if (!current()) return false;
@@ -55,6 +55,7 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
       addStamina(outing.stamina);
       if (outing.money) addMoney(outing.money);
       if (outing.stat) earnStat(outing.stat, 4);
+      for (const [who, pts] of Object.entries(outing.affinity || {})) gainAffinity(who, pts);
       return true;
     }, { consumed: used => used && !!outing.stat });
     if (!settled.value || !current()) return false;
@@ -62,8 +63,8 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
     // 心得の盤で灯した授業があれば、その店で相談して習う（盤が無効な時は何もしない）
     if (OUTING_TEACHER[outing.place] && current()) await consultLessons(OUTING_TEACHER[outing.place], { bg: bgRef, signal: owner.controller.signal });
     if (!current()) return true;
-    toast(outing.money ? `日当 +${outing.money.toLocaleString()}円` : outing.stamina > 0 ? "少し体が休まった" : "訪ねてよかった",
-      { kind: "good" });
+    toast(outing.toast || (outing.money ? `日当 +${outing.money.toLocaleString()}円`
+      : outing.stamina > 0 ? "少し体が休まった" : "訪ねてよかった"), { kind: "good" });
     return true;
   } finally {
     signal?.removeEventListener("abort", cancel);
