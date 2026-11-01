@@ -254,7 +254,7 @@ await suite("ch2-preview", async check => {
       assert(unknown >= 0 && known > unknown, `${id} name appeared before introduction or did not unlock: ${JSON.stringify(frames)}`);
       assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_city_inside_${id}`], id), true);
       assert(fs.existsSync(path.join(evidence, `desktop-room-${id}.png`)), `Room portrait was not displayed: ${id}`);
-      if (id === 'kumicho') assert(!frames.some(frame => /組長/.test(frame.title || '')), 'Kanzaki secret revealed before DAY14');
+      if (id === 'kumicho') assert(!frames.some(frame => /組長/.test(frame.title || '')), 'Kanzaki introduction must leave his identity ambiguous');
       if (id === 'ageha') assert(frames.some(frame => frame.text.includes('うちも！')), 'Ageha must remain a chapter-two tournament rival');
     }
     await turbo(page);
