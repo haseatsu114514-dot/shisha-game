@@ -3,6 +3,7 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
 import { playEntrance } from "./tournament-entrance.js";
+import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
@@ -19,7 +20,7 @@ import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
 import { radar } from "../daily/status.js";
-import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
+import { onDialogueEnter } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
@@ -544,8 +545,7 @@ async function tournamentDay() {
   void preloadBgm("bgm_tournament_craft");
   void warmGameOver();
   await smokeWipe(() => playBgm("bgm_tournament_wait"), { color: "dark" });
-  await play("ch1_tournament_arrival");
-  await maybeShuraba(); // 恋人が2人以上いたら、ロビーで鉢合わせる
+  await playTournamentArrival();
   playBgm("bgm_tournament_edm");
   await play("ch1_tournament_opening", { bg: STAGE });
   const regulation = regulationFor({ mode: "tournament" });
