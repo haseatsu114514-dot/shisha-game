@@ -227,13 +227,14 @@ export function completeLesson(student, id, result) {
 export async function consultLessons(who, { only = null, bg, signal } = {}) {
   const owner = state;
   const lessons = readyLessons(who).filter((l) => !only || l.id === only);
-  if (!lessons.length) return [];
+  if (!lessons.length || signal?.aborted) return [];
   const { play } = await import("../vn/engine.js");
   const { gainCard } = await import("./ui.js");
   const done = [];
   for (const lesson of lessons) {
+    if (owner !== state || signal?.aborted || !readyLessons(who).some(l => l.id === lesson.id)) break;
     const result = await play(lesson.scene, { ...(bg ? { bg } : {}), signal });
-    if (!completeLesson(owner, lesson.id, result)) break;
+    if (signal?.aborted || !completeLesson(owner, lesson.id, result)) break;
     done.push(lesson);
     gainCard({ kind: "info", badge: "授", top: "TRAINING", main: lesson.name, sub: lesson.text });
   }

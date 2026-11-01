@@ -1202,6 +1202,96 @@ await suite("growth-levelup", async (runCheck) => {
       assert.deepEqual(result, { done: ["M-B4"], same: true, learned: true, cycle: 3, hearts: 0, effective: true, repeat: 0 });
     }, { viewport, ...(label === "touch" ? { isMobile: true, hasTouch: true } : {}) });
   }
+  await check("LOAD-before-lesson-import-finishes", async page => {
+    await setupDaily(page);
+    const result = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), growth = await import("./js/core/growth.js");
+      const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true;
+      const lines = []; vn.hooks.onLine = id => lines.push(id);
+      growth.ensureGrowth().nodes = ["M-W1"];
+      core.save();
+      const old = core.state;
+      const pending = growth.consultLessons("sumi");
+      core.load();
+      const before = JSON.stringify(core.state);
+      const learned = await pending;
+      vn.hooks.onLine = null;
+      return { replaced: old !== core.state, learned: learned.map(l => l.id), lines,
+        unchanged: JSON.stringify(core.state) === before };
+    });
+    assert.deepEqual(result, { replaced: true, learned: [], lines: [], unchanged: true });
+  });
+  await check("tonari-shift-menu-teaches-lit-lesson-once", async page => {
+    await setupDaily(page);
+    // 開始時の火種は保存fixture。盤の実経路と通常シフト後の相談口を検査し、獲得ペースは証明しない。
+    await page.evaluate(async () => {
+      window.shiftCore = await import("./js/core/state.js");
+      const growth = await import("./js/core/growth.js"), board = await import("./js/core/growth-board.js");
+      const g = growth.ensureGrowth(); g.hidane.any = 8;
+      const path = board.pathTo("M-W1", new Set()).path;
+      if (!board.commitPending(path).some(n => n.id === "M-W1")) throw new Error("legal lesson path");
+      shiftCore.state.flags._ev_ageha_cameo = true;
+      const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true;
+      window.shiftLines = []; vn.hooks.onLine = id => shiftLines.push(id);
+      window.shiftRun = (async () => {
+        const tonari = await import("./js/daily/tonari.js");
+        if (await tonari.tonariMenu() !== "baito") throw new Error("shift selection");
+        return tonari.doBaito();
+      })();
+    });
+    await page.locator(t("tonari-baito")).click();
+    await page.locator(t("shift-order-0")).click();
+    await page.locator(t("after-lesson-M-W1")).waitFor();
+    const before = await page.evaluate(() => ({ day: shiftCore.state.day, slot: shiftCore.state.slot,
+      stamina: shiftCore.state.stamina, money: shiftCore.state.money, paid: JSON.stringify(shiftCore.state.growth.paid),
+      fire: JSON.stringify(shiftCore.state.growth.hidane) }));
+    await page.locator(t("after-lesson-M-W1")).click();
+    const result = await page.evaluate(async () => {
+      await shiftRun;
+      const growth = await import("./js/core/growth.js");
+      shiftCore.save(); shiftCore.load();
+      const s = shiftCore.state;
+      const taught = shiftLines.includes("ch1_sumi_cube_coals");
+      (await import("./js/vn/engine.js")).hooks.onLine = null;
+      return { taught, learned: growth.lessonLearned("M-W1"), cube: s.flags._coal_cube_learned,
+        repeat: (await growth.consultLessons("sumi")).length,
+        after: { day: s.day, slot: s.slot, stamina: s.stamina, money: s.money,
+          paid: JSON.stringify(s.growth.paid), fire: JSON.stringify(s.growth.hidane) } };
+    });
+    assert.deepEqual(result, { taught: true, learned: true, cube: true, repeat: 0, after: before });
+  });
+  await check("FESTA-revisits-stay-free-without-action-XP", async page => {
+    await setupDaily(page);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    // 第3章クリアだけを開始fixtureにし、第4章のプロローグと初訪・再訪は実カードから進める。
+    await page.evaluate(async () => {
+      window.festaCore = await import("./js/core/state.js");
+      const s = festaCore.newGame(); Object.assign(s, { chapter: 3, phase: "cleared", day: 45, slot: 1 });
+      s.flags._ch3_cleared = true;
+      const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
+      void (await import("./js/chapters/ch4.js")).beginChapterFour();
+    });
+    await page.locator(t("ch4-companion-none")).click();
+    for (const id of ["ch4_sumi_training", "ch4_strategy", "ch4_opening", "ch4_arrival_inn"]) {
+      await page.locator(`${t("ch4-scene")}[data-scene="${id}"]`).waitFor();
+      await page.locator(t("ch4-continue")).click();
+    }
+    await page.locator(t("ch4-free")).waitFor();
+    const snapshot = () => page.evaluate(() => {
+      const s = festaCore.state;
+      return { day: s.day, slot: s.slot, stamina: s.stamina, money: s.money,
+        xp: s.growth?.xp || 0, fresh: structuredClone(s.growth?.fresh || {}), affinity: s.affinity.da_silva || 0 };
+    });
+    const before = await snapshot();
+    for (let visit = 0; visit < 3; visit++) {
+      await page.locator(t("ch4-go-festa")).click();
+      const scene = visit ? "ch4_festa_revisit" : "ch4_festa";
+      await page.waitForFunction(id => festaCore.state.flags._ch4.read[id] === true, scene);
+      await page.locator(t("ch4-go-festa") + ":not(:disabled)").waitFor();
+      assert.deepEqual(await snapshot(), before, "無料のFESTA再訪ではX1・新鮮さ・資源を変えない");
+    }
+    assert.equal(await page.evaluate(() => festaCore.state.met.da_silva), true);
+  });
   await Promise.all(Array.from({length:2},async()=>{
     for(;;){const next=cases.shift();if(!next)return;await runCheck(...next);}
   }));
