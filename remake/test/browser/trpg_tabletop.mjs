@@ -222,7 +222,7 @@ try{
    await fit(p,`${scenario}-${width}x${height}-actual-result`);
    assert(await ctl(p,'trpg-reroll-0').count());await ctl(p,'trpg-reroll-0').click();await ctl(p,'trpg-settle').waitFor();
    await fit(p,`${scenario}-${width}x${height}-rerolled-result`);
-   await ctl(p,'trpg-settle').click();await p.setViewportSize({width:1280,height:720});await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');await c.close();
+   await ctl(p,'trpg-settle').click();await p.setViewportSize({width:1280,height:720});await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'interview','after the first roll the story character is interviewed');await c.close();
  }
  // Reduced motion uses the same actual dice and spare equipment in both stories.
  for(const scenario of ['ordinary-cup','shark-last-order']){
@@ -242,7 +242,7 @@ try{
  }
  // Deliberately fail all decorative resources; live content stays usable.
  const c=await browser.newContext();const p=await c.newPage();await p.route(/\/(walnut-brass-frame|deep-teal-felt|harbour-paper-stack|spare-polyhedral-kit)\.webp$/,r=>r.abort());
- await p.goto(base+'trpg-preview.html?scenario=ordinary-cup&seed=9');await ctl(p,'trpg-start').click();await lines(p);await declare(p);await fit(p,'missing-decoration');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');await c.close();
+ await p.goto(base+'trpg-preview.html?scenario=ordinary-cup&seed=9');await ctl(p,'trpg-start').click();await lines(p);await declare(p);await fit(p,'missing-decoration');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'interview');await c.close();
 }finally{await browser.close();fs.writeFileSync(path.join(out,'measurements.json'),JSON.stringify(results,null,2)+'\n');}
 console.log('PASS tabletop viewport, live input, state invariance and missing image checks');
 

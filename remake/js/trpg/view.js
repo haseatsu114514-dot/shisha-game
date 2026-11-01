@@ -523,7 +523,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function servingChoices() {
     return el("div.trpg-selection", { dataset: { field: session.flow.serve[0] } }, [
       el("div.trpg-selection-title", el("h2", { text: presentation.serveTitle })),
-      choiceTabs([...session.flow.prepare, ...(session.flow.twist || [])], false),
+      choiceTabs(Object.keys(session.snapshot().plan), false),
       el("div.trpg-choice-cards", scenario.options[session.flow.serve[0]].map(option => optionButton(session.flow.serve[0], option))),
     ]);
   }

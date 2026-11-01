@@ -456,7 +456,8 @@ async function shark(page, correct) {
     await settle(page);
     assert.equal((await state(page)).phase, "ending");
     await hit(page, "trpg-recap");
-    assert.equal(await page.locator(".trpg-recap-check").count(), 3);
+    // Listen, the twist, preparation and the escape: four rolls in the recap.
+    assert.equal(await page.locator(".trpg-recap-check").count(), 4);
     await page.keyboard.press("Escape");
   }
   await fits(page);
@@ -517,7 +518,7 @@ try {
       await page.waitForFunction(() => Math.abs(Number(document.getElementById("stage").style.getPropertyValue("--k")) - 390 / 1280) < 1e-9);
       await hit(page, "trpg-roll"); await control(page, "trpg-settle").waitFor();
       const model = await state(page);
-      assert.match(await page.locator(".trpg-roll-context").textContent(), /判定 0\/3 · 連携札 2\/2/);
+      assert.match(await page.locator(".trpg-roll-context").textContent(), /判定 0\/4 · 連携札 2\/2/);
       assert.equal(await page.locator(".trpg-dice-total > strong").textContent(), "合計 " + (model.pending.dice[0] + model.pending.dice[1] + model.pending.bonus));
       await page.evaluate(() => {
         Object.defineProperty(document, "hidden", { configurable: true, value: true });
