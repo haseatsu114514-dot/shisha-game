@@ -18,7 +18,7 @@
 - `brand/character_profiles.md`、`data/characters.json`
 - `data/dialogue/ch1_bonds.json`、`data/dialogue/samechan.json`
 - `data/equipment.json`、`remake/js/daily/bonds.js`
-- `docs/hiyori_implementation.md`
+- `docs/spec/hiyori_implementation.md`
 - `docs/asset_ai_guidance.md`
 - `asset_sources/shisha-hardware-reference/drawing-sheet/README.md`
 - `asset_sources/shisha-hardware-reference/ai-generation-structural-pitfalls.md`

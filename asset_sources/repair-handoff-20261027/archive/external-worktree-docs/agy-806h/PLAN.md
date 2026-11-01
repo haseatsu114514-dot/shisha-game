@@ -9,7 +9,7 @@ Issue #806 のうち項目2（ひより）に対応し、ひよりとは Dr.fook
 1. `remake/js/daily/hiyori.js`:
    - `hiyoriShopEligible`: `spot.kind === "shop"` を除外。
    - `hiyoriShopLocation`: ショールームが非適格となったことに伴い、`candidates` の `(spot.kind !== "shop" || !rinUnavailable(state))` を整理し、不要となった `rinUnavailable` インポートを削除。
-2. `docs/hiyori_implementation.md`:
+2. `docs/spec/hiyori_implementation.md`:
    - 該当1行（初対面候補の記述）からショールームを除外。
 3. `remake/test/hiyori_encounters.mjs`:
    - 訪問先リストから `shop` を除外し、`excluded` リストに `shop` を追加。

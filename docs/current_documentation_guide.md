@@ -26,18 +26,33 @@
 - 改稿前の台本は `data/dialogue/_legacy/`。旧 `web/`・Godot版は廃止済みで、`docs/master_spec.md` に残る `web/js/` 等のパスは履歴。
 - 旧資料の整理・削除は、参照先と失われる情報を確認したうえで行う。日付付きの新規MDは必要な場合だけ作り、`docs/` 直下に増やさず `archive/` か該当する正本へ。
 
+## docs/ の構成（2026-11-02 整理）
+
+直下に残すのは入口と正本の7本だけ。ほかは用途ごとのフォルダに置き、`docs/` 直下に新しいファイルを足さない。
+
+| 場所 | 中身 | 例 |
+|---|---|---|
+| `docs/` 直下 | 入口と正本 | 本書、`master_spec.md`、`owner_requests.md`、`gameplay_agent_reference.md`、`asset_ai_guidance.md`、`shisha_reference.md`、`review_scope.md` |
+| [spec/](spec/) | 機能ごとの現行仕様・決定・作業基準（実装済みと承認済み未実装を含む） | `pakki_slot_spec.md`、`axe_throw.md`、`trpg_preview.md`、`hiyori_implementation.md`、`chapter_parity_audit.md`、`open_questions_ch4_ch5.md` |
+| [stat-design/](stat-design/SPEC.md) | 成長（経験値・レベル・心得の盤）の決定と仕様 | `ADDENDUM-BOARD-LAYOUT.md`、`SPEC.md` |
+| [prompts/](prompts/) | 画像・音・レビューの発注書とガイド（人やAIに渡す文面） | `asset_gen_prompts.md`、`image_generation_guide.md`、`bgm_suno_prompts.md`、`cg_production_plan.md`、`story_review_prompt.md` |
+| [tools/](tools/) | ツール・開発者コンソールの手引き（任意の試作ツールの説明もここ） | `text_editor_manual.md`、`dev_inspector.md`、`remake_browser_checks.md`、`sequential_merge.md` |
+| [design/](design/)・[reports/](reports/) | オーナー未決定の提案・設計案・調査（採用扱いにしない） | |
+| [archive/](archive/README.md) | 日付付きの引き継ぎ・計画・記録・二次資料（履歴。根拠にしない） | |
+| `qa/` | 検証記録（約0.7GB。`.claudeignore` 済み） | |
+
 ## 日常の作業で読むもの
 
 | 作業 | 最初に読む |
 |---|---|
-| 第2〜5章・キャラの作り込み（第1章に揃える） | [chapter_parity_audit.md](chapter_parity_audit.md)（第1章の基準チェックリストと章・キャラごとの不足） |
+| 第2〜5章・キャラの作り込み（第1章に揃える） | [chapter_parity_audit.md](spec/chapter_parity_audit.md)（第1章の基準チェックリストと章・キャラごとの不足） |
 | 台詞・会話イベントの追加・編集 | `.claude/skills/dialogue-edit`、`text-style`、`gameplay_agent_reference.md`、必要なら `shisha_reference.md` |
 | 設定の矛盾点検・ストーリー改善 | `.claude/skills/canon-check`、`story-review`、`review_scope.md`、`brand/` |
-| 画像・CG・立ち絵 | `.claude/skills/codex-image-prompt`、`portrait-fix`、`character-portrait-remaster`、`asset_ai_guidance.md` |
-| BGM | `.claude/skills/suno-bgm-prompt`、`bgm_suno_prompts.md` |
+| 画像・CG・立ち絵 | `.claude/skills/codex-image-prompt`、`portrait-fix`、`character-portrait-remaster`、`asset_ai_guidance.md`。シーシャ機材が写るなら [shisha_reference.md §4](shisha_reference.md#4-画像生成の必須手順機材の形と構造) |
+| BGM | `.claude/skills/suno-bgm-prompt`、`prompts/bgm_suno_prompts.md` |
 | オーナーの要望・バグ報告 | `.claude/skills/owner-request`、`owner_requests.md` |
 | テスト・CI | `.claude/skills/web-build-test`、`remake/README.md`、`tools/ci/suites.json` |
-| 開発者コンソールの補助 | `dev_inspector.md`、`dev_event_preview.md`、`dev_event_rehearsal.md`、`remake_browser_checks.md` |
+| 開発者コンソールの補助 | `tools/dev_inspector.md`、`tools/dev_event_preview.md`、`tools/dev_event_rehearsal.md`、`tools/remake_browser_checks.md` |
 
 ## AI間の引き継ぎ
 

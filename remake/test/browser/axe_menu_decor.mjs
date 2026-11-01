@@ -15,7 +15,7 @@ async function entrance(page) {
 }
 async function reachableControls(page) {
   const menu = page.locator(".axe-menu");
-  assert.equal(await menu.locator("button, a").count(), 11);
+  assert.equal(await menu.locator("button, a").count(), 16);
   assert.deepEqual(await menu.locator(".axe-menu-mode").evaluateAll(nodes => nodes.map(n => n.dataset.kind)), ["practice", "league", "versus"]);
   assert.equal(await menu.locator("h1").textContent(), "AXE THROW");
   assert.equal(await menu.locator("img, canvas").count(), 0, "Menu content is live text DOM, not a screenshot click surface");
@@ -81,7 +81,7 @@ await suite("axe-menu-decor", async check => {
     assert.equal(await page.locator('[data-test="axe-start"]').evaluate(n => n === document.activeElement), true);
     for (const [selector, key, text] of [
       ['[data-test="axe-start"]', "Enter", /3投の練習/],
-      ['[data-test="axe-league"]', "Space", /10投の競技練習/],
+      ['[data-test="axe-league"]', "Space", /10投ゲーム/],
       ['[data-test="axe-versus"]', "Enter", /ひよりと10投対戦/],
     ]) {
       await page.locator(selector).focus(); await page.keyboard.press(key);

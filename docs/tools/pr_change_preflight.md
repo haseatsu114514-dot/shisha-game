@@ -18,7 +18,7 @@ PR編集・マージ・権限変更は行いません。任意の補助で、着
   "files": [
     "tools/pr_change_preflight.py",
     "tools/test_pr_change_preflight.py",
-    "docs/pr_change_preflight.md"
+    "docs/tools/pr_change_preflight.md"
   ],
   "dependencies": {
     "issues": [],
@@ -57,7 +57,7 @@ IssueのConversationコメントに、次の3行を**同じコメント内**で�
 
 ```text
 WORKER: your-session-specific-worker
-PLANNED_FILES: ["tools/pr_change_preflight.py", "tools/test_pr_change_preflight.py", "docs/pr_change_preflight.md"]
+PLANNED_FILES: ["tools/pr_change_preflight.py", "tools/test_pr_change_preflight.py", "docs/tools/pr_change_preflight.md"]
 DEPENDS: {"issues": [], "prs": [557]}
 ```
 
