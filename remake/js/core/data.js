@@ -28,6 +28,8 @@ export const DB = {
   relationshipMemories: {}, // 実際に読んだ交流の記憶（id -> 記録）
   glossary: [],
   lime: [],
+  limeTemplates: {}, // 配信条件と動的IDを持たない、実行時の文面雛形
+
   recipes: [],
   ngMixes: [],
   kuji: { meta: {}, grades: {} },
@@ -167,6 +169,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.baito = raw.baito.events.filter((e) => BAITO_CATEGORIES.has(e.category));
   DB.glossary = raw.glossary.groups;
   DB.lime = raw.lime.messages;
+  DB.limeTemplates = raw.lime.templates;
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
   DB.kuji = raw.kuji;

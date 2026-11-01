@@ -9,7 +9,8 @@ import { STAT_JA } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
-const db = { lime: JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8")).messages, lover: {}, dialogues: {} };
+const limeData = JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8"));
+const db = { lime: limeData.messages, limeTemplates: limeData.templates, lover: {}, dialogues: {} };
 const allMessages = db.lime, state = {}, gains = [], plays = [], statGains = [], nudges = [];
 const completedPlay = (scene) => ({ id: typeof scene === "string" ? scene : scene?.dialogue_id, visited: [] });
 let playResult = completedPlay;
@@ -32,6 +33,7 @@ function el(spec, attrs = {}, children = []) {
 }
 const layers = Object.fromEntries(["modal", "toasts", "fx"].map((k) => [k, new Element("div")]));
 const context = vm.createContext({ console, clearTimeout, setTimeout: () => {}, requestAnimationFrame: (fn) => fn(), document: { querySelector: () => null }, Math, Date, Set, Promise });
+let hiyoriSpots = null;
 const noop = () => {}, mods = new Map();
 const values = {
   "chapter-clock.js": { chapterDay, chapterDaysLeft, relationshipElapsedDay },
@@ -45,7 +47,7 @@ const values = {
   "audio.js": { SE: { phone: noop, phoneReceive: noop, phoneSend: noop, select: noop, click: noop, cancel: noop } },
   "engine.js": { isPlaying: () => false, hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); return playResult(...a); } },
   "rules.js": { MAX_MONEY, TOURNAMENT_DAY: 14 },
-  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => ({ charId: id, closedOn: 6 }),
+  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => hiyoriSpots ? hiyoriSpots.find(s => s.id === id) : ({ charId: id, closedOn: 6 }),
     isClosed: (spot) => state.day % 7 === spot.closedOn || state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter}:${state.day}` }, "bus.js": { emit: noop },
   "bonds.js": { bondInvites: () => [], friendMessages: () => [] }, // 締めくくりの誘い・友人のLIMEは remake/test/bonds.mjs
   "story-knowledge.js": { syncMintoKnowledge: () => {} },
@@ -56,7 +58,7 @@ async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;
   if (values[name]) mod = new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name });
-  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8"), { context, identifier: name });
+  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { hiyoriInvite as testHiyoriInvite };" : ""), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
@@ -682,3 +684,66 @@ console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch
 }
 
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority + #1081 C04 unread guard: PASS");
+
+// #2035: compare the moved definition with the previous production algorithm.
+const spotSource = await fs.readFile(new URL("js/daily/spots.js", root), "utf8");
+hiyoriSpots = ["naru", "adam", "minto"].map(id => {
+  const line = spotSource.split("\n").find(line => line.includes(`{ id: "${id}",`));
+  assert(line, id);
+  return { id, charId: /charId: "([^"]+)"/.exec(line)[1], label: /label: "([^"]+)"/.exec(line)[1], closedOn: Number(/closedOn: (\d+)/.exec(line)[1]) };
+});
+const { hasContact, spotById, isClosed } = values["spots.js"];
+function legacyHiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) {
+  if (tournamentDay || fixedNight(state.day) || ![1, 2].includes(state.chapter) || !hasContact("hiyori")
+    || !state.flags._hiyori_tonari_return_done || (state.lovers || []).includes("hiyori")) return null;
+  const recent = (state.inbox || []).filter(i => i.msg?.accept_event === "__hiyori_shop__" && i.chapter === state.chapter);
+  if (recent.some(i => state.day - i.day < 3) || (state.seed + state.day) % 4 !== 0) return null;
+  const open = ["naru", "adam", "minto"].map(spotById).filter(s => s && state.met[s.charId] && !isClosed(s));
+  if (!open.length) return null;
+  const spot = open[Math.floor(state.day / 4) % open.length];
+  return { id: `_hiyori_shop_c${state.chapter}_d${state.day}`, sender: "hiyori", type: "invitation",
+    time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: spot.id,
+    messages: [`……今夜、${spot.label}で一緒に一服しない？ 私が煙になっちゃう前に`], accept_text: "今夜、行きます",
+    decline_response: { text: "……うん。また都合のいい日に" } };
+}
+const templateBefore = JSON.stringify(db.limeTemplates);
+const plain = v => v == null ? v : clone(v);
+let comparedInvites = 0;
+for (const chapter of [0, 1, 2, 3]) for (let day = 1; day <= 28; day++) for (let seed = 0; seed < 8; seed++) {
+  for (const met of [{}, { naru: true }, { adam: true, minto: true }, { naru: true, adam: true, minto: true }]) {
+    reset({ chapter, day, seed, contacts: ["hiyori"], met, flags: { _hiyori_tonari_return_done: true } });
+    const expected = legacyHiyoriInvite();
+    assert.deepEqual(plain(phone.testHiyoriInvite()), plain(expected));
+    if (expected) comparedInvites++;
+  }
+}
+assert(comparedInvites > 0);
+for (const override of [{ contacts: [] }, { flags: {} }, { lovers: ["hiyori"] },
+  ...[1, 2, 3, 4].map(gap => ({ inbox: [{ chapter: 2, day: 8-gap, read: true, done: true, msg: { accept_event: "__hiyori_shop__" } }] })),
+  { inbox: [{ chapter: 1, day: 8, msg: { accept_event: "__hiyori_shop__" } }] },
+  { flags: { _hiyori_tonari_return_done: true, _temporary_closed_naru: "2:8" } }]) {
+  for (const opts of [{}, { tournamentDay: true }, { fixedNight: () => true }]) {
+    reset({ chapter: 2, day: 8, seed: 0, contacts: ["hiyori"], met: { naru: true, adam: true, minto: true }, flags: { _hiyori_tonari_return_done: true }, ...override });
+    assert.deepEqual(plain(phone.testHiyoriInvite(opts)), legacyHiyoriInvite(opts));
+  }
+}
+reset({ chapter: 2, day: 8, seed: 0, contacts: ["hiyori"], met: { naru: true }, flags: { _hiyori_tonari_return_done: true } });
+const first = phone.testHiyoriInvite(), second = phone.testHiyoriInvite();
+assert.notEqual(first, second); assert.notEqual(first.messages, second.messages); assert.notEqual(first.decline_response, second.decline_response);
+first.messages[0] = "changed"; first.decline_response.text = "changed";
+assert.deepEqual(plain(phone.testHiyoriInvite()), legacyHiyoriInvite());
+assert.equal(JSON.stringify(db.limeTemplates), templateBefore);
+console.log("PASS #2035: legacy invitation equivalence, boundaries and immutable template", comparedInvites);
+// Saved dynamic messages remain self-contained: acceptance does not re-resolve a template.
+const oldMessage = clone(legacyHiyoriInvite());
+state.inbox = [item(JSON.parse(JSON.stringify(oldMessage)), { chapter: 2 })];
+session = phone.openLime({ sender: "hiyori" }); await click("reply-0");
+assert.equal(state.pendingInvite.event, "__hiyori_shop__");
+assert.equal(state.pendingInvite.originId, "_hiyori_shop_c2_d8");
+assert.equal(state.pendingInvite.visitSpot, "naru");
+assert.equal(state.inbox[0].result, "accepted");
+assert(state.flags._invited__hiyori_shop_c2_d8);
+await closeThread(session);
+assert.equal(phone.deliverMorning(), 0, "Saved dynamic ID must not be delivered twice");
+assert.equal(JSON.stringify(db.limeTemplates), templateBefore);
+console.log("PASS #2035: old saved dynamic ID, acceptance event, destination and history");

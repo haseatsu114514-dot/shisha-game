@@ -329,10 +329,10 @@ function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) 
   const open = ["naru", "adam", "minto"].map(spotById).filter(s => s && state.met[s.charId] && !isClosed(s));
   if (!open.length) return null;
   const spot = open[Math.floor(state.day / 4) % open.length];
-  return { id: `_hiyori_shop_c${state.chapter}_d${state.day}`, sender: "hiyori", type: "invitation",
-    time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: spot.id,
-    messages: [`……今夜、${spot.label}で一緒に一服しない？ 私が煙になっちゃう前に`], accept_text: "今夜、行きます",
-    decline_response: { text: "……うん。また都合のいい日に" } };
+  const template = DB.limeTemplates.hiyori_shop;
+  return { ...template, id: `_hiyori_shop_c${state.chapter}_d${state.day}`, visit_spot: spot.id,
+    messages: template.messages.map(text => text.replace("{shop}", spot.label)),
+    decline_response: { ...template.decline_response } };
 }
 
 /**
