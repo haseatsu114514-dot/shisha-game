@@ -1,3 +1,4 @@
+import { tournamentResources, restoreTournamentResources } from "./tournament-resource-snapshot.js";
 import { tournamentStandings } from "./tournament-standings.js";
 import { MAX_MONEY } from "../core/rules.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
@@ -68,12 +69,11 @@ export function tournamentProgress(value) {
 }
 
 export function resources(value) {
-  return copy({ flavorStock: value.flavorStock, stamina: value.stamina,
-    equip: value.equip, recipes: value.recipes, stats: value.stats });
+  return tournamentResources(value);
 }
 
 export function restoreResources(value, snapshot) {
-  for (const [key, data] of Object.entries(copy(snapshot))) value[key] = data;
+  restoreTournamentResources(value, snapshot);
 }
 
 /** 開始資源を一度捕まえ、失敗した一台の消費だけを戻す。 */
