@@ -102,7 +102,7 @@
 2026-10-19のオーナー指示に基づき、今回の範囲を以下のように整理・限定した。
 
 - **今回実施した範囲**:
-  - 第2章王冠構図案C（背景の王冠輪郭）の確定・1280×720解像度検証・本編タイトルコール（`remake/img/ui/chapters/ch2-title.webp`、`remake/js/core/chapter-title-art.js`）および既存表示箇所（`ch2.js`、`ch1.js`、`ch2.json`、`docs/chapter_previews.md`）への接続・英題 `Hollow Crown` への統一。
+  - 第2章王冠構図案C（背景の王冠輪郭）の確定・1280×720解像度検証・本編タイトルコール（`remake/img/ui/chapters/ch2-title.webp`、`remake/js/core/chapter-title-art.js`）および既存表示箇所（`ch2.js`、`ch1.js`、`ch2.json`、`docs/spec/chapter_previews.md`）への接続・英題 `Hollow Crown` への統一。
   - 第3章題『嘘つきたちの夜 / SMOKE AND MIRRORS』の設定正本（`brand/story_and_structure.md`）および既存参照箇所への反映。
 - **今回混ぜず残作業とする範囲**:
   - 物語・台詞の大幅な本改稿（`data/dialogue/` や個別イベントの改稿、選択の因果調整など）。
@@ -116,9 +116,9 @@
 | `brand/character_profiles.md`、`data/characters.json` | はじめ・なる・すみ・南雲・ましろ・パッキー・博士の動機と関係 | 年齢・ID・正規の外見は今回の議論から勝手に変更しない |
 | `data/dialogue/`、`data/lime_messages.json`、`data/lime_events.json` | 選択の因果、優しい嘘、ライバルの再会、店の理由、博士との結末 | 本編と個別イベント・恋愛分岐の情報差、既読フラグ・分岐・順序を保つ |
 | `data/forced_events.json`、`data/baito_events.json` | あらすじ・強制イベントの説明・仕事中の変化 | 台詞だけ直して説明文に旧断罪が残らないようにする |
-| `remake/js/chapters/ch1.js`、`remake/js/chapters/ch2.js`、`data/chapter_previews/ch2.json`、`docs/chapter_previews.md` | 次章案内・タイトルコール・予告の英題 | `Jealousy Haze` と `Hollow Crown` の新しい対応を揃える |
+| `remake/js/chapters/ch1.js`、`remake/js/chapters/ch2.js`、`data/chapter_previews/ch2.json`、`docs/spec/chapter_previews.md` | 次章案内・タイトルコール・予告の英題 | `Jealousy Haze` と `Hollow Crown` の新しい対応を揃える |
 | `remake/js/chapters/ch2-story-data.js` など章の進行 | 新しい会話順と選択の反映 | 最新mainでは第2章の導入・日常・固定会話が接続されている。古い「第2章は全て未接続」という記録だけで判断しない |
-| `docs/gameplay_agent_reference.md`、`docs/story_review_prompt.md`、`docs/story_relational_self.md`、`docs/story_ku_resolution.md` | 改稿時の判断基準 | 古い「第1章の勝利は実力ではない」「贖罪」等の説明を、確定した新しい意図と照合する |
+| `docs/gameplay_agent_reference.md`、`docs/prompts/story_review_prompt.md`、`docs/spec/story_relational_self.md`、`docs/spec/story_ku_resolution.md` | 改稿時の判断基準 | 古い「第1章の勝利は実力ではない」「贖罪」等の説明を、確定した新しい意図と照合する |
 | `docs/master_spec.md`、`docs/plans/post_chapter1_roadmap.md`、`docs/owner_requests.md` | 章題・進行・要望と反映状況 | 方針決定・台詞改稿・本編接続・検証を別々に記録する |
 | 共同制作向け資料の本文・編集元・Word・PDF | あらすじ、人物紹介、関係図、章題、画像、最終章の結末 | [#544](https://github.com/haseatsu114514-dot/shisha-game/issues/544)で保存中。保存先と生成手順を確認してから、編集元→Word/PDFの順に更新する |
 
