@@ -1,8 +1,41 @@
 import unittest
-from check_story_canon import character_shop_name_errors, lime_first_person_errors, text_errors
+from check_story_canon import (character_shop_name_errors, confirmed_r5_baito_errors,
+                               confirmed_r5_r6_dialogue_errors, lime_first_person_errors, text_errors)
 
 
 class CanonRegressionTests(unittest.TestCase):
+    def test_r5_r6_confirmed_old_lines_only(self):
+        old_baito = '店流に整えて出す（マシマシは体に毒なので）'
+        def baito(text):
+            return {'events': [{'id': 'baito_jiro_call', 'choices': [{'text': text}]}]}
+        self.assertEqual(len(confirmed_r5_baito_errors(baito(old_baito))), 1)
+        for text in ('店流に整えて出す（全マシだと吸い口が崩れるので）',
+                     '「マシマシは体に毒なので」は誤り',
+                     'マシマシは体に毒なので、とは言えない'):
+            with self.subTest(text=text):
+                self.assertEqual(confirmed_r5_baito_errors(baito(text)), [])
+        self.assertEqual(confirmed_r5_baito_errors({'events': [
+            {'id': 'other', 'choices': [{'text': old_baito}]}]}), [])
+
+        cases = (
+            ('ch2_kumicho.json', 'ch2_kumicho_third', 'kumicho',
+             'こうして煙を出してるうちは、誰も傷つかねえ。それだけの話でさ',
+             'こうして煙を出してるうちは、誰も殴らねえし殴られねえ。それだけの話でさ'),
+            ('tournament_craft.json', 'tournament_craft_interlude2_3', 'hajime',
+             '（大須から、ここまで来たんだ。最後も、俺の温度でやる）',
+             '（橙須から、ここまで来たんだ。最後も、俺の温度でやる）'),
+        )
+        for filename, scene, speaker, old, current in cases:
+            with self.subTest(filename=filename):
+                errors = lambda text, who=speaker: confirmed_r5_r6_dialogue_errors(
+                    filename, scene, {'speaker': who, 'text': text})
+                self.assertEqual(len(errors(old)), 1)
+                for text in (current, f'「{old}」は旧稿', f'{old}とは言えない'):
+                    self.assertEqual(errors(text), [])
+                self.assertEqual(errors(old, 'narrator'), [])
+                self.assertEqual(confirmed_r5_r6_dialogue_errors(filename, 'other',
+                                 {'speaker': speaker, 'text': old}), [])
+
     def test_r3_confirmed_shop_references(self):
         # These phrases were the five shop references corrected in PR #2015.
         self.assertEqual(len(text_errors({'text': 'ケムリクサのなる、エデンのアダム'})), 2)

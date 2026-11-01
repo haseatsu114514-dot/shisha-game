@@ -7,6 +7,14 @@ from pathlib import Path
 from lint_dialogue import bracket_problem, fullwidth_len
 
 ROOT = Path(__file__).resolve().parents[1]
+CONFIRMED_R5_R6_LINES = {
+    ('ch2_kumicho.json', 'ch2_kumicho_third', 'kumicho',
+     'こうして煙を出してるうちは、誰も傷つかねえ。それだけの話でさ'):
+        '神崎の旧R5無害断定（#1947）',
+    ('tournament_craft.json', 'tournament_craft_interlude2_3', 'hajime',
+     '（大須から、ここまで来たんだ。最後も、俺の温度でやる）'):
+        '大会台詞の旧R6地名は橙須（#1947）',
+}
 
 
 def nodes(value):
@@ -72,6 +80,22 @@ def character_shop_name_errors(characters):
     return errors
 
 
+def confirmed_r5_r6_dialogue_errors(filename, scene_id, row):
+    # #1973/#1847: guard the three confirmed old lines only, not general health
+    # statements, quoted discussions, or real-world place-name references.
+    key = (filename, scene_id, row.get('speaker'), row.get('text'))
+    return [CONFIRMED_R5_R6_LINES[key]] if key in CONFIRMED_R5_R6_LINES else []
+
+
+def confirmed_r5_baito_errors(data):
+    old_choice = '店流に整えて出す（マシマシは体に毒なので）'
+    for event in data.get('events', []):
+        if event.get('id') == 'baito_jiro_call':
+            return ['baito_events.json:baito_jiro_call: 旧R5有害性断定（#1947）'
+                    for choice in event.get('choices', []) if choice.get('text') == old_choice]
+    return []
+
+
 def text_errors(row):
     errors = []
     text = row.get('text')
@@ -110,6 +134,7 @@ def check(root=ROOT):
     errors, scenes = [], {}
     errors.extend(character_shop_name_errors(json.loads((root / 'data/characters.json').read_text())))
     errors.extend(lime_first_person_errors(json.loads((root / 'data/lime_messages.json').read_text())))
+    errors.extend(confirmed_r5_baito_errors(json.loads((root / 'data/baito_events.json').read_text())))
     files = sorted((root / 'data/dialogue').glob('*.json'))
     for path in files:
         data = json.loads(path.read_text())
@@ -120,6 +145,8 @@ def check(root=ROOT):
             scenes[sid] = scene
             for row in nodes(scene):
                 errors.extend(f'{path.name}:{sid}: {e}' for e in text_errors(row))
+                errors.extend(f'{path.name}:{sid}: {e}' for e in
+                              confirmed_r5_r6_dialogue_errors(path.name, sid, row))
                 for field in ('next_id', 'dialogue_id', 'dialogue_file'):
                     if '_legacy' in str(row.get(field, '')):
                         errors.append(f'{path.name}:{sid}: legacy reference')
