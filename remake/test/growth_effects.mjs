@@ -320,4 +320,18 @@ core.state.affinity.naru=0;core.state.affinityCarry.naru=0;core.state.growth.nod
 stats.gainAffinity("naru",5,{onGain(){}});
 const withK20=(core.state.affinity.naru||0)+(core.state.affinityCarry.naru||0);
 assert(Math.abs(withK20-withoutK20-.085)<1e-10,"5ポイントの通常交流へ2%を端数込みで加え、既存の0.85ペースを一度掛ける");
+// 花の授業は異なる二系統と、実際に終えた調整で層を重ねる。
+growth.setGrowthPreview(true);core.newGame();Object.assign(growth.ensureGrowth(),{nodes:["M-B2","M-B3"],learned:["M-B2","M-B3"]});
+const flowerCs={mode:"tournament",chapter:2,mix:{rose:6,lavender:6},careHistory:[]};
+assert.equal(effects.floralLayers(core.state,flowerCs,DB.flavorById).length,2);
+assert.equal(bonusOf(flowerCs).bonus,0);flowerCs.careHistory.push({score:80});assert.equal(bonusOf(flowerCs).bonus,2);
+flowerCs.careHistory.push({score:80});const flowerBefore=JSON.stringify(flowerCs);assert.equal(bonusOf(flowerCs).bonus,4);assert.equal(bonusOf(flowerCs).bonus,4);assert.equal(JSON.stringify(flowerCs),flowerBefore);
+assert.equal(effects.floralLayers(core.state,{mix:{rose_a:5,rose_b:7}},{rose_a:{family:"rose",category:"floral"},rose_b:{family:"rose",category:"floral"}}).length,0);
+assert.equal(bonusOf({...flowerCs,mix:{rose:12}}).bonus,0);assert.equal(bonusOf({...flowerCs,failed:true}).bonus,0);assert.equal(bonusOf({...flowerCs,mode:"rehearsal"}).bonus,4);
+const blindCs={mode:"tournament",chapter:2,pullDone:true,blindService:true,blindVariance:2.4};
+const blindBefore=JSON.stringify(blindCs);assert.equal(bonusOf(blindCs).bonus,2.4);assert.equal(bonusOf(blindCs).bonus,2.4);assert.equal(JSON.stringify(blindCs),blindBefore);
+assert.equal(bonusOf({...blindCs,blindVariance:-3}).bonus,-3);assert.equal(bonusOf({...blindCs,blindService:false}).bonus,0);
+assert.equal(bonusOf({...blindCs,pullDone:false}).bonus,0);assert.equal(bonusOf({...blindCs,failed:true}).bonus,0);
+assert.equal(bonusOf(JSON.parse(JSON.stringify(blindCs))).bonus,2.4,"セッション保存の振れ幅を再抽選しない");
+growth.setGrowthPreview(false);assert.equal(bonusOf(blindCs).bonus,0);assert.deepEqual(effects.floralLayers(core.state,flowerCs,DB.flavorById),[]);
 console.log("[growth effects] PASS: additive legacy growth, 160+29=189, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");

@@ -7,7 +7,7 @@ import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, step } from "../core/stats.js";
-import { growthPerks, growthSkill, growthFeature, growthLesson, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
+import { growthPerks, growthSkill, growthFeature, growthLesson, settleGrowthPhase, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 import { REFRESH_RADII, REFRESH_LABELS, refreshRestoresMental } from "../core/stat-step-tables.js";
 import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
@@ -20,7 +20,7 @@ import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
 import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
-import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx, buildWordCutFx } from "./steam-slash.js";
+import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx, buildWordCutFx, buildSharkFx, sharkPulseTouchesBullet } from "./steam-slash.js";
 import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
 import { effectVisible, effectBadge, effectLine } from "./effect-visual.js";
 
@@ -127,7 +127,8 @@ export async function runSteamDodge(cs) {
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
   let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
-  let afterglowUntil = 0, afterglows = 0;
+  let afterglowUntil = 0, afterglows = 0, sharkPulses = 0;
+  const shark = hasAttackTraining(state.flags) && growthLesson(state,"M-W7");
   let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
@@ -253,8 +254,13 @@ export async function runSteamDodge(cs) {
     if (!running || !hasAttackTraining(state.flags) || time < slashReadyAt) return;
     const direction = "u", angle = slashAngle(direction);
     const before = slashProfile(wordsCut);
-    const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle, before.reach));
-    const cutWords = cleared.filter(b => b.word).length;
+    const cleared = removeBullets(b => slashTouchesBullet(b,hx,hy,angle,before.reach,shark?Math.PI/2:undefined));
+    let cutWords=cleared.filter(b=>b.word).length;
+    const pulse=shark&&Math.floor((wordsCut+cutWords)/3)>Math.floor(wordsCut/3);
+    if(pulse){
+      const extra=removeBullets(b=>sharkPulseTouchesBullet(b,hx,hy,before.reach*LESSON_TUNING.sharkRadius));
+      cleared.push(...extra);cutWords+=extra.filter(b=>b.word).length;sharkPulses++;
+    }
     const beforeCuts = wordsCut;
     wordsCut += cutWords; totalWordsCut += cutWords; maxCombo = Math.max(maxCombo, wordsCut);
     if (growthSkill(state,"K22") && Math.floor(wordsCut/3) > Math.floor(beforeCuts/3)) {
@@ -266,9 +272,9 @@ export async function runSteamDodge(cs) {
     slashBtn.dataset.uses = String(slashesUsed); slashBtn.dataset.direction = direction;
     slashBtn.dataset.lastCut = String(cleared.length);
     slashFeedback.dataset.hit = String(cleared.length > 0);
-    slashFeedback.textContent = cleared.length ? `${cleared.length}個斬った${after.tier > before.tier ? "・強化！" : ""}` : "空振り";
+    slashFeedback.textContent = cleared.length ? `${cleared.length}個${shark?"噛んだ":"斬った"}${pulse?"・大きく噛みついた！":after.tier > before.tier ? "・強化！" : ""}` : "空振り";
     world.dissolve(time, cleared, { echoWords: false });
-    const fx = buildSlashFx(hx, hy, angle, before.reach, cleared.length > 0, after.tier);
+    const fx = shark?buildSharkFx(hx,hy,angle,before.reach*(pulse?LESSON_TUNING.sharkRadius:1),pulse):buildSlashFx(hx, hy, angle, before.reach, cleared.length > 0, after.tier);
     box.append(fx); transients.push({ node: fx, until: time + .32 });
     for (const b of cleared) {
       if (b.word) {
@@ -425,7 +431,7 @@ export async function runSteamDodge(cs) {
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
-  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, afterglows, warmingFactor: steamClimate(cs.environment).transfer };
+  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, afterglows, sharkPulses, warmingFactor: steamClimate(cs.environment).transfer };
   settleGrowthPhase(state, cs, "steam", cs.steam, hits === 0);
   scoreStep(cs, "steam", cs.steam.score, "蒸らし");
   refreshBench();

@@ -1,5 +1,6 @@
+import { craftContext } from "./context.js";
 import { state } from "../core/state.js";
-import { growthPerks, growthFeature, useGrowthInsurance, growthSkill, growthLesson, growthCritical, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
+import { growthPerks, growthFeature, useGrowthInsurance, growthSkill, growthLesson, growthCritical, settleGrowthPhase, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 // 吸い出し（CLAUDE.md: 最低2回・3回までは無傷・それ以上は葉が痩せる。やめ時は自分で選ぶ）
 // 左右に振れる針を止めた位置で、熱を入れる吸い／キープ／熱を逃がす吸い。中央の細い帯が「ジャスト」。
 // 熱管理（大会のR3・調整）も同じ針のゲーム。「炭を交換しますか？」で個数を選び、交換した炭で温度が戻ってから、
@@ -111,8 +112,11 @@ export async function runCare(cs, { round = 0 } = {}) {
 }
 
 async function pullGame(cs, mode) {
+  const owner=state;
   await waitBenchReady(cs, mode.store);
+  if(state!==owner)return false;
   const tutorial = cs.mode === "tutorial";
+  const context=craftContext(cs);
   // 葉が傷むと適温帯が細くなるので、ダメージのたびに bands/ideal を取り直す。中心は動かないので一度だけ。
   let bands = temperatureBands(cs), ideal = bands.ideal;
   const center = bands.center;
@@ -202,19 +206,26 @@ async function pullGame(cs, mode) {
   const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: HOSE_ICON });
   const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
-  const deepBtn = mode.store === "pull" && !tutorial && growthLesson(state,"M-S4") ? el("button.btn", { text:"ズボー（一気に深く）", disabled:true, dataset:{test:"pull-deep"} }) : null;
-  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: mode.serveLabel })]);
+  const deepBtn = mode.store === "pull" && !tutorial && growthLesson(state,"M-S4") ? el("button.btn", { text:"ズボー", title:"一気に深く吸って熱を大きく上げる", "aria-label":"ズボー（一気に深く）", disabled:true, dataset:{test:"pull-deep"} }) : null;
+  const blindBtn = mode.store==="pull"&&!tutorial&&growthLesson(state,"M-B3")?el("button.btn.ghost.small",{
+    text:"味の名前を伏せる",title:"白紙の味カード。審査員の受け止めの振れ幅が大きくなる",dataset:{test:"pull-blind"},"aria-pressed":String(!!cs.blindService),
+    onclick:()=>{if(state!==owner||drawing||finished)return;cs.blindService=!cs.blindService;blindBtn.setAttribute("aria-pressed",String(cs.blindService));},
+  }):null;
+  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: mode.store==="pull"&&context.title!=="提供"?"確かめる":mode.serveLabel })]);
   // 吸った回数の点。無傷で吸える回数を超える点は橙の枠で、吸いすぎの範囲だと分かるようにする。
   const pips = Array.from({ length: MAX_PULLS }, (_, i) => el(`i.pull-pip${i >= mode.safe ? ".over" : ""}`, { "aria-hidden": "true" }));
   const pullCount = el("b.pull-count-num");
   const counter = el("span.pull-count", { role: "img", dataset: { test: "pull-count" } }, [el("span.pull-pips", pips), pullCount]);
   const lifeLeaves = el("span.pull-life-leaves");
-  const omen = growthFeature(state,"omen") ? el("p", {role:"status",dataset:{test:"pull-omen"},style:{fontSize:"12px",margin:"2px 0",color:"var(--gold)"}}) : null;
+  const omen = growthFeature(state,"omen") ? el("span.pull-omen", {role:"status",dataset:{test:"pull-omen"}}) : null;
   const summary = el("div.pull-summary", [
     el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves, tags, drawStatus]),
     el("div.pull-life.pull-count-box", [el("span.pull-life-label", { text: mode.drift ? "吸った回数" : "吸い出し回数" }), counter]),
   ]);
-  const play = el("div.pull-play", [dialRow, effectLine("technique", "技", "技術でゲージがゆっくり"), summary, omen, el("div.pull-btns", [pullBtn, deepBtn, serveBtn])]);
+  if(omen)dialRow.append(omen);
+  const actionButtons=[pullBtn,deepBtn,blindBtn,serveBtn].filter(Boolean);
+  const controls=el(`div.pull-btns${actionButtons.length>2?".with-options":""}`,{style:actionButtons.length>2?{gridTemplateColumns:`minmax(0,1.75fr) repeat(${actionButtons.length-1},minmax(0,1fr))`}:{}},actionButtons);
+  const play = el("div.pull-play", [dialRow, effectLine("technique", "技", "技術でゲージがゆっくり"), summary, controls]);
   play.setAttribute("aria-label", "左の熱を逃がす吸いで温度を下げ、中央でキープ、右の熱を入れる吸いで温度を上げる");
   const main = el("div.pull-main", [play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
@@ -277,7 +288,7 @@ async function pullGame(cs, mode) {
   let period = 1.5 * slowNow();
   const loop = (now) => {
     if (!running || drawing || finished) return;
-    if (!play.isConnected) { abandoned = true; running = false; serve(); return; }
+    if (state!==owner || !play.isConnected) { abandoned = true; running = false; serve(); return; }
     const current = gameClock.now();
     const dt = Math.min(0.05, (current - last) / 1000);
     last = current;
@@ -321,12 +332,12 @@ async function pullGame(cs, mode) {
     if (T >= harshTemp) SE.miss();
   };
   const doPull = async (at = pos, deep = false) => {
-    if (failed || !running || drawing || finished || pulls >= MAX_PULLS || gameClock.paused) return;
+    if (state!==owner || failed || !running || drawing || finished || pulls >= MAX_PULLS || gameClock.paused) return;
     const before = T;
     // 葉が傷むほど、止めた針が狙いから少しずれて落ち着く（止まり方のズレ TH27）。傷が浅いうちはほぼ0。
     const landed = clamp(at + leafStopDrift(leafDamageRatio(cs.leaf), rand(-1, 1)), 0, 1);
     const { z, isJust, delta, critical } = deep
-      ? { z:{...ZONES[2],label:"ズボー",mark:"▲▲"}, isJust:false, delta:.27, critical:false } : actionAt(landed);
+      ? { z:{...ZONES[2],label:"ズボー",mark:"▲▲"}, isJust:false, delta:LESSON_TUNING.deepHeat, critical:false } : actionAt(landed);
     drawing = true;
     cancelAnimationFrame(raf);
     moveNeedle(landed);
@@ -346,7 +357,7 @@ async function pullGame(cs, mode) {
     try {
       const complete = await animateDraw({ duration,
         paused: () => gameClock.paused,
-        active: () => running && !finished && !failed && play.isConnected,
+        active: () => state===owner && running && !finished && !failed && play.isConnected,
         update: (progress, linear) => {
           if (!insuranceAtStart && cs.growthInsuranceUsed) return;
           coreTemp = from + (to - from) * progress;
@@ -356,7 +367,7 @@ async function pullGame(cs, mode) {
           checkTemperature();
         },
       });
-      if (!complete || failed || finished) {
+      if (state!==owner || !complete || failed || finished) {
         if (!failed && !finished) { abandoned = true; running = false; serve(); }
         return;
       }
@@ -400,8 +411,8 @@ async function pullGame(cs, mode) {
     choosing = true;
     play.hidden = true;
     const lead = el("p.care-coals-lead", { text: (cs.careRound > 1
-      ? "お客さんが吸い続け、再び炭が消耗して温度が下がってきた。もう一度整えよう"
-      : "提供して約20分。お客さんが吸ううちに炭が消耗し、温度が下がってきた。調整しよう")
+      ? `${context.waiting}、再び炭が消耗して温度が下がってきた。もう一度整えよう`
+      : `${cs.mode==="tournament"?"提供して":"試し吸いから"}約20分。${context.waiting}炭が消耗し、温度が下がってきた。調整しよう`)
       + "。炭を選ぶ間は時間が止まるので、急がなくていい" });
     // 説明文の代わりに、温度計と同じ印で戻る熱を示す（▲が多いほど戻る。交換しないと ↓ 落ちていく）。
     const options = Array.from({ length: coalCount(cs) + 1 }, (_, i) => i);
@@ -424,6 +435,7 @@ async function pullGame(cs, mode) {
       setTimeout(() => pick(auto === "good" ? best : auto === "burn" ? 3 : 0), 60);
     }
     coals = await picked;
+    if(state!==owner||!play.isConnected){abandoned=true;choice.remove();choosing=false;return;}
     thermometer.preview(null);
     buttons.querySelectorAll("button").forEach((b) => { b.disabled = true; });
     SE.select();
@@ -442,6 +454,7 @@ async function pullGame(cs, mode) {
     const stage = el("div.care-burn", { dataset: { test: "care-burn" } });
     choice.append(stage);
     const { picks } = await burnCoals(cs, stage, { count: coals, compact: true, replacement: true });
+    if(state!==owner||!play.isConnected){abandoned=true;choice.remove();choosing=false;return;}
     coolRate *= coalLifeFactor(picks);
     cs.careCoals = { count: coals, picks };
     await sleep(autoSkill() ? 40 : 450);
@@ -449,6 +462,7 @@ async function pullGame(cs, mode) {
     SE.coalPlace();
     const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals] * coalHeatFactor(picks)), started = gameClock.now(), dur = autoSkill() ? 200 : 1400;
     for (;;) {
+      if(state!==owner||!play.isConnected){abandoned=true;break;}
       const k = Math.min(1, (gameClock.now() - started) / dur);
       coreTemp = clamp(from + add * (1 - (1 - k) ** 2), 0, 1); T = coreTemp;
       render();
@@ -467,19 +481,26 @@ async function pullGame(cs, mode) {
   pullBtn.addEventListener("click", (e) => { if (e.detail === 0) doPull(); });
   let serve;
   const served = new Promise((r) => { serve = r; });
-  const finish = () => { if (!serveBtn.disabled && !gameClock.paused) { finished = true; serve(); } };
+  const finish = () => { if (state===owner && !serveBtn.disabled && !gameClock.paused) {
+    if(mode.store==="pull"&&cs.blindService&&growthLesson(state,"M-B3")&&!Number.isFinite(cs.blindVariance))cs.blindVariance=rand(-LESSON_TUNING.blindSwing,LESSON_TUNING.blindSwing);
+    finished = true; serve();
+  } };
   serveBtn.addEventListener("click", finish);
   const unkey = keys({ " ": (e) => !e.repeat && doPull(), Space: (e) => !e.repeat && doPull(), Enter: (e) => !e.repeat && finish() });
 
   render();
   if (mode.drift) await prepareCoals();
-  if (!failed) {
+  if(state!==owner||abandoned||!play.isConnected){abandoned=true;serve();}
+  else if (!failed) {
     render();
     await countdown();
+    if(state!==owner||!play.isConnected){abandoned=true;serve();}
+    else {
     running = true;
     last = gameClock.now();
     raf = requestAnimationFrame(loop);
     render();
+    }
   } else serve();
 
   const auto = autoSkill();
@@ -533,7 +554,7 @@ async function pullGame(cs, mode) {
   const result = pullResult(T, pulls, justs, bands, safeLimit);
   const { inZone, optimal } = result;
   let score = Math.min(100,result.score + (criticals ? Math.min(SKILL_TUNING.criticalCap, criticals * SKILL_TUNING.critical) : 0));
-  const tasteCard = actualExpressionCard(cs, T);
+  const tasteCard = mode.store==="pull"&&cs.blindService&&growthLesson(state,"M-B3")?"白紙の味カードで提供した。味の名前は伏せ、尋ねられたら答える":actualExpressionCard(cs, T);
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, criticals, smokeRings, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0] };
   score = settleGrowthPhase(state, cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, cs[mode.store], justs > 0);
   scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
@@ -542,10 +563,10 @@ async function pullGame(cs, mode) {
     refreshBench();
     tickerSay(inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
     await resultCard(panel, {
-      title: "提供",
-      summary: ["お客さんへシーシャを提供した。しばらく吸ってもらおう"],
+      title: context.title,
+      summary: [context.summary],
       lines: [
-        inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えて提供できた" : optimal ? "最適温に合わせて提供できた" : inZone ? "適温で提供できた" : T > ideal[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
+        inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : optimal ? "最適温に合わせられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
         tasteCard,
         waterComfortLine(cs.water),
         `${pulls}回吸った`,
@@ -557,7 +578,7 @@ async function pullGame(cs, mode) {
   await resultCard(panel, {
     title: `${mode.title} 結果`,
     lines: [
-      inZone ? "適温に整えて、審査員へ戻せた" : T > ideal[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
+      inZone ? `適温に整えて、${context.returned}` : T > ideal[1] ? cs.mode==="tournament"?"熱いまま審査員に任せてしまった":"まだ熱い。次は少し熱を逃がそう" : cs.mode==="tournament"?"冷めたまま審査員に任せてしまった":"まだぬるい。次は少し熱を入れよう",
       tasteCard,
       waterComfortLine(cs.water),
       coals ? `消耗した炭を${coals}個交換した` : "炭は交換せずに整えた",

@@ -9,7 +9,7 @@ export const SKILL_TUNING = Object.freeze({ sleep: .1, first: .2, mastery: .2, l
   coalReplacement: .2, forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65 });
 const skillIds = new Set(SKILLS.map(s => s.id));
 const lessonIds = new Set(LESSONS.map(s => s.id));
-export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4 });
+export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5 });
 /** 授業は盤に灯すだけでは発動しない。対面で相談を終えた記録も必要。 */
 export const growthLesson = (s, id) => growthEnabled() && lessonIds.has(id)
   && Array.isArray(s?.growth?.nodes) && s.growth.nodes.includes(id)
@@ -97,4 +97,16 @@ export function useGrowthInsurance(s, cs, kind) {
   if (cs?.mode !== "tournament" || cs.growthInsuranceUsed || !["burnt","cold","leaf"].includes(kind) || !growthFeature(s,"insurance")) return false;
   cs.growthInsuranceUsed = true; cs.growthInsuranceKind = kind;
   return true;
+}
+
+/** 異なる花の系統を重ねる。銘柄違いの同じ花を二種とは数えない。 */
+export function floralLayers(s,cs,flavors) {
+  if(!growthLesson(s,"M-B2"))return [];
+  const flowers=new Map();
+  for(const [id,grams] of Object.entries(cs?.mix||{})){
+    const f=flavors?.[id];if(!Number.isFinite(grams)||grams<=0||f?.category!=="floral")continue;
+    const family=f.family||id,old=flowers.get(family);
+    if(!old||grams>old.grams)flowers.set(family,{id,family,grams,name:f.short_name||f.name||id});
+  }
+  return flowers.size>=2?[...flowers.values()].sort((a,b)=>b.grams-a.grams||a.id.localeCompare(b.id)):[];
 }

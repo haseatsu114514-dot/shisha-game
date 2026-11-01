@@ -239,9 +239,9 @@ async function chooseMix() {
 /** レシピ帳から作る。作れるレシピがなければ null */
 async function chooseRecipe() {
   const options = (DB.recipes || []).filter((r) => state.recipes?.[r.id] && recipeMix(r))
-    .map((r) => ({ label: r.name, value: r.id, test: `home-recipe-${r.id}` }));
+    .map((r) => ({ label: `${r.name}（${Object.entries(recipeMix(r)).map(([id,g])=>`${leafName(id)}${g}g`).join("・")}）`, value: r.id, test: `home-recipe-${r.id}` }));
   if (!options.length) return null;
-  const id = await modal({ title: "家シーシャ：レシピ帳から作る", className: "home-shisha-dialog", body: "自分の葉で作れるレシピ。使う葉と量はレシピどおり。",
+  const id = await modal({ title: "家シーシャ：レシピ帳から作る", className: "home-shisha-dialog", body: `自分の葉を合計${HOME_GRAMS}g使う。体力 ${state.stamina}→${staminaAfter(HOME_STAMINA)}（${state.stamina-staminaAfter(HOME_STAMINA)}消費）。`,
     options: [...options, { label: "戻る", value: null, test: "home-recipe-back" }] });
   return id ? recipeMix(DB.recipes.find((r) => r.id === id)) : null;
 }
@@ -257,7 +257,7 @@ export async function runHomeShisha({ eve = false } = {}) {
   let mix = null;
   while (!mix) {
     const how = await modal({ title: "寝る前の家シーシャ", className: "home-shisha-dialog",
-      body: `まだ体力に余裕がある。${rig.name}で家シーシャをする？ 自分の葉${HOME_GRAMS}gと体力を使う。使った味の熟練度が育つ。`,
+      body: `まだ体力に余裕がある。${rig.name}で家シーシャをする？ 自分の葉${HOME_GRAMS}gを使う。体力 ${state.stamina}→${staminaAfter(HOME_STAMINA)}（${state.stamina-staminaAfter(HOME_STAMINA)}消費）。使った味の熟練度が育つ。`,
       options: [
         { label: "家シーシャをする（フレーバーを選ぶ）", value: "mix", primary: true, test: "home-shisha-mix" },
         ...(canRecipe ? [{ label: "家シーシャをする（レシピ帳）", value: "recipe", test: "home-shisha-recipe" }] : []),
@@ -265,7 +265,9 @@ export async function runHomeShisha({ eve = false } = {}) {
       ] });
     if (!how || state !== owner) return false;
     mix = how === "recipe" ? await chooseRecipe() : await chooseMix();
+    if(state!==owner)return false;
   }
+  if(state!==owner)return false;
   const result = applyHomeShisha(mix, rig);
   // 消費・実施済み印・成長を、会話や再読み込みを挟む前に一括で保存する。
   if (!result) return false;

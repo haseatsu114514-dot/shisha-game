@@ -54,7 +54,7 @@ async function harness({ manual = false } = {}) {
     '../core/data.js': { makingUrl: () => '' },
     './mental.js': { buildMentalTrace: () => ({ root: new Node() }) },
     '../core/condition.js': { craftCondition: () => ({ focus: 1 }) },
-    './steam-slash.js': { SLASH_ART: '', SLASH_RECHARGE_SECONDS: 1, slashProfile: () => ({ reach: 1, recharge: 1, tier: 1 }), slashAngle: noop, slashTouchesBullet: noop, buildSlashFx: noop, buildWordCutFx: noop },
+    './steam-slash.js': { buildSharkFx: () => {throw Error('unlearned shark');}, sharkPulseTouchesBullet:()=>false, SLASH_ART: '', SLASH_RECHARGE_SECONDS: 1, slashProfile: () => ({ reach: 1, recharge: 1, tier: 1 }), slashAngle: noop, slashTouchesBullet: noop, buildSlashFx: noop, buildWordCutFx: noop },
     './steam-heart.js': { HEART_SIZE: 28, heartHitRadius: () => 5, heartTouchesBullet: () => false },
     './clock.js': { createCraftClock: () => ({ now: () => 0, paused: true, dispose: () => metrics.clockDisposed++ }) },
   };
