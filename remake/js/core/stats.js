@@ -7,7 +7,6 @@ import { pendingLoveStage, questionComplete } from "./affinity-stages.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
 import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
-import { growthPerks } from "./growth-effects.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
@@ -108,6 +107,7 @@ let earningAction = null;
 // 経験値（core/growth.js）は自分をここへ登録する。stats.js からは読みに行かない（未公開の機能に依存させない）。
 let expHooks = null;
 export function setExpHooks(hooks) { expHooks = hooks || null; }
+const growthPerks = s => expHooks?.enabled?.() ? expHooks.perks?.(s) : null;
 const noop = () => {};
 
 /** 台本・訪問・制作の成長候補。確定済み報酬用の gainStat と分ける。 */
@@ -409,10 +409,11 @@ export function maxStamina() {
   return 100 + Math.max(GUTS_STAMINA_BONUS[step("guts") - 1], growthPerks(state)?.stamina || 0);
 }
 
-export function addStamina(n) {
+export function addStamina(n, { sleep = false } = {}) {
   const before = state.stamina;
   const maximum = maxStamina();
-  state.stamina = staminaAfter(n);
+  const amount = sleep && n > 0 ? n * (1 + (growthPerks(state)?.sleep || 0) / 100) : n;
+  state.stamina = staminaAfter(amount);
   if (earningAction?.owner === state && state.stamina < before) earningAction.spent += before - state.stamina;
   if (state.stamina !== before) emit("stamina-change", { before, after: state.stamina, maximum });
   emit("hud");

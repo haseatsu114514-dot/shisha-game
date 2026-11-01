@@ -27,6 +27,9 @@ const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTi
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
 const db = { dialogues: {}, statusTexts: {}, lime: [] };
 const values = {
+  "growth-mode.js": { growthEnabled: () => false, GROWTH_BOARD: false, PREVIEW_KEY: "suien_growth_preview" },
+  "growth-effects.js": { growthPerks: () => null },
+  "flavor-mastery.js": { masteryHooks: { multiplier: () => 1 } },
   "city-guests.js": { cityGuestAtShop: () => null, visitCityGuestAtShop: async () => false },
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },

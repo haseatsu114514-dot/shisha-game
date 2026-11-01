@@ -339,7 +339,7 @@ function migrate(s) {
       [!!s.flags?._ch2_read_ch2_rei_fourth, "ch2_rei_fourth", { rose: 1 }],
     ];
     for (const [read, dialogue_id, flavor_lesson] of readFourth) {
-      if (read) learnFlavorStory(s, { dialogue_id, metadata: { flavor_lesson } });
+      if (read) learnFlavorStory(s, { dialogue_id, metadata: { flavor_lesson } }, {}, { growth: false });
     }
   }
   // 第4回読了済みの旧セーブは再生できない。第2回・反復回で受け取った分を除き、未取得分だけ補う。
@@ -347,7 +347,7 @@ function migrate(s) {
     learnFlavorStory(s, {
       dialogue_id: "ch1_rin_fourth",
       metadata: { flavor_lesson: { rose: 1, lychee: 1, blueberry: 1 } },
-    });
+    }, {}, { growth: false });
   }
   if (!s.staffPractice || typeof s.staffPractice.day !== "string") s.staffPractice = null;
   else s.staffPractice.used = Object.fromEntries(Object.entries(record(s.staffPractice.used))

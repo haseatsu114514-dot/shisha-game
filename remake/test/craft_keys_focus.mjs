@@ -66,6 +66,8 @@ function synth(id, names, values) {
 }
 const noop = () => {};
 const stubMods = {
+  "../core/state.js": synth("state", ["state"], { state: {} }),
+  "../core/growth-effects.js": synth("growth-effects", ["growthPerks"], { growthPerks: () => null }),
   "../core/util.js": synth("util", ["el", "sleep", "clamp"], { el: noop, sleep: noop, clamp: (v) => v }),
   "../core/audio.js": synth("audio", ["SE"], { SE: {} }),
   "../core/stats.js": synth("stats", ["tier01"], { tier01: noop }),

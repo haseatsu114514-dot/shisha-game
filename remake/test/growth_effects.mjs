@@ -44,6 +44,17 @@ assert(leafDamagePerPull(cs,{ lemon:{mix_life:1} })<baseDamage);
 core.state.growth.nodes=[nodeFor("tongue").id];
 gainFlavorExperience(core.state,{ lemon:12 },10);
 assert(core.state.flavorMastery.lemon>10);
+// 旧セーブの不足補完は、今の盤の熟練度倍率で過去の報酬を増やさない。
+core.state.schema=23; core.state.story.rin=4;
+core.save(); core.load();
+assert.equal(core.state.flavorMastery.rose,6); assert.equal(core.state.flavorMastery.lychee,6);
+assert.equal(core.state.flavorMastery.blueberry,12);
+const migrated=JSON.stringify(core.state.flavorMastery); core.save(); core.load();
+assert.equal(JSON.stringify(core.state.flavorMastery),migrated);
+core.state.growth.nodes=board.NODES.filter(n=>n.perk==="sleep").map(n=>n.id);
+core.state.stamina=20; stats.addStamina(14,{sleep:true});
+assert(core.state.stamina>34,"睡眠だけに眠りの回復倍率を適用");
+core.state.stamina=20; stats.addStamina(14); assert.equal(core.state.stamina,34);
 core.state.growth.nodes=[nodeFor("gauge").id]; assert(skill.slow({})>1);
 core.state.growth.nodes=[nodeFor("heat").id]; assert(skill.window({})>1); assert.equal(skill.window({},"pull"),1);
 core.state.growth.nodes=[nodeFor("pull").id]; assert(skill.window({},"pull")>1); assert.equal(skill.window({}),1);

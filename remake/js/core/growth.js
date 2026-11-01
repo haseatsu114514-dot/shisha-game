@@ -8,6 +8,8 @@ import { emit } from "./bus.js";
 import { setExpHooks, affinityLevel } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
 import { growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
+import { growthPerks } from "./growth-effects.js";
+import { masteryHooks } from "./flavor-mastery.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -544,4 +546,5 @@ export function gaugeInfo(g = state?.growth) {
 }
 
 // 自由行動の確定（paidAction）と好感度の段から呼ばれる入口を登録する。
-setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, affinity: awardAffinityStepExp });
+setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, affinity: awardAffinityStepExp, perks: growthPerks });
+masteryHooks.multiplier = s => 1 + (growthPerks(s)?.tongue || 0) / 100;
