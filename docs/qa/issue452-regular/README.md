@@ -1,5 +1,7 @@
 # #452 B・常連接客の実回答と後日の反応
 
+> 履歴注記：このフォルダの再現JSON・ログ・画像は当時の検証証拠であり、現行人物設定ではない。`contexts-reproduction.json` に残る博士の七三・水色シャツ・青チェックネクタイは撤回済み（#2190 P05の本人訂正）。原記録は改変せず、現在の外見は [人物正本](../../../brand/character_profiles.md)と採用済み立ち絵を参照する。
+
 WORKER: `codex-tsumugi452-20261015-3d1c4d7902`（既存予約を保持）
 BASE: `7d63fbdc5ce75e57c3cca438476452b7238bd12e`
 BRANCH: `codex/452-regular-service-20261018`

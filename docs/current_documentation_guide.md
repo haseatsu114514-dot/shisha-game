@@ -44,3 +44,12 @@
 - 進行中の作業は GitHub の Issue / PR を直接見る（スナップショット文書は作らない）。Issue予約（claim / release / handoff）は2026-10-23に撤廃済みで、過去資料に残る予約手順は無効。
 - 作業開始: 現在のブランチと関連する正本を確認。過去の引き継ぎを丸ごと読み込まない。保存済みPRは既存ブランチで継続する。
 - 作業終了: PR本文に変更内容・テスト・未完了事項・次の一手を記載。長期に残すべき確定仕様だけ該当する正本へ反映する。
+
+## 博士の外見と旧資料の区別（#2190 P05）
+
+本人訂正により、博士の七三・水色シャツ・青チェックネクタイは撤回済み。採用済みの乱れた茶髪・黒縁の四角い眼鏡・開襟の白シャツ・染みのある白衣を基準にする。人物データ・本文・生成指示が食い違っても、古い文へ画像を戻さない。
+
+- 根拠：[採用記録](../asset_sources/adoptions/ch1-art-20261008/README.md)、[採用立ち絵](../assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png)、[人物正本](../brand/character_profiles.md)、`data/characters.json` の `dr_kemuri`。
+- 現役の生成参照：`tools/make_reference_sheet.py` の博士欄と [カットイン人物欄](../asset_sources/character-intros/graphic-20261031/characters.tsv)。`visual_concepts` も採用済み外見に合わせる。
+- 履歴：[旧台詞差分表](archive/reports_story_edit_564_changes.md)と [#452 QA](qa/issue452-regular/README.md)の原ログ・過去画像は証拠として保持し、現在の外見の根拠にしない。元の生成プロンプトの旧名「炭場創」も現在名を決める根拠にせず、人物ID `dr_kemuri` と現行の火浦理一を参照する。
+- 追跡テキスト全域（hidden skills・制作用プロンプトを含む）の七三／水色シャツ／青チェックと英語の side-part／blue shirt／plaid tie／necktie、および博士名・IDを照合。他人物の上園の水色シャツ、サイの横分け、神崎のネクタイは今回の博士の撤回対象と混同しない。旧設定資料集は上記のとおり退避済みで、他人物の外見や未確定の設定をこの点検で変更しない。
