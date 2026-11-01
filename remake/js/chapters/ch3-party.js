@@ -15,7 +15,7 @@ export async function openChapterThreeParty({ signal, isCurrent = () => true } =
     const eligible = chapterThreePartyGuests(owner);
     for (const id of selected) if (!eligible.includes(id)) selected.delete(id);
     if (eligible.length < 2) return false;
-    const choice = await modal({ title: "ピザとシーシャの夜", body: `スティーブの店に、東京にいる仲間を2〜3人誘おう。\n選んだ人：${[...selected].map(name).join("、") || "まだいない"}`,
+    const choice = await modal({ title: "ピザとシーシャの夜", className: "ch3-party-dialog", body: `スティーブの店に、東京にいる仲間を2〜3人誘おう。\n選んだ人：${[...selected].map(name).join("、") || "まだいない"}`,
       options: [
         ...eligible.map(id => ({ label: `${selected.has(id) ? "✓ " : ""}${name(id)}`, value: id, test: `ch3-party-guest-${id}` })),
         ...(selected.size >= 2 ? [{ label: "この仲間で開く", value: "start", primary: true, test: "ch3-party-start" }] : []),

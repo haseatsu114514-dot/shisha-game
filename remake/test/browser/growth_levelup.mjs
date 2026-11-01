@@ -41,6 +41,10 @@ await suite("growth-levelup", async (runCheck) => {
     });
     await page.locator(t("ch3-aftermath-continue")).click();
     await page.locator(t("ch3-aftermath-party")).click();
+    await page.waitForTimeout(350); // modalの既存pop-inが完了した実寸で測る。
+    await assertFits(page,'[data-test^="ch3-party-guest-"]');
+    assert.equal(await page.locator(".modal-backdrop").evaluate(n=>getComputedStyle(n).backdropFilter),"none");
+    await page.screenshot({path:`${out}/pizza-invitation.png`});
     await page.locator(t("ch3-party-guest-mashiro")).click();
     await page.locator(t("ch3-party-cancel")).click();
     await page.locator(t("ch3-aftermath-party")).waitFor();
