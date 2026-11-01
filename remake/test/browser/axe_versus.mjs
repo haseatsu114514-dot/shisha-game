@@ -84,6 +84,10 @@ async function start(page, difficulty = "normal", options = {}) {
   const button = page.locator('[data-test="axe-versus"]');
   if (options.keyboard) { await button.focus(); await page.keyboard.press("Enter"); }
   else if (options.touch) await button.tap(); else await button.click();
+  // The setup sheet: keep the shown division and one game, then start.
+  await page.locator('[data-test="axe-setup"]').waitFor();
+  if (options.keyboard) await page.keyboard.press("Enter");
+  else if (options.touch) await page.locator('[data-test="axe-setup-start"]').tap(); else await page.locator('[data-test="axe-setup-start"]').click();
   // A second same-host call observes the existing Promise; no state or outcomes are injected.
   await page.evaluate(() => { window.matchPromise = import("./js/minigames/axe.js").then(m => m.runAxeThrow({host:document.getElementById("axe-app")})); });
   await phase(page, "choice"); await fit(page);
@@ -104,10 +108,11 @@ await suite("axe-versus", async check => {
       await press(page, options); await phase(page, "opponent-ready");
       assert.equal(await root(page).getAttribute("data-actor"), "opponent");
       if (i === 5 || i === 10) {
-        // Throw five calls the upper-left blue. Throw ten calls lower-left, unless a bonus call earned by a drop was spent on throw eight at that height, which sends the last call to the opposite row.
-        if (i === 5) assert.equal(await root(page).getAttribute("data-called"), "upper-left");
-        else assert.match(await root(page).getAttribute("data-called"), /^(upper|lower)-left$/);
-        assert.match(await page.locator('.axe-comment').textContent(), /キルショット/);
+        // Throw five calls the upper-left blue. Throw ten calls a left blue, unless a drop's bonus call was spent on throw eight:
+        // the last call must then go to the opposite height, and if that height is already closed there is no legal call (checked below).
+        const calledNow = await root(page).getAttribute("data-called");
+        if (i === 5) assert.equal(calledNow, "upper-left"); else assert.match(calledNow, /^((upper|lower)-left)?$/);
+        if (calledNow) assert.match(await page.locator('.axe-comment').textContent(), /キルショット/);
       }
       await phase(page, "result");
       assert.equal(await root(page).getAttribute("data-opponent-throws"), String(i));
@@ -137,6 +142,10 @@ await suite("axe-versus", async check => {
         JSON.stringify(Object.fromEntries(Object.entries(s).filter(([k]) => !["baseAim", "sway"].includes(k))))));
     }, result);
     assert(scoring, "every rendered shot uses resolveThrow and its own history");
+    if (!result.match.opponent[9].called) assert(await page.evaluate(async history => {
+      const { KILLS, canCall } = await import("./js/minigames/axe-model.js");
+      return !KILLS.some(k => canCall(k.id, history, 10));
+    }, result.match.opponent.slice(0, 9)), "the opponent skips its last call only when no blue is legal");
     assert.deepEqual(await storageSnapshot(page), before);
   }, context);
 
@@ -213,7 +222,7 @@ await suite("axe-versus", async check => {
     assert(cancelled.cancelled && !cancelled.completed);
     assert.equal(cancelled.match.winner, null); assert.equal(cancelled.match.player.length, 1); assert.equal(cancelled.match.opponent.length, 0);
     assert.deepEqual(await storageSnapshot(page), before);
-    await page.locator('[data-test="axe-versus"]').click(); await phase(page, "choice");
+    await page.locator('[data-test="axe-versus"]').click(); await page.locator('[data-test="axe-setup-start"]').click(); await phase(page, "choice");
     assert.equal(await root(page).getAttribute("data-player-throws"), "0");
     await page.keyboard.press("Escape");
   });

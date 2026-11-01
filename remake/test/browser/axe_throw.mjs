@@ -74,6 +74,8 @@ async function standalone(page, { touch = false, keyboard = false, league = fals
   await press(page,'[data-companion="' + opponent + '"]',touch);
   const selector=league?'[data-test="axe-league"]':'[data-test="axe-start"]';
   if (keyboard) { await page.locator(selector).focus(); await page.keyboard.press("Enter"); } else await press(page,selector,touch);
+  // 10投ゲーム opens the setup sheet first; its start button takes Enter, a tap or a click.
+  if (league) { await page.locator('[data-test="axe-setup"]').waitFor(); if (keyboard) await page.keyboard.press("Enter"); else await press(page,'[data-test="axe-setup-start"]',touch); }
   await phase(page,"choice");
 }
 await suite("axe-throw", async run => {
