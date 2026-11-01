@@ -52,7 +52,7 @@ const mocks = {
   "core/audio.js": { SE: { click: noop, select: noop } }, "core/stats.js": { AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], setStoryAffinityCap() {}, releaseStoryAffinity: () => 0, affinityGateWaiting: () => false, STAMINA_LOW: 20 },
   "daily/spots.js": { allSpots: () => [], SPOT_PREVIEW: {}, isUnlocked: yes, hasNewEvent: noop, spotDetailLabel: s => s.label },
   "daily/hud.js": { updateHud: noop }, "daily/home-rig.js": { homeRig: noop }, "daily/reel.js": { mountReel: noop },
-  "daily/weather.js": { isRainy: noop }, "daily/fortune.js": { fortuneToday: noop },
+  "daily/weather.js": { isRainy: noop, tomorrowForecast: () => null }, "daily/fortune.js": { fortuneToday: noop },
   "daily/spot-access.js": { spotVisible: yes, spotAvailability: () => ({ ok: true }), freeGuide: noop },
   "daily/spot-hours.js": { spotTimeNote: noop },
   "daily/spot-people.js": { spotPeople: () => [] }, "core/store-logos.js": { hasStoreLogo: noop, storeLogo: noop },

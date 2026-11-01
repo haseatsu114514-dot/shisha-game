@@ -206,7 +206,7 @@ export function shortNormalVisit(spot) {
     const n = (state.spotVisits?.[spot.id] || 0) + 1;
     if (n < 2 || !state.reel?.introDone || state.flags._pakki_first_spin_pending
       || state.flags._ev_reviewer_cameo && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff
-      || spotEncounterDue(spot.id, n, state, DB.dialogues)) return false;
+      || spotEncounterDue(spot.id, n, state, DB.dialogues, { wide: growthEnabled() && state.growth?.nodes?.includes("K19") })) return false;
     const pool = quietSpotPool(spot, state.slot);
     const rain = RAIN_SPOT_TEXTS[spot.id];
     const id = rain && isRainy() && DB.dialogues[rain] ? rain : pool[Math.max(0, n - 2) % pool.length];
@@ -417,7 +417,7 @@ export async function visitSpot(spot) {
   } else if ((n > 1 || state.slot === 1 && spot.nightPool) && pool.length) {
     id = pool[Math.max(0, n - 2) % pool.length];
   }
-  const encounter = spotEncounterDue(spot.id, n, state, DB.dialogues);
+  const encounter = spotEncounterDue(spot.id, n, state, DB.dialogues, { wide: growthEnabled() && state.growth?.nodes?.includes("K19") });
   if (encounter) id = encounter;
   // 雨の日（2回目以降）は雨の回を出す
   const rainId = RAIN_SPOT_TEXTS[spot.id];

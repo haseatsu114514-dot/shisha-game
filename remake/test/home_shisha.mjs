@@ -196,6 +196,7 @@ for (const schema of [14, SCHEMA]) for (const [label, patch, grant] of [
   expected.schema = SCHEMA;
   if (schema < 19) expected.flags._sumi_double_apple_received = true;
   if (schema < 16) expected.flags._axe_bar_legacy_access = true; // #577の旧保存互換だけを追加。資源の厳密比較は維持
+  if (schema < 25) expected.flags._dense_pack_legacy = true;
   if (grant && !expected.owned.includes(rig.SUMI_RIG)) expected.owned.push(rig.SUMI_RIG);
   const loaded = key === SAVE_KEY ? loadGame() : loadFromSlot(key);
   // 手動LOADのみ自動保存日時を更新する。元の手動枠は変更しない。

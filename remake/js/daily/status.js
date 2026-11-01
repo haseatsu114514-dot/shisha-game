@@ -12,6 +12,7 @@ import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 import { growthEnabled, ensureGrowth } from "../core/growth.js";
+import { growthCraftMemo } from "../core/growth-memory.js";
 import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STAT_SQUARES, statCount, statRatio, perkTotals } from "../core/growth-board.js";
 
 const SVG = "http://www.w3.org/2000/svg";
@@ -228,6 +229,15 @@ function giftNote(e) {
   ]);
 }
 
+function craftMemoRows(id) {
+  const memo = growthCraftMemo(state, id);
+  if (!memo) return [];
+  const mix = Object.entries(memo.mix).map(([id,g]) => `${DB.flavorById[id]?.short_name || DB.flavorById[id]?.name || id} ${g}g`).join(" ／ ");
+  const diff = Number.isFinite(memo.previousTotal) ? memo.total - memo.previousTotal : null;
+  return [el("p", { text: `作った配合：${mix}` }),
+    el("p", { text: `直近の一台：${memo.total.toFixed(1)}点${diff == null ? "" : `（前回比 ${diff >= 0 ? "+" : ""}${diff.toFixed(1)}）`}` })];
+}
+
 function recipeDetails(recipe) {
   const name = (id) => String(DB.flavorById[id]?.short_name || DB.flavorById[id]?.name || id).split(" ").pop();
   const day = state.recipes[recipe.id]?.day;
@@ -238,7 +248,8 @@ function recipeDetails(recipe) {
       el("p", { text: recipe.golden
         ? `黄金比：${Object.entries(recipe.golden).map(([id, weight]) => `${name(id)} ${weight}`).join("：")}（割合）`
         : "黄金比：未設定" }),
-      el("p.st-note", { text: "同じ系統の銘柄でも作れる。発見時のグラム数は記録していない。" }),
+      el("p.st-note", { text: growthCraftMemo(state,recipe.id) ? "同じ系統の銘柄でも作れる。作った配合と点をメモしている。" : "同じ系統の銘柄でも作れる。発見時のグラム数は記録していない。" }),
+      ...craftMemoRows(recipe.id),
       el("p", { text: `発見日：${Number.isInteger(day) && day > 0 ? `DAY ${day}` : "記録なし"}` }),
       recipe.memo ? el("p", { text: recipe.memo }) : null,
     ]),
@@ -268,6 +279,9 @@ function itemsTab(showRecipe) {
     el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "所持0" })]),
     el("p.st-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
     el("h4", { text: "レシピ帳" }),
+    growthCraftMemo(state,"_free") ? el("div.recipe-detail", { dataset: { test: "craft-memo-free" } }, [
+      el("h4", { text: "レシピ名のない一台のメモ" }), ...craftMemoRows("_free"),
+    ]) : null,
     el("p.st-note", { text: "名前をタップすると、材料・黄金比・発見日を確認できる。" }),
     el("div.chips", (() => {
       const found = DB.recipes.filter((r) => state.recipes?.[r.id]);

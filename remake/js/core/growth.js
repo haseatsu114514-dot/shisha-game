@@ -83,6 +83,7 @@ export function newGrowth() {
     chapterLog: {},        // 章 -> X1で関わった人・場所（X11）
     tournamentXp: {},      // 章 -> 大会の参加・最高順位・色の火種（再挑戦で戻さない）
     cleared: [],           // X10/X11を精算した章（周回ごと）
+    memory: { lastMix: null, crafts: {} }, // 配合と一台の成績。能力と一緒に周回へ持ち越す
     today: { xp: 0, learned: {}, gifts: [] }, // 寝る時までの分。learned は鍵 -> 経験値（「今日学んだこと」）、gifts は♥5の贈り物
     seen: { fullLevelUp: false },      // フル演出を一度見たか（初回の判定）
     nodes: [],             // 盤で灯したマスID（確定済みだけ。紋は数えない。取った授業も入る）

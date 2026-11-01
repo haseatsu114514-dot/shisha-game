@@ -5,7 +5,9 @@ import { DB } from "../core/data.js";
 import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { step, earnStat, earnRecipeDiscovery } from "../core/stats.js";
-import { growthFeature, growthLesson, LESSON_TUNING } from "../core/growth-effects.js";
+import { growthFeature, growthLesson, densePackAvailable, LESSON_TUNING } from "../core/growth-effects.js";
+import { growthEnabled } from "../core/growth-mode.js";
+import { rememberGrowthMix, growthRecallOptions } from "../core/growth-memory.js";
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
@@ -419,12 +421,21 @@ export async function stepMix(cs) {
     ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && !state.recipes?.[r.id] && cafeNoted(state, r))
       || (insightful ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
     : null;
+  const recall = cs.mode !== "tutorial" ? growthRecallOptions(state, DB.recipes, DB.flavorById, ids) : [];
 
   panel.append(el("div.mix", [
     el("div.mix-side", [vessel, taste, lifePreview, recipeLine]),
     // ひらめきは葉の組み合わせの助言なので葉の一覧の頭に置き、決定欄に隠れないようにする（#907）。
     // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
     el("div.mix-list", [el("div.mix-list-head", [
+      recall.length ? el("details.mix-recall", [el("summary", { text: "香りの記憶" }),
+        el("div.chips", recall.map(option => el("button.btn.ghost.small", {
+          text: option.name, dataset: { test: `mix-recall-${option.id}` }, onclick: () => {
+            cs.mix = fitMixToStock(option.mix, ids, limit, cap);
+            redraw();
+          },
+        }))),
+      ]) : null,
       el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }),
       compactTaste,
       hint ? el("div.mix-hint", { dataset: { test: "mix-hint" } }, [
@@ -466,6 +477,7 @@ export async function stepMix(cs) {
   if (consumes) for (const [id, g] of Object.entries(cs.mix)) if (!supplied(id)) addFlavorStock(id, -g);
   if (cs.staffPractice) { cs.practiceSpent = spendPracticeMix(state, cs.mix); if (!cs.practiceSpent) throw new Error("練習用の葉が不足しています"); }
   cs.mixInfo = evaluateMix(cs);
+  if (cs.mode !== "tutorial") rememberGrowthMix(state, cs.mix);
   reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
   // レシピ帳への登録（新発見のときだけ）
   const r = cs.mixInfo.recipe;
@@ -493,21 +505,28 @@ export async function stepMix(cs) {
 // ---------------------------------------------------------------- 詰め・配置・蒸らし時間
 
 export async function stepPack(cs) {
+  const owner = state;
   await waitBenchReady(cs, "pack");
+  if (state !== owner) throw new DOMException("Packing owner changed", "AbortError");
+  // 通常公開前の旧モードで見た選択肢も、後日の盤公開で奪わない。
+  if (!growthEnabled()) state.flags._dense_pack_legacy = true;
+  const dense = densePackAvailable(state);
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   const options = [
     { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一台を狙う時に。温めすぎに注意" },
     { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
-    { value: "firm", label: "デンスパック", surface: "密に詰める・厚い味へ", desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
+    { value: "firm", label: "デンスパック", surface: dense ? "密に詰める・厚い味へ" : "心得の盤で習得", locked: !dense,
+      desc: "蒸らしを長めにして厚みを出す。吸い心地は重くなる" },
   ];
-  let selected = options.find(o => o.value === cs.pack) || options[1];
+  let selected = options.find(o => o.value === cs.pack && !o.locked) || options[1];
   const vessel = el("div.pack-vessel", { role: "img", dataset: { test: "pack-vessel" } });
   const caption = el("div.pack-caption", { "aria-live": "polite" });
   const confirm = el("button.btn.primary.pack-confirm", { dataset: { test: "pack-confirm" } }, [
     el("span.btn-label", { text: "この詰め方で決める" }),
   ]);
   const choices = options.map(option => el("button.pack-choice", {
-    type: "button", dataset: { test: `opt-${option.value}` }, onclick: () => { selected = option; SE.select(); draw(); },
+    type: "button", disabled: !!option.locked, dataset: { test: `opt-${option.value}` },
+    onclick: () => { if (option.locked) return; selected = option; SE.select(); draw(); },
   }, [el("b", { text: option.label }), el("small", { text: option.surface })]));
   function draw() {
     vessel.dataset.pack = selected.value;

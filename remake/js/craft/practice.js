@@ -14,6 +14,8 @@ import { retireScreen } from "../core/ui.js";
 import { temperatureAfterSteam } from "./conditions.js";
 import { ensureFlavorLife } from "./flavor-life.js";
 import { recordPractice } from "./practice-history.js";
+import { finalize } from "./score.js";
+import { growthSkill } from "../core/growth-effects.js";
 export { practiceRecords, recordPractice } from "./practice-history.js";
 
 export const CRAFT_STEPS = [["setup", "SETUP"], ["mix", "MIX"], ["pack", "PACK"], ["holes", "FOIL"], ["place", "SET"], ["heat", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"], ["care1", "調整1回目"], ["care2", "調整2回目"]];
@@ -59,6 +61,7 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
     checkCurrent();
   }
   if (!recordPractice(cs, kind)) throw new Error("Practice interrupted before serving");
+  if (cs.mode !== "tutorial" && growthSkill(state, "K24")) finalize(cs);
   const key = !coached && `_mastery_practice_${masteryDay(state)}_${kind}`;
   cs.masteryGained = false;
   if (cs.pullDone && !state.flags[key] && !coached) {

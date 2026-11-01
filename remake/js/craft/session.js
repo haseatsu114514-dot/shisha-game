@@ -9,6 +9,7 @@ import { bgUrl } from "../core/data.js";
 import { state, timeOfDay, save } from "../core/state.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
 import { growthSkill, growthCraftCondition, SKILL_TUNING } from "../core/growth-effects.js";
+import { noteGrowthCraftOwner } from "../core/growth-memory.js";
 import { buildWorkerScene, WORKER_STEPS, benchBgRef } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
 import { buildGuide, STEP_BRIEFS, TUTORIAL_STEP_HELP } from "./bench-ui.js";
@@ -89,6 +90,7 @@ export function newSession(mode) {
   // E07(#1081): 葉の持ち/消耗は一台の全工程で共有する状態として、ここで一度だけ生む。
   // 蒸らし・提供で傷んだ葉を、調整（熱管理）や場面切替・SAVE/LOAD で新品へ戻さない。
   ensureFlavorLife(cs);
+  noteGrowthCraftOwner(cs, state);
   return cs;
 }
 

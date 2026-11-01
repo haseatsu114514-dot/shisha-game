@@ -6,6 +6,7 @@ import { clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
 import { growthPerks } from "../core/growth-effects.js";
+import { rememberGrowthCraft } from "../core/growth-memory.js";
 import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
@@ -135,5 +136,6 @@ export function finalize(cs) {
   cs.parts = parts;
   cs.foilSkipped = foilSkipped;
   cs.bonusNotes = notes;
+  rememberGrowthCraft(state, cs);
   return cs;
 }

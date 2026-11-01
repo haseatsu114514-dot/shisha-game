@@ -302,6 +302,7 @@ export const FLAG_EXACT_RULES = [
   ["_hole_outer24_unlocked", "unlock"],
   ["_home_shisha_day", "progression"],
   ["_home_lavender_sleep", "progression"],
+  ["_dense_pack_legacy", "unlock"],
   ["_home_tonight", "progression"],
   ["_home_trial_plan", "progression"],
   ["_intro_", "progression"],

@@ -22,6 +22,118 @@ async function setupDaily(page) {
 }
 
 await suite("growth-levelup", async (check) => {
+  await check("dense-pack-new-and-legacy",async(page)=>{
+    await setupDaily(page);
+    for(const kind of ["new","learned","legacy","old-mode"]) {
+      await page.evaluate(async(kind)=>{
+        const core=await import("./js/core/state.js"),growth=await import("./js/core/growth.js");
+        core.newGame();Object.assign(core.state,{phase:"daily",day:3,slot:1,stamina:90});growth.setGrowthPreview(kind!=="old-mode");
+        if(kind==="learned")growth.ensureGrowth().nodes=["K18"];
+        if(kind==="legacy"){core.state.schema=24;core.save();core.load();}
+        window.packBefore=JSON.stringify({day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:core.state.stats});
+        const session=await import("./js/craft/session.js");session.craftTest.auto=null;
+        window.packCs=session.newSession("rehearsal");session.openBench(packCs);
+        window.packRun=(await import("./js/craft/steps.js")).stepPack(packCs);
+      },kind);
+      const firm=page.locator(t("opt-firm"));await firm.waitFor();assert.equal(await firm.isEnabled(),kind!=="new");
+      await page.locator(t(kind==="new"?"opt-normal":"opt-firm")).click();await page.locator(t("pack-confirm")).click();
+      const result=await page.evaluate(async()=>{await packRun;return {pack:packCs.pack,same:packBefore===JSON.stringify({day:__remake.state.day,slot:__remake.state.slot,stamina:__remake.state.stamina,stats:__remake.state.stats}),legacy:__remake.state.flags._dense_pack_legacy};});
+      assert.equal(result.pack,kind==="new"?"normal":"firm");assert(result.same);
+      if(kind==="legacy"||kind==="old-mode") assert.equal(result.legacy,true);
+    }
+  });
+
+  await check("ordinary-conversation-smoke-hint",async(page)=>{
+    await setupDaily(page);
+    await page.evaluate(async()=>{
+      const growth=await import("./js/core/growth.js"),core=await import("./js/core/state.js");growth.setGrowthPreview(true);growth.ensureGrowth().nodes=["K07"];
+      window.hintVn=await import("./js/vn/engine.js");hintVn.vnTest.turbo=false;
+      window.showHint=async(optional)=>{
+        const {DB}=await import("./js/core/data.js"),source=DB.dialogues.ch1_naru_first;
+        const choice=source.lines.find(line=>line.id==="naru_first_scout");window.hintText=choice.choices.map(c=>c.text);
+        window.hintAbort=new AbortController();window.hintRun=hintVn.play({dialogue_id:source.dialogue_id,lines:[choice],branches:source.branches},{growthScene:optional,signal:hintAbort.signal});
+      };
+      await showHint(true);
+    });
+    await page.locator('.vn-choices.show').waitFor();assert.equal(await page.locator(".vn-choice.growth-hint").count(),1);
+    assert.deepEqual(await page.locator(".vn-choice").allTextContents(),await page.evaluate(()=>hintText));
+    assert.match(await page.locator(".vn-choice.growth-hint").evaluate(n=>getComputedStyle(n,"::before").content),/〰/);
+    await page.evaluate(async()=>{hintAbort.abort();await hintRun;await showHint(false);});
+    await page.locator('.vn-choices.show').waitFor();assert.equal(await page.locator(".vn-choice.growth-hint").count(),0);
+    await page.evaluate(async()=>{hintAbort.abort();await hintRun;});
+  });
+
+  await check("bargain-price-checkout",async(page)=>{
+    await setupDaily(page);
+    const deal=await page.evaluate(async()=>{
+      const growth=await import("./js/core/growth.js"),core=await import("./js/core/state.js"),shop=await import("./js/daily/shop.js"),{DB}=await import("./js/core/data.js");
+      growth.setGrowthPreview(true);growth.ensureGrowth().nodes=["K23"];core.state.weatherSeed=42;
+      const id=shop.SHOP_FLAVORS.find(id=>shop.shopFlavorPrice(DB.flavorById[id],shop.SHOP_FLAVORS)<DB.flavorById[id].price);
+      const price=shop.shopFlavorPrice(DB.flavorById[id],shop.SHOP_FLAVORS);window.dealBefore={money:core.state.money,stock:shop.flavorStock(id),day:core.state.day,slot:core.state.slot,stamina:core.state.stamina};
+      window.dealShop=shop.openShop();return {id,price};
+    });
+    await page.locator(t("shop-enter")).click();await page.locator(t(`buy-${deal.id}`)).click();
+    const row=page.locator(".shop-row").filter({has:page.locator(t(`buy-${deal.id}`))});assert.match(await row.innerText(),/掘り出し物/);
+    await page.locator(t("shop-checkout")).click();
+    const result=await page.evaluate(async(id)=>{
+      const core=await import("./js/core/state.js"),shop=await import("./js/daily/shop.js");
+      return {cost:dealBefore.money-core.state.money,gained:shop.flavorStock(id)-dealBefore.stock,same:dealBefore.day===core.state.day&&dealBefore.slot===core.state.slot&&dealBefore.stamina===core.state.stamina};
+    },deal.id);
+    assert.deepEqual(result,{cost:deal.price,gained:50,same:true});
+  });
+
+  await check("tomorrow-weather-on-map-and-morning", async(page)=>{
+    await setupDaily(page);
+    const forecast=await page.evaluate(async()=>{
+      const growth=await import("./js/core/growth.js"),core=await import("./js/core/state.js");
+      growth.setGrowthPreview(true);growth.ensureGrowth().nodes=["K05"];core.state.weatherSeed=42;
+      window.forecastBefore=JSON.stringify(core.state);const weather=await import("./js/daily/weather.js");
+      window.forecastMap=(await import("./js/daily/map.js")).chooseSpot();return weather.tomorrowForecast();
+    });
+    await page.locator(".map:not(.done)").waitFor();assert.match(await page.locator(".mi-foot").innerText(),new RegExp(`明日は${forecast}`));
+    await page.evaluate(async()=>{const map=await import("./js/daily/map.js");map.interruptMap(null);await forecastMap;});
+    await page.evaluate(async()=>{
+      const wx=await import("./js/daily/weather.js"),ui=await import("./js/core/ui.js");
+      window.forecastDay=ui.dayCard("DAY 3","朝の支度",{ms:2000,forecast:wx.tomorrowForecast()});
+    });
+    await page.locator(t("day-forecast")).waitFor();assert.equal(await page.locator(t("day-forecast")).innerText(),`明日は${forecast}`);
+    await page.waitForFunction(() => { const card=document.querySelector(".day-card.show:not(.out)"); return card && new DOMMatrix(getComputedStyle(card).transform).isIdentity; });
+    await assertFits(page,t("day-forecast"));await page.evaluate(async()=>await forecastDay);
+    assert.equal(await page.evaluate(()=>JSON.stringify(__remake.state)===forecastBefore),true);
+  },{viewport:{width:591,height:1280}});
+
+  await check("mix-recall-and-score-memo", async(page)=>{
+    await setupDaily(page);
+    await page.evaluate(async()=>{
+      window.memoCore=await import("./js/core/state.js");const growth=await import("./js/core/growth.js");
+      const memory=await import("./js/core/growth-memory.js");growth.setGrowthPreview(true);growth.ensureGrowth().nodes=["K02","K24"];
+      memory.rememberGrowthMix(memoCore.state,{lemon:9,mint:3});memoCore.state.recipes.ice_lemonade={day:1};
+      memoCore.state.flavors=["lemon","mint"];memoCore.state.flavorStock={lemon:100,mint:100};
+      window.memoSession=await import("./js/craft/session.js");memoSession.craftTest.auto=null;
+      window.memoCs=memoSession.newSession("rehearsal");memoCs.staffPractice=true;memoSession.openBench(memoCs);
+      window.memoMix=(await import("./js/craft/steps.js")).stepMix(memoCs);
+    });
+    await page.locator(".mix-recall summary").click();await page.locator(t("mix-recall-last")).click();
+    assert.deepEqual(await page.evaluate(()=>memoCs.mix),{lemon:9,mint:3});
+    assert.deepEqual(await page.evaluate(()=>memoCore.state.flavorStock),{lemon:100,mint:100});
+    await assertFits(page,".mix-recall");await page.locator(t("mix-ok")).click();
+    const score=await page.evaluate(async()=>{
+      await memoMix;const {finalize}=await import("./js/craft/score.js");
+      Object.assign(memoCs,{pack:"normal",steamSeconds:360,
+        holes:{score:90,total:24,minimumComplete:true,outerEven:1,innerExcess:0},
+        heat:{score:90,heatPower:70,heatStability:90,burnRisk:5,aromaRetention:90},
+        steam:{score:90,hits:0,seconds:360,temp:.55},pull:{score:90,temp:.55,pulls:3},pullDone:true,
+        careHistory:[{score:85},{score:85}]});
+      finalize(memoCs);const score=memoCs.total;memoCore.save();memoCore.load();
+      void(await import("./js/daily/status.js")).openStatus();return score;
+    });
+    await page.locator('.st-tab[data-tab="items"]').click();await page.locator(t("recipe-ice_lemonade")).click();
+    await page.locator(t("recipe-detail")).waitFor();
+    assert.match(await page.locator(t("recipe-detail")).innerText(),new RegExp(`直近の一台：${score.toFixed(1)}点`));
+    assert.match(await page.locator(t("recipe-detail")).innerText(),/9g.*3g/s);
+    await assertFits(page,t("recipe-detail"));await page.locator(t("status-close")).click();
+  },{viewport:{width:591,height:1280}});
+
   for(const festa of [false,true]) await check(festa ? "festa-refresh-once" : "two-refresh-charges", async (page) => {
     await setupDaily(page);
     await page.evaluate(async(festa)=>{

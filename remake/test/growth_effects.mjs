@@ -178,4 +178,86 @@ for(const [id,mix,miss] of [
  core.save();core.load();assert.equal(mixScore(mix).score,once.score);
  growth.setGrowthPreview(false);assert.equal(mixScore(mix).score,base.score);growth.setGrowthPreview(true);
 }
+// 香りの記憶・メモ魔: 実際の配合と完成品スコアを保存し、再計算・LOAD・旧ownerで重ねない。
+const memory=await import("../js/core/growth-memory.js"),{finalize}=await import("../js/craft/score.js");
+core.newGame();growth.ensureGrowth().nodes=["K02","K24"];
+const resources=()=>JSON.stringify({day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:core.state.stats,reel:core.state.reel});
+const untouched=resources();
+memory.rememberGrowthMix(core.state,{lemon:9,mint:3});
+core.state.recipes.ice_lemonade={day:1};
+const made=care=>{
+ const cs=session.newSession("tournament");Object.assign(cs,{mix:{lemon:9,mint:3},pack:"normal",steamSeconds:360,
+  holes:{score:90,total:24,minimumComplete:true,outerEven:1,innerExcess:0},heat:{score:90,heatPower:70,heatStability:90,burnRisk:5,aromaRetention:90},
+  steam:{score:90,hits:0,seconds:360,temp:.55},pull:{score:90,temp:.55,pulls:3},pullDone:true,careHistory:[{score:care},{score:care}]});
+ cs.mixInfo=evaluateMix(cs);return cs;
+};
+const firstCraft=made(80);finalize(firstCraft);
+const firstMemo=memory.growthCraftMemo(core.state,"ice_lemonade");
+assert(firstMemo,JSON.stringify({score:firstCraft.total,recipe:firstCraft.mixInfo.recipe?.id,memory:core.state.growth.memory}));
+assert.equal(firstMemo.total,firstCraft.total);assert.equal(firstMemo.previousTotal,null);
+finalize(firstCraft);assert.deepEqual(memory.growthCraftMemo(core.state,"ice_lemonade"),firstMemo);
+core.save();core.load();assert.deepEqual(memory.growthCraftMemo(core.state,"ice_lemonade"),firstMemo);
+const nextCraft=made(95);finalize(nextCraft);
+const nextMemo=memory.growthCraftMemo(core.state,"ice_lemonade");
+assert(nextMemo.total>firstMemo.total);assert.equal(nextMemo.previousTotal,firstMemo.total);
+finalize(firstCraft);assert.deepEqual(memory.growthCraftMemo(core.state,"ice_lemonade"),nextMemo,"古いownerの再計算は新しいセーブへ書かない");
+assert.equal(resources(),untouched);assert.equal(core.state.growth.xp,0);
+let options=memory.growthRecallOptions(core.state,DB.recipes,DB.flavorById,["lemon","mint"]);
+assert.deepEqual(options.find(x=>x.id==="last").mix,{lemon:9,mint:3});
+assert.deepEqual(options.find(x=>x.id==="ice_lemonade").mix,nextMemo.mix);
+core.state.recipes.test_recall={day:1};
+const secretRecipe={id:"test_recall",name:"記録のない配合",flavors:["lemon","mint"],get golden(){throw Error("黄金比を呼び出しへ使わない");}};
+options=memory.growthRecallOptions(core.state,[secretRecipe],DB.flavorById,["lemon","mint"]);
+assert.deepEqual(options.find(x=>x.id==="test_recall").mix,{lemon:8,mint:4});
+assert(!memory.growthRecallOptions(core.state,[secretRecipe],DB.flavorById,["lemon"]).some(x=>x.id==="test_recall"));
+const {buildCarryPackage}=await import("../js/core/carry.js");
+assert.deepEqual(buildCarryPackage(core.state).growth.memory,core.state.growth.memory);
+growth.setGrowthPreview(false);assert.deepEqual(memory.growthRecallOptions(core.state,DB.recipes,DB.flavorById,["lemon","mint"]),[]);
+assert.equal(memory.growthCraftMemo(core.state,"ice_lemonade"),null);
+// 空模様は翌日の同じ抽選結果を読むだけ。取得・表示・無効化で種や日付を動かさない。
+const weather=await import("../js/daily/weather.js");growth.setGrowthPreview(true);core.newGame();core.state.phase="daily";
+growth.ensureGrowth().nodes=["K05"];
+for(const seed of [0,4,100,99999]) for(let day=1;day<14;day++) {
+ core.state.weatherSeed=seed;core.state.day=day;const before=JSON.stringify(core.state);
+ assert.equal(weather.tomorrowForecast(),weather.WEATHER_LABEL[weather.weatherOf(day+1)]);
+ assert.equal(JSON.stringify(core.state),before);
+}
+delete core.state.weatherSeed;assert.equal(weather.tomorrowForecast(),null);assert.equal(core.state.weatherSeed,undefined);
+growth.setGrowthPreview(false);assert.equal(weather.tomorrowForecast(),null);
+// デンスパックは新しい盤で習得し、旧保存の利用権は移行・再LOAD・周回で保持する。
+growth.setGrowthPreview(true);core.newGame();assert(!effects.densePackAvailable(core.state));
+growth.ensureGrowth().nodes=["K18"];assert(effects.densePackAvailable(core.state));
+core.newGame();const oldDense=core.newState();oldDense.schema=24;
+for(const key of core.STAT_KEYS) oldDense.stats[key]=100;
+stored.set(core.SAVE_KEY,JSON.stringify(oldDense));core.load();
+assert.equal(core.state.schema,25);assert(effects.densePackAvailable(core.state));
+core.save();core.load();assert(effects.densePackAvailable(core.state));
+for(const key of core.STAT_KEYS) assert.equal(core.state.stats[key],100);
+assert.equal(buildCarryPackage(core.state).flags._dense_pack_legacy,true);
+// 会話の気配は指定済みの普通の会話だけ。強制場面・恋愛の決断・変更済みの選択は示さない。
+core.newGame();growth.ensureGrowth().nodes=["K07"];
+const hints=JSON.parse(readFileSync(new URL("../data/fortune-choice-hints.json",import.meta.url),"utf8"));
+const hint=hints.choices["ch1_naru_first:naru_first_scout"];
+const choiceLine={id:"naru_first_scout",choices:hint.options.map(next=>({text:next,next}))};
+const choiceBefore=JSON.stringify(core.state);
+assert.equal(effects.growthChoiceIndex(core.state,"ch1_naru_first",choiceLine,hints,true),hint.options.indexOf(hint.preferred));
+assert.equal(effects.growthChoiceIndex(core.state,"ch1_naru_first",choiceLine,hints,false),-1);
+assert.equal(effects.growthChoiceIndex(core.state,"ch1_naru_first",{...choiceLine,choices:[...choiceLine.choices].reverse()},hints,true),-1);
+assert.equal(effects.growthChoiceIndex(core.state,"ch1_tsumugi_bond_question",{id:"bond_q1_tsumugi",choices:choiceLine.choices},hints,true),-1);
+assert.equal(JSON.stringify(core.state),choiceBefore);
+// 顔が広いは既存の未読遭遇の間隔だけを縮め、初回紹介や面識の条件を飛ばさない。
+const {spotEncounterDue}=await import("../js/daily/spot-encounters.js");
+core.state.met.naru=true;core.state.flags._spot_seen_cafe_naru_break=true;core.state.flags._spot_last_cafe=2;
+const encounters={cafe_naru_break:{},cafe_maezono_break:{}};
+assert.equal(spotEncounterDue("cafe",3,core.state,encounters),null);
+core.state.growth.nodes=["K19"];assert.equal(spotEncounterDue("cafe",3,core.state,encounters,{wide:effects.growthSkill(core.state,"K19")}),"cafe_maezono_break");
+assert.equal(spotEncounterDue("cafe",1,core.state,encounters),null);
+// 目利きの価格は同日再表示とLOADで同一。表示と会計が同じ関数を使う。
+const {shopFlavorPrice,SHOP_FLAVORS}=await import("../js/daily/shop.js");
+core.state.growth.nodes=["K23"];const shopBefore=JSON.stringify(core.state);
+const prices=()=>SHOP_FLAVORS.map(id=>shopFlavorPrice(DB.flavorById[id],SHOP_FLAVORS));
+const firstPrices=prices();assert.equal(firstPrices.filter((price,i)=>price<DB.flavorById[SHOP_FLAVORS[i]].price).length,2);
+assert.deepEqual(prices(),firstPrices);assert.equal(JSON.stringify(core.state),shopBefore);
+core.save();core.load();assert.deepEqual(prices(),firstPrices);
+growth.setGrowthPreview(false);assert.deepEqual(prices(),SHOP_FLAVORS.map(id=>DB.flavorById[id].price));
 console.log("[growth effects] PASS: additive legacy growth, 160+29=189, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");

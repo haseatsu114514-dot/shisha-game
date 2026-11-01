@@ -1,6 +1,7 @@
 import { notifyMastery } from "../core/mastery-notice.js";
 import { learnFlavorStory } from "../core/flavor-mastery.js";
 import { awardLoverSceneExp } from "../core/lover-rewards.js";
+import { growthChoiceIndex } from "../core/growth-effects.js";
 import { tournamentFinished } from "../core/story-context.js";
 import { basicsExperienced } from "../craft/practice-history.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
@@ -924,9 +925,10 @@ function showChoices(line) {
   r.waitingChoice = true;
   // 実回答の記録はpickChoiceのフックへ。占いは対象/期限/台詞照合済みの2択だけ示す。
   const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
-  const buttons = (line.choices || []).map((c, i) => el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}`, {
+  const growthHint = growthChoiceIndex(state, r.currentId || r.id, line, DB.fortuneHints, r.growthScene);
+  const buttons = (line.choices || []).map((c, i) => el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}${i === growthHint ? ".growth-hint" : ""}`, {
     html: formatHtml(c.text || "……"),
-    "aria-label": i === fortuneHint ? `${c.text}（占いの予感）` : null,
+    "aria-label": i === fortuneHint ? `${c.text}（占いの予感）` : i === growthHint ? `${c.text}（会話の気配）` : null,
     disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
     style: { animationDelay: `${i * 80}ms` },
     dataset: { test: `choice-${i}` },
