@@ -167,6 +167,120 @@ try {
   await page.evaluate(() => T.talk);
   assert.deepEqual(await page.evaluate(() => T.seen), ["naru"], "カットインが一度だけになっていない");
 
+  // CIG07 pilot: no new art; lifecycle, accessibility, timing and DS coordinates.
+  await page.evaluate(async () => {
+    const { portraitInfo } = await import("./js/core/data.js");
+    T.pilotEvents = [];
+    T.pilotObserver = new MutationObserver(records => records.forEach(record => record.addedNodes.forEach(node => {
+      if (node.nodeType !== 1) return;
+      for (const candidate of [node, ...node.querySelectorAll('.ci-silhouette,.ci-wipe')])
+        if (candidate.matches('.ci-silhouette,.ci-wipe')) T.pilotEvents.push(candidate.className);
+    })));
+    T.pilotObserver.observe(document.querySelector('#fx'), { childList: true, subtree: true });
+    T.seedPortrait = async () => {
+      const box = document.createElement('div'); box.className = 'vn-portraits'; box.id = 'pilot-source';
+      const image = new Image(); image.src = portraitInfo('naru', 'normal').src;
+      image.className = 'portrait active'; image.dataset.speaker = 'naru';
+      image.style.cssText = 'height:650px;bottom:0;left:30%;--ax:-50%';
+      await image.decode(); box.append(image); document.querySelector('#stage').append(box);
+    };
+    await T.seedPortrait();
+  });
+  const cleanPilot = async () => assert.equal(await page.locator('.ci-transition,.ci-silhouette,.ci-wipe,.cutin,.intro-fit-surface').count(), 0, '中断・終了後に影/色面/カットインが残る');
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    await page.evaluate(() => {
+      T.core.config.reduceShake = false; T.core.config.introArtStyle = 'graphic'; T.pilotEvents.length = 0;
+      T.started = performance.now(); T.done = T.intro.playIntro('naru');
+    });
+    await page.locator('.ci-silhouette').waitFor({ state: 'attached' });
+    assert(await page.evaluate(() => {
+      const source = document.querySelector('#pilot-source img').getBoundingClientRect();
+      const shadow = document.querySelector('.ci-silhouette').getBoundingClientRect();
+      return ['left','top','width','height'].every(key => Math.abs(source[key] - shadow[key]) < 1);
+    }), 'PC/スマホ縦: 影が立ち絵と同じ座標');
+    await page.keyboard.press('Enter'); await page.keyboard.press('Control');
+    await page.locator('.ci-transition').dispatchEvent('pointerup');
+    await page.locator('.cutin.in').waitFor();
+    await page.waitForTimeout(650);
+    assert.equal(await page.locator('.ci-transition,.ci-wipe,.ci-silhouette').count(), 0, '入場完了後に影と色面を残さない');
+    const animationProperties = await page.evaluate(() => document.querySelector('.cutin').getAnimations({ subtree: true }).flatMap(a =>
+      a.effect.getKeyframes().flatMap(frame => Object.keys(frame).filter(key => !['offset','computedOffset','easing','composite'].includes(key)))));
+    assert(animationProperties.every(key => ['opacity','transform','clipPath'].includes(key)), `許可以外のアニメーション: ${animationProperties}`);
+    await page.evaluate(() => T.done);
+    assert(await page.evaluate(() => performance.now() - T.started >= 4380), '入場480 + hold3600 + 退場300msを操作で短縮しない');
+    await cleanPilot();
+  }
+  for (const mode of ['classic', 'setting', 'system']) {
+    await page.emulateMedia({ reducedMotion: mode === 'system' ? 'reduce' : 'no-preference' });
+    await page.evaluate(mode => {
+      T.core.config.introArtStyle = mode === 'classic' ? 'classic' : 'graphic';
+      T.core.config.reduceShake = mode === 'setting'; T.pilotEvents.length = 0;
+      T.done = T.intro.playIntro('naru');
+    }, mode);
+    await page.locator('.cutin.in').waitFor();
+    if (mode !== 'classic') assert(await page.evaluate(() => document.querySelector('.cutin').getAnimations({ subtree: true }).every(a =>
+      a.effect.getKeyframes().every(frame => !('transform' in frame) && !('clipPath' in frame)))), '軽減時はフェードのみ');
+    await page.evaluate(() => T.done);
+    assert.deepEqual(await page.evaluate(() => T.pilotEvents), [], `${mode}: 影と色面を作らない`);
+    await cleanPilot();
+  }
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 1280, height: 720 });
+  for (const phase of ['shadow', 'wipe', 'hold', 'exit', 'load', 'error']) {
+    await page.evaluate(phase => {
+      T.core.config.introArtStyle = 'graphic'; T.core.config.reduceShake = false;
+      T.abort = new AbortController(); T.failure = '';
+      T.done = T.intro.playIntro('naru', { signal: T.abort.signal, onAppear: phase === 'error' ? () => { throw new Error('pilot injected error'); } : null })
+        .catch(error => { T.failure = error.message; });
+    }, phase);
+    if (phase === 'error') { await page.evaluate(() => T.done); assert.equal(await page.evaluate(() => T.failure), 'pilot injected error'); }
+    else {
+      await page.locator('.ci-transition').waitFor({ state: 'attached' });
+      if (phase === 'wipe') await page.waitForTimeout(180);
+      if (['hold','exit','load'].includes(phase)) {
+        await page.locator('.ci-transition').waitFor({ state: 'detached' });
+        if (phase === 'exit') await page.locator('.ci-transition').waitFor({ state: 'attached' });
+      }
+      await page.evaluate(phase => { if (phase === 'load') { T.core.save(); T.core.load(); } else T.abort.abort(); }, phase);
+      await page.evaluate(() => T.done);
+    }
+    await cleanPilot();
+  }
+  // No portrait: wipe only. A non-pilot graphic character keeps its current presentation.
+  await page.evaluate(() => { document.querySelector('#pilot-source').remove(); T.pilotEvents.length = 0; T.done = T.intro.playIntro('naru'); });
+  await page.locator('.ci-wipe').waitFor({ state: 'attached' });
+  assert.equal(await page.locator('.ci-silhouette').count(), 0);
+  await page.evaluate(() => T.done); await cleanPilot();
+  await page.evaluate(() => { T.pilotEvents.length = 0; T.done = T.intro.playIntro('sumi'); });
+  await page.evaluate(() => T.done);
+  assert.deepEqual(await page.evaluate(() => T.pilotEvents), [], '4人以外へ広げない');
+  // Real VN interruption in stacked DS mode: the overlay follows the upper-screen portrait.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => {
+    localStorage.setItem('suien_title_layout', 'ds'); dispatchEvent(new Event('display-layout-change'));
+    T.core.newGame(); T.core.markMet('naru'); T.vnAbort = new AbortController();
+    T.talk = T.vn.play({ dialogue_id: '__pilot_ds_abort', lines: [
+      { speaker: 'naru', face: 'normal', text: 'なるの登場確認' },
+      { speaker: 'hajime', text: 'よろしくお願いします' },
+    ] }, { signal: T.vnAbort.signal });
+  });
+  await page.locator('body.game-ds #vn.active').waitFor();
+  await page.waitForFunction(() => document.querySelector('.vn-text')?.textContent.includes('なるの登場確認'));
+  await page.waitForTimeout(350); await page.keyboard.press('Enter');
+  await page.waitForTimeout(350); await page.keyboard.press('Enter');
+  await page.locator('.ci-silhouette').waitFor({ state: 'attached' });
+  assert(await page.evaluate(() => {
+    const a = document.querySelector('#vn .portrait[data-speaker="naru"]').getBoundingClientRect();
+    const b = document.querySelector('.ci-silhouette').getBoundingClientRect();
+    return ['left','top','width','height'].every(key => Math.abs(a[key] - b[key]) < 1);
+  }), '実VNのDS上画面で影の位置を合わせる');
+  if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/pilot-ds-shadow.png` });
+  await page.evaluate(() => T.vnAbort.abort()); await page.evaluate(() => T.talk);
+  await page.locator('.ci-transition').waitFor({ state: 'detached' }); await cleanPilot();
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.evaluate(() => T.pilotObserver.disconnect());
+
   assert.deepEqual(errors, []);
   console.log(`OK intro_cutin: ${ids.length}人のカットインが画面内に収まり、名乗った直後に一度だけ出る`);
 } finally {

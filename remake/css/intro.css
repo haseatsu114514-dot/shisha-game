@@ -51,3 +51,15 @@
 .intro-fit-surface { position:absolute; inset:0; overflow:hidden; pointer-events:auto; }
 .cutin.intro-fitted { inset:auto; left:50%; top:50%; width:1280px; height:720px;
   transform:translate(-50%,-50%) scale(var(--intro-fit-scale,1)); transform-origin:center; }
+
+/* Four-person CIG07 motion prototype. FX coordinates follow the existing stage/DS surface. */
+.ci-transition { position:absolute; inset:0; z-index:30; overflow:hidden; pointer-events:auto; }
+.ci-silhouette { position:absolute; background:color-mix(in srgb,var(--accent) 60%,#101820); mask-size:100% 100%; mask-repeat:no-repeat; opacity:0; }
+.ci-wipe,.ci-wipe-edge { position:absolute; inset:-10%; background:var(--accent); clip-path:polygon(28% -10%,28% -10%,22% 110%,22% 110%); }
+.ci-wipe-edge { background:var(--secondary); }
+.ci-transition[data-motion="soft"] .ci-wipe { background:linear-gradient(94deg,transparent,var(--accent) 2%,var(--accent) 98%,transparent); }
+.art-intro .ci-motion-light { position:absolute; inset:0; z-index:1; pointer-events:none; opacity:0; background:linear-gradient(105deg,transparent 30%,#fff 48%,transparent 62%); }
+.art-intro .ci-motion-dots { position:absolute; inset:0; z-index:1; pointer-events:none; opacity:0; background:radial-gradient(circle,#fff 1px,transparent 2px) 0 0 / 12px 12px; }
+.art-intro .ci-motion-edge { position:absolute; inset:0; border-top:3px solid #fff; opacity:0; pointer-events:none; background:linear-gradient(90deg,transparent 30%,#fff8 50%,transparent 70%); }
+
+.ci-motion-entering :is(.ci-ribbon,.ci-accent-line,.ci-quote-area) { visibility:hidden; }
