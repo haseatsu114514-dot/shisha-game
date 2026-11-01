@@ -11,6 +11,34 @@ const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
 const limeData = JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8"));
 const db = { lime: limeData.messages, limeTemplates: limeData.templates, lover: {}, dialogues: {} };
+const legacyScheduledSource = (function legacyScheduledInvitation(m, opts = {}) {
+  const holidayOnly = m.private_schedule === "holiday_or_temporary";
+  if (!holidayOnly && m.private_schedule !== "holiday_or_after_close") return m;
+  const day = opts.day ?? state.day;
+  const schedule = holidayOnly
+    ? { time_slot: "noon", ...(day % 7 === m.closed_on ? { closed_on: m.closed_on } : { temporary_closed: true }) }
+    : dateSchedule(m.sender, { ...opts, allowTemporaryClosure: importantInvite(m) });
+  if (!schedule) return null;
+  const daytime = schedule.time_slot === "noon";
+  const context = schedule.temporary_closed ? "今日は臨時のお休みだから、午後"
+    : daytime ? "今日はお店がお休みだから、午後" : "今日、仕事を終えたあと";
+  const when = daytime ? "午後" : "仕事のあと"; // 返事のボタン「{privateWhen}、会おう（行動を1回使う）」が1行に収まる長さ
+  const render = (value) => String(value).replaceAll("{privateContext}", context).replaceAll("{privateWhen}", when);
+  // DBの雛形を変更せず、その日の受信トークへ解決済みの時刻を保存する。
+  const resolved = { ...m, ...schedule, after_close: !!schedule.after_close };
+  if (schedule.closed_on == null) delete resolved.closed_on;
+  resolved.messages = (m.messages || []).map((line) => typeof line === "string" ? render(line) : typeof line?.text === "string" ? { ...line, text: render(line.text) } : { ...line });
+  if (schedule.temporary_closed && !JSON.stringify(m.messages).includes("{privateContext}")) {
+    const text = { naru: "今日は店を臨時で閉めたから、午後ちょっと付き合えよ",
+      adam: "今日は店を臨時で休む。午後、共に出かけよう",
+      minto: "今日は臨時でお店を休みにしたの。午後、会えたら嬉しいな" }[m.sender]
+      || "今日は臨時のお休み。午後、会えたらうれしいな";
+    resolved.messages.unshift({ sender: m.sender, text });
+  }
+  if (m.reminder_text) resolved.reminder_text = render(m.reminder_text);
+  if (m.accept_text) resolved.accept_text = render(m.accept_text);
+  return resolved;
+}).toString();
 const allMessages = db.lime, state = {}, gains = [], plays = [], statGains = [], nudges = [];
 const completedPlay = (scene) => ({ id: typeof scene === "string" ? scene : scene?.dialogue_id, visited: [] });
 let playResult = completedPlay;
@@ -58,7 +86,7 @@ async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;
   if (values[name]) mod = new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name });
-  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { hiyoriInvite as testHiyoriInvite, sumiBaitoInvite as testSumiBaitoInvite };" : ""), { context, identifier: name });
+  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { hiyoriInvite as testHiyoriInvite, sumiBaitoInvite as testSumiBaitoInvite, scheduledInvitation as testScheduledInvitation };\n" + legacyScheduledSource + "\nexport { legacyScheduledInvitation };" : ""), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
@@ -812,3 +840,40 @@ assert(state.flags._invited__sumi_baito_inv_d3);
 await closeThread(session);
 assert.equal(JSON.stringify(db.limeTemplates), sumiTemplateBefore);
 console.log("PASS #2035 sumi: equivalence / boundaries / independent copies / saved acceptance", sumiCases, sumiGenerated);
+
+// #2035: only the temporary-closure preface moved; use actual dateSchedule.
+const prefaceDBBefore = JSON.stringify(db.limeTemplates);
+let closureCases = 0, closureNull = 0, closureNoon = 0, closureNight = 0, closurePrepended = 0;
+for (const sender of ["naru", "adam", "minto", "rin", "sumi"]) {
+  for (const schedule of [undefined, "holiday_or_temporary", "holiday_or_after_close"]) {
+    for (const day of [3, 5, 6, 8]) for (const fixed of [false, true]) for (const placeholder of ["none", "string", "object"]) for (const slot of ["noon", "night"]) {
+      reset({ day, lovers: [sender], met: { [sender]: true }, contacts: [sender] });
+      const message = { id: "saved_invitation", sender, type: "invitation", accept_event: "outing_"+sender,
+        priority: 1, private_schedule: schedule, closed_on: 6, time_slot: slot,
+        messages: [placeholder === "string" ? "{privateContext}、話そう" : "待ち合わせしよう",
+          { sender, text: placeholder === "object" ? "{privateContext}、{privateWhen}、会おう" : "{privateWhen}、会おう" }, { sender, stamp: "existing_stamp" }],
+        reminder_text: "{privateWhen}、忘れずに", accept_text: "{privateWhen}、行く" };
+      const before = JSON.stringify(message), opts = { day, fixedNight: () => fixed };
+      const expected = phone.legacyScheduledInvitation(message, opts);
+      const actual = phone.testScheduledInvitation(message, opts);
+      assert.deepEqual(plain(actual), plain(expected));
+      assert.deepEqual(plain(phone.testScheduledInvitation(message, opts)), plain(expected));
+      assert.equal(JSON.stringify(message), before);
+      assert.equal(JSON.stringify(db.limeTemplates), prefaceDBBefore);
+      if (actual === null) closureNull++;
+      else {
+        if (actual.time_slot === "noon") closureNoon++; else closureNight++;
+        if (actual.messages.length > message.messages.length) {
+          closurePrepended++;
+          assert.deepEqual(plain(actual.messages.slice(1)), plain(expected.messages.slice(1)));
+          assert.equal(actual.messages[0].sender, sender);
+        }
+        if (schedule) { assert.notEqual(actual.messages, message.messages); actual.messages[0] = "changed"; }
+      }
+      assert.equal(JSON.stringify(message), before);
+      closureCases++;
+    }
+  }
+}
+assert(closureNull>0 && closureNoon>0 && closureNight>0 && closurePrepended>0);
+console.log("PASS #2035 closure preface: frozen algorithm / schedules / mixed messages / placeholders / order / input and DB invariance", { closureCases, closureNull, closureNoon, closureNight, closurePrepended });
