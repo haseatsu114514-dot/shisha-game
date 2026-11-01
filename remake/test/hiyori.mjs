@@ -134,11 +134,17 @@ try {
     await check(`${label} layout and inner becoming spoken`, async () => {
       await page.setViewportSize(viewport);
       await start("hiyori_preview_romance");
-      assert.equal(await page.locator(".vn-inner").evaluate((n) => getComputedStyle(n).color), "rgb(255, 182, 204)");
+      assert.equal(await page.locator(".vn-inner").evaluate((n) => getComputedStyle(n).color), "rgb(168, 52, 95)");
       await fit();
       await page.screenshot({ path: path.join(artifacts, `${label}-inner.png`) });
-      await next(); await next();
-      assert((await page.locator(".vn-text").innerText()).includes("帰りたくない"));
+      let spoken = await page.locator(".vn-text").innerText();
+      for (let i = 0; i < 8 && !spoken.includes("帰りたくない"); i++) {
+        assert(await page.locator("#vn").evaluate(n => n.classList.contains("active")), "Spoken confession was never reached");
+        await next();
+        await page.waitForTimeout(100);
+        spoken = await page.locator(".vn-text").innerText();
+      }
+      assert(spoken.includes("帰りたくない"), "Inner confession never became spoken dialogue");
       assert(await page.locator(".vn-inner").evaluate((n) => n.hidden));
       await fit();
       await page.screenshot({ path: path.join(artifacts, `${label}-spoken.png`) });
@@ -158,7 +164,7 @@ try {
     await page.keyboard.press("Enter");
     await page.waitForTimeout(1500);
     assert.equal(await page.locator(".vn-text").innerText(), "……");
-    await page.locator(".log-head button").click();
+    assert.equal(await page.locator(".vn-log.show").count(), 0, "Enter closes the focused LOG button without advancing dialogue");
     await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "そうですね");
     await page.locator('[data-test="vn-auto"]').click();
     await next(); await page.evaluate(() => window.scene);

@@ -8,6 +8,7 @@ import { addMoney } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { bgRef } from "./spots.js";
 import { isRainy } from "./weather.js";
+import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { fortuneRumorHeard, fortuneOpenOn } from "./fortune-schedule.js";
 import { grantFortuneReading, fortuneResultId, fortuneTargets, isFortuneTargetAvailable } from "../core/fortune-effects.js";
 
@@ -15,7 +16,7 @@ export const FORTUNE_FEE = 3000;
 const BG = "bg_street";
 
 export { FORTUNE_RUMOR_ID, fortuneRumorHeard } from "./fortune-schedule.js";
-export const fortuneToday = () => !!state && [1, 2].includes(state.chapter) && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
+export const fortuneToday = () => !!state && chapterFeatureEnabled(state.chapter, "fortune") && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
 
 /** 占い師の出店に寄る（時間は使わない）。戻り値=占ってもらったか */
 export async function doFortune() {

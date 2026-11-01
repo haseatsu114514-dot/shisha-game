@@ -34,15 +34,27 @@ export const TUTORIAL_STEP_HELP = Object.freeze({
 
 export function buildGuide() {
   const note = el("p");
+  const summary = el("summary", { text: "?", "aria-label": "操作の説明（開くと時間が止まる）", title: "操作の説明（開くと時間が止まる）" });
+  const close = el("button.btn.primary", {
+    type: "button", text: "説明を閉じて進む", dataset: { test: "bench-guide-close" },
+    style: { display: "block", marginTop: "12px", maxWidth: "100%", whiteSpace: "normal",
+      minHeight: "calc(44px / var(--k, 1))", fontSize: "calc(16px / var(--k, 1))" },
+    onclick: () => {
+      // 初回説明の待機と時計の再開は、既存のtoggle経路に任せる。
+      root.open = false;
+      summary.focus({ preventScroll: true });
+    },
+  });
   const root = el("details.bench-guide", [
-    el("summary", { text: "?", "aria-label": "操作の説明（開くと時間が止まる）", title: "操作の説明（開くと時間が止まる）" }),
+    summary,
     el("div.bench-guide-tip", [el("b", { text: "操作の説明" }), note,
-      el("small", { text: "開くと時間が止まり、閉じると再開します。" })]),
+      el("small", { text: "開くと時間が止まり、閉じると再開します。" }), close]),
   ]);
   root.addEventListener("toggle", () => {
     const bench = root.closest(".bench"), panel = bench?.querySelector(".bench-panel");
     if (panel) panel.inert = root.open;
     if (bench) bench.dataset.helpPaused = String(root.open);
+    if (root.open) close.focus({ preventScroll: true });
   });
   return { root, note };
 }

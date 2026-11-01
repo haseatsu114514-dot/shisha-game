@@ -16,6 +16,12 @@
       "run": ["node --experimental-vm-modules remake/test/chapter_actions.mjs"]
     },
     {
+      "id": "ch1-daily-features",
+      "title": "Chapter 1 early home rig and shift cameo boundaries (#2021)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch1_daily_features.mjs"]
+    },
+    {
       "id": "typography-css",
       "title": "Readable CSS typography follows #1352",
       "kind": "quick",
@@ -2413,6 +2419,7 @@
       "timeout": 15,
       "paths": [
         "remake/js/daily/fortune*.js",
+        "remake/js/core/chapter-features.js",
         "remake/css/hud*.css",
         "assets/ui/fortune/**",
         "remake/test/fortune_readings.mjs",
@@ -3155,6 +3162,26 @@
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/relationship-pace"
       }
+    },
+    {
+      "id": "ch1-arrival",
+      "title": "Chapter 1 arrival conflict order and SAVE compatibility (#2089)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch1.js",
+        "remake/js/chapters/ch1-arrival.js",
+        "remake/js/daily/romance.js",
+        "remake/js/vn/engine.js",
+        "data/dialogue/ch1_tournament.json",
+        "data/dialogue/remake_ch1.json",
+        "remake/test/browser/ch1_arrival.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch1_arrival.mjs"
+      ],
+      "chrome": "playwright"
     }
   ]
 }
