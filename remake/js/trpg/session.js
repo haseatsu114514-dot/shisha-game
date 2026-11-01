@@ -2,6 +2,22 @@
 const copy = value => structuredClone(value);
 
 export const TEAMWORK_MAX = 2;
+/** Character sheet stats. A PC's rating in the chosen stat replaces the flat base bonus. */
+export const STATS = Object.freeze(["eye", "hand", "talk", "nerve"]);
+/** The human player's seat: companions earn a spotlight when they act for the first time. */
+export const PLAYER_SEAT = "hajime";
+/** PC sheets keyed by the authored seat id; a materialized table carries them even when a seat is empty. */
+export const sheetsOf = scenario => scenario.sheets || Object.fromEntries(scenario.cast.filter(c => c.sheet).map(c => [c.id, c.sheet]));
+export const approachesOf = (scenario, kind) => scenario.checks?.[kind]?.approaches || [];
+/** The public bonus a declared approach brings: the PC's stat, or the flat base when a check has no sheets. */
+export function approachBase(scenario, kind, approachId = null) {
+  const approaches = approachesOf(scenario, kind);
+  if (!approaches.length) return { base: DICE.base, approach: null };
+  const approach = approachId ? approaches.find(a => a.id === approachId) : approaches[0];
+  if (!approach) throw new Error("Unknown approach");
+  const stat = sheetsOf(scenario)[approach.sheet || approach.actor]?.stats?.[approach.stat];
+  return { base: Number.isInteger(stat) ? stat : DICE.base, approach };
+}
 // Keep two dice and one-die rerolls; scale the old aids toward their original success rates.
 export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 4, success: 30, mixed: 19 });
 export const gradeOf = total => total >= DICE.success ? "success" : total >= DICE.mixed ? "mixed" : "trouble";
@@ -34,7 +50,7 @@ export class TrpgSession {
       plan: Object.fromEntries(Object.values(this.flow).flat().map(field => [field, null])),
       pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [],
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
-      checks: [], pending: null,
+      acted: {}, checks: [], pending: null,
     };
   }
 
@@ -97,21 +113,33 @@ export class TrpgSession {
     this.state.plan[field] = value;
   }
 
-  beginCheck(kind, { support = false } = {}) {
+  /** Declare who acts and with which stat; the sheet's rating becomes the roll's base bonus. */
+  beginCheck(kind, { support = false, approach = null } = {}) {
     const phases = { listen: "listen", prepare: "prepare", serve: "serve" };
     if (!phases[kind]) throw new Error("Unknown check");
     this.require(phases[kind]);
     if (this.flow[kind]?.some(field => !this.state.plan[field])) throw new Error("Complete the plan before rolling");
+    const declared = approachBase(this.scenario, kind, approach);
+    if (approach && !declared.approach) throw new Error("This check has no approaches");
     const helper = this.scenario.checks[kind].helper || null;
     if (support && (!helper || this.state.used[helper] || this.state.teamwork < 1)) throw new Error("This support is unavailable");
     if (support) { this.state.used[helper] = true; this.state.teamwork--; }
     const hypothesisBonus = kind === "prepare" && this.state.hypothesis === this.profile.id ? this.rules.hypothesisBonus * DICE.hypothesis : 0;
     const momentum = this.state.momentum;
     this.state.momentum = 0;
+    const chosen = declared.approach;
     this.state.pending = {
-      kind, dice: [this.die(), this.die()], bonus: DICE.base + hypothesisBonus + (support ? DICE.support : 0) + momentum * DICE.momentum, hypothesisBonus, momentum,
+      kind, dice: [this.die(), this.die()], base: declared.base,
+      bonus: declared.base + hypothesisBonus + (support ? DICE.support : 0) + momentum * DICE.momentum, hypothesisBonus, momentum,
+      approach: chosen?.id || null, actor: chosen?.actor || null, sheet: chosen ? chosen.sheet || chosen.actor : null, stat: chosen?.stat || null,
       helper: support ? helper : null, rerolled: false,
     };
+    if (chosen) {
+      const first = !this.state.acted[chosen.actor];
+      this.state.acted[chosen.actor] = (this.state.acted[chosen.actor] || 0) + 1;
+      // A companion stepping forward for the first time is a table moment; the GM playing an empty seat is not.
+      if (first && !chosen.npc && chosen.actor !== PLAYER_SEAT) this.cheer(1, (sheetsOf(this.scenario)[this.state.pending.sheet]?.name || "仲間") + "の見せ場");
+    }
     if (support) this.cheer(1, "仲間の見せ場");
     return this.checkResult();
   }
@@ -174,7 +202,7 @@ export class TrpgSession {
       heat: { value: this.state.heat, max: HEAT.max, night: HEAT.nights[heatTier(this.state.heat)] },
       variant: this.state.pressure >= this.rules.detourThreshold ? "with-detour" : "smooth",
       plan: copy(plan), hypothesis: this.state.hypothesis,
-      clues: copy(this.state.clues), checks: copy(this.state.checks),
+      clues: copy(this.state.clues), checks: copy(this.state.checks), acted: copy(this.state.acted),
       pressure: this.state.pressure, profileId: this.profile.id,
     };
   }

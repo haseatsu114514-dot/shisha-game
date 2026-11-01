@@ -80,7 +80,11 @@ async function finishAxe(page, count, confirm = true, aimed = false) {
   }
 }
 async function lines(page) { for (let i = 0; i < 35 && await page.locator(t("trpg-next")).isVisible(); i++) await hit(page, "trpg-next"); }
-async function roll(page) { await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+async function declare(page) {
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
+}
+async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
 async function manualSave(page) {
   await hit(page, "hud-menu"); await hit(page, "menu-save"); await hit(page, "slot-1");
   await page.waitForFunction(() => localStorage.getItem("suien_remake_slot1") !== null);

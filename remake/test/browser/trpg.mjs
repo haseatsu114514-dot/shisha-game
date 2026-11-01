@@ -23,7 +23,15 @@ async function nextLines(page, keyboard = false) {
   }
   throw new Error("Dialogue did not terminate");
 }
+// The declaration stage: a real table says who acts before any die is touched.
+async function declare(page) {
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (!await card.count() || !await card.isVisible()) return;
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await card.tap(); else await card.click();
+  await nextLines(page);
+}
 async function checkRoll(page, { support = null, reroll = false } = {}) {
+  await declare(page);
   if (support) await hit(page, '[data-test="trpg-support-' + support + '"]');
   await hit(page, '[data-test="trpg-roll"]');
   await page.locator('[data-test="trpg-settle"]').waitFor();
@@ -206,7 +214,7 @@ try {
       await fits(page);
     });
   await run("double-input-and-integration-abort", { seed: "13", traveler: "quiet" }, {}, async page => {
-    await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
+    await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);
     await page.locator('[data-test="trpg-roll"]').evaluate(node => { node.click(); node.click(); });
     await page.locator('[data-test="trpg-settle"]').waitFor();
     await page.locator('[data-test="trpg-settle"]').evaluate(node => { node.click(); node.click(); });
@@ -281,7 +289,7 @@ try {
     await hit(page, '[data-test="trpg-audio"]');
     await page.waitForFunction(() => __trpg.audio().enabled && __trpg.audio().state === "running");
     await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
-    await hit(page, '[data-test="trpg-check-back"]');
+    await hit(page, '[data-test="trpg-declare-back"]');
     assert.equal((await page.evaluate(() => __trpg.snapshot())).pending, null);
     assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.length, 0);
     await hit(page, '[data-test="trpg-listen-open"]'); await checkRoll(page);

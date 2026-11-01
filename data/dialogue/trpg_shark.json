@@ -1,6 +1,6 @@
 {
   "id": "shark-last-order",
-  "version": 3,
+  "version": 4,
   "title": "サメは閉店を待たない",
   "subtitle": "海上ラウンジ、最後の夜",
   "author": "青瀬マコ",
@@ -54,7 +54,18 @@
       "color": "#89bbc4",
       "ability": "土壇場のひらめき",
       "abilityType": "reroll",
-      "abilityText": "判定後、サイコロ1個を一度だけ振り直す"
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "sheet": {
+        "name": "レン",
+        "title": "新人甲板員",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        },
+        "trait": "走るのと飛び込むのは速い。考えるのは、あと"
+      }
     },
     {
       "id": "hiyori",
@@ -69,6 +80,17 @@
           "ability": "舞台の支度",
           "color": "#c9463a"
         }
+      },
+      "sheet": {
+        "name": "オット",
+        "title": "香りの研究員",
+        "stats": {
+          "eye": 4,
+          "hand": 4,
+          "talk": 2,
+          "nerve": 1
+        },
+        "trait": "香りと道具に詳しい。サメは、見たくない"
       }
     },
     {
@@ -78,7 +100,18 @@
       "color": "#b8a3cc",
       "ability": "見せ場の構図",
       "abilityType": "serve",
-      "abilityText": "脱出するとき、判定に一度だけ＋7"
+      "abilityText": "脱出するとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "セラ",
+        "title": "照明係",
+        "stats": {
+          "eye": 2,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 5
+        },
+        "trait": "暗い場所も高い場所も平気。照明なら任せて"
+      }
     }
   ],
   "spots": [
@@ -1420,6 +1453,204 @@
           "text": "危ない場面も、三人で越えた。最後まで、一緒じゃ"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_listen_window",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "レンは窓際に寄って、自分の目で確かめる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "度胸で判定じゃな。窓の向こうは海じゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_listen_scan",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "オットは双眼鏡を構えて、背びれの動きを追うわ",
+          "variants": {
+            "adam": {
+              "text": "オットは双眼鏡を構える。背びれの癖を見抜いてやる",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。目標は30。よく見るのじゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_listen_lamp",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……セラは救難灯を海へ向けて、照らします"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "度胸で判定じゃ。照らした先に何がいても知らんぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_prepare_rig",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "レンはロープと板で、手早く組み上げます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。急いでも結び目は確かめるのじゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_prepare_kit",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "オットが道具を組むわ。研究室で慣れてるから",
+          "variants": {
+            "adam": {
+              "text": "オットが道具を組む。舞台の仕掛けと同じさ",
+              "face": "smile"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定じゃ。見立てが合っておれば追い風じゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_prepare_wire",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "セラは照明の配線をつないで、仕掛けを動かします"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。感電には気をつけるのじゃ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_serve_dash",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "レンが合図を出して、全員いっせいに走る！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "度胸で判定じゃな。合図は一度きりじゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_serve_lead",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "セラが先頭で走ります。暗い桟橋は、慣れてるので"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "度胸で判定じゃ。ラストシーンじゃぞ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_serve_read",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "オットは波の間を読んで、走る合図を出すわ",
+          "variants": {
+            "adam": {
+              "text": "オットが波を読む。合図は俺が出そう",
+              "face": "serious"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。波の間を外すなよ。目標は30"
+        }
+      ]
     }
   ],
   "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
@@ -1487,33 +1718,130 @@
     },
     "help": "調査は最大四箇所。新しい場所を調べるたび、危機が一つ進みます。三つ以上で見立てを選び、道具・経路・最後の作戦を決めます。相談とメモの再読は無料。見立てが合うと仕掛け判定に＋4。",
     "exitText": "映画をここで中断して、本棚へ戻ります。次に遊ぶと、違う習性のサメが現れるかもしれません。",
-    "endingKicker": "TONIGHT’S FEATURE / この映画の結末"
+    "endingKicker": "TONIGHT’S FEATURE / この映画の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言せよ",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）"
   },
   "intro": "trpg_shark_intro",
   "listen": "trpg_shark_listen",
   "checks": {
     "listen": {
       "title": "背びれと波を見分ける",
-      "hint": "落ち着いて観察 ＋3。どの出目でも探索へ進みます。",
+      "hint": "宣言した甲板員の能力で判定。どの出目でも探索へ進みます。",
       "success": "trpg_shark_listen_success",
       "mixed": "trpg_shark_listen_mixed",
-      "trouble": "trpg_shark_listen_trouble"
+      "trouble": "trpg_shark_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_window",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "窓際に寄って、直接確かめる",
+          "detail": "レンが自分の目で、背びれの動きを見る",
+          "declare": "trpg_shark_declare_listen_window"
+        },
+        {
+          "id": "listen_scan",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "双眼鏡で、背びれを追う",
+          "detail": "オットが距離を取り、動きの癖を読む",
+          "declare": "trpg_shark_declare_listen_scan"
+        },
+        {
+          "id": "listen_lamp",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "nerve",
+          "label": "救難灯を海へ向ける",
+          "detail": "セラが光で照らし、波の下を確かめる",
+          "declare": "trpg_shark_declare_listen_lamp"
+        }
+      ]
     },
     "prepare": {
       "title": "即席の仕掛けを組み立てる",
-      "hint": "手際 ＋3。見立てが合えば、さらに＋4。",
+      "hint": "宣言した甲板員の能力で判定。見立てが合えば、さらに＋4。",
       "success": "trpg_shark_prepare_success",
       "mixed": "trpg_shark_prepare_mixed",
       "trouble": "trpg_shark_prepare_trouble",
-      "helper": "hiyori"
+      "helper": "hiyori",
+      "approaches": [
+        {
+          "id": "prepare_rig",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "ロープと板で、手早く組む",
+          "detail": "レンが力まかせに。結び目は、たぶん大丈夫",
+          "declare": "trpg_shark_declare_prepare_rig"
+        },
+        {
+          "id": "prepare_kit",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "道具を組んで、仕掛けを作る",
+          "detail": "オットが研究室の手順どおり、確実に",
+          "declare": "trpg_shark_declare_prepare_kit"
+        },
+        {
+          "id": "prepare_wire",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "hand",
+          "label": "照明の配線で、仕掛けを動かす",
+          "detail": "セラが電源を引き回し、遠くから動かす",
+          "declare": "trpg_shark_declare_prepare_wire"
+        }
+      ]
     },
     "serve": {
       "title": "三人そろって岸へ帰る",
-      "hint": "連携 ＋3。どの出目でも全員で結末へ進みます。",
+      "hint": "宣言した甲板員の能力で判定。どの出目でも全員で結末へ進みます。",
       "success": "trpg_shark_serve_success",
       "mixed": "trpg_shark_serve_mixed",
       "trouble": "trpg_shark_serve_trouble",
-      "helper": "tsumugi"
+      "helper": "tsumugi",
+      "approaches": [
+        {
+          "id": "serve_dash",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "合図で、全員いっせいに走る",
+          "detail": "レンが先頭で声を上げ、三人まとめて岸へ",
+          "declare": "trpg_shark_declare_serve_dash"
+        },
+        {
+          "id": "serve_lead",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "nerve",
+          "label": "暗い桟橋を、先頭で走る",
+          "detail": "セラが足場を知っている。灯りを消して進む",
+          "declare": "trpg_shark_declare_serve_lead"
+        },
+        {
+          "id": "serve_read",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "波の間を読んで、合図を出す",
+          "detail": "オットが背びれの動きを見て、走る瞬間を決める",
+          "declare": "trpg_shark_declare_serve_read"
+        }
+      ]
     }
   },
   "consult": {
@@ -1561,4 +1889,3 @@
     ]
   }
 }
-

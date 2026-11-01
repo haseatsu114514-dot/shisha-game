@@ -1,6 +1,6 @@
 {
   "id": "ordinary-cup",
-  "version": 3,
+  "version": 4,
   "title": "世界一普通の一台",
   "subtitle": "港町の茶房と、ひとりの旅人",
   "author": "汐見しお",
@@ -26,7 +26,18 @@
       "color": "#89bbc4",
       "ability": "ひらめき",
       "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
-      "abilityType": "reroll"
+      "abilityType": "reroll",
+      "sheet": {
+        "name": "フィン",
+        "title": "見習い店番",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "人の話を聞くのが上手い。手は、まだ少し慌てる"
+      }
     },
     {
       "id": "adam",
@@ -35,7 +46,18 @@
       "color": "#c8a375",
       "ability": "舞台の支度",
       "abilityText": "一台を準備するとき、判定に一度だけ＋7",
-      "abilityType": "prepare"
+      "abilityType": "prepare",
+      "sheet": {
+        "name": "ニコ",
+        "title": "香りの案内役",
+        "stats": {
+          "eye": 2,
+          "hand": 5,
+          "talk": 3,
+          "nerve": 1
+        },
+        "trait": "香りと炭の支度なら店一番。怖い話は苦手"
+      }
     },
     {
       "id": "tsumugi",
@@ -44,7 +66,18 @@
       "color": "#b8a3cc",
       "ability": "席の気配",
       "abilityText": "提供するとき、判定に一度だけ＋7",
-      "abilityType": "serve"
+      "abilityType": "serve",
+      "sheet": {
+        "name": "ルカ",
+        "title": "窓辺の絵描き",
+        "stats": {
+          "eye": 5,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 3
+        },
+        "trait": "よく見て、よく描く。口数は少ない"
+      }
     }
   ],
   "intro": "trpg_ordinary_intro",
@@ -52,26 +85,113 @@
   "checks": {
     "listen": {
       "title": "旅人の言葉を待つ",
-      "hint": "聞き役の気配り ＋3。結果にかかわらず、店内の探索へ進みます。",
+      "hint": "宣言した店番の能力で判定。結果にかかわらず、店内の探索へ進みます。",
       "success": "trpg_ordinary_listen_success",
       "mixed": "trpg_ordinary_listen_mixed",
-      "trouble": "trpg_ordinary_listen_trouble"
+      "trouble": "trpg_ordinary_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_talk",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "向かいに座って、話しかける",
+          "detail": "フィンが旅人の正面へ。ひと言ずつ、ゆっくり聞く",
+          "declare": "trpg_ordinary_declare_listen_talk"
+        },
+        {
+          "id": "listen_watch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "少し離れて、様子を見る",
+          "detail": "ルカが窓辺から、旅人の手元と視線を追う",
+          "declare": "trpg_ordinary_declare_listen_watch"
+        },
+        {
+          "id": "listen_serve",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "お冷やを出しながら、世間話",
+          "detail": "ニコがカウンター越しに、気楽な話題から",
+          "declare": "trpg_ordinary_declare_listen_serve"
+        }
+      ]
     },
     "prepare": {
       "title": "選んだ香りを、一台にする",
-      "hint": "店番の手際 ＋3。香りと席の準備を、判定します。",
+      "hint": "宣言した店番の能力で判定。香りと席の準備を、一台にします。",
       "success": "trpg_ordinary_prepare_success",
       "mixed": "trpg_ordinary_prepare_mixed",
       "trouble": "trpg_ordinary_prepare_trouble",
-      "helper": "adam"
+      "helper": "adam",
+      "approaches": [
+        {
+          "id": "prepare_self",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "教わった通りに、自分で作る",
+          "detail": "フィンが自分の手で一台を。少し慌てるかも",
+          "declare": "trpg_ordinary_declare_prepare_self"
+        },
+        {
+          "id": "prepare_craft",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "ニコが香りを量って整える",
+          "detail": "店一番の手際で、一台を仕上げる",
+          "declare": "trpg_ordinary_declare_prepare_craft"
+        },
+        {
+          "id": "prepare_light",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "席の光と風を見て整える",
+          "detail": "ルカが席の雰囲気を読み、一台を合わせる",
+          "declare": "trpg_ordinary_declare_prepare_light"
+        }
+      ]
     },
     "serve": {
       "title": "席へ案内して、声をかける",
-      "hint": "相手への気配り ＋3。どの出目でも結末へ進みます。",
+      "hint": "宣言した店番の能力で判定。どの出目でも結末へ進みます。",
       "success": "trpg_ordinary_serve_success",
       "mixed": "trpg_ordinary_serve_mixed",
       "trouble": "trpg_ordinary_serve_trouble",
-      "helper": "tsumugi"
+      "helper": "tsumugi",
+      "approaches": [
+        {
+          "id": "serve_word",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "席へ案内して、声をかける",
+          "detail": "フィンが選んだ言葉を、自分の声で添える",
+          "declare": "trpg_ordinary_declare_serve_word"
+        },
+        {
+          "id": "serve_sketch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "nerve",
+          "label": "黙って、絵を一枚添える",
+          "detail": "ルカが言葉の代わりに、港の小さなスケッチを",
+          "declare": "trpg_ordinary_declare_serve_sketch"
+        },
+        {
+          "id": "serve_host",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "一台の説明をして、下がる",
+          "detail": "ニコが香りの話を少しだけ。あとは任せる",
+          "declare": "trpg_ordinary_declare_serve_host"
+        }
+      ]
     }
   },
   "spots": [
@@ -1513,6 +1633,186 @@
           "text": "聞き直した時間も、この一台に入ってる……。そういうの、好きだな"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_listen_talk",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "フィンは旅人の向かいに座る。『長い旅でした？』って聞いてみる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "じゃあ話術で判定ね。目標は30。サイコロ二つ、どうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_listen_watch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……ルカは窓辺から、旅人の手元と視線を見ています"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "観察で判定。ルカの得意分野ね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_listen_serve",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ニコはお冷やを出しながら、天気の話から入るよ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。気楽な入り方、いいね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_prepare_self",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "フィンは教わった通りに、自分の手で一台を作ります"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定ね。慌てないで。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_prepare_craft",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ここはニコの出番だな。香りを量って、炭を整える"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定。店一番の腕前、見せてもらおうかな。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_prepare_light",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ルカは席の光と風を見て、一台の置き場所を決めます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定。席の雰囲気も一台の一部ね。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_serve_word",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "フィンが席へ案内して、選んだ言葉を添えます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。最後の一言、大事にね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_serve_sketch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……ルカは何も言わず、港のスケッチを一枚添えます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "度胸で判定。言葉なしは勇気がいるね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_serve_host",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ニコは香りの説明を少しだけして、静かに下がるよ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。引き際が肝心ね。目標は30"
+        }
+      ]
     }
   ],
   "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
@@ -1608,7 +1908,17 @@
     },
     "help": "三つ以上の手がかりから仮説を立て、香り・席・声のかけ方を選びます。探索・相談・メモの再読に回数制限はありません。",
     "exitText": "この卓はここで終わります。もう一度遊ぶと、別の旅人が訪れるかもしれません。",
-    "endingKicker": "この晩の結末"
+    "endingKicker": "この晩の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言しよう",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）"
   },
   "debrief": {
     "smooth": "trpg_ordinary_debrief_smooth",
@@ -1647,4 +1957,3 @@
     ]
   }
 }
-

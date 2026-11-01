@@ -180,6 +180,13 @@ test("all eligible small/full tables remain finishable, without absent helpers o
     const table = rules.materializeTrpgCast(scenario, cast.assignments);
     assert(table.cast.length >= 2);
     assert(table.dialogues.flatMap(b => b.lines).every(l => cast.participants.includes(l.speaker)));
+    // Every authored PC keeps its sheet; an empty seat's approaches are voiced by the GM and never credited to an absent player.
+    assert.deepEqual(Object.keys(table.sheets).sort(), scenario.cast.filter(c => c.sheet).map(c => c.id).sort());
+    for (const check of Object.values(table.checks)) for (const approach of check.approaches) {
+      assert(cast.participants.includes(approach.actor), approach.id);
+      assert(table.sheets[approach.sheet], approach.id);
+      assert.equal(approach.npc, approach.actor === cast.gm && approach.sheet !== cast.gm);
+    }
     assert(scenario.endings[finish(table).ending]);
   }
 });

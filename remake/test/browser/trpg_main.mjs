@@ -15,7 +15,11 @@ async function hit(page, id) {
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await target.tap(); else await target.click();
 }
 async function lines(page) { for (let i = 0; i < 35 && await button(page, "trpg-next").isVisible(); i++) await hit(page, "trpg-next"); }
-async function roll(page) { await hit(page, "trpg-roll"); await button(page, "trpg-settle").waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+async function declare(page) {
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
+}
+async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await button(page, "trpg-settle").waitFor(); await hit(page, "trpg-settle"); await lines(page); }
 async function prepare(page, options = {}) {
   await page.evaluate(async options => {
     const core = await import("./js/core/state.js"), s = core.newGame();

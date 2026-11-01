@@ -16,6 +16,8 @@
 
 この指示はCI30・CI58など過去の「画面左＝緑・右＝赤」の指定より優先する。以下の制作記録と `asset_sources/` 内の当時の生成指示は履歴として保持する。
 
+> 2026-11-01 TRB05: TRPGキャラクターシートのPC似顔絵6点（3×2の丸窓シート）の[Codex用プロンプトと組み込み先](../asset_sources/trpg-sheets/README.md)。未生成。本人の立ち絵で代用中。
+
 > 2026-10-30 GB02: 心得の盤の画面デザイン案5パターン（漆と金／炭火の焼き網／煙の星図／店の木の盤／ネオンのラウンジ）の[Codex用プロンプト](../asset_sources/ui/growth-board-20261030/concepts/prompts.txt)。正本 `docs/stat-design/ADDENDUM-BOARD-LAYOUT.md`（3能力・能力ごとの盤・枝分かれの道）に合わせた方向決め用の見本で、文字は焼き込まない。選ばれた案でGB01の素材を作り直す。
 
 > 2026-10-30 GB01: 心得の盤・火種・レベルアップの[デザイン方針と画像の契約](../asset_sources/ui/growth-board-20261030/README.md)と[Codex用プロンプト4枚](../asset_sources/ui/growth-board-20261030/prompts.txt)。火種（炭火の粒・万能＋5色のシート）、スキルアイコン14種のシート、盤の背景、中央の紋。輪・扇・線・ノードの丸・ゲージ・文字・状態の光はコードが描き、画像に焼き込まない。

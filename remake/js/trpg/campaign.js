@@ -116,13 +116,22 @@ export function materializeTrpgCast(scenario, assignments) {
   const gm = scenario.cast.find(c => c.part === "GM").id;
   if (!assignments[gm] || assignments.hajime !== "hajime") throw new Error("Missing required TRPG participant");
   if (Object.values(assignments).some(id => excluded.has(id))) throw new Error("Excluded TRPG participant");
+  // PC sheets stay keyed by the authored seat: the character exists even when the GM plays an empty seat.
+  table.sheets = Object.fromEntries(scenario.cast.filter(c => c.sheet).map(c => [c.id, c.sheet]));
   table.cast = table.cast.filter(c => assignments[c.id]).map(c => {
     const id = assignments[c.id];
-    return { ...c, ...(c.alternatives?.[id] || {}), id };
+    return { ...c, ...(c.alternatives?.[id] || {}), id, seat: c.id };
   });
   table.consult = Object.fromEntries(Object.entries(table.consult).filter(([id]) => assignments[id])
     .map(([id, value]) => [assignments[id], value]));
-  for (const check of Object.values(table.checks)) check.helper = assignments[check.helper] || null;
+  for (const check of Object.values(table.checks)) {
+    check.helper = assignments[check.helper] || null;
+    // A declared approach follows its player; an empty seat's PC is voiced by the GM (npc).
+    check.approaches = (check.approaches || []).map(approach => {
+      const seat = approach.sheet || approach.actor;
+      return { ...approach, sheet: seat, actor: assignments[approach.actor] || assignments[gm], npc: !assignments[approach.actor] };
+    });
+  }
   for (const block of table.dialogues) {
     block.lines = block.lines.flatMap(line => {
       const id = assignments[line.speaker];

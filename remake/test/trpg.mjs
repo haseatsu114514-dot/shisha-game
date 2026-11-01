@@ -91,7 +91,9 @@ test("rerolls are shared across checks and take the new die; aids are spent once
   const preparation = session.beginCheck("prepare", { support: true });
   // Reroll, the listen result and the hypothesis talk lift the table to the first tier: momentum +1.
   assert.equal(preparation.momentum, 1);
-  assert.equal(preparation.bonus, 10 + preparation.momentum * 4);
+  // The default approach is the player's own character: the sheet stat replaces the old flat +3.
+  assert.equal(preparation.base, scenario.cast.find(c => c.id === "hajime").sheet.stats.hand);
+  assert.equal(preparation.bonus, preparation.base + 7 + preparation.momentum * 4);
   assert(session.snapshot().used.adam);
   assert.throws(() => session.reroll(0));
 });
@@ -261,7 +263,7 @@ test("table excitement rises with shared moments, tiers give the next roll one m
   session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
   const before = session.snapshot().momentum;
   const check = session.beginCheck("prepare");
-  assert.equal(check.momentum, before); assert.equal(check.bonus, 3 + before * 4);
+  assert.equal(check.momentum, before); assert.equal(check.bonus, check.base + before * 4);
   assert.equal(session.snapshot().momentum, 0, "momentum is spent on the roll");
   session.state.heat = HEAT.max - 1; session.cheer(5, "test");
   assert.equal(session.snapshot().heat, HEAT.max);
@@ -271,3 +273,48 @@ test("table excitement rises with shared moments, tiers give the next roll one m
   assert.equal(done.result().heat.night, HEAT.nights[heatTier(done.snapshot().heat)]);
 });
 
+
+test("declared approaches roll with the PC's sheet stat; a companion's first turn is a table moment", () => {
+  for (const s of catalogScenarios) {
+    const gm = s.cast.find(c => c.part === "GM").id;
+    const sheets = Object.fromEntries(s.cast.filter(c => c.sheet).map(c => [c.id, c.sheet]));
+    assert.equal(Object.keys(sheets).length, 3);
+    for (const sheet of Object.values(sheets)) {
+      assert(sheet.name && sheet.title);
+      for (const stat of ["eye", "hand", "talk", "nerve"]) assert(Number.isInteger(sheet.stats[stat]) && sheet.stats[stat] >= 1 && sheet.stats[stat] <= 5);
+    }
+    for (const kind of ["listen", "prepare", "serve"]) {
+      const approaches = s.checks[kind].approaches;
+      assert.equal(approaches.length, 3);
+      assert.equal(approaches[0].actor, "hajime", "the player's own character leads the list");
+      assert.equal(new Set(approaches.map(a => a.actor)).size, 3, "every PC can act in each scene");
+      for (const a of approaches) {
+        assert(Number.isInteger(sheets[a.sheet || a.actor].stats[a.stat]), a.id);
+        const block = s.dialogues.find(d => d.dialogue_id === a.declare);
+        assert(block, a.declare);
+        assert(block.lines.some(l => l.speaker === gm), "the GM calls the roll");
+        assert(block.lines.some(l => l.speaker === a.actor), "the acting player declares");
+      }
+    }
+  }
+  const session = new TrpgSession(scenario, { profileId: "quiet", seed: 7 });
+  session.start();
+  assert.throws(() => session.beginCheck("listen", { approach: "nope" }));
+  const first = session.beginCheck("listen", { approach: "listen_watch" });
+  assert.equal(first.actor, "tsumugi"); assert.equal(first.stat, "eye"); assert.equal(first.base, 5); assert.equal(first.bonus, 5);
+  assert.equal(session.snapshot().heat, 1, "a companion stepping forward lifts the table once");
+  assert.deepEqual(session.snapshot().acted, { tsumugi: 1 });
+  session.settleCheck();
+  for (const id of ["menu", "window", "bag"]) session.inspect(id);
+  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  const heatBefore = session.snapshot().heat;
+  const second = session.beginCheck("prepare", { approach: "prepare_light" });
+  assert.equal(second.base, 5); assert.equal(session.snapshot().heat, heatBefore, "the same companion earns no second spotlight");
+  session.settleCheck(); session.plan("approach", "quiet");
+  const own = session.beginCheck("serve");
+  assert.equal(own.actor, "hajime"); assert.equal(own.base, 4, "the default approach is the player's own character");
+  assert.equal(session.snapshot().heat, heatBefore, "the player's own turn is not a spotlight");
+  session.settleCheck();
+  assert.deepEqual(session.result().checks.map(c => c.approach), ["listen_watch", "prepare_light", "serve_word"]);
+  assert.deepEqual(session.result().acted, { tsumugi: 2, hajime: 1 });
+});

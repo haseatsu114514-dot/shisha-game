@@ -67,18 +67,22 @@ function mount(scenario) {
   const q = id => { const node = root.querySelector('[data-test="' + id + '"]'); assert(node, id); return node; };
   const drain = () => { let n = 0; while (!q('trpg-next').hidden) { q('trpg-next').click(); assert(++n < 100); } };
   const roll = () => { q('trpg-roll').click(); timers.shift()(); };
-  return { api, root, q, drain, roll, get completions() { return completions; } };
+  // A real table declares who acts before the dice: pick the first approach and read the declaration.
+  const declare = kind => { const first = scenario.checks[kind].approaches?.[0]; if (first) { q('trpg-approach-' + first.id).click(); drain(); } };
+  return { api, root, q, drain, roll, declare, get completions() { return completions; } };
 }
 for (const scenario of scenarios) {
   test(scenario.id + ': cast seats follow dialogue and idle GM; no invented participants', () => {
     const { api, root, q, drain } = mount(scenario); q('trpg-start').click();
     assert.equal(root.querySelectorAll('.trpg-table-person').length, scenario.cast.length);
     const active = root.querySelector('.trpg-table-person.active'); assert(active); assert.equal(active.querySelector('.trpg-seat-speaking').textContent, '話者');
-    drain(); q('trpg-check-back').click();
-    assert.equal(root.querySelector('.trpg-table-person.active').dataset.speaker, scenario.cast.find(c => c.part === 'GM').id); api.destroy();
+    drain(); q('trpg-declare-back').click();
+    assert.equal(root.querySelector('.trpg-table-person.active').dataset.speaker, scenario.cast.find(c => c.part === 'GM').id);
+    assert.equal(root.querySelectorAll('[data-test^="trpg-seat-pc-"], .trpg-seat-pc').length >= scenario.cast.length - 1, true, 'player seats carry their PC sheet');
+    api.destroy();
   });
   test(scenario.id + ': support cancellation does not spend; confirmed help and reroll share seat receipts', () => {
-    const mounted = mount(scenario); const { api, root, q, drain, roll } = mounted; q('trpg-start').click(); drain(); roll();
+    const mounted = mount(scenario); const { api, root, q, drain, roll, declare } = mounted; q('trpg-start').click(); drain(); declare('listen'); roll();
     const actor = scenario.cast.find(c => c.abilityType === 'reroll').id;
     q('trpg-reroll-1').click();
     assert(q('trpg-reroll-receipt').textContent.includes(actor));
@@ -95,23 +99,24 @@ for (const scenario of scenarios) {
     for (const field of Object.keys(api.snapshot().plan).filter(f => scenario.flow?.prepare?.includes(f) || !scenario.flow && ['aroma', 'seat'].includes(f))) {
       q('trpg-choice-tab-' + field).click(); q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
     }
-    q('trpg-prepare-open').click(); const helper = scenario.checks.prepare.helper;
+    q('trpg-prepare-open').click(); declare('prepare'); const helper = scenario.checks.prepare.helper;
     const before = JSON.stringify(api.snapshot()); q('trpg-support-' + helper).checked = true; q('trpg-support-' + helper).change(); q('trpg-check-back').click();
     assert.equal(JSON.stringify(api.snapshot()), before);
-    q('trpg-prepare-open').click(); assert(!q('trpg-support-' + helper).checked); q('trpg-support-' + helper).checked = true; roll();
+    q('trpg-prepare-open').click(); declare('prepare'); assert(!q('trpg-support-' + helper).checked); q('trpg-support-' + helper).checked = true; roll();
+    assert(q('trpg-actor-receipt').textContent.includes(scenario.cast.find(c => c.id === 'hajime').sheet.name), 'the roll names the declared character');
     assert(q('trpg-helper-receipt').textContent.includes(helper)); assert.equal(api.snapshot().used[helper], true);
     const seat = root.querySelectorAll('.trpg-table-person').find(n => n.dataset.speaker === helper);
     assert.equal(seat.querySelector('.trpg-seat-ability').dataset.spent, 'true');
     q('trpg-settle').click(); drain();
     const fields = scenario.flow?.serve || ['approach'];
     for (const field of fields) q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
-    q('trpg-serve-open').click(); roll(); assert(!root.querySelector('[data-test="trpg-helper-receipt"]'));
+    q('trpg-serve-open').click(); declare('serve'); roll(); assert(!root.querySelector('[data-test="trpg-helper-receipt"]'));
     q('trpg-settle').click(); drain(); assert.equal(api.snapshot().phase, 'ending');
     assert.equal(root.querySelectorAll('.trpg-table-clue').length, 3); assert(!q('trpg-finish').disabled);
     assert.equal(api.snapshot().teamwork, 0); assert.equal(mounted.completions, 1); drain(); assert.equal(mounted.completions, 1, 'Fast advance cannot deliver completion twice'); api.destroy(); assert.equal(mounted.completions,1);
   });
   test(scenario.id + ': 0/1/3 clue cards open the existing notes without inspecting again', () => {
-    const { api, root, q, drain, roll } = mount(scenario); q('trpg-start').click(); drain(); roll(); q('trpg-settle').click(); drain();
+    const { api, root, q, drain, roll, declare } = mount(scenario); q('trpg-start').click(); drain(); declare('listen'); roll(); q('trpg-settle').click(); drain();
     assert.equal(root.querySelectorAll('.trpg-table-clue').length, 0);
     for (const [i, spot] of scenario.spots.slice(0, 3).entries()) {
       q('trpg-spot-' + spot.id).click(); drain(); assert.equal(root.querySelectorAll('.trpg-table-clue').length, i + 1);
@@ -210,7 +215,7 @@ test('seat rail measurement waits for preview resize outputs', async () => {
 
 for (const reduced of [true, false]) test('d20 roll once and settle once; reduced-motion=' + reduced, async () => {
   reducedMotion = reduced; timers.length = delays.length = tickers.length = 0;
-  const { api, root, q, drain } = mount(scenarios[0]); q('trpg-start').click(); drain();
+  const { api, root, q, drain, declare } = mount(scenarios[0]); q('trpg-start').click(); drain(); declare('listen');
   const roll = q('trpg-roll'), click = roll.events.click[0];
   click({currentTarget:roll}); const pending = JSON.stringify(api.snapshot().pending);
   click({currentTarget:roll}); assert.equal(JSON.stringify(api.snapshot().pending), pending, 'Double click cannot roll twice');
