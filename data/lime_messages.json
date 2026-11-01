@@ -1,5 +1,11 @@
 {
   "templates": {
+    "temporary_closure_preface": {
+      "naru": "今日は店を臨時で閉めたから、午後ちょっと付き合えよ",
+      "adam": "今日は店を臨時で休む。午後、共に出かけよう",
+      "minto": "今日は臨時でお店を休みにしたの。午後、会えたら嬉しいな",
+      "fallback": "今日は臨時のお休み。午後、会えたらうれしいな"
+    },
     "sumi_baito": {
       "sender": "sumi",
       "type": "invitation",

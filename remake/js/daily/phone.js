@@ -71,10 +71,8 @@ function scheduledInvitation(m, opts = {}) {
   if (schedule.closed_on == null) delete resolved.closed_on;
   resolved.messages = (m.messages || []).map((line) => typeof line === "string" ? render(line) : typeof line?.text === "string" ? { ...line, text: render(line.text) } : { ...line });
   if (schedule.temporary_closed && !JSON.stringify(m.messages).includes("{privateContext}")) {
-    const text = { naru: "今日は店を臨時で閉めたから、午後ちょっと付き合えよ",
-      adam: "今日は店を臨時で休む。午後、共に出かけよう",
-      minto: "今日は臨時でお店を休みにしたの。午後、会えたら嬉しいな" }[m.sender]
-      || "今日は臨時のお休み。午後、会えたらうれしいな";
+    const preface = DB.limeTemplates.temporary_closure_preface;
+    const text = preface[m.sender] || preface.fallback;
     resolved.messages.unshift({ sender: m.sender, text });
   }
   if (m.reminder_text) resolved.reminder_text = render(m.reminder_text);

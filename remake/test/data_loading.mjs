@@ -306,3 +306,5 @@ console.log("[remake data] 42 boot JSON files, deferred hiyori/cinema/tournament
 assert.equal(all.DB.limeTemplates.sumi_baito.accept_reply.stamp, "st_sumi_ack");
 assert.equal(all.DB.limeTemplates.sumi_baito.reasons.length, 3);
 assert(!all.DB.lime.some(m => m.accept_event === "__sumi_baito__"));
+
+assert.deepEqual(Object.keys(all.DB.limeTemplates.temporary_closure_preface).sort(), ["adam", "fallback", "minto", "naru"]);
