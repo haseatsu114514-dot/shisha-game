@@ -675,3 +675,18 @@ html:root[data-ui-theme="paper"] .axe-tile[data-half="0"] + .axe-tile[data-half=
 html:root[data-ui-theme="paper"] .axe-calls [data-call]:not([data-call="normal"]) { color: #286282; border-color: #9cc3d6; }
 html:root[data-ui-theme="paper"] .axe-calls [data-call]:not([data-call="normal"])[aria-pressed="true"] { color: #fff; background: #2f7fc1; border-color: #2f7fc1; }
 html:root[data-ui-theme="paper"] .axe-game[data-sudden-death="true"] .axe-total strong { color: #286282; }
+/* Versus summary on a phone: the scoreboard already shows every throw, so the chips and the comment give way to the board. */
+@container (max-width: 650px) and (min-height: 501px) {
+  .axe-game[data-mode="versus"][data-phase="summary"] :is(.axe-challenges, .axe-companion) { display: none; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-result-value { font-size: 44px; margin: 0; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-result-card { padding: 8px 10px; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-match-records { gap: 4px; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-match-records p { line-height: 1.4; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-rank { margin: 0; }
+  .axe-game[data-mode="versus"] .axe-panel { gap: 5px; }
+}
+@container (max-height: 500px) {
+  .axe-game[data-mode="versus"][data-phase="summary"] :is(.axe-challenges, .axe-companion) { display: none; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-result-value { font-size: 40px; }
+  .axe-game[data-mode="versus"][data-phase="summary"] .axe-rank span { display: none; }
+}
