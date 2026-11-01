@@ -94,6 +94,9 @@
   .axe-menu-setting + .axe-menu-setting { padding-left: 16px; }
   .axe-menu-tip { max-width: 28em; }
 }
+@container (min-width: 601px) and (max-width: 900px) and (max-height: 650px) {
+  .axe-intro.axe-menu { row-gap: 8px; }
+}
 @container (max-width: 600px) and (min-height: 501px) {
   .axe-intro.axe-menu {
     grid-template-columns: minmax(0, 1fr);
@@ -135,7 +138,7 @@
   .axe-menu .axe-menu-rules { min-height: 38px; font-size: 12px; font-weight: 700; }
 }
 @container (max-height: 500px) {
-  .axe-intro.axe-menu { grid-template-areas: "masthead masthead" "title guide" "message message" "modes modes" "settings settings" "footer footer"; padding: 12px 24px; gap: 7px 24px; align-content: safe center; }
+  .axe-intro.axe-menu { grid-template-areas: "masthead masthead" "title guide" "message message" "modes modes" "settings settings" "footer footer"; padding: 8px 24px; gap: 4px 24px; align-content: safe center; }
   .axe-menu-masthead { padding-bottom: 7px; }
   .axe-menu .axe-eyebrow { font-size: 12px; font-weight: 700; }
   .axe-menu-mark { width: 15px; height: 15px; box-shadow: inset 0 0 0 3px #161714, inset 0 0 0 4px var(--menu-amber); }
@@ -147,7 +150,7 @@
   .axe-menu-guide li { gap: 7px; }
   .axe-menu-guide li strong { font-size: 16px; }
   .axe-menu .axe-menu-modes { gap: 10px; margin-top: 0; }
-  .axe-menu .axe-menu-mode { min-height: 117px; padding: 12px 14px; }
+  .axe-menu .axe-menu-mode { min-height: 117px; padding: 8px 14px; }
   .axe-menu-mode::before { left: 14px; width: 24px; }
   .axe-menu-mode-top { flex-wrap: nowrap; margin-bottom: 8px; }
   .axe-menu-count { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
@@ -292,8 +295,10 @@
   .axe-menu .axe-menu-options .axe-button { padding-inline: 10px; }
 }
 @container (max-height: 500px) {
-  .axe-menu-masthead { padding: 7px 12px; }
-  .axe-menu h1 { padding: 8px 64px 10px 18px; font-size: 38px; }
+  /* Keep the decorated entrance inside short landscape screens, including
+     the footer and the 44px settings/lesson/rules controls. */
+  .axe-menu-masthead { padding: 5px 12px; }
+  .axe-menu h1 { padding: 6px 64px 8px 18px; font-size: 38px; }
   .axe-menu h1::after { width: 42px; height: 42px; right: 12px; }
   .axe-menu-mode-top { padding: 4px 7px; }
   .axe-menu-mode-action { padding: 6px 8px; }

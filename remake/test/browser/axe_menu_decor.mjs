@@ -21,11 +21,12 @@ async function reachableControls(page) {
   assert.equal(await menu.locator("img, canvas").count(), 0, "Menu content is live text DOM, not a screenshot click surface");
   const overflow = await menu.evaluate(n => n.scrollWidth - n.clientWidth);
   assert(overflow <= 1, `Horizontal overflow: ${overflow}`);
-  const initiallyContained = await menu.locator("button, a").evaluateAll(nodes => nodes.every(n => {
+  const initiallyClipped = await menu.locator("button, a").evaluateAll(nodes => nodes.flatMap(n => {
     const r = n.getBoundingClientRect();
-    return r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1;
+    return r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1
+      ? [] : [{ text: n.textContent.trim(), rect: r.toJSON() }];
   }));
-  assert(initiallyContained, "Named acceptance viewports initially show every menu control");
+  assert.deepEqual(initiallyClipped, [], "Named acceptance viewports initially show every menu control");
   for (const control of await menu.locator("button, a").all()) {
     await control.scrollIntoViewIfNeeded();
     const metrics = await control.evaluate(n => {
@@ -54,7 +55,7 @@ async function useSettingsAndRules(page, touch) {
   assert.equal(await page.locator('[data-test="axe-menu-rules"]').evaluate(n => n === document.activeElement), true);
 }
 await suite("axe-menu-decor", async check => {
-  for (const [w, h, touch] of [[1280,720,false],[800,600,false],[390,844,true],[844,390,true]]) {
+  for (const [w, h, touch] of [[1280,720,false],[800,600,false],[390,844,true],[844,390,true],[812,375,true]]) {
     await check(`${w}x${h}-live-controls`, async page => {
       await entrance(page);
       const before = await storageSnapshot(page);

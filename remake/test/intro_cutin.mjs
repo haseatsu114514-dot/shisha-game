@@ -81,6 +81,13 @@ try {
     assert.equal(await page.locator(".cutin").count(), 0, `${id}: 自動で閉じない`);
   }
 
+  // 1a) 苗字と名前のあいだの小さな空き（正本の名前に空白がある人だけ）
+  const split = await page.evaluate(async () => {
+    const { nameParts } = await import("./js/vn/intro-art.js");
+    return { kuze: nameParts("kuze", "久世朔"), maki: nameParts("maki", "斧崎マキ"), naru: nameParts("naru", "なる"), hiyori: nameParts("hiyori", "ひより") };
+  });
+  assert.deepEqual(split, { kuze: ["久世", "朔"], maki: ["斧崎", "マキ"], naru: null, hiyori: null }, "苗字と名前の区切り");
+
   // 1b) 絵柄の切り替え: 既定は新しいグラフィック絵柄、設定 classic で旧の立ち絵へ戻る（2026-10-31）
   const artFor = async (id, style) => {
     const src = await page.evaluate(([id, style]) => {

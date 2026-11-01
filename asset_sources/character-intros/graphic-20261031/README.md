@@ -10,3 +10,13 @@
 - `chatgpt-20261031/` オーナーが ChatGPT で作った作り直し分（人物10・背景22、#2144）。採用した案は `picks.json`。これで全24人の人物と背景がそろった。
 - 切り抜き: `python3 key_background.py <原画> <出力.png> m|g`（m=マゼンタ, g=緑）。黒背景の原画は外周からつながる黒だけを抜く。
 - 採用素材: `remake/img/ui/character_intros/graphic/<id>.webp`（1024×1024・透過）、`bg_<id>.webp`（1672×941）。一覧は `remake/js/vn/intro-graphic.js`。
+
+## 差し替え手順（ポーズ違いなど・Codex 向け）
+
+1. 原画を用意する。正方形・人物は胸〜腰から上・**背景は人物に使わない単色（マゼンタ #FF00FF か鮮やかなピンク／緑）**。黒背景は髪や服と区別できないので不可。目は髪で隠す。画風の見本は `owner_originals/samechan.png`・`ageha_v1.png`・`rin.png`、指示文は `portrait_prompt.txt`。
+2. リポジトリ直下で `python3 tools/intro_graphic_import.py <id> <原画.png>` を実行する（背景なら `--background`）。
+   - 背景色は外周から自動で読み取って抜き、上の隙間が出ないよう切り出し、`remake/img/ui/character_intros/graphic/<id>.webp` を上書きする。
+   - 原画・確認画像（緑の上に重ねたもの）・記録は `replacements/<日付>/` に保存される。「左／右の端で切れています」の警告が出たら、引いた構図で描き直す。
+   - 先に見るだけなら `--dry-run`。
+3. 位置を変えたいポーズだけ、`remake/js/vn/intro-graphic.js` の `FRAME_OVERRIDES` に `id: { width, left, top }` を足す（既定は `GRAPHIC_FRAME`）。
+4. 確認: `node remake/test/intro_cutin.mjs`（`SHOTS=<フォルダ>` で全員の画面を保存）。新しいキャラを足すときは `PORTRAITS` にIDを足してから。

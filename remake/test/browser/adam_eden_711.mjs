@@ -192,8 +192,8 @@ async function runScene(page, row, touch) {
     await page.locator('.cutin.in[data-char="adam"]').waitFor();
     await page.waitForTimeout(1350);
     row.images = await images(page, '.cutin img');
-    assert(row.images.some(x => x.src.endsWith('/chr_adam_intense.webp')));
-    assert(row.images.some(x => x.src.endsWith('/ui/character_intros/adam.webp')));
+    assert(row.images.some(x => x.src.endsWith('/img/ui/character_intros/graphic/adam.webp') && x.width === 1024 && x.height === 1024));
+    assert(row.images.some(x => x.src.endsWith('/img/ui/character_intros/graphic/bg_adam.webp') && x.width === 1672 && x.height === 941));
     row.text = await textFits(page, '.cutin .ci-title, .cutin .ci-name, .cutin .ci-line');
     row.screenshots.push(await shot(page, prefix));
     await page.evaluate(() => A711.task);

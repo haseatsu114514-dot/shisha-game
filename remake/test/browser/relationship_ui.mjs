@@ -47,6 +47,9 @@ async function choicesFit(page, expected) {
   // 表示時に1つ目へキーボードフォーカスが付く（#1908）。フォーカス強調はルート情報ではないので外してから比べる
   assert.equal(await page.evaluate(() => document.activeElement?.classList.contains("vn-choice")), true, "The first reply should take keyboard focus");
   await page.evaluate(() => document.activeElement?.blur());
+  // blur 後に紙テーマの focus 背景が戻る遷移を待ってから、ルート間の色を比較する。
+  await page.evaluate(() => Promise.all([...document.querySelectorAll(".vn-choice")]
+    .flatMap(n => n.getAnimations().map(a => a.finished.catch(() => {})))));
   const rows = await page.locator(".vn-choice").evaluateAll(buttons => buttons.map(b => ({
     label: b.getAttribute("aria-label"), route: b.dataset.route ?? null,
     className: b.className, color: getComputedStyle(b).color,

@@ -12,6 +12,8 @@
 .cutin.art-intro .ci-name { all:unset; display:inline-block; flex-shrink:0; white-space:nowrap; font-weight:900; line-height:1.03; letter-spacing:-.055em; color:#090e15; transform:skewX(-10deg) scaleX(.86); transform-origin:left center; }
 .cutin.art-intro .ci-portrait { height:auto; translate:none; transform:none; opacity:1; transition:none; z-index:4; pointer-events:none; }
 /* 一言とフレーバーは下端を基準に積む。1行／2行・フレーバー有無で上へ伸びる（2026-10-31） */
+/* 苗字と名前のあいだの小さな空き（久世 朔・神崎 竜二など） */
+.art-intro .ci-name-gap { display:inline-block; width:.22em; }
 .art-intro .ci-quote-area { position:absolute; left:634px; bottom:80px; width:580px; z-index:5; display:flex; flex-direction:column; align-items:flex-start; }
 .art-intro .ci-quote-area.has-flavor { bottom:34px; }
 /* グラフィック絵柄（人物が大きい一枚絵）: 名前の欄と一言・好きなフレーバーを右へ寄せ、人物に重ねない。名前の幅は intro-art.js の GRAPHIC_META_SHIFT と合わせる */
