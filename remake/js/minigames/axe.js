@@ -7,12 +7,13 @@ import { RINGS, KILLS, CLUSTERS, LINE, BLADE, POWER, SWAY, MODES, DIVISIONS, BOA
 import { createMatch, takeTurn, turnOf, planOpponent, matchResult, resolveTurn, inSuddenDeath, suddenDeathTarget, DIFFICULTIES } from "./axe-match.js";
 import { COMPANIONS, reaction, matchReaction, portraitFocus } from "./axe-companions.js";
 import { axeRules } from "./axe-rules.js";
-import { TARGET, FLIGHT, flightPose, impactPose } from "./axe-flight.js";
+import { TARGET, FLIGHT, flightPose, flightTime, impactPose } from "./axe-flight.js";
 import { createAxe, renderAxe } from "./axe-geometry.js";
-import { shotFeedback, sessionStats, impactFeedback, declarationCue, killPlaces, clusterPlaces } from "./axe-presentation.js";
+import { shotFeedback, sessionStats, impactFeedback, declarationCue, killPlaces, clusterPlaces, quiverAt, zoneLabel, haloFor } from "./axe-presentation.js";
 import { coachDialog } from "./axe-coach.js";
 import { pickChallenges, evaluateChallenges, heatOf, rankOf, titleOf } from "./axe-challenges.js";
 const active = new WeakMap(), artReady = new Map();
+let instances = 0;
 function decodeArt(url) {
   if (!artReady.has(url)) {
     const image = new Image(); image.src = url;
@@ -29,6 +30,10 @@ const { x: CX, y: CY, radius: R } = TARGET;
 const OPAQUE = { left: 76 / 1254, right: 1181 / 1254, top: 75 / 1254, bottom: 1176 / 1254 };
 const PLANK = { left: CX + BOARD.left * R, right: CX + BOARD.right * R, top: CY + BOARD.top * R, bottom: CY + BOARD.bottom * R };
 const cycles = { horizontal: 3600, vertical: 3600, power: 2400 };
+// The camera frames the scoring area (the 1 ring and the gauge sweep) rather than the whole five planks.
+const VIEW = { x: CX - 232, y: CY - 232, size: 464 };
+// The judge's close-up after a stuck throw: ±.2 of the 1-ring radius around the blade.
+const ZOOM = .2;
 const SERIES = [1, 3];
 export function runAxeThrow({ host = document.getElementById("stage") || document.getElementById("axe-app"),
   signal, mode = "practice", tutorial = false, opponent = tutorial ? null : "hiyori", allowRetry = true, difficulty = "normal", seed,
@@ -68,7 +73,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   let actor = "player", matchLines = null, gameRecorded = false;
   let portraitKey = null;
   let declareTimer = 0, declareNode = null, declareMarker = null, clearedGoals = new Set();
-  let held = 0, focusUntil = -1, focusUsed = false, helpPanel = null, coachPanel = null, coachLines = null;
+  let held = 0, focusUntil = -1, focusUsed = false, helpPanel = null, coachPanel = null, coachLines = null, quiver = null;
   const taught = new Set();
   const isPaused = () => document.hidden || Boolean(helpPanel || coachPanel);
   const suddenDeath = () => versus && inSuddenDeath(match);
@@ -109,7 +114,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const portrait = el("img.axe-portrait", { alt: companion?.name || "", dataset: { test: "axe-portrait" } });
   const comment = el("p.axe-comment", { "aria-live": "polite", dataset: { test: "axe-comment" } });
   const companionCard = companion ? el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div", [el("strong", { text: companion.name }), comment])]) : null;
-  const board = svg("svg", { viewBox: "40 -40 580 580", class: "axe-target", role: "button", tabindex: "0",
+  const board = svg("svg", { viewBox: `${VIEW.x} ${VIEW.y} ${VIEW.size} ${VIEW.size}`, class: "axe-target", role: "button", tabindex: "0",
     "aria-label": "的。ゲージ操作中はタップでも止められます。構える前は青をタップして宣言できます", "data-test": "axe-target" });
   board.addEventListener("click", event => {
     if (cycles[phase]) { act(); return; }
@@ -124,7 +129,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const plankWidth = (PLANK.right - PLANK.left) / (OPAQUE.right - OPAQUE.left), plankHeight = (PLANK.bottom - PLANK.top) / (OPAQUE.bottom - OPAQUE.top);
   const plank = svg("g", { class: "axe-plank" }, [svg("image", { href: ART.board, x: PLANK.left - OPAQUE.left * plankWidth, y: PLANK.top - OPAQUE.top * plankHeight,
     width: plankWidth, height: plankHeight, preserveAspectRatio: "none" })]);
-  board.append(plank);
+  // The wood, its paint and the cuts form one group, so the close-up can show the same board through <use>.
+  const artId = "axe-art-" + (++instances), vignetteId = artId + "-vignette";
+  const art = svg("g", { id: artId, class: "axe-art" }, [plank,
+    svg("rect", { class: "axe-vignette", x: PLANK.left, y: PLANK.top, width: PLANK.right - PLANK.left, height: PLANK.bottom - PLANK.top, fill: `url(#${vignetteId})` })]);
+  board.append(svg("defs", {}, [svg("radialGradient", { id: vignetteId, cx: CX, cy: CY, r: R * 1.62, gradientUnits: "userSpaceOnUse" }, [
+    svg("stop", { offset: "0", "stop-color": "#fff3d6", "stop-opacity": .08 }), svg("stop", { offset: ".55", "stop-color": "#000", "stop-opacity": 0 }),
+    svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": .58 })])]), art);
   // Painted markings at the official proportions: 20 mm black lines, red bulls, blue killshots with a red outline.
   const markings = svg("g", { class: "axe-markings", "aria-hidden": "true" });
   const lineWidth = LINE * 2 * R;
@@ -146,8 +157,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       svg("circle", { cx: CX + target.x * R, cy: CY + target.y * R, r: target.inner * R, fill: "#163f78" }),
     ]); markings.append(marker); markers.set(target.id, marker);
   }
-  board.append(markings);
+  art.append(markings);
   const cuts = svg("g", { class: "axe-cuts", "aria-hidden": "true" });
+  art.append(cuts);
+  // While aiming, the zone the blade would score glows: the blade-touch rule made visible.
+  const zoneHalo = svg("circle", { class: "axe-zone-halo", r: 0, fill: "none", opacity: 0 });
   const impacts = svg("g", { class: "axe-impacts" });
   // This effect follows the active game clock so rules and background tabs freeze it too.
   const impactRing = svg("circle", { r: 18, fill: "none", "stroke-width": 3 });
@@ -160,14 +174,24 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const burst = svg("text", { class: "axe-score-burst", "text-anchor": "middle", "font-size": 38,
     "font-weight": 900, "paint-order": "stroke", stroke: "#17120e", "stroke-width": 4 });
   const impactFx = svg("g", { class: "axe-impact-fx", opacity: 0, "aria-hidden": "true", "pointer-events": "none" }, [impactFlash, impactRing, echoRing, ...dust, ...splinters, burst]);
-  const trail = svg("path", { class: "axe-flight-trail", fill: "none", stroke: "#f3dbaf", "stroke-width": 4, "stroke-linecap": "round", opacity: 0 });
+  const trail = svg("path", { class: "axe-flight-trail", fill: "none", stroke: "#fff1cf", "stroke-width": 7, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0 });
   const flying = createAxe(); flying.classList.add("axe-flight"); flying.setAttribute("opacity", 0);
+  // Two afterimages a few frames behind make the tumble readable at speed.
+  const ghosts = [createAxe(), createAxe()];
+  ghosts.forEach(node => { node.classList.add("axe-ghost"); node.setAttribute("opacity", 0); node.setAttribute("aria-hidden", "true"); });
+  // A soft contact shadow on the wood grows as the axe arrives, so its depth reads.
+  const contactShadow = svg("ellipse", { class: "axe-contact-shadow", rx: 0, ry: 0, fill: "#120a05", opacity: 0 });
   const bladePx = BLADE.halfLength * R;
   // The white blade marker is the 4 in cutting edge: the highest zone it touches scores.
-  const crosshair = svg("g", { class: "axe-crosshair" }, [svg("path", { d: `M0 ${-bladePx}V${bladePx}`, stroke: "#fff5d9", "stroke-width": 3.5, "stroke-linecap": "round" }),
-    svg("path", { d: `M-6 ${-bladePx}H6 M-6 ${bladePx}H6 M-14 0H-6 M6 0H14`, stroke: "#fff5d9", "stroke-width": 2 }),
-    svg("circle", { r: 3.2, fill: "none", stroke: "#fff5d9", "stroke-width": 2 })]);
-  for (const node of crosshair.children) node.setAttribute("stroke", "currentColor");
+  // A dark outline under the white blade keeps it readable on light and dark wood alike.
+  const bladeShape = `M0 ${-bladePx}V${bladePx} M-7 ${-bladePx}H7 M-7 ${bladePx}H7 M-16 0H-7 M7 0H16`;
+  const crosshairLines = [svg("path", { d: `M0 ${-bladePx}V${bladePx}`, stroke: "#fff5d9", "stroke-width": 4, "stroke-linecap": "round" }),
+    svg("path", { d: `M-7 ${-bladePx}H7 M-7 ${bladePx}H7 M-16 0H-7 M7 0H16`, stroke: "#fff5d9", "stroke-width": 2.5, "stroke-linecap": "round" }),
+    svg("circle", { r: 3.6, fill: "none", stroke: "#fff5d9", "stroke-width": 2.2 })];
+  for (const node of crosshairLines) node.setAttribute("stroke", "currentColor");
+  const crosshair = svg("g", { class: "axe-crosshair" }, [
+    svg("path", { class: "axe-crosshair-outline", d: bladeShape, stroke: "#160f0a", "stroke-width": 8, "stroke-linecap": "round", fill: "none", opacity: .8 }),
+    svg("circle", { class: "axe-crosshair-outline", r: 3.6, fill: "none", stroke: "#160f0a", "stroke-width": 6, opacity: .8 }), ...crosshairLines]);
   const fixedAim = svg("g", { class: "axe-fixed-aim" }, [svg("circle", { r: 7, fill: "none", stroke: "#e5bd70", "stroke-width": 2 }),
     svg("path", { d: "M-12 0H12 M0-12V12", stroke: "#e5bd70", "stroke-width": 1 })]);
   const powerShift = svg("path", { class: "axe-power-shift", fill: "none", stroke: "#aee0c0", "stroke-width": 3 });
@@ -176,10 +200,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     svg("circle", { r: 3, fill: "#fff5d9" })]);
   const xNeedle = svg("path", { class: "axe-x-needle", d: `M0 ${PLANK.top - 6}V${PLANK.bottom + 6}`, stroke: "#91cfe6", "stroke-width": 2.5 });
   const yNeedle = svg("path", { class: "axe-y-needle", d: `M${PLANK.left - 6} 0H${PLANK.right + 6}`, stroke: "#e5bd70", "stroke-width": 2.5 });
-  const sdBadge = svg("text", { class: "axe-sd-badge", x: CX, y: PLANK.top - 16, "text-anchor": "middle", fill: "#9cecff", "font-size": 15, "font-weight": 900, opacity: 0 }, ["SUDDEN DEATH"]);
-  board.append(cuts, powerShift, releaseDot, impacts, impactMark, trail, flying, fixedAim, crosshair, impactFx,
-    svg("text", { x: CX, y: PLANK.bottom + 26, "text-anchor": "middle", fill: "#91cfe6", "font-size": 17, "font-weight": 700 }, ["① 横"]),
-    svg("text", { x: PLANK.right + 8, y: CY + 6, fill: "#e5bd70", "font-size": 17, "font-weight": 700 }, ["② 縦"]), xNeedle, yNeedle, sdBadge);
+  const sdBadge = svg("text", { class: "axe-sd-badge", x: CX, y: VIEW.y + 26, "text-anchor": "middle", fill: "#9cecff", "font-size": 15, "font-weight": 900, opacity: 0 }, ["SUDDEN DEATH"]);
+  const gaugeLabel = (x, y, text, fill, anchor) => svg("text", { class: "axe-gauge-label", x, y, "text-anchor": anchor, fill, "font-size": 16, "font-weight": 900,
+    "paint-order": "stroke", stroke: "#140d08", "stroke-width": 4 }, [text]);
+  board.append(zoneHalo, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, impactFx,
+    gaugeLabel(CX, VIEW.y + VIEW.size - 10, "① 横", "#a9dcef", "middle"), gaugeLabel(VIEW.x + VIEW.size - 8, CY - 10, "② 縦", "#f1c983", "end"), xNeedle, yNeedle, sdBadge);
   const note = el("p.axe-note", { dataset: { test: "axe-note" } });
   const announcement = el("p.axe-announcement", { "aria-live": "polite", "aria-atomic": "true" });
   const resultLabel = el("span.axe-result-label"), resultNumber = el("span"), resultUnit = el("small", { text: "PTS" });
@@ -218,7 +243,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       lastAction = performance.now(); aim = { x: 0, y: 0 }; power = POWER.ideal; held = 0; focusUntil = -1; setPhase("choice");
     }
   } });
-  function resetThrow() { aim = { x: 0, y: 0 }; power = POWER.ideal; held = 0; focusUntil = -1; focusUsed = false; impacts.replaceChildren(); }
+  function resetThrow() { aim = { x: 0, y: 0 }; power = POWER.ideal; held = 0; focusUntil = -1; focusUsed = false; impacts.replaceChildren(); quiver = null; }
   function newGame(index) {
     gameIndex = index; gameRecorded = false;
     if (versus) match = createMatch(difficulty, gameSeed(index), division);
@@ -233,8 +258,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   } });
   const controls = el("div.axe-controls", [focusButton, reaim]);
   const keyhint = el("p.axe-keyhint", { text: "ボタン / 的をタップ / Space・Enter" });
+  // The judge's close-up: the same painted board through <use>, the 4in blade and the zone it touched.
+  const zoomBlade = svg("g", {}, [svg("path", { stroke: "#160f0a", "stroke-width": 2.6, "stroke-linecap": "round", fill: "none" }),
+    svg("path", { stroke: "#fff7e0", "stroke-width": 1.2, "stroke-linecap": "round", fill: "none" })]);
+  const zoomView = svg("svg", { class: "axe-zoom-view", viewBox: "0 0 1 1", "aria-hidden": "true" }, [svg("use", { href: "#" + artId }), zoomBlade]);
+  const zoomScore = el("strong"), zoomZone = el("span");
+  const zoom = el("figure.axe-zoom", { hidden: true, role: "img", dataset: { test: "axe-zoom" } }, [zoomView, el("figcaption", [zoomScore, zoomZone])]);
   const boardPane = el("div.axe-board-pane", [
-    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), board]),
+    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), board, zoom]),
     panel = el("aside.axe-panel", [matchScore, goals, companionCard, matchRecords, status, calls, steps, note, liveScore, resultCard, timing, feedback, steadiness, stability, action, keyhint, controls, retry]);
   const body = el("div.axe-body", [boardPane, panel]);
   root.append(heading, scoreboard, body, announcement);
@@ -372,6 +403,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (next === "summary") recordGame();
     phaseCue(next);
     if (next === "flight") {
+      root.dataset.slowMotion = String(Boolean(pending.called) && !reducedMotion);
       const pose = flightPose(pending, reducedMotion ? FLIGHT.travel + FLIGHT.fall : 0);
       renderAxe(flying, pose); flying.setAttribute("opacity", pose.opacity);
     }
@@ -402,7 +434,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         pending = { ...resolveTurn(match, "opponent", input), baseAim: { x: input.x, y: input.y },
           sway: { x: 0, y: 0, amplitude: 0, fatigue: 0, focused: false } };
         aim = { ...pending.aim }; power = pending.power; called = pending.called;
-        impacts.replaceChildren(); setPhase("opponent-ready");
+        impacts.replaceChildren(); quiver = null; setPhase("opponent-ready");
       } else if (versus ? turnOf(match) === null : shots.length === rules.throws) setPhase("summary");
       else { actor = "player"; called = null; resetThrow(); setPhase("choice"); }
     } else if (phase === "summary") {
@@ -464,9 +496,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       root.dataset.previewScore = String(previewShot.score); root.dataset.previewOutcome = previewShot.outcome;
       liveValue.textContent = previewShot.score + "点";
       crosshair.style.color = previewShot.score > 0 ? "#f8fff1" : "#f0a58b";
+      const halo = haloFor(previewShot);
+      zoneHalo.setAttribute("opacity", halo ? .95 : 0);
+      if (halo) { zoneHalo.setAttribute("cx", CX + halo.x * R); zoneHalo.setAttribute("cy", CY + halo.y * R); zoneHalo.setAttribute("r", halo.r * R); zoneHalo.dataset.kind = halo.kind; }
       liveReason.textContent = previewShot.outcome === "drop" ? previewShot.dropReason === "weak" ? "柄から当たる・落下" : "回りすぎ・落下"
         : !previewShot.stuck ? "板の外" : called && !previewShot.score ? "宣言した青以外は0点" : previewShot.zone?.kind === "closed" ? "閉じた円 · 0点" : "";
-    } else { root.dataset.previewScore = ""; root.dataset.previewOutcome = ""; }
+    } else { root.dataset.previewScore = ""; root.dataset.previewOutcome = ""; zoneHalo.setAttribute("opacity", 0); }
     const axisText = (value, negative, positive) => Math.abs(value) < .035 ? "中央" : (value < 0 ? negative : positive) + Math.round(Math.abs(value) / 1.2 * 100) + "%";
     for (const [i, step] of [...steps.children].entries()) {
       const locked = Boolean(displayedShot) || phaseIndex > i, live = phaseIndex === i;
@@ -562,7 +597,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       }
     }
     for (const target of KILLS) {
-      const marker = markers.get(target.id); marker.setAttribute("opacity", ks.closed.includes(target.row) && !sd ? .28 : 1);
+      // The blue just thrown stays bright while its result (and close-up) is on screen, even though its height has now closed.
+      const justThrown = phase === "result" && shown?.called === target.id;
+      const marker = markers.get(target.id); marker.setAttribute("opacity", ks.closed.includes(target.row) && !sd && !justThrown ? .28 : 1);
       marker.style.filter = called === target.id ? "drop-shadow(0 0 6px #fff5b1)" : "";
       marker.setAttribute("data-callable", String(phase === "choice" && actor === "player" && !sd && canCall(target.id, shots, rules.throws)));
     }
@@ -609,7 +646,20 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     yNeedle.setAttribute("transform", "translate(0 " + (CY + aim.y * R) + ")");
     xNeedle.setAttribute("opacity", phase === "horizontal" ? 1 : moving ? .4 : 0); yNeedle.setAttribute("opacity", phase === "vertical" ? 1 : phase === "power" ? .4 : 0);
     sdBadge.setAttribute("opacity", sd ? 1 : 0);
-    if (phase !== "flight") { flying.setAttribute("opacity", 0); trail.setAttribute("opacity", 0); }
+    if (phase !== "flight") { flying.setAttribute("opacity", 0); trail.setAttribute("opacity", 0); contactShadow.setAttribute("opacity", 0); ghosts.forEach(node => node.setAttribute("opacity", 0)); }
+    // The close-up opens on the result of a stuck axe, on the side away from where it landed.
+    const zoomShot = phase === "result" && shown?.stuck ? shown : null;
+    zoom.hidden = !zoomShot;
+    if (zoomShot) {
+      const zx = CX + zoomShot.landing.x * R, zy = CY + zoomShot.landing.y * R, half = ZOOM * R;
+      zoomView.setAttribute("viewBox", `${zx - half} ${zy - half} ${half * 2} ${half * 2}`);
+      for (const line of zoomBlade.children) line.setAttribute("d", `M${zx} ${zy - bladePx}V${zy + bladePx} M${zx - 3} ${zy}H${zx + 3}`);
+      zoom.dataset.side = zoomShot.landing.x < 0 ? "right" : "left";
+      zoom.dataset.scored = String(zoomShot.score > 0);
+      const label = zoneLabel(zoomShot);
+      zoomScore.textContent = zoomShot.score + "点"; zoomZone.textContent = label;
+      zoom.setAttribute("aria-label", "刃の着地点の拡大。" + zoomShot.score + "点・" + label);
+    }
     needle.style.left = power * 100 + "%";
     calls.hidden = phase !== "choice" || sd; reaim.hidden = !cycles[phase]; retry.hidden = !allowRetry || phase !== "summary" || Boolean(series && !seriesWinner());
     controls.hidden = steadiness.hidden = !moving;
@@ -686,7 +736,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (!show) return;
     const progress = Math.min(1, elapsed / effect.duration), x = CX + shot.landing.x * R, y = CY + shot.landing.y * R;
     const color = effect.color, recoil = Math.max(0, 1 - elapsed / 260) ** 2 * effect.strength * (effect.special ? 1.6 : 1);
-    boardPane.style.transform = `translate(${Math.sin(elapsed * .12) * recoil}px, ${Math.cos(elapsed * .15) * recoil * .65}px)`;
+    const punch = Math.max(0, 1 - elapsed / 200) * (effect.special ? .03 : .014);
+    boardPane.style.transform = `translate(${Math.sin(elapsed * .12) * recoil}px, ${Math.cos(elapsed * .15) * recoil * .65}px) scale(${1 + punch})`;
     total.style.setProperty("--score-glow", String(Math.max(0, 1 - progress)));
     impactFx.setAttribute("transform", `translate(${x} ${y})`);
     impactFlash.setAttribute("r", 8 + Math.min(1, elapsed / 130) * (effect.special ? 55 : 35));
@@ -719,12 +770,26 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       SE.whoosh(); setPhase("flight");
     }
     if (phase === "flight" && !isPaused()) {
-      const pose = flightPose(pending, reducedMotion ? FLIGHT.travel + FLIGHT.fall : elapsed);
-      if (!reducedMotion && elapsed < FLIGHT.travel) {
-        const points = [130, 65, 0].map(offset => flightPose(pending, Math.max(0, elapsed - offset)));
+      // A called throw (killshot or sudden death) slows down for its final approach.
+      const slow = root.dataset.slowMotion === "true";
+      const display = reducedMotion ? FLIGHT.travel + FLIGHT.fall : flightTime(elapsed, slow);
+      const pose = flightPose(pending, display);
+      if (!reducedMotion && display < FLIGHT.travel) {
+        const points = [160, 110, 60, 0].map(offset => flightPose(pending, Math.max(0, display - offset)));
         trail.setAttribute("d", points.map((p, i) => `${i ? "L" : "M"}${p.bladeX} ${p.bladeY}`).join(" "));
-        trail.setAttribute("opacity", .22 * Math.min(1, elapsed / 150));
-      } else trail.setAttribute("opacity", 0);
+        trail.setAttribute("opacity", .42 * Math.min(1, display / 120));
+        ghosts.forEach((node, i) => {
+          renderAxe(node, flightPose(pending, Math.max(0, display - (i + 1) * 40)));
+          node.setAttribute("opacity", (i ? .14 : .3) * Math.min(1, display / 80));
+        });
+        const near = display / FLIGHT.travel, size = 6 + 16 * near;
+        contactShadow.setAttribute("cx", CX + pending.landing.x * R); contactShadow.setAttribute("cy", CY + pending.landing.y * R + 4);
+        contactShadow.setAttribute("rx", size); contactShadow.setAttribute("ry", size * .42);
+        contactShadow.setAttribute("opacity", .42 * near * near);
+      } else {
+        trail.setAttribute("opacity", 0); contactShadow.setAttribute("opacity", 0);
+        ghosts.forEach(node => node.setAttribute("opacity", 0));
+      }
       renderAxe(flying, pose); flying.setAttribute("opacity", pose.opacity);
       if (pose.done) {
         let shot = pending;
@@ -734,11 +799,25 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         } else shots.push(shot);
         pending = null;
         if (shot.score > 0) { SE.hit(); if (shot.score >= 6) SE.perfect(); } else SE.miss();
-        if (shot.stuck) { const embedded = createAxe(); renderAxe(embedded, impactPose(shot)); embedded.dataset.scored = String(shot.score > 0); impacts.append(embedded); }
+        if (shot.stuck) {
+          const embedded = createAxe(); renderAxe(embedded, impactPose(shot)); embedded.dataset.scored = String(shot.score > 0);
+          // The handle quivers around the cutting edge for a moment after the thunk; the edge itself never moves.
+          if (!reducedMotion) {
+            const node = svg("g", { class: "axe-quiver" }); node.append(...embedded.childNodes); embedded.append(node);
+            const edge = node.querySelector(".axe-cut-contact");
+            quiver = { node, x: Number(edge.getAttribute("cx")), y: Number(edge.getAttribute("cy")) };
+          }
+          impacts.append(embedded);
+        }
         setPhase("result");
       }
     }
     if (phase === "result" && elapsed <= 1250 && !isPaused()) drawImpact(versus ? latest(actor) : shots.at(-1));
+    if (phase === "result" && quiver && !isPaused()) {
+      const q = quiverAt(elapsed);
+      quiver.node.setAttribute("transform", q ? `translate(${quiver.x} ${quiver.y}) rotate(${q.rotate}) scale(1 ${q.scale}) translate(${-quiver.x} ${-quiver.y})` : "");
+      if (!q) quiver = null;
+    }
     if (cycles[phase] || action.disabled && !["loading", "flight", "opponent-ready"].includes(phase) && !document.hidden && performance.now() - lastAction >= 250) render();
     frame = requestAnimationFrame(tick);
   }

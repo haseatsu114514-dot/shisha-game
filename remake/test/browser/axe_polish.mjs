@@ -209,6 +209,47 @@ await suite("axe-polish", async check => {
     assert(shot.stuck && shot.score === 0 && shot.outcome === "miss" && shot.dropReason === null);
     assert.deepEqual(shot.landing, predicted, "A zero score uses exactly the displayed landing too");
   });
+  await check("halo-afterimages-slow-motion-quiver-and-close-up", async page => {
+    const before = await start(page, { opponent: null, mode: "league" });
+    // Aiming at the centre: the halo outlines the bull the blade would touch.
+    await action(page); await phase(page, "horizontal");
+    await boardStop(page, .5, 3600, "vertical", false);
+    await boardStop(page, .5, 3600, "power", false);
+    await gauge(page, .4, 2400); await root(page).focus(); await page.keyboard.press("f");
+    await gauge(page, .62, 2400);
+    const halo = page.locator(".axe-zone-halo");
+    assert.equal(Number(await halo.getAttribute("opacity")) > 0, true);
+    assert.equal(await halo.getAttribute("data-kind"), "bull");
+    await page.locator(".axe-target").click(); await phase(page, "flight");
+    assert.equal(await root(page).getAttribute("data-slow-motion"), "false");
+    await page.clock.runFor(240);
+    assert(Number(await page.locator(".axe-ghost").first().getAttribute("opacity")) > 0, "afterimages follow the axe mid-flight");
+    assert(Number(await page.locator(".axe-contact-shadow").getAttribute("opacity")) > 0, "the contact shadow is on the wood");
+    await page.clock.runFor(400); await phase(page, "result");
+    assert.equal(Number(await page.locator(".axe-ghost").first().getAttribute("opacity")), 0);
+    const zoom = page.locator('[data-test="axe-zoom"]');
+    await zoom.waitFor();
+    assert.match(await zoom.innerText(), /6点[\s\S]*中央の赤に触れた/);
+    assert.equal(await zoom.getAttribute("data-scored"), "true");
+    assert.equal(await zoom.locator("use").count(), 1, "the close-up shows the same painted board");
+    const quiver = page.locator(".axe-impacts .axe-quiver");
+    assert.notEqual(await quiver.getAttribute("transform") || "", "", "the handle quivers right after the thunk");
+    await page.clock.runFor(600);
+    assert.equal(await quiver.getAttribute("transform"), "", "the quiver settles to the exact embedded pose");
+    await capture(page, "pc-close-up");
+    // A called throw slows its approach and still lands within 0.9s.
+    await action(page); await phase(page, "choice"); assert(await zoom.isHidden());
+    await page.clock.runFor(300); await page.locator('[data-call="upper-left"]').click();
+    await action(page); await phase(page, "horizontal");
+    await boardStop(page, .5, 3600, "vertical", false); await boardStop(page, .5, 3600, "power", false);
+    await boardStop(page, .62, 2400, "flight", false);
+    assert.equal(await root(page).getAttribute("data-slow-motion"), "true");
+    await page.clock.runFor(700); assert.equal(await root(page).getAttribute("data-phase"), "flight", "slow motion stretches the approach");
+    await page.clock.runFor(200); await phase(page, "result");
+    const result = await cancel(page, before);
+    assert.equal(result.throws.length, 2); assert.equal(result.throws[0].score, 6); assert.equal(result.throws[1].called, "upper-left");
+  });
+
   await check("tap-a-blue-on-the-board-to-call-and-the-centre-to-cancel", async page => {
     const before = await start(page, { opponent: null, mode: "league" });
     await page.clock.runFor(300);

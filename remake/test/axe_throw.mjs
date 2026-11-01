@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { RINGS, BULLS, KILLS, CLUSTERS, MODES, POWER, LINE, BLADE, INCH, AIM_RANGE, BOARD, DIVISIONS, scoreAt, scoreBlade, resolveThrow, gaugeAt, axisAt, swayAt, releaseAimAt, totalOf, gradeOf, canCall, killState, closuresOf, halfOf, bladeDistance } from "../js/minigames/axe-model.js";
 import { reaction } from "../js/minigames/axe-companions.js";
-import { TARGET, CAMERA, AXE, FLIGHT, flightPose, impactPose, projectAxePoint, worldPoint } from "../js/minigames/axe-flight.js";
+import { TARGET, CAMERA, AXE, AXE_SCALE, FLIGHT, flightPose, flightTime, flightDuration, impactPose, projectAxePoint, worldPoint } from "../js/minigames/axe-flight.js";
 import { projectedAxe } from "../js/minigames/axe-geometry.js";
 const shot = (x = 0, y = 0, power = POWER.ideal, called = null, history = [], options = {}) => resolveThrow({ x, y, power, called }, history, options);
 const league = { throws: 10 };
@@ -175,14 +175,30 @@ test("visible release positions remain finite and legal at the edges", () => {
   assert.throws(() => swayAt(-1), RangeError); assert.throws(() => swayAt(1, .62, .5), RangeError);
   assert.throws(() => releaseAimAt({ x: 2, y: 0 }, 1, .62, 0, false), RangeError);
 });
-test("throws arrive within half a second and drops finish within three quarters without changing the shot", () => {
+test("throws arrive in 0.6s and drops finish in 0.9s without changing the shot; the axe is drawn at hatchet size", () => {
   for (const power of [.1, .62, .95]) {
     const result = shot(0, 0, power), before = structuredClone(result);
     assert.equal(flightPose(result, 0).contact, false);
-    assert.equal(flightPose(result, 500).contact, true);
-    assert.equal(flightPose(result, 750).done, true);
+    assert.equal(flightPose(result, FLIGHT.travel - 1).contact, false);
+    assert.equal(flightPose(result, 600).contact, true);
+    assert.equal(flightPose(result, 900).done, true);
     assert.deepEqual(result, before);
   }
+  // A 16in hatchet on a 48in board: the embedded axe spans about a third of the board height.
+  const end = impactPose(shot()), length = projectAxePoint(end, AXE.handleTip).y - projectAxePoint(end, AXE.blade).y;
+  assert(length > TARGET.radius * .9 && length < TARGET.radius * 1.4, "embedded axe length " + length);
+  assert.equal(AXE_SCALE, 1.6);
+});
+test("a called throw slows only its approach; the display clock is continuous and lands on the same contact", () => {
+  assert.equal(flightTime(0, true), 0); assert.equal(flightTime(200, true), 200);
+  const start = FLIGHT.travel * FLIGHT.slowFrom, end = start + (FLIGHT.travel - start) / FLIGHT.slowRate;
+  assert.equal(flightTime(start, true), start); assert.equal(flightTime(end, true), FLIGHT.travel);
+  assert.equal(flightTime(end + 100, true), FLIGHT.travel + 100);
+  for (let ms = 0; ms < end + 400; ms += 7) assert(flightTime(ms + 7, true) >= flightTime(ms, true), "never runs backwards");
+  for (let ms = 0; ms < 2000; ms += 50) assert.equal(flightTime(ms, false), ms);
+  const drop = shot(0, 0, .1), stuck = shot();
+  assert.equal(flightDuration(stuck), FLIGHT.travel); assert.equal(flightDuration(drop), FLIGHT.travel + FLIGHT.fall);
+  assert.equal(flightDuration(stuck, true), end); assert(flightDuration(stuck, true) <= 900, "even a slow killshot lands within 0.9s");
 });
 test("flight shrinks toward the board and contacts the scored blade point without a pose jump", () => {
   for (const x of [-1.2, 0, 1.2]) for (const y of [-1.2, 0, 1.2]) for (const power of [.42, .62, .82]) {

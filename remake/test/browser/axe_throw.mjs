@@ -85,7 +85,8 @@ await suite("axe-throw", async run => {
     await phase(page,'power');await page.clock.runFor(760);await pressReady(page);await phase(page,'flight');
     const frames=[];
     // Advance whole animation frames, including the release frame before the clock starts.
-    for(const [label,ms] of [['release',0],['quarter',144],['half',128],['three-quarter',112],['impact',144]]){
+    // Fractions of the 600ms flight: .3, .57, .8, then past contact.
+    for(const [label,ms] of [['release',0],['quarter',180],['half',160],['three-quarter',140],['impact',180]]){
       if(ms)await page.clock.runFor(ms);
       const shape=page.locator(label==='impact'?'.axe-impacts>g':'.axe-flight');
       frames.push(await shape.evaluate(n=>({pitch:Number(n.dataset.pitch),depth:Number(n.dataset.depth),

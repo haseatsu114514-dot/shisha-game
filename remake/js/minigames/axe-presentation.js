@@ -1,4 +1,4 @@
-import { BULLS, KILLS, CLUSTERS } from "./axe-model.js";
+import { BULLS, KILLS, CLUSTERS, RINGS } from "./axe-model.js";
 
 // One resolved score drives celebration, never just whether the axe can stick in wood.
 export function impactFeedback(shot) {
@@ -62,3 +62,35 @@ export function sessionStats(shots = []) {
   return { bulls, killshots, calls, stuck, drops, average: shots.length ? Math.round(total / shots.length * 100) / 100 : 0, best, streak };
 }
 export { BULLS };
+
+/** Handle quiver after the axe sticks: a decaying wobble around the cutting edge, gone after 420ms. */
+export const QUIVER_MS = 420;
+export function quiverAt(milliseconds) {
+  if (!(milliseconds >= 0) || milliseconds >= QUIVER_MS) return null;
+  const decay = (1 - milliseconds / QUIVER_MS) ** 2, wave = Math.sin(milliseconds * .075);
+  return { rotate: 2.6 * wave * decay, scale: 1 + .06 * Math.sin(milliseconds * .075 + 1.2) * decay };
+}
+
+/** Plain words for the zone the blade touched, shown in the judge's close-up. */
+export function zoneLabel(shot) {
+  const zone = shot.zone || {};
+  if (zone.kind === "kill") return killPlaces[shot.called] + "の青" + (shot.score === 8 ? "の中心" : "");
+  if (zone.kind === "bull") return clusterPlaces[zone.cluster] + "の赤に触れた";
+  if (zone.kind === "five") return clusterPlaces[zone.cluster] + "の5の円";
+  if (zone.kind === "ring") return shot.score + "のリング";
+  if (zone.kind === "closed") return "閉じた円に触れた";
+  if (shot.called) return "宣言した青の外";
+  return "得点圏の外";
+}
+
+/** The circle of the zone the blade would score, in board units, or null when it scores nothing. */
+export function haloFor(shot) {
+  if (!shot?.stuck || !shot.score) return null;
+  const zone = shot.zone || {};
+  if (zone.kind === "kill") { const k = KILLS.find(t => t.id === shot.called); return { kind: "kill", x: k.x, y: k.y, r: shot.score === 8 ? k.inner : k.outer }; }
+  const cluster = CLUSTERS.find(c => c.id === zone.cluster);
+  if (zone.kind === "bull" && cluster) return { kind: "bull", x: cluster.x, y: cluster.y, r: RINGS[0].radius };
+  if (zone.kind === "five" && cluster) return { kind: "five", x: cluster.x, y: cluster.y, r: RINGS[1].radius };
+  if (zone.kind === "ring") return { kind: "ring", x: 0, y: 0, r: RINGS[6 - shot.score].radius };
+  return null;
+}
