@@ -5,7 +5,7 @@
 - ショールームではひよりの全遭遇イベント（初対面 `meeting`、再会 `relay` / `cracks`、相席 `repeat`）が発生しないようにし、ショールーム専用の初対面台詞は追加していません。
 - 他の適切な店（`rival` 各店・`samechan`・`c_station`）での登場、初対面と再会の区別、連絡先交換、既読、好感度、進行、同日1回制限、seedによる抽選の非再抽選を維持しました。
 - 旧セーブで `_hiyori_meeting_shop` がショールームID（`"shop"`）のままでも進行や整合性が壊れないことを確認・テスト化しました。
-- `docs/hiyori_implementation.md` の初対面候補からショールームを除外する該当1行を更新しました。
+- `docs/spec/hiyori_implementation.md` の初対面候補からショールームを除外する該当1行を更新しました。
 
 ### レビュー指摘対応（#806h 1回目）
 1. **フィクスチャ前提の修正（`remake/test/hiyori_showroom_806.mjs`）**:
@@ -24,13 +24,13 @@
 2. **ファイル全体の精査**:
    - セクション4〜7の全アサーションを再確認し、同種のモック依存の期待値（VN台本内の副作用フラグへの依存等）が存在しないことを確認しました。
 3. **製品コード・他ファイルの維持**:
-   - 製品コード（`remake/js/daily/hiyori.js`、`docs/hiyori_implementation.md`）およびその他ファイルは一切変更していません。
+   - 製品コード（`remake/js/daily/hiyori.js`、`docs/spec/hiyori_implementation.md`）およびその他ファイルは一切変更していません。
 
 ## 2. 変更ファイルと関数
 1. `remake/js/daily/hiyori.js`（変更なし）
    - [`hiyoriShopEligible`]([local path omitted]): `spot.kind === "shop"` を除外。
    - [`hiyoriShopLocation`]([local path omitted]): `candidates` からショールーム関連の条件 `(spot.kind !== "shop" || !rinUnavailable(state))` を整理。不要となった `rinUnavailable` のインポートを削除。
-2. `docs/hiyori_implementation.md`（変更なし）
+2. `docs/spec/hiyori_implementation.md`（変更なし）
    - 初対面店舗の列挙行（第8行）からショールームを除外し、通常の買い物やショールームでは発生しない記述に更新。
 3. `remake/test/hiyori_frequency.mjs`（PASS済み・変更なし）
    - `shops` リストに `{ id: "shop", kind: "shop" }` を復元。

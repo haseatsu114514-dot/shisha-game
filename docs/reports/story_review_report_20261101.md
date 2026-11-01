@@ -407,7 +407,7 @@
 - 小道具の矛盾: 現物 `ch1_tsumugi_work_in_progress` draft_window[2]・draft_hands[2]・[28]（拡大・画面）／正本 同場面[3]「水彩のスケッチブック」・[14]「紙の右半分」／直す先 `data/dialogue/ch1_tsumugi.json`（表#2）。
 - 共感覚の扱い: 現物 `ch1_tsumugi_smoke_color[15]`「だから、濁らせちゃ、だめですよ」／正本 `data/characters.json` tsumugi.background_secret、`docs/gameplay_agent_reference.md`「交流と物語の実装」（色は受け取り方で、人格・善悪の判定ではない）／直す先 `data/dialogue/ch1_tsumugi.json`（表#3）。
 - 果たせない約束: 現物 `ch1_tsumugi_work_in_progress[29]`「大会の一台は、ちゃんと手を止めて吸います」／正本 `ch1_tournament`（観客は客席で見て投票するだけ）・`ch1_tsumugi_eve[14]`「ちゃんと、見てます」／直す先 `data/dialogue/ch1_tsumugi.json`（表#5）。
-- 文字数超過: 現物 `ch1_rin_bond_finale[8]`（51字）／正本 1台詞は全角48字以内（`docs/story_review_prompt.md`）／直す先 `data/dialogue/ch1_bonds.json`（表#10）。
+- 文字数超過: 現物 `ch1_rin_bond_finale[8]`（51字）／正本 1台詞は全角48字以内（`docs/prompts/story_review_prompt.md`）／直す先 `data/dialogue/ch1_bonds.json`（表#10）。
 - 交流の時系列ルール: 担当範囲の大会前提の台詞（tsumugi_fifth・smoke_color・rin_third・naru_bond_finale）は `tournament_finished` の分岐が揃っていた。サメちゃんの初対面（「今度の大会にも出る」）も `samechan.js` で第1章の大会前の日常に限られており、問題なし。
 
 ### 作者判断が要る点（あれば）

@@ -3,7 +3,7 @@ import { imgFileUrl } from "./img-file.js";
 // Approved for loading screens by the owner's request to use existing repository comics.
 // The source sheet stays intact; regions display only episode 25, left -> right.
 //
-// Comic data format (see remake/README.md ＞ ロード画面):
+// Comic data format (see docs/spec/loading_screen_and_comics.md):
 //   id / title / minChapter (required), contexts? (default: any), note? (素材台帳メモ),
 //   caption?  : 初心者向けの一行解説（コマの下に表示。省略可）。
 //   panels[2] : { src, alt,

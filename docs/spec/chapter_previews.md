@@ -31,7 +31,7 @@ Issue #519で、つむぎの水の場面をヨーコ／初期OVAのような可�
 
 `node remake/test/browser/ch1_preview.mjs` の9ケースで、採用Cの自然完走の全12カット、タイトル後のみんとの言葉、採用6枚/16:9構図の保持/字幕の書体、初回と再視聴、旧セーブ、16:9復帰、PC/タッチ横画面、動き軽減、字幕と操作の収まり、非表示の停止、読み込み失敗と遅延、中断の後片付け、単体ページの保存不変を検証する。CIは `.github/workflows/ch1-preview.yml`。
 
-最新の#519の画像を反映した[音付きゲーム録画・約53秒](../asset_sources/retro-ova-study-519/gameplay/chapter-preview.mp4)と[録画QA](../asset_sources/retro-ova-study-519/gameplay/capture.json)は本編と同じ予告APIを確認ページで自然完走したもの。初回・再視聴・保存・PC/タッチ・読込失敗などの9ケースと、比較ページの4ケースは成功。入口の影のタッチ画面でも話者名なしと保存不変を確認した。[画像と採用の記録](../asset_sources/retro-ova-study-519/README.md)。以前の録画とQAは `docs/qa/ch1-preview/` に履歴として保持する。`samples/c-quiet.mp4` は#519の更新前のC。ゲーム本編の通し検証は `node remake/test/playthrough.mjs`。
+最新の#519の画像を反映した[音付きゲーム録画・約53秒](../../asset_sources/retro-ova-study-519/gameplay/chapter-preview.mp4)と[録画QA](../../asset_sources/retro-ova-study-519/gameplay/capture.json)は本編と同じ予告APIを確認ページで自然完走したもの。初回・再視聴・保存・PC/タッチ・読込失敗などの9ケースと、比較ページの4ケースは成功。入口の影のタッチ画面でも話者名なしと保存不変を確認した。[画像と採用の記録](../../asset_sources/retro-ova-study-519/README.md)。以前の録画とQAは `docs/qa/ch1-preview/` に履歴として保持する。`samples/c-quiet.mp4` は#519の更新前のC。ゲーム本編の通し検証は `node remake/test/playthrough.mjs`。
 
 ## 3案の比較サンプル
 
@@ -66,3 +66,22 @@ node remake/tools/record_chapter_preview.mjs
 接続は第1章と同じ挙動で、各章の完了カードから行う: 第2章は `ch2-tournament.js` の完了カード、第3章は `ch3-aftermath.js` の完了カード、第4章は `ch4.js` の完了カード。未視聴なら自動再生し、再生中は「第N章へ進む」を押せない。完走/明示スキップのときだけ既読（`_ch2_preview_seen` / `_ch3_preview_seen` / `_ch4_preview_seen`）を保存し、再視聴ボタン「次回予告をもう一度」を置く。第5章の終わりには予告を置かない（スタッフロールで完結）。
 
 確認ページは `remake/chapter-preview.html?ch=ch3` のように `?ch=` で切り替える（既定は ch2）。検証は台本・登録・素材の実在を `node remake/test/chapter_preview_scripts.mjs`、登録表の全予告の再生・操作・保存不変と第2章完了カードの統合を `node remake/test/browser/chapter_preview.mjs` が担う。
+
+## 章タイトルコール（2026-11-02 に remake/README.md から移した）
+
+## 採用済みの章タイトルコール（#385）
+
+第1章「煙がつなぐ街」、第2章「才能の壁」は採用画像を章開始に表示する。
+第4章「継承の煙」・第5章「機械仕掛けの神」も共通表示へ登録済み（章ランナーは `chapters/ch4.js`・`ch5.js`）。
+第3章はオーナー決定により『嘘つきたちの夜 / SMOKE AND MIRRORS』を採用。画像差し替えは保留し、呼び出し元の文字表示を保つ。
+第2章は王冠構図案C（背景の王冠輪郭）を採用し、英題をHollow Crownへ更新・接続済み（Issue #549 / PR #550）。
+
+`/remake/chapter-titles-preview.html` で1・2・4・5章を本編と同じ表示処理で確認できる。ゲームの保存データは変更しない。
+画像準備後に表示し、読み込めない場合は章名の文字表示で進む。画像内の文字へDOMの章名を重ねず、縦横比を保って全体を収める。
+章の既読・進行・セーブの判定は従来の呼び出し元が行う。
+
+原画と採用の正本は `asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/adoption.json`。
+`python3 tools/build_chapter_titles.py` は対象4枚だけをSHA256照合して無劣化WebPへ変換し、全画素一致を検証する。
+採用記録の `runtime_integrated:false` は、採用画像4枚の本編表示が当時は部分導入だったことを示す記録。実際の導入は `js/core/chapter-title-art.js` と [検証記録](../qa/chapter-titles/README.md) を参照。
+
+検証: `node remake/test/browser/chapter_titles.mjs`。PC・タッチ・縦DS、実際のNEW GAME/第2章入口、保存不変、画像の遅延/失敗と第3章保留を確認する。

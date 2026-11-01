@@ -127,6 +127,11 @@
           "text": "閉店後。誰もいないtonariで、つむぎのために一台、組んだ。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "ラベンダーを主に。つむぎは長く吸うから、炭を外寄りに置いて熱を控えた。"
+        },
+        {
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……お店のじゃなくて。私のために、だけの一台"
@@ -462,7 +467,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "家でゆっくり過ごす時間。栞さんは、化粧もしないで、となりで笑っていた。"
+          "text": "家でゆっくり過ごす時間。栞さんは、となりで笑っていた。"
         },
         {
           "speaker": "minto",
@@ -487,12 +492,12 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……何か、作ろうか"
+          "text": "……一台、作ろうか"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "ん、……ふたりで作ろ"
+          "text": "ん、……ふたりで作ろ。ミントの量は、私が決めるね"
         }
       ]
     },
@@ -812,6 +817,16 @@
           "speaker": "rin",
           "face": "normal",
           "text": "一人の名前には、したくなかった。二人で決めたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "名前が決まる前に、これで一台組ませてください"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……いいね。紙の上じゃ、煙になった時の顔までは分からないから"
         },
         {
           "speaker": "hajime",
@@ -1753,7 +1768,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "お茶、淹れますね"
+          "text": "卓上台で、桃と紅茶の一台を作りますね"
         },
         {
           "speaker": "hiyori",

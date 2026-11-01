@@ -76,34 +76,37 @@ const sensitive = /大会前|本番、よろしく|いよいよ大会|大会が�
 const effects = rows => rows.filter(r => ['remember','apply','set_flag','buy_keepsake','flavor_lesson'].includes(r.type)
   || r.text && /【.+】.*上がった/.test(r.text));
 const fullRun = {scope:'full',success:true,served:true,kind:'practice'};
+// 初めての会話（この場面は来店の段階列で一度だけ読む）では、制作経験の有無にかかわらず全文を見せる。
 const sumiCases = [
-  ['未体験', {}, false],
-  ['未完了の手本', {_tutorial_requested:true}, false],
-  ['旧スキップ', {_tutorial_done:true,_tutorial_skipped:true}, false],
-  ['旧制作完了', {_tutorial_done:true}, true],
-  ['制作1回', {_craft_practice_runs:[fullRun]}, true],
-  ['制作複数回', {_craft_practice_runs:[fullRun,fullRun]}, true],
-  ['吸い出し失敗', {_craft_practice_runs:[{...fullRun,success:false,served:false}]}, false],
-  ['提供未完了', {_tutorial_done:true,_craft_practice_runs:[{...fullRun,kind:'tutorial',served:false}]}, false],
-  ['調整練習だけ', {_craft_practice_runs:[{...fullRun,scope:'care'}]}, false],
+  ['未体験', {}],
+  ['未完了の手本', {_tutorial_requested:true}],
+  ['旧スキップ', {_tutorial_done:true,_tutorial_skipped:true}],
+  ['旧制作完了', {_tutorial_done:true}],
+  ['制作1回', {_craft_practice_runs:[fullRun]}],
+  ['制作複数回', {_craft_practice_runs:[fullRun,fullRun]}],
+  ['吸い出し失敗', {_craft_practice_runs:[{...fullRun,success:false,served:false}]}],
+  ['提供未完了', {_tutorial_done:true,_craft_practice_runs:[{...fullRun,kind:'tutorial',served:false}]}],
+  ['調整練習だけ', {_craft_practice_runs:[{...fullRun,scope:'care'}]}],
 ];
 const sumiFirst = paths('ch1_sumi_basics', state(1))[0];
-for (const [label,flags,review] of sumiCases) for (const [chapter,phase] of [[1,'daily'],[1,'aftermath'],[2,'daily']]) {
+assert.equal(paths('ch1_sumi_basics', state(1)).length, 1, 'スミの基礎説明は分岐しない');
+for (const [label,flags] of sumiCases) for (const [chapter,phase] of [[1,'daily'],[1,'aftermath'],[2,'daily']]) {
   const value = {...state(chapter,phase),day:9,flags:structuredClone(flags)};
   const before = JSON.stringify(value);
   const rows = paths('ch1_sumi_basics', value)[0];
-  assert.equal(rows.some(r=>r.text?.includes('今日は復習だ')), review, label);
+  assert.equal(rows.some(r=>r.type==='condition'), false, `${label}: 経験で短縮しない`);
   assert.deepEqual(rows.filter(r=>r.diagram).map(r=>r.diagram),
-    review ? ['hose','hide'] : ['show','heat','smoke','bubble','hose','hide'], label);
-  assert.deepEqual(effects(rows), effects(sumiFirst), `${label}: 記憶と技術報酬は各1回`);
-  assert.equal(rows.filter(r=>r.type==='remember' && r.memory_id==='sumi_heat').length, 1);
+    ['show','heat','smoke','bubble','hose','hide'], label);
+  assert(rows.some(r=>r.text?.includes('『燃やす』んじゃねえ。『蒸らす』んだ')), `${label}: 蒸らす説明を見せる`);
+  assert(rows.some(r=>r.text?.includes('グリセリンと熱の仕事')), `${label}: 爆煙の説明を見せる`);
+  assert.equal(effects(rows).filter(r=>r.text && /【技術】.*上がった/.test(r.text)).length, 1, `${label}: 技術報酬は1回`);
+  assert.equal(rows.filter(r=>r.type==='remember' && r.memory_id==='sumi_heat').length, 1, `${label}: 記憶は1回`);
   assert(rows.some(r=>r.text?.includes('今ここにある一台を見ろ')), `${label}: 記憶が参照する言葉を保持`);
-  if (review) assert(rows.length < sumiFirst.length / 2, `${label}: 短い復習`);
-  else assert.deepEqual(rows, sumiFirst, `${label}: 従来の説明を保持`);
-  assert.deepEqual(paths('ch1_sumi_basics', JSON.parse(before))[0], rows, `${label}: 保存復元後も同じ分岐`);
-  assert.equal(JSON.stringify(value), before, `${label}: 分岐だけで状態を変更しない`);
+  assert.deepEqual(rows, sumiFirst, `${label}: 同じ全文`);
+  assert.deepEqual(paths('ch1_sumi_basics', JSON.parse(before))[0], rows, `${label}: 保存復元後も同じ内容`);
+  assert.equal(JSON.stringify(value), before, `${label}: 状態を変更しない`);
 }
-console.log(`PASS: スミの基礎説明 ${sumiCases.length * 3} 状態（制作履歴・旧セーブ・大会後・保存復元・図解・共通報酬）`);
+console.log(`PASS: スミの基礎説明 ${sumiCases.length * 3} 状態（制作履歴・旧セーブ・大会後で常に全文・保存復元・図解・報酬と記憶は各1回）`);
 // #1253: the private finale is valid before/after chapter 1's tournament and in later chapters.
 // Exercise friendship, the final romance question and already-lover branches with the real VN condition handler.
 const originalEval = context.hooks.evalCondition;

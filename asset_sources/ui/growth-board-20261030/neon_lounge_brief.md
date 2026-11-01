@@ -10,7 +10,7 @@
 2. `docs/stat-design/SPEC.md` の 2.2（盤の形）・2.5（スキル）・2.6（授業）・3.7（普通のマスの恩恵）・6.2（盤の画面）
 3. `remake/js/core/growth-board-data.js`（盤の形 `BOARD_SHAPES`・スキル・授業・恩恵 `SQUARE_PERKS`）
 4. `remake/js/daily/growth-board-screen.js`（画面の組み立て）と `remake/css/daily.css` の `.gboard` / `.gb-*`
-5. `docs/asset_gen_prompts.md` の「共通スタイル指針」と「分業の大原則」
+5. `docs/prompts/asset_gen_prompts.md` の「共通スタイル指針」と「分業の大原則」
 
 - 盤は `GROWTH_BOARD` の裏の試作。ブラウザで `remake/?growth=1` を開くと有効になる。プレビューは `python3 remake/tools/serve_preview.py --port 8123`。
 - **盤の規則・データ・配置（`growth-board.js`・`growth-board-data.js`）は変えない**。変えるのは見た目（CSS・画面の組み立て・画像）だけ。マスの座標・道・章・数値はコードが描くので、画像に焼き込まない。
@@ -73,7 +73,7 @@
 
 ## 5. プロンプト
 
-すべて冒頭に `docs/asset_gen_prompts.md` の「共通スタイル指針」を貼る（要約しない）。そのうえで次の「盤の共通」を続ける。
+すべて冒頭に `docs/prompts/asset_gen_prompts.md` の「共通スタイル指針」を貼る（要約しない）。そのうえで次の「盤の共通」を続ける。
 
 ```
 盤の共通: 「ネオンのラウンジ」。黒いスモークガラスの盤面に、細いネオン管の道。光る色は盤の色（才能 #ef8a5e／感覚 #58a6ff／理論 #7bd36d）と金（#f4d27a）と白火の白金（#fff1d0）と極みの白（#f6f2ff）だけ。ガラスに薄い煙が映り込む。夜のシーシャ店のネオンサインの質感（管の太さが均一で、芯が明るく外側にやわらかい光のにじみ）。2Dドット絵〜ピクセルペインター調で、細かいドット感を残す。
@@ -144,7 +144,7 @@ NG: 文字・漢字・英字・数字・ロゴ・ゲージの焼き込み、wate
 - スキル18枚: `growth-board-data.js` の `SKILLS`（名前・効く場面・効果）から、はじめがその技を使っている手元の一場面を1枚ずつ。シーシャ台・炭・ホースが写る絵は `asset_sources/shisha-hardware-reference/drawing-sheet/README.md` の「生成前に決める8行」をプロンプトに入れる。
 - 授業20枚: その人がはじめに話している一場面（`LESSONS` の名前・効果、人物は `brand/character_profiles.md` と立ち絵に合わせる）。
 - どちらも右のパネルの絵の枠（横長 16:9、@2x で 960×540）。見本どおりパネルでは横長の帯（約 470×168）に `object-fit: cover` で中央を切り抜いて出すので、主題は上下の中央 6 割に収める。影絵（まだ開いていない時）はコードで暗くするので、普通の絵だけでよい。
-- プロンプトは書いたら `docs/asset_gen_prompts.md` に登録してから生成する。
+- プロンプトは書いたら `docs/prompts/asset_gen_prompts.md` に登録してから生成する。
 
 ### 5.4 背景の絵（後で。SBD65）
 

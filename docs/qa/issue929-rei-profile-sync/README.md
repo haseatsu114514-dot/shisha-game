@@ -64,7 +64,7 @@ REI を含む台本を文字列で検索し、次の箇所を局所確認した�
 
 | 確認方法 | 結果 |
 | --- | --- |
-| 指定資料 `AGENTS.md` / `docs/pr_change_preflight.md` / `/home/box/repos/logs/common-20261022.md` の確認、`./tools/check_git_safety.sh` | 確認済み、安全検査 PASS。root・既存hooks・canonicalRoot・mainとのmerge-baseも確認。設定変更なし |
+| 指定資料 `AGENTS.md` / `docs/tools/pr_change_preflight.md` / `/home/box/repos/logs/common-20261022.md` の確認、`./tools/check_git_safety.sh` | 確認済み、安全検査 PASS。root・既存hooks・canonicalRoot・mainとのmerge-baseも確認。設定変更なし |
 | `gh issue view 929 --comments` / `gh pr view 1011`、PRの変更ファイル・merge commitの照合 | 確認済み。対象設定ファイルと同じファイルを変更するOpen PRは取得時点でなし |
 | 正式 normal・顔アイコンの目視、原画とnormalのSHA-256照合、#1011以降の対象素材差分確認 | PASS。既存素材と保存記録が一致 |
 | `node --experimental-vm-modules remake/test/data_loading.mjs` | PASS（42 JSONの実データ読込・エラー処理等。VM Modulesの実験機能WARNのみ） |

@@ -90,7 +90,7 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
   git clone --depth 1 --filter=blob:none --sparse https://github.com/haseatsu114514-dot/shisha-game.git
   cd shisha-game
   git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/tools/' '/brand/' '/experiments/' \
-    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/*/' '/docs/qa/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/' '/asset_sources/shisha-hardware-reference/'
+    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/archive/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/' '/asset_sources/shisha-hardware-reference/'
   ```
 
   `asset_sources/` や `docs/qa/` の特定フォルダが要るときは `git sparse-checkout add '/asset_sources/<フォルダ>/'` でそのフォルダだけ取る。範囲外に新しいファイルを足すときは `git add --sparse <パス>`。
@@ -108,7 +108,7 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
 - 作業の区切りと終了時に、有効な変更をcommitして作業branchへpushし、PRに変更点・テスト・未完・次の一手を書く。push が止まったら回避せず、未保存の差分と再開方法を報告する。
 - 終える前に `git status` と `git log @{u}..HEAD`（またはAPIのremote head照合）で、自分の未保存・未pushがないことを確認する。
 - 要望台帳（`docs/owner_requests.md`）のIDは、最新mainを見て次の空き番号を使う。
-- 利用枠が残り少ない・セッション終了が近いときは、大きな新規作業を始めず保存とPR整理を優先する。オーナーが望む小さな作業は続けてよい。残量は公式に見える場合だけ参照し、推測しない。Macでは任意で `python3 tools/agent_quota_guard.py check codex|claude` を使える（[詳細](docs/agent_quota_guard.md)）。
+- 利用枠が残り少ない・セッション終了が近いときは、大きな新規作業を始めず保存とPR整理を優先する。オーナーが望む小さな作業は続けてよい。残量は公式に見える場合だけ参照し、推測しない。Macでは任意で `python3 tools/agent_quota_guard.py check codex|claude` を使える（[詳細](docs/tools/agent_quota_guard.md)）。
 - AIの交代は、変更をpushしたうえでPRかIssueに DONE / TODO / TEST / NEXT を書くだけでよい。後任はそのbranchで続ける。予約の受け渡しは不要。
 - オーナーが「止めてマージ」「終了整理」と言ったら、新しい実装を止め、push → 条件を満たすPRをmerge → 未完をIssue/PRに記録 → 短く報告する。
 - 終了報告は **MERGED: #番号 / PENDING: #番号(理由) / ISSUES: #番号 / BRANCH: 名前 / NEXT: 次の1手** の形で短く書く。

@@ -194,7 +194,8 @@ await suite("regular-service-response", async check => {
         if (version === "current") response(later.lines, answer);
         counts[version] = { first: first.clicks, choices: first.choices, later: later.clicks };
       }
-      assert.equal(counts.current.first, counts.baseline.first);
+      // The new mouthpiece explanation adds one line to the current first visit.
+      assert.equal(counts.current.first, counts.baseline.first + (answer === null ? 0 : 1));
       assert.equal(counts.current.choices, answer === null ? 0 : 1);
       assert.equal(counts.baseline.choices, 0); assert.equal(counts.current.later, counts.baseline.later);
       console.log(`${label}/${answer ?? "legacy"} clicks ${JSON.stringify(counts)}`);

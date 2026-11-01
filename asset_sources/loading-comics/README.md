@@ -1,7 +1,7 @@
 # ロード画面の2コマ漫画 — 制作規格（正本）
 
 ロード画面（作業台に入るときなどの共通ロード）に出る2コマ漫画の **作り方・寸法・プロンプト・組み込み** を1か所にまとめた正本。
-表示側の仕様は [remake/README.md ＞ 共通ロード画面と２コマ漫画](../../remake/README.md#共通ロード画面と２コマ漫画導入用の基盤)、登録先は `remake/js/core/loading-comics.js`、切り出しツールは `tools/loading_comic_cut.py`。
+表示側の仕様は [docs/spec/loading_screen_and_comics.md](../../docs/spec/loading_screen_and_comics.md)、登録先は `remake/js/core/loading-comics.js`、切り出しツールは `tools/loading_comic_cut.py`。
 以前の参照先 `work/loading-comic-ref/REFERENCE.md` はリポジトリに無いので、本書が置き換える。
 
 ## 0. なぜ規格が要るか（2026-11-01 オーナー指摘）

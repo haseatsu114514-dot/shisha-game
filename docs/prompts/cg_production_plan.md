@@ -21,7 +21,7 @@
 | 2 | `cg_tsumugi_smoke_color` | ch1 | ch1_tsumugi_smoke_color | つむぎの見る世界。tonariの席、煙が藍色〜虹色に光って見える共感覚の画。彼女の横顔は静かに微笑む |
 | 3 | `cg_oneesan_first_smoke` | ch1 | ch1_tutorial_oneesan | 素のみんと（ura）の一服の横顔。カウンター越し、夜のtonari。**クリア後に意味が変わる一枚**（正体を知って見返す） |
 | 4 | `cg_minto_cheki` | ch1 | interaction_minto_noon_01 | チェキ写真そのものの画。白フレーム＋手書き「♡PEPERMINT」落書き。みんとがピース、はじめは見切れ気味（一人称なので顔は写さないか後頭部） |
-| 5 | `cg_mashiro_double_apple` | ch3 | ch3_double_apple_incident | 制作・接続済み。閉店後のmukaiで、ましろがハンドルを差し出す一人称の近景。顔・吸い口・握る手を会話枠より上へ置く。種明かし前なので缶・味名・果物は写さない。[原画・生成指示・検品](../asset_sources/ch3-mashiro-handoff/README.md) |
+| 5 | `cg_mashiro_double_apple` | ch3 | ch3_double_apple_incident | 制作・接続済み。閉店後のmukaiで、ましろがハンドルを差し出す一人称の近景。顔・吸い口・握る手を会話枠より上へ置く。種明かし前なので缶・味名・果物は写さない。[原画・生成指示・検品](../../asset_sources/ch3-mashiro-handoff/README.md) |
 | 6 | `cg_tsumugi_confession` | 告白 | confession_tsumugi_accept | 服の裾をぎゅっと掴む潤み目の上目遣い |
 | 7 | `cg_minto_confession` | 告白 | confession_minto_accept | 素の栞の顔で泣き笑い |
 | 8 | `cg_ageha_confession` | 告白 | confession_ageha_accept | いつも強気なアゲハが目を逸らして頬を掻く |

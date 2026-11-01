@@ -93,7 +93,7 @@
 | [Audiostock](https://audiostock.jp/) | 専用感の高いBGM・SEを有料購入したいとき | 購入するライセンスの使用範囲・ゲーム配布方法を確認。 |
 | [itch.io — Music](https://itch.io/game-assets/tag-music) | インディーゲーム向けループBGM、8bit/Lo-fi | 各作者の個別条件と、リリース版に同梱できるかを確認。 |
 
-関連する既存の制作指示：docs/bgm_suno_prompts.md には過去のBGM発注プロンプトがある。ただし古いweb/版への配線指示を含むので、**最新版remake/の実装にはそのまま適用しない**。
+関連する既存の制作指示：docs/prompts/bgm_suno_prompts.md には過去のBGM発注プロンプトがある。ただし古いweb/版への配線指示を含むので、**最新版remake/の実装にはそのまま適用しない**。
 
 ## ドット絵パレット / 制作ツール（素材とは別）
 
