@@ -83,6 +83,14 @@ assert.equal(all.DB.dialogues.samechan_cinema_introduction, undefined);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
+// LIMEは単一の正本から、ファイル順・IDを保って一度だけ読み込む。
+const limeMessages = realJSON("../data/lime_messages.json").messages;
+assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
+assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
+assert.deepEqual(Array.from(all.DB.lime.slice(-3), m => m.id), [
+  "lime_naru_samechan_nickname", "lime_samechan_preparing_thanks", "lime_samechan_opening",
+]);
+assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
 assert(all.DB.baito.some(event => event.id === "baito_tsumugi_art"), "つむぎの常連接客が起動時に除外された");
 for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romance"]) {

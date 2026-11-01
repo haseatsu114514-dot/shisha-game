@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "ch1-daily-features",
+      "title": "Chapter 1 early home rig and shift cameo boundaries (#2021)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch1_daily_features.mjs"]
+    },
+    {
       "id": "typography-css",
       "title": "Readable CSS typography follows #1352",
       "kind": "quick",
