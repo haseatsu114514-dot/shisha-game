@@ -1,0 +1,143 @@
+{
+  "issue": 1177,
+  "task": "第3章タイトル画の新規候補（現行第3章『嘘つきたちの夜 / SMOKE AND MIRRORS / HAZE: NATIONAL TOKYO 編』用）",
+  "mode": "Codex A built-in image generation (codex exec, workspace-write), text-free plates + Pillow typesetting",
+  "worker": "muse subagent (ch3-title-art)",
+  "date_jst": "2026-10-29",
+  "title_spec": {
+    "no": "第三章",
+    "name": "嘘つきたちの夜",
+    "read": "SMOKE AND MIRRORS",
+    "sub": "HAZE: NATIONAL TOKYO 編",
+    "source": "remake/js/chapters/ch3.js chapterTitle() calls"
+  },
+  "delivery_format": {
+    "original": [
+      1672,
+      941
+    ],
+    "plate": [
+      1280,
+      720
+    ],
+    "note": "既存章タイトル画の納品形式に一致（originals 1672x941、runtime想定 1280x720）。タイポグラフィは採用プレート（ch2-title.webp）のレイアウトで別合成"
+  },
+  "candidates": [
+    {
+      "id": "cand1",
+      "key": "mashiro-mirror",
+      "concept": "ましろと鏡像（鏡の中だけ笑う映り）。窓の外に東京タワー",
+      "original": "originals/ch3-cand-1.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "original_bytes": 2382722,
+      "original_sha256": "1495beaecdbe9b2f1455f5db08506209c1c84e29fad49fc8d12ab88bc98835fc",
+      "plate": "plates/ch3-title-cand-1.png",
+      "plate_size": [
+        1280,
+        720
+      ],
+      "plate_bytes": 1449929,
+      "plate_sha256": "28692466da7f51da69399a10dd5b800e340db9a2aa6319e8829f58faaef7979a",
+      "prompt": "prompts/cand1.txt",
+      "references": [
+        "assets/sprites/characters/mashiro/chr_mashiro_normal.png"
+      ]
+    },
+    {
+      "id": "cand2",
+      "key": "kuze-vs-hajime",
+      "concept": "久世朔の大写しと小さなはじめの背中。全国大会アリーナ",
+      "original": "originals/ch3-cand-2.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "original_bytes": 2026451,
+      "original_sha256": "8f45718c733b2a77e5b65736035ce7c1fac573195b1b467c218b35bf1a80c919",
+      "plate": "plates/ch3-title-cand-2.png",
+      "plate_size": [
+        1280,
+        720
+      ],
+      "plate_bytes": 1254997,
+      "plate_sha256": "5476d49de3659d73f94c16a3d59b45a9815eca6ac82ee626ad9397e0152013b8",
+      "prompt": "prompts/cand2.txt",
+      "references": [
+        "assets/sprites/characters/kuze/chr_kuze_smug.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png"
+      ]
+    },
+    {
+      "id": "cand3",
+      "key": "volk-observer",
+      "concept": "観客席最後列で手帳を取るヴォルク。遠くの舞台に一人",
+      "original": "originals/ch3-cand-3.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "original_bytes": 1659472,
+      "original_sha256": "203e411ac3ebd40c9d5124c9bbc31ac11f5530a4b419064b8d3b03cfb1ef8f85",
+      "plate": "plates/ch3-title-cand-3.png",
+      "plate_size": [
+        1280,
+        720
+      ],
+      "plate_bytes": 977141,
+      "plate_sha256": "596866ddf6d1eb31157043029fec673e7a8f081beacab93149ac7e128ee1c730",
+      "prompt": "prompts/cand3.txt",
+      "references": [
+        "assets/sprites/characters/volk/chr_volk_normal.png"
+      ]
+    },
+    {
+      "id": "cand4",
+      "key": "rooftop-strategy",
+      "concept": "東京の屋上ではじめとましろの作戦会議。双の煙",
+      "original": "originals/ch3-cand-4.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "original_bytes": 2078042,
+      "original_sha256": "5343764bfa3ad9963658bf3f46ba53fbc036ecae3fb159cdd76044af647bada1",
+      "plate": "plates/ch3-title-cand-4.png",
+      "plate_size": [
+        1280,
+        720
+      ],
+      "plate_bytes": 1272841,
+      "plate_sha256": "c9822e5763d897ef639f86f33837ced1b7804802d1c21ae98d8dc368485213bf",
+      "prompt": "prompts/cand4.txt",
+      "references": [
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/mashiro/chr_mashiro_normal.png"
+      ]
+    },
+    {
+      "id": "cand5",
+      "key": "stage-still-life",
+      "concept": "人物なし静物。鏡面テーブルの水タバコと空の優勝席、双の煙",
+      "original": "originals/ch3-cand-5.png",
+      "original_size": [
+        1672,
+        941
+      ],
+      "original_bytes": 2032331,
+      "original_sha256": "fdd1c4e21fa4f06a8b8ebcc439b4901e602a8f05a4bc670a24ffa75c2896bd1d",
+      "plate": "plates/ch3-title-cand-5.png",
+      "plate_size": [
+        1280,
+        720
+      ],
+      "plate_bytes": 1233520,
+      "plate_sha256": "f927bb6d4c7566255a9731749fce2320a62ebed832089f2b171a92a9b71213fe",
+      "prompt": "prompts/cand5.txt",
+      "references": []
+    }
+  ],
+  "status": "owner selection pending; not wired into remake/js/core/chapter-title-art.js"
+}
