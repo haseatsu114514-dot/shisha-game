@@ -55,12 +55,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（目の前にいる栞さんが好きだ。その気持ちは、何も変わらない）"
+          "text": "（年上でも年下でも、目の前の栞さんは何も変わらない）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（この人の隣にいたい。……そう思っているのは、俺の方だ。なら、言うのは、俺からだ）"
+          "text": "（話してくれた分、俺も正直に返したい。……俺は、どう答えたい？）"
         },
         {
           "type": "choice",
@@ -70,7 +70,7 @@
               "next_id": "confession_minto_accept"
             },
             {
-              "text": "「話してくれてありがとう」（ライバルのままでいる）",
+              "text": "「話してくれてありがとう」と返す（今のままでいる）",
               "next_id": "confession_minto_reject"
             }
           ]
@@ -307,7 +307,7 @@
               "next_id": "confession_tsumugi_accept"
             },
             {
-              "text": "「ごめん、そういう気持ちじゃないと思う」と正直に言う",
+              "text": "「また明日、いつもの席で」と、いつも通りに返す",
               "next_id": "confession_tsumugi_reject"
             }
           ]
@@ -440,7 +440,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……はい。教えてくれて……ありがとうございます"
+          "text": "……言いかけたこと、今日は、しまっておきます"
         },
         {
           "speaker": "",
@@ -653,7 +653,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（ましろちゃんのこと、友達としか見ていなかったわけじゃ……）"
+          "text": "（友達、なのかな。それとも……）"
         },
         {
           "type": "choice",
@@ -663,7 +663,7 @@
               "next_id": "confession_mashiro_accept"
             },
             {
-              "text": "「大切な友達です」と答える",
+              "text": "「大切な友達だよ」と答える",
               "next_id": "confession_mashiro_reject"
             }
           ]
@@ -844,7 +844,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺もです。いつも仕事の話に戻せるから、言わずに済ませてました"
+          "text": "仕事の話なら、いくらでもできるんですけどね"
         },
         {
           "speaker": "rin",
@@ -1024,7 +1024,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "最近は、会いたい方が先になりました"
+          "text": "最近は、どっちで来てるのか、自分でも分からなくて"
         },
         {
           "speaker": "samechan",
@@ -1044,7 +1044,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、同じです"
+          "text": "……俺も、言葉を探してました"
         },
         {
           "speaker": "samechan",
