@@ -3149,6 +3149,26 @@
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/relationship-pace"
       }
+    },
+    {
+      "id": "ch1-arrival",
+      "title": "Chapter 1 arrival conflict order and SAVE compatibility (#2089)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch1.js",
+        "remake/js/chapters/ch1-arrival.js",
+        "remake/js/daily/romance.js",
+        "remake/js/vn/engine.js",
+        "data/dialogue/ch1_tournament.json",
+        "data/dialogue/remake_ch1.json",
+        "remake/test/browser/ch1_arrival.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch1_arrival.mjs"
+      ],
+      "chrome": "playwright"
     }
   ]
 }
