@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 import { test } from "node:test";
+import { demoFor } from "../js/craft/demo.js";
 
 const source = await readFile(new URL("../js/craft/session.js", import.meta.url), "utf8");
 const helpSource = await readFile(new URL("../js/craft/bench-ui.js", import.meta.url), "utf8");
@@ -40,7 +41,7 @@ async function harness(mode = "tutorial", override = null) {
     const values = Object.fromEntries(declaration[1].split(",").map(x => [x.trim(), () => {}]));
     if (spec === "./bench-ui.js") Object.assign(values, help.namespace);
     if (spec === "../core/state.js") { values.state = statePort.state; values.save = () => { saved++; }; }
-    if (spec === "./demo.js") { values.demoFor = step => step === "holes" ? {} : null; values.openDemoSheet = async (_, step) => { demos.push(step); }; }
+    if (spec === "./demo.js") { values.demoFor = demoFor; values.openDemoSheet = async (_, step) => { demos.push(step); }; }
     if (spec === "../core/util.js") values.sleep = () => new Promise(resolve => sleepers.push(resolve));
     const dep = new vm.SyntheticModule(Object.keys(values), function () {
       for (const [key, value] of Object.entries(values)) this.setExport(key, value);
@@ -73,16 +74,29 @@ async function harness(mode = "tutorial", override = null) {
   };
 }
 
-test("hole demo appears once in lesson, including when skipped, and is saved", async () => {
+for (const step of ["holes", "place"]) test(`${step} demo helper appears once in lesson, including when skipped, and is saved`, async () => {
   const h = await harness();
-  await h.mod.namespace.showStepDemo(h.cs, "holes");
-  await h.mod.namespace.showStepDemo(h.cs, "holes");
-  assert.deepEqual(h.demos, ["holes"]);
-  assert.equal(h.statePort.state.flags.seenDemo.holes, true);
+  await h.mod.namespace.showStepDemo(h.cs, step);
+  await h.mod.namespace.showStepDemo(h.cs, step);
+  assert.deepEqual(h.demos, [step]);
+  assert.equal(h.statePort.state.flags.seenDemo[step], true);
   assert.equal(h.saved, 1);
   const drill = await harness("drill");
-  await drill.mod.namespace.showStepDemo(drill.cs, "holes");
+  await drill.mod.namespace.showStepDemo(drill.cs, step);
   assert.equal(drill.demos.length, 0);
+});
+
+test("place cues cover the measured clip and only register existing controls", () => {
+  const demo = demoFor("place");
+  assert.equal(demo.src, "./media/demo-place.mp4");
+  assert.deepEqual(demo.cues.map(c => c.from), [0, 3, 9.36]);
+  for (const [i, cue] of demo.cues.entries()) {
+    assert(cue.text && cue.to > cue.from);
+    assert(cue.arrow.x >= 0 && cue.arrow.x <= 1 && cue.arrow.y >= 0 && cue.arrow.y <= 1);
+    if (i) assert.equal(demo.cues[i - 1].to, cue.from);
+  }
+  assert.equal(demo.cues.at(-1).to, Infinity);
+  assert.equal(demoFor("unknown"), null);
 });
 
 test("demo sheet pauses the craft clock during replay", async () => {

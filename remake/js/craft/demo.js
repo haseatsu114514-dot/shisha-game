@@ -12,6 +12,15 @@ export const STEP_DEMOS = Object.freeze({
       { from: 25, to: Infinity, text: "よし、開通。結果を見て、間隔を確かめろ", arrow: { x: .865, y: .78, rotate: 0 } },
     ],
   },
+  place: {
+    title: "炭の配置のお手本",
+    src: "./media/demo-place.mp4",
+    cues: [
+      { from: 0, to: 3, text: "炭の配置だ。右の選択肢を見ろ", arrow: { x: .63, y: .065, rotate: 180 } },
+      { from: 3, to: 9.36, text: "『トライアングル（3個）』を押せ", arrow: { x: .63, y: .065, rotate: 180 } },
+      { from: 9.36, to: Infinity, text: "炭焼きの画面に切り替わった。配置を選ぶ操作はここまでだ", arrow: { x: .30, y: .45, rotate: 0 } },
+    ],
+  },
 });
 
 export function demoFor(step) { return STEP_DEMOS[step] || null; }

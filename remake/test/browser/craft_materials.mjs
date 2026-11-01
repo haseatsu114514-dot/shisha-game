@@ -21,8 +21,85 @@ async function setup(page) {
   });
 }
 await suite("craft-materials", async check => {
+  const run = check;
+  check = (...args) => !process.env.TEST_CASES || args[0].includes(process.env.TEST_CASES) ? run(...args) : Promise.resolve();
   for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
     { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true, reducedMotion: "reduce" }]]) {
+    await check(`${device}-place-demo-isolated-player`, async page => {
+      await page.evaluate(async () => {
+        const core = await import('./js/core/state.js'); core.newGame(); core.state.flags._coal_cube_learned = true;
+        core.config.bgmVolume = core.config.seVolume = 0;
+        const session = await import('./js/craft/session.js'), steps = await import('./js/craft/steps.js');
+        const cs = session.newSession('rehearsal'); cs.preview = true; cs.mix = { double_apple: 10, mint: 2 }; cs.pack = 'normal';
+        const bench = session.openBench(cs); await bench.ready;
+        window.PD = { core, session, cs, bench, clock: (await import('./js/craft/clock.js')).createCraftClock(bench.panel) };
+        PD.step = steps.stepPlace(cs);
+      });
+      await page.locator('[data-test="opt-triangle"]').waitFor();
+      // Registration/player QA only. Existing horizontal CSS hides the hint's manual link.
+      console.log(`[place-demo ${device}] existing manual link visible: ${await page.locator('.bench-demo-link').isVisible()}`);
+      const open = () => page.evaluate(async () => {
+        PD.sheet = (await import('./js/craft/demo.js')).openDemoSheet(PD.bench.root, 'place');
+      });
+      const before = await page.evaluate(() => JSON.stringify({ state: PD.core.state, cs: PD.cs, storage: { ...localStorage } }));
+      await open();
+      const video = page.locator('.bench-demo-stage video');
+      await video.evaluate(v => new Promise((resolve, reject) => {
+        if (v.readyState >= 1) return resolve();
+        v.addEventListener('loadedmetadata', resolve, { once: true }); v.addEventListener('error', reject, { once: true });
+      }));
+      const info = await video.evaluate(v => ({ duration: v.duration, width: v.videoWidth, height: v.videoHeight }));
+      assert(info.duration >= 15 && info.duration <= 45); assert.equal(info.width, 1280); assert.equal(info.height, 720);
+      assert(await page.evaluate(() => PD.bench.panel.inert && PD.clock.paused));
+      await video.evaluate(async v => {
+        if (v.readyState < 2) await new Promise(resolve => v.addEventListener('loadeddata', resolve, { once: true }));
+        v.playbackRate = 4; await v.play();
+      });
+      // Python's preview server has no HTTP Range support. Advance native playback, not currentTime.
+      await page.waitForFunction(() => document.querySelector('.bench-demo-stage video').currentTime >= 4);
+      await video.evaluate(v => v.pause());
+      await page.waitForFunction(() => document.querySelector('.bench-demo-caption').textContent.includes('トライアングル'));
+      assert.equal(await page.locator('.bench-demo-arrow').evaluate(n => n.style.left), '63%');
+      const stopped = await video.evaluate(v => v.currentTime);
+      await page.waitForTimeout(200); assert.equal(await video.evaluate(v => v.currentTime), stopped);
+      assert.equal(await page.evaluate(() => PD.clock.now()), 0);
+      await video.evaluate(v => v.play());
+      await page.waitForFunction(() => document.querySelector('.bench-demo-stage video').currentTime >= 10);
+      await video.evaluate(v => v.pause());
+      await page.waitForFunction(() => document.querySelector('.bench-demo-caption').textContent.includes('炭焼きの画面'));
+      assert.equal(await page.locator('.bench-demo-arrow').evaluate(n => n.style.top), '45%');
+      for (const selector of ['.bench-demo-skip', '.bench-demo-caption', '.bench-demo-finish']) {
+        await page.locator(selector).scrollIntoViewIfNeeded(); await assertFits(page, selector);
+      }
+      await click(page, '.bench-demo-skip', touch);
+      assert.equal(await page.locator('.bench-demo-sheet').count(), 0);
+      assert.equal(await page.evaluate(() => PD.bench.panel.inert), false);
+      assert.equal(await page.evaluate(() => JSON.stringify({ state: PD.core.state, cs: PD.cs, storage: { ...localStorage } })), before);
+      await open();
+      await page.locator('.bench-demo-stage video').evaluate(async v => {
+        await new Promise(resolve => { if (v.readyState >= 1) resolve(); else v.addEventListener('loadedmetadata', resolve, { once: true }); });
+        v.playbackRate = 16; await v.play();
+      });
+      await page.waitForFunction(() => document.querySelector('.bench-demo-stage video').ended);
+      await click(page, '.bench-demo-finish', touch);
+      assert.equal(await page.locator('.bench-demo-sheet').count(), 0);
+      assert.equal(await page.evaluate(() => JSON.stringify({ state: PD.core.state, cs: PD.cs, storage: { ...localStorage } })), before);
+      await open();
+      const loaded = await page.evaluate(() => {
+        PD.core.save(); PD.core.newGame(); PD.core.load(); return JSON.stringify(PD.core.state);
+      });
+      await click(page, '.bench-demo-skip', touch);
+      assert.equal(await page.evaluate(() => JSON.stringify(PD.core.state)), loaded, 'late dismissal after LOAD grants nothing');
+      await open();
+      await page.evaluate(async () => {
+        const sheet = PD.bench.root.querySelector('.bench-demo-sheet');
+        (await import('./js/core/ui.js')).clearScreen();
+        // Existing sheet has no owner observer; dispose the detached media explicitly in this fixture.
+        sheet.querySelector('.bench-demo-skip').click(); PD.clock.dispose();
+      });
+      assert.equal(await page.locator('.bench-demo-sheet').count(), 0);
+      assert.equal(await page.evaluate(() => JSON.stringify(PD.core.state)), loaded, 'screen exit grants nothing');
+    }, options);
     await check(`${device}-chapter-five-exact-12g`, async page => {
       for (const bowl of ["silicone_bowl", "hagal_80beat", "suyaki_hagal"]) {
         await page.evaluate(async bowl => {

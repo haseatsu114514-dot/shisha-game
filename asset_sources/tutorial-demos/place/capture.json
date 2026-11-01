@@ -1,0 +1,64 @@
+{
+  "sourceCommit": "69cfc2577cf960818d9cb452b94e706f6c531e14",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "mode": "rehearsal",
+  "fixture": {
+    "coalLessonComplete": true,
+    "preview": true,
+    "mix": {
+      "double_apple": 10,
+      "mint": 2
+    },
+    "pack": "normal"
+  },
+  "realInput": {
+    "selector": "[data-test=\"opt-triangle\"]",
+    "box": {
+      "x": 473,
+      "y": 83,
+      "width": 379,
+      "height": 104.390625
+    },
+    "clickedAt": 8.983250141143799
+  },
+  "heatVisibleAt": 9.356250047683716,
+  "duration": 15.976250171661377,
+  "frames": 405,
+  "errors": [],
+  "noScoringAutomation": true,
+  "encoding": {
+    "runtime": "ffmpeg -i raw.mp4 -an -c:v libx264 -crf 28 -preset slow -pix_fmt yuv420p -movflags +faststart demo-place.mp4",
+    "raw": "ffmpeg concat CDP JPEG timestamps, fps30, libx264 crf18 preset slow",
+    "audio": "none"
+  },
+  "outputs": {
+    "asset_sources/tutorial-demos/place/raw.mp4": {
+      "bytes": 644893,
+      "sha256": "4c3ce6b0eef47d963d41b5603151605e00a4b3a4173b981efbfa9ddb61f513be"
+    },
+    "remake/media/demo-place.mp4": {
+      "bytes": 298909,
+      "sha256": "d3c9658d49db056b08984ac83292655dd184aabff64ab92760dfbb4d5b968115"
+    }
+  },
+  "cueSource": "remake/js/craft/demo.js:STEP_DEMOS.place",
+  "runtimeProbe": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "r_frame_rate": "30/1"
+      }
+    ],
+    "format": {
+      "duration": "16.033333",
+      "size": "298909"
+    }
+  }
+}
