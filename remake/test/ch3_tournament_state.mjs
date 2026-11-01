@@ -1,3 +1,4 @@
+import "./tournament_resource_snapshot.mjs";
 import "./tournament_standings.mjs";
 import assert from "node:assert/strict";
 import { newState } from "../js/core/state.js";
