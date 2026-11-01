@@ -1,6 +1,6 @@
 # 空・縁起・分人の場面と接続
 
-物語の正本は [story_and_structure.md](../brand/story_and_structure.md)。改稿前の筋を併記せず、現在の実装状態と場面の役割をここで管理する。
+物語の正本は [story_and_structure.md](../../brand/story_and_structure.md)。改稿前の筋を併記せず、現在の実装状態と場面の役割をここで管理する。
 
 ## 実装済みと台本
 

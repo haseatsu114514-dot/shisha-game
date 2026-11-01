@@ -23,6 +23,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 - 確認するのは、依頼外の重大な仕様変更・結果を大きく変える曖昧さ・破壊的操作・新しい権限や公開範囲・大容量通信のときだけ。
 - WARN、CLI不在、利用枠不明、旧資料との食い違いだけを理由に止めない。事実を確認して、使える経路で進める。
 - ゲームの挙動・UI・世界観の変更は依頼範囲に収める。キャラ設定・台詞・報酬・改行は正本とスキーマに従う。
+- シーシャ台・ハガル・HMD・炭・ホースが写る画像を生成・修正するときは（Codexアプリで直接生成する場合も）、[画像生成の必須手順](docs/shisha_reference.md#4-画像生成の必須手順機材の形と構造)を実行する: 貼る文をプロンプトに入れ、`asset_sources/shisha-hardware-reference/photos/` の実写を見て（渡せるツールなら渡し）、生成後チェックで検品してから採用する。
 - 好感度イベントを追加・変更・接続するときは、全章共通の[交流の時系列ルール](docs/gameplay_agent_reference.md#交流の時系列ルール必須)を必ず守る。好感度と大会進行・面識を同一視せず、大会後に遅れて読む場合の分岐を実装・検証する。
 - 新規作業は最新 `origin/main` からbranchを作る。保存済みPRの続きは既存branchで行う。**mainより遅れているだけでは毎回mergeしない**。競合解消・必要な依存変更があるときだけ取り込む。
 
@@ -89,7 +90,7 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
   git clone --depth 1 --filter=blob:none --sparse https://github.com/haseatsu114514-dot/shisha-game.git
   cd shisha-game
   git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/tools/' '/brand/' '/experiments/' \
-    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/*/' '/docs/qa/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/'
+    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/archive/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/' '/asset_sources/shisha-hardware-reference/'
   ```
 
   `asset_sources/` や `docs/qa/` の特定フォルダが要るときは `git sparse-checkout add '/asset_sources/<フォルダ>/'` でそのフォルダだけ取る。範囲外に新しいファイルを足すときは `git add --sparse <パス>`。
@@ -107,7 +108,7 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
 - 作業の区切りと終了時に、有効な変更をcommitして作業branchへpushし、PRに変更点・テスト・未完・次の一手を書く。push が止まったら回避せず、未保存の差分と再開方法を報告する。
 - 終える前に `git status` と `git log @{u}..HEAD`（またはAPIのremote head照合）で、自分の未保存・未pushがないことを確認する。
 - 要望台帳（`docs/owner_requests.md`）のIDは、最新mainを見て次の空き番号を使う。
-- 利用枠が残り少ない・セッション終了が近いときは、大きな新規作業を始めず保存とPR整理を優先する。オーナーが望む小さな作業は続けてよい。残量は公式に見える場合だけ参照し、推測しない。Macでは任意で `python3 tools/agent_quota_guard.py check codex|claude` を使える（[詳細](docs/agent_quota_guard.md)）。
+- 利用枠が残り少ない・セッション終了が近いときは、大きな新規作業を始めず保存とPR整理を優先する。オーナーが望む小さな作業は続けてよい。残量は公式に見える場合だけ参照し、推測しない。Macでは任意で `python3 tools/agent_quota_guard.py check codex|claude` を使える（[詳細](docs/tools/agent_quota_guard.md)）。
 - AIの交代は、変更をpushしたうえでPRかIssueに DONE / TODO / TEST / NEXT を書くだけでよい。後任はそのbranchで続ける。予約の受け渡しは不要。
 - オーナーが「止めてマージ」「終了整理」と言ったら、新しい実装を止め、push → 条件を満たすPRをmerge → 未完をIssue/PRに記録 → 短く報告する。
 - 終了報告は **MERGED: #番号 / PENDING: #番号(理由) / ISSUES: #番号 / BRANCH: 名前 / NEXT: 次の1手** の形で短く書く。

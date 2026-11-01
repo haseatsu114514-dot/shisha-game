@@ -15,6 +15,7 @@ async function entrance(page) {
 }
 async function reachableControls(page) {
   const menu = page.locator(".axe-menu");
+  // The entrance keeps eleven controls; the division and match length live on the setup sheet of the competitive modes.
   assert.equal(await menu.locator("button, a").count(), 11);
   assert.deepEqual(await menu.locator(".axe-menu-mode").evaluateAll(nodes => nodes.map(n => n.dataset.kind)), ["practice", "league", "versus"]);
   assert.equal(await menu.locator("h1").textContent(), "AXE THROW");

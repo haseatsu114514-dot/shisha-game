@@ -5,7 +5,7 @@
   - **第3版（本書）**: 「商店街を歩くはもう無い機能」「LIMEアイコンは実際のスマホをイメージした角丸四角で意図的」「シーシャ屋以外のシール風アイコンは意図的」「ステータスの三角形は不要」「白×ラベンダーのテロップボックスは良いが、日常の黒と金とは相性が悪い。白×ラベンダー＋もう一色でUI全体を作ってみては」「ウインドウやメニューは画像生成で見た目を良くしたい。今はシンプルすぎる」。
   - **採用（同日）**: 「このUIで行こう」「ステータスアップは昔の概念なので使わない」「3色目は琥珀」「看板はA」「画像は生成してから組み込み」「大会パートはリメイク中なので今度」。台帳は `docs/owner_requests.md` の DUI01〜11。
 - 作成: 2026-10-31 / 担当: Claude
-- 位置づけ: **設計資料**。コードの変更は §A の不具合修正（`remake/css/store-logos.css` の1行）だけ。画像生成の指示は `docs/ui_lounge_prompts.md` 末尾「紙×ラベンダーUI生成プロンプト」に置いた（未生成）。採用が決まった項目から `docs/master_spec.md`（#19・#20・#22）と `docs/owner_requests.md` の台帳へ写し、本書は `docs/archive/` へ移す。
+- 位置づけ: **設計資料**。コードの変更は §A の不具合修正（`remake/css/store-logos.css` の1行）だけ。画像生成の指示は `docs/prompts/ui_lounge_prompts.md` 末尾「紙×ラベンダーUI生成プロンプト」に置いた（未生成）。採用が決まった項目から `docs/master_spec.md`（#19・#20・#22）と `docs/owner_requests.md` の台帳へ写し、本書は `docs/archive/` へ移す。
 - 画面モックアップ（5枚。MENU は左のタブをクリックで切り替わる）: <https://claude.ai/artifact/77Sy6fxqdKG48BUB3GS4Zs>。背景・立ち絵・顔アイコン・店のロゴ・施設のシールは本編の実画像、枠と文字はCSSのモック（画像生成前の形）。
 - 計測の出どころ: main `c4067af2` の `remake/` を 1280×800 のChromiumで撮影。保存データは変更していない。
 - 扱わないもの: 制作画面・大会パート（別途リメイク中。DUI10）・タイトル・くじの演出・心得の盤の画面そのもの。**STATUS UP の通知は昔の概念なので新しいUIでは使わない**（DUI04。成長の表示は経験値のチップと Lv のゲージ）。
@@ -121,7 +121,7 @@ CSSだけの紙と線では「シンプルすぎる」ので、面を画像生�
 | 4 | `assets/ui/paper/menu-bg.png` | MENU の背景 | 2464×1344。二重線の枠、左下にシーシャ台の小さなシルエットと煙、左 220px の淡い帯 |
 
 - **2026-10-31 生成済み**: 4枚とも生成し、ゲームのラベンダーへ色を合わせて `assets/ui/paper/` に採用した（原画・指示・SHA は `asset_sources/ui/paper-20261031/README.md`）。会話窓・板・ラベンダーの面は UIテーマ `paper`（既定）として組み込み済み。MENU背景は全画面MENUの段階で使う。
-- プロンプト本文: `docs/ui_lounge_prompts.md` 末尾「紙×ラベンダーUI生成プロンプト」（共通指針＋4枚、Codex にそのままコピペ）。
+- プロンプト本文: `docs/prompts/ui_lounge_prompts.md` 末尾「紙×ラベンダーUI生成プロンプト」（共通指針＋4枚、Codex にそのままコピペ）。
 - 受け取り後: `remake/tools/build_ui_skin.py` に `paper` 系の切り出し・WebP化を足し、`remake/img/ui/paper/` へ。`ui-art.css` で `.panel/.modal-box/.hud-card/.map-info/.vn-box/.vn-name/.btn` の面を `border-image` の九分割に差し替える。文字・ゲージ・チップはコードのまま。
 - 生成の注意: 文字・数字・アイコンを焼き込まない。中央は無地（文字が乗る）。装飾は細い線と小さな煙だけで、中世風・レース・リボンを入れない（共通指針に明記済み）。
 
@@ -165,5 +165,5 @@ CSSだけの紙と線では「シンプルすぎる」ので、面を画像生�
 - `docs/owner_requests.md` GUI01〜31・UX01〜17・PF18〜32・UIT24-01〜05・LM01〜06
 - `docs/gameplay_agent_reference.md` 書体の決まり（#1352）・ステータス表示ルール
 - `docs/stat-design/SPEC.md`（経験値・火種・盤）・`remake/README.md` 2026-10-30 節
-- `docs/ui_lounge_prompts.md`（既存の生成UIの分業と、今回の紙×ラベンダーのプロンプト）
+- `docs/prompts/ui_lounge_prompts.md`（既存の生成UIの分業と、今回の紙×ラベンダーのプロンプト）
 - 実装: `remake/js/daily/{hud,map,status,calendar,phone,tonari,shop,spots,facility-icons,relationship-status}.js`・`remake/js/core/{store-logos,growth,growth-board,ui-theme}.js`・`remake/js/vn/engine.js`・`remake/css/{base,daily,shop,vn,vn-composition,ui-themes,ui-art,store-logos,facility-icons}.css`
