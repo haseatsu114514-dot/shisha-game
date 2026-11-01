@@ -134,7 +134,7 @@ try {
     await check(`${label} layout and inner becoming spoken`, async () => {
       await page.setViewportSize(viewport);
       await start("hiyori_preview_romance");
-      assert.equal(await page.locator(".vn-inner").evaluate((n) => getComputedStyle(n).color), "rgb(255, 182, 204)");
+      assert.equal(await page.locator(".vn-inner").evaluate((n) => getComputedStyle(n).color), "rgb(168, 52, 95)");
       await fit();
       await page.screenshot({ path: path.join(artifacts, `${label}-inner.png`) });
       await next(); await next();
