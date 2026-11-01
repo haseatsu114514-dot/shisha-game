@@ -1,4 +1,5 @@
 // 味の系統ごとの熟練度。同じ味のメーカー違いは経験を共有する。
+import { growthPerks } from "./growth-effects.js";
 export const MASTERY_THRESHOLDS = [0, 6, 18, 36, 60];
 const MASTERY_MAX_XP = MASTERY_THRESHOLDS.at(-1);
 export const flavorFamily = (id, flavors = {}) => flavors[id]?.family || id;
@@ -12,6 +13,7 @@ export function gainFlavorExperience(s, mix, budget, flavors = {}) {
   const valid = Object.entries(mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0);
   const total = valid.reduce((sum, [, g]) => sum + g, 0);
   if (!total || !Number.isFinite(budget) || budget <= 0) return [];
+  budget *= 1 + (growthPerks(s)?.tongue || 0) / 100;
   const families = {};
   for (const [id, g] of valid) { const f = flavorFamily(id, flavors); families[f] = (families[f] || 0) + g; }
   s.flavorMastery ||= {};

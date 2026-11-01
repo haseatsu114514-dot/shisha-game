@@ -1,3 +1,4 @@
+import { growthPerks } from "../core/growth-effects.js";
 // 吸い出し（CLAUDE.md: 最低2回・3回までは無傷・それ以上は葉が痩せる。やめ時は自分で選ぶ）
 // 左右に振れる針を止めた位置で、熱を入れる吸い／キープ／熱を逃がす吸い。中央の細い帯が「ジャスト」。
 // 熱管理（大会のR3・調整）も同じ針のゲーム。「炭を交換しますか？」で個数を選び、交換した炭で温度が戻ってから、
@@ -125,7 +126,7 @@ async function pullGame(cs, mode) {
   const concentration = mode.focus(cs);
   // 疲れが付くと途中から針が速く、成功帯が狭くなるので、毎回計算し直す。
   const slowNow = () => skill.slow(cs) * (tutorial ? 1.3 : 1) * concentration.slow;
-  const widenNow = () => skill.window(cs) * (tutorial ? 1.4 : 1) * concentration.window;
+  const widenNow = () => skill.window(cs, "pull") * (tutorial ? 1.4 : 1) * concentration.window;
   let widen = widenNow();
   let coreTemp = mode.start(cs);
   const initialTemp = coreTemp;
@@ -396,7 +397,7 @@ async function pullGame(cs, mode) {
     thermometer.preview(null);
     buttons.querySelectorAll("button").forEach((b) => { b.disabled = true; });
     SE.select();
-    coolRate = baseCool * COAL_COOL[coals];
+    coolRate = baseCool * COAL_COOL[coals] / (1 + (growthPerks(state)?.coal || 0) / 100);
     if (!coals) {
       cs.careCoals = { count: 0, picks: [] };
       lead.textContent = "消耗した炭のまま整える。熱は落ちていく";

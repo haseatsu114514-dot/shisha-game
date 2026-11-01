@@ -123,11 +123,13 @@ await suite("growth-levelup", async (check) => {
       assert.equal(await page.evaluate(() => __remake.state.flags._kannon_growth_intro_done), true);
       assert.match(await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(x => x.text).join(" ")), /三つの盤/);
       for (let i = 0; i < 2; i++) { // 火種2つを使い切る
-        await tap('.gb-node[data-status="available"]');
+        await tap(i === 0 ? t("board-node-B1") : '.gb-node[data-status="available"]');
         await tap(t("board-light"));
       }
       await tap(t("board-decide"));
       await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      const maximum = await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina());
+      assert(maximum >= 102, "B1の最大体力+2が実際に効く");
       await page.evaluate(async () => { await window.entryFlow; await window.entryMap(); });
       await page.locator(".map:not(.done)").waitFor();
       assert.equal(await page.locator(t("kannon-hidane")).count(), 0);
@@ -146,6 +148,7 @@ await suite("growth-levelup", async (check) => {
       assert.equal(saved.before, saved.after);
       assert.equal(saved.intro, true);
       assert.equal(saved.reel, await page.evaluate(() => window.entryReel));
+      assert.equal(await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina()), maximum);
       await tap(t("hud-status"));
       assert.equal(await page.evaluate(() => window.entryStatus), 1);
     }, options);

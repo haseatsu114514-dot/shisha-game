@@ -7,6 +7,7 @@ import { pendingLoveStage, questionComplete } from "./affinity-stages.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
 import { conditionForRatio, STAMINA_CONDITIONS } from "./condition.js";
+import { growthPerks } from "./growth-effects.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
@@ -353,7 +354,7 @@ function reportAffinityGain(opts, payload, carryBefore, carryAfter, cap) {
 
 export function gainAffinity(id, pts, opts = {}) {
   if (!id || !(pts > 0)) return;
-  let mult = 1 + 0.2 * tier01("charm");
+  let mult = Math.max(1 + 0.2 * tier01("charm"), 1 + (growthPerks(state)?.charm || 0) / 100);
   if ((state.lovers || []).includes(id)) {
     if (!bond.private) return;
     releaseLoveAffinity(id);
@@ -405,7 +406,7 @@ export function gainAffinity(id, pts, opts = {}) {
 export const STAMINA_LOW = 25;
 
 export function maxStamina() {
-  return 100 + GUTS_STAMINA_BONUS[step("guts") - 1];
+  return 100 + Math.max(GUTS_STAMINA_BONUS[step("guts") - 1], growthPerks(state)?.stamina || 0);
 }
 
 export function addStamina(n) {

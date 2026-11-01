@@ -22,9 +22,11 @@ async function load(url) {
   const mod = values ? new vm.SyntheticModule(Object.keys(values), function () {
     for (const [k, v] of Object.entries(values)) this.setExport(k, v);
   }, { context, identifier: url.href }) : new vm.SourceTextModule(fs.readFileSync(url, "utf8"), { context, identifier: url.href });
-  modules.set(url.href, mod); await mod.link((s) => load(new URL(s, url))); return mod;
+  modules.set(url.href, mod); return mod;
 }
-const reelModule = await load(new URL("daily/reel.js", root)); await reelModule.evaluate();
+const reelModule = await load(new URL("daily/reel.js", root));
+await reelModule.link((specifier, parent) => load(new URL(specifier, parent.identifier)));
+await reelModule.evaluate();
 const reel = reelModule.namespace;
 const core = modules.get(new URL("core/state.js", root).href).namespace;
 // vm の別領域で作られた配列・オブジェクトを、比べる前に普通の値へ

@@ -5,6 +5,7 @@ import { mixMasteryProfile } from "../core/flavor-mastery.js";
 import { clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
+import { growthPerks } from "../core/growth-effects.js";
 import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
@@ -92,6 +93,8 @@ export function computeShisha(cs) {
 export function bonusOf(cs = null) {
   let b = 0;
   const notes = [];
+  const impression = cs?.mode === "tournament" ? growthPerks(state)?.stage || 0 : 0;
+  if (impression > 0) { b += impression; notes.push(`盤の第一印象 +${impression.toFixed(1)}`); }
   // この2記録は第1章の準備。後章の旧セーブに残っていても、その章の加点にはしない。
   if ((cs?.chapter ?? state?.chapter) === 1) {
     if (state?.rehearsal === "great") { b += 3; notes.push("前日リハーサルの手応え"); }

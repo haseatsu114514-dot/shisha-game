@@ -1,20 +1,15 @@
 // 経験値・レベル・火種（心得の盤 第二弾の芯。docs/stat-design/SPEC.md 1章・6.1a・6.3）。
 // 盤の画面ができるまでは GROWTH_BOARD=false の裏に置く。恋人EXPの保存・獲得表示だけは先行公開。
 // 開発中は URL の ?growth=1（または __remake.dev.growth(true)）でこの端末だけ有効にできる。
-// 有効でも能力の伸び方（旧しくみ）は変えない。経験値・レベル・火種を横で数えるだけ。
+// C2の切替までは旧成長も保持する。通常マスの恩恵は実際に効き、旧能力由来の効き目を下回らない。
 // 第2版（SPEC 2026-10-30）: 能力は3つ（才能・感覚・理論）、火種はレベル1つで2つ、色つきの火種は才・感・理。
 import { state, save } from "./state.js";
 import { emit } from "./bus.js";
 import { setExpHooks, affinityLevel } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
+import { growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
+export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
-export const GROWTH_BOARD = false;
-const PREVIEW_KEY = "suien_growth_preview";
-
-export function growthEnabled() {
-  if (GROWTH_BOARD) return true;
-  try { return globalThis.localStorage?.getItem(PREVIEW_KEY) === "1"; } catch { return false; }
-}
 export function setGrowthPreview(on) {
   try {
     if (on) globalThis.localStorage?.setItem(PREVIEW_KEY, "1");

@@ -95,7 +95,7 @@ export async function runHoles(cs) {
   stepPanel("holes", "アルミ穴あけ", "光が目印に重なった瞬間にタップ（Space）。リングが完成したら「次のリングへ」。選んだ配置を開け終えて仕上げる");
   const rings = ringsForTemplate(template);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
-  const perfWin = 4.2 * skill.window(cs) * (tutorial ? 1.5 : 1);
+  const perfWin = 4.2 * skill.window(cs, "holes") * (tutorial ? 1.5 : 1);
   const basePerfWin = perfWin / (1 + 0.45 * effectTier("sense"));
   const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (cs.retryAssist ? 1.35 : 1);
   const limit = tutorial ? 48 : TIME_LIMIT;

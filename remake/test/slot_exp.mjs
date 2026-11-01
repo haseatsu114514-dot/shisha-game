@@ -23,9 +23,11 @@ async function load(url) {
   const mod = values ? new vm.SyntheticModule(Object.keys(values), function () {
     for (const [k, v] of Object.entries(values)) this.setExport(k, v);
   }, { context, identifier: url.href }) : new vm.SourceTextModule(fs.readFileSync(url, "utf8"), { context, identifier: url.href });
-  modules.set(url.href, mod); await mod.link((s) => load(new URL(s, url))); return mod;
+  modules.set(url.href, mod); return mod;
 }
-const reelModule = await load(new URL("daily/reel.js", root)); await reelModule.evaluate();
+const reelModule = await load(new URL("daily/reel.js", root));
+await reelModule.link((specifier, parent) => load(new URL(specifier, parent.identifier)));
+await reelModule.evaluate();
 const reel = reelModule.namespace;
 const ns = (p) => modules.get(new URL(p, root).href).namespace;
 const core = ns("core/state.js"), growth = ns("core/growth.js"), { on } = ns("core/bus.js");

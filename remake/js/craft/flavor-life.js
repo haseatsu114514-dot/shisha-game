@@ -1,5 +1,7 @@
 // TH77〜82: 赤い葉5枚。使用中の1枚だけが赤→茶→黒→消えると進む。
 // hp は次に使える赤い葉の残数。最後の赤が茶色になったら、その一台は失敗。
+import { growthPerks } from "../core/growth-effects.js";
+import { state } from "../core/state.js";
 import { DB } from "../core/data.js";
 import { steamSecondsOf } from "./steam-time.js";
 
@@ -83,7 +85,7 @@ export function steamDamageMult(cs) {
 /** 過吸い1回あたりのダメージ量。体力が高い配合ほど小さく、長い蒸らしほど大きい。 */
 export function leafDamagePerPull(cs, flavorById = DB.flavorById) {
   const life = flavorMixLife(cs, flavorById) || LEAF_DAMAGE.mixLifeDefault;
-  return LEAF_DAMAGE.perOverPull / life * steamDamageMult(cs);
+  return LEAF_DAMAGE.perOverPull / life * steamDamageMult(cs) * (1 - (growthPerks(state)?.leaf || 0) / 100);
 }
 
 /** 止めた針位置の小さなズレ。roll は [-1,1]。ダメージが少ないうちはほぼ0で、増えるほど少しずつ広がる。 */

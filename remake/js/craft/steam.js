@@ -7,6 +7,7 @@ import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, step } from "../core/stats.js";
+import { growthPerks } from "../core/growth-effects.js";
 import { REFRESH_RADII, REFRESH_LABELS, refreshRestoresMental } from "../core/stat-step-tables.js";
 import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
@@ -39,7 +40,7 @@ export const REFRESH_RECHARGE_SECONDS = 8;
 export function refreshStock() { return 1; }
 export function refreshEffect() {
   const level = step("guts");
-  return { radius: REFRESH_RADII[level - 1], mentalRecovery: refreshRestoresMental(level),
+  return { radius: REFRESH_RADII[level - 1] + (growthPerks(state)?.breath || 0), mentalRecovery: refreshRestoresMental(level),
     label: REFRESH_LABELS[level - 1] };
 }
 
@@ -101,7 +102,8 @@ export async function runSteamDodge(cs) {
   let dur = steamPlaySeconds(seconds) * (tutorial ? 0.7 : 1);
   if (cs.steamShorten && !tutorial) dur = Math.min(dur, SHORT_DODGE_SECONDS);
   const focus = craftCondition(cs).focus;
-  const hitR = heartHitRadius(tier01("guts"), focus);
+  const hitR = Math.min(heartHitRadius(tier01("guts"), focus),
+    heartHitRadius(0, focus) * (1 - (growthPerks(state)?.dodge || 0) / 100));
   heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
   heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
   const spawnEvery = (eased ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
