@@ -25,7 +25,7 @@ function fire(test, type = "click") { const node = find(test); assert(node, test
 const settle = async () => { for (let i = 0; i < 80; i++) await Promise.resolve(); };
 async function frame(time) { now = time; const waiting = [...frames.values()]; frames.clear(); for (const callback of waiting) callback(now); await settle(); }
 const values = {
-  "growth-effects.js": { growthPerks: () => null },
+  "growth-effects.js": { growthPerks: () => null, growthSkill: () => false, SKILL_TUNING: {} },
   "util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo) => lo },
   "ui.js": { countdown: async () => {} },
   "data.js": { DB: { flavorById: {} } },

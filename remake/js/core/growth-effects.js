@@ -1,7 +1,13 @@
 // 通常のマス・色の台座の実効値。仮置きは含めず、確定した有効なIDを一度だけ数える。
 import { growthEnabled } from "./growth-mode.js";
 import { NODE_BY_ID } from "./growth-board-layout.js";
-import { SQUARE_PERKS, PERK_TIERS, GATE_TIER, NOTABLES } from "./growth-board-data.js";
+import { SQUARE_PERKS, PERK_TIERS, GATE_TIER, NOTABLES, SKILLS } from "./growth-board-data.js";
+
+/** 調整用の初期値。通常マスの百分率とは別に重ねる（SPEC 2.5）。 */
+export const SKILL_TUNING = Object.freeze({ sleep: .1, first: .2, mastery: .2, leaf: .2 });
+const skillIds = new Set(SKILLS.map(s => s.id));
+export const growthSkill = (s, id) => growthEnabled() && skillIds.has(id)
+  && Array.isArray(s?.growth?.nodes) && s.growth.nodes.includes(id);
 
 /** 表示と処理が共有する帯・要の倍率。 */
 export const perkMultiplier = node => (node.kind === "gate" ? GATE_TIER.mult : PERK_TIERS[node.band]?.mult || 1)

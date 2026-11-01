@@ -1,14 +1,14 @@
 // 経験値・レベル・火種（心得の盤 第二弾の芯。docs/stat-design/SPEC.md 1章・6.1a・6.3）。
 // 盤の画面ができるまでは GROWTH_BOARD=false の裏に置く。恋人EXPの保存・獲得表示だけは先行公開。
 // 開発中は URL の ?growth=1（または __remake.dev.growth(true)）でこの端末だけ有効にできる。
-// C2の切替までは旧成長も保持する。通常マスの恩恵は旧能力由来の効き目へ加算する（保存値へは書き戻さない）。
+// 無効時は旧成長、有効時は経験値へ置き換える。通常マスの恩恵は旧能力由来の効き目へ加算する（保存値へは書き戻さない）。
 // 第2版（SPEC 2026-10-30）: 能力は3つ（才能・感覚・理論）、火種はレベル1つで2つ、色つきの火種は才・感・理。
 import { state, save } from "./state.js";
 import { emit } from "./bus.js";
 import { setExpHooks, affinityLevel } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
 import { growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
-import { growthPerks } from "./growth-effects.js";
+import { growthPerks, growthSkill, SKILL_TUNING } from "./growth-effects.js";
 import { masteryHooks } from "./flavor-mastery.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
@@ -37,7 +37,7 @@ export const hidaneForLevel = () => HIDANE_PER_LEVEL;
 export const COLORED_GIFT = 2;      // 節目・大会・♥5の色つきの火種（1.5）
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
-export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30 };
+export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20 };
 /** その章で同じ鍵の 1・2回目 ×1.0、3回目 ×0.8、4回目 ×0.6、5回目以降 ×0.4（1.3） */
 export const FRESHNESS = [1, 1, 0.8, 0.6, 0.4];
 export const freshness = (count) => FRESHNESS[Math.min(FRESHNESS.length, Math.max(1, count)) - 1];
@@ -78,6 +78,7 @@ export function newGrowth() {
     milestones: [],        // 2つ目を渡した節目のレベル（重複防止）
     fresh: { chapter: 1, counts: {} }, // 新鮮さの鍵 -> その章の回数
     firsts: { people: [], places: [] }, // 周回内の「はじめて」
+    discoveries: { recipes: [], golden: [] }, // 自由行動で精算した配合の発見（周回ごと）
     today: { xp: 0, learned: {}, gifts: [] }, // 寝る時までの分。learned は鍵 -> 経験値（「今日学んだこと」）、gifts は♥5の贈り物
     seen: { fullLevelUp: false },      // フル演出を一度見たか（初回の判定）
     nodes: [],             // 盤で灯したマスID（確定済みだけ。紋は数えない。取った授業も入る）
@@ -133,6 +134,7 @@ export function ensureGrowth(s = state) {
   if (!g.fresh || typeof g.fresh !== "object") g.fresh = fresh.fresh;
   if (!g.fresh.counts || typeof g.fresh.counts !== "object") g.fresh.counts = {};
   g.firsts = { people: strings(g.firsts?.people), places: strings(g.firsts?.places) };
+  g.discoveries = { recipes: strings(g.discoveries?.recipes), golden: strings(g.discoveries?.golden) };
   if (!g.today || typeof g.today !== "object") g.today = fresh.today;
   g.today.xp = num(g.today.xp);
   if (!g.today.learned || typeof g.today.learned !== "object") g.today.learned = {};
@@ -288,12 +290,13 @@ export function holdExpChip() {
  * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計と「今日」に足す。
  * レベルはまだ上げない（寝る時に精算する。1.7）。戻り値=入った量。
  */
-export function gainExp(base, { key = null, tag = null, silent = false, source = null } = {}) {
+export function gainExp(base, { key = null, tag = null, silent = false, source = null, first = false } = {}) {
   // 恋人イベントだけは通常プレイでも貯める。精算・火種・盤の公開条件は変えない。
   if ((!growthEnabled() && source !== "lover") || !state || !(base > 0)) return 0;
   const g = ensureGrowth();
   const room = totalExpFor(MAX_LEVEL) - g.xp;
-  const amount = Math.min(room, Math.round(base * (CHAPTER_MULT[state.chapter] || 1)));
+  const firstBonus = first && growthSkill(state, "K04") ? 1 + SKILL_TUNING.first : 1;
+  const amount = Math.min(room, Math.round(base * (CHAPTER_MULT[state.chapter] || 1) * firstBonus));
   if (!(amount > 0)) return 0;
   g.xp += amount;
   g.today.xp += amount;
@@ -325,11 +328,24 @@ export function awardActionExp(target) {
   let got = gainExp(EXP.action * freshness(count), { key: target.key, tag: count >= 3 ? "なじみ" : null });
   if (target.person && !g.firsts.people.includes(target.person)) {
     g.firsts.people.push(target.person);
-    got += gainExp(EXP.firstPerson, { key: target.key, tag: "はじめて" });
+    got += gainExp(EXP.firstPerson, { key: target.key, tag: "はじめて", first: true });
   }
   if (target.place && !g.firsts.places.includes(target.place)) {
     g.firsts.places.push(target.place);
-    got += gainExp(EXP.firstPlace, { key: target.key, tag: "はじめて" });
+    got += gainExp(EXP.firstPlace, { key: target.key, tag: "はじめて", first: true });
+  }
+  return got;
+}
+
+/** X6/X7。配合画面を閉じただけでは渡さず、paidAction の確定から呼ぶ。周回ごとに各レシピ1回。 */
+export function awardRecipeExp(id, { discovered = false, golden = false } = {}) {
+  if (!growthEnabled() || !state || typeof id !== "string" || !id) return 0;
+  const g = ensureGrowth();
+  let got = 0;
+  for (const [kind, eligible, base] of [["recipes", discovered, EXP.recipe], ["golden", golden, EXP.golden]]) {
+    if (!eligible || g.discoveries[kind].includes(id)) continue;
+    g.discoveries[kind].push(id);
+    got += gainExp(base, { key: `recipe:${id}`, tag: kind === "recipes" ? "新レシピ" : "黄金比" });
   }
   return got;
 }
@@ -546,5 +562,7 @@ export function gaugeInfo(g = state?.growth) {
 }
 
 // 自由行動の確定（paidAction）と好感度の段から呼ばれる入口を登録する。
-setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, affinity: awardAffinityStepExp, perks: growthPerks });
-masteryHooks.multiplier = s => 1 + (growthPerks(s)?.tongue || 0) / 100;
+setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, recipe: awardRecipeExp, affinity: awardAffinityStepExp, perks: growthPerks,
+  sleepMultiplier: s => growthSkill(s, "K03") ? 1 + SKILL_TUNING.sleep : 1 });
+masteryHooks.multiplier = s => (1 + (growthPerks(s)?.tongue || 0) / 100)
+  * (growthSkill(s, "K09") ? 1 + SKILL_TUNING.mastery : 1);

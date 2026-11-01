@@ -4,7 +4,7 @@ import { el, sleep, clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
-import { step, earnStat } from "../core/stats.js";
+import { step, earnStat, earnRecipeDiscovery } from "../core/stats.js";
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
@@ -455,10 +455,14 @@ export async function stepMix(cs) {
   reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
   // レシピ帳への登録（新発見のときだけ）
   const r = cs.mixInfo.recipe;
-  if (r && !state.recipes[r.id]) {
+  const discovered = r && !state.recipes[r.id];
+  if (discovered) {
     state.recipes[r.id] = { day: state.day };
     toast(`📖 レシピ帳に書き加えた「${r.name}」`, { kind: "good" });
     if (cs.mode !== "tournament") earnStat("sense", 1);
+  }
+  if (r && !["tutorial", "tournament", "home"].includes(cs.mode)) {
+    earnRecipeDiscovery(r.id, { discovered, golden: cs.mixInfo.golden === "hit" });
   }
   // 黄金比（#627）: 配合中は出さず、確定したあとだけ知らせる（＋−を押すだけで答えが探せないように）
   if (cs.mixInfo.golden === "hit") toast(`✨ 黄金比！ ${r.name}は ${goldenLabel(r)}`, { kind: "good" });

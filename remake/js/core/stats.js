@@ -61,6 +61,8 @@ export function gainWord(total) {
  * @param opts.silent 通知カードを出さない（スロットのように自前で見せるとき）
  */
 export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } = {}) {
+  // 盤モードの成長は経験値と確定したマスだけ。旧セーブの基礎値は書き換えない。
+  if (expHooks?.enabled?.()) return 0;
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
   let cap = statCap(key);
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
@@ -112,9 +114,17 @@ const noop = () => {};
 
 /** 台本・訪問・制作の成長候補。確定済み報酬用の gainStat と分ける。 */
 export function earnStat(key, amount = 1) {
+  if (expHooks?.enabled?.()) return;
   if (!earningAction || earningAction.owner !== state || !STAT_KEYS.includes(key) || !(amount > 0)) return;
   // 数字は育成候補の優先度に使う。台本・訪問終了の同じ能力を重複加算しない。
   earningAction.gains[key] = Math.max(earningAction.gains[key] || 0, amount);
+}
+
+/** 配合確定時の発見も、体力を使った自由行動が終わるまで預かる（家・教材・大会は対象外）。 */
+export function earnRecipeDiscovery(id, { discovered = false, golden = false } = {}) {
+  if (!expHooks?.enabled?.() || !earningAction || earningAction.owner !== state || typeof id !== "string" || !id) return;
+  const previous = earningAction.recipes[id] || {};
+  earningAction.recipes[id] = { discovered: !!(discovered || previous.discovered), golden: !!(golden || previous.golden) };
 }
 
 /**
@@ -123,7 +133,7 @@ export function earnStat(key, amount = 1) {
  */
 export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false, exp = null } = {}) {
   const parent = earningAction;
-  const action = { owner: state, gains: {}, spent: 0 };
+  const action = { owner: state, gains: {}, recipes: Object.create(null), spent: 0 };
   earningAction = action;
   const releaseChip = expHooks?.hold?.() || noop;
   let value;
@@ -139,14 +149,17 @@ function settleAction(action, parent, value, { budget, points, primary, consumed
   if (parent?.owner === state) parent.spent += action.spent;
   if (action.spent > 0 || consumed(value)) {
     // 通常は最大2能力各1P。誘いはbudget=1・points=2で主な能力だけを伸ばす。
-    const entries = Object.entries(action.gains).sort((a, b) => (b[0] === primary) - (a[0] === primary) || b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
+    const entries = expHooks?.enabled?.() ? [] : Object.entries(action.gains).sort((a, b) => (b[0] === primary) - (a[0] === primary) || b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
     const rewarded = [];
     for (const [key] of entries) {
       const before = { ...state.stats };
       gainStat(key, points, { excludedKeys: rewarded });
       for (const k of STAT_KEYS) if (state.stats[k] > before[k]) rewarded.push(k);
     }
-    if (expHooks?.enabled()) expHooks.action(typeof exp === "function" ? exp(value) : exp);
+    if (expHooks?.enabled()) {
+      expHooks.action(typeof exp === "function" ? exp(value) : exp);
+      for (const [id, result] of Object.entries(action.recipes)) expHooks.recipe?.(id, result);
+    }
   }
   return { value, spent: action.spent };
 }
@@ -417,7 +430,8 @@ export function maxStamina({ forCondition = false } = {}) {
 export function addStamina(n, { sleep = false } = {}) {
   const before = state.stamina;
   const maximum = maxStamina();
-  const amount = sleep && n > 0 ? n * (1 + (growthPerks(state)?.sleep || 0) / 100) : n;
+  const amount = sleep && n > 0 ? n * (1 + (growthPerks(state)?.sleep || 0) / 100)
+    * (expHooks?.enabled?.() ? expHooks.sleepMultiplier?.(state) || 1 : 1) : n;
   state.stamina = staminaAfter(amount);
   if (earningAction?.owner === state && state.stamina < before) earningAction.spent += before - state.stamina;
   if (state.stamina !== before) emit("stamina-change", { before, after: state.stamina, maximum });
