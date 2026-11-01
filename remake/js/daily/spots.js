@@ -22,6 +22,7 @@ import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
+import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { fortuneRumorHeard, fortuneOpenOn } from "./fortune-schedule.js";
 import { openingStatus, rinUnavailable } from "./spot-hours.js";
 
@@ -59,36 +60,36 @@ export const VISIT_BG = {
 export const SPOTS = [
   AXE_BAR,
   { id: "tonari", kind: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, theme: "baito", glyph: "店", face: "sumi",
-    desc: "バイト先のシーシャラウンジ。客として一服するか、シフトに入るか。" },
+    desc: "バイト先。一服か、シフトに入るか。" },
   { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
-    desc: "焼き菓子みたいな甘い匂いの人気店。腕のいい若い店員がいると評判らしい。", stamina: -16 },
+    desc: "甘い香りの人気店。凄腕がいるらしい。", stamina: -16 },
   { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
-    desc: "アニスの甘い香りが漏れてくる店。注文はなぜかいつもダブルアップル。", stamina: -16 },
+    desc: "アニスが香る店。いつもダブルアップル。", stamina: -16 },
   { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 28, y: 62, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
-    desc: "SNSで人気のポップな店。コンカフェ風の接客らしい。", stamina: -16 },
+    desc: "SNSで人気の、コンカフェ風の店。", stamina: -16 },
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
-    desc: "1階の買い物は昼夜とも時間消費なし。2階のショールームで相談できるのは夜だけ。" },
+    desc: "1階で買い物。夜は2階で相談できる。" },
   { id: "cafe", kind: "spot", label: "喫茶こはく", area: "繁華街", x: 72, y: 45, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: -4,
     first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
-    openSlots: [0], desc: "昼だけ開く、なる行きつけの喫茶。ラテと焼き菓子でひと息。常連の小話も聞こえる。" },
+    openSlots: [0], desc: "なる行きつけの喫茶。昼だけ開く。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 18, y: 57, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: -4,
     first: "ch1_kannon_visit", pool: ["kannon_cat", "kannon_sweep", "kannon_adam", "kannon_oldman"], bg: "bg_kannon_day",
     nightPool: ["venue_kannon_night", "venue_kannon_night_b"],
-    desc: "街の小さなお堂。昼は猫や街の人と会い、夜は静かな境内で今日を振り返る。" },
+    desc: "昼は猫と街の人、夜は静かな境内。" },
   { id: "choizap", kind: "spot", label: "CHOI-ZAP", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", pool: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"], bg: "bg_choizap",
     nightPool: ["venue_choizap_night", "venue_choizap_night_b"],
-    desc: "昼夜とも使える無人ジム。入会はアプリから。動画でフォームを確かめ、自分のペースで汗を流す。" },
+    desc: "昼夜使える無人ジム。入会はアプリから。" },
   { id: "c_station", kind: "spot", label: "C.STATION", area: "大会運営", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -16,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
-    desc: "大会を運営する大型チェーン店。会場は同じビルのイベントホール。噂や大会情報が集まる。" },
+    desc: "大会を運営するチェーン店。噂も集まる。" },
   // 路上占い師（旧版 F11）: 週2日だけアーケード脇に出る。時間を使わない・1日1回・相性占い3,000円。
   // 出店日に正式な施設名で表示する。未対面の人物情報は引き続き伏せる。
   { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", area: "アーケード脇", x: 63, y: 69, theme: "park", glyph: "占",
-    desc: "タロットで相性を見てくれる。誰かとの縁を見てもらえるらしい（3,000円・時間はかからない）。",
-    unknownDesc: "路地の隅に、見慣れない小さな出店がある。……誰か座っている？" },
+    desc: "タロットで縁を占う。1回3,000円。",
+    unknownDesc: "路地の隅に、見慣れない出店がある。" },
   { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 44, theme: "rest", glyph: "休", stamina: 55,
-    desc: "1行動使って体を休める。体力が大きく戻る。" },
+    desc: "体を休める。体力が大きく戻る。" },
 ];
 /** 行き先の中の様子（マップ右下のプレビュー）。入ったときの背景と同じ絵を指す */
 export const SPOT_PREVIEW = {
@@ -259,7 +260,7 @@ export function isUnlocked(spot) {
   // 初回受領後は使い切っても内省の場所を残す。紹介・訪問の記録は変更しない。
   if (spot.id === "kannon" && growthEnabled() && (state.growth?.earned > 0 || hidaneTotal() > 0)) return true;
   if (spot.id === "rojiura_cinema") return cinemaDiscovered(state);
-  if (spot.kind === "fortune") return [1, 2].includes(state.chapter) && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
+  if (spot.kind === "fortune") return chapterFeatureEnabled(state.chapter, "fortune") && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
   if (spot.id === "cafe") return !!state.flags._cafe_introduced || (state.spotVisits?.cafe || 0) > 0;
   // 旧保存でも実際に訪れた施設は保持する。面識だけの解放は引き継がない。

@@ -1,6 +1,7 @@
 // 第3章・東京到着から全国大会前夜までを、場面単位で保存する。
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
+import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -47,19 +48,7 @@ let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
 const test = name => `ch3-intro-${name}`;
 
-function button(owner, text, name, action, primary = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text,
-    dataset: { test: test(name) }, onclick: () => perform(owner, action) });
-}
-
-async function perform(owner, action) {
-  if (!current(owner) || owner.busy) return;
-  owner.busy = true;
-  try { await action(); }
-  catch (error) {
-    if (current(owner)) { console.error("[ch3 intro]", error); renderError(owner); }
-  } finally { owner.busy = false; }
-}
+const { button, perform } = createChapterActions({ current, test, logName: "[ch3 intro]", renderError });
 
 function menuButton(owner) {
   return el("button.btn", { type: "button", text: "MENU", dataset: { test: test("menu") },

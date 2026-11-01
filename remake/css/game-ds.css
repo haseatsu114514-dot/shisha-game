@@ -214,10 +214,6 @@ body.game-ds :is(.map-notice, .map-guide) {
   left: calc(var(--ds-vx) + 8px); top: auto; right: auto; bottom: calc(100% - var(--ds-vy) - var(--ds-vh) + 8px);
   width: calc(var(--ds-vw) - 16px); max-height: 110px; overflow: auto; font-size: 14px; transform: none;
 }
-body.game-ds .map-walk {
-  left: auto; right: calc(100% - var(--ds-vx) - var(--ds-vw) + 8px); top: calc(var(--ds-vy) + var(--ds-vh) - 52px); bottom: auto;
-  min-height: 44px; padding: 8px 12px; font-size: 14px;
-}
 /* 上画面の全体図に打つ点（map.js が描く。通常版では出さない） */
 .ds-map-markers { display: none; }
 /* 地図画像（16:9）を上画面に全体表示し、上下の帯はHUDと余白に使う。点は画像の範囲に合わせる。 */

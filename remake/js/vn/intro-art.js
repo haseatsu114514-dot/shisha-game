@@ -1,6 +1,7 @@
 // PR226の採用組版。文言・表情は正本から受け取り、配色と人物配置は目録から読む。
 import { el } from "../core/util.js";
 import { introFlavor } from "./intro-flavors.js";
+import { DB } from "../core/data.js";
 
 export function flavorTag(flavor) {
   if (!flavor) return null;
@@ -13,8 +14,20 @@ export function flavorTag(flavor) {
   ]);
 }
 
+/** 苗字と名前の区切り。正本の名前（例「久世 朔（くぜ さく）」）に、表示名を空白で分けた形があれば [苗字, 名前] */
+export function nameParts(id, main) {
+  const full = String(DB.characters?.[id]?.name || "");
+  for (const m of full.matchAll(/([^\s/（）()・]+)[ 　]([^\s/（）()・]+)/g)) {
+    if (m[1] + m[2] === main) return [m[1], m[2]];
+  }
+  return null;
+}
+
 /** 一言の改行位置の指定「／」を除いた本文 */
 export const plainLine = (text = "") => String(text).replace(/([！？♪])／/g, "$1 ").replaceAll("／", "");
+
+/** グラフィック絵柄で名前の欄を右へ寄せる量（px）。intro.css の [data-art="graphic"] と合わせる */
+export const GRAPHIC_META_SHIFT = 56;
 
 /** 動きの型（データの motion）。未指定は従来の滑り込み */
 export const MOTIONS = {
@@ -40,7 +53,9 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
     el("div.ci-ribbon", [
       el("div.ci-art-meta", [
         el("div.ci-title", { text: intro.title || "" }),
-        el("div.ci-name-line", [el("span.ci-name", { text: main })]),
+        el("div.ci-name-line", [nameParts(id, main)
+          ? el("span.ci-name", { "aria-label": main }, nameParts(id, main).flatMap((part, i) => [...(i ? [el("span.ci-name-gap", { "aria-hidden": "true" })] : []), el("span", { text: part })]))
+          : el("span.ci-name", { text: main })]),
       ]),
     ]),
     el("img.ci-portrait", {
@@ -73,11 +88,13 @@ function fitWidth(node, max, high, low, limit) {
 
 /** 一言は1行に収まれば42px（無理なら38px）、収まらなければ「／」で2行・36px。2行なら true */
 export function layoutIntro(host, id, variant, intro) {
+  // グラフィック絵柄は人物が大きいので、名前の欄を右へ寄せたぶん幅を詰める（intro.css と同じ値）
+  const shift = host.dataset.art === "graphic" ? GRAPHIC_META_SHIFT : 0;
   const name = host.querySelector(".ci-name");
-  fitWidth(name, .86, 150, 60, 596);
+  fitWidth(name, .86, 150, 60, 596 - shift);
   const title = host.querySelector(".ci-title");
   title.style.fontSize = "28px";
-  if (title.scrollWidth > 580) fitWidth(title, 1, 27, 20, 580);
+  if (title.scrollWidth > 580 - shift) fitWidth(title, 1, 27, 20, 580 - shift);
   const quote = host.querySelector(".ci-line"), raw = intro.line || "", text = plainLine(raw);
   const oneLine = () => quote.offsetHeight <= parseFloat(getComputedStyle(quote).lineHeight) + 1;
   for (const size of [42, 38]) {
@@ -124,7 +141,8 @@ export function animateIntro(host, id, motion = "sharp", { sound = () => {} } = 
   if (motion === "still") {
     animate(".ci-art-background", [{ opacity: 0 }, { opacity: 1 }], { duration: 900, easing: "ease-out" });
     for (const [selector, delay] of [[".ci-ribbon", 200], [".ci-accent-line", 260]]) {
-      animate(selector, [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }], { duration: 500, delay, easing: "cubic-bezier(.7,0,.3,1)" });
+      // 上下は広げておく: 帯の上にはみ出した二つ名を切り取らない
+      animate(selector, [{ clipPath: "inset(-120px 100% -120px 0)" }, { clipPath: "inset(-120px 0 -120px 0)" }], { duration: 500, delay, easing: "cubic-bezier(.7,0,.3,1)" });
     }
     animate(".ci-portrait", [{ opacity: 0 }, { opacity: 1 }], { duration: 800, delay: 200, easing: "ease-out" });
     animate(".ci-name-line", [{ opacity: 0 }, { opacity: 1 }], { duration: 1, delay: 600 });

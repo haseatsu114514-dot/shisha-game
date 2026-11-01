@@ -95,13 +95,16 @@ const context = vm.createContext({
   play: id => played.push(id),
   captureEntryResources, restoreEntryResources, applyAssistRecovery, maxStamina: () => 130, regulationFor,
   save: () => saves.push(copy(entrant)), toast: stub,
-  markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(), maybeShuraba: stub,
+  markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(),
+  playTournamentArrival: () => played.push("arrival-sequence"),
   entrance: stub, newSession: () => { sessions.push(copy(entrant)); return {}; },
   loadingNotice: label => ({ label }),
   withLoadingNotice: async (task, notice) => { notices.push(notice); return await task; },
   loadTournamentCraftDialogue: async () => {},
 });
 await vm.runInContext(prefix + "\ntournamentDay()", context);
+assert.equal(played.filter(id => id === "arrival-sequence").length, 1);
+assert(played.indexOf("arrival-sequence") < played.indexOf("ch1_tournament_opening"), "arrival sequence precedes the opening");
 assert.deepEqual(saves[0].tournament.entryResources.flavorStock, {}, "entry does not grant private lemon");
 assert(!played.includes("remake_flavor_rescue") && !played.includes("remake_flavor_brought"), "morning does not branch on private stock");
 assert.equal(sessions[0].stamina, 52);

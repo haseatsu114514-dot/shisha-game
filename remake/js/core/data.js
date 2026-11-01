@@ -15,7 +15,7 @@ export function setBackgroundWeatherSource(source) { backgroundWeather = source;
 /** 読み込んだ全データ。起動時に loadAll()、タイトル後に後段ローダが埋める */
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
-  samechan: {},         // シーシャークのprofile・会話・LIME・店（独立overlay）
+  samechan: {},         // シーシャークのprofile・会話・店（独立overlay）
   fortuneTrivia: {},
   fortuneHints: {},
   hiyori: {},         // 登場方法が決まるまで無効のルート定義と、表示確認用台本
@@ -166,7 +166,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.equipById = Object.fromEntries(DB.equipment.map((e) => [e.id, e]));
   DB.baito = raw.baito.events.filter((e) => BAITO_CATEGORIES.has(e.category));
   DB.glossary = raw.glossary.groups;
-  DB.lime = [...raw.lime.messages, ...(DB.samechan.lime || [])];
+  DB.lime = raw.lime.messages;
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
   DB.kuji = raw.kuji;

@@ -251,7 +251,12 @@ await suite("affinity-gates", async check => {
       })));
       assert.equal(friends.length, ids.length);
       assert(friends.every(row => row.friend), JSON.stringify(friends));
-      await assertFits(page, ".st-people, .pp-row, .pp-relation");
+      // 一覧はモーダル本文内でスクロールする。各行を表示して欠けずに読めることを確認する。
+      for (const [index] of friends.entries()) {
+        const selector = `.pp-row:nth-of-type(${index + 1})`;
+        await page.locator(selector).scrollIntoViewIfNeeded();
+        await assertFits(page, `${selector}, ${selector} .pp-relation`);
+      }
       await page.locator('[data-test="status-close"]').click();
       const preserved = await page.evaluate(() => ({
         state: JSON.stringify(G.core.state) === G.beforeStatus,

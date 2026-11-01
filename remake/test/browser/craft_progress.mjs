@@ -23,6 +23,59 @@ const headerLabels = page => page.locator(".bench-phase-copy b").allTextContents
 const fits = page => assertFits(page, ".bench-progress, .bench-phase-copy b");
 
 await suite("craft-progress", async check => {
+  for (const [name, viewport, mobile, reducedMotion] of [
+    ["desktop", { width: 1280, height: 720 }, false, "no-preference"],
+    ["touch", { width: 844, height: 390 }, true, "reduce"],
+  ]) {
+    await check(`${name}-steam-guide`, async page => {
+      await page.evaluate(async () => {
+        const core = await import("./js/core/state.js"); core.newGame();
+        const session = await import("./js/craft/session.js");
+        const steam = await import("./js/craft/steam.js");
+        window.guideSession = session;
+        window.guideCS = session.newSession("tutorial"); guideCS.steamSeconds = 600;
+        session.openBench(guideCS); await session.waitBenchReady(guideCS);
+        window.guideStarts = 0;
+        new MutationObserver(records => {
+          for (const record of records) for (const node of record.addedNodes)
+            if (node.classList?.contains("countdown")) guideStarts++;
+        }).observe(document.body, { childList: true, subtree: true });
+        window.guideRun = steam.runSteamDodge(guideCS);
+      });
+      const close = page.getByRole("button", { name: "説明を閉じて進む" });
+      const summary = page.locator(".bench-guide summary");
+      const clock = page.locator('[data-test="steam-clock"]');
+      await close.waitFor();
+      await page.waitForFunction(() => document.activeElement?.dataset.test === "bench-guide-close");
+      await assertFits(page, '.bench-guide-tip, [data-test="bench-guide-close"]');
+      const size = await close.boundingBox(); assert(size.height >= 43, "Touch target remains 44px after stage scaling");
+      const before = await clock.textContent();
+      await page.waitForTimeout(250);
+      assert.equal(await clock.textContent(), before);
+      assert.equal(await page.evaluate(() => guideStarts), 0, "Initial explanation must hold the countdown");
+      assert.equal(await page.locator('.bench-panel').evaluate(n => n.inert), true);
+      await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/${name}-steam-guide-open.png` });
+      if (mobile) await close.tap(); else await page.keyboard.press("Enter");
+      await page.waitForFunction(() => document.activeElement?.matches(".bench-guide summary"));
+      await page.waitForFunction(() => guideStarts === 1);
+      await page.waitForFunction(() => !document.querySelector('[data-test="dodge-precision"]')?.disabled);
+      await page.waitForFunction(() => document.querySelector('[data-test="steam-clock"]').textContent !== "10:00");
+      // Reopen through the native summary, then dismiss through the same real button.
+      if (mobile) await summary.tap(); else await page.keyboard.press("Enter");
+      await close.waitFor();
+      const paused = await clock.textContent();
+      await page.waitForTimeout(250);
+      assert.equal(await clock.textContent(), paused, "Reopened guide pauses the active steam clock");
+      assert.equal(await page.locator('.bench-panel').evaluate(n => n.inert), true);
+      if (mobile) await close.tap(); else await page.keyboard.press("Space");
+      await page.waitForFunction(() => document.activeElement?.matches(".bench-guide summary"));
+      await page.waitForFunction(value => document.querySelector('[data-test="steam-clock"]').textContent !== value, paused);
+      assert.equal(await page.evaluate(() => guideStarts), 1, "Reopening must not start a second countdown");
+      assert.equal(await page.locator('.bench-panel').evaluate(n => n.inert), false);
+      assert.equal(await page.evaluate(() => guideSession.explainTutorialStep(guideCS, "steam")), true);
+      assert.equal(await page.locator('.bench-guide').evaluate(n => n.open), false, "Acknowledged lesson is not repeated");
+    }, { viewport, isMobile: mobile, hasTouch: mobile, reducedMotion });
+  }
   for (const [name, viewport, mobile] of [
     ["desktop", { width: 1280, height: 720 }, false],
     ["mobile-landscape", { width: 844, height: 390 }, true],

@@ -87,6 +87,17 @@ await suite("home-shisha", async check => {
       assert.match(await detail.innerText(), /発見時のグラム数は記録していない/);
       assert.doesNotMatch(await detail.innerText(), /白桃ソルベ|secret_probe/);
       await assertFits(page, '[data-test="recipe-detail"]');
+      const text = detail.locator('.recipe-detail-text');
+      assert(await text.evaluate(node => node.clientHeight >= Math.min(96, node.scrollHeight)), "詳細本文に読める高さを確保する");
+      await assertFits(page, '[data-test="recipe-back"]');
+      for (const paragraph of await text.locator('p').all()) {
+        await paragraph.scrollIntoViewIfNeeded();
+        assert(await paragraph.evaluate(node => {
+          const bounds = node.getBoundingClientRect(), frame = node.parentElement.getBoundingClientRect();
+          return bounds.top >= frame.top - 1 && bounds.bottom <= frame.bottom + 1;
+        }), "材料・黄金比・発見日・メモをスクロールして最後まで読める");
+      }
+      await text.evaluate(node => { node.scrollTop = 0; });
       await page.locator(t("recipe-back")).scrollIntoViewIfNeeded();
       await assertFits(page, '[data-test="recipe-back"]');
       await page.screenshot({ path: `${out}/recipe-details-${label}.png` });

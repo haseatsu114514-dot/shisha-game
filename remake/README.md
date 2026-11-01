@@ -1,5 +1,18 @@
 # 水煙前線 -EN:CODE- リメイク版（remake/）
 
+## 2026-10-31 制作（シーシャ作り）の紙×ラベンダー＋琥珀
+
+シーシャ作りパート（作業台）を、地図・MENU・Dr.fookah と同じ紙×ラベンダー＋琥珀へ一新した（`docs/owner_requests.md` CUI01〜04）。
+
+- `css/craft-paper.css` を `craft.css`・`steam.css`・`craft-header.css`・`craft-landscape.css` の後に読み、色・面・縁だけを上書きする（寸法・座標・操作判定は変えない）。練習・レッスン・大会のどのモードでも同じ面。`data-ui-theme` には依存しない（制作画面は常にこの配色）。
+- 生成素材 `img/ui/craft-paper/`（原画 `assets/ui/craft-paper/`、生成記録 `asset_sources/ui/craft-paper-20261031/`、ビルド `python3 remake/tools/build_ui_skin.py`）: 板（左右のウインドウ・結果カードの九分割）、壁紙（作業台の背景）、温度計の枠（透明な窓に管を合わせる）、ボタン3種（紙＝通常、ラベンダー＝主、琥珀＝吸う・穴をあける・詰め方の決定）。旧素材（`img/ui/making/ui_*`）は残し、`skin.js` の読み込みも変えていない。
+- 板に `filter` を付けない（DSで `position: fixed` にしている温度計の台座・外観ボタンが板の中へ閉じ込められる）。影は `box-shadow`。板の縁は1pxのままで、絵は余白と外側に描く（中身の寸法を変えない）。
+- 工程ごとの舞台（CUI05・通常表示のみ）: 炭焼き・調整は台所の石の天板、穴あけ・蒸らし時間はリネンマット、配合と詰め方はボウルの窓だけマット。天板の上の文字は紙のカードや札。調整の炭の交換は炭の絵のカード（既存の `img/ui/making/coal_*.webp`）。
+- 温度計の管は `--thermo-inset`（上下対称）で置く。`thermometer.js` が矢印・目印を同じ変数で置くため、ずらすと矢印が判定とずれる。
+- ボタンの主・ホバー・選択中にも縁の太さを明示する（`craft.css` の縁1pxが勝つとホバーで高さが変わり、ボタンが揺れる）。
+- 大会の演出レイヤー（入場・中間発表・南雲カットイン・最終順位表・RESULT 10 COUNT・実況コメント）は大会リメイク側で決めるため未変更。
+- 検証: `node tools/ci/run.mjs --kind browser --suites craft-materials,ds-packing,heat-feedback,mix-temperature,steam-attack,steam-forecast,craft-scenes,flavor-expression,loading-gate,ch1-tournament,game-layout,water-pour`、`craft-preview.html` と本編の配合→調整までの各工程を 1280×720・844×390・390×844（DS）で撮影して確認。
+
 ## 2026-10-31 紙とラベンダーのUI（既定のUIテーマ）
 
 日常パートのUIを Dr.fookah の紙×ラベンダー＋琥珀へ統一する方針（`docs/owner_requests.md` DUI01〜11、[設計](../docs/design/daily-ui-menu-design.md)）の第一段。
@@ -503,7 +516,7 @@ node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信
 - コード中の未決番号（Q1〜Q20）の判断待ち一覧は `docs/open_questions_ch4_ch5.md`
 - 恋人になってからの章をまたぐ要素（ch4 ドバイに来る／来ない・エンディングの修羅場）は第2章以降と一緒に
 - BGMの細かい出し分け（現状は場面ごとの基本曲のみ）
-- 街全域の歩行化。第1章の3入口は#456で既存試作を仮接続し、#471で大須を参考にした本編用の遠近アーケードと正式なはじめの歩行絵へ進める。ピンマップの「商店街を歩く」からカフェ/PEPPERMINT/KEMURIKUSAだけを選べる。ピンと直接移動も従来どおり。訪問・配達・時間等は既存日常処理。保存は本編の実訪問記録を使い、歩行位置はロード後に入口へ戻る。素材の参照・生成・測定は `asset_sources/street-production-issue471/README.md`、PC/タッチ検証は `test/browser/street_selection.mjs`。他エリアや新イベントの追加は別作業。
+- 本編の街歩き（第1章ピンマップの「商店街を歩く」、#456・#471）は2026-10-31のオーナー指示で完全に廃止した。行き先はピンマップのピンと「ここへ行く」だけで選ぶ。旧試作は `experiments/proto/` に残る（本編からは使わない）。
 
 ## 2026-10-01 の改稿取り込み
 

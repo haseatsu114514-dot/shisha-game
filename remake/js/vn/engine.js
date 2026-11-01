@@ -73,9 +73,13 @@ function readSeenLines() {
   catch { seenLines = new Set(); }
   return seenLines;
 }
+// 既読の記録を端末へ書くのは本編（index.html → main.js）だけ。会話UI・第2章などの試遊ページは本編の保存を変えない。
+let seenLinePersistence = false;
+export function enableSeenLinePersistence() { seenLinePersistence = true; }
 function markSeenLine(key) {
   if (!key || readSeenLines().has(key)) return;
   seenLines.add(key);
+  if (!seenLinePersistence) return;
   try { localStorage.setItem(SEEN_LINES_KEY, JSON.stringify([...seenLines].slice(-20000))); }
   catch { /* 端末の容量制限時も会話は続ける */ }
 }
@@ -224,6 +228,9 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param opts.bg  背景の上書き（res:// パス可）
  * @param opts.signal 呼出し元が場面を破棄したとき、読了・末尾報酬なしで閉じる
  * @param opts.cancelOnSkip SKIPを中断として扱い、呼出し元で次回の再読を可能にする
+ * @param opts.fromLine 主列の開始位置（含む）。既読キーは元の行位置を保つ
+ * @param opts.toLine 主列の終了位置（含まない）。分岐は通常どおり再生する
+ * 範囲指定でも各playの終了時に台本の報酬を処理する。報酬つき台本を分割する用途には使わない。
  */
 export function play(idOrDlg, opts = {}) {
   if (!dom) buildDom();
@@ -241,7 +248,7 @@ export function play(idOrDlg, opts = {}) {
       id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
-      queue: queuedLines(dlg.dialogue_id, dlg.lines),
+      queue: queuedLines(dlg.dialogue_id, dlg.lines).slice(opts.fromLine ?? 0, opts.toLine),
       branches: dlg.branches || {},
       resolve,
       cancelOnSkip: !!opts.cancelOnSkip,

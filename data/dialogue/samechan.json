@@ -53,7 +53,7 @@
     "cost": 3000,
     "stamina": -12,
     "minChapter": 2,
-    "desc": "SHISHARK。海とサメがモチーフの店。店主は大会より、客の居心地を大事にしている。",
+    "desc": "海とサメがモチーフの、居心地のいい店。",
     "bg": "bg_shishark",
     "preview": "bg_shishark"
   },
@@ -1456,100 +1456,6 @@
           "speaker": "",
           "face": "",
           "text": "呼び方を選べることが、少し特別だった。手をつなぎ直すと、彼女が肩を寄せてきた。"
-        }
-      ]
-    }
-  ],
-  "lime": [
-    {
-      "id": "lime_naru_samechan_nickname",
-      "sender": "naru",
-      "trigger_condition": "flag",
-      "trigger_flag": "_samechan_first_encounter",
-      "priority": 3,
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "naru",
-          "text": "路地のSHISHARKの店主に会ったんだって？ 俺はサメちゃんって呼んでる。"
-        },
-        {
-          "sender": "naru",
-          "text": "映画の話になると長いけど、店のことは本当に真面目に考えてる。"
-        },
-        {
-          "sender": "naru",
-          "text": "大会の勝ち負けには興味ないってさ。俺も客として遊びに行きたい。"
-        }
-      ],
-      "replies": [
-        {
-          "text": "荷物運びを、少し手伝いました",
-          "response": "そうか。助かったと思う。サメちゃん、一人で抱え込みがちだからな。",
-          "affinity": 0
-        },
-        {
-          "text": "コロちゃんにも歓迎されました",
-          "response": "王様にも気に入られたか。じゃあ、もう顔なじみだな。",
-          "affinity": 0
-        }
-      ],
-      "chapter": 1
-    },
-    {
-      "id": "lime_samechan_preparing_thanks",
-      "sender": "samechan",
-      "trigger_condition": "flag",
-      "trigger_flag": "_samechan_first_encounter",
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "samechan",
-          "text": "先日は箱を運んでくれて、ありがとうなのじゃ。あれから椅子の位置を決め直した。"
-        },
-        {
-          "sender": "samechan",
-          "text": "コロちゃんの玉座は、客の通り道をふさがぬ場所になったぞ。開店の日が決まったら、また知らせるのじゃ。"
-        }
-      ],
-      "replies": [
-        {
-          "text": "通りやすくなってよかったです",
-          "response": "うむ。座る前から疲れさせては、落ち着く店にならんからの。",
-          "affinity": 1
-        },
-        {
-          "text": "準備、無理しすぎないでくださいね",
-          "response": "ありがとうなのじゃ。……うむ。次からは台車を借りるのじゃ。",
-          "affinity": 1
-        }
-      ],
-      "chapter": 1
-    },
-    {
-      "id": "lime_samechan_opening",
-      "sender": "samechan",
-      "chapter": 2,
-      "trigger_condition": "flag",
-      "trigger_flag": "_shishark_opened",
-      "priority": 4,
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "samechan",
-          "text": "SHISHARK、いよいよオープンじゃ！ 大会おつかれさま。コロちゃんと、はじめが来るのを待っておるぞ。"
-        }
-      ],
-      "replies": [
-        {
-          "text": "開店おめでとう。遊びに行きます！",
-          "response": "うむ、嬉しいのじゃ。お主がゆっくりできる席を用意しておく。",
-          "affinity": 1
-        },
-        {
-          "text": "コロちゃんにもお祝いを伝えてください",
-          "response": "「余は祝福を受け取った。側近も喜んでいる」……こ、コロちゃん！",
-          "affinity": 1
         }
       ]
     }

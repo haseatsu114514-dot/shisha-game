@@ -415,7 +415,10 @@ await suite('ch2-tournament',async check=>{
     await assertFits(page,'.ch2-contest .btn');await page.locator(t('start')).click();await phone(page);
     await page.locator(t('ready')).waitFor();
     const texts=await page.evaluate(()=>window.__texts.join('\n'));
-    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のREI/);assert.match(texts,/昔は組を張ってやした/);
+    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のREI/);
+    assert.match(texts,/神崎煙草店の神崎竜二でさ/);
+    assert.match(texts,/今日は、いち職人として来た。文句なら、俺の煙に言いな/);
+    assert.doesNotMatch(texts,/昔は組を張って|足は洗った/);
     const entryTrace=await page.evaluate(()=>window.__trace);
     const result=await playAttempt(page,false,true);assert.equal(result.flags._ch2_tournament.result.rank,1);
     // 最終票を確定した直後、講評の途中で離脱した保存を再現する。
@@ -462,6 +465,9 @@ await suite('ch2-tournament',async check=>{
   await check('touch-known-loss-retry-and-preserved-consumption',async page=>{
     await seed(page,{known:true,auto:'bad'});await page.locator(t('start')).tap();await phone(page,true);await page.locator(t('ready')).waitFor();
     const text=await page.evaluate(()=>window.__texts.join('\n'));assert.match(text,/神崎さんだ/);assert.match(text,/また会ったな/);assert(!text.includes('名前を聞くのは初めて'));
+    assert.match(text,/神崎煙草店の神崎竜二でさ/);
+    assert.match(text,/今日は、いち職人として来た。文句なら、俺の煙に言いな/);
+    assert.doesNotMatch(text,/昔は組を張って|足は洗った/);
     const before=await get(page);const loss=await playAttempt(page,true);assert(loss.flags._ch2_tournament.result.rank>1);
     await page.locator(t('continue')).tap();await page.locator(t('defeat')).waitFor();
     await page.locator(t('retry')).tap();await page.evaluate(async()=>{(await import('./js/craft/session.js')).craftTest.auto='good';});

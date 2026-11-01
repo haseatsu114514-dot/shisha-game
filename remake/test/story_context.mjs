@@ -48,6 +48,20 @@ function paths(id, state, knownFlags = false) {
   return run(scene.lines,scene.branches || {},value,[]);
 }
 const state = (chapter,phase='daily',met={}) => ({chapter,phase,day:1,flags:{},met,stats:{},money:100000});
+// #2056: 大会前・大会後・後続章でも、神崎の素性を公表済みとして扱わない。
+for (const value of [state(2), state(2,'cleared'), state(3)]) {
+  for (const id of ['ch2_tournament_entrance','ch2_kumicho_third','ch2_kumicho_fourth','ch2_kumicho_after_ch2']) {
+    for (const rows of paths(id,value)) {
+      const text=rows.map(row=>row.text || '').join('\n');
+      assert.doesNotMatch(text,/昔は組を張って|昔の組|足は洗った|カタギの範囲|隠したまま同じ舞台|昔のことを自分から話して/,id);
+      if(id==='ch2_tournament_entrance') assert.match(text,/今日は、いち職人として来た。文句なら、俺の煙に言いな/);
+      if(id==='ch2_kumicho_fourth' && tournamentFinished(value,2)) {
+        assert.match(text,/職人として来たって言ってましたね/);
+        assert.match(text,/それ以上は、まだ分からない/);
+      }
+    }
+  }
+}
 for (let target=1;target<=5;target++) {
   for (const phase of ['opening','daily','tournament','aftermath','cleared']) {
     const value=state(target,phase), before=JSON.stringify(value);

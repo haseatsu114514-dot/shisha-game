@@ -22,15 +22,22 @@ try {
   });
   assert(ids.length >= 20, `カットインのデータが少ない（${ids.length}人）`);
   const flavorCases = await page.evaluate(() => Object.fromEntries(
-    ["hiyori", "kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "ageha", "unknown"].map((id) => [id, T.introFlavor(id)]),
+    ["hiyori", "samechan", "kuze", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "ageha", "unknown"].map((id) => [id, T.introFlavor(id)]),
   ));
   assert.deepEqual(flavorCases.hiyori, { main: "マンゴー", small: "ハバネロ" });
   for (const id of ["oneesan", "unknown"]) {
     assert.equal(flavorCases[id], null, `${id}: 未確定・正体を伏せる好みを表示しない`);
   }
   assert.deepEqual([flavorCases.kuze, flavorCases.steve, flavorCases.master_hookah, flavorCases.sheikh, flavorCases.maezono],
-    [{ main: "アフサール アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "ミント／ダブルアップル" }],
+    [{ main: "アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "ミント／ダブルアップル" }],
     "正本で決まっている好みを表示する");
+  assert.deepEqual(flavorCases.samechan, { main: "スプリングウォーター" });
+  const brandNames = await page.evaluate((ids) => ids.flatMap((id) => {
+    const f = T.introFlavor(id);
+    const text = f ? `${f.main}${f.small || ""}` : "";
+    return /アフサール|ドバジ|ナイトサイド|\bAF\b|\bNS\b/.test(text) ? [`${id}: ${text}`] : [];
+  }), ids);
+  assert.deepEqual(brandNames, [], "カットインの好きなフレーバーにメーカー名を付けない");
   assert.equal(await page.evaluate(() => T.introFlavor("__proto__")), null, "未登録の特殊IDを表示しない");
   assert.deepEqual(flavorCases.ageha, { main: "ホワイトグミベア／レッドグミベア" });
   assert.equal(await page.evaluate(() => T.introFlavor("ageha", "unknown")), null, "正体不明版で好みを表示しない");
@@ -73,6 +80,37 @@ try {
     await page.evaluate(() => T.done);
     assert.equal(await page.locator(".cutin").count(), 0, `${id}: 自動で閉じない`);
   }
+
+  // 1a) 苗字と名前のあいだの小さな空き（正本の名前に空白がある人だけ）
+  const split = await page.evaluate(async () => {
+    const { nameParts } = await import("./js/vn/intro-art.js");
+    return { kuze: nameParts("kuze", "久世朔"), maki: nameParts("maki", "斧崎マキ"), naru: nameParts("naru", "なる"), hiyori: nameParts("hiyori", "ひより") };
+  });
+  assert.deepEqual(split, { kuze: ["久世", "朔"], maki: ["斧崎", "マキ"], naru: null, hiyori: null }, "苗字と名前の区切り");
+
+  // 1b) 絵柄の切り替え: 既定は新しいグラフィック絵柄、設定 classic で旧の立ち絵へ戻る（2026-10-31）
+  const artFor = async (id, style) => {
+    const src = await page.evaluate(([id, style]) => {
+      T.core.config.introArtStyle = style;
+      T.core.state.flags[`_intro_${id}`] = false;
+      T.done = T.intro.playIntro(id);
+    }, [id, style]).then(() => page.waitForSelector(`.cutin.in[data-char="${id}"] img.ci-portrait`))
+      .then(() => page.evaluate(() => ({ portrait: document.querySelector(".cutin img.ci-portrait").getAttribute("src"),
+        background: document.querySelector(".cutin img.ci-art-background").getAttribute("src") })));
+    await page.waitForTimeout(400);
+    await page.evaluate(() => T.done);
+    return src;
+  };
+  const graphicMaki = await artFor("maki", "graphic");
+  assert.match(graphicMaki.portrait, /character_intros\/graphic\/maki\.webp$/, "既定は新しい絵柄の人物");
+  assert.match(graphicMaki.background, /character_intros\/graphic\/bg_maki\.webp$/, "描き直した背景を使う");
+  const graphicRin = await artFor("rin", "graphic");
+  assert.match(graphicRin.portrait, /graphic\/rin\.webp$/);
+  assert.match(graphicRin.background, /graphic\/bg_rin\.webp$/, "全員の背景を新しい絵柄に描き直した（2026-10-31）");
+  const classicMaki = await artFor("maki", "classic");
+  assert.match(classicMaki.portrait, /sprites\/characters\/maki\//, "classic で旧の立ち絵に戻る");
+  assert.doesNotMatch(classicMaki.background, /graphic\//, "classic で旧の背景に戻る");
+  await page.evaluate(() => { T.core.config.introArtStyle = "graphic"; });
 
   // 2) 名前の出し方: 全員で呼び名のみ、本名の括弧を廃止。物語の名乗りは残す
   const rule = await page.evaluate(() => Object.fromEntries(["naru", "sumi", "tsumugi", "nagumo", "minto"].map((id) => [id, T.intro.introName(id)])));

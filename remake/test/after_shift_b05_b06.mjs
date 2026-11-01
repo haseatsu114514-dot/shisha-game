@@ -80,6 +80,7 @@ async function realModule(name, path) {
 }
 
 await realModule("stat-step-tables.js", "remake/js/core/stat-step-tables.js");
+await realModule("chapter-features.js", "remake/js/core/chapter-features.js");
 
 synthetic("util.js", { el, pick: (list) => list[0] });
 synthetic("data.js", { DB: db, bgUrl: (id) => id });

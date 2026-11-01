@@ -10,6 +10,18 @@
   ],
   "suites": [
     {
+      "id": "chapter-actions",
+      "title": "Chapter 3–5 action buttons, session invalidation and error recovery",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/chapter_actions.mjs"]
+    },
+    {
+      "id": "ch1-daily-features",
+      "title": "Chapter 1 early home rig and shift cameo boundaries (#2021)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/ch1_daily_features.mjs"]
+    },
+    {
       "id": "typography-css",
       "title": "Readable CSS typography follows #1352",
       "kind": "quick",
@@ -366,7 +378,6 @@
         "node --experimental-vm-modules remake/test/water_setup_helper.mjs",
         "node remake/test/water_setup_lifetime.mjs",
         "node remake/test/steam_heart.mjs",
-        "node remake/test/street_projection.mjs",
         "node remake/test/venue_hours.mjs",
         "node remake/test/ch2_progress.mjs",
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",
@@ -1696,9 +1707,6 @@
         "remake/js/daily/calendar.js",
         "remake/js/daily/invitations.js",
         "remake/js/daily/map.js",
-        "remake/js/daily/street.js",
-        "remake/street/**",
-        "assets/street_walk/**",
         "remake/js/core/stats.js",
         "remake/js/daily/hiyori.js",
         "remake/test/browser/hiyori_gate.mjs",
@@ -1724,9 +1732,6 @@
         "remake/js/daily/calendar.js",
         "remake/js/daily/invitations.js",
         "remake/js/daily/map.js",
-        "remake/js/daily/street.js",
-        "remake/street/**",
-        "assets/street_walk/**",
         "remake/js/core/stats.js",
         "remake/js/daily/hiyori.js",
         "remake/test/browser/hiyori_gate.mjs",
@@ -2414,6 +2419,7 @@
       "timeout": 15,
       "paths": [
         "remake/js/daily/fortune*.js",
+        "remake/js/core/chapter-features.js",
         "remake/css/hud*.css",
         "assets/ui/fortune/**",
         "remake/test/fortune_readings.mjs",
@@ -2615,28 +2621,6 @@
       }
     },
     {
-      "id": "street-selection",
-      "title": "Chapter 1 street selection",
-      "kind": "browser",
-      "weight": 1,
-      "timeout": 25,
-      "paths": [
-        "experiments/proto/street/**",
-        "assets/proto_*/**",
-        "assets/street_walk/**",
-        "remake/js/daily/street.js",
-        "remake/street/**",
-        "remake/test/browser/street_selection.mjs"
-      ],
-      "run": [
-        "node remake/test/browser/street_selection.mjs"
-      ],
-      "env": {
-        "BASE_URL": "http://127.0.0.1:8123/remake/",
-        "SHOTS": ".codex/artifacts/street/selection"
-      }
-    },
-    {
       "id": "playthrough-direct",
       "title": "Complete chapter 1 with direct pins",
       "kind": "browser",
@@ -2645,7 +2629,6 @@
       "paths": [
         "experiments/proto/street/**",
         "assets/proto_*/**",
-        "assets/street_walk/**",
         "remake/js/chapters/ch1*.js",
         "remake/js/chapters/ch2*.js",
         "data/dialogue/ch1*.json",
@@ -2658,33 +2641,6 @@
       "env": {
         "BASE_URL": "http://127.0.0.1:8123/remake/",
         "SHOTS": ".codex/artifacts/street/direct"
-      }
-    },
-    {
-      "id": "playthrough-street",
-      "title": "Complete chapter 1 with street entrances",
-      "kind": "browser",
-      "weight": 11,
-      "timeout": 25,
-      "paths": [
-        "experiments/proto/street/**",
-        "assets/proto_*/**",
-        "assets/street_walk/**",
-        "remake/js/daily/street.js",
-        "remake/street/**",
-        "remake/js/chapters/ch1*.js",
-        "remake/js/chapters/ch2*.js",
-        "data/dialogue/ch1*.json",
-        "data/dialogue/ch2*.json",
-        "remake/test/playthrough.mjs"
-      ],
-      "run": [
-        "node remake/test/playthrough.mjs"
-      ],
-      "env": {
-        "BASE_URL": "http://127.0.0.1:8123/remake/",
-        "SHOTS": ".codex/artifacts/street/street",
-        "STREET_MODE": "1"
       }
     },
     {
@@ -3206,6 +3162,26 @@
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/relationship-pace"
       }
+    },
+    {
+      "id": "ch1-arrival",
+      "title": "Chapter 1 arrival conflict order and SAVE compatibility (#2089)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch1.js",
+        "remake/js/chapters/ch1-arrival.js",
+        "remake/js/daily/romance.js",
+        "remake/js/vn/engine.js",
+        "data/dialogue/ch1_tournament.json",
+        "data/dialogue/remake_ch1.json",
+        "remake/test/browser/ch1_arrival.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch1_arrival.mjs"
+      ],
+      "chrome": "playwright"
     }
   ]
 }

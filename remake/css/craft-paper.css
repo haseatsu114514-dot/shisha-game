@@ -1,0 +1,501 @@
+/* ============================================================
+   制作（シーシャ作り）の紙×ラベンダー＋琥珀（2026-10-31・CUI01〜）
+   日常パートの紙テーマ（ui-paper.css・Dr.fookah の店内）と同じ3色で作業台を組み直す。
+   craft.css / steam.css / craft-header.css / craft-landscape.css の暗い配色と真鍮の素材の上に重ね、
+   寸法・座標・操作の判定は変えない（色・面・縁だけ）。練習・レッスン・大会のどのモードでも同じ面。
+   生成素材: remake/img/ui/craft-paper/（原画 assets/ui/craft-paper/、生成記録 asset_sources/ui/craft-paper-20261031/、
+   ビルド remake/tools/build_ui_skin.py）。文字・数値・針・ゲージはこれまでどおり DOM で動かす。
+   ============================================================ */
+html .bench[data-mode] {
+  --paper: #f7f3ed; --paper-card: #fffcf8; --paper-line: #d5c8dc; --paper-ink: #38283f; --paper-muted: #76667e;
+  --lavender: #69497e; --lavender-soft: #e9dfef; --lavender-line: #9676a8; --lavender-deep: #4f3660;
+  --amber: #d8963f; --amber-ink: #b8651f; --amber-soft: #fbe9cf;
+  --cool-ink: #2f6f99; --warm-ink: #c2561d; --good-ink: #2f8a5a; --bad-ink: #b83a3a;
+  --accent: var(--lavender); --accent-2: var(--amber);
+  --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
+  --good: var(--good-ink);
+  --cp-board: url("../img/ui/craft-paper/board.webp");
+  --cp-backdrop: url("../img/ui/craft-paper/backdrop.webp");
+  --cp-thermo: url("../img/ui/craft-paper/thermo-frame.webp");
+  --cp-button: url("../img/ui/craft-paper/button-paper.webp");
+  --cp-button-primary: url("../img/ui/craft-paper/button-lavender.webp");
+  --cp-button-amber: url("../img/ui/craft-paper/button-amber.webp");
+  --cp-shadow: 0 10px 24px #2a1a3a2e;
+  --bench-bg: var(--cp-backdrop) center / cover no-repeat, #d9cbe3;
+  background: var(--bench-bg);
+  color: var(--paper-ink);
+}
+html .bench[data-mode="tournament"] { --accent: var(--lavender); --accent-2: var(--amber); --bench-bg: var(--cp-backdrop) center / cover no-repeat, #d9cbe3; }
+html .bench[data-mode].thermal-active { --accent: var(--lavender); }
+
+/* ---------------------------------------------------------------- 上の帯（モード・工程） */
+html .bench[data-mode] .bench-top, html .bench[data-mode][data-art-skin] .bench-top, html .bench[data-mode].thermal-active .bench-top {
+  background: linear-gradient(180deg, #fffcf8f2, #f7f3edf2); border-bottom: 1px solid var(--lavender-line); box-shadow: 0 2px 10px #2a1a3a14;
+}
+html .bench[data-mode] .bench-mode { color: var(--lavender); letter-spacing: .14em; }
+html .bench[data-mode] .bench-top .bench-mode small { color: var(--paper-muted); border-left-color: var(--paper-line); }
+html .bench[data-mode] .bench-progress-count { color: var(--paper-muted); }
+html .bench[data-mode] .bench-progress-track > span:not(.bench-phase) { background: var(--paper-line); }
+html .bench[data-mode] .bench-progress-track > span.seen:not(.bench-phase) { background: var(--lavender-line); }
+html .bench[data-mode] .bench-progress-track > span.now:not(.bench-phase) { background: var(--lavender); }
+html .bench[data-mode] .bench-phase .bench-phase-copy { background: none; box-shadow: none; }
+html .bench[data-mode] .bench-progress-track > .bench-phase { color: var(--paper-muted); background: var(--paper-card); border: 1px solid var(--paper-line); }
+html .bench[data-mode] .bench-phase:not(:last-child)::after { color: var(--lavender-line); }
+html .bench[data-mode] .bench-progress-track > .bench-phase.seen { color: var(--lavender); background: var(--lavender-soft); border-color: #c3a9d5; }
+html .bench[data-mode] .bench-phase.seen small::after { color: var(--good-ink); }
+html .bench[data-mode][data-art-skin] .bench-progress-track > .bench-phase.now, html .bench[data-mode] .bench-progress-track > .bench-phase.now {
+  color: #fff; border-color: var(--lavender); background: var(--lavender); box-shadow: 0 3px 8px #69497e40;
+}
+html .bench[data-mode] .bench-phase.now .bench-phase-icon { filter: none; }
+html .bench[data-mode][data-art-skin] .bench-progress-track > span:not(.bench-phase) { box-shadow: none; }
+
+/* 体調・ヒントの丸ボタンと吹き出し */
+html .bench[data-mode] .bench-condition { color: var(--amber-ink); }
+html .bench[data-mode] .bench-condition[data-health="green"] { color: var(--good-ink); }
+html .bench[data-mode] .bench-condition[data-health="red"] { color: var(--bad-ink); }
+html .bench[data-mode][data-art-skin] .bench-condition summary { background: var(--paper-card); border: 1px solid currentColor; box-shadow: 0 2px 5px #2a1a3a1f; }
+html .bench[data-mode] .bench-guide summary, html .bench[data-mode][data-art-skin] .bench-guide summary {
+  color: var(--lavender); background: var(--paper-card); border: 1px solid var(--lavender-line); box-shadow: 0 2px 5px #2a1a3a1f; font-weight: 700;
+}
+html .bench[data-mode] .bench-guide summary:hover { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+html .bench[data-mode] :is(.bench-condition-tip, .bench-guide-tip) {
+  color: var(--paper-ink); background: var(--paper-card); border: 1px solid var(--lavender-line); box-shadow: var(--cp-shadow);
+}
+html .bench[data-mode] :is(.bench-condition-tip, .bench-guide-tip) p { color: #4a3d52; }
+html .bench[data-mode] :is(.bench-condition, .bench-guide) summary:focus-visible { outline-color: var(--amber); }
+
+/* ---------------------------------------------------------------- 左右の板（九分割の紙）
+   板に filter を付けると、DSで position: fixed にしている温度計の台座・外観ボタンが板の中に閉じ込められる。影は box-shadow だけ。 */
+/* 縁は従来どおり1pxで、中身の寸法・余白は craft.css などの値のまま。板の絵は余白の上と外側へ描く。 */
+html .bench[data-mode] .bench-left, html .bench[data-mode] .bench-right {
+  background: var(--paper); border: 1px solid transparent; border-radius: 0;
+  border-image: var(--cp-board) 40 fill / 14px / 6px stretch; box-shadow: 0 8px 18px #2a1a3a2b;
+}
+html .bench[data-mode] .audience-single { gap: 14px; padding: 10px; }
+html .bench[data-mode]:is([data-step="heat"], [data-step="steam"], [data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-right,
+html .bench[data-mode].thermal-active .bench-right, html .bench[data-mode].thermal-active:is([data-thermal-band="fire"], [data-thermal-band="inferno"]) .bench-right {
+  background: var(--paper); border-image: var(--cp-board) 40 fill / 14px / 6px stretch; border-color: transparent; box-shadow: 0 8px 18px #2a1a3a2b;
+}
+html .bench[data-mode]:is([data-step="pull"], [data-step="serve"], [data-step="care"]) :is(.bench-left, .bench-right) { border-color: transparent; box-shadow: 0 8px 18px #2a1a3a2b; }
+html .bench[data-mode] .bench-head { border-bottom: 1px solid var(--paper-line); }
+html .bench[data-mode][data-art-skin] .bench-head { border-bottom-color: var(--paper-line); }
+html .bench[data-mode] .bench-title, html .bench[data-mode][data-art-skin] .bench-title { color: var(--paper-ink); text-shadow: none; }
+html .bench[data-mode] .bench-hint { color: var(--paper-muted); }
+html .bench[data-mode]:is([data-step="steam"], [data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-title { color: var(--lavender); text-shadow: none; }
+html .bench[data-mode]:is([data-step="steam"], [data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-title::after { opacity: .3; filter: blur(1px) sepia(1) hue-rotate(230deg) saturate(.6); }
+html .bench[data-mode]:is([data-step="steam"], [data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-hint { color: var(--paper-muted); }
+html .bench[data-mode]:is([data-step="steam"], [data-step="pull"], [data-step="serve"], [data-step="care"]) .bench-head::after { background: linear-gradient(90deg, var(--lavender-line), #9676a822); }
+html .bench[data-mode] .bench-demo-link { color: var(--lavender); }
+html .bench[data-mode] .bench-demo-sheet { background: #1e14298c; }
+html .bench[data-mode] .bench-demo-card { background: var(--paper); border: 1px solid var(--lavender-line); color: var(--paper-ink); }
+html .bench[data-mode] .bench-demo-head h2 { color: var(--lavender); }
+html .bench[data-mode] .bench-demo-sheet button { background: var(--paper-card); border-color: var(--lavender-line); color: var(--lavender); }
+html .bench[data-mode] .bench-demo-caption { color: var(--paper-ink); }
+html .bench[data-mode] .bench-demo-link:focus-visible, html .bench[data-mode] .bench-demo-sheet button:focus-visible { outline-color: var(--amber); }
+html .bench[data-mode] .bench-appearance-dialog { background: var(--paper); border: 1px solid var(--lavender-line); color: var(--paper-ink); box-shadow: var(--cp-shadow); }
+html .bench[data-mode] .craft-loading { background: #f7f3edee; color: var(--paper-ink); }
+html .bench[data-mode] .craft-loading::before { border-color: var(--paper-line); border-top-color: var(--lavender); }
+
+/* ---------------------------------------------------------------- 左の作業風景・はじめの欄・観客 */
+html .bench[data-mode] .bench-worker, html .bench[data-mode][data-art-skin] .bench-worker {
+  border: 1px solid var(--lavender-line); border-image: none; border-radius: 6px; background: #0c0a0e; box-shadow: 0 3px 10px #2a1a3a2e;
+}
+html .bench[data-mode].thermal-active .bench-worker { box-shadow: 0 3px 10px #2a1a3a2e; }
+html .bench[data-mode] .worker-scene-tag { color: #fff; text-shadow: 0 1px 3px #000c; }
+html .bench[data-mode] .bench-worker-name { color: #fff; }
+html .bench[data-mode] .bench-worker[data-draw] .bench-worker-caption { color: #fff; }
+html .bench[data-mode] .bench-audience, html .bench[data-mode][data-art-skin] .bench-audience, html .bench[data-mode] .bench-left .bench-audience {
+  border: 1px solid var(--paper-line); border-image: none; border-radius: 6px; background: var(--paper-card); box-shadow: 0 3px 10px #2a1a3a40;
+}
+html .bench[data-mode] .audience-face { background: var(--lavender-soft); }
+html .bench[data-mode] .audience-single .audience-face { border-color: var(--paper-line); background: var(--lavender-soft); }
+html .bench[data-mode] .audience-face-label { color: var(--lavender); background: var(--lavender-soft); }
+html .bench[data-mode] .audience-person figcaption, html .bench[data-mode] .audience-name, html .bench[data-mode] .audience-caption { color: var(--paper-muted); }
+html .bench[data-mode] .audience-rating { color: var(--lavender); }
+html .bench[data-mode] .audience-note { color: var(--paper-ink); }
+html .bench[data-mode] .bench-audience[data-tone="bright"] .audience-rating { color: var(--amber-ink); }
+html .bench[data-mode] .bench-audience[data-tone="bright"] .audience-note { color: var(--amber-ink); }
+html .bench[data-mode] .bench-audience[data-speaker="nagumo"][data-tone="bright"] .audience-note { color: var(--cool-ink); }
+html .bench[data-mode] .bench-audience[data-tone="warm"] .audience-note { color: var(--good-ink); }
+html .bench[data-mode] .bench-audience[data-tone="warm"] .audience-rating { color: var(--good-ink); }
+html .bench[data-mode] .bench-audience[data-tone="quiet"] .audience-note, html .bench[data-mode] .bench-audience[data-tone="quiet"] .audience-rating { color: var(--paper-muted); }
+html .bench[data-mode] .thermal-label { color: var(--paper-muted); }
+html .bench[data-mode][data-thermal-band="optimal"] .thermal-label { color: var(--lavender); }
+html .bench[data-mode][data-thermal-band="ready"] .thermal-label { color: var(--good-ink); }
+/* 熱の光は紙を琥珀に染める（暗い面向けの screen では消えてしまう）。奥の煙はラベンダーの薄墨に。 */
+html .bench[data-mode] .thermal-glow { mix-blend-mode: multiply; }
+html .bench[data-mode] .panel-smoke-wisp { filter: brightness(.6) sepia(1) hue-rotate(225deg) saturate(1.1); mix-blend-mode: multiply; opacity: .7; }
+
+/* ---------------------------------------------------------------- ボタン（紙＝通常、ラベンダー＝主、琥珀＝特別な一手） */
+html .bench[data-mode] .btn, html .bench[data-mode][data-art-skin] .btn, html .bench[data-mode] .btn.ghost {
+  color: var(--lavender); background: var(--paper-card); border: 12px solid transparent; border-radius: 0;
+  border-image: var(--cp-button) 28 fill / 12px / 0 stretch; box-shadow: none; text-shadow: none; filter: none; clip-path: none;
+  padding-top: 2px; padding-bottom: 2px;
+}
+html .bench[data-mode] .btn .btn-desc, html .bench[data-mode][data-art-skin] .btn .btn-desc { color: var(--paper-muted); }
+html .bench[data-mode] .btn:hover:not(:disabled), html .bench[data-mode][data-art-skin] .btn:hover:not(:disabled) {
+  border: 12px solid transparent; border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch; color: #fff; box-shadow: none; filter: none;
+}
+html .bench[data-mode] .btn:hover:not(:disabled) .btn-desc { color: #e9dfef; }
+html .bench[data-mode] .btn.primary, html .bench[data-mode] .btn.primary:hover:not(:disabled),
+html .bench[data-mode][data-art-skin] .btn.primary, html .bench[data-mode][data-art-skin] .btn.primary:hover:not(:disabled) {
+  color: #fff; border: 12px solid transparent; border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch; background: var(--lavender); box-shadow: none; filter: none;
+}
+html .bench[data-mode] .btn.primary .btn-desc { color: #e9dfef; }
+html .bench[data-mode] .btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
+html .bench[data-mode] .btn:active:not(:disabled) { transform: translateY(1px); }
+html .bench[data-mode] .btn:focus-visible, html .bench[data-mode][data-art-skin] .btn:focus-visible,
+html .bench[data-mode] .opt:focus-visible, html .bench[data-mode] .fr-btn:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; box-shadow: none; }
+html .bench[data-mode] .btn:disabled, html .bench[data-mode][data-art-skin] .btn:disabled { opacity: .45; filter: saturate(.4); }
+/* 特別な一手: 吸う・穴をあける・スタート。琥珀の面に墨の文字。 */
+html .bench[data-mode][data-art-skin] .pull-btns .btn.primary, html .bench[data-mode] .pull-btns .btn.primary,
+html .bench[data-mode][data-art-skin] .pull-btns .btn.primary:hover:not(:disabled), html .bench[data-mode] .pull-btns .btn.primary:hover:not(:disabled),
+html .bench[data-mode] .btn.primary.hr-punch, html .bench[data-mode][data-art-skin] .btn.primary.hr-punch, html .bench[data-mode][data-art-skin] .btn.primary.hr-punch:hover:not(:disabled),
+html .bench[data-mode] .btn.primary.pack-confirm, html .bench[data-mode][data-art-skin] .btn.primary.pack-confirm:hover:not(:disabled) {
+  color: #3b2208; background: var(--amber); border: 14px solid transparent; border-image: var(--cp-button-amber) 36 fill / 14px / 0 stretch; box-shadow: none;
+}
+html .bench[data-mode][data-art-skin] .pull-btns .btn.primary::before, html .bench[data-mode][data-art-skin] .pull-btns .btn.primary::after { color: #8a4f14; }
+html .bench[data-mode] .pull-btn-icon { color: #5a3310; filter: none; }
+html .bench[data-mode] .pull-btns .btn.primary .btn-desc, html .bench[data-mode] .hr-punch .btn-desc, html .bench[data-mode] .pack-confirm .btn-desc { color: #6b3f12; }
+html .bench[data-mode][data-art-skin] .pull-play[data-draw] .btn.primary { opacity: .85; }
+/* 丸い＋−と選択肢 */
+html .bench[data-mode] .fr-btn, html .bench[data-mode][data-art-skin] .fr-btn {
+  color: var(--lavender); border: 2px solid var(--lavender-line); background: var(--paper-card); box-shadow: 0 2px 4px #2a1a3a1a;
+}
+html .bench[data-mode] .fr-btn:hover:not(:disabled), html .bench[data-mode][data-art-skin] .fr-btn:hover:not(:disabled) { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+html .bench[data-mode] .opt, html .bench[data-mode][data-art-skin] .opt {
+  color: var(--paper-ink); background: var(--paper-card); border: 1px solid var(--paper-line); border-image: none; border-radius: 6px; box-shadow: 0 2px 6px #2a1a3a14;
+}
+html .bench[data-mode] .opt small { color: var(--paper-muted); }
+html .bench[data-mode] .opt:hover:not(:disabled), html .bench[data-mode][data-art-skin] .opt:hover:not(:disabled) { border-color: var(--lavender-line); background: var(--paper-card); box-shadow: 0 6px 14px #2a1a3a24; }
+html .bench[data-mode] .opt.on, html .bench[data-mode][data-art-skin] .opt.on { border-color: var(--lavender); background: var(--lavender-soft); box-shadow: inset 4px 0 var(--lavender); }
+html .bench[data-mode] .opt-badge { color: var(--amber-ink); }
+html .bench[data-mode] .ht-option[aria-pressed="true"], html .bench[data-mode][data-art-skin] .ht-option[aria-pressed="true"] { color: #fff; border: 12px solid transparent; border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch; background: var(--lavender); }
+
+/* ---------------------------------------------------------------- 配合 */
+html .bench[data-mode] .mix-vessel { background: none; }
+html .bench[data-mode] .mix-taste > b { color: var(--lavender); }
+html .bench[data-mode] .mix-taste p { color: var(--paper-ink); }
+html .bench[data-mode] .mix-taste-tags span { color: var(--lavender); border-color: var(--lavender-line); background: var(--paper-card); }
+html .bench[data-mode] .mix-list-caption { color: var(--paper-muted); }
+html .bench[data-mode] .flavor-row { background: var(--paper-card); border: 1px solid var(--paper-line); box-shadow: 0 2px 6px #2a1a3a12; }
+html .bench[data-mode] .fr-name small { color: var(--paper-muted); }
+html .bench[data-mode] .fr-name .fr-reg { color: var(--amber-ink); }
+html .bench[data-mode] .fr-name .fr-stock { color: var(--good-ink); }
+html .bench[data-mode] .fr-name .fr-ratio { color: var(--lavender); }
+html .bench[data-mode] .fr-g { color: var(--paper-ink); }
+html .bench[data-mode] .mix-footer { border-top-color: var(--paper-line); }
+html .bench[data-mode] .lcd, html .bench[data-mode][data-art-skin] .lcd { color: var(--paper-ink); background: var(--paper-card); border: 1px solid var(--paper-line); border-radius: 6px; box-shadow: none; }
+html .bench[data-mode] .lcd.ok, html .bench[data-mode][data-art-skin] .lcd.ok { color: var(--lavender); border-color: var(--lavender-line); }
+html .bench[data-mode] .reg-line { color: var(--bad-ink); }
+html .bench[data-mode] .reg-line.ok { color: var(--good-ink); }
+html .bench[data-mode] .recipe-line { color: var(--lavender); }
+html .bench[data-mode] .mix-hint { color: var(--cool-ink); border-left-color: var(--cool-ink); background: #2f6f990f; }
+html .bench[data-mode] .effect-badge { background: var(--paper-card); }
+html .bench[data-mode] .craft-sense-base { background: var(--paper-line); }
+html .bench[data-mode] .mix-life-preview { border-top-color: var(--paper-line); }
+html .bench[data-mode] .mix-life-preview > b { color: var(--paper-muted); }
+html .bench[data-mode] .mix-life-note { color: var(--good-ink); }
+html .bench[data-mode] .mix-temperature-preview { color: var(--paper-muted); }
+html .bench[data-mode] .mix-thermal-scale { border-color: var(--lavender-line); }
+html .bench[data-mode] .mix-ideal { color: var(--good-ink); }
+html .bench[data-mode] .mix-optimal { color: var(--lavender); }
+
+/* DS の下画面の配合の足元（粘着）も紙。 */
+html body.game-ds .bench[data-mode][data-step="mix"] .mix-footer { background: var(--paper); border-top-color: var(--paper-line); }
+
+/* ---------------------------------------------------------------- 詰め方 */
+html .bench[data-mode] .pack-aroma { color: var(--paper-ink); border-left-color: var(--lavender); background: var(--lavender-soft); }
+html .bench[data-mode] .pack-vessel { background: none; }
+html .bench[data-mode] .pack-vessel::before { background: #38283f40; }
+html .bench[data-mode] .pack-caption b { color: var(--lavender); }
+html .bench[data-mode] .pack-caption p { color: var(--paper-ink); }
+html .bench[data-mode] .pack-choice { color: var(--paper-ink); background: var(--paper-card); border: 1px solid var(--paper-line); box-shadow: 0 2px 6px #2a1a3a12; }
+html .bench[data-mode] .pack-choice small { color: var(--paper-muted); }
+html .bench[data-mode] .pack-choice[aria-pressed="true"] { color: #fff; background: var(--lavender); border-color: var(--lavender); box-shadow: inset 0 -3px var(--lavender-deep); }
+html .bench[data-mode] .pack-choice[aria-pressed="true"] small { color: #e9dfef; }
+html .bench[data-mode] .pack-choice[aria-pressed="true"]::before { color: #fff; }
+html .bench[data-mode] .pack-choice:focus-visible { outline-color: var(--amber); }
+html .bench[data-mode] .pack-footer small { color: var(--paper-muted); }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  html body:not(.game-ds) .bench[data-mode]:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .pack-footer { background: var(--paper); }
+}
+
+/* ---------------------------------------------------------------- 穴あけ */
+html .bench[data-mode] .foil { box-shadow: -4px 10px 22px #2a1a3a40; }
+html .bench[data-mode] .foil-legend { color: var(--paper-ink); }
+html .bench[data-mode] .hr-ring { color: var(--lavender); }
+html .bench[data-mode] :is(.hr-role, .hr-time) { color: var(--paper-muted); }
+html .bench[data-mode] .hr-time-bar, html .bench[data-mode][data-art-skin] .hr-time-bar { border: 1px solid var(--paper-line); background: var(--lavender-soft); box-shadow: none; }
+html .bench[data-mode] .hr-time-bar b { background: linear-gradient(90deg, var(--amber), var(--lavender)); box-shadow: none; }
+html .bench[data-mode] .hr-score { color: var(--paper-ink); }
+html .bench[data-mode] .hr-combo { color: var(--amber-ink); text-shadow: none; }
+html .bench[data-mode] .hr-plan { color: var(--paper-ink); }
+html .bench[data-mode] .ht-title { color: var(--lavender); }
+html .bench[data-mode] .ht-counts { color: var(--lavender); }
+html .bench[data-mode] :is(.ht-description, .ht-note, .ht-help, .ht-current) { color: var(--paper-muted); }
+html .bench[data-mode] .ht-help summary { color: var(--lavender); }
+html .bench[data-mode] .hr-feedback .stamp.perfect, html .bench[data-mode] .hr-feedback .stamp.just { color: var(--amber-ink); text-shadow: 0 0 10px #d8963f55; }
+html .bench[data-mode] .hr-feedback .stamp.good { color: var(--good-ink); text-shadow: none; }
+html .bench[data-mode] .hr-feedback .stamp.miss { color: var(--paper-muted); }
+html .bench[data-mode] .hr-feedback .stamp.bad { color: var(--bad-ink); text-shadow: none; }
+
+/* ---------------------------------------------------------------- 炭焼き・熱管理 */
+html .bench[data-mode][data-step="heat"] .bench-right { background: var(--paper); }
+html .bench[data-mode] .heat-info { color: var(--paper-ink); border: 1px solid var(--lavender-line); border-radius: 12px; background: var(--paper-card); box-shadow: 0 4px 12px #2a1a3a1f; }
+html .bench[data-mode] .heat-carrier-head { color: var(--paper-ink); }
+html .bench[data-mode] .heat-carrier-head h2 { color: var(--lavender); }
+html .bench[data-mode] .heat-carrier-head small { color: var(--paper-muted); }
+html .bench[data-mode] .heat-feedback { color: var(--paper-ink); }
+html .bench[data-mode] .heat-feedback .stamp { text-shadow: none; }
+html .bench[data-mode] .heat-feedback .perfect { color: var(--amber-ink); }
+html .bench[data-mode] .heat-feedback .good { color: var(--good-ink); }
+html .bench[data-mode] .heat-feedback .miss { color: var(--bad-ink); }
+html .bench[data-mode] .heat-error { border-left-color: var(--paper-line); }
+html .bench[data-mode] .heat-bonus { color: var(--amber-ink); }
+html .bench[data-mode] .coal-corners { border-color: #69497e66; }
+html .bench[data-mode] .coal.pikan .coal-corners, html .bench[data-mode] .coal:focus-visible .coal-corners { border-color: var(--amber-ink); filter: drop-shadow(0 0 6px #d8963f); }
+html .bench[data-mode] .coal.soon .coal-corners { border-color: var(--amber); }
+html .bench[data-mode] .coal:focus-visible { outline-color: var(--amber); }
+html .bench[data-mode] .care-coals-ask { color: var(--lavender); }
+html .bench[data-mode] .care-coals-lead { color: var(--paper-ink); }
+html .bench[data-mode] .care-coal .btn-desc { color: var(--amber-ink); }
+html .bench[data-mode] .care-coal[data-test="care-coal-0"] .btn-desc { color: var(--cool-ink); }
+html .bench[data-mode] .care-coal:hover:not(:disabled) .btn-desc { color: #fbe9cf; }
+
+/* ---------------------------------------------------------------- 蒸らし（タイマー・雑念） */
+html .bench[data-mode][data-step="steam"] .bench-right { background: var(--paper); }
+html .bench[data-mode] .timer-advice { color: var(--paper-muted); }
+html .bench[data-mode] .steam-forecast { color: var(--paper-ink); border: 1px solid var(--paper-line); background: var(--paper-card); box-shadow: none; }
+html .bench[data-mode] .steam-forecast-heading { color: var(--paper-muted); }
+html .bench[data-mode] .steam-forecast-value { color: var(--lavender); }
+html .bench[data-mode] .steam-weather { color: var(--paper-muted); }
+html .bench[data-mode] .steam-weather i { color: var(--lavender); }
+html .bench[data-mode] .steam-forecast-note { color: var(--paper-muted); }
+html .bench[data-mode] .steam-temperature::before, html .bench[data-mode] .pull > .thermo::before { color: var(--paper-ink); font-weight: 700; }
+html .bench[data-mode] .steam-temperature-read { border: 1px solid var(--paper-line); background: var(--paper-card); }
+html .bench[data-mode] .thermo-range-note { color: var(--lavender); background: var(--paper-card); border-bottom-color: var(--lavender-line); }
+html .bench[data-mode] .dodge-wave { color: var(--lavender); }
+/* 雑念の場は夜の心の中。暗い面のまま、縁だけ紙の線に。 */
+html .bench[data-mode][data-art-skin] .dodge { border: 2px solid var(--lavender-line); background: #131123; box-shadow: 0 4px 14px #2a1a3a33; }
+html .bench[data-mode] .dodge-actions small { color: var(--paper-muted); }
+html .bench[data-mode] .dodge-pad:focus-visible { outline-color: var(--amber); }
+html .bench[data-mode][data-art-skin] .dodge-pad > span { color: var(--lavender); }
+html .bench[data-mode][data-art-skin] .dodge-knob {
+  border-color: var(--lavender-line); background: linear-gradient(155deg, #fffcf8, #e9dfef 45%, #c3a9d5); box-shadow: inset 0 1px 2px #fff, 0 3px 8px #2a1a3a40;
+}
+html .bench[data-mode] .dodge-knob::before { background: repeating-linear-gradient(0deg, transparent 0 7px, #69497e22 7px 8px); }
+html .bench[data-mode] .dodge-knob::after { border-color: #69497e33; background: radial-gradient(ellipse at 35% 25%, #fffcf8, #e9dfef 45%, #c3a9d5); box-shadow: inset 0 2px 4px #fff8; }
+html .bench[data-mode][data-art-skin] .dodge-pad.held { box-shadow: 0 0 16px #69497e40; }
+html .bench[data-mode][data-art-skin] .dodge-pad.held .dodge-knob { border-color: var(--lavender); }
+html .bench[data-mode] .slash-growth { color: var(--lavender); border-color: var(--lavender-line); background: var(--paper-card); box-shadow: 0 2px 5px #2a1a3a33; }
+html .bench[data-mode][data-art-skin] .btn.dodge-action, html .bench[data-mode][data-art-skin] .btn.dodge-action:hover:not(:disabled) {
+  border: 1px solid var(--lavender-line); border-image: none; border-radius: 8px; background: var(--paper-card); color: var(--lavender); box-shadow: 0 2px 6px #2a1a3a1f; padding-top: 0; padding-bottom: 0;
+}
+html .bench[data-mode][data-art-skin] .btn.dodge-action:hover:not(:disabled) { border-color: var(--lavender); filter: none; }
+html .bench[data-mode][data-art-skin] .btn.dodge-action[data-cooling="true"]:disabled { opacity: 1; filter: none; }
+
+/* ---------------------------------------------------------------- 温度計（生成した紙の枠） */
+html .bench[data-mode] .thermo-housing .thermo-skin {
+  background: var(--cp-thermo) center / 100% 100% no-repeat !important; filter: drop-shadow(0 3px 6px #2a1a3a2e);
+}
+/* 枠の透明な窓（幅 33.4〜66.3%・高さ 5.1〜92.6%）に管を合わせる。矢印・目印・吹き出しは thermometer.js が
+   --thermo-inset（上下同じ余白）で置くので、管も同じ変数で上下対称に置く（ずらすと矢印が判定とずれる）。 */
+html .bench[data-mode] .thermo:has(.thermo-housing) { --thermo-inset: 6.4% !important; }
+html .bench[data-mode] .thermo-housing .thermo-tube { left: 34%; right: 34%; top: var(--thermo-inset); bottom: var(--thermo-inset); border-radius: 6px; background: linear-gradient(90deg, #ddd3e2, #efe7f2, #d9cde0); }
+html .bench[data-mode] .thermo-tube { border-color: var(--lavender-line); background: var(--lavender-soft); }
+html .bench[data-mode] .thermo-zone { background: #2f8a5a2e; border-color: var(--good-ink); }
+html .bench[data-mode] .thermo-projected { border-color: var(--lavender); background: #69497e22; }
+html .bench[data-mode] .thermo-projected-label { color: var(--lavender); border: 1px dashed var(--lavender-line); background: var(--paper-card); }
+html .bench[data-mode] .thermo-pop { text-shadow: 0 0 6px #fffcf8, 0 0 2px #fffcf8, 0 1px 1px #fffcf8; }
+html .bench[data-mode] .thermo-pop.up { color: var(--warm-ink); }
+html .bench[data-mode] .thermo-pop.keep { color: var(--paper-ink); }
+html .bench[data-mode] .thermo-pop.down { color: var(--cool-ink); }
+html .bench[data-mode] :is(.pull, .steam, .steam-timer) > .thermo::after, html .bench[data-mode] .mix-temperature-preview::before {
+  border: 1px solid var(--lavender-line); background: var(--paper-card); box-shadow: 0 3px 10px #2a1a3a2e;
+}
+html .bench[data-mode] .mix-temperature-preview > b { color: var(--lavender); }
+html .bench[data-mode] .mix-temperature-preview > small { color: var(--paper-muted); }
+html .bench[data-mode] .mix-temperature[data-selected="false"] .thermo-scale { background: #c9bcd2; }
+html .bench[data-mode] .pull > .thermo .pull-read { color: var(--paper-ink); border: 1px solid var(--lavender-line); background: var(--paper-card); box-shadow: 0 2px 6px #2a1a3a1f; }
+html .bench[data-mode] .pull > .thermo .pull-read[data-tone="cool"] { border-color: var(--lavender-line); }
+html .bench[data-mode] .pull > .thermo .pull-read[data-tone="ok"] { border-color: var(--good-ink); }
+html .bench[data-mode] .pull > .thermo .pull-read[data-tone="optimal"] { border-color: var(--amber); box-shadow: 0 0 10px #d8963f55; }
+html .bench[data-mode] .pull > .thermo .pull-read[data-tone="hot"] { border-color: var(--warm-ink); }
+html .bench[data-mode] .pull > .thermo .pull-read:is([data-tone="danger"], [data-tone="cold"]) { border-color: var(--bad-ink); }
+html .bench[data-mode] .pull-read[data-tone="cool"] .pull-state, html .bench[data-mode] .pull-read[data-tone="ok"] .pull-state, html .bench[data-mode] .pull-read[data-tone="hot"] .pull-state,
+html .bench[data-mode] .pull-read[data-tone="danger"] .pull-state, html .bench[data-mode] .pull-read[data-tone="cold"] .pull-state { text-shadow: none; }
+html .bench[data-mode] .pull-life { border: 1px solid var(--paper-line); background: var(--paper-card); box-shadow: 0 2px 6px #2a1a3a14; }
+html .bench[data-mode] .pull-life-label { color: var(--paper-muted); }
+html .bench[data-mode] .pull-zone-label.l-keep > span { color: var(--lavender); border: 1px solid var(--lavender-line); background: var(--lavender-soft); }
+
+/* ---------------------------------------------------------------- 吸い出し・熱管理 */
+html .bench[data-mode] .pull-read { color: var(--paper-ink); }
+html .bench[data-mode] .pull-read[data-tone="ok"] .pull-state { color: var(--good-ink); }
+html .bench[data-mode] .pull-read[data-tone="hot"] .pull-state { color: var(--warm-ink); }
+html .bench[data-mode] .pull-read[data-tone="danger"] .pull-state { color: var(--bad-ink); }
+html .bench[data-mode] .pull-read[data-tone="cold"] .pull-state { color: var(--cool-ink); }
+html .bench[data-mode] .pull-read[data-tone="cool"] .pull-state { color: var(--paper-muted); }
+html .bench[data-mode] .pull-drift { color: var(--cool-ink); }
+html .bench[data-mode] .pull-tag { color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line); }
+html .bench[data-mode] .pull-summary { border: 1px solid var(--paper-line); background: var(--paper-card); }
+html .bench[data-mode] .pull-draw-status { color: var(--paper-muted); }
+html .bench[data-mode] .pull-play[data-draw] .pull-draw-status { color: var(--amber-ink); }
+html .bench[data-mode] .pull-play[data-draw] .pull-summary::after { background: var(--amber); box-shadow: none; }
+html .bench[data-mode] .pull-pip { border-color: var(--lavender-line); background: var(--paper-card); box-shadow: none; }
+html .bench[data-mode] .pull-pip.over { border-color: var(--warm-ink); }
+html .bench[data-mode] .pull-pip.on { background: radial-gradient(circle at 40% 35%, #fff1d6, var(--amber) 55%, var(--amber-ink)); box-shadow: 0 0 6px #d8963f66; }
+html .bench[data-mode] .pull-pip.over.on { background: radial-gradient(circle at 40% 35%, #ffe2c2, #e8743a 55%, #b8651f); }
+html .bench[data-mode] .pull-count-num { color: var(--paper-ink); }
+html .bench[data-mode] .pull-count[data-pulls="5"] .pull-count-num { color: var(--warm-ink); }
+/* 半円の計器: 紙の面にラベンダーの縁、琥珀の針。 */
+html .bench[data-mode] .dial-recess { fill: #fffcf8; stroke: var(--lavender-line); }
+html .bench[data-mode] .dial-ring { filter: drop-shadow(0 4px 8px #2a1a3a26); }
+html .bench[data-mode] .dial-rim { stroke: var(--lavender-line); stroke-width: 1.5; }
+html .bench[data-mode] .dial-gloss { fill: #69497e08; }
+html .bench[data-mode] .pg-just { fill: #fff6d8; stroke: var(--amber); stroke-width: 1.6; filter: drop-shadow(0 0 6px #d8963f80); }
+html .bench[data-mode] .dial-label { stroke: #fffcf8; }
+html .bench[data-mode] .dial-label.l-up { fill: var(--warm-ink); }
+html .bench[data-mode] .dial-label.l-keep { fill: var(--paper-ink); }
+html .bench[data-mode] .dial-label.l-down { fill: var(--cool-ink); }
+html .bench[data-mode] .dial-desc { fill: var(--paper-muted); stroke: #fffcf8; }
+html .bench[data-mode] .dial-desc.l-down { fill: var(--cool-ink); }
+html .bench[data-mode] .dial-desc.l-up { fill: var(--warm-ink); }
+html .bench[data-mode] .needle-body { fill: var(--amber); stroke: #8a4f14; filter: drop-shadow(0 2px 3px #2a1a3a40); }
+html .bench[data-mode] .needle-light { stroke: #fff1d6; }
+html .bench[data-mode] .needle-cap { fill: #f3c77a; stroke: #8a4f14; filter: none; }
+html .bench[data-mode] .dial-pivot-rim { fill: #fffcf8; stroke: var(--lavender-line); }
+html .bench[data-mode] .dial-pivot { fill: var(--lavender); stroke: var(--lavender-deep); filter: none; }
+html .bench[data-mode] .pull-zone-label { color: var(--paper-ink); }
+html .bench[data-mode] .pull-zone-label > b { text-shadow: none; }
+html .bench[data-mode] .pull-zone-label.l-down { color: var(--cool-ink); }
+html .bench[data-mode] .pull-zone-label.l-up { color: var(--warm-ink); }
+html .bench[data-mode] .pull-zone-label.l-keep { color: var(--paper-ink); }
+html .bench[data-mode] .leaf-icon { filter: none; }
+
+/* ---------------------------------------------------------------- 結果カード */
+html .bench[data-mode] .result-card, html .bench[data-mode][data-art-skin] .result-card {
+  color: var(--paper-ink); background: var(--paper); border: 16px solid transparent; border-radius: 0;
+  border-image: var(--cp-board) 40 fill / 16px / 0 stretch; box-shadow: 0 12px 28px #2a1a3a40;
+}
+html .bench[data-mode] .result-card .rc-title { color: var(--paper-muted); }
+html .bench[data-mode] .rc-lines { color: var(--paper-ink); }
+html .bench[data-mode] .g-S { color: var(--amber-ink); text-shadow: 0 0 14px #d8963f55; }
+html .bench[data-mode] .g-A { color: var(--lavender); text-shadow: none; }
+html .bench[data-mode] .g-B { color: var(--good-ink); }
+html .bench[data-mode] .g-C { color: var(--paper-muted); }
+html .bench[data-mode] .g-D { color: #a89aae; }
+html .bench[data-mode] .result-card.compact, html .bench[data-mode][data-art-skin] .result-card.compact {
+  background: var(--paper-card); border: 1px solid var(--lavender-line); border-image: none; border-radius: 8px; box-shadow: 0 -4px 16px #2a1a3a1f; filter: none;
+}
+html .bench[data-mode] .rc-summary { color: var(--paper-ink); }
+html .bench[data-mode] .rc-summary p:last-child { color: var(--lavender); }
+html .bench[data-mode] .rc-details { color: var(--paper-muted); }
+html .bench[data-mode] .rc-details summary { border-bottom-color: var(--paper-line); color: var(--lavender); }
+
+/* ---------------------------------------------------------------- 水入れ（試遊）と汎用の水位表示 */
+html .bench[data-mode] .wpour-info { color: var(--paper-ink); border: 1px solid var(--lavender-line); border-radius: 12px; background: var(--paper-card); box-shadow: 0 4px 12px #2a1a3a1f; }
+html .bench[data-mode] .wpour-head h2 { color: var(--lavender); }
+html .bench[data-mode] .wpour-head small { color: var(--paper-muted); }
+html .bench[data-mode] .wpour-goal { color: var(--amber-ink); }
+html .bench[data-mode] :is(.wpour-status, .wpour-result small, .wpour-keys) { color: var(--paper-muted); }
+html .bench[data-mode] .wpour[data-pour="on"] .wpour-pour, html .bench[data-mode] .wpour[data-tilt="on"] .wpour-tilt { box-shadow: 0 0 0 3px #d8963f66; }
+html .bench[data-mode] .wpour-spilled { color: var(--cool-ink); }
+html .bench[data-mode] .wpour-spilled b { color: var(--cool-ink); }
+html .bench[data-mode] .wpour-result { border-top-color: var(--paper-line); }
+html .bench[data-mode] .wpour-stamp.perfect { color: var(--amber-ink); text-shadow: 0 0 12px #d8963f55; }
+html .bench[data-mode] .wpour-stamp.great { color: var(--amber-ink); text-shadow: none; }
+html .bench[data-mode] .wpour-stamp.good { color: var(--good-ink); }
+html .bench[data-mode] .wpour-stamp.miss { color: var(--bad-ink); }
+html .bench[data-mode] .craft-water { color: var(--paper-ink); }
+html .bench[data-mode] .craft-water-status { color: var(--amber-ink); }
+html .bench[data-mode] .craft-water-status[data-band="none"] { color: var(--bad-ink); }
+html .bench[data-mode] .craft-water-actions button:focus-visible { outline-color: var(--amber); }
+
+/* 吸い出し前の「3・2・1」は作業台の外（fx 層）に出る。紙の上で読めるラベンダーの数字にする。 */
+html:has(.bench[data-mode]:not(.done)) .countdown { color: var(--lavender, #69497e); text-shadow: 0 0 18px #fffcf8, 0 0 40px #fffcf8, 0 2px 2px #38283f33; }
+html:has(.bench[data-mode]:not(.done)) .countdown.go { color: #b8651f; }
+
+/* ================================================================ 工程ごとの舞台（CUI05）
+   小道具（コンロ・炭壺・アルミ・タイマー・ボウル）を紙の上に浮かせず、生成した天板に置く。
+   台所の石の天板＝炭焼き・調整、ラベンダーの縁のリネンマット＝穴あけ・蒸らし時間・配合と詰め方のボウル。
+   文字は天板の上に直接置かず、紙のカードや札に載せる。DS（2画面）は今回の対象外なので通常表示だけ。 */
+html body:not(.game-ds) .bench[data-mode] {
+  --cp-stage-kitchen: url("../img/ui/craft-paper/stage-kitchen.webp");
+  --cp-stage-workbench: url("../img/ui/craft-paper/stage-workbench.webp");
+  --cp-stage-edge: inset 0 0 0 1px var(--lavender-line), inset 0 0 0 4px #fffcf8b3, inset 0 14px 28px #2a1a3a24;
+}
+html body:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [data-step="care"], [data-step="holes"]) .bench-panel,
+html body:not(.game-ds) .bench[data-mode][data-step="steam"] .bench-panel:has(> .steam-timer) { isolation: isolate; }
+html body:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [data-step="care"], [data-step="holes"]) .bench-panel::before,
+html body:not(.game-ds) .bench[data-mode][data-step="steam"] .bench-panel:has(> .steam-timer)::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: 8px;
+  background: var(--cp-stage-workbench) center 58% / cover no-repeat; box-shadow: var(--cp-stage-edge);
+}
+html body:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [data-step="care"]) .bench-panel::before { background: var(--cp-stage-kitchen) center 64% / cover no-repeat; }
+
+/* 炭焼き: 炭壺と判定はカードのまま。コンロの下に接地の影。 */
+html body:not(.game-ds) .bench[data-mode] .stove::after {
+  content: ""; position: absolute; left: 8%; right: 8%; bottom: -10px; height: 34px; z-index: -1; border-radius: 50%;
+  background: radial-gradient(ellipse, #2a1a3a55, transparent 70%); pointer-events: none;
+}
+html body:not(.game-ds) .bench[data-mode] .heat-info { background: #fffcf8f2; }
+
+/* 調整（炭の交換）: 問いを紙のカードに、選択肢は炭の絵の大きなカードに。下の空きは台所の天板が見える。 */
+html body:not(.game-ds) .bench[data-mode] .care-coals {
+  padding: 14px 18px 16px; border: 1px solid var(--lavender-line); border-radius: 10px; background: #fffcf8f2; box-shadow: 0 6px 16px #2a1a3a24;
+}
+/* 炭を焼く間はコンロを天板に置く。カードは外し、案内の一行だけ紙の札に。 */
+html body:not(.game-ds) .bench[data-mode] .care-coals:not(:has(.care-coal-btns)) { padding: 0; border: 0; background: none; box-shadow: none; }
+html body:not(.game-ds) .bench[data-mode] .care-coals:not(:has(.care-coal-btns)) > .care-coals-lead {
+  width: fit-content; padding: 8px 18px; border: 1px solid var(--lavender-line); border-radius: 999px; background: #fffcf8f2; box-shadow: 0 4px 10px #2a1a3a24;
+}
+html body:not(.game-ds) .bench[data-mode] .care-coal-btns { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+html body:not(.game-ds) .bench[data-mode] .btn.care-coal {
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; min-height: 168px; padding-top: 4px; padding-bottom: 6px;
+}
+html body:not(.game-ds) .bench[data-mode] .btn.care-coal::before {
+  content: ""; order: -1; flex: 1; align-self: stretch; min-height: 92px; pointer-events: none;
+  background: url("../img/ui/making/coal_just.webp") center 70% / 64px no-repeat;
+  filter: drop-shadow(0 4px 4px #2a1a3a40);
+}
+html body:not(.game-ds) .bench[data-mode] .btn.care-coal[data-test="care-coal-0"]::before { background-image: url("../img/ui/making/coal_white.webp"); filter: drop-shadow(0 4px 4px #2a1a3a40) saturate(.6); }
+html body:not(.game-ds) .bench[data-mode] .btn.care-coal[data-test="care-coal-2"]::before {
+  background: url("../img/ui/making/coal_just.webp") calc(50% - 30px) 70% / 58px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 30px) 70% / 58px no-repeat;
+}
+html body:not(.game-ds) .bench[data-mode] .btn.care-coal[data-test="care-coal-3"]::before {
+  background: url("../img/ui/making/coal_just.webp") 50% 18% / 50px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 28px) 88% / 50px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 28px) 88% / 50px no-repeat;
+}
+html body:not(.game-ds) .bench[data-mode] .btn.care-coal[data-test="care-coal-4"]::before {
+  background: url("../img/ui/making/coal_just.webp") calc(50% - 25px) 18% / 46px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 25px) 18% / 46px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 25px) 88% / 46px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 25px) 88% / 46px no-repeat;
+}
+html body:not(.game-ds) .bench[data-mode] .btn.care-coal .btn-label { font-size: 20px; font-weight: 800; }
+html body:not(.game-ds) .bench[data-mode] .btn.care-coal:disabled::before { filter: grayscale(.6); }
+
+/* 穴あけ: アルミはマットの上。配置の説明と操作は右の紙のカード。 */
+html body:not(.game-ds) .bench[data-mode] .holes { padding: 0 14px 0 18px; }
+html body:not(.game-ds) .bench[data-mode] :is(.ht-side, .hr-side) {
+  padding: 14px 16px; border: 1px solid var(--lavender-line); border-radius: 10px; background: #fffcf8f2; box-shadow: 0 6px 16px #2a1a3a24;
+}
+html body:not(.game-ds) .bench[data-mode] .foil-legend { width: fit-content; margin-inline: auto; padding: 6px 14px; border-radius: 999px; background: #fffcf8e6; box-shadow: 0 2px 6px #2a1a3a1f; }
+
+/* 蒸らし時間: タイマーはマットの上。説明の一行と目安は紙。 */
+html body:not(.game-ds) .bench[data-mode] .steam-clock { filter: drop-shadow(0 10px 14px #2a1a3a33); }
+html body:not(.game-ds) .bench[data-mode] .timer-advice { padding: 6px 16px; border-radius: 999px; background: #fffcf8e6; color: var(--paper-ink); box-shadow: 0 2px 6px #2a1a3a1f; }
+html body:not(.game-ds) .bench[data-mode] .steam-forecast { background: #fffcf8f2; box-shadow: 0 6px 16px #2a1a3a24; }
+
+/* 配合・詰め方: ボウルの周りだけマットを窓のように見せる。 */
+html body:not(.game-ds) .bench[data-mode] .mix-vessel,
+html body:not(.game-ds) .bench[data-mode] .pack-vessel {
+  border-radius: 10px; background: var(--cp-stage-workbench) center 62% / cover no-repeat; box-shadow: var(--cp-stage-edge);
+}
+html body:not(.game-ds) .bench[data-mode] .pack-vessel::before { background: #2a1a3a40; }
+
+/* 工程が切り替わったとき、中身を短く浮かび上がらせる（位置は動かさない）。 */
+html body:not(.game-ds) .bench[data-mode] .bench-panel > * { animation: cp-panel-in .22s ease-out both; }
+@keyframes cp-panel-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { html body:not(.game-ds) .bench[data-mode] .bench-panel > * { animation: none; } }
+/* スマホ横は器の窓が小さく、縮めた器の絵が窓からはみ出すので天板の窓を使わない。 */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  html body:not(.game-ds) .bench[data-mode] :is(.mix-vessel, .pack-vessel) { background: none; box-shadow: none; }
+}

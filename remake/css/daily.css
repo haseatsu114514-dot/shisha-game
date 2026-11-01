@@ -183,9 +183,6 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .hud-right { display: flex; align-items: center; gap: 8px; pointer-events: auto; }
 .hud-stamina { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; font-size: 13px; letter-spacing: .02em; color: var(--text-dim); }
 .hud-stamina .gauge-track { position: relative; }
-.hud-stamina .guts-extra { position: absolute; top: 0; bottom: 0; display: block; background: var(--stat-guts); box-shadow: 0 0 5px var(--stat-guts); }
-.hud-stamina .guts-badge { display: inline-grid; place-items: center; border: 1px solid var(--stat-guts); border-radius: 3px; color: var(--stat-guts); font-size: 12px; font-weight: 700; width: 15px; height: 15px; }
-.hud-stamina .guts-badge[hidden] { display: none; }
 .hud-bar { display: block; height: 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(199, 154, 60, 0.7); overflow: hidden; transition: width 0.4s; }
 .hud-bar b { display: block; height: 100%; background: linear-gradient(90deg, #6fcf8f, #c9f07a); transition: width 0.5s var(--ease-out); }
 .hud-stamina.recovering { animation: stamina-recover 1.4s ease-out; }
@@ -987,6 +984,15 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .chip.dim { color: var(--text-dim); }
 .recipe-chip { border: 1px solid var(--gold); min-height: 36px; font: 700 14px var(--font); cursor: pointer; }
 .recipe-chip:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
+/* レシピ詳細だけ本文をスクロールし、狭い下画面でも戻る操作を残す。 */
+.status-modal .modal-body:has(.recipe-detail) { display: flex; flex-direction: column; }
+.status-modal .status:has(.recipe-detail) { display: flex; flex-direction: column; min-height: 0; }
+.status-modal .modal-body:has(.recipe-detail) .st-tabs { display: none; }
+.status-modal .st-body:has(> .recipe-detail) { display: flex; flex-direction: column; min-height: 0; }
+.status-modal .recipe-detail { display: flex; flex-direction: column; min-height: 0; }
+.status-modal .recipe-detail h4 { flex: none; }
+.status-modal .recipe-detail-text { min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.status-modal .recipe-detail + .btn { flex: none; align-self: flex-start; }
 .recipe-detail h4 { margin: 0 0 12px; color: var(--gold); }
 .recipe-detail p { margin: 8px 0; overflow-wrap: anywhere; }
 /* 贈られた専用ハガル（売却不可）: 贈り主・染み付いた香りの札 */
@@ -1071,17 +1077,6 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .keepsake-viewer img { width: 90%; max-height: 610px; object-fit: contain; }
 .keepsake-viewer span { color: var(--gold); }
 
-/* 第1章の任意の街歩き。既存のピンと直接移動を併用する。 */
-.map-walk { position: absolute; z-index: 5; bottom: 16px; left: 176px; padding: 12px 18px; color: var(--gold-hi); background: var(--ink-2); border: 1px solid var(--gold); border-radius: 6px; cursor: pointer; font-size: 20px; }
-.street-selection { position: absolute; inset: 0; }
-.street-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
-.street-heading { position: absolute; top: 126px; left: 20px; max-width: 730px; color: #fff; background: rgba(0,0,0,.85); padding: 8px 14px; border-radius: 6px; pointer-events: none; }
-.street-heading b { font-size: 24px; color: var(--gold-hi); }
-.street-heading span { display: block; font-size: 16px; }
-.street-heading p { margin: 4px 0 0; font-size: 20px; }
-.street-back { position: absolute; top: 128px; right: 22px; font-size: 22px; padding: 12px 16px; background: #000; color: #fff; border: 2px solid var(--gold); border-radius: 6px; cursor: pointer; }
-.street-waiting { position: absolute; left: 50%; top: 50%; z-index: 4; transform: translate(-50%, -50%); max-width: 720px; padding: 16px 22px; background: #000; color: #fff; border: 2px solid var(--gold); border-radius: 6px; pointer-events: none; font-size: 22px; text-align: center; }
-.street-waiting[hidden] { display: none; }
 .mi-preview.loading { display: grid; place-items: center; font-size: 20px; color: #cdb8e6; background: #171225; }
 
 /* 寝る前の一服（家シーシャ・#638）: 自分の葉を1gずつ、合計12g */
@@ -1109,8 +1104,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .vn-choice.fortune-hint:hover, .vn-choice.fortune-hint:focus-visible { background: linear-gradient(100deg, #382132, #261626); }
 
 /* Movement waits for the brief reveal; interrupt always clears its local lock. */
-.map[data-revealing="true"] .map-pins, .map[data-revealing="true"] .map-info,
-.map[data-revealing="true"] .map-walk { pointer-events: none; }
+.map[data-revealing="true"] .map-pins, .map[data-revealing="true"] .map-info { pointer-events: none; }
 /* 解禁の表示と余韻が終わるまでは、次の指示を重ねない。 */
 .map[data-revealing="true"] .map-info, .map[data-revealing="true"] .map-guide,
 .map[data-revealing="true"] .map-notice:not(.map-unlock-notice) { visibility: hidden; }
@@ -1651,3 +1645,60 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .gboard.has-art .gb-node.gate.s-locked .gb-face { opacity: 0.85; }
 @media (prefers-reduced-motion: reduce) { .gboard.has-art .gb-node.gate .gb-face::after, .gboard.has-art .gb-node.gate .gb-gate-gem { animation: none !important; } }
 .gboard.has-art .gb-node.gate.selected .gb-face, .gboard.has-art .gb-node.gate.target .gb-face { outline: none; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--board-c)) !important; }
+
+/* 左上の日付カード（2026-10-31 DUI13）: 紙の色になる前の配置（左に日付、右に所持金・大会まで・体力の3行）を薄く組み直す。
+   行ごとの枠は付けず、細い線で区切る。幅は固定（所持金の桁・時間帯・最大体力で板が動かない）。2画面表示は game-ds.css のまま。 */
+body:not(.game-ds) #hud .hud-card { display: flex; align-items: center; width: auto; height: auto; padding: 6px 14px 7px 16px; }
+body:not(.game-ds) #hud .dc-main { flex: none; width: 58px; min-width: 0; }
+body:not(.game-ds) #hud .dc-area { margin: 0 0 2px; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+body:not(.game-ds) #hud .dc-day b { font-size: 30px; font-weight: 900; }
+body:not(.game-ds) #hud .dc-slot { margin-top: 2px; font-size: 14px; font-weight: 700; }
+body:not(.game-ds) #hud .dc-meta {
+  flex: none; width: 214px; gap: 0; margin-left: 12px; padding-left: 14px; border-left: 1px solid var(--paper-line, #d5c8dc);
+}
+body:not(.game-ds) #hud .dc-row,
+body:not(.game-ds) #hud .hud-card .hud-stamina {
+  display: flex; align-items: center; gap: 8px; width: auto; min-width: 0; height: 25px; padding: 0;
+  background: none; border: 0; border-bottom: 1px solid var(--paper-line, #d5c8dc); border-image: none; border-radius: 0; box-shadow: none; white-space: nowrap;
+}
+body:not(.game-ds) #hud .dc-row { justify-content: space-between; }
+body:not(.game-ds) #hud .dc-meta > :last-child:not([hidden]),
+body:not(.game-ds) #hud .dc-meta > .hud-stamina:has(+ [hidden]) { border-bottom: 0; }
+body:not(.game-ds) #hud .dc-row span,
+body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+body:not(.game-ds) #hud .dc-row.money b { font-size: 20px; line-height: 1; }
+body:not(.game-ds) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1; }
+/* 体力: 育成で最大体力が伸びるとバーが長くなる（92px×最大体力/100、最大160で147px）。上乗せ分の色・印・点線は出さない。 */
+body:not(.game-ds) #hud .hud-card .hud-stamina { position: relative; }
+body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { width: 28px; }
+body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar { position: relative; flex: none; box-sizing: border-box; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
+/* 中身は枠の内側に上下左右とも1pxで収める（古い position: relative と絵の枠用の inset: 3px 4px を引き継がない）。 */
+body:not(.game-ds) #hud .hud-card .hud-stamina .gauge-track { position: absolute; inset: 1px; display: block; overflow: hidden; border-radius: 4px; }
+body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar b { border-radius: 4px; }
+body:not(.game-ds) #hud .hud-card .hud-exp { height: 25px; padding: 0; }
+
+/* 地図の案内パネル（2026-10-31 DUI14・DUI16）: 右下の家・喫茶の看板に届かない高さ（約255px）に収める。
+   行き先を選んだら16:9の写真を見せ、店名と人の名前は写真の上に重ねる。タグは置かず、料金は行くボタンに一言だけ。 */
+body:not(.game-ds) .map .map-info {
+  display: grid; grid-template-columns: minmax(0, 1fr); width: 312px; padding: 6px 8px 8px;
+}
+body:not(.game-ds) .map .map-info > * { grid-column: 1; }
+body:not(.game-ds) .map .mi-banner { justify-self: start; margin-bottom: 4px; white-space: nowrap; }
+body:not(.game-ds) .map .mi-desc { margin: 2px 2px 6px; font-size: 14px; line-height: 1.45; word-break: auto-phrase; line-break: strict; }
+body:not(.game-ds) .map .mi-foot { white-space: nowrap; }
+body:not(.game-ds) .map .mi-area { font-size: 14px; font-weight: 700; line-height: 1.3; }
+body:not(.game-ds) .map .map-info > .mi-preview {
+  grid-row: 1; aspect-ratio: 16 / 9; width: 100%; height: auto; margin: 0 0 6px; background-position: center; border-radius: 4px;
+}
+body:not(.game-ds) .map .map-info:has(> .mi-preview) > .mi-banner {
+  grid-row: 1; align-self: start; z-index: 1; margin: 6px; max-width: calc(100% - 12px); overflow: hidden; text-overflow: ellipsis;
+}
+body:not(.game-ds) .map .map-info:has(> .mi-preview) > .mi-area {
+  grid-row: 1; align-self: end; justify-self: start; z-index: 1; margin: 0 6px 12px; padding: 1px 8px;
+  color: var(--paper-ink, #38283f); background: #fffcf8e6; border-radius: 3px; box-shadow: 0 2px 6px #0000004d;
+}
+body:not(.game-ds) .map .mi-go { display: flex; justify-content: center; align-items: baseline; gap: 10px; padding: 6px 0; }
+body:not(.game-ds) .map .mi-note { font-size: 12px; font-weight: 700; letter-spacing: 0; opacity: .85; }
+body:not(.game-ds) .map .mi-note.warn { color: #b83a3a; opacity: 1; }
+body:not(.game-ds) .map .mi-go:is(:hover, :focus-visible) .mi-note.warn { color: #ffd6d6; }
+body:not(.game-ds) .map .mi-no { padding: 5px; }

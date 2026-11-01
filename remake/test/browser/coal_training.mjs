@@ -10,8 +10,8 @@ const output = path.resolve(root, process.env.COAL_ARTIFACTS || ".codex/artifact
 fs.mkdirSync(output, { recursive: true });
 const missing = new Set(), results = [];
 const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff2": "font/woff2" };
-// #964: classic の会話枠原画は narration.svg（dialogue.svg は要求されない）。
-const vnAssets = ["/remake/img/ui/vn-lounge/narration.svg", "/remake/img/ui/vn-lounge/controls.svg", "/remake/fonts/ZenOldMincho-Name-Bold.woff2"];
+// #2136: the default paper theme uses its own dialogue frame and gothic name font.
+const vnAssets = ["/remake/img/ui/paper/dialogue.webp", "/remake/fonts/ZenKakuGothicNew-Black.woff2"];
 const server = http.createServer((req, res) => {
   const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
   const file = path.resolve(root, "." + (pathname.endsWith("/") ? pathname + "index.html" : pathname));
@@ -73,8 +73,9 @@ try {
     await page.locator('[data-test="after-cube-coals"]').click();
     await page.locator("#vn.active").waitFor();
     const nameFontLoaded = await page.evaluate(async () => {
-      await document.fonts.load('700 24px "Suien Name"');
-      return document.fonts.check('700 24px "Suien Name"') && getComputedStyle(document.querySelector(".vn-name")).fontFamily.includes("Suien Name");
+      if (document.documentElement.dataset.uiTheme !== 'paper') return false;
+      await document.fonts.load('900 24px "Suien Gothic"');
+      return document.fonts.check('900 24px "Suien Gothic"') && getComputedStyle(document.querySelector(".vn-name")).fontFamily.includes("Suien Gothic");
     });
     assert.equal(nameFontLoaded, true, "統合後の授業で採用済み会話UIの名前書体を使う");
     assert.equal(await page.evaluate(() => Q.coals.hasCoalTraining(Q.core.state.flags)), false);
@@ -253,7 +254,7 @@ try {
     assert.equal(served.careHistory.length, 2);
     assert(served.careHistory.every(care => !care.failed && care.inZone));
     assert.deepEqual(errors, []);
-    assert.deepEqual(vnAssets.map(path => [path, vnResponses.get(path)]), vnAssets.map(path => [path, 200]), "採用済み会話枠・操作枠・名前書体をローカルで読み込む");
+    assert.deepEqual(vnAssets.map(path => [path, vnResponses.get(path)]), vnAssets.map(path => [path, 200]), "紙テーマの会話枠・名前書体をローカルで読み込む");
     results.push({ label, status: "passed", glow, timing, served,
       scope: "real Chrome; touch and reduced-motion emulation; unrelated media intentionally omitted; steam outcome is a numerical fixture, not a dodge playthrough" });
     console.log(`[coal browser] PASS ${label}: boot, shift menu, real lesson SKIP/AUTO/abort, save, glow, production burn 1..4 and pointer/keyboard`);
