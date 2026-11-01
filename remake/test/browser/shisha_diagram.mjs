@@ -56,8 +56,9 @@ await suite("shisha-diagram", async check => {
       return state.stats.technique;
     });
     // 制作経験があっても、初めての会話では全文（水と煙の説明）を読む（2026-11-01 オーナー決定）。
-    await advanceTo(page, stepText.hide);
+    await advanceTo(page, stepText.hose);
     assert.equal(await count(page), 1);
+    await advanceTo(page, stepText.hide);
     await advanceTo(page, "はい……！ ありがとうございます、スミさん");
     for (let i = 0; i < 8; i++) {
       if (await page.evaluate(() => document.querySelector("#preview-status")?.textContent.includes("会話終了"))) break;
