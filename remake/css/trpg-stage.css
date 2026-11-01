@@ -698,8 +698,8 @@
 
 /* The roll shows who is rolling, with which stat, and what the GM called. */
 .trpg-root.trpg-cinematic .trpg-roll-actor { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 2px auto 0; }
-.trpg-root.trpg-cinematic .trpg-roll-actor .trpg-aid-art { position: relative; flex: 0 0 54px; width: 54px; height: 54px; border: 1px solid #d8ccaa7a; border-radius: 50%; overflow: hidden; background: #49615b5c; }
-.trpg-root.trpg-cinematic .trpg-roll-actor .trpg-aid-art img { position: absolute; left: 50%; width: 150px; max-width: none; transform: translateX(-50%); }
+.trpg-root.trpg-cinematic .trpg-roll-actor-face { position: relative; display: block; flex: 0 0 54px; width: 54px; height: 54px; border: 1px solid #d8ccaa7a; border-radius: 50%; overflow: hidden; background: #49615b5c; }
+.trpg-root.trpg-cinematic .trpg-roll-actor-face img { position: absolute; left: 50%; width: 150px; max-width: none; transform: translateX(-50%); }
 .trpg-root.trpg-cinematic .trpg-roll-actor-copy { display: flex; flex-direction: column; gap: 2px; text-align: left; }
 .trpg-root.trpg-cinematic .trpg-roll-actor-copy small { font-size: 12px; font-weight: 700; color: #c6d1c5; }
 .trpg-root.trpg-cinematic .trpg-roll-actor-copy strong { font-size: 17px; font-weight: 500; color: #fff0cf; }
@@ -750,14 +750,14 @@
   .trpg-root.trpg-cinematic .trpg-approach-face { width: 48px; height: 48px; }
   .trpg-root.trpg-cinematic .trpg-sheet { padding: 12px; gap: 6px; }
 }
-.trpg-root.trpg-cinematic :is(.trpg-approach-face, .trpg-sheet-face, .trpg-roll-actor .trpg-aid-art) img.trpg-pc-art { position: absolute; inset: 0; left: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; transform: none; }
+.trpg-root.trpg-cinematic :is(.trpg-approach-face, .trpg-sheet-face, .trpg-roll-actor-face) img.trpg-pc-art { position: absolute; inset: 0; left: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; transform: none; }
 /* The roll's extra lines (declared character, momentum) must never squeeze the reroll choices below their content. */
 .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-rerolls, .trpg-reroll-choice, .trpg-roll-trump, .trpg-ability-receipt, .trpg-dice-total, .trpg-roll-special) { flex-shrink: 0; }
 .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-choice { height: auto; }
 @media (max-width: 1000px), (max-height: 600px) {
   .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-actor-receipt { font-size: calc(12 * var(--roll-unit)); margin: 2px 0; }
   .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-actor { gap: 10px; }
-  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-actor .trpg-aid-art { flex-basis: 44px; width: 44px; height: 44px; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-actor-face { flex-basis: 44px; width: 44px; height: 44px; }
 }
 @media (max-width: 1000px), (max-height: 600px) {
   /* Small landscape screens: the declared character already appeared before the roll and lives in the recap. */

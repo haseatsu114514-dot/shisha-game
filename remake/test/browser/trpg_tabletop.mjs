@@ -182,7 +182,7 @@ try{
  }
  for(const scenario of ['ordinary-cup','shark-last-order'])for(const [width,height] of [[1280,720],[800,600],[390,844],[844,390]]){
    const c=await browser.newContext({viewport:{width:1280,height:720},hasTouch:true});const p=await c.newPage();
-   await p.goto(base+`trpg-preview.html?scenario=${scenario}&seed=9`);await ctl(p,'trpg-start').click();await lines(p);
+   await p.goto(base+`trpg-preview.html?scenario=${scenario}&seed=9`);await ctl(p,'trpg-start').click();await lines(p);await declare(p);
    await p.setViewportSize({width,height});await ctl(p,'trpg-details-toggle').press('Enter');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();
    await fit(p,`${scenario}-${width}x${height}-actual-result`);
    assert(await ctl(p,'trpg-reroll-0').count());await ctl(p,'trpg-reroll-0').click();await ctl(p,'trpg-settle').waitFor();
@@ -192,7 +192,7 @@ try{
  // Reduced motion uses the same actual dice and spare equipment in both stories.
  for(const scenario of ['ordinary-cup','shark-last-order']){
    const c=await browser.newContext({viewport:{width:1280,height:720},reducedMotion:'reduce'});const p=await c.newPage();
-   await p.goto(base+`trpg-preview.html?scenario=${scenario}&seed=9`);await ctl(p,'trpg-start').click();await lines(p);
+   await p.goto(base+`trpg-preview.html?scenario=${scenario}&seed=9`);await ctl(p,'trpg-start').click();await lines(p);await declare(p);
    await ctl(p,'trpg-roll').click();
    await assertReducedDice(p);
    await ctl(p,'trpg-settle').waitFor();await assertReducedDice(p);await fit(p,scenario+'-reduced-motion-result');await c.close();
@@ -202,12 +202,12 @@ try{
  const seeds={};for(let seed=1;Object.keys(seeds).length<3&&seed<1000;seed++){const m=new TrpgSession(scenarioData,{seed});m.start();const r=m.beginCheck('listen');seeds[r.grade]??=seed;}
  assert.equal(Object.keys(seeds).length,3);
  for(const [grade,seed] of Object.entries(seeds)){
-   const c=await browser.newContext();const p=await c.newPage();await p.goto(base+`trpg-preview.html?scenario=ordinary-cup&seed=${seed}`);await ctl(p,'trpg-start').click();await lines(p);
+   const c=await browser.newContext();const p=await c.newPage();await p.goto(base+`trpg-preview.html?scenario=ordinary-cup&seed=${seed}`);await ctl(p,'trpg-start').click();await lines(p);await declare(p);
    await ctl(p,'trpg-roll').click();assert(await ctl(p,'trpg-roll').isDisabled());await p.screenshot({path:path.join(out,'rolling-'+grade+'.png')});await ctl(p,'trpg-settle').waitFor();assert.equal(await ctl(p,'trpg-roll-total').getAttribute('data-grade'),grade);await fit(p,'grade-'+grade);await c.close();
  }
  // Deliberately fail all decorative resources; live content stays usable.
  const c=await browser.newContext();const p=await c.newPage();await p.route(/\/(walnut-brass-frame|deep-teal-felt|harbour-paper-stack|spare-polyhedral-kit)\.webp$/,r=>r.abort());
- await p.goto(base+'trpg-preview.html?scenario=ordinary-cup&seed=9');await ctl(p,'trpg-start').click();await lines(p);await fit(p,'missing-decoration');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');await c.close();
+ await p.goto(base+'trpg-preview.html?scenario=ordinary-cup&seed=9');await ctl(p,'trpg-start').click();await lines(p);await declare(p);await fit(p,'missing-decoration');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');await c.close();
 }finally{await browser.close();fs.writeFileSync(path.join(out,'measurements.json'),JSON.stringify(results,null,2)+'\n');}
 console.log('PASS tabletop viewport, live input, state invariance and missing image checks');
 

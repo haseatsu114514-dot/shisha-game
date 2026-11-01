@@ -500,7 +500,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const pc = sheets[approach.sheet || approach.actor], actor = approach.actor;
     const rating = pc?.stats?.[approach.stat];
     return el("div.trpg-roll-actor", { dataset: { test: "trpg-roll-actor", actor, npc: String(!!approach.npc) } }, [
-      el("span.trpg-aid-art", { "aria-hidden": "true" }, pcFace(approach.sheet || approach.actor, actor)),
+      el("span.trpg-roll-actor-face", { "aria-hidden": "true" }, pcFace(approach.sheet || approach.actor, actor)),
       el("span.trpg-roll-actor-copy", [
         el("small", { text: (approach.npc ? "GM " + name(actor) + " が演じる " : "PL " + name(actor) + " の ") + (pc?.name || "") }),
         el("strong", { text: approach.label }),
