@@ -23,6 +23,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 - 確認するのは、依頼外の重大な仕様変更・結果を大きく変える曖昧さ・破壊的操作・新しい権限や公開範囲・大容量通信のときだけ。
 - WARN、CLI不在、利用枠不明、旧資料との食い違いだけを理由に止めない。事実を確認して、使える経路で進める。
 - ゲームの挙動・UI・世界観の変更は依頼範囲に収める。キャラ設定・台詞・報酬・改行は正本とスキーマに従う。
+- シーシャ台・ハガル・HMD・炭・ホースが写る画像を生成・修正するときは（Codexアプリで直接生成する場合も）、[画像生成の必須手順](docs/shisha_reference.md#4-画像生成の必須手順機材の形と構造)を実行する: 貼る文をプロンプトに入れ、`asset_sources/shisha-hardware-reference/photos/` の実写を見て（渡せるツールなら渡し）、生成後チェックで検品してから採用する。
 - 好感度イベントを追加・変更・接続するときは、全章共通の[交流の時系列ルール](docs/gameplay_agent_reference.md#交流の時系列ルール必須)を必ず守る。好感度と大会進行・面識を同一視せず、大会後に遅れて読む場合の分岐を実装・検証する。
 - 新規作業は最新 `origin/main` からbranchを作る。保存済みPRの続きは既存branchで行う。**mainより遅れているだけでは毎回mergeしない**。競合解消・必要な依存変更があるときだけ取り込む。
 
@@ -89,7 +90,7 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
   git clone --depth 1 --filter=blob:none --sparse https://github.com/haseatsu114514-dot/shisha-game.git
   cd shisha-game
   git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/tools/' '/brand/' '/experiments/' \
-    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/*/' '/docs/qa/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/'
+    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/*/' '/docs/qa/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/' '/asset_sources/shisha-hardware-reference/'
   ```
 
   `asset_sources/` や `docs/qa/` の特定フォルダが要るときは `git sparse-checkout add '/asset_sources/<フォルダ>/'` でそのフォルダだけ取る。範囲外に新しいファイルを足すときは `git add --sparse <パス>`。
