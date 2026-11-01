@@ -11,10 +11,11 @@ const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cin
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rin','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
+const limeData = JSON.parse(fs.readFileSync(new URL('../../data/lime_messages.json', import.meta.url)));
 async function fixture() {
   const memory = new Map(), events = [], plays = [], timers = new Map();
   let serial = 0, playImpl = async scene => ({ id: typeof scene === 'string' ? scene : scene.dialogue_id, visited: [] });
-  const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], equipById: {}, flavorById: {}, characters: {}, lime: JSON.parse(fs.readFileSync(new URL('../../data/lime_messages.json', import.meta.url))).messages };
+  const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], equipById: {}, flavorById: {}, characters: {}, lime: limeData.messages, limeTemplates: clone(limeData.templates) };
   const context = vm.createContext({ console, AbortController, setTimeout: fn => { timers.set(++serial,fn); return serial; }, clearTimeout: id => timers.delete(id), localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
   const known = {
     MAX_MONEY: 999999, TOURNAMENT_DAY: 14, DB: db, callName: String,
