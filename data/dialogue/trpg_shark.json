@@ -50,7 +50,7 @@
     {
       "id": "hajime",
       "part": "PLAYER",
-      "role": "レン／新人甲板員",
+      "role": "{pc}／新人甲板員",
       "color": "#89bbc4",
       "ability": "土壇場のひらめき",
       "abilityType": "reroll",
@@ -1464,7 +1464,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "レンは窓際に寄って、自分の目で確かめる"
+          "text": "{pc}は窓際に寄って、自分の目で確かめる"
         },
         {
           "speaker": "samechan",
@@ -1530,7 +1530,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "レンはロープと板で、手早く組み上げます"
+          "text": "{pc}はロープと板で、手早く組み上げます"
         },
         {
           "speaker": "samechan",
@@ -1596,7 +1596,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "excited",
-          "text": "レンが合図を出して、全員いっせいに走る！"
+          "text": "{pc}が合図を出して、全員いっせいに走る！"
         },
         {
           "speaker": "samechan",
@@ -1746,7 +1746,7 @@
           "sheet": "hajime",
           "stat": "nerve",
           "label": "窓際に寄って、直接確かめる",
-          "detail": "レンが自分の目で、背びれの動きを見る",
+          "detail": "{pc}が自分の目で、背びれの動きを見る",
           "declare": "trpg_shark_declare_listen_window"
         },
         {
@@ -1783,7 +1783,7 @@
           "sheet": "hajime",
           "stat": "hand",
           "label": "ロープと板で、手早く組む",
-          "detail": "レンが力まかせに。結び目は、たぶん大丈夫",
+          "detail": "{pc}が力まかせに。結び目は、たぶん大丈夫",
           "declare": "trpg_shark_declare_prepare_rig"
         },
         {
@@ -1820,7 +1820,7 @@
           "sheet": "hajime",
           "stat": "nerve",
           "label": "合図で、全員いっせいに走る",
-          "detail": "レンが先頭で声を上げ、三人まとめて岸へ",
+          "detail": "{pc}が先頭で声を上げ、三人まとめて岸へ",
           "declare": "trpg_shark_declare_serve_dash"
         },
         {
@@ -1885,6 +1885,87 @@
           "tsumugi"
         ],
         "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この映画で演じる甲板員を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "ink",
+        "label": "黒髪の甲板員",
+        "detail": "短い黒髪に、救命胴衣",
+        "color": "#2f4350",
+        "accent": "#89bbc4",
+        "portrait": null
+      },
+      {
+        "id": "salt",
+        "label": "潮やけの甲板員",
+        "detail": "白っぽく焼けた髪と、日焼けの肌",
+        "color": "#5c6a70",
+        "accent": "#efe2c0",
+        "portrait": null
+      },
+      {
+        "id": "rust",
+        "label": "赤毛の甲板員",
+        "detail": "赤毛をバンダナで押さえる",
+        "color": "#7b3f33",
+        "accent": "#f0b27a",
+        "portrait": null
+      },
+      {
+        "id": "deep",
+        "label": "長髪の甲板員",
+        "detail": "濡れた長い髪と、暗い色のレインコート",
+        "color": "#2d3a5e",
+        "accent": "#a9b8e8",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "rookie",
+        "name": "レン",
+        "title": "新人甲板員",
+        "trait": "走るのと飛び込むのは速い。考えるのは、あと",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        }
+      },
+      {
+        "id": "lifeguard",
+        "name": "ナギ",
+        "title": "元ライフセーバー",
+        "trait": "海は怖くない。機械と細かい作業は人任せ",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 5
+        }
+      },
+      {
+        "id": "radio",
+        "name": "ハル",
+        "title": "無線係の見習い",
+        "trait": "よく見て、よく聞く。走るのは最後の手段",
+        "stats": {
+          "eye": 4,
+          "hand": 2,
+          "talk": 3,
+          "nerve": 2
+        }
       }
     ]
   }

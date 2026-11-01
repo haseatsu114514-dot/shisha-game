@@ -206,6 +206,32 @@ try {
       await page.locator('[data-test="trpg-select-ordinary-cup"]').waitFor();
       assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "library");
     });
+  await run("character-builder-pc", { seed: "9", traveler: "quiet" }, {}, async page => {
+    assert.equal(await page.locator('[data-test="trpg-cover-pc-name"]').textContent(), "フィン");
+    await hit(page, '[data-test="trpg-build"]');
+    await page.locator('[data-test="trpg-builder"]').waitFor();
+    await fits(page);
+    await hit(page, '[data-test="trpg-look-rust"]'); await hit(page, '[data-test="trpg-archetype-sailor"]');
+    await hit(page, '[data-test="trpg-stat-nerve-down"]'); await hit(page, '[data-test="trpg-stat-talk-up"]');
+    assert.equal(await page.locator('[data-test="trpg-stat-points"]').getAttribute("data-left"), "0");
+    assert(await page.locator('[data-test="trpg-stat-talk-up"]').isDisabled(), "spent points disable raising");
+    await page.locator('[data-test="trpg-pc-name"]').fill("ソラ");
+    await hit(page, '[data-test="trpg-build-confirm"]');
+    assert.equal(await page.locator('[data-test="trpg-cover-pc-name"]').textContent(), "ソラ");
+    const pc = (await page.evaluate(() => __trpg.snapshot())).pc;
+    assert.deepEqual(pc, { name: "ソラ", title: "船乗り帰りの手伝い", look: "rust", archetype: "sailor", stats: { eye: 2, hand: 3, talk: 3, nerve: 3 } });
+    // "Leave it to the dice" is reproducible from the model, and cancelling keeps the confirmed character.
+    await hit(page, '[data-test="trpg-build"]'); await hit(page, '[data-test="trpg-build-random"]'); await hit(page, '[data-test="trpg-build-back"]');
+    assert.deepEqual((await page.evaluate(() => __trpg.snapshot())).pc, pc);
+    await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
+    assert.match(await page.locator('[data-test="trpg-seat-pc-hajime"]').textContent(), /ソラ/);
+    await hit(page, '[data-test="trpg-approach-listen_talk"]');
+    assert.match(await page.locator(".trpg-speech p").textContent(), /^ソラは/);
+    assert.equal(await page.locator(".trpg-root").evaluate(n => n.textContent.includes("{pc}")), false);
+    await nextLines(page);
+    assert.equal(await page.locator('[data-test="trpg-bonus"]').textContent(), "＋3", "the built talk stat is the roll's base");
+    await fits(page);
+  });
   await run("portrait-touch-hint", { seed: "1" },
     { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, async page => {
       assert(await page.locator("#trpg-rotate").isVisible());

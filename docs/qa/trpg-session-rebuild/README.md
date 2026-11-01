@@ -10,5 +10,7 @@
 | キャラクターシート | [sheets-pc.webp](sheets-pc.webp) |
 | 座席バーのPC名と能力値（探索中） | [seats-explore-pc.webp](seats-explore-pc.webp) |
 | 横持ちタッチ 844×390 | [seats-explore-landscape.webp](seats-explore-landscape.webp) |
+| キャラクター作成（見た目・出自・名前・ステ振り） | [builder-pc.webp](builder-pc.webp) |
+| 作った役を載せた表紙 | [cover-built-pc.webp](cover-built-pc.webp) |
 
 PCの似顔絵は未生成（`asset_sources/trpg-sheets/README.md` のCodex依頼待ち）。丸窓はプレイヤー本人の立ち絵で代用している。

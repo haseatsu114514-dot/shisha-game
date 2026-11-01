@@ -318,3 +318,48 @@ test("declared approaches roll with the PC's sheet stat; a companion's first tur
   assert.deepEqual(session.result().checks.map(c => c.approach), ["listen_watch", "prepare_light", "serve_word"]);
   assert.deepEqual(session.result().acted, { tsumugi: 2, hajime: 1 });
 });
+
+test("character creation: looks, origin presets, a point-buy and a name replace the player's seat; dialogue names the built character", async () => {
+  const { buildPc, randomPc } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+  for (const s of catalogScenarios) {
+    const b = s.builder;
+    assert(b && b.looks.length >= 4 && b.archetypes.length >= 3);
+    for (const a of b.archetypes) assert.equal(Object.values(a.stats).reduce((n, v) => n + v, 0), b.points, a.id + " presets spend every point");
+    // The authored default on the player's seat equals the first origin, so the untouched table plays as before.
+    const seat = s.cast.find(c => c.id === b.seat);
+    assert.deepEqual(seat.sheet.stats, b.archetypes[0].stats); assert.equal(seat.sheet.name, b.archetypes[0].name);
+    // The player's name never appears hard-coded: every line uses the {pc} token instead.
+    assert(!s.dialogues.some(d => d.lines.some(l => l.text.includes(b.archetypes[0].name))), "no raw default name in dialogue");
+    assert(s.dialogues.some(d => d.lines.some(l => l.text.includes("{pc}"))));
+    for (const check of Object.values(s.checks)) assert(check.approaches.some(a => a.detail.includes("{pc}")));
+    const pc = buildPc(s, { look: b.looks[2].id, archetype: b.archetypes[1].id, name: "ソラ" });
+    assert.equal(pc.name, "ソラ"); assert.equal(pc.title, b.archetypes[1].title); assert.equal(pc.look, b.looks[2].id);
+    assert.deepEqual(pc.stats, b.archetypes[1].stats);
+    assert.throws(() => buildPc(s, { look: "nope" })); assert.throws(() => buildPc(s, { archetype: "nope" }));
+    assert.throws(() => buildPc(s, { name: "" })); assert.throws(() => buildPc(s, { name: "あいうえおかき" }));
+    assert.throws(() => buildPc(s, { stats: { ...b.archetypes[0].stats, eye: b.max + 1 } }));
+    assert.throws(() => buildPc(s, { stats: { ...b.archetypes[0].stats, nerve: b.min - 1 } }));
+    const full = b.archetypes[0].stats, over = { ...full, [Object.keys(full).find(k => full[k] < b.max)]: full[Object.keys(full).find(k => full[k] < b.max)] + 1 };
+    assert.throws(() => buildPc(s, { stats: over }), /points/);
+    const spare = { ...full, [Object.keys(full).find(k => full[k] > b.min)]: full[Object.keys(full).find(k => full[k] > b.min)] - 1 };
+    assert.equal(buildPc(s, { stats: spare }).points, b.points - 1, "leaving a point unspent is allowed");
+    const a = randomPc(s, 42), c = randomPc(s, 42);
+    assert.deepEqual(a, c, "a seeded random character is reproducible");
+    assert(a.points <= b.points);
+  }
+  const moved = { eye: 2, hand: 3, talk: 3, nerve: 3 };
+  const session = new TrpgSession(scenario, { profileId: "quiet", seed: 7, pc: { look: "rust", archetype: "sailor", name: "ソラ", stats: moved } });
+  assert.equal(session.sheets.hajime.name, "ソラ"); assert.deepEqual(session.sheets.hajime.stats, moved);
+  assert.equal(session.sheets.adam.name, "ニコ", "companions keep their own sheets");
+  assert.deepEqual(session.snapshot().pc, { name: "ソラ", title: "船乗り帰りの手伝い", look: "rust", archetype: "sailor", stats: moved });
+  session.start();
+  const roll = session.beginCheck("listen", { approach: "listen_talk" });
+  assert.equal(roll.base, 3, "the player's own stat drives the roll");
+  session.settleCheck();
+  for (const id of ["menu", "window", "bag"]) session.inspect(id);
+  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  session.beginCheck("prepare"); session.settleCheck(); session.plan("approach", "quiet");
+  session.beginCheck("serve"); session.settleCheck();
+  assert.equal(session.result().pc.name, "ソラ");
+  assert.throws(() => new TrpgSession(scenario, { seed: 1, pc: { name: "" } }));
+});

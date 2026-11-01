@@ -22,7 +22,7 @@
     {
       "id": "hajime",
       "part": "PLAYER",
-      "role": "フィン／見習い店番",
+      "role": "{pc}／見習い店番",
       "color": "#89bbc4",
       "ability": "ひらめき",
       "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
@@ -96,7 +96,7 @@
           "sheet": "hajime",
           "stat": "talk",
           "label": "向かいに座って、話しかける",
-          "detail": "フィンが旅人の正面へ。ひと言ずつ、ゆっくり聞く",
+          "detail": "{pc}が旅人の正面へ。ひと言ずつ、ゆっくり聞く",
           "declare": "trpg_ordinary_declare_listen_talk"
         },
         {
@@ -133,7 +133,7 @@
           "sheet": "hajime",
           "stat": "hand",
           "label": "教わった通りに、自分で作る",
-          "detail": "フィンが自分の手で一台を。少し慌てるかも",
+          "detail": "{pc}が自分の手で一台を。少し慌てるかも",
           "declare": "trpg_ordinary_declare_prepare_self"
         },
         {
@@ -170,7 +170,7 @@
           "sheet": "hajime",
           "stat": "talk",
           "label": "席へ案内して、声をかける",
-          "detail": "フィンが選んだ言葉を、自分の声で添える",
+          "detail": "{pc}が選んだ言葉を、自分の声で添える",
           "declare": "trpg_ordinary_declare_serve_word"
         },
         {
@@ -538,7 +538,7 @@
           "speaker": "hajime",
           "role": "",
           "face": "normal",
-          "text": "じゃあ俺は、見習いのフィン。店番なのに、ちょっと緊張するな"
+          "text": "じゃあ俺は、見習いの{pc}。店番なのに、ちょっと緊張するな"
         },
         {
           "speaker": "hiyori",
@@ -718,7 +718,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "フィンは思わず『一番人気なら』と言う。旅人は、少しだけ首を振った",
+          "text": "{pc}は思わず『一番人気なら』と言う。旅人は、少しだけ首を振った",
           "face": "normal"
         },
         {
@@ -742,7 +742,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "ニコが棚を整え、フィンが一台を用意する。選んだ香りが、静かに開いた",
+          "text": "ニコが棚を整え、{pc}が一台を用意する。選んだ香りが、静かに開いた",
           "face": "normal"
         },
         {
@@ -804,7 +804,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "ルカが椅子を引き、フィンが旅人を案内する。落ち着いたところで、一台を置いた",
+          "text": "ルカが椅子を引き、{pc}が旅人を案内する。落ち着いたところで、一台を置いた",
           "face": "normal"
         }
       ]
@@ -832,7 +832,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "フィンが声をかけると、椅子がこつんと鳴った。気まずい間のあと、旅人が先に口を開く",
+          "text": "{pc}が声をかけると、椅子がこつんと鳴った。気まずい間のあと、旅人が先に口を開く",
           "face": "normal"
         },
         {
@@ -1438,7 +1438,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "フィンたちは呼べる距離に戻る。閉店の札は、もう少しだけ、そのままにした",
+          "text": "{pc}たちは呼べる距離に戻る。閉店の札は、もう少しだけ、そのままにした",
           "face": "normal"
         }
       ]
@@ -1510,7 +1510,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "旅人の話を聞き、フィンたちは席や言葉を少し変える。一台は、その相談の入口になった",
+          "text": "旅人の話を聞き、{pc}たちは席や言葉を少し変える。一台は、その相談の入口になった",
           "face": "normal"
         },
         {
@@ -1644,7 +1644,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "フィンは旅人の向かいに座る。『長い旅でした？』って聞いてみる"
+          "text": "{pc}は旅人の向かいに座る。『長い旅でした？』って聞いてみる"
         },
         {
           "speaker": "hiyori",
@@ -1704,7 +1704,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "フィンは教わった通りに、自分の手で一台を作ります"
+          "text": "{pc}は教わった通りに、自分の手で一台を作ります"
         },
         {
           "speaker": "hiyori",
@@ -1764,7 +1764,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "フィンが席へ案内して、選んだ言葉を添えます"
+          "text": "{pc}が席へ案内して、選んだ言葉を添えます"
         },
         {
           "speaker": "hiyori",
@@ -1953,6 +1953,87 @@
           "tsumugi"
         ],
         "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この物語で演じる店番を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "ink",
+        "label": "黒髪の店番",
+        "detail": "短い黒髪に、店のエプロン",
+        "color": "#3b4a5a",
+        "accent": "#89bbc4",
+        "portrait": null
+      },
+      {
+        "id": "ash",
+        "label": "灰色の髪の店番",
+        "detail": "伸びた灰色の髪を後ろで束ねる",
+        "color": "#6b6a72",
+        "accent": "#d9cdb6",
+        "portrait": null
+      },
+      {
+        "id": "rust",
+        "label": "赤茶の髪の店番",
+        "detail": "日に焼けた肌と、赤茶の癖毛",
+        "color": "#7a4a37",
+        "accent": "#e3b27a",
+        "portrait": null
+      },
+      {
+        "id": "moss",
+        "label": "眼鏡の店番",
+        "detail": "丸眼鏡と、苔色のベスト",
+        "color": "#4c5f49",
+        "accent": "#bcd3a8",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "apprentice",
+        "name": "フィン",
+        "title": "見習い店番",
+        "trait": "人の話を聞くのが上手い。手は、まだ少し慌てる",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        }
+      },
+      {
+        "id": "sailor",
+        "name": "マル",
+        "title": "船乗り帰りの手伝い",
+        "trait": "港の仕事で鍛えた度胸。茶房の作法は覚えたて",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        }
+      },
+      {
+        "id": "regular",
+        "name": "テオ",
+        "title": "本好きの常連",
+        "trait": "店のことは本で読んで知っている。手を動かすのは苦手",
+        "stats": {
+          "eye": 4,
+          "hand": 1,
+          "talk": 3,
+          "nerve": 3
+        }
       }
     ]
   }

@@ -194,11 +194,13 @@ test("reading an ending records its cast and advances exactly one action; cancel
   const s = own(friends(state()), ordinary.id);
   const cast = rules.castTrpgTable(s, catalog, ordinary), ticket = { ...cast, chapter: 2, day: 3, slot: 1 };
   const result = finish(rules.materializeTrpgCast(ordinary, cast.assignments));
+  assert.equal(result.pc?.name, ordinary.builder.archetypes[0].name, "an untouched table plays the default character");
   const before = structuredClone(s);
   assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, { cancelled: true })); assert.deepEqual(s, before);
   assert(!rules.completeTrpgTable(s, catalog, ordinary, { ...ticket, day: 2 }, result)); assert.deepEqual(s, before);
   assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, result));
   assert.equal(s.slot, 2); assert.deepEqual(s.trpg.cleared[ordinary.id].participants, cast.participants);
+  assert.deepEqual(s.trpg.cleared[ordinary.id].pc, result.pc, "the memory keeps the character the player built");
   assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, result)); assert.equal(s.slot, 2);
   s.day = 5; s.slot = 1; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
 });

@@ -127,6 +127,33 @@ for (const scenario of scenarios) {
   });
 }
 
+for (const scenario of scenarios) {
+  test(scenario.id + ': the cover builds the player character; seats, lines and the result use it', () => {
+    const { api, root, q, drain, declare, roll } = mount(scenario);
+    const builder = scenario.builder, look = builder.looks[1], origin = builder.archetypes[1];
+    assert.equal(q('trpg-cover-pc-name').textContent, builder.archetypes[0].name);
+    q('trpg-build').click();
+    q('trpg-look-' + look.id).click(); q('trpg-archetype-' + origin.id).click();
+    const lowered = Object.keys(origin.stats).find(k => origin.stats[k] > builder.min), raised = Object.keys(origin.stats).find(k => k !== lowered && origin.stats[k] < builder.max);
+    q('trpg-stat-' + lowered + '-down').click();
+    assert.equal(q('trpg-stat-points').dataset.left, '1');
+    q('trpg-stat-' + raised + '-up').click();
+    assert.equal(q('trpg-stat-points').dataset.left, '0');
+    assert(q('trpg-stat-' + raised + '-up').disabled, 'no points left to spend');
+    q('trpg-build-confirm').click();
+    const pc = api.snapshot().pc;
+    assert.equal(pc.name, origin.name); assert.equal(pc.look, look.id);
+    assert.equal(pc.stats[lowered], origin.stats[lowered] - 1); assert.equal(pc.stats[raised], origin.stats[raised] + 1);
+    assert.equal(q('trpg-cover-pc-name').textContent, origin.name);
+    q('trpg-start').click();
+    assert(q('trpg-seat-pc-hajime').textContent.includes(origin.name), 'the seat shows the built character');
+    assert(!root.textContent.includes('{pc}'), 'the name token never leaks to the screen');
+    drain(); declare('listen'); roll(); q('trpg-settle').click(); drain();
+    assert.equal(api.snapshot().checks[0].base, pc.stats[scenario.checks.listen.approaches[0].stat]);
+    api.destroy();
+  });
+}
+
 // Static cascade regression for the actual card and existing pocket-span rules.
 // This is selector/media evidence, not a browser/computed-style or pixel test.
 const stageCss = await readFile(new URL('../css/trpg-stage.css', import.meta.url), 'utf8');

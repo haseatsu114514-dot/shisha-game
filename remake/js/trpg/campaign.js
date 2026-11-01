@@ -164,6 +164,8 @@ export function completeTrpgTable(state, catalog, scenario, ticket, result, opti
     variant: result.variant, plan: clone(result.plan), version: scenario.version,
     ...(Number.isInteger(result.rating?.stars) ? { stars: result.rating.stars } : {}),
     ...(Number.isInteger(result.heat?.value) ? { heat: result.heat.value, night: result.heat.night } : {}),
+    // The player's own character, as built for this table: name, origin, look and stats.
+    ...(result.pc && typeof result.pc.name === "string" ? { pc: clone(result.pc) } : {}),
   };
   state.slot++;
   return true;

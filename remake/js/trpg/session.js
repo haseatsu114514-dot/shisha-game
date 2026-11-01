@@ -7,16 +7,48 @@ export const STATS = Object.freeze(["eye", "hand", "talk", "nerve"]);
 /** The human player's seat: companions earn a spotlight when they act for the first time. */
 export const PLAYER_SEAT = "hajime";
 /** PC sheets keyed by the authored seat id; a materialized table carries them even when a seat is empty. */
-export const sheetsOf = scenario => scenario.sheets || Object.fromEntries(scenario.cast.filter(c => c.sheet).map(c => [c.id, c.sheet]));
+export const sheetsOf = scenario => scenario.sheets || Object.fromEntries((scenario.cast || []).filter(c => c.sheet).map(c => [c.id, c.sheet]));
 export const approachesOf = (scenario, kind) => scenario.checks?.[kind]?.approaches || [];
 /** The public bonus a declared approach brings: the PC's stat, or the flat base when a check has no sheets. */
-export function approachBase(scenario, kind, approachId = null) {
+export function approachBase(scenario, kind, approachId = null, sheets = null) {
   const approaches = approachesOf(scenario, kind);
   if (!approaches.length) return { base: DICE.base, approach: null };
   const approach = approachId ? approaches.find(a => a.id === approachId) : approaches[0];
   if (!approach) throw new Error("Unknown approach");
-  const stat = sheetsOf(scenario)[approach.sheet || approach.actor]?.stats?.[approach.stat];
+  const stat = (sheets || sheetsOf(scenario))[approach.sheet || approach.actor]?.stats?.[approach.stat];
   return { base: Number.isInteger(stat) ? stat : DICE.base, approach };
+}
+/** Build the player's own character from the scenario's builder: a look, an archetype preset, edited stats and a name. */
+export function buildPc(scenario, choices = {}) {
+  const builder = scenario.builder;
+  if (!builder) return null;
+  const archetype = builder.archetypes.find(a => a.id === (choices.archetype || builder.archetypes[0].id));
+  if (!archetype) throw new Error("Unknown archetype");
+  const look = builder.looks.find(l => l.id === (choices.look || builder.looks[0].id));
+  if (!look) throw new Error("Unknown look");
+  const stats = Object.fromEntries(STATS.map(key => [key, choices.stats?.[key] ?? archetype.stats[key]]));
+  for (const key of STATS) {
+    if (!Number.isInteger(stats[key]) || stats[key] < builder.min || stats[key] > builder.max) throw new Error("Stat out of range: " + key);
+  }
+  const points = STATS.reduce((n, key) => n + stats[key], 0);
+  if (points > builder.points) throw new Error("Too many stat points");
+  const name = String(choices.name ?? archetype.name).trim();
+  if (!name || [...name].length > (builder.nameMax || 6)) throw new Error("Invalid character name");
+  return { seat: builder.seat || PLAYER_SEAT, name, title: archetype.title, trait: archetype.trait, stats, points,
+    look: look.id, archetype: archetype.id, portrait: look.portrait || null, color: look.color || null, accent: look.accent || null };
+}
+/** A deterministic "leave it to the dice" character: look and archetype from the seed, with one point moved between stats. */
+export function randomPc(scenario, seed = Date.now()) {
+  const builder = scenario.builder;
+  if (!builder) return null;
+  let x = Number(seed) >>> 0 || 1;
+  const next = () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return x >>> 0; };
+  const look = builder.looks[next() % builder.looks.length];
+  const archetype = builder.archetypes[next() % builder.archetypes.length];
+  const stats = { ...archetype.stats };
+  const from = STATS[next() % STATS.length], to = STATS[next() % STATS.length];
+  if (from !== to && stats[from] > builder.min && stats[to] < builder.max) { stats[from]--; stats[to]++; }
+  return buildPc(scenario, { look: look.id, archetype: archetype.id, stats });
 }
 // Keep two dice and one-die rerolls; scale the old aids toward their original success rates.
 export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 4, success: 30, mixed: 19 });
@@ -31,9 +63,13 @@ export const HEAT = { max: 8, tiers: [3, 6, 8], momentumMax: 2,
 export const heatTier = value => HEAT.tiers.filter(t => value >= t).length;
 
 export class TrpgSession {
-  constructor(scenario, { seed = Date.now(), profileId = null } = {}) {
+  constructor(scenario, { seed = Date.now(), profileId = null, pc = null } = {}) {
     if (!scenario?.profiles?.length || scenario.profiles.length < 1) throw new Error("Missing traveler profiles");
     this.scenario = scenario;
+    // The player's own character replaces the authored default on that seat; companions keep their sheets.
+    this.pc = scenario.builder ? buildPc(scenario, pc || {}) : null;
+    this.sheets = sheetsOf(scenario);
+    if (this.pc) this.sheets[this.pc.seat] = { ...(this.sheets[this.pc.seat] || {}), ...this.pc };
     this.rng = Number(seed) >>> 0 || 1;
     const profile = profileId ? scenario.profiles.find(p => p.id === profileId)
       : scenario.profiles[this.next() % scenario.profiles.length];
@@ -51,6 +87,7 @@ export class TrpgSession {
       pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [],
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
       acted: {}, checks: [], pending: null,
+      pc: this.pc ? { name: this.pc.name, title: this.pc.title, look: this.pc.look, archetype: this.pc.archetype, stats: { ...this.pc.stats } } : null,
     };
   }
 
@@ -119,7 +156,7 @@ export class TrpgSession {
     if (!phases[kind]) throw new Error("Unknown check");
     this.require(phases[kind]);
     if (this.flow[kind]?.some(field => !this.state.plan[field])) throw new Error("Complete the plan before rolling");
-    const declared = approachBase(this.scenario, kind, approach);
+    const declared = approachBase(this.scenario, kind, approach, this.sheets);
     if (approach && !declared.approach) throw new Error("This check has no approaches");
     const helper = this.scenario.checks[kind].helper || null;
     if (support && (!helper || this.state.used[helper] || this.state.teamwork < 1)) throw new Error("This support is unavailable");
@@ -138,7 +175,7 @@ export class TrpgSession {
       const first = !this.state.acted[chosen.actor];
       this.state.acted[chosen.actor] = (this.state.acted[chosen.actor] || 0) + 1;
       // A companion stepping forward for the first time is a table moment; the GM playing an empty seat is not.
-      if (first && !chosen.npc && chosen.actor !== PLAYER_SEAT) this.cheer(1, (sheetsOf(this.scenario)[this.state.pending.sheet]?.name || "仲間") + "の見せ場");
+      if (first && !chosen.npc && chosen.actor !== PLAYER_SEAT) this.cheer(1, (this.sheets[this.state.pending.sheet]?.name || "仲間") + "の見せ場");
     }
     if (support) this.cheer(1, "仲間の見せ場");
     return this.checkResult();
@@ -202,7 +239,7 @@ export class TrpgSession {
       heat: { value: this.state.heat, max: HEAT.max, night: HEAT.nights[heatTier(this.state.heat)] },
       variant: this.state.pressure >= this.rules.detourThreshold ? "with-detour" : "smooth",
       plan: copy(plan), hypothesis: this.state.hypothesis,
-      clues: copy(this.state.clues), checks: copy(this.state.checks), acted: copy(this.state.acted),
+      clues: copy(this.state.clues), checks: copy(this.state.checks), acted: copy(this.state.acted), pc: copy(this.state.pc),
       pressure: this.state.pressure, profileId: this.profile.id,
     };
   }
