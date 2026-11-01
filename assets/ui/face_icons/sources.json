@@ -31,9 +31,17 @@
   "sprite": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
   "blob": "5a18bfa77696e348b9d9ac34a90754f4bfb7db9c"
  },
+ "face_kuze.png": {
+  "sprite": "assets/sprites/characters/kuze/chr_kuze_normal.png",
+  "blob": "fce3c4e1484d3a786020d1028844b037a2d3c7ae"
+ },
  "face_maezono.png": {
   "sprite": "assets/sprites/characters/maezono/chr_maezono_normal.png",
   "blob": "a6edd59479a9d683cfcce4933f041777091ef2de"
+ },
+ "face_maki.png": {
+  "sprite": "assets/sprites/characters/maki/chr_maki_normal.png",
+  "blob": "98821db463c3befa092330989d08e2440466b83f"
  },
  "face_mashiro.png": {
   "sprite": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
@@ -79,6 +87,10 @@
   "sprite": "assets/sprites/characters/sai/chr_sai_normal.png",
   "blob": "f69ba7b09ede20649635fcba8b73863e0a0869b5"
  },
+ "face_salaryman.png": {
+  "sprite": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+  "blob": "d10bd4ab59c9b2ec7b768002a15df24e0a7023d7"
+ },
  "face_samechan.png": {
   "sprite": "assets/sprites/characters/samechan/chr_samechan_normal.png",
   "blob": "22768d83367e0560e4576a1d15f2010008dc2076"
@@ -90,6 +102,10 @@
  "face_shisha_9000.png": {
   "sprite": "assets/sprites/characters/shisha_9000/chr_shisha_9000_normal.png",
   "blob": "4e3baa273978e1a1e1eec688084b0d69638617a2"
+ },
+ "face_steve.png": {
+  "sprite": "assets/sprites/characters/steve/chr_steve_normal.png",
+  "blob": "3988f77bda6b4b612302d59fe554058cbb987905"
  },
  "face_sumi.png": {
   "sprite": "assets/sprites/characters/sumi/chr_sumi_normal.png",
