@@ -134,7 +134,7 @@ await check("chapter feature preserves legacy map and entry gates across schedul
     const enabled = [1, 2].includes(chapter);
     assert.equal(features.chapterFeatureEnabled(chapter, "fortune"), enabled);
     assert.equal(features.chapterFeatureEnabled(chapter, "unknown"), false);
-    for (let day = 1; day <= 14; day++) for (const seed of [2, 4])
+    for (let day = 1; day <= 14; day++) for (const seed of [2, 4, 12, 29])
       for (const heard of [false, true]) for (const slot of [0, 1]) for (const done of [false, true]) {
         const s = fresh(day, slot);
         if (chapter === undefined) delete s.chapter; else s.chapter = chapter;

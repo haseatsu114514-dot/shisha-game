@@ -2407,6 +2407,7 @@
       "timeout": 15,
       "paths": [
         "remake/js/daily/fortune*.js",
+        "remake/js/core/chapter-features.js",
         "remake/css/hud*.css",
         "assets/ui/fortune/**",
         "remake/test/fortune_readings.mjs",
