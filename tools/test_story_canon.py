@@ -16,6 +16,28 @@ class CanonRegressionTests(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertFalse(text_errors({'speaker': 'adam', 'text': text}))
 
+    def test_r2_hajime_direct_address_only(self):
+        for text in ('師匠。審査のとき……', '師匠、少し聞いてもいいですか',
+                     '……師匠！', 'ありがとうございます。師匠、見てください',
+                     '『審査の話』。師匠、見てください'):
+            with self.subTest(text=text):
+                self.assertIn('はじめはスミさんを師匠と呼びかけない（#1947）',
+                              text_errors({'speaker': 'hajime', 'text': text}))
+        for row in (
+            {'speaker': '', 'text': '師匠が、弟子のシーシャを吸っている。'},
+            {'speaker': 'hiyori', 'text': 'あの人、私の本当にいい師匠なんだよ'},
+            {'speaker': 'naru', 'text': '師匠孝行だしな'},
+            {'speaker': 'hajime', 'text': 'スミさんは俺の師匠です。'},
+            {'speaker': 'hajime', 'text': '師匠が、弟子の煙を見ている。'},
+            {'speaker': 'hajime', 'text': '「師匠」と呼ぶのは違う。'},
+            {'speaker': 'hajime', 'text': '「理想の」師匠。スミさんはそういう人です。'},
+            {'speaker': 'hajime', 'text': 'ひよりさんは「ありがとう。師匠、また来ます」と言ってた。'},
+            {'speaker': 'hajime', 'text': 'ひよりさんは『師匠。ありがとうございました』と言ってた。'},
+            {'speaker': 'hajime', 'comment': '師匠。審査のとき……'},
+        ):
+            with self.subTest(row=row):
+                self.assertNotIn('はじめはスミさんを師匠と呼びかけない（#1947）', text_errors(row))
+
     def test_r3_intentional_exceptions_and_non_display_fields(self):
         for text in ('エデンの園へようこそ', '楽園の一服（エデン・スペシャル）',
                      'チョイザップへ行く', 'ケムリクサって読むんですね'):

@@ -84,6 +84,11 @@ def text_errors(row):
         errors.append('括弧が一行の中で閉じていない')
     if speaker == 'hajime' and re.search(r'僕|あたし', text):
         errors.append('はじめの一人称は俺')
+    # #1947 R2: only a spoken vocative, not descriptions of the mentor role.
+    if speaker == 'hajime':
+        unquoted = re.sub(r'「[^」]*」|『[^』]*』|“[^”]*”|‘[^’]*’', '引用', text)
+        if re.search(r'(?:^|[。！？!?])\s*…*師匠(?=[、。！？!?]|$)', unquoted):
+            errors.append('はじめはスミさんを師匠と呼びかけない（#1947）')
     if speaker == 'dr_kemuri' and '僕' in text:
         errors.append('博士の一人称は私（公的）／俺（はじめ・年下とフランクに）')
     if speaker == 'ageha' and re.search(r'あたし|アタシ|ウチ|はじめくん', text):
