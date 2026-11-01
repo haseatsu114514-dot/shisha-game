@@ -46,7 +46,7 @@ schema9への移行は既存セーブの能力・残高・確定済み未演出�
 
 ## 確認画像と検証
 
-[PCの通知](../asset_sources/ui/compact-gains-map-20261008/gain-1331.png)・[スマホ横の通知](../asset_sources/ui/compact-gains-map-20261008/gain-844.png)・[スマホ縦の通知](../asset_sources/ui/compact-gains-map-20261008/gain-591.png)・[5色](../asset_sources/ui/compact-gains-map-20261008/stat-colors.png)・[マップ](../asset_sources/ui/compact-gains-map-20261008/map-1331.png)・[モデル結果](../asset_sources/ui/compact-gains-map-20261008/balance.json)。
+[PCの通知](../../asset_sources/ui/compact-gains-map-20261008/gain-1331.png)・[スマホ横の通知](../../asset_sources/ui/compact-gains-map-20261008/gain-844.png)・[スマホ縦の通知](../../asset_sources/ui/compact-gains-map-20261008/gain-591.png)・[5色](../../asset_sources/ui/compact-gains-map-20261008/stat-colors.png)・[マップ](../../asset_sources/ui/compact-gains-map-20261008/map-1331.png)・[モデル結果](../../asset_sources/ui/compact-gains-map-20261008/balance.json)。
 
 - `paid_action_growth`：実際の初回・繰り返し訪問、施設、バイト、後払いの誘い、無料・消耗ゼロの行動、セーブを検証。
 - `stat_growth_balance`：すべての★帯で通常1P、重複防止、上限振替、旧セーブと未演出報酬、追加自主練、5章モデルを検証。
@@ -57,4 +57,4 @@ schema9への移行は既存セーブの能力・残高・確定済み未演出�
 - `playthrough`：最終表示 `2155b42` で405秒。新規から14日目まで進め、4位敗北→再挑戦→1位・合計100票→章1クリアがPASS。オート／手動セーブとロード、LIME15件読了・誘い3件受諾、雨マップ11回、スロット25回転・未演出0、常連ノート7件。会話の背景残り・コンソールエラー0。最終能力は技術48／センス44／根性12／魅力16／洞察27。これは通しテストの行動計画の結果であり、全能力を均等に育てる計画ではない。
 - 台詞lint ERROR 0／既存WARN 207。変更JSの構文・差分空白・確認資料のリンクとハッシュが正常。現行版はビルド不要。
 
-[第1章の実行ログ](../asset_sources/ui/compact-gains-map-20261008/playthrough.log)。通常1P・成長モデルは `82ceb7b`、最終表示・統合チェックは `2155b42` で確認。PR [#217](https://github.com/haseatsu114514-dot/shisha-game/pull/217)。
+[第1章の実行ログ](../../asset_sources/ui/compact-gains-map-20261008/playthrough.log)。通常1P・成長モデルは `82ceb7b`、最終表示・統合チェックは `2155b42` で確認。PR [#217](https://github.com/haseatsu114514-dot/shisha-game/pull/217)。

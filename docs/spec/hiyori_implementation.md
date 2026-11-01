@@ -1,7 +1,7 @@
 # 朝霧ひより・本編の登場と接続仕様
 
 オーナー指定の「他店で偶然相席→スミさんへの報告と伝言→各店での交流→好感度3でLIMEからtonariへ」を現行の `remake/` に接続した。
-キャラの基本情報・外見・服装は [`data/characters.json`](../data/characters.json) の `hiyori`、台本と条件は [`data/dialogue/hiyori.json`](../data/dialogue/hiyori.json) が正本。
+キャラの基本情報・外見・服装は [`data/characters.json`](../../data/characters.json) の `hiyori`、台本と条件は [`data/dialogue/hiyori.json`](../../data/dialogue/hiyori.json) が正本。
 
 ## 本編での進め方
 
@@ -41,10 +41,10 @@
 ## 画像と本心
 
 現在はオーナーが選択したレースブラウス案。ポニーテール、白〜アイボリーのフレンチスリーブ、黒のパンツ、名札なし。通常・物憂げ・控えめな微笑み・驚き・感動の涙の5表情と、ミディアムヘアで元気な学生時代の1表情を使用する。
-原画と生成指示は [`asset_sources/portraits/hiyori-office-v1/`](../asset_sources/portraits/hiyori-office-v1/README.md)。896×1200の透過PNG、RGBAが一致する可逆WebP、160pxの顔アイコン、manifestを揃えた。背景や別人で素材待ちを埋めない。
+原画と生成指示は [`asset_sources/portraits/hiyori-office-v1/`](../../asset_sources/portraits/hiyori-office-v1/README.md)。896×1200の透過PNG、RGBAが一致する可逆WebP、160pxの顔アイコン、manifestを揃えた。背景や別人で素材待ちを埋めない。
 
 正式名は朝霧ひより（あさぎり ひより）。他店で名乗った直後に一度だけ登場カットインを表示し、呼び名「ひより」と「儚げな元スタッフ」、本人の短い台詞を出す。背景は乳白色・淡い桃色・薄い藤色の線香花火。現在の立ち絵をそのまま重ね、柔らかいフェードと小さな火玉の光で儚さを出す。動きを減らす設定では停止し、既読は `_intro_hiyori` で保存する。
-原画・指示・実画面の記録は [`asset_sources/character-intros/hiyori-senkou-v1/`](../asset_sources/character-intros/hiyori-senkou-v1/README.md)。PC・横持ちスマホ・動きを減らす設定の3項目を `remake/test/hiyori_intro.mjs` で実行する。
+原画・指示・実画面の記録は [`asset_sources/character-intros/hiyori-senkou-v1/`](../../asset_sources/character-intros/hiyori-senkou-v1/README.md)。PC・横持ちスマホ・動きを減らす設定の3項目を `remake/test/hiyori_intro.mjs` で実行する。
 
 学生時代を知ったはじめがすぐ演技の全容を見抜く展開にはしない。`_hiyori_real_self_known` は今回の回想・再会で立てない。
 回想後の一部台詞だけに `inner` を付け、発話の後に淡いピンク・括弧付きで出す。プレイヤーにだけ見え、はじめは聞いた台詞と見た行動へ返す。仕事の疲れは本物で、儚い演技も本人の好きなあり方。
@@ -53,7 +53,7 @@
 
 ## 斧投げ用の素材（#477）
 
-専用夜背景 `bg_axe_lounge_night` と、キャップ/Tシャツの `axe_normal`・`axe_laugh`・`axe_shout`、現在のレース衣装の `serious`・`love_blush` を追加した。旧6表情と顔アイコンのバイナリ、全表情の共通足元・縮尺は維持する。原画・生成指示・SHA・再登録手順・表示QAは [素材記録](../asset_sources/hiyori-axe-issue477/README.md)。
+専用夜背景 `bg_axe_lounge_night` と、キャップ/Tシャツの `axe_normal`・`axe_laugh`・`axe_shout`、現在のレース衣装の `serious`・`love_blush` を追加した。旧6表情と顔アイコンのバイナリ、全表情の共通足元・縮尺は維持する。原画・生成指示・SHA・再登録手順・表示QAは [素材記録](../../asset_sources/hiyori-axe-issue477/README.md)。
 
 この素材登録だけでは `_hiyori_real_self_known` や仕事・恋愛・友情の読了を立てない。登録時点では正式斧投げ台本とミニゲームは未接続だった。操作は #480、タイトル5枚は #486、正式台本は #492で接続。casual/lounge/date等の他衣装と残り表情は未制作として素材記録に残す。
 
@@ -73,14 +73,14 @@
 
 ## 検証と今後の範囲
 
-検証コードは `remake/test/hiyori_encounters.mjs`（本編訪問・報告・LIME・セーブ・PC／スマホ）、`remake/test/hiyori.mjs`（本心・ログ・AUTO・SKIP・共通関係API）、`remake/test/hiyori_intro.mjs`（名乗り・紹介・既読保存）。CIでも実行する。記録は [`asset_sources/hiyori-encounters-20261011/`](../asset_sources/hiyori-encounters-20261011/README.md)。
+検証コードは `remake/test/hiyori_encounters.mjs`（本編訪問・報告・LIME・セーブ・PC／スマホ）、`remake/test/hiyori.mjs`（本心・ログ・AUTO・SKIP・共通関係API）、`remake/test/hiyori_intro.mjs`（名乗り・紹介・既読保存）。CIでも実行する。記録は [`asset_sources/hiyori-encounters-20261011/`](../../asset_sources/hiyori-encounters-20261011/README.md)。
 
 今回の実装は三人の物語の入口まで。斧投げでの正体発覚、深い仕事の相談、恋愛／友情の締めくくり、専用ハガル、海外同行は未制作。第2章以降のゲーム進行自体も未接続で、条件だけを先行定義している。
 `storyEvents` の4本（meeting/cracks/axe_reveal/work_talk）は後半の共通関係システム用のまま保持。スミさんへの報告やtonari再会を既存の4本の代用にして告白を早めない。専用ハガルと正式な後半台本が揃うまで好感度MAXだけでは告白しない。
 
 ## ランダムタイトル5場面（#486）
 
-採用済み夕暮れ・窓際・雨上がりの3枚に、昼の書店とラーメン店を追加し、ひよりの実参照プールを5枚にした。既存の7キャラの均等抽選・同キャラ連続回避を維持し、枚数の増加でひよりの選択確率を増やさない。正規の顔・年齢25歳・高いポニーテール・レース衣装を基準とし、斧投げの核心や学生回想をタイトルで先出ししない。原画・実指示・既存画像hash・限定登録・表示QAは [5場面の制作記録](../asset_sources/hiyori-title-five-issue486/README.md)。本編の縦持ちでは従来の横向きガイドを維持し、回転後の表示も確認する。抽選は物語・関係・LIME・セーブを変更しない。
+採用済み夕暮れ・窓際・雨上がりの3枚に、昼の書店とラーメン店を追加し、ひよりの実参照プールを5枚にした。既存の7キャラの均等抽選・同キャラ連続回避を維持し、枚数の増加でひよりの選択確率を増やさない。正規の顔・年齢25歳・高いポニーテール・レース衣装を基準とし、斧投げの核心や学生回想をタイトルで先出ししない。原画・実指示・既存画像hash・限定登録・表示QAは [5場面の制作記録](../../asset_sources/hiyori-title-five-issue486/README.md)。本編の縦持ちでは従来の横向きガイドを維持し、回転後の表示も確認する。抽選は物語・関係・LIME・セーブを変更しない。
 
 ## 正式な斧投げ（#492 / 旧 #343）
 
@@ -102,6 +102,6 @@
 
 MAX時の正式台本 `hiyori_bond_finale` と `confession_hiyori`/accept/rejectを追加した。二度の実回答と正式な締めくくりの読了を確認してから恋愛へ進む。途中で友人を選んだ場合は友人の結論へ進み、既存の友人/恋人は再読で分類し直さない。最終質問の保存済み0/1も同じ反応へ戻す。
 
-**専用ハガル #497 / 旧 #345 はDraftで接続・検証中。** `route.finale.gift` に `suyaki_hiyori` を登録し、採用済みB「素顔でひと休み」を単体素材化した。容量20g、非売品・売却不可。オーナー承認に基づき、ピーチ3g以上で既存の香り+4・総合ボーナス+1を使う。正式な素顔・仕事・実回答・反応読了を経た後だけ締めくくりへ進む。過去の読了や回答を好感度・所有機材から補完しない。機材未登録を明示する共通APIのfixtureと、専用機材を使う本番設定の検証を区別する。**保存/LIMEの新規テスト3件の失敗と中断待ちが残り、自然到達・表示・既存回帰・最終CIは未完。マージ・公開可の状態ではない。** [停止時の保存・失敗・再開手順](../asset_sources/hiyori-hagal-issue497/README.md)。
+**専用ハガル #497 / 旧 #345 はDraftで接続・検証中。** `route.finale.gift` に `suyaki_hiyori` を登録し、採用済みB「素顔でひと休み」を単体素材化した。容量20g、非売品・売却不可。オーナー承認に基づき、ピーチ3g以上で既存の香り+4・総合ボーナス+1を使う。正式な素顔・仕事・実回答・反応読了を経た後だけ締めくくりへ進む。過去の読了や回答を好感度・所有機材から補完しない。機材未登録を明示する共通APIのfixtureと、専用機材を使う本番設定の検証を区別する。**保存/LIMEの新規テスト3件の失敗と中断待ちが残り、自然到達・表示・既存回帰・最終CIは未完。マージ・公開可の状態ではない。** [停止時の保存・失敗・再開手順](../../asset_sources/hiyori-hagal-issue497/README.md)。
 
 検証は `remake/test/browser/hiyori_work_relationship.mjs`。自然New Gameの仕事到達は `GOAL_HIYORI_WORK=1 node remake/test/browser/hiyori_axe_natural.mjs` で、seedだけ固定して実斧投げ→仕事相談→最初の友人回答まで通す。後続素材未登録のため本番ではfinales/恋人を増やさない。
