@@ -412,7 +412,7 @@ async function ordinary(page, keyboard) {
     assert(await readable.evaluate(n => n.scrollTop > 0), "Keyboard readers can scroll to the rest of the recap");
   }
   await page.keyboard.press("Escape");
-  assert.equal((await state(page)).checks.length, 3);
+  assert.equal((await state(page)).checks.length, 4, "listen, twist, preparation and serving");
   await fits(page);
 }
 async function shark(page, correct) {
