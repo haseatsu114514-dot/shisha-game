@@ -1,5 +1,6 @@
 import { nextTokyoFreeTime } from "../core/tokyo-clock.js";
 import { syncTokyoVisits, tokyoVisitState } from "../core/tokyo-visits.js";
+import { recordChapterThreeStoryLime } from "./ch3-story-lime.js";
 // 第3章の東京到着から全国大会前夜。読了した場面だけを確定する。
 // day は章内の日付。通算の value.day は startDay から換算する。
 const LEGACY_SCENES = Object.freeze([
@@ -71,6 +72,7 @@ export function chapterThreeProgress(value) {
 export function completeChapterThreeScene(value, sceneId) {
   const progress = chapterThreeProgress(value);
   if (chapterThreeScenes(value)[progress.stage]?.id !== sceneId || chapterThreeFreeTime(value)) return false;
+  recordChapterThreeStoryLime(value, sceneId);
   progress.stage += 1;
   setNextChapterThreeTime(value);
   return true;

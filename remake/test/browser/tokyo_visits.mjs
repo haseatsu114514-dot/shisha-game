@@ -31,6 +31,46 @@ async function seed(page, { lovers = ["tsumugi", "minto", "rin", "samechan", "hi
 async function open(page) { await page.evaluate(() => { void import("./js/chapters/ch3-social.js").then(module => module.openTokyoLime()); }); }
 async function close(page) { await page.locator(t("lime-back")).click(); await page.locator(t("phone-close")).click(); await page.locator(".phone-overlay").waitFor({ state: "detached" }); }
 await suite("tokyo-visits", async check => {
+  await check("story-call-history-after-completion-and-load", async page => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, day: 35, slot: 1, phase: "daily", lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch2_cleared: true,
+        _ch3_intro: { startDay: 29, stage: 9, titleSeen: true, prologueStep: 4, routeVersion: 2 } };
+      value.met.naru = true; value.flags._intro_naru = true;
+      for (let window; (window = progress.chapterThreeFreeTime(value));) progress.completeChapterThreeFreeTime(value, window.id);
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig(); core.save();
+      const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true;
+      vn.hooks.onLine = (id, line) => { if (id === "ch3_naru_contact_before_tournament" && line.text?.includes("今、少し話せますか")) vn.vnTest.turbo = false; };
+      void (await import("./js/chapters/ch3.js")).resumeChapterThree();
+    });
+    const scene = '[data-test="ch3-intro-scene"][data-scene="ch3_naru_contact_before_tournament"]';
+    await page.locator(scene).waitFor();
+    const before = await get(page);
+    await page.locator(t("ch3-intro-continue")).click();
+    await page.waitForFunction(() => document.querySelector("#vn.active .vn-text")?.textContent.includes("今、少し話せますか"));
+    assert.equal((await get(page)).inbox.length, 0, "An interrupted call has no completed history");
+    await page.reload(); await page.locator(t("title-load")).click();
+    await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = true; });
+    await page.locator(t("slot-0")).click(); await page.locator(scene).waitFor();
+    assert.equal((await get(page)).inbox.length, 0);
+    await page.locator(t("ch3-intro-continue")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.stage === 10);
+    const after = await get(page);
+    assert.equal(after.inbox.length, 1);
+    assert.deepEqual(after.inbox[0].log, [{ note: "通話：戻ったら会う約束をした" }]);
+    for (const key of ["money", "stamina", "stats", "affinity", "flavorStock", "contacts", "lovers"])
+      assert.deepEqual(after[key], before[key], `The call history changed ${key}`);
+    await page.locator(t("ch3-intro-lime")).click();
+    await page.locator(t("lime-contact-naru")).click();
+    assert((await page.locator(".lime-chat").textContent()).includes("通話：戻ったら会う約束をした"));
+    for (const action of ["chat", "offer", "book", "lover"]) assert.equal(await page.locator(t(`lime-travel-${action}`)).count(), 0);
+    await close(page);
+    await page.reload(); await page.locator(t("title-load")).click(); await page.locator(t("slot-0")).click();
+    await page.locator('[data-test="ch3-intro-scene"][data-scene="ch3_naru_work"]').waitFor();
+    assert.equal((await get(page)).inbox.length, 1, "SAVE/LOAD must preserve one call record");
+  });
   for (const touch of [false, true]) await check(touch ? "travel-lime-touch" : "travel-lime-pc", async page => {
     // The function deliberately remains pending while its phone is open.
     await seed(page);

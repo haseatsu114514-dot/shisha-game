@@ -9,6 +9,7 @@ import { visitContacts, tokyoVisitState, playerRegion, characterRegion, syncToky
 import { openContactLime } from "../daily/phone.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { pendingLoverLime, readLoverLime } from "./lover-entry.js";
+import { chapterThreeStoryContacts } from "./ch3-story-lime.js";
 
 let definitions = null;
 export async function loadTokyoSocial() {
@@ -54,12 +55,12 @@ export function syncTokyoSocial() {
   }
 }
 
-/** 恋人ではない地元の連絡先（あげは）。第3章で連絡先を交換していれば、恋人の一覧の後に並べる。 */
+/** あげはの連絡先と、本筋で実際に連絡した相手も、恋人の一覧の後に並べる。 */
 export function tokyoLimeContacts(value, definitions) {
   const lovers = visitContacts(value, definitions);
   const extra = ["ageha"].filter(id => definitions.characters[id] && !lovers.includes(id)
     && value.chapter === 3 && (value.contacts || []).includes(id));
-  return [...lovers, ...extra];
+  return [...new Set([...lovers, ...extra, ...chapterThreeStoryContacts(value)])];
 }
 
 /** 訪問の定義に無い東京在住の恋人（ましろ）。連絡先を交換していれば、恋人LIMEを読むためだけに一覧の最後へ並べる（#2024）。 */
@@ -95,7 +96,8 @@ export async function openTokyoLime({ signal = null } = {}) {
   const summary = id => {
     if (notes[id]) return notes[id];
     const character = definitions.characters[id];
-    if (!character) return "同じ東京にいる恋人。";
+    if (!character) return chapterThreeStoryContacts(state).includes(id)
+      ? "東京で交わした連絡の記録。" : "同じ東京にいる恋人。";
     if (!(state.lovers || []).includes(id)) return playerRegion(state) === "home" ? character.homeSummary || "地元へ戻った。" : character.summary || "地元からの連絡。";
     const offer = state.tokyoVisits.offers[id];
     if (offer) return `${offer.held ? "保留中の訪問" : "訪問の相談"}：${tripLabel(offer)}`;

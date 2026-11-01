@@ -173,6 +173,9 @@
     },
     {
       "dialogue_id": "ch3_naru_contact_before_tournament",
+      "metadata": {
+        "lime_history": { "sender": "naru", "call": "通話：戻ったら会う約束をした" }
+      },
       "lines": [
         {
           "speaker": "",
