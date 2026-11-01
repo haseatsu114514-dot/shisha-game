@@ -27,6 +27,23 @@ async function dialogue(page) {
   }
   throw new Error("Dialogue did not terminate");
 }
+// A real table declares who acts before the dice: take the first approach and read the declaration.
+async function declare(page) {
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (!await card.count() || !await card.isVisible()) return;
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await card.tap(); else await card.click();
+  await dialogue(page);
+}
+// The declared character's stat, read from the canonical scenario file rather than the screen.
+async function declaredBase(page) {
+  const snap = await state(page);
+  return page.evaluate(async ({ id, kind }) => {
+    const catalog = await (await fetch("../data/trpg_catalog.json")).json();
+    const scenario = await (await fetch("../data/" + catalog.scenarios.find(s => s.id === id).file)).json();
+    const lead = scenario.checks[kind].approaches[0];
+    return scenario.cast.find(c => c.id === (lead.sheet || lead.actor)).sheet.stats[lead.stat];
+  }, { id: snap.scenarioId, kind: snap.phase });
+}
 async function fits(page) {
   const clipped = await page.locator("button:not([hidden]), summary[data-test], .trpg-speech p, .trpg-spot span, .trpg-object-label, .trpg-object-detail").evaluateAll(nodes => {
     const stage = document.getElementById("stage").getBoundingClientRect();
@@ -85,7 +102,7 @@ async function forecast(page, supported = false, conditional = false) {
   if (!await control(page, "trpg-roll-details").evaluate(n => n.open)) await hit(page, "trpg-details-toggle");
   assert(await control(page, "trpg-forecast").isVisible(), "Opening the details reveals the probability forecast");
   const momentum = (await state(page)).momentum;
-  const bonus = 3 + (supported ? 7 : 0) + momentum * 4;
+  const bonus = await declaredBase(page) + (supported ? 7 : 0) + momentum * 4;
   const oddsFor = extra => {
     const counts = { success: 0, mixed: 0, trouble: 0 };
     for (let a = 1; a <= 20; a++) for (let b = 1; b <= 20; b++) {
@@ -147,6 +164,7 @@ async function begin(page, { keyboard = false } = {}) {
   if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-conversation-pc.png") });
   await currentStep(page);
   await dialogue(page);
+  await declare(page);
   await closedDetails(page);
   await forecast(page);
   if (keyboard) {
@@ -314,6 +332,7 @@ async function ordinary(page, keyboard) {
   assert.match(summary, /雨を眺める窓辺/);
   await page.screenshot({ path: path.join(artifacts, keyboard ? "ordinary-plan-pc.png" : "ordinary-plan-touch.png") });
   await hit(page, "trpg-prepare-open");
+  await declare(page);
   await closedDetails(page);
   const aid = await control(page, "trpg-support-adam").evaluate(n => n.closest("label")?.textContent || n.getAttribute("aria-label"));
   assert.match(aid, /[+＋]\s*7/);
@@ -333,6 +352,7 @@ async function ordinary(page, keyboard) {
   await choosePlan(page, { approach: "quiet" });
   assert.match(await control(page, "trpg-plan-summary").textContent(), /声を添えて/);
   await hit(page, "trpg-serve-open");
+  await declare(page);
   await closedDetails(page);
   await roll(page);
   await settle(page);
@@ -376,6 +396,7 @@ async function shark(page, correct) {
   await dialogue(page);
   await choosePlan(page, { tool: "citrus", route: "pier" });
   await hit(page, "trpg-prepare-open");
+  await declare(page);
   await closedDetails(page);
   await forecast(page, false, true);
   const preview = (await control(page, "trpg-forecast").textContent()).replace(/\s+/g, " ").trim();
@@ -390,6 +411,7 @@ async function shark(page, correct) {
   if (correct) {
     await choosePlan(page, { finale: "lure" });
     await hit(page, "trpg-serve-open");
+    await declare(page);
     await closedDetails(page);
     await roll(page);
     await settle(page);
@@ -451,7 +473,7 @@ try {
   await run("shark-insight-hidden", { scenario: "shark-last-order", seed: "9", traveler: "vibration" }, {}, page => shark(page, false));
   for (const [label, scenario] of [["ordinary", "ordinary-cup"], ["shark", "shark-last-order"]])
     await run(label + "-portrait-roll-resources-and-paused-effects", { scenario, seed: "9" }, { hasTouch: true }, async page => {
-      await hit(page, "trpg-start"); await dialogue(page);
+      await hit(page, "trpg-start"); await dialogue(page); await declare(page);
       await page.setViewportSize({ width: 390, height: 844 });
       await page.waitForFunction(() => Math.abs(Number(document.getElementById("stage").style.getPropertyValue("--k")) - 390 / 1280) < 1e-9);
       await hit(page, "trpg-roll"); await control(page, "trpg-settle").waitFor();

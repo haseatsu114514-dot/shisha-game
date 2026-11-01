@@ -64,6 +64,11 @@ def main():
             for line in block["lines"]:
                 portrait(line["speaker"], line.get("face", "normal"))
 
+    if catalog.get("tutorial"):
+        files.add("data/" + catalog["tutorial"])
+        for line in json.loads(read("data/" + catalog["tutorial"])).get("lines", []):
+            portrait(line["speaker"], line.get("face", "normal"))
+
     for entry in catalog["scenarios"]:
         path = "data/" + entry["file"]
         files.add(path)

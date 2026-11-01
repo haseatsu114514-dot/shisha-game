@@ -15,7 +15,7 @@ function fontsReady(signal) {
 
 /** Owned tabletop collection. No main-game state, saves, or URL changes. */
 export function mountTrpgCollection(host, {
-  signal, initialScenarioId = null, seed, profileId = null,
+  signal, initialScenarioId = null, seed, profileId = null, tutorial = false,
   closeLabel = "閉じる", closable = false, onScenarioChange = () => {},
 } = {}) {
   let controller = null, resources = null, request = null, generation = 0;
@@ -45,6 +45,7 @@ export function mountTrpgCollection(host, {
     const ticket = ++generation;
     controller?.destroy(); phase = "session"; onScenarioChange(id);
     const mounted = mountTrpg(host, { scenario, characters: resources.characters, manifest: resources.manifest, tableTalk: resources.tableTalk, audio,
+      tutorialLines: resources.tutorialLines, tutorial,
       seed: seed ?? Date.now(), profileId: scenario.profiles.some(p => p.id === profileId) ? profileId : null,
       closeLabel: "本棚へ戻る" });
     controller = mounted;

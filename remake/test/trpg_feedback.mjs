@@ -59,9 +59,13 @@ test("unconfirmed hypotheses and other phases have no conditional bonus; support
   }
   for (const kind of ["listen", "prepare", "serve"]) for (const support of [false, true]) {
     const forecast = checkForecast(ordinary, { hypothesis: "quiet" }, kind, { support });
-    assert.equal(forecast.baseBonus, support ? 10 : 3);
+    // Without a declared approach the forecast reads the player's own character, the first approach.
+    const lead = ordinary.checks[kind].approaches[0];
+    const base = ordinary.cast.find(c => c.id === lead.actor).sheet.stats[lead.stat];
+    assert.equal(forecast.base, base);
+    assert.equal(forecast.baseBonus, base + (support ? 7 : 0));
     assert.equal(forecast.potentialBonus, 0);
-    assert.deepEqual(forecast.bestOdds, rollOdds(support ? 10 : 3));
+    assert.deepEqual(forecast.bestOdds, rollOdds(base + (support ? 7 : 0)));
     if (kind !== "prepare") assert.equal(checkForecast(shark, { hypothesis: "scent" }, kind, { support }).potentialBonus, 0);
   }
   assert.equal(checkForecast({}, { hypothesis: "scent" }, "prepare").potentialBonus, 0);
@@ -100,7 +104,19 @@ test("returned forecasts are independent and malformed roll inputs are rejected"
 
 test("table momentum is part of the public forecast", () => {
   const forecast = checkForecast(ordinary, { hypothesis: null, momentum: 2 }, "listen");
-  assert.equal(forecast.momentum, 2); assert.equal(forecast.baseBonus, 11);
-  assert.deepEqual(forecast.odds, rollOdds(11));
+  assert.equal(forecast.momentum, 2); assert.equal(forecast.baseBonus, forecast.base + 8);
+  assert.deepEqual(forecast.odds, rollOdds(forecast.base + 8));
 });
 
+
+test("a declared approach forecasts with that character's stat; unknown approaches are rejected", () => {
+  const watch = checkForecast(ordinary, { hypothesis: null }, "listen", { approach: "listen_watch" });
+  assert.equal(watch.base, ordinary.cast.find(c => c.id === "tsumugi").sheet.stats.eye);
+  assert.equal(watch.baseBonus, watch.base);
+  assert.deepEqual(watch.odds, rollOdds(watch.base));
+  assert.notEqual(watch.baseBonus, checkForecast(ordinary, { hypothesis: null }, "listen").baseBonus);
+  assert.throws(() => checkForecast(ordinary, { hypothesis: null }, "listen", { approach: "missing" }));
+  // The hidden profile is never read for an approach forecast either.
+  const hidden = { hypothesis: "scent", get profileId() { throw new Error("Hidden profile was read"); } };
+  assert.equal(checkForecast(shark, hidden, "prepare", { approach: "prepare_kit" }).potentialBonus, 4);
+});
