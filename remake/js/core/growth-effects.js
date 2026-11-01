@@ -9,11 +9,14 @@ export const SKILL_TUNING = Object.freeze({ sleep: .1, first: .2, mastery: .2, l
   coalReplacement: .2, forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65 });
 const skillIds = new Set(SKILLS.map(s => s.id));
 const lessonIds = new Set(LESSONS.map(s => s.id));
-export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5 });
+export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5, callingSales: 1000 });
 /** 授業は盤に灯すだけでは発動しない。対面で相談を終えた記録も必要。 */
 export const growthLesson = (s, id) => growthEnabled() && lessonIds.has(id)
   && Array.isArray(s?.growth?.nodes) && s.growth.nodes.includes(id)
   && Array.isArray(s?.growth?.learned) && s.growth.learned.includes(id);
+/** 店の追加注文分。基本給・呼び出し手当・既存の注文報酬は変更しない。 */
+export const callingSalesBonus = (s, condition) => growthLesson(s, "M-B1")
+  ? Math.round(LESSON_TUNING.callingSales * condition.bonusRate) : 0;
 export const growthSkill = (s, id) => growthEnabled() && skillIds.has(id)
   && Array.isArray(s?.growth?.nodes) && s.growth.nodes.includes(id);
 export const densePackAvailable = s => !growthEnabled() || growthSkill(s,"K18") || s?.flags?._dense_pack_legacy === true;

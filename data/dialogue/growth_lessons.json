@@ -1,6 +1,16 @@
 {
   "dialogues": [
     {
+      "dialogue_id": "baito_minto_calling",
+      "lines": [
+        { "speaker": "", "text": "窓際の灯りを早めにつけ、客席が見えるように席を整えた。" },
+        { "speaker": "", "text": "通りがかった人が足を止め、空いていた卓が一つ埋まる。" },
+        { "speaker": "hajime", "face": "smile", "text": "（煙を吸う前にも、店の良さは伝えられる。みんとさんに教わったとおりだ）" },
+        { "speaker": "", "text": "帰り際に声をかけると、もう一杯の注文が入った。" },
+        { "speaker": "", "text": "追加注文のぶんは、店からの売上ボーナスとして給料に上乗せされる。" }
+      ]
+    },
+    {
       "dialogue_id": "lesson_minto_calling",
       "lines": [
         {
@@ -1221,7 +1231,12 @@
         {
           "speaker": "steve",
           "face": "smile",
-          "text": "グッド。大会が終わって、東京にいる最後の夜にしよう。場所はここを使っていい。ピザも俺が頼んでおく"
+          "text": "グッド。大会が終わって、東京にいる最後の夜にしよう"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "場所はここを使っていい。ピザも俺が頼んでおく"
         }
       ]
     },

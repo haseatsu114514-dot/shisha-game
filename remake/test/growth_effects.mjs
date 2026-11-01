@@ -347,3 +347,16 @@ assert.deepEqual(group.firsts.places,["party"]);
 assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","kuze"]}),24);
 growth.setGrowthPreview(false);
 console.log("[growth effects] PASS: group action XP occurs once; first-person and breadth ledgers count unique real guests");
+growth.setGrowthPreview(true);core.newGame();
+const calling = growth.ensureGrowth();calling.nodes.push("M-B1");
+assert.equal(effects.callingSalesBonus(core.state,{bonusRate:1}),0,"lit alone does not grant sales");
+calling.learned.push("M-B1");
+const callingBefore=JSON.stringify(core.state);
+for(const [rate,pay] of [[1.15,1150],[1,1000],[.5,500]]){
+  assert.equal(effects.callingSalesBonus(core.state,{bonusRate:rate}),pay);
+  assert.equal(effects.callingSalesBonus(core.state,{bonusRate:rate}),pay);
+}
+assert.equal(JSON.stringify(core.state),callingBefore,"calculating sales cannot spend or stack a saved reward");
+assert.equal(effects.callingSalesBonus(JSON.parse(callingBefore),{bonusRate:1}),1000);
+growth.setGrowthPreview(false);assert.equal(effects.callingSalesBonus(core.state,{bonusRate:1.15}),0);
+console.log("[growth effects] PASS: learned calling grants 1150/1000/500 at normal condition rates; preview off, unlearned and repeated reads preserve old state");

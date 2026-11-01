@@ -197,6 +197,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_outings", "progression"],
   ["_ch3_naru_party_ready", "progression"],
   ["_ch3_pizza_party", "progression"],
+  ["_minto_calling_paid", "progression"],
   ["_ch3_preview_seen", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
   ["_ch3_read_hiyori_tokyo_contact", "progression"],
