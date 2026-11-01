@@ -6,9 +6,10 @@
 
 - 既存の `img/ui/paper/` の板とラベンダーを再利用。素材の新規生成・追加はない。的・部屋・選択肢の絵や、力の適正帯の緑とキルショットの青は維持する。
 - `ui-paper.css` でくじの結果・ギャラリーのタブと操作帯も揃える。写真・漫画・動画の鑑賞面とスロットの実機は既存の表現を保つ。
-- 寸法・当たり判定・ルール・料金・報酬・台詞・セーブは維持。2d20の数字は旧ドット用の3列から1列へ戻して中央へ置き、盛り上がりの勢いが無い時に出ていた `null` を除く。
+- 操作領域・当たり判定・ルール・料金・報酬・台詞・セーブは維持。2d20の数字は旧ドット用の3列から1列へ戻して中央へ置き、盛り上がりの勢いが無い時に出ていた `null` を除く。縮小されるダイス窓の数字は18px・説明は12px以上に保ち、スクロール端でボタンが欠けない余白を設ける。本編のTRPG入口は従来どおり横向き案内を出す。
 - シーシャ制作・大会・開発中の心得の盤はこの変更の対象外。TRPGの静的書き出しにも紙のCSSと素材を含め、LFSポインタを実体へ解決する。
 - 検証入口: `node tools/ci/run.mjs --kind quick`、`--kind browser --suites axe-throw,trpg,play-spots`、`node remake/test/browser/gallery.mjs`、`shop_ui.mjs`。TRPGの卓テストで、実際の2d20と数字の一致・数字の中央位置・盛り上がりの余計な文字なしを確認する。
+- 実画面: [斧投げ・PC](../docs/qa/minigames-paper/axe-play.webp)／[斧投げ・縦](../docs/qa/minigames-paper/axe-portrait.webp)／[ダイス・PC](../docs/qa/minigames-paper/trpg-dice.webp)／[ダイス・縦](../docs/qa/minigames-paper/trpg-dice-portrait.webp)／[部活](../docs/qa/minigames-paper/trpg-club.webp)／[ギャラリー](../docs/qa/minigames-paper/gallery.webp)／[くじ](../docs/qa/minigames-paper/kuji.webp)。素材の採用記録ではなく、実装後の表示確認用の画像。
 
 ## 2026-10-31 制作（シーシャ作り）の紙×ラベンダー＋琥珀
 

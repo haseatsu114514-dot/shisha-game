@@ -194,6 +194,7 @@ html:root[data-ui-theme="paper"] .vn-choice.fortune-hint { color: #c2334a; text-
 html:root[data-ui-theme="paper"] .vn-choice.fortune-hint:is(:hover, :focus-visible) { color: #fff; background: #c2334a; border-color: #c2334a; }
 
 /* 第1〜2章から使う、くじの結果とギャラリーの操作面。 */
+html:root[data-ui-theme="paper"] .kuji-cat { color: #9f325d !important; border-color: #d59ab3 !important; background: #f8e6ee; }
 html:root[data-ui-theme="paper"] :is(.kuji-card, .kuji-multi-panel, .gal) {
   --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
   color: var(--paper-ink); background: var(--paper); border-color: var(--paper-line);

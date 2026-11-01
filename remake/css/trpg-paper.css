@@ -111,3 +111,5 @@ html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trp
 html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-instruction { font-size: max(16px, calc(12 * var(--roll-unit))); }
 html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total > strong { font-size: max(33px, calc(20 * var(--roll-unit))); }
 html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total .trpg-dice-grade { font-size: max(18px, calc(14 * var(--roll-unit))); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body { scroll-padding-block: calc(4 * var(--roll-unit)); padding-bottom: calc(4 * var(--roll-unit)); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body button { scroll-margin-block: calc(4 * var(--roll-unit)); }
