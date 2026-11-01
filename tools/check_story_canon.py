@@ -19,6 +19,32 @@ def nodes(value):
             yield from nodes(child)
 
 
+def tsumugi_first_person_errors(speaker, text):
+    # #2015: only clear, unquoted uses of わたし. Skip whole quoted lines;
+    # attribution and possessive/embedded uses need human judgment.
+    if speaker != 'tsumugi' or not isinstance(text, str):
+        return []
+    if any(mark in text for mark in '「」『』“”‘’"\''):
+        return []
+    if re.search(r'(?:^|[\s、。！？!?…])わたし(?:[、。！？!?…]|[はがもにと]|から)', text):
+        return ['つむぎの一人称は私（#2015）']
+    return []
+
+
+def lime_first_person_errors(data):
+    errors = []
+    for message in data.get('messages', []):
+        location = f'lime_messages.json:{message["id"]}'
+        # A reply's text is the player's choice; response is the sender's line.
+        for row in nodes(message):
+            errors.extend(f'{location}: {e}' for e in
+                          tsumugi_first_person_errors(row.get('sender'), row.get('text')))
+        for reply in message.get('replies', []):
+            errors.extend(f'{location}: replies.response: {e}' for e in
+                          tsumugi_first_person_errors(message.get('sender'), reply.get('response')))
+    return errors
+
+
 def text_errors(row):
     errors = []
     text = row.get('text')
@@ -37,6 +63,7 @@ def text_errors(row):
         errors.append('あげははうち／ハジメっち')
     if speaker == 'tsumugi' and 'はじめくん' in text:
         errors.append('つむぎははじめさん')
+    errors.extend(tsumugi_first_person_errors(speaker, text))
     if speaker == 'kumicho' and re.search(r'ワシ|わし', text):
         errors.append('神崎の一人称は俺')
     if re.fullmatch(r'[♡♥」』）\s]+', text):
@@ -48,6 +75,7 @@ def text_errors(row):
 
 def check(root=ROOT):
     errors, scenes = [], {}
+    errors.extend(lime_first_person_errors(json.loads((root / 'data/lime_messages.json').read_text())))
     files = sorted((root / 'data/dialogue').glob('*.json'))
     for path in files:
         data = json.loads(path.read_text())
