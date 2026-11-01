@@ -28,7 +28,12 @@ def main():
     def read(path):
         if path.startswith("/") or path.startswith("../"):
             raise ValueError("Asset path escaped the source repository")
-        return git("show", commit + ":" + path)
+        data = git("show", commit + ":" + path)
+        if data.startswith(b"version https://git-lfs.github.com/spec/v1\n"):
+            data = subprocess.check_output(["git", "lfs", "smudge", "--", path], input=data, cwd=repo)
+            if data.startswith(b"version https://git-lfs.github.com/spec/v1\n"):
+                raise RuntimeError("LFS image is unavailable: " + path)
+        return data
 
     catalog = json.loads(read("data/trpg_catalog.json"))
     manifest = json.loads(read("remake/data/manifest.json"))
@@ -38,6 +43,8 @@ def main():
              "remake/js/core/chapter-clock.js", "remake/js/core/rules.js", "remake/js/core/venue-host.js", "remake/css/venue-host.css"}
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/js/trpg").decode().splitlines())
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/css/trpg-stage.css", "remake/img/ui/trpg").decode().splitlines())
+    files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/css/trpg-paper.css", "remake/css/ui-paper.css",
+                     "remake/img/ui/paper").decode().splitlines())
     files.update("data/" + file for file in catalog.get("characterProfiles", []))
     if catalog.get("club", {}).get("file"):
         files.add("data/" + catalog["club"]["file"])

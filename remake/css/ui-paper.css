@@ -192,3 +192,24 @@ html:root[data-ui-theme="paper"] .gb-hidane.zero { opacity: .55; }
 /* 占いの「当たり」の選択肢は赤で示す。紙の札の上では淡い赤が読みにくいので、濃い赤にする（影なし）。 */
 html:root[data-ui-theme="paper"] .vn-choice.fortune-hint { color: #c2334a; text-shadow: none; }
 html:root[data-ui-theme="paper"] .vn-choice.fortune-hint:is(:hover, :focus-visible) { color: #fff; background: #c2334a; border-color: #c2334a; }
+
+/* 第1〜2章から使う、くじの結果とギャラリーの操作面。 */
+html:root[data-ui-theme="paper"] .kuji-cat { color: #9f325d !important; border-color: #d59ab3 !important; background: #f8e6ee; }
+html:root[data-ui-theme="paper"] :is(.kuji-card, .kuji-multi-panel, .gal) {
+  --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
+  color: var(--paper-ink); background: var(--paper); border-color: var(--paper-line);
+  border-image: var(--paper-art) 72 fill / 18px / 0 stretch; box-shadow: 0 10px 30px #110a2247;
+}
+html:root[data-ui-theme="paper"] :is(.kuji-overlay, .gal-overlay) { background-color: #1e1429b5; }
+html:root[data-ui-theme="paper"] .kuji-card .kuji-rank { color: var(--lavender); text-shadow: none; background: none; animation: none; }
+html:root[data-ui-theme="paper"] .kuji-card:is(.rank-S, .rank-LAST) { border-color: var(--amber); box-shadow: 0 0 0 2px var(--amber), 0 10px 30px #110a2247; }
+html:root[data-ui-theme="paper"] .kuji-card:is(.rank-S, .rank-LAST) .kuji-rank { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .gal-cell { background-color: var(--paper-card); border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .gal-cell.locked { background: repeating-linear-gradient(45deg, #efe7f2 0 10px, #e9dfef 10px 20px); }
+html:root[data-ui-theme="paper"] .gal-cell.locked span { color: var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.gal-close, .gal-tab) { color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line); }
+html:root[data-ui-theme="paper"] :is(.gal-close, .gal-tab):is(:hover, :focus-visible) { background: var(--lavender-soft); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gal-tab[aria-selected="true"] { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gal-viewer-tools { color: var(--paper-ink); background: var(--paper); }
+html:root[data-ui-theme="paper"] .gal-viewer-tools strong { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gal :is(button, .gal-cell):focus-visible { outline: 3px solid var(--amber-ink); outline-offset: 2px; }
