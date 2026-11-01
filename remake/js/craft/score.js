@@ -5,7 +5,7 @@ import { mixMasteryProfile } from "../core/flavor-mastery.js";
 import { clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
-import { growthPerks, growthSkill, growthLesson, floralLayers, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
+import { growthPerks, growthSkill, growthLesson, floralLayers, grapeReceptionBonus, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 import { rememberGrowthCraft } from "../core/growth-memory.js";
 import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
@@ -94,6 +94,8 @@ export function computeShisha(cs) {
 export function bonusOf(cs = null) {
   let b = 0;
   const notes = [];
+  const grape = grapeReceptionBonus(state, cs, DB.flavorById);
+  if (grape) { b += grape; notes.push(`グレープの王道・受け止め +${grape.toFixed(1)}`); }
   if (cs?.mode === "tournament" && !cs.failed && cs.pullDone && cs.pull?.smokeRings > 0 && growthSkill(state,"K21")) { b += SKILL_TUNING.smokeRing; notes.push("スモークリングの余韻"); }
   if(cs&&cs.mode!=="tutorial"&&!cs.failed){
     if(floralLayers(state,cs,DB.flavorById).length){

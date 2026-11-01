@@ -238,7 +238,7 @@ export const LESSONS = [
     text: "配合にブラックティーを1〜2割入れると、ほかの葉の香りを消さずに奥行きが出て、配合の点が上がる", scene: "lesson_mashiro_blacktea" },
   { id: "M-W8", cell: "2,-7", board: "wisdom", who: "sheikh", need: 5, ring: 4, sig: true, reward: "special", name: "グレープの王道", revealFlag: "_ch4_sheikh_revealed",
     hint: "あの人と仲良くなると、王道の一台の作り方を教えてもらえそう",
-    text: "グレープを主役（いちばん多い葉）にした一台は、審査員の受け止めが一段良くなる", scene: "lesson_sheikh_grape" },
+    text: "グレープ系統が単独で最多の一台は、最後の総合評価の受け止めが一段良くなる", scene: "lesson_sheikh_grape" },
   { id: "M-B6", cell: "0,-7", board: "body", who: "da_silva", need: 5, ring: 4, sig: true, reward: "skill", name: "フェスタの煙",
     hint: "太陽と仲良くなると、場をひっくり返す煙の出し方を教えてもらえそう",
     text: "1台に1回、蒸らしのリフレッシュが画面全体に広がり、すべての雑念を消す", scene: "lesson_da_silva_festa" },

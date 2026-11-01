@@ -154,6 +154,7 @@ function settleAction(action, parent, value, { budget, points, primary, consumed
   if (action.owner !== state) return { value, spent: 0 };
   if (parent?.owner === state) parent.spent += action.spent;
   if (action.spent > 0 || consumed(value)) {
+    expHooks?.committed?.(state);
     // 通常は最大2能力各1P。誘いはbudget=1・points=2で主な能力だけを伸ばす。
     const entries = expHooks?.enabled?.() ? [] : Object.entries(action.gains).sort((a, b) => (b[0] === primary) - (a[0] === primary) || b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
     const rewarded = [];

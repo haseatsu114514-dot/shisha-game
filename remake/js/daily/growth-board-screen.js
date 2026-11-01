@@ -4,8 +4,11 @@
 import { el, sleep } from "../core/util.js";
 import { layers, modal, gainCard } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { emit } from "../core/bus.js";
-import { state } from "../core/state.js";
+import { emit, on } from "../core/bus.js";
+import { state, save } from "../core/state.js";
+import { canRespec, prepareRespec, commitRespec } from "../core/growth-respec.js";
+import { growthEnabled } from "../core/growth-mode.js";
+import { LESSON_TUNING } from "../core/growth-effects.js";
 import { displayName, faceIconUrl, portraitInfo } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
 import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned, readyLessons } from "../core/growth.js";
@@ -84,8 +87,10 @@ let current = null;
 /** 盤を開き、閉じるまで待つ。戻り値=確定したマス */
 export function openBoard({ place = null } = {}) {
   if (current) return current.done;
-  const g = ensureGrowth();
-  const canLight = !!place;
+  const owner = state, original = ensureGrowth();
+  let g = original, canLight = !!place, rebuilding = null, finishing = false;
+  let dismissConfirm = null;
+  let offOwner = () => {};
   let pending = [];
   let board = boardOfTarget() || BOARD_KEYS[0];
   let selected = null;
@@ -192,7 +197,9 @@ export function openBoard({ place = null } = {}) {
         el("i.gb-gauge", [el("b", { style: { width: `${Math.round(info.now * 100)}%` } })]),
         el("small", { text: info.max ? "MAX" : info.pending ? "今夜 Lv UP" : `あと${info.left}` }),
       ]),
-      el("p.gb-place", { dataset: { test: "board-place" }, text: canLight ? `${PLACE_JA[place] || "静かな場所"}で内省している（時間は進まない）` : "見るだけ。灯すのは観音堂などで内省した時" }),
+      el("p.gb-place", { dataset: { test: "board-place" }, text: rebuilding ? "組み直し中（確定まで保存内容は変わらない）"
+        : canRespec(original, owner) ? "組み直しは最初の自由行動または日付変更まで"
+        : canLight ? `${PLACE_JA[place] || "静かな場所"}で内省している（時間は進まない）` : "見るだけ。灯すのは観音堂などで内省した時" }),
       el("button.gb-icon", { text: "？", title: "見方", "aria-label": "盤の見方", dataset: { test: "board-help" }, onclick: help }),
       el("button.gb-icon", { text: "×", title: "閉じる", "aria-label": "閉じる", dataset: { test: "board-close" }, onclick: close }),
     );
@@ -436,7 +443,7 @@ export function openBoard({ place = null } = {}) {
       const met = lessonKnown(node, g);
       if (!met) lines.push(el("p", { dataset: { test: "board-lesson-mystery" }, text: "まだ出会っていない誰かが、ここで何かを教えてくれるらしい" }));
       else {
-        lines.push(el("p.gb-p-reward", { text: `${REWARD_JA[node.reward]}：${node.text}` }));
+        lines.push(el("p.gb-p-reward", { text: `${REWARD_JA[node.reward]}：${node.text}${node.id === "M-W8" ? `（総合 +${LESSON_TUNING.grapeReception}）` : ""}` }));
         if (st === "sealed") lines.push(el("p.gb-p-sub", { text: node.hint }));
       }
       if (lock && met) {
@@ -512,9 +519,11 @@ export function openBoard({ place = null } = {}) {
       title: k === "any" ? "白火（色の台座のほか、どのマスにも）" : `${HIDANE_NAME[k]}（${BOARD_JA[k]}盤のマスと、色の台座）`,
     }, [el("i", { "aria-hidden": "true" }), el("span", { text: HIDANE_NAME[k] }), el("b", { text: String(v.hidane[k] || 0) })])));
     const actions = [];
+    if (rebuilding) actions.push(el("button.btn", { text: "前の形に戻す", dataset: { test: "board-respec-restore" }, onclick: restoreRespec }));
+    else if (canRespec(original, owner)) actions.push(el("button.btn", { text: "組み直す", dataset: { test: "board-respec" }, onclick: startRespec }));
     if (canLight && pending.length) actions.push(el("button.btn.gb-reset", { text: "取り消す", dataset: { test: "board-reset" }, onclick: () => { pending = []; SE.cancel?.(); render(); } }));
     actions.push(el("button.btn.primary.gb-decide", {
-      text: pending.length ? `決定（${pending.length}）` : "閉じる", dataset: { test: "board-decide" }, onclick: () => (pending.length ? finish(true) : close()),
+      text: rebuilding ? "組み直しを決定" : pending.length ? `決定（${pending.length}）` : "閉じる", dataset: { test: "board-decide" }, onclick: () => (pending.length || rebuilding ? finish(true) : close()),
     }));
     footer.replaceChildren(wallet, el("p.gb-legend", [
       legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: "◆ 色の台座（光っている色の火をはめる）" }), legend("sealed", "授業の錠"), legend("locked", "結界の先（物語が進むと開く）"), el("span", { text: "✦ できることが増える" }),
@@ -526,6 +535,23 @@ export function openBoard({ place = null } = {}) {
     const v = view();
     pending = v.pending;
     renderHeader(); renderTabs(v); renderBoard(v); renderSide(v); renderFooter(v);
+  }
+  function startRespec() {
+    if (owner !== state || finishing) return;
+    const transaction = prepareRespec(original, owner);
+    if (!transaction) {
+      void modal({ title: "組み直し", body: "戻せる支払記録がありません。今の盤はそのまま残します。", options: [{ label: "戻る", value: null, primary: true }] });
+      return;
+    }
+    rebuilding = transaction; g = transaction.growth; canLight = true; pending = []; selected = null;
+    root.classList.add("can-light"); root.classList.remove("view-only"); root.dataset.mode = "respec";
+    render();
+  }
+  function restoreRespec() {
+    g = original; rebuilding = null; canLight = !!place; pending = []; selected = null;
+    root.classList.toggle("can-light", canLight); root.classList.toggle("view-only", !canLight);
+    root.dataset.mode = canLight ? "light" : "view";
+    render();
   }
   function select(id, sound) {
     selected = id;
@@ -569,25 +595,37 @@ export function openBoard({ place = null } = {}) {
         el("p", { text: "ひし形は色の台座。色の火（紅火・蒼火・翠火）を1つはめると、その先の道が開き、台座の能力（台座の先のマスより大きい）も手に入る。台座の先には強いスキルと授業がある。白火でははまらない。" }),
         el("p", { text: "金の札は授業（火種いらず）。教えてくれる人に出会うと盤に現れる。灯したら、次にその人に会った時に相談して習う（LIME では習えない）。" }),
         el("p", { text: "白火は色の台座のほか、どのマスにも使える。色の火はその色の盤のマスと色の台座に使える。払うときは白火が先。" }),
-        el("p", { text: "火種を灯せるのは、観音堂などの静かな場所で内省した時だけ（時間は進まない）。メニューからは見るだけで、欲しいマスを目標にしておける。" }),
+        el("p", { text: "火種を灯せるのは、観音堂などの静かな場所で内省した時（時間は進まない）。メニューでは閲覧と目標設定ができる。章・周回はじめの組み直しが開いている間は、メニューからも組み直して振り直せる。授業は忘れない。" }),
       ]),
       options: [{ label: "閉じる", value: true, primary: true }],
     });
   }
   async function close() {
-    if (pending.length) {
-      const choice = await modal({
-        title: "決定しますか？", body: `仮置き ${pending.length}つ`,
+    if (pending.length || rebuilding) {
+      const confirmation = modal({
+        title: "決定しますか？", body: rebuilding ? `組み直しと仮置き${pending.length}つを決定します。やめて閉じると元の盤が残ります。` : `仮置き ${pending.length}つ`,
         options: [{ label: "決定して閉じる", value: "yes", primary: true, test: "board-confirm-yes" }, { label: "仮置きをやめて閉じる", value: "no", test: "board-confirm-no" }, { label: "戻る", value: null }],
       });
+      dismissConfirm = layers.modal.querySelector('[data-test="board-confirm-no"]');
+      const choice = await confirmation;
+      dismissConfirm = null;
       if (!choice) return;
       return finish(choice === "yes");
     }
     return finish(false);
   }
   async function finish(commit) {
-    const owner = state;
-    const committed = commit ? commitPending(pending) : [];
+    if (finishing) return;
+    finishing = true;
+    offOwner();
+    if (owner !== state || !growthEnabled()) {
+      commit = false;
+      if (dismissConfirm?.isConnected) dismissConfirm.click();
+    }
+    const reset = commit && rebuilding ? commitRespec(original, rebuilding, owner) : false;
+    if (rebuilding && !reset) commit = false;
+    const committed = commit ? commitPending(pending, owner) : [];
+    if (owner === state && (reset || committed.length)) save();
     document.removeEventListener("keydown", onKey, true);
     root.classList.remove("show");
     await sleep(200);
@@ -625,9 +663,10 @@ export function openBoard({ place = null } = {}) {
     ]);
     root.append(banner);
     setTimeout(() => banner.remove(), 3200);
-    setTimeout(() => { fresh.clear(); if (current) render(); }, 3200);
+    setTimeout(() => { fresh.clear(); if (current?.owner === owner && root.isConnected) render(); }, 3200);
   }
-  current = { done };
+  current = { done, owner };
+  offOwner = on("hud", () => { if (owner !== state || !growthEnabled()) void finish(false); });
   layers.fx.append(root);
   document.addEventListener("keydown", onKey, true);
   if (g.target) selected = g.target;

@@ -493,6 +493,7 @@ export const FLAG_EXACT_RULES = [
   ["romance_minto", "person"],
   ["seenDemo", "ui"],
   ["_kannon_growth_intro_done", "ui"],
+  ["_ch5_growth_travel", "progression"],
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],
   ["spot_kannon_adam_done", "person"],

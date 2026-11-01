@@ -1292,6 +1292,58 @@ await suite("growth-levelup", async (runCheck) => {
     }
     assert.equal(await page.evaluate(() => festaCore.state.met.da_silva), true);
   });
+  for (const [label, viewport] of [["pc", { width: 1280, height: 720 }], ["touch", { width: 844, height: 390 }]]) {
+    await check(`respec-${label}-draft-restore-LOAD-and-commit`, async page => {
+      await setupDaily(page); await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.evaluate(async () => {
+        window.respecCore = await import("./js/core/state.js");
+        const growth = await import("./js/core/growth.js"), board = await import("./js/core/growth-board.js");
+        const g = growth.ensureGrowth(); g.hidane.any = 20; g.earned = 20;
+        for (const id of ["B1", "M-W1", "M-S1"]) board.commitPending(board.pathTo(id, new Set(g.nodes)).path);
+        g.learned = ["M-W1"];
+        respecCore.state.chapter = 2; respecCore.state.phase = "opening"; growth.ensureGrowth();
+        respecCore.state.phase = "daily"; growth.ensureGrowth(); respecCore.save();
+        window.respecBefore = JSON.stringify({ nodes: g.nodes, paid: g.paid, fire: g.hidane });
+        window.respecResources = JSON.stringify({ day: respecCore.state.day, slot: respecCore.state.slot,
+          stamina: respecCore.state.stamina, money: respecCore.state.money, stats: respecCore.state.stats, reel: respecCore.state.reel });
+        void growth.openGrowthBoard();
+      });
+      await page.locator(t("board-respec")).click();
+      assert.equal(await page.evaluate(() => { const g = respecCore.state.growth; return JSON.stringify({ nodes: g.nodes, paid: g.paid, fire: g.hidane }) === respecBefore; }), true);
+      await assertFits(page, t("board-respec-restore") + "," + t("board-decide"));
+      await page.locator(t("board-respec-restore")).click();
+      assert.equal(await page.locator(t("board-node-B1")).getAttribute("data-status"), "unlocked");
+      await page.locator(t("board-respec")).click();
+      await page.locator(t("board-node-B1")).scrollIntoViewIfNeeded(); await page.locator(t("board-node-B1")).click();
+      await page.locator(t("board-light")).click();
+      await assertFits(page, ".gb-actions .btn");
+      await page.screenshot({ path: `${out}/respec-${label}-pending.png` });
+      await page.locator(t("board-close")).click(); await page.locator(t("board-confirm-no")).click();
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      assert.equal(await page.evaluate(() => { const g = respecCore.state.growth; return JSON.stringify({ nodes: g.nodes, paid: g.paid, fire: g.hidane }) === respecBefore; }), true);
+      await page.evaluate(async () => { void (await import("./js/core/growth.js")).openGrowthBoard(); });
+      await page.locator(t("board-respec")).click();
+      await page.evaluate(() => { respecCore.save(); respecCore.load(); });
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      assert.equal(await page.evaluate(() => { const g = respecCore.state.growth; return JSON.stringify({ nodes: g.nodes, paid: g.paid, fire: g.hidane }) === respecBefore; }), true);
+      await page.evaluate(async () => { void (await import("./js/core/growth.js")).openGrowthBoard(); });
+      await page.locator(t("board-respec")).click();
+      await page.locator(t("board-node-B1")).scrollIntoViewIfNeeded(); await page.locator(t("board-node-B1")).click();
+      await page.locator(t("board-light")).click(); await page.locator(t("board-decide")).dblclick();
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      const result = await page.evaluate(async () => {
+        respecCore.load(); const s = respecCore.state, g = s.growth;
+        const same = JSON.stringify({ day: s.day, slot: s.slot, stamina: s.stamina, money: s.money, stats: s.stats, reel: s.reel }) === respecResources;
+        const beforeClose = (await import("./js/core/growth-respec.js")).canRespec(g, s);
+        await (await import("./js/core/stats.js")).paidAction(() => true, { consumed: () => true });
+        return { same, nodes: g.nodes, fire: g.hidane.any, paid: g.paid, learned: g.learned,
+          effective: (await import("./js/core/growth-effects.js")).growthLesson(s, "M-W1"), beforeClose,
+          afterClose: (await import("./js/core/growth-respec.js")).canRespec(g, s) };
+      });
+      assert.deepEqual(result, { same: true, nodes: ["M-W1", "M-S1", "B1"], fire: 19,
+        paid: { "M-W1": {}, "M-S1": {}, B1: { any: 1 } }, learned: ["M-W1"], effective: true, beforeClose: true, afterClose: false });
+    }, { viewport, ...(label === "touch" ? { isMobile: true, hasTouch: true } : {}) });
+  }
   await Promise.all(Array.from({length:2},async()=>{
     for(;;){const next=cases.shift();if(!next)return;await runCheck(...next);}
   }));

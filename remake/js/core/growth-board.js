@@ -70,7 +70,19 @@ export const featuresOf = (board, unlocked) => boardNodes(board).filter((n) => n
 export const statsFilled = (board, unlocked) => boardNodes(board).every((n) => n.kind !== "stat" || n.peak || unlocked.has(n.id));
 
 /** 線でつながった隣が灯っている（か、紋の隣） */
-export const connected = (node, unlocked) => node.peak ? statsFilled(node.board, unlocked) : node.links.some((id) => id === HUB || unlocked.has(id));
+function lessonReconnected(id, unlocked) {
+  const seen = new Set(), queue = [id];
+  while (queue.length) {
+    const next = queue.shift();
+    if (next === HUB) return true;
+    if (seen.has(next) || !unlocked.has(next)) continue;
+    seen.add(next);
+    queue.push(...(NODE_BY_ID[next]?.links || []));
+  }
+  return false;
+}
+export const connected = (node, unlocked) => node.peak ? statsFilled(node.board, unlocked) : node.links.some(id =>
+  id === HUB || unlocked.has(id) && (NODE_BY_ID[id]?.kind !== "lesson" || lessonReconnected(id, unlocked)));
 
 /** 授業の相手に会っているか（スミさんは最初から） */
 export function hasMet(who, s = state) {

@@ -10,6 +10,7 @@ import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, STAT_UPGR
 import { growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
 import { growthPerks, growthSkill, growthLesson, SKILL_TUNING, LESSON_TUNING } from "./growth-effects.js";
 import { masteryHooks } from "./flavor-mastery.js";
+import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -97,6 +98,7 @@ export function newGrowth() {
     rewards: {},           // 受け取った遊びのご褒美（斧投げ・TRPG・DJ の水準、くじのラストワン賞）
     seenRing: 1,           // 盤で「新しい道が開いた」を見せた章の範囲（章が進んで初めて開いた時の演出）
     boardVersion: BOARD_VERSION, // 盤の型の版（v2→v3 で灯し方を返す）
+    respec: null,            // 実際の章／周回の変更後、最初の日常だけの組み直し機会
   };
 }
 
@@ -163,6 +165,7 @@ export function ensureGrowth(s = state) {
   g.partyLast = strings(g.partyLast);
   g.seenRing = Math.min(5, Math.max(1, Math.floor(num(g.seenRing, 1))));
   syncLessonFlags(g, s);
+  syncRespecOpportunity(g, s);
   return g;
 }
 
@@ -341,8 +344,10 @@ export function awardSlotExp(role) {
  * @param target.person はじめての相手（X2）／ target.place はじめての場所・遊び（X3）
  */
 export function awardActionExp(target) {
-  if (!growthEnabled() || !state || !target?.key) return 0;
+  if (!growthEnabled() || !state) return 0;
   const g = ensureGrowth();
+  closeRespecOpportunity(g); // expの鍵が無い行動でも、実際に確定した最初の自由行動で閉じる。
+  if (!target?.key) return 0;
   if (g.fresh.chapter !== state.chapter) g.fresh = { chapter: state.chapter, counts: {} };
   const count = (g.fresh.counts[target.key] = (Number(g.fresh.counts[target.key]) || 0) + 1);
   let log = g.chapterLog[state.chapter];
@@ -661,6 +666,7 @@ export function gaugeInfo(g = state?.growth) {
 
 // 自由行動の確定（paidAction）と好感度の段から呼ばれる入口を登録する。
 setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, recipe: awardRecipeExp, scene: awardSceneExp, affinity: awardAffinityStepExp, perks: growthPerks,
+  committed: s => { if (s.growth?.respec) { syncRespecOpportunity(s.growth, s); closeRespecOpportunity(s.growth); } },
   capacityBonus: s => growthLesson(s, "M-B4") ? LESSON_TUNING.stamina : 0,
   sleepMultiplier: s => (growthSkill(s, "K03") ? 1 + SKILL_TUNING.sleep : 1)
     * (growthLesson(s, "M-S3") && s.flags?._home_lavender_sleep === `${s.chapter || 1}:${s.day}` ? 1 + LESSON_TUNING.lavenderSleep : 1) });

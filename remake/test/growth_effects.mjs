@@ -360,3 +360,51 @@ assert.equal(JSON.stringify(core.state),callingBefore,"calculating sales cannot 
 assert.equal(effects.callingSalesBonus(JSON.parse(callingBefore),{bonusRate:1}),1000);
 growth.setGrowthPreview(false);assert.equal(effects.callingSalesBonus(core.state,{bonusRate:1.15}),0);
 console.log("[growth effects] PASS: learned calling grants 1150/1000/500 at normal condition rates; preview off, unlearned and repeated reads preserve old state");
+
+// M-W8: 「一段」の初期補正は総合+2。既存の花2層(+4)より小さく、前夜調整(+2)と同じ。
+const {createCh3TournamentEvaluate}=await import("../js/core/ngplus-measurement.js");
+core.newGame();growth.setGrowthPreview(true);
+const grapeGrowth=growth.ensureGrowth();grapeGrowth.nodes=["M-W8"];grapeGrowth.learned=["M-W8"];
+const grapeCup=(score=85,mix={grape:5,lemon:4,mint:3})=>({mode:"tournament",chapter:3,mix,pullDone:true,
+ stats:{craftQuality:score},holes:{score},heat:{score},careHistory:[{score},{score}],equip:{}});
+assert.equal(effects.grapeReceptionBonus(core.state,grapeCup(),DB.flavorById),2,"過半数でなくても単独最多なら主役");
+for(const mix of [{grape:6,lemon:6},{grape:3,lemon:9},{ice_grape:12},{grape:1,unknown_grape:11},{grape:12,lemon:-1},{grape:12,lemon:NaN}]) {
+ assert.equal(effects.grapeReceptionBonus(core.state,grapeCup(85,mix),DB.flavorById),0);
+}
+const grouped={...DB.flavorById,other_grape:{family:"grape"}};
+assert.equal(effects.grapeReceptionBonus(core.state,grapeCup(85,{grape:3,other_grape:3,lemon:5}),grouped),2);
+assert.equal(effects.grapeReceptionBonus(core.state,grapeCup(85,{grape:3,other_grape:3,lemon:6}),grouped),0);
+for(const change of [{mode:"tutorial"},{mode:"rehearsal"},{failed:"burnt"},{pullDone:false}]){
+ assert.equal(effects.grapeReceptionBonus(core.state,{...grapeCup(),...change},DB.flavorById),0);
+}
+grapeGrowth.learned=[];assert.equal(finalize(grapeCup()).total,85,"点灯だけでは効かない");
+grapeGrowth.learned=["M-W8"];
+const cup=finalize(grapeCup());assert.equal(cup.total,87);assert.deepEqual(cup.bonusNotes,["グレープの王道・受け止め +2.0"]);
+for(let i=0;i<3;i++){finalize(cup);assert.equal(cup.total,87);assert.equal(cup.bonusNotes.length,1);}
+core.state.tournament.craft=cup;core.save();core.load();
+assert.equal(finalize(core.state.tournament.craft).total,87,"JSON SAVE/LOAD後も加点は一度分");
+assert.equal(finalize(grapeCup(99.5)).total,100,"上限は100のまま");
+const stacked=growth.ensureGrowth();stacked.nodes=["M-W8","M-B2"];stacked.learned=["M-W8","M-B2"];
+assert.equal(finalize(grapeCup(85,{grape:6,rose:4,jasmine:2})).total,91,"花2層の4点と葡萄2点は別の恩恵として一度ずつ重なる");
+stacked.nodes=["M-W8"];stacked.learned=["M-W8"];
+growth.setGrowthPreview(false);assert.equal(finalize(grapeCup()).total,85);growth.setGrowthPreview(true);
+assert.equal(effects.LESSON_TUNING.grapeReception,2);assert(effects.LESSON_TUNING.grapeReception<2*effects.LESSON_TUNING.flowerLayer);
+const voteImpact=[];
+for(const base of [50,80,82,83,84,85,88,90,98]){
+ const evaluate=createCh3TournamentEvaluate({performanceOf:(scenario)=>({rounds:[base,base,base,scenario.final],processScores:[]})});
+ const tally={base,boosted:base+2,seeds:200,baselineWins:0,boostedWins:0,rankChanged:0,votesChanged:0};
+ for(let seed=1;seed<=200;seed++){
+  const old=evaluate({id:"baseline",final:base},seed,{p:0});const next=evaluate({id:"grape",final:Math.min(100,base+2)},seed,{p:0});
+  assert(next.rank<=old.rank,"同じルール・同じseedで小さな補正が順位を悪化させない");
+  tally.baselineWins+=Number(old.rank===1);tally.boostedWins+=Number(next.rank===1);tally.rankChanged+=Number(old.rank!==next.rank);
+  tally.votesChanged+=Number(JSON.stringify(old.votes)!==JSON.stringify(next.votes));
+ }
+ voteImpact.push(tally);
+}
+assert.equal(voteImpact[0].boostedWins,0,"授業を覚えても低い制作点は勝利にならない");
+const boundaryVote=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[80,84,80,s.final]})});
+const withoutGrape=boundaryVote({id:"without",final:82},1,{p:0}),withGrape=boundaryVote({id:"with",final:84},1,{p:0});
+assert.equal(withoutGrape.rank,2);assert.equal(withGrape.rank,1,"既存の総票・同点規則のまま境界例では勝敗が変わる");
+assert.equal(withoutGrape.votes.hajime,9);assert.equal(withGrape.votes.hajime,11);
+console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, existing C3 votes unchanged rules",JSON.stringify(voteImpact));
+growth.setGrowthPreview(false);

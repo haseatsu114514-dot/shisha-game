@@ -6,6 +6,7 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot } from "../core/growth.js";
 import { canReflect } from "../daily/reflection.js";
+import { growthEnabled } from "../core/growth-mode.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -281,6 +282,14 @@ async function renderStage(owner) {
   const progress = chapterFiveProgress(state);
   if (progress.part === "prologue") return renderScene(owner, CH5_PROLOGUE[progress.stage], "");
   if (progress.part === "free") {
+    if (growthEnabled() && (state.flags._ch5_growth_travel?.region === "dubai" || state.flags._ch5_growth_travel?.pendingNight)) {
+      const travel = await import("./ch5-growth-travel.js");
+      if (!current(owner)) return;
+      await travel.runChapterFiveTravel({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
+      if (!current(owner)) return;
+      owner.growthDay = state.day;
+      return renderStage(owner);
+    }
     if (chapterFiveTimeoutPending(state)) return renderTimeoutCard(owner);
     return chapterFivePrepPending(state) ? renderPrep(owner) : renderFree(owner);
   }
@@ -352,6 +361,14 @@ async function renderFree(owner) {
   const unread = chapterFiveFreeRemaining(state);
   const remaining = unread.filter(scene => scene.location === "tonari");
   const actions = [];
+  if (growthEnabled()) actions.push(button(owner, "ドバイへ会いに行く・渡航の準備", "travel", async () => {
+    const travel = await import("./ch5-growth-travel.js");
+    if (!current(owner)) return;
+    await travel.runChapterFiveTravel({ isCurrent: () => current(owner), menuButton: () => menuButton(owner) });
+    if (!current(owner)) return;
+    owner.growthDay = state.day;
+    await renderStage(owner);
+  }));
   if (remaining.length) {
     actions.push(button(owner, `tonari で過ごす（${remaining[0].label}）`, "spend-tonari", async () => {
       const [next] = chapterFiveFreeRemaining(state).filter(scene => scene.location === "tonari");

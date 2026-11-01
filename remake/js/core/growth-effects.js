@@ -9,11 +9,28 @@ export const SKILL_TUNING = Object.freeze({ sleep: .1, first: .2, mastery: .2, l
   coalReplacement: .2, forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65 });
 const skillIds = new Set(SKILLS.map(s => s.id));
 const lessonIds = new Set(LESSONS.map(s => s.id));
-export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5, callingSales: 1000 });
+export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5, callingSales: 1000, grapeReception: 2 });
 /** 授業は盤に灯すだけでは発動しない。対面で相談を終えた記録も必要。 */
 export const growthLesson = (s, id) => growthEnabled() && lessonIds.has(id)
   && Array.isArray(s?.growth?.nodes) && s.growth.nodes.includes(id)
   && Array.isArray(s?.growth?.learned) && s.growth.learned.includes(id);
+
+/** 葡萄の系統が単独で最多の一台。名称から系統を推測せず、同率最多には付けない。 */
+export function grapeReceptionBonus(s, cs, flavors) {
+  if (!growthLesson(s, "M-W8") || cs?.mode !== "tournament" || !cs.pullDone || cs.failed) return 0;
+  const grams = new Map();
+  for (const [id, amount] of Object.entries(cs.mix || {})) {
+    const flavor = flavors?.[id];
+    if (!Number.isFinite(amount) || amount < 0) return 0;
+    if (amount === 0) continue;
+    if (!flavor) return 0;
+    const family = flavor.family || id;
+    grams.set(family, (grams.get(family) || 0) + amount);
+  }
+  const grape = grams.get("grape") || 0;
+  return grape > 0 && [...grams].every(([family, amount]) => family === "grape" || grape > amount)
+    ? LESSON_TUNING.grapeReception : 0;
+}
 /** 店の追加注文分。基本給・呼び出し手当・既存の注文報酬は変更しない。 */
 export const callingSalesBonus = (s, condition) => growthLesson(s, "M-B1")
   ? Math.round(LESSON_TUNING.callingSales * condition.bonusRate) : 0;
