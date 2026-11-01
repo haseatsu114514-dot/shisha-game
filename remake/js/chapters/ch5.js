@@ -2,6 +2,7 @@
 // 状態遷移は ch5-progress.js。ここは表示と再生だけを持つ。
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
+import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -51,19 +52,7 @@ const ADJUST_LINES = {
   failed: "煙が、途中で荒れた。客は一口だけ吸って、ホースを置いた。",
 };
 
-function button(owner, text, name, action, primary = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text,
-    dataset: { test: test(name) }, onclick: () => perform(owner, action) });
-}
-
-async function perform(owner, action) {
-  if (!current(owner) || owner.busy) return;
-  owner.busy = true;
-  try { await action(); }
-  catch (error) {
-    if (current(owner)) { console.error("[ch5]", error); renderError(owner); }
-  } finally { owner.busy = false; }
-}
+const { button, perform } = createChapterActions({ current, test, logName: "[ch5]", renderError });
 
 function menuButton(owner) {
   return el("button.btn", { type: "button", text: "MENU", dataset: { test: test("menu") },

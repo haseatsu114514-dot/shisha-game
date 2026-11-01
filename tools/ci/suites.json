@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "chapter-actions",
+      "title": "Chapter 3–5 action buttons, session invalidation and error recovery",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/chapter_actions.mjs"]
+    },
+    {
       "id": "typography-css",
       "title": "Readable CSS typography follows #1352",
       "kind": "quick",

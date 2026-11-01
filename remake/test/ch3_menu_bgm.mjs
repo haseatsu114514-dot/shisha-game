@@ -69,6 +69,11 @@ async function harness(chapter, value) {
   });
   await mod.link(async specifier => {
     const depUrl = new URL(specifier, url);
+    if (specifier === "../core/chapter-actions.js") {
+      const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
+      await dep.link(async () => synthetic(new URL("../core/util.js", url), ["el"]));
+      return dep;
+    }
     if (specifier === "./ch3-aftermath-progress.js") {
       const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
       await dep.link(async () => synthetic(new URL("../js/core/tokyo-visits.js", import.meta.url), ["syncTokyoVisits"]));
