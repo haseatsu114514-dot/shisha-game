@@ -111,10 +111,14 @@ export function castVotes(p, round, performance, prefByJudge = null) {
     const amount = SPEND[round], row = p.votes[judge];
     const available = 10 - Object.values(row).reduce((sum, n) => sum + n, 0);
     if (available < amount) throw new Error("審査員の持ち点が不足しています");
-    row[order[0]] += amount - 1;
-    row[order[1]]++;
     // 表示専用（#909）。この回に誰へ何点入れたか。得点・順位の計算には使わない。
     lastVotes[judge] = { first: order[0], second: order[1], points: { [order[0]]: amount - 1, [order[1]]: 1 } };
+  }
+  // 全審査員の持ち点を確認できてから、この一回分をまとめて確定する。
+  for (const judge of JUDGES) {
+    const { first, second } = lastVotes[judge], row = p.votes[judge];
+    row[first] += SPEND[round] - 1;
+    row[second]++;
   }
   p.lastVotes = lastVotes;
   p.voted++;
