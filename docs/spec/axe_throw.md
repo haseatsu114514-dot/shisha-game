@@ -40,7 +40,7 @@ remake/axe-throw.html で、開発コンソールなしで遊べる。
 - 結果カードの集計は平均点/投・ブル・キル/宣言・落下。見出しに部門バッジ。`data-half`・`data-sudden-death`・`data-game`・`data-division` を持つ。
 - `runAxeThrow({division:"rec"|"am"|"pro", bestOf:1|3})` を追加。返り値に `division`・`stats`・`series`、`match.suddenDeath` を追加。既存の引数・`throws/total/grade/maximum/challenges/rank/title` は維持。
 - 独立ページは入口の操作を11個のまま保ち、10投ゲーム・ひよりと対戦を選んだ時だけ設定シート（`.axe-setup`：部門、対戦は本数も。「はじめる」に焦点、Esc／戻るで入口へ、選択は次回も保持）を開く。3投の練習はすぐ始まる。斧投げBarには10投ゲームの部門選択と通算成績（`flags._axe_bar_records.career`: games/throws/points/bulls/kills/calls/drops）を追加。記録の `best/last` に `division` を保存。成長の盤のランク判定（`growth.js` の `best.total/maximum`）は変えない。
-- 板の新規画像は OpenAI 画像APIがクレジット切れ（429）で生成できず、Codex向けの指示文を `asset_sources/ui/axe-watl-20261101/prompts/board.txt` に残した。受け取ったら `assets/ui/axe_throw/` に置き、`ART.board` と `OPAQUE`（不透明範囲）を差し替える。
+- 板の画像は Codex の3案から C を採用（#2198・AXR06、下の「的と斧の見え方」）。
 
 検証: `node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs`、`node tools/ci/run.mjs --kind browser --suites axe-throw,play-spots`。
 
@@ -69,7 +69,7 @@ remake/axe-throw.html で、開発コンソールなしで遊べる。
 - **刺さった瞬間**: 的が小さく押し込まれ（特別な投ほど強く）、刺さった斧の柄が刃を軸に約0.4秒震えて止まる（`quiverAt`）。刃先の位置は動かない。
 - **判定の拡大**: 刺さった投の結果で、着地点を約4倍に拡大した丸窓（`.axe-zoom`、`<use>` で同じ板を映す）を、着地点と反対側の下隅に出す。点数と「中央の赤に触れた」「4のリング」「左上の青の中心」「閉じた円に触れた」などの言葉を添える（`zoneLabel`）。成功して閉じた高さの青も、その結果の間は明るいまま映す。
 - 動き軽減では残像・スロー・震え・押し込み・拡大の飛び出しを省き、拡大窓と結果は残す。
-- 板の新しい画像（5枚の縦板・明るく落ち着いた中央）は Codex に依頼した（#2198、AXR06）。
+- 板の新しい画像（5枚の縦板・明るく落ち着いた中央）は Codex に依頼し（#2198、AXR06）、3案から C（琥珀寄り）を採用した。表示は `remake/img/ui/axe_throw/target_board_watl_800.webp`、不透明範囲は `OPAQUE`（記録 `asset_sources/ui/axe-watl-20261101/adoption.json`）。
 
 ## 遊び方を読む・手ブレを読む（#522）
 

@@ -1,0 +1,26 @@
+{
+  "source": "asset_sources/ui/axe-watl-20261101/raw/axe-board-C-amber-honey.png",
+  "source_sha256": "acdd066d952d32544c420a799bf64650dc088e3edc35e1fc48c8fb4b61c83293",
+  "adopted": "assets/ui/axe_throw/target_board_watl.png",
+  "adopted_sha256": "e7f4665a7d7273f8f38e08d811a474dfdabe9edcd2298759fb960d5ee7dd94e3",
+  "display": "remake/img/ui/axe_throw/target_board_watl_800.webp",
+  "display_sha256": "bb1b0cbb0ff4f596637078fb0eeae9609465e8f6dc7b5b671e52dba8e3a21c83",
+  "size": [
+    1254,
+    1254
+  ],
+  "solid_box": [
+    69,
+    61,
+    1185,
+    1190
+  ],
+  "stray_alpha_cleared": 22938,
+  "opaque_fractions": {
+    "left": 0.055024,
+    "right": 0.944976,
+    "top": 0.048644,
+    "bottom": 0.948963
+  },
+  "display_note": "800px lossy WebP (quality 90, method 6, exact alpha). Not named *_display.webp: that suffix is reserved for the #477 props registry checked by asset_sources/hiyori-axe-issue477/validate.py."
+}

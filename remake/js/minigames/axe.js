@@ -21,13 +21,14 @@ function decodeArt(url) {
   }
   return artReady.get(url);
 }
-const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_display.webp") };
+// The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
+const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_800.webp") };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const faceArt = (id, face) => imgFileUrl("sprites/characters/" + id + "/chr_" + id + "_" + face + ".webp");
 const { x: CX, y: CY, radius: R } = TARGET;
-// Opaque plank edges inside the existing 1254px artwork; the transparent margin is not wood.
-const OPAQUE = { left: 76 / 1254, right: 1181 / 1254, top: 75 / 1254, bottom: 1176 / 1254 };
+// Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
+const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
 const PLANK = { left: CX + BOARD.left * R, right: CX + BOARD.right * R, top: CY + BOARD.top * R, bottom: CY + BOARD.bottom * R };
 const cycles = { horizontal: 3600, vertical: 3600, power: 2400 };
 // The camera frames the scoring area (the 1 ring and the gauge sweep) rather than the whole five planks.
