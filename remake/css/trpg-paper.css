@@ -1,0 +1,107 @@
+/* 第2章の本棚・部活・卓を日常UIの紙×ラベンダーへ。
+   物語の部屋・調査地点・カードの絵と2d20の判定は既存のまま。 */
+html:root[data-ui-theme="paper"] .trpg-root {
+  --paper: #f7f3ed; --muted: var(--paper-muted); --line: var(--paper-line);
+}
+html:root[data-ui-theme="paper"] .trpg-root:not(.trpg-cinematic) {
+  color: var(--paper-ink); background: var(--paper);
+  border-image: var(--paper-art) 72 fill / 22px / 0 stretch;
+}
+html:root[data-ui-theme="paper"] .trpg-root .trpg-button:not(.trpg-object-choice):not(.trpg-notebook) {
+  color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line); box-shadow: none; text-shadow: none;
+}
+html:root[data-ui-theme="paper"] .trpg-root .trpg-button:not(.trpg-object-choice):not(.trpg-notebook):hover:not(:disabled) { background: var(--lavender-soft); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-button:is(.primary, .selected, [aria-pressed="true"]):not(.trpg-object-choice) {
+  color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border-color: var(--lavender); box-shadow: inset 0 -3px #c3a9d5;
+}
+html:root[data-ui-theme="paper"] .trpg-root button:focus-visible { outline-color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] :is(.trpg-library-header h1, .trpg-library-copy h2, .trpg-campaign-header h1, .trpg-campaign-book-copy h2, .trpg-club-proposal h2, .trpg-trial-score) { color: var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.trpg-library-meta, .trpg-library-intro, .trpg-library-byline, .trpg-library-details, .trpg-library-cast > div, .trpg-library-footer, .trpg-campaign-meta, .trpg-campaign-person small, .trpg-campaign-book-copy small, .trpg-campaign-footer, .trpg-club-line small) { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] :is(.trpg-library-copy > p, .trpg-club-line[data-speaker="hajime"], .trpg-club-proposal p.trpg-club-narration) { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] :is(.trpg-library-book, .trpg-library-book[data-theme="shark"], .trpg-campaign-book, .trpg-campaign-book[data-theme="shark"], .trpg-campaign-person, .trpg-club-proposal, .trpg-day-trial) {
+  color: var(--paper-ink); background: var(--paper-card); border-color: var(--paper-line); box-shadow: none;
+}
+html:root[data-ui-theme="paper"] .trpg-campaign-person[data-available="false"] { color: var(--paper-muted); background: #ece7ed; border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .trpg-campaign-memory { color: var(--paper-ink); background: var(--lavender-soft); border-color: var(--lavender-line); }
+html:root[data-ui-theme="paper"] .trpg-campaign-memory strong { color: var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.trpg-campaign-stars, .trpg-campaign-night) { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .trpg-campaign-notice { color: var(--paper-ink); border-color: var(--amber); }
+html:root[data-ui-theme="paper"] :is(.trpg-campaign .trpg-kicker, .trpg-library-header .trpg-kicker) { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .trpg-campaign .venue-host { color: var(--paper-ink); background: var(--lavender-soft); border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .trpg-campaign .venue-host-copy small { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .trpg-campaign .venue-host-copy strong { color: var(--lavender); }
+
+/* 部屋の上のUIは紙の帯に。絶対座標とタッチ領域は既存のまま。 */
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-header {
+  color: var(--paper-ink); background: var(--paper); border-radius: 4px; text-shadow: none;
+  box-shadow: 0 3px 12px #110a2233;
+}
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-heading > small { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic :is(.trpg-teamwork span, .trpg-heat, .trpg-heat-name) { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-teamwork i { background: var(--lavender); box-shadow: none; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-teamwork i.spent { background: var(--paper-line); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-heat-pips i { background: var(--paper-line); box-shadow: none; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-heat-pips i.lit { background: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-heat-momentum { color: var(--amber-ink); background: #fbe9cf; border-color: var(--amber); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-dock {
+  color: var(--paper-ink); background: var(--paper); text-shadow: none;
+  border-image: var(--paper-art) 72 fill / 18px / 0 stretch;
+}
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-speaker-label strong { color: var(--lavender); text-shadow: none; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-speaker-label span { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-speech p { color: var(--paper-ink); text-shadow: none; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-table { color: var(--paper-ink); background: var(--paper); border-color: var(--lavender-line); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-table-person { color: var(--paper-ink); background: var(--paper-card); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-table-person.active { border-color: var(--lavender-line); background: var(--lavender-soft); }
+
+/* 開始の紹介・結末は既存の絵の上に重ねるため、明るい文字を維持。
+   紙の名札とノートだけ墨色へ。 */
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic :is(.trpg-object-label, .trpg-object-choice > strong) { color: var(--lavender); background: var(--paper); box-shadow: 0 4px 13px #110a2233; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-object-choice:focus-visible .trpg-object-label { outline-color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-notebook { color: var(--paper-ink); background: var(--paper); border-color: var(--lavender-line); }
+
+/* ダイス・相談・ログ。板は生成済みの紙を再利用し、木と緑フェルトを置換。
+   縁は内側へ描き、スクロール領域や表示倍率を変えない。 */
+html:root[data-ui-theme="paper"] .trpg-root .trpg-modal,
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-modal.trpg-roll-stage {
+  color: var(--paper-ink); background: var(--paper); border-color: var(--paper-line);
+  border-image: var(--paper-art) 72 fill / 22px / 0 stretch; box-shadow: 0 18px 50px #110a2259; text-shadow: none;
+}
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage::before { border: 0; border-image: none; }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-overlay { background-color: #1e1429b5; }
+html:root[data-ui-theme="paper"] .trpg-root :is(.trpg-modal h2, .trpg-note-head, .trpg-roll-context, .trpg-dice-total, .trpg-dice-bonus, .trpg-roll-equation, .trpg-log-line strong) { color: var(--lavender); text-shadow: none; border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-roll-context, .trpg-roll-instruction, .trpg-roll-insight, .trpg-roll-consequence, .trpg-roll-trump, .trpg-roll-equation, .trpg-reroll-warning, .trpg-reroll-choice small, .trpg-forecast-head small, .trpg-forecast > p) { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast-head strong { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p:first-child { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-bonus { color: var(--lavender); text-shadow: none; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds > div { border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds strong { color: #30664b; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds [data-grade="mixed"] strong { color: #955015; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds [data-grade="trouble"] strong { color: #a33f44; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds :is(span, small) { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage { --roll-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage[data-grade="success"] { --roll-color: #30664b; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage[data-grade="mixed"] { --roll-color: #955015; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage[data-grade="trouble"] { --roll-color: #a33f44; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total { color: var(--lavender); text-shadow: none; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total .trpg-dice-grade { color: #30664b; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total[data-grade="mixed"] .trpg-dice-grade { color: #955015; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total[data-grade="trouble"] .trpg-dice-grade { color: #a33f44; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die.trpg-d20 { grid-template-columns: 1fr; grid-template-rows: 1fr; filter: drop-shadow(3px 5px 3px #38283f40); }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-die.trpg-d20 polygon { fill: var(--lavender); stroke: #9e81b0; }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-die.trpg-d20 path { stroke: #c3a9d5; }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-die.trpg-d20 .trpg-d20-value { color: #fff; }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid { color: var(--paper-ink); background: var(--lavender-soft); border-color: var(--lavender-line); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid :is(strong, small) { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-aid input { accent-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-details summary { color: var(--lavender); border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-roll-special { color: var(--paper-ink); background: #fbe9cf; border-color: var(--amber); }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-roll-special[data-special="critical"] { background: #fbe9cf; border-color: var(--amber-ink); box-shadow: 0 0 0 2px #d8963f33; }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-roll-special[data-special="fumble"] { background: #e9e7ef; border-color: var(--lavender-line); }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-roll-special :is(strong, span),
+html:root[data-ui-theme="paper"] .trpg-root .trpg-roll-special[data-special="fumble"] strong { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-recap-rating { color: var(--paper-ink); background: var(--lavender-soft); border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .trpg-root .trpg-recap-rating li[data-lit="true"] strong { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-modal-body { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-object-detail { color: var(--paper-ink); background: var(--paper); text-shadow: none; }
