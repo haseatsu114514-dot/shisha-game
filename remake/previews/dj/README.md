@@ -1,41 +1,59 @@
-# Manual DJ — Issue #1064
+# DJ ミニゲーム（セット形式・2026-11-01 再構成）
 
-Entry: `remake/previews/dj/index.html`. Kevin MacLeodの実曲5曲（CC BY 4.0）を、ゲームが提示する3ステージでつなぎます。Stage 1はDance Monster / Digital Lemonade、Stage 2はRaving Energy / Cut and Dry、Stage 3はRising Tide (faster) / Dance Monsterです。全曲の帰属・ISRCは画面下部に掲載しています。
+Entry: `remake/previews/dj/index.html?set=1〜3`（旧 `?stage=` も同じ）。本編と同じ 1280×720 の固定ステージを画面に合わせて拡縮する（`controller-fx.mjs`）。本編の SAVE・所持金・時間は変えない。セット終了時に親フレームへ `postMessage({type:'dj-result', set, rank, total, floor})` を送るので、本編へ接続するときはこれを受けて `state.dj.bestRank` に残す（`core/growth-board-data.js` の SBD39 が読む）。
 
-ステージ選択でAが開始し、Bは待機します。Stage 1・2のBにはランダムな±1.2〜2.8%のデチューン、Stage 3には122/120 BPMの差があります。既定はStage 1。音声準備だけでは再生しません。
+## 遊び方（操作は ▶ と横フェーダーだけ）
 
-手動PITCH（スライダー・±0.01 BPM）で合わせ、大きなPLAYを押します。PLAYは即時開始し、フレーズ頭へ予約・同期しません。拍からの符号つきずれをPERFECT / GOOD / OK / EARLY / LATEで表示します。上下の実PCM波形、±1/16拍、Bの±10msナッジで位相を合わせ、8小節ガイドに沿って等パワーの横フェーダーを動かします。テンポは音程にも反映します。
+1. **A の ▶** でセットが始まる。A が鳴り、B には次の曲が載る。上の波形に「IN」の線が来るまで待つ（最低4小節先のフレーズ頭）。
+2. 入りの直前4拍はフロアに大きな数字が出て、B の ▶ が点滅する。**0 で B の ▶**。押した瞬間に判定（PERFECT / GOOD / OK / EARLY / LATE）が出る。
+   - **QUANTIZE**（常時ON）: CDJ と同じく、押したタイミングを今の曲の一番近い拍に吸着して B を鳴らす。拍はずれないので、ジョグで位相を直す操作は無い。採点はずれた分で決まる。
+3. **8小節MIX**: 横フェーダーを A から B へゆっくり動かす。**EQ は自動**（AUTO EQ）: フェーダーが中央を越えるまで B の低音を抑え、越えたら A の低音を抑える（低音の入れ替え）。つまみとランプは動きに合わせて回るが操作はできない。
+4. 8小節が終わると A が降りて次の曲が A に載り、次の入りを待つ（B が主になり、今度は A の ▶ → フェーダーを A へ）。これを曲数ぶん繰り返して終了。フェーダーが B 側（0.9 以上）に届いていない場合、A は最大8小節まで鳴り続ける（猶予。届いた時点で終了）。
 
-両デッキ再生中かつ対象PLAY記録後に判定できます。ピッチ誤差・PLAYずれ・位相ドリフトの3項目を平均し、S/A/B/Cを表示します。8小節完了時には未判定なら自動判定します。ガイドは開始・同期・テンポ変更をしません。
+### BPM 合わせ（任意）
 
-全体停止/再開は直前の再生デッキだけを復帰し、個別PAUSEはヘッドを保持します。タブ非表示・音声中断時は停止し、自動再開しません。本編SAVE・経済・章進行には接続しません。小窓のコード仮ドット/仮キャラ・生成背景は従来の試作表示です。
+- **SET 1** は全曲 120 BPM のまま届くので何もしなくてよい（LOCK が点いている）。
+- **SET 2** は次の曲が ±1.2〜2.8 % ずれて届く。**PITCH フェーダー（±8 %）**かジョグ外周（1目盛り 0.01 BPM）で合わせる。0.15 % 以内で **LOCK** が点き、QUANTIZE が位相も合わせる。
+- **SYNC** ボタンを押せば次の曲の BPM が今の曲に揃う（実機の SYNC と同じ）。使った回のBPM点は 85 止まり。
+- **SET 3** は 120 ↔ 122 BPM の曲が交互なので、毎回 +1.67 % / −1.64 % の合わせが要る。
 
-検証: `node remake/test/dj_preview.mjs`。音声ローダを注入した制御WebAudioと純関数を検証します。ブラウザテスト `remake/test/browser/dj_preview.mjs` は通常PR CI用です。記録済みの制限に従いローカルでは実行せず、`node --check` のみ行います。実機発音、ループ品質、遅延、タッチ、OS中断の確認はCIと司令塔側の担当です。
+### 採点
 
-## 本編サイズ・コントローラー表示（Issue #2073）
+1回のつなぎごとに 3 項目（各 100 / 85 / 60 / 30）→ 平均 → S（90〜）/ A（75〜）/ B（55〜）/ C。
 
-画面は本編と同じ1280×720の固定ステージ（`remake/index.html` の `#stage`）に収め、`controller-fx.mjs` が画面に合わせて縮小・拡大する。操作するのは縦フェーダー（各デッキのPITCH・中央の音量）と横クロスフェーダー、各ボタン。ジョグとEQつまみは飾り。低音は横フェーダーに合わせてシステムが自動でカットする（`model.mjs` の `lowCutDb`。Bは中央まで、Aは中央を越えたら最大−26dB。LOWつまみとLEDが動きに合わせて回る）。判定（ピッチ・PLAYずれ・位相）は変えていない。押下時の沈み込み・LED・フェーダーの段の手応え（対応端末のみ振動）は表示だけで、音声・判定には触れない。素材は `asset_sources/ui/dj-2073/`。
+| 項目 | 100 | 85 | 60 | 30 |
+|---|---|---|---|---|
+| BPM（終了時のずれ） | ≤0.15 % | ≤0.3 %（SYNC使用もここ） | ≤0.6 % | それ以上 |
+| 入り（▶のずれ） | ≤30 ms | ≤60 ms | ≤120 ms | それ以上 |
+| フェーダー | 到達（8小節中に 0.9 へ。3割より前は 85・猶予中は 60・未到達 30）と滑らかさ（0.25秒内の移動 ≤0.2 / ≤0.4 / ≤0.7）の平均 | | | |
 
-## 大きいジョグ・外周でBPM微調整（Issue #2080）
+セットの結果は全つなぎの平均。**FLOOR**（盛り上がり 0〜100）は演出用: きれいに混ざっていると上がり、無音・片側だけ薄い・拍が噛み合っていない・EARLY/LATE で下がる。PERFECT と S/A のつなぎで跳ねる。群衆の手が上がる人数と光の強さが FLOOR に連動する。
 
-±0.01 BPMボタンを廃止し、ジョグ（皿・288px）の外周（半径の58%より外）をドラッグして回すとBPMを微調整する（右回りで上げる、12°で0.01 BPM、110〜140の範囲）。中央に触っても変化しない。触れている間は外周が光り、1目盛りごとに点滅（タッチ端末は短い振動）。キーボードはジョグにフォーカスして矢印キー。内部は従来のボタンと同じ `audio.tempo` 呼び出しで、判定は変えていない。見出し・装飾文言を減らし、上の波形を大きくした。
+## 画面
 
-## 紫テーマ・操作部の整理（Issue #2095）
+- 上: **フロア**（群衆のドット・FLOOR ゲージ・セット名と曲数・判定・カウント・やり直す）。
+- 中: **上下 A/B の横波形**（共通の秒スケール・小節番号・8小節の頭は明るい線・次の入りの「IN」・MIX 中は窓を薄く塗る）と案内文1行。
+- 下: **コントローラー**。皿（アートワーク・BPM・LOCK）を外側、PITCH と ▶ をミキサー側に。中央は自動 EQ のつまみ・レベルメーター・QUANTIZE / AUTO EQ ランプ・SYNC・銀色の横フェーダー。A は紫、B は水色。
 
-ゲームのテーマ色（`remake/css/base.css` の `--ink` #0b0812・ロード画面の #b45cf0〜#3fd0e8）に合わせて紫基調にした。Aは薄紫、Bはシアン。ジョグは340pxで、外周（半径の42%より外）を回すとBPM微調整。▶ボタンは記号のみ。音声準備・ミュート・全体一時停止のボタンは廃止し、最初の▶で音声を準備する（タブ非表示時の自動停止は従来どおり）。下段を廃止し、ドット絵のVJは波形の背後に薄く表示する。
+素材は `remake/img/ui/dj/`（#2071/#2073/#2095/#2107/#2114 の生成物をそのまま使用）。フロアの背景は `bg-purple.webp`（空のクラブ）の上に群衆をコードで描いている。
 
-## 細かいボタン・説明文字の削除（Issue #2101）
+### 任意の差し替え: フロアの群衆画像（Codex 用プロンプト）
 
-上のステージ欄を削除（ステージは `?stage=1〜3` で本編側から指定、既定はStage 1）。1/16拍・±10ms・B半拍・判定ボタンと、VOLフェーダーを削除。判定は従来どおり8小節MIXの完了時に自動。位相合わせはジョグの内側（半径42%より内）を回す（12°で1/16拍、キーボードはShift＋矢印）。外周は従来どおりBPM微調整。説明文・BPM表示の細かい文字は画面から外し、読み上げ用に残した。入りの直前4拍は波形上に大きな数字で出す。皿の中央に曲ごとの生成アートワーク（`remake/img/ui/dj/art-*.webp`、`asset_sources/ui/dj-2101/`）を薄く表示。中央は演出用のレベルメーター。
+画像生成 API のクレジット切れ（2026-11-01）のため群衆はコード描画。より写実的にしたい場合は次を Codex に渡し、できた画像を `asset_sources/ui/dj-floor/` に原画、`remake/img/ui/dj/floor-crowd.webp`（1536×512・不透過）に組み込み、`style.css` の `.floor` の背景に差し替える（`#crowd` のドット群衆は FLOOR 連動の演出として残す）。
 
-## ▶の位置・右デッキの水色・BPMを外へ（Issue #2107）
+```
+Painterly illustration, game theme palette deep purple-black (#0b0812, #151024) with violet (#b45cf0), neon pink (#ff5fa8) and cyan (#3fd0e8) stage light, faint hookah smoke wisps, moody shisha-bar club atmosphere.
+Scene: wide view from behind the DJ booth looking out over a packed club dancefloor at night. A dense crowd of dark back-lit silhouettes with raised hands fills the middle band; violet and cyan beams and haze above; the very bottom edge is the dark top surface of the DJ table. Horizontal 3:1 composition (1536x512), crowd heads roughly in the lower half so UI text can sit on the dark ceiling area.
+No text, no letters, no logos, no numbers, no watermark, no readable faces, no gauges or UI elements baked in.
+Save as: remake/img/ui/dj/floor-crowd.webp (opaque, 1536x512). Keep the original PNG in asset_sources/ui/dj-floor/.
+```
 
-▶（112×60px）はミキサー側（PITCHフェーダーの隣）へ、BPMは皿の外の外側下に移した。皿の中央は曲名とアートワークだけ。デッキBは水色基調（ジョグ・つまみ・枠・▶・メーター・本体の右側LED）。画像はPillowで既存素材の色相を回したもの（`jog-wheel-cyan.webp`、`fader-cap-h-cyan.webp`、本体の左右で色を変えた `controller-body-duo.webp`）。
+## 検証
 
-## BPMを皿の中央へ・PITCHを外側へ・中立色の横フェーダー（Issue #2110）
+- `node remake/test/dj_preview.mjs`: 純関数（セット進行・クオンタイズ・採点・FLOOR）と注入 WebAudio の契約。
+- `node remake/test/browser/dj_preview.mjs`（プレビューサーバー起動後）: PC / タッチ / 動き低減で、操作部の数、▶ の大きさ、PITCH とジョグの実入力、入りのカウントとクオンタイズ、キーボード／タップでの8小節フェード、自動 EQ ランプ、つなぎ後の曲の載せ替え、やり直しを実ブラウザで確認。CI は `tools/ci/suites.json` の `dj-preview`。
+- 実機の発音・遅延・OS 中断は CI 外。
 
-BPMは皿の中央（アートワークの上）に戻した。PITCHフェーダーは各デッキの外側の端、▶はミキサー側のまま。横フェーダーはA（紫）・B（水色）どちらでもない銀白色（つまみは元画像をグレースケール化した `fader-cap-silver.webp`）。
+## 経緯
 
-## 皿の拡大・外周グリップ・PITCHと▶の配置（Issue #2114）
-
-皿は384px。ジョグ画像を半径方向に引き伸ばし直して（`asset_sources/ui/dj-2114/remap_jog.py`）、黒い内側を半径の76%→66%に狭め、外周のグリップを太くした。BPM微調整の判定域も外周グリップ（半径62%より外）に合わせ、内側は位相合わせ。PITCHフェーダーはミキサー側で短くし、その下に▶（92×54px）を置いた。
+Issue #1064（Codex 試作: 手動ピッチ・即時 PLAY・ジョグで位相合わせ・1回のつなぎで採点）→ #2073〜#2118（コントローラー表示の調整）→ **2026-11-01 オーナー指示で再構成**: 「よりリアルに DJ をしている感じ、でも操作は横フェーダーと再生ボタンくらい。EQ は自動。BPM 合わせはやっても良い程度」。1回のつなぎからセット（3〜4曲）の連続ミックスへ変え、位相合わせを QUANTIZE に置き換え、採点をつなぎごと＋FLOOR の盛り上がりにした。
