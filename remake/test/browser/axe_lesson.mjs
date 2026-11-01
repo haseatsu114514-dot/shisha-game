@@ -143,6 +143,36 @@ await suite("axe-lesson", async check => {
     assert.deepEqual(await storageSnapshot(page), before);
   });
 
+  await check("first-play-and-event-contexts-swap-greeting-and-send-off", async page => {
+    for (const [context, greeting, farewell, ahead] of [["first", /斧は初めて/, /ここからが本番/, "本番へ"], ["event", /連れと一緒に/, /連れと楽しんで/, "投げに行く"]]) {
+      if (clocked.has(page)) await page.clock.resume();
+      const before = await start(page, { tutorial: true, opponent: null, lessonContext: context });
+      assert.match(await coach(page, "welcome").innerText(), greeting);
+      assert.equal(await page.locator('[data-test="axe-coach-skip"]').textContent(), "説明をとばす");
+      await guide(page, "welcome", false, true); await guide(page, "target", false, true);
+      assert.match(await page.locator('[data-test="axe-rules"]').textContent(), /ルール/);
+      await action(page); await phase(page, "horizontal"); await guide(page, "horizontal", false, true);
+      await stop(page, .5, 3600, "vertical"); await guide(page, "vertical", false, true);
+      await stop(page, .5, 3600, "power"); await guide(page, "power", false, true);
+      await stop(page, .62, 2400, "flight"); await page.clock.runFor(1200);
+      await coach(page, "result").waitFor(); assert.match(await coach(page, "result").innerText(), /丸い窓/);
+      await guide(page, "result", false, true); await phase(page, "result"); await action(page);
+      await coach(page, "finish").waitFor();
+      assert.match(await coach(page, "finish").innerText(), farewell);
+      assert.equal(await page.locator('[data-test="axe-coach-next"]').textContent(), ahead);
+      await guide(page, "finish", false, true);
+      const result = await page.evaluate(() => window.lessonPromise);
+      assert(result.completed && result.tutorial); assert.equal(result.lessonContext, context);
+      assert.deepEqual(await storageSnapshot(page), before);
+    }
+    const refused = await page.evaluate(async () => {
+      const { runAxeThrow } = await import("./js/minigames/axe.js"), host = document.getElementById("axe-app");
+      return Promise.all([runAxeThrow({ host, tutorial: true, opponent: null, lessonContext: "party" }), runAxeThrow({ host, mode: "practice", lessonContext: "first" })]
+        .map(p => p.then(() => false, e => e instanceof RangeError)));
+    });
+    assert.deepEqual(refused, [true, true], "an unknown context, or a context outside the lesson, is refused");
+  });
+
   await check("skip-abort-and-host-removal-close-coach", async page => {
     for (const operation of ["skip", "abort", "host", "screen"]) {
       if (clocked.has(page)) await page.clock.resume();
@@ -194,12 +224,14 @@ await suite("axe-lesson", async check => {
       assert.equal(await page.evaluate(() => window.lessonVisitSettled), false);
       assert.equal(await page.locator('[data-test="axe-bar-menu"]').evaluate(n => n.inert), false);
       assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "axe-bar-lesson");
-      assert.equal(await page.evaluate(() => JSON.stringify(lessonCore.state)), stateBefore, restriction);
+      // The only change is the record that the owner's lesson was taken, so the first paid game does not repeat it.
+      const taught = JSON.parse(stateBefore); taught.flags._axe_lesson_done = true;
+      assert.equal(await page.evaluate(() => JSON.stringify(lessonCore.state)), JSON.stringify(taught), restriction);
       assert.deepEqual(await storageSnapshot(page), storageBefore, restriction);
       assert(await page.locator('[data-test="axe-bar-practice"]').isDisabled());
       await page.locator('[data-test="axe-bar-back"]').click();
       assert.equal(await page.evaluate(() => window.visitPromise), false, "A lesson never completes a paid daily action");
-      assert.equal(await page.evaluate(() => JSON.stringify(lessonCore.state)), stateBefore);
+      assert.equal(await page.evaluate(() => JSON.stringify(lessonCore.state)), JSON.stringify(taught));
     }
   });
 });

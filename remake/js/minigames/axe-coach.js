@@ -29,11 +29,13 @@ export function scoringGuide() {
 }
 
 /** The caller owns mounting, pausing the game and removing the dialog. */
-export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome", onNext, onSkip }) {
+export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome", context = null, onNext, onSkip }) {
   const lineId = "axe-coach-line-" + ++dialogCount;
-  const next = el("button.axe-button.axe-primary", { type: "button", text: ({ welcome: "レッスンをはじめる", target: "やってみる", result: "振り返る", finish: "レッスンを終える" })[kind] || "やってみる",
+  // Before a real game the last button leads on into it, and skipping goes straight there too.
+  const ahead = context === "first" ? "本番へ" : context === "event" ? "投げに行く" : null;
+  const next = el("button.axe-button.axe-primary", { type: "button", text: ({ welcome: ahead ? "1投教わる" : "レッスンをはじめる", target: "やってみる", result: "振り返る", finish: ahead || "レッスンを終える" })[kind] || "やってみる",
     dataset: { test: "axe-coach-next" }, onclick: onNext });
-  const skip = el("button.axe-button.axe-coach-skip", { type: "button", text: "レッスンをやめる", dataset: { test: "axe-coach-skip" }, onclick: onSkip });
+  const skip = el("button.axe-button.axe-coach-skip", { type: "button", text: ahead ? "説明をとばす" : "レッスンをやめる", dataset: { test: "axe-coach-skip" }, onclick: onSkip });
   const panel = el("section.axe-coach", { role: "dialog", "aria-modal": "true", "aria-label": title, "aria-describedby": lineId,
     dataset: { test: "axe-coach", kind } }, [
     el("div.axe-coach-card", [

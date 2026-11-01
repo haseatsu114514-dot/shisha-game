@@ -70,7 +70,11 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       const lesson = el("button.btn.ghost.axe-bar-lesson", { type: "button", text: "マキに教わる・無料1投", dataset: { test: "axe-bar-lesson" }, onclick: async () => {
         if (lessonOpen || picked || !current()) return;
         lessonOpen = true; host.hidden = true; host.inert = true;
-        try { await runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, signal: abort.signal, allowRetry: true }); }
+        try {
+          const lesson = await runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, signal: abort.signal, allowRetry: true });
+          // A finished lesson counts as the owner's first-play tutorial, so the first paid game does not repeat it.
+          if (lesson.completed && current()) owner.flags._axe_lesson_done = true;
+        }
         catch (error) { if (current()) { console.error(error); toast("レッスンを開けませんでした。もう一度お試しください。"); } }
         finally {
           lessonOpen = false;
@@ -100,6 +104,13 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     });
     if (!mode || !available() || !await staminaGuard(AXE_BAR.stamina) || !available()) return false;
     host.hidden = true;
+    // The first paid throw at the bar starts with the owner's free one-throw lesson. Skipping it leads straight on.
+    if (!owner.flags._axe_lesson_done) {
+      await runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, lessonContext: "first", allowRetry: false, signal: abort.signal });
+      if (!current()) return false;
+      owner.flags._axe_lesson_done = true;
+      if (!available()) return false;
+    }
     const result = await runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? division : "rec" });
     if (!result.completed || !available()) return false;
     const records = owner.flags._axe_bar_records ||= {};

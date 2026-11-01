@@ -1,7 +1,7 @@
 {
   "metadata": {
     "minigame": "axe-throw",
-    "description": "斧崎マキが案内する無料1投レッスン用のUI台詞。章・物語・関係・報酬は進行しない。"
+    "description": "斧崎マキが案内する無料1投レッスン用のUI台詞（WATL 2026式の的・採点）。章・物語・関係・報酬は進行しない。first_*は斧投げBarで初めて投げる時、event_*はひよりの寄り道で投げる前（マキと面識がある時だけ）に、あいさつと締めだけを差し替える。"
   },
   "dialogues": [
     {
@@ -26,7 +26,59 @@
           "id": "welcome_3",
           "speaker": "maki",
           "face": "normal",
-          "text": "横、縦、力の順で止める。肩の力、抜きな！"
+          "text": "横、縦、回転の順で止める。肩の力、抜きな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_first_welcome",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "first_welcome",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "お、斧は初めてだね？　本番の前に、あたしが1投だけ教えるよ"
+        },
+        {
+          "id": "first_welcome_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "この1投はタダ。点も記録には残らないから安心しな"
+        },
+        {
+          "id": "first_welcome_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "横、縦、回転の順で止める。肩の力、抜きな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_event_welcome",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "event_welcome",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "連れと一緒に来たんだね。投げる前に、1投だけ教えさせて"
+        },
+        {
+          "id": "event_welcome_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "練習の1投だから、点は数えないよ"
+        },
+        {
+          "id": "event_welcome_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "横、縦、回転の順で止める。肩の力、抜きな！"
         }
       ]
     },
@@ -40,19 +92,25 @@
           "id": "target",
           "speaker": "maki",
           "face": "normal",
-          "text": "通常はリング1〜5点、中央と外の4つの赤い中心が6点"
+          "text": "的は外から1・2・3・4点。中央と外の4か所に、5の円と赤い6点があるよ"
         },
         {
           "id": "target_2",
           "speaker": "maki",
           "face": "normal",
-          "text": "青は投げる前に1つ宣言、外7点・中心8点、その青以外は0点だよ"
+          "text": "点は刃が触れた一番高いところ。黒い線の上は、低いほうの点だ"
         },
         {
           "id": "target_3",
           "speaker": "maki",
           "face": "normal",
-          "text": "宣言は2回まで。成功した高さの青は左右とも閉じる！"
+          "text": "青は投げる前に1つ宣言。外7点・中心8点、ほかに刺さると0点だよ"
+        },
+        {
+          "id": "target_4",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "宣言は1ゲーム2回、落としたら1回増える。決めた高さの青は左右とも閉じる！"
         }
       ]
     },
@@ -66,13 +124,13 @@
           "id": "horizontal",
           "speaker": "maki",
           "face": "normal",
-          "text": "まずは横の位置だ。針が左右に動くから、狙いたい所で的をタップ"
+          "text": "まずは横の位置だ。縦の線が左右に動くから、狙いたい所で的をタップ"
         },
         {
           "id": "horizontal_2",
           "speaker": "maki",
           "face": "normal",
-          "text": "ボタンかSpaceでも止められるよ。止めた位置は金色の印だ"
+          "text": "ボタンかSpaceでも止められるよ。刃は縦に長いけど、横のずれはごまかせない"
         },
         {
           "id": "horizontal_3",
@@ -98,13 +156,13 @@
           "id": "vertical_2",
           "speaker": "maki",
           "face": "normal",
-          "text": "上下に動く針を見て、的のタップ、ボタンかSpaceで止めな"
+          "text": "上下に動く線を見て、的のタップ、ボタンかSpaceで止めな"
         },
         {
           "id": "vertical_3",
           "speaker": "maki",
           "face": "normal",
-          "text": "金色の印が狙いだ。赤い中心まで、あとひと息！"
+          "text": "狙っている所が光るだろ？　赤い中心まで、あとひと息！"
         }
       ]
     },
@@ -118,16 +176,22 @@
           "id": "power",
           "speaker": "maki",
           "face": "normal",
-          "text": "最後は力！　緑の54〜70%で止めな。弱すぎても強すぎても落下して0点だ"
+          "text": "最後は回転！　緑の54〜70%で放しな"
         },
         {
           "id": "power_2",
           "speaker": "maki",
           "face": "normal",
-          "text": "白い照準が予測着地点だよ。息を整えるかFで、1投に1回だけブレを抑えられる"
+          "text": "弱いと柄から当たる、強いと回りすぎる。どっちも落ちて0点だ"
         },
         {
           "id": "power_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "白い刃先が着地点だよ。息を整えるかFで、1投に1回だけ揺れを抑えられる"
+        },
+        {
+          "id": "power_4",
           "speaker": "maki",
           "face": "normal",
           "text": "斧に仕事をさせな！"
@@ -150,13 +214,13 @@
           "id": "result_2",
           "speaker": "maki",
           "face": "normal",
-          "text": "通常なら刺さった場所、青を宣言したならその青に当たったかで点が決まる"
+          "text": "閉じたら、隅の丸い窓で刃がどこに触れたか確かめな"
         },
         {
           "id": "result_3",
           "speaker": "maki",
           "face": "normal",
-          "text": "力が合わず落下したら0点だ。点数と着地点を見て、次の狙いを決めな！"
+          "text": "落としたら0点だ。点数と刃の位置を見て、次の狙いを決めな！"
         }
       ]
     },
@@ -170,7 +234,7 @@
           "id": "finish",
           "speaker": "maki",
           "face": "normal",
-          "text": "お疲れ！　横、縦、力の順でよく投げたね。迷ったら、いつでも無料で復習できるよ"
+          "text": "お疲れ！　横、縦、回転の順でよく投げたね。迷ったら、いつでも無料で復習できるよ"
         },
         {
           "id": "finish_2",
@@ -183,6 +247,52 @@
           "speaker": "maki",
           "face": "normal",
           "text": "準備ができたら、自分の一投を楽しみな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_first_finish",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "first_finish",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "いい筋だ！　ここからが本番、点はちゃんと記録するよ"
+        },
+        {
+          "id": "first_finish_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "10投のゲームは5投で的を交代する。迷ったら「ルール」を開きな"
+        },
+        {
+          "id": "first_finish_3",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "さあ、自分の一投を楽しみな！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "axe_tutorial_event_finish",
+      "metadata": {
+        "minigame": "axe-throw"
+      },
+      "lines": [
+        {
+          "id": "event_finish",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "いい筋だ！　あとは連れと楽しんでおいで"
+        },
+        {
+          "id": "event_finish_2",
+          "speaker": "maki",
+          "face": "normal",
+          "text": "迷ったら「ルール」を開きな。いい夜を！"
         }
       ]
     }

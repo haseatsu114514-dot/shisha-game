@@ -35,14 +35,19 @@ const VIEW = { x: CX - 232, y: CY - 232, size: 464 };
 // The judge's close-up after a stuck throw: ±.2 of the 1-ring radius around the blade.
 const ZOOM = .2;
 const SERIES = [1, 3];
+// Where the owner's lesson happens: the first paid throw at the bar, or before hiyori's three throws.
+// Each context swaps only the greeting and the send-off; the five teaching steps are shared.
+export const LESSON_CONTEXTS = ["first", "event"];
+const LESSON_STEPS = ["welcome", "target", "horizontal", "vertical", "power", "result", "finish"];
 export function runAxeThrow({ host = document.getElementById("stage") || document.getElementById("axe-app"),
   signal, mode = "practice", tutorial = false, opponent = tutorial ? null : "hiyori", allowRetry = true, difficulty = "normal", seed,
-  division = "rec", bestOf = 1, reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
+  division = "rec", bestOf = 1, lessonContext = null, reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const versus = mode === "versus";
   if (typeof tutorial !== "boolean" || tutorial && (mode !== "practice" || opponent !== null) || (!versus && !Object.hasOwn(MODES, mode)) || versus && (opponent !== "hiyori" || !Object.hasOwn(DIFFICULTIES, difficulty)) || opponent !== null && !Object.hasOwn(COMPANIONS, opponent)
-    || !Object.hasOwn(DIVISIONS, division) || !SERIES.includes(bestOf)) return Promise.reject(new RangeError("Unknown axe mode, division or companion"));
+    || !Object.hasOwn(DIVISIONS, division) || !SERIES.includes(bestOf)
+    || lessonContext !== null && (!tutorial || !LESSON_CONTEXTS.includes(lessonContext))) return Promise.reject(new RangeError("Unknown axe mode, division, lesson or companion"));
   const rules = tutorial ? { throws: 1, max: 8, half: 0 } : MODES[versus ? "league" : mode], companion = COMPANIONS[opponent];
   const baseSeed = (seed ?? crypto.getRandomValues(new Uint32Array(1))[0]) >>> 0;
   const gameSeed = index => (baseSeed + index * 7919) >>> 0;
@@ -57,7 +62,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     grade: completed ? gradeOf(totalOf(shots), rules.max) : null, ruleset: RULESET, mode, opponent, division, throwCount: rules.throws, maximum: rules.max,
     challenges: evaluateChallenges(challengeIds, shots, completed), rank: completed ? rankOf(totalOf(shots), rules.max) : null,
     title: completed && !tutorial ? titleOf(shots, rules.max) : null, stats: sessionStats(shots),
-    ...(tutorial ? { tutorial: true } : {}),
+    ...(tutorial ? { tutorial: true, lessonContext } : {}),
     ...(versus ? { match: { ...matchResult(match), winner: completed ? matchResult(match).winner : null,
       player: structuredClone(match.player), opponent: structuredClone(match.opponent), suddenDeath: structuredClone(match.suddenDeath), difficulty, division, seed: match.seed },
       series: { bestOf, games: structuredClone(series.games), wins: { ...series.wins }, winner: completed ? seriesWinner() : null } } : {}) });
@@ -294,15 +299,16 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   function teach(id) {
     if (!tutorial || !coachLines || coachPanel || phase === "closed") return;
-    const ids = ["welcome", "target", "horizontal", "vertical", "power", "result", "finish"];
-    const titles = { welcome: "マキと、まずは一投。", target: "赤と青、得点の違い", horizontal: "① 横の位置を止める", vertical: "② 縦の位置を止める", power: "③ 緑の回転で放す", result: "今の一投を振り返ろう", finish: "レッスン完了" };
+    const ids = LESSON_STEPS;
+    const titles = { welcome: lessonContext === "first" ? "はじめての一投、マキと。" : lessonContext === "event" ? "投げる前に、マキから。" : "マキと、まずは一投。", target: "的と得点、刃が触れた所", horizontal: "① 横の位置を止める", vertical: "② 縦の位置を止める", power: "③ 緑の回転で放す", result: "今の一投を振り返ろう", finish: "レッスン完了" };
     const last = shots.at(-1);
-    const text = coachLines[id] + (id === "result" && last ? ` 今回は${last.score}点。${shotFeedback(last).tip}` : "");
+    const key = lessonContext && coachLines[lessonContext + "_" + id] ? lessonContext + "_" + id : id;
+    const text = coachLines[key] + (id === "result" && last ? ` 今回は${last.score}点。${shotFeedback(last).tip}` : "");
     const close = () => {
       coachPanel.remove(); coachPanel = null; heading.inert = body.inert = scoreboard.inert = false;
       stamp = null; render(); root.focus();
     };
-    coachPanel = coachDialog({ text, title: titles[id], step: ids.indexOf(id) + 1, total: ids.length, kind: id,
+    coachPanel = coachDialog({ text, title: titles[id], step: ids.indexOf(id) + 1, total: ids.length, kind: id, context: lessonContext,
       onNext: () => { close(); if (id === "welcome") teach("target"); else if (id === "finish") cleanup(true); },
       onSkip: () => cleanup(false) });
     coachPanel.dataset.lesson = id;
@@ -326,7 +332,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
               .then(response => { if (!response.ok) throw new Error("Axe lesson unavailable"); return response.json(); })
               .then(data => {
                 coachLines = Object.fromEntries(data.dialogues.map(dialogue => [dialogue.lines[0].id, dialogue.lines.map(line => line.text).join("\n")]));
-                if (!["welcome", "target", "horizontal", "vertical", "power", "result", "finish"].every(id => typeof coachLines[id] === "string"))
+                if (!LESSON_STEPS.every(id => typeof coachLines[id] === "string")
+                  || lessonContext && !["welcome", "finish"].every(id => typeof coachLines[lessonContext + "_" + id] === "string"))
                   throw new Error("Axe lesson incomplete");
               }));
         }

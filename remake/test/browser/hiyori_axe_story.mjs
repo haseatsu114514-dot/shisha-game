@@ -31,6 +31,24 @@ async function finish(page,touch=false) {
 async function start(page){await page.evaluate(()=>{S.started=S.before();S.run=S.daily.playHiyoriEvent("axe_reveal");});await phase(page,"choice");}
 async function unchanged(page){assert.deepEqual(await page.evaluate(()=>S.before()),await page.evaluate(()=>S.started));}
 await suite("hiyori-axe-story",async check=>{
+  // AXR08: with Maki already met, her one-throw lesson sits where the script says the staff explained.
+  await check("owner-lesson-before-three-throws-only-when-maki-is-known",async page=>{
+    await setup(page);
+    await page.evaluate(()=>{const s=S.core.state;s.flags._intro_maki=true;s.met.maki=true;S.started=S.before();S.run=S.daily.playHiyoriEvent("axe_reveal");});
+    const coach=page.locator('[data-test="axe-coach"][data-kind="welcome"]');await coach.waitFor({timeout:60000});
+    assert.match(await coach.innerText(),/連れと一緒に/);
+    assert.equal(await page.locator('[data-test="axe-portrait"]').count(),0,"The lesson is Maki's, not hiyori's");
+    await page.locator('[data-test="axe-coach-skip"]').click();
+    await page.locator('[data-test="axe-game"][data-tutorial="false"][data-phase="choice"]').waitFor();
+    assert.equal(await page.locator('.axe-companion strong').textContent(),"ひより");
+    assert.equal(await page.evaluate(()=>S.core.state.flags._axe_lesson_done),true);
+    await page.locator('[data-test="axe-cancel"]').click();assert(!await page.evaluate(()=>S.run));
+    // Without having met Maki, the event goes straight to the three throws.
+    await page.evaluate(()=>{const s=S.core.state;delete s.flags._axe_lesson_done;s.flags._intro_maki=false;S.run=S.daily.playHiyoriEvent("axe_reveal");});
+    await page.locator('[data-test="axe-game"][data-tutorial="false"][data-phase="choice"]').waitFor({timeout:60000});
+    assert.equal(await page.locator('[data-test="axe-coach"]').count(),0);
+    await page.locator('[data-test="axe-cancel"]').click();
+  });
   await check("read-gates-and-legacy-do-not-infer",async page=>{
     await setup(page);
     const result=await page.evaluate(required=>{
