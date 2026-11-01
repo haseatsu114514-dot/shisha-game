@@ -60,13 +60,17 @@ export function chapterFourReviewLines(value, cs) {
   return lines;
 }
 
-/** 固定の自分の操作描写を、完了した一台の記録に差し替える。対戦相手の場面は既存台本のまま。 */
+/**
+ * 固定の自分の操作描写（ブロンドをほぐす〜炭を一つ離す）だけを、完了した一台の味と熱の2行に差し替える。
+ * 配合%・調整マーク・太陽の講評は直前の結果モーダルに任せ、ここでは成績表を繰り返さない。
+ * 操作に左右されない「ふと視線を感じた」以降と、対戦相手の場面は既存台本のまま。
+ */
 export function chapterFourFinalDialogue(source, value, cs) {
   const start = source.lines.findIndex(row => row.text === "はじめは普通のブロンドをほぐす。和の配合は、何度も試したものだ。");
-  const end = source.lines.findIndex(row => row.text?.startsWith("シェイクも火を直す。"));
-  const review = chapterFourReviewLines(value, cs);
+  const end = source.lines.findIndex(row => row.text?.startsWith("ふと視線を感じた。"));
+  const served = cs.pullDone && !cs.pull?.failed ? servedEvaluationLines(cs) : [];
   return { ...source, lines: start >= 0 && end > start
-    ? [...source.lines.slice(0, start), ...review, ...source.lines.slice(end)] : review };
+    ? [...source.lines.slice(0, start), ...served, ...source.lines.slice(end)] : served };
 }
 
 /** 敗北でも、未完了の提供や「最後まで吸いたくなる」という固定の成功評価を捏造しない。 */
