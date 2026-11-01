@@ -164,7 +164,7 @@ try {
     await page.keyboard.press("Enter");
     await page.waitForTimeout(1500);
     assert.equal(await page.locator(".vn-text").innerText(), "……");
-    await page.locator(".log-head button").click();
+    assert.equal(await page.locator(".vn-log.show").count(), 0, "Enter closes the focused LOG button without advancing dialogue");
     await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "そうですね");
     await page.locator('[data-test="vn-auto"]').click();
     await next(); await page.evaluate(() => window.scene);
