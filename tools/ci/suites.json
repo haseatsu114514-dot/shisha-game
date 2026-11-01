@@ -1057,6 +1057,22 @@
       ]
     },
     {
+      "id": "staff-roll",
+      "title": "Chapter 5 end card radar, staff roll, first-time no skip, then title",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 10,
+      "paths": [
+        "remake/js/scenes/staff-roll.js",
+        "remake/css/staff-roll.css",
+        "remake/js/chapters/ch5*.js",
+        "remake/test/browser/staff_roll.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/staff_roll.mjs"
+      ]
+    },
+    {
       "id": "ch3-map-activities",
       "title": "Tokyo map and nationwide gym membership",
       "kind": "browser",
