@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "chapter-actions",
+      "title": "Chapter 3–5 action buttons, session invalidation and error recovery",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/chapter_actions.mjs"]
+    },
+    {
       "id": "ch1-daily-features",
       "title": "Chapter 1 early home rig and shift cameo boundaries (#2021)",
       "kind": "quick",

@@ -1,0 +1,131 @@
+[
+  {
+    "id": "adam",
+    "kind": "portrait",
+    "source": "adam_01_serious.png",
+    "applied": true,
+    "background_color": [
+      250,
+      3,
+      201
+    ],
+    "top": 29,
+    "left": 117,
+    "right": 95,
+    "warnings": []
+  },
+  {
+    "id": "nagumo",
+    "kind": "portrait",
+    "source": "nagumo_01_shadow.png",
+    "applied": true,
+    "background_color": [
+      251,
+      4,
+      250
+    ],
+    "top": 23,
+    "left": 120,
+    "right": 67,
+    "warnings": []
+  },
+  {
+    "id": "steve",
+    "kind": "portrait",
+    "source": "steve_01_clear.png",
+    "applied": true,
+    "background_color": [
+      246,
+      4,
+      227
+    ],
+    "top": 32,
+    "left": 2,
+    "right": 4,
+    "warnings": []
+  },
+  {
+    "id": "maezono",
+    "kind": "portrait",
+    "source": "maezono_01_shadow.png",
+    "applied": true,
+    "background_color": [
+      251,
+      3,
+      202
+    ],
+    "top": 10,
+    "left": 2,
+    "right": 0,
+    "warnings": [
+      "人物が右の端で切れています"
+    ]
+  },
+  {
+    "id": "mashiro",
+    "kind": "portrait",
+    "source": "mashiro_01_shadow.png",
+    "applied": true,
+    "background_color": [
+      248,
+      3,
+      159
+    ],
+    "top": 0,
+    "left": 39,
+    "right": 0,
+    "warnings": [
+      "人物が右の端で切れています"
+    ]
+  },
+  {
+    "id": "sai",
+    "kind": "portrait",
+    "source": "sai_01_shadow.png",
+    "applied": true,
+    "background_color": [
+      248,
+      4,
+      225
+    ],
+    "top": 8,
+    "left": 93,
+    "right": 0,
+    "warnings": [
+      "人物が右の端で切れています"
+    ]
+  },
+  {
+    "id": "tsumugi",
+    "kind": "portrait",
+    "source": "tsumugi_01_shadow.png",
+    "applied": true,
+    "background_color": [
+      251,
+      2,
+      170
+    ],
+    "top": 0,
+    "left": 88,
+    "right": 116,
+    "warnings": []
+  },
+  {
+    "id": "samechan",
+    "kind": "portrait",
+    "source": "samechan_01_fringe.png",
+    "applied": true,
+    "background_color": [
+      251,
+      5,
+      192
+    ],
+    "top": 4,
+    "left": 1,
+    "right": 0,
+    "warnings": [
+      "人物が左の端で切れています",
+      "人物が右の端で切れています"
+    ]
+  }
+]
