@@ -14,12 +14,42 @@ const sourceFile = file => {
 };
 
 await suite("setup-continuation", async check => {
+  await check("selected appearance stays inside the worker window and clear of dialogue on resize", async page => {
+    for (const file of ["candidates.json", "render-preview.json"]) {
+      await page.route(`**/skin-candidates-issue374/${file}`, route => route.fulfill({ contentType: "application/json", body: sourceFile(file) }));
+    }
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const session = await import("./js/craft/session.js");
+      core.newGame().appearance = { handle: "handle-01-yoshio", mouthpiece: "mouthpiece-01-crystal-drop" };
+      session.openBench(session.newSession("rehearsal"), { steps: [["setup", "機材"]] });
+    });
+    await page.locator('[data-test="worker-appearance"] image').first().waitFor();
+    for (const layout of ["normal", "ds"]) {
+      await page.evaluate(layout => {
+        localStorage.setItem("suien_title_layout", layout);
+        window.dispatchEvent(new Event("display-layout-change"));
+      }, layout);
+      await page.waitForFunction(layout => document.body.classList.contains("game-ds") === (layout === "ds"), layout);
+      for (const viewport of [{ width: 1280, height: 800 }, { width: 844, height: 390 }, { width: 390, height: 844 }]) {
+        await page.setViewportSize(viewport);
+        // Wait for the real resize/layout handlers rather than imposing a particular offset.
+        await page.waitForFunction(() => {
+          const rect = selector => document.querySelector(selector).getBoundingClientRect();
+          const a = rect(".worker-appearance"), s = rect(".bench-worker-stage"), d = rect(".bench-audience");
+          return a.width > 0 && a.height > 0 && a.left >= s.left && a.right <= s.right + 1
+            && a.top >= s.top && a.bottom <= s.bottom + 1
+            && (a.bottom <= d.top || a.top >= d.bottom || a.right <= d.left || a.left >= d.right);
+        });
+      }
+    }
+  }, { reducedMotion: "reduce" });
   await check("optional appearance selection updates the active rig and SAVE only", async page => {
     for (const file of ["candidates.json", "render-preview.json"]) {
       await page.route(`**/skin-candidates-issue374/${file}`, route => route.fulfill({ contentType: "application/json", body: sourceFile(file) }));
     }
     const pixel = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jR4sAAAAASUVORK5CYII=", "base64");
-    await page.route("**/skin-candidates-issue374/*.png", route => route.fulfill({ contentType: "image/png", body: pixel }));
+    await page.route("**/remake/img/appearance/*.png", route => route.fulfill({ contentType: "image/png", body: pixel }));
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
       const session = await import("./js/craft/session.js");
@@ -33,6 +63,9 @@ await suite("setup-continuation", async check => {
     });
     await page.locator('[data-test="worker-appearance"] [data-id="handle-01-yoshio"]').waitFor();
     await page.locator('[data-test="worker-appearance"] [data-id="mouthpiece-01-crystal-drop"]').waitFor();
+    assert.deepEqual(await page.locator('[data-test="worker-appearance"] image').evaluateAll(nodes => nodes.map(node => new URL(node.getAttribute("href")).pathname)), [
+      "/remake/img/appearance/handle-01-yoshio.png", "/remake/img/appearance/mouthpiece-01-crystal-drop.png",
+    ]);
     await page.locator('[data-test="bench-appearance-open"]').click();
     await page.locator('[data-test="appearance-handle"]').selectOption("handle-02-shishark-blue");
     await page.locator('[data-test="appearance-cancel"]').click();
