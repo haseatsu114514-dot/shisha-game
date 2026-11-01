@@ -28,6 +28,7 @@ try{
   // Controls: two ▶, a crossfader, PITCH ×2 and SYNC. No stage header, no nudge/judge/VOL/CUE buttons, no EQ inputs.
   assert.equal(await page.locator('.stage-btn,header,[data-nudge],[data-nudge-ms],#judge-btn,#offset,#volume,#cue-a,#cue-b,#start,#pause,#mute').count(),0);
   assert.equal(await page.locator('input[type=range]').count(),3,'crossfader + PITCH ×2 only');
+  assert(await page.locator('#exit').isHidden(),'← 戻る only when opened from the game (?embed=1 in a frame)');
   assert.equal(await page.locator('.eq input').count(),0,'EQ knobs are decorative');
   assert.equal(await page.locator('#track-a').textContent(),'Dance Monster');assert.equal(await page.locator('#track-b').textContent(),'Digital Lemonade');
   assert((await page.locator('main').textContent()).includes('CC BY 4.0'));
