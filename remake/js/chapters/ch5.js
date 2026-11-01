@@ -3,7 +3,7 @@
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
-import { awardChapterClearExp, awardTournamentExp } from "../core/growth.js";
+import { awardChapterClearExp, awardTournamentExp, awardSceneExp } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -259,8 +259,10 @@ async function deliverLime(owner, milestone) {
 
 /** 読了 → 確定 → 保存。確定できなければ（別partの場面など）保存せず false。 */
 async function readAndCommit(owner, id) {
+  const optional = chapterFiveFreeRemaining(state).some(scene => scene.id === id);
   if (!await readScene(owner, id)) return false;
   if (!completeChapterFiveScene(state, id)) return false;
+  if (optional) awardSceneExp(id);
   if (state.flags._ch5_cleared) awardChapterClearExp();
   save();
   return true;

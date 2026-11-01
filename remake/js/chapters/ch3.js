@@ -3,6 +3,7 @@ import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
+import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -404,7 +405,25 @@ async function renderStage(owner) {
  */
 async function optionalActions(owner) {
   const scenes = availableOptionalScenes(await loadStoryRoutes(), state);
-  return scenes.length ? [button(owner, `寄り道をする（${scenes.length}）`, "optional-open", () => renderOptional(owner))] : [];
+  const count = scenes.length + readyVolkLessons().length;
+  return count ? [button(owner, `寄り道をする（${count}）`, "optional-open", () => renderOptional(owner))] : [];
+}
+
+function readyVolkLessons() {
+  const first = chapterThreeScenes(state).findIndex(scene => scene.id === "ch3_volk_first");
+  const known = state.met?.volk || state.flags?._met_volk || (state.affinity?.volk || 0) > 0;
+  return first >= 0 && state.flags?._ch3_intro?.stage > first && known ? readyLessons("volk") : [];
+}
+
+async function consultVolk(owner) {
+  if (!current(owner) || !readyVolkLessons().length) return;
+  const background = bgUrl("bg_volk_shop");
+  showScreen("none", null); hud(owner);
+  await withScenePreparation(setBg(background, { instant: true }));
+  if (!current(owner)) return;
+  const controller = owner.controller = new AbortController();
+  try { await consultLessons("volk", { bg: background, signal: controller.signal }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 /**
@@ -495,10 +514,15 @@ async function runTrial(owner, id) {
 async function renderOptional(owner) {
   if (!current(owner)) return;
   const scenes = availableOptionalScenes(await loadStoryRoutes(), state);
-  if (!scenes.length) { await renderStage(owner); return; }
+  const lessons = readyVolkLessons();
+  if (!scenes.length && !lessons.length) { await renderStage(owner); return; }
   card(owner, "optional", "寄り道", "本筋の合間に、立ち寄れる場面がある。読んでも、予定は進まない。", [
     ...scenes.map(scene => button(owner, `${scene.label}（${scene.location}）`, `optional-${scene.id}`,
       () => readOptional(owner, scene.id))),
+    ...lessons.map(lesson => button(owner, `鉄の煙でヴォルクに相談する（${lesson.name}）`, "lesson-volk", async () => {
+      await consultVolk(owner);
+      if (current(owner)) await renderStage(owner);
+    })),
     button(owner, "戻る", "optional-back", () => renderStage(owner)),
   ], "読んだ場面は、あとから読み返せません。");
 }
@@ -509,7 +533,12 @@ async function readOptional(owner, id) {
   if (scene && !await readScene(owner, scene)) return;
   if (scene) {
     commitOptionalRead(state, id);
+    awardSceneExp(id);
     save();
+    // 既存の「鉄の煙」への段階訪問。配達や初来店を前倒しせず、その場で授業を相談する。
+    if (current(owner) && scene.location === "鉄の煙" && scene.met?.includes("volk")) {
+      await consultVolk(owner);
+    }
   }
   await renderStage(owner);
 }

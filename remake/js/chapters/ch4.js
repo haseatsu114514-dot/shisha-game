@@ -10,7 +10,7 @@ import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { radar } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
-import { awardChapterClearExp, presentNight } from "../core/growth.js";
+import { awardChapterClearExp, awardSceneExp, presentNight, consultLessons } from "../core/growth.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
@@ -189,6 +189,7 @@ async function readAndCommit(owner, id) {
   const unlockRevisit = id === "ch4_stranger_second" && progress.part === "free" && !progress.read[id];
   if (!await readScene(owner, id)) return false;
   if (!completeChapterFourScene(state, id)) return false;
+  if (progress.part === "free" && CH4_SPOT_SCENES.includes(id)) awardSceneExp(id);
   if (state.flags._ch4_cleared) awardChapterClearExp();
   save();
   if (unlockRevisit) toast("路地裏のカフェに再訪できるようになった", { kind: "good" });
@@ -302,10 +303,18 @@ async function visit(owner, id) {
     if (CH4_SPOT_SCENES.includes(sceneId)) {
       // スポット初回は「……【センス】が少し上がった。」の台詞報酬を実際に加算する（通常の自由行動と同じ最大2能力各1P）。
       // 最後まで読んだ時だけ精算し、中断では何も付けない。
-      const { value: done } = await paidAction(() => readAndCommit(owner, sceneId), { consumed: ok => ok });
+      const { value: done } = await paidAction(() => readAndCommit(owner, sceneId), {
+        consumed: ok => ok, exp: { key: `dubai:${destination.id}`, place: `dubai:${destination.id}` },
+      });
       if (!done) return;
       save();
     } else if (!await readAndCommit(owner, sceneId)) return;
+  }
+  if (destination.id === "festa" && current(owner)) {
+    const controller = owner.controller = new AbortController();
+    try { await consultLessons("da_silva", { bg: bgUrl(destination.background), signal: controller.signal }); }
+    finally { if (owner.controller === controller) owner.controller = null; }
+    if (!current(owner)) return;
   }
   if (destination.kind === "end_day") {
     if (!endChapterFourDay(state)) return;

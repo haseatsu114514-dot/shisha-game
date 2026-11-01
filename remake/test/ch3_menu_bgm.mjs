@@ -27,6 +27,7 @@ async function harness(chapter, value) {
   const modules = new Map();
   const bindings = {
     state: value, save: () => calls.saves++,
+    chapterGrowthNight: async () => true, // 盤無効のMENU検査。夜の実精算はgrowth_chapter_rewardsで別途検証。
     DB: { dialogues: {} }, bgUrl: key => key, el: node,
     layers: { hud: node() }, showScreen: (name, root) => calls.screens.push({ name, root }), setBg: async () => {},
     modal: async options => { calls.modals.push(options); return calls.modals.length === 1 ? choice : true; },

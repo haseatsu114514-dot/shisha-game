@@ -8,6 +8,7 @@ globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v)
 const core = await import("../js/core/state.js"), growth = await import("../js/core/growth.js");
 const p3 = await import("../js/chapters/ch3-aftermath-progress.js"), p4 = await import("../js/chapters/ch4-progress.js"), p5 = await import("../js/chapters/ch5-progress.js");
 const actions = await import("../js/core/chapter-actions.js");
+const stats = await import("../js/core/stats.js"), map4 = await import("../js/chapters/ch4-map-model.js");
 growth.setGrowthPreview(true);
 const dialogues = {};
 for(const file of fs.readdirSync(new URL("../../data/dialogue/",import.meta.url)).filter(x=>x.endsWith(".json"))){
@@ -23,6 +24,7 @@ async function runner(name,progress,exposed){
   let owner,screen,cancel=false,swap=false,craft,snapshots=[],replacement;
   const noop=()=>{};
   const ports={...progress,...growth,el:node,DB:{dialogues},bgUrl:x=>x,
+    chapterFourMapModel:map4.chapterFourMapModel,canReflect:()=>false,paidAction:stats.paidAction,
     chapterDay:()=>core.state.day,chapterGrowthNight:async()=>true,createChapterActions:opts=>actions.createChapterActions(opts),
     layers:{hud:{replaceChildren:noop,classList:{remove:noop}}},showScreen:(_id,n)=>{screen=n;},
     setBg:async()=>{},playBgm:noop,toast:noop,hooks:{},
@@ -76,10 +78,14 @@ function beforeFourClear(){
   for(const scene of p4.CH4_RESOLUTION.slice(0,-1))p4.completeChapterFourScene(s,scene.id);
   return s;
 }
-function beforeFiveCup(){
+function beforeFiveFree(){
   const s=fresh(4);s.phase="cleared";s.flags._ch4_cleared=true;p5.advanceToChapterFive(s);
   s.growth.chapterLog[5]={people:["sumi","minto","minto"],places:["one","two","two"]};
   for(const scene of p5.CH5_PROLOGUE)p5.completeChapterFiveScene(s,scene.id);
+  return s;
+}
+function beforeFiveCup(){
+  const s=beforeFiveFree();
   p5.completeChapterFiveScene(s,"ch5_unrecorded_day");p5.recordChapterFiveScheduleDecision(s,"decide");
   p5.completeChapterFiveScene(s,"ch5_schedule_contact");p5.beginChapterFiveMatch(s);
   for(const key of ["arrival","firstCup","beforeSecond"])p5.completeChapterFiveScene(s,p5.CH5_MATCH_SCENES[key]);
@@ -95,7 +101,7 @@ function beforeFiveClear(){
 
 core.newGame();
 const r3=await runner("ch3-aftermath",p3,["renderStage"]);
-const r4=await runner("ch4",p4,["readAndCommit"]);
+const r4=await runner("ch4",p4,["readAndCommit","visit"]);
 const r5=await runner("ch5",p5,["readAndCommit","craftSecondCup"]);
 for(const [chapter,r,seed,id] of [[3,r3,beforeThreeClear,"ch3_ageha_reunion"],
   [4,r4,beforeFourClear,p4.CH4_RESOLUTION.at(-1).id],[5,r5,beforeFiveClear,"ending_daily_smoke"]]){
@@ -138,7 +144,23 @@ for(const [total,failed,expectedBase] of [[100,false,200],[20,false,120],[76,fal
   const before=JSON.stringify(core.state.growth);growth.awardTournamentExp(expectedBase===200?1:2,craft);
   assert.equal(JSON.stringify(core.state.growth),before,"tournament retry cannot repeat XP or colored fire");
 }
-console.log("PASS: actual chapter 3/4/5 runner commit boundaries save clear/breadth XP once; cancellation/off preserve old stats; chapter 5 real outcome records participation/rank/fire once (controlled VN/UI/craft input)");
+// 既存のスーク行動はX1が一回、場所の初回X3と固有場面X5。日・体力を新設しない。
+{
+  const s=fresh(3);s.phase="cleared";s.flags._ch3_cleared=true;p4.advanceToChapterFour(s);
+  for(const scene of p4.CH4_PROLOGUE)p4.completeChapterFourScene(s,scene.id);
+  const day=s.day,stamina=s.stamina;r4.use(s);await r4.module.visit(r4.owner,"souq");
+  assert.equal(core.state.growth.xp,158);assert.equal(core.state.growth.fresh.counts["dubai:souq"],1);
+  assert(core.state.growth.read.includes("ch4_dubai_souq"));assert(core.state.growth.firsts.places.includes("dubai:souq"));
+  assert.equal(core.state.day,day);assert.equal(core.state.stamina,stamina);
+}
+// 第5章の既存の任意の会話は完読分だけ。無料の再表示を一行動に数えない。
+{
+  const s=beforeFiveFree(),id=p5.CH5_FREE_SCENES[0].id;r5.use(s);
+  assert.equal(await r5.module.readAndCommit(r5.owner,id),true);
+  assert.equal(core.state.growth.xp,40);assert.deepEqual(core.state.growth.fresh.counts,{});
+  assert(core.state.growth.read.includes(id));
+}
+console.log("PASS: actual chapter 3/4/5 runner commit boundaries save clear/breadth XP once; cancellation/off preserve old stats; chapter 5 real outcome records participation/rank/fire once; optional and spot XP preserve existing action/time contracts (controlled VN/UI/craft input)");
 
 // 章の時計を読む共通境界。旧セーブ初表示・再表示・巻戻しでは夜を作らない。
 {

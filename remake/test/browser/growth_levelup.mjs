@@ -25,6 +25,65 @@ await suite("growth-levelup", async (runCheck) => {
   // ケースごとに独立したBrowserContext。検査の増加後も既存の5分枠へ収まるよう最大2件ずつ動かす。
   const cases=[];
   const check=(...args)=>{cases.push(args);};
+  await check("existing-Volk-and-FESTA-visits-teach-in-person",async(page)=>{
+    await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
+    await page.evaluate(async()=>{
+      window.teacherCore=await import("./js/core/state.js");window.teacherGrowth=await import("./js/core/growth.js");
+      const p=await import("./js/chapters/ch3-progress.js"),s=teacherCore.state;
+      Object.assign(s,{chapter:2,day:28,phase:"cleared"});s.flags={_ch2_cleared:true,_ch2_read_ch2_tournament_ageha_heart:true,_ch2_tournament:{stage:"complete"}};
+      if(!p.advanceToChapterThree(s))throw new Error("Tokyo boundary");
+      for(let i=0;i<80;i++){
+        const next=p.chapterThreeScenes(s)[s.flags._ch3_intro.stage];if(next?.id==="ch3_strategy")break;
+        const w=p.chapterThreeFreeTime(s);if(w)p.completeChapterThreeFreeTime(s,w.id);
+        else if(next)p.completeChapterThreeScene(s,next.id);else throw new Error("Tokyo strategy");
+      }
+      Object.assign(s.flags._ch3_intro,{titleSeen:true,prologueStep:4});s.flags._ch3_opening_read=true;s.met.volk=true;s.affinity.volk=66;
+      teacherGrowth.setGrowthPreview(true);Object.assign(teacherGrowth.ensureGrowth(),{nodes:["M-W5"],learned:[]});
+      (await import("./js/vn/engine.js")).vnTest.turbo=true;
+      window.teacherBefore={day:s.day,slot:s.slot,stage:s.flags._ch3_intro.stage,stamina:s.stamina};
+      void (await import("./js/chapters/ch3.js")).resumeChapterThree();
+    });
+    await page.locator(t("ch3-intro-optional-open")).click();
+    await page.locator(t("ch3-intro-optional-ch3_volk_second")).click();
+    await page.waitForFunction(()=>teacherCore.state.growth.learned.includes("M-W5"));
+    const volk=await page.evaluate(async()=>{
+      const s=teacherCore.state;return{same:s.day===teacherBefore.day&&s.slot===teacherBefore.slot&&s.flags._ch3_intro.stage===teacherBefore.stage&&s.stamina===teacherBefore.stamina,
+        active:(await import("./js/core/growth-effects.js")).growthLesson(s,"M-W5"),
+        xp:s.growth.xp,read:s.growth.read.includes("ch3_volk_second"),count:Object.keys(s.growth.fresh.counts).length};
+    });
+    assert(volk.same&&volk.active&&volk.read);assert.equal(volk.xp,30);assert.equal(volk.count,0);
+    await page.locator(t("ch3-intro-scene")).waitFor();
+    // 先に既存の訪問を読んだ保存でも、後から灯した相談だけを選べる（同じ話やXPを再演しない）。
+    await page.evaluate(async()=>{
+      teacherCore.state.growth.learned=[];
+      void (await import("./js/chapters/ch3.js")).resumeChapterThree();
+    });
+    await page.locator(t("ch3-intro-optional-open")).click();
+    await page.locator(t("ch3-intro-lesson-volk")).click();
+    await page.waitForFunction(()=>teacherCore.state.growth.learned.includes("M-W5"));
+    assert.equal(await page.evaluate(()=>teacherCore.state.growth.xp),30);
+    await page.locator(t("ch3-intro-scene")).waitFor();
+    await page.evaluate(async()=>{
+      const p=await import("./js/chapters/ch4-progress.js"),s=teacherCore.newGame();
+      Object.assign(s,{chapter:3,phase:"cleared",day:45});s.flags._ch3_cleared=true;
+      if(!p.advanceToChapterFour(s))throw new Error("Dubai boundary");
+      for(const scene of p.CH4_PROLOGUE)p.completeChapterFourScene(s,scene.id);
+      s.flags._ch4.titleSeen=true;s.met.da_silva=true;s.affinity.da_silva=66;
+      Object.assign(teacherGrowth.ensureGrowth(),{nodes:["M-B6"],learned:[]});
+      const companion=await import("./js/core/overseas-companion.js");
+      if(companion.canChooseOverseasCompanion(s))companion.chooseOverseasCompanion(s,null);
+      window.teacherBefore={day:s.day,slot:s.slot,stamina:s.stamina};
+      void (await import("./js/chapters/ch4.js")).resumeChapterFour();
+    });
+    await page.locator(t("ch4-go-festa")).click();
+    await page.waitForFunction(()=>teacherCore.state.growth.learned.includes("M-B6"));
+    const festa=await page.evaluate(async()=>{
+      const s=teacherCore.state;teacherCore.saveToSlot("teacher-festa");teacherCore.loadFromSlot("teacher-festa");
+      return{same:s.day===teacherBefore.day&&s.slot===teacherBefore.slot&&s.stamina===teacherBefore.stamina,
+        active:(await import("./js/core/growth-effects.js")).growthLesson(teacherCore.state,"M-B6"),read:s.flags._ch4.read.ch4_festa};
+    });
+    assert(festa.same&&festa.active&&festa.read);
+  });
   await check("Tokyo-night-saves-before-animation-and-LOAD-cleans-owner",async(page)=>{
     await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
     await page.evaluate(async()=>{
