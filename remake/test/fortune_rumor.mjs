@@ -5,7 +5,7 @@ import path from "node:path";
 import vm from "node:vm";
 const root = new URL("../js/", import.meta.url);
 const dataRoot = new URL("../../data/dialogue/", import.meta.url);
-const actual = new Set(["core/flavor-mastery.js","core/cinema-discovery.js", "daily/cinema.js","core/affinity-stages.js", "core/state.js", "core/gallery-progress.js", "core/rules.js", "core/bus.js", "core/chapter-clock.js", "daily/fortune-schedule.js", "core/fortune-effects.js",
+const actual = new Set(["core/chapter-features.js", "core/flavor-mastery.js","core/cinema-discovery.js", "daily/cinema.js","core/affinity-stages.js", "core/state.js", "core/gallery-progress.js", "core/rules.js", "core/bus.js", "core/chapter-clock.js", "daily/fortune-schedule.js", "core/fortune-effects.js",
   "daily/fortune-rumor.js", "daily/weather.js", "daily/tonari.js", "daily/spots.js", "daily/fortune.js", "daily/spot-access.js",
   "daily/spot-people.js", "daily/map-reveals.js", "daily/tsumugi-schedule.js", "chapters/tsumugi-story.js", "daily/calendar.js"]);
 const DB = { flavorById: {}, dialogues: {}, characters: { naru: { name: "なる" } }, fortuneTrivia: {}, flavors: [], recipes: [], baito: [] };
@@ -127,6 +127,40 @@ await check("actual state SAVE/LOAD preserves face completion, legacy LIME histo
   core.saveToSlot("suien_remake_slot1"); core.newGame(); core.loadFromSlot("suien_remake_slot1");
   assert.equal(core.state.flags[key],true);assert.equal(core.state.fortuneDay,1);assert.equal(core.state.fortune.char,"naru");
   assert.equal(JSON.stringify(core.state.limeRead),prior);assert.equal(discovery.fortuneOpenOn(5,d=>[3,4].includes(d)),true);
+});
+await check("chapter feature preserves legacy map and entry gates across schedule boundaries", async () => {
+  const features = await load("core/chapter-features.js");
+  for (const chapter of [1, 2, 3, 4, 5, undefined, "1", "2", "3", "4", "5"]) {
+    const enabled = [1, 2].includes(chapter);
+    assert.equal(features.chapterFeatureEnabled(chapter, "fortune"), enabled);
+    assert.equal(features.chapterFeatureEnabled(chapter, "unknown"), false);
+    for (let day = 1; day <= 14; day++) for (const seed of [2, 4])
+      for (const heard of [false, true]) for (const slot of [0, 1]) for (const done of [false, true]) {
+        const s = fresh(day, slot);
+        if (chapter === undefined) delete s.chapter; else s.chapter = chapter;
+        s.weatherSeed = seed; s.flags[key] = heard;
+        s.fortuneDay = done ? day : 0; s.money = 10000; s.met.naru = true; s.affinity.naru = 5;
+        const expectedToday = enabled && heard && discovery.fortuneOpenOn(day, weather.isRainy);
+        const expectedEntry = expectedToday && slot === 0 && !done;
+        const before = JSON.stringify(s), label = JSON.stringify({ chapter, day, seed, heard, slot, done });
+        assert.equal(fortune.fortuneToday(), expectedToday, label);
+        assert.equal(spots.isUnlocked(offer()), expectedToday, label);
+        assert.equal(access.spotVisible(offer()), expectedToday, label);
+        assert.equal(access.spotAvailability(offer()).ok, expectedEntry, label);
+        assert.equal(JSON.stringify(s), before, `read-only gates: ${label}`);
+        assert.equal(await fortune.doFortune(), expectedEntry, label);
+        if (!expectedEntry) assert.equal(JSON.stringify(s), before, `blocked entry: ${label}`);
+        else {
+          assert.equal(s.money, 7000, label); assert.equal(s.fortuneDay, day, label);
+          assert.equal(s.fortune.char, "naru", label); assert.equal(Object.keys(s.fortune).join(","), "char", label);
+          assert.equal(s.affinity.naru, 5, label); assert.equal(s.slot, slot, label);
+          assert.equal(s.day, day, label); assert.equal(s.chapter, chapter, label);
+          const paid = JSON.stringify(s);
+          assert.equal(await fortune.doFortune(), false, label);
+          assert.equal(JSON.stringify(s), paid, `once per day: ${label}`);
+        }
+      }
+  }
 });
 await check("daylight, fee, once/day and live result application retained", async () => {
   const s = fresh(3, 0); s.flags[key] = true; while (weather.isRainy()) s.weatherSeed++;
