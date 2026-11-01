@@ -25,6 +25,22 @@ await suite("growth-levelup", async (runCheck) => {
   // ケースごとに独立したBrowserContext。検査の増加後も既存の5分枠へ収まるよう最大2件ずつ動かす。
   const cases=[];
   const check=(...args)=>{cases.push(args);};
+  await check("chapter-five-entry-settles-previous-night-once",async(page)=>{
+    await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
+    await page.evaluate(async()=>{
+      window.entryFiveCore=await import("./js/core/state.js");const g=await import("./js/core/growth.js"),s=entryFiveCore.state;
+      Object.assign(s,{chapter:4,phase:"cleared",day:60});s.flags._ch4_cleared=true;
+      g.setGrowthPreview(true);Object.assign(g.ensureGrowth(),{xp:260,level:1,settledXp:0});
+      void (await import("./js/chapters/ch5.js")).beginChapterFive();
+    });
+    await page.locator(t("levelup")).waitFor({timeout:30000});
+    assert.deepEqual(await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem(entryFiveCore.SAVE_KEY));return{chapter:s.chapter,day:s.day,level:s.growth.level,fire:s.growth.hidane.any,xp:s.growth.xp};}),
+      {chapter:5,day:61,level:2,fire:2,xp:260});
+    await page.locator(t("levelup-ok")).click();await page.locator(t("ch5-scene")).waitFor();
+    await page.evaluate(async()=>{if(!entryFiveCore.loadFromSlot(entryFiveCore.SAVE_KEY))throw new Error("entry autosave");void (await import("./js/chapters/ch5.js")).resumeChapterFive();});
+    await page.locator(t("ch5-scene")).waitFor();assert.equal(await page.locator(t("levelup")).count(),0);
+    assert.deepEqual(await page.evaluate(()=>({xp:entryFiveCore.state.growth.xp,fire:entryFiveCore.state.growth.hidane.any})),{xp:260,fire:2});
+  });
   await check("chapter-five-finale-settles-and-Kannon-stays-free",async(page)=>{
     await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
     await page.evaluate(async()=>{

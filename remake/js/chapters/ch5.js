@@ -3,6 +3,7 @@
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot } from "../core/growth.js";
 import { canReflect } from "../daily/reflection.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
@@ -154,7 +155,7 @@ export function resumeChapterFive() {
 
 async function openChapter(advance) {
   if (session) { session.active = false; session.controller?.abort(); }
-  const owner = session = { state, active: true, busy: false, menuBusy: false, controller: null };
+  const owner = session = { state, growthDay: state.day, active: true, busy: false, menuBusy: false, controller: null };
   document.body.classList.remove("ch2-city", "ch2-main", "ch2-tournament", "ch3-intro", "ch3-aftermath", "ch3-tournament", "ch4-intro");
   document.body.classList.add("ch5-intro");
   hud();
@@ -276,6 +277,7 @@ async function readAndCommit(owner, id) {
 
 async function renderStage(owner) {
   if (!current(owner)) return;
+  if (!await chapterGrowthNight(owner, () => current(owner))) return;
   const progress = chapterFiveProgress(state);
   if (progress.part === "prologue") return renderScene(owner, CH5_PROLOGUE[progress.stage], "");
   if (progress.part === "free") {
