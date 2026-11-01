@@ -8,15 +8,15 @@ import assert from 'node:assert/strict';
 import { registerHooks } from 'node:module';
 
 const mode = process.argv.includes('--star') ? 'star' : 'step';
-// Keep the game source untouched. Node's loader changes only the in-memory tier01 export.
-if (mode === 'step') registerHooks({ load(url, context, nextLoad) {
+// Default uses the production ten-step calculation unchanged. --star is only a legacy
+// comparison of tier01; the loader changes that export in memory, never the game files.
+if (mode === 'star') registerHooks({ load(url, context, nextLoad) {
   const loaded = nextLoad(url, context);
   if (!url.endsWith('/core/stats.js')) return loaded;
   const source = String(loaded.source);
-  const old = 'return (star(key) - 1) / 4;';
-  assert.equal(source.split(old).length, 2, 'tier01 source changed');
-  return { ...loaded, source: source.replace(old,
-    'return (clamp(Math.ceil((state.stats[key] || 0) / 10), 1, 10) - 1) / 9;') };
+  const current = 'return (step(key) - 1) / 9;';
+  assert.equal(source.split(current).length, 2, 'tier01 source changed: update the legacy comparison');
+  return { ...loaded, source: source.replace(current, 'return (star(key) - 1) / 4;') };
 }});
 
 globalThis.document = { addEventListener() {} };
@@ -139,5 +139,5 @@ if (process.argv.includes('--calibrate-poor')) {
     assert.deepEqual(again,rows,`repeat ${id}/${operation}`);
     all.push({id,operation,n:rows.length,wins:rows.filter(x=>x.rank===1).length,sha256:sha(rows),repeatSha256:sha(again)});
   }
-  console.log(JSON.stringify({tierMode:mode,planSha256:sha(fs.readFileSync(new URL('plan.json',root))),rows:all}));
+  console.log(JSON.stringify({tierMode:mode,model:'gaussian-input-approximation; legacy-stats-only; no growth-board acceptance',planSha256:sha(fs.readFileSync(new URL('plan.json',root))),rows:all}));
 }

@@ -162,7 +162,7 @@ export async function playHiyoriQuestion({ bg = null, signal = null, deferSave =
   const q = hiyoriRoute().question, scene = DB.dialogues[q.dialogue];
   const answer = state.romanceChoices[q.choice];
   const owner = state;
-  const result = await play(resumeChoice(scene,q.choice,answer), { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
+  const result = await play(resumeChoice(scene,q.choice,answer), { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal, growthScene: true });
   if (state !== owner || signal?.aborted || (!result || result.cancelled) || state.romanceChoices[q.choice]?.char !== "hiyori") return false;
   state.flags[q.flag] = true;
   releaseAffinity("hiyori");
@@ -204,7 +204,7 @@ export async function playQuestionVisit(id, { bg = null, signal = null, deferSav
   try {
     const scene = DB.dialogues[q.dialogue];
     const script = resumeChoice(scene, q.choice, state.romanceChoices?.[q.choice]);
-    const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
+    const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal, growthScene: true });
     const answer = state.romanceChoices?.[q.choice];
     if (state !== owner || signal?.aborted || (!result || result.cancelled)
       || answer?.char !== id || !Number.isFinite(answer.value) || answer.value < 0) return false;
@@ -271,7 +271,7 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   });
   const script = answer ? { ...scene, lines: resumeRows(scene.lines),
     branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([key, rows]) => [key, resumeRows(rows)])) } : def.dialogue;
-  const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
+  const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal, growthScene: true });
   if (state !== owner || (!result || result.cancelled) || signal?.aborted) return false;
   const route = isLover(id) ? "lover" : romanceChosen(id) ? "romance" : "friend";
   if (!state.owned.includes(def.gift)) await giftOpen(def.gift); // 箱がほどけて専用ハガルが出てくる（受け取りの通知はこの後）
@@ -416,7 +416,7 @@ export async function playFriendHangout(id) {
       { speaker: id, face: v.close.face, text: v.close.text, inner: v.close.inner },
       { type: "apply", stats: { [f.stat]: 2 } },
     ],
-  });
+  }, { growthScene: true });
   state.friendHangouts[id] = n + 1;
   save();
   return true;

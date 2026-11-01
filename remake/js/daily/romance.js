@@ -232,7 +232,7 @@ export async function playDate(id) {
   const venue = dateVenue(id);
   state.lastDate[id] = state.day;
   bond.private = true;
-  await play(dateScene(id, venue));
+  await play(dateScene(id, venue), { growthScene: true });
   gainAffinity(id, 10);
   bond.private = false;
   addStamina(-10);

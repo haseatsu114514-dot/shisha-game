@@ -37,7 +37,7 @@ export const hidaneForLevel = () => HIDANE_PER_LEVEL;
 export const COLORED_GIFT = 2;      // 節目・大会・♥5の色つきの火種（1.5）
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
-export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20 };
+export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20, scene: 20 };
 /** その章で同じ鍵の 1・2回目 ×1.0、3回目 ×0.8、4回目 ×0.6、5回目以降 ×0.4（1.3） */
 export const FRESHNESS = [1, 1, 0.8, 0.6, 0.4];
 export const freshness = (count) => FRESHNESS[Math.min(FRESHNESS.length, Math.max(1, count)) - 1];
@@ -79,6 +79,10 @@ export function newGrowth() {
     fresh: { chapter: 1, counts: {} }, // 新鮮さの鍵 -> その章の回数
     firsts: { people: [], places: [] }, // 周回内の「はじめて」
     discoveries: { recipes: [], golden: [] }, // 自由行動で精算した配合の発見（周回ごと）
+    read: [],              // 自分で選んだ固有場面の完読報酬（開始台本ID、周回ごと）
+    chapterLog: {},        // 章 -> X1で関わった人・場所（X11）
+    tournamentXp: {},      // 章 -> 大会の参加・最高順位・色の火種（再挑戦で戻さない）
+    cleared: [],           // X10/X11を精算した章（周回ごと）
     today: { xp: 0, learned: {}, gifts: [] }, // 寝る時までの分。learned は鍵 -> 経験値（「今日学んだこと」）、gifts は♥5の贈り物
     seen: { fullLevelUp: false },      // フル演出を一度見たか（初回の判定）
     nodes: [],             // 盤で灯したマスID（確定済みだけ。紋は数えない。取った授業も入る）
@@ -135,6 +139,11 @@ export function ensureGrowth(s = state) {
   if (!g.fresh.counts || typeof g.fresh.counts !== "object") g.fresh.counts = {};
   g.firsts = { people: strings(g.firsts?.people), places: strings(g.firsts?.places) };
   g.discoveries = { recipes: strings(g.discoveries?.recipes), golden: strings(g.discoveries?.golden) };
+  g.read = strings(g.read);
+  for (const key of ["chapterLog", "tournamentXp"]) {
+    if (!g[key] || typeof g[key] !== "object" || Array.isArray(g[key])) g[key] = {};
+  }
+  g.cleared = [...new Set((Array.isArray(g.cleared) ? g.cleared : []).filter(c => Number.isInteger(c) && c >= 1 && c <= 5))];
   if (!g.today || typeof g.today !== "object") g.today = fresh.today;
   g.today.xp = num(g.today.xp);
   if (!g.today.learned || typeof g.today.learned !== "object") g.today.learned = {};
@@ -325,6 +334,11 @@ export function awardActionExp(target) {
   const g = ensureGrowth();
   if (g.fresh.chapter !== state.chapter) g.fresh = { chapter: state.chapter, counts: {} };
   const count = (g.fresh.counts[target.key] = (Number(g.fresh.counts[target.key]) || 0) + 1);
+  let log = g.chapterLog[state.chapter];
+  if (!log || typeof log !== "object" || Array.isArray(log)) log = g.chapterLog[state.chapter] = { people: [], places: [] };
+  log.people = strings(log.people); log.places = strings(log.places);
+  const collection = target.person ? log.people : log.places, id = target.person || target.place || target.key;
+  if (!collection.includes(id)) collection.push(id);
   let got = gainExp(EXP.action * freshness(count), { key: target.key, tag: count >= 3 ? "なじみ" : null });
   if (target.person && !g.firsts.people.includes(target.person)) {
     g.firsts.people.push(target.person);
@@ -348,6 +362,62 @@ export function awardRecipeExp(id, { discovered = false, golden = false } = {}) 
     got += gainExp(base, { key: `recipe:${id}`, tag: kind === "recipes" ? "新レシピ" : "黄金比" });
   }
   return got;
+}
+
+/** X5/X5s。専用の恋人報酬は lover-rewards.js が扱い、同じ完読を二重に数えない。 */
+export function awardSceneExp(id) {
+  if (!growthEnabled() || !state || typeof id !== "string" || !id
+    || /^lover_/.test(id) || id === "hiyori_feelings_spoken") return 0;
+  const g = ensureGrowth();
+  if (g.read.includes(id)) return 0;
+  g.read.push(id);
+  return gainExp(EXP.scene, { key: `scene:${id}`, tag: "会話", first: true });
+}
+
+/** X8/X9。順位の報酬は最高記録との差分だけ。制作が最後まで終わった大会では色の火種も一度渡す。 */
+export function awardTournamentExp(rank, craft) {
+  if (!growthEnabled() || !state || !Number.isInteger(rank) || rank < 1) return 0;
+  const g = ensureGrowth(), chapter = state.chapter;
+  let entry = g.tournamentXp[chapter];
+  if (!entry || typeof entry !== "object" || Array.isArray(entry)) entry = g.tournamentXp[chapter] = {};
+  let got = 0;
+  if (entry.entered !== true) {
+    entry.entered = true;
+    got += gainExp(100, { key: "tournament", tag: "大会出場" });
+  }
+  const base = [200, 120, 80][rank - 1] || 40;
+  const previous = [40, 80, 120, 200].includes(entry.rankBase) ? entry.rankBase : 0;
+  if (base > previous) {
+    entry.rankBase = base;
+    got += gainExp(base - previous, { key: "tournament", tag: `${rank}位` });
+  }
+  if (entry.gifted !== true && !craft?.failed && craft?.pullDone && craft?.careHistory?.length === 2) {
+    const stages = [
+      ["body", craft.careHistory[0]?.score], ["body", craft.careHistory[1]?.score],
+      ["sense", craft.heat?.score], ["sense", craft.steam?.score],
+      ["wisdom", craft.holes?.skipped ? null : craft.holes?.score], ["wisdom", craft.stats?.craftQuality],
+    ].filter(([, score]) => Number.isFinite(score));
+    if (stages.length) {
+      const top = Math.max(...stages.map(([, score]) => score));
+      const colors = [...new Set(stages.filter(([, score]) => score === top).map(([color]) => color))];
+      const color = colors.reduce((best, key) => boardFill(g, key) < boardFill(g, best) ? key : best);
+      entry.gifted = true;
+      const gift = giveColored(g, color);
+      if (gift.n > 0) g.today.gifts.push({ label: "大会の学び", parts: [gift] });
+    }
+  }
+  return got;
+}
+
+/** X10/X11。物語が章を閉じる同期的な確定地点で呼ぶ。初回だけ内訳を経験値チップへ渡す。 */
+export function awardChapterClearExp() {
+  if (!growthEnabled() || !state) return 0;
+  const g = ensureGrowth(), chapter = state.chapter;
+  if (g.cleared.includes(chapter)) return 0;
+  g.cleared.push(chapter);
+  const log = g.chapterLog[chapter] || {}, people = strings(log.people).length, places = strings(log.places).length;
+  return gainExp(150, { key: "chapter_clear", tag: "章クリア" })
+    + gainExp(people * 25 + places * 15, { key: "chapter_breadth", tag: `広さ ${people}人・${places}種類` });
 }
 
 /** 好感度・恋人の絆の段が上がった（X4）。段ごとに +30。♥5になった人からは、その人の色の火種（2.7） */
@@ -562,7 +632,7 @@ export function gaugeInfo(g = state?.growth) {
 }
 
 // 自由行動の確定（paidAction）と好感度の段から呼ばれる入口を登録する。
-setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, recipe: awardRecipeExp, affinity: awardAffinityStepExp, perks: growthPerks,
+setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, recipe: awardRecipeExp, scene: awardSceneExp, affinity: awardAffinityStepExp, perks: growthPerks,
   sleepMultiplier: s => growthSkill(s, "K03") ? 1 + SKILL_TUNING.sleep : 1 });
 masteryHooks.multiplier = s => (1 + (growthPerks(s)?.tongue || 0) / 100)
   * (growthSkill(s, "K09") ? 1 + SKILL_TUNING.mastery : 1);

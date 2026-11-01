@@ -45,7 +45,7 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     if (invite) state.pendingInvite = invite; // 中断保存は予約あり・未払い。calendarは同じ場面へ戻れる。
     state.flags._samechan_date = { stamp, venue: venue.id, complete: false };
     save();
-    await play(dateScene("samechan", venue, { choice, choiceFlags, growth: false }));
+    await play(dateScene("samechan", venue, { choice, choiceFlags, growth: false }), { growthScene: true });
     if (state !== owner) return no;
     const selected = state.flags[choiceFlags.a] ? "optA" : state.flags[choiceFlags.b] ? "optB" : null;
     if (!selected) return no; // 未回答を選んだことにはしない。

@@ -304,7 +304,7 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     const live = () => state === owner && !signal?.aborted;
     const read = async (scene, opts = {}) => {
       if (!live()) return false;
-      const result = await play(scene, { ...opts, signal });
+      const result = await play(scene, { growthScene: typeof scene === "string" && !scene.startsWith("venue_"), ...opts, signal });
       return live() && !!result && !result.cancelled;
     };
     if (charId === "sumi") await meetHiyoriAtTonari();
@@ -427,7 +427,7 @@ export async function visitSpot(spot) {
     state.flags._ev_reviewer_payoff = true;
     id = "ch1_reviewer_payoff";
   }
-  await play(id, { bg: bgRef(spot.bg) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
+  await play(id, { bg: bgRef(spot.bg), growthScene: true }); // bgUrl が昼夜差分（_day/_night）を選ぶ
   if (state !== owner) return;
   recordSpotEncounter(spot.id, id, n, state);
   if (spot.id === "c_station") {
@@ -444,7 +444,7 @@ async function maybeCafeIdea(spot, visit) {
   const pick = pickCafeIdea(state, DB.recipes || [], { rainy: isRainy() });
   if (!pick || !cafeIdeaDue(state, visit)) return;
   const owner = state;
-  await play(ideaDialogue(pick), { bg: bgRef(spot.bg) });
+  await play(ideaDialogue(pick), { bg: bgRef(spot.bg), growthScene: true });
   if (state !== owner) return;
   const combo = markCafeIdea(state, pick, DB.flavors || []);
   toast(`📝 試したい配合をメモした ──「${combo}」（配合の画面でひらめきに出る）`, { kind: "good" });

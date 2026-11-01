@@ -127,13 +127,19 @@ export function earnRecipeDiscovery(id, { discovered = false, golden = false } =
   earningAction.recipes[id] = { discovered: !!(discovered || previous.discovered), golden: !!(golden || previous.golden) };
 }
 
+/** 自由行動として選んだ固有場面の完読。取消・部分再生・強制イベントは呼出し元が除外する。 */
+export function earnSceneCompletion(id, owner = state) {
+  if (!expHooks?.enabled?.() || owner !== state || earningAction?.owner !== owner || typeof id !== "string" || !id) return;
+  earningAction.scenes.add(id);
+}
+
 /**
  * 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。
  * @param opts.exp 経験値の対象 {key, person, place}。関数なら行動の結果から決める（core/growth.js）
  */
 export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false, exp = null } = {}) {
   const parent = earningAction;
-  const action = { owner: state, gains: {}, recipes: Object.create(null), spent: 0 };
+  const action = { owner: state, gains: {}, recipes: Object.create(null), scenes: new Set(), spent: 0 };
   earningAction = action;
   const releaseChip = expHooks?.hold?.() || noop;
   let value;
@@ -159,6 +165,7 @@ function settleAction(action, parent, value, { budget, points, primary, consumed
     if (expHooks?.enabled()) {
       expHooks.action(typeof exp === "function" ? exp(value) : exp);
       for (const [id, result] of Object.entries(action.recipes)) expHooks.recipe?.(id, result);
+      for (const id of action.scenes) expHooks.scene?.(id);
     }
   }
   return { value, spent: action.spent };

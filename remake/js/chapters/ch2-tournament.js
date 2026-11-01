@@ -9,6 +9,7 @@ import { layers, showScreen, setBg, modal, imageReady, loadingNotice } from "../
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
+import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
@@ -406,14 +407,14 @@ async function drive(owner) {
         cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
       }
       finishStep(state, cs);
-      if (cs.failed) { save(); continue; }
+      if (cs.failed) { awardTournamentExp(4, cs); save(); continue; }
       if (MILESTONES.has(p.step)) {
         broadcast.clearComments();
         const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
         // finalizeの完成品と2回のcareを同じcsに残し、追加投票だけを確定する。
         p.craft = clone(cs); castVotes(p, round, quality);
         p.stage = p.step === STEPS.length ? "tasting" : "votes";
-        if (p.stage === "tasting") recordResult(state, cs.total);
+        if (p.stage === "tasting") { const result = recordResult(state, cs.total); awardTournamentExp(result.rank, cs); }
       }
       save();
     } else if (p.stage === "tasting") {
@@ -443,6 +444,7 @@ async function drive(owner) {
       const recognition = craftRecognition(p.craft)?.comment;
       if (!await message(owner, "tokyo", [...(recognition ? [recognition] : []), "東京に行ったら、mukaiのムカイさんを頼れ", "──それと、飯はちゃんと食え"], chapterTwoCongratulations)) { if (live(owner)) card(owner, "tokyo", "東京への連絡", "スミさんからのLIMEを読んで、次の行き先を確かめよう。", [button(owner, "LIMEを開く", "tokyo-message", () => drive(owner), true)]); return; }
       state.flags._ch2_cleared = true; state.flags._ch2_tokyo_invitation = true;
+      awardChapterClearExp();
       state.phase = "cleared"; checkpoint("complete");
     } else if (p.stage === "complete") {
       // 章の最後に、はじめのいない店であげはの心の声（#929）。読了時だけ記録し、クリア済みの旧セーブにも一度だけ出す。

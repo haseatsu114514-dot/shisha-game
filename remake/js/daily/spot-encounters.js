@@ -8,7 +8,7 @@ const ENCOUNTERS = {
   kannon: [
     { id: "kannon_adam", met: "adam", slot: 0 },
     { id: "kannon_oldman", slot: 0 },
-    // パッキーのアプリ導入後: 観音堂で設定が変わることをアダムが匂わせる（#621）
+    // パッキーのアプリ導入後: アダムと携帯を置いて振り返る（既読ID・出現条件は維持）
     { id: "kannon_adam_pakki", met: "adam", flag: "pakki_app_installed", slot: 0 },
   ],
   choizap: [

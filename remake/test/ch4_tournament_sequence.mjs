@@ -8,6 +8,7 @@ import * as match from "../js/chapters/ch4-tournament-state.js";
 globalThis.document = { addEventListener() {} };
 const score = await import("../js/craft/score.js");
 const verdict = await import("../js/chapters/ch4-verdict.js");
+const growth = await import("../js/core/growth.js");
 delete globalThis.document;
 const data = file => JSON.parse(fs.readFileSync(new URL(`../../data/${file}.json`, import.meta.url)));
 DB.flavorById = Object.fromEntries(data("flavors").flavors.map(row => [row.id, row]));
@@ -26,7 +27,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
   let current = true;
   const initial = () => ({ mode: "tournament", chapter: 4, equip: {}, mix: {}, careHistory: [],
     pack: "normal", place: "triangle", steamSeconds: 480, pullDone: false, total: 0 });
-  const values = { ...match, ...score, ...verdict, state: value, CRAFT_STEPS: [],
+  const values = { ...match, ...score, ...verdict, ...growth, state: value, CRAFT_STEPS: [],
     newSession: initial,
     save: () => snapshots.push(JSON.parse(JSON.stringify(value))),
     openBench: cs => trace.push(`bench:${match.chapterFourMatch(value).step}`),
@@ -119,4 +120,19 @@ const noAsk = await run({ ask: false });
 assert.deepEqual(noAsk.value.flags._ch4.match.craft.customerChecks, [false, false]);
 assert(!noAsk.trace.includes("ch4_customer_1"));
 assert.equal(noAsk.result.total, success.result.total, "Asking is information, not an automatic points bonus");
+// 同じ実runnerで、盤モードの結果確定→保存再開→敗北後の再挑戦まで経験値を確認する。
+const previewStorage = new Map();
+globalThis.localStorage = {getItem:key=>previewStorage.get(key)??null,setItem:(key,value)=>previewStorage.set(key,String(value))};
+growth.setGrowthPreview(true);
+const grown=await run(); assert.equal(grown.error,undefined);
+assert.equal(grown.value.growth.xp,525);assert.equal(grown.value.growth.earned,2);
+const grownReload=await run({resume:structuredClone(grown.value)});
+assert.equal(grownReload.value.growth.xp,525);assert.equal(grownReload.value.growth.earned,2);
+const grownLoss=await run({failure:"pull"});
+assert.equal(grownLoss.value.growth.xp,245);assert.equal(grownLoss.value.growth.earned,0);
+assert(match.resetChapterFourCraft(grownLoss.value));
+const grownRetry=await run({resume:structuredClone(grownLoss.value)});
+assert.equal(grownRetry.error,undefined);assert.equal(grownRetry.value.growth.xp,525);
+assert.equal(grownRetry.value.growth.earned,2,"再挑戦は順位の差分だけ。色の火種は完成後に一度");
+previewStorage.clear();
 console.log("PASS: real Chapter 4 runner awaits each craft step, handles failures/abandonment/owner changes and resumes serialized saves");

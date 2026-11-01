@@ -151,7 +151,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     if (dialogue === "samechan_bond_finale") {
       if (!await playFinale("samechan", { deferSave: true, signal })) return false;
     } else {
-      const result = await play(visitScript(dialogue), { signal });
+      const result = await play(visitScript(dialogue), { signal, growthScene: true });
       if ((!result || result.cancelled)) return false;
     }
     if (!current()) return false;

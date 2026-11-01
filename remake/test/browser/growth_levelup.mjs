@@ -22,6 +22,54 @@ async function setupDaily(page) {
 }
 
 await suite("growth-levelup", async (check) => {
+  await check("scene-completion-transactions", async (page) => {
+    await setupDaily(page);
+    const report = await page.evaluate(async () => {
+      const core=await import("./js/core/state.js"), stats=await import("./js/core/stats.js");
+      const vn=await import("./js/vn/engine.js"), growth=await import("./js/core/growth.js");
+      vn.vnTest.turbo=true; growth.setGrowthPreview(true);
+      const scene={dialogue_id:"__growth_scene",lines:[{speaker:"hajime",text:"今日、見つけたことを振り返る。"}]};
+      const raw=JSON.stringify(core.state.stats);
+      const action=opts=>stats.paidAction(async()=>{stats.addStamina(-4);await vn.play(scene,opts);});
+      await action({growthScene:true}); const first=core.state.growth.xp;
+      core.save();core.load();await action({growthScene:true});const repeat=core.state.growth.xp;
+      await stats.paidAction(async()=>{stats.addStamina(-4);await vn.play({...scene,dialogue_id:"__partial_scene"},{growthScene:true,fromLine:0});});
+      await stats.paidAction(async()=>{stats.addStamina(-4);await vn.play({...scene,dialogue_id:"__forced_scene"});});
+      await stats.paidAction(async()=>{
+        stats.addStamina(-4);const controller=new AbortController();
+        const playing=vn.play({...scene,dialogue_id:"__cancelled_scene"},{growthScene:true,signal:controller.signal});
+        controller.abort();await playing;
+      });
+      await vn.play({...scene,dialogue_id:"__free_scene"},{growthScene:true});
+      const after={xp:core.state.growth.xp,read:[...core.state.growth.read],sameRaw:raw===JSON.stringify(core.state.stats)};
+      await stats.paidAction(async()=>{
+        stats.addStamina(-4);const playing=vn.play({...scene,dialogue_id:"__old_owner_scene"},{growthScene:true});
+        core.newGame();await playing;
+      });
+      return {first,repeat,after,loadedXp:core.state.growth?.xp||0};
+    });
+    assert.deepEqual(report,{first:20,repeat:20,after:{xp:20,read:["__growth_scene"],sameRaw:true},loadedXp:0});
+  });
+
+  await check("recipe-experience-through-mix", async (page) => {
+    await setupDaily(page);
+    const report=await page.evaluate(async()=>{
+      const core=await import("./js/core/state.js"),stats=await import("./js/core/stats.js"),growth=await import("./js/core/growth.js");
+      const craft=await import("./js/craft/session.js"),steps=await import("./js/craft/steps.js");
+      growth.setGrowthPreview(true);craft.craftTest.auto="good";
+      core.state.flavors=["double_apple","mint"];core.state.flavorStock={double_apple:100,mint:100};
+      core.state.recipes={};const raw=JSON.stringify(core.state.stats);
+      const mix=()=>stats.paidAction(async()=>{
+        stats.addStamina(-4);const cs=craft.newSession("rehearsal");cs.staffPractice=true;
+        craft.openBench(cs);await steps.stepMix(cs);return cs.mixInfo.recipe?.id;
+      });
+      const first=await mix(),xp=core.state.growth.xp;
+      core.save();core.load();await mix();
+      return {recipe:first.value,xp,repeated:core.state.growth.xp,raw:raw===JSON.stringify(core.state.stats),read:core.state.growth.discoveries.recipes};
+    });
+    assert.deepEqual(report,{recipe:"sumi_basic",xp:30,repeated:30,raw:true,read:["sumi_basic"]});
+  });
+
   await check("flag-off-hides-everything", async (page) => {
     await page.evaluate(async () => (await import("./js/core/growth.js")).setGrowthPreview(false));
     await setupDaily(page);

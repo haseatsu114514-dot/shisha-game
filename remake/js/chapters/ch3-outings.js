@@ -1,7 +1,7 @@
 // 東京の自由時間に地図から選んだ行き先を再生し、読了後に一枠だけ確定する（#1655）。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save } from "../core/state.js";
-import { addStamina, addMoney, earnStat, gainAffinity, paidAction } from "../core/stats.js";
+import { addStamina, addMoney, earnStat, gainAffinity, paidAction, earnSceneCompletion } from "../core/stats.js";
 import { layers, showScreen, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -24,6 +24,12 @@ export function loadChapterThreeOutings() {
 const OUTING_BG = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", park: "bg_street" };
 /** その店で会える授業の先生（心得の盤 SBD70: 授業は会って相談した時だけ習う） */
 const OUTING_TEACHER = { mukai: "mashiro", enmaku: "kuze", steve: "steve" };
+// 店の手伝いは仕事の鍵。人に会いに行く回は、店が変わってもその人の鍵で数える（SPEC 1.3）。
+const OUTING_EXP = {
+  mukai_help: { key: "tokyo:mukai_help", place: "tokyo:mukai_help" },
+  enmaku_notes: { key: "kuze", person: "kuze" }, enmaku_answer: { key: "kuze", person: "kuze" },
+  mukai_steve: { key: "steve", person: "steve" }, steve_timer: { key: "steve", person: "steve" },
+};
 
 /** 地図で選んだ行き先（#1655）。消費・成長・記録は正常完読後だけ。中断は同じ自由時間へ戻る。 */
 export async function visitChapterThreeOuting(windowId, id, { signal = null, isCurrent = () => true } = {}) {
@@ -55,9 +61,10 @@ export async function visitChapterThreeOuting(windowId, id, { signal = null, isC
       addStamina(outing.stamina);
       if (outing.money) addMoney(outing.money);
       if (outing.stat) earnStat(outing.stat, 4);
+      if (OUTING_EXP[id]) earnSceneCompletion(result.id, owner.value);
       for (const [who, pts] of Object.entries(outing.affinity || {})) gainAffinity(who, pts);
       return true;
-    }, { consumed: used => used && !!outing.stat });
+    }, { consumed: used => used && !!outing.stat, exp: OUTING_EXP[id] || null });
     if (!settled.value || !current()) return false;
     save();
     // 心得の盤で灯した授業があれば、その店で相談して習う（盤が無効な時は何もしない）

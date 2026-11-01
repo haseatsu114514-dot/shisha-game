@@ -721,7 +721,7 @@ async function meetInvitation(inv) {
     addStamina(-10);
   } else {
     result = await play(storeInvitationSpot({ accept_event: inv.event })
-      ? storeInvitationDialogue(DB.dialogues[inv.event], state.slot) : inv.event);
+      ? storeInvitationDialogue(DB.dialogues[inv.event], state.slot) : inv.event, { growthScene: true });
     if (state !== owner || result?.cancelled) return false;
     if (inv.event === `outing_${inv.sender}_1`) state.flags[`_outing_done_${inv.sender}`] = true;
     if (inv.event === "ch1_minto_fifth") state.flags._minto_fifth_done = true;

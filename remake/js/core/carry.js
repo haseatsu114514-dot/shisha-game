@@ -571,6 +571,8 @@ export function buildCarryPackage(s) {
     g.fresh = { chapter: 1, counts: {} };
     g.firsts = { people: [], places: [] };
     g.discoveries = { recipes: [], golden: [] };
+    g.read = [];
+    g.chapterLog = {}; g.tournamentXp = {}; g.cleared = [];
     g.gifted = {};
     g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [] };
   }
