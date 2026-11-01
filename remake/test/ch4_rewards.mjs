@@ -24,7 +24,12 @@ let source = fs.readFileSync(new URL("../js/chapters/ch4.js", import.meta.url), 
 source += '\nexport function testOwner(value) { session = value; }\nexport { readAndCommit, renderComplete };';
 const modules = new Map();
 const module = new vm.SourceTextModule(source, { context });
-await module.link(spec => {
+await module.link(async spec => {
+  if (spec === "../core/chapter-actions.js") {
+    const dep = new vm.SourceTextModule(fs.readFileSync(new URL("../js/core/chapter-actions.js", import.meta.url), "utf8"), { context });
+    await dep.link(() => new vm.SyntheticModule(["el"], function () { this.setExport("el", node); }, { context }));
+    return dep;
+  }
   if (modules.has(spec)) return modules.get(spec);
   const imports = [...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)];
   const names = imports.filter(m => m[2] === spec).flatMap(m => m[1].split(",").map(n => n.trim()));

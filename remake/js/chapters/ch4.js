@@ -2,6 +2,7 @@
 // 状態遷移は ch4-progress.js、行き先の計算は ch4-map-model.js。ここは表示と再生だけを持つ。
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
+import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -31,19 +32,7 @@ let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
 const test = name => `ch4-${name}`;
 
-function button(owner, text, name, action, primary = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text,
-    dataset: { test: test(name) }, onclick: () => perform(owner, action) });
-}
-
-async function perform(owner, action) {
-  if (!current(owner) || owner.busy) return;
-  owner.busy = true;
-  try { await action(); }
-  catch (error) {
-    if (current(owner)) { console.error("[ch4]", error); renderError(owner); }
-  } finally { owner.busy = false; }
-}
+const { button, perform } = createChapterActions({ current, test, logName: "[ch4]", renderError });
 
 function menuButton(owner) {
   return el("button.btn", { type: "button", text: "MENU", dataset: { test: test("menu") },
