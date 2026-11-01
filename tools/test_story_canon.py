@@ -1,8 +1,47 @@
 import unittest
-from check_story_canon import lime_first_person_errors, text_errors
+from check_story_canon import character_shop_name_errors, lime_first_person_errors, text_errors
 
 
 class CanonRegressionTests(unittest.TestCase):
+    def test_r3_confirmed_shop_references(self):
+        # These phrases were the five shop references corrected in PR #2015.
+        self.assertEqual(len(text_errors({'text': 'ケムリクサのなる、エデンのアダム'})), 2)
+        for text in ('ケムリクサのなる、エデンのアダム', 'ケムリクサってとこでやってる',
+                     'エデンのアダムだ', 'エデンの主、アダムだ', 'ここはエデン。'):
+            with self.subTest(text=text):
+                self.assertTrue(any('店名は' in error for error in
+                                    text_errors({'speaker': 'adam', 'text': text})))
+        for text in ('KEMURIKUSAのなる、EDENのアダム', 'KEMURIKUSAってとこ',
+                     'EDENの主、アダムだ', 'ここはEDEN。'):
+            with self.subTest(text=text):
+                self.assertFalse(text_errors({'speaker': 'adam', 'text': text}))
+
+    def test_r3_intentional_exceptions_and_non_display_fields(self):
+        for text in ('エデンの園へようこそ', '楽園の一服（エデン・スペシャル）',
+                     'チョイザップへ行く', 'ケムリクサって読むんですね'):
+            with self.subTest(text=text):
+                self.assertFalse(text_errors({'speaker': 'adam', 'text': text}))
+        self.assertFalse(text_errors({'speaker': 'adam', 'comment': 'ケムリクサのなる'}))
+        self.assertFalse(text_errors({'speaker': 'adam', 'text': None}))
+
+    def test_r3_confirmed_character_fields(self):
+        old = [
+            {'id': 'nagumo', 'affiliation': 'シーステーション会長',
+             'description': 'シーステーションを築いた'},
+            {'id': 'adam', 'affiliation': 'Eden', 'description': 'Edenに所属する'},
+        ]
+        errors = character_shop_name_errors(old)
+        self.assertEqual(len(errors), 4)
+        self.assertTrue(all('characters.json:' in error for error in errors))
+        current = [
+            {'id': 'nagumo', 'affiliation': 'C.STATION会長',
+             'description': 'C.STATIONを築いた'},
+            {'id': 'adam', 'affiliation': 'EDEN', 'description': 'EDENに所属する',
+             'visual_concepts': ['Eden shop outfit']},
+            {'id': 'minto', 'description': 'チョイザップで会う'},
+        ]
+        self.assertEqual(character_shop_name_errors(current), [])
+
     def test_tsumugi_unquoted_first_person_drift(self):
         for text in ('わたし、煙に色が見えるんです。', '……わたしも……ずっと。',
                      '今日は、わたしから', '煙の色を、わたしに見せてください。',

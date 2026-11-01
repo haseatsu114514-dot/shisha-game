@@ -45,6 +45,33 @@ def lime_first_person_errors(data):
     return errors
 
 
+def shop_name_errors(text):
+    # #2015: these contexts identify the shop, unlike エデンの園 or a recipe name.
+    if not isinstance(text, str):
+        return []
+    errors = []
+    if re.search(r'ケムリクサ(?=のなる|ってとこ)', text):
+        errors.append('店名はKEMURIKUSA（#2015）')
+    if re.search(r'エデン(?=の(?:アダム|主))|(?<=ここは)エデン(?=[。！？!?]|$)', text):
+        errors.append('店名はEDEN（#2015）')
+    return errors
+
+
+def character_shop_name_errors(characters):
+    errors = []
+    for person in characters:
+        fields = ('affiliation', 'description')
+        if person.get('id') == 'nagumo':
+            for field in fields:
+                if 'シーステーション' in person.get(field, ''):
+                    errors.append(f'characters.json:nagumo.{field}: 店名はC.STATION（#2015）')
+        if person.get('id') == 'adam':
+            for field in fields:
+                if re.search(r'(?<![A-Za-z])Eden(?![A-Za-z])', person.get(field, '')):
+                    errors.append(f'characters.json:adam.{field}: 店名はEDEN（#2015）')
+    return errors
+
+
 def text_errors(row):
     errors = []
     text = row.get('text')
@@ -64,6 +91,7 @@ def text_errors(row):
     if speaker == 'tsumugi' and 'はじめくん' in text:
         errors.append('つむぎははじめさん')
     errors.extend(tsumugi_first_person_errors(speaker, text))
+    errors.extend(shop_name_errors(text))
     if speaker == 'kumicho' and re.search(r'ワシ|わし', text):
         errors.append('神崎の一人称は俺')
     if re.fullmatch(r'[♡♥」』）\s]+', text):
@@ -75,6 +103,7 @@ def text_errors(row):
 
 def check(root=ROOT):
     errors, scenes = [], {}
+    errors.extend(character_shop_name_errors(json.loads((root / 'data/characters.json').read_text())))
     errors.extend(lime_first_person_errors(json.loads((root / 'data/lime_messages.json').read_text())))
     files = sorted((root / 'data/dialogue').glob('*.json'))
     for path in files:
