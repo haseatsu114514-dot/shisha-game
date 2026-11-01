@@ -197,7 +197,7 @@ const vnModule = synthetic(["play"], { play: (_dialogue, { signal }) => {
 const deps = {
   "../core/data.js": dataModule,
   "../core/state.js": stateModule,
-  "../core/stats.js": synthetic(["addStamina", "earnStat", "paidAction"], stats),
+  "../core/stats.js": synthetic(["addStamina", "earnStat", "paidAction", "earnSceneCompletion"], stats),
   "../core/ui.js": uiModule,
   "../vn/engine.js": vnModule,
   "../daily/spots.js": synthetic(["facilityGrowth"], { facilityGrowth: spot => {
@@ -283,4 +283,17 @@ for (const cancellation of ["abort", "cancelled", "load"]) {
   assert.equal(playCalls, calls); assert.deepEqual(selected, before);
 }
 
+{
+  globalThis.document ||= { addEventListener() {} };
+  const growth = await import("../js/core/growth.js");
+  growth.setGrowthPreview(true);
+  choose(firstWindow()); const before=copy(selected), window=chapterThreeFreeTime(selected);
+  finishPlay=null; const pending=visit(window.id); await ready(); finishPlay({cancelled:false});
+  assert.equal(await pending,true);
+  assert.deepEqual(selected.stats,before.stats,"盤モードでは東京の施設も旧能力へ直接加算しない");
+  assert.equal(selected.growth.xp,135,"東京の施設 X1=45・初場所=60・固有場面=30");
+  assert.deepEqual(selected.growth.firsts.places,["tokyo:gym"]);
+  const once=copy(selected);assert.equal(await visit(window.id),false);assert.deepEqual(selected,once);
+  storage.delete("suien_growth_preview");
+}
 console.log("PASS: Tokyo membership, one finite action, reservations, day-bound fit, once-only real stamina/growth, rest, interruption and LOAD boundaries");

@@ -30,8 +30,10 @@ const ports = {
   hasNewStory: () => false, spotFollowupDue: () => null,
   axeThrowExposed: () => true, canStudyAttack: () => false, canStudyCubeCoals: () => false,
   readyLessons: () => [],
+  on: () => () => {},
+  callingSalesBonus: () => 0,
 };
-const ctx = vm.createContext({ console, queueMicrotask });
+const ctx = vm.createContext({ console, queueMicrotask, AbortController });
 const actual = new Set(['core/chapter-features.js', 'core/stat-step-tables.js', 'daily/home-rig.js', 'daily/tonari.js']);
 const modules = new Map();
 function get(id) {

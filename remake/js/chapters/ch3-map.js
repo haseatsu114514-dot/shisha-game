@@ -2,6 +2,7 @@ import { el } from "../core/util.js";
 import { bgUrl } from "../core/data.js";
 import { chapterThreeMapModel } from "./ch3-map-model.js";
 import { hasStoreLogo, storeLogo } from "../core/store-logos.js";
+import { tomorrowForecast } from "../daily/weather.js";
 
 let activeMap = null;
 
@@ -34,7 +35,8 @@ export function openChapterThreeMap(value, scenes, options = {}) {
     const details = el("div.ch3-map-details", { "aria-live": "polite", dataset: { test: "ch3-map-details" } });
     const list = el("div.ch3-map-list", { "aria-label": "地図の地点" });
     const markers = el("div.ch3-map-markers");
-    const note = el("p.ch3-map-note", { text: model.note });
+    const forecast = tomorrowForecast(value);
+    const note = el("p.ch3-map-note", { text: model.note + (forecast ? ` ／ 明日は${forecast}` : "") });
     const imageError = el("p.ch3-map-image-error", {
       hidden: true, role: "status", text: "地図を読み込めませんでした。地点の一覧は利用できます。",
       dataset: { test: "ch3-map-image-error" },

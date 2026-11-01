@@ -43,7 +43,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node remake/test/growth_travel.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs"]
     },
     {
       "id": "vent-lid",
@@ -95,6 +95,10 @@
       "timeout": 5,
       "paths": [
         "remake/js/core/growth.js",
+        "remake/js/core/growth-mode.js",
+        "remake/js/core/growth-respec.js",
+        "remake/js/core/growth-effects.js",
+        "remake/js/core/growth-board-layout.js",
         "remake/js/daily/levelup.js",
         "remake/js/core/growth-board.js",
         "remake/js/core/growth-board-data.js",
@@ -113,6 +117,15 @@
       "run": [
         "node remake/test/browser/growth_levelup.mjs"
       ]
+    },
+    {
+      "id": "growth-overseas",
+      "title": "Chapter five normal overseas meetings, night EXP, board and lessons",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/chapters/ch5.js", "remake/js/chapters/ch5-growth-travel.js", "remake/js/chapters/ch5-growth-travel-state.js", "data/dialogue/ch5_growth_visits.json", "remake/js/core/growth.js", "remake/test/browser/growth_overseas.mjs"],
+      "run": ["node remake/test/browser/growth_overseas.mjs"]
     },
     {
       "id": "station-j01",

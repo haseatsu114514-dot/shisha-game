@@ -29,10 +29,10 @@ for (const [a, b] of [["body", "sense"], ["sense", "wisdom"], ["body", "wisdom"]
   const A = keys(a), B = keys(b), diff = [...A].filter((k) => !B.has(k)).length + [...B].filter((k) => !A.has(k)).length;
   assert(diff >= 12, `${a} と ${b} の形が違う（違うマス ${diff}）`);
 }
-const expect = { body: [8, 6], sense: [8, 7], wisdom: [8, 7] }; // スキル各8（中ほどの面白いスキル2つを足した。SBD66） // スキル各6・授業20（カルダモンは感覚盤へ。SBD60）
+const expect = { body: [7, 6], sense: [8, 7], wisdom: [8, 7] }; // スキル各8（中ほどの面白いスキル2つを足した。SBD66） // スキル各6・授業20（カルダモンは感覚盤へ。SBD60）
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
-  assert.equal(nodes.filter((n) => n.kind === "stat").length, SHAPE_SIZE[k][0], `${k}: 能力のマス`);
+  assert.equal(nodes.filter((n) => n.kind === "stat").length, SHAPE_SIZE[k][0]+(k==="body"?1:0), `${k}: 能力のマス`);
   assert.equal(board.STAT_SQUARES[k], SHAPE_SIZE[k][0]);
   assert.equal(nodes.filter((n) => n.kind === "gate").length, SHAPE_SIZE[k][1], `${k}: 関門`);
   assert.equal(nodes.filter((n) => n.kind === "skill").length, expect[k][0], `${k}: スキル`);
@@ -85,7 +85,7 @@ for (const l of board.LESSONS) {
 }
 // 帯と強さ: 火種4のスキルは近く、6と8は関門の先。極みも関門の先。どの関門の先にもスキルがある
 for (const s of board.SKILLS) assert.equal(N[s.id].band, s.cost === 4 ? 1 : s.cost === 2 ? 2 : 3, `${s.id}（火種${s.cost}）の帯: 4＝近く・2＝中ほど・5と7＝関門の先`);
-for (const k of board.BOARD_KEYS) assert.deepEqual(board.SKILLS.filter((s) => s.board === k).map((s) => s.cost).sort(), [2, 2, 4, 4, 5, 5, 7, 7], `${k}: スキルの火種`);
+for (const k of board.BOARD_KEYS) assert.deepEqual([...board.SKILLS,...board.STAT_UPGRADES].filter((s) => s.board === k).map((s) => s.cost).sort(), [2, 2, 4, 4, 5, 5, 7, 7], `${k}: スキルの火種`);
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
   // 極みは道につながらない。その盤の能力のマスを全部灯すと灯せる（SBD63）
@@ -104,7 +104,7 @@ for (const k of board.BOARD_KEYS) {
     assert(nodes.some((n) => beyond.has(n.id) && n.kind === "skill"), `${gate.id}: 関門の先に強いスキル`);
   }
   const bands = [1, 2, 3].map((b) => nodes.filter((n) => n.kind === "stat" && !n.peak && n.band === b).length);
-  assert.deepEqual(bands, [9, 8, 8], `${k}: 能力のマスは 近く9・中ほど8・関門の先8`);
+  assert.deepEqual(bands, [9, k==="body"?9:8, 8], `${k}: 能力のマスは 近く9・中ほど8・関門の先8`);
   // v13「輪つきの木」（SBD73）
   {
     const V = nodes.filter((n) => !n.peak).length + 1; // 紋を含む（極みは道の外）
@@ -123,6 +123,8 @@ for (const k of board.BOARD_KEYS) {
     for (const n of notables) { assert.equal(n.kind, "stat"); assert.equal(n.cost, 1); assert.equal(board.NOTABLES[n.notable].board, k); }
     // 普通のマスの袋小路（線が1本だけ）は無い（授業・スキル・極みの手前は除く）
     for (const n of nodes) if (n.kind === "stat" && !n.peak) {
+      // K20はオーナー指定の置き換え。旧セーブの道を変えず、元の脇道の接続を厳密に保持する。
+      if(n.id==="K20"){assert.deepEqual(n.links,["B9"]);continue;}
       const deg = n.links.length;
       const onlyToSpot = deg === 2 && n.links.some((l) => byId[l] && byId[l].kind !== "stat" && byId[l].kind !== "gate");
       assert(deg >= 2, `${k} ${n.id}: 能力のマスの袋小路`);
@@ -177,10 +179,12 @@ assert.deepEqual(board.HIDANE_NAME, { any: "白火", body: "紅火", sense: "蒼
 assert.equal(N["M-W6"].board, "sense", "カルダモンは感覚盤（3つの盤の授業の数をならす。SBD60）");
 assert.deepEqual([N["M-W2"].ring, N["M-W6"].ring], [2, 2], "スミさんの四つ置き・カルダモンは第2章から");
 // 各スキル・授業は、データの章（届けたい章）までに開く
-for (const item of [...board.SKILLS, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
-assert.equal(board.SKILLS.length, 24, "中ほどの面白いスキル6つを足して24（SBD66）");
+for (const item of [...board.SKILLS, ...board.STAT_UPGRADES, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
+assert.equal(board.SKILLS.length, 23, "K20は通常マスへ変更（2026-11-01 オーナー指示）");
+assert.equal(N.K20.kind,"stat");assert.equal(N.K20.perk,"charm");assert.equal(N.K20.cost,2);
+assert.equal(board.perkOf(N.K20).text,"好感度が上がりやすく（＋2%）");
 for (const k of board.BOARD_KEYS) {
-  const sk = board.SKILLS.filter((x) => x.board === k);
+  const sk = [...board.SKILLS,...board.STAT_UPGRADES].filter((x) => x.board === k);
   assert.equal(sk.reduce((n, x) => n + x.cost, 0), 36, `${k}: スキルの火種は各36`);
   assert.equal(sk.filter((x) => x.ring === 1).length, 2, `${k}: 第1章のスキルは各2つ`);
   assert.equal(board.boardNodes(k).reduce((n, x) => n + x.cost, 0), 66, `${k}: 盤は各66`);
@@ -231,7 +235,7 @@ assert.equal(v.pending.length, 3, "火種3で3マスまで");
 // 盤の伸び（SBD63）: 灯した割合と、恩恵ごとの合計
 const five = new Set(["B1", "B2", "B3"]);
 assert.equal(board.statCount("body", five), 3);
-assert.equal(board.statRatio("body", five), 3 / board.STAT_SQUARES.body);
+assert.equal(board.statRatio("body", five), 3 / board.statTotal("body"));
 {
   const totals = Object.fromEntries(board.perkTotals("body", five).map((p) => [p.key, p]));
   const expect = {};
@@ -509,3 +513,92 @@ growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
 console.log("[growth board] PASS: v13 ring-tree boards (loops, forked perks, 3 notables, toll skills on loops), lessons farther by chapter with lessons right behind gates, peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 20 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+
+// 組み直し: 実際の経路と支払を使う保存fixture。獲得ペースの通し証明とは分ける。
+const respec = await import("../js/core/growth-respec.js");
+const statCore = await import("../js/core/stats.js");
+const clone = value => JSON.parse(JSON.stringify(value));
+const funds = g => Object.values(g.hidane).reduce((a,b)=>a+b,0)
+  + Object.values(g.paid).flatMap(pay=>Object.values(pay)).reduce((a,b)=>a+b,0);
+core.newGame(); growth.setGrowthPreview(true);
+let respecG = growth.ensureGrowth();
+respecG.hidane={any:100,body:5,sense:5,wisdom:5}; respecG.earned=115;
+for (const id of ["B1","M-W1","M-S1"]) {
+  board.commitPending(board.pathTo(id,new Set(respecG.nodes)).path);
+  assert(respecG.nodes.includes(id));
+}
+assert(growth.completeLesson(core.state,"M-W1",{id:N['M-W1'].scene,visited:[N['M-W1'].scene]}));
+const rawBeforeRespec=clone(core.state.stats), maximumBeforeRespec=statCore.maxStamina();
+assert.equal(respec.canRespec(respecG,core.state),false,"初周の最初は組み直し無し");
+core.state.chapter=2;core.state.phase="opening";growth.ensureGrowth();
+assert.equal(respec.canRespec(respecG,core.state),false);
+core.state.day+=2;core.state.phase="daily";growth.ensureGrowth();
+assert.equal(respec.canRespec(respecG,core.state),true,"冒頭イベント後の最初の日常で開く");
+const paidGate=board.NODES.find(n=>n.kind==="gate"&&n.board==="body");
+board.commitPending(board.pathTo(paidGate.id,new Set(respecG.nodes)).path);
+assert.deepEqual(respecG.paid[paidGate.id],{body:1});
+const fullBefore=clone(respecG), originalFunds=funds(respecG), resourcesBefore=clone({day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,money:core.state.money,reel:core.state.reel});
+let transaction=respec.prepareRespec(respecG,core.state);
+assert(transaction);assert.deepEqual(respecG,fullBefore,"仮状態を作っても実保存は変えない");
+assert.deepEqual(transaction.growth.nodes,["M-W1","M-S1"]);
+assert.deepEqual(transaction.growth.learned,["M-W1"]);
+assert.equal(funds(transaction.growth),originalFunds);
+for (const color of growth.HIDANE_KEYS) {
+  const refund=Object.entries(fullBefore.paid).filter(([id])=>N[id].kind!=="lesson").reduce((sum,[,pay])=>sum+(pay[color]||0),0);
+  assert.equal(transaction.growth.hidane[color],fullBefore.hidane[color]+refund,"支払った種類を変えずに返す");
+}
+for (const id of transaction.growth.nodes) {
+  for (const neighbor of N[id].links.filter(id=>id!==board.HUB)) {
+    const node=N[neighbor];if(node.links.includes(board.HUB))continue;
+    assert.equal(board.connected(node,new Set(transaction.growth.nodes)),false,"保持授業から有料の道を無料で飛ばさない");
+  }
+}
+const forged=clone(transaction);forged.growth.hidane.any++;
+assert.equal(respec.commitRespec(respecG,forged,core.state),false,"返金額の改変を拒否");
+assert(respec.commitRespec(respecG,transaction,core.state));
+assert.equal(respec.commitRespec(respecG,transaction,core.state),false,"同じ返金を二度確定しない");
+assert.equal(funds(respecG),originalFunds);assert.deepEqual(respecG.paid,{"M-W1":{},"M-S1":{}});
+assert.equal(growth.lessonLearned("M-W1"),true);assert.equal(core.state.flags._coal_cube_learned,true);
+assert.equal(growth.readyLessons("sumi").some(l=>l.id==="M-S1"),true);
+assert.deepEqual(core.state.stats,rawBeforeRespec);
+assert(statCore.maxStamina()<=maximumBeforeRespec);
+assert.deepEqual({day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,money:core.state.money,reel:core.state.reel},resourcesBefore);
+assert.equal(board.commitPending(["B1"]).length,1);assert.equal(funds(respecG),originalFunds);
+core.save();core.load();respecG=growth.ensureGrowth();
+assert.equal(funds(respecG),originalFunds);assert.equal(growth.lessonLearned("M-W1"),true);
+transaction=respec.prepareRespec(respecG,core.state);assert(transaction);
+const other=core.newState();other.growth=clone(respecG);
+assert.equal(respec.commitRespec(respecG,transaction,other),false,"旧ownerは他の保存へ書かない");
+await statCore.paidAction(()=>false,{consumed:()=>false});
+assert.equal(respec.canRespec(respecG,core.state),true,"行動取消では閉じない");
+await statCore.paidAction(()=>true,{consumed:()=>true});
+assert.equal(respec.canRespec(respecG,core.state),false,"鍵無しの実行動でも閉じる");
+assert.equal(respec.commitRespec(respecG,transaction,core.state),false);
+const c3 = await import("../js/chapters/ch3-progress.js");
+core.state.phase="cleared";
+Object.assign(core.state.flags,{_ch2_cleared:true,_ch2_read_ch2_tournament_ageha_heart:true,_ch2_tournament:{stage:"complete"}});
+assert(c3.advanceToChapterThree(core.state));growth.ensureGrowth();
+while(!c3.chapterThreeFreeTime(core.state)) {
+  const scene=c3.chapterThreeScenes(core.state)[core.state.flags._ch3_intro.stage];
+  assert(scene);assert(c3.completeChapterThreeScene(core.state,scene.id));growth.ensureGrowth();
+  if(!c3.chapterThreeFreeTime(core.state)) {
+    assert.equal(respecG.respec.status,"pending","強制場面の日付変更では失効しない");
+    assert.equal(respec.canRespec(respecG,core.state),false);
+  }
+}
+assert.equal(c3.chapterThreeFreeTime(core.state).id,"d5-noon");
+assert(respec.canRespec(respecG,core.state),"実進行の最初の自由時間で開く");
+core.state.day++;growth.ensureGrowth();assert.equal(respec.canRespec(respecG,core.state),false);
+core.state.chapter=4;growth.ensureGrowth();delete respecG.paid.B1;
+assert.equal(respec.prepareRespec(respecG,core.state),null,"支払が無ければ無料返金を推測しない");
+growth.setGrowthPreview(false);
+await statCore.paidAction(()=>true,{consumed:()=>true});
+growth.setGrowthPreview(true);
+assert.equal(respec.canRespec(respecG,core.state),false,"無効中に済ませた行動の後から機会を復活させない");
+const {buildCarryPackage}=await import("../js/core/carry.js"),{startNextCycle}=await import("../js/core/cycle-start.js");
+startNextCycle(buildCarryPackage(core.state));core.state.phase="daily";respecG=growth.ensureGrowth();
+assert(respec.canRespec(respecG,core.state),"周回はじめの最初の日常にも開く");
+respecG.respec=null;core.state.chapter=3;growth.ensureGrowth();
+assert.equal(respec.canRespec(respecG,core.state),false,"既存セーブの表示だけで旧移行特典を作らない");
+growth.setGrowthPreview(false);
+console.log("[respec] PASS: exact payments, lessons retained, no shortcut/duplicate refund, draft/commit, SAVE/LOAD, old owner, action/day/NG+ windows and legacy no-grant");

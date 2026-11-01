@@ -46,14 +46,15 @@ export function steamTemperatureRange(cs, seconds) {
   const basePrecision = clamp(prediction.precision ?? 0, 0, 1);
   const mastery = mixMasteryProfile(cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state, cs.mix, DB.flavorById);
   const precision = basePrecision + (1 - basePrecision) * mastery.forecastGain;
+  const readBonus = clamp(prediction.readBonus || 0, 0, .3), observedRead = Math.min(.9, precision * .6 + readBonus);
   // 洞察と慣れで読み取れる分だけ予測へ反映。実温度や許容帯そのものは変えない。
   const observed = cs.steamVariation ? {
-    offset: cs.steamVariation.offset * precision * .6,
-    transfer: 1 + (cs.steamVariation.transfer - 1) * precision * .6,
+    offset: cs.steamVariation.offset * observedRead,
+    transfer: 1 + (cs.steamVariation.transfer - 1) * observedRead,
   } : prediction;
   const nominal = temperatureAfterSteam(selected, seconds, observed);
-  const margin = (steamClimate(cs.environment).rainy ? .085 : .075) - precision * .04;
-  const step = .05 - .025 * precision;
+  const margin = (steamClimate(cs.environment).rainy ? .085 : .075) - precision * .04 - readBonus * .05;
+  const step = .05 - .025 * precision - readBonus * .025;
   // 端で片側だけを切ると、予測の中心が移る際に上位の洞察ほど幅が広く見えてしまう。
   // 範囲を丸ごと物理的な上限・下限へ収め、どの温度でも洞察による幅の縮小を保つ。
   const center = clamp(Math.round(nominal / step) * step, .08 + margin, STEAM_LIMIT - margin);

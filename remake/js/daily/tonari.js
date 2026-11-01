@@ -1,5 +1,7 @@
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
+import { callingSalesBonus } from "../core/growth-effects.js";
+import { on } from "../core/bus.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
 // シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
@@ -88,48 +90,68 @@ export async function tonariCustomer({ signal = null } = {}) {
 
 // 魅力の段で指名・リピートが増える
 const CALLED_BONUS = 5000; // スミさんに急に呼ばれた日の上乗せ（店からの給料。チップではない）
+const activeShifts = new WeakSet();
 
 /** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ） */
 export async function doBaito({ called = false } = {}) {
-  return dialogueSequence(() => baitoShift({ called }));
+  const owner = state;
+  if (activeShifts.has(owner)) return false;
+  activeShifts.add(owner);
+  const controller = new AbortController();
+  const off = on("hud", () => { if (state !== owner) controller.abort(); });
+  try { return await dialogueSequence(() => baitoShift({ called, owner, signal: controller.signal })); }
+  finally { off(); controller.abort(); activeShifts.delete(owner); }
 }
 
-async function baitoShift({ called }) {
+async function baitoShift({ called, owner, signal }) {
+  const current = () => state === owner && !signal.aborted;
+  const read = async (scene, opts) => {
+    const result = await play(scene, { ...opts, signal });
+    return current() && !result?.cancelled;
+  };
   addStamina(-24);
   const condition = currentCondition(); // 消耗を反映した制作時の体力で、そのシフト中は固定
+  const shiftKey = `${owner.chapter}:${owner.day}:${owner.slot}`;
+  const callingBonus = owner.flags._minto_calling_paid === shiftKey ? 0 : callingSalesBonus(owner, condition);
   playBgm("tonari");
   state.baitoCount = (state.baitoCount || 0) + 1;
   state.lastBaitoDay = state.day;
-  await play("remake_baito_start", { bg: TONARI_BG });
+  if (!await read("remake_baito_start", { bg: TONARI_BG })) return false;
   await meetHiyoriAtTonari();
+  if (!current()) return false;
   const rainy = isRainy();
-  if (rainy) await play("remake_baito_rain", { bg: TONARI_BG });
+  if (rainy && !await read("remake_baito_rain", { bg: TONARI_BG })) return false;
   const n = state.baitoCount;
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
   if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
     state.flags._ev_rei_cameo = true;
-    await play("ch1_rei_cameo", { bg: TONARI_BG });
+    if (!await read("ch1_rei_cameo", { bg: TONARI_BG })) return false;
     rememberBaito("ch1_rei_cameo", ["rei"]);
   } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
     state.flags._ev_reviewer_cameo = true;
-    await play("ch1_reviewer_cameo", { bg: TONARI_BG });
+    if (!await read("ch1_reviewer_cameo", { bg: TONARI_BG })) return false;
     rememberBaito("ch1_reviewer_cameo", ["reviewer"]);
   } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 4 && state.day >= 6 && !state.flags._ev_maezono_cameo) {
     state.flags._ev_maezono_cameo = true;
-    await play("ch1_maezono_cameo", { bg: TONARI_BG });
+    if (!await read("ch1_maezono_cameo", { bg: TONARI_BG })) return false;
     rememberBaito("ch1_maezono_cameo", ["maezono"]);
   } else {
-    await customerEvent(condition);
+    if (await customerEvent(condition, signal) === false) return false;
   }
+  if (!current()) return false;
   await serveShiftOrder();
+  if (!current()) return false;
+  if (callingBonus && !await read("baito_minto_calling", { bg: TONARI_BG })) return false;
   const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
-  const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus;
+  const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
   await shiftClose();
-  await play("remake_baito_end", { bg: TONARI_BG });
-  if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });
+  if (!current() || !await read("remake_baito_end", { bg: TONARI_BG })) return false;
+  if (called && !await read("remake_sumi_call_thanks", { bg: TONARI_BG })) return false;
   addMoney(pay);
+  if (callingBonus) owner.flags._minto_calling_paid = shiftKey; // 同じ行動枠の再開・再入力で上乗せを重ねない。
+  if (callingBonus) toast(`呼び込みの追加注文。店からの売上ボーナス +${callingBonus.toLocaleString()}円`, { kind: "good" });
   if (bonus) toast(`指名ボーナス（魅力）＋${bonus.toLocaleString()}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
@@ -138,7 +160,9 @@ async function baitoShift({ called }) {
   // 基礎成長は訪問と同じ4。接客・片付けの両方を経験する。
   applyStats({ technique: 2, charm: 2 });
   await afterShiftErrand();
+  if (!current()) return false;
   await afterShift();
+  return current();
 }
 
 /** 店の受け取りは実際のシフト後だけ。旧DAY4の既読記録もそのまま使う。 */
@@ -192,15 +216,16 @@ function chooseCustomerEvent(rainy) {
 }
 
 /** baito_events.json の接客イベントを会話に変換して再生 */
-async function customerEvent(condition) {
+async function customerEvent(condition, signal) {
+  const owner = state;
   const used = (state.usedBaito = state.usedBaito || []);
   const ev = chooseCustomerEvent(isRainy());
   if (!ev) {
     // 条件を満たす客がいないときも、未対面の名前や一度限りの出来事は再生しない。
-    await play({ dialogue_id: "remake_baito_routine", lines: [
+    const result = await play({ dialogue_id: "remake_baito_routine", lines: [
       { speaker: "", face: "", text: "注文を聞いて、炭を替え、グラスを下げる。今日のシフトも、一つずつ対応を重ねた。" },
-    ] }, { bg: TONARI_BG });
-    return;
+    ] }, { bg: TONARI_BG, signal });
+    return state === owner && !result?.cancelled;
   }
   const narr = (t) => String(t || "").split("\n").filter(Boolean).map((text) => ({ speaker: "", face: "", text }));
   const branches = {};
@@ -214,7 +239,8 @@ async function customerEvent(condition) {
     lines: [...narr(ev.text), ...(choices.length ? [{ type: "choice", id: "baito", choices }] : [])],
     branches,
   };
-  await play(dlg, { bg: TONARI_BG });
+  const result = await play(dlg, { bg: TONARI_BG, signal });
+  if (state !== owner || result?.cancelled) return false;
   if (!used.includes(ev.id)) used.push(ev.id);
   if (ev.set_flag) state.flags[ev.set_flag] = true;
   if (ev.mark_flag) state.flags[ev.mark_flag] = (Number(state.flags[ev.mark_flag]) || 0) + 1; // 繰り返し来る常連の接客回数（大会の回想分岐用。set_flag と違い一度きり化しない）

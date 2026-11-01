@@ -6,6 +6,7 @@ import { gainFlavorExperience, masteryLabel } from "../core/flavor-mastery.js";
 // 育つのは配合したフレーバーの熟練度だけ。ステータスは増えず、体力24を使う。
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
+import { growthLesson } from "../core/growth-effects.js";
 import { addStamina, staminaAfter, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { coldRisk } from "../core/illness.js";
@@ -61,8 +62,8 @@ export function homeShishaOffer(s = state, { eve = false } = {}) {
   if (!rig || eve || s.flags?._home_shisha_day === dayKey(s)) return null;
   const stock = ownedFlavorIds().reduce((sum, id) => sum + flavorStock(id), 0);
   if (stock < HOME_GRAMS) return null;
-  if (conditionForRatio(s.stamina / maxStamina()).health !== "green") return null;
-  if (coldRisk(staminaAfter(HOME_STAMINA) / maxStamina())) return null;
+  if (conditionForRatio(s.stamina / maxStamina({ forCondition: true })).health !== "green") return null;
+  if (coldRisk(staminaAfter(HOME_STAMINA) / maxStamina({ forCondition: true }))) return null;
   return rig;
 }
 
@@ -75,6 +76,9 @@ export function applyHomeShisha(mix, rig, s = state) {
   addStamina(HOME_STAMINA);
   const masteryGains = gainFlavorExperience(s, mix, rig.id === "home_rig_pro" ? 7.5 : 6, DB.flavorById);
   s.flags._home_shisha_day = dayKey(s);
+  if (s.slot >= 1 && growthLesson(s, "M-S3") && entries.some(([id]) => familyOf(id) === "lavender")) {
+    s.flags._home_lavender_sleep = dayKey(s);
+  }
   const info = evaluateMix({ mode: "home", mix, equip: { bowl: s.equip?.bowl || "silicone_bowl" } });
   const taste = tasteOf(info);
   // 自分で組んで当てたレシピはレシピ帳へ。発見によるセンス加算も行わない。
@@ -235,9 +239,9 @@ async function chooseMix() {
 /** レシピ帳から作る。作れるレシピがなければ null */
 async function chooseRecipe() {
   const options = (DB.recipes || []).filter((r) => state.recipes?.[r.id] && recipeMix(r))
-    .map((r) => ({ label: r.name, value: r.id, test: `home-recipe-${r.id}` }));
+    .map((r) => ({ label: `${r.name}（${Object.entries(recipeMix(r)).map(([id,g])=>`${leafName(id)}${g}g`).join("・")}）`, value: r.id, test: `home-recipe-${r.id}` }));
   if (!options.length) return null;
-  const id = await modal({ title: "家シーシャ：レシピ帳から作る", className: "home-shisha-dialog", body: "自分の葉で作れるレシピ。使う葉と量はレシピどおり。",
+  const id = await modal({ title: "家シーシャ：レシピ帳から作る", className: "home-shisha-dialog", body: `自分の葉を合計${HOME_GRAMS}g使う。体力 ${state.stamina}→${staminaAfter(HOME_STAMINA)}（${state.stamina-staminaAfter(HOME_STAMINA)}消費）。`,
     options: [...options, { label: "戻る", value: null, test: "home-recipe-back" }] });
   return id ? recipeMix(DB.recipes.find((r) => r.id === id)) : null;
 }
@@ -253,7 +257,7 @@ export async function runHomeShisha({ eve = false } = {}) {
   let mix = null;
   while (!mix) {
     const how = await modal({ title: "寝る前の家シーシャ", className: "home-shisha-dialog",
-      body: `まだ体力に余裕がある。${rig.name}で家シーシャをする？ 自分の葉${HOME_GRAMS}gと体力を使う。使った味の熟練度が育つ。`,
+      body: `まだ体力に余裕がある。${rig.name}で家シーシャをする？ 自分の葉${HOME_GRAMS}gを使う。体力 ${state.stamina}→${staminaAfter(HOME_STAMINA)}（${state.stamina-staminaAfter(HOME_STAMINA)}消費）。使った味の熟練度が育つ。`,
       options: [
         { label: "家シーシャをする（フレーバーを選ぶ）", value: "mix", primary: true, test: "home-shisha-mix" },
         ...(canRecipe ? [{ label: "家シーシャをする（レシピ帳）", value: "recipe", test: "home-shisha-recipe" }] : []),
@@ -261,7 +265,9 @@ export async function runHomeShisha({ eve = false } = {}) {
       ] });
     if (!how || state !== owner) return false;
     mix = how === "recipe" ? await chooseRecipe() : await chooseMix();
+    if(state!==owner)return false;
   }
+  if(state!==owner)return false;
   const result = applyHomeShisha(mix, rig);
   // 消費・実施済み印・成長を、会話や再読み込みを挟む前に一括で保存する。
   if (!result) return false;

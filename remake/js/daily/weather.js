@@ -2,6 +2,7 @@
 // 雨の日: マップに雨、観音堂・カフェは雨の回、つむぎは長居、バイトは長居客の追加注文ぶん給料に上乗せ。
 import { state } from "../core/state.js";
 import { setBackgroundWeatherSource } from "../core/data.js";
+import { growthSkill } from "../core/growth-effects.js";
 
 setBackgroundWeatherSource(weatherOf);
 
@@ -24,6 +25,15 @@ export function weatherOf(day = state?.day) {
   return h % 100 < 30 ? "cloud" : "sun";
 }
 export const WEATHER_LABEL = { sun: "晴れ", cloud: "くもり", rain: "雨" };
+
+/** 空模様は同じ保存済みの種を読むだけ。表示のために天気を抽選し直さない。 */
+export function tomorrowForecast(s = state) {
+  if (!growthSkill(s, "K05") || !Number.isFinite(s?.weatherSeed) || s.phase === "tournament") return null;
+  const day = (s.day || 1) + 1;
+  const rain = (Math.imul(s.weatherSeed + day * 7919, 2654435761) >>> 0) % 100 < 30;
+  const cloud = (Math.imul(s.weatherSeed + day * 104729, 2246822519) >>> 0) % 100 < 30;
+  return WEATHER_LABEL[rain ? "rain" : cloud ? "cloud" : "sun"];
+}
 
 /** 雨の日だけ出す回（晴れの日はローテーションに出さない＝天気と文が食い違わない） */
 export const RAIN_SPOT_TEXTS = { kannon: "kannon_rain", cafe: "cafe_window_rain" };

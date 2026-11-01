@@ -61,7 +61,7 @@ export const GRID = { w: 6, h: 8 }; // x は −w〜w、y は −h〜0（紋は�
 
 /**
  * ✦のマス（2026-10-30 オーナー「9段とか10段みたいな概念は無くす」SBD63）: 段に付いていた「できること」を、決まったマスに移した。
- * そのマスを灯すと開く。どのマスかは BOARD_SHAPES の5つ目。表示だけで、効き目は C5。
+ * そのマスを灯すと開く。どのマスかは BOARD_SHAPES の5つ目。効き目は growth-effects.js と各制作工程へ接続。通常公開前は GROWTH_BOARD の裏。
  */
 export const FEATURES = {
   stage: { board: "body", name: "審査員の第一印象", text: "大会で審査員の第一印象が良く、少し加点される" },
@@ -74,7 +74,7 @@ export const FEATURES = {
 /**
  * 普通のマス（白火で灯す能力のマス）の恩恵（2026-10-30 オーナー「少しでも恩恵はつけたい。毎回違うのでなくてもいい」SBD59）。
  * どの恩恵かはマスごと（BOARD_SHAPES の4つ目）。強さは帯で決まる（SBD62「遠くをとりに行くやつはリターンを合わせたい」）:
- * 近く×1・中ほど×2・関門の先×3。text の {n} が帯の倍率で n×1／n×2／n×3 になる。数字は仮（効き目の実装 C5 で計測して決める）。今は表示だけ。
+ * 近く×1・中ほど×2・関門の先×3。text の {n} が帯の倍率で n×1／n×2／n×3 になる。数字は調整の初期値。表示と実効値は同じ集計を使う（growth-effects.js）。
  */
 /**
  * 要のマス（2026-10-31 SBD73）: 能力のマスの中の目的地。その道の恩恵の名前つきの強化版。火種1・総量は変えない。
@@ -136,7 +136,7 @@ export const BOARD_WHERE = {
 };
 
 // ---------------------------------------------------------------- スキル24（2.5）。各盤8つ（近く 4×2・中ほど 2×2・関門の先 5×2と7×2）・火種の合計は各36・第1章は各2つ（2026-10-30 オーナー「バランスをとって」SBD60）。
-// デンスパック（K18）は理論盤で覚える（オーナー採用 SBD57。今は表示だけで、詰め方の画面の制限は効き目の段階で入れる）
+// デンスパック（K18）は理論盤で覚える（オーナー採用 SBD57。新規の盤モードは習得で解放。旧セーブと旧モードの選択肢は互換フラグで保持）
 // cell は要所の座標、ring はその章までに届けたい章。要所の章（BOARD_SHAPES）がこれ以下であることを読み込み時に確かめる。
 
 export const SKILLS = [
@@ -163,7 +163,6 @@ export const SKILLS = [
   { id: "K18", cell: "-3,1", board: "wisdom", ring: 1, cost: 4, glyph: "密", name: "デンスパック", scene: "パッキング", text: "詰め方に「デンスパック」が加わる（密に詰めて厚い味へ。蒸らしは長めに）" },
   // 中ほどの「たまに面白い」スキル（2026-10-30 オーナー「授業以外でも中間でたまに面白い取りたいってなるスキルを入れたい」SBD66）。火種2・関門なし
   { id: "K19", cell: "3,-1", board: "body", ring: 3, cost: 2, glyph: "顔", name: "顔が広い", scene: "日常", text: "街を歩くと、知り合いにばったり会いやすくなる（偶然の会話が増える）" },
-  { id: "K20", cell: "-3,-1", board: "body", ring: 2, cost: 2, glyph: "差", name: "差し入れ上手", scene: "交流", text: "手土産や差し入れを渡すと、好感度が少し多く上がる" },
   { id: "K21", cell: "0,-4", board: "sense", ring: 2, cost: 2, glyph: "輪", name: "スモークリング", scene: "吸い出し", text: "吸い出しをジャストで取ると煙の輪が出て、審査員の受けが少し良くなる" },
   { id: "K22", cell: "2,-4", board: "sense", ring: 3, cost: 2, glyph: "残", name: "残り香", scene: "蒸らし", text: "蒸らしで雑念を3つ続けて消すと、少しのあいだ周りの雑念がゆっくりになる" },
   { id: "K23", cell: "-1,-4", board: "wisdom", ring: 2, cost: 2, glyph: "利", name: "目利き", scene: "買い物", text: "葉を買う時に掘り出し物が並び、少し安く買える" },
@@ -175,6 +174,11 @@ export const SKILLS = [
 // はじめが相談して話を聞く場面（scene）を見て習得する。章（ring）はその人に会える章。
 
 /** reward: skill（新しい操作）／special（その人らしい強い効き目）／stat（能力が伸びる。bonus はマスの数） */
+// 2026-11-01 オーナー指示: 差し入れスキルは廃止。保存済みのID・位置・支払を保って通常マスへ。
+export const STAT_UPGRADES = [
+  { id:"K20", cell:"-3,-1", board:"body", ring:2, cost:2, perk:"charm" },
+];
+
 export const LESSONS = [
   { id: "M-B1", cell: "-1,-2", board: "body", who: "minto", need: 5, sig: true, reward: "skill", name: "呼び込み上手",
     hint: "みんとと仲良くなると、お客さんの呼び方を教えてもらえそう",
@@ -234,7 +238,7 @@ export const LESSONS = [
     text: "配合にブラックティーを1〜2割入れると、ほかの葉の香りを消さずに奥行きが出て、配合の点が上がる", scene: "lesson_mashiro_blacktea" },
   { id: "M-W8", cell: "2,-7", board: "wisdom", who: "sheikh", need: 5, ring: 4, sig: true, reward: "special", name: "グレープの王道", revealFlag: "_ch4_sheikh_revealed",
     hint: "あの人と仲良くなると、王道の一台の作り方を教えてもらえそう",
-    text: "グレープを主役（いちばん多い葉）にした一台は、審査員の受け止めが一段良くなる", scene: "lesson_sheikh_grape" },
+    text: "グレープ系統が単独で最多の一台は、最後の総合評価の受け止めが一段良くなる", scene: "lesson_sheikh_grape" },
   { id: "M-B6", cell: "0,-7", board: "body", who: "da_silva", need: 5, ring: 4, sig: true, reward: "skill", name: "フェスタの煙",
     hint: "太陽と仲良くなると、場をひっくり返す煙の出し方を教えてもらえそう",
     text: "1台に1回、蒸らしのリフレッシュが画面全体に広がり、すべての雑念を消す", scene: "lesson_da_silva_festa" },

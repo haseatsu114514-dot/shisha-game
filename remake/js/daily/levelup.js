@@ -4,6 +4,7 @@ import { el, sleep } from "../core/util.js";
 import { layers } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { state } from "../core/state.js";
+import { on } from "../core/bus.js";
 import { DB, displayName } from "../core/data.js";
 import { settleGrowth, gaugeAt, totalExpFor, openGrowthBoard } from "../core/growth.js";
 import { BOARD_HEAD, BOARD_JA, HIDANE_NAME } from "../core/growth-board-data.js";
@@ -12,6 +13,8 @@ import { spotById } from "./spots.js";
 const colorName = (kind) => HIDANE_NAME[kind] || "火種";
 const PLACE_LABEL = {
   tonari_shift: "tonariのバイト", tonari_practice: "まかないで練習", tonari_seat: "tonariの客席", axe_bar: "斧投げBar", pakki_slot: "パッキースロット",
+  "tokyo:pizza_party": "ピザとシーシャの夜",
+  "dubai:souq": "スーク", "dubai:festa": "FESTA", "dubai:center_cafe": "中心地のカフェ",
 };
 
 /** 「今日学んだこと」の名前。相手は表示名、場所は行き先の名前。分からない鍵は出さない。 */
@@ -39,28 +42,34 @@ export function giftLine(gift) {
 }
 
 /** その日の分を精算し、上がっていれば見せる。上がらない夜は、ご褒美があればそれだけ短く見せる。 */
-export async function presentNightGrowth() {
-  const r = settleGrowth();
+export async function presentNightGrowth(r = settleGrowth()) {
   if (!r) return r;
-  if (r.to <= r.from) { if (r.gifts.length) await giftBand(r); return r; }
-  if (r.full) await fullLevelUp(r);
-  else await shortLevelUp(r);
-  return r;
+  const owner = state, controller = new AbortController();
+  const off = on("hud", () => { if (state !== owner) controller.abort(); });
+  try {
+    if (r.to <= r.from) { if (r.gifts.length) await giftBand(r, controller.signal); return r; }
+    if (r.full) await fullLevelUp(r, controller.signal);
+    else await shortLevelUp(r, controller.signal);
+    return r;
+  } finally { off(); controller.abort(); }
 }
 
-function skipper() {
+function skipper(signal) {
   let skipped = false, wake = null;
   const wait = (ms) => skipped ? Promise.resolve() : new Promise((resolve) => {
     const timer = setTimeout(() => { wake = null; resolve(); }, ms);
     wake = () => { clearTimeout(timer); wake = null; resolve(); };
   });
-  return { wait, skip: () => { skipped = true; wake?.(); }, get skipped() { return skipped; } };
+  const skip = () => { skipped = true; wake?.(); };
+  signal?.addEventListener("abort", skip, { once: true });
+  if (signal?.aborted) skip();
+  return { wait, skip, get skipped() { return skipped; } };
 }
 const reducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // ---------------------------------------------------------------- 短い帯（約1.8秒）
 
-async function shortLevelUp(r) {
+async function shortLevelUp(r, signal) {
   const learned = learnedText(r.learned);
   const band = el("div.levelup-band", { role: "status", dataset: { test: "levelup-band" } }, [
     el("b.lb-top", { text: "LEVEL UP" }),
@@ -69,11 +78,12 @@ async function shortLevelUp(r) {
     learned ? el("small.lb-learned", { text: `今日学んだこと：${learned}` }) : null,
     ...r.gifts.map((x) => el("small.lb-gift", { text: giftLine(x) })),
   ]);
-  const s = skipper();
+  const s = skipper(signal);
   band.addEventListener("pointerdown", s.skip);
   layers.fx.append(band);
   SE.select();
   await sleep(30);
+  if (signal.aborted) { band.remove(); return; }
   band.classList.add("show");
   await s.wait(1800);
   band.classList.remove("show");
@@ -83,17 +93,18 @@ async function shortLevelUp(r) {
 
 // ---------------------------------------------------------------- ご褒美だけの夜（レベルは上がっていない）
 
-async function giftBand(r) {
+async function giftBand(r, signal) {
   const band = el("div.levelup-band.gift", { role: "status", dataset: { test: "gift-band" } }, [
     el("b.lb-top", { text: "HIDANE" }),
     ...r.gifts.map((x) => el("span.lb-hidane", { text: giftLine(x) })),
     el("small.lb-learned", { text: "火種は観音堂などで内省すると灯せる" }),
   ]);
-  const s = skipper();
+  const s = skipper(signal);
   band.addEventListener("pointerdown", s.skip);
   layers.fx.append(band);
   SE.select();
   await sleep(30);
+  if (signal.aborted) { band.remove(); return; }
   band.classList.add("show");
   await s.wait(2200 + 600 * r.gifts.length);
   band.classList.remove("show");
@@ -103,8 +114,8 @@ async function giftBand(r) {
 
 // ---------------------------------------------------------------- フル演出
 
-async function fullLevelUp(r) {
-  const s = skipper();
+async function fullLevelUp(r, signal) {
+  const s = skipper(signal);
   const settled = el("b.lu-settled"), fill = el("b.lu-fill");
   const lvText = el("strong.lu-lv", { text: `Lv.${r.from}` });
   const head = el("h2.lu-head", { text: "LEVEL UP", "aria-hidden": "true" });
@@ -140,6 +151,7 @@ async function fullLevelUp(r) {
   setBar(settled, start.now, true);
   setBar(fill, start.now, true);
   await sleep(30);
+  if (signal.aborted) { backdrop.remove(); return; }
   backdrop.classList.add("show");
   if (reducedMotion()) s.skip();
   await s.wait(350);
@@ -164,6 +176,8 @@ async function fullLevelUp(r) {
   if (!s.skipped) await s.wait(300);
   ok.focus?.();
   const choice = await new Promise((resolve) => {
+    if (signal.aborted) { resolve("cancel"); return; }
+    signal.addEventListener("abort", () => resolve("cancel"), { once: true });
     ok.addEventListener("click", () => { SE.click?.(); resolve("ok"); }, { once: true });
     toBoard.addEventListener("click", () => { SE.select?.(); resolve("board"); }, { once: true });
     panel.addEventListener("keydown", (e) => { if (e.key === "Escape") resolve("ok"); });
@@ -172,7 +186,7 @@ async function fullLevelUp(r) {
   await sleep(220);
   backdrop.remove();
   // 寝る前に盤を見て目標を決められる。灯すのは参拝の場所（SPEC 2.8）
-  if (choice === "board") await openGrowthBoard();
+  if (choice === "board" && !signal.aborted) await openGrowthBoard();
 }
 
 /** 火種の粒を HUD の五角形（盤への入り口）へ飛ばす。HUD が見えなければ飛ばさない。 */

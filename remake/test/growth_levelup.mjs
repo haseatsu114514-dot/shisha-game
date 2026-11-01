@@ -46,6 +46,9 @@ const off = await stats.paidAction(async () => { stats.addStamina(-10); return t
 assert.equal(off.spent > 0, true);
 assert.equal(core.state.growth, undefined, "無効なら growth を作らない");
 assert.equal(growth.settleGrowth(), null);
+const legacyRaw = core.state.stats.sense;
+await stats.paidAction(async () => { stats.earnStat("sense", 2); stats.addStamina(-4); });
+assert.equal(core.state.stats.sense, legacyRaw + 1, "無効時の行動による旧成長は維持");
 
 // 有効: 自由行動 X1〜X3、新鮮さ、1行動1枚のチップ
 growth.setGrowthPreview(true);
@@ -54,6 +57,8 @@ core.newGame();
 core.state.phase = "daily";
 const statsBefore = { ...core.state.stats };
 const visit = (target, run = async () => { stats.addStamina(-4); return true; }) => stats.paidAction(run, { exp: target });
+assert.equal(stats.gainStat("sense", 20), 0, "盤モードでは確定加算口からも旧能力を増やさない");
+stats.earnStat("sense", 20);
 await visit({ key: "naru", person: "naru" });
 const g = core.state.growth;
 assert.equal(g.xp, 70, "初めての相手: 30＋40");
@@ -62,6 +67,7 @@ await tick(10);
 assert.equal(chips.length, 1, "1行動につきチップ1枚");
 assert.deepEqual(chips[0], { total: 70, tags: ["はじめて"] });
 assert.deepEqual(Object.keys(core.state.stats).map((k) => core.state.stats[k] >= statsBefore[k]), [true, true, true, true, true], "旧しくみの能力は下がらない");
+assert.deepEqual(core.state.stats, statsBefore, "経験値と旧能力の二重成長をしない");
 await visit({ key: "naru", person: "naru" });
 assert.equal(g.xp, 100, "2回目は満額・はじめて無し");
 await visit({ key: "naru", person: "naru" });
@@ -229,6 +235,96 @@ assert.equal(core.state.growth.earned, growth.BOARD_TOTAL);
 assert.equal(capped.boardFull, false, "受け取りが上限でも、灯していなければ「盤は埋まった」と出さない");
 
 // 無効へ戻すと新しいゲームには growth が無い
+// X6/X7: 行動の確定時にだけ配合の発見を精算し、再読・LOAD・無料練習では増やさない。
+core.newGame(); core.state.phase = "daily";
+const discoveryStats = { ...core.state.stats };
+stats.earnRecipeDiscovery("lemon_mint", { discovered: true, golden: true });
+assert.equal(core.state.growth, undefined, "自由行動の外では報酬を作らない");
+await stats.paidAction(async () => {
+  stats.addStamina(-4); stats.earnStat("sense", 4);
+  stats.earnRecipeDiscovery("lemon_mint", { discovered: true });
+  stats.earnRecipeDiscovery("lemon_mint", { golden: true });
+}, { exp: { key: "tonari_practice", place: "tonari_practice" } });
+assert.equal(core.state.growth.xp, 120, "X1+X3+新レシピ30+黄金比20");
+assert.deepEqual(core.state.stats, discoveryStats);
+core.save(); core.load();
+await stats.paidAction(async () => {
+  stats.addStamina(-4); stats.earnRecipeDiscovery("lemon_mint", { discovered: true, golden: true });
+});
+assert.equal(core.state.growth.xp, 120, "同じ配合を再び確定しても発見は重複しない");
+await stats.paidAction(async () => { stats.earnRecipeDiscovery("no_cost", { discovered: true }); });
+assert.equal(core.state.growth.xp, 120);
+assert(!core.state.growth.discoveries.recipes.includes("no_cost"));
+await assert.rejects(stats.paidAction(async () => {
+  stats.addStamina(-4); stats.earnRecipeDiscovery("cancelled", { discovered: true }); throw new Error("cancel");
+}), /cancel/);
+assert.equal(core.state.growth.xp, 120);
+await stats.paidAction(async () => {
+  stats.addStamina(-4); stats.earnRecipeDiscovery("old_owner", { discovered: true }); core.newGame();
+});
+assert.equal(core.state.growth, undefined, "LOAD相当で所有者が変わった行動の報酬を持ち越さない");
+core.state.chapter = 2;
+await stats.paidAction(async () => { stats.addStamina(-4); stats.earnRecipeDiscovery("chapter2", { discovered: true, golden: true }); });
+assert.equal(core.state.growth.xp, 63, "第2章の新レシピ38＋黄金比25");
+const { buildCarryPackage } = await import("../js/core/carry.js");
+assert.deepEqual(buildCarryPackage(core.state).growth.discoveries, { recipes: [], golden: [] });
+assert.deepEqual(core.state.growth.discoveries, { recipes: ["chapter2"], golden: ["chapter2"] }, "周回パッケージ作成で現セーブを変更しない");
+core.newGame(); core.state.phase="daily";
+growth.ensureGrowth().nodes=["K04","K04"];
+growth.awardActionExp({key:"new_person",person:"new_person"});
+assert.equal(core.state.growth.xp,78,"K04はX2の40だけを20%増やす。X1の30はそのまま");
+growth.awardActionExp({key:"new_place",place:"new_place"});
+assert.equal(core.state.growth.xp,156);
+growth.awardActionExp({key:"new_person",person:"new_person"});
+assert.equal(core.state.growth.xp,186,"再訪の行動経験値にK04を付けない");
+growth.awardRecipeExp("recipe",{discovered:true,golden:true});
+assert.equal(core.state.growth.xp,236,"新レシピと黄金比はK04の対象外");
+// X5/X5s は完読候補を行動終了で精算。部品の再通知・無料会話・旧ownerを除外する。
+stats.earnSceneCompletion("outside"); assert.deepEqual(core.state.growth.read,[]);
+await stats.paidAction(async () => {
+  stats.addStamina(-4); stats.earnSceneCompletion("cafe_idea"); stats.earnSceneCompletion("cafe_idea");
+});
+assert.equal(core.state.growth.xp,260,"初場面20にK04の20%を適用、重複候補は一度だけ");
+core.save(); core.load();
+await stats.paidAction(async () => { stats.addStamina(-4); stats.earnSceneCompletion("cafe_idea"); });
+assert.equal(core.state.growth.xp,260,"LOAD後の同じ場面に再付与しない");
+await stats.paidAction(async () => { stats.earnSceneCompletion("no_cost"); });
+assert.deepEqual(core.state.growth.read,["cafe_idea"]);
+assert.equal(growth.awardSceneExp("lover_minto_lv2"),0,"恋人専用の先行報酬と重ねない");
+assert.equal(growth.awardSceneExp("hiyori_feelings_spoken"),0);
+assert.deepEqual(buildCarryPackage(core.state).growth.read,[]);
+// X8〜X11: 再挑戦では最高順位との差分、章の終了・広さは一度だけ。大会の資源を変更しない。
+core.newGame(); core.state.phase="tournament";
+const resourceBefore={day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,money:core.state.money,stats:{...core.state.stats}};
+assert.equal(growth.awardTournamentExp(0),0);
+assert.equal(growth.awardTournamentExp(4,{failed:"burnt"}),140);
+assert.equal(growth.hidaneTotal(),0,"制作途中の敗北では工程の色を推測しない");
+const finishedCraft={pullDone:true,careHistory:[{score:60},{score:70}],heat:{score:95},steam:{score:80},holes:{score:90},stats:{craftQuality:85}};
+assert.equal(growth.awardTournamentExp(3,finishedCraft),40);
+assert.equal(core.state.growth.hidane.sense,2);
+assert.equal(growth.awardTournamentExp(2,finishedCraft),40);
+assert.equal(growth.awardTournamentExp(1,finishedCraft),80);
+assert.equal(growth.awardTournamentExp(4,finishedCraft),0);
+core.save();core.load();
+assert.equal(growth.awardTournamentExp(1,finishedCraft),0);
+assert.equal(core.state.growth.xp,300);assert.equal(core.state.growth.earned,2);
+assert.equal(core.state.growth.today.gifts.length,1);
+assert.deepEqual({day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,money:core.state.money,stats:core.state.stats},resourceBefore);
+growth.awardActionExp({key:"naru",person:"naru"});
+growth.awardActionExp({key:"naru",person:"naru"});
+growth.awardActionExp({key:"cafe",place:"cafe"});
+assert.equal(growth.awardChapterClearExp(),190,"章クリア150＋1人25＋1種類15");
+core.save();core.load();assert.equal(growth.awardChapterClearExp(),0);
+core.state.chapter=2;
+assert.equal(growth.awardTournamentExp(1,finishedCraft),375,"別の章は再集計し章倍率1.25を適用");
+assert.equal(growth.awardChapterClearExp(),188,"前章の広さを次章へ数えない");
+const carry=buildCarryPackage(core.state).growth;
+assert.deepEqual(carry.chapterLog,{});assert.deepEqual(carry.tournamentXp,{});assert.deepEqual(carry.cleared,[]);
+// 欠けた新台帳・壊れた章別レコードで旧セーブを落とさない。
+core.newGame();core.state.growth={...growth.newGrowth(),chapterLog:{1:42},tournamentXp:{1:"invalid"}};
+growth.awardActionExp({key:"cafe",place:"cafe"});
+assert.equal(growth.awardTournamentExp(4),140);
+assert.equal(growth.awardChapterClearExp(),165);
 growth.setGrowthPreview(false);
 core.newGame();
 assert.equal(core.state.growth, undefined);

@@ -16,11 +16,13 @@ export function steamClimate(environment = {}) {
   // 係数はゲーム用の調整値。湿度は計算に使わない（#1129 オーナー決定 2026-10-30）。
   const offset = (ambientC - 23) * .0025 - (rainy ? .01 : 0);
   const transfer = clamp(1 + (ambientC - 23) * .012 - (rainy ? .055 : 0), .72, 1.14);
-  return { rainy, ambientC, offset, transfer };
+  const precision = environment.precision === true ? clamp(environment.precisionAmount ?? .5,0,1) : 1;
+  return { rainy, ambientC, offset: offset * precision, transfer: 1 + (transfer - 1) * precision };
 }
 
 // 洞察で炭の状態を読み取る。最高でも6割までで、実際の揺らぎを全部は知れない。
-export function steamForecastProfile(insight, variation) {
-  const precision = clamp(insight ?? 0, 0, 1), read = precision * .6;
-  return { precision, offset: variation.offset * read, transfer: 1 + (variation.transfer - 1) * read };
+export function steamForecastProfile(insight, variation, { readBonus = 0 } = {}) {
+  const precision = clamp(insight ?? 0, 0, 1), bonus = clamp(readBonus, 0, .3), read = Math.min(.9, precision * .6 + bonus);
+  return { precision, offset: variation.offset * read, transfer: 1 + (variation.transfer - 1) * read,
+    ...(bonus ? { readBonus: bonus } : {}) };
 }

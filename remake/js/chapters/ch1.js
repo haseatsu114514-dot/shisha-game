@@ -11,6 +11,7 @@ import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, t
 import { withLoadingNotice } from "../core/module-loading.js";
 import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
 import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
+import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -640,6 +641,7 @@ async function tournamentDay() {
   const out = outcomeOf(cs.total);
   state.tournament.lastRank = out.rank;
   state.tournament.lastTotal = cs.total;
+  awardTournamentExp(out.rank, cs);
   save();
 
   if (out.rank === 1) {
@@ -755,6 +757,7 @@ async function finishAfterTournament() {
   });
   delete state.flags._rest_after_tournament;
   state.phase = "cleared";
+  awardChapterClearExp();
   save();
   await bannersIdle();
   await showClear();
@@ -817,6 +820,7 @@ export async function showClear() {
 /** 一台がダメになった大会は、審査を待たずにその場でGAME OVER（TH06・TH18〜TH20）。 */
 async function failedOut(reason, cs) {
   bc.clearComments();
+  awardTournamentExp(4, cs);
   save();
   await smokeWipe(() => showGameOver({ reason, cs }), { color: "dark" });
 }

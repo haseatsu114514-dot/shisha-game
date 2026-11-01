@@ -11,7 +11,7 @@ const context = vm.createContext({ console, Math, Map, Set, JSON, Date, structur
 let core, growth, board, mode = "cancel", afterScene = null;
 const scenes = [], opened = [];
 const mocks = {
-  "core/stats.js": { affinityLevel: () => 0, maxStamina: () => 100, setExpHooks() {} },
+  "core/stats.js": { affinityLevel: () => 0, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], maxStamina: () => 100, setExpHooks() {} },
   "vn/engine.js": { play: async id => { scenes.push(id); afterScene?.(); } },
   "daily/growth-board-screen.js": { openBoard: async options => {
     opened.push(options.place);

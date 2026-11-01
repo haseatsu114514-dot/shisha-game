@@ -647,7 +647,7 @@
 /* ---------------------------------------------------------------- 大会の生放送レイヤー（ニコ動風コメント・体感スコア） */
 /* 上はヘッダー、下は実況テロップを避けて流す。操作の邪魔をしない */
 .bc-lane { position: absolute; left: 0; right: 0; top: 76px; bottom: 145px; z-index: 6; overflow: hidden; pointer-events: none; user-select: none; container-type: inline-size;
-  mask-image: linear-gradient(90deg, #000b 0 36%, #0005 46% 96%, #0008 100%);
+  mask-image: linear-gradient(90deg, #000 0 36%, #000b 46% 96%, #000d 100%);
   clip-path: polygon(0 0, calc(100% - 180px) 0, calc(100% - 180px) 80px, 100% 80px, 100% 100%, 0 100%); }
 .nico {
   position: absolute;
@@ -1253,3 +1253,15 @@ body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve
 @media (min-height: 600px) and (min-width: 761px) {
   body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { transform: none; }
 }
+
+/* 心得「残り香」: 斬ったあと3秒だけ、実際にゆっくりになった雑念へ薄い余韻。 */
+.dodge.afterglow .dodge-word { text-shadow: 0 0 9px #d9bdf5; }
+
+/* 授業の追加操作も、吸う／提供と同じ行に収める。主操作を次の行へ押し出さない。 */
+.bench[data-art-skin] .pull-btns.with-options .btn { font-size:20px;line-height:1.4;padding:3px 8px;white-space:normal;overflow-wrap:anywhere; }
+.pull-btns.with-options .pull-btn-icon { width:32px;height:32px; }
+.pull-omen { position:absolute;left:15%;right:15%;bottom:4px;text-align:center;font-size:16px;line-height:1.5;min-height:28px;padding:2px 4px;color:var(--gold);pointer-events:none; }
+.pull-omen:empty { display:none; }
+
+/* 明るい会場でも、観客の一言の文字と輪郭が背景へ溶けない。 */
+.nico { background:#160f21b8;border-radius:6px;padding:2px 8px;-webkit-text-stroke:1px #190e21;paint-order:stroke fill; }

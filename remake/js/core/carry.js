@@ -195,6 +195,9 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
   ["_ch3_outings", "progression"],
+  ["_ch3_naru_party_ready", "progression"],
+  ["_ch3_pizza_party", "progression"],
+  ["_minto_calling_paid", "progression"],
   ["_ch3_preview_seen", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],
   ["_ch3_read_hiyori_tokyo_contact", "progression"],
@@ -301,6 +304,8 @@ export const FLAG_EXACT_RULES = [
   ["_hiyori_work_talk_done", "person"],
   ["_hole_outer24_unlocked", "unlock"],
   ["_home_shisha_day", "progression"],
+  ["_home_lavender_sleep", "progression"],
+  ["_dense_pack_legacy", "unlock"],
   ["_home_tonight", "progression"],
   ["_home_trial_plan", "progression"],
   ["_intro_", "progression"],
@@ -487,6 +492,8 @@ export const FLAG_EXACT_RULES = [
   ["romance_ageha", "person"],
   ["romance_minto", "person"],
   ["seenDemo", "ui"],
+  ["_kannon_growth_intro_done", "ui"],
+  ["_ch5_growth_travel", "progression"],
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],
   ["spot_kannon_adam_done", "person"],
@@ -569,6 +576,9 @@ export function buildCarryPackage(s) {
     const g = data.growth = clone(s.growth);
     g.fresh = { chapter: 1, counts: {} };
     g.firsts = { people: [], places: [] };
+    g.discoveries = { recipes: [], golden: [] };
+    g.read = [];
+    g.chapterLog = {}; g.tournamentXp = {}; g.cleared = [];
     g.gifted = {};
     g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [] };
   }

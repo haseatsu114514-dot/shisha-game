@@ -5,6 +5,8 @@ import { mixMasteryProfile } from "../core/flavor-mastery.js";
 import { clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
+import { growthPerks, growthSkill, growthLesson, floralLayers, grapeReceptionBonus, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
+import { rememberGrowthCraft } from "../core/growth-memory.js";
 import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
@@ -92,6 +94,21 @@ export function computeShisha(cs) {
 export function bonusOf(cs = null) {
   let b = 0;
   const notes = [];
+  const grape = grapeReceptionBonus(state, cs, DB.flavorById);
+  if (grape) { b += grape; notes.push(`グレープの王道・受け止め +${grape.toFixed(1)}`); }
+  if (cs?.mode === "tournament" && !cs.failed && cs.pullDone && cs.pull?.smokeRings > 0 && growthSkill(state,"K21")) { b += SKILL_TUNING.smokeRing; notes.push("スモークリングの余韻"); }
+  if(cs&&cs.mode!=="tutorial"&&!cs.failed){
+    if(floralLayers(state,cs,DB.flavorById).length){
+      const layers=(cs.careHistory||[]).slice(0,2).filter(c=>!c.failed&&Number.isFinite(c.score)).length;
+      if(layers){b+=layers*LESSON_TUNING.flowerLayer;notes.push(`花を重ねる・調整で${layers}層の香りが立った`);}
+    }
+    if(cs.mode==="tournament"&&cs.pullDone&&cs.blindService&&growthLesson(state,"M-B3")&&Number.isFinite(cs.blindVariance)){
+      const swing=Math.min(LESSON_TUNING.blindSwing,Math.max(-LESSON_TUNING.blindSwing,cs.blindVariance));
+      b+=swing;notes.push(`白紙の味カード ${swing>=0?"+":""}${swing.toFixed(1)}`);
+    }
+  }
+  const impression = cs?.mode === "tournament" ? growthPerks(state)?.stage || 0 : 0;
+  if (impression > 0) { b += impression; notes.push(`盤の第一印象 +${impression.toFixed(1)}`); }
   // この2記録は第1章の準備。後章の旧セーブに残っていても、その章の加点にはしない。
   if ((cs?.chapter ?? state?.chapter) === 1) {
     if (state?.rehearsal === "great") { b += 3; notes.push("前日リハーサルの手応え"); }
@@ -132,5 +149,6 @@ export function finalize(cs) {
   cs.parts = parts;
   cs.foilSkipped = foilSkipped;
   cs.bonusNotes = notes;
+  rememberGrowthCraft(state, cs);
   return cs;
 }

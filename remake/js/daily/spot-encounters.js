@@ -8,7 +8,7 @@ const ENCOUNTERS = {
   kannon: [
     { id: "kannon_adam", met: "adam", slot: 0 },
     { id: "kannon_oldman", slot: 0 },
-    // パッキーのアプリ導入後: 観音堂で設定が変わることをアダムが匂わせる（#621）
+    // パッキーのアプリ導入後: アダムと携帯を置いて振り返る（既読ID・出現条件は維持）
     { id: "kannon_adam_pakki", met: "adam", flag: "pakki_app_installed", slot: 0 },
   ],
   choizap: [
@@ -31,10 +31,10 @@ const FOLLOWUPS = {
 const seenKey = (id) => `_spot_seen_${id}`;
 
 /** 初回は場所の紹介。再訪から未読を一つずつ、必ず一回以上の静かな訪問を挟む。 */
-export function spotEncounterDue(spotId, visit, save, dialogues) {
+export function spotEncounterDue(spotId, visit, save, dialogues, { wide = false } = {}) {
   if (visit < 2 || spotId === "choizap" && !save.flags._gym_member) return null;
   const last = Number(save.flags[`_spot_last_${spotId}`]) || 0;
-  if (last && visit - last < 2) return null;
+  if (last && visit - last < (wide ? 1 : 2)) return null;
   return ENCOUNTERS[spotId]?.find(({ id, met, flag, slot }) => dialogues[id] && (slot === undefined || (save.slot ?? 0) === slot)
     && !save.flags[seenKey(id)] && (!met || save.met[met]) && (!flag || save.flags[flag]))?.id || null;
 }

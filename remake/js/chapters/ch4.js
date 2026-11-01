@@ -3,12 +3,14 @@
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
 import { radar } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
+import { awardChapterClearExp, awardSceneExp, presentNight, consultLessons } from "../core/growth.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
@@ -18,7 +20,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
-import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
+import { canReflect, reflectAt } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates, overseasCompanion } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
@@ -112,7 +114,7 @@ export function resumeChapterFour() {
 
 async function openChapter(advance) {
   if (session) { session.active = false; session.controller?.abort(); }
-  const owner = session = { state, active: true, busy: false, menuBusy: false, controller: null };
+  const owner = session = { state, growthDay: state.day, active: true, busy: false, menuBusy: false, controller: null };
   document.body.classList.remove("ch2-city", "ch2-main", "ch2-tournament", "ch3-intro", "ch3-aftermath", "ch3-tournament");
   document.body.classList.add("ch4-intro");
   hud();
@@ -187,6 +189,8 @@ async function readAndCommit(owner, id) {
   const unlockRevisit = id === "ch4_stranger_second" && progress.part === "free" && !progress.read[id];
   if (!await readScene(owner, id)) return false;
   if (!completeChapterFourScene(state, id)) return false;
+  if (progress.part === "free" && CH4_SPOT_SCENES.includes(id)) awardSceneExp(id);
+  if (state.flags._ch4_cleared) awardChapterClearExp();
   save();
   if (unlockRevisit) toast("路地裏のカフェに再訪できるようになった", { kind: "good" });
   return true;
@@ -194,6 +198,7 @@ async function readAndCommit(owner, id) {
 
 async function renderStage(owner) {
   if (!current(owner)) return;
+  if (!await chapterGrowthNight(owner, () => current(owner))) return;
   const progress = chapterFourProgress(state);
   if (canChooseOverseasCompanion(state)) return renderCompanionChoice(owner);
   if (progress.part === "prologue") return renderScene(owner, CH4_PROLOGUE[progress.stage], `DAY ${progress.day}`);
@@ -298,10 +303,18 @@ async function visit(owner, id) {
     if (CH4_SPOT_SCENES.includes(sceneId)) {
       // スポット初回は「……【センス】が少し上がった。」の台詞報酬を実際に加算する（通常の自由行動と同じ最大2能力各1P）。
       // 最後まで読んだ時だけ精算し、中断では何も付けない。
-      const { value: done } = await paidAction(() => readAndCommit(owner, sceneId), { consumed: ok => ok });
+      const { value: done } = await paidAction(() => readAndCommit(owner, sceneId), {
+        consumed: ok => ok, exp: { key: `dubai:${destination.id}`, place: `dubai:${destination.id}` },
+      });
       if (!done) return;
       save();
     } else if (!await readAndCommit(owner, sceneId)) return;
+  }
+  if (destination.id === "festa" && current(owner)) {
+    const controller = owner.controller = new AbortController();
+    try { await consultLessons("da_silva", { bg: bgUrl(destination.background), signal: controller.signal }); }
+    finally { if (owner.controller === controller) owner.controller = null; }
+    if (!current(owner)) return;
   }
   if (destination.kind === "end_day") {
     if (!endChapterFourDay(state)) return;
@@ -312,13 +325,15 @@ async function visit(owner, id) {
 
 /** 前夜: 未読の必須場面を story_routes の順に強制消化する。繋ぎ場面があれば先に再生。 */
 async function renderEve(owner) {
-  // 前夜に火種が残っていれば、モスクの見える水辺でひとり内省する（SPEC 2.8・#1690）
-  if (await eveReflection("dubai_waterside")) { if (current(owner)) await renderStage(owner); return; }
   const [next] = chapterFourMandatory(state);
   if (!next) {
     // 必須場面の後、大会日へ進む前に、前夜の過ごし方を一度だけ確定する（#1895）。
     if (!state.flags._ch4_evening) { await renderEvening(owner); return; }
+    // 夜の会話も経験に含め、精算してから内省する。既読の前夜をLOADしてもXPは積み増さない。
+    await presentNight({ evePlace: "dubai_waterside" });
+    if (!current(owner)) return;
     if (!finishChapterFourEve(state)) throw new Error("前夜を終えられません");
+    owner.growthDay = state.day;
     save();
     await renderStage(owner);
     return;

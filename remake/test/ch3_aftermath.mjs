@@ -158,3 +158,53 @@ for (const [oldStage, expectedStage] of [[0, 0], [2, 2], [3, 4], [5, 6], [6, 7]]
   assert.equal(playerRegion(legacy), oldStage >= 3 ? "home" : "tokyo", "A home-night save went back to Tokyo");
 }
 console.log("PASS: Chapter 3 victory aftermath saves seven scenes once, crosses Tokyo and home dates, preserves completed old saves, and never repeats the tournament");
+
+// ピザの夜は帰郷前の読了地点だけ。古い保存・約束・現在地を変更して開催可能にしない。
+{
+  globalThis.localStorage = { getItem: key => key === "suien_growth_preview" ? "1" : null };
+  const party = await import("../js/chapters/ch3-party-progress.js");
+  const s = winningSave(); beginChapterThreeAftermath(s);
+  completeChapterThreeAftermathScene(s, ids[0]); completeChapterThreeAftermathScene(s, ids[1]);
+  s.growth = { nodes: ["M-S5"], learned: ["M-S5"] };
+  s.met = { mashiro: true, kuze: true, volk: true, minto: true };
+  assert.equal(party.chapterThreePartyWindow(s), false, "Naru must be read first");
+  s.flags._ch3_naru_party_ready = true;
+  assert.deepEqual(party.chapterThreePartyGuests(s), ["mashiro", "kuze", "volk"], "home guests cannot teleport");
+  const withHost = structuredClone(s); withHost.met.mukai_master = true;
+  assert.deepEqual(party.chapterThreePartyGuests(withHost), ["mashiro", "kuze", "volk", "mukai_master"]);
+  const invalid = [[], ["mashiro"], ["mashiro", "mashiro"], ["mashiro", "minto"], ["mashiro", "kuze", "volk", "minto"]];
+  for (const guests of invalid) {
+    const before = structuredClone(s);
+    assert.equal(party.completeChapterThreeParty(s, guests, () => assert.fail("invalid award")), false);
+    assert.deepEqual(s, before);
+  }
+  s.pendingInvite = { day: s.day, slot: s.slot };
+  assert.deepEqual(party.chapterThreePartyGuests(s), []);
+  delete s.pendingInvite;
+  s.growth.partyLast = ["mashiro"];
+  assert.deepEqual(party.chapterThreePartyGuests(s), ["kuze", "volk"]);
+  const before = structuredClone(s), awards = [];
+  assert.equal(party.completeChapterThreeParty(s, ["kuze", "volk"], (...a) => awards.push(a)), true);
+  assert.deepEqual(awards, [["kuze", 10], ["volk", 10]]);
+  for (const key of ["day", "slot", "stamina", "money", "stats", "flavorStock", "tokyoVisits", "tournament"])
+    assert.deepEqual(s[key], before[key], key);
+  const restored = JSON.parse(JSON.stringify(s));
+  const { buildCarryPackage, flagVerdict } = await import("../js/core/carry.js");
+  const carry = buildCarryPackage(restored);
+  assert.deepEqual(carry.growth.partyLast, ["kuze", "volk"], "consecutive invitations stay blocked across NG+");
+  assert.equal(flagVerdict("_ch3_pizza_party"), "reset");
+  assert.equal(flagVerdict("_ch3_naru_party_ready"), "reset");
+  assert(!carry.flags._ch3_pizza_party && !carry.flags._ch3_naru_party_ready);
+  assert.equal(party.completeChapterThreeParty(restored, ["mashiro", "kuze"], () => assert.fail("duplicate award")), false);
+  assert.equal(completeChapterThreeAftermathScene(restored, ids[2]), true);
+  assert.deepEqual([restored.day, restored.slot], [44, 0]);
+  assert.equal(party.chapterThreePartyWindow(restored), false);
+  const visitor = structuredClone(before);
+  visitor.tokyoVisits.plans = [{ characterId: "minto", met: true, status: "staying", arrivalDay: 42, returnDay: 44 }];
+  assert(party.chapterThreePartyGuests(visitor).includes("minto"));
+  visitor.tokyoVisits.plans[0].returnDay = 43;
+  assert(!party.chapterThreePartyGuests(visitor).includes("minto"));
+  visitor.growth.learned = [];
+  assert.equal(party.chapterThreePartyWindow(visitor), false, "lit but unlearned is unavailable");
+}
+console.log("PASS: post-tournament party preserves dates, reservations and old checkpoints; guests, award and reload are guarded");

@@ -90,7 +90,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
     refreshWeather: () => trace.push('weather:' + fixture.day),
     bgUrl: (id, time) => `${id}:${time}`, setBg: bg => trace.push(bg),
     dayTurn: async wake => { trace.push('dawn'); const data = await wake(); assert.equal(data.weather, weather); },
-    fadeBlack: async wake => wake(), isRainy: () => weather === 'rain', weatherOf: () => weather,
+    fadeBlack: async wake => wake(), isRainy: () => weather === 'rain', weatherOf: () => weather, tomorrowForecast: () => null,
     presentSleepRecovery: async ({ before, after }) => { assert.equal(before, 60); assert.equal(after, 74); trace.push('recovery-ui'); },
     playBgm: bgm => trace.push(bgm), dayCard: async () => { throw Error('Duplicate morning DAY card'); },
     deliverMorning: () => { trace.push('lime'); return 1; }, pushNotice: () => trace.push('notice'),

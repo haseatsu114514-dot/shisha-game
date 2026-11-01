@@ -206,7 +206,7 @@ export function shortNormalVisit(spot) {
     const n = (state.spotVisits?.[spot.id] || 0) + 1;
     if (n < 2 || !state.reel?.introDone || state.flags._pakki_first_spin_pending
       || state.flags._ev_reviewer_cameo && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff
-      || spotEncounterDue(spot.id, n, state, DB.dialogues)) return false;
+      || spotEncounterDue(spot.id, n, state, DB.dialogues, { wide: state.growth?.nodes?.includes("K19") && growthEnabled() })) return false;
     const pool = quietSpotPool(spot, state.slot);
     const rain = RAIN_SPOT_TEXTS[spot.id];
     const id = rain && isRainy() && DB.dialogues[rain] ? rain : pool[Math.max(0, n - 2) % pool.length];
@@ -304,7 +304,7 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     const live = () => state === owner && !signal?.aborted;
     const read = async (scene, opts = {}) => {
       if (!live()) return false;
-      const result = await play(scene, { ...opts, signal });
+      const result = await play(scene, { growthScene: typeof scene === "string" && !scene.startsWith("venue_"), ...opts, signal });
       return live() && !!result && !result.cancelled;
     };
     if (charId === "sumi") await meetHiyoriAtTonari();
@@ -417,7 +417,7 @@ export async function visitSpot(spot) {
   } else if ((n > 1 || state.slot === 1 && spot.nightPool) && pool.length) {
     id = pool[Math.max(0, n - 2) % pool.length];
   }
-  const encounter = spotEncounterDue(spot.id, n, state, DB.dialogues);
+  const encounter = spotEncounterDue(spot.id, n, state, DB.dialogues, { wide: state.growth?.nodes?.includes("K19") && growthEnabled() });
   if (encounter) id = encounter;
   // 雨の日（2回目以降）は雨の回を出す
   const rainId = RAIN_SPOT_TEXTS[spot.id];
@@ -427,7 +427,7 @@ export async function visitSpot(spot) {
     state.flags._ev_reviewer_payoff = true;
     id = "ch1_reviewer_payoff";
   }
-  await play(id, { bg: bgRef(spot.bg) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
+  await play(id, { bg: bgRef(spot.bg), growthScene: true }); // bgUrl が昼夜差分（_day/_night）を選ぶ
   if (state !== owner) return;
   recordSpotEncounter(spot.id, id, n, state);
   if (spot.id === "c_station") {
@@ -444,7 +444,7 @@ async function maybeCafeIdea(spot, visit) {
   const pick = pickCafeIdea(state, DB.recipes || [], { rainy: isRainy() });
   if (!pick || !cafeIdeaDue(state, visit)) return;
   const owner = state;
-  await play(ideaDialogue(pick), { bg: bgRef(spot.bg) });
+  await play(ideaDialogue(pick), { bg: bgRef(spot.bg), growthScene: true });
   if (state !== owner) return;
   const combo = markCafeIdea(state, pick, DB.flavors || []);
   toast(`📝 試したい配合をメモした ──「${combo}」（配合の画面でひらめきに出る）`, { kind: "good" });

@@ -1,6 +1,7 @@
 import { notifyMastery } from "../core/mastery-notice.js";
 import { learnFlavorStory } from "../core/flavor-mastery.js";
 import { awardLoverSceneExp } from "../core/lover-rewards.js";
+import { growthChoiceIndex } from "../core/growth-effects.js";
 import { tournamentFinished } from "../core/story-context.js";
 import { basicsExperienced } from "../craft/practice-history.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
@@ -13,7 +14,7 @@ import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
 import { loadVnFonts } from "../core/vn-fonts.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
-import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
+import { applyStats, gainAffinity, addMoney, affinityLevel, earnSceneCompletion } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
 import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
 import { formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
@@ -230,6 +231,7 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param opts.cancelOnSkip SKIPを中断として扱い、呼出し元で次回の再読を可能にする
  * @param opts.fromLine 主列の開始位置（含む）。既読キーは元の行位置を保つ
  * @param opts.toLine 主列の終了位置（含まない）。分岐は通常どおり再生する
+ * @param opts.growthScene 自分で選んだ固有場面。全編の正常完読を自由行動の経験値候補にする
  * 範囲指定でも各playの終了時に台本の報酬を処理する。報酬つき台本を分割する用途には使わない。
  */
 export function play(idOrDlg, opts = {}) {
@@ -248,6 +250,7 @@ export function play(idOrDlg, opts = {}) {
       id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
+      growthScene: opts.growthScene === true && opts.fromLine == null && opts.toLine == null && !!dlg.lines?.length,
       queue: queuedLines(dlg.dialogue_id, dlg.lines).slice(opts.fromLine ?? 0, opts.toLine),
       branches: dlg.branches || {},
       resolve,
@@ -390,6 +393,7 @@ function finish(cancelled = false) {
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   if (!cancelled && meta.flavor_lesson) notifyMastery(learnFlavorStory(state, r.dlg, DB.flavorById));
   if (!cancelled) awardLoverSceneExp(r.id, r.owner);
+  if (!cancelled && r.growthScene) earnSceneCompletion(r.id, r.owner);
   layers.vn.classList.remove("active");
   document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");
@@ -921,9 +925,10 @@ function showChoices(line) {
   r.waitingChoice = true;
   // 実回答の記録はpickChoiceのフックへ。占いは対象/期限/台詞照合済みの2択だけ示す。
   const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
-  const buttons = (line.choices || []).map((c, i) => el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}`, {
+  const growthHint = growthChoiceIndex(state, r.currentId || r.id, line, DB.fortuneHints, r.growthScene);
+  const buttons = (line.choices || []).map((c, i) => el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}${i === growthHint ? ".growth-hint" : ""}`, {
     html: formatHtml(c.text || "……"),
-    "aria-label": i === fortuneHint ? `${c.text}（占いの予感）` : null,
+    "aria-label": i === fortuneHint ? `${c.text}（占いの予感）` : i === growthHint ? `${c.text}（会話の気配）` : null,
     disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
     style: { animationDelay: `${i * 80}ms` },
     dataset: { test: `choice-${i}` },

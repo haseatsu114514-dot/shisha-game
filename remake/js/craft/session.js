@@ -1,3 +1,4 @@
+import { craftContext, craftMode, craftModeNote } from "./context.js";
 // シーシャ作りのセッション（1台ぶんの状態）と作業台画面。
 // 工程の中身は steps.js（選ぶ工程）と各ミニゲーム（holes/heat/steam/pull/care）。
 // 大会では章の台本（chapters/ch1.js）が工程の間に実況や会話を挟むので、
@@ -8,6 +9,8 @@ import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay, save } from "../core/state.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
+import { growthSkill, growthCraftCondition, growthLesson, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
+import { noteGrowthCraftOwner } from "../core/growth-memory.js";
 import { buildWorkerScene, WORKER_STEPS, benchBgRef } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
 import { buildGuide, STEP_BRIEFS, TUTORIAL_STEP_HELP } from "./bench-ui.js";
@@ -41,7 +44,7 @@ import { demoFor, openDemoSheet } from "./demo.js";
 export const craftTest = { auto: null }; // "good" / "bad" / "burn"（温度を上げ続けて焦がす）
 
 export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "REHEARSAL", tournament: "SMOKE CROWN CUP" };
-const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsal: "前日リハーサル", tournament: "大会" };
+const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsal: "リハーサル", tournament: "大会" };
 
 // 自主練のメニュー（本番のミニゲームを単体で回す）
 export const DRILLS = {
@@ -55,12 +58,14 @@ export function newSession(mode) {
   const steamVariation = { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
   const cs = {
     mode,
+    ...(growthLesson(state,"M-B3")?{blindVariance:rand(-LESSON_TUNING.blindSwing,LESSON_TUNING.blindSwing)}:{}),
     chapter: state.chapter,
     audienceIds: audienceFor(mode, state.chapter),
-    condition: currentCondition(), // 作り始めの体力を一台の全工程で使う
-    environment: steamEnvironment(isRainy(), state.day, state.weatherSeed ?? 0, timeOfDay()),
+    condition: growthCraftCondition(state, mode, currentCondition()), // 本番の胆力はこの一台だけ
+    environment: { ...steamEnvironment(isRainy(), state.day, state.weatherSeed ?? 0, timeOfDay()), ...(growthLesson(state,"M-W5") ? { precision:true, precisionAmount:LESSON_TUNING.climateVariation } : {}) },
     steamVariation,
-    steamPrediction: steamForecastProfile(tier01("insight"), steamVariation),
+    steamPrediction: steamForecastProfile(tier01("insight"), steamVariation,
+      { readBonus: growthSkill(state, "K14") ? SKILL_TUNING.forecastRead : 0 }),
     masteryAtStart: { ...state.flavorMastery }, // 練習後の成長で、作り終えた一台の評価を変えない
     equip: { ...state.equip },
     appearance: { ...state.appearance },
@@ -87,6 +92,7 @@ export function newSession(mode) {
   // E07(#1081): 葉の持ち/消耗は一台の全工程で共有する状態として、ここで一度だけ生む。
   // 蒸らし・提供で傷んだ葉を、調整（熱管理）や場面切替・SAVE/LOAD で新品へ戻さない。
   ensureFlavorLife(cs);
+  noteGrowthCraftOwner(cs, state);
   return cs;
 }
 
@@ -144,7 +150,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const leaf = buildLeafIcon();
   worker.footer.append(leaf.root);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: cs.retryAssist ? "今回のみ操作補助" : cs.eventNote || MODE_NOTE[cs.mode] || "" })]), progress]),
+    el("div.bench-top", [el("span.bench-mode", [craftMode(cs,MODE_LABEL), el("small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs,MODE_NOTE) })]), progress]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
@@ -155,7 +161,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   applyCraftSkin(root);
   const thermal = buildThermalAtmosphere(root, worker, cs);
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
+  bench = { cs, owner:state, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
   attachBenchAppearance(bench, cs);
   const background = bg();
@@ -370,10 +376,13 @@ function renderFatigue() {
  * 体力が体調の境界を割れば、その一台の残りは悪い方の体調で作る。
  */
 export function strainBench(cs, stamina = 4) {
-  if (cs.mode === "tutorial") return false;
-  cs.strain = (cs.strain || 0) + 1;
-  addStamina(-stamina);
-  const now = currentCondition(), order = ["green", "yellow", "red"];
+  if (cs.mode === "tutorial" || bench && (bench.cs!==cs || bench.owner!==state)) return false;
+  const rate = growthSkill(state, "K08") ? SKILL_TUNING.strain : 1;
+  const progress = (cs.strainRemainder || 0) + rate;
+  cs.strain = (cs.strain || 0) + Math.floor(progress);
+  cs.strainRemainder = progress - Math.floor(progress);
+  addStamina(-stamina * rate);
+  const now = growthCraftCondition(state, cs.mode, currentCondition()), order = ["green", "yellow", "red"];
   if (order.indexOf(now.health) > order.indexOf(cs.condition?.health ?? "yellow")) cs.condition = now;
   if (bench?.cs === cs) {
     renderFatigue();
@@ -439,14 +448,15 @@ export function refreshBench() {
   // pullDoneは失敗時にも立つので、成功した提供だけを現在地にする。
   // panelの工程IDは結果評価が参照するためpullのまま保持する。
   if (bench.panel.dataset.step === "pull" && bench.cs.pullDone && bench.cs.pull && !bench.cs.pull.failed) {
-    bench.phaseProgress.update("serve", "提供");
-    bench.title.textContent = "提供";
-    bench.hint.textContent = "お客さんへシーシャを提供した。しばらく吸ってもらおう";
+    const context=craftContext(bench.cs);
+    bench.phaseProgress.update("serve", context.title);
+    bench.title.textContent = context.title;
+    bench.hint.textContent = context.summary;
     bench.guide.root.open = false;
     bench.guide.root.hidden = true;
     bench.root.dataset.step = "serve";
     bench.worker.setStep("serve");
-    bench.worker.caption.textContent = "シーシャを提供した";
+    bench.worker.caption.textContent = context.summary;
   }
 }
 

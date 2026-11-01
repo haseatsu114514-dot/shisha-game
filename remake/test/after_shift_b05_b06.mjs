@@ -120,6 +120,7 @@ synthetic("hiyori.js", { meetHiyoriAtTonari: async () => {} });
 synthetic("attack-lesson.js", { canStudyAttack: () => false, studyAttack: async () => {} });
 synthetic("coal-lesson.js", { canStudyCubeCoals: () => false, studyCubeCoals: async () => {} });
 synthetic("growth.js", { readyLessons: () => [], consultLessons: async () => [] });
+synthetic("growth-effects.js", { callingSalesBonus: () => 0 });
 synthetic("tsumugi-schedule.js", { tsumugiAtTonari: () => false });
 synthetic("flavor-mastery.js", { staffFlavors: () => [], staffStock: () => 0 });
 synthetic("axe-bar-discovery.js", { hiyoriFirstMeetingReady: () => false });

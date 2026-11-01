@@ -34,6 +34,7 @@ async function harness({ manual = false } = {}) {
   const imports = {
     './effect-visual.js': { effectVisible: () => false, effectBadge: () => null, effectLine: () => null },
     '../core/state.js': { state: owner },
+    '../core/growth-effects.js': { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
     '../core/util.js': { el: () => new Node(), sleep: ms => { const d = deferred(); sleeps.push({ ms, ...d }); return d.promise; }, clamp: (x, a, b) => Math.max(a, Math.min(b, x)), rand: () => .5, pick: a => a[0] },
     '../core/ui.js': { countdown: () => { metrics.countdown++; return countdown.promise; }, shake: noop },
     '../core/audio.js': { SE: new Proxy({}, { get: () => noop }) },
@@ -53,7 +54,7 @@ async function harness({ manual = false } = {}) {
     '../core/data.js': { makingUrl: () => '' },
     './mental.js': { buildMentalTrace: () => ({ root: new Node() }) },
     '../core/condition.js': { craftCondition: () => ({ focus: 1 }) },
-    './steam-slash.js': { SLASH_ART: '', SLASH_RECHARGE_SECONDS: 1, slashProfile: () => ({ reach: 1, recharge: 1, tier: 1 }), slashAngle: noop, slashTouchesBullet: noop, buildSlashFx: noop, buildWordCutFx: noop },
+    './steam-slash.js': { buildSharkFx: () => {throw Error('unlearned shark');}, sharkPulseTouchesBullet:()=>false, SLASH_ART: '', SLASH_RECHARGE_SECONDS: 1, slashProfile: () => ({ reach: 1, recharge: 1, tier: 1 }), slashAngle: noop, slashTouchesBullet: noop, buildSlashFx: noop, buildWordCutFx: noop },
     './steam-heart.js': { HEART_SIZE: 28, heartHitRadius: () => 5, heartTouchesBullet: () => false },
     './clock.js': { createCraftClock: () => ({ now: () => 0, paused: true, dispose: () => metrics.clockDisposed++ }) },
   };

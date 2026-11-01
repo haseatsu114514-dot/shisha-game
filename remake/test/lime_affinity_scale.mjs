@@ -1,16 +1,35 @@
-// LIME返信の好感度を少量にする仕様の固定テスト（静的検査）。
+// LIME返信の好感度を少量にする仕様の固定テスト（実処理・データ検査）。
 // node --experimental-vm-modules --test remake/test/lime_affinity_scale.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import test from 'node:test';
 
-const stats = await fs.readFile(new URL('../js/core/stats.js', import.meta.url), 'utf8');
 const phone = await fs.readFile(new URL('../js/daily/phone.js', import.meta.url), 'utf8');
 
-test('LIME倍率は整数丸めの後・端数繰り越しの前に掛かる', () => {
-  assert.match(stats, /export const LIME_AFFINITY_SCALE = 0\.25;/);
-  assert.match(stats, /Math\.round\(pts \* mult\) \* AFFINITY_PACE \* scale \+ \(state\.affinityCarry\[id\] \|\| 0\)/);
-  assert.match(stats, /opts\.source === "lime" \? LIME_AFFINITY_SCALE : 1/);
+test('盤なしでは従来の整数丸め・LIME倍率・端数・占い消費を実処理で保つ', async () => {
+  const storage = new Map();
+  globalThis.localStorage = { getItem:k=>storage.get(k)??null, setItem:(k,v)=>storage.set(k,String(v)), removeItem:k=>storage.delete(k) };
+  globalThis.document ||= { addEventListener() {} }; globalThis.window ||= {};
+  const stateApi = await import('../js/core/state.js');
+  const statApi = await import('../js/core/stats.js');
+  const growthApi = await import('../js/core/growth.js');
+  growthApi.setGrowthPreview(false);
+  assert.equal(statApi.LIME_AFFINITY_SCALE,.25); assert.equal(statApi.AFFINITY_PACE,.85);
+  for (const raw of [0,10,11,50,99,100]) for (const source of ['lime','ordinary']) for (const fortune of [false,true]) {
+    const s = stateApi.newGame(); s.stats.charm=raw;
+    if (fortune) s.fortune={char:'adam'};
+    const tier=(Math.max(1,Math.min(10,Math.ceil(raw/10)))-1)/9;
+    let expected=0;
+    for (let i=0;i<24;i++) {
+      const points=1+i%3, multiplier=(1+.2*tier)*(fortune&&i===0?1.5:1);
+      expected+=Math.round(points*multiplier)*.85*(source==='lime'?.25:1);
+      statApi.gainAffinity('adam',points,source==='lime'?{source:'lime',onGain(){}}:{});
+      const actual=(s.affinity.adam||0)+(s.affinityCarry.adam||0);
+      assert(Math.abs(actual-expected)<1e-9,`${raw}/${source}/${fortune}/${i}: ${actual} vs ${expected}`);
+      assert.equal(s.fortune,undefined,'占いは最初の獲得時だけ消費する');
+    }
+    assert.equal(s.growth,undefined,'盤なしでは旧成長の保存形を変えない');
+  }
 });
 
 test('返信が複数ある雑談LIMEは好感度が全選択肢同値になっていない (#1903)', async () => {

@@ -231,3 +231,144 @@ growth.setGrowthPreview(false);
 assert.equal(startNextCycle(expPackage, { groups: { stats: false } }).growth, undefined);
 assert.equal(startNextCycle(buildCarryPackage(newState())).growth, undefined, "旧セーブに成長台帳を捏造しない");
 console.log("lover EXP: PASS (normal awards, preview switch, save/load, NG+ carry/reset, no duplicate settlement or ability gains)");
+
+// 盤の成長は旧能力へ加算したまま周回し、章報酬の台帳だけを毎周作り直す。
+// 工程入力・♥5への到達を省いた保存fixture。通しプレイ／操作バランスの証明とは分ける。
+const effects = await import("../js/core/growth-effects.js");
+newGame();
+growth.setGrowthPreview(true);
+for (const key of core.STAT_KEYS) core.state.stats[key] = 100;
+const boardGrowth = growth.ensureGrowth();
+Object.assign(boardGrowth, {
+  nodes: ["B1", "K20", "K18", "M-B4", "M-W1"],
+  learned: ["M-B4", "M-W1"],
+  paid: { B1: { any: 1 }, K20: { body: 2 }, K18: { any: 4 }, "M-B4": {}, "M-W1": {} },
+  hidane: { any: 5, body: 0, sense: 0, wisdom: 0 }, earned: 12, ringsOpen: 5,
+  partyLast: ["kuze", "mashiro"],
+});
+const rawStats = structuredClone(core.state.stats);
+const retainedBoard = structuredClone({ nodes: boardGrowth.nodes, learned: boardGrowth.learned, paid: boardGrowth.paid });
+const finishedCup = { pullDone: true, careHistory: [{ score: 60 }, { score: 70 }],
+  heat: { score: 95 }, steam: { score: 80 }, holes: { score: 90 }, stats: { craftQuality: 85 } };
+const tournamentXp = [300, 375, 450, 525, 600], clearXp = [150, 188, 225, 263, 300];
+const sceneXp = [20, 25, 30, 35, 40];
+const boardSnapshot = () => ({ nodes: core.state.growth.nodes, learned: core.state.growth.learned, paid: core.state.growth.paid });
+for (let cycle = 1; cycle <= 3; cycle++) {
+  assert.equal(core.state.cycle, cycle);
+  assert.deepEqual(core.state.stats, rawStats, "周回のたびに盤の恩恵を旧能力へ書き込まない");
+  assert.deepEqual(boardSnapshot(), retainedBoard);
+  assert.equal(maxStamina(), 182, "旧最大160＋B1の2＋習得済みひよりの20");
+  assert.equal(effects.growthPerks(core.state).charm, 2, "旧K20の開放・支払を人柄へ引き継ぐ");
+  assert.equal(effects.densePackAvailable(core.state), true);
+  assert.equal(effects.growthLesson(core.state, "M-W1"), true, "交流をやり直しても習得済み授業は有効");
+  for (let chapter = 1; chapter <= 5; chapter++) {
+    core.state.chapter = chapter;
+    const before = structuredClone({ day: core.state.day, slot: core.state.slot, stamina: core.state.stamina,
+      money: core.state.money, reel: core.state.reel, flavorStock: core.state.flavorStock });
+    assert.equal(growth.awardSceneExp(`measurement_chapter_${chapter}`), sceneXp[chapter - 1]);
+    assert.equal(growth.awardTournamentExp(1, finishedCup), tournamentXp[chapter - 1]);
+    assert.equal(growth.awardChapterClearExp(), clearXp[chapter - 1]);
+    const awarded = structuredClone(core.state.growth);
+    save(); core.load();
+    assert.equal(growth.awardSceneExp(`measurement_chapter_${chapter}`), 0);
+    assert.equal(growth.awardTournamentExp(1, finishedCup), 0);
+    assert.equal(growth.awardChapterClearExp(), 0);
+    assert.deepEqual(core.state.growth, awarded, "再LOAD後の同章報酬はXPも火種も重複しない");
+    assert.deepEqual({ day: core.state.day, slot: core.state.slot, stamina: core.state.stamina,
+      money: core.state.money, reel: core.state.reel, flavorStock: core.state.flavorStock }, before);
+  }
+  growth.settleGrowth();
+  const settledBoard = structuredClone(core.state.growth);
+  const source = structuredClone(core.state), carryBoard = buildCarryPackage(core.state);
+  assert.deepEqual(core.state, source, "引き継ぎの抽出は元セーブを変えない");
+  assert.deepEqual(carryBoard.growth.chapterLog, {});
+  assert.deepEqual(carryBoard.growth.tournamentXp, {});
+  assert.deepEqual(carryBoard.growth.cleared, []);
+  assert.deepEqual(carryBoard.growth.read, []);
+  if (cycle === 3) break;
+  startNextCycle(carryBoard);
+  save(); core.load();
+  assert.deepEqual(core.state.growth.hidane, settledBoard.hidane);
+  assert.equal(core.state.growth.xp, settledBoard.xp);
+  assert.equal(core.state.growth.earned, settledBoard.earned);
+  assert.equal(core.state.growth.ringsOpen, 5);
+  assert.deepEqual(core.state.growth.partyLast, ["kuze", "mashiro"]);
+  assert.deepEqual(core.state.growth.firsts, { people: [], places: [] });
+  const beforeResettle = structuredClone(core.state.growth);
+  growth.settleGrowth();
+  assert.deepEqual(core.state.growth, beforeResettle, "新周回の再精算では火種を積み増さない");
+}
+growth.setGrowthPreview(false);
+console.log("growth NG+: PASS (three cycles × five chapters, retained additive perks/lessons/payment, reward reset, SAVE/LOAD, unchanged resources)");
+
+// 点灯済み・相談未完の授業は次周の♥5で相談再開。点灯や支払は外さない。
+// 好感度の閾値を直接置く境界fixtureであり、物語から♥5へ到達する通しプレイではない。
+const { NODE_BY_ID } = await import("../js/core/growth-board.js");
+newGame(); growth.setGrowthPreview(true);
+const pendingGrowth = growth.ensureGrowth();
+Object.assign(pendingGrowth, {
+  nodes: ["B1", "M-B4", "M-S6", "M-S1"], learned: ["M-S6"],
+  paid: { B1: { any: 1 }, "M-B4": {}, "M-S6": {}, "M-S1": {} },
+  hidane: { any: 2, body: 1, sense: 0, wisdom: 0 }, earned: 4,
+});
+core.state.affinity.hiyori = 66;
+assert.deepEqual(growth.readyLessons("hiyori").map(l => l.id), ["M-B4"]);
+const initialPending = structuredClone(pendingGrowth);
+const lessonResult = { id: NODE_BY_ID["M-B4"].scene, visited: [NODE_BY_ID["M-B4"].scene] };
+const lessonResources = () => structuredClone({ day: core.state.day, slot: core.state.slot, stamina: core.state.stamina,
+  money: core.state.money, stats: core.state.stats, reel: core.state.reel, xp: core.state.growth.xp,
+  hidane: core.state.growth.hidane, paid: core.state.growth.paid, nodes: core.state.growth.nodes });
+for (const cycle of [2, 3]) {
+  startNextCycle(buildCarryPackage(core.state));
+  assert.equal(core.state.cycle, cycle);
+  const resources = lessonResources();
+  assert.deepEqual(core.state.growth.nodes, initialPending.nodes);
+  assert.deepEqual(core.state.growth.paid, initialPending.paid);
+  assert.equal(effects.growthLesson(core.state, "M-S6"), true, "習得済み授業は好感度0でも効果を保持");
+  assert.equal(growth.readyLessons("sumi").some(l => l.id === "M-S1"), true, "好感度不要の授業はそのまま");
+  assert.deepEqual(growth.readyLessons("hiyori"), []);
+  const separateSave = structuredClone(core.state);
+  separateSave.affinity.hiyori = 66;
+  assert.deepEqual(growth.readyLessons("hiyori", separateSave).map(l => l.id), ["M-B4"], "明示state自身の♥で判定する");
+  assert.deepEqual(growth.readyLessons("hiyori"), [], "別stateの♥を現在セーブへ混ぜない");
+  core.state.lovers = ["hiyori"];
+  assert.deepEqual(growth.readyLessons("hiyori").map(l => l.id), ["M-B4"], "恋人は既存仕様どおり♥5扱い");
+  core.state.lovers = [];
+  assert.deepEqual(await growth.consultLessons("hiyori"), [], "好感度0では再生へ入らない");
+  assert.equal(growth.learnLesson("M-B4"), false, "習得関数の直接呼出しでも条件を迂回しない");
+  assert.equal(growth.completeLesson(core.state, "M-B4", lessonResult), false);
+  save(); core.load();
+  assert.deepEqual(growth.readyLessons("hiyori"), []);
+  core.state.affinity.hiyori = 65;
+  assert.deepEqual(growth.readyLessons("hiyori"), [], "♥4の上端ではまだ相談不可");
+  core.state.affinity.hiyori = 66;
+  assert.deepEqual(growth.readyLessons("hiyori").map(l => l.id), ["M-B4"]);
+  assert.equal(effects.growthLesson(core.state, "M-B4"), false, "♥5へ戻しただけでは習得しない");
+  const beforeLoad = core.state;
+  save(); core.load();
+  assert.deepEqual(growth.readyLessons("hiyori").map(l => l.id), ["M-B4"]);
+  assert.equal(growth.completeLesson(beforeLoad, "M-B4", lessonResult), false, "LOAD前の完了は無効");
+  for (const result of [{ ...lessonResult, cancelled: true }, { ...lessonResult, visited: [] }, undefined]) {
+    assert.equal(growth.completeLesson(core.state, "M-B4", result), false);
+  }
+  assert.deepEqual(lessonResources(), resources, "相談の可否・中断で資源や点灯・支払を変更しない");
+  if (cycle === 2) continue; // 未完のまま、もう一周持ち越す。
+  core.state.affinity.hiyori = 65;
+  assert.equal(growth.completeLesson(core.state, "M-B4", lessonResult), false, "開始後も確定時に♥を再確認");
+  core.state.affinity.hiyori = 66;
+  assert.equal(growth.completeLesson(core.state, "M-B4", lessonResult), true);
+  assert.equal(effects.growthLesson(core.state, "M-B4"), true);
+  assert.equal(growth.completeLesson(core.state, "M-B4", lessonResult), false);
+  assert.deepEqual(lessonResources(), resources, "完読・再通知でも二重支払・XP・追加時間なし");
+  save(); core.load();
+  assert.equal(effects.growthLesson(core.state, "M-B4"), true);
+}
+startNextCycle(buildCarryPackage(core.state));
+assert.equal(core.state.cycle, 4);
+assert.equal(core.state.affinity.hiyori || 0, 0);
+assert.equal(effects.growthLesson(core.state, "M-B4"), true, "次の周でも習得済み効果は好感度不要");
+assert.deepEqual(growth.readyLessons("hiyori"), []);
+assert.deepEqual(core.state.growth.nodes, initialPending.nodes);
+assert.deepEqual(core.state.growth.paid, initialPending.paid);
+growth.setGrowthPreview(false);
+console.log("pending lessons NG+: PASS (two pending carry boundaries, current hearts at start/commit, cancel/owner/SAVE/LOAD, learned effects retained without repayments)");

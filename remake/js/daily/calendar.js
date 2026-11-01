@@ -18,7 +18,7 @@ import { showSumiRigAtHome } from "./home-rig.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
-import { isRainy, weatherOf } from "./weather.js";
+import { isRainy, weatherOf, tomorrowForecast } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG, facilityGrowth } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
@@ -26,7 +26,7 @@ import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
 import { openStatus } from "./status.js";
-import { onAction as spinReel, presentNow as showReelNow, changeSetting as changeReelSetting, installReel } from "./reel.js";
+import { onAction as spinReel, presentNow as showReelNow, installReel } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
 import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
@@ -130,7 +130,7 @@ async function morning() {
   playBgm("kansetsu_shomei_to_black_coffee");
   // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
   if (dawnShownDay === state.day) dawnShownDay = null;
-  else await dayCard(`DAY ${chapterDay(state)}`, `${chapterDef.tournamentName || "SMOKE CROWN CUP"} まで あと${daysLeft()}日`, { weather: weatherOf() });
+  else await dayCard(`DAY ${chapterDay(state)}`, `${chapterDef.tournamentName || "SMOKE CROWN CUP"} まで あと${daysLeft()}日`, { weather: weatherOf(), forecast: tomorrowForecast() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight });
   if (n) pushNotice(n, { onOpen: (sender) => {
@@ -418,7 +418,7 @@ async function deliver({ charId, scene, text }) {
 // ---------------------------------------------------------------- 行動
 
 async function staminaGuard(cost, { mandatory = false } = {}) {
-  if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina())) return true;
+  if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina({ forCondition: true }))) return true;
   const go = await modal({
     title: "体が重い……",
     body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
@@ -506,10 +506,6 @@ async function takeAction() {
   });
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
-  // 施設のおまけ（#621）。説明はキャラではなくシステムの通知で短く
-  // 観音堂: パッキースロットの設定が変わる（次に筐体が出たときに光って知らせる）
-  // 場所は明かさない（遊び方は「特定のスポット」とだけ書く・#634）
-  if (spot.id === "kannon" && changeReelSetting()) toast("……ふと、パッキースロットの設定が変わった気がする", { kind: "good" });
   // チョコザップ: その日から数日、風邪をひきにくい
   if (spot.id === "choizap" && state.flags._gym_member) {
     state.flags._fit_since = { chapter: state.chapter, day: state.day };
@@ -725,7 +721,7 @@ async function meetInvitation(inv) {
     addStamina(-10);
   } else {
     result = await play(storeInvitationSpot({ accept_event: inv.event })
-      ? storeInvitationDialogue(DB.dialogues[inv.event], state.slot) : inv.event);
+      ? storeInvitationDialogue(DB.dialogues[inv.event], state.slot) : inv.event, { growthScene: true });
     if (state !== owner || result?.cancelled) return false;
     if (inv.event === `outing_${inv.sender}_1`) state.flags[`_outing_done_${inv.sender}`] = true;
     if (inv.event === "ch1_minto_fifth") state.flags._minto_fifth_done = true;
@@ -761,7 +757,7 @@ function cancelSamechanAppointment(inv) {
 /** 行動を1回使ったあと: そのイベントの終わりにスロットが1回転。告白は営業後に endDay で扱う */
 async function afterAction({ exerted = false, spent = 0 } = {}) {
   // 警告の承諾回数ではなく、実際に消耗した行動の終了時に一度だけ抽選する。
-  if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio(), Math.random, { fit: fitActive(state) })) state.flags._cold_pending = true;
+  if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio({ forCondition: true }), Math.random, { fit: fitActive(state) })) state.flags._cold_pending = true;
   spinReel({ spent });
   save();
   // 昼夜とも、別イベントやマップ・翌朝へ進む前に、この行動の演出を完了する。
@@ -871,7 +867,7 @@ async function endDay({ returnedToTonari = false } = {}) {
 
 async function advanceDay() {
   const exhausted = !!state.flags._cold_pending;
-  const illnessHealth = conditionForRatio(staminaRatio()).health;
+  const illnessHealth = conditionForRatio(staminaRatio({ forCondition: true })).health;
   delete state.flags._cold_pending;
   delete state.flags._overwork; // 旧セーブの固定発病カウンターは使わない。
   const sleepBefore = state.stamina;
@@ -879,7 +875,7 @@ async function advanceDay() {
   const fromLeft = daysLeft();
   const wake = () => {
     // 大会の朝に発病しても大会日を飛ばさない。その夜は回復せず、不調の残量で本番へ。
-    addStamina(exhausted && chapterDay(state) + 1 >= TOURNAMENT_DAY ? 0 : SLEEP_RECOVERY);
+    addStamina(exhausted && chapterDay(state) + 1 >= TOURNAMENT_DAY ? 0 : SLEEP_RECOVERY, { sleep: true });
     state.day += 1;
     state.slot = 0;
     state.restDay = exhausted ? { chapter: state.chapter, day: state.day, fullDay: false, illnessHealth } : null;
@@ -891,7 +887,7 @@ async function advanceDay() {
     // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
     await dayTurn(async () => {
       wake();
-      return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted, tournamentName: chapterDef?.tournamentName };
+      return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), forecast: tomorrowForecast(), sick: exhausted, tournamentName: chapterDef?.tournamentName };
     });
     dawnShownDay = state.day;
   } else await fadeBlack(wake, 500);
