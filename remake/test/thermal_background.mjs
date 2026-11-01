@@ -61,8 +61,8 @@ try {
   // 前回の一台の灼熱を蒸らしへ持ち越さず、炭を置いた直後の温度から始める。
   await page.evaluate(() => { T.session.stepPanel('pull','x'); T.session.setBenchTemperature(cs,.96); T.session.stepPanel('steam','蒸らし時間'); });
   assert.equal(await band(), 'cold');
-  // 見出しは素材スキンより後の紙の帯で読める（CUI01: 紙×ラベンダー）。台の上は煙だけで、ボウルは燃やさない。
-  assert.match(await page.locator('.bench-top').evaluate(e=>getComputedStyle(e).backgroundImage), /rgba\(255, 252, 248/);
+  // 見出しは素材スキンより後の紫の帯で読める。台の上は煙だけで、ボウルは燃やさない。
+  assert.match(await page.locator('.bench-top').evaluate(e=>getComputedStyle(e).backgroundImage), /rgba\(81, 50, 105/);
   const layout = await page.evaluate(() => {
     const eq = document.querySelector('.worker-equipment'), pic = eq.querySelector('.thermal-picture').getBoundingClientRect(), bowl = eq.querySelector('.worker-bowl').getBoundingClientRect();
     return { first: eq.firstElementChild.classList.contains('thermal-picture'), base: pic.bottom, bowlTop: bowl.top, bowlBottom: bowl.bottom, top: pic.top, stage: document.querySelector('.bench-worker-stage').getBoundingClientRect().top };
