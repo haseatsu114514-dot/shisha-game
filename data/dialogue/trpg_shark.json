@@ -1,6 +1,6 @@
 {
   "id": "shark-last-order",
-  "version": 4,
+  "version": 5,
   "title": "サメは閉店を待たない",
   "subtitle": "海上ラウンジ、最後の夜",
   "author": "青瀬マコ",
@@ -19,12 +19,16 @@
     ],
     "serve": [
       "finale"
+    ],
+    "twist": [
+      "tactic"
     ]
   },
   "fitWeights": {
     "tool": 1,
     "route": 1,
-    "finale": 2
+    "finale": 2,
+    "tactic": 0
   },
   "fallbackEnding": "sequel",
   "rules": {
@@ -164,17 +168,20 @@
     {
       "id": "scent",
       "label": "柑橘の甘い香りを追っている",
-      "description": "保管箱の中身を、こちらの逃げ道から離せそう。"
+      "description": "保管箱の中身を、こちらの逃げ道から離せそう。",
+      "discussion": "trpg_shark_discuss_scent"
     },
     {
       "id": "vibration",
       "label": "低い振動を追っている",
-      "description": "音を止め、床を揺らさずに移動するべきかも。"
+      "description": "音を止め、床を揺らさずに移動するべきかも。",
+      "discussion": "trpg_shark_discuss_vibration"
     },
     {
       "id": "light",
       "label": "点滅する光を追っている",
-      "description": "光を別の場所に置けば、こちらを見失いそう。"
+      "description": "光を別の場所に置けば、こちらを見失いそう。",
+      "discussion": "trpg_shark_discuss_light"
     }
   ],
   "options": {
@@ -237,6 +244,26 @@
         "description": "遠い浮き灯へ目を向けさせ、その間に逃げる。",
         "response": "trpg_shark_choice_finale_signal"
       }
+    ],
+    "tactic": [
+      {
+        "id": "bucket",
+        "label": "みんなで水をかき出す",
+        "description": "床の水を減らし、足場を守る。",
+        "response": "trpg_shark_choice_tactic_bucket"
+      },
+      {
+        "id": "furniture",
+        "label": "椅子とテーブルで足場を作る",
+        "description": "高いところを渡れるようにする。",
+        "response": "trpg_shark_choice_tactic_furniture"
+      },
+      {
+        "id": "radio",
+        "label": "非常用の無線を直す",
+        "description": "救助艇と、もう一度連絡を取る。",
+        "response": "trpg_shark_choice_tactic_radio"
+      }
     ]
   },
   "profiles": [
@@ -286,6 +313,28 @@
           "text": "今夜の流れは沖向き。香りの箱を桟橋と反対へ流せる。屋根からの迂回より表の艇が近い。",
           "lines": "trpg_shark_clue_scent_chart"
         }
+      },
+      "answers": {
+        "sighting": {
+          "title": "果物の船のそば",
+          "text": "最初の目撃は、果物を運ぶ船の近くだった。",
+          "lines": "trpg_shark_ask_scent_sighting"
+        },
+        "before": {
+          "title": "柑橘の荷が落ちた",
+          "text": "夕方、柑橘の箱が一つ海に落ちてから出た。",
+          "lines": "trpg_shark_ask_scent_before"
+        },
+        "rumor": {
+          "title": "鼻のいいサメ",
+          "text": "港では『鼻のいいサメ』と呼ばれている。",
+          "lines": "trpg_shark_ask_scent_rumor"
+        },
+        "rescue": {
+          "title": "表の桟橋へ",
+          "text": "救助艇は表の桟橋に着ける予定だ。",
+          "lines": "trpg_shark_ask_scent_rescue"
+        }
       }
     },
     {
@@ -334,6 +383,28 @@
           "text": "表の桟橋は波で軋む。屋根の側の壁は頑丈で、艇を寄せられる。静かに移動すれば安全そうだ。",
           "lines": "trpg_shark_clue_vibration_chart"
         }
+      },
+      "answers": {
+        "sighting": {
+          "title": "工事中の桟橋",
+          "text": "最初の目撃は、工事中の桟橋の下だった。",
+          "lines": "trpg_shark_ask_vibration_sighting"
+        },
+        "before": {
+          "title": "唸る発電機",
+          "text": "今夜、ラウンジの発電機がずっと低く唸っていた。",
+          "lines": "trpg_shark_ask_vibration_before"
+        },
+        "rumor": {
+          "title": "足音を聞くサメ",
+          "text": "『足音を聞くサメ』という噂がある。",
+          "lines": "trpg_shark_ask_vibration_rumor"
+        },
+        "rescue": {
+          "title": "屋根の側から",
+          "text": "表の桟橋は軋むので、屋根の側から乗せたい。",
+          "lines": "trpg_shark_ask_vibration_rescue"
+        }
       }
     },
     {
@@ -381,6 +452,28 @@
           "title": "影になる保守水路",
           "text": "裏の水路は壁で外の光を遮れる。表の沖へ灯りを流せば、目を引いた隙に裏から艇へ渡れる。",
           "lines": "trpg_shark_clue_light_chart"
+        }
+      },
+      "answers": {
+        "sighting": {
+          "title": "灯台の下",
+          "text": "最初の目撃は、灯台の光が回るあたりだった。",
+          "lines": "trpg_shark_ask_light_sighting"
+        },
+        "before": {
+          "title": "点滅する電飾",
+          "text": "今夜はラウンジの電飾を点滅させていた。",
+          "lines": "trpg_shark_ask_light_before"
+        },
+        "rumor": {
+          "title": "光を追うサメ",
+          "text": "『光を追うサメ』と呼ばれ、漁火に寄ってくる。",
+          "lines": "trpg_shark_ask_light_rumor"
+        },
+        "rescue": {
+          "title": "暗い裏から",
+          "text": "救助艇は灯りを消し、暗い裏手へ回る。",
+          "lines": "trpg_shark_ask_light_rescue"
         }
       }
     }
@@ -458,6 +551,24 @@
           "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
+          "text": "{pc}は、閉店の曲に合わせて床を拭いている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:hiyori}は、カウンターで今夜の帳簿をつけている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:tsumugi}は、天井の照明の配線を巻き取っている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
           "text": "閉店の曲が鳴った瞬間、窓の向こうを背びれが横切る"
         },
         {
@@ -506,6 +617,12 @@
           "role": "無線のミラ／物語",
           "face": "normal",
           "text": "救助艇を向かわせる。窓の外、何が見える？"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "surprise",
+          "text": "背びれが……窓の外を、ぐるぐる回ってます！"
         }
       ]
     },
@@ -655,6 +772,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……今。動くなら、今だと思った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "救助艇の灯りが、三人を迎える"
         }
       ]
     },
@@ -672,6 +795,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "ありがとう。靴より俺を拾ってくれて"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "全員、艇に乗れたのじゃ。よくやったぞ"
         }
       ]
     },
@@ -753,12 +882,24 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "光ならランプ。渡れる場所なら、海図と救命具かな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "鋭いのう。相談は何度でも無料じゃぞ"
         }
       ]
     },
     {
       "dialogue_id": "trpg_shark_preparation",
       "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "使えるのは、この店にあるものだけじゃぞ"
+        },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
@@ -776,6 +917,12 @@
               "face": "normal"
             }
           }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……仕掛けの位置、図にしておきます"
         }
       ]
     },
@@ -793,6 +940,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……最後の合図。みんなに見えるようにするね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "みんな、合図を待って……"
         }
       ]
     },
@@ -834,6 +987,24 @@
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "よいぞ。サメの目は、少し格好よく頼むのじゃ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……サメちゃん、GMうまいね",
+          "variants": {
+            "adam": {
+              "text": "サメのGM、見事だった。脚本も悪くない",
+              "face": "smile"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "そ、そうかの！？ 次はもっと大きいサメを用意するのじゃ！"
         }
       ]
     },
@@ -851,6 +1022,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "香りを追ってるのか。なら、香りを囮にできるな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……無線の声、少し震えてました"
         }
       ]
     },
@@ -874,6 +1051,18 @@
               "face": "normal"
             }
           }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "保管箱の中身、全部メモしておくわね",
+          "variants": {
+            "adam": {
+              "text": "保管箱の中身、全部覚えた",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -891,6 +1080,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……風が香りを運んでる。風向き、描き留めておきます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "送風機、止まってても役に立ちそうだな"
         }
       ]
     },
@@ -908,6 +1103,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "灯りは関係ないのか。追ってるのは、別の何かだな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "救難灯は電池式じゃ。灯りが落ちても点くぞ"
         }
       ]
     },
@@ -931,6 +1132,12 @@
               "face": "normal"
             }
           }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……三人分。ちゃんと、あります"
         }
       ]
     },
@@ -948,6 +1155,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……潮が沖向き。香りを流す方向、決められそうです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "海図が出てくると、作戦っぽくなってきたな"
         }
       ]
     },
@@ -965,6 +1178,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "機械の音か……。なら、店の機械は止めた方がいいな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……無線の声、少し震えてました"
         }
       ]
     },
@@ -988,6 +1207,18 @@
               "face": "normal"
             }
           }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "保管箱の中身、全部メモしておくわね",
+          "variants": {
+            "adam": {
+              "text": "保管箱の中身、全部覚えた",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -1005,6 +1236,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……床の震えを止めたら、静かになる。足元、描き留めておきます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "送風機、止まってても役に立ちそうだな"
         }
       ]
     },
@@ -1022,6 +1259,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "光じゃなくて、軋む音か。足元に気をつけないとな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "救難灯は電池式じゃ。灯りが落ちても点くぞ"
         }
       ]
     },
@@ -1045,6 +1288,12 @@
               "face": "normal"
             }
           }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……三人分。ちゃんと、あります"
         }
       ]
     },
@@ -1062,6 +1311,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……屋根の側なら、軋まない。逃げ道、印をつけておきます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "海図が出てくると、作戦っぽくなってきたな"
         }
       ]
     },
@@ -1079,6 +1334,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "点滅を追ってるのか。なら、灯りの置き場所が鍵だな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……無線の声、少し震えてました"
         }
       ]
     },
@@ -1102,6 +1363,18 @@
               "face": "normal"
             }
           }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "保管箱の中身、全部メモしておくわね",
+          "variants": {
+            "adam": {
+              "text": "保管箱の中身、全部覚えた",
+              "face": "normal"
+            }
+          }
         }
       ]
     },
@@ -1119,6 +1392,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……影で光が消えると、曲がる。影の形、描き留めておきます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "送風機、止まってても役に立ちそうだな"
         }
       ]
     },
@@ -1136,6 +1415,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "ランプで引きつけられるなら、その隙に動けるな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "救難灯は電池式じゃ。灯りが落ちても点くぞ"
         }
       ]
     },
@@ -1159,6 +1444,12 @@
               "face": "normal"
             }
           }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……三人分。ちゃんと、あります"
         }
       ]
     },
@@ -1176,6 +1467,12 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……明るい表と、暗い裏。暗い方の道、写しておきます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "海図が出てくると、作戦っぽくなってきたな"
         }
       ]
     },
@@ -1322,6 +1619,12 @@
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "その一箱が、三人を岸へ帰したのじゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……海に、ラストオーダー。きれいでした"
         }
       ]
     },
@@ -1357,6 +1660,12 @@
               "face": "normal"
             }
           }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "静かに逃げるサメ映画、新しいな"
         }
       ]
     },
@@ -1386,6 +1695,18 @@
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "港の人は、夜の上映会じゃと思ったそうな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "上映会みたいで、ちょっとロマンチックね",
+          "variants": {
+            "adam": {
+              "text": "最高のプレミアだ。監督冥利に尽きる",
+              "face": "smile"
+            }
+          }
         }
       ]
     },
@@ -1443,6 +1764,12 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "text": "三人の合図が揃ったのう。怖くても、ちゃんと一緒じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "怖かったけど、楽しかったな"
         }
       ]
     },
@@ -1453,6 +1780,12 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "text": "危ない場面も、三人で越えた。最後まで、一緒じゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……危ないところも、見せ場でした"
         }
       ]
     },
@@ -1861,6 +2194,590 @@
           "text": "役者はそろったのじゃ。では、開演じゃ！"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_scent_sighting",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "serious",
+          "text": "最初に見たのは、果物を積んだ船のそばだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "normal",
+          "text": "甘い匂いが、港じゅうに漂っててな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_scent_before",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "serious",
+          "text": "夕方、柑橘の箱が一つ海に落ちた。それから、あいつが出た"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "箱と一緒に出てきたのか……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_scent_rumor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "normal",
+          "text": "港じゃ『鼻のいいサメ』って呼ばれてる。屋台の匂いにも寄ってくる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……この映画だけの設定じゃぞ。本物のサメの話ではない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_scent_rescue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "serious",
+          "text": "救助艇は表の桟橋に着ける。そこまで来られるか？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "表の桟橋……縄があれば、届くかしら",
+          "variants": {
+            "adam": {
+              "text": "表の桟橋か。縄があれば、届きそうだな",
+              "face": "normal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_vibration_sighting",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "serious",
+          "text": "最初に見たのは、工事してる桟橋の下だ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "normal",
+          "text": "杭を打つたびに、背びれが寄ってきたらしい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_vibration_before",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "normal",
+          "text": "今夜は、そっちの発電機がよく唸ってたな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……ずっと、低い音がしてました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_vibration_rumor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "normal",
+          "text": "『足音を聞くサメ』って噂だ。桟橋を走ると、寄ってくる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……映画の中だけの習性じゃぞ。本物とは違うからの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_vibration_rescue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "serious",
+          "text": "表の桟橋は古くて軋む。屋根の側から乗れないか？"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "屋根から……ロープで渡るのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_light_sighting",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "serious",
+          "text": "最初に見たのは、灯台の光が回るあたりだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "normal",
+          "text": "光が当たるたびに、背びれが跳ねた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_light_before",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "normal",
+          "text": "そっちの店、今夜は電飾がちかちかしてたろう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "閉店セール用の飾り……点けっぱなしだったわ",
+          "variants": {
+            "adam": {
+              "text": "閉店セールの電飾か。点けっぱなしだったな",
+              "face": "surprise"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_light_rumor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "normal",
+          "text": "『光を追うサメ』って言われてる。漁火にも寄ってくる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……これも映画の設定じゃ。現実のサメとは別物じゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_ask_light_rescue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "serious",
+          "text": "救助艇は灯りを消して、裏の暗い方へ回す"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……暗い方なら、見つからない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_discuss_scent",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "香りを追うなら……柑橘の箱が、囮になるわね",
+          "variants": {
+            "adam": {
+              "text": "香りを追うなら、柑橘の箱が最高の囮だ",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……潮の向き、沖へ流れてました"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ふむ、なかなか鋭いのう。では、その読みで行くのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_discuss_vibration",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "音を追うなら、動かないのが一番……かしら",
+          "variants": {
+            "adam": {
+              "text": "音を追うなら、静けさが武器になるな",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……屋根の側は、軋まないです"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "静かに逃げるサメ映画、渋いのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_discuss_light",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "光を追うなら、明かりで引きつけられるわね",
+          "variants": {
+            "adam": {
+              "text": "光を追うなら、照明で舞台を作れる",
+              "face": "normal"
+            }
+          }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……裏は暗い。逃げるなら、そっち"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "光の見せ場、映画らしくて好きじゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "そのとき、ラウンジの灯りがすべて消えた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "床板の隙間から、海水がじわじわと上がってくる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "ふはは、停電と浸水。B級映画の定番である"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "コロちゃん、楽しそうに言わないで！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "さあ、どうする？ 手を選ぶのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_tactic_bucket",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "バケツと鍋を総動員して、水を窓の外へ返していく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "地味だけど、これが一番効く！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_tactic_furniture",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "テーブルを並べて、濡れない道を作っていく"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……橋みたい。渡れます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_choice_tactic_radio",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "非常用の無線に電池を入れ直す。雑音の向こうに、声が戻った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "無線のミラ／物語",
+          "face": "serious",
+          "text": "……聞こえる！ 救助艇は予定どおり向かってる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "水の入り口が塞がり、非常灯がぼんやり点いた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……ちゃんと、みんなの顔が見える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "水は止まったが、膝まで濡れてしまった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……冷たい。でも、まだ動けるわ",
+          "variants": {
+            "adam": {
+              "text": "冷たいな。だが、見せ場はこれからだ",
+              "face": "sad"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "椅子が倒れ、大きな音がラウンジに響く"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "し、静かに……！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "危機は進む。じゃが、全員まだ無事じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_twist_lead",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}が暗闇に踏み出す。みんな、俺の声についてきて！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "度胸で判定じゃ。足元は見えんぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_twist_patch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}は手探りで、穴を塞ぐ道具を組むわ",
+          "variants": {
+            "adam": {
+              "text": "{pc:hiyori}が手探りで道具を組む。暗転は慣れてる",
+              "face": "serious"
+            }
+          }
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。暗くても手は動くかの？ 目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_declare_twist_listen",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は、水の音がする方を探します"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。耳も目も澄ますのじゃ。目標30"
+        }
+      ]
     }
   ],
   "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
@@ -1882,7 +2799,8 @@
     "fields": {
       "tool": "仕掛けに使う道具",
       "route": "脱出する経路",
-      "finale": "最後の作戦"
+      "finale": "最後の作戦",
+      "tactic": "停電への手"
     },
     "prepareTitle": "何を使い、どこから逃げる？",
     "prepareDescription": "仕掛け一つ、逃げ道一つ。見つけた習性を作戦にしよう。",
@@ -1902,20 +2820,32 @@
         "description": "閉店の曲に混じって、無線が鳴った。まずは全員、落ち着こう。",
         "button": "状況をつかむ"
       },
+      "interview": {
+        "kicker": "02 / 無線で聞く",
+        "title": "無線のミラに、何を聞く？",
+        "description": "無線が保つのは二つ分。答えは、このサメの習性しだいで変わる。",
+        "button": "無線を切って、ラウンジを調べる"
+      },
       "explore": {
-        "kicker": "02 / ラウンジを調べる",
+        "kicker": "03 / ラウンジを調べる",
         "title": "サメの習性を見抜く",
         "description": "調査は四箇所まで。三つ以上の手がかりから、逃げる作戦を考えよう。",
         "button": "見立てを話す"
       },
+      "twist": {
+        "kicker": "04 / 停電と浸水",
+        "title": "灯りが消えた",
+        "description": "暗闇と浸水。全員で切り抜けよう。",
+        "button": "この手で切り抜ける"
+      },
       "prepare": {
-        "kicker": "03 / 仕掛けを組む",
+        "kicker": "05 / 仕掛けを組む",
         "title": "おとりと、逃げ道",
         "description": "使えるものは、この店にあるものだけ。",
         "button": "仕掛けを組む"
       },
       "serve": {
-        "kicker": "04 / 岸へ逃げる",
+        "kicker": "06 / 岸へ逃げる",
         "title": "誰も、置いていかない",
         "description": "習性を逆手に取って、三人で岸へ。ここがラストシーン。",
         "button": "全員で脱出する"
@@ -1926,7 +2856,7 @@
         "description": "大事なものを持って、岸へ帰れた。さて、この映画の感想は？"
       }
     },
-    "help": "調査は最大四箇所。新しい場所を調べるたび、危機が一つ進みます。三つ以上で見立てを選び、道具・経路・最後の作戦を決めます。相談とメモの再読は無料。見立てが合うと仕掛け判定に＋4。",
+    "help": "無線で二つ質問し、ラウンジを最大四箇所調べます。新しい場所を調べるたび危機が一つ進みます。三つ以上の手がかりで習性を見立てたあと、停電と浸水を切り抜け、道具・経路・最後の作戦を決めます。相談とメモの再読は無料。見立てが合うと仕掛け判定に＋4。",
     "exitText": "映画をここで中断して、本棚へ戻ります。次に遊ぶと、違う習性のサメが現れるかもしれません。",
     "endingKicker": "TONIGHT’S FEATURE / この映画の結末",
     "stats": {
@@ -1938,7 +2868,21 @@
     "declareTitle": "どうする？ 行動を宣言せよ",
     "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
     "sheetTitle": "キャラクターシート",
-    "target": "GMの裁定 · 目標値30（19以上でひと手間）"
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "choiceArt": {
+      "src": "../../img/ui/trpg/choices-shark.webp",
+      "rowCount": 3,
+      "rows": {
+        "tool": 0,
+        "route": 1,
+        "finale": 2,
+        "hypotheses": 0
+      }
+    },
+    "twistTitle": "停電と浸水。どうする？",
+    "interviewIdle": "無線で聞けるのは二つまでじゃ。何を聞く？",
+    "twistIdle": "暗闇じゃ。手を選んで、誰が動くか決めるのじゃ",
+    "planTitle": "みんなの脱出プラン"
   },
   "intro": "trpg_shark_intro",
   "listen": "trpg_shark_listen",
@@ -2050,6 +2994,42 @@
           "label": "波の間を読んで、合図を出す",
           "detail": "{pc:hiyori}が背びれの動きを見て、走る瞬間を決める",
           "declare": "trpg_shark_declare_serve_read"
+        }
+      ]
+    },
+    "twist": {
+      "title": "暗闇の浸水を乗り切る",
+      "hint": "宣言した甲板員の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_shark_twist_success",
+      "mixed": "trpg_shark_twist_mixed",
+      "trouble": "trpg_shark_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_lead",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "暗い中、先頭で動く",
+          "detail": "{pc}が暗闇に踏み出し、みんなを導く",
+          "declare": "trpg_shark_declare_twist_lead"
+        },
+        {
+          "id": "twist_patch",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "非常用の道具で穴を塞ぐ",
+          "detail": "{pc:hiyori}が手探りで道具を組み、穴を塞ぐ",
+          "declare": "trpg_shark_declare_twist_patch"
+        },
+        {
+          "id": "twist_listen",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "暗がりで、水の入り口を探す",
+          "detail": "{pc:tsumugi}が水の音を頼りに、入り口を探す",
+          "declare": "trpg_shark_declare_twist_listen"
         }
       ]
     }
@@ -2285,5 +3265,35 @@
   "sessionZero": {
     "open": "trpg_shark_session_zero_open",
     "close": "trpg_shark_session_zero_close"
+  },
+  "interview": {
+    "title": "無線のミラに、何を聞く？",
+    "prompt": "無線が保つのは二つ分だけ。逃げる作戦に効きそうなことを聞こう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "sighting",
+        "label": "最初に見かけた場所",
+        "description": "背びれをどこで見たか聞く"
+      },
+      {
+        "id": "before",
+        "label": "今夜、海で変わったこと",
+        "description": "いつもと違ったことを聞く"
+      },
+      {
+        "id": "rumor",
+        "label": "港のうわさ",
+        "description": "このサメの噂を聞く"
+      },
+      {
+        "id": "rescue",
+        "label": "救助艇の段取り",
+        "description": "迎えの手順を聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_shark_twist_intro"
   }
 }

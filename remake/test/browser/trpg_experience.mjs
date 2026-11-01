@@ -143,6 +143,37 @@ async function roll(page, { trap = false } = {}) {
   assert.equal(await page.locator(".trpg-roll-fx").count(), reduced ? 0 : 1);
   await fits(page);
 }
+
+// New scenes: two questions for the story's character after the first roll, a twist after the guess.
+async function interviewStep(page) {
+  const snap = () => page.evaluate(() => window.__trpg?.snapshot?.() ?? null);
+  if ((await snap())?.phase !== "interview" && !(await page.locator('[data-test="trpg-interview-done"], [data-test^="trpg-topic-"]').count())) return;
+  for (let n = 0; n < 2; n++) {
+    const topic = page.locator('[data-test^="trpg-topic-"]:not([disabled]):not(.selected)').first();
+    if (!await topic.count()) break;
+    if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await topic.tap(); else await topic.click();
+    for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  }
+  const done = page.locator('[data-test="trpg-interview-done"]');
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await done.tap(); else await done.click();
+}
+async function twistStep(page) {
+  const option = page.locator('[data-test^="trpg-plan-tactic-"]').first();
+  if (!await option.count()) return;
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  if (touch) await option.tap(); else await option.click();
+  const open = page.locator('[data-test="trpg-twist-open"]');
+  if (touch) await open.tap(); else await open.click();
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (touch) await card.tap(); else await card.click();
+  for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  const roll = page.locator('[data-test="trpg-roll"]');
+  if (touch) await roll.tap(); else await roll.click();
+  await page.locator('[data-test="trpg-settle"]').waitFor();
+  const settle = page.locator('[data-test="trpg-settle"]');
+  if (touch) await settle.tap(); else await settle.click();
+  for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+}
 async function settle(page) {
   await hit(page, "trpg-settle");
   await dialogue(page);
@@ -174,6 +205,9 @@ async function begin(page, { keyboard = false } = {}) {
   }
   await roll(page, { trap: keyboard });
   await settle(page);
+  assert.equal((await state(page)).phase, "interview");
+  await fits(page);
+  await interviewStep(page);
   assert.equal((await state(page)).phase, "explore");
   await currentStep(page);
   await cinematicScene(page);
@@ -214,7 +248,8 @@ async function hotspots(page, keyboard) {
 async function compare(page, count, screenshot = null) {
   assert(await page.locator('.trpg-stage-pockets [data-test="trpg-compare-notes"]').isEnabled());
   await hit(page, "trpg-compare-notes");
-  assert.equal(await page.locator(".trpg-note-card").count(), count, "Every discovered clue can be compared");
+  // The room's clues plus what the story's character said in the interview.
+  assert.equal(await page.locator(".trpg-note-card").count(), count + (await state(page)).asked.length, "Every discovered clue can be compared");
   assert(await page.evaluate(() => !!document.activeElement.closest('[role="dialog"]')));
   const modalButtons = page.locator('[role="dialog"] button:not(:disabled)');
   await modalButtons.first().focus();
@@ -305,6 +340,9 @@ async function ordinary(page, keyboard) {
   if (keyboard) await page.screenshot({ path: path.join(artifacts, "ordinary-hypothesis-pc.png") });
   await hit(page, "trpg-hypothesis-quiet");
   await dialogue(page);
+  assert.equal((await state(page)).phase, "twist");
+  await fits(page);
+  await twistStep(page);
   await currentStep(page);
   await compare(page, 3);
   await choiceGroup(page, "aroma");
@@ -359,7 +397,7 @@ async function ordinary(page, keyboard) {
   assert.equal((await state(page)).phase, "ending");
   assert.equal(await control(page, "trpg-ending-title").textContent(), "雨音のある一台");
   await hit(page, "trpg-recap");
-  assert.equal(await page.locator(".trpg-recap-check").count(), 3);
+  assert.equal(await page.locator(".trpg-recap-check").count(), 4);
   const recap = await page.locator(".trpg-modal-body").textContent();
   assert.match(recap, /穏やかな紅茶/);
   assert.match(recap, /目を止めた紅茶/);
@@ -394,6 +432,7 @@ async function shark(page, correct) {
   await hit(page, "trpg-interpret");
   await hit(page, "trpg-hypothesis-scent");
   await dialogue(page);
+  await twistStep(page);
   await choosePlan(page, { tool: "citrus", route: "pier" });
   await hit(page, "trpg-prepare-open");
   await declare(page);
