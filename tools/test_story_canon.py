@@ -18,7 +18,8 @@ class CanonRegressionTests(unittest.TestCase):
 
     def test_r2_hajime_direct_address_only(self):
         for text in ('師匠。審査のとき……', '師匠、少し聞いてもいいですか',
-                     '……師匠！', 'ありがとうございます。師匠、見てください'):
+                     '……師匠！', 'ありがとうございます。師匠、見てください',
+                     '『審査の話』。師匠、見てください'):
             with self.subTest(text=text):
                 self.assertIn('はじめはスミさんを師匠と呼びかけない（#1947）',
                               text_errors({'speaker': 'hajime', 'text': text}))
@@ -29,6 +30,9 @@ class CanonRegressionTests(unittest.TestCase):
             {'speaker': 'hajime', 'text': 'スミさんは俺の師匠です。'},
             {'speaker': 'hajime', 'text': '師匠が、弟子の煙を見ている。'},
             {'speaker': 'hajime', 'text': '「師匠」と呼ぶのは違う。'},
+            {'speaker': 'hajime', 'text': '「理想の」師匠。スミさんはそういう人です。'},
+            {'speaker': 'hajime', 'text': 'ひよりさんは「ありがとう。師匠、また来ます」と言ってた。'},
+            {'speaker': 'hajime', 'text': 'ひよりさんは『師匠。ありがとうございました』と言ってた。'},
             {'speaker': 'hajime', 'comment': '師匠。審査のとき……'},
         ):
             with self.subTest(row=row):
