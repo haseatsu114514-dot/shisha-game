@@ -582,19 +582,19 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 
 /* WATL 2026 lounge rules: league scoreboard, painted target, calls on the board, halves and sudden death. */
 .axe-game { grid-template-rows: auto auto minmax(0,1fr); }
-.axe-division { order: 1; align-self: center; padding: 4px 9px; border: 1px solid #c4a766; border-radius: 4px; color: #f1dbb0; font-size: 12px; font-weight: 900; letter-spacing: .12em; white-space: nowrap; background: #141a18cc; }
+.axe-division { order: 1; align-self: center; padding: 4px 9px; border: 1px solid #c4a766; border-radius: 4px; color: #f1dbb0; font-size: 12px; font-weight: 900; letter-spacing: .02em; white-space: nowrap; background: #141a18cc; }
 .axe-scoreboard { display: grid; gap: 4px; padding: 6px 10px; border: 1px solid var(--axe-line); border-radius: 8px; background: #0e1413e6; font-variant-numeric: tabular-nums; }
 .axe-score-row { display: grid; grid-template-columns: auto minmax(0,1fr) auto auto; align-items: center; gap: 8px; }
 .axe-score-row[data-active="true"] .axe-score-name { color: #f3ca8b; }
-.axe-score-name { min-width: 3.5em; color: #b7b1a3; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.axe-score-name { min-width: 3.5em; color: #b7b1a3; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 .axe-score-tiles { display: flex; gap: 3px; min-width: 0; }
 .axe-tile { position: relative; display: grid; grid-template-rows: auto auto; justify-items: center; flex: 1 1 0; min-width: 0; padding: 3px 0 2px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; background: rgba(0,0,0,.25); line-height: 1.1; }
 .axe-tile[data-half="1"]:first-of-type, .axe-tile[data-half="1"] + .axe-tile[data-half="1"] { margin-left: 0; }
 .axe-tile[data-half="0"] + .axe-tile[data-half="1"] { margin-left: 10px; }
 .axe-tile[data-half="0"] + .axe-tile[data-half="1"]::before { content: ""; position: absolute; left: -7px; top: 10%; height: 80%; border-left: 2px dashed #8a7a5a; }
-.axe-tile i { color: #7f8681; font-size: 10px; font-style: normal; font-weight: 700; }
+.axe-tile i { color: #7f8681; font-size: 12px; font-style: normal; font-weight: 700; }
 .axe-tile strong { color: #6f7672; font-size: 15px; font-weight: 800; }
-.axe-tile em { position: absolute; right: 2px; top: 1px; color: #e4c28a; font-size: 9px; font-style: normal; font-weight: 900; }
+.axe-tile em { position: absolute; right: 2px; top: 0; color: #e4c28a; font-size: 12px; font-style: normal; font-weight: 900; line-height: 1; }
 .axe-tile[data-filled="true"] strong { color: #f1ddbb; }
 .axe-tile[data-current="true"] { border-color: #d9a45c; background: rgba(217,161,82,.16); box-shadow: inset 0 2px #d9a45c; }
 .axe-tile[data-current="true"] i { color: #f4d8aa; }
@@ -604,7 +604,7 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-tile-sd { border-color: #4f8aa8; background: rgba(42,110,150,.2); }
 .axe-tile-sd i { color: #9cd8ee; }
 .axe-score-calls { display: inline-flex; gap: 2px; min-width: 2.6em; }
-.axe-score-calls i { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #2f7fc1; border: 1px solid #c23b2a; color: #fff; font-size: 9px; font-style: normal; font-weight: 900; }
+.axe-score-calls i { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: #2f7fc1; border: 1px solid #c23b2a; color: #fff; font-size: 12px; font-style: normal; font-weight: 900; }
 .axe-score-total { min-width: 2em; color: #fff1ce; font-size: 18px; font-weight: 900; text-align: right; }
 .axe-scores { display: none; }
 .axe-markings { pointer-events: none; }
@@ -631,31 +631,31 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-result-tip { font-variant-numeric: tabular-nums; }
 @container (max-width: 650px) and (min-height: 501px) {
   .axe-game { grid-template-rows: auto auto minmax(0,1fr); gap: 7px; }
-  .axe-header .axe-division { grid-column: 1; grid-row: 2; justify-self: start; padding: 2px 6px; font-size: 10px; }
+  .axe-header .axe-division { grid-column: 1; grid-row: 2; justify-self: start; padding: 2px 6px; font-size: 12px; }
   .axe-header:has(.axe-division) .axe-round { grid-column: 1; grid-row: 2; justify-self: end; margin-right: 6px; }
   .axe-scoreboard { padding: 4px 6px; gap: 2px; }
   .axe-score-row { gap: 5px; }
-  .axe-score-name { min-width: 0; font-size: 11px; }
+  .axe-score-name { min-width: 0; font-size: 12px; }
   .axe-score-tiles { gap: 2px; }
   .axe-tile { padding: 2px 0 1px; }
-  .axe-tile i { font-size: 9px; } .axe-tile strong { font-size: 12px; } .axe-tile em { font-size: 8px; right: 1px; top: 0; }
+  .axe-tile strong { font-size: 12px; } .axe-tile em { right: 0; top: 0; }
   .axe-tile[data-half="0"] + .axe-tile[data-half="1"] { margin-left: 6px; }
   .axe-tile[data-half="0"] + .axe-tile[data-half="1"]::before { left: -5px; }
-  .axe-score-calls { min-width: 0; } .axe-score-calls i { width: 13px; height: 13px; font-size: 8px; }
+  .axe-score-calls { min-width: 0; } .axe-score-calls i { width: 15px; height: 15px; }
   .axe-score-total { font-size: 15px; }
   .axe-calls .axe-button { min-height: 40px; }
 }
 @container (max-height: 500px) {
   .axe-game { grid-template-rows: auto auto minmax(0,1fr); gap: 5px; }
-  .axe-division { padding: 2px 6px; font-size: 10px; }
+  .axe-division { padding: 2px 6px; }
   .axe-scoreboard { padding: 3px 8px; gap: 1px; }
   .axe-score-row { gap: 6px; }
-  .axe-score-name { min-width: 0; font-size: 11px; }
+  .axe-score-name { min-width: 0; }
   .axe-tile { grid-template-rows: auto; grid-auto-flow: column; gap: 3px; padding: 1px 2px; }
-  .axe-tile i { font-size: 9px; } .axe-tile strong { font-size: 12px; } .axe-tile em { position: static; font-size: 8px; }
+  .axe-tile strong { font-size: 12px; } .axe-tile em { position: static; }
   .axe-tile[data-half="0"] + .axe-tile[data-half="1"] { margin-left: 6px; }
   .axe-tile[data-half="0"] + .axe-tile[data-half="1"]::before { left: -5px; }
-  .axe-score-calls i { width: 12px; height: 12px; font-size: 8px; }
+  .axe-score-calls i { width: 15px; height: 15px; }
   .axe-score-total { font-size: 14px; }
   .axe-calls .axe-button { min-height: 32px; }
 }

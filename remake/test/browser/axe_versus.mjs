@@ -39,7 +39,7 @@ async function shoot(page, options = {}) {
   await stop(page, .5, options); await phase(page, "power");
   if (options.focus) {
     const [x, y] = await root(page).evaluate(game => [Number(game.dataset.aimX), Number(game.dataset.aimY)]);
-    if (Math.abs(x) > .045 || Math.abs(y) > .15) {
+    if (Math.abs(x) > .03 || Math.abs(y) > .15) {
       // The 1.5in bull (radius .051) forgives vertical error through the 4in blade; horizontal error must leave room for focused sway.
       assert((options.attempt || 0) < 5, `Visible center aiming failed: ${x},${y}`);
       await page.locator('[data-test="axe-reaim"]:not([disabled])').click();
@@ -124,12 +124,13 @@ await suite("axe-versus", async check => {
     assert.equal(result.total, result.match.playerTotal);
     assert.equal(result.match.playerTotal, result.match.player.reduce((sum, s) => sum + s.score, 0));
     assert.equal(result.match.opponentTotal, result.match.opponent.reduce((sum, s) => sum + s.score, 0));
-    assert.equal(result.match.winner, result.match.playerTotal === result.match.opponentTotal ? "draw"
+    assert.equal(result.match.winner, result.match.playerTotal === result.match.opponentTotal ? result.match.suddenDeath.winner
       : result.match.playerTotal > result.match.opponentTotal ? "player" : "opponent");
+    if (result.match.playerTotal === result.match.opponentTotal) assert(result.match.suddenDeath.rounds >= 1 && ["player", "opponent"].includes(result.match.winner));
     const scoring = await page.evaluate(async result => {
       const model = await import("./js/minigames/axe-model.js");
       return [result.match.player, result.match.opponent].every(history => history.every((s, i) =>
-        JSON.stringify(model.resolveThrow({ ...s.aim, power: s.power, called: s.called }, history.slice(0, i))) ===
+        JSON.stringify(model.resolveThrow({ ...s.aim, power: s.power, called: s.called }, history.slice(0, i), { division: result.match.division, throws: 10 })) ===
         JSON.stringify(Object.fromEntries(Object.entries(s).filter(([k]) => !["baseAim", "sway"].includes(k))))));
     }, result);
     assert(scoring, "every rendered shot uses resolveThrow and its own history");
