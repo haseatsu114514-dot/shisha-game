@@ -39,6 +39,7 @@ export function ringsOpen(s = state) {
 }
 
 /** 灯した能力のマスの数（能力が伸びる授業は bonus 分を足す。2.6） */
+export const statTotal = board => boardNodes(board).filter(n=>n.kind==="stat").length;
 export function statCount(board, unlocked) {
   let n = 0;
   for (const id of unlocked) {
@@ -47,10 +48,10 @@ export function statCount(board, unlocked) {
     if (node.kind === "stat") n++;
     else if (node.kind === "lesson" && node.reward === "stat") n += node.bonus || 0;
   }
-  return Math.min(STAT_SQUARES[board], n);
+  return Math.min(statTotal(board), n);
 }
 /** 盤の伸び（SBD63「段の概念は無くす。盤の伸びをステータスグラフに」）: 灯した能力のマスの割合 0〜1 */
-export const statRatio = (board, unlocked) => statCount(board, unlocked) / STAT_SQUARES[board];
+export const statRatio = (board, unlocked) => statCount(board, unlocked) / statTotal(board);
 
 /** 恩恵ごとの合計（盤の右のパネルの横棒）。[{ key, glyph, name, text（合計を入れた文）, sum, max }] */
 export function perkTotals(board, unlocked) {

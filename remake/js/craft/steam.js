@@ -7,7 +7,7 @@ import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, step } from "../core/stats.js";
-import { growthPerks, growthSkill, growthFeature, growthLesson } from "../core/growth-effects.js";
+import { growthPerks, growthSkill, growthFeature, growthLesson, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { REFRESH_RADII, REFRESH_LABELS, refreshRestoresMental } from "../core/stat-step-tables.js";
 import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
@@ -63,6 +63,16 @@ export async function runSteamDodge(cs) {
   const eased = tutorial || cs.retryAssist;
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
+  if (seconds === 0 && cs.zeroSteam === true && !tutorial && growthLesson(state,"M-W4")) {
+    const panel = stepPanel("steam", "0分蒸らし", "蒸らさず、低温から吸って立ち上げる");
+    const temp = temperatureAfterSteam(cs,0,cs.steamVariation ?? 0);
+    cs.steam = { min:0, seconds:0, temp, hits:0, score:100, refreshesUsed:0, slashesUsed:0, wordsCut:0, combo:0, maxCombo:0, zeroSteam:true };
+    // 回避をしていないので、次の工程のジャストボーナスは作らない。
+    settleGrowthPhase(state,cs,"steam",cs.steam,false);
+    scoreStep(cs,"steam",cs.steam.score); setBenchTemperature(cs,temp); refreshBench();
+    await resultCard(panel,{title:"0分蒸らし",lines:["待たずに立ち上げる。吸い出しで低温から熱を運ぼう"]});
+    return;
+  }
   const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。被弾するとコンボは途切れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
   const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
   const W = 784, H = 414;
@@ -117,6 +127,7 @@ export async function runSteamDodge(cs) {
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
   let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
+  let afterglowUntil = 0, afterglows = 0;
   let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
@@ -244,7 +255,11 @@ export async function runSteamDodge(cs) {
     const before = slashProfile(wordsCut);
     const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle, before.reach));
     const cutWords = cleared.filter(b => b.word).length;
+    const beforeCuts = wordsCut;
     wordsCut += cutWords; totalWordsCut += cutWords; maxCombo = Math.max(maxCombo, wordsCut);
+    if (growthSkill(state,"K22") && Math.floor(wordsCut/3) > Math.floor(beforeCuts/3)) {
+      afterglowUntil = time + SKILL_TUNING.afterglowSeconds; afterglows++;
+    }
     const after = slashProfile(wordsCut);
     slashCooldown = after.recharge;
     slashesUsed++; slashReadyAt = time + slashCooldown;
@@ -361,8 +376,13 @@ export async function runSteamDodge(cs) {
         }
         if (warning && time >= warning.due) { launchWave(warning); warning = null; }
         inv = Math.max(0, inv - dt); heart.classList.toggle("shield", inv > 0);
+        const afterglow = time < afterglowUntil;
+        box.dataset.afterglow = String(afterglow);
+        box.classList.toggle("afterglow",afterglow);
+        box.dataset.bulletSpeed = String(afterglow ? SKILL_TUNING.afterglowSpeed : 1);
+        const bulletDt = dt * (afterglow ? SKILL_TUNING.afterglowSpeed : 1);
         for (let i = bullets.length - 1; i >= 0; i--) {
-          const b = bullets[i]; b.x += b.vx * dt; b.y += b.vy * dt;
+          const b = bullets[i]; b.x += b.vx * bulletDt; b.y += b.vy * bulletDt;
           b.node.style.transform = `translate(${b.x}px, ${b.y}px)`;
           if (!inv && heartTouchesBullet(b, hx, hy, hitR)) {
             hits++; inv = 0.9;
@@ -405,8 +425,9 @@ export async function runSteamDodge(cs) {
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
-  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, warmingFactor: steamClimate(cs.environment).transfer };
-  scoreStep(cs, "steam", score, "蒸らし");
+  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, afterglows, warmingFactor: steamClimate(cs.environment).transfer };
+  settleGrowthPhase(state, cs, "steam", cs.steam, hits === 0);
+  scoreStep(cs, "steam", cs.steam.score, "蒸らし");
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
   await sleep(400);

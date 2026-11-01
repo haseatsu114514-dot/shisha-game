@@ -26,7 +26,7 @@ const settle = async () => { for (let i = 0; i < 80; i++) await Promise.resolve(
 async function frame(time) { now = time; const waiting = [...frames.values()]; frames.clear(); for (const callback of waiting) callback(now); await settle(); }
 const growthSkills = new Set();
 const values = {
-  "growth-effects.js": { growthPerks: () => null, growthSkill: (_s,id) => growthSkills.has(id), growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {holesSeconds:6} },
+  "growth-effects.js": { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: (_s,id) => growthSkills.has(id), growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {holesSeconds:6} },
   "util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo) => lo },
   "ui.js": { countdown: async () => {} },
   "data.js": { DB: { flavorById: {} } },

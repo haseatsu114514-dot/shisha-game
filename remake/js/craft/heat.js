@@ -12,7 +12,7 @@ export { HEAT_GRADES } from "./heat_logic.js";
 import { coalCount, coalTypes } from "./coals.js";
 import { createCraftClock } from "./clock.js";
 import { state } from "../core/state.js";
-import { growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
+import { growthSkill, growthCritical, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { coalJustSeconds } from "./heat_logic.js";
 import { effectVisible, effectBadge, senseBand, effectTier } from "./effect-visual.js";
 
@@ -21,6 +21,7 @@ export async function runHeat(cs) {
   const panel = stepPanel("heat", "炭焼き", "黒い面が消えて全面が赤くなった炭を、タップして取り上げる");
   // 炭を一つ取るたびに、その炭の分の点がスコアへ入る（TH42）。
   const { res, timings, picks, info, feedback } = await burnCoals(cs, panel, { count: coalCount(cs), onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
+  settleGrowthPhase(state, cs, "heat", res, res.just > 0);
   cs.heat = res;
   scoreStep(cs, "heat", res.score, "炭焼き");
   refreshBench();
@@ -91,7 +92,8 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     c.p = elapsedSeconds / c.tj;
     c.picked = g;
     const index = coals.indexOf(c);
-    c.timing = { ...timing, coal: index + 1, automatic };
+    c.timing = { ...timing, coal: index + 1, automatic, critical: growthCritical(state, timing.errorSeconds, justSec, { tutorial, automatic }) };
+    if (c.timing.critical) { c.timing.rating = "会心"; c.timing.label = "会心の一服"; }
     const G = HEAT_GRADES[g];
     // 入力時刻で先に判定し、同じ素材・その時の焼け具合を炭壺へ残す。
     paint(c, c.p);
@@ -175,10 +177,11 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   const timings = coals.map((c) => c.timing);
   const timingSummary = summarizeCoalTimings(timings);
   const avg = (k) => picks.reduce((s, g) => s + HEAT_GRADES[g][k], 0) / picks.length;
-  const score = timingSummary.accuracy;
+  const criticals = timings.filter(t => t.critical).length;
+  const score = Math.min(100, timingSummary.accuracy + (criticals ? Math.min(SKILL_TUNING.criticalCap, criticals * SKILL_TUNING.critical) : 0));
   const res = {
-    score, grade: gradeOf(score), picks, timings,
-    timingAccuracy: score, meanAbsoluteError: timingSummary.meanAbsoluteError,
+    score, grade: gradeOf(score), picks, timings, criticals,
+    timingAccuracy: timingSummary.accuracy, meanAbsoluteError: timingSummary.meanAbsoluteError,
     just: picks.filter((g) => g === "just").length,
     early: picks.filter((g) => g === "raw" || g === "early").length,
     over: picks.filter((g) => g === "over").length,

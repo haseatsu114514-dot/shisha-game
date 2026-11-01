@@ -8,6 +8,7 @@ const effects = await import("../js/core/growth-effects.js");
 const { gainFlavorExperience } = await import("../js/core/flavor-mastery.js");
 const { leafDamagePerPull } = await import("../js/craft/flavor-life.js");
 const { skill } = await import("../js/craft/common.js");
+const {evaluateMix}=await import("../js/craft/steps.js");
 const { bonusOf } = await import("../js/craft/score.js");
 const { steamHeartRadius } = await import("../js/craft/steam.js");
 core.newGame(); growth.setGrowthPreview(true);
@@ -162,7 +163,6 @@ const {readFileSync}=await import("node:fs"),{DB}=await import("../js/core/data.
 const fixture=name=>JSON.parse(readFileSync(new URL(`../../data/${name}.json`,import.meta.url),"utf8"));
 DB.flavors=fixture("flavors").flavors;DB.flavorById=Object.fromEntries(DB.flavors.map(f=>[f.id,f]));
 DB.recipes=fixture("recipes").recipes;DB.ngMixes=fixture("ng_mixes").ng_mixes;
-const {evaluateMix}=await import("../js/craft/steps.js");
 const mixScore=mix=>evaluateMix({mode:"rehearsal",mix,equip:{}});
 for(const [id,mix,miss] of [
  ["M-S6",{blueberry:3,lemon:9},{blueberry:1,lemon:11}],
@@ -260,4 +260,64 @@ const firstPrices=prices();assert.equal(firstPrices.filter((price,i)=>price<DB.f
 assert.deepEqual(prices(),firstPrices);assert.equal(JSON.stringify(core.state),shopBefore);
 core.save();core.load();assert.deepEqual(prices(),firstPrices);
 growth.setGrowthPreview(false);assert.deepEqual(prices(),SHOP_FLAVORS.map(id=>DB.flavorById[id].price));
+// 単体の美学は、授業を習い選んだ一種の一台だけ。旧来の単体を弱くしない。
+growth.setGrowthPreview(true);core.newGame();growth.ensureGrowth().nodes=["M-S2"];
+const singleCs={mode:"rehearsal",chapter:1,mix:{double_apple:12},masteryAtStart:{double_apple:60}};
+const singleBase=evaluateMix(singleCs).score;singleCs.singleStyle=true;
+assert.equal(evaluateMix(singleCs).score,singleBase,"灯すだけでは習得しない");
+core.state.growth.learned=["M-S2"];assert.equal(evaluateMix(singleCs).score,singleBase+4);
+assert.equal(evaluateMix({...singleCs,masteryAtStart:{}}).score,singleBase,"熟練度が無ければ加点しない");
+assert.equal(evaluateMix({...singleCs,singleStyle:false}).score,singleBase);
+const duo={...singleCs,mix:{double_apple:10,mint:2}};assert.equal(evaluateMix(duo).score,evaluateMix({...duo,singleStyle:false}).score);
+// 会心の中央・教材・自動落下と、勝負勘の隣接工程・再読込・上限。
+growth.setGrowthPreview(true);core.newGame();growth.ensureGrowth().nodes=["K15","K16","K21"];
+assert(effects.growthCritical(core.state,.05,.5));assert(!effects.growthCritical(core.state,.051,.5));
+assert(!effects.growthCritical(core.state,0,.5,{tutorial:true}));assert(!effects.growthCritical(core.state,0,.5,{automatic:true}));
+assert(!effects.growthCritical(core.state,NaN,.5));assert(!effects.growthCritical(core.state,0,0));
+let phaseCs={mode:"tournament",holes:{skipped:false}};
+assert.equal(effects.settleGrowthPhase(core.state,phaseCs,"mix",{score:80},true),80);
+let phaseRes={score:80,grade:"A"};assert.equal(effects.settleGrowthPhase(core.state,phaseCs,"holes",phaseRes,false),82);
+assert.equal(effects.settleGrowthPhase(core.state,phaseCs,"holes",phaseRes,false),82,"再採点で積み増さない");
+phaseCs=JSON.parse(JSON.stringify(phaseCs));phaseRes=JSON.parse(JSON.stringify(phaseRes));
+assert.equal(effects.settleGrowthPhase(core.state,phaseCs,"holes",phaseRes,false),82,"保存された元の点から再評価する");
+assert.equal(effects.settleGrowthPhase(core.state,phaseCs,"heat",{score:80},true),80,"二つ前の会心を使い回さない");
+assert.equal(effects.settleGrowthPhase(core.state,phaseCs,"steam",{score:99},true),100);
+assert.equal(effects.settleGrowthPhase(core.state,phaseCs,"pull",{score:0,failed:true},true),0);
+assert.equal(effects.settleGrowthPhase(core.state,phaseCs,"care1",{score:80},false),80,"失敗は次の会心を作らない");
+const rehearsal={mode:"rehearsal"}, rehearsalRes={score:80};effects.settleGrowthPhase(core.state,rehearsal,"heat",rehearsalRes,true);
+assert.deepEqual(rehearsalRes,{score:80});assert.deepEqual(rehearsal,{mode:"rehearsal"});
+const ringCs={mode:"tournament",chapter:2,pullDone:true,pull:{smokeRings:3}};
+assert.equal(bonusOf(ringCs).bonus,1);assert.equal(bonusOf(ringCs).bonus,1);ringCs.failed=true;assert.equal(bonusOf(ringCs).bonus,0);
+const {steamClimate}=await import("../js/craft/steam-climate.js");
+for(const rainy of [false,true])for(const ambientC of [10,19,23,30]){
+ const actual=steamClimate({rainy,ambientC}), precise=steamClimate({rainy,ambientC,precision:true});
+ assert.equal(precise.offset,actual.offset*.5);assert.equal(precise.transfer,1+(actual.transfer-1)*.5);
+ assert.equal(precise.rainy,rainy);assert.equal(precise.ambientC,ambientC);
+}
+const {steamSecondsOf}=await import("../js/craft/steam-time.js");
+assert.equal(steamSecondsOf({mode:"rehearsal",steamSeconds:0}),10);
+assert.equal(steamSecondsOf({mode:"rehearsal",steamSeconds:0,zeroSteam:true}),0);
+assert.equal(steamSecondsOf({mode:"tutorial",steamSeconds:0,zeroSteam:true}),10);
+growth.setGrowthPreview(false);assert(!effects.growthCritical(core.state,0,.5));assert.equal(bonusOf({...ringCs,failed:false}).bonus,0);
+growth.setGrowthPreview(true);core.newGame();
+const {NODES}=await import("../js/core/growth-board-layout.js");
+growth.ensureGrowth().nodes=[NODES.find(n=>n.feature==="insurance").id];
+let insured={mode:"tournament"};assert.equal(effects.useGrowthInsurance(core.state,insured,"leaf"),true);
+insured=JSON.parse(JSON.stringify(insured));assert.equal(effects.useGrowthInsurance(core.state,insured,"burnt"),false);
+assert.equal(insured.growthInsuranceKind,"leaf");assert.equal(effects.useGrowthInsurance(core.state,{mode:"rehearsal"},"leaf"),false);
+assert.equal(effects.useGrowthInsurance(core.state,{mode:"tournament"},"invalid"),false);
+growth.setGrowthPreview(false);assert.equal(effects.useGrowthInsurance(core.state,{mode:"tournament"},"leaf"),false);
+// 廃止した差し入れのK20は同じ開放ID・支払のまま人柄+2%になる。
+growth.setGrowthPreview(true);core.newGame();const replacement=growth.ensureGrowth();
+Object.assign(replacement,{nodes:["K20"],paid:{K20:{any:1,body:1}},hidane:{any:3,body:4,sense:0,wisdom:0}});
+const replacementBefore=JSON.stringify(replacement),rawBefore=JSON.stringify(core.state.stats);
+core.save();core.load();assert.equal(JSON.stringify(growth.ensureGrowth()),replacementBefore);
+assert.deepEqual(board.NODE_BY_ID.K20.links,["B9"]);assert.equal(effects.boardPerks(["K20","K20"]).charm,2);
+assert.equal(effects.growthSkill(core.state,"K20"),false);assert.equal(JSON.stringify(core.state.stats),rawBefore);
+core.state.growth.nodes=[];stats.gainAffinity("naru",5,{onGain(){}});
+const withoutK20=(core.state.affinity.naru||0)+(core.state.affinityCarry.naru||0);
+core.state.affinity.naru=0;core.state.affinityCarry.naru=0;core.state.growth.nodes=["K20"];
+stats.gainAffinity("naru",5,{onGain(){}});
+const withK20=(core.state.affinity.naru||0)+(core.state.affinityCarry.naru||0);
+assert(Math.abs(withK20-withoutK20-.085)<1e-10,"5ポイントの通常交流へ2%を端数込みで加え、既存の0.85ペースを一度掛ける");
 console.log("[growth effects] PASS: additive legacy growth, 160+29=189, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");

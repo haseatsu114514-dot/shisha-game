@@ -1,4 +1,5 @@
-import { growthPerks } from "../core/growth-effects.js";
+import { state } from "../core/state.js";
+import { growthPerks, growthFeature, useGrowthInsurance, growthSkill, growthLesson, growthCritical, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 // 吸い出し（CLAUDE.md: 最低2回・3回までは無傷・それ以上は葉が痩せる。やめ時は自分で選ぶ）
 // 左右に振れる針を止めた位置で、熱を入れる吸い／キープ／熱を逃がす吸い。中央の細い帯が「ジャスト」。
 // 熱管理（大会のR3・調整）も同じ針のゲーム。「炭を交換しますか？」で個数を選び、交換した炭で温度が戻ってから、
@@ -134,7 +135,7 @@ async function pullGame(cs, mode) {
   const conditions = craftConditions(cs);
   ensureFlavorLife(cs);
   setBenchLeaf(cs);
-  let pulls = 0, justs = 0, failed = null, coals = null;
+  let pulls = 0, justs = 0, criticals = 0, smokeRings = 0, failed = null, coals = null;
   // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
   const clarity = mode.drift ? skill.clarity(cs) : 1;
   const baseCool = mode.drift ? rand(0.006, 0.013) * (cs.retryAssist ? .55 : 1) : 0;
@@ -201,17 +202,19 @@ async function pullGame(cs, mode) {
   const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: HOSE_ICON });
   const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
+  const deepBtn = mode.store === "pull" && !tutorial && growthLesson(state,"M-S4") ? el("button.btn", { text:"ズボー（一気に深く）", disabled:true, dataset:{test:"pull-deep"} }) : null;
   const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: mode.serveLabel })]);
   // 吸った回数の点。無傷で吸える回数を超える点は橙の枠で、吸いすぎの範囲だと分かるようにする。
   const pips = Array.from({ length: MAX_PULLS }, (_, i) => el(`i.pull-pip${i >= mode.safe ? ".over" : ""}`, { "aria-hidden": "true" }));
   const pullCount = el("b.pull-count-num");
   const counter = el("span.pull-count", { role: "img", dataset: { test: "pull-count" } }, [el("span.pull-pips", pips), pullCount]);
   const lifeLeaves = el("span.pull-life-leaves");
+  const omen = growthFeature(state,"omen") ? el("p", {role:"status",dataset:{test:"pull-omen"},style:{fontSize:"12px",margin:"2px 0",color:"var(--gold)"}}) : null;
   const summary = el("div.pull-summary", [
     el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves, tags, drawStatus]),
     el("div.pull-life.pull-count-box", [el("span.pull-life-label", { text: mode.drift ? "吸った回数" : "吸い出し回数" }), counter]),
   ]);
-  const play = el("div.pull-play", [dialRow, effectLine("technique", "技", "技術でゲージがゆっくり"), summary, el("div.pull-btns", [pullBtn, serveBtn])]);
+  const play = el("div.pull-play", [dialRow, effectLine("technique", "技", "技術でゲージがゆっくり"), summary, omen, el("div.pull-btns", [pullBtn, deepBtn, serveBtn])]);
   play.setAttribute("aria-label", "左の熱を逃がす吸いで温度を下げ、中央でキープ、右の熱を入れる吸いで温度を上げる");
   const main = el("div.pull-main", [play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
@@ -221,7 +224,13 @@ async function pullGame(cs, mode) {
   const render = () => {
     thermometer.update(T);
     setBenchTemperature(cs, T);
-    thermometer.preview(running && !drawing && !finished ? clamp(T + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
+    const predicted = clamp(T + heatDelta(cs, actionAt(pos).delta),0,1);
+    thermometer.preview(running && !drawing && !finished ? predicted : null);
+    if (omen) omen.textContent = !running || drawing || finished ? "" : isBurnt(predicted) ? "次の一口で焦げそうだ"
+      : mode.drift && predicted <= COLD_OUT + .04 ? "冷え切る前に熱を戻したい"
+      : predicted >= harshTemp ? "次の一口は熱が強すぎそうだ"
+      : pulls + 1 > safeLimit && cs.leaf.hp <= 1 ? "これ以上吸うと、最後の葉が抜けそうだ"
+      : pulls + 1 > safeLimit ? "次の一口から葉を傷めそうだ" : "";
     if (choosing) return;
     const inZone = isIdealTemperature(T, bands);
     const expressive = bands.expressionWeight >= .999;
@@ -245,11 +254,18 @@ async function pullGame(cs, mode) {
     counter.setAttribute("aria-label", `吸った回数 ${pulls}/${MAX_PULLS}回`);
     serveBtn.disabled = !running || drawing || finished || pulls < mode.min || !!failed;
     pullBtn.disabled = !running || drawing || finished || !!failed || pulls >= MAX_PULLS;
+    if (deepBtn) deepBtn.disabled = pullBtn.disabled;
   };
 
   // その一台がダメになったら、すぐに止めて結果へ進む。
   const fail = (kind) => {
     if (failed) return true;
+    if (useGrowthInsurance(state,cs,kind)) {
+      if (kind === "leaf") { Object.assign(cs.leaf,{hp:1,burn:0,dmg:10,steps:10}); bands=temperatureBands(cs);ideal=bands.ideal;setBenchLeaf(cs); }
+      else { coreTemp = T = kind === "burnt" ? DANGER_TEMP-.02 : COLD_OUT+.06;setBenchTemperature(cs,T); }
+      drawStatus.textContent = "一度だけ、取り返しのつくところで手を止めた";
+      reactAudience(cs,"good",{force:true});render();return false;
+    }
     failed = kind; running = false; render(); serve();
     return true;
   };
@@ -286,7 +302,7 @@ async function pullGame(cs, mode) {
     const isJust = at >= z.just[0] && at <= z.just[0] + jw;
     // キープ中央は維持。半円の色に合わせ、左寄りは微減、右寄りは微増。
     const delta = z.id === "keep" ? (at - .5) * .18 : (isJust ? z.justDelta : z.delta) + .015;
-    return { z, isJust, delta };
+    return { z, isJust, delta, critical: isJust && growthCritical(state, at - (z.just[0] + jw / 2), jw, { tutorial }) };
   };
   // 吸いすぎでフレーバーが傷む。文字は出さず、ダメージの音と揺れ、葉の傷みで伝える（TH27・TH28）。
   const damageLeaf = () => {
@@ -304,18 +320,20 @@ async function pullGame(cs, mode) {
     period = 1.5 * slowNow(); widen = widenNow(); placeJusts();
     if (T >= harshTemp) SE.miss();
   };
-  const doPull = async (at = pos) => {
+  const doPull = async (at = pos, deep = false) => {
     if (failed || !running || drawing || finished || pulls >= MAX_PULLS || gameClock.paused) return;
     const before = T;
     // 葉が傷むほど、止めた針が狙いから少しずれて落ち着く（止まり方のズレ TH27）。傷が浅いうちはほぼ0。
     const landed = clamp(at + leafStopDrift(leafDamageRatio(cs.leaf), rand(-1, 1)), 0, 1);
-    const { z, isJust, delta } = actionAt(landed);
+    const { z, isJust, delta, critical } = deep
+      ? { z:{...ZONES[2],label:"ズボー",mark:"▲▲"}, isJust:false, delta:.27, critical:false } : actionAt(landed);
     drawing = true;
     cancelAnimationFrame(raf);
     moveNeedle(landed);
     pulls++;
-    const duration = autoSkill() ? 120 : DRAW_MS[z.id];
+    const duration = autoSkill() ? 120 : DRAW_MS[z.id] * (deep ? 1.5 : 1);
     const from = coreTemp, to = clamp(from + heatDelta(cs, delta), 0, 1), sway = T - coreTemp;
+    const insuranceAtStart = !!cs.growthInsuranceUsed;
     play.dataset.draw = z.id;
     play.style.setProperty("--draw-duration", `${duration}ms`);
     pullLabel.textContent = "吸っている…";
@@ -330,6 +348,7 @@ async function pullGame(cs, mode) {
         paused: () => gameClock.paused,
         active: () => running && !finished && !failed && play.isConnected,
         update: (progress, linear) => {
+          if (!insuranceAtStart && cs.growthInsuranceUsed) return;
           coreTemp = from + (to - from) * progress;
           T = clamp(coreTemp + sway * (1 - progress), 0, 1);
           play.style.setProperty("--draw-progress", Math.min(1, linear).toFixed(4));
@@ -342,6 +361,17 @@ async function pullGame(cs, mode) {
         return;
       }
       if (isJust) justs++;
+      if (critical) { criticals++; drawStatus.textContent = "会心の一服"; }
+      if (isJust && mode.store === "pull" && !tutorial && growthSkill(state,"K21")) {
+        smokeRings++;
+        const ring = el("i", { "aria-hidden": "true", dataset: { test: "pull-smoke-ring" }, style: {
+          position: "absolute", left: "55%", top: "30%", width: "60px", height: "60px", border: "6px solid #e4dff0", borderRadius: "50%", pointerEvents: "none", filter: "blur(1px)",
+        } });
+        play.append(ring);
+        const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        const animation = ring.animate(reduced ? [{opacity:.8},{opacity:0}] : [{opacity:.8,transform:"scale(.4)"},{opacity:0,transform:"translateY(-60px) scale(1.7)"}], {duration:reduced?300:1000});
+        animation.finished.then(()=>ring.remove(),()=>ring.remove());
+      }
       const overdone = pulls > safeLimit;
       reactAudience(cs, isIdealTemperature(T, bands) ? "good" : Math.abs(T - center) > Math.abs(before - center) ? "bad" : "good");
       thermometer.pop(z.id === "keep" ? z.mark : isJust ? z.mark.repeat(2) : z.mark, z.id);
@@ -422,7 +452,7 @@ async function pullGame(cs, mode) {
       const k = Math.min(1, (gameClock.now() - started) / dur);
       coreTemp = clamp(from + add * (1 - (1 - k) ** 2), 0, 1); T = coreTemp;
       render();
-      if (isBurnt(T)) { failed = "burnt"; break; }
+      if (isBurnt(T)) { fail("burnt"); break; }
       if (k >= 1) break;
       await new Promise(requestAnimationFrame);
     }
@@ -431,6 +461,7 @@ async function pullGame(cs, mode) {
     play.hidden = false;
   };
 
+  deepBtn?.addEventListener("click", () => doPull(.83,true));
   pullBtn.addEventListener("pointerdown", (e) => { e.preventDefault(); doPull(); });
   // キーボード・支援技術が送るclickにも対応。吸引中の連打・長押しは同じ一口にする。
   pullBtn.addEventListener("click", (e) => { if (e.detail === 0) doPull(); });
@@ -499,9 +530,12 @@ async function pullGame(cs, mode) {
     return true;
   }
 
-  const { score, inZone, optimal } = pullResult(T, pulls, justs, bands, safeLimit);
+  const result = pullResult(T, pulls, justs, bands, safeLimit);
+  const { inZone, optimal } = result;
+  let score = Math.min(100,result.score + (criticals ? Math.min(SKILL_TUNING.criticalCap, criticals * SKILL_TUNING.critical) : 0));
   const tasteCard = actualExpressionCard(cs, T);
-  cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0] };
+  cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, criticals, smokeRings, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0] };
+  score = settleGrowthPhase(state, cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, cs[mode.store], justs > 0);
   scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
   if (mode.store === "pull") {
     cs.pullDone = true;

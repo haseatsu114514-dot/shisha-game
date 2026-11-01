@@ -6,10 +6,10 @@ import { STAMINA_CONDITIONS } from "./condition.js";
 
 /** 調整用の初期値。通常マスの百分率とは別に重ねる（SPEC 2.5）。 */
 export const SKILL_TUNING = Object.freeze({ sleep: .1, first: .2, mastery: .2, leaf: .2, holesSeconds: 6, strain: .75,
-  coalReplacement: .2, forecastRead: .15, bargain: .1 });
+  coalReplacement: .2, forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65 });
 const skillIds = new Set(SKILLS.map(s => s.id));
 const lessonIds = new Set(LESSONS.map(s => s.id));
-export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2 });
+export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4 });
 /** 授業は盤に灯すだけでは発動しない。対面で相談を終えた記録も必要。 */
 export const growthLesson = (s, id) => growthEnabled() && lessonIds.has(id)
   && Array.isArray(s?.growth?.nodes) && s.growth.nodes.includes(id)
@@ -67,3 +67,34 @@ export function boardPerks(nodes = []) {
 
 /** 旧能力の保存値は保持し、確定済みの盤の恩恵を各使用箇所で加算する。 */
 export const growthPerks = s => growthEnabled() ? boardPerks(s?.growth?.nodes) : null;
+
+/** 会心は実際のジャスト帯の中央2割。自動落下・教材・無効な時刻は対象にしない。 */
+export function growthCritical(s, error, width, { tutorial = false, automatic = false } = {}) {
+  return !tutorial && !automatic && growthSkill(s,"K15") && Number.isFinite(error)
+    && Number.isFinite(width) && width > 0 && Math.abs(error) <= width * .1 + 1e-9;
+}
+
+/** 一つ前の確定工程の手応えだけを読む。基礎点を一台へ保存し、再評価・LOADで積み増さない。 */
+export function settleGrowthPhase(s, cs, key, result, precise = false) {
+  if (!growthSkill(s,"K16") || cs.mode !== "tournament" || !result || !Number.isFinite(result.score)) return result?.score;
+  const sequence = ["mix", ...(cs.holes?.skipped ? [] : ["holes"]), "heat", "steam", "pull", "care1", "care2"];
+  const index = sequence.indexOf(key);
+  if (index < 0) return result.score;
+  const base = Number.isFinite(result.growthBaseScore) ? result.growthBaseScore : result.score;
+  cs.growthPhases ??= {};
+  const previous = cs.growthPhases[sequence[index-1]];
+  const bonus = !result.failed && base > 0 && previous?.precise === true ? SKILL_TUNING.momentum : 0;
+  result.growthBaseScore = base;
+  result.growthPhaseBonus = bonus;
+  result.score = Math.min(100, Math.max(0, base + bonus));
+  if (Object.hasOwn(result,"grade")) result.grade = result.score >= 90 ? "S" : result.score >= 80 ? "A" : result.score >= 65 ? "B" : result.score >= 50 ? "C" : "D";
+  cs.growthPhases[key] = { precise: !result.failed && !!precise, base, bonus, score: result.score };
+  return result.score;
+}
+
+/** 保険は本番の一台で一度だけ。記録をcsへ残すので熱管理・LOADをまたいでも戻らない。 */
+export function useGrowthInsurance(s, cs, kind) {
+  if (cs?.mode !== "tournament" || cs.growthInsuranceUsed || !["burnt","cold","leaf"].includes(kind) || !growthFeature(s,"insurance")) return false;
+  cs.growthInsuranceUsed = true; cs.growthInsuranceKind = kind;
+  return true;
+}

@@ -1,5 +1,5 @@
 // 盤の形とノードID。状態・UIに依存しない共通の正本。
-import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, LESSONS, PEAK_CELL, FEATURES, NOTABLES } from "./growth-board-data.js";
+import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, STAT_UPGRADES, LESSONS, PEAK_CELL, FEATURES, NOTABLES } from "./growth-board-data.js";
 
 export const HUB = "HUB";
 
@@ -51,6 +51,7 @@ function buildNodes() {
       .map((c, i) => ({ id: `${BOARD_PREFIX[board]}G${i + 1}`, kind: "gate", board, cost: 1, cell: c.key }));
     const spots = [
       ...SKILLS.filter((s) => s.board === board).map((s) => ({ ...s, kind: "skill" })),
+      ...STAT_UPGRADES.filter(s=>s.board===board).map(s=>({...s,kind:"stat"})),
       ...LESSONS.filter((l) => l.board === board).map((l) => ({ ring: 1, ...l, kind: "lesson", cost: 0 })),
     ];
     for (const spot of spots) {

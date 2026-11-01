@@ -163,7 +163,6 @@ export const SKILLS = [
   { id: "K18", cell: "-3,1", board: "wisdom", ring: 1, cost: 4, glyph: "密", name: "デンスパック", scene: "パッキング", text: "詰め方に「デンスパック」が加わる（密に詰めて厚い味へ。蒸らしは長めに）" },
   // 中ほどの「たまに面白い」スキル（2026-10-30 オーナー「授業以外でも中間でたまに面白い取りたいってなるスキルを入れたい」SBD66）。火種2・関門なし
   { id: "K19", cell: "3,-1", board: "body", ring: 3, cost: 2, glyph: "顔", name: "顔が広い", scene: "日常", text: "街を歩くと、知り合いにばったり会いやすくなる（偶然の会話が増える）" },
-  { id: "K20", cell: "-3,-1", board: "body", ring: 2, cost: 2, glyph: "差", name: "差し入れ上手", scene: "交流", text: "手土産や差し入れを渡すと、好感度が少し多く上がる" },
   { id: "K21", cell: "0,-4", board: "sense", ring: 2, cost: 2, glyph: "輪", name: "スモークリング", scene: "吸い出し", text: "吸い出しをジャストで取ると煙の輪が出て、審査員の受けが少し良くなる" },
   { id: "K22", cell: "2,-4", board: "sense", ring: 3, cost: 2, glyph: "残", name: "残り香", scene: "蒸らし", text: "蒸らしで雑念を3つ続けて消すと、少しのあいだ周りの雑念がゆっくりになる" },
   { id: "K23", cell: "-1,-4", board: "wisdom", ring: 2, cost: 2, glyph: "利", name: "目利き", scene: "買い物", text: "葉を買う時に掘り出し物が並び、少し安く買える" },
@@ -175,6 +174,11 @@ export const SKILLS = [
 // はじめが相談して話を聞く場面（scene）を見て習得する。章（ring）はその人に会える章。
 
 /** reward: skill（新しい操作）／special（その人らしい強い効き目）／stat（能力が伸びる。bonus はマスの数） */
+// 2026-11-01 オーナー指示: 差し入れスキルは廃止。保存済みのID・位置・支払を保って通常マスへ。
+export const STAT_UPGRADES = [
+  { id:"K20", cell:"-3,-1", board:"body", ring:2, cost:2, perk:"charm" },
+];
+
 export const LESSONS = [
   { id: "M-B1", cell: "-1,-2", board: "body", who: "minto", need: 5, sig: true, reward: "skill", name: "呼び込み上手",
     hint: "みんとと仲良くなると、お客さんの呼び方を教えてもらえそう",

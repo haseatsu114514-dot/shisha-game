@@ -22,6 +22,123 @@ async function setupDaily(page) {
 }
 
 await suite("growth-levelup", async (check) => {
+  await check("K20-stat-replacement-keeps-save-and-fire",async(page)=>{
+    await setupDaily(page);
+    await page.evaluate(async()=>{
+      const core=await import("./js/core/state.js"),growth=await import("./js/core/growth.js"),b=await import("./js/core/growth-board.js");
+      growth.setGrowthPreview(true);core.state.chapter=2;growth.ensureGrowth().hidane.any=30;
+      const route=b.pathTo("K20",new Set());b.commitPending(route.path);
+      window.oldK20=JSON.stringify({nodes:core.state.growth.nodes,paid:core.state.growth.paid,hidane:core.state.growth.hidane,day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:core.state.stats});
+      core.state.schema=24;core.save();core.load();growth.ensureGrowth();
+      window.k20Board=(await import("./js/daily/growth-board-screen.js")).openBoard({place:"kannon"});
+    });
+    const node=page.locator(t("board-node-K20"));await node.waitFor();assert.match(await node.getAttribute("class"),/gb-node stat/);
+    await node.click();assert.match(await page.locator(t("board-perk")).innerText(),/好感度.*＋2%/);
+    assert.doesNotMatch(await page.locator(t("board-preview")).innerText(),/差し入れ|手土産/);
+    assert.match(await page.locator(t("board-tab-body")).getAttribute("aria-label"),/\/27/);
+    await page.locator(t("board-close")).click();
+    assert.equal(await page.evaluate(async()=>{await k20Board;const core=await import("./js/core/state.js");core.save();core.load();return JSON.stringify({nodes:core.state.growth.nodes,paid:core.state.growth.paid,hidane:core.state.growth.hidane,day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:core.state.stats})===oldK20;}),true);
+  },{viewport:{width:591,height:1280}});
+
+  await check("tournament-insurance-only-once",async(page)=>{
+    await setupDaily(page);
+    for(const enabled of [false,true]){
+      await page.evaluate(async(enabled)=>{
+        const core=await import("./js/core/state.js"),growth=await import("./js/core/growth.js"),{NODES}=await import("./js/core/growth-board-layout.js");
+        core.newGame();growth.setGrowthPreview(true);growth.ensureGrowth().nodes=enabled?NODES.filter(n=>["insurance","omen"].includes(n.feature)).map(n=>n.id):[];
+        const session=await import("./js/craft/session.js");session.craftTest.auto="bad";Math.random=()=>.5;
+        window.insuranceCs=session.newSession("tournament");insuranceCs.steam={score:80,temp:.5};insuranceCs.leaf={hp:1,max:5,burn:0,dmg:10,steps:10};session.openBench(insuranceCs);
+        window.insuranceRun=(await import("./js/craft/pull.js")).runPull(insuranceCs);
+      },enabled);
+      await page.locator(t("pull-stop")).waitFor();assert.equal(await page.locator(t("pull-omen")).count(),enabled?1:0);
+      const result=await page.evaluate(async()=>{await insuranceRun;return {pulls:insuranceCs.pull.pulls,failed:insuranceCs.failed,used:insuranceCs.growthInsuranceUsed===true,kind:insuranceCs.growthInsuranceKind||null};});
+      assert.deepEqual(result,{pulls:enabled?5:4,failed:"leaf",used:enabled,kind:enabled?"leaf":null});
+    }
+  });
+
+  await check("single-leaf-style-lesson",async(page)=>{
+    await setupDaily(page);
+    await page.evaluate(async()=>{
+      const core=await import("./js/core/state.js"),growth=await import("./js/core/growth.js");growth.setGrowthPreview(true);
+      Object.assign(growth.ensureGrowth(),{nodes:["M-S2"],learned:["M-S2"]});core.state.flavorMastery.double_apple=60;
+      const session=await import("./js/craft/session.js");session.craftTest.auto=null;
+      window.singleCs=session.newSession("rehearsal");singleCs.practiceKind="midcheck";session.openBench(singleCs);
+      window.singleRun=(await import("./js/craft/steps.js")).stepMix(singleCs);
+    });
+    await page.locator(t("mix-single-style")).click();await assertFits(page,t("mix-single-style"));
+    for(let i=0;i<11;i++)await page.locator(t("mix-plus-double_apple")).click();
+    await page.locator(t("mix-plus-mint")).click();assert.equal(await page.locator(t("mix-ok")).isDisabled(),true);
+    await page.locator(t("mix-minus-mint")).click();await page.locator(t("mix-plus-double_apple")).click();assert.equal(await page.locator(t("mix-ok")).isEnabled(),true);
+    await page.locator(t("mix-ok")).click();
+    const result=await page.evaluate(async()=>{await singleRun;return {mix:singleCs.mix,score:singleCs.mixInfo.score,style:singleCs.singleStyle};});
+    assert.deepEqual(result,{mix:{double_apple:12},score:88,style:true});
+  },{viewport:{width:591,height:1280}});
+
+  await check("critical-coal-momentum-and-judge-memory",async(page)=>{
+    await setupDaily(page);
+    await page.evaluate(async()=>{
+      const core=await import("./js/core/state.js"),growth=await import("./js/core/growth.js");
+      growth.setGrowthPreview(true);growth.ensureGrowth().nodes=["K15","K16","K10"];core.markMet("dr_kemuri");
+      window.phaseSession=await import("./js/craft/session.js");window.phaseHeat=await import("./js/craft/heat.js");
+      phaseSession.craftTest.auto=null;Math.random=()=>.5;
+      window.phaseClock=1000;Object.defineProperty(performance,"now",{configurable:true,value:()=>phaseClock});
+      const raf=requestAnimationFrame;window.requestAnimationFrame=fn=>raf(()=>fn(phaseClock));
+      window.phaseCs=phaseSession.newSession("tournament");phaseCs.growthPhases={holes:{precise:true}};
+      phaseSession.openBench(phaseCs);window.phaseRun=phaseHeat.runHeat(phaseCs);
+      window.phaseWidth=.5*(await import("./js/craft/common.js")).skill.window(phaseCs);
+    });
+    await page.waitForFunction(()=>document.querySelector('[data-test="coal-0"]')?.dataset.phase==="raw");
+    await page.evaluate(()=>{phaseClock=1000+5790;});
+    await page.locator(t("coal-0")).click();await page.locator(t("coal-1")).click();
+    await page.evaluate(()=>{phaseClock=1000+(5.8+phaseWidth/2)*1000;});await page.locator(t("coal-2")).click();
+    await page.locator(t("step-next")).waitFor();
+    const result=await page.evaluate(()=>({score:phaseCs.heat.score,base:phaseCs.heat.growthBaseScore,criticals:phaseCs.heat.criticals,accuracy:phaseCs.heat.timingAccuracy,bonus:phaseCs.heat.growthPhaseBonus}));
+    assert.deepEqual(result,{score:88.5,base:86.5,criticals:1,accuracy:85,bonus:2});
+    await assertFits(page,t("judge-reception"));await page.locator(t("judge-reception")).click();
+    await page.locator("#modal.show").waitFor();assert.match(await page.locator(".modal-body").innerText(),/炭焼き.*博士|炭焼き.*ケムリ/);
+    await page.locator(".modal-actions button").click();await page.locator(t("step-next")).click();await page.evaluate(async()=>await phaseRun);
+  },{viewport:{width:591,height:1280}});
+
+  await check("zero-steam-and-deep-pull-lesson",async(page)=>{
+    await setupDaily(page);
+    await page.evaluate(async()=>{
+      const growth=await import("./js/core/growth.js");growth.setGrowthPreview(true);
+      Object.assign(growth.ensureGrowth(),{nodes:["M-W4","M-S4","M-W5"],learned:["M-W4","M-S4","M-W5"]});
+      window.lessonSession=await import("./js/craft/session.js");lessonSession.craftTest.auto=null;
+      window.lessonCs=lessonSession.newSession("rehearsal");lessonSession.openBench(lessonCs);
+      window.lessonTimer=(await import("./js/craft/timer.js")).runSteamTimer(lessonCs);
+    });
+    await page.locator(t("timer-start")).waitFor();assert.equal(await page.locator(t("timer-start")).isEnabled(),true);
+    await page.locator(t("timer-start")).click();await page.evaluate(async()=>{await lessonTimer;window.zeroRun=(await import("./js/craft/steam.js")).runSteamDodge(lessonCs);});
+    await page.locator(t("step-next")).waitFor();assert.equal(await page.locator(t("dodge")).count(),0);
+    const zero=await page.evaluate(()=>({seconds:lessonCs.steam.seconds,temp:lessonCs.steam.temp,precision:lessonCs.environment.precision}));
+    assert.equal(zero.seconds,0);assert(zero.temp<.12);assert.equal(zero.precision,true);
+    await page.locator(t("step-next")).click();await page.evaluate(async()=>{await zeroRun;window.deepRun=(await import("./js/craft/pull.js")).runPull(lessonCs);});
+    await page.locator(t("pull-deep")).waitFor();await page.waitForFunction(()=>!document.querySelector('[data-test="pull-deep"]').disabled);
+    const before=Number(await page.locator(t("pull-temperature")).getAttribute("aria-valuenow"));
+    await page.locator(t("pull-deep")).click();await page.waitForFunction(()=>!document.querySelector('[data-test="pull-deep"]').disabled);
+    const after=Number(await page.locator(t("pull-temperature")).getAttribute("aria-valuenow"));assert(after>before+.2);
+    assert.match(await page.locator(t("pull-count")).getAttribute("aria-label"),/1/);
+    await page.locator(t("pull-stop")).click();await page.waitForFunction(()=>!document.querySelector('[data-test="pull-serve"]').disabled);
+    await page.locator(t("pull-serve")).click();await page.locator(t("step-next")).waitFor();await page.locator(t("step-next")).click();
+    const completed=await page.evaluate(async()=>{await deepRun;return {pulls:lessonCs.pull.pulls,failed:lessonCs.failed||null};});
+    assert.deepEqual(completed,{pulls:2,failed:null});
+  },{viewport:{width:591,height:1280}});
+
+  await check("just-pull-smoke-rings",async(page)=>{
+    await setupDaily(page);
+    await page.evaluate(async()=>{
+      const growth=await import("./js/core/growth.js");growth.setGrowthPreview(true);growth.ensureGrowth().nodes=["K15","K21"];
+      const session=await import("./js/craft/session.js");session.craftTest.auto="good";
+      window.ringCs=session.newSession("tournament");ringCs.steam={score:100,temp:(await import("./js/craft/temperature-model.js")).temperatureBands(ringCs).center};session.openBench(ringCs);
+      window.ringRun=(await import("./js/craft/pull.js")).runPull(ringCs);
+    });
+    await page.locator(t("pull-smoke-ring")).first().waitFor();
+    const rings=await page.evaluate(async()=>{await ringRun;const score=await import("./js/craft/score.js");return {count:ringCs.pull.smokeRings,criticals:ringCs.pull.criticals,justs:ringCs.pull.justs,bonus:score.bonusOf(ringCs).bonus};});
+    assert.equal(rings.count,3);assert.equal(rings.criticals,0); // 広がったジャスト帯の中心は0.5より右。通常ジャストと会心を混同しない。
+    assert.equal(rings.justs,3);assert.equal(rings.bonus,1);
+  });
+
   await check("dense-pack-new-and-legacy",async(page)=>{
     await setupDaily(page);
     for(const kind of ["new","learned","legacy","old-mode"]) {
@@ -652,14 +769,14 @@ await suite("growth-levelup", async (check) => {
       void (await import("./js/core/growth.js")).openGrowthBoard();
     });
     await page.locator(t("board-tab-body")).waitFor();
-    assert.match(await page.locator(t("board-tab-body")).innerText(), /才能盤\s*2\/26/);
+    assert.match(await page.locator(t("board-tab-body")).innerText(), /才能盤\s*2\/27/);
     assert.equal(await page.locator(t("board-bars")).count(), 1, "恩恵の横棒");
     assert.doesNotMatch(await page.locator(t("growth-board")).innerText(), /\d段/, "盤に段の文字は無い");
     await page.locator(t("board-decide")).click();
     await page.waitForSelector(t("growth-board"), { state: "detached" });
     await page.evaluate(async () => { void (await import("./js/daily/status.js")).openStatus(); });
     await page.locator(t("board-radar")).waitFor();
-    assert.match(await page.locator(t("st-board-body")).innerText(), /2\/26/);
+    assert.match(await page.locator(t("st-board-body")).innerText(), /2\/27/);
     assert.doesNotMatch(await page.locator(".st-me").innerText(), /\d段/, "ステータスに段の文字は無い");
   }, { viewport: { width: 1331, height: 760 } });
   // 授業は会って相談した時だけ習う（SBD61）: 盤には LIME で聞く入口が無く、次に会った時と出る

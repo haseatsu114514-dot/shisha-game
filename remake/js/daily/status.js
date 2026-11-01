@@ -13,7 +13,7 @@ import { KEEPSAKES } from "../core/keepsakes.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 import { growthEnabled, ensureGrowth } from "../core/growth.js";
 import { growthCraftMemo } from "../core/growth-memory.js";
-import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STAT_SQUARES, statCount, statRatio, perkTotals } from "../core/growth-board.js";
+import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, statTotal, statCount, statRatio, perkTotals } from "../core/growth-board.js";
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
@@ -90,9 +90,9 @@ function boardMeTab() {
     }, [
       el("span.st-board-head", { text: BOARD_HEAD[k], "aria-hidden": "true" }),
       el("div.st-info", [
-        el("div.st-line", [el("span.st-name", { text: BOARD_JA[k] }), el("span.st-count", { text: `${count}/${STAT_SQUARES[k]}` })]),
+        el("div.st-line", [el("span.st-name", { text: BOARD_JA[k] }), el("span.st-count", { text: `${count}/${statTotal(k)}` })]),
         el("span.st-fx", { text: sums.length ? sums.map((p) => p.text).join("・") : "まだ灯していない" }),
-        el("i.st-next-track", { "aria-hidden": "true" }, [el("b", { style: { width: `${Math.round((count / STAT_SQUARES[k]) * 100)}%` } })]),
+        el("i.st-next-track", { "aria-hidden": "true" }, [el("b", { style: { width: `${Math.round((count / statTotal(k)) * 100)}%` } })]),
       ]),
     ]);
   });

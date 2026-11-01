@@ -8,7 +8,7 @@ import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay, save } from "../core/state.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
-import { growthSkill, growthCraftCondition, SKILL_TUNING } from "../core/growth-effects.js";
+import { growthSkill, growthCraftCondition, growthLesson, SKILL_TUNING } from "../core/growth-effects.js";
 import { noteGrowthCraftOwner } from "../core/growth-memory.js";
 import { buildWorkerScene, WORKER_STEPS, benchBgRef } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
@@ -60,7 +60,7 @@ export function newSession(mode) {
     chapter: state.chapter,
     audienceIds: audienceFor(mode, state.chapter),
     condition: growthCraftCondition(state, mode, currentCondition()), // 本番の胆力はこの一台だけ
-    environment: steamEnvironment(isRainy(), state.day, state.weatherSeed ?? 0, timeOfDay()),
+    environment: { ...steamEnvironment(isRainy(), state.day, state.weatherSeed ?? 0, timeOfDay()), ...(growthLesson(state,"M-W5") ? { precision:true } : {}) },
     steamVariation,
     steamPrediction: steamForecastProfile(tier01("insight"), steamVariation,
       { readBonus: growthSkill(state, "K14") ? SKILL_TUNING.forecastRead : 0 }),

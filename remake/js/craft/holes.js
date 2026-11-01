@@ -10,7 +10,7 @@ import { effectBadge, effectLine, effectVisible, senseBand, effectTier } from ".
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 import { state as gameState } from "../core/state.js";
-import { growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
+import { growthSkill, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { artImg } from "./art.js";
 
 import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil, skippedFoilResult } from "./holes_logic.js";
@@ -344,6 +344,7 @@ export async function runHoles(cs) {
   res.templateId = template.id;
   res.templateLabel = template.label;
   res.plannedCounts = { ...template.counts };
+  settleGrowthPhase(gameState, cs, "holes", res, res.score >= 90);
   cs.holes = res;
   scoreStep(cs, "holes", res.score, "穴あけ");
   refreshBench();

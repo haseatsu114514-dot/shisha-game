@@ -6,7 +6,7 @@ export const normalizeSteamSeconds = (seconds) => clamp(Math.round((Number.isFin
 
 export function steamSecondsOf(cs) {
   const seconds = cs?.steamSeconds ?? cs?.steam?.seconds ?? (cs?.steamMin != null ? cs.steamMin * 60 : (cs?.steam?.min ?? 5) * 60);
-  return Math.max(10, normalizeSteamSeconds(seconds));
+  return Math.max(cs?.zeroSteam === true && cs?.mode !== "tutorial" ? 0 : 10, normalizeSteamSeconds(seconds));
 }
 
 export const clockTime = (seconds) => `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;

@@ -4,7 +4,8 @@ import { displayName, portraitInfo, faceIconUrl } from "../core/data.js";
 import { state } from "../core/state.js";
 import { evaluationOf, feedbackLine, commentaryLine, tutorialGuide, innerVoiceLine, watchLine } from "./feedback.js";
 import { autoWrap } from "../vn/text.js";
-import { imageReady } from "../core/ui.js";
+import { growthSkill } from "../core/growth-effects.js";
+import { imageReady, modal } from "../core/ui.js";
 
 /**
  * 吹き出しと同じ文節単位の改行で、枠の幅に合わせて折る（TH91: 「見なが／ら」のような語の途中の改行を防ぐ）。
@@ -69,12 +70,17 @@ export function buildAudience(cs) {
   const person = el("figure.audience-person", { role: "img" }, [el("div.audience-face", [image, fallbackName]), name]);
   const mark = el("b.audience-rating", { hidden: true, dataset: { test: "craft-rating" } });
   const caption = el("span.audience-caption", { text: ids[0] === "hajime" ? "心の声" : "" });
+  const reception = cs.mode === "tournament" && growthSkill(state,"K10") ? el("button.btn.ghost.small", { text:"手応え", title:"ここまでの審査員の受け止め", style:{fontSize:"10px",padding:"1px 4px",minHeight:"0",minWidth:"0",flexShrink:"0"}, disabled:true, dataset:{test:"judge-reception"}, onclick: () => {
+    const names = {mix:"配合",holes:"穴あけ",heat:"炭焼き",steam:"蒸らし",pull:"吸い出し",care:"熱管理",care1:"調整1",care2:"調整2"};
+    const rows = Object.entries(cs.judgeReception || {}).map(([key,r]) => el("p", {text:`${names[key]||key}：${displayName(r.judge,state)} ${evaluationOf(r.score).mark}　${r.text}`}));
+    modal({title:"ここまでの審査員の手応え",body:el("div",rows)});
+  } }) : null;
   const note = el("p.audience-note", { dataset: { test: "craft-feedback" } });
   const setNote = (text) => { note.dataset.raw = text; delete note.dataset.wrapped; note.textContent = text; wrapNote(note); };
   setNote(ids[0] === "hajime" ? innerVoiceLine("default", "watch") : watchLine(ids[0], "default"));
   if (typeof ResizeObserver === "function") new ResizeObserver(() => wrapNote(note)).observe(note);
   const root = el("aside.bench-audience.audience-single", { "aria-label": cs.mode === "drill" ? "はじめの心の声" : cs.mode === "tournament" ? "審査員と大会実況" : "見守る人", dataset: { test: "craft-audience" } }, [
-    el("div.audience-people", [person]), el("div.audience-speech", { "aria-live": "polite" }, [el("div.audience-heading", [mark, speaker, caption]), note]),
+    el("div.audience-people", [person]), el("div.audience-speech", { "aria-live": "polite" }, [el("div.audience-heading", [mark, speaker, caption, reception]), note]),
   ]);
   let primary = ids[0], active = primary, step = "", current = "", changedAt = -Infinity;
   const showPerson = (id, mood, kind = "") => {
@@ -135,6 +141,12 @@ export function buildAudience(cs) {
         mark.setAttribute("aria-label", evaluation.label); root.dataset.tone = evaluation.tone;
         caption.textContent = [id === "hajime" ? "心の声" : "", title.replace(/\s*結果$/, "")].filter(Boolean).join("・");
         setNote(text || feedbackLine(id, step, evaluation));
+        if (reception && Number.isFinite(score)) {
+          const key = step === "care" && cs.careRound ? `care${cs.careRound}` : step;
+          cs.judgeReception ??= {};
+          cs.judgeReception[key] = { judge:id, score, text:text || feedbackLine(id,step,evaluation) };
+          reception.disabled = false;
+        }
       }
     },
   };

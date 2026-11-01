@@ -37,6 +37,8 @@ async function timerFixture(mode, experienced=false) {
   const port=(name,values)=>new vm.SyntheticModule(Object.keys(values),function(){for(const [k,v] of Object.entries(values))this.setExport(k,v);},{context:ctx,identifier:name});
   const ctx=vm.createContext({console,setTimeout(){throw Error('Unexpected auto-start');}});
   const mods=new Map([
+    ['core/state.js',port('state',{state:{}})],
+    ['core/growth-effects.js',port('growth',{growthLesson:()=>false})],
     ['core/util.js',port('util',{el,clamp:(n,a,b)=>Math.max(a,Math.min(b,n))})],
     ['core/audio.js',port('audio',{SE:{click(){},select(){}}})],
     ['craft/session.js',port('session',{stepPanel:()=>node()})],

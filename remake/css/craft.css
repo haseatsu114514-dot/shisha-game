@@ -1252,3 +1252,6 @@ body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve
 @media (min-height: 600px) and (min-width: 761px) {
   body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { transform: none; }
 }
+
+/* 心得「残り香」: 斬ったあと3秒だけ、実際にゆっくりになった雑念へ薄い余韻。 */
+.dodge.afterglow .dodge-word { text-shadow: 0 0 9px #d9bdf5; }
