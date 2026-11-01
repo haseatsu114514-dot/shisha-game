@@ -52,3 +52,20 @@ assert.match(moderateLines[0], /^今回よかったこと：/);
 assert.match(moderateLines[1], /^次に変える一つ：|^次の練習：/);
 assert.deepEqual(craftReviewLines(steady), [goodPointOf(steady), improvementOf(steady)].filter(Boolean));
 console.log("PASS shared result-card review lines for chapters 2-5");
+
+// 最低2回で提供しても適温帯の端では○になる。汎用講評は回数を原因と断定しない。
+const { pullResult } = await import("../js/craft/conditions.js");
+const { evaluationOf, feedbackLine } = await import("../js/craft/feedback.js");
+const orangeBands = { center: .54, optimal: [.488, .592], ideal: [.4152, .6648], expressionWeight: 0 };
+const edge = pullResult(.6648, 2, 0, orangeBands, 3);
+assert.equal(edge.score, 65);
+assert.equal(edge.inZone, true);
+assert.equal(evaluationOf(edge.score).mark, "○");
+assert.doesNotMatch(feedbackLine("sumi", "pull", evaluationOf(edge.score)), /回数|抑え|減ら|吸いすぎ/);
+for (const [score, mark] of [[64, "△"], [65, "○"], [89, "○"], [90, "◎"]]) {
+  assert.equal(evaluationOf(score).mark, mark);
+  assert(feedbackLine("sumi", "pull", evaluationOf(score)));
+}
+assert.equal(feedbackLine("sumi", "pull", evaluationOf(90)), "いい頃合いだ。これなら出せる");
+assert.equal(feedbackLine("sumi", "pull", evaluationOf(64)), "熱が合わなかったな。焦らず一口ずつだ");
+console.log("PASS minimum-two-pull edge result and unchanged 65/90 feedback boundaries");
