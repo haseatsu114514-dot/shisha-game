@@ -354,16 +354,19 @@ function reportAffinityGain(opts, payload, carryBefore, carryAfter, cap) {
 
 export function gainAffinity(id, pts, opts = {}) {
   if (!id || !(pts > 0)) return;
-  let mult = Math.max(1 + 0.2 * tier01("charm"), 1 + (growthPerks(state)?.charm || 0) / 100);
+  let mult = 1 + 0.2 * tier01("charm");
+  // 旧報酬の丸めは保ち、盤の上乗せだけを端数台帳へ渡す。小さい恩恵も失わない。
+  const boardRate = (growthPerks(state)?.charm || 0) / 100;
   if ((state.lovers || []).includes(id)) {
     if (!bond.private) return;
     releaseLoveAffinity(id);
-    mult *= fortuneMult(id);
+    const fortune = fortuneMult(id);
+    mult *= fortune;
     const prevPts = state.lovePts[id] || 0;
     // 元の加算量の半分。1ポイントの会話も2回で1となり、切り捨てて失わない。
     state.loveCarry ||= {};
     const carryBefore = state.loveCarry[id] || 0;
-    const value = Math.round(pts * mult) * BOND_PACE + carryBefore;
+    const value = (Math.round(pts * mult) + pts * boardRate * fortune) * BOND_PACE + carryBefore;
     const got = Math.floor(value + 1e-9);
     state.loveCarry[id] = Math.max(0, value - got);
     const cap = lovePointCap(id);
@@ -380,7 +383,8 @@ export function gainAffinity(id, pts, opts = {}) {
     return applied;
   }
   releaseAffinity(id);
-  mult *= fortuneMult(id);
+  const fortune = fortuneMult(id);
+  mult *= fortune;
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;
   // 従来の加算量（倍率込みで四捨五入）の85%。旧式（pts×倍率×0.85）は1〜2ptの報酬で従来より増えていた
@@ -388,7 +392,7 @@ export function gainAffinity(id, pts, opts = {}) {
   // LIME返信のみ、整数丸めの後・端数繰り越しの前に倍率を掛ける（丸めで0にならず微量が累積する）
   const scale = opts.source === "lime" ? LIME_AFFINITY_SCALE : 1;
   const carryBefore = state.affinityCarry[id] || 0;
-  const value = Math.round(pts * mult) * AFFINITY_PACE * scale + (state.affinityCarry[id] || 0);
+  const value = (Math.round(pts * mult) + pts * boardRate * fortune) * AFFINITY_PACE * scale + (state.affinityCarry[id] || 0);
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
   const cap = affinityPointCap(id);
@@ -405,8 +409,9 @@ export function gainAffinity(id, pts, opts = {}) {
 
 export const STAMINA_LOW = 25;
 
-export function maxStamina() {
-  return 100 + Math.max(GUTS_STAMINA_BONUS[step("guts") - 1], growthPerks(state)?.stamina || 0);
+export function maxStamina({ forCondition = false } = {}) {
+  // 盤の容量増加だけで体調や発病リスクを悪化させない。ゲージの容量と体調の基準を分ける。
+  return 100 + GUTS_STAMINA_BONUS[step("guts") - 1] + (forCondition ? 0 : growthPerks(state)?.stamina || 0);
 }
 
 export function addStamina(n, { sleep = false } = {}) {
@@ -426,11 +431,11 @@ export function staminaAfter(n) {
   return clamp(Math.round(state.stamina + d), 0, maxStamina());
 }
 
-export const staminaRatio = () => state.stamina / maxStamina();
+export const staminaRatio = ({ forCondition = false } = {}) => state.stamina / maxStamina({ forCondition });
 export const currentCondition = () => {
   const sick = state.restDay;
   return sick?.chapter === state.chapter && sick.day === state.day && STAMINA_CONDITIONS[sick.illnessHealth]
-    || conditionForRatio(staminaRatio());
+    || conditionForRatio(staminaRatio({ forCondition: true }));
 };
 
 // ---------------------------------------------------------------- お金

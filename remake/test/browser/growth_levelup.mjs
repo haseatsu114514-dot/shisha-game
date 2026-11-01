@@ -93,6 +93,12 @@ await suite("growth-levelup", async (check) => {
         map.interruptMap(null); await window.entryFlow;
         const growth = await import("./js/core/growth.js");
         growth.gainExp(205); growth.settleGrowth();
+        __remake.state.stats.guts = 100;
+        __remake.state.stamina = 81;
+        const stats = await import("./js/core/stats.js");
+        window.entryMaximum = stats.maxStamina();
+        window.entryCondition = stats.currentCondition().health;
+        window.entryRawStats = JSON.stringify(__remake.state.stats);
         window.entryBefore = { day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina };
         Object.assign(__remake.state.reel, { installed: true, introDone: true, settingGuideDone: true,
           setting: 6, settingDraws: 4, settingSince: { chapter: 1, day: 3 }, settingNotice: false, resetNext: true });
@@ -129,7 +135,10 @@ await suite("growth-levelup", async (check) => {
       await tap(t("board-decide"));
       await page.locator(t("growth-board")).waitFor({ state: "detached" });
       const maximum = await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina());
-      assert(maximum >= 102, "B1の最大体力+2が実際に効く");
+      assert(maximum >= await page.evaluate(() => window.entryMaximum) + 2, "旧最大体力160にもB1の+2を加算する");
+      assert.equal(await page.evaluate(async () => (await import("./js/core/stats.js")).currentCondition().health),
+        await page.evaluate(() => window.entryCondition));
+      assert.equal(await page.evaluate(() => JSON.stringify(__remake.state.stats)), await page.evaluate(() => window.entryRawStats));
       await page.evaluate(async () => { await window.entryFlow; await window.entryMap(); });
       await page.locator(".map:not(.done)").waitFor();
       assert.equal(await page.locator(t("kannon-hidane")).count(), 0);

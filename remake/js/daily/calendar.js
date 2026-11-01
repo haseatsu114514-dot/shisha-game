@@ -418,7 +418,7 @@ async function deliver({ charId, scene, text }) {
 // ---------------------------------------------------------------- 行動
 
 async function staminaGuard(cost, { mandatory = false } = {}) {
-  if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina())) return true;
+  if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina({ forCondition: true }))) return true;
   const go = await modal({
     title: "体が重い……",
     body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
@@ -757,7 +757,7 @@ function cancelSamechanAppointment(inv) {
 /** 行動を1回使ったあと: そのイベントの終わりにスロットが1回転。告白は営業後に endDay で扱う */
 async function afterAction({ exerted = false, spent = 0 } = {}) {
   // 警告の承諾回数ではなく、実際に消耗した行動の終了時に一度だけ抽選する。
-  if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio(), Math.random, { fit: fitActive(state) })) state.flags._cold_pending = true;
+  if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio({ forCondition: true }), Math.random, { fit: fitActive(state) })) state.flags._cold_pending = true;
   spinReel({ spent });
   save();
   // 昼夜とも、別イベントやマップ・翌朝へ進む前に、この行動の演出を完了する。
@@ -867,7 +867,7 @@ async function endDay({ returnedToTonari = false } = {}) {
 
 async function advanceDay() {
   const exhausted = !!state.flags._cold_pending;
-  const illnessHealth = conditionForRatio(staminaRatio()).health;
+  const illnessHealth = conditionForRatio(staminaRatio({ forCondition: true })).health;
   delete state.flags._cold_pending;
   delete state.flags._overwork; // 旧セーブの固定発病カウンターは使わない。
   const sleepBefore = state.stamina;

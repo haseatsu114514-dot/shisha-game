@@ -9,6 +9,7 @@ const { gainFlavorExperience } = await import("../js/core/flavor-mastery.js");
 const { leafDamagePerPull } = await import("../js/craft/flavor-life.js");
 const { skill } = await import("../js/craft/common.js");
 const { bonusOf } = await import("../js/craft/score.js");
+const { steamHeartRadius } = await import("../js/craft/steam.js");
 core.newGame(); growth.setGrowthPreview(true);
 const g = growth.ensureGrowth(); g.hidane.any=3;
 const before = { day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:{...core.state.stats} };
@@ -25,7 +26,37 @@ for (const raw of [10,21,48,80,100]) {
   for (const key of core.STAT_KEYS) core.state.stats[key]=raw;
   growth.setGrowthPreview(false); const legacy={ maximum:stats.maxStamina(),slow:skill.slow({}),window:skill.window({}) };
   growth.setGrowthPreview(true);
-  assert(stats.maxStamina()>=legacy.maximum); assert(skill.slow({})>=legacy.slow); assert(skill.window({})>=legacy.window);
+  assert.equal(stats.maxStamina(),legacy.maximum+2,"旧能力が高くてもB1の+2を加算する");
+  assert.equal(skill.slow({}),legacy.slow); assert.equal(skill.window({}),legacy.window);
+}
+const legacyStats = JSON.stringify(core.state.stats);
+core.state.stamina=81;
+assert.equal(stats.maxStamina(),162);
+assert.equal(stats.currentCondition().health,"green","容量を増やしただけで旧体調を悪化させない");
+assert.equal(stats.maxStamina({forCondition:true}),160);
+for (let i=0;i<3;i++) {
+  core.save(); core.load();
+  assert.equal(stats.maxStamina(),162,"LOADのたびに効果を積み増さない");
+  assert.equal(JSON.stringify(core.state.stats),legacyStats); assert.equal(core.state.stamina,81);
+}
+core.state.growth.nodes=board.NODES.filter(n=>["stat","gate"].includes(n.kind)).map(n=>n.id);
+assert.equal(stats.maxStamina(),189,"旧最大体力160に盤の29を加算できる");
+core.state.stamina=189; core.save(); core.load();
+assert.equal(core.state.stamina,189); assert.equal(stats.maxStamina(),189);
+for (const schema of [8,21,23,core.SCHEMA]) {
+  const old=core.newState(); old.schema=schema;
+  for (const key of core.STAT_KEYS) old.stats[key]=100;
+  old.stamina=81;
+  stored.set(core.SAVE_KEY,JSON.stringify(old)); core.load();
+  assert.equal(stats.maxStamina(),160); assert.equal(stats.currentCondition().health,"green");
+  growth.ensureGrowth().hidane.any=1; board.commitPending(["B1"]);
+  for (let i=0;i<2;i++) {
+    core.save(); core.load();
+    assert.equal(stats.maxStamina(),162); assert.equal(core.state.stamina,81);
+    assert.equal(core.state.growth.hidane.any,0);
+    assert.equal(core.state.growth.nodes.filter(id=>id==="B1").length,1);
+    for (const key of core.STAT_KEYS) assert.equal(core.state.stats[key],100);
+  }
 }
 core.newGame(); growth.ensureGrowth();
 // 表示する恩恵と同じ値で、帯・要・色の台座・重複を検査する。
@@ -38,6 +69,19 @@ assert.deepEqual(effects.boardPerks(["B1","B1","unknown"]),effects.boardPerks(["
 assert.deepEqual(effects.boardPerks({}),effects.boardPerks([]));
 assert.deepEqual(effects.boardPerks([{},null,0,["B1"],{toString:"B1"},"__proto__"]),effects.boardPerks([]));
 const nodeFor = perk => board.NODES.find(n=>n.kind==="stat"&&!n.peak&&n.perk===perk);
+// 旧強化が最大でも、新しいマスの恩恵が止まらない。
+Object.assign(core.state.stats,{technique:100,sense:100,guts:100,charm:100});
+core.state.growth.nodes=[nodeFor("gauge").id]; assert(skill.slow({})>1.18);
+core.state.growth.nodes=[nodeFor("heat").id]; assert(skill.window({})>1.45);
+core.state.growth.nodes=[nodeFor("dodge").id]; assert(steamHeartRadius()<3.2);
+core.state.growth.nodes=["B4"]; core.state.fortune={char:"adam"};
+stats.gainAffinity("adam",1,{source:"lime",onGain(){}});
+const totalAffinity = () => (core.state.affinity.adam||0)+(core.state.affinityCarry.adam||0);
+assert(Math.abs(totalAffinity()-(2+.015)*.85*.25)<1e-10,"旧報酬と盤の端数へ占いを一度だけ適用");
+assert.equal(core.state.fortune,undefined);
+stats.gainAffinity("adam",1,{source:"lime",onGain(){}});
+assert(Math.abs(totalAffinity()-((2+.015)+(1+.01))*.85*.25)<1e-10);
+core.newGame(); growth.ensureGrowth();
 const cs={ mix:{ lemon:12 },steamSeconds:360 };
 const baseDamage=leafDamagePerPull(cs,{ lemon:{mix_life:1} });
 core.state.growth.nodes=[nodeFor("leaf").id];
@@ -62,4 +106,4 @@ core.state.growth.nodes=[nodeFor("pull").id]; assert(skill.window({},"pull")>1);
 core.state.growth.nodes=[nodeFor("stage").id]; assert(bonusOf({mode:"tournament"}).bonus>0);
 assert.equal(bonusOf({mode:"practice"}).bonus,0);
 growth.setGrowthPreview(false); assert.equal(bonusOf({mode:"tournament"}).bonus,0);
-console.log("[growth effects] PASS: B1 real effect, time/stamina/old stats unchanged, reload, no duplication, legacy floors, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");
+console.log("[growth effects] PASS: additive legacy growth, 160+29=189, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");

@@ -61,8 +61,8 @@ export function homeShishaOffer(s = state, { eve = false } = {}) {
   if (!rig || eve || s.flags?._home_shisha_day === dayKey(s)) return null;
   const stock = ownedFlavorIds().reduce((sum, id) => sum + flavorStock(id), 0);
   if (stock < HOME_GRAMS) return null;
-  if (conditionForRatio(s.stamina / maxStamina()).health !== "green") return null;
-  if (coldRisk(staminaAfter(HOME_STAMINA) / maxStamina())) return null;
+  if (conditionForRatio(s.stamina / maxStamina({ forCondition: true })).health !== "green") return null;
+  if (coldRisk(staminaAfter(HOME_STAMINA) / maxStamina({ forCondition: true }))) return null;
   return rig;
 }
 

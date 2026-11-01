@@ -16,9 +16,9 @@ export const strainWindow = (cs) => 0.88 ** Math.min(3, cs?.strain || 0);
 
 /** 腕前（★）に、その一台を作り始めたときの体力コンディションと、途中で溜まった疲れを重ねる。 */
 export const skill = {
-  slow: (cs) => Math.max(1 + 0.18 * tier01("technique"), 1 + (growthPerks(state)?.gauge || 0) / 100)
+  slow: (cs) => (1 + 0.18 * tier01("technique") + (growthPerks(state)?.gauge || 0) / 100)
     * craftCondition(cs).slow * strainSlow(cs) * (cs.retryAssist ? 1.35 : 1),
-  window: (cs, kind = "heat") => Math.max(1 + 0.45 * tier01("sense"), 1 + (growthPerks(state)?.[kind] || 0) / 100)
+  window: (cs, kind = "heat") => (1 + 0.45 * tier01("sense") + (growthPerks(state)?.[kind] || 0) / 100)
     * craftCondition(cs).window * strainWindow(cs) * (cs.retryAssist ? 1.5 : 1),
   clarity: (cs) => clamp(tier01("insight") + craftCondition(cs).focus - 1, 0, 1),
 };

@@ -28,5 +28,5 @@ export function boardPerks(nodes = []) {
   return sums;
 }
 
-/** 旧能力の値は互換用に保持する。既存の効き目との比較は各使用箇所で行う。 */
+/** 旧能力の保存値は保持し、確定済みの盤の恩恵を各使用箇所で加算する。 */
 export const growthPerks = s => growthEnabled() ? boardPerks(s?.growth?.nodes) : null;

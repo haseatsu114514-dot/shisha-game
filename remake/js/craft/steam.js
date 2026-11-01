@@ -44,6 +44,12 @@ export function refreshEffect() {
     label: REFRESH_LABELS[level - 1] };
 }
 
+/** 旧根性の縮小分に、盤の「かわし」の縮小分を足す。保存値への書き戻しはしない。 */
+export function steamHeartRadius(focus = 1) {
+  return heartHitRadius(tier01("guts"), focus)
+    - heartHitRadius(0, focus) * (growthPerks(state)?.dodge || 0) / 100;
+}
+
 export async function runSteamDodge(cs) {
   const owner = state;
   await waitBenchReady(cs, "steam");
@@ -102,8 +108,7 @@ export async function runSteamDodge(cs) {
   let dur = steamPlaySeconds(seconds) * (tutorial ? 0.7 : 1);
   if (cs.steamShorten && !tutorial) dur = Math.min(dur, SHORT_DODGE_SECONDS);
   const focus = craftCondition(cs).focus;
-  const hitR = Math.min(heartHitRadius(tier01("guts"), focus),
-    heartHitRadius(0, focus) * (1 - (growthPerks(state)?.dodge || 0) / 100));
+  const hitR = steamHeartRadius(focus);
   heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
   heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
   const spawnEvery = (eased ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
