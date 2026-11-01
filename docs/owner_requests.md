@@ -18,6 +18,7 @@
 | SHR02 | ✅ 本PR | **ルールが生成の現場に届いていない**: 16ファイル・約139KB・4段リンク先（`asset_sources/` 配下＝軽量checkoutと `.claudeignore` の対象外）にあった。部位ごとの正解とNG・貼る文・8行・生成後チェックを `docs/shisha_reference.md` §4 に1か所でまとめ、AGENTS.md に1行で誘導。`codex-image-prompt` スキルを Codex 用 `.agents/skills` にも登録。軽量checkoutの対象に参照フォルダを追加 |
 | SHR03 | ✅ 本PR | **資料の整理 第1段（移動だけ。中身は変えない）**: `docs/` 直下46本 → 入口と正本の7本に。機能仕様14本を `docs/spec/`、発注書・ガイド9本を `docs/prompts/`、ツール手引き12本を `docs/tools/`、履歴4本（体験版枠・旧fast checks・凛v12引き継ぎ・サメちゃん恋愛企画）を `docs/archive/` へ。参照リンクは全md（docs/qa 含む）で付け替え、`current_documentation_guide.md` に構成表を追加。Codex 用 `.agents/skills` に残り9スキルも登録 |
 | SHR04 | ✅ 本PR | **資料の整理 第2段（中身の圧縮）**: `master_spec.md`（約12万字。2026-06の完了項目#1〜29・第4部モデル別優先順位・旧FLAVOR TRIAL・BGM一覧は履歴）、`owner_requests.md`（約60万字。2026-09以前の節は旧 `web/` 時代）、`remake/README.md`（約12万字。先頭の日付付き変更メモ）を、現行の仕様だけ残して履歴を `archive/` へ移す案。移す節の一覧を出して承認後に実施 |
+| SHR05 | ✅ 本PR | **実写リファレンスの収集**: オーナー「素材に関してはClaude側で参考写真を集めて。マウスピースも生成が下手。HMDやセッティングは色々あるといい」「店で実際に使われている機材を主役に（80ターキッシュ・シリコンロータス・ソラリス・プロボスト系）」→ Wikimedia Commons の CC BY / CC BY-SA 写真41枚を `asset_sources/shisha-hardware-reference/photos/` に保存（部位別の命名、出典・作者・ライセンスを README と `sources.json` に記録、Git LFS）。ハンドル・吸い口の正解とNG、店の機材を主役にする方針、ゲーム内機材（シリコン＋ロートス／80beat＋タヌキッシュリッド／素焼き＋アマバースト）と実物の対応表を `docs/shisha_reference.md` §4 に追加。日本の店特有の機材（Lotus型・ターキッシュリッド・蓋付き高火力HMD・シリコンボウル）の実写は Commons に無く、オーナー撮影待ち。オーナー提示の製品名の表記は要確認 |
 
 ## 2026-11-01 DJミニゲームの再構成とクラブSEAM（DJS）
 
