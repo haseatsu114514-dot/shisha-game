@@ -1,4 +1,4 @@
-// CONTINUE V4: 全18分岐、1行テロップ、20秒の期限、連打・画面離脱・復帰・横持ち。
+// CONTINUE V4: 全台本の両分岐、1行テロップ、20秒の期限、連打・画面離脱・復帰・横持ち。
 // CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/continue_screen.mjs
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
@@ -108,7 +108,7 @@ try {
   await page.locator('[data-test="retry"]').click();
   assert(await page.locator(".go-approval").isVisible(), "generated approval stamp appears on meeting retry");
   console.log("PASS: GAME OVER / approval assets load; stamp appears");
-  const variants = [0, 1, 2, ...["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"].map(id => `premium:${id}`)];
+  const variants = [0, 1, 2, ...["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan", "hiyori"].map(id => `premium:${id}`)];
   for (const variant of variants) {
     for (const choice of ["retry", "quit"]) {
       await mount(variant);
@@ -198,7 +198,7 @@ try {
 
   await mount(0);
   await page.clock.runFor(19900);
-  // 期限境界は同じ時計で即時に入力。UI安定待ちによる期限越えを混ぜない（実クリックは全18分岐で確認）。
+  // 期限境界は同じ時計で即時に入力。UI安定待ちによる期限越えを混ぜない（実クリックは全台本の両分岐で確認）。
   await page.evaluate(() => document.querySelector('[data-test="retry"]').click());
   await page.clock.runFor(200);
   assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
@@ -256,7 +256,7 @@ try {
     await page.locator('[data-test="game-over-title"]').click();
     await geometry();
   }
-  console.log("PASS: all 9 scripts in phone landscape, reduced motion, muted controls");
+  console.log(`PASS: all ${variants.length} scripts in phone landscape, reduced motion, muted controls`);
   // 実験版は同じボタン処理を使う。全台本の大きい1行と、上部の2択をPC／横持ちで検証。
   for (const layout of ["top", "back-count"]) for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport);
@@ -288,7 +288,7 @@ try {
     await page.clock.runFor(2000);
     assert.deepEqual(await page.evaluate(() => window.__decisions), ["quit"]);
   }
-  console.log("PASS: both top-button experiments, all 9 scripts on PC / phone; GAME OVER hides every count and choices");
+  console.log(`PASS: both top-button experiments, all ${variants.length} scripts on PC / phone; GAME OVER hides every count and choices`);
   // 拡大は台詞送りから独立し、タブ休止・動き軽減を尊重する。
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
