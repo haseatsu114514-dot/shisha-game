@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { newState } from "../js/core/state.js";
+import { chapterDay, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SCENES, CH5_MATCH_SCENES, CH5_AFTERMATH,
   CH5_ENDING_IDS, CH5_SCENE_FILES, canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress,
   chapterFiveFreeRemaining, chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
@@ -131,6 +132,28 @@ assert.deepEqual(value.flags._ch5, { startDay: 61, stage: 0, part: "prologue", t
 assert.equal(value.flags._ch5_match_scheduled, false);
 assert.equal(value.flags._ch5_match_started, false);
 assert.equal(value.flags._ch4_cleared, true, "The Chapter 4 clear record must stay");
+assert.equal(chapterDay(value), 1, "Chapter 5 starts on local day 1");
+assert.equal(relationshipElapsedDay(value), 117, "The existing relationship clock calculation is unchanged");
+{
+  const resumed = JSON.parse(JSON.stringify(value));
+  resumed.day = 63;
+  const beforeRead = structuredClone(resumed);
+  assert.equal(chapterDay(resumed), 3, "A resumed Chapter 5 save uses its original start day");
+  assert.deepEqual(chapterFiveProgress(resumed), resumed.flags._ch5);
+  assert.equal(relationshipElapsedDay(resumed), 119);
+  assert.deepEqual(resumed, beforeRead, "Reading both clocks and progress must not change a save");
+}
+for (const startDay of [undefined, null, 0, -1, 61.5, "61", Number.NaN]) {
+  const legacy = { chapter: 5, day: 63, flags: { _ch5: { startDay } } };
+  const beforeRead = structuredClone(legacy);
+  assert.equal(chapterDay(legacy), 63, `Invalid startDay ${String(startDay)} keeps the old fallback`);
+  assert.deepEqual(legacy, beforeRead);
+}
+assert.equal(chapterDay({ chapter: 5, day: 63, flags: {} }), 63, "Older saves without _ch5 keep the fallback");
+for (const chapter of [1, 4])
+  assert.equal(chapterDay({ chapter, day: 63, flags: { _ch5: { startDay: 61 } } }), 63);
+for (const [chapter, field] of [[2, "_ch2_day1"], [3, "_ch3_intro"]])
+  assert.equal(chapterDay({ chapter, day: 63, flags: { [field]: { startDay: 61 }, _ch5: { startDay: 50 } } }), 3);
 assert.equal(canAdvanceToChapterFive(value), false, "A second advance must be refused");
 rejects(value, advanceToChapterFive);
 roundTrip(value);
