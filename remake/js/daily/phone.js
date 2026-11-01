@@ -350,27 +350,11 @@ function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
   // DAY3・DAY8 の固定の誘いは台本の一部なので残す
   if (!fixed && fixedNight?.(state.day)) return null;
   // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）
-  const reasons = [
-    "常連の団体が入ってな。人手が足りん",
-    "仕入れの業者と昼が重なってな。手が回らん",
-    "昼に貸切の予約が入った。炭番が一人足りん",
-  ];
-  return {
-    id,
-    sender: "sumi",
-    type: "invitation",
-    time_slot: "noon",
-    accept_event: "__sumi_baito__",
-    accept_text: "入ります！",
-    accept_reply: { sender: "sumi", stamp: "st_sumi_ack" },
-    hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
-    messages: [
-      "急で悪い。今日、昼のシフト入れるか？",
-      reasons[state.day % reasons.length],
-      "……代わりと言っちゃなんだが、給料は弾むぞ",
-    ],
-    decline_response: { text: "……そうか。なら、こっちで回す" },
-  };
+  const { reasons, ...template } = DB.limeTemplates.sumi_baito;
+  return { ...template, id,
+    messages: template.messages.map(text => text === "{reason}" ? reasons[state.day % reasons.length] : text),
+    accept_reply: { ...template.accept_reply },
+    decline_response: { ...template.decline_response } };
 }
 
 // ---------------------------------------------------------------- アカウント（トークの単位）

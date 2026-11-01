@@ -58,7 +58,7 @@ async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;
   if (values[name]) mod = new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name });
-  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { hiyoriInvite as testHiyoriInvite };" : ""), { context, identifier: name });
+  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { hiyoriInvite as testHiyoriInvite, sumiBaitoInvite as testSumiBaitoInvite };" : ""), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
@@ -747,3 +747,68 @@ await closeThread(session);
 assert.equal(phone.deliverMorning(), 0, "Saved dynamic ID must not be delivered twice");
 assert.equal(JSON.stringify(db.limeTemplates), templateBefore);
 console.log("PASS #2035: old saved dynamic ID, acceptance event, destination and history");
+
+// #2035: frozen pre-move algorithm versus real-data template output.
+const TOURNAMENT_DAY = 14;
+function legacySumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
+  if (tournamentDay || ![1, 2].includes(state.chapter) || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
+  const id = `_sumi_baito_inv_d${state.day}`;
+  if (state.limeRead.includes(id)) return null;
+  const fixed = state.chapter === 1 && (state.day === 3 || state.day === 8);
+  const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
+  if (!fixed && !slacking) return null;
+  // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
+  // DAY3・DAY8 の固定の誘いは台本の一部なので残す
+  if (!fixed && fixedNight?.(state.day)) return null;
+  // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）
+  const reasons = [
+    "常連の団体が入ってな。人手が足りん",
+    "仕入れの業者と昼が重なってな。手が回らん",
+    "昼に貸切の予約が入った。炭番が一人足りん",
+  ];
+  return {
+    id,
+    sender: "sumi",
+    type: "invitation",
+    time_slot: "noon",
+    accept_event: "__sumi_baito__",
+    accept_text: "入ります！",
+    accept_reply: { sender: "sumi", stamp: "st_sumi_ack" },
+    hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
+    messages: [
+      "急で悪い。今日、昼のシフト入れるか？",
+      reasons[state.day % reasons.length],
+      "……代わりと言っちゃなんだが、給料は弾むぞ",
+    ],
+    decline_response: { text: "……そうか。なら、こっちで回す" },
+  };
+}
+const sumiTemplateBefore = JSON.stringify(db.limeTemplates);
+let sumiCases = 0, sumiGenerated = 0;
+for (const chapter of [0, 1, 2, 3]) for (let day = 1; day <= 30; day++) {
+  for (const lastBaitoDay of [undefined, 0, day-3, day-4, day-5, day]) for (const read of [false, true]) {
+    for (const opts of [{}, { tournamentDay: true }, { fixedNight: () => true }]) {
+      reset({ chapter, day, lastBaitoDay, limeRead: read ? [`_sumi_baito_inv_d${day}`] : [] });
+      const expected = legacySumiBaitoInvite(opts), before = JSON.stringify(state);
+      const actual = phone.testSumiBaitoInvite(opts);
+      assert.deepEqual(plain(actual), plain(expected));
+      assert.equal(JSON.stringify(state), before);
+      if (actual) { sumiGenerated++; assert(!Object.hasOwn(actual, "reasons")); }
+      sumiCases++;
+    }
+  }
+}
+reset({ day: 3 });
+const sumiOne = phone.testSumiBaitoInvite(), sumiTwo = phone.testSumiBaitoInvite();
+for (const key of ["messages", "decline_response", "accept_reply"]) assert.notEqual(sumiOne[key], sumiTwo[key]);
+sumiOne.messages[0] = "changed"; sumiOne.decline_response.text = "changed"; sumiOne.accept_reply.stamp = "changed";
+assert.deepEqual(plain(phone.testSumiBaitoInvite()), plain(legacySumiBaitoInvite()));
+assert.equal(JSON.stringify(db.limeTemplates), sumiTemplateBefore);
+const savedSumi = JSON.parse(JSON.stringify(legacySumiBaitoInvite()));
+state.inbox = [item(savedSumi, { chapter: 1 })];
+session = phone.openLime({ sender: "sumi" }); await click("reply-0");
+assert.equal(state.inbox[0].result, "accepted");
+assert(state.flags._invited__sumi_baito_inv_d3);
+await closeThread(session);
+assert.equal(JSON.stringify(db.limeTemplates), sumiTemplateBefore);
+console.log("PASS #2035 sumi: equivalence / boundaries / independent copies / saved acceptance", sumiCases, sumiGenerated);

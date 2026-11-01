@@ -302,3 +302,7 @@ for (const phase of ["headers", "body"]) {
 }
 
 console.log("[remake data] 42 boot JSON files, deferred hiyori/cinema/tournament_craft and retry, max 4 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+
+assert.equal(all.DB.limeTemplates.sumi_baito.accept_reply.stamp, "st_sumi_ack");
+assert.equal(all.DB.limeTemplates.sumi_baito.reasons.length, 3);
+assert(!all.DB.lime.some(m => m.accept_event === "__sumi_baito__"));
