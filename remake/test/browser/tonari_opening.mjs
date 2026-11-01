@@ -2,7 +2,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import { suite, assertFits, storageSnapshot } from "./support.mjs";
+import { suite, assertFits, storageSnapshot as rawStorageSnapshot } from "./support.mjs";
+// #1950: 既読SKIP用の既読記録は端末設定として意図して保存される。セーブ・スロット・セッションの不変だけを確かめる。
+const SEEN_LINES_KEY = "suien_remake_seen_dialogue_lines";
+async function storageSnapshot(page) { const snap = await rawStorageSnapshot(page); delete snap.local[SEEN_LINES_KEY]; return snap; }
 
 const captures = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser");
 fs.mkdirSync(captures, { recursive: true });
@@ -66,11 +69,15 @@ await suite("tonari-opening", async check => {
             await page.locator(".vn-log.show").waitFor();
             assert.ok((await page.locator(".vn-log .log-row").count()) > 0);
             await assertFits(page, ".log-head button");
+            // LOGを開くと「閉じる」にフォーカスが移るので、Enterはそのボタンを押してLOGを閉じる（本文は進めない）。
+            assert.equal(await page.evaluate(() => document.activeElement?.textContent), "閉じる");
             await page.keyboard.press("Enter");
+            await page.locator(".vn-log.show").waitFor({ state: "hidden" });
             assert.equal(await page.locator(".tonari-opening").getAttribute("data-shot"), cue);
             assert.equal(await page.evaluate(() => O531.lines.length), before.count);
-            await page.locator(".vn-log button").getByText("閉じる", { exact: true }).click();
-            await page.locator(".vn-log.show").waitFor({ state: "hidden" });
+            // 閉じた後はフォーカスがLOGボタンへ戻る。次のEnterで再びLOGを開かないよう外す。
+            assert.equal(await page.evaluate(() => document.activeElement?.dataset?.test), "vn-log");
+            await page.evaluate(() => document.activeElement?.blur());
           }
           saved.add(cue);
         }

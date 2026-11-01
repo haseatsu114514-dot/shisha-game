@@ -2,6 +2,8 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
+import { playEntrance } from "./tournament-entrance.js";
+import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
@@ -17,9 +19,8 @@ import { initHud, showHud, daysLeft } from "../daily/hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
-import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/shop.js";
 import { radar } from "../daily/status.js";
-import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
+import { onDialogueEnter } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
@@ -202,6 +203,7 @@ export async function resumeGame() {
   if (state.chapter === 5) return resumeChapterModule(() => import("./ch5.js"), m => m.resumeChapterFive(), "第5章へ戻っています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
+  if (state.phase === "tournament" && state.tournament?.victory) return resumeVictory();
   if (state.phase === "tournament") return tournamentDay();
   if (state.phase === "opening" && await openingPart() === false) return;
   await dailyPart();
@@ -353,6 +355,10 @@ async function lastNight() {
   if (progress.choice === "sleep_early") {
     addStamina(maxStamina() - state.stamina);
     state.flags._home_tonight = true;
+    // #2088: 早寝は休養と同じく、溜めた発熱予約を消し、今夜の告白も後回しにする
+    delete state.flags._cold_pending;
+    delete state.flags._overwork;
+    state.flags._eve_slept = state.day;
   }
   setFlag("_ev_last_night");
   save();
@@ -526,11 +532,7 @@ async function tournamentDay() {
     await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
     const cheers = morningMessages({ tournamentDay: true });
     if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
-    // 本番用フレーバーを仕入れていなければ、スミさんのお情け（強制購入はしない）
-    const stocked = flavorStock("lemon") >= 12;
-    await play(stocked ? "remake_flavor_brought" : "remake_flavor_rescue", { bg: TONARI });
-    if (!stocked) addFlavorStock("lemon", 12 - flavorStock("lemon")); // スミさんの「一回分」
-    captureEntryResources(state); // 救済支給後・初回制作前に一度だけ。在庫と体力を同じ境界で保存。
+    captureEntryResources(state); // 初回制作前に一度だけ。在庫と体力を同じ境界で保存。
     save();
     toast("大会直前のデータをセーブした");
   }
@@ -543,8 +545,7 @@ async function tournamentDay() {
   void preloadBgm("bgm_tournament_craft");
   void warmGameOver();
   await smokeWipe(() => playBgm("bgm_tournament_wait"), { color: "dark" });
-  await play("ch1_tournament_arrival");
-  await maybeShuraba(); // 恋人が2人以上いたら、ロビーで鉢合わせる
+  await playTournamentArrival();
   playBgm("bgm_tournament_edm");
   await play("ch1_tournament_opening", { bg: STAGE });
   const regulation = regulationFor({ mode: "tournament" });
@@ -642,7 +643,9 @@ async function tournamentDay() {
   save();
 
   if (out.rank === 1) {
-    // 南雲の二口 →「もうだめだ」→ 10カウント → プチュン → 南雲の持ち点10一括投入 → 優勝
+    state.tournament.victory = { step: 0, revealed: false };
+    save();
+    // 南雲の二口 →「もうだめだ」→ 10カウント → プチュン → 南雲の持ち点10が先頭のはじめへ入り、優勝を締める（逆転ではない・#1282）
     // 審査待ちのなるの一言は、実際の調整実績（安定／立て直し／終盤帯外／記録不足）に合わせて差し替える。
     const judging = DB.dialogues.ch1_tournament_judging;
     const judgingLines = judging.lines.map(line =>
@@ -654,6 +657,8 @@ async function tournamentDay() {
     await nagumoCutin(1);
     await play("ch1_tournament_reveal", { bg: STAGE });
     await resultTable(cs, 1);
+    state.tournament.victory.revealed = true;
+    save();
     await victory(cs);
   } else {
     await resultCountdown(cs, out.kind);
@@ -666,77 +671,79 @@ async function tournamentDay() {
   }
 }
 
-/** 入場（ライバル → 主人公）。スミさんの一言つき。自動で送られる */
-async function entrance() {
-  const cards = [
-    { id: "naru", ring: "孤高の探求者", note: "なる……人格者だが、煙は別人だ。基礎が異常に堅い" },
-    { id: "adam", ring: "ダブルアップルの匠", note: "アダムは一点突破。正面から殴り合うな" },
-    { id: "minto", ring: "甘い嵐", note: "みんとは緩急で揺さぶってくる。乗せられるな" },
-    { id: "hajime", ring: "tonari の新星", note: "──行ってこい。目の前の一人に届けてこい" },
-  ];
-  const host = el("div.entrance");
-  layers.fx.append(host);
-  for (const c of cards) {
-    const face = c.id === "hajime" ? el("span.ent-face.ph", { text: "YOU" }) : el("img.ent-face", { src: faceIconUrl(c.id), alt: "" });
-    const card = el(`div.ent-card${c.id === "hajime" ? ".me" : ""}`, [
-      el("div.ent-cut", [face, el("span.ent-tag", { text: c.id === "hajime" ? "CHALLENGER" : "RIVAL" })]),
-      el("div.ent-meta", [
-        el("div.ent-ring", { text: c.ring }),
-        el("div.ent-name", { text: c.id === "hajime" ? "はじめ" : realName(c.id) }),
-        el("div.ent-note", { text: `スミ「${c.note}」` }),
-      ]),
-    ]);
-    host.replaceChildren(card);
-    await sleep(30);
-    card.classList.add("in");
-    c.id === "hajime" ? SE.fanfare() : SE.select();
-    await sleep(window.__remake?.craftTest?.auto ? 80 : 2100);
-  }
-  host.remove();
-}
+/** 入場（ライバル → 主人公）。スミさんの一言つき。共有部品 tournament-entrance.js（#2031） */
+const entrance = () => playEntrance(1);
 
 // ---------------------------------------------------------------- 優勝のあと
 
 async function victory(cs) {
-  clearContinueHistory(state);
-  state.tournament.retryAssist = false;
-  const recognition = craftRecognition(cs);
-  addMoney(PRIZE);
-  delete state.tournament.stockSnap;
-  delete state.tournament.entryResources;
+  // #2088: 優勝後の余韻は長いので、段ごとに保存して途中から再開できるようにする（賞金・能力加算は一度だけ）。
+  const v = state.tournament.victory ||= { step: 0, revealed: true };
+  if (!v.paid) {
+    clearContinueHistory(state);
+    state.tournament.retryAssist = false;
+    v.comment = (cs ? craftRecognition(cs) : null)?.comment || null;
+    addMoney(PRIZE);
+    delete state.tournament.stockSnap;
+    delete state.tournament.entryResources;
+    v.paid = true;
+    save();
+  }
   // スミさんの祝福LIMEは、閉店後のtonariで祝杯を交わす前に届く。tonariへ戻る背景切替の手前で場面を区切る。
   const after = DB.dialogues.ch1_tournament_after;
   const tonariAt = after.lines.findIndex(line => line.type === "bg" && line.bg?.includes("bg_tonari_inside"));
-  await play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE });
-  await openPhone([
-    {
-      id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
-        "おう。優勝、見事だった",
-        ...(recognition?.comment ? [recognition.comment] : []),
-        "最後の調整まで、よく作りきったな",
-        "今日は喜べ。帰ったら、一緒に一服しよう",
-      ], close_label: "……はい。ありがとうございます、スミさん",
-    },
-  ], { time: "PM 6:52", title: "表彰式のあと" });
-  await play({ ...after, lines: after.lines.slice(tonariAt) }); // 先頭の bg 行で tonari に切り替わる
-  await play("interval_day1_naru_lime");
-  gainStat("guts", 1);
-  // 優勝の夜。記録を続ける博士の伏線へ。
-  await openPhone([
-    {
-      id: "_sys_unknown_recorded", sender: "???", messages: [
-        "本日のあなたの試合データは、すべて記録させていただきました。",
-      ], close_label: "……誰？",
-    },
-  ], { time: "PM 11:47", title: "優勝の夜" });
-  await play("interval_day1_morning_win");
-  await play("ch1_naru_promise");
-  await play("interval_day2_adam_lime");
-  gainStat("insight", 1);
-  await play("interval_day5_eve");
+  const steps = [
+    () => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE }),
+    () => openPhone([
+      {
+        id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
+          "おう。優勝、見事だった",
+          ...(v.comment ? [v.comment] : []),
+          "最後の調整まで、よく作りきったな",
+          "今日は喜べ。帰ったら、一緒に一服しよう",
+        ], close_label: "……はい。ありがとうございます、スミさん",
+      },
+    ], { time: "PM 6:52", title: "表彰式のあと" }),
+    () => play({ ...after, lines: after.lines.slice(tonariAt) }), // 先頭の bg 行で tonari に切り替わる
+    () => play("interval_day1_naru_lime"),
+    () => gainStat("guts", 1),
+    // 優勝の夜。記録を続ける博士の伏線へ。
+    () => openPhone([
+      {
+        id: "_sys_unknown_recorded", sender: "???", messages: [
+          "本日のあなたの試合データは、すべて記録させていただきました。",
+        ], close_label: "……誰？",
+      },
+    ], { time: "PM 11:47", title: "優勝の夜" }),
+    () => play("interval_day1_morning_win"),
+    () => play("ch1_naru_promise"),
+    () => play("interval_day2_adam_lime"),
+    () => gainStat("insight", 1),
+    () => play("interval_day5_eve"),
+  ];
+  while (v.step < steps.length) {
+    await steps[v.step]();
+    v.step += 1;
+    save();
+  }
+  delete state.tournament.victory;
   state.phase = "aftermath";
   save();
   await finishAfterTournament();
+}
+
+/** #2088: 優勝確定後に閉じたセーブは、大会を作り直さず余韻の続きから */
+async function resumeVictory() {
+  showHud(false);
+  playBgm("bgm_aftermath");
+  const v = state.tournament.victory;
+  if (!v.revealed) {
+    await nagumoCutin(1);
+    await play("ch1_tournament_reveal", { bg: STAGE });
+    v.revealed = true;
+    save();
+  }
+  await victory(null);
 }
 
 async function finishAfterTournament() {
@@ -776,7 +783,7 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" }), el("span", { text: "隣町での県大会、第3章の東京での交流と全国大会、帰郷後の再会まで遊べます。" })]),
+        el("div.next-teaser", [el("small", { text: "NEXT CHAPTER" }), el("b", { text: "第二章『才能の壁』" }), el("span", { text: "ホロウ・クラウン / HAZE: OPEN CLOUD 編" })]),
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),

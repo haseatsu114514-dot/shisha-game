@@ -73,6 +73,12 @@
     },
     {
       "dialogue_id": "ch3_outing_steve_timer",
+      "comment": "味の会話（#2028）。スティーブの好み＝フォースフェクタ マウンテンミスト（characters.json：レモンとライムを低温で順に立たせる）。店を訪ねた後の任意の外出で、味覚が戻った後に限られる。好感度は台本に置かず、任意の外出の確定時に付ける（ch3-outing-progress.js の affinity）。",
+      "metadata": {
+        "flavor_lesson": {
+          "mountain_mist": 1
+        }
+      },
       "lines": [
         { "speaker": "", "text": "Smoke & Glory。昼の店に、ピザの箱が積んである。" },
         { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。今日は客？　それとも偵察？" },
@@ -81,8 +87,15 @@
         { "speaker": "steve", "face": "serious", "text": "時間だけ見てると、客の二口目を見落とす。だから両方が目に入る場所" },
         { "speaker": "hajime", "face": "normal", "text": "待つための道具なのに、見るのは客なんですね" },
         { "speaker": "steve", "face": "smile", "text": "イエス。タイマーは俺を止めるだけ。決めるのは客の顔" },
+        { "speaker": "steve", "face": "smile", "text": "せっかくだ、一口どうぞ。俺の推し、マウンテンミスト" },
+        { "speaker": "", "text": "レモンとライムが重なった葉だという。炭は遠く、ボウルの縁がまだ温まりきっていない。" },
+        { "speaker": "steve", "face": "serious", "text": "柑橘は熱に弱い。急ぐと、二口目でライムが飛ぶ" },
+        { "speaker": "", "text": "一口目はレモンが軽く抜けた。二口目、炭がなじんだ頃に、ライムの苦みが追ってくる。" },
+        { "speaker": "hajime", "face": "surprise", "text": "……順番に来る。レモンの後から、ライムが" },
+        { "speaker": "steve", "face": "smile", "text": "イエス。低い熱で待つと、二つが一列に並ぶ。それが俺の一台" },
+        { "speaker": "hajime", "face": "normal", "text": "（待った分だけ、柑橘が残るんだ）" },
         { "speaker": "", "text": "スティーブはキッチンタイマーを一つ、はじめの手に載せた。" },
-        { "speaker": "steve", "face": "smug", "text": "予備。大会で鳴らしたら、俺のせいにしていい" },
+        { "speaker": "steve", "face": "smile", "text": "予備。大会で鳴らしたら、俺のせいにしていい" },
         { "speaker": "hajime", "face": "smile", "text": "……ありがとうございます。借ります" }
       ]
     },
@@ -118,7 +131,7 @@
         { "speaker": "", "text": "高架の下を抜けて、公園まで歩いた。池の水面に、昼の光が揺れている。" },
         { "speaker": "hajime", "face": "normal", "text": "（東京に来てから、ずっと何かを確かめてばかりだった）" },
         { "speaker": "", "text": "動物園の方から、子どもの声が聞こえる。何も決めずに、池をひと回りした。" },
-        { "speaker": "hajime", "face": "smile", "text": "（少し、肩が軽くなった）" }
+        { "speaker": "hajime", "face": "smile", "text": "（落ち葉を踏む音が、思ったより心地いい）" }
       ]
     },
     {
@@ -128,6 +141,46 @@
         { "speaker": "hajime", "face": "normal", "text": "（明日のことは、明日の自分に任せよう）" },
         { "speaker": "", "text": "ベンチで温かい飲み物を一本空けて、ゆっくり歩いて帰った。" }
       ]
+    },
+    {
+      "dialogue_id": "ch3_outing_tetsuko",
+      "comment": "mukaiの看板猫てつこ（#1993）。飼い主のムカイさんには普通で、懐くのはましろちゃんだけ。撫でる・餌の選択はどちらも同じ回復で、能力・好感度は増やさない。",
+      "lines": [
+        { "speaker": "", "text": "mukaiの裏口。ベンチの上で、てつこが壁にもたれて座っていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "よう、てつこ。今日も店番か" },
+        { "speaker": "", "text": "てつこはこちらを一度だけ見て、また目を閉じた。ましろちゃんの時とは、ずいぶん違う。" },
+        {
+          "type": "choice",
+          "id": "ch3_tetsuko_care",
+          "choices": [
+            { "text": "そっと撫でる", "next": "pet" },
+            { "text": "まかないの残りを分ける", "next": "feed" }
+          ]
+        },
+        { "speaker": "", "text": "てつこを構っているうちに、肩の力が少し抜けていた。" }
+      ],
+      "branches": {
+        "pet": [
+          { "speaker": "", "text": "指の背で、喉元をゆっくり撫でる。てつこは逃げなかったが、喜んでいるかは分からない。" },
+          { "speaker": "hajime", "face": "normal", "text": "（……嫌われてはいない、と思いたい）" },
+          { "speaker": "", "text": "裏口の戸が開いて、ましろちゃんが顔を出した。てつこがすぐに立ち上がる。" },
+          { "speaker": "mashiro", "face": "smile", "text": "あ、はじめくんも来てたんだぁ。てつこちゃん、おいで" },
+          { "speaker": "", "text": "てつこはましろちゃんの足にすり寄って、低く喉を鳴らした。" },
+          { "speaker": "hajime", "face": "normal", "text": "さっきまで、石みたいだったのに" },
+          { "speaker": "mashiro", "face": "normal", "text": "ムカイさんにもそうだよぉ。飼い主なのに、ちょっとかわいそう" }
+        ],
+        "feed": [
+          { "speaker": "", "text": "まかないで残ったささみを、小皿に少しだけ置く。" },
+          { "speaker": "", "text": "てつこはゆっくり近づいて、匂いを確かめてから食べ始めた。" },
+          { "speaker": "hajime", "face": "normal", "text": "ゆっくりでいいぞ。誰も取らないから" },
+          { "speaker": "", "text": "食べ終わると、てつこは一度だけこちらを見て、元のベンチへ戻った。" },
+          { "speaker": "", "text": "裏口の戸が開いて、ましろちゃんが顔を出した。" },
+          { "speaker": "mashiro", "face": "smile", "text": "てつこちゃん、ちゃんと食べた？　えらいねぇ" },
+          { "speaker": "", "text": "てつこはましろちゃんの足にすり寄って、低く喉を鳴らした。" },
+          { "speaker": "", "text": "店の中から、ムカイさんの低い声がした。" },
+          { "speaker": "mukai_master", "face": "normal", "text": "……買ってきたのは俺なんだけどな" }
+        ]
+      }
     }
   ]
 }

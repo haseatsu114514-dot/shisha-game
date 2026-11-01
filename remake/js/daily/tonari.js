@@ -1,4 +1,5 @@
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
+import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
 // シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
@@ -34,6 +35,9 @@ export function tonariMenu() {
     setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
     playBgm("tonari");
     const tsumugiKnown = !!(state.met.tsumugi || state.flags._met_tsumugi || (state.story.tsumugi || 0) > 0);
+    const tsumugiPresent = tsumugiAtTonari(state);
+    const customerStory = state.visitedDay.tonari_customer !== state.day && tsumugiPresent && hasNewStory("tsumugi");
+    const shiftStory = state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi");
     const pickIt = (value) => { retire(root); resolve(value); };
     const opt = (title, desc, value, test) =>
       el("button.big-choice", { dataset: { test }, disabled: value === "hiyori_axe" && !hiyoriAxeAffordable(), onclick: () => { SE.select(); pickIt(value); } }, [
@@ -43,12 +47,12 @@ export function tonariMenu() {
       el("h2.sub-title", { text: "tonari" }),
       el("p.sub-lead", { text: state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
       el("div.sub-choices", [
-        opt("お客さんとして一服", !tsumugiAtTonari(state) ? "客席でゆっくり一服する"
-          : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
+        opt("お客さんとして一服", `${customerStory ? "【新しい話】" : ""}${!tsumugiPresent ? "客席でゆっくり一服する"
+          : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}`, "customer", "tonari-customer"),
         opt("まかないで練習", `体力を使う・1行動。今日の葉：${staffFlavors(state).map(id => `${DB.flavorById[id]?.short_name || id} ${staffStock(state, id)}g`).join("、")}。私物も使える`, "practice", "tonari-practice"),
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
-        opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話せる", "baito", "tonari-baito"),
+        opt("シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}接客で稼ぐ。上がったあとはスミさんと話せる`, "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -102,15 +106,15 @@ async function baitoShift({ called }) {
   if (rainy) await play("remake_baito_rain", { bg: TONARI_BG });
   const n = state.baitoCount;
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
-  if (state.chapter === 1 && n === 2 && !state.flags._ev_rei_cameo) {
+  if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
     state.flags._ev_rei_cameo = true;
     await play("ch1_rei_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_rei_cameo", ["rei"]);
-  } else if (state.chapter === 1 && n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
+  } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
     state.flags._ev_reviewer_cameo = true;
     await play("ch1_reviewer_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_reviewer_cameo", ["reviewer"]);
-  } else if (state.chapter === 1 && n >= 4 && state.day >= 6 && !state.flags._ev_maezono_cameo) {
+  } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 4 && state.day >= 6 && !state.flags._ev_maezono_cameo) {
     state.flags._ev_maezono_cameo = true;
     await play("ch1_maezono_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_maezono_cameo", ["maezono"]);
@@ -130,7 +134,7 @@ async function baitoShift({ called }) {
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
   if (condition.shiftBonus) toast(`仕上げは好調。売上ボーナス +${condition.shiftBonus.toLocaleString()}円`, { kind: "good" });
-  if (condition.health === "red") toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
+  if (condition.health === "red" && bonus > 0) toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
   // 基礎成長は訪問と同じ4。接客・片付けの両方を経験する。
   applyStats({ technique: 2, charm: 2 });
   await afterShiftErrand();
@@ -139,7 +143,7 @@ async function baitoShift({ called }) {
 
 /** 店の受け取りは実際のシフト後だけ。旧DAY4の既読記録もそのまま使う。 */
 async function afterShiftErrand() {
-  if (state.chapter !== 1 || state.day < 4 || state.flags._ev_ageha_cameo
+  if (!chapterFeatureEnabled(state.chapter, "baitoCameos") || state.day < 4 || state.flags._ev_ageha_cameo
     || !DB.dialogues.ch1_ageha_encounter) return;
   await play("ch1_ageha_encounter");
   state.flags._ev_ageha_cameo = true;

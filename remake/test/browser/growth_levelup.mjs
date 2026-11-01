@@ -210,7 +210,7 @@ await suite("growth-levelup", async (check) => {
       // 寝る前・メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
       assert.equal(await board.getAttribute("data-mode"), "view");
       assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
-      assert.match(await page.locator(t("board-wallet")).innerText(), /万能\s*4/, "Lv.1→3 で火種4");
+      assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*4/, "Lv.1→3 で白火4");
       const ids = await page.evaluate(async () => {
         const b = await import("./js/core/growth-board.js");
         const first = b.boardNodes("body").find((n) => n.kind === "stat" && n.links.includes(b.HUB)).id;
@@ -282,7 +282,7 @@ await suite("growth-levelup", async (check) => {
     await board.waitFor({ state: "detached" });
     await page.evaluate(async () => { __remake.state.chapter = 2; void (await import("./js/core/growth.js")).openGrowthBoard(); });
     await page.locator(t("board-opened")).waitFor();
-    assert.match(await page.locator(t("board-opened")).innerText(), /封が解けた/);
+    assert.match(await page.locator(t("board-opened")).innerText(), /結界が解けた/);
     assert.ok(await page.locator(".gb-node.just-opened").count() > 0);
     await page.waitForTimeout(500);
     await page.screenshot({ path: `${out}/growth-board-unseal.png` });
@@ -301,7 +301,7 @@ await suite("growth-levelup", async (check) => {
     });
     const band = page.locator(t("gift-band"));
     await band.waitFor();
-    assert.match(await band.innerText(), /くじのラストワン賞[\s\S]*才の火種 ＋1/);
+    assert.match(await band.innerText(), /くじのラストワン賞[\s\S]*紅火 ＋1/);
     await assertFits(page, '[data-test="gift-band"]');
     await page.waitForFunction(() => window.night?.gifts?.length === 1, null, { timeout: 8000 });
   }, { viewport: { width: 1331, height: 760 } });
@@ -379,8 +379,27 @@ await suite("growth-levelup", async (check) => {
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
   }, { viewport: { width: 1331, height: 760 } });
-  // 会えない人には LIME で相談（SBD57）: 盤の授業の欄から「LIME で聞く」→ 返事を読んで返信すると習得
-  await check("lesson-lime", async (page) => {
+  // 段はなくした（SBD63）: 盤の札は「n/26」、右のパネルは恩恵の横棒、ステータス画面は三角のグラフ
+  await check("no-steps-graph", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const g = (await import("./js/core/growth.js")).ensureGrowth();
+      g.nodes.push("B1", "B2");
+      void (await import("./js/core/growth.js")).openGrowthBoard();
+    });
+    await page.locator(t("board-tab-body")).waitFor();
+    assert.match(await page.locator(t("board-tab-body")).innerText(), /才能盤\s*2\/26/);
+    assert.equal(await page.locator(t("board-bars")).count(), 1, "恩恵の横棒");
+    assert.doesNotMatch(await page.locator(t("growth-board")).innerText(), /\d段/, "盤に段の文字は無い");
+    await page.locator(t("board-decide")).click();
+    await page.waitForSelector(t("growth-board"), { state: "detached" });
+    await page.evaluate(async () => { void (await import("./js/daily/status.js")).openStatus(); });
+    await page.locator(t("board-radar")).waitFor();
+    assert.match(await page.locator(t("st-board-body")).innerText(), /2\/26/);
+    assert.doesNotMatch(await page.locator(".st-me").innerText(), /\d段/, "ステータスに段の文字は無い");
+  }, { viewport: { width: 1331, height: 760 } });
+  // 授業は会って相談した時だけ習う（SBD61）: 盤には LIME で聞く入口が無く、次に会った時と出る
+  await check("lesson-in-person", async (page) => {
     await setupDaily(page);
     await page.evaluate(async () => {
       const g = await import("./js/core/growth.js");
@@ -391,20 +410,7 @@ await suite("growth-levelup", async (check) => {
     });
     await page.locator(t("board-tab-body")).click();
     await page.locator(t("board-node-M-B2")).click();
-    const ask = page.locator(t("board-lime-consult"));
-    await ask.waitFor();
-    await ask.click();
-    await page.locator('[data-test="reply-0"]').waitFor();
-    await page.locator('[data-test="reply-0"]').click();
-    await page.locator('[data-test="phone-next"]').waitFor();
-    await page.locator('[data-test="phone-next"]').click();
-    await page.locator(".gain-card", { hasText: "花を重ねる" }).waitFor();
-    const r = await page.evaluate(async () => {
-      const g = await import("./js/core/growth.js");
-      return { learned: g.lessonLearned("M-B2"), again: g.canAskByLime("M-B2"), aff: __remake.state.affinity.rei };
-    });
-    assert.equal(r.learned, true, "LIME の相談で習得");
-    assert.equal(r.again, false, "習得したらもう聞かない");
-    assert.equal(r.aff, 1, "相談の LIME で好感度は増えない");
+    await page.locator(".gb-p-state", { hasText: "次に" }).waitFor();
+    assert.equal(await page.locator(t("board-lime-consult")).count(), 0, "LIME で聞くボタンは無い");
   }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1` });

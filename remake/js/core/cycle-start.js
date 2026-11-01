@@ -6,7 +6,7 @@ import { maxStamina } from "./stats.js";
 
 // §3.5: 自己ベスト best は知識・記録系として knowledge に含める。
 const GROUP_KEYS = {
-  stats: ["stats", "statXp"],
+  stats: ["stats", "statXp", "growth"],
   money: ["money"],
   items: ["owned", "equip", "goods", "kuji", "reel", "trpg", "flavorStock", "keepsakes"],
   knowledge: ["flavors", "flavorMastery", "flavorLessons", "recipes", "best"],

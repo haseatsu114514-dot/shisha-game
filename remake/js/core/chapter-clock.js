@@ -3,7 +3,8 @@ import { TOURNAMENT_DAY } from "./rules.js";
 export function chapterDay(value) {
   const day = value?.day || 1;
   const start = value?.chapter === 2 ? value.flags?._ch2_day1?.startDay
-    : value?.chapter === 3 ? value.flags?._ch3_intro?.startDay : null;
+    : value?.chapter === 3 ? value.flags?._ch3_intro?.startDay
+    : value?.chapter === 5 ? value.flags?._ch5?.startDay : null;
   return Number.isInteger(start) && start > 0 ? Math.max(1, day - start + 1) : day;
 }
 

@@ -226,6 +226,66 @@
       ]
     },
     {
+      "dialogue_id": "venue_kumicho_day",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の神崎煙草店。暖簾の向こうで、神崎さんが炭の箱を整えている。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。昼間っから精が出ますな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_kumicho_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の神崎煙草店。古い木の匂いに、ドラゴンフルーツの甘さがかすかに混じる。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "いらっしゃい。夜は冷えやす、奥へどうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_rei_day",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の零-ZERO-。カーテンを閉めた店内に、小さな音でギターが流れている。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……昼でも、ここは夜"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_rei_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の零-ZERO-。ろうそくの灯りの下で、常連がCDのジャケットを眺めている。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……いらっしゃい。空いてる席、どこでも"
+        }
+      ]
+    },
+    {
       "dialogue_id": "venue_tonari_day",
       "lines": [
         {

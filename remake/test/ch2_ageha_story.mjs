@@ -11,7 +11,19 @@ const story = Object.fromEntries(read("data/dialogue/ch2_ageha_story.json").dial
 // 2日目と8日目（サメのTRPG）は自由に使える夜として空けたまま（#639）
 const night = (day) => CH2_NIGHTS.find((n) => n.day === day);
 assert.deepEqual(night(3).steps.map((s) => s.id), ["ch2_naru_warm", "remake_ch2_ageha_scout"]);
-assert.equal(night(3).steps[1].contact, "ageha", "会っていなくても連絡先を交換する");
+// 連絡先は台本の set_flag で交換する（交換の演出が出る・#2023）。偵察の夜も店の初回も、つながっていない時だけ
+assert.equal(night(3).steps[1].contact, undefined, "コードで連絡先を付けない");
+assert.equal(night(3).steps[1].met, "ageha", "偵察の夜に会ったら面識を記録する");
+{
+  const chat = read("data/dialogue/ch2_preparation.json").dialogues.find((d) => d.dialogue_id === "remake_ch2_ageha_chat");
+  for (const d of [story.remake_ch2_ageha_scout, chat]) {
+    const cond = d.lines.find((l) => l.type === "condition" && l.flag === "_lime_contact_ageha");
+    assert(cond && d.branches[cond.next_false], `${d.dialogue_id}: 未交換の分岐`);
+    assert(d.branches[cond.next_false].some((l) => l.type === "set_flag" && l.flag === "_lime_contact_ageha"), d.dialogue_id);
+    assert(!d.lines.some((l) => l.type === "set_flag" && l.flag === "_lime_contact_ageha"), `${d.dialogue_id}: 交換済みなら交換し直さない`);
+    if (cond.next_true) assert(!d.branches[cond.next_true].some((l) => l.type === "set_flag"), d.dialogue_id);
+  }
+}
 assert(!night(2), "2日目は自由な夜");
 assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting", "ch2_strawberry_sample"]);
 // 9日目はMELTY PUFFではなくC.STATION柚ヶ谷店の客席（#929）。旧IDのまま読了フラグを引き継ぐ
@@ -54,14 +66,63 @@ for (const [index,id] of AGEHA_VISITS.entries()) {
 }
 assert.equal(agehaStoryScene({flags:{},affinity:{ageha:66}},3,{[AGEHA_VISITS[1]]:story[AGEHA_VISITS[1]]}),null,"欠落した前段を飛ばさない");
 
+// ♥3の分岐（#1988）: 「初めての客」の直後に恋愛／友情の二択。選択肢は返答の台詞だけで、関係名の札を付けない
+{
+  const q = story.ch2_ageha_bond_question;
+  assert(q?.lines?.length, "ch2_ageha_bond_question exists");
+  const ids = read("data/dialogue/ch2_ageha_story.json").dialogues.map((d) => d.dialogue_id);
+  assert.equal(ids.indexOf("ch2_ageha_bond_question"), ids.indexOf("remake_ch2_ageha_newcomer") + 1);
+  const choice = q.lines.find((l) => l.type === "choice");
+  assert.equal(choice.id, "bond_q1_ageha"); assert.equal(choice.romance_char, "ageha");
+  assert.deepEqual(choice.choices.map((c) => c.romance), [1, 0]);
+  for (const c of choice.choices) {
+    assert(q.branches[c.next]?.length, c.next);
+    assert.doesNotMatch(c.text, /恋愛|友情|友達として/, "no relationship labels on the choice");
+    assert([...c.text].reduce((n, ch) => n + (ch.charCodeAt(0) < 128 ? .5 : 1), 0) <= 26, c.text);
+  }
+  const all = [...q.lines, ...Object.values(q.branches).flat()];
+  assert(!all.some((l) => l.type === "apply" || l.type === "set_flag"), "the answer is the only record");
+  assert.doesNotMatch(all.map((l) => l.text || "").join("\n"), /大会|本番|いよいよ/, "no tournament-bound wording");
+}
+
+// ♥5（#2023）: 白・赤のグミベアの試作が最後の通う回で、味の会話を兼ねる。締めくくりは専用ハガルを渡し、大会の前後で分岐する
+{
+  assert.equal(AGEHA_VISITS.at(-1), "remake_ch2_ageha_gummy");
+  const gummy = story.remake_ch2_ageha_gummy;
+  assert.deepEqual(gummy.metadata.flavor_lesson, { white_gummy_bear: 1, red_gummy_bear: 1 });
+  const choice = gummy.lines.find((l) => l.type === "choice");
+  for (const c of choice.choices) assert(gummy.branches[c.next]?.length, c.next);
+  assert(gummy.lines.some((l) => l.type === "condition" && l.flag === "_ch2_ageha_secret" && gummy.branches[l.next_true]));
+  const gummyText = [...gummy.lines, ...Object.values(gummy.branches).flat()].map((l) => l.text || "").join("\n");
+  assert.doesNotMatch(gummyText, /大会|本番|いよいよ|病院/, "大会の前後どちらでも読め、病気の理由を先取りしない");
+
+  const finale = story.ch2_ageha_bond_finale;
+  assert.equal(finale.metadata.bond_finale, "ageha");
+  const when = finale.lines.find((l) => l.type === "condition" && l.condition_type === "tournament_finished");
+  assert.equal(when.tournament_chapter, 2);
+  assert(finale.branches[when.next_true]?.length && finale.branches[when.next_false]?.length, "大会前／大会後");
+  assert.doesNotMatch(finale.branches[when.next_true].map((l) => l.text || "").join("\n"), /大会前|いよいよ|明日/);
+  const route = finale.lines.find((l) => l.type === "condition" && l.condition_type === "romance_open");
+  assert.equal(route.char_id, "ageha");
+  assert(finale.branches[route.next_true]?.length && finale.branches[route.next_false]?.length);
+  const all = [...finale.lines, ...Object.values(finale.branches).flat()];
+  assert(!all.some((l) => l.type === "choice"), "方向は♥3の答えで決まり、最後の質問を置かない");
+  assert(!all.some((l) => l.type === "set_flag"), "受け取りと記録は bonds.js の playFinale だけ");
+  const gift = read("data/equipment.json").equipment.find((e) => e.id === "suyaki_ageha");
+  assert.equal(gift.gift.from, "ageha"); assert.equal(gift.gift.flavor, "white_gummy_bear");
+  assert(gift.unsellable && gift.not_for_sale);
+}
+
 // 答え合わせ: 2回当てたら試煙会で不安を話す
 const flags = { _ch2_vibes_hit_scout: true };
 assert.equal(syncAgehaVibes(flags), 1); assert(!flags._ch2_vibes_understood);
 flags._ch2_vibes_hit_magazine = true;
 assert.equal(syncAgehaVibes(flags), 2); assert(flags._ch2_vibes_understood);
 
-// 各回の答え合わせ: 選択肢の行き先がそろい、当たりの枝だけが当たりの印を付ける
-for (const id of ["remake_ch2_ageha_scout", ...AGEHA_VISITS]) {
+// 各回の答え合わせ: 選択肢の行き先がそろい、当たりの枝だけが当たりの印を付ける（♥5のグミベアの回は答え合わせではない）
+const vibesVisits = AGEHA_VISITS.filter((id) => id !== "remake_ch2_ageha_gummy");
+assert.deepEqual(vibesVisits, ["remake_ch2_ageha_gyaru", "remake_ch2_ageha_newcomer", "remake_ch2_ageha_magazine"]);
+for (const id of ["remake_ch2_ageha_scout", ...vibesVisits]) {
   const d = story[id];
   const choice = d.lines.find((l) => l.type === "choice");
   for (const c of choice.choices) assert(d.branches[c.next], `${id}: ${c.next}`);

@@ -52,6 +52,13 @@
 }
 @keyframes kj-rainbow { to { background-position: 300% 0; } }
 .kuji-card.rank-C .kuji-rank, .kuji-card.rank-B .kuji-rank { color: #cfd6e6; text-shadow: none; }
+.kuji-multi { cursor: default; padding: 20px; }
+.kuji-multi-panel { width: min(760px, 100%); max-height: 100%; padding: 20px; overflow-y: auto; text-align: center; color: var(--text); background: #1c1427; border: 1px solid var(--gold); border-radius: 10px; }
+.kuji-multi-panel h2 { margin: 0 0 14px; color: var(--gold-hi); }
+.kuji-multi-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 18px; }
+.kuji-card.kuji-short { width: auto; min-height: 94px; padding: 12px; }
+.kuji-short .kuji-rank { font-size: 28px; }
+.kuji-short .kuji-name { font-size: 14px; }
 
 /* ---- ギャラリー ---- */
 .gal-overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5, 4, 10, 0.78); backdrop-filter: blur(3px); }
@@ -130,3 +137,8 @@
 @media (max-width: 600px) {
   .gal-viewer-tools strong { flex-basis: 100%; }
 }
+.kuji-card.kuji-short { transition: transform .22s ease, filter .22s ease; }
+.kuji-card.kuji-facedown { transform: rotateY(180deg); filter: brightness(.35); }
+.kuji-card.kuji-facedown > * { visibility: hidden; }
+.kuji-flip-all { margin-right: 8px; }
+@media (prefers-reduced-motion: reduce) { .kuji-card.kuji-short { transition: none; } }

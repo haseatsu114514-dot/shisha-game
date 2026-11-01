@@ -54,6 +54,7 @@ function prepare(options = {}) {
   };
   const box = state.kuji[grade];
   if (options.last) box.drawn = box.order.length - 1;
+  if (options.remaining) box.drawn = box.order.length - options.remaining;
   if (options.empty) { box.drawn = box.order.length; box.emptyDay = state.day; }
   if (options.money != null) state.money = options.money;
   paint(); saves = moneyEvents = flavorGrants = renders = 0;
@@ -74,6 +75,9 @@ async function finish() {
 }
 window.K = {prepare, snapshot, finish, forceOld:()=>force(old),
   click:()=>old.click(), repaint:paint,
+  batch:(grade, count)=>root.querySelector('[data-test="kuji-' + grade + '-' + count + '"]')?.click(),
+  batchResults:()=>[...layers.modal.querySelectorAll('.kuji-short')].map(card=>card.textContent),
+  finishBatch:()=>layers.modal.querySelector('.kuji-multi-panel button')?.click(),
   burst:()=>{for(let i=0;i<5;i++) force(old);},
   reenter:()=>{reentry=()=>force(root.querySelector('[data-test="kuji-g1000"]'));},
   crossGrade:()=>force(root.querySelector('[data-test="kuji-g1000"]')),
@@ -204,6 +208,27 @@ try {
     assert.deepEqual((await run("K.load()")).state,after.state,'legacy box survives real load');
   }
   console.log("PASS legacy 20/12-ticket order and save-load");
+  for (const count of [5, 10]) {
+    const before = await run("K.prepare({grade:'g500'})");
+    await run(`K.batch('g500', ${count}); K.batch('g500', ${count});`);
+    const bought = await run("K.snapshot()");
+    assert.equal(bought.state.kuji.g500.drawn, count);
+    assert.equal(bought.state.money, before.state.money - 500 * count);
+    assert.equal(bought.saves, count, "every ticket saved immediately");
+    assert.equal((await run("K.batchResults()")).length, count);
+    await run("K.finishBatch()");
+    assert.equal((await run("K.snapshot()")).overlays, 0, "batch result closes");
+    assert.deepEqual((await run("K.load()")).state, bought.state, "batch survives real save/load");
+  }
+  const beforeLastBatch = await run("K.prepare({grade:'g500',remaining:3})");
+  await run("K.batch('g500', 5)");
+  const lastBatch = await run("K.snapshot()");
+  assert.equal(lastBatch.state.kuji.g500.drawn, beforeLastBatch.state.kuji.g500.drawn + 3);
+  assert.equal(lastBatch.state.money, beforeLastBatch.state.money - 1500);
+  assert.equal(lastBatch.state.owned.filter(id=>id==='nightside_premier_hagal').length, 1);
+  assert.equal(lastBatch.saves, 3);
+  assert.equal((await run("K.batchResults()")).length, 4, "last-one appears beside three tickets");
+  console.log("PASS 5/10 batch charge, immediate saves, last-one result and load");
   console.log("PASS kuji purchase guard (isolated real DOM; turbo reveal; actual state save/load)");
 } finally {
   clearTimeout(watchdog); child.kill(); await exited;

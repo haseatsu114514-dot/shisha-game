@@ -23,19 +23,19 @@
 }
 .axe-menu *, .axe-menu button { touch-action: pan-y !important; }
 .axe-menu-masthead { grid-area: masthead; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--menu-line); }
-.axe-menu .axe-eyebrow { display: flex; align-items: center; gap: 10px; color: #e1ceb1; font-size: 12px; letter-spacing: .08em; }
+.axe-menu .axe-eyebrow { display: flex; align-items: center; gap: 10px; color: #e1ceb1; font-size: 12px; letter-spacing: .02em; }
 .axe-menu-mark { position: relative; width: 20px; height: 20px; border: 1px solid var(--menu-amber); border-radius: 50%; box-shadow: inset 0 0 0 4px #161714, inset 0 0 0 5px var(--menu-amber); }
 .axe-menu-mark::after { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: var(--menu-amber); }
-.axe-menu-lounge { color: #c9b69a; font-size: 10px; letter-spacing: .2em; }
+.axe-menu-lounge { color: #c9b69a; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 .axe-menu h1 { grid-area: title; margin: 2px 0 0; color: #fff6e6; font-size: clamp(48px, 7.4vw, 92px); font-weight: 900; line-height: 1.08; letter-spacing: -.035em; text-shadow: 0 4px 30px rgba(0, 0, 0, .3); }
 .axe-menu .axe-menu-message { grid-area: message; margin: 0; max-width: 30em; color: #e3d7c6; font-size: 18px; line-height: 1.65; }
 .axe-menu-guide { grid-area: guide; justify-self: end; width: min(380px, 100%); }
-.axe-menu-guide-label { display: block; margin-bottom: 8px; color: #ccbea9; font-size: 11px; letter-spacing: .04em; }
+.axe-menu-guide-label { display: block; margin-bottom: 8px; color: #ccbea9; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 .axe-menu .axe-menu-guide ol { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; padding: 0; list-style: none; line-height: 1; }
 .axe-menu-guide li { display: flex; align-items: center; gap: 10px; padding: 0 16px; border-left: 1px solid var(--menu-line); }
 .axe-menu-guide li:first-child { padding-left: 0; border-left: 0; }
-.axe-menu-guide li + li::before { content: "→"; margin-left: -23px; margin-right: 6px; color: #a18a68; font-size: 11px; }
-.axe-menu-guide li span { color: var(--menu-amber); font-size: 10px; font-variant-numeric: tabular-nums; }
+.axe-menu-guide li + li::before { content: "→"; margin-left: -23px; margin-right: 6px; color: #a18a68; font-size: 12px; font-weight: 700; }
+.axe-menu-guide li span { color: var(--menu-amber); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .axe-menu-guide li strong { font-size: 18px; font-weight: 700; }
 .axe-menu-modes { grid-area: modes; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 8px; }
 .axe-menu .axe-menu-mode {
@@ -58,8 +58,8 @@
 .axe-menu-mode::before { content: ""; position: absolute; top: 0; left: 22px; width: 32px; height: 2px; background: var(--menu-amber); }
 .axe-menu .axe-menu-mode[data-kind="practice"] { border-color: #e4b875; background: linear-gradient(125deg, rgba(81, 57, 31, .98), rgba(41, 34, 24, .97)); }
 .axe-menu-mode-top { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin-bottom: 20px; }
-.axe-menu-count { color: #d6b98c; font-size: 10px; font-weight: 700; letter-spacing: .12em; white-space: nowrap; }
-.axe-menu-tag { color: #c1b7a7; font-size: 10px; white-space: nowrap; }
+.axe-menu-count { color: #d6b98c; font-size: 12px; font-weight: 700; letter-spacing: .02em; white-space: nowrap; }
+.axe-menu-tag { color: #c1b7a7; font-size: 12px; font-weight: 700; white-space: nowrap; }
 .axe-menu-mode[data-kind="practice"] .axe-menu-tag { color: #f3cf96; }
 .axe-menu-mode-title { display: block; font-size: 24px; font-weight: 900; line-height: 1.35; letter-spacing: .01em; }
 .axe-menu-mode-description { display: block; margin-top: 6px; color: #c5baaa; font-size: 12px; line-height: 1.5; }
@@ -68,13 +68,13 @@
 .axe-menu-settings { grid-area: settings; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 12px 0; border-bottom: 1px solid var(--menu-line); }
 .axe-menu-setting { display: flex; align-items: center; gap: 16px; min-width: 0; }
 .axe-menu-setting + .axe-menu-setting { padding-left: 24px; border-left: 1px solid var(--menu-line); }
-.axe-menu-setting-label { color: #c0b29e; font-size: 11px; white-space: nowrap; }
+.axe-menu-setting-label { color: #c0b29e; font-size: 12px; font-weight: 700; white-space: nowrap; }
 .axe-menu .axe-menu-options { display: flex; flex-wrap: nowrap; gap: 6px; min-width: 0; }
 .axe-menu .axe-menu-options .axe-button { min-height: 40px; padding: 8px 13px; border: 1px solid #655b4b; border-radius: 3px; background: rgba(18, 21, 20, .75); color: #c9c0b1; font-size: 12px; white-space: nowrap; }
 .axe-menu .axe-menu-options .axe-button[aria-pressed="true"] { border-color: #d6ae70; background: rgba(117, 87, 45, .32); color: #ffe0aa; box-shadow: inset 0 -2px 0 #d6ae70; }
 .axe-menu-footer { grid-area: footer; display: flex; align-items: center; gap: 20px; min-width: 0; }
 .axe-menu .axe-back { padding: 10px 0; color: #d9c6a7; font-size: 12px; white-space: nowrap; text-decoration: none; }
-.axe-menu-tip { margin-left: auto; color: #b1a591; font-size: 11px; line-height: 1.5; }
+.axe-menu-tip { margin-left: auto; color: #b1a591; font-size: 12px; font-weight: 700; line-height: 1.5; }
 .axe-menu .axe-menu-rules { min-height: 40px; padding: 8px 14px; border: 1px solid #76644b; border-radius: 3px; background: rgba(18, 21, 20, .7); color: #e3c79f; font-size: 12px; white-space: nowrap; }
 .axe-menu .axe-menu-lesson { min-height: 40px; padding: 8px 14px; border: 1px solid #a18a63; border-radius: 3px; background: rgba(93, 65, 31, .5); color: #ffdfae; font-size: 12px; white-space: nowrap; }
 @media (hover: hover) {
@@ -87,12 +87,15 @@
   .axe-menu .axe-menu-mode { padding: 18px 16px; min-height: 182px; }
   .axe-menu-mode-top { flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
   .axe-menu-mode-title { font-size: 21px; }
-  .axe-menu-mode-description { font-size: 11px; }
+  .axe-menu-mode-description { font-size: 12px; font-weight: 700; }
   .axe-menu-mode-action { margin-top: 16px; }
   .axe-menu-settings { gap: 16px; }
   .axe-menu-setting { align-items: flex-start; flex-direction: column; gap: 8px; }
   .axe-menu-setting + .axe-menu-setting { padding-left: 16px; }
   .axe-menu-tip { max-width: 28em; }
+}
+@container (min-width: 601px) and (max-width: 900px) and (max-height: 650px) {
+  .axe-intro.axe-menu { row-gap: 8px; }
 }
 @container (max-width: 600px) and (min-height: 501px) {
   .axe-intro.axe-menu {
@@ -104,68 +107,68 @@
     background-position: center, center, 68% center;
   }
   .axe-menu-masthead { padding-bottom: 12px; }
-  .axe-menu .axe-eyebrow { font-size: 10px; gap: 8px; }
-  .axe-menu-lounge { font-size: 8px; letter-spacing: .12em; }
+  .axe-menu .axe-eyebrow { font-size: 12px; font-weight: 700; gap: 8px; }
+  .axe-menu-lounge { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
   .axe-menu h1 { margin-top: 2px; font-size: clamp(42px, 12.7vw, 66px); }
   .axe-menu .axe-menu-message { font-size: 14px; line-height: 1.5; }
   .axe-menu-guide { justify-self: stretch; width: 100%; padding-block: 7px; }
-  .axe-menu-guide-label { font-size: 10px; margin-bottom: 10px; }
+  .axe-menu-guide-label { font-size: 12px; font-weight: 700; margin-bottom: 10px; }
   .axe-menu-guide li { gap: 12px; }
   .axe-menu-guide li strong { font-size: 17px; }
   .axe-menu-modes { grid-template-columns: 1fr; gap: 9px; margin-top: 0; }
   .axe-menu .axe-menu-mode { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "top top" "title action" "description action"; gap: 0 12px; min-height: 107px; padding: 14px 16px; }
   .axe-menu-mode::before { left: 16px; width: 24px; }
   .axe-menu-mode-top { grid-area: top; flex-wrap: nowrap; margin-bottom: 7px; }
-  .axe-menu-count { font-size: 9px; }
-  .axe-menu-tag { font-size: 9px; }
+  .axe-menu-count { font-size: 12px; font-weight: 700; }
+  .axe-menu-tag { font-size: 12px; font-weight: 700; }
   .axe-menu-mode-title { grid-area: title; font-size: 21px; }
-  .axe-menu-mode-description { grid-area: description; margin-top: 3px; font-size: 11px; }
+  .axe-menu-mode-description { grid-area: description; margin-top: 3px; font-size: 12px; font-weight: 700; }
   .axe-menu-mode-action { grid-area: action; align-self: center; margin-top: 0; padding-top: 0; border: 0; }
   .axe-menu-mode-action > span:first-child { display: none; }
   .axe-menu-mode-action > span:last-child { font-size: 26px; }
   .axe-menu-settings { grid-template-columns: 1fr; gap: 10px; padding-block: 3px 12px; }
   .axe-menu-setting { flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
   .axe-menu-setting + .axe-menu-setting { padding-left: 0; border: 0; }
-  .axe-menu-setting-label { font-size: 10px; }
+  .axe-menu-setting-label { font-size: 12px; font-weight: 700; }
   .axe-menu .axe-menu-options { gap: 4px; }
-  .axe-menu .axe-menu-options .axe-button { min-height: 38px; padding: 8px 9px; font-size: 11px; }
+  .axe-menu .axe-menu-options .axe-button { min-height: 38px; padding: 8px 9px; font-size: 12px; font-weight: 700; }
   .axe-menu-footer { flex-wrap: wrap; justify-content: space-between; gap: 5px 12px; }
-  .axe-menu .axe-menu-lesson { order: -1; flex: 0 0 100%; min-height: 38px; font-size: 11px; }
-  .axe-menu-tip { order: 1; flex: 0 0 100%; margin: 2px 0 0; font-size: 10px; }
-  .axe-menu .axe-menu-rules { min-height: 38px; font-size: 11px; }
+  .axe-menu .axe-menu-lesson { order: -1; flex: 0 0 100%; min-height: 38px; font-size: 12px; font-weight: 700; }
+  .axe-menu-tip { order: 1; flex: 0 0 100%; margin: 2px 0 0; font-size: 12px; font-weight: 700; }
+  .axe-menu .axe-menu-rules { min-height: 38px; font-size: 12px; font-weight: 700; }
 }
 @container (max-height: 500px) {
-  .axe-intro.axe-menu { grid-template-areas: "masthead masthead" "title guide" "message message" "modes modes" "settings settings" "footer footer"; padding: 12px 24px; gap: 7px 24px; align-content: safe center; }
+  .axe-intro.axe-menu { grid-template-areas: "masthead masthead" "title guide" "message message" "modes modes" "settings settings" "footer footer"; padding: 8px 24px; gap: 4px 24px; align-content: safe center; }
   .axe-menu-masthead { padding-bottom: 7px; }
-  .axe-menu .axe-eyebrow { font-size: 10px; }
+  .axe-menu .axe-eyebrow { font-size: 12px; font-weight: 700; }
   .axe-menu-mark { width: 15px; height: 15px; box-shadow: inset 0 0 0 3px #161714, inset 0 0 0 4px var(--menu-amber); }
   .axe-menu-mark::after { inset: 6px; }
   .axe-menu h1 { margin: 0; font-size: 44px; }
   .axe-menu .axe-menu-message { font-size: 12px; line-height: 1.4; }
   .axe-menu-guide { max-width: 290px; }
-  .axe-menu-guide-label { margin-bottom: 7px; font-size: 9px; }
+  .axe-menu-guide-label { margin-bottom: 7px; font-size: 12px; font-weight: 700; }
   .axe-menu-guide li { gap: 7px; }
   .axe-menu-guide li strong { font-size: 16px; }
   .axe-menu .axe-menu-modes { gap: 10px; margin-top: 0; }
-  .axe-menu .axe-menu-mode { min-height: 117px; padding: 12px 14px; }
+  .axe-menu .axe-menu-mode { min-height: 117px; padding: 8px 14px; }
   .axe-menu-mode::before { left: 14px; width: 24px; }
   .axe-menu-mode-top { flex-wrap: nowrap; margin-bottom: 8px; }
-  .axe-menu-count { font-size: 8px; letter-spacing: .08em; }
-  .axe-menu-tag { font-size: 8px; }
+  .axe-menu-count { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+  .axe-menu-tag { font-size: 12px; font-weight: 700; }
   .axe-menu-mode-title { font-size: 20px; }
-  .axe-menu-mode-description { margin-top: 3px; font-size: 10px; }
-  .axe-menu-mode-action { margin-top: 8px; padding-top: 6px; font-size: 10px; }
+  .axe-menu-mode-description { margin-top: 3px; font-size: 12px; font-weight: 700; }
+  .axe-menu-mode-action { margin-top: 8px; padding-top: 6px; font-size: 12px; font-weight: 700; }
   .axe-menu-mode-action > span:last-child { font-size: 16px; }
   .axe-menu-settings { gap: 16px; padding: 3px 0 7px; }
   .axe-menu-setting { flex-direction: row; align-items: center; gap: 10px; }
-  .axe-menu-setting-label { font-size: 9px; }
+  .axe-menu-setting-label { font-size: 12px; font-weight: 700; }
   .axe-menu .axe-menu-options { gap: 4px; }
-  .axe-menu .axe-menu-options .axe-button { min-height: 34px; padding: 6px 10px; font-size: 10px; }
+  .axe-menu .axe-menu-options .axe-button { min-height: 34px; padding: 6px 10px; font-size: 12px; font-weight: 700; }
   .axe-menu-footer { gap: 14px; }
-  .axe-menu .axe-back { padding: 5px 0; font-size: 10px; }
-  .axe-menu-tip { margin-left: auto; max-width: none; font-size: 9px; }
-  .axe-menu .axe-menu-rules { min-height: 30px; padding: 6px 12px; font-size: 10px; }
-  .axe-menu .axe-menu-lesson { min-height: 30px; padding: 6px 12px; font-size: 10px; }
+  .axe-menu .axe-back { padding: 5px 0; font-size: 12px; font-weight: 700; }
+  .axe-menu-tip { margin-left: auto; max-width: none; font-size: 12px; font-weight: 700; }
+  .axe-menu .axe-menu-rules { min-height: 30px; padding: 6px 12px; font-size: 12px; font-weight: 700; }
+  .axe-menu .axe-menu-lesson { min-height: 30px; padding: 6px 12px; font-size: 12px; font-weight: 700; }
 }
 @container (max-width: 360px) and (min-height: 501px) {
   .axe-intro.axe-menu { padding-inline: 14px; gap: 10px; }
@@ -292,8 +295,10 @@
   .axe-menu .axe-menu-options .axe-button { padding-inline: 10px; }
 }
 @container (max-height: 500px) {
-  .axe-menu-masthead { padding: 7px 12px; }
-  .axe-menu h1 { padding: 8px 64px 10px 18px; font-size: 38px; }
+  /* Keep the decorated entrance inside short landscape screens, including
+     the footer and the 44px settings/lesson/rules controls. */
+  .axe-menu-masthead { padding: 5px 12px; }
+  .axe-menu h1 { padding: 6px 64px 8px 18px; font-size: 38px; }
   .axe-menu h1::after { width: 42px; height: 42px; right: 12px; }
   .axe-menu-mode-top { padding: 4px 7px; }
   .axe-menu-mode-action { padding: 6px 8px; }

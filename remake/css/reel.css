@@ -346,7 +346,7 @@
 .rn-history .k-reg b { color: #6cc0ff; }
 .rn-history .k-freeze b { color: #ffd75e; }
 .rn-history span { text-align: right; padding-right: 12px; font-variant-numeric: tabular-nums; }
-.rn-history .rn-ren { display: inline-block; margin-left: 4px; padding: 0 3px; border: 1px solid currentColor; border-radius: 3px; font-size: 10px; line-height: 1.2; letter-spacing: 0; vertical-align: middle; }
+.rn-history .rn-ren { display: inline-block; margin-left: 4px; padding: 0 3px; border: 1px solid currentColor; border-radius: 3px; font-size: 12px; font-weight: 700; line-height: 1.2; letter-spacing: 0; vertical-align: middle; }
 .rn-history small { color: #a99cbc; }
 .rn-hall { margin: 0; padding: 0; list-style: none; font-size: 15px; color: #ffd75e; }
 .rn-empty, .rn-setting { margin: 0; font-size: 14px; line-height: 1.6; color: #cfc3dd; }
@@ -356,7 +356,7 @@
 .rn-guide-list b { color: var(--gold); letter-spacing: 0.06em; }
 .ri-panel.sys { border-color: rgba(191, 230, 255, 0.6); }
 .ri-panel.sys .ri-app { color: #bfe6ff; }
-.rn-hint-head { margin: 8px 0 2px; font-size: 13px; font-weight: 700; color: #bfe6ff; letter-spacing: 0.06em; }
+.rn-hint-head { margin: 8px 0 2px; font-size: 13px; font-weight: 700; color: #bfe6ff; letter-spacing: .02em; }
 .rn-hint-head.past, .rn-hints.past { color: #8f86a0; }
 .rn-hints { margin: 4px 0 0; padding: 0; list-style: none; font-size: 14px; line-height: 1.6; color: #bfe6ff; }
 @media (max-width: 640px) {

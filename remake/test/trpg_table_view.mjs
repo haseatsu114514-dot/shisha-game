@@ -156,7 +156,7 @@ function cardDeclarations(width, height) {
   rules.sort((a, b) => { for (let i = 0; i < 3; i++) if (a.specificity[i] !== b.specificity[i]) return a.specificity[i] - b.specificity[i]; return 0; });
   return Object.assign({}, ...rules.map(r => r.declarations));
 }
-for (const [width, height, size] of [[1280, 720, '10px'], [1001, 720, '10px'], [1000, 720, '0'], [844, 390, '0'], [390, 844, '0']]) {
+for (const [width, height, size] of [[1280, 720, '12px'], [1001, 720, '12px'], [1000, 720, '0'], [844, 390, '0'], [390, 844, '0']]) {
   test(`clue card cascade ${width}x${height}`, () => {
     const styles = cardDeclarations(width, height);
     assert.equal(styles.color, '#273d3a', 'Dark card text must beat inherited pocket text');

@@ -368,6 +368,30 @@
       "thumbnail": "media/3d1be37becf76aaeda73578ff5e8c17bc8092cc0ff7b5f654e4eb169cb7b623b-thumb.webp"
     },
     {
+      "id": "dffd1904ccfc0223e0e153bc955eff27e9e03f2da147e70d106fb86e9d36981f",
+      "sha256": "dffd1904ccfc0223e0e153bc955eff27e9e03f2da147e70d106fb86e9d36981f",
+      "character": "mashiro",
+      "label": "title_art_mashiro_05_rooftop_dusk_yawn",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_mashiro_05_rooftop_dusk_yawn.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/dffd1904ccfc0223e0e153bc955eff27e9e03f2da147e70d106fb86e9d36981f.webp",
+      "thumbnail": "media/dffd1904ccfc0223e0e153bc955eff27e9e03f2da147e70d106fb86e9d36981f-thumb.webp"
+    },
+    {
       "id": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
       "sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
       "character": "mashiro",
@@ -509,6 +533,30 @@
       "related": [],
       "image": "media/b7aacbe1a029e21bc99da46dee4e730db0606df716c6148593c6c3ac7bffb2ff.webp",
       "thumbnail": "media/b7aacbe1a029e21bc99da46dee4e730db0606df716c6148593c6c3ac7bffb2ff-thumb.webp"
+    },
+    {
+      "id": "aa20723f929794f63668eb0cf44db584b256c1f64644535fb4c1e222639cd8f6",
+      "sha256": "aa20723f929794f63668eb0cf44db584b256c1f64644535fb4c1e222639cd8f6",
+      "character": "minto",
+      "label": "title_art_minto_07_balcony_mint",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_minto_07_balcony_mint.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/aa20723f929794f63668eb0cf44db584b256c1f64644535fb4c1e222639cd8f6.webp",
+      "thumbnail": "media/aa20723f929794f63668eb0cf44db584b256c1f64644535fb4c1e222639cd8f6-thumb.webp"
     },
     {
       "id": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
@@ -797,6 +845,30 @@
       "thumbnail": "media/68069f432237be2a9e40d209fbc71aefbf6f7d8ee874ed0ec80e60412f26c802-thumb.webp"
     },
     {
+      "id": "2029749c427c785d90b0f6907ad98d1c651c9ecd5618593462bf4ee9a3166051",
+      "sha256": "2029749c427c785d90b0f6907ad98d1c651c9ecd5618593462bf4ee9a3166051",
+      "character": "samechan",
+      "label": "title_art_samechan_05_rainy_splash",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_samechan_05_rainy_splash.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/2029749c427c785d90b0f6907ad98d1c651c9ecd5618593462bf4ee9a3166051.webp",
+      "thumbnail": "media/2029749c427c785d90b0f6907ad98d1c651c9ecd5618593462bf4ee9a3166051-thumb.webp"
+    },
+    {
       "id": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
       "sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
       "character": "samechan",
@@ -911,6 +983,30 @@
       "related": [],
       "image": "media/f4ce7823a49506defe7e2d91d9be6056f29a17b982d9b5c23b6e4287ac4b377e.webp",
       "thumbnail": "media/f4ce7823a49506defe7e2d91d9be6056f29a17b982d9b5c23b6e4287ac4b377e-thumb.webp"
+    },
+    {
+      "id": "25ffd1077e42537f71f66b179743307431ca3c66e10aaa31683507c572045ff2",
+      "sha256": "25ffd1077e42537f71f66b179743307431ca3c66e10aaa31683507c572045ff2",
+      "character": "sumi",
+      "label": "title_art_sumi_02_coal_tending",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_sumi_02_coal_tending.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/25ffd1077e42537f71f66b179743307431ca3c66e10aaa31683507c572045ff2.webp",
+      "thumbnail": "media/25ffd1077e42537f71f66b179743307431ca3c66e10aaa31683507c572045ff2-thumb.webp"
     },
     {
       "id": "a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab",
@@ -3068,10 +3164,10 @@
     ]
   },
   "summary": {
-    "originalPaths": 130,
-    "uniqueArt": 108,
+    "originalPaths": 134,
+    "uniqueArt": 112,
     "duplicatePaths": 22,
-    "current": 37,
+    "current": 41,
     "missingHistoricalSlots": [
       {
         "slot": "ageha01",

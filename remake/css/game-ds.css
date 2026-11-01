@@ -31,7 +31,7 @@ body.game-ds .game-layout-toolbar:not([open]) summary { min-height: 30px !import
   top: calc(var(--ds-cy) - var(--ds-hinge) / 2 - 16px) !important; border-radius: 16px;
 }
 :root[data-ds-layout="stacked"] body.game-ds .game-layout-toolbar:not([open]) summary {
-  min-height: 30px !important; padding: 5px 12px !important; font-size: 11px; line-height: 18px;
+  min-height: 30px !important; padding: 5px 12px !important; font-size: 12px; font-weight: 700; line-height: 18px;
 }
 body.game-ds .game-layout-toolbar:not([open]) summary::before { content: "⚙ "; }
 
@@ -86,7 +86,7 @@ body.game-ds .hud-card::before, body.game-ds .hud-card::after { display: none; }
 body.game-ds .dc-main { display: flex; align-items: baseline; gap: 4px; width: auto; min-width: 0; flex: none; padding: 0; background: none; border: 0; }
 body.game-ds .dc-area { display: none; }
 body.game-ds .dc-day { font-family: var(--ds-dot); font-size: 12px; color: var(--ds-dim); }
-body.game-ds .dc-day::before { content: "DAY "; font-size: 11px; }
+body.game-ds .dc-day::before { content: "DAY "; font-size: 12px; font-weight: 700; }
 body.game-ds .dc-day b { font-size: 18px; color: var(--ds-gold-hi); }
 body.game-ds .dc-slot { font-family: var(--ds-dot); font-size: 14px; padding: 0 0 0 2px; background: none; border: 0; }
 body.game-ds .dc-meta { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 10px; flex: 1; min-width: 0; margin: 0; }
@@ -115,7 +115,7 @@ body.game-ds .hud-level svg { width: 22px; height: 22px; }
 body.game-ds .hud-level::before { display: none; }
 body.game-ds .hud-level::after {
   content: "ステータス"; position: static; width: auto; height: auto; border: 0; background: none;
-  font-size: 11px; line-height: 1; color: var(--ds-text);
+  font-size: 12px; font-weight: 700; line-height: 1; color: var(--ds-text);
 }
 body.game-ds .hud-lime { font-size: 13px; }
 body.game-ds .hud-menu { font-size: 14px; letter-spacing: .06em; }
@@ -156,7 +156,7 @@ body.game-ds .vn-controls {
   display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; padding: 0; background: none; border: 0; transform: none;
 }
 body.game-ds .vn-ctl {
-  min-height: 44px; height: 100%; padding: 0; font-size: 13px; letter-spacing: .04em; border-radius: 8px;
+  min-height: 44px; height: 100%; padding: 0; font-size: 13px; letter-spacing: .02em; border-radius: 8px;
   background: linear-gradient(#2c2238, #1c1526); border: 1px solid #e8c27a3d;
 }
 body.game-ds .vn-log { inset: auto; left: var(--ds-cx); top: var(--ds-cy); width: var(--ds-cw); height: calc(var(--ds-ch) - var(--ds-touchbar)); transform: none; font-size: 17px; }
@@ -214,10 +214,6 @@ body.game-ds :is(.map-notice, .map-guide) {
   left: calc(var(--ds-vx) + 8px); top: auto; right: auto; bottom: calc(100% - var(--ds-vy) - var(--ds-vh) + 8px);
   width: calc(var(--ds-vw) - 16px); max-height: 110px; overflow: auto; font-size: 14px; transform: none;
 }
-body.game-ds .map-walk {
-  left: auto; right: calc(100% - var(--ds-vx) - var(--ds-vw) + 8px); top: calc(var(--ds-vy) + var(--ds-vh) - 52px); bottom: auto;
-  min-height: 44px; padding: 8px 12px; font-size: 14px;
-}
 /* 上画面の全体図に打つ点（map.js が描く。通常版では出さない） */
 .ds-map-markers { display: none; }
 /* 地図画像（16:9）を上画面に全体表示し、上下の帯はHUDと余白に使う。点は画像の範囲に合わせる。 */
@@ -258,7 +254,7 @@ body.game-ds .bench-top {
 /* DSでは上部バーが狭いので下画面の右上へ。右端の「？」ガイド（34px）を避けて、その左に置く。 */
 body.game-ds .bench-appearance-button { position: fixed; left: auto; right: calc(100% - var(--ds-cx) - var(--ds-cw) + 56px); top: calc(var(--ds-cy) + 7px); z-index: 8; }
 body.game-ds .bench-appearance-dialog { left: calc(var(--ds-cx) + 8px); right: auto; top: calc(var(--ds-cy) + 8px); width: calc(var(--ds-cw) - 16px); height: calc(var(--ds-ch) - 16px); }
-body.game-ds .bench-mode { width: 74px; font-size: 10px; }
+body.game-ds .bench-mode { width: 74px; font-size: 12px; font-weight: 700; }
 body.game-ds .bench-progress { min-width: 0; overflow: auto; }
 body.game-ds .bench-progress-track { width: max-content; gap: 3px; }
 body.game-ds .bench .bench-progress-track > .bench-phase { min-width: 54px; max-width: 54px; height: 32px; gap: 2px; padding: 2px; }
@@ -366,7 +362,7 @@ body.game-ds .standings .tournament-heading {
   position: absolute; left: calc(var(--ds-vx) + 12px); top: calc(var(--ds-vy) + 10px); width: calc(var(--ds-vw) - 24px);
   display: block; padding-bottom: 6px;
 }
-body.game-ds .standings .tournament-eyebrow { font-size: 10px; letter-spacing: .14em; }
+body.game-ds .standings .tournament-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body.game-ds .standings .tournament-heading h1 { margin-top: 2px; font-size: 26px; }
 body.game-ds .standings .tournament-heading p { display: none; }
 body.game-ds .standings .sd-board {
@@ -380,7 +376,7 @@ body.game-ds .standings .sd-face { width: 34px; height: 34px; border-radius: 8px
 body.game-ds .standings .sd-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 body.game-ds .standings .sd-bar { height: 10px; }
 body.game-ds .standings .sd-points { font-size: 22px; }
-body.game-ds .standings .sd-points small { font-size: 10px; }
+body.game-ds .standings .sd-points small { font-size: 12px; font-weight: 700; }
 body.game-ds .judge-legend { gap: 10px; font-size: 14px; }
 body.game-ds .standings .judge-panel {
   position: absolute; left: calc(var(--ds-cx) + 10px); top: calc(var(--ds-cy) + 10px); width: calc(var(--ds-cw) - 20px);
@@ -393,7 +389,7 @@ body.game-ds .judge-name { font-size: 12px; white-space: nowrap; overflow: hidde
 body.game-ds .judge-pips { width: 100%; gap: 2px; }
 body.game-ds .judge-pips b { height: 7px; }
 body.game-ds .judge-left { font-size: 14px; }
-body.game-ds .judge-chip.held::after { right: 6px; top: 4px; font-size: 11px; }
+body.game-ds .judge-chip.held::after { right: 6px; top: 4px; font-size: 12px; font-weight: 700; }
 body.game-ds .standings .sd-status {
   position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); margin: 0;
   top: calc(var(--ds-cy) + 140px); font-size: 12px; padding: 6px 10px;
@@ -414,7 +410,7 @@ body.game-ds .nagumo-cut .nc-rays { left: var(--ds-vx); top: var(--ds-vy); width
 body.game-ds .nagumo-cut .tournament-heading {
   position: absolute; left: calc(var(--ds-cx) + 12px); top: calc(var(--ds-cy) + 8px); width: calc(var(--ds-cw) - 24px); padding-bottom: 6px;
 }
-body.game-ds .nagumo-cut .tournament-eyebrow { font-size: 10px; letter-spacing: .14em; }
+body.game-ds .nagumo-cut .tournament-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body.game-ds .nagumo-cut .tournament-heading h1 { margin-top: 2px; font-size: 24px; }
 body.game-ds .nagumo-cut .tournament-heading p { display: none; }
 body.game-ds .nagumo-cut .nc-bars {
@@ -436,7 +432,7 @@ body.game-ds .nc-stamp { left: calc(var(--ds-vx) + var(--ds-vw) * .3); top: calc
 
 /* カウント：上＝見出し・数字・リング、下＝4人のカード */
 body.game-ds .count-screen .tournament-heading { left: calc(var(--ds-vx) + 12px); top: calc(var(--ds-vy) + 10px); width: calc(var(--ds-vw) - 24px); }
-body.game-ds .count-screen .tournament-eyebrow { font-size: 10px; letter-spacing: .14em; }
+body.game-ds .count-screen .tournament-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body.game-ds .count-screen .tournament-heading h1 { font-size: 26px; }
 body.game-ds .count-screen .tournament-heading p { font-size: 12px; margin-top: 2px; }
 body.game-ds .count-screen::before { left: calc(var(--ds-vx) + var(--ds-vw) / 2); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); }
@@ -464,15 +460,15 @@ body.game-ds .result-table .rt-hero {
 body.game-ds .rt-emblem { width: 56px; height: 56px; }
 body.game-ds .rt-emblem b { font-size: 26px; }
 body.game-ds .rt-emblem small { font-size: 12px; letter-spacing: 0.02em; }
-body.game-ds .result-table .tournament-eyebrow { font-size: 9px; letter-spacing: .12em; }
+body.game-ds .result-table .tournament-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body.game-ds .result-table .tournament-heading h1 { font-size: 30px; }
-body.game-ds .result-table .tournament-heading p { font-size: 11px; margin-top: 0; }
+body.game-ds .result-table .tournament-heading p { font-size: 12px; font-weight: 700; margin-top: 0; }
 body.game-ds .result-table .rt-ranking {
   position: absolute; left: calc(var(--ds-vx) + 10px); top: calc(var(--ds-vy) + 78px); width: calc(var(--ds-vw) - 20px);
   height: calc(var(--ds-vh) - 86px); padding: 8px 10px; overflow: hidden;
 }
 body.game-ds .rt-ranking-head { margin-bottom: 6px; }
-body.game-ds .rt-ranking h2 { font-size: 11px; }
+body.game-ds .rt-ranking h2 { font-size: 12px; font-weight: 700; }
 body.game-ds .result-table .rt-rows { gap: 5px; }
 body.game-ds .result-table .rt-row { grid-template-columns: 40px 34px minmax(0, 1fr) 52px; min-height: 0; height: min(58px, calc((var(--ds-vh) - 140px) / 4)); padding: 4px 10px 4px 4px; column-gap: 8px; row-gap: 2px; }
 body.game-ds .result-table .rt-rank { width: 38px; height: 38px; font-size: 12px; }
@@ -489,7 +485,7 @@ body.game-ds .result-table .rt-detail h4 { font-size: 12px; margin-bottom: 0; }
 body.game-ds .result-table .rt-part { padding: 5px 8px 6px; font-size: 12px; }
 body.game-ds .result-table .rt-part b { font-size: 22px; }
 body.game-ds .result-table .rt-part.score b { font-size: 22px; }
-body.game-ds .result-table .rt-detail > small { font-size: 11px; }
+body.game-ds .result-table .rt-detail > small { font-size: 12px; font-weight: 700; }
 body.game-ds .result-table > .btn {
   position: absolute; left: calc(var(--ds-cx) + 10px); width: calc(var(--ds-cw) - 20px); min-width: 0;
   top: calc(var(--ds-cy) + var(--ds-ch) - 62px); min-height: 52px; font-size: 16px;
@@ -502,7 +498,7 @@ body.game-ds .result-table .rt-row { height: min(58px, calc((var(--ds-vh) - 128p
 body.game-ds .result-table .rt-ranking { overflow: auto; overscroll-behavior: contain; }
 @media (max-height: 640px) {
   body.game-ds .result-table .rt-row { height: auto; grid-template-columns: 30px 28px minmax(0, 1fr) 44px; padding: 3px 8px 3px 2px; }
-  body.game-ds .result-table .rt-rank { width: 30px; height: 30px; font-size: 10px; }
+  body.game-ds .result-table .rt-rank { width: 30px; height: 30px; font-size: 12px; font-weight: 700; }
   body.game-ds .result-table .rt-face { width: 28px; height: 28px; }
   body.game-ds .result-table .rt-name { font-size: 12px; }
   body.game-ds .result-table .rt-bar { height: 6px; }
@@ -524,7 +520,7 @@ body.game-ds .hud-exp .hx-lv { min-width: 0; }
   top: calc(var(--ds-cy) - var(--ds-hinge) / 2 - 11px) !important; border-radius: 11px;
 }
 :root[data-ds-layout="stacked"] body.game-ds .game-layout-toolbar:not([open]) summary {
-  min-height: 22px !important; padding: 2px 8px !important; font-size: 11px; line-height: 16px;
+  min-height: 22px !important; padding: 2px 8px !important; font-size: 12px; font-weight: 700; line-height: 16px;
 }
 :root[data-ds-layout="stacked"] body.game-ds .game-layout-toolbar[open] { top: calc(var(--ds-cy) + 6px) !important; }
 
@@ -575,7 +571,7 @@ body.game-ds .mi-go { min-height: 40px; font-size: 16px; }
 /* 制作：工程バーの文字を重ねない。モード名は1行、工程名は小さく、矢印は出さない。 */
 body.game-ds .bench-top { gap: 4px; padding: 4px 6px; }
 body.game-ds .bench-mode {
-  width: auto; max-width: 64px; font-size: 9px; letter-spacing: .06em; line-height: 1.1;
+  width: auto; max-width: 64px; font-size: 12px; font-weight: 700; letter-spacing: .02em; line-height: 1.1;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 body.game-ds .bench-top .bench-mode small { display: none; }
@@ -591,14 +587,14 @@ body.game-ds .bench .bench-progress-track > .bench-phase:not(.now) { flex: 1 1 0
 body.game-ds .bench .bench-progress-track > .bench-phase.now { flex: 0 0 auto; max-width: 40%; }
 body.game-ds .bench .bench-progress-track > .bench-phase.now .bench-phase-copy b { overflow: visible; }
 body.game-ds .bench-phase-copy { gap: 0; }
-body.game-ds .bench-phase-copy small { font-size: 9px; line-height: 1; }
-body.game-ds .bench-phase-copy b { font-size: 10px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+body.game-ds .bench-phase-copy small { font-size: 12px; font-weight: 700; line-height: 1; }
+body.game-ds .bench-phase-copy b { font-size: 12px; font-weight: 700; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 body.game-ds .bench-top .bench-progress { padding-right: 0; overflow: hidden; }
 
 /* 「外観を選ぶ」は小さな札にして下画面の右上へ。下の中身は札ぶん下げる。 */
 body.game-ds .bench-appearance-button {
   left: auto; right: calc(100% - var(--ds-cx) - var(--ds-cw) + 8px); top: calc(var(--ds-cy) + 6px);
-  min-height: 30px; padding: 4px 10px; font-size: 12px; letter-spacing: .04em;
+  min-height: 30px; padding: 4px 10px; font-size: 12px; letter-spacing: .02em;
 }
 body.game-ds .bench-right, body.game-ds .bench[data-step] .bench-right { padding-top: 42px; }
 
@@ -613,7 +609,7 @@ body.game-ds .bench[data-step="setup"] .craft-water { width: 100%; padding: 4px 
 body.game-ds .bench[data-step="setup"] .craft-water-display { gap: 14px; align-items: center; }
 body.game-ds .bench[data-step="setup"] .craft-water-meter { flex: 0 0 72px; height: clamp(104px, calc(var(--ds-ch) * .3), 150px); }
 body.game-ds .bench[data-step="setup"] .craft-water-display p { font-size: 12px; line-height: 1.35; margin: 4px 0 0; }
-body.game-ds .bench[data-step="setup"] .craft-water > p { font-size: 11px; line-height: 1.3; margin: 4px 0 0; color: var(--ds-dim); }
+body.game-ds .bench[data-step="setup"] .craft-water > p { font-size: 12px; font-weight: 700; line-height: 1.3; margin: 4px 0 0; color: var(--ds-dim); }
 body.game-ds .bench[data-step="setup"] .craft-water-status { font-size: 14px; }
 body.game-ds .bench[data-step="setup"] .craft-water-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
 body.game-ds .bench[data-step="setup"] .craft-water-actions .btn:last-child { grid-column: 1 / -1; }
@@ -644,7 +640,7 @@ body.game-ds .bench .bench-progress-track > .bench-phase { flex: 1 1 0; min-widt
 body.game-ds .bench .bench-progress-track > .bench-phase:not(.now) .bench-phase-icon { display: block; width: 18px; height: 20px; }
 body.game-ds .bench .bench-progress-track > .bench-phase:not(.now) .bench-phase-copy b { display: none; }
 body.game-ds .bench .bench-progress-track > .bench-phase.now { flex: 0 0 auto; max-width: 44%; padding: 2px 8px; }
-body.game-ds .bench-phase-copy small { font-size: 10px; }
+body.game-ds .bench-phase-copy small { font-size: 12px; font-weight: 700; }
 /* 師匠の顔: 80px幅の切り取り（audience.js）を崩さず、箱ごと縮める。 */
 body.game-ds .bench-left .audience-single .audience-people { width: 84px; height: auto; padding: 4px; zoom: .72; }
 body.game-ds .bench-left .audience-face { width: 100%; height: 56px; border-radius: 8px; }
@@ -662,3 +658,31 @@ body.game-ds .dodge-action .refresh-copy, body.game-ds .precision-copy .refresh-
 /* 配合の温度計: 「低め／高め」の細かい行は省く（緑の帯と「おいしい範囲」で足りる）。 */
 body.game-ds .mix-temperature-legend > :nth-child(2) { display: none; }
 body.game-ds .bench[data-step="mix"] .mix-footer > .btn { white-space: nowrap; }
+
+/* ================================================================ 2026-10-30 残課題の対応（オーナー「判断は任せる」）
+   1) 地図の上下の帯: 地図は全体表示（ピンの位置を崩さない）のまま、帯は同じ地図をぼかして暗くした絵で埋める。
+      要素自身の背景は大きさ0で隠し、::before にぼかし（全面）、::after に全体表示を描く。 */
+body.game-ds[data-ds-view="map"] #bg .bg-img { background-size: 0 0; }
+body.game-ds[data-ds-view="map"] #bg .bg-img::before,
+body.game-ds[data-ds-view="map"] #bg .bg-img::after {
+  content: ""; position: absolute; pointer-events: none; background-image: inherit; background-repeat: no-repeat; background-position: center;
+}
+body.game-ds[data-ds-view="map"] #bg .bg-img::before { inset: -24px; background-size: cover; filter: blur(14px) brightness(.38) saturate(.8); }
+body.game-ds[data-ds-view="map"] #bg .bg-img::after { inset: 0; background-size: contain; }
+
+/* 2) 場面転換: 1280×720 用の斜め帯・円・店ロゴの幕は2画面をまたいで崩れるので、DSでは全体の暗転にする。
+      覆う・開くの時間と入力の止め方は既存の幕のまま。 */
+body.game-ds .scene-curtain { background: #0b0814; }
+body.game-ds .scene-curtain > * { display: none; }
+body.game-ds .scene-curtain:not(.move) { opacity: 0; transition: opacity var(--st-ms, 200ms) ease; }
+body.game-ds .scene-curtain:not(.move).cover { opacity: 1; }
+body.game-ds .scene-curtain:not(.move).reveal { opacity: 0; }
+body.game-ds .scene-curtain.move { animation: ds-veil-in 180ms ease-out both; }
+@keyframes ds-veil-in { from { opacity: 0; } to { opacity: 1; } }
+/* 店に入るときのロゴは上画面の中に小さく出す。 */
+body.game-ds .store-arrival { inset: auto; left: var(--ds-vx); top: var(--ds-vy); width: var(--ds-vw); height: var(--ds-vh); }
+body.game-ds .store-arrival-card { zoom: .62; }
+
+/* 3) 座標で操作する工程（穴あけ・炭・蒸らし・吸い出し）は、タイミング操作中にスクロールさせないため縮小のまま。
+      代わりに押せる範囲が画面上で小さすぎる炭のつまみは、見た目を変えずに当たり判定だけを広げる（縮小倍率ぶんを打ち消す）。 */
+body.game-ds .bench button.coal::after { content: ""; position: absolute; inset: calc(-9px / var(--ds-k, 1)); }

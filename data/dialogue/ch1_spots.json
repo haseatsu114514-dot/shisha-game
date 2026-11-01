@@ -314,12 +314,17 @@
           {
             "speaker": "",
             "face": "",
-            "text": "フロアをぐるりと見回していると、奥のテーブルで、２人の男が打ち合わせをしているのが目に入った。"
+            "text": "受付の脇に、機材の見本台がある。ハガルの上に、炭を載せる金属の蓋がのっていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あ、これ。tonariで毎日使ってるのと同じ型だ）"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "１人は白衣の男。七三分けのメガネ。"
+            "text": "見本台の前で、白衣の男が蓋を外したり戻したりしている。七三分けのメガネ。"
           },
           {
             "speaker": "",
@@ -327,18 +332,58 @@
             "text": "水色のシャツに青いチェックのネクタイ、チノパンに、足元だけサンダル。"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "なんとも抜けた格好だが、話し方には独特の圧がある。"
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "気になる？ 触っていいよ。熱は入ってないから"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "HMDですよね。炭を直に載せなくていいし、熱も均一で"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "これ便利ですよね。店でも、ずっと助けられてます"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "でしょ？ それ作ったの、俺だもん"
           },
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "（あの人……審査員の火浦さんだ。チャコール博士。もう１人は……南雲会長？）"
+            "text": "えっ。……あ、大会のサイトで見た顔だ。審査員の、チャコール博士？"
           },
           {
             "type": "set_flag",
             "flag": "_met_dr_kemuri"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "……失礼。機材の話になると、つい"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "火浦です。今回の大会でも審査員をします"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "使い心地は、現場の声が一番のデータだ。今度、詳しく聞かせて"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "奥のテーブルから、スーツの男が博士を呼んだ。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（もう１人は……南雲会長？）"
           },
           {
             "type": "set_flag",
@@ -347,12 +392,12 @@
           {
             "speaker": "",
             "face": "",
-            "text": "近づくつもりはなかったが、静かな店内に声が少し響いていた。"
+            "text": "博士はテーブルへ戻り、打ち合わせの続きを始めた。静かな店内に、声が少し響く。"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "はじめは席について、聞こえてくる話に耳をそばだてた。"
+            "text": "はじめは受付の列に並びながら、聞こえてくる話に耳を傾けた。"
           },
           {
             "speaker": "dr_kemuri",
@@ -1042,12 +1087,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "炭を載せる、金属のやつですよね。店で見たことあります"
+          "text": "炭を載せる、金属の……初めて会った時の、HMDですね"
         },
         {
           "speaker": "dr_kemuri",
           "face": "smile",
-          "text": "今のは、どこの店にもある型だ。でも元の型はね、……開発者、私だもん"
+          "text": "そう。今はどこの店にもある型だ。でも元の型はね、……何度でも言うよ、俺だもん"
         },
         {
           "speaker": "",
@@ -2082,9 +2127,25 @@
       "branches": {
         "see_before": [
           {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_met_maezono",
+            "next_true": "see_before_met",
+            "next_false": "see_before_poster"
+          }
+        ],
+        "see_before_poster": [
+          {
             "speaker": "",
             "face": "",
             "text": "C.STATIONの窓際に、大会ポスターで見た顔があった。審査員の上園文太郎さんだ。"
+          }
+        ],
+        "see_before_met": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "C.STATIONの窓際に、カフェで会った顔があった。審査員の上園文太郎さんだ。"
           }
         ],
         "see_after": [

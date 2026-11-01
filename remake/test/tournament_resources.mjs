@@ -86,35 +86,38 @@ const prefix = source.slice(start, end) + '  return newSession("tournament");\n}
 core.newGame(); // regulationFor closes over the real core.state, not the sandbox's `state`; reset it to Chapter 1 defaults
 const entrant = core.newState();
 Object.assign(entrant, { phase: "daily", day: 14, stamina: 52, flavorStock: {} });
-const saves = [], sessions = [], notices = [], stub = () => {};
+const saves = [], sessions = [], notices = [], played = [], stub = () => {};
 const context = vm.createContext({
   state: entrant, TOURNAMENT_DAY: 14, NIGHT_EVENTS: [], SHOP_FLAVORS: ["lemon"], TONARI: "", TONARI_N: "", STAGE: "",
   syncNightQueue: stub, runNightPlan: stub, playTsumugiStory: stub, sketchScene: stub,
   prepareFlavorStock: stub, lastNight: stub, warmCraftAssets: () => Promise.resolve([]), clearScreen: stub, initHud: stub,
   showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], openPhone: stub,
-  play: stub, ownsFlavor: () => false, flavorStock: id => entrant.flavorStock[id] || 0,
-  addFlavorStock: (id, amount) => { entrant.flavorStock[id] = (entrant.flavorStock[id] || 0) + amount; },
+  play: id => played.push(id),
   captureEntryResources, restoreEntryResources, applyAssistRecovery, maxStamina: () => 130, regulationFor,
   save: () => saves.push(copy(entrant)), toast: stub,
-  markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(), maybeShuraba: stub,
+  markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(),
+  playTournamentArrival: () => played.push("arrival-sequence"),
   entrance: stub, newSession: () => { sessions.push(copy(entrant)); return {}; },
   loadingNotice: label => ({ label }),
   withLoadingNotice: async (task, notice) => { notices.push(notice); return await task; },
   loadTournamentCraftDialogue: async () => {},
 });
 await vm.runInContext(prefix + "\ntournamentDay()", context);
-assert.deepEqual(saves[0].tournament.entryResources.flavorStock, { lemon: 12 }, "capture follows rescue grant");
+assert.equal(played.filter(id => id === "arrival-sequence").length, 1);
+assert(played.indexOf("arrival-sequence") < played.indexOf("ch1_tournament_opening"), "arrival sequence precedes the opening");
+assert.deepEqual(saves[0].tournament.entryResources.flavorStock, {}, "entry does not grant private lemon");
+assert(!played.includes("remake_flavor_rescue") && !played.includes("remake_flavor_brought"), "morning does not branch on private stock");
 assert.equal(sessions[0].stamina, 52);
 entrant.stamina = 48; entrant.flavorStock.lemon = 0;
 await vm.runInContext("tournamentDay()", context);
 assert.equal(saves.length, 1, "retry never overwrites the entry save");
 assert.equal(sessions[1].stamina, 52);
-assert.deepEqual(sessions[1].flavorStock, { lemon: 12 });
+assert.deepEqual(sessions[1].flavorStock, {});
 // #590: 救済を選んだ挑戦だけ、戻した直後に現在の最大体力（根性込みの値）へ。entryは書き換えない。
 entrant.stamina = 3; entrant.tournament.retryAssist = true;
 await vm.runInContext("tournamentDay()", context);
 assert.equal(sessions[2].stamina, 130, "assisted retry recovers to the current maximum");
-assert.deepEqual(sessions[2].flavorStock, { lemon: 12 }, "stock is restored once, unchanged by recovery");
+assert.deepEqual(sessions[2].flavorStock, {}, "stock is restored once, unchanged by recovery");
 assert.equal(entrant.tournament.entryResources.stamina, 52, "the entry snapshot keeps the original stamina");
 entrant.stamina = 3; entrant.tournament.retryAssist = false;
 await vm.runInContext("tournamentDay()", context);
@@ -152,4 +155,4 @@ await retryOptions.onRetry();
 assert.equal(typeof transition, "function");
 ownerContext.state = core.newState(); transition();
 assert.equal(resumed, 0, "LOAD during the wipe cannot resume the old tournament");
-console.log("PASS: absolute retry, rescue-before-capture, one-time entry, schema15/16/17 migration, re-SAVE/LOAD, illness/progress/#577/Chapter2 preservation, LOAD during preload/wipe");
+console.log("PASS: absolute retry, no private lemon grant, one-time entry, schema15/16/17 migration, re-SAVE/LOAD, illness/progress/#577/Chapter2 preservation, LOAD during preload/wipe");

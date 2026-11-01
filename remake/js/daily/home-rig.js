@@ -2,6 +2,7 @@
 // 寝る前の一服の流れは home-shisha.js。ここは台の持ち物・受け取りと、その夜の自室でのお披露目。
 import { DB, img } from "../core/data.js";
 import { state, save } from "../core/state.js";
+import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { emit } from "../core/bus.js";
 import { el } from "../core/util.js";
 import { imageReady, modal, withScenePreparation } from "../core/ui.js";
@@ -73,7 +74,7 @@ export async function showSumiRigAtHome() {
 
 /** DAY2から、体調を崩していない夜にお下がりを渡す。旧セーブでも次の夜に受け取れる。 */
 export async function giveEarlyHomeRig() {
-  if (state.chapter !== 1 || state.day < 2 || state.day >= 14 || state.restDay?.fullDay
+  if (!chapterFeatureEnabled(state.chapter, "earlyHomeRig") || state.day < 2 || state.day >= 14 || state.restDay?.fullDay
       || state.owned?.includes(SUMI_RIG)) return;
   await giveSumiRig({ bg: "res://assets/backgrounds/bg_tonari_inside.png" });
 }

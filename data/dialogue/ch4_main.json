@@ -131,9 +131,23 @@
           "text": "大会の間だけ、会場の一角に出した出張ブース。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "手拍子に合わせて吸い込み、太陽は煙の輪をひとつ、客席の頭上へ吐いた。輪がほどけるたび、歓声が上がる。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_da_silva"
+        },
+        {
           "speaker": "da_silva",
-          "face": "normal",
+          "face": "excited",
           "text": "来たな、日本の二人！　まず座れ。暑かっただろ"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "まずはこれだ。俺の自慢、アサイーの一台！　甘酸っぱいだろ？　氷の効いたドリンクと合わせたら最高なんだ"
         },
         {
           "speaker": "naru",
@@ -146,9 +160,24 @@
           "text": "踊る人も、座ってる人もいる。どっちも邪魔されたくないだろ"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ほんとだ、甘酸っぱい。俺、大会のことで頭がいっぱいで"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "固い顔だな。シーシャはフェスタだ。楽しくなけりゃ意味がねぇ"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "はじめの足が通路へはみ出す前に、太陽が椅子を回した。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "それとな、美味いだけじゃ誰も振り向かねえ。最初の一口の前に、目と耳で楽しませるんだ"
         },
         {
           "speaker": "hajime",
@@ -167,18 +196,8 @@
         },
         {
           "speaker": "da_silva",
-          "face": "normal",
-          "text": "いいな。じゃ、休みの日は誰が開ける？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……それ、なるにも聞かれました"
-        },
-        {
-          "speaker": "naru",
           "face": "smile",
-          "text": "一人で全部やるつもりなら、そこから相談な"
+          "text": "いいな。じゃ、休みの日は誰が開ける？"
         },
         {
           "speaker": "",
@@ -431,11 +450,16 @@
     },
     {
       "dialogue_id": "ch4_wang_reception",
+      "metadata": {
+        "flavor_lesson": {
+          "lychee": 1
+        }
+      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "前夜祭。金色の装束の王煙楼が、客席のざわめきが静まるのを待っていた。"
+          "text": "前夜祭。深紅の装束の王煙楼が、客席のざわめきが静まるのを待っていた。"
         },
         {
           "speaker": "",
@@ -455,14 +479,48 @@
           "text": "はい。客席の息まで、待ってたんですね"
         },
         {
+          "type": "set_flag",
+          "flag": "_met_master_hookah"
+        },
+        {
           "speaker": "master_hookah",
           "face": "normal",
           "text": "観客が息を止めると、煙がよく見える"
         },
         {
           "speaker": "master_hookah",
-          "face": "normal",
+          "face": "laugh",
           "text": "もっとも、待ちすぎて炭を三度冷ましたことがある。助手の目が怖かった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼の台から、花のような甘い香りが流れてきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ライチですか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "そう。ライチは香りが細い。熱を上げると、花が先に散ってしまう"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "炭は少し遠く。甘さが前へ出てくるまで、こちらが待つ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口もらう。軽い甘さの後ろに、花の香りが静かに残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（強くしないから、最後まで香りが残るんだ）"
         },
         {
           "speaker": "",
@@ -481,7 +539,7 @@
         },
         {
           "speaker": "master_hookah",
-          "face": "normal",
+          "face": "smile",
           "text": "楽しみにしている。私も、君の前で作る"
         }
       ],
@@ -499,7 +557,7 @@
           },
           {
             "speaker": "master_hookah",
-            "face": "normal",
+            "face": "smile",
             "text": "映像より、音が静かだろう"
           }
         ],
@@ -516,7 +574,7 @@
           }
         ]
       },
-      "comment": "王煙楼はシェイクの師。推薦選手として正面から登場する。老人語は使わない。"
+      "comment": "王煙楼はシェイクの師。推薦選手として正面から登場する。老人語は使わない。味の会話（#2028）: 王煙楼の好み＝ライチ。必須場面なので熟練度だけで、好感度は付けない（王煙楼に好感度はない）。"
     },
     {
       "dialogue_id": "ch4_tournament_start",
@@ -557,6 +615,10 @@
           "text": "そして現王者、シェイク・アル=ガリヤーン！"
         },
         {
+          "type": "set_flag",
+          "flag": "_met_sheikh"
+        },
+        {
           "speaker": "hajime",
           "face": "surprise",
           "text": "……路地裏の"
@@ -568,7 +630,7 @@
         },
         {
           "speaker": "master_hookah",
-          "face": "normal",
+          "face": "serious",
           "text": "散歩は済んだか。今度は、私も相手だ"
         },
         {
@@ -588,7 +650,7 @@
         },
         {
           "speaker": "sheikh",
-          "face": "normal",
+          "face": "smug",
           "text": "全部、出してくるといい。受け止めるのは、私の役目だ"
         },
         {
@@ -630,6 +692,11 @@
           "speaker": "",
           "face": "",
           "text": "王煙楼は一口目の長さを測る。シェイクの金の台は、継ぎ目一つ揺らがない。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "ゆっくりでいい。次の息までは、私が待とう"
         },
         {
           "speaker": "",
@@ -733,8 +800,13 @@
         },
         {
           "speaker": "da_silva",
-          "face": "normal",
+          "face": "smile",
           "text": "……静かでも、いいフェスタだ"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "手拍子ひとつ打たずに最後まで見てたフェスタなんて、俺は初めてだぞ"
         }
       ],
       "comment": "成功時。全て同じ一台・同時進行の一試合。なるの敗北受容は最終集計後だけ。"
@@ -746,6 +818,21 @@
           "speaker": "",
           "face": "",
           "text": "審査員の残った持ち点が、順に投入された。パッキーが集計を確認する。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の一口を見届けたパッキーが、マイクを下ろしたまま黙っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場がざわめく。『黙った』『本物の一台の時だけ、って噂の……』"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "……失礼しましたッ！ さあ、気を取り直して参りましょう！ ぷぷぷっ！"
         },
         {
           "speaker": "pakki",
@@ -799,13 +886,33 @@
         },
         {
           "speaker": "sheikh",
-          "face": "normal",
+          "face": "smile",
           "text": "王座にいると、本気で向かってくる者がいなくなる。今日は、楽しかった"
         },
         {
           "speaker": "sheikh",
           "face": "normal",
           "text": "次は、私が挑む番だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼が、自分の台の炭を静かに下ろした。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "おめでとう。君の客は、最後まで一度も急かされなかった"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "laugh",
+          "text": "弟子に先を言われたな。私も、古いレシピを一つ書き直そう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ポケットでスマホが震えた。スミさんからだった。"
         },
         {
           "speaker": "sumi",
@@ -850,12 +957,7 @@
         {
           "speaker": "sheikh",
           "face": "normal",
-          "text": "ああ。十五年前のあの一台が、私を作る側へ回らせた"
-        },
-        {
-          "speaker": "sheikh",
-          "face": "normal",
-          "text": "当時、私は店員の名も知らなかった。あとで、世界大会準優勝者だと知った"
+          "text": "ああ。あの店員の名を、私はあとで知った。世界大会準優勝者だと"
         },
         {
           "speaker": "sheikh",
@@ -915,7 +1017,7 @@
         },
         {
           "speaker": "sheikh",
-          "face": "normal",
+          "face": "serious",
           "text": "正直に言ってくれ。この屋敷で、本当のことを言う者は少ない"
         },
         {
@@ -1542,6 +1644,11 @@
     },
     {
       "dialogue_id": "ch4_alley_cafe_quiet",
+      "metadata": {
+        "flavor_lesson": {
+          "grape": 1
+        }
+      },
       "lines": [
         {
           "speaker": "",
@@ -1566,6 +1673,41 @@
         {
           "speaker": "",
           "face": "",
+          "text": "店員が棚から紫のラベルの缶を下ろした。あの男が、ここでいつも頼む葉だという。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "グレープです。あの方は、ほかの葉を混ぜません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "甘い葉ですよね。熱を上げたら、もっと香りが立ちそうですけど"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "上げすぎると、煮詰めたジャムの匂いになります。あの方は、それを嫌います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口だけ吸わせてもらった。炭は控えめで、甘さの奥に、皮の渋みが薄く残る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘いだけじゃない。熱を抑えると、ぶどうの皮まで戻ってくる）"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "炭を足すより、待つ方だそうです。この台では、昔からそうでした"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "古びた台のホースは、きれいに巻き直してあった。継ぎ目の革だけが、まだ新しい。"
         },
         {
@@ -1574,7 +1716,7 @@
           "text": "（……前夜にでも、返しに来るか）"
         }
       ],
-      "comment": "ドラフト追加（未接続）。出典: 第4章本文ドラフト §4-3。ch4_stranger_second を読んだ後、前夜祭の前に置く想定の訪問場面。全行仮置き。"
+      "comment": "ドラフト追加（未接続）。出典: 第4章本文ドラフト §4-3。ch4_stranger_second を読んだ後、前夜祭の前に置く想定の訪問場面。全行仮置き。味の会話（#2028）: シェイクの好み＝グレープ（単一フレーバー）。正体を伏せる期間なので本人は出さず、路地裏の店員（shop_clerk）が「あの方」の葉として話す。ch4_stranger_third の「……グレープですね」の前振り。シェイクに好感度はないので付けない。"
     },
     {
       "dialogue_id": "ch4_stranger_first_forced_in",

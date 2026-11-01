@@ -22,7 +22,13 @@ try {
     for (const s of spots.SPOTS) if (s.requiresMet) core.state.flags[`_spot_guide_${s.requiresMet}`] = true;
     core.state.flags._cafe_introduced = true;
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
-    T.openMap = async () => { map.interruptMap(null); ui.dropRetired(); T.mapPromise = map.chooseSpot(); };
+    T.openMap = async () => {
+      map.interruptMap(null); ui.dropRetired();
+      await new Promise((resolve, reject) => {
+        T.mapPromise = map.chooseSpot({ onShown: resolve });
+        T.mapPromise.catch(reject);
+      });
+    };
     T.inkOffset = n => {
       const style=getComputedStyle(n), box=n.getBoundingClientRect(), range=document.createRange();
       range.selectNodeContents(n); const r=range.getBoundingClientRect(), scale=box.width/n.offsetWidth;
@@ -64,12 +70,16 @@ try {
     assert.match(map.gym, /ui\/map-facilities-extra-579\.webp/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
+    // 煙なしの金枠の札（原画）は「これまでのゴージャス」（classic）の素材。既定の紙テーマ（#2136）ではテーマの色で描くため、札の確認だけ classic で行う。
     await page.evaluate(async () => {
+      T.theme = document.documentElement.dataset.uiTheme; document.documentElement.dataset.uiTheme = "classic";
       for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 12; // 10段では10の倍数を越えると段到達カードになるため、段の途中から始める
       T.core.state.statXp = {};
       await T.stats.paidAction(async () => { T.stats.earnStat("sense", 4); T.stats.addStamina(-8); });
     });
     await page.waitForSelector(".gain-card.st-sense.show"); await page.waitForTimeout(500);
+    // 光が横切る演出（::before）が動いている間は札の外へはみ出して見えるため、演出が終わってから測る。
+    await page.waitForFunction(() => document.querySelector(".gain-card.st-sense")?.getAnimations({ subtree: true }).every(a => a.playState !== "running"));
     const card = await page.locator(".gain-card.st-sense").evaluate(n => {
       const r=n.getBoundingClientRect(), stage=document.querySelector("#stage").getBoundingClientRect();
       const after=getComputedStyle(n,"::after"), points=n.querySelector(".gc-points"), name=n.querySelector(".gc-main");
@@ -94,7 +104,7 @@ try {
     assert(card.inside && card.noOverflow && card.noSub && card.sameSize && card.smaller && card.pointGap < 8,JSON.stringify(card));
     assert(Math.abs(card.badgeInk.x)<.75 && Math.abs(card.badgeInk.y)<.75,JSON.stringify(card));
     if (shots) await page.screenshot({ path: `${shots}/gain-${size.width}.png` });
-    await page.evaluate(() => T.ui.bannersIdle());
+    await page.evaluate(() => { T.ui.bannersIdle(); document.documentElement.dataset.uiTheme = T.theme; });
   }
   await page.setViewportSize(sizes[0]);
 
@@ -113,11 +123,21 @@ try {
   });
   await page.waitForSelector('[data-test="pin-naru"]');
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').textContent(), "!");
-  // 質問・締めくくりも読了している場合は印を残さない。
+  // 質問・締めくくりの読了後も、凛の試作品イベントが未読なら印を残す。
   await page.evaluate(async () => {
     T.core.state.finales=Object.fromEntries(Object.keys(T.spots.VISIT_SEQ).map(id => [id,{day:3,chapter:1,route:"friend"}]));
     await T.openMap();
   });
+  await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
+  assert.equal(await page.evaluate(() => T.spots.rinPrototypeDue()), true);
+  assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
+  // 試作品も読了した状態では、全店舗の新規印が消える。
+  await page.evaluate(async () => {
+    T.core.state.flags._spot_seen_ch1_rin_prototype_night=true;
+    await T.openMap();
+  });
+  await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
+  assert.equal(await page.evaluate(() => T.spots.rinPrototypeDue()), false);
   assert.equal(await page.locator(".evt-badge.story").count(),0);
 
   // 店名は閉店日も残す。臨時休暇は別の札で伝え、訪問できない理由も一致する。

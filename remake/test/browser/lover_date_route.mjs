@@ -125,8 +125,11 @@ await suite("lover-date-route", async check => {
       const result = await page.evaluate(async () => {
         const s = D.core.state, declined = s.inbox.find(i => i.msg.accept_event === "date_mashiro");
         const refusal = { result: declined.result, pending: s.pendingInvite, last: s.lastDate.mashiro ?? null, pts: s.lovePts.mashiro };
-        s.day = 6; s.slot = 0; D.phone.deliverMorning();
-        const fresh = s.inbox.find(i => i.id === "_date_inv_mashiro_d6");
+        // 恋人の誘いは恋人全員あわせて4日に1回（LM02）。DAY4に断った誘いの次はDAY8に届く
+        s.day = 7; s.slot = 0;
+        const early = D.romance.loverMessages().some(m => m.accept_event === "date_mashiro");
+        s.day = 8; D.phone.deliverMorning();
+        const fresh = s.inbox.find(i => i.id === "_date_inv_mashiro_d8");
         s.slot = 2; D.phone.expireInvitations();
         const expiry = { result: fresh.result, read: fresh.read, last: s.lastDate.mashiro ?? null, pending: s.pendingInvite };
         // Representative old accepted reservation without originId/inbox metadata.
@@ -137,6 +140,8 @@ await suite("lover-date-route", async check => {
         const log = console.error; console.error = t => errors.push(t);
         try { await D.romance.playDate("unknown_date"); } finally { console.error = log; }
         const missing = { unchanged: before === JSON.stringify(s), lines: D.vn.backlog().length - backlog, errors };
+        // ここからは同じ恋人の間隔（絆MAXで5日）だけを見る。共有の4日枠は上で確認済みなので、届いた誘いの履歴を外す
+        s.inbox = s.inbox.filter(i => !(i.msg?.lover && i.msg.type === "invitation"));
         s.day = 8; s.slot = 0; s.lastDate.mashiro = 4; s.loveLevel.mashiro = 5;
         const maxBefore = D.romance.loverMessages().some(m => m.accept_event === "date_mashiro");
         s.day = 9;
@@ -145,10 +150,11 @@ await suite("lover-date-route", async check => {
         s.lovers = ["minto"]; s.day = 6; s.lastDate.minto = 0; s.limeRead.push("_lover_private_account_minto");
         const holiday = D.romance.loverMessages().find(m => m.accept_event === "date_minto");
         D.core.save(); D.core.newGame(); D.core.load();
-        return { refusal, expiry, old, missing, maxBefore, maxAfter, fixed,
+        return { refusal, early, expiry, old, missing, maxBefore, maxAfter, fixed,
           holiday: { time: holiday.time_slot, after: holiday.after_close ?? false }, savedLovers: D.core.state.lovers };
       });
       assert.deepEqual(result.refusal, { result: "declined", pending: null, last: null, pts: 9 });
+      assert.equal(result.early, false, "断った誘いの3日後には、まだ次の誘いは来ない");
       assert.deepEqual(result.expiry, { result: "expired", read: false, last: null, pending: null });
       assert.equal(result.old.pending, null); assert(result.old.history);
       assert(result.missing.unchanged); assert.equal(result.missing.lines, 0); assert.equal(result.missing.errors.length, 1);

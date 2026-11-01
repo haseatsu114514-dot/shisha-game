@@ -17,6 +17,7 @@ export const CH4_PRIZE = 200000;
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // ドバイ専用の背景が無いので、全て既存 bg の流用。#1177 でドバイ素材に差し替える時はこの表だけ直す。
 export const CH4_PLACE_BG = Object.freeze({
+  mosque: "bg_dubai_map_dusk", // 内省の現行代替背景を維持（#1788 の画像選別は別作業）
   map: "bg_dubai_map",            // #1177 選定マップ（ch4_dubai_10・真昼）
   mapDusk: "bg_dubai_map_dusk",   // #1177 候補4（ch4_dubai_04・夕景）。前夜日（DAY4）の自由行動マップに使う
   souq: "bg_street_day",          // 仮置き bg（#1177 でドバイ素材に差し替え）
@@ -128,6 +129,16 @@ export const CH4_SCENE_FILES = Object.freeze({
     ...CH4_RESOLUTION.map(scene => scene.id),
   ].filter((id, index, all) => all.indexOf(id) === index)),
   ch4_spots: Object.freeze(["ch4_dubai_souq", "ch4_dubai_cafe"]),
+});
+
+// ヒロイン来訪の台本（読込登録だけ）。到着・約束の再生条件は #516 で決めるため、ここでは再生しない。
+export const CH4_VISITOR_SCENE_FILES = Object.freeze({
+  ch4_mashiro_dubai: Object.freeze(["ch4_mashiro_dubai_friend", "ch4_mashiro_dubai_girlfriend"]),
+  ch4_visitors: Object.freeze(["ch4_samechan_dubai_girlfriend", "ch4_hiyori_dubai_girlfriend"]),
+  ch4_tsumugi_dubai: Object.freeze(["ch4_tsumugi_dubai_girlfriend"]),
+  ch4_minto_dubai: Object.freeze(["ch4_minto_dubai_girlfriend"]),
+  ch4_rin_dubai: Object.freeze(["ch4_rin_dubai_girlfriend"]),
+  ch4_ageha_dubai: Object.freeze(["ch4_ageha_dubai_girlfriend"]),
 });
 
 const PARTS = Object.freeze(["prologue", "free", "eve", "tournament", "resolution", "cleared"]);

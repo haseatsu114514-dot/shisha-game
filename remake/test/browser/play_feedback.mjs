@@ -84,15 +84,19 @@ await suite('play-feedback', async check => {
         return { info: +getComputedStyle(n).zIndex, pins: +getComputedStyle(p).zIndex,
           width: parseFloat(getComputedStyle(n).width), inStage: b.right <= innerWidth && b.bottom <= innerHeight };
       });
-      assert(geometry.info > geometry.pins); assert.equal(geometry.width, 270); assert(geometry.inStage);
+      // DUI16 (6ed65699a84) uses a 312px guide with a 16:9 photo outside DS mode.
+      assert(geometry.info > geometry.pins); assert.equal(geometry.width, 312); assert(geometry.inStage);
       // #1081 J08（699d48310）: 説明パネルは見た目だけ前面に置き、余白のクリックは背後のピンへ
       // 素通りさせる（操作を奪わない）。クリックを受けるのはパネル内のボタンだけ。
       // ピンをパネルの余白へ重ね、実ヒットテストでピンが押せて、ボタンも押せることを確認する。
       const hit = await page.evaluate(() => {
         const info = document.querySelector('.map-info'), pin = document.querySelector('[data-spot="rest"]');
-        const b = info.getBoundingClientRect(), stage = document.querySelector('#stage').getBoundingClientRect();
-        pin.style.left = `${(b.x + 70 - stage.x) * 1280 / stage.width}px`;
-        pin.style.top = `${(b.y + 100 - stage.y) * 720 / stage.height}px`;
+        const photo = info.querySelector('.mi-preview').getBoundingClientRect();
+        const stage = document.querySelector('#stage').getBoundingClientRect();
+        const pinBefore = pin.getBoundingClientRect();
+        const x = photo.x + photo.width / 2, y = photo.y + photo.height / 2;
+        pin.style.left = `${(x - pinBefore.width / 2 - stage.x) * 1280 / stage.width}px`;
+        pin.style.top = `${(y - pinBefore.height / 2 - stage.y) * 720 / stage.height}px`;
         const r = pin.getBoundingClientRect();
         const atPin = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
         const goBtn = document.querySelector('[data-test="map-go"]');

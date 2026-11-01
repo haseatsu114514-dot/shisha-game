@@ -125,10 +125,11 @@ await suite("samechan-dates", async check => {
       await press(page, '[data-test="lime-chat-samechan"]'); await page.locator('[data-test="reply-1"]').waitFor();
       await press(page, '[data-test="reply-1"]'); await press(page, '[data-test="phone-next"]'); await press(page, '[data-test="phone-close"]');
       const r = await page.evaluate(async () => {
-        await K.session; const s = K.core.state, declined = K.snap(); s.day = 6; s.slot = 0;
+        // 恋人の誘いは恋人全員あわせて4日に1回（LM02）。DAY4に断った誘いの次はDAY8に届く
+        await K.session; const s = K.core.state, declined = K.snap(); s.day = 8; s.slot = 0;
         K.phone.deliverMorning(); s.slot = 2; K.phone.expireInvitations();
-        const expired = s.inbox.find(i => i.id === "_date_inv_samechan_c2_d6");
-        s.day = 8; s.slot = 0;
+        const expired = s.inbox.find(i => i.id === "_date_inv_samechan_c2_d8");
+        s.day = 12; s.slot = 0;
         return { declined, expired, fixed: K.romance.loverMessages({ fixedNight: () => true }).filter(m => m.accept_event === "date_samechan"), after: K.snap() };
       });
       assert.equal(r.declined.pendingInvite, null); assert.equal(r.declined.lastDate.samechan, undefined);

@@ -1510,6 +1510,10 @@
         {
           "speaker": "",
           "text": "さっきの笑い声を知っていると、その表情も少し近くに見えた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "hiyori_shout"
         }
       ]
     },
@@ -1598,6 +1602,10 @@
         {
           "speaker": "",
           "text": "ひよりは手帳を鞄へしまった。仕事を片づけるためではなく、今ここで過ごすために。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "hiyori_boundary"
         }
       ]
     },

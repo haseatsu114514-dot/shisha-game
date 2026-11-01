@@ -37,7 +37,7 @@ async function paintedAttachment(page) {
   });
 }
 
-const themes = ["smoke", "smoke-purple", "cut-paper", "amber", "tissue", "classic"];
+const themes = ["smoke", "smoke-purple", "cut-paper", "amber", "tissue", "classic", "paper"];
 await suite("ui-themes-preview", async check => {
   for (const viewport of [{ width:1280, height:768 }, { width:844, height:438 }]) {
     await check(`${viewport.width}`, async page => {
@@ -87,7 +87,9 @@ await suite("ui-themes-preview", async check => {
             nameCentered:Math.abs((nameGlyph.left+nameGlyph.right)/2-(name.left+name.right)/2)<=2*scale,
             nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale && name.bottom<=text.top-12*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
-            headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top-3*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-32*scale,
+            headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top-3*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2,
+            headerInside:controls.top>=box.top-1*scale && controls.bottom<=text.top+1*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-32*scale,
+            rightGap:(controls.right-box.right)/scale,
             sceneOpen:box.height/scale<=192 && (box.top-document.querySelector("#stage").getBoundingClientRect().top)/scale>=500,
             headerOffset:((name.top+name.height/2)-(controls.top+controls.height/2))/scale,
             typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
@@ -102,8 +104,14 @@ await suite("ui-themes-preview", async check => {
         assert(!twoLines.overlap,"controls do not cover either text line");
         assert(twoLines.clear,"name, next indicator, toolbar and actual text glyphs remain separate");
         assert(twoLines.footerClear,"next indicator leaves a clear margin above the visible paper/footer edge, including its 2px bob");
-        assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
-        assert(Math.abs(twoLines.headerOffset-(id.startsWith("smoke")?8:16))<=.5,"controls leave the intended space above the main window");
+        // 紙とラベンダーは、操作札を窓の中（外枠と本文の上の罫線のあいだの帯）の右側に置く（DUI18）。
+        if(id==="paper"){
+          assert(twoLines.headerInside,"paper controls sit inside the window header strip, right of center, above the body text");
+        }else{
+          assert(twoLines.headerAttached,"toolbar shares the frame header on the right and clears the body text");
+          assert(Math.abs(twoLines.headerOffset-(id.startsWith("smoke")?8:16))<=.5,"controls leave the intended space above the main window");
+          assert(twoLines.rightGap<=-32,"toolbar stays inside the frame header");
+        }
         assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
         assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.65,"command text is a quieter third level");
         assert(twoLines.margins[0]>=95.9 && twoLines.margins[1]>=95.9,"reserve space for visible folds and smoke, beyond glyph bounds");
@@ -143,8 +151,8 @@ await suite("ui-themes-preview", async check => {
         assert(innerFits,"main and inner voice glyphs stay inside the frame and clear of controls/next");
         fixedCommands(await commandGeometry(page),fixedHeader,id+" inner voice");
       }
-      assert.equal(new Set(colors).size,6,"every theme must actually repaint common panels");
-      assert.equal(new Set(frames).size,6,"each selected frame/colorway loads its corresponding artwork");
+      assert.equal(new Set(colors).size,themes.length,"every theme must actually repaint common panels");
+      assert.equal(new Set(frames).size,themes.length,"each selected frame/colorway loads its corresponding artwork");
       for(let i=0;i<layouts.length;i++) assert.deepEqual(layouts[i].slice(4,8),layouts[i<2?0:2].slice(4,8),"smoke variants share the wider body; optical text offsets do not change the body geometry");
       assert.deepEqual(await storageSnapshot(page),saved,"preview never persists preferences or games");
       await page.selectOption("#preview-theme","smoke");
@@ -237,7 +245,7 @@ await suite("ui-themes-config",async check=>{
     await page.evaluate(()=>localStorage.setItem("suien_remake_config",JSON.stringify({uiTheme:"unknown-old-skin"})));
     await page.reload();
     await page.locator('[data-test="title-config"]').waitFor();
-    assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"classic","unknown skin safely uses the default");
+    assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"paper","unknown skin safely uses the default");
   });
   for (const [label, options, touch] of [
     ["ingame-config-pc", { viewport: { width: 1280, height: 720 } }, false],

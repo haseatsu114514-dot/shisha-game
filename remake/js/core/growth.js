@@ -1,5 +1,5 @@
 // 経験値・レベル・火種（心得の盤 第二弾の芯。docs/stat-design/SPEC.md 1章・6.1a・6.3）。
-// 盤の画面ができるまでは GROWTH_BOARD=false の裏に置き、プレイヤーには旧しくみだけが見える。
+// 盤の画面ができるまでは GROWTH_BOARD=false の裏に置く。恋人EXPの保存・獲得表示だけは先行公開。
 // 開発中は URL の ?growth=1（または __remake.dev.growth(true)）でこの端末だけ有効にできる。
 // 有効でも能力の伸び方（旧しくみ）は変えない。経験値・レベル・火種を横で数えるだけ。
 // 第2版（SPEC 2026-10-30）: 能力は3つ（才能・感覚・理論）、火種はレベル1つで2つ、色つきの火種は才・感・理。
@@ -30,7 +30,7 @@ export const MAX_LEVEL = 99; // 2周目の終わりにやり込んで届く上�
 export const BOARD_TOTAL = BOARD_KEYS.reduce((n, b) => n + STAT_SQUARES[b]
   + BOARD_SHAPES[b].cells.filter(([, kind]) => kind === "gate").length, 0) + SKILLS.reduce((n, s) => n + s.cost, 0);
 /** 盤の型の版。違う版の灯し方は、使った火種を返して最初から（習得した授業は残す） */
-export const BOARD_VERSION = 8; // 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ（2026-10-30）
+export const BOARD_VERSION = 13; // 4: 授業の小道、5: 授業20、6: 1レベル1つ、7: 3盤とも7割、8: 3盤を同じ大きさに・1レベル2つ、9: 紋を下に・関門の先に授業、10: 関門を紋のそばに・極みは盤を埋めたご褒美、11: 3枚の形をそれぞれ変える、12: 紋の場所も盤ごと・授業は章の順に遠く（2026-10-30）、13: 輪つきの木・要のマス・アイコン（2026-10-31）
 /**
  * レベルアップ1回でもらう万能の火種（1.5）。2026-10-30 オーナー「いろんな盤をあけてく爽快感も欲しい」→「1レベル2つ・盤を細かく」（SBD60）:
  * どのレベルも2つ。盤は198（3盤とも66）で、1周目（中央 Lv.57、約140）で3つの盤どれも7割。
@@ -223,41 +223,6 @@ export async function consultLessons(who, { only = null, bg, signal } = {}) {
   return done;
 }
 
-/**
- * 会えない人には LIME で相談する（2026-10-30 オーナー「会えない人は LIME でカバー。質問するみたいなイベント」）。
- * 会って相談できるのは、相談の場面がある人を、その人の街にいる章（第1章と、どこへでも行ける第5章）だけ。
- * それ以外（場面がまだ無い人、第2〜4章で地元を離れている時）は LIME で聞ける。
- */
-const IN_PERSON_CHAPTERS = [1, 5];
-export function canAskByLime(id, s = state) {
-  const lesson = LESSONS.find((l) => l.id === id);
-  if (!lesson || !s || !growthEnabled()) return false;
-  const g = ensureGrowth(s);
-  if (!g.nodes.includes(id) || g.learned.includes(id)) return false;
-  return !lesson.scene || !IN_PERSON_CHAPTERS.includes(Number(s.chapter) || 1);
-}
-/** LIME で聞ける授業（相手ごと） */
-export const limeLessons = (s = state) => LESSONS.filter((l) => canAskByLime(l.id, s));
-
-/** LIME で相談する: はじめが送った質問への返事を読み、返信を選ぶと習得する。戻り値: 習得したか */
-export async function consultByLime(id) {
-  const owner = state;
-  if (!canAskByLime(id)) return false;
-  const lesson = LESSONS.find((l) => l.id === id);
-  const { DB } = await import("./data.js");
-  const msg = (DB.lime || []).find((m) => m.id === `lime_lesson_${id}`);
-  if (!msg) return false;
-  const { openPhone } = await import("../daily/phone.js");
-  const { gainCard } = await import("./ui.js");
-  await openPhone([msg], { title: "相談" });
-  if (state !== owner) return false;
-  const item = [...(state.inbox || [])].reverse().find((i) => i.msg?.id === msg.id);
-  if (item?.replyState !== "replied") return false;
-  learnLesson(id);
-  gainCard({ kind: "info", badge: "授", top: "TRAINING", main: lesson.name, sub: lesson.text });
-  emit("hud");
-  return true;
-}
 
 /** 盤で灯した火種を数える（節目の色。growth-board.js の決定から呼ぶ） */
 export function noteLit(g, board, cost) {
@@ -293,9 +258,10 @@ let chip = null;
 let chipTimer = null;
 let holdDepth = 0;
 
-function addToChip(amount, tag) {
+function addToChip(amount, tag, source) {
   if (chip?.owner !== state) chip = { owner: state, total: 0, tags: [] };
   chip.total += amount;
+  if (source === "lover") chip.publicReward = true;
   if (tag && !chip.tags.includes(tag)) chip.tags.push(tag);
   clearTimeout(chipTimer);
   if (!holdDepth) chipTimer = setTimeout(flushChip, MERGE_MS);
@@ -305,7 +271,7 @@ function flushChip() {
   const c = chip;
   chip = null;
   if (!c || c.owner !== state || !(c.total > 0)) return;
-  emit("exp-gain", { total: c.total, tags: c.tags });
+  emit("exp-gain", { total: c.total, tags: c.tags, ...(c.publicReward ? { publicReward: true } : {}) });
 }
 /** 自由行動の間は、行動中に入った分（好感度の段など）を行動の確定まで1枚にまとめる。 */
 export function holdExpChip() {
@@ -325,8 +291,9 @@ export function holdExpChip() {
  * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計と「今日」に足す。
  * レベルはまだ上げない（寝る時に精算する。1.7）。戻り値=入った量。
  */
-export function gainExp(base, { key = null, tag = null, silent = false } = {}) {
-  if (!growthEnabled() || !state || !(base > 0)) return 0;
+export function gainExp(base, { key = null, tag = null, silent = false, source = null } = {}) {
+  // 恋人イベントだけは通常プレイでも貯める。精算・火種・盤の公開条件は変えない。
+  if ((!growthEnabled() && source !== "lover") || !state || !(base > 0)) return 0;
   const g = ensureGrowth();
   const room = totalExpFor(MAX_LEVEL) - g.xp;
   const amount = Math.min(room, Math.round(base * (CHAPTER_MULT[state.chapter] || 1)));
@@ -334,7 +301,7 @@ export function gainExp(base, { key = null, tag = null, silent = false } = {}) {
   g.xp += amount;
   g.today.xp += amount;
   if (key) g.today.learned[key] = (g.today.learned[key] || 0) + amount;
-  if (!silent) addToChip(amount, tag); // silent: 呼び出し側が自分の通知で見せる（スロットの結果カード）
+  if (!silent) addToChip(amount, tag, source); // silent: 呼び出し側が自分の通知で見せる（スロットの結果カード）
   emit("hud");
   return amount;
 }
@@ -441,7 +408,7 @@ export function claimPlayRewards(g, s = state) {
     const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}`;
     if (g.rewards[key]) continue;
     g.rewards[key] = true;
-    const low = BOARD_KEYS.reduce((best, k) => boardStep(g, k) < boardStep(g, best) ? k : best, BOARD_KEYS[0]);
+    const low = BOARD_KEYS.reduce((best, k) => boardFill(g, k) < boardFill(g, best) ? k : best, BOARD_KEYS[0]);
     out.push({ label: "くじのラストワン賞", parts: giveSet(g, { [low]: KUJI_LAST_ONE_GIFT }) });
   }
   return out;
@@ -449,19 +416,19 @@ export function claimPlayRewards(g, s = state) {
 
 // ---------------------------------------------------------------- 寝る時の精算（6.3）
 
-/** 盤の段（1＋9×能力のマス÷その盤の数）。規則の growth-board.js と同じ数え方を、循環させずに持つ */
-function boardStep(g, board) {
+/** 盤の伸び（灯した能力のマスの割合）。規則の growth-board.js と同じ数え方を、循環させずに持つ（段は SBD63 でなくした） */
+function boardFill(g, board) {
   const prefix = BOARD_PREFIX[board];
   let n = g.nodes.filter((id) => id.startsWith(prefix) && /^\D\d+$/.test(id)).length;
   for (const l of LESSONS) if (l.board === board && l.reward === "stat" && g.nodes.includes(l.id)) n += l.bonus || 0;
-  return Math.min(10, 1 + Math.floor((9 * Math.min(STAT_SQUARES[board], n)) / STAT_SQUARES[board]));
+  return Math.min(STAT_SQUARES[board], n) / STAT_SQUARES[board];
 }
 
-/** 節目の色: 前の節目から一番火種を灯した盤。同数なら段の低い盤（1.5） */
+/** 節目の色: 前の節目から一番火種を灯した盤。同数なら伸びの少ない盤（1.5） */
 export function milestoneSystem(g = ensureGrowth()) {
   return BOARD_KEYS.reduce((best, k) => {
     const a = g.litSince[k] || 0, b = g.litSince[best] || 0;
-    return a > b || (a === b && boardStep(g, k) < boardStep(g, best)) ? k : best;
+    return a > b || (a === b && boardFill(g, k) < boardFill(g, best)) ? k : best;
   }, BOARD_KEYS[0]);
 }
 

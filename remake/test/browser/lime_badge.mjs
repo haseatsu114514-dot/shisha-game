@@ -68,7 +68,7 @@ try {
         const opticalOffset = .5 * b.width / 20;
         assert(Math.abs(n.x + n.width / 2 - b.x - b.width / 2 - opticalOffset) < .1 && Math.abs(n.y + n.height / 2 - b.y - b.height / 2) < .1, 'number keeps its optical center independently of plus');
         if (count > 99) {
-          assert(geometry.plusSize <= geometry.fontSize / 2, 'plus is smaller than the digit');
+          assert(geometry.plusSize >= 12 && geometry.plusRect.height < n.height, 'plus uses readable CSS size and renders smaller than the digit');
           assert(geometry.plusRect.y < n.y && geometry.plusRect.x > n.x + n.width / 2, 'plus is at upper right of number');
         } else assert.equal(geometry.plusRect, null);
         assert(t.x >= b.x && t.y >= b.y && t.x + t.width <= b.x + b.width && t.y + t.height <= b.y + b.height, 'text fits circle');

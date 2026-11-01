@@ -9,7 +9,8 @@ import { STAT_JA } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
-const db = { lime: JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8")).messages, lover: {}, dialogues: {} };
+const limeData = JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8"));
+const db = { lime: limeData.messages, limeTemplates: limeData.templates, lover: {}, dialogues: {} };
 const allMessages = db.lime, state = {}, gains = [], plays = [], statGains = [], nudges = [];
 const completedPlay = (scene) => ({ id: typeof scene === "string" ? scene : scene?.dialogue_id, visited: [] });
 let playResult = completedPlay;
@@ -32,6 +33,7 @@ function el(spec, attrs = {}, children = []) {
 }
 const layers = Object.fromEntries(["modal", "toasts", "fx"].map((k) => [k, new Element("div")]));
 const context = vm.createContext({ console, clearTimeout, setTimeout: () => {}, requestAnimationFrame: (fn) => fn(), document: { querySelector: () => null }, Math, Date, Set, Promise });
+let hiyoriSpots = null;
 const noop = () => {}, mods = new Map();
 const values = {
   "chapter-clock.js": { chapterDay, chapterDaysLeft, relationshipElapsedDay },
@@ -45,7 +47,7 @@ const values = {
   "audio.js": { SE: { phone: noop, phoneReceive: noop, phoneSend: noop, select: noop, click: noop, cancel: noop } },
   "engine.js": { isPlaying: () => false, hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); return playResult(...a); } },
   "rules.js": { MAX_MONEY, TOURNAMENT_DAY: 14 },
-  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => ({ charId: id, closedOn: 6 }),
+  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => hiyoriSpots ? hiyoriSpots.find(s => s.id === id) : ({ charId: id, closedOn: 6 }),
     isClosed: (spot) => state.day % 7 === spot.closedOn || state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter}:${state.day}` }, "bus.js": { emit: noop },
   "bonds.js": { bondInvites: () => [], friendMessages: () => [] }, // 締めくくりの誘い・友人のLIMEは remake/test/bonds.mjs
   "story-knowledge.js": { syncMintoKnowledge: () => {} },
@@ -56,7 +58,7 @@ async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;
   if (values[name]) mod = new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name });
-  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8"), { context, identifier: name });
+  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { hiyoriInvite as testHiyoriInvite, sumiBaitoInvite as testSumiBaitoInvite };" : ""), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
@@ -67,7 +69,7 @@ const phone = phoneModule.namespace, romance = (await load("romance.js")).namesp
 const clone = (v) => JSON.parse(JSON.stringify(v));
 function reset(overrides = {}) {
   for (const key of Object.keys(state)) delete state[key];
-  Object.assign(state, { chapter: 1, phase: "daily", money: 30000, day: 6, slot: 0, flags: {}, limeRead: [], inbox: [], contacts: ["minto", "rin", "tsumugi", "naru", "adam", "sumi"], met: {}, story: {}, lastBaitoDay: 6, lovers: [], loveLevel: {}, loverSince: {}, lastDate: {}, lovePts: {}, loverEventsSeen: [] }, overrides);
+  Object.assign(state, { chapter: 1, phase: "daily", money: 30000, day: 6, slot: 0, flags: {}, limeRead: [], inbox: [], contacts: ["minto", "rin", "tsumugi", "naru", "adam", "sumi"], met: {}, story: {}, lastBaitoDay: overrides.day ?? 6, lovers: [], loveLevel: {}, loverSince: {}, lastDate: {}, lovePts: {}, loverEventsSeen: [] }, overrides);
   db.lime = allMessages; db.lover = {}; db.dialogues = {}; gains.length = 0; plays.length = 0; statGains.length = 0; nudges.length = 0; playHook = async () => {}; playResult = completedPlay;
   for (const layer of Object.values(layers)) layer.replaceChildren();
 }
@@ -318,8 +320,8 @@ for (const pts of [0, 1, 2]) {
 reset({ lovers: ["minto"] }); state.inbox.push(item({ id: "loverchat", sender: "minto", type: "chat", messages: ["おはよう"], replies: [{ text: "おはよう", affinity: 1 }] }));
 session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session); assert.equal(gains[0].pts, 3);
 
-// 六つの噂も返信可能。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
-const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 6);
+// 五つの噂も返信可能（南雲は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
+const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 5);
 for (const rumor of rumors) {
   assert(rumor.replies.length >= 2); assert(rumor.replies.some((r) => r.affinity === 0));
   for (let index = 0; index < rumor.replies.length; index++) {
@@ -408,7 +410,7 @@ reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: tr
 assert.equal(await romance.maybeConfession(async () => {}), true); assert.equal(plays.length, 1); assert(!state.flags._minto_name_known); assert.equal(state.flags._confession_due, "minto");
 
 // 外出後の話は後日読んでも時間が食い違わない。私的LIMEに店の呼び込み口調を持ち込まない。
-const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 4);
+const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outing_")); assert.equal(afterOutings.length, 5);
 for (const message of afterOutings) { const text = JSON.stringify(message); assert(!/昨日|昨夜/.test(text)); assert(text.includes("この前")); }
 const privateMinto = allMessages.filter((m) => m.sender === "minto" && m.id !== "lime_minto_day4");
 for (const message of privateMinto) assert(!/♡|生きてる〜|おはよっ|チェキ/.test(JSON.stringify(message)), message.id);
@@ -478,6 +480,39 @@ assert.equal(phone.morningMessages()[0].id, "_lover_anniv_minto_n10", "Chapter t
 reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 } }, lovers: ["minto"], contacts: ["minto"], lastDate: { minto: 12 } });
 db.lime = []; db.lover = { inviteLines: { minto: ["仕事のあと"] } };
 assert.equal(phone.morningMessages()[0].type, "invitation", "Dates remain available before the chapter-two tournament");
+
+// #2035: 正本へ移した3通は、条件・未読/既読の復元後も一度だけ配信する。
+for (const [id, sender, chapter, flag] of [
+  ["lime_naru_samechan_nickname", "naru", 1, "_samechan_first_encounter"],
+  ["lime_samechan_preparing_thanks", "samechan", 1, "_samechan_first_encounter"],
+  ["lime_samechan_opening", "samechan", 2, "_shishark_opened"],
+]) {
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  const setup = (overrides = {}) => {
+    reset({ chapter, day: 9, contacts: [sender], flags: { [flag]: true }, ...overrides });
+    db.lime = [message];
+  };
+  setup({ flags: {} });
+  assert.equal(phone.deliverMorning(), 0, `${id}: flag required`);
+  setup({ contacts: [] });
+  assert.equal(phone.deliverMorning(), 0, `${id}: contact required`);
+  setup({ chapter: chapter === 1 ? 2 : 1 });
+  assert.equal(phone.deliverMorning(), 0, `${id}: chapter required`);
+  setup();
+  assert.equal(phone.deliverMorning(), 1, `${id}: deliver when eligible`);
+  assert.equal(state.inbox[0].id, id);
+  assert.equal(state.inbox[0].read, false);
+  const unread = clone(state);
+  setup(unread);
+  assert.equal(phone.deliverMorning(), 0, `${id}: unread survives restore without duplicate`);
+  assert.equal(state.inbox[0].read, false);
+  state.inbox[0].read = true; state.inbox[0].done = true; state.limeRead.push(id);
+  const read = clone(state);
+  setup(read);
+  assert.equal(phone.deliverMorning(), 0, `${id}: read survives restore without redelivery`);
+  assert.equal(state.inbox[0].read, true);
+}
 
 // #1178 CH2-TF-02/03: 実データの日数指定LIMEを章内日で配信する。
 for (const [id, sender, due] of [
@@ -609,4 +644,171 @@ state.inbox.push(item(invitation("c04_private", "minto"), { account: "minto_priv
 assert.equal(phone.invitationReadBeforeMeeting({ originId: "c04_private", sender: "minto" }), "minto_private");
 reset();
 
+// #1897: 大会当日の応援は、本文がある相手のうち連絡先を交換した人から届く（固定の送り主リストを持たない）。
+const cheers = (overrides) => { reset({ day: 14, ...overrides }); return [...phone.morningMessages({ tournamentDay: true }).map((m) => m.id)].sort(); };
+assert.deepEqual(cheers({ contacts: ["tsumugi", "minto", "rin"] }), ["encourage_minto", "encourage_rin", "encourage_tsumugi"]);
+assert.deepEqual(cheers({ contacts: ["ageha", "hiyori"] }), [], "第1章のあげは・儚い演技中のひよりからは届かない");
+assert.deepEqual(cheers({ contacts: ["hiyori"], flags: { _hiyori_tonari_return_done: true } }), ["encourage_hiyori"]);
+assert.deepEqual(cheers({ contacts: ["samechan"] }), ["encourage_samechan"]);
+assert.deepEqual(cheers({ chapter: 2, contacts: ["ageha", "samechan"] }), ["encourage_ageha", "encourage_ch2_samechan"], "開店前の文面は第1章だけ・第2章は店からの応援");
+assert.equal(cheers({ contacts: ["tsumugi", "minto", "rin", "hiyori"], flags: { _hiyori_tonari_return_done: true } }).length, 3, "大会の朝も3通まで");
+reset();
+console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch1 ageha and hiyori gate");
+
+// #1668 2-8: 第5章の節目のLIMEは朝の配信に乗らない。openPhone で読むと返信つきで一度だけ履歴に残り、好感度は動かない。
+{
+  const chapterFive = allMessages.filter((m) => m.trigger_condition === "ch5_milestone");
+  for (const day of [6, 14]) for (const tournamentDay of [false, true]) {
+    reset({ chapter: 5, day, contacts: ["mashiro", "adam", "minto", "tsumugi", "rin"], met: { mashiro: true, adam: true } });
+    const ids = phone.morningMessages({ tournamentDay }).map((m) => m.id);
+    assert(!ids.some((id) => chapterFive.some((m) => m.id === id)), "Chapter 5 milestone LIME is not a morning message");
+  }
+  for (const milestone of ["prep", "after_match"]) {
+    reset({ chapter: 5, phase: "aftermath", day: 70, contacts: ["mashiro", "adam"], met: { mashiro: true, adam: true } });
+    const due = chapterFive.filter((m) => m.milestone === milestone);
+    assert.equal(due.length, 2);
+    const session = phone.openPhone(due, { title: "勝負のあと", time: "夜" });
+    for (let index = 0; index < due.length; index += 1) { await click(`reply-${index % 2}`); await click("phone-next"); }
+    await session;
+    assert.deepEqual(state.inbox.map((i) => i.id), due.map((m) => m.id));
+    for (const [index, entry] of state.inbox.entries()) {
+      const reply = due[index].replies[index % 2];
+      assert(entry.read && entry.done && entry.replyState === "replied", entry.id);
+      assert.deepEqual(clone(entry.log), [{ me: true, text: reply.text }, { me: false, text: reply.response }]);
+    }
+    assert(gains.every((gain) => gain.pts === 0), "No affinity from the finale's LIME");
+    assert.deepEqual(statGains, []);
+  }
+  reset();
+  console.log("[1668] PASS chapter 5 milestone LIME stays out of morning delivery and reads once with a reply");
+}
+
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority + #1081 C04 unread guard: PASS");
+
+// #2035: compare the moved definition with the previous production algorithm.
+const spotSource = await fs.readFile(new URL("js/daily/spots.js", root), "utf8");
+hiyoriSpots = ["naru", "adam", "minto"].map(id => {
+  const line = spotSource.split("\n").find(line => line.includes(`{ id: "${id}",`));
+  assert(line, id);
+  return { id, charId: /charId: "([^"]+)"/.exec(line)[1], label: /label: "([^"]+)"/.exec(line)[1], closedOn: Number(/closedOn: (\d+)/.exec(line)[1]) };
+});
+const { hasContact, spotById, isClosed } = values["spots.js"];
+function legacyHiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) {
+  if (tournamentDay || fixedNight(state.day) || ![1, 2].includes(state.chapter) || !hasContact("hiyori")
+    || !state.flags._hiyori_tonari_return_done || (state.lovers || []).includes("hiyori")) return null;
+  const recent = (state.inbox || []).filter(i => i.msg?.accept_event === "__hiyori_shop__" && i.chapter === state.chapter);
+  if (recent.some(i => state.day - i.day < 3) || (state.seed + state.day) % 4 !== 0) return null;
+  const open = ["naru", "adam", "minto"].map(spotById).filter(s => s && state.met[s.charId] && !isClosed(s));
+  if (!open.length) return null;
+  const spot = open[Math.floor(state.day / 4) % open.length];
+  return { id: `_hiyori_shop_c${state.chapter}_d${state.day}`, sender: "hiyori", type: "invitation",
+    time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: spot.id,
+    messages: [`……今夜、${spot.label}で一緒に一服しない？ 私が煙になっちゃう前に`], accept_text: "今夜、行きます",
+    decline_response: { text: "……うん。また都合のいい日に" } };
+}
+const templateBefore = JSON.stringify(db.limeTemplates);
+const plain = v => v == null ? v : clone(v);
+let comparedInvites = 0;
+for (const chapter of [0, 1, 2, 3]) for (let day = 1; day <= 28; day++) for (let seed = 0; seed < 8; seed++) {
+  for (const met of [{}, { naru: true }, { adam: true, minto: true }, { naru: true, adam: true, minto: true }]) {
+    reset({ chapter, day, seed, contacts: ["hiyori"], met, flags: { _hiyori_tonari_return_done: true } });
+    const expected = legacyHiyoriInvite();
+    assert.deepEqual(plain(phone.testHiyoriInvite()), plain(expected));
+    if (expected) comparedInvites++;
+  }
+}
+assert(comparedInvites > 0);
+for (const override of [{ contacts: [] }, { flags: {} }, { lovers: ["hiyori"] },
+  ...[1, 2, 3, 4].map(gap => ({ inbox: [{ chapter: 2, day: 8-gap, read: true, done: true, msg: { accept_event: "__hiyori_shop__" } }] })),
+  { inbox: [{ chapter: 1, day: 8, msg: { accept_event: "__hiyori_shop__" } }] },
+  { flags: { _hiyori_tonari_return_done: true, _temporary_closed_naru: "2:8" } }]) {
+  for (const opts of [{}, { tournamentDay: true }, { fixedNight: () => true }]) {
+    reset({ chapter: 2, day: 8, seed: 0, contacts: ["hiyori"], met: { naru: true, adam: true, minto: true }, flags: { _hiyori_tonari_return_done: true }, ...override });
+    assert.deepEqual(plain(phone.testHiyoriInvite(opts)), legacyHiyoriInvite(opts));
+  }
+}
+reset({ chapter: 2, day: 8, seed: 0, contacts: ["hiyori"], met: { naru: true }, flags: { _hiyori_tonari_return_done: true } });
+const first = phone.testHiyoriInvite(), second = phone.testHiyoriInvite();
+assert.notEqual(first, second); assert.notEqual(first.messages, second.messages); assert.notEqual(first.decline_response, second.decline_response);
+first.messages[0] = "changed"; first.decline_response.text = "changed";
+assert.deepEqual(plain(phone.testHiyoriInvite()), legacyHiyoriInvite());
+assert.equal(JSON.stringify(db.limeTemplates), templateBefore);
+console.log("PASS #2035: legacy invitation equivalence, boundaries and immutable template", comparedInvites);
+// Saved dynamic messages remain self-contained: acceptance does not re-resolve a template.
+const oldMessage = clone(legacyHiyoriInvite());
+state.inbox = [item(JSON.parse(JSON.stringify(oldMessage)), { chapter: 2 })];
+session = phone.openLime({ sender: "hiyori" }); await click("reply-0");
+assert.equal(state.pendingInvite.event, "__hiyori_shop__");
+assert.equal(state.pendingInvite.originId, "_hiyori_shop_c2_d8");
+assert.equal(state.pendingInvite.visitSpot, "naru");
+assert.equal(state.inbox[0].result, "accepted");
+assert(state.flags._invited__hiyori_shop_c2_d8);
+await closeThread(session);
+assert.equal(phone.deliverMorning(), 0, "Saved dynamic ID must not be delivered twice");
+assert.equal(JSON.stringify(db.limeTemplates), templateBefore);
+console.log("PASS #2035: old saved dynamic ID, acceptance event, destination and history");
+
+// #2035: frozen pre-move algorithm versus real-data template output.
+const TOURNAMENT_DAY = 14;
+function legacySumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
+  if (tournamentDay || ![1, 2].includes(state.chapter) || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
+  const id = `_sumi_baito_inv_d${state.day}`;
+  if (state.limeRead.includes(id)) return null;
+  const fixed = state.chapter === 1 && (state.day === 3 || state.day === 8);
+  const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
+  if (!fixed && !slacking) return null;
+  // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
+  // DAY3・DAY8 の固定の誘いは台本の一部なので残す
+  if (!fixed && fixedNight?.(state.day)) return null;
+  // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）
+  const reasons = [
+    "常連の団体が入ってな。人手が足りん",
+    "仕入れの業者と昼が重なってな。手が回らん",
+    "昼に貸切の予約が入った。炭番が一人足りん",
+  ];
+  return {
+    id,
+    sender: "sumi",
+    type: "invitation",
+    time_slot: "noon",
+    accept_event: "__sumi_baito__",
+    accept_text: "入ります！",
+    accept_reply: { sender: "sumi", stamp: "st_sumi_ack" },
+    hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
+    messages: [
+      "急で悪い。今日、昼のシフト入れるか？",
+      reasons[state.day % reasons.length],
+      "……代わりと言っちゃなんだが、給料は弾むぞ",
+    ],
+    decline_response: { text: "……そうか。なら、こっちで回す" },
+  };
+}
+const sumiTemplateBefore = JSON.stringify(db.limeTemplates);
+let sumiCases = 0, sumiGenerated = 0;
+for (const chapter of [0, 1, 2, 3]) for (let day = 1; day <= 30; day++) {
+  for (const lastBaitoDay of [undefined, 0, day-3, day-4, day-5, day]) for (const read of [false, true]) {
+    for (const opts of [{}, { tournamentDay: true }, { fixedNight: () => true }]) {
+      reset({ chapter, day, lastBaitoDay, limeRead: read ? [`_sumi_baito_inv_d${day}`] : [] });
+      const expected = legacySumiBaitoInvite(opts), before = JSON.stringify(state);
+      const actual = phone.testSumiBaitoInvite(opts);
+      assert.deepEqual(plain(actual), plain(expected));
+      assert.equal(JSON.stringify(state), before);
+      if (actual) { sumiGenerated++; assert(!Object.hasOwn(actual, "reasons")); }
+      sumiCases++;
+    }
+  }
+}
+reset({ day: 3 });
+const sumiOne = phone.testSumiBaitoInvite(), sumiTwo = phone.testSumiBaitoInvite();
+for (const key of ["messages", "decline_response", "accept_reply"]) assert.notEqual(sumiOne[key], sumiTwo[key]);
+sumiOne.messages[0] = "changed"; sumiOne.decline_response.text = "changed"; sumiOne.accept_reply.stamp = "changed";
+assert.deepEqual(plain(phone.testSumiBaitoInvite()), plain(legacySumiBaitoInvite()));
+assert.equal(JSON.stringify(db.limeTemplates), sumiTemplateBefore);
+const savedSumi = JSON.parse(JSON.stringify(legacySumiBaitoInvite()));
+state.inbox = [item(savedSumi, { chapter: 1 })];
+session = phone.openLime({ sender: "sumi" }); await click("reply-0");
+assert.equal(state.inbox[0].result, "accepted");
+assert(state.flags._invited__sumi_baito_inv_d3);
+await closeThread(session);
+assert.equal(JSON.stringify(db.limeTemplates), sumiTemplateBefore);
+console.log("PASS #2035 sumi: equivalence / boundaries / independent copies / saved acceptance", sumiCases, sumiGenerated);

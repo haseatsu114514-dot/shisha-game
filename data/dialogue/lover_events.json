@@ -1,5 +1,5 @@
 {
-  "_comment": "恋人マイルストーンイベント（master_spec #24）。恋人Lvが上がった節目に1本再生される。id 規則: lover_{charId}_lv{N}（2本目は _b）。背景は店外・プライベート。はじめの立ち絵は出さない（一人称）。",
+  "_comment": "恋人の節目イベント（master_spec #24）。♥3の分岐→♥5の告白で交際が成立し state.lovers に入った相手だけが対象。交際後の絆Lv（state.loveLevel）が上がった節目に1本再生される。id 規則: lover_{charId}_lv{N}（2本目は _b）。背景は店外・プライベート。はじめの立ち絵は出さない（一人称）。",
   "dialogues": [
     {
       "dialogue_id": "lover_tsumugi_lv1",
@@ -26,7 +26,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……この前は、はじめさんからだったので。……今日は、わたしから"
+          "text": "……この前は、はじめさんからだったので。……今日は、私から"
         },
         {
           "speaker": "hajime",
@@ -49,12 +49,6 @@
           "text": "……今日のこと、ノートに描きます。……２人の、いちばん最初のページ"
         },
         {
-          "type": "apply",
-          "stats": {
-            "sense": 2
-          }
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "見せてもらえる？ そのページ"
@@ -68,11 +62,6 @@
           "speaker": "",
           "face": "",
           "text": "帰り道はいつもの倍、ゆっくり歩いた。それでも、あっという間だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
         }
       ]
     },
@@ -101,7 +90,7 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "……わたしに見える色、です。お客さんの煙、ぜんぶ"
+          "text": "……私に見える色、です。お客さんの煙、ぜんぶ"
         },
         {
           "speaker": "hajime",
@@ -114,13 +103,6 @@
           "text": "……はじめさんのは、いちばん最後のページ。……いちばん、好きな色だから"
         },
         {
-          "type": "apply",
-          "stats": {
-            "sense": 2,
-            "insight": 1
-          }
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "最後のページには、淡いオレンジの煙が、画面いっぱいに描かれていた。"
@@ -129,11 +111,6 @@
           "speaker": "tsumugi",
           "face": "smile",
           "text": "……あったかい色。……tonariの、カウンターの色です"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【センス】が少し上がった。"
         }
       ]
     },
@@ -152,7 +129,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……お店のじゃなくて。わたしのために、だけの一台"
+          "text": "……お店のじゃなくて。私のために、だけの一台"
         },
         {
           "speaker": "",
@@ -162,7 +139,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……澄んだ、水色。……今、わたしが、すごく落ち着いてる色"
+          "text": "……澄んだ、水色。……今、私が、すごく落ち着いてる色"
         },
         {
           "speaker": "tsumugi",
@@ -185,13 +162,6 @@
           "text": "……うん。君がいるなら、こわくない"
         },
         {
-          "type": "apply",
-          "stats": {
-            "guts": 2,
-            "sense": 1
-          }
-        },
-        {
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……この一台の色、忘れないように、覚えて帰ります"
@@ -200,11 +170,6 @@
           "speaker": "",
           "face": "",
           "text": "誰もいない店で、煙がひとすじ、ゆっくりほどけていった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【洞察】が少し上がった。"
         }
       ]
     },
@@ -223,7 +188,7 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "……わたし、昔。煙の色の話をして、嘘つきって言われたことがあって"
+          "text": "……私、昔。煙の色の話をして、嘘つきって言われたことがあって"
         },
         {
           "speaker": "tsumugi",
@@ -241,13 +206,6 @@
           "text": "……俺も。君の見てる世界を、もっと知りたい"
         },
         {
-          "type": "apply",
-          "stats": {
-            "charm": 2,
-            "insight": 1
-          }
-        },
-        {
           "speaker": "tsumugi",
           "face": "smile",
           "text": "……じゃあ、少しずつ。……ぜんぶは、まだ、恥ずかしいので"
@@ -256,11 +214,6 @@
           "speaker": "",
           "face": "",
           "text": "それから公園を出るまで、つむぎはずっと、半歩となりにいた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【洞察】が少し上がった。"
         }
       ]
     },
@@ -294,19 +247,12 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……わたしと、はじめさんの、今の色。……きっと、また変わります。……変わっても、描き続けて、いいですか"
+          "text": "……私と、はじめさんの、今の色。……きっと、また変わります。……変わっても、描き続けて、いいですか"
         },
         {
           "speaker": "hajime",
           "face": "smile",
           "text": "……約束する。何色になっても、ずっと描いてほしい"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "sense": 3,
-            "charm": 1
-          }
         },
         {
           "speaker": "",
@@ -316,12 +262,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……捨てないですよ。……ここまでの色も、ぜんぶ、わたしなので"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
+          "text": "……捨てないですよ。……ここまでの色も、ぜんぶ、私なので"
         }
       ]
     },
@@ -368,12 +309,6 @@
           "text": "……ばか、……ありがと"
         },
         {
-          "type": "apply",
-          "stats": {
-            "charm": 2
-          }
-        },
-        {
           "speaker": "minto",
           "face": "ura_smile",
           "text": "……次のお休みも、また会えたらうれしい。……ゆっくり、予定を合わせようね"
@@ -382,11 +317,6 @@
           "speaker": "",
           "face": "",
           "text": "別れ際の小さな手は、店の誰も知らない、栞さんの手だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
         }
       ]
     },
@@ -428,13 +358,6 @@
           "text": "……うん。私も、そうしたい、……一緒に、ね"
         },
         {
-          "type": "apply",
-          "stats": {
-            "insight": 2,
-            "charm": 1
-          }
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "静かなお店の前で、栞さんは少しだけ長く立ち止まった。"
@@ -443,11 +366,6 @@
           "speaker": "",
           "face": "",
           "text": "自分で掛け直した看板を、そっと見上げる。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【洞察】が少し上がった。"
         }
       ]
     },
@@ -484,13 +402,6 @@
           "text": "……っ、〜〜！……もう、ほんと、その素直なの、心臓に、わるい……"
         },
         {
-          "type": "apply",
-          "stats": {
-            "charm": 2,
-            "guts": 1
-          }
-        },
-        {
           "speaker": "minto",
           "face": "ura_smug",
           "text": "……ね、トングのほうは、お店で使ってるの、……見ても、笑わないでよ"
@@ -499,11 +410,6 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "笑わないよ。今度、こっそり見せて"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】が少し上がった。"
         }
       ]
     },
@@ -540,21 +446,9 @@
           "text": "……ふふ。約束ね。……ひとりの夢が、ふたりの夢になった、……こんなの、初めて"
         },
         {
-          "type": "apply",
-          "stats": {
-            "charm": 2,
-            "insight": 1
-          }
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "栞さんの部屋の冷蔵庫に「試作パフェ・一号」と書かれたメモが、こっそり貼ってあった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
         }
       ]
     },
@@ -591,12 +485,6 @@
           "text": "……こんなに、楽なの、生まれて初めて。……ありがとね、はじめくん"
         },
         {
-          "type": "apply",
-          "stats": {
-            "charm": 3
-          }
-        },
-        {
           "speaker": "hajime",
           "face": "smile",
           "text": "……何か、作ろうか"
@@ -605,11 +493,6 @@
           "speaker": "minto",
           "face": "ura_smile",
           "text": "ん、……ふたりで作ろ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
         }
       ]
     },
@@ -679,17 +562,6 @@
           "speaker": "rin",
           "face": "smile",
           "text": "……それは、もう一回聞いてもいい"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "sense": 2
-          }
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
         }
       ],
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
@@ -760,18 +632,6 @@
           "speaker": "",
           "face": "",
           "text": "歩きながら、今夜食べたいものを相談した。二人とも、相手の返事が終わるまで待った。"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "sense": 2,
-            "technique": 1
-          }
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【センス】が少し上がった。"
         }
       ],
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
@@ -837,18 +697,6 @@
           "speaker": "",
           "face": "",
           "text": "別れる前、凛さんが俺の袖を引いた。短い抱擁のあとも、指がしばらく離れなかった。"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "insight": 2,
-            "sense": 1
-          }
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【洞察】が少し上がった。"
         }
       ],
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
@@ -919,18 +767,6 @@
           "speaker": "",
           "face": "",
           "text": "腕を回すと、彼女の頭が少しだけ肩に寄った。返事を急がず、そのまま一緒に座っていた。"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "charm": 2,
-            "insight": 1
-          }
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】が少し上がった。"
         }
       ],
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
@@ -1011,18 +847,6 @@
           "speaker": "",
           "face": "",
           "text": "唇が触れて、離れる。笑った顔まで近いまま、次に会う日を二人で決めた。"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "sense": 2,
-            "charm": 2
-          }
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
         }
       ],
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
@@ -1065,12 +889,6 @@
           "text": "……でもさ。うちの直感、ハジメっちのこと『当たり』って言ってる。この直感は、ガチで外さないから"
         },
         {
-          "type": "apply",
-          "stats": {
-            "guts": 2
-          }
-        },
-        {
           "speaker": "ageha",
           "face": "smile",
           "text": "ってことで、記念写真！ 初デートのやつは一生モンだから！"
@@ -1079,11 +897,6 @@
           "speaker": "",
           "face": "",
           "text": "撮った写真は、その日のうちに待ち受けになっていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
         }
       ]
     },
@@ -1120,13 +933,6 @@
           "text": "うちそういうの、匂いで分かる。……ハジメっちの店も、好きだよ。客のこと"
         },
         {
-          "type": "apply",
-          "stats": {
-            "sense": 2,
-            "guts": 1
-          }
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "……あげはの『匂いで分かる』、俺も欲しいな"
@@ -1135,11 +941,6 @@
           "speaker": "ageha",
           "face": "smile",
           "text": "あげない！ ……けど、隣で見てるのはタダだよ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【センス】が少し上がった。"
         }
       ]
     },
@@ -1186,21 +987,9 @@
           "text": "『大丈夫』って言われるより、そっちがいい。……ありがと"
         },
         {
-          "type": "apply",
-          "stats": {
-            "guts": 2,
-            "insight": 1
-          }
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "数日後、LIMEに「今日ちょい震える日。夜、来て」とだけ届いた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】が少し上がった。"
         }
       ]
     },
@@ -1237,13 +1026,6 @@
           "text": "違うから、並べると、楽しい。……いつか、隣の台で一緒に作ろ？"
         },
         {
-          "type": "apply",
-          "stats": {
-            "sense": 2,
-            "charm": 1
-          }
-        },
-        {
           "speaker": "hajime",
           "face": "smile",
           "text": "いいね。……震える日は、炭は俺が置く。香りはあげはが決めて"
@@ -1252,11 +1034,6 @@
           "speaker": "ageha",
           "face": "smile",
           "text": "約束な！ 指切りとかじゃなくて、バイブスで契約ね！"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【センス】が少し上がった。"
         }
       ]
     },
@@ -1303,13 +1080,6 @@
           "text": "あはは！知ってる！……うちも。ガチで、ずっと好（ハオ）だわ"
         },
         {
-          "type": "apply",
-          "stats": {
-            "guts": 2,
-            "charm": 2
-          }
-        },
-        {
           "speaker": "ageha",
           "face": "normal",
           "text": "……あとさ。今日、ちょい疲れてる日。……肩、貸して"
@@ -1323,11 +1093,6 @@
           "speaker": "",
           "face": "",
           "text": "やわらかい顔のまま、あげはは肩に頭を乗せた。今日は、写真を撮らなかった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
         }
       ]
     },
@@ -1365,7 +1130,7 @@
         },
         {
           "speaker": "mashiro",
-          "face": "sad",
+          "face": "yawn",
           "text": "……充電中……"
         },
         {
@@ -1382,11 +1147,6 @@
           "speaker": "mashiro",
           "face": "sleep",
           "text": "……はじめくんのそば、安心する……えへへ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
         }
       ]
     },
@@ -1446,16 +1206,6 @@
           "speaker": "mashiro",
           "face": "smile",
           "text": "さすが、のみこみ早いねぇ……えへへ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【技術】が少し上がった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【洞察】が少し上がった。"
         }
       ]
     },
@@ -1474,7 +1224,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "テツコが足元で丸くなっている。"
+          "text": "てつこが足元で丸くなっている。"
         },
         {
           "speaker": "mashiro",
@@ -1514,22 +1264,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "テツコが小さく鳴いた。"
+          "text": "てつこが小さく鳴いた。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "ましろちゃんが袖で目元を拭う。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】が少し上がった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【センス】が少し上がった。"
         }
       ]
     },
@@ -1589,16 +1329,6 @@
           "speaker": "mashiro",
           "face": "smile",
           "text": "じゃあ、今日も一口ずつねぇ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【魅力】が少し上がった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "……【洞察】が少し上がった。"
         }
       ]
     },
@@ -1673,16 +1403,408 @@
           "speaker": "",
           "face": "",
           "text": "煙が天井へ、ゆっくり昇っていく。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_hiyori_lv1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_axe_lounge_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出たあと、ひよりさんに袖を引かれた。着いたのは、あの斧投げの店だった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "夜の木が……私たちを呼んでる気がして……",
+          "inner": "恋人になって最初の斧投げ。ここは譲れない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "呼ばれてるなら、行かないとですね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "……【センス】が上がった。"
+          "text": "レーンに立ったひよりさんは、青い小さな的を指さして宣言した。斧が、乾いた音で縁に刺さる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_laugh",
+          "text": "入った！ ……あ、今のは、木霊が喜んだだけ……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "隠さなくていいですよ。もう知ってますから"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_normal",
+          "text": "……そっか。前は、見られたら終わりだと思ってたのにな"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_normal",
+          "text": "今は、見ててほしいって思ってる。……投げるとこも、外すとこも"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "……【魅力】が上がった。"
+          "text": "次の一投は的を外れた。ひよりさんは悔しそうに笑って、斧をこちらに差し出した。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_laugh",
+          "text": "はい、交代。はじめくんが青に入れたら、帰りに何かおごる",
+          "inner": "入らなくてもおごる。理由はあとで作る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、本気で狙います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "斧は青の少し外に刺さった。それでもひよりさんは、自分のことみたいに手を叩いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "axe_normal",
+          "text": "……惜しい。でも、今日いちばん好きな音だった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_hiyori_lv2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道、ひよりさんの足が、湯気の立つ暖簾の前で止まった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "お腹がね……少しだけ、透けてる気がして……",
+          "inner": "味噌。味玉。今日は迷わない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "味噌ですね。味玉つきで"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "なんで分かるの！？ ……あ、前に言ったか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに並んで座る。ひよりさんはポニーテールを結び直して、真剣な顔でレンゲを構えた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "最初の一口は、スープだけ。ここ大事だから"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……はあ、おいしい。今日の書類、全部溶けた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "儚い女の人、どこに行きました？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "湯気の向こうで待ってる。ラーメンの時は、出番ないの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "前はね、彼氏ができたらラーメンは隠そうって思ってた。儚くないから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "隠されてたら、この顔は見られなかったです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……そういうこと、麺すすってる時に言わないで",
+          "inner": "むせるかと思った。好き"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、ひよりさんは店のスタンプカードを二枚もらってきた。一枚を、俺の手に押しつける。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "十個たまったら、一緒に替え玉ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_hiyori_lv3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "駅までの道で、ひよりさんのスマホが震えた。画面を見た顔が、一瞬で仕事の顔になる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "……明日の朝イチの件。今ちょっと確認すれば、明日が楽になるんだけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "急ぎですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "急ぎ……ではない。でも、気になりだすと止まらないんだよね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指が返信の画面の上で止まる。少しして、ひよりさんは小さく息を吐いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "明日の私に回す。宛先も、ちゃんと明日の私"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホが、鞄の奥へしまわれた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……本日の総務、これにて閉店します"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "閉店のあいさつ、あるんですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "いま作った。こう言わないと、家でもう一回開店しちゃうから",
+          "inner": "本当は前から言いたかった。言う相手がいなかっただけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "閉店したら、あとは休むだけですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "うん。……閉店後の時間、はじめくんに使ってもいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どうぞ。延長も受け付けます"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "延長申請、通るんだ……。うちの窓口より優しい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "改札の手前で、ひよりさんはもう一度だけ振り返って手を振った。仕事の顔は、もう残っていなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_hiyori_lv4",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りのベンチで、ひよりさんが伏し目がちに夜空を見上げた。いつもの、儚いひよりさんだ。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "月が……少し欠けてるね。私みたい……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日の設定は、月ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……ねえ、真面目に聞くね。この儚いの、はじめくんは嫌じゃない？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "最初は、こうしたらモテるかもって始めたの。疲れてて、物語の中の人になりたかったのもある"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "もう付き合ってるんだし、やめた方がいいのかなって。最近ちょっと思ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "やめたいんですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……やめたくない。演じてる時の私、けっこう好きなんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、続けてください。俺は、どっちのひよりさんも見たいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消えそうな時は見つけに行くって、約束しましたし"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……覚えてたんだ",
+          "inner": "あの夜の台詞、録音しとけばよかった"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "じゃあ、続けるね。……でも、ひとつだけ設定を変える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どこをですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "儚い女は、ひとりで消えていくんじゃなくて、見つけてもらえるの、……君に"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんはまた伏し目になった。口元だけは、隠しきれずに笑っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_hiyori_lv5",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "仕事帰りに、ひよりさんを部屋へ招いた。ひよりさんは鞄を置くなり、ソファに深く沈んだ。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "本日の総務、閉店しました……。私、半透明になります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お茶、淹れますね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "ありがと……。ねえ、半透明の女はね、放っておくとそのまま消えちゃうの……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消えないようにするには、どうしたらいいですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……捕まえてて。肩、五分だけ貸して",
+          "inner": "五分で足りるわけない。延長前提"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "肩に、ひよりさんの頭の重みが乗った。ポニーテールの先が、首元をくすぐる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "前はね、閉店しても、明日の開店までずっと受付に座ってるみたいだった"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "今は、閉店したらここに来ればいいって分かってる。……それだけで、明日も行ける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつでも来てください。ご飯、用意して待ってます"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……うん。好きだよ、はじめくん。儚くないほうの声で、言っとく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、好きです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんの手を握ると、小さく笑い声がした。肩の上の重みは、五分を過ぎても離れなかった。"
         }
       ]
     },

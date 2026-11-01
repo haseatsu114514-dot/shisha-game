@@ -1,0 +1,215 @@
+/* 紙×ラベンダー＋琥珀（日常UI・DUI01〜09）。原画は assets/ui/paper/、ビルドは remake/tools/build_ui_skin.py。
+   場面の上に直接書く文字（日付の幕など）が読めるよう、全体の文字色は明るいまま。
+   紙の面の中だけ文字色の変数を墨へ切り替える（子孫へ継承される）。 */
+html:root[data-ui-theme="paper"] {
+  --gold: #e8c27a; --gold-hi: #ffe2a6; --text: #f4ede0; --text-dim: #c9bdcc;
+  --ink: #0b0812; --ink-2: #151024;
+  --paper: #f7f3ed; --paper-card: #fffcf8; --paper-line: #d5c8dc; --paper-ink: #38283f; --paper-muted: #76667e;
+  --lavender: #69497e; --lavender-soft: #e9dfef; --lavender-line: #9676a8; --amber: #d8963f; --amber-ink: #b8651f;
+  --panel: var(--paper); --panel-edge: var(--paper-line); --ui-edge: #c9b8d2;
+  --inner-edge: var(--paper-line); --inner-face: var(--paper-card); --inner-hover: #efe7f2; --inner-active: var(--lavender-soft);
+  --ui-radius: 6px; --ui-button-radius: 4px; --ui-shadow: 0 10px 30px #110a2247; --ui-button: var(--paper-card);
+  --paper-art: url("../img/ui/paper/panel.webp");
+  --lavender-art: url("../img/ui/paper/lavender.webp");
+  --vn-lounge-frame: url("../img/ui/paper/dialogue.webp");
+  --vn-lounge-narration: url("../img/ui/paper/dialogue.webp");
+  --vn-lounge-name: #fff;
+  --vn-tab-face: var(--lavender-art) center / 256px repeat, #69497e;
+  --vn-tab-edge: #69497e; --vn-tab-inner: #c3a9d566; --vn-tab-text: #fff;
+  --vn-tab-radius: 8px 8px 3px 3px; --vn-tab-shadow: 0 3px 8px #2a1a3a40;
+}
+
+/* 紙の面: 生成画像の板を九分割。中は墨の文字。 */
+html:root[data-ui-theme="paper"] :is(.panel, .modal-box, .ink-panel, .vn-log, .map-info, .map-notice, .map-time, .hud-card, .toast, .sub-menu) {
+  --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
+  color: var(--paper-ink); text-shadow: none;
+  background: var(--paper); border: 22px solid transparent; border-radius: 0;
+  border-image: var(--paper-art) 72 fill / 22px / 0 stretch;
+  box-shadow: none; filter: drop-shadow(0 10px 22px #110a2240); backdrop-filter: none;
+}
+html:root[data-ui-theme="paper"] :is(.map-notice, .map-time, .toast) { border-width: 12px; border-image-width: 12px; }
+html:root[data-ui-theme="paper"] .modal-backdrop { background: #1e14298c; }
+html:root[data-ui-theme="paper"] .modal-box h3 { color: var(--paper-ink); font-weight: 900; letter-spacing: .02em; }
+
+/* 紙の上の小さな面（入れ子の豪華な枠を作らない。GUI31） */
+html:root[data-ui-theme="paper"] :is(.st-row, .shop-item, .dc-row, .hud-level, .hud-menu, .hud-stamina) {
+  --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
+  color: var(--paper-ink); background: var(--paper-card); border: 1px solid var(--paper-line);
+  border-image: none; border-radius: 4px; box-shadow: none; filter: none;
+}
+html:root[data-ui-theme="paper"] :is(.hud-level, .hud-menu) { background: var(--paper); border-color: var(--ui-edge); box-shadow: 0 4px 10px #110a2240; }
+
+/* ボタン: 通常＝紫の枠、主・選択中＝ラベンダー塗り */
+html:root[data-ui-theme="paper"] :is(.btn, .vn-choice, .mi-go, .mi-banner, .st-tab, .shop-tab, .gl-tab, .big-choice, .spot-pin .sub-label) {
+  color: #58386c; background: var(--paper-card); border: 2px solid var(--lavender-line);
+  border-image: none; border-radius: 4px; clip-path: none; box-shadow: none; filter: none; text-shadow: none;
+}
+html:root[data-ui-theme="paper"] :is(.btn, .vn-choice, .mi-go, .st-tab, .shop-tab, .gl-tab, .big-choice):is(:hover, :focus-visible, .on, .primary) {
+  color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border-color: var(--lavender);
+  box-shadow: inset 0 0 0 1px #c3a9d566;
+}
+html:root[data-ui-theme="paper"] :is(.btn, .vn-choice, .big-choice):focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+html:root[data-ui-theme="paper"] .big-choice small { color: inherit; opacity: .8; }
+/* 紙の札は1pxの縁が付く分、左右の余白を1px詰めて元の幅に保つ（隣の看板に重ならない） */
+html:root[data-ui-theme="paper"] .spot-pin .sub-label { border-width: 1px; padding-left: 9px; padding-right: 9px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 3px 8px #0000004d; }
+html:root[data-ui-theme="paper"] .sub-title { color: var(--paper-ink); }
+
+/* 会話: 生成した紙の窓（表示と同じ縦横比に組んだ原画）＋ラベンダーの名前札 */
+/* 窓の絵が読めない（未取得・配信のずれ）時も、紙の面を必ず敷いて本文を読めるようにする（DUI12）。 */
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box::before,
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box:is(.narration, .thought)::before {
+  inset: -8px -8px -8px; background: var(--vn-lounge-frame) center / 100% 100% no-repeat, var(--paper);
+  border-radius: 8px; box-shadow: inset 0 0 0 1px #69497e40;
+  filter: drop-shadow(0 8px 18px #110a2240);
+}
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box .vn-name {
+  font-family: var(--font); font-weight: 900; color: #fff; text-shadow: none;
+}
+/* AUTO・SKIP などは窓の中へ入れる（DUI18）。窓の上の帯（外枠の内線と、本文の上の罫線のあいだ）の右側に、
+   名前札と左右で釣り合う位置へ文字だけで並べる。場面の上には何も出さない。
+   押せる範囲は44pxのまま、帯の高さ（約30px）の中央に文字を置く。本文は罫線より下から始まるので重ならない。 */
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls {
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - 44px);
+  right: calc((1280px - var(--vn-dialogue-width)) / 2 + 44px);
+  width: 300px; height: 44px; padding: 0;
+  background: none; border: 0; border-radius: 0; box-shadow: none;
+}
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls::before { display: none; }
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl { height: 44px; min-height: 44px; color: var(--lavender); font-size: 16px; font-weight: 700; border-radius: 4px; }
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { top: 16px; bottom: 16px; background: var(--paper-line); opacity: 1; }
+/* 押せる範囲（44px）は帯より広いので、塗りではなく帯の高さの淡い面と下線で示す。AUTO・SKIP中は琥珀色。 */
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl:is(:hover, :focus-visible) {
+  color: var(--paper-ink); background: linear-gradient(var(--lavender-soft), var(--lavender-soft)) center / 100% 26px no-repeat;
+  box-shadow: none; text-decoration: underline 2px var(--lavender); text-underline-offset: 4px;
+}
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl.on { color: var(--amber-ink); background: none; box-shadow: none; }
+html:root[data-ui-theme="paper"] .vn-text { color: var(--paper-ink); text-shadow: none; }
+html:root[data-ui-theme="paper"] .vn-box.narration .vn-text { color: #4a3d52; }
+html:root[data-ui-theme="paper"] .vn-box.thought .vn-text { color: #46578a; }
+html:root[data-ui-theme="paper"] .vn-inner { color: #a8345f; text-shadow: none; }
+html:root[data-ui-theme="paper"] .vn-next { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .vn-box :is(.tx-imp) { color: var(--amber-ink); text-shadow: none; }
+html:root[data-ui-theme="paper"] .vn-box .tx-hint { color: #2f6f99; }
+html:root[data-ui-theme="paper"] .vn-box :is(.tx-warn, .tx-red) { color: #b83a3a; }
+html:root[data-ui-theme="paper"] .vn-box .tx-blue { color: #3b5ea8; }
+html:root[data-ui-theme="paper"] .vn-box .tx-sub { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .vn-log .log-row b { color: var(--lavender); }
+/* 2画面表示は窓の大きさが違うので、原画を引き伸ばさず紙の面と線で描く。 */
+html:root[data-ui-theme="paper"] body.game-ds .vn-box::before,
+html:root[data-ui-theme="paper"] body.game-ds .vn-box:is(.narration, .thought)::before {
+  background: var(--paper); border: 1px solid var(--lavender); border-radius: 8px;
+}
+html:root[data-ui-theme="paper"] body.game-ds .vn-box .vn-name { font-family: var(--font); color: #fff; background: var(--lavender); border-radius: 6px 6px 2px 2px; text-shadow: none; }
+html:root[data-ui-theme="paper"] body.game-ds .vn-controls { background: var(--paper); border: 1px solid var(--paper-line); border-radius: 8px; }
+html:root[data-ui-theme="paper"] body.game-ds .vn-controls .vn-ctl { color: var(--lavender); }
+
+/* 紙の上で読めるよう、暗い面向けに明るく作られた色を濃くする。 */
+html:root[data-ui-theme="paper"] .hud-card { border-width: 10px; border-image-width: 10px; }
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .hud-card .hud-bar { background: #e6dcea; border: 1px solid #b9a5c6; }
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-area { color: var(--lavender); }
+/* 左上の札の文字色をそろえる: 項目名（所持金・次の大会まで・体力）は灰紫、日付の数字は他の見出しと同じ紫（DUI13） */
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-day b { color: var(--lavender); }
+html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-row:not(.money) b { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] :is(.cfg-row select, .ui-theme-select) {
+  background: var(--paper-card); color: var(--paper-ink); border: 1px solid var(--lavender-line);
+}
+html:root[data-ui-theme="paper"] .mi-tags .tag { background: var(--paper-card); color: var(--paper-muted); border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .mi-tags .tag.free { color: #2f6b45; border-color: #a9cdb6; background: #e2efe6; }
+html:root[data-ui-theme="paper"] .mi-tags .tag.warn { color: #a83a3a; border-color: #e3a3a3; background: #fbe6e6; }
+html:root[data-ui-theme="paper"] .mi-tags .tag.new { color: #8a5413; border-color: #e4b57a; background: #fbe9cf; }
+html:root[data-ui-theme="paper"] .st-fx { color: color-mix(in srgb, var(--sc) 45%, var(--paper-ink)); }
+html:root[data-ui-theme="paper"] .st-next { color: color-mix(in srgb, var(--sc) 55%, var(--paper-ink)); }
+html:root[data-ui-theme="paper"] .st-next-track { background: var(--paper-line); }
+html:root[data-ui-theme="paper"] :is(.radar-grid, .radar-axis) { stroke: #c9b8d2; }
+html:root[data-ui-theme="paper"] .radar-base { fill: #69497e14; stroke: #9676a8; }
+html:root[data-ui-theme="paper"] .radar-now { fill: #d8963f55; stroke: var(--amber-ink); }
+
+/* 地図の案内パネルは紙の縁を細くして、後ろの看板にかからない高さにする（DUI14）。 */
+html:root[data-ui-theme="paper"] .map-info { border-width: 10px; border-image-width: 10px; }
+
+/* 店のロゴは明るい台紙の上に描かれているので、どのUIテーマでも看板の台紙は元の生成り（store-logos.css）に戻す。 */
+html[data-ui-theme] .spot-pin.branded .shield::before { background: #fffaf0; border: 1px solid #d9c7a5; border-radius: 8px; box-shadow: none; }
+
+/* 心得の盤（経験値の盤・DUI17）: 見出し・タブ・右の説明・下の凡例を紙とラベンダーに。
+   光る管とマスで描く盤の面だけは、暗い面に嵌め込んだまま（明るい紙の上では光が見えなくなるため）。 */
+html:root[data-ui-theme="paper"] .gboard {
+  --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
+  color: var(--paper-ink); text-shadow: none;
+  background: radial-gradient(ellipse 60% 70% at 85% 10%, #e9dfef, transparent 70%), var(--paper);
+}
+html:root[data-ui-theme="paper"] .gboard .gb-board { --gold: #e8c27a; --gold-hi: #ffe2a6; --text: #f4ede0; --text-dim: #c9bdcc; color: var(--text);
+  border: 1px solid #2a1f33; border-top: 0; box-shadow: 0 6px 16px #2a1a3a33; }
+html:root[data-ui-theme="paper"] .gb-header { background: none; border-bottom: 1px solid var(--paper-line); }
+html:root[data-ui-theme="paper"] .gb-title { color: var(--lavender); text-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-level { color: var(--paper-ink); font-weight: 700; }
+html:root[data-ui-theme="paper"] .gb-gauge { background: #e6dcea; border-color: #b9a5c6; }
+html:root[data-ui-theme="paper"] .gb-gauge b { background: linear-gradient(90deg, #c98a3a, var(--amber)); box-shadow: none; }
+html:root[data-ui-theme="paper"] .gboard.can-light .gb-place { color: var(--amber-ink); font-weight: 700; }
+html:root[data-ui-theme="paper"] .gb-icon { color: var(--lavender); background: var(--paper-card); border: 2px solid var(--lavender-line); box-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-icon:is(:hover, :focus-visible) { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+/* タブ: 選んでいる盤だけ、下の暗い盤とつながる色にする。 */
+html:root[data-ui-theme="paper"] .gb-tab { color: var(--paper-muted); background: var(--paper-card); border: 1px solid var(--paper-line); border-bottom: 0; box-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-tab-head { color: color-mix(in srgb, var(--c) 70%, var(--paper-ink)); border-color: color-mix(in srgb, var(--c) 60%, var(--paper-line)); text-shadow: none; box-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-tab-line { background: var(--paper-line); }
+html:root[data-ui-theme="paper"] .gb-tab-line b { box-shadow: none; }
+html:root[data-ui-theme="paper"] .gb-tab.on { color: #f4ede0; background: #16111d; border-color: #2a1f33; box-shadow: inset 0 3px 0 var(--c); }
+html:root[data-ui-theme="paper"] .gb-tab.on .gb-tab-head { color: #fff; border-color: var(--c); }
+html:root[data-ui-theme="paper"] .gb-tab.on .gb-tab-line { background: #ffffff1f; }
+html:root[data-ui-theme="paper"] .gb-tab-target { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .gb-tab.on .gb-tab-target { color: #ffe2a6; }
+/* 右の説明: 紙の板（生成した紙の縁）にする。 */
+html:root[data-ui-theme="paper"] .gb-side,
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-side {
+  color: var(--paper-ink); background: var(--paper); border: 22px solid transparent; border-radius: 0;
+  border-image: var(--paper-art) 72 fill / 22px / 0 stretch; box-shadow: none; filter: drop-shadow(0 6px 14px #110a2233); padding: 4px 8px 4px;
+}
+html:root[data-ui-theme="paper"] .gb-side::before, html:root[data-ui-theme="paper"] .gb-side::after { display: none; }
+html:root[data-ui-theme="paper"] .gb-p-title { color: var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.gb-p-sub, .gb-p-state, .gb-hint) { color: var(--paper-muted); font-weight: 700; letter-spacing: .02em; }
+html:root[data-ui-theme="paper"] .gb-p-next { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] :is(.gb-p-quality, .gb-p-reward, .gb-p-state.s-available, .gb-p-target, .gb-bar-sum) { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .gb-p-lock { color: #7a4d9a; }
+html:root[data-ui-theme="paper"] .gb-p-state.s-pending { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gb-bar-name { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .gb-bar-line { background: #e6dcea; }
+html:root[data-ui-theme="paper"] .gb-bar-line b { background: color-mix(in srgb, var(--c) 80%, var(--paper-ink)); box-shadow: none; }
+/* 下の帯: 火種の数と凡例 */
+html:root[data-ui-theme="paper"] .gb-footer { background: var(--paper-card); border-top: 1px solid var(--paper-line); }
+html:root[data-ui-theme="paper"] .gb-hidane { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .gb-hidane b { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .gb-hidane i { filter: drop-shadow(0 0 1px #38283f99); }
+html:root[data-ui-theme="paper"] .gb-legend { color: var(--paper-muted); font-weight: 700; letter-spacing: .02em; }
+html:root[data-ui-theme="paper"] .gb-legend-item i { border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gb-legend-item i.s-available { box-shadow: 0 0 0 2px #e9dfef, 0 0 6px var(--amber); border-color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .gb-legend-item i.s-sealed { border-color: #9676a8; }
+/* 地図の左上に出る EXP の札とレベルアップの帯 */
+html:root[data-ui-theme="paper"] .exp-chip { color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border: 1px solid var(--lavender); box-shadow: 0 3px 8px #2a1a3a40; }
+html:root[data-ui-theme="paper"] .exp-chip :is(b, span) { color: #fff; }
+html:root[data-ui-theme="paper"] .gb-wallet { background: var(--paper); border: 1px solid var(--paper-line); }
+html:root[data-ui-theme="paper"] .gb-hidane.zero { opacity: .55; }
+
+/* 占いの「当たり」の選択肢は赤で示す。紙の札の上では淡い赤が読みにくいので、濃い赤にする（影なし）。 */
+html:root[data-ui-theme="paper"] .vn-choice.fortune-hint { color: #c2334a; text-shadow: none; }
+html:root[data-ui-theme="paper"] .vn-choice.fortune-hint:is(:hover, :focus-visible) { color: #fff; background: #c2334a; border-color: #c2334a; }
+
+/* 第1〜2章から使う、くじの結果とギャラリーの操作面。 */
+html:root[data-ui-theme="paper"] .kuji-cat { color: #9f325d !important; border-color: #d59ab3 !important; background: #f8e6ee; }
+html:root[data-ui-theme="paper"] :is(.kuji-card, .kuji-multi-panel, .gal) {
+  --text: var(--paper-ink); --text-dim: var(--paper-muted); --gold: var(--lavender); --gold-hi: var(--lavender);
+  color: var(--paper-ink); background: var(--paper); border-color: var(--paper-line);
+  border-image: var(--paper-art) 72 fill / 18px / 0 stretch; box-shadow: 0 10px 30px #110a2247;
+}
+html:root[data-ui-theme="paper"] :is(.kuji-overlay, .gal-overlay) { background-color: #1e1429b5; }
+html:root[data-ui-theme="paper"] .kuji-card .kuji-rank { color: var(--lavender); text-shadow: none; background: none; animation: none; }
+html:root[data-ui-theme="paper"] .kuji-card:is(.rank-S, .rank-LAST) { border-color: var(--amber); box-shadow: 0 0 0 2px var(--amber), 0 10px 30px #110a2247; }
+html:root[data-ui-theme="paper"] .kuji-card:is(.rank-S, .rank-LAST) .kuji-rank { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .gal-cell { background-color: var(--paper-card); border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .gal-cell.locked { background: repeating-linear-gradient(45deg, #efe7f2 0 10px, #e9dfef 10px 20px); }
+html:root[data-ui-theme="paper"] .gal-cell.locked span { color: var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.gal-close, .gal-tab) { color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line); }
+html:root[data-ui-theme="paper"] :is(.gal-close, .gal-tab):is(:hover, :focus-visible) { background: var(--lavender-soft); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gal-tab[aria-selected="true"] { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gal-viewer-tools { color: var(--paper-ink); background: var(--paper); }
+html:root[data-ui-theme="paper"] .gal-viewer-tools strong { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gal :is(button, .gal-cell):focus-visible { outline: 3px solid var(--amber-ink); outline-offset: 2px; }

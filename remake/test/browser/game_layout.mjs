@@ -199,7 +199,7 @@ try {
           branches:{done:[{speaker:"sumi",face:"normal",text:"選択できた。"}]}},{bg:"res://assets/backgrounds/bg_tonari_inside.png"});
       });
       await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),touch);await dsGeometry(p);
-      for(const theme of ["smoke","smoke-purple","cut-paper","amber","tissue","classic"]){
+      for(const theme of ["paper","smoke","smoke-purple","cut-paper","amber","tissue","classic"]){
         await p.evaluate(async id=>(await import("./js/core/ui-theme.js")).applyUiTheme(id),theme);
         // 2026-10-30: 縦持ちの見直しで、AUTO/SKIP/LOG/用語/設定 は下画面（触る画面）の下端のタッチバーへ移した。
         // 上画面の立ち絵の顔を覆わず、本文・選択肢とも交差しない。

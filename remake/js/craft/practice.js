@@ -60,10 +60,14 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
   }
   if (!recordPractice(cs, kind)) throw new Error("Practice interrupted before serving");
   const key = !coached && `_mastery_practice_${masteryDay(state)}_${kind}`;
+  cs.masteryGained = false;
   if (cs.pullDone && !state.flags[key] && !coached) {
     const own = Object.values(cs.practiceSpent?.own || {}).reduce((a, b) => a + b, 0);
     const total = Object.values(cs.mix).reduce((a, b) => a + b, 0);
-    notifyMastery(gainFlavorExperience(state, cs.mix, staffPractice ? 2 + 4 * own / Math.max(1, total) : 2, DB.flavorById));
+    const before = { ...state.flavorMastery };
+    const gains = gainFlavorExperience(state, cs.mix, staffPractice ? 2 + 4 * own / Math.max(1, total) : 2, DB.flavorById);
+    cs.masteryGained = gains.some(({ id }) => state.flavorMastery[id] > (before[id] || 0));
+    notifyMastery(gains);
     state.flags[key] = true;
   }
   retireScreen();

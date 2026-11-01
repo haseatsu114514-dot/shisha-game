@@ -1,0 +1,42 @@
+{
+ "model": "gpt-image-2.5-sunburst",
+ "endpoint": "images/edits",
+ "size": "1024x1024",
+ "quality": "medium",
+ "background": "transparent",
+ "images": {
+  "coal_flat_just.png": {
+   "ref": "assets/ui/making/heat_flat_lit.png",
+   "prompt": "Single isolated hookah charcoal briquette game asset, transparent background, nothing else in frame: no tongs, no stove, no bowl, no smoke, no flames, no text, no logo. Same three-quarter top-down isometric-ish view as the reference (top face and two side faces visible, wide bottom resting flat), centered with generous even transparent margin (~10% each side). Painterly semi-realistic game art matching the reference texture: porous coconut charcoal with fine cracks. Shape: a flat square coconut charcoal, wide top face, sides about one third of the width in height (moderate thickness, not thin). State: perfectly ready — every face glowing evenly bright orange-red from within, with only a very thin light-grey ash film in the cracks, no black areas left."
+  },
+  "coal_just.png": {
+   "ref": "originals/coal_flat_just.png",
+   "prompt": "Redraw this same glowing coconut charcoal, same rendering style, same orange-red glow, same view angle, same lighting, transparent background, but change the shape into an exact cube: height equal to width and depth (about three times taller than the reference), straight square faces, slightly worn corners. Single object only, centered, ~10% transparent margin on each side. No smoke, no flames, no text."
+  },
+  "coal_cold.png": {
+   "ref": "originals/coal_just.png",
+   "prompt": "Keep exactly the same object shape, silhouette, size, position, view angle, rotation and crack pattern as the reference: the cube must face the viewer at the identical orientation (same corner pointing toward the viewer, same visible top face and two side faces in the same proportions, no rotation); transparent background; single object only; no smoke, no flames, no text. Change only the burning state: completely unlit cold coconut charcoal: matte charcoal-black and dark grey, no glow at all, subtle porous texture and faint cracks visible, soft neutral lighting."
+  },
+  "coal_red.png": {
+   "ref": "originals/coal_just.png",
+   "prompt": "Keep exactly the same object shape, silhouette, size, position, view angle, rotation and crack pattern as the reference: the cube must face the viewer at the identical orientation (same corner pointing toward the viewer, same visible top face and two side faces in the same proportions, no rotation); transparent background; single object only; no smoke, no flames, no text. Change only the burning state: still heating, not ready: glowing orange-red on the lower and side areas but dark black unburnt areas remain as broad soft patches along the top face and upper edges (about one quarter of the surface black). No small isolated black dots, spots or specks anywhere, especially none on the top face."
+  },
+  "coal_white.png": {
+   "ref": "originals/coal_just.png",
+   "prompt": "Keep exactly the same object shape, silhouette, size, position, view angle and crack pattern as the reference; transparent background; single object only; no smoke, no flames, no text. Change only the burning state: left on the heat too long: covered in a thick pale grey-white ash layer over almost all faces, only faint dim orange glow showing in a few deep cracks near the bottom, edges slightly rounded and shrunken by burning."
+  },
+  "coal_flat_cold.png": {
+   "ref": "originals/coal_flat_just.png",
+   "prompt": "Keep exactly the same object shape, silhouette, size, position, view angle and crack pattern as the reference; transparent background; single object only; no smoke, no flames, no text. Change only the burning state: completely unlit cold coconut charcoal: matte charcoal-black and dark grey, no glow at all, subtle porous texture and faint cracks visible, soft neutral lighting."
+  },
+  "coal_flat_red.png": {
+   "ref": "originals/coal_flat_just.png",
+   "prompt": "Keep exactly the same object shape, silhouette, size, position, view angle and crack pattern as the reference; transparent background; single object only; no smoke, no flames, no text. Change only the burning state: still heating, not ready: glowing orange-red on the lower and side areas but noticeable dark black unburnt patches remain on the top face and upper edges (about one quarter of the surface black)."
+  },
+  "coal_flat_white.png": {
+   "ref": "originals/coal_flat_just.png",
+   "prompt": "Keep exactly the same object shape, silhouette, size, position, view angle and crack pattern as the reference; transparent background; single object only; no smoke, no flames, no text. Change only the burning state: left on the heat too long: covered in a thick pale grey-white ash layer over almost all faces, only faint dim orange glow showing in a few deep cracks near the bottom, edges slightly rounded and shrunken by burning."
+  }
+ },
+ "regenerated": "2026-10-31 JST: 全8枚を gpt-image-2.5-sunburst で作り直し。coal_cold は向きを他の状態にそろえる文、coal_red は上面の小さな黒い点を出さない文を追加"
+}

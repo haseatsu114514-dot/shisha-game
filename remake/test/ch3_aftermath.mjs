@@ -5,6 +5,9 @@ import { chapterDay } from "../js/core/chapter-clock.js";
 import { playerRegion } from "../js/core/tokyo-visits.js";
 import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene } from "../js/chapters/ch3-aftermath-progress.js";
+import { agehaConfessionDue, beginAgehaConfessionDay, AGEHA_CONFESSION_DAY_AFTER_WIN, AGEHA_HEART_MAX_PTS } from "../js/chapters/ch3-romance-entry.js";
+import { AFFINITY_RANK_PTS } from "../js/core/stats.js";
+assert.equal(AGEHA_HEART_MAX_PTS, AFFINITY_RANK_PTS[5], "ageha's ♥5 threshold must follow the shared affinity table");
 
 const ids = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup", "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"];
 assert.deepEqual(CH3_AFTERMATH_SCENES.map(scene => scene.id), ids);
@@ -115,6 +118,26 @@ assert.equal(chapterDay(value), 17);
 assert.equal(value.flags._ch3_tournament_won, true);
 assert.deepEqual(value.flags._ch3_tournament, before.flags._ch3_tournament);
 assert(!value.flags._ch4_intro);
+// #1988: 再会のままでは告白は出ず、第3章完へ。恋愛ルート（♥3で恋愛寄り・♥5）だけ、再会の翌日に告白の日へ進む。
+assert.equal(agehaConfessionDue(value), false, "no ♥3 answer: the reunion ends the chapter");
+assert.equal(beginAgehaConfessionDay(value), false);
+assert.equal(value.day, 45);
+{
+  const route = structuredClone(value);
+  route.romanceChoices = { bond_q1_ageha: { char: "ageha", value: 1, day: 20 } };
+  route.affinity.ageha = 66;
+  assert.equal(agehaConfessionDue(route), true);
+  assert.equal(beginAgehaConfessionDay(route), true);
+  assert.equal(route.day, 42 + AGEHA_CONFESSION_DAY_AFTER_WIN);
+  assert.equal(route.day, value.day + 1, "the confession is the day after the reunion");
+  assert.equal(route.slot, 0);
+  assert.equal(playerRegion(route), "home");
+  assert.equal(route.flags._ch3_cleared, true);
+  assert.equal(chapterThreeAftermathProgress(route).stage, ids.length, "the aftermath checkpoint is untouched");
+  const again = structuredClone(route);
+  assert.equal(beginAgehaConfessionDay(again), false);
+  assert.deepEqual(again, route);
+}
 assert.throws(() => chapterThreeAftermathProgress({ ...value, flags: { ...value.flags, _ch3_aftermath: { ...value.flags._ch3_aftermath, stage: 4 } } }));
 for (const [oldStage, expectedStage] of [[0, 0], [2, 2], [3, 4], [4, 6], [5, 7]]) {
   const legacy = winningSave();

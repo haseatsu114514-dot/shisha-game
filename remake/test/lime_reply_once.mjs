@@ -8,6 +8,7 @@ import test from 'node:test';
 
 const source = await fs.readFile(new URL('../js/daily/phone.js', import.meta.url), 'utf8');
 const mediaCatalog = JSON.parse(await fs.readFile(new URL('../data/lime_media.json', import.meta.url), 'utf8'));
+const limeTemplates = JSON.parse(await fs.readFile(new URL("../../data/lime_messages.json", import.meta.url), "utf8")).templates;
 const response = { text: '頑張ります', response: 'うん、お互いにね', affinity: 1 };
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const flush = async () => { for (let i = 0; i < 12; i++) await Promise.resolve(); };
@@ -28,9 +29,9 @@ async function fixture({ lover = false, reply = response, invitation = false } =
   const noop = () => {};
   const imports = {
     'util.js': { el: element, sleep: async () => {}, fitOneLine: noop, yen: String },
-    'data.js': { DB: { lime: [], manifest: { limeMedia: mediaCatalog } }, displayName: String, faceIconUrl: noop },
+    'data.js': { DB: { lime: [], limeTemplates, manifest: { limeMedia: mediaCatalog } }, displayName: String, faceIconUrl: noop },
     'lime-icons.js': { customLimeIconUrl: () => null },
-    'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
+    'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'casual-lime.js': { casualMessages: () => [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
     'travel-budget.js': { spendableMoney: () => 30000 },
     'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private }); if (pts > 0) opts?.onGain?.(.2125); },
@@ -233,7 +234,15 @@ test('accepted invitation saves one existing acknowledgement after the player re
   const f = await fixture({ invitation: true });
   f.original.day = f.item.day = 3;
   f.item.id = 'sumi-invite';
-  f.item.msg = f.api.sumiBaitoInvite();
+  const generated = f.api.sumiBaitoInvite();
+  const legacy = { id: '_sumi_baito_inv_d3', sender: 'sumi', type: 'invitation', time_slot: 'noon',
+    accept_event: '__sumi_baito__', accept_text: '入ります！',
+    accept_reply: { sender: 'sumi', stamp: 'st_sumi_ack' },
+    hint: '乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく',
+    messages: ['急で悪い。今日、昼のシフト入れるか？', '常連の団体が入ってな。人手が足りん', '……代わりと言っちゃなんだが、給料は弾むぞ'],
+    decline_response: { text: '……そうか。なら、こっちで回す' } };
+  assert.deepEqual(JSON.parse(JSON.stringify(generated)), legacy);
+  f.item.msg = JSON.parse(JSON.stringify(legacy)); // A serialized pre-template save.
   assert.equal(f.item.msg.accept_reply.stamp, 'st_sumi_ack');
   const run = f.run(); f.picks[0].resolve({ text: '入ります！', go: true });
   await flush(); await f.finish(); await run;

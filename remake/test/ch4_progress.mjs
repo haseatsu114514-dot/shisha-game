@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { newState, setState } from "../js/core/state.js";
 import { paidAction, applyStats } from "../js/core/stats.js";
-import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_PROLOGUE, CH4_RESOLUTION, CH4_MANDATORY,
+import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_VISITOR_SCENE_FILES, CH4_PROLOGUE, CH4_RESOLUTION, CH4_MANDATORY,
   CH4_TOURNAMENT_DAY, CH4_EVE_DAY, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress,
   completeChapterFourScene, endChapterFourDay, finishChapterFourEve, chapterFourMandatory,
   chapterFourSecondAvailable, chapterFourSheikhRevealed, revealChapterFourSheikh,
@@ -26,6 +26,21 @@ for (const id of [...CH4_PROLOGUE, ...CH4_RESOLUTION].map(scene => scene.id)
 for (const id of ["ch4_return", "ch4_samechan_dubai_evening", "ch4_hiyori_dubai_evening"])
   assert(!connected.includes(id), `${id} must stay unconnected`);
 assert.equal(new Set(connected).size, connected.length, "A scene is listed twice");
+// ヒロイン来訪の台本は全ファイル（ch4_visitors と *_dubai）を読込登録し、本文があり、接続場面とは重ならない。
+const visitorFiles = readdirSync(new URL("../../data/dialogue/", import.meta.url))
+  .map(name => name.replace(/\.json$/, "")).filter(name => /^ch4_(visitors|\w+_dubai)$/.test(name)).sort();
+assert.deepEqual(Object.keys(CH4_VISITOR_SCENE_FILES).sort(), visitorFiles);
+for (const [file, ids] of Object.entries(CH4_VISITOR_SCENE_FILES)) {
+  const rows = readData(`dialogue/${file}`).dialogues;
+  assert.deepEqual([...ids].sort(), rows.map(row => row.dialogue_id).sort(), `${file}: all scenes registered`);
+  for (const id of ids) {
+    assert(rows.some(row => row.dialogue_id === id && row.lines?.length), `${file}:${id}`);
+    assert(!connected.includes(id), `${id} is load-only`);
+  }
+}
+assert(readData("dialogue/ch4_rin_dubai").dialogues[0].lines
+  .some(line => line.speaker === "rin" && line.text.includes("最重要サンプルの品質管理") && line.text.includes("業務は午後で終わり")),
+"rin's visit pretext");
 // 背景の対応表は全場面・全行き先を覆い、実在の bg だけを使う。
 for (const id of connected) assert(CH4_SCENE_BG[id], `bg missing for ${id}`);
 for (const bg of [...Object.values(CH4_SCENE_BG), ...Object.values(CH4_PLACE_BG)])

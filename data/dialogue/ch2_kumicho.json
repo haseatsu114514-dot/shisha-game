@@ -377,6 +377,13 @@
           "text": "神崎さんの「0分立ち上げ」を、目の前で見せてもらった。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_kumicho",
+          "next_true": "",
+          "next_false": "lime_exchange"
+        },
+        {
           "type": "remember",
           "memory_id": "kumicho_welcome"
         },
@@ -385,7 +392,40 @@
           "face": "",
           "text": "……【根性】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "lime_exchange": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "……あんちゃん、LIMEってのはやってなさるかい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、はい。神崎さんもやってるんですか"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "若いのに教わって入れたはいいが、使い方がまだ怪しくてね"
+          },
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "変な時間に送っても、勘弁しなせえ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "こうして、神崎さんとLIMEを交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_kumicho"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_kumicho_third",
@@ -513,7 +553,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "こうして煙を出してるうちは、誰も傷つかねえ。それだけの話でさ"
+          "text": "こうして煙を出してるうちは、誰も殴らねえし殴られねえ。それだけの話でさ"
         },
         {
           "speaker": "kumicho",
@@ -553,7 +593,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（若い衆。大会の受付で話していた、昔の組の人たちのことだろうか）"
+            "text": "（若い衆。……大会で会っても、まだ知らないことばかりだ）"
           }
         ]
       }
@@ -625,7 +665,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（え!? いつの間に盃事になってたんだ!?）"
+          "text": "（え！？ いつの間に盃事になってたんだ！？）"
         },
         {
           "speaker": "kumicho",
@@ -731,7 +771,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "……大会の受付で、昔のことを自分から話してましたね"
+            "text": "……入場の時、職人として来たって言ってましたね"
           },
           {
             "speaker": "",
@@ -746,17 +786,401 @@
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "……隠したまま同じ舞台に立つのは、スジが違うと思いやしてね"
+            "text": "……あそこじゃ、煙で勝負する。それだけでさ"
           },
           {
             "speaker": "kumicho",
             "face": "normal",
-            "text": "だが、こうして煙を吸ってる間は、昔の話は野暮ってもんですわ"
+            "text": "こうして煙を吸ってる間も、野暮な話は抜きにしやしょう"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（話すべき場所では、自分から話した。ここでは、それ以上を語らない）"
+            "text": "（職人としての神崎さんは知っている。それ以上は、まだ分からない）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_kumicho_fifth",
+      "comment": "#2027 ♥4。昔馴染みの若い客が組んだ一台を吸い、神崎が怒鳴らずに本人の舌で確かめさせる。素性はまだ語らない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ryuji_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎煙草店の奥で、スーツの若い男が一人、HMDの前で固まっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前に来た時、隅のソファで頭を下げていた二人のうちの一人だ。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。いいところに来なすった"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "こいつが一台組んだんでさ。客に出す前に、あんちゃんも吸ってみてくれねえか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺でいいんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "身内の舌だけじゃ、どうしても甘くなるんでね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された一台を吸う。最初の一口から、焦げた葉の苦みが喉に残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……熱が強すぎる。立ち上げの途中で、吸うのをやめたのかもしれない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "若い男の肩が、目に見えてこわばった。神崎さんの眉間に、深いしわが寄る。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "おい、……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "声が一段低くなって、そこで止まった。神崎さんは、ちらりとこちらを見た。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……いや。お前も吸ってみな。自分の煙だ"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……っ、はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "若い男がホースを受け取り、一口吸って顔をしかめた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……苦いっす。焦げてます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そうだ。怒鳴られて覚えるより、自分の舌で覚えた方が残るんでさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "で、どこで焦がしたと思う"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……アニ、神崎さんの0分立ち上げを真似して。途中で吸うのをやめちまって"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "半端に止めりゃ、熱だけ残って葉が焦げる。……先に言わなかった俺も悪い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "若い男は深く頭を下げ、炭を下ろしに奥へ下がった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "神崎さん、今、怒らなかったですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……昔の俺なら、ここで雷を落としてたところでさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "だが、あんちゃんはいつも、まず吸ってから物を言うでしょう"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "先に煙を確かめりゃ、声を荒げる理由は案外少ねえ。……真似させてもらいやした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（俺の、真似……？）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺は、失敗した一台ほど自分で吸うようにしてるだけです"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "そいつを『だけ』と言えるのが、あんちゃんの器でさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥から、炭を組み直す小さな音が聞こえてきた。さっきより、ずっと落ち着いた手つきだった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "kumicho_taste_first"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_kumicho_sixth",
+      "comment": "#2027 ♥5。棚の湯呑みと、来なくなった若い衆の分。はじめの湯呑みを棚に足す。素性・抗争の具体は語らない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ryuji_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎煙草店に入ると、神崎さんが棚の湯呑みを一つずつ布で拭いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "湯呑み、たくさんありますね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "常連の分でさ。来る奴の顔を、湯呑みで覚えとくんですわ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の端に、使われた跡のない湯呑みが三つ並んでいる。埃一つない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その三つは……"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "sad",
+          "text": "……もう来ねえ奴の分でさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは、その三つだけを特に丁寧に拭いた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "前に話した若いのでね。来ねえと分かっちゃいるが、片付けられねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……失ったと話していた、若い衆の人たちだ）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "湿っぽい話をするつもりじゃなかったんでさ。……あんちゃん、こいつを"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが、棚の奥から真新しい湯呑みを一つ取り出した。白い地に、小さな竜が描かれている。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃんの分でさ。いつ来ても、これで茶を出しやす"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺の、ですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "五厘の兄弟に湯呑みの一つもなきゃ、格好がつかねえでしょう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……使ってもらえるように、ちゃんと通います"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "違えねえ。湯呑みは、使ってなんぼでさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "来ねえ奴の分を拭くより、来る奴に茶を淹れる方が、ずっといい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新しい湯呑みに、湯気の立つ茶が注がれた。三つの湯呑みの隣で、それだけが温かかった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "kumicho_cup"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_kumicho_bond_finale",
+      "comment": "#2027 好感度MAXの締めくくり（友情のみ）。閉店後に使い込んだドラゴンフルーツの素焼きを、盃の代わりに渡す。",
+      "metadata": {
+        "bond_finale": "kumicho"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "神崎さんの煙が、吸いたくなって"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……そいつは、何よりの口上ですわ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは奥へ消え、布に包んだ何かを両手で持って戻ってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "布がほどける。出てきたのは、縁の黒ずんだ素焼きのハガルだった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "閉店後に、俺がドラゴンフルーツを詰めてきた一台でさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "何年も火を入れてきた。土の奥まで、あの甘みが染みてやす"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんな大事なもの……"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "受け取りなせえ。こいつは盃の代わりでさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "盃ってのは、同じ酒を分けるもんだ。俺の煙を分けるなら、こいつしかねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ煙を、同じ場所で。最初に聞いた、盃の話だ）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "ただし、親子の盃じゃねえ。上も下もねえ、兄弟の盃でさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "五厘から、ちょいと格上げってとこですわ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……何分になったんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そいつは、あんちゃんがこいつで作った煙を吸ってから決めやす"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "はい。このハガルで作った一台、必ず吸ってもらいに来ます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。手入れは水洗いだけでさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "ドラゴンフルーツは火に強えが、越えりゃ焦げる。そこだけ忘れなさんな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みを抱えて店を出た。腕の中で、乾いた土からかすかに甘い匂いがした。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "おう、あんちゃん。大会の支度で忙しい時に、よく顔を出しなさる"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "おう、あんちゃん。今日もよく顔を出しなさった"
           }
         ]
       }
@@ -840,12 +1264,12 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "足は洗った身だ。困り事があったら言いな、カタギの範囲でね"
+          "text": "困り事があったら言いな。俺にできることなら、力になりやす"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（カタギの範囲。……じゃあ普段は何の範囲なんだ）"
+          "text": "（この顔で言われると迫力があるけど……頼もしい）"
         },
         {
           "speaker": "kumicho",

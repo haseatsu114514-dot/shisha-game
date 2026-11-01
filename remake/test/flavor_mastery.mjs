@@ -249,3 +249,27 @@ for (const [chapter, reg] of Object.entries(REGULATION)) {
  if (reg.supply) assert.equal(isTournamentFlavorLegal(reg.supply,Number(chapter)),true,`データ矛盾: 第${chapter}章の課題支給葉が未発売`);
 }
 console.log('PASS #1279 tournament candidates and injected mixes reject trial and prerelease leaves, including NG+ carry; release in chapter 3; 課題支給葉のデータ矛盾なし');
+
+// #1924: Chapter 5 promises one leaf and exactly 12g, regardless of bowl capacity.
+const equipment = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json',import.meta.url))).equipment;
+DB.equipById = Object.fromEntries(equipment.map(e=>[e.id,e]));
+s=core.newGame();s.chapter=5;
+for (const bowl of equipment.filter(e=>e.type==='bowl')) {
+ for (const grams of [0,11,11.9,12,12.1,13,15,20]) {
+  const cup={mode:'tournament',equip:{bowl:bowl.id},mix:{double_apple:grams}};
+  assert.equal(evaluateMix(cup).regOk,grams===12,`${bowl.id}: ${grams}g`);
+ }
+}
+for (const mix of [{double_apple:11,mint:1},{double_apple:12,mint:1},{mint:12},{double_apple:6,absal_double_apple:6}]) {
+ assert.equal(evaluateMix({mode:'tournament',equip:{bowl:'suyaki_hagal'},mix}).regOk,false,'12g must be a single leaf');
+}
+assert.equal(evaluateMix({mode:'tournament',mix:{double_apple:12,mint:0}}).regOk,true);
+for (const [chapter,required,min] of [[1,'lemon',2],[2,'afsahr_strawberry',4],[3,'chocolate',4]]) {
+ s.chapter=chapter;
+ for(const grams of [min-1,min,12,13,20]) {
+  assert.equal(evaluateMix({mode:'tournament',mix:{[required]:grams}}).regOk,grams>=min,`Chapter ${chapter} minimum unchanged`);
+ }
+}
+s.chapter=5;
+assert.equal(evaluateMix({mode:'practice',mix:{double_apple:20}}).regOk,true,'Free practice is not the fixed match');
+console.log('PASS #1924: every bowl, exact 12g boundary, single leaf, zero entries, chapters 1–3 minimums and free practice');

@@ -54,7 +54,7 @@ const mocks = {
   "daily/hud.js": { updateHud: noop }, "daily/home-rig.js": { homeRig: noop }, "daily/reel.js": { mountReel: noop },
   "daily/weather.js": { isRainy: noop }, "daily/fortune.js": { fortuneToday: noop },
   "daily/spot-access.js": { spotVisible: yes, spotAvailability: () => ({ ok: true }), freeGuide: noop },
-  "daily/spot-hours.js": { spotTimeNote: noop }, "daily/street.js": { openStreet: noop, canWalkStreet: noop, WALK_STREET: Symbol(), BACK_TO_MAP: Symbol() },
+  "daily/spot-hours.js": { spotTimeNote: noop },
   "daily/spot-people.js": { spotPeople: () => [] }, "core/store-logos.js": { hasStoreLogo: noop, storeLogo: noop },
   "daily/map-reveals.js": { newlyRevealedSpots: () => [], startSpotReveal: noop, spotRevealNotice: noop },
   "daily/facility-icons.js": { createMapFacilityIcon: noop, hasFacilityIcon: noop, FACILITY_SHEET: "fixture" },
@@ -73,7 +73,7 @@ async function moduleAt(id) {
 }
 async function load(id) { const m = await moduleAt(id); if (m.status !== "evaluated") await m.evaluate(); return m.namespace; }
 const core = await load("core/state.js"), travel = await load("daily/station-travel.js"), map = await load("daily/map.js");
-const regions = [{ id: "home", label: "地元・大須／栄", spots: [] }, { id: "widehanga", label: "隣町・ワイドハンガ", spots: [] }];
+const regions = [{ id: "home", label: "地元・大須／栄", spots: [] }, { id: "widehanga", label: "隣町・柚ヶ谷", spots: [] }];
 const fresh = (money = 1000) => {
   const s = core.newState(); Object.assign(s, { chapter: 2, day: 17, slot: 0, money });
   Object.assign(s.flags, { _ch2_region: "home", _ch2_preparation_started: true }); core.setState(s); return s;

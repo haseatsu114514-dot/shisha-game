@@ -18,6 +18,7 @@ const chapterNightSource = chapterSource.slice(start, end);
 let state = {};
 const calls = [], saves = [];
 let actionEnds = 0, reportMode = 'normal';
+let coldDraws = 0;
 const noop = () => {}, asyncNoop = async () => {};
 const unexpected = async () => { throw new Error('Unexpected unrelated chapter event'); };
 const spots = { minto: { id: 'minto' }, adam: { id: 'adam' }, c_station: { id: 'c_station' } };
@@ -47,8 +48,13 @@ const overrides = {
   dayTurn: async fn => fn(), fadeBlack: async fn => fn?.(),
   chapterDay: () => state.day, daysLeft: () => 14 - state.day, TOURNAMENT_DAY: 14,
   maxStamina: () => 100, staminaRatio: () => state.stamina / 100,
-  addMoney: n => state.money += n, addStamina: n => state.stamina = Math.min(100, state.stamina + n),
-  catchesCold: () => false, conditionForRatio: () => ({ health: 'green' }),
+  spendableMoney: () => state.money,
+  addMoney: n => state.money += n, addStamina: n => state.stamina = Math.max(0, Math.min(100, state.stamina + n)),
+  staminaAfter: n => Math.max(0, state.stamina + n), coldRisk: ratio => ratio <= .25,
+  catchesCold: () => { coldDraws++; return false; }, fitActive: () => false,
+  modal: async options => { calls.push({ type: 'stamina-warning', options: options.options }); return options.options[0].value; },
+  rescheduleInvitation: (inv, note) => { calls.push({ type: 'rescheduled', note }); state.pendingInvite = null; },
+  conditionForRatio: () => ({ health: 'green' }),
   paidAction: async fn => ({ value: await fn(), spent: 0 }), play,
   chooseSpot: async opts => {
     assert(calls.length < 100, 'Calendar did not progress');
@@ -110,7 +116,7 @@ function reset({ day = 2, slot = 0, flags = {}, money = 10000, stamina = 80 } = 
   replaceState({ chapter: 1, day, slot, money, stamina,
     flags: { _errand_scout_done: true, _c_station_registered: true, [`_morning_${day}`]: true, ...flags },
     story: {}, met: {}, visitedDay: {}, stats: {}, inbox: [], deferredNightEvents: [], restDay: null });
-  calls.length = 0; saves.length = 0; actionEnds = 0; reportMode = 'normal';
+  calls.length = 0; saves.length = 0; actionEnds = 0; coldDraws = 0; reportMode = 'normal';
 }
 const countScene = id => calls.filter(x => x.type === 'scene' && x.id === id).length;
 const countArrival = () => calls.filter(x => x.type === 'beat' && x.text === salary.beat).length;
@@ -205,3 +211,25 @@ for (const mode of ['cancel', 'load']) {
   assert.equal(state.money, mode === 'load' ? 4321 : 14000); assert.equal(actionEnds, 0);
   console.log(`delivery night: report ${mode} cannot finish the old day PASS`);
 }
+
+reset({ stamina: 15 });
+await run();
+const deliveryWarnings = calls.filter(x => x.type === 'stamina-warning');
+assert.equal(deliveryWarnings.length, 2, 'Each mandatory delivery warns before spending stamina');
+assert(deliveryWarnings.every(x => x.options.length === 1 && x.options[0].value === true));
+assert.equal(actionEnds, 2, 'Both deliveries still finish');
+assert.equal(coldDraws, 2, 'Mandatory deliveries still receive the normal cold-risk draw');
+console.log('delivery night: red stamina warns without cancelling deliveries or cold draws PASS');
+
+for (const afterClose of [false, true]) {
+  reset({ slot: afterClose ? 2 : 0, flags: { ...completed, _delivery_report_done: true }, stamina: 15 });
+  state.pendingInvite = { event: 'test_invitation', sender: 'minto', day: state.day, slot: afterClose ? 1 : 0,
+    afterClose, queuedAfterClose: afterClose };
+  await run({});
+  assert.equal(calls.filter(x => x.type === 'stamina-warning').length, 1);
+  assert.equal(calls.filter(x => x.type === 'rescheduled').length, 1);
+  assert.equal(state.pendingInvite, null);
+  assert.equal(coldDraws, 0, 'Declining an invitation does not draw for illness');
+  assert.equal(countScene('test_invitation'), 0);
+}
+console.log('delivery night: declined daytime and after-close invitations reschedule without illness draw PASS');

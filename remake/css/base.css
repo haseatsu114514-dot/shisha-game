@@ -424,7 +424,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .gc-meta { display: flex; flex-direction: column; gap: 2px; }
 .gc-top { font-family: var(--font); font-size: 14px; letter-spacing: 0.04em; color: var(--gc); }
 .gc-main { font-size: 21px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
-.gc-sub { font-size: 13px; letter-spacing: 0.06em; color: var(--text-dim); }
+.gc-sub { font-size: 13px; letter-spacing: .02em; color: var(--text-dim); }
 .gc-evolution { font-size: 20px; line-height: 1.5; color: var(--gold-hi); }
 .gc-fx { margin-top: 3px; padding: 2px 8px; font-size: 14px; font-weight: 700; color: #1a1018; background: var(--gc); border-radius: 3px; align-self: flex-start; }
 .gain-card.st-technique { --gc: var(--stat-technique); }
@@ -522,12 +522,20 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 @keyframes flash { from { opacity: 0.9; } to { opacity: 0; } }
 
 #stage.shake { animation: shake 0.38s linear; }
+@media (prefers-reduced-motion: reduce) {
+  .flash, #stage.shake { animation: none !important; }
+  .flash { display: none; }
+}
 /* 拡縮の transform と独立した translate プロパティで揺らす */
 @keyframes shake {
   10%, 90% { translate: -2px 1px; }
   20%, 80% { translate: 4px -2px; }
   30%, 50%, 70% { translate: -6px 2px; }
   40%, 60% { translate: 6px -1px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flash { animation: none; opacity: 0; }
+  #stage.shake { animation: none; }
 }
 
 .chapter-title-shield { position: absolute; inset: 0; pointer-events: auto; }
@@ -749,19 +757,19 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .save-slot.auto { border-left-color: #7fb8d4; border-color: rgba(127, 184, 212, 0.45); background: linear-gradient(90deg, rgba(127, 184, 212, 0.16), rgba(255, 255, 255, 0.03) 70%); }
 .save-slot.blank { background: rgba(255, 255, 255, 0.02); border-style: dashed; border-left-style: solid; }
 .ss-label { flex: none; display: flex; flex-direction: column; gap: 2px; width: 104px; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; color: var(--gold-hi); }
-.ss-label small { font-size: 11px; letter-spacing: 0.28em; color: var(--gold); }
+.ss-label small { font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--gold); }
 .save-slot.auto .ss-label { color: #a9d6ec; }
 .save-slot.auto .ss-label small { color: #7fb8d4; }
 .ss-info { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .ss-info b { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-size: 16px; line-height: 1.25; }
 .ss-info em { font-style: normal; }
-.ss-chapter { font-size: 12px; letter-spacing: 0.16em; color: var(--gold-hi); }
+.ss-chapter { font-size: 12px; letter-spacing: .02em; color: var(--gold-hi); }
 .ss-phase { padding: 0 6px; font-size: 12px; color: var(--text-dim); border: 1px solid var(--panel-edge); border-radius: 3px; }
 .ss-info small { font-size: 14px; line-height: 1.2; color: var(--text-dim); }
 .ss-info.empty { color: var(--text-dim); letter-spacing: 0.2em; }
 .ss-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
 .ss-stat { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.ss-stat small { font-size: 11px; line-height: 1; letter-spacing: 0; white-space: nowrap; color: var(--text-dim); }
+.ss-stat small { font-size: 12px; font-weight: 700; line-height: 1; letter-spacing: 0; white-space: nowrap; color: var(--text-dim); }
 .ss-stat i { display: block; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
 .ss-stat i::after { content: ""; display: block; width: var(--v); height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-hi)); }
 .save-slot.auto .ss-stat i::after { background: linear-gradient(90deg, #7fb8d4, #a9d6ec); }

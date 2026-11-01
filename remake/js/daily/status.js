@@ -11,6 +11,8 @@ import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
+import { growthEnabled, ensureGrowth } from "../core/growth.js";
+import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STAT_SQUARES, statCount, statRatio, perkTotals } from "../core/growth-board.js";
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
@@ -50,6 +52,61 @@ export function radar(stats, baseline, size = 340) {
     svg.append(s);
   });
   return svg;
+}
+
+/**
+ * 心得の盤の三角のグラフ（2026-10-30 オーナー「9段とか10段みたいな概念は無くす。盤の伸びをステータスグラフに」SBD63）。
+ * 才能・感覚・理論の3つの角。灯した能力のマスの割合だけ伸びる。段の文字は出さない。
+ */
+export function boardTriangle(ratios, size = 340) {
+  const c = size / 2, R = size * 0.38;
+  const pt = (i, r) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / 3; return [c + Math.cos(a) * r, c + 12 + Math.sin(a) * r]; };
+  const svg = svgEl("svg", { viewBox: `0 0 ${size} ${size}`, class: "radar board-radar", "data-test": "board-radar" });
+  for (let k = 1; k <= 4; k++) svg.append(svgEl("polygon", { points: [0, 1, 2].map((i) => pt(i, (R * k) / 4).join(",")).join(" "), class: "radar-grid" }));
+  for (let i = 0; i < 3; i++) { const [x, y] = pt(i, R); svg.append(svgEl("line", { x1: c, y1: c + 12, x2: x, y2: y, class: "radar-axis" })); }
+  svg.append(svgEl("polygon", { points: BOARD_KEYS.map((k, i) => pt(i, R * Math.max(0.05, ratios[k])).join(",")).join(" "), class: "radar-now" }));
+  BOARD_KEYS.forEach((k, i) => {
+    const [x, y] = pt(i, R + 26);
+    const t = svgEl("text", { x, y, class: `radar-label rb-${k}`, "text-anchor": "middle", "dominant-baseline": "middle" });
+    t.textContent = BOARD_JA[k];
+    svg.append(t);
+  });
+  return svg;
+}
+
+/** 盤を使う時のステータス（段なし）: 三角のグラフと、盤ごとの灯した数・恩恵の合計 */
+function boardMeTab() {
+  const lit = new Set(ensureGrowth().nodes);
+  const note = el("p.st-note", { text: "心得の盤で灯した分だけ三角が広がる。項目をタップすると、何に効くかが分かる。" });
+  const rows = BOARD_KEYS.map((k) => {
+    const count = statCount(k, lit), sums = perkTotals(k, lit).filter((p) => p.sum);
+    return el(`div.st-row.st-b-${k}`, {
+      dataset: { test: `st-board-${k}` },
+      onclick: (e) => {
+        e.currentTarget.parentNode.querySelectorAll(".st-row").forEach((r) => r.classList.toggle("sel", r === e.currentTarget));
+        note.textContent = `【${BOARD_JA[k]}】${BOARD_WHERE[k]}`;
+      },
+    }, [
+      el("span.st-board-head", { text: BOARD_HEAD[k], "aria-hidden": "true" }),
+      el("div.st-info", [
+        el("div.st-line", [el("span.st-name", { text: BOARD_JA[k] }), el("span.st-count", { text: `${count}/${STAT_SQUARES[k]}` })]),
+        el("span.st-fx", { text: sums.length ? sums.map((p) => p.text).join("・") : "まだ灯していない" }),
+        el("i.st-next-track", { "aria-hidden": "true" }, [el("b", { style: { width: `${Math.round((count / STAT_SQUARES[k]) * 100)}%` } })]),
+      ]),
+    ]);
+  });
+  const condition = currentCondition();
+  return el("div.st-me", [
+    el("div.st-radar", [boardTriangle(Object.fromEntries(BOARD_KEYS.map((k) => [k, statRatio(k, lit)])))]),
+    el("div.st-side", [
+      ...rows,
+      el("div.st-misc", [
+        el("div", { text: `所持金 ${yen(state.money)}` }),
+        el("div", { text: `体力 ${condition.label} ── ${condition.hint}。眠ると回復し、外出すると行き先に応じて疲れる。` }),
+      ]),
+      note,
+    ]),
+  ]);
 }
 
 export function openStatus() {
@@ -92,6 +149,7 @@ export function tierFx(k) {
 }
 
 function meTab() {
+  if (growthEnabled()) return boardMeTab();
   const note = el("p.st-note", { text: "項目をタップすると、何に効くかが分かる。淡い面は章のはじめ、明るい面が今の自分。" });
   const rows = STAT_KEYS.map((k) => {
     const progress = nextStepProgress(k);
@@ -129,7 +187,7 @@ function meTab() {
   ]);
 }
 
-const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha"];
+const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha", "kumicho", "rei", "mashiro"];
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);
@@ -155,7 +213,7 @@ function peopleTab() {
     ]);
   });
   return el("div.st-people", [
-    el("p.pp-guide", { text: "♥は親しさ。♥3で恋愛・友情のどちらで続けるかを選び、♥5で特別なイベントと贈り物（どちらを選んでも受け取れる）。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。友達・恋人になった後もLIMEで交流は続く。" }),
+    el("p.pp-guide", { text: "♥は親しさ。交流の進み方は相手によって異なる。恋愛・友情の分岐がある相手は♥3で方向を選ぶ。特別なイベントと贈り物がある相手は♥5でその節目へ（恋愛・友情のどちらでも受け取れる）。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。LIMEの連絡先があれば、友達・恋人になった後も交流は続く。" }),
     ...(rows.length ? rows : [el("p", { text: "まだ誰とも親しくなっていない。" })]),
   ]);
 }
@@ -175,13 +233,15 @@ function recipeDetails(recipe) {
   const day = state.recipes[recipe.id]?.day;
   return el("div.recipe-detail", { dataset: { test: "recipe-detail" } }, [
     el("h4", { text: recipe.name }),
-    el("p", { text: `材料：${recipe.flavors.map(name).join(" ／ ")}` }),
-    el("p", { text: recipe.golden
-      ? `黄金比：${Object.entries(recipe.golden).map(([id, weight]) => `${name(id)} ${weight}`).join("：")}（割合）`
-      : "黄金比：未設定" }),
-    el("p.st-note", { text: "同じ系統の銘柄でも作れる。発見時のグラム数は記録していない。" }),
-    el("p", { text: `発見日：${Number.isInteger(day) && day > 0 ? `DAY ${day}` : "記録なし"}` }),
-    recipe.memo ? el("p", { text: recipe.memo }) : null,
+    el("div.recipe-detail-text", [
+      el("p", { text: `材料：${recipe.flavors.map(name).join(" ／ ")}` }),
+      el("p", { text: recipe.golden
+        ? `黄金比：${Object.entries(recipe.golden).map(([id, weight]) => `${name(id)} ${weight}`).join("：")}（割合）`
+        : "黄金比：未設定" }),
+      el("p.st-note", { text: "同じ系統の銘柄でも作れる。発見時のグラム数は記録していない。" }),
+      el("p", { text: `発見日：${Number.isInteger(day) && day > 0 ? `DAY ${day}` : "記録なし"}` }),
+      recipe.memo ? el("p", { text: recipe.memo }) : null,
+    ]),
   ]);
 }
 

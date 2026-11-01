@@ -1,0 +1,110 @@
+{
+ "face_adam.png": {
+  "sprite": "assets/sprites/characters/adam/chr_adam_normal.png",
+  "blob": "9ee76e3d2713b15022dfb78b4528a416ec64a6da"
+ },
+ "face_ageha.png": {
+  "sprite": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+  "blob": "70c28dec704ad0396116057c8d4cf3816769f098"
+ },
+ "face_da_silva.png": {
+  "sprite": "assets/sprites/characters/da_silva/chr_da_silva_normal.png",
+  "blob": "4954f11cbc0f7cf6eff4e69f811f9971b41a4d9f"
+ },
+ "face_dr_kemuri.png": {
+  "sprite": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+  "blob": "374243115385298f34ea59843817e728b5f92e0f"
+ },
+ "face_emil.png": {
+  "sprite": "assets/sprites/characters/emil/chr_emil_normal.png",
+  "blob": "d67632456082ac718ec768130162f0388ad17310"
+ },
+ "face_hajime.png": {
+  "sprite": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+  "blob": "c641dc297e7bf7c9c9df01ba4e117be79e92319b"
+ },
+ "face_hiyori.png": {
+  "sprite": "assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+  "blob": "f8b98f6bca9263402491b3f13650e4eb44a7cd4d"
+ },
+ "face_kumicho.png": {
+  "sprite": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
+  "blob": "5a18bfa77696e348b9d9ac34a90754f4bfb7db9c"
+ },
+ "face_maezono.png": {
+  "sprite": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+  "blob": "a6edd59479a9d683cfcce4933f041777091ef2de"
+ },
+ "face_mashiro.png": {
+  "sprite": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+  "blob": "e4ce6e0e6a36dcb25aa7752100b0c487a3084595"
+ },
+ "face_master_hookah.png": {
+  "sprite": "assets/sprites/characters/master_hookah/chr_master_hookah_normal.png",
+  "blob": "60d6fc8316c951a093fb97340da52171fd79e9ef"
+ },
+ "face_minto.png": {
+  "sprite": "assets/sprites/characters/minto/chr_minto_normal.png",
+  "blob": "cc475a41a050eb5c690450fd50dbd72f58406178"
+ },
+ "face_minto_private.png": {
+  "sprite": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+  "blob": "f8aaf07f55d3f1bf62f864d416b7b68dd226dcca"
+ },
+ "face_mukai_master.png": {
+  "sprite": "assets/sprites/characters/mukai_master/chr_mukai_master_normal.png",
+  "blob": "8e56659563233116ffeb5b7356e7808d433c63fd"
+ },
+ "face_nagumo.png": {
+  "sprite": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+  "blob": "37be28dcaf26b22dc17a43c55b983ef2382eece9"
+ },
+ "face_naru.png": {
+  "sprite": "assets/sprites/characters/naru/chr_naru_normal.png",
+  "blob": "63e6c74e86544b8a1eb4e3a6d2a0946c830cf787"
+ },
+ "face_pakki.png": {
+  "sprite": "assets/sprites/characters/pakki/chr_pakki_normal.png",
+  "blob": "416a8717cc7ca68f30cfe615c24a42a3906b0800"
+ },
+ "face_rei.png": {
+  "sprite": "assets/sprites/characters/rei/chr_rei_normal.png",
+  "blob": "4433a3fa184741f7695f0d886c1e787fce1d6dc7"
+ },
+ "face_rin.png": {
+  "sprite": "assets/sprites/characters/rin/chr_rin_normal.png",
+  "blob": "f92f3650ff5b3cfcf0985e53142e3025581f3c7c"
+ },
+ "face_sai.png": {
+  "sprite": "assets/sprites/characters/sai/chr_sai_normal.png",
+  "blob": "f69ba7b09ede20649635fcba8b73863e0a0869b5"
+ },
+ "face_samechan.png": {
+  "sprite": "assets/sprites/characters/samechan/chr_samechan_normal.png",
+  "blob": "22768d83367e0560e4576a1d15f2010008dc2076"
+ },
+ "face_sheikh.png": {
+  "sprite": "assets/sprites/characters/sheikh/chr_sheikh_normal.png",
+  "blob": "63e7d7cb01be0ea81ab831743ab7292295a78008"
+ },
+ "face_shisha_9000.png": {
+  "sprite": "assets/sprites/characters/shisha_9000/chr_shisha_9000_normal.png",
+  "blob": "4e3baa273978e1a1e1eec688084b0d69638617a2"
+ },
+ "face_sumi.png": {
+  "sprite": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+  "blob": "b16b085ff96c47fbef9d8561ebd26cbbc87b4d49"
+ },
+ "face_tsumugi.png": {
+  "sprite": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+  "blob": "67fff31bea79471dab2b63f89fcd8ea5c94165e0"
+ },
+ "face_uranaishi.png": {
+  "sprite": "assets/sprites/characters/uranaishi/chr_uranaishi_normal.png",
+  "blob": "1ac3c3696e9f82faee6b60a097f2fded11ebbb8c"
+ },
+ "face_volk.png": {
+  "sprite": "assets/sprites/characters/volk/chr_volk_normal.png",
+  "blob": "ced92cef37b67d592716f86f5abd5075363a2b0d"
+ }
+}

@@ -1,6 +1,7 @@
 // 第3章・東京到着から全国大会前夜までを、場面単位で保存する。
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
+import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -9,7 +10,11 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { play, hooks } from "../vn/engine.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { shinkansenRide } from "../core/scene-motions.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { onDialogueEnter } from "../daily/romance.js";
+import { pendingFriendLime, readFriendLime } from "./friend-entry.js";
+import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale, recordRomanceChoice, bondCondition } from "../daily/bonds.js";
+import { CH3_CONFESSION_IDS, confessionAnswer } from "./ch3-romance-entry.js";
+import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "./ch3-progress.js";
@@ -21,7 +26,8 @@ import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { chapterThreeGymAvailability, visitChapterThreeGym, restChapterThreeFreeTime } from "./ch3-activities.js";
 import { chapterThreeOutings, visitChapterThreeOuting } from "./ch3-outings.js";
-import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, loadStoryRoutes, availableOptionalScenes, commitOptionalRead,
+import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
+import { CH3_STORY_DIALOGUE_FILES, EVENING_WINDOW, availableOptionalScenes, commitOptionalRead,
   selectChapterThreeEvening, eveningRecord } from "./ch3-story-wiring.js";
 
 const FILES = {
@@ -42,19 +48,7 @@ let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
 const test = name => `ch3-intro-${name}`;
 
-function button(owner, text, name, action, primary = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text,
-    dataset: { test: test(name) }, onclick: () => perform(owner, action) });
-}
-
-async function perform(owner, action) {
-  if (!current(owner) || owner.busy) return;
-  owner.busy = true;
-  try { await action(); }
-  catch (error) {
-    if (current(owner)) { console.error("[ch3 intro]", error); renderError(owner); }
-  } finally { owner.busy = false; }
-}
+const { button, perform } = createChapterActions({ current, test, logName: "[ch3 intro]", renderError });
 
 function menuButton(owner) {
   return el("button.btn", { type: "button", text: "MENU", dataset: { test: test("menu") },
@@ -120,7 +114,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
         await openShop({ branch: "tokyo" });
         if (current(owner)) await renderStage(owner);
       }),
-      button(owner, "LIME・恋人との連絡", "lime", async () => {
+      button(owner, "LIME・地元との連絡", "lime", async () => {
         const social = await withLoadingNotice(import("./ch3-social.js"), loadingNotice("LIMEを準備しています…"));
         if (!current(owner)) return;
         const controller = owner.controller = new AbortController();
@@ -313,6 +307,11 @@ async function readScene(owner, scene) {
     const result = await play(dialogue, { signal: controller.signal });
     finished = current(owner) && !controller.signal.aborted && !!result && !result.cancelled;
     if (finished && strategyChoice) state.flags._ch3_strategy = strategyChoice;
+    // 告白の返事（#1930）。第3章から読み込んだ保存では hooks.onEnter が無いことがあるため、読了後に入った返事で確定する。
+    if (finished) for (const id of CH3_CONFESSION_IDS) {
+      const answer = confessionAnswer(result.visited, id);
+      if (answer) onDialogueEnter(answer, DB.dialogues[answer]);
+    }
     return finished;
   } finally {
     if (choiceHook && hooks.onChoice === choiceHook) hooks.onChoice = previousOnChoice;
@@ -389,6 +388,8 @@ async function renderStage(owner) {
       await renderStage(owner);
     }, true),
     ...trialActions(owner),
+    ...bondActions(owner),
+    ...friendActions(owner),
     ...await optionalActions(owner),
   ], scene.id === "ch3_kuze_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
 }
@@ -404,12 +405,67 @@ async function optionalActions(owner) {
 }
 
 /**
+ * 友人になった相手からのたまのLIME（#2022）。文面と間隔は daily/bonds.js（第1・2章と同じ）。
+ * 東京で一緒に働くましろは、会えているので送ってこない。本筋の予定は進めない。
+ */
+function friendActions(owner) {
+  if (!pendingFriendLime({ exclude: ["mashiro"] }).length) return [];
+  return [button(owner, "友人・知り合いのLIMEを読む", "friend-lime", async () => {
+    showScreen("none", null);
+    hud(owner);
+    await readFriendLime({ exclude: ["mashiro"] });
+    if (current(owner)) await renderStage(owner);
+  })];
+}
+
+/**
  * 回復後の試作（#1654）。久世・スティーブの場面を読んだあと、大会前の場面カードに一度ずつ出す。
  * 寄り道と同じく本筋の予定は進めない。完了と講評の既読は ch3-trials.js が保存する。
  */
 function trialActions(owner) {
   const trials = availableChapterThreeTrials(state);
   return trials.length ? [button(owner, `mukaiで試作する（${trials.length}）`, "trial-open", () => renderTrials(owner))] : [];
+}
+
+/**
+ * ましろの♥3の質問と締めくくり（#2022）。条件は第1章と同じ daily/bonds.js（質問は練習の後・♥3、締めくくりは
+ * 寄り道の全段階と質問の後・♥5）。寄り道と同じく本筋の予定は進めず、既読・回答・贈り物は bonds.js が保存する。
+ */
+function bondActions(owner) {
+  // 恋人になった後は、同じ入口で恋人の節目（#2024）。ましろは東京在住なので、会いに行ける。
+  if (loverMilestonesDue(["mashiro"]).length) return [button(owner, "ましろちゃんと過ごす（恋人）", "bond-lover", async () => {
+    await readLoverMilestoneAt(owner, "mashiro");
+    if (current(owner)) await renderStage(owner);
+  })];
+  const kind = questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
+  return kind ? [button(owner, kind === "question" ? "ましろちゃんと話す（mukai）" : "ましろちゃんに呼ばれる（mukai）",
+    `bond-${kind}`, () => readBond(owner, kind))] : [];
+}
+
+async function readBond(owner, kind) {
+  if (!current(owner)) return;
+  const background = bgUrl("bg_mukai_shop");
+  showScreen("none", null);
+  hud(owner);
+  await withScenePreparation(setBg(background, { instant: true }));
+  if (!current(owner)) return;
+  const controller = owner.controller = new AbortController();
+  // 第3章から読み込んだ保存でも、恋愛／友情の実回答と lover・romance_open の分岐を読めるようにする。
+  const previousChoice = hooks.onChoice, previousCondition = hooks.evalCondition;
+  const choiceHook = (...args) => { previousChoice ? previousChoice(...args) : recordRomanceChoice(args[5], args[4]); };
+  const conditionHook = line => previousCondition?.(line) ?? bondCondition(line);
+  hooks.onChoice = choiceHook;
+  hooks.evalCondition = conditionHook;
+  try {
+    const options = { bg: background, signal: controller.signal };
+    if (kind === "question") await playQuestionVisit("mashiro", options);
+    else if (finaleAtVisit("mashiro")) await playFinale("mashiro", options);
+  } finally {
+    if (hooks.onChoice === choiceHook) hooks.onChoice = previousChoice;
+    if (hooks.evalCondition === conditionHook) hooks.evalCondition = previousCondition;
+    if (owner.controller === controller) owner.controller = null;
+  }
+  if (current(owner)) await renderStage(owner);
 }
 
 async function renderTrials(owner) {
@@ -465,7 +521,21 @@ async function playEvening(owner, result, { plan = null, window = null, definiti
   if (window && !completeChapterThreeFreeTime(state, window.id)) return false;
   state.flags._ch3_evening = eveningRecord(result);
   save();
+  if (result.kind === "date") for (const id of result.participants) await readLoverMilestoneAt(owner, id);
   return true;
+}
+
+/**
+ * 恋人と会えた後の節目（lover_events.json）。第1・2章のデートの後と同じく、未読を一つだけ読む（#2024）。
+ * 絆は足さない（東京の訪問デートは絆・能力を動かさない）。中断しても未読のまま次に会えた時へ回る。
+ */
+async function readLoverMilestoneAt(owner, id) {
+  if (!current(owner) || !loverMilestonesDue([id]).length) return;
+  showScreen("none", null);
+  hud(owner);
+  const controller = owner.controller = new AbortController();
+  try { await readLoverMilestone(id, { signal: controller.signal }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 async function settleEveningAtReady(owner) {
@@ -515,6 +585,7 @@ async function renderFreeTime(owner, window) {
       if (!completeTokyoVisitAction(state, definitions, plan.id, window)) return;
       completeChapterThreeFreeTime(state, window.id);
       save();
+      if (kind === "date") await readLoverMilestoneAt(owner, id);
       await renderStage(owner);
     }, true)] : []),
     ...(gym.ok ? [button(owner, "CHOI-ZAPで体を動かす", "gym", async () => {

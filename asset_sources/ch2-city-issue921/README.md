@@ -120,11 +120,11 @@ A：富士山のタイル絵 ／ B：黒い石と青い水風呂 ／ C：昔な�
 
 [原寸で開く](candidates/sento.png)
 
-## Dr.fookah ワイドハンガ店
+## Dr.fookah 柚ヶ谷店
 
 A：明るい白とミント ／ B：黒と真鍮 ／ C：コンパクトな駅前店
 
-![Dr.fookah ワイドハンガ店](candidates/shop.png)
+![Dr.fookah 柚ヶ谷店](candidates/shop.png)
 
 [原寸で開く](candidates/shop.png)
 

@@ -7,6 +7,9 @@ export function anchor(d, now, beat = beatAt(d, now)) { d.beat = beat; d.at = no
 export function setTempo(d, bpm, now) { anchor(d, now); d.bpm = clamp(Number(bpm), 110, 140); }
 export function phaseError(a, b, now) { return mod(beatAt(b, now) - beatAt(a, now) + .5, 1) - .5; }
 export function phraseError(a, b, now) { return mod(beatAt(b, now) - beatAt(a, now) + 16, 32) - 16; }
+/** Automatic bass swap (no player input): incoming B keeps its lows cut until the fader reaches the middle, then A's lows are cut. dB per deck. */
+export const LOW_CUT_DB = -26;
+export function lowCutDb(x) { x = clamp(x, 0, 1); const ramp = t => (LOW_CUT_DB * clamp(t, 0, 1)) || 0; return [ramp((x - .5) / .25), ramp((.5 - x) / .25)]; }
 export function gains(x) { x = clamp(x, 0, 1); return [Math.cos(x * Math.PI / 2), Math.sin(x * Math.PI / 2)]; }
 export function createMix() {
   return { decks: [128, 126].map(bpm => ({ nativeBpm: bpm, bpm, beat: 0, at: 0, playing: false })),

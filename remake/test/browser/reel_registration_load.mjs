@@ -16,10 +16,20 @@ async function tap(page, selector, touch) {
 async function loadTitle(page, touch) {
   await page.reload({ waitUntil: 'load' });
   await page.locator('#boot').waitFor({ state: 'detached' });
+  // Use the player's instant-text preference; keep real cut-ins and UI input.
+  await page.evaluate(async () => { (await import('./js/core/state.js')).config.textSpeed = 4; });
   await tap(page, '[data-test="title-load"]:not([disabled])', touch);
   await tap(page, '[data-test="slot-0"]', touch);
 }
 async function advanceDialogue(page, touch) {
+  // The receipt includes first-meeting cut-ins and portrait entrances. Wait for
+  // the real dialogue's next marker instead of spending the polling budget on
+  // inputs ignored during those transitions or the typewriter animation.
+  if (await page.locator('#vn.active').isVisible()) {
+    await page.waitForFunction(() => !document.querySelector('#vn.active')
+      || document.querySelector('#vn.active .vn-next.show')
+      || [...document.querySelectorAll('.vn-choice')].some(node => node.getClientRects().length));
+  }
   const choices = page.locator('.vn-choice:visible');
   if (await choices.count()) {
     const register = choices.filter({ hasText: /登録|参加|お願い/ });
@@ -209,7 +219,7 @@ await suite('reel-registration-load', async check => {
           const core = await import('./js/core/state.js');
           return JSON.parse(localStorage.getItem(core.SAVE_KEY));
         });
-        assert.equal(committed.visitedDay.c_station, 2, 'Visit day was not saved before first-spin commitment');
+        assert.equal(committed.visitedDay.c_station, undefined, 'First-spin commitment must leave the customer visit available');
         assert(!committed.flags._pakki_first_spin_pending);
         assert.equal(committed.reel.count, expected.count);
         assert.equal(Object.values(committed.stats).reduce((a, b) => a + b, 0)
@@ -217,7 +227,7 @@ await suite('reel-registration-load', async check => {
         await loadTitle(page, touch);
         await mintoNext(page, touch);
         const resumed = await snapshot(page);
-        assert.equal(resumed.visitedDay, 2);
+        assert.equal(resumed.visitedDay, null);
         assert.equal(resumed.count, committed.reel.count, 'Second interruption redrew first spin');
         assert.deepEqual(resumed.stats, committed.stats, 'Second interruption changed payout');
         assert.deepEqual(resumed.xp, committed.statXp);
@@ -233,8 +243,13 @@ await suite('reel-registration-load', async check => {
       assert.equal(after.pending, 0);
       assert.equal(after.mintoDone, false); assert.equal(after.adamDone, false);
       assert.equal(after.seed, 1);
-      assert.equal(after.visitedDay, beforeLoad.visitedDay.c_station ??
-        (beforeLoad.flags._pakki_first_spin_pending ? 2 : null));
+      assert.equal(after.visitedDay, beforeLoad.visitedDay.c_station ?? null);
+      const customerAccess = await page.evaluate(async () => {
+        const { spotAvailability } = await import('./js/daily/spot-access.js');
+        const { spotById } = await import('./js/daily/spots.js');
+        return spotAvailability(spotById('c_station'));
+      });
+      assert.equal(customerAccess.ok, true, `Registration blocked a same-day customer visit: ${customerAccess.why}`);
       if (boundary === 'legacy-no-explicit-flag') {
         assert.equal(after.count, 0, 'Inferred a first spin for a legacy installed save');
         assert.deepEqual(after.stats, receipt.stats);

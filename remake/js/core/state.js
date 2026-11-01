@@ -385,8 +385,8 @@ export function newGame() {
 
 let lastComplementedAutosaveRaw = null;
 
-function writeSave() {
-  if (!state) return { raw: null, saved: false };
+function writeSave(target = state) {
+  if (!target) return { raw: null, saved: false };
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try {
     const oldRaw = localStorage.getItem(SAVE_KEY);
@@ -396,11 +396,11 @@ function writeSave() {
       lastComplementedAutosaveRaw = oldRaw;
     }
   } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
-  recordGalleryProgress(state);
-  state.savedAt = Date.now();
+  recordGalleryProgress(target);
+  target.savedAt = Date.now();
   let raw = null;
   try {
-    raw = JSON.stringify(state);
+    raw = JSON.stringify(target);
     localStorage.setItem(SAVE_KEY, raw);
     lastComplementedAutosaveRaw = raw;
     return { raw, saved: true };
@@ -485,15 +485,11 @@ export function loadFromSlot(key) {
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
   if (!migrated) return null;
-  const previous = state;
-  setState(migrated);
-  const saved = save();
+  // 保存の成否が決まるまで候補を公開しない。hud購読者は旧画面を破棄しうる。
+  const { saved } = writeSave(migrated);
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
-  if (!saved && key !== SAVE_KEY) {
-    setState(previous);
-    return null;
-  }
-  return state;
+  if (!saved && key !== SAVE_KEY) return null;
+  return setState(migrated);
 }
 
 /** ゲーム中にロードしたとき: いったん読み直して、タイトルを飛ばしてそのまま再開する */
@@ -517,21 +513,27 @@ export function wipeSave() {
 
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
-  uiTheme: "classic",  // 会話枠と共通UI。ゲームの進行とは別の端末設定。
+  uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
+  mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
   seVolume: 0.7,
   textSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい 4=瞬時
+  autoSpeed: 2,      // 1=ゆっくり 2=ふつう 3=はやい
+  skipSeenOnly: false, // 旧来の全スキップを維持し、設定で既読のみへ切替
+  reduceShake: false,
   voiceBlip: true,   // 文字送りの声（キャラ別の音程）
   // 一度見た演出（連絡先交換・シフト終了）を2回目以降だけ短くする。初回は必ずフルで見せる。
   // 既定オフ＝現状どおり。くじ・チェキ・MG(#1081 H05)は短縮しない。既読判定は state.flags を使う。
   shortSeen: false,
   statEffectColors: true, // 作り画面の能力補正を色と漢字で示す
+  introArtStyle: "graphic", // 登場カットインの絵柄。"classic" で旧（立ち絵）に戻す（2026-10-31）
 };
 
 export function loadConfig() {
   try {
     Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}"));
   } catch { /* noop */ }
+  if ("muted" in config) { config.mute = !!(config.mute || config.muted); delete config.muted; }
   return config;
 }
 

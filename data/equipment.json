@@ -130,7 +130,7 @@
       "value": "pipe_middle",
       "deprecated": true,
       "not_for_sale": true,
-      "description": "少し値が張るが、気密性が高く味と煙が安定する。大会では専門評価に少し補正が入る。"
+      "description": "旧版で使われていたスチール製パイプ。現在は販売・使用を終了した廃止品。"
     },
     {
       "id": "pipe_high",
@@ -143,7 +143,7 @@
       "value": "pipe_high",
       "deprecated": true,
       "not_for_sale": true,
-      "description": "美しさと実用性を兼ね備えた名機。味の輪郭と見栄えに補正が入る。"
+      "description": "旧版で使われていたガラス・真鍮製パイプ。現在は販売・使用を終了した廃止品。"
     },
     {
       "id": "pipe_highest",
@@ -156,7 +156,7 @@
       "value": "pipe_highest",
       "deprecated": true,
       "not_for_sale": true,
-      "description": "限られた職人しか作れない特注品。味、煙、プレゼンすべてに高い補正が入る。"
+      "description": "旧版で使われていた特注パイプ。現在は販売・使用を終了した廃止品。"
     },
     {
       "id": "winkwink_hagal",
@@ -377,6 +377,100 @@
       "gift": {
         "from": "samechan",
         "reason": "一緒に店の居心地を確かめたお礼"
+      }
+    },
+    {
+      "id": "suyaki_ageha",
+      "type": "bowl",
+      "name": "あげはが育てたホワイトグミベア専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_ageha",
+      "description": "あげはがMELTY PUFFを開けた頃から使い込んだ素焼き。ホワイトグミベアの甘い香りが土まで染み付いている。縁にクマのシールつき。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "ageha",
+        "reason": "答え合わせ係の道具",
+        "flavor": "white_gummy_bear",
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_mashiro",
+      "type": "bowl",
+      "name": "ましろが育てたブラックティー専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_mashiro",
+      "description": "ましろが、ほかの葉を消さない量を探して使い込んだ素焼き。ブラックティーの渋い香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "mashiro",
+        "reason": "ほかの葉を消さない一割を、次は自分の手で",
+        "flavor": "black_tea",
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_kumicho",
+      "type": "bowl",
+      "name": "神崎が育てたドラゴンフルーツ専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_kumicho",
+      "description": "神崎が閉店後の一服に使い込んだ素焼き。ドラゴンフルーツの甘みが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "kumicho",
+        "reason": "兄弟の盃の代わり",
+        "flavor": "dragonfruit",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_rei",
+      "type": "bowl",
+      "name": "REIが育てたローズ専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_rei",
+      "description": "REIが店を始めた頃からローズだけを詰めてきた素焼き。薔薇の香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "rei",
+        "reason": "友達のしるし",
+        "flavor": "rose",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
       }
     }
   ]

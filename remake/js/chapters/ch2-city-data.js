@@ -1,5 +1,8 @@
 // 本編の初日と独立試遊が使う同じ街・同じ台本。セーブ操作を含めない。
 import { DB } from "../core/data.js";
+// 台本の読み込みは core/chapter-data.js（#2035）。既存の呼び出し元のために再エクスポートする。
+import { readDialogues } from "../core/chapter-data.js";
+export { readDialogues };
 import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, STRAWBERRY_TRIAL_IDS } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES } from "../core/affinity-stages.js";
 
@@ -23,22 +26,6 @@ const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "rema
 const OUTING_IDS = ["aquarium", "sento", "chain"].flatMap(id => ["look", "visit", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
 const CITY_IDS = ["arrival", ...STOPS.map((stop) => stop.id), ...Object.keys(ROOMS).flatMap((id) => [`${id}_inside`, `${id}_farewell`]), "return"].map((id) => `ch2_city_${id}`);
 
-export async function readDialogues(name, required) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 15000);
-  try {
-    const response = await fetch(`../data/dialogue/${name}.json`, { cache: "no-cache", signal: controller.signal });
-    if (!response.ok) throw new Error(`${name}: HTTP ${response.status}`);
-    const data = await response.json();
-    if (!Array.isArray(data.dialogues)) throw new Error(`${name}: 台本の形式を確認してください`);
-    const dialogues = Object.fromEntries(data.dialogues.map((dialogue) => [dialogue.dialogue_id, dialogue]));
-    for (const id of required) {
-      if (!dialogues[id]?.lines?.length) throw new Error(`${name}: 台本が不足しています ${id}`);
-    }
-    return dialogues;
-  } finally { clearTimeout(timer); }
-}
-
 export async function loadCityDialogues() {
   const dialogues = await readDialogues("ch2_city", CITY_IDS);
   Object.assign(DB.dialogues, dialogues);
@@ -57,11 +44,16 @@ export async function loadChapterTwoDialogues() {
 export async function loadPreparationDialogues() {
   const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
   required.push(...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`));
-  const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS] };
+  // 神崎・REIの通い訪問の小会話（#2027）
+  required.push(...["kumicho", "rei"].flatMap(id => ["b", "c", "d"].map(suffix => `remake_ch2_${id}_repeat_${suffix}`)));
+  // 好感度MAXの締めくくり（daily/bonds.js の BOND_FINALES・#2027）
+  const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS],
+    ch2_kumicho: ["ch2_kumicho_bond_finale"], ch2_rei: ["ch2_rei_bond_finale"] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
   // 神崎・REIの長い段階会話（味の学習を含む）も通常訪問列として公開する（#1648）。
   for (const entry of Object.values(CH2_VISIT_STORIES).flat()) if (entry.file) (files[entry.file] ||= []).push(entry.scene);
-  const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id].filter(Boolean); // 店に通う回（#626）
+  // 店に通う回（#626）と♥3の質問（#1988）、♥5の締めくくり（#2023）
+  const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id, "ch2_ageha_bond_question", "ch2_ageha_bond_finale"].filter(Boolean);
   if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   if (STRAWBERRY_TRIAL_IDS.length) (files.ch2_main ||= []).push(...STRAWBERRY_TRIAL_IDS); // まかないの苺の試作（#1650）
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。

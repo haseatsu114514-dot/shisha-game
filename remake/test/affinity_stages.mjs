@@ -11,10 +11,11 @@ const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cin
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rin','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
+const limeData = JSON.parse(fs.readFileSync(new URL('../../data/lime_messages.json', import.meta.url)));
 async function fixture() {
   const memory = new Map(), events = [], plays = [], timers = new Map();
   let serial = 0, playImpl = async scene => ({ id: typeof scene === 'string' ? scene : scene.dialogue_id, visited: [] });
-  const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], equipById: {}, flavorById: {}, characters: {}, lime: JSON.parse(fs.readFileSync(new URL('../../data/lime_messages.json', import.meta.url))).messages };
+  const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], equipById: {}, flavorById: {}, characters: {}, lime: limeData.messages, limeTemplates: clone(limeData.templates) };
   const context = vm.createContext({ console, AbortController, setTimeout: fn => { timers.set(++serial,fn); return serial; }, clearTimeout: id => timers.delete(id), localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
   const known = {
     MAX_MONEY: 999999, TOURNAMENT_DAY: 14, DB: db, callName: String,
@@ -26,7 +27,7 @@ async function fixture() {
     maybeRecruitTrpgMember: async () => false, sharkSwim: async swap => swap(),
     withScenePreparation: task => task, imageReady: async () => false, toast() {}, setBg: async () => {}, sceneBg: () => ({}),
     hiyoriFirstMeetingReady: () => true,
-    tsumugiMessages: () => [], hooks: {}, giftOpen: async () => {},
+    tsumugiMessages: () => [], casualMessages: () => [], hooks: {}, giftOpen: async () => {},
     openingStatus: () => ({ok:true}), refreshPlaceCue() {}, playBgm() {}, hiyoriShopEncounterDue: () => false,
   };
   const modules = new Map(), required = new Map();
@@ -221,6 +222,91 @@ await check('chapter2 actual flags: chat/followup/ageha three visits are indepen
     }
   }
 });
+await check('chapter2 kumicho/rei finale (#2027): after every visit story and ♥5 only, once, with the gift', async f => {
+  for (const id of ['kumicho','rei']) {
+    const s=f.core.state;s.chapter=2;s.met[id]=true;s.affinity[id]=66;
+    f.db.dialogues[`ch2_${id}_bond_finale`]={dialogue_id:`ch2_${id}_bond_finale`,lines:[{speaker:'',face:'',text:'x'}]};
+    f.db.equipById[`suyaki_${id}`]={id:`suyaki_${id}`,name:id,gift:{from:id}};
+    assert.equal(f.bonds.finaleDue(id),false,'no visit story has been read');
+    const entries=f.stages.CH2_VISIT_STORIES[id];
+    const read=e=>{ if(e.done)(s.flags[e.done]||={})[id]=true; else s.flags[`_ch2_read_${e.scene}`]=true; };
+    entries.slice(0,-1).forEach(read);
+    assert.equal(f.bonds.finaleDue(id),false,'the ♥5 visit story is still unread');
+    read(entries.at(-1));
+    assert.equal(f.bonds.finaleDue(id),true);
+    s.affinity[id]=65;assert.equal(f.bonds.finaleDue(id),false,'needs ♥5');s.affinity[id]=66;
+    assert.equal(f.bonds.finaleAtVisit(id),true,'met at the shop, day or night');
+    assert.equal(await f.bonds.playFinale(id),true);
+    assert.equal(s.owned.filter(x=>x===`suyaki_${id}`).length,1);
+    assert.equal(s.finales[id].route,'friend','no romance question: friendship landing');
+    assert.equal(f.bonds.finaleDue(id),false);
+    assert.equal(await f.bonds.playFinale(id),false,'once');
+    assert.equal(s.owned.filter(x=>x===`suyaki_${id}`).length,1);
+  }
+});
+await check('ageha ♥3 question (#1988): after the newcomer visit, once, recorded only by the actual answer', async f => {
+  const s=f.core.state;s.chapter=2;s.met.ageha=true;s.affinity.ageha=33;
+  f.db.dialogues.ch2_ageha_bond_question={dialogue_id:'ch2_ageha_bond_question',lines:[{type:'choice',id:'bond_q1_ageha',romance_char:'ageha',choices:[{text:'a',next:'r',romance:1},{text:'b',next:'f',romance:0}]}],branches:{r:[],f:[]}};
+  assert.equal(f.stats.AFFINITY_GATE_CHOICES.ageha,'bond_q1_ageha');
+  assert.equal(f.bonds.questionVisitDue('ageha'),false,'the newcomer visit has not been read');
+  s.flags._ch2_talks={ageha:1};s.flags._ch2_followup_done={ageha:true};
+  assert.equal(f.stages.pendingAffinityStage(s,'ageha').scene,'remake_ch2_ageha_gyaru');
+  s.flags._ch2_read_remake_ch2_ageha_gyaru=true;s.flags._ch2_read_remake_ch2_ageha_newcomer=true;
+  { const stage=f.stages.pendingAffinityStage(s,'ageha'); assert.equal(stage.level,3); assert.equal(stage.scene,'ch2_ageha_bond_question'); assert.equal(stage.done,false); }
+  assert.equal(f.bonds.questionVisitDue('ageha'),true);
+  s.affinity.ageha=32;assert.equal(f.bonds.questionVisitDue('ageha'),false,'needs ♥3');s.affinity.ageha=33;
+  assert.equal(await f.bonds.playQuestionVisit('ageha'),false,'reading without the answer records nothing');
+  assert(!s.flags._ageha_affinity_question_done);assert.equal(f.bonds.questionVisitDue('ageha'),true);
+  f.setPlay(async()=>{f.bonds.recordRomanceChoice({id:'bond_q1_ageha',romance_char:'ageha'},{romance:1});return done;});
+  assert.equal(await f.bonds.playQuestionVisit('ageha'),true);
+  assert(s.flags._ageha_affinity_question_done);
+  assert.equal(JSON.stringify(s.romanceChoices.bond_q1_ageha),JSON.stringify({char:'ageha',value:1,day:s.day}));
+  assert.equal(f.bonds.questionVisitDue('ageha'),false);
+  assert.equal(f.stages.pendingAffinityStage(s,'ageha').scene,'remake_ch2_ageha_magazine');
+  assert.equal(await f.bonds.playQuestionVisit('ageha'),false,'asked once');
+  assert.equal(f.bonds.recordRomanceChoice({id:'bond_q1_ageha',romance_char:'ageha'},{romance:0}),false,'re-reading cannot flip the answer');
+  assert.equal(s.romanceChoices.bond_q1_ageha.value,1);
+  // 恋愛寄りの答えで恋愛の方向は開くが、日常の告白予約（romanceRouteOpen）は開かず、第3章の入口（ch3-romance-entry.js）だけが読む。
+  // 締めくくり（#2023）は♥5の会話まで読むまで出ない。
+  s.affinity.ageha=66;assert.equal(f.bonds.romanceOpen('ageha'),true);assert.equal(f.romance.romanceRouteOpen('ageha'),false);
+  assert.equal(f.bonds.finaleDue('ageha'),false);
+  // 友情寄りの答えも一度で確定し、以後の質問は出ない。
+  const t=f.fresh();t.chapter=2;t.affinity.ageha=33;t.flags._ch2_talks={ageha:1};t.flags._ch2_followup_done={ageha:true};
+  t.flags._ch2_read_remake_ch2_ageha_gyaru=true;t.flags._ch2_read_remake_ch2_ageha_newcomer=true;
+  f.setPlay(async()=>{f.bonds.recordRomanceChoice({id:'bond_q1_ageha',romance_char:'ageha'},{romance:0});return done;});
+  assert.equal(await f.bonds.playQuestionVisit('ageha'),true);
+  assert.equal(t.romanceChoices.bond_q1_ageha.value,0);assert.equal(f.bonds.questionVisitDue('ageha'),false);
+  assert.equal(f.stages.pendingAffinityStage(t,'ageha').scene,'remake_ch2_ageha_magazine');
+});
+await check('ageha ♥5 gummy stage and MELTY PUFF finale (#2023): once, gift, route from the ♥3 answer, no chapter-2 confession', async f => {
+  f.db.dialogues.ch2_ageha_bond_finale={dialogue_id:'ch2_ageha_bond_finale',lines:[{speaker:'ageha',face:'smile',text:'x'}]};
+  f.db.equipById.suyaki_ageha={id:'suyaki_ageha',name:'g',gift:{from:'ageha',flavor:'white_gummy_bear'}};
+  f.db.friends=JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  const ready=(romance)=>{
+    const s=f.fresh();s.chapter=2;s.met.ageha=true;s.affinity.ageha=48;s.flags._ch2_talks={ageha:1};s.flags._ch2_followup_done={ageha:true};
+    for(const k of ['gyaru','newcomer','magazine'])s.flags[`_ch2_read_remake_ch2_ageha_${k}`]=true;
+    s.romanceChoices.bond_q1_ageha={char:'ageha',value:romance,day:3};if(romance>0)s.romance.ageha=1;s.flags._ageha_affinity_question_done=true;
+    return s;
+  };
+  for(const romance of [1,0]){
+    const s=ready(romance);
+    { const stage=f.stages.pendingAffinityStage(s,'ageha'); assert.equal(stage.level,5); assert.equal(stage.scene,'remake_ch2_ageha_gummy'); }
+    s.affinity.ageha=66;assert.equal(f.bonds.finaleDue('ageha'),false,'the ♥5 talk is unread');
+    s.flags._ch2_read_remake_ch2_ageha_gummy=true;assert.equal(f.stages.pendingAffinityStage(s,'ageha'),null);
+    s.affinity.ageha=65;assert.equal(f.bonds.finaleDue('ageha'),false,'needs ♥5');s.affinity.ageha=66;
+    assert.equal(f.bonds.finaleDue('ageha'),true);assert.equal(f.bonds.finaleAtVisit('ageha'),true);
+    s.chapter=3;assert.equal(f.bonds.finaleDue('ageha'),false,'MELTY PUFF visits are chapter 2 only');s.chapter=2;
+    f.setPlay(async()=>({cancelled:true}));
+    assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),false);assert(!s.finales.ageha);assert(!s.owned.includes('suyaki_ageha'));
+    f.setPlay(async()=>done);
+    assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),true);
+    assert.equal(s.finales.ageha.route,romance?'romance':'friend');assert(s.owned.includes('suyaki_ageha'));
+    assert(!s.flags._confession_due,'the confession stays in chapter 3');assert.equal(f.romance.romanceRouteOpen('ageha'),false);
+    assert.equal(f.bonds.settledFriend('ageha'),!romance,'only the friend route gets friend LIME');
+    assert.equal(await f.bonds.playFinale('ageha',{deferSave:true}),false,'once');
+    assert.equal(s.owned.filter(id=>id==='suyaki_ageha').length,1);
+  }
+});
 for(const id of ['tsumugi','samechan']) for(const outcome of ['cancel','missing','load','abort','throw']) await check(`${id} lover public milestone ${outcome} stays unread/unrewarded`,async f=>{
   const s=f.core.state;s.chapter=2;s.lovers=[id];s.loveLevel[id]=1;s.lovePts[id]=9;const controller=new AbortController();
   f.setPlay(async()=>{if(outcome==='throw')throw Error('expected');if(outcome==='load')f.core.newGame();if(outcome==='abort')controller.abort();return outcome==='missing'?undefined:outcome==='cancel'?{cancelled:true}:done;});
@@ -241,7 +327,7 @@ await check('lover points wait for both connected scripts; private scale/carry a
   f.roundTrip();assert.equal(f.stats.releaseLoveAffinity('tsumugi'),0);assert.equal(f.core.state.lovePts.tsumugi,32);
 });
 await check('all romanceable casts: unread lover stage holds next level; normal completion releases to that next stage', async f => {
-  for (const id of new Set([...f.stats.ROMANCEABLE.filter(id=>id!=="hiyori"),"mashiro"])) for (let level=1;level<5;level++) {
+  for (const id of new Set([...f.stats.ROMANCEABLE,"mashiro"])) for (let level=1;level<5;level++) {
     const s=f.fresh();s.chapter=5;s.lovers=[id];s.loveLevel[id]=level;s.lovePts[id]=f.stats.AFFINITY_RANK_PTS[level];
     for(let n=1;n<level;n++) s.loverEventsSeen.push(`lover_${id}_lv${n}`,`lover_${id}_lv${n}_b`);
     f.stats.bond.private=true; f.stats.gainAffinity(id,100); f.stats.bond.private=false;
@@ -254,12 +340,15 @@ await check('all romanceable casts: unread lover stage holds next level; normal 
     assert.equal(f.stats.releaseLoveAffinity(id),0);
   }
 });
-await check('unconnected hiyori lover preview is not invented as a cap or completion requirement',async f=>{
+await check('hiyori lover Lv1-5 use the common ladder; the preview is not a stage',async f=>{
   const s=f.core.state;s.lovers=['hiyori'];s.loveLevel.hiyori=1;s.lovePts.hiyori=9;
-  assert.equal(f.stages.pendingLoveStage(s,'hiyori',f.db),null);
+  assert.equal(f.stages.pendingLoveStage(s,'hiyori',f.db),1);
+  assert.equal(f.romance.loverMilestoneDue('hiyori'),'lover_hiyori_lv1');
   f.stats.bond.private=true;f.stats.gainAffinity('hiyori',30);f.stats.bond.private=false;
-  assert.equal(s.lovePts.hiyori,24);assert.equal(s.loveLevel.hiyori,2);
-  assert.equal(s.loverEventsSeen.length,0);
+  assert.equal(s.loveLevel.hiyori,1,'unread Lv1 must hold the bond');
+  f.setPlay(async()=>done);assert.equal(await f.romance.playLoverMilestone('hiyori'),true);
+  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1');assert.equal(s.loveLevel.hiyori,2);
+  assert.ok(f.plays.every(([scene])=>!/preview/.test(typeof scene==='string'?scene:scene?.dialogue_id)));
 });
 await check('LOAD during old private scope cannot leak into new public gain or close new private scope',async f=>{
   const old=f.core.state;old.lovers=['tsumugi'];old.loveLevel.tsumugi=1;old.lovePts.tsumugi=9;
@@ -439,6 +528,42 @@ await check('Minto later-chapter finale grants gift and romance reservation once
     assert.equal(f.bonds.bondInvites().length, 0);
     assert.equal(s.owned.filter(id => id === 'suyaki_minto').length, 1);
   }
+});
+await check('Mashiro (#2022): chapter 3 optional reads are the ladder, ♥3 question after practice, ♥5 finale gives the hagal without reserving a confession', async f => {
+  const mashiro = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_mashiro.json', import.meta.url))).dialogues;
+  for (const d of mashiro) f.db.dialogues[d.dialogue_id] = d;
+  f.db.equipById.suyaki_mashiro = { name: 'gift' };
+  const s = f.core.state; s.chapter = 3; s.met.mashiro = true;
+  const read = id => { s.flags[`_ch3_read_${id}`] = true; };
+  assert.equal(f.stats.AFFINITY_GATE_CHOICES.mashiro, 'bond_q1_mashiro');
+  assert.deepEqual(clone(f.stages.pendingAffinityStage(s, 'mashiro')), { level: 0, scene: 'ch3_mashiro_play_1', done: false });
+  s.affinity.mashiro = 66;
+  assert.equal(f.bonds.questionVisitDue('mashiro'), false, 'max affinity alone does not open the question');
+  assert.equal(f.bonds.finaleDue('mashiro'), false, 'nor the finale');
+  ['ch3_mashiro_play_1', 'ch3_mashiro_play_2'].forEach(read);
+  assert.equal(f.stages.pendingAffinityStage(s, 'mashiro').scene, 'ch3_mashiro_practice');
+  read('ch3_mashiro_practice');
+  s.affinity.mashiro = 32; assert.equal(f.bonds.questionVisitDue('mashiro'), false, 'needs ♥3');
+  s.affinity.mashiro = 33; assert.equal(f.bonds.questionVisitDue('mashiro'), true);
+  s.chapter = 4; assert.equal(f.bonds.questionVisitDue('mashiro'), false, 'only on the chapter 3 cards'); s.chapter = 3;
+  assert.equal(await f.bonds.playQuestionVisit('mashiro'), false, 'reading without the answer records nothing');
+  f.setPlay(async () => { f.bonds.recordRomanceChoice({ id: 'bond_q1_mashiro', romance_char: 'mashiro' }, { romance: 1 }); return done; });
+  assert.equal(await f.bonds.playQuestionVisit('mashiro'), true);
+  assert.equal(await f.bonds.playQuestionVisit('mashiro'), false, 'once');
+  assert(f.stages.questionComplete(s, 'mashiro'));
+  s.affinity.mashiro = 66;
+  assert.equal(f.bonds.finaleDue('mashiro'), false, 'the remaining optional scenes come first');
+  ['ch3_mashiro_play_3', 'ch3_mashiro_black_tea'].forEach(read);
+  assert.equal(f.stages.pendingAffinityStage(s, 'mashiro'), null);
+  s.affinity.mashiro = 65; assert.equal(f.bonds.finaleDue('mashiro'), false, 'needs ♥5'); s.affinity.mashiro = 66;
+  assert.equal(f.bonds.finaleAtVisit('mashiro'), true);
+  f.setPlay(async () => { f.bonds.recordRomanceChoice({ id: 'bond_q2_mashiro', romance_char: 'mashiro' }, { romance: 1 }); return done; });
+  assert.equal(await f.bonds.playFinale('mashiro'), true);
+  const after = f.roundTrip();
+  assert.equal(after.finales.mashiro.route, 'romance');
+  assert.equal(after.flags._confession_due, undefined, 'the chapter 3 detour owns the confession');
+  assert.equal(after.owned.filter(id => id === 'suyaki_mashiro').length, 1);
+  assert.equal(await f.bonds.playFinale('mashiro'), false);
 });
 
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);

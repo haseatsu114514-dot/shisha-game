@@ -436,8 +436,48 @@
           "speaker": "",
           "face": "",
           "text": "いつもの短い返事。でもその顔は、さっきまでと少し違って見えた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_lime_contact_rei",
+          "next_true": "",
+          "next_false": "lime_exchange"
         }
-      ]
+      ],
+      "branches": {
+        "lime_exchange": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り際、REIがカウンター越しにスマホを差し出した。画面には、LIMEのQRコードが出ている。"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……ミックスの名前、決まったら送る。いやなら、いい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "いやじゃないです。楽しみにしてます"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……そうか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "こうして、REIとLIMEを交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_rei"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_rei_third",
@@ -453,7 +493,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……悲しげに咲く花に……君の面影を……ちがうな……"
+          "text": "……夜の底で咲く花に……あの人の名を……ちがうな……"
         },
         {
           "speaker": "hajime",
@@ -741,7 +781,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……音も色も温度も……半分になったこの部屋……ちがうな……"
+          "text": "……灯りも匂いも途切れた部屋で……ちがうな……"
         },
         {
           "speaker": "hajime",
@@ -988,6 +1028,302 @@
       }
     },
     {
+      "dialogue_id": "ch2_rei_sixth",
+      "comment": "#2027 ♥5。名前を探していたミックス「嘘」が仕上がり、はじめが最初に吸う。煙のタトゥーの由来（初めて客として行ったライブの帰り）を話す。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "零-ZERO-の扉を開けると、BGMが止まっていた。REIがカウンターで、一台のHMDを見つめている。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……来た。ちょうどいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "静かですね。今日は曲、かけないんですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……これを吸う時は、何も鳴らさないで聴いてほしかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された一台から、温かいリンゴとピーチの甘さが立ちのぼる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "もしかして、この前の……"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……「嘘」。やっと形になった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口目は、甘くて温かい。三口、四口と吸ううちに、下の層からミントがふっと冷えてきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（温かかった煙が、途中で静かになる。笑って手を振る別れ際みたいだ）"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……どう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "冷えてくるところで、少し寂しくなりました。でも、嫌な寂しさじゃなくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "吸い終わったら、また最初の甘さが恋しくなる感じです"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIの手が止まった。しばらくして、小さく息を吐く。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……それ。それを、出したかった"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "また会えるって嘘は、もう一度会いたいから、つく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（だから、最後にまた最初の甘さが恋しくなるのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIは袖を少しまくり、手の甲から首へ続く煙のタトゥーを指でなぞった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……これ。初めて客として行ったライブの帰りに、決めた"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "一番後ろで、一人で立ってた。誰とも話せなかった"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "でも、音は一番後ろまで届いてた。知らない誰かの声が、俺のところまで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "だから、煙なんですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……煙も、届く。見えなくなっても、香りは残る"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "俺も、そういうのを出したかった。一番後ろの奴にも、届くやつを"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……「嘘」を最初に吸ったのが、お前でよかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、最初に吸えてよかったです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "曲の流れない店内に、ミントの冷たさだけが静かに残っていた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "rei_reach"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rei_bond_finale",
+      "comment": "#2027 好感度MAXの締めくくり（友情のみ）。店を始めた頃からローズだけを詰めた素焼きを渡し、「仲間」を「友達」と言い直す。",
+      "metadata": {
+        "bond_finale": "rei"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 2,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIはカウンターの下から、黒い布の包みを取り出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "布をほどくと、薄く紅の染みた素焼きのハガルが出てきた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ローズしか詰めてない一台。店を始めた頃から"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……REIさんの、一番大事な道具なんじゃないか）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……お前に、渡したい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ、いいんですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……いい。ずっと誰かに渡したかった。でも、渡せる相手がいなかった"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "薔薇は、上げすぎると棘が出る。……このハガルは、その手前を覚えてる"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "お前なら、棘の手前で止められる。何度も、話の続きを待ってくれたから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（言葉が出てくるまで、黙って待った時間のことだ）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……前に、仲間だって言った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "V系の、ですよね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……違う。あれは、半分は口実だった"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……友達、のつもりだった。言い方が、分からなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "知ってました。俺も、そのつもりです"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIは顔を背けた。耳が少し赤かった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……今の顔は、練習じゃない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かります"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……来た。大会の支度、忙しいはずなのに"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "忙しいからこそ、REIさんの煙が吸いたくて"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……来た"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "REIさんの煙が、吸いたくなって"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch2_rei_group_concert_prep",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
@@ -1001,12 +1337,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "V系ファン風の若者たちが数人、コーナー席でわいわいしながらシーシャを吸っている。テーブルには、同じバンドのチケットが並んでいた。"
+          "text": "V系ファン風の若者たちが数人、コーナー席でわいわいしながらシーシャを吸っている。テーブルには、ライブのチケットが並んでいた。"
         },
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "来週のセトリ、一曲目は絶対「嘘」でしょ！ あのイントロ、ライブで聴いたら泣く"
+          "text": "来週のセトリ、一曲目は絶対あの曲でしょ！ あのイントロ、ライブで聴いたら泣く"
         },
         {
           "speaker": "customer",
@@ -1061,7 +1397,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……あの「月光花」を作る人が、同じバンドの話をひとこと返すだけで、こんなに力がいるんだ）"
+          "text": "（……あの「月光花」を作る人が、ファンの話をひとこと返すだけで、こんなに力がいるんだ）"
         },
         {
           "speaker": "",

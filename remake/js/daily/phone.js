@@ -22,13 +22,16 @@ import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
 import { tsumugiMessages } from "./tsumugi-schedule.js";
+import { casualMessages } from "./casual-lime.js";
 
 import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitationNote } from "./invitations.js";
+// #2090: 第2章の対峙（決裂・休業）以降か。spots.js / core/fortune-effects.js の naruRiftActive と同じ条件（試験の依存を増やさないため写し）
+const naruRiftActive = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._ch2_read_ch2_naru_confrontation
+  || save?.flags?._ch2_night_11_done || save?.flags?._ch2_naru_listened || save?.flags?._ch2_naru_hurt);
 
 // C03: 初回受信から返信を待つ目安。再案内の日付では数え直さない。
 const LIME_REPLY_NUDGE_DAYS = 3;
 
-const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
 const POLITE = new Set(["sumi", "nagumo", "maezono"]);
 const originId = (item) => item.originId || item.msg?.origin_id || item.id;
@@ -144,6 +147,16 @@ function repairLostStoryInvitations() {
 }
 
 export function expireInvitations(opts = {}) {
+  // #2090: 対峙のあとは、受付済み・未返信のなるの誘いも約束ごと流れる（休業中の店で一服は再生しない）
+  if (naruRiftActive(state)) {
+    if (state.pendingInvite?.sender === "naru") state.pendingInvite = null;
+    for (const item of state.inbox || []) {
+      if (item.done || item.msg?.sender !== "naru" || item.msg?.type !== "invitation") continue;
+      item.done = true;
+      item.result = "expired";
+      item.replyState = "expired";
+    }
+  }
   const pending = state.pendingInvite;
   if (pending) {
     const booked = bookedInvitation(pending);
@@ -190,8 +203,10 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (state.limeRead.includes(m.id) && !importantInvite(m) && !needsResend(m.id)) return false;
   if (m.chapter && m.chapter !== state.chapter) return false;
   if (m.sender === "ageha" && state.chapter === 1) return false; // 第1章では連絡先を知らない
+  if (m.sender === "naru" && naruRiftActive(state)) return false; // #2090 決裂・休業中のなるからは何も届かない
   const cond = m.trigger_condition;
-  if (cond === "tournament_day") return tournamentDay && HEROINES_ENCOURAGE.includes(m.sender) && hasContact(m.sender);
+  // 大会当日の応援は、本文がある相手のうち連絡先を交換した人から。trigger_flag は応援を言える関係になった印（ひより等）
+  if (cond === "tournament_day") return tournamentDay && hasContact(m.sender) && (!m.trigger_flag || !!state.flags[m.trigger_flag]);
   if (tournamentDay) return false;
   if (!hasContact(m.sender)) return false;
   if (m.type === "invitation" && state.flags[`_invited_${m.id}`]) return false;
@@ -206,6 +221,8 @@ function eligible(m, { tournamentDay = false } = {}) {
   }
   if (cond === "affinity_level") return affinityLevel(m.sender) >= (m.trigger_value || 3) && !state.flags[`_invited_${m.id}`];
   if (cond === "flag") return !!state.flags[m.trigger_flag];
+  // 章の開始後に届く噂（rumor_kumicho_cigarman など）。章は上で一致を確認済みなので、章内の日数が trigger_day に達したら届く
+  if (/^ch\d+_started$/.test(cond || "")) return state.chapter >= Number(cond.slice(2, -8)) && chapterDay(state) >= (m.trigger_day || 1);
   return false;
 }
 
@@ -249,6 +266,8 @@ export function morningMessages(opts = {}) {
   }
   // 大事な外出の誘いは、通常の雑談より先に届ける。同じ相手からは1朝1話題。
   const messages = [...DB.lime, ...tsumugiMessages(state, DB.friends)].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
+  // 大会の朝は3通までなので、応援は仲の深い相手から届く（同じ深さなら台本順）。
+  if (opts.tournamentDay) messages.sort((a, b) => affinityLevel(b.sender) - affinityLevel(a.sender));
   for (const template of messages) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || !eligible(template, opts)) continue;
@@ -274,12 +293,26 @@ export function morningMessages(opts = {}) {
     out.push(hiyori);
     senders.add("hiyori");
   }
+  // 返事の要る連絡（物語の返信・誘い）が今朝すでに届くなら、返事の要る雑談は重ねない（LM04）。
+  // スミさんのバイトの誘いは仕事の連絡なので数えない（オーナー「すみさんのバイト入れるか？みたいなやつはいい」）
+  const needsReply = (m) => m.accept_event !== "__sumi_baito__" && (m.type === "invitation" || !!m.replies?.length);
+  let casualSlot = true;
   for (const template of friendMessages(opts)) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || delivered.has(template.id)) continue;
     if (template.type === "invitation" && (otherInvite || out.some(meetInvite))) continue;
+    if (template.replies?.length && out.some(needsReply)) continue;
     const m = scheduledInvitation(template, opts); // お誘いは休日の午後か仕事後。合わない日は同じ相手の雑談へ
     if (!m || !invitationAvailable(m, opts)) continue;
+    out.push(m);
+    senders.add(m.sender);
+    casualSlot = false;
+    break;
+  }
+  // 友人のLIMEが届かない朝だけ、♥3〜4の知り合いから読むだけの雑談を1通（LM05）
+  for (const m of casualSlot ? casualMessages(opts) : []) {
+    if (out.length >= 3) break;
+    if (senders.has(m.sender) || delivered.has(m.id)) continue;
     out.push(m);
     senders.add(m.sender);
     break;
@@ -296,45 +329,32 @@ function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) 
   const open = ["naru", "adam", "minto"].map(spotById).filter(s => s && state.met[s.charId] && !isClosed(s));
   if (!open.length) return null;
   const spot = open[Math.floor(state.day / 4) % open.length];
-  return { id: `_hiyori_shop_c${state.chapter}_d${state.day}`, sender: "hiyori", type: "invitation",
-    time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: spot.id,
-    messages: [`……今夜、${spot.label}で一緒に一服しない？ 私が煙になっちゃう前に`], accept_text: "今夜、行きます",
-    decline_response: { text: "……うん。また都合のいい日に" } };
+  const template = DB.limeTemplates.hiyori_shop;
+  return { ...template, id: `_hiyori_shop_c${state.chapter}_d${state.day}`, visit_spot: spot.id,
+    messages: template.messages.map(text => text.replace("{shop}", spot.label)),
+    decline_response: { ...template.decline_response } };
 }
 
 /**
  * スミさんからの「急で悪い、昼のシフト入れるか？」。序盤の固定2回（DAY3/8）＋4日以上バイトに出ていない朝。
- * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。最終日の朝は来ない
+ * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。各章の大会当日は来ない
  */
-function sumiBaitoInvite({ tournamentDay = false } = {}) {
-  if (tournamentDay || state.chapter !== 1 || state.day >= TOURNAMENT_DAY) return null;
+function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
+  if (tournamentDay || ![1, 2].includes(state.chapter) || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
   const id = `_sumi_baito_inv_d${state.day}`;
   if (state.limeRead.includes(id)) return null;
-  const fixed = state.day === 3 || state.day === 8;
+  const fixed = state.chapter === 1 && (state.day === 3 || state.day === 8);
   const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
   if (!fixed && !slacking) return null;
+  // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
+  // DAY3・DAY8 の固定の誘いは台本の一部なので残す
+  if (!fixed && fixedNight?.(state.day)) return null;
   // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）
-  const reasons = [
-    "常連の団体が入ってな。人手が足りん",
-    "仕入れの業者と昼が重なってな。手が回らん",
-    "昼に貸切の予約が入った。炭番が一人足りん",
-  ];
-  return {
-    id,
-    sender: "sumi",
-    type: "invitation",
-    time_slot: "noon",
-    accept_event: "__sumi_baito__",
-    accept_text: "入ります！",
-    accept_reply: { sender: "sumi", stamp: "st_sumi_ack" },
-    hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
-    messages: [
-      "急で悪い。今日、昼のシフト入れるか？",
-      reasons[state.day % reasons.length],
-      "……代わりと言っちゃなんだが、給料は弾むぞ",
-    ],
-    decline_response: { text: "……そうか。なら、こっちで回す" },
-  };
+  const { reasons, ...template } = DB.limeTemplates.sumi_baito;
+  return { ...template, id,
+    messages: template.messages.map(text => text === "{reason}" ? reasons[state.day % reasons.length] : text),
+    accept_reply: { ...template.accept_reply },
+    decline_response: { ...template.decline_response } };
 }
 
 // ---------------------------------------------------------------- アカウント（トークの単位）
@@ -747,7 +767,16 @@ function phoneShell({ time, title }) {
 /** 読み終えたときの報酬（返信の無いメッセージ）。噂は洞察、ふつうの連絡は少しだけ好感度 */
 function readReward(m) {
   if (m.type === "rumor") applyStats({ insight: 2 });
-  else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") gainAffinity(m.sender, 2);
+  else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") {
+    // 恋人の読むだけの連絡（朝のひとこと）は、私的なやりとりとして絆に積もる（LM01: 返事1点ぶん）
+    const lover = isLover(m.sender);
+    bond.private = lover;
+    try {
+      gainAffinity(m.sender, lover ? 3 : 2);
+    } finally {
+      bond.private = false;
+    }
+  }
 }
 
 /** 一方の約束を承諾したら、その日に競合する誘いには先の約束を理由に返事を残す */
@@ -1122,7 +1151,8 @@ export function limeCoach(onOpen) {
 }
 
 /** 章の旅程相談。既存端末とアカウントを使い、当日招待の失効・報酬処理へ流さない。 */
-export async function openContactLime({ contacts, summary, actions, onAction, signal = null }) {
+export async function openContactLime({ contacts, summary, actions, onAction, signal = null,
+  title = "恋人との連絡", empty = "連絡先を交換した恋人ができると、ここから連絡できます。" }) {
   const owner = state;
   const ui = phoneShell({ time: clockNow(), title: `DAY ${chapterDay(state)}` });
   let resolveClose;
@@ -1134,7 +1164,7 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
   function showList() {
     if (!alive()) return;
     ui.gen++;
-    ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: "恋人との連絡" }));
+    ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: title }));
     ui.chat.classList.add("list");
     ui.chat.replaceChildren();
     for (const id of contacts()) {
@@ -1144,7 +1174,7 @@ export async function openContactLime({ contacts, summary, actions, onAction, si
         el("div.lcr-main", [el("div.lcr-name", { text: limeName(account) }), el("div.lcr-preview", { text: summary(id) })]),
       ]));
     }
-    if (!contacts().length) ui.chat.append(el("p.lime-empty", { text: "連絡先を交換した恋人ができると、ここから連絡できます。" }));
+    if (!contacts().length) ui.chat.append(el("p.lime-empty", { text: empty }));
     ui.actions.replaceChildren(el("button.lime-reply.ghost", { text: "スマホを閉じる", dataset: { test: "phone-close" }, onclick: close }));
   }
   function showThread(id) {

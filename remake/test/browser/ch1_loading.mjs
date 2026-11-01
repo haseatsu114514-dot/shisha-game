@@ -2,7 +2,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import {suite, storageSnapshot} from './support.mjs';
+import {suite, storageSnapshot as rawStorageSnapshot} from './support.mjs';
+// #1950: 既読SKIPのため、読んだ台詞の記録（suien_remake_seen_dialogue_lines）は意図して保存される。
+// ここで守るのはセーブ等それ以外の保存が読み込み待ちで変わらないこと。
+const SEEN_LINES_KEY='suien_remake_seen_dialogue_lines';
+async function storageSnapshot(page){const snap=await rawStorageSnapshot(page);delete snap.local[SEEN_LINES_KEY];return snap;}
 
 const measurements=[];
 const out=process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser';

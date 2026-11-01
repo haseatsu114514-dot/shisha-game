@@ -12,7 +12,8 @@ async function setup(page, { money = 36000, unknown = false, reel = false, guest
   const seeded = await page.evaluate(async ({ money, unknown, reel, guest, stamina, weatherSeed }) => {
     const core = await import('./js/core/state.js');
     const value = core.newGame();
-    Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina, weatherSeed });
+    // These map-flow cases start the morning after a recent shift; the optional shift invite has its own coverage.
+    Object.assign(value, { chapter: 2, phase: 'daily', day: 15, slot: 2, money, stamina, weatherSeed, lastBaitoDay: 15 });
     value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true },
       _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true,
       _hiyori_meeting_done: true, _hiyori_message_delivered: true };
@@ -139,7 +140,7 @@ await suite('ch2-daily',async check=>{
       }, spot.previewUrl));
     }
     assert.equal(await page.locator('.map-info .mi-desc').innerText(), spot.desc);
-    assert.match(await page.locator('.map-info .mi-tags').innerText(), /入店・部活設立は無料/);
+    assert.match(await page.locator('.map-info [data-test="spot-note"]').innerText(), /入店・部活設立は無料/);
     assert.equal(await page.evaluate(() => JSON.stringify(window.__remake.state)), await page.evaluate(() => __b02.before));
     const enter = page.locator(t('map-go'));
     assert(await enter.isVisible() && await enter.isEnabled());

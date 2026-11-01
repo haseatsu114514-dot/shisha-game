@@ -294,6 +294,36 @@ export function chapterFivePrepEcho(value, id) {
   return [];
 }
 
+// ---- 節目の LIME（#1668 2-8）--------------------------------------------------------
+// 本文は data/lime_messages.json の chapter:5・trigger_condition:"ch5_milestone"（朝の配信では届かない）。
+// 第5章で実際に会った場面（after_scene）を読み、連絡先を交換済みの相手からだけ届く。一斉の応援にしない。
+export const CH5_LIME_CONDITION = "ch5_milestone";
+export const CH5_LIME_MILESTONES = Object.freeze({
+  prep: "prep",               // 日程が決まった夜（scheduled のカード）
+  afterMatch: "after_match",  // 勝負のあと、tonari へ戻る前（後日談の2場面目のカード）
+});
+
+function limeMilestoneOpen(progress, milestone) {
+  if (milestone === CH5_LIME_MILESTONES.prep) return progress.part === "scheduled";
+  if (milestone === CH5_LIME_MILESTONES.afterMatch) {
+    return progress.part === "aftermath" && CH5_AFTERMATH[progress.aftermath]?.id === "ch5_return_to_tonari";
+  }
+  return false;
+}
+
+/**
+ * 今の節目で届ける LIME（台本の順）。読み終えた（done）ものは再送しない。
+ * hasContact は連絡先の判定（daily/spots.js）。ここでは連絡先を追加しない。
+ */
+export function chapterFiveLimeDue(value, milestone, messages, hasContact) {
+  const progress = chapterFiveProgress(value);
+  if (!limeMilestoneOpen(progress, milestone) || !Array.isArray(messages)) return [];
+  const done = new Set((value.inbox || []).filter(item => item?.done).map(item => item.originId || item.id));
+  return messages.filter(m => m?.chapter === 5 && m.trigger_condition === CH5_LIME_CONDITION
+    && m.milestone === milestone && CH5_FREE_SCENES.some(scene => scene.id === m.after_scene)
+    && progress.read[m.after_scene] === true && !done.has(m.id) && hasContact(m.sender));
+}
+
 /** 連絡で先送りを選んだ直後の保存か（復帰時に ch5_timeout を先に消化するための判定）。 */
 export function chapterFiveTimeoutPending(value) {
   const progress = chapterFiveProgress(value);
@@ -322,7 +352,7 @@ export function beginChapterFiveMatch(value) {
 }
 
 // ---- 試合 ---------------------------------------------------------------------------
-// 正本（docs/setting_book/05_tournament.md）: 同じ観客が一本目・二本目の両方を吸い、それぞれ良かった方へ
+// 正本（docs/archive/setting_book/05_tournament.md）: 同じ観客が一本目・二本目の両方を吸い、それぞれ良かった方へ
 // 挙手する。二本の合計票で勝敗を決める。審査員の採点や恋愛人数の加点は持ち込まない。
 // 一本目は台本どおり 9000 が僅かに先取（固定）。二本目は、はじめが実際に作った一台の出来で挙手が動く。
 export const CH5_AUDIENCE = 40;
@@ -347,7 +377,9 @@ function isValidSecondCup(cup) {
     && Number.isFinite(cup.total) && cup.total >= 0 && cup.total <= 100
     && SECOND_CUP_CATEGORIES.includes(cup.category)
     && count(cup.votes?.hajime) && count(cup.votes?.machine)
-    && cup.votes.hajime + cup.votes.machine === CH5_AUDIENCE;
+    && cup.votes.hajime + cup.votes.machine === CH5_AUDIENCE
+    && (cup.review === undefined || (Array.isArray(cup.review) && cup.review.length <= 2
+      && cup.review.every(text => typeof text === "string")));
 }
 
 const secondCupTally = cup => ({
@@ -371,7 +403,7 @@ export function chapterFiveVoteTally(value) {
  * 二本目を作り終えたときに runner が呼ぶ。二本目の前の場面を読み終え、まだ記録が無い試合だけ受け付ける。
  * total は finalize の総合、category は調整実績の区分（naruTastingCategory と同じ土台）か "failed"。
  */
-export function recordChapterFiveSecondCup(value, { total, category, failed = false }) {
+export function recordChapterFiveSecondCup(value, { total, category, failed = false, review = [] }) {
   const progress = chapterFiveProgress(value);
   if (progress.part !== "match" || progress.secondCup != null
     || progress.read[CH5_MATCH_SCENES.beforeSecond] !== true
@@ -381,6 +413,9 @@ export function recordChapterFiveSecondCup(value, { total, category, failed = fa
   if (!Number.isFinite(score) || !SECOND_CUP_CATEGORIES.includes(kind)) return false;
   const hajime = chapterFiveSecondCupVotes(score, failed);
   progress.secondCup = { total: score, category: kind, votes: { hajime, machine: CH5_AUDIENCE - hajime } };
+  // 結果カードの「今回よかったこと／次に変える一つ」。旧保存には無いので任意（#1909）。
+  const lines = Array.isArray(review) ? review.filter(text => typeof text === "string" && text).slice(0, 2) : [];
+  if (lines.length) progress.secondCup.review = lines;
   return true;
 }
 

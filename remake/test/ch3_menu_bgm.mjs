@@ -69,9 +69,20 @@ async function harness(chapter, value) {
   });
   await mod.link(async specifier => {
     const depUrl = new URL(specifier, url);
+    if (specifier === "../core/chapter-actions.js") {
+      const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
+      await dep.link(async () => synthetic(new URL("../core/util.js", url), ["el"]));
+      return dep;
+    }
     if (specifier === "./ch3-aftermath-progress.js") {
       const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
       await dep.link(async () => synthetic(new URL("../js/core/tokyo-visits.js", import.meta.url), ["syncTokyoVisits"]));
+      return dep;
+    }
+    if (specifier === "./ch3-romance-entry.js") {
+      // #1930: DOMを持たない告白の入口の条件は実物を使う（定数配列を関数の代用品にしない）。
+      const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
+      await dep.link(async () => { throw new Error("ch3-romance-entry.js must stay import-free"); });
       return dep;
     }
     return synthetic(depUrl, required.get(depUrl.href) || []);
