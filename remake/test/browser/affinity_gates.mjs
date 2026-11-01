@@ -37,6 +37,32 @@ async function setup(page) {
 await suite("affinity-gates", async check => {
   const run = check;
   check = (...args) => !process.env.TEST_CASES || args[0].includes(process.env.TEST_CASES) ? run(...args) : Promise.resolve();
+  await check('rin-added-stages-pc', async page => {
+    await setup(page);
+    const rows = await page.evaluate(async () => {
+      const rows = [];
+      for (const [chapter, phase] of [[1, 'daily'], [1, 'aftermath'], [2, 'daily']]) {
+        let s = G.fresh(); Object.assign(s, { chapter, phase });
+        s.story.rin = 4; s.affinity.rin = 66;
+        s.flags._rin_affinity_question_done = true;
+        s.flags._spot_seen_ch1_rin_prototype_night = true;
+        // Normalize the saved fixture first: chapter 2 LOAD restores the existing home rig.
+        G.core.save(); G.core.newGame(); G.core.load(); s = G.core.state;
+        const before = JSON.stringify({ lovers: s.lovers, answers: s.romanceChoices, finales: s.finales, owned: s.owned });
+        const first = await G.spots.visitChar('rin');
+        const afterFirst = s.story.rin, earlyFinale = G.bonds.finaleDue('rin');
+        G.core.save(); G.core.newGame(); G.core.load(); s = G.core.state;
+        const loaded = s.story.rin, second = await G.spots.visitChar('rin');
+        const after = JSON.stringify({ lovers: s.lovers, answers: s.romanceChoices, finales: s.finales, owned: s.owned });
+        if (before !== after) throw Error(`Rin relationship/inventory changed: ${before} -> ${after}`);
+        rows.push({ first, second, afterFirst, loaded, afterSecond: s.story.rin, earlyFinale,
+          finale: G.bonds.finaleDue('rin'), stable: before === JSON.stringify({ lovers: s.lovers, answers: s.romanceChoices, finales: s.finales, owned: s.owned }) });
+      }
+      return rows;
+    });
+    assert.equal(rows.length, 3);
+    for (const row of rows) assert.deepEqual(row, { first: true, second: true, afterFirst: 5, loaded: 5, afterSecond: 6, earlyFinale: false, finale: true, stable: true });
+  }, { viewport: { width: 1280, height: 720 }, reducedMotion: 'reduce' });
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`${label}-lime-fraction-feedback-and-load`, async page => {
       await setup(page);

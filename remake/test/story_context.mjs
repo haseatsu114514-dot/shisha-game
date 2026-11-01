@@ -145,6 +145,27 @@ for(const seen of [false,true]) {
     else {assert.doesNotMatch(text,/約束、覚えてたか/);assert.match(text,/今日はお前の一台/);}
   }
 }
+// #2025: late Rin visits are ordinary conversation in every tournament/relationship state.
+const rinFaces = JSON.parse(read('remake/data/manifest.json')).portraits.rin.faces;
+for (const id of ['ch1_rin_fifth', 'ch1_rin_sixth']) {
+  const scene = DB.dialogues[id];
+  assert(scene.lines.length >= 10 && scene.lines.length <= 20);
+  assert.equal(scene.metadata.flavor_lesson, undefined);
+  assert(scene.lines.every(line => !line.type && ['rin', 'hajime', ''].includes(line.speaker)));
+  for (const line of scene.lines.filter(line => line.speaker === 'rin')) assert(rinFaces.includes(line.face));
+  let expected;
+  for (const [chapter, phase] of [[1, 'daily'], [1, 'aftermath'], [1, 'cleared'], [2, 'daily'], [5, 'daily']]) {
+    for (const relationship of ['unsettled', 'friend', 'lover']) {
+      const value = state(chapter, phase, { rin: true }); value.story = { rin: id.endsWith('fifth') ? 4 : 5 };
+      value.lovers = relationship === 'lover' ? ['rin'] : [];
+      if (relationship === 'friend') value.flags._friend_rin = true;
+      const before = JSON.stringify(value), resolved = paths(id, value);
+      assert.equal(resolved.length, 1); expected ??= resolved[0];
+      assert.deepEqual(resolved[0], expected, 'no invented tournament, encounter or romance prerequisites');
+      assert.equal(JSON.stringify(value), before);
+    }
+  }
+}
 // Audit every connected chapter-1 affinity stage, including choice branches and prior knowledge.
 for (const id of Object.values(VISIT_SEQ).flat()) for(const known of [false,true]) {
   for(const rows of paths(id,state(3,'daily'),known)) {

@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.AFFINITY_SOURCE_ROOT || root;
@@ -564,6 +565,83 @@ await check('Mashiro (#2022): chapter 3 optional reads are the ladder, ♥3 ques
   assert.equal(after.flags._confession_due, undefined, 'the chapter 3 detour owns the confession');
   assert.equal(after.owned.filter(id => id === 'suyaki_mashiro').length, 1);
   assert.equal(await f.bonds.playFinale('mashiro'), false);
+});
+
+// #2025: append only; old scenes, counters and question host remain authoritative.
+const rinAdded = ['ch1_rin_fifth', 'ch1_rin_sixth'];
+const rinSource = data[scripts.indexOf('ch1_rin')];
+assert.equal(createHash('sha256').update(JSON.stringify({ ...rinSource,
+  dialogues: rinSource.dialogues.filter(d => !rinAdded.includes(d.dialogue_id)) })).digest('hex'),
+  'd67f1bf88a1dbfc8409298a76220bf66d16831903692610ed84c3f1114cc1b70');
+const rinReady = (f, stage, heart = 5) => {
+  const s = f.fresh(); s.story.rin = stage; s.affinity.rin = f.stats.AFFINITY_RANK_PTS[heart];
+  s.met.rin = true; s.flags[f.stages.questionDoneKey('rin')] = true;
+  s.flags._spot_seen_ch1_rin_prototype_night = true;
+  return s;
+};
+await check('Rin #2025: append heart4/5; legacy counts and question host stay intact', async f => {
+  assert.deepEqual(Array.from(f.spots.VISIT_SEQ.rin), ['ch1_rin_first', 'ch1_rin_second', 'ch1_rin_third', 'ch1_rin_fourth', ...rinAdded]);
+  for (const stage of [4, 5, 6, 7]) {
+    let s = rinReady(f, stage); const before = JSON.stringify(s);
+    assert.equal(f.stages.pendingAffinityStage(s, 'rin')?.scene ?? null, rinAdded[stage - 4] ?? null);
+    assert.equal(f.bonds.finaleDue('rin'), stage >= 6);
+    assert.equal(JSON.stringify(s), before, 'query cannot fill unread stages or create a relationship');
+    s = f.roundTrip(); assert.equal(s.story.rin, stage); assert.deepEqual(Array.from(s.lovers), []);
+    assert.equal(s.romanceChoices.bond_q1_rin, undefined); assert.equal(s.finales.rin, undefined);
+  }
+  const s = rinReady(f, 4); delete s.flags[f.stages.questionDoneKey('rin')];
+  assert.equal(f.bonds.questionVisitDue('rin'), true, 'old completed third still offers the existing question');
+  assert.equal(f.stages.pendingAffinityStage(s, 'rin').scene, 'ch1_rin_bond_question');
+});
+await check('Rin #2025: actual visit chooses one oldest unread at hearts3/4/5 across tournament time', async f => {
+  for (const [chapter, phase] of [[1, 'daily'], [1, 'aftermath'], [2, 'daily'], [5, 'daily']]) {
+    for (const stage of [4, 5]) for (const heart of [3, 4, 5]) {
+      let s = rinReady(f, stage, heart); Object.assign(s, { chapter, phase });
+      const seen = []; f.setPlay(async scene => { seen.push(typeof scene === 'string' ? scene : scene.dialogue_id); return done; });
+      assert.equal(await f.spots.visitChar('rin'), true);
+      const eligible = heart >= stage;
+      assert.deepEqual(seen.filter(id => rinAdded.includes(id)), eligible ? [rinAdded[stage - 4]] : []);
+      assert.equal(s.story.rin, stage + Number(eligible));
+      assert.deepEqual(Array.from(s.lovers), []); assert.equal(s.finales.rin, undefined);
+      assert.equal(s.romanceChoices.bond_q1_rin, undefined);
+      s = f.roundTrip(); assert.equal(s.story.rin, stage + Number(eligible));
+    }
+  }
+  const s = rinReady(f, 4); const seen = [];
+  f.setPlay(async scene => { seen.push(typeof scene === 'string' ? scene : scene.dialogue_id); return done; });
+  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(seen, [rinAdded[0]]);
+  assert.equal(f.bonds.finaleDue('rin'), false);
+  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(seen, rinAdded);
+  assert.equal(s.story.rin, 6); assert.equal(f.bonds.finaleDue('rin'), true);
+});
+for (const stage of [4, 5]) for (const outcome of ['cancel', 'missing', 'throw', 'abort', 'load']) {
+  await check(`Rin #2025 stage${stage} ${outcome}: no completion or reward`, async f => {
+    const s = rinReady(f, stage), before = clone(s), controller = new AbortController();
+    f.setPlay(async scene => {
+      assert.equal(typeof scene === 'string' ? scene : scene.dialogue_id, rinAdded[stage - 4]);
+      if (outcome === 'throw') throw Error('expected Rin read failure');
+      if (outcome === 'abort') controller.abort();
+      if (outcome === 'load') {
+        f.roundTrip();
+        before.savedAt = s.savedAt; // save() updates only this timestamp on the old owner.
+      }
+      return outcome === 'cancel' ? { cancelled: true } : outcome === 'missing' ? undefined : done;
+    });
+    const result = f.spots.visitChar('rin', { signal: controller.signal });
+    if (outcome === 'throw') await assert.rejects(result, /expected Rin read failure/);
+    else assert.equal(await result, false);
+    assert.deepEqual(clone(s), before); assert.equal(f.core.state.story.rin, stage);
+    assert.equal(f.core.state.affinity.rin, before.affinity.rin); assert.equal(f.core.state.visits.rin || 0, 0);
+  });
+}
+await check('Rin #2025: missing data cannot read ahead; settled saves keep existing records', async f => {
+  let s = rinReady(f, 4); delete f.db.dialogues[rinAdded[0]];
+  assert.equal(await f.spots.visitChar('rin'), true); assert.equal(s.story.rin, 4);
+  assert(!f.plays.some(([scene]) => rinAdded.includes(typeof scene === 'string' ? scene : scene.dialogue_id)));
+  s = rinReady(f, 4); s.finales.rin = { chapter: 1, day: 8, route: 'friend' }; s.flags._friend_rin = true;
+  const finale = clone(s.finales.rin); s = f.roundTrip();
+  assert.deepEqual(clone(s.finales.rin), finale); assert(s.flags._friend_rin); assert.equal(s.story.rin, 4);
+  assert.equal(f.bonds.finaleDue('rin'), false);
 });
 
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);

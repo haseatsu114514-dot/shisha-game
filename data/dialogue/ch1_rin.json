@@ -637,6 +637,179 @@
       }
     },
     {
+      "dialogue_id": "ch1_rin_fifth",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "感想のない日"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリップボードを脇に寄せて、凛さんがこちらを見た。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "今日は、感想メモなし？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。話すことを考えながら来たんですけど"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "手ぶらで来ちゃいけないとは言ってないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛さんに何か返さなきゃ、と思って"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "じゃあ、今の話で一つ返ってきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何のですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "君が、ここに来る理由"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんはペンを置いた。まだ何も書いていない。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……別に、毎回仕事の話じゃなくていい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、今日は何を話しましょう"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "それまで私に決めさせる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何でもいいって言われると、かえって難しくて"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ふふ。うん、今のでいいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "話題を探していたはずなのに、もう少し話が続いていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_rin_sixth",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "余白の続き"
+      },
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "この前の余白、まだ残してるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お客さんの顔を書いたところですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "うん。数字より先に、そっちを読んじゃう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "書いたのは凛さんですけど"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "持ってきたのは君でしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんがクリップボードを伏せた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、俺の顔も書くんですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "そこまで仕事熱心じゃないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、モニターは休みですね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……そうだね。今は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛さんと話してると、つい報告みたいになって"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "私も。聞くことが決まってるほうが楽だから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し間が空いた。凛さんはペンに手を伸ばさなかった。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "でも、決まってない話も、君となら悪くない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺もです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "答えると、凛さんの目尻が少し緩んだ。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch1_rin_repeat",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
