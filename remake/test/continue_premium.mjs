@@ -2,7 +2,8 @@
 // node remake/test/continue_premium.mjs
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { PREMIUM_CONTINUE_SCRIPTS, PREMIUM_CONTINUE_RATE, choosePremiumContinue } from "../js/chapters/continue-premium.js";
 assert.equal(PREMIUM_CONTINUE_RATE, .20);
 assert.equal(choosePremiumContinue([], 1, () => 0), null, "no romance must never trigger");
@@ -42,7 +43,10 @@ for (const cue of hiyori.cues) assert(cue.at >= 0 && cue.at < hiyori.duration);
 const usedFaces = new Set([...hiyori.cues.map(c => c.face), ...Object.values(hiyori.reactions).flatMap(r => r.faces)]);
 for (const face of usedFaces) {
   assert(manifest.portraits.hiyori.faces.includes(face), `existing Hiyori face: ${face}`);
-  assert(existsSync(new URL(`../img/sprites/characters/hiyori/chr_hiyori_${face}.webp`, import.meta.url)));
+  // quick CI intentionally omits image bytes; require a tracked asset even in sparse checkout.
+  const asset = `remake/img/sprites/characters/hiyori/chr_hiyori_${face}.webp`;
+  assert.equal(execFileSync("git", ["ls-files", "--error-unmatch", "--", asset],
+    { cwd: new URL("../../", import.meta.url), encoding: "utf8" }).trim(), asset);
 }
 for (const reaction of Object.values(hiyori.reactions)) {
   assert.equal(reaction.effect, "warm");
