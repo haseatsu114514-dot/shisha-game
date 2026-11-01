@@ -8,7 +8,7 @@ import { emit } from "../core/bus.js";
 import { state } from "../core/state.js";
 import { displayName, faceIconUrl, portraitInfo } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
-import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned } from "../core/growth.js";
+import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned, readyLessons } from "../core/growth.js";
 import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, REWARD_JA, FEATURES,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, statCount, statTotal, replay, nodeStatus, commitPending,
@@ -484,6 +484,7 @@ export function openBoard({ place = null } = {}) {
       if (node.kind !== "lesson") return "灯してある";
       const who = node.who === "sumi" ? "スミさん" : displayName(node.who, state);
       if (lessonLearned(node.id)) return "習得済み";
+      if (!readyLessons(node.who).some((l) => l.id === node.id)) return `灯してある。今の周で${who}と♥${node.need}まで仲良くなると相談できる`;
       return `相談できる。次に${who}に会った時に話を聞こう`;
     }
     if (st === "pending") return "仮置き中。決定するまでは「やめる」で戻せる";

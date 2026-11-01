@@ -1148,6 +1148,60 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator(".gb-p-state", { hasText: "次に" }).waitFor();
     assert.equal(await page.locator(t("board-lime-consult")).count(), 0, "LIME で聞くボタンは無い");
   }, { viewport: { width: 1331, height: 760 } });
+  for (const [label, viewport] of [["pc", { width: 1280, height: 720 }], ["touch", { width: 844, height: 390 }]]) {
+    await check(`pending-lesson-cycle-${label}`, async page => {
+      await setupDaily(page);
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.evaluate(async () => {
+        window.pendingCore = await import("./js/core/state.js");
+        const growth = await import("./js/core/growth.js");
+        const g = growth.ensureGrowth();
+        Object.assign(g, { nodes: ["M-B4", "M-S6"], learned: ["M-S6"], paid: { "M-B4": {}, "M-S6": {} } });
+        pendingCore.state.affinity.hiyori = 66;
+        (await import("./js/core/cycle-start.js")).startNextCycle(
+          (await import("./js/core/carry.js")).buildCarryPackage(pendingCore.state));
+        pendingCore.state.phase = "daily";
+        pendingCore.save(); pendingCore.load();
+        window.pendingResources = JSON.stringify({ day: pendingCore.state.day, slot: pendingCore.state.slot,
+          stamina: pendingCore.state.stamina, money: pendingCore.state.money, stats: pendingCore.state.stats,
+          hidane: pendingCore.state.growth.hidane, paid: pendingCore.state.growth.paid, nodes: pendingCore.state.growth.nodes });
+        if ((await growth.consultLessons("hiyori")).length) throw new Error("hearts required");
+        void growth.openGrowthBoard({ place: "kannon" });
+      });
+      await page.locator(t("board-node-M-B4")).scrollIntoViewIfNeeded();
+      await page.locator(t("board-node-M-B4")).click();
+      assert.match(await page.locator(".gb-p-state").innerText(), /今の周.*♥5/);
+      await assertFits(page, ".gb-p-state");
+      await page.screenshot({ path: `${out}/pending-lesson-cycle-${label}.png` });
+      await page.locator(t("board-close")).click();
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      await page.evaluate(async () => {
+        pendingCore.state.affinity.hiyori = 66;
+        pendingCore.save(); pendingCore.load();
+        void (await import("./js/core/growth.js")).openGrowthBoard({ place: "kannon" });
+      });
+      await page.locator(t("board-node-M-B4")).scrollIntoViewIfNeeded();
+      await page.locator(t("board-node-M-B4")).click();
+      assert.match(await page.locator(".gb-p-state").innerText(), /相談できる。次に/);
+      await page.locator(t("board-close")).click();
+      await page.locator(t("growth-board")).waitFor({ state: "detached" });
+      const result = await page.evaluate(async () => {
+        const growth = await import("./js/core/growth.js");
+        (await import("./js/vn/engine.js")).vnTest.turbo = true;
+        const done = (await growth.consultLessons("hiyori")).map(l => l.id);
+        pendingCore.load();
+        const s = pendingCore.state;
+        const same = JSON.stringify({ day: s.day, slot: s.slot, stamina: s.stamina, money: s.money,
+          stats: s.stats, hidane: s.growth.hidane, paid: s.growth.paid, nodes: s.growth.nodes }) === pendingResources;
+        const learned = growth.lessonLearned("M-B4");
+        (await import("./js/core/cycle-start.js")).startNextCycle((await import("./js/core/carry.js")).buildCarryPackage(s));
+        return { done, same, learned, cycle: pendingCore.state.cycle, hearts: pendingCore.state.affinity.hiyori || 0,
+          effective: (await import("./js/core/growth-effects.js")).growthLesson(pendingCore.state, "M-B4"),
+          repeat: (await growth.consultLessons("hiyori")).length };
+      });
+      assert.deepEqual(result, { done: ["M-B4"], same: true, learned: true, cycle: 3, hearts: 0, effective: true, repeat: 0 });
+    }, { viewport, ...(label === "touch" ? { isMobile: true, hasTouch: true } : {}) });
+  }
   await Promise.all(Array.from({length:2},async()=>{
     for(;;){const next=cases.shift();if(!next)return;await runCheck(...next);}
   }));

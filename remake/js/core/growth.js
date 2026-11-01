@@ -5,7 +5,7 @@
 // 第2版（SPEC 2026-10-30）: 能力は3つ（才能・感覚・理論）、火種はレベル1つで2つ、色つきの火種は才・感・理。
 import { state, save } from "./state.js";
 import { emit } from "./bus.js";
-import { setExpHooks, affinityLevel } from "./stats.js";
+import { setExpHooks, affinityLevel, AFFINITY_RANK_PTS } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, STAT_UPGRADES, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
 import { growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
 import { growthPerks, growthSkill, growthLesson, SKILL_TUNING, LESSON_TUNING } from "./growth-effects.js";
@@ -184,11 +184,18 @@ function syncLessonFlags(g, s) {
   }
 }
 
-/** 灯して「相談できる」まま、まだ相談していない授業（その人の分）。場面のある授業だけ */
+// 点灯だけを持ち越した授業は、今の周で好感度を上げ直してから相談する。
+// 点灯・支払・習得済みの記録は変更しない。好感度条件のないスミさんの授業は従来どおり。
+const lessonHeartReady = (lesson, s) => !(s.cycle > 1) || !lesson.need
+  || (s.lovers || []).includes(lesson.who)
+  || (s.affinity?.[lesson.who] || 0) >= AFFINITY_RANK_PTS[lesson.need];
+
+/** 灯していて、今の周でも相談できる未習得の授業（その人の分）。場面のある授業だけ */
 export function readyLessons(who, s = state) {
   if (!growthEnabled() || !s) return [];
   const g = ensureGrowth(s);
-  return LESSONS.filter((l) => l.who === who && l.scene && g.nodes.includes(l.id) && !g.learned.includes(l.id));
+  return LESSONS.filter((l) => l.who === who && l.scene && g.nodes.includes(l.id) && !g.learned.includes(l.id)
+    && lessonHeartReady(l, s));
 }
 export const lessonLearned = (id, s = state) => !!s?.growth?.learned?.includes(id);
 
@@ -197,7 +204,7 @@ export function learnLesson(id, s = state) {
   const lesson = LESSONS.find((l) => l.id === id);
   if (!lesson || !s) return false;
   const g = ensureGrowth(s);
-  if (!g.nodes.includes(id) || g.learned.includes(id)) return false;
+  if (!g.nodes.includes(id) || g.learned.includes(id) || !lessonHeartReady(lesson, s)) return false;
   g.learned.push(id);
   for (const f of lesson.unlocks || []) s.flags[f] = true;
   return true;
