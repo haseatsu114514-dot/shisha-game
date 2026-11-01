@@ -12,6 +12,7 @@ import { spotById } from "./spots.js";
 const colorName = (kind) => HIDANE_NAME[kind] || "火種";
 const PLACE_LABEL = {
   tonari_shift: "tonariのバイト", tonari_practice: "まかないで練習", tonari_seat: "tonariの客席", axe_bar: "斧投げBar", pakki_slot: "パッキースロット",
+  "tokyo:pizza_party": "ピザとシーシャの夜",
 };
 
 /** 「今日学んだこと」の名前。相手は表示名、場所は行き先の名前。分からない鍵は出さない。 */

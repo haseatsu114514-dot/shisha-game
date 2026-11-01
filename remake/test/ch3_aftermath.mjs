@@ -170,6 +170,8 @@ console.log("PASS: Chapter 3 victory aftermath saves seven scenes once, crosses 
   assert.equal(party.chapterThreePartyWindow(s), false, "Naru must be read first");
   s.flags._ch3_naru_party_ready = true;
   assert.deepEqual(party.chapterThreePartyGuests(s), ["mashiro", "kuze", "volk"], "home guests cannot teleport");
+  const withHost = structuredClone(s); withHost.met.mukai_master = true;
+  assert.deepEqual(party.chapterThreePartyGuests(withHost), ["mashiro", "kuze", "volk", "mukai_master"]);
   const invalid = [[], ["mashiro"], ["mashiro", "mashiro"], ["mashiro", "minto"], ["mashiro", "kuze", "volk", "minto"]];
   for (const guests of invalid) {
     const before = structuredClone(s);

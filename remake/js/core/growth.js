@@ -351,6 +351,13 @@ export function awardActionExp(target) {
     g.firsts.places.push(target.place);
     got += gainExp(EXP.firstPlace, { key: target.key, tag: "はじめて", first: true });
   }
+  // 一つの行動で複数人と話した場合もX1は一回。X2と章の交流記録は実際に話した各人へ。
+  for (const person of strings(target.people)) {
+    if (!log.people.includes(person)) log.people.push(person);
+    if (g.firsts.people.includes(person)) continue;
+    g.firsts.people.push(person);
+    got += gainExp(EXP.firstPerson, { key: target.key, tag: "はじめて", first: true });
+  }
   return got;
 }
 

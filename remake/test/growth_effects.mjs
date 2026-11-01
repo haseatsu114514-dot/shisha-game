@@ -335,3 +335,15 @@ assert.equal(bonusOf({...blindCs,pullDone:false}).bonus,0);assert.equal(bonusOf(
 assert.equal(bonusOf(JSON.parse(JSON.stringify(blindCs))).bonus,2.4,"セッション保存の振れ幅を再抽選しない");
 growth.setGrowthPreview(false);assert.equal(bonusOf(blindCs).bonus,0);assert.deepEqual(effects.floralLayers(core.state,flowerCs,DB.flavorById),[]);
 console.log("[growth effects] PASS: additive legacy growth, 160+29=189, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");
+// 集団交流は一行動。各人の初回・交流の幅だけを重複なく数える（SPEC X1/X2/X3/X11）。
+growth.setGrowthPreview(true);core.newGame();
+const group = growth.ensureGrowth();
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["kuze","volk","kuze"]}),150);
+assert.equal(group.fresh.counts["group-test"],1);
+assert.deepEqual(group.firsts.people,["kuze","volk"]);assert.deepEqual(group.chapterLog[1].people,["kuze","volk"]);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","kuze"]}),30);
+assert.equal(group.fresh.counts["group-test"],2);
+assert.deepEqual(group.firsts.places,["party"]);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","kuze"]}),24);
+growth.setGrowthPreview(false);
+console.log("[growth effects] PASS: group action XP occurs once; first-person and breadth ledgers count unique real guests");

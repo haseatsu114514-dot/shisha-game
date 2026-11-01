@@ -1,7 +1,7 @@
 import { DB, bgUrl } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { modal, setBg, showScreen, layers } from "../core/ui.js";
-import { gainAffinity } from "../core/stats.js";
+import { gainAffinity, paidAction, earnSceneCompletion } from "../core/stats.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { play } from "../vn/engine.js";
 import { chapterThreePartyGuests, completeChapterThreeParty } from "./ch3-party-progress.js";
@@ -39,7 +39,12 @@ export async function openChapterThreeParty({ signal, isCurrent = () => true } =
     showScreen("none", null); layers.hud.replaceChildren(); layers.hud.classList.remove("show");
     const result = await play(scene, { signal });
     if (!current() || !result || result.cancelled) return false;
-    if (!completeChapterThreeParty(owner, [...selected], gainAffinity)) return false;
+    const settled = await paidAction(() => {
+      if (!current() || !completeChapterThreeParty(owner, [...selected], gainAffinity)) return false;
+      earnSceneCompletion(result.id, owner);
+      return true;
+    }, { consumed: used => used, exp: { key: "tokyo:pizza_party", place: "tokyo:pizza_party", people: [...selected] } });
+    if (!current() || !settled.value) return false;
     save();
     return true;
   }

@@ -62,9 +62,13 @@ await suite("growth-levelup", async (runCheck) => {
       const loaded=!!partyCore.loadFromSlot("party-proof");
       return {same:loaded&&record===JSON.stringify({flags:partyCore.state.flags,growth:partyCore.state.growth,affinity:partyCore.state.affinity}),
         unchanged:s.day===partyInitial.day&&s.slot===partyInitial.slot&&s.money===partyInitial.money&&s.stamina===partyInitial.stamina&&JSON.stringify(s.flavorStock)===partyInitial.stock,
-        guests:s.flags._ch3_pizza_party.guests,gains:["mashiro","kuze"].map(id=>(s.affinity[id]||0)-(partyInitial.affinity[id]||0)),stage:s.flags._ch3_aftermath.stage};
+        guests:s.flags._ch3_pizza_party.guests,gains:["mashiro","kuze"].map(id=>(s.affinity[id]||0)-(partyInitial.affinity[id]||0)),stage:s.flags._ch3_aftermath.stage,
+        xp:s.growth.xp,actionCount:s.growth.fresh.counts["tokyo:pizza_party"],firstPeople:s.growth.firsts.people,
+        firstPlace:s.growth.firsts.places.includes("tokyo:pizza_party"),read:s.growth.read.includes("ch3_growth_pizza_party")};
     });
     assert(result.same&&result.unchanged);assert.deepEqual(result.guests,["mashiro","kuze"]);assert(result.gains.every(n=>n>0));assert.equal(result.stage,2);
+    assert(result.xp>=255&&result.firstPlace&&result.read);assert.equal(result.actionCount,1);
+    assert(result.firstPeople.includes("mashiro")&&result.firstPeople.includes("kuze"));
     // LOADでownerが切り替わった後、古いカードの入力では次の朝へ進まない。
     await page.locator(t("ch3-aftermath-party-next")).click();
     assert.equal(await page.evaluate(()=>partyCore.state.flags._ch3_aftermath.stage),2);
