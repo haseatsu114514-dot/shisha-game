@@ -79,6 +79,11 @@ async function fit(p,label){
  }
  const pending=(await p.evaluate(()=>__trpg.snapshot())).pending;
  assert.doesNotMatch(await p.locator('.trpg-heat').textContent(),/null|undefined/,'No placeholder text in the heat meter without momentum');
+ const faceText=await p.locator('.trpg-roll-instruction,.trpg-d20-value,.trpg-dice-total > strong,.trpg-dice-grade').evaluateAll(nodes=>{
+  const scale=document.getElementById('stage').getBoundingClientRect().width/1280;
+  return nodes.filter(n=>n.checkVisibility()).map(n=>({text:n.textContent,size:parseFloat(getComputedStyle(n).fontSize)*scale}));
+ });
+ for(const text of faceText)assert(text.size>=11.9,label+' roll text must remain readable: '+JSON.stringify(text));
  if(pending){assert.deepEqual(dice.map(d=>d.value),pending.dice,'Rendered dice must match actual model');
    for(const i of [0,1])if(await ctl(p,'trpg-reroll-'+i).count())assert.match(await ctl(p,'trpg-reroll-'+i).textContent(),new RegExp(`${i+1}個目（${pending.dice[i]}）`));
  }

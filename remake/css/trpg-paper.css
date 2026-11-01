@@ -105,3 +105,9 @@ html:root[data-ui-theme="paper"] .trpg-root .trpg-recap-rating { color: var(--pa
 html:root[data-ui-theme="paper"] .trpg-root .trpg-recap-rating li[data-lit="true"] strong { color: var(--amber-ink); }
 html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-modal-body { color: var(--paper-ink); }
 html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-object-detail { color: var(--paper-ink); background: var(--paper); text-shadow: none; }
+
+/* 縦持ちのダイス窓でも、1280px舞台の縮小で結果を極小にしない。 */
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-d20-value { font-size: max(32px, calc(18 * var(--roll-unit))); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-instruction { font-size: max(16px, calc(12 * var(--roll-unit))); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total > strong { font-size: max(33px, calc(20 * var(--roll-unit))); }
+html:root[data-ui-theme="paper"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total .trpg-dice-grade { font-size: max(18px, calc(14 * var(--roll-unit))); }
