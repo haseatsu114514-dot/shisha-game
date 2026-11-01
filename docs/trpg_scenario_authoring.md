@@ -1,6 +1,8 @@
 # TRPGシナリオの書き方（小さな卓の冒険）
 
 新しい短編を足すときの正本。1本＝1つのJSON（`data/dialogue/trpg_<名前>.json`）と、catalog への登録だけで遊べる。
+
+> **シナリオを増やすときは、タイトル（題名・GM・PL・ジャンル・あらすじ）の段階でオーナーに相談し、了承を得てから書き始める**（2026-11-01 オーナー指示）。下の「企画一覧」の未了承の行は案であり、書き始めてよい合図ではない。
 画面・ルールのコードは変えない。手本は `data/dialogue/trpg_ordinary.json`（自由に調べる型）と `trpg_shark.json`（調べる回数に限りがある型）。
 
 ```bash
@@ -67,7 +69,7 @@ python3 tools/lint_dialogue.py trpg_<名前>                             # 台�
 
 `data/trpg_catalog.json` の `scenarios` に `{id, file, price, stockRequires}` を足す（入荷条件にGMを含める）。GMが新しい人なら `data/dialogue/trpg_table_talk.json` に `trpg_talk_<GM>_{critical,critical_full,fumble,double,heat_up,heat_max}` を足す。
 
-## 企画一覧（全10本）
+## 企画一覧（全10本・03〜10はタイトル相談中）
 
 | 番号 | ID / ファイル | 題名 | GM | PL（はじめ＋） | ジャンル | 調査 |
 | --- | --- | --- | --- | --- | --- | --- |
