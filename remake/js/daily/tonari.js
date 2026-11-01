@@ -1,4 +1,5 @@
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
+import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { staffFlavors, staffStock } from "../core/flavor-mastery.js";
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん）。
 // シーシャ作りの練習は店の練習イベントで行う（#783）。chooseDrill は第1章の準備イベントで使う。
@@ -105,15 +106,15 @@ async function baitoShift({ called }) {
   if (rainy) await play("remake_baito_rain", { bg: TONARI_BG });
   const n = state.baitoCount;
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
-  if (state.chapter === 1 && n === 2 && !state.flags._ev_rei_cameo) {
+  if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
     state.flags._ev_rei_cameo = true;
     await play("ch1_rei_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_rei_cameo", ["rei"]);
-  } else if (state.chapter === 1 && n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
+  } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
     state.flags._ev_reviewer_cameo = true;
     await play("ch1_reviewer_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_reviewer_cameo", ["reviewer"]);
-  } else if (state.chapter === 1 && n >= 4 && state.day >= 6 && !state.flags._ev_maezono_cameo) {
+  } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 4 && state.day >= 6 && !state.flags._ev_maezono_cameo) {
     state.flags._ev_maezono_cameo = true;
     await play("ch1_maezono_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_maezono_cameo", ["maezono"]);
@@ -142,7 +143,7 @@ async function baitoShift({ called }) {
 
 /** 店の受け取りは実際のシフト後だけ。旧DAY4の既読記録もそのまま使う。 */
 async function afterShiftErrand() {
-  if (state.chapter !== 1 || state.day < 4 || state.flags._ev_ageha_cameo
+  if (!chapterFeatureEnabled(state.chapter, "baitoCameos") || state.day < 4 || state.flags._ev_ageha_cameo
     || !DB.dialogues.ch1_ageha_encounter) return;
   await play("ch1_ageha_encounter");
   state.flags._ev_ageha_cameo = true;
