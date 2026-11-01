@@ -479,6 +479,39 @@ reset({ chapter: 2, day: 16, flags: { _ch2_day1: { startDay: 15 } }, lovers: ["m
 db.lime = []; db.lover = { inviteLines: { minto: ["仕事のあと"] } };
 assert.equal(phone.morningMessages()[0].type, "invitation", "Dates remain available before the chapter-two tournament");
 
+// #2035: 正本へ移した3通は、条件・未読/既読の復元後も一度だけ配信する。
+for (const [id, sender, chapter, flag] of [
+  ["lime_naru_samechan_nickname", "naru", 1, "_samechan_first_encounter"],
+  ["lime_samechan_preparing_thanks", "samechan", 1, "_samechan_first_encounter"],
+  ["lime_samechan_opening", "samechan", 2, "_shishark_opened"],
+]) {
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  const setup = (overrides = {}) => {
+    reset({ chapter, day: 9, contacts: [sender], flags: { [flag]: true }, ...overrides });
+    db.lime = [message];
+  };
+  setup({ flags: {} });
+  assert.equal(phone.deliverMorning(), 0, `${id}: flag required`);
+  setup({ contacts: [] });
+  assert.equal(phone.deliverMorning(), 0, `${id}: contact required`);
+  setup({ chapter: chapter === 1 ? 2 : 1 });
+  assert.equal(phone.deliverMorning(), 0, `${id}: chapter required`);
+  setup();
+  assert.equal(phone.deliverMorning(), 1, `${id}: deliver when eligible`);
+  assert.equal(state.inbox[0].id, id);
+  assert.equal(state.inbox[0].read, false);
+  const unread = clone(state);
+  setup(unread);
+  assert.equal(phone.deliverMorning(), 0, `${id}: unread survives restore without duplicate`);
+  assert.equal(state.inbox[0].read, false);
+  state.inbox[0].read = true; state.inbox[0].done = true; state.limeRead.push(id);
+  const read = clone(state);
+  setup(read);
+  assert.equal(phone.deliverMorning(), 0, `${id}: read survives restore without redelivery`);
+  assert.equal(state.inbox[0].read, true);
+}
+
 // #1178 CH2-TF-02/03: 実データの日数指定LIMEを章内日で配信する。
 for (const [id, sender, due] of [
   ["lime_ageha_day3", "ageha", 3],
