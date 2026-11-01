@@ -6,6 +6,10 @@
 > - 本文に残る `web/js/`・`web/test/`・`CLAUDE.md の開発ワークフロー` は旧版の記録。現行の実装は `remake/js/`、テストは `remake/test/`、開発ルールは `AGENTS.md` と `docs/gameplay_agent_reference.md`。
 > - 最新のオーナー判断は `docs/owner_requests.md`、物語・人物は `brand/`、成長（経験値・心得の盤）は `docs/stat-design/` が正本。本書と食い違うときは、より新しい日付の記述を優先する。
 
+## 2026-10-30 第3章の日数と会話のテンポ（#1045）
+
+[オーナー決定](https://github.com/haseatsu114514-dot/shisha-game/issues/1045#issuecomment-6508771824)に従い、第3章は14日のまま、既読の会話や説明を短くして中身を濃くする。回復の日々に小さな選択は今は追加しない。
+
 ## 2026-10-29 第1章の南雲の基準点（#1899）
 
 - 第1章の南雲の基準は現行 90.8（`remake/js/craft/score.js` の `NAGUMO_BAR`、commit ae433005）。下の2026-10-26節にある「72→84へ調整」は途中経過で、この値が優先する。根拠は `MEASURE.md` の第1章・mid 初回突破率 74.2%（742/1000）。
