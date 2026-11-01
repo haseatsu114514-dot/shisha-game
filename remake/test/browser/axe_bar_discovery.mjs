@@ -15,6 +15,8 @@ async function setup(page, { rumor = false, legacy = false, met = false } = {}) 
       ui: await import("./js/core/ui.js"), bus: await import("./js/core/bus.js"), lines: [], result: null,
     };
     const s = A.core.newGame(); Object.assign(s, { phase: "daily", day: 5, slot: 1, money: 12000, stamina: 80, seed: 131 });
+    // スミさんとBARのマキは本人が話す。既知の話し手として固定し、ひよりの面識だけを検査する。
+    for (const id of ["sumi", "maki"]) { s.met[id] = true; s.flags[`_intro_${id}`] = true; }
     if (rumor) s.flags._axe_bar_rumor_done = true;
     if (met) { s.met.hiyori = true; s.flags._hiyori_meeting_done = true; }
     if (legacy) { s.schema = 15; A.core.save(); A.core.load(); }
