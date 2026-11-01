@@ -1,6 +1,6 @@
 # 斧投げ WATL 2026式の板（2026-11-01・AXR06・Codex依頼 #2198）
 
-斧投げミニゲームを公式（WATL 2026 Hatchet）の的・採点へ再構成した際（台帳 `docs/owner_requests.md` AXR01〜06、設計 `docs/axe_throw.md`「WATL 2026式への再構成」）、板の新規画像を生成しようとしたが、OpenAI 画像API（`gpt-image-2.5-sunburst`）が **クレジット切れ（HTTP 429 `insufficient_quota`）** で生成できなかった。オーナー指示「新規で画像生成が必要な場合はコーデックスに依頼して作成しても可」に従い、Codex への依頼を [Issue #2198](https://github.com/haseatsu114514-dot/shisha-game/issues/2198) にまとめた（プロンプト・受け入れ条件・組み込み手順）。指示文の正本はこのフォルダの `prompts/board.txt`。
+斧投げミニゲームを公式（WATL 2026 Hatchet）の的・採点へ再構成した際（台帳 `docs/owner_requests.md` AXR01〜06、設計 `docs/spec/axe_throw.md`「WATL 2026式への再構成」）、板の新規画像を生成しようとしたが、OpenAI 画像API（`gpt-image-2.5-sunburst`）が **クレジット切れ（HTTP 429 `insufficient_quota`）** で生成できなかった。オーナー指示「新規で画像生成が必要な場合はコーデックスに依頼して作成しても可」に従い、Codex への依頼を [Issue #2198](https://github.com/haseatsu114514-dot/shisha-game/issues/2198) にまとめた（プロンプト・受け入れ条件・組み込み手順）。指示文の正本はこのフォルダの `prompts/board.txt`。
 
 2026-11-01 追記（AXR07）: 見やすさのため、中央6割を明るく均一にし、濃い節・黒い傷・強い木目を置かない指示を加えた。
 
