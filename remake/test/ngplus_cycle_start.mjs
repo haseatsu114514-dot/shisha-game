@@ -231,3 +231,72 @@ growth.setGrowthPreview(false);
 assert.equal(startNextCycle(expPackage, { groups: { stats: false } }).growth, undefined);
 assert.equal(startNextCycle(buildCarryPackage(newState())).growth, undefined, "旧セーブに成長台帳を捏造しない");
 console.log("lover EXP: PASS (normal awards, preview switch, save/load, NG+ carry/reset, no duplicate settlement or ability gains)");
+
+// 盤の成長は旧能力へ加算したまま周回し、章報酬の台帳だけを毎周作り直す。
+// 工程入力・♥5への到達を省いた保存fixture。通しプレイ／操作バランスの証明とは分ける。
+const effects = await import("../js/core/growth-effects.js");
+newGame();
+growth.setGrowthPreview(true);
+for (const key of core.STAT_KEYS) core.state.stats[key] = 100;
+const boardGrowth = growth.ensureGrowth();
+Object.assign(boardGrowth, {
+  nodes: ["B1", "K20", "K18", "M-B4", "M-W1"],
+  learned: ["M-B4", "M-W1"],
+  paid: { B1: { any: 1 }, K20: { body: 2 }, K18: { any: 4 }, "M-B4": {}, "M-W1": {} },
+  hidane: { any: 5, body: 0, sense: 0, wisdom: 0 }, earned: 12, ringsOpen: 5,
+  partyLast: ["kuze", "mashiro"],
+});
+const rawStats = structuredClone(core.state.stats);
+const retainedBoard = structuredClone({ nodes: boardGrowth.nodes, learned: boardGrowth.learned, paid: boardGrowth.paid });
+const finishedCup = { pullDone: true, careHistory: [{ score: 60 }, { score: 70 }],
+  heat: { score: 95 }, steam: { score: 80 }, holes: { score: 90 }, stats: { craftQuality: 85 } };
+const tournamentXp = [300, 375, 450, 525, 600], clearXp = [150, 188, 225, 263, 300];
+const sceneXp = [20, 25, 30, 35, 40];
+const boardSnapshot = () => ({ nodes: core.state.growth.nodes, learned: core.state.growth.learned, paid: core.state.growth.paid });
+for (let cycle = 1; cycle <= 3; cycle++) {
+  assert.equal(core.state.cycle, cycle);
+  assert.deepEqual(core.state.stats, rawStats, "周回のたびに盤の恩恵を旧能力へ書き込まない");
+  assert.deepEqual(boardSnapshot(), retainedBoard);
+  assert.equal(maxStamina(), 182, "旧最大160＋B1の2＋習得済みひよりの20");
+  assert.equal(effects.growthPerks(core.state).charm, 2, "旧K20の開放・支払を人柄へ引き継ぐ");
+  assert.equal(effects.densePackAvailable(core.state), true);
+  assert.equal(effects.growthLesson(core.state, "M-W1"), true, "交流をやり直しても習得済み授業は有効");
+  for (let chapter = 1; chapter <= 5; chapter++) {
+    core.state.chapter = chapter;
+    const before = structuredClone({ day: core.state.day, slot: core.state.slot, stamina: core.state.stamina,
+      money: core.state.money, reel: core.state.reel, flavorStock: core.state.flavorStock });
+    assert.equal(growth.awardSceneExp(`measurement_chapter_${chapter}`), sceneXp[chapter - 1]);
+    assert.equal(growth.awardTournamentExp(1, finishedCup), tournamentXp[chapter - 1]);
+    assert.equal(growth.awardChapterClearExp(), clearXp[chapter - 1]);
+    const awarded = structuredClone(core.state.growth);
+    save(); core.load();
+    assert.equal(growth.awardSceneExp(`measurement_chapter_${chapter}`), 0);
+    assert.equal(growth.awardTournamentExp(1, finishedCup), 0);
+    assert.equal(growth.awardChapterClearExp(), 0);
+    assert.deepEqual(core.state.growth, awarded, "再LOAD後の同章報酬はXPも火種も重複しない");
+    assert.deepEqual({ day: core.state.day, slot: core.state.slot, stamina: core.state.stamina,
+      money: core.state.money, reel: core.state.reel, flavorStock: core.state.flavorStock }, before);
+  }
+  growth.settleGrowth();
+  const settledBoard = structuredClone(core.state.growth);
+  const source = structuredClone(core.state), carryBoard = buildCarryPackage(core.state);
+  assert.deepEqual(core.state, source, "引き継ぎの抽出は元セーブを変えない");
+  assert.deepEqual(carryBoard.growth.chapterLog, {});
+  assert.deepEqual(carryBoard.growth.tournamentXp, {});
+  assert.deepEqual(carryBoard.growth.cleared, []);
+  assert.deepEqual(carryBoard.growth.read, []);
+  if (cycle === 3) break;
+  startNextCycle(carryBoard);
+  save(); core.load();
+  assert.deepEqual(core.state.growth.hidane, settledBoard.hidane);
+  assert.equal(core.state.growth.xp, settledBoard.xp);
+  assert.equal(core.state.growth.earned, settledBoard.earned);
+  assert.equal(core.state.growth.ringsOpen, 5);
+  assert.deepEqual(core.state.growth.partyLast, ["kuze", "mashiro"]);
+  assert.deepEqual(core.state.growth.firsts, { people: [], places: [] });
+  const beforeResettle = structuredClone(core.state.growth);
+  growth.settleGrowth();
+  assert.deepEqual(core.state.growth, beforeResettle, "新周回の再精算では火種を積み増さない");
+}
+growth.setGrowthPreview(false);
+console.log("growth NG+: PASS (three cycles × five chapters, retained additive perks/lessons/payment, reward reset, SAVE/LOAD, unchanged resources)");
