@@ -67,10 +67,12 @@ export async function withLoading(prepare, {
   status.append(emblem, el("span", { text: "LOADING…" }));
   const logo = el("div.loading-logo", { "aria-hidden": "true" });
   const bar = el("div.loading-bar", { "aria-hidden": "true" }, [el("div.loading-bar-fill")]);
+  // The gauge wrapper only carries the decorative smoke flourishes at both ends (css/loading.css).
+  const gauge = el("div.loading-gauge", { "aria-hidden": "true" }, [bar]);
   const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: "タップ・クリック・キーで進む" });
   const content = el("div.loading-comic");
   overlay.classList.add("has-logo");
-  overlay.append(logo, el("div.loading-card", [content]), bar, status, proceed);
+  overlay.append(logo, el("div.loading-card", [content]), gauge, status, proceed);
   let settled = false, comicShown = false, awaitingProceed = false, resolveProceed;
   const proceeded = new Promise(resolve => { resolveProceed = resolve; });
   const abort = () => controller.abort(signal.reason);
