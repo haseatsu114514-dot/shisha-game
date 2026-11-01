@@ -8,7 +8,7 @@ const context = vm.createContext({ console, Math, Map, Set, JSON, Date,
   localStorage: { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)), removeItem: k => storage.delete(k) },
 });
 const mocks = {
-  "core/stats.js": { affinityLevel: () => 0, maxStamina: () => 100, setExpHooks() {} },
+  "core/stats.js": { affinityLevel: () => 0, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], maxStamina: () => 100, setExpHooks() {} },
   "core/ui.js": { modal: async () => { modalHook?.(); return choice; } },
   "vn/engine.js": { play: async id => {
     scenes.push(id);
