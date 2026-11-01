@@ -90,6 +90,9 @@ assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
 assert.deepEqual(Array.from(all.DB.lime.slice(-3), m => m.id), [
   "lime_naru_samechan_nickname", "lime_samechan_preparing_thanks", "lime_samechan_opening",
 ]);
+assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
+assert.equal(all.DB.lime.length, 72);
+assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
 assert(all.DB.baito.some(event => event.id === "baito_tsumugi_art"), "つむぎの常連接客が起動時に除外された");
