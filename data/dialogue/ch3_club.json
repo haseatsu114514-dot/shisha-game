@@ -1,0 +1,61 @@
+{
+  "comment": "第3章・東京の夜の自由時間に行けるクラブSEAMと店主の針間ヨル（DJS12・2026-11-01）。DJミニゲームなので時間・お金・体力・好感度は変えない。初回の出会い（一度だけ。ヨルが名乗るまでの ch3_club_first → 登場カットイン → ch3_club_first_after。カットインと面識は dj-club.js が斧投げBarのマキと同じ playIntro で付ける）・初めてAランク以上を出した夜の会話（一度だけ）・店主の案内と結果への一言。はじめの味覚の調子・大会・恋愛には触れないので、大会前後の分岐は要らない。読了と既読フラグは remake/js/daily/dj-club.js が正常読了後に保存する。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_club_first",
+      "lines": [
+        { "speaker": "", "text": "夜の路地を歩いていると、足元から低い音が上がってきた。" },
+        { "speaker": "", "text": "地下へ続く細い階段。小さな看板に、縫い目のような線で「SEAM」とある。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……店の下から、音が出てる？）" },
+        { "speaker": "", "text": "階段の上で、ヘッドフォンを首にかけた女の人が、紙コップを傾けていた。" },
+        { "speaker": "yoru", "face": "normal", "text": "……あ、mukaiの新しい子だ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、俺のこと、知ってるんですか？" },
+        { "speaker": "yoru", "face": "smile", "text": "開店前に、ムカイと甘いお茶を飲みに行くからね。カウンターの奥で見てた" },
+        { "speaker": "yoru", "face": "normal", "text": "針間ヨル。この下で、SEAMってクラブをやってる" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_club_first_after",
+      "lines": [
+        { "speaker": "hajime", "face": "normal", "text": "蒸野はじめです。えっと……クラブって、踊るところですよね" },
+        { "speaker": "yoru", "face": "smile", "text": "踊ってもいいし、聴いてるだけでもいい。今夜はオープンデッキの日" },
+        { "speaker": "yoru", "face": "normal", "text": "誰が回してもいい夜。はじめくんも、一回やっていきなよ" },
+        { "speaker": "hajime", "face": "surprise", "text": "DJですか？　俺、やったことないです" },
+        { "speaker": "yoru", "face": "normal", "text": "みんな最初はそう。触るのは、ほとんど二つだけ" },
+        { "speaker": "", "text": "階段を下りると、暗いフロアの奥で、皿が二枚並んだ機材が光っていた。" },
+        { "speaker": "yoru", "face": "normal", "text": "次の曲が載ってる方の▶で入れて、真ん中の横のフェーダーで渡す" },
+        { "speaker": "yoru", "face": "normal", "text": "曲には八小節ごとの区切りがある。その頭で入れて、八小節かけて渡すの" },
+        { "speaker": "yoru", "face": "normal", "text": "頭が近づくと数字が出るから、0で▶。少しずれても、拍には合わせてくれる" },
+        { "speaker": "hajime", "face": "normal", "text": "低い音とか、細かいつまみは……" },
+        { "speaker": "yoru", "face": "smile", "text": "そこは機材に任せてる。低い音どうしはぶつかると濁るから、勝手に片方を引いてくれる" },
+        { "speaker": "hajime", "face": "normal", "text": "（ぶつからないように、片方を引く。シーシャの配合みたいだ）" },
+        { "speaker": "hajime", "face": "normal", "text": "二つを混ぜるのに、どっちの味も消さないように重ねる……みたいな" },
+        { "speaker": "yoru", "face": "smile", "text": "へえ、そっちの言葉だとそうなるんだ。いいね" },
+        { "speaker": "yoru", "face": "normal", "text": "それにね、DJは曲を一つも作ってない。今夜かける曲も、全部誰かの曲" },
+        { "speaker": "yoru", "face": "normal", "text": "でも、どの曲をどこでつなぐかは、その夜のあたしにしか出せない" },
+        { "speaker": "hajime", "face": "normal", "text": "（人の曲だけで、その人の夜になる……）" },
+        { "speaker": "yoru", "face": "normal", "text": "曲の速さがずれてたら、PITCHで寄せるか、SYNCを押せばいい" },
+        { "speaker": "yoru", "face": "smile", "text": "ずるじゃないよ、機材の仕事。はじめくんは、フロアを見てて" },
+        { "speaker": "yoru", "face": "normal", "text": "じゃあ、次の頭で入れよう" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_club_a_talk",
+      "lines": [
+        { "speaker": "", "text": "ブースを降りると、ヨルさんが紙コップを二つ持って待っていた。" },
+        { "speaker": "yoru", "face": "smile", "text": "今の、フロアがずっと揺れてた" },
+        { "speaker": "yoru", "face": "normal", "text": "ねえ、さっきかけた曲、誰の曲だった？" },
+        { "speaker": "hajime", "face": "normal", "text": "……全部、人の曲です。俺は、つないだだけで" },
+        { "speaker": "yoru", "face": "smile", "text": "うん。でも今の八小節は、はじめくんにしか作れなかった" },
+        { "speaker": "hajime", "face": "normal", "text": "（誰かの曲と、誰かの曲のあいだ。そこにいたのは、確かに俺だった）" },
+        { "speaker": "yoru", "face": "normal", "text": "またおいで。デッキはいつでも空けとく" }
+      ]
+    },
+    { "dialogue_id": "venue_yoru_greet", "lines": [{ "speaker": "yoru", "face": "smile", "text": "好きなセットを選んで。最初はSET 1からね" }] },
+    { "dialogue_id": "venue_yoru_return", "lines": [{ "speaker": "yoru", "face": "normal", "text": "おかえり。デッキ、空いてるよ" }] },
+    { "dialogue_id": "venue_yoru_set_S", "lines": [{ "speaker": "yoru", "face": "smile", "text": "最後まで手が上がってた。今夜のSEAMは、はじめくんの夜だね" }] },
+    { "dialogue_id": "venue_yoru_set_A", "lines": [{ "speaker": "yoru", "face": "smile", "text": "いいつなぎ。つなぎ目、誰も気づいてなかったよ" }] },
+    { "dialogue_id": "venue_yoru_set_B", "lines": [{ "speaker": "yoru", "face": "normal", "text": "悪くない。入りは頭で、フェーダーはもう少しゆっくり" }] },
+    { "dialogue_id": "venue_yoru_set_C", "lines": [{ "speaker": "yoru", "face": "normal", "text": "最初はみんなそう。次は、数字の0で▶だけ考えてみな" }] }
+  ]
+}

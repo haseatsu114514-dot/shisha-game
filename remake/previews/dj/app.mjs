@@ -6,11 +6,16 @@ const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 const setParam = Number(params.get('set') || params.get('stage')) - 1;
 const setIndex = SETS[setParam] ? setParam : 0;
+// ?embed=1: opened by the main game (remake/js/minigames/dj.js). Shows ← 戻る and follows the game's mute / BGM volume (?mute=1, ?vol=0..1).
+const embedded = params.get('embed') === '1' && window.parent !== window;
+const gameVolume = Number(params.get('vol')), gameMuted = params.get('mute') === '1';
+const tell = message => { try { if (embedded) window.parent.postMessage(message, location.origin); } catch { /* host optional */ } };
 const reduced = matchMedia('(prefers-reduced-motion: reduce)'), coarse = matchMedia('(pointer: coarse)');
 let audio, disposed = false, frame = 0, view = { mode: 'idle' }, message = '', toastUntil = 0, judgeUntil = 0, shownPlay = null, lastCount = '', crowd = null;
 const status = text => { $('status').textContent = text; };
 function create() {
   audio = new DJAudio(undefined, { setIndex });
+  if (embedded) { audio.muted = gameMuted; if (Number.isFinite(gameVolume)) audio.volume = Math.max(0, Math.min(.36, .18 * gameVolume / .5)); }
   audio.onInterrupted = () => status('音声が中断されました。▶で再開します。');
   const d = audio.mix.decks;
   for (const id of [0, 1]) { const key = id ? 'b' : 'a', t = TRACKS[d[id].track]; $('track-' + key).textContent = t.title; $('platter-' + key).style.setProperty('--art', `url('../../img/ui/dj/art-${d[id].track}.webp')`); }
@@ -25,7 +30,7 @@ export function snapshot() {
     beats: m.decks.map(d => beatAt(d, now)), playing: m.decks.map(d => d.playing), phase_error: phaseError(...m.decks, now),
     mix: m.mix, master: m.master, cue: m.cue ? { ...m.cue } : null, lastPlay: m.lastPlay, floor: m.floor, fader: m.fader ? { maxJump: m.fader.maxJump, reached: m.fader.reached } : null,
     transitions: m.transitions.map(t => ({ to: t.to, grade: t.grade, parts: t.parts, total: t.total, rank: t.rank })), result: m.result,
-    voices: audio.voices.filter(Boolean).length, rms: audio.level(), reduced: reduced.matches, remaining: view.remaining, progress: view.progress };
+    voices: audio.voices.filter(Boolean).length, rms: audio.level(), reduced: reduced.matches, embedded, muted: audio.muted, volume: audio.volume, remaining: view.remaining, progress: view.progress };
 }
 async function pause() { try { await audio.pause(); status('停止中。▶で再開します。'); } catch (e) { status(`停止処理: ${e.message}`); } }
 for (const id of [0, 1]) {
@@ -38,6 +43,8 @@ for (const id of [0, 1]) {
   });
 }
 $('sync').addEventListener('click', () => { if (audio.sync()) status('SYNC：次の曲のBPMを合わせました'); });
+$('exit').hidden = !embedded;
+$('exit').addEventListener('click', async () => { if (!embedded) return; await audio.pause().catch(() => {}); tell({ type: 'dj-exit' }); });
 $('restart').addEventListener('click', async () => { const old = audio; create(); await old.dispose().catch(() => {}); status('最初から'); });
 $('crossfader').addEventListener('input', e => audio.setMix(e.target.value));
 // Jog outer rim = fine pitch (12° of rim travel = 0.01 BPM). Inside the rim does nothing; QUANTIZE keeps the phase.
@@ -119,9 +126,10 @@ function showTransition(t) {
 }
 function showResult(r) {
   const rows = r.transitions.map((t, i) => `<tr><th>${i + 1}</th><td>${TRACKS[t.from].title} → ${TRACKS[t.to].title}</td><td>${t.grade}</td><td>${t.parts.join(' / ')}</td><td class="r-${t.rank}">${t.rank}</td></tr>`).join('');
-  $('score-result').innerHTML = `<div class="result-card"><div class="result-head"><small>${r.set} RESULT</small><strong class="rank r-${r.rank}">${r.rank}</strong><span class="result-total">${r.total}点 ・ FLOOR ${r.floor}%</span></div><table><thead><tr><th>#</th><th>つなぎ</th><th>入り</th><th>BPM / 入り / フェーダー</th><th></th></tr></thead><tbody>${rows}</tbody></table><p>${{ S: 'フロアが沸いた。完璧なセット！', A: 'いいセット。フロアはずっと踊っていた', B: 'つなぎが少し荒い。フェーダーはゆっくり、入りは拍の頭で', C: '次はBPMを合わせてから、カウントの0で▶' }[r.rank]}</p><button id="again" type="button">もう一度</button></div>`;
+  $('score-result').innerHTML = `<div class="result-card"><div class="result-head"><small>${r.set} RESULT</small><strong class="rank r-${r.rank}">${r.rank}</strong><span class="result-total">${r.total}点 ・ FLOOR ${r.floor}%</span></div><table><thead><tr><th>#</th><th>つなぎ</th><th>入り</th><th>BPM / 入り / フェーダー</th><th></th></tr></thead><tbody>${rows}</tbody></table><p>${{ S: 'フロアが沸いた。完璧なセット！', A: 'いいセット。フロアはずっと踊っていた', B: 'つなぎが少し荒い。フェーダーはゆっくり、入りは拍の頭で', C: '次はBPMを合わせてから、カウントの0で▶' }[r.rank]}</p><div class="result-actions"><button id="again" type="button">もう一度</button>${embedded ? '<button id="leave" type="button">戻る</button>' : ''}</div></div>`;
   $('again').addEventListener('click', () => $('restart').click());
-  try { if (window.parent !== window) window.parent.postMessage({ type: 'dj-result', set: setIndex + 1, rank: r.rank, total: r.total, floor: r.floor }, location.origin); } catch { /* host optional */ }
+  $('leave')?.addEventListener('click', () => $('exit').click());
+  tell({ type: 'dj-result', set: setIndex + 1, rank: r.rank, total: r.total, floor: r.floor });
 }
 function render() {
   if (disposed) return; const now = audio.now, m = audio.mix;

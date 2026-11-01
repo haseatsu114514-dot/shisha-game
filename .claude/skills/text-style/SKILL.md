@@ -53,7 +53,7 @@ python3 tools/text_editor_server.py   # → http://127.0.0.1:8321/
 #   ・保存すると data/dialogue/*.json に直接書き戻る
 #   ・プレビューは remake/js/vn/text.js の autoWrap 実物を配信＝本編とズレない
 #   ・画面の「台詞の検査」「⬆️コミット&プッシュ」で 4) まで完結できる（main/masterでは拒否）
-#   ・使い方の詳細は docs/text_editor_manual.md（アプリ内「❓ヘルプ」からも読める）
+#   ・使い方の詳細は docs/tools/text_editor_manual.md（アプリ内「❓ヘルプ」からも読める）
 
 # 4) 反映
 # remake/ はJSONを直接読む。保存後、ブラウザを再読み込みする

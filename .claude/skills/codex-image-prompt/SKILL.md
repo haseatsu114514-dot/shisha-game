@@ -14,16 +14,16 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 | 種類 | 正本（書式・スタイル指針をここから写す） |
 |---|---|
 | 背景 | `tools/bg_prompts.txt` — 英語プロンプト・1280x720・no people・painterly。画風基準は `bg_eden_shop.png` |
-| 立ち絵・表情差分 | `docs/image_generation_guide.md` — マゼンタ(#FF00FF)背景・表情は1枚のシートで一括生成・pixelize前提 |
-| 作りパートUI・小物 | `docs/asset_gen_prompts.md` — 共通スタイル指針＋分業表＋現行の作業台素材表（ファイル名→使う場所） |
-| CG（一枚絵） | `docs/cg_production_plan.md` ＋ 背景の書式を流用 |
+| 立ち絵・表情差分 | `docs/prompts/image_generation_guide.md` — マゼンタ(#FF00FF)背景・表情は1枚のシートで一括生成・pixelize前提 |
+| 作りパートUI・小物 | `docs/prompts/asset_gen_prompts.md` — 共通スタイル指針＋分業表＋現行の作業台素材表（ファイル名→使う場所） |
+| CG（一枚絵） | `docs/prompts/cg_production_plan.md` ＋ 背景の書式を流用 |
 
 - キャラの容姿・雰囲気は `brand/character_profiles.md` と `data/characters.json` から写す。
   ⚠️ ガイド内の旧サンプルに「自信なさげ」等の**旧人格の雰囲気語**が残っていることがある。
   雰囲気の形容は最新の人格設定（docs/gameplay_agent_reference.md「主人公」節など）に合わせて書く。
 - 夜/昼の差分背景は `_day`/`_night` ペア命名（`resolveSceneBg()` が自動切替に使う）。
 - 台詞側と画像側の資料の対応は `docs/shisha_reference.md`（炭の個数は画像ではHMD内2〜3個、制作工程ではアルミ上に三角3個）。
-- シーシャ台・ホース・炭が写る画像は、まず[シーシャ描写の早見表](../../../asset_sources/shisha-hardware-reference/drawing-sheet/README.md)の「生成前に決める8行」「プロンプトに貼る文」をプロンプトへ入れる。早見表・構造図は資料なので添付画像にしない（図の見た目が移る）。添付するのは各資料に記録した実物写真（台・HMDの装着状態・手持ちなら掌が写る実写）。
+- シーシャ台・ハガル・HMD・炭・ホースが写る画像は、[画像生成の必須手順](../../../docs/shisha_reference.md#4-画像生成の必須手順機材の形と構造)（`docs/shisha_reference.md` §4）に従う: 「生成前に決める8行」を埋め、「プロンプトに貼る文」をそのまま入れ、`asset_sources/shisha-hardware-reference/photos/` の実写を見る（渡せるなら渡す）。早見表・構造図は資料なので添付画像にしない（図の見た目が移る）。Codexアプリで自分が生成するときも同じ手順で、出力後は §4.4 のチェックを通してから採用する。
 - ヒロイン日常・タイトルCGでは[専用の追加生成ルール](../../../asset_sources/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)も必読。正規立ち絵を本人・年齢感、タイトル絵を質感の参照として実画像を添付し、完成・喫煙状態はHMD必須・直炭禁止。具体的な一モデルと適合ボウル・蓋・炭を先に選び、少量の色や仕上げだけ変える。候補間で台・背景・時間帯・行動を変え、植物を必須にしない。出力後は顔・縮尺・HMDの混成・ホース接続を目視し、NGは修正・再生成する。
 
 ## Step 2 — プロンプトに必ず含める6点セット
@@ -36,7 +36,7 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 4. **場面の内容**（人物なし/あり、時間帯、光源。既存の近い画像を参照基準として指定）
 5. **焼き込み禁止**: 文字・ロゴ・数字・ゲージ・watermark。作りパート素材では
    穴・煙・炭の明滅・水泡など**コードが描く動的要素**も焼き込まない
-   （`docs/asset_gen_prompts.md` の分業表が正）
+   （`docs/prompts/asset_gen_prompts.md` の分業表が正）
 6. **NG形状**: シーシャ台の先端は小さい凸型金属ポスト（カップ型・ボウル一体型にしない）
 
 **修正依頼**の場合はさらに: 現画像のパスと「何がどうダメか」を具体的に

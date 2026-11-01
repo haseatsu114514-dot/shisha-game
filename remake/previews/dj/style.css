@@ -176,5 +176,6 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .result-card thead th{font-size:10px;letter-spacing:.1em;color:#a99fbf}
 .result-card td.r-S,.result-card td.r-A,.result-card td.r-B,.result-card td.r-C{font:900 16px/1 var(--mono)}
 .result-card p{margin:10px 0 12px;font-size:14px;color:#e7d8dd}
-#again{width:100%;font-size:15px;font-weight:700}
+.result-actions{display:flex;gap:10px}.result-actions button{flex:1;font-size:15px;font-weight:700}
+#exit{background:#0b0812cc}#exit[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){.platter:before{transform:none}button,.knob{transition:none}.deck-play.cue-soon{animation:none;border-color:var(--ok)}.judge.pop{animation:none}}

@@ -20,4 +20,4 @@ Issue #384 / PR #490。2026-10-13に既存セル画版v2の6場面を使い、�
 - `CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/chapter_preview_samples.mjs` — 4件PASS（B/CのPC・スマホ横画面、停止/再開、スキップ、保存不変）。
 - JS構文、`git diff --check`、`python3 tools/check_agent_docs.py` — PASS。
 
-この比較時点の結果JSONは `production-browser-results.json` / `samples-browser-results.json`。Cを本編へ採用した後の9件の結果は `../browser-results.json`。録画スクリプトと再作成コマンドは [章末と次回予告](../../../chapter_previews.md)を参照。JPEGの時刻は1/1000秒単位で結合し、動画書き出し時のカットのずれを防ぐ。
+この比較時点の結果JSONは `production-browser-results.json` / `samples-browser-results.json`。Cを本編へ採用した後の9件の結果は `../browser-results.json`。録画スクリプトと再作成コマンドは [章末と次回予告](../../../spec/chapter_previews.md)を参照。JPEGの時刻は1/1000秒単位で結合し、動画書き出し時のカットのずれを防ぐ。

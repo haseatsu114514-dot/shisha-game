@@ -62,7 +62,7 @@ PCはクリックとキーボード、タッチ端末は横持ち。会話はEnt
 - **振り返り**: 各判定に「誰のPCが・どの行動で・能力いくつ」を残す。`result().checks[].approach/actor/sheet/stat/base` と `result().acted`。本棚の保存項目は変えていない。
 - 既定の宣言（APIで `approach` を省略した場合）は一覧の先頭＝はじめのPC。純関数の既存テストはこの既定で動く。
 
-PCの似顔絵は未生成で、プレイヤー本人の立ち絵を丸窓に入れて代用している。Codex用の生成依頼と組み込み先は [asset_sources/trpg-sheets/README.md](../asset_sources/trpg-sheets/README.md)。
+PCの似顔絵は未生成で、プレイヤー本人の立ち絵を丸窓に入れて代用している。Codex用の生成依頼と組み込み先は [asset_sources/trpg-sheets/README.md](../../asset_sources/trpg-sheets/README.md)。
 
 ### 仲間のキャラ作り・初心者向け・店長のチュートリアル（2026-11-01）
 
@@ -126,7 +126,7 @@ PCの似顔絵は未生成で、プレイヤー本人の立ち絵を丸窓に入
 
 段階の大見出しは小さくし、探索の中央と調査地点を空ける。出目確定時の動きは背景タブで停止し、動き軽減では省く。音は従来どおり初期OFF。通常／サメ両作品のルール・結末・料金・保存は変更しない。新規画像生成はせず、既存の卓・背景・キャラ素材を使う。
 
-記録と変更前後: [ミニゲーム体験改善QA](qa/minigame-feel-649/README.md)。
+記録と変更前後: [ミニゲーム体験改善QA](../qa/minigame-feel-649/README.md)。
 
 ### 世界一普通の一台
 

@@ -133,6 +133,15 @@
       "run": ["node remake/test/browser/dj_preview.mjs"]
     },
     {
+      "id": "dj-club",
+      "title": "Club SEAM from the game: first meeting with the owner, embedded DJ, result recorded to state.dj, no time used (DJS10/DJS12)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs"],
+      "run": ["node remake/test/browser/dj_club.mjs"]
+    },
+    {
       "id": "title-art-met",
       "title": "Title art unlocks by characters met in the latest save",
       "kind": "quick",
@@ -346,6 +355,7 @@
         "node --experimental-vm-modules remake/test/engine_robust.mjs",
         "node --experimental-vm-modules remake/test/ch3_deliveries.mjs",
         "node remake/test/dj_preview.mjs",
+        "node --experimental-vm-modules remake/test/dj_club.mjs",
         "node --experimental-vm-modules remake/test/illness.mjs",
         "node --experimental-vm-modules remake/test/tournament_resources.mjs",
         "node remake/test/friend_lime_scene_chapters.mjs",

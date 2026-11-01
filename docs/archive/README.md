@@ -15,11 +15,11 @@
 | `claude_handoff_20261003_relationships.md` | 好感度・呼び名・最終交流・専用ハガルの引き継ぎ（旧 `web/` 時代） | 2026-10-03 | `docs/gameplay_agent_reference.md`、`docs/master_spec.md` |
 | `claude_handoff_thermal_20261009.md` | 温度による背景変化の引き継ぎ | 2026-10-09 | 実装済み `remake/js/craft/thermal.js` |
 | `codex_handoff_city_images.md` / `codex_handoff_street_proto.md` / `codex_handoff_street_set_images.md` / `street_city_design.md` | 街歩き試作の発注書・設計 | 2026-10 | `experiments/proto/street/README.md`（試作は保存のみ） |
-| `continue_voice_music_premium_20261010.md` / `sumi_continue_20261010.md` | CONTINUE演出の第1〜2期 | 2026-10-10 | `docs/continue_button_reactions_sfx_20261010.md`（CV35〜46が現行） |
+| `continue_voice_music_premium_20261010.md` / `sumi_continue_20261010.md` | CONTINUE演出の第1〜2期 | 2026-10-10 | `docs/spec/continue_button_reactions_sfx_20261010.md`（CV35〜46が現行） |
 | `motion_endings_20261011.md` | 演出終端・帰宅の扉の修正記録（PR #283） | 2026-10-11 | `remake/README.md`、`docs/owner_requests.md` |
 | `player_load_capacity_20261010.md` | ロード容量の実測 | 2026-10-10 | 再計測が必要なら `remake/test/loading_prefetch.mjs` 周辺 |
 | `samechan_gothic_shark_handoff.md` | サメちゃん新衣装3案の確認 | 2026-10 | `asset_sources/portraits/samechan-gothic-shark-concepts-v1/` |
-| `slot_bonus_notification_20261008.md` | スロットボーナス通知（PF31・32） | 2026-10-08 | `docs/owner_requests.md`、`docs/pakki_slot_spec.md` |
+| `slot_bonus_notification_20261008.md` | スロットボーナス通知（PF31・32） | 2026-10-08 | `docs/owner_requests.md`、`docs/spec/pakki_slot_spec.md` |
 | `image-decisions-20261025/` | 画像採否のスナップショット | 2026-10-25 | `docs/owner_requests.md` 2026-10-24〜25 の節 |
 | `plans_ch1_completion_scope.md` | 第1章完成の優先範囲 | 2026-10-12 | 第1〜3章は接続済み |
 | `plans_ch2_followup_inventory_563.md` | 第2章3店の続編棚卸し（予約時代の記録を含む） | 2026-10-15 | `docs/owner_requests.md` #929 の節、`data/dialogue/ch2_*.json` |
@@ -27,4 +27,8 @@
 | `plans_story_revision.md` | #549 王冠構図と改稿案 | 2026-10 | `brand/story_and_structure.md` |
 | `reports_story_review_564_20261016.md` / `reports_story_edit_564_changes.md` | #564 ストーリー添削と差分 | 2026-10-16 | 反映済み（`data/dialogue/`） |
 | `reports_loading_screens_1060_plan_20261027.md` | ロード画面計画 | 2026-10-27 | 実装済み `remake/js/core/loading-prefetch.js` |
-| `reports_issue1081-i04-ch2-shop-assets-20261028.md` / `reports_issue1081-k01-slot-left-reel-20261028.md` | #1081 の棚卸し | 2026-10-28 | `docs/pakki_slot_spec.md`、`asset_sources/` |
+| `reports_issue1081-i04-ch2-shop-assets-20261028.md` / `reports_issue1081-k01-slot-left-reel-20261028.md` | #1081 の棚卸し | 2026-10-28 | `docs/spec/pakki_slot_spec.md`、`asset_sources/` |
+| `demo_release_spec.md` | 第1章体験版の枠（未実装・旧 `web/` 手順） | 2026-07-04 | 体験版を作るときに `remake/` 前提で仕様を書き直す |
+| `remake_fast_checks.md` | ブラウザ不要の検査workflowの説明 | 2026-10 | `.github/workflows/ci.yml`（quick）と `tools/ci/suites.json` |
+| `rin_portrait_handoff.md` | 凛 v12 立ち絵の修正と引き継ぎ | 2026-10 | 反映済み（`assets/sprites/characters/rin/`）。手順は `.claude/skills/portrait-fix` |
+| `samechan_romcom_route_plan_20261011.md` | サメちゃん恋愛ルート企画（保存のみ・未実装） | 2026-10-11 | 着手時に `brand/` と `docs/spec/post_relationship_gameplay_plan_20261011.md` と合わせて読む |
