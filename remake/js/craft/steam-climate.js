@@ -20,7 +20,8 @@ export function steamClimate(environment = {}) {
 }
 
 // 洞察で炭の状態を読み取る。最高でも6割までで、実際の揺らぎを全部は知れない。
-export function steamForecastProfile(insight, variation) {
-  const precision = clamp(insight ?? 0, 0, 1), read = precision * .6;
-  return { precision, offset: variation.offset * read, transfer: 1 + (variation.transfer - 1) * read };
+export function steamForecastProfile(insight, variation, { readBonus = 0 } = {}) {
+  const precision = clamp(insight ?? 0, 0, 1), bonus = clamp(readBonus, 0, .3), read = Math.min(.9, precision * .6 + bonus);
+  return { precision, offset: variation.offset * read, transfer: 1 + (variation.transfer - 1) * read,
+    ...(bonus ? { readBonus: bonus } : {}) };
 }

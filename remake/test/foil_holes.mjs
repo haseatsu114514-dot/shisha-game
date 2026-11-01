@@ -24,8 +24,9 @@ const find = (test, node = panel) => node?.dataset?.test === test ? node : node?
 function fire(test, type = "click") { const node = find(test); assert(node, test); for (const fn of node.listeners[type] || []) fn({ preventDefault() {} }); }
 const settle = async () => { for (let i = 0; i < 80; i++) await Promise.resolve(); };
 async function frame(time) { now = time; const waiting = [...frames.values()]; frames.clear(); for (const callback of waiting) callback(now); await settle(); }
+const growthSkills = new Set();
 const values = {
-  "growth-effects.js": { growthPerks: () => null, growthSkill: () => false, SKILL_TUNING: {} },
+  "growth-effects.js": { growthPerks: () => null, growthSkill: (_s,id) => growthSkills.has(id), growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {holesSeconds:6} },
   "util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo) => lo },
   "ui.js": { countdown: async () => {} },
   "data.js": { DB: { flavorById: {} } },
@@ -176,4 +177,10 @@ for (const template of templates.HOLE_TEMPLATES) {
   }
   assert(scores[0] > scores[1]);
 }
+growthSkills.add("K01");
+active=await start();await frame(35000);
+assert(!find("hole-plan").textContent.includes("時間評価は終了"),"段取り八分は32秒を過ぎても時間評価を残す");
+await frame(40000);assert(find("hole-plan").textContent.includes("時間評価は終了"));
+await punchCircle(6.4,24,41);fire("hole-done");await active.running;
+growthSkills.clear();
 console.log("[remake foil] PASS: template selection, exact 24/0/0 and 12/12/0, guarded completion, timeout continuation, no ring skipping, unlock flags, density and shared thermal response");

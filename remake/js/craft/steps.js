@@ -5,6 +5,7 @@ import { DB } from "../core/data.js";
 import { toast, modal } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { step, earnStat, earnRecipeDiscovery } from "../core/stats.js";
+import { growthFeature, growthLesson, LESSON_TUNING } from "../core/growth-effects.js";
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
@@ -192,6 +193,8 @@ export function evaluateMix(cs) {
   const key = [...new Set(ids.map(familyKeyOf))].sort().join("+");
   const recipe = DB.recipes.find((r) => r.flavors.slice().sort().join("+") === key) || null;
   if (recipe) { score += 14; notes.push(`レシピ「${recipe.name}」の組み合わせ`); }
+  const cardamom = flavorFamilyGrams(mix, "cardamom");
+  const bridge = growthLesson(state, "M-W6") && cardamom > 0 && cardamom / total <= .2;
   for (const ng of DB.ngMixes) {
     const [a, b] = ng.flavors;
     const aGrams = flavorFamilyGrams(mix, a), bGrams = flavorFamilyGrams(mix, b);
@@ -201,10 +204,21 @@ export function evaluateMix(cs) {
       (ng.condition === "both_over_4g" && aGrams > 4 && bGrams > 4) ||
       (ng.condition === "combined_over_10g" && aGrams + bGrams > 10) ||
       (ng.condition === "ratio_close" && Math.abs(aGrams - bGrams) <= 1);
-    if (hit) { score += ng.penalty * 3; notes.push(ng.text); ngReasons.push(ng.text); }
+    if (hit) {
+      score += ng.penalty * 3 * (bridge ? LESSON_TUNING.cardamomPenalty : 1);
+      notes.push(ng.text); ngReasons.push(ng.text);
+      if (bridge && !notes.includes("カルダモンの一つまみで、ぶつかりがやわらいだ")) notes.push("カルダモンの一つまみで、ぶつかりがやわらいだ");
+    }
   }
   const main = Math.max(...ids.map((id) => mix[id]), 0) / (total || 1);
   if (ids.length >= 2 && main >= 0.45 && main <= 0.8) { score += 4; notes.push("主役と脇役の比率がいい"); }
+  if (total > 0 && growthLesson(state, "M-S6") && flavorFamilyGrams(mix, "blueberry") / total >= .2) {
+    score += LESSON_TUNING.mix; notes.push("ブルーベリーに帰る。香りがまとまった");
+  }
+  const tea = flavorFamilyGrams(mix, "black_tea") / total;
+  if (total > 0 && growthLesson(state, "M-B5") && tea >= .1 && tea <= .2) {
+    score += LESSON_TUNING.mix; notes.push("ブラックティーを一割。香りに奥行きが出た");
+  }
   const reg = regulationFor(cs);
   const competitionLegal = cs.mode !== "tournament" || ids.every(id => isTournamentFlavorLegal(id));
   const regOk = competitionLegal && (!reg || (reg.exact != null
@@ -400,7 +414,7 @@ export async function stepMix(cs) {
   });
 
   // 洞察の段: 相性のいい組み合わせのヒント（レシピ帳・聞いた話から）。喫茶こはくで思いついた配合は洞察に関係なく出す
-  const insightful = canSeeMixHint(step("insight"));
+  const insightful = canSeeMixHint(step("insight")) || growthFeature(state, "pairing");
   const hint = cs.mode !== "tutorial"
     ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && !state.recipes?.[r.id] && cafeNoted(state, r))
       || (insightful ? DB.recipes.find((r) => r.flavors.every((f) => ids.includes(f)) && (state.flags[`_note_${r.hint_note}`] || r.id === "sumi_basic")) : null)
@@ -467,7 +481,7 @@ export async function stepMix(cs) {
   // 黄金比（#627）: 配合中は出さず、確定したあとだけ知らせる（＋−を押すだけで答えが探せないように）
   if (cs.mixInfo.golden === "hit") toast(`✨ 黄金比！ ${r.name}は ${goldenLabel(r)}`, { kind: "good" });
   else if (cs.mixInfo.golden === "near") {
-    const short = canSeeGoldenShort(step("insight")) && cs.mixInfo.goldenShort;
+    const short = (canSeeGoldenShort(step("insight")) || growthFeature(state, "golden")) && cs.mixInfo.goldenShort;
     toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し",
       { kind: short && effectVisible("insight") ? "insight-hint" : "" });
   }

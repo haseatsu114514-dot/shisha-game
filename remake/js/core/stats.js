@@ -431,7 +431,8 @@ export const STAMINA_LOW = 25;
 
 export function maxStamina({ forCondition = false } = {}) {
   // 盤の容量増加だけで体調や発病リスクを悪化させない。ゲージの容量と体調の基準を分ける。
-  return 100 + GUTS_STAMINA_BONUS[step("guts") - 1] + (forCondition ? 0 : growthPerks(state)?.stamina || 0);
+  return 100 + GUTS_STAMINA_BONUS[step("guts") - 1] + (forCondition ? 0 : (growthPerks(state)?.stamina || 0)
+    + (expHooks?.enabled?.() ? expHooks.capacityBonus?.(state) || 0 : 0));
 }
 
 export function addStamina(n, { sleep = false } = {}) {

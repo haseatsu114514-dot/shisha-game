@@ -8,6 +8,7 @@ import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay, save } from "../core/state.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
+import { growthSkill, growthCraftCondition, SKILL_TUNING } from "../core/growth-effects.js";
 import { buildWorkerScene, WORKER_STEPS, benchBgRef } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
 import { buildGuide, STEP_BRIEFS, TUTORIAL_STEP_HELP } from "./bench-ui.js";
@@ -57,10 +58,11 @@ export function newSession(mode) {
     mode,
     chapter: state.chapter,
     audienceIds: audienceFor(mode, state.chapter),
-    condition: currentCondition(), // 作り始めの体力を一台の全工程で使う
+    condition: growthCraftCondition(state, mode, currentCondition()), // 本番の胆力はこの一台だけ
     environment: steamEnvironment(isRainy(), state.day, state.weatherSeed ?? 0, timeOfDay()),
     steamVariation,
-    steamPrediction: steamForecastProfile(tier01("insight"), steamVariation),
+    steamPrediction: steamForecastProfile(tier01("insight"), steamVariation,
+      { readBonus: growthSkill(state, "K14") ? SKILL_TUNING.forecastRead : 0 }),
     masteryAtStart: { ...state.flavorMastery }, // 練習後の成長で、作り終えた一台の評価を変えない
     equip: { ...state.equip },
     appearance: { ...state.appearance },
@@ -371,9 +373,12 @@ function renderFatigue() {
  */
 export function strainBench(cs, stamina = 4) {
   if (cs.mode === "tutorial") return false;
-  cs.strain = (cs.strain || 0) + 1;
-  addStamina(-stamina);
-  const now = currentCondition(), order = ["green", "yellow", "red"];
+  const rate = growthSkill(state, "K08") ? SKILL_TUNING.strain : 1;
+  const progress = (cs.strainRemainder || 0) + rate;
+  cs.strain = (cs.strain || 0) + Math.floor(progress);
+  cs.strainRemainder = progress - Math.floor(progress);
+  addStamina(-stamina * rate);
+  const now = growthCraftCondition(state, cs.mode, currentCondition()), order = ["green", "yellow", "red"];
   if (order.indexOf(now.health) > order.indexOf(cs.condition?.health ?? "yellow")) cs.condition = now;
   if (bench?.cs === cs) {
     renderFatigue();

@@ -7,7 +7,7 @@ import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, step } from "../core/stats.js";
-import { growthPerks } from "../core/growth-effects.js";
+import { growthPerks, growthSkill, growthFeature, growthLesson } from "../core/growth-effects.js";
 import { REFRESH_RADII, REFRESH_LABELS, refreshRestoresMental } from "../core/stat-step-tables.js";
 import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep, waitBenchReady, explainTutorialStep, benchRoot } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
@@ -37,10 +37,11 @@ const OBJECTS = ["coal", "orb", "orb", "smoke"];
 // SF63: 一度に1回分を持ち、使用後8秒でリチャージ。根性は範囲と回復に効く。
 export const REFRESH_RECHARGE_SECONDS = 8;
 // dodge枠は784×414px。根性1段の半径90pxから10段の画面全体まで広がる。
-export function refreshStock() { return 1; }
-export function refreshEffect() {
+export function refreshStock() { return growthSkill(state, "K06") ? 2 : 1; }
+export function refreshEffect(cs = null) {
   const level = step("guts");
-  return { radius: REFRESH_RADII[level - 1] + (growthPerks(state)?.breath || 0), mentalRecovery: refreshRestoresMental(level),
+  return { radius: REFRESH_RADII[level - 1] + (growthPerks(state)?.breath || 0),
+    mentalRecovery: refreshRestoresMental(level) || growthFeature(state, "mental") || cs?.mode === "tournament" && growthSkill(state, "K13"),
     label: REFRESH_LABELS[level - 1] };
 }
 
@@ -57,7 +58,7 @@ export async function runSteamDodge(cs) {
   if (state !== owner || !root) return;
   SE.coalPlace();
   const stock = refreshStock();
-  const effect = refreshEffect();
+  const effect = refreshEffect(cs);
   const tutorial = cs.mode === "tutorial";
   const eased = tutorial || cs.retryAssist;
   const seconds = steamSecondsOf(cs), min = seconds / 60;
@@ -73,8 +74,9 @@ export async function runSteamDodge(cs) {
   const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { "aria-hidden": "true" }, [controlArt("steam_stick_simple_base.png")]), knob]);
   const refreshBtn = el("button.btn.primary.dodge-action.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
   const refreshCharge = el("span.action-recharge");
+  const refreshCopy = el("span.refresh-copy", { text: "リフレッシュ" });
   refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png"), el("i.recharge-ring"), refreshCharge]),
-    el("span.refresh-copy", { text: "リフレッシュ" }));
+    refreshCopy);
   const slashCharge = el("span.action-recharge");
   const slashCount = el("span.slash-count", { text: "×0" });
   const slashGrowth = el("span.slash-growth", [slashCount]);
@@ -185,7 +187,9 @@ export async function runSteamDodge(cs) {
   };
   const refreshLabel = () => {
     refreshBtn.dataset.remaining = String(refreshes);
-    rechargeLabel(refreshBtn, refreshCharge, Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS, `リフレッシュ。${effect.label}の雑念を消す`);
+    refreshCopy.textContent = stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ";
+    rechargeLabel(refreshBtn, refreshCharge, refreshes > 0 ? 0 : Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS,
+      `リフレッシュ。${effect.label}の雑念を消す${stock > 1 && refreshes === 1 ? "。2回目は半分の範囲" : ""}`);
   };
   const slashLabel = () => {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
@@ -211,10 +215,14 @@ export async function runSteamDodge(cs) {
   const refresh = () => {
     if (!running || refreshes === 0) return;
     refreshes--; refreshesUsed++; refreshReadyAt = time + REFRESH_RECHARGE_SECONDS;
-    world.dissolve(time, clearBullets(effect.radius));
+    const festa = growthLesson(state, "M-B6") && !cs.festaRefreshUsed;
+    if (festa) cs.festaRefreshUsed = true;
+    const radius = festa ? Infinity : stock > 1 && refreshes === 0
+      ? (Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H)) / 2 : effect.radius;
+    world.dissolve(time, clearBullets(radius));
     if (effect.mentalRecovery) setPlayerMental(cs, mental.recoverStep(time, hits));
     reactAudience(cs, "good");
-    const reach = Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H);
+    const reach = Number.isFinite(radius) ? radius : Math.hypot(W, H);
     const fx = el(`div.dodge-refresh-fx${effectVisible("guts") ? ".guts-visible" : ""}`, { "aria-hidden": "true", style: { "--x": `${hx}px`, "--y": `${hy}px`, "--reach": `${reach}px` } }, [
       el("i.dr-flash"), el("i.dr-ring"), el("i.dr-ring.second"),
       ...Array.from({ length: 8 }, (_, i) => el("i.dr-ray", { style: { "--angle": `${i * 45}deg` } })),

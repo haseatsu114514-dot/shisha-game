@@ -9,6 +9,8 @@ import { stepPanel, showStepDemo, refreshBench, tickerSay, reactAudience, scoreS
 import { effectBadge, effectLine, effectVisible, senseBand, effectTier } from "./effect-visual.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
+import { state as gameState } from "../core/state.js";
+import { growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
 import { artImg } from "./art.js";
 
 import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil, skippedFoilResult } from "./holes_logic.js";
@@ -98,7 +100,7 @@ export async function runHoles(cs) {
   const perfWin = 4.2 * skill.window(cs, "holes") * (tutorial ? 1.5 : 1);
   const basePerfWin = perfWin / (1 + 0.45 * effectTier("sense"));
   const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (cs.retryAssist ? 1.35 : 1);
-  const limit = tutorial ? 48 : TIME_LIMIT;
+  const limit = tutorial ? 48 : TIME_LIMIT + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0);
 
   // ---- 画面
   const D = 430;

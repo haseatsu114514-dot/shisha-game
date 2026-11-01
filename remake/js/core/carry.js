@@ -301,6 +301,7 @@ export const FLAG_EXACT_RULES = [
   ["_hiyori_work_talk_done", "person"],
   ["_hole_outer24_unlocked", "unlock"],
   ["_home_shisha_day", "progression"],
+  ["_home_lavender_sleep", "progression"],
   ["_home_tonight", "progression"],
   ["_home_trial_plan", "progression"],
   ["_intro_", "progression"],

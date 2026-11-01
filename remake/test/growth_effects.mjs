@@ -125,4 +125,57 @@ core.state.stamina=0; stats.addStamina(40,{sleep:true}); assert.equal(core.state
 growth.setGrowthPreview(false);
 core.state.stamina=0; stats.addStamina(40,{sleep:true}); assert.equal(core.state.stamina,40);
 assert(!effects.growthSkill(core.state,"K03"));
+// 新しいスキルも実際の制作セッションへ反映し、日常の体力・旧能力を変えない。
+growth.setGrowthPreview(true);core.newGame();growth.ensureGrowth();
+const session=await import("../js/craft/session.js");
+const steam=await import("../js/craft/steam.js");
+core.state.stamina=20;core.state.growth.nodes=["K12"];
+const tournament=session.newSession("tournament");
+assert.equal(tournament.condition.health,"yellow");assert.equal(stats.currentCondition().health,"red");
+assert.equal(core.state.stamina,20);assert.equal(session.newSession("rehearsal").condition.health,"red");
+core.state.stamina=0;session.strainBench(tournament);assert.equal(tournament.condition.health,"yellow");
+core.newGame();growth.ensureGrowth().nodes=["K08"];core.state.stamina=100;
+const fatigued=session.newSession("rehearsal");
+for(const expected of [0,1,2,3]) {session.strainBench(fatigued,4);assert.equal(fatigued.strain,expected);}
+assert.equal(core.state.stamina,88);assert.equal(fatigued.strainRemainder,0);
+core.state.growth.nodes=["K06"];assert.equal(steam.refreshStock(),2);
+core.state.growth.nodes=["K13"];assert(steam.refreshEffect({mode:"tournament"}).mentalRecovery);
+assert(!steam.refreshEffect({mode:"rehearsal"}).mentalRecovery);
+const mentalNode=board.NODES.find(n=>n.feature==="mental");core.state.growth.nodes=[mentalNode.id];
+assert(steam.refreshEffect({mode:"rehearsal"}).mentalRecovery);
+for(const feature of ["pairing","golden","mental"]) {
+ const n=board.NODES.find(x=>x.feature===feature);core.state.growth.nodes=[n.id,n.id];
+ assert(effects.growthFeature(core.state,feature));
+}
+growth.setGrowthPreview(false);assert.equal(steam.refreshStock(),1);
+assert.equal(session.newSession("tournament").condition.health,stats.currentCondition().health);
+// 授業は灯しただけで発動せず、相談完了後の実効値を保存から再構成する。
+growth.setGrowthPreview(true);core.newGame();growth.ensureGrowth().nodes=["M-B4"];
+core.state.stats.guts=100;core.state.stamina=81;
+assert.equal(stats.maxStamina(),160);assert.equal(effects.growthLesson(core.state,"M-B4"),false);
+assert(growth.learnLesson("M-B4"));assert.equal(stats.maxStamina(),180);
+assert.equal(core.state.stamina,81);assert.equal(stats.currentCondition().health,"green");
+core.save();core.load();assert.equal(stats.maxStamina(),180);assert.equal(core.state.growth.learned.length,1);
+growth.setGrowthPreview(false);assert.equal(stats.maxStamina(),160);
+growth.setGrowthPreview(true);core.newGame();growth.ensureGrowth();
+const {readFileSync}=await import("node:fs"),{DB}=await import("../js/core/data.js");
+const fixture=name=>JSON.parse(readFileSync(new URL(`../../data/${name}.json`,import.meta.url),"utf8"));
+DB.flavors=fixture("flavors").flavors;DB.flavorById=Object.fromEntries(DB.flavors.map(f=>[f.id,f]));
+DB.recipes=fixture("recipes").recipes;DB.ngMixes=fixture("ng_mixes").ng_mixes;
+const {evaluateMix}=await import("../js/craft/steps.js");
+const mixScore=mix=>evaluateMix({mode:"rehearsal",mix,equip:{}});
+for(const [id,mix,miss] of [
+ ["M-S6",{blueberry:3,lemon:9},{blueberry:1,lemon:11}],
+ ["M-B5",{black_tea:2,lemon:10},{black_tea:3,lemon:9}],
+ ["M-W6",{double_apple:5,coconut:5,cardamom:2},{double_apple:4,coconut:4,cardamom:4}],
+]) {
+ core.state.growth.nodes=[];core.state.growth.learned=[];
+ const base=mixScore(mix),wrong=mixScore(miss);
+ core.state.growth.nodes=[id];assert.equal(mixScore(mix).score,base.score,"相談前には授業の恩恵を付けない");
+ assert(growth.learnLesson(id));assert(mixScore(mix).score>base.score);
+ assert.equal(mixScore(miss).score,wrong.score,"指定比率から外れた配合へ授業を付けない");
+ const once=mixScore(mix);assert.deepEqual(mixScore(mix),once,"再評価で効果を積み増さない");
+ core.save();core.load();assert.equal(mixScore(mix).score,once.score);
+ growth.setGrowthPreview(false);assert.equal(mixScore(mix).score,base.score);growth.setGrowthPreview(true);
+}
 console.log("[growth effects] PASS: additive legacy growth, 160+29=189, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");

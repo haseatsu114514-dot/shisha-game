@@ -12,6 +12,7 @@ export { HEAT_GRADES } from "./heat_logic.js";
 import { coalCount, coalTypes } from "./coals.js";
 import { createCraftClock } from "./clock.js";
 import { state } from "../core/state.js";
+import { growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
 import { coalJustSeconds } from "./heat_logic.js";
 import { effectVisible, effectBadge, senseBand, effectTier } from "./effect-visual.js";
 
@@ -56,10 +57,11 @@ function heatAdvice(res) {
 }
 
 // 1〜4個の炭を焼く本体。最初の炭焼きと、熱管理で消耗した炭を交換するときの両方で使う（TH39）。
-export async function burnCoals(cs, panel, { count = 3, compact = false, onPick = null } = {}) {
+export async function burnCoals(cs, panel, { count = 3, compact = false, onPick = null, replacement = false } = {}) {
   const tutorial = cs.mode === "tutorial";
   const types = coalTypes(cs, count);
-  const justSec = coalJustSeconds(skill.window(cs), tutorial, state?.goods || []);
+  const multiplier = replacement && !tutorial && growthSkill(state, "K11") ? 1 + SKILL_TUNING.coalReplacement : 1;
+  const justSec = coalJustSeconds(skill.window(cs) * multiplier, tutorial, state?.goods || []);
   const baseJustSec = coalJustSeconds(skill.window(cs) / (1 + 0.45 * effectTier("sense")), tutorial, state?.goods || []);
   const plainBase = coalJustSeconds(skill.window(cs) / (1 + 0.45 * effectTier("sense")), tutorial, []);
   const clarity = skill.clarity(cs);

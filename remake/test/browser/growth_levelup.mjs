@@ -22,6 +22,55 @@ async function setupDaily(page) {
 }
 
 await suite("growth-levelup", async (check) => {
+  for(const festa of [false,true]) await check(festa ? "festa-refresh-once" : "two-refresh-charges", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async(festa)=>{
+      const growth=await import("./js/core/growth.js"),core=await import("./js/core/state.js");
+      growth.setGrowthPreview(true);const g=growth.ensureGrowth();g.nodes=["K06","M-B6"];g.learned=festa?["M-B6"]:[];core.state.stats.guts=10;
+      const session=await import("./js/craft/session.js"),steam=await import("./js/craft/steam.js");
+      session.craftTest.auto=null;const cs=session.newSession("drill");cs.steamSeconds=180;
+      session.openBench(cs);window.skillSteam=steam.runSteamDodge(cs);
+    },festa);
+    const button=page.locator(t("dodge-refresh"));
+    await page.waitForFunction(()=>{const n=document.querySelector('[data-test="dodge-refresh"]');return n&&!n.disabled;});
+    assert.equal(await button.getAttribute("data-remaining"),"2");
+    await button.click();
+    assert.equal(await button.getAttribute("data-remaining"),"1");assert.equal(await button.isEnabled(),true);
+    const reach=await page.locator(".dodge-refresh-fx").last().evaluate(n=>parseFloat(n.style.getPropertyValue("--reach")));
+    assert.equal(reach,festa?Math.hypot(784,414):90);
+    await button.click();
+    assert.equal(await button.getAttribute("data-remaining"),"0");assert.equal(await button.isDisabled(),true);
+    assert.equal(await page.locator(".dodge-refresh-fx").last().evaluate(n=>n.style.getPropertyValue("--reach")),"45px");
+    await page.evaluate(async()=>{(await import("./js/core/state.js")).newGame();await window.skillSteam;});
+  });
+
+  await check("replacement-coal-window", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async()=>{
+      window.skillCore=await import("./js/core/state.js");window.skillGrowth=await import("./js/core/growth.js");
+      window.skillSession=await import("./js/craft/session.js");window.skillHeat=await import("./js/craft/heat.js");
+      window.skillCommon=await import("./js/craft/common.js");
+      window.coalClock=1000;Object.defineProperty(performance,"now",{configurable:true,value:()=>window.coalClock});
+      const raf=window.requestAnimationFrame.bind(window);window.requestAnimationFrame=fn=>raf(()=>fn(window.coalClock));
+      Math.random=()=>.5;skillSession.craftTest.auto=null;
+      window.startSkillCoal=async({enabled,replacement})=>{
+        skillCore.newGame();skillGrowth.setGrowthPreview(enabled);skillGrowth.ensureGrowth().nodes=["K11"];
+        coalClock=1000;const cs=skillSession.newSession("tournament");skillSession.openBench(cs);
+        await skillSession.waitBenchReady(cs,"heat");const panel=skillSession.stepPanel("heat","炭の交換");
+        window.baseCoalWindow=.5*skillCommon.skill.window(cs);
+        window.skillCoal=skillHeat.burnCoals(cs,panel,{count:1,compact:true,replacement});
+      };
+    });
+    for(const [enabled,replacement,phase] of [[true,false,"hot"],[true,true,"just"],[false,true,"hot"]]) {
+      await page.evaluate(args=>startSkillCoal(args),{enabled,replacement});
+      await page.waitForFunction(()=>document.querySelector('[data-test="coal-0"]')?.dataset.phase==="raw");
+      await page.evaluate(()=>{coalClock=1000+(5.8+baseCoalWindow+.03)*1000;});
+      await page.waitForTimeout(40);await page.locator(t("coal-0")).click();
+      const result=await page.evaluate(async()=>await window.skillCoal);
+      assert.equal(result.timings[0].phase,phase);
+    }
+  });
+
   await check("scene-completion-transactions", async (page) => {
     await setupDaily(page);
     const report = await page.evaluate(async () => {

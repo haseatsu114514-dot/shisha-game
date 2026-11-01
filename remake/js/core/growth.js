@@ -8,7 +8,7 @@ import { emit } from "./bus.js";
 import { setExpHooks, affinityLevel } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
 import { growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
-import { growthPerks, growthSkill, SKILL_TUNING } from "./growth-effects.js";
+import { growthPerks, growthSkill, growthLesson, SKILL_TUNING, LESSON_TUNING } from "./growth-effects.js";
 import { masteryHooks } from "./flavor-mastery.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
@@ -633,6 +633,8 @@ export function gaugeInfo(g = state?.growth) {
 
 // 自由行動の確定（paidAction）と好感度の段から呼ばれる入口を登録する。
 setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp, recipe: awardRecipeExp, scene: awardSceneExp, affinity: awardAffinityStepExp, perks: growthPerks,
-  sleepMultiplier: s => growthSkill(s, "K03") ? 1 + SKILL_TUNING.sleep : 1 });
+  capacityBonus: s => growthLesson(s, "M-B4") ? LESSON_TUNING.stamina : 0,
+  sleepMultiplier: s => (growthSkill(s, "K03") ? 1 + SKILL_TUNING.sleep : 1)
+    * (growthLesson(s, "M-S3") && s.flags?._home_lavender_sleep === `${s.chapter || 1}:${s.day}` ? 1 + LESSON_TUNING.lavenderSleep : 1) });
 masteryHooks.multiplier = s => (1 + (growthPerks(s)?.tongue || 0) / 100)
   * (growthSkill(s, "K09") ? 1 + SKILL_TUNING.mastery : 1);

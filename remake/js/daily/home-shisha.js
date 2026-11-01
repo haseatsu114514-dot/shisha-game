@@ -6,6 +6,7 @@ import { gainFlavorExperience, masteryLabel } from "../core/flavor-mastery.js";
 // 育つのは配合したフレーバーの熟練度だけ。ステータスは増えず、体力24を使う。
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
+import { growthLesson } from "../core/growth-effects.js";
 import { addStamina, staminaAfter, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { coldRisk } from "../core/illness.js";
@@ -75,6 +76,9 @@ export function applyHomeShisha(mix, rig, s = state) {
   addStamina(HOME_STAMINA);
   const masteryGains = gainFlavorExperience(s, mix, rig.id === "home_rig_pro" ? 7.5 : 6, DB.flavorById);
   s.flags._home_shisha_day = dayKey(s);
+  if (s.slot >= 1 && growthLesson(s, "M-S3") && entries.some(([id]) => familyOf(id) === "lavender")) {
+    s.flags._home_lavender_sleep = dayKey(s);
+  }
   const info = evaluateMix({ mode: "home", mix, equip: { bowl: s.equip?.bowl || "silicone_bowl" } });
   const taste = tasteOf(info);
   // 自分で組んで当てたレシピはレシピ帳へ。発見によるセンス加算も行わない。

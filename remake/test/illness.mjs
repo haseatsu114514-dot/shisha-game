@@ -28,7 +28,7 @@ const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, con
 const db = { dialogues: {}, statusTexts: {}, lime: [] };
 const values = {
   "growth-mode.js": { growthEnabled: () => false, GROWTH_BOARD: false, PREVIEW_KEY: "suien_growth_preview" },
-  "growth-effects.js": { growthPerks: () => null, growthSkill: () => false, SKILL_TUNING: {} },
+  "growth-effects.js": { growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
   "flavor-mastery.js": { masteryHooks: { multiplier: () => 1 } },
   "city-guests.js": { cityGuestAtShop: () => null, visitCityGuestAtShop: async () => false },
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },

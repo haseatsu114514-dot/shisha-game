@@ -411,7 +411,7 @@ async function pullGame(cs, mode) {
     choice.replaceChildren(el("p.care-coals-lead", { text: `交換する炭を${coals}個焼こう` }));
     const stage = el("div.care-burn", { dataset: { test: "care-burn" } });
     choice.append(stage);
-    const { picks } = await burnCoals(cs, stage, { count: coals, compact: true });
+    const { picks } = await burnCoals(cs, stage, { count: coals, compact: true, replacement: true });
     coolRate *= coalLifeFactor(picks);
     cs.careCoals = { count: coals, picks };
     await sleep(autoSkill() ? 40 : 450);

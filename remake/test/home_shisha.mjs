@@ -375,4 +375,18 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
   s.flags._ch2_taste_distant = true; assert.equal(home.tasteDistant(s), true, "During the chapter 2 slump");
   s.chapter = 3; assert.equal(home.tasteDistant(s), false, "Later chapters own their own recovery scenes");
 }
+// つむぎの授業は相談済み・その夜に使ったラベンダーだけ。無料の一服をEXPへ換算しない。
+{
+  const growth=await import("../js/core/growth.js"),stats=await import("../js/core/stats.js");
+  growth.setGrowthPreview(true);state=newGame();Object.assign(state,{day:4,slot:2,stamina:80});
+  state.owned.push(rig.SUMI_RIG);state.flavors.push("lavender");state.flavorStock={lavender:24};
+  growth.ensureGrowth().nodes=["M-S3"];assert(growth.learnLesson("M-S3"));
+  const raw={...state.stats};assert(home.applyHomeShisha({lavender:12},rig.homeRig()));
+  assert.equal(state.flags._home_lavender_sleep,"1:4");assert.equal(state.slot,2);assert.equal(state.day,4);
+  assert.deepEqual(state.stats,raw);assert.equal(state.growth.xp,0);
+  saveGame();state=loadGame();state.stamina=20;stats.addStamina(20,{sleep:true});assert.equal(state.stamina,44);
+  state.stamina=20;stats.addStamina(20);assert.equal(state.stamina,40);
+  state.day++;state.stamina=20;stats.addStamina(20,{sleep:true});assert.equal(state.stamina,40,"翌晩へ効き目を持ち越さない");
+  growth.setGrowthPreview(false);
+}
 console.log("[home shisha] PASS: rigs, kuji from ch1, offer rules, recipe mix, taste, 12g/24 stamina/no slot, proportional mastery only, no stat gain, lines");
