@@ -50,7 +50,7 @@ async function boardStop(page, value, cycle, next, touch) {
 }
 async function throwWithBoard(page, { touch = false, power = .62, focus = true, finish = 1320 } = {}) {
   await action(page, touch); await phase(page, "horizontal");
-  await boardStop(page, .5, 3200, "vertical", touch);
+  await boardStop(page, .5, 3600, "vertical", touch);
   await boardStop(page, .5, 3600, "power", touch);
   if (focus) {
     await gauge(page, .4, 2400);
@@ -97,7 +97,7 @@ await suite("axe-polish", async check => {
       shown.push(Number(await page.locator(".axe-result-value > span").textContent()));
       assert.equal(Number(await page.locator(".axe-total strong").textContent()), shown.reduce((a, b) => a + b, 0));
       if (i === 1) {
-        const board = await page.locator(".axe-target > image").boundingBox();
+        const board = await page.locator(".axe-target .axe-plank image").boundingBox();
         assert(board.width > minimum, `Usable wood target width: ${board.width}`);
         sizes.push({ label, viewport: page.viewportSize(), phase: "result", woodWidth: board.width, woodHeight: board.height });
         await capture(page, `${label}-bull-result`);
@@ -106,7 +106,7 @@ await suite("axe-polish", async check => {
       if (i < 2) await phase(page, "choice");
     }
     await phase(page, "summary"); await fits(page);
-    assert.match(await page.locator(".axe-result-tip").textContent(), /ブル 2回/);
+    assert.match(await page.locator(".axe-result-tip").textContent(), /平均 4\.00点\/投 · ブル 2 · キル 0\/0 · 落下 1/);
     const displayedTotal = Number(await page.locator(".axe-total strong").textContent());
     await capture(page, `${label}-summary`); await action(page, touch);
     const completed = await page.evaluate(() => window.axePolishPromise);
@@ -169,7 +169,7 @@ await suite("axe-polish", async check => {
   await check("reduced-motion-keeps-result-without-impact-animation", async page => {
     const before = await start(page, { reducedMotion: true });
     await action(page); await phase(page, "horizontal");
-    await boardStop(page, .5, 3200, "vertical", false);
+    await boardStop(page, .5, 3600, "vertical", false);
     await boardStop(page, .5, 3600, "power", false);
     await gauge(page, .4, 2400); await root(page).focus(); await page.keyboard.press("f");
     await gauge(page, .62, 2400); await page.locator(".axe-target").click();
@@ -188,11 +188,11 @@ await suite("axe-polish", async check => {
       for (const kind of Object.keys(window.axeSounds)) SE[kind] = () => window.axeSounds[kind]++;
     });
     await action(page); await phase(page, "horizontal");
-    await boardStop(page, .995, 3200, "vertical", false);
+    await boardStop(page, .995, 3600, "vertical", false);
     await boardStop(page, .995, 3600, "power", false);
     await gauge(page, .62, 2400);
     assert.equal(await page.locator(".axe-timing").getAttribute("data-quality"), "sweet");
-    assert.match(await page.locator('[data-test="axe-power-cue"]').textContent(), /いま投げる/);
+    assert.match(await page.locator('[data-test="axe-power-cue"]').textContent(), /いま放す/);
     assert.equal(await root(page).getAttribute("data-preview-score"), "0");
     await capture(page, "pc-green-power");
     await page.locator(".axe-target").click();
@@ -202,10 +202,75 @@ await suite("axe-polish", async check => {
     assert.equal(Number(await page.locator(".axe-impact-fx").getAttribute("opacity")), 0);
     assert.deepEqual(await page.evaluate(() => window.axeSounds), { hit: 0, perfect: 0, miss: 1 });
     await capture(page, "pc-zero-point-wood");
+    // The five planks are wider than the sweep, so the corner is wood: the axe sticks for zero without any celebration.
+    assert.equal(await page.locator(".axe-impacts > g").count(), 1);
+    assert.equal(await page.locator(".axe-impacts > g").getAttribute("data-scored"), "false");
     const result = await cancel(page, before), shot = result.throws[0];
-    assert(!shot.stuck && shot.score === 0 && shot.outcome === "miss" && shot.dropReason === "off-board");
-    assert.equal(await page.locator(".axe-impacts > g").count(), 0);
+    assert(shot.stuck && shot.score === 0 && shot.outcome === "miss" && shot.dropReason === null);
     assert.deepEqual(shot.landing, predicted, "A zero score uses exactly the displayed landing too");
+  });
+  await check("tap-a-blue-on-the-board-to-call-and-the-centre-to-cancel", async page => {
+    const before = await start(page, { opponent: null, mode: "league" });
+    await page.clock.runFor(300);
+    const target = page.locator(".axe-target");
+    const at = async (x, y) => {
+      const [px, py] = await target.evaluate((svg, [x, y]) => { const p = svg.createSVGPoint(); p.x = x; p.y = y; const q = p.matrixTransform(svg.getScreenCTM()); return [q.x, q.y]; }, [x, y]);
+      await page.mouse.click(px, py);
+    };
+    await at(330 - 7 / 14.75 * 164, 245 - 12 / 14.75 * 164);
+    assert.equal(await root(page).getAttribute("data-called"), "upper-left");
+    assert.match(await page.locator('[data-test="axe-call-status"]').textContent(), /左上の青/);
+    assert.equal(await page.locator('[data-call="upper-left"]').getAttribute("aria-pressed"), "true");
+    await page.clock.runFor(300); await at(330, 245);
+    assert.equal(await root(page).getAttribute("data-called"), "");
+    await page.clock.runFor(300); await at(330 + 7 / 14.75 * 164, 245 + 12 / 14.75 * 164);
+    assert.equal(await root(page).getAttribute("data-called"), "lower-right");
+    await throwWithBoard(page, { focus: false });
+    assert.match(await page.locator('[data-test="axe-result"]').innerText(), /MISS/);
+    await action(page); await phase(page, "choice");
+    assert.match(await page.locator('[data-test="axe-call-status"]').textContent(), /残り1回/);
+    const result = await cancel(page, before); assert.equal(result.throws[0].called, "lower-right"); assert.equal(result.division, "rec");
+  });
+
+  await check("drop-earns-a-bonus-call-and-the-half-switch-flips-the-lane", async page => {
+    const before = await start(page, { opponent: null, mode: "league", division: "pro" });
+    assert.equal(await root(page).getAttribute("data-division"), "pro");
+    await throwWithBoard(page, { power: .93, focus: false });
+    assert.match(await page.locator('[data-test="axe-result"]').innerText(), /追加の宣言/);
+    await action(page); await phase(page, "choice");
+    assert.match(await page.locator('[data-test="axe-call-status"]').textContent(), /残り3回.*落下で\+1/);
+    for (let i = 1; i < 5; i++) { await throwWithBoard(page); await action(page); await phase(page, "choice"); }
+    assert.equal(await root(page).getAttribute("data-half"), "1");
+    assert.equal(await page.locator(".axe-target").getAttribute("data-half"), "1");
+    assert.match(await page.locator('[data-test="axe-note"]').textContent(), /後半5投/);
+    assert.equal(await page.locator(".axe-cuts > g").count(), 0, "cuts of the first half are gone with the lane switch");
+    assert.equal(await page.locator('[data-test="axe-round"]').textContent(), "6 / 10 投 · 後半");
+    const result = await cancel(page, before);
+    assert.equal(result.throws.length, 5); assert.equal(result.throws[1].score, 6, "Pro: the first centre bull scores");
+    assert.equal(result.throws[2].score, 0, "Pro: the centre five ring is closed for the half");
+    assert.equal(result.throws[2].zone.kind, "closed");
+  });
+
+  await check("best-of-three-series-opens-a-second-game", async page => {
+    const before = await start(page, { mode: "versus", difficulty: "hard", seed: 0, bestOf: 3 });
+    for (let i = 0; i < 10; i++) {
+      await throwWithBoard(page, { power: .93, focus: false });
+      await action(page); await phase(page, "opponent-ready"); await page.clock.runFor(2200); await phase(page, "result"); await action(page);
+    }
+    await phase(page, "summary");
+    assert.match(await page.locator(".axe-result-label").textContent(), /GAME 1 · GOOD MATCH/);
+    assert.match(await page.locator('[data-test="axe-match-score"]').textContent(), /0勝1敗/);
+    assert.equal(await page.locator('[data-test="axe-action"]').textContent(), "第2ゲームへ");
+    assert(await page.locator('[data-test="axe-retry"]').isHidden(), "no retry while the match is open");
+    await action(page); await phase(page, "choice");
+    assert.equal(await root(page).getAttribute("data-game"), "2");
+    assert.equal(await root(page).getAttribute("data-player-throws"), "0");
+    assert.equal(await root(page).getAttribute("data-opponent-throws"), "0");
+    assert.match(await page.locator('[data-test="axe-round"]').textContent(), /G2/);
+    const result = await cancel(page, before);
+    assert.equal(result.series.bestOf, 3); assert.equal(result.series.games.length, 1);
+    assert.deepEqual(result.series.wins, { player: 0, opponent: 1 }); assert.equal(result.series.winner, null);
+    assert.equal(result.series.games[0].winner, "opponent");
   });
 });
 

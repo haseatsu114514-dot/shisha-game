@@ -18,7 +18,8 @@ async function capture(page, name) {
 async function pauseClock(page) {
   if (!clocked.has(page)) { await page.clock.install(); clocked.add(page); }
   const now = await page.evaluate(() => Date.now());
-  await page.clock.pauseAt(new Date(now + 30));
+  // A generous margin: the fake clock keeps running between the read and the pause, and a past target throws.
+  await page.clock.pauseAt(new Date(now + 500));
 }
 async function hit(page, selector, touch = false) {
   if (touch) await page.locator(selector).tap(); else await page.locator(selector).click();
@@ -74,7 +75,7 @@ async function completeLesson(page, { touch = false, captureName = null, freeze 
   await guide(page, "welcome", touch, freeze); await guide(page, "target", touch, freeze);
   await action(page, touch); await phase(page, "horizontal");
   await guide(page, "horizontal", touch, freeze);
-  await stop(page, .5, 3200, "vertical", touch); await guide(page, "vertical", touch, freeze);
+  await stop(page, .5, 3600, "vertical", touch); await guide(page, "vertical", touch, freeze);
   await stop(page, .5, 3600, "power", touch); await guide(page, "power", touch, freeze);
   await gauge(page, .4, 2400); await game(page).focus(); await page.keyboard.press("f");
   await stop(page, .62, 2400, "flight", touch); await page.clock.runFor(1200);
@@ -121,11 +122,11 @@ await suite("axe-lesson", async check => {
     await page.locator('[data-test="axe-rules"]').click();
     const rules = page.locator('[data-test="axe-rules-panel"]');
     assert.equal(await rules.locator(".axe-rules-scroll > .axe-coach-diagram").count(), 1);
-    assert.match(await rules.innerText(), /まずこれだけ/); assert.match(await rules.innerText(), /キルショットとは/);
-    for (const explanation of [/外側は7点.*中心は8点/, /選んだ青以外.*0点/, /宣言なし.*通常リング点/, /1ゲーム2回/, /外れ・落下でも1回/, /左右2つは両方閉じ/])
+    assert.match(await rules.innerText(), /まずこれだけ/); assert.match(await rules.innerText(), /キルショット（青）/);
+    for (const explanation of [/外側の青は7点.*中心は8点/, /その青以外.*0点/, /宣言なしで青に刺さると1のリングの1点/, /1ゲーム2回/, /外れ・落下でも1回/, /左右とも閉じ/, /落下.*宣言が1回増える/, /前半・後半/, /レク.*アマ.*プロ|部門/, /サドンデス/])
       assert.match(await rules.innerText(), explanation);
     await page.locator('[data-test="axe-rules-close"]').click();
-    await action(page); await stop(page, .5, 3200, "vertical"); await stop(page, .5, 3600, "power");
+    await action(page); await stop(page, .5, 3600, "vertical"); await stop(page, .5, 3600, "power");
     await gauge(page, .3, 2400);
     assert.equal((await previewMatchesModel(page)).outcome, "drop");
     await gauge(page, .4, 2400); await game(page).focus(); await page.keyboard.press("f");
@@ -133,7 +134,7 @@ await suite("axe-lesson", async check => {
     await page.locator('[data-test="axe-reaim"]').click(); await phase(page, "choice");
     await page.clock.runFor(300); await page.locator('[data-call="upper-left"]').click();
     assert.match(await page.locator('[data-test="axe-call-status"]').textContent(), /青以外0点/);
-    await action(page); await stop(page, .5, 3200, "vertical"); await stop(page, .5, 3600, "power");
+    await action(page); await stop(page, .5, 3600, "vertical"); await stop(page, .5, 3600, "power");
     await gauge(page, .62, 2400); assert.equal((await previewMatchesModel(page)).outcome, "killshot-miss");
     assert.equal((await previewMatchesModel(page)).score, 0);
     await game(page).focus(); await page.keyboard.press("Escape");

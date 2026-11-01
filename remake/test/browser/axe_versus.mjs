@@ -39,8 +39,8 @@ async function shoot(page, options = {}) {
   await stop(page, .5, options); await phase(page, "power");
   if (options.focus) {
     const [x, y] = await root(page).evaluate(game => [Number(game.dataset.aimX), Number(game.dataset.aimY)]);
-    if (Math.hypot(x, y) > .06) {
-      // Leave room inside the radius .1 bull for focused sway and the power correction.
+    if (Math.abs(x) > .045 || Math.abs(y) > .15) {
+      // The 1.5in bull (radius .051) forgives vertical error through the 4in blade; horizontal error must leave room for focused sway.
       assert((options.attempt || 0) < 5, `Visible center aiming failed: ${x},${y}`);
       await page.locator('[data-test="axe-reaim"]:not([disabled])').click();
       return shoot(page, { ...options, attempt: (options.attempt || 0) + 1 });
@@ -53,6 +53,21 @@ async function shoot(page, options = {}) {
   }
   await stop(page, options.power ?? .62, options); await phase(page, "result");
   assert.equal(await root(page).getAttribute("data-actor"), "player");
+}
+/** A tie after ten throws goes to sudden death: alternate killshot throws until the game declares a winner. */
+async function finishSuddenDeath(page, options = {}, shootInput = { x: 0, y: 0 }) {
+  for (let round = 0; round < 12 && await root(page).getAttribute("data-phase") !== "summary"; round++) {
+    await phase(page, "choice");
+    assert.equal(await root(page).getAttribute("data-sudden-death"), "true");
+    assert.equal(await page.locator(".axe-calls").count() && await page.locator(".axe-calls").isHidden(), true, "no call buttons in sudden death");
+    await shoot(page, { ...options, ...shootInput });
+    assert.equal(await root(page).getAttribute("data-player-throws"), "10", "sudden death adds no game throws");
+    await press(page, options); await phase(page, "opponent-ready"); await phase(page, "result");
+    assert.match(await page.locator('[data-test="axe-call-status"]').textContent(), /サドンデス/);
+    await press(page, options);
+    await page.waitForFunction(() => ["choice", "summary"].includes(document.querySelector('[data-test="axe-game"]')?.dataset.phase));
+  }
+  await phase(page, "summary");
 }
 async function start(page, difficulty = "normal", options = {}) {
   await page.goto(new URL("axe-throw.html", page.url()).href);
@@ -96,8 +111,9 @@ await suite("axe-versus", async check => {
       if (i === 1) { await fit(page); await capture(page, label + "-opponent-result"); }
       await press(page, options);
     }
+    if (await root(page).getAttribute("data-phase") !== "summary") await finishSuddenDeath(page, options);
     await phase(page, "summary"); await fit(page); await capture(page, label + "-summary");
-    assert.match(await page.locator('.axe-note').textContent(), /勝ち|引き分け/);
+    assert.match(await page.locator('.axe-note').textContent(), /勝ち/);
     assert.equal(await page.locator('.axe-match-records > div').count(), 2);
     await press(page, options);
     const result = await page.evaluate(() => window.matchPromise);
@@ -120,11 +136,11 @@ await suite("axe-versus", async check => {
     assert.deepEqual(await storageSnapshot(page), before);
   }, context);
 
-  await check("seeded-draw-ends-at-ten-and-retry-clears-both-histories", async page => {
+  await check("seeded-tie-goes-to-sudden-death-and-retry-clears-both-histories", async page => {
     await page.goto(new URL("axe-throw.html", page.url()).href);
     await page.evaluate(async () => {
       const mini = await import("./js/minigames/axe.js");
-      window.matchPromise = mini.runAxeThrow({ host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 9 });
+      window.matchPromise = mini.runAxeThrow({ host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 0 });
     });
     await phase(page, "choice");
     const before = await storageSnapshot(page);
@@ -133,20 +149,29 @@ await suite("axe-versus", async check => {
       assert.match(await page.locator('.axe-note').textContent(), /6点/, "real focused bull must score six");
       await press(page); await phase(page, "opponent-ready"); await phase(page, "result"); await press(page);
     }
-    await phase(page, "summary");
+    await phase(page, "choice");
     assert.equal(await root(page).getAttribute("data-player-throws"), "10");
     assert.equal(await root(page).getAttribute("data-opponent-throws"), "10");
     assert.match(await page.locator('.axe-match-score').textContent(), /あなた 60 — 60 ひより/);
-    assert.match(await page.locator('.axe-note').textContent(), /引き分け.*延長なし/);
-    assert.match(await page.locator('.axe-comment').textContent(), /引き分け/);
-    await capture(page, "seeded-draw-summary");
+    assert.equal(await root(page).getAttribute("data-sudden-death"), "true");
+    assert.equal(await root(page).getAttribute("data-called"), "upper-left", "sudden death starts at the upper-left blue");
+    assert.match(await page.locator('.axe-comment').textContent(), /同点|決着/);
+    await capture(page, "seeded-tie-sudden-death");
+    // The player throws at the centre (zero on a called blue); the hard opponent decides the round on the blue or by distance.
+    await finishSuddenDeath(page, { focus: true, precise: true });
+    assert.match(await page.locator('.axe-match-score').textContent(), /あなた 60 — 60 ひより/);
+    assert.match(await page.locator('.axe-note').textContent(), /勝ち.*サドンデス/);
+    assert.equal(await page.locator('.axe-tile-sd').count() >= 2, true, "sudden-death tiles join both scoreboard rows");
+    await capture(page, "seeded-tie-summary");
+    const finished = await page.evaluate(() => JSON.parse(document.querySelector('[data-test="axe-game"]').dataset.suddenDeathRounds));
+    assert(finished >= 1);
     await page.locator('[data-test="axe-retry"]:not([disabled])').click(); await phase(page, "choice");
     assert.equal(await root(page).getAttribute("data-player-throws"), "0");
     assert.equal(await root(page).getAttribute("data-opponent-throws"), "0");
     assert.match(await page.locator('.axe-call-status').textContent(), /残り2回/);
     await page.keyboard.press("Escape");
     const result = await page.evaluate(() => window.matchPromise);
-    assert.equal(result.match.seed, 9); assert.equal(result.match.winner, null);
+    assert.equal(result.match.seed, 0); assert.equal(result.match.winner, null);
     assert.deepEqual(result.match.player, []); assert.deepEqual(result.match.opponent, []);
     assert.deepEqual(await storageSnapshot(page), before);
   });

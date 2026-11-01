@@ -11,6 +11,39 @@ remake/axe-throw.html で、開発コンソールなしで遊べる。
 サメちゃんは遊びに付き添う立場で、物語上の大会ライバルや競争相手には追加しない。
 ひよりの大声はキルショット成功時だけの短い反応。素顔発覚や恋愛成立を推定しない。
 
+## WATL 2026式への再構成（2026-11-01・AXR）
+
+オーナー「よりリアルなキルショットがあったり、得点も公式のスポーツの斧投げをしているようなゲーム性と競技性のあるものにしたい。デザインからゲーム性まで見直して再構成」。参考: [WATL公式ルール](https://worldaxethrowingleague.com/axe-throwing-rules/)（2026-10-07更新版を2026-11-01に確認）。ルールセット名は `watl-2026-lounge`。
+
+### 的と採点（`axe-model.js`）
+
+- 寸法は公式のインチを1リング半径（14.75in）で正規化（`INCH`）。中央ブル1.5in（6点）、5のリング3.5in、4/3/2/1のリングは2024ステンシル（直径10.75／17／23.25／29.5in）。外側の5リングとブルは上下3.5in（56.5／63.5in）・左右6in。キルショットは上下12in（48／72in）・左右7in、外1.5in（7点）・内0.75in（8点）、赤い縁取りの青。板は2x10を5枚（46.25×48in）。
+- **刃の幅で採点**: 刃は縦4in（`BLADE.halfLength`）。刃の線分が触れた一番高い区画が点になる（`scoreBlade`）。黒い20mmの線（`LINE`）は低い側の点なので、各リングは線の内側だけが有効。縦のずれは刃で拾い、横のずれはそのまま出る。宣言なしで青に刺さると1点（1リング）。
+- 宣言は2回、成功した高さは左右とも閉じてゲーム中は開かない。**落下（刺さらない）で宣言が1回増える（最後の投を除く）**。増えた宣言は直前の宣言と反対の高さの青にだけ使える（`killState().mustRow`）。
+- 10投は5投ずつの前後半（`halfOf`）。後半に入ると的（レーン）を交代し、赤・5の閉鎖は開き直す。
+- 部門 `DIVISIONS`: レク（閉じない）／アマ（当てた6と5はその半分のあいだ閉じる。閉じた6は5点、閉じた5はリング点＝中央4・外側3）／プロ（当てた5の円が丸ごと閉じ、同じ半分で触れると0点、`zone.kind:"closed"`）。閉鎖は各投の `zone` から `closuresOf()` で読む。
+- 各投は `zone {kind: bull|five|ring|kill|closed|null, cluster: center|ul|ur|ll|lr|null}`・`half`・`distance`（宣言した青の中心までの刃の距離）を持つ。`resolveThrow(input, history, {division, throws, suddenDeath})`。
+- ゲージの範囲は±1.2（`AIM_RANGE`）で板（±1.57）より狭いため、板の外は出ない。1リングの外の木は刺さって0点。手ブレの最小は .03。
+- 最大点は従来どおり3投22点・10投64点（キル2本＋ブル）。プロは5つの赤を半分ごとに順に回ると60点＋キル。
+
+### 対戦（`axe-match.js`）
+
+- 同点なら**サドンデス**: 左上→右上→右下→左下の順に同じ青へ1本ずつ。点が上回った方が勝ち。両者外れは1・2本目は次へ回し、3本目（`MEASURE_FROM`=2）から刃の距離が短い方が勝ち。落下・板の外は計測不能で負け、両者計測不能は投げ直し。サドンデスは宣言回数・閉鎖を無視し、合計点には足さない。`match.suddenDeath[{target, player, opponent}]`。
+- `createMatch(difficulty, seed, division)`。相手は自分の閉鎖を読んで中央→開いている外側ブルの順に狙う（`openAim`）。宣言は5投目（上）・10投目、落下で増えた宣言は8投目に反対の高さへ。`resolveTurn()` で表示用の投を先に解決する。
+- マッチ（2本先取、`bestOf: 3`）は `axe.js` が `series {bestOf, games, wins, winner}` として返す。ゲームごとのseedは `baseSeed + 7919 × game`。
+
+### 画面（`axe.js`・`axe-throw.css`）
+
+- 見出しの下にリーグ式のスコアボード（`.axe-scoreboard`）: 投ごとのタイル（点・K/●/↓/×の印）、前後半の区切り、残り宣言のK印、合計。対戦は2段、サドンデスは `SD` タイルが伸びる。
+- 的は板の画像（既存 `target_board_display.webp`）に公式比率のマーキングをSVGで描く（20mm黒線・赤ブル・赤縁の青）。白い照準は4inの刃の線分。狙いの針は板を横切る線。前後半の交代で板を左右反転し、その半分の投の切り傷（点つき）を木に残す。閉じた赤・5には×と減光。
+- 構える前に**的の青を直接タップして宣言**できる（中央付近のタップで取り消し）。ボタンの宣言も残す。
+- 結果カードの集計は平均点/投・ブル・キル/宣言・落下。見出しに部門バッジ。`data-half`・`data-sudden-death`・`data-game`・`data-division` を持つ。
+- `runAxeThrow({division:"rec"|"am"|"pro", bestOf:1|3})` を追加。返り値に `division`・`stats`・`series`、`match.suddenDeath` を追加。既存の引数・`throws/total/grade/maximum/challenges/rank/title` は維持。
+- 独立ページに部門と対戦本数の選択、斧投げBarに10投ゲームの部門選択と通算成績（`flags._axe_bar_records.career`: games/throws/points/bulls/kills/calls/drops）を追加。記録の `best/last` に `division` を保存。成長の盤のランク判定（`growth.js` の `best.total/maximum`）は変えない。
+- 板の新規画像は OpenAI 画像APIがクレジット切れ（429）で生成できず、Codex向けの指示文を `asset_sources/ui/axe-watl-20261101/prompts/board.txt` に残した。受け取ったら `assets/ui/axe_throw/` に置き、`ART.board` と `OPAQUE`（不透明範囲）を差し替える。
+
+検証: `node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs`、`node tools/ci/run.mjs --kind browser --suites axe-throw,play-spots`。
+
 ## 遊び方を読む・手ブレを読む（#522）
 
 練習入口の「遊び方・得点ルール」とゲーム中の「ルール」は、同じ説明を開く。操作順、通常の同心円/外側ブル、宣言した青以外0点、宣言の消費/高さの閉鎖、落下、力による上下ずれ、3投/10投を説明する。PC・タッチ縦横でスクロールでき、見出しと戻るボタンを固定する。本編内でも読める。説明中はゲージ・手ブレ・飛行・集中時間を止め、Tabの焦点を説明内に収める。Esc/戻るで同じ段階へ戻り、callerのAbort/撤去では説明ごと片付ける。
@@ -21,7 +54,7 @@ remake/axe-throw.html で、開発コンソールなしで遊べる。
 
 通常得点/落下/キルショットの判定モデルは維持する。結果の各投には実刃先の`aim`と、止めた`baseAim`、実際に表示した`sway`（幅/疲れ/集中状態）を残す。既存のcallerはcompleted/throws/totalを従来どおり使える。セーブやキャラの能力を難易度へ流用しない。
 
-## ラウンジ競技ルール（lounge-2026-v1）
+## 旧ラウンジ競技ルール（lounge-2026-v1・2026-11-01に上記へ置換）
 
 参考: [WATL公式2026ルール](https://worldaxethrowingleague.com/axe-throwing-rules/)
 （確認した版は2026-10-07更新）。本ゲームは公式大会シミュレーターではない。
