@@ -95,10 +95,25 @@ assert.equal(DB.equipById.lotos_hagal.name, "ロートスHMD");
 assert.equal(DB.equipById.winkwink_hagal.name, "ビッグタヌキッシュリッド");
 assert.equal(DB.equipById.harry_the_moon.name, "ハリーザムーン");
 assert.equal(DB.characters.maezono.name, "上園 文太郎");
+// #1947 R9 / #1984: guard only the withdrawn descriptions on retired pipes.
+const withdrawnPipeDescriptions = {
+  pipe_middle: "少し値が張るが、気密性が高く味と煙が安定する。大会では専門評価に少し補正が入る。",
+  pipe_high: "美しさと実用性を兼ね備えた名機。味の輪郭と見栄えに補正が入る。",
+  pipe_highest: "限られた職人しか作れない特注品。味、煙、プレゼンすべてに高い補正が入る。",
+};
+const revivesWithdrawnPipeCopy = ({ id, description }) =>
+  Object.hasOwn(withdrawnPipeDescriptions, id) && withdrawnPipeDescriptions[id] === description;
 for (const pid of ["pipe_middle", "pipe_high", "pipe_highest"]) {
   assert.equal(DB.equipById[pid].deprecated, true);
   assert.equal(DB.equipById[pid].not_for_sale, true);
+  const oldCopy = withdrawnPipeDescriptions[pid];
+  assert(revivesWithdrawnPipeCopy({ id: pid, description: oldCopy }));
+  assert(!revivesWithdrawnPipeCopy(DB.equipById[pid]), `${pid} must not restore its old scoring claim`);
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `「${oldCopy}」は旧説明` }));
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `${oldCopy}とは言えない` }));
+  assert(!revivesWithdrawnPipeCopy({ id: "harry_the_moon", description: oldCopy }));
 }
+assert(!revivesWithdrawnPipeCopy(DB.equipById.hagal_80beat));
 
 // 2. メーカー6社・加算天井（単社時は主要4社が +2.50、初心者安定枠のドバジが +0.80）
 const sampleByMaker = {
