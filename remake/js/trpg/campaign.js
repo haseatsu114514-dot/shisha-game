@@ -132,7 +132,10 @@ export function materializeTrpgCast(scenario, assignments) {
       return { ...approach, sheet: seat, actor: assignments[approach.actor] || assignments[gm], npc: !assignments[approach.actor] };
     });
   }
+  const present = new Set(Object.values(assignments).filter(Boolean));
   for (const block of table.dialogues) {
+    // A companion's character-making talk is written in that player's own voice: keep it only when they are at the table.
+    if (block.metadata?.making) { block.lines = block.lines.filter(line => present.has(line.speaker)); continue; }
     block.lines = block.lines.flatMap(line => {
       const id = assignments[line.speaker];
       if (!id) return [];

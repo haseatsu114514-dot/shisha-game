@@ -212,6 +212,8 @@ try {
     await page.locator('[data-test="trpg-builder"]').waitFor();
     await fits(page);
     await hit(page, '[data-test="trpg-look-rust"]'); await hit(page, '[data-test="trpg-archetype-sailor"]');
+    assert.equal(await page.locator('[data-test="trpg-stat-nerve-down"]').count(), 0, "easy mode hides the point-buy");
+    await hit(page, '[data-test="trpg-builder-advanced"]');
     await hit(page, '[data-test="trpg-stat-nerve-down"]'); await hit(page, '[data-test="trpg-stat-talk-up"]');
     assert.equal(await page.locator('[data-test="trpg-stat-points"]').getAttribute("data-left"), "0");
     assert(await page.locator('[data-test="trpg-stat-talk-up"]').isDisabled(), "spent points disable raising");
@@ -231,6 +233,22 @@ try {
     await nextLines(page);
     assert.equal(await page.locator('[data-test="trpg-bonus"]').textContent(), "＋3", "the built talk stat is the roll's base");
     await fits(page);
+  });
+  await run("shopkeeper-tutorial-and-session-zero", { seed: "6", traveler: "quiet", tutorial: "1" }, {}, async page => {
+    await page.locator('[data-test="trpg-tutorial-panel"]').waitFor();
+    assert(!await page.locator('[data-test="trpg-start"]').isVisible(), "the cover waits for the shopkeeper");
+    await fits(page);
+    await nextLines(page);
+    assert.equal(await page.locator('[data-test="trpg-tutorial-panel"]').count(), 0);
+    await hit(page, '[data-test="trpg-start"]');
+    const first = await page.locator(".trpg-speech p").textContent();
+    assert.match(first, /キャラ作り/, "the GM opens session zero");
+    await nextLines(page);
+    assert.equal(await page.locator('[data-test="trpg-approach-best"]').count(), 1, "one approach carries the beginner's recommendation");
+    await fits(page);
+    await hit(page, '[data-test="trpg-approach-listen_talk"]');
+    await nextLines(page);
+    assert.equal(await page.locator(".trpg-root").evaluate(n => n.textContent.includes("{pc")), false);
   });
   await run("portrait-touch-hint", { seed: "1" },
     { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, async page => {

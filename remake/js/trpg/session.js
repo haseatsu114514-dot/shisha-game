@@ -37,6 +37,24 @@ export function buildPc(scenario, choices = {}) {
   return { seat: builder.seat || PLAYER_SEAT, name, title: archetype.title, trait: archetype.trait, stats, points,
     look: look.id, archetype: archetype.id, portrait: look.portrait || null, color: look.color || null, accent: look.accent || null };
 }
+/**
+ * Companions make their own characters: each seat's player picks one authored option (likes, a joke, a parody),
+ * chosen from the seed by a separate hash so the dice sequence never changes. Empty seats keep the authored sheet.
+ */
+export function pickCompanions(scenario, seed = 1, chosen = {}) {
+  const picks = {};
+  for (const [seat, byPlayer] of Object.entries(scenario.companionBuilds || {})) {
+    const player = scenario.cast.find(c => (c.seat || c.id) === seat && c.part !== "GM")?.id;
+    const options = player ? byPlayer[player] || [] : [];
+    if (!options.length) continue;
+    // FNV-1a over the seat, mixed with the seed by a murmur finalizer: every bit of the seed reaches the pick.
+    let x = ((Number(seed) >>> 0) ^ [...seat].reduce((n, ch) => Math.imul(n ^ ch.codePointAt(0), 16777619) >>> 0, 2166136261)) >>> 0;
+    x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0; x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0; x = (x ^ (x >>> 16)) >>> 0;
+    const option = options.find(o => o.id === chosen[seat]) || options[x % options.length];
+    picks[seat] = { ...option, player };
+  }
+  return picks;
+}
 /** A deterministic "leave it to the dice" character: look and archetype from the seed, with one point moved between stats. */
 export function randomPc(scenario, seed = Date.now()) {
   const builder = scenario.builder;
@@ -63,12 +81,17 @@ export const HEAT = { max: 8, tiers: [3, 6, 8], momentumMax: 2,
 export const heatTier = value => HEAT.tiers.filter(t => value >= t).length;
 
 export class TrpgSession {
-  constructor(scenario, { seed = Date.now(), profileId = null, pc = null } = {}) {
+  constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {} } = {}) {
     if (!scenario?.profiles?.length || scenario.profiles.length < 1) throw new Error("Missing traveler profiles");
     this.scenario = scenario;
-    // The player's own character replaces the authored default on that seat; companions keep their sheets.
+    // The player's own character replaces the authored default on that seat; each companion brings the character they made.
     this.pc = scenario.builder ? buildPc(scenario, pc || {}) : null;
-    this.sheets = sheetsOf(scenario);
+    this.sheets = { ...sheetsOf(scenario) };
+    this.companions = pickCompanions(scenario, seed, companions);
+    for (const [seat, option] of Object.entries(this.companions)) {
+      this.sheets[seat] = { ...(this.sheets[seat] || {}), name: option.name, title: option.title, trait: option.trait, likes: option.likes,
+        stats: { ...option.stats }, portrait: option.portrait || this.sheets[seat]?.portrait || null, option: option.id };
+    }
     if (this.pc) this.sheets[this.pc.seat] = { ...(this.sheets[this.pc.seat] || {}), ...this.pc };
     this.rng = Number(seed) >>> 0 || 1;
     const profile = profileId ? scenario.profiles.find(p => p.id === profileId)
@@ -88,6 +111,7 @@ export class TrpgSession {
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
       acted: {}, checks: [], pending: null,
       pc: this.pc ? { name: this.pc.name, title: this.pc.title, look: this.pc.look, archetype: this.pc.archetype, stats: { ...this.pc.stats } } : null,
+      companions: Object.fromEntries(Object.entries(this.companions).map(([seat, o]) => [seat, o.id])),
     };
   }
 
@@ -240,6 +264,7 @@ export class TrpgSession {
       variant: this.state.pressure >= this.rules.detourThreshold ? "with-detour" : "smooth",
       plan: copy(plan), hypothesis: this.state.hypothesis,
       clues: copy(this.state.clues), checks: copy(this.state.checks), acted: copy(this.state.acted), pc: copy(this.state.pc),
+      companions: copy(this.state.companions),
       pressure: this.state.pressure, profileId: this.profile.id,
     };
   }

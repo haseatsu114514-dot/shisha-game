@@ -134,6 +134,10 @@ for (const scenario of scenarios) {
     assert.equal(q('trpg-cover-pc-name').textContent, builder.archetypes[0].name);
     q('trpg-build').click();
     q('trpg-look-' + look.id).click(); q('trpg-archetype-' + origin.id).click();
+    // Beginners never see +/- unless they ask; every stat carries a plain explanation.
+    assert(!root.querySelector('[data-test="trpg-stat-eye-up"]'), 'easy mode hides the point-buy');
+    assert.equal(root.querySelectorAll('.trpg-builder-stat-help').length, 4);
+    q('trpg-builder-advanced').click();
     const lowered = Object.keys(origin.stats).find(k => origin.stats[k] > builder.min), raised = Object.keys(origin.stats).find(k => k !== lowered && origin.stats[k] < builder.max);
     q('trpg-stat-' + lowered + '-down').click();
     assert.equal(q('trpg-stat-points').dataset.left, '1');
@@ -265,4 +269,41 @@ test('actual runTrpg public caller: pre-abort and in-flight abort return cancell
   const pending = entry.namespace.runTrpg(host, options); signal.abort(); signal.abort();
   assert.equal((await pending).cancelled, true); assert.equal(completed, 0);
   const again = await entry.namespace.runTrpg(new Dom(), options); assert.equal(again.cancelled,true); assert.equal(completed,0);
+});
+
+test('the shopkeeper tutorial plays on the cover, blocks the start until it ends, and can be replayed', async () => {
+  const tutorial = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_tutorial.json', import.meta.url), 'utf8'));
+  for (const scenario of scenarios) {
+    const host = new Dom();
+    const manifest = { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
+    const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {} };
+    let done = 0;
+    const api = mod.namespace.mountTrpg(host, { scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio,
+      tutorialLines: tutorial.lines, tutorial: true, onTutorialDone: () => done++ });
+    const root = host.children[0];
+    const q = id => { const node = root.querySelector('[data-test="' + id + '"]'); assert(node, id); return node; };
+    assert.match(root.querySelector('.trpg-speaker-label').textContent, /^sai店長/, 'the shopkeeper speaks first');
+    assert.equal(q('trpg-tutorial-panel').dataset.panel, 'welcome');
+    q('trpg-start').click();
+    assert.equal(api.snapshot().phase, 'cover', 'the story cannot start over the tutorial');
+    const panels = new Set();
+    for (let n = 0; !q('trpg-next').hidden; n++) {
+      const panel = root.querySelector('[data-test="trpg-tutorial-panel"]'); if (panel) panels.add(panel.dataset.panel);
+      assert(!root.querySelector('.trpg-speech').textContent.includes('{gm}'), 'the GM name is filled in');
+      q('trpg-next').click(); assert(n < 40);
+    }
+    assert.equal(done, 1); assert.equal(panels.size, 7); assert.equal(root.querySelector('[data-test="trpg-tutorial-panel"]'), null);
+    q('trpg-tutorial').click(); assert(!q('trpg-next').hidden, 'the cover button replays the tutorial');
+    while (!q('trpg-next').hidden) q('trpg-next').click();
+    assert.equal(done, 2);
+    // Session zero: the companions announce the characters they made before the story begins.
+    q('trpg-start').click();
+    const said = [];
+    for (let n = 0; n < 6; n++) { said.push(root.querySelector('.trpg-speech').textContent); q('trpg-next').click(); }
+    for (const option of Object.values(api.snapshot().companions)) assert(option);
+    const names = Object.keys(scenario.companionBuilds).map(seat => scenario.companionBuilds[seat][seat].find(o => o.id === api.snapshot().companions[seat]).name);
+    assert(names.every(name => said.join('').includes(name)), 'each companion names their character: ' + said.join(' / '));
+    assert(!said.join('').includes('{pc'), 'no name token leaks');
+    api.destroy();
+  }
 });

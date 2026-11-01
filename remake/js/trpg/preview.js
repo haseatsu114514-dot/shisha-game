@@ -21,7 +21,7 @@ function boot() {
   collection = mountTrpgCollection(host, {
     initialScenarioId: params.get("scenario") || (params.has("traveler") || params.has("seed") ? "ordinary-cup" : null),
     seed: params.has("seed") ? Number(params.get("seed")) : undefined,
-    profileId: params.get("traveler"), onScenarioChange: setScenarioUrl,
+    profileId: params.get("traveler"), onScenarioChange: setScenarioUrl, tutorial: params.get("tutorial") === "1",
   });
   window.__trpg = Object.freeze({ snapshot: () => collection.snapshot(), audio: () => collection.audioSnapshot(),
     get ready() { return collection.loaded; } });

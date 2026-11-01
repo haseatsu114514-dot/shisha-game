@@ -40,7 +40,7 @@ export async function loadTrpgClubResources({ signal } = {}) {
   return { catalog, characters: [...people.values()], manifest, club };
 }
 
-function trpgAssetUrls({ characters, manifest, tableTalk }, scenarios) {
+function trpgAssetUrls({ characters, manifest, tableTalk, tutorialLines = [] }, scenarios) {
   const people = new Set(characters.map(c => c.id));
   const urls = new Set();
   scenarios.forEach(s => {
@@ -51,7 +51,7 @@ function trpgAssetUrls({ characters, manifest, tableTalk }, scenarios) {
     });
     s.dialogues.forEach(d => d.lines.forEach(l => urls.add(portraitUrl(manifest, l.speaker, l.face))));
   });
-  Object.values(tableTalk).flat().forEach(l => { if (manifest.portraits[l.speaker]) urls.add(portraitUrl(manifest, l.speaker, l.face)); });
+  [...Object.values(tableTalk).flat(), ...(tutorialLines || [])].forEach(l => { if (manifest.portraits[l.speaker]) urls.add(portraitUrl(manifest, l.speaker, l.face)); });
   return urls;
 }
 
@@ -67,7 +67,7 @@ export async function loadTrpgLibrary({ signal, scenarioId = null, preloadAssets
   const catalog = await json(new URL("trpg_catalog.json", base), signal);
   const entries = scenarioId ? catalog.scenarios.filter(s => s.id === scenarioId) : catalog.scenarios;
   if (!entries.length) throw new Error("Unknown TRPG scenario: " + scenarioId);
-  const [scenarios, characters, manifest, overlays, club, talk] = await Promise.all([
+  const [scenarios, characters, manifest, overlays, club, talk, tutorial] = await Promise.all([
     Promise.all(entries.map(entry => json(new URL(entry.file, base), signal))),
     json(new URL("characters.json", base), signal),
     json(new URL("../../data/manifest.json", import.meta.url), signal),
@@ -75,11 +75,14 @@ export async function loadTrpgLibrary({ signal, scenarioId = null, preloadAssets
     json(new URL(catalog.club.file, base), signal),
     // Optional table chatter: a missing file only removes the doubles chatter.
     catalog.tableTalk ? json(new URL(catalog.tableTalk, base), signal).catch(error => { if (signal?.aborted) throw error; return null; }) : null,
+    // Optional first-table tutorial by the shopkeeper: a missing file only removes the tutorial.
+    catalog.tutorial ? json(new URL(catalog.tutorial, base), signal).catch(error => { if (signal?.aborted) throw error; return null; }) : null,
   ]);
   const tableTalk = Object.fromEntries((talk?.dialogues || []).map(d => [d.dialogue_id, d.lines]));
   const people = new Map(characters.map(c => [c.id, c]));
   overlays.forEach(o => { if (o.profile?.id) people.set(o.profile.id, o.profile); });
-  const resources = { catalog, scenarios, characters: [...people.values()], manifest, club, tableTalk };
+  const tutorialLines = (tutorial?.lines || []).filter(l => people.has(l.speaker));
+  const resources = { catalog, scenarios, characters: [...people.values()], manifest, club, tableTalk, tutorialLines };
   // cast 検証は先読みを省く場合も従来どおりここで行う。
   const urls = trpgAssetUrls(resources, scenarios);
   if (preloadAssets) await Promise.all([...urls].map(url => preload(url, signal)));

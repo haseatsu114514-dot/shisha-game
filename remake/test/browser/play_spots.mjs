@@ -242,7 +242,7 @@ await suite("play-spots", async runCheck => {
     await travel(page, "widehanga"); await go(page, "trpg_bar");
     assert.equal(await page.locator(t("trpg-buy-ordinary-cup")).count(), 0);
     assert(await page.locator(t("trpg-play-ordinary-cup")).isEnabled());
-    await hit(page, "trpg-play-ordinary-cup"); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await hit(page, "trpg-play-ordinary-cup"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
     for (const id of ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
     await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page);
     await hit(page, "trpg-plan-aroma-tea"); await hit(page, "trpg-plan-seat-window");
@@ -284,7 +284,7 @@ await suite("play-spots", async runCheck => {
       const bought = await value(page);
       assert.equal(bought.money, before.money - 800); assert.equal(bought.slot, 1); assert.equal(bought.stamina, before.stamina);
       assert.deepEqual(bought.trpg.owned, ["shark-last-order"]);
-      await hit(page, "trpg-play-shark-last-order"); await hit(page, "trpg-start"); await lines(page); await roll(page);
+      await hit(page, "trpg-play-shark-last-order"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
       assert.deepEqual(await value(page), bought, "An unfinished table must not commit its ending or night action");
       for (const id of ["radio", "leaves", "fan"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
       await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-scent"); await lines(page);

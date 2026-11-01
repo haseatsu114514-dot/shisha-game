@@ -18,6 +18,7 @@ export function portraitUrl(manifest, id, face = "normal") {
 
 export function portraitTop(manifest, id, width, headY) {
   const p = manifest.portraits[id];
+  if (!p) return "0px";
   return (headY - (1 - p.h - p.b) * width / p.aspect) + "px";
 }
 
