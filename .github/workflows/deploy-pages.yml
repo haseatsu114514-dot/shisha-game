@@ -2,24 +2,21 @@
 # 旧ブラウザ版・単一HTML配布は2026-10-07のオーナー指示で廃止。
 name: Deploy web build to GitHub Pages
 
+# Pages の公開元が「ブランチ」のままだと、GitHub の旧来の公開（pages build and deployment）が
+# main への push のたびに走り、LFS の画像を131バイトのポインタのまま配信して、この公開を上書きする
+# （2026-10-31〜11-01: 会話窓・顔アイコン・登場カットインが出ない）。
+# 本当の直し方は Settings → Pages → Source を「GitHub Actions」にすること。それまでは、
+# どの push でも（資料だけの変更でも）この公開を走らせ、旧来の公開が終わるのを待ってから上書きし直す。
 on:
   push:
     branches: [main]
-    paths:
-      - "assets/**"
-      - "data/**"
-      - "remake/**"
-      - "experiments/proto/street/**"
-      - "icon.svg"
-      - "tools/browser/flavor_stats_editor.html"
-      - "tools/title-review/**"
-      - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 concurrency:
   group: pages
@@ -104,6 +101,28 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+      # 旧来のブランチ公開が同じコミットで動いていれば、それが終わってから公開する（後から公開した方が残る）。
+      # 公開元が「GitHub Actions」なら旧来の公開は起きないので待たない。
+      - name: Wait for the legacy branch build to finish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          build_type=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .build_type 2>/dev/null || echo unknown)
+          echo "Pages build_type: $build_type"
+          if [ "$build_type" = workflow ]; then exit 0; fi
+          legacy='[.workflow_runs[] | select(.path == "dynamic/pages/pages-build-deployment")]'
+          while [ "$SECONDS" -lt 900 ]; do
+            runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$GITHUB_SHA&per_page=100" --jq "$legacy" || echo '[]')
+            total=$(echo "$runs" | jq length)
+            pending=$(echo "$runs" | jq '[.[] | select(.status != "completed")] | length')
+            if [ "$total" -gt 0 ] && [ "$pending" -eq 0 ]; then echo "Legacy branch build finished"; exit 0; fi
+            # 旧来の公開は push と同時に作られる。2分待っても無ければ、このコミットには無い。
+            if [ "$total" -eq 0 ] && [ "$SECONDS" -ge 120 ]; then echo "No legacy branch build for this commit"; exit 0; fi
+            echo "Waiting for legacy branch build ($pending running)"
+            sleep 15
+          done
+          echo "::warning::Legacy Pages branch build did not finish within 15 minutes; deploying anyway"
       - id: deployment
         uses: actions/deploy-pages@v4
         continue-on-error: true
