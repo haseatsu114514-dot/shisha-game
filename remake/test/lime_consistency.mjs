@@ -9,7 +9,36 @@ import { STAT_JA } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 const root = new URL("../", import.meta.url);
 const dataRoot = new URL("../../", import.meta.url);
-const db = { lime: JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8")).messages, lover: {}, dialogues: {} };
+const limeData = JSON.parse(await fs.readFile(new URL("data/lime_messages.json", dataRoot), "utf8"));
+const db = { lime: limeData.messages, limeTemplates: limeData.templates, lover: {}, dialogues: {} };
+const legacyScheduledSource = (function legacyScheduledInvitation(m, opts = {}) {
+  const holidayOnly = m.private_schedule === "holiday_or_temporary";
+  if (!holidayOnly && m.private_schedule !== "holiday_or_after_close") return m;
+  const day = opts.day ?? state.day;
+  const schedule = holidayOnly
+    ? { time_slot: "noon", ...(day % 7 === m.closed_on ? { closed_on: m.closed_on } : { temporary_closed: true }) }
+    : dateSchedule(m.sender, { ...opts, allowTemporaryClosure: importantInvite(m) });
+  if (!schedule) return null;
+  const daytime = schedule.time_slot === "noon";
+  const context = schedule.temporary_closed ? "今日は臨時のお休みだから、午後"
+    : daytime ? "今日はお店がお休みだから、午後" : "今日、仕事を終えたあと";
+  const when = daytime ? "午後" : "仕事のあと"; // 返事のボタン「{privateWhen}、会おう（行動を1回使う）」が1行に収まる長さ
+  const render = (value) => String(value).replaceAll("{privateContext}", context).replaceAll("{privateWhen}", when);
+  // DBの雛形を変更せず、その日の受信トークへ解決済みの時刻を保存する。
+  const resolved = { ...m, ...schedule, after_close: !!schedule.after_close };
+  if (schedule.closed_on == null) delete resolved.closed_on;
+  resolved.messages = (m.messages || []).map((line) => typeof line === "string" ? render(line) : typeof line?.text === "string" ? { ...line, text: render(line.text) } : { ...line });
+  if (schedule.temporary_closed && !JSON.stringify(m.messages).includes("{privateContext}")) {
+    const text = { naru: "今日は店を臨時で閉めたから、午後ちょっと付き合えよ",
+      adam: "今日は店を臨時で休む。午後、共に出かけよう",
+      minto: "今日は臨時でお店を休みにしたの。午後、会えたら嬉しいな" }[m.sender]
+      || "今日は臨時のお休み。午後、会えたらうれしいな";
+    resolved.messages.unshift({ sender: m.sender, text });
+  }
+  if (m.reminder_text) resolved.reminder_text = render(m.reminder_text);
+  if (m.accept_text) resolved.accept_text = render(m.accept_text);
+  return resolved;
+}).toString();
 const allMessages = db.lime, state = {}, gains = [], plays = [], statGains = [], nudges = [];
 const completedPlay = (scene) => ({ id: typeof scene === "string" ? scene : scene?.dialogue_id, visited: [] });
 let playResult = completedPlay;
@@ -32,6 +61,7 @@ function el(spec, attrs = {}, children = []) {
 }
 const layers = Object.fromEntries(["modal", "toasts", "fx"].map((k) => [k, new Element("div")]));
 const context = vm.createContext({ console, clearTimeout, setTimeout: () => {}, requestAnimationFrame: (fn) => fn(), document: { querySelector: () => null }, Math, Date, Set, Promise });
+let hiyoriSpots = null;
 const noop = () => {}, mods = new Map();
 const values = {
   "chapter-clock.js": { chapterDay, chapterDaysLeft, relationshipElapsedDay },
@@ -45,7 +75,7 @@ const values = {
   "audio.js": { SE: { phone: noop, phoneReceive: noop, phoneSend: noop, select: noop, click: noop, cancel: noop } },
   "engine.js": { isPlaying: () => false, hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); return playResult(...a); } },
   "rules.js": { MAX_MONEY, TOURNAMENT_DAY: 14 },
-  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => ({ charId: id, closedOn: 6 }),
+  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => hiyoriSpots ? hiyoriSpots.find(s => s.id === id) : ({ charId: id, closedOn: 6 }),
     isClosed: (spot) => state.day % 7 === spot.closedOn || state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter}:${state.day}` }, "bus.js": { emit: noop },
   "bonds.js": { bondInvites: () => [], friendMessages: () => [] }, // 締めくくりの誘い・友人のLIMEは remake/test/bonds.mjs
   "story-knowledge.js": { syncMintoKnowledge: () => {} },
@@ -56,7 +86,7 @@ async function load(name) {
   if (mods.has(name)) return mods.get(name);
   let mod;
   if (values[name]) mod = new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name });
-  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8"), { context, identifier: name });
+  else mod = new vm.SourceTextModule(await fs.readFile(new URL(coreFiles[name] ? `js/core/${coreFiles[name]}` : `js/daily/${name}`, root), "utf8") + (name === "phone.js" ? "\nexport { hiyoriInvite as testHiyoriInvite, sumiBaitoInvite as testSumiBaitoInvite, scheduledInvitation as testScheduledInvitation };\n" + legacyScheduledSource + "\nexport { legacyScheduledInvitation };" : ""), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const statsModule = await load("production-stats.js"); await statsModule.evaluate();
@@ -682,3 +712,168 @@ console.log("[1897] PASS tournament-day cheers follow data senders, contacts, ch
 }
 
 console.log("[remake LIME] notification/reply/invitations/legacy + #782 contact/unread/once/gap/priority + #1081 C04 unread guard: PASS");
+
+// #2035: compare the moved definition with the previous production algorithm.
+const spotSource = await fs.readFile(new URL("js/daily/spots.js", root), "utf8");
+hiyoriSpots = ["naru", "adam", "minto"].map(id => {
+  const line = spotSource.split("\n").find(line => line.includes(`{ id: "${id}",`));
+  assert(line, id);
+  return { id, charId: /charId: "([^"]+)"/.exec(line)[1], label: /label: "([^"]+)"/.exec(line)[1], closedOn: Number(/closedOn: (\d+)/.exec(line)[1]) };
+});
+const { hasContact, spotById, isClosed } = values["spots.js"];
+function legacyHiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) {
+  if (tournamentDay || fixedNight(state.day) || ![1, 2].includes(state.chapter) || !hasContact("hiyori")
+    || !state.flags._hiyori_tonari_return_done || (state.lovers || []).includes("hiyori")) return null;
+  const recent = (state.inbox || []).filter(i => i.msg?.accept_event === "__hiyori_shop__" && i.chapter === state.chapter);
+  if (recent.some(i => state.day - i.day < 3) || (state.seed + state.day) % 4 !== 0) return null;
+  const open = ["naru", "adam", "minto"].map(spotById).filter(s => s && state.met[s.charId] && !isClosed(s));
+  if (!open.length) return null;
+  const spot = open[Math.floor(state.day / 4) % open.length];
+  return { id: `_hiyori_shop_c${state.chapter}_d${state.day}`, sender: "hiyori", type: "invitation",
+    time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: spot.id,
+    messages: [`……今夜、${spot.label}で一緒に一服しない？ 私が煙になっちゃう前に`], accept_text: "今夜、行きます",
+    decline_response: { text: "……うん。また都合のいい日に" } };
+}
+const templateBefore = JSON.stringify(db.limeTemplates);
+const plain = v => v == null ? v : clone(v);
+let comparedInvites = 0;
+for (const chapter of [0, 1, 2, 3]) for (let day = 1; day <= 28; day++) for (let seed = 0; seed < 8; seed++) {
+  for (const met of [{}, { naru: true }, { adam: true, minto: true }, { naru: true, adam: true, minto: true }]) {
+    reset({ chapter, day, seed, contacts: ["hiyori"], met, flags: { _hiyori_tonari_return_done: true } });
+    const expected = legacyHiyoriInvite();
+    assert.deepEqual(plain(phone.testHiyoriInvite()), plain(expected));
+    if (expected) comparedInvites++;
+  }
+}
+assert(comparedInvites > 0);
+for (const override of [{ contacts: [] }, { flags: {} }, { lovers: ["hiyori"] },
+  ...[1, 2, 3, 4].map(gap => ({ inbox: [{ chapter: 2, day: 8-gap, read: true, done: true, msg: { accept_event: "__hiyori_shop__" } }] })),
+  { inbox: [{ chapter: 1, day: 8, msg: { accept_event: "__hiyori_shop__" } }] },
+  { flags: { _hiyori_tonari_return_done: true, _temporary_closed_naru: "2:8" } }]) {
+  for (const opts of [{}, { tournamentDay: true }, { fixedNight: () => true }]) {
+    reset({ chapter: 2, day: 8, seed: 0, contacts: ["hiyori"], met: { naru: true, adam: true, minto: true }, flags: { _hiyori_tonari_return_done: true }, ...override });
+    assert.deepEqual(plain(phone.testHiyoriInvite(opts)), legacyHiyoriInvite(opts));
+  }
+}
+reset({ chapter: 2, day: 8, seed: 0, contacts: ["hiyori"], met: { naru: true }, flags: { _hiyori_tonari_return_done: true } });
+const first = phone.testHiyoriInvite(), second = phone.testHiyoriInvite();
+assert.notEqual(first, second); assert.notEqual(first.messages, second.messages); assert.notEqual(first.decline_response, second.decline_response);
+first.messages[0] = "changed"; first.decline_response.text = "changed";
+assert.deepEqual(plain(phone.testHiyoriInvite()), legacyHiyoriInvite());
+assert.equal(JSON.stringify(db.limeTemplates), templateBefore);
+console.log("PASS #2035: legacy invitation equivalence, boundaries and immutable template", comparedInvites);
+// Saved dynamic messages remain self-contained: acceptance does not re-resolve a template.
+const oldMessage = clone(legacyHiyoriInvite());
+state.inbox = [item(JSON.parse(JSON.stringify(oldMessage)), { chapter: 2 })];
+session = phone.openLime({ sender: "hiyori" }); await click("reply-0");
+assert.equal(state.pendingInvite.event, "__hiyori_shop__");
+assert.equal(state.pendingInvite.originId, "_hiyori_shop_c2_d8");
+assert.equal(state.pendingInvite.visitSpot, "naru");
+assert.equal(state.inbox[0].result, "accepted");
+assert(state.flags._invited__hiyori_shop_c2_d8);
+await closeThread(session);
+assert.equal(phone.deliverMorning(), 0, "Saved dynamic ID must not be delivered twice");
+assert.equal(JSON.stringify(db.limeTemplates), templateBefore);
+console.log("PASS #2035: old saved dynamic ID, acceptance event, destination and history");
+
+// #2035: frozen pre-move algorithm versus real-data template output.
+const TOURNAMENT_DAY = 14;
+function legacySumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
+  if (tournamentDay || ![1, 2].includes(state.chapter) || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
+  const id = `_sumi_baito_inv_d${state.day}`;
+  if (state.limeRead.includes(id)) return null;
+  const fixed = state.chapter === 1 && (state.day === 3 || state.day === 8);
+  const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
+  if (!fixed && !slacking) return null;
+  // #2088: 夜のtonariに外せない予定がある日は「シフトには入れない」と断るので、サボり気味の催促は出さない（翌日以降に再送）。
+  // DAY3・DAY8 の固定の誘いは台本の一部なので残す
+  if (!fixed && fixedNight?.(state.day)) return null;
+  // 毎回同じ理由にならないよう日付で選ぶ（固定のDAY3とDAY8は別の理由になる）
+  const reasons = [
+    "常連の団体が入ってな。人手が足りん",
+    "仕入れの業者と昼が重なってな。手が回らん",
+    "昼に貸切の予約が入った。炭番が一人足りん",
+  ];
+  return {
+    id,
+    sender: "sumi",
+    type: "invitation",
+    time_slot: "noon",
+    accept_event: "__sumi_baito__",
+    accept_text: "入ります！",
+    accept_reply: { sender: "sumi", stamp: "st_sumi_ack" },
+    hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
+    messages: [
+      "急で悪い。今日、昼のシフト入れるか？",
+      reasons[state.day % reasons.length],
+      "……代わりと言っちゃなんだが、給料は弾むぞ",
+    ],
+    decline_response: { text: "……そうか。なら、こっちで回す" },
+  };
+}
+const sumiTemplateBefore = JSON.stringify(db.limeTemplates);
+let sumiCases = 0, sumiGenerated = 0;
+for (const chapter of [0, 1, 2, 3]) for (let day = 1; day <= 30; day++) {
+  for (const lastBaitoDay of [undefined, 0, day-3, day-4, day-5, day]) for (const read of [false, true]) {
+    for (const opts of [{}, { tournamentDay: true }, { fixedNight: () => true }]) {
+      reset({ chapter, day, lastBaitoDay, limeRead: read ? [`_sumi_baito_inv_d${day}`] : [] });
+      const expected = legacySumiBaitoInvite(opts), before = JSON.stringify(state);
+      const actual = phone.testSumiBaitoInvite(opts);
+      assert.deepEqual(plain(actual), plain(expected));
+      assert.equal(JSON.stringify(state), before);
+      if (actual) { sumiGenerated++; assert(!Object.hasOwn(actual, "reasons")); }
+      sumiCases++;
+    }
+  }
+}
+reset({ day: 3 });
+const sumiOne = phone.testSumiBaitoInvite(), sumiTwo = phone.testSumiBaitoInvite();
+for (const key of ["messages", "decline_response", "accept_reply"]) assert.notEqual(sumiOne[key], sumiTwo[key]);
+sumiOne.messages[0] = "changed"; sumiOne.decline_response.text = "changed"; sumiOne.accept_reply.stamp = "changed";
+assert.deepEqual(plain(phone.testSumiBaitoInvite()), plain(legacySumiBaitoInvite()));
+assert.equal(JSON.stringify(db.limeTemplates), sumiTemplateBefore);
+const savedSumi = JSON.parse(JSON.stringify(legacySumiBaitoInvite()));
+state.inbox = [item(savedSumi, { chapter: 1 })];
+session = phone.openLime({ sender: "sumi" }); await click("reply-0");
+assert.equal(state.inbox[0].result, "accepted");
+assert(state.flags._invited__sumi_baito_inv_d3);
+await closeThread(session);
+assert.equal(JSON.stringify(db.limeTemplates), sumiTemplateBefore);
+console.log("PASS #2035 sumi: equivalence / boundaries / independent copies / saved acceptance", sumiCases, sumiGenerated);
+
+// #2035: only the temporary-closure preface moved; use actual dateSchedule.
+const prefaceDBBefore = JSON.stringify(db.limeTemplates);
+let closureCases = 0, closureNull = 0, closureNoon = 0, closureNight = 0, closurePrepended = 0;
+for (const sender of ["naru", "adam", "minto", "rin", "sumi"]) {
+  for (const schedule of [undefined, "holiday_or_temporary", "holiday_or_after_close"]) {
+    for (const day of [3, 5, 6, 8]) for (const fixed of [false, true]) for (const placeholder of ["none", "string", "object"]) for (const slot of ["noon", "night"]) {
+      reset({ day, lovers: [sender], met: { [sender]: true }, contacts: [sender] });
+      const message = { id: "saved_invitation", sender, type: "invitation", accept_event: "outing_"+sender,
+        priority: 1, private_schedule: schedule, closed_on: 6, time_slot: slot,
+        messages: [placeholder === "string" ? "{privateContext}、話そう" : "待ち合わせしよう",
+          { sender, text: placeholder === "object" ? "{privateContext}、{privateWhen}、会おう" : "{privateWhen}、会おう" }, { sender, stamp: "existing_stamp" }],
+        reminder_text: "{privateWhen}、忘れずに", accept_text: "{privateWhen}、行く" };
+      const before = JSON.stringify(message), opts = { day, fixedNight: () => fixed };
+      const expected = phone.legacyScheduledInvitation(message, opts);
+      const actual = phone.testScheduledInvitation(message, opts);
+      assert.deepEqual(plain(actual), plain(expected));
+      assert.deepEqual(plain(phone.testScheduledInvitation(message, opts)), plain(expected));
+      assert.equal(JSON.stringify(message), before);
+      assert.equal(JSON.stringify(db.limeTemplates), prefaceDBBefore);
+      if (actual === null) closureNull++;
+      else {
+        if (actual.time_slot === "noon") closureNoon++; else closureNight++;
+        if (actual.messages.length > message.messages.length) {
+          closurePrepended++;
+          assert.deepEqual(plain(actual.messages.slice(1)), plain(expected.messages.slice(1)));
+          assert.equal(actual.messages[0].sender, sender);
+        }
+        if (schedule) { assert.notEqual(actual.messages, message.messages); actual.messages[0] = "changed"; }
+      }
+      assert.equal(JSON.stringify(message), before);
+      closureCases++;
+    }
+  }
+}
+assert(closureNull>0 && closureNoon>0 && closureNight>0 && closurePrepended>0);
+console.log("PASS #2035 closure preface: frozen algorithm / schedules / mixed messages / placeholders / order / input and DB invariance", { closureCases, closureNull, closureNoon, closureNight, closurePrepended });

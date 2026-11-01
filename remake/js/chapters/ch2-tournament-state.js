@@ -1,3 +1,5 @@
+import { tournamentResources, restoreTournamentResources } from "./tournament-resource-snapshot.js";
+import { tournamentStandings } from "./tournament-standings.js";
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
 import { MAX_MONEY } from "../core/rules.js";
 
@@ -57,11 +59,10 @@ export function tournamentProgress(value) {
 }
 
 export function resources(value) {
-  return copy({ flavorStock: value.flavorStock, stamina: value.stamina,
-    equip: value.equip, recipes: value.recipes, stats: value.stats });
+  return tournamentResources(value);
 }
 export function restoreResources(value, snapshot) {
-  for (const [key, data] of Object.entries(copy(snapshot))) value[key] = data;
+  restoreTournamentResources(value, snapshot);
 }
 export function startAttempt(value, craft) {
   const p = tournamentProgress(value);
@@ -121,11 +122,7 @@ export function castVotes(p, round, performance, prefByJudge = null) {
   return true;
 }
 export function standings(p) {
-  const points = Object.fromEntries(CONTESTANTS.map(id => [id,
-    JUDGES.reduce((sum, judge) => sum + (p.votes[judge]?.[id] || 0), 0)]));
-  return CONTESTANTS.slice().sort((a, b) => points[b] - points[a]
-    || (p.quality?.[b] || 0) - (p.quality?.[a] || 0) || a.localeCompare(b))
-    .map((id, index) => ({ id, rank: index + 1, points: points[id] }));
+  return tournamentStandings(p, CONTESTANTS, JUDGES);
 }
 export function recordResult(value, total) {
   const p = tournamentProgress(value);

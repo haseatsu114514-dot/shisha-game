@@ -2,6 +2,7 @@ import { CH2_CITY_NAME, CH2_CITY_EN } from "../core/city-locations.js";
 // 第2章「才能の壁」初日。第1章の状態を引き継ぎ、読んだ場面の区切りだけを保存する。
 import { DB, bgUrl } from "../core/data.js";
 import { el, yen } from "../core/util.js";
+import { createChapterActions } from "../core/chapter-actions.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
@@ -27,33 +28,25 @@ import { offerAgehaPurikura } from "./ch2-purikura.js";
 
 let session = null;
 let watchingHistory = false;
-const current = owner => session === owner && owner.active && state === owner.state;
+const current = owner => !!owner && session === owner && owner.active && state === owner.state;
 const test = name => `ch2-main-${name}`;
 const progress = () => dayOneProgress(state);
 // 通常の日常・買物と同じ既存曲。J04の街用新曲選定とは分ける。
 const CITY_BGM = "kansetsu_shomei_to_black_coffee";
 
-function button(label, name, action, primary = false, disabled = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text: label, dataset: { test: test(name) }, disabled: session?.busy || disabled, onclick: () => perform(action) });
-}
 function focus(name) { requestAnimationFrame(() => layers.screen.querySelector(`[data-test="${test(name)}"]`)?.focus()); }
-function busy(value) {
-  session.busy = value;
+function setBusy(owner, value) {
+  owner.busy = value;
   layers.screen.setAttribute("aria-busy", String(value));
   for (const node of layers.screen.querySelectorAll("button")) node.disabled = value || node.dataset.locked === "true";
 }
-async function perform(action) {
-  if (!session || session.busy || !current(session)) return;
-  const owner = session;
-  busy(true);
-  try { await action(); }
-  catch (error) {
-    if (current(owner)) {
-      console.error("[ch2]", error);
-      renderError(() => openChapter(state.chapter === 1));
-    }
-  } finally { if (current(owner)) busy(false); }
-}
+const actions = createChapterActions({ current, test, logName: "[ch2]",
+  renderError: () => renderError(() => openChapter(state.chapter === 1)),
+  buttonOwner: () => session, buttonDisabled: (_owner, disabled) => session?.busy || disabled,
+  setBusy, clearBusyIfCurrent: true });
+const button = (label, name, action, primary = false, disabled = false) =>
+  actions.button(session, label, name, action, primary, disabled);
+const perform = action => actions.perform(session, action);
 
 export function beginChapterTwo() {
   if (state.chapter !== 1 || state.phase !== "cleared") return false;

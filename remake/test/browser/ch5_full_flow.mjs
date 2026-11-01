@@ -45,6 +45,50 @@ async function loadSlot(page, slot) {
 }
 
 await suite("ch5-full-flow", async check => {
+  await check("r10-scene-comments-stay-out-of-vn-and-log", async page => {
+    const cases = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const { DB } = await import("./js/core/data.js");
+      const ui = await import("./js/core/ui.js");
+      const vn = await import("./js/vn/engine.js");
+      const data = await (await fetch("../data/dialogue/ch5_main.json")).json();
+      core.newGame(); ui.clearScreen(); vn.clearLog();
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      vn.vnTest.turbo = false;
+      const selected = [
+        ["ch5_second_cup_defeat", "after_match"],
+        ["ch5_return_to_tonari", "ending_start"],
+      ].map(([id, marker]) => {
+        const dialogue = data.dialogues.find(item => item.dialogue_id === id);
+        DB.dialogues[id] = dialogue;
+        const lineIndex = dialogue.lines.findIndex(line => !line.type && typeof line.text === "string");
+        return { id, marker, comment: dialogue.comment, lineIndex, firstLine: dialogue.lines[lineIndex].text };
+      });
+      window.r10Vn = vn;
+      return selected;
+    });
+    for (const item of cases) {
+      assert(item.comment.includes(item.marker), `${item.id} has the audited comment`);
+      await page.evaluate(({ id, lineIndex }) => {
+        window.r10Started = performance.now();
+        window.r10Play = window.r10Vn.play(id, { fromLine: lineIndex, toLine: lineIndex + 1 });
+      }, item);
+      await page.waitForFunction(text => document.querySelector("#vn.active .vn-text")?.textContent === text,
+        item.firstLine);
+      assert.equal(await page.locator("#vn.active .vn-text").textContent(), item.firstLine);
+      const displayed = await page.locator("#vn.active").textContent();
+      assert(!displayed.includes(item.comment) && !displayed.includes(item.marker));
+      await page.locator('[data-test="vn-log"]').click();
+      assert.equal(await page.locator(".vn-log.show .log-row span").last().textContent(), item.firstLine);
+      const logged = await page.locator(".vn-log.show").textContent();
+      assert(!logged.includes(item.comment) && !logged.includes(item.marker));
+      await page.locator(".vn-log.show .log-head button").click();
+      await page.waitForFunction(() => performance.now() - window.r10Started > 400);
+      await page.locator("#vn.active .vn-box").click();
+      await page.evaluate(() => window.r10Play);
+    }
+  }, { reducedMotion: "reduce" });
+
   await check("chapter-five-prologue-free-contact-match-and-finale-on-one-save", async page => {
     await seed(page);
     // 1. タイトルからロード → 第4章の完了カード → 第5章へ

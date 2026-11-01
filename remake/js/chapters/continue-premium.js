@@ -110,6 +110,23 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     { at: 16.5, face: "smile", text: "……もう一台、作る？" },
     ],
   },
+  hiyori: {
+    id: "premium_hiyori", title: "君の一台を", name: "ひより",
+    bio: "恋人 / ひより", speaker: "hiyori", duration: 20, audio: null,
+    reactions: {
+      retry: { text: ["……うん。応援してるね"], faces: ["normal", "smile"], effect: "warm", word: "応援してるね" },
+      quit: { text: ["……今日は、ゆっくり休んでね"], faces: ["sad", "smile"], effect: "warm", word: "ゆっくり休んでね" },
+    },
+    cues: [
+    { at: 0, face: "normal", text: "……はじめくん、お疲れさま" },
+    { at: 1.8, face: "sad", text: "うまくいかない日も、あるよね……" },
+    { at: 4.2, face: "normal", text: "……すぐに決めなくても、いいよ" },
+    { at: 7, face: "smile", text: "君の一台、吸ってみたいな……" },
+    { at: 10.3, face: "normal", text: "……続けるなら、応援してる" },
+    { at: 13.6, face: "sad", text: "今日は、休んでもいいんだよ……" },
+    { at: 16.5, face: "smile", text: "……はじめくんは、どうしたい？" },
+    ],
+  },
 };
 
 /**

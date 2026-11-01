@@ -845,6 +845,30 @@
       "thumbnail": "media/68069f432237be2a9e40d209fbc71aefbf6f7d8ee874ed0ec80e60412f26c802-thumb.webp"
     },
     {
+      "id": "2029749c427c785d90b0f6907ad98d1c651c9ecd5618593462bf4ee9a3166051",
+      "sha256": "2029749c427c785d90b0f6907ad98d1c651c9ecd5618593462bf4ee9a3166051",
+      "character": "samechan",
+      "label": "title_art_samechan_05_rainy_splash",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_samechan_05_rainy_splash.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/2029749c427c785d90b0f6907ad98d1c651c9ecd5618593462bf4ee9a3166051.webp",
+      "thumbnail": "media/2029749c427c785d90b0f6907ad98d1c651c9ecd5618593462bf4ee9a3166051-thumb.webp"
+    },
+    {
       "id": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
       "sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
       "character": "samechan",
@@ -959,6 +983,30 @@
       "related": [],
       "image": "media/f4ce7823a49506defe7e2d91d9be6056f29a17b982d9b5c23b6e4287ac4b377e.webp",
       "thumbnail": "media/f4ce7823a49506defe7e2d91d9be6056f29a17b982d9b5c23b6e4287ac4b377e-thumb.webp"
+    },
+    {
+      "id": "25ffd1077e42537f71f66b179743307431ca3c66e10aaa31683507c572045ff2",
+      "sha256": "25ffd1077e42537f71f66b179743307431ca3c66e10aaa31683507c572045ff2",
+      "character": "sumi",
+      "label": "title_art_sumi_02_coal_tending",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "assets/ui/title_arts/title_art_sumi_02_coal_tending.png"
+      ],
+      "groups": [
+        "正式タイトル"
+      ],
+      "history": [
+        "現在の本編タイトルで使用中"
+      ],
+      "prompts": [],
+      "current": true,
+      "related": [],
+      "image": "media/25ffd1077e42537f71f66b179743307431ca3c66e10aaa31683507c572045ff2.webp",
+      "thumbnail": "media/25ffd1077e42537f71f66b179743307431ca3c66e10aaa31683507c572045ff2-thumb.webp"
     },
     {
       "id": "a8acbf72091293470a7f0b3a00445361bdf3f5b2f63141606e32cb5e1bd014ab",
@@ -3116,10 +3164,10 @@
     ]
   },
   "summary": {
-    "originalPaths": 132,
-    "uniqueArt": 110,
+    "originalPaths": 134,
+    "uniqueArt": 112,
     "duplicatePaths": 22,
-    "current": 39,
+    "current": 41,
     "missingHistoricalSlots": [
       {
         "slot": "ageha01",

@@ -1,4 +1,48 @@
 {
+  "templates": {
+    "temporary_closure_preface": {
+      "naru": "今日は店を臨時で閉めたから、午後ちょっと付き合えよ",
+      "adam": "今日は店を臨時で休む。午後、共に出かけよう",
+      "minto": "今日は臨時でお店を休みにしたの。午後、会えたら嬉しいな",
+      "fallback": "今日は臨時のお休み。午後、会えたらうれしいな"
+    },
+    "sumi_baito": {
+      "sender": "sumi",
+      "type": "invitation",
+      "time_slot": "noon",
+      "accept_event": "__sumi_baito__",
+      "accept_text": "入ります！",
+      "accept_reply": {
+        "sender": "sumi",
+        "stamp": "st_sumi_ack"
+      },
+      "hint": "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
+      "messages": [
+        "急で悪い。今日、昼のシフト入れるか？",
+        "{reason}",
+        "……代わりと言っちゃなんだが、給料は弾むぞ"
+      ],
+      "decline_response": {
+        "text": "……そうか。なら、こっちで回す"
+      },
+      "reasons": [
+        "常連の団体が入ってな。人手が足りん",
+        "仕入れの業者と昼が重なってな。手が回らん",
+        "昼に貸切の予約が入った。炭番が一人足りん"
+      ]
+    },
+    "hiyori_shop": {
+      "sender": "hiyori",
+      "type": "invitation",
+      "time_slot": "night",
+      "accept_event": "__hiyori_shop__",
+      "messages": [
+        "……今夜、{shop}で一緒に一服しない？ 私が煙になっちゃう前に"
+      ],
+      "accept_text": "今夜、行きます",
+      "decline_response": { "text": "……うん。また都合のいい日に" }
+    }
+  },
   "messages": [
     {
       "id": "lime_naru_day3",

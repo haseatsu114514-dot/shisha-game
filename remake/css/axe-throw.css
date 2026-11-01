@@ -492,3 +492,88 @@ body:has(.axe-game) .title-layout-toolbar { visibility: hidden; }
 .axe-portrait-frame .axe-portrait { width: 450% !important; left: 50%; top: 50%; transform: translate(calc(var(--focus-x, .5) * -100%), calc(var(--focus-y, .28) * -100%)); }
 /* Secondary readouts kept for screen readers only; the board, gauge and result card show the same thing. */
 .axe-game .axe-quiet { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+
+/* 第1〜2章の斧投げ。紙テーマの面・文字・状態色だけを差し替える。
+   的・照準・力の意味色と寸法は axe-throw.css、旧テーマは既存のまま。 */
+html:root[data-ui-theme="paper"] .axe-game {
+  --axe-amber: var(--amber-ink); --axe-line: var(--paper-line); --axe-muted: var(--paper-muted);
+}
+html:root[data-ui-theme="paper"] :is(.axe-header, .axe-panel, .axe-rules-card, .axe-coach-card) {
+  color: var(--paper-ink); background: var(--paper);
+  border-color: var(--paper-line); box-shadow: 0 8px 24px #110a2233;
+  border-image: var(--paper-art) 72 fill / 18px / 0 stretch; text-shadow: none;
+}
+html:root[data-ui-theme="paper"] .axe-header { border-radius: 6px; }
+html:root[data-ui-theme="paper"] :is(.axe-header h1, .axe-total strong, .axe-round, .axe-live-score strong, .axe-rank strong, .axe-rank span, .axe-match-records strong, .axe-coach-title, .axe-rules h2, .axe-rules h3) { color: var(--lavender); text-shadow: none; }
+html:root[data-ui-theme="paper"] :is(.axe-total small, .axe-total > span, .axe-header p, .axe-result-tip, .axe-keyhint, .axe-steps span, .axe-steps [data-state="waiting"] strong, .axe-live-label, .axe-live-reason, .axe-coach-progress, .axe-coach-identity small) { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] :is(.axe-total, .axe-live-score, .axe-scores > span, .axe-steps li, .axe-result-card, .axe-match-score, .axe-coach-diagram > section) {
+  color: var(--paper-ink); border-color: var(--paper-line); background: var(--paper-card); box-shadow: none;
+}
+html:root[data-ui-theme="paper"] :is(.axe-scores i, .axe-scores strong) { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .axe-scores [data-filled="true"] strong { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .axe-scores [data-current="true"],
+html:root[data-ui-theme="paper"] .axe-steps [data-state="live"] { border-color: var(--lavender); background: var(--lavender-soft); box-shadow: inset 0 2px var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.axe-scores [data-current="true"] i, .axe-steps [data-state="live"] span) { color: var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.axe-scores [data-outcome="bull"] strong, .axe-scores [data-outcome="killshot"] strong) { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] :is(.axe-scores [data-outcome="drop"] strong, .axe-scores [data-outcome="miss"] strong, .axe-scores [data-outcome="killshot-miss"] strong) { color: #a33f44; }
+html:root[data-ui-theme="paper"] :is(.axe-steps [data-state="locked"] strong, .axe-feedback, .axe-steadiness) { color: #30664b; }
+html:root[data-ui-theme="paper"] :is(.axe-button, .axe-header .axe-button) {
+  color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line);
+  border-image: none; box-shadow: none; text-shadow: none;
+}
+html:root[data-ui-theme="paper"] .axe-button:hover:not(:disabled) { color: var(--lavender); background: var(--lavender-soft); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .axe-button[aria-pressed="true"] {
+  color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border-color: var(--lavender); box-shadow: inset 0 -3px #c3a9d5;
+}
+html:root[data-ui-theme="paper"] .axe-button.axe-primary,
+html:root[data-ui-theme="paper"] .axe-button.axe-primary:hover:not(:disabled) { color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.axe-button, .axe-menu a):focus-visible { outline-color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] :is(.axe-call-status, .axe-live-score strong) { color: #286282; }
+html:root[data-ui-theme="paper"] .axe-companion { background: var(--lavender-soft); border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .axe-companion strong { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .axe-comment { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] :is(.axe-result-label, .axe-result-value) { color: var(--lavender); text-shadow: none; }
+html:root[data-ui-theme="paper"] .axe-game[data-outcome="killshot"] .axe-result-card { border-color: #286282; background: #e8f2f6; }
+html:root[data-ui-theme="paper"] .axe-game[data-outcome="killshot"] :is(.axe-result-label, .axe-result-value) { color: #286282; }
+html:root[data-ui-theme="paper"] .axe-game:is([data-outcome="miss"], [data-outcome="drop"], [data-outcome="killshot-miss"]) .axe-result-value { color: #a33f44; }
+html:root[data-ui-theme="paper"] .axe-game[data-phase="result"][data-special="true"] .axe-result-card { box-shadow: 0 0 0 2px var(--amber); }
+html:root[data-ui-theme="paper"] .axe-game[data-phase="result"][data-special="true"] :is(.axe-result-label, .axe-result-value) { color: var(--amber-ink); text-shadow: none; }
+html:root[data-ui-theme="paper"] .axe-challenges li { color: var(--paper-muted); border-color: var(--paper-line); background: var(--paper-card); }
+html:root[data-ui-theme="paper"] .axe-challenges li[data-state="done"] { color: #30664b; border-color: #78a58a; background: #e2efe6; }
+html:root[data-ui-theme="paper"] .axe-challenges li[data-state="failed"] { color: #a33f44; border-color: #d79ea3; background: #fbe6e6; }
+html:root[data-ui-theme="paper"] :is(.axe-challenges i, .axe-challenges small, .axe-rank small) { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .axe-challenges [data-state="done"] i { color: #30664b; }
+html:root[data-ui-theme="paper"] .axe-power-readout { color: #a33f44; }
+html:root[data-ui-theme="paper"] .axe-timing[data-quality="sweet"] .axe-power-readout { color: #30664b; }
+html:root[data-ui-theme="paper"] .axe-game[data-phase="power"]:has(.axe-timing[data-quality="sweet"]) .axe-primary { background: #d9ebda; color: #235335; border-color: #568763; box-shadow: inset 0 0 0 1px #568763; }
+html:root[data-ui-theme="paper"] .axe-note { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .axe-heat { color: var(--amber-ink); background: #fbe9cf; border-color: var(--amber); box-shadow: none; }
+html:root[data-ui-theme="paper"] .axe-game:not([data-heat="0"]):not([data-heat="1"]) .axe-total strong { color: var(--amber-ink); text-shadow: none; }
+html:root[data-ui-theme="paper"] :is(.axe-coach-line, .axe-coach-diagram p, .axe-rules p, .axe-rules li, .axe-rules td) { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] :is(.axe-coach-identity strong, .axe-coach-diagram strong, .axe-coach-diagram small, .axe-rules th) { color: var(--lavender); }
+html:root[data-ui-theme="paper"] :is(.axe-rules, .axe-coach) { background: #1e1429dc; }
+
+/* 単独の練習入口も、本編と同じ紙とラベンダーへ。 */
+html:root[data-ui-theme="paper"] .axe-intro.axe-menu {
+  --menu-line: var(--paper-line); --menu-amber: var(--amber-ink);
+  color: var(--paper-ink);
+  background: linear-gradient(90deg, #f7f3edf5, #f7f3edeb 58%, #e9dfeee8), var(--axe-bg) center / cover;
+}
+html:root[data-ui-theme="paper"] :is(.axe-menu-masthead, .axe-menu h1, .axe-menu .axe-menu-mode, .axe-menu-mode-top, .axe-menu-mode-action) {
+  color: var(--paper-ink); background: var(--paper-card); border-color: var(--paper-line); box-shadow: none; text-shadow: none;
+}
+html:root[data-ui-theme="paper"] .axe-intro.axe-menu h1 { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .axe-menu-mode::before { border-color: var(--paper-line); border-image: var(--paper-art) 72 / 10px / 0 stretch; }
+html:root[data-ui-theme="paper"] .axe-menu .axe-menu-mode[data-kind="practice"] { border-color: var(--lavender-line); background: var(--lavender-soft); }
+html:root[data-ui-theme="paper"] .axe-menu .axe-menu-mode:hover:not(:disabled) { border-color: var(--lavender); background: var(--lavender-soft); }
+html:root[data-ui-theme="paper"] :is(.axe-menu .axe-eyebrow, .axe-menu-lounge, .axe-menu-guide-label, .axe-menu-count, .axe-menu-tag, .axe-menu-mode[data-kind="practice"] .axe-menu-tag, .axe-menu-mode-description, .axe-menu-setting-label, .axe-menu-tip) { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .axe-menu .axe-menu-message { color: var(--paper-ink); }
+html:root[data-ui-theme="paper"] .axe-menu :is(.axe-button, .axe-back) { color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line); box-shadow: none; }
+html:root[data-ui-theme="paper"] .axe-menu .axe-menu-options .axe-button[aria-pressed="true"] { color: #fff; background: var(--lavender); border-color: var(--lavender); box-shadow: inset 0 -3px #c3a9d5; }
+html:root[data-ui-theme="paper"] .axe-menu-mark { box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--menu-amber); }
+
+/* 本編の案内役と無料レッスンも、明るい紙の上で読める墨色に。 */
+html:root[data-ui-theme="paper"] .axe-bar-menu .venue-host { color: var(--paper-ink); background: var(--lavender-soft); border-color: var(--paper-line); }
+html:root[data-ui-theme="paper"] .axe-bar-menu .venue-host-copy small { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .axe-bar-menu .venue-host-copy strong { color: var(--lavender); }
+html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--lavender); border-color: var(--lavender-line); }

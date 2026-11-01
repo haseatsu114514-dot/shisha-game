@@ -132,3 +132,50 @@ assert.equal(tokyo.phase, "tournament");
 assert.equal(tokyo.flags._ch3_cleared, undefined);
 console.log("PASS: Chapter 3 entrance preserves the save, rival visits reach DAY14, and scenes checkpoint once");
 await import("./ch3_aftermath.mjs");
+
+// #1658⑩: 本筋の連絡は正常読了した場面だけ。旧行程でも同じcheckpointを使う。
+{
+  const { DB } = await import("../js/core/data.js");
+  const { chapterThreeStoryContacts } = await import("../js/chapters/ch3-story-lime.js");
+  const scripts = JSON.parse(readFileSync(new URL("../../data/dialogue/ch3_main.json", import.meta.url))).dialogues;
+  const original = DB.dialogues;
+  DB.dialogues = Object.fromEntries(scripts.map(d => [d.dialogue_id, d]));
+  const resources = game => Object.fromEntries(["money", "stamina", "stats", "statXp", "flavorStock", "owned",
+    "equip", "lovers", "affinity", "contacts", "relationshipMemories"].map(key => [key, structuredClone(game[key])]));
+  try {
+    for (const routeVersion of [undefined, 2]) {
+      let game = structuredClone(entered);
+      game.lovers = []; game.contacts = [];
+      if (routeVersion === undefined) delete game.flags._ch3_intro.routeVersion;
+      const sceneId = "ch3_naru_contact_before_tournament";
+      while (chapterThreeScenes(game)[game.flags._ch3_intro.stage].id !== sceneId) {
+        for (let window; (window = chapterThreeFreeTime(game));) completeChapterThreeFreeTime(game, window.id);
+        completeChapterThreeScene(game, chapterThreeScenes(game)[game.flags._ch3_intro.stage].id);
+      }
+      for (let window; (window = chapterThreeFreeTime(game));) completeChapterThreeFreeTime(game, window.id);
+      assert.equal(game.inbox.length, 0, "Future contacts must not appear before the call finishes");
+      const before = resources(game), day = game.day;
+      game = JSON.parse(JSON.stringify(game)); // 中断/保存では完読を補完しない。
+      assert.equal(completeChapterThreeScene(game, "ch3_naru_reconcile"), false);
+      assert.equal(game.inbox.length, 0);
+      assert(completeChapterThreeScene(game, sceneId));
+      assert.deepEqual(resources(game), before);
+      assert.deepEqual(chapterThreeStoryContacts(game), ["naru"]);
+      assert.deepEqual(game.inbox[0].log, [{ note: "通話：戻ったら会う約束をした" }]);
+      assert.equal(game.inbox[0].day, day);
+      assert.equal(game.inbox[0].chapter, 3);
+      assert.equal(game.inbox[0].replyState, "none");
+      assert.equal(game.inbox[0].msg.lover, undefined);
+      game = JSON.parse(JSON.stringify(game));
+      const saved = structuredClone(game);
+      assert.equal(completeChapterThreeScene(game, sceneId), false);
+      assert.deepEqual(game, saved, "LOAD and repeated completion must not duplicate history");
+      const oldCompleted = structuredClone(game);
+      oldCompleted.inbox = []; oldCompleted.limeRead = [];
+      chapterThreeProgress(oldCompleted);
+      assert.equal(completeChapterThreeScene(oldCompleted, sceneId), false);
+      assert.equal(oldCompleted.inbox.length, 0, "No invented backfill for an already completed old save");
+    }
+    console.log("PASS: Chapter 3 story call history commits once, preserves resources and old routes, and survives JSON SAVE/LOAD");
+  } finally { DB.dialogues = original; }
+}

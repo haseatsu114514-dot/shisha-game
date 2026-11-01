@@ -148,11 +148,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     heatMeter.dataset.tier = String(tier);
     heatMeter.setAttribute("aria-valuenow", String(state.heat));
     heatMeter.setAttribute("aria-label", "卓の盛り上がり " + state.heat + "/" + HEAT.max + " · " + HEAT.names[tier]);
-    heatMeter.replaceChildren(el("span.trpg-heat-label", { text: "盛り上がり" }),
+    heatMeter.replaceChildren(...[el("span.trpg-heat-label", { text: "盛り上がり" }),
       el("span.trpg-heat-pips", { "aria-hidden": "true" }, Array.from({ length: HEAT.max }, (_, i) =>
         el("i", { class: [i < state.heat ? "lit" : "", HEAT.tiers.includes(i + 1) ? "tier" : ""].filter(Boolean).join(" ") }))),
       el("small.trpg-heat-name", { text: HEAT.names[tier] }),
-      state.momentum && state.phase !== "ending" ? el("b.trpg-heat-momentum", { text: "勢い＋" + state.momentum, dataset: { test: "trpg-momentum" } }) : null);
+      state.momentum && state.phase !== "ending" ? el("b.trpg-heat-momentum", { text: "勢い＋" + state.momentum, dataset: { test: "trpg-momentum" } }) : null].filter(Boolean));
     const fresh = state.heatLog.slice(heatSeen);
     heatSeen = state.heatLog.length;
     const top = Math.max(0, ...fresh.map(entry => entry.tier));

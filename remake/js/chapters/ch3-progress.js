@@ -2,6 +2,7 @@ import { nextTokyoFreeTime } from "../core/tokyo-clock.js";
 import { syncTokyoVisits, tokyoVisitState } from "../core/tokyo-visits.js";
 import { CH3_INTRO_SCENES, chapterThreeScenes } from "./ch3-scenes.js";
 export { CH3_INTRO_SCENES, chapterThreeScenes } from "./ch3-scenes.js";
+import { recordChapterThreeStoryLime } from "./ch3-story-lime.js";
 
 /** 第2章の優勝と後日談を終えた保存だけ、東京の初日へ進める。 */
 export function canAdvanceToChapterThree(value) {
@@ -39,6 +40,7 @@ export function chapterThreeProgress(value) {
 export function completeChapterThreeScene(value, sceneId) {
   const progress = chapterThreeProgress(value);
   if (chapterThreeScenes(value)[progress.stage]?.id !== sceneId || chapterThreeFreeTime(value)) return false;
+  recordChapterThreeStoryLime(value, sceneId);
   progress.stage += 1;
   setNextChapterThreeTime(value);
   return true;

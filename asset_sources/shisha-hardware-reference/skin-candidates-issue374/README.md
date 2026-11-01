@@ -83,6 +83,33 @@ PNG検査は元バイトのSHA256とIHDRの寸法・RGBA宣言・CRCまで。画
 
 ## 接続候補の機械検証（#437 接続契約v1）
 
+### 配信用画像と参照先（2026-10-30、#437）
+
+採用4原画から [`remake/img/appearance/`](../../../remake/img/appearance/) に同じIDのPNGを別保存した。新規生成・原画の上書き・デザイン変更は行っていない。4点ともRGB全画素・1536×1024のキャンバス・接続アンカーは原画と同一。透過縁の薄い光彩を抑えるため、alphaだけを `a <= 16 → 0`、それ以外を `(a - 16) * 255 / 238`（8bitへ丸め、上限255）に変換した。最大254を255に正規化し、中間alphaは残す。色の塗り直し・拡縮・回転・切り抜きはしていない。
+
+再作成はリポジトリルートで ImageMagick 6 の次のコマンドを4つの採用IDに実行する。原画・生成指示・`candidates.json` のハッシュと採用範囲は引き続き正本のまま。新規PNGはGit LFSで保存する。
+
+```sh
+for id in handle-01-yoshio handle-02-shishark-blue mouthpiece-01-crystal-drop mouthpiece-02-starmoon-charm; do
+  convert "asset_sources/shisha-hardware-reference/skin-candidates-issue374/$id.png" \
+    -channel A -fx 'u<=16/255?0:(u*255-16)/238' +channel -define png:color-type=6 \
+    "remake/img/appearance/$id.png"
+done
+```
+
+本編作業台（#1636で接続済み）と独立比較ページは共通の `render-preview.js` を通して配信用PNGを読む。今後の採用画像も `<安定ID>.png` を同フォルダに配置する。カタログとアンカーJSONはこのフォルダの既存正本をそのまま読み、Pages配信時にもこの2JSONだけを同じパスへ配置する。原画や実物写真は公開サイトへコピーしない。`candidates.json` の `design_only`・`runtime_integrated:false`・`distribution_assets_ready:false` と `physical_fit:null` は変更していない。今回の画像仕上げを実物適合・人物の手持ち・口元との比率の承認とは扱わない。
+
+検証: 原画4点のSHA256と全RGB画素不変、全PNG復号、RGBA・寸法一致、alpha 0〜255。ChromiumでPC／844×390横タッチ／390×844縦の既定込み9組×明暗（54表示）、配信用画像の実復号、確定／取消・横から縦への回転・本編ストレージ不変を確認。外観選択/SAVEの6テストとカタログ26テストも成功。実機・人物の手持ち・物理嵌合は引き続き未確認。
+
+| 仕上げ画像の暗背景 | 仕上げ画像の明背景 |
+|---|---|
+| ![夜潮と水晶](preview-qa/distribution-pc-dark-1.png) | ![夜潮と水晶](preview-qa/distribution-pc-light-1.png) |
+| ![SHISHARKと星月](preview-qa/distribution-pc-dark-2.png) | ![SHISHARKと星月](preview-qa/distribution-pc-light-2.png) |
+
+[横タッチ](preview-qa/distribution-touch-dark-1.png)・[縦画面](preview-qa/distribution-portrait-light-1.png)・[本編作業台](preview-qa/distribution-bench-pc.png)。原画PNGを置かず（HTTP 404）、正本2JSONだけを配置した公開相当のディレクトリでも同じ54表示と本編作業台の配信用画像2点の復号を確認した。本編の任意選択→取消／確定→SAVE／再読込、PC練習・横タッチ大会と外観遮蔽の回帰を含む `setup_continuation.mjs` も4件成功。作業台では外観層を右上に配置し、横幅を160px／作業領域の50%の小さい方に制限して、下部の台詞枠に隠れないようにした。通常表示のPC・横タッチと、DS表示のPC・横タッチ・縦画面で既定込み9組（45表示）を実際の選択UIから確定し、全画像の復号・作業領域内への収まり・台詞枠との非重複を確認。通常表示の縦回転は従来どおり回転案内が表示され、横へ戻すと選択が保持されることも確認した。台詞枠・人物絵・制作フローは変更していない。
+
+作業台の証跡: [通常横タッチ](preview-qa/distribution-bench-normal-touch.png)・[DS PC](preview-qa/distribution-bench-ds-pc.png)・[DS横タッチ](preview-qa/distribution-bench-ds-touch.png)・[DS縦画面](preview-qa/distribution-bench-ds-portrait.png)。#1866 は2026-10-30にマージ済みで、同PRのお手本表示は維持している。下の2026-10-26記録は原画を表示していた時点の履歴。
+
 ### 原画を組み合わせる実表示プレビュー（2026-10-26）
 
 [`remake/appearance-preview.html`](../../../remake/appearance-preview.html) は採用原画を別々の層で「ホース→ハンドル→任意の短いチップ」に配置する比較ページ。正本の4デザインを再生成・描き換えず、表示上の一様拡縮と回転で接続する。明暗背景・未選択・2ハンドル×2チップを比較でき、確定と取消も操作できる。本編・GAME OVER・本編セーブには接続しない。
