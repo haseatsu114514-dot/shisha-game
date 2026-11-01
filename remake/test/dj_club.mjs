@@ -55,18 +55,37 @@ check("SET 1 is always open; SET 2 / 3 open after the previous set is played thr
   dj.recordDjResult(s, msg(2, "C", 20));
   assert.deepEqual([1, 2, 3].map(id => dj.djSetOpen(s, id)), [true, true, true]);
 });
-check("DJ night appears on the Tokyo map only in chapter 3 night free time and does not use the free time", () => {
-  assert.deepEqual(dj.djNightChoices({ chapter: 3 }, { id: "d5-1", slot: 1 }), [{ ...dj.DJ_NIGHT, ok: true, consumes: false, dj: true }]);
+check("the club appears on the Tokyo map only in chapter 3 night free time, unnamed until the first visit, without using the free time", () => {
+  const first = dj.djNightChoices({ chapter: 3, flags: {} }, { id: "d5-1", slot: 1 });
+  assert.deepEqual(first, [{ ...dj.DJ_NIGHT_FIRST, ok: true, consumes: false, dj: true }]);
+  assert.equal(first[0].place, "club"); assert.equal(first[0].placeLabel, "地下の店"); assert.doesNotMatch(first[0].label, /SEAM|クラブ/, "the name is learned at the door");
+  const known = dj.djNightChoices({ chapter: 3, flags: { [dj.CLUB_MET_FLAG]: true } }, { id: "d6-1", slot: 1 });
+  assert.deepEqual(known, [{ ...dj.DJ_NIGHT, ok: true, consumes: false, dj: true }]); assert.match(known[0].label, /クラブSEAM/);
   assert.deepEqual(dj.djNightChoices({ chapter: 3 }, { id: "d5-0", slot: 0 }), []);
   assert.deepEqual(dj.djNightChoices({ chapter: 3 }, null), []);
   for (const chapter of [1, 2, 4, 5]) assert.deepEqual(dj.djNightChoices({ chapter }, { slot: 1 }), []);
   const value = { chapter: 3, slot: 1, flags: { _ch3_intro: { stage: 1 } } }, scenes = [{ id: "ch3_opening" }, { id: "ch3_kuze_first" }];
   const plain = chapterThreeMapModel(value, scenes, { freeTime: true, actions: [] });
-  assert.ok(plain.landmarks.some(item => item.id === "livehouse")); assert.ok(!plain.pins.some(pin => pin.id === "livehouse")); assert.doesNotMatch(plain.note, /DJ/);
+  assert.ok(!plain.pins.some(pin => pin.id === "club")); assert.ok(plain.landmarks.some(item => item.id === "livehouse"), "the drawn live house stays a landmark"); assert.doesNotMatch(plain.note, /DJ/);
   const model = chapterThreeMapModel(value, scenes, { freeTime: true, actions: dj.djNightChoices(value, { slot: 1 }) });
-  const pin = model.pins.find(item => item.id === "livehouse");
-  assert.ok(pin && pin.actions[0].dj && pin.actions[0].consumes === false); assert.ok(!model.landmarks.some(item => item.id === "livehouse"), "the landmark becomes the pin");
-  assert.match(model.note, /DJナイトは予定を進めません/);
+  const pin = model.pins.find(item => item.id === "club");
+  assert.ok(pin && pin.actions[0].dj && pin.actions[0].consumes === false); assert.equal(pin.label, "地下の店");
+  assert.ok(model.landmarks.some(item => item.id === "livehouse")); assert.match(model.note, /地下の店のDJは予定を進めません/);
+  value.flags[dj.CLUB_MET_FLAG] = true;
+  assert.equal(chapterThreeMapModel(value, scenes, { freeTime: true, actions: dj.djNightChoices(value, { slot: 1 }) }).pins.find(item => item.id === "club").label, "クラブSEAM");
+});
+check("the club owner is a venue host with an intro cut-in; the club script names her before her cut-in and has a line per rank", () => {
+  const fs = globalThis.process.getBuiltinModule("node:fs");
+  const yoru = JSON.parse(fs.readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8")).find(c => c.id === "yoru");
+  assert.equal(yoru.role, "venue_host"); assert.equal(yoru.display_name, "針間ヨル"); assert.equal(yoru.affiliation, "クラブSEAM"); assert.ok(yoru.intro_cutin?.title && yoru.intro_cutin.line);
+  const script = Object.fromEntries(JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_club.json", import.meta.url), "utf8")).dialogues.map(d => [d.dialogue_id, d]));
+  for (const id of ["ch3_club_first", "ch3_club_first_after", "ch3_club_a_talk", "venue_yoru_greet", "venue_yoru_return", ...dj.DJ_RANKS.map(rank => `venue_yoru_set_${rank}`)]) assert.ok(script[id]?.lines?.length, id);
+  const before = script.ch3_club_first.lines;
+  assert.match(before.at(-1).text, /針間ヨル/, "the first part ends with her name; dj-club.js plays her cut-in before the rest");
+  assert.ok(!before.slice(0, -1).some(line => /針間|ヨル/.test(line.text || "")), "nobody says her name before she does");
+  assert.ok(!JSON.stringify(script).includes("set_flag"), "met and cut-in come from playIntro, not from new literal flags");
+  for (const d of Object.values(script)) for (const line of d.lines) if (line.speaker !== undefined) assert.ok(["", "hajime", "yoru"].includes(line.speaker), line.speaker);
+  assert.doesNotMatch(JSON.stringify(script), /大会|全国|味覚|恋人/, "no tournament, taste or romance assumptions (no before/after branch needed)");
 });
 check("SBD39: an A (or S) best gives one sense ember at bedtime, once; B does not", () => {
   const s = { chapter: 3, flags: {}, trpg: { cleared: {} }, kuji: {} };

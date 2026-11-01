@@ -281,7 +281,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "あんちゃん。トングは根元ですぜ"
+          "text": "あんちゃん。炭は皿の上ですぜ"
         },
         {
           "speaker": "hajime",
@@ -297,6 +297,11 @@
           "speaker": "",
           "face": "",
           "text": "読み返した手順だけが、くっきりしている。苺の味の輪郭は、まだ遠かった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（舌は当てにならない。煙の白さと、ホースの重さと、手の熱で見る）"
         }
       ],
       "branches": {
@@ -477,7 +482,7 @@
         {
           "speaker": "nagumo",
           "face": "serious",
-          "text": "見事な正解だが、その煙に君自身の顔は見えたか？"
+          "text": "見事な正解だ。だが、その煙は誰の顔を見て作った？"
         },
         {
           "speaker": "",

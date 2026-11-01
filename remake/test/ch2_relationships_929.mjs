@@ -82,7 +82,7 @@ for (const scene of [greeting, window, eveRei]) {
   assert(!all(scene).some((l) => l.type === "apply" || l.type === "note"), `${scene.dialogue_id}: 強制の夜に報酬を付けない`);
 }
 const told = greeting.lines.findIndex((l) => l.speaker === "sumi" && /落とした/.test(l.text || ""));
-const advice = greeting.lines.findIndex((l) => l.speaker === "kumicho" && /根元/.test(l.text || ""));
+const advice = greeting.lines.findIndex((l) => l.speaker === "kumicho" && /皿の上で運/.test(l.text || ""));
 assert(told > 0 && advice > told, "神崎は事故を見ていない。スミから聞いてから助言する");
 assert.doesNotMatch(text(greeting), /ヤクザ|組長|極道/, "素性は大会の入場で本人が明かす");
 for (const [scene, id] of [[greeting, "kumicho"], [eveRei, "rei"]]) {

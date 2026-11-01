@@ -691,12 +691,22 @@
         {
           "speaker": "",
           "face": "",
+          "text": "甘い匂いに、前列の客が振り返る。なるの台の前で、小さな歓声が上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "王煙楼は一口目の長さを測る。シェイクの金の台は、継ぎ目一つ揺らがない。"
         },
         {
           "speaker": "master_hookah",
           "face": "normal",
           "text": "ゆっくりでいい。次の息までは、私が待とう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼が吸い出しの一息を吐く。龍の形の煙に、客席が低くどよめいた。"
         },
         {
           "speaker": "",
@@ -799,9 +809,19 @@
           "text": "四台とも、最後まで誰かの手が入っていた。"
         },
         {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……もう一口いいか。何の香りかは、そのあとで聞く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……説明より先に、もう一口だ）"
+        },
+        {
           "speaker": "da_silva",
           "face": "smile",
-          "text": "……静かでも、いいフェスタだ"
+          "text": "……誰も踊ってないのに、目が離せねえ"
         },
         {
           "speaker": "da_silva",
@@ -1293,7 +1313,7 @@
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "ありがとう、……悔しいな"
+          "text": "……届かなかった。悔しいな"
         },
         {
           "speaker": "",

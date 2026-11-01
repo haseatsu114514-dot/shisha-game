@@ -5,7 +5,7 @@
 1. 最新の明示的なオーナー指示と取得済み承認。依頼された仕様変更に再承認を求めない。結果を大きく変える曖昧さだけ確認する。
 2. 開発・Git安全ルール: `AGENTS.md` が唯一の正本。Claude Code は `CLAUDE.md` から読み込む。
 3. 実際に動く現行コード・データ: `remake/`（起動・テストは [remake/README.md](../remake/README.md)）、`data/`（台詞・共有データ）、`assets/`（素材）。
-4. 仕様・オーナー要望: [master_spec.md](master_spec.md)（冒頭の「本書の読み方」から）と [owner_requests.md](owner_requests.md)（新しい順の台帳。冒頭の「読み方」から）。
+4. 仕様・オーナー要望: [master_spec.md](master_spec.md)（採用済みの最新仕様を新しい順に。2026-06 の第1〜4部は `archive/` へ移した）と [owner_requests.md](owner_requests.md)（2026-10 以降の新しい順の台帳。冒頭の「読み方」から。2026-09 以前は `archive/`）。
 5. 物語・人物: [brand/](../brand/README.md)（`story_and_structure.md`・`character_profiles.md`）と `data/characters.json`・`data/story_routes.json`。
 6. ゲームの規則・台詞の書き方: [gameplay_agent_reference.md](gameplay_agent_reference.md)。画像・素材: [asset_ai_guidance.md](asset_ai_guidance.md)。シーシャの工程・機材・用語の参照先一覧: [shisha_reference.md](shisha_reference.md)。
 7. 成長（経験値・レベル・心得の盤）: 決定は [stat-design/ADDENDUM-BOARD-LAYOUT.md](stat-design/ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [stat-design/SPEC.md](stat-design/SPEC.md)（第2版）。第2版の3能力は `GROWTH_BOARD=false` の裏で未公開。プレイヤーに見える能力は従来の5種類（`gameplay_agent_reference.md`）。
