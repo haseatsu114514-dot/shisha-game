@@ -101,16 +101,33 @@ const withdrawnPipeDescriptions = {
   pipe_high: "美しさと実用性を兼ね備えた名機。味の輪郭と見栄えに補正が入る。",
   pipe_highest: "限られた職人しか作れない特注品。味、煙、プレゼンすべてに高い補正が入る。",
 };
-const revivesWithdrawnPipeCopy = ({ id, description }) =>
-  Object.hasOwn(withdrawnPipeDescriptions, id) && withdrawnPipeDescriptions[id] === description;
+const withdrawnPipeClaims = {
+  pipe_middle: "大会では専門評価に少し補正が入る",
+  pipe_high: "味の輪郭と見栄えに補正が入る",
+  pipe_highest: "味、煙、プレゼンすべてに高い補正が入る",
+};
+function revivesWithdrawnPipeCopy({ id, description }) {
+  if (!Object.hasOwn(withdrawnPipeClaims, id)) return false;
+  const unquoted = String(description || "").replace(/「[^」]*」|『[^』]*』|“[^”]*”|‘[^’]*’|"[^"]*"|'[^']*'/g, "引用");
+  const claim = withdrawnPipeClaims[id];
+  for (let at = unquoted.indexOf(claim); at >= 0; at = unquoted.indexOf(claim, at + claim.length)) {
+    if (!/^(?:。)?(?:わけではない|ことはない|とは限らない|とは言えない|とは断定できない|という説明は誤り)/.test(unquoted.slice(at + claim.length))) return true;
+  }
+  return false;
+}
 for (const pid of ["pipe_middle", "pipe_high", "pipe_highest"]) {
   assert.equal(DB.equipById[pid].deprecated, true);
   assert.equal(DB.equipById[pid].not_for_sale, true);
   const oldCopy = withdrawnPipeDescriptions[pid];
   assert(revivesWithdrawnPipeCopy({ id: pid, description: oldCopy }));
+  assert(revivesWithdrawnPipeCopy({ id: pid, description: `${DB.equipById[pid].description} ${withdrawnPipeClaims[pid]}。` }));
   assert(!revivesWithdrawnPipeCopy(DB.equipById[pid]), `${pid} must not restore its old scoring claim`);
   assert(!revivesWithdrawnPipeCopy({ id: pid, description: `「${oldCopy}」は旧説明` }));
-  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `${oldCopy}とは言えない` }));
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `「${withdrawnPipeClaims[pid]}」は旧説明` }));
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `"${withdrawnPipeClaims[pid]}" は旧説明` }));
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `${withdrawnPipeClaims[pid]}わけではない` }));
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `${withdrawnPipeClaims[pid]}ことはない。` }));
+  assert(revivesWithdrawnPipeCopy({ id: pid, description: `${withdrawnPipeClaims[pid]}わけではない。だが、${withdrawnPipeClaims[pid]}。` }));
   assert(!revivesWithdrawnPipeCopy({ id: "harry_the_moon", description: oldCopy }));
 }
 assert(!revivesWithdrawnPipeCopy(DB.equipById.hagal_80beat));
