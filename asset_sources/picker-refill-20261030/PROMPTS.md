@@ -730,7 +730,7 @@ Add one very thin, faint grey smoke line drifting along the silver rule line; le
 【正本】名前は王煙楼（ワン・イェンロウ）、通称は煙楼先生（data/characters.json の master_hookah、brand/character_profiles.md）。「マスター・フーカ」は旧名で本編では使わない（docs/owner_requests.md Z5）。58歳・身長165cmの中国の現役職人。龍龍水煙所の当主。白い長髭を先端で束ねる、長い白髪。設定案は麻の武術衣・素朴な土色の長衣（visual_concepts）、前夜祭では金色の装束（本編台詞）。静かで短い言葉、急がない。威圧や説教で強さを見せない。
 【前回の没】金色の装束で両手を前に組んだ案（Draft PR #1384 の normal-prompt.txt）。今回は武人らしい姿勢と衣装の方向へ振る。
 
-【共通スタイル指針（正本: docs/image_generation_guide.md「① マスター1枚を作る」から転記・改変なし）】
+【共通スタイル指針（正本: docs/prompts/image_generation_guide.md「① マスター1枚を作る」から転記・改変なし）】
 【画風】レトロJRPG風のアニメ調ピクセルアート。輪郭は濃くはっきり。
 【背景】完全な単色マゼンタ(#FF00FF)。キャラの影や光を背景に落とさないこと。
 画面に文字・ロゴ・フレームを入れないこと。

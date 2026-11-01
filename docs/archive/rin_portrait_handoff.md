@@ -4,7 +4,7 @@
 
 Issue #376の再照合で、後続のPR [#194](https://github.com/haseatsu114514-dot/shisha-game/pull/194)・[#195](https://github.com/haseatsu114514-dot/shisha-game/pull/195)がマージ済みであることを確認。5立ち絵は下記v12採用記録とSHA256が一致し、PNG／WebPのRGBA画素も一致。160pxの顔アイコンは現行通常絵と `make_face_icons.py` の凛用切り抜きから再計算した画素と一致した。PRT34を原画待ちへ戻したりv11へ戻したりせず、現在の本人・5表情・頭部アンカーを維持する。新規生成や本編画像の差替えは不要。
 
-[比較・使用パス・PC／スマホ・LIME・紹介画面の検証](../asset_sources/portraits/rin-sync-issue376/README.md)。**以下は当時の保存・分担・停止指示を含む履歴であり、現在の未完リストではない。** 凛02タイトル候補の葉の色やヒロインCG選定は別問題。
+[比較・使用パス・PC／スマホ・LIME・紹介画面の検証](../../asset_sources/portraits/rin-sync-issue376/README.md)。**以下は当時の保存・分担・停止指示を含む履歴であり、現在の未完リストではない。** 凛02タイトル候補の葉の色やヒロインCG選定は別問題。
 
 ## 最新：2026-10-04、PRT46／PRT47 — 保存・PR作成、マージ保留
 
@@ -18,13 +18,13 @@ Issue #376の再照合で、後続のPR [#194](https://github.com/haseatsu114514
 
 保存先は引き続き `codex/rin-hair-texture-20261004`。制作前に最新mainのPR #190〜192（`634efcf`）を `58c56f2` で取り込み、Claude側で完了したv11のアイコン・設定資料と全員96pxのアイコンを保持した。分岐中のすみさんのPRT39は、mainで使用済みのPRT39〜41と衝突するためPRT42へ整理。すみさん5枚・ましろ6枚の確認資料は保持し、採用回答には扱っていない。
 
-- [修正前後の姿勢と原寸の顔](../.claude/skills/character-portrait-remaster/references/rin-v12-stance-comparison.png)
-- [修正版5表情と原寸の顔](../.claude/skills/character-portrait-remaster/references/rin-v12-five-review.png)
-- [添付と同じ会話場面・スマートフォンの修正前後](../.claude/skills/character-portrait-remaster/references/rin-v12-game-before-after-591.png)
-- [PCの修正前後](../.claude/skills/character-portrait-remaster/references/rin-v12-game-before-after-1280.png)
-- [みんと・つむぎとの原寸の質感比較](../.claude/skills/character-portrait-remaster/references/rin-v12-style-comparison.png)
-- [無加工の生成元・保存プロンプト・実参照・SHA-256](../.claude/skills/character-portrait-remaster/references/rin-v12-generation.json)
-- [共通倍率・足元・配布画素・実会話の検証](../.claude/skills/character-portrait-remaster/references/rin-v12-integration.json)
+- [修正前後の姿勢と原寸の顔](../../.claude/skills/character-portrait-remaster/references/rin-v12-stance-comparison.png)
+- [修正版5表情と原寸の顔](../../.claude/skills/character-portrait-remaster/references/rin-v12-five-review.png)
+- [添付と同じ会話場面・スマートフォンの修正前後](../../.claude/skills/character-portrait-remaster/references/rin-v12-game-before-after-591.png)
+- [PCの修正前後](../../.claude/skills/character-portrait-remaster/references/rin-v12-game-before-after-1280.png)
+- [みんと・つむぎとの原寸の質感比較](../../.claude/skills/character-portrait-remaster/references/rin-v12-style-comparison.png)
+- [無加工の生成元・保存プロンプト・実参照・SHA-256](../../.claude/skills/character-portrait-remaster/references/rin-v12-generation.json)
+- [共通倍率・足元・配布画素・実会話の検証](../../.claude/skills/character-portrait-remaster/references/rin-v12-integration.json)
 
 5枚は `assets/sprites/characters/rin/chr_rin_{normal,smile,serious,surprise,sad}.png`。896×1200 RGBA、共通倍率 `0.7132667617689016`、足元下端1173px、横差0.683px未満。通常の初回修正案は脚の右への傾きが残ったため不採用とし、同じ顔を参照して脚を胴体の下へ戻した通常から4表情を制作。表情・仕草の意味はv11と同じ。創作上の修正は画像生成だけで行い、後処理は画像全体の同倍率拡縮と平行移動だけ。顔の貼り替え・体のワープ・アルファ閾値処理なし。
 
@@ -54,13 +54,13 @@ Codex側は修正版5表情・表示用WebP・計測ビルド・比較資料を�
 
 ## 採用デザインと保存場所
 
-[採用した通常v11](../.claude/skills/character-portrait-remaster/references/rin-style-v11.png)を再生成せず使用。青みの暗い髪、自然で控えめな毛束、胸下〜ウエスト上のロング、少し年上の半目とクールな微笑み、白シャツと黒スラックスを基準に、同じ本人と画風で残り4表情を制作した。
+[採用した通常v11](../../.claude/skills/character-portrait-remaster/references/rin-style-v11.png)を再生成せず使用。青みの暗い髪、自然で控えめな毛束、胸下〜ウエスト上のロング、少し年上の半目とクールな微笑み、白シャツと黒スラックスを基準に、同じ本人と画風で残り4表情を制作した。
 
-- [5表情の全身と顔の比較](../.claude/skills/character-portrait-remaster/references/rin-v11-five-review.png)
-- [生成元・保存プロンプト・実参照とSHA-256](../.claude/skills/character-portrait-remaster/references/rin-v11-expressions-generation.json)
-- [共通倍率・配置・PNG/WebPと表示の検証](../.claude/skills/character-portrait-remaster/references/rin-v11-integration.json)
-- [通常v11の制作履歴](../.claude/skills/character-portrait-remaster/references/rin-style-v11-generation.json)
-- [制作記録](../.claude/skills/character-portrait-remaster/references/review-status.md)
+- [5表情の全身と顔の比較](../../.claude/skills/character-portrait-remaster/references/rin-v11-five-review.png)
+- [生成元・保存プロンプト・実参照とSHA-256](../../.claude/skills/character-portrait-remaster/references/rin-v11-expressions-generation.json)
+- [共通倍率・配置・PNG/WebPと表示の検証](../../.claude/skills/character-portrait-remaster/references/rin-v11-integration.json)
+- [通常v11の制作履歴](../../.claude/skills/character-portrait-remaster/references/rin-style-v11-generation.json)
+- [制作記録](../../.claude/skills/character-portrait-remaster/references/review-status.md)
 
 | 表情キー | 意味と仕草 |
 |---|---|

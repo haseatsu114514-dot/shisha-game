@@ -40,7 +40,7 @@
 [凛の5表情比較](rin-five-review.html)、[刷新前との比較](rin-redesign-review.html)、[サメちゃん5表情比較](samechan-five-review.html)で本人と初期基準を確認する。
 初期の採用済み15枚は変更していない。旧案は生成履歴に保存し、採用済み画風の一覧へ加えない。
 
-2026-10-04の採用履歴：[通常v11](rin-style-v11.png)の顔・画風を残り4表情へ展開した。[5表情比較](rin-v11-five-review.png)、[実参照・プロンプトと生成元](rin-v11-expressions-generation.json)、[共通倍率・足元と検証](rin-v11-integration.json)を保存。v7と旧追加4枚は採用履歴、v8〜v10は修正履歴。v12と丸アイコンの反映状況は[引き継ぎ履歴](../../../../docs/rin_portrait_handoff.md)を参照し、現在の担当・マージ待ちとは扱わない。
+2026-10-04の採用履歴：[通常v11](rin-style-v11.png)の顔・画風を残り4表情へ展開した。[5表情比較](rin-v11-five-review.png)、[実参照・プロンプトと生成元](rin-v11-expressions-generation.json)、[共通倍率・足元と検証](rin-v11-integration.json)を保存。v7と旧追加4枚は採用履歴、v8〜v10は修正履歴。v12と丸アイコンの反映状況は[引き継ぎ履歴](../../../../docs/archive/rin_portrait_handoff.md)を参照し、現在の担当・マージ待ちとは扱わない。
 
 ましろv1の基本5表情は[生成元](mashiro-v1-sheet.png)・[生成記録](mashiro-generation.json)・[5表情の顔比較](mashiro-v1-faces-preview.png)・[共通画風との原寸比較](mashiro-v1-style-comparison.png)。元の二つの三つ編み・眠たげな黄金色の目・衣装を維持。5枚目は元の `sad` のあくび表情。
 あくびを残して立ち寝を6枚目として追加。[追加生成元](mashiro-sleep-v1.png)・[追加生成記録](mashiro-sleep-generation.json)・[6表情の比較](mashiro-six-review.png)・[あくびとの比較](mashiro-sleep-yawn-comparison.png)。当初の採用前記録と、その後の採用指示（要望台帳PRT49）を区別する。
