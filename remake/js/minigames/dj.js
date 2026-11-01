@@ -1,4 +1,4 @@
-// DJ ミニゲームを本編から開く部品（2026-11-01 DJS10）。遊びの本体は remake/previews/dj/ をそのまま同じ画面に重ねて使う。
+// DJ ミニゲームを本編から開く部品（2026-11-01 DJS10・クラブSEAM DJS12）。遊びの本体は remake/previews/dj/ をそのまま同じ画面に重ねて使う。
 // ミニゲームは時間を使わない（#2113）: 行動・日付・お金・体力は変えない。記録は state.dj に残し、
 // 心得の盤の「遊びのご褒美」（SBD39・growth.js の claimPlayRewards）が state.dj.bestRank を読んで、寝る前に感覚の火種を1つ渡す。
 import { SETS } from "../../previews/dj/tracks.mjs";
@@ -56,12 +56,17 @@ export function recordDjResult(s, data) {
   return { entry, newBest, rankUp: before.bestRank === null || rankIndex(after.bestRank) > rankIndex(before.bestRank) };
 }
 
-/** 東京のライブハウスの「DJナイト」。第3章の夜の自由時間だけ地図の行き先に出す（自由時間を使わない）。 */
-export const DJ_NIGHT = Object.freeze({ id: "dj", place: "livehouse", label: "ライブハウスのDJナイトで回す",
+/** 東京の路地の地下のクラブ「SEAM」（店主は針間ヨル）。第3章の夜の自由時間だけ地図の行き先に出す（自由時間を使わない）。
+ *  初めて入るまでは店名を知らないので「地下から低い音がする店」と出す。初回の出会いは ch3_club_first（dj-club.js が再生）。 */
+export const CLUB_MET_FLAG = "_club_yoru_first_done";
+export const DJ_NIGHT = Object.freeze({ id: "dj", place: "club", label: "クラブSEAMで回す",
   reasonText: "時間は進まない。セットを選んで曲をつなぐ" });
+export const DJ_NIGHT_FIRST = Object.freeze({ id: "dj", place: "club", label: "地下から低い音がする店をのぞく",
+  reasonText: "路地の下から、音が上がってくる", placeLabel: "地下の店" });
+export const clubKnown = value => value?.flags?.[CLUB_MET_FLAG] === true;
 export function djNightChoices(value, window) {
   if (value?.chapter !== 3 || !window || window.slot !== 1) return [];
-  return [{ ...DJ_NIGHT, ok: true, consumes: false, dj: true }];
+  return [{ ...(clubKnown(value) ? DJ_NIGHT : DJ_NIGHT_FIRST), ok: true, consumes: false, dj: true }];
 }
 
 /** 本編の音量設定を DJ へ渡す URL。 */
