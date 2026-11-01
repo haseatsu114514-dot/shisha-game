@@ -57,12 +57,19 @@ export async function withLoading(prepare, {
   const status = el("p.loading-status", { role: "status", "aria-label": label });
   const emblem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   emblem.setAttribute("class", "loading-emblem");
-  emblem.setAttribute("viewBox", "0 0 48 42");
+  emblem.setAttribute("viewBox", "0 0 36 52");
   emblem.setAttribute("aria-hidden", "true");
-  // Three separated rising wisps, so the ornament reads as smoke rather than a "3".
-  for (const d of ["M8 40C4 32 12 30 8 22S4 12 8 4", "M24 40C20 32 28 30 24 22S20 12 24 4", "M40 40C36 32 44 30 40 22S36 12 40 4"]) {
+  // A small shisha in the correct stack (docs/shisha_reference.md §4.1): base → stem (side hose port) →
+  // tray → bowl on a thin leg → lidded HMD. One hose from the port, sagging to a rigid handle and tip.
+  // Smoke never comes out of the hardware (only from a mouth), so the "loading" motion is the coal heat
+  // breathing as a warm glow over the HMD. The glow is first (painted behind, and animated).
+  for (const [cls, d] of [
+    ["emblem-glow", "M16 6.4c3.9 0 7 1.5 7 3.3S19.9 13 16 13s-7-1.5-7-3.3 3.1-3.3 7-3.3z"],
+    ["emblem-body", "M15 6h2v1.5h-2z M11 7.5h10l.5 1.2V12h-11V8.7z M10.8 12.4h10.4c0 2.7-1.7 4.6-3.4 5.4h-3.6c-1.7-.8-3.4-2.7-3.4-5.4z M15.2 17.8h1.6v2.8h-1.6z M4 20.6h24c-.6 1.4-3.6 2.1-12 2.1s-11.4-.7-12-2.1z M15.15 22.7h1.7V47h-1.7z M16.85 31h2.7v1.4h-2.7z M14.2 37H17.8V38.8C21.6 40 23.8 42.4 23.8 45.6C23.8 48 22.6 50 21.4 51H10.6C9.4 50 8.2 48 8.2 45.6C8.2 42.4 10.4 40 14.2 38.8Z M15.3 39.6C11.6 40.8 9.4 42.9 9.4 45.6C9.4 47.6 10.3 49.1 11.1 49.8H20.9C21.7 49.1 22.6 47.6 22.6 45.6C22.6 42.9 20.4 40.8 16.7 39.6Z M9.7 45.4H22.3C22.2 47.4 21.5 48.9 20.9 49.8H11.1C10.5 48.9 9.8 47.4 9.7 45.4Z M28.6 40.57l1.8.86 2.8-5.79-1.8-.87z M31.8 34.96l1 .48.8-1.7-1-.48z"],
+    ["emblem-hose", "M19.5 31.7C24.5 32 26 42.6 29.5 41"],
+  ]) {
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", d); path.setAttribute("pathLength", "100"); emblem.append(path);
+    path.setAttribute("class", cls); path.setAttribute("d", d); emblem.append(path);
   }
   status.append(emblem, el("span", { text: "LOADING…" }));
   const logo = el("div.loading-logo", { "aria-hidden": "true" });

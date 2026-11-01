@@ -1,7 +1,9 @@
 /* Loading screen: a printed two-panel comic intermission over a dim neon lounge (owner mockup
    style-ref-03, 1170x658 → asset_sources/issue-loading-mockup/). Stack, top to bottom:
-   logo (its foot overlaps the sheet) → paper sheet (title + 2 panels + optional one-line note)
-   → short neon gauge → upright LOADING… with the smoke mark → "tap to continue" pill.
+   pearl logo (same art as the title screen, soft mist behind) → paper sheet (title + 2 panels +
+   optional one-line note) → short neon gauge with diamond end marks → small shisha mark (coal glow
+   breathing over the HMD) + upright LOADING… → "tap to continue" pill. Smoke is ambient haze only,
+   never drawn coming out of hardware (docs/shisha_reference.md §4.1).
    Visual language follows the game's 紙×ラベンダー＋琥珀 UI (ui-paper.css): paper, lavender ink,
    amber only as a small accent. Placeholder art (logo / bar colours / backdrop) is swappable
    through the CSS variables declared on .loading-gate below.
@@ -9,7 +11,7 @@
    fits any landscape host; the card width is also capped by height (see .loading-card). */
 .loading-gate {
   /* --- Swappable placeholders: replace these in one place when the final art arrives. --- */
-  --loading-logo: url("../img/ui/ui_title_logo.webp");         /* 上中央のロゴ（仮: 既存タイトルロゴ） */
+  --loading-logo: url("../img/ui/ui_title_logo_rich.webp");    /* 上中央のロゴ（タイトル画面と同じ光沢ロゴ。起動時に読込済み） */
   --loading-bar-gradient: linear-gradient(90deg, #ff5fa8 0%, #b45cf0 50%, #3fd0e8 100%); /* 進捗バーの色 */
   --loading-backdrop: #100b18;                                  /* 背景の下地色 */
   --loading-backdrop-art: url("../img/ui/loading/loading_bg.webp"); /* 背景イラスト（正式アート: 案B「霞と奥行き」、原画は asset_sources/ui/loading/） */
@@ -41,8 +43,15 @@
   color: #ede2ce; pointer-events: auto;
   animation: loading-appear 160ms ease-out both;
 }
-/* Slow drifting smoke across the upper half: alive but never busy (transform only; off with reduced motion). */
-.loading-gate::before { content: ""; position: absolute; inset: -8% -14% 34% -14%; z-index: -1; background: url("../img/ui/vn-lounge/smoke-purple.svg") 50% 35% / 115% auto no-repeat; opacity: calc(.12 + .2 * var(--loading-backdrop-fx, 1)); transform: rotate(-8deg); mix-blend-mode: screen; pointer-events: none; animation: loading-smoke-drift 22s ease-in-out infinite alternate; }
+/* Exhaled-smoke haze drifting slowly along the bottom, behind the gauge and LOADING (not attached to any
+   hardware). Soft blurred gradients only, transform/opacity animation; still under reduced motion. */
+.loading-gate::before { content: ""; position: absolute; left: -12%; right: -12%; bottom: -8%; height: 38%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(ellipse 22% 38% at 24% 62%, #d9c6f02e 0%, transparent 70%),
+    radial-gradient(ellipse 26% 34% at 52% 70%, #c8d5eb24 0%, transparent 72%),
+    radial-gradient(ellipse 20% 40% at 78% 58%, #f0c6e026 0%, transparent 70%),
+    radial-gradient(ellipse 60% 30% at 50% 88%, #b45cf01f 0%, transparent 75%);
+  filter: blur(18px); animation: loading-haze 26s ease-in-out infinite alternate; }
 /* Right-hand lounge window (CSS approximation, used only when no backdrop art is set). */
 .loading-gate::after {
   content: ""; position: absolute; top: 4%; bottom: 20%; right: -1%; width: 31%; z-index: -1; pointer-events: none;
@@ -57,18 +66,25 @@
   opacity: calc(.5 * var(--loading-backdrop-fx, 1));
 }
 
-/* Logo: a box tall enough for title + smoke art; its foot overlaps the card top as in the mockup.
-   Purely decorative (title text lives in the art); contain keeps any logo art undistorted. */
-.loading-logo { position: relative; z-index: 1; flex: none; width: calc(460 * var(--loading-unit)); height: calc(124 * var(--loading-unit)); margin: calc(10 * var(--loading-unit)) 0 calc(-18 * var(--loading-unit)); background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 calc(4 * var(--loading-unit)) calc(12 * var(--loading-unit)) #000c) drop-shadow(0 0 calc(22 * var(--loading-unit)) #b45cf066); }
+/* Logo: the same pearl logo as the title screen. The image lives on ::after so a soft mist (::before) can
+   sit behind it; a small gap keeps the EN:CODE line clear of the card top (budget: 102 + 8 + 6 = 116u). Purely decorative (title text lives in the art); contain keeps it undistorted. */
+.loading-logo { position: relative; z-index: 1; flex: none; width: calc(360 * var(--loading-unit)); height: calc(102 * var(--loading-unit)); margin: calc(8 * var(--loading-unit)) 0 calc(6 * var(--loading-unit)); }
+.loading-logo::after { content: ""; position: absolute; inset: 0; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 calc(4 * var(--loading-unit)) calc(10 * var(--loading-unit)) #000000d9) drop-shadow(0 0 calc(20 * var(--loading-unit)) #b45cf059); animation: loading-logo-in 420ms ease-out both; }
+.loading-logo::before { content: ""; position: absolute; inset: -34% -14% -6%; pointer-events: none;
+  background:
+    radial-gradient(ellipse 26% 40% at 34% 56%, #e7e0ef40 0%, transparent 70%),
+    radial-gradient(ellipse 28% 38% at 64% 46%, #c8d5eb33 0%, transparent 70%),
+    radial-gradient(ellipse 46% 34% at 50% 74%, #b45cf02e 0%, transparent 74%);
+  filter: blur(calc(16 * var(--loading-unit))); animation: loading-logo-mist 14s ease-in-out infinite alternate; }
 .loading-gate:not(.has-logo) .loading-logo { display: none; }
 
 /* Card: 88.6% of the reference width, capped by the gate height so the full stack always fits:
-   fixed parts (logo 116 + card chrome 114 + gauge 32 + status 36 + proceed 42 = 340u) leave
-   (100cqh - 340u) for the panel height; panel width = ratio × that; two panels + side padding 36u
+   fixed parts (logo 116 + card chrome 114 + gauge 30 + status 40 + proceed 42 = 342u) leave
+   (100cqh - 342u) for the panel height; panel width = ratio × that; two panels + side padding 36u
    + gutter 22u + border 2px. Paper with a printed grain, a hairline inner frame and a deep shadow. */
 .loading-card {
   position: relative; isolation: isolate; box-sizing: border-box; flex: none;
-  width: min(calc(1134 * var(--loading-unit)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - 340 * var(--loading-unit)) + 60 * var(--loading-unit)));
+  width: min(calc(1134 * var(--loading-unit)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - 342 * var(--loading-unit)) + 60 * var(--loading-unit)));
   padding: calc(16 * var(--loading-unit)) calc(18 * var(--loading-unit)) calc(14 * var(--loading-unit));
   border-radius: calc(3 * var(--loading-unit));
   background: linear-gradient(170deg, var(--loading-paper-hi) 0%, var(--loading-paper) 45%, var(--loading-paper-lo) 100%);
@@ -111,10 +127,12 @@
    report(done, total) arrives, the fill is an indeterminate sliding segment: the bar never shows an
    invented percentage. The first report adds .is-determinate and the width follows the real counts;
    a shine sweep runs while work continues. At the reading hold (.is-ready) the bar rests at 100%. */
-.loading-gauge { position: relative; flex: none; display: flex; justify-content: center; margin-top: calc(18 * var(--loading-unit)); }
-.loading-gauge::before, .loading-gauge::after { content: ""; position: absolute; top: 50%; width: calc(72 * var(--loading-unit)); height: calc(40 * var(--loading-unit)); pointer-events: none; opacity: .7; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 40'%3E%3Cdefs%3E%3Cfilter id='b' x='-20%25' y='-40%25' width='140%25' height='180%25'%3E%3CfeGaussianBlur stdDeviation='.9'/%3E%3C/filter%3E%3C/defs%3E%3Cg fill='none' stroke-linecap='round' filter='url(%23b)'%3E%3Cpath d='M68 30c-10 2-14-6-9-11s13-5 10-12c-2-5-10-4-14-1' stroke='%23e3c4ff' stroke-width='2.2' opacity='.9'/%3E%3Cpath d='M52 34c-9 1-15-5-12-10s9-4 8-9' stroke='%239fe7f7' stroke-width='1.6' opacity='.7'/%3E%3Cpath d='M36 24c-6 1-10-3-8-7s6-3 5-7' stroke='%23ffb3d9' stroke-width='1.3' opacity='.55'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat; }
-.loading-gauge::before { right: 100%; margin-right: calc(2 * var(--loading-unit)); transform: translateY(-70%) scaleX(-1); }
-.loading-gauge::after { left: 100%; margin-left: calc(2 * var(--loading-unit)); transform: translateY(-30%) scaleY(-1); }
+.loading-gauge { position: relative; flex: none; display: flex; justify-content: center; margin-top: calc(16 * var(--loading-unit)); }
+/* End ornaments: a hairline fading outward with a small amber diamond beside the bar (same amber mark as the caption). */
+.loading-gauge::before, .loading-gauge::after { content: ""; position: absolute; top: 50%; width: calc(64 * var(--loading-unit)); height: calc(10 * var(--loading-unit)); pointer-events: none; opacity: .85;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 10'%3E%3Cdefs%3E%3ClinearGradient id='f'%3E%3Cstop offset='0' stop-color='%23d9c6f0' stop-opacity='0'/%3E%3Cstop offset='1' stop-color='%23d9c6f0' stop-opacity='.75'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect y='4.5' width='53' height='1' fill='url(%23f)'/%3E%3Cpath d='M59 1.6 62.4 5 59 8.4 55.6 5z' fill='%23e8c27a'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
+.loading-gauge::before { right: 100%; margin-right: calc(6 * var(--loading-unit)); transform: translateY(-50%); }
+.loading-gauge::after { left: 100%; margin-left: calc(6 * var(--loading-unit)); transform: translateY(-50%) scaleX(-1); }
 .loading-bar {
   position: relative; flex: none; width: calc(704 * var(--loading-unit)); height: calc(14 * var(--loading-unit));
   border-radius: 999px; background: #1b1028; overflow: hidden;
@@ -130,14 +148,14 @@
 .loading-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, #ffffff55, transparent); transform: translateX(-100%); animation: loading-bar-sweep 1.6s ease-in-out infinite; }
 .loading-gate.is-ready .loading-bar::after { animation: none; opacity: 0; }
 
-/* Upright, wide-tracked LOADING between the smoke emblem (left) and a small smoke flourish (right). */
-.loading-status { position: static; flex: none; display: flex; align-items: center; gap: .55em; margin: calc(12 * var(--loading-unit)) 0 0; color: #f3e8d2; font-size: calc(20 * var(--loading-unit)); font-weight: 800; font-style: normal; line-height: 1.2; letter-spacing: .3em; text-indent: .3em; text-shadow: 0 0 .5em #ff5fa866, 0 1px 0 #00000080; }
-.loading-status::after { content: ""; flex: none; width: 2.4em; height: 1.2em; background: url("../img/ui/vn-lounge/smoke-purple.svg") left center / contain no-repeat; opacity: .6; -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent); mask-image: linear-gradient(90deg, #000 40%, transparent); }
-.loading-emblem { width: 1.6em; height: 1.4em; overflow: visible; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
-.loading-emblem path { stroke-dasharray: 34 66; animation: loading-smoke 2.8s ease-in-out infinite; }
-.loading-emblem path:nth-child(2) { animation-delay: -.9s; }
-.loading-emblem path:nth-child(3) { animation-delay: -1.8s; }
-
+/* Upright, wide-tracked LOADING led by the small shisha mark. The coal heat over the HMD breathes as a warm
+   glow (the only motion: smoke is never drawn coming out of hardware, docs/shisha_reference.md §4.1). */
+.loading-status { position: static; flex: none; display: flex; align-items: center; gap: .6em; margin: calc(8 * var(--loading-unit)) 0 0; color: #f3e8d2; font-size: calc(20 * var(--loading-unit)); font-weight: 800; font-style: normal; line-height: 1.2; letter-spacing: .3em; text-indent: .3em; text-shadow: 0 0 .5em #ff5fa866, 0 1px 0 #00000080; }
+.loading-emblem { width: 1.32em; height: 1.9em; margin: -.15em 0; overflow: visible; flex: none; filter: drop-shadow(0 1px 0 #00000099); }
+.loading-emblem .emblem-body { fill: currentColor; opacity: .92; }
+.loading-emblem .emblem-hose { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; opacity: .92; }
+.loading-emblem .emblem-glow { fill: #ffa060; transform-box: fill-box; transform-origin: 50% 55%; filter: blur(1.2px) drop-shadow(0 0 2.5px #ff7a3d); animation: loading-coal 2.6s ease-in-out infinite; }
+.loading-gate.is-ready .emblem-glow { animation-duration: 4.2s; }
 /* "Tap/click/key to continue" pill, revealed only once preparation is done and a comic is shown.
    Its line is always reserved (and budgeted) so the stack never shifts when it appears. */
 .loading-proceed { box-sizing: border-box; flex: none; margin: calc(6 * var(--loading-unit)) 0 calc(12 * var(--loading-unit)); min-height: calc(24 * var(--loading-unit)); padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); border-radius: 999px; border: 1px solid #ffffff2e; background: #0b071380; color: #f3e7cc; font-size: calc(14 * var(--loading-unit)); font-weight: 700; line-height: 1.3; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
@@ -146,8 +164,10 @@
 @keyframes loading-appear { from { opacity: 0; } to { opacity: 1; } }
 @keyframes loading-sheet { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes loading-panel-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes loading-smoke { 0% { stroke-dashoffset: 30; opacity: .15; } 45% { opacity: .9; } 100% { stroke-dashoffset: -66; opacity: .15; } }
-@keyframes loading-smoke-drift { from { transform: translateX(-2.5%) rotate(-8deg); } to { transform: translateX(2.5%) rotate(-6deg); } }
+@keyframes loading-coal { 0%, 100% { opacity: .3; transform: scale(.94, .9); } 45% { opacity: 1; transform: scale(1.08, 1.04); } }
+@keyframes loading-haze { from { transform: translateX(-3%) scaleY(.92); opacity: .75; } to { transform: translateX(3%) scaleY(1.06); opacity: 1; } }
+@keyframes loading-logo-mist { from { transform: translate(-3%, 3%) scale(.96); opacity: .7; } to { transform: translate(3%, -4%) scale(1.06); opacity: 1; } }
+@keyframes loading-logo-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes loading-bar-sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
 @keyframes loading-bar-indeterminate { from { transform: translateX(-110%); } to { transform: translateX(300%); } }
 @keyframes loading-proceed-pulse { 0%, 100% { opacity: .75; } 50% { opacity: .95; } }
@@ -159,11 +179,11 @@
 
 /* Phone/tablet portrait: stack the two panels nearly full-width so each is large and the text reads.
    cq units here are the gate (= visible viewport). The card width is capped by height:
-   R/2 * (78.8cqh - 160px) + 4.4cqw + 2px keeps logo + two panels + gauge + status + proceed on screen. */
+   R/2 * (77.8cqh - 160px) + 4.4cqw + 2px keeps logo + two panels + gauge + status + proceed on screen. */
 @media (orientation: portrait) {
   .loading-gate { --loading-unit: calc(100cqw / 720); --loading-backdrop-art-pos: 70% 50%; --loading-gutter: 1.2cqh; }
-  .loading-logo { width: min(260px, 52cqw); height: 7cqh; margin: 2cqh 0 -.6cqh; }
-  .loading-card { width: min(94cqw, calc((var(--loading-panel-ratio)) / 2 * (78.8cqh - 160px) + 4.4cqw + 2px)); padding: 1.2cqh 2.2cqw; }
+  .loading-logo { width: min(260px, 52cqw); height: 6.6cqh; margin: 2cqh 0 .8cqh; }
+  .loading-card { width: min(94cqw, calc((var(--loading-panel-ratio)) / 2 * (77.8cqh - 160px) + 4.4cqw + 2px)); padding: 1.2cqh 2.2cqw; }
   .loading-comic-title { font-size: clamp(18px, 5.2cqw, 30px); margin-bottom: 1cqh; padding-bottom: .8cqh; }
   .loading-panels { grid-template-columns: 1fr; }
   .loading-panels::after { transform: translate(-50%, -50%) rotate(90deg); }
@@ -176,7 +196,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .loading-gate, .loading-gate::before, .loading-card, .loading-panels figure, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
-  .loading-emblem path { stroke-dasharray: none; opacity: .8; }
+  .loading-gate, .loading-gate::before, .loading-logo::before, .loading-logo::after, .loading-card, .loading-panels figure, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
+  .loading-emblem .emblem-glow, .loading-gate.is-ready .emblem-glow { animation: none; opacity: .7; }
   .loading-gate.is-ready .loading-proceed { opacity: .92; }
 }

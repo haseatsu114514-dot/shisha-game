@@ -110,4 +110,4 @@ python3 tools/loading_comic_cut.py check remake/img/loading/<id>-*.webp
 - 本書・下敷き: `asset_sources/loading-comics/`（新規の話もこの下に `NN-<id>/` で追加する）
 - 過去のバッチ: [short-comics-unhinged-ltr-20261025](../short-comics-unhinged-ltr-20261025/README.md)（21〜40話・在庫。未登録分はオーナー決定により採用しない）、[loading-comics-batch1-20261029](../loading-comics-batch1-20261029/README.md)（41話）
 - モックアップ（見た目の基準）: [issue-loading-mockup](../issue-loading-mockup/README.md)
-- 実画面の確認（2026-11-01 の刷新前後・PC 1280×720 とスマホ横 844×390）: [qa/before-pc-20261101.webp](qa/before-pc-20261101.webp) → [qa/after-pc-20261101.webp](qa/after-pc-20261101.webp)、[qa/after-phone-landscape-20261101.webp](qa/after-phone-landscape-20261101.webp)
+- 実画面の確認（2026-11-01 の刷新前後・PC 1280×720 とスマホ横 844×390）: [qa/before-pc-20261101.webp](qa/before-pc-20261101.webp) → [qa/after-pc-20261101.webp](qa/after-pc-20261101.webp)、[qa/after-phone-landscape-20261101.webp](qa/after-phone-landscape-20261101.webp)、[qa/after-portrait-20261101.webp](qa/after-portrait-20261101.webp)（ロゴと LOADING の印の作り直し後）
