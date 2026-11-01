@@ -16,6 +16,8 @@ import { radar } from "../daily/status.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { syncTokyoVisits } from "../core/tokyo-visits.js";
+import { growthLesson } from "../core/growth-effects.js";
+import { chapterThreePartyGuests } from "./ch3-party-progress.js";
 import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene } from "./ch3-aftermath-progress.js";
 
@@ -191,6 +193,28 @@ async function renderStage(owner) {
   if (!live(owner)) return;
   const progress = chapterThreeAftermathProgress(state);
   const scene = CH3_AFTERMATH_SCENES[progress.stage];
+  if (scene?.id === "ch3_naru_reconcile" && state.flags._ch3_naru_party_ready) {
+    const actions = [];
+    if (chapterThreePartyGuests(state).length >= 2) actions.push(button(owner, "ピザとシーシャの夜を開く", "party", async () => {
+      const { openChapterThreeParty } = await import("./ch3-party.js");
+      if (!live(owner)) return;
+      const controller = owner.controller = new AbortController();
+      try { await openChapterThreeParty({ signal: controller.signal, isCurrent: () => live(owner) }); }
+      finally { if (owner.controller === controller) owner.controller = null; }
+      if (live(owner)) await renderStage(owner);
+    }, true));
+    actions.push(button(owner, "翌朝へ進む", "party-next", async () => {
+      if (!completeChapterThreeAftermathScene(state, scene.id)) return;
+      save(); await renderStage(owner);
+    }, !actions.length));
+    await setBg(bgUrl("bg_mukai_shop", "night"), { instant: true });
+    if (!live(owner)) return;
+    card(owner, "party-night", `DAY ${chapterDay(state)}・夜 ／ 帰郷の前に`,
+      state.flags._ch3_pizza_party ? "仲間と過ごした夜の話を胸に、明日の帰り支度をする。"
+        : "なるへの報告は終わった。スティーブに教わった夜を、東京にいる仲間と開ける。",
+      actions, "開催できるのは、この夜に予定が重ならない、前回と違う仲間が2人以上いる時です。");
+    return;
+  }
   if (!scene) {
     await setBg(bgUrl("bg_ageha_shop"), { instant: true });
     if (!live(owner)) return;
@@ -255,6 +279,10 @@ async function renderStage(owner) {
     `${scene.location}で、次の話を聞く。`, [
     button(owner, "続きを読む", "continue", async () => {
       if (!await readScene(owner, scene)) return;
+      if (scene.id === "ch3_naru_reconcile" && growthLesson(state, "M-S5")) {
+        state.flags._ch3_naru_party_ready = true;
+        save(); await renderStage(owner); return;
+      }
       if (!completeChapterThreeAftermathScene(state, scene.id)) return;
       save();
       await renderStage(owner);

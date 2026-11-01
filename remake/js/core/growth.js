@@ -93,6 +93,7 @@ export function newGrowth() {
     litSince: {},          // 前の節目から盤ごとに灯した火種（節目の色を決める。1.5）
     target: null,          // 目標のマス（2.4）
     learned: [],           // 相談を終えて習得した授業（盤で灯した授業は「相談できる」。次に会った時に相談して習得）
+    partyLast: [],         // 前回招いた人。周回しても連続で同じ人を呼ばない。
     rewards: {},           // 受け取った遊びのご褒美（斧投げ・TRPG・DJ の水準、くじのラストワン賞）
     seenRing: 1,           // 盤で「新しい道が開いた」を見せた章の範囲（章が進んで初めて開いた時の演出）
     boardVersion: BOARD_VERSION, // 盤の型の版（v2→v3 で灯し方を返す）
@@ -159,6 +160,7 @@ export function ensureGrowth(s = state) {
   if (!VALID_IDS.has(g.target)) g.target = null;
   if (!g.rewards || typeof g.rewards !== "object" || Array.isArray(g.rewards)) g.rewards = {};
   g.learned = strings(g.learned).filter((id) => g.nodes.includes(id));
+  g.partyLast = strings(g.partyLast);
   g.seenRing = Math.min(5, Math.max(1, Math.floor(num(g.seenRing, 1))));
   syncLessonFlags(g, s);
   return g;

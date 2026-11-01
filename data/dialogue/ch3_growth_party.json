@@ -1,0 +1,18 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_growth_pizza_party",
+      "lines": [
+        { "speaker": "", "face": "", "text": "なるへの報告を終えた夜。Smoke & Gloryの奥のテーブルに、{guests}が集まった。" },
+        { "speaker": "steve", "face": "smile", "text": "ウェルカム。大会の話も、そうじゃない話も、今夜はゆっくりだ。まずピザが冷める前に食べよう" },
+        { "speaker": "hajime", "face": "smile", "text": "来てくれて、ありがとうございます。帰る前に、ちゃんと一緒に座りたかったんです" },
+        { "speaker": "", "face": "", "text": "教わったとおり、軽い柑橘を低い熱で立ち上げる。ホースを渡すたび、好きな味を一つずつ聞いた。" },
+        { "speaker": "", "face": "", "text": "ピザの箱が空くころには、店の話から日々の小さな失敗まで、みんなの話がテーブルを一周していた。黙って聞いていた人にも、次の一本を渡す。" },
+        { "speaker": "", "face": "", "text": "{favorites}" },
+        { "speaker": "steve", "face": "smile", "text": "グッド。誰かと吸うと、その人のペースも分かるだろう。また別の顔も呼ぼうな" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。……次に会ったとき、今日の続きも聞かせてください" },
+        { "speaker": "", "face": "", "text": "片づけを手伝ってから、みんなで店を出た。明日は煙幕に寄って、それから地元へ帰る。" }
+      ]
+    }
+  ]
+}

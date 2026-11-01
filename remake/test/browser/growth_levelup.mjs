@@ -25,6 +25,50 @@ await suite("growth-levelup", async (runCheck) => {
   // ケースごとに独立したBrowserContext。検査の増加後も既存の5分枠へ収まるよう最大2件ずつ動かす。
   const cases=[];
   const check=(...args)=>{cases.push(args);};
+  await check("post-tournament-pizza-night",async(page)=>{
+    await setupDaily(page);
+    await page.evaluate(async()=>{
+      window.partyCore=await import("./js/core/state.js");
+      const growth=await import("./js/core/growth.js");growth.setGrowthPreview(true);
+      Object.assign(growth.ensureGrowth(),{nodes:["M-S5"],learned:["M-S5"]});
+      const s=partyCore.state;Object.assign(s,{chapter:3,phase:"aftermath",day:43,slot:1});
+      Object.assign(s.flags,{_ch3_intro:{startDay:29,stage:18,titleSeen:true},_ch3_tournament_won:true,
+        _ch3_tournament:{stage:"complete",result:{rank:1,win:true}},_ch3_aftermath:{version:3,stage:2,winDay:42}});
+      Object.assign(s.met,{mashiro:true,kuze:true,volk:true});
+      (await import("./js/vn/engine.js")).vnTest.turbo=true;
+      window.partyInitial={day:s.day,slot:s.slot,money:s.money,stamina:s.stamina,affinity:{...s.affinity},stock:JSON.stringify(s.flavorStock)};
+      void (await import("./js/chapters/ch3-aftermath.js")).runChapterThreeAftermath();
+    });
+    await page.locator(t("ch3-aftermath-continue")).click();
+    await page.locator(t("ch3-aftermath-party")).click();
+    await page.locator(t("ch3-party-guest-mashiro")).click();
+    await page.locator(t("ch3-party-cancel")).click();
+    await page.locator(t("ch3-aftermath-party")).waitFor();
+    assert.equal(await page.evaluate(()=>!!partyCore.state.flags._ch3_pizza_party),false);
+    await page.locator(t("ch3-aftermath-party")).click();
+    await page.locator(t("ch3-party-guest-mashiro")).click();
+    await page.locator(t("ch3-party-guest-kuze")).click();
+    await page.locator(t("ch3-party-start")).click();
+    await page.waitForFunction(()=>!!partyCore.state.flags._ch3_pizza_party);
+    await page.locator(t("ch3-aftermath-party-night")).waitFor();
+    assert.equal(await page.locator(t("ch3-aftermath-party")).count(),0);
+    const result=await page.evaluate(()=>{
+      const s=partyCore.state;partyCore.saveToSlot("party-proof");
+      const record=JSON.stringify({flags:s.flags,growth:s.growth,affinity:s.affinity});
+      const loaded=!!partyCore.loadFromSlot("party-proof");
+      return {same:loaded&&record===JSON.stringify({flags:partyCore.state.flags,growth:partyCore.state.growth,affinity:partyCore.state.affinity}),
+        unchanged:s.day===partyInitial.day&&s.slot===partyInitial.slot&&s.money===partyInitial.money&&s.stamina===partyInitial.stamina&&JSON.stringify(s.flavorStock)===partyInitial.stock,
+        guests:s.flags._ch3_pizza_party.guests,gains:["mashiro","kuze"].map(id=>(s.affinity[id]||0)-(partyInitial.affinity[id]||0)),stage:s.flags._ch3_aftermath.stage};
+    });
+    assert(result.same&&result.unchanged);assert.deepEqual(result.guests,["mashiro","kuze"]);assert(result.gains.every(n=>n>0));assert.equal(result.stage,2);
+    // LOADでownerが切り替わった後、古いカードの入力では次の朝へ進まない。
+    await page.locator(t("ch3-aftermath-party-next")).click();
+    assert.equal(await page.evaluate(()=>partyCore.state.flags._ch3_aftermath.stage),2);
+    await page.evaluate(async()=>{void (await import("./js/chapters/ch3-aftermath.js")).runChapterThreeAftermath();});
+    await page.locator(t("ch3-aftermath-party-next")).click();
+    await page.waitForFunction(()=>partyCore.state.flags._ch3_aftermath.stage===3);
+    assert.deepEqual(await page.evaluate(()=>[partyCore.state.day,partyCore.state.slot]),[44,0]);
+  },{viewport:{width:591,height:1280}});
   await check("LOAD-during-deep-pull-keeps-new-owner",async(page)=>{
     await setupDaily(page);
     await page.evaluate(async()=>{
