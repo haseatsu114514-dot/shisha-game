@@ -21,14 +21,15 @@ const stateBindings=[];
 const syncBindings=()=>stateBindings.forEach(m=>m.setExport("state",core.state));
 
 async function runner(name,progress,exposed){
-  let owner,screen,cancel=false,swap=false,craft,snapshots=[],replacement;
+  let owner,screen,cancel=false,swap=false,craft,snapshots=[],replacement,nightBefore,pauseAtSave=true;
   const noop=()=>{};
   const ports={...progress,...growth,el:node,DB:{dialogues},bgUrl:x=>x,
     chapterFourMapModel:map4.chapterFourMapModel,canReflect:()=>false,paidAction:stats.paidAction,
     chapterDay:()=>core.state.day,chapterGrowthNight:async()=>true,createChapterActions:opts=>actions.createChapterActions(opts),
     layers:{hud:{replaceChildren:noop,classList:{remove:noop}}},showScreen:(_id,n)=>{screen=n;},
     setBg:async()=>{},playBgm:noop,toast:noop,hooks:{},
-    save:()=>{snapshots.push(JSON.parse(JSON.stringify(core.state)));owner.active=false;},
+    save:()=>{snapshots.push(JSON.parse(JSON.stringify(core.state)));if(pauseAtSave)owner.active=false;},
+    presentNight:async()=>{nightBefore=JSON.parse(JSON.stringify(core.state));growth.settleGrowth();},
     play:async()=>{if(swap){core.newGame();syncBindings();replacement=JSON.stringify(core.state);}return {id:"fixture",visited:[],cancelled:cancel};},
     newSession:()=>craft,openBench:noop,waitBenchReady:async()=>{},CRAFT_STEPS:[],
     stepSetup:noop,stepWater:noop,stepMix:noop,stepPack:noop,runHoles:noop,stepPlace:noop,runHeat:noop,
@@ -54,8 +55,8 @@ async function runner(name,progress,exposed){
     use(value,options={}){
       core.setState(value);syncBindings();
       growth.ensureGrowth();owner={state:core.state,active:true};module.namespace.testOwner(owner);
-      cancel=!!options.cancel;swap=!!options.swap;craft=options.craft;snapshots=[];replacement=null;return owner;
-    },get screen(){return screen;},get saves(){return snapshots;},get owner(){return owner;},get replacement(){return replacement;}};
+      cancel=!!options.cancel;swap=!!options.swap;craft=options.craft;snapshots=[];replacement=null;nightBefore=null;pauseAtSave=options.pauseAtSave!==false;return owner;
+    },get screen(){return screen;},get saves(){return snapshots;},get owner(){return owner;},get replacement(){return replacement;},get nightBefore(){return nightBefore;}};
 }
 function fresh(chapter){const s=core.newState();s.chapter=chapter;s.growth=growth.newGrowth();
   s.growth.chapterLog[chapter]={people:["sumi","minto","minto"],places:["one","two","two"]};return s;}
@@ -110,12 +111,14 @@ for(const [chapter,r,seed,id] of [[3,r3,beforeThreeClear,"ch3_ageha_reunion"],
     await r.module.renderStage(r.owner);return find(r.screen,"ch3-aftermath-continue").onclick();
   };
   for(const enabled of [false,true]){
-    growth.setGrowthPreview(enabled);r.use(seed());const stats=JSON.stringify(core.state.stats);
+    growth.setGrowthPreview(enabled);r.use(seed(),{pauseAtSave:chapter!==5});const stats=JSON.stringify(core.state.stats);
     await invoke();assert.equal(core.state.flags[`_ch${chapter}_cleared`],true);
     assert.equal(core.state.growth.cleared.includes(chapter),enabled);
     if(enabled){
-      assert.equal(core.state.growth.today.learned.chapter_clear,Math.round(150*growth.CHAPTER_MULT[chapter]));
-      assert.equal(core.state.growth.today.learned.chapter_breadth,Math.round(80*growth.CHAPTER_MULT[chapter]));
+      const learned = (chapter===5?r.nightBefore:core.state).growth.today.learned;
+      assert.equal(learned.chapter_clear,Math.round(150*growth.CHAPTER_MULT[chapter]));
+      assert.equal(learned.chapter_breadth,Math.round(80*growth.CHAPTER_MULT[chapter]));
+      if(chapter===5){assert.equal(core.state.growth.level,3);assert.equal(core.state.growth.hidane.any,4);}
       assert.equal(r.saves[0].growth.xp,core.state.growth.xp,"XP must be in the same checkpoint save");
       const checkpoint=JSON.stringify(core.state.growth);assert.equal(growth.awardChapterClearExp(),0);
       assert.equal(JSON.stringify(core.state.growth),checkpoint,"reload/redraw cannot stack a clear reward");

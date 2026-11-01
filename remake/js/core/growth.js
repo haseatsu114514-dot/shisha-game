@@ -586,15 +586,17 @@ export async function presentNight({ evePlace = null } = {}) {
  * 参拝の場所に着いた時の「静かに振り返る」（時間を使わない）。
  * 火種が無ければ何もしない（false）。振り返った・戻った時は true（呼び出し側は行動にしない）。
  */
-export async function reflectAtSpot(spotId) {
+export async function reflectAtSpot(spotId, { boardOnly = false } = {}) {
   if (spotId !== "kannon" || !growthEnabled() || !state) return false;
   const owner = state;
   const { canReflect, reflectAt } = await import("../daily/reflection.js");
+  if (state !== owner || !growthEnabled()) return true;
   if (!canReflect()) return false;
   const { modal } = await import("./ui.js");
+  if (state !== owner || !growthEnabled()) return true;
   const how = await modal({ title: "観音堂", body: "学んできたことを振り返り、火種を盤に灯せる。", options: [
     { label: "盤を開く（時間は進まない）", value: "reflect", primary: true, test: "kannon-reflect" },
-    { label: "いつもどおり過ごす（1行動）", value: "visit", test: "kannon-visit" },
+    ...(!boardOnly ? [{ label: "いつもどおり過ごす（1行動）", value: "visit", test: "kannon-visit" }] : []),
     { label: "戻る", value: null },
   ] });
   if (state !== owner || !growthEnabled()) return true;
@@ -602,6 +604,7 @@ export async function reflectAtSpot(spotId) {
   if (how === "reflect") {
     if (!owner.flags._kannon_growth_intro_done) {
       const { play } = await import("../vn/engine.js");
+      if (state !== owner || !growthEnabled()) return true;
       const result = await play("kannon_growth_intro", { bg: "res://assets/backgrounds/bg_kannon_night.png" });
       if (state !== owner || !growthEnabled() || result?.cancelled
         || result?.id !== "kannon_growth_intro" || !result.visited?.includes("kannon_growth_intro")) return true;

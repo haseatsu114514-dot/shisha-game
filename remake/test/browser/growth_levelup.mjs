@@ -25,6 +25,47 @@ await suite("growth-levelup", async (runCheck) => {
   // ケースごとに独立したBrowserContext。検査の増加後も既存の5分枠へ収まるよう最大2件ずつ動かす。
   const cases=[];
   const check=(...args)=>{cases.push(args);};
+  await check("chapter-five-finale-settles-and-Kannon-stays-free",async(page)=>{
+    await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
+    await page.evaluate(async()=>{
+      window.finalCore=await import("./js/core/state.js");const p=await import("./js/chapters/ch5-progress.js"),g=await import("./js/core/growth.js");
+      const s=finalCore.state;Object.assign(s,{chapter:4,phase:"cleared",day:60});s.flags._ch4_cleared=true;
+      if(!p.advanceToChapterFive(s))throw new Error("chapter five");
+      for(const scene of p.CH5_PROLOGUE)p.completeChapterFiveScene(s,scene.id);
+      p.completeChapterFiveScene(s,"ch5_unrecorded_day");p.recordChapterFiveScheduleDecision(s,"decide");p.completeChapterFiveScene(s,"ch5_schedule_contact");p.beginChapterFiveMatch(s);
+      for(const key of ["arrival","firstCup","beforeSecond"])p.completeChapterFiveScene(s,p.CH5_MATCH_SCENES[key]);
+      p.recordChapterFiveSecondCup(s,{total:100,category:"steady"});
+      for(const key of ["win","afterglow"])p.completeChapterFiveScene(s,p.CH5_MATCH_SCENES[key]);
+      for(const scene of p.CH5_AFTERMATH)p.completeChapterFiveScene(s,scene.id);
+      p.beginChapterFiveFinale(s,["ending_start","ending_normal","ending_daily_smoke"]);
+      p.completeChapterFiveScene(s,"ending_start");p.completeChapterFiveScene(s,"ending_normal");
+      g.setGrowthPreview(true);g.ensureGrowth().chapterLog[5]={people:["sumi","minto"],places:["one","two"]};
+      Object.assign(s.reel,{setting:6,settingDraws:9,lastChapter:5});
+      window.finalBefore={day:s.day,slot:s.slot,stamina:s.stamina,money:s.money,stats:JSON.stringify(s.stats),reel:JSON.stringify(s.reel),
+        maximum:(await import("./js/core/stats.js")).maxStamina()};
+      (await import("./js/vn/engine.js")).vnTest.turbo=true;
+      void (await import("./js/chapters/ch5.js")).resumeChapterFive();
+    });
+    await page.locator(t("ch5-continue")).click();await page.locator(t("levelup")).waitFor();
+    assert.deepEqual(await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem(finalCore.SAVE_KEY));return{cleared:s.flags._ch5_cleared,level:s.growth.level,fire:s.growth.hidane.any,xp:s.growth.xp};}),
+      {cleared:true,level:3,fire:4,xp:460});
+    await page.locator(t("levelup-ok")).click();await page.locator(t("ch5-complete")).waitFor();
+    await assertFits(page,t("ch5-reflect"));await page.locator(t("ch5-reflect")).click();
+    await page.locator(t("kannon-reflect")).waitFor();assert.equal(await page.locator(t("kannon-visit")).count(),0);
+    await page.locator(t("kannon-reflect")).click();await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+    await page.locator(t("board-node-B1")).click();await page.locator(t("board-light")).click();await page.locator(t("board-decide")).click();
+    await page.locator(t("growth-board")).waitFor({state:"detached"});await page.locator(t("ch5-complete")).waitFor();
+    const result=await page.evaluate(async()=>{
+      const s=finalCore.state;finalCore.saveToSlot("final-growth-proof");finalCore.loadFromSlot("final-growth-proof");
+      return{same:s.day===finalBefore.day&&s.slot===finalBefore.slot&&s.stamina===finalBefore.stamina&&s.money===finalBefore.money
+        &&JSON.stringify(s.stats)===finalBefore.stats&&JSON.stringify(s.reel)===finalBefore.reel,
+        fire:finalCore.state.growth.hidane.any,node:finalCore.state.growth.nodes.includes("B1"),xp:finalCore.state.growth.xp,
+        maximum:(await import("./js/core/stats.js")).maxStamina()-finalBefore.maximum,intro:finalCore.state.flags._kannon_growth_intro_done};
+    });
+    assert(result.same&&result.node&&result.intro);assert.equal(result.fire,3);assert.equal(result.xp,460);assert.equal(result.maximum,2);
+    await page.evaluate(async()=>{void (await import("./js/chapters/ch5.js")).resumeChapterFive();});
+    await page.locator(t("ch5-complete")).waitFor();assert.equal(await page.locator(t("levelup")).count(),0);
+  });
   await check("existing-Volk-and-FESTA-visits-teach-in-person",async(page)=>{
     await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
     await page.evaluate(async()=>{

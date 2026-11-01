@@ -3,7 +3,8 @@
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
-import { awardChapterClearExp, awardTournamentExp, awardSceneExp } from "../core/growth.js";
+import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot } from "../core/growth.js";
+import { canReflect } from "../daily/reflection.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -263,7 +264,12 @@ async function readAndCommit(owner, id) {
   if (!await readScene(owner, id)) return false;
   if (!completeChapterFiveScene(state, id)) return false;
   if (optional) awardSceneExp(id);
-  if (state.flags._ch5_cleared) awardChapterClearExp();
+  if (state.flags._ch5_cleared) {
+    awardChapterClearExp();
+    // 最終場面は「数日後のtonari」。残る経験をここで精算する。日数・体力は新設しない。
+    await presentNight();
+    if (!current(owner)) return false;
+  }
   save();
   return true;
 }
@@ -385,6 +391,7 @@ async function renderFree(owner) {
     if (!await readAndCommit(owner, "ch5_schedule_contact")) return;
     await renderStage(owner);
   }, true));
+  actions.push(...reflectionActions(owner));
   const description = remaining.length
     ? "勝負の前に、tonari で済ませておきたいことが残っている。博士との日程は、まだ決まっていない。"
     : "tonari での準備は済んだ。博士に連絡して、勝負の日を決める。";
@@ -563,7 +570,15 @@ function renderComplete(owner) {
   card(owner, "complete", "第五章・完", "SHISHA-9000 の勝負は終わった。店の明かりが、いつもの夜に戻っていく。", [
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
+    ...reflectionActions(owner),
   ], "ここまでが、この物語の終わりです。");
+}
+
+function reflectionActions(owner) {
+  return canReflect() ? [button(owner, "観音堂で盤を開く（時間は進まない）", "reflect", async () => {
+    await reflectAtSpot("kannon", { boardOnly: true });
+    if (current(owner)) await renderStage(owner);
+  })] : [];
 }
 
 function renderError(owner) {
