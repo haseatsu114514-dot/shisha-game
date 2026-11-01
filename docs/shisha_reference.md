@@ -39,16 +39,102 @@
 | フレーバー・レシピ・裏レシピ・NGミックス | `data/flavors.json`、`data/recipes.json`、`data/secret_recipes.json`、`data/ng_mixes.json` |
 | 家シーシャ・まかない練習・熟練度 | `docs/master_spec.md` 2026-10-26 の節、`remake/README.md` 同節 |
 
-## 4. 画像・CG（機材の形と構造）
+## 4. 画像生成の必須手順（機材の形と構造）
 
-- **入口は1つ**: `asset_sources/shisha-hardware-reference/drawing-sheet/README.md`（生成前の構成メモ・貼る文・QAチェックリスト・詳細資料の索引）。`docs/asset_ai_guidance.md` から同じ場所へ飛ぶ。
-- 部位名と空気の流れ（台詞で仕組みを説明するときも使う）: `asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md`。
-- ボウル内部・アルミ・炭の置き方・HMDの種類: `bowl-interiors-foil-coal-placement-20261009.md`。
-- ホース・吸い口・マイチップ: `hose-and-mouthpieces-20261009.md`、`mouthpiece-handle-skins-20261009.md`。
-- ヒロインCGの必須ルール（HMD必須・直炭なし・炭は2〜3個）: `heroine-title-cg-rules-20261009.md`。
-- 生成でよくある構造ミスと実例: `ai-generation-structural-pitfalls.md`、`ng-examples/README.md`、`visual-qa-necklace-hose-20261009.md`。
-- フレーバー保管（小さなタブ、客からは見えない）・炭の個数: `docs/asset_ai_guidance.md`、`flavor-storage-tubs-issue396/README.md`。
+シーシャ台・ハガル・HMD・炭・ホースが写る画像を**生成・修正するときは、この節だけ読めば足りる**ようにしてある。Codexアプリで自分が直接生成するときも、人に渡すプロンプトを書くときも同じ手順。根拠・写真の出典は 4.6 の一覧。
+
+### 4.0 実写の参照画像（現状と置き場）
+
+- `asset_sources/shisha-hardware-reference/` の `*.webp` は、提供写真を**1枚あたり150px前後に縮めた一覧**で、生成の参照には使えない。元の写真は2026-10-09当時に保存されず、リポジトリには**実写が1枚も無い**（2026-11-02 に履歴まで確認）。
+- 実写の置き場は `asset_sources/shisha-hardware-reference/photos/`（入れ方・命名は同フォルダの README）。写真がある部位は生成前に**実際に開いて見る**。生成ツールに参照画像を渡せるなら、早見表・構造図ではなく**この実写**を渡す（図解を渡すと平板な図の見た目が絵に移る）。
+- 写真が無い部位は 4.1 の「正解」と 4.2 の文で描き、生成後チェックを厳しくする。足りない写真はオーナーに部位名を挙げて頼む。
+
+### 4.1 部位ごとの正解と、よく出る間違い
+
+| 部位 | 正解 | よく出る間違い（1つでも出たら作り直し） |
+|---|---|---|
+| ベースと台の付け根 | ガラスのベースの口に、金属のステムが**ゴムのパッキン（またはねじ込み）で真っ直ぐ差さる**。ベースの水は下の方だけで、ステムの先端（ダウンステム）が数cm浸かる | ステムがベースの横腹から生える／ベース全体が水槽／ベースとステムが溶けて一体の花瓶／付け根に意味のない膨らみや二重の口 |
+| ステムと受け皿 | 縦1本の金属棒。**受け皿はステム上部**（ハガルのすぐ下）に水平に付く。ステム側面の下寄りに**ホースポート**（1〜2個）、それとは別に小さな**パージ弁** | 受け皿がベース近くや中央にある／受け皿が2枚／ポートとパージ弁を同じ穴にする／ステムが途中で分岐 |
+| ハガル（ボウル） | 陶器の器＋**細い脚**。脚がステム先端の小さな金属ポストに**ゴムを介して**載る。口径は大人の掌の幅くらい | 脚が無い・短く潰れる／受け皿と一体化／口径が受け皿並みに巨大／**ハガル未装着の制作画面**なのにボウル・HMD・炭を描く（未装着時は**小さな凸型の金属ポスト**だけ） |
+| アルミ | 制作の「詰める→アルミ→穴あけ」の段階だけ。ハガルの口に**平らに張って縁で折り込む**。穴は小さく規則的 | 袋状・布状／完成絵で炭をアルミに直接載せた「直炭」／アルミとHMDを同時に主役にする |
+| HMD（ヒートマネジメント） | ハガルの口の上に載る**別部品の低い金属の器**。径はハガルの口と同じくらい、高さは指2本分。蓋・取手・通気口は**1つのモデルで統一** | 台の最上部に浮く／蓋だけ別モデル／煙突・網・取手の寄せ集め／ハガルと融合／受け皿並みに大きい |
+| 炭 | **指先ほどの小さな角炭**。表面は灰色の灰、割れ目に少し赤。炎は出ない。完成・喫煙状態は**HMDの中に2〜3個**、制作工程は**アルミの上に三角3個** | 燃える炎／赤い岩／5個以上／HMDの外に転がる／炭から煙が出る |
+| ホース | **1本だけ**。ステム側面のポートから出て、重力でたわみ、**硬いハンドル**の根元につながる。ハンドルの先に吸い口 | Y字分岐・3つ目の端／途中で消える・浮く／ボウル・皿・ベースの底から生える／人物を囲む大きな輪／ハンドル無しでホースが直接口に入る |
+| 吸い口・マイチップ | 首掛けなら**チェーン＋小さな吸い口本体**。使用中はハンドルの先端に装着 | チェーンだけ／棒飾りだけ／チップをハンドルの大きさに巨大化 |
+| 煙 | **人物の口元**から出て広がる | HMD・ホースの根元・チェーンから常時噴出 |
+| 縮尺 | ハガルの口 ≒ HMD ≒ 掌の幅、受け皿はHMDの約2.5倍、炭は指先。手持ちの物は手と同じ奥行き | カメラへ突き出した巨大ボウル／小さな受け皿に大きなHMD／ハガルの脚が潰れている |
+
+### 4.2 プロンプトに貼る文
+
+場面の指定のあとに、日本語か英語のどちらかを**そのまま**貼る（要約しない）。
+
+> シーシャ（水たばこ）の構造を守って描く。上から順に「小さな角炭 → 炭を収めるHMD（熱管理器具。ボウルの口に載る別部品） → フレーバーを詰めたハガル（器と細い脚） → 灰の受け皿 → 縦のステム → 水の入ったガラスのベース」。ステムはベースの口に真っ直ぐ差さり、ベースの水面は下の方で、ステムを水槽にしない。ホースは1本だけで、本体側面のホースポートから出て、重力でたわみ、手で持つ硬いハンドルの根元につながる。ホースを分岐・途切れ・浮遊させず、パージ弁・ボウル・受け皿・ベースの底から生やさない。人物を囲む大きな輪にしない。完成・喫煙状態ではアルミに炭を直接置かず、HMDの中に炭を置く。HMDは1つのモデルとして成立させ、別の型の蓋・煙突・取手を混ぜない。ハガルの口とHMDは大人の掌の幅くらい、炭は指先ほどの大きさ。受け皿はHMDの2.5倍前後。煙は人物の口元から出し、HMD・ホース根元からは出さない。首掛けのマイマウスピースを描く場合はチェーンだけでなく小さな吸い口本体を付ける。台の形・色・装飾は自由にデザインし、実在製品・ロゴ・文字は描かない。
+
+> Draw the hookah with correct structure. From top to bottom: a few small cube charcoals (about fingertip size, grey ash with a little red glow, no flames) → a heat management device (HMD), a separate low metal cup sitting on the bowl's rim, holding the coals → the ceramic tobacco bowl (a cup on a slim neck) → a wide ash tray → a vertical stem → a glass base with water only in its lower part. The stem goes straight down into the mouth of the base through a rubber grommet; the base is not an aquarium. Exactly one hose: it starts at the hose port on the side of the stem above the base, sags naturally with gravity, and connects to the base of a rigid handle held in the hand. The hose never forks, breaks, floats, loops around the character, or comes out of the purge valve, bowl, tray or base bottom. In a finished/smoking setup, coals sit inside the HMD, never directly on foil. Use one coherent HMD model; do not mix lids, chimneys or handles from different models. The bowl mouth and HMD are about the width of an adult palm; the tray is about 2.5× the HMD width. Smoke comes from the character's mouth, not from the HMD or hose. If a neck-worn personal mouthpiece is shown, draw a real small mouthpiece body on the chain, not just a chain. Hookah shape, colors and ornaments are free; no real brands, logos or text.
+
+場面別に足す一文:
+
+- **ボウル未装着の制作画面**: 台の先端は小さな凸型の金属ポスト。ボウル・HMD・炭は描かない。
+- **詰める・アルミ・穴あけ**: ハガル＋アルミだけ。炭とHMDはまだ載せない。アルミは口に平らに張り、縁で折り込む。
+- **炭を置く（制作工程）**: トングで小さな角炭を扱う。アルミの外周に三角で3個。
+- **手でハガル／HMDを持つ**: 手と同じ奥行きで、片手で持てる大きさ。カメラに突き出さない。脚を短く潰さない。
+- **完成・喫煙・提供済み**: HMD必須・直炭禁止。炭はHMDの中に2〜3個。
+
+### 4.3 生成前に決める8行（1枚ごとに書いて制作記録に残す）
+
+```
+人物      : （キャラID。正規立ち絵 assets/sprites/characters/<id>/chr_<id>_normal.png を見る・渡す）
+場面      : 準備中（ボウル未装着）／詰める・アルミ／炭を置く／完成・喫煙／携帯 のどれか1つ
+台の型    : 伝統の金属／木製ステム／角型モダン／透明・低重心 など。色・装飾は自由
+HMD       : 完成・喫煙なら必須。具体的な1モデル（例: 蓋なしの低い容器）。蓋の有無も
+炭        : 小さな角炭○個（HMD内、または制作工程ならアルミ上に三角3個）
+ホース    : 本体の側面ポート → ホース → 硬いハンドル →（チップ）→ 口。画面のどこを通すか
+吸い口    : なし／使い捨てチップ／首掛けマイチップ（携帯中）／マイチップをハンドルに装着
+構図      : カメラ距離・人物と台の奥行き（手持ちなら同じ奥行き）・場所と時間帯
+```
+
+渡す画像の役割を分けて書く: **本人**＝正規立ち絵、**質感**＝`assets/ui/title_arts/title_art_keyvisual_01.png`、**機材**＝`photos/` の実写（HMDは装着状態、手持ちなら掌が写るもの）。早見表・構造図・この表は渡さない。
+
+### 4.4 生成後チェック（原寸で見る。1つでもNGなら直すか再生成）
+
+- [ ] 人物は正規の立ち絵と同一人物（顔・髪・衣装・年齢感）
+- [ ] 積み順が成立: ベース→ステム→受け皿→ハガル→HMD→炭。ステムはベースの口に真っ直ぐ差さっている
+- [ ] 完成・喫煙の台はHMD付き。直炭になっていない
+- [ ] HMDの蓋・取手・通気口が同じ1モデルの組
+- [ ] ハガル・HMD・炭・手・受け皿の縮尺が自然。ハガルの脚が潰れていない
+- [ ] ホースをポート→手元、手元→ポートの両方向になぞって1本。分岐・3つ目の端・途切れなし
+- [ ] ホースは側面ポートから。パージ・ボウル・皿・ベース底から生えていない
+- [ ] 人物を囲む輪・不自然な大回りがない
+- [ ] マイチップ: 吸い口本体がある／使用中はハンドル先端に付いている
+- [ ] 煙は口元から。HMD・ホース根元・チェーンから出ていない
+- [ ] 文字・ロゴ・透かし・UIが焼き込まれていない
+
+不採用の実例（ホースのY字分岐・ハガルが短い・足元を囲む大回り）は `asset_sources/shisha-hardware-reference/ng-examples/README.md`。
+
+### 4.5 ゲーム側の数値との対応
+
 - 炭の個数は、**画像（HMD内）は通常2〜3個・4個は稀**、**制作工程（アルミ上）は三角3個が基本**。場面に合わせて使い分ける。
+- フレーバー保管は小さな透明タッパー。客席からは見えない店が多い（`docs/asset_ai_guidance.md`「フレーバー保管と炭の個数」）。
+- この節は描写の約束で、制作工程（穴あけテンプレ・基本3炭・採点）や `data/equipment.json` の機材仕様は変えない。
+
+### 4.6 詳しい資料（根拠・出典。必要なときだけ開く）
+
+すべて `asset_sources/shisha-hardware-reference/` 配下。
+
+| 知りたいこと | ファイル |
+|---|---|
+| 人が読む早見表の画像と構造図（検品時に見比べる。生成ツールに渡さない） | `drawing-sheet/README.md` |
+| 台の型・材質（提供写真9点の一覧と見方） | `README.md` |
+| 37写真を横断した誤描写の一覧 | `ai-generation-structural-pitfalls.md` |
+| ヒロインの日常・タイトルCG（HMDの具体モデルと寸法・顔の年齢感・背景の変化） | `heroine-title-cg-rules-20261009.md` |
+| 首掛けマイチップ・ホース接続の検品 | `visual-qa-necklace-hose-20261009.md` |
+| 装着時・手持ちの縮尺の実写と出典 | `installed-and-handheld-scale-20261009.md` |
+| 部品名・空気の通り道・パージ（台詞で仕組みを説明するときも使う） | `anatomy-diagrams-20261009.md` |
+| ハガル内部の穴・アルミの穴あけ・炭の配置・HMDの種類 | `bowl-interiors-foil-coal-placement-20261009.md` |
+| アルミ直置きとHMDの近接写真 | `heat-management-closeups-20261009.md` |
+| 喫煙姿勢・煙の出方／設置場所・構図 | `smoking-and-heat-management-20261009.md`、`usage-and-installation-20261009.md` |
+| ホース・チップの部品 | `hose-and-mouthpieces-20261009.md`、`mouthpiece-handle-skins-20261009.md` |
+| フレーバー保管の実物4写真 | `flavor-storage-tubs-issue396/README.md` |
 
 ## 5. 未決定・注意
 
