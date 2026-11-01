@@ -3,6 +3,7 @@
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { awardChapterClearExp, awardTournamentExp } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -260,6 +261,7 @@ async function deliverLime(owner, milestone) {
 async function readAndCommit(owner, id) {
   if (!await readScene(owner, id)) return false;
   if (!completeChapterFiveScene(state, id)) return false;
+  if (state.flags._ch5_cleared) awardChapterClearExp();
   save();
   return true;
 }
@@ -507,6 +509,8 @@ async function craftSecondCup(owner) {
   if (!failed) finalize(cs);
   const category = failed ? "failed" : naruTastingCategory(cs);
   if (!recordChapterFiveSecondCup(state, { total: cs.total, category, failed, review: craftReviewLines(cs) })) throw new Error("二本目の記録を確定できません");
+  // 報酬表への対応（仮）: 一対一の勝利側は1位、既存の敗北側（同数を含む）は2位相当。挙手・勝敗は変えない。
+  awardTournamentExp(chapterFiveMatchOutcome(state) === "win" ? 1 : 2, cs);
   save();
   const source = DB.dialogues[CH5_MATCH_SCENES.beforeSecond]?.lines.find(line => line.cue === ADJUST_CUE);
   const text = ADJUST_LINES[category] || source?.text;

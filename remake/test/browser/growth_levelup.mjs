@@ -25,6 +25,44 @@ await suite("growth-levelup", async (runCheck) => {
   // ケースごとに独立したBrowserContext。検査の増加後も既存の5分枠へ収まるよう最大2件ずつ動かす。
   const cases=[];
   const check=(...args)=>{cases.push(args);};
+  await check("Tokyo-night-saves-before-animation-and-LOAD-cleans-owner",async(page)=>{
+    await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
+    await page.evaluate(async()=>{
+      window.nightCore=await import("./js/core/state.js");const p=await import("./js/chapters/ch3-progress.js"),g=await import("./js/core/growth.js");
+      const s=nightCore.state;Object.assign(s,{chapter:2,day:28,phase:"cleared",stamina:80});
+      s.flags={_ch2_cleared:true,_ch2_read_ch2_tournament_ageha_heart:true,_ch2_tournament:{stage:"complete"}};
+      if(!p.advanceToChapterThree(s))throw new Error("chapter 3 boundary");
+      while(p.chapterThreeScenes(s)[s.flags._ch3_intro.stage].id!=="ch3_daily_cup_1"){
+        const w=p.chapterThreeFreeTime(s);if(w)p.completeChapterThreeFreeTime(s,w.id);
+        else p.completeChapterThreeScene(s,p.chapterThreeScenes(s)[s.flags._ch3_intro.stage].id);
+      }
+      Object.assign(s.flags._ch3_intro,{titleSeen:true,prologueStep:4});s.flags._ch3_opening_read=true;
+      g.setGrowthPreview(true);Object.assign(g.ensureGrowth(),{xp:260,level:1,settledXp:0});
+      (await import("./js/vn/engine.js")).vnTest.turbo=true;
+      window.nightBefore={day:s.day,slot:s.slot,stamina:s.stamina,money:s.money};
+      window.tokyoNight=(await import("./js/chapters/ch3.js")).resumeChapterThree();
+    });
+    await page.locator(t("ch3-intro-continue")).click();await page.locator(t("levelup")).waitFor();
+    const settled=await page.evaluate(()=>{
+      const s=nightCore.state,saved=JSON.parse(localStorage.getItem(nightCore.SAVE_KEY));
+      return{day:s.day,slot:s.slot,stamina:s.stamina,money:s.money,level:s.growth.level,fire:s.growth.hidane.any,
+        saved:saved.growth.level===s.growth.level&&saved.growth.hidane.any===s.growth.hidane.any,before:nightBefore};
+    });
+    assert(settled.saved);assert.equal(settled.level,2);assert.equal(settled.fire,2);
+    assert.equal(settled.day,settled.before.day+1);assert.equal(settled.slot,0);
+    assert.equal(settled.stamina,settled.before.stamina);assert.equal(settled.money,settled.before.money);
+    await page.evaluate(()=>{nightCore.newGame();window.nightNewOwner=JSON.stringify(nightCore.state);});
+    await page.locator(t("levelup")).waitFor({state:"detached"});
+    assert.equal(await page.evaluate(()=>JSON.stringify(nightCore.state)===nightNewOwner),true);
+    assert.equal(await page.locator(t("growth-board")).count(),0);
+    await page.evaluate(async()=>{
+      if(!nightCore.loadFromSlot(nightCore.SAVE_KEY))throw new Error("night autosave");
+      window.tokyoNight=(await import("./js/chapters/ch3.js")).resumeChapterThree();
+    });
+    await page.locator(t("ch3-intro-free")).waitFor();
+    assert.deepEqual(await page.evaluate(()=>({level:nightCore.state.growth.level,fire:nightCore.state.growth.hidane.any})),{level:2,fire:2});
+    assert.equal(await page.locator(t("levelup")).count(),0);
+  });
   await check("minto-sales-through-real-shift",async(page)=>{
     await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
     await page.evaluate(async()=>{

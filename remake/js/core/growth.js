@@ -569,11 +569,15 @@ export function settleGrowth() {
 export async function presentNight({ evePlace = null } = {}) {
   if (!growthEnabled()) return null;
   const owner = state;
+  // 進行と一緒に先に保存する。演出の途中のLOADでも火種を失わず、別ownerを精算しない。
+  const report = settleGrowth();
+  save();
   const { presentNightGrowth } = await import("../daily/levelup.js");
-  const result = await presentNightGrowth();
+  if (state !== owner) return report;
+  const result = await presentNightGrowth(report);
   if (evePlace && state === owner) {
     const { eveReflection } = await import("../daily/reflection.js");
-    await eveReflection(evePlace);
+    if (state === owner) await eveReflection(evePlace);
   }
   return result;
 }

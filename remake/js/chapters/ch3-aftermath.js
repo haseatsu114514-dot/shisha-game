@@ -17,6 +17,8 @@ import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { syncTokyoVisits } from "../core/tokyo-visits.js";
 import { growthLesson } from "../core/growth-effects.js";
+import { awardChapterClearExp } from "../core/growth.js";
+import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { chapterThreePartyGuests } from "./ch3-party-progress.js";
 import { CH3_AFTERMATH_SCENES, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene } from "./ch3-aftermath-progress.js";
@@ -108,7 +110,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 export async function runChapterThreeAftermath() {
   if (!canRunChapterThreeAftermath(state)) return false;
   if (session) { session.active = false; session.controller?.abort(); }
-  const owner = session = { state, active: true, busy: false, menuBusy: false, controller: null };
+  const owner = session = { state, growthDay: state.day, active: true, busy: false, menuBusy: false, controller: null };
   document.body.classList.remove("ch2-city", "ch2-main", "ch2-tournament", "ch3-tournament");
   document.body.classList.add("ch3-intro", "ch3-aftermath");
   layers.hud.replaceChildren();
@@ -191,6 +193,7 @@ function renderAgehaConfession(owner) {
 
 async function renderStage(owner) {
   if (!live(owner)) return;
+  if (!await chapterGrowthNight(owner, () => live(owner))) return;
   const progress = chapterThreeAftermathProgress(state);
   const scene = CH3_AFTERMATH_SCENES[progress.stage];
   if (scene?.id === "ch3_naru_reconcile" && state.flags._ch3_naru_party_ready) {
@@ -284,6 +287,7 @@ async function renderStage(owner) {
         save(); await renderStage(owner); return;
       }
       if (!completeChapterThreeAftermathScene(state, scene.id)) return;
+      if (state.flags._ch3_cleared) awardChapterClearExp();
       save();
       await renderStage(owner);
     }, true),

@@ -17,6 +17,7 @@ const values = {
   layers: { hud: { replaceChildren() {}, classList: { remove() {} } } },
   showScreen: (_, tree) => { screen = tree; }, setBg: async () => {},
   playBgm() {}, toast: text => notices.push(text), hooks: {},
+  awardChapterClearExp() {},
   play: async () => ({ cancelled: cancel }),
   radar: (current, baseline, size) => { comparisons.push({ current, baseline, size }); return node("svg"); },
 };

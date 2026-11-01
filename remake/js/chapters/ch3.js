@@ -2,6 +2,7 @@
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { layers, showScreen, setBg, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -185,7 +186,7 @@ export async function resumeChapterThree() {
 
 async function openChapter(advance) {
   if (session) { session.active = false; session.controller?.abort(); session.rollbackMeeting?.(); }
-  const owner = session = { state, active: true, busy: false, menuBusy: false, controller: null, rollbackMeeting: null };
+  const owner = session = { state, growthDay: state.day, active: true, busy: false, menuBusy: false, controller: null, rollbackMeeting: null };
   document.body.classList.remove("ch2-city", "ch2-main", "ch2-tournament");
   document.body.classList.add("ch3-intro");
   hud(owner);
@@ -327,11 +328,13 @@ async function renderStage(owner) {
   const progress = chapterThreeProgress(state);
   const scene = chapterThreeScenes(state)[progress.stage];
   const free = chapterThreeFreeTime(state);
+  if ((scene || free) && !await chapterGrowthNight(owner, () => current(owner))) return;
   if (free) { await renderFreeTime(owner, free); return; }
   if (!scene) {
     // 前夜の自由時間を通らなかった夜（約束がない・休んだ）は、ここで一度だけ「過ごさなかった」と確定する。
     if (!state.flags._ch3_evening && !await settleEveningAtReady(owner)) return;
     if (!current(owner)) return;
+    if (!await chapterGrowthNight(owner, () => current(owner), { evePlace: "tokyo_shrine" })) return;
     card(owner, "ready", "全国大会の朝", "久世、スティーブ、ヴォルクと同じ舞台へ。手順と、昨日決めた一台を確かめる。", [
       button(owner, "HAZE: NATIONAL TOKYOへ", "tournament", async () => {
         const mod = await withLoadingNotice(import("./ch3-tournament.js"), loadingNotice("全国大会を準備しています…"));
