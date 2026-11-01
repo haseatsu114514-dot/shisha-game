@@ -4,6 +4,7 @@ import vm from 'node:vm';
 
 const read = path => fs.readFile(new URL('../'+path,import.meta.url),'utf8');
 const story = JSON.parse(await fs.readFile(new URL('../../data/dialogue/samechan.json',import.meta.url),'utf8'));
+const lime = JSON.parse(await fs.readFile(new URL('../../data/lime_messages.json',import.meta.url),'utf8'));
 const manifest = JSON.parse(await read('data/manifest.json'));
 const state = {chapter:1,day:8,phase:'daily',slot:2,flags:{},contacts:[],met:{},story:{},limeRead:[]};
 const played=[], rewards=[];
@@ -17,7 +18,7 @@ const context=vm.createContext({AbortController,setTimeout,clearTimeout,Promise,
     if(path.endsWith('/equipment.json'))return {equipment:[]};
     if(path.endsWith('/baito_events.json'))return {events:[]};
     if(path.endsWith('/glossary.json'))return {groups:[]};
-    if(path.endsWith('/lime_messages.json'))return {messages:[]};
+    if(path.endsWith('/lime_messages.json'))return lime;
     return {dialogues:[]};
   }})});
 const dataModule=new vm.SourceTextModule(await read('js/core/data.js'),{context});
@@ -33,7 +34,7 @@ for (const [name, lines] of Object.entries(firstShop.branches)) {
   const farewell = texts.findIndex(text=>text.includes('一服を終えて'));
   if (farewell>=0) assert(farewell>serving,`${name}: 一服を終えた描写は提供後`);
 }
-assert.equal(data.DB.lime.length,3);assert(data.DB.dialogues.samechan_first_encounter);
+assert.deepEqual(JSON.parse(JSON.stringify(data.DB.lime)),lime.messages);assert(data.DB.dialogues.samechan_first_encounter);
 assert.equal(data.displayName('samechan',state),'？？？');
 for(const face of ['normal','smile','surprise','serious'])assert.equal(data.portraitInfo('samechan',face).src,`img/sprites/characters/samechan/chr_samechan_${face}.webp`);
 assert.equal(data.sceneBg('bg_shishark_preparing_night','night').tint,null);
@@ -107,7 +108,7 @@ for(const scene of story.dialogues){
   if(row.type==='choice')for(const choice of row.choices)assert(scene.branches[choice.next]);}
 }
 assert(story.dialogues[0].lines.some(l=>l.text==='お主、サメは好きか？'));
-assert(story.lime.find(m=>m.id==='lime_samechan_preparing_thanks').chapter===1);
-assert(story.lime.find(m=>m.id==='lime_samechan_opening').chapter===2);
+assert(data.DB.lime.find(m=>m.id==='lime_samechan_preparing_thanks').chapter===1);
+assert(data.DB.lime.find(m=>m.id==='lime_samechan_opening').chapter===2);
 assert.equal(story.profile.romance_available,true);
 console.log('[SHISHARK] live data load / 4 portraits / construction tint / one-time quiet-night encounter / name knowledge / chapter boundary / visit branches: PASS');
