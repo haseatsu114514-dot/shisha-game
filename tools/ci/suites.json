@@ -368,6 +368,8 @@
         "node remake/test/ch3_map.mjs",
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
         "node --experimental-vm-modules remake/test/ch4_rewards.mjs",
+        "node remake/test/camel_race_model.mjs",
+        "node remake/test/ch4_camel_race.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -1073,6 +1075,26 @@
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
       ]
+    },
+    {
+      "id": "ch4-camel-race",
+      "title": "Chapter 4 camel race in the real UI: meet, invite, watch, race, record, save/load, replay",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/js/minigames/camel-race.js",
+        "remake/js/minigames/camel-race-model.js",
+        "remake/js/chapters/ch4-camel-race.js",
+        "remake/js/chapters/ch4-camel-progress.js",
+        "remake/js/chapters/ch4-map-model.js",
+        "remake/css/camel-race.css",
+        "remake/camel-race.html",
+        "remake/js/camel-race-page.js",
+        "data/dialogue/ch4_camel_race.json",
+        "remake/test/browser/ch4_camel_race.mjs"
+      ],
+      "run": ["node remake/test/browser/ch4_camel_race.mjs"]
     },
     {
       "id": "ch4-tournament",

@@ -146,7 +146,7 @@ assert.equal(value.flags._ch4_strategy, "peach");
 let model = chapterFourMapModel(value);
 assert.equal(model.mode, "day");
 assert.equal(model.background, "bg_dubai_map");
-assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "shop", "inn"]);
+assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "shop", "camel", "inn"]);
 // Dr.fookah ドバイ店（NF03）: 場面を持たず、時間・体力を使わない買い物の行き先。
 assert.equal(DUBAI_MAP_PLACES.shop.label, "Dr.fookah ドバイ店");
 assert.deepEqual((({ kind, consumes, scenes, unreadCount }) => ({ kind, consumes, scenes, unreadCount }))(model.destinations.find(item => item.id === "shop")),
@@ -182,7 +182,7 @@ assert.equal(completeChapterFourScene(value, "ch4_dubai_cafe_revisit"), true);
 assert.equal(completeChapterFourScene(value, "ch4_dubai_souq_revisit"), true);
 assert.equal(value.day, day, "Visiting places must not advance the calendar");
 assert.equal(value.flags._ch4.day, chapterDay);
-assert.deepEqual(chapterFourMapModel(value).destinations.map(item => item.id), ["souq", "festa", "center_cafe", "shop", "inn"]);
+assert.deepEqual(chapterFourMapModel(value).destinations.map(item => item.id), ["souq", "festa", "center_cafe", "shop", "camel", "inn"]);
 secrecy();
 roundTrip();
 
@@ -206,7 +206,7 @@ assert.equal(chapterFourSecondAvailable(value), true);
 model = chapterFourMapModel(value);
 assert.equal(model.mode, "day", "DAY 3 still shows the midday map");
 assert.equal(model.background, "bg_dubai_map");
-assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "alley_cafe", "shop", "inn"]);
+assert.deepEqual(model.destinations.map(item => item.id), ["souq", "festa", "center_cafe", "alley_cafe", "shop", "camel", "inn"]);
 assert.deepEqual(model.destinations.find(item => item.id === "alley_cafe").scenes, ["ch4_stranger_second"]);
 assert.equal(model.daysLeft, 2);
 secrecy();
