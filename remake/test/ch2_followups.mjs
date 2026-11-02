@@ -45,7 +45,7 @@ const mocks = {
   "../daily/calendar.js": { runDaily: async def => { options = def; } },
   "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn },
   "../daily/hiyori.js": { setHiyoriExtraShops: () => {} },
-  "../daily/trpg.js": { trpgSpot: () => null },
+  "../daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
   // あげはの♥3の質問（#1988）は affinity_stages.mjs で確認する。ここでは質問が無い通常訪問だけを見る
