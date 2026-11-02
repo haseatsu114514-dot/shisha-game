@@ -318,15 +318,23 @@ await suite("growth-levelup", async (runCheck) => {
       window.homeCore=await import("./js/core/state.js");window.homeVn=await import("./js/vn/engine.js");window.homeModule=await import("./js/daily/home-shisha.js");
       window.startHome=()=>{homeCore.newGame();const s=homeCore.state;Object.assign(s,{phase:"daily",day:3,slot:1,stamina:100});s.stats.guts=100;s.owned.push("home_rig_set");s.flavorStock={lemon:100,mint:100};s.flavors=["lemon","mint"];s.recipes.ice_lemonade={day:1};homeVn.vnTest.turbo=false;window.homeUiRun=homeModule.runHomeShisha();};startHome();
     });
-    assert.match(await page.locator(".modal-body").innerText(),/100→82（18消費）/);
+    // 体力の数値は画面に出さない（FML07）。レシピを選んだ後に、使う葉と体調の変化を確かめてから吸う（main の P18）
+    assert.doesNotMatch(await page.locator(".modal-body").innerText(),/\d+→\d+|消費/);
     await page.locator(t("home-shisha-recipe")).click();const recipe=page.locator(t("home-recipe-ice_lemonade"));
-    await recipe.waitFor();assert.match(await recipe.innerText(),/レモン8g/);assert.match(await recipe.innerText(),/ミント4g/);await assertFits(page,t("home-recipe-ice_lemonade"));
+    await recipe.waitFor();await assertFits(page,t("home-recipe-ice_lemonade"));
     assert.deepEqual(await page.evaluate(()=>({stock:homeCore.state.flavorStock,stamina:homeCore.state.stamina})),{stock:{lemon:100,mint:100},stamina:100});
     await page.evaluate(()=>{homeVn.vnTest.turbo=true;});await recipe.click();
+    await page.locator(t("home-recipe-confirm-ok")).waitFor();
+    const confirmText=await page.locator(t("home-recipe-confirm")).innerText();
+    assert.match(confirmText,/レモン：8g使用 → 残り92g/);assert.match(confirmText,/ミント：4g使用 → 残り96g/);assert.doesNotMatch(confirmText,/体力\s*\d/);
+    assert.deepEqual(await page.evaluate(()=>({stock:homeCore.state.flavorStock,stamina:homeCore.state.stamina})),{stock:{lemon:100,mint:100},stamina:100},"確認するまで何も使わない");
+    await page.locator(t("home-recipe-confirm-ok")).click();
     const applied=await page.evaluate(async()=>{await homeUiRun;return {stock:homeCore.state.flavorStock,stamina:homeCore.state.stamina,day:homeCore.state.day,slot:homeCore.state.slot};});
     assert.deepEqual(applied,{stock:{lemon:92,mint:96},stamina:82,day:3,slot:1});
-    await page.evaluate(()=>startHome());await page.locator(t("home-shisha-recipe")).click();await recipe.waitFor();
-    await page.evaluate(()=>{homeCore.newGame();window.newHomeOwner=JSON.stringify(homeCore.state);});await recipe.click();
+    // 確認の間に別のセーブへ替わったら、古い確認では何も使わない
+    await page.evaluate(()=>startHome());await page.locator(t("home-shisha-recipe")).click();await recipe.waitFor();await recipe.click();
+    await page.locator(t("home-recipe-confirm-ok")).waitFor();
+    await page.evaluate(()=>{homeCore.newGame();window.newHomeOwner=JSON.stringify(homeCore.state);});await page.locator(t("home-recipe-confirm-ok")).click();
     assert.equal(await page.evaluate(async()=>{const applied=await homeUiRun;return applied===false&&JSON.stringify(homeCore.state)===newHomeOwner;}),true);
   },{viewport:{width:591,height:1280}});
 

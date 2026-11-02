@@ -13,6 +13,9 @@ try {
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
   await page.waitForSelector('[data-test="title-new"]');
   const report = await page.evaluate(async () => {
+    // 旧しくみ（体力を使った行動で1能力1P・UX12/13）の検査。通常プレイの既定は心得の盤（SBD93）で、行動の経験値は
+    // growth_levelup.mjs が受け持つ。?growth=0 と同じ印でこの端末を旧しくみにする
+    localStorage.setItem("suien_growth_preview", "0");
     const core = await import("./js/core/state.js"), stats = await import("./js/core/stats.js");
     const vn = await import("./js/vn/engine.js"), spots = await import("./js/daily/spots.js");
     const tonari = await import("./js/daily/tonari.js"), shop = await import("./js/daily/shop.js");

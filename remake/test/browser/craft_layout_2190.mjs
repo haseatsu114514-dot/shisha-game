@@ -97,7 +97,11 @@ await suite("craft-layout-2190", async check => {
       const state = core.newGame(); state.recipes.ice_lemonade = { day: 1 };
       const status = await import("./js/daily/status.js"); void status.openStatus();
     });
-    for (const [key, label] of [["technique", "技術"], ["sense", "センス"], ["guts", "根性"], ["charm", "魅力"], ["insight", "洞察"]]) {
+    // 心得の盤（通常プレイの既定・SBD93）のステータスは才能・感覚・理論の3行、旧しくみ（?growth=0）は5能力の行
+    const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
+    const rows = board ? [["board-body", "才能"], ["board-sense", "感覚"], ["board-wisdom", "理論"]]
+      : [["technique", "技術"], ["sense", "センス"], ["guts", "根性"], ["charm", "魅力"], ["insight", "洞察"]];
+    for (const [key, label] of rows) {
       await page.locator(`[data-test="st-${key}"]`).click();
       const layout = await page.locator(".st-note").evaluate(note => ({
         rect: note.getBoundingClientRect().toJSON(), body: note.closest(".modal-body").getBoundingClientRect().toJSON(),
