@@ -1,0 +1,3 @@
+nagumo-hidden-prize-1.webp: 余白 左3% 右3% 上0% 下0% → 拡大 90%（切った所 top1%・bottom4%）
+nagumo-hidden-prize-2.webp: 余白 左3% 右3% 上0% 下0% → そのまま
+拡大して埋めた: 1 / 2 枚
