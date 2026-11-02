@@ -15,17 +15,17 @@ import { resetChapterFourCraft } from "./ch4-tournament-state.js";
 export const CH4_PRIZE = 200000;
 
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
-// ドバイ専用の背景が無いので、全て既存 bg の流用。#1177 でドバイ素材に差し替える時はこの表だけ直す。
+// 第4章の場所と場面の背景対応。
 export const CH4_PLACE_BG = Object.freeze({
   mosque: "bg_dubai_map_dusk", // 内省の現行代替背景を維持（#1788 の画像選別は別作業）
   map: "bg_dubai_map",            // #1177 選定マップ（ch4_dubai_10・真昼）
   mapDusk: "bg_dubai_map_dusk",   // #1177 候補4（ch4_dubai_04・夕景）。前夜日（DAY4）の自由行動マップに使う
   souq: "bg_street_day",          // 仮置き bg（#1177 でドバイ素材に差し替え）
-  festa: "bg_tournament_stage",   // 仮置き bg（#1177 でドバイ素材に差し替え）
+  festa: "bg_dubai_festa",
   center_cafe: "bg_cafe_day",     // 仮置き bg（#1177 でドバイ素材に差し替え）
-  alley_cafe: "bg_cafe_night",    // 仮置き bg（#1177 でドバイ素材に差し替え）
+  alley_cafe: "bg_dubai_alley_cafe_night",
   inn: "bg_ch3_hotel_night",      // 仮置き bg（#1177 でドバイ素材に差し替え）
-  venue: "bg_tournament_stage",   // 仮置き bg（#1177 でドバイ素材に差し替え）
+  venue: "bg_dubai_grand_smoke_stage",
 });
 
 export const CH4_SCENE_BG = Object.freeze({
@@ -37,22 +37,22 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_dubai_souq_revisit: "bg_street_day",        // 仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_stranger_first: "bg_street_day",            // 仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_stranger_first_forced_in: "bg_street_day",  // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_festa: "bg_tournament_stage",               // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_festa_revisit: "bg_tournament_stage",       // 仮置き bg（#1177 でドバイ素材に差し替え）
+  ch4_festa: "bg_dubai_festa",
+  ch4_festa_revisit: "bg_dubai_festa",
   ch4_dubai_cafe: "bg_cafe_day",                  // 仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_dubai_cafe_revisit: "bg_cafe_day",          // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_stranger_second: "bg_cafe_night",           // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_alley_cafe_quiet: "bg_cafe_night",          // 仮置き bg（#1177 でドバイ素材に差し替え）
+  ch4_stranger_second: "bg_dubai_alley_cafe_night",
+  ch4_alley_cafe_quiet: "bg_dubai_alley_cafe_night",
   ch4_inn_tool_care: "bg_ch3_hotel_night",        // 仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_wang_reception_forced_in: "bg_ch3_hotel_night", // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_wang_reception: "bg_tournament_stage",      // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_stranger_third: "bg_cafe_night",            // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_tournament_start: "bg_tournament_stage",    // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_final: "bg_tournament_stage",               // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_defeat: "bg_tournament_stage",              // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_result: "bg_tournament_stage",              // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_nagumo_old_rival: "bg_tournament_stage",    // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_ending: "bg_hideaway",                      // 屋敷。仮置き bg（#1177 でドバイ素材に差し替え）
+  ch4_wang_reception: "bg_dubai_grand_smoke_stage",
+  ch4_stranger_third: "bg_dubai_alley_cafe_night",
+  ch4_tournament_start: "bg_dubai_grand_smoke_stage",
+  ch4_final: "bg_dubai_grand_smoke_stage",
+  ch4_defeat: "bg_dubai_grand_smoke_stage",
+  ch4_result: "bg_dubai_grand_smoke_stage",
+  ch4_nagumo_old_rival: "bg_dubai_grand_smoke_stage",
+  ch4_ending: "bg_dubai_sheikh_residence",
   ch4_sumi_return: "bg_tonari_inside_night",      // 帰国後のtonari。仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_two_tables: "bg_tonari_inside_night",       // 仮置き bg（#1177 でドバイ素材に差し替え）
 });

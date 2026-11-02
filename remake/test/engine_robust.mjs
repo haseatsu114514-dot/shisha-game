@@ -41,10 +41,12 @@ const vnDb = {
   },
   flavorById: {},
 };
+const nameData = await import("../js/core/data.js");
+nameData.DB.characters = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8")).map(c => [c.id, c]));
 const vn = await loadModule(engineSource, `
-export const robustPort = { handleCondition, jumpTo, getVnWarnings, clearVnWarnings, hooks,
+export const robustPort = { handleCondition, jumpTo, lineDisplayName, getVnWarnings, clearVnWarnings, hooks,
   setRunning: (r) => { running = r; }, getRunning: () => running };
-`, { state: vnState, DB: vnDb, config: {}, STAT_EN: {}, affinityLevel: () => 0, tournamentFinished: () => false, basicsExperienced: () => false });
+`, { state: vnState, DB: vnDb, config: {}, displayName: nameData.displayName, STAT_EN: {}, affinityLevel: () => 0, tournamentFinished: () => false, basicsExperienced: () => false });
 const port = vn.robustPort;
 
 function fakeRunning() {
@@ -122,6 +124,31 @@ check("jumpTo: currentId を jump 先へ引き継ぎ、開始台本の id は残
   assert.equal(r.id, "root_dlg");
   assert.deepEqual(r.visited, ["root_dlg", "jump_target"]);
   assert.equal(r.queue[0]?.text, "jumped");
+});
+
+check("LIMEの名前表示: 明示metadataだけを使い、既存の公私名・未知名・声を保つ", () => {
+  const r = fakeRunning(); r.dlg.metadata.contact_channel = "lime";
+  vnState.met = { naru: true, minto: true }; vnState.flags = {};
+  assert.equal(port.lineDisplayName({ speaker: "naru" }, r), "なる（LIME）");
+  assert.equal(port.lineDisplayName({ speaker: "adam" }, r), "？？？（LIME）");
+  assert.equal(port.lineDisplayName({ speaker: "minto" }, r), "みんと（LIME）");
+  vnState.flags._minto_name_known = true;
+  assert.equal(port.lineDisplayName({ speaker: "minto" }, r), "みんと（LIME）");
+  r.context = "private";
+  assert.equal(port.lineDisplayName({ speaker: "minto" }, r), `${nameData.DB.characters.minto.private_name}（LIME）`);
+  assert.equal(port.lineDisplayName({ speaker: "samechan", voice: "korochan" }, r), "コロちゃん（LIME）");
+  assert.equal(port.lineDisplayName({ speaker: "" }, r), "");
+  delete r.dlg.metadata.contact_channel; r.id = r.currentId = "filename_lime";
+  assert.equal(port.lineDisplayName({ speaker: "naru" }, r), "なる", "IDの字面では経路を推測しない");
+});
+
+check("LIMEの名前表示: jump先のmetadataへ切り替わり、対面へ持ち越さない", () => {
+  const r = fakeRunning(); r.dlg.metadata.contact_channel = "lime";
+  port.setRunning(r); port.jumpTo("jump_target");
+  assert.equal(port.lineDisplayName({ speaker: "naru" }, r), "なる");
+  vnDb.dialogues.jump_target.metadata.contact_channel = "lime";
+  assert.equal(port.lineDisplayName({ speaker: "naru" }, r), "なる（LIME）");
+  delete vnDb.dialogues.jump_target.metadata.contact_channel;
 });
 
 // ---------------- scoreStep（#1364） ----------------

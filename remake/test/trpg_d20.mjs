@@ -7,6 +7,19 @@ const scenario=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/trpg_ordi
 const travelURL='data:text/javascript;base64,'+Buffer.from(fs.readFileSync(new URL('../js/core/travel-budget.js',import.meta.url))).toString('base64');
 const campaignSource=fs.readFileSync(new URL('../js/trpg/campaign.js',import.meta.url),'utf8').replace('"../core/travel-budget.js"',JSON.stringify(travelURL));
 const campaign=await import('data:text/javascript;base64,'+Buffer.from(campaignSource).toString('base64'));
+
+// The scenes a full session adds between the old ones: two questions after the first roll, a twist after the guess.
+function interviewDone(s) {
+  if (s.snapshot().phase !== "interview") return;
+  for (const topic of s.scenario.interview.topics.slice(0, s.scenario.interview.picks || 2)) s.ask(topic.id);
+  s.endInterview();
+}
+function twistDone(s) {
+  if (s.snapshot().phase !== "twist") return;
+  for (const field of s.flow.twist) s.plan(field, s.scenario.options[field][0].id);
+  s.beginCheck("twist"); s.settleCheck();
+}
+
 const catalog=JSON.parse(fs.readFileSync(new URL('../../data/trpg_catalog.json',import.meta.url)));
 const counts=(sides,bonus,success,mixed)=>{
   const out={success:0,mixed:0,trouble:0};
@@ -49,8 +62,8 @@ test('actual d20 completion through campaign contract: cancel/stale inert, one a
   campaign.syncTrpgStock(state,catalog);assert(campaign.buyTrpgBook(state,catalog,scenario.id));
   const cast=campaign.castTrpgTable(state,catalog,scenario);assert(cast.ok);
   const ticket={chapter:state.chapter,day:state.day,slot:state.slot,assignments:cast.assignments};
-  const session=new TrpgSession(scenario,{seed:5});session.start();session.beginCheck('listen');session.settleCheck();
-  for(const spot of scenario.spots.slice(0,3))session.inspect(spot.id);session.interpret(scenario.hypotheses[0].id);
+  const session=new TrpgSession(scenario,{seed:5});session.start();session.beginCheck('listen');session.settleCheck();interviewDone(session);
+  for(const spot of scenario.spots.slice(0,3))session.inspect(spot.id);session.interpret(scenario.hypotheses[0].id); twistDone(session);
   for(const kind of ['prepare','serve']){for(const field of session.flow[kind])session.plan(field,scenario.options[field][0].id);session.beginCheck(kind);session.settleCheck();}
   const result=session.result(),before=structuredClone(state);
   assert.equal(campaign.completeTrpgTable(state,catalog,scenario,ticket,{cancelled:true}),false);assert.deepEqual(state,before);

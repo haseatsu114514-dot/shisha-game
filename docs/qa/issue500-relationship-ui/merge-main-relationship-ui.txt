@@ -1,6 +1,0 @@
-[relationship-ui] PASS: pc-actual-questions-and-status
-[relationship-ui] PASS: pc-legacy-and-progress-guidance
-[relationship-ui] PASS: pc-final-choices-and-ordinary-dialogue
-[relationship-ui] PASS: touch-actual-questions-and-status
-[relationship-ui] PASS: touch-legacy-and-progress-guidance
-[relationship-ui] PASS: touch-final-choices-and-ordinary-dialogue

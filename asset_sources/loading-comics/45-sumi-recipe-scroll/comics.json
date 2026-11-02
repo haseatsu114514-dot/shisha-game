@@ -1,0 +1,116 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。布の鶴・巻物・座布団などの誇張は本編能力を変更しない。猫は本編の常連設定への追加ではない。",
+  "image_manifest": [
+    {
+      "file": "45-sumi-recipe-scroll.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "dd7a816d52912c1354957e6aa06a75394cdcc07a9d2992679e855575d6340a1f",
+      "bytes": 1625609
+    }
+  ],
+  "pages": [
+    {
+      "file": "45-sumi-recipe-scroll.png",
+      "ids": [
+        "hajime",
+        "sumi"
+      ],
+      "range": "45",
+      "rows": [
+        [
+          "45 一行の秘訣",
+          "はじめ・スミさん",
+          "左: スミさんが指一本を立て「コツは一行だ。」。はじめが小さなメモ帳と鉛筆を取り「メモします。」。右: はじめが床まで長々と転がる巻物にメモをして困惑「巻物になった。」。スミさんが呆れて見守る。巻物は文字を描かず小さな線だけ。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 45,
+      "dialogue": [
+        "コツは一行だ。",
+        "メモします。",
+        "巻物になった。"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷きを編集し1536x1024の2コマ漫画1話。枠は左x36..756、右780..1500、y272..752、各720x480厳守。枠線残す。枠外は全て紙色#EEE3CFの無地。題名・番号・署名・擬音文字なし。枠から4%内側に顔・吹き出しを収める。添付2ははじめ（黒い野球帽・黒パーカー・黒髪・青年）、添付3はスミさん（黒ハンチング・四角眼鏡・短い顎髭・炭色シャツ・茶腰エプロン）。2.5頭身の太線セル塗り、暖かな紙質、表情豊かなギャグ。両コマではじめは左、スミさんは右を厳守。白吹き出しに太いゴシックで台詞を大きく正確に。2人以外の人・シーシャ器具・炭・ホース・煙・武器は描かない。店の静かな木カウンター背景。左: スミさんが指一本を立て「コツは一行だ。」。はじめが小さなメモ帳と鉛筆を取り「メモします。」。右: はじめが床まで長々と転がる巻物にメモをして困惑「巻物になった。」。スミさんが呆れて見守る。巻物は文字を描かず小さな線だけ。",
+      "revision_prompt": "画像1の漫画の枠配置だけを画像2の下敷きへ合わせて描き直す。出力1536x1024。左枠x36 y272 w720 h480、右枠x780 y272 w720 h480。上下余白をそれぞれ必ず272px確保し枠はy752で終わる。今の縦に長いコマを横長3:2に再構成する。全ての顔・吹き出しは枠から29px離す。絵と衣装と位置と長い巻物の話は維持。台詞は左のスミ「コツは一行だ。」はじめ「メモします。」右はじめ「巻物になった。」一字一句維持。枠外は均一#EEE3CF。背景棚の瓶や植物は削除し不透明な扉収納に変更。他の文字なし。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "episode": 45,
+      "result": "採用。原画を目視、画像規格検査成功。PC・スマホ横のゲーム画面はQA参照。",
+      "checks": {
+        "dialogue_exact": "3台詞一致",
+        "identity": "野球帽/パーカーとハンチング/眼鏡/髭/腰エプロン、左右固定を目視確認",
+        "prohibited": "炭・機材・武器なし",
+        "frame": "warn: 巻物を欠けなく残すため左右約6%の紙帯で補正。規格の許容帯内。"
+      },
+      "known_deviations": [
+        "枠位置・紙色は下敷きから微差あり。切り出し後に顔と台詞の欠けなし。",
+        "枠線除去後の数pxの寸法差は表示側の同一3:2枠で吸収する。"
+      ],
+      "browser": {
+        "sizes": [
+          "1280x720",
+          "844x390"
+        ],
+        "result": "各話を固定して全12画面で画像decode成功・撮影。スマホ横全話とPC第45話を目視確認、台詞の欠けなし。",
+        "screenshots": [
+          "qa-pc.png",
+          "qa-phone.png"
+        ],
+        "regression": "loading_craft: pc/mobile/portrait 全3ケース成功（既存画像LFS取得後）"
+      }
+    }
+  ],
+  "source": [
+    {
+      "file": "45-sumi-recipe-scroll.png",
+      "region": {
+        "x": 40,
+        "y": 242,
+        "width": 712,
+        "height": 536,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "45-sumi-recipe-scroll.png",
+      "region": {
+        "x": 784,
+        "y": 242,
+        "width": 712,
+        "height": 543,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sumi-recipe-scroll-1.webp",
+      "width": 804,
+      "height": 536,
+      "sha256": "2fda0c9ab1aa1db72cb78a67d8f1017e192023f7e581d18e1dc0a76c4b612f1a"
+    },
+    {
+      "file": "sumi-recipe-scroll-2.webp",
+      "width": 814,
+      "height": 543,
+      "sha256": "38a8ea8ac179d5d06e46f2496cdd32f96c18912807b23f33021cd5cf37a91f89"
+    }
+  ]
+}

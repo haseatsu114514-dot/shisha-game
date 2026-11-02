@@ -199,8 +199,11 @@
 
 /* 配合: 葉と器、香りの返事を中心に置く。 */
 .mix { display: grid; grid-template-columns: 300px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 18px 24px; height: 100%; }
-.mix-side { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 0; overflow-y: auto; }
-.mix-side > * { flex: none; }
+.mix-side { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; min-height: 0; overflow-y: auto; }
+.mix-side > * { flex: none; max-width: 100%; }
+/* 検出した名前は予測の先頭へ。長い予測を開いても、初期位置で見つけられる。 */
+.mix-side > .recipe-line { order: -1; }
+.mix-side > .recipe-line:empty { display: none; }
 .mix-vessel { position: relative; flex: none; width: 300px; height: 332px; overflow: hidden; background: radial-gradient(ellipse at 50% 40%, #d5a26012, transparent 70%); }
 .mix-vessel-art { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; }
 .mix-vessel-art > .art { flex: none; }
@@ -697,6 +700,9 @@
 .result-card.compact .rc-title { font-size: 15px; letter-spacing: 0.04em; }
 .result-card.compact .rc-next { width: 180px; min-height: 48px; margin-left: auto; }
 .result-card.compact.with-summary { flex-wrap: wrap; gap: 12px 18px; }
+/* 詳説はカードの中で展開し、左のコーチ欄へはみ出さない。 */
+.result-card.compact:has(.rc-details[open]) { flex-wrap: wrap; overflow: auto; }
+.result-card.compact .rc-details[open] { flex: 1 0 100%; min-width: 0; }
 .rc-summary { flex: 0 0 100%; font-size: 15px; line-height: 1.65; font-variant-numeric: tabular-nums; }
 .rc-summary p { margin: 0; }
 .rc-summary p:last-child { margin-top: 4px; color: var(--accent); }
@@ -778,7 +784,7 @@
 .rc-details summary { cursor: pointer; border-bottom: 1px solid #ffffff33; list-style: none; }
 .rc-details summary::-webkit-details-marker { display: none; }
 .rc-details summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-.rc-details .rc-lines { position: absolute; width: 420px; bottom: calc(100% + 24px); right: -200px; margin: 0; padding: 20px 20px 20px 38px; border: 1px solid #ffffff26; border-radius: 12px; background: #242129; box-shadow: 0 16px 38px #0008; font-size: 15px; }
+.rc-details .rc-lines { position: static; width: auto; max-height: 300px; overflow: auto; overscroll-behavior: contain; margin: 12px 0 0; padding: 16px 20px 16px 38px; border: 1px solid #ffffff26; border-radius: 12px; background: #242129; color: #ede6db; font-size: 15px; overflow-wrap: anywhere; }
 .rc-evaluation, .craft-evaluation { font-size: 26px; color: #c4ada6; }
 .rc-evaluation.bright, .craft-evaluation.bright { color: #efcf8a; }
 .rc-evaluation.warm, .craft-evaluation.warm { color: #b7d2bc; }

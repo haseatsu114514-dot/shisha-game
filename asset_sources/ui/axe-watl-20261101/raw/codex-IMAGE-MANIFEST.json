@@ -1,0 +1,32 @@
+[
+  {
+    "file": "axe-board-A-pale-honey.png",
+    "bytes": 1840351,
+    "sha256": "e813d1a611bb860aabd89240331270758d570cf5f06d151feac8a816f4d24fcd",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "axe-board-B-creamy-gold.png",
+    "bytes": 2219084,
+    "sha256": "be3f9e0f3a17434748e6a848036da63becceeae01d409886cf4a0b7624f64494",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "axe-board-C-amber-honey.png",
+    "bytes": 1968069,
+    "sha256": "acdd066d952d32544c420a799bf64650dc088e3edc35e1fc48c8fb4b61c83293",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA"
+  }
+]

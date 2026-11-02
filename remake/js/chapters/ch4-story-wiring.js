@@ -12,8 +12,8 @@ export const CH4_EVENING_DIALOGUE_FILES = Object.freeze({
   relationship_conflicts: Object.freeze(["tournament_evening_overlap"]),
 });
 
-// 前夜の場面の背景。ドバイの夜の街の専用背景が無いので既存 bg の流用（仮置き bg、#1177 でドバイ素材に差し替え）。
-export const CH4_EVENING_BG = "bg_street_night";
+// 前夜の会話に使うドバイの夜の街。
+export const CH4_EVENING_BG = "bg_dubai_street_night";
 
 /**
  * 前夜の context（location_contract 準拠）。好感度・渡航予定だけから恋人や到着を作らない。

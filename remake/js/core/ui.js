@@ -6,6 +6,7 @@ import { state, STAT_KEYS, config } from "./state.js";
 import { reducedMotion } from "./transition-kit.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
+import { gainSeenKey, bannerHold } from "./gain-notice.js";
 import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
@@ -405,8 +406,11 @@ function pumpBanners() {
       // 1拍おいてから今の値へ → ハートの中身が「ぐいーん」と伸びる
       if (hearts) setTimeout(() => hearts.querySelectorAll("i").forEach((h, i) => h.style.setProperty("--fill", `${o.hearts.to[i]}%`)), 260);
     });
-    const hold = o.evolution ? 4200 : o.fx ? 3200 : o.hearts && o.hearts.to.join() !== o.hearts.from.join() ? 2600 : 2200;
+    const seenKey = gainSeenKey(o);
+    const hold = bannerHold(o, !!(seenKey && owner.flags?.[seenKey]) && !!config.shortSeen);
     setTimeout(() => {
+      // 見せ終えた通知だけ既読にする。途中のSAVE/LOADや画面除去で未完の通知を短縮しない。
+      if (seenKey && owner === state && b.isConnected && owner.flags) owner.flags[seenKey] = true;
       b.classList.remove("show");
       b.classList.add("out");
       setTimeout(() => { b.remove(); bannerBusy--; pumpBanners(); }, 420);
@@ -642,3 +646,4 @@ export async function roundCut(text, sub = "") {
 export function dayTurn(mid) {
   return nightToMorning(layers.fx, mid);
 }
+

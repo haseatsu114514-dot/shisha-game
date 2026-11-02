@@ -231,7 +231,7 @@ alpha=b.getchannel('A');assert alpha.getextrema()==(0,255)
 for p in [(0,0),(b.width-1,0),(0,b.height-1),(b.width-1,b.height-1)]:assert alpha.getpixel(p)==0
 left,top,right,bottom=alpha.point(lambda v:255 if v>2 else 0).getbbox();assert left>0 and top>0 and right<b.width and bottom<b.height, 'portrait cut off at an edge'
 w=Image.open(root/'remake/img/sprites/characters/uranaishi/chr_uranaishi_normal.webp').convert('RGBA');assert w.size==b.size and w.getchannel('A').tobytes()==alpha.tobytes()
-m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits']['uranaishi']['faces']==['normal','smile']
+m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits']['uranaishi']['faces']==['normal','sad','serious','smile','surprise']
 `, new URL('../../', import.meta.url).pathname], { encoding: 'utf8' });
 assert.equal(art.status, 0, art.stderr);
 console.log('PASS fortune: 62 approved readings, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');

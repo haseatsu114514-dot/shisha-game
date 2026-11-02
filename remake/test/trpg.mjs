@@ -3,7 +3,20 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 const source = await readFile(new URL("../js/trpg/session.js", import.meta.url), "utf8");
-const { TrpgSession, specialOf, HEAT, heatTier } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+const { TrpgSession, specialOf, HEAT, heatTier, checkKindsOf } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+
+// The scenes a full session adds between the old ones: two questions after the first roll, a twist after the guess.
+function interviewDone(s) {
+  if (s.snapshot().phase !== "interview") return;
+  for (const topic of s.scenario.interview.topics.slice(0, s.scenario.interview.picks || 2)) s.ask(topic.id);
+  s.endInterview();
+}
+function twistDone(s) {
+  if (s.snapshot().phase !== "twist") return;
+  for (const field of s.flow.twist) s.plan(field, s.scenario.options[field][0].id);
+  s.beginCheck("twist"); s.settleCheck();
+}
+
 const scenario = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_ordinary.json", import.meta.url), "utf8"));
 const shark = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_shark.json", import.meta.url), "utf8"));
 const catalogScenarios = [scenario, shark];
@@ -15,9 +28,9 @@ characters.push(...overlays.map(o => o.profile));
 
 function complete({ profileId = "quiet", seed = 1, aroma = "tea", seat = "window", approach = "quiet", supports = true } = {}) {
   const session = new TrpgSession(scenario, { profileId, seed });
-  session.start(); session.beginCheck("listen"); session.settleCheck();
+  session.start(); session.beginCheck("listen"); session.settleCheck(); interviewDone(session);
   for (const id of ["menu", "window", "bag"]) session.inspect(id);
-  session.interpret("quiet");
+  session.interpret("quiet"); twistDone(session);
   session.plan("aroma", aroma); session.plan("seat", seat);
   session.beginCheck("prepare", { support: supports }); session.settleCheck();
   session.plan("approach", approach);
@@ -66,7 +79,7 @@ test("all choices, including low rolls without help, remain finishable", () => {
       const session = complete({ profileId: profile.id, aroma: aroma.id, seat: seat.id, approach: approach.id,
         seed: seed++, supports: false });
       const result = session.result();
-      assert.equal(result.checks.length, 3);
+      assert.equal(result.checks.length, checkKindsOf(scenario).length);
       assert(result.checks.every(c => c.dice.every(d => d >= 1 && d <= 20)));
       assert(result.pressure >= 0 && result.pressure <= 3);
       assert(scenario.endings[result.ending]);
@@ -85,12 +98,13 @@ test("rerolls are shared across checks and take the new die; aids are spent once
   assert.equal(next.dice[1], first.dice[1]);
   assert(session.snapshot().used.hajime);
   assert.throws(() => session.reroll(1));
-  session.settleCheck();
+  session.settleCheck(); interviewDone(session);
   for (const id of ["menu", "window", "bag"]) session.inspect(id);
-  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  session.interpret("quiet"); twistDone(session); session.plan("aroma", "tea"); session.plan("seat", "window");
+  const banked = session.snapshot().momentum;
   const preparation = session.beginCheck("prepare", { support: true });
-  // Reroll, the listen result and the hypothesis talk lift the table to the first tier: momentum +1.
-  assert.equal(preparation.momentum, 1);
+  // Whatever momentum the table banked after the twist roll is spent on this roll, +4 each.
+  assert.equal(preparation.momentum, banked);
   // The default approach is the player's own character: the sheet stat replaces the old flat +3.
   assert.equal(preparation.base, scenario.cast.find(c => c.id === "hajime").sheet.stats.hand);
   assert.equal(preparation.bonus, preparation.base + 7 + preparation.momentum * 4);
@@ -111,6 +125,10 @@ test("invalid phase, double submission and unknown choices cannot advance or con
   assert.deepEqual(session.snapshot(), pending);
   session.settleCheck();
   assert.throws(() => session.settleCheck());
+  assert.throws(() => session.inspect("menu"), /phase/, "the interview comes before the room");
+  assert.throws(() => session.endInterview(), /at least one/);
+  assert.throws(() => session.ask("not-a-topic"));
+  interviewDone(session);
   assert.throws(() => session.interpret("quiet"));
   assert.throws(() => session.inspect("not-a-spot"));
   session.inspect("menu"); session.inspect("menu");
@@ -128,10 +146,10 @@ test("snapshots and results are detached; equal seeds and decisions are reproduc
 
 test("the three individual trumps compete for two shared teamwork cards", () => {
   const session = new TrpgSession(scenario, { profileId: "quiet", seed: 12 });
-  session.start(); session.beginCheck("listen"); session.reroll(0); session.settleCheck();
+  session.start(); session.beginCheck("listen"); session.reroll(0); session.settleCheck(); interviewDone(session);
   assert.equal(session.snapshot().teamwork, 1);
   for (const id of ["menu", "window", "bag"]) session.inspect(id);
-  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  session.interpret("quiet"); twistDone(session); session.plan("aroma", "tea"); session.plan("seat", "window");
   session.beginCheck("prepare", { support: true }); session.settleCheck();
   assert.equal(session.snapshot().teamwork, 0);
   session.plan("approach", "quiet");
@@ -144,9 +162,9 @@ test("the three individual trumps compete for two shared teamwork cards", () => 
 
 function sharkRun({ profileId = "scent", seed = 4, choices = null, hypothesis = profileId, count = 3 } = {}) {
   const session = new TrpgSession(shark, { profileId, seed });
-  session.start(); session.beginCheck("listen"); session.settleCheck();
+  session.start(); session.beginCheck("listen"); session.settleCheck(); interviewDone(session);
   for (const spot of shark.spots.slice(0, count)) session.inspect(spot.id);
-  session.interpret(hypothesis);
+  session.interpret(hypothesis); twistDone(session);
   const plan = choices || Object.fromEntries(Object.entries(session.profile.likes).map(([field, values]) => [field, values[0]]));
   for (const field of shark.flow.prepare) session.plan(field, plan[field]);
   session.beginCheck("prepare"); session.settleCheck();
@@ -163,7 +181,7 @@ test("the shark movie offers three planned escapes and a rescue with a sequel", 
 
 test("limited investigation consumes tide only once; rereading and consulting stay available", () => {
   const s = new TrpgSession(shark, { profileId: "light", seed: 4 });
-  s.start(); s.beginCheck("listen"); s.settleCheck();
+  s.start(); s.beginCheck("listen"); s.settleCheck(); interviewDone(s);
   const before = s.snapshot().pressure;
   for (const spot of shark.spots.slice(0, 4)) s.inspect(spot.id);
   assert.equal(s.snapshot().pressure, Math.min(6, before + 4));
@@ -172,7 +190,7 @@ test("limited investigation consumes tide only once; rereading and consulting st
   assert.equal(s.snapshot().pressure, state.pressure);
   assert.throws(() => s.inspect("rope"), /limit/);
   assert.equal(s.snapshot().clues.length, 4);
-  s.interpret("light");
+  s.interpret("light"); twistDone(s);
   assert.equal(s.snapshot().phase, "prepare");
 });
 
@@ -181,7 +199,7 @@ test("all 243 shark plans finish; both risk variants exist and risk stays bounde
   for (const profile of shark.profiles) for (const tool of shark.options.tool) {
     for (const route of shark.options.route) for (const finale of shark.options.finale) {
       const result = sharkRun({ profileId: profile.id, seed: seed++, choices: { tool: tool.id, route: route.id, finale: finale.id } }).result();
-      assert.equal(result.checks.length, 3);
+      assert.equal(result.checks.length, checkKindsOf(shark).length);
       assert(result.pressure >= 3 && result.pressure <= 6);
       assert(shark.endings[result.ending]);
       assert(result.checks.every(c => c.dice.every(n => n >= 1 && n <= 20)));
@@ -194,11 +212,12 @@ test("all 243 shark plans finish; both risk variants exist and risk stays bounde
 
 test("a matching shark hypothesis improves preparation, and an unknown plan field is inert", () => {
   const correct = sharkRun(), incorrect = sharkRun({ hypothesis: "light" });
-  assert.equal(correct.result().checks[1].bonus, incorrect.result().checks[1].bonus + 4);
+  const prep = run => run.result().checks.find(c => c.kind === "prepare");
+  assert.equal(prep(correct).bonus, prep(incorrect).bonus + 4);
   const s = new TrpgSession(shark, { seed: 5 });
-  s.start(); s.beginCheck("listen"); s.settleCheck();
+  s.start(); s.beginCheck("listen"); s.settleCheck(); interviewDone(s);
   for (const spot of shark.spots.slice(0, 3)) s.inspect(spot.id);
-  s.interpret("scent"); const before = s.snapshot();
+  s.interpret("scent"); twistDone(s); const before = s.snapshot();
   assert.throws(() => s.plan("aroma", "citrus"));
   assert.deepEqual(s.snapshot(), before);
 });
@@ -257,10 +276,12 @@ test("table excitement rises with shared moments, tiers give the next roll one m
   session.settleCheck();
   assert.equal(session.snapshot().heat, 3, "a critical lifts the table three");
   assert.equal(session.snapshot().momentum, 1, "reaching the first tier");
+  interviewDone(session);
+  assert.equal(session.snapshot().heat, 4, "talking to the story's character lifts the table once");
   session.consult("adam"); session.consult("adam");
-  assert.equal(session.snapshot().heat, 4, "only the first talk with each friend counts");
+  assert.equal(session.snapshot().heat, 5, "only the first talk with each friend counts");
   for (const id of ["menu", "window", "bag"]) session.inspect(id);
-  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  session.interpret("quiet"); twistDone(session); session.plan("aroma", "tea"); session.plan("seat", "window");
   const before = session.snapshot().momentum;
   const check = session.beginCheck("prepare");
   assert.equal(check.momentum, before); assert.equal(check.bonus, check.base + before * 4);
@@ -304,19 +325,20 @@ test("declared approaches roll with the PC's sheet stat; a companion's first tur
   assert.equal(first.actor, "tsumugi"); assert.equal(first.stat, "eye"); assert.equal(first.base, 5); assert.equal(first.bonus, 5);
   assert.equal(session.snapshot().heat, 1, "a companion stepping forward lifts the table once");
   assert.deepEqual(session.snapshot().acted, { tsumugi: 1 });
-  session.settleCheck();
+  session.settleCheck(); interviewDone(session);
   for (const id of ["menu", "window", "bag"]) session.inspect(id);
-  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  session.interpret("quiet"); twistDone(session); session.plan("aroma", "tea"); session.plan("seat", "window");
   const heatBefore = session.snapshot().heat;
   const second = session.beginCheck("prepare", { approach: "prepare_light" });
   assert.equal(second.base, 5); assert.equal(session.snapshot().heat, heatBefore, "the same companion earns no second spotlight");
   session.settleCheck(); session.plan("approach", "quiet");
+  const heatBeforeServe = session.snapshot().heat;
   const own = session.beginCheck("serve");
   assert.equal(own.actor, "hajime"); assert.equal(own.base, 4, "the default approach is the player's own character");
-  assert.equal(session.snapshot().heat, heatBefore, "the player's own turn is not a spotlight");
+  assert.equal(session.snapshot().heat, heatBeforeServe, "the player's own turn is not a spotlight");
   session.settleCheck();
-  assert.deepEqual(session.result().checks.map(c => c.approach), ["listen_watch", "prepare_light", "serve_word"]);
-  assert.deepEqual(session.result().acted, { tsumugi: 2, hajime: 1 });
+  assert.deepEqual(session.result().checks.map(c => c.approach), ["listen_watch", "twist_talk", "prepare_light", "serve_word"]);
+  assert.deepEqual(session.result().acted, { tsumugi: 2, hajime: 2 });
 });
 
 test("character creation: looks, origin presets, a point-buy and a name replace the player's seat; dialogue names the built character", async () => {
@@ -355,9 +377,9 @@ test("character creation: looks, origin presets, a point-buy and a name replace 
   session.start();
   const roll = session.beginCheck("listen", { approach: "listen_talk" });
   assert.equal(roll.base, 3, "the player's own stat drives the roll");
-  session.settleCheck();
+  session.settleCheck(); interviewDone(session);
   for (const id of ["menu", "window", "bag"]) session.inspect(id);
-  session.interpret("quiet"); session.plan("aroma", "tea"); session.plan("seat", "window");
+  session.interpret("quiet"); twistDone(session); session.plan("aroma", "tea"); session.plan("seat", "window");
   session.beginCheck("prepare"); session.settleCheck(); session.plan("approach", "quiet");
   session.beginCheck("serve"); session.settleCheck();
   assert.equal(session.result().pc.name, "ソラ");
@@ -415,4 +437,45 @@ test("the shopkeeper's first-table tutorial explains GM, PL, PC, the sheet, decl
   const text = tutorial.lines.map(l => l.text).join("");
   for (const word of ["GM", "PL", "PC", "キャラクターシート", "30以上", "おすすめ"]) assert(text.includes(word), word);
   for (const l of tutorial.lines) assert(Array.from(l.text.replace("{gm}", "サメちゃん")).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0) <= 48, l.text);
+});
+
+test("a full session talks to the story's character, survives a twist and reads about ten minutes of lines", () => {
+  for (const s of catalogScenarios) {
+    assert(s.interview?.topics.length >= 4 && (s.interview.picks || 2) >= 2);
+    for (const p of s.profiles) for (const topic of s.interview.topics) {
+      const a = p.answers[topic.id];
+      assert(a?.title && a.text && s.dialogues.some(d => d.dialogue_id === a.lines), p.id + "/" + topic.id);
+    }
+    assert(s.hypotheses.every(h => s.dialogues.some(d => d.dialogue_id === h.discussion)), "every guess is talked over");
+    assert(s.flow.twist?.length && s.options[s.flow.twist[0]].length === 3 && s.checks.twist.approaches.length === 3);
+    // Interview, twist and the old scenes, in order, with every transition guarded.
+    const session = new TrpgSession(s, { seed: 21, profileId: s.profiles[0].id });
+    session.start(); session.beginCheck("listen"); session.settleCheck();
+    assert.equal(session.snapshot().phase, "interview");
+    const [a, b, c] = s.interview.topics;
+    session.ask(a.id); session.ask(a.id); session.ask(b.id);
+    assert.throws(() => session.ask(c.id), /No more/, "only the allowed number of questions");
+    assert.deepEqual(session.snapshot().asked, [a.id, b.id]);
+    session.endInterview();
+    for (const spot of s.spots.slice(0, 3)) session.inspect(spot.id);
+    session.interpret(s.hypotheses[0].id);
+    assert.equal(session.snapshot().phase, "twist");
+    assert.throws(() => session.beginCheck("twist"), /Complete the plan/);
+    assert.throws(() => session.plan(s.flow.prepare[0], s.options[s.flow.prepare[0]][0].id));
+    twistDone(session);
+    assert.equal(session.snapshot().phase, "prepare");
+    // A typical path: session zero, opening, two answers, four clues, the guess, the twist and an ending.
+    const by = Object.fromEntries(s.dialogues.map(d => [d.dialogue_id, d.lines.length]));
+    const L = id => by[id] || 0, profile = s.profiles[0];
+    const zero = L(s.sessionZero.open) + L(s.sessionZero.close) + Object.values(s.companionBuilds).reduce((n, p) => n + L(Object.values(p)[0][0].making), 0);
+    const opening = L(s.intro) + L(s.listen) + 1;
+    const talk = Object.values(profile.answers).slice(0, 2).reduce((n, a) => n + L(a.lines), 0);
+    const clues = s.spots.slice(0, 4).reduce((n, spot) => n + L(profile.evidence[spot.id].lines), 0);
+    const declare = ["listen", "twist", "prepare", "serve"].reduce((n, k) => n + L(s.checks[k].approaches[0].declare) + L(s.checks[k].mixed), 0);
+    const middle = L(s.hypotheses[0].discussion) + L(s.twist.intro) + L(s.options[s.flow.twist[0]][0].response) + L(s.preparation) + L(s.serving)
+      + Object.values(s.consult).reduce((n, id) => n + L(id), 0);
+    const ending = L(s.endings[profile.ending].dialogue) + L(Object.values(s.debrief)[0]) + L(s.epilogue);
+    const total = zero + opening + talk + clues + declare + middle + ending;
+    assert(total >= 95, s.id + " reads only " + total + " lines on a typical path");
+  }
 });

@@ -17,10 +17,10 @@
 
 | # | cg_id | 章 | 表示シーン（組込済） | 構図・内容 |
 |---|---|---|---|---|
-| 1 | `cg_minto_casual` | ch1 | outing_minto_1 冒頭 | 私服みんと初見せ。フリルブラウス＋ロングスカート、駅前で振り返って手を振る。コンカフェ衣装とのギャップが主役 |
+| 1 | `cg_minto_casual` | ch1 | outing_minto_1 冒頭 | 私服みんと初見せ。ベージュのケーブルニットのカーディガン＋ロングスカート、駅前で振り返って手を振る。コンカフェ衣装とのギャップが主役 |
 | 2 | `cg_tsumugi_smoke_color` | ch1 | ch1_tsumugi_smoke_color | つむぎの見る世界。tonariの席、煙が藍色〜虹色に光って見える共感覚の画。彼女の横顔は静かに微笑む |
 | 3 | `cg_oneesan_first_smoke` | ch1 | ch1_tutorial_oneesan | 素のみんと（ura）の一服の横顔。カウンター越し、夜のtonari。**クリア後に意味が変わる一枚**（正体を知って見返す） |
-| 4 | `cg_minto_cheki` | ch1 | interaction_minto_noon_01 | チェキ写真そのものの画。白フレーム＋手書き「♡PEPERMINT」落書き。みんとがピース、はじめは見切れ気味（一人称なので顔は写さないか後頭部） |
+| 4 | `cg_minto_cheki` | ch1 | interaction_minto_noon_01 | チェキ写真そのものの画。白フレーム＋手書き「♡PEPERMINT」落書き。みんと一人を写す（2026-10-08 チェキ修正: 現行PEPPERMINT店内） |
 | 5 | `cg_mashiro_double_apple` | ch3 | ch3_double_apple_incident | 制作・接続済み。閉店後のmukaiで、ましろがハンドルを差し出す一人称の近景。顔・吸い口・握る手を会話枠より上へ置く。種明かし前なので缶・味名・果物は写さない。[原画・生成指示・検品](../../asset_sources/ch3-mashiro-handoff/README.md) |
 | 6 | `cg_tsumugi_confession` | 告白 | confession_tsumugi_accept | 服の裾をぎゅっと掴む潤み目の上目遣い |
 | 7 | `cg_minto_confession` | 告白 | confession_minto_accept | 素の栞の顔で泣き笑い |
@@ -39,9 +39,9 @@
 共通サフィックス: `anime style, cinematic lighting, 16:9, high detail, shisha lounge atmosphere`
 （一人称視点のため**主人公の顔は描かない**。写る場合は後ろ姿・手元のみ）
 
-1. cg_minto_casual — `young woman in beige frilled blouse and long skirt, hair down, turning around waving at viewer, station square at noon, soft sunlight, gentle mature smile, casual private look`
+1. cg_minto_casual — `young woman with long straight black hair and green eyes in a beige cable-knit cardigan and long skirt, turning around waving at viewer, station square at noon, soft sunlight, gentle mature smile, casual private look`
 2. cg_tsumugi_smoke_color — `quiet girl with iPad at a dim lounge table, watching shisha smoke that glows in indigo and faint rainbow colors (synesthesia visualization), profile view, soft neon, wonder in her eyes`
-3. cg_oneesan_first_smoke — `elegant woman in casual clothes at a bar counter at night, exhaling shisha smoke slowly, eyes closed, warm low light, viewed from behind the counter`
+3. cg_oneesan_first_smoke — `elegant woman with long straight black hair in a beige cable-knit cardigan at the tonari shisha cafe counter at night, exhaling shisha smoke slowly, eyes closed, warm low light, viewed from behind the counter`
 4. cg_minto_cheki — `instant photo (cheki) with white frame, cute woman doing peace sign in a pastel shisha cafe, handwritten doodles and heart on the frame, slightly blurred flash photo look`
 5. cg_mashiro_double_apple — 採用画像と実際の生成指示は `asset_sources/ch3-mashiro-handoff/`。正規ましろの立ち絵・mukaiの内装を参照し、眠たげな普段の表情でハンドルを差し出す。中身を隠した現行台本に合わせ、旧案の赤いダブルアップル包装は描かない。一本のホースはハンドル根元から卓の裏へ自然に隠れ、台・HMD・炭は画角外。頭上の余白と会話枠上の手元を確保する。
 6-9 confession — 各立ち絵参照＋`blushing, teary eyes, night street / lounge background, emotional close-up`

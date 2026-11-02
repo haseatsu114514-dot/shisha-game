@@ -36,13 +36,14 @@ async function stopGauge(page, value, touch, keyboard) {
 }
 async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard = false, precision = false, attempt = 0 } = {}) {
   await phase(page,"choice"); await pressReady(page,touch,keyboard); await phase(page,"horizontal"); await fit(page);
-  await stopGauge(page,(x / 1.08 + 1) / 2,touch,keyboard); await phase(page,"vertical");
+  await stopGauge(page,(x / 1.2 + 1) / 2,touch,keyboard); await phase(page,"vertical");
   const stoppedX=await game(page).getAttribute("data-aim-x");
-  await stopGauge(page,(y / 1.08 + 1) / 2,touch,keyboard); await phase(page,"power");
+  await stopGauge(page,(y / 1.2 + 1) / 2,touch,keyboard); await phase(page,"power");
   assert.equal(await game(page).getAttribute("data-aim-x"),stoppedX,"Horizontal position remains locked");
   if (precision) {
     const actualY=Number(await game(page).getAttribute("data-aim-y"));
-    if (Math.abs(Number(stoppedX)-x)>.03 || Math.abs(actualY-y)>.03) {
+    // The 4in blade forgives vertical error; horizontal error must stay inside the small blue outer ring (.051).
+    if (Math.abs(Number(stoppedX)-x)>.04 || Math.abs(actualY-y)>.08) {
       assert(attempt<4,"Physical aiming failed after five visible re-aims");
       // Use the player's real re-aim control before throwing; a slow runner can miss the narrow timing window.
       console.log(`[axe-throw] Re-aim ${attempt+1}: actual ${stoppedX},${actualY}; target ${x},${y}`);
@@ -73,6 +74,8 @@ async function standalone(page, { touch = false, keyboard = false, league = fals
   await press(page,'[data-companion="' + opponent + '"]',touch);
   const selector=league?'[data-test="axe-league"]':'[data-test="axe-start"]';
   if (keyboard) { await page.locator(selector).focus(); await page.keyboard.press("Enter"); } else await press(page,selector,touch);
+  // 10投ゲーム opens the setup sheet first; its start button takes Enter, a tap or a click.
+  if (league) { await page.locator('[data-test="axe-setup"]').waitFor(); if (keyboard) await page.keyboard.press("Enter"); else await press(page,'[data-test="axe-setup-start"]',touch); }
   await phase(page,"choice");
 }
 await suite("axe-throw", async run => {
@@ -84,7 +87,8 @@ await suite("axe-throw", async run => {
     await phase(page,'power');await page.clock.runFor(760);await pressReady(page);await phase(page,'flight');
     const frames=[];
     // Advance whole animation frames, including the release frame before the clock starts.
-    for(const [label,ms] of [['release',0],['quarter',144],['half',128],['three-quarter',112],['impact',144]]){
+    // Fractions of the 600ms flight: .3, .57, .8, then past contact.
+    for(const [label,ms] of [['release',0],['quarter',180],['half',160],['three-quarter',140],['impact',180]]){
       if(ms)await page.clock.runFor(ms);
       const shape=page.locator(label==='impact'?'.axe-impacts>g':'.axe-flight');
       frames.push(await shape.evaluate(n=>({pitch:Number(n.dataset.pitch),depth:Number(n.dataset.depth),
@@ -160,7 +164,7 @@ await suite("axe-throw", async run => {
     await page.goto(new URL('axe-throw.html',page.url()).href);
     await press(page,'[data-test="axe-menu-rules"]',touch);
     const help=page.locator('[data-test="axe-rules-panel"]');await help.waitFor();
-    assert.match(await help.textContent(),/外れ・落下でも1回/);assert.match(await help.textContent(),/外側5点、赤い中心6点/);
+    assert.match(await help.textContent(),/外れ・落下でも1回/);assert.match(await help.textContent(),/外側4か所にも5のリングと赤い6点/);
     assert.match(await help.textContent(),/構え直しても回数は戻らない/);
     if(shotsPath)await page.screenshot({path:shotsPath+'/'+label+'-top.png'});
     const scroll=help.locator('.axe-rules-scroll');await scroll.evaluate(n=>n.scrollTop=n.scrollHeight);
@@ -234,7 +238,7 @@ await suite("axe-throw", async run => {
     assert.match(await page.locator(".axe-comment").textContent(),/お主/); assert.equal(await page.locator(".axe-portrait").getAttribute("alt"),"サメちゃん");
     await page.locator('[data-call="upper-left"]').click(); assert.match(await page.locator(".axe-comment").textContent(),/キルショット/);
     // Physical timing stops, not injected model/history. Small marker is intentionally demanding.
-    await shoot(page,{x:-.56,y:-.70,precision:true});
+    await shoot(page,{x:-7/14.75,y:-12/14.75,precision:true});
     assert.match(await page.locator(".axe-note").textContent(),/キルショット！ [78]点/);
     assert.match(await page.locator(".axe-comment").textContent(),/小さい的/);
     assert.match(await page.locator(".axe-portrait").getAttribute("src"),/excited/);
@@ -246,7 +250,7 @@ await suite("axe-throw", async run => {
     assert.match(await page.locator(".axe-call-status").textContent(),/残り0回/);
     for (let n=2;n<10;n++) {
       if(n===5) { assert.match(await page.locator(".axe-note").textContent(),/後半5投/); assert(await page.locator('[data-call="upper-left"]').isDisabled()); }
-      await shoot(page,{x:n%2?.36:0,y:n%2?.24:0}); await pressReady(page);
+      await shoot(page,{x:n%2?6/14.75:0,y:n%2?3.5/14.75:0}); await pressReady(page);
     }
     await phase(page,"summary"); await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
     await fit(page); assert.match(await page.locator(".axe-note").textContent(),/64点/);

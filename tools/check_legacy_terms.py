@@ -53,6 +53,17 @@ LEGACY_ERROR = {
     "筋肉の記憶": "「体で覚えた手つき」等に言い換え（2026-07-20オーナー指定・禁止）",
 }
 
+# 2026-11-02 追加。過去の記録（要望台帳・archive・検証記録）には当時の名前が残るので、それ以外だけを見る。
+LEGACY_ERROR_CURRENT = {
+    "スナック＆シーシャ": "みんとの店はコンセプトカフェ「ぺぱーみんと／PEPPERMINT」（旧設定資料集の誤り・2026-11-02削除）",
+    "オーナーママ": "みんとはオーナー兼キャスト（スナックのママではない）",
+    "炭場 創": "チャコール博士の本名は火浦 理一",
+    "炭場創": "チャコール博士の本名は火浦 理一",
+    "前園": "上園 文太郎（ID maezono）に統一",
+    "マスター・フーカ": "王煙楼（煙楼先生・ID master_hookah・第4章）に統一",
+}
+HISTORY_PATHS = ("docs/archive/", "docs/qa/", "docs/owner_requests.md")
+
 LEGACY_STAT_ERROR = {
     "技術力": "技術",
     "洞察力": "洞察",
@@ -168,6 +179,11 @@ def scan_file(path: Path, errors: list, warnings: list):
         for term, fix in LEGACY_ERROR.items():
             if term in line:
                 errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
+
+        if not str(rel).startswith(HISTORY_PATHS):
+            for term, fix in LEGACY_ERROR_CURRENT.items():
+                if term in line:
+                    errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
 
         for term, fix in LEGACY_STAT_ERROR.items():
             if term in line:

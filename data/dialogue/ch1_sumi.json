@@ -858,7 +858,12 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "窓は少し開けとけ。閉め切って炭を焚くと、一酸化炭素で倒れることもある"
+          "text": "炭は一酸化炭素を出す。中毒で命を落とすこともある"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "室内で炭を焚くな。窓を開けても、安全とは言えない"
         },
         {
           "type": "condition",

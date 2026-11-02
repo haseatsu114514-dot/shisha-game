@@ -111,3 +111,16 @@ python3 tools/loading_comic_cut.py check remake/img/loading/<id>-*.webp
 - 過去のバッチ: [short-comics-unhinged-ltr-20261025](../short-comics-unhinged-ltr-20261025/README.md)（21〜40話・在庫。未登録分はオーナー決定により採用しない）、[loading-comics-batch1-20261029](../loading-comics-batch1-20261029/README.md)（41話）
 - モックアップ（見た目の基準）: [issue-loading-mockup](../issue-loading-mockup/README.md)
 - 実画面の確認（2026-11-01 の刷新前後・PC 1280×720 とスマホ横 844×390）: [qa/before-pc-20261101.webp](qa/before-pc-20261101.webp) → [qa/after-pc-20261101.webp](qa/after-pc-20261101.webp)、[qa/after-phone-landscape-20261101.webp](qa/after-phone-landscape-20261101.webp)、[qa/after-portrait-20261101.webp](qa/after-portrait-20261101.webp)（ロゴと LOADING の印の作り直し後）
+
+## 8. 新作（2026-11-02）
+
+正式立ち絵と下敷きで制作した、はじめ＋スミさんの日常ギャグ6話。第42話は既存PR #1398 のため使用しない。各フォルダの `comics.json` に台本・プロンプト・ハッシュ・切り出し領域・検品記録を保存。第45話は原画比率1.31〜1.33の警告を記録し、紙色を左右約6%足して内容を保った。全12枚の配信用WebPは3:2の規格検査に合格。
+
+| 話 | 題名 | 原画と台帳 |
+| --- | --- | --- |
+| 43 | 予約の正体 | [sumi-reserved-seat](43-sumi-reserved-seat/) |
+| 44 | 畳みの極意 | [sumi-cloth-fold](44-sumi-cloth-fold/) |
+| 45 | 一行の秘訣 | [sumi-recipe-scroll](45-sumi-recipe-scroll/) |
+| 46 | 雨音の合奏 | [sumi-rain-concert](46-sumi-rain-concert/) |
+| 47 | 座り心地派 | [sumi-cushion-tower](47-sumi-cushion-tower/) |
+| 48 | 看板の向き | [sumi-sign-reverse](48-sumi-sign-reverse/) |

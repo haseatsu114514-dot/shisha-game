@@ -1,0 +1,62 @@
+[
+  {
+    "file": "look-a.png",
+    "bytes": 2473959,
+    "sha256": "f30e0c4cb904cf1976a1e8a7fe3d33cf4e90837f3a80130358d2d4fe443541a2",
+    "size": [
+      1774,
+      887
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "look-b.png",
+    "bytes": 2250571,
+    "sha256": "46f01faaa1ee6bd7ed4ec20a736d59ac515f606163efc36b49bd4bcdd5052fd3",
+    "size": [
+      1774,
+      887
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "look-c.png",
+    "bytes": 2445540,
+    "sha256": "8c8b57391c78717ba5829d2d9b1d599ef01f5c948833a6ef5a08422e7c2b667c",
+    "size": [
+      1774,
+      887
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "pc-a.png",
+    "bytes": 2303157,
+    "sha256": "a90fda5d92878a358fa5a4bde616d7b1441a6a5f8f06f89769b5cdd772b98b7a",
+    "size": [
+      1448,
+      1086
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "pc-b.png",
+    "bytes": 2083218,
+    "sha256": "11bcd3e45bb87436cd878dc933cb1fe29d77dadd389ef8282b709a3d2bdb6cf9",
+    "size": [
+      1448,
+      1086
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "pc-c.png",
+    "bytes": 2008083,
+    "sha256": "7aa1916f7232791186f82f1d59e7685c66c7735b76513b71f5c78fe8c5c8ffb2",
+    "size": [
+      1448,
+      1086
+    ],
+    "mode": "RGBA"
+  }
+]

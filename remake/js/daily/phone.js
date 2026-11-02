@@ -1104,11 +1104,12 @@ export async function openPhone(messages, { title = null, time = "朝" } = {}) {
     item.done = true;
     await new Promise((resolve) => {
       const last = messages.at(-1) === m;
-      ui.actions.replaceChildren(el("button.lime-reply.ghost", {
+      ui.actions.replaceChildren(el(`button.lime-reply.ghost${m.close_label ? ".multiline" : ""}`, {
         text: m.close_label || (last ? "スマホを閉じる" : "次のトーク ▸"),
         dataset: { test: "phone-next" },
         onclick: () => { SE.click(); resolve(); },
       }));
+      ui.scroll();
     });
   }
   await ui.close();

@@ -51,6 +51,10 @@ const fixedNight = (day) => nightOccupied(chapterDef.nightEvents, day);
  * 日常パート。章側は実装済みの最終日、街の選択と固有行動だけを差し替えられる。
  * @param def.nightEvents { [day]: { pin, beat, run: async () => {} } }
  * @param def.onQuit タイトルへ戻る処理
+ * @param def.untilDay 最終日の通算日（大会・勝負の日）。getter でもよい（第5章は日程が決まるまで Infinity）
+ * @param def.undatedNote 最終日が決まっていないときの朝・夜明けのカードの一言
+ * @param def.dateInvitations false で恋人のデートの誘いを出さない
+ * @param def.confessions false で夜の告白の場面を出さない
  */
 export async function runDaily(def) {
   chapterDef = def;
@@ -143,7 +147,8 @@ async function morning() {
   if (dawnShownDay === state.day) dawnShownDay = null;
   else await dayCard(`DAY ${chapterDay(state)}`, countdownText(), { weather: weatherOf() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
-  const n = deliverMorning({ fixedNight });
+  // 恋人のデートの誘いを出さない章（第5章）は、恋人の朝のLIMEだけ届く（lover-entry.js と同じ扱い）。
+  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false });
   if (n) pushNotice(n, { onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
@@ -854,7 +859,9 @@ async function endDay({ returnedToTonari = false } = {}) {
     }
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
-  const confessed = await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
+  // 告白は第1〜3章の物語。第5章（confessions: false）では夜に告白の場面を始めない。
+  const confessed = chapterDef.confessions === false ? false
+    : await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
   await chapterDef.beforeHomecoming?.();
   const athome = !!state.flags._home_tonight;

@@ -86,8 +86,8 @@ export function applyHomeShisha(mix, rig, s = state) {
 // ---------------------------------------------------------------- 画面
 
 const INTROS = {
-  home_rig_set: ["窓を少し開けて、部屋の明かりを落とし、卓上台に炭をのせる。", "一日の終わり。窓を少し開け、小さな台に今日の葉を詰める。", "窓を少し開けて、寝る前の家シーシャを組む。"],
-  home_rig_pro: ["窓を少し開けて、本番と同じ台に炭をのせる。手の感覚が、そのまま残る。", "一日の終わり。窓を少し開け、大会と同じ台で家シーシャを組む。"],
+  home_rig_set: ["部屋の明かりを落とし、卓上台に今日の葉を詰める。", "一日の終わり。小さな台に今日の葉を詰める。", "寝る前の家シーシャを組む。"],
+  home_rig_pro: ["本番と同じ台に今日の葉を詰める。手の感覚が、そのまま残る。", "一日の終わり。大会と同じ台で家シーシャを組む。"],
 };
 // data/flavors.json の説明に沿った一口の気づき。技法・温度・分量の講評はしない。
 // 銘柄固有の味はfamilyでまとめず、同系統でも別の感想にする。
@@ -233,13 +233,43 @@ async function chooseMix() {
 }
 
 /** レシピ帳から作る。作れるレシピがなければ null */
-async function chooseRecipe() {
+async function chooseRecipe(current) {
   const options = (DB.recipes || []).filter((r) => state.recipes?.[r.id] && recipeMix(r))
     .map((r) => ({ label: r.name, value: r.id, test: `home-recipe-${r.id}` }));
   if (!options.length) return null;
   const id = await modal({ title: "家シーシャ：レシピ帳から作る", className: "home-shisha-dialog", body: "自分の葉で作れるレシピ。使う葉と量はレシピどおり。",
     options: [...options, { label: "戻る", value: null, test: "home-recipe-back" }] });
-  return id ? recipeMix(DB.recipes.find((r) => r.id === id)) : null;
+  if (!id || !current()) return null;
+  const recipe = DB.recipes.find((r) => r.id === id);
+  const mix = recipeMix(recipe);
+  if (!mix) {
+    toast("葉の残量が変わった。もう一度選ぼう");
+    return null;
+  }
+  const stock = Object.entries(mix).map(([id, g]) => ({ id, g, before: flavorStock(id) }));
+  const before = state.stamina, after = staminaAfter(HOME_STAMINA), maximum = maxStamina();
+  const condition = (n) => conditionForRatio(n / maximum).label;
+  const body = el("div", { dataset: { test: "home-recipe-confirm" } }, [
+    el("p", { text: `自分の葉を合計${HOME_GRAMS}g使う。` }),
+    el("ul", stock.map(({ id, g, before }) => el("li", {
+      text: `${DB.flavorById[id].short_name || DB.flavorById[id].name}：${g}g使用 → 残り${before - g}g`,
+      dataset: { test: `home-recipe-leaf-${id}` },
+    }))),
+    el("p", { text: `体力を使う。体調：${condition(before)} → ${condition(after)}`, dataset: { test: "home-recipe-condition" } }),
+  ]);
+  const confirmed = await modal({ title: `家シーシャ：${recipe.name}`, className: "home-shisha-dialog", body,
+    options: [
+      { label: "この葉で吸う", value: true, primary: true, test: "home-recipe-confirm-ok" },
+      { label: "戻る", value: false, test: "home-recipe-confirm-back" },
+    ] });
+  if (!confirmed || !current()) return null;
+  // 確認した銘柄・残量・体調のままで決定する。表示中の変更後に別の葉へ差し替えない。
+  if (stock.some(({ id, before }) => flavorStock(id) !== before) || state.stamina !== before
+      || maxStamina() !== maximum || staminaAfter(HOME_STAMINA) !== after) {
+    toast("葉の残量か体調が変わった。もう一度選ぼう");
+    return null;
+  }
+  return mix;
 }
 
 /** 一日の終わりに呼ぶ。吸ったら true（行動の枠は使わない） */
@@ -249,9 +279,13 @@ export async function runHomeShisha({ eve = false } = {}) {
   const rig = homeShishaOffer(state, { eve });
   if (!rig) return false;
   const owner = state;
-  const canRecipe = (DB.recipes || []).some((r) => state.recipes?.[r.id] && recipeMix(r));
+  const night = dayKey(owner), slot = owner.slot;
+  const current = () => state === owner && dayKey(state) === night && state.slot === slot
+    && homeShishaOffer(state, { eve })?.id === rig.id;
   let mix = null;
   while (!mix) {
+    if (!current()) return false;
+    const canRecipe = (DB.recipes || []).some((r) => state.recipes?.[r.id] && recipeMix(r));
     const how = await modal({ title: "寝る前の家シーシャ", className: "home-shisha-dialog",
       body: `まだ体力に余裕がある。${rig.name}で家シーシャをする？ 自分の葉${HOME_GRAMS}gと体力を使う。使った味の熟練度が育つ。`,
       options: [
@@ -259,8 +293,9 @@ export async function runHomeShisha({ eve = false } = {}) {
         ...(canRecipe ? [{ label: "家シーシャをする（レシピ帳）", value: "recipe", test: "home-shisha-recipe" }] : []),
         { label: "今日は寝る", value: null, test: "home-shisha-skip" },
       ] });
-    if (!how || state !== owner) return false;
-    mix = how === "recipe" ? await chooseRecipe() : await chooseMix();
+    if (!how || !current()) return false;
+    mix = how === "recipe" ? await chooseRecipe(current) : await chooseMix();
+    if (!current()) return false;
   }
   const result = applyHomeShisha(mix, rig);
   // 消費・実施済み印・成長を、会話や再読み込みを挟む前に一括で保存する。

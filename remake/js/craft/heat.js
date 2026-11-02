@@ -36,7 +36,7 @@ export async function runHeat(cs) {
     grade: res.grade,
     summary: [
       ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
-      res.just === coalCount(cs) ? "すべて全面が赤い取り頃で取れた" : res.just ? "取り頃で取れた炭がある" : "次は全面が赤くなるのを待とう",
+      res.just === coalCount(cs) ? "すべて全面が赤い取り頃で取れた" : res.just ? "取り頃で取れた炭がある" : "取り頃で取れた炭はなかった",
     ],
     lines: [
       picks.map((g) => HEAT_GRADES[g].label).join("・"),
