@@ -13,7 +13,9 @@ import { play } from "../vn/engine.js";
 import { awardActionExp } from "../core/growth.js";
 
 export * from "./ch4-desert-progress.js";
-import { DESERT_TALKS, DESERT_SCENES, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
+import { addMoney, gainAffinity, visitAffinity } from "../core/stats.js";
+import { spendableMoney } from "../core/travel-budget.js";
+import { DESERT_TALKS, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
@@ -29,11 +31,12 @@ const firstLine = id => DB.dialogues[id]?.lines?.[0]?.text || "";
 let active = false;
 
 /**
- * 地図からの入口。kind "desert_talk" はデスクの会話を1つ読んで確定、kind "desert" は砂丘へ出かけて遊ぶ。
+ * 地図からの入口。kind "desert_talk" はカフェ・サーリムで会話を1つ読んで確定（paid なら一台の代金 3,000円）、
+ * kind "desert" は砂丘へ出かけて遊ぶ（2回目からツアー代）。会話のたびにヌールの好感度が上がる（段階 +16・雑談 +8）。
  * 読了・完走の確定と保存はここで行う。中断（signal・LOAD・タイトル）は確定済みの分だけ残す。
  * 戻り値: 何かを確定したら true。
  */
-export async function visitDesert(destination, { day, isCurrent = () => true, signal = null, host = null } = {}) {
+export async function visitDesert(destination, { day, isCurrent = () => true, signal = null, host = null, paid = false } = {}) {
   if (active || !state || !destination || destination.ok === false || signal?.aborted || !isCurrent()) return false;
   active = true;
   const owner = state;
@@ -52,9 +55,15 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (!current()) return false;
     const { bgUrl } = await import("../core/data.js");
     if (destination.kind === "desert_talk") {
-      const id = desertTalkScene(owner, day);
-      if (!id || !await read(id, bgUrl("bg_dubai_inn_day"))) return false;
-      if (!completeDesertTalk(owner, id, day)) return false;
+      const legacy = destination.legacy === true;
+      const visit = desertCafeVisit(owner, day, { legacy });
+      if (!visit) return false;
+      if (paid && DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`); return false; }
+      const id = visit.id;
+      if (!await read(id, bgUrl("bg_dubai_inn_day"))) return false;
+      if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
+      if (paid) addMoney(-DESERT_CAFE_PRICE);
+      gainAffinity(DESERT_GUIDE, visitAffinity(visit.kind));
       save(); changed = true;
       // 初対面の登場カットイン（名乗った後に一度だけ。立ち絵が無い間も名前と一言は出す）
       if (id === DESERT_TALKS[0] && !owner.flags._intro_noor) {
@@ -72,8 +81,9 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (!current()) return false;
     loadDesertArt(); // 到着の会話の間にゲームの絵を読み始める
     if (!await read(status.first ? DESERT_SCENES.arrive : DESERT_SCENES.again, bgUrl(DESERT_BG))) return false;
-    // ここで昼の行動枠を使う。以降の滑り直しは何度でも、追加の消費なし。
+    // ここで昼の行動枠を使う（2回目からはツアー代も）。以降の滑り直しは何度でも、追加の消費なし。
     if (!beginDesertOuting(owner, day)) return false;
+    if (status.price) addMoney(-status.price);
     save(); changed = true;
     showScreen("none", null);
     const before = desertRecords(owner);
@@ -123,14 +133,19 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
  */
 export async function performDesertSpot(entry, { day, showHud = null } = {}) {
   const owner = state;
-  const before = desertProgress(owner).outings;
+  const cafe = entry.place === "tour_desk";
+  const before = desertProgress(owner);
   const hudRoot = layers.hud.firstElementChild;
+  let changed = false;
   try {
-    await visitDesert({ kind: entry.place === "tour_desk" ? "desert_talk" : "desert", ok: true }, { day });
+    changed = await visitDesert({ kind: cafe ? "desert_talk" : "desert", ok: true }, { day, paid: cafe });
   } finally {
     if (hudRoot && !hudRoot.isConnected) layers.hud.replaceChildren(hudRoot);
     showHud?.(true);
   }
-  const went = state === owner && desertProgress(owner).outings > before;
+  if (state !== owner) return { used: false, exerted: false, slotsUsed: 0 };
+  // カフェは一台吸う来店なので、ほかのカフェと同じく行動を1つ使う（体力は使わない）。砂丘は外出の確定で slot を使い済み
+  if (cafe) return { used: !!changed, exerted: false };
+  const went = desertProgress(owner).outings > before.outings;
   return { used: went, exerted: false, slotsUsed: 0 };
 }
