@@ -3,7 +3,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { DESERT_FLAG, DESERT_TALKS, DESERT_SCENES, DESERT_DIALOGUE_IDS, desertProgress, desertInvited, desertTalkScene, completeDesertTalk,
-  desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations } from "../js/chapters/ch4-desert-progress.js";
+  desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations,
+  DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { readFileSync } from "node:fs";
 
@@ -124,4 +125,37 @@ test("every dialogue the connection needs exists in data/dialogue/ch4_desert.jso
   const characters = JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8"));
   const noor = characters.find(c => c.id === "noor");
   assert.equal(noor.display_name, "ヌール"); assert.equal(noor.role, "venue_host"); assert(noor.intro_cutin?.title);
+});
+
+test("the 14-day daily map (route 2) shows the desk only when a talk is due, then the dunes only by day and once a day", () => {
+  const value = fresh();
+  value.slot = 0;
+  let spots = desertDailySpots(value, 1);
+  assert.deepEqual(spots.map(spot => [spot.id, spot.region, spot.kind, spot.place]), [[DESERT_SPOT_IDS.desk, "dubai", "ch4_desert", "tour_desk"]]);
+  assert.equal(spots[0].hasNew(), true);
+  assert.match(spots[0].desc, /時間は使わない/);
+  completeDesertTalk(value, DESERT_TALKS[0], 1);
+  assert.deepEqual(desertDailySpots(value, 1), [], "no desk after today's talk");
+  assert.equal(desertDailySpotById(value, 1, DESERT_SPOT_IDS.desk), null);
+  assert.equal(desertDailySpots(value, 2)[0].label, "ヌールと話す");
+  completeDesertTalk(value, DESERT_TALKS[1], 2); completeDesertTalk(value, DESERT_TALKS[2], 3);
+  spots = desertDailySpots(value, 3);
+  assert.deepEqual(spots.map(spot => [spot.id, spot.place]), [[DESERT_SPOT_IDS.dunes, "dunes"]]);
+  assert.match(spots[0].desc, /昼の行動を使う/);
+  assert.equal(desertDailySpotById(value, 3, DESERT_SPOT_IDS.dunes).id, DESERT_SPOT_IDS.dunes);
+  value.slot = 1;
+  assert.deepEqual(desertDailySpots(value, 3), [], "the dunes are a daytime trip");
+  value.slot = 0;
+  assert(beginDesertOuting(value, 3));
+  assert.equal(value.slot, 1);
+  value.slot = 0;
+  assert.deepEqual(desertDailySpots(value, 3), [], "once a day");
+  recordDesertResult(value, result(9100, "S"));
+  assert.match(desertDailySpots(value, 4)[0].desc, /自己ベスト 9,100点／S/);
+  assert.equal(desertDailySpots(value, 4)[0].hasNew(), false);
+  // ドバイの日常ループに組み込まれている（地図・行き先の解決・処理）
+  const daily = readFileSync(new URL("../js/chapters/ch4-dubai-daily.js", import.meta.url), "utf8");
+  assert.match(daily, /\.\.\.desertDailySpots\(state, dubaiDay\(\)\)/);
+  assert.match(daily, /desertDailySpotById\(state, dubaiDay\(\), id\)/);
+  assert.match(daily, /entry\.kind === "ch4_desert"[\s\S]*performDesertSpot/);
 });

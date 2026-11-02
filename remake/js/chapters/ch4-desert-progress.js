@@ -8,10 +8,10 @@ export const DESERT_TALKS = Object.freeze(["ch4_noor_meet", "ch4_noor_talk2", "c
 export const DESERT_SCENES = Object.freeze({ arrive: "ch4_desert_arrive", again: "ch4_desert_again", sunsetFirst: "ch4_desert_sunset_first", sunsetAgain: "ch4_desert_sunset_again" });
 export const DESERT_DIALOGUE_IDS = Object.freeze([...DESERT_TALKS, ...Object.values(DESERT_SCENES), ...RANK_ORDER.map(rank => `venue_noor_result_${rank}`)]);
 export const DESERT_DIALOGUE_FILE = "ch4_desert";
-// 地図の位置（百分率）。宿（12,24）の隣と、街の外の砂丘。
+// 地図の位置（百分率）。ドバイの地図で HUD・案内の枠・ほかの行き先と重ならない所（デスクは宿・FESTA・店の間、砂丘は左下＝街の外）。
 export const DESERT_PLACES = Object.freeze({
-  tour_desk: Object.freeze({ id: "tour_desk", label: "砂漠ツアーのデスク", x: 20, y: 18 }),
-  dunes: Object.freeze({ id: "dunes", label: "砂丘", x: 92, y: 86 }),
+  tour_desk: Object.freeze({ id: "tour_desk", label: "砂漠ツアーのデスク", x: 34, y: 30 }),
+  dunes: Object.freeze({ id: "dunes", label: "砂丘", x: 13, y: 92 }),
 });
 
 const integer = (value, min = 0) => Number.isInteger(value) && value >= min ? value : null;
@@ -131,3 +131,33 @@ export function desertDestinations(value, day) {
       : status.first ? "約束の砂漠。サンドボードを教わる。昼の行動を1つ使う（滑り直しは何度でも）。"
         : `もう一度砂丘を滑る。自己ベスト ${records.best.score.toLocaleString("ja-JP")}点／${records.best.rank}。昼の行動を1つ使う。` }];
 }
+
+// ---- 日常ループ（版2・14日のドバイ: chapters/ch4-dubai-daily.js）の地図の行き先 ----------------------------
+// 同じ進み具合を、日常ループの地図の行き先（spot）の形で出す。デスクの会話は時間を使わない（昼夜どちらでも）。
+// 砂丘は昼だけ・同じ日は一度。出かけると beginDesertOuting が slot を使うので、日常ループには追加の消費をさせない。
+export const DESERT_SPOT_IDS = Object.freeze({ desk: "ch4_dubai_tour_desk", dunes: "ch4_dubai_dunes" });
+const dailySpot = fields => Object.freeze({ region: "dubai", kind: "ch4_desert", ...fields });
+
+/** 今の時点で日常ループの地図に出す行き先（0〜1件）。day はドバイの章内日。 */
+export function desertDailySpots(value, day) {
+  const progress = desertProgress(value);
+  if (progress.talks < DESERT_TALKS.length) {
+    const scene = desertTalkScene(value, day);
+    if (!scene) return [];
+    const first = progress.talks === 0;
+    return [dailySpot({ id: DESERT_SPOT_IDS.desk, place: "tour_desk", label: first ? "砂漠ツアーのデスク" : "ヌールと話す", area: "宿の隣",
+      x: DESERT_PLACES.tour_desk.x, y: DESERT_PLACES.tour_desk.y, theme: "store", glyph: "砂", preview: "bg_dubai_inn_day",
+      desc: first ? "宿の隣のデスク。砂丘を走る車の写真が貼ってある（時間は使わない）。" : "日本語を教えがてら、砂漠の話を聞く（時間は使わない）。",
+      hasNew: () => true })];
+  }
+  const status = desertOutingStatus(value, day);
+  if (!status.ok) return [];
+  const best = desertRecords(value).best;
+  return [dailySpot({ id: DESERT_SPOT_IDS.dunes, place: "dunes", label: "ヌールと砂丘へ", area: "街の外の砂丘",
+    x: DESERT_PLACES.dunes.x, y: DESERT_PLACES.dunes.y, theme: "park", glyph: "砂", preview: "bg_dubai_dunes_day",
+    desc: status.first ? "サンドボードを教わる。昼の行動を使う（滑り直しは何度でも）。"
+      : `もう一度砂丘を滑る。昼の行動を使う。自己ベスト ${best.score.toLocaleString("ja-JP")}点／${best.rank}。`,
+    hasNew: () => status.first })];
+}
+
+export const desertDailySpotById = (value, day, id) => desertDailySpots(value, day).find(entry => entry.id === id) || null;

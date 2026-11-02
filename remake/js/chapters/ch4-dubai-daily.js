@@ -21,6 +21,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chapterFourProgress, syncChapterFourDay,
   chapterFourSecondAvailable } from "./ch4-progress.js";
+import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -89,12 +90,12 @@ function spotHasNew(entry) {
 
 /** 今の時間・物語の時点で地図に出す行き先。 */
 export function chapterFourDubaiSpots() {
-  return CH4_DUBAI_SPOTS.filter(entry => {
+  return [...CH4_DUBAI_SPOTS.filter(entry => {
     if (entry.place === "alley_cafe") return read("ch4_stranger_second") || chapterFourSecondAvailable(state);
     if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
     if (entry.place === "mosque") return canReflect(state);
     return true;
-  });
+  }), ...desertDailySpots(state, dubaiDay())]; // 砂漠ツアーのデスク／ヌールと砂丘へ（任意・ch4-desert.js）
 }
 
 /** 行き先の次の会話。once は一巡したら出さない（なると会う・練習会場の初回）。 */
@@ -155,7 +156,7 @@ export function chapterFourDubaiDefinition(io) {
     wakeBackground: () => CH4_PLACE_BG.inn,
     dateInvitations: false,
     confessions: false,
-    spotById: id => CH4_DUBAI_SPOTS.find(entry => entry.id === id) || null,
+    spotById: id => CH4_DUBAI_SPOTS.find(entry => entry.id === id) || desertDailySpotById(state, dubaiDay(), id),
     performSpot: (entry, options) => performDubaiSpot(entry, io, options),
   };
 }
@@ -207,6 +208,10 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.region !== DUBAI) return null;
   const owner = state;
   syncChapterFourDay(state);
+  if (entry.kind === "ch4_desert") {
+    const { performDesertSpot } = await import("./ch4-desert.js");
+    return performDesertSpot(entry, { day: chapterFourProgress(state).day, showHud });
+  }
   if (entry.place === "shop") { await openShop({ branch: "dubai" }); return unused; }
   if (entry.place === "mosque") {
     const hours = openingStatus(MOSQUE_VISITING_HOURS, state);
