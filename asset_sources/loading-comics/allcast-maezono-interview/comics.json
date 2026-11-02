@@ -1,0 +1,85 @@
+{
+  "id": "maezono-interview",
+  "title": "取材の範囲",
+  "cast": [
+    "maezono"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "取材いいかな？",
+    "はい！",
+    "そこまで？"
+  ],
+  "first_speaker": "maezono",
+  "panel1": "右の上園がメモ帳を開いて「取材いいかな？」（左上に高く）。左のはじめが背筋を伸ばして「はい！」（右下）。",
+  "panel2": "上園がはじめの寝ぐせ・靴ひも・弁当の中身を、しゃがんで熱心にメモしている。はじめ「そこまで？」。",
+  "caption": "HOOKAH PRESS編集長の取材は、細かい。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "60c0b236bbfdf4d839a7b6b16880611f4305decdac610c9ce7b52480f314b4df",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "dimension template"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/maezono.png",
+      "sha256": "a8bce133e3a390519149237cc1c934ee02e9822f549b33aecbac4c8ae776c21b",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "initial adopted game comic style only"
+    }
+  ],
+  "prompts": [
+    {
+      "path": "prompt-A-v1.txt",
+      "sha256": "78de0930fd3c0f97dbeb22df8279a2551a76d19f6530c78525deba5ded32294a"
+    }
+  ],
+  "versions": [
+    {
+      "path": "source-A-v1.png",
+      "sha256": "60c0b236bbfdf4d839a7b6b16880611f4305decdac610c9ce7b52480f314b4df",
+      "status": "review candidate"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "all three canonical lines visually read; punctuation matched",
+    "reading_order": "left panel then right; first speaker top/left before response; tails to correct speaker",
+    "identity": "official normal images viewed before generation; both panels preserve Hajime left and partner right",
+    "style": "initial adopted comic screenshot used as fourth reference every generation; cute chibi 2.5-head proportions, thick clean outlines, warm cel colors visually consistent",
+    "hardware": "none: no shisha stand/bowl/HMD/coal/hose/smoking",
+    "prohibited_text": "no title, UI, watermark, or extra text in review candidate",
+    "cut": "16/16 panel check OK; fill changed 0; <400KiB each; minor 1-3px size/rounding differences recorded, no forced ratio or upscaling",
+    "notes": "Interview balloon upper-left points right to Maezono; reply lower-right points left to Hajime. Shoes/lunch and crouched reporter clearly shown; cap obscures bedhair.",
+    "in_game_pc_phone": "not run; candidates remain unregistered"
+  },
+  "delivery": [
+    {
+      "file": "panels/maezono-interview-1.webp",
+      "width": 718,
+      "height": 479,
+      "bytes": 61242,
+      "sha256": "90f898aab827f1ae3888c21ace469a8e29579a6a78ea1873852c2ef4f338b822"
+    },
+    {
+      "file": "panels/maezono-interview-2.webp",
+      "width": 714,
+      "height": 477,
+      "bytes": 61096,
+      "sha256": "60dac03d981392510ada8b97fab81898ed06ce28ba911fbecbb44b7c5be3c35c"
+    }
+  ]
+}

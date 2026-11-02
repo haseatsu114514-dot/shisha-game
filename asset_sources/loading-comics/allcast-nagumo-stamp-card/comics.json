@@ -1,0 +1,92 @@
+{
+  "episode": {
+    "id": "nagumo-stamp-card",
+    "title": "会長の名刺",
+    "cast": [
+      "nagumo"
+    ],
+    "minChapter": 1,
+    "dialogue": [
+      "南雲だ。",
+      "会長さん……",
+      "スタンプカードだ。"
+    ],
+    "first_speaker": "nagumo",
+    "panel1": "右の南雲が名刺を差し出して重々しく「南雲だ。」（左上に高く）。左のはじめが緊張して両手で受け取り「会長さん……」（右下）。",
+    "panel2": "はじめが名刺を裏返すと、裏は丸い枠が並んだスタンプカード（文字なし）。南雲は真顔のまま。はじめ「スタンプカードだ。」。",
+    "caption": "C.STATIONは、誰でも入りやすい店です。"
+  },
+  "status": "review_candidate_not_adopted",
+  "generator": "built-in image_gen",
+  "selected_for_review": "source-A-v1.png",
+  "prompt": "prompt-A-v1.txt",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/nagumo.png",
+      "sha256": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+    }
+  ],
+  "edit_reference": null,
+  "variants": [
+    {
+      "file": "source-A-v1.png",
+      "sha256": "4b3258d06ba8ad7f06248fad7fabc568174140b894bc5bd4adb5cc82c5b5dfb9",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "台詞・話者・読順・2人・外見・枠/余白・禁止描写を目視確認"
+    }
+  ],
+  "panels": [
+    {
+      "file": "panels/nagumo-stamp-card-1.webp",
+      "sha256": "6e8bf003ba8efafce70588a725eba79f5af5d6f75daf328a4a81902c74b95df3",
+      "size": [
+        714,
+        476
+      ],
+      "bytes": 56322
+    },
+    {
+      "file": "panels/nagumo-stamp-card-2.webp",
+      "sha256": "c8aafbb3247e908447787081c376f54987adc63c7688bf28b10c0e036fc2a259",
+      "size": [
+        714,
+        476
+      ],
+      "bytes": 52810
+    }
+  ],
+  "qa": {
+    "source_dimensions": "1536x1024",
+    "dialogue": "台本と一字一句一致を目視（句読点/！？含む）",
+    "speakers_order": "左右配置固定・先話を上/左、応答を下/右、尻尾の話者所属を確認",
+    "identity": "正式立ち絵に準拠。パッキーは白い雲状/赤蝶ネクタイ/通常マイクへ。占い師は台本優先で目/鼻を陰に隠す。",
+    "style": "初期採用pc.pngを実見し、少し可愛いデフォルメ/暖かいセル塗り/太い主線を確認。先行3話は同系統のrei-mix-namesを作風参照。",
+    "count": "はじめ＋相手の2人のみ。背景に人なし",
+    "prohibited": "シーシャ台/HMD/ハガル/炭/ホース/吸い口/喫煙/武器なし。カードのラーメンの湯気は料理の絵で喫煙ではない。",
+    "cut_visual": "qa-contact-1〜3を目視、文字/顔/オチが切れていない",
+    "warnings": [
+      "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+      "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+    ]
+  },
+  "file_hashes": {
+    "source-A-v1.png": "4b3258d06ba8ad7f06248fad7fabc568174140b894bc5bd4adb5cc82c5b5dfb9",
+    "cut-QA.txt": "248fd381047f6f779a614af3b2268b37d5d1d002e78f90e02e468a66951cd465",
+    "prompt-A-v1.txt": "87806ed9aa111f1461a7ae0112bd1226b5a4278470d7753fe17993deb14db5e9"
+  }
+}
