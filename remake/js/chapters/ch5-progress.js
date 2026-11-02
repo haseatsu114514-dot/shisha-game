@@ -24,7 +24,7 @@
 import { selectPostEndingConflict } from "../core/story-routes.js";
 
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
-// 第5章専用の背景が無いので、全て既存 bg の流用。素材が届いたらこの表だけ直す。
+// 第5章の勝負会場は SMOKE LAB。その他は既存 bg を使用する。
 export const CH5_SCENE_BG = Object.freeze({
   ch5_bridge_after_return: "bg_tonari_inside_night", // 仮置き bg
   ch5_opening: "bg_osu_map_finale",                  // #1177 選定マップ（ch5_osu_07・夜／帰郷場面）
@@ -44,18 +44,18 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_schedule_contact: "bg_tonari_inside_night",    // 仮置き bg（閉店後の場面）
   ch5_timeout: "bg_tonari_inside_night",             // 仮置き bg
   ch5_match_day_arrival: "bg_tonari_inside_day",      // 休業日の朝の店から始まる場面なので tonari・昼（会場 SMOKE LAB の背景と切り替えは #2222 待ち）
-  ch5_copy_first_cup: "bg_tournament_stage",         // 仮置き bg
-  ch5_relationship_before_second_cup: "bg_tournament_stage", // 仮置き bg
-  ch5_second_cup_result: "bg_tournament_stage",      // 仮置き bg
-  ch5_second_cup_result_afterglow: "bg_tournament_stage", // 仮置き bg
-  ch5_second_cup_defeat: "bg_tournament_stage",      // 仮置き bg
+  ch5_copy_first_cup: "bg_smoke_lab",
+  ch5_relationship_before_second_cup: "bg_smoke_lab",
+  ch5_second_cup_result: "bg_smoke_lab",
+  ch5_second_cup_result_afterglow: "bg_smoke_lab",
+  ch5_second_cup_defeat: "bg_smoke_lab",
   ch5_prep_recall_heat_adjusted: "bg_tournament_stage", // 二杯目の前の末尾に続く（表示は親場面の bg）
   ch5_prep_recall_heat_kept: "bg_tournament_stage",
   ch5_prep_recall_pack_adjusted: "bg_tournament_stage",
   ch5_prep_recall_pack_kept: "bg_tournament_stage",
   ch5_prep_recall_aroma_adjusted: "bg_tournament_stage",
   ch5_prep_recall_aroma_kept: "bg_tournament_stage",
-  ch5_doctor_after_match: "bg_tournament_stage",     // 仮置き bg
+  ch5_doctor_after_match: "bg_smoke_lab",
   ch5_return_to_tonari: "bg_tonari_inside_night",    // 仮置き bg
   ch5_prep_answer_heat_adjusted: "bg_tonari_inside_night", // 帰店後の末尾に続く（表示は親場面の bg）
   ch5_prep_answer_heat_kept: "bg_tonari_inside_night",
