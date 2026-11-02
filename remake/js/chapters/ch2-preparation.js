@@ -105,7 +105,8 @@ export async function visitCityRegular(spot, { staminaGuard }) {
   return { used: true, exerted: true };
 }
 
-async function visitPreparationSpot(spot, { staminaGuard }) {
+/** 柚ヶ谷の店・支店・外出先への来店（第2章と、第3・4章の出発前の準備期間 chapters/departure-prep.js）。 */
+export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (spot.region !== "widehanga") return null;
   if (!(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
   const owner = state, id = spot.charId;

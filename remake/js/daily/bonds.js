@@ -243,10 +243,14 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
  * 締めくくりを始められるか: 固有会話を全部読み、好感度MAX（恋人も含む）で、まだ読んでいない。
  * みんとは私的な場面で会うので、私服の約束で本名を聞いた後
  */
+/** 第3章の東京へ発つ前の準備期間か（core/chapter-clock.js の departurePrep と同じ判定）。 */
+const beforeTokyoDeparture = () => state.chapter === 3 && !!state.flags?._ch3_prep && !state.flags._ch3_prep.departed;
+
 export function finaleDue(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
   if (id === "samechan" && (state.chapter || 1) < 2) return false;
-  if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit")) return false; // MELTY PUFFに通えるのは第2章だけ
+  // MELTY PUFFに通えるのは第2章と、第3章の東京へ発つ前の準備3日だけ（VOL02。東京にいる間は店が地図に無い）
+  if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   if (id === "kuze" && state.chapter !== 3) return false; // 煙幕は第3章の東京にだけある
   const def = BOND_FINALES[id];
