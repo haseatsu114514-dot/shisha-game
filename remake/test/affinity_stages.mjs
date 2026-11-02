@@ -231,6 +231,8 @@ await check('hiyori ♥4 peach talk and ♥5 promise (#2025) follow the ♥3 que
   assert.equal(R.hiyoriEventStatus('promise'),'prerequisites','♥5 first');
   s.affinity.hiyori=pts[5];assert.equal(R.hiyoriEventStatus('promise'),'ready');
   s.slot=0;assert.equal(R.hiyoriEventStatus('promise'),'time','night scene');s.slot=1;
+  // 締めくくりは第3章まで。♥4・♥5も同じ範囲で読めないと、第3章で♥5に届いた保存が詰む。
+  s.chapter=3;assert.equal(R.hiyoriEventStatus('promise'),'ready','chapter 3 finale window');s.chapter=4;assert.equal(R.hiyoriEventStatus('promise'),'chapter');s.chapter=1;
   assert.equal(R.hiyoriStoriesDone(),false);
   s.flags._hiyori_promise_done=true;assert.equal(R.hiyoriStoriesDone(),true);
   assert.equal(f.stages.pendingAffinityStage(s,'hiyori',f.db),null);

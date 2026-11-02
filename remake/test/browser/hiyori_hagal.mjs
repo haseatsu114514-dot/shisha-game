@@ -33,7 +33,12 @@ async function setup(page, answer = 0) {
     };
   }, answer);
 }
-const work = page => page.evaluate(() => H.daily.playHiyoriEvent('work_talk'));
+// ♥4・♥5（#2025）は読了済みとして贈り物だけを見る。段階の順序は affinity_stages.mjs と hiyori_work_relationship.mjs で検証する。
+const work = page => page.evaluate(async () => {
+  const done = await H.daily.playHiyoriEvent('work_talk');
+  if (done) Object.assign(H.core.state.flags, { _hiyori_peach_talk_done: true, _hiyori_promise_done: true });
+  return done;
+});
 await suite('hiyori-hagal', async allCheck => {
   // Focused reruns are optional; CI executes every assertion by default.
   const check = (label, body, options) => !process.env.CASE_FILTER || label.includes(process.env.CASE_FILTER)
@@ -49,6 +54,7 @@ await suite('hiyori-hagal', async allCheck => {
         if (kind === 'only-owned') s.owned.push(gear.id);
         if (kind === 'unanswered' || kind === 'missing-gear') {
           s.flags._hiyori_work_talk_done = true; s.flags._hiyori_bond_question_done = true;
+          s.flags._hiyori_peach_talk_done = true; s.flags._hiyori_promise_done = true;
         }
         if (kind === 'missing-gear') {
           s.romanceChoices.bond_q1_hiyori = { char: 'hiyori', value: 0, day: s.day };

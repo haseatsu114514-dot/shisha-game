@@ -166,7 +166,8 @@
         "dialogue": "hiyori_peach_talk",
         "chapters": [
           1,
-          2
+          2,
+          3
         ],
         "flag": "_hiyori_peach_talk_done",
         "requires": [
@@ -183,7 +184,8 @@
         "dialogue": "hiyori_promise",
         "chapters": [
           1,
-          2
+          2,
+          3
         ],
         "flag": "_hiyori_promise_done",
         "requires": [
