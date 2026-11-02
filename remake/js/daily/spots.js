@@ -22,8 +22,7 @@ import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
-import { chapterFeatureEnabled } from "../core/chapter-features.js";
-import { fortuneRumorHeard, fortuneOpenOn } from "./fortune-schedule.js";
+import { fortuneHere, fortunePosition } from "./fortune-schedule.js";
 import { openingStatus, rinUnavailable } from "./spot-hours.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
@@ -51,7 +50,7 @@ export const VISIT_BG = {
 
 /**
  * マップのスポット。x/y はマップ（bg_osu_map）上の位置（%）。店舗は看板のしっぽ、施設は絵の中心が指す地点。
- * 施設絵は絵の中心を地点へ合わせる。観音堂は背景のお堂、家は右側の住宅、占いはアーケード脇。
+ * 施設絵は絵の中心を地点へ合わせる。観音堂は背景のお堂、家は右側の住宅。占い師は現れるたびに場所が変わる。
  * kind: tonari（サブメニュー）/ rival（店主に会う）/ shop / spot（施設）/ rest
  * theme: 看板の色 / glyph: 顔ドット絵が無いときの一文字 / face: 看板に出す顔（面識があれば）
  * label: 看板の下の店名・施設名（店は「へ行く」を足す）
@@ -83,11 +82,6 @@ export const SPOTS = [
   { id: "c_station", kind: "spot", label: "C.STATION", area: "大会運営", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -16,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会を運営するチェーン店。噂も集まる。" },
-  // 路上占い師（旧版 F11）: 週2日だけアーケード脇に出る。時間を使わない・1日1回・相性占い3,000円。
-  // 出店日に正式な施設名で表示する。未対面の人物情報は引き続き伏せる。
-  { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", area: "アーケード脇", x: 63, y: 69, theme: "park", glyph: "占",
-    desc: "タロットで縁を占う。1回3,000円。",
-    unknownDesc: "路地の隅に、見慣れない出店がある。" },
   { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 44, theme: "rest", glyph: "休", stamina: 55,
     desc: "体を休める。体力が大きく戻る。" },
 ];
@@ -103,7 +97,19 @@ export const SPOT_PREVIEW = {
 export const FACILITY_GROWTH_SPOTS = Object.freeze(["kannon", "choizap", "cafe", "axe_bar", "rojiura_cinema"]);
 export const facilityGrowth = (spot) => FACILITY_GROWTH_SPOTS.includes(spot?.id)
   ? { budget: 1, points: 2, primary: spot.stat || null } : {};
-export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot(), cinemaSpot()].filter(Boolean)];
+/**
+ * 路上占い師（旧版 F11）: 章ごとに1〜2回、予定の無い昼か夜に、街のどこかへ現れる（daily/fortune-schedule.js・台帳 URA）。
+ * 時間を使わない・相性占い3,000円。現れている時間帯だけ、その回の場所に出す。未対面の人物情報は引き続き伏せる。
+ * @param where 地図の地域（"home" | "tokyo"）
+ */
+export function fortuneSpot(where = "home") {
+  if (!state || !fortuneHere(state, where)) return null;
+  const { x, y, area } = fortunePosition(state);
+  return { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", area, x, y, theme: "park", glyph: "占",
+    desc: "タロットで縁を占う。1回3,000円。時間は使わない。",
+    unknownDesc: "路地の隅に、見慣れない出店がある。" };
+}
+export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot(), cinemaSpot(), fortuneSpot("home")].filter(Boolean)];
 export const spotById = (id) => allSpots().find((s) => s.id === id);
 
 // ---------------------------------------------------------------- 状態の読み取り
@@ -262,7 +268,7 @@ export function isUnlocked(spot) {
   // 初回受領後は使い切っても内省の場所を残す。紹介・訪問の記録は変更しない。
   if (spot.id === "kannon" && growthEnabled() && (state.growth?.earned > 0 || hidaneTotal() > 0)) return true;
   if (spot.id === "rojiura_cinema") return cinemaDiscovered(state);
-  if (spot.kind === "fortune") return chapterFeatureEnabled(state.chapter, "fortune") && fortuneRumorHeard(state) && fortuneOpenOn(state.day, isRainy);
+  if (spot.kind === "fortune") return fortuneHere(state);
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;
   if (spot.id === "cafe") return !!state.flags._cafe_introduced || (state.spotVisits?.cafe || 0) > 0;
   // 旧保存でも実際に訪れた施設は保持する。面識だけの解放は引き継がない。

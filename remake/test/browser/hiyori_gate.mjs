@@ -60,11 +60,11 @@ await suite('hiyori-gate', async check => {
         return { rows, guarantee, lover, minto: s.affinity.minto };
       });
       for (const r of results.rows) {
-        assert.equal(r.locked, r.start + 209); assert.equal(r.held,0);
+        assert.equal(r.locked, r.start + 214); assert.equal(r.held,0);
         assert.equal(r.beforeRead, 0); assert(r.read && r.done && r.fortuneUsed);
         assert.equal(r.legacyReleased, 0); assert.equal(r.stageReleased,0);
         assert.equal(r.retained,0);
-        assert.equal(r.after, r.start + 219, JSON.stringify(r));
+        assert.equal(r.after, r.start + 224, JSON.stringify(r));
         assert(!r.duplicate); assert.equal(r.again, 0); assert.equal(r.final, r.after);
       }
       assert.deepEqual(results.guarantee, { points: 48, guaranteed: 0, again: 0 });
