@@ -10,6 +10,25 @@
   ],
   "suites": [
     {
+      "id": "craft-layout-2190",
+      "title": "Horizontal mix recipe, status explanation and full result details (#2190)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": [
+        "remake/css/craft.css",
+        "remake/css/craft-landscape.css",
+        "remake/css/ui-inner.css",
+        "remake/css/flavor-guide.css",
+        "remake/js/craft/common.js",
+        "remake/js/craft/flavor-guide.js",
+        "remake/js/daily/status.js",
+        "remake/test/browser/craft_layout_2190.mjs"
+      ],
+      "run": ["node remake/test/browser/craft_layout_2190.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "chapter-actions",
       "title": "Chapter 3–5 action buttons, session invalidation and error recovery",
       "kind": "quick",
