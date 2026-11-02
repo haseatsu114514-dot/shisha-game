@@ -4,7 +4,7 @@
 //   - 本筋の場面: 昼の行動を使う場面（slotEvent）と夜の予定（nightEvents）。並びと日付は ch3-progress.js の CH3_DAILY_PLAN
 //   - 恋人の東京訪問: 約束した時間帯に、合流・散歩が一つの行動として入る（core/tokyo-visits.js）
 //   - 行き先: mukai（手伝い・ましろちゃんとの時間・店番・作業台・裏口のてつこ）・煙幕・Smoke & Glory・鉄の煙・公園・
-//     東京の店・CHOI-ZAP・路地裏の神社・クラブSEAM・mukaiの奥の部屋（地元との連絡は右上の LIME の一番上の行）
+//     東京の店・CHOI-ZAP・池の弁天堂・クラブSEAM・mukaiの奥の部屋（地元との連絡は右上の LIME の一番上の行）
 //   - 寄り道（任意の場面）は、その場所を訪ねた時に一つずつ読む（行動を使うので選んで読む。台本の能力報酬も効く）。
 //     遠くからの電話（みんと・つむぎ・ひより）は、本筋の予定が無い夜に一つ届く
 // 現在地は flags._ch2_region = "tokyo"（HUD の街の札）。台詞の正本は data/dialogue/ch3_*.json と ch3_tokyo_daily.json。
@@ -98,8 +98,9 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
     preview: "bg_fookah_showroom", desc: "東京の店。葉を買える（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_gym", place: "gym", label: "CHOI-ZAP", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体",
     preview: "bg_choizap", stamina: -8, stat: "charm", desc: "全国の店で使える会員証で、体を動かす。" }),
-  spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "路地裏の神社", area: "路地の奥", x: 54, y: 70, theme: "rest", glyph: "社",
-    preview: "bg_street", desc: "学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
+  // 心得の盤の内省。公園の池に浮かぶお堂（IR26・SBD98）。id は仮置きの「路地裏の神社」の時のまま（互換）
+  spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",
+    preview: "bg_tokyo_park", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
   // 店名は入口で知る（DJS12）。店主の針間ヨルに会うまでは「地下の店」と出す（daily/map.js の charId・unknownLabel）。
   spot({ id: "ch3_tokyo_club", place: "club", label: "クラブSEAM", area: "路地の地下", x: 86, y: 50, theme: "stadium", glyph: "♪",
     charId: "yoru", unknownLabel: "地下の店", unknownDesc: "地下から低い音がする。のぞいてみる（時間は使わない）。",
@@ -110,6 +111,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
 
 function spotHasNew(entry) {
   if (["mukai", "enmaku", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
+  if (entry.place === "enmaku" && finaleAtVisit("kuze")) return true; // 久世の締めくくり（IR22）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
 }
@@ -479,9 +481,12 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
 /**
  * 煙幕・Smoke & Glory・鉄の煙: 寄り道があればそれ、無ければその店の外出（#1655）。
  * 東京のシーシャ屋は一台4,000円（TOKYO_VISIT_COST）。読み終えた時だけ払う。本筋の場面（日程の枠で読む）は払わない。
+ * 煙幕では、久世の締めくくり（♥5・IR22）が来ていれば「久世に呼ばれる」を先頭に出す（閉店後に呼ばれるので払わない）。
  */
 async function visitRivalShop(entry, io, staminaGuard, owner) {
+  const finale = entry.place === "enmaku" && finaleAtVisit("kuze");
   const choices = [
+    ...finale ? [{ label: "久世に呼ばれる", value: "finale:kuze" }] : [],
     ...optionalAt(entry.place).map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
     ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${outingReason(state, outing)}`, value: `outing:${outing.id}` })),
   ];
@@ -493,10 +498,21 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
       { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
   if (!pick || state !== owner) return unused;
   const [kind, id] = pick.split(":");
+  if (kind === "finale") return readKuzeFinale(staminaGuard, owner);
   const result = kind === "scene" ? await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner)
     : await goOuting(outingById(id), staminaGuard, owner);
   if (result?.used && state === owner && cost) addMoney(-cost);
   return result;
+}
+
+/** 久世の締めくくり（daily/bonds.js の条件・一度だけ）。ましろちゃんの節目と同じく行動を一つ使う。 */
+async function readKuzeFinale(staminaGuard, owner) {
+  if (!(await staminaGuard(-10))) return unused;
+  const bg = BG(visitBg.enmaku);
+  await setBg(bg, { instant: true });
+  if (!await playFinale("kuze", { bg }) || state !== owner) return unused;
+  addStamina(-10);
+  return { used: true, exerted: true, exp: personExp("kuze") };
 }
 
 /**

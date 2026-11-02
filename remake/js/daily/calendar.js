@@ -54,6 +54,7 @@ const fixedNight = (day) => nightOccupied(chapterDef.nightEvents, day);
  * @param def.untilDay 最終日の通算日（大会・勝負の日）。getter でもよい（第5章は日程が決まるまで Infinity）
  * @param def.undatedNote 最終日が決まっていないときの朝・夜明けのカードの一言
  * @param def.dateInvitations false で恋人のデートの誘いを出さない
+ * @param def.withLovers () => 恋人ID[]。今いっしょにいて、朝のLIMEを送ってこない恋人（第4章のドバイの同行者）
  * @param def.confessions false で夜の告白の場面を出さない
  * @param def.homeShisha () => false で寝る前の家シーシャを聞かない（家の台が無い泊まり先）
  * @param def.departure true なら最終日は大会ではなく遠出の出発の朝（第3・4章の準備期間・VOL02）。
@@ -175,10 +176,12 @@ async function morning() {
   if (dawnShownDay === state.day) dawnShownDay = null;
   else await dayCard(dayTitle(), countdownText(), { weather: weatherOf(), forecast: tomorrowForecast() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
-  // 恋人のデートの誘いを出さない章（第5章）は、恋人の朝のLIMEだけ届く（lover-entry.js と同じ扱い）。
+  // 恋人のデートの誘いを出さない章（第3章の東京・第4章のドバイ）は、恋人の朝のLIMEだけ届く（lover-entry.js と同じ扱い）。
+  // 一緒にいる恋人（ドバイの同行者）からは届かない。
   // 章の側から届く朝のLIME（第3章の東京の恋人からの訪問の相談など）
   const extra = chapterDef.morningLime?.() || 0;
-  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false }) + extra;
+  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false,
+    exclude: chapterDef.withLovers?.() || [] }) + extra;
   if (n) pushNotice(n, { onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
@@ -713,7 +716,7 @@ const TONARI_EXP = {
   customer: { key: "tonari_seat", place: "tonari_seat" },
 };
 /**
- * 大会前夜に内省する場所（SPEC 2.8）。今いる地域の静かな場所: 地元は観音堂、東京は路地裏の神社、ドバイはモスクの見える水辺、
+ * 大会前夜に内省する場所（SPEC 2.8）。今いる地域の静かな場所: 地元は観音堂、東京は池の弁天堂、ドバイはモスクの見える水辺、
  * 柚ヶ谷は宿の窓辺（参拝の場所を置かない。SBD34）。2026-11-02: 東京の日常ループ（第3章・第5章）でも地元の観音堂になっていたのを直す
  */
 export function evePlaceFor(s) {

@@ -7,10 +7,12 @@ import { hasUsableHidane } from "../core/growth-board.js";
 import { starterPending } from "./growth-board-tutorial.js";
 import { openingStatus, MOSQUE_VISITING_HOURS } from "./spot-hours.js";
 
-/** 場所ごとの場面と背景。新設の神社・モスクの背景は #1788 の画像が届くまで近い背景で代える */
+/** 場所ごとの場面と背景。新設の弁天堂・モスクの背景は画像が届くまで近い背景で代える */
 export const REFLECT_PLACES = {
   kannon: { scene: "reflect_kannon", bg: "res://assets/backgrounds/bg_kannon_night.png", label: "観音堂" },
-  tokyo_shrine: { scene: "reflect_tokyo_shrine", bg: "res://assets/backgrounds/bg_street_night.png", label: "路地裏の神社" },
+  // 東京は公園の池に浮かぶ弁天堂（IR26・SBD98）。背景は bg_tokyo_benten_*（tools/bg_prompts.txt PK03・PK04）が届くまで
+  // 同じ公園の池の絵（昼夜で切り替わる）で代える。id の tokyo_shrine は仮置きの「路地裏の神社」の時のまま（互換）
+  tokyo_shrine: { scene: "reflect_tokyo_shrine", bg: "bg_tokyo_park", label: "池の弁天堂" },
   dubai_mosque: { scene: "reflect_dubai_mosque", bg: "res://assets/backgrounds/bg_dubai_map_dusk.png", label: "見学できるモスク", ...MOSQUE_VISITING_HOURS },
   dubai_waterside: { scene: "reflect_dubai_waterside", bg: "res://assets/backgrounds/bg_dubai_map_dusk.png", label: "モスクの見える水辺" },
   inn_window: { scene: "reflect_inn_window", bg: "res://assets/backgrounds/bg_ch3_hotel_night.png", label: "宿の窓辺" },

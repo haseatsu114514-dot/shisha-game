@@ -14,12 +14,17 @@ export const CH3_AFTERMATH_SCENES = Object.freeze([
 /**
  * 大会後の寄り道（#2028 残件3・#1658 ⑥）。優勝の翌日から煙幕の片づけまで、東京にいる間の場面カードから一度ずつ読める。
  * 読んでも stage・日時は進めない。既読は大会前の寄り道と同じ _ch3_read_<id>（ch3-story-wiring.js の optionalReadFlag）。
- * file=台詞ファイル、met=面識がある人物だけ。
+ * file=台詞ファイル、met=面識がある人物だけ、after=この寄り道を読んでから（順に読む）。
  */
 export const CH3_AFTERMATH_DETOURS = Object.freeze([
   { id: "ch3_mukai_after_tournament", file: "ch3_mukai", label: "閉店前のカウンター", location: "mukai", bg: "bg_mukai_shop" },
   // エミルは大会当日に名乗る審査員。体験会の台本は大会前の寄り道にもあるが、面識の条件で大会後にしか開かない。
   { id: "ch3_emil_workshop", file: "ch3_rivals", label: "エミルの体験会", location: "東京", bg: "bg_street_day", met: ["emil"] },
+  // 鉄の煙の再訪（IR23）。初来店（DAY12夜）から大会までは行動が一つしかないので、大会前に読めなかった分を大会後にも順に読める。
+  // 台本は大会に触れない店の話なので、大会の前後どちらで読んでも通る。好感度は台本の報酬（任意の場面だけ。必須の初来店には付けない）。
+  { id: "ch3_volk_second", file: "ch3_volk", label: "鉄の煙の二度目", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+  { id: "ch3_volk_third", file: "ch3_volk", label: "七年分の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"], after: ["ch3_volk_second"] },
+  { id: "ch3_volk_fourth", file: "ch3_volk", label: "頷く順番", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"], after: ["ch3_volk_third"] },
   { id: "ch3_volk_after_ch3", file: "ch3_volk", label: "大会のあとの記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
 ]);
 const DETOUR_FIRST = CH3_AFTERMATH_SCENES.findIndex(scene => scene.id === "ch3_mashiro_recovery");
@@ -32,7 +37,8 @@ export function availableAftermathDetours(value) {
   const stage = value.flags._ch3_aftermath?.stage;
   if (!Number.isInteger(stage) || stage < DETOUR_FIRST || stage > DETOUR_LAST) return [];
   return CH3_AFTERMATH_DETOURS.filter(scene => !value.flags[detourReadFlag(scene.id)]
-    && (scene.met || []).every(who => value.met?.[who]));
+    && (scene.met || []).every(who => value.met?.[who])
+    && (scene.after || []).every(id => value.flags[detourReadFlag(id)]));
 }
 
 /**
@@ -62,6 +68,22 @@ export function availableAftermathLessons(value, ready) {
     .filter(entry => !(entry.who === "steve" && value.flags._ch3_naru_party_ready))
     .map(entry => ({ ...entry, lessons: ready(entry.who) || [] }))
     .filter(entry => entry.lessons.length > 0);
+}
+
+/**
+ * 大会後の東京で読める締めくくり（IR22）。♥5に届いた次の来店が大会の後になった時も、帰る前に一度だけ読める
+ * （台本は大会の前後で分かれる）。窓は久世の授業と同じく、煙幕の片づけ（店を畳む朝）の前まで。
+ * due(who) は daily/bonds.js の finaleDue（♥5・前提の場面・既読）。寄り道と同じく stage・日時は進めず、保存は変更しない。
+ */
+export const CH3_AFTERMATH_FINALES = Object.freeze([
+  { who: "kuze", file: "ch3_rivals", dialogue: "ch3_kuze_bond_finale", label: "久世に呼ばれる", place: "煙幕", bg: "bg_yohaku_shop",
+    from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
+]);
+export function availableAftermathFinales(value, due) {
+  if (!canRunChapterThreeAftermath(value) || value.flags._ch3_cleared) return [];
+  const stage = value.flags._ch3_aftermath?.stage;
+  if (!Number.isInteger(stage)) return [];
+  return CH3_AFTERMATH_FINALES.filter(entry => stage >= sceneIndex(entry.from) && stage <= sceneIndex(entry.to) && !!due(entry.who));
 }
 
 /** 寄り道を最後まで読んだ時だけ既読にする。本筋の進行には触れない。 */

@@ -389,6 +389,93 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
   });
 
+  // IR16・IR17: 第5章は帰郷後なので、第1・2章と同じく恋人のLIMEの誘い→デート（絆が深まる）→節目（lover_events）。
+  // 今日の約束があるまま東京へ発とうとすると確かめられ、行くなら約束は別の日に改める。
+  await check("chapter-five-lover-invitation-date-and-milestone", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 60000, stamina: 100,
+        weatherSeed: 5, lovers: ["tsumugi"], loveLevel: { tsumugi: 1 }, lovePts: { tsumugi: 9 }, loverSince: { tsumugi: 44 },
+        contacts: ["sumi", "tsumugi"], limeRead: ["_lover_private_account_tsumugi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
+      Object.assign(value.met, { tsumugi: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
+      value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 51, slot: 0 });
+    let state = await get(page);
+    const invite = state.inbox.find(item => item.msg?.accept_event === "date_tsumugi");
+    assert(invite && !invite.read, "The morning LIME brings a date invitation in Chapter 5");
+    await page.locator(dt("hud-phone")).click();
+    await page.locator(dt("lime-chat-tsumugi")).click();
+    await page.locator('[data-test="reply-0"]:not([disabled])').click();
+    await page.locator(dt("phone-next")).click();
+    await page.locator(dt("phone-close")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    state = await get(page);
+    assert.equal(state.pendingInvite?.event, "date_tsumugi");
+    assert.equal(state.pendingInvite.slot, 1);
+    // 東京へ発とうとすると、今日の約束を確かめられる。やめれば約束も現在地もそのまま。
+    await go(page, "ch5_to_tokyo");
+    await page.locator(dt("ch5-date-stay")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    state = await get(page);
+    assert.equal(state.flags._ch2_region ?? "home", "home");
+    assert.equal(state.pendingInvite?.event, "date_tsumugi", "Staying keeps the date");
+    // 昼は家で休む → 仕事のあと約束の場所へ → デート → 節目 → 翌朝。
+    await go(page, "rest");
+    const settle = async (day, slot) => {
+      for (let n = 0; n < 180; n++) {
+        for (const name of ["levelup-ok", "board-close"]) {
+          const button = page.locator(dt(name));
+          if (await button.count() && await button.first().isVisible()) await button.first().click().catch(() => {});
+        }
+        if (await page.evaluate(([day, slot]) => {
+          const s = window.__remake?.state;
+          return s && s.day === day && s.slot === slot && !!document.querySelector('.map:not(.done):not([data-revealing="true"]) [data-test=pin-tonari]')
+            && !document.querySelector("#modal.show");
+        }, [day, slot])) return;
+        await page.waitForTimeout(500);
+      }
+      throw new Error(`The map of day ${day} did not open`);
+    };
+    await settle(52, 0);
+    state = await get(page);
+    assert.equal(state.lastDate.tsumugi, 51, "The date happened on the promised night");
+    assert(state.lovePts.tsumugi > 9, "The date deepens the private bond (lovePts)");
+    assert(state.loverEventsSeen.includes("lover_tsumugi_lv1"), "The first milestone follows the date");
+    assert.equal(state.pendingInvite, null);
+    assert(state.inbox.find(item => item.id === invite.id)?.completed, "The appointment is completed once");
+    // 約束を改めて東京へ行くと、その日の約束は流れ、また誘ってもらえる。
+    await page.evaluate(() => {
+      const s = window.__remake.state;
+      s.inbox.push({ id: "_date_inv_tsumugi_test_d52", originId: "_date_inv_tsumugi_test_d52", day: 52, chapter: 5, read: true, done: true, result: "accepted", log: [],
+        msg: { id: "_date_inv_tsumugi_test_d52", sender: "tsumugi", type: "invitation", lover: true, accept_event: "date_tsumugi",
+          time_slot: "night", after_close: true, messages: ["今日は仕事を終えてから、少し会える？"] } });
+      s.pendingInvite = { event: "date_tsumugi", sender: "tsumugi", slot: 1, day: 52, originId: "_date_inv_tsumugi_test_d52", afterClose: true };
+    });
+    await go(page, "ch5_to_tokyo");
+    await page.locator(dt("ch5-date-leave")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch2_region === "tokyo" && window.__remake.state.slot === 1, null, { timeout: 60000 });
+    state = await get(page);
+    assert.equal(state.pendingInvite, null, "The date is moved to another day");
+    const moved = state.inbox.find(item => item.id === "_date_inv_tsumugi_test_d52");
+    assert.equal(moved.result, "expired");
+    assert.equal(moved.needsResend, true);
+    assert.equal(state.lastDate.tsumugi, 51, "No date in Tokyo");
+  });
+
   // 帰国後の tonari の打ち上げ（オーナー指定 2026-11-02）: 自由行動の始めに一度だけ、誰の隣に座るかを選ぶ。
   // その場にいる恋人が2人以上なら、どの席でも浮気がばれて修羅場（恋人ごとの反応→謝罪＝未解決の印）。
   await check("chapter-five-after-party-seat-and-two-lovers-shuraba", async page => {

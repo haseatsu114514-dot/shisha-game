@@ -1280,6 +1280,7 @@
       "paths": [
         "remake/js/chapters/ch3-aftermath*.js",
         "remake/js/chapters/ch5-tokyo.js",
+        "remake/js/chapters/ch5-dubai.js",
         "remake/js/chapters/ch5-shops.js",
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/core/growth.js",
@@ -1355,6 +1356,7 @@
         "data/dialogue/ch5_tokyo.json",
         "data/dialogue/ch5_dubai.json",
         "data/dialogue/ending.json",
+        "remake/js/daily/romance.js",
         "remake/test/browser/ch5_full_flow.mjs"
       ],
       "run": [
@@ -1459,6 +1461,8 @@
         "data/dialogue/tournament_craft.json",
         "data/characters.json",
         "remake/data/manifest.json",
+        "remake/js/chapters/lover-entry.js",
+        "remake/data/lover.json",
         "remake/test/browser/ch3_tournament.mjs"
       ],
       "run": [

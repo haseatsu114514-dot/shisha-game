@@ -30,6 +30,10 @@ import { invitationCost, storeInvitationSpot, visitReminderSpot, missedInvitatio
 const naruRiftActive = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._ch2_read_ch2_naru_confrontation
   || save?.flags?._ch2_night_11_done || save?.flags?._ch2_naru_listened || save?.flags?._ch2_naru_hurt);
 
+// IR16: 恋人のデートは地元の店で会う約束。はじめが東京・ドバイにいる間は乗れない。
+// romance.js の awayFromHome と同じ条件（試験の依存を増やさないため写し）
+const awayFromHome = (save) => ["tokyo", "dubai"].includes(save?.flags?._ch2_region);
+
 // C03: 初回受信から返信を待つ目安。再案内の日付では数え直さない。
 const LIME_REPLY_NUDGE_DAYS = 3;
 
@@ -50,6 +54,8 @@ function invitationAvailable(m, { fixedNight = () => false } = {}) {
   if (m.closed_on != null && state.day % 7 !== m.closed_on) return false;
   if (m.exclude_closed_on != null && state.day % 7 === m.exclude_closed_on) return false;
   if (m.time_slot === "night" && fixedNight(state.day)) return false;
+  // 恋人のデートは地元で会う約束。東京・ドバイにいる間は乗れない（IR16）
+  if (m.lover && m.type === "invitation" && awayFromHome(state)) return false;
   return true;
 }
 
@@ -170,7 +176,9 @@ export function expireInvitations(opts = {}) {
     if (storeVisit && dueDay === state.day && state.slot === 1 && pending.slot === 0) pending.slot = 1;
     const past = dueDay < state.day || dueDay === state.day && pending.slot < state.slot && !waitingForClose;
     const conflict = dueDay === state.day && !waitingForClose && (pending.slot === 1 && !storeVisit && opts.fixedNight?.(dueDay) || schedule === null
-      || schedule && (!invitationAvailable(schedule, opts) || pending.slot !== replySlot(schedule)));
+      || schedule && (!invitationAvailable(schedule, opts) || pending.slot !== replySlot(schedule))
+      // 約束した恋人のデートの日に東京・ドバイへ出ていたら、地元のデートはできない（IR16）
+      || /^date_/.test(pending.event) && awayFromHome(state));
     if (past || conflict) {
       rescheduleInvitation(pending, conflict
         ? "仕事や別の予定と重なったため、約束を別の日に改めることにした"

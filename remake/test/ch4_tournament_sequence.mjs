@@ -16,7 +16,7 @@ DB.flavorById = Object.fromEntries(data("flavors").flavors.map(row => [row.id, r
 DB.equipById = Object.fromEntries(data("equipment").equipment.map(row => [row.id, row]));
 const source = fs.readFileSync(new URL("../js/chapters/ch4-tournament.js", import.meta.url), "utf8");
 
-async function run({ failure = null, abandon = false, invalidate = false, resume = null, ask = true, loadFails = false, storyCancel = null } = {}) {
+async function run({ failure = null, abandon = false, invalidate = false, resume = null, ask = true, loadFails = false, storyCancel = null, quality = 96 } = {}) {
   const value = resume || newState();
   if (!resume) {
     value.chapter = 4; value.phase = "tournament";
@@ -24,7 +24,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     value.flags._ch4 = { part: "tournament", read: { ch4_tournament_start: true, ch4_stranger_second: true, ch4_stranger_third: true } };
   }
   setState(value);
-  const trace = [], snapshots = [];
+  const trace = [], snapshots = [], contexts = [], shown = [];
   let current = true;
   const initial = () => ({ mode: "tournament", chapter: 4, equip: {}, mix: {}, careHistory: [],
     pack: "normal", place: "triangle", steamSeconds: 480, pullDone: false, total: 0 });
@@ -34,7 +34,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     openBench: cs => trace.push(`bench:${match.chapterFourMatch(value).step}`),
     waitBenchReady: async () => trace.push("ready"),
     benchRoot: () => ({ querySelector: () => ({ append: () => trace.push("menu") }) }),
-    showChapterFourStandings: async p => trace.push(`standings:${p.voted}`),
+    showChapterFourStandings: async p => { trace.push(`standings:${p.voted}`); shown.push(match.chapterFourStandings(p)); },
     retireScreen: () => trace.push("retire"), playBgm() {}, clearComments() {}, block() {},
     play: async dialogue => { trace.push(dialogue.dialogue_id); return {}; },
     modal: async options => { trace.push(options.title); return ask; },
@@ -46,6 +46,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
       story.seen ||= [];
       if (story.seen.includes(event)) return true;
       trace.push(`story:${event}:${options?.context?.rank ?? "-"}`);
+      contexts.push({ event, ...options?.context });
       if (storyCancel === event) return false;
       story.seen.push(event);
       return true;
@@ -53,21 +54,21 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     stepSetup: async () => trace.push("setup"), stepWater: async () => trace.push("water"),
     stepMix: async cs => { trace.push("mix"); cs.mix = { sakura: 12 }; cs.mixInfo = { total: 12, score: 96, intensity: 5 }; },
     stepPack: async cs => { trace.push("pack"); cs.pack = "normal"; },
-    runHoles: async cs => { trace.push("holes"); cs.holes = { score: 96, outerEven: 1, total: 24, minimumComplete: true, innerExcess: 0 }; },
+    runHoles: async cs => { trace.push("holes"); cs.holes = { score: quality, outerEven: 1, total: 24, minimumComplete: true, innerExcess: 0 }; },
     stepPlace: async cs => { trace.push("place"); cs.place = "triangle"; },
-    runHeat: async cs => { trace.push("heat"); cs.heat = { score: 96, heatPower: 85, heatStability: 100, burnRisk: 0, aromaRetention: 100 }; },
+    runHeat: async cs => { trace.push("heat"); cs.heat = { score: quality, heatPower: 85, heatStability: 100, burnRisk: 0, aromaRetention: 100 }; },
     stepSteamTime: async cs => { trace.push("steam-time"); cs.steamSeconds = 480; },
     runSteamDodge: async cs => { trace.push("steam"); cs.steam = { score: 96 }; },
     runPull: async cs => {
       trace.push("pull"); value.stamina -= 4;
       if (invalidate) { current = false; return true; }
       if (abandon) return false;
-      cs.pull = { score: 96, temp: .54, pulls: 2 }; cs.pullDone = true;
+      cs.pull = { score: quality, temp: .54, pulls: 2 }; cs.pullDone = true;
       if (failure === "pull") cs.failed = "burnt";
       return true;
     },
     runCare: async (cs, { round }) => {
-      trace.push(`care${round}`); cs.careHistory[round - 1] = { score: 96, temp: .54, coals: 1 };
+      trace.push(`care${round}`); cs.careHistory[round - 1] = { score: quality, temp: .54, coals: 1 };
       if (failure === `care${round}`) cs.failed = "cold";
     },
   };
@@ -85,7 +86,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
   let result, error;
   try { result = await module.namespace.runChapterFourCraft({ isCurrent: () => current, menuButton: () => ({}) }); }
   catch (e) { error = e; }
-  return { trace, snapshots, value, result, error };
+  return { trace, snapshots, value, result, error, contexts, shown };
 }
 const success = await run();
 assert.equal(success.error, undefined);
@@ -164,6 +165,27 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   const reopened = await run({ resume: structuredClone(closed.value) });
   assert.equal(reopened.result.win, true);
   assert.deepEqual(told(reopened.trace), ["packed", "waiting", "interlude1", "interlude2"]);
+}
+// 2026-11-02「なるを強くする」: ふつうの出来の一台では、提供後・調整1回目の票でなるが先頭に立ち、最後の票で逆転する。
+// 掛け合いには、直前に見せた途中順位と同じ並び（はじめの順位と先頭）を渡す。強い一台では先頭ははじめのまま。
+{
+  const average = await run({ quality: 89 });
+  assert.equal(average.result.win, true);
+  const told = (r, event) => r.contexts.find(row => row.event === event);
+  assert.deepEqual(average.shown.map(rows => rows[0].id), ["hajime", "naru", "naru"]);
+  for (const r of [average, success]) for (const [event, index] of [["interlude1", 1], ["interlude2", 2]]) {
+    const rows = r.shown[index], me = rows.find(row => row.id === "hajime");
+    assert.deepEqual(told(r, event), { event, leader: rows[0].id, rank: me.rank,
+      tied: rows[1].points === rows[0].points, level: me.points === rows[0].points }, `${event} is told the standings just shown`);
+  }
+  // ふつうの一台では、なるは提供後・調整1回目の票の1位を取って、はじめと同じ持ち点に並ぶ（盤の上はその回の出来の差）。
+  // 台本には「並んだ」と渡し、単独の先頭とは言わせない。
+  assert.deepEqual(average.shown.slice(1).map(rows => rows.slice(0, 2).map(row => `${row.id}:${row.points}`)),
+    [["naru:6", "hajime:6"], ["naru:9", "hajime:9"]]);
+  assert.equal(told(average, "interlude1").tied, true);
+  assert.equal(told(average, "interlude1").level, true);
+  assert.equal(told(success, "interlude1").leader, "hajime");
+  assert.equal(told(success, "interlude2").leader, "hajime");
 }
 const noAsk = await run({ ask: false });
 assert.deepEqual(noAsk.value.flags._ch4.match.craft.customerChecks, [false, false]);

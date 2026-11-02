@@ -11,7 +11,7 @@ import { DB, sceneBg } from "../core/data.js";
 import { setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { tokyoVanBlock, TOKYO_VAN_SLOTS } from "./ch5-travel.js";
 import { openShop } from "../daily/shop.js";
@@ -36,10 +36,10 @@ export const TOKYO_SPOTS = Object.freeze([
     preview: "bg_mukai_shop", stamina: MUKAI_SHIFT_STAMINA, shift: true, talks: ["ch5_tokyo_mukai_help", "ch5_tokyo_mukai_help_b", "ch5_tokyo_mukai_help_c"],
     desc: "ムカイさんの店のシフト（日当6,000円）。帰りに裏口のてつこにも会える。" }),
   spot({ id: "ch5_tokyo_steve", charId: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙", face: "steve",
-    preview: "bg_steve_shop", cost: TOKYO_VISIT_COST, stamina: -16, stat: "technique", affinity: 5,
+    preview: "bg_steve_shop", cost: TOKYO_VISIT_COST, stamina: -16, stat: "technique",
     talks: ["ch5_tokyo_steve", "ch5_tokyo_steve_b", "ch5_tokyo_steve_c"], desc: "タイマーの並ぶ店。二口目までの一台。" }),
   spot({ id: "ch5_tokyo_volk", charId: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙", face: "volk",
-    preview: "bg_volk_shop", cost: TOKYO_VISIT_COST, stamina: -16, stat: "insight", affinity: 5,
+    preview: "bg_volk_shop", cost: TOKYO_VISIT_COST, stamina: -16, stat: "insight",
     talks: ["ch5_tokyo_volk", "ch5_tokyo_volk_b", "ch5_tokyo_volk_c"], desc: "計器の並ぶ店。測ってから、客に聞く。" }),
   spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_street",
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
@@ -48,9 +48,9 @@ export const TOKYO_SPOTS = Object.freeze([
     preview: "bg_fookah_showroom", desc: "東京の店。第3章と同じ品ぞろえ。" }),
   spot({ id: "ch5_tokyo_attic", label: "屋根裏", area: "mukaiの上", x: 45, y: 63, theme: "rest", glyph: "休", preview: ATTIC_BG,
     stamina: 55, desc: "ムカイさんの屋根裏で休む。体力が大きく戻る。" }),
-  // 心得の盤の内省（SPEC 2.8）: 第3章と同じ路地裏の神社。灯せる火種がある時だけ地図に出す（ch5-daily.js）。時間は使わない。
-  spot({ id: "ch5_tokyo_shrine", reflect: "tokyo_shrine", label: "路地裏の神社", area: "路地の奥", x: 54, y: 70, theme: "rest", glyph: "社",
-    preview: "bg_street", desc: "学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
+  // 心得の盤の内省（SPEC 2.8）: 第3章と同じ池の弁天堂（IR26）。灯せる火種がある時だけ地図に出す（ch5-daily.js）。時間は使わない。
+  spot({ id: "ch5_tokyo_shrine", reflect: "tokyo_shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",
+    preview: "bg_tokyo_park", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
   // 帰りも東京店から出る配送便（地図の絵は文字の盾。新幹線の駅の絵は使わない）。
   // 文字の盾は札を印の上に描くので、駅の絵だった頃（y: 20）と同じ所に見えるよう少し下げた。
   spot({ id: HOME_ID, label: "地元へ帰る（配送便）", area: "Dr.fookah 東京店の帰りの便", x: 40, y: 28, theme: "rest", glyph: "便", preview: "bg_street",
@@ -162,13 +162,16 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
   const talks = state.flags[TALKS_FLAG] ||= {};
-  const scene = spot.talks[(talks[spot.id] || 0) % spot.talks.length];
+  const visits = talks[spot.id] || 0;
+  const scene = spot.talks[visits % spot.talks.length];
   if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };
   if (spot.cost) addMoney(-spot.cost);
   if (spot.pay) addMoney(spot.pay);
   addStamina(spot.stamina);
-  talks[spot.id] = (talks[spot.id] || 0) + 1;
-  if (spot.charId) { gainAffinity(spot.charId, spot.affinity || 5); markMet(spot.charId); }
+  talks[spot.id] = visits + 1;
+  // 好感度は通いと同じ値（core/stats.js の visitAffinity。第5章はゆっくりの 10・5）。1回目は段階会話、2回目からは小会話。
+  // ヴォルクは第3章の終盤に会うので、ここへ通って♥5に届き、授業（♥5）を相談できる（IR23）
+  if (spot.charId) { gainAffinity(spot.charId, visitAffinity(visits ? "talk" : "story")); markMet(spot.charId); }
   earnStat(spot.stat, 4);
   const teacher = TOKYO_TEACHERS[spot.id];
   if (teacher && state === owner) await consultLessons(teacher, { bg: sceneBg(spot.preview, timeOfDay()).url });
