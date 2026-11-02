@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-01 23:56 UTC",
+ "generated": "2026-11-02 02:28 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -399,11 +399,15 @@
   },
   "yoru": {
    "faces": [
-    "normal"
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
    ],
-   "h": 0.975,
-   "b": 0.01,
-   "ax": 0.4926,
+   "h": 0.9667,
+   "b": 0.0167,
+   "ax": 0.5176,
    "aspect": 0.7467
   }
  },
@@ -1684,10 +1688,30 @@
    "shadow": "#120d1f",
    "background": "ui/character_intros/yoru.png",
    "frames": {
+    "smile": {
+     "width": 880.552,
+     "left": -109.955,
+     "top": 18.345
+    },
+    "surprise": {
+     "width": 880.552,
+     "left": -110.912,
+     "top": 18.345
+    },
     "normal": {
-     "width": 873.026,
-     "left": -110.95,
-     "top": 20.462
+     "width": 880.552,
+     "left": -115.934,
+     "top": 18.345
+    },
+    "sad": {
+     "width": 880.552,
+     "left": -114.382,
+     "top": 18.345
+    },
+    "serious": {
+     "width": 880.552,
+     "left": -114.963,
+     "top": 18.345
     }
    }
   }
@@ -2687,7 +2711,11 @@
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
   "sprites/characters/yoru/chr_yoru_normal.png",
-  "ui/character_intros/yoru.png"
+  "ui/character_intros/yoru.png",
+  "sprites/characters/yoru/chr_yoru_sad.png",
+  "sprites/characters/yoru/chr_yoru_serious.png",
+  "sprites/characters/yoru/chr_yoru_smile.png",
+  "sprites/characters/yoru/chr_yoru_surprise.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
