@@ -21,7 +21,7 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 3,
-      "paths": ["remake/js/craft/feedback.js", "remake/js/craft/result.js", "remake/test/browser/judge_comment_2190.mjs"],
+      "paths": ["remake/js/craft/feedback.js", "remake/js/craft/advice.js", "remake/js/craft/temperature-records.js", "remake/js/craft/result.js", "remake/test/browser/judge_comment_2190.mjs"],
       "run": ["node remake/test/browser/judge_comment_2190.mjs"],
       "chrome": "playwright"
     },

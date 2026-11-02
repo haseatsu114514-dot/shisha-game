@@ -20,16 +20,22 @@ await suite("judge-comment-2190", async check => {
         const adjustment = { ...pullResult(bands.center, 1, 0, bands, 2), temp: bands.center, pulls: 1 };
         cs.careHistory = [{ ...adjustment }, { ...adjustment }];
         finalize(cs);
-        window.J = { saved: JSON.stringify(cs), result: await import("./js/craft/result.js") };
+        window.J = { saved: JSON.stringify(cs), finalize, result: await import("./js/craft/result.js") };
       });
       const storage = await storageSnapshot(page);
       for (const [kind, expected] of [
         ["three-ideal", /提供も2回の調整も、いい温度だった/],
+        ["three-ideal-next", /提供も2回の調整も、いい温度だった/],
         ["recorded-miss", /温度が合わなかったところ/],
         ["legacy", /いいねえ。そのまま丁寧にいこう/],
       ]) {
         await page.evaluate(kind => {
           J.cs = JSON.parse(J.saved);
+          if (kind === "three-ideal-next") {
+            Object.assign(J.cs.holes, { score: 95, evenness: .95, outerEven: .95 });
+            Object.assign(J.cs.heat, { score: 95, heatPower: 95, heatStability: 95, burnRisk: 5, aromaRetention: 95 });
+            delete J.cs.stats; J.finalize(J.cs);
+          }
           if (kind === "recorded-miss") Object.assign(J.cs.careHistory[1], { temp: .2, score: 40, inZone: false });
           if (kind === "legacy") delete J.cs.pull.inZone;
           J.before = JSON.stringify(J.cs);
@@ -42,6 +48,10 @@ await suite("judge-comment-2190", async check => {
         const quality = page.locator(".rt-part").filter({ has: page.locator("span", { hasText: /^完成品$/ }) });
         assert.equal(await quality.locator(".craft-evaluation").textContent(), "○");
         await assertFits(page, ".rt-judge-comment");
+        if (kind === "three-ideal-next") {
+          assert.match(await page.locator(".rt-next-tip").innerText(), /今回の記録を見て、次に試すことを選ぼう/);
+          await assertFits(page, ".rt-next-tip");
+        }
         assert(await page.evaluate(() => JSON.stringify(J.cs) === J.before), "Result comment leaves craft data unchanged");
         assert.deepEqual(await storageSnapshot(page), storage, "Result comment does not save or award anything");
         await page.locator('[data-test="result-next"]').click();

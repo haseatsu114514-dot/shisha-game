@@ -1,5 +1,6 @@
 // 工程の成績を、記号と見守る人物の短い一言で伝える。
 import { DB } from "../core/data.js";
+import { recordedTemperatureStates } from "./temperature-records.js";
 
 /** 自主練の内心も、他の台詞と同じ正本JSONから読む。 */
 export function innerVoiceLine(step, kind) {
@@ -57,11 +58,7 @@ export function feedbackLine(id, step, evaluation) {
 
 /** 第1章結果表の上園。完成品の品質点を、温度の成否に読み替えない。 */
 export function judgeComment(cs) {
-  const rounds = [cs?.pull, cs?.careHistory?.[0], cs?.careHistory?.[1]];
-  // 各工程の終了時に記録した判定を読む。最後の葉の傷みで過去の適温帯を狭めない。
-  const temperatures = rounds.map(result => result && !result.failed && !result.skipped
-    && Number.isFinite(result.score) && Number.isFinite(result.temp) && typeof result.inZone === "boolean"
-    ? result.inZone : null);
+  const temperatures = recordedTemperatureStates(cs);
   if (temperatures.every(value => value === true)) return "提供も2回の調整も、いい温度だったねえ";
   if (temperatures.some(value => value === false)) return "温度が合わなかったところがあるねえ。次は一口ずついこう";
   return feedbackLine("maezono", "default", evaluationOf(cs?.parts?.shisha || 0));
