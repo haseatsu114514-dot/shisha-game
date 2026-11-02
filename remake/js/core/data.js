@@ -252,7 +252,8 @@ export function callName(id, state, opts = {}) {
 let WEBP = new Set();
 // #983で採用した顔修正を、同名URLに残った旧画像のキャッシュと区別する。
 // 2026-10-28: #1081 I03 でみんと通常を斜め向きへ復元したため revision を更新。
-const FACE_CORRECTION_REVISION = "face-restore-20261028";
+// 2026-11-02: 立ち絵の規格（TS09）でみんと営業姿の頭を私服の大きさへ作り直したため revision を更新。
+const FACE_CORRECTION_REVISION = "portrait-standard-20261102";
 function faceCorrectionVersion(rel) {
   return /^(sprites\/characters\/(minto\/chr_minto_normal|ageha\/chr_ageha_[a-z]+)\.png|ui\/face_icons\/face_(minto|ageha)\.png)$/.test(rel)
     ? `?v=${FACE_CORRECTION_REVISION}` : "";

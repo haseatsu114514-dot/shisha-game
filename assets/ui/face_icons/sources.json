@@ -29,7 +29,7 @@
  },
  "face_kumicho.png": {
   "sprite": "assets/sprites/characters/kumicho/chr_kumicho_normal.png",
-  "blob": "5a18bfa77696e348b9d9ac34a90754f4bfb7db9c"
+  "blob": "6a165f7b76fc95ef85074b39598afe49961c785e"
  },
  "face_kuze.png": {
   "sprite": "assets/sprites/characters/kuze/chr_kuze_normal.png",
@@ -53,7 +53,7 @@
  },
  "face_minto.png": {
   "sprite": "assets/sprites/characters/minto/chr_minto_normal.png",
-  "blob": "cc475a41a050eb5c690450fd50dbd72f58406178"
+  "blob": "d594d172388b89e981ed6fadab5a931507a618f8"
  },
  "face_minto_private.png": {
   "sprite": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
@@ -105,7 +105,7 @@
  },
  "face_steve.png": {
   "sprite": "assets/sprites/characters/steve/chr_steve_normal.png",
-  "blob": "3988f77bda6b4b612302d59fe554058cbb987905"
+  "blob": "8908ea0951f173ed7492d567d629030cefb0bda0"
  },
  "face_sumi.png": {
   "sprite": "assets/sprites/characters/sumi/chr_sumi_normal.png",
@@ -121,7 +121,7 @@
  },
  "face_volk.png": {
   "sprite": "assets/sprites/characters/volk/chr_volk_normal.png",
-  "blob": "ced92cef37b67d592716f86f5abd5075363a2b0d"
+  "blob": "d451f0bf01f91983422754ad8d56b621fabdd654"
  },
  "face_yoru.png": {
   "sprite": "assets/sprites/characters/yoru/chr_yoru_normal.png",
