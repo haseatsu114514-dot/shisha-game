@@ -181,6 +181,16 @@
       ],
       "preferred": "romance",
       "reason": "店の外でもあげはと会いたいと伝える"
+    },
+    "ch3_mashiro_bond_question:bond_q1_mashiro": {
+      "target": "mashiro",
+      "kind": "romance",
+      "options": [
+        "personal",
+        "work"
+      ],
+      "preferred": "personal",
+      "reason": "同僚の分ではなく、ましろちゃんと飲むお茶だと伝える"
     }
   }
 }
