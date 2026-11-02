@@ -84,9 +84,34 @@ const ch2Events = events.filter((e) => e.chapter === 2);
 assert(ch2Events.length >= 4, "第2章固有の接客がロード対象に4件以上ない");
 for (const ev of ch2Events) {
   const slot = ev.time_slot === "night" ? 1 : 0;
-  reset({ slot }); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), undefined, `${ev.id} が第1章に出た`);
-  reset({ chapter: 2, slot }); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), `baito_${ev.id}`, `${ev.id} が第2章に出ない`);
+  // 正のtrigger_flagは両章で立て、第1章で出ないのが章の条件のためだと確かめる（否定flagは立てない）。
+  const unlock = () => { if (ev.trigger_flag && !ev.trigger_flag.startsWith("!")) state.flags[ev.trigger_flag] = true; };
+  reset({ slot }); unlock(); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), undefined, `${ev.id} が第1章に出た`);
+  reset({ chapter: 2, slot }); unlock(); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), `baito_${ev.id}`, `${ev.id} が第2章に出ない`);
 }
+// #2032: 第2章の味の不調中は、自分で吸って味を確かめる閉店後の一服を出さない。不調の記録が残る第4章では出す。
+for (const [chapter, distant, shown] of [[2, true, false], [2, false, true], [4, true, true]]) {
+  reset({ chapter, slot: 1 }); if (distant) state.flags._ch2_taste_distant = true;
+  db.baito = [byid.baito_closing_smoke]; await tonari.doBaito();
+  assert.equal(selected(), shown ? "baito_baito_closing_smoke" : undefined, `閉店後の一服 chapter=${chapter} distant=${distant}`);
+}
+// #2032: スミさんの飯は「残る匂い」（しばらく飯はうちで食ってけ）を読んだ第2章だけ。昼夜どちらのシフトでも出る。
+const staffMeal = byid.baito_ch2_staff_meal;
+assert(staffMeal, "第2章のスミさんの飯の回がロード対象にない");
+assert(!/まかない/.test(JSON.stringify(staffMeal)), "飯の回で「まかない（練習）」と紛れる語を使わない");
+assert(staffMeal.choices.every((choice) => !choice.money_bonus), "飯は売上ではない");
+reset({ chapter: 2 }); db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), undefined, "残る匂いの前に飯が出た");
+for (const slot of [0, 1]) {
+  reset({ chapter: 2, slot }); state.flags._ch2_read_ch2_lingering_smell = true;
+  db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_ch2_staff_meal", `slot=${slot} で飯が出ない`);
+}
+reset(); state.flags._ch2_read_ch2_lingering_smell = true; db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), undefined, "第1章に飯が出た");
+// priority: 未読なら次のシフトで必ず飯（抽選の先頭が別の客でも）。一度読めば通常の抽選に戻る。
+reset({ chapter: 2 }); state.flags._ch2_read_ch2_lingering_smell = true;
+db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_ch2_staff_meal", "残る匂いの後の最初のシフトで飯が出ない");
+assert.deepEqual(state.usedBaito, ["baito_ch2_staff_meal"]);
+reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal"] }); state.flags._ch2_read_ch2_lingering_smell = true;
+db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_01", "読んだ後も飯が優先され続けた");
 reset({ chapter: 2 }); db.baito = [byid.baito_mysterious_customer, byid.baito_regular_03]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_03");
 reset(); db.baito = [custom("locked", { trigger_flag: "needs_contact" })]; await tonari.doBaito(); assert.equal(selected(), undefined);
 state.flags.needs_contact = true; await tonari.doBaito(); assert.equal(selected(), "baito_locked");

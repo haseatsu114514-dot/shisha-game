@@ -160,6 +160,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_kumicho_fifth", "person"],
   ["_ch2_read_ch2_kumicho_sixth", "person"],
   ["_ch2_read_ch2_kumicho_third", "person"],
+  ["_ch2_read_ch2_lingering_smell", "progression"], // スミさんの飯の接客回（baito_ch2_staff_meal）の条件
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
   ["_ch2_read_ch2_rei_fifth", "person"],
   ["_ch2_read_ch2_rei_fourth", "person"],
@@ -222,6 +223,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_tokyo_call_night", "progression"],
   ["_ch4", "progression"],
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
+  ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
   ["_ch4_desert", "progression"],
@@ -322,6 +324,8 @@ export const FLAG_EXACT_RULES = [
   ["_hiyori_meeting_done", "person"],
   ["_hiyori_meeting_shop", "person"],
   ["_hiyori_message_delivered", "person"],
+  ["_hiyori_peach_talk_done", "person"],
+  ["_hiyori_promise_done", "person"],
   ["_hiyori_real_self_known", "person"],
   ["_hiyori_repeat_count", "person"],
   ["_hiyori_sumi_message_done", "person"],
@@ -401,8 +405,10 @@ export const FLAG_EXACT_RULES = [
   ["_op_praise_talent", "progression"],
   ["_outing_done_adam", "person"],
   ["_outing_done_ageha", "person"],
+  ["_outing_done_hiyori", "person"],
   ["_outing_done_minto", "person"],
   ["_outing_done_naru", "person"],
+  ["_outing_done_rin", "person"],
   ["_outing_done_samechan", "person"],
   ["_outing_done_tsumugi", "person"],
   ["_overwork", "progression"],

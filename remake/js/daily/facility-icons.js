@@ -30,6 +30,10 @@ export const FACILITY_ICONS = Object.freeze({
   dubai_inn: single('map-facilities-dubai-inn.webp', '旧市街の宿', [384, 347], [380, 157]),
   dubai_inn_lobby: single('map-facilities-dubai-inn-lobby.webp', '宿のロビー', [384, 311], [372, 80]),
   dubai_practice_hall: single('map-facilities-dubai-practice-hall.webp', '公式練習会場', [384, 269], [368, 67]),
+  // MPI07（2026-11-02 オーナー「おまかせで」）: 後から入ったドバイの行き先
+  desert_tour_desk: single('map-facilities-desert-tour-desk.webp', '砂漠ツアーのデスク', [384, 333], [376, 136]),
+  desert_dunes: single('map-facilities-desert-dunes.webp', '砂丘', [384, 259], [343, 128]),
+  camel_race_track: single('map-facilities-camel-race-track.webp', 'ラクダレース場', [384, 276], [372, 109]),
 });
 export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 96, 128]);
 const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'kohaku',
@@ -40,8 +44,12 @@ const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'koha
   ch3_tokyo_park: 'tokyo_park', ch5_tokyo_park: 'tokyo_park', ch3_tokyo_room: 'mukai_back_room', ch5_tokyo_attic: 'mukai_attic',
   ch5_call: 'smartphone', // 第3章の「地元と連絡」は地図から外し、右上の LIME の一番上の行に（オーナー決定 2026-11-02）
   ch5_to_tokyo: 'shinkansen_station', ch5_tokyo_home: 'shinkansen_station',
+  // MPI07: 砂漠ツアーのデスク・砂丘・ラクダレース場（ラクダは誘われた後のレース場だけ。店先の段階は facilityIcon: false）
+  ch4_dubai_tour_desk: 'desert_tour_desk', ch4_dubai_dunes: 'desert_dunes', ch4_dubai_camel: 'camel_race_track',
   ch4_dubai_souq: 'dubai_souq', ch4_dubai_creek: 'dubai_creek', ch4_dubai_mosque: 'dubai_mosque', ch4_dubai_inn: 'dubai_inn',
-  ch4_dubai_naru: 'dubai_inn_lobby', ch4_dubai_practice: 'dubai_practice_hall' });
+  ch4_dubai_naru: 'dubai_inn_lobby', ch4_dubai_practice: 'dubai_practice_hall',
+  // 第5章のドバイも同じ場所の絵（SLG05）
+  ch5_dubai_souq: 'dubai_souq', ch5_dubai_creek: 'dubai_creek', ch5_dubai_mosque: 'dubai_mosque' });
 export const hasFacilityIcon = id => Object.hasOwn(SPOT_ICONS, id);
 
 // Morphology follows the alpha silhouette, rather than adding a rectangular backing.

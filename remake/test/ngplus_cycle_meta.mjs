@@ -16,7 +16,7 @@ const meta = await import("../js/core/cycle-meta.js");
 const gallery = await import("../js/core/gallery-progress.js");
 const core = await import("../js/core/state.js");
 const { CYCLE_META_KEY, CYCLE_META_VERSION, emptyCycleMeta, readCycleMeta, saveCycleMeta,
-  recordTrueEnd, recordCycleStarted } = meta;
+  recordTrueEnd, recordTrueEndForRun, recordCycleStarted } = meta;
 const { GALLERY_PROGRESS_KEY, readGalleryProgress } = gallery;
 const { newState, save } = core;
 
@@ -168,6 +168,103 @@ function trueEndState() {
     "保存失敗でも周回内 state は壊れない");
   assert.equal(recordTrueEnd(s), true, "失敗後の再通知で記録できる");
   assert.equal(readCycleMeta().trueEnds.length, 1, "再通知で到達は重複しない");
+}
+
+// ---------------------------------------------------------------- G. 締めの流れからの通知（recordTrueEndForRun）
+{
+  // 初回のスタッフロール直後は解放と到達を記録する
+  store.clear();
+  const a = trueEndState();
+  assert.equal(recordTrueEndForRun(a, { justFinished: true }), true);
+  const first = readCycleMeta();
+  assert.equal(first.unlocked, true);
+  assert.equal(first.trueEnds.length, 1);
+  assert.equal(first.carryPackage.fromCycleId, "cycle-test-1");
+  assert.equal(readGalleryProgress().routeRecords.minto?.trueEndAsLover, true);
+
+  // 同じ周回の再通知（完了カード・盤を使った後）は、到達と通算を増やさずパッケージだけ最新化する
+  a.money = 9100;
+  assert.equal(recordTrueEndForRun(a), true);
+  const refreshed = readCycleMeta();
+  assert.equal(refreshed.trueEnds.length, 1);
+  assert.deepEqual(refreshed.lifetime, first.lifetime);
+  assert.equal(refreshed.carryPackage.data.money, 9100);
+
+  // 別の周回 B が初回のスタッフロールを見終えたら、パッケージは B になる
+  const b = trueEndState();
+  b.cycleId = "cycle-test-b";
+  b.cycle = 2;
+  b.money = 300;
+  assert.equal(recordTrueEndForRun(b, { justFinished: true }), true);
+  const afterB = readCycleMeta();
+  assert.equal(afterB.carryPackage.fromCycleId, "cycle-test-b");
+  assert.equal(afterB.trueEnds.length, 2);
+
+  // その後に A のクリア済み保存を開いても巻き戻さない（何も書かない）
+  const raw = store.get(CYCLE_META_KEY);
+  a.money = 1;
+  assert.equal(recordTrueEndForRun(a), true, "書かなくてよい通知は成功として返す");
+  assert.equal(store.get(CYCLE_META_KEY), raw, "記録済みの古い周回の保存を開いてもメタ層を書き換えない");
+
+  // 接続前に見終えた、未記録の古い保存 P を開いたときも、B のパッケージは残し、到達と通算だけ足す
+  const p = trueEndState();
+  p.cycleId = "cycle-test-prefix";
+  p.money = 50;
+  p.lovers = ["tsumugi"];
+  assert.equal(recordTrueEndForRun(p), true);
+  const backfilled = readCycleMeta();
+  assert.deepEqual(backfilled.carryPackage, afterB.carryPackage, "別の周回のパッケージは巻き戻さない");
+  assert.equal(backfilled.trueEnds.length, 3);
+  assert.equal(backfilled.trueEnds[2].cycleId, "cycle-test-prefix");
+  assert.deepEqual(backfilled.lifetime, {
+    tournamentWins: afterB.lifetime.tournamentWins + 3,
+    tournamentAttempts: afterB.lifetime.tournamentAttempts + 10,
+  });
+  assert.equal(readGalleryProgress().routeRecords.tsumugi?.trueEndAsLover, true);
+  const rawP = store.get(CYCLE_META_KEY);
+  assert.equal(recordTrueEndForRun(p), true);
+  assert.equal(store.get(CYCLE_META_KEY), rawP, "記録した後に開き直しても書かない");
+
+  // B の保存を開き直せば、B のパッケージとして最新化される
+  b.money = 400;
+  assert.equal(recordTrueEndForRun(b), true);
+  const reopenedB = readCycleMeta();
+  assert.equal(reopenedB.carryPackage.fromCycleId, "cycle-test-b");
+  assert.equal(reopenedB.carryPackage.data.money, 400);
+  assert.equal(reopenedB.trueEnds.length, 3);
+
+  // 解放済みでもパッケージが検証で落ちていたら作り直す（タイトルの周回開始を行き止まりにしない）
+  const broken = JSON.parse(store.get(CYCLE_META_KEY));
+  broken.carryPackage = { fromCycleId: "cycle-test-b", fromCycle: 2, data: [] };
+  store.set(CYCLE_META_KEY, JSON.stringify(broken));
+  assert.equal(readCycleMeta().carryPackage, null);
+  assert.equal(recordTrueEndForRun(a), true);
+  const rebuilt = readCycleMeta();
+  assert.equal(rebuilt.carryPackage.fromCycleId, "cycle-test-1");
+  assert.equal(rebuilt.carryPackage.data.money, 1);
+  assert.equal(rebuilt.trueEnds.length, 3, "到達済みの周回は重複しない");
+  assert.deepEqual(rebuilt.lifetime, reopenedB.lifetime);
+
+  // keepPackage はパッケージが無ければ作る（未解放の端末で接続前の保存を開いた場合と同じ結果）
+  store.clear();
+  assert.equal(recordTrueEnd(p, { keepPackage: true }), true);
+  assert.equal(readCycleMeta().carryPackage.fromCycleId, "cycle-test-prefix");
+
+  // 不備な state は記録しない
+  store.clear();
+  assert.equal(recordTrueEndForRun(null), false);
+  assert.equal(recordTrueEndForRun({ cycle: 1 }), false, "cycleId が無い");
+  assert.equal(recordTrueEndForRun({ cycleId: "x", cycle: 0 }, { justFinished: true }), false);
+  assert.equal(store.has(CYCLE_META_KEY), false);
+  assert.equal(store.has(GALLERY_PROGRESS_KEY), false);
+
+  // 保存できない端末でも例外にせず false を返し、次の通知で記録できる
+  failSet = true;
+  assert.equal(recordTrueEndForRun(trueEndState(), { justFinished: true }), false);
+  failSet = false;
+  assert.equal(readCycleMeta().unlocked, false);
+  assert.equal(recordTrueEndForRun(trueEndState()), true);
+  assert.equal(readCycleMeta().unlocked, true);
 }
 
 console.log("ngplus_cycle_meta: all assertions passed");

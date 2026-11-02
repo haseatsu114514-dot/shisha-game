@@ -642,6 +642,396 @@
       }
     },
     {
+      "dialogue_id": "ch1_rin_fifth",
+      "comment": "#2025 ♥4。客の顔の課題（ch1_rin_fourth）の続き。余白のメモを私物の手帳へ移したことを見せる。分岐は♥3の答え（romance_open）。着地済みの旧セーブには出さない（affinity-stages.js）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "余白の手帳"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の2階。凛さんは作業台ではなく、奥のデスクで何かを読み返していた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリップボードではない。角のすり切れた、黒い手帳だ。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……あ、モルモットくん。ちょうど、君の話を読んでたとこ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺の話、ですか？"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "本国から、この前のレポートが戻ってきた。余白に赤が入ってる"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "「数字以外の記述は別紙に」だって、……お行儀のいい返事"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "余白って、常連さんの顔を書いてくれたところですよね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "そう。だから、言われたとおり別紙にした。これ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手帳がこちらへ向けて開かれた。細い字が、日付ごとに並んでいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『ローズ×ライチ。仕事帰りの人。ホースを置いて、少し目を閉じた』"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『EARL GREY試作。練習で確かめる、と言った』"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……これ、全部俺が持ってきた話だ"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "売れた数は、会社が覚えてる。こっちは、私しか覚えてないから"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "誰にも提出しない。仕事の書類じゃなくて、私物"
+        },
+        {
+          "type": "choice",
+          "id": "rin_fifth_note",
+          "choices": [
+            {
+              "text": "「俺の話、ほかにも書いていいですよ」",
+              "next": "note_more"
+            },
+            {
+              "text": "「次は、もっといい顔を持ってきます」",
+              "next": "note_face"
+            }
+          ]
+        },
+        {
+          "type": "condition",
+          "condition_type": "romance_open",
+          "char_id": "rin",
+          "next_true": "note_romance",
+          "next_false": "note_friend"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは手帳を閉じて、デスクの引き出しではなく、鞄の内ポケットにしまった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "rin_notebook"
+        }
+      ],
+      "branches": {
+        "note_more": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "天気の話でも、まかないの話でも"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "……それ、どの欄に書くの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "余白で"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "余白だらけの手帳になるね、……まあ、いいか"
+          }
+        ],
+        "note_face": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "いい顔じゃなくていいよ。退屈そうな顔も、むせた顔も"
+          },
+          {
+            "speaker": "rin",
+            "face": "serious",
+            "text": "本当にそういう顔だったなら、全部持ってきて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……はい。盛らずに持ってきます"
+          }
+        ],
+        "note_romance": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "……最後のページ、まだ白いでしょ"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "そこは、君の顔用。まだ何も書いてないけど"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……え"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "今のは業務外。書くかどうかは、そのうち決める"
+          }
+        ],
+        "note_friend": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "共同研究ってことにしよう。著者は、モルモットくんと私"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "それ、俺の名前が出ちゃうじゃないですか"
+          },
+          {
+            "speaker": "rin",
+            "face": "smug",
+            "text": "手帳の中だけね。海外デビューは、また今度"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_rin_sixth",
+      "comment": "#2025 ♥5。締めくくり（ch1_rin_bond_finale）の前。客の顔を知らない側にいる凛が、ロットを選ぶ基準の変化を自分から話す（characters.json の growth_stats.notes）。分岐は♥3の答え（romance_open）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "窓の下"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の2階。黒いフィルムで塞がれた窓が、一枚だけ細く開いていた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "来たね。……ああ、それ。夜は湿気が少ないから、空気を入れ替えてるの"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "昼に開けると、日の当たった葉が傷む。ここの窓は、夜しか開けない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隙間から、問屋街の通りが見下ろせた。シャッターの閉まった店の前を、人が歩いていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "提げている紙袋には、見覚えのあるロゴがあった。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "あの袋、1階のだね。……ここから見るとさ、袋しか見えないの"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "頭のてっぺんと、袋。顔は、一度も見えたことがない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "上からだと、そうなりますね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "うん。……たぶん私、ずっとそういう場所に立ってるんだと思う"
+        },
+        {
+          "type": "choice",
+          "id": "rin_sixth_window",
+          "choices": [
+            {
+              "text": "（窓に顔を寄せて、下をのぞく）",
+              "next": "window_look"
+            },
+            {
+              "text": "「顔なら、俺が持ってきます」",
+              "next": "window_bring"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙袋の人は角を曲がって、見えなくなった。凛さんはしばらく、窓の外を見ていた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……モルモットくん。今日は、私から一つ報告していい？"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "最近ね、ロットを選ぶとき、つい考えるの。これ、tonariでどんな顔で吸われるかなって"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "前は、本国の評価と数字しか見てなかったのに"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "……君のせいだよ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "romance_open",
+          "char_id": "rin",
+          "next_true": "window_romance",
+          "next_false": "window_friend"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "階段を降りて、さっきの通りを今度は下から歩いた。凛さんの窓は、もう黒く閉じていた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "rin_window"
+        }
+      ],
+      "branches": {
+        "window_look": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "窓の隙間に顔を寄せる。紙袋の人は、信号の前で立ち止まっていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの人、信号待ちで袋の口を少し開けて、匂いをかいでました"
+          },
+          {
+            "speaker": "rin",
+            "face": "surprise",
+            "text": "……そんなこと、するんだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "帰るまで待てなかったんだと思います。tonariでも、よく見る顔です"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "ふふ。……今の、手帳に書いとく。窓の下、一人目"
+          }
+        ],
+        "window_bring": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "上から見えないなら、俺が下で見て、ここまで持ってきます"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "……それ、もう契約書のどこにも書いてないよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "書いてなくても、持ってきます"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "……君、同意書のいらない人だね"
+          }
+        ],
+        "window_romance": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "俺のせいなら、うれしいです"
+          },
+          {
+            "speaker": "rin",
+            "face": "surprise",
+            "text": "……そう返すんだ"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "じゃあ、責任とってね。……今のは、半分くらい業務外"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛さんは窓を閉めた。黒いフィルムの向こうで、通りの灯りがにじんで消えた。"
+          }
+        ],
+        "window_friend": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "いいモニターになれた、ってことですか"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "そう。最高のモルモット。……代わりは、探さないからね"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛さんは窓を閉めて、いつものクリップボードを手に取った。"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch1_rin_repeat",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png"

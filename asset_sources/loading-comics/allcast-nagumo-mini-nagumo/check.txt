@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-mini-nagumo/panels/nagumo-mini-nagumo-1.webp: 720x480 比率 1.500 57 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-mini-nagumo/panels/nagumo-mini-nagumo-2.webp: 717x478 比率 1.500 49 KiB

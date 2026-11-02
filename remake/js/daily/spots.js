@@ -34,7 +34,7 @@ export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight",
 
 // 固有会話の順番。特別回（常連回・総督回など）は関係ができた頃合いに一度だけ挟む
 export { VISIT_SEQ } from "../core/affinity-stages.js";
-import { VISIT_SEQ } from "../core/affinity-stages.js";
+import { VISIT_SEQ, visitStorySkipped } from "../core/affinity-stages.js";
 const REPEAT_POOL = {
   rin: ["ch1_rin_repeat", "ch1_rin_repeat_b", "ch1_rin_repeat_c"],
 };
@@ -204,7 +204,7 @@ export function hasNewStory(charId) {
   if (questionVisitDue(charId)) return true;
   if (charId === "rin" && rinPrototypeDue()) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
-  if (id) return storyAvailable(id);
+  if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
 }
 
@@ -379,7 +379,7 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       if (!await read(chapterTalk, DB.dialogues[chapterTalk].metadata?.bg ? {} : { bg })) return false;
       state.flags[`_talk_seen_${chapterTalk}`] = true;
       gainAffinity(charId, visitAffinity("talk"));
-    } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
+    } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx]) && !visitStorySkipped(state, charId, seq[idx])) {
       const opts = DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg };
       // 試供品は完読で受領する。SKIPでは進行を確定せず、次回読み直せるようにする。
       if (charId === "rin" && seq[idx] === "ch1_rin_third") opts.cancelOnSkip = true;

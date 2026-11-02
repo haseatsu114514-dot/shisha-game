@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EDE1CE  枠の段 1: 2コマ@y=275
+  コマ1: 717x474 @(36,275) 比率 1.513 → ok
+  コマ2: 717x477 @(781,272) 比率 1.503 → ok
+コマ1: 717x474 (1.513) → 上下に各0.4%の紙帯 → 出力 717x478  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-sweet-potato/panels/uranaishi-sweet-potato-1.webp (67 KiB)
+コマ2: 717x477 (1.503) そのまま → 出力 717x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-sweet-potato/panels/uranaishi-sweet-potato-2.webp (69 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "uranaishi-sweet-potato",
+  "title": "路地の呼び声",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "怪しく見える占い師も、話すと気のいい人。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-sweet-potato/panels/uranaishi-sweet-potato-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-sweet-potato/panels/uranaishi-sweet-potato-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-sweet-potato/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 275,
+        "width": 717,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-sweet-potato/source-v1.png",
+      "region": {
+        "x": 781,
+        "y": 272,
+        "width": 717,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "uranaishi-sweet-potato-1.webp",
+      "width": 717,
+      "height": 478,
+      "sha256": "1f29ab79f8feaec420114059e83ab2a7b1f2450262a41b34e69485e6b19e0559"
+    },
+    {
+      "file": "uranaishi-sweet-potato-2.webp",
+      "width": 717,
+      "height": 477,
+      "sha256": "67f0904a19838ab6cc7a2a4c7c84510377ae409c178f33b1f76330c0331a36f4"
+    }
+  ]
+}

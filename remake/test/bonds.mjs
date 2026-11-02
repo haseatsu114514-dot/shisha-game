@@ -450,10 +450,17 @@ try {
     vn.backlog().length = 0;
     await spots.visitChar("rin");
     const fourth = vn.backlog().map((l) => l.text).join("|");
+    // ♥4・♥5の段階会話（#2025）。締めくくりはその後
+    const late = [];
+    for (let i = 0; i < 2; i++) {
+      vn.backlog().length = 0;
+      await spots.visitChar("rin");
+      late.push(vn.backlog().map((l) => l.text).join("|"));
+    }
     vn.backlog().length = 0;
     await spots.visitChar("rin");
     const second = vn.backlog().map((l) => l.text).join("|");
-    return { badge, finaleBlocked, first, fourth, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
+    return { badge, finaleBlocked, first, fourth, late, second, answer: state.romanceChoices.bond_q1_rin?.value, route: state.finales.rin?.route, owned: state.owned.includes("suyaki_rin") };
   });
   assert.equal(rin.badge, true); assert.equal(rin.finaleBlocked, false);
   // 質問の場面と友情側の着地（d7a613c6 で台本を書き直し）
@@ -461,9 +468,12 @@ try {
   assert(!rin.first.includes("ラベルも同意書もない"));
   // 質問の次は4つ目の固有会話（#1696）。締めくくりはその後
   assert(rin.fourth.includes("吸ってる人の顔だけ、知らない")); assert(!rin.fourth.includes("ラベルも同意書もない"));
+  assert(rin.late[0].includes("角のすり切れた、黒い手帳だ")); assert(rin.late[0].includes("共同研究ってことにしよう"));
+  assert(rin.late[1].includes("袋しか見えないの")); assert(rin.late[1].includes("代わりは、探さないからね"));
+  assert(rin.late.every((text) => !text.includes("ラベルも同意書もない")));
   assert(rin.second.includes("ラベルも同意書もない")); assert(rin.second.includes("仕事仲間からのプレゼント"));
   assert.equal(rin.answer, 0); assert.equal(rin.route, "friend"); assert(rin.owned);
-  log("HF04/05 rin: question visit before the MAX finale, friendship landing with a personal gift");
+  log("HF04/05 rin: question visit, heart4/5 stages, then the MAX finale with a friendship landing and a personal gift");
 
   // スミ・なる・アダム（友情）: 締めくくりと贈り物。スミさんは閉店後だけ
   const friends = await page.evaluate(async () => {

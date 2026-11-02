@@ -232,6 +232,10 @@ try {
           { text: "友達のまま", next_id: "confession_hiyori_reject" }] }]);
         add("confession_hiyori_accept", [{ speaker: "hiyori", text: "よろしくね" }]);
         add("confession_hiyori_reject", [{ speaker: "hiyori", text: "うん、友達でいよう" }]);
+        // ♥4・♥5（#2025）を実際に読んでから締めくくりへ。
+        await daily.playHiyoriEvent("peach_talk");
+        await daily.playHiyoriEvent("promise");
+        const heartsDone = route.hiyoriStoriesDone();
         await bonds.playFinale("hiyori");
         const romantic = s.finales.hiyori.route;
         s.slot = 2;
@@ -255,7 +259,7 @@ try {
         const friendLime = bonds.friendMessages().map((m) => m.sender);
         await bonds.playFriendHangout("hiyori");
         const friendInner = vn.backlog().some((l) => l.inner?.includes("会社の電話"));
-        return { missing, workTooEarly, beforeEnd, concurrent, replay, stablePts, story, withoutGift, romantic, lovers, publicUnchanged, dateInner, friendRoute, noConfession, friendLime, friendInner };
+        return { missing, workTooEarly, beforeEnd, concurrent, replay, stablePts, story, heartsDone, withoutGift, romantic, lovers, publicUnchanged, dateInner, friendRoute, noConfession, friendLime, friendInner };
       } finally {
         data.DB.hiyori = original;
         for (const id of added) {
@@ -268,7 +272,8 @@ try {
     assert.equal(result.missing, "prerequisites");
     assert.equal(result.workTooEarly, false); assert.equal(result.beforeEnd, false);
     assert.equal(result.concurrent, false); assert.equal(result.replay, false); assert(result.stablePts);
-    assert.deepEqual(result.story, { count: 4, known: true, contact: true, done: true });
+    // 仕事の話の時点では♥4・♥5（#2025）が未読なので、まだ締めくくりの前提は揃わない。
+    assert.deepEqual(result.story, { count: 4, known: true, contact: true, done: false }); assert(result.heartsDone);
     assert.equal(result.withoutGift, false); assert.equal(result.romantic, "romance");
     assert.deepEqual(result.lovers, ["hiyori"]); assert(result.publicUnchanged && result.dateInner);
     assert.equal(result.friendRoute, "friend"); assert(result.noConfession && result.friendInner);

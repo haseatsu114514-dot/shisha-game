@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D2  枠の段 1: 2コマ@y=275
+  コマ1: 718x474 @(38,275) 比率 1.515 → ok
+  コマ2: 718x474 @(782,275) 比率 1.515 → ok
+コマ1: 718x474 (1.515) → 上下に各0.5%の紙帯 → 出力 718x479  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]
+コマ2: 718x474 (1.515) → 上下に各0.5%の紙帯 → 出力 718x479  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "kuze-photo-face",
+  "title": "（題名）",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "loading/kuze-photo-face-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "loading/kuze-photo-face-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/kuze-photo-face/source-v2.png",
+      "region": {
+        "x": 38,
+        "y": 275,
+        "width": 718,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/kuze-photo-face/source-v2.png",
+      "region": {
+        "x": 782,
+        "y": 275,
+        "width": 718,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "kuze-photo-face-1.webp",
+      "width": 718,
+      "height": 479,
+      "sha256": null
+    },
+    {
+      "file": "kuze-photo-face-2.webp",
+      "width": 718,
+      "height": 479,
+      "sha256": null
+    }
+  ]
+}

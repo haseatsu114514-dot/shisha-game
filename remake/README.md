@@ -324,6 +324,17 @@ node remake/test/bgm_browser.mjs            # 実音声のデコード・ルー�
 node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信失敗・タイムアウト
 ```
 
+## デバッグ用の道具（リリース前に消す）
+
+2026-11-02 オーナー「デバッグ用に役立つ機能入れたい。何倍速とかシーシャ作りパートスキップとか。リリースするときは消すけど」。
+
+- URL に `?debug=1` を付けて開くと、左下に「DBG」が出る（この端末に覚える。`?debug=0` で消える）。` キーでも開閉できる
+- **速さ** ×1／×2／×4／×8: ゲームの時計（タイマー・アニメーション・ミニゲームの時間）をまとめて速くする。音の高さ・長さは変えない（`js/dev/time-warp.js`）
+- **シーシャ作り** 自分で／自動で成功／自動で失敗: 各工程が操作なしで進む（検査用の `craftTest.auto` を使う）
+- **便利**: 体力を満タン・お金＋10万円・経験値＋200・火種＋6、今の章・日・時間帯・体力・お金
+- 会話の早送りは、会話の操作バーの SKIP（設定で未読も飛ばせる）
+- **リリース前に消すもの**: `remake/js/dev/` のフォルダ、`remake/js/main.js` の「デバッグ用の道具」の行、`remake/test/browser/debug_tools.mjs` と `tools/ci/suites.json` の `debug-tools`
+
 テスト用フック: `window.__remake`（state参照・ミニゲーム自動解決）。
 開発用ジャンプ: ブラウザのコンソールで `__remake.dev.tournament()`（大会当日から）／`__remake.dev.drill("heat")`（ドリル単体）。※今のセーブを上書きする。UIの見た目を変えても壊れないよう、
 テストはこのフックと `data-test` 属性だけに依存する。

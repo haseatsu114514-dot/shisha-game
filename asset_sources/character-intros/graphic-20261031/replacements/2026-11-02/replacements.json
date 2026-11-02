@@ -88,5 +88,26 @@
     "left": 216,
     "right": 139,
     "warnings": []
+  },
+  {
+    "id": "noor",
+    "kind": "portrait",
+    "source": "noor.png",
+    "applied": true,
+    "background_color": [
+      251,
+      5,
+      251
+    ],
+    "top": 24,
+    "left": 11,
+    "right": 13,
+    "warnings": []
+  },
+  {
+    "id": "noor",
+    "kind": "bg",
+    "source": "bg_noor.png",
+    "applied": true
   }
 ]

@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE3D2  枠の段 1: 2コマ@y=271
+  コマ1: 721x511 @(35,271) 比率 1.411 → ok
+  コマ2: 721x513 @(779,271) 比率 1.405 → ok
+コマ1: 721x511 (1.411) → 左右に各2.9%の紙帯 → 出力 766x511  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-hidden-prize/panels/nagumo-hidden-prize-1.webp (58 KiB)
+コマ2: 721x513 (1.405) → 左右に各3.2%の紙帯 → 出力 770x513  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-hidden-prize/panels/nagumo-hidden-prize-2.webp (63 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "nagumo-hidden-prize",
+  "title": "背中の景品",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "いかつい南雲会長にも、かわいい戦利品があります。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-hidden-prize/panels/nagumo-hidden-prize-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-hidden-prize/panels/nagumo-hidden-prize-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-hidden-prize/source-v1.png",
+      "region": {
+        "x": 35,
+        "y": 271,
+        "width": 721,
+        "height": 511,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-hidden-prize/source-v1.png",
+      "region": {
+        "x": 779,
+        "y": 271,
+        "width": 721,
+        "height": 513,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "nagumo-hidden-prize-1.webp",
+      "width": 766,
+      "height": 511,
+      "sha256": "333225ba6bbab8ce430c9cac16d7bacb1afc4b379851e4d3f0c3c279a95b26dd"
+    },
+    {
+      "file": "nagumo-hidden-prize-2.webp",
+      "width": 770,
+      "height": 513,
+      "sha256": "13185121e0c8a3ea01ad1a4dd821a3ecf72aab2bdc0a10eaaed0217ec7ce1973"
+    }
+  ]
+}

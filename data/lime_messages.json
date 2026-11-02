@@ -2478,6 +2478,134 @@
           "affinity": 1
         }
       ]
+    },
+    {
+      "id": "lime_outing_rin_1",
+      "important": true,
+      "sender": "rin",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "rin",
+          "text": "おはよ、モルモットくん。今日のお昼、少し借りていい？"
+        },
+        {
+          "sender": "rin",
+          "text": "豆の仕入れ。ショールームに置いてるコーヒー豆、切らしちゃってさ"
+        },
+        {
+          "sender": "rin",
+          "text": "荷物持ちと、鼻がもう一つ要る。……業務、ってことにしとく"
+        }
+      ],
+      "accept_event": "outing_rin_1",
+      "accept_text": "お昼、行きます",
+      "decline_response": {
+        "sender": "rin",
+        "text": "了解。豆は一人で嗅いでくる。君の鼻は、また借りにいくね"
+      },
+      "reminder_text": "この前の仕入れの話、まだ有効。豆屋は逃げないけど、私の昼休みは逃げる"
+    },
+    {
+      "id": "lime_after_outing_rin",
+      "sender": "rin",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_rin",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rin",
+          "text": "おはよ。この前の豆、もう半分減った"
+        },
+        {
+          "sender": "rin",
+          "text": "試香の合間に嗅ぐたび、豆屋での君の顔を思い出す。……仕事の邪魔なんだけど"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺の分も、ちゃんと飲んでます",
+          "response": "よろしい。苦かったら、牛乳を足していいからね。……私も、たまに足す",
+          "affinity": 2
+        },
+        {
+          "text": "次も、荷物持ちします",
+          "response": "……そういうとこだよ、モルモットくん。じゃあ、次の仕入れの日は空けといて",
+          "affinity": 2
+        },
+        {
+          "text": "仕事、がんばってください",
+          "response": "ん。君もね。いい煙を",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_hiyori_1",
+      "important": true,
+      "sender": "hiyori",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "おはよう、はじめくん。……今日ね、代休なの"
+        },
+        {
+          "sender": "hiyori",
+          "text": "お昼の光って、私には少し強すぎて。ひとりで歩いたら、とけてしまいそうで……"
+        },
+        {
+          "sender": "hiyori",
+          "text": "駅ビルまで、付き添ってくれないかな。……用事は、着いてから話すね"
+        }
+      ],
+      "accept_event": "outing_hiyori_1",
+      "accept_text": "お昼、付き添います",
+      "decline_response": {
+        "sender": "hiyori",
+        "text": "……うん。じゃあ今日は、日陰だけを選んで歩くね"
+      },
+      "reminder_text": "……この前の付き添いのお願い、まだ有効だよ。光は、今日も強いけど"
+    },
+    {
+      "id": "lime_after_outing_hiyori",
+      "sender": "hiyori",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_hiyori",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "おはよう、はじめくん。この前のとけだるま、枕元に並べたよ"
+        },
+        {
+          "sender": "hiyori",
+          "text": "朝起きると、みんな同じ顔で笑ってるの。……少しだけ、出社する気力が残ってた"
+        }
+      ],
+      "replies": [
+        {
+          "text": "うちの子も、鍵で揺れてます",
+          "response": "……そう。じゃあ、離れてても同じ顔で笑ってるんだね",
+          "affinity": 2
+        },
+        {
+          "text": "また付き添います",
+          "response": "……ほんと？ 次は日傘、二人で入れる大きさにしておく",
+          "affinity": 2
+        },
+        {
+          "text": "今日もおつかれさまです",
+          "response": "ありがとう。……今日は、消えずに定時で帰るね",
+          "affinity": 1
+        }
+      ]
     }
   ]
 }
