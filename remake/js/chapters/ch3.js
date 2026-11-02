@@ -18,7 +18,7 @@ import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { MUKAI_DELIVERY_STEPS, runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, chapterThreeProgress,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime,
-  chapterThreePrepPending, departChapterThree } from "./ch3-progress.js";
+  chapterThreePrepPending, departChapterThree, chapterThreeDaily } from "./ch3-progress.js";
 import { CH3_PREP_SCENES, chapterThreePrepEvents } from "./ch3-prep.js";
 import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts } from "../core/tokyo-visits.js";
 
@@ -400,6 +400,8 @@ async function renderStage(owner) {
   if (!current(owner)) return;
   syncTokyoVisits(state);
   const progress = chapterThreeProgress(state);
+  // 東京も日常ループで遊ぶ行程（版3・VOL03）は、大会の朝（DAY14）まで日常ループ。以後は今までの大会の朝のカード。
+  if (chapterThreeDaily(state) && state.day < progress.startDay + 13) { await renderTokyoDaily(owner); return; }
   const scene = chapterThreeScenes(state)[progress.stage];
   const free = chapterThreeFreeTime(state);
   if (free) { await renderFreeTime(owner, free); return; }
@@ -467,6 +469,20 @@ async function renderStage(owner) {
     ...friendActions(owner),
     ...await optionalActions(owner),
   ], scene.id === "ch3_kuze_advice" ? "煙幕を初めて訪ねた日から、数日が過ぎた。" : "", scene.id);
+}
+
+/** 東京の14日（版3）。日常ループの地図・本筋・寄り道は chapters/ch3-tokyo-daily.js。大会の朝に戻る。 */
+async function renderTokyoDaily(owner) {
+  const tokyo = await withLoadingNotice(import("./ch3-tokyo-daily.js"), loadingNotice("東京の地図を準備しています…"));
+  if (!current(owner)) return;
+  showScreen("none", null);
+  await tokyo.runChapterThreeTokyo({
+    readScene: scene => readScene(owner, scene),
+    openRuleSheet: async () => (await import("../scenes/rule-sheet.js")).openRuleSheet(),
+  });
+  if (!current(owner) || state.day < tokyo.tokyoTournamentDay(state)) return;
+  hud(owner);
+  await renderStage(owner);
 }
 
 /**

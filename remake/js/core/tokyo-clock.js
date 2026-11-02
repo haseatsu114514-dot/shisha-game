@@ -19,6 +19,16 @@ const TOKYO_FREE_TIMES_V2 = Object.freeze(TOKYO_FREE_TIMES.map(window => ({ ...w
   "d10-night": "ch3_taste_return",
 })[window.id] || window.before })));
 
+// 東京も日常ループで遊ぶ行程（版3・VOL03）の空き時間。昼の行動を使う場面の無い時間帯すべて。
+// 恋人の東京訪問（合流・散歩）はこの中から選ぶ。d13-night は前夜（大会前夜の場面の後に過ごし方を選ぶ）。
+const V3_STORY_NOONS = new Set([1, 2, 3, 4, 8, 11, 13]);
+export const TOKYO_FREE_TIMES_V3 = Object.freeze(Array.from({ length: 13 }, (_, index) => index + 1).flatMap(day => [
+  ...(V3_STORY_NOONS.has(day) ? [] : [{ id: `d${day}-noon`, day, slot: 0 }]),
+  ...(day === 1 ? [] : [{ id: `d${day}-night`, day, slot: 1 }]),
+]).map(window => Object.freeze(window)));
+/** その保存の行程で使う空き時間の一覧（恋人の訪問の候補）。 */
+export const tokyoFreeTimes = value => value?.flags?._ch3_intro?.routeVersion === 3 ? TOKYO_FREE_TIMES_V3 : TOKYO_FREE_TIMES;
+
 export function tokyoTime(value, window) {
   return { ...window, day: value.flags._ch3_intro.startDay + window.day - 1 };
 }
@@ -47,7 +57,8 @@ export const tokyoOpenWindow = value => value.flags?._ch3_intro?.routeVersion ==
 
 /** 古い保存の過ぎた空き時間を再演しない。本筋のstageは増やさない。 */
 export function nextTokyoFreeTime(value, before) {
-  if (!value.flags?._ch3_intro) return null;
+  // 版3は日常ループが空き時間そのもの。場面カードの自由時間は出さない。
+  if (!value.flags?._ch3_intro || value.flags._ch3_intro.routeVersion === 3) return null;
   const closed = value.tokyoVisits?.closedSlots || [];
   const windows = value.flags._ch3_intro.routeVersion === 2 ? TOKYO_FREE_TIMES_V2 : TOKYO_FREE_TIMES;
   return windows.filter(window => window.before === before && !closed.includes(window.id))
