@@ -4,6 +4,8 @@
 // 別便の応援（恋人・ましろ）がいれば、前夜祭より先に到着の場面を読み、到着した恋人を前夜に誘えること。
 // カフェでは現地のメニューから一台頼んで味わい、吸いながら現地の文化の話を聞く（2026-11-02 オーナー「カフェで吸えたりとかにしよう」）。
 // 龍龍水煙所（王煙楼の店）は最初から地図にあり、通うと段階の会話が進む。先に店で会っていれば前夜祭は顔見知りの分岐。
+// 街の手触り（2026-11-02 オーナー「2以外は採用」）: 昼の屋外は暑さで体力を多めに使い、カフェ・専門店は夜がにぎわう（夜の一行・
+// 初めての夜は短い場面）。スークの後は屋台で軽く買える（体力が少し戻る）。値段には約何ディルハムかを添える。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
@@ -82,6 +84,8 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(await page.locator(dt("pin-ch4_dubai_alley")).count(), 0, "The alley appears after the market meeting");
     // 昼: スーク（市場→最初の出会い）。夜: FESTA（ドバイの専門店の一台6,000円）。
     await go(page, "ch4_dubai_souq");
+    // スークの後は屋台（買わなくてもよい）
+    await page.locator(dt("stall-none")).click();
     await dubaiMap(page, { day: 49, slot: 1 });
     state = await get(page);
     assert.equal(state.flags._ch4.read.ch4_dubai_souq, true);
@@ -93,6 +97,8 @@ await suite("ch4-dubai-daily", async check => {
     state = await get(page);
     assert.equal(state.flags._ch4.read.ch4_festa, true);
     assert.equal(state.money, money - 6000, "FESTA charges the Dubai lounge price of one shisha");
+    assert.deepEqual(state.flags._ch4_dubai_nights, { festa: 1 }, "The first night at FESTA reads its night scene before the meeting");
+    assert((await backlog(page)).some(text => text.startsWith("夜のFESTAは、人でいっぱいだった。")));
     assert.equal(state.flags._ch4.day, 2, "The chapter day follows the calendar");
     assert.equal(state.flags._ch2_region, "dubai", "The night is spent at the inn in Dubai");
     // 2日目の昼: 宿で休むと、最初の一回は道具の手入れ（本筋）。
@@ -168,6 +174,71 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(state.flags._ch4.read.ch4_dubai_cafe_revisit, true);
     assert.equal(state.flags._ch4_dubai_talks.center_cafe, 1);
     assert.equal(state.money, money - 9000, "Three cafe visits at 3,000 yen");
+  });
+
+  // 昼のスーク: 暑さで体力を多めに使い（-15）、屋台でシャワルマ（500円・体力+12）。夜の中心地のカフェ: 初めての夜は短い場面
+  // （スポット固有の場面の経験値）→ 店員の「マルハバ」→ 一台。翌日の昼のクリーク沿いは夜ほど休まらず（+12）、二度目の夜は一行だけ。
+  await check("daytime-heat-souq-stall-and-lively-cafe-nights", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care", "ch4_dubai_cafe"]) p.read[id] = true;
+      p.firstDay = 1;
+      value.day = p.startDay + 2; value.slot = 0; p.day = 3;
+      value.money = 50000; value.stamina = 60;
+      value.stats.guts = 10; // 根性の軽減なし（体力の増減をそのまま確かめる）
+    });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 51, slot: 0 });
+    const desc = async pin => { await page.locator(dt(`pin-${pin}`)).click(); return page.locator(".mi-desc").first().innerText(); };
+    assert.match(await desc("ch4_dubai_souq"), /屋台で軽いものも買える。昼は暑く、いつもより体力を使う。/);
+    assert.match(await desc("ch4_dubai_creek"), /昼は日差しが強く、夜ほどは休まらない。/);
+    assert.match(await desc("ch4_dubai_festa"), /一台6,000円（約140ディルハム）。夜がにぎわう。/);
+    assert.match(await desc("ch4_dubai_cafe"), /一台3,000円（約70ディルハム）。夜がにぎわう。/);
+    let state = await get(page);
+    const money = state.money;
+    // 昼のスーク → 屋台
+    await go(page, "ch4_dubai_souq");
+    await page.locator(dt("stall-shawarma")).waitFor();
+    assert.deepEqual(await page.locator(".ch4-souq-stall .modal-actions button").allInnerTexts(),
+      ["カラクチャイ 100円（約2ディルハム）", "シャワルマ 500円（約10ディルハム）", "ルカイマット 500円（約10ディルハム）", "何も買わない"]);
+    assert.match(await page.locator(".ch4-souq-stall .modal-body").innerText(), /「マルハバ」/);
+    assert.equal(await page.locator(".toast", { hasText: "昼の暑さで、いつもより体力を使った" }).count(), 1, "The heat is shown");
+    await page.locator(dt("stall-shawarma")).click();
+    await dubaiMap(page, { day: 51, slot: 1 });
+    state = await get(page);
+    assert.equal(state.money, money - 500, "A shawarma is 500 yen");
+    assert.equal(state.stamina, 60 - 15 + 12, "The midday souq takes 15, the shawarma gives back 12");
+    assert((await backlog(page)).some(text => text.startsWith("回る肉の塊を")));
+    // 夜の中心地のカフェ（初めての夜）
+    await go(page, "ch4_dubai_cafe");
+    await page.locator(dt("cafe-order-grape_mint")).click();
+    await dubaiMap(page, { day: 52, slot: 0 });
+    state = await get(page);
+    assert.deepEqual(state.flags._ch4_dubai_nights, { center_cafe: 1 });
+    assert.equal(state.money, money - 500 - 3000);
+    let lines = await backlog(page);
+    const nightLine = "夜の中心地のカフェは、テラスの席までほとんど埋まっていた。";
+    const nightMore = "客の入りは、日付が変わるころまで途切れないらしい。店員が、空いた席を探して回っている。";
+    assert(lines.includes(nightLine) && lines.includes(nightMore), "The first night is the short night scene");
+    assert(lines.includes("マルハバ。前と同じ、窓際のお席でよろしいですか"), "The staff greets with marhaba");
+    assert(state.growth?.read?.includes("ch4_dubai_night_center_cafe"), "The first night counts as a spot scene (growth board)");
+    // 翌日の昼のクリーク沿い（夜ほど休まらない）
+    const max = await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina());
+    const before = state.stamina;
+    await go(page, "ch4_dubai_creek");
+    await dubaiMap(page, { day: 52, slot: 1 });
+    state = await get(page);
+    assert.equal(state.stamina, Math.min(max, before + 12), "The midday creek walk restores 12");
+    // 二度目の夜は一行だけ
+    await go(page, "ch4_dubai_cafe");
+    await page.locator(dt("cafe-order-mint")).click();
+    await dubaiMap(page, { day: 53, slot: 0 });
+    state = await get(page);
+    assert.deepEqual(state.flags._ch4_dubai_nights, { center_cafe: 2 });
+    lines = await backlog(page);
+    assert.equal(lines.filter(text => text === nightLine).length, 2, "The night line is read on every night visit");
+    assert.equal(lines.filter(text => text === nightMore).length, 1, "The rest of the night scene only on the first night");
   });
 
   await check("the-night-of-day-twelve-leads-to-the-eve-of-the-world-tournament", async page => {
