@@ -30,6 +30,37 @@ async function declare(page) {
   if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await card.tap(); else await card.click();
   await nextLines(page);
 }
+
+// New scenes: two questions for the story's character after the first roll, a twist after the guess.
+async function interviewStep(page) {
+  const snap = () => page.evaluate(() => window.__trpg?.snapshot?.() ?? null);
+  if ((await snap())?.phase !== "interview" && !(await page.locator('[data-test="trpg-interview-done"], [data-test^="trpg-topic-"]').count())) return;
+  for (let n = 0; n < 2; n++) {
+    const topic = page.locator('[data-test^="trpg-topic-"]:not([disabled]):not(.selected)').first();
+    if (!await topic.count()) break;
+    if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await topic.tap(); else await topic.click();
+    for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  }
+  const done = page.locator('[data-test="trpg-interview-done"]');
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await done.tap(); else await done.click();
+}
+async function twistStep(page) {
+  const option = page.locator('[data-test^="trpg-plan-tactic-"]').first();
+  if (!await option.count()) return;
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  if (touch) await option.tap(); else await option.click();
+  const open = page.locator('[data-test="trpg-twist-open"]');
+  if (touch) await open.tap(); else await open.click();
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (touch) await card.tap(); else await card.click();
+  for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  const roll = page.locator('[data-test="trpg-roll"]');
+  if (touch) await roll.tap(); else await roll.click();
+  await page.locator('[data-test="trpg-settle"]').waitFor();
+  const settle = page.locator('[data-test="trpg-settle"]');
+  if (touch) await settle.tap(); else await settle.click();
+  for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+}
 async function checkRoll(page, { support = null, reroll = false } = {}) {
   await declare(page);
   if (support) await hit(page, '[data-test="trpg-support-' + support + '"]');
@@ -52,6 +83,8 @@ async function begin(page, keyboard = false) {
   }
   await nextLines(page, keyboard);
   await checkRoll(page);
+  assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "interview");
+  await interviewStep(page);
   assert.equal((await page.evaluate(() => __trpg.snapshot())).phase, "explore");
   await fits(page);
 }
@@ -65,6 +98,7 @@ async function explore(page, { spots = ["menu", "window", "bag"], hypothesis = "
   await hit(page, '[data-test="trpg-interpret"]');
   await hit(page, '[data-test="trpg-hypothesis-' + hypothesis + '"]');
   await nextLines(page);
+  await twistStep(page);
 }
 async function finish(page, choices) {
   const fields = Object.keys(choices);
@@ -177,7 +211,7 @@ try {
   await run("home-touch", { seed: "3", traveler: "home" },
     { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, async page => {
       await page.locator('[data-test="trpg-start"]').tap();
-      await nextLines(page); await checkRoll(page);
+      await nextLines(page); await checkRoll(page); await interviewStep(page);
       await explore(page); await finish(page, { aroma: "tea", seat: "shelf", approach: "memory" });
       assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), "帰り道の一台");
     });
@@ -317,9 +351,10 @@ try {
     if (movie.label === "shark-scent-pc") await page.screenshot({ path: path.join(artifacts, "shark-explore-pc.png") });
     await hit(page, '[data-test="trpg-interpret"]');
     await hit(page, '[data-test="trpg-hypothesis-' + movie.profile + '"]'); await nextLines(page);
+    await twistStep(page);
     await finish(page, movie.choices);
     assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), movie.ending);
-    assert.equal((await page.evaluate(() => __trpg.snapshot())).checks[1].hypothesisBonus, 4); // d20版の見立て補正
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.find(c => c.kind === "prepare").hypothesisBonus, 4); // d20版の見立て補正
     await fits(page);
     if (movie.label === "shark-scent-pc") {
       await hit(page, '[data-test="trpg-replay"]');

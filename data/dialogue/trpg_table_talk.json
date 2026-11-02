@@ -240,6 +240,282 @@
           "text": "この空気なら、次のサイコロも味方してくれる"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_critical",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "20のゾロ目だと……！ 林檎が二つ、宇宙が祝福している"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "アダムさん、GMなのに一番喜んでる……"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "褒美だ。連携札を1枚、君たちの手に返そう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_critical_full",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "20のゾロ目だと……！ 林檎が二つ、宇宙が祝福している"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "アダムさん、GMなのに一番喜んでる……"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "札は満ちている。ならば、俺から喝采を贈ろう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_fumble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "1ゾロ……ファンブルか。だが、悲劇は名作の香りだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "名作の香り、で片付けていいのかな……"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "安心しろ。この幕は、必ず美しく下りる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_double",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ゾロ目か。舞台の照明が、少し明るくなったな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "揃うと、なんか嬉しいですよね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_heat_up",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "卓が温まってきた。客席の熱が、俺の語りを押し上げる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "アダムさんのGM、ノッてくると止まらないな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_heat_max",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "intense",
+          "text": "最高潮だ！ この卓こそ、今夜の原点だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "この空気なら、次のサイコロも味方してくれる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_critical",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……20のゾロ目。クリティカル、です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "つむぎの声が、ちょっと弾んでる……！"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ご褒美。連携札を1枚、お返しします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_critical_full",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……20のゾロ目。クリティカル、です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "つむぎの声が、ちょっと弾んでる……！"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……札はいっぱい。だから、拍手を送ります"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_fumble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……1ゾロ。ファンブル、です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "やっちゃった……。何が起こるんだ？"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……ちょっとだけ、面白いことが起きます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_double",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ゾロ目。きれいに揃いました"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "揃うと、なんか嬉しいよな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_heat_up",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……卓が、あたたかくなってきました"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "つむぎのGM、静かなのに引き込まれるな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_heat_max",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……最高潮。今の卓、描きたいくらいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "この空気なら、次もいける気がする"
+        }
+      ]
     }
   ]
 }

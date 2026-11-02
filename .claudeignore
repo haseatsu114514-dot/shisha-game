@@ -11,10 +11,8 @@ asset_sources/
 # 履歴・隔離済みの旧資料（必要なときだけ明示的に開く）
 docs/archive/
 docs/qa/
-data/dialogue/_legacy/
 
 # 生成物（正本は生成元）
-docs/archive/setting_reference.html
 remake/data/manifest.json
 
 # スプレッドシート系（CSV は必要時のみ手動で参照）

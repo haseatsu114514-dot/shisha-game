@@ -11,6 +11,37 @@ const browser=await chromium.launch({headless:true,
  ...(process.env.CHROME_EXECUTABLE_PATH?{executablePath:process.env.CHROME_EXECUTABLE_PATH}:{})});const results=[];
 const ctl=(p,id)=>p.locator(`[data-test="${id}"]`);
 async function lines(p){for(let n=0;n<60&&await ctl(p,'trpg-next').isVisible();n++)await ctl(p,'trpg-next').click();}
+
+// New scenes: two questions for the story's character after the first roll, a twist after the guess.
+async function interviewStep(page) {
+  const snap = () => page.evaluate(() => window.__trpg?.snapshot?.() ?? null);
+  if ((await snap())?.phase !== "interview" && !(await page.locator('[data-test="trpg-interview-done"], [data-test^="trpg-topic-"]').count())) return;
+  for (let n = 0; n < 2; n++) {
+    const topic = page.locator('[data-test^="trpg-topic-"]:not([disabled]):not(.selected)').first();
+    if (!await topic.count()) break;
+    if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await topic.tap(); else await topic.click();
+    for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  }
+  const done = page.locator('[data-test="trpg-interview-done"]');
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await done.tap(); else await done.click();
+}
+async function twistStep(page) {
+  const option = page.locator('[data-test^="trpg-plan-tactic-"]').first();
+  if (!await option.count()) return;
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  if (touch) await option.tap(); else await option.click();
+  const open = page.locator('[data-test="trpg-twist-open"]');
+  if (touch) await open.tap(); else await open.click();
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (touch) await card.tap(); else await card.click();
+  for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  const roll = page.locator('[data-test="trpg-roll"]');
+  if (touch) await roll.tap(); else await roll.click();
+  await page.locator('[data-test="trpg-settle"]').waitFor();
+  const settle = page.locator('[data-test="trpg-settle"]');
+  if (touch) await settle.tap(); else await settle.click();
+  for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+}
 async function declare(p){const card=p.locator('[data-test^="trpg-approach-"]').first();if(await card.count()&&await card.isVisible()){await card.click();await lines(p);}}
 async function assertReducedDice(p){
  // The 40ms result render replaces rolling dice. Query and read styles in one
@@ -132,8 +163,11 @@ try{
   await p.keyboard.press('Escape');assert.equal(await p.locator('[role=dialog]').count(),1);
   await ctl(p,'trpg-settle').waitFor();assert.equal(await p.locator('[role=status].trpg-dice-total').count(),1);await fit(p,scenario+'-result');
   if(await ctl(p,'trpg-reroll-0').count()){await ctl(p,'trpg-reroll-0').dblclick();assert.equal(await ctl(p,'trpg-reroll-0').count(),0);}
-  await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');
+  await ctl(p,'trpg-settle').click();await lines(p);await interviewStep(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');
   // Adopted table presentation: check real CSS/viewport separately from DOM ports.
+  // The seat rail marks who is speaking, so it is measured during a line; idle choice screens hide it.
+  assert(!await p.locator('.trpg-table').evaluate(n=>n.checkVisibility({visibilityProperty:true})),'Idle choice screens keep the rail out of the way');
+  await p.locator('[data-test^="trpg-consult-"]').first().click();
   for (const [width,height] of [[1280,720],[844,390],[390,844]]) {
    await p.setViewportSize({width,height});
    await settledPreview(p);
@@ -147,6 +181,7 @@ try{
    assert.equal(seats.pointer,'none');assert.equal(seats.active,1);assert.equal(seats.speaking,'話者');
   }
   await p.setViewportSize({width:1280,height:720});
+  await lines(p);
   assert.equal(await p.locator('.trpg-table-clue').count(),0);
   // Reach the real preparation check, retaining canonical helper and scene.
   const scenarioData=await p.evaluate(async id=>{const cat=await (await fetch('../data/trpg_catalog.json')).json();return (await fetch('../data/'+cat.scenarios.find(x=>x.id===id).file)).json();},scenario);
@@ -154,10 +189,10 @@ try{
    await ctl(p,'trpg-spot-'+spot.id).click();await lines(p);
    assert.equal(await p.locator('.trpg-table-clue').count(),index+1);
    const beforeMemo=await p.evaluate(()=>__trpg.snapshot());
-   await ctl(p,'trpg-compare-notes').tap();assert.equal(await p.locator('.trpg-note-card').count(),index+1);
+   await ctl(p,'trpg-compare-notes').tap();assert.equal(await p.locator('.trpg-note-card').count(),index+1+(await p.evaluate(()=>__trpg.snapshot())).asked.length);
    await ctl(p,'trpg-notes-close').press('Enter');assert.deepEqual(await p.evaluate(()=>__trpg.snapshot()),beforeMemo);
   }
-  await ctl(p,'trpg-interpret').click();await ctl(p,'trpg-hypothesis-'+scenarioData.hypotheses[0].id).click();await lines(p);
+  await ctl(p,'trpg-interpret').click();await ctl(p,'trpg-hypothesis-'+scenarioData.hypotheses[0].id).click();await lines(p);await twistStep(p);
   for(const field of scenarioData.flow?.prepare||['aroma','seat'])await ctl(p,'trpg-plan-'+field+'-'+scenarioData.options[field][0].id).click();
   await ctl(p,'trpg-prepare-open').click();await declare(p);
   const helper=scenarioData.checks.prepare.helper;
@@ -187,7 +222,7 @@ try{
    await fit(p,`${scenario}-${width}x${height}-actual-result`);
    assert(await ctl(p,'trpg-reroll-0').count());await ctl(p,'trpg-reroll-0').click();await ctl(p,'trpg-settle').waitFor();
    await fit(p,`${scenario}-${width}x${height}-rerolled-result`);
-   await ctl(p,'trpg-settle').click();await p.setViewportSize({width:1280,height:720});await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');await c.close();
+   await ctl(p,'trpg-settle').click();await p.setViewportSize({width:1280,height:720});await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'interview','after the first roll the story character is interviewed');await c.close();
  }
  // Reduced motion uses the same actual dice and spare equipment in both stories.
  for(const scenario of ['ordinary-cup','shark-last-order']){
@@ -207,7 +242,7 @@ try{
  }
  // Deliberately fail all decorative resources; live content stays usable.
  const c=await browser.newContext();const p=await c.newPage();await p.route(/\/(walnut-brass-frame|deep-teal-felt|harbour-paper-stack|spare-polyhedral-kit)\.webp$/,r=>r.abort());
- await p.goto(base+'trpg-preview.html?scenario=ordinary-cup&seed=9');await ctl(p,'trpg-start').click();await lines(p);await declare(p);await fit(p,'missing-decoration');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'explore');await c.close();
+ await p.goto(base+'trpg-preview.html?scenario=ordinary-cup&seed=9');await ctl(p,'trpg-start').click();await lines(p);await declare(p);await fit(p,'missing-decoration');await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();await ctl(p,'trpg-settle').click();await lines(p);assert.equal((await p.evaluate(()=>__trpg.snapshot())).phase,'interview');await c.close();
 }finally{await browser.close();fs.writeFileSync(path.join(out,'measurements.json'),JSON.stringify(results,null,2)+'\n');}
 console.log('PASS tabletop viewport, live input, state invariance and missing image checks');
 

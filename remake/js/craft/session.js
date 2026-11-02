@@ -33,6 +33,7 @@ import { prepareBenchEntry } from "./loading.js";
 import { applyCoalTraining } from "./coals.js";
 import { attachBenchAppearance } from "../appearance/bench.js";
 import { demoFor, openDemoSheet } from "./demo.js";
+import { craftMode, craftModeNote } from "./context.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -144,7 +145,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const leaf = buildLeafIcon();
   worker.footer.append(leaf.root);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", [cs.eventTitle || MODE_LABEL[cs.mode] || "", el("small", { text: cs.retryAssist ? "今回のみ操作補助" : cs.eventNote || MODE_NOTE[cs.mode] || "" })]), progress]),
+    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el("small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs, MODE_NOTE) })]), progress]),
     el("div.bench-left", [
       worker.root,
       audience?.root,

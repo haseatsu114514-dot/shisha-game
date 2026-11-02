@@ -44,7 +44,8 @@ function trpgAssetUrls({ characters, manifest, tableTalk, tutorialLines = [] }, 
   const people = new Set(characters.map(c => c.id));
   const urls = new Set();
   scenarios.forEach(s => {
-    urls.add(sceneUrl(s));
+    if (sceneUrl(s)) urls.add(sceneUrl(s));
+    if (s.presentation.choiceArt?.src) urls.add(new URL(s.presentation.choiceArt.src, new URL("./view.js", import.meta.url)).href);
     s.cast.forEach(c => {
       if (!people.has(c.id) || !manifest.portraits[c.id]) throw new Error("Missing canonical character: " + c.id);
       urls.add(portraitUrl(manifest, c.id));

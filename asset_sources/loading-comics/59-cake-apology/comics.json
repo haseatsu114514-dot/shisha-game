@@ -1,0 +1,96 @@
+{
+  "episode": 59,
+  "title": "反省の向き",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "canon_status": "不条理ギャグの誇張。本編の能力・人物・店の衛生や営業設定への追加ではない。",
+  "reading_order": "左①導入→右②オチ",
+  "image_manifest": [
+    {
+      "file": "59-cake-apology.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "ef175939f41307330d6b9ed803f63d226d43cd3e19129301cbaceabd0902c7fb",
+      "bytes": 1710407
+    }
+  ],
+  "tasks": [
+    {
+      "dialogue": [
+        "失敗した。",
+        "次がありますよ。",
+        "謝る先そっち？"
+      ],
+      "script": "左: なるがしぼんだ小さいスポンジケーキを前に『失敗した。』はじめが『次がありますよ。』と励ます。右: なるがカウンターのスポンジケーキへ向かって真剣に深々と一礼して謝っている。はじめは左から見て『謝る先そっち？』。なるは失敗を認め努力する誠実な人として、客へ怒らずケーキに謝る。",
+      "prompt": "添付の下敷き画像を編集して2コマ漫画1話を描く。1536x1024維持。最優先は枠の寸法: 左x36 y272 w720 h480、右x780 y272 w720 h480、各横長3:2。上下はそれぞれ272pxの紙の余白。枠はy752で終わる。コマの高さを拡げない。枠外は均一紙色#EEE3CF。各コマにバストアップの2.5頭身人物と必要な小物だけを描き、全身を詰め込まない。太線、読みやすいセル塗り、暖かな配色、真顔と短いツッコミで笑わせる不条理漫画。添付の正式立ち絵に顔・髪・服を合わせる。両コマともはじめ（黒野球帽、黒髪、黒パーカー）が左、相手は右。吹き出しと顔は枠から29px離す。白吹き出しに太いゴシック日本語。台詞は指定された3つだけ、一字一句同じ。余計な文字・題名・番号・擬音文字・英語・署名なし。人は2人まで。シーシャ台・ハガル・HMD・炭・ホース・喫煙・煙・武器は一切描かない。実在ロゴなし。背景の棚は不透明な扉収納、葉や瓶は並べない。左: なるがしぼんだ小さいスポンジケーキを前に『失敗した。』はじめが『次がありますよ。』と励ます。右: なるがカウンターのスポンジケーキへ向かって真剣に深々と一礼して謝っている。はじめは左から見て『謝る先そっち？』。なるは失敗を認め努力する誠実な人として、客へ怒らずケーキに謝る。",
+      "character_constraints": "アダムは正面の画面左が赤・右が緑、黒ヘンリーと黒エプロン。なるは銀髪・黒白ジャケット・銀アクセサリー。スミはハンチング・眼鏡・顎髭・茶腰エプロン。",
+      "revision_prompt": null,
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/naru/chr_naru_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "59-cake-apology.png",
+      "region": {
+        "x": 38,
+        "y": 252,
+        "width": 716,
+        "height": 510,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "59-cake-apology.png",
+      "region": {
+        "x": 783,
+        "y": 252,
+        "width": 714,
+        "height": 508,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/cake-apology-1.webp",
+      "width": 765,
+      "height": 510,
+      "sha256": "278379412ac32ba16c08818f1a6af1577ae6829a5c935c920420418136c5c9f3"
+    },
+    {
+      "file": "panels/cake-apology-2.webp",
+      "width": 762,
+      "height": 508,
+      "sha256": "78e12abdb9ae3a2c40837d2fc3d11d79143997594dfd35950aa1283afd6ccea0"
+    }
+  ],
+  "qa": {
+    "source_visual": "目視済み。3台詞一致・左右の人物固定・機材/炭/煙/武器なし。",
+    "ratio": "全コマok（検査の強制通過なし）",
+    "known_deviations": [
+      "枠位置と紙色・枠除去後の寸法に生成由来の微差がある。規格内の紙色補正で3:2へ調整。",
+      "画風のデフォルメ度合いには候補間の差あり。正式採用の選別対象。"
+    ],
+    "selection": "未選別。面白さの採用判断はオーナー待ち。",
+    "browser": {
+      "result": "12話×PC/スマホ横の24画面をロード画面に一時差し込み、画像decode・題名・表示比率・画面内配置を検証し撮影成功。ゲームの登録ファイルは変更していない。",
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ],
+      "sizes": [
+        "1280x720",
+        "844x390"
+      ],
+      "visual": "スマホ横12話とPC51話/55話を目視確認。台詞・顔の欠けなし。"
+    }
+  },
+  "theme": "キャラのこだわり"
+}
