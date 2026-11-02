@@ -250,8 +250,9 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
       const p = finishChapterFourStep(value, c);
       if (p.voted === rounds.length) continue;
       const got = id => CH4_JUDGES.reduce((sum, judge) => sum + p.votes[judge][id] - before[judge][id], 0);
-      rounds.push({ got: Object.fromEntries(CH4_CONTESTANTS.map(id => [id, got(id)])), leader: chapterFourStandings(p)[0].id,
-        rank: chapterFourStandings(p).find(row => row.id === "hajime").rank });
+      const rows = chapterFourStandings(p);
+      rounds.push({ got: Object.fromEntries(CH4_CONTESTANTS.map(id => [id, got(id)])), leader: rows[0].id,
+        rank: rows.find(row => row.id === "hajime").rank, top: rows.slice(0, 2).map(row => `${row.id}:${row.points}`) });
       before = structuredClone(p.votes);
     }
     return { p: chapterFourMatch(value), rounds };
@@ -270,6 +271,12 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   assert(average.rounds[2].got.naru > 0);
   assert.equal(average.p.result.win, true);
   assert.equal(average.p.result.rows[1].id, "naru", "Naru competes to the end");
+  // その先頭は、はじめと同じ持ち点（6対6、9対9）で、その回の出来の差で上に出ている（台本は「先頭に並んだ」と言う）。
+  assert.deepEqual(average.rounds.slice(1, 3).map(r => r.top), [["naru:6", "hajime:6"], ["naru:9", "hajime:9"]]);
+  // 制作後の票を逃し（王煙楼87に届かない）、提供後に2位まで上げた一台では、なるが持ち点でも単独の先頭になる。
+  const late = byRound(entry(), { ...craft(89), holes: craft(86).holes, heat: craft(86).heat, servedQuality: 96 });
+  assert.deepEqual(late.rounds[0].got, { hajime: 0, naru: 0, master_hookah: 3, sheikh: 3 });
+  assert.deepEqual(late.rounds[1].top, ["naru:6", "hajime:3"]);
   // 最後の総合がシェイクに届かない一台（全工程87）: 最後の票の1位はシェイク、2位はなる。シェイクが勝つ。
   const short = byRound(entry(), craft(87));
   assert.equal(short.rounds[3].got.sheikh, 6);

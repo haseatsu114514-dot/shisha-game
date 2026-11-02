@@ -1127,11 +1127,36 @@
           "speaker": "pakki",
           "face": "excited",
           "text": "提供後の票で、なる選手が先頭ッ！"
-        },
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_4_naru_tie",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "提供後の票は、なる選手がトップッ！ 先頭に並びましたッ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_4_naru_ahead",
+      "lines": [
         {
           "speaker": "hajime",
           "face": "serious",
           "text": "（なるが前に……。次の調整で、炭を寄せて追いつかないと）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude1_4_naru_level",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（並ばれた……。次の調整で、炭を寄せて突き放さないと）"
         }
       ]
     },
@@ -1162,6 +1187,16 @@
           "speaker": "pakki",
           "face": "excited",
           "text": "先頭は、なる選手ッ！ 最後の調整で、まだ動きますッ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tournament_craft_interlude2_4_naru_tie",
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "先頭に並ぶのは、なる選手ッ！ 最後の調整で、まだ動きますッ！"
         }
       ]
     },

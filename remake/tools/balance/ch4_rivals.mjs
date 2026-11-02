@@ -37,13 +37,16 @@ function play(mod, parts, bonus = BONUS) {
     total: Math.round(Math.min(100, parts.reduce((a, b) => a + b, 0) / 5 + bonus) * 10) / 10 };
   mod.startChapterFourCraft(value, cs);
   const rounds = [];
-  let before = mod.chapterFourMatch(value).votes;
+  let before = structuredClone(mod.chapterFourMatch(value).votes);
   for (let step = 0; step < 11; step++) {
     mod.beginChapterFourStep(value);
     const p = mod.finishChapterFourStep(value, cs);
     if (p.voted === rounds.length) continue;
     const got = id => mod.CH4_JUDGES.reduce((sum, judge) => sum + p.votes[judge][id] - before[judge][id], 0);
-    rounds.push({ got: Object.fromEntries(mod.CH4_CONTESTANTS.map(id => [id, got(id)])), leader: mod.chapterFourStandings(p)[0].id });
+    const rows = mod.chapterFourStandings(p);
+    // margin: 先頭と2位の持ち点の差（0なら同じ持ち点で、その回の出来の差で上に出ているだけ）。
+    rounds.push({ got: Object.fromEntries(mod.CH4_CONTESTANTS.map(id => [id, got(id)])), leader: rows[0].id,
+      margin: rows[0].points - rows[1].points });
     before = structuredClone(p.votes);
   }
   const p = mod.chapterFourMatch(value);
@@ -51,14 +54,18 @@ function play(mod, parts, bonus = BONUS) {
   return { win: p.result.win, rounds, rows: p.result.rows };
 }
 
-function measure(mod, mu) {
-  const runs = SPREAD.map(offsets => play(mod, offsets.map(x => Math.min(100, mu + x))));
+/** drop: 調整2回目だけをさらに下げる（最後の調整で崩れた一台）。 */
+function measure(mod, mu, drop = 0) {
+  const runs = SPREAD.map(offsets => play(mod, offsets.map((x, i) => Math.min(100, mu + x) - (i === 4 ? drop : 0))));
   const rate = test => runs.filter(test).length / runs.length;
   return {
     win: rate(r => r.win),
     naruVotes: rate(r => r.rounds[1].got.naru > 0 || r.rounds[2].got.naru > 0),
     naruLead1: rate(r => r.rounds[1].leader === "naru"),
     naruLead2: rate(r => r.rounds[2].leader === "naru"),
+    naruSole1: rate(r => r.rounds[1].leader === "naru" && r.rounds[1].margin > 0),
+    naruSole2: rate(r => r.rounds[2].leader === "naru" && r.rounds[2].margin > 0),
+    naruWin: rate(r => r.rows[0].id === "naru"),
     naruSecond: rate(r => r.win && r.rows[1].id === "naru"),
     sheikhLast: rate(r => r.rounds[3].got.sheikh === 6),
   };
@@ -87,6 +94,20 @@ for (const [label, mu] of [["弱め", 85], ["ふつう", 88], ["良い", 91], ["
   const a = measure(old, mu), b = measure(now, mu);
   console.log(`| ${label} | ${mu} | ${pct(a.win)} → ${pct(b.win)} | ${pct(a.naruVotes)} → ${pct(b.naruVotes)} | `
     + `${pct(b.naruLead1)} / ${pct(b.naruLead2)}（旧 ${pct(a.naruLead1)}） | ${pct(a.naruSecond)} → ${pct(b.naruSecond)} | ${pct(a.sheikhLast)} → ${pct(b.sheikhLast)} |`);
+}
+console.log("\nなるが先頭のうち、持ち点でも単独の先頭（同じ持ち点で、その回の出来の差で上に出ているだけを除く）:");
+console.log("| はじめ | μ | 盤の先頭がなる: 提供後 / 調整1の後 | うち単独の先頭: 提供後 / 調整1の後 |");
+console.log("|---|---:|---:|---:|");
+for (const [label, mu] of [["弱め", 85], ["ふつう", 88], ["良い", 91], ["とても良い", 94]]) {
+  const b = measure(now, mu);
+  console.log(`| ${label} | ${mu} | ${pct(b.naruLead1)} / ${pct(b.naruLead2)} | ${pct(b.naruSole1)} / ${pct(b.naruSole2)} |`);
+}
+console.log("\n最後の調整（調整2回目）だけ崩れた一台で、優勝がなる（旧はなるが優勝しない）:");
+console.log("| はじめ | μ | 調整2回目 | 勝率 旧→新 | 優勝がなる 旧→新 |");
+console.log("|---|---:|---:|---:|---:|");
+for (const [label, mu] of [["ふつう", 88], ["良い", 91]]) for (const drop of [10, 20]) {
+  const a = measure(old, mu, drop), b = measure(now, mu, drop);
+  console.log(`| ${label} | ${mu} | −${drop} | ${pct(a.win)} → ${pct(b.win)} | ${pct(a.naruWin)} → ${pct(b.naruWin)} |`);
 }
 console.log(`\n勝率50%の平均 μ: 旧 ${midpoint(old)} → 新 ${midpoint(now)}`);
 console.log(`5工程とも同じ出来で勝てる最小値: 旧 ${evenBar(old)} → 新 ${evenBar(now)}`);

@@ -34,7 +34,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     openBench: cs => trace.push(`bench:${match.chapterFourMatch(value).step}`),
     waitBenchReady: async () => trace.push("ready"),
     benchRoot: () => ({ querySelector: () => ({ append: () => trace.push("menu") }) }),
-    showChapterFourStandings: async p => { trace.push(`standings:${p.voted}`); shown.push(match.chapterFourStandings(p).map(row => row.id)); },
+    showChapterFourStandings: async p => { trace.push(`standings:${p.voted}`); shown.push(match.chapterFourStandings(p)); },
     retireScreen: () => trace.push("retire"), playBgm() {}, clearComments() {}, block() {},
     play: async dialogue => { trace.push(dialogue.dialogue_id); return {}; },
     modal: async options => { trace.push(options.title); return ask; },
@@ -172,12 +172,18 @@ assert.equal(resumed.value.flags._ch4.match.voted, 4);
   const average = await run({ quality: 89 });
   assert.equal(average.result.win, true);
   const told = (r, event) => r.contexts.find(row => row.event === event);
-  assert.deepEqual(average.shown.map(rows => rows[0]), ["hajime", "naru", "naru"]);
-  for (const [event, index] of [["interlude1", 1], ["interlude2", 2]]) {
-    assert.equal(told(average, event).leader, average.shown[index][0], `${event} is told the standings just shown`);
-    assert.equal(told(average, event).rank, average.shown[index].indexOf("hajime") + 1);
+  assert.deepEqual(average.shown.map(rows => rows[0].id), ["hajime", "naru", "naru"]);
+  for (const r of [average, success]) for (const [event, index] of [["interlude1", 1], ["interlude2", 2]]) {
+    const rows = r.shown[index], me = rows.find(row => row.id === "hajime");
+    assert.deepEqual(told(r, event), { event, leader: rows[0].id, rank: me.rank,
+      tied: rows[1].points === rows[0].points, level: me.points === rows[0].points }, `${event} is told the standings just shown`);
   }
-  assert.equal(told(average, "interlude1").leader, "naru");
+  // ふつうの一台では、なるは提供後・調整1回目の票の1位を取って、はじめと同じ持ち点に並ぶ（盤の上はその回の出来の差）。
+  // 台本には「並んだ」と渡し、単独の先頭とは言わせない。
+  assert.deepEqual(average.shown.slice(1).map(rows => rows.slice(0, 2).map(row => `${row.id}:${row.points}`)),
+    [["naru:6", "hajime:6"], ["naru:9", "hajime:9"]]);
+  assert.equal(told(average, "interlude1").tied, true);
+  assert.equal(told(average, "interlude1").level, true);
   assert.equal(told(success, "interlude1").leader, "hajime");
   assert.equal(told(success, "interlude2").leader, "hajime");
 }
