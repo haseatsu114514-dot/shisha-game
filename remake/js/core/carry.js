@@ -195,6 +195,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_delivery_steve", "person"],
   ["_ch3_delivery_volk", "person"],
   ["_ch3_evening", "progression"],
+  ["_ch3_tokyo_proposal_day", "progression"],
   ["_ch3_intro", "progression"],
   ["_ch3_japan_first_representative", "progression"],
   ["_ch3_mukai_work_intro_read", "person"],
