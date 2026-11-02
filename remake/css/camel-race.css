@@ -1,88 +1,222 @@
-/* CAMEL RACE（第4章ドバイ編の任意ミニゲーム）。本編の #stage（1280×720）に重ねる。素材が届くまでは Canvas 描写。 */
+/* CAMEL RACE（第4章ドバイ編の任意ミニゲーム）。本編の #stage（1280×720）に重ねる。
+   色: 夜明け前の藍（外枠）と、砂漠の金（文字・縁）。コースの上の HUD はコースの大きさ（cqw）で縮む。 */
 .camel-game {
+  --cr-gold: #ffd77a; --cr-gold-deep: #e0a43c; --cr-amber: #ffb347; --cr-ink: #1a110a; --cr-sand: #fff3dc; --cr-dim: #d9c6a3;
+  --cr-glass: rgba(18, 11, 6, .74); --cr-line: rgba(255, 215, 122, .38);
   position: absolute; inset: 0; z-index: 70; display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 8px; padding: 10px 14px 12px; color: #fff6e5; font-size: 15px; pointer-events: auto; outline: none;
-  background: linear-gradient(180deg, #1b2a44, #3b2e22 60%, #241a12);
+  gap: 8px; padding: 10px 14px 12px; color: var(--cr-sand); font-size: 15px; pointer-events: auto; outline: none;
+  background: radial-gradient(ellipse at 50% 120%, rgba(224,164,60,.28), transparent 60%), linear-gradient(180deg, #17213a, #2b2030 55%, #1d140d);
 }
 .camel-game > * { position: relative; min-width: 0; }
+
+/* ---- 見出しと順位表（放送の順位の札。入れ替わると滑る） ---- */
 .camel-header { display: flex; align-items: center; gap: 14px; min-height: 52px; }
-.camel-header h1 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: .16em; color: var(--gold-hi, #ffe2a6); line-height: 1.1; }
-.camel-header p { margin: 2px 0 0; font-size: 12px; color: var(--text-dim, #d8c8a8); }
-.camel-standings { display: flex; gap: 6px; margin: 0 0 0 auto; padding: 0; list-style: none; }
-.camel-standings li { display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto; column-gap: 6px; align-items: center; min-width: 92px; padding: 4px 8px; border-radius: 8px; border-left: 4px solid var(--camel-color, #fff); background: rgba(0,0,0,.35); font-size: 12px; line-height: 1.2; }
-.camel-standings li b { grid-row: 1 / span 2; font-size: 20px; font-weight: 900; color: #fff6e5; }
-.camel-standings li small { color: var(--text-dim, #d8c8a8); font-size: 12px; font-weight: 700; }
-.camel-standings li[data-who="player"] { background: rgba(232,194,122,.22); outline: 1px solid rgba(255,226,166,.6); }
-.camel-close { min-height: 40px; padding: 6px 14px; border: 1px solid rgba(255,246,229,.35); border-radius: 8px; background: rgba(0,0,0,.35); color: #fff6e5; font: inherit; font-size: 13px; cursor: pointer; }
-.camel-close:hover, .camel-close:focus-visible { border-color: var(--gold-hi, #ffe2a6); }
-.camel-stage { position: relative; container-type: size; min-height: 0; height: 100%; max-width: 100%; aspect-ratio: 16 / 9; justify-self: center; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,226,166,.3); background: #e2c48c; box-shadow: 0 14px 40px rgba(0,0,0,.3); }
+.camel-header h1 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: .16em; line-height: 1.1;
+  background: linear-gradient(180deg, #fff1c4, var(--cr-gold) 55%, var(--cr-gold-deep)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.camel-header p { margin: 2px 0 0; font-size: 12px; font-weight: 700; color: var(--cr-dim); }
+.camel-standings { --chip-w: clamp(92px, 10vw, 132px); --chip-gap: 6px; position: relative; width: calc(var(--chip-w) * 4 + var(--chip-gap) * 3); height: 44px; margin: 0 0 0 auto; padding: 0; list-style: none; }
+.camel-standings li { position: absolute; top: 0; left: calc(var(--pos, 0) * (var(--chip-w) + var(--chip-gap))); width: var(--chip-w); height: 100%;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr 1fr; column-gap: 7px; align-items: center; padding: 0 8px 0 6px; box-sizing: border-box;
+  border-radius: 10px; background: linear-gradient(180deg, rgba(40,26,14,.92), rgba(18,11,6,.92)); border: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset 3px 0 0 var(--camel-color, #fff), 0 4px 10px rgba(0,0,0,.25); transition: left .38s cubic-bezier(.2,.8,.2,1), background-color .2s; }
+.camel-rank-badge { grid-row: 1 / span 2; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font-size: 15px; font-weight: 900; color: var(--cr-ink);
+  background: linear-gradient(180deg, #e9e2d4, #a89f8e); box-shadow: inset 0 -2px 0 rgba(0,0,0,.2); }
+.camel-standings li[data-pos="1"] .camel-rank-badge { background: linear-gradient(180deg, #fff1b8, #e0a43c); }
+.camel-standings li[data-pos="2"] .camel-rank-badge { background: linear-gradient(180deg, #ffffff, #b9c3cc); }
+.camel-standings li[data-pos="3"] .camel-rank-badge { background: linear-gradient(180deg, #ffd9b0, #b9763d); }
+.camel-chip-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; font-weight: 800; align-self: end; line-height: 1.1; }
+.camel-chip-gap { font-size: 12px; font-weight: 700; color: var(--cr-dim); align-self: start; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.camel-standings li[data-who="player"] { background: linear-gradient(180deg, rgba(120,82,24,.95), rgba(52,33,12,.95)); border-color: rgba(255,215,122,.7); box-shadow: inset 3px 0 0 var(--cr-gold), 0 0 0 1px rgba(255,215,122,.25), 0 6px 16px rgba(224,164,60,.25); }
+.camel-standings li[data-who="player"] .camel-chip-name { color: #ffe9b8; }
+.camel-standings li[data-move="up"] { animation: camel-chip-up .9s ease-out; }
+.camel-standings li[data-move="down"] { animation: camel-chip-down .9s ease-out; }
+@keyframes camel-chip-up { 0% { box-shadow: inset 3px 0 0 var(--camel-color), 0 0 0 2px #8ee6a8, 0 0 18px rgba(142,230,168,.6); } 100% { } }
+@keyframes camel-chip-down { 0% { box-shadow: inset 3px 0 0 var(--camel-color), 0 0 0 2px #ff8e8e, 0 0 18px rgba(255,142,142,.5); } 100% { } }
+.camel-close { min-height: 40px; padding: 6px 14px; border: 1px solid rgba(255,243,220,.3); border-radius: 10px; background: rgba(0,0,0,.3); color: var(--cr-sand); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.camel-close:hover, .camel-close:focus-visible { border-color: var(--cr-gold); background: rgba(255,215,122,.12); }
+
+/* ---- コース ---- */
+.camel-stage { position: relative; container-type: size; min-height: 0; height: 100%; max-width: 100%; aspect-ratio: 16 / 9; justify-self: center; border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--cr-line); background: #e2c48c; box-shadow: 0 0 0 4px rgba(10,6,3,.55), 0 18px 44px rgba(0,0,0,.45); }
 .camel-canvas { display: block; width: 100%; height: 100%; object-fit: contain; background: #e2c48c; }
-.camel-feedback { position: absolute; left: 32%; top: 40%; transform: translate(-50%, -50%) scale(.7); opacity: 0; font-size: clamp(18px, 3.4cqw, 34px); font-weight: 900; letter-spacing: .08em; text-shadow: 0 2px 0 rgba(0,0,0,.4), 0 0 18px rgba(0,0,0,.35); pointer-events: none; transition: none; }
+
+/* ---- HUD（コースに重ねる。文字は cqw で縮む） ---- */
+.camel-hud { position: absolute; inset: 0; pointer-events: none; font-size: clamp(12px, 1.25cqw, 16px); }
+.camel-hud[hidden] { display: none; }
+.camel-progress { position: absolute; left: 6%; right: 6%; top: 3.2%; height: 2.4em; padding: 0 1.2em; border-radius: 99px; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+.camel-progress-track { position: absolute; left: 1.2em; right: 1.6em; top: 50%; height: .36em; transform: translateY(-50%); border-radius: 99px; background: rgba(255,243,220,.18); }
+.camel-progress-spurt { position: absolute; top: -.25em; bottom: -.25em; left: calc(var(--x) * 100%); right: 0; border-radius: 99px; background: linear-gradient(90deg, rgba(255,179,71,.15), rgba(255,179,71,.55)); }
+.camel-progress-spurt span { position: absolute; left: .2em; bottom: 100%; margin-bottom: .1em; font-size: .7em; font-weight: 900; letter-spacing: .12em; color: var(--cr-amber); line-height: 1; }
+.camel-progress-tick { position: absolute; left: calc(var(--x) * 100%); top: -.3em; width: 1px; height: 1em; background: rgba(255,243,220,.35); }
+.camel-progress-flag { position: absolute; right: -1.2em; top: 50%; width: 1em; height: .8em; transform: translateY(-50%); border-radius: 2px;
+  background: conic-gradient(#1a110a 25%, #fff 0 50%, #1a110a 0 75%, #fff 0) 0 0 / .4em .4em; box-shadow: 0 0 0 1px rgba(255,255,255,.6); }
+.camel-dot { position: absolute; left: calc(var(--x, 0) * 100%); top: 50%; width: .8em; height: .8em; transform: translate(-50%, -50%); border-radius: 50%; background: var(--camel-color); box-shadow: 0 0 0 2px rgba(18,11,6,.9); }
+.camel-dot[data-who="player"] { z-index: 1; width: 1.25em; height: 1.25em; background: radial-gradient(circle at 35% 35%, #fff6d6, var(--cr-gold) 55%, var(--cr-gold-deep)); box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(255,215,122,.8); }
+.camel-clock { position: absolute; left: 2.6%; bottom: 3.6%; padding: .5em .9em .55em; border-radius: .9em; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); }
+.camel-clock-time { display: block; font-size: 1.55em; font-weight: 900; letter-spacing: .04em; font-variant-numeric: tabular-nums; line-height: 1.1; color: #fff; }
+.camel-rhythm { display: flex; align-items: center; gap: .5em; margin-top: .2em; }
+.camel-rhythm small { font-size: .8em; font-weight: 800; color: var(--cr-dim); }
+.camel-rhythm-bars { display: flex; align-items: flex-end; gap: .2em; height: .95em; }
+.camel-rhythm-bars i { width: .38em; border-radius: 2px; background: rgba(255,243,220,.18); transition: background-color .2s; }
+.camel-rhythm-bars i:nth-child(1) { height: 40%; } .camel-rhythm-bars i:nth-child(2) { height: 55%; } .camel-rhythm-bars i:nth-child(3) { height: 70%; } .camel-rhythm-bars i:nth-child(4) { height: 85%; } .camel-rhythm-bars i:nth-child(5) { height: 100%; }
+.camel-rhythm-bars i.on { background: linear-gradient(180deg, #fff1b8, var(--cr-gold)); box-shadow: 0 0 6px rgba(255,215,122,.6); }
+.camel-stamina { position: absolute; right: 2.6%; bottom: 3.6%; width: 26%; padding: .5em .9em .55em; border-radius: .9em; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); }
+.camel-stamina-head { display: flex; align-items: baseline; justify-content: space-between; }
+.camel-stamina-head small { font-size: .8em; font-weight: 800; color: var(--cr-dim); }
+.camel-stamina-head b { font-size: 1.3em; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.camel-stamina-bar { position: relative; height: .7em; margin-top: .25em; border-radius: 99px; overflow: hidden; background: rgba(255,243,220,.14); }
+.camel-stamina-bar i { position: absolute; inset: 0 auto 0 0; width: calc(var(--v, 1) * 100%); border-radius: 99px; background: linear-gradient(90deg, #4fc58a, #b8f07a); transition: width .15s linear, background .3s; }
+.camel-stamina[data-state="tired"] .camel-stamina-bar i { background: linear-gradient(90deg, #e08a2c, #ffcf5c); }
+.camel-stamina[data-state="spent"] .camel-stamina-bar i { background: linear-gradient(90deg, #c8433b, #ff8e7a); }
+.camel-stamina[data-state="spent"] { animation: camel-blink 1s steps(2) infinite; }
+.camel-stamina-mark { position: absolute; left: calc(var(--x) * 100%); top: 0; bottom: 0; width: 1px; background: rgba(0,0,0,.45); }
+.camel-signal-state { margin: .3em 0 0; font-size: .8em; font-weight: 800; color: var(--cr-gold); white-space: nowrap; }
+@keyframes camel-blink { 50% { border-color: rgba(255,142,122,.8); } }
+
+/* ---- 判定・バナー・カウントダウン ---- */
+.camel-feedback { position: absolute; left: 32%; top: 40%; transform: translate(-50%, -50%) scale(.7); opacity: 0; font-size: clamp(18px, 3.4cqw, 34px); font-weight: 900; letter-spacing: .08em; text-shadow: 0 2px 0 rgba(0,0,0,.45), 0 0 18px rgba(0,0,0,.35); pointer-events: none; }
 .camel-feedback.show { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: camel-pop .7s ease-out both; }
-.camel-feedback[data-kind="perfect"] { color: #ffe27a; }
+.camel-feedback[data-kind="perfect"] { color: #ffe27a; text-shadow: 0 2px 0 #7a4a08, 0 0 22px rgba(255,215,122,.8); }
 .camel-feedback[data-kind="good"] { color: #b8f0ff; }
 .camel-feedback[data-kind="miss"], .camel-feedback[data-kind="lost"] { color: #ff8e8e; }
 .camel-feedback[data-kind="boost"], .camel-feedback[data-kind="early"] { color: #c8ffd4; }
-.camel-feedback[data-kind="spurt"] { color: #ffb347; font-size: clamp(20px, 4cqw, 40px); }
+.camel-feedback[data-kind="spurt"] { color: var(--cr-amber); font-size: clamp(20px, 4cqw, 40px); }
 @keyframes camel-pop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.6); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 70% { opacity: 1; transform: translate(-50%, -60%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -80%) scale(1); } }
-.camel-banner { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); padding: 10px 34px; border: 2px solid rgba(255,255,255,.7); border-radius: 100px; background: rgba(20,14,10,.72); font-size: clamp(18px, 3.2cqw, 32px); font-weight: 900; letter-spacing: .2em; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.camel-banner { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); padding: .3em 1.1em; border: 2px solid rgba(255,255,255,.7); border-radius: 100px; background: rgba(20,12,6,.76); font-size: clamp(18px, 3.2cqw, 32px); font-weight: 900; letter-spacing: .2em; opacity: 0; pointer-events: none; transition: opacity .2s; }
 .camel-banner.show { opacity: 1; animation: camel-banner .5s ease-out both; }
-.camel-banner[data-kind="spurt"] { color: #ffb347; border-color: #ffb347; }
-.camel-banner[data-kind="goal"] { color: #ffe27a; border-color: #ffe27a; font-size: clamp(22px, 4.4cqw, 44px); }
+.camel-banner[data-kind="spurt"] { color: var(--cr-amber); border-color: var(--cr-amber); box-shadow: 0 0 24px rgba(255,179,71,.45); }
+.camel-banner[data-kind="goal"] { color: #ffe27a; border-color: #ffe27a; font-size: clamp(22px, 4.4cqw, 44px); box-shadow: 0 0 30px rgba(255,215,122,.5); }
 .camel-banner[data-kind="tired"] { color: #ff8e8e; border-color: #ff8e8e; font-size: clamp(16px, 2.4cqw, 24px); }
 @keyframes camel-banner { from { transform: translateX(-50%) scale(.8); } to { transform: translateX(-50%) scale(1); } }
 .camel-countdown { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); font-size: clamp(56px, 12cqw, 120px); font-weight: 900; color: #fff6e5; text-shadow: 0 4px 0 rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.45); opacity: 0; pointer-events: none; }
 .camel-countdown.show { opacity: 1; animation: camel-count .9s ease-out both; }
 @keyframes camel-count { from { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } 30% { opacity: 1; } to { transform: translate(-50%, -50%) scale(1); } }
 .camel-live { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---- 操作ボタン（調教師のリモコン） ---- */
 .camel-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .camel-controls[hidden] { display: none; }
-.camel-control { display: grid; justify-items: center; gap: 2px; min-height: 68px; padding: 8px 12px; border: 2px solid rgba(255,226,166,.55); border-radius: 14px; color: #fff6e5; font: inherit; cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .08s, background-color .12s; }
-.camel-control strong { font-size: 20px; letter-spacing: .08em; }
-.camel-control span { font-size: 12px; font-weight: 700; color: rgba(255,246,229,.75); letter-spacing: .02em; }
-.camel-voice { background: linear-gradient(180deg, rgba(232,194,122,.42), rgba(232,194,122,.18)); }
-.camel-signal { background: linear-gradient(180deg, rgba(240,166,74,.42), rgba(240,166,74,.18)); }
-.camel-control:active { transform: scale(.97); background: rgba(255,226,166,.5); }
-.camel-control:focus-visible { outline: 2px solid var(--gold-hi, #ffe2a6); outline-offset: 2px; }
-.camel-sheet { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 24px; background: rgba(10,8,16,.68); }
+.camel-control { --tone: var(--cr-gold); position: relative; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  min-height: 72px; padding: 8px 16px 8px 12px; border: 1px solid rgba(255,255,255,.14); border-radius: 18px; color: var(--cr-sand); font: inherit; text-align: left; cursor: pointer;
+  background: linear-gradient(180deg, rgba(58,40,22,.95), rgba(26,17,9,.95)); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.35);
+  touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .15s, border-color .15s; }
+.camel-signal { --tone: var(--cr-amber); }
+.camel-control-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; color: var(--cr-ink);
+  background: radial-gradient(circle at 35% 30%, #fff6d6, var(--tone) 60%, color-mix(in srgb, var(--tone) 70%, #000)); box-shadow: 0 0 0 3px rgba(0,0,0,.35), inset 0 -2px 0 rgba(0,0,0,.2); }
+.camel-control-icon svg { width: 26px; height: 26px; }
+.camel-control-text { display: grid; gap: 2px; min-width: 0; }
+.camel-control-text strong { font-size: 19px; font-weight: 900; letter-spacing: .06em; line-height: 1.2; }
+.camel-control-text small { font-size: 12px; font-weight: 700; color: var(--cr-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.camel-control kbd { padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,.25); border-bottom-width: 3px; background: rgba(0,0,0,.35); color: var(--cr-sand); font: inherit; font-size: 12px; font-weight: 800; }
+.camel-control:active { transform: translateY(2px) scale(.985); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.35); }
+.camel-control:focus-visible { outline: 2px solid var(--cr-gold); outline-offset: 2px; }
+.camel-voice[data-cue="on"] { border-color: rgba(255,215,122,.75); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,215,122,.35), 0 0 22px rgba(255,215,122,.35); }
+.camel-voice[data-cue="on"] .camel-control-icon { animation: camel-ring 1.25s ease-in-out infinite; }
+@keyframes camel-ring { 0%, 100% { box-shadow: 0 0 0 3px rgba(0,0,0,.35); } 50% { box-shadow: 0 0 0 3px rgba(0,0,0,.35), 0 0 0 7px rgba(255,215,122,.25); } }
+.camel-control-cool { position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--cool, 0)); background: rgba(0,0,0,.42); pointer-events: none; transition: transform .1s linear; }
+.camel-signal[data-state="cooling"] .camel-control-icon { filter: grayscale(.7) brightness(.8); }
+.camel-signal[data-state="spurt"] { border-color: rgba(255,179,71,.8); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,179,71,.35), 0 0 24px rgba(255,179,71,.45); }
+.camel-signal[data-state="spurt"] .camel-control-text small { color: var(--cr-amber); }
+.camel-signal[data-state="spent"] { opacity: .65; }
+.camel-control.hit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: camel-hit .35s ease-out both; }
+.camel-control.hit[data-hit="perfect"]::after { background: radial-gradient(circle at 30px 50%, rgba(255,226,122,.75), transparent 70%); }
+.camel-control.hit[data-hit="good"]::after { background: radial-gradient(circle at 30px 50%, rgba(184,240,255,.6), transparent 70%); }
+.camel-control.hit[data-hit="miss"]::after { background: radial-gradient(circle at 30px 50%, rgba(255,120,110,.55), transparent 70%); }
+.camel-control.hit[data-hit="boost"]::after { background: radial-gradient(circle at 30px 50%, rgba(255,179,71,.7), transparent 70%); }
+@keyframes camel-hit { from { opacity: 1; } to { opacity: 0; } }
+
+/* ---- 遊び方とリザルトのカード（ボタンは本編の紙のテーマより強い指定で、砂漠の金にそろえる） ---- */
+.camel-sheet { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at center, rgba(20,12,6,.55), rgba(8,5,12,.82)); backdrop-filter: blur(2px); }
 .camel-sheet[hidden] { display: none; }
-.camel-card { width: min(640px, 100%); max-height: 100%; overflow: auto; padding: 22px 26px; border: 1px solid rgba(255,226,166,.45); border-radius: 16px; background: linear-gradient(160deg, rgba(36,26,18,.98), rgba(20,14,10,.98)); box-shadow: 0 18px 60px rgba(0,0,0,.45); }
-.camel-card h2 { margin: 2px 0 10px; font-size: 24px; color: var(--gold-hi, #ffe2a6); }
-.camel-card p { margin: 0 0 8px; line-height: 1.7; }
-.camel-eyebrow { color: var(--gold, #e8c27a); font-size: 14px; font-weight: 700; letter-spacing: .16em; }
-.camel-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
-.camel-card-actions .btn { min-height: 46px; }
-.camel-result-head { display: flex; align-items: center; gap: 22px; margin: 4px 0 12px; }
-.camel-rank { display: flex; align-items: baseline; gap: 4px; color: #ffe27a; }
-.camel-rank strong { font-size: 72px; font-weight: 900; line-height: 1; }
-.camel-rank span { font-size: 22px; }
-.camel-time { color: var(--text-dim, #d8c8a8); }
-.camel-grade strong { font-size: 30px; font-weight: 900; }
-.camel-grade-letter[data-grade="S"] { color: #ffe27a; } .camel-grade-letter[data-grade="A"] { color: #ffb347; }
-.camel-grade-letter[data-grade="B"] { color: #b8f0ff; } .camel-grade-letter[data-grade="C"] { color: #d8c8a8; }
-.camel-score-row { display: grid; grid-template-columns: 72px 1fr 72px; align-items: center; gap: 10px; margin: 6px 0; font-size: 14px; }
+.camel-card { width: min(680px, 100%); max-height: 100%; overflow: auto; padding: 24px 28px; border: 1px solid var(--cr-line); border-radius: 20px;
+  background: linear-gradient(160deg, rgba(48,32,18,.98), rgba(20,13,8,.98)); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 22px 60px rgba(0,0,0,.5); }
+.camel-card h2 { margin: 2px 0 10px; font-size: 24px; color: #ffe9b8; }
+.camel-card p { margin: 0 0 8px; line-height: 1.75; }
+.camel-eyebrow { color: var(--cr-gold); font-size: 14px; font-weight: 800; letter-spacing: .16em; }
+.camel-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.camel-game .camel-sheet .camel-card .camel-card-actions .btn { min-height: 48px; padding-inline: 24px; border-radius: 12px; border: 1px solid rgba(255,215,122,.5); background: rgba(0,0,0,.3); color: var(--cr-sand); font-weight: 800; letter-spacing: .06em; box-shadow: none; }
+.camel-game .camel-sheet .camel-card .camel-card-actions .btn:hover, .camel-game .camel-sheet .camel-card .camel-card-actions .btn:focus-visible { background: rgba(255,215,122,.14); border-color: var(--cr-gold); color: #fff; }
+.camel-game .camel-sheet .camel-card .camel-card-actions .btn.primary { border-color: transparent; color: var(--cr-ink); background: linear-gradient(180deg, #fff1b8, var(--cr-gold) 45%, var(--cr-gold-deep)); box-shadow: inset 0 -3px 0 rgba(0,0,0,.2), 0 6px 18px rgba(224,164,60,.35); }
+.camel-game .camel-sheet .camel-card .camel-card-actions .btn.primary:hover, .camel-game .camel-sheet .camel-card .camel-card-actions .btn.primary:focus-visible { filter: brightness(1.06); color: var(--cr-ink); }
+.camel-tutorial { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px; align-items: start; }
+.camel-tutorial-icon { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 24px; color: var(--cr-ink);
+  background: radial-gradient(circle at 35% 30%, #fff6d6, var(--cr-gold) 55%, var(--cr-gold-deep)); box-shadow: 0 0 0 4px rgba(0,0,0,.35), 0 10px 24px rgba(224,164,60,.3); }
+.camel-tutorial-icon[data-kind="signal"] { background: radial-gradient(circle at 35% 30%, #fff1d6, var(--cr-amber) 55%, #b9682a); }
+.camel-tutorial-icon svg { width: 60%; height: 60%; }
+.camel-steps { display: flex; gap: 6px; margin-top: 10px; }
+.camel-steps i { width: 22px; height: 5px; border-radius: 99px; background: rgba(255,243,220,.2); }
+.camel-steps i.on { background: var(--cr-gold); }
+.camel-result-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 20px; margin: 6px 0 16px; }
+.camel-medal { display: grid; grid-auto-flow: column; align-items: baseline; justify-content: center; gap: 2px; width: 104px; height: 104px; place-content: center; border-radius: 50%; color: var(--cr-ink);
+  background: radial-gradient(circle at 35% 30%, #f4efe6, #a89f8e); box-shadow: 0 0 0 5px rgba(0,0,0,.35), inset 0 -4px 0 rgba(0,0,0,.18); }
+.camel-medal[data-rank="1"] { background: radial-gradient(circle at 35% 30%, #fff6cf, #ffd77a 50%, #c98a24); box-shadow: 0 0 0 5px rgba(0,0,0,.35), 0 0 28px rgba(255,215,122,.55), inset 0 -4px 0 rgba(0,0,0,.18); }
+.camel-medal[data-rank="2"] { background: radial-gradient(circle at 35% 30%, #ffffff, #c9d2da 55%, #8d98a2); }
+.camel-medal[data-rank="3"] { background: radial-gradient(circle at 35% 30%, #ffe4c6, #d49255 55%, #8f5427); }
+.camel-medal strong { font-size: 54px; font-weight: 900; line-height: 1; }
+.camel-medal span { font-size: 18px; font-weight: 900; }
+.camel-result-score { display: grid; gap: 4px; }
+.camel-time { margin: 0; color: var(--cr-dim); font-size: 14px; font-weight: 800; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+.camel-total { display: flex; align-items: baseline; gap: 8px; margin: 0; }
+.camel-total small { font-size: 13px; font-weight: 800; color: var(--cr-dim); letter-spacing: .02em; }
+.camel-total strong { font-size: 52px; font-weight: 900; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
+.camel-grade-letter { display: grid; justify-items: center; align-content: center; width: 88px; height: 88px; border-radius: 22px; transform: rotate(-4deg);
+  border: 3px solid currentColor; color: var(--cr-dim); background: rgba(0,0,0,.25); }
+.camel-grade-letter small { font-size: 12px; font-weight: 800; letter-spacing: .02em; }
+.camel-grade-letter strong { font-size: 48px; font-weight: 900; line-height: 1; }
+.camel-grade-letter[data-grade="S"] { color: #ffe27a; box-shadow: 0 0 24px rgba(255,226,122,.45); }
+.camel-grade-letter[data-grade="A"] { color: var(--cr-amber); }
+.camel-grade-letter[data-grade="B"] { color: #b8f0ff; }
+.camel-score-row { display: grid; grid-template-columns: 76px 1fr 72px; align-items: center; gap: 10px; margin: 8px 0; font-size: 14px; font-weight: 700; }
 .camel-score-row b { text-align: right; font-variant-numeric: tabular-nums; }
-.camel-score-bar { height: 10px; border-radius: 6px; overflow: hidden; background: rgba(255,255,255,.12); }
-.camel-score-bar i { display: block; height: 100%; background: linear-gradient(90deg, #e8c27a, #ffb347); }
-.camel-stats { margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--text-dim, #d8c8a8); }
-.camel-best { color: #ffe27a; font-weight: 900; letter-spacing: .1em; }
+.camel-score-bar { height: 12px; border-radius: 99px; overflow: hidden; background: rgba(255,255,255,.1); box-shadow: inset 0 1px 2px rgba(0,0,0,.4); }
+.camel-score-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--cr-gold-deep), var(--cr-gold), #fff1b8); }
+.camel-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
+.camel-stats li { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,.25); }
+.camel-stats small { font-size: 12px; font-weight: 800; color: var(--cr-dim); }
+.camel-stats b { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.camel-best { margin-top: 10px; color: #ffe27a; font-weight: 900; letter-spacing: .1em; }
+
 @media (prefers-reduced-motion: reduce) {
-  .camel-feedback.show, .camel-banner.show, .camel-countdown.show { animation: none; }
+  .camel-feedback.show, .camel-banner.show, .camel-countdown.show, .camel-standings li[data-move], .camel-voice[data-cue="on"] .camel-control-icon, .camel-stamina[data-state="spent"] { animation: none; }
+  .camel-standings li { transition: none; }
 }
-/* 独立ページ（camel-race.html） */
-#camel-app { position: fixed; inset: 0; background: #241a12; }
-.camel-menu { display: grid; gap: 14px; max-width: 560px; margin: 0 auto; padding: clamp(20px, 6vw, 60px) 20px; color: #fff6e5; }
-.camel-menu h1 { margin: 0; font-size: clamp(32px, 6vw, 60px); letter-spacing: .14em; color: var(--gold-hi, #ffe2a6); }
-.camel-menu p { margin: 0; line-height: 1.7; color: var(--text-dim, #d8c8a8); }
-.camel-menu .btn { min-height: 52px; }
+
 /* 低い画面（スマホ横持ちの独立ページ）: 見出しと操作を詰めてコースを大きく */
 @media (max-height: 480px) {
   .camel-game { padding: 6px 10px 8px; gap: 6px; }
   .camel-header { min-height: 36px; }
   .camel-header h1 { font-size: 16px; } .camel-header p { display: none; }
-  .camel-standings li { min-width: 70px; padding: 2px 6px; font-size: 12px; } .camel-standings li b { font-size: 15px; }
+  .camel-standings { --chip-w: 112px; --chip-gap: 4px; height: 34px; }
+  .camel-standings li { padding: 0 6px 0 4px; column-gap: 5px; }
+  .camel-rank-badge { width: 22px; height: 22px; font-size: 13px; }
+  .camel-chip-name { font-size: 12px; }
+  .camel-chip-gap { display: none; }
+  .camel-standings li { grid-template-rows: 1fr; }
   .camel-close { min-height: 32px; padding: 4px 10px; font-size: 12px; }
-  .camel-control { min-height: 52px; padding: 4px 10px; } .camel-control strong { font-size: 16px; } .camel-control span { display: none; }
+  .camel-control { min-height: 54px; padding: 4px 12px 4px 8px; gap: 8px; border-radius: 14px; }
+  .camel-control-icon { width: 36px; height: 36px; } .camel-control-icon svg { width: 20px; height: 20px; }
+  .camel-control-text strong { font-size: 16px; } .camel-control-text small, .camel-control kbd { display: none; }
   .camel-card { padding: 12px 16px; } .camel-card h2 { font-size: 18px; } .camel-card p { font-size: 13px; font-weight: 700; line-height: 1.5; }
-  .camel-rank strong { font-size: 44px; } .camel-result-head { margin-bottom: 6px; }
+  .camel-tutorial { gap: 12px; } .camel-tutorial-icon { width: 56px; height: 56px; border-radius: 16px; }
+  .camel-result-head { gap: 12px; margin-bottom: 8px; }
+  .camel-medal { width: 64px; height: 64px; } .camel-medal strong { font-size: 32px; } .camel-medal span { font-size: 13px; }
+  .camel-total strong { font-size: 32px; } .camel-grade-letter { width: 60px; height: 60px; } .camel-grade-letter strong { font-size: 30px; }
+  .camel-score-row { margin: 4px 0; } .camel-stats { margin-top: 8px; }
 }
+
+/* コースが小さいとき（スマホ）: HUD を詰める */
+@container (max-width: 640px) {
+  .camel-progress { top: 2.5%; height: 2em; }
+  .camel-clock, .camel-stamina { padding: .3em .6em .35em; border-radius: .7em; bottom: 2.5%; }
+  .camel-clock-time { font-size: 1.2em; }
+  .camel-stamina { width: 30%; }
+  .camel-stamina-head b { font-size: 1.1em; }
+  .camel-signal-state { display: none; }
+}
+
+/* 独立ページ（camel-race.html） */
+#camel-app { position: fixed; inset: 0; background: #1d140d; }
+.camel-menu { display: grid; gap: 14px; max-width: 560px; margin: 0 auto; padding: clamp(20px, 6vw, 60px) 20px; color: #fff3dc; }
+.camel-menu h1 { margin: 0; font-size: clamp(32px, 6vw, 60px); letter-spacing: .14em; color: #ffd77a; }
+.camel-menu p { margin: 0; line-height: 1.7; color: #d9c6a3; }
+.camel-menu .btn { min-height: 52px; }
