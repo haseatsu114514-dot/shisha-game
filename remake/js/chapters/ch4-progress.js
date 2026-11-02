@@ -4,7 +4,8 @@
 // 日数表（骨格。Q11「訪問ごとの日数消費」が決まったら、日が進む呼び出し箇所だけが変わる）:
 //   DAY1 到着日   : プロローグ4場面 → 自由行動（スーク・FESTA・カフェ）→ 宿で終える
 //   DAY2〜3       : 自由行動。宿で終える（stranger_second は first を読んだ日 +2日以降に解放）
-//   DAY4 前夜     : 自由行動 → 宿で終える = 前夜シーケンス（別便の応援の到着 → 未読の必須場面を story_routes 順に強制消化）
+//   DAY4 前夜     : 自由行動 → 宿で終える = 前夜シーケンス（別便の応援の到着 →（任意）到着した恋人と夕方 →
+//                   未読の必須場面を story_routes 順に強制消化）
 //   DAY5 大会当日 : tournament_start → 勝敗 →（勝ち）final → 後日談の本線 → 完了
 // マップ訪問では日は進まない。進むのは endChapterFourDay（宿でその日を終える）と前夜の終了だけ。
 
@@ -67,6 +68,9 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_samechan_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_hiyori_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_mashiro_dubai_friend: "bg_dubai_inn_day",
+  // 到着の後の夕方（任意・IR18）。宿のロビーで待ち合わせて夕飯へ。
+  ch4_samechan_dubai_evening: "bg_dubai_inn_night",
+  ch4_hiyori_dubai_evening: "bg_dubai_inn_night",
 });
 
 // ---- BGM の対応表（演出の山だけ切り替える。無い場面は tonari）-------------------------
@@ -132,7 +136,8 @@ export const CH4_TOURNAMENT_SCENES = Object.freeze({
   start: "ch4_tournament_start", win: "ch4_final", loss: "ch4_defeat",
 });
 
-// 自由行動で再生する場面（接続する全ID）。ch4_return（空場面）・恋人線の dubai_evening 系は接続しない。
+// 自由行動で再生する場面（接続する全ID）。ch4_return（空場面）は接続しない。恋人線の dubai_evening 系は自由行動ではなく、
+// 前夜祭の日の到着の後に読む（下の CH4_ARRIVAL_EVENING_SCENES）。
 const FREE_SCENES = Object.freeze({
   souq: "ch4_dubai_souq", souqRevisit: "ch4_dubai_souq_revisit",
   festa: "ch4_festa", festaRevisit: "ch4_festa_revisit",
@@ -142,10 +147,17 @@ const FREE_SCENES = Object.freeze({
 });
 export const CH4_FREE_SCENE_IDS = Object.freeze(Object.values(FREE_SCENES));
 
+// 到着した恋人と過ごす夕方の場面（IR18）。その人の到着場面を読んだ後、前夜祭が始まる前に任意で一度だけ読める
+// （ch4.js の renderEve で前夜の最初のカードに出す）。同行者には到着場面が無いので出ない。台本は ch4_main.json。
+export const CH4_ARRIVAL_EVENING_SCENES = Object.freeze({
+  samechan: "ch4_samechan_dubai_evening", hiyori: "ch4_hiyori_dubai_evening",
+});
+
 // 台本の読み込み対象（ch4.js が FILES に使う）。
 export const CH4_SCENE_FILES = Object.freeze({
   ch4_main: Object.freeze([
     ...CH4_PROLOGUE.map(scene => scene.id),
+    ...Object.values(CH4_ARRIVAL_EVENING_SCENES),
     ...CH4_FREE_SCENE_IDS.filter(id => id !== "ch4_dubai_souq" && id !== "ch4_dubai_cafe"),
     ...CH4_MANDATORY.flatMap(entry => [entry.lead, entry.id]).filter(Boolean),
     ...Object.values(CH4_TOURNAMENT_SCENES),
@@ -307,6 +319,21 @@ export function chapterFourArrivalsDue(value) {
 }
 
 /**
+ * 前夜祭の日、到着した恋人と過ごす夕方の場面で、今読めるもの（{id, scene}。CH4_ARRIVAL_EVENING_SCENES の順）。
+ * その人の到着場面を読んだ後だけ（同行者・恋人でない人・まだ着いていない人には出さない）。到着がまだ残っている間は、到着を先に読む。
+ * 前夜祭が始まった後・前夜の過ごし方を記録した後・大会の後は出さない（任意なので、読まずに進めばそのまま）。
+ */
+export function chapterFourArrivalEveningsDue(value) {
+  const progress = chapterFourProgress(value);
+  if (progress.part !== "eve" || value.flags._ch4_evening
+    || CH4_FESTIVAL_STARTED.some(id => progress.read[id] === true) || chapterFourArrivalsDue(value).length) return [];
+  const lovers = new Set(value.lovers || []);
+  return Object.entries(CH4_ARRIVAL_EVENING_SCENES)
+    .filter(([id, scene]) => lovers.has(id) && progress.read[CH4_ARRIVAL_SCENES[id]] === true && progress.read[scene] !== true)
+    .map(([id, scene]) => ({ id, scene }));
+}
+
+/**
  * 版2: 日常ループの今の日付を章内日（_ch4.day）に写す。日は日常ループの就寝で進む（宿で終える操作は無い）。
  * 前夜の日（DAY13）以降へは enterChapterFourEve で入る。
  */
@@ -366,6 +393,11 @@ export function completeChapterFourScene(value, id) {
     // 別便の応援の到着は、先頭の1人ずつ。報酬は付けない（渡航の場面）。必須場面はこれまでどおり確定できる（旧保存・LOADを止めない）。
     const [arrival] = chapterFourArrivalsDue(value);
     if (arrival && id === arrival.scene) {
+      progress.read[id] = true;
+      return true;
+    }
+    // 到着の後の夕方（任意・IR18）。報酬は付けない。読んでも前夜の進み方は変わらない。
+    if (chapterFourArrivalEveningsDue(value).some(entry => entry.scene === id)) {
       progress.read[id] = true;
       return true;
     }

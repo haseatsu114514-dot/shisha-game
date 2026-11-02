@@ -362,6 +362,7 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 
 - 上表は来る動機。到着の記録なしにその場へ出現させない。海外同行は一人またはなし、その他の来訪は別の予定として扱う。
 - 別便の応援（同行者以外の恋人と、ましろ）の到着場面は、前夜祭の日・前夜祭より前に1人ずつ読む（`remake/js/chapters/ch4-progress.js` の `chapterFourArrivalsDue`）。同行者には到着場面を出さない。前夜祭が始まった保存や大会の後には足さない。到着を読んだ恋人だけが前夜の過ごし方で「その場にいる」人になる。
+- 到着したサメちゃん・ひより（恋人）とは、到着の後、前夜祭が始まる前に夕方を任意で一度過ごせる（`ch4_samechan_dubai_evening`／`ch4_hiyori_dubai_evening`。`chapterFourArrivalEveningsDue`・IR18）。同行者には到着場面が無いので出ない。読まずに前夜祭へ進めば、そのまま出ない。報酬は付けない。
 - ましろは **ch3クリアしていれば好感度・恋愛状態に関係なく登場**する唯一のキャラ
 - 登場セリフは `data/dialogue/ch4_mashiro_dubai.json`（friend版・girlfriend版）
 - サメちゃんの第1・2章の交流は現行実装に従う。第4章の別便の到着と前夜デートは、他の恋人と同じ仕組みで本編に接続済み。エンディング後の修羅場は未接続。
