@@ -1,0 +1,212 @@
+[
+  {
+    "id": "grapefruit",
+    "variant": "A",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the BLACK carton and the same small white winged-halo emblem at the upper front exactly as in\nthe reference. Replace the yellow painterly brush-stroke band with a coral-pink and pale yellow\npainterly brush stroke, and replace the lemons at the bottom with one whole pink grapefruit and one\nhalved grapefruit showing juicy ruby-pink segments, rendered in the same realistic painted style.\n\nGenerate candidate A, faithful baseline. Use the attached reference only as the fictional maker's packaging design reference. Output a single square 1024x1024 image.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lemon.webp",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-46e000a6-5f78-49d3-8269-0f20b912238e.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/grapefruit-A.png",
+    "tool": "built-in image_gen",
+    "status": "generated"
+  },
+  {
+    "id": "grapefruit",
+    "variant": "B",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the BLACK carton and the same small white winged-halo emblem at the upper front exactly as in\nthe reference. Replace the yellow painterly brush-stroke band with a coral-pink and pale yellow\npainterly brush stroke, and replace the lemons at the bottom with one whole pink grapefruit and one\nhalved grapefruit showing juicy ruby-pink segments, rendered in the same realistic painted style.\n\nGenerate candidate B, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lemon.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-2c118d64-16fa-4c07-9688-8e665d00cd72.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/grapefruit-B.png"
+  },
+  {
+    "id": "grapefruit",
+    "variant": "C",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the BLACK carton and the same small white winged-halo emblem at the upper front exactly as in\nthe reference. Replace the yellow painterly brush-stroke band with a coral-pink and pale yellow\npainterly brush stroke, and replace the lemons at the bottom with one whole pink grapefruit and one\nhalved grapefruit showing juicy ruby-pink segments, rendered in the same realistic painted style.\n\nGenerate candidate C, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lemon.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-223b7bbe-b54c-4df4-a7dc-506b10b4fb44.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/grapefruit-C.png"
+  },
+  {
+    "id": "lime",
+    "variant": "A",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the BLACK carton and the same small white winged-halo emblem at the upper front exactly as in\nthe reference. Replace the yellow painterly brush-stroke band with a vivid lime-green painterly brush\nstroke, and replace the lemons at the bottom with one whole green lime and one halved lime showing\npale green juicy segments (clearly green limes, not lemons), rendered in the same realistic painted style.\n\nGenerate candidate A, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lemon.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-dbb57af1-298b-4107-b575-d8a9f8b93702.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/lime-A.png"
+  },
+  {
+    "id": "lime",
+    "variant": "B",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the BLACK carton and the same small white winged-halo emblem at the upper front exactly as in\nthe reference. Replace the yellow painterly brush-stroke band with a vivid lime-green painterly brush\nstroke, and replace the lemons at the bottom with one whole green lime and one halved lime showing\npale green juicy segments (clearly green limes, not lemons), rendered in the same realistic painted style.\n\nGenerate candidate B, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lemon.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-7ddde6e9-c091-4ce8-81d8-6105f82cb3a6.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/lime-B.png"
+  },
+  {
+    "id": "lime",
+    "variant": "C",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the BLACK carton and the same small white winged-halo emblem at the upper front exactly as in\nthe reference. Replace the yellow painterly brush-stroke band with a vivid lime-green painterly brush\nstroke, and replace the lemons at the bottom with one whole green lime and one halved lime showing\npale green juicy segments (clearly green limes, not lemons), rendered in the same realistic painted style.\n\nGenerate candidate C, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lemon.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-9ae10274-b9be-4f4a-b633-7923037372da.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/lime-C.png"
+  },
+  {
+    "id": "honey",
+    "variant": "A",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the pale matte paper carton style of the reference, the same small dark sunrise-over-water-lines\nemblem on the upper front and on the right side, the diagonal ribbon across the front and the round\ncream vignette. Change the carton color to warm pale amber cream, the diagonal ribbon to a golden\nhoney-colored ribbon, and the round vignette illustration to a wooden honey dipper dripping glossy\ngolden honey beside a small hexagonal honeycomb piece, drawn in the same clean geometric painted style\nas the lychee.\n\nGenerate candidate A, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lychee.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-48500357-3c2a-4d8a-8609-92883b98a451.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/honey-A.png"
+  },
+  {
+    "id": "honey",
+    "variant": "B",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the pale matte paper carton style of the reference, the same small dark sunrise-over-water-lines\nemblem on the upper front and on the right side, the diagonal ribbon across the front and the round\ncream vignette. Change the carton color to warm pale amber cream, the diagonal ribbon to a golden\nhoney-colored ribbon, and the round vignette illustration to a wooden honey dipper dripping glossy\ngolden honey beside a small hexagonal honeycomb piece, drawn in the same clean geometric painted style\nas the lychee.\n\nGenerate candidate B, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lychee.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-1ea0314e-ad22-4c6e-91d7-26f871995944.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/honey-B.png"
+  },
+  {
+    "id": "honey",
+    "variant": "C",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the pale matte paper carton style of the reference, the same small dark sunrise-over-water-lines\nemblem on the upper front and on the right side, the diagonal ribbon across the front and the round\ncream vignette. Change the carton color to warm pale amber cream, the diagonal ribbon to a golden\nhoney-colored ribbon, and the round vignette illustration to a wooden honey dipper dripping glossy\ngolden honey beside a small hexagonal honeycomb piece, drawn in the same clean geometric painted style\nas the lychee.\n\nGenerate candidate C, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lychee.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-a1b86403-6d9f-4824-a64a-9b4e9b2f143a.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/honey-C.png"
+  },
+  {
+    "id": "cherry",
+    "variant": "A",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the pale matte paper carton style of the reference, the same small dark sunrise-over-water-lines\nemblem on the upper front and on the right side, the diagonal ribbon across the front and the round\ncream vignette. Change the carton color to pale blush pink, the diagonal ribbon to a deep crimson\nribbon, and the round vignette illustration to a pair of glossy dark red cherries joined by their\nstems with one green leaf, drawn in the same clean geometric painted style as the lychee.\n\nGenerate candidate A, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lychee.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-6f05bd3a-f5e3-43c2-a62b-fb875d33fe46.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/cherry-A.png"
+  },
+  {
+    "id": "cherry",
+    "variant": "B",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the pale matte paper carton style of the reference, the same small dark sunrise-over-water-lines\nemblem on the upper front and on the right side, the diagonal ribbon across the front and the round\ncream vignette. Change the carton color to pale blush pink, the diagonal ribbon to a deep crimson\nribbon, and the round vignette illustration to a pair of glossy dark red cherries joined by their\nstems with one green leaf, drawn in the same clean geometric painted style as the lychee.\n\nGenerate candidate B, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lychee.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-9de9c163-2213-411a-80dc-ec0298bd064f.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/cherry-B.png"
+  },
+  {
+    "id": "cherry",
+    "variant": "C",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the pale matte paper carton style of the reference, the same small dark sunrise-over-water-lines\nemblem on the upper front and on the right side, the diagonal ribbon across the front and the round\ncream vignette. Change the carton color to pale blush pink, the diagonal ribbon to a deep crimson\nribbon, and the round vignette illustration to a pair of glossy dark red cherries joined by their\nstems with one green leaf, drawn in the same clean geometric painted style as the lychee.\n\nGenerate candidate C, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/lychee.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-5d566629-338d-4a2a-8485-8dd3ac6044f8.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/cherry-C.png"
+  },
+  {
+    "id": "milk",
+    "variant": "A",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and\nthe black right side panel, the same small white stylized emblem on both black areas, and the flowing\nswoosh ribbon. Change the swoosh ribbon colors to soft milky white with a light sky-blue edge and\nreplace the mango illustration with a gentle splash of fresh white milk curling into a crown above a\nsmall plain glass of milk (no label on the glass), drawn in the same flat illustrated style.\n\nGenerate candidate A, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/mango.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-f750da1f-d221-4434-9043-41f4f6f2ecab.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/milk-A.png"
+  },
+  {
+    "id": "milk",
+    "variant": "B",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and\nthe black right side panel, the same small white stylized emblem on both black areas, and the flowing\nswoosh ribbon. Change the swoosh ribbon colors to soft milky white with a light sky-blue edge and\nreplace the mango illustration with a gentle splash of fresh white milk curling into a crown above a\nsmall plain glass of milk (no label on the glass), drawn in the same flat illustrated style.\n\nGenerate candidate B, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/mango.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-efb38661-7704-48b6-b464-17616beb9d36.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/milk-B.png"
+  },
+  {
+    "id": "milk",
+    "variant": "C",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and\nthe black right side panel, the same small white stylized emblem on both black areas, and the flowing\nswoosh ribbon. Change the swoosh ribbon colors to soft milky white with a light sky-blue edge and\nreplace the mango illustration with a gentle splash of fresh white milk curling into a crown above a\nsmall plain glass of milk (no label on the glass), drawn in the same flat illustrated style.\n\nGenerate candidate C, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/mango.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-affe26e2-2211-49fe-b9ed-3c41a0c383cb.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/milk-C.png"
+  },
+  {
+    "id": "passion_fruit",
+    "variant": "A",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and\nthe black right side panel, the same small white stylized emblem on both black areas, and the flowing\nswoosh ribbon. Change the swoosh ribbon colors to deep purple and sunny yellow and replace the mango\nillustration with one whole wrinkled purple passion fruit and one halved passion fruit showing golden\nyellow pulp with dark seeds, drawn in the same flat illustrated style.\n\nGenerate candidate A, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/mango.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-cbd54fa3-c5c4-4c5e-88cb-cbb28beee5a6.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/passion_fruit-A.png"
+  },
+  {
+    "id": "passion_fruit",
+    "variant": "B",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and\nthe black right side panel, the same small white stylized emblem on both black areas, and the flowing\nswoosh ribbon. Change the swoosh ribbon colors to deep purple and sunny yellow and replace the mango\nillustration with one whole wrinkled purple passion fruit and one halved passion fruit showing golden\nyellow pulp with dark seeds, drawn in the same flat illustrated style.\n\nGenerate candidate B, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/mango.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-b0fa7d5e-d229-4322-87ce-2c2a3556f2ba.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/passion_fruit-B.png"
+  },
+  {
+    "id": "passion_fruit",
+    "variant": "C",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and\nthe black right side panel, the same small white stylized emblem on both black areas, and the flowing\nswoosh ribbon. Change the swoosh ribbon colors to deep purple and sunny yellow and replace the mango\nillustration with one whole wrinkled purple passion fruit and one halved passion fruit showing golden\nyellow pulp with dark seeds, drawn in the same flat illustrated style.\n\nGenerate candidate C, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/mango.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-b6f527d4-1bcb-4b39-9759-15d4dae6bec5.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/passion_fruit-C.png"
+  },
+  {
+    "id": "biscuit",
+    "variant": "A",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and\nthe black right side panel, the same small white stylized emblem on both black areas, and the flowing\nswoosh ribbon. Change the swoosh ribbon colors to golden toasted brown and butter yellow and replace\nthe mango illustration with two round golden butter biscuits with crimped edges, one overlapping the\nother, with a few crumbs, drawn in the same flat illustrated style.\nGenerate candidate A, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/mango.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-38c7cc01-cf86-4840-af36-e3255388785c.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/biscuit-A.png"
+  },
+  {
+    "id": "biscuit",
+    "variant": "B",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and\nthe black right side panel, the same small white stylized emblem on both black areas, and the flowing\nswoosh ribbon. Change the swoosh ribbon colors to golden toasted brown and butter yellow and replace\nthe mango illustration with two round golden butter biscuits with crimped edges, one overlapping the\nother, with a few crumbs, drawn in the same flat illustrated style.\nGenerate candidate B, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/mango.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-39f68a0a-8500-43b7-9514-ee64aa8df5a3.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/biscuit-B.png"
+  },
+  {
+    "id": "biscuit",
+    "variant": "C",
+    "prompt": "Common rules for every image below:\nCreate ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\n\n\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and\nthe black right side panel, the same small white stylized emblem on both black areas, and the flowing\nswoosh ribbon. Change the swoosh ribbon colors to golden toasted brown and butter yellow and replace\nthe mango illustration with two round golden butter biscuits with crimped edges, one overlapping the\nother, with a few crumbs, drawn in the same flat illustrated style.\nGenerate candidate C, an independent faithful rendition with only subtle variation in the painted ingredient illustration. Keep the reference packaging layout, emblem, viewpoint and proportions unchanged. Output a single square image, at least 1024 pixels per side.",
+    "reference": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/references/mango.webp",
+    "tool": "built-in image_gen",
+    "status": "generated",
+    "generated_path": "/workspace/scratch/431c36bf589e/generated_images/exec-e316f319-4f5f-4dbd-ac17-319860e95bcb.png",
+    "saved_path": "/workspace/scratch/431c36bf589e/output/nf04-cartons-20261102/candidates/biscuit-C.png"
+  }
+]

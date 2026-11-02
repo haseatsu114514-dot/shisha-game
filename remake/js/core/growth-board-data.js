@@ -260,6 +260,8 @@ export const PLAY_REWARDS = [
   { id: "dj-a", game: "dj", rank: "A", label: "DJで Aランク", gift: { sense: 1 } },
   // 第4章ドバイのサンドボード（chapters/ch4-desert.js が state.desert.bestRank を残す）
   { id: "desert-a", game: "desert", rank: "A", label: "サンドボードで Aランク", gift: { body: 1 } },
+  // ラクダレース（第4章ドバイ・chapters/ch4-camel-race.js）: 初めて練習レースを走り切ったら1つ（順位は問わない。再プレイでは増えない）
+  { id: "camel-finish", game: "camel", clears: 1, label: "ラクダレースを完走", gift: { sense: 1 } },
 ];
 /** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色） */
 export const KUJI_LAST_ONE_GIFT = 1;

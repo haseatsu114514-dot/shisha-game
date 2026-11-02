@@ -1,0 +1,190 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-11-02",
+  "source": "main asset_sources/trpg-scenarios/README.md blob057937ca0f39d2b188fa8e088c585b0d890a18fb; PR2264 merged",
+  "reference_images": [],
+  "reference_roles": "No image references: original scenario fictional roles, not actual tabletop participants",
+  "adopted": false,
+  "outputs": [
+    {
+      "file": "portraits-purikura-hero-a.png",
+      "sha256": "9acf769152041c29e42e7fe99f9811e493fd04658b1267c6140cc1ea1745b5e8",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.4718430695667979,
+      "margins_ltrb": [
+        [
+          68,
+          54,
+          19,
+          17
+        ],
+        [
+          73,
+          62,
+          35,
+          25
+        ],
+        [
+          51,
+          51,
+          39,
+          20
+        ],
+        [
+          31,
+          60,
+          53,
+          27
+        ],
+        [
+          49,
+          27,
+          20,
+          34
+        ],
+        [
+          29,
+          23,
+          23,
+          37
+        ],
+        [
+          33,
+          36,
+          27,
+          39
+        ],
+        [
+          15,
+          8,
+          15,
+          40
+        ]
+      ]
+    },
+    {
+      "file": "portraits-purikura-hero-b.png",
+      "sha256": "eb49fe6843a24beaa0fae8e9f8a653378363f54a606d7af7471d50f983cf24cc",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.685968181257777,
+      "margins_ltrb": [
+        [
+          153,
+          110,
+          5,
+          41
+        ],
+        [
+          96,
+          115,
+          85,
+          42
+        ],
+        [
+          45,
+          116,
+          111,
+          41
+        ],
+        [
+          19,
+          119,
+          138,
+          42
+        ],
+        [
+          179,
+          72,
+          2,
+          89
+        ],
+        [
+          110,
+          71,
+          59,
+          86
+        ],
+        [
+          47,
+          72,
+          0,
+          82
+        ],
+        [
+          0,
+          58,
+          115,
+          85
+        ]
+      ]
+    },
+    {
+      "file": "portraits-purikura-hero-c.png",
+      "sha256": "1992100e2c7d4b52cebd0cf86921bd1f3b6ee01aec28f7b4354187b4133a971e",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.6920767086654406,
+      "margins_ltrb": [
+        [
+          143,
+          156,
+          42,
+          13
+        ],
+        [
+          127,
+          156,
+          69,
+          9
+        ],
+        [
+          89,
+          164,
+          94,
+          9
+        ],
+        [
+          74,
+          157,
+          102,
+          6
+        ],
+        [
+          129,
+          78,
+          41,
+          81
+        ],
+        [
+          101,
+          62,
+          32,
+          78
+        ],
+        [
+          88,
+          81,
+          80,
+          82
+        ],
+        [
+          58,
+          53,
+          67,
+          80
+        ]
+      ]
+    }
+  ]
+}

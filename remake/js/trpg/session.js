@@ -86,7 +86,7 @@ export const phasesOf = scenario => ["listen", ...(scenario.interview ? ["interv
 export const checkKindsOf = scenario => ["listen", ...(scenario.flow?.twist ? ["twist"] : []), "prepare", "serve"];
 
 export class TrpgSession {
-  constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {} } = {}) {
+  constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {}, warmStart = false } = {}) {
     if (!scenario?.profiles?.length || scenario.profiles.length < 1) throw new Error("Missing traveler profiles");
     this.scenario = scenario;
     // The player's own character replaces the authored default on that seat; each companion brings the character they made.
@@ -108,6 +108,8 @@ export class TrpgSession {
       checkPressure: { success: 0, mixed: 1, trouble: 1 }, detourThreshold: 1, hypothesisBonus: 0,
       ...scenario.rules };
     this.rerollActor = scenario.cast.find(c => c.abilityType === "reroll")?.id || "hajime";
+    // 自分のダイス（VOL07）: 卓が盛り上がり1から始まる。ダイスは振らないので、同じseedの出目は変わらない。
+    this.warmStart = warmStart === true;
     this.state = {
       scenarioId: scenario.id, version: scenario.version, seed: Number(seed) >>> 0, phase: "cover",
       profileId: profile.id, clues: [], consulted: [], hypothesis: null,
@@ -140,7 +142,10 @@ export class TrpgSession {
   require(phase) {
     if (this.state.phase !== phase || this.state.pending) throw new Error("Action unavailable in this phase");
   }
-  start() { this.require("cover"); this.state.phase = "listen"; }
+  start() {
+    this.require("cover"); this.state.phase = "listen";
+    if (this.warmStart) this.cheer(1, "マイダイスを卓に並べた");
+  }
 
   /** Talking to the story's character: pick a few questions; each answer depends on the hidden profile. */
   ask(id) {

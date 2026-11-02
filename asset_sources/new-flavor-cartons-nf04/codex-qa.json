@@ -1,0 +1,548 @@
+[
+  {
+    "file": "biscuit-A.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      61,
+      1206,
+      1200
+    ],
+    "fully_inside": false,
+    "sha256": "45ac47ac96fbcadce623ded252b4f4ce26191d8a9e9eecc64736545b35eb8b9b",
+    "bytes": 1043274,
+    "opaque_bbox": [
+      270,
+      106,
+      992,
+      1161
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "biscuit-B.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      87,
+      71,
+      1222,
+      1181
+    ],
+    "fully_inside": true,
+    "sha256": "21c2150254ee69ebced36de5608cbd94dcdcaa91617c0cfc87637f8c96252623",
+    "bytes": 1002277,
+    "opaque_bbox": [
+      267,
+      108,
+      993,
+      1162
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "biscuit-C.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      55,
+      1194,
+      1190
+    ],
+    "fully_inside": false,
+    "sha256": "0f54d5cda2158b27f330fb3d84b03975483cb004bb4b1e24ea56200b4f9a1a3f",
+    "bytes": 1018916,
+    "opaque_bbox": [
+      270,
+      104,
+      991,
+      1163
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "cherry-A.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      146,
+      17,
+      1152,
+      1230
+    ],
+    "fully_inside": true,
+    "sha256": "93ef9af29603a699b9a159e2aa83fb270183c2b127573cecd5add9c4fe81b5ca",
+    "bytes": 1091189,
+    "opaque_bbox": [
+      265,
+      81,
+      1019,
+      1204
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "cherry-B.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      49,
+      63,
+      1142,
+      1254
+    ],
+    "fully_inside": false,
+    "sha256": "b4366834cab6650be002fe4df977786e632b6ed86f6eaee8bc4b5977e8465ca1",
+    "bytes": 1066698,
+    "opaque_bbox": [
+      266,
+      81,
+      1018,
+      1204
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "cherry-C.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      87,
+      24,
+      1218,
+      1230
+    ],
+    "fully_inside": true,
+    "sha256": "aec93388b6052243d7943fa3a2b03112d790f68a7486320bf1124a355b696bd6",
+    "bytes": 1063075,
+    "opaque_bbox": [
+      266,
+      80,
+      1019,
+      1204
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "grapefruit-A.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      65,
+      17,
+      1234,
+      1188
+    ],
+    "fully_inside": true,
+    "sha256": "ce8827da98491634b4047e08a49e7b77d3ef3953e575e2f11e6541d4f6ba85f6",
+    "bytes": 1242909,
+    "opaque_bbox": [
+      261,
+      130,
+      998,
+      1119
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "grapefruit-B.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      1106,
+      1230
+    ],
+    "fully_inside": false,
+    "sha256": "44806131193df8351d716407bcf44950b2cb6b435e0768b921fbd1fd2d6e60a2",
+    "bytes": 1223802,
+    "opaque_bbox": [
+      261,
+      132,
+      999,
+      1118
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "grapefruit-C.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      138,
+      0,
+      1226,
+      1175
+    ],
+    "fully_inside": false,
+    "sha256": "6e98ac327eed5263c04a6407380a3e6eed39b23bd2ac1dbe7f73c214a1b45a75",
+    "bytes": 1242010,
+    "opaque_bbox": [
+      260,
+      131,
+      999,
+      1118
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "honey-A.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      21,
+      1251,
+      1254
+    ],
+    "fully_inside": false,
+    "sha256": "b6f3ede1798b0d9dfdb82d3bc0f49e5cc1a183ca6938e5d7333fa057653c518c",
+    "bytes": 1075996,
+    "opaque_bbox": [
+      265,
+      80,
+      1019,
+      1204
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "honey-B.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      41,
+      69,
+      1200,
+      1232
+    ],
+    "fully_inside": true,
+    "sha256": "a4cb791d50813e8b3eb8cf51ad44b502933f35946c2ba1d01d3f922f0e505c61",
+    "bytes": 1015729,
+    "opaque_bbox": [
+      267,
+      81,
+      1018,
+      1204
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "honey-C.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      35,
+      0,
+      1226,
+      1254
+    ],
+    "fully_inside": false,
+    "sha256": "6339c8d523388156b0fed72b8a022b8d0ad4a9ff990e50a34c6fde4131c45656",
+    "bytes": 1037535,
+    "opaque_bbox": [
+      266,
+      80,
+      1019,
+      1206
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "lime-A.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      1222,
+      1254
+    ],
+    "fully_inside": false,
+    "sha256": "8ffe414e6c1fa6eeb05f7e92b7ac8684f6e2f02dd5fef55ff69a167f4c079814",
+    "bytes": 1263496,
+    "opaque_bbox": [
+      261,
+      132,
+      999,
+      1117
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "lime-B.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      136,
+      0,
+      1202,
+      1238
+    ],
+    "fully_inside": false,
+    "sha256": "86adcedb8fc2cb555a38e32d80a1cbb5a0ca43131f3c20f156b00210b0606d00",
+    "bytes": 1201777,
+    "opaque_bbox": [
+      262,
+      132,
+      999,
+      1119
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "lime-C.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      1224,
+      1230
+    ],
+    "fully_inside": false,
+    "sha256": "1fe56164b21d5f7b6acde3272b3c80f6070aa17917c210aa2ef5a4e1621e499d",
+    "bytes": 1260507,
+    "opaque_bbox": [
+      262,
+      132,
+      1000,
+      1117
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "milk-A.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      105,
+      87,
+      1196,
+      1216
+    ],
+    "fully_inside": true,
+    "sha256": "69e3bd8a8eae3a7daee7391b5286727e71f33f71a3069d1c6d06a126c566acfd",
+    "bytes": 962790,
+    "opaque_bbox": [
+      271,
+      109,
+      993,
+      1161
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "milk-B.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      73,
+      31,
+      1103,
+      1254
+    ],
+    "fully_inside": false,
+    "sha256": "9e985f0c12b926fd8375453320f29be494beecf39b2a54a2e1a93cb931dc8fc7",
+    "bytes": 956355,
+    "opaque_bbox": [
+      269,
+      108,
+      990,
+      1160
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "milk-C.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      21,
+      1224,
+      1230
+    ],
+    "fully_inside": false,
+    "sha256": "5efd0797282445256caeead856d3f5e2c79ecf6b6c70c5712dd33b0e49ab41af",
+    "bytes": 976167,
+    "opaque_bbox": [
+      270,
+      110,
+      992,
+      1161
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "passion_fruit-A.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      49,
+      7,
+      1166,
+      1188
+    ],
+    "fully_inside": true,
+    "sha256": "ffe4c70967d2bf84bd3efe4c9d771cfb0dc13a6eddd7cabc48b4f874d007ba60",
+    "bytes": 1046459,
+    "opaque_bbox": [
+      268,
+      108,
+      991,
+      1162
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "passion_fruit-B.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      81,
+      52,
+      1198,
+      1230
+    ],
+    "fully_inside": true,
+    "sha256": "959d0d4c7326b9267b5ebd848073a1c1b778cb12452809c5545ed7b3f2bd766a",
+    "bytes": 1029638,
+    "opaque_bbox": [
+      267,
+      110,
+      991,
+      1162
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  },
+  {
+    "file": "passion_fruit-C.png",
+    "width": 1254,
+    "height": 1254,
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      104,
+      1222,
+      1222
+    ],
+    "fully_inside": false,
+    "sha256": "5cfb426c603fea87a27ee9c61708e0745b2fafe62020c8efb2b39930b7adf7e0",
+    "bytes": 1039648,
+    "opaque_bbox": [
+      268,
+      107,
+      992,
+      1161
+    ],
+    "fringe_note": "alpha > 0 includes near-transparent generation specks; opaque bbox used for carton containment"
+  }
+]

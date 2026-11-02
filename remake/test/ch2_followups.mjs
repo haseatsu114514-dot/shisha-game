@@ -11,7 +11,7 @@ const all = Object.fromEntries([...preparation.dialogues, ...stories].map(d => [
 const stagesSource = fs.readFileSync(new URL("remake/js/core/affinity-stages.js", root), "utf8");
 const { CH2_VISIT_STORIES, ch2VisitDone } = await import(new URL("remake/js/core/affinity-stages.js", root));
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
-let state, options, played, saves, mode, resolvePlay, heartLevel = 1, finaleOpen = new Set(), finaleCalls = [];
+let state, options, played, saves, mode, resolvePlay, heartLevel = 1, finaleOpen = new Set(), finaleCalls = [], agehaStory = null;
 const isRepeat = (id, scene) => id === "ageha" ? scene === "remake_ch2_ageha_repeat" : /^remake_ch2_(kumicho|rei)_repeat(_[bcd])?$/.test(scene) && scene.includes(id);
 const ids = ["ageha", "kumicho", "rei"];
 const DB = { dialogues: { ...all } };
@@ -27,7 +27,7 @@ const mocks = {
   "../core/data.js": { DB, bgUrl: x => x },
   "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須" },
   "../core/stats.js": {
-    affinityLevel: () => heartLevel,
+    affinityLevel: () => heartLevel, releaseAffinity: () => 0,
 
     addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
     earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); },
@@ -43,7 +43,8 @@ const mocks = {
     return { id, visited: [id] };
   } },
   "../daily/calendar.js": { runDaily: async def => { options = def; } },
-  "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn },
+  "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
+    CHAR_STAT: {}, VISIT_BG: {}, bgRef: x => x, setChapterVisitDue: () => {} },
   "../daily/hiyori.js": { setHiyoriExtraShops: () => {} },
   "../daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "../daily/shop.js": { openShop: async () => null },
@@ -61,9 +62,10 @@ const mocks = {
   "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false, outingDialogue: () => null, recordOutingVisit: () => {} },
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight },
-  "./ch2-story.js": { chapterTwoNights: () => ({}) },
+  // 地元の店で読む第2章の本編（VOL13）は ch2_story_visits.mjs で確認する
+  "./ch2-story.js": { chapterTwoNights: () => ({}), storyVisitDue: () => null, readStoryVisit: async () => false },
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
-  "./ch2-story-data.js": { agehaStoryScene: () => null, syncAgehaVibes: () => 0 },
+  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, syncAgehaVibes: () => 0 },
   // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
   "../core/growth.js": { consultLessons: async () => [] },
   // 第5章の柚ヶ谷の通い訪問（#2033）が小会話を読み込む。ここでは第2章の訪問だけを見る
@@ -179,6 +181,21 @@ for (const id of ids) {
   heartLevel = 1; await visit(id);
   assert.equal(played.at(-1), `remake_ch2_${id}_followup`);
   assert.equal(state.flags._ch2_followup_done[id], true);
+}
+
+// あげはの店に通う回は、神崎・REIの段階会話と同じ+10。いつもの会話だけ+5（VOL06）。
+{
+  await setup(1); state.flags._ch2_followup_done = { ageha: true };
+  agehaStory = "remake_ch2_ageha_gyaru";
+  DB.dialogues.remake_ch2_ageha_gyaru = { dialogue_id: agehaStory, lines: [{ speaker: "ageha", face: "smile", text: "a" }] };
+  assert.equal((await visit("ageha")).used, true);
+  assert.equal(played.at(-1), agehaStory);
+  assert.deepEqual(state.affinity, [["ageha", 10]], "An Ageha story visit gains like the Kanzaki/REI stages");
+  assert.equal(state.flags._ch2_read_remake_ch2_ageha_gyaru, true);
+  agehaStory = null;
+  await visit("ageha");
+  assert(isRepeat("ageha", played.at(-1)));
+  assert.deepEqual(state.affinity, [["ageha", 10], ["ageha", 5]], "The usual chat stays +5");
 }
 
 // The actual required-ID loader is atomic on missing/malformed new scenes.

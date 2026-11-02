@@ -11,16 +11,20 @@ try{
   await page.addInitScript(layout=>localStorage.setItem('suien_title_layout',layout),layout);
   await page.goto(process.env.BASE_URL||'http://127.0.0.1:8123/remake/');await page.locator('[data-test="title-new"]').waitFor({timeout:45000});await page.locator('#boot').waitFor({state:'detached'});
   await page.evaluate(async()=>{
-   window.Q={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),chapter:await import('./js/chapters/ch1.js'),fortune:await import('./js/daily/fortune.js'),effects:await import('./js/core/fortune-effects.js'),stats:await import('./js/core/stats.js'),access:await import('./js/daily/spot-access.js'),spots:await import('./js/daily/spots.js')};
+   window.Q={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),chapter:await import('./js/chapters/ch1.js'),fortune:await import('./js/daily/fortune.js'),effects:await import('./js/core/fortune-effects.js'),stats:await import('./js/core/stats.js'),access:await import('./js/daily/spot-access.js'),spots:await import('./js/daily/spots.js'),schedule:await import('./js/daily/fortune-schedule.js')};
+   // 占い師は章で1〜2回・予定の無い昼か夜に現れる（台帳 URA）。この試験では、確かめる時間帯ごとに今ここへ出す。
+   Q.here=()=>{delete Q.core.state.flags._fortune_wander;return Q.schedule.placeFortuneNow(Q.core.state);};
    Q.chapter.setupHooks();Q.vn.vnTest.turbo=true;
    Object.assign(Q.core.newGame(),{phase:'daily',day:3,slot:1,seed:131,money:13000});Q.core.state.met.naru=true;Q.core.state.affinity.naru=6;
    // #780: 対面の噂を完読した状態。旧LIME既読では解放しない。晴れの種は維持。
    Q.core.state.flags._fortune_rumor_heard=true;Q.core.state.weatherSeed=2;
+   Q.here(); // 夜に現れた
   });
-  const night=await page.evaluate(async()=>{const before=JSON.stringify(Q.core.state);const av=Q.access.spotAvailability(Q.spots.spotById('fortune'));const result=await Q.fortune.doFortune();return {av,result,unchanged:before===JSON.stringify(Q.core.state)};});
-  assert.equal(night.result,false);assert(night.unchanged);assert.equal(night.av.tag,'昼のみ営業');
+  // 夜にも占える（旧版の「昼のみ営業」は廃止）
+  const night=await page.evaluate(async()=>{const before=JSON.stringify(Q.core.state);const av=Q.access.spotAvailability(Q.spots.spotById('fortune'));return {av,unchanged:before===JSON.stringify(Q.core.state)};});
+  assert.equal(night.av.ok,true);assert(night.unchanged);assert.notEqual(night.av.tag,'昼のみ営業');
   const unsuccessful=await page.evaluate(async()=>{
-   Q.core.state.slot=0;Q.core.state.money=2999;
+   Q.core.state.money=2999;
    const broke=await Q.fortune.doFortune();
    const brokeSafe=!broke&&Q.core.state.money===2999&&!Q.effects.activeFortuneSight(Q.core.state);
    Q.core.state.money=13000;Q.vn.vnTest.choose=id=>id==='remake_fortune_offer'?1:0;
@@ -31,16 +35,18 @@ try{
    Q.core.state.affinity.naru=6;return {brokeSafe,cancelSafe,noTargetSafe};
   });assert(Object.values(unsuccessful).every(Boolean),'unsuccessful reading granted or charged a benefit');
   const paid=await page.evaluate(async()=>{
-   Q.core.state.slot=0;const seed=Q.core.state.seed;const done=await Q.fortune.doFortune();
+   const seed=Q.core.state.seed;const done=await Q.fortune.doFortune();
    const lines=Q.vn.backlog().map(x=>x.text);const readings=Q.data.DB.fortuneTrivia.characters.naru;
    return {done,money:Q.core.state.money,day:Q.core.state.fortuneDay,char:Q.core.state.fortune?.char,sight:Q.effects.activeFortuneSight(Q.core.state),trivia:readings.filter(x=>lines.includes(x.teller)).map(x=>x.id),seedUnchanged:seed===Q.core.state.seed};
   });
   assert(paid.done);assert.equal(paid.money,10000);assert.equal(paid.day,3);assert.equal(paid.char,'naru');assert.equal(paid.sight.until,5);assert.equal(paid.trivia.length,1);assert(paid.seedUnchanged);
   const duplicate=await page.evaluate(async()=>{const before=JSON.stringify(Q.core.state);return {result:await Q.fortune.doFortune(),unchanged:before===JSON.stringify(Q.core.state)};});
   assert.equal(duplicate.result,false);assert(duplicate.unchanged);
-  const nightAfter=await page.evaluate(()=>{Q.core.state.slot=1;const tag=Q.access.spotAvailability(Q.spots.spotById('fortune')).tag;Q.core.state.slot=0;return tag;});assert.equal(nightAfter,'昼のみ営業');
+  // 占ってもらうと、その出現はおしまい（地図から消える）
+  const goneAfter=await page.evaluate(()=>Q.spots.spotById('fortune')===undefined&&!Q.fortune.fortuneToday());assert(goneAfter,'the fortune teller stays after a reading');
   const bonus=await page.evaluate(()=>{const before=Q.core.state.affinity.naru;Q.stats.gainAffinity('naru',2);return {increase:Q.core.state.affinity.naru-before,carry:Q.core.state.affinityCarry.naru,consumed:!Q.core.state.fortune,sight:Q.effects.activeFortuneSight(Q.core.state)};});
-  assert.equal(bonus.increase,2);assert(Math.abs(bonus.carry-.55)<1e-9);assert(bonus.consumed&&bonus.sight);
+  // ×2（2026-11-02 台帳 URA。旧 ×1.5 は +2・端数.55）: round(2×2)×.85 = 3.4 → +3・端数.4
+  assert.equal(bonus.increase,3);assert(Math.abs(bonus.carry-.4)<1e-9);assert(bonus.consumed&&bonus.sight);
   const persisted=await page.evaluate(()=>{Q.core.save();Q.core.newGame();Q.core.load();return Q.effects.activeFortuneSight(Q.core.state);});assert.equal(persisted.char,'naru');assert.equal(persisted.until,5);
   async function choices(day,target,id){return page.evaluate(async({day,target,id})=>{
    Q.core.state.day=day;if(target==='rin')Q.effects.grantFortuneReading(Q.core.state,'rin',Q.data.DB.fortuneTrivia);
@@ -56,7 +62,7 @@ try{
    const snap=JSON.stringify(Q.core.state);
    // Legacy mask 31 on naru draws from the newly added readings (naru_9 / naru_12 / naru_15) in live doFortune.
    Object.assign(Q.core.state,{chapter:1,day:6,slot:0,fortuneDay:0,money:13000,met:{naru:true},affinity:{naru:10}});
-   Q.core.state.flags._fortune_trivia_seen_naru=31;
+   Q.core.state.flags._fortune_trivia_seen_naru=31;Q.here();
    const newDone=await Q.fortune.doFortune();
    const newLines=Q.vn.backlog().map(x=>x.text);
    const newMatched=Q.data.DB.fortuneTrivia.characters.naru.filter(x=>newLines.includes(x.teller)).map(x=>x.id);
@@ -68,7 +74,7 @@ try{
    Q.core.state.day=24; // 24 % 7 === 3 (regular weekly holiday before rift)
    const beforeRiftHoliday=Q.access.spotAvailability(naruSpot).tag;
    // Mid-selection transition in doFortune: if rift activates while choosing Naru, abort without charging.
-   Q.core.state.day=27;
+   Q.core.state.day=27;Q.here();
    Q.vn.vnTest.choose=did=>{
     if(did==='remake_fortune_pick_live'){Q.core.state.flags._ch2_read_ch2_naru_confrontation=true;return 0;}
     return 0;
@@ -87,13 +93,13 @@ try{
    const blockedChar=await Q.spots.visitChar('naru');
    const entryBlocked=!blockedRival&&!blockedChar&&Q.core.state.money===moneyBeforeVisit&&Q.core.state.stamina===staminaBeforeVisit;
    // Fortune picker after rift excludes Naru and only offers Adam (or no_target if Naru was sole acquaintance).
-   Q.core.state.day=27;
+   Q.core.state.day=27;Q.here();
    let offeredChoices=[];
    Q.vn.vnTest.choose=(did,texts)=>{if(did==='remake_fortune_pick_live')offeredChoices=texts;return 0;};
    const adamPicked=await Q.fortune.doFortune();
    Q.vn.vnTest.choose=null;
    const pickedChar=Q.core.state.fortune?.char;
-   delete Q.core.state.affinity.adam;Q.core.state.fortuneDay=0;
+   delete Q.core.state.affinity.adam;Q.core.state.fortuneDay=0;Q.here();
    const soleNaruNoTarget=!(await Q.fortune.doFortune());
    Object.assign(Q.core.state,JSON.parse(snap));
    Q.core.save();
