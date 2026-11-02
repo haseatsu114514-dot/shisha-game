@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-31 05:19 UTC",
+ "generated": "2026-11-02 00:30 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -240,6 +240,7 @@
   "rei": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -252,6 +253,7 @@
   "volk": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -318,6 +320,7 @@
   "steve": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -331,6 +334,7 @@
    "faces": [
     "excited",
     "normal",
+    "serious",
     "smile",
     "surprise"
    ],
@@ -381,7 +385,8 @@
     "normal",
     "serious",
     "smile",
-    "smug"
+    "smug",
+    "surprise"
    ],
    "h": 0.9725,
    "b": 0.0133,
@@ -2659,7 +2664,12 @@
   "sprites/characters/master_hookah/chr_master_hookah_sad.png",
   "sprites/characters/master_hookah/chr_master_hookah_serious.png",
   "sprites/characters/master_hookah/chr_master_hookah_smile.png",
-  "sprites/characters/master_hookah/chr_master_hookah_surprise.png"
+  "sprites/characters/master_hookah/chr_master_hookah_surprise.png",
+  "sprites/characters/da_silva/chr_da_silva_serious.png",
+  "sprites/characters/rei/chr_rei_sad.png",
+  "sprites/characters/sheikh/chr_sheikh_surprise.png",
+  "sprites/characters/steve/chr_steve_sad.png",
+  "sprites/characters/volk/chr_volk_sad.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
