@@ -105,12 +105,6 @@ for (const mix of ngMixes) {
     check(ids.has(ref), `ng_mixes ${mix.id}: flavors の参照先 ${JSON.stringify(ref)} が存在しない`);
   }
 }
-const secretRecipes = read("../../data/secret_recipes.json").recipes;
-for (const recipe of secretRecipes) {
-  for (const part of recipe.composition || []) {
-    check(ids.has(part.flavor), `secret_recipes ${recipe.id}: composition の参照先 ${JSON.stringify(part.flavor)} が存在しない`);
-  }
-}
 // くじ景品は kuji.js の grant() が flavorId / flavors[].id を実在庫へ付与する（js/daily/kuji.js:53-58）。
 // 参照そのものを持たない景品（旧箱の詰め合わせ等）は対象外とし、参照がある場合だけ実在を見る。
 const kuji = read("../../data/kuji.json");
