@@ -21,6 +21,9 @@ import { initGameLayout } from "./scenes/game-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
 enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に残す
+// デバッグ用の道具（URL に ?debug=1 で左下に「DBG」・?debug=0 で消す。速さ・シーシャ作りの自動など）。
+// リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
+try { const q = new URLSearchParams(location.search).get("debug"); if (q !== null) localStorage.setItem("suien_debug", q === "1" ? "1" : "0"); if (localStorage.getItem("suien_debug") === "1") import("./dev/debug-panel.js").then(m => m.mountDebugPanel()).catch(e => console.error(e)); } catch {}
 
 function fitStage() {
   const stage = $("#stage");

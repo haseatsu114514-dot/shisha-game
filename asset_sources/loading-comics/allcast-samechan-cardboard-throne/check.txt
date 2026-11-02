@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-cardboard-throne/panels/samechan-cardboard-throne-1.webp: 808x539 比率 1.499 86 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-cardboard-throne/panels/samechan-cardboard-throne-2.webp: 808x539 比率 1.499 81 KiB
