@@ -402,3 +402,16 @@ assert.equal(Object.hasOwn(lotosCup.parts, "holes"), false);
 assert.equal(lotosCup.total, 62.5, "four completed parts share the score when foil is skipped");
 assert.equal(improvementOf(lotosCup), "次の練習：炭の全面が赤くなる頃合いを確かめよう。");
 
+
+// #2190 P03: 炭焼きが一番弱い一台の「次の練習」は、炭焼き結果の助言と同じ向き（遅取り＝待たずに／早取り＝待ってから）。
+for (const [picks, expected] of [
+  [["over", "over", "over"], "次の練習：炭の全面が赤くなったら、待たずに取り出そう。"],
+  [["hot", "just", "just"], "次の練習：炭の全面が赤くなったら、待たずに取り出そう。"],
+  [["early", "pre", "just"], "次の練習：黒い面が消えるまで待ってから取り出そう。"],
+  [["early", "over", "just"], "次の練習：黒い面が消えて全面が赤くなった炭から取り出そう。"],
+]) {
+  newGame();
+  const cup = finalize({ ...evenCup(1), heat: { score: 40, picks } });
+  assert.equal(improvementOf(cup), expected, `heat practice follows picks ${picks.join(",")}`);
+}
+console.log("[craft scoring spec] PASS: heat practice tip matches early/late pick direction");
