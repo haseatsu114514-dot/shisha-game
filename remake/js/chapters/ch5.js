@@ -562,19 +562,21 @@ async function renderStaffRoll(owner) {
   if (!current(owner)) return;
   if (!first) return renderComplete(owner);
   if (!recordChapterFiveCredits(state)) throw new Error("スタッフロールの記録を確定できません");
-  noteTrueEnd(); // 戻った先のタイトルに NEXT CYCLE が出る
+  noteTrueEnd({ justFinished: true }); // 戻った先のタイトルに NEXT CYCLE が出る
   backToTitle();
 }
 
 /**
  * スタッフロールまで見終えていれば、真エンドとして周回を解放する（#1228。条件は chapterFiveTrueEndReached）。
- * 同じ周回の再通知はパッケージの最新化だけ。記録できなくても締めの表示は止めない（次の完了カードで再通知）。
+ * 初回のスタッフロール直後は、この周回を引き継ぎ元にする。完了カードからの再通知は、同じ周回ならパッケージの
+ * 最新化だけで、別の周回のパッケージは巻き戻さない（recordTrueEndForRun）。
+ * 記録できなくても締めの表示は止めない（次の完了カードで再通知）。
  * 解放済みなら、タイトルで始められる周回数を返す（それ以外は 0）。
  */
-function noteTrueEnd() {
+function noteTrueEnd({ justFinished = false } = {}) {
   try {
     if (!chapterFiveTrueEndReached(state)) return 0;
-    recordTrueEndForRun(state);
+    recordTrueEndForRun(state, { justFinished });
     const meta = readCycleMeta();
     return meta.unlocked && meta.carryPackage ? meta.carryPackage.fromCycle + 1 : 0;
   } catch {

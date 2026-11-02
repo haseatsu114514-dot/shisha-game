@@ -477,9 +477,10 @@ export function recordChapterFiveCredits(value) {
 }
 
 /**
- * 真エンドに到達したか（周回の解放条件。#1228「真エンド到達で解放」）。
- * 真エンド＝9000との決着→フィナーレ→スタッフロール（#517 決定・RTP04）。別の真ENDは作らない。
- * 勝敗は問わない（progression_contract.loss: 負け・同数も同じ後日談とフィナーレへ続く）。
+ * 真エンドに到達したか（周回の解放条件。#1228「解放条件は真エンド到達」）。
+ * 真エンド＝9000との決着→フィナーレ→スタッフロール（#517 の決着後の流れ・RTP04）。別の真ENDは作らない。
+ * 勝敗は問わない読み方にしている: #517 の「9000に勝てば」は第5章が勝ち固定だった時期の言葉で、
+ * その後の progression_contract.loss で負け・同数も同じ後日談とフィナーレへ続くようになった。
  * 勝ちだけにする場合は、この条件に `&& progress.won === true` を足すだけでよい。
  */
 export function chapterFiveTrueEndReached(value) {

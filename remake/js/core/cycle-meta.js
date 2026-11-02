@@ -113,7 +113,7 @@ function tournamentTotalsForCycle(s) {
  * 同一 cycleId の再通知では到達履歴と通算値を増やさず、パッケージだけを最新化する。
  * 戻り値はメタ層の保存成否。ギャラリー進行層（別キー）へのルート記録も冪等に行う。
  */
-export function recordTrueEnd(state) {
+export function recordTrueEnd(state, { keepPackage = false } = {}) {
   try {
     if (!state || typeof state !== "object") return false;
     if (!cycleIdValid(state.cycleId) || !cycleValid(state.cycle)) return false;
@@ -121,10 +121,11 @@ export function recordTrueEnd(state) {
     const loversAtEnd = unique(list(state.lovers).filter(charIdValid));
     const meta = readCycleMeta();
     const isNewCycle = !meta.trueEnds.some(e => e.cycleId === state.cycleId);
+    // keepPackage: 到達・通算・ギャラリーだけ記録し、既にあるパッケージ（別の周回のもの）は残す。
     const next = {
       ...meta,
       unlocked: true,
-      carryPackage: {
+      carryPackage: keepPackage && meta.carryPackage ? meta.carryPackage : {
         fromCycleId: state.cycleId,
         fromCycle: state.cycle,
         at,
@@ -150,19 +151,24 @@ export function recordTrueEnd(state) {
 
 /**
  * 締めの流れ（ch5.js）からの真エンド通知。例外を投げない。
- * この周回の初回は recordTrueEnd で解放・到達を記録し、同じ周回の再通知ではパッケージだけを最新化する。
- * 別の周回がパッケージを持つときに古い周回のクリア済み保存を開いても、パッケージを巻き戻さない（書かずに true）。
- * 解放済みでもパッケージが無い（検証で落ちた）ときは作り直し、タイトルの周回開始が行き止まりにならないようにする。
+ * - justFinished（初回のスタッフロールを流し終えた直後）: いちばん新しい真エンドなので recordTrueEnd で
+ *   解放・到達を記録し、パッケージもこの周回にする。
+ * - それ以外（完了カード＝保存を開いたとき・盤を使って戻ったとき）:
+ *   - パッケージが無い（未解放・検証で落ちた）か、この周回のもの → recordTrueEnd（作り直し・最新化）。
+ *     同じ周回の再通知は到達履歴と通算値を増やさない。
+ *   - 別の周回がパッケージを持つ → パッケージは巻き戻さない。この周回が未記録（接続前に見終えた保存など）
+ *     なら到達・通算・ギャラリーだけ記録し、記録済みなら何も書かない。
  * 戻り値は保存成否（書く必要がなければ true、不備な state は false）。
  */
-export function recordTrueEndForRun(state) {
+export function recordTrueEndForRun(state, { justFinished = false } = {}) {
   try {
     if (!state || typeof state !== "object") return false;
     if (!cycleIdValid(state.cycleId) || !cycleValid(state.cycle)) return false;
+    if (justFinished) return recordTrueEnd(state);
     const meta = readCycleMeta();
-    const reached = meta.trueEnds.some(e => e.cycleId === state.cycleId);
     const owner = meta.carryPackage?.fromCycleId;
-    if (!reached || owner == null || owner === state.cycleId) return recordTrueEnd(state);
+    if (owner == null || owner === state.cycleId) return recordTrueEnd(state);
+    if (!meta.trueEnds.some(e => e.cycleId === state.cycleId)) return recordTrueEnd(state, { keepPackage: true });
     return true;
   } catch {
     return false;

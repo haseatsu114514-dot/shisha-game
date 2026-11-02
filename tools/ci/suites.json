@@ -1292,7 +1292,7 @@
     },
     {
       "id": "staff-roll",
-      "title": "Chapter 5 end card radar, staff roll, first-time no skip, then title",
+      "title": "Chapter 5 end card radar, staff roll, first-time no skip, then title and NEXT CYCLE unlock",
       "kind": "browser",
       "weight": 0.4,
       "timeout": 10,
@@ -1301,6 +1301,8 @@
         "remake/css/staff-roll.css",
         "remake/js/chapters/ch5*.js",
         "remake/js/core/cycle-meta.js",
+        "remake/js/core/cycle-start.js",
+        "remake/js/scenes/title.js",
         "remake/test/browser/staff_roll.mjs"
       ],
       "run": [
