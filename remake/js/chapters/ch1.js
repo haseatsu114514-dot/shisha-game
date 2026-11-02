@@ -550,7 +550,7 @@ async function tournamentDay() {
   await play("ch1_tournament_opening", { bg: STAGE });
   const regulation = regulationFor({ mode: "tournament" });
   const challenge = regulation?.flavor === "mint" ? "ミント" : "レモン";
-  const source = regulation?.supply ? "葉は主催者が支給します！" : "葉は自分で持ち込むこと！";
+  const source = regulation?.supply ? `${challenge}は主催者が支給！ 他の葉は持ち込みです！` : "葉は自分で持ち込むこと！";
   await play({ dialogue_id: "ch1_tournament_rule_recap", lines: [
     { speaker: "pakki", face: "excited", text: `本日の課題はッ！ ${challenge}を2g以上！ ${source}` },
   ] }, { bg: STAGE });
