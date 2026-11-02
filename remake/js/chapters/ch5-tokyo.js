@@ -49,8 +49,10 @@ export const TOKYO_SPOTS = Object.freeze([
 ]);
 
 /** 地元の地図に出す「東京へ（新幹線）」。往復の運賃が無いと出発できない。 */
+// 位置: 新幹線の駅のアイコン（#2371）は文字の盾より大きく、(27,44) では名札が下の PEPPERMINT（28,62）を覆って押せなかった。
+// CHOI-ZAP・観音堂・路上占いの出る場所とも重ならない左端へ。
 export const TO_TOKYO_SPOT = Object.freeze({
-  id: "ch5_to_tokyo", kind: "ch5_tokyo", label: "東京へ（新幹線）", area: "橙須駅", x: 27, y: 44, theme: "stadium", glyph: "新",
+  id: "ch5_to_tokyo", kind: "ch5_tokyo", label: "東京へ（新幹線）", area: "橙須駅", x: 8, y: 40, theme: "stadium", glyph: "新",
   preview: "bg_ch3_train_arrival",
   desc: `片道${TOKYO_TRAIN_FARE.toLocaleString("ja-JP")}円・1行動。ムカイさんの屋根裏に好きなだけ泊まれて、好きな時に帰れる。`,
 });
