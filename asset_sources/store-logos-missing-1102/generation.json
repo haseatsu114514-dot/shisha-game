@@ -1,0 +1,335 @@
+{
+  "status": "NOT_ADOPTED_OWNER_SELECTION_REQUIRED",
+  "tool": "OpenAI built-in image_gen",
+  "output_policy": "Unmodified generated PNGs; no references included; no game integration",
+  "reference_library_id": "libfile_9c02c94bda5c8191a09e4e8d38b5aebe",
+  "reference_main": "a70cbf8823a84b800834e10f240db7331a4d0f61",
+  "references": [
+    {
+      "path": "remake/img/backgrounds/bg_shishark.webp",
+      "sha256": "fa68c849894620521f8830cc3de259f5a46f1d1a62c49ad8412bcc038891a838",
+      "bytes": 2114530
+    },
+    {
+      "path": "remake/img/backgrounds/bg_dubai_cafe_day.webp",
+      "sha256": "10a5db56cb5ab1d8d7712ffc02b2065e4ab4f44061334b1a7a4d2cf0c4ece564",
+      "bytes": 302540
+    },
+    {
+      "path": "remake/img/backgrounds/bg_dubai_alley_cafe_night.webp",
+      "sha256": "5fa4ffbbb11db8a7138696f24aca3acd91ed554733adc5fead70f100d0ae815d",
+      "bytes": 287544
+    },
+    {
+      "path": "assets/ui/store_logos/ch3-smoke-and-glory.webp",
+      "sha256": "9b475fb3ffe277e40a90a786044cdc77eff618e14b4962996a13d7668762c80f",
+      "bytes": 123608
+    },
+    {
+      "path": "assets/ui/store_logos/melty-puff.webp",
+      "sha256": "806427ef08599331e421fb1af37651aa3d2cd8d87f5c1cb7a957925ff8c7c688",
+      "bytes": 471760
+    },
+    {
+      "path": "assets/ui/store_logos/kanzaki.webp",
+      "sha256": "fb1c99e5687e8f85562ff0d353afc7064778962b080d9b5b0b0cff574f668c4b",
+      "bytes": 269368
+    }
+  ],
+  "items": [
+    {
+      "name": "shishark-a",
+      "prompt": "Create a polished standalone ORIGINAL fictional shop logo for a Japanese visual-novel game map. True transparent background (real alpha; no checkerboard, no backdrop panel, no cast shadow outside the mark). Landscape 3:2 canvas, 1536x1024, one centered logo that fills about 80% of the canvas width with a clear transparent margin on every side. Match the finish of the attached existing shop logos from the same game (style only, do not copy their subjects or lettering): a crisp, richly detailed illustrated signboard-emblem logo with bold readable lettering, clean edges, a dark outline around the whole mark, limited glossy highlights, sticker-like graphic finish. It must stay readable when shrunk to 82x46 px on an off-white (#fffaf0) map signboard and also on a dark purple (#1f1a29) panel: bold simple main shape, high contrast, no large pure-white areas on the outer edge.\n\nShop: \"SHISHARK\", a cozy sea-and-shark themed shisha lounge on a narrow shopping-street alley in a Japanese town (a pun on shisha + shark). The owner is a cheerful young woman, so the brand feels playful and friendly, never scary or gory. The first attached image is this shop's existing storefront sign in the game. The logo must be the same brand identity as that sign: keep its design language and colours, but redraw it as a clean standalone logo with no building, wall, balcony, windows, lamps or brackets.\n\nDesign: a big friendly cartoon shark (blue-grey back from #3d82e6 to #2457ad, white belly, round black eye, wide open grin with a pink gum line #ff8fb0 and neat white triangular teeth, a few gill slits, a tall dorsal fin) leaping out of stylized curling blue and teal ocean waves with white foam curls in a Japanese woodblock-print wave style, behind and above a deep navy name plate with a thin polished brass frame and small corner flourishes. On the plate, the exact uppercase Latin word SHISHARK (S-H-I-S-H-A-R-K, eight letters, one line) in bold cream-ivory serif letters with a dark navy outline, perfectly legible and evenly spaced. The lettering is the largest readable element; the shark and waves frame it and never cover any letter. No crown, no puppet, no hood, no human.\n\nNo people or characters other than the one shark, no hands. No shisha, hookah, water pipe, hose, bowl, charcoal, tobacco or cigarettes, and no smoke rising from any equipment. No other words, no Japanese text, no tagline, no numbers, no watermark or signature. No real brands, trademarks or existing logos, no copyrighted mascots or movie posters. The whole mark is inside the canvas, no cropped letters. Single complete logo, no montage, no mockup.\n\nCandidate A: faithful to the storefront sign: the shark rises over the upper left of a wide horizontal plate, waves curl up on both sides.",
+      "candidate": "a",
+      "file": "shishark-a.png",
+      "sha256": "7360ae65a895d92e3b771c1e0249166cf27bfd3e43678b5c6f2e92198fde977b",
+      "bytes": 1873837,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        33,
+        1518,
+        1024
+      ],
+      "reference_order": [
+        "remake/img/backgrounds/bg_shishark.webp",
+        "assets/ui/store_logos/ch3-smoke-and-glory.webp",
+        "assets/ui/store_logos/melty-puff.webp"
+      ],
+      "reference_crop": {
+        "x": 700,
+        "y": 30,
+        "width": 610,
+        "height": 320
+      }
+    },
+    {
+      "name": "shishark-b",
+      "prompt": "Create a polished standalone ORIGINAL fictional shop logo for a Japanese visual-novel game map. True transparent background (real alpha; no checkerboard, no backdrop panel, no cast shadow outside the mark). Landscape 3:2 canvas, 1536x1024, one centered logo that fills about 80% of the canvas width with a clear transparent margin on every side. Match the finish of the attached existing shop logos from the same game (style only, do not copy their subjects or lettering): a crisp, richly detailed illustrated signboard-emblem logo with bold readable lettering, clean edges, a dark outline around the whole mark, limited glossy highlights, sticker-like graphic finish. It must stay readable when shrunk to 82x46 px on an off-white (#fffaf0) map signboard and also on a dark purple (#1f1a29) panel: bold simple main shape, high contrast, no large pure-white areas on the outer edge.\n\nShop: \"SHISHARK\", a cozy sea-and-shark themed shisha lounge on a narrow shopping-street alley in a Japanese town (a pun on shisha + shark). The owner is a cheerful young woman, so the brand feels playful and friendly, never scary or gory. The first attached image is this shop's existing storefront sign in the game. The logo must be the same brand identity as that sign: keep its design language and colours, but redraw it as a clean standalone logo with no building, wall, balcony, windows, lamps or brackets.\n\nDesign: a big friendly cartoon shark (blue-grey back from #3d82e6 to #2457ad, white belly, round black eye, wide open grin with a pink gum line #ff8fb0 and neat white triangular teeth, a few gill slits, a tall dorsal fin) leaping out of stylized curling blue and teal ocean waves with white foam curls in a Japanese woodblock-print wave style, behind and above a deep navy name plate with a thin polished brass frame and small corner flourishes. On the plate, the exact uppercase Latin word SHISHARK (S-H-I-S-H-A-R-K, eight letters, one line) in bold cream-ivory serif letters with a dark navy outline, perfectly legible and evenly spaced. The lettering is the largest readable element; the shark and waves frame it and never cover any letter. No crown, no puppet, no hood, no human.\n\nNo people or characters other than the one shark, no hands. No shisha, hookah, water pipe, hose, bowl, charcoal, tobacco or cigarettes, and no smoke rising from any equipment. No other words, no Japanese text, no tagline, no numbers, no watermark or signature. No real brands, trademarks or existing logos, no copyrighted mascots or movie posters. The whole mark is inside the canvas, no cropped letters. Single complete logo, no montage, no mockup.\n\nCandidate B: round porthole badge: a thick polished brass porthole ring with the shark bursting through it out of the waves, and SHISHARK on a wide navy plate laid across the lower part of the ring, the plate wider than the ring.",
+      "candidate": "b",
+      "file": "shishark-b.png",
+      "sha256": "e0e444f99e46977cfdeef90ca699ba618811d311836903f8d4dbad51a5ba1ff1",
+      "bytes": 1957255,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        18,
+        1508,
+        1024
+      ],
+      "reference_order": [
+        "remake/img/backgrounds/bg_shishark.webp",
+        "assets/ui/store_logos/ch3-smoke-and-glory.webp",
+        "assets/ui/store_logos/melty-puff.webp"
+      ],
+      "reference_crop": {
+        "x": 700,
+        "y": 30,
+        "width": 610,
+        "height": 320
+      }
+    },
+    {
+      "name": "shishark-c",
+      "prompt": "Create a polished standalone ORIGINAL fictional shop logo for a Japanese visual-novel game map. True transparent background (real alpha; no checkerboard, no backdrop panel, no cast shadow outside the mark). Landscape 3:2 canvas, 1536x1024, one centered logo that fills about 80% of the canvas width with a clear transparent margin on every side. Match the finish of the attached existing shop logos from the same game (style only, do not copy their subjects or lettering): a crisp, richly detailed illustrated signboard-emblem logo with bold readable lettering, clean edges, a dark outline around the whole mark, limited glossy highlights, sticker-like graphic finish. It must stay readable when shrunk to 82x46 px on an off-white (#fffaf0) map signboard and also on a dark purple (#1f1a29) panel: bold simple main shape, high contrast, no large pure-white areas on the outer edge.\n\nShop: \"SHISHARK\", a cozy sea-and-shark themed shisha lounge on a narrow shopping-street alley in a Japanese town (a pun on shisha + shark). The owner is a cheerful young woman, so the brand feels playful and friendly, never scary or gory. The first attached image is this shop's existing storefront sign in the game. The logo must be the same brand identity as that sign: keep its design language and colours, but redraw it as a clean standalone logo with no building, wall, balcony, windows, lamps or brackets.\n\nDesign: a big friendly cartoon shark (blue-grey back from #3d82e6 to #2457ad, white belly, round black eye, wide open grin with a pink gum line #ff8fb0 and neat white triangular teeth, a few gill slits, a tall dorsal fin) leaping out of stylized curling blue and teal ocean waves with white foam curls in a Japanese woodblock-print wave style, behind and above a deep navy name plate with a thin polished brass frame and small corner flourishes. On the plate, the exact uppercase Latin word SHISHARK (S-H-I-S-H-A-R-K, eight letters, one line) in bold cream-ivory serif letters with a dark navy outline, perfectly legible and evenly spaced. The lettering is the largest readable element; the shark and waves frame it and never cover any letter. No crown, no puppet, no hood, no human.\n\nNo people or characters other than the one shark, no hands. No shisha, hookah, water pipe, hose, bowl, charcoal, tobacco or cigarettes, and no smoke rising from any equipment. No other words, no Japanese text, no tagline, no numbers, no watermark or signature. No real brands, trademarks or existing logos, no copyrighted mascots or movie posters. The whole mark is inside the canvas, no cropped letters. Single complete logo, no montage, no mockup.\n\nCandidate C: compact wordmark for tiny sizes: a wider and taller SHISHARK plate; only the shark's head, open grin and dorsal fin peek over the top edge of the plate, with a low band of curling waves along the bottom edge of the plate.",
+      "candidate": "c",
+      "file": "shishark-c.png",
+      "sha256": "4f4cd6cb6cb227370d0dbd1fdac66a72b328c888102ba108cdb35851582e2c9c",
+      "bytes": 2055538,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        23,
+        1526,
+        1024
+      ],
+      "reference_order": [
+        "remake/img/backgrounds/bg_shishark.webp",
+        "assets/ui/store_logos/ch3-smoke-and-glory.webp",
+        "assets/ui/store_logos/melty-puff.webp"
+      ],
+      "reference_crop": {
+        "x": 700,
+        "y": 30,
+        "width": 610,
+        "height": 320
+      }
+    },
+    {
+      "name": "dubai-center-cafe-a",
+      "prompt": "Create a polished standalone ORIGINAL fictional shop logo for a Japanese visual-novel game map. True transparent background (real alpha; no checkerboard, no backdrop panel, no cast shadow outside the mark). Landscape 3:2 canvas, 1536x1024, one centered logo that fills about 80% of the canvas width with a clear transparent margin on every side. Match the finish of the attached existing shop logos from the same game (style only, do not copy their subjects or lettering): a crisp, richly detailed illustrated emblem with clean edges, a dark outline around the whole mark, limited glossy highlights, sticker-like graphic finish. It must stay readable when shrunk to 82x46 px on an off-white (#fffaf0) map signboard and also on a dark purple (#1f1a29) panel: bold simple main shape, high contrast, no large pure-white or pale-ivory areas on the outer edge.\n\nShop: an upscale shisha cafe in the centre of modern Dubai, the most expensive place in town. The attached interior image shows its look (use it for motifs and palette only): white marble floor, polished gold trim, tall arched windows with fine gold geometric lattice, ivory armchairs with pale blue damask cushions, hanging brass lanterns, potted palms; formal, attentive, hotel-lounge service. The shop has no established name in the game, so this logo has NO lettering at all.\n\nDesign: a wordless luxury crest. An ornate pointed-arch window frame in polished gold with a delicate geometric star lattice, and a deep navy-blue enamel inner field (#1f3554); a small glowing brass lantern hangs inside the arch; symmetrical date-palm fronds curve around the base; a few tiny gold sparkles. Palette: polished gold, deep navy, pale sky blue (#9cc8e6) enamel accents, small ivory highlights. A thin dark outline runs around the outer gold edge so it reads on an off-white board. Symmetrical, elegant and premium, but bold and clean enough to read at small size.\n\nStrictly no letters, words, numbers, initials or monograms, and no Arabic or Arabic-looking calligraphy or pseudo-script anywhere, not even hidden in the ornaments. No crescent moon, no star-and-crescent, no flags, no falcon, no crowns or royal insignia, no religious symbols, no mosque dome or minaret. No real landmarks or skyline (no Burj Khalifa, no sail-shaped hotel), no real hotel, airline or brand emblems, no existing logos. No people, no animals. No shisha, hookah, water pipe, hose, bowl, charcoal, charcoal basket, tobacco or smoke. The whole mark is inside the canvas. Single complete logo, no montage, no mockup.\n\nCandidate A: a tall arch crest as described, palm fronds framing the base.",
+      "candidate": "a",
+      "file": "dubai-center-cafe-a.png",
+      "sha256": "1f2ad465230ecd3f75f2f2a261648d65c7e110192ddacbbc5c2bb10137428593",
+      "bytes": 2239051,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        16,
+        1512,
+        1008
+      ],
+      "reference_order": [
+        "remake/img/backgrounds/bg_dubai_cafe_day.webp",
+        "assets/ui/store_logos/kanzaki.webp",
+        "assets/ui/store_logos/ch3-smoke-and-glory.webp"
+      ],
+      "reference_crop": null
+    },
+    {
+      "name": "dubai-center-cafe-b",
+      "prompt": "Create a polished standalone ORIGINAL fictional shop logo for a Japanese visual-novel game map. True transparent background (real alpha; no checkerboard, no backdrop panel, no cast shadow outside the mark). Landscape 3:2 canvas, 1536x1024, one centered logo that fills about 80% of the canvas width with a clear transparent margin on every side. Match the finish of the attached existing shop logos from the same game (style only, do not copy their subjects or lettering): a crisp, richly detailed illustrated emblem with clean edges, a dark outline around the whole mark, limited glossy highlights, sticker-like graphic finish. It must stay readable when shrunk to 82x46 px on an off-white (#fffaf0) map signboard and also on a dark purple (#1f1a29) panel: bold simple main shape, high contrast, no large pure-white or pale-ivory areas on the outer edge.\n\nShop: an upscale shisha cafe in the centre of modern Dubai, the most expensive place in town. The attached interior image shows its look (use it for motifs and palette only): white marble floor, polished gold trim, tall arched windows with fine gold geometric lattice, ivory armchairs with pale blue damask cushions, hanging brass lanterns, potted palms; formal, attentive, hotel-lounge service. The shop has no established name in the game, so this logo has NO lettering at all.\n\nDesign: a wordless luxury crest. An ornate pointed-arch window frame in polished gold with a delicate geometric star lattice, and a deep navy-blue enamel inner field (#1f3554); a small glowing brass lantern hangs inside the arch; symmetrical date-palm fronds curve around the base; a few tiny gold sparkles. Palette: polished gold, deep navy, pale sky blue (#9cc8e6) enamel accents, small ivory highlights. A thin dark outline runs around the outer gold edge so it reads on an off-white board. Symmetrical, elegant and premium, but bold and clean enough to read at small size.\n\nStrictly no letters, words, numbers, initials or monograms, and no Arabic or Arabic-looking calligraphy or pseudo-script anywhere, not even hidden in the ornaments. No crescent moon, no star-and-crescent, no flags, no falcon, no crowns or royal insignia, no religious symbols, no mosque dome or minaret. No real landmarks or skyline (no Burj Khalifa, no sail-shaped hotel), no real hotel, airline or brand emblems, no existing logos. No people, no animals. No shisha, hookah, water pipe, hose, bowl, charcoal, charcoal basket, tobacco or smoke. The whole mark is inside the canvas. Single complete logo, no montage, no mockup.\n\nCandidate B: a wide horizontal plaque for the map: the gold arch with the lantern sits in the centre of a long, low gold-and-navy plaque, with matching lattice panels extending to the left and right.",
+      "candidate": "b",
+      "file": "dubai-center-cafe-b.png",
+      "sha256": "876c4c90f76cb3ed61b49459d14fe7dc58e3992793c6d50013ed71c32b5a4b7e",
+      "bytes": 2032767,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        3,
+        1520,
+        1024
+      ],
+      "reference_order": [
+        "remake/img/backgrounds/bg_dubai_cafe_day.webp",
+        "assets/ui/store_logos/kanzaki.webp",
+        "assets/ui/store_logos/ch3-smoke-and-glory.webp"
+      ],
+      "reference_crop": null
+    },
+    {
+      "name": "dubai-center-cafe-c",
+      "prompt": "Create a polished standalone ORIGINAL fictional shop logo for a Japanese visual-novel game map. True transparent background (real alpha; no checkerboard, no backdrop panel, no cast shadow outside the mark). Landscape 3:2 canvas, 1536x1024, one centered logo that fills about 80% of the canvas width with a clear transparent margin on every side. Match the finish of the attached existing shop logos from the same game (style only, do not copy their subjects or lettering): a crisp, richly detailed illustrated emblem with clean edges, a dark outline around the whole mark, limited glossy highlights, sticker-like graphic finish. It must stay readable when shrunk to 82x46 px on an off-white (#fffaf0) map signboard and also on a dark purple (#1f1a29) panel: bold simple main shape, high contrast, no large pure-white or pale-ivory areas on the outer edge.\n\nShop: an upscale shisha cafe in the centre of modern Dubai, the most expensive place in town. The attached interior image shows its look (use it for motifs and palette only): white marble floor, polished gold trim, tall arched windows with fine gold geometric lattice, ivory armchairs with pale blue damask cushions, hanging brass lanterns, potted palms; formal, attentive, hotel-lounge service. The shop has no established name in the game, so this logo has NO lettering at all.\n\nDesign: a wordless luxury crest. An ornate pointed-arch window frame in polished gold with a delicate geometric star lattice, and a deep navy-blue enamel inner field (#1f3554); a small glowing brass lantern hangs inside the arch; symmetrical date-palm fronds curve around the base; a few tiny gold sparkles. Palette: polished gold, deep navy, pale sky blue (#9cc8e6) enamel accents, small ivory highlights. A thin dark outline runs around the outer gold edge so it reads on an off-white board. Symmetrical, elegant and premium, but bold and clean enough to read at small size.\n\nStrictly no letters, words, numbers, initials or monograms, and no Arabic or Arabic-looking calligraphy or pseudo-script anywhere, not even hidden in the ornaments. No crescent moon, no star-and-crescent, no flags, no falcon, no crowns or royal insignia, no religious symbols, no mosque dome or minaret. No real landmarks or skyline (no Burj Khalifa, no sail-shaped hotel), no real hotel, airline or brand emblems, no existing logos. No people, no animals. No shisha, hookah, water pipe, hose, bowl, charcoal, charcoal basket, tobacco or smoke. The whole mark is inside the canvas. Single complete logo, no montage, no mockup.\n\nCandidate C: a round medallion: a gold geometric-star rosette ring around a navy field, a single gold arch window with a glowing lantern in the centre, two palm fronds crossing below.\n\nQA retry: Candidate C is the final shape specification, overriding the general base layout. The outer sign must be a true CIRCLE, equal width and height, centered inside the 1536x1024 landscape canvas with generous transparent left and right margins. NOT an oval, ellipse, pointed crest or rectangular sign. Round geometric rosette medallion ring, lantern and arch inside, fronds below. No furniture, chairs, tables or flowers; use only the motifs in the Design paragraph.",
+      "candidate": "c",
+      "qa_retry": "final-retry",
+      "file": "dubai-center-cafe-c.png",
+      "sha256": "43b06039a4d35b9603956b4ec5f42c36c11f531597d28285b32ee1779ad80e4e",
+      "bytes": 2053649,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        39,
+        1380,
+        1024
+      ],
+      "reference_order": [
+        "remake/img/backgrounds/bg_dubai_cafe_day.webp",
+        "assets/ui/store_logos/kanzaki.webp",
+        "assets/ui/store_logos/ch3-smoke-and-glory.webp"
+      ],
+      "reference_crop": null
+    },
+    {
+      "name": "dubai-alley-cafe-a",
+      "prompt": "Create a polished standalone ORIGINAL fictional shop logo for a Japanese visual-novel game map. True transparent background (real alpha; no checkerboard, no backdrop panel, no cast shadow outside the mark). Landscape 3:2 canvas, 1536x1024, one centered logo that fills about 80% of the canvas width with a clear transparent margin on every side. Match the finish of the attached existing shop logos from the same game (style only, do not copy their subjects or lettering): a crisp, richly detailed illustrated signboard emblem with clean edges, a dark outline around the whole mark, limited glossy highlights, sticker-like graphic finish. It must stay readable when shrunk to 82x46 px on an off-white (#fffaf0) map signboard and also on a dark purple (#1f1a29) panel: bold simple main shape, high contrast.\n\nShop: a tiny, humble back-alley shisha cafe at the far end of a narrow lane in old Dubai, the kind of place only regulars know. The attached interior image shows its look (use it for motifs and palette only): rough ochre plaster walls, one bare warm light bulb on a cord, a slow wall ventilation fan, worn wooden tables and low woven-rush stools, red and green kilim rugs, a brass Arabic coffee pot (dallah) on a shelf of plain tins. Quiet, warm, worn and honest. The shop has no established name in the game, so this logo has NO lettering at all.\n\nDesign: a wordless hand-painted shop sign. A small, slightly weathered wooden hanging sign (rounded rectangle, chipped paint at the edges, warm ochre and terracotta field) hanging from a simple dark wrought-iron bracket by two short chains. Painted on it in a flat folk style: a brass dallah coffee pot (a coffee pot with a long curved spout, NOT a water pipe) with two small tulip-shaped tea glasses, under one bare glowing light bulb; a narrow red-and-teal kilim zigzag band along the bottom edge. Palette: ochre (#c8914a), terracotta, deep red (#8e2a2a), teal-green (#2f6f63), brass, warm bulb yellow, dark brown outline. Cozy night warmth, small and modest, clearly different from a luxury crest: no gold filigree, no marble.\n\nStrictly no letters, words, numbers, initials or monograms, and no Arabic or Arabic-looking calligraphy or pseudo-script anywhere (not on the sign, the pot, the glasses, any tin or the bracket). No crescent moon, no flags, no religious symbols, no real brands or existing logos, no labels with writing. No people, no animals. No shisha, hookah, water pipe, hose, bowl, charcoal, tobacco or smoke. The whole mark is inside the canvas. Single complete logo, no montage, no mockup.\n\nCandidate A: the hanging wooden sign as described.",
+      "candidate": "a",
+      "file": "dubai-alley-cafe-a.png",
+      "sha256": "12223676b8da822891289b4fffe50f7aede66ec23c25af756047358cc9e3c7af",
+      "bytes": 2662999,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        0,
+        1492,
+        1008
+      ],
+      "reference_order": [
+        "remake/img/backgrounds/bg_dubai_alley_cafe_night.webp",
+        "assets/ui/store_logos/kanzaki.webp",
+        "assets/ui/store_logos/ch3-smoke-and-glory.webp"
+      ],
+      "reference_crop": {
+        "x": 560,
+        "y": 0,
+        "width": 720,
+        "height": 320
+      }
+    },
+    {
+      "name": "dubai-alley-cafe-b",
+      "prompt": "Create a polished standalone ORIGINAL fictional shop logo for a Japanese visual-novel game map. True transparent background (real alpha; no checkerboard, no backdrop panel, no cast shadow outside the mark). Landscape 3:2 canvas, 1536x1024, one centered logo that fills about 80% of the canvas width with a clear transparent margin on every side. Match the finish of the attached existing shop logos from the same game (style only, do not copy their subjects or lettering): a crisp, richly detailed illustrated signboard emblem with clean edges, a dark outline around the whole mark, limited glossy highlights, sticker-like graphic finish. It must stay readable when shrunk to 82x46 px on an off-white (#fffaf0) map signboard and also on a dark purple (#1f1a29) panel: bold simple main shape, high contrast.\n\nShop: a tiny, humble back-alley shisha cafe at the far end of a narrow lane in old Dubai, the kind of place only regulars know. The attached interior image shows its look (use it for motifs and palette only): rough ochre plaster walls, one bare warm light bulb on a cord, a slow wall ventilation fan, worn wooden tables and low woven-rush stools, red and green kilim rugs, a brass Arabic coffee pot (dallah) on a shelf of plain tins. Quiet, warm, worn and honest. The shop has no established name in the game, so this logo has NO lettering at all.\n\nDesign: a wordless hand-painted shop sign. A small, slightly weathered wooden hanging sign (rounded rectangle, chipped paint at the edges, warm ochre and terracotta field) hanging from a simple dark wrought-iron bracket by two short chains. Painted on it in a flat folk style: a brass dallah coffee pot (a coffee pot with a long curved spout, NOT a water pipe) with two small tulip-shaped tea glasses, under one bare glowing light bulb; a narrow red-and-teal kilim zigzag band along the bottom edge. Palette: ochre (#c8914a), terracotta, deep red (#8e2a2a), teal-green (#2f6f63), brass, warm bulb yellow, dark brown outline. Cozy night warmth, small and modest, clearly different from a luxury crest: no gold filigree, no marble.\n\nStrictly no letters, words, numbers, initials or monograms, and no Arabic or Arabic-looking calligraphy or pseudo-script anywhere (not on the sign, the pot, the glasses, any tin or the bracket). No crescent moon, no flags, no religious symbols, no real brands or existing logos, no labels with writing. No people, no animals. No shisha, hookah, water pipe, hose, bowl, charcoal, tobacco or smoke. The whole mark is inside the canvas. Single complete logo, no montage, no mockup.\n\nCandidate B: a wider, lower painted plate fixed flat to a small patch of ochre plaster wall, with the bare bulb hanging above it on its cord; the dallah and the two glasses are painted on the plate.\n\nQA retry: The Candidate B line above is the final shape requirement and overrides the general hanging-sign layout. No bracket, no chains, no hanging sign. Make a wide low horizontal wall-mounted painted plate, with a bulb above on its cord.",
+      "candidate": "b",
+      "qa_retry": "retry",
+      "file": "dubai-alley-cafe-b.png",
+      "sha256": "d0abe6bb490a0079477e6622dd79b65495302a6f77c24682accba7a1615acf29",
+      "bytes": 2731783,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        13,
+        1520,
+        1024
+      ],
+      "reference_order": [
+        "remake/img/backgrounds/bg_dubai_alley_cafe_night.webp",
+        "assets/ui/store_logos/kanzaki.webp",
+        "assets/ui/store_logos/ch3-smoke-and-glory.webp"
+      ],
+      "reference_crop": {
+        "x": 560,
+        "y": 0,
+        "width": 720,
+        "height": 320
+      }
+    },
+    {
+      "name": "dubai-alley-cafe-c",
+      "prompt": "Create a polished standalone ORIGINAL fictional shop logo for a Japanese visual-novel game map. True transparent background (real alpha; no checkerboard, no backdrop panel, no cast shadow outside the mark). Landscape 3:2 canvas, 1536x1024, one centered logo that fills about 80% of the canvas width with a clear transparent margin on every side. Match the finish of the attached existing shop logos from the same game (style only, do not copy their subjects or lettering): a crisp, richly detailed illustrated signboard emblem with clean edges, a dark outline around the whole mark, limited glossy highlights, sticker-like graphic finish. It must stay readable when shrunk to 82x46 px on an off-white (#fffaf0) map signboard and also on a dark purple (#1f1a29) panel: bold simple main shape, high contrast.\n\nShop: a tiny, humble back-alley shisha cafe at the far end of a narrow lane in old Dubai, the kind of place only regulars know. The attached interior image shows its look (use it for motifs and palette only): rough ochre plaster walls, one bare warm light bulb on a cord, a slow wall ventilation fan, worn wooden tables and low woven-rush stools, red and green kilim rugs, a brass Arabic coffee pot (dallah) on a shelf of plain tins. Quiet, warm, worn and honest. The shop has no established name in the game, so this logo has NO lettering at all.\n\nDesign: a wordless hand-painted shop sign. A small, slightly weathered wooden hanging sign (rounded rectangle, chipped paint at the edges, warm ochre and terracotta field) hanging from a simple dark wrought-iron bracket by two short chains. Painted on it in a flat folk style: a brass dallah coffee pot (a coffee pot with a long curved spout, NOT a water pipe) with two small tulip-shaped tea glasses, under one bare glowing light bulb; a narrow red-and-teal kilim zigzag band along the bottom edge. Palette: ochre (#c8914a), terracotta, deep red (#8e2a2a), teal-green (#2f6f63), brass, warm bulb yellow, dark brown outline. Cozy night warmth, small and modest, clearly different from a luxury crest: no gold filigree, no marble.\n\nStrictly no letters, words, numbers, initials or monograms, and no Arabic or Arabic-looking calligraphy or pseudo-script anywhere (not on the sign, the pot, the glasses, any tin or the bracket). No crescent moon, no flags, no religious symbols, no real brands or existing logos, no labels with writing. No people, no animals. No shisha, hookah, water pipe, hose, bowl, charcoal, tobacco or smoke. The whole mark is inside the canvas. Single complete logo, no montage, no mockup.\n\nCandidate C: a round painted tin sign, slightly dented, with the dallah and the two glasses in the centre, a kilim pattern border ring, and one small plain purple tin with no writing beside the pot.\n\nQA retry: Candidate C is the final shape specification, overriding the general base layout. The outer sign must be a true CIRCLE, equal width and height, centered inside the 1536x1024 landscape canvas with generous transparent left and right margins. NOT an oval, ellipse, pointed crest or rectangular sign. No bracket and no chains. Round tin sign, round kilim border and one small plain purple tin as specified.",
+      "candidate": "c",
+      "qa_retry": "final-retry",
+      "file": "dubai-alley-cafe-c.png",
+      "sha256": "c682709a0cfc52eeb3e212cad67d9b5166d2e572e13d02201e7ac999a0772dd7",
+      "bytes": 2363156,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "alpha_bbox": [
+        0,
+        31,
+        1522,
+        1008
+      ],
+      "reference_order": [
+        "remake/img/backgrounds/bg_dubai_alley_cafe_night.webp",
+        "assets/ui/store_logos/kanzaki.webp",
+        "assets/ui/store_logos/ch3-smoke-and-glory.webp"
+      ],
+      "reference_crop": {
+        "x": 560,
+        "y": 0,
+        "width": 720,
+        "height": 320
+      }
+    }
+  ]
+}

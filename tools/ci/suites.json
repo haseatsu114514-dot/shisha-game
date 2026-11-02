@@ -172,6 +172,23 @@
       ]
     },
     {
+      "id": "debug-tools",
+      "title": "Debug tools for development: ?debug=1 panel, speed, auto shisha-making (debug_tools)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/dev/**",
+        "remake/js/main.js",
+        "remake/js/craft/session.js",
+        "remake/test/browser/debug_tools.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/debug_tools.mjs"
+      ]
+    },
+    {
       "id": "board-tutorial",
       "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
       "kind": "browser",
@@ -638,6 +655,7 @@
         "node --test tools/ci/test_ci.mjs",
         "python3 tools/check_face_icons_fresh.py",
         "python3 tools/portrait_metrics.py check",
+        "python3 tools/background_catalog.py check",
         "node --test tools/sequential_merge/test.mjs",
         "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
         "node remake/test/dev_inspector.mjs"

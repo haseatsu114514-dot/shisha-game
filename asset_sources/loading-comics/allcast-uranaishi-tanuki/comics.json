@@ -1,0 +1,136 @@
+{
+  "id": "uranaishi-tanuki",
+  "title": "福の置物",
+  "cast": [
+    "uranaishi"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "ヒヒ、福を授けよう。",
+    "やった！",
+    "持って帰れない。"
+  ],
+  "first_speaker": "uranaishi",
+  "panel1": "アーケードの外れの机。右の占い師が手招きして「ヒヒ、福を授けよう。」（左上に高く）。左のはじめが小さなお守りをもらえると思い、両手をそろえて差し出し「やった！」（右下）。",
+  "panel2": "占い師が台車で、はじめより背の高い巨大なタヌキの焼き物の置物（笠をかぶり大きな丸いおなか。手には何も持たせず。文字なし）をごろごろ押してくる。はじめは両手を出したまま固まる。はじめ「持って帰れない。」。置物はコマの中央に大きく。",
+  "caption": "路上の占い師の「福」は、たまに大きすぎる。",
+  "type": "大きさの過剰",
+  "num": 115,
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "533bcb8cec9eb17a34daafc7cc8a6f3c20227494",
+  "generator": "built-in image_gen",
+  "source": "allcast-uranaishi-tanuki.png",
+  "source_sha256": "56dae87d12e40299b1e6ca4362ef2dbf47cafe02d5e13b196da4153929db0f0e",
+  "references": [
+    {
+      "path": "hajime-sheet/normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "hajime official normal"
+    },
+    {
+      "path": "portrait-standard-2369-ts11-ts12/uranaishi/refs/uranaishi-current-normal.png",
+      "sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+      "role": "uranaishi current-main official normal; parent verified hash"
+    },
+    {
+      "path": "ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "early adopted style only, not deliverable"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "official template regenerated using unchanged repository tool"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked, 3 lines matching official script",
+    "reading_order": "left-to-right / first speaker upper-left when speaker is on right; tails checked",
+    "identity": "normal references; same positions both panels; eye hood per official script",
+    "style": "early adopted Menu Revision style: cute 2.5-head chibi, bold lines, warm cel palette",
+    "hardware": "none; no siryou hardware needed in these scripts",
+    "in_game_pc_phone": "NOT PERFORMED; not registered",
+    "selection": "awaiting owner; not adopted",
+    "template": "frame detection results retained; vertical drift recorded; no force",
+    "fill_inspection": "Changed derivatives visually inspected. Kotatsu right fill=0 preserves slippers; sleeve internal paper band remains under official fill limit."
+  },
+  "cut_source_regions": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-tanuki/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 718,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-tanuki/source-v1.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 718,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/uranaishi-tanuki-1.webp",
+      "sha256": "65b23af4cc1a58d6e3517ba6599cc0fc9bc124bc839850544769c91adf7a1feb",
+      "width": 718,
+      "height": 478,
+      "bytes": 68818
+    },
+    {
+      "file": "panels/uranaishi-tanuki-2.webp",
+      "sha256": "7a0ff63d65323acec70ced11154a10f593939b67d7d170a3cef8c686b7ec42fd",
+      "width": 718,
+      "height": 478,
+      "bytes": 66948
+    }
+  ],
+  "originals": [
+    {
+      "file": "allcast-uranaishi-tanuki.png",
+      "sha256": "56dae87d12e40299b1e6ca4362ef2dbf47cafe02d5e13b196da4153929db0f0e",
+      "bytes": 1735616
+    }
+  ],
+  "generation_calls": [
+    {
+      "output": "source-v1.png",
+      "prompt": "prompt-v1.txt",
+      "references": [
+        {
+          "path": "hajime-sheet/normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "role": "hajime official normal"
+        },
+        {
+          "path": "portrait-standard-2369-ts11-ts12/uranaishi/refs/uranaishi-current-normal.png",
+          "sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+          "role": "uranaishi current-main official normal; parent verified hash"
+        },
+        {
+          "path": "ryuji-sheet/loading/pc.png",
+          "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+          "role": "early adopted style only, not deliverable"
+        },
+        {
+          "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+          "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+          "role": "official template regenerated using unchanged repository tool"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    }
+  ],
+  "local_source_before_handoff": "source-v1.png"
+}

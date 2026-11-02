@@ -1,0 +1,137 @@
+{
+  "id": "sheikh-coaster",
+  "title": "動じない王",
+  "cast": [
+    "sheikh"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "怖くないですか？",
+    "問題ない。",
+    "なんで平気！？"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "遊園地のジェットコースター。二人だけで並んで座席に座り、発車を待っている。左のはじめが青い顔で「怖くないですか？」。右のシェイクは背筋を伸ばして穏やかに「問題ない。」。",
+  "panel2": "コースターが大きな宙返りの真っ最中で、二人とも逆さま。左のはじめは髪とパーカーのひもが逆立ち、目を見開いて絶叫している（キャップは頭に残す）。右のシェイクは頭布ひとつ乱れず、お茶の湯のみを一滴もこぼさず持って静かに座っている（二人の差をコマの中央に大きく）。はじめ「なんで平気！？」。",
+  "caption": "どんな時も急がず焦らない。それが世界王者。",
+  "type": "余裕の過剰",
+  "note": "王族の正装（白いカンドゥーラ）で描き、王族と分かっている前提の笑いなので第4章から（前回の『旅の人』と同じ）。旅装・変装は使わない。正本の「勝負中も焦る手が一つもない」の誇張。ほかの乗客は描かない。",
+  "num": 98,
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "533bcb8cec9eb17a34daafc7cc8a6f3c20227494",
+  "generator": "built-in image_gen",
+  "source": "allcast-sheikh-coaster.png",
+  "source_sha256": "d79d0fc23a191a2554ae229d38e2bacf3d0b93d460185dfbec47174eb2aea1a7",
+  "references": [
+    {
+      "path": "hajime-sheet/normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "hajime official normal"
+    },
+    {
+      "path": "portrait-standard-2369-ts11-ts12/sheikh/refs/sheikh-current-normal.png",
+      "sha256": "96cce4308d9a6c72c66276a637fa1ece92439875d8d013ce9434e04bb9236ebd",
+      "role": "sheikh current-main official normal; LFS SHA256 confirmed 96cce4308d9a6c72c66276a637fa1ece92439875d8d013ce9434e04bb9236ebd"
+    },
+    {
+      "path": "ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "early adopted style only, not deliverable"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "official template regenerated using unchanged repository tool"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked, 3 lines matching official script",
+    "reading_order": "left-to-right / first speaker upper-left when speaker is on right; tails checked",
+    "identity": "normal references; same positions both panels",
+    "style": "early adopted Menu Revision style: cute 2.5-head chibi, bold lines, warm cel palette",
+    "hardware": "none; no siryou hardware needed in these scripts",
+    "in_game_pc_phone": "NOT PERFORMED; not registered",
+    "selection": "awaiting owner; not adopted",
+    "template": "frame detection results retained; vertical drift recorded; no force",
+    "fill_inspection": "All changed previews re-inspected. Keep padding in kotatsu both panels and coaster right via max-fill=0 to preserve bubble boundaries."
+  },
+  "cut_source_regions": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-coaster/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 514,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-coaster/source-v1.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 719,
+        "height": 514,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/sheikh-coaster-1.webp",
+      "sha256": "232acf5f399a2424df4a978af3a946f80f75ff4a8877aa305a6886f4015c34eb",
+      "width": 771,
+      "height": 514,
+      "bytes": 78102
+    },
+    {
+      "file": "panels/sheikh-coaster-2.webp",
+      "sha256": "0b1ffac6ccfaf00967a24dfcd35c5403ee05a7304073014ae35fc753eb069b83",
+      "width": 771,
+      "height": 514,
+      "bytes": 74754
+    }
+  ],
+  "originals": [
+    {
+      "file": "allcast-sheikh-coaster.png",
+      "sha256": "d79d0fc23a191a2554ae229d38e2bacf3d0b93d460185dfbec47174eb2aea1a7",
+      "bytes": 1759459
+    }
+  ],
+  "generation_calls": [
+    {
+      "output": "source-v1.png",
+      "prompt": "prompt-v1.txt",
+      "references": [
+        {
+          "path": "hajime-sheet/normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "role": "hajime official normal"
+        },
+        {
+          "path": "portrait-standard-2369-ts11-ts12/sheikh/refs/sheikh-current-normal.png",
+          "sha256": "96cce4308d9a6c72c66276a637fa1ece92439875d8d013ce9434e04bb9236ebd",
+          "role": "sheikh current-main official normal; LFS SHA256 confirmed 96cce4308d9a6c72c66276a637fa1ece92439875d8d013ce9434e04bb9236ebd"
+        },
+        {
+          "path": "ryuji-sheet/loading/pc.png",
+          "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+          "role": "early adopted style only, not deliverable"
+        },
+        {
+          "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+          "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+          "role": "official template regenerated using unchanged repository tool"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    }
+  ],
+  "local_source_before_handoff": "source-v1.png"
+}
