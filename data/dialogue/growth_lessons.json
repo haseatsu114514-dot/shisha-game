@@ -139,9 +139,9 @@
           "text": "知り尽くした一つがあれば、混ぜるときも迷わん。帰る場所があるからな"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（足して深くするんじゃなくて、知って深くするのか）"
+          "speaker": "",
+          "face": "",
+          "text": "二つのボウルを、もう一度交互に吸う。同じ葉なのに、別の日の味がした。"
         },
         {
           "speaker": "hajime",
@@ -724,19 +724,14 @@
           "text": "SHISHARKの奥の席。サメちゃんが、コロちゃんの王冠を指で直している。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "サメちゃん、ちょっと相談してもいいですか"
-        },
-        {
           "speaker": "samechan",
-          "face": "smile",
-          "text": "うむ、なんじゃ。申してみよ"
+          "face": "serious",
+          "text": "お主、蒸らしの顔が険しいのう。何に噛みつかれておる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "蒸らしを待ってる間、雑念が次々浮かぶんです。スミさんに切り方は習ったんですけど"
+          "text": "……雑念です。スミさんに切り方は習ったんですけど"
         },
         {
           "speaker": "hajime",
@@ -861,7 +856,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "12グラムのボウルなら、3グラム近く……思ったより多いですね"
+          "text": "12グラムのボウルなら、2グラムちょっと……思ったより多いですね"
         },
         {
           "speaker": "rin",
@@ -1037,11 +1032,6 @@
           "speaker": "mashiro",
           "face": "smile",
           "text": "うん。僕、ほかの葉の香り、消したくないから"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（主役はそのまま。一割の紅茶で、後ろにもう一枚、壁を立てる）"
         },
         {
           "speaker": "hajime",

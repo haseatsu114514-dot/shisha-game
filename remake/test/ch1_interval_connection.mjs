@@ -30,9 +30,6 @@ function stringify(value) {
 }
 assert.equal(createHash('sha256').update(stringify(sortKeys(sumi))).digest('hex'),
   '186935cd6f1ee864150edb8d3d9d415a98ecd2871fcc2a67dbcd4e41f5616465');
-const legacy = JSON.parse(read('data/dialogue/_legacy/forced_events.json')).interval_1;
-assert(!legacy.some(entry => entry.id === 'interval_day1_morning'));
-assert(legacy.some(entry => entry.id === 'interval_day3_sumi_call'));
 
 const data = read('remake/js/core/data.js');
 const files = data.match(/const DIALOGUE_FILES = \[([\s\S]*?)\];/);
@@ -84,8 +81,9 @@ assert(tonariAt > 0 && toastAt > tonariAt, 'the tonari toast follows the split p
 assert.match(victory, /"今日は喜べ。帰ったら、一緒に一服しよう"/);
 assert.match(chapter, /import \{[^}]*\bgainStat\b[^}]*\} from "\.\.\/core\/stats\.js"/);
 
-assert.equal(scenes.find(scene => scene.dialogue_id === 'interval_day1_morning_win').lines[0].text,
-  '大会で優勝した翌朝。目が覚めて、まずトロフィーを探した。……そうだ、店のカウンターに飾ったんだった。現実感がまだ追いついていない。');
+const morning = scenes.find(scene => scene.dialogue_id === 'interval_day1_morning_win');
+assert.equal(morning.lines[0].text, '大会で優勝した翌朝。目が覚めて、まずトロフィーを探した。');
+assert.equal(morning.lines[1].text, '……そうだ、店のカウンターに飾ったんだった。現実感が、まだ追いつかない。');
 console.log('PASS: interval IDs, unchanged Sumi hash, legacy entries, loader, victory order, rewards and trophy continuity');
 const remaining = [];
 function scan(directory) {

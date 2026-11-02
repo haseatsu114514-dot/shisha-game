@@ -1,9 +1,0 @@
-# Independent candidate review: PR759 mix two-row cascade
-
-CSS candidate blob 7b1b8986196bcb0ec29f9609f7888885a4bef483 independently recomputed. Product source unchanged. Five override selectors only; each stays inside existing phone coarse/landscape mix gate and matches the existing two-row :has()/nth-child() condition. It restores row grid/name full-span/font/button/g sizing against the higher-specificity old shared rule. No commonCSS/steps/outer/thermometer change.
-
-Evidence: artifacts/results.json PC hidden/visible independent geometry PASS; phone initial strict-name-linebox check failed because real font glyph Range extends 1.083px above its linebox. The glyphs remain within row padding (label-derived.json) and do not clip. This is a review-harness assertion error, not a product issue. artifacts-label-check/results.json then independently confirms phone hidden/visible physical44.095px buttons,16px names, children inside rows, unchanged outer/thermometer/labels and synthetic scroll tail468/541; final button focus3px. Real screenshots initial-phone-false.webp and mix-phone-false.webp visually inspected for names/labels/controls. Replay run.mjs now also asserts glyph ranges within the actual padded row instead of a font linebox.
-
-Static-new reports PASS1 extra two-row case; static-old invocation of the same source fails expected phone-844/mix-two .fr-btn target too small. Author's larger53-case suite and pixel comparison are separate evidence; not claimed as independently reexecuted here. PC independent old/candidate DOM geometry matches in both preview states.
-
-No required findings. review.json is COMMENT payload without commit_id: parent must attach broker-verified exact new HEAD after saving matching candidate blobs. No remote post/network/CI/merge/source edit by this reviewer. localhost only, actual production step component; no physical-device/chapter/public runtime guarantee.

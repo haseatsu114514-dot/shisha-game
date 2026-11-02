@@ -51,6 +51,10 @@ const fixedNight = (day) => nightOccupied(chapterDef.nightEvents, day);
  * 日常パート。章側は実装済みの最終日、街の選択と固有行動だけを差し替えられる。
  * @param def.nightEvents { [day]: { pin, beat, run: async () => {} } }
  * @param def.onQuit タイトルへ戻る処理
+ * @param def.untilDay 最終日の通算日（大会・勝負の日）。getter でもよい（第5章は日程が決まるまで Infinity）
+ * @param def.undatedNote 最終日が決まっていないときの朝・夜明けのカードの一言
+ * @param def.dateInvitations false で恋人のデートの誘いを出さない
+ * @param def.confessions false で夜の告白の場面を出さない
  */
 export async function runDaily(def) {
   chapterDef = def;
@@ -80,7 +84,7 @@ export async function runDaily(def) {
   // 第2章の初日配達は章側で行動・帰店報告まで完了済み。
   // 日付だけを飛ばさず、通常日と同じ夜予定・帰宅・就寝を経て翌朝へ進む。
   if (def.startNextDay && chapterDay(state) === 1) { await endDay({ returnedToTonari: true }); save(); }
-  while (state.day < (def.untilDay ?? TOURNAMENT_DAY)) {
+  while (state.day < finalDayAbs()) {
     syncNightQueue(chapterDef.nightEvents);
     if (!state.flags[`_morning_${state.day}`]) {
       state.flags[`_morning_${state.day}`] = true;
@@ -125,14 +129,26 @@ export async function runDaily(def) {
   }
 }
 
+/** 章の最終日（大会・勝負の日）の通算日。章定義の untilDay（第5章は日程が決まるまで Infinity の getter）。 */
+const finalDayAbs = () => chapterDef?.untilDay ?? TOURNAMENT_DAY;
+/** 今夜が最終日の前夜か（寝ると最終日の朝）。 */
+const finalEve = () => state.day + 1 >= finalDayAbs();
+/** 朝の日付カードの小見出し。最終日が決まっていない章は undatedNote（無ければ出さない）。 */
+function countdownText() {
+  const left = daysLeft();
+  if (left === null) return chapterDef?.undatedNote || "";
+  return `${chapterDef?.tournamentName || "SMOKE CROWN CUP"} まで あと${left}日`;
+}
+
 async function morning() {
   refreshWeather();
   playBgm("kansetsu_shomei_to_black_coffee");
   // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
   if (dawnShownDay === state.day) dawnShownDay = null;
-  else await dayCard(`DAY ${chapterDay(state)}`, `${chapterDef.tournamentName || "SMOKE CROWN CUP"} まで あと${daysLeft()}日`, { weather: weatherOf() });
+  else await dayCard(`DAY ${chapterDay(state)}`, countdownText(), { weather: weatherOf() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
-  const n = deliverMorning({ fixedNight });
+  // 恋人のデートの誘いを出さない章（第5章）は、恋人の朝のLIMEだけ届く（lover-entry.js と同じ扱い）。
+  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false });
   if (n) pushNotice(n, { onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
@@ -843,7 +859,9 @@ async function endDay({ returnedToTonari = false } = {}) {
     }
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
-  const confessed = await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
+  // 告白は第1〜3章の物語。第5章（confessions: false）では夜に告白の場面を始めない。
+  const confessed = chapterDef.confessions === false ? false
+    : await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
   await chapterDef.beforeHomecoming?.();
   const athome = !!state.flags._home_tonight;
@@ -859,11 +877,11 @@ async function endDay({ returnedToTonari = false } = {}) {
   await showSumiRigAtHome();
   if (state !== homeOwner) return;
   // 夜の行動を終え、余力があるときだけ家シーシャを選べる。大会前夜は聞かない。
-  if (await runHomeShisha({ eve: state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY) })) await bannersIdle();
+  if (await runHomeShisha({ eve: finalEve() })) await bannersIdle();
   delete state.flags._home_trial_plan; // 予約方式の旧セーブを読んだ場合も持ち越さない
   // 寝る直前（夜明けの幕の前）にその日の経験値を精算する。大会前夜もここで火種が届く（REPORT P2・R1）
   // 大会前夜は、火種が残っていれば精算のあとにひとりで内省しに行く（SPEC 2.8・#1690）。柚ヶ谷の夜は宿の窓辺
-  const eve = state.day + 1 >= (chapterDef.untilDay ?? TOURNAMENT_DAY);
+  const eve = finalEve();
   await presentNight({ evePlace: eve ? (state.chapter === 2 && state.flags._ch2_region === "widehanga" ? "inn_window" : "kannon") : null });
   if (state !== homeOwner) return;
   await advanceDay();
@@ -877,9 +895,11 @@ async function advanceDay() {
   const sleepBefore = state.stamina;
   const fromDay = chapterDay(state);
   const fromLeft = daysLeft();
+  // 寝ると最終日（大会・勝負の日）の朝になる夜か。判定は日が進む前に一度だけ。
+  const eveOfFinal = finalEve();
   const wake = () => {
     // 大会の朝に発病しても大会日を飛ばさない。その夜は回復せず、不調の残量で本番へ。
-    addStamina(exhausted && chapterDay(state) + 1 >= TOURNAMENT_DAY ? 0 : SLEEP_RECOVERY);
+    addStamina(exhausted && eveOfFinal ? 0 : SLEEP_RECOVERY);
     state.day += 1;
     state.slot = 0;
     state.restDay = exhausted ? { chapter: state.chapter, day: state.day, fullDay: false, illnessHealth } : null;
@@ -887,17 +907,17 @@ async function advanceDay() {
     updateHud();
     setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
   };
-  if (chapterDay(state) + 1 < TOURNAMENT_DAY) {
+  if (!eveOfFinal) {
     // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
     await dayTurn(async () => {
       wake();
-      return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted, tournamentName: chapterDef?.tournamentName };
+      return { fromDay, day: chapterDay(state), fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted, tournamentName: chapterDef?.tournamentName, undatedNote: chapterDef?.undatedNote };
     });
     dawnShownDay = state.day;
   } else await fadeBlack(wake, 500);
   await presentSleepRecovery({ before: sleepBefore, after: state.stamina });
   if (!exhausted) return;
-  if (chapterDay(state) >= TOURNAMENT_DAY) {
+  if (state.day >= finalDayAbs()) {
     await play("remake_sick_tournament");
     updateHud();
     return;

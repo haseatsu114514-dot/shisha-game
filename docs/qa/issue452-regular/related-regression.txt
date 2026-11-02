@@ -1,4 +1,0 @@
-Compared 19 current/baseline scene paths: full state equal
-[issue508-theme] PASS: six-scenes-branches-old-save-and-state-effects
-Full state/rewards equal in 12 later-scene paths and both DAY2 answers
-[regular-service-response] PASS: both-answers-read-unread-legacy-and-full-state

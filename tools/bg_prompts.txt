@@ -25,7 +25,7 @@ Anime visual novel background, detailed digital painting, dramatic lighting, no 
 Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. Interior of an upscale hookah flavor wholesale shop. Floor-to-ceiling wooden shelves filled with hundreds of colorful flavor bottles and tins. Glass display cases with premium hookah equipment. Industrial-chic: exposed brick, dark metal fixtures, Edison bulbs. Wooden counter with register. Metal staircase in back leading to second floor. Sophisticated specialist shop. Warm amber, dark wood, colorful bottle accents.
 
 --- 8/11: bg_tonari_inside.png ---
-Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. Interior of a cozy Japanese shisha bar during daytime. Warm sunlight through windows. Comfortable sofas and low wooden tables. Wooden bookshelf displaying glass hookah pipes. Persian-style rug on dark hardwood floor. Framed art prints on cream walls. Hanging plants. Round paper lantern ceiling lights off, natural light instead. Books on shelves. Feels like a living room — warm, homey, relaxed. Bar counter partially visible. Beige, brown, forest green with golden sunlight.
+Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. Interior of a cozy Japanese shisha bar during daytime. Warm sunlight through windows. Comfortable sofas and low wooden tables. Wooden bookshelf displaying glass hookah pipes. Persian-style rug on dark hardwood floor. Framed art prints on cream walls. Hanging plants. Turkish mosaic glass lamps of mixed shapes and colors hanging at varied lengths, switched off, natural light instead. Books on shelves. Feels like a living room — warm, homey, relaxed. Bar counter partially visible. Beige, brown, forest green with golden sunlight.
 
 --- 9/11: bg_hideaway.png ---
 Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. Interior of a hidden underground hookah lounge — no sign outside, known only to regulars. Dim amber candlelight, low pendant lights. Deep leather sofas and armchairs around low tables. Exposed brick walls. Small intimate space, 6-8 seats. Thick smoke catching candlelight. Vintage record player in corner. Private and exclusive. Deep brown, burgundy, amber, smoky haze. Heavy curtain for entrance.
@@ -77,7 +77,7 @@ black areas. Secretive, professional, faintly dangerous. Deep gray-blue palette 
 amber accents.
 
 --- R2/10: kemurikusa.png ★再生成（現状: 輝度25/255でほぼ黒・Dr.fookahと構図類似） ---
-用途: なるの店 KEMURIKUSA（訪問・デート）。正典: 隣町の人気店。若い店主が一人で回す、
+用途: なるの店 KEMURIKUSA（訪問）。正典: 地元・橙須の人気店。若い店主が一人で回す、
 スピード勝負の店。「迷いのない煙」。Dr.fookah（棚＋ソファのラウンジ）と見分けがつくよう、
 カウンター主体の構図に変える。
 Anime visual novel background, detailed digital painting, warm lighting, no people, 16:9,
@@ -104,7 +104,7 @@ green and gold accents.
 レイアウトの夜バージョンにする（ソファ・本棚のガラスパイプ・ラグ・カウンターの位置を維持）。
 Anime visual novel background, detailed digital painting, warm lighting, no people, 16:9,
 painterly brushwork. The same cozy Japanese shisha bar interior as the daytime version, at
-night after closing. Round paper lantern ceiling lights on, pooling warm amber light over
+night after closing. Turkish mosaic glass lamps of mixed shapes and colors on, pooling warm amber light over
 the sofas and low wooden tables. Windows show deep blue night and faint city lights.
 Bookshelf of glass hookah pipes catching highlights. Persian rug, cream walls, hanging
 plants all clearly readable in the warm dimness. Intimate, quiet, end-of-day mood. No pure

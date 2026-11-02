@@ -1,8 +1,0 @@
-{
-  "repetitions": 3,
-  "scenarioDetailsCasesPerRun": 4,
-  "delayedResizeNegative": "PASS all 5 targets #trpg-rotate",
-  "releasedResizePositive": "PASS all 5 hits",
-  "persistentObstruction": "PASS all 5 targets #persistent-obstruction",
-  "runtimeDiffFromOriginal": "empty"
-}

@@ -132,9 +132,11 @@ export async function nightToMorning(host, mid) {
     const info = await mid();
     if (!info) return;
     const dayFlip = flipNumber(info.fromDay, info.day);
-    const leftFlip = flipNumber(info.fromLeft, info.left);
+    // 最終日が決まっていない章（第5章の日程未定）は残り日数をめくらず、章の一言だけ出す。
+    const leftFlip = info.left === null || info.left === undefined ? null : flipNumber(info.fromLeft ?? info.left, info.left);
     const sub = info.sick
       ? el("div.tr-dawn-sub", [el("span", { text: "……熱っぽい" })])
+      : !leftFlip ? el("div.tr-dawn-sub", [el("span", { text: info.undatedNote || "" })])
       : el("div.tr-dawn-sub", [el("span", { text: `${info.tournamentName || "SMOKE CROWN CUP"} まで あと` }), leftFlip, el("span", { text: "日" })]);
     const card = el("div.tr-dawn-card", { dataset: { test: "dawn-card" } }, [el("div.tr-dawn-day", [el("small", { text: "DAY" }), dayFlip]), sub]);
     if (info.sick) node.classList.add("sick");
@@ -147,7 +149,7 @@ export async function nightToMorning(host, mid) {
     if (wx?.badge) card.append(wx.badge);
     node.append(card);
     if (reduced) {
-      [dayFlip, leftFlip].forEach((s) => { s.firstChild.remove(); s.firstChild.style.transform = ""; s.firstChild.style.opacity = ""; });
+      [dayFlip, leftFlip].filter(Boolean).forEach((s) => { s.firstChild.remove(); s.firstChild.style.transform = ""; s.firstChild.style.opacity = ""; });
       await move(card, [{ opacity: 0 }, { opacity: 1 }], 200, { easing: "ease" });
       await sleep(1300);
       await move(node, [{ opacity: 1 }, { opacity: 0 }], 300, { easing: "ease" });
@@ -164,7 +166,7 @@ export async function nightToMorning(host, mid) {
     }
     await sleep(220);
     SE.tick();
-    await Promise.all([flip(dayFlip), info.sick ? null : sleep(90).then(() => flip(leftFlip))]);
+    await Promise.all([flip(dayFlip), info.sick || !leftFlip ? null : sleep(90).then(() => flip(leftFlip))]);
     await sleep(info.sick ? 1100 : 650);
     const horizon = el("div.tr-dawn-horizon");
     node.append(horizon);

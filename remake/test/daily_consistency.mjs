@@ -110,6 +110,12 @@ reset({ usedBaito: ["baito_regular_01"] }); db.baito = [byid.baito_regular_01]; 
 // 昼に閉店回、夜に昼下がり回を出さない。晴れに雨回を出さない。
 for (const id of ["baito_closing_smoke", "baito_closing_late", "baito_atmosphere_03"]) { reset(); db.baito = [byid[id]]; await tonari.doBaito(); assert.equal(selected(), undefined); reset({ slot: 1 }); db.baito = [byid[id]]; await tonari.doBaito(); assert.equal(selected(), `baito_${id}`); }
 reset({ slot: 1 }); db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), undefined);
+// 「午後の光」の回は晴れの昼だけ。みんとの正体を知った後は、初対面の目で語る回を出さない（一度きり）。
+reset(); rainy = true; db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), undefined);
+reset(); db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_atmosphere_02");
+reset(); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_mysterious_customer");
+reset({ usedBaito: ["baito_mysterious_customer"] }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
+reset({ flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true, _minto_identity_revealed: true } }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
 reset(); db.baito = [byid.baito_rainy_day]; await tonari.doBaito(); assert.equal(selected(), undefined);
 reset(); rainy = true; db.baito = [byid.baito_regular_01, byid.baito_rainy_day]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_rainy_day");
 // chapter1の正体を伏せた3客はそれぞれ一度きり、chapter2に持ち越さない。
