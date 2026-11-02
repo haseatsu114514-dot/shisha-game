@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 13:14 UTC",
+ "generated": "2026-11-02 13:20 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -438,6 +438,24 @@
    "b": 0.0117,
    "ax": 0.5889,
    "aspect": 0.7467
+  },
+  "rashid": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9333,
+   "b": 0.0167,
+   "ax": 0.505,
+   "aspect": 0.7467
+  },
+  "saif": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9333,
+   "b": 0.0167,
+   "ax": 0.5457,
+   "aspect": 0.7467
   }
  },
  "backgrounds": [
@@ -463,6 +481,7 @@
   "bg_dubai_airport_day.png",
   "bg_dubai_alley_cafe_night.png",
   "bg_dubai_cafe_day.png",
+  "bg_dubai_camel_track_morning.png",
   "bg_dubai_dunes_day.png",
   "bg_dubai_dunes_dusk.png",
   "bg_dubai_festa.png",
@@ -2538,6 +2557,7 @@
   "backgrounds/bg_dubai_airport_day.png",
   "backgrounds/bg_dubai_alley_cafe_night.png",
   "backgrounds/bg_dubai_cafe_day.png",
+  "backgrounds/bg_dubai_camel_track_morning.png",
   "backgrounds/bg_dubai_dunes_day.png",
   "backgrounds/bg_dubai_dunes_dusk.png",
   "backgrounds/bg_dubai_festa.png",
@@ -2757,6 +2777,7 @@
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
   "sprites/characters/pakki/chr_pakki_surprise.png",
+  "sprites/characters/rashid/chr_rashid_normal.png",
   "sprites/characters/rei/chr_rei_normal.png",
   "sprites/characters/rei/chr_rei_sad.png",
   "sprites/characters/rei/chr_rei_serious.png",
@@ -2774,6 +2795,7 @@
   "sprites/characters/sai/chr_sai_smile.png",
   "sprites/characters/sai/chr_sai_surprise.png",
   "sprites/characters/sai/chr_sai_thinking.png",
+  "sprites/characters/saif/chr_saif_normal.png",
   "sprites/characters/salaryman/chr_salaryman_normal.png",
   "sprites/characters/salaryman/chr_salaryman_smile.png",
   "sprites/characters/samechan/chr_samechan_excited.png",

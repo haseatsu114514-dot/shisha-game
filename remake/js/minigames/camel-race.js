@@ -3,9 +3,11 @@
 // （結果を返すだけ。記録と報酬は chapters/ch4-camel-race.js が確定する）。
 //
 // 操作: Space＝声をかける（輪が重なる瞬間）／X＝補助の合図（ロボット騎手の腕）。スマホは下の2つの大きなボタン。
-// 画像素材はまだ無いので、砂漠・ラクダ・ロボット騎手・SUV・砂煙はすべて Canvas で描く（Codex の素材が届いたら差し替え）。
+// ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
+// 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { el } from "../core/util.js";
 import { SE } from "../core/audio.js";
+import { imgFileUrl } from "../core/img-file.js";
 import { RACE, CUE, PLAYER, createRace, stepRace, pressVoice, pressSignal, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 
@@ -27,6 +29,31 @@ const TUTORIAL = [
   { title: "合図 ── X／右のボタン", body: "ロボット騎手の腕を振る。スタミナを使って一気に加速し、残り250mの LAST SPURT でいちばん伸びる。息が切れていると空ぶかし。終盤に残しておこう。" },
 ];
 const sfx = name => { try { SE[name]?.(); } catch { /* 音は無くても遊べる */ } };
+
+// ---- 絵（Codex・2026-11-02 採用）。寸法は絵の画素で、asset_sources/ch4-camel-race/README.md で測った値。
+// ラクダは4コマ（512×384・右向き）。背の線は4コマとも1px以内で、ground の線に足元をそろえる。
+// 騎手（160×160）はコブの頂点（x=260）の45px後ろの背に、鞍の底を合わせて座らせる。
+// SUV（720×360）の車輪の上に、回転用の車輪（160×160・直径約140px）を 137/160 倍で重ねる。
+const ART_FILES = Object.freeze({
+  camel: [1, 2, 3, 4].map(i => `ui/camel_race/camel_${i}.webp`),
+  jockey: "ui/camel_race/jockey.webp", suv: "ui/camel_race/suv.webp", wheel: "ui/camel_race/wheel.webp",
+});
+const CAMEL_ART = Object.freeze({ scale: 0.3, centerX: 256, ground: 342, seatX: 215, seatY: 131, stride: 4.5 });
+const JOCKEY_ART = Object.freeze({ cx: 94, bottom: 133, scale: 0.9 });
+const SUV_ART = Object.freeze({ scale: 0.3, centerX: 360, ground: 331, wheels: [[167, 259], [581, 259]], wheel: 137 / 160, radius: 60 });
+// AI のラクダの毛色の違い（ctx.filter が無い端末では同じ色のまま。名札の色で見分ける）。
+const RIVAL_TINT = Object.freeze({ front: "sepia(0.25) saturate(1.25) brightness(0.95)", closer: "brightness(1.12) saturate(0.85)", steady: "brightness(0.82) saturate(1.05)" });
+let artTask = null;
+/** 絵をすべて読み終えたら { camel: [..4], jockey, suv, wheel }。1枚でも読めなければ null（Canvas の描画に戻す）。 */
+export function loadCamelArt() {
+  if (typeof Image === "undefined") return Promise.resolve(null);
+  const load = rel => { const image = new Image(); image.decoding = "async"; image.src = imgFileUrl(rel); return image.decode().then(() => image); };
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel)])
+    .then(([camel, jockey, suv, wheel]) => ({ camel, jockey, suv, wheel }))
+    .catch(() => null);
+  return artTask;
+}
+if (typeof Image !== "undefined" && typeof document !== "undefined") void loadCamelArt();
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const fmtTime = seconds => `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(2).padStart(5, "0")}`;
 const active = new WeakMap();
@@ -77,6 +104,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [header, stageNode, controls, live, sheet]);
   host.append(root);
 
+  let art = null;
+  void loadCamelArt().then(value => { art = value; if (!done) root.dataset.art = value ? "sprites" : "canvas"; });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
   let standingsStamp = 0, whip = 0, done = false, spurtShown = false, settleTimer = 0;
   const dust = [], confetti = [];
@@ -334,7 +363,34 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       if (m > 0) { ctx.fillStyle = "rgba(255,255,255,0.85)"; for (let i = 0; i < 3; i++) { const tx = sx + 90 + i * 70; ctx.beginPath(); ctx.moveTo(tx, 300); ctx.lineTo(tx + 60, 300); ctx.lineTo(tx + 30, 262); ctx.closePath(); ctx.fill(); } }
     }
   }
+  /** 絵のラクダ（4コマ）とロボット騎手。足元を ground の線に、騎手をコブの後ろにそろえる。 */
+  function drawCamelSprite(x, y, s, camel, t) {
+    const k = s * CAMEL_ART.scale;
+    const frame = camel.speed > 1 ? Math.floor((camel.distance / CAMEL_ART.stride) * 4) % 4 : 0;
+    const image = art.camel[(frame + 4) % 4];
+    const dx = x - CAMEL_ART.centerX * k, dy = y + 30 * s - CAMEL_ART.ground * k;
+    ctx.save();
+    ctx.fillStyle = "rgba(60,40,20,0.22)"; ctx.beginPath(); ctx.ellipse(x, y + 30 * s, 52 * s, 7 * s, 0, 0, Math.PI * 2); ctx.fill();
+    if (camel.id !== "player" && RIVAL_TINT[camel.id]) ctx.filter = RIVAL_TINT[camel.id];
+    ctx.drawImage(image, dx, dy, image.width * k, image.height * k);
+    ctx.filter = "none";
+    // 騎手: 鞍の底を背に合わせ、合図の間だけ前後に揺らす（自分のラクダ）。
+    const jk = k * JOCKEY_ART.scale;
+    const sx = dx + CAMEL_ART.seatX * k, sy = dy + CAMEL_ART.seatY * k;
+    const swing = camel.id === "player" ? Math.sin(whip * Math.PI * 3) * whip * 0.28 : Math.sin(t * 6 + x) * 0.04;
+    ctx.translate(sx, sy); ctx.rotate(-swing);
+    ctx.drawImage(art.jockey, -JOCKEY_ART.cx * jk, -JOCKEY_ART.bottom * jk, art.jockey.width * jk, art.jockey.height * jk);
+    ctx.restore();
+    // 名札（AI は毛色に加えて名札の色で見分ける）。
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    ctx.fillStyle = "rgba(20,14,10,0.62)"; ctx.fillRect(-34, 34, 68, 16);
+    ctx.fillStyle = camel.color; ctx.fillRect(-34, 34, 4, 16);
+    ctx.fillStyle = "#fff6e5"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText(camel.id === "player" ? `★ ${camel.name}` : camel.name, 2, 46);
+    ctx.restore();
+  }
   function drawCamel(x, y, s, camel, t) {
+    if (art) { drawCamelSprite(x, y, s, camel, t); return; }
     const gait = camel.speed > 1 ? (camel.distance / 3.4) * Math.PI * 2 : 0; // 歩幅に合わせた足の位相
     const bob = Math.sin(gait * 2) * 3 * s;
     ctx.save(); ctx.translate(x, y + bob); ctx.scale(s, s);
@@ -395,8 +451,25 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       ctx.fillText(`${rival.name} ${right ? "+" : "-"}${Math.abs(Math.round(rival.distance - race.player.distance))}m`, right ? W - 40 : 40, lane.y + 4);
     }
   }
+  /** 絵の SUV。車体の車輪の上に回転用の車輪を重ね、地面を流れる速さで回す。 */
+  function drawSuvSprite(x, y) {
+    const k = SUV_ART.scale;
+    const dx = x - SUV_ART.centerX * k, dy = y + 41 - SUV_ART.ground * k;
+    ctx.save();
+    ctx.fillStyle = "rgba(40,25,10,0.28)"; ctx.beginPath(); ctx.ellipse(x, y + 40, 94, 8, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.drawImage(art.suv, dx, dy, art.suv.width * k, art.suv.height * k);
+    const size = art.wheel.width * SUV_ART.wheel * k;
+    const angle = ((race?.player.distance || 0) * PX_PER_M) / (SUV_ART.radius * k);
+    for (const [wx, wy] of SUV_ART.wheels) {
+      ctx.save(); ctx.translate(dx + wx * k, dy + wy * k); ctx.rotate(reducedMotion ? 0 : angle);
+      ctx.drawImage(art.wheel, -size / 2, -size / 2, size, size);
+      ctx.restore();
+    }
+    ctx.restore();
+  }
   function drawSuv() {
     const { x, y } = suvPosition();
+    if (art) { drawSuvSprite(x, y); return; }
     const t = race?.t || 0;
     ctx.save(); ctx.translate(x, y);
     ctx.fillStyle = "rgba(40,25,10,0.28)"; ctx.beginPath(); ctx.ellipse(0, 30, 92, 9, 0, 0, Math.PI * 2); ctx.fill();

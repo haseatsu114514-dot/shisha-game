@@ -63,7 +63,9 @@
 
 ## 6. Codex への画像素材依頼（Claude は画像を生成しない）
 
-依頼文の一式は [asset_sources/ch4-camel-race/README.md](../../asset_sources/ch4-camel-race/README.md)。背景の英文プロンプトは `tools/bg_prompts.txt` の CR01。届くまでは Canvas 描写で動く。
+依頼文の一式と**採用の記録**は [asset_sources/ch4-camel-race/README.md](../../asset_sources/ch4-camel-race/README.md)。背景の英文プロンプトは `tools/bg_prompts.txt` の CR01。
+
+2026-11-02 採用: 背景 A、ラクダ A（4コマ）、騎手 B、SUV は修正版と回転用の車輪、サイフの通常 A、ラシードの通常 B。レース画面は絵で描き、読めない環境では Canvas の描画に戻る（画面の `data-art` が `sprites`／`canvas`）。AI のラクダは毛色を少し変え（`ctx.filter`）、名札の色でも見分ける。未制作: サイフ・ラシードの表情差分（今は normal で表示）、砂煙・ゴールゲート・テント（任意）。
 
 | ID | 素材 | 用途 | サイズ・透過 |
 |---|---|---|---|
@@ -76,5 +78,5 @@
 
 ## 7. 未完・次の一手
 
-- Codex の素材が届いたら `camel-race.js` の描写を差し替え、`CAMEL_TRACK_BG` を実背景にする。
+- サイフ（smile・surprise・excited・wink）とラシード（smile）の表情差分。通常の頭身が規格より小さいので、作り直すかはオーナー判断（`asset_sources/ch4-camel-race/README.md`）。
 - サンドボードは別チャットで並行制作中。共通の第4章ファイルへの変更は `ch4-map-model.js` 4行・`ch4.js` 17行に留めた。

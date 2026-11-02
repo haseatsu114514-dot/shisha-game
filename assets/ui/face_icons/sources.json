@@ -79,6 +79,10 @@
   "sprite": "assets/sprites/characters/pakki/chr_pakki_normal.png",
   "blob": "416a8717cc7ca68f30cfe615c24a42a3906b0800"
  },
+ "face_rashid.png": {
+  "sprite": "assets/sprites/characters/rashid/chr_rashid_normal.png",
+  "blob": "e67fc4dcf2ecc83675e4896909514099c96593dd"
+ },
  "face_rei.png": {
   "sprite": "assets/sprites/characters/rei/chr_rei_normal.png",
   "blob": "4433a3fa184741f7695f0d886c1e787fce1d6dc7"
@@ -90,6 +94,10 @@
  "face_sai.png": {
   "sprite": "assets/sprites/characters/sai/chr_sai_normal.png",
   "blob": "f69ba7b09ede20649635fcba8b73863e0a0869b5"
+ },
+ "face_saif.png": {
+  "sprite": "assets/sprites/characters/saif/chr_saif_normal.png",
+  "blob": "d06710c9aa128e8c10c54cd1633978ff688b3e50"
  },
  "face_salaryman.png": {
   "sprite": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",

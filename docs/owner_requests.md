@@ -74,7 +74,7 @@
 | CR03 | ✅ 本PR | ストーリー: Dr.fookah ドバイ店のサイフ（新キャラ）と知り合い、翌日に誘われ、その翌日の朝に叔父ラシード（調教師）の車から本番を見て練習レースのリモコンを借りる。ロボット騎手・車からの声と合図・進路は操縦しないという現実に沿う。結果に応じた会話3種＋再挑戦の会話。シェイクの伏線には触れない |
 | CR04 | ✅ 本PR | 本編接続: 第4章の自由行動の地図に行き先1件。会話の段階は時間を使わず、レースは昼の行動を使う（`slot`）。1日1回。自己ベスト保存。初回完走だけ育成（paidAction の経験値＋心得の盤の火種 `camel-finish`）。旧方式の能力加算なし。SAVE/LOAD・中断に対応。大会の進行に影響しない。日付は通算日で相対比較（14日化で runDaily に移せる形） |
 | CR05 | ✅ 本PR | 試遊ページ `remake/camel-race.html`。テスト: `camel_race_model.mjs`・`ch4_camel_race.mjs`・`browser/ch4_camel_race.mjs`。CI suites 登録 |
-| CR06 | 📥 Codex待ち | 画像素材: 砂漠のレース場背景・ロボット騎手付きラクダ・SUV・サイフ／ラシードの立ち絵・演出素材。依頼文は [asset_sources/ch4-camel-race/README.md](../asset_sources/ch4-camel-race/README.md)・`tools/bg_prompts.txt` CR01。届くまでは Canvas/CSS の仮描写 |
+| CR06 | ✅ 一部（表情差分は未） | 画像素材: Codex の候補から背景A・ラクダA・騎手B・SUV修正版と回転用の車輪・サイフ通常A・ラシード通常Bを採用し組み込み（オーナー「確認して選定して」）。記録は [asset_sources/ch4-camel-race/README.md](../asset_sources/ch4-camel-race/README.md)。サイフ・ラシードの表情差分と砂煙等の小物は未制作。2人の通常は規格より頭が小さい（8.62・9.75頭身）ので、表情の前に作り直すかはオーナー判断 |
 | CR07 | ✅ 本PR | 14日化（#2297）の日常ループの地図にラクダレースを接続。店先の会話は時間を使わず、レースは完走時に昼の枠を一度だけ使う（日常ループと二重に進めない）。旧5日のセーブは従来の地図のまま |
 
 
