@@ -127,7 +127,8 @@ assert.equal(saves.length, 1, "recovery never writes a new entry save");
 assert.equal(notices.length, 4, "every tournamentDay run wraps the entry wait in the loading notice");
 for (const notice of notices) assert.deepEqual(notice, { label: "大会の準備をしています…" });
 const victory = source.slice(source.indexOf("async function victory(cs)"), source.indexOf('  const after = DB.dialogues.ch1_tournament_after;'));
-assert(victory.includes("delete state.tournament.entryResources"), "victory clears the retry snapshot");
+assert.match(victory, /^async function victory\(cs\) \{\s*const owner = state;/, "victory captures the state owner in its own scope");
+assert(victory.includes("delete owner.tournament.entryResources"), "victory clears the captured owner's retry snapshot");
 
 // Run the actual Chapter 1 asynchronous owner boundaries. A LOAD during
 // preload or the transition must not attach/resume the old tournament.
