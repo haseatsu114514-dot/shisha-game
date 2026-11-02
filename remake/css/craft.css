@@ -364,8 +364,9 @@
 .bench[data-step="heat"] .bench-right { left: 348px; background: radial-gradient(ellipse at 48% 55%, #58251355, transparent 75%), linear-gradient(135deg, #190e18f2, #140c13f2); }
 .bench[data-step="heat"] .bench-title { font-family: "Craft Mincho", var(--font); font-size: 36px; }
 .heat { display: grid; grid-template-columns: minmax(0, 1fr) 240px; align-items: start; gap: 18px; min-width: 0; height: 100%; }
-.heat:not(.heat-compact) { padding-top: 40px; }
-.stove { position: relative; flex: none; margin: 66px auto 0; }
+.heat:not(.heat-compact) { padding-top: 16px; }
+.heat-stage { min-width: 0; }
+.stove { position: relative; flex: none; margin: 40px auto 0; }
 .stove-img { pointer-events: none; image-rendering: auto; }
 .coal { position: absolute; width: 100px; height: 90px; transform: translate(-50%, -100%); padding: 0; border: 0; background: none; cursor: pointer; touch-action: manipulation; transition: opacity .2s; }
 .coal-sprite { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%) rotate(var(--coal-angle, 0deg)); transform-origin: center bottom; pointer-events: none; }
@@ -378,6 +379,16 @@
 .coal.pikan .coal-corners, .coal:focus-visible .coal-corners { border-color: #fff3bf; filter: drop-shadow(0 0 7px #ffb45c); }
 .coal.pikan .c-core { opacity: 1; }
 .coal.pikan .c-hot { opacity: 1; filter: brightness(2.2) saturate(.75) drop-shadow(0 0 10px #ffe1a0); }
+.coal.pikan .coal-corners { animation: heat-ready .35s ease-in-out infinite alternate; }
+@keyframes heat-ready { to { opacity: .35; filter: drop-shadow(0 0 12px #ff6b36); } }
+.heat-actions { display: flex; justify-content: center; gap: 6px; margin: 4px auto 0; max-width: 600px; }
+.heat-pick { flex: 1; min-width: 0; min-height: 50px; padding: 5px 3px; border: 2px solid #b98d5d; border-radius: 8px; background: #281923; color: #ffe2b4; cursor: pointer; font: inherit; }
+.heat-pick b, .heat-pick small { display: block; line-height: 1.25; }
+.heat-pick b { font-size: 14px; }
+.heat-pick small { font-size: 12px; font-variant-numeric: tabular-nums; }
+.heat-pick[data-phase="just"] { border-color: #ffe2a0; background: #8b321c; color: #fff7d9; box-shadow: 0 0 12px #ff7935; animation: heat-ready .35s ease-in-out infinite alternate; }
+.heat-pick:focus-visible { outline: 3px solid #fff1bf; outline-offset: 2px; }
+.heat-pick:disabled { opacity: .55; cursor: default; }
 .coal.soon .coal-corners { border-color: #e6a160; }
 .heat.insight-visible .coal.soon .coal-corners { border-color: var(--stat-insight); box-shadow: 0 0 12px var(--stat-insight); animation: insight-soon .5s ease-in-out infinite alternate; }
 .coal .effect-insight { display: none; position: absolute; right: -15px; top: -12px; }
@@ -406,7 +417,9 @@
 .heat-bonus { color: #e5cd95; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 .heat-picks { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .heat-compact { grid-template-columns: minmax(0, 1fr) 200px; gap: 12px; height: 355px; }
-.heat-compact .stove { margin-top: 56px; }
+.heat-compact .stove { margin-top: 35px; }
+.heat-compact .heat-pick { min-height: 42px; }
+.heat-compact .heat-pick b { font-size: 12px; }
 .heat-compact .coal { width: 84px; height: 72px; }
 .heat-compact .heat-info { padding: 10px 10px 6px; }
 .heat-compact .heat-carrier-head h2 { font-size: 24px; }
@@ -415,7 +428,7 @@
 .heat-compact .heat-feedback { height: 44px; flex-direction: column; gap: 2px; }
 .heat-compact .heat-feedback .stamp { font-size: 14px; }
 .heat-compact .heat-error { font-size: 14px; line-height: 1.2; padding-left: 0; border-left: 0; }
-@media (prefers-reduced-motion: reduce) { .coal, .coal-stored { transition: none; animation: none; } .coal.pikan .c-core { animation: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .coal, .coal-stored, .coal.pikan .coal-corners, .heat-pick { transition: none; animation: none; } .coal.pikan .c-core { opacity: 1; } }
 
 /* キッチンタイマー：液晶と四つのボタンだけをコードで重ねる。 */
 .steam-timer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; height: 100%; padding-bottom: 24px; }
@@ -1109,6 +1122,12 @@
 .needle-light { fill: none; stroke: #fff8cf; stroke-width: 1.2; }
 .needle-cap { fill: #fff0b6; stroke: #e3b755; filter: drop-shadow(0 0 5px #ffd270); }
 .pull-dial-labels { position: absolute; inset: 0; pointer-events: none; }
+.pull-current-zone { position: absolute; z-index: 2; top: 0; left: 50%; transform: translateX(-50%); min-width: 205px; padding: 3px 12px; border: 2px solid #ffe5a0; border-radius: 9px; background: #241722ee; color: #ffe9bb; text-align: center; pointer-events: none; }
+.pull-current-zone small, .pull-current-zone b { display: block; line-height: 1.25; }
+.pull-current-zone small { font-size: 12px; }
+.pull-current-zone b { font-size: 21px; white-space: nowrap; }
+.pull-current-zone[data-zone="down"] { border-color: #6fc4ff; color: #bde5ff; }
+.pull-current-zone[data-zone="up"] { border-color: #ff995f; color: #ffd2ae; }
 .pull-zone-label { position: absolute; top: 106px; display: flex; flex-direction: column; font-size: 16px; line-height: 1.5; color: #dda577; }
 .pull-zone-label > b { font-size: 24px; letter-spacing: .06em; line-height: 1.4; padding-bottom: 5px; margin-bottom: 6px; border-bottom: 1px solid currentColor; text-shadow: 0 0 10px #a342382e; }
 .pull-zone-label.l-down { left: 24px; color: #a6d8ff; }
