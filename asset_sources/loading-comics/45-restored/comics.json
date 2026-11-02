@@ -1,0 +1,101 @@
+{
+  "episode": 45,
+  "title": "一行の秘訣",
+  "cast": "はじめ・スミさん",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/loading-comics/45-sumi-recipe-scroll/45-sumi-recipe-scroll.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [
+    {
+      "file": "45-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1625609,
+      "sha256": "dd7a816d52912c1354957e6aa06a75394cdcc07a9d2992679e855575d6340a1f"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "左: スミさんが指一本を立て「コツは一行だ。」。はじめが小さなメモ帳と鉛筆を取り「メモします。」。右: はじめが床まで長々と転がる巻物にメモをして困惑「巻物になった。」。スミさんが呆れて見守る。巻物は文字を描かず小さな線だけ。",
+      "dialogue_original": [
+        "コツは一行だ。",
+        "メモします。",
+        "巻物になった。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/loading-comics/45-sumi-recipe-scroll/45-sumi-recipe-scroll.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "45-restored.png",
+      "region": {
+        "x": 40,
+        "y": 242,
+        "width": 712,
+        "height": 536,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "45-restored.png",
+      "region": {
+        "x": 784,
+        "y": 242,
+        "width": 712,
+        "height": 543,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-45-1.webp",
+      "width": 804,
+      "height": 536,
+      "sha256": "2fda0c9ab1aa1db72cb78a67d8f1017e192023f7e581d18e1dc0a76c4b612f1a"
+    },
+    {
+      "file": "panels/restored-45-2.webp",
+      "width": 814,
+      "height": 543,
+      "sha256": "38a8ea8ac179d5d06e46f2496cdd32f96c18912807b23f33021cd5cf37a91f89"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #F0E4D0  枠の段 1: 2コマ@y=272
+  コマ1: 721x512 @(36,272) 比率 1.408 → ok
+  コマ2: 719x510 @(781,272) 比率 1.410 → ok
+コマ1: 721x512 (1.408) → 左右に各3.1%の紙帯 → 出力 768x512  asset_sources/loading-comics/85-naru-cake-compass/panels/naru-cake-compass-1.webp (62 KiB)
+コマ2: 719x510 (1.410) → 左右に各3.0%の紙帯 → 出力 765x510  asset_sources/loading-comics/85-naru-cake-compass/panels/naru-cake-compass-2.webp (69 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "naru-cake-compass",
+  "title": "帰り道の寄り道",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/85-naru-cake-compass/panels/naru-cake-compass-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/85-naru-cake-compass/panels/naru-cake-compass-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/85-naru-cake-compass/85-naru-cake-compass.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 721,
+        "height": 512,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/85-naru-cake-compass/85-naru-cake-compass.png",
+      "region": {
+        "x": 781,
+        "y": 272,
+        "width": 719,
+        "height": 510,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "naru-cake-compass-1.webp",
+      "width": 768,
+      "height": 512,
+      "sha256": "bf7cc371639fa0538ceb592d1070ab1ad2a52acea5a16f825243483fefb82741"
+    },
+    {
+      "file": "naru-cake-compass-2.webp",
+      "width": 765,
+      "height": 510,
+      "sha256": "f5c401bae30cd8fed89fa6faa6f3510ca4dc46b27204825b5fa18a5a8ca908b1"
+    }
+  ]
+}

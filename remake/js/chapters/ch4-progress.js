@@ -20,31 +20,31 @@ export const CH4_PLACE_BG = Object.freeze({
   mosque: "bg_dubai_map_dusk", // 内省の現行代替背景を維持（#1788 の画像選別は別作業）
   map: "bg_dubai_map",            // #1177 選定マップ（ch4_dubai_10・真昼）
   mapDusk: "bg_dubai_map_dusk",   // #1177 候補4（ch4_dubai_04・夕景）。前夜日（DAY4）の自由行動マップに使う
-  souq: "bg_street_day",          // 仮置き bg（#1177 でドバイ素材に差し替え）
+  souq: "bg_dubai_souq_day",
   festa: "bg_dubai_festa",
-  center_cafe: "bg_cafe_day",     // 仮置き bg（#1177 でドバイ素材に差し替え）
+  center_cafe: "bg_dubai_cafe_day",
   alley_cafe: "bg_dubai_alley_cafe_night",
-  inn: "bg_ch3_hotel_night",      // 仮置き bg（#1177 でドバイ素材に差し替え）
+  inn: "bg_dubai_inn_day",
   venue: "bg_dubai_grand_smoke_stage",
 });
 
 export const CH4_SCENE_BG = Object.freeze({
   ch4_sumi_training: "bg_tonari_inside",          // 仮置き bg（#1177 でドバイ素材に差し替え）
   ch4_strategy: "bg_tonari_inside",               // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_opening: "bg_street_day",                   // 空港。仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_arrival_inn: "bg_ch3_hotel_night",          // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_dubai_souq: "bg_street_day",                // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_dubai_souq_revisit: "bg_street_day",        // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_stranger_first: "bg_street_day",            // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_stranger_first_forced_in: "bg_street_day",  // 仮置き bg（#1177 でドバイ素材に差し替え）
+  ch4_opening: "bg_dubai_airport_day",
+  ch4_arrival_inn: "bg_dubai_inn_day",
+  ch4_dubai_souq: "bg_dubai_souq_day",
+  ch4_dubai_souq_revisit: "bg_dubai_souq_day",
+  ch4_stranger_first: "bg_dubai_souq_day",
+  ch4_stranger_first_forced_in: "bg_dubai_souq_day",
   ch4_festa: "bg_dubai_festa",
   ch4_festa_revisit: "bg_dubai_festa",
-  ch4_dubai_cafe: "bg_cafe_day",                  // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_dubai_cafe_revisit: "bg_cafe_day",          // 仮置き bg（#1177 でドバイ素材に差し替え）
+  ch4_dubai_cafe: "bg_dubai_cafe_day",
+  ch4_dubai_cafe_revisit: "bg_dubai_cafe_day",
   ch4_stranger_second: "bg_dubai_alley_cafe_night",
   ch4_alley_cafe_quiet: "bg_dubai_alley_cafe_night",
-  ch4_inn_tool_care: "bg_ch3_hotel_night",        // 仮置き bg（#1177 でドバイ素材に差し替え）
-  ch4_wang_reception_forced_in: "bg_ch3_hotel_night", // 仮置き bg（#1177 でドバイ素材に差し替え）
+  ch4_inn_tool_care: "bg_dubai_inn_night",
+  ch4_wang_reception_forced_in: "bg_dubai_inn_night",
   ch4_wang_reception: "bg_dubai_grand_smoke_stage",
   ch4_stranger_third: "bg_dubai_alley_cafe_night",
   ch4_tournament_start: "bg_dubai_grand_smoke_stage",

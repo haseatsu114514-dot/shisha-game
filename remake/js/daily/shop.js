@@ -123,7 +123,8 @@ const rinUnavailable = () => rinVisitReason(state);
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
   if (opts.branch === "tokyo") {
-    if (state.chapter !== 3) return null;
+    // 第3章の東京と、第5章に東京へ来た時（#2033）。品ぞろえは第3章の東京店と同じ。
+    if (![3, 5].includes(state.chapter)) return null;
     return openCounter({ flavorIds: TOKYO_FLAVORS, stockChapter: 3, shopName: TOKYO_SHOP_NAME });
   }
   if (opts.branch === "widehanga") {

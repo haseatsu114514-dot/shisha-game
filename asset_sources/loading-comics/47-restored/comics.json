@@ -1,0 +1,101 @@
+{
+  "episode": 47,
+  "title": "座り心地派",
+  "cast": "はじめ・スミさん",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/loading-comics/47-sumi-cushion-tower/47-sumi-cushion-tower.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [
+    {
+      "file": "47-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1750432,
+      "sha256": "3bb204f6a2b38686432d163e91a2b47ecf4c0f0c927a34ee62d82a7dda713aa7"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "左: はじめが椅子にクッションを二枚載せて「楽な席にします。」。スミさんが「ほどほどにな。」。右: はじめがふわふわのクッションを五枚ほど積んだ低い山に座り頭が天井すれすれで「天井が近い。」。スミさんは右であきれて見上げる。安全な柔らかいデフォルメ誇張、脚立なし。",
+      "dialogue_original": [
+        "楽な席にします。",
+        "ほどほどにな。",
+        "天井が近い。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/loading-comics/47-sumi-cushion-tower/47-sumi-cushion-tower.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "47-restored.png",
+      "region": {
+        "x": 40,
+        "y": 249,
+        "width": 714,
+        "height": 476,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "47-restored.png",
+      "region": {
+        "x": 782,
+        "y": 248,
+        "width": 714,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-47-1.webp",
+      "width": 714,
+      "height": 476,
+      "sha256": "b9d0692d983632f7c941c47090b9f17870af78f7e308e9f8e4f3ef4a02be1b88"
+    },
+    {
+      "file": "panels/restored-47-2.webp",
+      "width": 714,
+      "height": 477,
+      "sha256": "80c1b18b444afc1023155f1979f4b7e647631c01a1f8b17b9b8f222188be4dfb"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

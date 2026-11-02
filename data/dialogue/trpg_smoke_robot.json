@@ -1,0 +1,3092 @@
+{
+  "id": "smoke-robot",
+  "version": 1,
+  "title": "星の駅の煙職人ロボ",
+  "subtitle": "軌道の休憩所と、寂しいビープ音",
+  "author": "宙野こまち",
+  "collection": "船灯文庫・小さな卓の冒険 07",
+  "duration": "約10分",
+  "premise": "地球を回る休憩所「星の駅ポラリス」。旅人に一台を作る丸いロボ・ピコが、このところ失敗続きで寂しく鳴いている。夜番の三人は、そのわけを探す。",
+  "fiction": {
+    "town": "地球周回軌道",
+    "shop": "星の駅ポラリス",
+    "traveler": "管制AIナビ"
+  },
+  "flow": {
+    "prepare": [
+      "part",
+      "flavor"
+    ],
+    "serve": [
+      "gift"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "part": 1,
+    "flavor": 1,
+    "gift": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "new-crew",
+  "rules": {
+    "exploreLimit": 4,
+    "pressureMax": 6,
+    "initialPressure": 0,
+    "inspectionPressure": 1,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 2
+    },
+    "detourThreshold": 5,
+    "hypothesisBonus": 1
+  },
+  "cast": [
+    {
+      "id": "samechan",
+      "part": "GM",
+      "role": "案内と、管制AIナビ",
+      "color": "#73b8df"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／新人の夜番",
+      "color": "#89bbc4",
+      "ability": "土壇場のひらめき",
+      "abilityType": "reroll",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "sheet": {
+        "name": "ソラ",
+        "title": "新人の夜番",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "夜番になって三日目。困っている相手は放っておけない"
+      }
+    },
+    {
+      "id": "adam",
+      "part": "PLAYER",
+      "role": "{pc:adam}／香りの航海士",
+      "color": "#c9463a",
+      "ability": "舞台の支度",
+      "abilityType": "prepare",
+      "abilityText": "ピコと一台を支度するとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "ノヴァ",
+        "title": "香りの航海士",
+        "stats": {
+          "eye": 2,
+          "hand": 5,
+          "talk": 3,
+          "nerve": 1
+        },
+        "trait": "香りの配合なら駅一番。名言の前に、少し間を取る",
+        "likes": "林檎の香り。宇宙の始まりの味"
+      }
+    },
+    {
+      "id": "tsumugi",
+      "part": "PLAYER",
+      "role": "{pc:tsumugi}／展望デッキの記録係",
+      "color": "#b8a3cc",
+      "ability": "見せ場の構図",
+      "abilityType": "serve",
+      "abilityText": "ピコの一台を届けるとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "ルナ",
+        "title": "展望デッキの記録係",
+        "stats": {
+          "eye": 5,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 3
+        },
+        "trait": "よく見て、よく描く。宇宙でも口数は少ない",
+        "likes": "ラベンダー色の星雲と、描きかけのスケッチ"
+      }
+    }
+  ],
+  "spots": [
+    {
+      "id": "bench",
+      "label": "ピコの作業台",
+      "short": "作業台",
+      "x": 50,
+      "y": 64
+    },
+    {
+      "id": "window",
+      "label": "展望デッキの窓",
+      "short": "窓",
+      "x": 76,
+      "y": 22
+    },
+    {
+      "id": "storage",
+      "label": "倉庫の扉",
+      "short": "倉庫",
+      "x": 89,
+      "y": 66
+    },
+    {
+      "id": "comms",
+      "label": "通信室の記録",
+      "short": "通信室",
+      "x": 14,
+      "y": 24
+    },
+    {
+      "id": "memo",
+      "label": "整備士のメモ",
+      "short": "メモ",
+      "x": 20,
+      "y": 72
+    },
+    {
+      "id": "pile",
+      "label": "失敗した一台の山",
+      "short": "失敗の山",
+      "x": 44,
+      "y": 34
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "maker",
+      "label": "作り手の技師に、一台を届けたい",
+      "description": "技師が好きだった香りを、言葉と一緒に送れそう。",
+      "discussion": "trpg_smoke_robot_discuss_maker"
+    },
+    {
+      "id": "earth",
+      "label": "地球の見える窓辺で、一台を出したい",
+      "description": "旅人が青い窓を眺めて過ごす時間を、作れそう。",
+      "discussion": "trpg_smoke_robot_discuss_earth"
+    },
+    {
+      "id": "friend",
+      "label": "眠る仲間と、一台を作りたい",
+      "description": "倉庫の旧型ロボを起こせば、二台で作れそう。",
+      "discussion": "trpg_smoke_robot_discuss_friend"
+    }
+  ],
+  "options": {
+    "part": [
+      {
+        "id": "wheel",
+        "label": "新しい車輪",
+        "description": "坂も登れる、太くて丈夫な車輪。",
+        "response": "trpg_smoke_robot_choice_part_wheel"
+      },
+      {
+        "id": "chip",
+        "label": "記憶チップ",
+        "description": "傷ついた記憶を補う、新品のチップ。",
+        "response": "trpg_smoke_robot_choice_part_chip"
+      },
+      {
+        "id": "light",
+        "label": "小さなライト",
+        "description": "暗い場所を照らす、頭に載る灯り。",
+        "response": "trpg_smoke_robot_choice_part_light"
+      }
+    ],
+    "flavor": [
+      {
+        "id": "citrus",
+        "label": "技師の好きな柑橘",
+        "description": "作り手が毎晩頼んでいた、明るい香り。",
+        "response": "trpg_smoke_robot_choice_flavor_citrus"
+      },
+      {
+        "id": "forest",
+        "label": "地球の森の香り",
+        "description": "宇宙で恋しくなる、雨上がりの木々の香り。",
+        "response": "trpg_smoke_robot_choice_flavor_forest"
+      },
+      {
+        "id": "tea",
+        "label": "倉庫で見つけた古い茶葉",
+        "description": "昔の合作に使われた、やさしい香り。",
+        "response": "trpg_smoke_robot_choice_flavor_tea"
+      }
+    ],
+    "gift": [
+      {
+        "id": "voice",
+        "label": "技師の声の録音",
+        "description": "『お前の一台が一番だ』と残された声。",
+        "response": "trpg_smoke_robot_choice_gift_voice"
+      },
+      {
+        "id": "photo",
+        "label": "地球の写真",
+        "description": "昔の旅人がピコと撮った、青い窓辺の一枚。",
+        "response": "trpg_smoke_robot_choice_gift_photo"
+      },
+      {
+        "id": "key",
+        "label": "仲間のロボの起動キー",
+        "description": "倉庫で眠る旧型ロボを、起こす鍵。",
+        "response": "trpg_smoke_robot_choice_gift_key"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "bulkhead",
+        "label": "隔壁を閉める",
+        "description": "揺れる区画を区切って、通路を守る。",
+        "response": "trpg_smoke_robot_choice_tactic_bulkhead"
+      },
+      {
+        "id": "carry",
+        "label": "ピコを抱えて避難する",
+        "description": "まずはピコを、揺れの少ない中央区画へ。",
+        "response": "trpg_smoke_robot_choice_tactic_carry"
+      },
+      {
+        "id": "course",
+        "label": "管制AIと航路を計算する",
+        "description": "流星の来る向きを読み、駅の向きを変える。",
+        "response": "trpg_smoke_robot_choice_tactic_course"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "maker",
+      "arrival": "ピコは失敗するたび、柑橘の小瓶を抱えて通信室の方を見ます",
+      "likes": {
+        "part": [
+          "chip"
+        ],
+        "flavor": [
+          "citrus"
+        ],
+        "gift": [
+          "voice"
+        ]
+      },
+      "ending": "engineer",
+      "evidence": {
+        "bench": {
+          "title": "柑橘の行だけ空欄",
+          "text": "作業台の配合表は、柑橘の行だけ数字が消えている。記憶チップの傷で、覚えた分量を思い出せないらしい。",
+          "lines": "trpg_smoke_robot_clue_maker_bench"
+        },
+        "window": {
+          "title": "窓の景色は見ていない",
+          "text": "ピコは窓の外の地球には興味を示さない。ガラスに映る通信室の灯りを、じっと見ている。",
+          "lines": "trpg_smoke_robot_clue_maker_window"
+        },
+        "storage": {
+          "title": "技師の工具箱",
+          "text": "倉庫に、技師が置いていった工具箱。『ピコの記憶チップ予備』と書いた袋は空で、予備は売店の棚に移したとある。",
+          "lines": "trpg_smoke_robot_clue_maker_storage"
+        },
+        "comms": {
+          "title": "地球の技師から",
+          "text": "通信室に、引退して地球へ帰った技師からの短い便り。『あの柑橘の一台が恋しい』とある。",
+          "lines": "trpg_smoke_robot_clue_maker_comms"
+        },
+        "memo": {
+          "title": "声で落ち着く子",
+          "text": "整備士のメモ。『ピコは技師の声を聞くと、手つきが落ち着く。声の録音は管制室にある』。",
+          "lines": "trpg_smoke_robot_clue_maker_memo"
+        },
+        "pile": {
+          "title": "どれも柑橘を目指した",
+          "text": "失敗作はどれも柑橘の香りを目指している。分量が毎回少しずつ違い、同じ香りに届かない。",
+          "lines": "trpg_smoke_robot_clue_maker_pile"
+        }
+      },
+      "answers": {
+        "since": {
+          "title": "技師が引退した日",
+          "text": "三か月前、ピコを作った技師が引退して地球へ帰った日から。",
+          "lines": "trpg_smoke_robot_ask_maker_since"
+        },
+        "route": {
+          "title": "通信室の前",
+          "text": "毎晩、通信室の前で止まり、地球行き郵便の時刻表を見ている。",
+          "lines": "trpg_smoke_robot_ask_maker_route"
+        },
+        "origin": {
+          "title": "柑橘好きの技師",
+          "text": "作ったのは駅の技師。毎晩、柑橘の一台を頼む人だった。",
+          "lines": "trpg_smoke_robot_ask_maker_origin"
+        },
+        "beep": {
+          "title": "『とどけたい』",
+          "text": "悲しいビープ音を訳すと『とどけたい』に近い。",
+          "lines": "trpg_smoke_robot_ask_maker_beep"
+        }
+      }
+    },
+    {
+      "id": "earth",
+      "arrival": "ピコは失敗するたび、展望デッキへ続く坂の下まで行って戻ります",
+      "likes": {
+        "part": [
+          "wheel"
+        ],
+        "flavor": [
+          "forest"
+        ],
+        "gift": [
+          "photo"
+        ]
+      },
+      "ending": "blue-window",
+      "evidence": {
+        "bench": {
+          "title": "欠けた車輪",
+          "text": "作業台の下に、欠けた車輪のかけら。ピコは作業台から先へ、ほとんど動けていない。",
+          "lines": "trpg_smoke_robot_clue_earth_bench"
+        },
+        "window": {
+          "title": "地球が昇る窓",
+          "text": "夜明け前、展望デッキの窓に青い地球が昇る。ピコの給仕の記録は、すべてこの窓辺だった。",
+          "lines": "trpg_smoke_robot_clue_earth_window"
+        },
+        "storage": {
+          "title": "森の香りの箱",
+          "text": "倉庫に『地球の森』と書いた香りの箱。窓辺の一台に使っていた印がついている。",
+          "lines": "trpg_smoke_robot_clue_earth_storage"
+        },
+        "comms": {
+          "title": "旅人の感想",
+          "text": "通信室に旅人の感想が残っている。『窓辺で地球を眺めながらの一台が、忘れられない』。",
+          "lines": "trpg_smoke_robot_clue_earth_comms"
+        },
+        "memo": {
+          "title": "坂用の車輪",
+          "text": "整備士のメモ。『坂を登れる車輪の予備あり。写真立ての裏に、ピコの昔の一枚』。",
+          "lines": "trpg_smoke_robot_clue_earth_memo"
+        },
+        "pile": {
+          "title": "窓のない場所で出された",
+          "text": "失敗作の香りそのものは悪くない。どれも、窓のない作業台の前で出されたものだ。",
+          "lines": "trpg_smoke_robot_clue_earth_pile"
+        }
+      },
+      "answers": {
+        "since": {
+          "title": "車輪が欠けた日",
+          "text": "展望デッキへの坂で、ピコの車輪が欠けた日から。",
+          "lines": "trpg_smoke_robot_ask_earth_since"
+        },
+        "route": {
+          "title": "坂の下で引き返す",
+          "text": "毎晩、展望デッキへ続く坂の下まで行き、そこで引き返している。",
+          "lines": "trpg_smoke_robot_ask_earth_route"
+        },
+        "origin": {
+          "title": "窓辺の給仕ロボ",
+          "text": "展望デッキの窓辺で、旅人に一台を出すために作られた。",
+          "lines": "trpg_smoke_robot_ask_earth_origin"
+        },
+        "beep": {
+          "title": "『みせたい』",
+          "text": "悲しいビープ音を訳すと『みせたい』に近い。",
+          "lines": "trpg_smoke_robot_ask_earth_beep"
+        }
+      }
+    },
+    {
+      "id": "friend",
+      "arrival": "ピコは失敗するたび、倉庫の扉の前で二回だけ点滅します",
+      "likes": {
+        "part": [
+          "light"
+        ],
+        "flavor": [
+          "tea"
+        ],
+        "gift": [
+          "key"
+        ]
+      },
+      "ending": "two-beeps",
+      "evidence": {
+        "bench": {
+          "title": "二つ並んだ台座",
+          "text": "作業台に、ロボが乗る台座が二つ並んでいる。片方には埃が丸く積もっている。",
+          "lines": "trpg_smoke_robot_clue_friend_bench"
+        },
+        "window": {
+          "title": "ガラスに映る扉",
+          "text": "ピコは窓の外の景色には反応しない。ガラスに映る倉庫の扉を、何度も振り返る。",
+          "lines": "trpg_smoke_robot_clue_friend_window"
+        },
+        "storage": {
+          "title": "暗がりで眠るロボ",
+          "text": "倉庫は真っ暗。奥に、ピコとそっくりな丸いロボが眠っている。灯りがないと、起こす場所も見えない。",
+          "lines": "trpg_smoke_robot_clue_friend_storage"
+        },
+        "comms": {
+          "title": "合作の一台",
+          "text": "通信室の記録。『ピコとポコの合作の一台、古い茶葉の香りが好評』とある。",
+          "lines": "trpg_smoke_robot_clue_friend_comms"
+        },
+        "memo": {
+          "title": "起動キーの在りか",
+          "text": "整備士のメモ。『ポコの起動キーは管制室の引き出し。起こすときは、明るくしてから』。",
+          "lines": "trpg_smoke_robot_clue_friend_memo"
+        },
+        "pile": {
+          "title": "半分だけ整った一台",
+          "text": "失敗作は、どれも半分だけ整っている。残り半分の香りは、相棒が受け持っていたらしい。",
+          "lines": "trpg_smoke_robot_clue_friend_pile"
+        }
+      },
+      "answers": {
+        "since": {
+          "title": "相棒が眠った日",
+          "text": "同型の旧型ロボ・ポコが、倉庫で眠りについた日から。",
+          "lines": "trpg_smoke_robot_ask_friend_since"
+        },
+        "route": {
+          "title": "倉庫の扉の前",
+          "text": "毎晩、倉庫の扉の前で止まり、小さく点滅している。",
+          "lines": "trpg_smoke_robot_ask_friend_route"
+        },
+        "origin": {
+          "title": "二台一組の職人",
+          "text": "ピコとポコは、二台一組で一台を作るように作られた。",
+          "lines": "trpg_smoke_robot_ask_friend_origin"
+        },
+        "beep": {
+          "title": "『いっしょに』",
+          "text": "悲しいビープ音を訳すと『いっしょに』に近い。",
+          "lines": "trpg_smoke_robot_ask_friend_beep"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "engineer": {
+      "title": "技師への一台",
+      "line": "柑橘の一台が仕上がり、ピコは同じ香りを小瓶に分けて地球へ送った。数日後、技師から返事が届いた。",
+      "dialogue": "trpg_smoke_robot_ending_engineer"
+    },
+    "blue-window": {
+      "title": "青い窓の一台",
+      "line": "夜明け前、展望デッキの窓に青い地球が昇る。ピコの一台を手に、旅人は長いこと窓辺にいた。",
+      "dialogue": "trpg_smoke_robot_ending_blue-window"
+    },
+    "two-beeps": {
+      "title": "ふたつのビープ音",
+      "line": "起動キーが回り、倉庫の旧型ロボが目を覚ます。ピポ、ポポ。ふたつのビープ音が、夜明けの通路に響いた。",
+      "dialogue": "trpg_smoke_robot_ending_two-beeps"
+    },
+    "new-crew": {
+      "title": "夜番がひとり増えた",
+      "line": "狙った一台にはならなかった。それでもピコは夜番の名簿に名前を載せ、三人と朝まで駅を回った。",
+      "dialogue": "trpg_smoke_robot_ending_new-crew"
+    }
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_smoke_robot_intro",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "今夜は宇宙の話じゃ。サメは出ぬ……たぶん、出ぬ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "わしがGM、お主たちは星の駅の夜番じゃ",
+          "castIntro": true,
+          "smallTableText": "わしがGM、お主が夜番じゃ。空いた役はわしが兼ねるぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "『たぶん』が気になるけど、宇宙は楽しみだな"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "宇宙か。林檎に始まったこの世界の、果てを見に行こう"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……星、たくさん描けそうです"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "地球を回る休憩所「星の駅ポラリス」。今は夜間モードの灯りじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は、旅人の眠る客室の通路を見回っている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:adam}は、売店で香りの瓶を数え直している"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:tsumugi}は、展望デッキの窓の曇りを拭いている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "通路の奥から、ピポ……と寂しいビープ音がした"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "丸いロボのピコが、失敗した一台の前でうなだれている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "ピコ、また駄目だったのか？ 前は旅人に大人気だったのに"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "案ずるな。宇宙にもサメの王はいる。余である"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "コロちゃん、宇宙服なしで平気なの？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "王は真空でも泳げるのじゃ。……この卓だけの設定じゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_listen",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "壁のスピーカーから、管制AIナビの声が降ってくる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "夜番の皆さん。ピコの一台が、七夜続けて失敗しています"
+        },
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "夜間モードの酸素メーターは、扉を開けるたびに一つ進みます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "六つで朝の換気が始まります。危険はなく、全館が起きるだけです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "surprise",
+          "text": "それは困る……！ 旅人は朝まで寝かせておきたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_listen_success",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコのビープ音には、決まった調子があると分かった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ピポ、ピポポ……。何か伝えようとしてるんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_listen_mixed",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコが驚いて、通路を一周してしまう。酸素が一つ進む"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "急がば回れ、だな。ピコも、俺たちも"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_listen_trouble",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコが驚いて、扉を次々に開けながら逃げていく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "待ってピコ、扉は閉めていって！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "酸素は二つ進む。じゃが、調査はできるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_prepare_success",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "パーツがかちりとはまり、ピコの目が明るく灯った"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "見ろ。これが、再起動という名の夜明けだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_prepare_mixed",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ネジが一本余った。ピコが不安そうにピポと鳴く"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "余ったネジは、次の名作の種だ……たぶんな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "あとで、ちゃんと戻しておこうな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_prepare_trouble",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "ピコが急に回り出し、香りの小瓶が通路へ転がっていく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "止まってピコ、目が回ってるって！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "予備の部品で直せる。作戦は、まだ使えるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_serve_success",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコの一台から、まっすぐな香りが立ちのぼった"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……ピコ、嬉しそうな音がします"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "ピポポ、と明るいビープ音が通路に響く"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_serve_mixed",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコが一度だけ迷い、くるりと回ってから続けた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "迷ってもいいんだ。ちゃんと戻ってきたな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "一台は、無事に仕上がったのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_serve_trouble",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最後の一瞬、ピコの手元が揺れる。三人がそっと手を添えた"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一人で決める必要はない。幕は、皆で上げるものだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "一台は仕上がったぞ。助け合いも、物語のうちじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_consult_adam",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "全部は調べられないな。名探偵は、狙いを絞るものだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "作業台と通信室。足りないものと、届け先が見えそうだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "相談とメモは、酸素を使わぬぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_consult_tsumugi",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……ピコが、どこを見ているか。それが知りたいです"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……窓と、倉庫の扉。視線の先を、確かめられそうです"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "鋭いのう。相談は何度でも無料じゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_preparation",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "使えるのは、この駅にあるものだけじゃぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "見立ては決まった。パーツと香りを選ぼう"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "パーツは舞台、香りは台本だ。どちらも外せん"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……ピコの設計図、描いておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_serving",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "夜明け前。ピコの一台が、いよいよ仕上がろうとしている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……最後のひと押し。ちゃんと、見ていてあげたいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "ピコ、一緒にいこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_epilogue",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "おしまいじゃ。朝のチャイムは、旅人を優しく起こしたそうな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ピコの一台、俺も一度もらってみたいな"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "宇宙で味わう林檎の一台……。原点に帰る旅だな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……ピコの絵、サメちゃんにあげてもいいですか？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "よいのか！？ 隅っこに、宇宙ザメも一匹頼むのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "結局、サメは出るんだな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "当然である。王の出番がない卓など、ない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_debrief_smooth",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "text": "酸素もたっぷり残ったのう。手際のよい夜番じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ピコの音、最後は明るかったな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_debrief_with_detour",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "text": "扉は開けすぎたが、誰も困っておらん。それが一番じゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "evil",
+          "text": "……朝のチャイム、ちょっと聞いてみたかったです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_maker_bench",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "配合表の柑橘の行だけ、数字が消えておる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "覚えてた分量を、忘れちゃったのか"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "記憶は欠けても、香りの魂は残る。チップを替えればな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_maker_window",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコは地球ではなく、ガラスに映る通信室の灯りを見ておる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……見てるのは、景色じゃないです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "通信室に、何かあるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_maker_storage",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "技師の工具箱に、空の袋。『記憶チップ予備』とある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "予備は、まだ駅のどこかにあるな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……几帳面な字。描き写しておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_maker_comms",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "引退した技師から便りがある。『あの柑橘の一台が恋しい』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ピコ、これを読んだんだな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……届けたい相手、この人です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_maker_memo",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "メモに『技師の声で落ち着く。録音は管制室』とある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "声の録音か。最高の舞台装置だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "管制室なら、すぐ取りに行けるな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_maker_pile",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "失敗作は全部、柑橘を目指して、分量だけがずれておる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……七つとも、同じ香りを探してます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "目指してる香りは、一つだけなんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_maker_since",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "serious",
+          "text": "失敗は三か月前から。ピコを作った技師が、地球へ帰った日です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "作ってくれた人が、いなくなったのか……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_maker_route",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "毎晩、通信室の前で止まります。地球行き郵便の時刻表の前です"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……誰かに、何か送りたいのかもしれません"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_maker_origin",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "作り手は駅の技師です。毎晩、柑橘の一台を頼んでいました"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "作り手の好物か。原点の味というやつだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_maker_beep",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "翻訳すると『とどけたい』。宛先の欄は、空っぽのままです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "届けたい相手が、いるんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_earth_bench",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "作業台の下に、欠けた車輪のかけら。ほとんど動けておらん"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ここで作って、ここで止まってたのか"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "足がなければ、舞台に上がれん。まずは車輪だな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_earth_window",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "夜明け前、この窓に青い地球が昇る。ピコの給仕記録も、全部ここじゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……この青、描きたいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ピコの持ち場は、この窓辺だったのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_earth_storage",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "倉庫に『地球の森』の香りの箱。窓辺用の印つきじゃ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "森の香りと、青い地球。悪くない取り合わせだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……箱の絵、木が描いてあります"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_earth_comms",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "旅人の声が残っておる。『窓辺で地球を眺めながらの一台』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一台だけじゃなくて、景色ごと覚えてたんだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "眺めも味のうち、か"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_earth_memo",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "メモに『坂用の車輪あり』。それと『写真立ての裏に昔の一枚』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "昔の写真……何が写ってるんだろう"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……見てみたいです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_earth_pile",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "香りは悪くない。どれも、窓のない作業台で出した一台じゃ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "中身は良い。足りないのは、舞台だな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "場所が違うだけで、こんなに変わるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_earth_since",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "serious",
+          "text": "展望デッキへの坂で、ピコの車輪が欠けました。その日からです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "坂か……。登れなくなったんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_earth_route",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "毎晩、展望デッキへの坂の下まで行き、そこで引き返します"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……上に、行きたいんですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_earth_origin",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "ピコは、展望デッキの窓辺で一台を出すために作られました"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "舞台は窓辺か。眺めごと一台、ということだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_earth_beep",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "翻訳すると『みせたい』。何を、かは言いません"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "見せたいもの……窓の外に、何があったっけ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_friend_bench",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "作業台に台座が二つ。片方には、埃が積もっておる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "二人で並んで作ってたんだな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……埃の跡、丸いロボの形です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_friend_window",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコは窓より、ガラスに映る倉庫の扉を気にしておる"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "景色より、扉の向こうか"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……誰かを、待ってるみたいです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_friend_storage",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "暗い倉庫の奥に、ピコとそっくりなロボ。名札は『ポコ』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ピコの仲間か。暗くて、よく見えないな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……小さなライトがあれば、描けます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_friend_comms",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "記録に『ピコとポコの合作、古い茶葉の香りが好評』とある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "合作か。二人で一つの舞台を作っていたんだな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "茶葉の香り……倉庫に、まだあるかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_friend_memo",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "メモに『ポコの起動キーは管制室の引き出し』とある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "キーがあれば、起こせるんだな"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "眠れる相棒を起こす鍵、か。いい小道具だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_clue_friend_pile",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "失敗作は、どれも半分だけ整っておる。残りは相棒の受け持ちじゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……半分ずつ。二人で、一台ですね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一人で全部やろうとしてたのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_friend_since",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "serious",
+          "text": "同型の旧型ロボ、ポコが倉庫で眠りについた日からです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ピコに、仲間がいたのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_friend_route",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "毎晩、倉庫の扉の前で止まって、小さく点滅しています"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……扉の向こうに、話しかけてるみたいです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_friend_origin",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "ピコとポコは、二台一組で一台を作る設計です"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "片翼では飛べぬ、か。宇宙でも同じだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ask_friend_beep",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "翻訳すると『いっしょに』。最近は、ずっとこればかりです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一緒に……誰と？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_part_wheel",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "坂も登れる車輪だ。ピコ、どこへ行きたい？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコの目が、ちかちかと瞬いた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_part_chip",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "新しい記憶チップだ。忘れた分量、思い出せるかな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコが、小さくピポポと鳴いた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_part_light",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "小さなライトだ。暗いところでも、これで見える"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコの頭に、ちょこんと灯りがともる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_flavor_citrus",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "柑橘か。作り手の好物は、ピコの原点だな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "瓶を開けると、ぱっと明るい香りが広がる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_flavor_forest",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "森の香りか。宇宙で嗅ぐ地球は、格別だろう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "瓶を開けると、雨上がりの森の匂いがする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_flavor_tea",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "古い茶葉か。時を越えた香りには、物語がある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "瓶を開けると、懐かしいお茶の香りがした"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_gift_voice",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……声を聞かせたら、ピコ、落ち着くかもしれません"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "よし、再生ボタンを押してみよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_gift_photo",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……この写真のピコ、笑ってるみたいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "これが、ピコの一番うまくいった夜か"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_gift_key",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……この鍵、ピコに持たせてあげたいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ピコ、自分で回してみるか？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_tactic_bulkhead",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "重い隔壁が、ゆっくりと下りていく"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "幕を下ろすのも、演出のうちだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_tactic_carry",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコを抱き上げると、小さくピポと鳴いた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……あったかい。ピコ、震えてます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_choice_tactic_course",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "計算を手伝ってください。数字の読み上げをお願いします"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "よし、ナビ。一緒にやろう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ending_engineer",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "柑橘の一台が仕上がる。ピコは同じ香りを小瓶に分けた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "添えたのは、短いビープ音の手紙。『ありがとう』の調子じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "届くといいな。地球まで"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "数日後、地球から返事が来る。『懐かしい香りだ。元気でな』"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "作り手に返す一台。原点への、最高の便りだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……封筒の絵、描かせてください"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ending_blue-window",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "新しい車輪で坂を登り、ピコは展望デッキへたどり着く"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "夜明け前の窓に、青い地球がゆっくりと昇ってくる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "早起きの旅人が、ピコの一台を受け取って窓辺に座った"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……この青、描いても描いても足りないです"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "一台と、この眺め。宇宙で一番の席だな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ピコの持ち場、やっぱりここだったんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ending_two-beeps",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピコが起動キーを回す。倉庫の奥で、小さな灯りがともった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ピポ。ポポ。ふたつのビープ音が、何度も確かめ合う"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "二台は台座に並び、懐かしい茶葉の一台を作り始めた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "息ぴったりだ。ずっと待ってたんだな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……二人並んだ絵。今夜いちばんの絵です"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "再会ものは泣けるのじゃ……。い、いや、泣いておらんぞ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_ending_new-crew",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "仕上がった一台は、思っていた香りとは少し違った"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "あれ……でも、悪くないぞ？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "首をかしげるピコに、ナビが告げる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "本日付けで、ピコを夜番に任命します。名簿に追加しました"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "仲間の一台を、仲間と探す。それもまた原点だ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余も夜番に加えよ。見回りは得意である"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……名札、描きます。ピコと、コロちゃんの分も"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_discuss_maker",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "作り手の好きな香りを、もう一度。原点への帰還だな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……届けるなら、言葉も添えたいです"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ふむ、よい読みじゃ。では、その見立てで行くのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_discuss_earth",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "窓辺こそピコの舞台か。青い地球を背に一台、最高の演出だ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……地球が昇る時間、描いておきます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "宇宙らしい見立てじゃのう。わしも好きじゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_discuss_friend",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "相棒と二人で一台、か。名コンビの復活劇だな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……二人がそろったら、並んだ絵を描きたいです"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ほう、相棒探しか。よい読みじゃぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "そのとき、窓の外を細かな光の雨が横切った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "流星群じゃ。駅がかすかに揺れ、警報が鳴り響く"
+        },
+        {
+          "speaker": "samechan",
+          "role": "管制AIナビ／物語",
+          "face": "normal",
+          "text": "小さな流星群です。駅は丈夫です。念のため、手順に従ってください"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "ふはは、宇宙ザメの群れである。……今のは、王の冗談だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "コロちゃん、この状況で冗談はやめて！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "さあ、どうする？ 手を選ぶのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "揺れが収まり、警報が静かに止んだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……流れ星、きれいでした。みんな、無事です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "揺れは収まったが、扉がいくつも開いてしまった"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "多少の乱れは、名演の味だ。前へ進もう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "ピコが転がり、香りの小瓶が通路じゅうに散らばる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "拾う！ 全部拾うから、ピコは動かないで！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "酸素は進む。じゃが、全員まだ無事じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_listen_talk",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}はピコの隣にしゃがんで、話しかけてみる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定じゃ。相手はロボじゃが、心はあるぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_listen_cheer",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:adam}が告げる。失敗とは、成功という林檎の種だ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "話術で判定じゃ。名言が刺さるかの？ 目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_listen_sketch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は、失敗した一台を一つずつ描き写します"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。よく見るのじゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_twist_lead",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}が先頭を行く。みんな、手すりをつかんで！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "度胸で判定じゃ。揺れは強いぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_twist_panel",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:adam}が非常用パネルを操る。舞台の暗転と同じだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。ボタンを押し間違えるでないぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_twist_read",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は、光の筋を描いて向きを読みます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。星の雨を、よく見るのじゃ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_prepare_fix",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}が説明書を見ながら、パーツを取りつけます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定じゃ。ネジは余らせるでないぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_prepare_blend",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}が香りを量る。この一匙に、宇宙の始まりを込める"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定じゃ。見立てが合えば追い風じゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_prepare_watch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}はピコの隣で、手元を見守ります"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定じゃ。見守るのも仕事じゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_serve_word",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}はピコに言う。大丈夫、一緒にやろう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定じゃ。言葉は短くてよいぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_serve_picture",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は、描いた絵をピコに見せます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "度胸で判定じゃ。見せる勇気が要るのう。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_declare_serve_speech",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}が告げる。さあピコ、今宵の主役はお前だ！"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "話術で判定じゃ。名言、決めるのじゃぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_make_adam_adam_nova",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺の役はノヴァ。駅の夜番で、香りの航海士だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "好きなものは林檎の香り。宇宙は、そこから始まった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "宇宙の始まりまで背負うとは、頼もしいのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_make_adam_adam_cosmo",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はコスモ。宇宙の果てまで、原点を探しに来た飛行士だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "宇宙は一つの林檎から始まった。この駅で、それを証明する"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "初耳の宇宙論じゃ！ ……じゃが、宇宙なら何でもありじゃな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "アダムさん、宇宙だと話のスケールが大きすぎる……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_make_tsumugi_tsumugi_luna",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はルナ。展望デッキで、星の記録をつけています"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……ラベンダー色の星雲が、好きです。描きかけが、たくさん"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "よいのう。宇宙の絵は、きっと映えるのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_make_tsumugi_tsumugi_konoha",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……コノハです。貨物の箱から出てきて、そのまま夜番になりました"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "evil",
+          "text": "……この子も一緒です。葉っぱの耳の猫。検疫は、まだです"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "猫連れの密航者じゃと！？ お約束を分かっておるのう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "つむぎ、その猫の絵、もう描いてあるんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "宇宙の旅の前に、キャラ作りじゃ。役は決まったかの？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "乗組員はそろったのじゃ。では、発進じゃ！"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
+  "presentation": {
+    "theme": "space",
+    "number": "07",
+    "genre": "SF / ロボと一台",
+    "tagline": "寂しいビープ音の、わけを探す。",
+    "backdrop": "linear-gradient(160deg, #2b2366, #141c46 52%, #070a1e)",
+    "sceneAlt": "軌道の休憩所。作業台、展望デッキの窓、倉庫の扉、通信室、整備士のメモと失敗作の山。窓の外に青い地球。",
+    "location": "地球周回軌道 / 星の駅ポラリス",
+    "atmosphere": "夜間モードの灯り。通路の奥で、小さなビープ音。",
+    "coverHeading": "ロボのピコが、今夜も一台を失敗した。",
+    "coverRule": "四箇所を調べ、ピコの願いを見立て、一緒に一台を作る。",
+    "titleLines": [
+      "星の駅の",
+      "煙職人ロボ"
+    ],
+    "fields": {
+      "part": "修理パーツ",
+      "flavor": "香り",
+      "gift": "ピコに添えるもの",
+      "tactic": "流星群への手"
+    },
+    "prepareTitle": "ピコに、何を渡す？",
+    "prepareDescription": "パーツを一つ、香りを一つ。手がかりから、ピコの一台を支度しよう。",
+    "serveTitle": "いよいよ、ピコの一台。",
+    "serveDescription": "最後に、ピコに何を添える？",
+    "hypothesisTitle": "ピコのビープ音は、何を願っている？",
+    "arrivalRole": "管制AIナビ／物語",
+    "riskLabel": "酸素",
+    "exploreIdle": "調べられるのは四箇所までじゃ。メモの再読と相談は、何度でもよいぞ",
+    "listenIdle": "しょんぼりしたピコじゃ。まずは様子をつかむのじゃ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "ここが見せ場じゃ。ピコの隣で、最後まで見届けるのじゃぞ",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 様子を見る",
+        "title": "ピポ……と、寂しい音",
+        "description": "通路の奥で、ロボのピコがうなだれている。まずは話を聞こう。",
+        "button": "様子を見る"
+      },
+      "interview": {
+        "kicker": "02 / 管制AIに聞く",
+        "title": "管制AIナビに、何を聞く？",
+        "description": "夜間回線で聞けるのは二つ。答えは、ピコの事情しだいで変わる。",
+        "button": "回線を切って、駅を調べる"
+      },
+      "explore": {
+        "kicker": "03 / 駅を調べる",
+        "title": "ピコの願いを見抜く",
+        "description": "調査は四箇所まで。三つ以上の手がかりから、ピコの願いを考えよう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 流星群",
+        "title": "警報が鳴った",
+        "description": "駅がかすかに揺れる。全員で落ち着いて切り抜けよう。",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / ピコを直す",
+        "title": "パーツと、香り",
+        "description": "使えるのは、この駅にあるものだけ。",
+        "button": "一台を支度する"
+      },
+      "serve": {
+        "kicker": "06 / 一台を届ける",
+        "title": "ピコの晴れ舞台",
+        "description": "ピコの隣で、最後のひと押し。ここがクライマックス。",
+        "button": "ピコと一台を仕上げる"
+      },
+      "ending": {
+        "kicker": "夜明けのあと",
+        "title": "おつかれさま、夜番",
+        "description": "ピコのビープ音は、どんな音になっただろう。"
+      }
+    },
+    "help": "管制AIに二つ質問し、駅を最大四箇所調べます。新しい場所を調べるたび、夜間モードの酸素メーターが一つ進みます（満タンでも危険はなく、朝のチャイムが鳴るだけです）。三つ以上の手がかりでピコの願いを見立てたあと、流星群を切り抜け、修理パーツ・香り・添えるものを決めます。相談とメモの再読は無料。見立てが合うと支度の判定に＋4。",
+    "exitText": "物語をここで中断して、本棚へ戻ります。次に遊ぶと、ピコの願いが違っているかもしれません。",
+    "endingKicker": "NIGHT SHIFT LOG / この夜番の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言せよ",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "流星群と警報。どうする？",
+    "interviewIdle": "ナビに聞けるのは二つまでじゃ。何を聞く？",
+    "twistIdle": "流星群じゃ。手を選んで、誰が動くか決めるのじゃ",
+    "planTitle": "ピコと作る一台の作戦"
+  },
+  "intro": "trpg_smoke_robot_intro",
+  "listen": "trpg_smoke_robot_listen",
+  "checks": {
+    "listen": {
+      "title": "ピコのビープ音を聞き分ける",
+      "hint": "宣言した夜番の能力で判定。どの出目でも調査へ進みます。",
+      "success": "trpg_smoke_robot_listen_success",
+      "mixed": "trpg_smoke_robot_listen_mixed",
+      "trouble": "trpg_smoke_robot_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_talk",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "隣にしゃがんで、話しかける",
+          "detail": "{pc}がピコと目の高さをそろえ、ビープ音に耳を傾ける",
+          "declare": "trpg_smoke_robot_declare_listen_talk"
+        },
+        {
+          "id": "listen_cheer",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "名言で、ピコを励ます",
+          "detail": "{pc:adam}が大げさな言葉で、ピコの顔を上げさせる",
+          "declare": "trpg_smoke_robot_declare_listen_cheer"
+        },
+        {
+          "id": "listen_sketch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "失敗した一台を、よく見る",
+          "detail": "{pc:tsumugi}が失敗作を描き写し、違いを比べる",
+          "declare": "trpg_smoke_robot_declare_listen_sketch"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "ピコと一台を支度する",
+      "hint": "宣言した夜番の能力で判定。見立てが合えば、さらに＋4。",
+      "success": "trpg_smoke_robot_prepare_success",
+      "mixed": "trpg_smoke_robot_prepare_mixed",
+      "trouble": "trpg_smoke_robot_prepare_trouble",
+      "helper": "adam",
+      "approaches": [
+        {
+          "id": "prepare_fix",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "修理パーツを、自分で取りつける",
+          "detail": "{pc}が説明書を片手に、ピコを直す。ネジは、たぶん足りる",
+          "declare": "trpg_smoke_robot_declare_prepare_fix"
+        },
+        {
+          "id": "prepare_blend",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "香りを量って、ピコに渡す",
+          "detail": "{pc:adam}が駅一番の手際で、香りを整える",
+          "declare": "trpg_smoke_robot_declare_prepare_blend"
+        },
+        {
+          "id": "prepare_watch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "ピコの手元を見守る",
+          "detail": "{pc:tsumugi}が隣で見て、迷ったところをそっと指さす",
+          "declare": "trpg_smoke_robot_declare_prepare_watch"
+        }
+      ]
+    },
+    "serve": {
+      "title": "ピコの一台を届ける",
+      "hint": "宣言した夜番の能力で判定。どの出目でも結末へ進みます。",
+      "success": "trpg_smoke_robot_serve_success",
+      "mixed": "trpg_smoke_robot_serve_mixed",
+      "trouble": "trpg_smoke_robot_serve_trouble",
+      "helper": "tsumugi",
+      "approaches": [
+        {
+          "id": "serve_word",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "声をかけて、背中を押す",
+          "detail": "{pc}が隣で『大丈夫』と言い、最後まで付き添う",
+          "declare": "trpg_smoke_robot_declare_serve_word"
+        },
+        {
+          "id": "serve_picture",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "nerve",
+          "label": "描いた絵を、ピコに見せる",
+          "detail": "{pc:tsumugi}が、届けたい姿を一枚の絵にして見せる",
+          "declare": "trpg_smoke_robot_declare_serve_picture"
+        },
+        {
+          "id": "serve_speech",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "名言で、最後の幕を上げる",
+          "detail": "{pc:adam}が大げさな口上で、ピコの晴れ舞台を作る",
+          "declare": "trpg_smoke_robot_declare_serve_speech"
+        }
+      ]
+    },
+    "twist": {
+      "title": "流星群の揺れを乗り切る",
+      "hint": "宣言した夜番の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_smoke_robot_twist_success",
+      "mixed": "trpg_smoke_robot_twist_mixed",
+      "trouble": "trpg_smoke_robot_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_lead",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "揺れる通路を、先頭で進む",
+          "detail": "{pc}が手すりを伝い、みんなを中央区画へ導く",
+          "declare": "trpg_smoke_robot_declare_twist_lead"
+        },
+        {
+          "id": "twist_panel",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "非常用パネルを、手早く操作する",
+          "detail": "{pc:adam}がパネルを開き、手順どおりに切り替える",
+          "declare": "trpg_smoke_robot_declare_twist_panel"
+        },
+        {
+          "id": "twist_read",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "窓から、流星の向きを読む",
+          "detail": "{pc:tsumugi}が光の筋を描き写し、来る向きを見極める",
+          "declare": "trpg_smoke_robot_declare_twist_read"
+        }
+      ]
+    }
+  },
+  "consult": {
+    "adam": "trpg_smoke_robot_consult_adam",
+    "tsumugi": "trpg_smoke_robot_consult_tsumugi"
+  },
+  "preparation": "trpg_smoke_robot_preparation",
+  "serving": "trpg_smoke_robot_serving",
+  "epilogue": "trpg_smoke_robot_epilogue",
+  "debrief": {
+    "smooth": "trpg_smoke_robot_debrief_smooth",
+    "with-detour": "trpg_smoke_robot_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "samechan",
+        "candidates": [
+          "samechan"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "adam",
+        "candidates": [
+          "adam"
+        ],
+        "required": false
+      },
+      {
+        "actor": "tsumugi",
+        "candidates": [
+          "tsumugi"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この物語で演じる夜番を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "ink",
+        "label": "黒髪の夜番",
+        "detail": "短い黒髪に、紺の作業着",
+        "color": "#27304f",
+        "accent": "#89bbc4",
+        "portrait": null
+      },
+      {
+        "id": "silver",
+        "label": "銀髪の夜番",
+        "detail": "ふわりと跳ねた銀髪と、反射板つきの上着",
+        "color": "#5b6378",
+        "accent": "#d8dcef",
+        "portrait": null
+      },
+      {
+        "id": "rust",
+        "label": "赤毛の夜番",
+        "detail": "赤毛をゴーグルで押さえる",
+        "color": "#6e3a35",
+        "accent": "#f0b27a",
+        "portrait": null
+      },
+      {
+        "id": "helmet",
+        "label": "ヘルメットの夜番",
+        "detail": "いつも外さない、丸いヘルメット",
+        "color": "#3a3f66",
+        "accent": "#b9b2f0",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "rookie",
+        "name": "ソラ",
+        "title": "新人の夜番",
+        "trait": "夜番になって三日目。困っている相手は放っておけない",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 4,
+          "nerve": 2
+        },
+        "recommended": true
+      },
+      {
+        "id": "pilot",
+        "name": "ハヤテ",
+        "title": "元パイロット",
+        "trait": "操縦と度胸なら任せて。ロボの気持ちは勉強中",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 5
+        }
+      },
+      {
+        "id": "mechanic",
+        "name": "ミオ",
+        "title": "整備見習い",
+        "trait": "工具箱を手放さない。ネジの音で機嫌がわかる",
+        "stats": {
+          "eye": 3,
+          "hand": 4,
+          "talk": 2,
+          "nerve": 2
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "adam": {
+      "adam": [
+        {
+          "id": "nova",
+          "name": "ノヴァ",
+          "title": "香りの航海士",
+          "trait": "香りの配合なら駅一番。名言の前に、少し間を取る",
+          "likes": "林檎の香り。宇宙の始まりの味",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_smoke_robot_make_adam_adam_nova"
+        },
+        {
+          "id": "cosmo",
+          "name": "コスモ",
+          "title": "原点を探す宇宙飛行士",
+          "trait": "宇宙は一つの林檎から始まったと、本気で信じている。腕は確か",
+          "likes": "ダブルアップル。宇宙の原点",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 4,
+            "nerve": 1
+          },
+          "making": "trpg_smoke_robot_make_adam_adam_cosmo"
+        }
+      ]
+    },
+    "tsumugi": {
+      "tsumugi": [
+        {
+          "id": "luna",
+          "name": "ルナ",
+          "title": "展望デッキの記録係",
+          "trait": "よく見て、よく描く。宇宙でも口数は少ない",
+          "likes": "ラベンダー色の星雲と、描きかけのスケッチ",
+          "stats": {
+            "eye": 5,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_luna"
+        },
+        {
+          "id": "konoha",
+          "name": "コノハ",
+          "title": "猫連れの密航者",
+          "trait": "貨物の箱から出てきて、そのまま夜番に雇われた。猫も一緒",
+          "likes": "葉っぱの耳の猫と、ラベンダーの匂いの毛布",
+          "stats": {
+            "eye": 4,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_smoke_robot_make_tsumugi_tsumugi_konoha"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_smoke_robot_session_zero_open",
+    "close": "trpg_smoke_robot_session_zero_close"
+  },
+  "interview": {
+    "title": "管制AIナビに、何を聞く？",
+    "prompt": "夜間回線は二つ分だけ。ピコの事情に近づけそうなことを聞こう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "since",
+        "label": "失敗が始まった日",
+        "description": "いつから一台が失敗し始めたか聞く"
+      },
+      {
+        "id": "route",
+        "label": "夜のピコの足取り",
+        "description": "夜中にピコがどこへ行くか聞く"
+      },
+      {
+        "id": "origin",
+        "label": "ピコの生まれ",
+        "description": "誰が、何のために作ったか聞く"
+      },
+      {
+        "id": "beep",
+        "label": "ビープ音の意味",
+        "description": "悲しい音を、言葉にしてもらう"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_smoke_robot_twist_intro"
+  }
+}

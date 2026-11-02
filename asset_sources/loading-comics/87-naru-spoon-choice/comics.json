@@ -1,0 +1,109 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "candidate": true,
+  "registration_status": "選別待ち・ゲーム未登録",
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
+  "image_manifest": [
+    {
+      "file": "87-naru-spoon-choice.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "e8486135f5e238ea8716617a54b509670d986b9ca9b8322c786860ca73f4ed73",
+      "bytes": 1735649
+    }
+  ],
+  "pages": [
+    {
+      "file": "87-naru-spoon-choice.png",
+      "ids": [
+        "hajime",
+        "naru"
+      ],
+      "range": "87",
+      "rows": [
+        [
+          "87 スプーン選び",
+          "はじめ・naru",
+          "はじめが大小のスプーンを見せ、なるが真剣に小さい方を指す。 / なるがごく小さなスプーンで大きなプリンを少しずつ味わう。はじめは大きなスプーンと空の皿で先に食べ終わり、なるを見守る。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 87,
+      "title": "スプーン選び",
+      "dialogue": [
+        "どっちを使う？",
+        "小さい方で。",
+        "慎重に食べたい。"
+      ],
+      "speakers": [
+        "はじめ",
+        "naru",
+        "naru"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷き（1536×1024）を編集し、横長の2コマ漫画を1話だけ描いてください。出力1536×1024。枠の位置・寸法を厳守：左x36〜756、右x780〜1500、y272〜752、各720×480の3:2。縦長コマに変形せず、枠外・上下・24pxのコマ間は#EEE3CFの無地で残す。枠線3pxは残す。枠の内側4%には顔・台詞・重要物を置かない。題名・話数・番号・ロゴ・署名・透かし・英語・擬音文字は一切描かない。吹き出しの台詞のみ日本語の太いゴシック体で大きく、横書きで最大2行。添付2のはじめ（黒いキャップ、黒髪、黒パーカー、首の銀アクセサリー）と添付3のなる（銀色の短髪、金色の目、黒白のストリートジャケット、首のシルバーアクセサリー）を、同じ外見・服装の2.5頭身にする。太いきれいな線、セル塗り、少しの紙の質感、暖色の明るいギャグ漫画。両コマともはじめは画面左、相手は画面右に固定。背景は台本の場面に合わせ、机・窓・壁だけの簡素な構成。店内の収納は閉じた不透明の扉。観葉植物を追加しない。必要な小物のみ描き、シーシャ本体・ボウル・炭・HMD・ホース・煙・武器・他の人物・実在ロゴは描かない。題名（描かない参考）『スプーン選び』。左①導入：はじめが大小のスプーンを見せ、なるが真剣に小さい方を指す。 吹き出しははじめの「どっちを使う？」となるの「小さい方で。」の2個だけ。右②オチ：なるがごく小さなスプーンで大きなプリンを少しずつ味わう。はじめは大きなスプーンと空の皿で先に食べ終わり、なるを見守る。 吹き出しはなるの「慎重に食べたい。」の1個だけ。台詞は句読点も一字一句一致させる。2コマ合計3吹き出し、台詞を省略・追加・繰り返ししない。 最優先：枠を縦方向へ広げない。上下それぞれ272pxの紙の余白を残し、720×480の横長コマに小さな人物と小道具を収める。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/naru/chr_naru_normal.png"
+      ],
+      "source": [
+        {
+          "file": "asset_sources/loading-comics/87-naru-spoon-choice/87-naru-spoon-choice.png",
+          "region": {
+            "x": 37,
+            "y": 272,
+            "width": 718,
+            "height": 481,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        },
+        {
+          "file": "asset_sources/loading-comics/87-naru-spoon-choice/87-naru-spoon-choice.png",
+          "region": {
+            "x": 780,
+            "y": 272,
+            "width": 719,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        }
+      ],
+      "delivery": [
+        {
+          "file": "naru-spoon-choice-1.webp",
+          "width": 722,
+          "height": 481,
+          "sha256": "646c50ae998f79d9b3d5d7430b71bfea570c341a2fff5804cf9ef2b6aa177a29",
+          "bytes": 60420
+        },
+        {
+          "file": "naru-spoon-choice-2.webp",
+          "width": 719,
+          "height": 480,
+          "sha256": "bf788d8dd00bffc33b4751a109c34e542da5144303ebda7a14fb35a63f9ac440",
+          "bytes": 57964
+        }
+      ],
+      "ratio_status": "ok",
+      "raw_ratios": [
+        1.4927234927234927,
+        1.4979166666666666
+      ],
+      "qa": {
+        "source_visual": "生成時に人物・台詞3つ・左右固定・禁止描写なしを目視確認",
+        "delivery": "cut tool passed; 3:2, <=1440x960, <400KiB",
+        "browser": "未実施: sandbox有効ChromiumがSUID helper設定エラーで起動不可。sandbox設定の解除・変更は行っていない。",
+        "warnings": [],
+        "rejected_trials": []
+      }
+    }
+  ]
+}

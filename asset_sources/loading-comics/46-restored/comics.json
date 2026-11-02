@@ -1,0 +1,101 @@
+{
+  "episode": 46,
+  "title": "雨音の合奏",
+  "cast": "はじめ・スミさん",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/loading-comics/46-sumi-rain-concert/46-sumi-rain-concert.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [
+    {
+      "file": "46-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1749346,
+      "sha256": "aaa106a32045826207ce3134da65183d347538ba0773ddc05f83958472d47567"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "左: 窓の雨筋を見てはじめが「雨、強いですね。」スミさんが「いい音だ。」。右: はじめが椅子に座り目を丸くし「客席が最前列。」。スミさんが雨の窓を背景に鉛筆一本を指揮棒にして大げさに指揮、文字のない音符が2つ。雨漏りはなし。",
+      "dialogue_original": [
+        "雨、強いですね。",
+        "いい音だ。",
+        "客席が最前列。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/loading-comics/46-sumi-rain-concert/46-sumi-rain-concert.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "46-restored.png",
+      "region": {
+        "x": 39,
+        "y": 275,
+        "width": 713,
+        "height": 475,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "46-restored.png",
+      "region": {
+        "x": 783,
+        "y": 275,
+        "width": 713,
+        "height": 475,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-46-1.webp",
+      "width": 713,
+      "height": 475,
+      "sha256": "8e374d49e28ce4e7e3bf024c9105b4e31efead762c3f41846d4d61eb0249fb85"
+    },
+    {
+      "file": "panels/restored-46-2.webp",
+      "width": 713,
+      "height": 475,
+      "sha256": "824cf9ef5a429dc51dbafef4196efb8cec7be0755a1b220b4b8836b5b715989c"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

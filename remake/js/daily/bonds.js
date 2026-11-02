@@ -17,6 +17,7 @@ import { state, save } from "../core/state.js";
 import { affinityLevel, AFFINITY_GATE_CHOICES, releaseAffinity } from "../core/stats.js";
 import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead } from "../core/affinity-stages.js";
 import { emit } from "../core/bus.js";
+import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { play } from "../vn/engine.js";
 import { giftOpen } from "../core/scene-motions.js";
 import { isLover, romanceRouteOpen } from "./romance.js";
@@ -98,7 +99,7 @@ export function recordRomanceChoice(line, choice) {
 /** まだ恋愛に進める相手か（友情寄りの答えも、断った告白もない）。締めくくりの最後の質問を出す条件 */
 export function romanceOpen(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
-  if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
+  if (id === "samechan" && (!chapterFeatureEnabled(state.chapter, "samechanRomance")
     || !state.flags._samechan_bond_question_done
     || state.romanceChoices?.bond_q1_samechan?.char !== id)) return false;
   const def = BOND_FINALES[id];
@@ -149,7 +150,7 @@ function resumeChoice(scene, key, answer) {
 export function hiyoriQuestionReady() {
   const q = hiyoriRoute().question, scene = DB.dialogues[q?.dialogue];
   if (!state || !hiyoriRoute().enabled || !state.flags._hiyori_work_talk_done
-    || !state.flags._hiyori_real_self_known || !state.met.hiyori || ![1,2].includes(state.chapter)
+    || !state.flags._hiyori_real_self_known || !state.met.hiyori || !chapterFeatureEnabled(state.chapter, "hiyoriDaily")
     || !q?.flag || state.flags[q.flag] || !scene?.lines?.length || scene.metadata?.preview_only
     || finaleSeen("hiyori") || isLover("hiyori") || state.flags._friend_hiyori) return false;
   const answer = state.romanceChoices[q.choice];
@@ -172,7 +173,7 @@ export async function playHiyoriQuestion({ bg = null, signal = null, deferSave =
 
 const questionOpen = (id) => {
   if (id === "hiyori" && !hiyoriRoute().enabled) return false;
-  if (id === "mashiro" && state.chapter !== 3) return false;
+  if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   if (AFFINITY_GATE_CHOICES[id] && affinityLevel(id) < 3) return false;
   const q = BOND_QUESTIONS[id];
   const answer = state.romanceChoices?.[q?.choice];
@@ -236,8 +237,8 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
 export function finaleDue(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
   if (id === "samechan" && (state.chapter || 1) < 2) return false;
-  if (id === "ageha" && state.chapter !== 2) return false; // MELTY PUFFに通えるのは第2章だけ
-  if (id === "mashiro" && state.chapter !== 3) return false;
+  if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit")) return false; // MELTY PUFFに通えるのは第2章だけ
+  if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
   if (affinityLevel(id) < 5 || questionVisitDue(id)) return false;

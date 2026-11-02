@@ -4,10 +4,13 @@
 Usage:
   python3 tools/trpg_crop_portraits.py looks <sheet.png> <out_dir>   # 4x2: ordinary ink/ash/rust/moss, shark ink/salt/rust/deep
   python3 tools/trpg_crop_portraits.py pcs   <sheet.png> <out_dir>   # 4x3: nico pippin luca leaf / otto midori mackin sera / noa
+  python3 tools/trpg_crop_portraits.py scenario <sheet.png> <scenario-id>
+      # 4x2 from asset_sources/trpg-scenarios/README.md: row 1 = the four builder looks, row 2 = the four companion builds.
+      # Writes 512px PNG to assets/ui/trpg/, 256px WebP to remake/img/ui/trpg/, and fills every matching "portrait" in the JSON.
 Each cell keeps only its largest opaque shape (drops specks and spill from neighbours), then a square is taken
 around the head (centroid of the upper part) so the face sits in the middle of the game's round frames.
 """
-import sys, pathlib
+import sys, json, pathlib
 import numpy as np
 from PIL import Image
 
@@ -71,5 +74,36 @@ def main(kind, sheet, out):
         portrait.save(out / (name + ".png"))
     print("cut", len(names), "portraits into", out)
 
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+
+def scenario(sheet, sid):
+    catalog = json.loads((ROOT / "data/trpg_catalog.json").read_text(encoding="utf-8"))
+    path = ROOT / "data" / next(e["file"] for e in catalog["scenarios"] if e["id"] == sid)
+    s = json.loads(path.read_text(encoding="utf-8"))
+    looks = s["builder"]["looks"]
+    builds = [o for seat in s["companionBuilds"].values() for opts in seat.values() for o in opts]
+    names = [f"look-{sid}-{l['id']}" for l in looks] + [f"pc-{o['id']}" for o in builds]
+    if len(names) != 8: raise SystemExit(f"{sid}: expected 4 looks and 4 companion builds, got {len(names)}")
+    # Companion ids share one folder with every other story: never overwrite another story's face.
+    for name in names[4:]:
+        if (ROOT / "assets/ui/trpg" / (name + ".png")).exists() and f'img/ui/trpg/{name}.webp"' not in path.read_text(encoding="utf-8"):
+            raise SystemExit(f"{name}.png already belongs to another story; rename the build id first")
+    LAYOUTS[sid] = (4, 2, names)
+    main(sid, sheet, ROOT / "assets/ui/trpg")
+    url = lambda name: f"../../img/ui/trpg/{name}.webp"
+    for name in names:
+        Image.open(ROOT / "assets/ui/trpg" / (name + ".png")).resize((256, 256), Image.LANCZOS).save(
+            ROOT / "remake/img/ui/trpg" / (name + ".webp"), quality=90, method=6)
+    for look, name in zip(looks, names): look["portrait"] = url(name)
+    faces = {o["name"]: url(f"pc-{o['id']}") for o in builds}
+    for o in builds: o["portrait"] = url(f"pc-{o['id']}")
+    for c in s["cast"]:
+        if c.get("sheet") and c["sheet"].get("name") in faces: c["sheet"]["portrait"] = faces[c["sheet"]["name"]]
+    path.write_text(json.dumps(s, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print("wired", len(names), "portraits into", path.relative_to(ROOT))
+
+
 if __name__ == "__main__":
-    main(*sys.argv[1:4])
+    if sys.argv[1:2] == ["scenario"]: scenario(*sys.argv[2:4])
+    else: main(*sys.argv[1:4])

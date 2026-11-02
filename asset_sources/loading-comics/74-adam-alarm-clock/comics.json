@@ -1,0 +1,109 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "candidate": true,
+  "registration_status": "選別待ち・ゲーム未登録",
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
+  "image_manifest": [
+    {
+      "file": "74-adam-alarm-clock.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "f1d94f7d4290a09a353e137ebe351c21ff59b29ccd8cc5d83f7e58237a0f8c5c",
+      "bytes": 1739214
+    }
+  ],
+  "pages": [
+    {
+      "file": "74-adam-alarm-clock.png",
+      "ids": [
+        "hajime",
+        "adam"
+      ],
+      "range": "74",
+      "rows": [
+        [
+          "74 目覚ましの役目",
+          "はじめ・adam",
+          "はじめが眠そうなアダムに小さな無地の目覚まし時計を見せる。 / アダムの枕元に目覚ましの代わりに赤緑のリンゴが二個きっちり並ぶ。アダムは腕組みで納得顔、はじめが指摘。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 74,
+      "title": "目覚ましの役目",
+      "dialogue": [
+        "朝は起きられます？",
+        "音には敏感だ。",
+        "リンゴは鳴らない。"
+      ],
+      "speakers": [
+        "はじめ",
+        "adam",
+        "はじめ"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷き（1536×1024）を編集し、横長の2コマ漫画を1話だけ描いてください。出力1536×1024。枠の位置・寸法を厳守：左x36〜756、右x780〜1500、y272〜752、各720×480の3:2。縦長コマに変形せず、枠外・上下・24pxのコマ間は#EEE3CFの無地で残す。枠線3pxは残す。枠の内側4%には顔・台詞・重要物を置かない。題名・話数・番号・ロゴ・署名・透かし・英語・擬音文字は一切描かない。吹き出しの台詞のみ日本語の太いゴシック体で大きく、横書きで最大2行。添付2のはじめ（黒いキャップ、黒髪、黒パーカー、首の銀アクセサリー）と添付3のアダム（黒シャツと黒エプロン、髪は本人左が緑・本人右が赤。正面像の画面左が赤、右が緑。緑を青にしない）を、同じ外見・服装の2.5頭身にする。太いきれいな線、セル塗り、少しの紙の質感、暖色の明るいギャグ漫画。両コマともはじめは画面左、相手は画面右に固定。背景は台本の場面に合わせ、机・窓・壁だけの簡素な構成。店内の収納は閉じた不透明の扉。観葉植物を追加しない。必要な小物のみ描き、シーシャ本体・ボウル・炭・HMD・ホース・煙・武器・他の人物・実在ロゴは描かない。題名（描かない参考）『目覚ましの役目』。左①導入：はじめが眠そうなアダムに小さな無地の目覚まし時計を見せる。 吹き出しははじめの「朝は起きられます？」とアダムの「音には敏感だ。」の2個だけ。右②オチ：アダムの枕元に目覚ましの代わりに赤緑のリンゴが二個きっちり並ぶ。アダムは腕組みで納得顔、はじめが指摘。 吹き出しははじめの「リンゴは鳴らない。」の1個だけ。台詞は句読点も一字一句一致させる。2コマ合計3吹き出し、台詞を省略・追加・繰り返ししない。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/adam/chr_adam_normal.png"
+      ],
+      "source": [
+        {
+          "file": "asset_sources/loading-comics/74-adam-alarm-clock/74-adam-alarm-clock.png",
+          "region": {
+            "x": 36,
+            "y": 272,
+            "width": 720,
+            "height": 480,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        },
+        {
+          "file": "asset_sources/loading-comics/74-adam-alarm-clock/74-adam-alarm-clock.png",
+          "region": {
+            "x": 781,
+            "y": 272,
+            "width": 718,
+            "height": 477,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        }
+      ],
+      "delivery": [
+        {
+          "file": "adam-alarm-clock-1.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "c936bd0323aac7610b3e06cae61d88dc24ef2ee3d36b86801c874bfe833c1394",
+          "bytes": 62084
+        },
+        {
+          "file": "adam-alarm-clock-2.webp",
+          "width": 718,
+          "height": 479,
+          "sha256": "2c36b5d7aa52a678b29ba3dad0cb5d229b17c1320b6d35302b33a6126128d89d",
+          "bytes": 56764
+        }
+      ],
+      "ratio_status": "ok",
+      "raw_ratios": [
+        1.5,
+        1.5052410901467506
+      ],
+      "qa": {
+        "source_visual": "生成時に人物・台詞3つ・左右固定・禁止描写なしを目視確認",
+        "delivery": "cut tool passed; 3:2, <=1440x960, <400KiB",
+        "browser": "未実施: sandbox有効ChromiumがSUID helper設定エラーで起動不可。sandbox設定の解除・変更は行っていない。",
+        "warnings": [],
+        "rejected_trials": []
+      }
+    }
+  ]
+}
