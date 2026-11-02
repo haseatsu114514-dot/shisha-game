@@ -36,9 +36,10 @@ const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'koha
   rojiura_cinema: 'rojiura_cinema',
   axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar',
   ch3_tokyo_gym: 'choizap', // 第3章の東京のCHOI-ZAP（同じチェーンの高架下の店）
-  // MPI: 東京・ドバイ・第5章の行き先。スマホと新幹線の駅は2か所で共用（オーナー決定 2026-11-02）。路地裏の神社は場所の決定待ち（#2166）
+  // MPI: 東京・ドバイ・第5章の行き先。新幹線の駅は2か所で共用（オーナー決定 2026-11-02）。路地裏の神社は場所の決定待ち（#2166）
   ch3_tokyo_park: 'tokyo_park', ch5_tokyo_park: 'tokyo_park', ch3_tokyo_room: 'mukai_back_room', ch5_tokyo_attic: 'mukai_attic',
-  ch3_tokyo_lime: 'smartphone', ch5_call: 'smartphone', ch5_to_tokyo: 'shinkansen_station', ch5_tokyo_home: 'shinkansen_station',
+  ch5_call: 'smartphone', // 第3章の「地元と連絡」は地図から外し、右上の LIME の一番上の行に（オーナー決定 2026-11-02）
+  ch5_to_tokyo: 'shinkansen_station', ch5_tokyo_home: 'shinkansen_station',
   ch4_dubai_souq: 'dubai_souq', ch4_dubai_creek: 'dubai_creek', ch4_dubai_mosque: 'dubai_mosque', ch4_dubai_inn: 'dubai_inn',
   ch4_dubai_naru: 'dubai_inn_lobby', ch4_dubai_practice: 'dubai_practice_hall',
   // 第5章のドバイも同じ場所の絵（SLG05）

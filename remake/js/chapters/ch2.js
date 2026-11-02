@@ -4,15 +4,14 @@ import { DB, bgUrl } from "../core/data.js";
 import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { storeLogo } from "../core/store-logos.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, imageReady, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { showHud } from "../daily/hud.js";
-import { openStatus } from "../daily/status.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { openMenu } from "../daily/menu.js";
+import { openLime, unreadCount } from "../daily/phone.js";
 import { play } from "../vn/engine.js";
-import { glossaryPanel } from "../vn/glossary.js";
 import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { trainRide } from "../core/scene-motions.js";
 import { cueTransition } from "../core/transitions.js";
@@ -324,7 +323,6 @@ function renderMap() {
         : stop.id === "c_station" ? "C.STATIONと同じビルの県大会ホール。入口と搬入場所を確認する。"
         : pending ? "tonariから預かった包みを渡して、ご挨拶しよう。" : "顔を見て挨拶した店。中をのぞくこともできます。" }),
     ];
-    if (!isStation) details.push(el("p.mi-foot", { text: stop.outing ? "今日は下見。配達の合間に立ち寄れます。" : "初日の配達・下見は代金と行動を使いません。" }));
     if (!isStation || canReturn) details.push(el("button.mi-go", { type: "button", dataset: { test: test("go") }, disabled: session.busy,
       text: isStation ? "tonariへ戻る" : pending ? "配達して挨拶する" : stop.shop ? "仕入れに行く" : stop.outing ? "立ち寄る" : "ここへ行く", onclick: () => go(stop) }));
     info.replaceChildren(...details);
@@ -345,7 +343,7 @@ function renderMap() {
     pins.push(pin);
   }
   info.append(el("h2.mi-banner", { text: "配達しながら、街を知ろう" }),
-    el("p.mi-desc", { text: deliveries?.accepted ? "三つの包みを届けて、会場を下見しよう。回る順番は自由です。行き先を選ぼう。" : "会場の確認と、新しい店へのご挨拶。行き先を選ぼう。" }));
+    el("p.mi-desc", { text: deliveries?.accepted ? "三つの包みを届けて、会場を下見しよう。回る順番は自由で、配達・下見は代金も行動も使いません。行き先を選ぼう。" : "会場の確認と、新しい店へのご挨拶。行き先を選ぼう。" }));
   if (!deliveries) info.append(button("スミさんの配達メモ", "delivery-offer", async () => {
     if (!await scene("remake_ch2_delivery_offer", MAP.day)) return;
     acceptChapterTwoDeliveries(state); save();
@@ -360,32 +358,26 @@ function renderMap() {
   layers.hud.replaceChildren(el("div.hud", [
     el("div.hud-card", [el("div.dc-main", [el("div.dc-area", { text: CH2_CITY_EN }), el("div.dc-day", [el("b", { text: chapterDay(state) }), el("small", { text: "/14" })]), el("div.dc-slot", { text: "配達" })]),
       el("div.dc-meta", [el("div.dc-row.money", [el("span", { text: "所持金" }), el("b", { text: yen(state.money) })]), el("div.dc-row", [el("span", { text: "次の大会まで" }), el("b", { text: `あと${chapterDaysLeft(state)}日` })])])]),
-    el("div.hud-right", [el("button.hud-menu", { type: "button", dataset: { test: test("menu") }, onclick: () => perform(openMenu) }, [el("i"), el("span", { text: "MENU" })])]),
+    el("div.hud-right", [
+      el("button.hud-lime", { type: "button", title: "LIME", dataset: { test: test("lime") }, onclick: () => perform(openLimeFromMap) }, [el("span", { text: "LIME" }), el(`em.badge${unreadCount() ? ".single" : ""}`, unreadCount() ? [el("b.badge-number", { text: String(Math.min(unreadCount(), 99)) })] : [])]),
+      el("button.hud-menu", { type: "button", dataset: { test: test("menu") }, onclick: () => perform(openMapMenu) }, [el("i"), el("span", { text: "MENU" })])]),
   ]));
   showHud(true);
 }
 
-async function openMenu() {
+// 第1章以降の日常と同じ全画面MENU（設定・セーブ・ロードはシステムタブ）。手動セーブは地図で行き先を選んでいる時だけ。
+function openMapMenu() {
   const owner = session;
-  const choice = await modal({ title: "MENU", body: `第${state.chapter}章・DAY ${chapterDay(state)} ／ 場面の区切りで自動セーブしています。`, options: [
-    { label: "セーブ", value: "save", test: test("save") }, { label: "ロード", value: "load", test: test("load") },
-    { label: "設定", value: "config", test: test("config") }, { label: "用語集", value: "glossary", test: test("glossary") },
-    { label: "ステータス・人間関係", value: "status", test: test("status") },
-    { label: "大会の規則", value: "rules", test: test("rules") },
-    { label: "タイトルへ戻る", value: "title", test: test("title") },
-    { label: "閉じる", value: null, primary: true },
-  ] });
-  if (!current(owner)) return;
-  if (choice === "save") await saveFlow();
-  if (choice === "config") await (await import("../scenes/title.js")).openConfig();
-  if (choice === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
-  if (choice === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
-  if (choice === "load") {
-    const key = await loadFlow({ inGame: true });
-    if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
-  }
-  if (choice === "status") await openStatus();
-  if (choice === "title") { save(); location.reload(); }
+  return openMenu({ canSave: () => current(owner) && owner.scene === "map", current: () => current(owner), leave: () => {} });
+}
+
+// 日常と同じLIME。初日の地図で行き先を選んでいる時だけ開ける（誘いの予約は受けない）。
+async function openLimeFromMap() {
+  const owner = session;
+  if (owner.scene !== "map" || layers.modal.classList.contains("show")) { toast("LIME は行き先を選んでいるときに開ける"); return; }
+  state.flags._lime_opened = true;
+  await openLime({});
+  if (current(owner)) { save(); renderMap(); }
 }
 
 async function continuePreparation() {

@@ -13,7 +13,6 @@
 //   心得の盤の「遊びのご褒美」（growth-board-data.js PLAY_REWARDS camel-finish・寝る前の精算で火種1つ）。
 //   能力値を直接足す旧方式（技術+1 等）は使わない。再プレイは記録（自己ベスト）だけで報酬は増えない。
 // - 大会（シェイクの正体・勝敗）には触れない。失敗しても進行に影響しない。
-// 仮置き: 砂漠のレース場の背景（Codex 依頼 CR-BG01 bg_dubai_camel_track_morning）が届いたらここだけ差し替える。
 
 export const CAMEL_FLAG = "_ch4_camel";
 export const CAMEL_SCENES = Object.freeze({
@@ -22,8 +21,8 @@ export const CAMEL_SCENES = Object.freeze({
   replay: "ch4_camel_replay", replayBest: "ch4_camel_replay_best", replayUsual: "ch4_camel_replay_usual",
 });
 export const CH4_CAMEL_SCENE_FILES = Object.freeze({ ch4_camel_race: Object.freeze(Object.values(CAMEL_SCENES)) });
-// 仮置き: 砂漠のレース場の背景（Codex 依頼 CR-BG01 bg_dubai_camel_track_morning）が届いたらここだけ差し替える。
-export const CAMEL_TRACK_BG = "bg_dubai_map";
+// 砂漠のレース場の朝（Codex CR-BG01 の A 案・2026-11-02 採用）。見学・結果・再挑戦の会話の背景。
+export const CAMEL_TRACK_BG = "bg_dubai_camel_track_morning";
 export const CAMEL_SHOP_BG = "bg_shop"; // Dr.fookah ドバイ店（NF03 と同じ流用）
 export const camelSceneBg = id => id === CAMEL_SCENES.meet || id === CAMEL_SCENES.invite ? CAMEL_SHOP_BG
   : Object.values(CAMEL_SCENES).includes(id) ? CAMEL_TRACK_BG : null;

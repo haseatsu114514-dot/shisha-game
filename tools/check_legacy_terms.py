@@ -60,7 +60,6 @@ LEGACY_ERROR_CURRENT = {
     "炭場 創": "チャコール博士の本名は火浦 理一",
     "炭場創": "チャコール博士の本名は火浦 理一",
     "前園": "上園 文太郎（ID maezono）に統一",
-    "マスター・フーカ": "王煙楼（煙楼先生・ID master_hookah・第4章）に統一",
 }
 HISTORY_PATHS = ("docs/archive/", "docs/qa/", "docs/owner_requests.md")
 

@@ -817,6 +817,9 @@ img.lime-face[src$="/face_hiyori.png"] { box-sizing: border-box; padding-left: 3
 }
 .lime-chat-row:hover { background: #f1faf3; }
 .lcr-face { position: relative; flex: none; }
+/* 章の入口の行（第3章の東京の「地元との連絡」）。顔の代わりに緑の丸い印。 */
+.lime-shortcut-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: #06c755; color: #fff; font-size: 20px; }
+.lime-shortcut { border-bottom: 2px solid #e3e7ec; }
 .lcr-face .lime-face { width: 42px; height: 42px; border-color: #e3e7ec; }
 .lcr-dot {
   position: absolute;

@@ -23,7 +23,7 @@ assert.deepEqual(Object.entries(FACILITY_ICONS).map(([id, { label }]) => [id, la
     ['shinkansen_station', '新幹線の駅'], ['dubai_souq', 'スーク'], ['dubai_creek', 'クリーク沿い'], ['dubai_mosque', '風の回廊モスク'],
     ['dubai_inn', '旧市街の宿'], ['dubai_inn_lobby', '宿のロビー'], ['dubai_practice_hall', '公式練習会場']]);
 for (const id of ['kannon', 'rest', 'cafe', 'rojiura_cinema', 'axe_bar', 'choizap', 'fortune', 'trpg_bar', 'ch3_tokyo_gym',
-  'ch3_tokyo_park', 'ch5_tokyo_park', 'ch3_tokyo_room', 'ch5_tokyo_attic', 'ch3_tokyo_lime', 'ch5_call', 'ch5_to_tokyo', 'ch5_tokyo_home',
+  'ch3_tokyo_park', 'ch5_tokyo_park', 'ch3_tokyo_room', 'ch5_tokyo_attic', 'ch5_call', 'ch5_to_tokyo', 'ch5_tokyo_home',
   'ch4_dubai_souq', 'ch4_dubai_creek', 'ch4_dubai_mosque', 'ch4_dubai_inn', 'ch4_dubai_naru', 'ch4_dubai_practice',
   'ch5_dubai_souq', 'ch5_dubai_creek', 'ch5_dubai_mosque']) assert(hasFacilityIcon(id), id);
 for (const id of ['tonari', 'naru', 'adam', 'minto', 'shop', 'c_station', '__proto__']) assert(!hasFacilityIcon(id), 'Store logos must keep their own role');
