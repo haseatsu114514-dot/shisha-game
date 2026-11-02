@@ -119,43 +119,43 @@
       "id": "map",
       "label": "宝の地図",
       "short": "地図",
-      "x": 14,
+      "x": 13,
       "y": 24
     },
     {
       "id": "pedestal",
       "label": "王冠の台座",
       "short": "台座",
-      "x": 78,
-      "y": 20
+      "x": 79,
+      "y": 22
     },
     {
       "id": "graffiti",
       "label": "船乗りの落書き",
       "short": "落書き",
-      "x": 40,
-      "y": 34
+      "x": 37,
+      "y": 33
     },
     {
       "id": "water",
       "label": "入り江の水面",
       "short": "水面",
-      "x": 56,
-      "y": 62
+      "x": 58,
+      "y": 56
     },
     {
       "id": "anchor",
       "label": "古い錨",
       "short": "錨",
-      "x": 85,
-      "y": 60
+      "x": 91,
+      "y": 66
     },
     {
       "id": "footprints",
       "label": "砂浜の足跡",
       "short": "足跡",
-      "x": 24,
-      "y": 79
+      "x": 30,
+      "y": 84
     }
   ],
   "hypotheses": [
@@ -2636,7 +2636,7 @@
     "number": "05",
     "genre": "海賊の冒険",
     "tagline": "宝の上で、サメの王が待っている。",
-    "backdrop": "linear-gradient(170deg, #5fd3c8 0%, #1f9aa6 38%, #12606f 62%, #e9d6a8 63%, #d8bd85 100%)",
+    "image": "../../img/backgrounds/trpg_shark-island_room.webp",
     "sceneAlt": "南の島の入り江。地図を広げた岩、王冠の台座、落書きの岩壁、青い水面、古い錨、砂浜の足跡。水の下に大きなサメの影。",
     "location": "トビウオ諸島 / サメ島の入り江",
     "atmosphere": "青く澄んだ入り江。白い砂。水の下に、大きな影。",

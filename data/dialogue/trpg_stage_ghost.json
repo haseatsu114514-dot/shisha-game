@@ -120,41 +120,41 @@
       "label": "舞台の幕",
       "short": "幕",
       "x": 50,
-      "y": 46
+      "y": 42
     },
     {
       "id": "mirror",
       "label": "楽屋の鏡",
       "short": "鏡",
-      "x": 12,
-      "y": 30
+      "x": 10,
+      "y": 22
     },
     {
       "id": "lights",
       "label": "照明室",
       "short": "照明室",
       "x": 88,
-      "y": 22
+      "y": 16
     },
     {
       "id": "frontrow",
       "label": "客席の最前列",
       "short": "最前列",
       "x": 50,
-      "y": 80
+      "y": 82
     },
     {
       "id": "shelf",
       "label": "台本の棚",
       "short": "台本棚",
-      "x": 16,
-      "y": 66
+      "x": 14,
+      "y": 60
     },
     {
       "id": "board",
       "label": "劇場の掲示",
       "short": "掲示",
-      "x": 84,
+      "x": 91,
       "y": 62
     }
   ],
@@ -2507,7 +2507,7 @@
     "number": "10",
     "genre": "やさしい幽霊劇",
     "tagline": "夜明けまでに、幕をきちんと下ろす。",
-    "backdrop": "radial-gradient(ellipse at 50% 0%, #e2b85a55 0%, transparent 45%), linear-gradient(160deg, #6a1826, #2a0a12 72%)",
+    "image": "../../img/backgrounds/trpg_stage-ghost_room.webp",
     "sceneAlt": "閉館した劇場。舞台の幕、楽屋の鏡、照明室、客席の最前列、台本の棚、劇場の掲示。空の舞台に淡い人影。",
     "location": "港坂 / 閉館した劇場「月灯座」",
     "atmosphere": "赤い幕。三百の空席。夜明けまで、あと少し。",

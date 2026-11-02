@@ -32,13 +32,8 @@ Create a production videogame sprite atlas on a TRANSPARENT background, EXACTLY 
 
 ## 03 葉っぱ耳の郵便猫（`leaf-mail`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `route`=0, `wrap`=1, `handover`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_leaf-mail_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。 Setting: 時計坂の町 / 月夜の大通り. Mood: 大きな月。石畳に、猫の足音がひとつ。. Fictional place from a tabletop story (絵本ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 郵便鞄 clearly visible around x52% y80%; 時計塔 clearly visible around x20% y24%; 屋根の上 clearly visible around x66% y18%; 川の橋 clearly visible around x86% y66%; パン屋の窓 clearly visible around x14% y64%; 掲示板 clearly visible around x38% y50%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-leaf-mail.png ---
@@ -62,13 +57,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 04 怪盗と原点の林檎（`apple-thief`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `trap`=0, `post`=1, `confront`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_apple-thief_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 湖畔の館の夜会。書斎の配合帳、温室の林檎の木、大広間の肖像画、厨房の香りの棚、玄関の予告状、主人の椅子。 Setting: ミルト湖畔 / 白林檎館. Mood: 燭台の灯り。林檎の香り。どこかに、怪盗。. Fictional place from a tabletop story (館の怪盗もの / 謎解き). Concrete click-investigation objects, each a distinct readable prop at its position: 書斎の配合帳 clearly visible around x14% y26%; 温室の林檎の木 clearly visible around x82% y24%; 大広間の肖像画 clearly visible around x47% y18%; 厨房の香りの棚 clearly visible around x18% y70%; 玄関の予告状 clearly visible around x50% y82%; 主人の椅子 clearly visible around x76% y62%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-apple-thief.png ---
@@ -92,13 +82,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 05 サメ島の宝の地図（`shark-island`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `gear`=0, `landing`=1, `offer`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_shark-island_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 南の島の入り江。地図を広げた岩、王冠の台座、落書きの岩壁、青い水面、古い錨、砂浜の足跡。水の下に大きなサメの影。 Setting: トビウオ諸島 / サメ島の入り江. Mood: 青く澄んだ入り江。白い砂。水の下に、大きな影。. Fictional place from a tabletop story (海賊の冒険). Concrete click-investigation objects, each a distinct readable prop at its position: 宝の地図 clearly visible around x14% y24%; 王冠の台座 clearly visible around x78% y20%; 船乗りの落書き clearly visible around x40% y34%; 入り江の水面 clearly visible around x56% y62%; 古い錨 clearly visible around x85% y60%; 砂浜の足跡 clearly visible around x24% y79%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-shark-island.png ---
@@ -122,13 +107,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 06 朝霧の王国と、最後の一台（`mist-kingdom`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `flavor`=0, `place`=1, `words`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_mist-kingdom_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。 Setting: 朝霧の王国 / 霧の王宮. Mood: 白い霧。薄れていく回廊。小さな王女の、透けそうな笑顔。. Fictional place from a tabletop story (剣と魔法 / 霧の選手権). Concrete click-investigation objects, each a distinct readable prop at its position: 玉座 clearly visible around x50% y28%; 王妃の肖像 clearly visible around x20% y24%; 霧の窓 clearly visible around x82% y22%; 審査員席 clearly visible around x30% y60%; 王宮の香り棚 clearly visible around x70% y58%; 消えかけの回廊 clearly visible around x14% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-mist-kingdom.png ---
@@ -152,13 +132,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 07 星の駅の煙職人ロボ（`smoke-robot`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `part`=0, `flavor`=1, `gift`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_smoke-robot_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 軌道の休憩所。作業台、展望デッキの窓、倉庫の扉、通信室、整備士のメモと失敗作の山。窓の外に青い地球。 Setting: 地球周回軌道 / 星の駅ポラリス. Mood: 夜間モードの灯り。通路の奥で、小さなビープ音。. Fictional place from a tabletop story (SF / ロボと一台). Concrete click-investigation objects, each a distinct readable prop at its position: ピコの作業台 clearly visible around x50% y64%; 展望デッキの窓 clearly visible around x76% y22%; 倉庫の扉 clearly visible around x89% y66%; 通信室の記録 clearly visible around x14% y24%; 整備士のメモ clearly visible around x20% y72%; 失敗した一台の山 clearly visible around x44% y34%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-smoke-robot.png ---
@@ -182,13 +157,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 08 試験前夜、消えかけの使い魔（`fading-familiar`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `spell`=0, `item`=1, `call`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_fading-familiar_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 夜の魔法学校。空っぽの寝床、図書館の窓、薬草園、天文台の階段、掲示板の試験表、廊下の煙の跡。 Setting: 星見ヶ丘魔法学校 / 夜の寮と校舎. Mood: 試験前夜の静かな校舎。夜明けまで、あと少し。. Fictional place from a tabletop story (学園ファンタジー・儚さ). Concrete click-investigation objects, each a distinct readable prop at its position: 空っぽの寝床 clearly visible around x15% y30%; 図書館の窓 clearly visible around x80% y24%; 薬草園 clearly visible around x86% y70%; 天文台の階段 clearly visible around x52% y20%; 掲示板の試験表 clearly visible around x20% y72%; 廊下に残る煙の跡 clearly visible around x52% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-fading-familiar.png ---
@@ -212,13 +182,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 09 夜市と狐のお面（`fox-market`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `light`=0, `stall`=1, `farewell`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_fox-market_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 夏祭りの夜市。お面屋の棚、金魚すくいの水槽、神社の鳥居、綿あめの屋台、落ちていた鈴、迷子案内の掲示板。 Setting: 灯籠通り / 夏の夜市. Mood: 提灯の列と、遠い太鼓。お面の子が、ひとり。. Fictional place from a tabletop story (和の不思議). Concrete click-investigation objects, each a distinct readable prop at its position: お面屋の棚 clearly visible around x15% y30%; 金魚すくいの水槽 clearly visible around x30% y76%; 神社の鳥居 clearly visible around x80% y22%; 綿あめの屋台 clearly visible around x50% y42%; 落ちていた鈴 clearly visible around x63% y84%; 迷子案内の掲示板 clearly visible around x89% y63%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-fox-market.png ---
@@ -242,13 +207,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 10 幕の降りない劇場（`stage-ghost`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `staging`=0, `prop`=1, `curtain`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_stage-ghost_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 閉館した劇場。舞台の幕、楽屋の鏡、照明室、客席の最前列、台本の棚、劇場の掲示。空の舞台に淡い人影。 Setting: 港坂 / 閉館した劇場「月灯座」. Mood: 赤い幕。三百の空席。夜明けまで、あと少し。. Fictional place from a tabletop story (やさしい幽霊劇). Concrete click-investigation objects, each a distinct readable prop at its position: 舞台の幕 clearly visible around x50% y46%; 楽屋の鏡 clearly visible around x12% y30%; 照明室 clearly visible around x88% y22%; 客席の最前列 clearly visible around x50% y80%; 台本の棚 clearly visible around x16% y66%; 劇場の掲示 clearly visible around x84% y62%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-stage-ghost.png ---
@@ -272,13 +232,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 11 月光花の古城と、終わらないアンコール（`moonflower-encore`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `stage`=0, `scent`=1, `finale`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_moonflower-encore_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。 Setting: 月の丘 / 月光花城. Mood: 燭台の灯り。白い花の香り。鳴りやまない、アンコール。. Fictional place from a tabletop story (ゴシック幻想 / 音楽). Concrete click-investigation objects, each a distinct readable prop at its position: 大広間の舞台 clearly visible around x48% y20%; 客席の名札 clearly visible around x22% y66%; 楽屋の譜面台 clearly visible around x14% y28%; 庭の月光花 clearly visible around x84% y26%; 回廊の肖像画 clearly visible around x78% y64%; 家令の鍵束 clearly visible around x50% y82%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-moonflower-encore.png ---
@@ -302,13 +257,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 12 盛れない勇者と、プリ帳の魔王（`purikura-hero`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `deco`=0, `light`=1, `pose`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_purikura-hero_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。 Setting: きらめき王国 / 王国の広場と撮影城. Mood: 盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。. Fictional place from a tabletop story (コメディ・ファンタジー). Concrete click-investigation objects, each a distinct readable prop at its position: 王国の広場 clearly visible around x22% y74%; 写真屋のショーケース clearly visible around x12% y36%; 城門の看板 clearly visible around x48% y56%; 撮影城の鏡の間 clearly visible around x80% y30%; 落とし物のプリ clearly visible around x38% y84%; 魔王の玉座 clearly visible around x60% y20%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-purikura-hero.png ---
@@ -332,13 +282,8 @@ Row 2 = characters the companions made for this story. Light comedy is welcome, 
 
 ## 13 人形館のレクイエム（`doll-requiem`）
 
-- 背景: 未生成（いまは backdrop の色で代用） / 選択肢の絵: 未生成（いまは文字のカードで代用）
+- 背景: 済 / 選択肢の絵: 未生成（いまは文字のカードで代用）
 - 行番号: `mend`=0, `tea`=1, `call`=2, `tactic`=3, `hypotheses`=4
-
-```
---- background: trpg_doll-requiem_room.png ---
-Finely finished premium visual-novel game background, single landscape 16:9 image (1280x720), wide cinematic composition, carefully painted anime environment concept art with tactile brush detail, restrained colors, high-quality polished indie game art. NO people, NO silhouettes of people, NO hookah/shisha/waterpipe, NO smoking apparatus, NO text, NO logos, NO watermarks, NO UI. Interior or scene must stay well lit and readable. Not a photograph, not a 3D render, not flat vector art. Scene: 雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。 Setting: 霧氷の丘 / 洋館「ラベンダー館」. Mood: 降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。. Fictional place from a tabletop story (怖すぎない洋館ミステリー). Concrete click-investigation objects, each a distinct readable prop at its position: 人形の飾り棚 clearly visible around x14% y34%; 子ども部屋の小さな舞台 clearly visible around x50% y26%; 書斎の日記 clearly visible around x86% y32%; 雪の窓辺 clearly visible around x84% y68%; 柱時計 clearly visible around x50% y72%; オルゴールの箱 clearly visible around x16% y70%. Keep the upper-center area slightly calm for a title. Believable scale and clean perspective.
-```
 
 ```
 --- choices atlas: choices-doll-requiem.png ---

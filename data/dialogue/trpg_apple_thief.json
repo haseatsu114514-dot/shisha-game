@@ -119,43 +119,43 @@
       "id": "notebook",
       "label": "書斎の配合帳",
       "short": "配合帳",
-      "x": 14,
-      "y": 26
+      "x": 13,
+      "y": 20
     },
     {
       "id": "tree",
       "label": "温室の林檎の木",
       "short": "林檎の木",
-      "x": 82,
+      "x": 86,
       "y": 24
     },
     {
       "id": "portrait",
       "label": "大広間の肖像画",
       "short": "肖像画",
-      "x": 47,
-      "y": 18
+      "x": 41,
+      "y": 16
     },
     {
       "id": "shelf",
       "label": "厨房の香りの棚",
       "short": "香りの棚",
-      "x": 18,
-      "y": 70
+      "x": 14,
+      "y": 59
     },
     {
       "id": "notice",
       "label": "玄関の予告状",
       "short": "予告状",
-      "x": 50,
-      "y": 82
+      "x": 57,
+      "y": 88
     },
     {
       "id": "chair",
       "label": "主人の椅子",
       "short": "椅子",
-      "x": 76,
-      "y": 62
+      "x": 77,
+      "y": 58
     }
   ],
   "hypotheses": [
@@ -2567,7 +2567,7 @@
     "number": "04",
     "genre": "館の怪盗もの / 謎解き",
     "tagline": "予告状は一枚。狙いは、原点の香り。",
-    "backdrop": "radial-gradient(ellipse at 50% 16%, rgba(246, 234, 212, 0.55), rgba(246, 234, 212, 0) 55%), linear-gradient(160deg, #8a2433, #4a1019 55%, #24070d)",
+    "image": "../../img/backgrounds/trpg_apple-thief_room.webp",
     "sceneAlt": "湖畔の館の夜会。書斎の配合帳、温室の林檎の木、大広間の肖像画、厨房の香りの棚、玄関の予告状、主人の椅子。",
     "location": "ミルト湖畔 / 白林檎館",
     "atmosphere": "燭台の灯り。林檎の香り。どこかに、怪盗。",

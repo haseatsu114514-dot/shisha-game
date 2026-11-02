@@ -119,21 +119,21 @@
       "id": "shelf",
       "label": "人形の飾り棚",
       "short": "飾り棚",
-      "x": 14,
-      "y": 34
+      "x": 13,
+      "y": 30
     },
     {
       "id": "stage",
       "label": "子ども部屋の小さな舞台",
       "short": "小さな舞台",
-      "x": 50,
-      "y": 26
+      "x": 58,
+      "y": 33
     },
     {
       "id": "diary",
       "label": "書斎の日記",
       "short": "日記",
-      "x": 86,
+      "x": 82,
       "y": 32
     },
     {
@@ -141,21 +141,21 @@
       "label": "雪の窓辺",
       "short": "窓辺",
       "x": 84,
-      "y": 68
+      "y": 60
     },
     {
       "id": "clock",
       "label": "柱時計",
       "short": "柱時計",
-      "x": 50,
-      "y": 72
+      "x": 52,
+      "y": 50
     },
     {
       "id": "musicbox",
       "label": "オルゴールの箱",
       "short": "オルゴール",
-      "x": 16,
-      "y": 70
+      "x": 17,
+      "y": 72
     }
   ],
   "hypotheses": [
@@ -2537,7 +2537,7 @@
     "number": "13",
     "genre": "怖すぎない洋館ミステリー",
     "tagline": "真夜中の鐘までに、人形たちのわけを知る。",
-    "backdrop": "radial-gradient(ellipse at 72% 8%, #ece8ff55 0%, transparent 42%), radial-gradient(ellipse at 18% 92%, #b9a3d933 0%, transparent 50%), linear-gradient(165deg, #3d3060, #171334 72%)",
+    "image": "../../img/backgrounds/trpg_doll-requiem_room.webp",
     "sceneAlt": "雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。",
     "location": "霧氷の丘 / 洋館「ラベンダー館」",
     "atmosphere": "降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。",

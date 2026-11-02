@@ -239,43 +239,43 @@
       "id": "plaza",
       "label": "王国の広場",
       "short": "広場",
-      "x": 22,
-      "y": 74
+      "x": 24,
+      "y": 60
     },
     {
       "id": "showcase",
       "label": "写真屋のショーケース",
       "short": "写真屋",
       "x": 12,
-      "y": 36
+      "y": 26
     },
     {
       "id": "sign",
       "label": "城門の看板",
       "short": "城門",
-      "x": 48,
-      "y": 56
+      "x": 57,
+      "y": 36
     },
     {
       "id": "mirror",
       "label": "撮影城の鏡の間",
       "short": "鏡の間",
-      "x": 80,
-      "y": 30
+      "x": 86,
+      "y": 26
     },
     {
       "id": "purikura",
       "label": "落とし物のプリ",
       "short": "落とし物",
-      "x": 38,
-      "y": 84
+      "x": 41,
+      "y": 86
     },
     {
       "id": "throne",
       "label": "魔王の玉座",
       "short": "玉座",
-      "x": 60,
-      "y": 20
+      "x": 62,
+      "y": 16
     }
   ],
   "consult": {
@@ -3155,7 +3155,7 @@
     "number": "12",
     "genre": "コメディ・ファンタジー",
     "tagline": "盛りを盗む魔王に、勇者たちが会いに行く。",
-    "backdrop": "radial-gradient(ellipse at 70% 18%, #b0599055, transparent 55%), linear-gradient(160deg, #3b1f4a 0%, #5a2c63 48%, #2b1c3e 100%)",
+    "image": "../../img/backgrounds/trpg_purikura-hero_room.webp",
     "sceneAlt": "きらめき王国。色あせた広場の噴水、写真屋のショーケース、サメの泳ぐ堀と城門、撮影城の鏡の間、落ちていたプリ、魔王の玉座。",
     "location": "きらめき王国 / 王国の広場と撮影城",
     "atmosphere": "盛りを吸われて、王国じゅうが少し地味。城から、今日もシャッターの音。",

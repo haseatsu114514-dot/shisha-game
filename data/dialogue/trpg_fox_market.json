@@ -238,43 +238,43 @@
       "id": "mask",
       "label": "お面屋の棚",
       "short": "お面屋",
-      "x": 15,
-      "y": 30
+      "x": 17,
+      "y": 32
     },
     {
       "id": "goldfish",
       "label": "金魚すくいの水槽",
       "short": "金魚",
-      "x": 30,
-      "y": 76
+      "x": 25,
+      "y": 70
     },
     {
       "id": "torii",
       "label": "神社の鳥居",
       "short": "鳥居",
-      "x": 80,
-      "y": 22
+      "x": 74,
+      "y": 17
     },
     {
       "id": "cotton",
       "label": "綿あめの屋台",
       "short": "綿あめ",
-      "x": 50,
-      "y": 42
+      "x": 49,
+      "y": 38
     },
     {
       "id": "bell",
       "label": "落ちていた鈴",
       "short": "鈴",
-      "x": 63,
-      "y": 84
+      "x": 62,
+      "y": 86
     },
     {
       "id": "board",
       "label": "迷子案内の掲示板",
       "short": "掲示板",
-      "x": 89,
-      "y": 63
+      "x": 90,
+      "y": 46
     }
   ],
   "consult": {
@@ -2965,7 +2965,7 @@
     "number": "09",
     "genre": "和の不思議",
     "tagline": "お面の下の、帰り道を探す。",
-    "backdrop": "radial-gradient(ellipse at 50% 112%, rgba(235, 138, 52, 0.55), rgba(235, 138, 52, 0) 58%), linear-gradient(172deg, #171b4d, #0e1133 62%, #2a1838)",
+    "image": "../../img/backgrounds/trpg_fox-market_room.webp",
     "sceneAlt": "夏祭りの夜市。お面屋の棚、金魚すくいの水槽、神社の鳥居、綿あめの屋台、落ちていた鈴、迷子案内の掲示板。",
     "location": "灯籠通り / 夏の夜市",
     "atmosphere": "提灯の列と、遠い太鼓。お面の子が、ひとり。",

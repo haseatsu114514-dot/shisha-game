@@ -238,42 +238,42 @@
       "label": "郵便鞄",
       "short": "鞄",
       "x": 52,
-      "y": 80
+      "y": 82
     },
     {
       "id": "clock",
       "label": "時計塔",
       "short": "時計塔",
-      "x": 20,
-      "y": 24
+      "x": 27,
+      "y": 16
     },
     {
       "id": "roof",
       "label": "屋根の上",
       "short": "屋根",
-      "x": 66,
-      "y": 18
+      "x": 62,
+      "y": 25
     },
     {
       "id": "bridge",
       "label": "川の橋",
       "short": "橋",
       "x": 86,
-      "y": 66
+      "y": 58
     },
     {
       "id": "bakery",
       "label": "パン屋の窓",
       "short": "パン屋",
-      "x": 14,
-      "y": 64
+      "x": 13,
+      "y": 45
     },
     {
       "id": "board",
       "label": "掲示板",
       "short": "掲示板",
       "x": 38,
-      "y": 50
+      "y": 47
     }
   ],
   "consult": {
@@ -2925,7 +2925,7 @@
     "number": "03",
     "genre": "絵本ファンタジー",
     "tagline": "宛名のにじんだ手紙を、月の下で届ける。",
-    "backdrop": "radial-gradient(circle at 78% 20%, #f6e3a1 0 5%, #e8c56a55 8%, transparent 24%), linear-gradient(170deg, #1d2d55, #101a38 58%, #080d20)",
+    "image": "../../img/backgrounds/trpg_leaf-mail_room.webp",
     "sceneAlt": "大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。",
     "location": "時計坂の町 / 月夜の大通り",
     "atmosphere": "大きな月。石畳に、猫の足音がひとつ。",
