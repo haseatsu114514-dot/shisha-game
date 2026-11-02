@@ -263,7 +263,8 @@ for (const reduced of [true, false]) test('d20 roll once and settle once; reduce
   const roll = q('trpg-roll'), click = roll.events.click[0];
   click({currentTarget:roll}); const pending = JSON.stringify(api.snapshot().pending);
   click({currentTarget:roll}); assert.equal(JSON.stringify(api.snapshot().pending), pending, 'Double click cannot roll twice');
-  assert.equal(delays.at(-1), reduced ? 40 : 650);
+  // The dice are thrown into the tray and bounce before they settle (2026-11-02: 650ms → 1050ms).
+  assert.equal(delays.at(-1), reduced ? 40 : 1050);
   for (const tick of tickers) tick(); assert.equal(JSON.stringify(api.snapshot().pending), pending, 'Animation cannot update actual dice');
   timers.shift()();
   const values = root.querySelectorAll('.trpg-d20-value').map(n => Number(n.textContent));
