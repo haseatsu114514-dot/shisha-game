@@ -2,19 +2,24 @@
 // オーナー「3も4も14日」）。日付・昼夜・体力・睡眠・天気・LIMEの受信箱・地図・育成（上限90）・寝る前の家シーシャは
 // 日常ループが持つ。ドバイDAY1〜12がこの日常、DAY13は前夜祭と前夜（ch4.js の今までの「前夜」の流れ）、DAY14が世界大会。
 // ここはドバイだけの部分:
-//   - 行き先: スーク・FESTA・中心地のカフェ・路地裏のカフェ（約束の後）・なると会う・公式練習会場・クリーク沿い・
-//     Dr.fookah ドバイ店・モスク（火種がある時・見学時間）・宿
+//   - 行き先: スーク・FESTA・中心地のカフェ・路地裏のカフェ（約束の後）・龍龍水煙所（王煙楼の店）・なると会う・公式練習会場・
+//     クリーク沿い・Dr.fookah ドバイ店・モスク（火種がある時・見学時間）・宿
+//   - 龍龍水煙所: 王煙楼の店がドバイに出した店。ほかの章のライバルの店と同じく、通うと好感度と段階の会話が進む（ch4-longlong.js）
 //   - 必須の出会い（FESTAの太陽・スークの出会い・路地裏の約束）は、期限の夜までに寄らなければその夜に読む
 //   - 再訪の会話は data/dialogue/ch4_dubai_daily.json から巡回して読む
+//   - 中心地のカフェ・路地裏のカフェは、来店のたびに現地のメニューから一台頼んで味わう（ch4-dubai-cafe.js。2026-11-02
+//     オーナー「カフェで吸えたりとかにしよう」）。ドバイで一台吸う来店は現地の相場をきりよく（2026-11-02 オーナー「シーシャは6000 カフェは3000 できりよくいく」）:
+//     専門店（FESTA）6,000円・カフェ（中心地・路地裏）3,000円。調べた相場（1ディルハム≒43.5円）は
+//     専門のラウンジ 100〜150ディルハム、モール・中心地のカフェ 65〜75ディルハム、下町の小さなカフェ 30〜70ディルハム
 //   - ラクダレース（任意・ch4-camel-race.js）: 店先でサイフと知り合う→誘い→昼にレース場。行き先は段階で変わる
 // 読了の確定は ch4-progress.js の completeChapterFourScene だけ（本筋の場面）。現在地は flags._ch2_region = "dubai"。
 import { state, save, timeOfDay } from "../core/state.js";
 import { DB, bgUrl } from "../core/data.js";
-import { layers, setBg, toast } from "../core/ui.js";
+import { layers, setBg, toast, modal } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { showHud } from "../daily/hud.js";
-import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel, visitAffinity } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { consultLessons } from "../core/growth.js";
@@ -26,6 +31,9 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chap
 import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { visitCamelRace } from "./ch4-camel-race.js";
 import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js";
+import { CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_IN_SCENE, TALKS_AFTER_ORDER,
+  resolveCafeOrder, tasteScene, recordCafeOrder } from "./ch4-dubai-cafe.js";
+import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, nextLonglongVisit, longlongHasNew, recordLonglongVisit } from "./ch4-longlong.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -34,11 +42,12 @@ const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（�
 const DEADLINE = Object.freeze({ festa: 6, first: 8, second: 11 });
 
 // 再訪の会話（data/dialogue/ch4_dubai_daily.json）。既存の再訪（ch4_main.json）と並べて巡回する。
+// カフェの *_culture_* は現地のシーシャ文化の話（吸いながら店の人・常連から聞く。注文の後に読む）。
 const TALKS = Object.freeze({
   souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d"],
   festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d"],
-  center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_talk_c", "ch4_cafe_talk_d"],
-  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_talk_b", "ch4_alley_talk_c"],
+  center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d"],
+  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_talk_b", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis"],
   naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3"],
   practice: ["ch4_practice_hall_1", "ch4_practice_hall_2"],
 });
@@ -48,8 +57,8 @@ const TALK_BG = Object.freeze({
   ch4_practice_hall_1: CH4_PLACE_BG.venue, ch4_practice_hall_2: CH4_PLACE_BG.venue,
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
-  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d)$/.test(scene))),
-  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest",
+  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
+  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...CAFE_TASTE_IDS,
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
@@ -63,11 +72,15 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch4_dubai_souq", place: "souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
     preview: CH4_PLACE_BG.souq, stamina: -10, stat: "insight", desc: "スパイスの匂いが立つ市場。歩くたびに、違うものが目に入る。" }),
   spot({ id: "ch4_dubai_festa", place: "festa", label: "FESTA", area: "大会会場の出張ブース", x: 56, y: 28, theme: "rival", glyph: "煙",
-    face: "da_silva", preview: CH4_PLACE_BG.festa, cost: 3000, stamina: -12, stat: "charm", desc: "手拍子と炭の匂いのする、太陽の店。" }),
+    face: "da_silva", preview: CH4_PLACE_BG.festa, cost: 6000, stamina: -12, stat: "charm", desc: "手拍子と炭の匂いのする、太陽の店。一台6,000円。" }),
   spot({ id: "ch4_dubai_cafe", place: "center_cafe", label: "中心地のカフェ", area: "街の中心", x: 70, y: 52, theme: "store", glyph: "茶",
-    preview: CH4_PLACE_BG.center_cafe, cost: 6000, stamina: -10, stat: "sense", desc: "一台6,000円の立派なカフェ。給仕と客の作法を見る。" }),
+    preview: CH4_PLACE_BG.center_cafe, cost: 3000, stamina: -10, stat: "sense", desc: "立派なカフェ。現地のメニューから一台頼んで吸う（3,000円）。給仕と客の作法も見る。" }),
   spot({ id: "ch4_dubai_alley", place: "alley_cafe", label: "路地裏のカフェ", area: "路地の奥", x: 30, y: 78, theme: "store", glyph: "茶",
-    preview: CH4_PLACE_BG.alley_cafe, cost: 3000, stamina: -10, stat: "technique", desc: "路地の奥の小さなカフェ。古い台が並ぶ。" }),
+    preview: CH4_PLACE_BG.alley_cafe, cost: 3000, stamina: -10, stat: "technique", desc: "古い台が並ぶ小さなカフェ。現地のメニューから一台頼んで吸う（3,000円）。" }),
+  // 龍龍水煙所（王煙楼の店）は最初から出す。王煙楼に会うまでは店主の顔は「？」（daily/spot-people.js）。背景は仮置き。
+  spot({ id: "ch4_dubai_longlong", place: "longlong", label: "龍龍水煙所", area: "世界大会のあいだの店", x: 58, y: 50, theme: "rival", glyph: "龍",
+    face: LONGLONG_CHAR, preview: LONGLONG_BG, cost: 6000, stamina: -12, stat: "insight",
+    desc: "中国の水煙の老舗が、世界大会に合わせて出した店。一台6,000円。" }),
   spot({ id: "ch4_dubai_naru", place: "naru", label: "なると会う", area: "宿のロビー", x: 20, y: 36, theme: "rival", glyph: "友",
     face: "naru", preview: CH4_PLACE_BG.inn, stamina: -8, stat: "guts", desc: "同じ街にいる日本の第二代表。少し話す。" }),
   spot({ id: "ch4_dubai_practice", place: "practice", label: "公式練習会場", area: "大会会場", x: 84, y: 30, theme: "stadium", glyph: "練",
@@ -89,6 +102,7 @@ function spotHasNew(entry) {
   if (entry.place === "alley_cafe") return !read("ch4_stranger_second") || !read("ch4_alley_cafe_quiet");
   if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
   if (entry.place === "practice") return nextTalk("practice", { once: true }) !== null;
+  if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR));
   return false;
 }
 
@@ -133,13 +147,14 @@ async function keepDailyHud(task) {
   }
 }
 
-/** 本筋ではない短い会話。読み終えたら true。 */
+/** 本筋ではない短い会話。読み終えたら true。id の代わりに台本そのもの（前に一行足したもの）も渡せる。 */
 async function readPlain(id, bg, owner) {
-  if (!DB.dialogues[id]?.lines?.length) return false;
+  const dialogue = typeof id === "string" ? DB.dialogues[id] : id;
+  if (!dialogue?.lines?.length) return false;
   const url = bgUrl(bg);
   await setBg(url, { instant: true });
   if (state !== owner) return false;
-  const result = await play(DB.dialogues[id], { bg: url });
+  const result = await play(dialogue, { bg: url });
   return state === owner && !!result && !result.cancelled;
 }
 
@@ -176,7 +191,7 @@ export function chapterFourDubaiDefinition(io) {
 /** ドバイの日常（DAY1〜12）を回す。前夜祭の日（DAY13）の朝か LOAD で戻る。 */
 export async function runChapterFourDubai(io) {
   const owner = state;
-  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS));
+  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_IDS));
   if (state !== owner) return;
   state.flags._ch2_region = DUBAI;
   state.phase = "daily";
@@ -234,16 +249,24 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.place === "camel") return visitCamel(owner);
   if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${entry.cost.toLocaleString("ja-JP")}円）`); return unused; }
   if (entry.stamina < 0 && !(await staminaGuard(entry.stamina))) return unused;
-  let done = false;
+  let done = false, longlong = null;
   if (entry.place === "inn") done = await restAtInn(io, owner);
   else if (entry.place === "creek") done = await readPlain(state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day", "bg_dubai_street_night", owner);
+  else if (entry.place === "longlong") {
+    // 必要ハートに届いた最古の未読の段階、無ければ小会話（ch4-longlong.js）。読み終えた時だけ記録する。
+    longlong = nextLonglongVisit(state, affinityLevel(LONGLONG_CHAR));
+    done = await readPlain(longlong.id, LONGLONG_BG, owner);
+  }
   else done = await visitPlace(entry, io, owner);
   if (!done || state !== owner) return unused;
+  if (longlong) recordLonglongVisit(state, longlong);
   if (entry.cost) addMoney(-entry.cost);
   addStamina(entry.stamina || 0);
   if (entry.stat) earnStat(entry.stat, 4);
   if (entry.place === "festa") gainAffinity("da_silva", 5);
   if (entry.place === "naru") gainAffinity("naru", 5);
+  // 龍龍水煙所: ほかの章のライバルの店と同じ値（段階の会話 +16・通いの小会話 +8。core/stats.js の visitAffinity）
+  if (longlong) gainAffinity(LONGLONG_CHAR, visitAffinity(longlong.kind === "story" ? "story" : "talk"));
   // 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があれば相談して話を聞く（FESTA＝太陽）。
   // 路地裏のカフェの日常の会話で話すのは店員で、シェイクの授業は大会で名を明かすまで伏せる。シェイクへの相談は第5章の屋敷（ch5-dubai.js）。
   const teacher = { festa: "da_silva" }[entry.place];
@@ -270,20 +293,46 @@ async function restAtInn(io, owner) {
   return readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner);
 }
 
-/** 行き先の場面: 初めての場面（本筋）があればそれ、無ければ再訪の会話を巡回して読む。 */
+/**
+ * 行き先の場面: 初めての場面（本筋）があればそれ、無ければ再訪の会話を巡回して読む。
+ * カフェでは、場面の後（吸いながらの会話は前）に現地のメニューから一台頼んで味わう。場面の中で吸う回は頼まない。
+ */
 async function visitPlace(entry, io, owner) {
+  const cafe = CAFE_PLACES.includes(entry.place);
   const first = firstScenes(entry.place);
   if (first.length) {
     for (const id of first) if (!await keepDailyHud(() => io.readAndCommit(id)) || state !== owner) return false;
-    return true;
+    return cafe && !first.some(id => SMOKED_IN_SCENE.includes(id)) ? orderAtCafe(entry, owner) : true;
   }
   const talk = nextTalk(entry.place);
   if (!talk) return false;
+  const orderFirst = cafe && TALKS_AFTER_ORDER.includes(talk);
+  if (orderFirst && !await orderAtCafe(entry, owner)) return false;
   // 既存の再訪（ch4_main.json の自由行動の場面）は本筋の確定も通す。新しい再訪の会話は読むだけ。
   const done = CH4_FREE_SCENE_IDS.includes(talk) ? await keepDailyHud(() => io.readAndCommit(talk))
     : await readPlain(talk, TALK_BG[talk] || CH4_SCENE_BG[talk] || entry.preview, owner);
   if (!done || state !== owner) return false;
   countTalk(entry.place);
+  if (cafe && !orderFirst && !SMOKED_IN_SCENE.includes(talk)) return orderAtCafe(entry, owner);
+  return true;
+}
+
+/**
+ * カフェで一台頼む: 現地のメニュー（おまかせも選べる）→ 味わいの場面。代金は来店の値段に入っている。
+ * 読み終えた時だけ頼んだ回数を記録する（初めての一台の熟練度は台本の flavor_lesson が一度だけ付ける）。
+ */
+async function orderAtCafe(entry, owner) {
+  const pick = await modal({ title: entry.label, className: "ch4-cafe-order",
+    body: "現地のメニューから、一台頼む。",
+    options: [...CAFE_MENU.map((item, index) => ({ label: item.label, value: item.id, test: `cafe-order-${item.id}`, primary: index === 0 })),
+      { label: "おまかせで", value: OMAKASE, test: "cafe-order-omakase" }] });
+  if (state !== owner) return false;
+  const id = resolveCafeOrder(state, pick) || CAFE_MENU[0].id;
+  const scene = DB.dialogues[tasteScene(state, id)];
+  if (!scene?.lines?.length) return true; // 台本が無い時も来店そのものは済んでいる
+  const lines = pick === OMAKASE ? [{ speaker: "", face: "", text: OMAKASE_LINE[entry.place] }, ...scene.lines] : scene.lines;
+  if (!await readPlain({ ...scene, lines }, entry.preview, owner)) return false;
+  recordCafeOrder(state, id);
   return true;
 }
 
