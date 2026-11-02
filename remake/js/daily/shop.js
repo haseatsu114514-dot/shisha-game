@@ -3,7 +3,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
 // 2階のショールーム（凛）へ上がると1行動使う。
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
-import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME, TOKYO_FLAVORS, TOKYO_SHOP_NAME, DUBAI_SHOP_NAME } from "./shop-catalogs.js";
+import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME, TOKYO_FLAVORS, TOKYO_SHOP_NAME, DUBAI_SHOP_NAME, tokyoShopFlavors } from "./shop-catalogs.js";
 import { el, yen } from "../core/util.js";
 import { shopText, shopProductName, groupShopFlavors } from "./shop-display.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -130,9 +130,9 @@ const rinUnavailable = () => rinVisitReason(state);
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
   if (opts.branch === "tokyo") {
-    // 第3章の東京と、第5章に東京へ来た時（#2033）。品ぞろえは第3章の東京店と同じ。
+    // 第3章の東京と、第5章に東京へ来た時（#2033）。品ぞろえは第3章の東京店と同じ（ナイトサイドはヴォルクへの配達の後から。#1657）。
     if (![3, 5].includes(state.chapter)) return null;
-    return openCounter({ flavorIds: TOKYO_FLAVORS, stockChapter: 3, shopName: TOKYO_SHOP_NAME });
+    return openCounter({ flavorIds: tokyoShopFlavors(state), stockChapter: 3, shopName: TOKYO_SHOP_NAME });
   }
   if (opts.branch === "dubai") {
     if (state.chapter !== 4) return null;
