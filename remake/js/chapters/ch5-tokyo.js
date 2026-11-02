@@ -5,7 +5,7 @@
 // ましろ（ヒロイン）は第5章の会話に出さない。久世は第3章の後に福岡へ戻ったので煙幕は出さない。
 // 台詞は data/dialogue/ch5_tokyo.json（てつこと夜の公園は第3章の場面を使う）。現在地は flags._ch2_region = "tokyo"。
 import { state, save, timeOfDay, markMet } from "../core/state.js";
-import { DB, bgUrl } from "../core/data.js";
+import { DB, sceneBg } from "../core/data.js";
 import { setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -17,7 +17,7 @@ import { VISIT_COST } from "../daily/spots.js";
 export const TOKYO = "tokyo";
 const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸してもらった（最初の到着の場面を読んだ）
 const TALKS_FLAG = "_ch5_tokyo_talks"; // 小会話の巡回の回数（人ごと）
-const ATTIC_BG = "bg_mukai_shop"; // 屋根裏の背景は未制作（画像の Issue）。店の絵で代用する
+const ATTIC_BG = "bg_mukai_attic"; // ムカイさんの店の上の屋根裏（2026-11-02 採用）。夜は既存の夜の暗転を共用する
 
 // 座標は東京の地図（bg_tokyo_map_*）に対する百分率。第3章の TOKYO_MAP_PLACES と同じ位置。
 const spot = fields => Object.freeze({ region: TOKYO, kind: "ch5_tokyo", ...fields });
@@ -63,9 +63,12 @@ async function loadTokyoScenes() {
   await loading;
 }
 
+// 夜は外光のある場所に既存の夜の暗転（tint）を掛ける。屋根裏の絵は昼の光なので、tint を落とさない。
+const showBg = (ref, tod) => { const { url, tint } = sceneBg(ref, tod); return setBg(url, { instant: true, tint }); };
+
 /** 読み終えたら true。中断・LOADは false（代金・体力・既読を残さない）。 */
 async function read(id, bg, owner) {
-  if (bg) await setBg(bgUrl(bg, timeOfDay()), { instant: true });
+  if (bg) await showBg(bg, timeOfDay());
   if (state !== owner) return false;
   const result = await play(id);
   return state === owner && !!result && !result.cancelled;
@@ -148,7 +151,7 @@ async function goHome(owner) {
 
 /** 夜: 東京にいれば屋根裏で寝る（帰らない）。 */
 export async function tokyoNight() {
-  await setBg(bgUrl(ATTIC_BG, "night"), { instant: true });
+  await showBg(ATTIC_BG, "night");
   return true;
 }
 export const tokyoWakeBackground = () => ATTIC_BG;
