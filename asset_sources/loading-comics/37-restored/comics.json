@@ -1,0 +1,96 @@
+{
+  "episode": 37,
+  "title": "新しい役職",
+  "cast": "サメちゃん・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "LEFT ①: ADULT Samechan in BLACK/BLUE SHARK HOOD, black hair with blue streaks, blue eyes, holds CROWNED BLUE/WHITE shark plush Korochan, casually asks Hajime 「手伝えるかの？」 He reaches for an ordinary mop. RIGHT ②: an absurd grand ROYAL SHARK COURT has materialized, rows of crowned shark PLUSH subjects bowing. Korochan plush sits on gold throne, speech bubble clearly FROM PLUSH: 「任命する。」 Hajime in his BLACK CAP/BLACK HOODIE is now wearing an overblown royal cape and holding the SAME MOP as a scepter; a large sash says 「清掃大臣」. Hajime says 「昇進、早っ。」 Samechan proudly officiates. Not real sharks, not minors.",
+      "dialogue_original": [
+        "手伝えるかの？",
+        "任命する。",
+        "清掃大臣",
+        "昇進、早っ。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+      "region": {
+        "x": 22,
+        "y": 110,
+        "width": 511,
+        "height": 285,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+      "region": {
+        "x": 550,
+        "y": 72,
+        "width": 517,
+        "height": 321,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-37-1.webp",
+      "width": 511,
+      "height": 341,
+      "sha256": "84337bc2af1491e9d06a9ebe6f13d35d9d10059932248bccf30a77625daec9b1"
+    },
+    {
+      "file": "panels/restored-37-2.webp",
+      "width": 517,
+      "height": 345,
+      "sha256": "ecf08df0c409bfba4919ff39b5c16c8f9963f632a2de630f8c69ab8351e0dfab"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

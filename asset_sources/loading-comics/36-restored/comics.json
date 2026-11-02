@@ -1,0 +1,109 @@
+{
+  "episode": 36,
+  "title": "極秘会談",
+  "cast": "りゅうじ・ムカイさん・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "36-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1963812,
+      "sha256": "111eaf8327e96eaaaa31c59f1052ce853bdbb9bc95fb11d096f803cbc905b52b"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "LEFT ①: scary noir close shot of Ryuji (white large-check/purple tie/moustache/SUNGLASSES) and Mukai (DARK SUIT/FEDORA/BEARD/NO GLASSES), grave secretive posture. Ryuji says 「誰にも言うな。」 RIGHT ②: pull way back: these two grown stern men have arranged a ludicrously elaborate PINK DOLLHOUSE TEA PARTY on a tiny doll-sized table with bunny plushies, lace doilies, tiny teacups and heart-shaped biscuits. Both men perch on tiny pink chairs, keeping serious gangster/hard-boiled faces and their exact adult costumes. Hajime opens the door astonished, Ryuji offers a tiny third chair saying 「お前も座れ。」 Hajime replies 「はい。」 The enormity of secret prep and tiny toys is the punchline. NO human dolls resembling minors, only cute animal plushies.",
+      "dialogue_original": [
+        "誰にも言うな。",
+        "お前も座れ。",
+        "はい。"
+      ],
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第36話「極秘会談」だけ。完成版の台本: LEFT ①: scary noir close shot of Ryuji (white large-check/purple tie/moustache/SUNGLASSES) and Mukai (DARK SUIT/FEDORA/BEARD/NO GLASSES), grave secretive posture. Ryuji says 「誰にも言うな。」 RIGHT ②: pull way back: these two grown stern men have arranged a ludicrously elaborate PINK DOLLHOUSE TEA PARTY on a tiny doll-sized table with bunny plushies, lace doilies, tiny teacups and heart-shaped biscuits. Both men perch on tiny pink chairs, keeping serious gangster/hard-boiled faces and their exact adult costumes. Hajime opens the door astonished, Ryuji offers a tiny third chair saying 「お前も座れ。」 Hajime replies 「はい。」 The enormity of secret prep and tiny toys is the punchline. NO human dolls resembling minors, only cute animal plushies.。元のギャグの誇張は復刻として保つ。シーシャの実物・ホース・炭・喫煙・武器は描かない。煙が物質化する第34話は空想の黒灰色の雲ブロックで、機材からの煙は描かない。第31話はあげはの髪・顔・クマ髪飾り・豹柄とピンク服を正式立ち絵に合わせる。",
+      "reference_images": [
+        "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "/workspace/shisha-game/asset_sources/short-comics-unhinged-ltr-20261025/33-36-chaos-ltr.png",
+        "/workspace/shisha-game/assets/sprites/characters/kumicho/chr_kumicho_normal.png",
+        "/workspace/shisha-game/assets/sprites/characters/mukai_master/chr_mukai_master_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "36-restored.png",
+      "region": {
+        "x": 39,
+        "y": 280,
+        "width": 709,
+        "height": 486,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "36-restored.png",
+      "region": {
+        "x": 779,
+        "y": 273,
+        "width": 717,
+        "height": 496,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-36-1.webp",
+      "width": 729,
+      "height": 486,
+      "sha256": "9e9eeabe9e4dbbc4a83e2c00de5700b19310030bdd194ae7ea50a58f987bc7f2"
+    },
+    {
+      "file": "panels/restored-36-2.webp",
+      "width": 744,
+      "height": 496,
+      "sha256": "c3933cf85129f3bd2d1c63fbd019c6136a6c5dccd2d293f5d25e4c8ddd275c9d"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  }
+}

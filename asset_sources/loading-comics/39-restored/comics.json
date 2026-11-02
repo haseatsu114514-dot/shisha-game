@@ -1,0 +1,96 @@
+{
+  "episode": 39,
+  "title": "少しだけ",
+  "cast": "なる・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "LEFT ①: Hajime meets friendly silver-haired Naru in black-and-WHITE streetwear jacket and asks 「少しだけ教えて。」 Naru happily opens one notebook. RIGHT ②: instant absurd expansion to an ENTIRE UNIVERSITY lecture theatre and campus of dessert science, Naru same silver hair and black/white jacket but with a professor's academic cap, pointing to giant cake/vanilla diagrams on the blackboard. Banner 「なる大学」. Hajime is now enrolled at a student desk surrounded by endless notebooks, his black baseball cap clearly visible. Naru warmly asks 「ノート、持った？」 Hajime astonished says 「入学してる。」 No fees or coercion: exaggerated generous teaching obsession, not evil arrogant professor.",
+      "dialogue_original": [
+        "少しだけ教えて。",
+        "なる大学",
+        "ノート、持った？",
+        "入学してる。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+      "region": {
+        "x": 22,
+        "y": 775,
+        "width": 454,
+        "height": 283,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+      "region": {
+        "x": 498,
+        "y": 736,
+        "width": 569,
+        "height": 321,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-39-1.webp",
+      "width": 454,
+      "height": 303,
+      "sha256": "b93864180a5a1c27c1fda5ddac603b4fc8e97b2c5ee7069caa93d2ff1347c661"
+    },
+    {
+      "file": "panels/restored-39-2.webp",
+      "width": 569,
+      "height": 379,
+      "sha256": "56514d388b6c0c64ce48d7b82d3069c4651c1ef783071c51cdda48331f811491"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "episode": 20,
+  "title": "師匠の教え",
+  "cast": "スミさん・はじめ",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-20261024/18-20-after-hours.png",
+    "original_order": "right-to-left",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "RIGHT: Hajime has been earnestly studying a tower of notes and a laptop late after closing in tonari, eyes tired, asking his mentor 「勝つコツは？」 Sumi, newsboy cap, glasses, beard and brown waist apron, looks thoughtful and serious. LEFT: Sumi gently closes the laptop, slides a warm mug to him and points toward the door home, saying 「まず、寝ろ。」 Hajime finally notices he has been nodding off, relaxes and says 「はい。」 Warm comic ending. No smoking equipment needed, varied Turkish mosaic lamps in background, no identical generic plants.",
+      "dialogue_original": [
+        "勝つコツは？",
+        "まず、寝ろ。",
+        "はい。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-20261024/18-20-after-hours.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-20261024/18-20-after-hours.png",
+      "region": {
+        "x": 595,
+        "y": 1047,
+        "width": 471,
+        "height": 367,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-20261024/18-20-after-hours.png",
+      "region": {
+        "x": 25,
+        "y": 1047,
+        "width": 540,
+        "height": 367,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-20-1.webp",
+      "width": 550,
+      "height": 367,
+      "sha256": "bd3a6c6c729e52632de00ad354aecd039bd13a54c5ecbeb6b2624a3f3235c6e2"
+    },
+    {
+      "file": "panels/restored-20-2.webp",
+      "width": 550,
+      "height": 367,
+      "sha256": "0cc4ff85563551f5e004a71ff741ce83b140acf09d9832f747c06099589fad84"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

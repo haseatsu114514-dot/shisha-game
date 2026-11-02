@@ -1,0 +1,95 @@
+{
+  "episode": 29,
+  "title": "総選挙",
+  "cast": "みんと・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "LEFT ①: black-haired green-eyed working Minto in black/neon-green devil cafe costume excitedly gives Hajime an election ballot, saying 「総選挙だよ♡」 RIGHT ②: huge ridiculous IDOL ELECTION STADIUM full of posters; EVERY candidate poster is the SAME Minto in different poses, all ballot boxes have her portrait, audience seats completely empty except Hajime. Minto on grand podium with trophy says 「接戦でした♡」 Hajime holding his lone ballot asks 「相手、誰？」 Same adult Minto, no real idol logos or political real-world reference.",
+      "dialogue_original": [
+        "総選挙だよ♡",
+        "接戦でした♡",
+        "相手、誰？"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png",
+      "region": {
+        "x": 22,
+        "y": 102,
+        "width": 512,
+        "height": 289,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png",
+      "region": {
+        "x": 555,
+        "y": 70,
+        "width": 510,
+        "height": 321,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-29-1.webp",
+      "width": 512,
+      "height": 341,
+      "sha256": "e5757b4bb3c0a96b3a2072cff22b63d65be7db70a33b64289f4fe841679b9f99"
+    },
+    {
+      "file": "panels/restored-29-2.webp",
+      "width": 510,
+      "height": 340,
+      "sha256": "458d8b44a25539f2beb4723e1b851614de6487396395a3594c68ead6c5533c80"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}
