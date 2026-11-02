@@ -34,7 +34,7 @@ export const SHOP_FLAVORS = [
 ];
 const SHOP_EQUIP_TYPES = ["bowl", "hms", "charcoal"];
 const CAT_LABEL = { cooling: "清涼", sweet: "スイート", fruit: "フルーツ", spice: "スパイス", floral: "フローラル" };
-const TYPE_LABEL = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭" };
+const TYPE_LABEL = { bowl: "ボウル", hms: "HMD", charcoal: "炭" };
 export { RIN_AWAY_DAY };
 
 // フレーバーは1箱50g（旧版 N3）。買う＝在庫+50g。自宅の試作・店への持ち込み・大会の課題以外の葉で減る（課題フレーバーは大会が支給＝減らない）
