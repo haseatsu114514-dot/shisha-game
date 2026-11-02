@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CF  枠の段 1: 2コマ@y=273
+  コマ1: 719x508 @(36,273) 比率 1.415 → ok
+  コマ2: 717x510 @(780,273) 比率 1.406 → ok
+コマ1: 719x508 (1.415) → 左右に各2.8%の紙帯 → 出力 762x508
+コマ2: 717x510 (1.406) → 左右に各3.1%の紙帯 → 出力 765x510
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "kuze-cushion-forecast",
+  "title": "（題名）",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "loading/kuze-cushion-forecast-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "loading/kuze-cushion-forecast-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/kuze-cushion-forecast/source-v2.png",
+      "region": {
+        "x": 36,
+        "y": 273,
+        "width": 719,
+        "height": 508,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/kuze-cushion-forecast/source-v2.png",
+      "region": {
+        "x": 780,
+        "y": 273,
+        "width": 717,
+        "height": 510,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "kuze-cushion-forecast-1.webp",
+      "width": 762,
+      "height": 508,
+      "sha256": null
+    },
+    {
+      "file": "kuze-cushion-forecast-2.webp",
+      "width": 765,
+      "height": 510,
+      "sha256": null
+    }
+  ]
+}

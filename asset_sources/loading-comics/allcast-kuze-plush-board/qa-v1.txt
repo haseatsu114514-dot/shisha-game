@@ -1,0 +1,1 @@
+1536x1024. Dialogue visually verbatim; reading order okay; identity good. Needs correction: multiple human silhouettes in panel1 (must have two people only); reply bubble touches lower border (safe margin violation). Original preserved.

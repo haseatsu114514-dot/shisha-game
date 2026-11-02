@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/panels/uranaishi-red-thread-1.webp: 738x492 比率 1.500 72 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/panels/uranaishi-red-thread-2.webp: 738x492 比率 1.500 84 KiB

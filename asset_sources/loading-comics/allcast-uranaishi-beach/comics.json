@@ -1,0 +1,155 @@
+{
+  "id": "uranaishi-beach",
+  "title": "海にも出店",
+  "cast": [
+    "uranaishi"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "明日から海です！",
+    "ヒヒ、いいねえ。",
+    "海にもいる。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "夕方のアーケードの外れ。左のはじめが浮き輪を抱えてうれしそうに「明日から海です！」。右の占い師が紫の布の机の前で、フードの奥の口元で笑って「ヒヒ、いいねえ。」。",
+  "panel2": "場面は真夏の砂浜、青い海と入道雲。左の水着姿のはじめが浮き輪をつけたまま固まる。右には、ビーチパラソルの下に同じ紫の布の机が出ていて、占い師がいつもの深いフードのローブのまま座り、タロットを並べて手招きしている。ほかに人はいない。はじめ「海にもいる。」。",
+  "caption": "路上の占い師は、なぜか思わぬ所にも現れる。",
+  "type": "神出鬼没（場面が一変）",
+  "note": "本編でも東京に現れる（ch3_tokyo_daily）ので、思わぬ所に出る誇張は人物設定と合う。",
+  "num": 107,
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "533bcb8cec9eb17a34daafc7cc8a6f3c20227494",
+  "generator": "built-in image_gen",
+  "source": "allcast-uranaishi-beach-b.png",
+  "source_sha256": "bb9714599213e76b5c5c4c8c8f04e68642ccb54b638944066adfa28ef44fbfea",
+  "references": [
+    {
+      "path": "hajime-sheet/normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "hajime official normal"
+    },
+    {
+      "path": "portrait-standard-2369-ts11-ts12/uranaishi/refs/uranaishi-current-normal.png",
+      "sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+      "role": "uranaishi current-main official normal; parent verified hash"
+    },
+    {
+      "path": "ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "early adopted style only, not deliverable"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "official template regenerated using unchanged repository tool"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked, 3 lines matching official script",
+    "reading_order": "left-to-right / first speaker upper-left when speaker is on right; tails checked",
+    "identity": "normal references; same positions both panels; eye hood per official script",
+    "style": "early adopted Menu Revision style: cute 2.5-head chibi, bold lines, warm cel palette",
+    "hardware": "none; no siryou hardware needed in these scripts",
+    "in_game_pc_phone": "NOT PERFORMED; not registered",
+    "selection": "awaiting owner; not adopted",
+    "template": "frame detection results retained; vertical drift recorded; no force",
+    "revision": "v1 tail pointed toward wrong person; v2 tail clearly toward Hajime. Both originals retained.",
+    "fill_inspection": "Changed derivatives visually inspected. Kotatsu right fill=0 preserves slippers; sleeve internal paper band remains under official fill limit."
+  },
+  "cut_source_regions": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/source-v2.png",
+      "region": {
+        "x": 38,
+        "y": 272,
+        "width": 716,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-beach/source-v2.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 721,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/uranaishi-beach-1.webp",
+      "sha256": "af0d0880b7224d749ed850d8ee289a20cceed6145572041ffb48e4c9dd02ad9b",
+      "width": 716,
+      "height": 478,
+      "bytes": 76716
+    },
+    {
+      "file": "panels/uranaishi-beach-2.webp",
+      "sha256": "a74cba4ee1aa8a59eba30750b0776bcb052912b74e71348575bdc117baed3257",
+      "width": 721,
+      "height": 481,
+      "bytes": 77136
+    }
+  ],
+  "originals": [
+    {
+      "file": "allcast-uranaishi-beach-a.png",
+      "sha256": "7802e0384eb0697a414869feb8007e8d4534e2f8836d001b130139879520ee25",
+      "bytes": 1782577
+    },
+    {
+      "file": "allcast-uranaishi-beach-b.png",
+      "sha256": "bb9714599213e76b5c5c4c8c8f04e68642ccb54b638944066adfa28ef44fbfea",
+      "bytes": 1969008
+    }
+  ],
+  "generation_calls": [
+    {
+      "output": "source-v1.png",
+      "prompt": "prompt-v1.txt",
+      "references": [
+        {
+          "path": "hajime-sheet/normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "role": "hajime official normal"
+        },
+        {
+          "path": "portrait-standard-2369-ts11-ts12/uranaishi/refs/uranaishi-current-normal.png",
+          "sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+          "role": "uranaishi current-main official normal; parent verified hash"
+        },
+        {
+          "path": "ryuji-sheet/loading/pc.png",
+          "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+          "role": "early adopted style only, not deliverable"
+        },
+        {
+          "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+          "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+          "role": "official template regenerated using unchanged repository tool"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    },
+    {
+      "output": "source-v2.png",
+      "prompt": "prompt-v2.txt",
+      "references": [
+        {
+          "path": "output/allcast-refill-2383-20261102/candidates/uranaishi-beach/source-v1.png",
+          "role": "edit target"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    }
+  ],
+  "local_source_before_handoff": "source-v2.png"
+}

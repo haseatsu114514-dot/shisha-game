@@ -189,5 +189,27 @@
     "expression": "normal",
     "portrait": "assets/sprites/characters/mukai_master/chr_mukai_master_normal.png",
     "caption_source": "data/characters.json: mukai_master.intro_cutin"
+  },
+  {
+    "id": "noor",
+    "color": "#e39a48",
+    "secondary": "#f6d6a0",
+    "shadow": "#0d0332",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/noor/chr_noor_normal.png",
+    "motif_label": "砂丘・夕日・ツアーの四駆・ボードの跡",
+    "caption_source": "data/characters.json: noor.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/recent-cast/backgrounds/noor.png",
+        "sha256": "4faeb5c72086746862d4b003523ec42d753c39b11c497f7dd2fcaa131e6f1408"
+      }
+    },
+    "generation": {
+      "tool": "Codex image_gen",
+      "date": "2026-11-02",
+      "source": "asset_sources/character-intros/graphic-20261031/replacements/2026-11-02/bg_noor.png（グラフィック背景の原画 1672×941 を高さ1024へ拡大し右寄せで1536×1024に切り出し）",
+      "brief": "DSR11 / PR #2382. Graphic-poster background, no people or text; dark left third and lower area for the portrait and text."
+    }
   }
 ]
