@@ -353,10 +353,17 @@ await suite("ch1-tournament", async check => {
       assert.equal(await page.locator('.sd-feed-lines > div').count(), 2);
     }
     await capture(page, `standings-${label}`);
+    if (label === "portrait") {
+      // Keep the portrait layout checks, then follow the guide to rotate before tapping.
+      assert(await page.locator("#rotate-hint").isVisible());
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.locator("#rotate-hint").waitFor({ state: "hidden" });
+    }
     if (mobile) await page.locator('[data-test="standings-next"]').tap();
     else await page.locator('[data-test="standings-next"]').click();
     await page.evaluate(() => window.standings);
     assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
+    if (label === "portrait") await page.setViewportSize(viewport);
     await page.evaluate(() => { window.cut = T.result.nagumoCutin(1); });
     await page.locator('.nc-cut.show').waitFor();
     await page.waitForTimeout(550);
