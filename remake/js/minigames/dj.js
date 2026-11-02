@@ -61,8 +61,8 @@ export function recordDjResult(s, data) {
 export const CLUB_MET_FLAG = "_club_yoru_first_done";
 export const DJ_NIGHT = Object.freeze({ id: "dj", place: "club", label: "クラブSEAMで回す",
   reasonText: "時間は進まない。セットを選んで曲をつなぐ" });
-export const DJ_NIGHT_FIRST = Object.freeze({ id: "dj", place: "club", label: "地下から低い音がする店をのぞく",
-  reasonText: "路地の下から、音が上がってくる", placeLabel: "地下の店" });
+export const DJ_NIGHT_FIRST = Object.freeze({ id: "dj", place: "club_unknown", label: "地下から低い音がする店をのぞく",
+  reasonText: "路地の下から、音が上がってくる" });
 export const clubKnown = value => value?.flags?.[CLUB_MET_FLAG] === true;
 export function djNightChoices(value, window) {
   if (value?.chapter !== 3 || !window || window.slot !== 1) return [];
