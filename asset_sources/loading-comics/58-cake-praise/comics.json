@@ -1,7 +1,7 @@
 {
   "episode": 58,
   "title": "褒める技術",
-  "status": "candidate-awaiting-owner-selection",
+  "status": "not-adopted-20261102: bubble-order",
   "registered": false,
   "canon_status": "不条理ギャグの誇張。本編の能力・人物・店の衛生や営業設定への追加ではない。",
   "reading_order": "左①導入→右②オチ",
@@ -92,5 +92,6 @@
       "visual": "スマホ横12話とPC51話/55話を目視確認。台詞・顔の欠けなし。"
     }
   },
-  "theme": "キャラのこだわり"
+  "theme": "キャラのこだわり",
+  "selection_note": "2026-11-02 不採用（作り直し候補）。1コマ目で右側の人物が先に話すのに、その吹き出しが左の吹き出しと同じ高さで右に並び、左から読むと返事やオチが先に入る。README §2 の吹き出しの順の決まりで描き直せば再候補。"
 }

@@ -12,6 +12,7 @@ import { layers, toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
+import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { gainAffinity, affinityLevel, applyStats, bond } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
@@ -320,7 +321,7 @@ export function morningMessages(opts = {}) {
 
 // 再会後のたまの誘い。受信した日を保存するため、読了・辞退・ロードで連投しない。
 function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) {
-  if (tournamentDay || fixedNight(state.day) || ![1, 2].includes(state.chapter) || !hasContact("hiyori")
+  if (tournamentDay || fixedNight(state.day) || !chapterFeatureEnabled(state.chapter, "hiyoriDaily") || !hasContact("hiyori")
     || !state.flags._hiyori_tonari_return_done || (state.lovers || []).includes("hiyori")) return null;
   const recent = (state.inbox || []).filter(i => i.msg?.accept_event === "__hiyori_shop__" && i.chapter === state.chapter);
   if (recent.some(i => state.day - i.day < 3) || (state.seed + state.day) % 4 !== 0) return null;
@@ -338,7 +339,7 @@ function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) 
  * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。各章の大会当日は来ない
  */
 function sumiBaitoInvite({ tournamentDay = false, fixedNight = null } = {}) {
-  if (tournamentDay || ![1, 2].includes(state.chapter) || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
+  if (tournamentDay || !chapterFeatureEnabled(state.chapter, "hiyoriDaily") || (state.chapter === 1 && state.day >= TOURNAMENT_DAY)) return null;
   const id = `_sumi_baito_inv_d${state.day}`;
   if (state.limeRead.includes(id)) return null;
   const fixed = state.chapter === 1 && (state.day === 3 || state.day === 8);
@@ -399,7 +400,7 @@ function replyMedia(item, line) {
   const asset = messageContent(line)?.asset;
   const sender = item.msg?.sender;
   if (!asset || asset.owner !== sender || line.sender && line.sender !== sender
-    || ![1, 2, 3].includes(state.chapter)
+    || !chapterFeatureEnabled(state.chapter, "lineMedia")
     || line.media_chapters && !line.media_chapters.includes(state.chapter)
     || asset.allowed_accounts && !asset.allowed_accounts.includes(accountOf(item))
     || mediaLines(item).length) return null;
@@ -431,7 +432,7 @@ function receiveItem(m) {
     if (content && content.kind !== "text") {
       const asset = content.asset;
       if (blocked || count >= 1 || !asset || asset.owner !== m.sender || line.sender && line.sender !== m.sender
-        || ![1, 2, 3].includes(state.chapter)
+        || !chapterFeatureEnabled(state.chapter, "lineMedia")
         || line.media_chapters && !line.media_chapters.includes(state.chapter)
         || asset.allowed_accounts && !asset.allowed_accounts.includes(accountOf(item))) return [];
       count++;
