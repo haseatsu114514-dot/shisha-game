@@ -1,7 +1,9 @@
 // Actions that consume the chapter's limited free time.
 export const PLAN = [
   "baito:holes",
-  "adam", "customer",
+  // #2213 B01/B03: DAY2 の昼は自由行動、夜は固定シフト、帰り道に PEPPERMINT→EDEN へ配達。
+  // 先に EDEN へ客として行くと配達の初来店が飛ぶので、DAY2 の昼は tonari の客席にする。
+  "customer", "adam",
   "minto", "baito:sumi",
   "naru", "rest",
   "baito:heat", "cafe",
