@@ -19,6 +19,25 @@
       "run": ["node remake/test/browser/vn_speaker_atomic_2190.mjs"]
     },
     {
+      "id": "craft-layout-2190",
+      "title": "Horizontal mix recipe, status explanation and full result details (#2190)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": [
+        "remake/css/craft.css",
+        "remake/css/craft-landscape.css",
+        "remake/css/ui-inner.css",
+        "remake/css/flavor-guide.css",
+        "remake/js/craft/common.js",
+        "remake/js/craft/flavor-guide.js",
+        "remake/js/daily/status.js",
+        "remake/test/browser/craft_layout_2190.mjs"
+      ],
+      "run": ["node remake/test/browser/craft_layout_2190.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "chapter-actions",
       "title": "Chapter 3–5 action buttons, session invalidation and error recovery",
       "kind": "quick",
@@ -1352,6 +1371,24 @@
       "run": [
         "node remake/test/browser/full_day_rest.mjs"
       ]
+    },
+    {
+      "id": "craft-cues-2190",
+      "title": "Craft action limits and practice labels",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": [
+        "remake/js/craft/context.js",
+        "remake/js/craft/session.js",
+        "remake/js/craft/practice.js",
+        "remake/js/craft/pull.js",
+        "remake/test/browser/craft_cues_2190.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_cues_2190.mjs"
+      ],
+      "chrome": "playwright"
     },
     {
       "id": "heat-feedback",

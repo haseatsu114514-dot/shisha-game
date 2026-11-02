@@ -2,9 +2,21 @@
 // This is presentation only. The saved shot and score still come from axe-model.js.
 export const TARGET = { x: 330, y: 245, radius: 164 };
 export const CAMERA = { focal: 700, boardDepth: 650 };
-export const AXE = { blade: { x: 0, y: -28, z: 62 }, handleTip: { x: 0, y: 160, z: -3 } };
+// A 16in hatchet against a 48in board: the mesh is drawn at this scale so the axe reads at its real size.
+export const AXE_SCALE = 1.6;
+export const AXE = { blade: { x: 0, y: -28 * AXE_SCALE, z: 62 * AXE_SCALE }, handleTip: { x: 0, y: 160 * AXE_SCALE, z: -3 * AXE_SCALE } };
 // Shared presentation clock for solo and versus; scoring/rotation stay in the model.
-export const FLIGHT = { travel: 480, fall: 240 };
+// slowFrom: a called throw (killshot or sudden death) plays the last part of its flight at half speed.
+export const FLIGHT = { travel: 600, fall: 300, slowFrom: .6, slowRate: .5 };
+/** Display clock for the flight. Slow motion stretches only the approach; the shot itself never changes. */
+export function flightTime(milliseconds, slow = false) {
+  const t = Math.max(0, milliseconds);
+  if (!slow) return t;
+  const start = FLIGHT.travel * FLIGHT.slowFrom, end = start + (FLIGHT.travel - start) / FLIGHT.slowRate;
+  return t <= start ? t : t <= end ? start + (t - start) * FLIGHT.slowRate : FLIGHT.travel + (t - end);
+}
+/** Wall-clock length of a whole flight, including the fall of a drop. */
+export const flightDuration = (shot, slow = false) => (slow ? FLIGHT.travel * FLIGHT.slowFrom + FLIGHT.travel * (1 - FLIGHT.slowFrom) / FLIGHT.slowRate : FLIGHT.travel) + (shot.stuck ? 0 : FLIGHT.fall);
 export function turnPoint(point, pitch) {
   const a = pitch * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
   return { x: point.x, y: point.y * c - point.z * s, z: point.y * s + point.z * c };

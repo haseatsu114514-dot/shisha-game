@@ -7,11 +7,13 @@ let dialogCount = 0;
 
 /** A compact scoring comparison shared by the lesson and the rules panel. */
 export function scoringGuide() {
-  const normal = svg("svg", { viewBox: "0 0 144 144", class: "axe-coach-target-icon", role: "img", "aria-label": "通常の的。リング1〜5点、中央と外側4か所の赤い中心が6点" });
+  const normal = svg("svg", { viewBox: "0 0 144 144", class: "axe-coach-target-icon", role: "img", "aria-label": "通常の的。リング1〜4点、中央と外側4か所の5リングと赤い6点" });
   for (const ring of [...RINGS].reverse()) normal.append(svg("circle", { cx: 72, cy: 72, r: 62 * ring.radius,
-    fill: ring.score === 6 ? "#b64435" : "#8b6846", stroke: "#34281f", "stroke-width": 2 }));
-  for (const bull of BULLS) for (const [radius, fill] of [[bull.outer, "#bd7c50"], [bull.inner, "#b64435"]])
-    normal.append(svg("circle", { cx: 72 + bull.x * 62, cy: 72 + bull.y * 62, r: radius * 62, fill, stroke: "#34281f", "stroke-width": 1 }));
+    fill: ring.score === 6 ? "#b64435" : "#c9a16f", stroke: "#2a2019", "stroke-width": ring.score >= 5 ? 1.2 : 2 }));
+  for (const bull of BULLS) for (const [radius, fill] of [[bull.outer, "#c9a16f"], [bull.inner, "#b64435"]])
+    normal.append(svg("circle", { cx: 72 + bull.x * 62, cy: 72 + bull.y * 62, r: radius * 62, fill, stroke: "#2a2019", "stroke-width": 1 }));
+  for (const [i, n] of ["1", "2", "3", "4"].entries()) normal.append(svg("text", { x: 72, y: 72 - 62 * [.9, .68, .47, .25][i] + 4, "text-anchor": "middle",
+    fill: "#2a2019", "font-size": 9, "font-weight": 900 }, [n]));
   const blue = svg("svg", { viewBox: "0 0 144 144", class: "axe-coach-target-icon", role: "img", "aria-label": "宣言した青。外側7点、中心8点。その青以外は0点" }, [
     svg("circle", { cx: 72, cy: 72, r: 54, fill: "#74bcda", stroke: "#29546b", "stroke-width": 3 }),
     svg("circle", { cx: 72, cy: 72, r: 27, fill: "#24689e", stroke: "#b6dfed", "stroke-width": 2 }),
@@ -20,18 +22,20 @@ export function scoringGuide() {
   ]);
   return el("div.axe-coach-diagram", [
     el("section.axe-coach-score-normal", [normal, el("div", [el("strong", { text: "通常" }),
-      el("p", { text: "リング1〜5点 · 赤い中心6点" }), el("small", { text: "中央＋外側4か所の赤い中心" })])]),
+      el("p", { text: "リング1〜4点 · 5の円 · 赤い中心6点" }), el("small", { text: "赤は中央＋外側4か所。刃が触れた最高点" })])]),
     el("section.axe-coach-score-kill", [blue, el("div", [el("strong", { text: "宣言した青" }),
-      el("p", { text: "外側7点 · 中心8点" }), el("small", { text: "その青以外は0点" })])]),
+      el("p", { text: "外側7点 · 中心8点" }), el("small", { text: "その青以外は0点 · 1ゲーム2回＋落下で1回" })])]),
   ]);
 }
 
 /** The caller owns mounting, pausing the game and removing the dialog. */
-export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome", onNext, onSkip }) {
+export function coachDialog({ text, title, step = 1, total = 7, kind = "welcome", context = null, onNext, onSkip }) {
   const lineId = "axe-coach-line-" + ++dialogCount;
-  const next = el("button.axe-button.axe-primary", { type: "button", text: ({ welcome: "レッスンをはじめる", target: "やってみる", result: "振り返る", finish: "レッスンを終える" })[kind] || "やってみる",
+  // Before a real game the last button leads on into it, and skipping goes straight there too.
+  const ahead = context === "first" ? "本番へ" : context === "event" ? "投げに行く" : null;
+  const next = el("button.axe-button.axe-primary", { type: "button", text: ({ welcome: ahead ? "1投教わる" : "レッスンをはじめる", target: "やってみる", result: "振り返る", finish: ahead || "レッスンを終える" })[kind] || "やってみる",
     dataset: { test: "axe-coach-next" }, onclick: onNext });
-  const skip = el("button.axe-button.axe-coach-skip", { type: "button", text: "レッスンをやめる", dataset: { test: "axe-coach-skip" }, onclick: onSkip });
+  const skip = el("button.axe-button.axe-coach-skip", { type: "button", text: ahead ? "説明をとばす" : "レッスンをやめる", dataset: { test: "axe-coach-skip" }, onclick: onSkip });
   const panel = el("section.axe-coach", { role: "dialog", "aria-modal": "true", "aria-label": title, "aria-describedby": lineId,
     dataset: { test: "axe-coach", kind } }, [
     el("div.axe-coach-card", [
