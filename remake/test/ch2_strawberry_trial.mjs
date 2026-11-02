@@ -38,7 +38,7 @@ assert.equal(strawberryTrialReady(tasted, {}), false, "台本が読めない時�
 
 // 試作の流れ（制作と会話は差し替え）
 const state = { chapter: 2, flags: {} };
-let stock, played, practice, simulateMastery = false;
+let stock, played, practice, simulateMastery = false, practiceRuns = 0;
 const context = vm.createContext({});
 const mocks = {
   "../core/state.js": { state, save: () => {} },
@@ -50,6 +50,7 @@ const mocks = {
   "../craft/score.js": { flavorFamilyGrams: (mix, family) => Object.entries(mix || {}).reduce((a, [id, g]) => a + (id.includes(family) ? g : 0), 0) },
   "./ch2-story-data.js": { STRAWBERRY_TRIAL_IDS, strawberryTrialReady },
   "../craft/practice.js": { runFullPractice: async () => {
+    practiceRuns++;
     if (!simulateMastery) return practice;
     const cs = { ...practice, masteryGained: false };
     const key = `_mastery_practice_${masteryDay(state)}_self`;
@@ -111,6 +112,45 @@ const calendarPorts = {
   toast: message => { notices.push(message); },
   visitHiyoriAtShop: async () => {}, visitCityGuestAtShop: async () => {},
 };
+// 名前つき import を ports から返す（無いものは何もしない関数）。
+const portLinker = (source, ports) => async spec => {
+  const names = [...new Set([...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
+    .filter(match => match[2] === spec).flatMap(match => match[1].split(",").map(name => name.trim().split(/\s+as\s+/)[0])))];
+  return new vm.SyntheticModule(names, function () {
+    for (const name of names) this.setExport(name, ports[name] ?? (() => {}));
+  }, { context });
+};
+
+// #2213 B04: 通常のまかないは「シフトに入る」→シフト上がりのメニュー（after-makanai）で選ぶ。
+// 実tonari.jsのシフト→上がり→まかないを通し、画面だけを選択肢の記録と自動選択に置き換える。
+let afterPick = "after-none", afterChoices = [];
+const el = (tag, props = {}, children = []) => {
+  if (Array.isArray(props)) { children = props; props = {}; }
+  return { ...props, dataset: props.dataset || {}, children: [children].flat(9).filter(child => child && typeof child === "object") };
+};
+const buttons = node => [node?.dataset?.test ? node : null, ...(node?.children || []).flatMap(buttons)].filter(Boolean);
+const tonariPorts = {
+  ...calendarPorts, el, DB: { dialogues: {}, baito: [], flavorById: {} }, config: {},
+  SE: { select() {}, cancel() {} }, CHARM_BONUS: [0], step: () => 1,
+  currentCondition: () => ({ bonusRate: 1, shiftBonus: 0, health: "green" }),
+  play: async () => ({}), dialogueSequence: run => run(), readyLessons: () => [],
+  staffFlavors: () => [], staffStock: () => 0,
+  showScreen: (_, node) => {
+    const found = buttons(node);
+    afterChoices = found.map(button => button.dataset.test);
+    const button = found.find(b => b.dataset.test === afterPick) || found.find(b => b.dataset.test === "after-none");
+    queueMicrotask(() => button.onclick());
+    return node;
+  },
+};
+const tonariSource = fs.readFileSync(new URL("remake/js/daily/tonari.js", root), "utf8");
+const tonariModule = new vm.SourceTextModule(tonariSource, {
+  context, importModuleDynamically: async spec => { const m = await link(spec); await m.evaluate(); return m; },
+});
+await tonariModule.link(portLinker(tonariSource, tonariPorts));
+await tonariModule.evaluate();
+calendarPorts.doBaito = tonariModule.namespace.doBaito;
+
 const calendarSource = fs.readFileSync(new URL("remake/js/daily/calendar.js", root), "utf8");
 const calendarModule = new vm.SourceTextModule(`${calendarSource}\nexport { performSpotAction }; export const configureTest = () => { chapterDef = {}; };`, {
   context, importModuleDynamically: async spec => {
@@ -120,13 +160,7 @@ const calendarModule = new vm.SourceTextModule(`${calendarSource}\nexport { perf
     return dependency;
   },
 });
-await calendarModule.link(async spec => {
-  const names = [...new Set([...calendarSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
-    .filter(match => match[2] === spec).flatMap(match => match[1].split(",").map(name => name.trim().split(/\s+as\s+/)[0])))];
-  return new vm.SyntheticModule(names, function () {
-    for (const name of names) this.setExport(name, calendarPorts[name] ?? (() => {}));
-  }, { context });
-});
+await calendarModule.link(portLinker(calendarSource, calendarPorts));
 await calendarModule.evaluate();
 const calendar = calendarModule.namespace;
 calendar.configureTest();
@@ -138,42 +172,58 @@ const resetDay = () => {
   stock = { afsahr_strawberry: 12 }; played = []; notices.length = 0;
   simulateMastery = true;
 };
+// "makanai" は「シフトに入る」→シフト上がりで「まかないで練習」を選ぶ（出ていなければ「まっすぐ上がる」）。
 const visit = async (choice, mix) => {
-  selection = choice;
+  selection = choice === "makanai" ? "baito" : choice;
+  afterPick = choice === "makanai" ? "after-makanai" : "after-none";
+  afterChoices = [];
   practice = { mix, pullDone: true, pull: { inZone: true } };
   return calendar.performSpotAction(tonari);
 };
+const makanaiOffered = () => afterChoices.includes("after-makanai");
 const learned = () => notices.filter(message => message.includes("熟練度が育った")).length;
 resetDay();
-const regularVisit = await visit("practice", { grape: 6, mint: 6 });
+const regularVisit = await visit("makanai", { grape: 6, mint: 6 });
 assert.equal(regularVisit.used, true);
+assert.equal(makanaiOffered(), true, "通常のまかないはシフト上がりで選べる");
+assert.deepEqual({ ...regularVisit.exp }, { key: "tonari_shift", place: "tonari_shift" }, "行動の学びはシフトの分だけ");
+assert.equal(state.visitedDay.tonari_practice, state.day, "苺との同日判定に使う記録");
 assert.equal(state.flavorMastery.grape, 1);
 assert.equal(state.flavorMastery.mint, 1);
 assert.equal(learned(), 1);
-const beforeRejected = { stock: stock.afsahr_strawberry, stamina: state.stamina, notices: learned() };
+const beforeRejected = { stock: stock.afsahr_strawberry, stamina: state.stamina, notices: learned(), runs: practiceRuns };
 assert.equal((await visit("strawberry", { afsahr_strawberry: 12 })).used, false);
-assert.deepEqual({ stock: stock.afsahr_strawberry, stamina: state.stamina, notices: learned() }, beforeRejected);
+assert.deepEqual({ stock: stock.afsahr_strawberry, stamina: state.stamina, notices: learned(), runs: practiceRuns }, beforeRejected);
 assert.equal(state.flags._ch2_strawberry_trial, undefined);
 assert.match(notices.at(-1), /今日はもうまかないで練習した/);
 state.day++;
 const strawberryVisit = await visit("strawberry", { afsahr_strawberry: 12 });
 assert.equal(strawberryVisit.used, true);
-assert.deepEqual({ ...strawberryVisit.exp }, { ...regularVisit.exp });
+assert.deepEqual({ ...strawberryVisit.exp }, { key: "tonari_practice", place: "tonari_practice" }, "苺はまかない練習として学ぶ");
 assert.equal(stock.afsahr_strawberry, 0);
 assert.equal(state.flavorMastery.strawberry, 2);
 assert.equal(state.flags._ch2_strawberry_trial, "gentle");
 assert.equal(learned(), 2);
+// 苺を試した日は、シフトには入れてもシフト上がりにまかないを出さない
 resetDay();
 assert.equal((await visit("strawberry", { afsahr_strawberry: 12 })).used, true);
-assert.equal((await visit("practice", { grape: 6, mint: 6 })).used, false);
+let runsBefore = practiceRuns;
+assert.equal((await visit("makanai", { grape: 6, mint: 6 })).used, true, "シフト自体は入れる");
+assert.equal(makanaiOffered(), false, "苺の日はまかないを出さない");
+assert.equal(practiceRuns, runsBefore);
 assert.equal(state.flavorMastery.grape, undefined);
 resetDay();
 state.visitedDay.tonari_strawberry = state.day; // 旧セーブの利用記録
-assert.equal((await visit("practice", { grape: 6, mint: 6 })).used, false);
-assert.equal(state.stamina, 100);
+runsBefore = practiceRuns;
+assert.equal((await visit("makanai", { grape: 6, mint: 6 })).used, true);
+assert.equal(makanaiOffered(), false, "旧セーブの苺記録の日もまかないを出さない");
+assert.equal(practiceRuns, runsBefore);
+assert.equal(state.flavorMastery.grape, undefined);
+assert.equal(state.visitedDay.tonari_practice, undefined);
 resetDay();
 state.flags[`_mastery_practice_${masteryDay(state)}_self`] = true;
-assert.equal((await visit("practice", { grape: 6, mint: 6 })).used, true);
+assert.equal((await visit("makanai", { grape: 6, mint: 6 })).used, true);
+assert.equal(makanaiOffered(), true);
 assert.equal(learned(), 0, "報酬がない時は成長通知を出さない");
 
-console.log("[ch2 strawberry trial] PASS: tasting sample, feedback, shared makanai day, both orders, legacy visit, reward notice");
+console.log("[ch2 strawberry trial] PASS: tasting sample, feedback, shared makanai day (after-shift makanai), both orders, legacy visit, reward notice");

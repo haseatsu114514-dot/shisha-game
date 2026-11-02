@@ -145,6 +145,7 @@ for (;;) {
       sickOnce: !!s?.flags?._sick_once,
       restDay: s?.restDay,
       deliveriesDone: !!(s?.flags?._delivery_adam_done && s?.flags?._delivery_minto_done),
+      deliveryMintoDone: !!s?.flags?._delivery_minto_done,
       stats: s?.stats,
       lastRank: s?.tournament?.lastRank,
       endTitle: document.querySelector(".end-screen.gameover") ? "GAME OVER" : document.querySelector(".end-title")?.textContent || "",
@@ -296,14 +297,15 @@ for (;;) {
     const id = await page.locator(".spot-pin.guide").getAttribute("data-spot");
     if (!snap.errandDone || id === "c_station") guided++; else deliveryGuided++;
     if (snap.day === 1 && !["shop", "naru"].includes(id)) throw new Error("DAY1 must end after scouting");
-    if (id === "minto" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Minto must be the first DAY2 delivery");
-    if (id === "adam" && (snap.day !== 2 || snap.slot !== 1)) throw new Error("Adam must be the second DAY2 delivery");
+    // #2213 B01/B03: 昼は自由行動、夜は固定のシフト。配達はシフト後の帰り道（slot 2）。
+    if (id === "minto" && (snap.day !== 2 || snap.slot !== 2)) throw new Error("Minto must be the first delivery on the DAY2 walk home");
+    if (id === "adam" && (snap.day !== 2 || snap.slot !== 2 || !snap.deliveryMintoDone)) throw new Error("Adam must be the second delivery on the DAY2 walk home");
     if (id === "c_station" && (snap.day !== 2 || snap.slot !== 0)) throw new Error("Registration must happen before DAY2 deliveries");
     await chooseDestination(id);
     continue;
   }
-  // 配達が全部済むまでは、届け先だけを選べる案内のマップしか出ない
-  if (snap.screen === "map" && !snap.deliveriesDone) throw new Error(`free map before deliveries (DAY ${snap.day} slot ${snap.slot})`);
+  // 配達が全部済むまでは、DAY2昼の自由行動のほかは届け先だけを選べる案内のマップしか出ない（夜は固定シフト）
+  if (snap.screen === "map" && !snap.deliveriesDone && !(snap.day === 2 && snap.slot === 0)) throw new Error(`free map before deliveries (DAY ${snap.day} slot ${snap.slot})`);
   if (snap.screen === "map" && snap.deliveriesDone && !checkedDeliveryBoundary) {
     const minto = await page.evaluate(() => { const s = window.__remake.state; return { story: s.story.minto || 0, visits: s.visits.minto || 0, visited: s.visitedDay.minto === s.day }; });
     if (minto.story || minto.visits || minto.visited) throw new Error(`Delivery consumed normal minto visit: ${JSON.stringify(minto)}`);

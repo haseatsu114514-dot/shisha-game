@@ -30,6 +30,8 @@ const ports = {
   hasNewStory: () => false, spotFollowupDue: () => null,
   axeThrowExposed: () => true, canStudyAttack: () => false, canStudyCubeCoals: () => false,
   readyLessons: () => [],
+  // #2213 B04: シフト上がりのメニューにまかない練習（今日の葉の表示）が並ぶ
+  staffFlavors: () => [], staffStock: () => 0,
 };
 const ctx = vm.createContext({ console, queueMicrotask });
 const actual = new Set(['core/chapter-features.js', 'core/stat-step-tables.js', 'daily/home-rig.js', 'daily/tonari.js']);
