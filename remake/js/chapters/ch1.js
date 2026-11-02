@@ -2,7 +2,7 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 // 第1章「煙がつなぐ街（スモーク・アンド・タイズ）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { playEntrance } from "./tournament-entrance.js";
+import { playEntrance, CH1_EVE_NOTES } from "./tournament-entrance.js";
 import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
@@ -353,7 +353,9 @@ async function lastNight() {
     }
     progress = owner.flags._ch1_eve;
     if (progress.choice !== "drill" || progress.practiceDone || progress.drill) break;
-    const drill = await chooseDrill({ allowBack: true });
+    // 直近の通し練習でいちばん低かった工程をおすすめし、反復の効き目を先に伝える（#2091）。
+    const drill = await chooseDrill({ allowBack: true, recommended: recommendedDrill(),
+      lead: "苦手な工程を反復しよう。★1つ以上で終えると、明日の一台に少し効きます。能力値は増えません。" });
     requireCurrent();
     if (owner.flags._ch1_eve !== progress) throw new DOMException("Tournament eve selection changed", "AbortError");
     if (drill !== null) { progress.drill = drill; save(); break; }
@@ -368,6 +370,7 @@ async function lastNight() {
     const tier = await runDrill(progress.drill);
     requireCurrent();
     state.best[progress.drill] = Math.max(state.best[progress.drill] ?? -1, tier);
+    progress.drillTier = tier; // ★1つ以上なら本番に「前夜の反復」+1（craft/score.js bonusOf）
     progress.practiceDone = true;
     save();
   }
@@ -695,7 +698,7 @@ async function tournamentDay() {
 }
 
 /** 入場（ライバル → 主人公）。スミさんの一言つき。共有部品 tournament-entrance.js（#2031） */
-const entrance = () => playEntrance(1);
+const entrance = () => playEntrance(1, { heroNote: CH1_EVE_NOTES[state.flags._last_night] || null });
 
 // ---------------------------------------------------------------- 優勝のあと
 
