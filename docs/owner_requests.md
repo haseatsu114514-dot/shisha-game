@@ -36,7 +36,7 @@
 | CR04 | ✅ 本PR | 本編接続: 第4章の自由行動の地図に行き先1件。会話の段階は時間を使わず、レースは昼の行動を使う（`slot`）。1日1回。自己ベスト保存。初回完走だけ育成（paidAction の経験値＋心得の盤の火種 `camel-finish`）。旧方式の能力加算なし。SAVE/LOAD・中断に対応。大会の進行に影響しない。日付は通算日で相対比較（14日化で runDaily に移せる形） |
 | CR05 | ✅ 本PR | 試遊ページ `remake/camel-race.html`。テスト: `camel_race_model.mjs`・`ch4_camel_race.mjs`・`browser/ch4_camel_race.mjs`。CI suites 登録 |
 | CR06 | 📥 Codex待ち | 画像素材: 砂漠のレース場背景・ロボット騎手付きラクダ・SUV・サイフ／ラシードの立ち絵・演出素材。依頼文は [asset_sources/ch4-camel-race/README.md](../asset_sources/ch4-camel-race/README.md)・`tools/bg_prompts.txt` CR01。届くまでは Canvas/CSS の仮描写 |
-| CR07 | ⏸ 14日化待ち | #2273 で第4章が runDaily に乗ったら、`camelRaceDestination()`／`visitCamelRace()` を行き先と performSpot に渡す（モジュールは変更不要の想定） |
+| CR07 | ✅ 本PR | 14日化（#2297）の日常ループの地図にラクダレースを接続。店先の会話は時間を使わず、レースは完走時に昼の枠を一度だけ使う（日常ループと二重に進めない）。旧5日のセーブは従来の地図のまま |
 
 
 ## 2026-11-02 補充したキャラの登場カットイン（グラフィック絵柄）と上園の好み

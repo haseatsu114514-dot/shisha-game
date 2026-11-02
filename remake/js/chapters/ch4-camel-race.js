@@ -13,7 +13,8 @@ export * from "./ch4-camel-progress.js";
  * 地図からの訪問。段階に応じて会話→レース→結果の会話を進め、確定ごとに保存する。
  * @param read 会話を再生して読了なら true を返す関数（ch4.js の readScene）
  * @param beforeRace レースを開く直前に呼ぶ（呼び出し側が中断用の controller を立てる）
- * 戻り値: { used, exerted }（performSpot と同じ形。used は昼の行動を使ったか）
+ * 戻り値: { used, exerted, slotsUsed }（performSpot と同じ形。used は昼の行動を使ったか）。
+ * 昼の枠はここで進めて記録と一緒に保存するので、日常ループには slotsUsed: 0 を返す（二重に進めない）。
  */
 export async function visitCamelRace({ read, signal = null, isCurrent = () => true, beforeRace = () => {}, host = document.getElementById("stage"), options = null } = {}) {
   const value = state;
@@ -49,8 +50,8 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
   const { best } = outcome.result;
   if (outcome.firstClear) toast(`初めてレースを走り切った。${best.rank}位・スコア ${best.total}（${best.grade}）。${growthEnabled() ? "……今夜の精算で、火種がひとつ届く。" : ""}`, { kind: "good" });
   else if (outcome.newBest) toast(`自己ベスト更新！ スコア ${best.total}（${best.grade}・${best.rank}位）`, { kind: "good" });
-  if (!isCurrent() || state !== value) return { used: true, exerted: true };
+  if (!isCurrent() || state !== value) return { used: true, exerted: true, slotsUsed: 0 };
   // 結果の会話。読み切れなくても記録・消費は済んでいる（二重に付かない）。
   await read(first ? resultSceneFor(best.rank) : outcome.newBest ? CAMEL_SCENES.replayBest : CAMEL_SCENES.replayUsual);
-  return { used: true, exerted: true };
+  return { used: true, exerted: true, slotsUsed: 0 };
 }

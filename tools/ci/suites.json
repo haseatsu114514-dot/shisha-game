@@ -1126,7 +1126,7 @@
     },
     {
       "id": "ch4-camel-race",
-      "title": "Chapter 4 camel race in the real UI: meet, invite, watch, race, record, save/load, replay",
+      "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot",
       "kind": "browser",
       "weight": 2,
       "timeout": 8,
@@ -1135,6 +1135,7 @@
         "remake/js/minigames/camel-race-model.js",
         "remake/js/chapters/ch4-camel-race.js",
         "remake/js/chapters/ch4-camel-progress.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/chapters/ch4-map-model.js",
         "remake/css/camel-race.css",
         "remake/camel-race.html",

@@ -93,6 +93,36 @@ export function camelRaceDestination(value) {
     purpose: ok ? `ハビーバにもう一度声をかける。昼の行動を使う。${best}` : `${played ? "今日はもう走った。ハビーバを休ませよう。" : "レースは朝。明日の昼に行こう。"}${best}` };
 }
 
+export const CAMEL_DAILY_SPOT_ID = "ch4_dubai_camel";
+
+/**
+ * ドバイ14日の日常ループ（ch4-dubai-daily.js の runDaily の地図）に出す行き先。出さないときは null。
+ * fields は章の側の値（region・kind）。段階で場所が変わる: 誘われるまでは Dr.fookah の店先、誘われたらレース場。
+ * 押せない理由は daily/spot-access.js の unavailable／unavailableTag で地図に出る。
+ */
+export function camelDailySpot(value, fields = {}) {
+  const destination = camelRaceDestination(value);
+  if (!destination) return null;
+  const camel = camelRaceRecord(value);
+  const race = camel.stage >= CAMEL_STAGES.invited;
+  const played = camel.lastPlayDay !== null && camel.lastPlayDay === value.day;
+  const tag = destination.ok !== false ? ""
+    : camel.stage === CAMEL_STAGES.met ? "また明日"
+    : camel.stage === CAMEL_STAGES.invited && camel.inviteDay !== null && value.day <= camel.inviteDay ? "レースは明日の朝"
+    : played ? "今日はもう走った" : "レースは昼だけ";
+  return Object.freeze({
+    ...fields, id: CAMEL_DAILY_SPOT_ID, place: "camel",
+    label: race ? "ラクダレース場" : "Dr.fookah の店先",
+    area: race ? "郊外の砂漠" : "街の中心",
+    x: race ? 84 : 46, y: race ? 76 : 42,
+    theme: race ? "park" : "shop", glyph: race ? "駱" : "話",
+    preview: race ? CAMEL_TRACK_BG : CAMEL_SHOP_BG,
+    desc: destination.purpose,
+    unavailable: destination.ok === false ? destination.why : "", unavailableTag: tag,
+    hasNew: () => destination.ok !== false && camel.stage < CAMEL_STAGES.unlocked,
+  });
+}
+
 /** 練習レースの結果を記録する。戻り値 { firstClear, newBest, plays }。形の合わない結果は null。 */
 export function recordCamelRaceResult(value, run, runs = 1) {
   if (!value || !record(run) || !Number.isFinite(run.total)) return null;
