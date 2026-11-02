@@ -1,0 +1,116 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。布の鶴・巻物・座布団などの誇張は本編能力を変更しない。猫は本編の常連設定への追加ではない。",
+  "image_manifest": [
+    {
+      "file": "47-sumi-cushion-tower.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "3bb204f6a2b38686432d163e91a2b47ecf4c0f0c927a34ee62d82a7dda713aa7",
+      "bytes": 1750432
+    }
+  ],
+  "pages": [
+    {
+      "file": "47-sumi-cushion-tower.png",
+      "ids": [
+        "hajime",
+        "sumi"
+      ],
+      "range": "47",
+      "rows": [
+        [
+          "47 座り心地派",
+          "はじめ・スミさん",
+          "左: はじめが椅子にクッションを二枚載せて「楽な席にします。」。スミさんが「ほどほどにな。」。右: はじめがふわふわのクッションを五枚ほど積んだ低い山に座り頭が天井すれすれで「天井が近い。」。スミさんは右であきれて見上げる。安全な柔らかいデフォルメ誇張、脚立なし。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 47,
+      "dialogue": [
+        "楽な席にします。",
+        "ほどほどにな。",
+        "天井が近い。"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷きを編集し1536x1024の2コマ漫画1話。枠は左x36..756、右780..1500、y272..752、各720x480厳守。枠線残す。枠外は全て紙色#EEE3CFの無地。題名・番号・署名・擬音文字なし。枠から4%内側に顔・吹き出しを収める。添付2ははじめ（黒い野球帽・黒パーカー・黒髪・青年）、添付3はスミさん（黒ハンチング・四角眼鏡・短い顎髭・炭色シャツ・茶腰エプロン）。2.5頭身の太線セル塗り、暖かな紙質、表情豊かなギャグ。両コマではじめは左、スミさんは右を厳守。白吹き出しに太いゴシックで台詞を大きく正確に。2人以外の人・シーシャ器具・炭・ホース・煙・武器は描かない。店の静かな木カウンター背景。左: はじめが椅子にクッションを二枚載せて「楽な席にします。」。スミさんが「ほどほどにな。」。右: はじめがふわふわのクッションを五枚ほど積んだ低い山に座り頭が天井すれすれで「天井が近い。」。スミさんは右であきれて見上げる。安全な柔らかいデフォルメ誇張、脚立なし。",
+      "revision_prompt": "枠が縦長→横長すぎの検査不合格を経て、最終編集で720x480へ再構成。クッションの上に座る姿と台詞を維持。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/sumi/chr_sumi_normal.png"
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "episode": 47,
+      "result": "採用。原画を目視、画像規格検査成功。PC・スマホ横のゲーム画面はQA参照。",
+      "checks": {
+        "dialogue_exact": "3台詞一致",
+        "identity": "野球帽/パーカーとハンチング/眼鏡/髭/腰エプロン、左右固定を目視確認",
+        "prohibited": "炭・機材・武器なし",
+        "frame": "比率判定ok。位置には生成由来の微差あり。"
+      },
+      "known_deviations": [
+        "枠位置・紙色は下敷きから微差あり。切り出し後に顔と台詞の欠けなし。",
+        "枠線除去後の数pxの寸法差は表示側の同一3:2枠で吸収する。"
+      ],
+      "browser": {
+        "sizes": [
+          "1280x720",
+          "844x390"
+        ],
+        "result": "各話を固定して全12画面で画像decode成功・撮影。スマホ横全話とPC第45話を目視確認、台詞の欠けなし。",
+        "screenshots": [
+          "qa-pc.png",
+          "qa-phone.png"
+        ],
+        "regression": "loading_craft: pc/mobile/portrait 全3ケース成功（既存画像LFS取得後）"
+      }
+    }
+  ],
+  "source": [
+    {
+      "file": "47-sumi-cushion-tower.png",
+      "region": {
+        "x": 40,
+        "y": 249,
+        "width": 714,
+        "height": 476,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "47-sumi-cushion-tower.png",
+      "region": {
+        "x": 782,
+        "y": 248,
+        "width": 714,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sumi-cushion-tower-1.webp",
+      "width": 714,
+      "height": 476,
+      "sha256": "b9d0692d983632f7c941c47090b9f17870af78f7e308e9f8e4f3ef4a02be1b88"
+    },
+    {
+      "file": "sumi-cushion-tower-2.webp",
+      "width": 714,
+      "height": 477,
+      "sha256": "80c1b18b444afc1023155f1979f4b7e647631c01a1f8b17b9b8f222188be4dfb"
+    }
+  ]
+}
