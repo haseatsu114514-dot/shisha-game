@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D1  枠の段 1: 2コマ@y=272
+  コマ1: 720x480 @(36,272) 比率 1.500 → ok
+  コマ2: 721x480 @(779,272) 比率 1.502 → ok
+コマ1: 720x480 (1.500) そのまま → 出力 720x480  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-watermelon-bite/panels/samechan-watermelon-bite-1.webp (80 KiB)
+コマ2: 721x480 (1.502) そのまま → 出力 721x480  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-watermelon-bite/panels/samechan-watermelon-bite-2.webp (79 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "samechan-watermelon-bite",
+  "title": "スイカの一口",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "サメちゃんは、笑うとギザ歯が見える店主です。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-watermelon-bite/panels/samechan-watermelon-bite-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-watermelon-bite/panels/samechan-watermelon-bite-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-watermelon-bite/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-watermelon-bite/source-v1.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 721,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "samechan-watermelon-bite-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "fda54ce9692b3541b0a467cb68024bc88ce04d39e53ce8481ea207623085f060"
+    },
+    {
+      "file": "samechan-watermelon-bite-2.webp",
+      "width": 721,
+      "height": 480,
+      "sha256": "cbf88b2a3115b8ab723b3343e6f735992e62988cb8575c3867d72fc34dde5eb3"
+    }
+  ]
+}

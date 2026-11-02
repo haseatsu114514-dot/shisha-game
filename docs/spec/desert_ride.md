@@ -71,9 +71,17 @@
 | 5 岩 | ✅ 採用（大A・小A） | 当たり判定より少しだけ広く描く |
 | 6 砂煙 | ✅ 採用（C） | |
 | 7 旗竿・ゴール | ✅ 採用（旗A・幕A） | |
-| 8 ヌールの立ち絵 | ✅ normal を採用（2026-11-02 オーナーが A を選定）。smile・surprise・登場カットインの一枚絵は依頼中 | `assets/sprites/characters/noor/chr_noor_normal.png`（896×1200）。台詞の smile・surprise は届くまで normal で表示し、登場カットインは立ち絵を使う型で出る。頭身は 7.96（標準の 6.4〜7.7 より頭が少し小さい。portrait_metrics の WARN）。B・C は採用しない |
+| 8 ヌールの立ち絵 | ✅ normal（A・オーナー選定）と smile・surprise（第5弾）を採用。登場カットインはグラフィック絵柄（第6弾）を採用 | `assets/sprites/characters/noor/chr_noor_{normal,smile,surprise}.png`（896×1200）。表情は normal と同じ切り抜き・倍率・位置。頭身は 7.96（標準の 6.4〜7.7 より頭が少し小さい。portrait_metrics の WARN）。B・C は採用しない |
 
-次の依頼: ヌールの smile・surprise を1枚ずつ（**採用した normal A の原画** `raw/phase4/noor-candidates/noor_normal_A-raw.png` を添付し、同じ服・同じ足元で表情と小さな首の傾きだけ変える）、そのあと登場カットインの一枚絵。寸法・透過・画風の条件は下の表のとおり。
+### 登場カットイン（グラフィック絵柄・DSR11）
+
+2026-11-02 にオーナーが**グラフィック絵柄**（ほかの31人と同じ）を選び、Codex が人物絵と背景を1枚ずつ描いた（第6弾。受け取り・SHA は `asset_sources/desert-ride-2306/README.md`）。
+
+- 人物絵: 1254角・マゼンタ背景の原画を `tools/intro_graphic_import.py noor` で抜いて 1024角の `remake/img/ui/character_intros/graphic/noor.webp` にした（端の切れ・マゼンタの残りなし）。肩にオレンジのボード、親指で後ろの砂丘を指す。目は顔の大きな影で隠す。
+- 頭の位置は `heads.json` の `noor`（頭頂32・顎449・顔の中心x470。頭頂はサングラスと髪の量を除く）。配置は `tools/intro_graphic_frames.py` が書き出す（`intro-graphic.js` の `FRAME_OVERRIDES`）。
+- 背景: 1672×941 の原画を `--background` で `bg_noor.webp` にした。右上に砂丘・夕日・ツアーの四駆・ボードの跡、左と下は暗い。
+- 旧絵柄（設定で戻す人）: 同じ背景を高さ1024へ拡大し右寄せで 1536×1024 に切り出した `assets/ui/character_intros/noor.png`（針間ヨルと同じ）。人物は立ち絵 normal。記録は `asset_sources/character-intros/recent-cast/characters.json`、manifest の `introArt` は `build_manifest.py --intros-only noor`。
+- 確認: `node remake/test/intro_cutin.mjs`（32人）。
 
 以下は最初の依頼（2026-11-02）。絵が読み込めない間・失敗した時は Canvas の図形で描く（`desert-ride.js` の `drawPlayer`・`drawRock`・`drawDunes`・`drawParticles`。絵の寸法と基準点は `desert-ride-art.js`）。既存の画風に合わせるため、背景は `tools/bg_prompts.txt` の共通指針（painterly・`bg_eden_shop.png` の筆致）、人物は `docs/prompts/image_generation_guide.md` と `character-portrait-remaster` の書式に従う。シーシャ機材は写らないので `docs/shisha_reference.md` §4 の手順は不要。
 

@@ -142,13 +142,17 @@ const dailySpot = fields => Object.freeze({ region: "dubai", kind: "ch4_desert",
  * 今の時点で日常ループの地図に出す行き先（いつも1件）。day はドバイの章内日。
  * 行けない時も地図に残し、理由を出す（unavailable。ラクダレースの行き先と同じ見せ方）。
  */
+// 日常の地図（ドバイ14日）での位置。アイコン（MPI07）は文字の盾より大きいので、
+// デスクは下の Dr.fookah ドバイ店に、砂丘は画面の下端に重ならない位置へ（旧カードの地図は DESERT_PLACES のまま）。
+const DAILY_AT = Object.freeze({ tour_desk: Object.freeze([34, 26]), dunes: Object.freeze([12, 80]) });
+
 export function desertDailySpots(value, day) {
   const progress = desertProgress(value);
   if (progress.talks < DESERT_TALKS.length) {
     const scene = desertTalkScene(value, day);
     const first = progress.talks === 0;
     return [dailySpot({ id: DESERT_SPOT_IDS.desk, place: "tour_desk", label: first ? "砂漠ツアーのデスク" : "ヌールと話す", area: "宿の隣",
-      x: DESERT_PLACES.tour_desk.x, y: DESERT_PLACES.tour_desk.y, theme: "store", glyph: "砂", preview: "bg_dubai_inn_day",
+      x: DAILY_AT.tour_desk[0], y: DAILY_AT.tour_desk[1], theme: "store", glyph: "砂", preview: "bg_dubai_inn_day",
       desc: first ? "宿の隣のデスク。砂丘を走る車の写真が貼ってある（時間は使わない）。" : "日本語を教えがてら、砂漠の話を聞く（時間は使わない）。",
       unavailable: scene ? "" : "今日はもう話した。また明日", unavailableTag: scene ? "" : "また明日",
       hasNew: () => !!scene })];
@@ -157,7 +161,7 @@ export function desertDailySpots(value, day) {
   const best = desertRecords(value).best;
   const tag = status.ok ? "" : status.why === "今日はもう砂丘へ行った" ? "今日はもう行った" : "砂丘は昼だけ";
   return [dailySpot({ id: DESERT_SPOT_IDS.dunes, place: "dunes", label: "ヌールと砂丘へ", area: "街の外の砂丘",
-    x: DESERT_PLACES.dunes.x, y: DESERT_PLACES.dunes.y, theme: "park", glyph: "砂", preview: "bg_dubai_dunes_day",
+    x: DAILY_AT.dunes[0], y: DAILY_AT.dunes[1], theme: "park", glyph: "砂", preview: "bg_dubai_dunes_day",
     desc: status.first ? "サンドボードを教わる。昼の行動を使う（滑り直しは何度でも）。"
       : `もう一度砂丘を滑る。昼の行動を使う。${best ? `自己ベスト ${best.score.toLocaleString("ja-JP")}点／${best.rank}。` : ""}`,
     unavailable: status.ok ? "" : status.why === "今日はもう砂丘へ行った" ? "今日はもう砂丘へ行った。また明日" : "砂丘へは昼に出かける",

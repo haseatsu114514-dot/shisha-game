@@ -43,6 +43,25 @@
 - 推奨の4人（サイB・零C-v2・マキB・太陽B）は、原画を `<id>-remaster-v2/normal-source.png` に保存した。オーナーの確認後、表情差分を作ってからキャラ単位で組み込む。
 - 路上占い師・シェイク・王煙楼は、フード・頭巾・長いひげで頭頂やあごが隠れていて、「頭を約○%大きく」の指示ではほとんど大きくならなかった。作り直すなら、参照②（凛・南雲）と同じ頭の大きさを、原画の高さに対する頭の高さ（約200px／人物1400px）で指定する。上園と同じく今のまま残す（`accepted`）こともできる。
 
+## 段階2.5：ラクダレースの2人（通常2枚・TS13）
+
+第4章ドバイのラクダレース（#2304・#2373）で増えた2人。Codex の候補をそのまま入れたので頭が小さい。2026-11-02 オーナー「任せる」で、表情差分の前に通常を約7頭身で作り直す。プロンプトは prompts.md の TS13（頭の大きさは px で指定）。
+
+| 順 | キャラ | 表情 | 状態 | メモ |
+|---|---|---|---|---|
+| 11 | サイフ（`saif`） | normal | 組み込み済み（7.08頭身） | 8.62→目標7.0頭身。①は `asset_sources/ch4-camel-race/originals/saif-normal-A-v2.png` |
+| 12 | ラシード（`rashid`） | normal | 組み込み済み（7.48頭身） | 9.75→目標約7頭身。グトラで頭頂が隠れるので目〜あごで測る。①は `asset_sources/ch4-camel-race/originals/rashid-normal-B.png` |
+
+2026-11-02 TS13：Codex が2人の通常を作り直し、ZIP（SHA256 `843eba1d…`）で届いた。原画を `saif-remaster-v2/normal-source.png`・`rashid-remaster-v2/normal-source.png` に保存し、`fit_portrait.py` で確認用の画像（`normal-preview.png`・`normal-compare.png`）を作った。ゲームの素材は触っていない。
+
+- 顔・ひげ・目の色・服・持ち物・ポーズ・色は前の絵のまま。頭だけが大きくなった。身長と足元の位置も前と同じ。
+- 頭身は Codex の測定でサイフ 6.61・ラシード 6.85、Claude の測定で 7.24・7.68。頭頂とあごの読み方の差で、どちらも規格（6.4〜7.7）内。前は 8.62・9.75。
+- 2026-11-02 オーナー「おーけー」で採用し、組み込んだ。顔の位置を測り直し（サイフ 7.08・ラシード 7.48頭身、会話画面の頭 143px・128px）、顔アイコンを作り直した。2人の顔アイコンは画像があるのに manifest の `faceIcons` から漏れていて、ゲームで出ていなかったので足した（ヨルも同じく漏れている。別件）。
+- 会話画面で PC（1280×720）とスマホ（591×1280）に表示し、読み込み・頭の見切れ・画像端の欠けが無いことを確かめた。
+- **次は prompts.md の TS13「表情差分」**（サイフ：smile・surprise・excited・wink、ラシード：smile の5枚）。①は合格した `asset_sources/portraits/<id>-remaster-v2/normal-source.png`。台詞はこの5種類を指定していて、今は全部通常の顔で代用されている。
+
+ヌール（`noor`、7.96頭身）は上限7.7をわずかに超えるだけなので、今のまま残す案を推奨（オーナー未回答）。
+
 ## 段階3：表情差分（キャラ単位）
 
 通常が合格したキャラから、残りの表情をまとめて作る。組み込みはキャラ単位（新旧の表情を混ぜない）。
@@ -52,13 +71,15 @@
 | 組長（神崎竜二）（`kumicho`） | smile・serious・surprise・sad・smug | 組み込み済み |
 | スティーブ（`steve`） | smile・serious・surprise・sad | 組み込み済み |
 | ヴォルク（`volk`） | smile・serious・surprise・sad | 組み込み済み |
-| 六角サイ（`sai`） | smile・serious・surprise・thinking | 依頼文あり（prompts.md の TS11）・未生成 |
-| 零-REI-（`rei`） | smile・serious・surprise・sad | 依頼文あり（prompts.md の TS11）・未生成 |
-| 斧崎マキ（`maki`） | smile・serious・surprise・excited | 依頼文あり（prompts.md の TS11）・未生成 |
+| 六角サイ（`sai`） | smile・serious・surprise・thinking | 組み込み済み |
+| 零-REI-（`rei`） | smile・serious・surprise・sad | 組み込み済み |
+| 斧崎マキ（`maki`） | smile・serious・surprise・excited | 組み込み済み |
 | 路上占い師（`uranaishi`） | smile・serious・surprise・sad | 未着手 |
 | シェイク（`sheikh`） | smile・serious・surprise・smug | 未着手 |
 | 王煙楼（`master_hookah`） | smile・serious・surprise・sad・angry・laugh | 未着手 |
-| ダ・シルヴァ太陽（`da_silva`） | smile・serious・surprise・excited | 依頼文あり（prompts.md の TS11）・未生成 |
+| ダ・シルヴァ太陽（`da_silva`） | smile・serious・surprise・excited | 組み込み済み |
+| サイフ（`saif`） | smile・surprise・excited・wink（新規。今は通常だけ） | 依頼文あり（prompts.md の TS13）・通常の合格待ち |
+| ラシード（`rashid`） | smile（新規。今は通常だけ） | 依頼文あり（prompts.md の TS13）・通常の合格待ち |
 
 2026-11-02 TS09：Codex の候補（組長15・スティーブ12・ヴォルク12・みんと15＋旧案）から、新しい通常と会話画面での頭の大きさが最も近い案を選んで組み込んだ。選んだ案と全候補の値は各 `<id>-remaster-v2/generation.json`。
 
@@ -75,6 +96,8 @@
 
 2026-11-02 オーナー「推奨のをお願い」：TS09 の21枚をゲームに組み込み（PR #2369）、サイB・零C-v2・マキB・太陽Bの通常を合格にした。路上占い師・シェイク・王煙楼は作り直す。次は Codex で「立ち絵そろえ 続けて」と送り、prompts.md の TS11（4人の表情差分16枚）と TS12（3人の通常の作り直し）を作る。
 
+2026-11-02 TS11：Codex がサイ・零・マキ・太陽の表情を各4枚（計16枚）作り、オーナーがギガファイル便（期限 2026-11-09、ZIP の SHA256 `8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399`）で共有した。中の4つのZIPは一覧の SHA256 と一致。Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、16枚とも頭の大きさがそろうことを確認した。透明度16以上の散った画素は無い。通常＋表情の20枚を組み込み、頭が通常より8px以上横にずれる9枚は絵全体を横へ動かして頭をそろえた（rei/serious +8px, rei/surprise +14px, maki/excited +10px, maki/serious +10px, maki/smile +9px, maki/surprise +8px, da_silva/serious +30px, da_silva/smile -8px, da_silva/surprise +11px）。顔の位置の記録・顔アイコンも作り直し、20表情×PC／スマホの会話画面で確認した。オーナー「OK。ただレイだけ顔でかく拡大されてるような」→ 零の顔アイコンだけ寄りすぎていた（右の頬が髪に隠れていて、頬の幅を狭く測っていた）。頬の幅を髪の下の輪郭まで測り直してアイコンを作り直した。会話画面の立ち絵の顔の大きさは標準のキャラの中央値どおりで、変えていない。
+
 ## オーナー判断（2026-11-02 回答済み）
 
 | 件 | 回答 |
@@ -84,3 +107,5 @@
 | 上園 | そのまま（`accepted`） |
 | 7人の通常（TS10） | 推奨のまま → サイB・零C-v2・マキB・太陽Bを合格、路上占い師・シェイク・王煙楼は作り直し |
 | あげは・サメちゃんの区分 | 可愛い方 → 小柄枠のまま |
+| 作り直しの範囲と変えてよいもの | 「全キャラ作り直しは勘弁、一部ならいい」「作り直して良い　見た目は今のがいいけど」「頭身とかはいじってもいい」→ 作り直すのは規格外の一部だけ。頭身・頭の大きさは変えてよく、顔・衣装・色・ポーズは今の絵のまま |
+| サイフ・ラシード（ラクダレース） | 任せる → 表情差分の前に通常を約7頭身で作り直す（段階2.5・TS13） |

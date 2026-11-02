@@ -1,0 +1,137 @@
+{
+  "id": "uranaishi-lunch",
+  "title": "お昼の占い",
+  "cast": [
+    "uranaishi"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "お昼、どっちにしよう。",
+    "ヒヒ、占おう。",
+    "お昼の話です。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "昼のアーケードの外れ。左のはじめが、片手におにぎり、片手にサンドイッチを持って迷い「お昼、どっちにしよう。」。右の占い師が机の前で指を一本立てて「ヒヒ、占おう。」。",
+  "panel2": "地面いっぱいに大きな光る魔法陣が浮かび、占い師が机の前で両腕を高く広げた儀式のポーズ。魔法陣の真ん中の二つの台座に、おにぎりとサンドイッチがちょこんと置かれ、まわりに金色の星や月の飾りが浮かぶ。はじめは汗をかいて一歩引いている。はじめ「お昼の話です。」。魔法陣と飾りは光だけで見せ、炎は描かない。",
+  "caption": "占い師は、どんな小さな悩みにも全力です。",
+  "type": "準備が大げさ",
+  "num": 110,
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "533bcb8cec9eb17a34daafc7cc8a6f3c20227494",
+  "generator": "built-in image_gen",
+  "source": "allcast-uranaishi-lunch.png",
+  "source_sha256": "2f811d2b53532c5e849448290c36fc4d31ef84955e288b67838fb5220af37658",
+  "references": [
+    {
+      "path": "hajime-sheet/normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "hajime official normal"
+    },
+    {
+      "path": "portrait-standard-2369-ts11-ts12/uranaishi/refs/uranaishi-current-normal.png",
+      "sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+      "role": "uranaishi current-main official normal; parent verified hash"
+    },
+    {
+      "path": "ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "early adopted style only, not deliverable"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "official template regenerated using unchanged repository tool"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked, 3 lines matching official script",
+    "reading_order": "left-to-right / first speaker upper-left when speaker is on right; tails checked",
+    "identity": "normal references; same positions both panels; eye hood per official script",
+    "style": "early adopted Menu Revision style: cute 2.5-head chibi, bold lines, warm cel palette",
+    "hardware": "none; no siryou hardware needed in these scripts",
+    "in_game_pc_phone": "NOT PERFORMED; not registered",
+    "selection": "awaiting owner; not adopted",
+    "template": "frame detection results retained; vertical drift recorded; no force",
+    "fill_inspection": "Changed derivatives visually inspected. Kotatsu right fill=0 preserves slippers; sleeve internal paper band remains under official fill limit.",
+    "gag_exaggeration": "Visual exaggeration follows script; not a new canon power or behavior."
+  },
+  "cut_source_regions": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-lunch/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-lunch/source-v1.png",
+      "region": {
+        "x": 783,
+        "y": 272,
+        "width": 716,
+        "height": 483,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/uranaishi-lunch-1.webp",
+      "sha256": "34fd83bea33edbf40cc4a55ec5b7805ebcbdef7249831dedc69f015efbcb48ee",
+      "width": 720,
+      "height": 480,
+      "bytes": 71310
+    },
+    {
+      "file": "panels/uranaishi-lunch-2.webp",
+      "sha256": "d6c32fa1b62528c3d33c823a6065309ee7987564cfa6a705f1db7299a8a2b00d",
+      "width": 724,
+      "height": 483,
+      "bytes": 79860
+    }
+  ],
+  "originals": [
+    {
+      "file": "allcast-uranaishi-lunch.png",
+      "sha256": "2f811d2b53532c5e849448290c36fc4d31ef84955e288b67838fb5220af37658",
+      "bytes": 1777735
+    }
+  ],
+  "generation_calls": [
+    {
+      "output": "source-v1.png",
+      "prompt": "prompt-v1.txt",
+      "references": [
+        {
+          "path": "hajime-sheet/normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "role": "hajime official normal"
+        },
+        {
+          "path": "portrait-standard-2369-ts11-ts12/uranaishi/refs/uranaishi-current-normal.png",
+          "sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d",
+          "role": "uranaishi current-main official normal; parent verified hash"
+        },
+        {
+          "path": "ryuji-sheet/loading/pc.png",
+          "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+          "role": "early adopted style only, not deliverable"
+        },
+        {
+          "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+          "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+          "role": "official template regenerated using unchanged repository tool"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    }
+  ],
+  "local_source_before_handoff": "source-v1.png"
+}

@@ -51,7 +51,7 @@ async function fixture() {
   const core=ns('core/state.js'), stats=ns('core/stats.js');
   const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:1}); return s; };
   fresh();
-  return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), spots: ns('daily/spots.js'), bonds: ns('daily/bonds.js'), phone: ns('daily/phone.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setPlay: fn => playImpl=fn,
+  return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), hiyoriRoute: ns('core/hiyori-route.js'), spots: ns('daily/spots.js'), bonds: ns('daily/bonds.js'), phone: ns('daily/phone.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setPlay: fn => playImpl=fn,
     tick: () => { for (const [id,fn] of [...timers]) { timers.delete(id); fn(); } },
     roundTrip: () => { core.save(); core.newGame(); assert(core.load()); return core.state; },
   };
@@ -211,6 +211,43 @@ await check('hiyori numeric growth is independent while connected route/question
   s.flags._hiyori_tonari_return_done=true;s.flags._hiyori_real_self_known=true;s.flags._hiyori_work_talk_done=true;
   assert.equal(f.stats.affinityPointCap('hiyori'),Infinity);
   s.flags._hiyori_bond_question_done=true;assert.equal(f.stats.affinityPointCap('hiyori'),Infinity);
+});
+await check('hiyori ♥4 peach talk and ♥5 promise (#2025) follow the ♥3 question and gate the finale; settled saves are not blocked', async f => {
+  const s=f.fresh();const route=f.db.hiyori.route,R=f.hiyoriRoute,pts=f.stats.AFFINITY_RANK_PTS;
+  const hearts=['peach_talk','promise'];
+  assert.deepEqual(route.storyEvents.slice(-2),hearts);
+  for(const id of hearts){const e=route.events.find(x=>x.id===id);assert(e.untilFinale,id);assert(f.db.dialogues[e.dialogue]?.lines?.length,id);}
+  assert.deepEqual(f.db.dialogues.hiyori_peach_talk.metadata.flavor_lesson,{peach:1});
+  s.chapter=1;s.slot=1;s.met.hiyori=true;s.contacts.push('hiyori');
+  for(const e of route.events) if(!hearts.includes(e.id)&&!e.relationship&&!e.contact)s.flags[e.flag]=true;
+  s.affinity.hiyori=pts[3];
+  assert.equal(R.hiyoriEventStatus('peach_talk'),'prerequisites','question first');
+  s.flags._hiyori_bond_question_done=true;
+  assert.equal(R.hiyoriEventStatus('peach_talk'),'prerequisites','♥4 first');
+  assert.deepEqual({...f.stages.pendingAffinityStage(s,'hiyori',f.db)},{level:4,scene:'hiyori_peach_talk',done:false});
+  s.affinity.hiyori=pts[4];
+  assert.equal(R.hiyoriEventStatus('peach_talk'),'ready');assert.equal(R.hiyoriEventStatus('promise'),'prerequisites');
+  assert.equal(R.hiyoriStoriesDone(),false);assert.equal(R.hiyoriFinaleReady(),false);
+  s.flags._hiyori_peach_talk_done=true;
+  assert.deepEqual({...f.stages.pendingAffinityStage(s,'hiyori',f.db)},{level:5,scene:'hiyori_promise',done:false});
+  assert.equal(R.hiyoriEventStatus('promise'),'prerequisites','♥5 first');
+  s.affinity.hiyori=pts[5];assert.equal(R.hiyoriEventStatus('promise'),'ready');
+  s.slot=0;assert.equal(R.hiyoriEventStatus('promise'),'time','night scene');s.slot=1;
+  // 締めくくりは第3章まで。♥4・♥5も同じ範囲で読めないと、第3章で♥5に届いた保存が詰む。
+  s.chapter=3;assert.equal(R.hiyoriEventStatus('promise'),'ready','chapter 3 finale window');s.chapter=4;assert.equal(R.hiyoriEventStatus('promise'),'chapter');s.chapter=1;
+  assert.equal(R.hiyoriStoriesDone(),false);
+  s.flags._hiyori_promise_done=true;assert.equal(R.hiyoriStoriesDone(),true);
+  assert.equal(f.stages.pendingAffinityStage(s,'hiyori',f.db),null);
+  // 追加前に締めくくりまで済んだ保存: 未読の♥4・♥5は出さず、締めくくり後の判定も止めない。既読は補完しない。
+  for(const settle of [x=>{x.finales.hiyori={route:'friend'};},x=>{x.flags._friend_hiyori=true;},x=>{x.lovers.push('hiyori');}]){
+    const old=f.fresh();old.chapter=1;old.slot=1;old.met.hiyori=true;old.contacts.push('hiyori');old.affinity.hiyori=pts[5];
+    for(const e of route.events) if(!hearts.includes(e.id)&&!e.relationship&&!e.contact)old.flags[e.flag]=true;
+    old.flags._hiyori_bond_question_done=true;settle(old);
+    for(const id of hearts)assert.equal(R.hiyoriEventStatus(id),'relationship',id);
+    assert.equal(R.hiyoriStoriesDone(),true);
+    assert.equal(f.stages.pendingAffinityStage(old,'hiyori',f.db),null);
+    assert(!old.flags._hiyori_peach_talk_done&&!old.flags._hiyori_promise_done,'no backfilled reads');
+  }
 });
 await check('chapter2 actual flags: chat/followup/ageha three visits are independent completion evidence', async f => {
   for(const id of ['ageha','kumicho','rei']) {
@@ -606,5 +643,68 @@ await check('Kuze (#2028): chapter 3 finale after the LIME detour and the answer
   assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['kuze', 'chat']], 'chat only on the scene-card chapters');
 });
 
-console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);
+// #2025: 凛の♥4・♥5。既存4本の後ろに足し、♥3の質問の後・締めくくりの前に一本ずつ読む。
+const RIN_LATE = ['ch1_rin_fifth', 'ch1_rin_sixth'];
+const rinAt = (f, story, heart = 5) => {
+  const s = f.fresh(); s.story.rin = story; s.affinity.rin = f.stats.AFFINITY_RANK_PTS[heart]; s.met.rin = true;
+  s.flags[f.stages.questionDoneKey('rin')] = true; s.flags._spot_seen_ch1_rin_prototype_night = true;
+  s.romanceChoices.bond_q1_rin = { char: 'rin', value: 1, day: 5 };
+  return s;
+};
+const sceneIds = f => f.plays.map(([scene]) => typeof scene === 'string' ? scene : scene.dialogue_id);
+await check('Rin #2025: heart4/5 follow the fourth, one per visit, before the finale', async f => {
+  assert.deepEqual(Array.from(f.spots.VISIT_SEQ.rin).slice(4), RIN_LATE);
+  for (const [story, scene] of [[4, RIN_LATE[0]], [5, RIN_LATE[1]], [6, null]]) {
+    const s = rinAt(f, story);
+    assert.equal(f.stages.pendingAffinityStage(s, 'rin')?.scene ?? null, scene);
+    assert.equal(f.bonds.finaleDue('rin'), story === 6, `finale at story ${story}`);
+  }
+  const s = rinAt(f, 4);
+  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(sceneIds(f), [RIN_LATE[0]]);
+  assert.equal(s.story.rin, 5); assert.equal(f.bonds.finaleDue('rin'), false);
+  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(sceneIds(f), RIN_LATE);
+  assert.equal(s.story.rin, 6); assert.equal(f.bonds.finaleDue('rin'), true);
+  assert.equal(f.roundTrip().story.rin, 6);
+});
+await check('Rin #2025: heart4 needs ♥4 and heart5 needs ♥5; the ♥3 question still comes first', async f => {
+  for (const [story, heart, reads] of [[4, 3, false], [4, 4, true], [5, 4, false], [5, 5, true]]) {
+    f.plays.length = 0; const s = rinAt(f, story, heart);
+    assert.equal(f.spots.hasNewStory('rin'), reads, `story ${story} heart ${heart}`);
+    assert.equal(await f.spots.visitChar('rin'), true);
+    assert.equal(sceneIds(f).some(id => RIN_LATE.includes(id)), reads); assert.equal(s.story.rin, story + Number(reads));
+  }
+  const s = rinAt(f, 4); delete s.flags[f.stages.questionDoneKey('rin')]; delete s.romanceChoices.bond_q1_rin;
+  assert.equal(f.stages.pendingAffinityStage(s, 'rin').scene, 'ch1_rin_bond_question');
+  assert.equal(f.bonds.questionVisitDue('rin'), true, 'unanswered question is offered before the new stages');
+});
+await check('Rin #2025: a cancelled heart4/5 read keeps the stage for the next visit', async f => {
+  for (const story of [4, 5]) {
+    const s = rinAt(f, story); f.setPlay(async () => ({ cancelled: true }));
+    assert.equal(await f.spots.visitChar('rin'), false);
+    assert.equal(s.story.rin, story); assert.equal(s.visits.rin || 0, 0);
+  }
+});
+await check('Rin #2025: saves already landed (finale, friend, lover) are not sent back to heart4/5', async f => {
+  for (const settle of [s => { s.finales.rin = { day: 9, chapter: 1, route: 'friend' }; s.flags._friend_rin = true; },
+    s => { s.finales.rin = { day: 9, chapter: 1, route: 'lover' }; s.lovers = ['rin']; }, s => { s.flags._friend_rin = true; }]) {
+    f.plays.length = 0; const s = rinAt(f, 4); settle(s);
+    assert.equal(f.stages.pendingAffinityStage(s, 'rin'), null);
+    assert.equal(f.spots.hasNewStory('rin'), false);
+    assert.equal(await f.spots.visitChar('rin'), true);
+    assert(!sceneIds(f).some(id => RIN_LATE.includes(id)), JSON.stringify(sceneIds(f)));
+    assert.equal(s.story.rin, 4, 'the skipped stages are not written back');
+  }
+});
+await check('Rin #2025: heart4/5 branch on the ♥3 answer and carry no new romance question', async f => {
+  for (const id of RIN_LATE) {
+    const scene = f.db.dialogues[id], rows = [...scene.lines, ...Object.values(scene.branches).flat()];
+    assert.equal(scene.metadata.flavor_lesson, undefined, 'the taste talk stays in ch1_rin_fourth');
+    const cond = rows.find(l => l.type === 'condition');
+    assert.equal(cond.condition_type, 'romance_open'); assert.equal(cond.char_id, 'rin');
+    assert(scene.branches[cond.next_true]?.length && scene.branches[cond.next_false]?.length);
+    assert(rows.filter(l => l.type === 'choice').every(l => !l.romance_char && l.choices.every(c => c.romance === undefined)));
+    assert(!rows.some(l => l.type === 'set_flag'), 'read state stays in the story counter');
+  }
+});
 
+console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);

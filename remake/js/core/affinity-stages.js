@@ -5,7 +5,7 @@ export const VISIT_SEQ = {
   naru: ["ch1_naru_first", "ch1_naru_second", "ch1_naru_third", "ch1_naru_group_regulars", "ch1_naru_fourth", "ch1_naru_fifth"],
   adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_group_soutoku", "ch1_adam_third", "ch1_adam_fourth", "ch1_adam_fifth"],
   minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_group_regulars", "ch1_minto_fourth", "ch1_minto_phantom_smell"],
-  rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third", "ch1_rin_fourth"],
+  rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third", "ch1_rin_fourth", "ch1_rin_fifth", "ch1_rin_sixth"],
 };
 
 // ♥2〜♥5。最後の白・赤のグミベアの試作（#2023）は味の会話を兼ねる。
@@ -55,6 +55,9 @@ export const SAMECHAN_HEART_EVENTS = [
 ];
 export const samechanHeartEventDone = (s, event) => settled(s, "samechan") || !!s.flags?.[event.flag];
 export const samechanHeartEventsDone = s => SAMECHAN_HEART_EVENTS.every(event => samechanHeartEventDone(s, event));
+// 凛の♥4・♥5（#2025）。後から足した段階なので、締めくくり・友人・恋人へ着地済みの旧セーブには出さず、読んだものとして扱う。
+export const RIN_LATE_STORIES = ["ch1_rin_fifth", "ch1_rin_sixth"];
+export const visitStorySkipped = (s, id, scene) => id === "rin" && RIN_LATE_STORIES.includes(scene) && settled(s, id);
 export function questionComplete(s, id) {
   return settled(s, id) || !!s.flags?.[id === "samechan" ? "_samechan_bond_question_done" : questionDoneKey(id)];
 }
@@ -64,7 +67,7 @@ export function pendingAffinityStage(s, id, db = {}) {
   const stages = [];
   const flags = s.flags || {};
   const seq = id === "sumi" ? null : VISIT_SEQ[id];
-  if (seq) seq.forEach((scene, level) => stages.push({ level, scene, done: (s.story?.[id] || 0) > level }));
+  if (seq) seq.forEach((scene, level) => stages.push({ level, scene, done: (s.story?.[id] || 0) > level || visitStorySkipped(s, id, scene) }));
   if (["tsumugi", "minto", "rin"].includes(id)) stages.push({ level: 3, scene: `ch1_${id}_bond_question`, done: questionComplete(s, id) });
   if (id === "samechan") stages.push(
     { level: 0, done: !!flags._samechan_first_encounter },
@@ -88,7 +91,8 @@ export function pendingAffinityStage(s, id, db = {}) {
       required.add(e); (e.requires || []).forEach(f => include(byFlag.get(f)));
     };
     (route.storyEvents || []).forEach(id => include(events.find(e => e.id === id)));
-    for (const e of required) stages.push({ level: levelOf(e), scene: e.dialogue, done: !!flags[e.flag] });
+    // ♥4・♥5（untilFinale）は締めくくり前の段階。着地済みの関係では残件にしない。
+    for (const e of required) stages.push({ level: levelOf(e), scene: e.dialogue, done: !!flags[e.flag] || !!e.untilFinale && settled(s, id) });
     if (route.question?.flag) stages.push({ level: Math.max(3, levelOf(events.find(e => e.dialogue === route.question.host))), scene: route.question.dialogue, done: settled(s, id) || !!flags[route.question.flag] });
   }
   if (id === "mashiro") {
