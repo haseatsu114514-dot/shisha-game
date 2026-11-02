@@ -35,6 +35,7 @@
 .dr-mark { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; border: 2px solid #fff; }
 .dr-mark-you { background: #e9532b; box-shadow: 0 0 8px rgba(233,83,43,.8); }
 .dr-mark-noor { background: #7c8a3a; width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; }
+.dr-mark-naru { background: #2a272c; border-color: #e8e4dc; width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; }
 .dr-race { padding: 4px 14px; border-radius: 999px; background: rgba(40,26,30,.72); color: #fff5e6; font-size: 16px; font-weight: 800; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
 .dr-race[data-lead="you"] { background: rgba(212,82,31,.88); }
 
@@ -52,6 +53,34 @@
 .dr-pop[data-kind="count"] { color: #fff; font-size: 120px; top: 24%; }
 .dr-pop[data-kind="go"] { color: #ffe27a; font-size: 130px; top: 24%; font-style: italic; text-shadow: 0 0 30px rgba(255,190,80,.9); }
 @keyframes dr-pop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.5); } 18% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); } 70% { opacity: 1; transform: translate(-50%, -60%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -80%) scale(1); } }
+
+/* ---- トリックのカットイン: 斜めの帯が走り込み、跳ぶ背面の絵と大きな角度を出して抜けていく ---- */
+.dr-cutin { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.dr-cutin:empty { display: none; }
+.dr-cutin-band { position: absolute; left: -12%; right: -12%; top: 23%; height: 230px; transform: skewY(-7deg); overflow: hidden;
+  background: linear-gradient(90deg, rgba(60,20,10,.92), rgba(196,68,24,.94) 45%, rgba(255,150,50,.9));
+  border-top: 6px solid #fff3c4; border-bottom: 6px solid #fff3c4; box-shadow: 0 0 0 3px rgba(80,30,10,.6), 0 18px 50px rgba(60,20,10,.45); }
+.dr-cutin-band[data-grade="perfect"] { background: linear-gradient(90deg, rgba(70,30,0,.92), rgba(214,140,10,.95) 45%, rgba(255,226,120,.92)); border-color: #fffbe0; }
+.dr-cutin-lines { position: absolute; inset: -40%; background: repeating-conic-gradient(from 0deg at 28% 50%, rgba(255,255,255,.28) 0 2deg, transparent 2deg 7deg); }
+.dr-cutin-rider { position: absolute; left: 15%; top: 52%; height: 250px; transform: translateY(-50%) skewY(7deg) rotate(-12deg); filter: drop-shadow(0 8px 0 rgba(60,20,10,.45)); }
+.dr-cutin-band[data-dir="left"] .dr-cutin-rider { transform: translateY(-50%) skewY(7deg) rotate(12deg) scaleX(-1); }
+.dr-cutin-words { position: absolute; left: 42%; top: 50%; transform: translateY(-50%) skewY(7deg); display: flex; flex-direction: column; align-items: flex-start; line-height: 1; }
+.dr-cutin-words b { font-size: 150px; font-weight: 900; font-style: italic; letter-spacing: -.02em; color: #fff; -webkit-text-stroke: 4px rgba(90,30,0,.85); text-shadow: 0 8px 0 rgba(90,30,0,.5), 0 0 30px rgba(255,220,120,.9); }
+.dr-cutin-words span { margin-top: 8px; padding: 4px 16px; font-size: 30px; font-weight: 900; font-style: italic; letter-spacing: .14em; color: #4a1a00; background: #fff3c4; border-radius: 4px; }
+.dr-cutin.show .dr-cutin-band { animation: dr-cutin-band 1s cubic-bezier(.2,.9,.2,1) forwards; }
+.dr-cutin.show .dr-cutin-rider { animation: dr-cutin-rider 1s cubic-bezier(.2,.9,.2,1) forwards; }
+.dr-cutin.show .dr-cutin-words { animation: dr-cutin-words 1s cubic-bezier(.2,.9,.2,1) forwards; }
+.dr-cutin.show .dr-cutin-lines { animation: dr-cutin-spin 1s linear forwards; }
+@keyframes dr-cutin-band { 0% { clip-path: inset(0 100% 0 0); } 14% { clip-path: inset(0 0 0 0); } 80% { clip-path: inset(0 0 0 0); opacity: 1; } 100% { clip-path: inset(0 0 0 100%); opacity: .9; } }
+@keyframes dr-cutin-rider { 0% { margin-left: -260px; opacity: 0; } 18% { margin-left: 0; opacity: 1; } 80% { margin-left: 30px; } 100% { margin-left: 260px; opacity: 0; } }
+@keyframes dr-cutin-words { 0%, 10% { opacity: 0; scale: 1.8; } 22% { opacity: 1; scale: .94; } 30% { scale: 1; } 80% { opacity: 1; } 100% { opacity: 0; scale: 1.06; } }
+@keyframes dr-cutin-spin { from { rotate: 0deg; } to { rotate: 14deg; } }
+.desert-ride[data-reduced-motion="true"] .dr-cutin.show .dr-cutin-band,
+.desert-ride[data-reduced-motion="true"] .dr-cutin.show .dr-cutin-rider,
+.desert-ride[data-reduced-motion="true"] .dr-cutin.show .dr-cutin-words { animation: dr-cutin-still .9s linear forwards; }
+.desert-ride[data-reduced-motion="true"] .dr-cutin.show .dr-cutin-lines { animation: none; }
+@keyframes dr-cutin-still { 0% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .dr-cutin.show .dr-cutin-band, .dr-cutin.show .dr-cutin-rider, .dr-cutin.show .dr-cutin-words { animation: dr-cutin-still .9s linear forwards; } .dr-cutin.show .dr-cutin-lines { animation: none; } }
 
 /* ---- 練習の説明 ---- */
 .dr-caption { position: absolute; left: 50%; top: 80px; transform: translateX(-50%); max-width: 760px; margin: 0; padding: 10px 26px; border-radius: 999px; background: rgba(40,26,30,.78); color: #fff5e6; font-size: 22px; font-weight: 700; letter-spacing: .04em; text-align: center; white-space: nowrap; pointer-events: none; }

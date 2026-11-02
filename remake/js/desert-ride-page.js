@@ -19,9 +19,13 @@ function menu(message = "狙いは、S。") {
   reduceBox.checked = reduce;
   const start = tutorial => async () => {
     app.hidden = true;
-    const { results } = await runDesertRide({ host: stage, tutorial, best, reducedMotion: reduce, onResult: result => {
+    // ヌールに一度勝つと、なる（裏の相手）とも勝負できる
+    const rivals = best?.beatNoor ? ["noor", "naru"] : ["noor"];
+    const { results } = await runDesertRide({ host: stage, tutorial, best, rivals, reducedMotion: reduce, onResult: result => {
       const prev = readBest();
-      if (!prev || result.score > prev.score) { try { localStorage.setItem(KEY, JSON.stringify({ score: result.score, rank: result.rank })); } catch { /* 保存できない環境 */ } }
+      const beatNoor = !!prev?.beatNoor || (result.race?.who === "noor" && result.race.won);
+      const top = !prev || result.score > prev.score ? { score: result.score, rank: result.rank } : { score: prev.score, rank: prev.rank };
+      try { localStorage.setItem(KEY, JSON.stringify({ ...top, beatNoor })); } catch { /* 保存できない環境 */ }
     } });
     app.hidden = false;
     const last = results.at(-1);
@@ -37,7 +41,8 @@ function menu(message = "狙いは、S。") {
       el("button.btn", { type: "button", text: "練習から始める", dataset: { test: "desert-page-tutorial" }, onclick: start(true) }),
     ]),
     el("p", { style: { marginTop: "16px" } }, [el("label", [reduceBox, el("span", { text: "動きを減らす（揺れ・閃光・速度線なし）" })])]),
-    el("p", { text: "PC: ← → で移動、Space でジャンプ／着地。スマホ: 下のボタン。", style: { fontSize: "15px", color: "#5a3a2a" } }),
+    best?.beatNoor ? el("p", { text: "ヌールに勝った。なるが、砂丘で待っている。", dataset: { test: "desert-page-naru" } }) : null,
+    el("p", { text: "PC: ← → で移動（空中では回転）、Space でジャンプ／着地、↓ でブースト。スマホ: 下のボタン。", style: { fontSize: "15px", color: "#5a3a2a" } }),
   );
 }
 menu();

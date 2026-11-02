@@ -41,8 +41,16 @@ await suite("desert-ride", async check => {
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp", "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
-    // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ
+    // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
+    await page.evaluate(() => {
+      window.__cutins = [];
+      const node = document.querySelector('[data-test="desert-cutin"]');
+      new MutationObserver(() => { if (node.classList.contains("show")) window.__cutins.push(node.dataset.degrees); }).observe(node, { attributes: true, attributeFilter: ["class"] });
+    });
     await autoplayToResult(page, "expert");
+    const cutins = await page.evaluate(() => window.__cutins);
+    assert(cutins.length >= 5 && cutins.includes("720"), `a cut-in for each big trick (${cutins.join(", ")})`);
+    assert.equal(await page.locator(".dr-cutin-rider").count() <= 1, true);
     const text = await resultText(page);
     assert.match(text, /RESULT/); assert.match(text, /転倒 0 回/); assert.match(text, /大ジャンプ 7 回/); assert.match(text, /自己ベスト更新/);
     assert.match(text, /トリック 7 回（最高 720）/); assert.match(text, /ブースト [2-9] 回/);
@@ -65,6 +73,19 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-best")).waitFor();
     assert.equal(await page.locator(t("desert-ride")).count(), 0, "the game cleans itself up");
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")).rank), "S");
+    // ヌールに勝ったので、単体ページでもなる（裏の相手）と勝負できる
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")).beatNoor), true);
+    await page.locator(t("desert-page-naru")).waitFor();
+    await page.locator(t("desert-page-start")).click();
+    await page.locator(t("desert-start-naru")).click();
+    await phase(page, "run");
+    assert.equal(await page.evaluate(() => window.__desertRide.raceWith), "naru");
+    assert.equal(await page.locator(t("desert-race-gap")).innerText(), "VS なる");
+    await autoplayToResult(page, "perfect");
+    assert.equal(await page.locator(t("desert-race")).getAttribute("data-who"), "naru");
+    assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "false", "clean landings without spins lose to Naru");
+    await page.locator(t("desert-leave")).click();
+    await page.locator(t("desert-page-best")).waitFor();
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), null, "the page never touches the real save");
   });
 
@@ -233,6 +254,10 @@ await suite("desert-ride", async check => {
     assert.match(await page.locator(t("ch4-free")).innerText(), /自己ベスト/);
     await page.locator(t("ch4-go-dunes")).click();
     await phase(page, "menu");
+    // ヌールに勝った後の外出: なるが砂丘に来て、勝負の相手に加わる（来た場面は一度だけ）
+    assert.equal(await page.locator(t("desert-start-naru")).count(), 1, "after beating Noor, Naru waits at the dunes");
+    value = await get(page);
+    assert.equal(value.desert.naruMet, true);
     await page.locator(t("desert-start")).click();
     await phase(page, "run");
     await page.waitForFunction(() => window.__desertRide.game.z > 40);

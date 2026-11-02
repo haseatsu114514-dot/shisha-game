@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, RANKS, DEFAULT_SEED, generateCourse, practiceCourse, curveAt, createGame, step, press, boost, chargeBoost,
-  summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing } from "../js/minigames/desert-ride-model.js";
+  summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
 function play(course, skill, { maxTime = 200, race = false } = {}) {
@@ -191,7 +191,7 @@ test("summary and readResult keep only well-formed finished records", () => {
   const result = summary(game);
   assert.deepEqual(readResult(result), { finished: true, score: result.score, rank: result.rank, time: result.time, maxCombo: result.maxCombo,
     falls: result.falls, bigJumps: result.bigJumps, perfect: result.perfect, good: result.good, nearMiss: result.nearMiss,
-    tricks: result.tricks, bestTrick: result.bestTrick, boosts: result.boosts, race: { won: true, gap: result.race.gap } });
+    tricks: result.tricks, bestTrick: result.bestTrick, boosts: result.boosts, race: { won: true, gap: result.race.gap, who: "noor" } });
   // 以前の形の記録（トリック・ブースト・競走が無い）も読める
   assert.deepEqual(readResult({ finished: true, score: 9000, rank: "A", time: 55, maxCombo: 3, falls: 0 }),
     { finished: true, score: 9000, rank: "A", time: 55, maxCombo: 3, falls: 0, bigJumps: 0, perfect: 0, good: 0, nearMiss: 0, tricks: 0, bestTrick: 0, boosts: 0, race: null });
@@ -300,6 +300,24 @@ test("race: Noor runs the same course deterministically; finishing first wins a 
   assert.equal(lose.race.won, false);
   assert(Math.abs(win.score - lose.score - SCORE.raceWin) <= SCORE.timeBonusPerSec, "the winner gets the race bonus");
   assert.equal(summary(createGame(course)).race, null, "no rival, no race");
+});
+
+test("the hidden rival Naru (after beating Noor) spins 360s, lands clean and boosts: only a spinning run beats him", () => {
+  const course = generateCourse(DEFAULT_SEED);
+  assert.deepEqual(Object.keys(RIVALS), ["noor", "naru"]);
+  const noor = rivalRun(course), naru = rivalRun(course, { who: "naru" });
+  assert.equal(noor.who, "noor"); assert.equal(naru.who, "naru");
+  assert.equal(naru.falls, 0);
+  assert(naru.finishTime < noor.finishTime - 2, `Naru is clearly faster (${naru.finishTime} vs ${noor.finishTime})`);
+  assert.equal(rivalRun(course, { who: "naru" }).finishTime, naru.finishTime, "deterministic");
+  assert(rivalAt(naru, 0).x > 0.3, "Naru starts on the right");
+  const race = skill => { const game = createGame(course, { rival: naru }), memo = {}; while (!game.finished && game.t < 200) botStep(game, skill, memo, DT); return game; };
+  const expert = race("expert"), perfect = race("perfect");
+  assert.equal(expert.race.won, true); assert.equal(expert.race.who, "naru");
+  assert.equal(perfect.race.won, false, "clean landings without spins are not enough");
+  assert(expert.events.some(e => e.kind === "race" && e.points === SCORE.raceWinNaru));
+  assert.deepEqual(readResult(summary(expert)).race, { won: true, gap: expert.race.gap, who: "naru" });
+  for (let seed = 1; seed <= 30; seed++) assert.equal(rivalRun(generateCourse(seed), { who: "naru" }).falls, 0, `Naru never falls on seed ${seed}`);
 });
 
 test("the adopted Codex art (PR #2306, #2333) matches its adoption record: sizes, anchors and runtime files", async () => {

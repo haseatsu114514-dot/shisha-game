@@ -2,7 +2,7 @@
 // デスクの会話は1日1つで3回、誘われたら昼の外出、同じ日に二度は行けない、記録と初回だけの報酬、遊びのご褒美の判定。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { DESERT_FLAG, DESERT_TALKS, DESERT_SCENES, DESERT_DIALOGUE_IDS, desertProgress, desertInvited, desertTalkScene, completeDesertTalk,
+import { DESERT_FLAG, DESERT_TALKS, DESERT_SCENES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, desertProgress, desertInvited, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations,
   DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
@@ -57,7 +57,7 @@ test("records keep the best by score, count runs, and reward the first finish on
   const value = fresh();
   const calls = [];
   const awardExp = target => { calls.push(target); return 70; };
-  assert.deepEqual(desertRecords(value), { runs: 0, best: null, bestRank: null, firstClear: null, rewarded: false, wins: 0 });
+  assert.deepEqual(desertRecords(value), { runs: 0, best: null, bestRank: null, firstClear: null, rewarded: false, wins: 0, naruMet: false, naruWins: 0 });
   assert.equal(recordDesertResult(value, { finished: false, score: 10, rank: "C" }, { awardExp }), null, "unfinished runs are not recorded");
   assert.equal(recordDesertResult(value, null, { awardExp }), null);
   const first = recordDesertResult(value, result(4000, "B"), { awardExp });
@@ -72,7 +72,8 @@ test("records keep the best by score, count runs, and reward the first finish on
   assert.deepEqual({ newBest: higher.newBest, exp: higher.exp }, { newBest: true, exp: 0 });
   assert.equal(calls.length, 1, "EXP only for the very first finish, however many replays");
   assert.deepEqual(desertRecords(value), { runs: 3, best: { finished: true, score: 7000, rank: "A", time: 55.2, maxCombo: 9, falls: 1, bigJumps: 5, perfect: 2, good: 2, nearMiss: 3,
-    tricks: 0, bestTrick: 0, boosts: 0, race: null }, bestRank: "A", firstClear: { chapter: 4, day: 46 }, rewarded: true, wins: 0 });
+    tricks: 0, bestTrick: 0, boosts: 0, race: null }, bestRank: "A", firstClear: { chapter: 4, day: 46 }, rewarded: true, wins: 0, naruMet: false, naruWins: 0 });
+  assert.deepEqual(desertRivals(value), ["noor"], "Naru waits until Noor is beaten");
   // ヌールとの競走: 勝った回数を数え、初めて勝った時だけ firstWin（夕日の前の短い会話）
   const lost = recordDesertResult(value, { ...result(5000, "B"), race: { won: false, gap: 0.4 } }, { awardExp });
   assert.deepEqual({ won: lost.won, firstWin: lost.firstWin }, { won: false, firstWin: false });
@@ -81,7 +82,16 @@ test("records keep the best by score, count runs, and reward the first finish on
   const again = recordDesertResult(value, { ...result(9100, "A"), race: { won: true, gap: 2 } }, { awardExp });
   assert.deepEqual({ won: again.won, firstWin: again.firstWin }, { won: true, firstWin: false });
   assert.equal(desertRecords(value).wins, 2);
-  assert.deepEqual(desertRecords(value).best.race, { won: true, gap: 2 });
+  assert.deepEqual(desertRecords(value).best.race, { won: true, gap: 2, who: "noor" });
+  // ヌールに勝つと、なる（裏の相手）が来る。初めて来た場面は一度だけ。なるへの勝ちは別に数える
+  assert.deepEqual(desertRivals(value), ["noor", "naru"]);
+  assert.equal(markNaruMet(value), true); assert.equal(markNaruMet(value), false);
+  assert.equal(desertRecords(value).naruMet, true);
+  const naruLost = recordDesertResult(value, { ...result(9200, "A"), race: { won: false, gap: 1.2, who: "naru" } }, { awardExp });
+  assert.deepEqual({ who: naruLost.who, won: naruLost.won, firstNaruWin: naruLost.firstNaruWin, firstWin: naruLost.firstWin }, { who: "naru", won: false, firstNaruWin: false, firstWin: false });
+  const naruWon = recordDesertResult(value, { ...result(9300, "A"), race: { won: true, gap: 0.6, who: "naru" } }, { awardExp });
+  assert.deepEqual({ firstNaruWin: naruWon.firstNaruWin, firstWin: naruWon.firstWin }, { firstNaruWin: true, firstWin: false });
+  assert.deepEqual([desertRecords(value).wins, desertRecords(value).naruWins], [2, 1], "a win over Naru is not a win over Noor");
   // 遊びのご褒美（心得の盤）の判定と、growth-board-data の登録
   assert.equal(desertRankAtLeast(value, "A"), true); assert.equal(desertRankAtLeast(value, "S"), false);
   assert.equal(desertRankAtLeast(fresh(), "C"), false);

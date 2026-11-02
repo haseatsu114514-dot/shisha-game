@@ -615,6 +615,101 @@
       ]
     },
     {
+      "dialogue_id": "ch4_desert_naru_arrive",
+      "comment": "DSR22: ヌールに初めて勝った後の外出で一度だけ。到着の会話のあと、なる（裏の相手）が砂丘に来て勝負を持ちかける。大会前後で一言を分ける。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "砂丘に着くと、見覚えのある銀色の頭が、板を抱えて待っていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "よう。ヌールさんに勝ったんだって？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "なる！？ なんでここに"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "宿のロビーにチラシがあった。「日本の子に負けた。挑戦者求む」って"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "書いた！ で、強そうな人を連れてきた。ハジメの友だちでしょ？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "板は初めてだけどな。……滑り方は、ここで全部見てた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……なるの「全部見てけ」は、見る側も本気だ）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 4,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "一本、勝負しようぜ。本番前の、いい肩慣らしだ"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "一本、勝負しようぜ。大会の打ち上げ代わりだ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_desert_naru_first_win",
+      "comment": "DSR22: 初めてなるに勝った外出で一度だけ。砂丘を下りたあと、夕日の会話の前。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴールで振り返ると、なるが砂の上に大の字になっていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……あー、くそ。悔しい"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "でも最後の回転は、見てても真似できねえわ。いい滑りだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なるが悔しがるの、久しぶりに見た"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "言ってろ。次は、負けねえ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "venue_noor_result_S",
       "lines": [
         {
@@ -662,6 +757,28 @@
           "speaker": "noor",
           "face": "surprise",
           "text": "スゴイ！ ……悔しいけど、今日は私の負け"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_naru_race_win",
+      "comment": "DSR22: なるに勝った完走のあとのひとこと。",
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……くっそ、負けた！ ……いい滑りだったぜ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_naru_race_lose",
+      "comment": "DSR22: なるに負けた完走のあとのひとこと。",
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "まだまだだな。回るなら、もっと高く跳べ"
         }
       ]
     }
