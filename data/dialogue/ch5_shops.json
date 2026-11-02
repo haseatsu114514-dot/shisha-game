@@ -1,0 +1,71 @@
+{
+  "comment": "第5章の地元の店（#2033 F）。なるはKEMURIKUSAを再開している（第4章 ch4_naru_dubai_3）。はじめは第4章の世界大会の後の新しい王者。C.STATIONの常連（old_man）は第1章の cs_regular_chat の人。好感度・代金・体力は台詞に書かず、chapters/ch5-shops.js が付ける。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch5_naru_shop",
+      "lines": [
+        { "speaker": "", "face": "", "text": "KEMURIKUSA。カウンターの奥で、なるがボウルに葉を詰めていた。" },
+        { "speaker": "naru", "face": "smile", "text": "お、世界一が来た" },
+        { "speaker": "hajime", "face": "normal", "text": "その呼び方、やめてくれって" },
+        { "speaker": "naru", "face": "smile", "text": "冗談だ。座れ。今日の一台、試してほしい" },
+        { "speaker": "", "face": "", "text": "バニラの甘さの奥に、焼いたパンのような香ばしさが残る一台だった。" },
+        { "speaker": "naru", "face": "normal", "text": "前は甘さだけで押してた。今は、二口目に客が息をつける所を作ってる" },
+        { "speaker": "hajime", "face": "normal", "text": "……吸ってる人の速さ、まだ数えてるんだ" },
+        { "speaker": "naru", "face": "smile", "text": "癖になった。お前のせいだぞ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_naru_shop_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "閉店前のKEMURIKUSA。なるが、カウンターを拭きながら顔を上げた。" },
+        { "speaker": "naru", "face": "normal", "text": "博士との勝負、日はまだ決めてないんだってな" },
+        { "speaker": "hajime", "face": "normal", "text": "うん。準備ができたら、こっちから連絡する" },
+        { "speaker": "naru", "face": "serious", "text": "急かすやつがいたら言え。俺が代わりに文句を言ってやる" },
+        { "speaker": "hajime", "face": "smile", "text": "なるが一番、急かしそうだけど" },
+        { "speaker": "naru", "face": "smile", "text": "……否定はしねえ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_naru_shop_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "KEMURIKUSAの作業台。なるが、炭の置き方を一つずつ変えて試していた。" },
+        { "speaker": "naru", "face": "normal", "text": "見るなら、全部見てけ。うまくいかなかった方もな" },
+        { "speaker": "hajime", "face": "normal", "text": "前も、そう言ってたよね" },
+        { "speaker": "naru", "face": "smile", "text": "言ってた。言った本人が、今やっと分かってきた" },
+        { "speaker": "", "face": "", "text": "うまくいかなかった一台の灰を、なるは捨てずに小皿へ取っておいた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（うまくいかなかった方も、ちゃんと残すんだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_c_station",
+      "lines": [
+        { "speaker": "", "face": "", "text": "C.STATIONに入ると、受付のスタッフが目を丸くした。" },
+        { "speaker": "shop_clerk", "face": "", "text": "あっ、世界大会の……！　席、すぐご用意します" },
+        { "speaker": "hajime", "face": "surprise", "text": "（ここでも、顔を覚えられてる）" },
+        { "speaker": "", "face": "", "text": "案内された席の壁に、世界大会の記事の切り抜きが貼ってあった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……ちょっと、落ち着かないな）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_c_station_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "C.STATIONのカウンター。隣の常連の男性が、こちらに気づいて片手を上げた。" },
+        { "speaker": "old_man", "face": "", "text": "よう。今日は客か。……なるの一台の話、覚えてるか" },
+        { "speaker": "hajime", "face": "normal", "text": "覚えてます。吸い終わっても、ホースを置かなかったって" },
+        { "speaker": "old_man", "face": "", "text": "今は、お前の一台でも同じ話をしてるよ" },
+        { "speaker": "hajime", "face": "smile", "text": "（……あの時の話が、こっちに回ってきたんだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_c_station_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "店の奥で、スタッフが次の地元大会のポスターを貼っていた。" },
+        { "speaker": "shop_clerk", "face": "", "text": "今年も、地元大会をやるんです" },
+        { "speaker": "shop_clerk", "face": "", "text": "……出ないですよね？" },
+        { "speaker": "hajime", "face": "smile", "text": "出ません。でも、見には来ます" },
+        { "speaker": "shop_clerk", "face": "", "text": "よかった。出られたら、みんな困っちゃうので" },
+        { "speaker": "", "face": "", "text": "新しいポスターには、去年より大きな字で「初出場歓迎」と書いてあった。" }
+      ]
+    }
+  ]
+}
