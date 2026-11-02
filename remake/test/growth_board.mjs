@@ -391,6 +391,61 @@ core.state.affinity.adam = 0;
   }
 }
 
+// 大会後に相談する授業は、その時の関係と時系列に合わせて分かれる（交流の時系列ルール・SPEC 2.6）。
+// なる（第3章の後はさん付けなし）・あげは（第4章からはため口。恋人ルートの呼び捨てとも食い違わないよう名前を呼ばない）・スティーブ（大会後の東京ではその夜がピザの夜）。
+{
+  const vm = await import("node:vm");
+  const { tournamentFinished } = await import("../js/core/story-context.js");
+  const engine = readFileSync(new URL("../js/vn/engine.js", import.meta.url), "utf8");
+  const start = engine.indexOf("function handleCondition("), end = engine.indexOf("\n}\n", start);
+  assert(start >= 0 && end > start, "engine handleCondition");
+  const scenes = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/dialogue/growth_lessons.json", import.meta.url), "utf8")).dialogues.map((d) => [d.dialogue_id, d]));
+  const ctx = vm.createContext({ tournamentFinished, DB: { dialogues: {} }, STAT_EN: {}, hooks: {}, jumpTo: () => { throw new Error("lesson scenes branch in place"); } });
+  vm.runInContext(engine.slice(start, end + 2), ctx);
+  const rows = (id, chapter, phase = "daily") => {
+    const d = scenes[id];
+    const running = { queue: [...d.lines], branches: d.branches || {} }, out = [];
+    Object.assign(ctx, { state: { chapter, phase, flags: {}, stats: {} }, running });
+    while (running.queue.length) { const line = running.queue.shift(); if (line.type === "condition") ctx.handleCondition(line); else out.push(line); }
+    return out;
+  };
+  const said = (id, chapter, phase, who = "hajime") => rows(id, chapter, phase).filter((l) => l.speaker === who).map((l) => l.text);
+  for (const id of ["lesson_naru_watch", "lesson_steve_pizza", "lesson_ageha_zuboo"]) {
+    const conditions = scenes[id].lines.filter((l) => l.type === "condition");
+    assert(conditions.length >= 1, `${id}: 大会後で分かれる`);
+    for (const c of conditions) {
+      assert.equal(c.condition_type, "tournament_finished"); assert.equal(c.tournament_chapter, 3);
+      assert(scenes[id].branches?.[c.next_true]?.length && scenes[id].branches?.[c.next_false]?.length, `${id}: 両方の分岐がある`);
+    }
+  }
+  for (const [chapter, phase] of [[1, "daily"], [2, "daily"], [3, "daily"], [3, "tournament"]]) {
+    const naru = said("lesson_naru_watch", chapter, phase).join("\n");
+    assert.match(naru, /なるさん/, `第${chapter}章 ${phase}: 大会前はなるさん`);
+    assert.doesNotMatch(naru, /なるって/);
+    assert.match(said("lesson_ageha_zuboo", chapter, phase).join("\n"), /ですか/, "大会前のあげはさんには丁寧語");
+    assert(rows("lesson_steve_pizza", chapter, phase).some((l) => l.text === "グッド。大会が終わって、東京にいる最後の夜にしよう"));
+  }
+  for (const [chapter, phase] of [[3, "aftermath"], [4, "daily"], [5, "daily"]]) {
+    const naru = said("lesson_naru_watch", chapter, phase).join("\n");
+    assert.match(naru, /なるって/, `第${chapter}章 ${phase}: 大会後はなる`);
+    assert.doesNotMatch(naru, /なるさん/);
+    for (const line of said("lesson_ageha_zuboo", chapter, phase)) assert.doesNotMatch(line, /です|ます/, `第${chapter}章のはじめはあげはさんにため口: ${line}`);
+    // 恋人ルートでは「あげは」と呼び捨てになる（lover_ageha_lv1）ので、大会後の相談では名前を呼ばない。
+    for (const line of said("lesson_ageha_zuboo", chapter, phase)) assert.doesNotMatch(line, /あげはさん/, `第${chapter}章: 恋人でも読める呼び方: ${line}`);
+    assert(said("lesson_ageha_zuboo", chapter, phase).some((t) => t === "ちょっと相談いい？ 吸い出しのことで"));
+    const agehaNarration = rows("lesson_ageha_zuboo", chapter, phase).filter((l) => !l.speaker).map((l) => l.text).join("\n");
+    assert.doesNotMatch(agehaNarration, /あげはさん/, "大会後の地の文は第4・5章と同じ「あげは」");
+    const steve = rows("lesson_steve_pizza", chapter, phase).map((l) => l.text || "");
+    assert(steve.some((t) => t.includes("今夜")), "大会後の東京では、その夜がピザの夜");
+    assert(!steve.some((t) => t.includes("大会が終わって")));
+  }
+  // 大会前の分岐は元の台詞のまま（行数・話者・表情）
+  assert.equal(rows("lesson_naru_watch", 1).length, 13);
+  assert.equal(rows("lesson_ageha_zuboo", 1).length, 16);
+  assert.equal(rows("lesson_steve_pizza", 1).length, 17);
+  assert.equal(rows("lesson_steve_pizza", 5).length, 17);
+}
+
 // 授業は会って相談した時だけ習う（SBD61: LIME では習えない）
 {
   assert.equal(growth.canAskByLime, undefined, "LIME で聞く入口は無い");

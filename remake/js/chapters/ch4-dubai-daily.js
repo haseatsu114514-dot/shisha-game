@@ -267,8 +267,9 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.place === "naru") gainAffinity("naru", 5);
   // 龍龍水煙所: ほかの章のライバルの店と同じ値（段階の会話 +16・通いの小会話 +8。core/stats.js の visitAffinity）
   if (longlong) gainAffinity(LONGLONG_CHAR, visitAffinity(longlong.kind === "story" ? "story" : "talk"));
-  // 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があれば相談して話を聞く（FESTA＝太陽、路地裏のカフェ＝シェイク）
-  const teacher = { festa: "da_silva", alley_cafe: "sheikh" }[entry.place];
+  // 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があれば相談して話を聞く（FESTA＝太陽）。
+  // 路地裏のカフェの日常の会話で話すのは店員で、シェイクの授業は大会で名を明かすまで伏せる。シェイクへの相談は第5章の屋敷（ch5-dubai.js）。
+  const teacher = { festa: "da_silva" }[entry.place];
   if (teacher && state === owner) await keepDailyHud(() => consultLessons(teacher));
   return { used: true, exerted: (entry.stamina || 0) < 0 };
 }

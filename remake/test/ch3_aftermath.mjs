@@ -5,7 +5,7 @@ import { chapterDay } from "../js/core/chapter-clock.js";
 import { playerRegion } from "../js/core/tokyo-visits.js";
 import { CH3_AFTERMATH_SCENES, CH3_AFTERMATH_DETOURS, canRunChapterThreeAftermath, beginChapterThreeAftermath,
   chapterThreeAftermathProgress, completeChapterThreeAftermathScene, availableAftermathDetours,
-  completeAftermathDetour } from "../js/chapters/ch3-aftermath-progress.js";
+  completeAftermathDetour, CH3_AFTERMATH_LESSONS, availableAftermathLessons } from "../js/chapters/ch3-aftermath-progress.js";
 import { agehaConfessionDue, beginAgehaConfessionDay, AGEHA_CONFESSION_DAY_AFTER_WIN, AGEHA_HEART_MAX_PTS } from "../js/chapters/ch3-romance-entry.js";
 import { AFFINITY_RANK_PTS } from "../js/core/stats.js";
 assert.equal(AGEHA_HEART_MAX_PTS, AFFINITY_RANK_PTS[5], "ageha's ♥5 threshold must follow the shared affinity table");
@@ -159,6 +159,53 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
   completeChapterThreeAftermathScene(readBefore, "ch3_abyss_hotel");
   assert(!availableAftermathDetours(readBefore).some(scene => scene.id === "ch3_emil_workshop"));
 }
+// 大会後の東京で、灯した授業を相談できる（SPEC 2.6・SBD61）。窓は場面idで決まり、保存は変更しない。
+{
+  assert.deepEqual(CH3_AFTERMATH_LESSONS.map(entry => entry.who), ["kuze", "steve", "volk", "mashiro"]);
+  for (const entry of CH3_AFTERMATH_LESSONS) for (const id of [entry.from, entry.to])
+    assert(ids.includes(id), `${entry.who}: window scene ${id} exists`);
+  const everyone = () => [{ id: "lit" }];
+  const who = (value, ready = everyone) => {
+    const before = structuredClone(value);
+    const found = availableAftermathLessons(value, ready).map(entry => entry.who);
+    assert.deepEqual(value, before, "reading the lesson list never changes the save");
+    return found;
+  };
+  const lessonSave = winningSave();
+  assert.deepEqual(who(lessonSave), [], "before the aftermath begins");
+  beginChapterThreeAftermath(lessonSave);
+  assert.deepEqual(who(lessonSave), [], "the victory night has no lessons");
+  completeChapterThreeAftermathScene(lessonSave, "ch3_abyss_hotel");
+  assert.deepEqual(who(lessonSave), ["kuze", "steve", "volk"], "day after the win (noon): mashiro is not yet at the after-hours counter");
+  const [kuze] = availableAftermathLessons(lessonSave, everyone);
+  assert.deepEqual(kuze.lessons, [{ id: "lit" }]);
+  assert.equal(kuze.place, "煙幕");
+  completeChapterThreeAftermathScene(lessonSave, "ch3_mashiro_recovery");
+  assert.deepEqual(who(lessonSave), ["kuze", "steve", "volk", "mashiro"], "the night of the day after: all four");
+  const partyNight = structuredClone(lessonSave);
+  partyNight.flags._ch3_naru_party_ready = true;
+  assert.deepEqual(who(partyNight), ["kuze", "volk", "mashiro"], "Steve's lesson is the party itself: hidden once the party night opens");
+  assert.deepEqual(who(lessonSave, name => name === "volk" ? [{ id: "M-W5" }] : []), ["volk"], "only people with a ready lesson");
+  assert.deepEqual(who(lessonSave, () => []), [], "nothing lit, nothing listed");
+  assert.deepEqual(who(lessonSave, () => undefined), [], "a missing growth list is treated as empty");
+  completeChapterThreeAftermathScene(lessonSave, "ch3_naru_reconcile");
+  assert.deepEqual(who(lessonSave), ["volk"], "the cleanup morning: Kuze is packing the shop, only Volk is left");
+  // 寄り道を全部読んでも、授業だけで寄り道の入口が開く（ch3-aftermath.js は寄り道と授業の合計で入口を出す）
+  lessonSave.met = { ...lessonSave.met, emil: true, volk: true };
+  for (const id of ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_after_ch3"]) assert.equal(completeAftermathDetour(lessonSave, id), true);
+  assert.deepEqual(availableAftermathDetours(lessonSave), []);
+  assert.deepEqual(who(lessonSave), ["volk"], "lessons stay open after every detour is read");
+  for (const id of ["ch3_enmaku_cleanup", "ch3_home_customer", "ch3_tsumugi_result"]) {
+    completeChapterThreeAftermathScene(lessonSave, id);
+    assert.deepEqual(who(lessonSave), [], `no Tokyo lessons after ${id}`);
+  }
+  completeChapterThreeAftermathScene(lessonSave, "ch3_ageha_reunion");
+  assert.equal(lessonSave.flags._ch3_cleared, true);
+  assert.deepEqual(who(lessonSave), [], "no lessons once chapter 3 is cleared");
+  const loser = winningSave(); loser.flags._ch3_tournament.result.rank = 4;
+  assert.deepEqual(who(loser), [], "a non-winning save has no aftermath lessons");
+}
+console.log("PASS: Chapter 3 aftermath lessons open by scene window, hide Steve on the party night, and never change the save");
 assert.equal(value.flags._ch3_cleared, true);
 assert.equal(value.phase, "cleared");
 assert.equal(value.chapter, 3);
