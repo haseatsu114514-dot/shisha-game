@@ -71,9 +71,26 @@
 | 5 岩 | ✅ 採用（大A・小A） | 当たり判定より少しだけ広く描く |
 | 6 砂煙 | ✅ 採用（C） | |
 | 7 旗竿・ゴール | ✅ 採用（旗A・幕A） | |
-| 8 ヌールの立ち絵 | ✅ normal を採用（2026-11-02 オーナーが A を選定）。smile・surprise・登場カットインの一枚絵は依頼中 | `assets/sprites/characters/noor/chr_noor_normal.png`（896×1200）。台詞の smile・surprise は届くまで normal で表示し、登場カットインは立ち絵を使う型で出る。頭身は 7.96（標準の 6.4〜7.7 より頭が少し小さい。portrait_metrics の WARN）。B・C は採用しない |
+| 8 ヌールの立ち絵 | ✅ normal（A・オーナー選定）と smile・surprise（第5弾）を採用。登場カットインはグラフィック絵柄で依頼中（2026-11-02 オーナー選択） | `assets/sprites/characters/noor/chr_noor_{normal,smile,surprise}.png`（896×1200）。表情は normal と同じ切り抜き・倍率・位置。頭身は 7.96（標準の 6.4〜7.7 より頭が少し小さい。portrait_metrics の WARN）。B・C は採用しない。カットインは素材が届くまで立ち絵を使う簡易版で出る |
 
-次の依頼: ヌールの smile・surprise を1枚ずつ（**採用した normal A の原画** `raw/phase4/noor-candidates/noor_normal_A-raw.png` を添付し、同じ服・同じ足元で表情と小さな首の傾きだけ変える）、そのあと登場カットインの一枚絵。寸法・透過・画風の条件は下の表のとおり。
+次の依頼（DSR11）: ヌールの登場カットインを**グラフィック絵柄**で（2026-11-02 オーナー選択。ほかの31人と同じ）。下の「登場カットイン（グラフィック絵柄）の依頼」を参照。
+
+### 登場カットイン（グラフィック絵柄）の依頼（DSR11）
+
+ほかの人物と同じ書式（`asset_sources/character-intros/graphic-20261031/`）で、人物絵1枚と背景1枚を頼む。旧絵柄（設定で戻す人）の背景は、届いた背景を 1536×1024 に切り出して使う（針間ヨルと同じ）。
+
+| # | 用途 | 書式 | 添付する画像 |
+|---|---|---|---|
+| 1 | 人物絵 | 1024×1024・背景はマゼンタ #FF00FF の単色（後で `tools/intro_graphic_import.py noor <原画>` が抜く）。指示文は `portrait_prompt.txt` の BGCOLOR を「マゼンタ #FF00FF」にし、最後に `characters.tsv` の `noor` の行を足す | 画風: `owner_originals/samechan.png`・`ageha_v1.png`・`rin.png`。人物: 採用した立ち絵 `assets/sprites/characters/noor/chr_noor_normal.png` |
+| 2 | 背景 | 1672×941・人物なし・文字なし（`tools/intro_graphic_import.py noor <原画> --background`） | 画風: 採用済みのグラフィック背景 `remake/img/ui/character_intros/graphic/bg_yoru.webp`・`bg_maki.webp`・`bg_da_silva.webp` |
+
+背景の指示文（コピペ用）:
+
+```
+Images 1-3 are STYLE references: bold Japanese graphic-poster character-intro backgrounds (flat screen-print look, large flat color shapes, halftone dots, strong diagonal composition, limited 2-3 color palette with one vivid accent, crisp edges, high contrast). Create a NEW background in exactly this style for Noor, a desert tour guide in Dubai who teaches sandboarding. Motifs (cluster them in the upper-right area): layered sand dunes drawn as sharp flat curves, a low setting sun disc, the diagonal track of a sandboard down a dune, a small simple silhouette of a 4x4 tour car on a dune crest. Theme color: warm sand orange #e39a48 as the main accent with deep navy-purple shadows. Keep the left third and the lower part dark and calm so a character and text can sit there. No people, no faces, no text, no letters, no logo, no watermark. 1672x941, opaque.
+```
+
+受け取った後: 人物・背景を `intro_graphic_import.py` で取り込み、`heads.json` に頭の位置を足し、`remake/js/vn/intro-graphic.js` の `PORTRAITS` に `noor` を足す。旧絵柄の背景は 1536×1024 に切り出して `assets/ui/character_intros/noor.png` に置き、manifest の `introArt` に入れる。確認は `node remake/test/intro_cutin.mjs`。
 
 以下は最初の依頼（2026-11-02）。絵が読み込めない間・失敗した時は Canvas の図形で描く（`desert-ride.js` の `drawPlayer`・`drawRock`・`drawDunes`・`drawParticles`。絵の寸法と基準点は `desert-ride-art.js`）。既存の画風に合わせるため、背景は `tools/bg_prompts.txt` の共通指針（painterly・`bg_eden_shop.png` の筆致）、人物は `docs/prompts/image_generation_guide.md` と `character-portrait-remaster` の書式に従う。シーシャ機材は写らないので `docs/shisha_reference.md` §4 の手順は不要。
 

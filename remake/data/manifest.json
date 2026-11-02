@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 13:14 UTC",
+ "generated": "2026-11-02 14:34 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -432,7 +432,9 @@
   },
   "noor": {
    "faces": [
-    "normal"
+    "normal",
+    "smile",
+    "surprise"
    ],
    "h": 0.975,
    "b": 0.0117,
@@ -2983,7 +2985,9 @@
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
-  "sprites/characters/noor/chr_noor_normal.png"
+  "sprites/characters/noor/chr_noor_normal.png",
+  "sprites/characters/noor/chr_noor_smile.png",
+  "sprites/characters/noor/chr_noor_surprise.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
