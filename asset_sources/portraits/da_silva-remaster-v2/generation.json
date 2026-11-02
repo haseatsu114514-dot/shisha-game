@@ -30,5 +30,43 @@
    "sha256": "91e558f3959434d731f08cf83d5c28bab0656cc517cea1290e36dc8e0cd3e921"
   }
  },
- "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む"
+ "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む",
+ "expressions": {
+  "excited": {
+   "original": "da_silva-excited.png",
+   "original_sha256": "8839d976130ebb8a6690598458a00f1640a51514723b96704b3b09641875cb08",
+   "generated_by": "Codex built-in image_gen（TS11、合格した通常を参照②に使用）",
+   "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+   "zip_sha256": "8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399",
+   "inner_zip_sha256": "d99885aa3cbeb99252caafc6bd7067821f300839d6e075bf145b927355add4e4",
+   "check": "Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、頭の大きさがそろうことを確認。透明度16以上の散った画素は無い（それ未満の極薄の画素はゲームでは見えない）"
+  },
+  "serious": {
+   "original": "da_silva-serious.png",
+   "original_sha256": "172fea6026404bef6a66183220dd90dd5f6c3ec485cacf6b56a16c5349f1dfa1",
+   "generated_by": "Codex built-in image_gen（TS11、合格した通常を参照②に使用）",
+   "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+   "zip_sha256": "8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399",
+   "inner_zip_sha256": "d99885aa3cbeb99252caafc6bd7067821f300839d6e075bf145b927355add4e4",
+   "check": "Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、頭の大きさがそろうことを確認。透明度16以上の散った画素は無い（それ未満の極薄の画素はゲームでは見えない）"
+  },
+  "smile": {
+   "original": "da_silva-smile.png",
+   "original_sha256": "e2f08a695ccc1784158e386935f40107f58831055fd23b49b10c36011ce79a79",
+   "generated_by": "Codex built-in image_gen（TS11、合格した通常を参照②に使用）",
+   "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+   "zip_sha256": "8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399",
+   "inner_zip_sha256": "d99885aa3cbeb99252caafc6bd7067821f300839d6e075bf145b927355add4e4",
+   "check": "Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、頭の大きさがそろうことを確認。透明度16以上の散った画素は無い（それ未満の極薄の画素はゲームでは見えない）"
+  },
+  "surprise": {
+   "original": "da_silva-surprise.png",
+   "original_sha256": "838e5df962928c52a46f5d02845a0a533222427b39f4dd562ae5435b33d8eb4d",
+   "generated_by": "Codex built-in image_gen（TS11、合格した通常を参照②に使用）",
+   "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+   "zip_sha256": "8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399",
+   "inner_zip_sha256": "d99885aa3cbeb99252caafc6bd7067821f300839d6e075bf145b927355add4e4",
+   "check": "Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、頭の大きさがそろうことを確認。透明度16以上の散った画素は無い（それ未満の極薄の画素はゲームでは見えない）"
+  }
+ }
 }

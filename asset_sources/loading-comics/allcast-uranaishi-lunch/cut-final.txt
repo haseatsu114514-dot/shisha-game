@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CE  枠の段 1: 2コマ@y=272
+  コマ1: 720x480 @(36,272) 比率 1.500 → ok
+  コマ2: 716x483 @(783,272) 比率 1.482 → ok
+コマ1: 720x480 (1.500) そのまま → 出力 720x480  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-lunch/panels/uranaishi-lunch-1.webp (69 KiB)
+コマ2: 716x483 (1.482) → 左右に各0.6%の紙帯 → 出力 724x483  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-lunch/panels/uranaishi-lunch-2.webp (77 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "uranaishi-lunch",
+  "title": "お昼の占い",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "占い師は、どんな小さな悩みにも全力です。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-lunch/panels/uranaishi-lunch-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-lunch/panels/uranaishi-lunch-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-lunch/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-lunch/source-v1.png",
+      "region": {
+        "x": 783,
+        "y": 272,
+        "width": 716,
+        "height": 483,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "uranaishi-lunch-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "34fd83bea33edbf40cc4a55ec5b7805ebcbdef7249831dedc69f015efbcb48ee"
+    },
+    {
+      "file": "uranaishi-lunch-2.webp",
+      "width": 724,
+      "height": 483,
+      "sha256": "d6c32fa1b62528c3d33c823a6065309ee7987564cfa6a705f1db7299a8a2b00d"
+    }
+  ]
+}

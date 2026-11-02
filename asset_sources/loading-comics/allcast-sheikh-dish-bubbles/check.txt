@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-dish-bubbles/panels/sheikh-dish-bubbles-1.webp: 728x485 比率 1.501 71 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-dish-bubbles/panels/sheikh-dish-bubbles-2.webp: 732x488 比率 1.500 68 KiB
