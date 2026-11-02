@@ -30,7 +30,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 
 ## 2026-10-10の実制作で優先する指定
 
-- 対象はつむぎ7、サメちゃん6、前園5、スミさん5、ましろ6、南雲5の計34表情。各原画は無加工で保存し、人物1300px以上・透過・元絵との原寸比較を検品する。ゲーム用は896×1200のまま、元の人物高と足元に合わせて縮小・配置する。
+- 対象はつむぎ7、サメちゃん6、上園5、スミさん5、ましろ6、南雲5の計34表情。各原画は無加工で保存し、人物1300px以上・透過・元絵との原寸比較を検品する。ゲーム用は896×1200のまま、元の人物高と足元に合わせて縮小・配置する。
 - つむぎはPU05により頭身変更を撤回。元の大きめの丸い頭、小柄な体格、短い胴と脚へ戻し、解像度と画風だけをそろえる。参照②にも元の通常絵を使い、体格を変えた候補から再生成を重ねない。
 - ましろはPU04により少し大きめの丸い顔・ふっくらした頬・眠そうな可愛さを優先。以前の8%縮小は強制しない。
 - 色は常に各表情の元のランタイム画像を基準にする。生成候補を色の基準にして、繰り返すたびに薄くしない。採用原画への後付けの彩度・明度加工は行わない。
@@ -57,7 +57,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 | はじめ | 861px | 1023px | 1.19倍 | 861 | 対象B |
 | 博士 | 877px | 1098px | 1.25倍 | 860 | 対象B |
 | アダム | 871px | 1056px | 1.21倍 | 846 | 対象B |
-| 前園 | 819px | 1116px | **1.36倍** | 836 | **対象A（目で見ても一番ぼやける）** |
+| 上園 | 819px | 1116px | **1.36倍** | 836 | **対象A（目で見ても一番ぼやける）** |
 | 南雲 | 846px | 1119px | **1.32倍** | 821 | **対象A** |
 | スミさん | 852px | 1079px | **1.27倍** | 811 | **対象A** |
 
@@ -67,7 +67,7 @@ CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_un
 
 ## 依頼の方針（2026-10-09 オーナー決定で更新）
 
-**画質・顔の大きさ・画風を1回の作り直しでまとめて直す。** 対象は、ゲーム画面での顔の大きさが中央値から±10%を超える6人：つむぎ・前園・スミさん・ましろ（大きい）、南雲・サメちゃん（小さい）。画風はみんと・アゲハに合わせる（サメちゃんのつやの強い塗り、前園の平たい塗りを基準へ）。
+**画質・顔の大きさ・画風を1回の作り直しでまとめて直す。** 対象は、ゲーム画面での顔の大きさが中央値から±10%を超える6人：つむぎ・上園・スミさん・ましろ（大きい）、南雲・サメちゃん（小さい）。画風はみんと・アゲハに合わせる（サメちゃんのつやの強い塗り、上園の平たい塗りを基準へ）。
 顔の大きさの比較は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)。完成版のプロンプト（34表情）は [prompts.md](prompts.md)。
 
 1. **1回の生成で1人・1表情**。縦長（約1085×1450）で、人物の高さを**1300px以上**にする。
@@ -103,7 +103,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### キャラごとの差し替え文
 
-**前園**（5表情：normal / smile / serious / surprise / excited）
+**上園**（5表情：normal / smile / serious / surprise / excited）
 - CHARACTER LINE：`Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.`
 - EXPRESSION LINE（現行画像のとおり）：
   - normal：`gentle small closed-mouth smile, SCREEN-LEFT hand lifted in greeting, SCREEN-RIGHT hand in pocket`
