@@ -9,6 +9,7 @@ import { emit, on } from "../core/bus.js";
 import { state, save } from "../core/state.js";
 import { canRespec, prepareRespec, commitRespec } from "../core/growth-respec.js";
 import { growthEnabled } from "../core/growth-mode.js";
+import { grantStarterHidane, tutorialPending, startBoardTutorial, TUTORIAL_FLAG } from "./growth-board-tutorial.js";
 import { LESSON_TUNING } from "../core/growth-effects.js";
 import { displayName, faceIconUrl, portraitInfo } from "../core/data.js";
 import { affinityLevel } from "../core/stats.js";
@@ -92,6 +93,9 @@ let current = null;
 export function openBoard({ place = null } = {}) {
   if (current) return current.done;
   const owner = state, original = ensureGrowth();
+  // はじめて灯せる時は、最初の火種（白火）を渡して案内する（growth-board-tutorial.js・台帳 SBD）
+  if (place) grantStarterHidane(owner, original);
+  let stopTutorial = () => {};
   let g = original, canLight = !!place, rebuilding = null, finishing = false;
   let dismissConfirm = null;
   let offOwner = () => {};
@@ -629,6 +633,7 @@ export function openBoard({ place = null } = {}) {
   async function finish(commit) {
     if (finishing) return;
     finishing = true;
+    stopTutorial();
     offOwner();
     if (owner !== state || !growthEnabled()) {
       commit = false;
@@ -686,6 +691,9 @@ export function openBoard({ place = null } = {}) {
   render();
   setZoom(ZOOM_START); centerOnHub();
   requestAnimationFrame(() => root.classList.add("show"));
+  if (canLight && tutorialPending(owner)) {
+    stopTutorial = startBoardTutorial(root, { onDone: () => { if (owner === state) { owner.flags[TUTORIAL_FLAG] = true; save(); } } });
+  }
   // 盤の絵が届いたら描き直す。読み終えた印（data-art）は、描き直しの後に触る検査が待つのに使う。
   loadBoardArt().then((ok) => {
     if (!root.isConnected) return;
