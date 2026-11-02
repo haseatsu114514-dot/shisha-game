@@ -32,7 +32,7 @@ DB.ngMixes = [];
 DB.characters = Object.fromEntries(characters.map((c) => [c.id, c]));
 
 // 1. データ整合性: メーカー6社・表記統一・禁止語チェック
-assert.equal(flavors.length, 77); // 人物に結びつく11種・マウンテンミスト・サメちゃんのスプリングウォーター
+assert.equal(flavors.length, 84); // 人物に結びつく11種・マウンテンミスト・サメちゃんのスプリングウォーター・新フレーバー7種（NF01）
 const expectedPrefixToMaker = {
   "アルファーヘブン": "af",
   "ドバジ": "dobaj",
@@ -340,6 +340,21 @@ assert.equal(advanceToChapterThree(prepared), true);
 assert.equal(finalize(evenCup(3)).total, 70, "real chapter 3 transition must stop the +5 carry-over");
 assert.equal(prepared.rehearsal, "great", "keep the historical preparation record");
 assert.equal(prepared.flags._last_night, "practice");
+
+// #2091: 前夜に苦手工程を反復し★1つ以上で終えたら +1。★0・記録の無い旧セーブ・第2章以降は加点しない。
+for (const [chapter, eve, expected] of [
+  [1, { choice: "drill", drillTier: 2 }, 1], [1, { choice: "drill", drillTier: 1 }, 1],
+  [1, { choice: "drill", drillTier: 0 }, 0], [1, { choice: "drill" }, 0], [1, undefined, 0],
+  [2, { choice: "drill", drillTier: 2 }, 0],
+]) {
+  const saved = newGame();
+  saved.chapter = chapter;
+  saved.flags._last_night = "drill";
+  if (eve) saved.flags._ch1_eve = eve;
+  assert.equal(bonusOf().bonus, expected, `drill eve chapter=${chapter} ${JSON.stringify(eve)}`);
+  assert.equal(finalize(evenCup(chapter)).total, 70 + expected);
+  if (expected) assert.deepEqual(bonusOf().notes, ["前夜の反復"]);
+}
 
 for (const chapter of [1, 2, 3, 4, 5]) {
   for (const rehearsal of [null, "rough", "good", "great"]) {

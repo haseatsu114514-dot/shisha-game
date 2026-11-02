@@ -1,0 +1,105 @@
+{
+  "episode": 17,
+  "title": "似顔絵",
+  "cast": "つむぎ・はじめ",
+  "theme": "旧話の復刻",
+  "status": "adopted-registered-20261102",
+  "registered": true,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-20261024/14-17-everyday.png",
+    "original_order": "right-to-left",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "17-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1783706,
+      "sha256": "678c6e87e11e2fcefa90212f181f16b2675ed411c31c7a858c4cc6ac848de5b2"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "RIGHT: quiet adult artist Tsumugi with DARK BROWN short bob and PURPLE hoodie sketches at her cracked tablet. Hajime leans in with friendly excitement and asks 「俺も描いて。」 LEFT: tablet is turned toward us showing a charming LEAF-EARED CAT with smoky curl tail, wearing Hajime's BLACK BASEBALL CAP and BLACK HOODIE, unmistakably his fantastical portrait. Tsumugi quietly says 「似てます。」 Hajime beams, amused, and says 「猫になった。」 No magical transformation of actual Hajime, only an illustration.",
+      "dialogue_original": [
+        "俺も描いて。",
+        "似てます。",
+        "猫になった。"
+      ],
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第17話「似顔絵」だけ。完成版の台本: LEFT: quiet adult artist Tsumugi with DARK BROWN short bob and PURPLE hoodie sketches at her cracked tablet. Hajime leans in with friendly excitement and asks 「俺も描いて。」 RIGHT: tablet is turned toward us showing a charming LEAF-EARED CAT with smoky curl tail, wearing Hajime's BLACK BASEBALL CAP and BLACK HOODIE, unmistakably his fantastical portrait. Tsumugi quietly says 「似てます。」 Hajime beams, amused, and says 「猫になった。」 No magical transformation of actual Hajime, only an illustration.。左に導入、右にオチ。シーシャ台・ホース・炭・喫煙・煙・武器は描かない。",
+      "reference_images": [
+        "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "/workspace/shisha-game/asset_sources/short-comics-20261024/14-17-everyday.png",
+        "/workspace/shisha-game/assets/sprites/characters/tsumugi/chr_tsumugi_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "17-restored.png",
+      "region": {
+        "x": 39,
+        "y": 265,
+        "width": 715,
+        "height": 486,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "17-restored.png",
+      "region": {
+        "x": 782,
+        "y": 267,
+        "width": 715,
+        "height": 484,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-17-1.webp",
+      "width": 729,
+      "height": 486,
+      "sha256": "187a3f2c11d4c8480b515f0cd190161024ee8f005558f5687fa66d860f6ad6c3"
+    },
+    {
+      "file": "panels/restored-17-2.webp",
+      "width": 726,
+      "height": 484,
+      "sha256": "4acfff24f6728a7f6c81626a02f7e28316360a888e1cd1aa6dcc4aacb02f9ff9"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  },
+  "selection_note": "2026-11-02 オーナー採用。remake/js/core/loading-comics.js の id 'restored-17'（出てくるキャラと会った後に出る）。画風の統一は後日の作り直しで行う。"
+}

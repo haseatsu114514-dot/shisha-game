@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D0  枠の段 1: 2コマ@y=272
+  コマ1: 717x480 @(36,272) 比率 1.494 → ok
+  コマ2: 717x480 @(780,272) 比率 1.494 → ok
+コマ1: 717x480 (1.494) → 左右に各0.2%の紙帯 → 出力 720x480  asset_sources/loading-comics/76-adam-photo-album/panels/adam-photo-album-1.webp (55 KiB)
+コマ2: 717x480 (1.494) → 左右に各0.2%の紙帯 → 出力 720x480  asset_sources/loading-comics/76-adam-photo-album/panels/adam-photo-album-2.webp (57 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "adam-photo-album",
+  "title": "写真の主役",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/76-adam-photo-album/panels/adam-photo-album-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/76-adam-photo-album/panels/adam-photo-album-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/76-adam-photo-album/76-adam-photo-album.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 717,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/76-adam-photo-album/76-adam-photo-album.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 717,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "adam-photo-album-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "78ffc68f68aa8a8e34f3b56266724a689991e8a0f3057694b535bc3e0431ebf7"
+    },
+    {
+      "file": "adam-photo-album-2.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "66b1878dfcb38c5146044a5479ca64d626ec70bed7b75685cbbf9a36d3a559e9"
+    }
+  ]
+}

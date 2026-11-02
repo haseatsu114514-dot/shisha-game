@@ -1,0 +1,190 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-11-02",
+  "source": "main asset_sources/trpg-scenarios/README.md blob b6c51024d50634b9922bb18fd45e7d59871a20b2",
+  "reference_images": [],
+  "reference_roles": "No image references: original scenario fictional roles, not actual tabletop participants",
+  "adopted": false,
+  "outputs": [
+    {
+      "file": "portraits-leaf-mail-a.png",
+      "sha256": "61d646e31dad9c8b81339241afb3a43c8bf137bf9f17c932f6cdc7dcdcff257a",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.36356033346509586,
+      "margins_ltrb": [
+        [
+          20,
+          8,
+          12,
+          0
+        ],
+        [
+          41,
+          16,
+          10,
+          0
+        ],
+        [
+          27,
+          7,
+          11,
+          0
+        ],
+        [
+          34,
+          17,
+          18,
+          0
+        ],
+        [
+          14,
+          0,
+          10,
+          27
+        ],
+        [
+          9,
+          0,
+          0,
+          27
+        ],
+        [
+          6,
+          0,
+          3,
+          25
+        ],
+        [
+          8,
+          0,
+          16,
+          24
+        ]
+      ]
+    },
+    {
+      "file": "portraits-leaf-mail-b.png",
+      "sha256": "af826d76b3a09eaf60f9b4a8be9ed3583b33dae82f53e0b0506f27612f6c6bce",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.47064068360598854,
+      "margins_ltrb": [
+        [
+          47,
+          67,
+          32,
+          2
+        ],
+        [
+          57,
+          63,
+          11,
+          5
+        ],
+        [
+          35,
+          46,
+          44,
+          5
+        ],
+        [
+          63,
+          65,
+          45,
+          1
+        ],
+        [
+          63,
+          49,
+          24,
+          25
+        ],
+        [
+          31,
+          48,
+          14,
+          25
+        ],
+        [
+          15,
+          28,
+          15,
+          24
+        ],
+        [
+          37,
+          34,
+          33,
+          24
+        ]
+      ]
+    },
+    {
+      "file": "portraits-leaf-mail-c.png",
+      "sha256": "ef2541f5d608af002c93ae06089a1e23582bf41f7a3c1422f1acd8a27271cebd",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alpha_zero_fraction": 0.6064753440971874,
+      "margins_ltrb": [
+        [
+          117,
+          70,
+          37,
+          35
+        ],
+        [
+          93,
+          81,
+          50,
+          34
+        ],
+        [
+          40,
+          70,
+          70,
+          34
+        ],
+        [
+          48,
+          82,
+          94,
+          34
+        ],
+        [
+          122,
+          49,
+          39,
+          60
+        ],
+        [
+          98,
+          62,
+          44,
+          61
+        ],
+        [
+          42,
+          38,
+          73,
+          59
+        ],
+        [
+          42,
+          51,
+          98,
+          60
+        ]
+      ]
+    }
+  ]
+}

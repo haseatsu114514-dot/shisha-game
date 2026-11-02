@@ -1,0 +1,3016 @@
+{
+  "id": "doll-requiem",
+  "version": 1,
+  "title": "人形館のレクイエム",
+  "subtitle": "雪の洋館と、居場所を変える人形たち",
+  "author": "冬城あまね",
+  "collection": "船灯文庫・小さな卓の冒険 13",
+  "duration": "約10分",
+  "premise": "雪の夜の洋館「ラベンダー館」では、毎晩、人形たちが居場所を変える。館を継いだばかりの少女リラに頼まれた三人は、真夜中の鐘までに、そのわけを確かめられるだろうか。",
+  "fiction": {
+    "town": "霧氷の丘",
+    "shop": "洋館「ラベンダー館」",
+    "traveler": "館の主リラ"
+  },
+  "flow": {
+    "prepare": [
+      "mend",
+      "tea"
+    ],
+    "serve": [
+      "call"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "mend": 1,
+    "tea": 1,
+    "call": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "tea",
+  "rules": {
+    "exploreLimit": 4,
+    "pressureMax": 6,
+    "initialPressure": 0,
+    "inspectionPressure": 1,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 2
+    },
+    "detourThreshold": 5,
+    "hypothesisBonus": 1
+  },
+  "cast": [
+    {
+      "id": "rei",
+      "part": "GM",
+      "role": "語り手と、館の主リラ",
+      "color": "#b0102a"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／住み込みの夜番",
+      "color": "#89bbc4",
+      "ability": "土壇場のひらめき",
+      "abilityType": "reroll",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "sheet": {
+        "name": "エミル",
+        "title": "住み込みの夜番",
+        "stats": {
+          "eye": 3,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 3
+        },
+        "trait": "ランタンと鍵束が相棒。夜の廊下は、まだ少し長い"
+      }
+    },
+    {
+      "id": "ageha",
+      "part": "PLAYER",
+      "role": "{pc:ageha}／人形服のデザイナー",
+      "color": "#ff8fc8",
+      "ability": "かわいいの魔法",
+      "abilityType": "prepare",
+      "abilityText": "人形たちを迎える支度に、判定で一度だけ＋7",
+      "sheet": {
+        "name": "キララ",
+        "title": "人形服のデザイナー",
+        "stats": {
+          "eye": 3,
+          "hand": 4,
+          "talk": 3,
+          "nerve": 1
+        },
+        "trait": "かわいい服なら一晩で縫う。人形は、怖いより先にかわいい",
+        "likes": "フリルとリボンと、白と赤のグミ",
+        "portrait": "../../img/ui/trpg/pc-doll-requiem-kirara.webp"
+      }
+    },
+    {
+      "id": "hiyori",
+      "part": "PLAYER",
+      "role": "{pc:hiyori}／か弱い人形師",
+      "color": "#dab978",
+      "ability": "儚い呼び声",
+      "abilityType": "serve",
+      "abilityText": "人形たちに呼びかけるとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "セシリア",
+        "title": "か弱い人形師",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "指先ひとつで人形を直す、儚い人形師。なぜか斧を一本、背負っている",
+        "likes": "ゆるい顔のぬいぐるみと、斧投げ",
+        "portrait": "../../img/ui/trpg/pc-cecilia.webp"
+      }
+    }
+  ],
+  "spots": [
+    {
+      "id": "shelf",
+      "label": "人形の飾り棚",
+      "short": "飾り棚",
+      "x": 13,
+      "y": 30
+    },
+    {
+      "id": "stage",
+      "label": "子ども部屋の小さな舞台",
+      "short": "小さな舞台",
+      "x": 58,
+      "y": 33
+    },
+    {
+      "id": "diary",
+      "label": "書斎の日記",
+      "short": "日記",
+      "x": 82,
+      "y": 32
+    },
+    {
+      "id": "pane",
+      "label": "雪の窓辺",
+      "short": "窓辺",
+      "x": 84,
+      "y": 60
+    },
+    {
+      "id": "clock",
+      "label": "柱時計",
+      "short": "柱時計",
+      "x": 52,
+      "y": 50
+    },
+    {
+      "id": "musicbox",
+      "label": "オルゴールの箱",
+      "short": "オルゴール",
+      "x": 17,
+      "y": 72
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "play",
+      "label": "人形劇の続きを、演じたい",
+      "description": "亡き館主が残した人形劇。その続きを演じれば、落ち着きそう。",
+      "discussion": "trpg_doll_requiem_discuss_play"
+    },
+    {
+      "id": "owner",
+      "label": "新しい主に、気づいてほしい",
+      "description": "新しい主のリラに気づいてほしい。一緒に遊びたいのかも。",
+      "discussion": "trpg_doll_requiem_discuss_owner"
+    },
+    {
+      "id": "window",
+      "label": "雪の夜の景色を、見に行きたい",
+      "description": "雪の夜にだけ見える、窓の外の景色を見に行っているのかも。",
+      "discussion": "trpg_doll_requiem_discuss_window"
+    }
+  ],
+  "options": {
+    "mend": [
+      {
+        "id": "thread",
+        "label": "糸と針",
+        "description": "ほつれた人形の衣装を、一針ずつ繕う。",
+        "response": "trpg_doll_requiem_choice_mend_thread"
+      },
+      {
+        "id": "ribbon",
+        "label": "新しいリボン",
+        "description": "人形たちに、おそろいの新しいリボンを結ぶ。",
+        "response": "trpg_doll_requiem_choice_mend_ribbon"
+      },
+      {
+        "id": "cloth",
+        "label": "磨き布",
+        "description": "くもった硝子の瞳を、一体ずつ磨く。",
+        "response": "trpg_doll_requiem_choice_mend_cloth"
+      }
+    ],
+    "tea": [
+      {
+        "id": "lavender",
+        "label": "ラベンダーと蜂蜜の茶",
+        "description": "館に伝わる、甘い香りのお茶。",
+        "response": "trpg_doll_requiem_choice_tea_lavender"
+      },
+      {
+        "id": "white",
+        "label": "白い茶",
+        "description": "雪のように淡い色の、白いお茶。",
+        "response": "trpg_doll_requiem_choice_tea_white"
+      },
+      {
+        "id": "milk",
+        "label": "温かいミルク",
+        "description": "小さなマグで、温かいミルクを。",
+        "response": "trpg_doll_requiem_choice_tea_milk"
+      }
+    ],
+    "call": [
+      {
+        "id": "script",
+        "label": "人形劇の台本を読む",
+        "description": "残された人形劇の台本を、声に出して読む。",
+        "response": "trpg_doll_requiem_choice_call_script"
+      },
+      {
+        "id": "introduce",
+        "label": "リラを紹介する",
+        "description": "リラを人形たちの前に立たせ、新しい主だと伝える。",
+        "response": "trpg_doll_requiem_choice_call_introduce"
+      },
+      {
+        "id": "curtain",
+        "label": "カーテンを開ける",
+        "description": "館じゅうのカーテンを開け、窓の外を見せる。",
+        "response": "trpg_doll_requiem_choice_call_curtain"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "stop",
+        "label": "オルゴールを一つずつ止める",
+        "description": "廊下を回って、蓋を一つずつ閉じる。",
+        "response": "trpg_doll_requiem_choice_tactic_stop"
+      },
+      {
+        "id": "candle",
+        "label": "蝋燭を灯して回る",
+        "description": "燭台に火を移しながら、館を照らして歩く。",
+        "response": "trpg_doll_requiem_choice_tactic_candle"
+      },
+      {
+        "id": "sing",
+        "label": "音に合わせて歌う",
+        "description": "オルゴールの旋律に、みんなで歌を重ねる。",
+        "response": "trpg_doll_requiem_choice_tactic_sing"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "play",
+      "arrival": "朝になると、人形たちが小さな舞台に並んでいるのです。何かの続きを、待つように",
+      "likes": {
+        "mend": [
+          "thread"
+        ],
+        "tea": [
+          "lavender"
+        ],
+        "call": [
+          "script"
+        ]
+      },
+      "ending": "last-act",
+      "evidence": {
+        "shelf": {
+          "title": "空いた『第二幕』の段",
+          "text": "飾り棚の段ごとに幕の名札。『第二幕』の段だけ、人形が一体もいない。",
+          "lines": "trpg_doll_requiem_clue_play_shelf"
+        },
+        "stage": {
+          "title": "白墨の立ち位置",
+          "text": "小さな舞台の床に、第二幕の立ち位置が白墨で印されている。上に、小さな足跡。",
+          "lines": "trpg_doll_requiem_clue_play_stage"
+        },
+        "diary": {
+          "title": "間に合わなかった衣装",
+          "text": "書斎の日記の最後の頁。『第二幕の衣装の繕いが間に合わない。次の雪の夜に』",
+          "lines": "trpg_doll_requiem_clue_play_diary"
+        },
+        "pane": {
+          "title": "窓辺の古い看板",
+          "text": "窓辺に人形劇の看板。『雪の夜の人形劇　第二幕、近日』",
+          "lines": "trpg_doll_requiem_clue_play_pane"
+        },
+        "clock": {
+          "title": "幕間のお茶",
+          "text": "柱時計の振り子の箱に紙片。『幕間は零時の鐘。ラベンダーと蜂蜜の茶を一杯』",
+          "lines": "trpg_doll_requiem_clue_play_clock"
+        },
+        "musicbox": {
+          "title": "第二幕の最初の台詞",
+          "text": "オルゴールの蓋の裏に、人形劇の台本の一節。第二幕の、最初の台詞だ。",
+          "lines": "trpg_doll_requiem_clue_play_musicbox"
+        }
+      },
+      "answers": {
+        "aunt": {
+          "title": "第一幕で終わった冬",
+          "text": "大叔母は毎年、雪の夜に人形劇を上演した。最後の冬は第二幕の衣装が間に合わず、第一幕で終わった。",
+          "lines": "trpg_doll_requiem_ask_play_aunt"
+        },
+        "dolls": {
+          "title": "人形劇の一座",
+          "text": "人形たちは、大叔母の人形劇の役者。王子に魔女に、雪の精。",
+          "lines": "trpg_doll_requiem_ask_play_dolls"
+        },
+        "nightly": {
+          "title": "毎朝の稽古",
+          "text": "朝になると、人形たちは子ども部屋の小さな舞台に並んでいる。立ち位置は毎朝ちがう。",
+          "lines": "trpg_doll_requiem_ask_play_nightly"
+        },
+        "lila": {
+          "title": "見届けてほしい続き",
+          "text": "大叔母の手紙に『第二幕は、リラに見届けてほしい』と書かれていた。",
+          "lines": "trpg_doll_requiem_ask_play_lila"
+        }
+      }
+    },
+    {
+      "id": "owner",
+      "arrival": "朝、扉を開けると、人形たちが私の部屋の前にいるのです。少しだけ、怖くて",
+      "likes": {
+        "mend": [
+          "ribbon"
+        ],
+        "tea": [
+          "milk"
+        ],
+        "call": [
+          "introduce"
+        ]
+      },
+      "ending": "new-mistress",
+      "evidence": {
+        "shelf": {
+          "title": "同じ方を向く人形",
+          "text": "飾り棚の人形が、みな同じ方を向いている。その先は、リラの部屋。",
+          "lines": "trpg_doll_requiem_clue_owner_shelf"
+        },
+        "stage": {
+          "title": "小さな招待状",
+          "text": "小さな舞台の上に招待状。『新しいご主人さまへ。お茶会にどうぞ』",
+          "lines": "trpg_doll_requiem_clue_owner_stage"
+        },
+        "diary": {
+          "title": "リボンで迎えて",
+          "text": "日記に大叔母の字。『新しい子が来たら、人形たちにリボンを結んで迎えさせること』",
+          "lines": "trpg_doll_requiem_clue_owner_diary"
+        },
+        "pane": {
+          "title": "窓の下の足跡",
+          "text": "窓の外の雪に小さな足跡。リラの部屋の窓の下まで続いている。",
+          "lines": "trpg_doll_requiem_clue_owner_pane"
+        },
+        "clock": {
+          "title": "二つのマグ",
+          "text": "柱時計の足もとに小さなマグが二つ。札に『温かいミルクは、子どもと一緒に』",
+          "lines": "trpg_doll_requiem_clue_owner_clock"
+        },
+        "musicbox": {
+          "title": "『リラへ』",
+          "text": "オルゴールの底に『リラへ』と刻まれている。曲は、やさしい子守歌。",
+          "lines": "trpg_doll_requiem_clue_owner_musicbox"
+        }
+      },
+      "answers": {
+        "aunt": {
+          "title": "毎朝のおはよう",
+          "text": "大叔母は毎朝、人形たちに一体ずつ声をかけていた。リラはまだ、名前を呼べていない。",
+          "lines": "trpg_doll_requiem_ask_owner_aunt"
+        },
+        "dolls": {
+          "title": "女の子の背丈",
+          "text": "人形はみな、小さな女の子の背丈に合わせて作られている。",
+          "lines": "trpg_doll_requiem_ask_owner_dolls"
+        },
+        "nightly": {
+          "title": "扉の前の人形たち",
+          "text": "朝、リラが扉を開けると、人形たちが部屋の前に並んでいる。",
+          "lines": "trpg_doll_requiem_ask_owner_nightly"
+        },
+        "lila": {
+          "title": "閉じこもりがちな主",
+          "text": "館に来てから、リラは人形が少し怖くて、部屋にこもりがち。",
+          "lines": "trpg_doll_requiem_ask_owner_lila"
+        }
+      }
+    },
+    {
+      "id": "window",
+      "arrival": "朝になると、人形たちが窓辺に集まっているのです。閉めたはずのカーテンの前に",
+      "likes": {
+        "mend": [
+          "cloth"
+        ],
+        "tea": [
+          "white"
+        ],
+        "call": [
+          "curtain"
+        ]
+      },
+      "ending": "snow-window",
+      "evidence": {
+        "shelf": {
+          "title": "くもった瞳",
+          "text": "飾り棚の人形の硝子の瞳が、うっすらくもっている。みな、窓の方を向いたまま。",
+          "lines": "trpg_doll_requiem_clue_window_shelf"
+        },
+        "stage": {
+          "title": "窓の背景画",
+          "text": "小さな舞台の背景画は、雪の夜の窓。向こうに、光の粒がいくつも描かれている。",
+          "lines": "trpg_doll_requiem_clue_window_stage"
+        },
+        "diary": {
+          "title": "窓辺の白いお茶",
+          "text": "日記に『雪の夜は窓辺で白いお茶を。人形たちと、雪灯りの庭を待つ』",
+          "lines": "trpg_doll_requiem_clue_window_diary"
+        },
+        "pane": {
+          "title": "カーテンの小さなしわ",
+          "text": "閉じたカーテンの裾に、小さな手でつかんだしわ。ガラスには小さな手形。",
+          "lines": "trpg_doll_requiem_clue_window_pane"
+        },
+        "clock": {
+          "title": "零時の雪の印",
+          "text": "柱時計の文字盤の零時に、雪の結晶の印。『零時、雪灯りの庭』と添え書き。",
+          "lines": "trpg_doll_requiem_clue_window_clock"
+        },
+        "musicbox": {
+          "title": "雪灯りの庭",
+          "text": "オルゴールの曲名は『雪灯りの庭』。蓋には、凍った湖に灯りが映る絵。",
+          "lines": "trpg_doll_requiem_clue_window_musicbox"
+        }
+      },
+      "answers": {
+        "aunt": {
+          "title": "窓辺の雪見",
+          "text": "大叔母は雪の夜、人形たちを窓辺に並べ、一緒に外を眺めていた。",
+          "lines": "trpg_doll_requiem_ask_window_aunt"
+        },
+        "dolls": {
+          "title": "雪を映す瞳",
+          "text": "人形の瞳は硝子製。雪の光をよく映すように作られている。",
+          "lines": "trpg_doll_requiem_ask_window_dolls"
+        },
+        "nightly": {
+          "title": "窓辺に集まる朝",
+          "text": "朝になると、人形たちは窓辺に集まり、外を向いている。",
+          "lines": "trpg_doll_requiem_ask_window_nightly"
+        },
+        "lila": {
+          "title": "閉めたカーテン",
+          "text": "リラは来たばかりの日、寒くて館のカーテンをすべて閉めた。",
+          "lines": "trpg_doll_requiem_ask_window_lila"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "last-act": {
+      "title": "人形劇の終幕",
+      "line": "零時の鐘とともに、人形たちは第二幕を演じきった。止まっていた人形劇に、ようやく幕が下りた。",
+      "dialogue": "trpg_doll_requiem_ending_last-act"
+    },
+    "new-mistress": {
+      "title": "新しい主人",
+      "line": "人形たちはリラのまわりに集まり、小さくお辞儀をした。館に、新しい主人が迎えられた。",
+      "dialogue": "trpg_doll_requiem_ending_new-mistress"
+    },
+    "snow-window": {
+      "title": "雪の窓辺",
+      "line": "カーテンの向こうに、雪灯りの庭が広がった。人形たちは光を瞳に映して、窓辺で静かに眠った。",
+      "dialogue": "trpg_doll_requiem_ending_snow-window"
+    },
+    "tea": {
+      "title": "みんなでお茶会",
+      "line": "人形たちの望みは、まだ分からない。それでも零時のお茶会で、みんな同じ卓を囲んだ。",
+      "dialogue": "trpg_doll_requiem_ending_tea"
+    }
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_doll_requiem_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……始める前に、役を決める。お前たちは、誰になる？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "……役はそろった。じゃあ、館の扉を開ける"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_make_ageha_ageha_kirara",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うちはキララ！ 人形の服を作るデザイナーやってます"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "人形が怖い？ ないない。フリル着てる子は、みんなかわいいの"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……人形を、怖がらないのか"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "GMさん、むしろサイズ測りたい。採寸からいくし"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_make_ageha_ageha_marie",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うちはマリー。ゴス好きの家庭教師！ 黒フリルが正装ね"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "教えるのは、人形のお茶会の作法。あと、プリの盛り方"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……黒のフリル。いい趣味だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "REIさん、今ちょっと嬉しそうでした？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_make_hiyori_hiyori_cecilia",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……私はセシリア。指先ひとつで人形を直す、か弱い人形師よ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "背中のこれ？ ……斧よ。木の人形の、修理に使うの"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ひよりさん、人形の修理に斧は使わないと思います"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……か弱さと、斧。その落差、嫌いじゃない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_make_hiyori_hiyori_chloe",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はクロエ。館の夜を、静かに支える執事よ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "夜食は湯気の立つ一杯と決めているの。とんこつの……あ、儚い一杯ね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……真夜中の執事に、ラーメン。館の夜が、少し明るくなる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_intro",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……今夜は、俺がGM。洋館の話だ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……お前たちは、雪の夜に館へ呼ばれた三人だ",
+          "castIntro": true,
+          "smallTableText": "……空いた役は、俺が兼ねる。たぶん、できる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "REIさんのGM、楽しみにしてました"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……そうか。期待は、ほどほどで"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "洋館に人形でしょ？ やば、絶対かわいいじゃん"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……人形の館。眠れない夜を知っている子たちね、きっと"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "……怖すぎない話だ。約束する。じゃあ、始める"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "雪は、音を食べる。だから今夜の丘は、息を止めたように静かだ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "丘の上に、古い洋館がひとつ。名を、ラベンダー館という"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓という窓に灯がともり、廊下の奥から、ラベンダーと蜂蜜の香りが流れてくる"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "飾り棚には、硝子の瞳の人形たち。夜ごと、その居場所が変わるという"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は、ランタンを提げて、凍った玄関の階段をのぼる"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:ageha}は、仕立て鞄を抱えて、肩の雪を払いながら後に続く"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:hiyori}は、玄関の柱にもたれて、白い息をそっと吐いている"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "零時の鐘まで、あと少し。……人形たちが、目を覚ます刻限だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "REIさん、語りに入ると急に詩人ですね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……今の、喋りすぎた。続ける"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_listen",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "重い扉が開く。燭台を手にした少女が、深く頭を下げた"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "smile",
+          "text": "ようこそ、ラベンダー館へ。この館を継いだ、リラと申します"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "待って、礼儀正しすぎ……。てか、ドレスの襟、超かわいい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "お手紙をいただいて来ました。人形のこと、聞かせてもらえますか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_listen_success",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "リラは燭台を置いて、ほっと息をついた。零時の鐘は、まだ遠い"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "話してくれそうだ。まずは、館のことを聞こう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_listen_mixed",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "柱時計の針が、こつりと進む。真夜中が一つ近づいた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……夜の時計は、少し意地悪ね。急かすみたいに鳴るわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_listen_trouble",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "棚の人形が一体、こてんと倒れた。リラが小さく悲鳴をあげる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "倒れた！ ……あ、でも寝てるみたいで、ちょっとかわいい"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……真夜中が、二つ近づいた。でも、話はまだ聞ける"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_listen_hearth",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は暖炉の前で、リラの話をゆっくり聞きます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定。急かさない聞き手が、いちばん強い。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_listen_ribbon",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}が、リラのリボンほめる！ 緊張ほぐすの、得意だから"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定。褒め言葉は、扉を開ける鍵だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_listen_dolls",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:hiyori}は話を聞きながら、人形の向きを見ておくわ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……観察で判定。硝子の瞳は、嘘をつかない。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_twist_lantern",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}がランタンを掲げて、暗い廊下を先に進みます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "……度胸で判定。闇は、歩く者に道を譲る。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_twist_hands",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}がみんなに声かけて、手つないで進む！ はぐれたら秒で迷子だし"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定。明るい声は、灯りの代わりになる。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_twist_ear",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}は耳を澄ますわ。最初に鳴った一台を探すの"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……観察で判定。音にも、始まりがある。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_prepare_room",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}が暖炉に薪を足して、人形たちの席を並べます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……手際で判定。迎える部屋は、言葉より先に語る。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_prepare_dress",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}が、人形の服と髪を一体ずつ整える！ ほら、じっとしててね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……手際で判定。見立てが合っていれば、追い風だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_prepare_tea",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:hiyori}がお茶を淹れるわ。……ポットは重いから、そっとね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……手際で判定。湯気が、館を温める。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_serve_step",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}が人形たちの正面に立ちます。目をそらしません"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "……度胸で判定。真夜中の主役は、お前だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_serve_voice",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:hiyori}が、人形師の静かな声で、人形たちに語りかけるわ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定。届くのは、静かな声だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_declare_serve_sign",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:ageha}が、人形のちっちゃい動きを見て合図出す。任せて"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……観察で判定。合図は、一度きり。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_consult_ageha",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "全部は回れないんでしょ？ じゃあ、うちの勘でいく"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "飾り棚と小さな舞台！ 人形がいちばんいそうなとこ、見たい"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……相談とメモは、何度でも。真夜中は、近づかない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_consult_hiyori",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……全部は調べられないのね。手がかりを比べましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "書斎の日記と柱時計。館の昔と、零時の秘密が分かりそう"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……いい相談だ。相談では、時計の針は進まない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "そのとき、ふっと灯りが消えた。館じゅうが、闇に沈む"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "闇の底で、オルゴールがひとつ鳴る。ふたつ、みっつ……やがて館じゅうで"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "やば、全部鳴ってる！ ……でも音、ちょっとかわいくない？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "停電！？ うそ、真っ暗じゃん！ ……あ、く、暗いのは苦手だわ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "落ち着こう。誰も怪我はしてない"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……大丈夫。怖いことは起きない。どうする？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "灯りが戻る。オルゴールは最後の一音を鳴らし、静かになった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "止まった……。なんだか、子守歌みたいだったな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "音はやんだが、柱時計の針が進んでいる。真夜中が一つ近づいた"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "急ご！ 零時、もうすぐじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "闇の中、{pc}の背中に、何かがとん、と当たった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "うわっ！ ……人形？ 抱っこされに来たのか？"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……真夜中が、二つ近づいた。でも、人形には懐かれた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_preparation",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……使えるのは、館にあるものだけ。繕い道具と、お茶"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "見立ては決まった。人形たちを迎える支度をしよう"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "繕いはうちに……ううん、{pc:ageha}に任せなさい？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……お茶なら、私が淹れるわ。湯気は、儚くて好きなの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_prepare_success",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "人形たちの席が整い、湯気が部屋を満たす。硝子の瞳が、灯を映した"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "完璧じゃん。みんな、今夜いちばんかわいいよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_prepare_mixed",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "支度に手間取るうち、柱時計が低く鳴る。真夜中が一つ近づいた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "整ったから大丈夫。急ごう、零時が来る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_prepare_trouble",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "糸巻きが転がって、人形の足にくるくると絡まった。誰も怪我はない"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ちょ、待って、ほどくから！ ……あ、そっと、ほどくわね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ほどけた。支度は、まだ間に合う"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_serving",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "柱時計が、零時の鐘を打ちはじめる。ひとつ、ふたつ……"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "鐘の音に合わせて、人形たちが、そっと顔を上げた"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "surprise",
+          "text": "動いた……。本当に、動いています"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "いきます。人形たちに、呼びかけます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_serve_success",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "呼びかけが、人形たちの胸の奥まで、静かに届いていく"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……今の、ちゃんと届いた。うち、分かる"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "人形たちが、ゆっくりと一礼した"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_serve_mixed",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "一体が、迷うように立ち止まる。{pc}が、そっと手を差しのべた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "大丈夫。一緒に行こう"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……少しの迷いも、夜の味だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_serve_trouble",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "鐘が鳴りやむ。人形たちが、ぴたりと動きを止めた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "止まっちゃった！？ ……あ、ま、まだ間に合うかしら"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……大丈夫。人形たちは、ちゃんと聞いている"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ending_last-act",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "零時の鐘の余韻の中、子ども部屋の小さな舞台に灯がともる"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "繕われた衣装をまとい、王子と魔女と雪の精が、音もなく第二幕を踊る"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "smile",
+          "text": "これが、大叔母さまの第二幕……。こんなに優しいお話だったのですね"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "衣装、間に合ったね。みんな、最高にかわいいよ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最後に人形たちは客席へ一礼し、小さな幕が、静かに下りた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "何年越しの、第二幕だったんだろう"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……止まった曲も、最後まで弾けば、ちゃんと終われる"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……今の、少し格好つけた。忘れてくれ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ending_new-mistress",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "零時の鐘とともに、リボンを結んだ人形たちが、リラのまわりに輪をつくる"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "surprise",
+          "text": "私を……待っていてくれたのですか？"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "人形たちは、そろって小さくお辞儀をした。おかえりなさい、と言うように"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "smile",
+          "text": "リラさん。みんな、ずっと一緒に遊びたかったんですよ"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "smile",
+          "text": "……はじめまして。いいえ、ただいま、みんな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……よかったわね。もう、ひとりの夜じゃないわ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "明日から毎日お茶会じゃん。うちも呼んでほしい"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……館は、住む人がいて、ようやく館になる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ending_snow-window",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "カーテンが開く。零時の鐘と同時に、丘の下の凍った湖が光りはじめた"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "村の灯が氷に映り、降る雪がそれを照り返す。これが、雪灯りの庭だ"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "surprise",
+          "text": "窓の外に、こんな景色があったなんて……"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "人形たちは窓辺に並び、硝子の瞳いっぱいに光を映して、静かに目を閉じた"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "みんな、満足そうな顔……。うちも、この景色ずっと覚えとく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "smile",
+          "text": "雪の夜は、カーテンを開けておきましょう"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……いい景色は、誰かと見ると、もっときれいに見える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ending_tea",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "十二の鐘が鳴り終わる。人形たちは、どこへも行かずに立ち止まった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "あれ……読み、違ったのかな"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "smile",
+          "text": "でも、みんなここにいてくれます。よければ、お茶にしませんか"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "暖炉の前に、人形とカップが並ぶ。湯気の向こうで、瞳が細くなった気がした"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "人形とお茶会とか、ふつうに優勝じゃん"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……答えは、また次の雪の夜ね。今夜は、これで十分だわ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……謎が残る夜も、悪くない。続きは、また今度"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_debrief_smooth",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……慌てずに、零時を迎えられた。いい卓だった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "怖いどころか、あったかい夜でしたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_debrief_with_detour",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……鐘ぎりぎりだった。でも、そういう夜ほど覚えてる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ドキドキしたけど、それも込みで楽しかったし"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_epilogue",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……これで、おしまい。どうだった"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "やば、めっちゃ楽しかった！ 途中から、うち完全に役に入ってたし"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "途中から、本当に雪の館にいる気分でした"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……雪の夜の館。静かで、少しだけ甘い夜だったわ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "REIさんの語りも、ずっと聞いていたかったです"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……そうか、……照れる"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……終わったら、一台作る。ラベンダーに、ホワイトティーと蜂蜜"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "館のお茶と、同じ香りですね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……DOLLS REQUIEM。好きな曲から名前をもらった。人形みたいに、静かな香りだ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "名前までおしゃれ……。うちも、それ吸ってみたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_play_aunt",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "serious",
+          "text": "大叔母さまは毎年、雪の夜に、村の子どもたちへ人形劇を見せていました"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "normal",
+          "text": "最後の冬は、第二幕の衣装が間に合わなくて……第一幕で終わったそうです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_play_dolls",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "normal",
+          "text": "人形たちは、大叔母さまの人形劇の一座です。王子に、魔女に、雪の精"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "役者の人形だったんですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_play_nightly",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "normal",
+          "text": "朝には、子ども部屋の小さな舞台に並んでいます。毎朝、立ち位置を変えて"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……まるで、稽古をしているみたいね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_play_lila",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "normal",
+          "text": "大叔母さまの手紙に、『第二幕は、リラに見届けてほしい』と……"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "え、エモ……。その続き、絶対見よ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_owner_aunt",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "normal",
+          "text": "大叔母さまは毎朝、人形たちに一体ずつ『おはよう』と声をかけていたそうです"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "serious",
+          "text": "私は、まだ一度も……あの子たちの名前を呼べていません"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_owner_dolls",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "normal",
+          "text": "人形はみんな、小さな女の子の背丈に合わせて作られているんです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "いつか来る子のために、作られたみたいですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_owner_nightly",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "serious",
+          "text": "朝、扉を開けると、人形たちが私の部屋の前に並んでいるのです"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "毎朝お迎え来てるの？ ちょっとかわいいんだけど"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_owner_lila",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "serious",
+          "text": "館に来てから、私は部屋にこもってばかりで……人形が、少し怖くて"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……知らない家の夜は、心細いものね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_window_aunt",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "normal",
+          "text": "大叔母さまは雪の夜になると、人形たちを窓辺に並べていたそうです"
+        },
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "smile",
+          "text": "一緒に外を眺めるのが、何より好きだったと"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_window_dolls",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "normal",
+          "text": "人形の瞳は、硝子でできています。雪の光を、よく映すように"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "瞳まで、雪の夜のために作られてるんですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_window_nightly",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "serious",
+          "text": "朝になると、人形たちは窓辺に集まって、外を向いているのです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……何かを、見ていたのかしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_ask_window_lila",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "館の主リラ／物語",
+          "face": "serious",
+          "text": "来たばかりの日、寒くて……館のカーテンを、すべて閉めてしまいました"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "カーテン全部？ 人形たち、外見えなくなっちゃったじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_play_shelf",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "飾り棚の段に、小さな名札。『第一幕』『第二幕』……第二幕の段だけ、空っぽだ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "第二幕の子たち、みんなでどこ行ったし"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_play_stage",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "小さな舞台の床に、白墨の印。第二幕の立ち位置だ。その上に、小さな足跡"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "毎晩、ここで稽古してるのか"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……熱心な役者さんたちね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_play_diary",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "日記の最後の頁。『第二幕の衣装の繕いが、間に合わない。次の雪の夜に』"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "衣装！？ それ、うちの出番じゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_play_pane",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓辺に、手描きの看板が立てかけてある。『雪の夜の人形劇　第二幕、近日』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……近日のまま、何年も待っているのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_play_clock",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "振り子の箱に、紙片が一枚。『幕間は零時の鐘。ラベンダーと蜂蜜の茶を』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "館のお茶だ。幕間に、みんなで飲んでたんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_play_musicbox",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "オルゴールの蓋の裏に、台本の一節が貼ってある。第二幕の、最初の台詞だ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "台本あるじゃん！ 読んだら、続きが始まりそう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_owner_shelf",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "飾り棚の人形たちが、みな同じ方を向いている。その先は、リラの部屋の扉だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "全員、リラさんの部屋を見てる……？"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "見守り隊じゃん。かわいい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_owner_stage",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "舞台の上に、豆粒ほどの招待状。『新しいご主人さまへ。お茶会にどうぞ』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……招待されているのは、リラさんね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_owner_diary",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "日記の一頁。『新しい子が来たら、人形たちにリボンを結んで迎えさせること』"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "リボン！ 任せて、結ぶのは秒だから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_owner_pane",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓の外の雪に、小さな足跡が並ぶ。リラの部屋の窓の下まで、続いている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……窓の下で、何度も呼んでいたのかしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_owner_clock",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "柱時計の足もとに、小さなマグが二つ。札に『温かいミルクは、子どもと一緒に』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "二人分……。誰かと一緒に飲むための、マグなんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_owner_musicbox",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "オルゴールの底に、小さく刻まれた文字。『リラへ』"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "流れだしたのは、やさしい子守歌だ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "え、リラちゃん宛て……？ 泣きそう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_window_shelf",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "人形たちの硝子の瞳が、うっすらとくもっている。みな、窓の方を向いたまま"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "瞳くもってたら、何も見えなくない？ 磨いてあげたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_window_stage",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "舞台の背景画は、雪の夜の窓。その向こうに、光の粒がいくつも描かれている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……きれい。何の光かしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_window_diary",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "日記の一行。『雪の夜は窓辺で白いお茶を。人形たちと、雪灯りの庭を待つ』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "雪灯りの庭……？ 窓の外に、何か見えるのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_window_pane",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "閉じたカーテンの裾に、小さな手でつかんだしわ。開けようとした跡だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……開けたかったのね。でも、重すぎたんだわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_window_clock",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "文字盤の零時の位置に、雪の結晶の印。『零時、雪灯りの庭』と小さな字"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "真夜中に、何かが見えるってことか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_clue_window_musicbox",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "オルゴールの曲名は『雪灯りの庭』。蓋には、凍った湖に灯りが映る絵"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "景色の曲なんだ。絶対きれいなやつじゃん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_discuss_play",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "続き、やりたいんだ……。分かる、途中で終わるとモヤるもん"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……幕が上がらないままの劇。少し、寂しいわね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……第二幕の、幕開けか。その読みで、いこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_discuss_owner",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "リラちゃんと遊びたいだけなんじゃない？ かわいすぎ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……新しい家族に、気づいてほしいのね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……出迎えの、続きか。その読みで、いこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_discuss_window",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "夜の景色を見に行ってるってこと？ 人形なのに、エモくない？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……閉じたカーテンの向こうに、見たい景色があるのね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……雪の夜の、窓辺か。その読みで、いこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_mend_thread",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "糸と針ね。ほつれ、全部ふさいじゃお。お嬢さんたち、並んで？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_mend_ribbon",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "新しいリボン！ みんなおそろいにしたら、絶対かわいい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_mend_cloth",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "normal",
+          "text": "磨き布ね。瞳ぴかぴかにしたら、もっと美人さんになるよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_tea_lavender",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ラベンダーと蜂蜜……館の香りね。夜には、甘いのが似合うわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_tea_white",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "白いお茶……。雪みたいに、淡い色ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_tea_milk",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "温かいミルク。……ふふ、小さい頃を思い出すわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_call_script",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "台本を読もう。第二幕の、最初の台詞から"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_call_introduce",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "リラさんを、人形たちにちゃんと紹介しよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_call_curtain",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "カーテンを開けよう。外が、ちゃんと見えるように"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_tactic_stop",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "廊下を回り、オルゴールの蓋を一つずつ閉じていく。音が、ひとつずつ眠る"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "よし、あと三つ！ 順番に閉めていこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_tactic_candle",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "燭台に火を移しながら進む。炎が揺れるたび、人形の影がお辞儀をする"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……蝋燭って、儚くていいわね。熱っ！ ……あ、平気よ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_choice_tactic_sing",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "オルゴールの旋律に合わせて、歌声が廊下に広がっていく"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ラララ〜……え、人形たち揺れてる！ もっと歌お！"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
+  "presentation": {
+    "theme": "mansion",
+    "number": "13",
+    "genre": "怖すぎない洋館ミステリー",
+    "tagline": "真夜中の鐘までに、人形たちのわけを知る。",
+    "image": "../../img/backgrounds/trpg_doll-requiem_room.webp",
+    "sceneAlt": "雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。",
+    "location": "霧氷の丘 / 洋館「ラベンダー館」",
+    "atmosphere": "降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。",
+    "coverHeading": "夜ごと、人形たちは居場所を変える。",
+    "coverRule": "四箇所を調べ、人形たちの望みを見立て、零時の鐘に呼びかける。",
+    "titleLines": [
+      "人形館の",
+      "レクイエム"
+    ],
+    "fields": {
+      "mend": "繕い道具",
+      "tea": "お茶",
+      "call": "人形への呼びかけ",
+      "tactic": "停電への手"
+    },
+    "prepareTitle": "どんな支度で、人形たちを迎える？",
+    "prepareDescription": "繕い道具を一つ、お茶を一つ。見つけた望みを支度にしよう。",
+    "serveTitle": "零時の鐘が、鳴りはじめた。",
+    "serveDescription": "どうやって、人形たちに呼びかける？",
+    "hypothesisTitle": "人形たちは、何を望んでいる？",
+    "arrivalRole": "館の主リラ／物語",
+    "riskLabel": "真夜中",
+    "exploreIdle": "……調べられるのは、四箇所まで。メモの読み返しと相談は、何度でもいい",
+    "listenIdle": "……まずは、館の主の話を聞こう。サイコロは二つだ",
+    "interviewIdle": "……リラに聞けるのは、二つまで。何を聞く？",
+    "twistIdle": "……オルゴールが鳴りやまない。手を選んで、誰が動くか決めてくれ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "……ここが見せ場だ。鐘が鳴り終わる前に、呼びかけよう",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 話を聞く",
+        "title": "雪の夜の、館の主",
+        "description": "燭台を手にした少女が、館の扉を開けた。まずは話を聞こう。",
+        "button": "話を聞く"
+      },
+      "interview": {
+        "kicker": "02 / 館の主に聞く",
+        "title": "リラに、何を聞く？",
+        "description": "零時までに聞けるのは二つ。答えは、人形たちの望みしだいで変わる。",
+        "button": "話を聞き終えて、館を調べる"
+      },
+      "explore": {
+        "kicker": "03 / 館を調べる",
+        "title": "人形たちの望みを探す",
+        "description": "調べられるのは四箇所まで。三つ以上の手がかりから、呼びかけ方を考えよう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 停電",
+        "title": "鳴りだすオルゴール",
+        "description": "灯りが消え、館じゅうのオルゴールが一斉に鳴りだした。",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / 支度をする",
+        "title": "繕い道具と、お茶",
+        "description": "使えるのは、この館に残るものだけ。",
+        "button": "支度を整える"
+      },
+      "serve": {
+        "kicker": "06 / 呼びかける",
+        "title": "零時の鐘",
+        "description": "人形たちの望みに合わせて、呼びかけよう。鐘は、もう鳴りはじめた。",
+        "button": "人形たちに呼びかける"
+      },
+      "ending": {
+        "kicker": "十二の鐘のあと",
+        "title": "鐘が鳴りやんだ",
+        "description": "館に、静かな雪の夜が戻った。さて、今夜の館の感想は？"
+      }
+    },
+    "help": "館の主リラに二つ質問し、館を最大四箇所調べます。新しい場所を調べるたび真夜中が一つ近づきます。三つ以上の手がかりで人形たちの望みを見立てたあと、停電を切り抜け、繕い道具・お茶・呼びかけ方を決めます。相談とメモの再読は無料。見立てが合うと支度の判定に＋4。",
+    "exitText": "物語をここで中断して、本棚へ戻ります。次に遊ぶと、人形たちは別の望みを抱えているかもしれません。",
+    "endingKicker": "TONIGHT’S REQUIEM / 今夜の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言せよ",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "停電。オルゴールが鳴りやまない。どうする？",
+    "planTitle": "人形たちを迎える支度"
+  },
+  "intro": "trpg_doll_requiem_intro",
+  "listen": "trpg_doll_requiem_listen",
+  "checks": {
+    "listen": {
+      "title": "館の主リラの話を聞く",
+      "hint": "宣言した客人の能力で判定。どの出目でも聞き込みへ進みます。",
+      "success": "trpg_doll_requiem_listen_success",
+      "mixed": "trpg_doll_requiem_listen_mixed",
+      "trouble": "trpg_doll_requiem_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_hearth",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "暖炉の前で、話を聞く",
+          "detail": "{pc}がリラの隣に座り、言葉が出るのをゆっくり待つ",
+          "declare": "trpg_doll_requiem_declare_listen_hearth"
+        },
+        {
+          "id": "listen_ribbon",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "talk",
+          "label": "リラの緊張をほぐす",
+          "detail": "{pc:ageha}がリラのリボンをほめて、笑顔を引き出す",
+          "declare": "trpg_doll_requiem_declare_listen_ribbon"
+        },
+        {
+          "id": "listen_dolls",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "棚の人形をそっと見る",
+          "detail": "{pc:hiyori}が話を聞きながら、人形たちの向きを確かめる",
+          "declare": "trpg_doll_requiem_declare_listen_dolls"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "人形たちを迎える支度をする",
+      "hint": "宣言した客人の能力で判定。見立てが合えば、さらに＋4。",
+      "success": "trpg_doll_requiem_prepare_success",
+      "mixed": "trpg_doll_requiem_prepare_mixed",
+      "trouble": "trpg_doll_requiem_prepare_trouble",
+      "helper": "ageha",
+      "approaches": [
+        {
+          "id": "prepare_room",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "暖炉をともし、席を並べる",
+          "detail": "{pc}が暖炉に薪を足し、人形たちの席を整える",
+          "declare": "trpg_doll_requiem_declare_prepare_room"
+        },
+        {
+          "id": "prepare_dress",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "hand",
+          "label": "人形の身支度を整える",
+          "detail": "{pc:ageha}が人形の服と髪を、一体ずつかわいく整える",
+          "declare": "trpg_doll_requiem_declare_prepare_dress"
+        },
+        {
+          "id": "prepare_tea",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "お茶の支度をする",
+          "detail": "{pc:hiyori}がカップを温め、ポットにお茶を淹れる",
+          "declare": "trpg_doll_requiem_declare_prepare_tea"
+        }
+      ]
+    },
+    "serve": {
+      "title": "零時の鐘に、人形たちへ呼びかける",
+      "hint": "宣言した客人の能力で判定。どの出目でも、呼びかけて結末へ進みます。",
+      "success": "trpg_doll_requiem_serve_success",
+      "mixed": "trpg_doll_requiem_serve_mixed",
+      "trouble": "trpg_doll_requiem_serve_trouble",
+      "helper": "hiyori",
+      "approaches": [
+        {
+          "id": "serve_step",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "人形たちの正面に立つ",
+          "detail": "{pc}が真夜中の部屋で、人形たちの前に一歩出る",
+          "declare": "trpg_doll_requiem_declare_serve_step"
+        },
+        {
+          "id": "serve_voice",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "talk",
+          "label": "人形たちに語りかける",
+          "detail": "{pc:hiyori}が人形師の静かな声で、人形たちに語りかける",
+          "declare": "trpg_doll_requiem_declare_serve_voice"
+        },
+        {
+          "id": "serve_sign",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "eye",
+          "label": "しぐさを見て、合図を出す",
+          "detail": "{pc:ageha}が人形の小さな動きを見て、呼びかけの合図を出す",
+          "declare": "trpg_doll_requiem_declare_serve_sign"
+        }
+      ]
+    },
+    "twist": {
+      "title": "停電と、鳴りだすオルゴール",
+      "hint": "宣言した客人の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_doll_requiem_twist_success",
+      "mixed": "trpg_doll_requiem_twist_mixed",
+      "trouble": "trpg_doll_requiem_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_lantern",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "ランタンで、暗い廊下を進む",
+          "detail": "{pc}がランタンを掲げ、先に立って暗い廊下を歩く",
+          "declare": "trpg_doll_requiem_declare_twist_lantern"
+        },
+        {
+          "id": "twist_hands",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "talk",
+          "label": "声をかけて、手をつなぐ",
+          "detail": "{pc:ageha}が明るい声でみんなを呼び、手をつないで進む",
+          "declare": "trpg_doll_requiem_declare_twist_hands"
+        },
+        {
+          "id": "twist_ear",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "最初に鳴った音を探す",
+          "detail": "{pc:hiyori}が耳を澄まし、最初に鳴りだした一台を探す",
+          "declare": "trpg_doll_requiem_declare_twist_ear"
+        }
+      ]
+    }
+  },
+  "consult": {
+    "ageha": "trpg_doll_requiem_consult_ageha",
+    "hiyori": "trpg_doll_requiem_consult_hiyori"
+  },
+  "preparation": "trpg_doll_requiem_preparation",
+  "serving": "trpg_doll_requiem_serving",
+  "epilogue": "trpg_doll_requiem_epilogue",
+  "debrief": {
+    "smooth": "trpg_doll_requiem_debrief_smooth",
+    "with-detour": "trpg_doll_requiem_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "rei",
+        "candidates": [
+          "rei"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "ageha",
+        "candidates": [
+          "ageha"
+        ],
+        "required": false
+      },
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "雪の夜に館を訪れる一人を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "ink",
+        "label": "黒髪の客人",
+        "detail": "短い黒髪に、厚手の黒い外套",
+        "color": "#2b2733",
+        "accent": "#c9a7e0",
+        "portrait": "../../img/ui/trpg/look-doll-requiem-ink.webp"
+      },
+      {
+        "id": "snow",
+        "label": "銀髪の客人",
+        "detail": "雪のような銀の髪と、紺のマフラー",
+        "color": "#4a4f63",
+        "accent": "#dfe4f0",
+        "portrait": "../../img/ui/trpg/look-doll-requiem-snow.webp"
+      },
+      {
+        "id": "wine",
+        "label": "赤茶の髪の客人",
+        "detail": "赤茶の髪に、ワインレッドの手袋",
+        "color": "#5e2a33",
+        "accent": "#e29aa8",
+        "portrait": "../../img/ui/trpg/look-doll-requiem-wine.webp"
+      },
+      {
+        "id": "braid",
+        "label": "長髪の客人",
+        "detail": "長い髪を一つに編み、ラベンダー色の上着",
+        "color": "#3a2f4f",
+        "accent": "#b9a3d9",
+        "portrait": "../../img/ui/trpg/look-doll-requiem-braid.webp"
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "nightwatch",
+        "name": "エミル",
+        "title": "住み込みの夜番",
+        "trait": "ランタンと鍵束が相棒。夜の廊下は、まだ少し長い",
+        "stats": {
+          "eye": 3,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 3
+        },
+        "recommended": true
+      },
+      {
+        "id": "restorer",
+        "name": "ユーリ",
+        "title": "人形修復師の見習い",
+        "trait": "ほつれも欠けも見逃さない。人と話すのは、少し苦手",
+        "stats": {
+          "eye": 4,
+          "hand": 4,
+          "talk": 1,
+          "nerve": 2
+        }
+      },
+      {
+        "id": "courier",
+        "name": "ロビン",
+        "title": "雪道の配達人",
+        "trait": "雪の日も手紙を届ける。話し好きで、怖いもの知らず",
+        "stats": {
+          "eye": 2,
+          "hand": 1,
+          "talk": 4,
+          "nerve": 4
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "ageha": {
+      "ageha": [
+        {
+          "id": "kirara",
+          "name": "キララ",
+          "title": "人形服のデザイナー",
+          "trait": "かわいい服なら一晩で縫う。人形は、怖いより先にかわいい",
+          "likes": "フリルとリボンと、白と赤のグミ",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_doll_requiem_make_ageha_ageha_kirara",
+          "portrait": "../../img/ui/trpg/pc-doll-requiem-kirara.webp"
+        },
+        {
+          "id": "marie",
+          "name": "マリー",
+          "title": "ゴス好きの家庭教師",
+          "trait": "黒いフリルが正装。授業より、人形のお茶会の作法にくわしい",
+          "likes": "黒いレースと、プリクラ帳",
+          "stats": {
+            "eye": 2,
+            "hand": 3,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_doll_requiem_make_ageha_ageha_marie",
+          "portrait": "../../img/ui/trpg/pc-marie.webp"
+        }
+      ]
+    },
+    "hiyori": {
+      "hiyori": [
+        {
+          "id": "cecilia",
+          "name": "セシリア",
+          "title": "か弱い人形師",
+          "trait": "指先ひとつで人形を直す、儚い人形師。なぜか斧を一本、背負っている",
+          "likes": "ゆるい顔のぬいぐるみと、斧投げ",
+          "stats": {
+            "eye": 2,
+            "hand": 3,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_doll_requiem_make_hiyori_hiyori_cecilia",
+          "portrait": "../../img/ui/trpg/pc-cecilia.webp"
+        },
+        {
+          "id": "chloe",
+          "name": "クロエ",
+          "title": "ラーメン好きの執事",
+          "trait": "館の夜を静かに支える執事。夜食は必ず、湯気の立つ一杯",
+          "likes": "真夜中のラーメンと、ゆるいキャラのしおり",
+          "stats": {
+            "eye": 3,
+            "hand": 2,
+            "talk": 3,
+            "nerve": 3
+          },
+          "making": "trpg_doll_requiem_make_hiyori_hiyori_chloe",
+          "portrait": "../../img/ui/trpg/pc-chloe.webp"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_doll_requiem_session_zero_open",
+    "close": "trpg_doll_requiem_session_zero_close"
+  },
+  "interview": {
+    "title": "リラに、何を聞く？",
+    "prompt": "零時の鐘まで、聞けるのは二つだけ。人形たちの望みに近づく話を聞こう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "aunt",
+        "label": "亡き大叔母のこと",
+        "description": "先代の館主がどんな人だったか聞く"
+      },
+      {
+        "id": "dolls",
+        "label": "人形たちのこと",
+        "description": "どんな人形たちなのか聞く"
+      },
+      {
+        "id": "nightly",
+        "label": "毎朝の様子",
+        "description": "朝、人形たちがどこにいるか聞く"
+      },
+      {
+        "id": "lila",
+        "label": "館に来てから",
+        "description": "リラの暮らしぶりを聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_doll_requiem_twist_intro"
+  }
+}

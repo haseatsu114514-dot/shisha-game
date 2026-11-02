@@ -18,6 +18,7 @@ import { motifs } from "./intro-motifs.js";
 import { illustratedIntro, layoutIntro, animateIntro, exitIntro, flavorTag, plainLine, motionOf, MOTIONS } from "./intro-art.js";
 import { introFlavor } from "./intro-flavors.js";
 import { graphicIntro } from "./intro-graphic.js";
+import { createTransition, measureStanding } from "./intro-transition.js";
 
 export const introSeenKey = (id, variant = "") => `_intro_${id}${variant ? `_${variant}` : ""}`;
 const introOf = (id, variant = "") => DB.characters[id]?.[variant ? `intro_cutin_${variant}` : "intro_cutin"] || null;
@@ -65,6 +66,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   markIntroSeen(id, variant);
   const main = intro.display_name || introName(id).main;
   let p = portraitInfo(id, intro.face || "normal");
+  const standingInfo = p;
   let art = DB.manifest.introArt?.[id];
   const graphic = art && p ? graphicIntro(id, config.introArtStyle) : null;
   if (graphic) {
@@ -81,18 +83,29 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     ]);
     const host = illustratedIntro(id, variant, intro, main, p, art, background);
     host.dataset.art = graphic ? "graphic" : "classic"; // ひより専用の明るい配色は旧絵柄（白い背景）だけ
-    const unmount = mountIntro(host, layers.fx);
-    const animations = [];
     const motion = motionOf(intro);
+    // 立ち絵からの「変身」のつなぎ（グラフィック絵柄のときだけ。既定 none は今まで通り）
+    const standingRect = graphic ? measureStanding(id, layers.fx) : null;
+    const transition = createTransition(graphic ? (override.transition ?? config.introTransition ?? "none") : "none", {
+      id, fx: layers.fx, host, frame: graphic?.frame, config,
+      standing: standingRect && standingInfo ? { rect: standingRect, p: standingInfo } : null,
+      colors: { color: art.color, secondary: art.secondary, shadow: art.shadow },
+      mount: () => mountIntro(host, layers.fx),
+    });
+    const animations = [];
+    let unmount = null;
     try {
+      unmount = await transition.enter();
       const twoLines = layoutIntro(host, id, variant, intro);
-      animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue) }));
+      animations.push(...animateIntro(host, id, motion, { sound: (cue) => introSound(motion, cue), skip: transition.skip }));
+      host.classList.remove("ci-staged");
       onAppear?.();
       introSound(motion, "appear");
-      await holdIntro(host, { motion, twoLines });
+      await holdIntro(host, { motion, twoLines, exit: transition.exit ? () => transition.exit() : null });
     } finally {
       animations.forEach((animation) => animation.cancel());
-      unmount();
+      transition.cancel();
+      unmount?.();
     }
     return;
   }
@@ -141,7 +154,7 @@ function introSound(motion, cue) {
 /** 一言が2行の時は400ms長く見せる */
 export const introHoldMs = (motion, twoLines = false) => (MOTIONS[motion] || MOTIONS.sharp).hold + (twoLines ? 400 : 0);
 
-async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = false } = {}) {
+async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = false, exit = null } = {}) {
   await sleep(30);
   host.classList.add("in");
   const onTap = (e) => { e.preventDefault(); e.stopPropagation(); };
@@ -154,6 +167,7 @@ async function holdIntro(host, { motion = "sharp", twoLines = false, legacy = fa
   try {
     await sleep(introHoldMs(motion, twoLines));
     if (legacy) { host.classList.add("out"); await sleep(280); }
+    else if (exit) await exit();
     else await sleep(exitIntro(host, motion));
   } finally {
     window.removeEventListener("keydown", onKey, true);

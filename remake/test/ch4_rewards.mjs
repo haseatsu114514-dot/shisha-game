@@ -50,7 +50,9 @@ function seed() {
   Object.assign(fresh, { chapter: 3, phase: "cleared", day: 45 });
   fresh.flags._ch3_cleared = true;
   progress.advanceToChapterFour(fresh);
+  delete fresh.flags._ch4.routeVersion; // 旧行程（ドバイ5日）
   for (const scene of progress.CH4_PROLOGUE) progress.completeChapterFourScene(fresh, scene.id);
+  progress.completeChapterFourScene(fresh, "ch4_festa");
   progress.completeChapterFourScene(fresh, "ch4_stranger_first");
   progress.endChapterFourDay(fresh); progress.endChapterFourDay(fresh);
   Object.assign(state, fresh);

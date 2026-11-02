@@ -129,7 +129,7 @@ console.log('PASS: chapter 1 / chapter 2 actual calendar night → home → slee
 
 // Actual chapter controller: finish the mandatory report before entering the shared calendar.
 const chapterSource = read('remake/js/chapters/ch2.js');
-const dayOneSource = chapterSource.slice(chapterSource.indexOf('async function continueDayOne()'), chapterSource.indexOf('\nasync function introduceStop('));
+const dayOneSource = chapterSource.slice(chapterSource.indexOf('async function continueDayOne()'), chapterSource.indexOf('\nfunction greetingWithoutFarewell('));
 for (const stage of ['tonari', 'complete']) {
   const scenes = [], progress = { stage }, fixture = { slot: 1, money: 1000, flags: { _ch2_deliveries: { accepted: true, reported: stage === 'complete' } } };
   const ctx = vm.createContext({

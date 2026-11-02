@@ -1152,6 +1152,15 @@ await suite("growth-levelup", async (runCheck) => {
     });
     assert.deepEqual(legacy, { board: null, grew: true, oldSame: true });
   });
+  // 大会前夜の内省の場所は今いる地域で決まる（地元＝観音堂、東京＝路地裏の神社、柚ヶ谷＝宿の窓辺）
+  await check("eve-place-by-region", async (page) => {
+    await setupDaily(page);
+    const places = await page.evaluate(async () => {
+      const { evePlaceFor } = await import("./js/daily/calendar.js");
+      return ["home", "tokyo", "widehanga", undefined].map((region) => evePlaceFor({ flags: region ? { _ch2_region: region } : {} }));
+    });
+    assert.deepEqual(places, ["kannon", "tokyo_shrine", "inn_window", "kannon"]);
+  });
   // ドバイのモスク（SPEC 2.8・SBD93）: 第4章の行き先から見学して振り返ると、灯せる盤が開く。時間・体力は使わない
   await check("dubai-mosque-lights-board", async (page) => {
     await setupDaily(page);

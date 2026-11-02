@@ -17,19 +17,25 @@ import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
   CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
-  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE } from "./ch4-progress.js";
+  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
+  CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
+  chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
+import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates, overseasCompanion } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
+import { buildGameOver, warmGameOver } from "./gameover.js";
+import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
   chapterFourEveningRecord } from "./ch4-story-wiring.js";
+import { CH4_CAMEL_SCENE_FILES, camelSceneBg, visitCamelRace } from "./ch4-camel-race.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -95,7 +101,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
-  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES };
+  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES, ...CH4_CAMEL_SCENE_FILES };
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
@@ -159,7 +165,7 @@ async function readScene(owner, id) {
   const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
-  await setBg(bgUrl(CH4_SCENE_BG[id] || CH4_EVENING_BG), { instant: true });
+  await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG), { instant: true });
   if (!current(owner)) return false;
   playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。
@@ -202,12 +208,42 @@ async function renderStage(owner) {
   if (!await chapterGrowthNight(owner, () => current(owner))) return;
   const progress = chapterFourProgress(state);
   if (canChooseOverseasCompanion(state)) return renderCompanionChoice(owner);
+  if (chapterFourPrepPending(state)) return renderPrep(owner);
   if (progress.part === "prologue") return renderScene(owner, CH4_PROLOGUE[progress.stage], `DAY ${progress.day}`);
-  if (progress.part === "free") return renderFree(owner);
+  if (progress.part === "free") return chapterFourDaily(state) ? renderDubaiDaily(owner) : renderFree(owner);
   if (progress.part === "eve") return renderEve(owner);
   if (progress.part === "tournament") return renderTournament(owner);
   if (progress.part === "resolution") return renderScene(owner, CH4_RESOLUTION[progress.resolution], "");
   return renderComplete(owner);
+}
+
+/**
+ * 出発前の準備3日（VOL02）: 地元・柚ヶ谷の日常ループ（1日目の昼に特訓、夜に持っていく配合）→ 出発の朝にドバイDAY1。
+ * 進み具合は flags._ch4_prep.step（0＝準備中、1＝出発の朝）。中断・LOADは同じ段から。
+ */
+async function renderPrep(owner) {
+  if (!current(owner)) return;
+  const prep = state.flags._ch4_prep;
+  if (prep.step === 0) {
+    const [{ runDeparturePrep, departureMorningReached }, { chapterFourPrepEvents }] = await Promise.all([
+      import("./departure-prep.js"), import("./ch4-prep.js")]);
+    if (!current(owner)) return;
+    showScreen("none", null);
+    await runDeparturePrep({ destination: "ドバイ", ...chapterFourPrepEvents(prep) });
+    // 出発の朝まで来た時だけ先へ。LOAD・タイトルへ戻った場合はここで止める。
+    if (!current(owner) || !departureMorningReached(state)) return;
+    hud();
+    prep.step = 1;
+    save();
+  }
+  // 出発前のtonari2場面が残っていれば（寝込んだ日など）、出発の朝に読んでから発つ。
+  for (const id of CH4_PREP_SCENES) {
+    if (chapterFourRead(state, id)) continue;
+    if (!await readAndCommit(owner, id)) return;
+  }
+  if (!departChapterFour(state)) throw new Error("ドバイへ出発できません");
+  save();
+  await renderStage(owner);
 }
 
 /** 出発前の同行選択。恋人1名か「同行なし」。選ぶと保存し、他の恋人は別便の応援として扱う（好感度は変えない）。 */
@@ -292,6 +328,22 @@ async function renderFree(owner) {
     [model.guide, model.hint, model.note].filter(Boolean).join(" "));
 }
 
+/**
+ * ドバイの日常（版2・VOL04）: DAY1〜12は第1・2章と同じ日常ループ（chapters/ch4-dubai-daily.js）。
+ * 前夜祭の日（DAY13）の朝に戻り、今までの「前夜」の流れ（必須の場面・前夜の過ごし方）へ入る。
+ */
+async function renderDubaiDaily(owner) {
+  const dubai = await import("./ch4-dubai-daily.js");
+  if (!current(owner)) return;
+  showScreen("none", null);
+  await dubai.runChapterFourDubai({ readAndCommit: id => readAndCommit(owner, id) });
+  if (!current(owner) || state.day < dubai.dubaiEveDay(state)) return;
+  if (!enterChapterFourEve(state)) throw new Error("前夜へ進めません");
+  save();
+  hud();
+  await renderStage(owner);
+}
+
 /** 行き先の場面を順に再生してマップへ戻る。日が進むのは「その日を終える」だけ。 */
 async function visit(owner, id) {
   const destination = chapterFourMapModel(state, { canReflect: canReflect() })?.destinations.find(item => item.id === id);
@@ -299,6 +351,25 @@ async function visit(owner, id) {
   if (destination.kind === "reflect") {
     await reflectAt("dubai_mosque");
     if (current(owner)) await renderStage(owner);
+    return;
+  }
+  if (destination.kind === "camel") {
+    // ラクダレース（任意）。会話→レース→結果の会話と保存は ch4-camel-race.js が進める。レース中の中断は controller で止める。
+    const controller = new AbortController();
+    try {
+      await visitCamelRace({ read: id => readScene(owner, id), signal: controller.signal, isCurrent: () => current(owner),
+        beforeRace: () => { showScreen("none", null); hud(); owner.controller = controller; } });
+    } finally { if (owner.controller === controller) owner.controller = null; }
+    if (!current(owner)) return;
+    playBgm(CH4_DEFAULT_BGM);
+    await renderStage(owner);
+    return;
+  }
+  if (destination.kind === "shop") {
+    await openShop({ branch: "dubai" });
+    if (!current(owner)) return;
+    playBgm(CH4_DEFAULT_BGM); // 店のBGMを街の曲へ戻す
+    await renderStage(owner);
     return;
   }
   for (const sceneId of destination.scenes) {
@@ -342,7 +413,7 @@ async function renderEve(owner) {
   }
   await setBg(bgUrl(CH4_SCENE_BG[next.lead || next.id]), { instant: true });
   if (!current(owner)) return;
-  card(owner, "eve", "DAY 4・前夜", "夜になった。大会の前に、済ませておくことが残っている。", [
+  card(owner, "eve", `DAY ${chapterFourEveDay(state)}・前夜`, "夜になった。大会の前に、済ませておくことが残っている。", [
     button(owner, "続きを読む", "continue", async () => {
       for (const id of [next.lead, next.id].filter(Boolean)) {
         if (!await readAndCommit(owner, id)) return;
@@ -375,7 +446,7 @@ async function renderEvening(owner) {
   const name = displayName(partner, state, { context: "private" });
   await setBg(bgUrl(CH4_EVENING_BG), { instant: true });
   if (!current(owner)) return;
-  card(owner, "evening", "DAY 4・前夜", `大会前夜。${name}と過ごす時間がある。`, [
+  card(owner, "evening", `DAY ${chapterFourEveDay(state)}・前夜`, `大会前夜。${name}と過ごす時間がある。`, [
     button(owner, `${name}と過ごす`, "evening-date",
       () => settle(selectChapterFourEvening(routes, state, partner)), true),
     button(owner, "ひとりで休む", "evening-rest", () => settle(selectChapterFourEvening(routes, state))),
@@ -384,9 +455,11 @@ async function renderEvening(owner) {
 
 async function renderTournament(owner) {
   const progress = chapterFourProgress(state);
+  // 敗北の場面を読み終え、まだ再挑戦を選んでいない保存はCONTINUE画面から再開する（第2・3章と同じ）。
+  if (chapterFourTournamentOutcome(state) === "loss" && progress.read[CH4_TOURNAMENT_SCENES.loss]) return renderDefeat(owner);
   await setBg(bgUrl(CH4_SCENE_BG[CH4_TOURNAMENT_SCENES.start]), { instant: true });
   if (!current(owner)) return;
-  card(owner, "tournament", "DAY 5・大会当日", "会場へ向かう。",
+  card(owner, "tournament", `DAY ${chapterFourTournamentDay(state)}・大会当日`, "会場へ向かう。",
     [button(owner, "大会へ", "start", () => runTournament(owner), true)],
     progress.attempts ? "同じ大会に、もう一度挑む。" : "", CH4_TOURNAMENT_SCENES.start);
 }
@@ -421,15 +494,48 @@ async function runTournament(owner) {
     options: [{ label: "講評へ", primary: true, test: "ch4-verdict-continue" }] });
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
+    clearContinueHistory(state);
     if (!await readAndCommit(owner, win)) return;
     toast(`大会の賞金 ${CH4_PRIZE.toLocaleString("ja-JP")}円を受け取った`, { kind: "good" });
   } else {
     if (!await readAndCommit(owner, loss)) return;
-    // ※仮置き（Q5・Q7 未決）: 大会の最初へ戻す暫定形。
-    if (!chapterFourAfterDefeat(state)) return;
-    save();
+    // 2026-11-02 オーナー決定: 第1〜3章と同じ20秒のCONTINUE画面を出す（#1909）。再挑戦は大会の最初から（Q5）。
+    await renderDefeat(owner);
+    return;
   }
   await renderStage(owner);
+}
+
+/** 世界大会の敗北後のCONTINUE画面。「もう一度」で大会の最初へ戻し、タイトルへは保存してから戻る。 */
+async function renderDefeat(owner, variant = null) {
+  if (!current(owner)) return;
+  const progress = chapterFourProgress(state);
+  const result = progress.match?.result;
+  owner.continueRoot?.cleanupContinue();
+  const context = recordContinueContext(state, progress, progress.attempts,
+    craftContinueContext(progress.match?.craft, { chapter: 4, reason: result?.failure || "rank", rank: result?.rank }));
+  await warmGameOver();
+  if (!current(owner)) return;
+  hud();
+  const root = buildGameOver({ context, variant,
+    onRetry: () => perform(owner, async () => {
+      if (!root.isConnected || chapterFourTournamentOutcome(state) !== "loss") return;
+      if (!chapterFourAfterDefeat(state)) return;
+      save();
+      await renderStage(owner);
+    }),
+    onTitle: () => {
+      if (!current(owner)) return;
+      save();
+      owner.active = false;
+      owner.controller?.abort();
+      location.reload();
+    },
+  });
+  owner.continueRoot = root;
+  root.dataset.test = test("defeat");
+  root.querySelector(".go-retry").dataset.test = test("continue-retry");
+  showScreen("end", root);
 }
 
 const RECAP_STRATEGY = Object.freeze({

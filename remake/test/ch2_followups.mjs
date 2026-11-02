@@ -11,7 +11,7 @@ const all = Object.fromEntries([...preparation.dialogues, ...stories].map(d => [
 const stagesSource = fs.readFileSync(new URL("remake/js/core/affinity-stages.js", root), "utf8");
 const { CH2_VISIT_STORIES, ch2VisitDone } = await import(new URL("remake/js/core/affinity-stages.js", root));
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
-let state, options, played, saves, mode, resolvePlay, heartLevel = 1, finaleOpen = new Set(), finaleCalls = [];
+let state, options, played, saves, mode, resolvePlay, heartLevel = 1, finaleOpen = new Set(), finaleCalls = [], agehaStory = null;
 const isRepeat = (id, scene) => id === "ageha" ? scene === "remake_ch2_ageha_repeat" : /^remake_ch2_(kumicho|rei)_repeat(_[bcd])?$/.test(scene) && scene.includes(id);
 const ids = ["ageha", "kumicho", "rei"];
 const DB = { dialogues: { ...all } };
@@ -27,10 +27,12 @@ const mocks = {
   "../core/data.js": { DB, bgUrl: x => x },
   "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須" },
   "../core/stats.js": {
-    affinityLevel: () => heartLevel,
+    affinityLevel: () => heartLevel, releaseAffinity: () => 0,
 
     addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
     earnStat: (id, n) => { state.growth.push([id, n]); }, gainAffinity: (id, n) => { state.affinity.push([id, n]); },
+    // 来店の好感度（台帳 AFB01）: 第2章は段階会話・初対面・締めくくり 16、通い 8
+    visitAffinity: kind => ({ story: 16, talk: 8 })[kind],
   },
   "../core/ui.js": { withScenePreparation: task => task, imageReady: async () => mode !== "bad-image", setBg: async () => {}, toast: () => {} },
   "../vn/engine.js": { play: async id => {
@@ -43,9 +45,10 @@ const mocks = {
     return { id, visited: [id] };
   } },
   "../daily/calendar.js": { runDaily: async def => { options = def; } },
-  "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn },
+  "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
+    CHAR_STAT: {}, VISIT_BG: {}, bgRef: x => x, setChapterVisitDue: () => {}, hasNewEvent: () => false },
   "../daily/hiyori.js": { setHiyoriExtraShops: () => {} },
-  "../daily/trpg.js": { trpgSpot: () => null },
+  "../daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
   // あげはの♥3の質問（#1988）は affinity_stages.mjs で確認する。ここでは質問が無い通常訪問だけを見る
@@ -61,9 +64,12 @@ const mocks = {
   "./ch2-outings.js": { CITY_OUTINGS: [], CITY_SHOP: { id: "ch2_shop" }, knownCityOutings: () => [], introduceCitySpot: () => false, outingDialogue: () => null, recordOutingVisit: () => {} },
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight },
-  "./ch2-story.js": { chapterTwoNights: () => ({}) },
+  // 地元の店で読む第2章の本編（VOL13）は ch2_story_visits.mjs で確認する
+  "./ch2-story.js": { chapterTwoNights: () => ({}), storyVisitDue: () => null, readStoryVisit: async () => false },
+  // tonariの大会準備（VOL13）は ch2_craft_prep.mjs で確認する
+  "./ch2-craft-prep.js": { craftPrepDue: () => null, offerCraftPrep: async () => null },
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
-  "./ch2-story-data.js": { agehaStoryScene: () => null, syncAgehaVibes: () => 0 },
+  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, syncAgehaVibes: () => 0 },
   // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
   "../core/growth.js": { consultLessons: async () => [] },
   // 第5章の柚ヶ谷の通い訪問（#2033）が小会話を読み込む。ここでは第2章の訪問だけを見る
@@ -102,7 +108,7 @@ for (const id of ids) {
     assert.equal(state.money, before.money - 3000); assert.equal(state.stamina, 84);
     assert.equal(state.flags._ch2_talks[id], (count || 0) + 1);
     assert.equal(!!state.flags._ch2_followup_done?.[id], !first);
-    assert.deepEqual(state.affinity, [[id, first ? 10 : 5]]);
+    assert.deepEqual(state.affinity, [[id, first ? 16 : 8]]);
     assert.deepEqual(state.relationshipMemories, before.relationshipMemories); assert.deepEqual(state.lovers, before.lovers);
     assert.equal(saves, 1, "Visit must not insert an early save before calendar settlement");
     if (first) { await visit(id); assert.equal(played.at(-1), `remake_ch2_${id}_followup`); }
@@ -175,10 +181,25 @@ for (const id of ids) {
   assert.equal((await visit(id)).used, true);
   assert(isRepeat(id, played.at(-1)));
   assert.equal(state.flags._ch2_followup_done?.[id], undefined);
-  assert.deepEqual(state.affinity, [[id,5]]);
+  assert.deepEqual(state.affinity, [[id,8]]);
   heartLevel = 1; await visit(id);
   assert.equal(played.at(-1), `remake_ch2_${id}_followup`);
   assert.equal(state.flags._ch2_followup_done[id], true);
+}
+
+// あげはの店に通う回は、神崎・REIの段階会話と同じ+16。いつもの会話だけ+8（VOL06・AFB01）。
+{
+  await setup(1); state.flags._ch2_followup_done = { ageha: true };
+  agehaStory = "remake_ch2_ageha_gyaru";
+  DB.dialogues.remake_ch2_ageha_gyaru = { dialogue_id: agehaStory, lines: [{ speaker: "ageha", face: "smile", text: "a" }] };
+  assert.equal((await visit("ageha")).used, true);
+  assert.equal(played.at(-1), agehaStory);
+  assert.deepEqual(state.affinity, [["ageha", 16]], "An Ageha story visit gains like the Kanzaki/REI stages");
+  assert.equal(state.flags._ch2_read_remake_ch2_ageha_gyaru, true);
+  agehaStory = null;
+  await visit("ageha");
+  assert(isRepeat("ageha", played.at(-1)));
+  assert.deepEqual(state.affinity, [["ageha", 16], ["ageha", 8]], "The usual chat stays +8");
 }
 
 // The actual required-ID loader is atomic on missing/malformed new scenes.
@@ -209,7 +230,12 @@ for (const id of validatedIds) {
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・REIの小会話6本と締めくくり2本（#2027）
-assert.equal(Object.keys(loaderDB.dialogues).length, 41 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// + あげはの小会話3本と地元の第2章の会話7本、tonariの大会準備9本（VOL13）
+assert.equal(Object.keys(loaderDB.dialogues).length, 60 + Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
+for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rin_taste", "ch2_rin_strawberry"]) assert(loaderDB.dialogues[id], id);
+for (const id of ["ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed", "ch2_prep_rehearsal_intro",
+  ...["great", "good", "rough", "burnt", "drill"].map(result => `ch2_prep_rehearsal_${result}`)]) assert(loaderDB.dialogues[id], `craft prep ${id} is published`);
 for (const id of ["kumicho", "rei"]) {
   assert(loaderDB.dialogues[`ch2_${id}_bond_finale`], `${id} finale is published`);
   for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_${id}_repeat_${suffix}`]);
@@ -238,8 +264,8 @@ for (const id of ["kumicho", "rei"]) {
   }
   assert.equal(state.flags._ch2_revisit_done[id], true);
   assert.equal(state.flags._ch2_talks[id], before.flags._ch2_talks[id] + sequence.length);
-  // 長い段階会話は第1章の固有会話と同じ+10、続編・再訪・小会話は+5（#2027）
-  const gained = [...CH2_VISIT_STORIES[id].map(entry => [id, entry.file ? 10 : 5]), [id, 5], [id, 5]];
+  // 長い段階会話は第1章の固有会話と同じ+16、続編・再訪・小会話は+8（#2027・AFB01）
+  const gained = [...CH2_VISIT_STORIES[id].map(entry => [id, entry.file ? 16 : 8]), [id, 8], [id, 8]];
   assert.deepEqual(state.affinity, gained);
   assert.deepEqual(state.relationshipMemories, before.relationshipMemories); assert.deepEqual(state.lovers, before.lovers);
 }
@@ -260,7 +286,7 @@ for (const id of ["kumicho", "rei"]) {
     assert(isRepeat(id, scenes[1])); repeats.push(scenes[1]);
   }
   assert.equal(new Set(repeats).size, 4, `${id}: four distinct small talks rotate`);
-  // 締めくくり: 室内の背景で再生し、完読で+10。中断では請求・交流回数・好感度を残さない。
+  // 締めくくり: 室内の背景で再生し、完読で+16。中断では請求・交流回数・好感度を残さない。
   finaleOpen.add(id); mode = "cancel";
   const before = structuredClone(state);
   assert.equal((await visit(id)).used, false);
@@ -270,7 +296,7 @@ for (const id of ["kumicho", "rei"]) {
   assert.equal((await visit(id)).used, true);
   assert.equal(played.at(-1), `${id}:finale`, "no greeting before the finale");
   assert.deepEqual(finaleCalls.map(([who, opts]) => [who, opts.bg, opts.deferSave]), [[id, id, true]]);
-  assert.equal(state.money, money - 3000); assert.deepEqual(state.affinity.at(-1), [id, 10]);
+  assert.equal(state.money, money - 3000); assert.deepEqual(state.affinity.at(-1), [id, 16]);
   // 訪問列が残っていれば、♥5でも締めくくりより段階会話が先
   await setup(); heartLevel = 5; finaleOpen.add(id);
   state.flags._ch2_followup_done = { [id]: true };

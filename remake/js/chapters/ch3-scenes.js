@@ -30,5 +30,5 @@ export const CH3_INTRO_SCENES = Object.freeze([
   { ...LEGACY_SCENES[9], day: 11, slot: 0 },
   ...LEGACY_SCENES.slice(13),
 ]);
-export const chapterThreeScenes = value => value?.flags?._ch3_intro?.routeVersion === 2
+export const chapterThreeScenes = value => value?.flags?._ch3_intro?.routeVersion >= 2 // 3: 東京も日常ループ（VOL03）。場面の並びは版2と同じ
   ? CH3_INTRO_SCENES : LEGACY_SCENES;

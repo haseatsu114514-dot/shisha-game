@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { execFileSync } from "node:child_process";
 import { TrpgSession, STATS, phasesOf, checkKindsOf, pickCompanions } from "../remake/js/trpg/session.js";
 import { materializeTrpgCast } from "../remake/js/trpg/campaign.js";
 
@@ -16,6 +17,9 @@ for (const file of catalog.characterProfiles || []) { const o = read("data/" + f
 const people = new Set(characters.map(c => c.id));
 const manifest = read("remake/data/manifest.json");
 const MEMBERS = new Set(catalog.participants.map(p => p.id));
+// An image is in the game when it is on disk or tracked by git: CI's quick checkout holds text files only (images stay in the index).
+const tracked = new Set((() => { try { return execFileSync("git", ["ls-files", "remake/img"], { cwd: root, encoding: "utf8", maxBuffer: 64 << 20 }).split("\n"); } catch { return []; } })());
+const shipped = url => { const rel = path.relative(root, path.join(root, "remake/js/trpg", url)); return fs.existsSync(path.join(root, rel)) || tracked.has(rel.split(path.sep).join("/")); };
 const width = t => Array.from(t).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0);
 
 function validate(rel) {
@@ -136,12 +140,15 @@ function validate(rel) {
     "listenIdle", "interviewIdle", "exploreIdle", "twistIdle", "prepareIdle", "serveIdle", "endingIdle", "hypothesisTitle", "serveTitle", "twistTitle", "arrivalRole",
     "stats", "declareTitle", "declareHint", "target", "planTitle"]) need(pr[key] !== undefined, "presentation." + key);
   need(pr.image || pr.backdrop, "presentation.image か backdrop（画像が届くまでの色）");
-  if (pr.image) need(fs.existsSync(path.join(root, "remake/js/trpg", pr.image)), "背景画像 " + pr.image + " が存在しない");
+  if (pr.image) need(shipped(pr.image), "背景画像 " + pr.image + " が存在しない");
   if (pr.choiceArt) {
-    need(fs.existsSync(path.join(root, "remake/js/trpg", pr.choiceArt.src)), "選択肢の絵 " + pr.choiceArt.src + " が存在しない");
+    need(shipped(pr.choiceArt.src), "選択肢の絵 " + pr.choiceArt.src + " が存在しない");
     for (const [field, row] of Object.entries(pr.choiceArt.rows || {})) need(Number.isInteger(row) && row < pr.choiceArt.rowCount, "choiceArt.rows." + field);
   }
   for (const phase of phasesOf(s)) need(pr.phases?.[phase]?.kicker && pr.phases[phase].title, "presentation.phases." + phase);
+  const faces = [...(s.builder?.looks || []), ...Object.values(s.companionBuilds || {}).flatMap(seat => Object.values(seat).flat()),
+    ...s.cast.map(c => c.sheet).filter(Boolean)].map(x => x.portrait).filter(Boolean);
+  for (const url of new Set(faces)) need(shipped(url), "人物シートの顔 " + url + " が存在しない");
   // Lines: speakers, faces, width, punctuation, tokens.
   const seatsAll = new Set(s.cast.map(c => c.id));
   for (const d of s.dialogues) {

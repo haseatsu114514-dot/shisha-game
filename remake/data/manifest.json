@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 00:53 UTC",
+ "generated": "2026-11-02 05:34 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -240,6 +240,7 @@
   "rei": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -252,6 +253,7 @@
   "volk": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -329,6 +331,7 @@
   "steve": {
    "faces": [
     "normal",
+    "sad",
     "serious",
     "smile",
     "surprise"
@@ -342,6 +345,7 @@
    "faces": [
     "excited",
     "normal",
+    "serious",
     "smile",
     "surprise"
    ],
@@ -396,7 +400,8 @@
     "normal",
     "serious",
     "smile",
-    "smug"
+    "smug",
+    "surprise"
    ],
    "h": 0.9725,
    "b": 0.0133,
@@ -414,11 +419,15 @@
   },
   "yoru": {
    "faces": [
-    "normal"
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
    ],
-   "h": 0.975,
-   "b": 0.01,
-   "ax": 0.4926,
+   "h": 0.9667,
+   "b": 0.0167,
+   "ax": 0.5176,
    "aspect": 0.7467
   }
  },
@@ -442,12 +451,17 @@
   "bg_choizap_night.png",
   "bg_club_seam.png",
   "bg_club_seam_entrance.png",
+  "bg_dubai_airport_day.png",
   "bg_dubai_alley_cafe_night.png",
+  "bg_dubai_cafe_day.png",
   "bg_dubai_festa.png",
   "bg_dubai_grand_smoke_stage.png",
+  "bg_dubai_inn_day.png",
+  "bg_dubai_inn_night.png",
   "bg_dubai_map.png",
   "bg_dubai_map_dusk.png",
   "bg_dubai_sheikh_residence.png",
+  "bg_dubai_souq_day.png",
   "bg_dubai_street_night.png",
   "bg_eden_shop.png",
   "bg_fookah_showroom.png",
@@ -461,6 +475,7 @@
   "bg_kannon_night.png",
   "bg_kannon_overcast_day.png",
   "bg_kemurikusa_outside_night.png",
+  "bg_mukai_attic.png",
   "bg_mukai_shop.png",
   "bg_osu_map_day.png",
   "bg_osu_map_finale.png",
@@ -501,7 +516,18 @@
   "bg_yuzugaya_trpg.webp",
   "eden.png",
   "kemurikusa.png",
-  "peppermint.png"
+  "peppermint.png",
+  "trpg_apple-thief_room.png",
+  "trpg_doll-requiem_room.png",
+  "trpg_fading-familiar_room.png",
+  "trpg_fox-market_room.png",
+  "trpg_leaf-mail_room.png",
+  "trpg_mist-kingdom_room.png",
+  "trpg_moonflower-encore_room.png",
+  "trpg_purikura-hero_room.png",
+  "trpg_shark-island_room.png",
+  "trpg_smoke-robot_room.png",
+  "trpg_stage-ghost_room.png"
  ],
  "cgs": [
   "cg_ageha_confession.png",
@@ -1704,10 +1730,30 @@
    "shadow": "#120d1f",
    "background": "ui/character_intros/yoru.png",
    "frames": {
+    "smile": {
+     "width": 880.552,
+     "left": -109.955,
+     "top": 18.345
+    },
+    "surprise": {
+     "width": 880.552,
+     "left": -110.912,
+     "top": 18.345
+    },
     "normal": {
-     "width": 873.026,
-     "left": -110.95,
-     "top": 20.462
+     "width": 880.552,
+     "left": -115.934,
+     "top": 18.345
+    },
+    "sad": {
+     "width": 880.552,
+     "left": -114.382,
+     "top": 18.345
+    },
+    "serious": {
+     "width": 880.552,
+     "left": -114.963,
+     "top": 18.345
     }
    }
   },
@@ -2475,12 +2521,17 @@
   "backgrounds/bg_choizap_night.png",
   "backgrounds/bg_club_seam.png",
   "backgrounds/bg_club_seam_entrance.png",
+  "backgrounds/bg_dubai_airport_day.png",
   "backgrounds/bg_dubai_alley_cafe_night.png",
+  "backgrounds/bg_dubai_cafe_day.png",
   "backgrounds/bg_dubai_festa.png",
   "backgrounds/bg_dubai_grand_smoke_stage.png",
+  "backgrounds/bg_dubai_inn_day.png",
+  "backgrounds/bg_dubai_inn_night.png",
   "backgrounds/bg_dubai_map.png",
   "backgrounds/bg_dubai_map_dusk.png",
   "backgrounds/bg_dubai_sheikh_residence.png",
+  "backgrounds/bg_dubai_souq_day.png",
   "backgrounds/bg_dubai_street_night.png",
   "backgrounds/bg_eden_shop.png",
   "backgrounds/bg_fookah_showroom.png",
@@ -2494,6 +2545,7 @@
   "backgrounds/bg_kannon_night.png",
   "backgrounds/bg_kannon_overcast_day.png",
   "backgrounds/bg_kemurikusa_outside_night.png",
+  "backgrounds/bg_mukai_attic.png",
   "backgrounds/bg_mukai_shop.png",
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_finale.png",
@@ -2530,6 +2582,17 @@
   "backgrounds/peppermint.png",
   "backgrounds/trpg_ordinary_room.png",
   "backgrounds/trpg_shark_room.png",
+  "backgrounds/trpg_apple-thief_room.png",
+  "backgrounds/trpg_doll-requiem_room.png",
+  "backgrounds/trpg_fading-familiar_room.png",
+  "backgrounds/trpg_fox-market_room.png",
+  "backgrounds/trpg_leaf-mail_room.png",
+  "backgrounds/trpg_mist-kingdom_room.png",
+  "backgrounds/trpg_moonflower-encore_room.png",
+  "backgrounds/trpg_purikura-hero_room.png",
+  "backgrounds/trpg_shark-island_room.png",
+  "backgrounds/trpg_smoke-robot_room.png",
+  "backgrounds/trpg_stage-ghost_room.png",
   "cgs/cg_ageha_confession.png",
   "cgs/cg_ageha_first_purikura.png",
   "cgs/cg_ch1_dr_kemuri_hook.png",
@@ -2869,8 +2932,17 @@
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
   "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "sprites/characters/da_silva/chr_da_silva_serious.png",
+  "sprites/characters/rei/chr_rei_sad.png",
+  "sprites/characters/sheikh/chr_sheikh_surprise.png",
+  "sprites/characters/steve/chr_steve_sad.png",
+  "sprites/characters/volk/chr_volk_sad.png",
   "sprites/characters/yoru/chr_yoru_normal.png",
   "ui/character_intros/yoru.png",
+  "sprites/characters/yoru/chr_yoru_sad.png",
+  "sprites/characters/yoru/chr_yoru_serious.png",
+  "sprites/characters/yoru/chr_yoru_smile.png",
+  "sprites/characters/yoru/chr_yoru_surprise.png",
   "ui/character_intros/master_hookah.png",
   "ui/character_intros/sheikh.png",
   "ui/character_intros/shisha_9000.png",

@@ -1,0 +1,105 @@
+{
+  "episode": 48,
+  "title": "看板の向き",
+  "cast": "はじめ・スミさん",
+  "theme": "旧話の復刻",
+  "status": "not-adopted-owner-20261102",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/loading-comics/48-sumi-sign-reverse/48-sumi-sign-reverse.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [
+    {
+      "file": "48-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1614074,
+      "sha256": "d6a399f79f5df5cf756374d4b7ba87a0147b7b2787a594a902d4573dec31a611"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "左: はじめが両手を腰に得意げで「準備できました！」。スミさんがドアの札を指し「札も返せよ。」。右: はじめは背中をこちらへ向けて逆向きに立ち、顔だけ振り向いて困惑「俺が裏返った。」。スミさんは無言で額に手を当てる。ドアの札は無地、文字なし。",
+      "dialogue_original": [
+        "準備できました！",
+        "札も返せよ。",
+        "俺が裏返った。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/loading-comics/48-sumi-sign-reverse/48-sumi-sign-reverse.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "48-restored.png",
+      "region": {
+        "x": 39,
+        "y": 274,
+        "width": 715,
+        "height": 496,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "48-restored.png",
+      "region": {
+        "x": 783,
+        "y": 274,
+        "width": 714,
+        "height": 493,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-48-1.webp",
+      "width": 744,
+      "height": 496,
+      "sha256": "1c3438014977352e66c78de28bedf5dd1f88c611a4a620f1726d5cd736195289"
+    },
+    {
+      "file": "panels/restored-48-2.webp",
+      "width": 740,
+      "height": 493,
+      "sha256": "c392ea62f188e7b888c8360da7b9a01e5443bbfbbfd1b53ccddfd96a58616ecc"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  },
+  "selection_note": "2026-11-02 オーナーの選別で不採用（ゲームに登録しない）。"
+}

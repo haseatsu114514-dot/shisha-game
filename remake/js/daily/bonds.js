@@ -15,8 +15,9 @@
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { affinityLevel, AFFINITY_GATE_CHOICES, releaseAffinity } from "../core/stats.js";
-import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead } from "../core/affinity-stages.js";
+import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead, samechanHeartEventsDone } from "../core/affinity-stages.js";
 import { emit } from "../core/bus.js";
+import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { play } from "../vn/engine.js";
 import { giftOpen } from "../core/scene-motions.js";
 import { isLover, romanceRouteOpen } from "./romance.js";
@@ -46,6 +47,10 @@ export const BOND_FINALES = {
   ageha: { dialogue: "ch2_ageha_bond_finale", gift: "suyaki_ageha", laterConfession: true },
   // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は仮置きの寄り道 confession_mashiro（#1930）が担うので予約しない。
   mashiro: { dialogue: "ch3_mashiro_bond_finale", gift: "suyaki_mashiro", question: "bond_q2_mashiro", ownConfession: true },
+  // 久世（#2028）: 第3章の場面カードから（chapters/ch3.js）。恋愛対象外なので友情の着地だけ。
+  // 好感度は煙幕への外出とLIME交換でしか付かず最大でも♥2前後のため、♥5ではなく heart（仮判断・♥1）と
+  // 久世の場面を読み終えたこと（storiesDone）で開く。数値はオーナー判断待ち（#2028 の PR 本文）。
+  kuze: { dialogue: "ch3_kuze_bond_finale", gift: "suyaki_kuze", heart: 1 },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -98,7 +103,7 @@ export function recordRomanceChoice(line, choice) {
 /** まだ恋愛に進める相手か（友情寄りの答えも、断った告白もない）。締めくくりの最後の質問を出す条件 */
 export function romanceOpen(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
-  if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
+  if (id === "samechan" && (!chapterFeatureEnabled(state.chapter, "samechanRomance")
     || !state.flags._samechan_bond_question_done
     || state.romanceChoices?.bond_q1_samechan?.char !== id)) return false;
   const def = BOND_FINALES[id];
@@ -149,7 +154,7 @@ function resumeChoice(scene, key, answer) {
 export function hiyoriQuestionReady() {
   const q = hiyoriRoute().question, scene = DB.dialogues[q?.dialogue];
   if (!state || !hiyoriRoute().enabled || !state.flags._hiyori_work_talk_done
-    || !state.flags._hiyori_real_self_known || !state.met.hiyori || ![1,2].includes(state.chapter)
+    || !state.flags._hiyori_real_self_known || !state.met.hiyori || !chapterFeatureEnabled(state.chapter, "hiyoriDaily")
     || !q?.flag || state.flags[q.flag] || !scene?.lines?.length || scene.metadata?.preview_only
     || finaleSeen("hiyori") || isLover("hiyori") || state.flags._friend_hiyori) return false;
   const answer = state.romanceChoices[q.choice];
@@ -172,7 +177,7 @@ export async function playHiyoriQuestion({ bg = null, signal = null, deferSave =
 
 const questionOpen = (id) => {
   if (id === "hiyori" && !hiyoriRoute().enabled) return false;
-  if (id === "mashiro" && state.chapter !== 3) return false;
+  if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   if (AFFINITY_GATE_CHOICES[id] && affinityLevel(id) < 3) return false;
   const q = BOND_QUESTIONS[id];
   const answer = state.romanceChoices?.[q?.choice];
@@ -218,12 +223,18 @@ export async function playQuestionVisit(id, { bg = null, signal = null, deferSav
 // ---------------------------------------------------------------- 締めくくり（好感度MAXイベント）
 
 export const finaleSeen = (id) => !!state.finales?.[id];
+/** 締めくくりに要る好感度の段階（既定は♥5＝MAX。heart を持つ相手だけ別） */
+export const finaleHeart = (id) => BOND_FINALES[id]?.heart || 5;
 const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "mashiro" ? mashiroScenesRead(state.flags) && questionComplete(state, id)
   : id === "samechan"
   ? storyCount(id) >= 3 && !!state.flags._samechan_quiet_seat_done && !!state.flags._samechan_closing_check_done
     && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
       && state.romanceChoices?.bond_q1_samechan?.char === id)
+    && samechanHeartEventsDone(state) // ♥4・♥5の来店会話（#2025）
+  // 久世: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
+  : id === "kuze" ? !!state.flags._ch3_read_ch3_kuze_lime && !!state.flags._lime_contact_kuze
+    && (state.flags._ch3_outings?.enmaku_answer || 0) > 0
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)
   : CH2_VISIT_STORIES[id] ? ch2VisitStoriesDone(state.flags, id)
   : storyCount(id) >= (VISIT_SEQ[id] || []).length
@@ -233,14 +244,19 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
  * 締めくくりを始められるか: 固有会話を全部読み、好感度MAX（恋人も含む）で、まだ読んでいない。
  * みんとは私的な場面で会うので、私服の約束で本名を聞いた後
  */
+/** 第3章の東京へ発つ前の準備期間か（core/chapter-clock.js の departurePrep と同じ判定）。 */
+const beforeTokyoDeparture = () => state.chapter === 3 && !!state.flags?._ch3_prep && !state.flags._ch3_prep.departed;
+
 export function finaleDue(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
   if (id === "samechan" && (state.chapter || 1) < 2) return false;
-  if (id === "ageha" && state.chapter !== 2) return false; // MELTY PUFFに通えるのは第2章だけ
-  if (id === "mashiro" && state.chapter !== 3) return false;
+  // MELTY PUFFに通えるのは第2章と、第3章の東京へ発つ前の準備3日だけ（VOL02。東京にいる間は店が地図に無い）
+  if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
+  if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
+  if (id === "kuze" && state.chapter !== 3) return false; // 煙幕は第3章の東京にだけある
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
-  if (affinityLevel(id) < 5 || questionVisitDue(id)) return false;
+  if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
   // つむぎは第1章本筋のDAY11「絵を描き終えて応募する」を関係の節目にする。
   // DAY12以降は旧セーブで当時の読了フラグが欠ける場合だけ進行不能を避けるフォールバック。
   if (id === "tsumugi" && (state.chapter || 1) === 1 && state.day < 12 && !state.flags._tsumugi_contest_submitted) return false;
@@ -254,7 +270,7 @@ export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
-  if (["hiyori", "samechan", "mashiro"].includes(id) && !finaleDue(id)) return false;
+  if (["hiyori", "samechan", "mashiro", "kuze"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue]) return false;
   const owner = state;
@@ -381,7 +397,7 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
     let pick = f.chats?.length ? chats % f.chats.length : 0;
-    if ((pick === 2 && ["minto", "tsumugi", "rin", "kumicho", "rei", "mashiro", "samechan"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+    if ((pick === 2 && ["minto", "tsumugi", "rin", "kumicho", "rei", "mashiro", "samechan", "kuze"].includes(id) && !state.owned.includes(`suyaki_${id}`))
       || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,

@@ -11,7 +11,9 @@ const settlementAt = nightFlow.search(/\bawait\s+presentNight\s*\(/);
 const advanceAt = nightFlow.search(/\bawait\s+advanceDay\s*\(/);
 assert.ok(settlementAt >= 0 && advanceAt > settlementAt, "#1690: 夜の精算を待ってから翌日へ進む");
 // 前夜の判定は finalEve() に一本化した（#2033: 第5章は日程が決まるまで最終日が無い）。
-assert.match(nightFlow.slice(0, settlementAt), /\bconst\s+eve\s*=\s*finalEve\s*\(\s*\)\s*;/, "#1690: 夜の精算より前に、章の最終日から前夜を判定する");
+// 遠出の出発の前夜（第3・4章の準備期間の最後の夜。VOL02）は大会前夜ではないので、内省の場所を渡さない。
+assert.match(nightFlow.slice(0, settlementAt), /\bconst\s+eve\s*=\s*tournamentEve\s*\(\s*\)\s*;/, "#1690: 夜の精算より前に、章の最終日から前夜を判定する");
+assert.match(calendarSource, /\bconst\s+tournamentEve\s*=\s*\(\s*\)\s*=>\s*finalEve\s*\(\s*\)\s*&&\s*!chapterDef\?\.departure\s*;/, "VOL02: 大会・勝負の前夜だけ（出発の前夜を除く）");
 assert.match(calendarSource, /\bconst\s+finalDayAbs\s*=\s*\(\s*\)\s*=>\s*chapterDef\?\.untilDay\s*\?\?\s*TOURNAMENT_DAY\s*;/, "#1690: 章の大会日（未指定ならTOURNAMENT_DAY）を最終日にする");
 assert.match(calendarSource, /\bconst\s+finalEve\s*=\s*\(\s*\)\s*=>\s*state\.day\s*\+\s*1\s*>=\s*finalDayAbs\s*\(\s*\)\s*;/, "#1690: 寝ると最終日の朝になる夜を前夜とする");
 assert.match(nightFlow.slice(settlementAt, advanceAt), /\bawait\s+presentNight\s*\(\s*\{\s*evePlace\s*:\s*eve\s*\?[^;]*:\s*null\s*\}\s*\)/, "#1690: 大会前夜だけ内省場所evePlaceを精算へ渡す");

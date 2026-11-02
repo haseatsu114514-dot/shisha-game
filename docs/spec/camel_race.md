@@ -1,0 +1,80 @@
+# CAMEL RACE ── 第4章ドバイ編の任意ミニゲーム（2026-11-02）
+
+オーナー依頼（2026-11-02）: 第4章ドバイ編の滞在中に遊べる任意アクティビティとして、ラクダレースのミニゲームを追加する。
+14日化（#2273・#2021）が未完成でも本体を進め、今の5日構成の日付に決め打ちしない。画像は Codex 担当（本書末尾の依頼一覧）。
+
+## 1. 現実のラクダレース（描写の根拠）
+
+- ラクダの背には**小型のロボット騎手**。2000年代に子どもの騎手が禁じられ（UAE は2005年に18歳未満を禁止）、代わりに普及した。初期は重い試作機だったが、今は**数キロ**の軽い箱型で、スピーカー（無線）と小さなムチの腕を持つ。
+- **調教師はコース横の道を走る車（SUV）から**、小さなリモコンで操作する。送れるのは**声**（スピーカー越しの声かけ）と**合図**（腕を回してムチを振る）だけ。**進行方向は操縦しない**。ラクダは自分で走る。
+- 本番は4〜10kmの長距離。主人公が参加するのは**調教師が監督する、若いラクダの練習レース（1,000m・4頭）**。
+- 出典: [What's On: Meet the tiny robot jockeys riding Dubai's racing camels](https://whatson.ae/2021/08/meet-the-tiny-robot-jockeys-riding-dubais-racing-camels/)、[The National: UAE camel trainers prefer robot jockeys](https://www.thenationalnews.com/uae/uae-camel-trainers-prefer-robot-jockeys-1.96956)、[PRI: Ancient tradition, modern twist — robot jockeys](https://www.pri.org/stories/2014/12/29/ancient-tradition-camel-racing-arab-peninsula-modern-twist-robot-jockeys)、[Al Jazeera: Robots ride camels in race (2005)](https://www.aljazeera.com/news/2005/07/18/robots-ride-camels-in-race/)、[CultureMap: Robot jockeys and sprinting SUVs](https://houston.culturemap.com/03-04-15-robot-jockeys-and-sprinting-suvs-bring-camel-racing-the-sport-of-sheikhs-into-the-21st-century/)。
+
+## 2. ストーリーと登場人物
+
+| 人物 | ID | 役 |
+|---|---|---|
+| サイフ（24） | `saif` | Dr.fookah ドバイ店のスタッフ。日本語は店長の指導とアニメ。叔父が調教師。はじめを「ハジメ」と呼ぶ。好感度・恋愛の対象ではない |
+| ラシード（56） | `rashid` | サイフの叔父。調教師。口数が少なく褒めない（「悪くない」が最高評価）。練習レースのリモコンを貸す |
+| ハビーバ | ─ | 練習レースで声をかける若い雌ラクダ（画面内の名前。人物ではない） |
+
+正本は `data/characters.json`（`saif`・`rashid`）と `brand/character_profiles.md`。既存のシェイク（路地裏の旅人）の正体・公開タイミングには一切触れない。大会の予告・結果にも触れない（大会前後どちらで読んでも成立。`remake/test/ch4_camel_race.mjs` が語句を検査）。
+
+台本 `data/dialogue/ch4_camel_race.json`（9場面）:
+
+| 段階 | 場面 | 内容 |
+|---|---|---|
+| 0→1 | `ch4_camel_meet` | 店先で日本語の挨拶。名前・日本の店の話・「昼に見せたいもの」 |
+| 1→2 | `ch4_camel_invite`（翌日以降） | 利き手の話→叔父の「ラクダに気づかれる前に合図を出せ」→誘い。はじめは人が乗ると思っている→今はロボット騎手 |
+| 2 | `ch4_camel_watch`（その翌日以降の昼） | 本番観戦。並走する車・リモコン・声・ムチ。進路は操縦しない。子どもの騎手の時代に軽く触れる→練習レースの操作を借りる |
+| 初回結果 | `ch4_camel_result_win` / `_place` / `_last` | 1位／2〜3位／4位 |
+| 3 | `ch4_camel_replay` → `_replay_best` / `_replay_usual` | 再挑戦の前後 |
+
+## 3. ミニゲーム仕様（`remake/js/minigames/`）
+
+- `camel-race-model.js`: 純粋な競走モデル（seed 固定・テスト可能）。`camel-race.js`: Canvas 描写・操作・チュートリアル・リザルト。
+- 4頭（自分1＋AI3: 先行型ナジュム・追い込み型リーフ・安定型サブール）。1,000m。ラクダは自動で走る。
+- **声をかける（Space／左ボタン）**: ラクダの頭上に金の輪が出て1.25秒で縮む。内側の輪に重なった瞬間（±0.13s）が PERFECT、±0.36s が GOOD。調子（rhythm）が上がり、基本速度が最大 ×1.08。外れた声・同じ輪への2度目は「無駄な声」（調子−・スタミナ−3）。1.5秒に3回以上は連打（さらにスタミナ−5）。輪を見送ると調子が大きく落ちる。調子は放っておくと毎秒7%ずつ落ちる（GOOD だけだと中くらいで釣り合い、PERFECT で高く保てる）。
+- **合図（X／右ボタン）**: ロボット騎手の腕。スタミナ12を使い2.4秒の加速（+3.2m/s）。再使用まで3.5秒。残り250m（LAST SPURT）では +4.6m/s・スタミナ10。スタミナが15未満なら空ぶかし（+1.0・残りを使い切る）。最初の2割で使うと「早すぎ」。
+- **スタミナ**: 毎秒−0.9。調子が0.75以上で息が整い+0.7。30未満で速度が落ち始める。
+- 所要: 全部 PERFECT＋終盤の合図で約50秒・1位、GOOD だけで約54秒・3位前後、無操作で約61秒・4位、連打は最下位。AIは51〜54秒でゴールし、seed で順位が入れ替わる。
+- **採点 0〜100**: 順位（1位40／2位30／3位20／4位10）＋声かけ（35: PERFECT 1.0・GOOD 0.6 の割合。無駄な声−2・連打−1）＋スタミナ（25: スパート区間で合図8・無駄な合図が無い9・残り5〜35で終える8）。**S≥85／A≥70／B≥50／C**。
+- 開始前に3ページのチュートリアル（初回だけ。「とばしてスタート」あり）。終了後にリザルト（順位・タイム・内訳・PERFECT等の数）と「もう一度」「終える」。
+- 演出: 朝の砂漠、2層の砂丘、柵と100mごとの表示板、START／FINISH ゲートとテント、並走する白いSUV（運転席の調教師・アンテナの点滅）、各頭の砂煙、ロボット騎手（箱型・バイザー・アンテナの灯・合図で振る腕）、LAST SPURT／GOAL のバナー、ゴールの紙吹雪。`prefers-reduced-motion` では粒子とアニメーションを省く。
+- PC: Space／X（会話エンジンへキーを流さない）。スマホ: 下の2つの大きなボタン（pointerdown）。低い画面では見出し・ボタンを詰める。
+- 試遊ページ: `http://127.0.0.1:8123/remake/camel-race.html`（`?pilot=perfect&speed=6&skip=1` で自動操作・早回し）。本編の保存は読み書きしない。
+
+## 4. 本編への接続（`remake/js/chapters/ch4-camel-progress.js`・`ch4-camel-race.js`）
+
+- 保存: `flags._ch4_camel = { stage, meetDay, inviteDay, watched, plays, lastPlayDay, best }`。日付は**通算の `value.day` で相対に**比べる（章内 DAY の決め打ちなし）。
+- 地図: `ch4-map-model.js` が `camelRaceDestination(value)` を1件足す（Dr.fookah ドバイ店の次・宿の前）。ラベル・目的・押せない理由は段階で変わる。
+- **昼の行動を使う**のはレース（段階2・3）だけ。`value.slot === 0` のときだけ押せ、完走で `slot = 1`。会話の段階（0・1）は時間を使わない。1日1回（`lastPlayDay`）。
+- **育成報酬は初回完走だけ**: `paidAction` の `consumed`（経験値 = `core/growth.js` の自由行動1回分・はじめての場所・相手）と、心得の盤の「遊びのご褒美」`PLAY_REWARDS` `camel-finish`（感覚の火種1つ・寝る前の精算で一度だけ）。能力値を直接足す旧方式は使わない。再プレイは自己ベストの更新だけ。
+- SAVE/LOAD・中断: 会話の段階は読了ごとに保存。本番の見学は `watched` で一度だけ。レースを途中でやめれば何も消費しない。記録と消費はリザルトの「終える」の前に保存するので、結果の会話を読み切れなくても二重にならない。
+- 大会: `_ch4.part`・シェイクの秘匿フラグ・大会の結果には触れない。失敗しても進行に影響しない。
+- 14日化（#2297・2026-11-02 接続済み）: 新しいセーブ（`_ch4.routeVersion === 2`）は `ch4-dubai-daily.js` の日常ループの地図に `ch4_dubai_camel` を1件出す（`camelDailySpot()`。誘われるまでは「Dr.fookah の店先」、誘われたら「ラクダレース場」）。押せない理由は `unavailable`／`unavailableTag`（また明日・レースは明日の朝・レースは昼だけ・今日はもう走った）。昼の枠は `visitCamelRace()` が記録と一緒に進めて保存し、日常ループには `slotsUsed: 0` を返す（二重に進めない）。体力・能力は使わない。旧セーブ（版1の5日）は従来どおり `ch4-map-model.js` の行き先。
+
+## 5. 検証
+
+- `node remake/test/camel_race_model.mjs`（再現性・所要時間・採点・連打・順位の入れ替わり）
+- `node remake/test/ch4_camel_race.mjs`（段階と日付・昼の行動・自己ベスト・一度限りの火種・台本の存在と時系列語の禁止）
+- `node remake/test/browser/ch4_camel_race.mjs`（実UI: 知り合う→誘い→見学→途中でやめる→自動操作で完走→結果の会話→保存/ロード→再挑戦→前夜へ。加えてドバイ14日の日常ループの地図から、店先の会話が時間を使わないこと・レースが昼の枠を一度だけ使うこと。プレビューサーバーが必要）
+- CI: `tools/ci/suites.json` の quick に2本、browser `ch4-camel-race`。
+
+## 6. Codex への画像素材依頼（Claude は画像を生成しない）
+
+依頼文の一式は [asset_sources/ch4-camel-race/README.md](../../asset_sources/ch4-camel-race/README.md)。背景の英文プロンプトは `tools/bg_prompts.txt` の CR01。届くまでは Canvas 描写で動く。
+
+| ID | 素材 | 用途 | サイズ・透過 |
+|---|---|---|---|
+| CR-BG01 | `bg_dubai_camel_track_morning.png` | 見学・結果の会話の背景（今は `bg_dubai_map` を流用） | 1280×720・不透過 |
+| CR-SP01 | サイフ立ち絵 通常／笑顔／驚き／熱弁／ウインク | 会話 | 896×1200 に収まる人物1300px以上・マゼンタ背景→透過 |
+| CR-SP02 | ラシード立ち絵 通常／笑顔 | 会話 | 同上 |
+| CR-GM01 | ラクダ（側面・4コマの走り）＋ロボット騎手（別レイヤー） | レース画面の自分・AI（色替え） | 各 512×384・透過 PNG |
+| CR-GM02 | 白いSUV（側面・調教師が窓から腕を出す） | 並走する車 | 720×360・透過 |
+| CR-GM03 | 砂煙3種・ゴールゲートと日よけテント | 演出・コース端 | 透過、任意 |
+
+## 7. 未完・次の一手
+
+- Codex の素材が届いたら `camel-race.js` の描写を差し替え、`CAMEL_TRACK_BG` を実背景にする。
+- サンドボードは別チャットで並行制作中。共通の第4章ファイルへの変更は `ch4-map-model.js` 4行・`ch4.js` 17行に留めた。

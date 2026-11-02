@@ -1,0 +1,405 @@
+[
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/apple-thief/portraits-apple-thief-a.png",
+    "relative_path": "apple-thief/portraits-apple-thief-a.png",
+    "bytes": 2284112,
+    "sha256": "926580b18bc9aaf80340936baa47aacba59b4e5ccb25b5f128c806c21d106be5",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "apple-thief/portraits-apple-thief-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/apple-thief/portraits-apple-thief-b.png",
+    "relative_path": "apple-thief/portraits-apple-thief-b.png",
+    "bytes": 1471214,
+    "sha256": "809dab3e307d1002bd949df815abcfa0ba0d42b16ddcc929c967cc931739c0ab",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "apple-thief/portraits-apple-thief-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/apple-thief/portraits-apple-thief-c.png",
+    "relative_path": "apple-thief/portraits-apple-thief-c.png",
+    "bytes": 1753313,
+    "sha256": "13ab6e69999e0ed755a8400b6c3dfec04f51c3a172644343f3974b61bf66f6a6",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "apple-thief/portraits-apple-thief-c.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/doll-requiem/portraits-doll-requiem-a.png",
+    "relative_path": "doll-requiem/portraits-doll-requiem-a.png",
+    "bytes": 1924501,
+    "sha256": "081c8af0f89364d305e99591576dbd37be26b3a8d4e23006252877c7c3831e30",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "doll-requiem/portraits-doll-requiem-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/doll-requiem/portraits-doll-requiem-b.png",
+    "relative_path": "doll-requiem/portraits-doll-requiem-b.png",
+    "bytes": 1060734,
+    "sha256": "c94f20cb4cf9537c75239553d89367bf6992a6eaac85f353a403bb2dc45e6e3e",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "doll-requiem/portraits-doll-requiem-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/doll-requiem/portraits-doll-requiem-c.png",
+    "relative_path": "doll-requiem/portraits-doll-requiem-c.png",
+    "bytes": 1494165,
+    "sha256": "b41388be4ae1aa1cc0a1b8f57e4849636d82d2e4fc757b47bbe489056af2c5e4",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "doll-requiem/portraits-doll-requiem-c.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/fading-familiar/portraits-fading-familiar-a.png",
+    "relative_path": "fading-familiar/portraits-fading-familiar-a.png",
+    "bytes": 1983198,
+    "sha256": "b65a9adbb230afc86e1d3279f471cd5ca41633fcd1f94ba72421299f009b1e9e",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "fading-familiar/portraits-fading-familiar-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/fox-market/portraits-fox-market-a.png",
+    "relative_path": "fox-market/portraits-fox-market-a.png",
+    "bytes": 2089451,
+    "sha256": "ddc67d1501be1f774e47614688b8d0e92b2065af0549899d59c21b8e86115ec3",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "fox-market/portraits-fox-market-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/fox-market/portraits-fox-market-b.png",
+    "relative_path": "fox-market/portraits-fox-market-b.png",
+    "bytes": 1472741,
+    "sha256": "6bb994be6d4db43472181cbcade2114ac781dcbfeae3340a9c18cc64061fdf4b",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "fox-market/portraits-fox-market-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/fox-market/portraits-fox-market-c.png",
+    "relative_path": "fox-market/portraits-fox-market-c.png",
+    "bytes": 1441853,
+    "sha256": "b18d202e9cef1dfd2d2109280e074a2a5770f6e6d27394bdb30c3dbf315be97e",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "fox-market/portraits-fox-market-c.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/leaf-mail/portraits-leaf-mail-a.png",
+    "relative_path": "leaf-mail/portraits-leaf-mail-a.png",
+    "bytes": 2654318,
+    "sha256": "61d646e31dad9c8b81339241afb3a43c8bf137bf9f17c932f6cdc7dcdcff257a",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "leaf-mail/portraits-leaf-mail-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/leaf-mail/portraits-leaf-mail-b.png",
+    "relative_path": "leaf-mail/portraits-leaf-mail-b.png",
+    "bytes": 2220199,
+    "sha256": "af826d76b3a09eaf60f9b4a8be9ed3583b33dae82f53e0b0506f27612f6c6bce",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "leaf-mail/portraits-leaf-mail-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/leaf-mail/portraits-leaf-mail-c.png",
+    "relative_path": "leaf-mail/portraits-leaf-mail-c.png",
+    "bytes": 1697341,
+    "sha256": "ef2541f5d608af002c93ae06089a1e23582bf41f7a3c1422f1acd8a27271cebd",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "leaf-mail/portraits-leaf-mail-c.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/mist-kingdom/portraits-mist-kingdom-a.png",
+    "relative_path": "mist-kingdom/portraits-mist-kingdom-a.png",
+    "bytes": 1639101,
+    "sha256": "3d0c0d758c03f0e3fe297a10fcb96d79f05b7bc2f7ebe7d2566a1a7ab568dde4",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "mist-kingdom/portraits-mist-kingdom-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/mist-kingdom/portraits-mist-kingdom-b.png",
+    "relative_path": "mist-kingdom/portraits-mist-kingdom-b.png",
+    "bytes": 1671862,
+    "sha256": "9c0bb1008a70ee8663407e69e452d13f9ab874ecb8c32c866d6aad5e61d88fd8",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "mist-kingdom/portraits-mist-kingdom-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/mist-kingdom/portraits-mist-kingdom-c.png",
+    "relative_path": "mist-kingdom/portraits-mist-kingdom-c.png",
+    "bytes": 1335487,
+    "sha256": "38c047fca03a581238c02554593bd0e9ee64df9a34c559f5cf44854f5d62eb43",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "mist-kingdom/portraits-mist-kingdom-c.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/moonflower-encore/portraits-moonflower-encore-a.png",
+    "relative_path": "moonflower-encore/portraits-moonflower-encore-a.png",
+    "bytes": 2082106,
+    "sha256": "8699b6a4d414b2f3a3642e46d10410cfe18c211b3e49a1cd6dd22eddb279953a",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "moonflower-encore/portraits-moonflower-encore-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/moonflower-encore/portraits-moonflower-encore-b.png",
+    "relative_path": "moonflower-encore/portraits-moonflower-encore-b.png",
+    "bytes": 1113031,
+    "sha256": "da9876c0f9300a48a3d8161b76b8f6a6b755ff977a3560a31f08a450e91af7b1",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "moonflower-encore/portraits-moonflower-encore-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/moonflower-encore/portraits-moonflower-encore-c.png",
+    "relative_path": "moonflower-encore/portraits-moonflower-encore-c.png",
+    "bytes": 1040940,
+    "sha256": "191c7205ef57371824120511ff55dcf5592352d87550a423d7449135cac2bfc2",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "moonflower-encore/portraits-moonflower-encore-c.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/purikura-hero/portraits-purikura-hero-a.png",
+    "relative_path": "purikura-hero/portraits-purikura-hero-a.png",
+    "bytes": 2216175,
+    "sha256": "9acf769152041c29e42e7fe99f9811e493fd04658b1267c6140cc1ea1745b5e8",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "purikura-hero/portraits-purikura-hero-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/purikura-hero/portraits-purikura-hero-b.png",
+    "relative_path": "purikura-hero/portraits-purikura-hero-b.png",
+    "bytes": 1403344,
+    "sha256": "eb49fe6843a24beaa0fae8e9f8a653378363f54a606d7af7471d50f983cf24cc",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "purikura-hero/portraits-purikura-hero-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/purikura-hero/portraits-purikura-hero-c.png",
+    "relative_path": "purikura-hero/portraits-purikura-hero-c.png",
+    "bytes": 1330882,
+    "sha256": "1992100e2c7d4b52cebd0cf86921bd1f3b6ee01aec28f7b4354187b4133a971e",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "purikura-hero/portraits-purikura-hero-c.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/shark-island/portraits-shark-island-a.png",
+    "relative_path": "shark-island/portraits-shark-island-a.png",
+    "bytes": 2306131,
+    "sha256": "e9128653a444579b744d00878874bae2d7d6b2ef813596ee28463ab6b54fa10e",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "shark-island/portraits-shark-island-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/shark-island/portraits-shark-island-b.png",
+    "relative_path": "shark-island/portraits-shark-island-b.png",
+    "bytes": 1537858,
+    "sha256": "033cf4e40f8144232348c45cdd13213210696d6a25de22a550b6f07514f9fc54",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "shark-island/portraits-shark-island-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/shark-island/portraits-shark-island-c.png",
+    "relative_path": "shark-island/portraits-shark-island-c.png",
+    "bytes": 1311120,
+    "sha256": "8addbe7b74e018c017b316923c1ee7bebaeb207d3c96d730ce8d9c035d261991",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "shark-island/portraits-shark-island-c.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/smoke-robot/portraits-smoke-robot-a.png",
+    "relative_path": "smoke-robot/portraits-smoke-robot-a.png",
+    "bytes": 2109206,
+    "sha256": "502bb7d7fe6348d895408a2f77373d535ae766272494d4b9409d960dfe57f3d6",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "smoke-robot/portraits-smoke-robot-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/smoke-robot/portraits-smoke-robot-b.png",
+    "relative_path": "smoke-robot/portraits-smoke-robot-b.png",
+    "bytes": 984114,
+    "sha256": "fcc2e7de4b6d6ebb70f63305f8107336c4d8a037f0fb049ac258310c21ba3180",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "smoke-robot/portraits-smoke-robot-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/smoke-robot/portraits-smoke-robot-c.png",
+    "relative_path": "smoke-robot/portraits-smoke-robot-c.png",
+    "bytes": 1763305,
+    "sha256": "1ad43177a470e36b797f8c8cc1ae1ab9ea615ab31807e82740e7bc37bc6c8220",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "smoke-robot/portraits-smoke-robot-c.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/stage-ghost/portraits-stage-ghost-a.png",
+    "relative_path": "stage-ghost/portraits-stage-ghost-a.png",
+    "bytes": 2086470,
+    "sha256": "549e88b02dc5138968d297b958588efc41c8244c8a2ae13164ceb08471ae2b69",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "stage-ghost/portraits-stage-ghost-a.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/stage-ghost/portraits-stage-ghost-b.png",
+    "relative_path": "stage-ghost/portraits-stage-ghost-b.png",
+    "bytes": 1320592,
+    "sha256": "efd09802a2b5c33b71506e4f4715b7a81ff8c00c38322b45a5b1187f89cc7d9a",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "stage-ghost/portraits-stage-ghost-b.png"
+  },
+  {
+    "group": "trpg-portraits",
+    "source_path": "/workspace/shared/trpg-scenario-portraits-20261102/stage-ghost/portraits-stage-ghost-c.png",
+    "relative_path": "stage-ghost/portraits-stage-ghost-c.png",
+    "bytes": 1725916,
+    "sha256": "7b09840344277ce8eadeb84a480a9f48c1a62f2318517c3ea59cb73634d7ee1c",
+    "dimensions": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "archive_path": "stage-ghost/portraits-stage-ghost-c.png"
+  }
+]

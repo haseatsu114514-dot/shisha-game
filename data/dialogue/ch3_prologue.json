@@ -3,11 +3,8 @@
   "dialogues": [
     {
       "dialogue_id": "ch3_childhood_opening",
+      "comment": "章頭の公園の回想。列車の中の4行は ch3_departure.json の ch3_train_departure へ移した（出発前の準備3日の後、出発の朝に読む。旧行程の保存は回想の前に読む。VOL02）",
       "lines": [
-        { "speaker": "", "text": "東京へ向かう列車の中。大会の案内を確かめた。" },
-        { "speaker": "hajime", "face": "normal", "text": "（味は、まだよく分からない。このまま全国大会に出るのか）" },
-        { "speaker": "hajime", "face": "normal", "text": "（スミさんが紹介してくれた、mukaiのムカイさんを頼ろう）" },
-        { "speaker": "hajime", "face": "normal", "text": "（着いたら、まず大会の参加受付だ。それからmukaiへ行く）" },
         { "speaker": "", "text": "はじめの知らない、ずっと前の話。東京の小さな公園。" },
         { "speaker": "", "text": "少年は、描いたばかりのレモンケーキを膝にのせて、お茶を一口飲んだ。" },
         { "speaker": "", "text": "少年「このお茶、絵のケーキの味がする」" },

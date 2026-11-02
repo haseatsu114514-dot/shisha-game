@@ -9,6 +9,7 @@ const core = await import("../js/core/state.js");
 const growth = await import("../js/core/growth.js");
 const { chapterThreeMapModel, TOKYO_MAP_PLACES } = await import("../js/chapters/ch3-map-model.js");
 const { hasStoreLogo } = await import("../js/core/store-logos.js");
+const { CH3_TOKYO_SPOTS } = await import("../js/chapters/ch3-tokyo-daily.js");
 let groups = 0; const check = (name, fn) => { fn(); groups++; console.log("PASS " + name); };
 const msg = (set, rank, total, floor = 80) => ({ type: "dj-result", set, rank, total, floor });
 
@@ -77,6 +78,18 @@ check("the club appears on the Tokyo map only in chapter 3 night free time, unna
   assert.equal(known2.pins.find(item => item.id === "club").label, "クラブSEAM"); assert.ok(!known2.pins.some(item => item.id === "club_unknown"));
   assert.deepEqual([TOKYO_MAP_PLACES.club.x, TOKYO_MAP_PLACES.club.y], [TOKYO_MAP_PLACES.club_unknown.x, TOKYO_MAP_PLACES.club_unknown.y], "same spot before and after");
   assert.ok(hasStoreLogo("ch3_club") && !hasStoreLogo("ch3_club_unknown"), "the logo only after the first visit");
+});
+check("the Tokyo daily map (VOL03) also hides the club's name until Yoru is met, and previews the entrance", () => {
+  const spot = CH3_TOKYO_SPOTS.find(item => item.place === "club");
+  assert.ok(spot, "the club is a destination of the Tokyo daily loop");
+  // daily/map.js: a spot with charId shows unknownLabel / unknownDesc until state.met[charId] (set when she names herself).
+  assert.equal(spot.charId, "yoru"); assert.equal(spot.unknownLabel, "地下の店");
+  assert.doesNotMatch(`${spot.unknownLabel}${spot.unknownDesc}`, /SEAM|クラブ|ヨル|DJ/, "the name is learned at the door");
+  assert.match(spot.label, /クラブSEAM/);
+  assert.equal(spot.preview, "bg_club_seam_entrance", "the detail panel shows the alley stairs, which carry no name");
+  const fs = globalThis.process.getBuiltinModule("node:fs");
+  const manifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
+  assert.ok(manifest.backgrounds.includes(`${spot.preview}.png`), "the preview background exists");
 });
 check("the club owner is a venue host with an intro cut-in; the club script names her before her cut-in and has a line per rank", () => {
   const fs = globalThis.process.getBuiltinModule("node:fs");

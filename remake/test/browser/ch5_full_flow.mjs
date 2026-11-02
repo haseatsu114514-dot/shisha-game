@@ -305,6 +305,59 @@ await suite("ch5-full-flow", async check => {
     assert.equal(stationFares(page), 200, "One fare out, paid by the station UI");
   });
 
+  // #2033 D: 新幹線で東京へ。最初の到着でムカイさんに屋根裏を借り、好きなだけ泊まれて、好きな時に帰れる。
+  await check("chapter-five-tokyo-attic-stay-and-train-home", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 60000, stamina: 100,
+        weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false };
+      Object.assign(value.met, { steve: true, volk: true, mukai_master: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 51, slot: 0 });
+    // 昼: 東京へ（片道11,000円・1行動）→ 初めての到着でムカイさんに屋根裏を借りる。
+    await go(page, "ch5_to_tokyo");
+    const tokyoMap = (day, slot) => page.waitForFunction(([day, slot]) => {
+      const s = window.__remake?.state;
+      return s && s.day === day && s.slot === slot && document.querySelector('.map:not(.done)[data-region="tokyo"] [data-test=pin-ch5_tokyo_mukai]')
+        && !document.querySelector("#modal.show");
+    }, [day, slot], { timeout: 60000 });
+    await tokyoMap(51, 1);
+    let state = await get(page);
+    assert.equal(state.flags._ch2_region, "tokyo");
+    assert.equal(state.flags._ch5_tokyo_attic, true, "Mukai lends the attic on the first arrival");
+    assert.equal(state.money, 60000 - 11000);
+    for (const pin of ["ch5_tokyo_steve", "ch5_tokyo_volk", "ch5_tokyo_park", "ch5_tokyo_attic", "ch5_tokyo_home", "ch5_tokyo_shop"])
+      assert.equal(await page.locator(dt(`pin-${pin}`)).count(), 1, `${pin} is on the Chapter 5 Tokyo map`);
+    assert.equal(await page.locator(dt("pin-ch5_call")).count(), 0, "The doctor is called from home");
+    assert.match(await page.locator(".hud").innerText(), /TOKYO|東京/);
+    // 夜: スティーブの店 → 屋根裏で寝て、翌朝も東京。
+    await go(page, "ch5_tokyo_steve");
+    await tokyoMap(52, 0);
+    state = await get(page);
+    assert.equal(state.flags._ch2_region, "tokyo", "The night is spent in the attic");
+    assert.equal(state.money, 60000 - 11000 - 3000);
+    assert.equal(state.flags._ch5_tokyo_talks?.ch5_tokyo_steve, 1);
+    // 昼: 帰りの新幹線（取り置いた片道分）→ 夜は地元。
+    await go(page, "ch5_tokyo_home");
+    await mapReady(page, { day: 52, slot: 1 });
+    state = await get(page);
+    assert.equal(state.flags._ch2_region, "home");
+    assert.equal(state.money, 60000 - 11000 * 2 - 3000);
+    assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
+  });
+
   await check("chapter-five-weak-second-cup-loses-on-votes-and-continues", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {

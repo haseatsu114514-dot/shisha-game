@@ -5,7 +5,7 @@
 const ROOT = "img/ui/character_intros/graphic/";
 const PORTRAITS = new Set([
   "adam", "ageha", "dr_kemuri", "hajime", "hiyori", "kumicho", "kuze", "maezono", "maki", "mashiro", "minto", "nagumo",
-  "naru", "oneesan", "pakki", "rei", "rin", "sai", "samechan", "steve", "sumi", "tsumugi", "uranaishi", "volk",
+  "naru", "oneesan", "pakki", "rei", "rin", "sai", "samechan", "steve", "sumi", "tsumugi", "uranaishi", "volk", "yoru",
   "master_hookah", "sheikh", "shisha_9000", "da_silva", "emil", "mukai_master",
 ]);
 // 背景も新しい絵柄に合わせて描き直した（2026-10-31 全24人）。無い人物は旧背景を使う
@@ -13,8 +13,45 @@ const BACKGROUNDS = new Set([...PORTRAITS]);
 // 正方形の原画を左半分に置く。原画の上端を画面の上端にそろえ、上に隙間を作らない
 export const GRAPHIC_FRAME = { width: 720, left: -88, top: 0 };
 
-// 人物ごとの置き方の上書き（ポーズ違いの絵で位置を変えたいときだけ足す）。例: maki: { width: 760, left: -120, top: 0 }
-const FRAME_OVERRIDES = {};
+// 人物ごとの置き方。原画ごとに寄り・引きが違うので、頭の大きさがそろうよう tools/intro_graphic_frames.py が計算する。
+// 測った頭の位置は asset_sources/character-intros/graphic-20261031/heads.json。fade=下を薄くする%、right=これより右を薄く消す%。
+// FRAMES:BEGIN tools/intro_graphic_frames.py が heads.json から書き出す（手で直さない）
+const FRAME_OVERRIDES = {
+  adam: {width: 896, left: -161, top: -6, right: 89.4},
+  ageha: {width: 691, left: -94, top: -11, fade: 14},
+  da_silva: {width: 896, left: -306, top: 0},
+  dr_kemuri: {width: 699, left: -38, top: 0, fade: 14, right: 96.9},
+  emil: {width: 831, left: -161, top: 4, right: 96.3},
+  hajime: {width: 716, left: -135, top: -36, fade: 14},
+  hiyori: {width: 686, left: 0, top: -6, fade: 14, right: 93.3},
+  kumicho: {width: 708, left: -86, top: 0, fade: 14},
+  kuze: {width: 699, left: -93, top: -4, fade: 14},
+  maezono: {width: 765, left: -102, top: -10, right: 97.1},
+  maki: {width: 940, left: -217, top: -7, right: 91.1},
+  mashiro: {width: 831, left: -135, top: 0, right: 93.2},
+  master_hookah: {width: 1195, left: -292, top: -54, right: 78.0},
+  minto: {width: 755, left: -109, top: -2, right: 99.3},
+  mukai_master: {width: 910, left: -201, top: -28, right: 92.4},
+  nagumo: {width: 972, left: -157, top: -12, right: 82.0},
+  naru: {width: 831, left: -109, top: 0, right: 90.1},
+  oneesan: {width: 843, left: -127, top: 4, right: 91.0},
+  rei: {width: 1024, left: -228, top: 6, right: 84.8},
+  rin: {width: 808, left: -136, top: -4, right: 96.1},
+  sai: {width: 819, left: -142, top: 4, right: 95.4},
+  samechan: {width: 765, left: -126, top: -51, fade: 14},
+  sheikh: {width: 1103, left: -249, top: -27, right: 80.6},
+  shisha_9000: {width: 869, left: -180, top: -43, right: 94.4},
+  steve: {width: 989, left: -273, top: -13, right: 92.3},
+  sumi: {width: 808, left: -111, top: -16, right: 92.9},
+  tsumugi: {width: 765, left: -114, top: 0, right: 98.7},
+  uranaishi: {width: 1195, left: -292, top: -77, right: 78.0},
+  volk: {width: 956, left: -240, top: -12, right: 92.0},
+  yoru: {width: 796, left: -105, top: 8, right: 93.6},
+};
+// FRAMES:END
+
+/** 頭の大きさをそろえた配置があるか（テスト用） */
+export const hasScaledFrame = (id) => Object.hasOwn(FRAME_OVERRIDES, id);
 
 /** 新しい絵柄で出す素材。旧絵柄の設定か、素材の無い人物は null */
 export function graphicIntro(id, style) {

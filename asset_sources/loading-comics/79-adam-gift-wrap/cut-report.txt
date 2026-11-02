@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EDE2CD  枠の段 1: 2コマ@y=272
+  コマ1: 717x544 @(36,272) 比率 1.318 → warn
+  コマ2: 720x544 @(780,272) 比率 1.324 → warn
+コマ1: 717x544 (1.318) → 左右に各6.1%の紙帯 → 出力 816x544  asset_sources/loading-comics/79-adam-gift-wrap/panels/adam-gift-wrap-1.webp (60 KiB)
+コマ2: 720x544 (1.324) → 左右に各5.9%の紙帯 → 出力 816x544  asset_sources/loading-comics/79-adam-gift-wrap/panels/adam-gift-wrap-2.webp (65 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "adam-gift-wrap",
+  "title": "包みの中身",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/79-adam-gift-wrap/panels/adam-gift-wrap-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/79-adam-gift-wrap/panels/adam-gift-wrap-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/79-adam-gift-wrap/79-adam-gift-wrap.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 717,
+        "height": 544,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/79-adam-gift-wrap/79-adam-gift-wrap.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 720,
+        "height": 544,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "adam-gift-wrap-1.webp",
+      "width": 816,
+      "height": 544,
+      "sha256": "f609406c8a8cca6b3bfb96d9c9b918b275fb16c40023be574e932e6bb0a645dc"
+    },
+    {
+      "file": "adam-gift-wrap-2.webp",
+      "width": 816,
+      "height": 544,
+      "sha256": "1c31665c20f6ec884d0ba79d759540cd2d146aa789cc43bd87b853b265a0ad73"
+    }
+  ]
+}

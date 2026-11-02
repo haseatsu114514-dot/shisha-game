@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import test from 'node:test';
+import { chapterFeatureEnabled } from '../js/core/chapter-features.js';
 
 const source = await fs.readFile(new URL('../js/daily/phone.js', import.meta.url), 'utf8');
 const mediaCatalog = JSON.parse(await fs.readFile(new URL('../data/lime_media.json', import.meta.url), 'utf8'));
@@ -33,6 +34,7 @@ async function fixture({ lover = false, reply = response, invitation = false, co
     'lime-icons.js': { customLimeIconUrl: () => null },
     'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'casual-lime.js': { casualMessages: () => [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
+    'chapter-features.js': { chapterFeatureEnabled },
     'travel-budget.js': { spendableMoney: () => 30000 },
     'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private }); if (pts > 0) opts?.onGain?.(.2125); },
       affinityLevel: () => 1, applyStats: noop, bond },

@@ -1,8 +1,8 @@
 {
   "episode": 57,
   "title": "甘さのものさし",
-  "status": "candidate-awaiting-owner-selection",
-  "registered": false,
+  "status": "adopted-registered-20261102",
+  "registered": true,
   "canon_status": "不条理ギャグの誇張。本編の能力・人物・店の衛生や営業設定への追加ではない。",
   "reading_order": "左①導入→右②オチ",
   "image_manifest": [
@@ -92,5 +92,6 @@
       "visual": "スマホ横12話とPC51話/55話を目視確認。台詞・顔の欠けなし。"
     }
   },
-  "theme": "シーシャあるある"
+  "theme": "シーシャあるある",
+  "selection_note": "2026-11-02 オーナー採用。remake/js/core/loading-comics.js の id 'sweet-unit'（出てくるキャラと会った後に出る）。画風の統一は後日の作り直しで行う。"
 }

@@ -43,10 +43,16 @@ const EXTRA_MET_SIGNALS = {
   sumi: (s) => !!s.contacts?.includes?.("sumi"),
 };
 
+/** 純粋関数。そのセーブで id のキャラと出会っているか（state.met と、上の等価な既存記録）。
+ *  タイトルアートの解放とロード画面の漫画の解放（core/loading-comics.js の cast）で共通に使う。 */
+export function hasMetCharacter(save, id) {
+  return !!save && (!!save.met?.[id] || !!EXTRA_MET_SIGNALS[id]?.(save));
+}
+
 /** 純粋関数。save が無ければ characterIds の全員、あればそのセーブで出会ったキャラだけ（0人なら空配列） */
 export function titleArtCharacters(save, characterIds) {
   if (!save) return [...characterIds];
-  return characterIds.filter((id) => !!save.met?.[id] || !!EXTRA_MET_SIGNALS[id]?.(save));
+  return characterIds.filter((id) => hasMetCharacter(save, id));
 }
 
 /** 純粋関数。解放済みのうち、専用キービジュアルが割り当てられているキャラだけ（実際に表示できる面々） */

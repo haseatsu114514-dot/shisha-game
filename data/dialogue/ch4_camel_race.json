@@ -1,0 +1,548 @@
+{
+  "comment": "第4章ドバイ編・任意イベント「ラクダレース」（CAMEL RACE）。Dr.fookah ドバイ店のサイフと知り合い、叔父ラシードの練習レースでリモコンを借りる。接続は remake/js/chapters/ch4-camel-race.js。大会前後の時系列を前提にしない（大会の予告・結果に触れない）。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_camel_meet",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookah ドバイ店の前。扉が開いて、冷気と一緒に声が飛んできた。"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "いらっしゃいませー！　……お、日本の人？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、日本語？"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "店長が日本人だから、挨拶だけ百回練習した。あとはアニメ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "発音、俺より良いかもしれない"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "サイフ。ここで葉を量ってる。あなたは？"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_saif"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "蒸野はじめです。日本で、シーシャの店で働いてて"
+        },
+        {
+          "speaker": "saif",
+          "face": "excited",
+          "text": "大会の人だ！　店長が言ってた。日本の若いのが来るって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の奥から、ダブルアップルの甘い匂いが流れてくる。"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "日本の店って、どんな感じ？　ここみたいに静か？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "静かな日もあるし、閉店まで笑い声が止まらない日もあります"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "いいな。こっちは夜になると、みんな外のテラスに出る。星を見ながら吸う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "星……。それ、日本じゃあんまりできないな"
+        },
+        {
+          "speaker": "saif",
+          "face": "wink",
+          "text": "じゃ、今度の夜はテラスね。……いや、その前に、昼に見せたいものがある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "昼に？"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "まだ秘密。また店に来て。今日は葉、何にする？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "名前を聞いただけで、少しこの街が近くなった気がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_invite",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookah ドバイ店。サイフが、葉の缶を抱えたまま手を振った。"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "ハジメ！　来た来た。今日は買い物？　話？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "両方で"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "日本のこと、もっと聞かせて。店長は仕事の話しかしない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ……うちの店は、客の利き手を見てホースの向きを変えます"
+        },
+        {
+          "speaker": "saif",
+          "face": "surprise",
+          "text": "利き手？　そこまで見るの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "師匠が言うんです。最初の一口までに、気づかれずに済ませろって"
+        },
+        {
+          "speaker": "saif",
+          "face": "excited",
+          "text": "かっこいい。叔父さんも似たこと言う。「ラクダに気づかれる前に合図を出せ」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ラクダ？"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "叔父さん、ラクダレースの調教師なんだ"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "明日の朝、レースがある。見に行かない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "行きます。……でも、ラクダに人が乗って走るんですよね。落ちないのかな"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "……あー。ハジメ、それ、二十年前の話"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "今乗ってるのは、こんな小さいロボット。背中にちょこんと乗ってる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サイフが両手で、葉の缶くらいの大きさを作った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ロボットが手綱を握るんですか？"
+        },
+        {
+          "speaker": "saif",
+          "face": "wink",
+          "text": "握らない。ラクダは自分で走る"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "詳しくは明日、現地で。朝は早いよ、六時集合"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "六時……。日本の店なら、閉店したばかりの時間だ"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "じゃ、寝ないで来る？　冗談。宿の前に迎えに行く"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_watch",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝六時。街を出た車は、三十分で砂の色しか見えない場所に着いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柵の向こうに、長いコースが一本。奥に白い日よけのテントが並んでいる。"
+        },
+        {
+          "speaker": "saif",
+          "face": "excited",
+          "text": "来た来た。ハジメ、こっち。叔父さんの車に乗ろう"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "サイフの友人か。ラシードだ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_rashid"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "乗りなさい。走り出すぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "走り出す……？　車が？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "号砲。ラクダたちが一斉に動き、同時に、コース横の道を白い車の列が走り出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "車が、ラクダと並んで走ってる！"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "調教師はみんな車から見てる。手に持ってるのが、これ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サイフが見せたのは、車のキーみたいな小さなリモコン。ラシードは窓から腕を出し、短く叫んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、叫んだのって……"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "声だ。騎手の背中にスピーカーがある。あいつは私の声を知っている"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "ボタンを押すと、ロボットの腕が回ってムチを振る。それだけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "右に行けとか、左とかは？"
+        },
+        {
+          "speaker": "rashid",
+          "face": "smile",
+          "text": "無い。ラクダは自分で走る。私たちができるのは、声と、合図だけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ラジコンじゃないんだ。……シーシャと一緒だ。相手が主役で、こっちは手を貸すだけ）"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "昔は子どもが乗ってた。軽いから"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "でも危ないし、よくないことも多かった。それでロボットになった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……重いと遅くなるから、小さいんですね"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "そう。今のは数キロ。叔父さん、ハジメは理解が早い"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "早いなら、やってみるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "本番の後に、若いラクダの練習レースをやる。四頭。リモコンを一つ、お前に貸す"
+        },
+        {
+          "speaker": "saif",
+          "face": "excited",
+          "text": "ハビーバだ！　ハジメ、あの子は声をかけるタイミングが好きなんだ。遅れると機嫌が悪くなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（タイミング……。炭を置くときと同じか）"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "連打はするな。声が多いと、ラクダは疲れる。終盤に息を残せ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "やってみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_result_win",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバが、鼻の差で先頭でゴールを抜けた。"
+        },
+        {
+          "speaker": "saif",
+          "face": "excited",
+          "text": "勝った！　ハジメ、初めてで勝った！"
+        },
+        {
+          "speaker": "rashid",
+          "face": "smile",
+          "text": "……ふむ。終盤に息を残していたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "言われた通りにしただけです。あとは、ハビーバが走ってくれた"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "それが分かるなら、調教師の素質がある。日本に帰らず、ここで働け"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "叔父さん、本気で言ってる顔だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "嬉しいですけど、俺、炭の方が得意なので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "車の窓から見た朝の砂が、やけに明るかった。"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "ハジメ。また走りたくなったら、店に来て。叔父さんは朝ならいつもここにいる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_result_place",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバは、二頭の間でゴールを抜けた。"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "惜しい！　でも初めてで中団はすごいよ"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "声の間が、ところどころ遅れた。あいつはそれを許さない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……わかりました。輪が重なる前に、もう息を吸ってないとだめなんですね"
+        },
+        {
+          "speaker": "rashid",
+          "face": "smile",
+          "text": "分かるのが早い。もう一度来い。あいつも覚えている"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "ハジメ。また走りたくなったら、店に来て。叔父さんは朝ならいつもここにいる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_result_last",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバは、最後にゴールを抜けた。それでも首を高く上げていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……すみません。声をかけすぎました"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "誰でも最初はそうだ。声が多いと、あいつは聞き分けられなくなる"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "ハビーバ、怒ってないよ。ほら、ハジメの方を見てる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大きな目が、こちらをじっと見ていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（黙って待つのも、合図のうちか。……スミさんも、そんな顔で待ってたな）"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "もう一度来い。次は息を残せ"
+        },
+        {
+          "speaker": "saif",
+          "face": "normal",
+          "text": "ハジメ。また走りたくなったら、店に来て。叔父さんは朝ならいつもここにいる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝のレース場。ラシードの白い車が、同じ場所に停まっていた。"
+        },
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "来たか。ハビーバが待っている"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "リモコン、持ったね。今日は連打しないでよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "しません、……たぶん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay_best",
+      "lines": [
+        {
+          "speaker": "saif",
+          "face": "excited",
+          "text": "自己ベスト！　ハビーバ、ハジメのこと好きになってきたんじゃない？"
+        },
+        {
+          "speaker": "rashid",
+          "face": "smile",
+          "text": "ラクダは声を覚える、……お前の声を、だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（帰る前に、もう一回くらい……）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay_usual",
+      "lines": [
+        {
+          "speaker": "rashid",
+          "face": "normal",
+          "text": "悪くない。だが、あいつはもっと走れる"
+        },
+        {
+          "speaker": "saif",
+          "face": "smile",
+          "text": "叔父さんは褒めない人だから。「悪くない」は最高評価"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、今日はいい日だ"
+        }
+      ]
+    }
+  ]
+}

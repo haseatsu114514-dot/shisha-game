@@ -107,9 +107,16 @@ const EQUIPMENT_USE = {
   amaburst_hms: ["全サイズ対応。繊細な温度合わせに", "適温幅が狭いので温度を見よう"],
   flat_charcoal: ["低めの熱へ細かく合わせやすい", "大容量・デンスは立ち上げ長め"],
   cube_charcoal: ["大容量・デンスにも熱を入れやすい", "温度の上がりすぎに注意"],
+  kumogama_phunnel: ["最大16g。適温幅がやや広い器", "多く詰めるほど蒸らしは長め"],
+  lotos_plus: ["アルミ不要の全サイズ対応。熱が安定しやすい", "適温幅はタヌキッシュリッドより狭い"],
+  dense_flat_charcoal: ["フラット炭より適温幅が少し広い", "炭を選べるのはキューブ炭を覚えてから"],
 };
 
 export function equipmentUse(item) {
+  // 家シーシャの台は制作の性能を持たない。実際に効く熟練度の経験値だけを書く（home-shisha.js）。
+  if (item?.type === "homeware" && Number.isFinite(item.home_xp)) {
+    return { use: `家シーシャ1回で熟練度の経験値${item.home_xp}（卓上台は6）`, caution: "店や大会で作る一台の点数は変わらない" };
+  }
   const [use, caution] = EQUIPMENT_USE[item?.id] || (String(item?.id || "").startsWith("suyaki_")
     ? ["大容量。使い込んだ香りを活かす", "葉の系統を合わせ、温度は丁寧に"]
     : [item?.description || "", ""]);

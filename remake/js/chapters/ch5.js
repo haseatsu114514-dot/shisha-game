@@ -35,7 +35,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
   beginChapterFiveMatch, chapterFiveMatchOutcome, chapterFiveVoteTally, CH5_FIRST_CUP_VOTES, recordChapterFiveSecondCup,
-  beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
+  chapterFiveEndingContext, beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
   chapterFiveCreditsPending, recordChapterFiveCredits, chapterFiveFreeRemaining } from "./ch5-progress.js";
 
 let session = null;
@@ -511,12 +511,11 @@ async function playLines(owner, id, lines) {
 async function renderFinale(owner) {
   let progress = chapterFiveProgress(state);
   if (!progress.finaleScenes) {
-    // ※仮置き（#517）: 恋人の所在・約束の供給元が未整備のため、捏造せず present/accepted は空で渡す。
-    // 中間は ending_normal になり、供給元ができたらこの呼び出しだけ差し替える。
+    // 恋人がちょうど1人なら中間がその人の後日談（epilogue_*）、それ以外は ending_normal（#517）。
     // 読み終えたらスタッフロール（renderStaffRoll）。その後の本格的な修羅場（Q20後段）は接続しない。
     const routes = await loadEndingRoutes();
     if (!current(owner)) return;
-    const scenes = selectStoryEnding(routes, state, { present: [], accepted: [] });
+    const scenes = selectStoryEnding(routes, state, chapterFiveEndingContext(routes, state));
     if (!beginChapterFiveFinale(state, scenes)) throw new Error("フィナーレを開始できません");
     save();
     progress = chapterFiveProgress(state);

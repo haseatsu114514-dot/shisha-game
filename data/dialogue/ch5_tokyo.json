@@ -1,0 +1,146 @@
+{
+  "comment": "第5章の東京（#2033 D）。勝負の日を決める前の自由行動で、新幹線で東京へ行き、mukaiの屋根裏に好きなだけ泊まれる（オーナー指定 2026-11-02）。ましろ（ヒロイン）は第5章の会話に出さない。久世は第3章の後に福岡へ戻ったので、煙幕は出さない。報酬は台詞に書かず、chapters/ch5-tokyo.js が付ける。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch5_tokyo_go",
+      "lines": [
+        { "speaker": "", "face": "", "text": "橙須の駅で、東京行きの新幹線に乗った。" },
+        { "speaker": "", "face": "", "text": "窓の外を、田んぼと工場の屋根が流れていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "（着いたら、まずmukaiに顔を出そう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_back",
+      "lines": [
+        { "speaker": "", "face": "", "text": "東京駅から、帰りの新幹線に乗った。" },
+        { "speaker": "", "face": "", "text": "窓の外が、少しずつ見慣れた景色に変わっていく。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_arrival",
+      "lines": [
+        { "speaker": "", "face": "", "text": "高架下の商店街を抜けて、mukaiの戸を開けた。コーヒーの匂いがする。" },
+        { "speaker": "mukai_master", "face": "normal", "text": "はじめくん。久しぶりだな" },
+        { "speaker": "hajime", "face": "smile", "text": "ご無沙汰してます。しばらく、こっちの店も見て回りたくて" },
+        { "speaker": "mukai_master", "face": "normal", "text": "泊まる所は決めてるのか" },
+        { "speaker": "hajime", "face": "normal", "text": "まだです。これから探そうかと" },
+        { "speaker": "mukai_master", "face": "smile", "text": "上の屋根裏が空いてる。好きなだけ使えばいい" },
+        { "speaker": "hajime", "face": "surprise", "text": "いいんですか？" },
+        { "speaker": "mukai_master", "face": "normal", "text": "帰りたくなったら、帰ればいい。鍵は、カウンターの下だ" },
+        { "speaker": "", "face": "", "text": "店の上の屋根裏に、毛布が一枚たたんで置いてあった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_mukai_help",
+      "lines": [
+        { "speaker": "", "face": "", "text": "昼のmukai。カウンターの内側で、洗い上がったグラスを拭いた。" },
+        { "speaker": "mukai_master", "face": "normal", "text": "はじめくん、そっちの棚。上から二段目だ" },
+        { "speaker": "hajime", "face": "normal", "text": "前と同じ場所ですね" },
+        { "speaker": "mukai_master", "face": "smile", "text": "変えてない。変えると、手が迷う" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_mukai_help_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "客が引いた時間に、ムカイさんが甘いラテを二つ淹れた。" },
+        { "speaker": "mukai_master", "face": "normal", "text": "一つは、はじめくんの" },
+        { "speaker": "hajime", "face": "surprise", "text": "いいんですか" },
+        { "speaker": "mukai_master", "face": "smile", "text": "一人で飲むと、甘すぎる気がしてな" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_mukai_help_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "閉店の前。ムカイさんがハットを壁に掛けた。" },
+        { "speaker": "mukai_master", "face": "normal", "text": "勝負が近いんだってな。スミから聞いた" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。日は、まだ決めてないんですけど" },
+        { "speaker": "mukai_master", "face": "normal", "text": "決まる前に、ここで一服していけばいい" },
+        { "speaker": "", "face": "", "text": "ムカイさんはそれだけ言って、コーヒーの豆を量りに載せた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_steve",
+      "lines": [
+        { "speaker": "", "face": "", "text": "Smoke & Glory。カウンターの端で、スティーブがキッチンタイマーを並べていた。" },
+        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ！　世界から帰ってきた顔だ" },
+        { "speaker": "hajime", "face": "smile", "text": "そんな顔、してますか" },
+        { "speaker": "steve", "face": "normal", "text": "してる。少し日に焼けて、少し落ち着いた" },
+        { "speaker": "steve", "face": "smile", "text": "一台どうぞ。今日も、二口目までが勝負" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_steve_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "店の奥で、スティーブがレシピカードの束をめくっていた。" },
+        { "speaker": "steve", "face": "normal", "text": "このカード、半分は客の言葉なんだ" },
+        { "speaker": "hajime", "face": "surprise", "text": "お客さんの、ですか" },
+        { "speaker": "steve", "face": "smile", "text": "「二口目がいちばん好き」とか。そういうのを余白に書く" },
+        { "speaker": "steve", "face": "serious", "text": "俺の言葉だけだと、炭が早くなる。客の言葉が手を止めてくれる" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_steve_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "タイマーが鳴る前に、スティーブは炭を一つ縁へ寄せた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "今の、タイマーより先でしたね" },
+        { "speaker": "steve", "face": "smile", "text": "イエス。たまには、自分の鼻を信じる" },
+        { "speaker": "steve", "face": "normal", "text": "タイマーは止めてくれる。でも、先に動く日も要る" },
+        { "speaker": "hajime", "face": "normal", "text": "（待つのも動くのも、同じ一台のためか）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_volk",
+      "lines": [
+        { "speaker": "", "face": "", "text": "鉄の煙。計器の並ぶカウンターで、ヴォルクが手帳に何かを書いていた。" },
+        { "speaker": "volk", "face": "normal", "text": "……来たか。座れ" },
+        { "speaker": "volk", "face": "serious", "text": "今日は湿度が高い。炭の減りが、いつもより遅い" },
+        { "speaker": "hajime", "face": "normal", "text": "測ってから、決めるんですね" },
+        { "speaker": "volk", "face": "normal", "text": "測る。それから、客に聞く。順番は変えない" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_volk_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "隣の席の客が、ホースを置いて窓の外を見ていた。" },
+        { "speaker": "volk", "face": "normal", "text": "……熱いか。それとも、休んでいるだけか" },
+        { "speaker": "", "face": "", "text": "客が首を振ると、ヴォルクは炭に触れず、水のグラスだけを寄せた。" },
+        { "speaker": "volk", "face": "serious", "text": "数字は正常だ。直すのは、炭ではなかった" },
+        { "speaker": "hajime", "face": "normal", "text": "（聞いてから直す。それが、この人の精度なんだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_volk_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "帰り際、ヴォルクが紅茶のカップを置いた。小皿に、ジャムが添えてある。" },
+        { "speaker": "volk", "face": "normal", "text": "祖母のやり方だ。量は測らない" },
+        { "speaker": "hajime", "face": "smile", "text": "計器だらけの店なのに" },
+        { "speaker": "volk", "face": "smile", "text": "ここだけは、数字を持たない。……飲め。冷める" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_park_day",
+      "lines": [
+        { "speaker": "", "face": "", "text": "高架の下を抜けて、公園まで歩いた。池の水面に、昼の光が揺れている。" },
+        { "speaker": "hajime", "face": "normal", "text": "（前に来た時より、景色がよく見える気がする）" },
+        { "speaker": "", "face": "", "text": "ベンチで少し休んでから、池をひと回りした。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_attic_rest",
+      "lines": [
+        { "speaker": "", "face": "", "text": "屋根裏で横になった。下の店から、コーヒーの匂いが上がってくる。" },
+        { "speaker": "", "face": "", "text": "少し眠ると、体が軽くなった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_tokyo_fortune",
+      "lines": [
+        { "speaker": "", "face": "", "text": "路地の角に、紫の布をかけた小さな机が出ていた。" },
+        { "speaker": "uranaishi", "face": "normal", "text": "……ヒヒ。こんな所で会うとはね" },
+        { "speaker": "hajime", "face": "surprise", "text": "東京にも、出るんですか？" },
+        { "speaker": "uranaishi", "face": "smile", "text": "縁のある所なら、どこへでも。……理由は聞かない方がいい" },
+        { "speaker": "uranaishi", "face": "normal", "text": "さて。今日は誰との縁が気になるんだい？" }
+      ]
+    }
+  ]
+}

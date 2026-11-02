@@ -2,8 +2,8 @@
   "episode": 70,
   "title": "人気の一位",
   "theme": "シーシャあるある",
-  "status": "candidate-awaiting-owner-selection",
-  "registered": false,
+  "status": "adopted-registered-20261102",
+  "registered": true,
   "canon_status": "シーシャの注文・店の日常とキャラのこだわりに根拠を置いた番外編ギャグ。本編の能力・人物設定・採点・レシピは変更しない。",
   "reading_order": "左①導入→右②オチ",
   "image_manifest": [
@@ -90,5 +90,6 @@
       ],
       "visual": "スマホ横の全12話とPC第71話を目視確認、台詞と顔の欠けなし。"
     }
-  }
+  },
+  "selection_note": "2026-11-02 オーナー採用。remake/js/core/loading-comics.js の id 'mint-ranking'（出てくるキャラと会った後に出る）。画風の統一は後日の作り直しで行う。"
 }

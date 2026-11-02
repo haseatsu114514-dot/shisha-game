@@ -73,8 +73,9 @@ function incomingDeck(m, key, index, now) {
   d.beat = 0; d.at = 0;
   return d;
 }
-export function createSet(set, detune = () => 1, rng = Math.random) {
-  const m = { set, count: set.count, played: [set.tracks[0], set.tracks[1]], detune, rng,
+/** allowance: extra ms added to every ▶ timing window (the main game's monitor headphones, VOL07: 10). 0 = the club's house setup. */
+export function createSet(set, detune = () => 1, rng = Math.random, { allowance = 0 } = {}) {
+  const m = { set, count: set.count, allowance: Number.isFinite(allowance) && allowance > 0 ? Math.min(30, allowance) : 0, played: [set.tracks[0], set.tracks[1]], detune, rng,
     decks: [makeDeck(set.tracks[0]), makeDeck(set.tracks[1], detune(1))],
     running: false, resumeDecks: [], mix: 0, master: 0, phase: 'idle', cue: null, select: null, transitions: [], floor: .5,
     lastPlay: null, lastUpdate: null, fader: null, result: null, pendingPick: null };
@@ -87,7 +88,7 @@ function nextCue(m, from, now) {
   m.phase = 'cue'; m.fader = null;
 }
 export const GRADE_FLOOR = { PERFECT: .08, GOOD: .04, OK: 0, EARLY: -.05, LATE: -.05 };
-export function gradeOf(errorMs) { const v = Math.abs(errorMs); return v <= 30 ? 'PERFECT' : v <= 60 ? 'GOOD' : v <= 120 ? 'OK' : errorMs < 0 ? 'EARLY' : 'LATE'; }
+export function gradeOf(errorMs, allowance = 0) { const v = Math.abs(errorMs) - allowance; return v <= 30 ? 'PERFECT' : v <= 60 ? 'GOOD' : v <= 120 ? 'OK' : errorMs < 0 ? 'EARLY' : 'LATE'; }
 /** ▶ on a deck. The incoming deck of an open cue starts quantized to the master's nearest beat; anything else starts at once. */
 export function playDeck(m, id, now) {
   const d = m.decks[id];
@@ -95,7 +96,7 @@ export function playDeck(m, id, now) {
   const c = m.cue;
   if (c && c.to === id && m.decks[c.from].playing && !c.pressed) {
     const from = m.decks[c.from], fb = beatAt(from, now), n = Math.round(fb);
-    const errorMs = (fb - c.start) * 60 / from.bpm * 1000, grade = gradeOf(errorMs);
+    const errorMs = (fb - c.start) * 60 / from.bpm * 1000, grade = gradeOf(errorMs, m.allowance || 0);
     d.beat = 0; d.at = from.at + (n - from.beat) * 60 / from.bpm; // beat 0 on the master's nearest beat (may be a few ms ahead)
     c.pressed = { errorMs, grade, beat: n, at: now }; m.lastPlay = { id, errorMs, grade };
     m.phase = 'mix'; m.fader = { reached: null, checks: 0, hits: 0, combo: 0, best: 0, lastBeat: 0, last: null };
@@ -169,9 +170,9 @@ export const scoreFromErr = (v, s, a, b) => v <= s + 1e-10 ? 100 : v <= a + 1e-1
 export const scoreFromRatio = r => r >= .9 - 1e-10 ? 100 : r >= .75 - 1e-10 ? 85 : r >= .5 - 1e-10 ? 60 : 30;
 export const rankFromScore = total => total >= 90 ? 'S' : total >= 75 ? 'A' : total >= 55 ? 'B' : 'C';
 /** Fader: how much of the 8 bars rode the guide line; never reaching the incoming deck caps it at 30, reaching it late at 60. */
-export function scoreTransition({ pitchErrPct, synced, playMs, reached, follow }) {
+export function scoreTransition({ pitchErrPct, synced, playMs, reached, follow, allowance = 0 }) {
   const pitch = Math.min(scoreFromErr(pitchErrPct, LOCK_PCT, .3, .6), synced ? 85 : 100);
-  const entry = scoreFromErr(playMs, 30, 60, 120);
+  const entry = scoreFromErr(playMs, 30 + allowance, 60 + allowance, 120 + allowance);
   const followScore = scoreFromRatio(follow);
   const fader = reached == null ? 30 : reached > 1 ? Math.min(60, followScore) : followScore;
   const total = Math.round((pitch + entry + fader) / 3);
@@ -187,7 +188,7 @@ export function scoreSet(m) {
 }
 function finishTransition(m, now, view) {
   const c = m.cue, from = m.decks[c.from], to = m.decks[c.to], f = m.fader;
-  const score = scoreTransition({ pitchErrPct: bpmDiffPct(from, to), synced: c.synced, playMs: Math.abs(c.pressed.errorMs), reached: f.reached, follow: f.checks ? f.hits / f.checks : 0 });
+  const score = scoreTransition({ pitchErrPct: bpmDiffPct(from, to), synced: c.synced, playMs: Math.abs(c.pressed.errorMs), reached: f.reached, follow: f.checks ? f.hits / f.checks : 0, allowance: m.allowance || 0 });
   const record = { ...score, from: from.track, to: to.track, grade: c.pressed.grade, missed: c.missed, combo: f.best, pick: m.pendingPick?.rating || null };
   m.transitions.push(record); view.transition = record; m.pendingPick = null;
   m.floor = clamp(m.floor + { S: .1, A: .05, B: 0, C: -.08 }[score.rank], 0, 1);

@@ -189,12 +189,16 @@ export function showHud(v = true) {
 
 export function updateHud() {
   if (!dom || !state) return;
-  const widehanga = travelsBetweenCities(state) && state.flags._ch2_region === "widehanga";
-  dom.area.dataset.region = widehanga ? "widehanga" : "sakae";
-  dom.area.setAttribute("aria-label", widehanga ? CH2_CITY_EN : HOME_CITY_EN);
+  // 今いる街（第2章・第5章は flags._ch2_region。第5章は東京にも泊まれる・#2033。第3章の東京も同じ印・VOL03）
+  const region = travelsBetweenCities(state) || [3, 4].includes(state.chapter) ? state.flags._ch2_region : "home";
+  const [areaId, areaEn, areaName] = region === "widehanga" ? ["widehanga", CH2_CITY_EN, CH2_CITY_NAME]
+    : region === "tokyo" && [3, 5].includes(state.chapter) ? ["tokyo", "TOKYO", "東京"]
+    : region === "dubai" && state.chapter === 4 ? ["dubai", "DUBAI", "ドバイ"] : ["sakae", HOME_CITY_EN, HOME_CITY_NAME];
+  dom.area.dataset.region = areaId;
+  dom.area.setAttribute("aria-label", areaEn);
   dom.area.replaceChildren(
-    el("span.dc-area-full", { text: widehanga ? CH2_CITY_EN : HOME_CITY_EN }),
-    el("span.dc-area-short", { text: widehanga ? CH2_CITY_NAME : HOME_CITY_NAME }),
+    el("span.dc-area-full", { text: areaEn }),
+    el("span.dc-area-short", { text: areaName }),
   );
   const finalDay = chapterFinalDay(state);
   dom.day.replaceChildren(...[el("b", { text: String(chapterDay(state)) }), finalDay === null ? null : el("small", { text: `/${finalDay}` })].filter(Boolean));

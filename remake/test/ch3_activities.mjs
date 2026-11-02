@@ -4,7 +4,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 import { newState, setState, saveToSlot, loadFromSlot } from "../js/core/state.js";
 import * as stats from "../js/core/stats.js";
-import { advanceToChapterThree, chapterThreeScenes, completeChapterThreeScene,
+import { advanceToChapterThree, departChapterThree, chapterThreeScenes, completeChapterThreeScene,
   chapterThreeFreeTime, completeChapterThreeFreeTime } from "../js/chapters/ch3-progress.js";
 import { proposeTokyoVisit, bookTokyoVisit } from "../js/core/tokyo-visits.js";
 import { TOKYO_FREE_TIMES, tokyoTime, tokyoWindowReserved } from "../js/core/tokyo-clock.js";
@@ -25,11 +25,14 @@ for (const scene of data.dialogues) {
 
 function departure({ member = true, legacy = false } = {}) {
   const value = newState();
-  Object.assign(value, { chapter: 2, day: 28, phase: "cleared", money: 12345, stamina: 80 });
+  Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日になる */ phase: "cleared", money: 12345, stamina: 80 });
   value.flags = { _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
     _ch2_tournament: { stage: "complete" } };
   if (member) value.flags._gym_member = true;
   assert(advanceToChapterThree(value));
+  value.day += 3; // 出発前の準備3日（VOL02）を過ごした出発の朝
+  assert(departChapterThree(value));
+  value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
   if (legacy) delete value.flags._ch3_intro.routeVersion;
   return value;
 }

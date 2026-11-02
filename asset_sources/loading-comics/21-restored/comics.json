@@ -1,0 +1,100 @@
+{
+  "episode": 21,
+  "title": "苦手なもの",
+  "cast": "りゅうじ・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "adopted-registered-20261102",
+  "registered": true,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/21-24-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "LEFT ①: in Ryuji's imposing yakuza-office shop, Hajime politely tells Ryuji 「ミント、苦手で。」 Ryuji calmly notes it in an ordinary order pad. RIGHT ②: wildly overblown security checkpoint across the same office; two stern adult suited guards gently escort a tiny PERSONIFIED WALKING MINT SPRIG out through a barrier, its leaves drooping. Large sign 「ミント出禁」. Ryuji in WHITE CHECK SUIT stamps a tiny order memo with solemn authority saying 「徹底する。」 Hajime boggles and asks 「国家？」 No violence, it is absurd hospitality.",
+      "dialogue_original": [
+        "ミント、苦手で。",
+        "ミント出禁",
+        "徹底する。",
+        "国家？"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-unhinged-ltr-20261025/21-24-chaos-ltr.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/21-24-chaos-ltr.png",
+      "region": {
+        "x": 19,
+        "y": 89,
+        "width": 509,
+        "height": 304,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/21-24-chaos-ltr.png",
+      "region": {
+        "x": 544,
+        "y": 44,
+        "width": 526,
+        "height": 355,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-21-1.webp",
+      "width": 509,
+      "height": 339,
+      "sha256": "01dda331c9b05a1b7fe0c475ffdc1ed2f4489c4f9374ea861278e8514b8cf94a"
+    },
+    {
+      "file": "panels/restored-21-2.webp",
+      "width": 532,
+      "height": 355,
+      "sha256": "6f42b0d2b4e778d5a9b0f8b8f2931d6d4d9aed83f7d303e63b96ae6699ba13da"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  },
+  "selection_note": "2026-11-02 オーナー採用。remake/js/core/loading-comics.js の id 'restored-21'（出てくるキャラと会った後に出る）。画風の統一は後日の作り直しで行う。"
+}

@@ -1,0 +1,214 @@
+{
+  "items": [
+    {
+      "id": "grapefruit",
+      "variant": "A",
+      "source_sha256": "ce8827da98491634b4047e08a49e7b77d3ef3953e575e2f11e6541d4f6ba85f6",
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          52,
+          408,
+          457
+        ],
+        "box": [
+          104,
+          50,
+          306,
+          409
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "409c89024dc43eefaf9d01824c5de0db4e2cde0f511d2bf6f3606827a36ea794"
+      },
+      "bytes": 34096
+    },
+    {
+      "id": "honey",
+      "variant": "B",
+      "source_sha256": "a4cb791d50813e8b3eb8cf51ad44b502933f35946c2ba1d01d3f922f0e505c61",
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          108,
+          33,
+          416,
+          492
+        ],
+        "box": [
+          106,
+          31,
+          312,
+          463
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "309c8de364ed2c388a2a1c33630958d8c775a0efa59133cecfe8bc174a84acff"
+      },
+      "bytes": 29398
+    },
+    {
+      "id": "milk",
+      "variant": "A",
+      "source_sha256": "69e3bd8a8eae3a7daee7391b5286727e71f33f71a3069d1c6d06a126c566acfd",
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          110,
+          44,
+          406,
+          475
+        ],
+        "box": [
+          108,
+          42,
+          300,
+          435
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "5c232b690f421d02c34b3db1645236ac438a90e8eb55b925f7c0bfa022f17131"
+      },
+      "bytes": 21138
+    },
+    {
+      "id": "cherry",
+      "variant": "B",
+      "source_sha256": "b4366834cab6650be002fe4df977786e632b6ed86f6eaee8bc4b5977e8465ca1",
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          108,
+          33,
+          416,
+          492
+        ],
+        "box": [
+          106,
+          31,
+          312,
+          463
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "f58af41ab25479b2f816e60cdd7996064523af074024d37fbe9ace0e285f207b"
+      },
+      "bytes": 23242
+    },
+    {
+      "id": "passion_fruit",
+      "variant": "B",
+      "source_sha256": "959d0d4c7326b9267b5ebd848073a1c1b778cb12452809c5545ed7b3f2bd766a",
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          108,
+          44,
+          405,
+          475
+        ],
+        "box": [
+          106,
+          42,
+          301,
+          435
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "6d1b1d4dc07c0b21ca57e101f5c7ed2f25fe20bbf0fd3857d523b8414e099dde"
+      },
+      "bytes": 24390
+    },
+    {
+      "id": "lime",
+      "variant": "A",
+      "source_sha256": "8ffe414e6c1fa6eeb05f7e92b7ac8684f6e2f02dd5fef55ff69a167f4c079814",
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          106,
+          54,
+          408,
+          457
+        ],
+        "box": [
+          104,
+          52,
+          306,
+          407
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "5f7fd25655af00934261acfc9b262550df269d2829bab3042980389245561f43"
+      },
+      "bytes": 31516
+    },
+    {
+      "id": "biscuit",
+      "variant": "B",
+      "source_sha256": "21c2150254ee69ebced36de5608cbd94dcdcaa91617c0cfc87637f8c96252623",
+      "delivery": {
+        "size": [
+          512,
+          512
+        ],
+        "mode": "RGBA",
+        "visible_bbox": [
+          108,
+          44,
+          406,
+          475
+        ],
+        "box": [
+          106,
+          42,
+          302,
+          435
+        ],
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "b6d3389e9488a73c14b934e9cc5efc2e87964dc5cf59d3211201f3adc3ade7e4"
+      },
+      "bytes": 21742
+    }
+  ]
+}

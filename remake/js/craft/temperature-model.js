@@ -116,18 +116,18 @@ export function flavorMakerProblems(items) {
 
 export const EQUIP_WIDTH_FACTORS = Object.freeze({
   bowl: Object.freeze({
-    silicone_bowl: 1.00, hagal_80beat: 1.08, nightside_premier_hagal: 1.12,
+    silicone_bowl: 1.00, hagal_80beat: 1.08, nightside_premier_hagal: 1.12, kumogama_phunnel: 1.10,
     suyaki_hagal: 0.90, suyaki_minto: 0.90, suyaki_adam: 0.90, suyaki_naru: 0.90,
     suyaki_sumi: 0.90, suyaki_tsumugi: 0.90, suyaki_rin: 0.90, suyaki_hiyori: 0.90, suyaki_samechan: 0.90,
     suyaki_ageha: 0.90,
     suyaki_kumicho: 0.90, suyaki_rei: 0.90,
-    suyaki_mashiro: 0.90,
+    suyaki_mashiro: 0.90, suyaki_kuze: 0.90,
   }),
   hms: Object.freeze({
-    lotos_hagal: 1.00, tanukish_lid: 1.08, winkwink_hagal: 1.05, amaburst_hms: 0.88,
+    lotos_hagal: 1.00, tanukish_lid: 1.08, winkwink_hagal: 1.05, amaburst_hms: 0.88, lotos_plus: 1.04,
   }),
   charcoal: Object.freeze({
-    flat_charcoal: 1.04, cube_charcoal: 0.94,
+    flat_charcoal: 1.04, cube_charcoal: 0.94, dense_flat_charcoal: 1.06,
   }),
 });
 
@@ -210,6 +210,11 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
     warmup: "やや穏やか（15g）", hold: "高め（味+12・持続+9）",
     summary: "適温帯が+12%広がる精密ファンネルボウル。繊細なミックスでも温度を保ちやすい。",
   }),
+  kumogama_phunnel: Object.freeze({
+    id: "kumogama_phunnel", type: "bowl", capacity: 16, widthFactor: 1.10,
+    warmup: "やや穏やか（16g）", hold: "高め（味+16・持続+12）",
+    summary: "背の高い中央の筒でシロップが葉の下へ落ちにくいファンネル。適温帯が+10%広がり、16gまで詰められる。",
+  }),
   suyaki_hagal: Object.freeze({
     id: "suyaki_hagal", type: "bowl", capacity: 20, widthFactor: 0.90,
     warmup: "ゆっくり（大容量20g）", hold: "最大（味+32・持続+24）",
@@ -220,6 +225,11 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
     id: "lotos_hagal", type: "hms", widthFactor: 1.00, stabilityBonus: 2,
     warmup: "じんわり（標準）", response: "素直（基準）", fitNote: "全ボウル対応",
     summary: "じんわり温まる標準HMD。蓋の通気で熱のこもり方を変えられる。",
+  }),
+  lotos_plus: Object.freeze({
+    id: "lotos_plus", type: "hms", widthFactor: 1.04, stabilityBonus: 4,
+    warmup: "じんわり（標準）", response: "素直（ロートスと同じ）", fitNote: "全ボウル対応・アルミ不要",
+    summary: "アルミを張らずに使うロートスの上位モデル。適温帯が+4%・熱安定が+2伸びる。",
   }),
   tanukish_lid: Object.freeze({
     id: "tanukish_lid", type: "hms", widthFactor: 1.08, stabilityBonus: 5,
@@ -240,6 +250,11 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
     id: "flat_charcoal", type: "charcoal", widthFactor: 1.04, power: 1.00, response: 1.00, burnRisk: 0, smokeBonus: 0,
     warmup: "穏やか・安定（火力×1.00）", responseLabel: "標準（1口ずつ微調整しやすい）",
     summary: "平型のココナッツ炭。適温帯が広く（×1.04）、追加の焦げリスクが0。香りを守り、低温〜標準帯の葉を丁寧に仕上げるのに向く。",
+  }),
+  dense_flat_charcoal: Object.freeze({
+    id: "dense_flat_charcoal", type: "charcoal", widthFactor: 1.06, power: 1.00, response: 1.00, burnRisk: 0, smokeBonus: 0,
+    warmup: "穏やか・安定（火力×1.00）", responseLabel: "標準（1口ずつ微調整しやすい）",
+    summary: "ココナッツ殻を固く詰めた上位のフラット炭。火力はフラットと同じで、適温帯が少し広い（×1.06）。焦げリスクは増えない。",
   }),
   cube_charcoal: Object.freeze({
     id: "cube_charcoal", type: "charcoal", widthFactor: 0.94, power: 1.13, response: 1.12, burnRisk: 10.5, smokeBonus: 6,
