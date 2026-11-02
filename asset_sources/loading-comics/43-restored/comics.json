@@ -3,7 +3,7 @@
   "title": "予約の正体",
   "cast": "はじめ・スミさん",
   "theme": "旧話の復刻",
-  "status": "candidate-awaiting-owner-selection",
+  "status": "not-adopted-owner-20261102",
   "registered": false,
   "reading_order": "左①導入→右②オチ",
   "source_reference": {
@@ -97,5 +97,6 @@
       ],
       "screenshots": []
     }
-  }
+  },
+  "selection_note": "2026-11-02 オーナーの選別で不採用（ゲームに登録しない）。"
 }

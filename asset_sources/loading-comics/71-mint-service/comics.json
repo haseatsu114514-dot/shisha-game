@@ -91,5 +91,5 @@
       "visual": "スマホ横の全12話とPC第71話を目視確認、台詞と顔の欠けなし。"
     }
   },
-  "selection_note": "2026-11-02 採用。remake/js/core/loading-comics.js の id 'mint-service'、配信用は remake/img/loading/mint-service-1.webp / -2.webp。"
+  "selection_note": "2026-11-02 オーナー採用。remake/js/core/loading-comics.js の id 'mint-service'（出てくるキャラと会った後に出る）。画風の統一は後日の作り直しで行う。"
 }
