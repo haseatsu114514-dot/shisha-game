@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-02 15:28 UTC",
+ "generated": "2026-11-02 16:00 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -447,7 +447,7 @@
    ],
    "h": 0.9333,
    "b": 0.0167,
-   "ax": 0.505,
+   "ax": 0.5001,
    "aspect": 0.7467
   },
   "saif": {
@@ -456,7 +456,7 @@
    ],
    "h": 0.9333,
    "b": 0.0167,
-   "ax": 0.5457,
+   "ax": 0.5437,
    "aspect": 0.7467
   }
  },
@@ -627,7 +627,9 @@
   "face_kuze.png",
   "face_maki.png",
   "face_salaryman.png",
-  "face_noor.png"
+  "face_noor.png",
+  "face_saif.png",
+  "face_rashid.png"
  ],
  "making": [
   "bench_base.png",

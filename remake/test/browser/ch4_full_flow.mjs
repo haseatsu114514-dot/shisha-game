@@ -25,7 +25,9 @@ const observeTournament = page => page.evaluate(() => {
   window.__ch4Observed = { text: new Set(), comments: new Set() };
   window.__ch4Observer = new MutationObserver(() => {
     const text = [...document.querySelectorAll(".vn-text, .audience-note")].map(node => node.dataset.raw || node.textContent).join("\n");
-    for (const phrase of ["出発前の方針：桜", "出発前の方針：茶", "出発前に選んだ桜の方針", "出発前に選んだ茶の方針", "桜の香りが、まっすぐ立つ", "葉が焦げた"])
+    for (const phrase of ["出発前の方針：桜", "出発前の方針：茶", "出発前に選んだ桜の方針", "出発前に選んだ茶の方針", "桜の香りが、まっすぐ立つ", "葉が焦げた",
+      // #2031: 制作中の掛け合い（開幕・提供後・調整1の後）
+      "誰のための一台か", "客の呼吸は、まだ続いている", "直した跡が、煙に出ている"])
       if (text.includes(phrase)) window.__ch4Observed.text.add(phrase);
     document.querySelectorAll(".nico").forEach(node => window.__ch4Observed.comments.add(node.textContent));
   });
@@ -249,6 +251,9 @@ await suite("ch4-full-flow", async check => {
     assert(observed.text.includes("出発前の方針：桜"), "ch4_craft_advice_1 must reflect the strategy");
     assert(observed.text.includes("出発前に選んだ桜の方針"), "The live broadcast must reflect the strategy");
     assert(observed.text.includes("桜の香りが、まっすぐ立つ"), "ch4_final must state the actual blend's taste");
+    // #2031: 第1〜3章と同じく、制作の合間に審査員とライバルの掛け合いが入る。
+    for (const phrase of ["誰のための一台か", "客の呼吸は、まだ続いている", "直した跡が、煙に出ている"])
+      assert(observed.text.includes(phrase), `The world tournament craft must play its banter: ${phrase}`);
     const localComments = Object.values(observed.chapter4.completion).flatMap(step => Object.values(step).flat());
     assert(observed.comments.some(comment => localComments.includes(comment)), "The broadcast must use chapter4 audience comments");
     await page.evaluate(() => window.__ch4Observer.disconnect());

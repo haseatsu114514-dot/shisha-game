@@ -515,7 +515,7 @@ function next() {
     if (type === "apply") { applyLine(line); continue; }
     if (type === "note") { onNote(line); continue; }
     if (type === "remember") { rememberRelationship(line.memory_id); continue; }
-    if (type === "reflection") { r.queue.unshift(...relationshipReflectionLines()); continue; }
+    if (type === "reflection") { r.queue.unshift(...relationshipReflectionLines(line)); continue; }
     if (type === "bg") {
       if (!line.bg) continue;
       r.ready = false;

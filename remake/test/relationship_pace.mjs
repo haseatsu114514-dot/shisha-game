@@ -97,6 +97,8 @@ try {
       }
       await page.waitForTimeout(70); continue;
     }
+    // 寝る前のレベルアップ（心得の盤、11/02から通常プレイで有効）。初回はOKを押すまで待つ全画面の演出。
+    if (await press('[data-test="levelup-ok"]')) { await page.waitForTimeout(70); continue; }
     if (snap.modal) {
       if (!await press('[data-test="reel-intro"]') && !await press('[data-test="drill-finish"]')
         && !await press('[data-test="kuji-reveal"]')) await press("#modal .modal-actions button");

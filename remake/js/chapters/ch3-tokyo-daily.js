@@ -16,7 +16,8 @@ import { runDaily } from "../daily/calendar.js";
 import { showHud } from "../daily/hud.js";
 import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
-import { fortuneSpot } from "../daily/spots.js";
+import { fortuneSpot, TOKYO_VISIT_COST } from "../daily/spots.js";
+import { spendableMoney } from "../core/travel-budget.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { consultLessons } from "../core/growth.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
@@ -85,11 +86,11 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_mukai", place: "mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店",
     face: "mukai_master", preview: "bg_mukai_shop", desc: "働かせてもらっている店。手伝い、ましろちゃんとの時間、作業台。帰りに裏口のてつこにも会える。" }),
   spot({ id: "ch3_tokyo_enmaku", place: "enmaku", label: "煙幕", area: "久世の店", x: 45.3, y: 49.7, theme: "rival", glyph: "煙",
-    face: "kuze", preview: "bg_yohaku_shop", desc: "久世の店。お茶と、ノートの続き。", met: "kuze" }),
+    face: "kuze", preview: "bg_yohaku_shop", cost: TOKYO_VISIT_COST, desc: "久世の店。お茶と、ノートの続き。", met: "kuze" }),
   spot({ id: "ch3_tokyo_steve", place: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙",
-    face: "steve", preview: "bg_steve_shop", desc: "タイマーの並ぶ店。", met: "steve" }),
+    face: "steve", preview: "bg_steve_shop", cost: TOKYO_VISIT_COST, desc: "タイマーの並ぶ店。", met: "steve" }),
   spot({ id: "ch3_tokyo_volk", place: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙",
-    face: "volk", preview: "bg_volk_shop", desc: "計器の並ぶ店。", met: "volk" }),
+    face: "volk", preview: "bg_volk_shop", cost: TOKYO_VISIT_COST, desc: "計器の並ぶ店。", met: "volk" }),
   spot({ id: "ch3_tokyo_park", place: "park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園",
     preview: "bg_street", stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   spot({ id: "ch3_tokyo_shop", place: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
@@ -447,20 +448,27 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
   return { used: true, exerted: true };
 }
 
-/** 煙幕・Smoke & Glory・鉄の煙: 寄り道があればそれ、無ければその店の外出（#1655）。 */
+/**
+ * 煙幕・Smoke & Glory・鉄の煙: 寄り道があればそれ、無ければその店の外出（#1655）。
+ * 東京のシーシャ屋は一台4,000円（TOKYO_VISIT_COST）。読み終えた時だけ払う。本筋の場面（日程の枠で読む）は払わない。
+ */
 async function visitRivalShop(entry, io, staminaGuard, owner) {
   const choices = [
     ...optionalAt(entry.place).map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
     ...outingsAt(entry.place).map(outing => ({ label: `${outing.label.replace(/\s*に(顔を出す|寄る)$/, "")}：${outingReason(state, outing)}`, value: `outing:${outing.id}` })),
   ];
   if (!choices.length) { toast("今日は、話すことが思いつかない"); return unused; }
+  const cost = entry.cost || 0;
+  if (cost > spendableMoney(state)) { toast(`お金が足りない（${cost.toLocaleString("ja-JP")}円）`); return unused; }
   const pick = choices.length === 1 ? choices[0].value : await modal({ title: entry.label, className: "tokyo-visit-choice",
     body: "何をしに行こう。", options: [...choices.map((choice, index) => ({ ...choice, test: `tokyo-${entry.place}-${index}` })),
       { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
   if (!pick || state !== owner) return unused;
   const [kind, id] = pick.split(":");
-  if (kind === "scene") return readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner);
-  return goOuting(outingById(id), staminaGuard, owner);
+  const result = kind === "scene" ? await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner)
+    : await goOuting(outingById(id), staminaGuard, owner);
+  if (result?.used && state === owner && cost) addMoney(-cost);
+  return result;
 }
 
 /**
