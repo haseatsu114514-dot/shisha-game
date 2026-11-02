@@ -37,7 +37,7 @@ export function spotPeople(spot, { visitBlock = null } = {}) {
   const roamer = roamerAt(spot);
   if (roamer) ids.push(roamer.id);
   return [...new Set(ids)].map(id => {
-    const known = id === "sumi" || !!state.met[id]
+    const known = id === "sumi" || id === "tetsuko" || !!state.met[id]
       || id === "tsumugi" && !!(state.flags._met_tsumugi || state.story.tsumugi > 0);
     return { id, known, role: id === spot.face ? "owner" : "guest", name: known ? displayName(id, state) : "見知らぬ客" };
   });

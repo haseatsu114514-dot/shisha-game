@@ -16,6 +16,7 @@ import { TOKYO_VISIT_COST } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { reflectAt } from "../daily/reflection.js";
+import { TOKYO_OUTINGS, outingDialogueId, outingCounts, OUTINGS_FLAG } from "./ch3-outing-progress.js";
 import { consultLessons } from "../core/growth.js";
 
 export const TOKYO = "tokyo";
@@ -60,7 +61,14 @@ export const TO_TOKYO_SPOT = Object.freeze({
 
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
 const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune"]);
-const CH3_SCENES = ["ch3_outing_park_walk_night", "ch3_outing_tetsuko"];
+// てつこのお世話は第3章の続き（通うほど懐いていく。回数も第3章と同じ記録。ch3-outing-progress.js の stages・loop）
+const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
+const CH3_SCENES = ["ch3_outing_park_walk_night", ...TETSUKO.stages, ...TETSUKO.loop];
+async function careForTetsuko(owner) {
+  if (!await read(outingDialogueId(state, TETSUKO), "bg_street", owner)) return false;
+  state.flags[OUTINGS_FLAG] = { ...outingCounts(state), tetsuko: (outingCounts(state).tetsuko || 0) + 1 };
+  return true;
+}
 
 let loading = null;
 async function loadTokyoScenes() {
@@ -116,7 +124,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
     return { used: true, exerted: false };
   }
   if (spot.id === "ch5_tokyo_tetsuko") {
-    if (!await read("ch3_outing_tetsuko", "bg_street", owner)) return { used: false, exerted: false };
+    if (!await careForTetsuko(owner)) return { used: false, exerted: false };
     addStamina(spot.stamina);
     return { used: true, exerted: false };
   }
@@ -191,7 +199,7 @@ async function offerTetsuko(owner) {
   const go = await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、看板猫のてつこがベンチで丸くなっている。",
     options: [{ label: "少し構っていく", value: true, test: "tokyo-tetsuko-yes", primary: true }, { label: "今日はそっとしておく", value: false, test: "tokyo-tetsuko-no" }] });
   if (!go || state !== owner) return;
-  if (!await read("ch3_outing_tetsuko", "bg_street", owner)) return;
+  if (!await careForTetsuko(owner)) return;
   addStamina(12);
   toast("てつこに、少し元気をもらった", { kind: "good" });
 }

@@ -54,6 +54,9 @@ export const ROAMERS = Object.freeze([
   { id: "volk", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "volk", ready: metStory("volk"), bond: true },
   { id: "mashiro", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "mukai", ready: metStory("mashiro"), bond: true },
   { id: "emil", chapters: [3], at: tokyoShop, ready: () => true },
+  // mukai の看板猫。裏口で一度構った後は、公園やよその店の帰り道で見かけることがある（2026-11-02 オーナー「てつこは作って」）
+  { id: "tetsuko", chapters: [3], at: spot => spot.region === "tokyo" && (spot.place === "park" || tokyoShop(spot) && spot.place !== "mukai"),
+    ready: value => (value.flags?._ch3_outings?.tetsuko || 0) >= 1 },
 ].map(Object.freeze));
 const BY_ID = Object.fromEntries(ROAMERS.map(entry => [entry.id, entry]));
 

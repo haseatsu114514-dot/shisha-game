@@ -227,6 +227,43 @@ await suite("roamers", async check => {
     assert.deepEqual(result, { ok: true, named: false, murmur: true });
   });
 
+  await check("tetsuko-warms-up-and-is-seen-around-tokyo", async page => {
+    const result = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), roamers = await import("./js/daily/roamers.js");
+      const tokyo = await import("./js/chapters/ch3-tokyo-daily.js"), outings = await import("./js/chapters/ch3-outing-progress.js");
+      const people = await import("./js/daily/spot-people.js");
+      roamers.addRoamerSpots(() => tokyo.CH3_TOKYO_SPOTS);
+      const cat = outings.TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, phase: "daily", day: 4, slot: 0 });
+      // 裏口のお世話の順番（素っ気ない→ブラシ→待っている→寄ってくる→懐いた後を巡回）
+      const order = [];
+      for (let n = 0; n < 8; n++) { value.flags._ch3_outings = { tetsuko: n }; order.push(outings.outingDialogueId(value, cat)); }
+      // 一度も構っていない間は、外で見かけない
+      value.flags._ch3_outings = {};
+      const seenBefore = [];
+      for (let day = 4; day < 14; day++) for (let seed = 1; seed < 80; seed++) {
+        Object.assign(value, { day, seed }); const plan = roamers.roamerPlan(); if (plan?.id === "tetsuko") seenBefore.push(plan);
+      }
+      value.flags._ch3_outings = { tetsuko: 1 };
+      const places = new Set(), places2 = Object.fromEntries(tokyo.CH3_TOKYO_SPOTS.map(entry => [entry.id, entry.place]));
+      let face = null;
+      for (let day = 4; day < 14; day++) for (let seed = 1; seed < 80; seed++) {
+        Object.assign(value, { day, seed });
+        const plan = roamers.roamerPlan();
+        if (plan?.id !== "tetsuko") continue;
+        places.add(places2[plan.spotId]);
+        face ||= people.spotPeople(tokyo.CH3_TOKYO_SPOTS.find(entry => entry.id === plan.spotId)).find(person => person.id === "tetsuko");
+      }
+      return { order, seenBefore: seenBefore.length, places: [...places].sort(), face };
+    });
+    assert.deepEqual(result.order, ["ch3_outing_tetsuko", "ch3_outing_tetsuko_brush", "ch3_outing_tetsuko_wait", "ch3_outing_tetsuko_trust",
+      "ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door", "ch3_outing_tetsuko_lap"]);
+    assert.equal(result.seenBefore, 0, "裏口で構う前は、外で見かけない");
+    assert(result.places.length > 0 && result.places.every(place => ["park", "enmaku", "steve", "volk"].includes(place)), result.places.join(","));
+    assert(result.face?.known && result.face.name === "てつこ", "地図には名前と顔で出る");
+  });
+
   await check("doctor-remembers-the-shop-records-in-chapter-five", async page => {
     const result = await page.evaluate(async () => {
       const core = await import("./js/core/state.js"), engine = await import("./js/vn/engine.js");

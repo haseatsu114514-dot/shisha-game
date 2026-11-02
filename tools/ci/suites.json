@@ -199,6 +199,8 @@
         "remake/js/daily/spot-people.js",
         "remake/js/daily/calendar.js",
         "remake/js/chapters/ch2-preparation.js",
+        "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/chapters/ch3-outing-progress.js",
         "data/dialogue/roaming_guests.json",
         "data/dialogue/ch5_main.json",
         "remake/test/browser/roamers.mjs",
