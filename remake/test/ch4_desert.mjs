@@ -200,7 +200,7 @@ test("the 14-day daily map (route 2) keeps the café on the map (3,000円, one a
   let [cafe] = spots;
   assert.deepEqual([cafe.id, cafe.region, cafe.kind, cafe.place, cafe.unavailable, cafe.cost], [DESERT_SPOT_IDS.desk, "dubai", "ch4_desert", "tour_desk", "", 3000]);
   assert.equal(cafe.hasNew(), true);
-  assert.match(cafe.desc, /3,000円/);
+  assert.match(cafe.desc, /3,000円（約70ディルハム）/, "the same price wording as the other Dubai cafés");
   completeDesertCafeVisit(value, desertCafeVisit(value, 1), 1);
   [cafe] = desertDailySpots(value, 1);
   assert.deepEqual([cafe.unavailable, cafe.unavailableTag, cafe.hasNew()], ["今日はもう寄った。また明日", "また明日", false], "one visit a day");

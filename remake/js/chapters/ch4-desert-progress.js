@@ -233,8 +233,8 @@ export function desertDailySpots(value, day) {
   const cafeWhy = !visit ? "今日はもう寄った。また明日" : poor ? `お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）` : "";
   const spots = [dailySpot({ id: DESERT_SPOT_IDS.desk, place: "tour_desk", label: first ? "宿の隣のカフェ" : "カフェ・サーリム", area: "宿の隣",
     x: DAILY_AT.tour_desk[0], y: DAILY_AT.tour_desk[1], theme: "store", glyph: "茶", preview: "bg_dubai_inn_day", cost: DESERT_CAFE_PRICE,
-    desc: first ? "宿の隣のシーシャカフェ。表に砂漠ツアーのデスクがある。一台頼んでみる（3,000円）。"
-      : "ヌールの父の店。一台頼んで、ヌールと話す（3,000円）。",
+    desc: first ? "宿の隣のシーシャカフェ。表に砂漠ツアーのデスクがある。一台3,000円（約70ディルハム）。"
+      : "ヌールの父の店。一台頼んで、ヌールと話す。一台3,000円（約70ディルハム）。",
     unavailable: cafeWhy, unavailableTag: !visit ? "また明日" : poor ? "お金が足りない" : "",
     hasNew: () => visit?.kind === "story" && !poor })];
   if (progress.talks < DESERT_TALKS.length) return spots;
@@ -244,7 +244,7 @@ export function desertDailySpots(value, day) {
   spots.push(dailySpot({ id: DESERT_SPOT_IDS.dunes, place: "dunes", label: "ヌールと砂丘へ", area: "街の外の砂丘",
     x: DAILY_AT.dunes[0], y: DAILY_AT.dunes[1], theme: "park", glyph: "砂", preview: "bg_dubai_dunes_day",
     desc: status.first ? "サンドボードを教わる（初回は無料）。昼の行動を使う（滑り直しは何度でも）。"
-      : `もう一度砂丘を滑る（ツアー代 ${DESERT_RIDE_PRICE.toLocaleString("ja-JP")}円）。昼の行動を使う。${best ? `自己ベスト ${best.score.toLocaleString("ja-JP")}点／${best.rank}。` : ""}`,
+      : `もう一度砂丘を滑る（ツアー代 6,000円・約140ディルハム）。昼の行動を使う。${best ? `自己ベスト ${best.score.toLocaleString("ja-JP")}点／${best.rank}。` : ""}`,
     unavailable: status.ok ? "" : status.why === "今日はもう砂丘へ行った" ? "今日はもう砂丘へ行った。また明日" : status.why.startsWith("お金") ? status.why : "砂丘へは昼に出かける",
     unavailableTag: tag, hasNew: () => status.ok && status.first }));
   return spots;
