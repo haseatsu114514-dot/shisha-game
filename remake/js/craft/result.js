@@ -11,7 +11,7 @@ import { SE, stopBgm } from "../core/audio.js";
 import { autoSkill } from "./common.js";
 import { mixColor } from "./art.js";
 import { NAGUMO_BAR } from "./score.js";
-import { evaluationOf, feedbackLine } from "./feedback.js";
+import { evaluationOf, judgeComment } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp } from "./tournament-graphics.js";
 
@@ -358,7 +358,7 @@ export function resultTable(cs, rank) {
         .filter(([k]) => !(k === "穴あけ" && cs.foilSkipped)).map(([k, v]) =>
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
       el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total)]),
-      el("small.rt-judge-comment", { text: `上園「${feedbackLine("maezono", "pull", evaluationOf(P.shisha || 0))}」` }),
+      el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
       el("small.rt-next-tip", { text: improvementOf(cs) }),

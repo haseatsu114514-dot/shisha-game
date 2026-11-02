@@ -10,6 +10,22 @@
   ],
   "suites": [
     {
+      "id": "judge-comment-2190",
+      "title": "Final judge comments follow recorded temperature results",
+      "kind": "quick",
+      "run": ["node remake/test/judge_comment_2190.mjs", "node --experimental-vm-modules remake/test/pull_history_2190.mjs"]
+    },
+    {
+      "id": "judge-comment-browser-2190",
+      "title": "Saved craft temperature comments in the final result table",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": ["remake/js/craft/feedback.js", "remake/js/craft/advice.js", "remake/js/craft/temperature-records.js", "remake/js/craft/result.js", "remake/test/browser/judge_comment_2190.mjs"],
+      "run": ["node remake/test/browser/judge_comment_2190.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "craft-layout-2190",
       "title": "Horizontal mix recipe, status explanation and full result details (#2190)",
       "kind": "browser",

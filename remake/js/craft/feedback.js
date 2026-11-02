@@ -1,5 +1,6 @@
 // 工程の成績を、記号と見守る人物の短い一言で伝える。
 import { DB } from "../core/data.js";
+import { recordedTemperatureStates } from "./temperature-records.js";
 
 /** 自主練の内心も、他の台詞と同じ正本JSONから読む。 */
 export function innerVoiceLine(step, kind) {
@@ -53,6 +54,14 @@ export function feedbackLine(id, step, evaluation) {
   if (id === "hajime") return innerVoiceLine(step, ["excellent", "good_result", "retry"][evaluation.index]);
   const voice = COMMENTS[id] || COMMENTS.sumi;
   return (voice[step] || voice.default)[evaluation.index];
+}
+
+/** 第1章結果表の上園。完成品の品質点を、温度の成否に読み替えない。 */
+export function judgeComment(cs) {
+  const temperatures = recordedTemperatureStates(cs);
+  if (temperatures.every(value => value === true)) return "提供も2回の調整も、いい温度だったねえ";
+  if (temperatures.some(value => value === false)) return "温度が合わなかったところがあるねえ。次は一口ずついこう";
+  return feedbackLine("maezono", "default", evaluationOf(cs?.parts?.shisha || 0));
 }
 
 // 判定前の「見ている」間に出す一言。地の文の説明ではなく、本人が話す体で短く。

@@ -1,4 +1,5 @@
 import { temperatureBands, isIdealTemperature, makerMixProfile } from "./temperature-model.js";
+import { allRecordedTemperaturesIdeal, recordedTemperatureState } from "./temperature-records.js";
 
 // 完了した有限の工程だけを比較する。未実施の0点や未知のキーを助言に使わない。
 export const ADVICE_PARTS = ["holes", "heat", "shisha", "care1", "care2"];
@@ -20,18 +21,22 @@ export function improvementOf(cs) {
     : `次に変える一つ：${failed[0]}は熱が上がり切る前に熱を逃がす吸いを試そう。`;
   // 葉切れは別の終端原因。消耗で狭まった適温帯のずれを、熱の失敗と取り違えない。
   const exhausted = failed?.[1].failed === "leaf";
-  const missed = [...rounds].reverse().find(([, result]) => Number.isFinite(result?.temp) && !isIdealTemperature(result.temp, bands));
+  // 後段の葉の消耗で狭まった帯を、記録済みの成功へさかのぼって当てない。
+  const missed = [...rounds].reverse().find(([, result]) => recordedTemperatureState(result) !== true
+    && Number.isFinite(result?.temp) && !isIdealTemperature(result.temp, bands));
   if (missed && !exhausted) return `次に変える一つ：${missed[0]}は${missed[1].temp > bands.ideal[1] ? "少し下げて" : "少し熱を戻して"}から仕上げよう。`;
   const safeBonus = makerMixProfile(cs).safePullsBonus || 0;
   const excessive = rounds.find(([, result, safe]) => result && result.pulls > safe + safeBonus);
   if (excessive) return `次に変える一つ：${excessive[0]}は吸う回数を減らし、後半の葉を残そう。`;
   if (exhausted) return `次に変える一つ：${failed[0]}で葉が尽きた。一台を通して吸う回数を見直そう。`;
+  const temperaturePractice = allRecordedTemperaturesIdeal(cs)
+    ? "次の練習：今回の記録を見て、次に試すことを選ぼう。" : null;
   return {
     holes: "次の練習：目印に合わせて、穴を均等に開けよう。",
     heat: "次の練習：炭の全面が赤くなる頃合いを確かめよう。",
-    shisha: "次の練習：配合と、提供時の温度を確かめよう。",
-    care1: "次の練習：1回目の調整で、交換する炭の数を見直そう。",
-    care2: "次の練習：2回目まで葉を残し、適温で仕上げよう。",
+    shisha: temperaturePractice || "次の練習：配合と、提供時の温度を確かめよう。",
+    care1: temperaturePractice || "次の練習：1回目の調整で、交換する炭の数を見直そう。",
+    care2: temperaturePractice || "次の練習：2回目まで葉を残し、適温で仕上げよう。",
   }[weakestPart(cs.parts)] || "";
 }
 
