@@ -25,6 +25,7 @@ import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt, eveReflection } from "../daily/reflection.js";
 import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionCandidates, overseasCompanion } from "../core/overseas-companion.js";
 import { playChapterPreview } from "./chapter-preview.js";
+import { consultLessons } from "../core/growth.js";
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
@@ -258,6 +259,9 @@ async function renderCompanionChoice(owner) {
       button(owner, "同行なし", "companion-none", choose(null), !lovers.length)]);
 }
 
+/** 読んだ後にその場にいる人へ、心得の盤で灯した授業を相談できる場面（SBD91。灯していなければ何も起きない） */
+const LESSON_AFTER_SCENE = Object.freeze({ ch4_result: "master_hookah" });
+
 async function renderScene(owner, scene, dayLabel) {
   await setBg(bgUrl(CH4_SCENE_BG[scene.id]), { instant: true });
   const lover = scene.location === "tonari" ? await loverActions(owner, { home: true }) : [];
@@ -265,6 +269,10 @@ async function renderScene(owner, scene, dayLabel) {
   card(owner, "scene", `${dayLabel ? `${dayLabel}・` : ""}${scene.label}`, `${scene.location}で、次の話を読む。`, [
     button(owner, "続きを読む", "continue", async () => {
       if (!await readAndCommit(owner, scene.id)) return;
+      // 結果発表の後、会場の片づけで王煙楼に相談する
+      const teacher = LESSON_AFTER_SCENE[scene.id];
+      if (teacher) await consultLessons(teacher, { bg: bgUrl(CH4_SCENE_BG[scene.id]) });
+      if (!current(owner)) return;
       await renderStage(owner);
     }, true),
     ...lover,
