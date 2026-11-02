@@ -22,6 +22,7 @@
         { "speaker": "yoru", "face": "normal", "text": "誰が回してもいい夜。はじめくんも、一回やっていきなよ" },
         { "speaker": "hajime", "face": "surprise", "text": "DJですか？　俺、やったことないです" },
         { "speaker": "yoru", "face": "normal", "text": "みんな最初はそう。触るのは、ほとんど二つだけ" },
+        { "type": "bg", "bg": "bg_club_seam" },
         { "speaker": "", "text": "階段を下りると、暗いフロアの奥で、皿が二枚並んだ機材が光っていた。" },
         { "speaker": "yoru", "face": "normal", "text": "次の曲が載ってる方の▶で入れて、真ん中の横のフェーダーで渡す" },
         { "speaker": "yoru", "face": "normal", "text": "曲には八小節ごとの区切りがある。その頭で入れて、八小節かけて渡すの" },

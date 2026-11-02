@@ -152,7 +152,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "静かだ。ここには煙の匂いも、ゴボゴボという音もない。ただ風が木の葉を揺らす音だけ。"
+          "text": "静かだ。ここには甘い煙の匂いも、ゴボゴボという音もない。ただ風が木の葉を揺らす音だけ。"
         },
         {
           "speaker": "hajime",
@@ -397,7 +397,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "はじめは受付の列に並びながら、聞こえてくる話に耳を傾けた。"
+            "text": "俺は受付の列に並びながら、聞こえてくる話に耳を傾けた。"
           },
           {
             "speaker": "dr_kemuri",
@@ -829,9 +829,11 @@
           "text": "あいつの一台、審査員に「もう一口吸いたい」って思わせたんだ。吸い終わってもホースをなかなか置かなくてさ。俺、客席から見てたんだ"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（審査員がホースを離さない一台……。どんな味だったんだろう）"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "thought_after",
+          "next_false": "thought_before"
         },
         {
           "speaker": "",
@@ -852,6 +854,20 @@
             "speaker": "old_man",
             "face": "",
             "text": "お兄ちゃんも店で作る人？ 手つきが違うもんな、慣れてる人は"
+          }
+        ],
+        "thought_before": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（審査員がホースを離さない一台……。どんな味だったんだろう）"
+          }
+        ],
+        "thought_after": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（なるさんの一台なら、俺も知ってる、……あれは離せない）"
           }
         ]
       }
@@ -1254,7 +1270,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（香りの立ち上がり方……お湯の温度でこんなに変わるのか）"
+          "text": "（冷めるにつれて、ミントが前に出てくる。温度で香りの順番が変わるのか）"
         },
         {
           "speaker": "",
@@ -2545,7 +2561,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "あの一分、意外と長かったですね"
+            "text": "あの一分、意外と長かったね"
           }
         ],
         "rest": [
@@ -2557,7 +2573,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "水を飲んでから帰ると、だいぶ楽でしたね"
+            "text": "水を飲んでから帰ると、だいぶ楽だったね"
           }
         ]
       }

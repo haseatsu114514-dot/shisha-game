@@ -40,12 +40,12 @@ await suite("first-brew-finish", async check => {
       assert.match(text, /いいシーシャ屋さん/);
       if (["balanced", "cool", "hot"].includes(row.finish)) {
         assert.equal(row.brew.finish, row.finish);
-        assert.match(text, { balanced: /熱もちょうどよく/, cool: /少しぬるい/, hot: /少し熱い/ }[row.finish]);
+        assert.match(text, { balanced: /熱もちょうどよく/, cool: /少し薄い/, hot: /少し熱い/ }[row.finish]);
         assert.doesNotMatch(text, /つい、もう一口/);
       } else {
         assert.equal(row.brew.finish ?? null, null);
         assert.match(text, /つい、もう一口/);
-        assert.doesNotMatch(text, /少しぬるい|少し熱い|熱もちょうどよく/);
+        assert.doesNotMatch(text, /少し薄い|少し熱い|熱もちょうどよく/);
       }
     }
   }, { reducedMotion: "reduce" });

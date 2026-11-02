@@ -352,6 +352,7 @@
       "title": "Game logic without a browser",
       "kind": "quick",
       "run": [
+        "node remake/test/chapter_final_day.mjs",
         "node --experimental-vm-modules remake/test/engine_robust.mjs",
         "node --experimental-vm-modules remake/test/ch3_deliveries.mjs",
         "node remake/test/dj_preview.mjs",
@@ -1054,6 +1055,22 @@
       ],
       "run": [
         "node remake/test/browser/ch5_full_flow.mjs"
+      ]
+    },
+    {
+      "id": "staff-roll",
+      "title": "Chapter 5 end card radar, staff roll, first-time no skip, then title",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 10,
+      "paths": [
+        "remake/js/scenes/staff-roll.js",
+        "remake/css/staff-roll.css",
+        "remake/js/chapters/ch5*.js",
+        "remake/test/browser/staff_roll.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/staff_roll.mjs"
       ]
     },
     {
