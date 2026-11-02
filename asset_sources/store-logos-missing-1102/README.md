@@ -20,7 +20,7 @@
 - ロゴで表すべき店（シーシャの店）で盾のままなのは **SHISHARK・中心地のカフェ・路地裏のカフェの3店**。今回の依頼はこの3店。
 - 第4章の旧「自由行動」カード（`chapters/ch4.js` の `renderFree`。日常ループに入る前の古いセーブ用）は `ch4_<場所>` でロゴを引くので、`ch4_center_cafe`・`ch4_alley_cafe` も同じロゴへつなぐ。
 - 第3章の東京の行程地図（`chapters/ch3-map.js`）の「訪ねた店」（`ch3_shop`）は名前の無い店なので、ロゴは要らない。
-- 地図に出ない店（龍龍水煙所・SMOKE LAB・NIGHTSIDE）は対象外。
+- 地図に出ない店（SMOKE LAB・NIGHTSIDE）は対象外。龍龍水煙所は 2026-11-02 に第4章ドバイの地図へ出たので、下の「追加（DBS08）」で依頼する。
 
 ## 作るもの
 
@@ -83,6 +83,20 @@
    白い文字が主のロゴになったら `dark: true` を付ける（地図の看板と到着の札が暗くなる）。
 5. テスト: `remake/test/store_logo_fallback.mjs` の別名の表に `ch4_center_cafe`・`ch4_alley_cafe`・`ch5_dubai_alley`・`ch5_dubai_shop` を足し、`shishark`・`ch4_dubai_cafe`・`ch4_dubai_alley` が `hasStoreLogo` で真になることを確かめる。`node --experimental-vm-modules remake/test/store_logo_fallback.mjs`、`node remake/test/store_logos.mjs`（第1章の地図。SHISHARK は第2章からなので変わらない）、`node remake/test/browser/ch4_dubai_daily.mjs` を通す（後の2つはプレビューサーバーを先に起動）。
 6. 実画面で確かめる: 第2章以降の地元（SHISHARK `x58 y38` と KEMURIKUSA・EDEN・喫茶こはくの名札が重ならない）、第4章のドバイ（中心地のカフェ `x70 y52`、路地裏のカフェ `x30 y78` とスーク・Dr.fookah ドバイ店）、第5章のドバイ（路地裏のカフェと Dr.fookah ドバイ店 `x40 y50`）。到着時の札にもロゴが出ること。ロゴの看板は盾より横に広い。
+
+## 追加（DBS08・2026-11-02）: 龍龍水煙所
+
+第4章ドバイの日常の地図に、王煙楼の店「龍龍水煙所」（中国伝統の水煙の老舗が世界大会に合わせて出したドバイの店。`ch4_dubai_longlong`、`x58 y50`）が入った（台帳 DBS05・DBS08）。ロゴが無いので今は盾。
+
+| 店 | 出る地図 | 登録キー | 今の表示 | プロンプト | ゲーム用の予定ファイル |
+|---|---|---|---|---|---|
+| 龍龍水煙所（王煙楼の店のドバイの店） | ドバイ（第4章） | `ch4_dubai_longlong` | 盾 | [longlong-prompt.txt](longlong-prompt.txt) | `assets/ui/store_logos/ch4-longlong.webp` |
+
+- 文字: 正本の店名 `龍龍水煙所`（`data/characters.json` の `master_hookah.affiliation`・`brand/character_profiles.md`。読みはロンロン・シュイイェンスオ、簡体字 龙龙水烟所）。画像AIが漢字を崩しやすいので、A は5字、B は「龍龍」の2字だけ、C は文字なしの3案。崩れた字・余計な字・偽の判子があれば不採用。
+- 図案: 黒漆の扁額に深紅の地・古金の縁、祥雲（雲の渦）で描いた細い龍が一匹（王煙楼の「龍の煙」の意匠を、煙そのものではなく雲の渦で表す）。配色は王煙楼の装束（深紅・黒・古金）に寄せ、翡翠色を少し。シーシャ機材・煙の柱・国の印（旗・星）を描かない。
+- 参照画像: 1枚目は意匠・配色の基準として王煙楼の立ち絵 `assets/sprites/characters/master_hookah/chr_master_hookah_normal.png`（**装束の色と刺繍の質感だけ**。人物は描かない）、2・3枚目は仕上げの基準 `assets/ui/store_logos/kanzaki.webp`・`assets/ui/store_logos/ch3-smoke-and-glory.webp`。
+- 組み込み: 上の手順1〜6と同じ。`STORE_LOGOS` に `ch4_dubai_longlong: { name: "龍龍水煙所", file: "ch4-longlong", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] }`。実画面は第4章のドバイ（龍龍水煙所 `x58 y50` と中心地のカフェ・Dr.fookah の店先・風の回廊モスクの名札が重ならない）。
+- 店の背景（`bg_dubai_longlong` の予定）も無く、今は `bg_hideaway` を仮に使っている。背景は `tools/bg_prompts.txt` の共通指針で別に頼む（ここでは作らない）。
 
 ## 参考: ロゴではない抜け（今回の依頼書の対象外）
 

@@ -2,8 +2,9 @@
 // オーナー「3も4も14日」）。日付・昼夜・体力・睡眠・天気・LIMEの受信箱・地図・育成（上限90）・寝る前の家シーシャは
 // 日常ループが持つ。ドバイDAY1〜12がこの日常、DAY13は前夜祭と前夜（ch4.js の今までの「前夜」の流れ）、DAY14が世界大会。
 // ここはドバイだけの部分:
-//   - 行き先: スーク・FESTA・中心地のカフェ・路地裏のカフェ（約束の後）・なると会う・公式練習会場・クリーク沿い・
-//     Dr.fookah ドバイ店・モスク（火種がある時・見学時間）・宿
+//   - 行き先: スーク・FESTA・中心地のカフェ・路地裏のカフェ（約束の後）・龍龍水煙所（王煙楼の店）・なると会う・公式練習会場・
+//     クリーク沿い・Dr.fookah ドバイ店・モスク（火種がある時・見学時間）・宿
+//   - 龍龍水煙所: 王煙楼の店がドバイに出した店。ほかの章のライバルの店と同じく、通うと好感度と段階の会話が進む（ch4-longlong.js）
 //   - 必須の出会い（FESTAの太陽・スークの出会い・路地裏の約束）は、期限の夜までに寄らなければその夜に読む
 //   - 再訪の会話は data/dialogue/ch4_dubai_daily.json から巡回して読む
 //   - 中心地のカフェ・路地裏のカフェは、来店のたびに現地のメニューから一台頼んで味わう（ch4-dubai-cafe.js。2026-11-02
@@ -16,7 +17,7 @@ import { layers, setBg, toast, modal } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { showHud } from "../daily/hud.js";
-import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, affinityLevel, visitAffinity } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { consultLessons } from "../core/growth.js";
@@ -30,6 +31,7 @@ import { visitCamelRace } from "./ch4-camel-race.js";
 import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js";
 import { CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_IN_SCENE, TALKS_AFTER_ORDER,
   resolveCafeOrder, tasteScene, recordCafeOrder } from "./ch4-dubai-cafe.js";
+import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, nextLonglongVisit, longlongHasNew, recordLonglongVisit } from "./ch4-longlong.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -73,6 +75,10 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
     preview: CH4_PLACE_BG.center_cafe, cost: 6000, stamina: -10, stat: "sense", desc: "立派なカフェ。現地のメニューから一台頼んで吸う（6,000円）。給仕と客の作法も見る。" }),
   spot({ id: "ch4_dubai_alley", place: "alley_cafe", label: "路地裏のカフェ", area: "路地の奥", x: 30, y: 78, theme: "store", glyph: "茶",
     preview: CH4_PLACE_BG.alley_cafe, cost: 6000, stamina: -10, stat: "technique", desc: "古い台が並ぶ小さなカフェ。現地のメニューから一台頼んで吸う（6,000円）。" }),
+  // 龍龍水煙所（王煙楼の店）は最初から出す。王煙楼に会うまでは店主の顔は「？」（daily/spot-people.js）。背景は仮置き。
+  spot({ id: "ch4_dubai_longlong", place: "longlong", label: "龍龍水煙所", area: "世界大会のあいだの店", x: 58, y: 50, theme: "rival", glyph: "龍",
+    face: LONGLONG_CHAR, preview: LONGLONG_BG, cost: 6000, stamina: -12, stat: "insight",
+    desc: "中国の水煙の老舗が、世界大会に合わせて出した店。一台6,000円。" }),
   spot({ id: "ch4_dubai_naru", place: "naru", label: "なると会う", area: "宿のロビー", x: 20, y: 36, theme: "rival", glyph: "友",
     face: "naru", preview: CH4_PLACE_BG.inn, stamina: -8, stat: "guts", desc: "同じ街にいる日本の第二代表。少し話す。" }),
   spot({ id: "ch4_dubai_practice", place: "practice", label: "公式練習会場", area: "大会会場", x: 84, y: 30, theme: "stadium", glyph: "練",
@@ -94,6 +100,7 @@ function spotHasNew(entry) {
   if (entry.place === "alley_cafe") return !read("ch4_stranger_second") || !read("ch4_alley_cafe_quiet");
   if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
   if (entry.place === "practice") return nextTalk("practice", { once: true }) !== null;
+  if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR));
   return false;
 }
 
@@ -182,7 +189,7 @@ export function chapterFourDubaiDefinition(io) {
 /** ドバイの日常（DAY1〜12）を回す。前夜祭の日（DAY13）の朝か LOAD で戻る。 */
 export async function runChapterFourDubai(io) {
   const owner = state;
-  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS));
+  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_IDS));
   if (state !== owner) return;
   state.flags._ch2_region = DUBAI;
   state.phase = "daily";
@@ -240,16 +247,24 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   if (entry.place === "camel") return visitCamel(owner);
   if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${entry.cost.toLocaleString("ja-JP")}円）`); return unused; }
   if (entry.stamina < 0 && !(await staminaGuard(entry.stamina))) return unused;
-  let done = false;
+  let done = false, longlong = null;
   if (entry.place === "inn") done = await restAtInn(io, owner);
   else if (entry.place === "creek") done = await readPlain(state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day", "bg_dubai_street_night", owner);
+  else if (entry.place === "longlong") {
+    // 必要ハートに届いた最古の未読の段階、無ければ小会話（ch4-longlong.js）。読み終えた時だけ記録する。
+    longlong = nextLonglongVisit(state, affinityLevel(LONGLONG_CHAR));
+    done = await readPlain(longlong.id, LONGLONG_BG, owner);
+  }
   else done = await visitPlace(entry, io, owner);
   if (!done || state !== owner) return unused;
+  if (longlong) recordLonglongVisit(state, longlong);
   if (entry.cost) addMoney(-entry.cost);
   addStamina(entry.stamina || 0);
   if (entry.stat) earnStat(entry.stat, 4);
   if (entry.place === "festa") gainAffinity("da_silva", 5);
   if (entry.place === "naru") gainAffinity("naru", 5);
+  // 龍龍水煙所: ほかの章のライバルの店と同じ値（段階の会話 +16・通いの小会話 +8。core/stats.js の visitAffinity）
+  if (longlong) gainAffinity(LONGLONG_CHAR, visitAffinity(longlong.kind === "story" ? "story" : "talk"));
   // 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があれば相談して話を聞く（FESTA＝太陽、路地裏のカフェ＝シェイク）
   const teacher = { festa: "da_silva", alley_cafe: "sheikh" }[entry.place];
   if (teacher && state === owner) await keepDailyHud(() => consultLessons(teacher));
