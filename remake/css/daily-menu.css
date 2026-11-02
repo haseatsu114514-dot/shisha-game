@@ -112,7 +112,9 @@
 .dmenu .dm-chip.gift { border-style: dashed; border-color: var(--dm-lav-line); }
 .dmenu .dm-chip.on.gift { border-color: #fff9; }
 .dmenu .dm-chip.new { color: #8a5413; background: #fbe9cf; border-color: #e4b57a; }
-.dmenu .dm-chip.lime { color: #fff; background: #06c755; border-color: #06c755; }
+/* LIME札は「連絡先あり」の所持表示。押せる操作に見えないよう、ほかの関係札と同じ淡い地＋濃い文字にそろえ、LIMEの緑は先頭の点で残す（#2363、文字#0a6b34／地#e6f7ec＝5.96:1） */
+.dmenu .dm-chip.lime { color: #0a6b34; background: #e6f7ec; border-color: #8fd9ac; }
+.dmenu .dm-chip.lime::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #06c755; }
 .dmenu .dm-chip.blank { visibility: hidden; }
 .dmenu .dm-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 
