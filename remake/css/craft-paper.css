@@ -539,6 +539,16 @@ html .bench[data-mode] .bench-phase:not(.now) .bench-phase-copy b { display: non
 html .bench[data-mode] .bench-phase.now .bench-phase-copy small { display: none; }
 html .bench[data-mode] .bench-phase.seen .bench-phase-copy small { font-size: 0; }
 html .bench[data-mode] .bench-phase.seen .bench-phase-copy small::after { content: "✓"; font-size: 15px; color: #c9a7e6; }
+html .bench[data-mode] .bench-worker-stage::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 3;
+  border: 1px solid transparent;
+  border-image: url("../img/ui/craft-night/frame.webp") 40 / 14px / 0 stretch;
+}
+html .bench[data-mode] .bench-worker-name {
+  background: none;
+  color: #f6f1fa;
+}
+html .bench[data-mode] .bench-hint { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0; }
 
 /* #2359: 白い選択面と金の透明角に、旧スキンの文字色・白地を残さない。 */
 html .bench[data-mode] .ht-option[aria-pressed="true"],
@@ -555,3 +565,12 @@ html .bench[data-mode] .pull-btns .btn.primary:hover:not(:disabled) {
 }
 /* 名前欄は元から絵に重なるabsolute層。空の帯を塗らず、見える台詞だけ窓に載せる。 */
 html .bench[data-mode] .bench-worker-name { background: none; }
+
+/* 実際に台詞がある時だけ窓を描き、空の名前欄とspanの二重窓は作らない。 */
+html .bench[data-mode] .bench-worker-caption { background: none; }
+html .bench[data-mode] .bench-worker:is([data-draw], [data-art-fallback="true"]) .bench-worker-name {
+  background: #2e1d45 url("../img/ui/craft-night/window.webp") center / 100% 100% no-repeat;
+}
+html .bench[data-mode] .bench-worker,
+html .bench[data-mode][data-art-skin] .bench-worker,
+html .bench[data-mode].thermal-active .bench-worker { box-shadow: none; }

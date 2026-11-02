@@ -144,6 +144,14 @@ CRAFT_NIGHT_PARTS = {
     "step-done": {"source_size": (1081, 1084), "width": 128, "alpha": True},
     "step-now": {"source_size": (1119, 1121), "width": 128, "alpha": True},
     "step-next": {"source_size": (1007, 1013), "width": 128, "alpha": True},
+    "rank-strip": {"source_size": (2138, 430), "width": 1024, "alpha": True},
+    "medal-gold": {"source_size": (1236, 1040), "width": 128, "alpha": True},
+    "medal-silver": {"source_size": (1252, 1075), "width": 128, "alpha": True},
+    "medal-bronze": {"source_size": (1189, 1013), "width": 128, "alpha": True},
+    "medal-plain": {"source_size": (1237, 1035), "width": 128, "alpha": True},
+    "cutin-band": {"source_size": (1009, 1536), "width": 1024, "alpha": True},
+    "entry-me": {"source_size": (1133, 1094), "width": 128, "alpha": True},
+    "entry-rival": {"source_size": (1056, 1022), "width": 128, "alpha": True},
 }
 
 

@@ -355,7 +355,27 @@ await suite("ch1-tournament", async check => {
       assert(await page.locator('[data-test="standings"].show:not(.out)').isVisible());
       assert.equal(await page.locator('.sd-feed-lines > div').count(), 2);
     }
+    const paint = await page.locator('.standings .rank-medal').evaluateAll(nodes => nodes.map(n => {
+      const s = getComputedStyle(n); return { image: s.backgroundImage, size: s.backgroundSize,
+        position: s.backgroundPosition, repeat: s.backgroundRepeat, clip: s.clipPath };
+    }));
+    assert(paint.length > 0);
+    for (const medal of paint) {
+      assert.match(medal.image, /medal-(gold|silver|bronze|plain)\.webp/);
+      assert.equal(medal.size, 'contain'); assert.equal(medal.position, '50% 50%');
+      assert.equal(medal.repeat, 'no-repeat'); assert.equal(medal.clip, 'none');
+    }
+    assert.equal(await page.locator('.standings .sd-board').evaluate(n => getComputedStyle(n).backgroundImage), 'none');
+    const decorations = await page.locator('.standings .sd-row').evaluateAll(nodes => nodes.map(n => {
+      const s = getComputedStyle(n); return [s.borderTopColor, s.boxShadow];
+    }));
+    assert(decorations.every(([border, shadow]) => border === 'rgba(0, 0, 0, 0)' && shadow === 'none'));
+    assert(await page.locator('.standings .sd-board').evaluate(n => {
+      const legend = n.querySelector('.judge-legend').getBoundingClientRect();
+      return legend.bottom <= n.querySelector('.sd-rows').getBoundingClientRect().top;
+    }), 'Judge legend overlaps the ranking rows');
     await capture(page, `standings-${label}`);
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/night-standings-${viewport.width}x${viewport.height}.png` });
     if (label === "portrait") {
       // Keep the portrait layout checks, then follow the guide to rotate before tapping.
       assert(await page.locator("#rotate-hint").isVisible());
