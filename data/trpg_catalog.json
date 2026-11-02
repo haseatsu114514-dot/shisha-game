@@ -119,6 +119,47 @@
       ],
       "interested": true,
       "interestHint": "物語や舞台の仕掛けが好き"
+    },
+    {
+      "id": "rei",
+      "maxAffinity": 66,
+      "workLabel": "零-ZERO-の営業中",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "interested": true,
+      "interestHint": "休みの日はTRPGで遊んでいる"
+    },
+    {
+      "id": "ageha",
+      "maxAffinity": 66,
+      "workLabel": "MELTY PUFFの営業中",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "interested": true,
+      "interestHint": "楽しそうなことには、とりあえず乗る"
     }
   ],
   "club": {

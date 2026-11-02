@@ -165,6 +165,28 @@ test("noon, story nights, pending appointments and non-daily phases cannot start
   s.pendingInvite.day = 4; assert(rules.castTrpgTable(s, catalog, ordinary).ok);
   s.phase = "tournament"; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
 });
+test("REI and Ageha join from their own chapter-two shop visits and never take an unwritten seat", async () => {
+  for (const id of ["rei", "ageha"]) {
+    const s = state(); rules.foundTrpgClub(s, catalog);
+    const person = catalog.participants.find(p => p.id === id);
+    assert(person?.interested, id + " is a club candidate");
+    assert(!rules.recruitmentStatus(s, person, catalog).ok, "Not before meeting");
+    s.met[id] = true; s.affinity[id] = 65;
+    assert(!rules.joinTrpgClub(s, catalog, id), "Not before MAX");
+    s.affinity[id] = 66;
+    assert(rules.joinTrpgClub(s, catalog, id));
+    assert.equal(club.branches["invite_" + id][0].speaker, "hajime");
+    assert(club.branches["invite_" + id][0].text.endsWith("どうですか？"), "Hajime speaks politely to " + id);
+  }
+  // Members wait for a scenario that wrote their voice: the existing books keep their authored seats.
+  const s = own(friends(state()), ordinary.id);
+  const cast = rules.castTrpgTable(s, catalog, ordinary);
+  assert(cast.ok); assert(!cast.participants.includes("rei")); assert(!cast.participants.includes("ageha"));
+  // The neighbouring town's shop visit offers the same face-to-face recruitment as the home town.
+  const source = await readFile(new URL("../js/chapters/ch2-preparation.js", import.meta.url), "utf8");
+  assert.match(source, /await maybeRecruitTrpgMember\(id\);\n  return \{ used: true, exerted: true \};/);
+});
+
 test("Sumi/Naru never join; unrecruited companions are not invited", () => {
   const s = own(friends(state(), ["hiyori", "sumi", "naru"]), ordinary.id);
   const result = rules.castTrpgTable(s, catalog, ordinary);
