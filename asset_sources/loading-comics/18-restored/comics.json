@@ -1,0 +1,100 @@
+{
+  "episode": 18,
+  "title": "儚い仕事人",
+  "cast": "ひより・はじめ",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-20261024/18-20-after-hours.png",
+    "original_order": "right-to-left",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "RIGHT: Hiyori, adult 25, reddish brown ponytail over shoulder, ivory sleeveless blouse and black work pants, wistfully leans over a cafe laptop, posing like a tragic heroine, saying softly 「私、壊れてしまいそう……」 Hajime looks concerned. She IS genuinely tired, not acting a serious disease. LEFT: while still holding the same elegant weary pose with one hand at her cheek, her other hand efficiently taps send on a laptop whose screen shows three big clean check marks by 「議事録」「経費」「引継ぎ」. Hiyori calmly says 「全部、送信しました。」 Hajime impressed says 「仕事は速い。」 No screaming personality switch, no mockery of actual fatigue.",
+      "dialogue_original": [
+        "私、壊れてしまいそう……",
+        "議事録",
+        "経費",
+        "引継ぎ",
+        "全部、送信しました。",
+        "仕事は速い。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-20261024/18-20-after-hours.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-20261024/18-20-after-hours.png",
+      "region": {
+        "x": 600,
+        "y": 151,
+        "width": 468,
+        "height": 347,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-20261024/18-20-after-hours.png",
+      "region": {
+        "x": 20,
+        "y": 151,
+        "width": 556,
+        "height": 347,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-18-1.webp",
+      "width": 520,
+      "height": 347,
+      "sha256": "112e598ba29e9c1238ee105190e043604764ee53dca2f8fe68ac65b746508f4b"
+    },
+    {
+      "file": "panels/restored-18-2.webp",
+      "width": 556,
+      "height": 371,
+      "sha256": "e453541c9789427dcdd2f3a693cb2f785acbe4013cc5d7ceeaca556036ae5feb"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  }
+}

@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D0  枠の段 1: 2コマ@y=272
+  コマ1: 720x480 @(36,272) 比率 1.500 → ok
+  コマ2: 718x477 @(781,272) 比率 1.505 → ok
+コマ1: 720x480 (1.500) そのまま → 出力 720x480  asset_sources/loading-comics/74-adam-alarm-clock/panels/adam-alarm-clock-1.webp (60 KiB)
+コマ2: 718x477 (1.505) → 上下に各0.2%の紙帯 → 出力 718x479  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  asset_sources/loading-comics/74-adam-alarm-clock/panels/adam-alarm-clock-2.webp (55 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "adam-alarm-clock",
+  "title": "目覚ましの役目",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "asset_sources/loading-comics/74-adam-alarm-clock/panels/adam-alarm-clock-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "asset_sources/loading-comics/74-adam-alarm-clock/panels/adam-alarm-clock-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "asset_sources/loading-comics/74-adam-alarm-clock/74-adam-alarm-clock.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "asset_sources/loading-comics/74-adam-alarm-clock/74-adam-alarm-clock.png",
+      "region": {
+        "x": 781,
+        "y": 272,
+        "width": 718,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "adam-alarm-clock-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "c936bd0323aac7610b3e06cae61d88dc24ef2ee3d36b86801c874bfe833c1394"
+    },
+    {
+      "file": "adam-alarm-clock-2.webp",
+      "width": 718,
+      "height": 479,
+      "sha256": "2c36b5d7aa52a678b29ba3dad0cb5d229b17c1320b6d35302b33a6126128d89d"
+    }
+  ]
+}

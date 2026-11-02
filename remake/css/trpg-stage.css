@@ -881,15 +881,28 @@
 
 /* ===== More scenes and more books (2026-11-01): atlas rows, text choices, art-free rooms, interviews. ===== */
 .trpg-root.trpg-cinematic .trpg-object-art { background-size: 300% calc(var(--atlas-rows, 3) * 100%); }
-.trpg-root.trpg-cinematic .trpg-object-choice.trpg-text-choice { justify-content: flex-end; }
-.trpg-root.trpg-cinematic .trpg-text-choice-mark {
-  position: absolute; left: 50%; top: 22px; transform: translateX(-50%); display: grid; place-items: center;
-  width: 150px; height: 150px; border-radius: 50%; font-size: 64px; font-weight: 500; letter-spacing: 0;
-  color: #fff1cf; background: radial-gradient(circle at 40% 35%, #3f6a6fcc, #12303ae6 70%); border: 1px solid #f1dfb366;
-  box-shadow: 0 14px 30px #0007; pointer-events: none;
+/* Art-free choices are plain cards. The extra .trpg-choice-cards keeps the photo-object rules (absolute labels, hidden details) from reaching them. */
+.trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice {
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px;
+  height: auto; min-height: 210px; padding: 22px 18px 20px; border: 1px solid #d8c9a3; border-radius: 10px;
+  background: var(--paper, #f7f1e3); color: var(--paper-ink, #2f2a3a); box-shadow: 0 12px 26px #0006;
 }
-.trpg-root.trpg-cinematic .trpg-object-choice.trpg-text-choice:is(.selected, [aria-pressed="true"]) .trpg-text-choice-mark { border-color: #ffd98f; box-shadow: 0 0 0 3px #ffd98f88, 0 14px 30px #0007; }
-.trpg-root.trpg-cinematic .trpg-object-choice.trpg-text-choice .trpg-object-detail { opacity: 1; visibility: visible; transform: none; }
+.trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice:hover:not(:disabled) { background: var(--paper, #f7f1e3); border: 1px solid #d8c9a3; box-shadow: 0 16px 30px #0007; }
+.trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice:is(.selected, [aria-pressed="true"]) { background: #fff8e6; border: 1px solid #d79a3f; box-shadow: 0 0 0 3px #e7b25f88, 0 14px 30px #0007; }
+.trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice > span.trpg-text-choice-mark {
+  position: static; display: grid; place-items: center; flex-shrink: 0; width: 52px; height: 52px; padding: 0; border-radius: 50%;
+  transform: none; opacity: 1; visibility: visible; font-size: 24px; font-weight: 600; line-height: 1; letter-spacing: 0;
+  color: #fff6dc; background: var(--lavender, #6a4c86); text-shadow: none; box-shadow: 0 4px 10px #0003; pointer-events: none;
+}
+.trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice > strong.trpg-object-label {
+  position: static; transform: none; width: auto; max-width: 100%; padding: 0; font-size: 19px; font-weight: 700; line-height: 1.4;
+  color: var(--lavender, #6a4c86); background: none; box-shadow: none; clip-path: none;
+}
+.trpg-root.trpg-cinematic .trpg-choice-cards .trpg-object-choice.trpg-text-choice > span.trpg-object-detail {
+  position: static; transform: none; opacity: 1; visibility: visible; padding: 0; font-size: 14px; line-height: 1.6;
+  color: var(--paper-ink, #2f2a3a); background: none; text-shadow: none;
+}
+.trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-choice-cards:has(.trpg-text-choice) { height: auto; align-items: stretch; padding: 8px 0 4px; }
 .trpg-root.trpg-cinematic .trpg-scene-fallback { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; }
 .trpg-root.trpg-cinematic .trpg-scene-fallback::before { content: ""; position: absolute; inset: 0; background:
   radial-gradient(ellipse at 30% 20%, #ffffff1a, transparent 55%), repeating-linear-gradient(115deg, #ffffff06 0 2px, transparent 2px 14px); }

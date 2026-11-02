@@ -1,8 +1,8 @@
 {
   "episode": 49,
   "title": "蒸らしの時計",
-  "status": "candidate-awaiting-owner-selection",
-  "registered": false,
+  "status": "adopted-registered-20261102",
+  "registered": true,
   "canon_status": "不条理ギャグの誇張。本編の能力・人物・店の衛生や営業設定への追加ではない。",
   "reading_order": "左①導入→右②オチ",
   "image_manifest": [
@@ -94,5 +94,6 @@
       "visual": "スマホ横12話とPC51話/55話を目視確認。台詞・顔の欠けなし。"
     }
   },
-  "theme": "シーシャあるある"
+  "theme": "シーシャあるある",
+  "selection_note": "2026-11-02 採用。remake/js/core/loading-comics.js の id 'steeping-clock'、配信用は remake/img/loading/steeping-clock-1.webp / -2.webp。"
 }

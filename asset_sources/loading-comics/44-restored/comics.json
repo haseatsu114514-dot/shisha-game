@@ -1,0 +1,101 @@
+{
+  "episode": 44,
+  "title": "畳みの極意",
+  "cast": "はじめ・スミさん",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/loading-comics/44-sumi-cloth-fold/44-sumi-cloth-fold.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [
+    {
+      "file": "44-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1593597,
+      "sha256": "9cb459806b5880b50b90265f089ebbfbb1f9310ec44cf38dd70f78e3abbbb636"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "左: はじめが清潔な白いふきんを持ち「畳み方は？」。スミさんが「角をそろえろ。」。右: はじめが折り紙の鶴そっくりに畳んだ白ふきんを手にして困惑「鶴になった。」。スミさんは無言で眼鏡をずらし驚く。布の鶴は飛ばない。",
+      "dialogue_original": [
+        "畳み方は？",
+        "角をそろえろ。",
+        "鶴になった。"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/loading-comics/44-sumi-cloth-fold/44-sumi-cloth-fold.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "44-restored.png",
+      "region": {
+        "x": 45,
+        "y": 266,
+        "width": 707,
+        "height": 499,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "44-restored.png",
+      "region": {
+        "x": 784,
+        "y": 266,
+        "width": 707,
+        "height": 499,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-44-1.webp",
+      "width": 748,
+      "height": 499,
+      "sha256": "f62d0696bf44bc3335d8fcf585a776f397c417702cf57108bba9eb15a87d62f3"
+    },
+    {
+      "file": "panels/restored-44-2.webp",
+      "width": 748,
+      "height": 499,
+      "sha256": "0bfdf27e2aaf157da4a57089b81eec7c6f7e49a5ec9b49471f4cd82d42968799"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

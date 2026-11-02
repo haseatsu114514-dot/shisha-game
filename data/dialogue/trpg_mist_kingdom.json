@@ -1,0 +1,3222 @@
+{
+  "id": "mist-kingdom",
+  "version": 1,
+  "title": "朝霧の王国と、最後の一台",
+  "subtitle": "霧の王女と、煙の選手権",
+  "author": "宵原ねむ",
+  "collection": "船灯文庫・小さな卓の冒険 06",
+  "duration": "約10分",
+  "premise": "朝霧の出る朝だけ現れる王国。霧の中にしかいられない小さな王女は、今年最後の霧が晴れる前に『最後の一台』を決める選手権を開いた。出場者たちは、彼女の本当の望みに届くだろうか。",
+  "fiction": {
+    "town": "朝霧の王国",
+    "shop": "霧の王宮",
+    "traveler": "霧の王女ミナ"
+  },
+  "flow": {
+    "prepare": [
+      "flavor",
+      "place"
+    ],
+    "serve": [
+      "words"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "flavor": 1,
+    "place": 1,
+    "words": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "together",
+  "rules": {
+    "exploreLimit": 4,
+    "pressureMax": 6,
+    "initialPressure": 0,
+    "inspectionPressure": 1,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 2
+    },
+    "detourThreshold": 5,
+    "hypothesisBonus": 1
+  },
+  "cast": [
+    {
+      "id": "hiyori",
+      "part": "GM",
+      "role": "案内と、霧の王国",
+      "color": "#c9b8de"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／見習いの出場者",
+      "color": "#89bbc4",
+      "ability": "土壇場のひらめき",
+      "abilityType": "reroll",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "sheet": {
+        "name": "リト",
+        "title": "見習いの出場者",
+        "stats": {
+          "eye": 3,
+          "hand": 3,
+          "talk": 3,
+          "nerve": 2
+        },
+        "trait": "一台を作るのは好き。大会の作法は、まだよく分からない"
+      }
+    },
+    {
+      "id": "adam",
+      "part": "PLAYER",
+      "role": "{pc:adam}／林檎の紋章の騎士",
+      "color": "#c9463a",
+      "ability": "舞台の支度",
+      "abilityType": "prepare",
+      "abilityText": "一台を準備するとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "オルド",
+        "title": "林檎の紋章の騎士",
+        "stats": {
+          "eye": 2,
+          "hand": 5,
+          "talk": 2,
+          "nerve": 2
+        },
+        "trait": "選手権の常連。毎回、林檎の香りで勝負する。腕は本物",
+        "likes": "林檎。この宇宙の最初の一個"
+      }
+    },
+    {
+      "id": "samechan",
+      "part": "PLAYER",
+      "role": "{pc:samechan}／会場見物の大工",
+      "color": "#73b8df",
+      "ability": "居心地の目利き",
+      "abilityType": "serve",
+      "abilityText": "王女に一台を届けるとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "コバン",
+        "title": "会場見物の大工",
+        "stats": {
+          "eye": 4,
+          "hand": 3,
+          "talk": 1,
+          "nerve": 3
+        },
+        "trait": "選手権には興味がない。王宮の椅子と通路を見に来ただけ",
+        "likes": "座り心地のいい椅子と、サメの彫り物"
+      }
+    }
+  ],
+  "spots": [
+    {
+      "id": "throne",
+      "label": "玉座",
+      "short": "玉座",
+      "x": 50,
+      "y": 28
+    },
+    {
+      "id": "portrait",
+      "label": "王妃の肖像",
+      "short": "肖像",
+      "x": 20,
+      "y": 24
+    },
+    {
+      "id": "window",
+      "label": "霧の窓",
+      "short": "窓",
+      "x": 82,
+      "y": 22
+    },
+    {
+      "id": "judges",
+      "label": "審査員席",
+      "short": "審査員席",
+      "x": 30,
+      "y": 60
+    },
+    {
+      "id": "shelf",
+      "label": "王宮の香り棚",
+      "short": "香り棚",
+      "x": 70,
+      "y": 58
+    },
+    {
+      "id": "corridor",
+      "label": "消えかけの回廊",
+      "short": "回廊",
+      "x": 14,
+      "y": 82
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "garden",
+      "label": "生まれた庭の香りを、もう一度かぎたい",
+      "description": "王女が生まれた庭の香りを、その庭で届ければよさそう。",
+      "discussion": "trpg_mist_kingdom_discuss_garden"
+    },
+    {
+      "id": "dawn",
+      "label": "霧が晴れるまで、誰かに隣にいてほしい",
+      "description": "長く香る一台で、最後の朝を一緒に過ごせばよさそう。",
+      "discussion": "trpg_mist_kingdom_discuss_dawn"
+    },
+    {
+      "id": "remember",
+      "label": "誰かに、自分を覚えていてほしい",
+      "description": "霧の外へ持ち帰れるものを、皆の前で受け取ればよさそう。",
+      "discussion": "trpg_mist_kingdom_discuss_remember"
+    }
+  ],
+  "options": {
+    "flavor": [
+      {
+        "id": "flower",
+        "label": "王妃の庭の花",
+        "description": "王女が生まれた庭に咲く、白い花の香り。",
+        "response": "trpg_mist_kingdom_choice_flavor_flower"
+      },
+      {
+        "id": "mistfruit",
+        "label": "霧の果実",
+        "description": "朝霧の中で熟す果実。ゆっくり長く香る。",
+        "response": "trpg_mist_kingdom_choice_flavor_mistfruit"
+      },
+      {
+        "id": "tea",
+        "label": "王女の合わせた茶",
+        "description": "王女が自分で合わせた、やさしい茶の香り。",
+        "response": "trpg_mist_kingdom_choice_flavor_tea"
+      }
+    ],
+    "place": [
+      {
+        "id": "garden",
+        "label": "王妃の庭",
+        "description": "王女が生まれた、小さな花の庭。",
+        "response": "trpg_mist_kingdom_choice_place_garden"
+      },
+      {
+        "id": "balcony",
+        "label": "朝霧のバルコニー",
+        "description": "城下を見渡せる、霧のいちばん濃い場所。",
+        "response": "trpg_mist_kingdom_choice_place_balcony"
+      },
+      {
+        "id": "stage",
+        "label": "選手権の舞台",
+        "description": "王国じゅうの人が見守る、選手権の真ん中。",
+        "response": "trpg_mist_kingdom_choice_place_stage"
+      }
+    ],
+    "words": [
+      {
+        "id": "memory",
+        "label": "思い出を聞く",
+        "description": "王女が話したいことを、急がず聞く。",
+        "response": "trpg_mist_kingdom_choice_words_memory"
+      },
+      {
+        "id": "stay",
+        "label": "夜明けまで隣にいる",
+        "description": "霧が晴れるその時まで、そばにいる。",
+        "response": "trpg_mist_kingdom_choice_words_stay"
+      },
+      {
+        "id": "learn",
+        "label": "作り方を教わる",
+        "description": "王女の一台の作り方を、霧の外へ持ち帰る。",
+        "response": "trpg_mist_kingdom_choice_words_learn"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "bell",
+        "label": "鐘を鳴らして霧を呼び戻す",
+        "description": "塔の古い鐘。その音は霧を呼ぶと言われる。",
+        "response": "trpg_mist_kingdom_choice_tactic_bell"
+      },
+      {
+        "id": "hurry",
+        "label": "消える前に急いで仕上げる",
+        "description": "迷う時間を削って、手を止めずに進める。",
+        "response": "trpg_mist_kingdom_choice_tactic_hurry"
+      },
+      {
+        "id": "guide",
+        "label": "王女を霧の濃い場所へ案内する",
+        "description": "霧の残る奥の間へ、小さな手を引いていく。",
+        "response": "trpg_mist_kingdom_choice_tactic_guide"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "garden",
+      "arrival": "姫さまは、花の香りがすると、いつも少しだけ足を止められるのです",
+      "likes": {
+        "flavor": [
+          "flower"
+        ],
+        "place": [
+          "garden"
+        ],
+        "words": [
+          "memory"
+        ]
+      },
+      "ending": "garden-scent",
+      "evidence": {
+        "throne": {
+          "title": "玉座の押し花",
+          "text": "玉座の肘掛けに、白い押し花。王女が生まれた朝、王妃の庭で摘まれた花だという。",
+          "lines": "trpg_mist_kingdom_clue_garden_throne"
+        },
+        "portrait": {
+          "title": "赤子を抱く王妃",
+          "text": "肖像の王妃は、庭の花に囲まれて赤子を抱いている。額には『庭で生まれた子へ』とある。",
+          "lines": "trpg_mist_kingdom_clue_garden_portrait"
+        },
+        "window": {
+          "title": "庭を向いた椅子",
+          "text": "窓辺の小さな椅子は、王妃の庭の方を向いている。座面には、膝を抱えて座った跡。",
+          "lines": "trpg_mist_kingdom_clue_garden_window"
+        },
+        "judges": {
+          "title": "王女の審査票",
+          "text": "王女の審査票は『香り』の欄だけが大きい。隅に『あの庭の香りに、似てる？』と書いてある。",
+          "lines": "trpg_mist_kingdom_clue_garden_judges"
+        },
+        "shelf": {
+          "title": "届かない花の瓶",
+          "text": "香り棚のいちばん上に、王妃の庭の花の香りの瓶。王女の背では届かない高さにある。",
+          "lines": "trpg_mist_kingdom_clue_garden_shelf"
+        },
+        "corridor": {
+          "title": "庭へ続く回廊",
+          "text": "消えかけの回廊は王妃の庭へ続く。庭だけは、霧が晴れても少し長く残るらしい。",
+          "lines": "trpg_mist_kingdom_clue_garden_corridor"
+        }
+      },
+      "answers": {
+        "reason": {
+          "title": "生まれた朝と同じ日",
+          "text": "今朝は、王女が王妃の庭で生まれた朝と同じ日。だから選手権を開いた。",
+          "lines": "trpg_mist_kingdom_ask_garden_reason"
+        },
+        "princess": {
+          "title": "庭を眺める王女",
+          "text": "王女は近ごろ、窓から王妃の庭ばかり眺めている。庭へ下りかけては、やめてしまう。",
+          "lines": "trpg_mist_kingdom_ask_garden_princess"
+        },
+        "mist": {
+          "title": "庭は少し遅れて消える",
+          "text": "霧が晴れると王国は消える。王妃の庭だけは、いつも少し遅れて消える。",
+          "lines": "trpg_mist_kingdom_ask_garden_mist"
+        },
+        "favorite": {
+          "title": "庭の花の香り",
+          "text": "王女は小さい頃から、庭の白い花の香りが好きだった。",
+          "lines": "trpg_mist_kingdom_ask_garden_favorite"
+        }
+      }
+    },
+    {
+      "id": "dawn",
+      "arrival": "姫さまは、霧が薄くなると、いつも誰かのそばへ寄って来られるのです",
+      "likes": {
+        "flavor": [
+          "mistfruit"
+        ],
+        "place": [
+          "balcony"
+        ],
+        "words": [
+          "stay"
+        ]
+      },
+      "ending": "until-dawn",
+      "evidence": {
+        "throne": {
+          "title": "すり減った肘掛け",
+          "text": "玉座の隣に王女の小さな椅子。肘掛けだけが、誰かの手を探すようにすり減っている。",
+          "lines": "trpg_mist_kingdom_clue_dawn_throne"
+        },
+        "portrait": {
+          "title": "肖像の裏の絵",
+          "text": "肖像の裏に、王女が描いた絵。霧の晴れた空の下、王女の隣に顔のない誰かが立っている。",
+          "lines": "trpg_mist_kingdom_clue_dawn_portrait"
+        },
+        "window": {
+          "title": "霧の帳面",
+          "text": "窓辺に、霧が晴れた時刻を記した帳面。日ごとに早くなり、今朝はとりわけ早い。",
+          "lines": "trpg_mist_kingdom_clue_dawn_window"
+        },
+        "judges": {
+          "title": "長く香るか",
+          "text": "王女の審査票の項目は『長く香るか』の一つだけ。急いで作った一台ほど、早く消えている。",
+          "lines": "trpg_mist_kingdom_clue_dawn_judges"
+        },
+        "shelf": {
+          "title": "霧の果実の瓶",
+          "text": "香り棚に霧の果実の瓶。説明書きに『霧の中では、ゆっくり長く香る』とある。",
+          "lines": "trpg_mist_kingdom_clue_dawn_shelf"
+        },
+        "corridor": {
+          "title": "バルコニーへの道",
+          "text": "消えかけの回廊はバルコニーへ続く。霧が一番濃く、王国で最後まで残る場所だ。",
+          "lines": "trpg_mist_kingdom_clue_dawn_corridor"
+        }
+      },
+      "answers": {
+        "reason": {
+          "title": "一人で見送らないように",
+          "text": "王女は霧が晴れる瞬間を、いつも一人で迎えてきた。今朝は誰かと過ごしたいらしい。",
+          "lines": "trpg_mist_kingdom_ask_dawn_reason"
+        },
+        "princess": {
+          "title": "袖をつかむ王女",
+          "text": "霧が薄くなるたび、王女は近くの誰かの袖をそっとつかむ。",
+          "lines": "trpg_mist_kingdom_ask_dawn_princess"
+        },
+        "mist": {
+          "title": "早く晴れる霧",
+          "text": "霧の晴れる時刻は日ごとに早くなり、今朝はとりわけ早く晴れそうだ。",
+          "lines": "trpg_mist_kingdom_ask_dawn_mist"
+        },
+        "favorite": {
+          "title": "長く香る一台",
+          "text": "王女が好きなのは、誰かとゆっくり囲める、長く香る一台。",
+          "lines": "trpg_mist_kingdom_ask_dawn_favorite"
+        }
+      }
+    },
+    {
+      "id": "remember",
+      "arrival": "姫さまは、出場者お一人お一人のお顔を、じっと見つめておられるのです",
+      "likes": {
+        "flavor": [
+          "tea"
+        ],
+        "place": [
+          "stage"
+        ],
+        "words": [
+          "learn"
+        ]
+      },
+      "ending": "named-blend",
+      "evidence": {
+        "throne": {
+          "title": "出場者の帳面",
+          "text": "玉座の脇に王女の帳面。出場者の名前が並び、最後に『だれか、覚えていてくれるかな』とある。",
+          "lines": "trpg_mist_kingdom_clue_remember_throne"
+        },
+        "portrait": {
+          "title": "空の額",
+          "text": "王妃の肖像の隣に、空の額。王女の肖像は、何度描いても霧に溶けて残らなかったという。",
+          "lines": "trpg_mist_kingdom_clue_remember_portrait"
+        },
+        "window": {
+          "title": "窓辺の覚え書き",
+          "text": "窓辺の机に、王女の字の覚え書き。『教えたことは、霧が晴れても消えない』。",
+          "lines": "trpg_mist_kingdom_clue_remember_window"
+        },
+        "judges": {
+          "title": "空いた審査員席",
+          "text": "審査員席の端に『霧の外の人』の札。王女が選ぶのは勝者ではなく、外へ持ち帰ってくれる人らしい。",
+          "lines": "trpg_mist_kingdom_clue_remember_judges"
+        },
+        "shelf": {
+          "title": "王女の茶の瓶",
+          "text": "棚の隅に、王女が自分で合わせた茶の瓶。『この香りの合わせ方を、だれかに』と札が結んである。",
+          "lines": "trpg_mist_kingdom_clue_remember_shelf"
+        },
+        "corridor": {
+          "title": "舞台へ戻る道",
+          "text": "消えかけの回廊は、選手権の舞台へ戻る。舞台は、王国じゅうの人が見守る場所だ。",
+          "lines": "trpg_mist_kingdom_clue_remember_corridor"
+        }
+      },
+      "answers": {
+        "reason": {
+          "title": "霧の外の人を招くため",
+          "text": "霧の外の人を招けるのは、選手権の日だけ。王女は外から来る出場者を待っていた。",
+          "lines": "trpg_mist_kingdom_ask_remember_reason"
+        },
+        "princess": {
+          "title": "名前を書き留める王女",
+          "text": "王女は近ごろ、出場者の名前を一人ずつ帳面に書き留めている。",
+          "lines": "trpg_mist_kingdom_ask_remember_princess"
+        },
+        "mist": {
+          "title": "教えたことは残る",
+          "text": "霧の国のものは霧の外へ持ち出せない。ただ、人に教えたことだけは残るという。",
+          "lines": "trpg_mist_kingdom_ask_remember_mist"
+        },
+        "favorite": {
+          "title": "自分で合わせた茶",
+          "text": "王女は自分で合わせた茶の香りを大事にしているが、まだ誰にも教えていない。",
+          "lines": "trpg_mist_kingdom_ask_remember_favorite"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "garden-scent": {
+      "title": "生まれた庭の香り",
+      "line": "王妃の庭で、花の香りの一台を。ミナは庭の思い出を語り、花の中で笑ったまま霧に溶けた。",
+      "dialogue": "trpg_mist_kingdom_ending_garden-scent"
+    },
+    "until-dawn": {
+      "title": "霧が晴れるまで",
+      "line": "霧の濃いバルコニーで、長く香る一台を囲む。ミナは最後まで袖をつかんだまま、笑って光に溶けた。",
+      "dialogue": "trpg_mist_kingdom_ending_until-dawn"
+    },
+    "named-blend": {
+      "title": "ミナの一台",
+      "line": "王女の合わせた茶の香りを、作り方ごと教わった。霧の外でその一台を作るたび、あの子を思い出す。",
+      "dialogue": "trpg_mist_kingdom_ending_named-blend"
+    },
+    "together": {
+      "title": "霧のあとに残る香り",
+      "line": "王女の望みとは少し違った。それでも、みんなで作った一台の香りに、彼女の気配が残っていた。",
+      "dialogue": "trpg_mist_kingdom_ending_together"
+    }
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_mist_kingdom_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……物語の前に、キャラ作りの時間。霧が晴れる前に、役を決めて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……出場者がそろったわ。では、霧の向こうへ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……今夜は、朝霧の中にだけある王国の物語。消えちゃう前に、一本だけ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "私がGM、みんなは選手権の出場者。短い朝の、短いお話よ",
+          "castIntro": true,
+          "smallTableText": "私がGM、はじめくんは出場者。空いた役は、私が兼ねるわ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "朝霧って……ひよりさんの名字ですよね？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "気づいた！？ ……こほん。偶然よ。儚いものは、みんな朝霧なの"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "選手権と聞いては黙っていられない。林檎が、もう騒いでいる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "わしは勝ち負けに興味はないのじゃ。王宮の椅子が見たい"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余も王である。霧の国の王族には、王として礼を尽くそう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "夜明け前。白い霧の中から、塔と城壁がゆっくり浮かび上がる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "朝霧の出る朝だけ、霧の外とつながる王国。今朝は『煙の選手権』の日"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は、出場者の列で、胸の番号札を握りしめている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:adam}は、審査員席へ向かって林檎の紋章を掲げている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:samechan}は、出場そっちのけで王宮の柱を叩いて回っている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "実況の伝令／物語",
+          "face": "smile",
+          "text": "さあ始まりました、煙の選手権！ 霧が晴れるまでの一本勝負！"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "surprise",
+          "text": "霧が晴れるまでって、時間制限つきなの！？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "sad",
+          "text": "……そう。この国は、霧が晴れたら消えちゃうから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_listen",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "審査員席には霧の大臣と料理長。玉座では、白い髭の老王が目を細めている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王の隣に、霧と同じ色の髪をした、小さな王女が座っていた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "来てくれて、ありがとう。わたし、ミナ。……最後の一台を、探してるの"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "そう言って微笑むと、王女の輪郭が、ほんの少し霧ににじんだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "今、透けた……。王女さま、儚すぎませんか"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "でしょ！？ 守りたくなるでしょ！？ ……こほん。続けるわね"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "sad",
+          "text": "姫さまは、霧のある間しかおられません。今朝は、今年最後の朝霧なのです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_listen_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミルテの肩の力が抜けた。霧はまだ濃い。ゆっくり話を聞けそうだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "急がない方が、話してくれることもあるんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_listen_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "話の途中で、遠くの鐘が一つ鳴る。霧が、ほんの少し薄くなった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今の鐘、時計みたいなものか……。少し急ごう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_listen_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "控えの間の扉が勢いよく開き、朝の風が霧をさらっていく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "扉、閉めて閉めて！ 霧が逃げる！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "霧晴れが二つ進むわ。……でも、調べる時間はまだ残ってる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "……間に合った。王宮の真ん中は、まだ白い霧の中にある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "よし、まだ時間はある"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "回廊の端は、消えてしまった。霧晴れが一つ進む"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "sad",
+          "text": "……儚いでしょう。でも、王宮の真ん中はまだ大丈夫"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "慌てた拍子に、香り棚の瓶が一つ転がる。霧晴れが二つ進む"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ごめん！ 割れてない、割れてない！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……誰も消えてないわ。物語は続くの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_prepare_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "選んだ香りが、霧の中でやわらかく開いた。審査員席から、小さなため息"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "見たか。香りの幕は、完璧に上がった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_prepare_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最初は香りが強すぎた。落ち着かせる間に、霧晴れが一つ進む"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "急ぐより、今の方がいい、……たぶん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_prepare_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "審査員の大臣が、大きなくしゃみ。霧がふわっと散って、霧晴れが二つ進む"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "審査員、今それ！？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……一台は無事よ。作戦は、まだ使えるわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_serve_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "言葉も一台も、まっすぐミナのもとへ届いた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "椅子の高さも、ぴったりじゃ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "ミナは一台の前に座り、ゆっくりと目を閉じる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_serve_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "言葉が少しつかえた。ミナはくすっと笑って、続きを待ってくれる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（緊張した……。でも、ちゃんと待ってくれた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_serve_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "ミナの裾が椅子の脚に引っかかり、一台がかたんと揺れる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "椅子の脚じゃと！？ わしとしたことが！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "ふふ。にぎやかな朝って、いいね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_consult_adam",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "全部は調べられない。ならば、主役の居場所から見よう"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "玉座の隣と、香り棚。王女の望みは、そのどちらかに眠っているはずだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……相談とメモは、霧を晴らさないわ。何度でもどうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_consult_samechan",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "あの子がどこで長く過ごしたか、椅子の減り方で分かるのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余が助言する。窓と回廊、王女の足が向く先を見よ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……さすが、椅子の目利きね。相談は、何度でも"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_preparation",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……王女の望み、見えてきたかしら。香りと、一台を置く場所を選んで"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "香りと場所か。ミナが一番安心できるところを考えよう"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "香りは物語の第一声だ。始まりを間違えなければ、宇宙は応える"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "置き場所はわしに任せよ。座り心地なら、もう三つは確かめたのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_serving",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "一台の香りが、霧の中にゆっくり広がる。ミナが、そっと近づいてくる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "椅子は用意したぞ。あとは、お主の言葉じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "……最後に、ミナにどんな言葉を添えよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "そのとき、窓の外が白く光った。霧が、晴れ始めている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "回廊の端の柱が、朝日に透けて、すうっと薄くなる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "sad",
+          "text": "……もう、晴れちゃうの？ まだ、最後の一台を見てないのに"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "柱が消えておる！ まだ座り心地を確かめておらんのに！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "……さあ、出場者たち。消えちゃう前に、どうする？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_epilogue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……これで、朝霧の王国の物語はおしまい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "選手権なのに、最後は誰が勝ったかより、ミナの話になりましたね"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "勝敗は霧と共に晴れた。残ったのは、林檎の……いや、一台の香りだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "わしは満足じゃ。審査員席、なかなかの座り心地じゃったぞ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余も満足である。小さな王女に、また会いたいものだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ひよりさんのGM、最後ちょっと泣きそうでした"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "ほんと！？ やった！ ……こほん。光栄だわ、消えちゃいそうなくらい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_debrief_smooth",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……霧が濃いうちに、みんな間に合ったわね。きれいな朝だった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "儚いのに、温かい話でしたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_debrief_with_detour",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……霧はずいぶん晴れちゃった。でも、急いだ朝も物語のうちよ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "間に合うか分からない。それこそが、最高の演出だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_discuss_garden",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "生まれた庭の香りを、生まれた庭で。原点は、原点で一番香る"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "棚の上の瓶なら、わしが踏み台を作るのじゃ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……いい読みね。じゃあ、その線で行ってみましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_discuss_dawn",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "霧が晴れるまで香る一台。終幕を、少しでも遠くへ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "霧の溜まるバルコニーなら、最後まで並んで座れるのじゃ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "sad",
+          "text": "……隣にいてあげて。そういうの、弱いのよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_discuss_remember",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "覚えていてほしい。……その願いに応えるのが、作り手の務めだ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "教わったことは残るのじゃろ？ なら、教わればよい"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……持ち帰れるもの、ね。その線でいきましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_flavor_flower",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "生まれた庭の花か。香りは、記憶の扉をいちばん静かに開ける"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_flavor_mistfruit",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "霧の果実か。ゆっくり長く、終幕を遠ざける香りだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_flavor_tea",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "王女の合わせた茶。……林檎以外で、初めて原点の匂いがした"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_place_garden",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "庭の長椅子は子ども用じゃ。……隣に、もう一脚置いておこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_place_balcony",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "バルコニーなら、手すりの高さもちょうどよい。並んで座れるのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_place_stage",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "舞台か。客席の椅子を全部、王女の方へ向けておくのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_words_memory",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "庭のこと、聞かせて。急がなくていいから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_words_stay",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "霧が晴れるまで、ここにいるよ。最後まで、隣に"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_words_learn",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "その一台の作り方、教えてほしい。霧の外でも作れるように"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_tactic_bell",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "塔の鐘を力いっぱい鳴らす。低い音に誘われて、霧がまた流れ込む"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "霧が戻ってきた！ 鐘、効くんだ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_tactic_hurry",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "迷う時間を、手を動かす時間に。三人の段取りが、ぐっと速くなる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "急ごう。でも、雑にはしない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_choice_tactic_guide",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミナの手を引いて、霧の残る奥の間へ。小さな手は、ひんやりしていた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "……誰かに手を引かれるの、久しぶり"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ending_garden-scent",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王妃の庭に、白い花の香りがふわりと広がる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "……この香り。わたし、ここで生まれたんだよ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミナは庭の思い出を、一つずつ話した。霧が、その声をやさしく包む"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "やがて霧が晴れる。ミナは花の中で笑ったまま、白く透けていった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "ありがとう、……また、霧の朝に"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "生まれた場所の香りか。原点とは、そういうものだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "sad",
+          "text": "……庭には、花の香りだけが残ったの。ほかより、少しだけ長く"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ending_until-dawn",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "朝霧のバルコニーで、霧の果実の一台がゆっくり香り続ける"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "隣にいてくれるの？ ……じゃあ、霧が晴れるまで、ここにいて"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは、ミナと並んで城下を眺めた。誰も、急がなかった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "最後の霧が晴れる。ミナは袖をつかんだまま、光の中へ溶けていった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "……楽しかった。また、霧の朝に"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "よい席じゃった。わしは、また霧の朝に座りに来るぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "また霧の朝に。約束だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ending_named-blend",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "選手権の舞台。ミナは自分で合わせた茶の香りを、一つずつ教えてくれた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "覚えた？ 霧の外でも、作れる？"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "smile",
+          "text": "作れるよ。作るたびに、ミナのこと思い出す"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "霧が晴れる。王国も舞台も、ミナの笑顔も、白い光にほどけていく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "その一台に、わたしの名前をつけてね、……また、霧の朝に"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "名前のついた一台は、作り手がいる限り消えない。俺が保証しよう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……霧の外に持ち出せるのは、教わったことだけ。ね、素敵でしょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ending_together",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミナの望みとは、少し違ったのかもしれない。王女は一台を前に、首をかしげた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "あれ、外した……？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "霧の王女ミナ／物語",
+          "face": "smile",
+          "text": "……でも、みんなで作ってくれたんだね。にぎやかな香り"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "霧が晴れ、王国は光に溶けた。けれど一台の香りの中に、ミナの気配が残る"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は感じる。この香りに、小さな王女がまだいる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……消えても、残るものはあるの。ちゃんとね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_listen_ask",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}は番号札を胸に、侍従長さんに王女さまのことを聞きます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定ね。……やさしく聞いてあげて。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_listen_herald",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}は林檎の紋章を掲げ、審査員席の前で高らかに名乗る！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "えっ、いきなり！？ ……こほん。度胸で判定。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_listen_chairs",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:samechan}は柱と椅子を見て回るのじゃ。王女の居場所が分かる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "観察で判定ね。椅子は、嘘をつかないもの。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_twist_run",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}が薄れる回廊へ走る。みんな、こっち！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "度胸で判定。足元が消えかけてるわ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_twist_steps",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}の段取りは、選手権で鍛えた。手は止めない"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定。……急ぐほど丁寧に、ね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_twist_mist",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:samechan}は霧の溜まる場所を探すのじゃ。造りを見れば分かる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定。霧の流れを読んでね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_prepare_self",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は番号札を外して、自分の手で一台を作ります"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定ね。慌てないで。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_prepare_champion",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ここは{pc:adam}の出番だ。選手権の香り、見せてやろう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定。審査員も見てるわよ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_prepare_seat",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:samechan}は光と風を見て、一台の置き場所を決めるのじゃ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定。席も一台のうちね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_serve_word",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}がミナの隣に座って、選んだ言葉を添えます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。……最後の一言、大事にね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_serve_seat",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:samechan}は黙って、ミナの椅子をちょうどよい向きに直すのじゃ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定。言葉より届くこともあるわ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_declare_serve_offer",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}がひざまずき、一台を恭しく王女へ捧げる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "度胸で判定。……ちょっと格好いいじゃない。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_make_adam_adam_orchard",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はオルド。林檎の紋章を掲げる、選手権の常連騎士だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "毎回、林檎で勝負する。宇宙の最初の一個に、敬意を払ってな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……毎回なのね。審査員も、もう覚えてるわよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_make_adam_adam_grants",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はグランツ。前回の選手権の王者だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "前回の記録？ 霧と一緒に、晴れてしまった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "待って、それ確かめようがないじゃない！ ……こほん。ずるい設定ね"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "確かめられないからこそ、伝説は伝説なんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_make_samechan_samechan_koban",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "わしの役はコバン。会場を見に来た大工じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "選手権？ 勝ち負けはどうでもよい。王宮の椅子が見たいのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余が補足する。側近は、審査員席の座り心地しか見ていない"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……出場の理由が、一番平和ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_make_samechan_samechan_sharuku",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "わしの役はシャルク。霧の堀のサメを探しに来た学者じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "選手権は、ついでじゃ。受付が一番、堀に近かったのでな"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は知っている。堀にサメがいるかは、まだGMに聞いていない"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……堀にサメ。いないとは、言ってないわよ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "ほんとか！？ やはり出場してよかったのじゃ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_garden_throne",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "……触れたら崩れそうな、白い押し花。王妃の庭の花よ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "王女さまが生まれた朝の花……王様が取っておいたのか"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "玉座より大事なものが、肘掛けに挟まっている。粋な王だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_garden_portrait",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "肖像の王妃は、花に囲まれて、小さな赤子を抱いている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "額に字が彫ってあるのじゃ。『庭で生まれた子へ』……"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "王女さまは、あの庭で生まれたんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_garden_window",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "霧の窓辺に、小さな椅子が一脚。向きは、花の庭の方"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "膝を抱えて座った跡じゃ。毎朝、ここから庭を眺めておったのじゃな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "庭へ行きたいのに、見てるだけなのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_garden_judges",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "審査員席に、王女の審査票。香りの欄だけが、ひときわ大きい"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "審査基準は香り一本か。……隅の小さな字は、読み上げるのが野暮だな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "『あの庭の香りに、似てる？』……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_garden_shelf",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "棚のいちばん上に、王妃の庭の花の香りの小瓶"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "王女の背では届かない高さだ。だが、俺らなら届く"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "取ってあげたいな、この瓶"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_garden_corridor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "薄れかけた回廊の先に、小さな花の庭が見える"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "庭の長椅子は子ども用じゃな。誰かが毎朝、拭いておる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "王女さまの、生まれた場所か"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_garden_reason",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "今朝は、姫さまが王妃さまの庭でお生まれになった朝と、同じ日なのです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "誕生日みたいなものか……。なのに、最後の朝なんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_garden_princess",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "近ごろの姫さまは、窓から王妃さまの庭ばかり眺めておられます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "sad",
+          "text": "庭へ下りようとして、途中でやめてしまわれるのです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_garden_mist",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "霧が晴れれば、王国は消えます。次の朝霧が来るまで"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "smile",
+          "text": "ただ、王妃さまの庭だけは、いつも少し遅れて消えるのです"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "庭が粘るのか。よい土なのじゃろうな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_garden_favorite",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "smile",
+          "text": "姫さまは小さな頃から、庭の白い花の香りがお好きでした"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "生まれた庭の香り、か。それは彼女の原点だな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_dawn_throne",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "玉座の隣に、王女の小さな椅子。肘掛けだけが、すり減っている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "誰かの手を探して、何度も撫でた跡じゃな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "隣に誰か、いてほしかったのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_dawn_portrait",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "肖像の裏に、子どもの絵が一枚。霧の晴れた空の下に、二人"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "隣の人影に、顔がない。……まだ、配役が決まっていないんだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "隣にいる誰か、か"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_dawn_window",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "窓辺の帳面に、霧の晴れた時刻。……毎朝、少しずつ早くなってる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "今朝は、もっと早いかもしれないのか"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "急がねばのう。じゃが、慌てると椅子を蹴るぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_dawn_judges",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "王女の審査票には、たった一項目。『長く香るか』"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "一項目だけの審査！ 潔い。審査とは、本来こうあるべきだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "長く……霧が晴れるまで、ってことかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_dawn_shelf",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "棚の真ん中に、霧の果実の瓶。説明書きが添えてある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ゆっくり長く香る、か。林檎の次くらいに、気に入った"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "霧の中で長く香るなら、今朝にぴったりだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_dawn_corridor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "薄れる回廊の先は、霧のいちばん濃いバルコニー"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ここだけ霧が溜まっておる。風の通り道から外れておるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後まで残るのは、ここか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_dawn_reason",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "姫さまは、霧が晴れる瞬間を、いつもお一人で迎えてこられました"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "最後の朝くらいは、誰かと一緒に……ってことか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_dawn_princess",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "霧が薄くなるたび、姫さまは近くの者の袖を、そっとつかまれるのです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "sad",
+          "text": "すぐに離して、何でもないと笑われますが"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_dawn_mist",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "serious",
+          "text": "このところ、霧の晴れる時刻が日ごとに早くなっているのです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "sad",
+          "text": "今朝は、とりわけ早く晴れそうで……"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "急がねばならんのう。じゃが、急ぎすぎもいかん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_dawn_favorite",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "smile",
+          "text": "姫さまのお好きなのは、誰かとゆっくり囲める、長く香る一台です"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "長く香る一台か。終幕を引き延ばすのも、また芸だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_remember_throne",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "玉座の脇に、王女の帳面。出場者の名前が、丁寧に並んでいる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最後のページに……『だれか、覚えていてくれるかな』"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "覚えていてほしい、か。それは、誰もが抱く願いだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_remember_portrait",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "王妃の肖像の隣に、空っぽの額がひとつ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "札には『王女』とあるのに、絵がない。描いても霧に溶けるのじゃな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "絵にも、残らないのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_remember_window",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓辺の机に、王女の字の覚え書きが一枚"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "『教えたことは、霧が晴れても消えない』……と書いてあるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "誰かに教えたいことが、あるのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_remember_judges",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "審査員席の端に、空いた椅子。札には『霧の外の人』"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "選ぶのは勝者ではなく、霧の外へ持ち帰る者……？"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺たち出場者に、何か託したいんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_remember_shelf",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "棚の隅に、小さな字の札を結んだ茶の瓶がある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "『この香りの合わせ方を、だれかに』。……宿題を託された気分だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "王女さまが、自分で合わせた香りなんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_clue_remember_corridor",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "薄れた回廊は、ぐるりと回って選手権の舞台へ戻ってくる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "舞台の客席は、王国じゅうの者が座れる広さじゃな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "みんなが見てる場所、か"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_remember_reason",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "霧の外の方をお招きできるのは、選手権の日だけなのです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "外から来た出場者に、会いたかったのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_remember_princess",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "近ごろの姫さまは、出場者の名前を一人ずつ書き留めておられます"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "名を記す、か。覚えておきたいのか、覚えていてほしいのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_remember_mist",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "normal",
+          "text": "霧の国のものは、霧の外へ持ち出せません。ただ……"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "smile",
+          "text": "人に教えたことだけは、霧が晴れても残る、と言われております"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "教えたことは、残る……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_ask_remember_favorite",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "侍従長ミルテ／物語",
+          "face": "smile",
+          "text": "姫さまは、ご自分で合わせた茶の香りを大事にしておられます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "自分で合わせた香りか。誰かに教えたことはあるのかの"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。ひよりGMの回なので「儚さ」（霧の中にだけいる王女）を軸にする。",
+  "presentation": {
+    "theme": "mist",
+    "number": "06",
+    "genre": "剣と魔法 / 霧の選手権",
+    "tagline": "霧が晴れるまでに、王女に最後の一台を。",
+    "backdrop": "radial-gradient(ellipse at 50% 12%, #f1eef8 0%, transparent 55%), linear-gradient(170deg, #c7c0dc 0%, #8f89ad 50%, #4b4764 100%)",
+    "sceneAlt": "霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。",
+    "location": "朝霧の王国 / 霧の王宮",
+    "atmosphere": "白い霧。薄れていく回廊。小さな王女の、透けそうな笑顔。",
+    "coverHeading": "霧が晴れたら、あの子は消える。",
+    "coverRule": "四箇所を調べ、王女の望みを見立て、最後の一台を届ける。",
+    "titleLines": [
+      "朝霧の王国と、",
+      "最後の一台"
+    ],
+    "fields": {
+      "flavor": "香り",
+      "place": "一台を置く場所",
+      "words": "王女に添える言葉",
+      "tactic": "晴れていく霧への手"
+    },
+    "prepareTitle": "どの香りを、どこに置く？",
+    "prepareDescription": "香りを一つ、場所を一つ。見立てた王女の望みを、一台にしよう。",
+    "serveTitle": "最後の一台を、王女の前に。",
+    "serveDescription": "一台に添える、最後の言葉を選ぶ。",
+    "hypothesisTitle": "霧の王女は、最後に何を望んでいる？",
+    "arrivalRole": "侍従長ミルテ／物語",
+    "riskLabel": "霧晴れ",
+    "exploreIdle": "……調べられるのは四箇所まで。メモと相談は、何度でもどうぞ",
+    "listenIdle": "……まずは、侍従長の話を聞いてみて。サイコロは二つよ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "……ここが見せ場。あの子に、最後の一台を届けてあげて",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 話を聞く",
+        "title": "霧の王宮へ、ようこそ",
+        "description": "選手権の朝。霧の中にだけいる王女が、出場者を待っている。",
+        "button": "話を聞く"
+      },
+      "interview": {
+        "kicker": "02 / 侍従長に聞く",
+        "title": "侍従長ミルテに、何を聞く？",
+        "description": "聞けるのは二つまで。答えは、王女の本当の望みしだいで変わる。",
+        "button": "王宮を調べに行く"
+      },
+      "explore": {
+        "kicker": "03 / 王宮を調べる",
+        "title": "王女の望みを見つける",
+        "description": "調べられるのは四箇所まで。三つ以上の手がかりから、王女の望みを見立てよう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 霧が晴れる",
+        "title": "王国の端が、薄れていく",
+        "description": "霧が晴れ始めた。消えてしまう前に、手を打とう。",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / 一台を作る",
+        "title": "香りと、置く場所",
+        "description": "選手権の作業台で、王女のための一台を作る。",
+        "button": "一台を作る"
+      },
+      "serve": {
+        "kicker": "06 / 王女に届ける",
+        "title": "最後の一台",
+        "description": "霧が晴れる前に、一台と言葉をあの子のもとへ。",
+        "button": "王女に届ける"
+      },
+      "ending": {
+        "kicker": "霧が晴れたあと",
+        "title": "朝が来た",
+        "description": "霧の王国は、光の中へ。さて、この朝の物語の感想は？"
+      }
+    },
+    "help": "侍従長に二つ質問し、王宮を最大四箇所調べます。新しい場所を調べるたび霧晴れが一つ進みます。三つ以上の手がかりで王女の望みを見立てたあと、晴れていく霧を切り抜け、香り・置く場所・添える言葉を決めます。相談とメモの再読は無料。見立てが合うと一台を作る判定に＋4。",
+    "exitText": "物語をここで中断して、本棚へ戻ります。次に遊ぶと、王女の望みが違っているかもしれません。",
+    "endingKicker": "AFTER THE MIST / この朝の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言しよう",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "霧が晴れていく。どうする？",
+    "interviewIdle": "……聞けるのは二つまで。何を聞くのかしら？",
+    "twistIdle": "……霧が晴れていくわ。手を選んで、誰が動くか決めて",
+    "planTitle": "最後の一台の作戦"
+  },
+  "intro": "trpg_mist_kingdom_intro",
+  "listen": "trpg_mist_kingdom_listen",
+  "checks": {
+    "listen": {
+      "title": "侍従長の話から、王女の様子をつかむ",
+      "hint": "宣言した出場者の能力で判定。どの出目でも調査へ進みます。",
+      "success": "trpg_mist_kingdom_listen_success",
+      "mixed": "trpg_mist_kingdom_listen_mixed",
+      "trouble": "trpg_mist_kingdom_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_ask",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "侍従長に、王女のことを尋ねる",
+          "detail": "{pc}が番号札を胸に、ミルテへ丁寧に聞く",
+          "declare": "trpg_mist_kingdom_declare_listen_ask"
+        },
+        {
+          "id": "listen_herald",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "nerve",
+          "label": "審査員席の前で、名乗りを上げる",
+          "detail": "{pc:adam}が林檎の紋章を掲げ、王宮じゅうの目を集める",
+          "declare": "trpg_mist_kingdom_declare_listen_herald"
+        },
+        {
+          "id": "listen_chairs",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "eye",
+          "label": "王宮の椅子と柱を見て回る",
+          "detail": "{pc:samechan}が座面の減り方から、王女の居場所を探る",
+          "declare": "trpg_mist_kingdom_declare_listen_chairs"
+        }
+      ]
+    },
+    "twist": {
+      "title": "晴れていく霧に、間に合わせる",
+      "hint": "宣言した出場者の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_mist_kingdom_twist_success",
+      "mixed": "trpg_mist_kingdom_twist_mixed",
+      "trouble": "trpg_mist_kingdom_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_run",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "消えかけの回廊へ、先に走る",
+          "detail": "{pc}が薄れる回廊へ飛び込み、みんなを導く",
+          "declare": "trpg_mist_kingdom_declare_twist_run"
+        },
+        {
+          "id": "twist_steps",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "選手権仕込みの段取りで動く",
+          "detail": "{pc:adam}が手順を組み直し、手を止めずに進める",
+          "declare": "trpg_mist_kingdom_declare_twist_steps"
+        },
+        {
+          "id": "twist_mist",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "eye",
+          "label": "霧の溜まる場所を見極める",
+          "detail": "{pc:samechan}が王宮の造りから、霧の残る場所を探す",
+          "declare": "trpg_mist_kingdom_declare_twist_mist"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "王女のための一台を作る",
+      "hint": "宣言した出場者の能力で判定。見立てが合えば、さらに＋4。",
+      "success": "trpg_mist_kingdom_prepare_success",
+      "mixed": "trpg_mist_kingdom_prepare_mixed",
+      "trouble": "trpg_mist_kingdom_prepare_trouble",
+      "helper": "adam",
+      "approaches": [
+        {
+          "id": "prepare_self",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "教わったとおりに、一台を作る",
+          "detail": "{pc}が番号札を外し、自分の手で丁寧に作る",
+          "declare": "trpg_mist_kingdom_declare_prepare_self"
+        },
+        {
+          "id": "prepare_champion",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "選手権仕込みの腕で作る",
+          "detail": "{pc:adam}が審査員の視線ごと、香りを組み上げる",
+          "declare": "trpg_mist_kingdom_declare_prepare_champion"
+        },
+        {
+          "id": "prepare_seat",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "eye",
+          "label": "一台を置く席を整える",
+          "detail": "{pc:samechan}が光と風と椅子を見て、置き場所を決める",
+          "declare": "trpg_mist_kingdom_declare_prepare_seat"
+        }
+      ]
+    },
+    "serve": {
+      "title": "最後の一台を、ミナに届ける",
+      "hint": "宣言した出場者の能力で判定。どの出目でも結末へ進みます。",
+      "success": "trpg_mist_kingdom_serve_success",
+      "mixed": "trpg_mist_kingdom_serve_mixed",
+      "trouble": "trpg_mist_kingdom_serve_trouble",
+      "helper": "samechan",
+      "approaches": [
+        {
+          "id": "serve_word",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "選んだ言葉を、ミナに添える",
+          "detail": "{pc}がミナの隣に座り、一台と一緒に言葉を渡す",
+          "declare": "trpg_mist_kingdom_declare_serve_word"
+        },
+        {
+          "id": "serve_seat",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "eye",
+          "label": "ミナの椅子を、そっと整える",
+          "detail": "{pc:samechan}が言葉より先に、居心地のいい席を作る",
+          "declare": "trpg_mist_kingdom_declare_serve_seat"
+        },
+        {
+          "id": "serve_offer",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "nerve",
+          "label": "ひざまずいて、一台を捧げる",
+          "detail": "{pc:adam}が選手権らしく、恭しく一台を差し出す",
+          "declare": "trpg_mist_kingdom_declare_serve_offer"
+        }
+      ]
+    }
+  },
+  "consult": {
+    "adam": "trpg_mist_kingdom_consult_adam",
+    "samechan": "trpg_mist_kingdom_consult_samechan"
+  },
+  "preparation": "trpg_mist_kingdom_preparation",
+  "serving": "trpg_mist_kingdom_serving",
+  "epilogue": "trpg_mist_kingdom_epilogue",
+  "debrief": {
+    "smooth": "trpg_mist_kingdom_debrief_smooth",
+    "with-detour": "trpg_mist_kingdom_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "adam",
+        "candidates": [
+          "adam"
+        ],
+        "required": false
+      },
+      {
+        "actor": "samechan",
+        "candidates": [
+          "samechan"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この物語で演じる出場者を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "ink",
+        "label": "黒髪の出場者",
+        "detail": "短い黒髪に、借り物の礼服",
+        "color": "#2f3446",
+        "accent": "#c9c3e6",
+        "portrait": null
+      },
+      {
+        "id": "silver",
+        "label": "銀髪の出場者",
+        "detail": "霧に溶けそうな銀髪と、灰色の外套",
+        "color": "#5d5f72",
+        "accent": "#e8e6f2",
+        "portrait": null
+      },
+      {
+        "id": "auburn",
+        "label": "赤毛の出場者",
+        "detail": "赤毛を一つに結び、番号札を胸に",
+        "color": "#7a4136",
+        "accent": "#f0c09a",
+        "portrait": null
+      },
+      {
+        "id": "dawn",
+        "label": "長髪の出場者",
+        "detail": "肩までの髪と、朝焼け色のスカーフ",
+        "color": "#4a3d5e",
+        "accent": "#f3b9a8",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "rookie",
+        "name": "リト",
+        "title": "見習いの出場者",
+        "trait": "一台を作るのは好き。大会の作法は、まだよく分からない",
+        "stats": {
+          "eye": 3,
+          "hand": 3,
+          "talk": 3,
+          "nerve": 2
+        },
+        "recommended": true
+      },
+      {
+        "id": "wanderer",
+        "name": "ハヤテ",
+        "title": "旅の香り職人",
+        "trait": "国から国へ、香りを運ぶ。霧の国は初めて",
+        "stats": {
+          "eye": 2,
+          "hand": 4,
+          "talk": 2,
+          "nerve": 3
+        }
+      },
+      {
+        "id": "shepherd",
+        "name": "ユノ",
+        "title": "霧に迷った羊飼い",
+        "trait": "羊を追って霧に入り、気づけば出場者に。度胸だけはある",
+        "stats": {
+          "eye": 2,
+          "hand": 2,
+          "talk": 2,
+          "nerve": 5
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "adam": {
+      "adam": [
+        {
+          "id": "orchard",
+          "name": "オルド",
+          "title": "林檎の紋章の騎士",
+          "trait": "選手権の常連。毎回、林檎の香りで勝負する。腕は本物",
+          "likes": "林檎。この宇宙の最初の一個",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_mist_kingdom_make_adam_adam_orchard"
+        },
+        {
+          "id": "grants",
+          "name": "グランツ",
+          "title": "自称・前回王者",
+          "trait": "前回の選手権の王者を名乗る。前回が本当にあったかは、誰も知らない",
+          "likes": "表彰台の真ん中と、林檎の香り",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 2,
+            "nerve": 3
+          },
+          "making": "trpg_mist_kingdom_make_adam_adam_grants"
+        }
+      ]
+    },
+    "samechan": {
+      "samechan": [
+        {
+          "id": "koban",
+          "name": "コバン",
+          "title": "会場見物の大工",
+          "trait": "選手権には興味がない。王宮の椅子と通路を見に来ただけ",
+          "likes": "座り心地のいい椅子と、サメの彫り物",
+          "stats": {
+            "eye": 4,
+            "hand": 3,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_mist_kingdom_make_samechan_samechan_koban"
+        },
+        {
+          "id": "sharuku",
+          "name": "シャルク",
+          "title": "霧のサメ研究家",
+          "trait": "王宮の堀にサメがいると信じて出場した。選手権は、ついで",
+          "likes": "サメの出る話。怖い場面は、目を細めて見る",
+          "stats": {
+            "eye": 4,
+            "hand": 2,
+            "talk": 2,
+            "nerve": 3
+          },
+          "making": "trpg_mist_kingdom_make_samechan_samechan_sharuku"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_mist_kingdom_session_zero_open",
+    "close": "trpg_mist_kingdom_session_zero_close"
+  },
+  "interview": {
+    "title": "侍従長ミルテに、何を聞く？",
+    "prompt": "霧が晴れる前に聞けるのは二つまで。王女の望みに近づく質問を選ぼう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "reason",
+        "label": "選手権を開いたわけ",
+        "description": "なぜ王女が選手権を開いたのか聞く"
+      },
+      {
+        "id": "princess",
+        "label": "王女の近ごろ",
+        "description": "このところの王女の様子を聞く"
+      },
+      {
+        "id": "mist",
+        "label": "霧のしきたり",
+        "description": "霧が晴れると何が起きるか聞く"
+      },
+      {
+        "id": "favorite",
+        "label": "王女の好きな一台",
+        "description": "王女が好んできた一台を聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_mist_kingdom_twist_intro"
+  }
+}

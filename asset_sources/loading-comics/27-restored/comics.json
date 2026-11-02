@@ -1,0 +1,106 @@
+{
+  "episode": 27,
+  "title": "専門外・再び",
+  "cast": "アダム・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/25-28-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "27-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1937757,
+      "sha256": "75c064f1732ab5365dfba6b3ea42b4221e18d06ecc663fe1c81008c52dd906ce"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "LEFT ①: professional Adam expertly studies a precise digital thermometer and timer, focused, says 「温度は完璧だ。」 No hot apparatus visible. RIGHT ②: he has built a giant ridiculous scientific ritual of monitors, apple-shaped diagrams and precise measuring tools around an ORDINARY RICE COOKER, but is completely lost with its simple buttons. He kneels earnestly asking 「炊飯、どれだ？」 Hajime points at the ONE large button 「炊飯」, saying 「そこです。」 Adam remains young, CLEAN SHAVEN, NO GLASSES.",
+      "dialogue_original": [
+        "温度は完璧だ。",
+        "炊飯、どれだ？",
+        "炊飯",
+        "そこです。"
+      ],
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第27話「専門外・再び」だけ。完成版の台本: LEFT ①: professional Adam expertly studies a precise digital thermometer and timer, focused, says 「温度は完璧だ。」 No hot apparatus visible. RIGHT ②: he has built a giant ridiculous scientific ritual of monitors, apple-shaped diagrams and precise measuring tools around an ORDINARY RICE COOKER, but is completely lost with its simple buttons. He kneels earnestly asking 「炊飯、どれだ？」 Hajime points at the ONE large button 「炊飯」, saying 「そこです。」 Adam remains young, CLEAN SHAVEN, NO GLASSES.。アダム髪は正面画面左が赤、右が緑。眼鏡・髭なし。元の非現実的なオチも復刻として保つ。左に導入、右にオチ。シーシャ台・ホース・炭・喫煙・煙・武器は描かない。",
+      "reference_images": [
+        "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "/workspace/shisha-game/asset_sources/short-comics-unhinged-ltr-20261025/25-28-chaos-ltr.png",
+        "/workspace/shisha-game/assets/sprites/characters/adam/chr_adam_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "27-restored.png",
+      "region": {
+        "x": 40,
+        "y": 277,
+        "width": 712,
+        "height": 469,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "27-restored.png",
+      "region": {
+        "x": 781,
+        "y": 277,
+        "width": 714,
+        "height": 468,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-27-1.webp",
+      "width": 712,
+      "height": 475,
+      "sha256": "7d8fb7189d7784d953bf7ee7535cfb8ca6f06dd5dcde7f3b7a19e188a4cc8213"
+    },
+    {
+      "file": "panels/restored-27-2.webp",
+      "width": 714,
+      "height": 476,
+      "sha256": "c1b2e22602bb1cda3cf81316e08d588f92103e67c6043ca74a00d07c4dcf5649"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  }
+}

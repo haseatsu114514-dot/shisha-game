@@ -1,0 +1,110 @@
+{
+  "game": "水煙前線 -EN:CODE-",
+  "episodes": 1,
+  "candidate": true,
+  "registration_status": "選別待ち・ゲーム未登録",
+  "reading_order": "左①導入→右②オチ",
+  "canon_status": "番外編ギャグ。誇張・夢・想像は本編能力や人物設定を変更しない。",
+  "image_manifest": [
+    {
+      "file": "86-naru-freezer-space.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "799b6cc6424fd9ddddc803c6b16b70c6741acd91cc2bb85e10a5fbed00e6cccb",
+      "bytes": 1694444
+    }
+  ],
+  "pages": [
+    {
+      "file": "86-naru-freezer-space.png",
+      "ids": [
+        "hajime",
+        "naru"
+      ],
+      "range": "86",
+      "rows": [
+        [
+          "86 冷凍庫の陣地",
+          "はじめ・naru",
+          "はじめが小さな氷皿を持ち、なるが小さな冷凍庫を開ける。 / 冷凍庫の中央だけ氷皿の細いスペース、アイスの無地カップが両端にぎっしり積み直される。なるは得意顔。"
+        ]
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "episode": 86,
+      "title": "冷凍庫の陣地",
+      "dialogue": [
+        "氷、入ります？",
+        "少し空けた。",
+        "アイスが引っ越した。"
+      ],
+      "speakers": [
+        "はじめ",
+        "naru",
+        "naru"
+      ],
+      "generator": "OpenAI image_gen",
+      "prompt_summary": "添付1の下敷き（1536×1024）を編集し、横長の2コマ漫画を1話だけ描いてください。出力1536×1024。枠の位置・寸法を厳守：左x36〜756、右x780〜1500、y272〜752、各720×480の3:2。縦長コマに変形せず、枠外・上下・24pxのコマ間は#EEE3CFの無地で残す。枠線3pxは残す。枠の内側4%には顔・台詞・重要物を置かない。題名・話数・番号・ロゴ・署名・透かし・英語・擬音文字は一切描かない。吹き出しの台詞のみ日本語の太いゴシック体で大きく、横書きで最大2行。添付2のはじめ（黒いキャップ、黒髪、黒パーカー、首の銀アクセサリー）と添付3のなる（銀色の短髪、金色の目、黒白のストリートジャケット、首のシルバーアクセサリー）を、同じ外見・服装の2.5頭身にする。太いきれいな線、セル塗り、少しの紙の質感、暖色の明るいギャグ漫画。両コマともはじめは画面左、相手は画面右に固定。背景は台本の場面に合わせ、机・窓・壁だけの簡素な構成。店内の収納は閉じた不透明の扉。観葉植物を追加しない。必要な小物のみ描き、シーシャ本体・ボウル・炭・HMD・ホース・煙・武器・他の人物・実在ロゴは描かない。題名（描かない参考）『冷凍庫の陣地』。左①導入：はじめが小さな氷皿を持ち、なるが小さな冷凍庫を開ける。 吹き出しははじめの「氷、入ります？」となるの「少し空けた。」の2個だけ。右②オチ：冷凍庫の中央だけ氷皿の細いスペース、アイスの無地カップが両端にぎっしり積み直される。なるは得意顔。 吹き出しははじめの「アイスが引っ越した。」の1個だけ。台詞は句読点も一字一句一致させる。2コマ合計3吹き出し、台詞を省略・追加・繰り返ししない。 最優先：枠を縦方向へ広げない。上下それぞれ272pxの紙の余白を残し、720×480の横長コマに小さな人物と小道具を収める。",
+      "reference_images": [
+        "asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "assets/sprites/characters/hajime/chr_hajime_normal.png",
+        "assets/sprites/characters/naru/chr_naru_normal.png"
+      ],
+      "source": [
+        {
+          "file": "asset_sources/loading-comics/86-naru-freezer-space/86-naru-freezer-space.png",
+          "region": {
+            "x": 36,
+            "y": 272,
+            "width": 720,
+            "height": 477,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        },
+        {
+          "file": "asset_sources/loading-comics/86-naru-freezer-space/86-naru-freezer-space.png",
+          "region": {
+            "x": 779,
+            "y": 272,
+            "width": 721,
+            "height": 477,
+            "sourceWidth": 1536,
+            "sourceHeight": 1024
+          }
+        }
+      ],
+      "delivery": [
+        {
+          "file": "naru-freezer-space-1.webp",
+          "width": 720,
+          "height": 480,
+          "sha256": "65ec0a8fc1cb3bd81d31c442a48d3a8e557f731769f4ce95c741fdfcb04d8bbc",
+          "bytes": 52380
+        },
+        {
+          "file": "naru-freezer-space-2.webp",
+          "width": 721,
+          "height": 481,
+          "sha256": "8bc83cc2a7d06b316b63117439c14574bd233d45f6dfaa948a9c9aebcd38d08d",
+          "bytes": 56662
+        }
+      ],
+      "ratio_status": "ok",
+      "raw_ratios": [
+        1.509433962264151,
+        1.5115303983228512
+      ],
+      "qa": {
+        "source_visual": "生成時に人物・台詞3つ・左右固定・禁止描写なしを目視確認",
+        "delivery": "cut tool passed; 3:2, <=1440x960, <400KiB",
+        "browser": "未実施: sandbox有効ChromiumがSUID helper設定エラーで起動不可。sandbox設定の解除・変更は行っていない。",
+        "warnings": [],
+        "rejected_trials": [],
+        "notes": "右コマの台詞はなる本人の説明として描かれた。台詞本文は一致。"
+      }
+    }
+  ]
+}

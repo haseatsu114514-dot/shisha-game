@@ -1,0 +1,113 @@
+{
+  "episode": 1,
+  "title": "店、間違えた？",
+  "cast": "りゅうじ・はじめ",
+  "theme": "旧話の復刻",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-20261024/01-ryuji-welcome.png",
+    "original_order": "4コマ・上から下",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "01-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 1740328,
+      "sha256": "39fde9d041a49146081043be74bf19b591b1a70e28d550ee586aff587c306eb3"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "PANEL 1 TOP: Over Hajime's shoulder as he opens a heavy door. Inside is Ryuji looming in his WHITE large-check double-breasted suit, black shirt, PURPLE tie, short SALT-AND-PEPPER hair, MOUSTACHE and tinted SUNGLASSES, gold folding screen, dark wood walls, wall shrine, black leather sofa. Two stern adult suited young men in the background. Low comedic noir dramatic framing. Hajime's tiny thought bubble: 「店、間違えた……」.\nPANEL 2: closer to very stern Ryuji leaning forward, hands folded carefully, eyebrow intimidating. He says 「苦手なもんはあるか。」 Hajime flinches and says 「えっ。」 Retain actual character appearances.\nPANEL 3: reveal Ryuji is politely presenting an ordinary flavor menu. He clarifies with the SAME rough-but-considerate personality, no keigo: 「フレーバーの話だ。」 Menu has tiny simple fruit pictograms, no gibberish long text. He sets a little glass of water on a coaster gently for Hajime. The OFFICE remains the same room but color light warms.\nPANEL 4 BOTTOM: Hajime visibly sinks into BLACK leather sofa in huge relief, shoulders dropping, both hands around water glass, thought bubble 「シーシャ屋だ……」. Ryuji stands beside him with reassuring stern smile, tiny service towel neatly folded over arm, saying 「ゆっくりしてけ。」 A small correctly constructed generic hookah is visible ON the low side table, glass base to HMD all connected, hose parked tidily on table; NO ONE is smoking or holding a hose. The intimidating young men are now politely offering a coaster and menu. Warm welcoming comedy, no final threat, no weapons, no cruel ridicule.",
+      "dialogue_original": [
+        "店、間違えた……",
+        "苦手なもんはあるか。",
+        "えっ。",
+        "フレーバーの話だ。",
+        "シーシャ屋だ……",
+        "ゆっくりしてけ。"
+      ],
+      "prompt": "添付1は旧作4コマ漫画。これをオチの内容を保って、添付2の下敷きの2コマへ編集・再構成してください。1536x1024、左x36 y272 w720 h480、右x780 y272 w720 h480、上下272pxの無地余白。顔・文字は枠から29px内側。太線と暖色セル塗り2.5頭身、添付3のりゅうじ（53歳・白大柄チェックスーツ・色付き眼鏡・口ひげ・紫ネクタイ）を本人の基準に。両コマはじめ左、りゅうじ右。左はじめが強面店長にびくっとし、りゅうじ『苦手なもんはあるか。』はじめ『店、間違えた？』。右はりゅうじが果物絵だけのフレーバーメニューを差し出して微笑み『フレーバーの話だ。』、はじめはホッとする。台詞はこの3つだけ、各横書き。題名・話数・署名・擬音文字なし。背景は黒革ソファと金の屏風、木壁の事務所風のシーシャ店。若衆など他の人物は描かない。シーシャ台・ハガル・ホース・炭・喫煙・煙・武器は一切描かない。原版は上書きせず2コマの選別用復刻版として作る。",
+      "reference_images": [],
+      "generator": "OpenAI image_gen",
+      "revision_prompt": "添付1の下敷きが寸法の正本です。添付2の2コマ漫画を、この下敷きの枠へ収め直してください。画像全体は1536x1024、各コマ720x480の横長3:2、左x36右x780、上辺y272下辺y752。上下に272pxの無地紙余白を必ず残す。添付2の横長帯の比率は禁止。人物は2.5頭身の胸上へ再構成し、3台詞をそのまま残す。左:はじめ『店、間違えた？』りゅうじ『苦手なもんはあるか。』。右:りゅうじ『フレーバーの話だ。』と果物絵のメニューを出す。はじめ左、白チェックスーツ・紫ネクタイ・色付き眼鏡・口ひげのりゅうじ右を維持。絵は枠内だけ。題名や話数はなし。シーシャ台・炭・ホース・喫煙・煙・武器は描かない。",
+      "dialogue_restored": [
+        "店、間違えた？",
+        "苦手なもんはあるか。",
+        "フレーバーの話だ。"
+      ]
+    }
+  ],
+  "source": [
+    {
+      "file": "01-restored.png",
+      "region": {
+        "x": 44,
+        "y": 276,
+        "width": 713,
+        "height": 453,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "01-restored.png",
+      "region": {
+        "x": 784,
+        "y": 276,
+        "width": 712,
+        "height": 452,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-01-1.webp",
+      "width": 713,
+      "height": 475,
+      "sha256": "966a27f818909c605a6a9b8ee7d36bdce076d98e94fec7626c70c96ca6d14d30"
+    },
+    {
+      "file": "panels/restored-01-2.webp",
+      "width": 712,
+      "height": 475,
+      "sha256": "83f9842db23edfa2794f36b60b13e3f1b233b6934415e32533dc5d059024f8e8"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "4コマ原版を保存し、ネタを3台詞の2コマへ圧縮した復刻版。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  }
+}

@@ -35,6 +35,7 @@
 - **① 導入 → ② オチ**。読む順は左から右。1話は2コマで完結し、前後の話に依存しない。
 - 登場人物は **2人まで**（原則、はじめ＋相手1人）。**両コマで立ち位置を揃える**（例: はじめが左、相手が右）。入れ替えると読者が人物を取り違える。
 - 台詞は **合計3つまで、1つ12字以内、2行まで**。①に1〜2つ、②に1〜2つ。ツッコミは②の端に短く。
+- **1コマに吹き出しが2つあるときは、先に話す方を左か上に置く**（2026-11-02 追加）。はじめが左に立つので、右の相手が先に話す場面では、相手の吹き出しを左上に高く置いて尻尾を相手へ伸ばし、はじめの返事を右下に置く。同じ高さで左右に並べると、左から読んだときに返事やオチが先に入る（候補54話のうち10話がこれで不採用になった）。
 - 題名は 4〜7 字（ゲームが紙面の上に描く）。一行解説（任意）は初心者向けの 25 字前後。
 - 内容は **番外編のギャグ**。本編の能力・人物設定・ゲーム挙動を変えない（`brand/character_profiles.md`、`data/characters.json` が正本）。誇張や不可能な出来事は「ギャグの誇張」として台帳に記す。
 - シーシャ機材・炭が写るときは [シーシャ描写の早見表](../shisha-hardware-reference/drawing-sheet/README.md) の「生成前に決める8行」に従う。火の付いた炭を素手で扱う・直炭などの危険な描写はしない。
@@ -56,6 +57,7 @@
 - 添付の立ち絵の人物を、同じ髪型・服・小物で、2〜3頭身のデフォルメ漫画にする。太めのきれいな主線、セル塗り＋少しの紙の質感、暖色寄りの明るい配色。
 - 吹き出しは白地に黒い縁、台詞は太いゴシック体で大きく読みやすく。台詞は下の台本と一字一句同じにする（句読点・！？も同じ）。
 - 2コマで人物の立ち位置を揃える（【はじめ】が左、【相手】が右）。
+- 1コマに吹き出しが2つあるときは、先に話す方の吹き出しを左か上に置く。右の人物が先に話すなら、その吹き出しを左上に高く置いて尻尾を右の人物へ伸ばし、後から話す左の人物の吹き出しは右下に置く。同じ高さで左右に並べない。
 
 ■ 台本
 - 題名（画像には描かない。参考）: 【題名】
@@ -96,6 +98,7 @@ python3 tools/loading_comic_cut.py check remake/img/loading/<id>-*.webp
 - [ ] ツールの比率判定が ok（warn なら理由を台帳に書く。reject は不採用）
 - [ ] 2枚の出力が同じ高さ・3:2（`check` が OK）。紙帯が出ていても吹き出し・顔が欠けていない
 - [ ] 台詞が台本と一字一句同じ。余計な文字・英語・署名・題名が入っていない
+- [ ] 1コマに吹き出しが2つあるとき、左（または上）から読むと台本の順になっている。返事やオチを先に読ませない
 - [ ] 人物が立ち絵と同一人物に見える（髪型・帽子・眼鏡・服の色）。2コマで立ち位置が同じ
 - [ ] 枠の外（紙・コマ間）に描き込みがない
 - [ ] 禁止描写なし（火の付いた炭の素手扱い・直炭・武器・暴力・本編設定の変更）
@@ -124,3 +127,44 @@ python3 tools/loading_comic_cut.py check remake/img/loading/<id>-*.webp
 | 46 | 雨音の合奏 | [sumi-rain-concert](46-sumi-rain-concert/) |
 | 47 | 座り心地派 | [sumi-cushion-tower](47-sumi-cushion-tower/) |
 | 48 | 看板の向き | [sumi-sign-reverse](48-sumi-sign-reverse/) |
+
+## 9. 候補54話の選別と登録（2026-11-02）
+
+オーナー依頼「候補の内容と実画面表示を確認し、採用できるものを整理して登録を進めて」。候補は #2246（記録番号49〜72・24話・merged）と #2258（記録番号61〜90・30話・Draft）。**61〜72は両PRで番号が重なる別作品**なので、以下はすべて **PR番号:安定ID** で書く。ゲームの登録 id は安定IDそのもの（`remake/js/core/loading-comics.js`）。
+
+**確認したこと**: 全108コマを目視（台詞・人物の見た目・アダムの髪の左右・みんとの営業時の姿だけでお姉さんの正体に触れない・機材や炭の描写なし）。人物設定は `data/characters.json` と照合（アダムの私生活は少し抜けている・なるはバニラと菓子系の作り手で口癖「全部見てけ」・みんとの店はキャスト一人で「人気No.1」・なるとアダムの一人称「俺」）。実画面は、ゲームの `#stage` に同じロード画面の部品で1話ずつ差し込み、PC 1280×720 とスマホ横 844×390 の108表示すべてで、2コマの読み込み・3:2の枠いっぱい・画面内・左→右を確認した（スマホ横でコマ幅 252px、吹き出しの文字は読める）。結果と画面写真は [qa/selection-20261102/](qa/selection-20261102/)。
+
+**採用 39話**（全話 `contexts: ["craft"]`・`minChapter: 1`）
+
+| 出どころ | 話（安定ID） |
+| --- | --- |
+| #2246（20話） | steeping-clock・mint-question・scent-overtime・apple-interview・apple-light・apple-ratio・sweet-unit・dessert-stomach・leave-it-to-you・all-favorites・short-visit・apple-study・apple-season・apple-break・sweet-name・not-sweet・cake-lunch・mint-ranking・mint-service・mint-photo |
+| #2258（19話） | sumi-cold-tea・sumi-memory-kitchen・sumi-clean-counter・sumi-coin-hunt・adam-holiday-choice・adam-lunch-dessert・adam-shopping-bag・adam-alarm-clock・adam-napkin-fold・adam-weather-forecast・adam-key-ring・naru-vanilla-break・naru-recipe-notes・naru-biscuit-measure・naru-cake-compass・naru-freezer-space・naru-spoon-choice・naru-flavor-dream・naru-tiny-sample |
+
+**不採用 10話（吹き出しの順。§2 の決まりで描き直せば再候補）**: 1コマ目で右の人物が先に話すのに、吹き出しが同じ高さで左右に並び、左から読むと返事やオチが先に入る。
+
+| 話 | 先に読めてしまう台詞 |
+| --- | --- |
+| PR2246:flavor-address | 「雨上がりの実家。」が「どんな味だった？」より先 |
+| PR2246:apple-judge | 「おいしいです。」が「味の感想は？」より先 |
+| PR2246:cake-praise | 2コマ目のツッコミ「ケーキに報告。」が「聞いたか、お前。」より先 |
+| PR2246:cake-apology | 「次がありますよ。」が「失敗した。」より先 |
+| PR2258:sumi-seat-choice | 「迷いますね。」が「好きな席でいいぞ。」より先 |
+| PR2258:sumi-tasting-sketch | 「任せてください。」が「感想は一言で。」より先 |
+| PR2258:sumi-order-practice | 「爽やかな味で！」が「注文の練習だ。」より先 |
+| PR2258:sumi-two-umbrellas | 「ちゃんとあります。」が「傘、忘れるなよ。」より先 |
+| PR2258:adam-gift-wrap | 「難しいですね。」が「中身、当ててみて。」より先 |
+| PR2258:adam-cup-noodles | 「内側の線です。」が「お湯はどこまでだ。」より先 |
+
+**保留 5話（似た話を採用済み。入れ替えたいときは安定IDで指定する）**: 絵と台詞に問題はない。
+
+| 話 | 採用した似た話 | 理由 |
+| --- | --- | --- |
+| PR2258:sumi-jacket-souvenir | PR2246:scent-overtime | 閉店後に服の香りを嗅ぎ、果物の想像図で見せる状況とオチが近い |
+| PR2258:adam-photo-album | PR2246:apple-study | 帳面を開くとリンゴばかり、の種明かしが同じ。題名「写真の主役」も PR2246:mint-photo と重なる |
+| PR2258:sumi-slow-clock | PR2246:steeping-clock | 残り一分を待ちきれず時計を見つめる |
+| PR2258:naru-sweet-description | PR2246:sweet-unit | 甘さをケーキで説明する入り方が同じ |
+| PR2258:naru-last-cookie | PR2258:naru-biscuit-measure | なるがお菓子を測るほど厳密に扱う |
+
+#2258 の原画・台本・プロンプトは同PRの各話フォルダ（`asset_sources/loading-comics/61-sumi-jacket-souvenir/` など。#2246 の `61-leave-it-to-you/` とは別フォルダ）にある。ゲームに要る配信用WebPだけを `remake/img/loading/` に複製して登録した。#2246 側の各話 `comics.json` には採否（`status`・`registered`・`selection_note`）を書き込んだ。
+
