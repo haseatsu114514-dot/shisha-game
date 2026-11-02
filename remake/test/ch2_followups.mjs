@@ -48,6 +48,7 @@ const mocks = {
   "../daily/spots.js": { allSpots: () => [], VISIT_COST: 3000, isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
     CHAR_STAT: {}, VISIT_BG: {}, bgRef: x => x, setChapterVisitDue: () => {}, hasNewEvent: () => false },
   "../daily/hiyori.js": { setHiyoriExtraShops: () => {} },
+  "../daily/roamers.js": { addRoamerSpots: () => {} }, // よその店に居合わせる人（第2章は柚ヶ谷の店も登録する）
   "../daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },

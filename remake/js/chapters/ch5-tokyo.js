@@ -19,6 +19,7 @@ import { TOKYO_VISIT_COST } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { reflectAt } from "../daily/reflection.js";
+import { consultLessons } from "../core/growth.js";
 
 export const TOKYO = "tokyo";
 const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸してもらった（最初の到着の場面を読んだ）
@@ -98,6 +99,12 @@ async function read(id, bg, owner, tod = timeOfDay()) {
   return state === owner && !!result && !result.cancelled;
 }
 
+/**
+ * 心得の盤の授業（SPEC 2.6・SBD61）: 会いに行った店で、灯した授業があれば相談して話を聞く（第5章のドバイの屋敷と同じ）。
+ * スティーブの授業（ピザとシーシャの夜）は第3章の大会の翌夜にだけ開ける夜なので、第5章では相談しない（大会後の東京で相談する）。
+ */
+const TOKYO_TEACHERS = Object.freeze({ ch5_tokyo_volk: "volk" });
+
 /** 東京の行き先と「東京へ」の処理。対象外の行き先は null（日常ループの通常の処理へ）。 */
 export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (spot.id !== TO_TOKYO_SPOT.id && spot.region !== TOKYO) return null;
@@ -155,6 +162,8 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   talks[spot.id] = (talks[spot.id] || 0) + 1;
   if (spot.charId) { gainAffinity(spot.charId, spot.affinity || 5); markMet(spot.charId); }
   earnStat(spot.stat, 4);
+  const teacher = TOKYO_TEACHERS[spot.id];
+  if (teacher && state === owner) await consultLessons(teacher, { bg: sceneBg(spot.preview, timeOfDay()).url });
   return { used: true, exerted: true };
 }
 

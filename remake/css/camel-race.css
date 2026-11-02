@@ -18,6 +18,16 @@
 .camel-title { margin: 0; font-size: .85em; font-weight: 900; letter-spacing: .18em; line-height: 1.2; color: var(--cr-gold); }
 .camel-clock-time { font-size: 1.7em; font-weight: 900; letter-spacing: .04em; font-variant-numeric: tabular-nums; line-height: 1.1; color: #fff; }
 .camel-clock-sub { font-size: .8em; font-weight: 800; color: var(--cr-dim); }
+/* 速度計（km/h）。ムチの間は赤、声の一伸びの間は金に光る */
+.camel-speed { display: grid; gap: .2em; margin: .15em 0 .1em; }
+.camel-speed-read { display: flex; align-items: baseline; gap: .3em; }
+.camel-speed-value { font-size: 1.9em; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; color: #fff6e5; transition: color .15s, text-shadow .15s; }
+.camel-speed-read small { font-size: .8em; font-weight: 800; color: var(--cr-dim); }
+.camel-speed-bar { position: relative; height: .4em; border-radius: 99px; overflow: hidden; background: rgba(255,243,220,.14); }
+.camel-speed-bar i { position: absolute; inset: 0 auto 0 0; width: calc(var(--v, 0) * 100%); border-radius: 99px; background: linear-gradient(90deg, #8ed0ff, #fff6e5); transition: width .12s linear; }
+.camel-speed[data-state="surge"] .camel-speed-value { color: #ffe27a; text-shadow: 0 0 .4em rgba(255,215,122,.7); }
+.camel-speed[data-state="whip"] .camel-speed-value { color: #ff9a7a; text-shadow: 0 0 .5em rgba(255,110,70,.75); }
+.camel-speed[data-state="whip"] .camel-speed-bar i { background: linear-gradient(90deg, #ffb347, #ff5a3a); }
 .camel-progress { position: absolute; left: 20cqw; right: 20cqw; top: 2.2cqw; height: 2.4em; border-radius: 99px; background: var(--cr-glass); border: 1px solid rgba(255,255,255,.08); }
 .camel-progress-track { position: absolute; left: 1.2em; right: 1.8em; top: 50%; height: .36em; transform: translateY(-50%); border-radius: 99px; background: rgba(255,243,220,.18); }
 .camel-progress-spurt { position: absolute; top: -.25em; bottom: -.25em; left: calc(var(--x) * 100%); right: 0; border-radius: 99px; background: linear-gradient(90deg, rgba(255,179,71,.15), rgba(255,179,71,.55)); }
@@ -90,6 +100,11 @@
 .camel-signal[data-state="spurt"] { border-color: rgba(255,179,71,.8); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,179,71,.35), 0 0 24px rgba(255,179,71,.45); }
 .camel-signal[data-state="spurt"] .camel-signal-note { color: var(--cr-amber); }
 .camel-signal[data-state="spent"] { opacity: .75; }
+/* ムチを押している間: 沈んだボタン・赤い縁・アイコンが回る */
+.camel-signal.held, .camel-signal[data-state="whipping"] { transform: translateY(2px) scale(.985); border-color: rgba(255,110,70,.9); box-shadow: inset 0 3px 10px rgba(0,0,0,.45), 0 0 0 1px rgba(255,110,70,.5), 0 0 26px rgba(255,90,50,.55); }
+.camel-signal[data-state="whipping"] .camel-control-icon { animation: camel-spin .35s linear infinite; }
+.camel-signal[data-state="whipping"] .camel-signal-note { color: #ffb09a; }
+@keyframes camel-spin { to { transform: rotate(360deg); } }
 .camel-control.hit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: camel-hit .35s ease-out both; }
 .camel-control.hit[data-hit="perfect"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,226,122,.75), transparent 70%); }
 .camel-control.hit[data-hit="good"]::after { background: radial-gradient(circle at 12% 50%, rgba(184,240,255,.6), transparent 70%); }
@@ -103,7 +118,7 @@
 .camel-feedback b { font-size: clamp(24px, 4.6cqw, 52px); letter-spacing: .06em; line-height: 1; paint-order: stroke fill; -webkit-text-stroke: .16em rgba(26,12,4,.9); text-shadow: 0 .08em 0 rgba(0,0,0,.35); }
 .camel-feedback small { font-size: clamp(13px, 1.7cqw, 20px); letter-spacing: .1em; color: #fff6e5; paint-order: stroke fill; -webkit-text-stroke: .22em rgba(26,12,4,.85); }
 .camel-feedback.show { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: camel-pop .75s cubic-bezier(.2,1.4,.4,1) both; }
-.camel-feedback[data-kind="perfect"] b { color: #ffe27a; background: linear-gradient(180deg, #fff6c8, #ffd04a 55%, #ff9f1c); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 .25em rgba(255,200,80,.55)); }
+.camel-feedback[data-kind="perfect"] b { color: #ffd84a; -webkit-text-stroke-color: #5a2e04; text-shadow: 0 .08em 0 rgba(0,0,0,.35), 0 0 .35em rgba(255,200,80,.75); }
 .camel-feedback[data-kind="good"] b { color: #9fe8ff; }
 .camel-feedback[data-kind="miss"] b, .camel-feedback[data-kind="lost"] b { color: #ff8e8e; font-size: clamp(18px, 3cqw, 34px); }
 .camel-feedback[data-kind="boost"] b, .camel-feedback[data-kind="early"] b { color: #b8ffc8; }
@@ -194,6 +209,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .camel-result .camel-medal, .camel-result .camel-grade-letter, .camel-result .camel-score-bar i, .camel-flash.show,
+  .camel-signal[data-state="whipping"] .camel-control-icon,
   .camel-feedback.show, .camel-banner.show, .camel-countdown.show, .camel-standings li[data-move], .camel-voice[data-cue="on"] .camel-control-icon, .camel-stamina[data-state="spent"] { animation: none; }
   .camel-standings li { transition: none; }
 }
@@ -209,7 +225,7 @@
 }
 /* コースが小さいとき（スマホ）: 説明の字とキーを隠し、順位は名前と順位だけ */
 @container (max-width: 760px) {
-  .camel-clock-sub, .camel-control kbd, .camel-chip-gap { display: none; }
+  .camel-clock-sub, .camel-control kbd, .camel-chip-gap, .camel-speed-bar { display: none; }
   .camel-call { max-width: 60%; }
   .camel-standings { width: 9.5em; --row-h: 2.2em; }
   .camel-standings li { grid-template-columns: auto minmax(0, 1fr); }

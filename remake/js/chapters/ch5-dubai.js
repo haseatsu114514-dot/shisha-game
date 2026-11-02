@@ -42,7 +42,7 @@ export const DUBAI_SPOTS = Object.freeze([
     desc: "スパイスの匂いが立つ市場を歩く。" }),
   spot({ id: "ch5_dubai_alley", label: "路地裏のカフェ", area: "路地の奥", x: 30, y: 78, theme: "store", glyph: "茶",
     preview: "bg_dubai_alley_cafe_night", cost: 3000, stamina: -10, stat: "technique", talks: ["ch5_dubai_alley", "ch5_dubai_alley_b"],
-    desc: "前に旅装のシェイクと向かい合った、小さなカフェ。" }),
+    desc: "前に旅装のシェイクと向かい合った、小さなカフェ。一台3,000円（約70ディルハム）。" }),
   spot({ id: "ch5_dubai_creek", label: "クリーク沿い", area: "水辺の遊歩道", x: 58, y: 86, theme: "park", glyph: "水",
     preview: "bg_dubai_street_night", stamina: 20, desc: "水辺を歩いて、少し体を休める。" }),
   spot({ id: "ch5_dubai_shop", kind: "shop", label: "Dr.fookah ドバイ店", area: "街の中心", x: 40, y: 50, theme: "shop", glyph: "卸",

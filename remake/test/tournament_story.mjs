@@ -141,4 +141,59 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
   assert.equal(tournamentStoryLeadIn({...base,chapter},event),null,`chapter${chapter} keeps its own round-end scenes`);
  assert.equal(JSON.stringify(c2),before,'Round-end call must not alter craft/results');
 }
-console.log('PASS: three tournaments, judges, packings, mix, crowds, temperature/care callbacks, legacy saves and no score mutation');
+// #2031: 第4章（世界大会）の制作中の掛け合い。審査員は南雲・エミル・太陽、対戦相手はなる・王煙楼・シェイク。
+{
+ const c4={...cs,chapter:4},before=JSON.stringify(c4);
+ const say=(event,context,c=c4)=>tournamentStoryDialogue(c,event,()=>0,context);
+ const lines=(event,context,c)=>say(event,context,c).lines.map(l=>l.text).join('\n');
+ const speakers=(event,context,c)=>say(event,context,c).lines.map(l=>l.speaker);
+ const others=['maezono','dr_kemuri','adam','minto','ageha','kumicho','rei','kuze','steve','volk'];
+ const events=[['opening'],['packed'],['waiting'],['interlude1',{rank:1}],['interlude1',{rank:3}],['interlude1'],['interlude2']];
+ for (const [event,context] of events) {
+  const d=say(event,context);
+  assert(d.lines.length>=4&&d.lines.length<=7,`chapter4 ${event} line count`);
+  assert(!d.lines.some(l=>others.includes(l.speaker)),`chapter4 ${event} used another chapter's cast`);
+  // 点数や数字は言わない（配合カードのg数だけは読む）。途中でなるが先頭とも言わない（CH4_RIVAL_QUALITY ではなるは途中の票を取れない）。
+  assert.doesNotMatch(d.lines.map(l=>l.text).join('\n').replace(/\d+g/g,''),/\d|点|一位|なる(選手)?が(先頭|トップ|リード)/,`chapter4 ${event} must not state scores`);
+  assert.equal(d.dialogue_id,`tournament_craft_4_${event}`);
+ }
+ // 開幕は第4章の審査員3人がそろい、第3章のエミルの行を繰り返さない。
+ assert.deepEqual(speakers('opening').filter(s=>s!=='pakki'),['nagumo','emil','da_silva']);
+ assert.match(lines('opening'),/誰のための一台/);assert.doesNotMatch(lines('opening'),/古い手順も新しい道具も/);
+ // パッキングの講評は太陽、配合はエミル（第3章と同じ行）。詰め方の言葉は既存の判定と同じ。
+ for (const [pack,expected] of [['fluffy',/ふわっと/],['normal',/均等/],['firm',/しっかり/]]) {
+  const d=say('packed',undefined,{...c4,pack});
+  assert(d.lines.some(l=>l.speaker==='da_silva')&&d.lines.some(l=>l.speaker==='emil'),'chapter4 packed uses its judges');
+  assert.match(d.lines.map(l=>l.text).join('\n'),expected);assert.match(d.lines.map(l=>l.text).join('\n'),/ミント 8g、ストロベリー 4g/);
+ }
+ assert(!lines('packed',undefined,{...c4,mix:{mint:12,strawberry:NaN}}).includes('NaN'));
+ // 蒸らしの間は、なる・王煙楼・シェイクの三人それぞれの待ち方を見せる。
+ for (const r of [0,.34,.99]) {
+  const d=tournamentStoryDialogue(c4,'waiting',()=>r),text=d.lines.map(l=>l.text).join('\n');
+  assert(d.lines.some(l=>l.speaker==='naru')&&d.lines.some(l=>l.speaker==='master_hookah'),'chapter4 waiting shows naru and the master');
+  assert.match(text,/シェイク/);assert(d.lines.length<=7);
+ }
+ // 提供後の掛け合いは、はじめの実際の順位で先頭か追う側かを分ける。順位が無ければ追う側。
+ assert.notEqual(lines('interlude1',{rank:1}),lines('interlude1',{rank:3}));
+ assert.match(lines('interlude1',{rank:1}),/先頭/);assert.match(lines('interlude1',{rank:3}),/追いかける展開/);
+ assert.equal(lines('interlude1'),lines('interlude1',{rank:3}));assert.equal(lines('interlude1',{rank:null}),lines('interlude1',{rank:2}));
+ // 調整前の独白は、次の問い（吸い心地を聞く／温度を見る）の答えを先に決めない。
+ assert.doesNotMatch(lines('interlude1'),/吸い心地を聞|温度を見て/);
+ // browser/ch4_full_flow.mjs が見る言い回し。文言を変えたら両方を直す（ch4-full-flow は台本だけの変更では動かない）。
+ assert.match(lines('interlude1'),/客の呼吸は、まだ続いている/);assert.match(lines('interlude2'),/直した跡が、煙に出ている/);
+ // 調整2回目の前には前夜の『出してくれ』の助言が続くので、シェイクの行で同じ言葉を重ねない。
+ assert.doesNotMatch(lines('interlude2'),/出して/);
+ // 第4章は試飲の講評を持たない（上園・博士の行を出さない）。
+ assert.throws(()=>say('tasting'),/第4章/);
+ assert.equal(JSON.stringify(c4),before,'Chapter 4 dialogue must not alter craft/results');
+ // 客席のコメント: 第1〜3章の顔ぶれを出さず、工程×出来ごとに2本以上。調整のコメントは1回目・2回目のどちらでも出る。
+ const world=JSON.parse(fs.readFileSync(new URL('../data/broadcast.json',import.meta.url))).chapter4;
+ assert.doesNotMatch(JSON.stringify(world),/久世|スティーブ|ヴォルク|あげは|神崎|REI|アダム|みんと|\d+点/);
+ for (const step of ['holes','heat','steam','pull','care']) for (const kind of ['perfect','great','good','miss'])
+  assert(world.completion[step][kind].length>=2,`chapter4 completion ${step}.${kind}`);
+ for (const kind of ['perfect','good','miss']) assert(world.nico[kind].length>=5,`chapter4 nico ${kind}`);
+ assert.doesNotMatch(Object.values(world.completion.care).flat().join('\n'),/二度目|最後/,'care comments must fit either adjustment');
+ // 提供の失敗（焦げ・冷え）でも miss のコメントが出て、その場で大会が終わる。続きがあるとは言わない。
+ assert.doesNotMatch(world.completion.pull.miss.join('\n'),/まだ|続く|調整/,'pull miss comments must also fit a failed serve');
+}
+console.log('PASS: four tournaments, judges, packings, mix, crowds, temperature/care callbacks, legacy saves and no score mutation');

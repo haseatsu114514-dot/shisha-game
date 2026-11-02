@@ -1,19 +1,34 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則。コースの生成・1フレームの物理・採点だけを持ち、DOM に触れない。
 // 画面と入力は desert-ride.js、本編との接続（行動枠・報酬・保存）は chapters/ch4-desert.js。
 // 座標: z はコースに沿った距離（m）、x はコース中央からの横位置（-1〜1 がコース幅、|x|>EDGE は端の深い砂）。
+// 2026-11-02 オーナー「もっとスピード感・ゲーム性を」: 空中トリック（大ジャンプ中に ← → で回転）、ブースト（ゲージ満タンで超加速・岩を砕く）、
+// ヌールとの競走（同じコースを自動で滑るヌールより先にゴールすれば勝ち）を足した。
 
-export const COURSE = Object.freeze({ length: 1700, practiceLength: 470, laneHalf: 1 });
+export const COURSE = Object.freeze({ length: 1700, practiceLength: 640, laneHalf: 1 });
 export const PLAYER = Object.freeze({ half: 0.1 });
 export const EDGE = 0.86;
-export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, accel: 1.5, fallFactor: 0.42, edgeDrag: 7, landingBoost: 3.5, plainLanding: 0.94, bounceLoss: 0.9 });
+export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, boost: 46, boostAccel: 26, overDecay: 12, accel: 1.5, fallFactor: 0.42, edgeDrag: 7, landingBoost: 3.5, plainLanding: 0.94, bounceLoss: 0.9 });
 export const JUMP = Object.freeze({ bigAir: 1.15, hopAir: 0.5, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55 });
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 0.28 });
-export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, bigJump: 150, airPerSec: 120, perfect: 250, good: 120, hopPerfect: 40, nearMiss: 60, comboStep: 0.15, comboMax: 3 });
-// 本編のコースは1本（DEFAULT_SEED）。評価の境目はそのコースで、転倒なし・全起伏で大ジャンプ・着地ほぼ完璧＝S、
-// 着地が「良い」止まり＝A、転倒2回＝B、ジャンプを使わず避けるだけ＝C になるよう合わせた（remake/test/desert_ride.mjs のボットで照合）。
+export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, bigJump: 150, airPerSec: 120, perfect: 250, good: 120, hopPerfect: 40, nearMiss: 60, comboStep: 0.15, comboMax: 3,
+  smash: 100, raceWin: 600, raceWinNaru: 1500 });
+// 競走の相手。ヌールは着地が少し遅い滑り（ブーストは使う）。なる（裏の相手・ヌールに勝った後）は 360 を決めて着地も完璧、ブーストも使う。
+export const RIVALS = Object.freeze({
+  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false }),
+  naru: Object.freeze({ skill: "expert", startX: 0.42, only360: true }),
+});
+// 空中トリック: 大ジャンプ中に ← か → を押している間だけ回る（rate 回転/秒）。離すと次の半回転まで finishRate で回り切る。
+// 着地の瞬間に半回転の区切りから tolerance（回転）以上ずれていると転倒。points は半回転の数ごとの得点（180, 360, 540 …）。
+// 跳んだ瞬間から押していた向きは、一度離すまで回転に使わない（よけながら跳んだだけで回り出さないように）。
+export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, points: Object.freeze([0, 150, 400, 700, 1100, 1500, 2000, 2600, 3300]) });
+// ブースト: かすめ・大ジャンプ・着地・トリックでゲージ（0〜1）が貯まり、満タンで発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
+// 当たった岩は砕ける（転倒しない）。転倒するとゲージが fallLoss 減る。
+export const BOOST = Object.freeze({ duration: 3, near: 0.12, jump: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3 });
+// 本編のコースは1本（DEFAULT_SEED）。評価の境目はそのコースで、空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
+// 着地が「良い」止まり＝B、ジャンプを使わず避けるだけ＝C になるよう合わせた（remake/test/desert_ride.mjs のボットで照合）。
 export const DEFAULT_SEED = 7;
-export const RANKS = Object.freeze([["S", 9000], ["A", 6500], ["B", 3800], ["C", 0]]);
+export const RANKS = Object.freeze([["S", 16000], ["A", 10000], ["B", 5000], ["C", 0]]);
 export const RANK_ORDER = Object.freeze(["C", "B", "A", "S"]);
 
 /** 決定的な乱数（mulberry32）。同じ seed なら同じコース。 */
@@ -78,10 +93,10 @@ export function generateCourse(seed = 1, { length = COURSE.length } = {}) {
   return Object.freeze({ seed, length, features, curves, practice: false });
 }
 
-/** 練習コース: まっすぐ → 岩1つ → 起伏 → 岩 → 起伏。説明の順番が固定なので乱数は使わない。 */
+/** 練習コース: まっすぐ → 岩1つ → 起伏（跳ぶ・着地）→ 岩 → 起伏（空中で回る）→ 岩2つ（ブーストで砕く）。説明の順番が固定なので乱数は使わない。 */
 export function practiceCourse() {
   const length = COURSE.practiceLength;
-  const features = [rock(150, 0.35), bump(240), rock(330, -0.3), bump(400)];
+  const features = [rock(150, 0.35), bump(240), rock(330, -0.3), bump(410), rock(540, 0), rock(590, 0.05)];
   const curves = [{ z: 0, c: 0 }, { z: length + 400, c: 0 }];
   return Object.freeze({ seed: 0, length, features, curves, practice: true });
 }
@@ -101,13 +116,17 @@ export function curveAt(course, z) {
   return points[points.length - 1].c;
 }
 
-export function createGame(course) {
+/** rival: rivalRun() の結果（本番のヌール）。あれば、ゴールの順を競い、先着で加点する。 */
+export function createGame(course, { rival = null } = {}) {
   return {
-    course, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start,
+    course, rival, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start,
     air: 0, airTotal: 0, airKind: null, landingPress: null, lastJumpT: -9,
+    rot: 0, spinDir: 0, spinHold: false, spinArmed: null, lastTrick: null,
+    gauge: 0, boostT: 0,
     fallT: 0, falls: 0, combo: 0, maxCombo: 0, score: 0,
-    stats: { bigJumps: 0, hops: 0, perfect: 0, good: 0, plain: 0, nearMiss: 0, edgeTime: 0, bounces: 0, airTime: 0 },
-    passed: new Set(), lastBump: null, finished: false, finishTime: null, events: [], landedAt: null,
+    stats: { bigJumps: 0, hops: 0, perfect: 0, good: 0, plain: 0, nearMiss: 0, edgeTime: 0, bounces: 0, airTime: 0,
+      tricks: 0, bestTrick: 0, spinFalls: 0, boosts: 0, smashed: 0 },
+    passed: new Set(), smashedRocks: new Set(), lastBump: null, finished: false, finishTime: null, race: null, events: [], landedAt: null,
   };
 }
 
@@ -119,6 +138,25 @@ function award(game, kind, base, { combo = true, at = {} } = {}) {
   if (combo) { game.combo += 1; game.maxCombo = Math.max(game.maxCombo, game.combo); }
   game.events.push({ kind, points, t: game.t, combo: game.combo, ...at });
   return points;
+}
+
+/** ブーストのゲージを貯める（0〜1）。満タンになった瞬間に gaugeFull を知らせる。練習の説明でも使う。 */
+export function chargeBoost(game, amount) {
+  if (game.finished || !(amount > 0)) return game.gauge;
+  const before = game.gauge;
+  game.gauge = Math.min(1, before + amount);
+  if (before < 1 && game.gauge >= 1) game.events.push({ kind: "gaugeFull", t: game.t });
+  return game.gauge;
+}
+
+/** ブースト（↓ ／ BOOST ボタン）。ゲージが満タンで、転んでいなければ発動する。 */
+export function boost(game) {
+  if (game.finished || game.fallT > 0 || game.boostT > 0 || game.gauge < 1) return null;
+  game.gauge = 0;
+  game.boostT = BOOST.duration;
+  game.stats.boosts += 1;
+  game.events.push({ kind: "boost", t: game.t });
+  return "boost";
 }
 
 /** 次の起伏（まだ越えていない）までの距離。無ければ Infinity。 */
@@ -154,14 +192,16 @@ export function press(game) {
 }
 
 function startAir(game, kind) {
-  const scale = 0.85 + 0.3 * (game.speed / SPEED.max);
+  const scale = 0.85 + 0.3 * Math.min(1, game.speed / SPEED.max); // ブースト中も飛距離は最高速と同じ（着地帯の外へ飛ばない）
   game.air = game.airTotal = kind === "big" ? JUMP.bigAir * scale : kind === "hop" ? JUMP.hopAir : JUMP.bounceAir;
   game.airKind = kind;
   game.landingPress = null;
   game.lastJumpT = game.t;
+  game.rot = 0; game.spinDir = 0; game.spinHold = false; game.spinArmed = null;
   if (kind === "big") {
     game.stats.bigJumps += 1;
     award(game, "jump", SCORE.bigJump + SCORE.airPerSec * game.airTotal, { at: { airTotal: game.airTotal } });
+    chargeBoost(game, BOOST.jump);
   } else if (kind === "hop") game.stats.hops += 1;
   else game.stats.bounces += 1;
 }
@@ -171,17 +211,38 @@ function land(game) {
   game.air = 0; game.airKind = null;
   if (kind === "bounce") { game.events.push({ kind: "land", grade: "bounce", t: game.t }); return; }
   game.landedAt = game.t; // 画面が着地の構えを少し残すため（採点には使わない）
+  if (kind === "big" && game.spinDir !== 0) {
+    // トリック: 半回転の区切りで着地できたか。回りかけなら転倒
+    const turns = Math.abs(game.rot), half = Math.round(turns * 2);
+    const spun = { half, degrees: half * 180, dir: game.spinDir };
+    game.rot = 0; game.spinDir = 0; game.spinHold = false;
+    if (Math.abs(turns - half / 2) > SPIN.tolerance) {
+      game.stats.spinFalls += 1;
+      game.landingPress = null;
+      fall(game, null, "spin");
+      return;
+    }
+    if (half >= 1) {
+      game.stats.tricks += 1;
+      game.stats.bestTrick = Math.max(game.stats.bestTrick, spun.degrees);
+      game.lastTrick = { ...spun, t: game.t };
+      award(game, "trick", SPIN.points[Math.min(half, SPIN.points.length - 1)], { at: spun });
+      chargeBoost(game, BOOST.trickPerHalf * half);
+    }
+  }
   const remaining = game.landingPress;
   let grade = "plain";
   if (remaining !== null && remaining <= JUMP.landingWindow) grade = "perfect";
   else if (remaining !== null && remaining <= JUMP.goodWindow) grade = "good";
   if (grade === "perfect") {
     game.stats.perfect += 1;
-    game.speed = Math.min(SPEED.max, game.speed + SPEED.landingBoost);
+    game.speed = Math.max(game.speed, Math.min(speedCap(game), game.speed + SPEED.landingBoost));
     award(game, "land", kind === "big" ? SCORE.perfect : SCORE.hopPerfect, { at: { grade } });
+    if (kind === "big") chargeBoost(game, BOOST.perfect);
   } else if (grade === "good") {
     game.stats.good += 1;
     award(game, "land", kind === "big" ? SCORE.good : Math.round(SCORE.hopPerfect / 2), { at: { grade } });
+    if (kind === "big") chargeBoost(game, BOOST.good);
   } else {
     game.stats.plain += 1;
     game.speed = Math.max(SPEED.min, game.speed * SPEED.plainLanding);
@@ -190,7 +251,7 @@ function land(game) {
   game.landingPress = null;
 }
 
-function fall(game, feature) {
+function fall(game, feature, reason = "rock") {
   game.fallT = FALL.recover;
   game.falls += 1;
   game.combo = 0;
@@ -198,8 +259,16 @@ function fall(game, feature) {
   game.vx = 0;
   game.score += FALL.points;
   game.air = 0; game.airKind = null;
-  game.events.push({ kind: "fall", points: FALL.points, t: game.t, x: feature?.x ?? game.x });
+  game.rot = 0; game.spinDir = 0; game.spinHold = false;
+  game.boostT = 0;
+  game.gauge = Math.max(0, game.gauge - BOOST.fallLoss);
+  game.events.push({ kind: "fall", points: FALL.points, t: game.t, x: feature?.x ?? game.x, reason });
 }
+
+/** 今の速度の上限（ブースト中は高い）。 */
+const speedCap = game => game.boostT > 0 ? SPEED.boost : SPEED.max;
+/** 岩を砕けるか: ブースト中と、終わった直後のまだ最高速を大きく超えている間（終わった瞬間に目の前の岩で転ばないように）。 */
+export const smashing = game => game.boostT > 0 || game.speed > SPEED.max + 3;
 
 /** 1フレーム進める。dt は秒（50ms で頭打ち）。入力は { left, right }。 */
 export function step(game, input, dt) {
@@ -209,8 +278,16 @@ export function step(game, input, dt) {
   const falling = game.fallT > 0;
   if (falling) {
     game.fallT = Math.max(0, game.fallT - dt);
+  } else if (game.boostT > 0) {
+    game.speed = Math.min(SPEED.boost, game.speed + SPEED.boostAccel * dt);
+  } else if (game.speed > SPEED.max) {
+    game.speed = Math.max(SPEED.max, game.speed - SPEED.overDecay * dt); // ブーストの後は少しずつ戻る
   } else {
     game.speed = Math.min(SPEED.max, game.speed + SPEED.accel * dt);
+  }
+  if (game.boostT > 0) {
+    game.boostT = Math.max(0, game.boostT - dt);
+    if (game.boostT === 0) game.events.push({ kind: "boostEnd", t: game.t });
   }
   if (Math.abs(game.x) > EDGE && game.air <= 0) {
     game.speed = Math.max(SPEED.min, game.speed - SPEED.edgeDrag * dt);
@@ -218,7 +295,11 @@ export function step(game, input, dt) {
   }
   // 横移動: 入力で加速、砂の抵抗で減衰。空中は効きが弱い。カーブでは外へ流れる。
   const steer = falling ? 0 : ((input?.right ? 1 : 0) - (input?.left ? 1 : 0));
-  const grip = game.air > 0 ? JUMP.steerInAir : 1;
+  let grip = game.air > 0 ? JUMP.steerInAir : 1;
+  if (game.air > 0 && game.airKind === "big") {
+    spinStep(game, steer, dt);
+    if (game.spinDir !== 0) grip = 0; // 回っている間は横へ動かない
+  }
   game.vx += steer * STEER.accel * grip * dt;
   game.vx -= curveAt(game.course, game.z) * STEER.curveDrift * (game.speed / SPEED.max) * dt;
   game.vx *= Math.max(0, 1 - STEER.damping * dt);
@@ -250,16 +331,39 @@ export function step(game, input, dt) {
     const dx = Math.abs(game.x - feature.x);
     const cleared = game.air > 0 && (game.airKind === "big" || feature.size === "small") && game.airKind !== "bounce";
     if (dx < feature.w + PLAYER.half && !cleared) {
+      if (smashing(game) && !falling) {
+        // ブースト中（と、その勢いが残る間）は岩を砕いて進む
+        game.stats.smashed += 1;
+        game.smashedRocks.add(feature);
+        award(game, "smash", SCORE.smash, { at: { x: feature.x, size: feature.size } });
+        continue;
+      }
       if (!falling) fall(game, feature);
       continue;
     }
     if (dx < feature.w + PLAYER.half + 0.22 && !falling) {
       game.stats.nearMiss += 1;
       award(game, "near", SCORE.nearMiss, { at: { dx } });
+      chargeBoost(game, BOOST.near);
     }
   }
   if (game.z >= game.course.length) finish(game);
   return game;
+}
+
+/** 大ジャンプ中の回転。steer は -1／0／1（画面の左／なし／右）。 */
+function spinStep(game, steer, dt) {
+  if (game.spinArmed === null) game.spinArmed = steer === 0; // 跳んだ瞬間に押していた向きは、一度離すまで使わない
+  else if (steer === 0) game.spinArmed = true;
+  game.spinHold = game.spinArmed && steer !== 0 && (game.spinDir === 0 || steer === game.spinDir);
+  if (game.spinHold) game.spinDir = steer;
+  if (game.spinDir === 0) return;
+  const turns = Math.abs(game.rot);
+  if (game.spinHold) game.rot = game.spinDir * (turns + SPIN.rate * dt);
+  else {
+    const target = Math.ceil(turns * 2 - 1e-9) / 2; // 次の半回転まで回り切る
+    game.rot = game.spinDir * Math.min(target, turns + SPIN.finishRate * dt);
+  }
 }
 
 function finish(game) {
@@ -270,6 +374,13 @@ function finish(game) {
   game.score += SCORE.finish;
   const bonus = Math.max(0, Math.round((SCORE.timePar - game.t) * SCORE.timeBonusPerSec));
   game.score += bonus;
+  if (game.rival) {
+    const won = game.t < game.rival.finishTime, who = game.rival.who || "noor";
+    const bonus = won ? (who === "naru" ? SCORE.raceWinNaru : SCORE.raceWin) : 0;
+    game.race = { won, gap: Math.round(Math.abs(game.rival.finishTime - game.t) * 10) / 10, rivalTime: Math.round(game.rival.finishTime * 10) / 10, who };
+    game.score += bonus;
+    game.events.push({ kind: "race", t: game.t, ...game.race, points: bonus });
+  }
   game.score = Math.max(0, Math.round(game.score));
   game.events.push({ kind: "finish", t: game.t, bonus });
 }
@@ -285,6 +396,8 @@ export function summary(game) {
     finished: game.finished, score, rank: game.finished ? rankOf(score) : null, time,
     maxCombo: game.maxCombo, falls: game.falls, bigJumps: game.stats.bigJumps, perfect: game.stats.perfect,
     good: game.stats.good, nearMiss: game.stats.nearMiss, seed: game.course.seed,
+    tricks: game.stats.tricks, bestTrick: game.stats.bestTrick, boosts: game.stats.boosts, smashed: game.stats.smashed,
+    race: game.race ? { ...game.race } : null,
   };
 }
 
@@ -294,20 +407,25 @@ export function readResult(value) {
   const n = (v, lo = 0) => Number.isFinite(v) && v >= lo ? v : null;
   const score = n(value.score), time = n(value.time), maxCombo = n(value.maxCombo), falls = n(value.falls);
   if (score === null || time === null || maxCombo === null || falls === null || !RANK_ORDER.includes(value.rank)) return null;
+  const race = value.race && typeof value.race === "object" && typeof value.race.won === "boolean" && n(value.race.gap) !== null
+    ? { won: value.race.won, gap: Math.round(value.race.gap * 10) / 10, who: value.race.who === "naru" ? "naru" : "noor" } : null;
   return { finished: true, score: Math.round(score), rank: value.rank, time: Math.round(time * 10) / 10, maxCombo: Math.round(maxCombo), falls: Math.round(falls),
-    bigJumps: Math.round(n(value.bigJumps) ?? 0), perfect: Math.round(n(value.perfect) ?? 0), good: Math.round(n(value.good) ?? 0), nearMiss: Math.round(n(value.nearMiss) ?? 0) };
+    bigJumps: Math.round(n(value.bigJumps) ?? 0), perfect: Math.round(n(value.perfect) ?? 0), good: Math.round(n(value.good) ?? 0), nearMiss: Math.round(n(value.nearMiss) ?? 0),
+    tricks: Math.round(n(value.tricks) ?? 0), bestTrick: Math.round(n(value.bestTrick) ?? 0), boosts: Math.round(n(value.boosts) ?? 0), race };
 }
 
 /**
- * 検証・デモ用の自動操作。skill: "perfect"（全部よけて起伏で跳び、着地を決める）／"good"（着地が少し遅い）／
- * "none"（跳ばずによけるだけ）／"lazy"（反応が遅くよく転ぶ）。戻り値は { input, action } で、action は押すべき時に "press"。
- * 乱数を使わないので同じコースなら同じ結果になる。
+ * 検証・デモ・ヌール用の自動操作。skill:
+ * "expert"（全部よけて起伏で跳び、空中で 360〜720 回って着地を決め、ゲージが満ちたらブースト）／"perfect"（回らないが着地を決め、ブーストも使う）／
+ * "good"（着地が少し遅い。ブーストは使う）／"rival"（ヌール。good と同じ滑り）／
+ * "none"（跳ばずによけるだけ）／"lazy"（反応が遅くよく転ぶ）。
+ * 戻り値は { input, action } で、action は押すべき時に "press"（ジャンプ・着地の構え）か "boost"。乱数を使わないので同じコースなら同じ結果になる。
  */
 export function botControl(game, skill = "perfect", memo = {}) {
   const course = game.course;
   const react = skill === "lazy" ? 22 : 45;
   const ahead = course.features.filter(f => f.kind === "rock" && !game.passed.has(f) && f.z > game.z && f.z - game.z < react);
-  let target = 0;
+  let target = memo.lane ?? 0; // 岩が無い所で滑る位置（ヌールは少し左を滑る）
   if (ahead.length) {
     const first = ahead[0], row = ahead.filter(r => Math.abs(r.z - first.z) < 1);
     let best = null;
@@ -319,10 +437,62 @@ export function botControl(game, skill = "perfect", memo = {}) {
     target = best.x;
   }
   const slow = skill === "lazy" && Math.floor(game.t * 4) % 3 === 0; // 時々手が止まる
-  const input = slow ? { left: false, right: false } : { left: game.x > target + 0.03, right: game.x < target - 0.03 };
+  let input = slow ? { left: false, right: false } : { left: game.x > target + 0.03, right: game.x < target - 0.03 };
   let action = null;
-  const jumps = skill === "perfect" || skill === "good";
+  const jumps = ["expert", "perfect", "good", "rival"].includes(skill);
+  const braceAt = skill === "expert" || skill === "perfect" ? 0.2 : 0.45;
+  if (game.air > 0 && game.airKind === "big" && skill !== "expert") input = { left: false, right: false }; // 大ジャンプ中の ← → は回転なので、回らない人は触らない
+  if (game.air > 0 && game.airKind === "big" && skill === "expert") {
+    // 空中トリック: 一度手を離してから右（跳ぶたびに左右を替える）を押し続け、目標の手前で離す（離すと次の半回転まで回り切る）
+    if (memo.spinJump !== game.lastJumpT) { memo.spinJump = game.lastJumpT; memo.spinSide = memo.spinSide === "right" ? "left" : "right"; memo.spinGoal = game.airTotal > 1.2 && !memo.only360 ? 1.55 : 0.55; }
+    input = { left: false, right: false };
+    if (game.spinArmed && Math.abs(game.rot) < memo.spinGoal) input[memo.spinSide] = true;
+  }
   if (jumps && game.air <= 0 && nextBumpDistance(game) <= game.speed * JUMP.bumpWindow * 0.8) { action = "press"; memo.braced = false; }
-  else if (game.air > 0 && game.airKind === "big" && !memo.braced && game.air <= (skill === "perfect" ? 0.2 : 0.45)) { action = "press"; memo.braced = true; }
+  else if (game.air > 0 && game.airKind === "big" && !memo.braced && game.air <= braceAt) { action = "press"; memo.braced = true; }
+  else if (["expert", "perfect", "good", "rival"].includes(skill) && game.gauge >= 1 && game.boostT <= 0 && game.fallT <= 0) action = "boost";
   return { input, action };
+}
+
+/** 自動操作の一歩（press／boost を実行してから進める）。ヌールの走りと検査で使う。 */
+export function botStep(game, skill, memo, dt) {
+  const { input, action } = botControl(game, skill, memo);
+  if (action === "press") press(game);
+  else if (action === "boost") boost(game);
+  step(game, input, dt);
+  return game;
+}
+
+const RIVAL_SAMPLE = 1 / 30;
+/**
+ * 本番の競走相手（who: "noor"／"naru"、`RIVALS`）の滑り。同じコースを自動操作で最後まで滑り、ゴールの時刻と、1/30 秒ごとの位置・姿勢を返す。
+ * 同じコースなら毎回同じ（決定的）。人物とは当たらない（並んで滑るだけ）。
+ */
+export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
+  const { skill, startX, only360 } = RIVALS[who] || RIVALS.noor;
+  const game = createGame(course), memo = { lane: startX, only360 }, samples = [];
+  game.x = startX;
+  const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airKind: game.airKind,
+    landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot });
+  snap();
+  let next = RIVAL_SAMPLE;
+  while (!game.finished && game.t < maxTime) {
+    botStep(game, skill, memo, 1 / 60);
+    if (game.t >= next - 1e-9 || game.finished) { snap(); next += RIVAL_SAMPLE; }
+  }
+  return Object.freeze({ who: RIVALS[who] ? who : "noor", finishTime: game.finishTime ?? game.t, samples, falls: game.falls });
+}
+
+/** 時刻 t のヌール（rivalRun の結果）。ゴールの後は旗の先で止まる。 */
+export function rivalAt(rival, t) {
+  const s = rival.samples;
+  if (!s.length) return null;
+  if (t >= rival.finishTime) {
+    const last = s[s.length - 1], after = t - rival.finishTime;
+    return { ...last, z: last.z + Math.min(24, after * 14 - after * after * 2.5 * Math.min(1, after / 2.8)), air: 0, airKind: null, fallT: 0, finished: true, t };
+  }
+  const i = Math.min(s.length - 1, Math.max(1, Math.ceil(t / RIVAL_SAMPLE)));
+  const a = s[i - 1], b = s[i];
+  const k = b.t > a.t ? Math.min(1, Math.max(0, (t - a.t) / (b.t - a.t))) : 1;
+  return { ...a, z: a.z + (b.z - a.z) * k, x: a.x + (b.x - a.x) * k, rot: a.rot + (b.rot - a.rot) * k, t, finished: false };
 }

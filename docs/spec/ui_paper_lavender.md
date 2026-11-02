@@ -25,6 +25,13 @@
 - 検証入口: `node tools/ci/run.mjs --kind quick`、`--kind browser --suites axe-throw,trpg,play-spots`、`node remake/test/browser/gallery.mjs`、`shop_ui.mjs`。TRPGの卓テストで、実際の2d20と数字の一致・数字の中央位置・盛り上がりの余計な文字なしを確認する。
 - 実画面: [斧投げ・PC](../qa/minigames-paper/axe-play.webp)／[斧投げ・縦](../qa/minigames-paper/axe-portrait.webp)／[ダイス・PC](../qa/minigames-paper/trpg-dice.webp)／[ダイス・縦](../qa/minigames-paper/trpg-dice-portrait.webp)／[部活](../qa/minigames-paper/trpg-club.webp)／[ギャラリー](../qa/minigames-paper/gallery.webp)／[くじ](../qa/minigames-paper/kuji.webp)。素材の採用記録ではなく、実装後の表示確認用の画像。
 
+## 2026-11-02 制作・大会の夜紫UI（#2359）
+
+- 制作と大会は日常の紙UIを反転し、地 `#150d22`、板 `#221534`、札 `#2e1d45`、線 `#5a4475`、ラベンダー光 `#c9a7e6`、白 `#f6f1fa`、金 `#e3bd6e` を使う。金は特別な一手と細い縁、順位の強調へ絞る。審査員の桃・青緑・金、LIVE の赤、温度と成否の意味色は保つ。
+- 原画と共通・個別プロンプトは `asset_sources/ui/craft-night-20261102/`、採用PNGは `assets/ui/craft-night/`、実行時WebPは `remake/img/ui/craft-night/`。`python3 remake/tools/build_ui_skin.py` の `CRAFT_NIGHT_PARTS` が固定寸法で変換する。
+- 板・窓・ボタン・額縁は織り目や繊維、片方向の光、二重罫、内影を持つ。板と舞台の中心は無地。板に `filter` を掛けず、縁は1px。温度計の透明窓に合わせ `--thermo-inset: 8.2%`、管は左右35%/36%に置く。
+- 工程バーは今の工程だけ名前、済みは✓、先は番号。大会の順位行・メダル・南雲カットイン帯・入場札も夜紫のパーツへ。工程・操作・判定・得点・台詞・保存・DS二画面の配置は変えない。
+
 ## 2026-11-01 制作（シーシャ作り）の紫×白＋金
 
 シーシャ作りパート（作業台）は、日常の白×紫＋金から紫を主役にした夜の配色。現行のレイアウト・工程・操作・ゲーム性は維持する。別途検討中の新しい制作UIモックは反映しない。
