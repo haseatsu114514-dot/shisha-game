@@ -1157,45 +1157,57 @@ await suite("growth-levelup", async (runCheck) => {
     await setupDaily(page);
     const places = await page.evaluate(async () => {
       const { evePlaceFor } = await import("./js/daily/calendar.js");
-      return ["home", "tokyo", "widehanga", undefined].map((region) => evePlaceFor({ flags: region ? { _ch2_region: region } : {} }));
+      return ["home", "tokyo", "widehanga", "dubai", undefined].map((region) => evePlaceFor({ flags: region ? { _ch2_region: region } : {} }));
     });
-    assert.deepEqual(places, ["kannon", "tokyo_shrine", "inn_window", "kannon"]);
+    assert.deepEqual(places, ["kannon", "tokyo_shrine", "inn_window", "dubai_waterside", "kannon"]);
   });
-  // ドバイのモスク（SPEC 2.8・SBD93）: 第4章の行き先から見学して振り返ると、灯せる盤が開く。時間・体力は使わない
+  // ドバイのモスク（SPEC 2.8・SBD93）: 第4章のドバイの地図（日常ループ・版2）の「風の回廊モスク」から見学して振り返ると、
+  // 灯せる盤が開く。時間・体力・お金は使わない
   await check("dubai-mosque-lights-board", async (page) => {
-    await setupDaily(page);
+    page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
-      const core = await import("./js/core/state.js"), p = await import("./js/chapters/ch4-progress.js");
-      const s = core.newGame();
-      Object.assign(s, { chapter: 3, day: 45, slot: 0, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5 });
-      Object.assign(s.flags, { _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
-        _overseas_companion: { decided: true, companion: null, supports: [] } });
-      if (!p.advanceToChapterFour(s)) throw new Error("chapter four");
-      for (const id of ["ch4_sumi_training", "ch4_strategy", "ch4_opening", "ch4_arrival_inn"]) p.completeChapterFourScene(s, id);
-      s.flags._ch4.titleSeen = true;
-      while (s.day % 7 === 5) s.day++; // 金曜午前は見学なし
+      const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch4-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+        _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+      if (!progress.advanceToChapterFour(value)) throw new Error("chapter four");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: [] }; value.flags._ch4.titleSeen = true;
+      for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+      value.day += 3; if (!progress.departChapterFour(value)) throw new Error("departure");
+      if (value.day % 7 === 5) throw new Error("金曜午前は見学なし。日付を変えて"); // MOSQUE_VISITING_HOURS
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+      Object.assign(core.state, value);
       (await import("./js/core/growth.js")).ensureGrowth().hidane.any = 3;
-      core.config.textSpeed = 4; core.save();
-      window.mosqueBefore = { day: s.day, slot: s.slot, stamina: s.stamina, money: s.money };
-      void (await import("./js/chapters/ch4.js")).resumeChapterFour();
+      core.save();
     });
-    await page.locator(t("ch4-free")).waitFor({ timeout: 30000 });
-    await page.locator(t("ch4-go-mosque")).click();
+    await page.reload(); await page.locator(t("title-load")).click();
+    await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
+    await page.locator(t("slot-0")).click();
+    // 到着と宿の場面を送り、ドバイの地図まで（この検査は成長の操作を自分で行う）
+    for (let i = 0; i < 300; i++) {
+      if (await page.evaluate(() => !!document.querySelector('.map:not(.done) [data-test="pin-ch4_dubai_inn"]') && !document.querySelector("#modal.show"))) break;
+      for (const sel of [t("levelup-ok"), ".vn-box", '[data-test^="ch4-continue"]']) {
+        const node = page.locator(sel).first();
+        if (await node.isVisible().catch(() => false)) await node.click().catch(() => {});
+      }
+      await page.waitForTimeout(300);
+    }
+    const before = await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina, money: __remake.state.money, region: __remake.state.flags._ch2_region }));
+    assert.equal(before.region, "dubai"); assert.equal(before.slot, 0);
+    await page.locator(t("pin-ch4_dubai_mosque")).click(); await page.locator(t("map-go")).click();
     for (let i = 0; i < 80 && !(await page.locator(t("growth-board")).count()); i++) {
-      if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click();
+      if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click().catch(() => {});
       await page.waitForTimeout(150);
     }
     await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
     assert.match(await page.locator(t("board-place")).innerText(), /モスクの回廊で内省/);
-    await page.locator(t("board-node-B1")).click();
-    await page.locator(t("board-light")).click();
-    await page.locator(t("board-decide")).click();
+    await page.locator(t("board-node-B1")).click(); await page.locator(t("board-light")).click(); await page.locator(t("board-decide")).click();
     await page.locator(t("growth-board")).waitFor({ state: "detached" });
-    await page.locator(t("ch4-free")).waitFor();
-    const after = await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina,
-      money: __remake.state.money, nodes: __remake.state.growth.nodes, fire: __remake.state.growth.hidane.any }));
-    const before = await page.evaluate(() => window.mosqueBefore);
-    assert.deepEqual({ day: after.day, slot: after.slot, stamina: after.stamina, money: after.money }, before, "モスクで灯しても時間・体力・お金は変わらない");
+    const after = await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina, money: __remake.state.money,
+      region: __remake.state.flags._ch2_region, nodes: __remake.state.growth.nodes, fire: __remake.state.growth.hidane.any }));
+    assert.deepEqual({ day: after.day, slot: after.slot, stamina: after.stamina, money: after.money, region: after.region }, before, "モスクで灯しても時間・体力・お金は変わらない");
     assert.deepEqual(after.nodes, ["B1"]); assert.equal(after.fire, 2);
     const saved = await page.evaluate(async () => JSON.parse(localStorage.getItem((await import("./js/core/state.js")).SAVE_KEY)).growth.nodes);
     assert.deepEqual(saved, ["B1"], "灯した盤は保存される");

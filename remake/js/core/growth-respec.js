@@ -8,7 +8,9 @@ const COLORS = ["any", ...BOARD_KEYS];
 const copy = value => JSON.parse(JSON.stringify(value));
 const cycleOf = s => s.cycleId || `cycle:${s.cycle || 1}`;
 const allocation = g => JSON.stringify([g.nodes, g.paid, g.hidane, g.litSince]);
-const freeTime = s => s.phase === "daily" && (s.chapter !== 3
+// 第3章の版3（2026-11-02 main: 出発前の地元と東京も日常ループ）はほかの章と同じく日常で開く。
+// 版2の旧セーブは、東京の行程の自由時間の枠で開く
+const freeTime = s => s.phase === "daily" && (s.chapter !== 3 || s.flags?._ch3_intro?.routeVersion === 3
   || !!s.flags?._ch3_intro && !!nextTokyoFreeTime(s,
     chapterThreeScenes(s)[s.flags._ch3_intro.stage]?.id || "tournament"));
 

@@ -69,12 +69,19 @@ function beforeThreeClear(){
 }
 function beforeFourClear(){
   const s=fresh(3);s.phase="cleared";s.flags._ch3_cleared=true;p4.advanceToChapterFour(s);
+  // 章クリアの経験値を確かめるだけなので、日付を手で進める旧行程（版1）で章末まで進める（版2は日常ループが日付を進める）
+  delete s.flags._ch4.routeVersion;
   s.growth.chapterLog[4]={people:["sumi","minto","minto"],places:["one","two","two"]};
   for(const scene of p4.CH4_PROLOGUE)p4.completeChapterFourScene(s,scene.id);
   p4.completeChapterFourScene(s,"ch4_stranger_first");
-  for(let i=0;i<4;i++)p4.endChapterFourDay(s);
-  for(const id of ["ch4_stranger_second","ch4_wang_reception_forced_in","ch4_wang_reception","ch4_stranger_third"])p4.completeChapterFourScene(s,id);
-  p4.finishChapterFourEve(s);p4.completeChapterFourScene(s,"ch4_tournament_start");
+  // ドバイの日々: その日に読める必須場面を読み、無ければ日を進め、前夜なら終える（日付ごとに必読が配られる版2の行程）
+  for(let guard=0;guard<60;guard++){
+    if(p4.finishChapterFourEve(s))break;
+    const [next]=p4.chapterFourMandatory(s);
+    if(next?.id==="ch4_wang_reception")p4.completeChapterFourScene(s,"ch4_wang_reception_forced_in");
+    if(next&&p4.completeChapterFourScene(s,next.id))continue;
+    if(!p4.endChapterFourDay(s))throw new Error(`第4章の下準備が進まない: ${JSON.stringify(s.flags._ch4)}`);
+  }p4.completeChapterFourScene(s,"ch4_tournament_start");
   s.flags._ch4.match={result:{win:true}};p4.completeChapterFourScene(s,"ch4_final");
   for(const scene of p4.CH4_RESOLUTION.slice(0,-1))p4.completeChapterFourScene(s,scene.id);
   return s;

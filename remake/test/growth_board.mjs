@@ -577,7 +577,17 @@ assert.equal(respec.commitRespec(respecG,transaction,core.state),false);
 const c3 = await import("../js/chapters/ch3-progress.js");
 core.state.phase="cleared";
 Object.assign(core.state.flags,{_ch2_cleared:true,_ch2_read_ch2_tournament_ageha_heart:true,_ch2_tournament:{stage:"complete"}});
+const ch3Start=clone(core.state);
 assert(c3.advanceToChapterThree(core.state));growth.ensureGrowth();
+// 版3（出発前の地元と東京も日常ループ）: 章頭の場面のあいだは開かず、最初の日常で開き、日付が変わると閉じる
+assert.equal(core.state.flags._ch3_intro.routeVersion,3);
+assert.equal(respecG.respec.status,"pending");assert.equal(respec.canRespec(respecG,core.state),false,"章頭の場面では開かない");
+core.state.phase="daily";growth.ensureGrowth();assert(respec.canRespec(respecG,core.state),"版3は最初の日常で開く");
+core.state.day++;growth.ensureGrowth();assert.equal(respec.canRespec(respecG,core.state),false,"日付が変わると閉じる");
+// 版2の旧セーブ（東京の行程の自由時間の枠）: 強制場面の日付変更では失効せず、最初の自由時間で開く
+core.setState(ch3Start);respecG=growth.ensureGrowth();
+assert(c3.advanceToChapterThree(core.state));delete core.state.flags._ch3_prep;
+core.state.flags._ch3_intro={startDay:core.state.day,stage:0,titleSeen:false,routeVersion:2};respecG=growth.ensureGrowth();
 while(!c3.chapterThreeFreeTime(core.state)) {
   const scene=c3.chapterThreeScenes(core.state)[core.state.flags._ch3_intro.stage];
   assert(scene);assert(c3.completeChapterThreeScene(core.state,scene.id));growth.ensureGrowth();
