@@ -46,7 +46,8 @@ try {
     });
     page.setDefaultTimeout(20000);
     page.on("pageerror", e => errors.push(e.message));
-    await page.goto(origin + "/remake/");
+    // スミさんの♥2の炭の授業は旧しくみ（?growth=0）の口。心得の盤（通常プレイの既定）ではキューブ炭は盤の授業 M-W1 で習う（#2166）。
+    await page.goto(origin + "/remake/?growth=0");
     await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js"); core.newGame();

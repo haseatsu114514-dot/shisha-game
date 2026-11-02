@@ -118,6 +118,8 @@ export const FLAG_EXACT_RULES = [
   ["_axe_bar_sighting_done", "progression"],
   ["_axe_lesson_done", "ui"],
   ["_axe_throw_unlocked", "person"],
+  ["_board_starter_given", "ui"],
+  ["_board_tutorial_done", "ui"],
   ["_c_station_registered", "unlock"],
   ["_cafe_idea_wait", "pending"],
   ["_cafe_introduced", "progression"],
@@ -198,6 +200,9 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
   ["_ch3_outings", "progression"],
+  ["_ch3_naru_party_ready", "progression"],
+  ["_ch3_pizza_party", "progression"],
+  ["_minto_calling_paid", "progression"],
   ["_ch3_prep", "progression"],
   ["_ch3_prep_clinic", "progression"],
   ["_ch3_prep_farewell", "progression"],
@@ -326,6 +331,8 @@ export const FLAG_EXACT_RULES = [
   ["_hiyori_work_talk_done", "person"],
   ["_hole_outer24_unlocked", "unlock"],
   ["_home_shisha_day", "progression"],
+  ["_home_lavender_sleep", "progression"],
+  ["_dense_pack_legacy", "unlock"],
   ["_home_tonight", "progression"],
   ["_home_trial_plan", "progression"],
   ["_intro_", "progression"],
@@ -526,6 +533,7 @@ export const FLAG_EXACT_RULES = [
   ["romance_ageha", "person"],
   ["romance_minto", "person"],
   ["seenDemo", "ui"],
+  ["_kannon_growth_intro_done", "ui"],
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],
   ["spot_kannon_adam_done", "person"],
@@ -610,8 +618,13 @@ export function buildCarryPackage(s) {
     const g = data.growth = clone(s.growth);
     g.fresh = { chapter: 1, counts: {} };
     g.firsts = { people: [], places: [] };
+    g.discoveries = { recipes: [], golden: [] };
+    g.read = [];
+    g.chapterLog = {}; g.tournamentXp = {}; g.cleared = [];
     g.gifted = {};
     g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [] };
+    // 新しい周回は第1章から。章のはじめの盤（章末の淡い面）を引き継いだ盤で記録しておく
+    g.chapterStart = { chapter: 1, nodes: Array.isArray(g.nodes) ? [...g.nodes] : [], level: g.level };
   }
   data.money = Math.min(MAX_MONEY, Math.max(0, Math.round(Number(s?.money) || 0)));
   data.flavors = clone(s?.flavors ?? []);

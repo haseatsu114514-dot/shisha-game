@@ -120,6 +120,9 @@ async function noonMapNext(page, touch) {
   }
   assert.fail('LOAD did not reach the free DAY2 noon map within 20 seconds');
 }
+/** 初回の当たりの支払い。旧しくみは能力Pの合計、心得の盤（通常プレイの既定・SBD97）は経験値（SPEC 1.8） */
+const statSum = (stats) => Object.values(stats).reduce((a, b) => a + b, 0);
+const payoutOf = (snap, board) => board ? (snap.growthXp ?? snap.growth?.xp ?? 0) : statSum(snap.stats);
 async function snapshot(page) {
   return page.evaluate(async () => {
     const { state: s } = await import('./js/core/state.js');
@@ -128,6 +131,7 @@ async function snapshot(page) {
       registered: s.flags._c_station_registered, pendingFirst: !!s.flags._pakki_first_spin_pending,
       intro: s.reel.introDone, seed: s.reel.seed, count: s.reel.count,
       pending: s.reel.pending.length, stats: { ...s.stats }, xp: { ...s.statXp },
+      growthXp: s.growth?.xp || 0, board: (await import('./js/core/growth-mode.js')).growthEnabled(),
       note: structuredClone(s.reel.note), lock: structuredClone(s.reel.lock),
       lastChapter: s.reel.lastChapter, setting: s.reel.setting,
       mintoDone: !!s.flags._delivery_minto_done, adamDone: !!s.flags._delivery_adam_done };
@@ -168,9 +172,15 @@ await suite('reel-registration-load', async check => {
         const { core } = await import('./js/daily/reel.js');
         const copy = structuredClone(state.reel);
         const results = core.spinSeries(copy, { chapterFirst: true, reset: true });
-        return { count: copy.count, exp: results.reduce((n, r) => n + r.exp, 0), lock: copy.lock };
+        const { growthEnabled } = await import('./js/core/growth-mode.js');
+        const { SLOT_EXP } = await import('./js/core/growth.js');
+        const board = growthEnabled();
+        const exp = board ? results.reduce((n, r) => n + (r.quiet ? 0 : SLOT_EXP[r.overlap || r.role] || 0), 0)
+          : results.reduce((n, r) => n + r.exp, 0);
+        return { count: copy.count, exp, board, lock: copy.lock };
       });
-      assert(expected.exp < 38, 'Fixture must stay below the stat cap');
+      assert.equal(expected.board, receipt.board);
+      if (!expected.board) assert(expected.exp < 38, 'Fixture must stay below the stat cap');
 
       // The first case reloads the actual receipt-produced checkpoint, unmodified.
       // Other cases explicitly isolate saved boundaries, rather than claiming UI reachability.
@@ -214,6 +224,7 @@ await suite('reel-registration-load', async check => {
         const during = await snapshot(page);
         assert.equal(during.count, beforeLoad.reel.count, 'Drew before explanation finished');
         assert.deepEqual(during.stats, beforeLoad.stats);
+        assert.equal(during.growthXp, beforeLoad.growth?.xp || 0, 'Paid EXP before explanation finished');
         assert.equal(await page.locator('.spot-pin.guide[data-spot="minto"]').isVisible(), false);
         await readIntro(page, touch);
       }
@@ -228,8 +239,7 @@ await suite('reel-registration-load', async check => {
         assert.equal(committed.visitedDay.c_station, undefined, 'First-spin commitment must leave the customer visit available');
         assert(!committed.flags._pakki_first_spin_pending);
         assert.equal(committed.reel.count, expected.count);
-        assert.equal(Object.values(committed.stats).reduce((a, b) => a + b, 0)
-          - Object.values(receipt.stats).reduce((a, b) => a + b, 0), expected.exp);
+        assert.equal(payoutOf(committed, expected.board) - payoutOf(receipt, expected.board), expected.exp);
         await loadTitle(page, touch);
         await noonMapNext(page, touch);
         const resumed = await snapshot(page);
@@ -237,6 +247,7 @@ await suite('reel-registration-load', async check => {
         assert.equal(resumed.count, committed.reel.count, 'Second interruption redrew first spin');
         assert.deepEqual(resumed.stats, committed.stats, 'Second interruption changed payout');
         assert.deepEqual(resumed.xp, committed.statXp);
+        assert.equal(resumed.growthXp, committed.growth?.xp || 0, 'Second interruption changed EXP payout');
         assert.deepEqual(resumed.note, committed.reel.note);
       }
       await noonMapNext(page, touch);
@@ -260,11 +271,12 @@ await suite('reel-registration-load', async check => {
         assert.equal(after.count, 0, 'Inferred a first spin for a legacy installed save');
         assert.deepEqual(after.stats, receipt.stats);
         assert.deepEqual(after.xp, receipt.xp);
+        assert.equal(after.growthXp, receipt.growthXp, 'Paid EXP for an inferred legacy first spin');
       } else {
         assert.equal(after.count, expected.count, 'Lost or duplicated the first series');
         assert.deepEqual(after.lock, expected.lock, 'Changed deterministic next-spin state');
-        const gain = Object.values(after.stats).reduce((a, b) => a + b, 0)
-          - Object.values(receipt.stats).reduce((a, b) => a + b, 0);
+        const gain = payoutOf(after, expected.board) - payoutOf(receipt, expected.board);
+        if (expected.board) assert.deepEqual(after.stats, receipt.stats, 'The board pays EXP, not stats');
         assert.equal(gain, expected.exp, 'Lost or duplicated first-spin payout');
         if (beforeLoad.reel.count > 0) {
           assert.deepEqual(after.stats, beforeLoad.stats, 'Repaid a committed result');

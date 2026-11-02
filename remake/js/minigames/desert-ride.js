@@ -5,7 +5,7 @@
 import { el } from "../core/util.js";
 import { SE, unlockAudio } from "../core/audio.js";
 import { COURSE, EDGE, SPEED, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, summary, curveAt, botControl } from "./desert-ride-model.js";
-import { DESERT_ART, loadDesertArt } from "./desert-ride-art.js";
+import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 
 const BOT_STEP = 1 / 60; // 自動操縦の判断と物理の刻み（モデルの検査と同じ）
 
@@ -56,6 +56,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     root.focus({ preventScroll: true });
 
     const input = { left: false, right: false };
+    let pose = "rider";
     let game = null, mode = null, bot = null, botMemo = {}, botLag = 0, last = 0, world = null, particles = [], shakeT = 0, flashT = 0, popT = 0, popText = "", popKind = "";
     let tut = null;
     const finish = () => {
@@ -336,9 +337,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       drawFeaturesAndPlayer(dusk);
       drawParticles();
       if (painted && dusk > 0.02) {
-        // 夕方: 絵の砂・岩・人物に同じ暖色をかける（Canvas の図形は色の中で夕方にしている）
+        // 夕方: 絵の砂・岩・人物に同じ暖色をかける（Canvas の図形は色の中で夕方にしている）。夕方の遠景があれば薄く
         ctx.globalCompositeOperation = "multiply";
-        ctx.fillStyle = `rgba(255,168,118,${dusk * 0.42})`; ctx.fillRect(-20, -20, W + 40, H + 40);
+        ctx.fillStyle = `rgba(255,168,118,${dusk * (art.get("duskLand") ? 0.2 : 0.42)})`; ctx.fillRect(-20, -20, W + 40, H + 40);
         ctx.globalCompositeOperation = "source-over";
       }
       drawSpeedLines();
@@ -353,7 +354,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const B = DESERT_ART.backdrop, k = BACKDROP_SCALE, dw = B.width * k, baseX = (W - dw) / 2;
       // 空はゆっくり、陸は速く横へ流れる（カーブに合わせたパララックス）。絵の地平線の行を HORIZON に合わせる
       ctx.drawImage(sky, baseX - world.yaw * 90, HORIZON - B.horizon * k, dw, sky.naturalHeight * k);
-      if (dusk > 0) {
+      const duskSky = art.get("duskSky"), duskLand = art.get("duskLand");
+      if (dusk > 0 && duskSky && duskLand) {
+        // 同じ構図の夕方の絵を、ゴールへ近づくほど濃く重ねる
+        ctx.globalAlpha = dusk;
+        ctx.drawImage(duskSky, baseX - world.yaw * 90, HORIZON - B.horizon * k, dw, duskSky.naturalHeight * k);
+        ctx.globalAlpha = 1;
+      } else if (dusk > 0) {
         const g = ctx.createLinearGradient(0, 0, 0, HORIZON + 10);
         g.addColorStop(0, `rgba(120,72,110,${dusk * 0.85})`); g.addColorStop(0.62, `rgba(245,150,84,${dusk * 0.8})`); g.addColorStop(1, `rgba(255,208,140,${dusk * 0.7})`);
         ctx.fillStyle = g; ctx.fillRect(0, 0, W, HORIZON + 10);
@@ -367,8 +374,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.beginPath(); ctx.arc(sunX, sunY, r, 0, Math.PI * 2); ctx.fill();
       // 陸: 稜線〜地平線は空と同じ倍率、地平線より下（平らな砂）は画面の下端まで伸ばす
       const landX = baseX - world.yaw * 200, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
-      ctx.drawImage(land, 0, 0, B.width, above, landX, HORIZON - above * k, dw, above * k);
-      ctx.drawImage(land, 0, above, B.width, below, landX, HORIZON, dw, H - HORIZON);
+      for (const [image, alpha] of [[land, 1], [dusk > 0 ? duskLand : null, dusk]]) {
+        if (!image) continue;
+        ctx.globalAlpha = alpha;
+        ctx.drawImage(image, 0, 0, B.width, above, landX, HORIZON - above * k, dw, above * k);
+        ctx.drawImage(image, 0, above, B.width, below, landX, HORIZON, dw, H - HORIZON);
+      }
+      ctx.globalAlpha = 1;
       return true;
     }
     function drawSky(dusk, progress) {
@@ -581,6 +593,24 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.beginPath(); ctx.ellipse(cx, groundY, unit * 0.55 * (1 - height * 0.2), unit * 0.14, 0, 0, Math.PI * 2); ctx.fill();
       const baseY = groundY - height * unit * 0.9 + bob;
       const lean = Math.max(-0.5, Math.min(0.5, game.vx * 0.35));
+      // 姿勢の絵（第4弾の差分）があれば、それを板の重心で立たせる。傾きは絵がもう描いているので少しだけ
+      pose = riderPose(game, pose);
+      const poseArt = art.get(pose), baseArt = art.get("rider");
+      if (poseArt && baseArt) {
+        const def = DESERT_ART[pose];
+        ctx.save();
+        ctx.translate(cx, baseY);
+        if (game.fallT > 0) ctx.rotate((game.x > 0 ? 1 : -1) * 0.25 * (game.fallT / 1.1));
+        else {
+          ctx.rotate(lean * (pose === "rider" ? 0.45 : 0.12));
+          if (game.air > 0) ctx.translate(0, -Math.sin(airT * Math.PI) * unit * 0.1);
+        }
+        // 大きさは背面Bの高さ（unit×2.45）に対する比。どの姿勢も同じ縮尺で描かれている
+        const dh = unit * 2.45 * poseArt.naturalHeight / baseArt.naturalHeight, dw = dh * poseArt.naturalWidth / poseArt.naturalHeight;
+        ctx.drawImage(poseArt, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
+        ctx.restore();
+        return;
+      }
       ctx.save();
       ctx.translate(cx, baseY);
       if (game.fallT > 0) {

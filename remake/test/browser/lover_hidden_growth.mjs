@@ -135,17 +135,21 @@ await suite("lover-hidden-growth", async check => {
         s.loverEventsSeen = ["lover_minto_lv1"]; s.loverSince = { minto: 2, rin: 5 }; s.guilt = 3;
         const played = [], enter = H.vn.hooks.onEnter;
         H.vn.hooks.onEnter = (id, dlg) => { enter?.(id, dlg); played.push(id); };
-        const before = s.stats.charm;
-        await H.stats.paidAction(() => H.romance.playDate("minto"), { budget: 1, points: 2, primary: "charm" });
+        const before = s.stats.charm, xpBefore = s.growth?.xp || 0;
+        const board = (await import("./js/core/growth-mode.js")).growthEnabled();
+        await H.stats.paidAction(() => H.romance.playDate("minto"), { budget: 1, points: 2, primary: "charm", exp: { key: "minto", person: "minto" } });
         const first = await H.romance.maybeShuraba(); const guilt = s.guilt;
         const repeated = await H.romance.maybeShuraba();
         H.core.save(); H.core.newGame(); H.core.load();
-        return { s: H.core.state, played, before, first, guilt, repeated };
+        return { s: H.core.state, played, before, xpBefore, board, first, guilt, repeated };
       });
       assert(result.s.lovePts.minto > 19); assert(result.s.loveLevel.minto >= 2);
       assert.equal(result.played.filter(id => id === "lover_minto_lv2").length, 1);
       assert.equal(result.s.loverEventsSeen.filter(id => id === "lover_minto_lv2").length, 1);
-      assert(result.s.stats.charm >= result.before + 2); assert.equal(result.s.lastDate.minto, 8);
+      // デートの成長: 旧しくみ（?growth=0）は魅力に2P、心得の盤（通常プレイの既定・SBD97）は経験値（能力は書き換えない）
+      if (result.board) { assert.equal(result.s.stats.charm, result.before); assert((result.s.growth?.xp || 0) > result.xpBefore, "date earns EXP"); }
+      else assert(result.s.stats.charm >= result.before + 2);
+      assert.equal(result.s.lastDate.minto, 8);
       assert(result.first && !result.repeated); assert.equal(result.guilt, 4); assert.equal(result.s.guilt, 4);
       assert.deepEqual(result.s.lovers, ["minto", "rin"]); assert.deepEqual(result.s.loverSince, { minto: 2, rin: 5 });
     }, { ...options, reducedMotion: "reduce" });

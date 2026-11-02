@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CE  枠の段 1: 2コマ@y=275
+  コマ1: 714x477 @(39,275) 比率 1.497 → ok
+  コマ2: 715x474 @(782,275) 比率 1.508 → ok
+コマ1: 714x477 (1.497) そのまま → 出力 714x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/late/allcast-yoru-next-head/panels/yoru-next-head-1.webp (59 KiB)
+コマ2: 715x474 (1.508) → 上下に各0.3%の紙帯 → 出力 715x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/late/allcast-yoru-next-head/panels/yoru-next-head-2.webp (61 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "yoru-next-head",
+  "title": "次の頭",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "ヨルさんの口癖は、「次の頭で入れよう」。",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/late/allcast-yoru-next-head/panels/yoru-next-head-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/late/allcast-yoru-next-head/panels/yoru-next-head-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/late/allcast-yoru-next-head/source-A-v1.png",
+      "region": {
+        "x": 39,
+        "y": 275,
+        "width": 714,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/late/allcast-yoru-next-head/source-A-v1.png",
+      "region": {
+        "x": 782,
+        "y": 275,
+        "width": 715,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "yoru-next-head-1.webp",
+      "width": 714,
+      "height": 477,
+      "sha256": "b6237d879edb524fc0022de1570c5aea2e7807574d5fa8035e23ba631c2c5505"
+    },
+    {
+      "file": "yoru-next-head-2.webp",
+      "width": 715,
+      "height": 477,
+      "sha256": "4eb08d2bf78fee929183c0885d9526dfa864dab2e6f863a3e68e66538e3764e5"
+    }
+  ]
+}

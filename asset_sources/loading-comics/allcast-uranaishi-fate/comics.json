@@ -1,0 +1,103 @@
+{
+  "episode": {
+    "id": "uranaishi-fate",
+    "title": "近い縁",
+    "cast": [
+      "uranaishi"
+    ],
+    "minChapter": 1,
+    "dialogue": [
+      "縁、見えます？",
+      "ヒヒ、見えるよ。",
+      "縁が近い。"
+    ],
+    "first_speaker": "hajime",
+    "panel1": "アーケードの外れ。左のはじめが紫の布の机をのぞいて「縁、見えます？」。右の占い師がフードの奥で笑い「ヒヒ、見えるよ。」。",
+    "panel2": "占い師がめくったタロットの絵は、湯気の立つラーメンどんぶり（文字なし）。はじめのお腹が鳴っている。はじめ「縁が近い。」。",
+    "caption": "路上の占い師は、腕は本物らしい。"
+  },
+  "status": "review_candidate_not_adopted",
+  "generator": "built-in image_gen",
+  "selected_for_review": "source-A-v2.png",
+  "prompt": "prompt-A-v2.txt",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/uranaishi.png",
+      "sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+    }
+  ],
+  "edit_reference": null,
+  "variants": [
+    {
+      "file": "source-A-v1.png",
+      "sha256": "dee344dc7db93f11e6b0067e1ec344b0507b9b281dba2b4c3c5d9bbf6eee348e",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "鼻先が見え、頭頂が上辺接触"
+    },
+    {
+      "file": "source-A-v2.png",
+      "sha256": "e46078b144d973fa6027e4fda4f3a47885bc062ee7f44269d28d78ede8acfad1",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "鼻まで黒い影に隠し頭頂を枠内へ修正"
+    }
+  ],
+  "panels": [
+    {
+      "file": "panels/uranaishi-fate-1.webp",
+      "sha256": "ef3d55bc1246a80927dbb21cda9ef8d0651e1065a9732381cb125c1e907c117b",
+      "size": [
+        714,
+        476
+      ],
+      "bytes": 77112
+    },
+    {
+      "file": "panels/uranaishi-fate-2.webp",
+      "sha256": "8333212d9490cba3593e90ff8774800b22eea0c079a002c222cc2540dfe28016",
+      "size": [
+        714,
+        476
+      ],
+      "bytes": 83346
+    }
+  ],
+  "qa": {
+    "source_dimensions": "1536x1024",
+    "dialogue": "台本と一字一句一致を目視（句読点/！？含む）",
+    "speakers_order": "左右配置固定・先話を上/左、応答を下/右、尻尾の話者所属を確認",
+    "identity": "正式立ち絵に準拠。パッキーは白い雲状/赤蝶ネクタイ/通常マイクへ。占い師は台本優先で目/鼻を陰に隠す。",
+    "style": "初期採用pc.pngを実見し、少し可愛いデフォルメ/暖かいセル塗り/太い主線を確認。先行3話は同系統のrei-mix-namesを作風参照。",
+    "count": "はじめ＋相手の2人のみ。背景に人なし",
+    "prohibited": "シーシャ台/HMD/ハガル/炭/ホース/吸い口/喫煙/武器なし。カードのラーメンの湯気は料理の絵で喫煙ではない。",
+    "cut_visual": "qa-contact-1〜3を目視、文字/顔/オチが切れていない",
+    "warnings": [
+      "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+      "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+    ]
+  },
+  "file_hashes": {
+    "prompt-A-v2.txt": "ce8ce74a7aa8ad0e1a7a4ce947f103ca885724f25c9175c4b2bd0a46479bfdf3",
+    "source-A-v2.png": "e46078b144d973fa6027e4fda4f3a47885bc062ee7f44269d28d78ede8acfad1",
+    "source-A-v1.png": "dee344dc7db93f11e6b0067e1ec344b0507b9b281dba2b4c3c5d9bbf6eee348e",
+    "cut-QA.txt": "6c830fb18334a3ccec0d7eaf8faeec0b67763df94a02acd277ba567479ea5da5",
+    "prompt-A-v1.txt": "415edbccd8514fe93e99759da96f2d98e20be4711464c5a19d0e16725f464778"
+  }
+}

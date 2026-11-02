@@ -1,0 +1,93 @@
+{
+  "episode": {
+    "id": "emil-murmur",
+    "title": "ひとこと",
+    "cast": [
+      "emil"
+    ],
+    "minChapter": 1,
+    "dialogue": [
+      "どうぞ。",
+      "……。",
+      "今の、褒めてる？"
+    ],
+    "first_speaker": "hajime",
+    "panel1": "左のはじめがピスタチオの焼き菓子を皿で差し出して「どうぞ。」。右のエミルが無言でひと口かじる「……。」。",
+    "panel2": "エミルが目を閉じて、口元だけで小さく何かつぶやいている（吹き出しは音符と点だけ、文字なし）。はじめが首をかしげて「今の、褒めてる？」。",
+    "caption": "エミルは、心が動くと母国語でつぶやく。"
+  },
+  "status": "review_candidate_not_adopted",
+  "generator": "built-in image_gen",
+  "selected_for_review": "source-A-v1.png",
+  "prompt": "prompt-A-v1.txt",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/emil.png",
+      "sha256": "61e85caac8c7a35a4a5d753b0204fde5f85390898280e1759a157a8bd87ea1ab"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+    }
+  ],
+  "edit_reference": null,
+  "variants": [
+    {
+      "file": "source-A-v1.png",
+      "sha256": "110c0731c2387b92a6b4698b18d046fc15d30bf95e9cc109d11e94fb5633e33b",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "台詞・話者・読順・2人・外見・枠/余白・禁止描写を目視確認"
+    }
+  ],
+  "panels": [
+    {
+      "file": "panels/emil-murmur-1.webp",
+      "sha256": "2d777e2bda85e083ffb6f3370a90fcf576900cc1c26149449529574134b3ecb5",
+      "size": [
+        720,
+        479
+      ],
+      "bytes": 66616
+    },
+    {
+      "file": "panels/emil-murmur-2.webp",
+      "sha256": "cd9eb87b35af0fddf4ad2c6c5d4259dd33d93255a2d67a08a50a0fe2125139fb",
+      "size": [
+        721,
+        481
+      ],
+      "bytes": 64972
+    }
+  ],
+  "qa": {
+    "source_dimensions": "1536x1024",
+    "dialogue": "台本と一字一句一致を目視（句読点/！？含む）",
+    "speakers_order": "左右配置固定・先話を上/左、応答を下/右、尻尾の話者所属を確認",
+    "identity": "正式立ち絵に準拠。パッキーは白い雲状/赤蝶ネクタイ/通常マイクへ。占い師は台本優先で目/鼻を陰に隠す。",
+    "style": "初期採用pc.pngを実見し、少し可愛いデフォルメ/暖かいセル塗り/太い主線を確認。先行3話は同系統のrei-mix-namesを作風参照。",
+    "count": "はじめ＋相手の2人のみ。背景に人なし",
+    "prohibited": "シーシャ台/HMD/ハガル/炭/ホース/吸い口/喫煙/武器なし。カードのラーメンの湯気は料理の絵で喫煙ではない。",
+    "cut_visual": "qa-contact-1〜3を目視、文字/顔/オチが切れていない",
+    "warnings": [
+      "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+      "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
+      "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
+    ]
+  },
+  "file_hashes": {
+    "source-A-v1.png": "110c0731c2387b92a6b4698b18d046fc15d30bf95e9cc109d11e94fb5633e33b",
+    "cut-QA.txt": "0c54fe1731ce995613623952054905ea00446f71580e9e2a70e5b9eacc08adde",
+    "prompt-A-v1.txt": "aa8829780334baf902d6163f3d40ebcfcd771cc9a5922d1c73e61cb0be360770"
+  }
+}

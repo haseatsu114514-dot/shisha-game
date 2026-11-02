@@ -1,0 +1,67 @@
+{
+  "id": "steve-wait-pizza",
+  "title": "待てる男",
+  "cast": [
+    "steve"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "もう食べます？",
+    "ノー、まだだ。",
+    "冷めました。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "テーブルに焼き上がったピザ。左のはじめが「もう食べます？」。右のスティーブがタイマーを見つめて手で制し「ノー、まだだ。」。",
+  "panel2": "スティーブはまだタイマーを真剣に見つめている。ピザの湯気は消え、チーズが固まっている。はじめ「冷めました。」。",
+  "caption": "スティーブは、熱を急がない職人です。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "a243868420e3cc9a3adbd83da8bc2ff794c5bf24d796a08fbe15b2f355a85a25",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/steve.png",
+      "sha256": "6053510bfa3b52e3fe66dde0071af133fdae931410ad919eb47323a6b5d89735"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; first speaker upper-left; tails checked",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "candidate visual check complete",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/steve-wait-pizza-1.webp",
+      "sha256": "50a422820c5035c4b12aaf5706f37efc35cccd0b08766757939cc1e7a4c0f166",
+      "width": 717,
+      "height": 478
+    },
+    {
+      "file": "panels/steve-wait-pizza-2.webp",
+      "sha256": "4190a6500e145f3df6184c974a1d2ea1309474d79fdbdc7a1c7a3d85c4c4d4a3",
+      "width": 714,
+      "height": 476
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

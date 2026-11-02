@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #F0E5CF  枠の段 1: 2コマ@y=275
+  コマ1: 714x474 @(39,275) 比率 1.506 → ok
+  コマ2: 714x474 @(783,275) 比率 1.506 → ok
+コマ1: 714x474 (1.506) → 上下に各0.2%の紙帯 → 出力 714x476  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-uranaishi-fate/panels/uranaishi-fate-1.webp (75 KiB)
+コマ2: 714x474 (1.506) → 上下に各0.2%の紙帯 → 出力 714x476  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-uranaishi-fate/panels/uranaishi-fate-2.webp (81 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "uranaishi-fate",
+  "title": "近い縁",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "路上の占い師は、腕は本物らしい。",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-uranaishi-fate/panels/uranaishi-fate-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-uranaishi-fate/panels/uranaishi-fate-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-uranaishi-fate/source-A-v2.png",
+      "region": {
+        "x": 39,
+        "y": 275,
+        "width": 714,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-uranaishi-fate/source-A-v2.png",
+      "region": {
+        "x": 783,
+        "y": 275,
+        "width": 714,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "uranaishi-fate-1.webp",
+      "width": 714,
+      "height": 476,
+      "sha256": "ef3d55bc1246a80927dbb21cda9ef8d0651e1065a9732381cb125c1e907c117b"
+    },
+    {
+      "file": "uranaishi-fate-2.webp",
+      "width": 714,
+      "height": 476,
+      "sha256": "8333212d9490cba3593e90ff8774800b22eea0c079a002c222cc2540dfe28016"
+    }
+  ]
+}

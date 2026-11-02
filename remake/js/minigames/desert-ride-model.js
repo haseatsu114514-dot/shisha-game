@@ -107,7 +107,7 @@ export function createGame(course) {
     air: 0, airTotal: 0, airKind: null, landingPress: null, lastJumpT: -9,
     fallT: 0, falls: 0, combo: 0, maxCombo: 0, score: 0,
     stats: { bigJumps: 0, hops: 0, perfect: 0, good: 0, plain: 0, nearMiss: 0, edgeTime: 0, bounces: 0, airTime: 0 },
-    passed: new Set(), lastBump: null, finished: false, finishTime: null, events: [],
+    passed: new Set(), lastBump: null, finished: false, finishTime: null, events: [], landedAt: null,
   };
 }
 
@@ -170,6 +170,7 @@ function land(game) {
   const kind = game.airKind;
   game.air = 0; game.airKind = null;
   if (kind === "bounce") { game.events.push({ kind: "land", grade: "bounce", t: game.t }); return; }
+  game.landedAt = game.t; // 画面が着地の構えを少し残すため（採点には使わない）
   const remaining = game.landingPress;
   let grade = "plain";
   if (remaining !== null && remaining <= JUMP.landingWindow) grade = "perfect";

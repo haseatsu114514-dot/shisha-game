@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D0  枠の段 1: 2コマ@y=273
+  コマ1: 712x478 @(40,273) 比率 1.490 → ok
+  コマ2: 712x476 @(784,275) 比率 1.496 → ok
+コマ1: 712x478 (1.490) → 左右に各0.3%の紙帯 → 出力 717x478  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-dasilva-acai/panels/dasilva-acai-1.webp (78 KiB)
+コマ2: 712x476 (1.496) → 左右に各0.1%の紙帯 → 出力 714x476  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-dasilva-acai/panels/dasilva-acai-2.webp (84 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "dasilva-acai",
+  "title": "おかわり",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "太陽の好きな味は、アサイー。",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-dasilva-acai/panels/dasilva-acai-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-dasilva-acai/panels/dasilva-acai-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-dasilva-acai/source-A-v2.png",
+      "region": {
+        "x": 40,
+        "y": 273,
+        "width": 712,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-dasilva-acai/source-A-v2.png",
+      "region": {
+        "x": 784,
+        "y": 275,
+        "width": 712,
+        "height": 476,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "dasilva-acai-1.webp",
+      "width": 717,
+      "height": 478,
+      "sha256": "ddf6839ee0da6147a49fd536cb964e02a275ecda135674fffb5ea0635ec1a869"
+    },
+    {
+      "file": "dasilva-acai-2.webp",
+      "width": 714,
+      "height": 476,
+      "sha256": "1334126bc9d589168fc04baf7db0c16e346360677e88d0c089d893cdbbd7dfa0"
+    }
+  ]
+}

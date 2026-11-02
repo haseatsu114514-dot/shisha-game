@@ -8,6 +8,9 @@ const root = new URL("../js/", import.meta.url);
 let rng = () => .5;
 const math = Object.create(Math); math.random = () => rng();
 const storage = new Map();
+// 旧しくみ（行動で能力が直接伸びる）の成長モデル。通常プレイの盤の釣り合いは growth_board.mjs（1周目で3盤とも7割）と measure.mjs --board。
+// ?growth=0 と同じ印で旧モードに固定する
+storage.set("suien_growth_preview", "0");
 const context = vm.createContext({ Math: math, Map, Set, console, setTimeout: () => 0, clearTimeout() {},
   localStorage: { setItem: (k,v) => storage.set(k,v), getItem: k => storage.get(k) || null } });
 const noop = () => {};

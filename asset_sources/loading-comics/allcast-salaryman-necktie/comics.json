@@ -1,0 +1,67 @@
+{
+  "id": "salaryman-necktie",
+  "title": "ゆるむ日",
+  "cast": [
+    "salaryman"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "アールグレイで？",
+    "……。",
+    "ネクタイが緩んだ。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "tonariの席でスマホを見るサラリーマン。左のはじめが「アールグレイで？」。右のサラリーマンが無表情で小さくうなずく「……。」。",
+  "panel2": "同じ席。表情は変わらないが、ネクタイがいつもより少し緩み、肩の力が抜けている。はじめがそっと気づいて「ネクタイが緩んだ。」。",
+  "caption": "常連さんの「おいしい」は、小さな変化に出ます。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "dc22a4ff5167da0d3b8c4dd62a519e089b0951bc9dec00fb70d767baa7e2310e",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/salaryman.png",
+      "sha256": "446e02ceafb0d457fffbb262e7a107a8faaf4306193c660e24b3a9a2cf20aec0"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; first speaker upper-left; tails checked",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "candidate visual check complete",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/salaryman-necktie-1.webp",
+      "sha256": "debbff56013c3069c4c80a826d58fc7752808a3bb81761380d60108616dc2280",
+      "width": 713,
+      "height": 475
+    },
+    {
+      "file": "panels/salaryman-necktie-2.webp",
+      "sha256": "7ac5bb5e9144ec7ef0a134e8109ab12e2c261b64c06672802956ca4136941aef",
+      "width": 713,
+      "height": 475
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

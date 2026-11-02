@@ -12,8 +12,9 @@ import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 import { HOBBY_GEAR } from "../core/hobby-gear.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
-import { growthEnabled, ensureGrowth } from "../core/growth.js";
-import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STAT_SQUARES, statCount, statRatio, perkTotals } from "../core/growth-board.js";
+import { growthEnabled, growthView } from "../core/growth.js";
+import { growthCraftMemo } from "../core/growth-memory.js";
+import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, statTotal, statCount, statRatio, perkTotals } from "../core/growth-board.js";
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
@@ -59,12 +60,14 @@ export function radar(stats, baseline, size = 340) {
  * 心得の盤の三角のグラフ（2026-10-30 オーナー「9段とか10段みたいな概念は無くす。盤の伸びをステータスグラフに」SBD63）。
  * 才能・感覚・理論の3つの角。灯した能力のマスの割合だけ伸びる。段の文字は出さない。
  */
-export function boardTriangle(ratios, size = 340) {
+export function boardTriangle(ratios, size = 340, baseline = null) {
   const c = size / 2, R = size * 0.38;
   const pt = (i, r) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / 3; return [c + Math.cos(a) * r, c + 12 + Math.sin(a) * r]; };
   const svg = svgEl("svg", { viewBox: `0 0 ${size} ${size}`, class: "radar board-radar", "data-test": "board-radar" });
   for (let k = 1; k <= 4; k++) svg.append(svgEl("polygon", { points: [0, 1, 2].map((i) => pt(i, (R * k) / 4).join(",")).join(" "), class: "radar-grid" }));
   for (let i = 0; i < 3; i++) { const [x, y] = pt(i, R); svg.append(svgEl("line", { x1: c, y1: c + 12, x2: x, y2: y, class: "radar-axis" })); }
+  // 淡い面＝基準（章のはじめ）、明るい面＝いま。基準が無ければ明るい面だけ
+  if (baseline) svg.append(svgEl("polygon", { points: BOARD_KEYS.map((k, i) => pt(i, R * Math.max(0.05, baseline[k])).join(",")).join(" "), class: "radar-base" }));
   svg.append(svgEl("polygon", { points: BOARD_KEYS.map((k, i) => pt(i, R * Math.max(0.05, ratios[k])).join(",")).join(" "), class: "radar-now" }));
   BOARD_KEYS.forEach((k, i) => {
     const [x, y] = pt(i, R + 26);
@@ -75,9 +78,19 @@ export function boardTriangle(ratios, size = 340) {
   return svg;
 }
 
+/**
+ * 章末の「この章で伸びたもの」。淡い面が章のはじめ、明るい面がいま。
+ * 心得の盤（通常プレイの既定・SBD97）は才能・感覚・理論の三角（章のはじめの盤は growth.chapterStart）、旧しくみは5能力のレーダー。
+ */
+export function chapterGrowthChart(s = state, size = 300) {
+  if (!growthEnabled()) return radar(s.stats, s.statsAtChapterStart || s.stats, size);
+  const g = growthView(s), ratios = (ids) => Object.fromEntries(BOARD_KEYS.map((k) => [k, statRatio(k, new Set(ids))]));
+  return boardTriangle(ratios(g.nodes), size, ratios(g.chapterStart?.nodes || g.nodes));
+}
+
 /** 盤を使う時のステータス（段なし）: 三角のグラフと、盤ごとの灯した数・恩恵の合計 */
 function boardMeTab() {
-  const lit = new Set(ensureGrowth().nodes);
+  const lit = new Set(growthView().nodes); // 見るだけ。成長データが無くても作らない
   const note = el("p.st-note", { text: "心得の盤で灯した分だけ三角が広がる。項目をタップすると、何に効くかが分かる。" });
   const rows = BOARD_KEYS.map((k) => {
     const count = statCount(k, lit), sums = perkTotals(k, lit).filter((p) => p.sum);
@@ -90,9 +103,9 @@ function boardMeTab() {
     }, [
       el("span.st-board-head", { text: BOARD_HEAD[k], "aria-hidden": "true" }),
       el("div.st-info", [
-        el("div.st-line", [el("span.st-name", { text: BOARD_JA[k] }), el("span.st-count", { text: `${count}/${STAT_SQUARES[k]}` })]),
+        el("div.st-line", [el("span.st-name", { text: BOARD_JA[k] }), el("span.st-count", { text: `${count}/${statTotal(k)}` })]),
         el("span.st-fx", { text: sums.length ? sums.map((p) => p.text).join("・") : "まだ灯していない" }),
-        el("i.st-next-track", { "aria-hidden": "true" }, [el("b", { style: { width: `${Math.round((count / STAT_SQUARES[k]) * 100)}%` } })]),
+        el("i.st-next-track", { "aria-hidden": "true" }, [el("b", { style: { width: `${Math.round((count / statTotal(k)) * 100)}%` } })]),
       ]),
     ]);
   });
@@ -235,6 +248,15 @@ function giftNote(e) {
   ]);
 }
 
+function craftMemoRows(id) {
+  const memo = growthCraftMemo(state, id);
+  if (!memo) return [];
+  const mix = Object.entries(memo.mix).map(([id,g]) => `${DB.flavorById[id]?.short_name || DB.flavorById[id]?.name || id} ${g}g`).join(" ／ ");
+  const diff = Number.isFinite(memo.previousTotal) ? memo.total - memo.previousTotal : null;
+  return [el("p", { text: `作った配合：${mix}` }),
+    el("p", { text: `直近の一台：${memo.total.toFixed(1)}点${diff == null ? "" : `（前回比 ${diff >= 0 ? "+" : ""}${diff.toFixed(1)}）`}` })];
+}
+
 function recipeDetails(recipe) {
   const name = (id) => String(DB.flavorById[id]?.short_name || DB.flavorById[id]?.name || id).split(" ").pop();
   const day = state.recipes[recipe.id]?.day;
@@ -245,7 +267,8 @@ function recipeDetails(recipe) {
       el("p", { text: recipe.golden
         ? `黄金比：${Object.entries(recipe.golden).map(([id, weight]) => `${name(id)} ${weight}`).join("：")}（割合）`
         : "黄金比：未設定" }),
-      el("p.st-note", { text: "同じ系統の銘柄でも作れる。発見時のグラム数は記録していない。" }),
+      el("p.st-note", { text: growthCraftMemo(state,recipe.id) ? "同じ系統の銘柄でも作れる。作った配合と点をメモしている。" : "同じ系統の銘柄でも作れる。発見時のグラム数は記録していない。" }),
+      ...craftMemoRows(recipe.id),
       el("p", { text: `発見日：${Number.isInteger(day) && day > 0 ? `DAY ${day}` : "記録なし"}` }),
       recipe.memo ? el("p", { text: recipe.memo }) : null,
     ]),
@@ -281,6 +304,9 @@ function itemsTab(showRecipe) {
     el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "所持0" })]),
     el("p.st-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
     el("h4", { text: "レシピ帳" }),
+    growthCraftMemo(state,"_free") ? el("div.recipe-detail", { dataset: { test: "craft-memo-free" } }, [
+      el("h4", { text: "レシピ名のない一台のメモ" }), ...craftMemoRows("_free"),
+    ]) : null,
     el("p.st-note", { text: "名前をタップすると、材料・黄金比・発見日を確認できる。" }),
     el("div.chips", (() => {
       const found = DB.recipes.filter((r) => state.recipes?.[r.id]);
