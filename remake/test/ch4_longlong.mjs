@@ -129,8 +129,8 @@ assert.deepEqual(reception.metadata, { flavor_lesson: { lychee: 1 } }, "前夜�
 
 // ---- ドバイの地図・代金・読み込み --------------------------------------------------------------
 const daily = read("../js/chapters/ch4-dubai-daily.js");
-assert.match(daily, /id: "ch4_dubai_longlong", place: "longlong", label: "龍龍水煙所"[^}]*x: 58, y: 50[^}]*face: LONGLONG_CHAR[^}]*cost: 6000, stamina: -12, stat: "insight"/,
-  "龍龍水煙所は最初から地図に出て、一台6,000円");
+assert.match(daily, /id: "ch4_dubai_longlong", place: "longlong", label: "龍龍水煙所"[^}]*x: 58, y: 50[^}]*face: LONGLONG_CHAR[^}]*cost: 5500, stamina: -12, stat: "insight"/,
+  "龍龍水煙所は最初から地図に出て、一台5,500円（専門店の相場）");
 assert.match(daily, /readDialogues\("ch4_longlong", LONGLONG_IDS\)/);
 assert.match(daily, /gainAffinity\(LONGLONG_CHAR, visitAffinity\(longlong\.kind === "story" \? "story" : "talk"\)\)/);
 assert.doesNotMatch(daily, /longlong: "master_hookah"|teacher.*longlong/, "授業（龍の煙）は大会後の会場の台詞なので、店では相談しない");
