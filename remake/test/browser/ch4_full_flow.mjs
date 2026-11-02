@@ -231,7 +231,11 @@ await suite("ch4-full-flow", async check => {
     // 章開始時と現在の実能力を、第1章と同じ二面のレーダーで比較する。
     assert.equal(await page.locator(`${dt("ch4-growth")} .radar-base`).count(), 1);
     assert.equal(await page.locator(`${dt("ch4-growth")} .radar-now`).count(), 1);
-    assert.notEqual(await page.locator(`${dt("ch4-growth")} .radar-base`).getAttribute("points"),
+    // 旧しくみ（?growth=0）は行動で5能力が伸びるので面が広がる。心得の盤（通常プレイの既定・SBD93）は盤の三角で、
+    // この通しでは盤に灯していないので面は章のはじめと同じ（灯した時の広がりは growth_levelup.mjs が確かめる）
+    if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
+      assert.equal(await page.locator(`${dt("ch4-growth")} [data-test="board-radar"]`).count(), 1, "The chapter end shows the board triangle");
+    } else assert.notEqual(await page.locator(`${dt("ch4-growth")} .radar-base`).getAttribute("points"),
       await page.locator(`${dt("ch4-growth")} .radar-now`).getAttribute("points"));
     assert.match(await page.locator(dt("ch4-growth")).innerText(), /章のはじめ/);
 

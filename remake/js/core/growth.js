@@ -100,6 +100,7 @@ export function newGrowth() {
     seenRing: 1,           // 盤で「新しい道が開いた」を見せた章の範囲（章が進んで初めて開いた時の演出）
     boardVersion: BOARD_VERSION, // 盤の型の版（v2→v3 で灯し方を返す）
     respec: null,            // 実際の章／周回の変更後、最初の日常だけの組み直し機会
+    chapterStart: null,      // その章で最初に読んだ時の盤（章末の「この章で伸びたもの」の淡い面。SBD93）
   };
 }
 
@@ -157,6 +158,11 @@ export function ensureGrowth(s = state) {
   if (!g.paid || typeof g.paid !== "object" || Array.isArray(g.paid)) g.paid = {};
   if (g.boardVersion !== BOARD_VERSION) refundOldBoard(g);
   g.nodes = strings(g.nodes).filter((id) => VALID_IDS.has(id));
+  // 章が変わって最初に読んだ時の盤と Lv を残す（章の途中で灯す前に必ずここを通る）
+  const chapterNow = Math.max(1, Math.floor(num(s.chapter, 1)));
+  if (!g.chapterStart || typeof g.chapterStart !== "object" || g.chapterStart.chapter !== chapterNow || !Array.isArray(g.chapterStart.nodes)) {
+    g.chapterStart = { chapter: chapterNow, nodes: [...g.nodes], level: g.level };
+  }
   g.ringsOpen = Math.min(5, Math.max(1, Math.floor(num(g.ringsOpen, 1))));
   if (!g.gifted || typeof g.gifted !== "object" || Array.isArray(g.gifted)) g.gifted = {};
   g.litSince = Object.fromEntries(BOARD_KEYS.map((k) => [k, Math.floor(num(g.litSince?.[k]))]));

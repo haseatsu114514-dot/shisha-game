@@ -14,7 +14,7 @@ import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
 import { playStaffRoll } from "../scenes/staff-roll.js";
-import { radar } from "../daily/status.js";
+import { chapterGrowthChart } from "../daily/status.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { newSession, openBench, waitBenchReady } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
@@ -573,7 +573,7 @@ function renderComplete(owner) {
     "ここまでが、この物語の終わりです。", "",
     // 他の章と同じ比較。淡い面が第5章のはじめ、明るい面がいま。
     [el("div.end-radar", { dataset: { test: test("growth") } }, [
-      radar(state.stats, state.statsAtChapterStart || state.stats, 300),
+      chapterGrowthChart(state, 300),
       el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
     ])]);
 }

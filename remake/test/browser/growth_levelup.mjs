@@ -1122,6 +1122,22 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
   }, { viewport: { width: 1331, height: 760 } });
+  // 章末の「この章で伸びたもの」（SBD93）: 盤モードは才能・感覚・理論の三角。章のはじめの盤が淡い面、灯した分だけ明るい面が広がる
+  await check("chapter-end-board-chart", async (page) => {
+    await setupDaily(page);
+    const result = await page.evaluate(async () => {
+      const g = (await import("./js/core/growth.js")).ensureGrowth();
+      const before = JSON.stringify(g.chapterStart);
+      g.nodes.push("B1", "B2", "S1");
+      const { chapterGrowthChart } = await import("./js/daily/status.js");
+      const svg = chapterGrowthChart(__remake.state, 300);
+      return { before, chapter: g.chapterStart.chapter, board: svg.dataset.test,
+        base: svg.querySelector(".radar-base")?.getAttribute("points"), now: svg.querySelector(".radar-now")?.getAttribute("points") };
+    });
+    assert.equal(result.chapter, 1); assert.equal(result.board, "board-radar");
+    assert(result.base && result.now && result.base !== result.now, "灯した分だけ明るい面が広がる");
+    assert.match(result.before, /"nodes":\[\]/, "章のはじめは盤が空");
+  });
   // ドバイのモスク（SPEC 2.8・SBD93）: 第4章の行き先から見学して振り返ると、灯せる盤が開く。時間・体力は使わない
   await check("dubai-mosque-lights-board", async (page) => {
     await setupDaily(page);
@@ -1427,4 +1443,4 @@ await suite("growth-levelup", async (runCheck) => {
   await Promise.all(Array.from({length:2},async()=>{
     for(;;){const next=cases.shift();if(!next)return;await runCheck(...next);}
   }));
-}, { entry: `${baseURL}?growth=1` });
+}, { entry: `${baseURL}?growth=1`, acknowledgeGrowth: false });

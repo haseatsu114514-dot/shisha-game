@@ -25,7 +25,7 @@ import { runPull, runCare } from "../craft/pull.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { evaluationOf, feedbackLine } from "../craft/feedback.js";
 import { craftRecognition } from "../craft/recognition.js";
-import { radar } from "../daily/status.js";
+import { chapterGrowthChart } from "../daily/status.js";
 import { CRAFT_STEPS } from "../craft/practice.js";
 import * as broadcast from "../craft/broadcast.js";
 import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/tournament-graphics.js";
@@ -298,7 +298,7 @@ function renderComplete(owner) {
     state.flags._ch2_tournament?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: `優勝賞金 ${yen(CH2_PRIZE)} を受け取った。` }) : null,
     // 第1章のクリア画面と同じ成長レーダー。淡い面が章のはじめ、明るい面がいま。
     el("div.ch2-contest-growth", { dataset: { test: id("growth") } }, [
-      radar(state.stats, state.statsAtChapterStart, 220),
+      chapterGrowthChart(state, 220),
       el("p.ch2-contest-note", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
     ]),
     el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" }),

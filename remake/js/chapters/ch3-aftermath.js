@@ -12,7 +12,7 @@ import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { onDialogueEnter } from "../daily/romance.js";
 import { AGEHA_CONFESSION_SCENES, agehaConfessionDue, beginAgehaConfessionDay, confessionAnswer } from "./ch3-romance-entry.js";
-import { radar } from "../daily/status.js";
+import { chapterGrowthChart } from "../daily/status.js";
 import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { syncTokyoVisits } from "../core/tokyo-visits.js";
@@ -267,7 +267,7 @@ async function renderStage(owner) {
     ], "第四章・ドバイ編へ進めます。", "", [
       // 第1・2章のクリア画面と同じ成長レーダー（#1658 ⑫）。淡い面が章のはじめ、明るい面がいま。
       el("div.ch2-contest-growth", { dataset: { test: test("growth") } }, [
-        radar(state.stats, state.statsAtChapterStart || state.stats, 220),
+        chapterGrowthChart(state, 220),
         el("p.ch2-contest-note", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
       ]),
     ]);

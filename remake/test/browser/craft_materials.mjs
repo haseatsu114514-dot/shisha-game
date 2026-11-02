@@ -141,6 +141,12 @@ await suite("craft-materials", async check => {
     }, { ...options, reducedMotion: "reduce" });
     await check(`${device}-packing`, async page => {
       await setup(page);
+      // 心得の盤（通常プレイの既定・SBD93）ではデンスパックはスキル K18 で覚える。3種類の詰め方を比べるため覚えた状態にする
+      // （覚える前に押せないことは growth_levelup.mjs の dense-pack-new-and-legacy が確かめる）
+      await page.evaluate(async () => {
+        const g = await import("./js/core/growth.js");
+        if (g.growthEnabled() && !g.ensureGrowth().nodes.includes("K18")) g.ensureGrowth().nodes.push("K18");
+      });
       for (const bowl of ["silicone_bowl", "hagal_80beat", "suyaki_tsumugi"]) {
         const before = await page.evaluate(bowl => {
           F.cs.equip.bowl = bowl; F.cs.pack = null;

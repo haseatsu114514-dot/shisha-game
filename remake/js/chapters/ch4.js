@@ -9,7 +9,7 @@ import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js
 import { layers, showScreen, setBg, chapterTitle, modal, toast } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { play, hooks } from "../vn/engine.js";
-import { radar } from "../daily/status.js";
+import { chapterGrowthChart } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
 import { awardChapterClearExp, awardSceneExp, presentNight, consultLessons } from "../core/growth.js";
 import { stopBgm, playBgm } from "../core/audio.js";
@@ -499,7 +499,7 @@ function renderComplete(owner) {
   ], "第五章・機械仕掛けの神へ進めます。", "",
   // 第1章と同じ比較。固定の祝福では能力を足さず、実際に伸びた分だけを重ねる。
   el("div.end-radar", { dataset: { test: test("growth") } }, [
-    radar(state.stats, state.statsAtChapterStart || state.stats, 300),
+    chapterGrowthChart(state, 300),
     el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
   ]));
   if (!state.flags._ch4_preview_seen) void preview(true);

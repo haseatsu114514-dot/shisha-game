@@ -583,6 +583,8 @@ export function buildCarryPackage(s) {
     g.chapterLog = {}; g.tournamentXp = {}; g.cleared = [];
     g.gifted = {};
     g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [] };
+    // 新しい周回は第1章から。章のはじめの盤（章末の淡い面）を引き継いだ盤で記録しておく
+    g.chapterStart = { chapter: 1, nodes: Array.isArray(g.nodes) ? [...g.nodes] : [], level: g.level };
   }
   data.money = Math.min(MAX_MONEY, Math.max(0, Math.round(Number(s?.money) || 0)));
   data.flavors = clone(s?.flavors ?? []);

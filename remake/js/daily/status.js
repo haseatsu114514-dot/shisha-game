@@ -59,12 +59,14 @@ export function radar(stats, baseline, size = 340) {
  * 心得の盤の三角のグラフ（2026-10-30 オーナー「9段とか10段みたいな概念は無くす。盤の伸びをステータスグラフに」SBD63）。
  * 才能・感覚・理論の3つの角。灯した能力のマスの割合だけ伸びる。段の文字は出さない。
  */
-export function boardTriangle(ratios, size = 340) {
+export function boardTriangle(ratios, size = 340, baseline = null) {
   const c = size / 2, R = size * 0.38;
   const pt = (i, r) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / 3; return [c + Math.cos(a) * r, c + 12 + Math.sin(a) * r]; };
   const svg = svgEl("svg", { viewBox: `0 0 ${size} ${size}`, class: "radar board-radar", "data-test": "board-radar" });
   for (let k = 1; k <= 4; k++) svg.append(svgEl("polygon", { points: [0, 1, 2].map((i) => pt(i, (R * k) / 4).join(",")).join(" "), class: "radar-grid" }));
   for (let i = 0; i < 3; i++) { const [x, y] = pt(i, R); svg.append(svgEl("line", { x1: c, y1: c + 12, x2: x, y2: y, class: "radar-axis" })); }
+  // 淡い面＝基準（章のはじめ）、明るい面＝いま。基準が無ければ明るい面だけ
+  if (baseline) svg.append(svgEl("polygon", { points: BOARD_KEYS.map((k, i) => pt(i, R * Math.max(0.05, baseline[k])).join(",")).join(" "), class: "radar-base" }));
   svg.append(svgEl("polygon", { points: BOARD_KEYS.map((k, i) => pt(i, R * Math.max(0.05, ratios[k])).join(",")).join(" "), class: "radar-now" }));
   BOARD_KEYS.forEach((k, i) => {
     const [x, y] = pt(i, R + 26);
@@ -73,6 +75,16 @@ export function boardTriangle(ratios, size = 340) {
     svg.append(t);
   });
   return svg;
+}
+
+/**
+ * 章末の「この章で伸びたもの」。淡い面が章のはじめ、明るい面がいま。
+ * 心得の盤（通常プレイの既定・SBD93）は才能・感覚・理論の三角（章のはじめの盤は growth.chapterStart）、旧しくみは5能力のレーダー。
+ */
+export function chapterGrowthChart(s = state, size = 300) {
+  if (!growthEnabled()) return radar(s.stats, s.statsAtChapterStart || s.stats, size);
+  const g = growthView(s), ratios = (ids) => Object.fromEntries(BOARD_KEYS.map((k) => [k, statRatio(k, new Set(ids))]));
+  return boardTriangle(ratios(g.nodes), size, ratios(g.chapterStart?.nodes || g.nodes));
 }
 
 /** 盤を使う時のステータス（段なし）: 三角のグラフと、盤ごとの灯した数・恩恵の合計 */
