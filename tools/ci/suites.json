@@ -10,6 +10,15 @@
   ],
   "suites": [
     {
+      "id": "vn-speaker-atomic-2190",
+      "title": "Speaker and dialogue switch together after portrait entry",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/vn/engine.js", "remake/test/browser/vn_speaker_atomic_2190.mjs"],
+      "run": ["node remake/test/browser/vn_speaker_atomic_2190.mjs"]
+    },
+    {
       "id": "craft-layout-2190",
       "title": "Horizontal mix recipe, status explanation and full result details (#2190)",
       "kind": "browser",
