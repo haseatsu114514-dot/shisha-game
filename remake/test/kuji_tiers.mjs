@@ -125,11 +125,16 @@ assert.equal(t.state.money, 4500);
 t = setup();
 const set = kuji.grades.g10000.prizes.find(p => p.flavors);
 assert.equal(t.grant(set), null);
-assert.deepEqual(t.state.flavorStock, { absal_double_apple: 50, absal_mint: 50, cardamom: 50 }, "詰め合わせは全部の葉が加わる");
+assert.deepEqual(t.state.flavorStock, { anise: 50, ginger: 50, cardamom: 50 }, "詰め合わせは全部の葉が加わる");
 assert.deepEqual(t.state.goods, [], "葉を小物にしない");
 // 古い箱の非売品の台（equipId なし）は今までどおり売れる小物。
 t = setup();
 assert.equal(t.grant({ type: "stand", name: "旧景品の台", sell: 3000 }), null);
 assert.deepEqual(JSON.parse(JSON.stringify(t.state.goods)), [{ name: "旧景品の台", sell: 3000 }]);
 
+// ドバイの葉（アフサール／ドバジのダブルアップル・ミント）は取りやめた（DBS03）ので、くじにも入れない。
+for (const [gradeId, g] of Object.entries(kuji.grades)) for (const prize of [...g.prizes, g.lastOne].filter(Boolean)) {
+  for (const id of [prize.flavorId, ...(prize.flavors || []).map(f => f.id)].filter(Boolean))
+    assert(!['absal_double_apple', 'absal_mint', 'dobaj_double_apple', 'dobaj_mint'].includes(id), `${gradeId} の ${prize.name} にドバイの葉を入れない`);
+}
 console.log(`[kuji tiers] PASS: ${Object.keys(kuji.grades).length} grades, chapter gates 1-5, gear prizes, duplicate cash`);
