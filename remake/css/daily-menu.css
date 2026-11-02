@@ -28,7 +28,7 @@
 
 /* ---------------------------------------------------------------- 左の帯：見出しとタブ */
 .dmenu .dm-side { grid-area: side; display: flex; flex-direction: column; min-height: 0; padding: 0 10px; }
-.dmenu .dm-title { display: flex; align-items: baseline; gap: 8px; margin: 2px 4px 14px; font-size: 28px; font-weight: 900; letter-spacing: .04em; line-height: 1.2; color: var(--dm-ink); }
+.dmenu .dm-title { display: flex; align-items: baseline; gap: 8px; margin: 2px 4px 14px; font-size: 28px; font-weight: 700; letter-spacing: .04em; line-height: 1.2; color: var(--dm-ink); }
 .dmenu .dm-cycle { padding: 2px 8px; border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: 0; color: var(--dm-amber-ink); background: #fbe9cf; border: 1px solid #e4b57a; }
 .dmenu .dm-tabs { display: flex; flex-direction: column; gap: 6px; }
 .dmenu .dm-tab {
@@ -80,7 +80,7 @@
 .dmenu .dm-sub { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.5; color: var(--dm-muted); }
 .dmenu .dm-note { margin: 0; font-size: 14px; font-weight: 500; line-height: 1.65; color: var(--dm-muted); }
 .dmenu .dm-empty { margin: 0; font-size: 15px; font-weight: 500; color: var(--dm-muted); }
-.dmenu .dm-strong { font-size: 17px; font-weight: 900; color: var(--dm-ink); }
+.dmenu .dm-strong { font-size: 17px; font-weight: 700; color: var(--dm-ink); }
 .dmenu .dm-en { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--dm-muted); }
 .dmenu .dm-card {
   display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 14px 16px; box-sizing: border-box;
@@ -134,16 +134,17 @@
 .dmenu .s-insight { --sc: var(--stat-insight); }
 .dmenu .dm-badge {
   display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; box-sizing: border-box;
-  font-size: 16px; font-weight: 900; color: color-mix(in srgb, var(--sc) 55%, var(--dm-ink));
+  font-size: 16px; font-weight: 700; color: color-mix(in srgb, var(--sc) 55%, var(--dm-ink));
   background: color-mix(in srgb, var(--sc) 22%, #fff); border: 2px solid color-mix(in srgb, var(--sc) 70%, var(--dm-ink));
 }
 .dmenu .dm-stat-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .dmenu .dm-stat-line { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; }
-.dmenu .dm-stat-line .dm-strong { width: 56px; }
+.dmenu .dm-stat-line .dm-rank { min-width: 128px; }
+.dmenu .dm-stat-line .dm-strong { width: 56px; font-size: 18px; font-weight: 900; }
 .dmenu .dm-stat .dm-pips i.on { background: color-mix(in srgb, var(--sc) 70%, var(--dm-ink)); border-color: color-mix(in srgb, var(--sc) 70%, var(--dm-ink)); }
-.dmenu .dm-rank { font-size: 15px; font-weight: 700; color: color-mix(in srgb, var(--sc) 50%, var(--dm-ink)); }
-.dmenu .dm-up { font-size: 16px; font-weight: 900; color: var(--dm-amber-ink); }
-.dmenu .dm-fx { font-size: 14px; font-weight: 500; line-height: 1.5; color: color-mix(in srgb, var(--sc) 40%, var(--dm-ink)); }
+.dmenu .dm-rank { font-size: 16px; font-weight: 700; color: color-mix(in srgb, var(--sc) 50%, var(--dm-ink)); }
+.dmenu .dm-up { font-size: 16px; font-weight: 700; color: var(--dm-amber-ink); }
+.dmenu .dm-fx { font-size: 14px; font-weight: 500; line-height: 1.5; color: color-mix(in srgb, var(--sc) 25%, var(--dm-muted)); }
 .dmenu .dm-next { display: flex; flex-direction: column; gap: 5px; }
 .dmenu .dm-next small { font-size: 13px; font-weight: 700; letter-spacing: 0; color: var(--dm-muted); }
 .dmenu .dm-next .dm-gauge { height: 8px; }
@@ -279,6 +280,13 @@ body.game-ds:has(#modal > .dmenu) .game-layout-toolbar { visibility: hidden; }
 :root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat { grid-template-columns: 34px minmax(0, 1fr); column-gap: 10px; row-gap: 6px; padding: 8px 6px; }
 :root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next { grid-column: 2; }
 :root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat-line .dm-strong { width: auto; }
+/* 縦持ち: 能力名と段位を1行目、丸を2行目、効き目の下に「次の段まで」を文字とゲージの1行で。1行 約130px → 約110px */
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat-line { gap: 2px 10px; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat-line .dm-rank { min-width: 0; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-pips { flex-basis: 100%; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next { flex-direction: row; align-items: center; gap: 8px; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next small { flex: none; white-space: nowrap; }
+:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next .dm-gauge { flex: 1 1 0; min-width: 24px; }
 :root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-board-row {
   grid-template-columns: 28px minmax(0, 1fr) auto; grid-template-areas: "head name count" "bar bar bar"; row-gap: 6px;
 }

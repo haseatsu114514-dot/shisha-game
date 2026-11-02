@@ -288,10 +288,11 @@ function statRows(select) {
       el("span.dm-badge", { text: statBadge(k).textContent, "aria-hidden": "true" }),
       el("span.dm-stat-main", [
         el("span.dm-stat-line", [
+          // 読む順は 能力名 → 段位 → 丸（段の進み）。次の段までは右（狭い画面では下）の帯で続ける。
           el("span.dm-strong", { text: STAT_JA[k] }),
-          pips(step(k), 10, `${step(k)}段`),
           el("span.dm-rank", { text: `${step(k)}段・${RANK_LABELS[k][Math.floor((step(k) - 1) / 2)]}` }),
           grown ? el("span.dm-up", { text: "↑", title: "この章で伸びた" }) : null,
+          pips(step(k), 10, `${step(k)}段`),
         ]),
         el("span.dm-fx", { text: tierFx(k) }),
       ]),
