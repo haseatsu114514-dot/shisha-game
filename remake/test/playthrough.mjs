@@ -204,6 +204,8 @@ for (;;) {
       || (await click('[data-test="phone-close"]'));
     continue;
   }
+  // 寝る前のレベルアップ（心得の盤、11/02から通常プレイで有効）。初回はOKを押すまで待つ全画面の演出。
+  if (await click('[data-test="levelup-ok"]')) continue;
   // 体力の警告は素直に引き返す
   if (snap.modal) {
     // スロットの初回説明（タップ送り）・くじの開封（タップで閉じる）
