@@ -511,10 +511,10 @@
         },
         {
           "type": "condition",
-          "condition_type": "flag",
-          "flag": "_ch2_city_visit_c_station",
-          "next_true": "seen_on_monitor",
-          "next_false": "heard_only"
+          "condition_type": "met",
+          "char_id": "master_hookah",
+          "next_true": "met_at_shop",
+          "next_false": "first_sight"
         },
         {
           "speaker": "hajime",
@@ -591,6 +591,32 @@
         }
       ],
       "branches": {
+        "met_at_shop": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "長い呼吸から、龍のような煙が立ち上がる。店で炭を並べていた手が、今は客席ごと煙で包んでいた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（店で見た静かな手と、同じ人なんだ）"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "smile",
+            "text": "来たね。店の時より、客が多いだろう"
+          }
+        ],
+        "first_sight": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_city_visit_c_station",
+            "next_true": "seen_on_monitor",
+            "next_false": "heard_only"
+          }
+        ],
         "seen_on_monitor": [
           {
             "speaker": "",
@@ -621,7 +647,7 @@
           }
         ]
       },
-      "comment": "王煙楼はシェイクの師。推薦選手として正面から登場する。老人語は使わない。味の会話（#2028）: 王煙楼の好み＝ライチ。必須場面なので熟練度だけで、好感度は付けない（王煙楼に好感度はない）。"
+      "comment": "王煙楼はシェイクの師。推薦選手として正面から登場する。老人語は使わない。味の会話（#2028）: 王煙楼の好み＝ライチ。必須場面なので熟練度だけで、好感度は付けない（王煙楼の好感度は龍龍水煙所のドバイの店で付く）。面識で分ける（2026-11-02 オーナー「普通に他の章のライバルと同じ扱い」・交流の時系列ルール）: ドバイの日常で先に龍龍水煙所の店で会っていれば（met）顔見知りとして迎え、名乗り・登場カットインを繰り返さない（met_at_shop）。会っていなければ今までどおりの初登場（first_sight → 県大会のモニターで見た／名前だけ聞いた）。"
     },
     {
       "dialogue_id": "ch4_tournament_start",
