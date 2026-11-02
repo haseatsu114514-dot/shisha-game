@@ -335,6 +335,8 @@ export const SE = {
   crackle: () => { for (let i = 0; i < 4; i++) noise({ dur: 0.03, vol: 0.1, filter: 2500 + Math.random() * 3000, delay: Math.random() * 0.25, q: 2 }); },
   bubbling: () => { for (let i = 0; i < 6; i++) tone({ freq: 180 + Math.random() * 120, to: 90, type: "sine", dur: 0.09, vol: 0.12, delay: i * 0.09 + Math.random() * 0.04 }); },
   whoosh: () => noise({ dur: 0.7, vol: 0.14, filter: 400, q: 0.6, sweepTo: 2600 }),
+  // ラクダレース: 自分のラクダの一完歩ごとの蹄（低く短く。速く走るほど詰まって聞こえる）。
+  hoof: () => { tone({ freq: 96, to: 52, type: "sine", dur: 0.08, vol: 0.11 }); noise({ dur: 0.04, vol: 0.04, filter: 600 }); },
   hit: () => { tone({ freq: 140, to: 60, type: "sine", dur: 0.2, vol: 0.3 }); noise({ dur: 0.12, vol: 0.12, filter: 900 }); },
   heartbeat: () => { tone({ freq: 70, to: 45, type: "sine", dur: 0.14, vol: 0.4 }); tone({ freq: 70, to: 45, type: "sine", dur: 0.12, vol: 0.3, delay: 0.2 }); },
   tick: () => tone({ freq: 2000, type: "square", dur: 0.02, vol: 0.05 }),

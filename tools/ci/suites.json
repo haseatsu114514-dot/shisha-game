@@ -1205,7 +1205,7 @@
     },
     {
       "id": "ch4-camel-race",
-      "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot",
+      "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot; hold-to-whip controls on the standalone page",
       "kind": "browser",
       "weight": 2,
       "timeout": 8,
@@ -1224,6 +1224,7 @@
         "remake/img/ui/camel_race/**",
         "assets/sprites/characters/saif/**",
         "assets/sprites/characters/rashid/**",
+        "remake/img/sprites/characters/hajime/**",
         "assets/backgrounds/bg_dubai_camel_track_morning.png",
         "remake/test/browser/ch4_camel_race.mjs"
       ],
