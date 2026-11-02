@@ -55,6 +55,18 @@ export function feedbackLine(id, step, evaluation) {
   return (voice[step] || voice.default)[evaluation.index];
 }
 
+/** 第1章結果表の上園。完成品の品質点を、温度の成否に読み替えない。 */
+export function judgeComment(cs) {
+  const rounds = [cs?.pull, cs?.careHistory?.[0], cs?.careHistory?.[1]];
+  // 各工程の終了時に記録した判定を読む。最後の葉の傷みで過去の適温帯を狭めない。
+  const temperatures = rounds.map(result => result && !result.failed && !result.skipped
+    && Number.isFinite(result.score) && Number.isFinite(result.temp) && typeof result.inZone === "boolean"
+    ? result.inZone : null);
+  if (temperatures.every(value => value === true)) return "提供も2回の調整も、いい温度だったねえ";
+  if (temperatures.some(value => value === false)) return "温度が合わなかったところがあるねえ。次は一口ずついこう";
+  return feedbackLine("maezono", "default", evaluationOf(cs?.parts?.shisha || 0));
+}
+
 // 判定前の「見ている」間に出す一言。地の文の説明ではなく、本人が話す体で短く。
 const WATCH = {
   sumi: { default: "手元を見ているぞ。落ち着いていけ" },
