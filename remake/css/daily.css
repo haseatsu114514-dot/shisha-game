@@ -111,8 +111,9 @@
 .cfg-row select { padding: 4px 10px; background: var(--ink-2); color: var(--text); border: 1px solid var(--panel-edge); border-radius: 4px; }
 
 /* ---------------------------------------------------------------- HUD */
-#hud { opacity: 0; transition: opacity 0.4s; }
-#hud.show { opacity: 1; }
+/* 透明なHUDを読み取り・Tab移動・フォーカスの対象にも残さない。 */
+#hud { opacity: 0; visibility: hidden; transition: opacity 0.4s; }
+#hud.show { opacity: 1; visibility: visible; }
 /* A late gameplay update must never expose controls over boot/title. */
 body[data-screen="boot"] #hud, body[data-screen="title"] #hud { display: none; }
 .hud {
@@ -125,10 +126,10 @@ body[data-screen="boot"] #hud, body[data-screen="title"] #hud { display: none; }
   align-items: flex-start;
   padding: 12px 16px;
 }
-body.in-vn .hud, body.vn-open .hud { opacity: 0; pointer-events: none; }
+body.in-vn .hud, body.vn-open .hud { opacity: 0; visibility: hidden; pointer-events: none; }
 body.in-vn .hud-right, body.vn-open .hud-right { pointer-events: none; }
 /* 作業台・集計・結果では見えないHUDを押せないようにする（見えないMENUから作業の途中を保存しない・#638） */
-body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; pointer-events: none; }
+body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; visibility: hidden; pointer-events: none; }
 body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body[data-screen="result"] .hud-right { pointer-events: none; }
 
 /* 左上の DAY カード（墨×金・角飾り） */
