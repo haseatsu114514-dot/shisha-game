@@ -958,6 +958,12 @@
           "text": "……【技術】が上がった。"
         },
         {
+          "type": "apply",
+          "affinity": {
+            "volk": 2
+          }
+        },
+        {
           "type": "set_flag",
           "flag": "ch3_volk_after_ch3_done"
         }

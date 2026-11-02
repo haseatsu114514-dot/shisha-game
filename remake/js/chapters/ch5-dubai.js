@@ -12,7 +12,7 @@ import { DB, sceneBg } from "../core/data.js";
 import { modal, setBg, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { addMoney, addStamina, earnStat, gainAffinity } from "../core/stats.js";
+import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity } from "../core/stats.js";
 import { DUBAI_ROUND_TRIP_FARE } from "../core/travel-budget.js";
 import { openShop } from "../daily/shop.js";
 import { reflectAt } from "../daily/reflection.js";
@@ -32,10 +32,10 @@ const yen = n => n.toLocaleString("ja-JP");
 const spot = fields => Object.freeze({ region: DUBAI, kind: "ch5_dubai", ...fields });
 export const DUBAI_SPOTS = Object.freeze([
   spot({ id: "ch5_dubai_sheikh", charId: "sheikh", label: "シェイクの屋敷", area: "中庭と低い卓の部屋", x: 19, y: 39, theme: "rival", glyph: "邸",
-    face: "sheikh", preview: RESIDENCE_BG, stamina: -10, stat: "insight", affinity: 5, talks: ["ch5_dubai_sheikh", "ch5_dubai_sheikh_b", "ch5_dubai_sheikh_c"],
+    face: "sheikh", preview: RESIDENCE_BG, stamina: -10, stat: "insight", talks: ["ch5_dubai_sheikh", "ch5_dubai_sheikh_b", "ch5_dubai_sheikh_c"],
     teacher: "sheikh", desc: "シェイクと話す。屋敷では、王族ではなく友人として。" }),
   spot({ id: "ch5_dubai_taiyo", charId: "da_silva", label: "中庭の太陽", area: "シェイクの屋敷の中庭", x: 34, y: 32, theme: "rival", glyph: "陽",
-    face: "da_silva", preview: RESIDENCE_BG, stamina: -10, stat: "charm", affinity: 5, teacher: "da_silva",
+    face: "da_silva", preview: RESIDENCE_BG, stamina: -10, stat: "charm", teacher: "da_silva",
     talks: ["ch5_dubai_taiyo", "ch5_dubai_taiyo_b", "ch5_dubai_taiyo_c"],
     desc: "休暇で屋敷に遊びに来ている太陽。今日は審査じゃなく、ただのフェスタ。" }),
   spot({ id: "ch5_dubai_souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
@@ -130,13 +130,15 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return unused;
   const talks = state.flags[TALKS_FLAG] ||= {};
-  const scene = spot.talks[(talks[spot.id] || 0) % spot.talks.length];
+  const visits = talks[spot.id] || 0;
+  const scene = spot.talks[visits % spot.talks.length];
   if (!await read(scene, spot.preview, owner)) return unused;
   if (spot.cost) addMoney(-spot.cost);
   addStamina(spot.stamina);
-  talks[spot.id] = (talks[spot.id] || 0) + 1;
-  // 第5章の好感度はゆっくり（通いの +5。東京と同じ。台帳 AFB01）
-  if (spot.charId) { gainAffinity(spot.charId, spot.affinity || 5); markMet(spot.charId); }
+  talks[spot.id] = visits + 1;
+  // 好感度は会うたびに通いと同じ値（core/stats.js の visitAffinity。第5章はゆっくりの 10・5。東京と同じ。台帳 AFB01）。
+  // 1回目は段階会話、2回目からは小会話（第3章の通いと同じ）。シェイク・太陽はここで♥5に届き、♥5の授業を相談できる（IR23）
+  if (spot.charId) { gainAffinity(spot.charId, visitAffinity(visits ? "talk" : "story")); markMet(spot.charId); }
   earnStat(spot.stat, 4);
   // 心得の盤で灯した授業があれば、会ったこの場で相談して習う（盤が無効な時は何もしない・SBD52）
   if (spot.teacher && state === owner) await consultLessons(spot.teacher, { bg: sceneBg(spot.preview, timeOfDay()).url });

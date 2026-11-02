@@ -1279,6 +1279,7 @@
       "paths": [
         "remake/js/chapters/ch3-aftermath*.js",
         "remake/js/chapters/ch5-tokyo.js",
+        "remake/js/chapters/ch5-dubai.js",
         "remake/js/chapters/ch5-shops.js",
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/core/growth.js",

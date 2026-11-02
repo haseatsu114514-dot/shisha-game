@@ -281,7 +281,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   // スークの後は屋台で軽く買える（時間は使わない・体力が少し戻る）。体力を使った後に戻すので、上限で消えにくい。
   if (entry.place === STALL_PLACE && state === owner) await visitStall(owner);
   if (entry.stat) earnStat(entry.stat, 4);
-  if (entry.place === "festa") gainAffinity("da_silva", 5);
+  if (entry.place === "festa") gainAffinity("da_silva", visitAffinity("talk")); // 太陽: 来店ごとに通いの小会話と同じ +8（IR23）
   if (entry.place === "naru") gainAffinity("naru", 5);
   // 龍龍水煙所: ほかの章のライバルの店と同じ値（段階の会話 +16・通いの小会話 +8。core/stats.js の visitAffinity）
   if (longlong) gainAffinity(LONGLONG_CHAR, visitAffinity(longlong.kind === "story" ? "story" : "talk"));
