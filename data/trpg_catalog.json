@@ -20,6 +20,70 @@
       "stockRequires": [
         "samechan"
       ]
+    },
+    {
+      "id": "leaf-mail",
+      "file": "dialogue/trpg_leaf_mail.json",
+      "price": 500,
+      "stockRequires": [
+        "tsumugi"
+      ]
+    },
+    {
+      "id": "apple-thief",
+      "file": "dialogue/trpg_apple_thief.json",
+      "price": 700,
+      "stockRequires": [
+        "adam"
+      ]
+    },
+    {
+      "id": "shark-island",
+      "file": "dialogue/trpg_shark_island.json",
+      "price": 800,
+      "stockRequires": [
+        "samechan"
+      ]
+    },
+    {
+      "id": "mist-kingdom",
+      "file": "dialogue/trpg_mist_kingdom.json",
+      "price": 700,
+      "stockRequires": [
+        "hiyori"
+      ]
+    },
+    {
+      "id": "smoke-robot",
+      "file": "dialogue/trpg_smoke_robot.json",
+      "price": 600,
+      "stockRequires": [
+        "samechan"
+      ]
+    },
+    {
+      "id": "fading-familiar",
+      "file": "dialogue/trpg_fading_familiar.json",
+      "price": 700,
+      "stockRequires": [
+        "hiyori"
+      ]
+    },
+    {
+      "id": "fox-market",
+      "file": "dialogue/trpg_fox_market.json",
+      "price": 600,
+      "stockRequires": [
+        "tsumugi"
+      ]
+    },
+    {
+      "id": "stage-ghost",
+      "file": "dialogue/trpg_stage_ghost.json",
+      "price": 800,
+      "stockRequires": [
+        "adam"
+      ]
     }
   ],
   "unlockChapter": 2,

@@ -1,0 +1,3240 @@
+{
+  "id": "leaf-mail",
+  "version": 1,
+  "title": "葉っぱ耳の郵便猫",
+  "subtitle": "時計坂の町と、宛名のにじんだ手紙",
+  "author": "灯森こはる",
+  "collection": "船灯文庫・小さな卓の冒険 03",
+  "duration": "約10分",
+  "premise": "大きな月の夜、時計坂の町。郵便猫ミトンが、宛名のにじんだ手紙を持ってきた。『月のよく見える家の、だれかへ』。夜番たちは、誰に届けるだろう。",
+  "fiction": {
+    "town": "時計坂の町",
+    "shop": "夜番の詰所",
+    "traveler": "郵便猫ミトン"
+  },
+  "cast": [
+    {
+      "id": "tsumugi",
+      "part": "GM",
+      "role": "案内と、郵便猫ミトン",
+      "color": "#b8a3cc"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／新米の夜番",
+      "color": "#89bbc4",
+      "ability": "ひらめき",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "abilityType": "reroll",
+      "sheet": {
+        "name": "ピム",
+        "title": "新米の夜番",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "町の道なら覚えた。夜の見回りは、まだ少しどきどきする"
+      }
+    },
+    {
+      "id": "hiyori",
+      "part": "PLAYER",
+      "role": "{pc:hiyori}／灯りともし",
+      "color": "#dab978",
+      "ability": "灯りの段取り",
+      "abilityText": "配達の支度をするとき、判定に一度だけ＋7",
+      "abilityType": "prepare",
+      "sheet": {
+        "name": "ユラ",
+        "title": "灯りともし",
+        "stats": {
+          "eye": 3,
+          "hand": 4,
+          "talk": 2,
+          "nerve": 2
+        },
+        "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
+        "likes": "屋台の夜鳴きラーメン"
+      }
+    },
+    {
+      "id": "adam",
+      "part": "PLAYER",
+      "role": "{pc:adam}／鐘つき",
+      "color": "#c9463a",
+      "ability": "鐘の口上",
+      "abilityText": "手紙を渡すとき、判定に一度だけ＋7",
+      "abilityType": "serve",
+      "sheet": {
+        "name": "レオン",
+        "title": "鐘つき",
+        "stats": {
+          "eye": 2,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 3
+        },
+        "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
+        "likes": "林檎の砂糖煮。甘さの原点"
+      }
+    }
+  ],
+  "intro": "trpg_leaf_mail_intro",
+  "listen": "trpg_leaf_mail_listen",
+  "checks": {
+    "listen": {
+      "title": "ミトンの話を聞く",
+      "hint": "宣言した夜番の能力で判定。結果にかかわらず、話の続きを聞けます。",
+      "success": "trpg_leaf_mail_listen_success",
+      "mixed": "trpg_leaf_mail_listen_mixed",
+      "trouble": "trpg_leaf_mail_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_talk",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "しゃがんで、目線を合わせる",
+          "detail": "{pc}がミトンの前にしゃがみ、ゆっくり話を聞く",
+          "declare": "trpg_leaf_mail_declare_listen_talk"
+        },
+        {
+          "id": "listen_look",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "灯りを寄せて、宛名を見る",
+          "detail": "{pc:hiyori}が灯りを近づけ、にじんだ宛名をよく見る",
+          "declare": "trpg_leaf_mail_declare_listen_look"
+        },
+        {
+          "id": "listen_greet",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "大げさに、郵便猫を歓迎する",
+          "detail": "{pc:adam}が帽子を取り、ミトンを詰所へ迎え入れる",
+          "declare": "trpg_leaf_mail_declare_listen_greet"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "配達の支度をする",
+      "hint": "宣言した夜番の能力で判定。届ける道と包み方を、一つの配達にします。",
+      "success": "trpg_leaf_mail_prepare_success",
+      "mixed": "trpg_leaf_mail_prepare_mixed",
+      "trouble": "trpg_leaf_mail_prepare_trouble",
+      "helper": "hiyori",
+      "approaches": [
+        {
+          "id": "prepare_self",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "自分の手で、手紙を包む",
+          "detail": "{pc}が選んだ包み方で、丁寧に手紙を整える",
+          "declare": "trpg_leaf_mail_declare_prepare_self"
+        },
+        {
+          "id": "prepare_plan",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "{pc:hiyori}が支度を整える",
+          "detail": "道具と道順を、手早くそろえる",
+          "declare": "trpg_leaf_mail_declare_prepare_plan"
+        },
+        {
+          "id": "prepare_scout",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "nerve",
+          "label": "届ける道を、先に見てくる",
+          "detail": "{pc:adam}が夜道をひと足先に確かめる",
+          "declare": "trpg_leaf_mail_declare_prepare_scout"
+        }
+      ]
+    },
+    "serve": {
+      "title": "手紙を届ける",
+      "hint": "宣言した夜番の能力で判定。どの出目でも結末へ進みます。",
+      "success": "trpg_leaf_mail_serve_success",
+      "mixed": "trpg_leaf_mail_serve_mixed",
+      "trouble": "trpg_leaf_mail_serve_trouble",
+      "helper": "adam",
+      "approaches": [
+        {
+          "id": "serve_word",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "自分の言葉で届ける",
+          "detail": "{pc}が選んだ渡し方で、手紙を差しだす",
+          "declare": "trpg_leaf_mail_declare_serve_word"
+        },
+        {
+          "id": "serve_wait",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "eye",
+          "label": "渡す時を、見はからう",
+          "detail": "{pc:hiyori}が窓の灯りを見て、ちょうどいい時を待つ",
+          "declare": "trpg_leaf_mail_declare_serve_wait"
+        },
+        {
+          "id": "serve_speech",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "ひと言、口上を添える",
+          "detail": "{pc:adam}が月にふさわしい一言を添える",
+          "declare": "trpg_leaf_mail_declare_serve_speech"
+        }
+      ]
+    },
+    "twist": {
+      "title": "飛ばされた手紙を追う",
+      "hint": "宣言した夜番の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_leaf_mail_twist_success",
+      "mixed": "trpg_leaf_mail_twist_mixed",
+      "trouble": "trpg_leaf_mail_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_dash",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "先頭で、風の中へ飛びだす",
+          "detail": "{pc}が風に向かって駆けだし、手紙を追う",
+          "declare": "trpg_leaf_mail_declare_twist_dash"
+        },
+        {
+          "id": "twist_tools",
+          "actor": "hiyori",
+          "sheet": "hiyori",
+          "stat": "hand",
+          "label": "縄と網を、手早く配る",
+          "detail": "{pc:hiyori}が詰所の道具を、みんなに手渡す",
+          "declare": "trpg_leaf_mail_declare_twist_tools"
+        },
+        {
+          "id": "twist_call",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "町の窓に、呼びかける",
+          "detail": "{pc:adam}が窓から顔を出した人に、手紙の行方を聞く",
+          "declare": "trpg_leaf_mail_declare_twist_call"
+        }
+      ]
+    }
+  },
+  "spots": [
+    {
+      "id": "bag",
+      "label": "郵便鞄",
+      "short": "鞄",
+      "x": 52,
+      "y": 80
+    },
+    {
+      "id": "clock",
+      "label": "時計塔",
+      "short": "時計塔",
+      "x": 20,
+      "y": 24
+    },
+    {
+      "id": "roof",
+      "label": "屋根の上",
+      "short": "屋根",
+      "x": 66,
+      "y": 18
+    },
+    {
+      "id": "bridge",
+      "label": "川の橋",
+      "short": "橋",
+      "x": 86,
+      "y": 66
+    },
+    {
+      "id": "bakery",
+      "label": "パン屋の窓",
+      "short": "パン屋",
+      "x": 14,
+      "y": 64
+    },
+    {
+      "id": "board",
+      "label": "掲示板",
+      "short": "掲示板",
+      "x": 38,
+      "y": 50
+    }
+  ],
+  "consult": {
+    "hiyori": "trpg_leaf_mail_consult_hiyori",
+    "adam": "trpg_leaf_mail_consult_adam"
+  },
+  "hypotheses": [
+    {
+      "id": "keeper",
+      "label": "丘の灯台守へ",
+      "description": "毎晩、町に灯りをともすおじいさんへの手紙。",
+      "discussion": "trpg_leaf_mail_discuss_keeper"
+    },
+    {
+      "id": "child",
+      "label": "引っ越した子へ",
+      "description": "遠くの町へ越していった子どもへの手紙。",
+      "discussion": "trpg_leaf_mail_discuss_child"
+    },
+    {
+      "id": "painter",
+      "label": "ミトンを描いた人へ",
+      "description": "ミトン自身が書いた、絵描きへのお礼の手紙。",
+      "discussion": "trpg_leaf_mail_discuss_painter"
+    }
+  ],
+  "preparation": "trpg_leaf_mail_preparation",
+  "serving": "trpg_leaf_mail_serving",
+  "options": {
+    "route": [
+      {
+        "id": "roof",
+        "label": "屋根の道",
+        "description": "猫と月だけが知っている、屋根づたいの近道。",
+        "response": "trpg_leaf_mail_choice_route_roof"
+      },
+      {
+        "id": "river",
+        "label": "川沿いの道",
+        "description": "水面の月を追って、川下へ続く長い道。",
+        "response": "trpg_leaf_mail_choice_route_river"
+      },
+      {
+        "id": "stairs",
+        "label": "坂の階段",
+        "description": "百段をのぼって、丘の上へ向かう道。",
+        "response": "trpg_leaf_mail_choice_route_stairs"
+      }
+    ],
+    "wrap": [
+      {
+        "id": "wax",
+        "label": "封蝋",
+        "description": "赤い封蝋に月の印。昔ながらの、きちんとした手紙。",
+        "response": "trpg_leaf_mail_choice_wrap_wax"
+      },
+      {
+        "id": "flower",
+        "label": "押し花",
+        "description": "丘の青い花を一輪。景色ごと届ける。",
+        "response": "trpg_leaf_mail_choice_wrap_flower"
+      },
+      {
+        "id": "bell",
+        "label": "小さな鈴",
+        "description": "封筒の角で、ちりんと鳴る。誰からか、音で分かる。",
+        "response": "trpg_leaf_mail_choice_wrap_bell"
+      }
+    ],
+    "handover": [
+      {
+        "id": "hand",
+        "label": "手渡し",
+        "description": "顔を見て、まっすぐ渡す。",
+        "response": "trpg_leaf_mail_choice_handover_hand"
+      },
+      {
+        "id": "window",
+        "label": "窓辺にそっと置く",
+        "description": "起こさないように。朝、見つけてもらう。",
+        "response": "trpg_leaf_mail_choice_handover_window"
+      },
+      {
+        "id": "song",
+        "label": "歌と一緒に",
+        "description": "ミトンの歌を添えて、手紙を渡す。",
+        "response": "trpg_leaf_mail_choice_handover_song"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "run",
+        "label": "走って追いかける",
+        "description": "坂を駆けて、落ちてくるところを待つ。",
+        "response": "trpg_leaf_mail_choice_tactic_run"
+      },
+      {
+        "id": "kite",
+        "label": "凧で捕まえる",
+        "description": "詰所の古い凧を上げ、風ごとすくう。",
+        "response": "trpg_leaf_mail_choice_tactic_kite"
+      },
+      {
+        "id": "bird",
+        "label": "夜の鳥に頼む",
+        "description": "時計塔のふくろうに、ひと声かける。",
+        "response": "trpg_leaf_mail_choice_tactic_bird"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "keeper",
+      "ending": "lamp",
+      "arrival": "宛名は『月のよく見える家の、だれかへ』。灯りの油のにおいが、少しします",
+      "likes": {
+        "route": [
+          "stairs"
+        ],
+        "wrap": [
+          "wax"
+        ],
+        "handover": [
+          "hand"
+        ]
+      },
+      "evidence": {
+        "bag": {
+          "title": "たくさんの字",
+          "text": "封筒を月に透かすと、大きさの違う字がいくつも並んでいる。何人もで書いた手紙だ。",
+          "lines": "trpg_leaf_mail_keeper_bag"
+        },
+        "clock": {
+          "title": "九つの鐘と、丘の灯り",
+          "text": "時計塔の鐘が九つ鳴ると、丘の上の灯台に灯りがともる。丘へは、坂の階段で百段。",
+          "lines": "trpg_leaf_mail_keeper_clock"
+        },
+        "roof": {
+          "title": "月にいちばん近い窓",
+          "text": "屋根の上から見渡すと、月にいちばん近い窓は、丘の灯台のてっぺんだ。",
+          "lines": "trpg_leaf_mail_keeper_roof"
+        },
+        "bridge": {
+          "title": "言いそびれたお礼",
+          "text": "橋の下の船頭たちは、丘の灯りを目印に帰ってくる。『顔を見て礼を言いそびれてる』と笑う。",
+          "lines": "trpg_leaf_mail_keeper_bridge"
+        },
+        "bakery": {
+          "title": "ひとつだけのパン",
+          "text": "パン屋の主人いわく、丘のおじいさんは毎晩パンを一つだけ買い、ほとんど誰とも話さずに帰る。",
+          "lines": "trpg_leaf_mail_keeper_bakery"
+        },
+        "board": {
+          "title": "赤い封蝋の貼り紙",
+          "text": "掲示板に、灯台の古い貼り紙。角は赤い封蝋で留めてある。昔ながらの手紙が好きな人らしい。",
+          "lines": "trpg_leaf_mail_keeper_board"
+        }
+      },
+      "answers": {
+        "where": {
+          "title": "渡し場の船頭たち",
+          "text": "坂の下の渡し場で、船頭たちがみんなで書いた手紙を預かった。",
+          "lines": "trpg_leaf_mail_ask_keeper_where"
+        },
+        "moon": {
+          "title": "町でいちばん高いところ",
+          "text": "月のよく見える家は、坂の階段をずっとのぼった先にあるらしい。",
+          "lines": "trpg_leaf_mail_ask_keeper_moon"
+        },
+        "smudge": {
+          "title": "川のしぶき",
+          "text": "渡し場で、川のしぶきがかかって宛名がにじんだ。",
+          "lines": "trpg_leaf_mail_ask_keeper_smudge"
+        },
+        "mitten": {
+          "title": "帰り道の目印",
+          "text": "ミトンは毎晩、丘の灯りを目印に帰ってくる。",
+          "lines": "trpg_leaf_mail_ask_keeper_mitten"
+        }
+      }
+    },
+    {
+      "id": "child",
+      "ending": "far-window",
+      "arrival": "宛名は『月のよく見える家の、だれかへ』。小さな子の、丸い字です",
+      "likes": {
+        "route": [
+          "river"
+        ],
+        "wrap": [
+          "flower"
+        ],
+        "handover": [
+          "window"
+        ]
+      },
+      "evidence": {
+        "bag": {
+          "title": "押し花の形",
+          "text": "封筒を月に透かすと、押し花の形が浮かぶ。丘に咲く、小さな青い花らしい。",
+          "lines": "trpg_leaf_mail_child_bag"
+        },
+        "clock": {
+          "title": "九時の約束",
+          "text": "時計塔の壁に、子どもの字で『九時に、ここで』。並んだ名前は二つ。片方だけ、色あせている。",
+          "lines": "trpg_leaf_mail_child_clock"
+        },
+        "roof": {
+          "title": "川の先の灯り",
+          "text": "屋根から川下を見ると、遠い町の窓明かりがかすかに見える。月はそちらにも昇っている。",
+          "lines": "trpg_leaf_mail_child_roof"
+        },
+        "bridge": {
+          "title": "川下へ越した一家",
+          "text": "橋番いわく、春に一家が川沿いの道を下って越していった。子どもは何度も振り返っていた。",
+          "lines": "trpg_leaf_mail_child_bridge"
+        },
+        "bakery": {
+          "title": "朝に見つけてほしい",
+          "text": "パン屋の娘が手紙を書いた。『朝起きたら、窓辺で見つけてほしい』と話していたらしい。",
+          "lines": "trpg_leaf_mail_child_bakery"
+        },
+        "board": {
+          "title": "引っ越しのお知らせ",
+          "text": "掲示板に春の貼り紙。『川下の町へ引っ越します。今度の家は、月のよく見える家です』",
+          "lines": "trpg_leaf_mail_child_board"
+        }
+      },
+      "answers": {
+        "where": {
+          "title": "パン屋の女の子",
+          "text": "パン屋の裏口で、小さな女の子から『絶対に届けて』と預かった。",
+          "lines": "trpg_leaf_mail_ask_child_where"
+        },
+        "moon": {
+          "title": "遠くの、窓の大きな家",
+          "text": "月のよく見える家は、この町ではなく遠くの町にあるらしい。",
+          "lines": "trpg_leaf_mail_ask_child_moon"
+        },
+        "smudge": {
+          "title": "胸に抱えていた",
+          "text": "書いた女の子が、ずっと胸に抱えていたせいでにじんだ。",
+          "lines": "trpg_leaf_mail_ask_child_smudge"
+        },
+        "mitten": {
+          "title": "橋の上の三人",
+          "text": "前は毎晩、女の子ともう一人の子と橋で遊んでいた。もう一人は春から見ない。",
+          "lines": "trpg_leaf_mail_ask_child_mitten"
+        }
+      }
+    },
+    {
+      "id": "painter",
+      "ending": "painter",
+      "arrival": "宛名は『月のよく見える家の、だれかへ』。書いた人は……ええと、ないしょです",
+      "likes": {
+        "route": [
+          "roof"
+        ],
+        "wrap": [
+          "bell"
+        ],
+        "handover": [
+          "song"
+        ]
+      },
+      "evidence": {
+        "bag": {
+          "title": "肉球のにじみ",
+          "text": "宛名のにじみをよく見ると、小さな肉球の形。インクは、まだ乾ききっていない。",
+          "lines": "trpg_leaf_mail_painter_bag"
+        },
+        "clock": {
+          "title": "最初の落書き",
+          "text": "時計塔の壁に、色あせた猫の絵。葉っぱの耳と、煙みたいな尻尾。ミトンにそっくりだ。",
+          "lines": "trpg_leaf_mail_painter_clock"
+        },
+        "roof": {
+          "title": "屋根裏の丸窓",
+          "text": "屋根づたいに進むと、屋根裏の丸い窓。絵の具の瓶が並び、月が窓いっぱいに映っている。",
+          "lines": "trpg_leaf_mail_painter_roof"
+        },
+        "bridge": {
+          "title": "ミトンの鼻歌",
+          "text": "ミトンは橋を渡るとき、いつも同じ鼻歌を歌う。描いてもらったとき、ずっと聞こえていた歌らしい。",
+          "lines": "trpg_leaf_mail_painter_bridge"
+        },
+        "bakery": {
+          "title": "同じ耳の看板猫",
+          "text": "パン屋の看板の猫も、葉っぱの耳。『屋根裏の絵描きさんが描いてくれた』と主人が言う。",
+          "lines": "trpg_leaf_mail_painter_bakery"
+        },
+        "board": {
+          "title": "絵描きの貼り紙",
+          "text": "掲示板に古い貼り紙。『鈴をつけた葉っぱ耳の猫を見かけたら、元気か教えてください』",
+          "lines": "trpg_leaf_mail_painter_board"
+        }
+      },
+      "answers": {
+        "where": {
+          "title": "拾った……らしい",
+          "text": "ミトンは『拾った』と言うが、目をそらして尻尾を回していた。",
+          "lines": "trpg_leaf_mail_ask_painter_where"
+        },
+        "moon": {
+          "title": "丸い窓の家",
+          "text": "屋根を歩くと、丸い窓に月がまるごと映る家があるという。",
+          "lines": "trpg_leaf_mail_ask_painter_moon"
+        },
+        "smudge": {
+          "title": "前足のインク",
+          "text": "インクが乾く前に、ミトンが前足でさわってにじんだ。",
+          "lines": "trpg_leaf_mail_ask_painter_smudge"
+        },
+        "mitten": {
+          "title": "描いてもらった耳",
+          "text": "ミトンの葉っぱの耳は、ある人に描いてもらったものらしい。",
+          "lines": "trpg_leaf_mail_ask_painter_mitten"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "lamp": {
+      "title": "灯りに届いた手紙",
+      "line": "手紙は、毎晩の灯りへの『ありがとう』だった。",
+      "dialogue": "trpg_leaf_mail_ending_lamp"
+    },
+    "far-window": {
+      "title": "遠くの窓に届いた手紙",
+      "line": "手紙は、同じ月の下の遠い窓で、朝を待っていた。",
+      "dialogue": "trpg_leaf_mail_ending_far_window"
+    },
+    "painter": {
+      "title": "描いた人に届いた手紙",
+      "line": "手紙は、郵便猫から描いてくれた人への『ありがとう』だった。",
+      "dialogue": "trpg_leaf_mail_ending_painter"
+    },
+    "together": {
+      "title": "みんなで宛先を探しに行く手紙",
+      "line": "宛先はまだ分からない。だから、町のみんなと探しに出かけた。",
+      "dialogue": "trpg_leaf_mail_ending_together"
+    }
+  },
+  "epilogue": "trpg_leaf_mail_epilogue",
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_leaf_mail_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……物語の前に、キャラ作りの時間です。役は、決まりましたか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……そろいました。では、最初のページをめくります"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_make_hiyori_hiyori_yura",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はユラ。町の灯りをともして回る、か弱い夜番よ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "夜風に吹かれたら、灯りと一緒に消えてしまいそうで……"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "でも、屋台のラーメンの湯気が見えたら走るわ。全力で"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ラーメンで元気になる夜番さん。いいと思います"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_make_hiyori_hiyori_neri",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……私はネリ。風見の見習いよ。強い風が吹いたら、飛ばされちゃうの"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "趣味は斧投げ。的の真ん中は、外したことないわ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "飛ばされる人の趣味じゃないよね！？"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……風の強い夜になるかも、しれませんね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_make_adam_adam_leon",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はレオン。時計塔で鐘をつく夜番だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "鐘は一つ。だが、その響きは町じゅうの窓に届く"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "鐘の音みたいに、声も大きそうだな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……頼もしいです。夜の町に、ぴったり"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_make_adam_adam_gran",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はグラン。月を測りに来た、旅の天文学者だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "この宇宙は、二つの林檎が並んだところから始まった"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……そういう学説、ありましたっけ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "今、生まれた。この卓で"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……今夜は、私がGMです。絵本みたいな物語を、一冊だけ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "『葉っぱ耳の郵便猫』……絵本のTRPGって、はじめてだな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "",
+          "face": "normal",
+          "text": "みんなは、時計坂の町の夜番です。私はGMと、郵便猫を",
+          "castIntro": true,
+          "smallTableText": "はじめさんは、時計坂の町の夜番です。空いた役は、私が"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "夜の見回りね。……私、夜風には弱いのだけど"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "月の下の夜番か。幕を上げるには、最高の夜だ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "時計坂の町。大きな月が、坂の石畳を白く照らしている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は詰所の前で、ランタンの火を確かめている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:hiyori}は、坂の街灯を一つずつ見上げている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:adam}は時計塔の影で、月の高さから時刻を読んでいる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "そこへ、手紙をくわえた猫が一匹。耳は葉っぱ、尻尾は煙みたいに揺れている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "猫！？ ……あ、いえ。かわいい猫ね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "あれ、この猫……つむぎがよく描いてる子？"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……はい。いつも描いてる子です。今夜は、町の郵便屋さん"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "こんばんは、夜番さん。郵便猫の、ミトンです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_listen",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンは前足で、手紙をそっと差しだす。宛名のインクが、にじんでいる"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "宛先の分からない手紙か。物語は、いつも謎から始まる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "こんばんは、ミトン。その手紙、届け先がわからないの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "sad",
+          "text": "はい。にじんでしまって、半分しか読めなくて……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_listen_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンは尻尾をゆらりと振った。安心して、話してくれそうだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "よかった。ゆっくりでいいからね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_listen_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンが小さくくしゃみをする。宛名のにじみが、少し広がった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……あら。でも、まだ読める字もあるわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……大丈夫です。話の続きは、ちゃんと聞けます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_listen_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "{pc}が手を伸ばすと、ミトンはびっくりして塀の上へ跳んだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "わっ、ごめん！ 驚かせるつもりじゃ……"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "……すみません、猫なので。話は、ここからします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_listen_talk",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}はしゃがんで、ミトンと目線を合わせる。『どうしたの？』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定です。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_listen_look",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:hiyori}は灯りを寄せて、にじんだ宛名をよく見るわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……観察で判定です。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_listen_greet",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:adam}は帽子を取って一礼。『ようこそ、月夜の郵便屋さん』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定。ミトン、照れてます。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "風がやんだ一瞬、手紙は{pc}の手の中へ、すとんと落ちてきた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "smile",
+          "text": "すごい……！ 夜番さん、ありがとうございます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "手紙は取り戻した。でも、封筒の角が少し折れてしまった"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンの耳の葉っぱも一枚、月の方へ飛んでいった"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……葉っぱがない日も、ミトンはミトンです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "手紙は町を一周して、パン屋の煙突に引っかかった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "そこ！？ 届くかな……"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "パン屋の主人が長い棒で取ってくれた。少し、パンの香りがする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_twist_dash",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}は風に向かって駆けだす！ 手紙から目を離さない"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……度胸で判定です。坂は急ですよ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_twist_tools",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:hiyori}は、縄と網を手早くみんなに配るわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……手際で判定です。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_twist_call",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}は窓という窓に呼びかける。『手紙を見た者はいないか！』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定。町じゅうが起きそうです。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_prepare_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "支度はぴたりと整った。手紙は、出発を待っている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "完璧ね。……私が儚く消える前に、出発しましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_prepare_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "包みを一度ほどいて、やり直す。そのぶん、出発が少し遅れた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "急がば回れ、だな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……月は、まだ待ってくれます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_prepare_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ランタンの油が切れた。暗い詰所で、手探りの支度になる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "えっ、暗い！？ ……あ、ううん。闇も儚くて素敵ね"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンの目がきらりと光って、手もとを照らしてくれた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_prepare_self",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は自分の手で、手紙を丁寧に包みます"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……手際で判定です。ゆっくりで大丈夫。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_prepare_plan",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:hiyori}が支度するわ。こう見えて、段取りは得意なの"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……手際で判定。頼もしいです。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_prepare_scout",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:adam}は、届ける道をひと足先に見てこよう"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……度胸で判定です。夜道ですよ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_serve_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "手紙は、まっすぐ届いた。窓の灯りが、ふっと揺れる"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "見事な幕引きだ。拍手は、月がしてくれる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_serve_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "渡すとき、{pc}は少し言葉に詰まった。でも、気持ちは伝わったようだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（うまく言えなかったけど……届いたなら、いいか）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_serve_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "渡す直前、ミトンが大きなくしゃみ。封筒が、ころんと転がった"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "……すみません、月がまぶしくて"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "拾い直して、もう一度。今度は、ちゃんと届いた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_serve_word",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}が、選んだ渡し方で手紙を届けます"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定です。最後の一言、大事に。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_serve_wait",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:hiyori}は窓の灯りを見て、渡す時を待つわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……観察で判定です。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_declare_serve_speech",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}が口上を添えよう。月にふさわしい一言を"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……話術で判定です。大げさすぎないように。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_consult_hiyori",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……宛名が半分なら、残りの半分は町が知ってるはずよ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "におい、字の跡、町のうわさ。小さなものほど、行き先を教えてくれるわ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手紙そのものと、町の人の話。両方見てみよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_consult_adam",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "宛先探しは、結末探しと同じだ。まず登場人物をそろえよう"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "誰が書き、誰が待つか。それが分かれば、道は自然に決まる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "書いた人と、待ってる人……。そこから考えるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_discuss_keeper",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "毎晩の灯りに、町からのお礼……。素敵ね"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "照らす者は、照らされることが少ない。今夜は逆の幕だ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……いい読みです。その線で、行ってみましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_discuss_child",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "遠くへ越した子に……。同じ月を、見てるといいわね"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "別れは幕間にすぎない。手紙が、次の幕を開ける"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……はい。遠い窓まで、届けましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_discuss_painter",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ミトンが自分で書いたの！？ ……かわいすぎない？"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "描かれた者から、描いた者へ。まさに、原点への手紙だ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "bow",
+          "text": "……そういう読みも、あると思います"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "そのとき、坂の上から大きな風が吹きおろした"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンの前足から、手紙がふわりと舞い上がる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "surprise",
+          "text": "にゃっ！？ 手紙が……！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……風。私も、飛ばされちゃう……"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "手紙が月の方へ飛んでいく！ 追いかけないと！"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "evil",
+          "text": "……さあ、夜番さん。どうしますか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_tactic_run",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "夜番たちは石畳の坂を駆けだす。手紙は、屋根の向こうへひらひらと"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "足なら負けない、たぶん！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_tactic_kite",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "詰所の物置から、月の絵の古い凧を引っぱりだす"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "凧揚げなら任せて！ ……じゃなくて、儚く任せて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_tactic_bird",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "時計塔のてっぺんで、ふくろうが片目を開けた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "ふくろうさん、お願いです。手紙を、見ていてください"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_preparation",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……届ける道と、手紙の包み方を決めてください"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "手がかりを見直して、道と包み方を選ぼう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "支度なら任せて。……か弱いけど、段取りは得意なの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_serving",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "月が、いちばん高くなった。届け先の窓に、灯りがひとつ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "最後は、どうやって渡そう"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "渡し方ひとつで、手紙の意味は変わる。最後の幕だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_route_roof",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "屋根の道へ。瓦の上を行く、猫と月の近道だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "屋根の上こそ、月にいちばん近い舞台だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_route_river",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "川沿いの道へ。水面の月が、ずっと先まで続いている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "川は、遠くの町まで流れているのよね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_route_stairs",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "坂の階段へ。百段の先に、丘の灯りが見える"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "百段か……。夜番の足の見せどころだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_wrap_wax",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "赤い封蝋を垂らし、月の印をひとつ押した"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "きちんとした手紙ね。背すじが伸びるわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_wrap_flower",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "封筒に、丘の青い花の押し花を一輪"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "花の色って、遠くからでも思い出せるのよね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_wrap_bell",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "封筒の角に、小さな鈴を結ぶ。ちりん、と鳴った"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "かわいい……！ あ、ううん。素敵ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_handover_hand",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "顔を見て、手渡ししよう。直接届けたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_handover_window",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "起こさないように、窓辺にそっと置いていこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_choice_handover_song",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ミトンに歌ってもらって、歌と一緒に渡そう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_keeper_where",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "坂の下の渡し場です。船頭さんたちが、みんなで書いていました"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "みんなで、一通の手紙を……？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_keeper_moon",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "町でいちばん高いところ、だそうです。坂の階段の、ずっと上"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "坂の上……。あそこには、何があったかしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_keeper_smudge",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "sad",
+          "text": "渡し場で、川のしぶきがかかってしまって……"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "船頭の手紙が、川に宛名を消されたか。皮肉な幕開けだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_keeper_mitten",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "夜の配達の帰りは、いつも丘の灯りを目印にしています"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "smile",
+          "text": "迷子にならないのは、あの灯りのおかげです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_child_where",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "パン屋の裏口で、小さな女の子から預かりました"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "女の子は何度も『絶対に届けてね』と言ったらしい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_child_moon",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "この町の家じゃない、と言っていました。遠くの、窓の大きな家"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "遠く……。町の外まで届けるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_child_smudge",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "sad",
+          "text": "書いたあと、女の子がずっと胸に抱えていたので……"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……大事な手紙なのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_child_mitten",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "前は毎晩、あの子ともう一人と、橋の上で遊んでいました"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "sad",
+          "text": "もう一人の子は、春から見かけません"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_painter_where",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "……ええと。拾いました。たぶん"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンは目をそらし、尻尾の先をくるくる回している"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（あやしい……）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_painter_moon",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "屋根を歩いていると、丸い窓に月がまるごと映る家があって……"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "surprise",
+          "text": "あっ、いえ。なんでもないです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_painter_smudge",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "sad",
+          "text": "インクが乾く前に、前足で、さわってしまって……"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "前足で？ 待て、それはつまり……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ask_painter_mitten",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "smile",
+          "text": "ぼくのこの耳、ある人に描いてもらったんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ミトン、少し誇らしそうです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ending_lamp",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "丘の上の灯台。扉が開き、白いひげのおじいさんが目を丸くした"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "灯台守のおじいさん／物語",
+          "face": "surprise",
+          "text": "わたしに、手紙かい？ ……五十年で、はじめてだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "封を開くと、船頭や子どもたちの字。『毎晩の灯りを、ありがとう』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "灯台守のおじいさん／物語",
+          "face": "smile",
+          "text": "そうか……。ちゃんと、見ていてくれたんだなあ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "smile",
+          "text": "お届け、完了です"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "その夜、丘の灯りは、いつもより少しだけ明るく見えた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "（あたりまえの灯りにも、届く言葉があるんだな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ending_far_window",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "遠い町の、窓の大きな家。夜明け前の窓辺に、手紙をそっと置いた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "朝。目を覚ました子が、窓辺の封筒に気づく"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "遠い町の子／物語",
+          "face": "surprise",
+          "text": "……あの子からだ！"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "遠い町の子／物語",
+          "face": "smile",
+          "text": "こっちの窓からも、同じ月が見えてるよって、返事を書かなきゃ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "smile",
+          "text": "返事も、ぼくが届けます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "遠くても、同じ月……。いいお話ね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "（遠くの窓まで、ちゃんと届いたな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ending_painter",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "丸窓の屋根裏。絵描きは描きかけの月の前で、うたた寝していた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ミトンが、いつもの鼻歌を歌う。絵描きが、ゆっくりと顔を上げた"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "屋根裏の絵描き／物語",
+          "face": "surprise",
+          "text": "……その耳。いちばん最初に描いた、あの子だ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "smile",
+          "text": "描いてくれて、ありがとう。それだけ、言いたかったんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "にじんだ宛名の下に、肉球の判子がひとつ押してあった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（描いた人に、ありがとう……か）"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "bow",
+          "text": "……物語の中の、お話です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_ending_together",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "normal",
+          "text": "……ちがったみたい、です。でも、ありがとうございます"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "宛先は、まだわからない。夜番たちはミトンと、月の下の町を歩きだす"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "パン屋も船頭も、窓から顔を出して『うちかもしれない』と言う"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "smile",
+          "text": "この町、月のよく見える家ばかりみたいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "宛先を探して歩く夜も、悪くないな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……続きは、また今度。きっと見つかります"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_debrief_smooth",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……みんな、まっすぐ届けてくれました。ミトン、喜んでます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "迷わず届くと、気持ちいいな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_debrief_with_detour",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……寄り道も、配達のうちです。ミトンも、よく寄り道します"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "寄り道したぶん、町に詳しくなったわね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_epilogue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……これで、おしまいです。配達、手伝ってくれてありがとうございました"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ミトン、いい猫だったな。つむぎの絵の中でも、あんなふうに走ってるの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……たぶん。いつも描いてる子なので、走るところも見せたくて"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ミトンのぬいぐるみが出たら、三つ買う……じゃなくて、ほしいかしら"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "描いた者が語る物語。それは林檎が林檎を語るような、原点の物語だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（よく分からないけど、褒めてるのは分かる）"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "つむぎのGM、静かなのに、ちゃんとどきどきした"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "bow",
+          "text": "……光栄です。次の物語も、描いておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_keeper_bag",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "郵便鞄の手紙を、月に透かしてみる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "中には、大きさの違う字がいくつも。何人もで書いた手紙らしい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "寄せ書き……？ 誰か一人に、みんなで何か伝えたいのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_keeper_clock",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "時計塔の鐘が九つ鳴る。少し遅れて、丘の上に灯りがともった"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "丘の灯台へは、坂の階段で百段。灯りは一晩も欠かさないらしい"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "鐘と灯りの合図か。毎晩欠かさない舞台は、本物だけだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_keeper_roof",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "屋根にのぼると、町じゅうの窓が見渡せる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "月にいちばん近い窓は、丘の灯台のてっぺんだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "高いところの窓……。月がよく見えそうね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_keeper_bridge",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "橋の下で、船頭たちが舟をつないでいる"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『丘の灯りのおかげで帰れる。顔を見て礼を言いそびれててな』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "顔を見て、か。直接渡せたらいいな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_keeper_bakery",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "パン屋の窓から、焼きたての匂い。主人が顔を出した"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『丘のおじいさんは毎晩、パンを一つだけ。話す相手もいないらしくてね』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "毎晩、一人きり……。誰かが来たら、きっと嬉しいわね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_keeper_board",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "掲示板の隅に、古い貼り紙。『灯台の灯り、今年で五十年』"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "貼り紙の角は、赤い封蝋で留めてある。昔ながらのやり方だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "封蝋……。きちんとした手紙が好きな人なのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_child_bag",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "郵便鞄の手紙を月に透かすと、小さな花の形が浮かぶ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "押し花だ。丘に咲く、小さな青い花らしい"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "押し花を入れた手紙……。思い出を一緒に送りたいのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_child_clock",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "時計塔の壁に、子どもの字の落書きがある"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『九時に、ここで』。並んだ名前は二つ。片方だけ、色あせている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "毎晩ここで待ち合わせてたのかな、二人で"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_child_roof",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "屋根にのぼると、川がずっと遠くまで光っている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "川下の先に、遠い町の窓明かり。月は、あちらの上にも出ている"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "同じ月が、二つの町を照らす。遠い窓も、同じ舞台の上だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_child_bridge",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "橋の上で、橋番のおばあさんが月を見ている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『春に、川沿いの道を一家が下っていったよ。子どもが何度も振り返ってね』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……振り返りながら、行ったのね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_child_bakery",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "パン屋の主人が、窓から顔を出す"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『うちの娘が手紙を書いてね。朝起きたら、窓辺で見つけてほしいんだと』"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "焼きたての林檎パイの匂い……。いや、今は手紙だ。窓辺、覚えておこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_child_board",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "掲示板に、春の日付の貼り紙が残っている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『川下の町へ引っ越します。今度の家は、月のよく見える家です』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "月のよく見える家……宛名と同じだ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_painter_bag",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "郵便鞄の手紙。宛名のにじみに、ランタンを近づける"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "にじみの形は、小さな肉球。インクは、まだ乾ききっていない"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "肉球……？ 書いたあと、猫が触ったのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_painter_clock",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "時計塔の壁に、色あせた猫の絵が描かれている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "葉っぱの耳に、煙みたいな尻尾。ミトンにそっくりだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "壁に残る一匹の猫。すべての物語には、最初の一筆がある"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_painter_roof",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "屋根づたいに歩くと、屋根裏の丸い窓に出る"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "中には絵の具の瓶。丸い窓いっぱいに、月が映っている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "屋根づたいでしか来られない窓……。まるで猫の道ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_painter_bridge",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "橋を渡りながら、ミトンが小さく鼻歌を歌っている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "郵便猫ミトン／物語",
+          "face": "smile",
+          "text": "この歌ですか？ ……描いてもらったとき、ずっと聞こえていた歌です"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "描いてもらったとき……？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_painter_bakery",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "パン屋の看板にも、葉っぱの耳の猫が描かれている"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『屋根裏の絵描きさんが、描いてくれたんだよ』と主人が笑う"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "林檎パイの隣に、同じ猫。……林檎と猫、どちらが原点か悩ましいな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_painter_board",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "掲示板に、色あせた貼り紙がある"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『鈴をつけた葉っぱ耳の猫を見かけたら、元気か教えてください』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "鈴の猫って、ミトンのことだよな。描いた人が、探してる？"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
+  "flow": {
+    "prepare": [
+      "route",
+      "wrap"
+    ],
+    "serve": [
+      "handover"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "route": 1,
+    "wrap": 1,
+    "handover": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "together",
+  "rules": {
+    "exploreLimit": 6,
+    "pressureMax": 3,
+    "initialPressure": 0,
+    "inspectionPressure": 0,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 1
+    },
+    "detourThreshold": 1,
+    "hypothesisBonus": 0
+  },
+  "presentation": {
+    "theme": "leaf",
+    "number": "03",
+    "genre": "絵本ファンタジー",
+    "tagline": "宛名のにじんだ手紙を、月の下で届ける。",
+    "backdrop": "radial-gradient(circle at 78% 20%, #f6e3a1 0 5%, #e8c56a55 8%, transparent 24%), linear-gradient(170deg, #1d2d55, #101a38 58%, #080d20)",
+    "sceneAlt": "大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。",
+    "location": "時計坂の町 / 月夜の大通り",
+    "atmosphere": "大きな月。石畳に、猫の足音がひとつ。",
+    "coverHeading": "宛名のにじんだ手紙が、一通。",
+    "coverRule": "町を調べ、宛先を見立て、手紙を届ける。",
+    "titleLines": [
+      "葉っぱ耳の",
+      "郵便猫"
+    ],
+    "fields": {
+      "route": "届ける道",
+      "wrap": "手紙の包み方",
+      "handover": "渡し方",
+      "tactic": "手紙を追う手"
+    },
+    "prepareTitle": "どの道で、どう包んで届ける？",
+    "prepareDescription": "道を一つ、包み方を一つ。手がかりを組み合わせて決めよう。",
+    "serveTitle": "月がいちばん高いうちに。",
+    "serveDescription": "手紙の渡し方を、一つ選ぶ。",
+    "hypothesisTitle": "この手紙は、だれへの手紙？",
+    "arrivalRole": "郵便猫ミトン／物語",
+    "exploreIdle": "……気になる場所を、調べてください。相談も、何度でも",
+    "listenIdle": "……まずは、ミトンの話を聞きましょう。サイコロは二つです",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "……渡し方を決めたら、手紙を届けましょう",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 話を聞く",
+        "title": "月夜の郵便猫",
+        "description": "宛名のにじんだ手紙を持って、猫がやってきた。まずは話を聞こう。",
+        "button": "ミトンの話を聞く"
+      },
+      "interview": {
+        "kicker": "02 / ミトンと話す",
+        "title": "ミトンに、何を聞く？",
+        "description": "聞ける質問は二つ。答えは、手紙の事情ごとに違う。",
+        "button": "話を聞き終えて、町を調べる"
+      },
+      "explore": {
+        "kicker": "03 / 町を調べる",
+        "title": "宛先の手がかりを探す",
+        "description": "気になる場所を調査。3つ以上の手がかりから、宛先を見立てよう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 夜の突風",
+        "title": "手紙が、飛んだ",
+        "description": "坂の上から吹きおろす風。手紙を取り戻そう。",
+        "button": "この手で取り戻す"
+      },
+      "prepare": {
+        "kicker": "05 / 配達の支度",
+        "title": "届ける道と、包み方",
+        "description": "道も包みも、手紙を待つ人のために。",
+        "button": "配達の支度をする"
+      },
+      "serve": {
+        "kicker": "06 / 手紙を届ける",
+        "title": "最後に、どう渡す？",
+        "description": "手渡しも、そっと置くことも、歌を添えることもできる。",
+        "button": "手紙を届ける"
+      },
+      "ending": {
+        "kicker": "卓を囲んで",
+        "title": "おつかれさまでした",
+        "description": "みんなで届けた一通の手紙。宛先には、何が届いただろう。"
+      }
+    },
+    "help": "ミトンに二つ質問し、町を調べて三つ以上の手がかりから宛先を見立てます。途中で突風が吹き、手紙を取り戻す手を選びます。最後に届ける道・包み方・渡し方を選びます。探索・相談・メモの再読に回数制限はありません。",
+    "exitText": "この卓はここで終わります。もう一度遊ぶと、別の宛先が待っているかもしれません。",
+    "endingKicker": "この夜の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言しよう",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "手紙が風に飛ばされた。どうする？",
+    "interviewIdle": "……ミトンに聞けるのは、二つまでです",
+    "twistIdle": "……手紙が飛んでいきます。手を選んで、誰が動くか決めてください",
+    "planTitle": "みんなの配達プラン"
+  },
+  "debrief": {
+    "smooth": "trpg_leaf_mail_debrief_smooth",
+    "with-detour": "trpg_leaf_mail_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "tsumugi",
+        "candidates": [
+          "tsumugi"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori"
+        ],
+        "required": false
+      },
+      {
+        "actor": "adam",
+        "candidates": [
+          "adam"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この物語で演じる夜番を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "lantern",
+        "label": "ランタンの夜番",
+        "detail": "短い黒髪に、紺の外套とランタン",
+        "color": "#2c3a5a",
+        "accent": "#e8c56a",
+        "portrait": null
+      },
+      {
+        "id": "scarf",
+        "label": "マフラーの夜番",
+        "detail": "長いマフラーと、星柄の手袋",
+        "color": "#5a3c4a",
+        "accent": "#d9a7b8",
+        "portrait": null
+      },
+      {
+        "id": "cap",
+        "label": "帽子の夜番",
+        "detail": "つばの広い帽子に、月の徽章",
+        "color": "#3e4b3a",
+        "accent": "#c9d6a3",
+        "portrait": null
+      },
+      {
+        "id": "glasses",
+        "label": "眼鏡の夜番",
+        "detail": "丸眼鏡と、地図の入った肩かけ鞄",
+        "color": "#4a4038",
+        "accent": "#e3c9a0",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "watch",
+        "name": "ピム",
+        "title": "新米の夜番",
+        "trait": "町の道なら覚えた。夜の見回りは、まだ少しどきどきする",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "recommended": true
+      },
+      {
+        "id": "sweep",
+        "name": "ゴード",
+        "title": "元・煙突掃除",
+        "trait": "屋根の上は庭のようなもの。手紙の扱いは覚えたて",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        }
+      },
+      {
+        "id": "books",
+        "name": "テト",
+        "title": "本屋の見習い",
+        "trait": "町の地図と昔話に詳しい。走るのは苦手",
+        "stats": {
+          "eye": 4,
+          "hand": 2,
+          "talk": 3,
+          "nerve": 2
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・支度するときに使う",
+      "talk": "話す・聞く力。人や猫と向き合うときに使う",
+      "nerve": "怖がらない力。高い所や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "hiyori": {
+      "hiyori": [
+        {
+          "id": "yura",
+          "name": "ユラ",
+          "title": "灯りともし",
+          "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
+          "likes": "屋台の夜鳴きラーメン",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_yura"
+        },
+        {
+          "id": "neri",
+          "name": "ネリ",
+          "title": "風見の見習い",
+          "trait": "風が吹くと倒れそう。……斧投げで鍛えた腕は、びくともしない",
+          "likes": "斧投げ。ゆるい顔の猫のお守り",
+          "stats": {
+            "eye": 3,
+            "hand": 3,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_neri"
+        }
+      ]
+    },
+    "adam": {
+      "adam": [
+        {
+          "id": "leon",
+          "name": "レオン",
+          "title": "鐘つき",
+          "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
+          "likes": "林檎の砂糖煮。甘さの原点",
+          "stats": {
+            "eye": 2,
+            "hand": 2,
+            "talk": 4,
+            "nerve": 3
+          },
+          "making": "trpg_leaf_mail_make_adam_adam_leon"
+        },
+        {
+          "id": "gran",
+          "name": "グラン",
+          "title": "旅の天文学者",
+          "trait": "月を測りに来た。宇宙の話は、必ず林檎から始まる",
+          "likes": "二つ並んだ林檎。宇宙の原点",
+          "stats": {
+            "eye": 4,
+            "hand": 2,
+            "talk": 3,
+            "nerve": 2
+          },
+          "making": "trpg_leaf_mail_make_adam_adam_gran"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_leaf_mail_session_zero_open",
+    "close": "trpg_leaf_mail_session_zero_close"
+  },
+  "interview": {
+    "title": "ミトンに、何を聞く？",
+    "prompt": "聞けるのは二つまで。宛先に近づく質問を選ぼう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "where",
+        "label": "どこで手紙を預かったか",
+        "description": "手紙を受け取った場所を聞く"
+      },
+      {
+        "id": "moon",
+        "label": "月のよく見える家とは",
+        "description": "宛名の家に心当たりを聞く"
+      },
+      {
+        "id": "smudge",
+        "label": "宛名がにじんだわけ",
+        "description": "にじんだときのことを聞く"
+      },
+      {
+        "id": "mitten",
+        "label": "ミトン自身のこと",
+        "description": "郵便猫の毎晩を聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_leaf_mail_twist_intro"
+  }
+}

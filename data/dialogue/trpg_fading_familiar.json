@@ -1,0 +1,3406 @@
+{
+  "id": "fading-familiar",
+  "version": 1,
+  "title": "試験前夜、消えかけの使い魔",
+  "subtitle": "星見ヶ丘魔法学校と、煙の使い魔",
+  "author": "汐見しお",
+  "collection": "船灯文庫・小さな卓の冒険 08",
+  "duration": "約10分",
+  "premise": "明日は実技試験。一年生の使い魔、煙でできた小さな女の子が、寝床から消えた。朝日が昇れば、もう会えないかもしれない。見回りの上級生たちは、夜明けまでに迎えに行けるだろうか。",
+  "fiction": {
+    "school": "星見ヶ丘魔法学校",
+    "place": "夜の寮と校舎",
+    "familiar": "モヤ（煙の女の子）",
+    "master": "メル",
+    "teacher": "トネリコ先生"
+  },
+  "cast": [
+    {
+      "id": "hiyori",
+      "part": "GM",
+      "role": "案内と、トネリコ先生",
+      "color": "#dab978"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／見回り当番の上級生",
+      "color": "#89bbc4",
+      "ability": "一夜漬けのひらめき",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "abilityType": "reroll",
+      "sheet": {
+        "name": "ノエル",
+        "title": "見回り当番の上級生",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "下級生の相談によく乗る。呪文は、まだ少し噛む"
+      }
+    },
+    {
+      "id": "samechan",
+      "part": "PLAYER",
+      "role": "{pc:samechan}／サメ召喚の三年生",
+      "color": "#73b8df",
+      "ability": "サメの宅配便",
+      "abilityText": "作戦を支度するとき、判定に一度だけ＋7",
+      "abilityType": "prepare",
+      "sheet": {
+        "name": "ヒレナ",
+        "title": "サメ召喚の三年生",
+        "stats": {
+          "eye": 2,
+          "hand": 4,
+          "talk": 1,
+          "nerve": 4
+        },
+        "trait": "どんな呪文を唱えても、サメが来る。陸ではちょっと困る",
+        "likes": "サメの出る映画。夜ふかしの上映会"
+      }
+    },
+    {
+      "id": "adam",
+      "part": "PLAYER",
+      "role": "{pc:adam}／林檎ひとすじの錬金術師",
+      "color": "#c9463a",
+      "ability": "原点の一言",
+      "abilityText": "モヤに呼びかけるとき、判定に一度だけ＋7",
+      "abilityType": "serve",
+      "sheet": {
+        "name": "マルス",
+        "title": "林檎ひとすじの錬金術師",
+        "stats": {
+          "eye": 2,
+          "hand": 4,
+          "talk": 3,
+          "nerve": 2
+        },
+        "trait": "何を錬成しても林檎になる。腕は学年一",
+        "likes": "ダブルアップル。宇宙の始まりの香り"
+      }
+    }
+  ],
+  "intro": "trpg_fading_familiar_intro",
+  "listen": "trpg_fading_familiar_listen",
+  "checks": {
+    "listen": {
+      "title": "先生の話を聞く",
+      "hint": "宣言した上級生の能力で判定。結果にかかわらず、先生への質問へ進みます。",
+      "success": "trpg_fading_familiar_listen_success",
+      "mixed": "trpg_fading_familiar_listen_mixed",
+      "trouble": "trpg_fading_familiar_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_talk",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "先生を落ち着かせて、話を聞く",
+          "detail": "{pc}が先生のランタンを持ち、ゆっくり話を聞く",
+          "declare": "trpg_fading_familiar_declare_listen_talk"
+        },
+        {
+          "id": "listen_shark",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "eye",
+          "label": "サメに、夜空を見回らせる",
+          "detail": "{pc:samechan}が呼んだサメが、窓の外の空を泳いで煙を探す",
+          "declare": "trpg_fading_familiar_declare_listen_shark"
+        },
+        {
+          "id": "listen_apple",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "林檎を配って、場を和ませる",
+          "detail": "{pc:adam}が錬成したての林檎を配り、気楽な話から入る",
+          "declare": "trpg_fading_familiar_declare_listen_apple"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "呪文と道具を支度する",
+      "hint": "宣言した上級生の能力で判定。選んだ呪文と道具を、夜明けまでにそろえます。",
+      "success": "trpg_fading_familiar_prepare_success",
+      "mixed": "trpg_fading_familiar_prepare_mixed",
+      "trouble": "trpg_fading_familiar_prepare_trouble",
+      "helper": "samechan",
+      "approaches": [
+        {
+          "id": "prepare_book",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "教科書どおりに、呪文を組む",
+          "detail": "{pc}が教科書を開き、呪文を一行ずつ確かめる",
+          "declare": "trpg_fading_familiar_declare_prepare_book"
+        },
+        {
+          "id": "prepare_shark",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "hand",
+          "label": "サメに、道具を運ばせる",
+          "detail": "{pc:samechan}が小さなサメを呼び、道具を背中に乗せて運ぶ",
+          "declare": "trpg_fading_familiar_declare_prepare_shark"
+        },
+        {
+          "id": "prepare_borrow",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "先生に頼んで、道具をそろえる",
+          "detail": "{pc:adam}が寮監室へ。名言を添えて、道具を借りてくる",
+          "declare": "trpg_fading_familiar_declare_prepare_borrow"
+        }
+      ]
+    },
+    "serve": {
+      "title": "モヤに、呼びかける",
+      "hint": "宣言した上級生の能力で判定。どの出目でも結末へ進みます。",
+      "success": "trpg_fading_familiar_serve_success",
+      "mixed": "trpg_fading_familiar_serve_mixed",
+      "trouble": "trpg_fading_familiar_serve_trouble",
+      "helper": "adam",
+      "approaches": [
+        {
+          "id": "serve_word",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "モヤの前に出て、呼びかける",
+          "detail": "{pc}が手すりのそばへ。選んだ言葉を、自分の声で",
+          "declare": "trpg_fading_familiar_declare_serve_word"
+        },
+        {
+          "id": "serve_fly",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "nerve",
+          "label": "サメに乗って、そばまで飛ぶ",
+          "detail": "{pc:samechan}が空飛ぶサメに乗り、手すりの外のモヤへ近づく",
+          "declare": "trpg_fading_familiar_declare_serve_fly"
+        },
+        {
+          "id": "serve_apple",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "林檎を差し出して、語りかける",
+          "detail": "{pc:adam}が林檎を一つ差し出し、宇宙の始まりから語る",
+          "declare": "trpg_fading_familiar_declare_serve_apple"
+        }
+      ]
+    },
+    "twist": {
+      "title": "本の嵐を切り抜ける",
+      "hint": "宣言した上級生の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_fading_familiar_twist_success",
+      "mixed": "trpg_fading_familiar_twist_mixed",
+      "trouble": "trpg_fading_familiar_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_call",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "本たちに、落ち着くよう呼びかける",
+          "detail": "{pc}が両手を広げ、飛び回る本に声をかける",
+          "declare": "trpg_fading_familiar_declare_twist_call"
+        },
+        {
+          "id": "twist_shark",
+          "actor": "samechan",
+          "sheet": "samechan",
+          "stat": "nerve",
+          "label": "サメで、本の群れを追い込む",
+          "detail": "{pc:samechan}が呼んだサメが、牧羊犬のように本を棚へ追う",
+          "declare": "trpg_fading_familiar_declare_twist_shark"
+        },
+        {
+          "id": "twist_apple",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "林檎を錬成して、本の気を引く",
+          "detail": "{pc:adam}が林檎を次々に錬成し、本の群れの前に転がす",
+          "declare": "trpg_fading_familiar_declare_twist_apple"
+        }
+      ]
+    }
+  },
+  "spots": [
+    {
+      "id": "bed",
+      "label": "空っぽの寝床",
+      "short": "寝床",
+      "x": 15,
+      "y": 30
+    },
+    {
+      "id": "library",
+      "label": "図書館の窓",
+      "short": "図書館",
+      "x": 80,
+      "y": 24
+    },
+    {
+      "id": "garden",
+      "label": "薬草園",
+      "short": "薬草園",
+      "x": 86,
+      "y": 70
+    },
+    {
+      "id": "stairs",
+      "label": "天文台の階段",
+      "short": "階段",
+      "x": 52,
+      "y": 20
+    },
+    {
+      "id": "board",
+      "label": "掲示板の試験表",
+      "short": "掲示板",
+      "x": 20,
+      "y": 72
+    },
+    {
+      "id": "trail",
+      "label": "廊下に残る煙の跡",
+      "short": "煙の跡",
+      "x": 52,
+      "y": 82
+    }
+  ],
+  "consult": {
+    "samechan": "trpg_fading_familiar_consult_samechan",
+    "adam": "trpg_fading_familiar_consult_adam"
+  },
+  "hypotheses": [
+    {
+      "id": "fear",
+      "label": "主人が落ちるのが、怖いのかも",
+      "description": "落ちたら自分が返されると思い、隠れている。",
+      "discussion": "trpg_fading_familiar_discuss_fear"
+    },
+    {
+      "id": "wand",
+      "label": "なくした杖を、探しに出たのかも",
+      "description": "消える前の最後の贈り物に、主人の杖を探している。",
+      "discussion": "trpg_fading_familiar_discuss_wand"
+    },
+    {
+      "id": "name",
+      "label": "名前が、ないのかも",
+      "description": "一度も名前を呼ばれず、形を保てなくなっている。",
+      "discussion": "trpg_fading_familiar_discuss_name"
+    }
+  ],
+  "preparation": "trpg_fading_familiar_preparation",
+  "serving": "trpg_fading_familiar_serving",
+  "options": {
+    "spell": [
+      {
+        "id": "light",
+        "label": "灯りの呪文",
+        "description": "やわらかい光で、暗い場所を照らす。",
+        "response": "trpg_fading_familiar_choice_spell_light"
+      },
+      {
+        "id": "quiet",
+        "label": "静けさの呪文",
+        "description": "まわりの音を消して、そっと近づく。",
+        "response": "trpg_fading_familiar_choice_spell_quiet"
+      },
+      {
+        "id": "summon",
+        "label": "呼び寄せの呪文",
+        "description": "呼んだ相手を、声のする方へ引き寄せる。",
+        "response": "trpg_fading_familiar_choice_spell_summon"
+      }
+    ],
+    "item": [
+      {
+        "id": "candy",
+        "label": "ふわふわ綿菓子",
+        "description": "購買の夜食。煙みたいに、ふわふわ甘い。",
+        "response": "trpg_fading_familiar_choice_item_candy"
+      },
+      {
+        "id": "compass",
+        "label": "探し物の羅針盤",
+        "description": "なくした物のある方を、針が指す。",
+        "response": "trpg_fading_familiar_choice_item_compass"
+      },
+      {
+        "id": "letter",
+        "label": "主人の手紙",
+        "description": "メルが使い魔に書いた、短い手紙。",
+        "response": "trpg_fading_familiar_choice_item_letter"
+      }
+    ],
+    "call": [
+      {
+        "id": "name",
+        "label": "名前を呼ぶ",
+        "description": "消えかけの女の子に、名前でまっすぐ呼びかける。",
+        "response": "trpg_fading_familiar_choice_call_name"
+      },
+      {
+        "id": "practice",
+        "label": "一緒に試験の練習をする",
+        "description": "明日の課題を、ここで一緒にやってみる。",
+        "response": "trpg_fading_familiar_choice_call_practice"
+      },
+      {
+        "id": "wand",
+        "label": "杖を見せる",
+        "description": "主人の杖を掲げて、モヤに見せる。",
+        "response": "trpg_fading_familiar_choice_call_wand"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "shelve",
+        "label": "本を棚へ帰す呪文",
+        "description": "一冊ずつ、元の棚の番号を唱えて帰す。",
+        "response": "trpg_fading_familiar_choice_tactic_shelve"
+      },
+      {
+        "id": "dash",
+        "label": "本の嵐を走り抜ける",
+        "description": "頭を低くして、ページの嵐を一気に進む。",
+        "response": "trpg_fading_familiar_choice_tactic_dash"
+      },
+      {
+        "id": "ghost",
+        "label": "司書の幽霊に頼む",
+        "description": "夜の図書館を守る、物静かな司書にお願いする。",
+        "response": "trpg_fading_familiar_choice_tactic_ghost"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "fear",
+      "ending": "together",
+      "arrival": "煙の子は、朝日に溶けてしまうのです。試験の噂を聞いてから、ずっと怯えていて",
+      "likes": {
+        "spell": [
+          "quiet",
+          "light"
+        ],
+        "item": [
+          "letter"
+        ],
+        "call": [
+          "practice"
+        ]
+      },
+      "evidence": {
+        "bed": {
+          "title": "毛布の下の手紙",
+          "text": "毛布が丸まり、誰かが膝を抱えて隠れていた跡。下には主人の手紙が『明日は一緒に』で止まっている。",
+          "lines": "trpg_fading_familiar_fear_bed"
+        },
+        "library": {
+          "title": "抜き出された本",
+          "text": "『使い魔の契約の解き方』だけが床に開いたまま。ページに、小さな指の跡がある。",
+          "lines": "trpg_fading_familiar_fear_library"
+        },
+        "garden": {
+          "title": "眠り草のそば",
+          "text": "心を静める眠り草の鉢のそばに、小さな女の子が座っていたような跡がある。",
+          "lines": "trpg_fading_familiar_fear_garden"
+        },
+        "stairs": {
+          "title": "一番遠い場所",
+          "text": "煙の跡は、寮から一番遠い天文台へ。誰にも見つからない場所を選んだようだ。",
+          "lines": "trpg_fading_familiar_fear_stairs"
+        },
+        "board": {
+          "title": "隅の落書き",
+          "text": "試験表の隅に古い落書き。『落ちたら、使い魔は返される』。そこだけ煙でにじんでいる。",
+          "lines": "trpg_fading_familiar_fear_board"
+        },
+        "trail": {
+          "title": "震えた足跡",
+          "text": "小さな足跡は、ところどころ震えたように途切れている。怯えていたのかもしれない。",
+          "lines": "trpg_fading_familiar_fear_trail"
+        }
+      },
+      "answers": {
+        "when": {
+          "title": "泣いた夜に",
+          "text": "メルが『明日落ちたらどうしよう』と泣いた夜、モヤは寝床から消えた。",
+          "lines": "trpg_fading_familiar_ask_fear_when"
+        },
+        "master": {
+          "title": "心配性の一年生",
+          "text": "メルは真面目で心配性。練習では、いつも最後に失敗する。",
+          "lines": "trpg_fading_familiar_ask_fear_master"
+        },
+        "exam": {
+          "title": "ただの噂",
+          "text": "試験は主人と使い魔が二人で灯りをともす課題。『落ちたら使い魔は返される』は、ただの噂。",
+          "lines": "trpg_fading_familiar_ask_fear_exam"
+        },
+        "smoke": {
+          "title": "心を映す煙",
+          "text": "煙の使い魔は主人の心を映す。主人が不安だと、使い魔も怖くなる。",
+          "lines": "trpg_fading_familiar_ask_fear_smoke"
+        }
+      }
+    },
+    {
+      "id": "wand",
+      "ending": "wand",
+      "arrival": "煙の子は、朝日に溶けてしまうのです。夕方メルが杖をなくしてから、落ち着かなくて",
+      "likes": {
+        "spell": [
+          "light"
+        ],
+        "item": [
+          "compass"
+        ],
+        "call": [
+          "wand"
+        ]
+      },
+      "evidence": {
+        "bed": {
+          "title": "煙の指の字",
+          "text": "机の杖立てが空っぽ。そばに、煙の指で書いた薄い字で『さいごに、みつけてあげる』。",
+          "lines": "trpg_fading_familiar_wand_bed"
+        },
+        "library": {
+          "title": "棚の隙間を覗いて",
+          "text": "小さな手で押し開けた窓から入り、暗い棚の隙間を一つずつ覗いて回ったらしい。",
+          "lines": "trpg_fading_familiar_wand_library"
+        },
+        "garden": {
+          "title": "探られた土",
+          "text": "ベンチの下の土が、細い棒の形に探られている。ベンチにはメルの手袋が置き忘れてある。",
+          "lines": "trpg_fading_familiar_wand_garden"
+        },
+        "stairs": {
+          "title": "上から探す",
+          "text": "階段の窓ごとに、煙が立ち止まった跡。天文台から学校じゅうを見渡すつもりらしい。",
+          "lines": "trpg_fading_familiar_wand_stairs"
+        },
+        "board": {
+          "title": "落とし物の貼り紙",
+          "text": "掲示板の隅に『落とし物、杖一本。寮監室で預かり中』の貼り紙がある。",
+          "lines": "trpg_fading_familiar_wand_board"
+        },
+        "trail": {
+          "title": "行ったり来たり",
+          "text": "小さな足跡は廊下を行ったり来たり。何かを探して歩き回ったようだ。",
+          "lines": "trpg_fading_familiar_wand_trail"
+        }
+      },
+      "answers": {
+        "when": {
+          "title": "杖をなくした夕方",
+          "text": "夕方、メルが杖をなくして騒いだ。その直後に、モヤもいなくなった。",
+          "lines": "trpg_fading_familiar_ask_wand_when"
+        },
+        "master": {
+          "title": "置き忘れの名人",
+          "text": "メルはおっとりしていて、よく物を置き忘れる。昨日は薬草園で居眠りしていた。",
+          "lines": "trpg_fading_familiar_ask_wand_master"
+        },
+        "exam": {
+          "title": "杖がないと受けられない",
+          "text": "実技試験は杖で呪文を唱える。なくした杖は、夜になって落とし物として届いた。",
+          "lines": "trpg_fading_familiar_ask_wand_exam"
+        },
+        "smoke": {
+          "title": "最後に残すもの",
+          "text": "煙の使い魔は探し物が得意。薄くなった子ほど、主人に何か残したがる。",
+          "lines": "trpg_fading_familiar_ask_wand_smoke"
+        }
+      }
+    },
+    {
+      "id": "name",
+      "ending": "name",
+      "arrival": "煙の子は、朝日に溶けてしまうのです。そういえば、あの子が呼ばれる声を聞いたことがなくて",
+      "likes": {
+        "spell": [
+          "summon"
+        ],
+        "item": [
+          "candy",
+          "letter"
+        ],
+        "call": [
+          "name"
+        ]
+      },
+      "evidence": {
+        "bed": {
+          "title": "空白の名札",
+          "text": "寝床の名札は空白。書いては消した跡が、いくつも残っている。",
+          "lines": "trpg_fading_familiar_name_bed"
+        },
+        "library": {
+          "title": "名前の本",
+          "text": "窓辺の机に『使い魔の名前 千選』が開いたまま。付箋は多いが、どの名前にも丸がない。",
+          "lines": "trpg_fading_familiar_name_library"
+        },
+        "garden": {
+          "title": "綿菓子みたいな子",
+          "text": "薬草園の当番日誌に、主人の字で『綿菓子みたいな女の子。名前、どうしよう』とある。",
+          "lines": "trpg_fading_familiar_name_garden"
+        },
+        "stairs": {
+          "title": "空へほどける",
+          "text": "上へ行くほど、足跡が薄く広がる。あの子の形が、ほどけかけているのかもしれない。",
+          "lines": "trpg_fading_familiar_name_stairs"
+        },
+        "board": {
+          "title": "未記入の欄",
+          "text": "試験表の、使い魔の名前の欄だけが空いている。『未記入』の判子つき。",
+          "lines": "trpg_fading_familiar_name_board"
+        },
+        "trail": {
+          "title": "呼ばれるのを待つ",
+          "text": "小さな足跡は、人の部屋の前で止まっては離れる。呼ばれるのを待つように。",
+          "lines": "trpg_fading_familiar_name_trail"
+        }
+      },
+      "answers": {
+        "when": {
+          "title": "誰も気づかなかった",
+          "text": "モヤがいつ消えたのか、誰も気づかなかった。もともと薄い子だった。",
+          "lines": "trpg_fading_familiar_ask_name_when"
+        },
+        "master": {
+          "title": "決められない名前",
+          "text": "メルは人見知り。使い魔の名前を考えすぎて、まだ決められずにいる。",
+          "lines": "trpg_fading_familiar_ask_name_master"
+        },
+        "exam": {
+          "title": "名前で呼び寄せる",
+          "text": "試験では使い魔を名前で呼び寄せる。『モヤ』は、みんなが呼ぶあだ名だった。",
+          "lines": "trpg_fading_familiar_ask_name_exam"
+        },
+        "smoke": {
+          "title": "名前で決まる形",
+          "text": "煙の使い魔は、名前を呼ばれて形が決まる。呼ばれないと、ほどけてしまう。",
+          "lines": "trpg_fading_familiar_ask_name_smoke"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "together": {
+      "title": "ふたりで受ける試験",
+      "line": "返されるのが怖かったのは、ひとりだと思っていたから。朝、ふたりは並んで試験へ向かった。",
+      "dialogue": "trpg_fading_familiar_ending_together"
+    },
+    "wand": {
+      "title": "見つかった杖",
+      "line": "最後の贈り物は、もう見つかっていた。モヤは杖の先の小さな灯になって、主人のそばに残った。",
+      "dialogue": "trpg_fading_familiar_ending_wand"
+    },
+    "name": {
+      "title": "呼ばれた名前",
+      "line": "初めて主人に名前を呼ばれた女の子は、朝が来ても消えなかった。",
+      "dialogue": "trpg_fading_familiar_ending_name"
+    },
+    "study": {
+      "title": "夜の勉強会",
+      "line": "思い通りの迎え方ではなかった。昼は見えなくなったモヤは、『夜になったら、また』と約束を残した。",
+      "dialogue": "trpg_fading_familiar_ending_study"
+    }
+  },
+  "epilogue": "trpg_fading_familiar_epilogue",
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_fading_familiar_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "物語の前に、キャラ作りの時間……。役は、もう決まったかしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "いい卓になりそう……。じゃあ、夜の校舎へ行きましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_make_samechan_samechan_hirena",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "わしの役はヒレナじゃ。召喚学科の三年生じゃぞ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "得意な呪文は召喚。何を呼んでも、サメが来るのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "つまり、余が来るということである"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "全部サメ！？ ……こほん。陸の学校で、大丈夫かしら"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_make_samechan_samechan_fukami",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "わしはフカミ。学校の空を泳ぐサメの、飼育係じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "好きなものは大きいサメ。とにかく、大きいほどよいのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余は、いずれ校舎より大きくなる予定である"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "予定！？ ……あ、ええと。屋根は壊さないでね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_make_adam_adam_mars",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はマルス。錬金術科で、学年一の腕前だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "ただし、何を錬成しても林檎になる。宇宙の始まりが林檎だからだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "それ、困らない……？ 試験の答案まで林檎になるわよ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "林檎で満点を取る。それが俺の錬金術だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_make_adam_adam_nox",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺はノクス。季節外れにやって来た、仮面の転校生だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "正体は誰にも明かさない。現れるたび、林檎の香りがするだけだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……それ、正体ほとんど言ってるわね"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "謎は、少し透けているくらいが美しい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "",
+          "face": "normal",
+          "text": "今夜の語り手は、私……。朝が来たら、もう会えないかもしれない女の子のお話よ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "",
+          "face": "normal",
+          "text": "『消えかけの使い魔』……魔法学校の話かな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "",
+          "face": "smile",
+          "text": "舞台は架空の魔法学校。私はGM、みんなは夜の見回りをする上級生ね",
+          "castIntro": true,
+          "smallTableText": "私はGM、はじめくんは上級生。空いた役は、私が兼ねるわね"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "星見ヶ丘魔法学校。明日は、年に一度の実技試験の日"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "試験前夜の寮は、いつもより早く灯りが消えた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は今夜の見回り当番。ランタンを手に、静かな廊下を歩いている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:samechan}は渡り廊下で、呼んでもいない小さなサメをなだめている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:adam}は寮の台所で夜食を錬成中。できあがるのは、もちろん林檎ね"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "そのとき、廊下の奥から、ランタンの灯りが揺れながら近づいてきた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "ああ、見回りの子たち……。困ったことになりました"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "寮監のトネリコ先生だ。いつもは眠そうな目が、今夜は大きく開いている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "",
+          "face": "normal",
+          "text": "先生があんなに慌ててるなんて……。まず、話を聞こう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_listen",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "先生はランタンを胸に抱え、乱れた白髪をなでつけた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "夜の見回りに事件はつきものじゃ。お主、灯りを頼むぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}",
+          "face": "normal",
+          "text": "先生、落ち着いてください。何があったんですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "sad",
+          "text": "一年生のメルの使い魔が、寝床から消えてしまったのです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "煙でできた、小さな女の子の使い魔、モヤ。いつも黙って、にこにこしていた子だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_listen_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "先生の肩から、力が抜けた。ランタンの灯りも、落ち着いて揺れる"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "よし、話はちゃんと聞けそうじゃな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_listen_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓の外を、白い煙の女の子がふわりと横切った。先生の話が、一度途切れる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "追いかけると、その子は振り返って小さく笑い、夜へほどけてしまった"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "儚い登場だ。だが、まだ舞台にいる証拠だな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_listen_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "{pc}たちの声で、廊下の一年生たちが起きてきてしまった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "あらあら。みんな、お部屋に戻りましょうね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "起こしちゃった。試験前夜なのに……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "本たちは一冊ずつ棚へ戻り、最後の一冊がぱたんと閉じた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "よし、煙の跡も消えてない。急ごう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "本は棚へ戻ったけれど、煙の跡が半分、ページの風に消えてしまった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "残った跡は細い。それでも、天文台の方へ続いている"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "細くても、跡は跡じゃ。追うぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "本が一冊、{pc}の頭にぽすんと乗った。『よく眠れる呪文集』だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "みんなで一度あくびをしてから、慌てて目を覚ました"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "試験前夜に、最も危険な本だったな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_prepare_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "呪文の言葉がそろい、道具も手の中に収まった。夜明けに間に合う"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "完璧じゃ！ わしのサメも胸を張っておる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_prepare_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "呪文を一か所、唱えまちがえた。言い直すあいだに、空の色が少し変わる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "急ごう。でも、慌てずに"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_prepare_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "呪文が暴発して、廊下じゅうに小さなサメがぽんぽん現れた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "わ、わしのせいではないぞ！？ ……たぶん"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "サメたちは道具を一つずつ運んでくれた。結果、準備はできた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_serve_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "声が届いた。透けかけた女の子が、ほんの少し、こちらを向く"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "届いたな。幕は、まだ下りていない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_serve_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "強い風に、輪郭が一度ほどけかける。けれど、小さな手が手すりを握り直した"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "まだ、いる。もう一度、ゆっくり"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_serve_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "{pc}がつまずいて、屋上のバケツを蹴飛ばした。かん、と大きな音"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "女の子はびくっと肩をすくめて、それから、くすっと笑った"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ほれ、笑っておる。ちゃんと聞こえておるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_listen_talk",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}は先生のランタンを持ちます。『ゆっくりで大丈夫です』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定ね。目標は30……。サイコロ二つ、どうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_listen_shark",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc:samechan}はサメを呼ぶのじゃ。空から煙を探させるぞ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "空飛ぶサメ！？ ……こほん。観察で判定よ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_listen_apple",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:adam}は林檎を配る。不安な夜には、原点の甘さが要る"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定ね。林檎、私ももらっておくわ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_twist_call",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}が前に出ます。『みんな、落ち着いて！ 棚に帰ろう！』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定ね。本に通じるかしら。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_twist_shark",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc:samechan}はサメを呼ぶ！ 本の群れを棚へ追い込むのじゃ！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "えっ、サメで追い込むの！？ ……こほん。度胸で判定よ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_twist_apple",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}は林檎を錬成する。本も、原点の香りには逆らえない"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定ね。本って、林檎が好きなのかしら。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_prepare_book",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は教科書どおりに、呪文を組みます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定ね。噛まないように……。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_prepare_shark",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:samechan}は小さいサメを呼ぶ。道具を背中に乗せて運ぶのじゃ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定。かわいい宅配便ね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_prepare_borrow",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:adam}は寮監室へ。『先生、林檎と交換で道具を』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定ね。先生、林檎はもう三つ目よ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_serve_word",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は手すりのそばへ行きます。そっと、呼びかけます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "話術で判定ね。最後の一言、大事にね……。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_serve_fly",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc:samechan}はサメに乗る。手すりの外まで、迎えに行くのじゃ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "屋上の外に！？ ……こほん。度胸で判定よ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_declare_serve_apple",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}は林檎を差し出す。『宇宙は、一つの林檎から始まった』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定ね。壮大な前置きだわ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_consult_samechan",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "わしの見立てじゃ。煙の跡の、残り方を見るのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "逃げたのか、探しておるのか、ほどけておるのか。跡が教えてくれる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "跡の形で、モヤの気持ちが分かるのか"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "サメも跡で語る。泳いだ跡であるがな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_consult_adam",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "使い魔は、主人を映す鏡だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "モヤを探すなら、まずメルを知ろう。寝床と試験表に、主人の影がある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "主人のことが分かれば、モヤの気持ちも見えてくる、か"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "そう。林檎を知るには、まず木を見るものだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_discuss_fear",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "返されるのが怖くて隠れた、か。小さい子には、重すぎる噂じゃ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "なら、迎えるときは静かに。驚かせないことだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……優しい読みね。じゃあ、その線で行ってみましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_discuss_wand",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "最後の贈り物に、杖を探しに出たのか。健気な子じゃ……！"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "探し物の旅か。ならば、灯りと道しるべが要る"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "最後になんて、させないわ……。見つかったって、伝えないとね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_discuss_name",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "名前がない……？ それは、寂しいのう"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "名は、存在に輪郭を与える。呼ばれてこそ、役者は舞台に立てる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "sad",
+          "text": "……呼ばれないまま、朝になったら。ううん、そうはさせないわ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "煙の跡を追って図書館の前を通ったとき、扉がばたんと開いた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "本が鳥のように羽ばたいて、廊下へ飛び出してくる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "試験前夜で、本たちも落ち着かないのね……。煙の跡が、ページの風に消えそう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "ふはは、本の群れか。サメの群れには及ばないのである"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "このままだと、モヤの跡を見失う……！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "さあ、上級生たち。どうする？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_preparation",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "さあ、見立てを作戦にしましょう……。呪文を一つ、道具を一つ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "呪文も道具も三つずつ。どれを選んでも、わしのサメが運ぶぞ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "迷ったら、集めた手がかりを読み返そう。答えは、そこにある"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_serving",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "天文台の屋上。東の空が、うっすらと白みはじめた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "手すりに、白い煙の女の子が腰かけている。朝の光に、輪郭が透けていく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "モヤ／物語",
+          "face": "smile",
+          "text": "……見つかっちゃった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "階段から、息を切らした足音。先生に連れられて、メルが上がってきた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "……間に合った。最後に、なんて呼びかけよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_spell_light",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "灯りの呪文じゃな。暗い夜は、まず足元を照らすのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_spell_quiet",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "静けさの呪文か。驚かせずに、そっと近づけるのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_spell_summon",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "呼び寄せの呪文。呼ぶ声が届けば、の話じゃがな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_item_candy",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ふわふわ綿菓子。煙の親戚だな。甘さは林檎の次に宇宙的だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_item_compass",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "探し物の羅針盤。迷う者には、道しるべが要る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_item_letter",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "主人の手紙か。言葉は、ときに呪文より強い"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_call_name",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "名前を呼ぼう。ちゃんと、届くように"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_call_practice",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一緒に練習しよう。明日の試験は、ひとりじゃないって"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_call_wand",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "杖を見せよう。もう探さなくていいって、伝えたい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_tactic_shelve",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは本の背表紙を読み、棚の番号を一冊ずつ唱えていく"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "本にも帰る家がある。わしらと同じじゃな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_tactic_dash",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは頭を低くして、ページの嵐の中へ飛び込んだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "嵐を駆け抜ける主役たち。見せ場だな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_choice_tactic_ghost",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "棚の奥から、眼鏡をかけた司書の幽霊が、すうっと現れた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "司書の幽霊／物語",
+          "face": "normal",
+          "text": "……図書館では、お静かに。本たちも、ね"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ゆ、幽霊なぞ怖くないのじゃ。サメの方が強いのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ending_together",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは手すりのそばで、明日の課題をやってみせる。小さな灯りを、一つ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "メル／物語",
+          "face": "normal",
+          "text": "モヤ、返したりしないよ。落ちても、ずっと一緒。だから明日は一緒に受けよう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "モヤ／物語",
+          "face": "sad",
+          "text": "……いっしょに、いて、いいの？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "女の子はメルの手を握った。二人でともした灯りは、朝日の中でも消えなかった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "怖かったのは、ひとりぼっちになると思っておったからじゃな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "明日の試験、二人なら大丈夫そうだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ending_wand",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}が杖を掲げる。寮監室で預かっていた、メルの杖だ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "モヤ／物語",
+          "face": "sad",
+          "text": "……もう、見つかってたんだ。最後に、渡したかったのにな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "メル／物語",
+          "face": "sad",
+          "text": "最後なんて言わないで。探してくれた気持ち、ちゃんと受け取ったよ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "朝日が昇る。女の子はすうっと縮んで、杖の先に小さな灯としてともった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "モヤ／物語",
+          "face": "smile",
+          "text": "じゃあ、ここにいるね。杖を振るたび、そばにいる"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "贈り物は届いた。贈り主ごとな。いい幕引きだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "見つかったって、ちゃんと伝えられてよかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ending_name",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちが呼ぶと、女の子の輪郭が、ほんの少しだけ濃くなった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "けれど、形を決められるのは主人の声だけ。メルが、一歩前に出る"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "メル／物語",
+          "face": "sad",
+          "text": "ずっと、決められなかったの。でも、みんなが呼んでくれた名前がいい"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "メル／物語",
+          "face": "smile",
+          "text": "モヤ。あなたは、モヤ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "モヤ／物語",
+          "face": "smile",
+          "text": "……はい。モヤです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "朝日が屋上に届く。女の子は溶けずに、メルの隣で小さく笑っていた"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "名を呼ばれた瞬間、役者は舞台に立つ。いい名だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "あだ名が、本当の名前になったんだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ending_study",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "呼びかけは、思っていた形にはならなかった。それでも女の子は、そっと降りてくる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "メル／物語",
+          "face": "normal",
+          "text": "モヤ……！ よかった、戻ってきてくれて"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "朝まで、あと少し。みんなで談話室に集まり、夜の勉強会が始まった"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "わしが問題を出すぞ。サメの歯は、一生で何本生え替わるじゃろうな？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "それは試験に出ないのである"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "sad",
+          "text": "朝日が差すと、モヤの姿は見えなくなった。ノートの端に、小さな字が残る"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "『よるになったら、また』。夜の談話室では、今も小さな笑い声がする"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "昼は会えなくても、夜には会える。それなら、いいな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_debrief_smooth",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "静かな夜だったわね。モヤも、きっと安心して眠れたわ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "夜の校舎、本当に歩いてきた気がする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_debrief_with_detour",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "寄り道した分だけ、夜が長くなったわね……。そういう夜も、好きよ"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "本の嵐もサメの大群も、全部よい思い出じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_epilogue",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "",
+          "face": "normal",
+          "text": "これで、この夜はおしまい……。朝に透けていく女の子、どうだったかしら"
+        },
+        {
+          "speaker": "hajime",
+          "role": "",
+          "face": "normal",
+          "text": "消えちゃうかもって思うと、ずっとハラハラしてた"
+        },
+        {
+          "speaker": "samechan",
+          "role": "",
+          "face": "smile",
+          "text": "わしのサメたち、大活躍じゃったろう？"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余の出番が少なかったのである。続編を要求する"
+        },
+        {
+          "speaker": "adam",
+          "role": "",
+          "face": "smile",
+          "text": "林檎は試験に出なかった。だが、心には残ったはずだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "",
+          "face": "sad",
+          "text": "……もう会えないかもしれない子って、ちゃんと見ておきたくなるでしょう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "でも、ひよりさんの話、最後はちゃんとあったかかったな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "えっ、ほんと！？ よかったー！ ……あ、ううん。ふふ、光栄よ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_fear_bed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "メルの部屋。窓辺に、人形のベッドほどの小さな寝床がある"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "毛布が小さく丸まっている。誰かが、膝を抱えて隠れていたみたい"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "下には、主人の書きかけの手紙。『明日は一緒に』で止まっている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "主人のそばで眠る寝床か。空っぽだと、寂しいな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_fear_library",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "渡り廊下から、夜の図書館の窓が見える。棚の本が、ときどき寝返りを打つ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓越しに、床に開いたままの本が一冊見える"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『使い魔の契約の解き方』。ページに、小さな指の跡が残っている"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "本が寝返りを打つ図書館……。何か起きそうな舞台だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_fear_garden",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "温室の薬草園。夜に咲く花が、ほのかに光っている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "眠り草の鉢のそばに、小さな女の子が座っていたような跡がある"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "眠り草は、心を静める香りの草。静かな場所が、欲しかったのかしら"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "夜の花は、静かでよいのう。ここにも、煙の気配じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_fear_stairs",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "天文台へ続く、長い螺旋階段。てっぺんの窓は、まだ暗い"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "煙の跡は、寮から一番遠い天文台へ向かっている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "誰にも見つからない場所を、選んだみたい"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "高い場所には、物語の終わりが待っているものだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_fear_board",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "廊下の掲示板。明日の実技試験の順番が、貼り出されている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "試験表の隅に、誰かの古い落書きがある"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『落ちたら、使い魔は返される』。そこだけ、煙でにじんでいる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "試験前夜の掲示板って、見るだけで緊張するな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_fear_trail",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "床に、小さな素足の形の煙の跡が続いている。指でなぞると、すぐに消えた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "小さな足跡は、ところどころ震えたように途切れている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "何かに、怯えていたのかもしれない"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余の鼻によれば、この煙はまだ新しいのである"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_fear_when",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "sad",
+          "text": "メルが『明日、落ちたらどうしよう』と泣いた夜です"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "気づいたら、あの子の寝床が空っぽになっていました"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……泣いてるのを、そばで見てたのかもな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_fear_master",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "真面目で、心配性な子です。練習では、いつも最後に失敗してしまう"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "最後で崩れるのは、緊張のせいじゃな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_fear_exam",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "明日は、使い魔と二人で灯りをともす試験です"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "落ちたら使い魔を返される、なんて噂もあるけれど。そんな決まりはありませんよ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "噂は、ときに怪物より怖い。小さな役者なら、なおさらだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_fear_smoke",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "煙の使い魔は、主人の心を映すのです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "主人が不安だと、あの子も怖くなってしまう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "じゃあ、モヤも怖がってるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_wand_bed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "メルの部屋。窓辺に、人形のベッドほどの小さな寝床がある"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "寝床も、机の杖立ても、空っぽだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "そばに、煙の指で書いた薄い字。『さいごに、みつけてあげる』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "主人のそばで眠る寝床か。空っぽだと、寂しいな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_wand_library",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "渡り廊下から、夜の図書館の窓が見える。棚の本が、ときどき寝返りを打つ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓が少し開いている。小さな手で、押し開けたみたい"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "暗い棚の隙間を、一つずつ覗いて回った跡がある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "本が寝返りを打つ図書館……。何か起きそうな舞台だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_wand_garden",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "温室の薬草園。夜に咲く花が、ほのかに光っている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ベンチの下の土が、細い棒の形に探られている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ベンチには、メルの名前入りの手袋が置き忘れてある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "夜の花は、静かでよいのう。ここにも、煙の気配じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_wand_stairs",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "天文台へ続く、長い螺旋階段。てっぺんの窓は、まだ暗い"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "階段の窓ごとに、煙が立ち止まった跡がある"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "天文台なら、学校じゅうが見渡せる。上から探すつもりかしら"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "高い場所には、物語の終わりが待っているものだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_wand_board",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "廊下の掲示板。明日の実技試験の順番が、貼り出されている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "掲示板の隅に、新しい貼り紙がある"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『落とし物、杖一本。寮監室で預かり中』と書いてある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "試験前夜の掲示板って、見るだけで緊張するな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_wand_trail",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "床に、小さな素足の形の煙の跡が続いている。指でなぞると、すぐに消えた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "小さな足跡は、行ったり来たり。何度も同じ角を曲がっている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "何かを探して、歩き回ったみたい"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余の鼻によれば、この煙はまだ新しいのである"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_wand_when",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "夕方、メルが杖をなくしたと大騒ぎして"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "そのすぐあとに、モヤもいなくなったのです"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "杖とモヤが、同じ日に消えたのか。怪しいのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_wand_master",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "おっとりした子で、よく物を置き忘れるのです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "smile",
+          "text": "昨日も、薬草園のベンチで居眠りしていました"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "置き忘れの名人か。小道具係には向かないな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_wand_exam",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "杖で呪文を唱える試験です。杖がなければ、受けられません"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "それは大変だ。杖、まだ見つかってないんですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "それが、夜になって落とし物の箱に届いたのです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_wand_smoke",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "煙の使い魔は、主人の物の匂いを覚えていて、探し物が得意です"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "sad",
+          "text": "それに、薄くなった子ほど、主人に何か残したがるもので"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "最後に、何か残す……？ そんなの、寂しいのう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_name_bed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "メルの部屋。窓辺に、人形のベッドほどの小さな寝床がある"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "寝床の名札は、空白のまま"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "よく見ると、書いては消した跡が、いくつも残っている"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "主人のそばで眠る寝床か。空っぽだと、寂しいな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_name_library",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "渡り廊下から、夜の図書館の窓が見える。棚の本が、ときどき寝返りを打つ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "窓辺の机に、『使い魔の名前 千選』が開いたまま"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "付箋はたくさん。でも、どの名前にも丸が付いていない"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "本が寝返りを打つ図書館……。何か起きそうな舞台だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_name_garden",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "温室の薬草園。夜に咲く花が、ほのかに光っている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "薬草園の当番日誌に、主人の丸い字がある"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『綿菓子みたいな女の子。名前、どうしよう』と書いてある"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "夜の花は、静かでよいのう。ここにも、煙の気配じゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_name_stairs",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "天文台へ続く、長い螺旋階段。てっぺんの窓は、まだ暗い"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "上へ行くほど、足跡が薄く、広がっていく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "あの子の形が、ほどけかけているのかもしれない"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "高い場所には、物語の終わりが待っているものだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_name_board",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "廊下の掲示板。明日の実技試験の順番が、貼り出されている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "試験表の、使い魔の名前の欄が空いている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "『未記入』の判子が、ぽつんと押してある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "試験前夜の掲示板って、見るだけで緊張するな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_name_trail",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "床に、小さな素足の形の煙の跡が続いている。指でなぞると、すぐに消えた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "足跡は、人の部屋の前で止まっては、また離れていく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "誰かに呼ばれるのを、待っていたみたい"
+        },
+        {
+          "speaker": "samechan",
+          "role": "コロちゃん／卓の会話",
+          "face": "ventriloquism",
+          "text": "余の鼻によれば、この煙はまだ新しいのである"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_name_when",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "それが、いつ消えたのか、誰も気づかなかったのです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "sad",
+          "text": "もともと、薄い子でしたから"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "誰も、気づかなかった……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_name_master",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "人見知りな子です。使い魔にも、まだ上手に話しかけられなくて"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "名前を考えすぎて、決められずにいるみたい"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "名付けは、最初の演出だ。悩むのも無理はない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_name_exam",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "試験の最初に、使い魔を名前で呼んで、呼び寄せるのです"
+        },
+        {
+          "speaker": "samechan",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "名前で……？ モヤ、というのは名前ではないのか？"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "それは、みんなが呼んでいるあだ名なのですよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_ask_name_smoke",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "normal",
+          "text": "煙の使い魔は、名前を呼ばれて、形が決まるのです"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "トネリコ先生／物語",
+          "face": "sad",
+          "text": "呼ばれないままだと、少しずつほどけてしまう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "だから、薄くなってるのか"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。variantsは代役本人のために書いた台詞。",
+  "flow": {
+    "prepare": [
+      "spell",
+      "item"
+    ],
+    "serve": [
+      "call"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "spell": 1,
+    "item": 1,
+    "call": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "study",
+  "rules": {
+    "exploreLimit": 6,
+    "pressureMax": 3,
+    "initialPressure": 0,
+    "inspectionPressure": 0,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 1
+    },
+    "detourThreshold": 1,
+    "hypothesisBonus": 0
+  },
+  "presentation": {
+    "theme": "magic",
+    "number": "08",
+    "genre": "学園ファンタジー・儚さ",
+    "tagline": "朝が来たら、もう会えないかもしれない。",
+    "backdrop": "radial-gradient(circle at 82% 16%, rgba(255, 244, 214, .34), transparent 16%), radial-gradient(circle at 18% 26%, rgba(214, 196, 255, .16), transparent 28%), radial-gradient(circle at 60% 12%, rgba(255, 255, 255, .12), transparent 6%), linear-gradient(165deg, #3d2b66, #1b1238 60%, #0d0a20)",
+    "sceneAlt": "夜の魔法学校。空っぽの寝床、図書館の窓、薬草園、天文台の階段、掲示板の試験表、廊下の煙の跡。",
+    "location": "星見ヶ丘魔法学校 / 夜の寮と校舎",
+    "atmosphere": "試験前夜の静かな校舎。夜明けまで、あと少し。",
+    "coverHeading": "試験前夜、煙の女の子が消えかけている。",
+    "coverRule": "校舎を調べ、仲間と相談し、モヤを迎える作戦を立てる。",
+    "titleLines": [
+      "試験前夜、",
+      "消えかけの使い魔"
+    ],
+    "fields": {
+      "spell": "使う呪文",
+      "item": "持っていく道具",
+      "call": "モヤへの呼びかけ",
+      "tactic": "本の嵐への手"
+    },
+    "prepareTitle": "どの呪文と道具で、迎えに行く？",
+    "prepareDescription": "呪文を一つ、道具を一つ。手がかりを組み合わせて作戦にしよう。",
+    "serveTitle": "夜明け前の屋上で。",
+    "serveDescription": "朝に透けていくモヤに、かける言葉を選ぶ。",
+    "hypothesisTitle": "モヤは、なぜいなくなった？",
+    "arrivalRole": "トネリコ先生／物語",
+    "exploreIdle": "気になる場所を調べてみて。仲間に相談してもいいわ",
+    "listenIdle": "まずは先生の話を聞いてみて。サイコロは二つよ",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "呼びかけを選んだら、モヤのところへ。朝は、もうすぐ",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 話を聞く",
+        "title": "使い魔が、いない",
+        "description": "寮監の先生が、灯りを手に駆けてきた。まずは話を聞こう。",
+        "button": "先生の話を聞く"
+      },
+      "interview": {
+        "kicker": "02 / 先生に聞く",
+        "title": "トネリコ先生に、何を聞く？",
+        "description": "聞ける質問は二つ。答えは、モヤの事情しだいで変わる。",
+        "button": "話を聞き終えて、校舎を調べる"
+      },
+      "explore": {
+        "kicker": "03 / 校舎を調べる",
+        "title": "モヤの行方を探す",
+        "description": "気になる場所を調査。3つ以上の手がかりから、みんなで見立てを話そう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / 本の嵐",
+        "title": "図書館の本が、飛び出した",
+        "description": "夜の本たちが大騒ぎ。煙の跡を見失わないよう切り抜けよう。",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / 作戦を支度する",
+        "title": "呪文と、道具",
+        "description": "夜明けまでに、モヤを迎える支度を。",
+        "button": "作戦を支度する"
+      },
+      "serve": {
+        "kicker": "06 / 屋上で呼びかける",
+        "title": "朝が来る前に",
+        "description": "東の空が白みはじめた。消えてしまう前に、モヤへ声を届けよう。",
+        "button": "モヤに呼びかける"
+      },
+      "ending": {
+        "kicker": "卓を囲んで",
+        "title": "おつかれさま",
+        "description": "夜明けの屋上で、あの子はどうなっただろう。"
+      }
+    },
+    "help": "寮監の先生に二つ質問し、校舎を調べて三つ以上の手がかりから見立てを立てます。途中で図書館の本が飛び出し、切り抜け方を選びます。最後に呪文・道具・モヤへの呼びかけを選びます。探索・相談・メモの再読に回数制限はありません。",
+    "exitText": "この卓はここで終わります。もう一度遊ぶと、モヤの事情が変わるかもしれません。",
+    "endingKicker": "この夜の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言しよう",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "本が飛び回っている。どうする？",
+    "interviewIdle": "先生に聞けるのは二つまで。何を聞こうかしら",
+    "twistIdle": "どう切り抜ける？ 手を選んで、誰が動くか決めよう",
+    "planTitle": "モヤを迎える作戦"
+  },
+  "debrief": {
+    "smooth": "trpg_fading_familiar_debrief_smooth",
+    "with-detour": "trpg_fading_familiar_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "hiyori",
+        "candidates": [
+          "hiyori"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "samechan",
+        "candidates": [
+          "samechan"
+        ],
+        "required": false
+      },
+      {
+        "actor": "adam",
+        "candidates": [
+          "adam"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この物語で演じる上級生を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
+    "looks": [
+      {
+        "id": "ink",
+        "label": "黒髪の上級生",
+        "detail": "短い黒髪に、紺のローブ",
+        "color": "#2f3552",
+        "accent": "#89bbc4",
+        "portrait": null
+      },
+      {
+        "id": "silver",
+        "label": "銀髪の上級生",
+        "detail": "肩までの銀髪に、星の刺繍のマント",
+        "color": "#5d5a78",
+        "accent": "#d8d4ee",
+        "portrait": null
+      },
+      {
+        "id": "ember",
+        "label": "赤毛の上級生",
+        "detail": "跳ねた赤毛と、呪文で焦げた袖",
+        "color": "#7a3f3a",
+        "accent": "#f0b27a",
+        "portrait": null
+      },
+      {
+        "id": "owl",
+        "label": "眼鏡の上級生",
+        "detail": "丸眼鏡と、ふくろう色のベスト",
+        "color": "#4e4a3c",
+        "accent": "#d9c79a",
+        "portrait": null
+      }
+    ],
+    "archetypes": [
+      {
+        "id": "patrol",
+        "name": "ノエル",
+        "title": "見回り当番の上級生",
+        "trait": "下級生の相談によく乗る。呪文は、まだ少し噛む",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "recommended": true
+      },
+      {
+        "id": "runner",
+        "name": "ミロ",
+        "title": "夜の廊下に強い寮生",
+        "trait": "暗い廊下も平気。呪文より先に足が出る",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        }
+      },
+      {
+        "id": "bookish",
+        "name": "セオ",
+        "title": "図書委員の上級生",
+        "trait": "本で読んだことなら何でも知っている。実技は苦手",
+        "stats": {
+          "eye": 4,
+          "hand": 1,
+          "talk": 3,
+          "nerve": 3
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。呪文を組む・道具を使うときに使う",
+      "talk": "話す・聞く力。人や使い魔と向き合うときに使う",
+      "nerve": "怖がらない力。暗い場所や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "samechan": {
+      "samechan": [
+        {
+          "id": "hirena",
+          "name": "ヒレナ",
+          "title": "サメ召喚の三年生",
+          "trait": "どんな呪文を唱えても、サメが来る。陸ではちょっと困る",
+          "likes": "サメの出る映画。夜ふかしの上映会",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_fading_familiar_make_samechan_samechan_hirena"
+        },
+        {
+          "id": "fukami",
+          "name": "フカミ",
+          "title": "空飛ぶサメの飼育係",
+          "trait": "学校の空を泳ぐサメの世話係。サメの機嫌は、天気でわかる",
+          "likes": "大きいサメ。とにかく大きいサメ",
+          "stats": {
+            "eye": 3,
+            "hand": 3,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_fading_familiar_make_samechan_samechan_fukami"
+        }
+      ]
+    },
+    "adam": {
+      "adam": [
+        {
+          "id": "mars",
+          "name": "マルス",
+          "title": "林檎ひとすじの錬金術師",
+          "trait": "何を錬成しても林檎になる。腕は学年一",
+          "likes": "ダブルアップル。宇宙の始まりの香り",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 2
+          },
+          "making": "trpg_fading_familiar_make_adam_adam_mars"
+        },
+        {
+          "id": "nox",
+          "name": "ノクス",
+          "title": "仮面の転校生",
+          "trait": "正体不明の謎の転校生。仮面の下は、だいたいみんな知っている",
+          "likes": "林檎と、登場の効果音",
+          "stats": {
+            "eye": 2,
+            "hand": 3,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_fading_familiar_make_adam_adam_nox"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_fading_familiar_session_zero_open",
+    "close": "trpg_fading_familiar_session_zero_close"
+  },
+  "interview": {
+    "title": "トネリコ先生に、何を聞く？",
+    "prompt": "聞けるのは二つまで。モヤの行方に近づく質問を選ぼう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "when",
+        "label": "いつ、いなくなったのか",
+        "description": "消えたときのことを聞く"
+      },
+      {
+        "id": "master",
+        "label": "主人のメルはどんな子か",
+        "description": "一年生のことを聞く"
+      },
+      {
+        "id": "exam",
+        "label": "明日はどんな試験なのか",
+        "description": "実技試験の中身を聞く"
+      },
+      {
+        "id": "smoke",
+        "label": "煙の使い魔とは何か",
+        "description": "使い魔の性質を聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_fading_familiar_twist_intro"
+  }
+}

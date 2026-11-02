@@ -110,11 +110,15 @@ test("MAX is recruitment eligibility, never automatic membership or stocking", (
   assert(!rules.participantStatus(s, catalog.participants[0]).ok);
   assert(!rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, []);
   assert(rules.joinTrpgClub(s, catalog, "hiyori")); assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
-  assert(rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, [ordinary.id]);
+  // A book is stocked once its GM has joined: each GM brings their own shelf of stories.
+  const stockedBy = members => catalog.scenarios.filter(b => b.stockRequires.every(id => members.includes(id))).map(b => b.id);
+  assert(rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, stockedBy(["hiyori"]));
+  assert.equal(s.trpg.stock[0], ordinary.id); assert(!s.trpg.stock.includes(shark.id));
   s.met.samechan = true; s.affinity.samechan = 66;
   assert(!rules.syncTrpgStock(s, catalog));
   assert(rules.joinTrpgClub(s, catalog, "samechan")); assert(rules.syncTrpgStock(s, catalog));
-  assert.deepEqual(s.trpg.stock, [ordinary.id, shark.id]);
+  assert.deepEqual(s.trpg.stock, [...stockedBy(["hiyori"]), ...stockedBy(["samechan"])]);
+  assert(s.trpg.stock.includes(shark.id));
 });
 test("known MAX friends or lovers may join; work does not prevent face-to-face recruitment", () => {
   const s = state(); rules.foundTrpgClub(s, catalog);
