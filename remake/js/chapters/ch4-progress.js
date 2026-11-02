@@ -79,8 +79,7 @@ export const CH4_SECOND_GAP_DAYS = 2;
 
 // ---- 場面表 -------------------------------------------------------------------------
 // プロローグ。並びは data/story_routes.json の before_eve 先頭（出発前2場面→到着）＋宿。
-// 章切り替え形式（Q2: 回想化A案／出発前先行B案）が決まったら、入口の見せ方の差し替えは
-// advanceToChapterFour とこの表の並びだけ。Q2 未決のため新しい地の文・台詞は足さない。
+// 出発前2場面は、出発前の準備3日（VOL02・Q2の更新）の1日目の昼と夜に読む（chapters/ch4-prep.js）。
 export const CH4_PROLOGUE = Object.freeze([
   { id: "ch4_sumi_training", label: "出発前のtonari", location: "tonari" },
   { id: "ch4_strategy", label: "持っていく配合", location: "tonari" },
