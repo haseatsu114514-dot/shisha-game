@@ -62,6 +62,8 @@ try {
           s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
           s.flags._cafe_introduced = true; // #780: 喫茶店は紹介後に地図へ出る
           s.flags._fortune_rumor_heard=true; // #780: 対面の噂を完読済みの表示fixture
+          // 占い師は章で1〜2回・予定の無い時間帯に現れる（台帳 URA）。この時間帯に出す
+          (await import('./js/daily/fortune-schedule.js')).placeFortuneNow(s);
           if (scenario === 'legacy') s.flags._axe_bar_legacy_access = true;
           else s.flags._axe_bar_rumor_done = true;
         }

@@ -51,7 +51,7 @@ export const TO_TOKYO_SPOT = Object.freeze({
 });
 
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
-const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest"]);
+const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune"]);
 const CH3_SCENES = ["ch3_outing_park_walk_night", "ch3_outing_tetsuko"];
 
 let loading = null;

@@ -165,7 +165,8 @@ await check('LIME .25/carry crosses unread hearts; old credit releases once with
   s.flags._naru_affinity_waiting_pts=1;s.fortune={char:'naru'};
   assert.equal(f.stats.releaseAffinity('naru'),1);assert(s.fortune);assert.equal(f.stats.releaseAffinity('naru'),0);
   f.stats.gainAffinity('naru',2,{source:'lime'});assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,10);
-  close(s.affinityCarry.naru,.7);assert.equal(s.story.naru,0);
+  // 占いの相手は ×2（2026-11-02 台帳 URA。旧 ×1.5 の .7 から）: round(2×2)×.25×.85 + .0625
+  close(s.affinityCarry.naru,.9125);assert.equal(s.story.naru,0);
 });
 await check('LIME reply feedback follows actual fractional progress without ordinary story caps, SAVE/LOAD and integer rollover', async f => {
   let s = f.core.state; s.story.naru = 1; s.affinity.naru = 9;

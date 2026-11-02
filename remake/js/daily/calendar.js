@@ -21,6 +21,7 @@ import { chooseSpot, interruptMap, isChoosingDestination } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG, facilityGrowth } from "./spots.js";
 import { doFortune } from "./fortune.js";
+import { syncFortune } from "./fortune-schedule.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
@@ -495,6 +496,12 @@ async function takeAction() {
     await afterAction({ exerted: true, spent });
     return;
   }
+  // 占い師（台帳 URA）: 予定の時間帯が来ていて、今が予定と重ならなければ、この時間帯だけ街のどこかに現れる。
+  const invite = state.pendingInvite;
+  const fortuneBusy = (state.slot >= 1 && fixedNight(state.day)) || restingToday()
+    || !!invite && (invite.day ?? state.day) === state.day && invite.slot === state.slot;
+  const fortuneWhere = state.flags._ch2_region === "tokyo" ? "tokyo" : state.flags._ch2_region === "widehanga" ? "widehanga" : "home";
+  if (syncFortune(state, { busy: fortuneBusy, where: fortuneWhere })) save();
   const visitBlock = spot => fixedNightVisitBlock(chapterDef.nightEvents, spot);
   const ev = nightPlan(chapterDef.nightEvents)[0];
   syncSamechanKnowledge();
@@ -644,7 +651,7 @@ async function performSpotAction(spot) {
       } else await restAtHome(spot);
     } else await restAtHome(spot);
   } else if (spot.kind === "fortune") {
-    await doFortune(); // 時間は使わない（占ってもらったら今日はもう寄れない）
+    await doFortune(); // 時間は使わない（占ってもらったら、この出現はおしまい）
     save();
     return { used: false, exerted };
   }
