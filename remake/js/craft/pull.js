@@ -342,7 +342,9 @@ async function pullGame(cs, mode) {
       }
       if (isJust) justs++;
       const overdone = pulls > safeLimit;
-      reactAudience(cs, isIdealTemperature(T, bands) ? "good" : Math.abs(T - center) > Math.abs(before - center) ? "bad" : "good");
+      const exhaustedAdvice = tutorial && pulls >= MAX_PULLS ? `吸うのはここまでだ。「${mode.serveLabel}」で次へ進もう` : "";
+      reactAudience(cs, isIdealTemperature(T, bands) ? "good" : Math.abs(T - center) > Math.abs(before - center) ? "bad" : "good",
+        { text: exhaustedAdvice, force: !!exhaustedAdvice });
       thermometer.pop(z.id === "keep" ? z.mark : isJust ? z.mark.repeat(2) : z.mark, z.id);
       if (overdone || T >= harshTemp) strain();
       if (overdone) { damageLeaf(); if (failed) return; }
