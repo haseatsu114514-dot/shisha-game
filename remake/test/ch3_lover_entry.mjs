@@ -72,8 +72,9 @@ async function check(name, run) {
 
 await check('chapter 3 lover LIME comes from lover.json without date invitations, once per message', async f => {
   const s = f.chapterThree(['mashiro']);
-  assert.equal(f.romance.loverMessages().find(m => m.sender === 'mashiro')?.type, 'invitation',
-    'The chapter 1-2 morning would invite her to a date that chapter 3 cannot keep');
+  // ましろは東京に住むので、第3章からは地元のデートに誘ってこない（IR16）。入口はそもそも誘いを出さない。
+  assert.equal(f.romance.loverMessages().some(m => m.type === 'invitation'), false);
+  assert.match(fs.readFileSync(path.join(root, 'chapters/lover-entry.js'), 'utf8'), /loverMessages\(\{ invitations: false \}\)/);
   const due = f.entry.pendingLoverLime();
   same(due.map(m => m.id), ['_lover_morning_mashiro_d30']);
   assert.equal(due[0].type, 'chat');
@@ -117,6 +118,71 @@ await check('ageha lover content reaches chapter 4 at home, and a companion abro
   same(f.plays, ['lover_ageha_lv1']);
 });
 
+await check('chapter 3 tournament morning: one cheer per lover, from far away or from Tokyo, read once (IR19)', async f => {
+  const s = f.chapterThree(['tsumugi', 'mashiro'], 42);
+  for (const id of ['tsumugi', 'mashiro']) s.limeRead.push(`_lover_private_account_${id}`);
+  // 地元のつむぎは配信で見る側の文面。東京に住むましろは、第1・2章と同じ大会の朝の文面。
+  assert.equal(await f.entry.readTournamentCheers({ away: ['tsumugi'] }), true);
+  same(f.phones, [['_lover_gameday_tsumugi_c3', '_lover_gameday_mashiro_c3']]);
+  const text = id => JSON.stringify(s.inbox.find(item => item.id === `_lover_gameday_${id}_c3`).msg.messages);
+  assert.equal(text('tsumugi'), JSON.stringify(lover.gameday_away.tsumugi[0].m));
+  assert(lover.gameday.mashiro.some(v => JSON.stringify(v.m) === text('mashiro')));
+  assert.match(text('tsumugi'), /配信/, 'The hometown lover watches the stream');
+  assert.equal(s.inbox.find(item => item.id === '_lover_gameday_tsumugi_c3').msg.replies.length, 2, 'A cheer can be answered, like chapters 1-2');
+  // LOAD・再挑戦で同じ朝の応援を重ねて届けない。
+  assert.equal(await f.entry.readTournamentCheers({ away: ['tsumugi'] }), false);
+  assert.equal(f.phones.length, 1);
+  // 恋人がいなければ端末は開かない。
+  s.lovers = [];
+  assert.equal(await f.entry.readTournamentCheers(), false);
+  // 遠くの文面が無い恋人（あげはは第3章の大会の時点では恋人にならない）は、いつもの文面に戻る。
+  assert.equal(lover.gameday_away.ageha, undefined);
+  s.lovers = ['ageha']; s.limeRead.push('_lover_private_account_ageha');
+  const [ageha] = f.romance.loverMessages({ tournamentDay: true, away: ['ageha'] });
+  assert(lover.gameday.ageha.some(v => JSON.stringify(v.m) === JSON.stringify(ageha.messages)));
+});
+
+await check('chapter 5 at home: date invitations, the date bond and the next milestone work like chapters 1-2 (IR16/IR17)', async f => {
+  const s = f.core.newGame();
+  // 第5章の21日目（勝負の日は未定）。大会のある章の DAY14 の止めは掛からない。
+  Object.assign(s, { chapter: 5, phase: 'daily', day: 80, slot: 0, lovers: ['tsumugi', 'mashiro'], contacts: ['sumi', 'tsumugi', 'mashiro'] });
+  s.flags._elapsed_calendar = true;
+  s.flags._ch5 = { startDay: 60, stage: 2, part: 'free' };
+  for (const id of s.lovers) { s.loveLevel[id] = 1; s.lovePts[id] = 9; s.loverSince[id] = 41; s.limeRead.push(`_lover_private_account_${id}`); }
+  const invites = () => f.romance.loverMessages().filter(m => m.type === 'invitation').map(m => m.sender);
+  same(invites(), ['tsumugi'], 'Mashiro lives in Tokyo, so she does not ask for a hometown date');
+  const invite = f.romance.loverMessages().find(m => m.type === 'invitation');
+  assert.equal(invite.accept_event, 'date_tsumugi');
+  assert.equal(invite.lover, true);
+  // 東京・ドバイにいる間は、地元のデートの誘いは届かない（朝のひとことは届く）。
+  for (const region of ['tokyo', 'dubai']) {
+    s.flags._ch2_region = region;
+    same(invites(), [], `No hometown date while in ${region}`);
+    assert.equal(f.romance.hometownDateOpen('tsumugi'), false);
+  }
+  s.flags._ch2_region = 'widehanga';
+  same(invites(), ['tsumugi'], 'Yuzugaya is a train ride from home (chapter 2 rule)');
+  s.flags._ch2_region = 'home';
+  // デート: 私的な絆が深まり、読了後に未読の節目（lv1）を一つだけ読む。
+  await f.romance.playDate('tsumugi');
+  same(f.plays, ['remake_date_tsumugi', 'lover_tsumugi_lv1']);
+  assert(s.lovePts.tsumugi > 9, 'The date deepens the private bond');
+  assert.equal(s.lastDate.tsumugi, 80);
+  assert(s.loverEventsSeen.includes('lover_tsumugi_lv1'));
+  // 第1・2章の東京在住でない保存（旧来のUI検査）では、ましろも地元のデートに誘う。
+  s.chapter = 2;
+  assert.equal(f.romance.hometownDateOpen('mashiro'), true);
+});
+
+await check('a lover who is with hajime sends no LIME, and the rest still do (IR17)', async f => {
+  const s = f.chapterThree(['ageha', 'tsumugi'], 32);
+  Object.assign(s, { chapter: 4 });
+  s.limeRead.push('_lover_private_account_ageha', '_lover_private_account_tsumugi');
+  same(f.romance.loverMessages({ invitations: false }).map(m => m.sender), ['ageha']);
+  same(f.romance.loverMessages({ invitations: false, exclude: ['ageha'] }).map(m => m.sender), []);
+  same(f.romance.loverMessages({ tournamentDay: true, exclude: ['ageha'] }).map(m => m.sender), ['tsumugi']);
+});
+
 await check('non-lovers and cancelled milestones stay unread', async f => {
   const s = f.chapterThree([]);
   same(f.entry.pendingLoverLime(), []);
@@ -133,13 +199,25 @@ await check('chapter runners call the shared entry (no duplicated lover logic)',
   assert.match(src('chapters/ch3-social.js'), /from "\.\/lover-entry\.js"/);
   assert.match(src('chapters/ch3.js'), /if \(kind === "date"\) await readLoverMilestoneAt\(owner, id\)/);
   assert.match(src('chapters/ch4.js'), /import\("\.\/lover-entry\.js"\)/);
-  // 第5章の自由行動は日常ループ（#2033）。恋人のLIMEは朝の端末（romance.js）で届き、デートの誘いと告白は出さない。
+  // 第5章の自由行動は日常ループ（#2033）。帰郷後なので、恋人の誘い・デート・節目は第1・2章と同じ（IR16・IR17）。告白は出さない。
   const ch5Daily = src('chapters/ch5-daily.js');
   assert.match(ch5Daily, /runDaily\(/);
-  assert.match(ch5Daily, /dateInvitations:\s*false/);
+  assert.doesNotMatch(ch5Daily, /dateInvitations:\s*false/);
   assert.match(ch5Daily, /confessions:\s*false/);
-  assert.match(src('daily/calendar.js'), /deliverMorning\(\{ fixedNight, invitations: chapterDef\.dateInvitations !== false \}\)/);
-  assert.match(src('daily/calendar.js'), /chapterDef\.confessions === false \? false/);
+  // 第3章の東京・第4章のドバイは誘いを閉じたまま（IR16）。ドバイでは節目を出さず、同行者はLIMEを送ってこない（IR17）。
+  assert.match(src('chapters/ch3-tokyo-daily.js'), /dateInvitations:\s*false/);
+  const ch4Daily = src('chapters/ch4-dubai-daily.js');
+  assert.match(ch4Daily, /dateInvitations:\s*false/);
+  assert.match(ch4Daily, /confessions:\s*false/);
+  assert.match(ch4Daily, /withLovers: \(\) => \[overseasCompanion\(state\)\.companion\]\.filter\(Boolean\)/);
+  const calendar = src('daily/calendar.js');
+  assert.match(calendar, /deliverMorning\(\{ fixedNight, invitations: chapterDef\.dateInvitations !== false,\s*exclude: chapterDef\.withLovers\?\.\(\) \|\| \[\] \}\)/);
+  assert.match(calendar, /chapterDef\.confessions === false \? false/);
+  // 日常ループの節目は、デートの読了後（romance.js の playDate）だけ。誘いの無い章では節目は進まない。
+  assert.doesNotMatch(calendar, /playLoverMilestone|loverMilestoneDue/);
+  assert.doesNotMatch(ch4Daily, /lover-entry|playLoverMilestone|readLoverMilestone/);
+  // 第3章の大会の朝は、共通の入口から応援を届ける（IR19）。
+  assert.match(src('chapters/ch3-tournament.js'), /readTournamentCheers\(\{ away \}\)/);
   assert.doesNotMatch(src('chapters/lover-entry.js'), /lover_\$\{|limePhase|morning/, 'Text and timing stay in romance.js / lover.json');
 });
 

@@ -1312,6 +1312,7 @@
         "remake/js/chapters/ch1.js",
         "data/dialogue/ch5_main.json",
         "data/dialogue/ending.json",
+        "remake/js/daily/romance.js",
         "remake/test/browser/ch5_full_flow.mjs"
       ],
       "run": [
@@ -1412,6 +1413,8 @@
         "data/dialogue/tournament_craft.json",
         "data/characters.json",
         "remake/data/manifest.json",
+        "remake/js/chapters/lover-entry.js",
+        "remake/data/lover.json",
         "remake/test/browser/ch3_tournament.mjs"
       ],
       "run": [

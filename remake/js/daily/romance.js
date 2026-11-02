@@ -257,6 +257,17 @@ export function dateSchedule(id, { day = state.day, fixedNight = () => false, al
   return { time_slot: "night", after_close: true };
 }
 
+// 恋人のデートは地元（橙須・柚ヶ谷）の店で会う約束（lover.json の venues）。はじめが東京・ドバイにいる間は誘いが届かず、
+// 届いていた誘いにも乗れない（第5章の遠出・IR16）。東京に住む恋人（ましろ）は地元のデートに誘ってこない
+// （第4章の地元で、ましろの節目を出さないのと同じ。chapters/ch3-story-wiring.js の TOKYO_RESIDENT_IDS）。
+const AWAY_REGIONS = Object.freeze(["tokyo", "dubai"]);
+const TOKYO_LOVERS = Object.freeze(["mashiro"]);
+/** はじめが地元から離れた街（東京・ドバイ）にいるか。現在地は第2章からの flags._ch2_region。 */
+const awayFromHome = (value = state) => AWAY_REGIONS.includes(value?.flags?._ch2_region);
+/** この恋人と、今、地元のデートの約束ができるか（ましろが東京に住むのは、出会う第3章から）。 */
+export const hometownDateOpen = (id, value = state) => !awayFromHome(value)
+  && !(TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3);
+
 // 恋人の連絡の塩梅（2026-10-31 オーナー「恋人とかはたまに連絡きて欲しい」「ストレスになるレベルで連絡きてる」LM01〜03）
 // - 朝のひとことは3日おき・返事なし（読むだけ）。恋人が何人いても朝に1通まで（長く届いていない恋人から）
 // - デートの誘いは恋人全員あわせて LOVER_INVITE_GAP 日に1回まで（長く会っていない恋人から）
@@ -270,8 +281,10 @@ const lastInboxDay = (match) => Math.max(-99, ...(state.inbox || []).filter(matc
  * @param opts.tournamentDay 大会当日の朝か
  * @param opts.fixedNight (day) => その夜に固定イベントがあるか（夜の約束を重ねない）
  * @param opts.invitations デートの誘いを出すか（約束の仕組みが無い場面カード式の章は false）
+ * @param opts.away 大会当日、会場の街にいない恋人（配信で見る側の文面 gameday_away を使う。第3章の東京・IR19）
+ * @param opts.exclude 今いっしょにいて、LIMEを送ってこない恋人（第4章のドバイの同行者・IR17）
  */
-export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true } = {}) {
+export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true, away = [], exclude = [] } = {}) {
   const out = [];
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
@@ -281,10 +294,13 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
   const inviteOpen = invitations && state.day - lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation") >= LOVER_INVITE_GAP;
   for (const id of state.lovers || []) {
     if (id === "samechan" && (state.chapter || 1) < 2) continue;
+    if (exclude.includes(id)) continue;
     const chapterKey = id === "samechan" ? `_c${state.chapter || 1}` : "";
     if (tournamentDay) {
       // #2089: 第1章のみんとは対戦相手なので、送り出す側の文面にしない
-      const pool = ((state.chapter || 1) === 1 && (L().gameday_rival || {})[id]) || (L().gameday || {})[id];
+      // 遠くの会場（第3章の東京）は、地元にいる恋人から「配信で見る」文面（IR19）。会場の街にいる恋人はいつもの文面
+      const pool = (away.includes(id) && (L().gameday_away || {})[id])
+        || ((state.chapter || 1) === 1 && (L().gameday_rival || {})[id]) || (L().gameday || {})[id];
       const msgId = `_lover_gameday_${id}_c${state.chapter}`;
       if (pool?.length && !read(msgId)) out.push(chat(id, msgId, pool[(state.day + (phase[id] || 0)) % pool.length]));
       continue;
@@ -310,7 +326,9 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
     const invId = `_date_inv_${id}${chapterKey}_d${state.day}`;
     const schedule = dateSchedule(id, { fixedNight });
     const gap = id === "samechan" ? samechanDateGap() : state.day - last;
-    if (inviteOpen && schedule && gap >= (maxed ? 5 : 3) && chapterDay(state) < 14 && !read(invId)
+    // 大会のある章は大会の前日まで。第5章は勝負の日の朝で日常が終わるので、日数で止めない（IR16）
+    const beforeFinal = (state.chapter || 1) >= 5 || chapterDay(state) < 14;
+    if (inviteOpen && schedule && hometownDateOpen(id) && gap >= (maxed ? 5 : 3) && beforeFinal && !read(invId)
       && (id !== "samechan" || samechanDateReady() && state.pendingInvite?.event !== "date_samechan")) {
       const lastInvite = lastInboxDay((i) => i.msg?.lover && i.msg.type === "invitation" && i.msg.sender === id);
       invites.push({ gap, lastInvite, msg: {
