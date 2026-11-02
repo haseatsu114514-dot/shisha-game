@@ -177,7 +177,7 @@ await suite('ch2-main', async check => {
     assert.doesNotMatch(await page.locator('.ch2-route-note').innerText(), /県大会ホールの入口と搬入場所も確認しよう。/);
     assert.equal(await page.locator('.map-info .mi-no').count(), 0, 'Station guidance appears once');
     assert.doesNotMatch(await page.locator('.map-info').innerText(), /null|undefined/);
-    await assertFits(page, '.spot-pin .sub-label, .ch2-route-note, .map-info, '+test('menu'));
+    await assertFits(page, '.spot-pin .sub-label, .ch2-route-note, .map-info, '+test('menu')+', '+test('lime'));
     const overlap = await page.evaluate(() => {
       const panel = document.querySelector('.ch2-route-note').getBoundingClientRect();
       return [...document.querySelectorAll('.spot-pin')].map(node => {
@@ -187,6 +187,12 @@ await suite('ch2-main', async check => {
     });
     for (const result of overlap) assert(result.area < 1, `Summary covers a destination: ${JSON.stringify(result)}`);
     await screenshot(page, 'city-day1.png');
+    // 第1章以降と同じLIMEボタン。初日の地図で開いて閉じても、地図と進行はそのまま。
+    await page.locator(test('lime')).click();
+    await page.locator('[data-test="phone-close"]').click();
+    await page.locator('.phone-overlay').waitFor({ state: 'detached' });
+    await page.locator(test('map')).waitFor();
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._lime_opened), true);
     await preserved(page, before);
   });
 
@@ -245,7 +251,8 @@ await suite('ch2-main', async check => {
     const before = await setup(page); await begin(page); await visit(page, 'kumicho');
     // Clear only the fixture's first manual slot so the real overwrite flow is not bypassed.
     await page.evaluate(() => localStorage.removeItem('suien_remake_slot1'));
-    await page.locator(test('menu')).click(); await page.locator(test('save')).click();
+    // The first-day map MENU is the daily full-screen MENU: save/load live on the システム tab.
+    await page.locator(test('menu')).click(); await page.locator('[data-test="menu-tab-system"]').click(); await page.locator('[data-test="menu-save"]').click();
     await page.locator('[data-test="slot-1"]').click();
     await page.locator(test('map')).waitFor();
     await visit(page, 'c_station');

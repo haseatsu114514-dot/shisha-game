@@ -445,6 +445,20 @@ function replyMedia(item, line) {
   return { sender, stamp: line.stamp, ...(line.media_chapters ? { media_chapters: [...line.media_chapters] } : {}) };
 }
 
+/** 章の側から1件届ける（第3章の東京の恋人からの訪問の相談など）。受信の整形は朝のLIMEと同じ。 */
+export function deliverLimeMessage(m) {
+  const item = receiveItem(m);
+  state.inbox.push(item);
+  return item;
+}
+
+/**
+ * 返事（replies[].action）を選んだ後に一度だけ呼ぶ処理。章の側が名前で登録する。
+ * 戻り値の文字列は、返事の後にトークの中へ小さく出す（「約束した：…」など）。
+ */
+const LIME_REPLY_ACTIONS = new Map();
+export const registerLimeReplyAction = (name, run) => LIME_REPLY_ACTIONS.set(name, run);
+
 /** 受信時だけ素材を選別し、DBや過去の受信箱を変更しない。dayは章をまたぐ通算日。 */
 function receiveItem(m) {
   const item = stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, chapter: state.chapter,
@@ -949,6 +963,9 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     item.done = true;
     item.replyState = "replied";
     item.log.push({ me: true, text: r.text });
+    // 返事で決まること（約束など）は、返事を確定した時に一度だけ。
+    const actionNote = r.action ? LIME_REPLY_ACTIONS.get(r.action)?.(item, r) || null : null;
+    if (actionNote) item.log.push({ note: actionNote });
     const responseMedia = replyMedia(item, r.response_media);
     if (responseMedia) item.log.push({ me: false, ...responseMedia });
     if (r.response) item.log.push({ me: false, text: r.response });
@@ -970,6 +987,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     if (responseMedia) await drawMessage(ui, responseMedia, false, from);
     if (!alive() || state !== session) return;
     if (r.response) await ui.bubble(r.response, false, from);
+    if (actionNote && alive() && state === session) ui.note(actionNote);
     return;
   }
   item.done = true;
