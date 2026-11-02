@@ -76,6 +76,16 @@ function upsample(sd, w, h, W, H, factor) {
   return out;
 }
 
+/**
+ * 距離を ±reach で頭打ちにする。そのままだと、遠くにある細い部分（新しいポーズの腕など）は
+ * 変形の最後の一瞬にしか現れず、消える部分は最初に消えてしまう。頭打ちにすると、
+ * 出る部分と消える部分が同じくらいの速さで、溶けるように入れ替わる。
+ */
+function clampField(sd, reach) {
+  for (let i = 0; i < sd.length; i++) sd[i] = sd[i] > reach ? reach : sd[i] < -reach ? -reach : sd[i];
+  return sd;
+}
+
 const hex = (c) => {
   const m = /^#?([0-9a-f]{6})$/i.exec(String(c || "").trim());
   const n = m ? parseInt(m[1], 16) : 0xe8c27a;
@@ -89,7 +99,7 @@ const hex = (c) => {
  * @param colors { color, secondary }
  * @returns { canvas, draw(t, glow) } t=0 で立ち絵の影、t=1 でカットインの人物の影
  */
-export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, region = { x: -360, y: -100, w: 1680, h: 1220 } } = {}) {
+export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, reach = 12, region = { x: -360, y: -100, w: 1680, h: 1220 } } = {}) {
   // 描く解像度（scale）の 1/field で距離場を作り、描く解像度へ補間で広げる
   const W = Math.round(region.w * scale), H = Math.round(region.h * scale);
   const fs = scale / field, w = Math.round(region.w * fs), h = Math.round(region.h * fs);
@@ -127,8 +137,8 @@ export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, re
       g.fillStyle = grad; g.fillRect(0, 0, w, h);
     }
   });
-  const dA = upsample(signedDistance(alphaA, w, h), w, h, W, H, field);
-  const dB = upsample(signedDistance(alphaB, w, h), w, h, W, H, field);
+  const dA = clampField(upsample(signedDistance(alphaA, w, h), w, h, W, H, field), reach);
+  const dB = clampField(upsample(signedDistance(alphaB, w, h), w, h, W, H, field), reach);
   // 毎フレーム全画素を回さないよう、どちらかの影がある範囲だけを描く
   let x0 = W, y0 = H, x1 = 0, y1 = 0;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
