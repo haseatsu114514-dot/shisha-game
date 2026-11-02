@@ -65,7 +65,7 @@ const PRIZE = 30000;
 export function setupHooks() {
   hooks.onEnter = onDialogueEnter; // 告白の返事（accept/reject）・set_romance
   hooks.onCg = recordCg;           // 見たCGはギャラリーで見返せる
-  hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(chapterDay(state)))
+  hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft() ?? "")).replace(/\{day\}/g, String(chapterDay(state)))
     .replace(/\{tsumugiFollowers\}/g, typeof DB.characters.tsumugi?.art_sns?.followers === "number" ? `${DB.characters.tsumugi.art_sns.followers / 10000}万` : "たくさん")
     .replace(/\{tsumugiContestTheme\}/g, DB.characters.tsumugi?.art_contest?.theme || "記憶と気配の交差")
     .replace(/\{fortuneName\}/g, state.fortune ? displayName(state.fortune.char, state) : "その人"); // 占い師の結果
