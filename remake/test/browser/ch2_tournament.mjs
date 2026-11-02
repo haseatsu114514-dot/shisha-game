@@ -5,6 +5,7 @@ const shots=process.env.SHOTS;
 if(shots)fs.mkdirSync(shots,{recursive:true});
 const capture=async(page,name)=>{if(shots)await page.screenshot({path:`${shots}/${name}.png`});};
 import { suite, assertFits } from './support.mjs';
+import { assertCraftProgress } from './craft_progress_assertions.mjs';
 import { confirmAppearanceSetup, prepareAppearanceCatalog } from './appearance_setup.mjs';
 import { confirmWaterSetup } from './water_setup.mjs';
 prepareAppearanceCatalog();
@@ -518,7 +519,8 @@ await suite('ch2-tournament',async check=>{
     assert.equal(await page.locator('.flavor-row[data-flavor="strawberry"]').count(),0);
     assert.match(await page.locator('.worker-scene-tag').textContent(),/HAZE: OPEN CLOUD/);
     assert.deepEqual(await page.locator('.bench-phase-copy b').allTextContents(),['パッキング','炭焼き','蒸らし','吸い出し','提供','調整']);
-    await assertFits(page,'.bench-top > *, .bench-phase-copy b');
+    await assertFits(page,'.bench-top > *');
+    await assertCraftProgress(page);
     await capture(page,touch?'touch-mix-header':'pc-mix-header');
     for(let n=0;n<4;n++)await press(dt('mix-plus-afsahr_strawberry'));
     for(let n=0;n<8;n++)await press(dt('mix-plus-double_apple'));
