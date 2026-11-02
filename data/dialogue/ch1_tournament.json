@@ -656,7 +656,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "チャコール博士の評価も、はじめとなるへ割れて入っていく。はじめの棒が、アダムを抜いて頭ひとつ前に出た。"
+          "text": "チャコール博士の評価も、はじめとなるへ割れて入っていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめの棒が、アダムを抜いて頭ひとつ前に出た。"
         },
         {
           "type": "sfx",
@@ -1055,7 +1060,7 @@
         },
         {
           "type": "bg",
-          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+          "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
         },
         {
           "speaker": "",

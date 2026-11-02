@@ -676,24 +676,32 @@ const entrance = () => playEntrance(1);
 // ---------------------------------------------------------------- 優勝のあと
 
 async function victory(cs) {
+  const owner = state;
   // #2088: 優勝後の余韻は長いので、段ごとに保存して途中から再開できるようにする（賞金・能力加算は一度だけ）。
-  const v = state.tournament.victory ||= { step: 0, revealed: true };
+  const v = owner.tournament.victory ||= { step: 0, revealed: true };
   if (!v.paid) {
-    clearContinueHistory(state);
-    state.tournament.retryAssist = false;
+    clearContinueHistory(owner);
+    owner.tournament.retryAssist = false;
     v.comment = (cs ? craftRecognition(cs) : null)?.comment || null;
     addMoney(PRIZE);
-    delete state.tournament.stockSnap;
-    delete state.tournament.entryResources;
+    delete owner.tournament.stockSnap;
+    delete owner.tournament.entryResources;
     v.paid = true;
     save();
   }
   // スミさんの祝福LIMEは、閉店後のtonariで祝杯を交わす前に届く。tonariへ戻る背景切替の手前で場面を区切る。
   const after = DB.dialogues.ch1_tournament_after;
   const tonariAt = after.lines.findIndex(line => line.type === "bg" && line.bg?.includes("bg_tonari_inside"));
+  const lobby = BG("bg_c_station_lobby");
+  // 大会後の数日は日常のslotを進めず描く。LOADでも各段の場所・時間を背景から確立する。
+  const inScene = (bg, run) => async () => {
+    await setBg(bgUrl(bg));
+    if (state !== owner) return; // 背景の準備中にLOADされたら、古い会話・電話・報酬を始めない。
+    return run();
+  };
   const steps = [
-    () => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE }),
-    () => openPhone([
+    inScene(lobby, () => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: lobby })),
+    inScene(lobby, () => openPhone([
       {
         id: "_sys_sumi_scoresheet", sender: "sumi", messages: [
           "おう。優勝、見事だった",
@@ -702,68 +710,79 @@ async function victory(cs) {
           "今日は喜べ。帰ったら、一緒に一服しよう",
         ], close_label: "……はい。ありがとうございます、スミさん",
       },
-    ], { time: "PM 6:52", title: "表彰式のあと" }),
-    () => play({ ...after, lines: after.lines.slice(tonariAt) }), // 先頭の bg 行で tonari に切り替わる
-    () => play("interval_day1_naru_lime"),
-    () => gainStat("guts", 1),
+    ], { time: "PM 6:52", title: "表彰式のあと" })),
+    inScene(TONARI_N, () => play({ ...after, lines: after.lines.slice(tonariAt) })),
+    inScene(TONARI_N, () => play("interval_day1_naru_lime")),
+    inScene(TONARI_N, () => gainStat("guts", 1)),
     // 優勝の夜。記録を続ける博士の伏線へ。
-    () => openPhone([
+    inScene(TONARI_N, () => openPhone([
       {
         id: "_sys_unknown_recorded", sender: "???", messages: [
           "本日のあなたの試合データは、すべて記録させていただきました。",
         ], close_label: "……誰？",
       },
-    ], { time: "PM 11:47", title: "優勝の夜" }),
-    () => play("interval_day1_morning_win"),
-    () => play("ch1_naru_promise"),
-    () => play("interval_day2_adam_lime"),
-    () => gainStat("insight", 1),
-    () => play("interval_day5_eve"),
+    ], { time: "PM 11:47", title: "優勝の夜" })),
+    inScene(BG("bg_home_day"), () => play("interval_day1_morning_win")),
+    inScene(BG("kemurikusa"), () => play("ch1_naru_promise")),
+    inScene(BG("kemurikusa"), () => play("interval_day2_adam_lime")),
+    inScene(BG("kemurikusa"), () => gainStat("insight", 1)),
+    inScene(TONARI_N, () => play("interval_day5_eve")),
   ];
   while (v.step < steps.length) {
     await steps[v.step]();
+    if (state !== owner) return;
     v.step += 1;
     save();
   }
-  delete state.tournament.victory;
-  state.phase = "aftermath";
+  if (state !== owner) return;
+  delete owner.tournament.victory;
+  owner.phase = "aftermath";
   save();
   await finishAfterTournament();
 }
 
 /** #2088: 優勝確定後に閉じたセーブは、大会を作り直さず余韻の続きから */
 async function resumeVictory() {
+  const owner = state;
+  clearScreen(); // LOADを選んだタイトルを、続きのLIMEの背後にも残さない。
   showHud(false);
   playBgm("bgm_aftermath");
-  const v = state.tournament.victory;
+  const v = owner.tournament.victory;
   if (!v.revealed) {
     await nagumoCutin(1);
+    if (state !== owner) return;
     await play("ch1_tournament_reveal", { bg: STAGE });
+    if (state !== owner) return;
     v.revealed = true;
     save();
   }
+  if (state !== owner) return;
   await victory(null);
 }
 
 async function finishAfterTournament() {
+  const owner = state;
   showHud(false);
   state.restDay = null; // 大会を終え、体調が戻った後の補完。発病当日の参加はここまで。
   setFlag("_rest_after_tournament");
   await finishDeferredNights(NIGHT_EVENTS, async () => {
     await play({ dialogue_id: "remake_rest_after_tournament", lines: [{ speaker: "", text: "大会を終えて、体調が戻った後。休養で見送ったtonariの予定を、改めて訪ねた。" }] });
   });
+  if (state !== owner) return;
   delete state.flags._rest_after_tournament;
-  state.phase = "cleared";
+  owner.phase = "cleared";
   save();
   await bannersIdle();
+  if (state !== owner) return;
   await showClear();
 }
 
 export async function showClear() {
+  const owner = state;
   playBgm("bgm_aftermath");
   showHud(false);
   await setBg(bgUrl("bg_tonari_inside", "night"), { tint: "dim" });
-  const owner = state;
+  if (state !== owner) return;
   let playing = false;
   const next = el("button.btn.primary", { text: "第2章へ進む", dataset: { test: "end-chapter2" }, onclick: async () => {
     if (playing || !root.isConnected || state !== owner) return;
