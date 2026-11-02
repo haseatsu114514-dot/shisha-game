@@ -1,4 +1,5 @@
-// 家シーシャの台（#638）。スミさんの卓上台（第1章 DAY2以降の帰宅前に譲られる）と、くじの大会公式モデルの台。
+// 家シーシャの台（#638）。スミさんの卓上台（第1章 DAY2以降の帰宅前に譲られる）と、くじの大会公式モデルの台、
+// 第2章以降に店で買えるシーシャ台（VOL08）。台ごとの違いは家シーシャ1回の熟練度経験値（equipment.json の home_xp）だけ。
 // 寝る前の一服の流れは home-shisha.js。ここは台の持ち物・受け取りと、その夜の自室でのお披露目。
 import { DB, img } from "../core/data.js";
 import { state, save } from "../core/state.js";
@@ -15,14 +16,23 @@ export const RIG_HOME_SCENE = "ch1_sumi_home_rig_homecoming";
 // #640で採用済み。scene-art.jsが自室の机上に置くものと同じ台。
 export const SUMI_RIG_IMAGE = "ui/scene_props/shisha_home_tabletop.png";
 const FALLBACK_GROWTH = { [SUMI_RIG]: 0.5, [PRO_RIG]: 0.75 };
+const FALLBACK_XP = { [SUMI_RIG]: 6, [PRO_RIG]: 7.5 };
 
-/** 家で使う台（両方あれば伸びのいい大会公式モデル）。なければ null */
+/** 台で家シーシャを1回したときの熟練度経験値。台でない・不明なIDは0 */
+export function homeRigXp(id) {
+  const gear = DB.equipById?.[id];
+  const xp = Number(gear?.home_xp);
+  if (gear?.type === "homeware" && Number.isFinite(xp) && xp > 0) return xp;
+  return FALLBACK_XP[id] || 0;
+}
+
+/** 家で使う台（持っている中で一番伸びのいい台。同じなら大会公式モデル→卓上台→所持順）。なければ null */
 export function homeRig(s = state) {
-  const owned = s?.owned || [];
-  const id = [PRO_RIG, SUMI_RIG].find((rig) => owned.includes(rig));
+  const owned = [...new Set([PRO_RIG, SUMI_RIG, ...(s?.owned || [])])].filter((id) => s?.owned?.includes(id));
+  const id = owned.reduce((best, rig) => homeRigXp(rig) > (best ? homeRigXp(best) : 0) ? rig : best, null);
   if (!id) return null;
   const gear = DB.equipById?.[id];
-  return { id, name: gear?.name || id, growth: Number(gear?.home_growth) || FALLBACK_GROWTH[id] };
+  return { id, name: gear?.name || id, growth: Number(gear?.home_growth) || FALLBACK_GROWTH[id] || 0, xp: homeRigXp(id) };
 }
 
 /** スミさんから卓上台を受け取る（一度だけ）。DAY2の帰宅前に呼ぶ。中間準備は未受領セーブのフォールバック */

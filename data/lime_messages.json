@@ -31,6 +31,31 @@
         "昼に貸切の予約が入った。炭番が一人足りん"
       ]
     },
+    "mukai_baito": {
+      "sender": "mukai_master",
+      "type": "invitation",
+      "time_slot": "noon",
+      "accept_event": "__mukai_baito__",
+      "accept_text": "入ります",
+      "accept_reply": {
+        "sender": "mukai_master",
+        "text": "助かる。待ってる"
+      },
+      "hint": "乗るとそのまま昼のmukaiのシフトへ（行動を1回使う）。いつもの日当に上乗せがつく",
+      "messages": [
+        "はじめくん。今日の昼、店に入れるか",
+        "{reason}",
+        "上がりに、甘いのを一杯つける"
+      ],
+      "decline_response": {
+        "text": "わかった。また頼む"
+      },
+      "reasons": [
+        "常連の集まりが、昼に入った",
+        "仕込みが押してる。炭番が一人ほしい",
+        "豆の業者と昼が重なった。カウンターを頼みたい"
+      ]
+    },
     "hiyori_shop": {
       "sender": "hiyori",
       "type": "invitation",

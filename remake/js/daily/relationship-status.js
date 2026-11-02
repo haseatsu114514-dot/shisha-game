@@ -2,14 +2,14 @@
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
 import { affinityLevel, affinityGateWaiting } from "../core/stats.js";
-import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, settledFriend } from "./bonds.js";
+import { BOND_QUESTIONS, BOND_FINALES, questionVisitDue, finaleDue, finaleHeart, settledFriend } from "./bonds.js";
 import { romanceRouteOpen } from "./romance.js";
 import { hiyoriFinaleReady } from "../core/hiyori-route.js";
 
 const meetingPlace = {
   sumi: "tonari", tsumugi: "tonari", naru: "KEMURIKUSA", adam: "EDEN",
   rin: "夜のDr.fookahの2階", minto: "PEPPERMINT", hiyori: "tonari", samechan: "SHISHARK", ageha: "MELTY PUFF",
-  kumicho: "神崎煙草店", rei: "零-ZERO-", mashiro: "mukai",
+  kumicho: "神崎煙草店", rei: "零-ZERO-", mashiro: "mukai", kuze: "煙幕",
 };
 const summary = (kind, label, hint) => ({ kind, label, hint });
 
@@ -101,6 +101,6 @@ export function relationshipStatus(id) {
       : "相手の話を進めると、恋愛・友情を選ぶ会話へ。";
     return summary("choice", "関係を考える会話待ち", hint);
   }
-  if (BOND_FINALES[id]) return summary("neutral", "交流中", lv >= 5 ? finaleHint(id) : "");
+  if (BOND_FINALES[id]) return summary("neutral", "交流中", lv >= finaleHeart(id) ? finaleHint(id) : "");
   return summary("neutral", "交流中", "これからの物語で、少しずつ仲を深めよう。");
 }

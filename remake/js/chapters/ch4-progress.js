@@ -9,6 +9,7 @@
 // マップ訪問では日は進まない。進むのは endChapterFourDay（宿でその日を終える）と前夜の終了だけ。
 
 import { MAX_MONEY } from "../core/rules.js";
+import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
 import { resetChapterFourCraft } from "./ch4-tournament-state.js";
 
 // 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
@@ -78,17 +79,20 @@ export const CH4_SECOND_GAP_DAYS = 2;
 
 // ---- 場面表 -------------------------------------------------------------------------
 // プロローグ。並びは data/story_routes.json の before_eve 先頭（出発前2場面→到着）＋宿。
-// 章切り替え形式（Q2: 回想化A案／出発前先行B案）が決まったら、入口の見せ方の差し替えは
-// advanceToChapterFour とこの表の並びだけ。Q2 未決のため新しい地の文・台詞は足さない。
+// 出発前2場面は、出発前の準備3日（VOL02・Q2の更新）の1日目の昼と夜に読む（chapters/ch4-prep.js）。
 export const CH4_PROLOGUE = Object.freeze([
   { id: "ch4_sumi_training", label: "出発前のtonari", location: "tonari" },
   { id: "ch4_strategy", label: "持っていく配合", location: "tonari" },
   { id: "ch4_opening", label: "ドバイ到着", location: "空港" },
   { id: "ch4_arrival_inn", label: "宿へ", location: "宿" },
 ].map(scene => Object.freeze(scene)));
+// 出発前の準備3日（VOL02）の中で読むプロローグの先頭2場面（準備1日目の昼の特訓・夜の持っていく配合）。
+export const CH4_PREP_SCENES = Object.freeze(CH4_PROLOGUE.slice(0, 2).map(scene => scene.id));
 
-// 前夜までの必須4場面（story_routes の順）。lead は強制発生用の繋ぎ場面。
+// 前夜までの必須5場面（story_routes の順）。lead は強制発生用の繋ぎ場面。
+// FESTA は審査員の太陽と会う場面。自由行動で寄らなかった時も、前夜に会場の出張ブースで読む（VOL05）。
 export const CH4_MANDATORY = Object.freeze([
+  { id: "ch4_festa", lead: null },
   { id: "ch4_stranger_first", lead: "ch4_stranger_first_forced_in" },
   { id: "ch4_stranger_second", lead: null },
   { id: "ch4_wang_reception", lead: "ch4_wang_reception_forced_in" },
@@ -160,10 +164,38 @@ export function advanceToChapterFour(value) {
   value.slot = 0;
   value.phase = "opening";
   value.statsAtChapterStart = { ...value.stats };
-  value.flags._ch4 = { startDay: value.day, day: 1, stage: 0, part: "prologue", titleSeen: false,
+  // 出発前の3日を地元で過ごしてからドバイへ（VOL02・Q2の更新）。出発前のtonari2場面は準備1日目の昼と夜に読む
+  // （chapters/ch4-prep.js）。ドバイDAY1は出発の朝。startDay は出発時に実際の日付で確定し直す。
+  value.flags._ch4_prep = { startDay: value.day, days: DEPARTURE_PREP_DAYS, step: 0, departed: false };
+  value.flags._ch2_region = "home";
+  value.flags._ch4 = { startDay: value.day + DEPARTURE_PREP_DAYS, day: 1, stage: 0, part: "prologue", titleSeen: false,
     read: {}, firstDay: null, resolution: 0, attempts: 0 };
   // シェイクの正体は ch4_tournament_start で明かされる（DRAFT §3）。それまで表示側は固有名を出さない。
   value.flags._ch4_sheikh_revealed = false;
+  return true;
+}
+
+/** 出発前の準備期間（VOL02）がまだ終わっていないか。準備期間の無い旧保存は false。 */
+export const chapterFourPrepPending = value => {
+  const prep = value?.flags?._ch4_prep;
+  return value?.chapter === 4 && !!prep && !prep.departed;
+};
+
+/**
+ * 出発の朝（準備の最後の日の翌朝）にドバイDAY1を確定する。出発前のtonari2場面（特訓・持っていく配合）を
+ * 読み終えている時だけ（プロローグの残りは到着・宿）。条件を満たさなければ false（何も変えない）。
+ */
+export function departChapterFour(value) {
+  const prep = value?.flags?._ch4_prep;
+  if (!chapterFourPrepPending(value) || !Number.isInteger(prep.startDay) || !Number.isInteger(prep.days)
+    || value.day < prep.startDay + prep.days) return false;
+  const progress = chapterFourProgress(value);
+  if (progress.part !== "prologue" || progress.stage < CH4_PREP_SCENES.length) return false;
+  prep.departed = true;
+  progress.startDay = value.day;
+  value.slot = 0;
+  value.phase = "opening";
+  value.flags._ch2_region = "home";
   return true;
 }
 

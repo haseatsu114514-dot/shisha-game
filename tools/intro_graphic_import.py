@@ -116,6 +116,9 @@ def main():
     print(f"  原画と確認画像: {folder.relative_to(ROOT)}/")
     for warning in info.get("warnings", []):
         print(f"  警告: {warning}")
+    if kind == "portrait" and not args.dry_run:
+        print("  次に: asset_sources/character-intros/graphic-20261031/heads.json の頭の位置を測り直し、"
+              "python3 tools/intro_graphic_frames.py で頭の大きさをそろえる")
 
 
 if __name__ == "__main__":
