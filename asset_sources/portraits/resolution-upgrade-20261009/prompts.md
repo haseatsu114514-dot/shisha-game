@@ -10,7 +10,7 @@
 | キャラ | いまの顔の大きさ（中央値比） | 直し方 | 画風の直し | 表情数 |
 |---|---|---|---|---|
 | つむぎ | +18% | 元絵の頭身・胴と脚の長さ・小柄な体格へ戻す。頭の縮小を撤回し、解像度と画風のみ統一（2026-10-10 PU05） | 基準に合わせる | 7 |
-| 前園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
+| 上園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
 | スミさん | +15% | 頭（帽子込み）を約13%小さく | 基準に合わせる | 5 |
 | ましろ | +13% | やや大きめの丸い顔と頬の可愛さを優先。8%縮小は強制しない（2026-10-10追記） | 基準に合わせる | 6 |
 | 南雲 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
@@ -27,7 +27,7 @@
 **ステップ1：試しの3枚で方向を確かめる**（ここで合格してから量産する）
 1. **#1 つむぎ・normal** … 元絵の頭身・小柄な丸さを保ち、解像度と画風だけを揃える（PU05）
 2. **#29 サメちゃん・normal** … 塗りを寄せても本人に見えるか（採用したばかりのデザイン）
-3. **#8 前園・normal** … 線が細くなり、塗りがみんと・アゲハに近づくか
+3. **#8 上園・normal** … 線が細くなり、塗りがみんと・アゲハに近づくか
 
 → 3枚を Claude に見せて確認。直す点があればここでプロンプトを調整する。
 
@@ -36,7 +36,7 @@
 
 **ステップ3：各キャラの残りの表情**（キャラごとにまとめて）
 - **②（同じキャラの通常）には、ステップ1・2で合格した「新しい通常」を添付する。** 表情どうしの顔と頭の大きさがそろいやすい。ただし、つむぎはPU05により、体格を変えた候補を引き継がず「元の通常」を添付する。
-- 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 前園 #9〜12 → スミさん #14〜17 → 南雲 #25〜28
+- 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 上園 #9〜12 → スミさん #14〜17 → 南雲 #25〜28
 - 1キャラの全表情がそろったら並べて確認し、`asset_sources/portraits/<id>-remaster-v2/` に置いて commit。キャラ単位で組み込みを頼んでよい。
 
 ## リポジトリに触れないチャット（ChatGPTなど）で手作業で頼むときの手順
@@ -239,9 +239,9 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10, superseding all earlier proportion instructions: the entire HEAD SIZE CORRECTION paragraph and the Minto proportion target are cancelled for Tsumugi; match image 1's original head-to-body ratio and body proportions exactly, restoring her compact petite silhouette, original short legs and torso, soft large rounded head and cheeks, narrow gentle shoulders, and original shoulder, waist, knee and shoe positions. Improve only resolution, line crispness and restrained matte rendering style while keeping image 1's figure proportions, expression, pose, outfit and original color strength unchanged; image 2 is the ORIGINAL normal sprite for identity, and must not introduce a taller, slimmer or fashion-model body.
 ```
 
-## 前園（maezono）
+## 上園（maezono）
 
-### 8. 前園・normal
+### 8. 上園・normal
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -265,7 +265,7 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
-### 9. 前園・smile
+### 9. 上園・smile
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_smile.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -289,7 +289,7 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
-### 10. 前園・serious
+### 10. 上園・serious
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_serious.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -313,7 +313,7 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
-### 11. 前園・surprise
+### 11. 上園・surprise
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_surprise.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -337,7 +337,7 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
-### 12. 前園・excited
+### 12. 上園・excited
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_excited.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 

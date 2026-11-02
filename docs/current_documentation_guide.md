@@ -39,7 +39,7 @@
 | [tools/](tools/) | ツール・開発者コンソールの手引き（任意の試作ツールの説明もここ） | `text_editor_manual.md`、`dev_inspector.md`、`remake_browser_checks.md`、`sequential_merge.md` |
 | [design/](design/)・[reports/](reports/) | オーナー未決定の提案・設計案・調査（採用扱いにしない） | |
 | [archive/](archive/README.md) | 日付付きの引き継ぎ・計画・記録・二次資料（履歴。根拠にしない） | |
-| `qa/` | 検証記録（約0.7GB。`.claudeignore` 済み） | |
+| `qa/` | テストが読む基準ファイルだけ（検証記録は2026-11-02に削除。過去の記録はgit履歴にある） | |
 
 ## 日常の作業で読むもの
 

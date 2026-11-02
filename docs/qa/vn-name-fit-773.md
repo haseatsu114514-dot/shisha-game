@@ -1,9 +1,0 @@
-# Issue773 name fit
-
-Base main625f197ca6f06d47073f3a1734cdd49edd99220c. Worker codex-a-vn-name-20261020-a496c7d1, claim39422194756 success/CLAIMED_ISSUE773, bot6290818689 (parent verified). No checkout; parent performs API equivalent expected-head save. This candidate is not a saved PR/merge/deployment.
-
-The actual name font and0.1em tracking make four existing display names exceed210design-px width by about1.1px. New name-only helper measures the actual text range and sets a font override only on overflow, with1px guard and14px minimum. Existing fitting names keep their original font. Font loading and width changes remeasure; new speaker clears previous fit. DS retains its existing CSS rule. No names/dialogue/frame art/body/input behavior changed.
-
-Local Chrome regression runs production helper source and candidate name CSS with the bundled real name font at1920x1080 and844x390. Ten representative names (all four reproduced overflows, short Japanese, unknown/private names and Latin) fit; already-fitting names retain size. Actual font load, loadingdone event,210→180→210 width observer, rename,14px floor, DS exclusion and focus/scroll preservation pass. Old unmodified CSS fails the same test on チャコール博士. Earlier baseline/prototype also covered43names×2viewports. Results are local DOM/font tests, not a full engine/chapter playthrough, physical device or publication proof. Unknown arbitrary future names may still exceed width at the preserved minimum; no ellipsis or identity edit is applied.
-
-Run: node tools/test_vn_name_fit.mjs (macOS Chrome by default, CHROME_BIN override). Fixture assets/font inline; CSP and external DNS block external resources. No CI/install/network retrieval. Total measured test time5.445s of1800s; initial CSP harness failure retained locally. No screenshots/profile contents uploaded. Frames were not inspected or edited.

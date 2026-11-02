@@ -1,8 +1,0 @@
-{
-  "source": "PR759 c709f2ada99721b64ab132c77770f018ce8b8928",
-  "case": "phone-844/mix-two (caption + two flavor rows)",
-  "expected": "FAIL: .fr-btn target too small",
-  "observed": "AssertionError [ERR_ASSERTION]: phone-844/mix-two .fr-btn target too small",
-  "exitCode": 1,
-  "command": "CRAFT_CACHE=work/landscape-craft CRAFT_REGRESSION_CSS=work/qa-real/baseline-overlays/759-c709/remake/css/craft-landscape.css CRAFT_REGRESSION_MIX_TWO=1 node work/qa-real/fix759/test_craft_landscape_static.mjs"
-}
