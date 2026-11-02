@@ -48,18 +48,27 @@ export function completeDesertTalk(value, id, day) {
 }
 
 /** 砂丘へ行けるか。誘われていて、今日まだ行っていない昼だけ。 */
+/** 昼か（value.slot が 0）。ラクダレース（ch4-camel-progress.js の isDaytime）と同じ判定で、昼の行動を分け合う。 */
+export const desertDaytime = value => (value?.slot ?? 0) === 0;
+
 export function desertOutingStatus(value, day) {
   const progress = desertProgress(value);
-  if (progress.talks < DESERT_TALKS.length) return { ok: false, why: "まだ誘われていない", first: progress.outings === 0 };
+  const first = progress.outings === 0;
+  if (progress.talks < DESERT_TALKS.length) return { ok: false, why: "まだ誘われていない", first };
   if (progress.lastOutingDay !== null && progress.lastOutingDay >= day) return { ok: false, why: "今日はもう砂丘へ行った", first: false };
-  return { ok: true, why: "", first: progress.outings === 0 };
+  if (!desertDaytime(value)) return { ok: false, why: "今日の昼はもう別の予定に使った", first };
+  return { ok: true, why: "", first };
 }
 
-/** 外出を確定する（昼の行動枠を使う）。この外出の中の再挑戦はもう消費しない。 */
+/**
+ * 外出を確定する。昼の行動を1つ使う（今の章では slot を 1 にする。ラクダレースと同じ。14日化の runDaily では calendar が同じ slot を進める）。
+ * この外出の中の再挑戦はもう消費しない。
+ */
 export function beginDesertOuting(value, day) {
   if (!value?.flags || !desertOutingStatus(value, day).ok) return false;
   const progress = desertProgress(value);
   write(value, { ...progress, outings: progress.outings + 1, lastOutingDay: day });
+  value.slot = 1;
   return true;
 }
 

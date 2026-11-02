@@ -34,14 +34,22 @@ test("the outing uses the day once: a second trip waits for the next day, retrie
   for (const [index, id] of DESERT_TALKS.entries()) completeDesertTalk(value, id, index + 1);
   assert.deepEqual(desertOutingStatus(value, 3), { ok: true, why: "", first: true });
   assert.equal(beginDesertOuting(value, 3), true);
+  assert.equal(value.slot, 1, "the outing spends the daytime action (the same slot as the camel race)");
   assert.deepEqual(desertOutingStatus(value, 3), { ok: false, why: "今日はもう砂丘へ行った", first: false });
   assert.equal(beginDesertOuting(value, 3), false, "no second outing on the same day");
+  value.slot = 0; // 宿で日を終えると昼に戻る（endChapterFourDay）
   // 同じ外出の中の滑り直し: 記録だけが増え、外出の回数は増えない
   recordDesertResult(value, result(3000, "C")); recordDesertResult(value, result(5000, "B"));
   assert.equal(desertProgress(value).outings, 1);
   assert.deepEqual(desertOutingStatus(value, 4), { ok: true, why: "", first: false });
   assert.equal(beginDesertOuting(value, 4), true);
   assert.equal(desertProgress(value).outings, 2);
+  // ほかの昼の行動（ラクダレース）で昼を使った日は行けない
+  value.slot = 1;
+  assert.deepEqual(desertOutingStatus(value, 5), { ok: false, why: "今日の昼はもう別の予定に使った", first: false });
+  assert.equal(beginDesertOuting(value, 5), false);
+  value.slot = 0;
+  assert.equal(desertOutingStatus(value, 5).ok, true);
 });
 
 test("records keep the best by score, count runs, and reward the first finish only once", () => {
@@ -93,6 +101,7 @@ test("map destinations: the desk before the invitation, the dunes after, with th
   recordDesertResult(value, result(6400, "B"));
   [dunes] = desertDestinations(value, 3);
   assert.equal(dunes.ok, false); assert.match(dunes.purpose, /今日はもう砂丘へ行った/);
+  value.slot = 0;
   [dunes] = desertDestinations(value, 4);
   assert.equal(dunes.ok, true); assert.match(dunes.purpose, /自己ベスト 6,400点／B/);
   assert.equal(dunes.visited, true);
