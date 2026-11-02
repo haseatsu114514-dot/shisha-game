@@ -258,6 +258,8 @@ export const PLAY_REWARDS = [
   { id: "trpg-star3", game: "trpg", stars: 3, label: "TRPGで★3の卓", gift: { wisdom: 1 } },
   // DJ はまだ本編に入っていない（remake/previews/dj）。入ったら最高ランクを state に残し、ここを読む
   { id: "dj-a", game: "dj", rank: "A", label: "DJで Aランク", gift: { sense: 1 } },
+  // 第4章ドバイのサンドボード（chapters/ch4-desert.js が state.desert.bestRank を残す）
+  { id: "desert-a", game: "desert", rank: "A", label: "サンドボードで Aランク", gift: { body: 1 } },
 ];
 /** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色） */
 export const KUJI_LAST_ONE_GIFT = 1;

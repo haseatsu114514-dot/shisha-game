@@ -51,6 +51,10 @@ mukaiの看板猫てつこ（#1993）は、到着の場面で裏口に登場し�
 タップ／Spaceで穴を開け、完成後に次のリング・仕上げを選ぶ。本番と同じ工程を呼び、本編セーブは読み書きしない。
 回帰テストは `node remake/test/browser/craft_materials.mjs`（PC／横持ちタッチ）と `node --experimental-vm-modules remake/test/foil_holes.mjs`。
 
+サンドボード DESERT RIDE（第4章ドバイの昼の寄り道）は `http://127.0.0.1:8123/remake/desert-ride.html` で単体でも遊べる。
+後方視点の疑似3Dで砂丘を自動滑走し、← →（スマホは左右ボタン）で岩をよけ、起伏の手前で Space（ジャンプ）、着地の直前にもう一度 Space で姿勢を整える。転倒しても起き上がる。S／A／B／Cの評価と自己ベスト、練習（チュートリアル）、動き軽減に対応。
+本編では宿の隣の砂漠ツアーのデスクでヌールと3回話すと「ヌールと砂丘へ」が出る（昼の行動1つ・滑り直しは無料・初回完走だけ経験値）。[仕様・操作・Codex向け素材依頼](../docs/spec/desert_ride.md)。検証は `node --test remake/test/desert_ride.mjs remake/test/ch4_desert.mjs` と `node remake/test/browser/desert_ride.mjs`。
+
 斧投げの練習は `http://127.0.0.1:8123/remake/axe-throw.html`。
 生成素材とキャラクターの反応を表示し、横・縦・回転のゲージを順に止める。WATL 2026式の的（刃の幅で採点・宣言制の青7／8点・落下で追加宣言・5投で的を交代・レク／アマ／プロの閉じ方）、3投練習／10投ゲーム、ひよりとの対戦（同点はサドンデス、2本先取のマッチ）がある。PC・スマホ縦横で遊べる。
 本編セーブや好感度・恋人/友人状態は変更しない。[操作・API・検証](../docs/spec/axe_throw.md)。
