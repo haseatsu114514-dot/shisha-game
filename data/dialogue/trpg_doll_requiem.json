@@ -2540,6 +2540,7 @@
     "genre": "怖すぎない洋館ミステリー",
     "tagline": "真夜中の鐘までに、人形たちのわけを知る。",
     "image": "../../img/backgrounds/trpg_doll-requiem_room.webp",
+    "choiceArt": {"src": "../../img/ui/trpg/choices-doll-requiem.webp", "rowCount": 5, "rows": {"mend": 0, "tea": 1, "call": 2, "tactic": 3, "hypotheses": 4}},
     "sceneAlt": "雪の夜の洋館の広間。人形の飾り棚、子ども部屋の小さな舞台、書斎の日記、雪の窓辺、柱時計、オルゴールの箱。棚に硝子の瞳の人形たち。",
     "location": "霧氷の丘 / 洋館「ラベンダー館」",
     "atmosphere": "降りやまない雪。ラベンダーの香り。硝子の瞳が、灯を映す。",
