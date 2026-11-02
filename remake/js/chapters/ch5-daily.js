@@ -121,7 +121,7 @@ const currentRegion = () => ["widehanga", TOKYO, DUBAI].includes(state.flags._ch
 export const chapterFiveTokyoSpots = () => [...TOKYO_SPOTS.filter(spot => (!spot.charId || state.met?.[spot.charId]) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
 /** ドバイの行き先（モスクは灯せる火種がある時だけ）。 */
 export const chapterFiveDubaiSpots = () => DUBAI_SPOTS.filter(reflectable);
-// 内省の場所（東京の神社・ドバイのモスク）は、心得の盤で灯せる火種がある時だけ地図に出す（第3・4章と同じ）。
+// 内省の場所（東京の池の弁天堂・ドバイのモスク）は、心得の盤で灯せる火種がある時だけ地図に出す（第3・4章と同じ）。
 const reflectable = spot => !spot.reflect || canReflect(state);
 
 /** 柚ヶ谷の支店（第2章の「県大会向け」の説明は使わない）。 */

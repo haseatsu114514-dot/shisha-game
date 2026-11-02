@@ -1164,7 +1164,7 @@ await suite("growth-levelup", async (runCheck) => {
     });
     assert.deepEqual(legacy, { board: null, grew: true, oldSame: true });
   });
-  // 大会前夜の内省の場所は今いる地域で決まる（地元＝観音堂、東京＝路地裏の神社、柚ヶ谷＝宿の窓辺）
+  // 大会前夜の内省の場所は今いる地域で決まる（地元＝観音堂、東京＝池の弁天堂（id は tokyo_shrine のまま）、柚ヶ谷＝宿の窓辺）
   await check("eve-place-by-region", async (page) => {
     await setupDaily(page);
     const places = await page.evaluate(async () => {
@@ -1224,7 +1224,7 @@ await suite("growth-levelup", async (runCheck) => {
     const saved = await page.evaluate(async () => JSON.parse(localStorage.getItem((await import("./js/core/state.js")).SAVE_KEY)).growth.nodes);
     assert.deepEqual(saved, ["B1"], "灯した盤は保存される");
   }, { viewport: { width: 1331, height: 760 } });
-  // 第5章で東京・ドバイに泊まっている間も、路地裏の神社・風の回廊モスクで盤を開ける（SBD97。2026-11-02）。
+  // 第5章で東京・ドバイに泊まっている間も、池の弁天堂（IR26）・風の回廊モスクで盤を開ける（SBD97。2026-11-02）。
   // 灯せる火種がある時だけ地図に出て、灯しても時間・体力・お金は変わらない。火種を使い切ると地図から消える。
   await check("chapter-five-tokyo-shrine-and-dubai-mosque", async (page) => {
     page.setDefaultTimeout(30000);
@@ -1253,6 +1253,19 @@ await suite("growth-levelup", async (runCheck) => {
       await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
       await page.locator(t("slot-0")).click();
       await page.locator(`.map:not(.done)[data-region="${region}"] ${t(`pin-${pin}`)}`).waitFor({ timeout: 60000 });
+      if (region === "tokyo") {
+        // 池の弁天堂は地図の右下の池のお堂に立つ。地図からはみ出さず、ほかの行き先のピンと重ならない（IR26）
+        const layout = await page.evaluate((pin) => {
+          const box = node => { const r = node.getBoundingClientRect(); return { x: r.x, y: r.y, right: r.right, bottom: r.bottom }; };
+          const map = document.querySelector(".map:not(.done) .map-pins"), mine = map.querySelector(`[data-spot="${pin}"]`);
+          return { map: box(map), mine: box(mine), caption: mine.querySelector(".sub-label")?.textContent,
+            others: [...map.querySelectorAll(".spot-pin")].filter(node => node !== mine).map(node => ({ id: node.dataset.spot, ...box(node) })) };
+        }, pin);
+        assert.equal(layout.caption, "池の弁天堂");
+        assert(layout.mine.right <= layout.map.right + 1 && layout.mine.bottom <= layout.map.bottom + 1, `${pin}: 地図からはみ出さない`);
+        for (const other of layout.others) assert(layout.mine.right <= other.x || other.right <= layout.mine.x
+          || layout.mine.bottom <= other.y || other.bottom <= layout.mine.y, `${pin} と ${other.id} が重なる`);
+      }
       const before = await page.evaluate(() => ({ day: __remake.state.day, slot: __remake.state.slot, stamina: __remake.state.stamina, money: __remake.state.money }));
       await page.locator(t(`pin-${pin}`)).click(); await page.locator(t("map-go")).click();
       for (let i = 0; i < 80 && !(await page.locator(t("growth-board")).count()); i++) {
@@ -1270,7 +1283,7 @@ await suite("growth-levelup", async (runCheck) => {
       assert.deepEqual(after.nodes, ["B1"]); assert.equal(after.region, region);
       assert.equal(await page.locator(t(`pin-${pin}`)).count(), 0, `${pin}: 火種を使い切ると地図から消える`);
     };
-    await open("tokyo", "ch5_tokyo_shrine", /神社/);
+    await open("tokyo", "ch5_tokyo_shrine", /池の弁天堂/);
     await open("dubai", "ch5_dubai_mosque", /モスク/);
   }, { viewport: { width: 1331, height: 760 } });
   // 日常ループ（第3章の版3）でも、会いに行った店で灯した授業を相談できる: mukai のシフトの帰りに、ましろちゃんの「ブラックティーを一割」（2026-11-02）
