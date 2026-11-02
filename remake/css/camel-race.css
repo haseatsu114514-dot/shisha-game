@@ -15,23 +15,23 @@
 .camel-standings li[data-who="player"] { background: rgba(232,194,122,.22); outline: 1px solid rgba(255,226,166,.6); }
 .camel-close { min-height: 40px; padding: 6px 14px; border: 1px solid rgba(255,246,229,.35); border-radius: 8px; background: rgba(0,0,0,.35); color: #fff6e5; font: inherit; font-size: 13px; cursor: pointer; }
 .camel-close:hover, .camel-close:focus-visible { border-color: var(--gold-hi, #ffe2a6); }
-.camel-stage { position: relative; min-height: 0; height: 100%; max-width: 100%; aspect-ratio: 16 / 9; justify-self: center; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,226,166,.3); background: #e2c48c; box-shadow: 0 14px 40px rgba(0,0,0,.3); }
+.camel-stage { position: relative; container-type: size; min-height: 0; height: 100%; max-width: 100%; aspect-ratio: 16 / 9; justify-self: center; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,226,166,.3); background: #e2c48c; box-shadow: 0 14px 40px rgba(0,0,0,.3); }
 .camel-canvas { display: block; width: 100%; height: 100%; object-fit: contain; background: #e2c48c; }
-.camel-feedback { position: absolute; left: 32%; top: 40%; transform: translate(-50%, -50%) scale(.7); opacity: 0; font-size: 34px; font-weight: 900; letter-spacing: .08em; text-shadow: 0 2px 0 rgba(0,0,0,.4), 0 0 18px rgba(0,0,0,.35); pointer-events: none; transition: none; }
+.camel-feedback { position: absolute; left: 32%; top: 40%; transform: translate(-50%, -50%) scale(.7); opacity: 0; font-size: clamp(18px, 3.4cqw, 34px); font-weight: 900; letter-spacing: .08em; text-shadow: 0 2px 0 rgba(0,0,0,.4), 0 0 18px rgba(0,0,0,.35); pointer-events: none; transition: none; }
 .camel-feedback.show { opacity: 1; transform: translate(-50%, -50%) scale(1); animation: camel-pop .7s ease-out both; }
 .camel-feedback[data-kind="perfect"] { color: #ffe27a; }
 .camel-feedback[data-kind="good"] { color: #b8f0ff; }
 .camel-feedback[data-kind="miss"], .camel-feedback[data-kind="lost"] { color: #ff8e8e; }
 .camel-feedback[data-kind="boost"], .camel-feedback[data-kind="early"] { color: #c8ffd4; }
-.camel-feedback[data-kind="spurt"] { color: #ffb347; font-size: 40px; }
+.camel-feedback[data-kind="spurt"] { color: #ffb347; font-size: clamp(20px, 4cqw, 40px); }
 @keyframes camel-pop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.6); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 70% { opacity: 1; transform: translate(-50%, -60%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -80%) scale(1); } }
-.camel-banner { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); padding: 10px 34px; border: 2px solid rgba(255,255,255,.7); border-radius: 100px; background: rgba(20,14,10,.72); font-size: 32px; font-weight: 900; letter-spacing: .2em; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.camel-banner { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); padding: 10px 34px; border: 2px solid rgba(255,255,255,.7); border-radius: 100px; background: rgba(20,14,10,.72); font-size: clamp(18px, 3.2cqw, 32px); font-weight: 900; letter-spacing: .2em; opacity: 0; pointer-events: none; transition: opacity .2s; }
 .camel-banner.show { opacity: 1; animation: camel-banner .5s ease-out both; }
 .camel-banner[data-kind="spurt"] { color: #ffb347; border-color: #ffb347; }
-.camel-banner[data-kind="goal"] { color: #ffe27a; border-color: #ffe27a; font-size: 44px; }
-.camel-banner[data-kind="tired"] { color: #ff8e8e; border-color: #ff8e8e; font-size: 24px; }
+.camel-banner[data-kind="goal"] { color: #ffe27a; border-color: #ffe27a; font-size: clamp(22px, 4.4cqw, 44px); }
+.camel-banner[data-kind="tired"] { color: #ff8e8e; border-color: #ff8e8e; font-size: clamp(16px, 2.4cqw, 24px); }
 @keyframes camel-banner { from { transform: translateX(-50%) scale(.8); } to { transform: translateX(-50%) scale(1); } }
-.camel-countdown { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); font-size: 120px; font-weight: 900; color: #fff6e5; text-shadow: 0 4px 0 rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.45); opacity: 0; pointer-events: none; }
+.camel-countdown { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); font-size: clamp(56px, 12cqw, 120px); font-weight: 900; color: #fff6e5; text-shadow: 0 4px 0 rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.45); opacity: 0; pointer-events: none; }
 .camel-countdown.show { opacity: 1; animation: camel-count .9s ease-out both; }
 @keyframes camel-count { from { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } 30% { opacity: 1; } to { transform: translate(-50%, -50%) scale(1); } }
 .camel-live { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
