@@ -68,7 +68,7 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator(t("levelup-ok")).click();await page.locator(t("ch5-complete")).waitFor();
     await assertFits(page,t("ch5-reflect"));await page.locator(t("ch5-reflect")).click();
     await page.locator(t("kannon-reflect")).waitFor();assert.equal(await page.locator(t("kannon-visit")).count(),0);
-    await page.locator(t("kannon-reflect")).click();await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+    await page.locator(t("kannon-reflect")).click();await page.locator(`${t("growth-board")}[data-mode="light"][data-art]`).waitFor();
     await page.locator(t("board-node-B1")).click();await page.locator(t("board-light")).click();await page.locator(t("board-decide")).click();
     await page.locator(t("growth-board")).waitFor({state:"detached"});await page.locator(t("ch5-complete")).waitFor();
     const result=await page.evaluate(async()=>{
@@ -807,7 +807,7 @@ await suite("growth-levelup", async (runCheck) => {
       await tap(t("hud-menu"));
       assert.match(await page.locator(t("menu-board")).innerText(), /火種 2/);
       await tap(t("menu-board"));
-      await page.locator(`${t("growth-board")}[data-mode="view"]`).waitFor();
+      await page.locator(`${t("growth-board")}[data-mode="view"][data-art]`).waitFor();
       assert.equal(await page.locator(t("board-light")).count(), 0);
       await tap('.gb-node[data-status="available"]');
       assert.equal(await page.locator(t("board-light")).count(), 0);
@@ -822,7 +822,7 @@ await suite("growth-levelup", async (runCheck) => {
         if (await next.isVisible()) await tap(".vn-box");
         await page.waitForTimeout(150);
       }
-      await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+      await page.locator(`${t("growth-board")}[data-mode="light"][data-art]`).waitFor();
       assert.equal(await page.evaluate(() => __remake.state.flags._kannon_growth_intro_done), true);
       assert.match(await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(x => x.text).join(" ")), /三つの盤/);
       for (let i = 0; i < 2; i++) { // 火種2つを使い切る
@@ -1213,7 +1213,7 @@ await suite("growth-levelup", async (runCheck) => {
       if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click().catch(() => {});
       await page.waitForTimeout(150);
     }
-    await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+    await page.locator(`${t("growth-board")}[data-mode="light"][data-art]`).waitFor();
     assert.match(await page.locator(t("board-place")).innerText(), /モスクの回廊で内省/);
     await page.locator(t("board-node-B1")).click(); await page.locator(t("board-light")).click(); await page.locator(t("board-decide")).click();
     await page.locator(t("growth-board")).waitFor({ state: "detached" });
@@ -1259,7 +1259,7 @@ await suite("growth-levelup", async (runCheck) => {
         if (await page.locator(".vn-box").isVisible().catch(() => false)) await page.locator(".vn-box").click().catch(() => {});
         await page.waitForTimeout(150);
       }
-      await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+      await page.locator(`${t("growth-board")}[data-mode="light"][data-art]`).waitFor();
       assert.match(await page.locator(t("board-place")).innerText(), place);
       await page.locator(t("board-node-B1")).click(); await page.locator(t("board-light")).click(); await page.locator(t("board-decide")).click();
       await page.locator(t("growth-board")).waitFor({ state: "detached" });
