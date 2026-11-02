@@ -40,7 +40,7 @@ async function seed(page) {
     // 予告3の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして第5章本体に集中する。
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
       _ch4_preview_seen: true, _lime_opened: true, _lime_tut: 1,
-      _ch4_cleared: true, _ch4_sheikh_revealed: true,
+      _ch4_cleared: true, _ch4_sheikh_revealed: true, _ch5_after_party: true, // 打ち上げは ch5-after-party の検査で見る
       _ch4: { startDay: 46, day: 5, stage: 4, part: "cleared", titleSeen: true, read: {},
         firstDay: 1, resolution: 5, attempts: 1 } };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
@@ -273,7 +273,7 @@ await suite("ch5-full-flow", async check => {
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
-        _ch5_match_scheduled: false, _ch5_match_started: false };
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
       Object.assign(value.met, { kumicho: true, rei: true, ageha: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -322,7 +322,7 @@ await suite("ch5-full-flow", async check => {
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
-        _ch5_match_scheduled: false, _ch5_match_started: false };
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
       Object.assign(value.met, { steve: true, volk: true, mukai_master: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -362,6 +362,43 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "free", "The Tokyo stay does not move the Chapter 5 story");
   });
 
+  // 帰国後の tonari の打ち上げ（オーナー指定 2026-11-02）: 自由行動の始めに一度だけ、誰の隣に座るかを選ぶ。
+  // その場にいる恋人が2人以上なら、どの席でも浮気がばれて修羅場（恋人ごとの反応→謝罪＝未解決の印）。
+  await check("chapter-five-after-party-seat-and-two-lovers-shuraba", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 30000, stamina: 100,
+        weatherSeed: 5, lovers: ["tsumugi", "minto"], loveLevel: { tsumugi: 1, minto: 1 }, contacts: ["sumi", "tsumugi", "minto"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
+          read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
+          finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false };
+      Object.assign(value.met, { tsumugi: true, minto: true, naru: true });
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    // 打ち上げの始まり → 席の選択（会ったことのあるヒロイン2人とスミさん）。
+    await page.locator(dt("party-seat-minto")).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator('[data-test^="party-seat-"]').count(), 3, "Two met heroines and Sumi");
+    await page.locator(dt("party-seat-minto")).click();
+    await mapReady(page, { day: 51, slot: 0 });
+    const state = await get(page);
+    assert.equal(state.flags._ch5_after_party, true);
+    assert.equal(state.flags._ch5_party_seat, "minto");
+    assert.equal(state.flags._story_shuraba_unresolved, true, "Two lovers at the party: the affair comes out and stays unresolved");
+    assert.equal(state.slot, 0, "The party does not use a free action");
+    // もう一度入っても打ち上げは繰り返さない。
+    await loadSlot(page, 0);
+    await mapReady(page, { day: 51, slot: 0 });
+    assert.equal(await page.locator('[data-test^="party-seat-"]').count(), 0, "The party happens once");
+  });
+
   // #2033 F: KEMURIKUSA（なる）と C.STATION は第5章の通いの小会話。代金・体力・好感度（なるだけ +5）が付き、会話は巡回する。
   await check("chapter-five-kemurikusa-and-c-station-regular-talks", async page => {
     page.setDefaultTimeout(30000);
@@ -376,7 +413,7 @@ await suite("ch5-full-flow", async check => {
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
-        _ch5_match_scheduled: false, _ch5_match_started: false };
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
       Object.assign(value.met, { naru: true });
       value.affinity = { naru: 40 };
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
@@ -416,7 +453,7 @@ await suite("ch5-full-flow", async check => {
         _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true,
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
-        _ch5_match_scheduled: false, _ch5_match_started: false };
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true };
       Object.assign(value.met, { sheikh: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
