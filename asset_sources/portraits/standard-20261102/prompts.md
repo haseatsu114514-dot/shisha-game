@@ -365,6 +365,43 @@ Japanese 2D visual-novel game art in the same artist's hand as the approved Mint
 Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
 ```
 
+## 作り直し：サイフ・ラシード（TS13）
+
+2026-11-02 第4章で追加された2人。`portrait_metrics.py check` でサイフ 8.62頭身・ラシード 9.75頭身（全員で最も頭が小さい）。オーナー「作り直して良い　見た目は今のがいいけど」で作り直す。**顔・衣装・色・ポーズ・持ち物は今の絵のまま、頭の大きさだけ**を直す。
+
+TS10 で「頭を約○%大きく」が効かなかったので、TS12 と同じく**画像の中の大きさをpxで**指定する。目標は南雲の実測（全身1400pxのとき、目〜あご 84px・頭頂〜あご 201px・頬の幅 113px）。
+参照画像は①現行の通常、②南雲（頭身の文脈だけ）、③みんと・④あげは（画風だけ）。
+
+合格の条件：全身1400px換算で、サイフは目〜あご 約85px（今69px）・頭頂〜あご 約195px（今162px）、ラシードは目〜あご 約92px（今72px）。`portrait_metrics.py grid --image` で原画を測り、頭身が 6.4〜7.7。顔・衣装・持ち物・ポーズが①と同じ。
+
+### サイフ（`saif`）・normal
+
+```
+Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. The owner likes the current look: whenever the style references and image 1 disagree, stay closer to image 1. Image 2 Nagumo is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+
+Character: Saif, a 24-year-old Emirati young man, tall and slim, warm brown skin, short cropped black hair with a neat fade, a thin trimmed beard along the jaw and chin, big friendly eyes, a relaxed closed-mouth smile with a slight head tilt. Black short-sleeved polo shirt with no logo or letters, sand-colored slim chinos, white sneakers, thin brown leather cords on the right wrist. Pose kept from image 1: right hand raised at shoulder height holding a small round brass flavor tin, left hand in the trouser pocket, weight on one leg.
+
+HEAD SIZE (a percentage instruction did not work last time, so use pixels): in a figure about 1400 px tall (hair top to soles), the distance from the eye line to the chin must be about 85 px (now about 69 px), and from the top of the hair to the chin about 195 px (now about 162 px), so that he is about 7 heads tall like image 2. Enlarge the whole head, hair, ears and beard together with natural neck and shoulders. Keep the total figure height, the slim long-legged silhouette, both hands, the tin and the stance. He must still look like the same young man.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
+### ラシード（`rashid`）・normal
+
+```
+Redraw the attached CURRENT game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. The owner likes the current look: whenever the style references and image 1 disagree, stay closer to image 1. Image 2 Nagumo is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.
+
+Character: Rashid, a 56-year-old Emirati man, sun-tanned face with deep wrinkles, short grey-and-white beard and moustache, calm sharp eyes, a slight knowing closed-mouth smile. Red-and-white checked ghutra headcloth held by a black agal, the cloth ends falling over both shoulders and down the back. White long-sleeved kandura reaching the ankles, an old sand-colored utility vest with pockets over it, brown leather shoes. Pose kept from image 1: right hand at waist height holding a small black car-key-sized remote controller with a short wrist strap, left hand in the vest or kandura pocket, upright relaxed stance.
+
+HEAD SIZE (a percentage instruction did not work last time, so use pixels): the skull is hidden by the headcloth, so size the FACE: in a figure about 1400 px tall (headcloth top to soles), the distance from the eye line to the chin (under the beard) must be about 92 px (now about 72 px), and the face width at the cheekbones about 120 px (now about 98 px). Enlarge the whole face, beard, headcloth and agal together, with natural neck and shoulders. Keep the total figure height, the long kandura silhouette, both hands, the remote and the stance. He must still look like the same man of the same age.
+
+Japanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rin sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.
+
+Output ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.
+```
+
 ## 試作1回目でわかったこと（2026-11-02）
 
 Codex が上の3つの英文で各3案（計9案）を生成した。頭身は次のとおりで、指定した拡大率どおりにはならなかった。
