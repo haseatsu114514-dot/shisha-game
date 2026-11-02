@@ -39,7 +39,7 @@ await suite("ch1-visual-quality", async check => {
           const text = place === "home"
             ? (time === "day" ? "朝。喉の奥が痛い。" : "店明かりの落ちた商店街")
             : place === "street"
-              ? (time === "day" ? "また来たね" : "今夜、俺と共に")
+              ? (time === "day" ? "また会ったね" : "今夜、俺と共に") // 路上占い師の作り替え（神出鬼没・84e1483a）で台詞が「また来たね」→「……また会ったね」
               : (time === "day" ? "はじめ、あのお姉さんの注文で" : "大会まであと");
           await page.locator(".vn-text").filter({ hasText: text }).waitFor();
           await page.waitForFunction(() => Number(getComputedStyle(document.getElementById("vn")).opacity) >= .99);
