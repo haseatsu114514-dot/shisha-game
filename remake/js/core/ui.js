@@ -418,10 +418,8 @@ function pumpBanners() {
   }
 }
 
-/**
- * 通知の光を、ステータスの入口（HUD の MENU）へ運ぶ。拡縮後もステージ座標で計算する。
- * 五角形のステータスボタンは廃止し、ステータスは全画面MENUのタブへ移した（DUI05・#2097）。
- */
+/** 通知の光を、ステータスの入口（HUD の MENU）へ運ぶ。拡縮後もステージ座標で計算する。 */
+// 五角形のステータスボタンは廃止し、ステータスは全画面MENUのタブへ移した（DUI05・#2097）。
 function flyStatGain(card, { stat, points }) {
   const menu = document.querySelector("#hud .hud-menu");
   const hud = menu?.closest("#hud");
