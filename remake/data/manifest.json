@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-31 05:19 UTC",
+ "generated": "2026-11-02 00:27 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -416,8 +416,13 @@
   "bg_ch3_train_arrival.png",
   "bg_choizap.png",
   "bg_choizap_night.png",
+  "bg_dubai_airport_day.png",
+  "bg_dubai_cafe_day.png",
+  "bg_dubai_inn_day.png",
+  "bg_dubai_inn_night.png",
   "bg_dubai_map.png",
   "bg_dubai_map_dusk.png",
+  "bg_dubai_souq_day.png",
   "bg_eden_shop.png",
   "bg_fookah_showroom.png",
   "bg_hideaway.png",
@@ -2271,8 +2276,13 @@
   "backgrounds/bg_ch3_train_arrival.png",
   "backgrounds/bg_choizap.png",
   "backgrounds/bg_choizap_night.png",
+  "backgrounds/bg_dubai_airport_day.png",
+  "backgrounds/bg_dubai_cafe_day.png",
+  "backgrounds/bg_dubai_inn_day.png",
+  "backgrounds/bg_dubai_inn_night.png",
   "backgrounds/bg_dubai_map.png",
   "backgrounds/bg_dubai_map_dusk.png",
+  "backgrounds/bg_dubai_souq_day.png",
   "backgrounds/bg_eden_shop.png",
   "backgrounds/bg_fookah_showroom.png",
   "backgrounds/bg_hideaway.png",
