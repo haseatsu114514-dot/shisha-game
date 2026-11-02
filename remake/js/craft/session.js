@@ -270,9 +270,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   }
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText && !lesson;
-  b.guide.note.textContent = lesson
-    ? [lesson.detail, hintText].filter(Boolean).join("　操作：")
-    : hintText;
+  b.guide.note.textContent = lesson?.detail || hintText;
   b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
   // 短い操作案内は、隠れている見出しではなく既存のスミさんの欄へ。
   // 蒸らし弾幕中は従来どおり無言とし、説明は「?」で読み返せる。

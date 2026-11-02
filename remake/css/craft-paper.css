@@ -563,6 +563,16 @@ html .bench[data-mode] .pull-btns .btn.primary:hover:not(:disabled) {
   background: transparent; border: 14px solid transparent;
   border-image: var(--cp-button-amber) 36 fill / 14px / 0 stretch; box-shadow: none;
 }
+/* 練習・レッスンの確定操作を同じ金ボタンに揃える。 */
+html .bench[data-mode] .btn.primary:is(.pack-confirm, .hr-punch),
+html .bench[data-mode] .btn.primary:is(.pack-confirm, .hr-punch):hover:not(:disabled),
+html .bench[data-mode][data-art-skin] .btn.primary:is(.pack-confirm, .hr-punch),
+html .bench[data-mode][data-art-skin] .btn.primary:is(.pack-confirm, .hr-punch):hover:not(:disabled) {
+  color: #3b2208; background-color: var(--amber);
+}
+html .bench[data-mode] .bench-demo-sheet .bench-demo-finish {
+  color: #3b2208; background: var(--amber); border-color: #b88132; font-weight: 700;
+}
 /* 名前欄は元から絵に重なるabsolute層。空の帯を塗らず、見える台詞だけ窓に載せる。 */
 html .bench[data-mode] .bench-worker-name { background: none; }
 

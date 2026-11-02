@@ -349,6 +349,7 @@ export async function runHoles(cs) {
   scoreStep(cs, "holes", res.score, "穴あけ");
   refreshBench();
   await sleep(300);
+  panel.replaceChildren(); // 結果を出す前に穴あけ操作を片付け、完了ボタンとの重なりを防ぐ。
   await resultCard(panel, {
     title: "穴あけ 結果",
     button: "確認して次の工程へ",

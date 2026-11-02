@@ -424,6 +424,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .gc-meta { display: flex; flex-direction: column; gap: 2px; }
 .gc-top { font-family: var(--font); font-size: 14px; letter-spacing: 0.04em; color: var(--gc); }
 .gc-main { font-size: 21px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
+.gain-card.affinity .gc-main { padding: 1px 6px; border-radius: 4px; color: #fff; background: rgba(26, 14, 30, .9); text-shadow: none; }
 .gc-sub { font-size: 13px; letter-spacing: .02em; color: var(--text-dim); }
 .gc-evolution { font-size: 20px; line-height: 1.5; color: var(--gold-hi); }
 .gc-fx { margin-top: 3px; padding: 2px 8px; font-size: 14px; font-weight: 700; color: #1a1018; background: var(--gc); border-radius: 3px; align-self: flex-start; }
