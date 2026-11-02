@@ -47,13 +47,14 @@ export const GRADES = Object.freeze([["S", 85], ["A", 70], ["B", 50], ["C", 0]])
 export const gradeOf = score => GRADES.find(([, min]) => score >= min)[0];
 
 // ライバルの走り方（先行・追い込み・安定）。区間ごとの目安速度 m/s。seed で ±0.4 の個体差と細かな揺れ。
+// color はゼッケン・順位の札・名札・進み具合の点で共通（自分は金、AI は緑・青・紫で見分けやすく）。
 export const RIVAL_PROFILES = Object.freeze([
-  { id: "front", name: "ナジュム", color: "#d9b26a", speeds: [19.9, 18.4, 17.6], note: "先行型。前半で前に出る" },
-  { id: "closer", name: "リーフ", color: "#8fb7d9", speeds: [17.7, 18.3, 20.6], note: "追い込み型。最後に伸びる" },
-  { id: "steady", name: "サブール", color: "#b69bd1", speeds: [18.6, 18.6, 18.7], note: "安定型。一定の足で走る" },
+  { id: "front", name: "ナジュム", color: "#4fae6a", speeds: [19.9, 18.4, 17.6], note: "先行型。前半で前に出る" },
+  { id: "closer", name: "リーフ", color: "#4b8ee0", speeds: [17.7, 18.3, 20.6], note: "追い込み型。最後に伸びる" },
+  { id: "steady", name: "サブール", color: "#a46ad8", speeds: [18.6, 18.6, 18.7], note: "安定型。一定の足で走る" },
 ].map(profile => Object.freeze(profile)));
 
-export const PLAYER_CAMEL = Object.freeze({ id: "player", name: "ハビーバ", color: "#e8c27a", note: "はじめが声をかけるラクダ" });
+export const PLAYER_CAMEL = Object.freeze({ id: "player", name: "ハビーバ", color: "#ffb52e", note: "はじめが声をかけるラクダ" });
 
 /** mulberry32。seed から [0,1) の列を作る。 */
 export function rng(seed) {
