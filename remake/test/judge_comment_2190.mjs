@@ -64,13 +64,14 @@ for (const index of [0, 1, 2]) {
   assert.match(improvementOf(cs), /熱を戻して/);
 }
 
-// Historical inZone remains authoritative after later leaf damage narrows the band.
+// Synthetic saved history, not a reachable fresh safe-count run: explicit historical successes remain authoritative.
 {
   const cs = cup();
   cs.pull.temp = temperatureBands(cs).ideal[0] + .001;
   cs.leaf = { hp: 2, max: 5, burn: 1, dmg: 10, steps: 10 };
   assert(!isIdealTemperature(cs.pull.temp, temperatureBands(cs)), "Fixture reproduces the later narrower band");
   assert.match(judgeComment(saved(cs)), /提供も2回の調整も、いい温度だった/);
+  assert.match(improvementOf(saved(cs)), /今回の記録を見て、次に試すことを選ぼう/);
 }
 
 // Missing, invalid, skipped and failed records must not manufacture thermal praise or blame.

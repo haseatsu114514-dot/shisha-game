@@ -13,7 +13,7 @@
       "id": "judge-comment-2190",
       "title": "Final judge comments follow recorded temperature results",
       "kind": "quick",
-      "run": ["node remake/test/judge_comment_2190.mjs"]
+      "run": ["node remake/test/judge_comment_2190.mjs", "node --experimental-vm-modules remake/test/pull_history_2190.mjs"]
     },
     {
       "id": "judge-comment-browser-2190",

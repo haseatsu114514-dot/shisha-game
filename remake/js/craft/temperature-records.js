@@ -1,9 +1,13 @@
 // 各工程の終了時に記録した温度の成否。最後の葉の傷みで過去の適温帯を狭めない。
+export function recordedTemperatureState(result) {
+  return result && !result.failed && !result.skipped
+    && Number.isFinite(result.score) && Number.isFinite(result.temp) && typeof result.inZone === "boolean"
+    ? result.inZone : null;
+}
+
 export function recordedTemperatureStates(cs) {
   const rounds = [cs?.pull, cs?.careHistory?.[0], cs?.careHistory?.[1]];
-  return rounds.map(result => result && !result.failed && !result.skipped
-    && Number.isFinite(result.score) && Number.isFinite(result.temp) && typeof result.inZone === "boolean"
-    ? result.inZone : null);
+  return rounds.map(recordedTemperatureState);
 }
 
 export function allRecordedTemperaturesIdeal(cs) {
