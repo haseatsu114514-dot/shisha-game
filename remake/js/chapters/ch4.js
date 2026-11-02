@@ -367,6 +367,17 @@ async function visit(owner, id) {
     await renderStage(owner);
     return;
   }
+  if (destination.kind === "desert_talk" || destination.kind === "desert") {
+    // 砂漠ツアーのデスク／砂丘のサンドボード（ch4-desert.js）。読了・外出・記録の確定と保存はあちらで行う。
+    const { visitDesert } = await import("./ch4-desert.js");
+    const controller = owner.controller = new AbortController();
+    try { await visitDesert(destination, { day: chapterFourProgress(state).day, isCurrent: () => current(owner), signal: controller.signal }); }
+    finally { if (owner.controller === controller) owner.controller = null; }
+    if (!current(owner)) return;
+    playBgm(CH4_DEFAULT_BGM);
+    await renderStage(owner);
+    return;
+  }
   for (const sceneId of destination.scenes) {
     if (CH4_SPOT_SCENES.includes(sceneId)) {
       // スポット初回は「……【センス】が少し上がった。」の台詞報酬を実際に加算する（通常の自由行動と同じ最大2能力各1P）。

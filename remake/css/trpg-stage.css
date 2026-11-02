@@ -1077,3 +1077,10 @@ html:root[data-ui-theme="paper"] .trpg-root .trpg-die.trpg-d20 .trpg-d20-value {
 .trpg-root.trpg-cinematic[data-phase="explore"]:not(:has(.trpg-overlay)) .trpg-table-status { visibility: hidden; }
 /* 結末の下地は上下をぼかして、四角い帯に見せない。 */
 .trpg-root.trpg-cinematic .trpg-ending::before { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); }
+/* 明るい背景の絵（朝霧・お城など）でも、選ぶ画面の見出しと選んだ項目が読めるように、暗い札を敷く。 */
+.trpg-root.trpg-cinematic .trpg-selection-title {
+  left: 50%; right: auto; width: max-content; max-width: 980px; transform: translateX(-50%);
+  padding: 6px 26px 9px; border: 1px solid #f1e3c02e; border-radius: 14px; background: #0b1420c2; box-shadow: 0 6px 18px #0006;
+}
+.trpg-root.trpg-cinematic .trpg-choice-tabs .trpg-choice-token { min-height: 30px; padding: 4px 14px; border-radius: 999px; background: #0b1420c2; border-bottom: 0; color: #efe8d6; }
+.trpg-root.trpg-cinematic .trpg-interview-prompt { width: max-content; max-width: 900px; margin-left: auto; margin-right: auto; padding: 3px 16px; border-radius: 999px; background: #0b1420c2; color: #efe8d6; text-shadow: none; }

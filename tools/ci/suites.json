@@ -220,6 +220,36 @@
       "run": ["node remake/test/browser/dj_club.mjs"]
     },
     {
+      "id": "desert-ride-rules",
+      "title": "DESERT RIDE course fairness, jump/landing/fall rules, ranks and the chapter 4 desk/outing/record rules",
+      "kind": "quick",
+      "run": ["node --test remake/test/desert_ride.mjs remake/test/ch4_desert.mjs"]
+    },
+    {
+      "id": "desert-ride",
+      "title": "DESERT RIDE on PC and touch, reduced motion, and the chapter 4 outing with save/load and interruption",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/js/minigames/desert-ride.js",
+        "remake/js/minigames/desert-ride-model.js",
+        "remake/js/minigames/desert-ride-art.js",
+        "remake/img/ui/desert_ride/**",
+        "remake/js/chapters/ch4-desert.js",
+        "remake/js/chapters/ch4-desert-progress.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch4-map-model.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/desert-ride-page.js",
+        "remake/desert-ride.html",
+        "remake/css/desert-ride.css",
+        "data/dialogue/ch4_desert.json",
+        "remake/test/browser/desert_ride.mjs"
+      ],
+      "run": ["node remake/test/browser/desert_ride.mjs"]
+    },
+    {
       "id": "title-art-met",
       "title": "Title art unlocks by characters met in the latest save",
       "kind": "quick",
