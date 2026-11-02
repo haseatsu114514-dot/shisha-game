@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { suite, baseURL, storageSnapshot, assertFits } from "./support.mjs";
 
 async function commandGeometry(page) {
@@ -400,3 +401,61 @@ await suite("blue-window-character-preview",async check=>{
     },{viewport});
   }
 },{entry:new URL("conversation-preview.html?theme=heisei-blue&character=minto",baseURL).href,readySelector:".vn-box"});
+
+// #2447: 日常UIの暗い面は、紙テーマの墨色を継承していないか実表示で観測する。
+// 修正前からある本番演出を呼ぶ表示fixture。通常進行の到達証明とは区別する。
+await suite("night-text-2447", async check => {
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
+    await check(`levelup-sleep-${viewport.width}`, async page => {
+      await page.evaluate(async () => {
+        const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js");
+        core.newGame(); ui.clearScreen();
+        const { presentNightGrowth } = await import("./js/daily/levelup.js");
+        const { totalExpFor } = await import("./js/core/growth.js");
+        window.nightText = presentNightGrowth({ from: 1, to: 2, xpFrom: 0, xpTo: totalExpFor(2),
+          gains: { any: 2, limited: [] }, gifts: [], learned: ["tonari_practice"], full: true, boardFull: false });
+      });
+      await page.locator('.levelup-backdrop').click({ position: { x: 10, y: 10 } });
+      await page.waitForFunction(() => document.querySelector('.levelup')?.classList.contains('lu-settled-state'));
+      const paint = await page.locator('.levelup').evaluate(panel => {
+        const luma = rgb => rgb.map(v => v / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
+          .reduce((a, v, i) => a + v * [.2126, .7152, .0722][i], 0);
+        const rgb = value => value.match(/[\d.]+/g).slice(0, 3).map(Number);
+        // Upper bound for the current gradient even over a white scene (97% opaque).
+        const backdrop = [34, 22, 44].map(v => v * .97 + 255 * .03);
+        return { background: getComputedStyle(panel).backgroundImage,
+          texts: [...panel.querySelectorAll('.lu-details p')].map(n => {
+            const style = getComputedStyle(n), a = luma(rgb(style.color)), b = luma(backdrop);
+            return { text: n.textContent, color: style.color, contrast: (Math.max(a,b)+.05)/(Math.min(a,b)+.05) };
+          }) };
+      });
+      console.log('[night-text-2447]', JSON.stringify(paint));
+      assert.match(paint.background, /linear-gradient/);
+      assert(paint.texts.some(t => t.text.includes("火種 ＋2")));
+      assert(paint.texts.some(t => t.text.includes("今日学んだこと")));
+      assert(paint.texts.every(t => t.contrast >= 4.5), JSON.stringify(paint));
+      await assertFits(page, '.lu-details, [data-test="levelup-ok"]');
+      const out = process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser';
+      fs.mkdirSync(out, { recursive: true });
+      await page.screenshot({ path: `${out}/2447-levelup-${viewport.width}.png` });
+      await page.locator('[data-test="levelup-ok"]').click();
+      await page.evaluate(() => window.nightText);
+      await page.locator('.levelup').waitFor({ state: 'detached' });
+      await page.evaluate(async () => {
+        const hud = await import("./js/daily/hud.js");
+        window.sleepText = hud.presentSleepRecovery({ before: 20, after: 100 });
+      });
+      await page.locator('.sleep-recovery.show').waitFor();
+      const sleep = await page.locator('.sleep-recovery').evaluate(n => ({ bg: getComputedStyle(n).backgroundColor,
+        color: getComputedStyle(n.querySelector('p')).color, text: n.textContent }));
+      console.log('[night-text-2447 sleep]', JSON.stringify(sleep));
+      assert.equal(sleep.bg, 'rgba(16, 27, 23, 0.91)');
+      assert.equal(sleep.color, 'rgb(237, 249, 238)');
+      assert.match(sleep.text, /ぐっすり眠って/);
+      await assertFits(page, '.sleep-recovery p');
+      await page.screenshot({ path: `${out}/2447-sleep-${viewport.width}.png` });
+      await page.evaluate(() => window.sleepText);
+      await page.locator('.sleep-recovery').waitFor({ state: 'detached' });
+    }, { viewport, reducedMotion: "reduce" });
+  }
+}, { acknowledgeGrowth: false });

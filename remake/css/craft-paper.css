@@ -508,11 +508,11 @@ html .bench[data-mode] .btn.primary,
 html .bench[data-mode] .btn.primary:hover:not(:disabled),
 html .bench[data-mode][data-art-skin] .btn.primary,
 html .bench[data-mode][data-art-skin] .btn.primary:hover:not(:disabled) {
-  color: #221534; background-color: #f6f1fa; border: 12px solid transparent;
+  color: #221534; background: #f6f1fa; border: 12px solid transparent;
   border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch;
 }
 html .bench[data-mode] .btn:hover:not(:disabled):not(.primary) {
-  color: #221534; background-color: #f6f1fa; border: 12px solid transparent;
+  color: #221534; background: #f6f1fa; border: 12px solid transparent;
   border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch;
 }
 html .bench[data-mode] .btn.primary .btn-desc { color: #5a4475; }
@@ -560,7 +560,8 @@ html .bench[data-mode][data-art-skin] .btn.primary:is(.hr-punch, .pack-confirm),
 html .bench[data-mode][data-art-skin] .btn.primary:is(.hr-punch, .pack-confirm):hover:not(:disabled),
 html .bench[data-mode] .pull-btns .btn.primary,
 html .bench[data-mode] .pull-btns .btn.primary:hover:not(:disabled) {
-  background: transparent; border: 14px solid transparent;
+  /* 画像未着でも文字の下は金。透明な縁には塗らず、旧白四角を戻さない。 */
+  background: #e3bd6e padding-box; border: 14px solid transparent;
   border-image: var(--cp-button-amber) 36 fill / 14px / 0 stretch; box-shadow: none;
 }
 /* 名前欄は元から絵に重なるabsolute層。空の帯を塗らず、見える台詞だけ窓に載せる。 */

@@ -11,14 +11,14 @@ const ngCase = ng => Object.fromEntries(ng.flavors.map(family => [
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 const click = (page, selector, touch) => touch ? page.locator(selector).tap() : page.locator(selector).click();
-async function setup(page) {
-  await page.evaluate(async () => {
+async function setup(page, mode = "tutorial") {
+  await page.evaluate(async mode => {
     const core = await import("./js/core/state.js"); core.newGame();
     window.F = { core, session: await import("./js/craft/session.js"), steps: await import("./js/craft/steps.js"),
       holes: await import("./js/craft/holes.js"), common: await import("./js/craft/common.js") };
-    F.cs = F.session.newSession("tutorial"); F.cs.mix = { double_apple: 10, mint: 2 };
+    F.cs = F.session.newSession(mode); F.cs.mix = { double_apple: 10, mint: 2 };
     await F.session.openBench(F.cs).ready;
-  });
+  }, mode);
 }
 await suite("craft-materials", async check => {
   for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
@@ -268,6 +268,45 @@ await suite("craft-materials", async check => {
       await capture(page, `${device}-preview`);
     }, options);
   }
+  // #2447: 練習/レッスンの実data-modeで、旧紫の背景画像と金画像未着の退行を防ぐ。
+  for (const mode of ["drill", "tutorial"]) for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
+    await check(`button-contrast-${mode}-${viewport.width}`, async page => {
+      await setup(page, mode);
+      assert.equal(await page.locator(".bench").getAttribute("data-mode"), mode);
+      await page.evaluate(() => { F.running = F.steps.stepPack(F.cs); });
+      const pack = page.locator('[data-test="pack-confirm"]');
+      await pack.waitFor();
+      for (const hover of [false, true]) {
+        if (hover) await pack.hover();
+        const paint = await pack.evaluate(n => {
+          const s = getComputedStyle(n); return { color: s.color, bg: s.backgroundColor, image: s.backgroundImage, clip: s.backgroundClip, border: s.borderTopWidth };
+        });
+        assert.deepEqual(paint, { color: "rgb(34, 21, 52)", bg: "rgb(227, 189, 110)", image: "none", clip: "padding-box", border: "14px" });
+      }
+      const before = await pack.boundingBox();
+      // Simulate only the missing border artwork; retain production CSS and geometry.
+      await pack.evaluate(n => { n.style.borderImageSource = "none"; });
+      assert.equal(await pack.evaluate(n => getComputedStyle(n).backgroundColor), "rgb(227, 189, 110)");
+      assert.deepEqual(await pack.boundingBox(), before);
+      await pack.evaluate(n => n.style.removeProperty("border-image-source"));
+      await pack.click(); await page.evaluate(() => F.running);
+      await page.evaluate(() => {
+        F.result = F.common.resultCard(document.querySelector(".bench-panel"), { title: "炭焼き", button: "作業へ進む" });
+      });
+      const next = page.locator('[data-test="step-next"]');
+      await next.waitFor();
+      for (const hover of [false, true]) {
+        if (hover) await next.hover();
+        const paint = await next.evaluate(n => {
+          const s = getComputedStyle(n); return { color: s.color, bg: s.backgroundColor, image: s.backgroundImage, border: s.borderTopWidth };
+        });
+        assert.deepEqual(paint, { color: "rgb(34, 21, 52)", bg: "rgb(246, 241, 250)", image: "none", border: "12px" });
+      }
+      await assertFits(page, '[data-test="step-next"]');
+      await next.click(); await page.evaluate(() => F.result);
+      await next.waitFor({ state: "detached" });
+    }, { viewport, reducedMotion: "reduce" });
+  }
   await check("automatic-packing", async page => {
     await setup(page);
     await page.evaluate(async () => { F.session.craftTest.auto = "good"; await F.steps.stepPack(F.cs); F.session.craftTest.auto = null; });
@@ -276,18 +315,17 @@ await suite("craft-materials", async check => {
   // #2359: 実際の制作処理と素材で3サイズを撮影。縦長はデスクトップ窓で確認し、回転案内は改変しない。
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 390, height: 844 }]) {
     for (const step of ["pack", "holes", "heat"]) await check(`night-${step}-${viewport.width}x${viewport.height}`, async page => {
-      await setup(page);
+      await setup(page, "drill");
       await page.evaluate(async step => {
-        F.cs.mode = "drill";
         const heat = await import("./js/craft/heat.js");
         F.running = step === "pack" ? F.steps.stepPack(F.cs) : step === "holes" ? F.holes.runHoles(F.cs) : heat.runHeat(F.cs);
       }, step);
       await page.locator(step === "pack" ? '[data-test="pack-confirm"]' : step === "holes" ? '[data-test="hole-start"]' : '.heat[aria-busy="false"]').waitFor();
       if (step === "pack") {
         const paint = await page.locator('[data-test="pack-confirm"]').evaluate(n => {
-          const s = getComputedStyle(n); return { background: s.backgroundColor, image: s.borderImageSource, width: s.borderTopWidth };
+          const s = getComputedStyle(n); return { background: s.backgroundColor, clip: s.backgroundClip, image: s.borderImageSource, width: s.borderTopWidth };
         });
-        assert.deepEqual(paint, { background: "rgba(0, 0, 0, 0)", image: paint.image, width: "14px" });
+        assert.deepEqual(paint, { background: "rgb(227, 189, 110)", clip: "padding-box", image: paint.image, width: "14px" });
         assert.match(paint.image, /button-gold\.webp/);
       }
       if (step === "holes") {
