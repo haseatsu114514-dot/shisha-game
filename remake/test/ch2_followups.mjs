@@ -66,6 +66,8 @@ const mocks = {
   "./ch2-story-data.js": { agehaStoryScene: () => null, syncAgehaVibes: () => 0 },
   // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
   "../core/growth.js": { consultLessons: async () => [] },
+  // 第5章の柚ヶ谷の通い訪問（#2033）が小会話を読み込む。ここでは第2章の訪問だけを見る
+  "../core/chapter-data.js": { readDialogues: async () => ({}) },
 };
 const module = new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/chapters/ch2-preparation.js", root), "utf8"), { context });
 await module.link(async specifier => {

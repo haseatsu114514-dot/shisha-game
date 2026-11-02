@@ -55,7 +55,7 @@
         { "speaker": "customer", "face": "normal", "text": "見た？ 『tonari、路地裏の名店。若い作り手の一台が、店の空気ごとうまい』だって" },
         { "speaker": "hajime", "face": "surprise", "text": "（うちの店だ……！ 若い作り手って、俺のこと、か……？）" },
         { "speaker": "", "face": "", "text": "あの日のハンチング帽を思い出す。……そうか、あの人だったんだ。" },
-        { "speaker": "", "face": "", "text": "その夜。記事を読んだスミさんが、黙って給料に売上ボーナスを乗せてくれた。" },
+        { "speaker": "", "face": "", "text": "その夜。記事を読んだスミさんが、給料とは別に売上ボーナスを渡してくれた。" },
         { "type": "apply", "stats": { "charm": 3 }, "money": 5000 }
       ]
     }

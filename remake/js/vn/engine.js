@@ -699,17 +699,6 @@ async function showLine(line) {
   const face = String(line.face || "");
   r.speaker = speaker;
   const name = lineDisplayName(line, r);
-  if (speaker) {
-    dom.name.textContent = name;
-    dom.name.style.setProperty("--vn-name-length", String([...name].length));
-    dom.name.title = name;
-    dom.name.classList.add("show");
-    nameFit.fit();
-  } else {
-    dom.name.classList.remove("show");
-  }
-  dom.box.classList.toggle("narration", !speaker);
-  dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
   // A line can retain its speaker/voice while using a dedicated cut instead of a portrait.
   const entrances = [updatePortraits(line.portrait === false ? "" : speaker, face)];
   // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。
@@ -749,6 +738,18 @@ async function showLine(line) {
   if (inner && hooks.interpolate) inner = hooks.interpolate(inner);
   log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });
   if (log.length > 300) log.shift();
+  // 入場待ちの間は前の名札と本文をそろえて残す。以降はawaitを挟まず一緒に切り替える。
+  if (speaker) {
+    dom.name.textContent = name;
+    dom.name.style.setProperty("--vn-name-length", String([...name].length));
+    dom.name.title = name;
+    dom.name.classList.add("show");
+    nameFit.fit();
+  } else {
+    dom.name.classList.remove("show");
+  }
+  dom.box.classList.toggle("narration", !speaker);
+  dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
   dom.box.classList.toggle("has-inner", !!inner);
   r.pages = dialoguePages(text, inner, dom.text, dom.inner);
   r.pageIdx = 0;
