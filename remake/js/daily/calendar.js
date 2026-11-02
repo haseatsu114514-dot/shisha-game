@@ -114,12 +114,13 @@ export async function runDaily(def) {
     }
     await chapterDef.morningDeparture?.();
     while (state.slot < 2) {
-      const delivery = dueDelivery();
-      if (delivery) await deliver(delivery);
+      if (fixedShiftDue()) await fixedShift();
       else await takeAction();
       updateHud();
       save();
     }
+    // #2213 B01: 配達はシフト後の帰り道。行動枠・体力は使わない。
+    for (let delivery = dueDelivery(); delivery; delivery = dueDelivery()) await deliver(delivery);
     // 2件の納品後、最終報告のため一度だけ職場へ戻る。
     const reported = state.chapter === 1 ? await reportDeliveryBatch() : null;
     if (reported === false) return;
@@ -321,7 +322,7 @@ async function registerTournament() {
   const venue = spotById("c_station");
   // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
   if (!venue || !isUnlocked(venue) || isClosed(venue) || state.flags._c_station_registered) return;
-  await chooseSpot({ guide: { pin: "c_station", text: "配達の前に、大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
+  await chooseSpot({ guide: { pin: "c_station", text: "まずは大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
   if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
     await (await import("../scenes/rule-sheet.js")).openRuleSheet();
@@ -334,17 +335,55 @@ async function registerTournament() {
 
 /**
  * 第1章は、スミさんの届け物でEDEN・PEPPERMINTの初来店を必ず通す（DL01）。DAY1 のおつかいに続けて
- * DAY2朝に二軒分をまとめて受注し、昼にPEPPERMINT、夜にEDEN。納品後にtonariへ一度だけ報告する。
- * EDENは従来の無料体験、PEPPERMINTは店内で荷物だけを渡し一服は任意。手当をバイト代に上乗せする。
+ * DAY2朝に二軒分をまとめて受注し、夜のシフト後の帰り道にPEPPERMINT→EDEN。納品後にtonariへ一度だけ報告する。
+ * #2213 B01: 配達は帰り道の無料の手順（行動枠・体力を使わない）。手当はバイト代への上乗せで残す。
+ * EDENは従来の無料体験、PEPPERMINTは店内で荷物だけを渡し一服は任意。
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
 const DELIVERIES = [
-  { charId: "minto", day: 2, slot: 0, scene: "remake_delivery_minto", text: "まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ！" },
-  { charId: "adam", day: 2, slot: 1, scene: "remake_delivery_eden", text: "次は古いダブルアップルを EDEN へ。EDEN をタップ！" },
+  { charId: "minto", scene: "remake_delivery_minto", text: "帰り道に、まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ！" },
+  { charId: "adam", scene: "remake_delivery_eden", text: "次は古いダブルアップルを EDEN へ。EDEN をタップ！" },
 ];
 const DELIVERY_LAST_DAY = 2;
 const DELIVERY_PAY = 2000;
-const DELIVERY_STAMINA = -10;
+
+/** #2213 B03: 勤務を固定するのは第1章DAY2の夜だけ。二軒分を受注した日は、夜の行動枠がそのままシフトになる。
+ * 旧方式で配達を済ませた保存には、後からシフトを足さない。 */
+const fixedShiftTonight = () => state.chapter === 1 && state.day === DELIVERY_LAST_DAY
+  && !!state.flags._delivery_batch_started && !state.flags._ch1_day2_shift_done && !restingToday()
+  && !DELIVERIES.every(d => state.flags[`_delivery_${d.charId}_done`]);
+function fixedShiftDue() {
+  if (state.slot !== 1 || !fixedShiftTonight()) return false;
+  const inv = state.pendingInvite;
+  return !(inv && (inv.day ?? state.day) === state.day && inv.slot === state.slot); // 旧セーブで先にした約束は守る
+}
+
+async function fixedShift() {
+  const spot = spotById("tonari");
+  await beat("夜。今日はtonariのシフトに入る日だ──");
+  await staminaGuard(-24, { mandatory: true });
+  state.visitedDay.tonari_baito = state.day;
+  const { spent } = await paidAction(async () => {
+    await doBaito({ story: regularCustomerStory });
+    return true;
+  }, { ...facilityGrowth(spot), exp: TONARI_EXP.baito });
+  state.visitedDay.tonari = state.day;
+  state.flags._ch1_day2_shift_done = true;
+  state.slot = 2;
+  await afterAction({ exerted: true, spent });
+}
+
+/** #2213 B02: 常連のサラリーマンの話（夜イベント「常連さんの話」）は、固定シフトの接客として流す。
+ * シフトに入れなかった日（休養など）は、夜イベントの定義どおり後日の夜に読む。 */
+async function regularCustomerStory() {
+  const scene = DB.dialogues.ch1_salaryman_regular;
+  if (state.flags._ev_salaryman || !scene) return null;
+  // 冒頭の「顔を出すと、カウンターを頼まれた」は夜の来店用。シフト中は接客の場面から入る。
+  const lines = scene.lines[0]?.text?.includes("顔を出すと") ? scene.lines.slice(1) : scene.lines;
+  await play({ ...scene, lines }, { bg: TONARI_BG });
+  state.flags._ev_salaryman = true;
+  return scene.dialogue_id;
+}
 
 /** DAY2朝の一括受注。旧途中セーブの既読・訪問済み状態を新規受注に戻さない。 */
 async function briefDeliveryBatch() {
@@ -386,13 +425,12 @@ async function reportDeliveryBatch() {
 }
 
 function dueDelivery() {
-  if (state.chapter !== 1 || state.day < 2 || !state.flags._errand_scout_done
+  // 帰り道（その日の行動枠を使い終えた後）だけ。
+  if (state.chapter !== 1 || state.day < 2 || state.slot < 2 || !state.flags._errand_scout_done
     || (state.day > DELIVERY_LAST_DAY && !state.flags._delivery_schedule_v2) || restingToday()) return null;
-  const inv = state.pendingInvite;
-  if (inv && (inv.day ?? state.day) === state.day && inv.slot === state.slot) return null; // 先にした約束を守る
   for (const d of DELIVERIES) {
     const done = `_delivery_${d.charId}_done`;
-    if (state.flags[done] || state.day * 2 + state.slot < d.day * 2 + d.slot) continue;
+    if (state.flags[done]) continue;
     if (storyCount(d.charId) > 0) { state.flags[done] = true; continue; } // もう自分で行った店
     const spot = spotById(d.charId);
     // 先の配達先が休業なら順番を入れ替えず、次の営業枠へ延期する。
@@ -408,10 +446,8 @@ async function deliver({ charId, scene, text }) {
     f[`_delivery_${charId}_told`] = true;
     save();
   }
-  await staminaGuard(DELIVERY_STAMINA, { mandatory: true });
-  await chooseSpot({ guide: { pin: charId, text, free: "配達（代金なし）" } });
+  await chooseSpot({ guide: { pin: charId, text, free: "配達（帰り道・代金なし）" } });
   f[`_delivery_${charId}`] = true;
-  addStamina(DELIVERY_STAMINA);
   playBgm("tonari");
   if (charId === "minto") {
     // 最初の背景・人物・台詞から店内。客としての初回接客は自由行動に残す。
@@ -427,8 +463,7 @@ async function deliver({ charId, scene, text }) {
   addMoney(DELIVERY_PAY);
   toast(`配達の手当 +${DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
   f[`_delivery_${charId}_done`] = true;
-  state.slot++;
-  await afterAction({ exerted: true });
+  save(); // 手当と納品済みを同じ境界で保存し、LOADで二重に払わない。
 }
 
 // ---------------------------------------------------------------- 行動
@@ -438,7 +473,7 @@ async function staminaGuard(cost, { mandatory = false } = {}) {
   const go = await modal({
     title: "体が重い……",
     body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。"
-      + (mandatory ? "<br>この配達は続ける必要がある。" : "<br>無事に済むこともあるけど、今は「家に帰る」で休める。")
+      + (mandatory ? "<br>今日のシフトは外せない。" : "<br>無事に済むこともあるけど、今は「家に帰る」で休める。")
       + (fitActive(state) ? "<br>（チョコザップで体を整えたので、今は風邪をひきにくい）" : ""),
     options: mandatory ? [{ label: "わかった", value: true, test: "stamina-go" }]
       : [{ label: "やめておく", value: false }, { label: "それでも行く", value: true, test: "stamina-go" }],
@@ -569,6 +604,10 @@ async function performSpotAction(spot) {
       if (completed) state.visitedDay.tonari_hiyori_axe = state.day;
       // 料金・体力・読了と一緒に行動を保存済み。共通末尾で二重に進めない。
       return { used: completed, exerted: completed, slotsUsed: 0 };
+    }
+    if (sub === "baito" && fixedShiftTonight()) {
+      toast("今日は夜にシフトが入っている");
+      return { used: false, exerted };
     }
     const makanai = sub === "practice" || sub === "strawberry";
     // 旧セーブの苺専用記録も、同じ日のまかないとして扱う。

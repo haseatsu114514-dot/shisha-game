@@ -40,6 +40,8 @@ const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},li
  completeInvitation:()=>{state.pendingInvite=null},
  invitationCost:()=>0,invitationGrowth:()=>({}),isFriendEvent:()=>false,isFinaleEvent:()=>false,CHAR_STAT:{},storeInvitationSpot:()=>false,
  openingStatus:()=>({ok:true}),VISIT_BG:{},restAtHome:async()=>{},currentCondition:()=>({health:'green'}),
+ // #2213 B03: the DAY2 night slot is a fixed shift; record it instead of running the tonari scenes.
+ doBaito:async({story}={})=>{calls.push({type:'shift',day:state.day,slot:state.slot,story:await story?.()})},
 };
 const context=vm.createContext({console,Math,Set,String,Number,Array,Promise});
 const modules=new Map();
@@ -53,17 +55,19 @@ await calendar.evaluate();const c=calendar.namespace;
 function reset({day=2,slot=0,flags={},story={}}={}){
  Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,{chapter:1,day,slot,money:10000,stamina:80,flags:{_errand_scout_done:true,_c_station_registered:true,_ch1_rules_read:true,...flags},story:{...story},met:{},visitedDay:{},stats:{},inbox:[]});calls.length=0;saves.length=0;actionEnds=0;closed.clear();locked.clear();
 }
-reset();assert.equal(c.dueDelivery().charId,'minto');await c.deliver(c.dueDelivery());assert.equal(c.dueDelivery().charId,'adam');await c.deliver(c.dueDelivery());
-assert.equal(c.dueDelivery(),null);assert.equal(state.money,14000);assert.equal(state.stamina,60);assert.equal(state.slot,2);assert.equal(actionEnds,2);assert.equal(state.story.minto,undefined);assert.equal(state.story.adam,1);assert.equal(state.met.minto,true);
+// #2213 B01: deliveries are the free walk home after the day's slots — no slot, stamina or action end.
+reset();assert.equal(c.dueDelivery(),null);state.slot=1;assert.equal(c.dueDelivery(),null);
+reset({slot:2});assert.equal(c.dueDelivery().charId,'minto');await c.deliver(c.dueDelivery());assert.equal(c.dueDelivery().charId,'adam');await c.deliver(c.dueDelivery());
+assert.equal(c.dueDelivery(),null);assert.equal(state.money,14000);assert.equal(state.stamina,80);assert.equal(state.slot,2);assert.equal(actionEnds,0);assert.equal(state.story.minto,undefined);assert.equal(state.story.adam,1);assert.equal(state.met.minto,true);
 assert(calls.find(x=>x.id==='remake_delivery_minto_handoff').opts.bg.endsWith('/peppermint.png'));
-// A reload from the committed checkpoint cannot pay or consume a slot twice.
+assert.equal(calls.find(x=>x.type==='map'&&x.pin==='minto').free,'配達（帰り道・代金なし）');
+// A reload from the committed checkpoint cannot pay twice.
 Object.assign(state,structuredClone(saves.at(-1)));assert.equal(c.dueDelivery(),null);assert.equal(state.money,14000);
-for(const id of ['minto','adam']){reset({story:{[id]:1}});const d=c.dueDelivery();assert.equal(state.flags[`_delivery_${id}_done`],id==='minto'?true:undefined);if(id==='minto')assert.equal(d,null);else assert.equal(d.charId,'minto');assert.equal(state.money,10000);}
-reset({slot:1,story:{minto:1}});assert.equal(c.dueDelivery().charId,'adam');assert.equal(state.flags._delivery_minto_done,true);
-reset();closed.add('minto');assert.equal(c.dueDelivery(),null);state.slot=1;assert.equal(c.dueDelivery(),null);closed.clear();assert.equal(c.dueDelivery().charId,'minto');
-reset();state.pendingInvite={day:2,slot:0};assert.equal(c.dueDelivery(),null);state.pendingInvite=null;assert.equal(c.dueDelivery().charId,'minto');
-reset();state.restDay={fullDay:true};assert.equal(c.dueDelivery(),null);
-reset({day:3});assert.equal(c.dueDelivery(),null);state.flags._delivery_schedule_v2=true;assert.equal(c.dueDelivery().charId,'minto');
+for(const id of ['minto','adam']){reset({slot:2,story:{[id]:1}});const d=c.dueDelivery();assert.equal(state.flags[`_delivery_${id}_done`],id==='minto'?true:undefined);if(id==='minto')assert.equal(d.charId,'adam');else assert.equal(d.charId,'minto');assert.equal(state.money,10000);}
+reset({slot:2,story:{minto:1}});assert.equal(c.dueDelivery().charId,'adam');assert.equal(state.flags._delivery_minto_done,true);
+reset({slot:2});closed.add('minto');assert.equal(c.dueDelivery(),null);closed.clear();assert.equal(c.dueDelivery().charId,'minto');
+reset({slot:2});state.restDay={fullDay:true};assert.equal(c.dueDelivery(),null);
+reset({day:3,slot:2});assert.equal(c.dueDelivery(),null);state.flags._delivery_schedule_v2=true;assert.equal(c.dueDelivery().charId,'minto');
 reset({day:1,slot:1});assert.equal(c.dueDelivery(),null);
 // Actual runDaily ordering: shopping/scout, home/sleep, registration, minto, adam.
 reset({day:1,flags:{_errand_scout_done:false,_c_station_registered:false}});await c.runDaily({untilDay:3,nightEvents:{}});
@@ -115,7 +119,11 @@ assert.deepEqual(deliveryTrace(),[
 ]);
 assert.equal(state.flags._delivery_batch_started,true);
 assert.equal(state.flags._delivery_report_done,true);
-assert.equal(state.money,14000);assert.equal(state.stamina,74);assert.equal(actionEnds,2);
+// #2213 B03: one free noon action, then the night slot is the fixed shift; deliveries follow it.
+assert.deepEqual(calls.filter(x=>x.type==='shift').map(x=>[x.day,x.slot]),[[2,1]]);
+assert.equal(state.flags._ch1_day2_shift_done,true);
+assert(calls.findIndex(x=>x.type==='shift')<calls.findIndex(x=>x.type==='map'&&x.pin==='minto'));
+assert.equal(state.money,14000);assert.equal(state.stamina,94);assert.equal(actionEnds,2);
 const firstGuide=calls.findIndex(x=>x.type==='map'&&x.pin==='minto');
 const secondGuide=calls.findIndex(x=>x.type==='map'&&x.pin==='adam');
 assert(firstGuide>=0 && secondGuide>firstGuide);
@@ -130,7 +138,7 @@ reset({day:2,slot:1,flags:{_delivery_batch_started:true,
 state.money=12000;state.stamina=70;
 await c.runDaily({untilDay:3,nightEvents:{}});
 assert.deepEqual(deliveryTrace(),['adam','remake_delivery_report']);
-assert.equal(state.money,14000);assert.equal(state.stamina,74);assert.equal(actionEnds,1);
+assert.equal(state.money,14000);assert.equal(state.stamina,84);assert.equal(actionEnds,1);
 
 // LOAD during the batch briefing: preserve the first explanation but read the second.
 reset({day:2,flags:{_delivery_batch_started:true,_delivery_minto_told:true,_morning_2:true}});
@@ -207,7 +215,7 @@ await entryCheck('legacy without explicit flag displays existing results only',a
  installProbe=async()=>installs++;displayProbe=async()=>displays++;
  await c.runDaily({untilDay:3,nightEvents:{}});
  assert.equal(installs,0);assert(displays>0);
- assert.equal(calls.find(x=>x.type==='map').pin,'minto');
+ assert.equal(calls.find(x=>x.type==='map'&&x.pin).pin,'minto');
  assert.equal(state.visitedDay.c_station,undefined);
  assert.equal(state.money,14000);assert.equal(actionEnds,2);
 });
@@ -217,7 +225,7 @@ await entryCheck('resume precedes result display and delivery actions',async()=>
  displayProbe=async()=>{if(!trace.includes('display'))assert.equal(calls.length,0);trace.push('display')};
  await c.runDaily({untilDay:3,nightEvents:{}});
  assert.deepEqual(trace.slice(0,2),['install','display']);
- assert.equal(calls.find(x=>x.type==='map').pin,'minto');
+ assert.equal(calls.find(x=>x.type==='map'&&x.pin).pin,'minto');
  assert.equal(state.money,14000);assert.equal(actionEnds,2);
 });
 await entryCheck('free registration survives reload during resumed first-spin presentation',async()=>{

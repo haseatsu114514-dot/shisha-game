@@ -1537,7 +1537,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "配達の前に、C.STATIONの受付で大会の参加登録を済ませてこい"
+          "text": "その前に、C.STATIONの受付で大会の参加登録を済ませてこい"
         },
         {
           "speaker": "hajime",
@@ -1547,12 +1547,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "ああ。登録が済んだらPEPPERMINT、それからEDENだ"
+          "text": "ああ。今夜はシフトに入ってくれ。届け物は上がった帰りに、PEPPERMINT、それからEDENだ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "先に大会の登録、そのあと二軒ですね。行ってきます"
+          "text": "登録して、夜はシフト、帰りに二軒ですね。行ってきます"
         }
       ],
       "branches": {

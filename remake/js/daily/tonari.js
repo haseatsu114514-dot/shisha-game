@@ -89,12 +89,13 @@ export async function tonariCustomer({ signal = null } = {}) {
 // 魅力の段で指名・リピートが増える
 const CALLED_BONUS = 5000; // スミさんに急に呼ばれた日の上乗せ（店からの給料。チップではない）
 
-/** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ） */
-export async function doBaito({ called = false } = {}) {
-  return dialogueSequence(() => baitoShift({ called }));
+/** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ）
+ *  @param opts.story その日の接客として流す本編の場面。流したらその場面IDを返す（通常の接客は重ねない） */
+export async function doBaito({ called = false, story = null } = {}) {
+  return dialogueSequence(() => baitoShift({ called, story }));
 }
 
-async function baitoShift({ called }) {
+async function baitoShift({ called, story }) {
   addStamina(-24);
   const condition = currentCondition(); // 消耗を反映した制作時の体力で、そのシフト中は固定
   playBgm("tonari");
@@ -105,8 +106,11 @@ async function baitoShift({ called }) {
   const rainy = isRainy();
   if (rainy) await play("remake_baito_rain", { bg: TONARI_BG });
   const n = state.baitoCount;
+  // #2213 B02: 本編の常連の話を接客として読んだ日は、カメオ・通常の接客を重ねない
+  const storyId = story ? await story() : null;
+  if (storyId) rememberBaito(storyId, [storyId]);
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
-  if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
+  else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
     state.flags._ev_rei_cameo = true;
     await play("ch1_rei_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_rei_cameo", ["rei"]);
